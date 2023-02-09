@@ -1,0 +1,9 @@
+[Unit]
+Description=distrobox-upgrade Automatic Update Trigger
+
+[Timer]
+OnBootSec=1h
+OnUnitInactiveSec=1d
+
+[Install]
+WantedBy=timers.target

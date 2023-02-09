@@ -1,0 +1,18 @@
+[Unit]
+# Usage: systemctl enable --now duperemove-weekly@$(systemd-escape <path>).timer
+# Utilize %J specifier for duration set.
+# One can hardlink/copy with 'weekly' part changed
+# to set other duration.
+Description=Deduplicate %I at calendar event (%J)
+After=local-fs.target
+Requires=local-fs.target
+Conflicts=shutdown.target rescue.target rescue.service emergency.service
+
+[Timer]
+Unit=duperemove@%i.service
+RandomizedDelaySec=30
+Persistent=true
+OnCalendar=%J
+
+[Install]
+WantedBy=multi-user.target

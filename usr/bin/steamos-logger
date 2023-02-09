@@ -1,0 +1,132 @@
+#!/bin/sh
+# -*- mode: sh; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+# vim: et sts=4 sw=4
+
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  Copyright © 2020 Collabora Ltd.
+#  Copyright © 2020 Valve Corporation.
+#
+#  This file is part of steamos-customizations.
+#
+#  steamos-customizations is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public License as
+#  published by the Free Software Foundation; either version 2.1 of the License,
+#  or (at your option) any later version.
+
+set -e
+set -u
+
+usage() {
+    cat <<EOF
+Usage: ${0##*/} [options] [<message>]
+
+Echoes the message to standard output.
+
+It displays the text message if splash screen is running.
+
+The splash screen is cleared if message is empty.
+
+Options:
+ -h, --help               this help message
+ -l, --log-level LEVEL    the level of logs
+
+LEVELS
+ Valid levels: emergency alert critical error warning notice info debug.
+EOF
+}
+
+declare -A LOG_LEVEL
+LOG_LEVEL[emergency]="0"
+LOG_LEVEL[fatal]="1"
+LOG_LEVEL[critical]="2"
+LOG_LEVEL[error]="3"
+LOG_LEVEL[warning]="4"
+LOG_LEVEL[notice]="5"
+LOG_LEVEL[info]="6"
+LOG_LEVEL[debug]="7"
+
+declare -A LOG_LEVEL_PREFIX
+LOG_LEVEL_PREFIX[emergency]="<0>"
+LOG_LEVEL_PREFIX[fatal]="<1>"
+LOG_LEVEL_PREFIX[critical]="<2>"
+LOG_LEVEL_PREFIX[error]="<3>"
+LOG_LEVEL_PREFIX[warning]="<4>"
+LOG_LEVEL_PREFIX[notice]="<5>"
+LOG_LEVEL_PREFIX[info]="<6>"
+LOG_LEVEL_PREFIX[debug]="<7>"
+
+declare -A PLYMOUTH_PREFIX
+PLYMOUTH_PREFIX[emergency]="Emergency: "
+PLYMOUTH_PREFIX[fatal]="Fatal: "
+PLYMOUTH_PREFIX[critical]="Critical: "
+PLYMOUTH_PREFIX[error]="Error: "
+PLYMOUTH_PREFIX[warning]="Warning: "
+if [[ ${STEAMOS_DEBUG:-} ]]
+then
+    PLYMOUTH_PREFIX[notice]="Notice: "
+    PLYMOUTH_PREFIX[info]="Info: "
+    PLYMOUTH_PREFIX[debug]="Debug: "
+fi
+
+if [[ "${0##*/}" != steamos-logger ]]
+then
+    log_level="${0##*/}"
+    log_level="${log_level#steamos-}"
+else
+    log_level="notice"
+fi
+
+while [[ "$#" -ne 0 ]]
+do
+    if [[ "$1" =~ ^(-h|--help) ]]
+    then
+        usage
+        exit
+    elif [[ "$1" =~ ^(-l|--log-level) ]]
+    then
+        shift
+
+        if [[ "$#" -eq 0 ]] || [[ -z ${LOG_LEVEL_PREFIX[$1]:-} ]]
+        then
+            echo "${!LOG_LEVEL_PREFIX[@]}"
+            if [[ "$#" -eq 0 ]]
+            then
+                exit 0
+            fi
+            exit 1
+        fi
+
+        log_level="$1"
+    else
+        break
+    fi
+    shift
+done
+
+if plymouth --ping &&
+   { [[ ${STEAMOS_DEBUG:-} ]] ||
+     [[ "${LOG_LEVEL[$log_level]}" -lt "${LOG_LEVEL[info]}" ]]; }
+then
+    prefix="${PLYMOUTH_PREFIX[$log_level]:-}"
+    if [[ ${prefix:-} ]]
+    then
+        text="$prefix"
+    fi
+    text+="${*:-}"
+
+    plymouth display-message --text="$text"
+    unset prefix text
+fi
+
+if [[ "$#" -eq 0 ]]
+then
+    exit
+fi
+
+if ! [[ -t 1 ]]
+then
+    prefix="${LOG_LEVEL_PREFIX[$log_level]:-}"
+fi
+
+exec printf "%s%s\n" "${prefix:-}" "${*:-}"

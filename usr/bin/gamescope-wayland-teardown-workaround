@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -eu
+
+TARGETS=('/bin/bash /usr/bin/gamescope-session'
+         '/usr/bin/kwin_x11')
+
+for target in "${TARGETS[@]}"; do
+  for processtree in $(pgrep -xf "$target" || true); do
+    kill -- "-$processtree"
+  done
+done
