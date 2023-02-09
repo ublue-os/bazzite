@@ -21,7 +21,7 @@ The `latest` tag will automatically point to the latest build.
 
 ## Features
 
-- Start with a base [ublue-os/kinoite-nvidia](https://github.com/ublue-os/nvidia image
+- Start with a base [ublue-os/kinoite-nvidia](https://github.com/ublue-os/nvidia) image
 - Adds ported versions of Valve's Steam Deck packages
 - Adds h264 decoding out of the box via RPM Fusion
 - Supports LatencyFleX & vkBasalt out of the box

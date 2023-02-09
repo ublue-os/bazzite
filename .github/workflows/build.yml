@@ -106,8 +106,8 @@ jobs:
           wc -c cosign.key
           wc -c cosign.pub
         env:
-          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
-          COSIGN_PUBLIC_KEY: ${{ secrets.COSIGN_PUBLIC_KEY }}
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+          COSIGN_PUBLIC_KEY: ${{ secrets.SIGNING_PUBLIC }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
@@ -122,7 +122,6 @@ jobs:
         env:
           TAGS: ${{ steps.push.outputs.digest }}
           COSIGN_EXPERIMENTAL: false
-          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
 
       - name: Verify signed image
         run: |
