@@ -4,8 +4,7 @@ FROM ghcr.io/ublue-os/kinoite-nvidia:latest
 
 COPY etc /etc
 COPY usr /usr
-RUN mkdir -p /var/lib/duperemove && \
-ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
+RUN  ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
 ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
 ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning
 
@@ -76,4 +75,5 @@ RUN sed -i 's/#AutomaticUpdatePolicy.*/AutomaticUpdatePolicy=stage/' /etc/rpm-os
     rm -rf \
     /tmp/* \
     /var/* && \
+    mkdir -p /var/lib/duperemove && \
     ostree container commit
