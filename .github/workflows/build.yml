@@ -9,7 +9,6 @@ on:
     branches:
       - main
 env:
-    IMAGE_NAME: bazzite
     IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 jobs:
@@ -23,6 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        image_name: ['', '-desktop']
         major_version: [37]
         include:
           - major_version: 37
@@ -61,13 +61,14 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           containerfiles: |
-            ./Containerfile
-          image: ${{ env.IMAGE_NAME }}
+            ${{ format('./Containerfile{0}', matrix.image_name) }}
+          image: ${{ format('bazzite{0}', matrix.image_name) }}
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
             ${{ steps.generate-tags.outputs.date }}
             ${{ steps.generate-tags.outputs.sha_short }}
           build-args: |
+            IMAGE_NAME=${{ matrix.image_name }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
           oci: true
 
@@ -118,14 +119,14 @@ jobs:
 
       - name: Sign container image
         run: |
-          cosign sign --key cosign.key -a git_sha=${{ github.sha }} -a git_tag=${{ github.ref }} ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
+          cosign sign --key cosign.key ${{ steps.registry_case.outputs.lowercase }}/${{ steps.build_image.outputs.image }}@${TAGS}
         env:
           TAGS: ${{ steps.push.outputs.digest }}
           COSIGN_EXPERIMENTAL: false
 
       - name: Verify signed image
         run: |
-          cosign verify --key cosign.pub ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
+          cosign verify --key cosign.pub ${{ steps.registry_case.outputs.lowercase }}/${{ steps.build_image.outputs.image }}@${TAGS}
         env:
           TAGS: ${{ steps.push.outputs.digest }}
           COSIGN_EXPERIMENTAL: false

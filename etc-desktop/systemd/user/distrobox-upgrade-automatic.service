@@ -1,0 +1,7 @@
+[Unit]
+Description=distrobox-upgrade Automatic Update
+ 
+[Service]
+Type=simple
+ExecStart=/usr/bin/distrobox-upgrade --all
+StandardOutput=null
