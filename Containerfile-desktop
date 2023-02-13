@@ -1,6 +1,7 @@
 FROM ghcr.io/ublue-os/kinoite-nvidia:latest
 
 COPY etc-desktop /etc
+COPY usr-desktop /usr
 
 # Re-enable RPMFusion repos & add Copr repos
 RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/rpmfusion-nonfree{,-updates}.repo && \
