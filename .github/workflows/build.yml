@@ -33,6 +33,16 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v3
 
+      # Build metadata
+      - name: Image Metadata
+        uses: docker/metadata-action@v4
+        id: meta
+        with:
+          images: |
+            ${{ format('bazzite{0}', matrix.image_name) }}
+          labels: |
+            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/README.md
+
       - name: Generate tags
         id: generate-tags
         shell: bash
@@ -70,7 +80,8 @@ jobs:
           build-args: |
             IMAGE_NAME=${{ matrix.image_name }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
-          oci: true
+          labels: ${{ steps.meta.outputs.labels }}
+          oci: false
 
       # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
       # https://github.com/macbre/push-to-ghcr/issues/12
