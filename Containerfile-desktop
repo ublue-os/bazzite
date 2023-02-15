@@ -58,7 +58,7 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree{,-update
     systemctl enable rpm-ostreed-automatic.timer && \
     rpm-ostree cleanup -m && \
     rm -rf \
-    /tmp/* \
-    /var/* && \
+        /tmp/* \
+        /var/* && \
     mkdir -p /var/lib/duperemove && \
     ostree container commit
