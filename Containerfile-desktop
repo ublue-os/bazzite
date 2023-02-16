@@ -16,6 +16,7 @@ RUN rpm-ostree install \
     distrobox \
     steam-devices \
     steamdeck-kde-themes \
+    wallpaper-engine-kde-plugin \
     duperemove \
     kdeconnectd \
     system76-scheduler \

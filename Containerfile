@@ -26,6 +26,7 @@ RUN rpm-ostree install \
     steamdeck-kde-presets \
     gamemode \
     latencyflex-vulkan-layer \
+    wallpaper-engine-kde-plugin \
     vkBasalt \
     mangohud \
     duperemove \
