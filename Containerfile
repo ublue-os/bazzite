@@ -54,6 +54,7 @@ RUN rpm-ostree override remove \
     libavformat-free \
     libavcodec-free \
     libavfilter-free \
+    libavdevice-free \
     libpostproc-free \
     --install=mesa-va-drivers-freeworld.x86_64 \
     --install=mesa-va-drivers-freeworld.i686 \
