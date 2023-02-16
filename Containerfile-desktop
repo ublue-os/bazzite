@@ -1,4 +1,4 @@
-FROM ghcr.io/ublue-os/kinoite-nvidia:latest
+FROM ghcr.io/ublue-os/kinoite-nvidia:pr-43
 
 COPY etc-desktop /etc
 COPY usr-desktop /usr
@@ -42,7 +42,6 @@ RUN rpm-ostree override remove \
     --install=mesa-va-drivers-freeworld.i686 \
     --install=mesa-vdpau-drivers-freeworld \
     --install=libva-intel-driver \
-    --install=nvidia-vaapi-driver \
     --install=ffmpeg-libs \
     --install=ffmpeg \
     --install=libavcodec-freeworld
