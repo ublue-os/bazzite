@@ -1,4 +1,4 @@
-FROM ghcr.io/ublue-os/kinoite-nvidia:pr-43
+FROM ghcr.io/ublue-os/kinoite-nvidia:pr-44
 
 COPY etc-desktop /etc
 COPY usr-desktop /usr
@@ -27,25 +27,6 @@ RUN rpm-ostree install \
 
 # Remove unneeded packages
 RUN rpm-ostree override remove toolbox
-
-# Install mesa freeworld components and ffmpeg for hardware accelerated video decode
-RUN rpm-ostree override remove \
-    mesa-va-drivers \
-    libavutil-free \
-    libswscale-free \
-    libswresample-free \
-    libavformat-free \
-    libavcodec-free \
-    libavfilter-free \
-    libavdevice-free \
-    libpostproc-free \
-    --install=mesa-va-drivers-freeworld.x86_64 \
-    --install=mesa-va-drivers-freeworld.i686 \
-    --install=mesa-vdpau-drivers-freeworld \
-    --install=libva-intel-driver \
-    --install=ffmpeg-libs \
-    --install=ffmpeg \
-    --install=libavcodec-freeworld
 
 # Cleanup & Finalize
 RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree{,-updates}.repo && \

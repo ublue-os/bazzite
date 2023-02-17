@@ -1,4 +1,4 @@
-FROM ghcr.io/ublue-os/kinoite-nvidia:latest
+FROM ghcr.io/ublue-os/kinoite-nvidia:pr-44
 
 COPY etc /etc
 COPY usr /usr
@@ -44,26 +44,6 @@ RUN git clone https://github.com/KyleGospo/jupiter-dock-updater-bin.git && \
 
 # Remove unneeded packages
 RUN rpm-ostree override remove toolbox
-
-# Install mesa freeworld components and ffmpeg for hardware accelerated video decode
-RUN rpm-ostree override remove \
-    mesa-va-drivers \
-    libavutil-free \
-    libswscale-free \
-    libswresample-free \
-    libavformat-free \
-    libavcodec-free \
-    libavfilter-free \
-    libavdevice-free \
-    libpostproc-free \
-    --install=mesa-va-drivers-freeworld.x86_64 \
-    --install=mesa-va-drivers-freeworld.i686 \
-    --install=mesa-vdpau-drivers-freeworld \
-    --install=libva-intel-driver \
-    --install=nvidia-vaapi-driver \
-    --install=ffmpeg-libs \
-    --install=ffmpeg \
-    --install=libavcodec-freeworld
 
 # Cleanup & Finalize
 RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree{,-updates}.repo && \
