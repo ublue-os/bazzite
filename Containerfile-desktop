@@ -12,7 +12,6 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/rpmfusion-nonfree{,-update
 # Install new packages
 RUN rpm-ostree install \
     distrobox \
-    steam-devices \
     steamdeck-kde-themes \
     wallpaper-engine-kde-plugin \
     duperemove \

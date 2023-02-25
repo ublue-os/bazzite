@@ -16,7 +16,6 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/rpmfusion-nonfree{,-update
 RUN rpm-ostree install \
     distrobox \
     steam \
-    steam-devices \
     gamescope \
     gamescope-session \
     jupiter-fan-control \
