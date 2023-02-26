@@ -31,7 +31,6 @@ RUN rpm-ostree install \
     btop \
     fish \
     kate \
-    openrgb-udev-rules \
     $(rpm -qa --qf "%{NAME} ")
     # The above prints every package installed, this acts similarly to rpm-ostree update when making an OCI image and resolves issues with installing Steam
 

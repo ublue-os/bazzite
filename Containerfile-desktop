@@ -19,8 +19,7 @@ RUN rpm-ostree install \
     system76-scheduler \
     btop \
     fish \
-    kate \
-    openrgb-udev-rules
+    kate
 
 # Remove unneeded packages
 RUN rpm-ostree override remove toolbox
