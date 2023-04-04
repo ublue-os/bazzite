@@ -33,6 +33,13 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v3
 
+      - name: Get current version
+        id: labels
+        run: |
+          docker pull ghcr.io/ublue-os/${{ matrix.image_name }}-main:${{ matrix.major_version }}
+          ver=$(docker inspect ghcr.io/ublue-os/${{ matrix.image_name }}-main:${{ matrix.major_version }} | jq -r '.[].Config.Labels["org.opencontainers.image.version"]')
+          echo "VERSION=$ver" >> $GITHUB_OUTPUT
+
       # Build metadata
       - name: Image Metadata
         uses: docker/metadata-action@v4
@@ -42,6 +49,7 @@ jobs:
             ${{ format('bazzite{0}', matrix.image_name) }}
           labels: |
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/README.md
+            org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
 
       - name: Generate tags
         id: generate-tags
