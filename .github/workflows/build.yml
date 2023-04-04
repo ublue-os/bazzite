@@ -48,8 +48,10 @@ jobs:
           images: |
             ${{ format('bazzite{0}', matrix.image_name) }}
           labels: |
-            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/README.md
+            org.opencontainers.image.title=${{ format('bazzite{0}', matrix.image_name) }}
             org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
+            org.opencontainers.image.description=Gaming-focused builds of ublue-os with arch distrobox images for gaming, nvidia support, and future support for Valve's Steam Deck.
+            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/README.md
 
       - name: Generate tags
         id: generate-tags
