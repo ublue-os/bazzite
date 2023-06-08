@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_name: ['', '-desktop']
+        image_name: ['', '-nvidia', '-desktop', '-desktop-nvidia']
         major_version: [37, 38]
         include:
           - major_version: 37

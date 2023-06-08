@@ -1,4 +1,4 @@
-FROM ghcr.io/ublue-os/kinoite-main:latest
+FROM ghcr.io/ublue-os/kinoite-nvidia:latest
 
 COPY etc /etc
 COPY usr /usr
