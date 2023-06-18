@@ -1,0 +1,21 @@
+ublue_variants:
+  - label: ublue-os/bazzite
+    ks: /kickstart/ublue-os.ks
+    flavors:
+      - label: bazzite
+        info: Bazzite
+  - label: ublue-os/bazzite-deck
+    ks: /kickstart/ublue-os.ks
+    flavors:
+      - label: bazzite-deck
+        info: Bazzite Deck
+  - label: ublue-os/bazzite-nvidia
+    ks: /kickstart/ublue-os-nvidia.ks
+    flavors:
+      - label: bazzite-nvidia
+        info: Bazzite (Nvidia)
+  - label: ublue-os/bazzite-deck-nvidia
+    ks: /kickstart/ublue-os-nvidia.ks
+    flavors:
+      - label: bluewhaleos-hidpi-nvidia
+        info: Bazzite Deck (Nvidia)
