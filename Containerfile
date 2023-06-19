@@ -92,6 +92,9 @@ RUN rpm-ostree install \
 RUN git clone https://github.com/KyleGospo/jupiter-dock-updater-bin.git && \
     mv -v jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
 
+# Suspend using power button
+RUN sed -i 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/g' /etc/systemd/logind.conf
+
 # Cleanup & Finalize
 RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
