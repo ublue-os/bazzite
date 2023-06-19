@@ -1,4 +1,4 @@
 #!/bin/sh
 
 rpm-ostree update
-exit 7
+exit 0
