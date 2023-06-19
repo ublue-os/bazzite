@@ -2,7 +2,7 @@
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
 
-Bazzite is an OCI based off of [ublue-os/kinoite-nvidia](https://github.com/ublue-os/nvidia) that is intended to be an alternative OS for the [Steam Deck](https://www.steamdeck.com/) and a SteamOS-alike for desktops.
+Bazzite is an OCI based off of [ublue-os/kinoite](https://github.com/ublue-os/main) that is intended to be an alternative OS for the [Steam Deck](https://www.steamdeck.com/) and is a SteamOS-alike for desktops.
 
 ### Bazzite is currently in development and should not be used on real hardware under any circumstance. Feel free to test in a VM.
 ### Bazzite is not associated with Valve Software in any way, and maintainers of the Bazzite project are not liable for any damage that may occur during use of the operating system.
@@ -21,7 +21,7 @@ The `latest` tag will automatically point to the latest build.
 
 ## Features
 
-- Start with a base [ublue-os/kinoite-nvidia](https://github.com/ublue-os/nvidia) image
+- Start with a base [ublue-os/kinoite](https://github.com/ublue-os/main) image
 - Adds ported versions of Valve's Steam Deck packages
 - Adds h264 decoding out of the box via RPM Fusion
 - Supports LatencyFleX & vkBasalt out of the box
