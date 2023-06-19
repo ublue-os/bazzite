@@ -87,7 +87,8 @@ RUN rpm-ostree install \
     gamemode \
     latencyflex-vulkan-layer \
     vkBasalt \
-    mangohud
+    mangohud \
+    skopeo
 
 # Install dock updater, this is done manually as it has proprietary parts and cannot be built in Copr.
 RUN git clone https://github.com/KyleGospo/jupiter-dock-updater-bin.git && \

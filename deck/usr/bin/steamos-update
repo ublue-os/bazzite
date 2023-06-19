@@ -1,4 +1,55 @@
-#!/bin/sh
+#!/bin/bash
 
-rpm-ostree update
-exit 0
+if command -v rpm-ostree > /dev/null; then
+  if [ "$1" == "check" ]; then
+    if [ -f '/tmp/upgrade-installed' ]; then
+      exit 7 # Upgrade already installed
+    else
+      # Perform connectivity check
+      wget -q --spider https://github.com
+      if [ $? -eq 0 ]; then
+        # Compare installation digest to latest image
+        IMAGE=$(rpm-ostree status | grep -m1 ghcr | sed 's/^.*ghcr/ghcr/')
+        CURRENT=$(rpm-ostree status | grep -m1 Digest | tr -d '[:space:]' | sed 's/'Digest:'//g')
+        LATEST=$(skopeo inspect docker://${IMAGE} | jq '.Digest' | tr -d '"')
+        if [ ${CURRENT} == ${LATEST} ]; then
+          exit 7 # Up to date
+        else
+          exit 0 # Upgrade available
+        fi
+      else
+        exit 7 # Connectivity check failed
+      fi
+    fi
+  elif [ "$1" == "--supports-duplicate-detection" ]; then
+    exit 0
+  else
+    # Fake upgrade progress bar
+    fake_progress() {
+      local value=0
+      while read -r line; do
+        if [ ${value} -lt '100' ]; then
+          echo ${value}'%'
+          value=$(( value + 3 ))
+        fi
+      done
+      echo 100%
+    }
+    upgrade() {
+      # Pull exit code from rpm-ostree
+      rpm-ostree upgrade --unchanged-exit-77
+      echo $? > /tmp/upgrade-check
+    }
+    upgrade | fake_progress
+    # Check if upgrade failed
+    UPGRADE_CHECK=/tmp/upgrade-check
+    rm /tmp/upgrade-check
+    if [ ${UPGRADE_CHECK} -eq 77 ]; then
+      exit 0 # Upgrade failed
+    else
+      touch /tmp/upgrade-installed
+    fi
+  fi
+else
+  exit 7 # rpm-ostree not installed
+fi
