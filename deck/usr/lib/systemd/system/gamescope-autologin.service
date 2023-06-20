@@ -1,0 +1,10 @@
+[Unit]
+Description=Enables autologin to gamescope-session
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/gamescope-autologin
+
+[Install]
+WantedBy=multi-user.target

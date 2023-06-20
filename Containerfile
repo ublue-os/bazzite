@@ -102,6 +102,7 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.re
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     systemctl enable set-cfs-tweaks.service && \
+    systemctl enable gamescope-autologin.service && \
     rm -rf \
         /tmp/* \
         /var/* && \

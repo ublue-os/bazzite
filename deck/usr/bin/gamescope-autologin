@@ -1,0 +1,15 @@
+#!/bin/bash
+NUM_USERS=$(ls /home | wc -l)
+
+# If we have multiple users, don't configure SDDM
+if [ ${NUM_USERS} -eq 1 ]; then
+  # Don't configure SDDM if we already have
+  SDDM_CONF=$(cat /etc/sddm.conf)
+  if grep '#User=' <<< ${SDDM_CONF}; then
+    # Retrieve username
+    USER=$(ls /home)
+    # Configure autologin
+    sed -i 's/#Session=/Session=gamescope-session/g' /etc/sddm.conf
+    sed -i 's/#User=/User='${USER}'/g' /etc/sddm.conf
+  fi
+fi
