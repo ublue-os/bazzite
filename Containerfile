@@ -69,6 +69,9 @@ RUN rm -f /usr/bin/system76-scheduler-dbus-proxy.sh
 # Remove steamdeck-kde-themes
 RUN rpm-ostree override remove steamdeck-kde-themes
 
+# Disable ZRAM, a 1GB swap file will be made to match SteamOS behavior.
+RUN rpm-ostree override remove zram-generator-defaults
+
 COPY deck/etc /etc
 COPY deck/usr /usr
 RUN ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
@@ -101,6 +104,7 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.re
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     systemctl enable set-cfs-tweaks.service && \
+    systemctl enable deckswap.service && \
     rm -rf \
         /tmp/* \
         /var/* && \
