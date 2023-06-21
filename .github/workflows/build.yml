@@ -32,7 +32,7 @@ jobs:
       matrix:
         image_flavor: [main, nvidia]
         base_name: [bazzite, bazzite-deck]
-        major_version: [37, 38]
+        major_version: [38]
         include:
           - major_version: 38
             is_latest_version: false
