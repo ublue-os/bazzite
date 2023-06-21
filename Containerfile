@@ -83,6 +83,7 @@ RUN rpm-ostree install \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     steamdeck-kde-presets \
+    ryzenadj \
     gamemode \
     latencyflex-vulkan-layer \
     vkBasalt \
