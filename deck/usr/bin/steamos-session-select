@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -53,10 +53,10 @@ fi
 
 case "$session" in
   plasma-wayland-persistent)
-    session_launcher="plasmawayland.desktop"
+    session_launcher="plasma.desktop"
   ;;
   plasma-x11-persistent)
-    session_launcher="plasma.desktop"
+    session_launcher="plasmax11.desktop"
   ;;
   plasma)
     if [[ "$session_type" == "x11" ]]; then
@@ -67,7 +67,8 @@ case "$session" in
     create_sentinel=1
   ;;
   gamescope)
-    session_launcher="gamescope-wayland.desktop"
+    session_launcher="gamescope-session.desktop"
+    create_sentinel=1
   ;;
   *)
     echo >&2 "!! Unrecognized session '$session'"

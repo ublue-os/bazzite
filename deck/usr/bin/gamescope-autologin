@@ -4,12 +4,16 @@ NUM_USERS=$(ls /home | wc -l)
 # If we have multiple users, don't configure SDDM
 if [ ${NUM_USERS} -eq 1 ]; then
   # Don't configure SDDM if we already have
-  SDDM_CONF=$(cat /etc/sddm.conf)
+  SDDM_CONF=$(cat /etc/sddm.conf.d/steamos.conf)
   if grep '#User=' <<< ${SDDM_CONF}; then
     # Retrieve username
     USER=$(ls /home)
     # Configure autologin
-    sed -i 's/#Session=/Session=gamescope-session/g' /etc/sddm.conf
-    sed -i 's/#User=/User='${USER}'/g' /etc/sddm.conf
+    sed -i 's/#User=/User='${USER}'/g' /etc/sddm.conf.d/steamos.conf
+    touch /etc/sddm.conf.d/zz-steamos-autologin.conf
+    # Remove sddm.conf if it exists
+    if [ -f '/etc/sddm.conf' ]; then
+      rm -f /etc/sddm.conf
+    fi
   fi
 fi
