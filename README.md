@@ -45,6 +45,7 @@ Ported SteamOS and ChimeraOS packages used by Bazzite are built on Copr in [this
 |steamdeck-kde-themes|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/steamdeck-kde-themes/status_image/last_build.png?)|
 |python3-hid|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/python3-hid/status_image/last_build.png?)|
 |wallpaper-engine-kde-plugin|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/wallpaper-engine-kde-plugin/status_image/last_build.png?)|
+|ryzenadj|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/ryzenadj/status_image/last_build.png?)|
 
 Additionally, the following packages are used from other Copr repos:
 |Package|Status|
