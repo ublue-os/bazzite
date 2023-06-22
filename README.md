@@ -30,10 +30,11 @@ The `latest` tag will automatically point to the latest build.
 - Built in duperemove
 - BTRFS by default, including the SD card
 - Matches SteamOS 1:1 whenever possible
+- Desktop variant uses [ublue-os/bazzite-arch](https://github.com/ublue-os/bazzite-arch) [![build-bazzite-arch](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml) in Distrobox to run Steam and other gaming workloads.
   
 ## Copr
 
-Ported SteamOS and ChimeraOS packages used by Bazzite are built on Copr in [this repo](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/).
+Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built on Copr in [this repo](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/).
 
 |Package|Status|
 |---|---|
