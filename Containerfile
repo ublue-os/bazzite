@@ -31,7 +31,10 @@ RUN rpm-ostree install \
     kate
 
 # Remove unneeded packages
-RUN rpm-ostree override remove toolbox
+RUN rpm-ostree override remove \
+    firefox \
+    firefox-langpacks \
+    toolbox
 
 # Cleanup & Finalize
 RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
