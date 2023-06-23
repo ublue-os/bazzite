@@ -2,34 +2,23 @@
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
 
-Bazzite is an OCI based off of [ublue-os/kinoite](https://github.com/ublue-os/main) that is intended to be an alternative OS for the [Steam Deck](https://www.steamdeck.com/) and is a SteamOS-alike for desktops.
-
-### Bazzite is currently in development and should not be used on real hardware under any circumstance. Feel free to test in a VM.
-### Bazzite is not associated with Valve Software in any way, and maintainers of the Bazzite project are not liable for any damage that may occur during use of the operating system.
+Bazzite is an OCI that serves as an alternative OS for the [Steam Deck](https://www.steamdeck.com/), and a ready-to-game SteamOS-like for Desktop computers.
 
 ## Usage
 
-Warning: This is an experimental feature and should not be used in production, try it in a VM for a while, you have been warned!
-
-    sudo rpm-ostree rebase --experimental ostree-unverified-registry:ghcr.io/ublue-os/bazzite:latest
-    
-We build date tags as well, so if you want to rebase to a particular day's release:
-  
-    sudo rpm-ostree rebase --experimental ostree-unverified-registry:ghcr.io/ublue-os/bazzite:20230209 
-
-The `latest` tag will automatically point to the latest build. 
+TODO
 
 ## Features
 
-- Start with a base [ublue-os/kinoite](https://github.com/ublue-os/main) image
+- Built from a base [ublue-os/kinoite](https://github.com/ublue-os/main) or [ublue-os/kinoite-nvidia](https://github.com/ublue-os/nvidia) image
 - Adds ported versions of Valve's Steam Deck packages
 - Adds h264 decoding out of the box via RPM Fusion
 - Supports LatencyFleX & vkBasalt out of the box
-- Ships with Distrobox already installed
+- Ships with Distrobox installed
 - Comes with services for automatic system, distrobox, and flatpak updates.
 - Built in duperemove
 - BTRFS by default, including the SD card
-- Matches SteamOS 1:1 whenever possible
+- Matches SteamOS as closely as possible
 - Desktop variant uses [ublue-os/bazzite-arch](https://github.com/ublue-os/bazzite-arch) [![build-bazzite-arch](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml) in Distrobox to run Steam and other gaming workloads.
   
 ## Copr
