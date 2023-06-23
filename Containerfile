@@ -21,6 +21,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
 RUN rpm-ostree install \
     distrobox \
     steamdeck-kde-themes \
+    sddm-sugar-steamOS \
     wallpaper-engine-kde-plugin \
     duperemove \
     kdeconnectd \
