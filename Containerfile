@@ -19,6 +19,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
 
 # Install new packages
 RUN rpm-ostree install \
+    python3-pip \
     distrobox \
     steamdeck-kde-themes \
     sddm-sugar-steamOS \
@@ -61,11 +62,11 @@ FROM bazzite as bazzite-deck
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
-# Add LatencyFlex Copr
+# Add LatencyFleX Copr
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O \
     /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo
 
-# Re-enable Copr
+# Re-enable Copr repos
 RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo
 
@@ -100,7 +101,7 @@ RUN rpm-ostree install \
     mangohud \
     skopeo
 
-# Install dock updater, this is done manually as it has proprietary parts and cannot be built in Copr.
+# Install dock updater, this is done manually due to proprietary parts preventing it from being on Copr.
 RUN git clone https://github.com/KyleGospo/jupiter-dock-updater-bin.git && \
     mv -v jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
 
