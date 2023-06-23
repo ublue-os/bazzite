@@ -2,7 +2,7 @@
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
 
-Bazzite is an OCI that serves as an alternative OS for the [Steam Deck](https://www.steamdeck.com/), and a ready-to-game SteamOS-like for Desktop computers.
+Bazzite is an OCI that serves as an alternative OS for the [Steam Deck](https://www.steamdeck.com/), and a ready-to-game SteamOS-like for desktop computers.
 
 ## Usage
 
@@ -11,15 +11,17 @@ TODO
 ## Features
 
 - Built from a base [ublue-os/kinoite](https://github.com/ublue-os/main) or [ublue-os/kinoite-nvidia](https://github.com/ublue-os/nvidia) image
+- Initial setup wizard provides [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), and an assortment of useful Flatpaks.
 - Adds ported versions of Valve's Steam Deck packages
-- Adds h264 decoding out of the box via RPM Fusion
-- Supports LatencyFleX & vkBasalt out of the box
-- Ships with Distrobox installed
-- Comes with services for automatic system, distrobox, and flatpak updates.
-- Built in duperemove
-- BTRFS by default, including the SD card
-- Matches SteamOS as closely as possible
+- Ships with [Distrobox](https://github.com/89luca89/distrobox) installed and ready to use
 - Desktop variant uses [ublue-os/bazzite-arch](https://github.com/ublue-os/bazzite-arch) [![build-bazzite-arch](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml) in Distrobox to run Steam and other gaming workloads.
+- Adds h264 decoding out of the box via [RPM Fusion](https://rpmfusion.org/)
+- Supports [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX) and [vkBasalt](https://github.com/DadSchoorse/vkBasalt) out of the box
+- Comes with services for automatic system, distrobox, and flatpak updates.
+- BTRFS by default, including the SD card
+- Built in duperemove services
+- Pre-tuned for gaming workloads
+- Matches SteamOS as closely as possible
   
 ## Copr
 
