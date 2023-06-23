@@ -29,7 +29,8 @@ RUN rpm-ostree install \
     system76-scheduler \
     hl2linux-selinux \
     btop \
-    fish
+    fish \
+    python3-pip
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
@@ -38,7 +39,8 @@ RUN rpm-ostree override remove \
     toolbox
 
 # Cleanup & Finalize
-RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
+RUN pip install --prefix=/usr yafti && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-system76-scheduler.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
