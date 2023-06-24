@@ -37,6 +37,7 @@ RUN rpm-ostree install \
 RUN rpm-ostree override remove \
     firefox \
     firefox-langpacks \
+    plasma-welcome \
     toolbox
 
 # Cleanup & Finalize
