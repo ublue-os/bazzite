@@ -138,7 +138,7 @@ screens:
       icon: "/path/to/icon"
       links:
         - "Install More Applications": 
-            run: /usr/bin/gnome-software
+            run: /usr/bin/plasma-discover
         - "Website":
             run: /usr/bin/xdg-open https://ublue.it
         - "Join the Discord Community":
