@@ -1,0 +1,280 @@
+diff --git usr/bin/amd_system_info usr/bin/amd_system_info
+index 586bad9..afcac43 100755
+--- usr/bin/amd_system_info
++++ usr/bin/amd_system_info
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # script from AMD to use when reporting bugs to them
+ 
+diff --git usr/bin/jupiter-biosupdate usr/bin/jupiter-biosupdate
+index 5210249..29b7d0d 100755
+--- usr/bin/jupiter-biosupdate
++++ usr/bin/jupiter-biosupdate
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ set -e
+ 
+ # If found, and --no-beta wasn't explicitly passed, use beta mode.  Set by e.g. foxnet.
+diff --git usr/bin/jupiter-check-support usr/bin/jupiter-check-support
+index bd56a57..3e68422 100755
+--- usr/bin/jupiter-check-support
++++ usr/bin/jupiter-check-support
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -e
+ 
+diff --git usr/bin/jupiter-controller-update usr/bin/jupiter-controller-update
+index 7b4db11..c6017bc 100755
+--- usr/bin/jupiter-controller-update
++++ usr/bin/jupiter-controller-update
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -euo pipefail
+ 
+diff --git usr/bin/steamos-polkit-helpers/jupiter-biosupdate usr/bin/steamos-polkit-helpers/jupiter-biosupdate
+index 1d7b792..3f8ef1e 100755
+--- usr/bin/steamos-polkit-helpers/jupiter-biosupdate
++++ usr/bin/steamos-polkit-helpers/jupiter-biosupdate
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/jupiter-check-support usr/bin/steamos-polkit-helpers/jupiter-check-support
+index 9a442c8..e2ce0d3 100755
+--- usr/bin/steamos-polkit-helpers/jupiter-check-support
++++ usr/bin/steamos-polkit-helpers/jupiter-check-support
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/jupiter-dock-updater usr/bin/steamos-polkit-helpers/jupiter-dock-updater
+index 15c695b..98bc850 100755
+--- usr/bin/steamos-polkit-helpers/jupiter-dock-updater
++++ usr/bin/steamos-polkit-helpers/jupiter-dock-updater
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/jupiter-fan-control usr/bin/steamos-polkit-helpers/jupiter-fan-control
+index 2dfa176..4f5a94d 100755
+--- usr/bin/steamos-polkit-helpers/jupiter-fan-control
++++ usr/bin/steamos-polkit-helpers/jupiter-fan-control
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/jupiter-get-als-gain usr/bin/steamos-polkit-helpers/jupiter-get-als-gain
+index 775b5f4..066de3b 100755
+--- usr/bin/steamos-polkit-helpers/jupiter-get-als-gain
++++ usr/bin/steamos-polkit-helpers/jupiter-get-als-gain
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-devkit-mode usr/bin/steamos-polkit-helpers/steamos-devkit-mode
+index b93f523..f504ec3 100755
+--- usr/bin/steamos-polkit-helpers/steamos-devkit-mode
++++ usr/bin/steamos-polkit-helpers/steamos-devkit-mode
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-disable-wireless-power-management usr/bin/steamos-polkit-helpers/steamos-disable-wireless-power-management
+index 82b602c..88f9359 100755
+--- usr/bin/steamos-polkit-helpers/steamos-disable-wireless-power-management
++++ usr/bin/steamos-polkit-helpers/steamos-disable-wireless-power-management
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-enable-sshd usr/bin/steamos-polkit-helpers/steamos-enable-sshd
+index fa7698f..bc477d8 100755
+--- usr/bin/steamos-polkit-helpers/steamos-enable-sshd
++++ usr/bin/steamos-polkit-helpers/steamos-enable-sshd
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-factory-reset-config usr/bin/steamos-polkit-helpers/steamos-factory-reset-config
+index 3a2a367..5fb1ae6 100755
+--- usr/bin/steamos-polkit-helpers/steamos-factory-reset-config
++++ usr/bin/steamos-polkit-helpers/steamos-factory-reset-config
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-format-sdcard usr/bin/steamos-polkit-helpers/steamos-format-sdcard
+index 0e1e6cb..1d283d5 100755
+--- usr/bin/steamos-polkit-helpers/steamos-format-sdcard
++++ usr/bin/steamos-polkit-helpers/steamos-format-sdcard
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-poweroff-now usr/bin/steamos-polkit-helpers/steamos-poweroff-now
+index 1841ce0..adfcd5c 100755
+--- usr/bin/steamos-polkit-helpers/steamos-poweroff-now
++++ usr/bin/steamos-polkit-helpers/steamos-poweroff-now
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-priv-write usr/bin/steamos-polkit-helpers/steamos-priv-write
+index 907133b..894b022 100755
+--- usr/bin/steamos-polkit-helpers/steamos-priv-write
++++ usr/bin/steamos-polkit-helpers/steamos-priv-write
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-reboot-now usr/bin/steamos-polkit-helpers/steamos-reboot-now
+index b4dcc81..cb9ff94 100755
+--- usr/bin/steamos-polkit-helpers/steamos-reboot-now
++++ usr/bin/steamos-polkit-helpers/steamos-reboot-now
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-reboot-other usr/bin/steamos-polkit-helpers/steamos-reboot-other
+index ad466f2..c952512 100755
+--- usr/bin/steamos-polkit-helpers/steamos-reboot-other
++++ usr/bin/steamos-polkit-helpers/steamos-reboot-other
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-restart-sddm usr/bin/steamos-polkit-helpers/steamos-restart-sddm
+index 9e08cd6..cab9ee0 100755
+--- usr/bin/steamos-polkit-helpers/steamos-restart-sddm
++++ usr/bin/steamos-polkit-helpers/steamos-restart-sddm
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-select-branch usr/bin/steamos-polkit-helpers/steamos-select-branch
+index 1b1d6c1..3a43a84 100755
+--- usr/bin/steamos-polkit-helpers/steamos-select-branch
++++ usr/bin/steamos-polkit-helpers/steamos-select-branch
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-set-hostname usr/bin/steamos-polkit-helpers/steamos-set-hostname
+index f63e164..9b83e8b 100755
+--- usr/bin/steamos-polkit-helpers/steamos-set-hostname
++++ usr/bin/steamos-polkit-helpers/steamos-set-hostname
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-set-timezone usr/bin/steamos-polkit-helpers/steamos-set-timezone
+index 2811d82..5d4a213 100755
+--- usr/bin/steamos-polkit-helpers/steamos-set-timezone
++++ usr/bin/steamos-polkit-helpers/steamos-set-timezone
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/bin/steamos-polkit-helpers/steamos-update usr/bin/steamos-polkit-helpers/steamos-update
+index bae7403..7097a9c 100755
+--- usr/bin/steamos-polkit-helpers/steamos-update
++++ usr/bin/steamos-polkit-helpers/steamos-update
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -eu
+ 
+diff --git usr/lib/hwsupport/cirrus-fixup.sh usr/lib/hwsupport/cirrus-fixup.sh
+index b21b103..5dcacaf 100755
+--- usr/lib/hwsupport/cirrus-fixup.sh
++++ usr/lib/hwsupport/cirrus-fixup.sh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ cd $1
+ 
+diff --git usr/lib/hwsupport/ev2_cirrus_alsa_fixups.sh usr/lib/hwsupport/ev2_cirrus_alsa_fixups.sh
+index 995ec8d..3095777 100755
+--- usr/lib/hwsupport/ev2_cirrus_alsa_fixups.sh
++++ usr/lib/hwsupport/ev2_cirrus_alsa_fixups.sh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # These tend to persist, but they're not right on first boot
+ # TODO call is_ev2.sh (doesn't exist yet) to only run it there?
+diff --git usr/lib/hwsupport/format-sdcard.sh usr/lib/hwsupport/format-sdcard.sh
+index 3210b23..2f621c8 100755
+--- usr/lib/hwsupport/format-sdcard.sh
++++ usr/lib/hwsupport/format-sdcard.sh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ set -e
+ 
+diff --git usr/lib/hwsupport/power-button-handler.py usr/lib/hwsupport/power-button-handler.py
+index 1a46251..cbf7857 100755
+--- usr/lib/hwsupport/power-button-handler.py
++++ usr/lib/hwsupport/power-button-handler.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/bin/env python3 -u
+ 
+ import evdev
+ import threading
+diff --git usr/lib/hwsupport/sdcard-mount.sh usr/lib/hwsupport/sdcard-mount.sh
+index 99b66ec..1861d3e 100755
+--- usr/lib/hwsupport/sdcard-mount.sh
++++ usr/lib/hwsupport/sdcard-mount.sh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # Originally from https://serverfault.com/a/767079
+ 

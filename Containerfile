@@ -9,8 +9,8 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
-COPY etc /etc
-COPY usr /usr
+COPY system_files/desktop/etc /etc
+COPY system_files/desktop/usr /usr
 
 # Add Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
@@ -80,8 +80,8 @@ RUN rpm-ostree override remove steamdeck-kde-themes
 # Remove mesa-va-drivers-freeworld
 RUN rpm-ostree override remove mesa-va-drivers-freeworld
 
-COPY deck/etc /etc
-COPY deck/usr /usr
+COPY system_files/deck/etc /etc
+COPY system_files/deck/usr /usr
 RUN ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning
