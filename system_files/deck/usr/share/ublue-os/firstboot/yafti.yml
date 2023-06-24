@@ -1,0 +1,147 @@
+title: Welcome to uBlue
+properties:
+  mode: "run-on-change"
+screens:
+  first-screen:
+    source: yafti.screen.title
+    values:
+      title: "Welcome to Bazzite (Alpha)"
+      icon: "/path/to/icon"
+      description: |
+        Pick some applications to get started
+  can-we-modify-your-flatpaks:
+    source: yafti.screen.consent
+    values:
+      title: Hello, there!
+      condition:
+        run: flatpak remotes --system | grep fedora
+      description: |
+        WARNING: This will modify your Flatpaks if you are rebasing! If you do not want to do this exit the installer.
+      actions:
+        - run: /usr/lib/fedora-third-party/fedora-third-party-opt-out
+        - run: /usr/bin/fedora-third-party disable
+        - run: flatpak remote-delete fedora --force
+        - run: flatpak remove --system --noninteractive --all
+        - run: flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
+  applications:
+    source: yafti.screen.package
+    values:
+      title: Application Installation
+      show_terminal: true
+      package_manager: yafti.plugin.flatpak
+      groups:
+        Bazzite:
+          description: Core Applications
+          default: true
+          packages:
+          - Bottles: com.usebottles.bottles
+          - Discord: com.discordapp.Discord
+          - Lutris: net.lutris.Lutris
+          - Mozilla Firefox: org.mozilla.firefox
+          - Proton Updater for Steam: net.davidotek.pupgui2
+        Web Browsers:
+          description: Additional browsers to complement Firefox
+          default: false
+          packages:
+          - Brave: com.brave.Browser
+          - Google Chrome: com.google.Chrome
+          - LibreWolf: io.gitlab.librewolf-community
+          - Microsoft Edge: com.microsoft.Edge
+          - Opera: com.opera.Opera
+        Gaming:
+          description: "Rock and Stone!"
+          default: false
+          packages:
+          - Bottles: com.usebottles.bottles
+          - Chiaki (PlayStation Remote Play): re.chiaki.Chiaki
+          - Discord: com.discordapp.Discord
+          - Heroic Games Launcher (GOG & Epic): com.heroicgameslauncher.hgl
+          - Lutris: net.lutris.Lutris
+          - Minecraft: com.mojang.Minecraft
+          - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
+          - Moonlight: com.moonlight_stream.Moonlight
+          - OpenMW: org.openmw.OpenMW
+          - Prism Launcher: org.prismlauncher.PrismLauncher
+          - Proton Updater for Steam: net.davidotek.pupgui2
+          - Steam Link: com.valvesoftware.SteamLink
+          - SuperTux: org.supertuxproject.SuperTux
+          - SuperTuxKart: net.supertuxkart.SuperTuxKart
+        Emulation:
+          description: Play games like it's 1972
+          default: false
+          packages:
+          - Cemu: info.cemu.Cemu
+          - Citra: org.citra_emu.citra
+          - Dolphin: org.DolphinEmu.dolphin-emu
+          - DuckStation: org.duckstation.DuckStation
+          - MAME: org.mamedev.MAME
+          - melonDS: net.kuribo64.melonDS
+          - mGBA: io.mgba.mGBA
+          - PCSX2: net.pcsx2.PCSX2
+          - PPSSPP: org.ppsspp.PPSSPP
+          - RetroArch: org.libretro.RetroArch
+          - RetroDECK: net.retrodeck.retrodeck
+          - Rosalie's Mupen GUI: com.github.Rosalie241.RMG
+          - RPCS3: net.rpcs3.RPCS3
+          - Ryujinx: org.ryujinx.Ryujinx
+          - ScummVM: org.scummvm.ScummVM
+          - Snes9x: om.snes9x.Snes9x
+          - xemu: app.xemu.xemu
+          - yuzu: org.yuzu_emu.yuzu
+        Streaming:
+          description: Stream to the Internet
+          default: false
+          packages:
+          - OBS Studio: com.obsproject.Studio
+          - VkCapture for OBS: com.obsproject.Studio.OBSVkCapture 
+          - Gstreamer for OBS: com.obsproject.Studio.Plugin.Gstreamer
+          - Gstreamer VAAPI for OBS: com.obsproject.Studio.Plugin.GStreamerVaapi
+          - Boatswain for Streamdeck: com.feaneron.Boatswain
+        Music:
+          description: "Rock and Roll!"
+          default: false
+          packages:
+          - Spotify: com.spotify.Client
+          - Strawberry Music Player: org.strawberrymusicplayer.strawberry
+          - Tidal-hifi: com.mastermindzh.tidal-hifi
+        Office:
+          description: Bow to Capitalism
+          default: false
+          packages:
+          - Joplin: net.cozic.joplin_desktop
+          - LibreOffice: org.libreoffice.LibreOffice
+          - Obsidian: md.obsidian.Obsidian
+          - OnlyOffice: org.onlyoffice.desktopeditors
+          - Slack: com.slack.Slack
+          - Standard Notes: org.standardnotes.standardnotes
+          - Thunderbird Email: org.mozilla.Thunderbird
+          - Xournal++: flathub com.github.xournalpp.xournalpp
+        Utilities:
+          description: Helpful tools
+          default: false
+          packages:
+          - Barrier: com.github.debauchee.barrier
+          - Bitwarden: com.bitwarden.desktop
+          - Calibre: com.calibre_ebook.calibre
+          - Fedora Media Writer: org.fedoraproject.MediaWriter
+          - Flatseal Permissions Manager: com.github.tchx84.Flatseal
+          - GIMP: org.gimp.GIMP
+          - GreenWithEnvy: com.leinardi.gwe
+          - qBittorrent: org.qbittorrent.qBittorrent
+          - Syncthing: com.github.zocker_160.SyncThingy
+          - VLC: org.videolan.VLC
+
+  final-screen:
+    source: yafti.screen.title
+    values:
+      title: "All done!"
+      icon: "/path/to/icon"
+      links:
+        - "Install More Applications": 
+            run: /usr/bin/gnome-software
+        - "Website":
+            run: /usr/bin/xdg-open https://ublue.it
+        - "Join the Discord Community":
+            run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx 
+      description: |
+        Thank you for trying Bazzite, we hope you enjoy it!
