@@ -1,6 +1,11 @@
 title: Welcome to uBlue
 properties:
   mode: "run-on-change"
+actions:
+  pre:
+  - run: distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch --nvidia && \
+         distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam' && \
+         distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
 screens:
   first-screen:
     source: yafti.screen.title
