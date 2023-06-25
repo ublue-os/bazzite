@@ -20,6 +20,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
 # Install new packages
 RUN rpm-ostree install \
     python3-pip \
+    libadwaita \
     distrobox \
     steamdeck-kde-themes \
     sddm-sugar-steamOS \
