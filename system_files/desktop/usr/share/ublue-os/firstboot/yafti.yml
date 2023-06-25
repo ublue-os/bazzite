@@ -60,7 +60,7 @@ screens:
           - Bottles: com.usebottles.bottles
           - Chiaki (PlayStation Remote Play): re.chiaki.Chiaki
           - Discord: com.discordapp.Discord
-          - Heroic Games Launcher (GOG & Epic): com.heroicgameslauncher.hgl
+          - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
           - Lutris: net.lutris.Lutris
           - Minecraft: com.mojang.Minecraft
           - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
