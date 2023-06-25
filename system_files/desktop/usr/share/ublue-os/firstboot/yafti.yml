@@ -48,7 +48,6 @@ screens:
           packages:
           - Bottles: com.usebottles.bottles
           - Discord: com.discordapp.Discord
-          - Lutris: net.lutris.Lutris
           - Mozilla Firefox: org.mozilla.firefox
           - Proton Updater for Steam: net.davidotek.pupgui2
         Web Browsers:
@@ -68,7 +67,6 @@ screens:
           - Chiaki (PlayStation Remote Play): re.chiaki.Chiaki
           - Discord: com.discordapp.Discord
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
-          - Lutris: net.lutris.Lutris
           - Minecraft: com.mojang.Minecraft
           - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
           - Moonlight: com.moonlight_stream.Moonlight
