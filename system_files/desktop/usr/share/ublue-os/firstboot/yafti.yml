@@ -1,11 +1,6 @@
 title: Welcome to uBlue
 properties:
   mode: "run-on-change"
-actions:
-  pre:
-  - run: distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch --nvidia && \
-         distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam' && \
-         distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
 screens:
   first-screen:
     source: yafti.screen.title
@@ -28,6 +23,18 @@ screens:
         - run: flatpak remote-delete fedora --force
         - run: flatpak remove --system --noninteractive --all
         - run: flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
+  setup-distrobox:
+    source: yafti.screen.consent
+    values:
+      title: Setting up Distrobox
+      condition:
+        run: distrobox list | grep -v bazzite-arch
+      description: |
+        This will install an Arch distrobox configured for gaming. Steam and Lutris will then be exported. Please note that this may take a while after clicking accept.
+      actions:
+        - run: yes | distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch && \
+               distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam' && \
+               distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
   applications:
     source: yafti.screen.package
     values:
