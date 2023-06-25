@@ -73,8 +73,8 @@ RUN rm -f /usr/bin/system76-scheduler-dbus-proxy.sh
 # Remove steamdeck-kde-themes
 RUN rpm-ostree override remove steamdeck-kde-themes
 
-# Remove mesa-va-drivers-freeworld
-RUN rpm-ostree override remove mesa-va-drivers-freeworld
+# Install mesa-va-drivers-freeworld-steamfix to correct a dependency issue with the Steam package
+RUN rpm-ostree install mesa-va-drivers-freeworld-steamfix
 
 COPY deck/etc /etc
 COPY deck/usr /usr
