@@ -12,7 +12,7 @@ screens:
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
-      title: Hello, there!
+      title: Setting up Flathub
       condition:
         run: flatpak remotes --system | grep fedora
       description: |
