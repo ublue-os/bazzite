@@ -1,3 +1,8 @@
+get-decky:
+  echo 'Retrieving Decky Loader'
+  wget https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/decky_installer.desktop -P ~/Desktop
+  chmod +x ~/Desktop/decky_install.desktop
+
 get-emudeck:
   echo 'Retrieving EmuDeck...'
   wget https://www.emudeck.com/EmuDeck.desktop -P ~/Desktop
