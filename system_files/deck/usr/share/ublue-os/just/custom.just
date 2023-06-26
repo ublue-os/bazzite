@@ -3,6 +3,11 @@ get-emudeck:
   wget https://www.emudeck.com/EmuDeck.desktop -P ~/Desktop
   chmod +x ~/Desktop/EmuDeck.desktop
 
+get-greenlight:
+  echo 'Retrieving Greenlight'
+  wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta8/Greenlight-2.0.0-beta8.AppImage -O ~/Desktop/Greenlight.AppImage
+  chmod +x ~/Desktop/Greenlight.AppImage
+
 deckswap-on:
   #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
