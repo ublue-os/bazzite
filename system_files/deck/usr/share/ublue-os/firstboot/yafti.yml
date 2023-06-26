@@ -137,6 +137,11 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
+        Decky Loader:
+          description: A plugin loader for the Steam Deck
+          default: true
+          packages:
+          - Retrieve Decky: just get-decky
         EmuDeck:
           description: |
             A utility for installing and configuring emulators on the Steam Deck
