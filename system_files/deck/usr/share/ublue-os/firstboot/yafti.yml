@@ -130,7 +130,19 @@ screens:
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
-
+  configure-bazzite:
+    source: yafti.screen.package
+    values:
+      title: Configure Bazzite
+      show_terminal: true
+      package_manager: yafti.plugin.run
+      groups:
+        Memory Tuning:
+          description: Adjust ZRAM and configure deckswap
+          default: false
+          packages:
+          - Deck Swap: just swap-on
+          - Disable ZRAM: just zram-off
   final-screen:
     source: yafti.screen.title
     values:

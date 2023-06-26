@@ -23,18 +23,6 @@ screens:
         - run: flatpak remote-delete fedora --force
         - run: flatpak remove --system --noninteractive --all
         - run: flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
-  setup-distrobox:
-    source: yafti.screen.consent
-    values:
-      title: Setting up Distrobox
-      condition:
-        run: distrobox list | grep -v bazzite-arch
-      description: |
-        This will install an Arch distrobox configured for gaming. Steam and Lutris will then be exported. Please note that this may take a while after clicking accept.
-      actions:
-        - run: yes | distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch && \
-               distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam' && \
-               distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
   applications:
     source: yafti.screen.package
     values:
@@ -140,7 +128,27 @@ screens:
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
-
+  configure-bazzite:
+    source: yafti.screen.package
+    values:
+      title: Configure Bazzite
+      show_terminal: true
+      package_manager: yafti.plugin.run
+      groups:
+        Bazzite Arch Distrobox:
+          description: This will install an Arch distrobox configured for gaming. Steam and Lutris will then be exported.
+          default: true
+          condition:
+            run: distrobox list | grep -v bazzite-arch
+          packages:
+          - Install Bazzite Arch: yes | distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch
+          - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
+          - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
+        Memory Tuning:
+          description: Adjust ZRAM configuration
+          default: false
+          packages:
+          - Disable ZRAM: just zram-off
   final-screen:
     source: yafti.screen.title
     values:
