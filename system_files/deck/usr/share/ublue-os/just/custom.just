@@ -1,3 +1,8 @@
+get-emudeck:
+  echo 'Retrieving EmuDeck...'
+  wget https://www.emudeck.com/EmuDeck.desktop -P ~/Desktop
+  chmod +x ~/Desktop/EmuDeck.desktop
+
 deckswap-on:
   #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
