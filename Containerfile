@@ -28,8 +28,7 @@ RUN rpm-ostree install \
     system76-scheduler \
     hl2linux-selinux \
     btop \
-    fish \
-    kate
+    fish
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
