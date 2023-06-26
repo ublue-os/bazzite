@@ -144,6 +144,11 @@ screens:
           - Install Bazzite Arch: yes | distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch
           - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
           - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
+        Greenlight:
+          description: A utility for xCloud and xHome streaming
+          default: false
+          packages:
+          - Retrieve Greenlight: just get-greenlight
         Memory Tuning:
           description: Adjust ZRAM configuration
           default: false
@@ -155,11 +160,11 @@ screens:
       title: "All done!"
       icon: "/path/to/icon"
       links:
-        - "Install More Applications": 
+        - "Install More Applications":
             run: /usr/bin/plasma-discover
         - "Website":
             run: /usr/bin/xdg-open https://ublue.it
         - "Join the Discord Community":
-            run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx 
+            run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
       description: |
         Thank you for trying Bazzite, we hope you enjoy it!

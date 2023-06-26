@@ -139,10 +139,15 @@ screens:
       groups:
         EmuDeck:
           description: |
-            Retrieves EmuDeck, a utility for installing and configuring emulators on the Steam Deck
+            A utility for installing and configuring emulators on the Steam Deck
           default: true
           packages:
-          - EmuDeck: just get-emudeck
+          - Retrieve EmuDeck: just get-emudeck
+        Greenlight:
+          description: A utility for xCloud and xHome streaming
+          default: false
+          packages:
+          - Retrieve Greenlight: just get-greenlight
         Memory Tuning:
           description: Adjust ZRAM and configure deckswap
           default: false
