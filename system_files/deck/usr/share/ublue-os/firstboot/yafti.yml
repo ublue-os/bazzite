@@ -137,6 +137,12 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
+        EmuDeck:
+          description: |
+            Retrieves EmuDeck, a utility for installing and configuring emulators on the Steam Deck
+          default: true
+          packages:
+          - EmuDeck: just get-emudeck
         Memory Tuning:
           description: Adjust ZRAM and configure deckswap
           default: false
@@ -149,11 +155,11 @@ screens:
       title: "All done!"
       icon: "/path/to/icon"
       links:
-        - "Install More Applications": 
+        - "Install More Applications":
             run: /usr/bin/plasma-discover
         - "Website":
             run: /usr/bin/xdg-open https://ublue.it
         - "Join the Discord Community":
-            run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx 
+            run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
       description: |
         Thank you for trying Bazzite, we hope you enjoy it!
