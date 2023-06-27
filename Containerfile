@@ -25,6 +25,7 @@ RUN rpm-ostree install \
     wallpaper-engine-kde-plugin \
     duperemove \
     kdeconnectd \
+    input-remapper \
     system76-scheduler \
     hl2linux-selinux \
     btop \
@@ -44,6 +45,7 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.re
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
     sed -i 's/#AutomaticUpdatePolicy.*/AutomaticUpdatePolicy=stage/' /etc/rpm-ostreed.conf && \
     systemctl enable rpm-ostreed-automatic.timer && \
+    systemctl enable input-remapper.service && \
     rm -rf \
         /tmp/* \
         /var/* && \
