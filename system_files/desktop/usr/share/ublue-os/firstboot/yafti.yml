@@ -130,6 +130,7 @@ screens:
           - Install Bazzite Arch: yes | distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch
           - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
           - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
+          - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
