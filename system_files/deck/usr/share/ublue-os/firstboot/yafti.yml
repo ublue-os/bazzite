@@ -39,7 +39,7 @@ screens:
           default: false
           packages:
           - Bottles: com.usebottles.bottles
-          - Chiaki (PlayStation Remote Play): re.chiaki.Chiaki
+          - Chiaki (PlayStation Remote Play): just get-chiaki
           - Discord: com.discordapp.Discord
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
           - Lutris: net.lutris.Lutris
