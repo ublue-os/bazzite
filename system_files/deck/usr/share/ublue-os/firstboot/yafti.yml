@@ -43,7 +43,7 @@ screens:
           - Discord: com.discordapp.Discord
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
           - Lutris: net.lutris.Lutris
-          - Minecraft: com.mojang.Minecraft
+          - Minecraft (Prism Launcher): org.prismlauncher.PrismLauncher
           - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
           - Moonlight: com.moonlight_stream.Moonlight
           - OpenMW: org.openmw.OpenMW
