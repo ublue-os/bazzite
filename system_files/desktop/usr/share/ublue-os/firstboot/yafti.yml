@@ -38,6 +38,8 @@ screens:
           - Discord: com.discordapp.Discord
           - Mozilla Firefox: org.mozilla.firefox
           - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
+          - System76 Scheduler: just enable-system76-scheduler
+          - Wallpaper Engine: just enable-wallpaper-engine
         Web Browsers:
           description: Additional browsers to complement Firefox
           default: false

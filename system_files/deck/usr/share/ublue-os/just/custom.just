@@ -16,6 +16,10 @@ get-greenlight:
 get-chiaki
   flatpak install --noninteractive $(curl -s https://api.github.com/repos/streetpea/chiaki4deck/releases/latest | grep "browser_download_url.*flatpakref" | cut -d : -f 2,3 | tr -d \")
 
+enable-wallpaper-engine:
+  git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --single-branch /tmp/wallpaper-engine-kde-plugin
+  plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
+
 deckswap-on:
   #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)

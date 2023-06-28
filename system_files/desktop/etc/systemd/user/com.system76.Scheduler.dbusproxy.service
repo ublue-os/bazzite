@@ -1,0 +1,8 @@
+[Unit]
+Description=Forward com.system76.Scheduler session DBus messages to the system bus
+
+[Service]
+ExecStart=/usr/bin/system76-scheduler-dbus-proxy
+
+[Install]
+WantedBy=default.target

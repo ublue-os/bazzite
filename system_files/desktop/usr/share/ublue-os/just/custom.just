@@ -3,6 +3,17 @@ get-greenlight:
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta8/Greenlight-2.0.0-beta8.AppImage -O ~/Desktop/Greenlight.AppImage
   chmod +x ~/Desktop/Greenlight.AppImage
 
+enable-system76-scheduler:
+  git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --single-branch /tmp/kwin-system76-scheduler-integration
+  kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
+  systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
+  systemctl enable --now com.system76.Scheduler.service
+  kcmshell5 kwinscripts
+
+enable-wallpaper-engine:
+  git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --single-branch /tmp/wallpaper-engine-kde-plugin
+  plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
+
 zram-on:
   #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
