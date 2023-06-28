@@ -144,6 +144,11 @@ screens:
           default: true
           packages:
           - Enable Automatic Updates: systemctl enable --user --now distrobox-upgrade-automatic.timer
+        Automatic Duplicate File Removal:
+          description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
+          default: true
+          packages:
+          - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
         Decky Loader:
           description: A plugin loader for the Steam Deck
           default: true
