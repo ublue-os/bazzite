@@ -139,6 +139,11 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
+        Automatic Distrobox Updates:
+          description: Updates all Distrobox containers automatically
+          default: true
+          packages:
+          - Enable Automatic Updates: systemctl enable --user --now distrobox-upgrade-automatic.timer
         Decky Loader:
           description: A plugin loader for the Steam Deck
           default: true

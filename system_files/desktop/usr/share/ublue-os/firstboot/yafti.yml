@@ -146,6 +146,7 @@ screens:
           - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
           - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
           - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
+          - Enable Automatic Updates: systemctl enable --user --now distrobox-upgrade-automatic.timer
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
