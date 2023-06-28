@@ -37,7 +37,7 @@ screens:
           - Bottles: com.usebottles.bottles
           - Discord: com.discordapp.Discord
           - Mozilla Firefox: org.mozilla.firefox
-          - Proton Updater for Steam: net.davidotek.pupgui2
+          - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
         Web Browsers:
           description: Additional browsers to complement Firefox
           default: false
@@ -59,7 +59,7 @@ screens:
           - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
           - Moonlight: com.moonlight_stream.Moonlight
           - OpenMW: org.openmw.OpenMW
-          - Proton Updater for Steam &amp; Lutris: net.davidotek.pupgui2
+          - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
           - Steam Link: com.valvesoftware.SteamLink
           - SuperTux: org.supertuxproject.SuperTux
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
