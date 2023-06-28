@@ -17,6 +17,11 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/repo/fedora-$(rpm -E %fedora)/kylegospo-system76-scheduler-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-system76-scheduler.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/hl2linux-selinux/repo/fedora-$(rpm -E %fedora)/kylegospo-hl2linux-selinux-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo
 
+# Install ROCM for non-Nvidia images
+RUN if [ "$IMAGE_FLAVOR" != "nvidia" ]; then rpm-ostree install \
+    rocm-hip \
+    rocm-opencl ; fi
+
 # Install new packages
 RUN rpm-ostree install \
     python3-pip \
