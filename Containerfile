@@ -79,9 +79,6 @@ RUN rm -f /usr/bin/system76-scheduler-dbus-proxy.sh
 # Remove steamdeck-kde-themes
 RUN rpm-ostree override remove steamdeck-kde-themes
 
-# Remove mesa-va-drivers-freeworld
-RUN rpm-ostree override remove mesa-va-drivers-freeworld
-
 COPY system_files/deck/etc /etc
 COPY system_files/deck/usr /usr
 RUN ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
