@@ -1,3 +1,14 @@
+install-bazzite-arch:
+  #!/usr/bash/env bash
+  KARGS=$(rpm-ostree kargs)
+  if grep 'nvidia' <<< ${KARGS}; then
+    echo 'Installing Bazzite Arch (Nvidia)...'
+    yes | distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch --nvidia
+  else
+    echo 'Installing Bazzite Arch...'
+    yes | distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch
+  fi
+
 get-greenlight:
   echo 'Retrieving Greenlight'
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta8/Greenlight-2.0.0-beta8.AppImage -O ~/Desktop/Greenlight.AppImage

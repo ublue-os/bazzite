@@ -142,7 +142,7 @@ screens:
           condition:
             run: distrobox list | grep -v bazzite-arch
           packages:
-          - Install Bazzite Arch: yes | distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch
+          - Install Bazzite Arch: just install-bazzite-arch
           - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
           - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
           - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
