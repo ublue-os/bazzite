@@ -47,6 +47,11 @@ RUN rpm-ostree override remove \
     plasma-welcome \
     toolbox
 
+# Run firstboot script per-profile
+RUN mkdir -p "/usr/etc/profile.d/"
+RUN ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
+    "/usr/etc/profile.d/ublue-firstboot.sh"
+
 # Cleanup & Finalize
 RUN pip install --prefix=/usr yafti && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
