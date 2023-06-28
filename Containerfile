@@ -73,18 +73,19 @@ RUN rm -f /usr/bin/system76-scheduler-dbus-proxy.sh
 # Remove steamdeck-kde-themes
 RUN rpm-ostree override remove steamdeck-kde-themes
 
-# Install mesa-va-drivers-freeworld-steamfix to correct a dependency issue with the Steam package
-RUN rpm-ostree install mesa-va-drivers-freeworld-steamfix
-
 COPY deck/etc /etc
 COPY deck/usr /usr
 RUN ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning
 
-# Install new packages
+# Install Steam
 RUN rpm-ostree install \
     steam \
+    --uninstall=mesa-va-drivers
+
+# Install supporting packages
+RUN rpm-ostree install \
     gamescope \
     gamescope-session \
     jupiter-fan-control \
