@@ -18,7 +18,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/hl2linux-selinux/repo/fedora-$(rpm -E %fedora)/kylegospo-hl2linux-selinux-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo
 
 # Install ROCM for non-Nvidia images
-RUN if [[ "-nvidia" !== "${IMAGE_FLAVOR}" ]]; then rpm-ostree install \
+RUN if [[ "-nvidia" != "${IMAGE_FLAVOR}" ]]; then rpm-ostree install \
     rocm-hip \
     rocm-opencl \
     ; fi
