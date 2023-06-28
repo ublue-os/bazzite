@@ -9,10 +9,12 @@ enable-system76-scheduler:
   systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
   systemctl enable --now com.system76.Scheduler.service
   kcmshell5 kwinscripts
+  rm -rf /tmp/kwin-system76-scheduler-integration
 
 enable-wallpaper-engine:
   git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --single-branch /tmp/wallpaper-engine-kde-plugin
   plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
+  rm -rf /tmp/wallpaper-engine-kde-plugin
 
 zram-on:
   #!/usr/bin/env bash
