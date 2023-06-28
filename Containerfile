@@ -85,6 +85,10 @@ RUN ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning
 
+# Install mesa-va-drivers shim (Needed due to dependency issues in Steam package)
+RUN rpm-ostree install \
+    mesa-va-drivers
+
 # Install new packages
 RUN rpm-ostree install \
     steam \
