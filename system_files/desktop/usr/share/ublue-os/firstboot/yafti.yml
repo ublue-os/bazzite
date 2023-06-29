@@ -146,7 +146,6 @@ screens:
           - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
           - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
           - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
-          - Enable Automatic Updates: systemctl enable --user --now distrobox-upgrade-automatic.timer
         Automatic Duplicate File Removal:
           description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
           default: true
