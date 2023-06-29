@@ -32,7 +32,8 @@ RUN rpm-ostree install \
     hl2linux-selinux \
     btop \
     fish \
-    python3-pip
+    python3-pip \
+    wireguard-tools
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
