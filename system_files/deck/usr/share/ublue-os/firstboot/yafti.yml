@@ -34,8 +34,6 @@ screens:
           description: Core Applications
           default: true
           packages:
-          - Bottles: com.usebottles.bottles
-          - Discord: com.discordapp.Discord
           - Lutris: net.lutris.Lutris
           - Mozilla Firefox: org.mozilla.firefox
           - Protontricks: com.github.Matoking.protontricks
@@ -58,13 +56,10 @@ screens:
           - Chiaki4Deck (PlayStation Remote Play): just get-chiaki
           - Discord: com.discordapp.Discord
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
-          - Lutris: net.lutris.Lutris
           - Minecraft (Prism Launcher): org.prismlauncher.PrismLauncher
           - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
           - Moonlight: com.moonlight_stream.Moonlight
           - OpenMW: org.openmw.OpenMW
-          - Protontricks: com.github.Matoking.protontricks
-          - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
           - Steam Link: com.valvesoftware.SteamLink
           - SuperTux: org.supertuxproject.SuperTux
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
@@ -129,6 +124,7 @@ screens:
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
           - GIMP: org.gimp.GIMP
           - GreenWithEnvy: com.leinardi.gwe
+          - KeePassXC: org.keepassxc.KeePassXC
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
@@ -146,13 +142,13 @@ screens:
           - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
         Decky Loader:
           description: A plugin loader for the Steam Deck
-          default: true
+          default: false
           packages:
           - Retrieve Decky: just get-decky
         EmuDeck:
           description: |
             A utility for installing and configuring emulators on the Steam Deck
-          default: true
+          default: false
           packages:
           - Retrieve EmuDeck: just get-emudeck
         Greenlight:

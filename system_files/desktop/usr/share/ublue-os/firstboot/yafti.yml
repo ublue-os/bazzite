@@ -34,8 +34,6 @@ screens:
           description: Core Applications
           default: true
           packages:
-          - Bottles: com.usebottles.bottles
-          - Discord: com.discordapp.Discord
           - Mozilla Firefox: org.mozilla.firefox
           - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
           - System76 Scheduler: just enable-system76-scheduler
@@ -61,7 +59,6 @@ screens:
           - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
           - Moonlight: com.moonlight_stream.Moonlight
           - OpenMW: org.openmw.OpenMW
-          - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
           - Steam Link: com.valvesoftware.SteamLink
           - SuperTux: org.supertuxproject.SuperTux
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
@@ -126,6 +123,7 @@ screens:
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
           - GIMP: org.gimp.GIMP
           - GreenWithEnvy: com.leinardi.gwe
+          - KeePassXC: org.keepassxc.KeePassXC
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
