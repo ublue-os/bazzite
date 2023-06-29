@@ -110,8 +110,8 @@ RUN rpm-ostree install \
     skopeo
 
 # Install dock updater, this is done manually due to proprietary parts preventing it from being on Copr.
-RUN git clone https://github.com/KyleGospo/jupiter-dock-updater-bin.git && \
-    mv -v jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
+RUN git clone https://github.com/KyleGospo/jupiter-dock-updater-bin.git --single-branch /tmp/jupiter-dock-updater-bin && \
+    mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
 
 # Suspend using power button
 RUN sed -i 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/g' /etc/systemd/logind.conf
