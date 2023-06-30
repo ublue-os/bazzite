@@ -55,14 +55,17 @@ screens:
           - Bottles: com.usebottles.bottles
           - Chiaki4Deck (PlayStation Remote Play): just get-chiaki
           - Discord: com.discordapp.Discord
+          - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
           - Minecraft (Prism Launcher): org.prismlauncher.PrismLauncher
           - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
           - Moonlight: com.moonlight_stream.Moonlight
+          - Mumble: info.mumble.Mumble
           - OpenMW: org.openmw.OpenMW
           - Steam Link: com.valvesoftware.SteamLink
           - SuperTux: org.supertuxproject.SuperTux
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
+          - TeamSpeak: com.teamspeak.TeamSpeak
         Emulation:
           description: Play games like it's 1972
           default: false

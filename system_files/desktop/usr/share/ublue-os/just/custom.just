@@ -9,6 +9,11 @@ install-bazzite-arch:
     yes | distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch
   fi
 
+install-corectrl:
+  rpm-ostree intall corectrl
+  rpm-ostree kargs --append='amdgpu.ppfeaturemask=0xffffffff'
+  /usr/bin/install-corectrl-polkit-rules
+
 get-greenlight:
   echo 'Retrieving Greenlight'
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta8/Greenlight-2.0.0-beta8.AppImage -O ~/Desktop/Greenlight.AppImage
