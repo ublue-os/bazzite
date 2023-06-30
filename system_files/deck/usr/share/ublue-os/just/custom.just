@@ -12,7 +12,7 @@ get-greenlight:
   chmod +x ~/Desktop/Greenlight.AppImage
 
 get-chiaki
-  flatpak install --noninteractive $(curl -s https://api.github.com/repos/streetpea/chiaki4deck/releases/latest | grep "browser_download_url.*flatpakref" | cut -d : -f 2,3 | tr -d \")
+  flatpak install --noninteractive $(curl -s https://api.github.com/repos/streetpea/chiaki4deck/releases/latest | jq -r .assets[1].browser_download_url)
 
 enable-wallpaper-engine:
   git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --single-branch /tmp/wallpaper-engine-kde-plugin
