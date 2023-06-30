@@ -14,9 +14,8 @@ COPY system_files/desktop/usr /usr
 
 # Add ublue-updater
 COPY --from=ghcr.io/gerblesh/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/
-RUN rpm-ostree override remove \
-    ublue-os-update-services \
-    --install=/tmp/rpms/ublue-update.noarch.rpm
+RUN rpm-ostree override remove ublue-os-update-services && \
+    rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
 
 # Add Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
