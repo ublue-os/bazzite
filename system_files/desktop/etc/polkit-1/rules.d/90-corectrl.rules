@@ -1,12 +1,9 @@
-#!/bin/bash
-cat > /etc/polkit-1/rules.d/90-corectrl-$(id -g -n).rules << EOF
 polkit.addRule(function(action, subject) {
     if ((action.id == "org.corectrl.helper.init" ||
          action.id == "org.corectrl.helperkiller.init") &&
         subject.local == true &&
         subject.active == true &&
-        subject.isInGroup("$(id -g -n)")) {
+        subject.isInGroup("wheel")) {
             return polkit.Result.YES;
     }
 });
-EOF

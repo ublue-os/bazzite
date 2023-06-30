@@ -11,8 +11,7 @@ install-bazzite-arch:
 
 install-corectrl:
   rpm-ostree intall corectrl
-  rpm-ostree kargs --append='amdgpu.ppfeaturemask=0xffffffff'
-  /usr/bin/install-corectrl-polkit-rules
+  rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
 
 get-greenlight:
   echo 'Retrieving Greenlight'
