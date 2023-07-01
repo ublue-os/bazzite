@@ -12,10 +12,9 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 COPY system_files/desktop/etc /etc
 COPY system_files/desktop/usr /usr
 
-# Add ublue-updater
+# Add ublue-update
 COPY --from=ghcr.io/gerblesh/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/
-RUN rpm-ostree override remove ublue-os-update-services && \
-    rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
+RUN rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
 
 # Add Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
@@ -59,7 +58,9 @@ RUN pip install --prefix=/usr yafti && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
-    systemctl enable ublue-update.timer && \
+    systemctl disable rpm-ostreed-automatic.timer && \
+    systemctl disable flatpak-system-update.timer && \
+    systemctl --global enable ublue-update.timer && \
     systemctl enable input-remapper.service && \
     rm -rf \
         /tmp/* \
