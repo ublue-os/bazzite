@@ -175,6 +175,11 @@ screens:
           packages:
           - Deck Swap: just swap-on
           - Disable ZRAM: just zram-off
+        SteamDeckGyroDSU:
+          descrption: Allows emulators and other applications to receive Steam Deck gyro motion data
+          default: true
+          packages
+          - Enable SDGyroDSU Service: systemctl --user enable --now sdgyrodsu
   final-screen:
     source: yafti.screen.title
     values:

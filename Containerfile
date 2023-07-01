@@ -113,6 +113,7 @@ RUN rpm-ostree install \
     latencyflex-vulkan-layer \
     vkBasalt \
     mangohud \
+    sdgyrodsu \
     skopeo
 
 # Install dock updater, this is done manually due to proprietary parts preventing it from being on Copr.
