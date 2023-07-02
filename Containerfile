@@ -84,7 +84,8 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.re
 
 # Remove system76-scheduler
 RUN rpm-ostree override remove system76-scheduler
-RUN rm -f /usr/bin/system76-scheduler-dbus-proxy.sh
+RUN rm -f /etc/systemd/user/com.system76.Scheduler.dbusproxy.service
+RUN rm -f /usr/bin/system76-scheduler-dbus-proxy
 
 # Remove steamdeck-kde-themes
 RUN rpm-ostree override remove steamdeck-kde-themes
