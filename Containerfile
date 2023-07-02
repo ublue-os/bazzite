@@ -9,8 +9,12 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
-COPY etc /etc
-COPY usr /usr
+COPY system_files/desktop/etc /etc
+COPY system_files/desktop/usr /usr
+
+# Add ublue-update
+COPY --from=ghcr.io/gerblesh/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/
+RUN rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
 
 # Add Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
@@ -19,6 +23,8 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
 
 # Install new packages
 RUN rpm-ostree install \
+    python3-pip \
+    libadwaita \
     distrobox \
     steamdeck-kde-themes \
     sddm-sugar-steamOS \
@@ -29,22 +35,31 @@ RUN rpm-ostree install \
     system76-scheduler \
     hl2linux-selinux \
     btop \
-    fish
+    fish \
+    python3-pip
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
     firefox \
     firefox-langpacks \
+    plasma-welcome \
     toolbox
 
+# Run firstboot script per-profile
+RUN mkdir -p "/usr/etc/profile.d/"
+RUN ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
+    "/usr/etc/profile.d/ublue-firstboot.sh"
+
 # Cleanup & Finalize
-RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
+RUN pip install --prefix=/usr yafti && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-system76-scheduler.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
-    sed -i 's/#AutomaticUpdatePolicy.*/AutomaticUpdatePolicy=stage/' /etc/rpm-ostreed.conf && \
-    systemctl enable rpm-ostreed-automatic.timer && \
+    systemctl disable rpm-ostreed-automatic.timer && \
+    systemctl disable flatpak-system-update.timer && \
+    systemctl --global enable ublue-update.timer && \
     systemctl enable input-remapper.service && \
     rm -rf \
         /tmp/* \
@@ -59,29 +74,31 @@ FROM bazzite as bazzite-deck
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
-# Add LatencyFlex Copr
+# Add LatencyFleX Copr
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O \
     /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo
 
-# Re-enable Copr
+# Re-enable Copr repos
 RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo
 
 # Remove system76-scheduler
 RUN rpm-ostree override remove system76-scheduler
-RUN rm -f /usr/bin/system76-scheduler-dbus-proxy.sh
+RUN rm -f /etc/systemd/user/com.system76.Scheduler.dbusproxy.service
+RUN rm -f /usr/bin/system76-scheduler-dbus-proxy
 
 # Remove steamdeck-kde-themes
 RUN rpm-ostree override remove steamdeck-kde-themes
 
-# Remove mesa-va-drivers-freeworld
-RUN rpm-ostree override remove mesa-va-drivers-freeworld
-
-COPY deck/etc /etc
-COPY deck/usr /usr
+COPY system_files/deck/etc /etc
+COPY system_files/deck/usr /usr
 RUN ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning
+
+# Install mesa-va-drivers shim (Needed due to dependency issues in Steam package)
+RUN rpm-ostree install \
+    mesa-va-drivers
 
 # Install new packages
 RUN rpm-ostree install \
@@ -96,11 +113,12 @@ RUN rpm-ostree install \
     latencyflex-vulkan-layer \
     vkBasalt \
     mangohud \
+    sdgyrodsu \
     skopeo
 
-# Install dock updater, this is done manually as it has proprietary parts and cannot be built in Copr.
-RUN git clone https://github.com/KyleGospo/jupiter-dock-updater-bin.git && \
-    mv -v jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
+# Install dock updater, this is done manually due to proprietary parts preventing it from being on Copr.
+RUN git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --single-branch /tmp/jupiter-dock-updater-bin && \
+    mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
 
 # Suspend using power button
 RUN sed -i 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/g' /etc/systemd/logind.conf
@@ -110,7 +128,7 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.re
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     systemctl enable set-cfs-tweaks.service && \
-    systemctl enable gamescope-autologin.service && \
+    systemctl disable input-remapper.service && \
     rm -rf \
         /tmp/* \
         /var/* && \
