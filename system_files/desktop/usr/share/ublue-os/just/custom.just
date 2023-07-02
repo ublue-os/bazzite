@@ -23,7 +23,7 @@ enable-system76-scheduler:
   kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
   systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
   systemctl enable --now com.system76.Scheduler.service
-  kcmshell5 kwinscripts
+  kcmshell5 kcm_kwin_scripts
   rm -rf /tmp/kwin-system76-scheduler-integration
 
 enable-wallpaper-engine:
