@@ -43,7 +43,7 @@ if command -v ublue-update > /dev/null; then
     }
     upgrade() {
       # Pull exit code from ublue-update
-      ublue-update
+      ublue-update --force
       echo $? > /tmp/upgrade-check
     }
     upgrade | fake_progress
