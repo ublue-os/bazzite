@@ -59,7 +59,6 @@ RUN pip install --prefix=/usr yafti && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
     systemctl disable rpm-ostreed-automatic.timer && \
-    systemctl disable flatpak-system-update.timer && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable input-remapper.service && \
     rm -rf \
