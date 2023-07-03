@@ -129,6 +129,7 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.re
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     systemctl enable set-cfs-tweaks.service && \
     systemctl disable input-remapper.service && \
+    systemctl --global disable ublue-update.timer && \
     rm -rf \
         /tmp/* \
         /var/* && \
