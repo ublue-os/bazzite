@@ -5,26 +5,18 @@ if command -v ublue-update > /dev/null; then
     if [ -f '/tmp/upgrade-installed' ]; then
       exit 7 # Upgrade already installed
     else
-      # Check system state
-      ublue-update --check
+      # Perform connectivity check
+      wget -q --spider https://github.com
       if [ $? -eq 0 ]; then
-        # Perform connectivity check
-        wget -q --spider https://github.com
+        # Check system state
+        ublue-update --check
         if [ $? -eq 0 ]; then
-          # Compare installation digest to latest image
-          IMAGE=$(rpm-ostree status | grep -m1 ghcr | sed 's/^.*ghcr/ghcr/')
-          CURRENT=$(rpm-ostree status | grep -m1 Digest | tr -d '[:space:]' | sed 's/'Digest:'//g')
-          LATEST=$(skopeo inspect docker://${IMAGE} | jq '.Digest' | tr -d '"')
-          if [ ${CURRENT} == ${LATEST} ]; then
-            exit 7 # Up to date
-          else
-            exit 0 # Upgrade available
-          fi
+          exit 0 # Upgrade available
         else
-          exit 7 # Connectivity check failed
+          exit 7 # Checks failed
         fi
       else
-        exit 7 # System in use
+        exit 7 # Connectivity check failed
       fi
     fi
   elif [ "$1" == "--supports-duplicate-detection" ]; then
