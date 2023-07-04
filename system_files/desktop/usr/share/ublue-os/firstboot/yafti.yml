@@ -34,9 +34,11 @@ screens:
           description: Core Applications
           default: true
           packages:
+          - MangoHud (Flatpak): org.freedesktop.Platform.VulkanLayer.MangoHud
           - Mozilla Firefox: org.mozilla.firefox
           - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
           - System76 Scheduler: just enable-system76-scheduler
+          - vkBasalt (Flatpak): org.freedesktop.Platform.VulkanLayer.vkBasalt
           - Wallpaper Engine: just enable-wallpaper-engine
         Web Browsers:
           description: Additional browsers to complement Firefox
@@ -93,7 +95,8 @@ screens:
           default: false
           packages:
           - OBS Studio: com.obsproject.Studio
-          - VkCapture for OBS: com.obsproject.Studio.OBSVkCapture 
+          - OBSVkCapture Layer: org.freedesktop.Platform.VulkanLayer.OBSVkCapture
+          - OBSVkCapture Plugin: com.obsproject.Studio.Plugin.OBSVkCapture
           - Gstreamer for OBS: com.obsproject.Studio.Plugin.Gstreamer
           - Gstreamer VAAPI for OBS: com.obsproject.Studio.Plugin.GStreamerVaapi
           - Boatswain for Streamdeck: com.feaneron.Boatswain
