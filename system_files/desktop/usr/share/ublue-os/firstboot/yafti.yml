@@ -168,6 +168,11 @@ screens:
           default: false
           packages:
           - Disable ZRAM: just zram-off
+        Nix Package Manager:
+          descrption: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
+          default: true
+          packages:
+            - Install Nix Package Support: curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
   final-screen:
     source: yafti.screen.title
     values:
