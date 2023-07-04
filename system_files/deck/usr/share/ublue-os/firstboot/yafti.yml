@@ -70,7 +70,7 @@ screens:
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
           - TeamSpeak: com.teamspeak.TeamSpeak
         Emulation:
-          description: Play games like it's 1972
+          description: Play games like it's 1972 (Leave these all unchecked if you're planning to use EmuDeck)
           default: false
           packages:
           - Cemu: info.cemu.Cemu
