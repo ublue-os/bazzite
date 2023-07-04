@@ -35,9 +35,11 @@ screens:
           default: true
           packages:
           - Lutris: net.lutris.Lutris
+          - MangoHud (Flatpak): org.freedesktop.Platform.VulkanLayer.MangoHud
           - Mozilla Firefox: org.mozilla.firefox
           - Protontricks: com.github.Matoking.protontricks
           - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
+          - vkBasalt (Flatpak): org.freedesktop.Platform.VulkanLayer.vkBasalt
           - Wallpaper Engine: just enable-wallpaper-engine
         Web Browsers:
           description: Additional browsers to complement Firefox
@@ -94,7 +96,8 @@ screens:
           default: false
           packages:
           - OBS Studio: com.obsproject.Studio
-          - VkCapture for OBS: com.obsproject.Studio.OBSVkCapture 
+          - OBSVkCapture Layer: org.freedesktop.Platform.VulkanLayer.OBSVkCapture
+          - OBSVkCapture Plugin: com.obsproject.Studio.Plugin.OBSVkCapture
           - Gstreamer for OBS: com.obsproject.Studio.Plugin.Gstreamer
           - Gstreamer VAAPI for OBS: com.obsproject.Studio.Plugin.GStreamerVaapi
           - Boatswain for Streamdeck: com.feaneron.Boatswain
@@ -176,6 +179,11 @@ screens:
           packages:
           - Deck Swap: just swap-on
           - Disable ZRAM: just zram-off
+        Nix Package Manager:
+          descrption: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
+          default: true
+          packages:
+            - Install Nix Package Support: curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
         SteamDeckGyroDSU:
           descrption: Allows emulators and other applications to receive Steam Deck gyro motion data
           default: true
