@@ -1,11 +1,12 @@
-Name:           jupiter-hw-support-btrfs
+%define packagename jupiter-hw-support
+Name:           %{packagename}-btrfs
 Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
 Summary:        Steam Deck Hardware Support Package
 License:    	GPLv3
 URL:            https://github.com/ublue-os/bazzite
 
-Source:         https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz
+Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/master/%{packagename}-master.tar.gz
 Patch0:         fedora.patch
 Patch1:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/sdcard-mount.sh.patch
 Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/format-sdcard.sh.patch
