@@ -15,7 +15,8 @@ COPY system_files/desktop/usr /usr
 # Add ublue packages
 COPY --from=ghcr.io/ublue-os/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/ublue-update.noarch.rpm
 COPY --from=ghcr.io/ublue-os/bling:latest /rpms/ublue-os-wallpapers-*.noarch.rpm /tmp/rpms/ublue-os-wallpapers.rpm
-RUN rpm-ostree install \
+RUN rpm-ostree override remove ublue-os-update-services && \
+    rpm-ostree install \
     /tmp/rpms/ublue-update.noarch.rpm \
     /tmp/rpms/ublue-os-wallpapers.rpm
 
@@ -61,7 +62,6 @@ RUN pip install --prefix=/usr yafti && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
     systemctl disable rpm-ostreed-automatic.timer && \
-    systemctl disable flatpak-system-update.timer && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable input-remapper.service && \
     rm -rf \
@@ -135,6 +135,7 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.re
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     systemctl enable set-cfs-tweaks.service && \
     systemctl disable input-remapper.service && \
+    systemctl --global disable ublue-update.timer && \
     rm -rf \
         /tmp/* \
         /var/* && \

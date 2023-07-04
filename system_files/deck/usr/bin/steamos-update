@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if command -v rpm-ostree > /dev/null; then
+if command -v ublue-update > /dev/null; then
   if [ "$1" == "check" ]; then
     if [ -f '/tmp/upgrade-installed' ]; then
       exit 7 # Upgrade already installed
@@ -8,14 +8,12 @@ if command -v rpm-ostree > /dev/null; then
       # Perform connectivity check
       wget -q --spider https://github.com
       if [ $? -eq 0 ]; then
-        # Compare installation digest to latest image
-        IMAGE=$(rpm-ostree status | grep -m1 ghcr | sed 's/^.*ghcr/ghcr/')
-        CURRENT=$(rpm-ostree status | grep -m1 Digest | tr -d '[:space:]' | sed 's/'Digest:'//g')
-        LATEST=$(skopeo inspect docker://${IMAGE} | jq '.Digest' | tr -d '"')
-        if [ ${CURRENT} == ${LATEST} ]; then
-          exit 7 # Up to date
-        else
+        # Check system state
+        ublue-update --check
+        if [ $? -eq 0 ]; then
           exit 0 # Upgrade available
+        else
+          exit 7 # Checks failed
         fi
       else
         exit 7 # Connectivity check failed
@@ -36,20 +34,20 @@ if command -v rpm-ostree > /dev/null; then
       echo 100%
     }
     upgrade() {
-      # Pull exit code from rpm-ostree
-      rpm-ostree upgrade --unchanged-exit-77
+      # Pull exit code from ublue-update
+      ublue-update --force
       echo $? > /tmp/upgrade-check
     }
     upgrade | fake_progress
     # Check if upgrade failed
     UPGRADE_CHECK=/tmp/upgrade-check
     rm /tmp/upgrade-check
-    if [ ${UPGRADE_CHECK} -eq 77 ]; then
-      exit 0 # Upgrade failed
-    else
+    if [ ${UPGRADE_CHECK} -eq 0 ]; then
       touch /tmp/upgrade-installed
+    else
+      exit 0 # Upgrade failed
     fi
   fi
 else
-  exit 7 # rpm-ostree not installed
+  exit 7 # ublue-update not installed
 fi
