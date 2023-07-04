@@ -35,9 +35,11 @@ screens:
           default: true
           packages:
           - Lutris: net.lutris.Lutris
+          - MangoHud (Flatpak): org.freedesktop.Platform.VulkanLayer.MangoHud
           - Mozilla Firefox: org.mozilla.firefox
           - Protontricks: com.github.Matoking.protontricks
           - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
+          - vkBasalt (Flatpak): org.freedesktop.Platform.VulkanLayer.vkBasalt
           - Wallpaper Engine: just enable-wallpaper-engine
         Web Browsers:
           description: Additional browsers to complement Firefox
@@ -94,7 +96,8 @@ screens:
           default: false
           packages:
           - OBS Studio: com.obsproject.Studio
-          - VkCapture for OBS: com.obsproject.Studio.OBSVkCapture 
+          - OBSVkCapture Layer: org.freedesktop.Platform.VulkanLayer.OBSVkCapture
+          - OBSVkCapture Plugin: com.obsproject.Studio.Plugin.OBSVkCapture
           - Gstreamer for OBS: com.obsproject.Studio.Plugin.Gstreamer
           - Gstreamer VAAPI for OBS: com.obsproject.Studio.Plugin.GStreamerVaapi
           - Boatswain for Streamdeck: com.feaneron.Boatswain
