@@ -12,10 +12,13 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 COPY system_files/desktop/etc /etc
 COPY system_files/desktop/usr /usr
 
-# Add ublue-update
-COPY --from=ghcr.io/ublue-os/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/
+# Add ublue packages
+COPY --from=ghcr.io/ublue-os/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/ublue-update.noarch.rpm
+COPY --from=ghcr.io/ublue-os/bling:latest /rpms/ublue-os-wallpapers-*.noarch.rpm /tmp/rpms/ublue-os-wallpapers.rpm
 RUN rpm-ostree override remove ublue-os-update-services && \
-    rpm-ostree install /tmp/rpms/ublue-update.noarch.rpm
+    rpm-ostree install \
+    /tmp/rpms/ublue-update.noarch.rpm \
+    /tmp/rpms/ublue-os-wallpapers.rpm
 
 # Add Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
@@ -89,6 +92,9 @@ RUN rm -f /usr/bin/system76-scheduler-dbus-proxy
 
 # Remove steamdeck-kde-themes
 RUN rpm-ostree override remove steamdeck-kde-themes
+
+# Remove ublue-os-wallpapers
+RUN rpm-ostree override remove ublue-os-wallpapers
 
 COPY system_files/deck/etc /etc
 COPY system_files/deck/usr /usr
