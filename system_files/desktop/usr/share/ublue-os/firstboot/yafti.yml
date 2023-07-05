@@ -18,11 +18,11 @@ screens:
       description: |
         WARNING: This will modify your Flatpaks if you are rebasing! If you do not want to do this exit the installer.
       actions:
-        - run: /usr/lib/fedora-third-party/fedora-third-party-opt-out
-        - run: /usr/bin/fedora-third-party disable
-        - run: flatpak remote-delete fedora --force
-        - run: flatpak remove --system --noninteractive --all
-        - run: flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
+      - run: /usr/lib/fedora-third-party/fedora-third-party-opt-out
+      - run: /usr/bin/fedora-third-party disable
+      - run: flatpak remote-delete fedora --force
+      - run: flatpak remove --system --noninteractive --all
+      - run: flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
   applications:
     source: yafti.screen.package
     values:
@@ -37,9 +37,7 @@ screens:
           - MangoHud (Flatpak): org.freedesktop.Platform.VulkanLayer.MangoHud
           - Mozilla Firefox: org.mozilla.firefox
           - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
-          - System76 Scheduler: just enable-system76-scheduler
           - vkBasalt (Flatpak): org.freedesktop.Platform.VulkanLayer.vkBasalt
-          - Wallpaper Engine: just enable-wallpaper-engine
         Web Browsers:
           description: Additional browsers to complement Firefox
           default: false
@@ -172,18 +170,28 @@ screens:
           descrption: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: true
           packages:
-            - Install Nix Package Support: curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
+          - Install Nix Package Support: curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
+        System76 Scheduler:
+          description: Enables System76 scheduler
+          default: true
+          packages:
+          - Enable System76 Scheduler: just enable-system76-scheduler
+        Wallpaper Engine:
+          description: Enables Wallpaper Engine
+          default: true
+          packages:
+          - Enable Wallpaper Engine: just enable-wallpaper-engine
   final-screen:
     source: yafti.screen.title
     values:
       title: "All done!"
       icon: "/path/to/icon"
       links:
-        - "Install More Applications":
-            run: /usr/bin/plasma-discover
-        - "Website":
-            run: /usr/bin/xdg-open https://ublue.it
-        - "Join the Discord Community":
-            run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
+      - "Install More Applications":
+          run: /usr/bin/plasma-discover
+      - "Website":
+          run: /usr/bin/xdg-open https://ublue.it
+      - "Join the Discord Community":
+          run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
       description: |
         Thank you for trying Bazzite, we hope you enjoy it!

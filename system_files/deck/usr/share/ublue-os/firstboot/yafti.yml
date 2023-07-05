@@ -18,11 +18,11 @@ screens:
       description: |
         WARNING: This will modify your Flatpaks if you are rebasing! If you do not want to do this exit the installer.
       actions:
-        - run: /usr/lib/fedora-third-party/fedora-third-party-opt-out
-        - run: /usr/bin/fedora-third-party disable
-        - run: flatpak remote-delete fedora --force
-        - run: flatpak remove --system --noninteractive --all
-        - run: flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
+      - run: /usr/lib/fedora-third-party/fedora-third-party-opt-out
+      - run: /usr/bin/fedora-third-party disable
+      - run: flatpak remote-delete fedora --force
+      - run: flatpak remove --system --noninteractive --all
+      - run: flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
   applications:
     source: yafti.screen.package
     values:
@@ -40,7 +40,6 @@ screens:
           - Protontricks: com.github.Matoking.protontricks
           - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
           - vkBasalt (Flatpak): org.freedesktop.Platform.VulkanLayer.vkBasalt
-          - Wallpaper Engine: just enable-wallpaper-engine
         Web Browsers:
           description: Additional browsers to complement Firefox
           default: false
@@ -183,28 +182,33 @@ screens:
           descrption: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: true
           packages:
-            - Install Nix Package Support: curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
+          - Install Nix Package Support: curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
         SteamDeckGyroDSU:
           descrption: Allows emulators and other applications to receive Steam Deck gyro motion data
           default: true
-          packages
+          packages:
           - Enable SDGyroDSU Service: systemctl --user enable --now sdgyrodsu
         Steam Desktop Shortcuts:
           descrption: Creates Steam desktop shortcuts
           default: true
-          packages
+          packages:
           - Create Steam shortcuts: just create-steam-shortcuts
+        Wallpaper Engine:
+          description: Enables Wallpaper Engine
+          default: true
+          packages:
+          - Enable Wallpaper Engine: just enable-wallpaper-engine
   final-screen:
     source: yafti.screen.title
     values:
       title: "All done!"
       icon: "/path/to/icon"
       links:
-        - "Install More Applications":
-            run: /usr/bin/plasma-discover
-        - "Website":
-            run: /usr/bin/xdg-open https://ublue.it
-        - "Join the Discord Community":
-            run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
+      - "Install More Applications":
+          run: /usr/bin/plasma-discover
+      - "Website":
+          run: /usr/bin/xdg-open https://ublue.it
+      - "Join the Discord Community":
+          run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
       description: |
         Thank you for trying Bazzite, we hope you enjoy it!
