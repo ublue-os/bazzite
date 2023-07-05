@@ -1,3 +1,7 @@
+create-steam-shortcuts:
+  cp /etc/skel.d/Desktop/Steam.desktop ~/Desktop
+  cp /etc/skel.d/Desktop/Return.desktop ~/Desktop
+
 get-decky:
   curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
 

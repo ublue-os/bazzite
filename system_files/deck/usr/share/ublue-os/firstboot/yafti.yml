@@ -189,6 +189,11 @@ screens:
           default: true
           packages
           - Enable SDGyroDSU Service: systemctl --user enable --now sdgyrodsu
+        Steam Desktop Shortcuts:
+          descrption: Creates Steam desktop shortcuts
+          default: true
+          packages
+          - Create Steam shortcuts: just create-steam-shortcuts
   final-screen:
     source: yafti.screen.title
     values:

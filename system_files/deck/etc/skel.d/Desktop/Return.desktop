@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Return to Gaming Mode
+Exec=qdbus org.kde.Shutdown /Shutdown org.kde.Shutdown.logout
+Icon=steamdeck-gaming-return
+Terminal=false
+Type=Application
+StartupNotify=false
