@@ -182,7 +182,7 @@ screens:
           descrption: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: true
           packages:
-          - Install Nix Package Support: curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
+          - Install Nix Package Support: just install-nix
         SteamDeckGyroDSU:
           descrption: Allows emulators and other applications to receive Steam Deck gyro motion data
           default: true
