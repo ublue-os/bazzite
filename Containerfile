@@ -39,12 +39,11 @@ RUN rpm-ostree install \
     input-remapper \
     system76-scheduler \
     hl2linux-selinux \
-    btop \
-    fish \
-    python3-pip \
     libobs_glcapture \
     libobs_vkcapture \
-    obs-vkcapture
+    obs-vkcapture \
+    btop \
+    fish
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
@@ -125,8 +124,7 @@ RUN rpm-ostree install \
     latencyflex-vulkan-layer \
     vkBasalt \
     mangohud \
-    sdgyrodsu \
-    skopeo
+    sdgyrodsu
 
 # Install dock updater, this is done manually due to proprietary parts preventing it from being on Copr.
 RUN git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --single-branch /tmp/jupiter-dock-updater-bin && \
