@@ -30,7 +30,8 @@ SteamOS 3.0 Steam Deck Hardware Support Package
 %define debug_package %{nil}
 
 %prep
-%autosetup -n %{name}-master
+%setup -n %{name}-master
+%patch 0 -p1
 
 %build
 
@@ -72,84 +73,26 @@ rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.
 %files
-%license LICENSE
-# %%{_sysconfdir}/default/grub-steamos
-%{_sysconfdir}/systemd/system/sdcard-mount@.service
-%{_sysconfdir}/systemd/system/alsa-restore.service
-%{_sysconfdir}/xdg/kded5rc
+%{_sysconfdir}/systemd/system/*
 %{_bindir}/amd_system_info
 %{_bindir}/foxnet-biosupdate
 %{_bindir}/jupiter-biosupdate
 %{_bindir}/jupiter-check-support
 %{_bindir}/jupiter-controller-update
-%{_bindir}/steamos-polkit-helpers/jupiter-biosupdate
-%{_bindir}/steamos-polkit-helpers/jupiter-check-support
-%{_bindir}/steamos-polkit-helpers/jupiter-dock-updater
-%{_bindir}/steamos-polkit-helpers/jupiter-fan-control
-%{_bindir}/steamos-polkit-helpers/jupiter-get-als-gain
-%{_bindir}/steamos-polkit-helpers/steamos-devkit-mode
-%{_bindir}/steamos-polkit-helpers/steamos-disable-wireless-power-management
-%{_bindir}/steamos-polkit-helpers/steamos-enable-sshd
-%{_bindir}/steamos-polkit-helpers/steamos-factory-reset-config
-%{_bindir}/steamos-polkit-helpers/steamos-format-sdcard
-%{_bindir}/steamos-polkit-helpers/steamos-poweroff-now
-%{_bindir}/steamos-polkit-helpers/steamos-priv-write
-%{_bindir}/steamos-polkit-helpers/steamos-reboot-now
-%{_bindir}/steamos-polkit-helpers/steamos-reboot-other
-%{_bindir}/steamos-polkit-helpers/steamos-restart-sddm
-%{_bindir}/steamos-polkit-helpers/steamos-select-branch
-%{_bindir}/steamos-polkit-helpers/steamos-set-hostname
-%{_bindir}/steamos-polkit-helpers/steamos-set-timezone
-%{_bindir}/steamos-polkit-helpers/steamos-update
+%{_bindir}/steamos-polkit-helpers/*
 %{_bindir}/thumbstick_cal
+%{_bindir}/thumbstick_fine_cal
 %{_bindir}/trigger_cal
-%{_prefix}/lib/hwsupport/cirrus-fixup.sh
-%{_prefix}/lib/hwsupport/ev2_cirrus_alsa_fixups.sh
-%{_prefix}/lib/hwsupport/format-sdcard.sh
-%{_prefix}/lib/hwsupport/power-button-handler.py
-%{_prefix}/lib/hwsupport/sdcard-mount.sh
-%{_prefix}/lib/systemd/system/jupiter-biosupdate.service
-%{_prefix}/lib/systemd/system/jupiter-controller-update.service
-%{_prefix}/lib/udev/rules.d/99-power-button.rules
-%{_prefix}/lib/udev/rules.d/99-sdcard-mount.rules
-%{_datadir}/alsa/ucm2/conf.d/acp5x/HiFi.conf
-%{_datadir}/alsa/ucm2/conf.d/acp5x/acp5x.conf
-%{_datadir}/icons/steam/index.theme
-%{_datadir}/icons/steam/cursors/arrow
-%{_datadir}/icons/steam/cursors/left_ptr
-%{_datadir}/icons/steam/cursors/left_ptr_help
-%{_datadir}/icons/steam/cursors/left_ptr_watch
+%{_prefix}/lib/hwsupport/*
+%{_prefix}/lib/systemd/system/*
+%{_prefix}/lib/udev/rules.d/*
+%{_datadir}/alsa/ucm2/conf.d/acp5x/*
+%{_datadir}/icons/steam/*
 %{_datadir}/steamos/steamos.png
-%{_datadir}/jupiter_bios/F7A0110_sign.fd
-%{_datadir}/jupiter_bios_updater/BatCtrl
-# %%{_datadir}/jupiter_bios_updater/H2OFFTx64-G.sh
-%{_datadir}/jupiter_bios_updater/H2OFFTx64.sh
-%{_datadir}/jupiter_bios_updater/Logo.png
-# %%{_datadir}/jupiter_bios_updater/driver/Makefile
-# %%{_datadir}/jupiter_bios_updater/driver/phy_alloc.c
-# %%{_datadir}/jupiter_bios_updater/driver/phy_alloc.h
-%{_datadir}/jupiter_bios_updater/h2offt
-# %%{_datadir}/jupiter_bios_updater/h2offt-g
-%{_datadir}/jupiter_bios_updater/h2osde-lx64
-%{_datadir}/jupiter_bios_updater/msg_cht.ini
-%{_datadir}/jupiter_bios_updater/msg_eng.ini
-%{_datadir}/jupiter_bios_updater/platform.ini
-%{_datadir}/jupiter_controller_fw_updater/D20_APP_REL_631F5DF4.bin
-%{_datadir}/jupiter_controller_fw_updater/D21_APP_REL_631F5DF4.bin
-%{_datadir}/jupiter_controller_fw_updater/RA_APP_REL_631F5DF4.bin
-%{_datadir}/jupiter_controller_fw_updater/RA_bootloader_updater/boot_ra_Release.srec
-%{_datadir}/jupiter_controller_fw_updater/RA_bootloader_updater/linux_host_tools/BatCtrl
-%{_datadir}/jupiter_controller_fw_updater/RA_bootloader_updater/linux_host_tools/rfp-linux-x64/Devices.xml
-%{_datadir}/jupiter_controller_fw_updater/RA_bootloader_updater/linux_host_tools/rfp-linux-x64/License_Agreement.txt
-%{_datadir}/jupiter_controller_fw_updater/RA_bootloader_updater/linux_host_tools/rfp-linux-x64/Messages.xml
-%{_datadir}/jupiter_controller_fw_updater/RA_bootloader_updater/linux_host_tools/rfp-linux-x64/libRFP.so
-%{_datadir}/jupiter_controller_fw_updater/RA_bootloader_updater/linux_host_tools/rfp-linux-x64/rfp-cli
-%{_datadir}/jupiter_controller_fw_updater/RA_bootloader_updater/rfp_cli_linux.sh
-%{_datadir}/jupiter_controller_fw_updater/d20bootloader.py
-%{_datadir}/jupiter_controller_fw_updater/d21bootloader16.py
-%{_datadir}/plymouth/themes/steamos/steamos.plymouth
-%{_datadir}/plymouth/themes/steamos/steamos.png
-%{_datadir}/plymouth/themes/steamos/steamos.script
+%{_datadir}/jupiter_bios/*
+%{_datadir}/jupiter_bios_updater/*
+%{_datadir}/jupiter_controller_fw_updater/*
+%{_datadir}/plymouth/themes/steamos/*
 %{_datadir}/polkit-1/actions/org.valve.steamos.policy
 %{_datadir}/polkit-1/rules.d/org.valve.steamos.rules
 %{_datadir}/steamos/steamos-cursor-config
