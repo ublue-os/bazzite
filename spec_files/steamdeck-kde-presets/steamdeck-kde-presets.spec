@@ -35,6 +35,7 @@ cp -rv etc/* %{buildroot}%{_sysconfdir}
 # Remove unneeded files
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/steam.desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
+rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
 
 # Do post-installation
 %post
@@ -51,7 +52,6 @@ rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
 %{_datadir}/color-schemes/Vapor.colors
 %{_datadir}/color-schemes/VGUI.colors
 %{_sysconfdir}/X11/Xsession.d/50rotate-screen
-%{_sysconfdir}/profile.d/kde.sh
 %{_sysconfdir}/sddm.conf.d/steamdeck.conf
 %{_sysconfdir}/skel/Desktop/Return.desktop
 %{_sysconfdir}/xdg/autostart/ibus.desktop
