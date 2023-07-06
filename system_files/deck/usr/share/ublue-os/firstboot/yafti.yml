@@ -172,6 +172,11 @@ screens:
           default: false
           packages:
           - Retrieve Greenlight: just get-greenlight
+        Kernel Arguments:
+          description: Sets kernel arguments used in SteamOS
+          default: true
+          packages:
+          - Set kargs: just set-steamos-kargs
         Memory Tuning:
           description: Adjust ZRAM and configure deckswap
           default: false
