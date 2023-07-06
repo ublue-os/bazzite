@@ -54,6 +54,13 @@ RUN rpm-ostree override remove \
     toolbox \
     htop
 
+# Install ROCM on non-Nvidia images
+RUN if grep -v "nvidia" <<< "${IMAGE_NAME}"; then \
+    rpm-ostree install \
+        rocm-hip \
+        rocm-opencl \
+; fi 
+
 # Run firstboot script per-profile
 RUN mkdir -p "/usr/etc/profile.d/"
 RUN ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
