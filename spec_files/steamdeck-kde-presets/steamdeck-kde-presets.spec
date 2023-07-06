@@ -32,6 +32,7 @@ cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/* %{buildroot}%{_prefix}/lib
 cp -rv etc/* %{buildroot}%{_sysconfdir}
+mv %{buildroot}%{_sysconfdir}/skel %{buildroot}%{_sysconfdir}/skel.d
 # Remove unneeded files
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/steam.desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
@@ -53,7 +54,7 @@ rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
 %{_datadir}/color-schemes/VGUI.colors
 %{_sysconfdir}/X11/Xsession.d/50rotate-screen
 %{_sysconfdir}/sddm.conf.d/steamdeck.conf
-%{_sysconfdir}/skel/Desktop/Return.desktop
+%{_sysconfdir}/skel.d/Desktop/Return.desktop
 %{_sysconfdir}/xdg/autostart/ibus.desktop
 %{_sysconfdir}/xdg/autostart/jupiter-plasma-bootstrap.desktop
 %{_sysconfdir}/xdg/gtk-2.0/gtkrc
