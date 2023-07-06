@@ -51,7 +51,8 @@ RUN rpm-ostree override remove \
     firefox \
     firefox-langpacks \
     plasma-welcome \
-    toolbox
+    toolbox \
+    htop
 
 # Run firstboot script per-profile
 RUN mkdir -p "/usr/etc/profile.d/"
