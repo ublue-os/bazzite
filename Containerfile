@@ -139,7 +139,7 @@ RUN rpm-ostree install \
     sdgyrodsu
 
 # Remove unneeded packages
-RUN rpm-osree override remove \
+RUN rpm-ostree override remove \
     krfb
 
 # Install dock updater, this is done manually due to proprietary parts preventing it from being on Copr.
