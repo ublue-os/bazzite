@@ -5,7 +5,7 @@ screens:
   first-screen:
     source: yafti.screen.title
     values:
-      title: "Welcome to Bazzite (Alpha)"
+      title: "Welcome to Bazzite (Steam Deck)"
       icon: "/path/to/icon"
       description: |
         Pick some applications to get started
@@ -35,11 +35,11 @@ screens:
           default: true
           packages:
           - Lutris: net.lutris.Lutris
-          - MangoHud (Flatpak): org.freedesktop.Platform.VulkanLayer.MangoHud
+          - MangoHud (Flatpak): org.freedesktop.Platform.VulkanLayer.MangoHud//22.08
           - Mozilla Firefox: org.mozilla.firefox
           - Protontricks: com.github.Matoking.protontricks
           - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
-          - vkBasalt (Flatpak): org.freedesktop.Platform.VulkanLayer.vkBasalt
+          - vkBasalt (Flatpak): org.freedesktop.Platform.VulkanLayer.vkBasalt//22.08
         Web Browsers:
           description: Additional browsers to complement Firefox
           default: false
@@ -129,7 +129,6 @@ screens:
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
           - GIMP: org.gimp.GIMP
-          - GreenWithEnvy: com.leinardi.gwe
           - KeePassXC: org.keepassxc.KeePassXC
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
@@ -151,6 +150,11 @@ screens:
           default: true
           packages:
           - Enable Autostart: cp ~/usr/share/applications/steam.desktop ~/.config/autostart/steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/steam-silent.desktop
+        Create Deck User:
+          description: Creates the "deck" user and group needed for mounting SD cards.
+          default: true
+          packages:
+          - User Setup: just create-deck-user
         Decky Loader:
           description: A plugin loader for the Steam Deck
           default: false

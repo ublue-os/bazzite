@@ -1,6 +1,14 @@
 set-steamos-kargs:
   rpm-ostree kargs --append="amd_iommu=off" --append="amdgpu.gttsize=8128" --append="spi_amd.speed_dev=1"
 
+create-deck-user:
+  #!/usr/bin/env bash
+  if ! grep "^deck" /etc/group; then
+    groupadd deck
+    useradd deck -g deck -G wheel
+  fi
+  usermod -a -G deck $(whoami)
+
 create-steam-shortcuts:
   cp /usr/share/applications/steam.desktop ~/Desktop
   cp /etc/skel.d/Desktop/Return.desktop ~/Desktop

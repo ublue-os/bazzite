@@ -5,7 +5,7 @@ screens:
   first-screen:
     source: yafti.screen.title
     values:
-      title: "Welcome to Bazzite (Alpha)"
+      title: "Welcome to Bazzite (Desktop)"
       icon: "/path/to/icon"
       description: |
         Pick some applications to get started
@@ -34,10 +34,10 @@ screens:
           description: Core Applications
           default: true
           packages:
-          - MangoHud (Flatpak): org.freedesktop.Platform.VulkanLayer.MangoHud
+          - MangoHud (Flatpak): org.freedesktop.Platform.VulkanLayer.MangoHud//22.08
           - Mozilla Firefox: org.mozilla.firefox
           - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
-          - vkBasalt (Flatpak): org.freedesktop.Platform.VulkanLayer.vkBasalt
+          - vkBasalt (Flatpak): org.freedesktop.Platform.VulkanLayer.vkBasalt//22.08
         Web Browsers:
           description: Additional browsers to complement Firefox
           default: false
