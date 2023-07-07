@@ -140,7 +140,8 @@ RUN rpm-ostree install \
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
-    krfb
+    krfb \
+    krfb-libs
 
 # Install dock updater, this is done manually due to proprietary parts preventing it from being on Copr.
 RUN git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --single-branch /tmp/jupiter-dock-updater-bin && \
