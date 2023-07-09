@@ -9,7 +9,7 @@ if command -v ublue-update > /dev/null; then
       wget -q --spider https://github.com
       if [ $? -eq 0 ]; then
         # Check system state
-        ublue-update --check
+        ublue-update --check --updatecheck
         if [ $? -eq 0 ]; then
           exit 0 # Upgrade available
         else
