@@ -30,22 +30,7 @@ fi
 
 EXTENDED_OPTIONS="$EXTENDED_OPTIONS,root_owner=$OWNER"
 
-# We only support SD/MMC and USB mass-storage devices
-case "$STORAGE_DEVICE" in
-    "")
-        echo "Usage: $(basename $0) [--force] [--skip-validation] [--full] [--quick] [--owner <uid>:<gid>] --device <device>"
-        exit 19 #ENODEV
-        ;;
-    /dev/mmcblk?)
-        STORAGE_PARTITION="${STORAGE_DEVICE}p1"
-        ;;
-    /dev/sd?)
-        STORAGE_PARTITION="${STORAGE_DEVICE}1"
-        ;;
-    *)
-        echo "Unknown or unsupported device: $STORAGE_DEVICE"
-        exit 19 #ENODEV
-esac
+STORAGE_PARTITION="${STORAGE_DEVICE}p1"
 
 if [[ ! -e "$STORAGE_DEVICE" ]]; then
     exit 19 #ENODEV
