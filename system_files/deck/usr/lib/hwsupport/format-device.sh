@@ -133,7 +133,14 @@ echo "stage=formatting"
 sync
 parted --script "$STORAGE_DEVICE" mklabel gpt mkpart primary 0% 100%
 sync
-mkfs.ext4 -m 0 -O casefold -E "$EXTENDED_OPTIONS" -F "$STORAGE_PARTITION"
+mkfs.btrfs -f -K "$STORAGE_PARTITION"
+MOUNT_DIR="/var/run/sdcard-mount"
+mkdir -p "$MOUNT_DIR"
+mount -o "rw,noatime,lazytime,compress-force=zstd,space_cache=v2,autodefrag,ssd_spread" "$STORAGE_PARTITION" "$MOUNT_DIR"
+btrfs subvolume create "$MOUNT_DIR/@"
+btrfs subvolume set-default "$MOUNT_DIR/@"
+umount -l "$MOUNT_DIR"
+rmdir "$MOUNT_DIR"
 sync
 udevadm settle
 

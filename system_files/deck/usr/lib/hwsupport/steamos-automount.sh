@@ -73,18 +73,19 @@ do_mount()
     ID_FS_LABEL=$(jq -r '.label | select(type == "string")' <<< "$dev_json")
     ID_FS_TYPE=$(jq -r '.fstype | select(type == "string")' <<< "$dev_json")
 
-    # Global mount options
-    OPTS="rw,noatime"
-
-    # File system type specific mount options
-    #if [[ ${ID_FS_TYPE} == "vfat" ]]; then
-    #    OPTS+=",users,gid=100,umask=000,shortname=mixed,utf8=1,flush"
-    #fi
-
-    # We need symlinks for Steam for now, so only automount ext4 as that'll Steam will format right now
-    if [[ ${ID_FS_TYPE} != "ext4" ]]; then
-        echo "Error mounting ${DEVICE}: wrong fstype: ${ID_FS_TYPE} - ${dev_json}"
-        exit 2
+    UDISKS2_ALLOW='compress,compress-force,datacow,nodatacow,datasum,nodatasum,autodefrag,noautodefrag,degraded,device,discard,nodiscard,subvol,subvolid,space_cache'
+    OPTS="rw,noatime,lazytime,compress-force=zstd,space_cache=v2,autodefrag,ssd_spread"
+    FSTYPE="btrfs"
+    # check for main subvol
+    mount_point_tmp="${MOUNT_LOCK%.*}.tmp"
+    mkdir -p "${mount_point_tmp}"
+    if /bin/mount -t btrfs -o ro "${DEVICE}" "${mount_point_tmp}"; then
+        if [[ -d "${mount_point_tmp}/@" ]] && \
+            btrfs subvolume show "${mount_point_tmp}/@" &>/dev/null; then
+            OPTS+=",subvol=@"
+        fi
+        /bin/umount -l "${mount_point_tmp}"
+        rmdir "${mount_point_tmp}"
     fi
 
     # Prior to talking to udisks, we need all udev hooks (we were started by one) to finish, so we know it has knowledge
@@ -101,9 +102,10 @@ do_mount()
                 org.freedesktop.UDisks2                                                            \
                 /org/freedesktop/UDisks2/block_devices/"${DEVBASE}"                                \
                 org.freedesktop.UDisks2.Filesystem                                                 \
-                Mount 'a{sv}' 3                                                                    \
+                Mount 'a{sv}' 4                                                                    \
                   as-user s deck                                                                   \
                   auth.no_user_interaction b true                                                  \
+                  fstype                   s "btrfs"                                             \
                   options                  s "$OPTS") || ret=$?
 
     if [[ $ret -ne 0 ]]; then
@@ -136,6 +138,26 @@ do_mount()
             ;;
     esac
 
+    # Workaround for for Steam compression bug
+    for d in "${mount_point}"/steamapps/{downloading,temp} ; do
+        if ! btrfs subvolume show "$d" &>/dev/null; then
+            mkdir -p "$d"
+            rm -rf "$d"
+            btrfs subvolume create "$d"
+            chattr +C "$d"
+            chown 1000:1000 "${d%/*}" "$d"
+        fi
+    done
+
+    # backwards compatibility
+    if [[ "${DEVBASE}" == 'mmcblk0p1' ]]; then
+        mkdir -p /run/media
+        rm -f /run/media/mmcblk0p1
+        ln -sfT "${mount_point}" /run/media/mmcblk0p1
+    fi
+
+    chown 1000:1000 -- "${mount_point}"
+
     echo "**** Mounted ${DEVICE} at ${mount_point} ****"
 
     # If Steam is running, notify it
@@ -154,6 +176,20 @@ do_unmount()
         # If we don't know the mount point then remove all broken symlinks
         find /run/media -maxdepth 1 -xdev -xtype l -exec rm -- {} \;
     fi
+    if [[ -L /run/media/mmcblk0p1 && "$(realpath /run/media/mmcblk0p1)" == "$(realpath "${mount_point}")" ]]; then
+        rm -f /run/media/mmcblk0p1
+    fi
+    if mountpoint -q "${mount_point}"/steamapps/compatdata; then
+        /bin/umount -l -R "${mount_point}"/steamapps/compatdata
+    fi
+    systemd-run --uid=1000 --pipe                                                          \
+      busctl call --allow-interactive-authorization=false --expect-reply=true --json=short \
+        org.freedesktop.UDisks2                                                            \
+        /org/freedesktop/UDisks2/block_devices/"${DEVBASE}"                                \
+        org.freedesktop.UDisks2.Filesystem                                                 \
+        Unmount 'a{sv}' 2                                                                  \
+          auth.no_user_interaction b true                                                  \
+          force                    b true
 }
 
 do_retrigger()
