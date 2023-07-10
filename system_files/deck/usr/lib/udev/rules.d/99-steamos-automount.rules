@@ -1,0 +1,8 @@
+# Originally from https://serverfault.com/a/767079
+# Run a mount script through systemd on any mmcblk0p* and sd[a-z]* activity
+
+# The service expects to be asynchronous and shouldn't block udev rules
+KERNEL=="mmcblk0p[0-9]", ACTION=="add",    RUN+="/bin/systemctl start --no-block steamos-automount@%k.service"
+KERNEL=="mmcblk0p[0-9]", ACTION=="remove", RUN+="/bin/systemctl stop  --no-block steamos-automount@%k.service"
+KERNEL=="sd[a-z][0-9]",  ACTION=="add",    RUN+="/bin/systemctl start --no-block steamos-automount@%k.service"
+KERNEL=="sd[a-z][0-9]",  ACTION=="remove", RUN+="/bin/systemctl stop  --no-block steamos-automount@%k.service"
