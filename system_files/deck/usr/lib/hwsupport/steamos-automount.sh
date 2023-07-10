@@ -21,19 +21,6 @@ ACTION=$1
 DEVBASE=$2
 DEVICE="/dev/${DEVBASE}"
 
-# Shared between this and the auto-mount script to ensure we're not double-triggering nor automounting while formatting
-# or vice-versa.
-MOUNT_LOCK="/var/run/jupiter-automount-${DEVBASE//\/_}.lock"
-
-# Obtain lock
-exec 9<>"$MOUNT_LOCK"
-if ! flock -n 9; then
-    echo "$MOUNT_LOCK is active: ignoring action $ACTION"
-    # Do not return a success exit code: it could end up putting the service in 'started' state without doing the mount
-    # work (further start commands will be ignored after that)
-    exit 1
-fi
-
 # Wait N seconds for steam
 wait_steam()
 {
@@ -77,7 +64,7 @@ do_mount()
     OPTS="rw,noatime,lazytime,compress-force=zstd,space_cache=v2,autodefrag,ssd_spread"
     FSTYPE="btrfs"
     # check for main subvol
-    mount_point_tmp="${MOUNT_LOCK%.*}.tmp"
+    mount_point_tmp="/var/run/jupiter-automount-${STORAGE_PARTBASE//\/_}.tmp"
     mkdir -p "${mount_point_tmp}"
     if /bin/mount -t btrfs -o ro "${DEVICE}" "${mount_point_tmp}"; then
         if [[ -d "${mount_point_tmp}/@" ]] && \
