@@ -80,6 +80,7 @@ RUN pip install --prefix=/usr yafti && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable input-remapper.service && \
+    systemctl enable waydroid-container.service && \
     rm -rf \
         /tmp/* \
         /var/* && \
