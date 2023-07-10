@@ -55,26 +55,6 @@ urlencode()
 
 do_mount()
 {
-    # Get info for this drive: $ID_FS_LABEL, and $ID_FS_TYPE
-    dev_json=$(lsblk -o PATH,LABEL,FSTYPE --json -- "$DEVICE" | jq '.blockdevices[0]')
-    ID_FS_LABEL=$(jq -r '.label | select(type == "string")' <<< "$dev_json")
-    ID_FS_TYPE=$(jq -r '.fstype | select(type == "string")' <<< "$dev_json")
-
-    UDISKS2_ALLOW='compress,compress-force,datacow,nodatacow,datasum,nodatasum,autodefrag,noautodefrag,degraded,device,discard,nodiscard,subvol,subvolid,space_cache'
-    OPTS="rw,noatime,lazytime,compress-force=zstd,space_cache=v2,autodefrag,ssd_spread"
-    FSTYPE="btrfs"
-    # check for main subvol
-    mount_point_tmp="/var/run/jupiter-automount-${STORAGE_PARTBASE//\/_}.tmp"
-    mkdir -p "${mount_point_tmp}"
-    if /bin/mount -t btrfs -o ro "${DEVICE}" "${mount_point_tmp}"; then
-        if [[ -d "${mount_point_tmp}/@" ]] && \
-            btrfs subvolume show "${mount_point_tmp}/@" &>/dev/null; then
-            OPTS+=",subvol=@"
-        fi
-        /bin/umount -l "${mount_point_tmp}"
-        rmdir "${mount_point_tmp}"
-    fi
-
     # Prior to talking to udisks, we need all udev hooks (we were started by one) to finish, so we know it has knowledge
     # of the drive.  Our own rule starts us as a service with --no-block, so we can wait for rules to settle here
     # safely.
@@ -83,47 +63,14 @@ do_mount()
       exit 1
     fi
 
-    # Ask udisks to auto-mount. This needs a version of udisks that supports the 'as-user' option.
-    ret=0
-    reply=$(busctl call --allow-interactive-authorization=false --expect-reply=true --json=short   \
-                org.freedesktop.UDisks2                                                            \
-                /org/freedesktop/UDisks2/block_devices/"${DEVBASE}"                                \
-                org.freedesktop.UDisks2.Filesystem                                                 \
-                Mount 'a{sv}' 4                                                                    \
-                  as-user s ${USER}                                                                \
-                  auth.no_user_interaction b true                                                  \
-                  fstype                   s "btrfs"                                               \
-                  options                  s "$OPTS") || ret=$?
+    mount_point=/mnt/sdcard
+    mkdir -p "${mount_point}"
+    /bin/mount "${DEVICE}" "${mount_point}"
 
-    if [[ $ret -ne 0 ]]; then
+    if [[ $? -ne 0 ]]; then
         echo "Error mounting ${DEVICE} (status = $ret)"
         exit 1
     fi
-
-    # Expected reply is of the format
-    #  {"type":"s","data":["/run/media/deck/home"]}
-    mount_point=$(jq -r '.data[0] | select(type == "string")' <<< "$reply" || true)
-    if [[ -z $mount_point ]]; then
-        echo "Error when mounting ${DEVICE}: udisks returned success but could not parse reply:"
-        echo "---"$'\n'"$reply"$'\n'"---"
-        exit 1
-    fi
-
-    # Create a symlink from /run/media to keep compatibility with apps
-    # that use the older mount point (for SD cards only).
-    case "${DEVBASE}" in
-        mmcblk0p*)
-            if [[ -z "${ID_FS_LABEL}" ]]; then
-                old_mount_point="/run/media/${DEVBASE}"
-            else
-                old_mount_point="/run/media/${mount_point##*/}"
-            fi
-            if [[ ! -d "${old_mount_point}" ]]; then
-                rm -f -- "${old_mount_point}"
-                ln -s -- "${mount_point}" "${old_mount_point}"
-            fi
-            ;;
-    esac
 
     # Workaround for for Steam compression bug
     for d in "${mount_point}"/steamapps/{downloading,temp} ; do
@@ -139,7 +86,6 @@ do_mount()
     # backwards compatibility
     if [[ "${DEVBASE}" == 'mmcblk0p1' ]]; then
         mkdir -p /run/media
-        rm -f /run/media/mmcblk0p1
         ln -sfT "${mount_point}" /run/media/mmcblk0p1
     fi
 
@@ -154,34 +100,22 @@ do_mount()
 do_unmount()
 {
     # If Steam is running, notify it
-    local mount_point=$(findmnt -fno TARGET "${DEVICE}" || true)
-    if [[ -n $mount_point ]]; then
-        send_steam_url "removelibraryfolder" "${mount_point}"
-        # Remove symlink to the mount point that we're unmounting
-        find /run/media -maxdepth 1 -xdev -type l -lname "${mount_point}" -exec rm -- {} \;
-    else
-        # If we don't know the mount point then remove all broken symlinks
-        find /run/media -maxdepth 1 -xdev -xtype l -exec rm -- {} \;
-    fi
+    local mount_point=/mnt/sdcard
+    send_steam_url "removelibraryfolder" "${mount_point}"
+    # Remove symlink to the mount point that we're unmounting
+    find /run/media -maxdepth 1 -xdev -type l -lname "${mount_point}" -exec rm -- {} \;
     if [[ -L /run/media/mmcblk0p1 && "$(realpath /run/media/mmcblk0p1)" == "$(realpath "${mount_point}")" ]]; then
         rm -f /run/media/mmcblk0p1
     fi
     if mountpoint -q "${mount_point}"/steamapps/compatdata; then
         /bin/umount -l -R "${mount_point}"/steamapps/compatdata
     fi
-    systemd-run --uid=1000 --pipe                                                          \
-      busctl call --allow-interactive-authorization=false --expect-reply=true --json=short \
-        org.freedesktop.UDisks2                                                            \
-        /org/freedesktop/UDisks2/block_devices/"${DEVBASE}"                                \
-        org.freedesktop.UDisks2.Filesystem                                                 \
-        Unmount 'a{sv}' 2                                                                  \
-          auth.no_user_interaction b true                                                  \
-          force                    b true
+    /bin/umount "${mount_point}"
 }
 
 do_retrigger()
 {
-    local mount_point=$(findmnt -fno TARGET "${DEVICE}" || true)
+    local mount_point=/mnt/sdcard
     [[ -n $mount_point ]] || return 0
 
     # In retrigger mode, we want to wait a bit for steam as the common pattern is starting in parallel with a retrigger
