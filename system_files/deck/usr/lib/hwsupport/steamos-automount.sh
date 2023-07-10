@@ -103,9 +103,9 @@ do_mount()
                 /org/freedesktop/UDisks2/block_devices/"${DEVBASE}"                                \
                 org.freedesktop.UDisks2.Filesystem                                                 \
                 Mount 'a{sv}' 4                                                                    \
-                  as-user s deck                                                                   \
+                  as-user s ${USER}                                                                \
                   auth.no_user_interaction b true                                                  \
-                  fstype                   s "btrfs"                                             \
+                  fstype                   s "btrfs"                                               \
                   options                  s "$OPTS") || ret=$?
 
     if [[ $ret -ne 0 ]]; then
