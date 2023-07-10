@@ -36,12 +36,6 @@ if [[ ! -e "$STORAGE_DEVICE" ]]; then
     exit 19 #ENODEV
 fi
 
-# Prevent accidental formatting of system drives
-if [[ $(lsblk -d -n -r -o hotplug "$STORAGE_DEVICE") != "1" ]]; then
-    echo "$STORAGE_DEVICE is not a hotplug device"
-    exit 19 #ENODEV
-fi
-
 STORAGE_PARTBASE="${STORAGE_PARTITION#/dev/}"
 
 systemctl stop steamos-automount@"$STORAGE_PARTBASE".service
