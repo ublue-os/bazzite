@@ -7,7 +7,7 @@ USER=$(ls /home)
 SDDM_CONF='/etc/sddm.conf.d/steamos.conf'
 
 # Configure autologin
-sed -i 's/.*Session=.*/Session=gamescope-session.desktop/g' ${SDDM_CONF}
+sed -i 's/.*Session=.*/Session=plasmax11.desktop/g' ${SDDM_CONF}
 if [ ${NUM_USERS} -eq 1 ]; then
   sed -i 's/.*User=.*/User='${USER}'/g' ${SDDM_CONF}
 fi
