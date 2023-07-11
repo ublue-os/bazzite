@@ -164,7 +164,7 @@ screens:
           description: Autologin to Gamescope Session
           default: true
           packages:
-          - Enable Gamescope Autologin: systemctl enable gamescope-autologin
+          - Enable Gamescope Autologin: just enable-gamescope-autologin
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
