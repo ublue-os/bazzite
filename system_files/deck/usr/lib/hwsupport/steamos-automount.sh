@@ -59,17 +59,18 @@ do_mount()
     # of the drive.  Our own rule starts us as a service with --no-block, so we can wait for rules to settle here
     # safely.
     if ! udevadm settle; then
-      echo "Failed to wait for \`udevadm settle\`"
-      exit 1
+        echo "Failed to wait for \`udevadm settle\`"
+        exit 1
     fi
 
     mount_point=/mnt/sdcard
-    mkdir -p "${mount_point}"
-    /bin/mount "${DEVICE}" "${mount_point}"
-
-    if [[ $? -ne 0 ]]; then
-        echo "Error mounting ${DEVICE} (status = $ret)"
-        exit 1
+    if [[ ! -d "${mount_point}" ]]; then
+        mkdir -p "${mount_point}"
+        /bin/mount "${DEVICE}" "${mount_point}"
+        if [[ $? -ne 0 ]]; then
+            echo "Error mounting ${DEVICE}"
+            exit 1
+        fi
     fi
 
     # Workaround for for Steam compression bug
