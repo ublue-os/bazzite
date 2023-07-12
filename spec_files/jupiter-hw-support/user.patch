@@ -7,7 +7,7 @@ index fb38b92..0eddd30 100755
                  org.freedesktop.UDisks2.Filesystem                                                 \
                  Mount 'a{sv}' 4                                                                    \
 -                  as-user s deck                                                                   \
-+                  as-user s ${USER}                                                                \
++                  as-user s $(ls /home)                                                            \
                    auth.no_user_interaction b true                                                  \
                    fstype                   s "$FSTYPE"                                             \
                    options                  s "$OPTS") || ret=$?
