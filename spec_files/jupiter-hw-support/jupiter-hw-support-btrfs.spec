@@ -11,6 +11,7 @@ Patch0:         fedora.patch
 Patch1:         selinux.patch
 Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch
 Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/format-device.sh.patch
+Patch4:         user.patch
 
 Requires:       python3
 Requires:       python3-libevdev
@@ -39,6 +40,7 @@ SteamOS 3.0 Steam Deck Hardware Support Package
 %patch 1 -p1
 %patch 2 -p1
 %patch 3 -p1
+%patch 4 -p1
 
 %build
 
@@ -49,9 +51,19 @@ mkdir -p %{buildroot}%{_unitdir}/
 mkdir -p %{buildroot}%{_bindir}/
 mkdir -p %{buildroot}%{_sbindir}/
 mkdir -p %{buildroot}%{_sysconfdir}/
+mkdir -p %{buildroot}%{_prefix}/lib/hwsupport/
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}/
-cp -rv usr/lib/hwsupport %{buildroot}%{_sbindir}/hwsupport
+cp usr/lib/hwsupport/cs35l41-dsp1-spk-prot.bin.mod %{buildroot}%{_prefix}/lib/hwsupport/cs35l41-dsp1-spk-prot.bin.mod
+cp usr/lib/hwsupport/cs35l41-dsp1-spk-prot.bin.orig %{buildroot}%{_prefix}/lib/hwsupport/cs35l41-dsp1-spk-prot.bin.orig
+cp usr/lib/hwsupport/power-button-handler.py %{buildroot}%{_prefix}/lib/hwsupport/power-button-handler.py
+cp usr/lib/hwsupport/cirrus-fixup.sh %{buildroot}%{_sbindir}/cirrus-fixup
+cp usr/lib/hwsupport/ev2_cirrus_alsa_fixups.sh %{buildroot}%{_sbindir}/ev2_cirrus_alsa_fixups
+cp usr/lib/hwsupport/format-device.sh %{buildroot}%{_sbindir}/format-device
+cp usr/lib/hwsupport/format-sdcard.sh %{buildroot}%{_sbindir}/format-sdcard
+cp usr/lib/hwsupport/jupiter-amp-control %{buildroot}%{_sbindir}/jupiter-amp-control
+cp usr/lib/hwsupport/steamos-automount.sh %{buildroot}%{_sbindir}/steamos-automount
+cp usr/lib/hwsupport/trim-devices.sh %{buildroot}%{_sbindir}/trim-devices
 cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
@@ -91,7 +103,14 @@ rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 %{_bindir}/thumbstick_cal
 %{_bindir}/thumbstick_fine_cal
 %{_bindir}/trigger_cal
-%{_sbindir}/hwsupport/*
+%{_sbindir}/cirrus-fixup
+%{_sbindir}/ev2_cirrus_alsa_fixups
+%{_sbindir}/format-device
+%{_sbindir}/format-sdcard
+%{_sbindir}/jupiter-amp-control
+%{_sbindir}/steamos-automount
+%{_sbindir}/trim-devices
+%{_prefix}/lib/hwsupport/*
 %{_prefix}/lib/systemd/system/*
 %{_prefix}/lib/udev/rules.d/*
 %{_datadir}/alsa/ucm2/conf.d/acp5x/*
