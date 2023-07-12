@@ -35,5 +35,3 @@ STEAMOS_BTRFS_SDCARD_NTFS_FORMAT_OPTS="-f -F"
 # Toggle to enable/disable the bind mount for Steam's compatdata/ folder on fat, exfat, ntfs filesystems.
 # Setting it to 0 will make the eject functionality in the Steam client work again but proton games will not start on it.
 STEAMOS_BTRFS_SDCARD_COMPATDATA_BIND_MOUNT="1"
-# Defines additional pacman packages to install into the rootfs and persist through upgrades (e.g.: "compsize nfs-utils wireguard-tools ..." )
-STEAMOS_BTRFS_ROOTFS_PACMAN_EXTRA_PKGS=""
