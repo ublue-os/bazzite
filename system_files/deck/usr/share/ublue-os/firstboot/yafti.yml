@@ -188,17 +188,17 @@ screens:
           - Deck Swap: just swap-on
           - Disable ZRAM: just zram-off
         Nix Package Manager:
-          descrption: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
+          description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: true
           packages:
           - Install Nix Package Support: just install-nix
         SteamDeckGyroDSU:
-          descrption: Allows emulators and other applications to receive Steam Deck gyro motion data
+          description: Allows emulators and other applications to receive Steam Deck gyro motion data
           default: true
           packages:
           - Enable SDGyroDSU Service: systemctl --user enable --now sdgyrodsu
         Steam Desktop Shortcuts:
-          descrption: Creates Steam desktop shortcuts
+          description: Creates Steam desktop shortcuts
           default: true
           packages:
           - Create Steam shortcuts: just create-steam-shortcuts
