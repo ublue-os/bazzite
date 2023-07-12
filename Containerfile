@@ -129,7 +129,7 @@ RUN rpm-ostree install \
     gamescope \
     gamescope-session \
     jupiter-fan-control \
-    jupiter-hw-support-bazzite \
+    jupiter-hw-support-btrfs \
     steamdeck-kde-presets \
     ryzenadj \
     gamemode \
