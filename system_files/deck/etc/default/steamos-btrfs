@@ -1,12 +1,12 @@
 # Defines the options used by btrfs-convert to convert home from ext4 to btrfs (default: "-L --uuid copy")
 STEAMOS_BTRFS_HOME_CONVERT_OPTS="-L --uuid copy"
-# Defines the mount options for the home partition (default: "defaults,nofail,x-systemd.growfs,noatime,lazytime,compress-force=zstd,space_cache=v2,autodefrag")
+# Defines the mount options for the home partition (default: "defaults,nofail,x-systemd.growfs,noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async")
 STEAMOS_BTRFS_HOME_MOUNT_OPTS="defaults,nofail,x-systemd.growfs,noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async"
 # Defines the root subvolume of the home partition (default: "@")
 STEAMOS_BTRFS_HOME_MOUNT_SUBVOL="@"
 # Defines the filesystem to format the SD card as (default: "btrfs"). One of btrfs, f2fs, ext4, fat, exfat, ntfs.
 STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"
-# Defines the SD card mount options for btrfs (default: "rw,noatime,lazytime,compress-force=zstd,space_cache=v2,autodefrag,ssd_spread")
+# Defines the SD card mount options for btrfs (default: "rw,noatime,lazytime,commit=120,compress-force=zstd:4,space_cache=v2,discard=async,ssd_spread")
 STEAMOS_BTRFS_SDCARD_BTRFS_MOUNT_OPTS="rw,noatime,lazytime,commit=120,compress-force=zstd:4,space_cache=v2,discard=async,ssd_spread"
 # Defines the default subvolume to mount for the SD card if present (default: "@")
 STEAMOS_BTRFS_SDCARD_BTRFS_MOUNT_SUBVOL="@"
