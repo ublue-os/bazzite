@@ -1,0 +1,25 @@
+diff --git a/etc/systemd/system/steamos-automount@.service b/etc/systemd/system/steamos-automount@.service
+index dd700da..152e231 100644
+--- a/etc/systemd/system/steamos-automount@.service
++++ b/etc/systemd/system/steamos-automount@.service
+@@ -14,6 +14,7 @@ Description=Mount removable drive %i and notify Steam
+ [Service]
+ Type=oneshot
+ RemainAfterExit=true
++EnvironmentFile=/etc/default/steamos-btrfs
+ ExecStart=/usr/sbin/steamos-automount add %i
+ ExecStop=/usr/sbin/steamos-automount remove %i
+ ExecReload=/usr/sbin/steamos-automount retrigger %i
+diff --git a/usr/lib/hwsupport/format-device.sh b/usr/lib/hwsupport/format-device.sh
+index 79afec7..43ea933 100755
+--- a/usr/lib/hwsupport/format-device.sh
++++ b/usr/lib/hwsupport/format-device.sh
+@@ -3,6 +3,8 @@
+ set -e
+ exec &> >(tee | logger -t steamos-format-device)
+ 
++source /etc/default/steamos-btrfs
++
+ RUN_VALIDATION=1
+ EXTENDED_OPTIONS="nodiscard"
+ # default owner for the new filesystem

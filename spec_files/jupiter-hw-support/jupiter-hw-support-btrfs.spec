@@ -12,6 +12,7 @@ Patch1:         selinux.patch
 Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch
 Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/format-device.sh.patch
 Patch4:         user.patch
+Patch5:         bazzite-btrfs.patch
 
 Requires:       python3
 Requires:       python3-libevdev
