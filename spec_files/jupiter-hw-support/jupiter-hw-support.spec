@@ -21,6 +21,7 @@ Requires:       jq
 Requires:       alsa-utils
 Requires:       parted
 Requires:       e2fsprogs
+Requires:       f3
 
 BuildRequires:  systemd-rpm-macros
 
