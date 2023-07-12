@@ -35,12 +35,7 @@ SteamOS 3.0 Steam Deck Hardware Support Package
 %define debug_package %{nil}
 
 %prep
-%setup -n %{packagename}-master
-%patch 0 -p1
-%patch 1 -p1
-%patch 2 -p1
-%patch 3 -p1
-%patch 4 -p1
+%autosetup -p1 -n %{packagename}-master
 
 %build
 
