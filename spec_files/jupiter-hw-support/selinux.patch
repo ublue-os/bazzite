@@ -1,0 +1,63 @@
+diff --git a/etc/systemd/system/steamos-automount@.service b/etc/systemd/system/steamos-automount@.service
+index e71a736..8fe8aca 100644
+--- a/etc/systemd/system/steamos-automount@.service
++++ b/etc/systemd/system/steamos-automount@.service
+@@ -14,6 +14,6 @@ Description=Mount removable drive %i and notify Steam
+ [Service]
+ Type=oneshot
+ RemainAfterExit=true
+-ExecStart=/usr/lib/hwsupport/steamos-automount.sh add %i
+-ExecStop=/usr/lib/hwsupport/steamos-automount.sh remove %i
+-ExecReload=/usr/lib/hwsupport/steamos-automount.sh retrigger %i
++ExecStart=/usr/sbin/hwsupport/steamos-automount.sh add %i
++ExecStop=/usr/sbin/hwsupport/steamos-automount.sh remove %i
++ExecReload=/usr/sbin/hwsupport/steamos-automount.sh retrigger %i
+diff --git a/usr/bin/steamos-polkit-helpers/jupiter-amp-control b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
+index 3e0ed02..ed132dd 100755
+--- a/usr/bin/steamos-polkit-helpers/jupiter-amp-control
++++ b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
+@@ -7,4 +7,4 @@ then
+     exec pkexec --disable-internal-agent "$0" "$@"
+ fi
+ 
+-exec /usr/lib/hwsupport/jupiter-amp-control "$@"
++exec /usr/sbin/hwsupport/jupiter-amp-control "$@"
+diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-device b/usr/bin/steamos-polkit-helpers/steamos-format-device
+index dcfe6b9..f3a7129 100755
+--- a/usr/bin/steamos-polkit-helpers/steamos-format-device
++++ b/usr/bin/steamos-polkit-helpers/steamos-format-device
+@@ -8,4 +8,4 @@ then
+     exec pkexec --disable-internal-agent "$0" --owner "$UID":"$gid" "$@"
+ fi
+ 
+-exec /usr/lib/hwsupport/format-device.sh "$@"
++exec /usr/sbin/hwsupport/format-device.sh "$@"
+diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard b/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
+index 53b4f2a..4298a52 100755
+--- a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
++++ b/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
+@@ -8,4 +8,4 @@ then
+     exec pkexec --disable-internal-agent "$0" --owner "$UID":"$gid" "$@"
+ fi
+ 
+-exec /usr/lib/hwsupport/format-sdcard.sh "$@"
++exec /usr/sbin/hwsupport/format-sdcard.sh "$@"
+diff --git a/usr/bin/steamos-polkit-helpers/steamos-trim-devices b/usr/bin/steamos-polkit-helpers/steamos-trim-devices
+index 296a6c7..c382047 100755
+--- a/usr/bin/steamos-polkit-helpers/steamos-trim-devices
++++ b/usr/bin/steamos-polkit-helpers/steamos-trim-devices
+@@ -7,4 +7,4 @@ then
+     exec pkexec --disable-internal-agent "$0" "$@"
+ fi
+ 
+-exec /usr/lib/hwsupport/trim-devices.sh "$@"
++exec /usr/sbin/hwsupport/trim-devices.sh "$@"
+diff --git a/usr/lib/hwsupport/format-sdcard.sh b/usr/lib/hwsupport/format-sdcard.sh
+index 3e13083..460c5dd 100755
+--- a/usr/lib/hwsupport/format-sdcard.sh
++++ b/usr/lib/hwsupport/format-sdcard.sh
+@@ -1,3 +1,3 @@
+ #!/usr/bin/sh
+ 
+-exec /usr/lib/hwsupport/format-device.sh --device /dev/mmcblk0 "$@"
++exec /usr/sbin/hwsupport/format-device.sh --device /dev/mmcblk0 "$@"

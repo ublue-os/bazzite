@@ -7,6 +7,7 @@ URL:            https://github.com/ublue-os/bazzite
 
 Source:        	https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz
 Patch0:         fedora.patch
+Patch1:         selinux.patch
 
 Requires:       python3
 Requires:       python3-libevdev
@@ -32,6 +33,7 @@ SteamOS 3.0 Steam Deck Hardware Support Package
 %prep
 %setup -n %{name}-master
 %patch 0 -p1
+%patch 1 -p1
 
 %build
 
@@ -40,10 +42,11 @@ export QA_RPATHS=0x0003
 mkdir -p %{buildroot}%{_datadir}/
 mkdir -p %{buildroot}%{_unitdir}/
 mkdir -p %{buildroot}%{_bindir}/
+mkdir -p %{buildroot}%{_sbindir}/
 mkdir -p %{buildroot}%{_sysconfdir}/
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}/
-cp -rv usr/lib/hwsupport %{buildroot}%{_prefix}/lib/hwsupport
+cp -rv usr/lib/hwsupport %{buildroot}%{_sbindir}/hwsupport
 cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
@@ -83,7 +86,7 @@ rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 %{_bindir}/thumbstick_cal
 %{_bindir}/thumbstick_fine_cal
 %{_bindir}/trigger_cal
-%{_prefix}/lib/hwsupport/*
+%{_sbindir}/hwsupport/*
 %{_prefix}/lib/systemd/system/*
 %{_prefix}/lib/udev/rules.d/*
 %{_datadir}/alsa/ucm2/conf.d/acp5x/*
