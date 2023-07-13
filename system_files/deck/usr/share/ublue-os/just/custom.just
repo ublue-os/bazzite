@@ -1,5 +1,5 @@
 set-steamos-kargs:
-  rpm-ostree kargs --append="amd_iommu=off" --append="amdgpu.gttsize=8128" --append="spi_amd.speed_dev=1"
+  rpm-ostree kargs --append="amd_pstate=active" --append="amd_iommu=off" --append="amdgpu.gttsize=8128" --append="spi_amd.speed_dev=1"
 
 create-deck-user:
   #!/usr/bin/env bash
