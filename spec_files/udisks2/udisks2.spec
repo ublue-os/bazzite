@@ -42,11 +42,12 @@
 
 Name:    udisks2
 Summary: Disk Manager
-Version: 2.9.4
+%define upstream_version 2.9.4
+Version: %{upstream_version}.bazzite
 Release: 7%{?dist}
 License: GPLv2+
 URL:     https://github.com/storaged-project/udisks
-Source0: https://github.com/storaged-project/udisks/releases/download/udisks-%{version}/udisks-%{version}.tar.bz2
+Source: https://github.com/storaged-project/udisks/releases/download/udisks-%{upstream_version}/udisks-%{upstream_version}.tar.bz2
 Patch0:  ignore-apple-boot-part.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2001549
 Patch1:  udisks-2.10.0-static_daemon_resources_free.patch
@@ -78,6 +79,9 @@ Patch18: udisks-2.10.0-lvm2_update_epoch.patch
 Patch19: udisks-2.10.0-lvm2_vgcreate_uevent_sync.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2148844
 Patch20: udisks-2.9.4-tests_job_unstable.patch
+
+# Bazzite
+Patch21: https://gitlab.com/evlaV/jupiter-PKGBUILD/-/raw/master/udisks2/mount-other-user.patch
 
 BuildRequires: make
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -140,7 +144,7 @@ Requires: libmount
 Recommends: polkit
 %endif
 
-Requires: lib%{name}%{?_isa} = %{version}-%{release}
+Requires: lib%{name}%{?_isa} = %{upstream_version}-%{release}
 
 # For mkntfs (not available on rhel or on ppc/ppc64)
 %if ! 0%{?rhel}
@@ -148,7 +152,7 @@ Requires: ntfsprogs
 Requires: ntfs-3g
 %endif
 
-Provides:  storaged = %{version}-%{release}
+Provides:  storaged = %{upstream_version}-%{release}
 Obsoletes: storaged
 
 %description
@@ -158,7 +162,7 @@ manipulate disks, storage devices and technologies.
 %package -n lib%{name}
 Summary: Dynamic library to access the udisksd daemon
 License: LGPLv2+
-Provides:  libstoraged = %{version}-%{release}
+Provides:  libstoraged = %{upstream_version}-%{release}
 Obsoletes: libstoraged
 
 %description -n lib%{name}
@@ -167,11 +171,11 @@ access to the udisksd daemon.
 
 %package -n %{name}-iscsi
 Summary: Module for iSCSI
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{upstream_version}-%{release}
 License: LGPLv2+
 Requires: iscsi-initiator-utils
 BuildRequires: iscsi-initiator-utils-devel
-Provides:  storaged-iscsi = %{version}-%{release}
+Provides:  storaged-iscsi = %{upstream_version}-%{release}
 Obsoletes: storaged-iscsi
 
 %description -n %{name}-iscsi
@@ -179,13 +183,13 @@ This package contains module for iSCSI configuration.
 
 %package -n %{name}-lvm2
 Summary: Module for LVM2
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{upstream_version}-%{release}
 License: LGPLv2+
 Requires: lvm2
 Requires: libblockdev-lvm >= %{libblockdev_version}
 BuildRequires: lvm2-devel
 BuildRequires: libblockdev-lvm-devel >= %{libblockdev_version}
-Provides:  storaged-lvm2 = %{version}-%{release}
+Provides:  storaged-lvm2 = %{upstream_version}-%{release}
 Obsoletes: storaged-lvm2
 
 %description -n %{name}-lvm2
@@ -193,9 +197,9 @@ This package contains module for LVM2 configuration.
 
 %package -n lib%{name}-devel
 Summary: Development files for lib%{name}
-Requires: lib%{name}%{?_isa} = %{version}-%{release}
+Requires: lib%{name}%{?_isa} = %{upstream_version}-%{release}
 License: LGPLv2+
-Provides:  libstoraged-devel = %{version}-%{release}
+Provides:  libstoraged-devel = %{upstream_version}-%{release}
 Obsoletes: libstoraged-devel
 
 %description -n lib%{name}-devel
@@ -205,11 +209,11 @@ dynamic library, which provides access to the udisksd daemon.
 %if 0%{?with_bcache}
 %package -n %{name}-bcache
 Summary: Module for Bcache
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{upstream_version}-%{release}
 License: LGPLv2+
 Requires: libblockdev-kbd >= %{libblockdev_version}
 BuildRequires: libblockdev-kbd-devel >= %{libblockdev_version}
-Provides:  storaged-bcache = %{version}-%{release}
+Provides:  storaged-bcache = %{upstream_version}-%{release}
 Obsoletes: storaged-bcache
 
 %description -n %{name}-bcache
@@ -219,11 +223,11 @@ This package contains module for Bcache configuration.
 %if 0%{?with_btrfs}
 %package -n %{name}-btrfs
 Summary: Module for BTRFS
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{upstream_version}-%{release}
 License: LGPLv2+
 Requires: libblockdev-btrfs >= %{libblockdev_version}
 BuildRequires: libblockdev-btrfs-devel >= %{libblockdev_version}
-Provides:  storaged-btrfs = %{version}-%{release}
+Provides:  storaged-btrfs = %{upstream_version}-%{release}
 Obsoletes: storaged-btrfs
 
 %description -n %{name}-btrfs
@@ -233,12 +237,12 @@ This package contains module for BTRFS configuration.
 %if 0%{?with_lsm}
 %package -n %{name}-lsm
 Summary: Module for LSM
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{upstream_version}-%{release}
 License: LGPLv2+
 Requires: libstoragemgmt
 BuildRequires: libstoragemgmt-devel
 BuildRequires: libconfig-devel
-Provides:  storaged-lsm = %{version}-%{release}
+Provides:  storaged-lsm = %{upstream_version}-%{release}
 Obsoletes: storaged-lsm
 
 %description -n %{name}-lsm
@@ -248,13 +252,13 @@ This package contains module for LSM configuration.
 %if 0%{?with_zram}
 %package -n %{name}-zram
 Summary: Module for ZRAM
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{upstream_version}-%{release}
 License: LGPLv2+
 Requires: libblockdev-kbd >= %{libblockdev_version}
 Requires: libblockdev-swap >= %{libblockdev_version}
 BuildRequires: libblockdev-kbd-devel >= %{libblockdev_version}
 BuildRequires: libblockdev-swap-devel
-Provides:  storaged-zram = %{version}-%{release}
+Provides:  storaged-zram = %{upstream_version}-%{release}
 Obsoletes: storaged-zram
 
 %description -n %{name}-zram
@@ -262,7 +266,7 @@ This package contains module for ZRAM configuration.
 %endif
 
 %prep
-%autosetup -p1 -n udisks-%{version}
+%autosetup -p1 -n udisks-%{upstream_version}
 sed -i udisks/udisks2.conf.in -e "s/encryption=luks1/encryption=%{default_luks_encryption}/"
 rm -f src/tests/dbus-tests/config_h.py
 
