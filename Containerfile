@@ -92,6 +92,12 @@ FROM bazzite as bazzite-deck
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
+COPY system_files/deck/etc /etc
+COPY system_files/deck/usr /usr
+RUN ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
+    ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
+    ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning
+
 # Add LatencyFleX Copr
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O \
     /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo
@@ -112,12 +118,6 @@ RUN rpm-ostree override remove steamdeck-kde-themes
 
 # Remove ublue-os-wallpapers
 RUN rpm-ostree override remove ublue-os-wallpapers
-
-COPY system_files/deck/etc /etc
-COPY system_files/deck/usr /usr
-RUN ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
-    ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
-    ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning
 
 # Install patched udisks2 (Needed for SteamOS SD card mounting)
 RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite udisks2

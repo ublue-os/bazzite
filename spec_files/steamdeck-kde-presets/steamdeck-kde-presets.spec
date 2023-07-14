@@ -2,15 +2,15 @@ Name:           steamdeck-kde-presets
 Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
 Summary:        KDE Presets from Valve's SteamOS 3.0
-License:    	GPLv2
+License:        GPLv2
 URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz
 BuildArch:      noarch
 
-Requires:		kde-filesystem
+Requires:       kde-filesystem
 
-Conflicts:  	steamdeck-kde-themes
+Conflicts:      steamdeck-kde-themes
 
 %description
 KDE Presets from Valve's SteamOS 3.0

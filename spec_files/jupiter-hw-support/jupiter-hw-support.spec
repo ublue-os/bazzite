@@ -2,7 +2,7 @@ Name:           jupiter-hw-support
 Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
 Summary:        Steam Deck Hardware Support Package
-License:    	MIT
+License:        MIT
 URL:            https://github.com/ublue-os/bazzite
 
 Source:        	https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz

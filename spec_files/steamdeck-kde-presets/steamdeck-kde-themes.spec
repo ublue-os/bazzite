@@ -3,15 +3,15 @@ Name:           steamdeck-kde-themes
 Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
 Summary:        KDE Themes from Valve's SteamOS 3.0
-License:    	GPLv2
+License:        GPLv2
 URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/master/%{packagename}-master.tar.gz
 BuildArch:      noarch
 
-Requires:		kde-filesystem
+Requires:       kde-filesystem
 
-Conflicts:  	steamdeck-kde-presets
+Conflicts:      steamdeck-kde-presets
 
 %description
 KDE Themes from Valve's SteamOS 3.0

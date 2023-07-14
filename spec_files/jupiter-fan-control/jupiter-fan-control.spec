@@ -2,7 +2,7 @@ Name:           jupiter-fan-control
 Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
 Summary:        Steam Deck Fan Controller
-License:    	MIT
+License:        MIT
 URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/%{name}/-/archive/main/%{name}-main.tar.gz
@@ -10,7 +10,7 @@ BuildArch:      noarch
 
 Patch0:         fedora.patch
 
-Requires:		python3
+Requires:       python3
 
 BuildRequires:  systemd-rpm-macros
 
