@@ -16,6 +16,9 @@ install-corectrl:
 install-nix:
   curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
 
+remove-nix:
+  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | bash
+
 get-greenlight:
   echo 'Retrieving Greenlight'
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta8/Greenlight-2.0.0-beta8.AppImage -O ~/Desktop/Greenlight.AppImage
@@ -57,7 +60,7 @@ zram-off:
 resize-zram:
   #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
-  CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/zram-size=//')
+  CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/zram-size=//g')
   echo 'Current size: '${CURRENT_SIZE}
   read -p 'Enter new size (512-4096) in megabytes (1024): ' NEW_SIZE
   if [ -z "${NEW_SIZE//[0-9]}" ]; then

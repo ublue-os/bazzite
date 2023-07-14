@@ -7,7 +7,7 @@ enable-plasma-autologin:
   systemctl enable --now plasma-autologin
 
 set-steamos-kargs:
-  rpm-ostree kargs --append="amd_pstate=active" --append="amd_iommu=off" --append="amdgpu.gttsize=8128" --append="spi_amd.speed_dev=1"
+  rpm-ostree kargs --append="amd_pstate=active" --append="amd_iommu=off" --append="amdgpu.gttsize=8128" --append="spi_amd.speed_dev=1" --delete-if-present="nomodeset"
 
 create-steam-shortcuts:
   cp /usr/share/applications/steam.desktop ~/Desktop
@@ -24,13 +24,18 @@ get-emudeck:
 install-nix:
   curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
 
+remove-nix:
+  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | bash
+
 get-greenlight:
   echo 'Retrieving Greenlight'
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta8/Greenlight-2.0.0-beta8.AppImage -O ~/Desktop/Greenlight.AppImage
   chmod +x ~/Desktop/Greenlight.AppImage
 
-get-chiaki
-  flatpak install --noninteractive $(curl -s https://api.github.com/repos/streetpea/chiaki4deck/releases/latest | jq -r .assets[1].browser_download_url)
+get-chiaki:
+  flatpak install \
+    $(curl -s https://api.github.com/repos/streetpea/chiaki4deck/releases/latest | \
+    jq -r ".assets[] | select(.name | test(\"flatpakref\")) | .browser_download_url")
 
 enable-wallpaper-engine:
   git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --single-branch /tmp/wallpaper-engine-kde-plugin
@@ -60,7 +65,7 @@ deckswap-off:
 resize-deckswap:
   #!/usr/bin/env bash
   CONFIG='/etc/default/deckswap'
-  CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/SWAP_SIZE=//')
+  CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/SWAP_SIZE=//g')
   echo 'Current size: '${CURRENT_SIZE}
   read -p 'Enter new size (1-16) in gigabytes (1G): ' NEW_SIZE
   if [ -z "${NEW_SIZE//[0-9]}" ]; then
@@ -102,7 +107,7 @@ zram-off:
 resize-zram:
   #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
-  CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/zram-size=//')
+  CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/zram-size=//g')
   echo 'Current size: '${CURRENT_SIZE}
   read -p 'Enter new size (512-4096) in megabytes (1024): ' NEW_SIZE
   if [ -z "${NEW_SIZE//[0-9]}" ]; then
