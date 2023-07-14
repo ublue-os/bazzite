@@ -44,6 +44,7 @@ RUN rpm-ostree install \
     libobs_glcapture \
     libobs_vkcapture \
     obs-vkcapture \
+    lzip \
     btop \
     fish
 
