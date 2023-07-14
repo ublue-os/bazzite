@@ -10,7 +10,7 @@ install-bazzite-arch:
   fi
 
 install-corectrl:
-  rpm-ostree intall corectrl
+  rpm-ostree install corectrl
   rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
 
 install-nix:
