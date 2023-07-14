@@ -13,6 +13,7 @@ Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/l
 Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/format-device.sh.patch
 Patch4:         user.patch
 Patch5:         bazzite-btrfs.patch
+Patch6:         systemd-run.patch
 
 Requires:       python3
 Requires:       python3-libevdev
