@@ -126,6 +126,7 @@ RUN rpm-ostree install \
 # Install new packages
 RUN rpm-ostree install \
     steam \
+    lutris \
     gamescope \
     gamescope-session \
     jupiter-fan-control \

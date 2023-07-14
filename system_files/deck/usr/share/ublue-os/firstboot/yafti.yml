@@ -34,7 +34,6 @@ screens:
           description: Core Applications
           default: true
           packages:
-          - Lutris: net.lutris.Lutris
           - MangoHud (Flatpak): org.freedesktop.Platform.VulkanLayer.MangoHud//22.08
           - Mozilla Firefox: org.mozilla.firefox
           - Protontricks: com.github.Matoking.protontricks
