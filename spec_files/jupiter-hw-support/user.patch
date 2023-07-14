@@ -1,0 +1,13 @@
+diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
+index fb38b92..0eddd30 100755
+--- a/usr/lib/hwsupport/steamos-automount.sh
++++ b/usr/lib/hwsupport/steamos-automount.sh
+@@ -146,7 +146,7 @@ do_mount()
+                 /org/freedesktop/UDisks2/block_devices/"${DEVBASE}"                                \
+                 org.freedesktop.UDisks2.Filesystem                                                 \
+                 Mount 'a{sv}' 4                                                                    \
+-                  as-user s deck                                                                   \
++                  as-user s $(ls /home)                                                            \
+                   auth.no_user_interaction b true                                                  \
+                   fstype                   s "$FSTYPE"                                             \
+                   options                  s "$OPTS") || ret=$?

@@ -149,11 +149,6 @@ screens:
           default: true
           packages:
           - Enable Autostart: cp ~/usr/share/applications/steam.desktop ~/.config/autostart/steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/steam-silent.desktop
-        Create Deck User:
-          description: Creates the "deck" user and group needed for mounting SD cards.
-          default: true
-          packages:
-          - User Setup: just create-deck-user
         Decky Loader:
           description: A plugin loader for the Steam Deck
           default: false

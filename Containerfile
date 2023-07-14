@@ -119,6 +119,9 @@ RUN ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning
 
+# Install patched udisks2 (Needed for SteamOS SD card mounting)
+RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite udisks2
+
 # Install mesa-va-drivers shim (Needed due to dependency issues in Steam package)
 RUN rpm-ostree install \
     mesa-va-drivers

@@ -1,0 +1,74 @@
+From d205057296957d6064825252a3d3377e809d6fed Mon Sep 17 00:00:00 2001
+From: Tomas Bzatek <tbzatek@redhat.com>
+Date: Wed, 6 Oct 2021 17:12:13 +0200
+Subject: [PATCH] udiskslinuxmountoptions: Do not free static daemon resources
+
+The GResource instance returned from udisks_daemon_resources_get_resource()
+that calls g_static_resource_get_resource() internally is marked as
+'(transfer none)' and should not be freed. In fact that causes double
+free inside the g_static_resource_fini() atexit handler leading
+to memory corruption causing random failures of further atexit
+handlers such as cryptsetup and openssl destructors.
+
+ Invalid read of size 4
+    at 0x4BB03A4: g_resource_unref (gresource.c:527)
+    by 0x4BB2150: g_static_resource_fini (gresource.c:1449)
+    by 0x4010ADB: _dl_fini (dl-fini.c:139)
+    by 0x4EF0DF4: __run_exit_handlers (exit.c:113)
+    by 0x4EF0F6F: exit (exit.c:143)
+    by 0x4ED9566: __libc_start_call_main (libc_start_call_main.h:74)
+    by 0x4ED960B: __libc_start_main@@GLIBC_2.34 (libc-start.c:409)
+    by 0x128774: (below main) (in udisks/src/.libs/udisksd)
+  Address 0x5cc5fc0 is 0 bytes inside a block of size 16 free'd
+    at 0x48430E4: free (vg_replace_malloc.c:755)
+    by 0x4DB10BC: g_free (gmem.c:199)
+    by 0x4BB2148: g_static_resource_fini (gresource.c:1448)
+    by 0x4010ADB: _dl_fini (dl-fini.c:139)
+    by 0x4EF0DF4: __run_exit_handlers (exit.c:113)
+    by 0x4EF0F6F: exit (exit.c:143)
+    by 0x4ED9566: __libc_start_call_main (libc_start_call_main.h:74)
+    by 0x4ED960B: __libc_start_main@@GLIBC_2.34 (libc-start.c:409)
+    by 0x128774: (below main) (in udisks/src/.libs/udisksd)
+  Block was alloc'd at
+    at 0x484086F: malloc (vg_replace_malloc.c:380)
+    by 0x4DB47A8: g_malloc (gmem.c:106)
+    by 0x4BB19C7: UnknownInlinedFun (gresource.c:545)
+    by 0x4BB19C7: g_resource_new_from_data (gresource.c:613)
+    by 0x4BB1A88: register_lazy_static_resources_unlocked (gresource.c:1374)
+    by 0x4BB218C: UnknownInlinedFun (gresource.c:1393)
+    by 0x4BB218C: UnknownInlinedFun (gresource.c:1387)
+    by 0x4BB218C: g_static_resource_get_resource (gresource.c:1472)
+    by 0x14F6A3: UnknownInlinedFun (udisks-daemon-resources.c:284)
+    by 0x14F6A3: udisks_linux_mount_options_get_builtin (udiskslinuxmountoptions.c:612)
+    by 0x12CC6E: udisks_daemon_constructed (udisksdaemon.c:441)
+    by 0x4D1ED96: g_object_new_internal (gobject.c:1985)
+    by 0x4D20227: g_object_new_valist (gobject.c:2288)
+    by 0x4D2075C: g_object_new (gobject.c:1788)
+    by 0x129A5F: udisks_daemon_new (udisksdaemon.c:619)
+    by 0x129AD5: on_bus_acquired (main.c:63)
+    by 0x4C35C95: connection_get_cb.lto_priv.0 (gdbusnameowning.c:504)
+    by 0x4BD3F99: g_task_return_now (gtask.c:1219)
+    by 0x4BD419A: UnknownInlinedFun (gtask.c:1289)
+    by 0x4BD419A: g_task_return (gtask.c:1245)
+    by 0x4C31D51: bus_get_async_initable_cb (gdbusconnection.c:7433)
+    by 0x4BD3F99: g_task_return_now (gtask.c:1219)
+    by 0x4BD3FDC: complete_in_idle_cb (gtask.c:1233)
+    by 0x4DA852A: g_idle_dispatch (gmain.c:5897)
+    by 0x4DAC33E: UnknownInlinedFun (gmain.c:3381)
+    by 0x4DAC33E: g_main_context_dispatch (gmain.c:4099)
+---
+ src/udiskslinuxmountoptions.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/udiskslinuxmountoptions.c b/src/udiskslinuxmountoptions.c
+index 7729d4015..819c9ba96 100644
+--- a/src/udiskslinuxmountoptions.c
++++ b/src/udiskslinuxmountoptions.c
+@@ -614,7 +614,6 @@ udisks_linux_mount_options_get_builtin (void)
+                                                "/org/freedesktop/UDisks2/data/builtin_mount_options.conf",
+                                                G_RESOURCE_LOOKUP_FLAGS_NONE,
+                                                &error);
+-  g_resource_unref (daemon_resource);
+ 
+   if (builtin_opts_bytes == NULL)
+     {
