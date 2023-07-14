@@ -1,0 +1,10 @@
+[Unit]
+Description=Enables autologin to Plasma (X11)
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/plasma-autologin
+
+[Install]
+WantedBy=multi-user.target

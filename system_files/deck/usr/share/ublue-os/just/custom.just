@@ -1,3 +1,11 @@
+enable-gamescope-autologin:
+  systemctl disable --now plasma-autologin
+  systemctl enable --now gamescope-autologin
+
+enable-plasma-autologin:
+  systemctl disable --now gamescope-autologin
+  systemctl enable --now plasma-autologin
+
 set-steamos-kargs:
   rpm-ostree kargs --append="amd_pstate=active" --append="amd_iommu=off" --append="amdgpu.gttsize=8128" --append="spi_amd.speed_dev=1"
 
