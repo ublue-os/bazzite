@@ -98,9 +98,9 @@ RUN ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning
 
-# Add LatencyFleX Copr
-RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O \
-    /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo
+# Add LatencyFleX and MangoApp Copr repos
+RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/kylegospo/mangohud/repo/fedora-$(rpm -E %fedora)/kylegospo-mangohud-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-mangohud.repo
 
 # Re-enable Copr repos
 RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
@@ -157,6 +157,7 @@ RUN sed -i 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/g' /etc/systemd/lo
 # Cleanup & Finalize
 RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-mangohud.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
