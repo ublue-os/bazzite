@@ -44,6 +44,7 @@ RUN rpm-ostree install \
     libobs_vkcapture \
     obs-vkcapture \
     btop \
+    neofetch \
     fish
 
 # Remove unneeded packages
