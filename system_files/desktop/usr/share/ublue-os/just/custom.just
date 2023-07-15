@@ -12,9 +12,9 @@ install-bazzite-arch:
 configure-waydroid:
   git clone https://github.com/casualsnek/waydroid_script
   cd waydroid_script
-  sudo pip install -r requirements.txt
+  sudo pip install --user -r requirements.txt
   sudo ./main.py
-  sudo pip uninstall -r requirements.txt
+  sudo pip uninstall --user -r requirements.txt
   cd ..
   rm -rf waydroid_script
 
