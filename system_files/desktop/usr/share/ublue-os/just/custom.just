@@ -16,7 +16,7 @@ configure-waydroid:
   sudo pip install --user -r ${SCRIPT}/requirements.txt
   sudo ${SCRIPT}/main.py
   sudo pip uninstall --user -r ${SCRIPT}/requirements.txt
-  rm -rf ${SCRIPT}/waydroid_script
+  rm -rf ${SCRIPT}
 
 install-corectrl:
   rpm-ostree intall corectrl
