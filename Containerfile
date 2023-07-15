@@ -33,6 +33,8 @@ RUN rpm-ostree install \
     libadwaita \
     distrobox \
     waydroid \
+    lzip \
+    weston \
     steamdeck-kde-themes \
     sddm-sugar-steamOS \
     wallpaper-engine-kde-plugin \
@@ -44,7 +46,6 @@ RUN rpm-ostree install \
     libobs_glcapture \
     libobs_vkcapture \
     obs-vkcapture \
-    lzip \
     btop \
     fish
 
