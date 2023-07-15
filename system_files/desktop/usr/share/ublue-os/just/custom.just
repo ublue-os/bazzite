@@ -10,13 +10,13 @@ install-bazzite-arch:
   fi
 
 configure-waydroid:
-  git clone https://github.com/casualsnek/waydroid_script
-  cd waydroid_script
-  sudo pip install --user -r requirements.txt
-  sudo ./main.py
-  sudo pip uninstall --user -r requirements.txt
-  cd ..
-  rm -rf waydroid_script
+  #!/usr/bin/env bash
+  SCRIPT='/tmp/waydroid_script'
+  git clone https://github.com/casualsnek/waydroid_script ${SCRIPT}
+  sudo pip install --user -r ${SCRIPT}/requirements.txt
+  sudo ${SCRIPT}/main.py
+  sudo pip uninstall --user -r ${SCRIPT}/requirements.txt
+  rm -rf ${SCRIPT}/waydroid_script
 
 install-corectrl:
   rpm-ostree intall corectrl
