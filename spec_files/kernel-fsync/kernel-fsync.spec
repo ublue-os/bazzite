@@ -31,7 +31,7 @@ Provides: kernel-headers%{_isa} = %{version}-%{release}
 Provides: kernel-modules%{_isa} = %{version}-%{release}
 Provides: kernel-modules-extra%{_isa} = %{version}-%{release}
 
-Requires: kernel-fsync
+Requires: kernel
 
 %description
 The linux-fsync kernel for Bazzite
