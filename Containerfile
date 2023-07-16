@@ -31,7 +31,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
 # Install kernel-fsync
 RUN wget https://download.copr.fedorainfracloud.org/results/eyecantcu/bazzite/fedora-38-x86_64/06175995-kernel/kernel-20380119-1.x86_64.rpm -P /tmp && \
     rpm-ostree cliwrap install-to-root / && \
-    rpm-ostree override replace /tmp/kernel*.rpm \
+    rpm-ostree override --experimental replace /tmp/kernel*.rpm \
         --remove=kernel \
         --remove=kernel-core \
         --remove=kernel-modules \
