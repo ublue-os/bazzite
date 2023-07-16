@@ -29,25 +29,25 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo
 
 # Install kernel-fsync
-RUN rpm-ostree cliwrap install-to-root / && \
-    rpm-ostree override --experimental replace \
-        kernel \
-        kernel-core
-        kernel-modules \
-        kernel-modules-core \
-        kernel-modules-extra \
-        kernel-devel \
-        kernel-devel-matched \
-        kernel-headers \
-        --replace \
-        kernel \
-        kernel-core
-        kernel-modules \
-        kernel-modules-core \
-        kernel-modules-extra \
-        kernel-devel \
-        kernel-devel-matched \
-        kernel-headers \
+RUN wget https://download.copr.fedorainfracloud.org/results/eyecantcu/bazzite/fedora-38-x86_64/06175969-kernel/kernel-20380119-1.x86_64.rpm -P /tmp && \
+    rpm-ostree cliwrap install-to-root / && \
+    rpm-ostree override replace /tmp/kernel*.rpm \
+        --remove=kernel \
+        --remove=kernel-core
+        --remove=kernel-modules \
+        --remove=kernel-modules-core \
+        --remove=kernel-modules-extra \
+        --remove=kernel-devel \
+        --remove=kernel-devel-matched \
+        --remove=kernel-headers \
+        --install=kernel \
+        --install=kernel-core
+        --install=kernel-modules \
+        --install=kernel-modules-core \
+        --install=kernel-modules-extra \
+        --install=kernel-devel \
+        --install=kernel-devel-matched \
+        --install=kernel-headers \
         --from repo='copr:copr.fedorainfracloud.org:sentry:kernel-fsync'
 
 # Install new packages
