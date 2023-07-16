@@ -1,0 +1,8 @@
+[bazzite-arch]
+image=ghcr.io/ublue-os/bazzite-arch
+init=false
+nvidia=true
+pull=true
+root=false
+replace=false
+start_now=true

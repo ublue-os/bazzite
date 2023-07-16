@@ -3,10 +3,10 @@ install-bazzite-arch:
   KARGS=$(rpm-ostree kargs)
   if grep 'nvidia' <<< ${KARGS}; then
     echo 'Installing Bazzite Arch (Nvidia)...'
-    yes | distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch --nvidia
+    distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch-nvidia
   else
     echo 'Installing Bazzite Arch...'
-    yes | distrobox create -i ghcr.io/ublue-os/bazzite-arch -n bazzite-arch
+    distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch
   fi
 
 install-corectrl:
