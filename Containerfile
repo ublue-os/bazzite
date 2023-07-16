@@ -29,20 +29,8 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nobara/repo/fedora-$(rpm -E %fedora)/gloriouseggroll-nobara-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_gloriouseggroll-nobara.repo
 
 # Install kernel-fsync
-COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms/kmods/ /tmp/kmods
-RUN  wget https://download.copr.fedorainfracloud.org/results/eyecantcu/bazzite/fedora-38-x86_64/06175995-kernel/kernel-20380119-1.x86_64.rpm -P /tmp && \
-    rpm-ostree cliwrap install-to-root / && \
-    rpm-ostree override --experimental replace /tmp/kernel*.rpm \
-        --remove=kernel \
-        --remove=kernel-core \
-        --remove=kernel-modules \
-        --remove=kernel-modules-core \
-        --remove=kernel-modules-extra \
-        --remove=kernel-devel \
-        --remove=kernel-devel-matched \
-        --remove=kernel-headers \
-        --install=kernel \
-        --install=/tmp/kmods/*.rpm
+RUN rpm-ostree cliwrap install-to-root / && \
+    rpm-ostree override --experimental replace kernel \
         --from repo='copr:copr.fedorainfracloud.org:gloriouseggroll:nobara'
 
 # Install new packages
