@@ -29,7 +29,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo
 
 # Install kernel-fsync
-RUN wget https://download.copr.fedorainfracloud.org/results/eyecantcu/bazzite/fedora-38-x86_64/06175969-kernel/kernel-20380119-1.x86_64.rpm -P /tmp && \
+RUN wget https://download.copr.fedorainfracloud.org/results/eyecantcu/bazzite/fedora-38-x86_64/06175995-kernel/kernel-20380119-1.x86_64.rpm -P /tmp && \
     rpm-ostree cliwrap install-to-root / && \
     rpm-ostree override replace /tmp/kernel*.rpm \
         --remove=kernel \
