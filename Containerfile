@@ -26,12 +26,12 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/hl2linux-selinux/repo/fedora-$(rpm -E %fedora)/kylegospo-hl2linux-selinux-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/repo/fedora-$(rpm -E %fedora)/kylegospo-obs-vkcapture-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/repo/fedora-$(rpm -E %fedora)/kylegospo-wallpaper-engine-kde-plugin-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
-    wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nobara/repo/fedora-$(rpm -E %fedora)/gloriouseggroll-nobara-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_gloriouseggroll-nobara.repo
+    wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo
 
 # Install kernel-fsync
 RUN rpm-ostree cliwrap install-to-root / && \
     rpm-ostree override --experimental replace kernel \
-        --from repo='copr:copr.fedorainfracloud.org:gloriouseggroll:nobara'
+        --from repo='copr:copr.fedorainfracloud.org:sentry:kernel-fsync'
 
 # Install new packages
 RUN rpm-ostree install \
