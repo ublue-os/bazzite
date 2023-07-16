@@ -33,7 +33,7 @@ RUN wget https://download.copr.fedorainfracloud.org/results/eyecantcu/bazzite/fe
     rpm-ostree cliwrap install-to-root / && \
     rpm-ostree override replace /tmp/kernel*.rpm \
         --remove=kernel \
-        --remove=kernel-core
+        --remove=kernel-core \
         --remove=kernel-modules \
         --remove=kernel-modules-core \
         --remove=kernel-modules-extra \
@@ -41,13 +41,6 @@ RUN wget https://download.copr.fedorainfracloud.org/results/eyecantcu/bazzite/fe
         --remove=kernel-devel-matched \
         --remove=kernel-headers \
         --install=kernel \
-        --install=kernel-core
-        --install=kernel-modules \
-        --install=kernel-modules-core \
-        --install=kernel-modules-extra \
-        --install=kernel-devel \
-        --install=kernel-devel-matched \
-        --install=kernel-headers \
         --from repo='copr:copr.fedorainfracloud.org:sentry:kernel-fsync'
 
 # Install new packages
