@@ -9,6 +9,7 @@ Source:         https://gitlab.com/evlaV/%{name}/-/archive/main/%{name}-main.tar
 BuildArch:      noarch
 
 Patch0:         fedora.patch
+Patch1:         driver_name.patch
 
 Requires:       python3
 
@@ -23,6 +24,7 @@ SteamOS 3.0 Steam Deck Fan Controller
 %prep
 %setup -n %{name}-main
 %patch 0 -p0
+%patch 1 -p1
 
 %build
 
