@@ -15,10 +15,13 @@ COPY system_files/desktop/usr /usr
 # Add ublue packages
 COPY --from=ghcr.io/ublue-os/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/ublue-update.noarch.rpm
 COPY --from=ghcr.io/ublue-os/bling:latest /rpms/ublue-os-wallpapers-*.noarch.rpm /tmp/rpms/ublue-os-wallpapers.rpm
+COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms/ /tmp/rpms
 RUN rpm-ostree override remove ublue-os-update-services && \
     rpm-ostree install \
     /tmp/rpms/ublue-update.noarch.rpm \
-    /tmp/rpms/ublue-os-wallpapers.rpm
+    /tmp/rpms/ublue-os-wallpapers.rpm \
+    /tmp/rpms/ublue-os/*.rpm \
+    /tmp/rpms/kmods/*.rpm
 
 # Add Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
