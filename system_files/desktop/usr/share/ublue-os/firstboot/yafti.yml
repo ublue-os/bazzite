@@ -8,7 +8,55 @@ screens:
       title: "Welcome to Bazzite (Desktop)"
       icon: "/path/to/icon"
       description: |
-        Pick some applications to get started
+        Configure your system to get started
+  configure-bazzite:
+    source: yafti.screen.package
+    values:
+      title: Configure Bazzite
+      show_terminal: true
+      package_manager: yafti.plugin.run
+      groups:
+        Bazzite Arch Distrobox:
+          description: This will install an Arch distrobox configured for gaming. Steam and Lutris will then be exported.
+          default: true
+          condition:
+            run: distrobox list | grep -v bazzite-arch
+          packages:
+          - Install Bazzite Arch: just install-bazzite-arch
+          - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
+          - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
+          - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
+          - Autostart Steam: cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
+        Automatic Duplicate File Removal:
+          description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
+          default: true
+          packages:
+          - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
+        Greenlight:
+          description: A utility for xCloud and xHome streaming
+          default: false
+          packages:
+          - Retrieve Greenlight: just get-greenlight
+        Memory Tuning:
+          description: Adjust ZRAM configuration
+          default: false
+          packages:
+          - Disable ZRAM: just zram-off
+        Nix Package Manager:
+          description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
+          default: true
+          packages:
+          - Install Nix Package Support: just install-nix
+        System76 Scheduler:
+          description: Enables System76 scheduler
+          default: true
+          packages:
+          - Enable System76 Scheduler: just enable-system76-scheduler
+        Wallpaper Engine:
+          description: Enables Wallpaper Engine
+          default: true
+          packages:
+          - Enable Wallpaper Engine: just enable-wallpaper-engine
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
@@ -133,54 +181,6 @@ screens:
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
-  configure-bazzite:
-    source: yafti.screen.package
-    values:
-      title: Configure Bazzite
-      show_terminal: true
-      package_manager: yafti.plugin.run
-      groups:
-        Bazzite Arch Distrobox:
-          description: This will install an Arch distrobox configured for gaming. Steam and Lutris will then be exported.
-          default: true
-          condition:
-            run: distrobox list | grep -v bazzite-arch
-          packages:
-          - Install Bazzite Arch: just install-bazzite-arch
-          - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
-          - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
-          - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
-          - Autostart Steam: cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
-        Automatic Duplicate File Removal:
-          description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
-          default: true
-          packages:
-          - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
-        Greenlight:
-          description: A utility for xCloud and xHome streaming
-          default: false
-          packages:
-          - Retrieve Greenlight: just get-greenlight
-        Memory Tuning:
-          description: Adjust ZRAM configuration
-          default: false
-          packages:
-          - Disable ZRAM: just zram-off
-        Nix Package Manager:
-          descrption: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
-          default: true
-          packages:
-          - Install Nix Package Support: just install-nix
-        System76 Scheduler:
-          description: Enables System76 scheduler
-          default: true
-          packages:
-          - Enable System76 Scheduler: just enable-system76-scheduler
-        Wallpaper Engine:
-          description: Enables Wallpaper Engine
-          default: true
-          packages:
-          - Enable Wallpaper Engine: just enable-wallpaper-engine
   final-screen:
     source: yafti.screen.title
     values:
