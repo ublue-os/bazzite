@@ -46,7 +46,7 @@ screens:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: true
           packages:
-          - Install Nix Package Support: just install-nix
+          - Install Nix Package Support: guisu just install-nix
         System76 Scheduler:
           description: Enables System76 scheduler
           default: true
