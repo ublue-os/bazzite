@@ -8,7 +8,76 @@ screens:
       title: "Welcome to Bazzite (Steam Deck)"
       icon: "/path/to/icon"
       description: |
-        Pick some applications to get started
+        Configure your system to get started
+  configure-bazzite:
+    source: yafti.screen.package
+    values:
+      title: Configure Bazzite
+      show_terminal: true
+      package_manager: yafti.plugin.run
+      groups:
+        Automatic Duplicate File Removal:
+          description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
+          default: true
+          packages:
+          - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
+        Autostart Steam:
+          description: Launches Steam automatically on the desktop
+          default: true
+          packages:
+          - Enable Autostart: cp ~/usr/share/applications/steam.desktop ~/.config/autostart/steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/steam-silent.desktop
+        Decky Loader:
+          description: A plugin loader for the Steam Deck
+          default: false
+          packages:
+          - Retrieve Decky: just get-decky
+        EmuDeck:
+          description: |
+            A utility for installing and configuring emulators on the Steam Deck
+          default: false
+          packages:
+          - Retrieve EmuDeck: just get-emudeck
+        Gamescope Autologin:
+          description: Autologin to Gamescope Session
+          default: true
+          packages:
+          - Enable Gamescope Autologin: just enable-gamescope-autologin
+        Greenlight:
+          description: A utility for xCloud and xHome streaming
+          default: false
+          packages:
+          - Retrieve Greenlight: just get-greenlight
+        Kernel Arguments:
+          description: Sets kernel arguments used in SteamOS
+          default: true
+          packages:
+          - Set kargs: just set-steamos-kargs
+        Memory Tuning:
+          description: Adjust ZRAM and configure deckswap
+          default: false
+          packages:
+          - Deck Swap: just swap-on
+          - Disable ZRAM: just zram-off
+        Nix Package Manager:
+          description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
+          default: true
+          packages:
+          - Install Nix Package Support: guisu just install-nix
+        SteamDeckGyroDSU:
+          description: Allows emulators and other applications to receive Steam Deck gyro motion data
+          default: true
+          packages:
+          - Enable SDGyroDSU Service: systemctl --user enable --now sdgyrodsu
+        Steam Desktop Shortcuts:
+          description: Creates Steam desktop shortcuts
+          default: true
+          packages:
+          - Create Steam shortcuts: just create-steam-shortcuts
+        Wallpaper Engine:
+          description: Enables Wallpaper Engine
+          default: true
+          packages:
+          - Enable Wallpaper Engine: just enable-wallpaper-engine
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
@@ -132,75 +201,6 @@ screens:
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
-  configure-bazzite:
-    source: yafti.screen.package
-    values:
-      title: Configure Bazzite
-      show_terminal: true
-      package_manager: yafti.plugin.run
-      groups:
-        Automatic Duplicate File Removal:
-          description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
-          default: true
-          packages:
-          - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
-        Autostart Steam:
-          description: Launches Steam automatically on the desktop
-          default: true
-          packages:
-          - Enable Autostart: cp ~/usr/share/applications/steam.desktop ~/.config/autostart/steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/steam-silent.desktop
-        Decky Loader:
-          description: A plugin loader for the Steam Deck
-          default: false
-          packages:
-          - Retrieve Decky: just get-decky
-        EmuDeck:
-          description: |
-            A utility for installing and configuring emulators on the Steam Deck
-          default: false
-          packages:
-          - Retrieve EmuDeck: just get-emudeck
-        Gamescope Autologin:
-          description: Autologin to Gamescope Session
-          default: true
-          packages:
-          - Enable Gamescope Autologin: just enable-gamescope-autologin
-        Greenlight:
-          description: A utility for xCloud and xHome streaming
-          default: false
-          packages:
-          - Retrieve Greenlight: just get-greenlight
-        Kernel Arguments:
-          description: Sets kernel arguments used in SteamOS
-          default: true
-          packages:
-          - Set kargs: just set-steamos-kargs
-        Memory Tuning:
-          description: Adjust ZRAM and configure deckswap
-          default: false
-          packages:
-          - Deck Swap: just swap-on
-          - Disable ZRAM: just zram-off
-        Nix Package Manager:
-          description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
-          default: true
-          packages:
-          - Install Nix Package Support: just install-nix
-        SteamDeckGyroDSU:
-          description: Allows emulators and other applications to receive Steam Deck gyro motion data
-          default: true
-          packages:
-          - Enable SDGyroDSU Service: systemctl --user enable --now sdgyrodsu
-        Steam Desktop Shortcuts:
-          description: Creates Steam desktop shortcuts
-          default: true
-          packages:
-          - Create Steam shortcuts: just create-steam-shortcuts
-        Wallpaper Engine:
-          description: Enables Wallpaper Engine
-          default: true
-          packages:
-          - Enable Wallpaper Engine: just enable-wallpaper-engine
   final-screen:
     source: yafti.screen.title
     values:

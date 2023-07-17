@@ -1,5 +1,5 @@
 install-bazzite-arch:
-  #!/usr/bash/env bash
+  #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
   if grep 'nvidia' <<< ${KARGS}; then
     echo 'Installing Bazzite Arch (Nvidia)...'
