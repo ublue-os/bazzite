@@ -1,4 +1,6 @@
-![Bazzite](/repo_content/logo.png?raw=true "Bazzite")
+<p align="center">
+  <img src="/repo_content/logo.png?raw=true" alt="Bazzite"/>
+</p>
 # Bazzite
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
