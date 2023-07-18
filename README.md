@@ -1,4 +1,4 @@
-![Bazzite](/system_files/desktop/usr/share/ublue-os/bazzite/logo.png?raw=true "Bazzite")
+![Bazzite](/repo_content/logo.png?raw=true "Bazzite")
 # Bazzite
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
