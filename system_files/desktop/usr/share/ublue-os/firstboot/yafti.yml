@@ -22,7 +22,7 @@ screens:
           condition:
             run: distrobox list | grep -v bazzite-arch
           packages:
-          - Install Bazzite Arch: just --unstable install-bazzite-arch
+          - Install Bazzite Arch: just install-bazzite-arch
           - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
           - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
           - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
@@ -32,38 +32,31 @@ screens:
           default: true
           packages:
           - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
-        CoreCtrl:
-          description: AMD GPU Overclocking
-          condition:
-            run: grep -v "nvidia" <<< $(rpm-ostree status)
-          default: false
-          packages:
-          - Install CoreCtrl: just --unstable install-corectrl
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
           packages:
-          - Retrieve Greenlight: just --unstable get-greenlight
+          - Retrieve Greenlight: just get-greenlight
         Memory Tuning:
           description: Adjust ZRAM configuration
           default: false
           packages:
-          - Disable ZRAM: just --unstable zram-off
+          - Disable ZRAM: just zram-off
         Nix Package Manager:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: true
           packages:
-          - Install Nix Package Support: just --unstable install-nix
+          - Install Nix Package Support: guisu just install-nix
         System76 Scheduler:
           description: Enables System76 scheduler
           default: true
           packages:
-          - Enable System76 Scheduler: just --unstable enable-system76-scheduler
+          - Enable System76 Scheduler: just enable-system76-scheduler
         Wallpaper Engine:
           description: Enables Wallpaper Engine
           default: true
           packages:
-          - Enable Wallpaper Engine: just --unstable enable-wallpaper-engine
+          - Enable Wallpaper Engine: just enable-wallpaper-engine
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
@@ -106,21 +99,33 @@ screens:
           description: "Rock and Stone!"
           default: false
           packages:
+          - Athenaeum (Free and Open Source Game Client): com.gitlab.librebob.Athenaeum
           - Bottles: com.usebottles.bottles
+          - Cartridges: hu.kramo.Cartridges
           - Chiaki (PlayStation Remote Play): re.chiaki.Chiaki
           - Discord: com.discordapp.Discord
+          - DOSBox Staging: io.github.dosbox-staging 
           - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
           - itch: io.itch.itch
+          - ludusavi (Game Save Backup): com.github.mtkennerly.ludusavi
           - Minecraft (Prism Launcher): org.prismlauncher.PrismLauncher
           - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
           - Moonlight: com.moonlight_stream.Moonlight
           - Mumble: info.mumble.Mumble
           - OpenMW: org.openmw.OpenMW
+          - OpenRGB: org.openrgb.OpenRGB
+          - osu: sh.ppy.osu
+          - Parsec: com.parsecgaming.parsec
+          - Pegasus: org.pegasus_frontend.Pegasus
+          - Space Cadet Pinball: com.github.k4zmu2a.spacecadetpinball
+          - Sonic Robo Blast 2: org.srb2.SRB2
           - Steam Link: com.valvesoftware.SteamLink
           - SuperTux: org.supertuxproject.SuperTux
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
+          - SysDVR-Qt: io.github.parnassius.SysDVR-Qt
           - TeamSpeak: com.teamspeak.TeamSpeak
+          - Webcord (Discord Web Client): io.github.spacingbat3.webcord
         Emulation:
           description: Play games like it's 1972
           default: false
@@ -141,6 +146,7 @@ screens:
           - Ryujinx: org.ryujinx.Ryujinx
           - ScummVM: org.scummvm.ScummVM
           - Snes9x: om.snes9x.Snes9x
+          - Stella: io.github.stella_emu.Stella
           - xemu: app.xemu.xemu
           - yuzu: org.yuzu_emu.yuzu
         Streaming:
@@ -157,19 +163,29 @@ screens:
           description: "Rock and Roll!"
           default: false
           packages:
+          - Cider (Apple Music Client): sh.cider.Cider
           - Spotify: com.spotify.Client
           - Strawberry Music Player: org.strawberrymusicplayer.strawberry
           - Tidal-hifi: com.mastermindzh.tidal-hifi
-        Office:
+        Office/Productivity:
           description: Bow to Capitalism
           default: false
           packages:
+          - Ardour: org.ardour.Ardour
+          - Blender: org.blender.Blender
+          - darktable: org.darktable.Darktable
+          - Inkscape: org.inkscape.Inkscape
           - Joplin: net.cozic.joplin_desktop
+          - Kdenlive: org.kde.kdenlive
+          - Krita: org.ardour.Ardour
           - LibreOffice: org.libreoffice.LibreOffice
+          - LMMS: io.lmms.LMMS
+          - Notepad Next: com.github.dail8859.NotepadNext
           - Obsidian: md.obsidian.Obsidian
           - OnlyOffice: org.onlyoffice.desktopeditors
           - Slack: com.slack.Slack
           - Standard Notes: org.standardnotes.standardnotes
+          - Tenacity: org.tenacityaudio.Tenacity
           - Thunderbird Email: org.mozilla.Thunderbird
           - Xournal++: flathub com.github.xournalpp.xournalpp
         Utilities:
@@ -178,15 +194,21 @@ screens:
           packages:
           - Barrier: com.github.debauchee.barrier
           - Bitwarden: com.bitwarden.desktop
+          - Boxes (Virtual Machine Software): org.gnome.Boxes
           - Calibre: com.calibre_ebook.calibre
+          - CoreCtrl (AMD GPU Overclocking): just install-corectrl
+          - Disk Usage Analyzer: org.gnome.baobab
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
           - GIMP: org.gimp.GIMP
           - GreenWithEnvy (Nvidia GPU Overclocking): com.leinardi.gwe
+          - GTKStressTesting: com.leinardi.gst
           - KeePassXC: org.keepassxc.KeePassXC
+          - Logs: org.gnome.Logs
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
+          - Warpinator: org.x.Warpinator
   final-screen:
     source: yafti.screen.title
     values:
