@@ -32,6 +32,13 @@ screens:
           default: true
           packages:
           - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
+        CoreCtrl:
+          description: AMD GPU Overclocking
+          condition:
+            run: grep -v "nvidia" <<< $(rpm-ostree status)
+          default: false
+          packages:
+          - Install CoreCtrl: just --unstable install-corectrl
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
@@ -172,7 +179,6 @@ screens:
           - Barrier: com.github.debauchee.barrier
           - Bitwarden: com.bitwarden.desktop
           - Calibre: com.calibre_ebook.calibre
-          - CoreCtrl (AMD GPU Overclocking): just --unstable install-corectrl
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
           - GIMP: org.gimp.GIMP
