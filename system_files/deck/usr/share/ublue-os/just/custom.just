@@ -34,6 +34,13 @@ get-greenlight:
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta8/Greenlight-2.0.0-beta8.AppImage -O ~/Desktop/Greenlight.AppImage
   chmod +x ~/Desktop/Greenlight.AppImage
 
+get-boilr:
+  wget \
+    $(curl -s https://api.github.com/repos/PhilipK/BoilR/releases/latest | \
+    jq -r ".assets[] | select(.name | test(\"linux_BoilR\")) | .browser_download_url") \
+    -O ~/Desktop/BoilR
+  chmod +x ~/Desktop/BoilR
+
 get-chiaki:
   flatpak install \
     $(curl -s https://api.github.com/repos/streetpea/chiaki4deck/releases/latest | \
