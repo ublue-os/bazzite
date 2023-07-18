@@ -28,7 +28,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Nix package manager, matching evidence in SteamOS 3.5 of this potentially being available in a future release.
 - GCAdapter_OC driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
 
-### Base
+### Desktop
 
 Common variant available as `bazzite` and suitable for desktops and HTPCs.
 
