@@ -6,6 +6,8 @@ License:        GPLv2
 URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/steamdeck-kde-presets/-/archive/master/steamdeck-kde-presets-master.tar.gz
+Patch0:         multiuser.patch
+
 BuildArch:      noarch
 
 Requires:       kde-filesystem
