@@ -94,6 +94,9 @@ resize-deckswap:
     just resize-deckswap
   fi
 
+switch-to-ext4:
+  just --unstable _auth | sudo sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs
+
 zram-on:
   #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
