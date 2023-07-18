@@ -46,7 +46,7 @@ Bazzite is an OCI that serves as an alternative operating system for the [Steam 
 
 ## Why
 Bazzite started as a project to resolve some of the issues that plague SteamOS, mainly out of date packages despite an Arch base and the lack of a functional package manager.
-Despite this project also being immutable you are able to install any Fedora package straight from the command line and those packages will be kept between updates. Additionally, Bazzite is updated daily with packages from upstream Fedora giving you the best possible performance and latest features - all on a stable base.
+Despite this project also being immutable you are able to install any Fedora package straight from the command line and those packages will be kept between updates. Additionally, Bazzite is updated daily with packages from upstream [Fedora](https://fedoraproject.org/) giving you the best possible performance and latest features - all on a stable base.
 
 We ship with the latest Linux kernel and SELinux enabled by default, and have full support for secure boot making this a much more sensible solution for general computing.
 
