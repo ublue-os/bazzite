@@ -32,7 +32,7 @@ RUN rpm-ostree install \
     python3-pip \
     libadwaita \
     distrobox \
-    steamdeck-kde-themes \
+    steamdeck-kde-presets-desktop \
     sddm-sugar-steamOS \
     wallpaper-engine-kde-plugin \
     duperemove \
@@ -114,8 +114,8 @@ RUN rpm-ostree override remove system76-scheduler
 RUN rm -f /etc/systemd/user/com.system76.Scheduler.dbusproxy.service
 RUN rm -f /usr/bin/system76-scheduler-dbus-proxy
 
-# Remove steamdeck-kde-themes
-RUN rpm-ostree override remove steamdeck-kde-themes
+# Remove steamdeck-kde-presets-desktop
+RUN rpm-ostree override remove steamdeck-kde-presets-desktop
 
 # Remove ublue-os-wallpapers
 RUN rpm-ostree override remove ublue-os-wallpapers
