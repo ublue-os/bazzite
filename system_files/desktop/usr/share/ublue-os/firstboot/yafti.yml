@@ -64,11 +64,6 @@ screens:
           default: true
           packages:
           - Enable System76 Scheduler: just --unstable enable-system76-scheduler
-        Theme:
-          description: Set the default KDE theme
-          default: true
-          packages:
-            - Setup Theme: just setup-theme
         Wallpaper Engine:
           description: Enables Wallpaper Engine
           default: true
