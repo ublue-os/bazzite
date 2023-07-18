@@ -218,6 +218,7 @@ screens:
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
           - KeePassXC: org.keepassxc.KeePassXC
+          - OpenRGB: org.openrgb.OpenRGB
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC

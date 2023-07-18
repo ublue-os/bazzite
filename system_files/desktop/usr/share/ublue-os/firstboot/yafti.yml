@@ -200,6 +200,7 @@ screens:
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
           - GreenWithEnvy (Nvidia GPU Overclocking): com.leinardi.gwe
           - KeePassXC: org.keepassxc.KeePassXC
+          - OpenRGB: org.openrgb.OpenRGB
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
