@@ -67,7 +67,7 @@ screens:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: true
           packages:
-          - Install Nix Package Support: guisu just --unstable install-nix
+          - Install Nix Package Support: just --unstable install-nix
         SteamDeckGyroDSU:
           description: Allows emulators and other applications to receive Steam Deck gyro motion data
           default: true
