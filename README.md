@@ -12,6 +12,11 @@ Despite this project also being immutable you are able to install any Fedora pac
 
 We ship with the latest Linux kernel and SELinux enabled by default, and have full support for secure boot making this a much more sensible solution for general computing.
 
+![Default Theme](/repo_content/desktop1.png?raw=true "Default Theme")
+![VGUI2 Theme](/repo_content/desktop2.png?raw=true "VGUI2 Theme")
+
+## Features
+
 ### Universal
 - Comes with Valve's KDE themes from SteamOS.
 - Full support for AMD's ROCM OpenCL/HIP runtimes.
@@ -74,6 +79,7 @@ Additionally, the following packages are used from other Copr repos:
 |[latencyflex-vulkan-layer](https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/package/latencyflex-vulkan-layer/status_image/last_build.png?)|
 |[mangohud](https://copr.fedorainfracloud.org/coprs/kylegospo/mangohud/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/mangohud/package/mangohud/status_image/last_build.png?)|
 |[obs-vkcapture](https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/package/obs-vkcapture/status_image/last_build.png?)|
+|[system76-scheduler](https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/package/system76-scheduler/status_image/last_build.png?)|
 |[wallpaper-engine-kde-plugin](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/package/wallpaper-engine-kde-plugin/status_image/last_build.png?)|
 
 ## Verification
