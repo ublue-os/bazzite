@@ -25,7 +25,7 @@ screens:
           description: Launches Steam automatically on the desktop
           default: true
           packages:
-          - Enable Autostart: cp ~/usr/share/applications/steam.desktop ~/.config/autostart/steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/steam-silent.desktop
+          - Enable Autostart: cp /usr/share/applications/steam.desktop ~/.config/autostart/steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/steam-silent.desktop
         Decky Loader:
           description: A plugin loader for the Steam Deck
           default: false
