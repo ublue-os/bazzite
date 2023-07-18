@@ -25,7 +25,8 @@ if command -v ublue-update > /dev/null; then
     # Fake upgrade progress bar
     fake_progress() {
       local value=0
-      while read -r line; do
+      while [ ! -f '/tmp/upgrade-check' ]; do
+        sleep 5
         if [ ${value} -lt '100' ]; then
           echo ${value}'%'
           value=$(( value + 3 ))
@@ -35,7 +36,7 @@ if command -v ublue-update > /dev/null; then
     }
     upgrade() {
       # Pull exit code from ublue-update
-      ublue-update --force
+      ublue-update --force > /dev/null 2>&1
       echo $? > /tmp/upgrade-check
     }
     upgrade | fake_progress
