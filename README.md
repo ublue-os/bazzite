@@ -36,7 +36,7 @@ Bazzite is an OCI that serves as an alternative operating system for the [Steam 
 - Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [(From the evlaV repository)](https://gitlab.com/evlaV).
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
 - Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default.
-- Initial installer has options to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader) and [EmuDeck](https://www.emudeck.com/), among numerous other useful packages.
+- Initial installer has options to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), and [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), among numerous other useful packages.
 - Custom update system allows for the OS, Flatpaks, and Distrobox images to be updated directly from the Gamemode UI.
 - Lutris preinstalled as a layered package for handling non-Steam games.
 - Comes with a default-disabled service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj).
