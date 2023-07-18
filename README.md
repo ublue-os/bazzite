@@ -4,18 +4,9 @@
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
 [![build-bazzite-arch](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml)
 
+## About & Features
+
 Bazzite is an OCI that serves as an alternative operating system for the [Steam Deck](https://www.steamdeck.com/), and a ready-to-game SteamOS-like for desktop computers. Built from [ublue-os/main](https://github.com/ublue-os/main) and [ublue-os/nvidia](https://github.com/ublue-os/nvidia), Bazzite contains the full feature sets of both projects and additionally features the following:
-
-## Why
-Bazzite started as a project to resolve some of the issues that plague SteamOS, mainly out of date packages despite an Arch base and the lack of a functional package manager.
-Despite this project also being immutable you are able to install any Fedora package straight from the command line and those packages will be kept between updates. Additionally, Bazzite is updated daily with packages from upstream Fedora guaranteeing you the best possible performance and latest features.
-
-We ship with the latest Linux kernel and SELinux enabled by default, and have full support for secure boot making this a much more sensible solution for general computing.
-
-![Default Theme](/repo_content/desktop1.png?raw=true "Default Theme")
-![VGUI2 Theme](/repo_content/desktop2.png?raw=true "VGUI2 Theme")
-
-## Features
 
 ### Universal
 - Comes with Valve's KDE themes from SteamOS.
@@ -48,6 +39,15 @@ We ship with the latest Linux kernel and SELinux enabled by default, and have fu
 - Tuned I/O scheduler to reduce starvation when installing games or during background duperemove processes.
 - Uses CFS scheduler parameters from [TKG](https://github.com/Frogging-Family/linux-tkg) for increased performance.
 - Applies SteamOS's kernel parameters and enables amd-pstate by default.
+
+## Why
+Bazzite started as a project to resolve some of the issues that plague SteamOS, mainly out of date packages despite an Arch base and the lack of a functional package manager.
+Despite this project also being immutable you are able to install any Fedora package straight from the command line and those packages will be kept between updates. Additionally, Bazzite is updated daily with packages from upstream Fedora guaranteeing you the best possible performance and latest features.
+
+We ship with the latest Linux kernel and SELinux enabled by default, and have full support for secure boot making this a much more sensible solution for general computing.
+
+![Default Theme](/repo_content/desktop1.png?raw=true "Default Theme")
+![VGUI2 Theme](/repo_content/desktop2.png?raw=true "VGUI2 Theme")
 
 ## Usage
 
