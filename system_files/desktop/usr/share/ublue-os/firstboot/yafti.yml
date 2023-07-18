@@ -5,8 +5,8 @@ screens:
   first-screen:
     source: yafti.screen.title
     values:
-      title: "Welcome to Bazzite (Desktop)"
-      icon: "/path/to/icon"
+      title: "Welcome to Bazzite"
+      icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
         Configure your system to get started
   configure-bazzite:
