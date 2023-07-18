@@ -10,46 +10,64 @@
 
 ## About & Features
 
-Bazzite is an OCI that serves as an alternative operating system for the [Steam Deck](https://www.steamdeck.com/), and a ready-to-game SteamOS-like for desktop computers. Built from [ublue-os/main](https://github.com/ublue-os/main) and [ublue-os/nvidia](https://github.com/ublue-os/nvidia), Bazzite contains the full feature sets of both projects and additionally features the following:
+Bazzite is an OCI image that serves as an alternative operating system for the [Steam Deck](https://www.steamdeck.com/), and a ready-to-game SteamOS-like for desktop computers and living room home theater PCs. 
 
-### Universal
-- Comes with Valve's KDE themes from SteamOS.
-- Full support for AMD's ROCM OpenCL/HIP runtimes.
-- Nvidia images with the proprietary Nvidia drivers layered in and immediately available from upstream ublue-os.
-- [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/MangoHud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default.
+### All Bazzite Images
+
+Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ublue-os/nvidia](https://github.com/ublue-os/nvidia), which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features: 
+
+Common variant is available as `bazzite`: 
+
+- Proprietary Nvidia drivers included on the image
+- Full hardware accelerated codec support for H264 decoding
+- Full support for AMD's ROCM OpenCL/HIP runtimes
+- Includes Valve's KDE themes from SteamOS
+- [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
 - Support for [Wallpaper Engine](https://www.wallpaperengine.io/en) on KDE.
 - [Distrobox](https://github.com/89luca89/distrobox) preinstalled with automatic updates for created containers.
 - Automated duperemove services for pruning wine prefix contents.
 - Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
-- Full support for H264 decoding from upstream ublue-os.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) preinsalled and enabled (Available but default-disabled on the Deck variant)
 - Helpful first-start installer provides an easy way to install numerous helpful applications and tweaks, including installing [CoreCtrl](https://gitlab.com/corectrl/corectrl) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
 - Nix package manager, matching evidence in SteamOS 3.5 of this potentially being available in a future release.
 - GCAdapter_OC driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
-
-### Desktop
 - Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
 - Ships with a ported version of [System76's Scheduler](https://github.com/pop-os/system76-scheduler), providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
 
+To rebase an existing system to this image: 
+
+    rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:latest
+
+or for Nvidia based machines:
+
+    rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:latest
+
 ### Deck
+
+Variant designed for usage as an alternative to SteamOS on the Steam Deck, available as `bazzite-deck`:
+
+    rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:latest
+
 - Directly boots to Gamemode matching SteamOS's behavior
-- Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [(From the evlaV repository)](https://gitlab.com/evlaV).
-- Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
-- Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default.
-- Initial installer has options to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), and [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), among numerous other useful packages.
-- Custom update system allows for the OS, Flatpaks, and Distrobox images to be updated directly from the Gamemode UI.
-- Steam and Lutris preinstalled as layered packages.
-- Comes with a default-disabled service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj).
-- Exclusively uses zram by default with the option to switch back to a swapfile and set a custom size if desired.
-- Tuned I/O scheduler to reduce starvation when installing games or during background duperemove processes.
-- Uses CFS scheduler parameters from [TKG](https://github.com/Frogging-Family/linux-tkg) for increased performance.
-- Applies SteamOS's kernel parameters and enables amd-pstate by default.
+- Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV)
+- Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default
+- Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default
+- Option to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), and [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), among numerous other useful packages on installation
+- Custom update system allows for the OS, Flatpaks, and Distrobox images to be updated directly from the Gamemode UI
+- Steam and Lutris preinstalled on the image
+- Comes with a default-disabled service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj)
+- Exclusively uses zram by default with the option to switch back to a swapfile and set a custom size if desired
+- Tuned I/O scheduler to reduce starvation when installing games or during background duperemove processes
+- Uses CFS scheduler parameters from [TKG](https://github.com/Frogging-Family/linux-tkg) for increased performance
+- Applies SteamOS's kernel parameters and enables amd-pstate by default
 
 ## Why
-Bazzite started as a project to resolve some of the issues that plague SteamOS, mainly out of date packages despite an Arch base and the lack of a functional package manager.
-Despite this project also being immutable you are able to install any Fedora package straight from the command line and those packages will be kept between updates. Additionally, Bazzite is updated daily with packages from upstream [Fedora](https://fedoraproject.org/) giving you the best possible performance and latest features - all on a stable base.
 
-We ship with the latest Linux kernel and SELinux enabled by default and have full support for secure boot and disk encryption, making this a much more sensible solution for general computing.
+Bazzite started as a project to resolve some of the issues that plague SteamOS, mainly out of date packages despite an Arch base and the lack of a functional package manager.
+
+Despite this project also being image-based you are able to install any Fedora package straight from the command line. These packages will persist across updates. Additionally, Bazzite is updated daily with packages from upstream [Fedora](https://fedoraproject.org/) giving you the best possible performance and latest features - all on a stable base.
+
+Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot and disk encryption, making this a sensible solution for general computing.
 
 <sup><sub>Yes, you can print from Bazzite.</sub></sup>
 
