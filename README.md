@@ -34,6 +34,7 @@ Common variant available as `bazzite` and suitable for desktops and HTPCs.
 
 - Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
 - Ships with a ported version of [System76's Scheduler](https://github.com/pop-os/system76-scheduler), providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
+- Option to automatically launch Steam in Big Picture Mode on boot for HTPCs.
 
 To rebase an existing system to this image: 
 
