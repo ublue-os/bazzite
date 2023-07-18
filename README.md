@@ -19,7 +19,6 @@ Bazzite is an OCI that serves as an alternative operating system for the [Steam 
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/MangoHud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default.
 - Support for [Wallpaper Engine](https://www.wallpaperengine.io/en) on KDE.
 - [Distrobox](https://github.com/89luca89/distrobox) preinstalled with automatic updates for created containers.
-- Lutris preinstalled for handling non-Steam games.
 - Automated duperemove services for pruning wine prefix contents.
 - Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
 - Full support for H264 decoding from upstream ublue-os.
@@ -38,6 +37,7 @@ Bazzite is an OCI that serves as an alternative operating system for the [Steam 
 - Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default.
 - Initial installer has options to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader) and [EmuDeck](https://www.emudeck.com/), among numerous other useful packages.
 - Custom update system allows for the OS, Flatpaks, and Distrobox images to be updated directly from the Gamemode UI.
+- Lutris preinstalled as a layered package for handling non-Steam games.
 - Comes with a default-disabled service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj).
 - Exclusively uses zram by default with the option to switch back to a swapfile and set a custom size if desired.
 - Tuned I/O scheduler to reduce starvation when installing games or during background duperemove processes.
@@ -83,6 +83,7 @@ Additionally, the following packages are used from other Copr repos:
 |[latencyflex-vulkan-layer](https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/package/latencyflex-vulkan-layer/status_image/last_build.png?)|
 |[mangohud](https://copr.fedorainfracloud.org/coprs/kylegospo/mangohud/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/mangohud/package/mangohud/status_image/last_build.png?)|
 |[obs-vkcapture](https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/package/obs-vkcapture/status_image/last_build.png?)|
+|[steamdeck-kmod](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/)|![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/package/steamdeck-kmod/status_image/last_build.png?)|
 |[system76-scheduler](https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/package/system76-scheduler/status_image/last_build.png?)|
 |[wallpaper-engine-kde-plugin](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/package/wallpaper-engine-kde-plugin/status_image/last_build.png?)|
 
