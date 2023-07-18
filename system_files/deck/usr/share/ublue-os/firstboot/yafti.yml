@@ -78,6 +78,11 @@ screens:
           default: true
           packages:
           - Create Steam shortcuts: just --unstable create-steam-shortcuts
+        Theme:
+          description: Set the default KDE theme
+          default: true
+          packages:
+            - Setup Theme: just setup-theme
         Wallpaper Engine:
           description: Enables Wallpaper Engine
           default: true
