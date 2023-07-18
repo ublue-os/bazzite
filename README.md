@@ -38,7 +38,7 @@ Bazzite is an OCI that serves as an alternative operating system for the [Steam 
 - Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default.
 - Initial installer has options to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), and [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), among numerous other useful packages.
 - Custom update system allows for the OS, Flatpaks, and Distrobox images to be updated directly from the Gamemode UI.
-- Lutris preinstalled as a layered package for handling non-Steam games.
+- Steam and Lutris preinstalled as layered packages.
 - Comes with a default-disabled service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj).
 - Exclusively uses zram by default with the option to switch back to a swapfile and set a custom size if desired.
 - Tuned I/O scheduler to reduce starvation when installing games or during background duperemove processes.
