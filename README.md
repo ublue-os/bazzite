@@ -77,7 +77,7 @@ Bazzite ships with the latest Linux kernel and SELinux enabled by default with f
 ![Default Theme](/repo_content/desktop1.png?raw=true "Default Theme")
 ![VGUI2 Theme](/repo_content/desktop2.png?raw=true "VGUI2 Theme")
   
-## Copr
+## Custom Packages
 
 Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built on Copr in [this repo](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/).
 
