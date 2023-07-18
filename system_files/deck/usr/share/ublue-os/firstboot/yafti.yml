@@ -30,39 +30,39 @@ screens:
           description: A plugin loader for the Steam Deck
           default: false
           packages:
-          - Retrieve Decky: just get-decky
+          - Retrieve Decky: just --unstable get-decky
         EmuDeck:
           description: |
             A utility for installing and configuring emulators on the Steam Deck
           default: false
           packages:
-          - Retrieve EmuDeck: just get-emudeck
+          - Retrieve EmuDeck: just --unstable get-emudeck
         Gamescope Autologin:
           description: Autologin to Gamescope Session
           default: true
           packages:
-          - Enable Gamescope Autologin: just enable-gamescope-autologin
+          - Enable Gamescope Autologin: just --unstable enable-gamescope-autologin
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
           packages:
-          - Retrieve Greenlight: just get-greenlight
+          - Retrieve Greenlight: just --unstable get-greenlight
         Kernel Arguments:
           description: Sets kernel arguments used in SteamOS
           default: true
           packages:
-          - Set kargs: just set-steamos-kargs
+          - Set kargs: just --unstable set-steamos-kargs
         Memory Tuning:
           description: Adjust ZRAM and configure deckswap
           default: false
           packages:
-          - Deck Swap: just swap-on
-          - Disable ZRAM: just zram-off
+          - Deck Swap: just --unstable swap-on
+          - Disable ZRAM: just --unstable zram-off
         Nix Package Manager:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: true
           packages:
-          - Install Nix Package Support: guisu just install-nix
+          - Install Nix Package Support: guisu just --unstable install-nix
         SteamDeckGyroDSU:
           description: Allows emulators and other applications to receive Steam Deck gyro motion data
           default: true
@@ -72,12 +72,12 @@ screens:
           description: Creates Steam desktop shortcuts
           default: true
           packages:
-          - Create Steam shortcuts: just create-steam-shortcuts
+          - Create Steam shortcuts: just --unstable create-steam-shortcuts
         Wallpaper Engine:
           description: Enables Wallpaper Engine
           default: true
           packages:
-          - Enable Wallpaper Engine: just enable-wallpaper-engine
+          - Enable Wallpaper Engine: just --unstable enable-wallpaper-engine
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
@@ -122,7 +122,7 @@ screens:
           default: false
           packages:
           - Bottles: com.usebottles.bottles
-          - Chiaki4Deck (PlayStation Remote Play): just get-chiaki
+          - Chiaki4Deck (PlayStation Remote Play): just --unstable get-chiaki
           - Discord: com.discordapp.Discord
           - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
