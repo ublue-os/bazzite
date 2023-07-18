@@ -1,5 +1,6 @@
+set shell := ["bash", "-c"]
+
 install-bazzite-arch:
-  #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
   if grep 'nvidia' <<< ${KARGS}; then
     echo 'Installing Bazzite Arch (Nvidia)...'
@@ -13,11 +14,11 @@ install-corectrl:
   rpm-ostree install corectrl
   rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
 
-install-nix:
-  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
+install-nix: _auth
+  sudo curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
 
-remove-nix:
-  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | bash
+remove-nix: _auth
+  sudo curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | bash
 
 get-greenlight:
   echo 'Retrieving Greenlight'
@@ -38,7 +39,6 @@ enable-wallpaper-engine:
   rm -rf /tmp/wallpaper-engine-kde-plugin
 
 zram-on:
-  #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
   if grep 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --delete=zram
@@ -48,7 +48,6 @@ zram-on:
   fi
 
 zram-off:
-  #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
   if grep -v 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --append=zram=0
@@ -58,7 +57,6 @@ zram-off:
   fi
 
 resize-zram:
-  #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
   CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/zram-size=//g')
   echo 'Current size: '${CURRENT_SIZE}
@@ -68,7 +66,7 @@ resize-zram:
       NEW_SIZE=1024
     fi
     if ((${NEW_SIZE} >= 512 && ${NEW_SIZE} <= 4096)); then
-      sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
+      just --unstable _auth | sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
       echo 'Current size: '${NEW_SIZE}'. Please reboot.'
     else
       echo 'Error: Input out of range (512-4096). Running again.'
@@ -78,3 +76,6 @@ resize-zram:
     echo 'Error: Input is not an integer. Running again.'
     just resize-zram
   fi
+
+_auth:
+  kdialog --password "Please enter your password: "

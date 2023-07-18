@@ -1,3 +1,5 @@
+set shell := ["bash", "-c"]
+
 enable-gamescope-autologin:
   systemctl disable --now plasma-autologin
   systemctl enable --now gamescope-autologin
@@ -13,19 +15,19 @@ create-steam-shortcuts:
   cp /usr/share/applications/steam.desktop ~/Desktop
   cp /etc/skel.d/Desktop/Return.desktop ~/Desktop
 
-get-decky:
-  curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
+get-decky: _auth
+  sudo curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
 
 get-emudeck:
   echo 'Retrieving EmuDeck...'
   wget https://www.emudeck.com/EmuDeck.desktop -P ~/Desktop
   chmod +x ~/Desktop/EmuDeck.desktop
 
-install-nix:
-  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
+install-nix: _auth
+  sudo curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
 
-remove-nix:
-  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | bash
+remove-nix: _auth
+  sudo curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | bash
 
 get-greenlight:
   echo 'Retrieving Greenlight'
@@ -43,7 +45,6 @@ enable-wallpaper-engine:
   rm -rf /tmp/wallpaper-engine-kde-plugin
 
 deckswap-on:
-  #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
   if grep 'inactive' <<< ${STATUS}; then
     systemctl enable deckswap.service
@@ -53,7 +54,6 @@ deckswap-on:
   fi
 
 deckswap-off:
-  #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
   if grep -v 'inactive' <<< ${STATUS}; then
     systemctl disable deckswap.service
@@ -63,7 +63,6 @@ deckswap-off:
   fi
 
 resize-deckswap:
-  #!/usr/bin/env bash
   CONFIG='/etc/default/deckswap'
   CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/SWAP_SIZE=//g')
   echo 'Current size: '${CURRENT_SIZE}
@@ -73,7 +72,7 @@ resize-deckswap:
       NEW_SIZE=1
     fi
     if ((${NEW_SIZE} >= 1 && ${NEW_SIZE} <= 16)); then
-      sudo sed -i 's/SWAP_SIZE='${CURRENT_SIZE}'G/SWAP_SIZE='${NEW_SIZE}'G/g' ${CONFIG}
+      just --unstable _auth | sudo sed -i 's/SWAP_SIZE='${CURRENT_SIZE}'G/SWAP_SIZE='${NEW_SIZE}'G/g' ${CONFIG}
       echo 'Current size: '${NEW_SIZE}'G. Please reboot.'
     else
       echo 'Error: Input out of range (1-16). Running again.'
@@ -85,7 +84,6 @@ resize-deckswap:
   fi
 
 zram-on:
-  #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
   if grep 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --delete=zram
@@ -95,7 +93,6 @@ zram-on:
   fi
 
 zram-off:
-  #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
   if grep -v 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --append=zram=0
@@ -105,7 +102,6 @@ zram-off:
   fi
 
 resize-zram:
-  #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
   CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/zram-size=//g')
   echo 'Current size: '${CURRENT_SIZE}
@@ -115,7 +111,7 @@ resize-zram:
       NEW_SIZE=1024
     fi
     if ((${NEW_SIZE} >= 512 && ${NEW_SIZE} <= 4096)); then
-      sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
+      just --unstable _auth | sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
       echo 'Current size: '${NEW_SIZE}'. Please reboot.'
     else
       echo 'Error: Input out of range (512-4096). Running again.'
@@ -125,3 +121,6 @@ resize-zram:
     echo 'Error: Input is not an integer. Running again.'
     just resize-zram
   fi
+
+_auth:
+  kdialog --password "Please enter your password: "

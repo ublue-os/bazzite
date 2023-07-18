@@ -22,7 +22,7 @@ screens:
           condition:
             run: distrobox list | grep -v bazzite-arch
           packages:
-          - Install Bazzite Arch: just install-bazzite-arch
+          - Install Bazzite Arch: just --unstable install-bazzite-arch
           - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
           - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
           - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
@@ -32,31 +32,38 @@ screens:
           default: true
           packages:
           - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
+        CoreCtrl:
+          description: AMD GPU Overclocking
+          condition:
+            run: grep -v "nvidia" <<< $(rpm-ostree status)
+          default: false
+          packages:
+          - Install CoreCtrl: just --unstable install-corectrl
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
           packages:
-          - Retrieve Greenlight: just get-greenlight
+          - Retrieve Greenlight: just --unstable get-greenlight
         Memory Tuning:
           description: Adjust ZRAM configuration
           default: false
           packages:
-          - Disable ZRAM: just zram-off
+          - Disable ZRAM: just --unstable zram-off
         Nix Package Manager:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: true
           packages:
-          - Install Nix Package Support: guisu just install-nix
+          - Install Nix Package Support: just --unstable install-nix
         System76 Scheduler:
           description: Enables System76 scheduler
           default: true
           packages:
-          - Enable System76 Scheduler: just enable-system76-scheduler
+          - Enable System76 Scheduler: just --unstable enable-system76-scheduler
         Wallpaper Engine:
           description: Enables Wallpaper Engine
           default: true
           packages:
-          - Enable Wallpaper Engine: just enable-wallpaper-engine
+          - Enable Wallpaper Engine: just --unstable enable-wallpaper-engine
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
@@ -172,7 +179,6 @@ screens:
           - Barrier: com.github.debauchee.barrier
           - Bitwarden: com.bitwarden.desktop
           - Calibre: com.calibre_ebook.calibre
-          - CoreCtrl (AMD GPU Overclocking): just install-corectrl
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
           - GIMP: org.gimp.GIMP
