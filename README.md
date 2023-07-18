@@ -50,6 +50,8 @@ Despite this project also being immutable you are able to install any Fedora pac
 
 We ship with the latest Linux kernel and SELinux enabled by default and have full support for secure boot and disk encryption, making this a much more sensible solution for general computing.
 
+<sup><sub>Yes, you can print from Bazzite.</sub></sup>
+
 ![Default Theme](/repo_content/desktop1.png?raw=true "Default Theme")
 ![VGUI2 Theme](/repo_content/desktop2.png?raw=true "VGUI2 Theme")
 
