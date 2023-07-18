@@ -128,14 +128,20 @@ screens:
           packages:
           - Bottles: com.usebottles.bottles
           - Discord: com.discordapp.Discord
+          - DOSBox Staging: io.github.dosbox-staging 
           - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
           - itch: io.itch.itch
+          - ludusavi (Game Save Backup): com.github.mtkennerly.ludusavi
           - Minecraft (Prism Launcher): org.prismlauncher.PrismLauncher
           - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
           - Moonlight: com.moonlight_stream.Moonlight
           - Mumble: info.mumble.Mumble
           - OpenMW: org.openmw.OpenMW
+          - osu: sh.ppy.osu
+          - Parsec: com.parsecgaming.parsec
+          - Space Cadet Pinball: com.github.k4zmu2a.spacecadetpinball
+          - Sonic Robo Blast 2: org.srb2.SRB2
           - Steam Link: com.valvesoftware.SteamLink
           - SuperTux: org.supertuxproject.SuperTux
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
@@ -152,6 +158,7 @@ screens:
           - melonDS: net.kuribo64.melonDS
           - mGBA: io.mgba.mGBA
           - PCSX2: net.pcsx2.PCSX2
+          - Pegasus: org.pegasus_frontend.Pegasus
           - PPSSPP: org.ppsspp.PPSSPP
           - RetroArch: org.libretro.RetroArch
           - RetroDECK: net.retrodeck.retrodeck
@@ -160,6 +167,7 @@ screens:
           - Ryujinx: org.ryujinx.Ryujinx
           - ScummVM: org.scummvm.ScummVM
           - Snes9x: om.snes9x.Snes9x
+          - Stella: io.github.stella_emu.Stella
           - xemu: app.xemu.xemu
           - yuzu: org.yuzu_emu.yuzu
         Streaming:
@@ -176,19 +184,28 @@ screens:
           description: "Rock and Roll!"
           default: false
           packages:
+          - Cider (Apple Music Client): sh.cider.Cider
           - Spotify: com.spotify.Client
           - Strawberry Music Player: org.strawberrymusicplayer.strawberry
           - Tidal-hifi: com.mastermindzh.tidal-hifi
-        Office:
+        Office/Productivity:
           description: Bow to Capitalism
           default: false
           packages:
+          - Ardour: org.ardour.Ardour
+          - Blender: org.blender.Blender
+          - darktable: org.darktable.Darktable
+          - GIMP: org.gimp.GIMP
+          - Inkscape: org.inkscape.Inkscape
           - Joplin: net.cozic.joplin_desktop
+          - Kdenlive: org.kde.kdenlive
+          - Krita: org.ardour.Ardour
           - LibreOffice: org.libreoffice.LibreOffice
           - Obsidian: md.obsidian.Obsidian
           - OnlyOffice: org.onlyoffice.desktopeditors
           - Slack: com.slack.Slack
           - Standard Notes: org.standardnotes.standardnotes
+          - Tenacity: org.tenacityaudio.Tenacity
           - Thunderbird Email: org.mozilla.Thunderbird
           - Xournal++: flathub com.github.xournalpp.xournalpp
         Utilities:
@@ -200,7 +217,6 @@ screens:
           - Calibre: com.calibre_ebook.calibre
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
-          - GIMP: org.gimp.GIMP
           - KeePassXC: org.keepassxc.KeePassXC
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
