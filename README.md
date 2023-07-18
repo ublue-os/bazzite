@@ -12,11 +12,7 @@
 
 Bazzite is an OCI image that serves as an alternative operating system for the [Steam Deck](https://www.steamdeck.com/), and a ready-to-game SteamOS-like for desktop computers and living room home theater PCs. 
 
-### All Bazzite Images
-
 Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ublue-os/nvidia](https://github.com/ublue-os/nvidia), which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features: 
-
-Common variant is available as `bazzite`: 
 
 - Proprietary Nvidia drivers included on the image
 - Full hardware accelerated codec support for H264 decoding
@@ -31,6 +27,11 @@ Common variant is available as `bazzite`:
 - Helpful first-start installer provides an easy way to install numerous helpful applications and tweaks, including installing [CoreCtrl](https://gitlab.com/corectrl/corectrl) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
 - Nix package manager, matching evidence in SteamOS 3.5 of this potentially being available in a future release.
 - GCAdapter_OC driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
+
+### Base
+
+Common variant available as `bazzite` and suitable for desktops and HTPCs.
+
 - Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
 - Ships with a ported version of [System76's Scheduler](https://github.com/pop-os/system76-scheduler), providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
 
@@ -38,15 +39,13 @@ To rebase an existing system to this image:
 
     rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:latest
 
-or for Nvidia based machines:
+or for devices with Nvidia GPUs:
 
     rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:latest
 
 ### Deck
 
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, available as `bazzite-deck`:
-
-    rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:latest
 
 - Directly boots to Gamemode matching SteamOS's behavior
 - Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV)
@@ -61,6 +60,10 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 - Uses CFS scheduler parameters from [TKG](https://github.com/Frogging-Family/linux-tkg) for increased performance
 - Applies SteamOS's kernel parameters and enables amd-pstate by default
 
+To rebase an existing system to this image: 
+
+    rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:latest
+
 ## Why
 
 Bazzite started as a project to resolve some of the issues that plague SteamOS, mainly out of date packages despite an Arch base and the lack of a functional package manager.
@@ -73,10 +76,6 @@ Bazzite ships with the latest Linux kernel and SELinux enabled by default with f
 
 ![Default Theme](/repo_content/desktop1.png?raw=true "Default Theme")
 ![VGUI2 Theme](/repo_content/desktop2.png?raw=true "VGUI2 Theme")
-
-## Usage
-
-TODO
   
 ## Copr
 
