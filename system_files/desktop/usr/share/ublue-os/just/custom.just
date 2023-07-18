@@ -1,6 +1,5 @@
-set shell := ["bash", "-c"]
-
 install-bazzite-arch:
+  #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
   if grep 'nvidia' <<< ${KARGS}; then
     echo 'Installing Bazzite Arch (Nvidia)...'
@@ -39,6 +38,7 @@ enable-wallpaper-engine:
   rm -rf /tmp/wallpaper-engine-kde-plugin
 
 zram-on:
+  #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
   if grep 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --delete=zram
@@ -48,6 +48,7 @@ zram-on:
   fi
 
 zram-off:
+  #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
   if grep -v 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --append=zram=0
@@ -57,6 +58,7 @@ zram-off:
   fi
 
 resize-zram:
+  #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
   CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/zram-size=//g')
   echo 'Current size: '${CURRENT_SIZE}

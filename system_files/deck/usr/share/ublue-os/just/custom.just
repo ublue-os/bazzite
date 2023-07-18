@@ -1,5 +1,3 @@
-set shell := ["bash", "-c"]
-
 enable-gamescope-autologin:
   systemctl disable --now plasma-autologin
   systemctl enable --now gamescope-autologin
@@ -45,6 +43,7 @@ enable-wallpaper-engine:
   rm -rf /tmp/wallpaper-engine-kde-plugin
 
 deckswap-on:
+  #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
   if grep 'inactive' <<< ${STATUS}; then
     systemctl enable deckswap.service
@@ -54,6 +53,7 @@ deckswap-on:
   fi
 
 deckswap-off:
+  #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
   if grep -v 'inactive' <<< ${STATUS}; then
     systemctl disable deckswap.service
@@ -63,6 +63,7 @@ deckswap-off:
   fi
 
 resize-deckswap:
+  #!/usr/bin/env bash
   CONFIG='/etc/default/deckswap'
   CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/SWAP_SIZE=//g')
   echo 'Current size: '${CURRENT_SIZE}
@@ -84,6 +85,7 @@ resize-deckswap:
   fi
 
 zram-on:
+  #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
   if grep 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --delete=zram
@@ -93,6 +95,7 @@ zram-on:
   fi
 
 zram-off:
+  #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
   if grep -v 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --append=zram=0
@@ -102,6 +105,7 @@ zram-off:
   fi
 
 resize-zram:
+  #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
   CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/zram-size=//g')
   echo 'Current size: '${CURRENT_SIZE}
