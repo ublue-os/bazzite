@@ -77,7 +77,6 @@ RUN pip install --prefix=/usr yafti && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
-    sed -i 's@VERSION_STRING@${FEDORA_MAJOR_VERSION}@g' /usr/share/ublue-os/bazzite/neofetch.conf && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable input-remapper.service && \
@@ -166,7 +165,6 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.re
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
-    sed -i 's@VERSION_STRING@${FEDORA_MAJOR_VERSION}@g' /usr/share/ublue-os/bazzite/neofetch.conf && \
     systemctl enable plasma-autologin.service && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable set-cfs-tweaks.service && \
