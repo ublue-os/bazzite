@@ -8,8 +8,3 @@ SDDM_CONF='/etc/sddm.conf.d/steamos.conf'
 # Configure autologin
 sed -i 's/.*Session=.*/Session=plasmax11.desktop/g' ${SDDM_CONF}
 sed -i 's/.*User=.*/User='${USER}'/g' ${SDDM_CONF}
-
-# Remove sddm.conf if it exists
-if [ -f '/etc/sddm.conf' ]; then
-  rm -f /etc/sddm.conf
-fi
