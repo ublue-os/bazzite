@@ -7,6 +7,7 @@ URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/steamdeck-kde-presets/-/archive/master/steamdeck-kde-presets-master.tar.gz
 Patch0:         multiuser.patch
+Patch1:         lockscreen.patch
 
 BuildArch:      noarch
 
@@ -43,7 +44,6 @@ rm %{buildroot}%{_sysconfdir}/xdg/autostart/ibus.desktop
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/jupiter-plasma-bootstrap.desktop
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/steam.desktop
 rm %{buildroot}%{_sysconfdir}/xdg/kcminputrc
-rm %{buildroot}%{_sysconfdir}/xdg/kscreenlockerrc
 rm %{buildroot}%{_sysconfdir}/xdg/kwinrc
 rm %{buildroot}%{_sysconfdir}/xdg/kwinrulesrc
 rm %{buildroot}%{_sysconfdir}/xdg/plasma-workspace/env/ibus.sh
@@ -76,6 +76,7 @@ rm %{buildroot}%{_sysconfdir}/xdg/powermanagementprofilesrc
 %{_sysconfdir}/xdg/gtk-3.0/settings.ini
 %{_sysconfdir}/xdg/baloofilerc
 %{_sysconfdir}/xdg/kdeglobals
+%{_sysconfdir}/xdg/kscreenlockerrc
 %{_sysconfdir}/xdg/ktrashrc
 %{_sysconfdir}/xdg/plasma-nm
 
