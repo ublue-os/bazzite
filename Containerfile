@@ -13,10 +13,13 @@ COPY system_files/desktop/etc /etc
 COPY system_files/desktop/usr /usr
 
 # Add ublue packages
+RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
+COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
 COPY --from=ghcr.io/ublue-os/ublue-update:latest /rpms/ublue-update.noarch.rpm /tmp/rpms/ublue-update.noarch.rpm
 COPY --from=ghcr.io/ublue-os/bling:latest /rpms/ublue-os-wallpapers-*.noarch.rpm /tmp/rpms/ublue-os-wallpapers.rpm
 RUN rpm-ostree override remove ublue-os-update-services && \
     rpm-ostree install \
+    /tmp/akmods-rpms/kmods/*gcadapter_oc*.rpm 
     /tmp/rpms/ublue-update.noarch.rpm \
     /tmp/rpms/ublue-os-wallpapers.rpm
 
@@ -70,6 +73,7 @@ RUN ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
 
 # Cleanup & Finalize
 RUN pip install --prefix=/usr yafti && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-system76-scheduler.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
@@ -107,10 +111,16 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedo
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/mangohud/repo/fedora-$(rpm -E %fedora)/kylegospo-mangohud-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-mangohud.repo
 
 # Re-enable Copr repos
-RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
+RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo
+
+# Add steamdeck driver
+COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
+rpm-ostree install \
+    /tmp/akmods-rpms/kmods/*steamdeck*.rpm 
 
 # Remove system76-scheduler
 RUN rpm-ostree override remove system76-scheduler
@@ -159,7 +169,8 @@ RUN git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --single-bra
 RUN sed -i 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/g' /etc/systemd/logind.conf
 
 # Cleanup & Finalize
-RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
+RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-mangohud.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
