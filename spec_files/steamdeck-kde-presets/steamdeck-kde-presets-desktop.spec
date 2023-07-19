@@ -21,7 +21,7 @@ KDE Presets from Valve's SteamOS 3.0 for desktops
 %define debug_package %{nil}
 
 %prep
-%setup -n steamdeck-kde-presets-master
+%autosetup -p1 -n steamdeck-kde-presets-master
 
 %build
 
