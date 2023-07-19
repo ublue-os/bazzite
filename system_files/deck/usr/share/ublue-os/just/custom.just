@@ -11,6 +11,7 @@ set-steamos-kargs:
 
 create-steam-shortcuts:
   cp /usr/share/applications/steam.desktop ~/Desktop
+  sed -i 's@Steam (Runtime)@Steam@g' ~/Desktop/steam.desktop
   cp /etc/skel.d/Desktop/Return.desktop ~/Desktop
 
 get-decky: _auth
