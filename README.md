@@ -39,11 +39,11 @@ Common variant available as `bazzite` and suitable for desktops and HTPCs.
 
 To rebase an existing system to this image: 
 
-    rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:latest
+    rpm-ostree rebase ostree-image-signed:docker://ghcr.io/ublue-os/bazzite:latest
 
 or for devices with Nvidia GPUs:
 
-    rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:latest
+    rpm-ostree rebase ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-nvidia:latest
 
 ### Deck
 
@@ -64,7 +64,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 
 To rebase an existing system to this image: 
 
-    rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:latest
+    rpm-ostree rebase ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-deck:latest
 
 ## Why
 
