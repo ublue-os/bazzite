@@ -19,9 +19,6 @@ install-nix: _auth
 remove-nix: _auth
   sudo curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | bash
 
-setup-theme:
-  lookandfeeltool -a com.valve.vapor.desktop
-
 enable-big-picture:
   systemctl enable --now plasma-autologin
   sed -i 's@/usr/bin/steam-runtime -silent %U@/usr/bin/steam-runtime -bigpicture %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
