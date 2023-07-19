@@ -16,6 +16,7 @@ create-steam-shortcuts:
 
 get-decky: _auth
   sudo curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
+  just --unstable _auth | sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
 
 get-emudeck:
   echo 'Retrieving EmuDeck...'
