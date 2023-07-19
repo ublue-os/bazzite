@@ -80,6 +80,9 @@ RUN pip install --prefix=/usr yafti && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable input-remapper.service && \
+    rm -f \
+        /usr/etc/sddm.conf \
+        /etc/sddm.conf && \
     rm -rf \
         /tmp/* \
         /var/* && \
