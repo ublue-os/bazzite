@@ -119,8 +119,8 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
 
 # Add steamdeck driver
 COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
-rpm-ostree install \
-    /tmp/akmods-rpms/kmods/*steamdeck*.rpm 
+RUN rpm-ostree install \
+    /tmp/akmods-rpms/kmods/*steamdeck*.rpm
 
 # Remove system76-scheduler
 RUN rpm-ostree override remove system76-scheduler
