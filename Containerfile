@@ -117,10 +117,10 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo
 
-# Add steamdeck driver
+# Add jupiter driver
 COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
 RUN rpm-ostree install \
-    /tmp/akmods-rpms/kmods/*steamdeck*.rpm
+    /tmp/akmods-rpms/kmods/*jupiter*.rpm
 
 # Remove system76-scheduler
 RUN rpm-ostree override remove system76-scheduler
