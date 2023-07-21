@@ -40,6 +40,7 @@ RUN rpm-ostree install \
     wallpaper-engine-kde-plugin \
     duperemove \
     rmlint \
+    compsize \
     kdeconnectd \
     input-remapper \
     system76-scheduler \
