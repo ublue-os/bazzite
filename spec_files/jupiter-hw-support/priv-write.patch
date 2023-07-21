@@ -1,0 +1,21 @@
+diff --git a/usr/bin/steamos-polkit-helpers/steamos-priv-write b/usr/bin/steamos-polkit-helpers/steamos-priv-write
+index 907133b..caaa807 100755
+--- a/usr/bin/steamos-polkit-helpers/steamos-priv-write
++++ b/usr/bin/steamos-polkit-helpers/steamos-priv-write
+@@ -13,15 +13,14 @@ WRITE_VALUE="$2"
+ function CommitWrite()
+ {
+     echo "commit: $WRITE_VALUE -> $WRITE_PATH" | systemd-cat -t p-steamos-priv-write -p warning
+-    echo "$WRITE_VALUE" > "$WRITE_PATH"
+     chmod a+w "$WRITE_PATH"
++    echo "$WRITE_VALUE" > "$WRITE_PATH"
+     exit 0
+ }
+ 
+ function DeclineWrite()
+ {
+     echo "decline: $WRITE_VALUE -> $WRITE_PATH" | systemd-cat -t p-steamos-priv-write -p err
+-    echo "$WRITE_VALUE" > "$WRITE_PATH"
+     exit 1
+ }
+ 
