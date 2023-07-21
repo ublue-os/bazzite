@@ -39,6 +39,7 @@ RUN rpm-ostree install \
     sddm-sugar-steamOS \
     wallpaper-engine-kde-plugin \
     duperemove \
+    rmlint \
     kdeconnectd \
     input-remapper \
     system76-scheduler \
