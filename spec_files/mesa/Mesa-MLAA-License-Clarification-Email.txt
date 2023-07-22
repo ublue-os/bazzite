@@ -1,0 +1,117 @@
+
+Subject: RE: Question about Mesa MLAA license
+From: Jorge Jimenez <iryoku@gmail.com>
+Date: 01/08/2013 12:50 PM
+To: Tom Callaway <tcallawa@redhat.com>
+CC: "jorge@iryoku.com" <jorge@iryoku.com>
+
+Yes to both questions.
+ 
+Thanks,
+Jorge
+ 
+From: Tom Callaway <tcallawa@redhat.com>
+Sent: January 8, 2013 6:49 PM
+To: Jorge Jimenez <iryoku@gmail.com>
+CC: jorge@iryoku.com
+Subject: Re: Question about Mesa MLAA license
+ 
+On 01/08/2013 12:39 PM, Jorge Jimenez wrote:
+> Hi Tom,
+>
+> What we meant with that is that we made an exception for clause 2.
+> Instead of clause 2, in the case of the Mesa project, you have to name
+> the technique Jimenez's MLAA in the config options of Mesa. We did that
+> just to allow them to solve license issues. This exception should be for
+> the Mesa project, and any project using Mesa, like Fedora.
+>
+> We want to widespread usage of our MLAA, so we want to avoid any kind of
+> license complications. Hope current one is good for Fedora, if not
+> please tell, and we'll see what we can do!
+
+Okay, a few more questions:
+
+* If Fedora decides to simply reproduce the quoted statement:
+"Uses Jimenez's MLAA. Copyright (C) 2010 by Jorge Jimenez, Belen Masia,
+Jose I. Echevarria, Fernando Navarro and Diego Gutierrez."
+
+Specifically, if this is done as part of documentation included with
+Mesa, is that sufficient to meet clause 2 even if the Mesa config option
+is not set as described in your exception?
+
+* Currently, the Mesa config option for MLAA says: "Morphological
+anti-aliasing based on Jimenez\' MLAA. 0 to disable, 8 for default
+quality". Is this in compliance with your exception?
+
+Thanks again,
+
+~tom
+
+==
+Fedora Project
+
+Subject: RE: Question about Mesa MLAA license
+From: Jorge Jimenez <iryoku@gmail.com>
+Date: 01/08/2013 12:39 PM
+To: "jorge@iryoku.com" <jorge@iryoku.com>, Tom Callaway <tcallawa@redhat.com>
+
+Hi Tom,
+ 
+What we meant with that is that we made an exception for clause 2. 
+Instead of clause 2, in the case of the Mesa project, you have to name 
+the technique Jimenez's MLAA in the config options of Mesa. We did that 
+just to allow them to solve license issues. This exception should be for 
+the Mesa project, and any project using Mesa, like Fedora.
+ 
+We want to widespread usage of our MLAA, so we want to avoid any kind of 
+license complications. Hope current one is good for Fedora, if not 
+please tell, and we'll see what we can do!
+ 
+Cheers,
+Jorge
+ 
+From: Tom Callaway <tcallawa@redhat.com>
+Sent: January 8, 2013 6:30 PM
+To: jorge@iryoku.com
+Subject: Question about Mesa MLAA license
+ 
+Jorge,
+
+Thanks for all of your fantastic graphics work! I have been auditing
+Fedora (a popular distribution of Linux) for license compliance and I
+came across your MLAA code in Mesa.
+
+The license says:
+
+ *    2. Redistributions in binary form must reproduce the following
+statement:
+ *
+ *       "Uses Jimenez's MLAA. Copyright (C) 2010 by Jorge Jimenez, Belen Masia,
+ *        Jose I. Echevarria, Fernando Navarro and Diego Gutierrez."
+ *
+ *       Only for use in the Mesa project, this point 2 is filled by naming the
+ *       technique Jimenez's MLAA in the Mesa config options.
+
+That wording is unclear. When you say "Only for use in the Mesa
+project...", it seems like you could either be saying:
+
+- This code may only be used as part of Mesa.
+
+OR
+
+- In Mesa, you can comply with clause 2 by simply selecting "Jimenez's
+MLAA" in the Mesa config options.
+
+*****
+
+If the first item is true, then we may have to remove the MLAA code from
+Fedora's copy of Mesa. However, looking at the license on your SMAA
+code, I do not believe it to be the case. Please let me know either way!
+
+Thanks in advance,
+
+Tom Callaway
+Fedora Legal
+
+==
+Fedora Project
