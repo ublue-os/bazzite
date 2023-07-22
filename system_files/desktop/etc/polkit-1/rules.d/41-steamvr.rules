@@ -1,0 +1,10 @@
+/* Allow members of the wheel group to execute the defined actions
+ * without password authentication, similar to "sudo NOPASSWD:"
+ */
+polkit.addRule(function(action, subject) {
+    if ((action.id == "org.chimeraos.steamvr.pkexec") &&
+        subject.isInGroup("wheel"))
+    {
+        return polkit.Result.YES;
+    }
+});
