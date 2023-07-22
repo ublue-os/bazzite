@@ -57,7 +57,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 %global ver 23.1.3
-Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
+%global base_ver %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
+Version:        %{base_ver}.bazzite
 Release:        %autorelease
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -153,7 +154,7 @@ BuildRequires:  pkgconfig(vulkan)
 
 %package filesystem
 Summary:        Mesa driver filesystem
-Provides:       mesa-dri-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       mesa-dri-filesystem = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 
 %description filesystem
 %{summary}.
