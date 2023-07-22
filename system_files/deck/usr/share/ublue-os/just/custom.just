@@ -138,5 +138,27 @@ resize-zram: _auth
     just resize-zram
   fi
 
+hide-grub: _auth
+  #!/usr/bin/env bash  
+  sudo -A sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
+  echo 'GRUB_TIMEOUT_STYLE=hidden' | sudo -A tee -a /etc/default/grub 1>/dev/null
+  echo 'GRUB_HIDDEN_TIMEOUT=1' | sudo -A tee -a /etc/default/grub 1>/dev/null
+  if [ -f '/boot/efi/EFI/fedora/grub.cfg' ]; then
+    sudo -A grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+  else
+    sudo -A grub2-mkconfig -o /boot/grub2/grub.cfg
+  fi
+
+unhide-grub: _auth
+  #!/usr/bin/env bash
+  sudo -A sed -i '/GRUB_HIDDEN_TIMEOUT=1/d' /etc/default/grub
+  sudo -A sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub
+  sudo -A sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=5/g' /etc/default/grub
+  if [ -f '/boot/efi/EFI/fedora/grub.cfg' ]; then
+    sudo -A grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+  else
+    sudo -A grub2-mkconfig -o /boot/grub2/grub.cfg
+  fi
+
 _auth:
   export SUDO_ASKPASS='/usr/bin/ksshaskpass'
