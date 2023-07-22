@@ -57,7 +57,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 %global ver 23.1.3
-Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
+%global base_ver %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
+Version:        %{base_ver}.bazzite
 Release:        %autorelease
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -153,7 +154,8 @@ BuildRequires:  pkgconfig(vulkan)
 
 %package filesystem
 Summary:        Mesa driver filesystem
-Provides:       mesa-dri-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{name}-dri-filesystem = %{?epoch:%{epoch}:}%{base_ver}-%{release}
+Provides:       %{name}-filesystem = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 
 %description filesystem
 %{summary}.
@@ -162,6 +164,7 @@ Provides:       mesa-dri-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
 Summary:        Mesa libGL runtime libraries
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-glx%{?_isa} >= 1:1.3.2
+Provides:       %{name}-libGL = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description libGL
@@ -184,6 +187,7 @@ Requires:       libglvnd-egl%{?_isa} >= 1:1.3.2
 Requires:       %{name}-libgbm%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{name}-libEGL = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 
 %description libEGL
 %{summary}.
@@ -201,11 +205,12 @@ Provides:       libEGL-devel%{?_isa}
 
 %package dri-drivers
 Summary:        Mesa-based DRI drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{?with_va}
 Recommends:     %{name}-va-drivers%{?_isa}
 %endif
+Provides:       %{name}-dri-drivers = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 # If mesa-libEGL is installed, it must match in version. This is here to prevent using
 # mesa-libEGL < 23.0.3-1 (frozen in the 'fedora' repo) which didn't have strong enough
 # inter-dependencies. See https://bugzilla.redhat.com/show_bug.cgi?id=2193135 .
@@ -217,7 +222,8 @@ Requires:       (%{name}-libEGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{releas
 %if 0%{?with_omx}
 %package omx-drivers
 Summary:        Mesa-based OMX drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{base_ver}-%{release}
+Provides:       %{name}-omx-drivers = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 
 %description omx-drivers
 %{summary}.
@@ -226,7 +232,7 @@ Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rel
 %if 0%{?with_va}
 %package        va-drivers
 Summary:        Mesa-based VA-API video acceleration drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 Obsoletes:      %{name}-vaapi-drivers < 22.2.0-5
 
 %description va-drivers
@@ -236,7 +242,7 @@ Obsoletes:      %{name}-vaapi-drivers < 22.2.0-5
 %if 0%{?with_vdpau}
 %package        vdpau-drivers
 Summary:        Mesa-based VDPAU drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 
 %description vdpau-drivers
 %{summary}.
@@ -247,6 +253,7 @@ Summary:        Mesa offscreen rendering libraries
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       libOSMesa
 Provides:       libOSMesa%{?_isa}
+Provides:       %{name}-libOSMesa = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 
 %description libOSMesa
 %{summary}.
@@ -262,6 +269,7 @@ Requires:       %{name}-libOSMesa%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rele
 Summary:        Mesa gbm runtime library
 Provides:       libgbm
 Provides:       libgbm%{?_isa}
+Provides:       %{name}-libgbm = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 # If mesa-dri-drivers are installed, they must match in version. This is here to prevent using
 # older mesa-dri-drivers together with a newer mesa-libgbm and its dependants.
@@ -285,6 +293,7 @@ Provides:       libgbm-devel%{?_isa}
 Summary:        Mesa XA state tracker
 Provides:       libxatracker
 Provides:       libxatracker%{?_isa}
+Provides:       %{name}-libxatracker = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 
 %description libxatracker
 %{summary}.
@@ -303,6 +312,7 @@ Provides:       libxatracker-devel%{?_isa}
 Summary:        Mesa shared glapi
 Provides:       libglapi
 Provides:       libglapi%{?_isa}
+Provides:       %{name}-libglapi = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 # If mesa-dri-drivers are installed, they must match in version. This is here to prevent using
 # older mesa-dri-drivers together with a newer mesa-libglapi or its dependants.
 # See https://bugzilla.redhat.com/show_bug.cgi?id=2193135 .
@@ -333,6 +343,7 @@ Requires:       %{name}-libOpenCL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rele
 %if 0%{?with_nine}
 %package libd3d
 Summary:        Mesa Direct3D9 state tracker
+Provides:       %{name}-libd3d = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 
 %description libd3d
 %{summary}.
@@ -348,6 +359,7 @@ Requires:       %{name}-libd3d%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release
 %package vulkan-drivers
 Summary:        Mesa Vulkan drivers
 Requires:       vulkan%{_isa}
+Provides:       %{name}-vulkan-drivers = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 Obsoletes:      mesa-vulkan-devel < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description vulkan-drivers
