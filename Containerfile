@@ -20,6 +20,7 @@ COPY --from=ghcr.io/ublue-os/bling:latest /rpms/ublue-os-wallpapers-*.noarch.rpm
 RUN rpm-ostree override remove ublue-os-update-services && \
     rpm-ostree install \
     /tmp/akmods-rpms/kmods/*gcadapter_oc*.rpm \
+    /tmp/akmods-rpms/kmods/*openrgb*.rpm \
     /tmp/rpms/ublue-update.noarch.rpm \
     /tmp/rpms/ublue-os-wallpapers.rpm
 
