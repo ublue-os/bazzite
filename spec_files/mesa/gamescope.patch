@@ -34,7 +34,7 @@ index 11bf6472894..21ad0c28937 100644
 +   if (!path)
 +      return 0;
 +
-+   static simple_mtx_t mtx = _SIMPLE_MTX_INITIALIZER_NP;
++   static simple_mtx_t mtx = SIMPLE_MTX_INITIALIZER;
 +   static int fd = -1;
 +
 +   simple_mtx_lock(&mtx);
@@ -144,7 +144,7 @@ index a42355971a7..ce03b95cb8e 100644
 +   if (!path)
 +      return 0;
 +
-+   static simple_mtx_t mtx = _SIMPLE_MTX_INITIALIZER_NP;
++   static simple_mtx_t mtx = SIMPLE_MTX_INITIALIZER;
 +   static int fd = -1;
 +
 +   simple_mtx_lock(&mtx);
