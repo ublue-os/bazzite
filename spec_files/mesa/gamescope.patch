@@ -12,7 +12,7 @@ Subject: [PATCH] STEAMOS: Dynamic swapchain override for gamescope limiter
  5 files changed, 82 insertions(+), 4 deletions(-)
 
 diff --git a/src/loader/loader_dri3_helper.c b/src/loader/loader_dri3_helper.c
-index ae4fb374604..04aa9ac64a9 100644
+index 11bf6472894..21ad0c28937 100644
 --- a/src/loader/loader_dri3_helper.c
 +++ b/src/loader/loader_dri3_helper.c
 @@ -37,6 +37,7 @@
@@ -23,7 +23,7 @@ index ae4fb374604..04aa9ac64a9 100644
  #include "drm-uapi/drm_fourcc.h"
  
  /**
-@@ -308,6 +309,30 @@ dri3_update_max_num_back(struct loader_dri3_drawable *draw)
+@@ -288,6 +289,30 @@ dri3_update_max_num_back(struct loader_dri3_drawable *draw)
     }
  }
  
@@ -54,13 +54,14 @@ index ae4fb374604..04aa9ac64a9 100644
  void
  loader_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
  {
-@@ -322,10 +347,12 @@ loader_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
+@@ -302,10 +327,12 @@ loader_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
      * PS. changing from value A to B and A < B won't cause swap out of order but
      * may still gets wrong target_msc value at the beginning.
      */
 -   if (draw->swap_interval != interval)
+-      loader_dri3_swapbuffer_barrier(draw);
 +   if (draw->orig_swap_interval != interval)
-       loader_dri3_swapbuffer_barrier(draw);
++       loader_dri3_swapbuffer_barrier(draw);
  
 -   draw->swap_interval = interval;
 +   draw->orig_swap_interval = interval;
@@ -68,9 +69,9 @@ index ae4fb374604..04aa9ac64a9 100644
 +      draw->swap_interval = interval;
  }
  
- /** dri3_free_render_buffer
-@@ -430,6 +457,12 @@ loader_dri3_drawable_init(xcb_connection_t *conn,
-    draw->swap_interval = dri_get_initial_swap_interval(draw->dri_screen,
+ static void
+@@ -437,6 +464,12 @@ loader_dri3_drawable_init(xcb_connection_t *conn,
+    draw->swap_interval = dri_get_initial_swap_interval(draw->dri_screen_render_gpu,
                                                         draw->ext->config);
  
 +   draw->orig_swap_interval = draw->swap_interval;
@@ -82,7 +83,7 @@ index ae4fb374604..04aa9ac64a9 100644
     dri3_update_max_num_back(draw);
  
     /* Create a new drawable */
-@@ -1053,6 +1086,12 @@ loader_dri3_swap_buffers_msc(struct loader_dri3_drawable *draw,
+@@ -1091,6 +1124,12 @@ loader_dri3_swap_buffers_msc(struct loader_dri3_drawable *draw,
     if (draw->type == LOADER_DRI3_DRAWABLE_WINDOW) {
        dri3_fence_reset(draw->conn, back);
  
@@ -96,12 +97,12 @@ index ae4fb374604..04aa9ac64a9 100644
         * successful MSC and adding in a swap interval for each outstanding swap
         * request. target_msc=divisor=remainder=0 means "Use glXSwapBuffers()
 diff --git a/src/loader/loader_dri3_helper.h b/src/loader/loader_dri3_helper.h
-index 792f7270098..f4717b96c44 100644
+index 1fd340bd145..b8f5eaaf190 100644
 --- a/src/loader/loader_dri3_helper.h
 +++ b/src/loader/loader_dri3_helper.h
-@@ -174,6 +174,7 @@ struct loader_dri3_drawable {
-    bool adaptive_sync;
-    bool adaptive_sync_active;
+@@ -178,6 +178,7 @@ struct loader_dri3_drawable {
+    bool block_on_depleted_buffers;
+    bool queries_buffer_age;
     int swap_interval;
 +   int orig_swap_interval;
  
@@ -120,21 +121,8 @@ index 6334cb9815c..0dc8ef40c37 100644
      ],
      build_by_default : false,
    )
-diff --git a/src/vulkan/wsi/meson.build b/src/vulkan/wsi/meson.build
-index fd48474b98f..789777a45dc 100644
---- a/src/vulkan/wsi/meson.build
-+++ b/src/vulkan/wsi/meson.build
-@@ -61,7 +61,7 @@ libvulkan_wsi = static_library(
-   include_directories : [inc_include, inc_src, inc_gallium],
-   dependencies : [
-     vulkan_wsi_deps, dep_libdrm, dep_libudev, idep_vulkan_util_headers,
--    idep_vulkan_runtime_headers, idep_xmlconfig,
-+    idep_vulkan_runtime_headers, idep_xmlconfig, idep_mesautil
-   ],
-   gnu_symbol_visibility : 'hidden',
-   build_by_default : false,
 diff --git a/src/vulkan/wsi/wsi_common_x11.c b/src/vulkan/wsi/wsi_common_x11.c
-index d3add512fab..34e77fb46dd 100644
+index a42355971a7..ce03b95cb8e 100644
 --- a/src/vulkan/wsi/wsi_common_x11.c
 +++ b/src/vulkan/wsi/wsi_common_x11.c
 @@ -42,6 +42,7 @@
@@ -145,7 +133,7 @@ index d3add512fab..34e77fb46dd 100644
  #include "util/u_debug.h"
  #include "util/u_thread.h"
  #include "util/xmlconfig.h"
-@@ -186,6 +187,30 @@ wsi_x11_detect_xwayland(xcb_connection_t *conn)
+@@ -198,6 +199,30 @@ wsi_x11_detect_xwayland(xcb_connection_t *conn,
     return is_xwayland;
  }
  
@@ -176,16 +164,16 @@ index d3add512fab..34e77fb46dd 100644
  static struct wsi_x11_connection *
  wsi_x11_connection_create(struct wsi_device *wsi_dev,
                            xcb_connection_t *conn)
-@@ -950,6 +975,8 @@ struct x11_swapchain {
+@@ -1042,6 +1067,8 @@ struct x11_swapchain {
     struct wsi_queue                             acquire_queue;
     pthread_t                                    queue_manager;
  
 +   VkPresentModeKHR                             orig_present_mode;
 +
-    struct x11_image                             images[0];
- };
- VK_DEFINE_NONDISP_HANDLE_CASTS(x11_swapchain, base.base, VkSwapchainKHR,
-@@ -1397,6 +1424,12 @@ x11_queue_present(struct wsi_swapchain *anv_chain,
+    /* Lock and condition variable that lets callers monitor forward progress in the swapchain.
+     * This includes:
+     * - Present ID completion updates (present_id).
+@@ -1146,6 +1173,12 @@ _x11_swapchain_result(struct x11_swapchain *chain, VkResult result,
     if (chain->status < 0)
        return chain->status;
  
@@ -195,10 +183,10 @@ index d3add512fab..34e77fb46dd 100644
 +      return x11_swapchain_result(chain, VK_ERROR_OUT_OF_DATE_KHR);
 +   }
 +
-    if (damage && damage->pRectangles && damage->rectangleCount > 0 &&
-       damage->rectangleCount <= MAX_DAMAGE_RECTS) {
-       xcb_rectangle_t rects[MAX_DAMAGE_RECTS];
-@@ -1930,6 +1963,10 @@ x11_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+    /* If we have a new error, mark it as permanent on the chain and return. */
+    if (result < 0) {
+ #ifndef NDEBUG
+@@ -2554,6 +2587,10 @@ x11_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
     xcb_void_cookie_t cookie;
     VkResult result;
     VkPresentModeKHR present_mode = wsi_swapchain_get_present_mode(wsi_device, pCreateInfo);
@@ -209,9 +197,9 @@ index d3add512fab..34e77fb46dd 100644
  
     assert(pCreateInfo->sType == VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR);
  
-@@ -1995,6 +2032,7 @@ x11_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
-    chain->base.acquire_next_image = x11_acquire_next_image;
-    chain->base.queue_present = x11_queue_present;
+@@ -2666,6 +2703,7 @@ x11_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+    chain->base.wait_for_present = x11_wait_for_present;
+    chain->base.release_images = x11_release_images;
     chain->base.present_mode = present_mode;
 +   chain->orig_present_mode = orig_present_mode;
     chain->base.image_count = num_images;
