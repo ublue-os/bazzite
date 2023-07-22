@@ -173,7 +173,16 @@ index a42355971a7..ce03b95cb8e 100644
     /* Lock and condition variable that lets callers monitor forward progress in the swapchain.
      * This includes:
      * - Present ID completion updates (present_id).
-@@ -1146,6 +1173,12 @@ _x11_swapchain_result(struct x11_swapchain *chain, VkResult result,
+@@ -1135,6 +1162,8 @@ static void x11_swapchain_notify_error(struct x11_swapchain *swapchain, VkResult
+  * is permanent once seen, and every subsequent call will return this. If
+  * this has not been seen, success will be returned.
+  */
++#define x11_swapchain_result(chain, result) \
++   _x11_swapchain_result(chain, result, __FILE__, __LINE__)
+ static VkResult
+ _x11_swapchain_result(struct x11_swapchain *chain, VkResult result,
+                       const char *file, int line)
+@@ -1146,6 +1175,12 @@ _x11_swapchain_result(struct x11_swapchain *chain, VkResult result,
     if (chain->status < 0)
        return chain->status;
  
@@ -186,6 +195,15 @@ index a42355971a7..ce03b95cb8e 100644
     /* If we have a new error, mark it as permanent on the chain and return. */
     if (result < 0) {
  #ifndef NDEBUG
+@@ -1177,8 +1212,6 @@ _x11_swapchain_result(struct x11_swapchain *chain, VkResult result,
+    /* No changes, so return the last status. */
+    return chain->status;
+ }
+-#define x11_swapchain_result(chain, result) \
+-   _x11_swapchain_result(chain, result, __FILE__, __LINE__)
+ 
+ static struct wsi_image *
+ x11_get_wsi_image(struct wsi_swapchain *wsi_chain, uint32_t image_index)
 @@ -2554,6 +2587,10 @@ x11_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
     xcb_void_cookie_t cookie;
     VkResult result;
