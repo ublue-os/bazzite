@@ -15,8 +15,8 @@ create-steam-shortcuts:
   cp /etc/skel.d/Desktop/Return.desktop ~/Desktop
 
 get-decky: _auth
-  sudo curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
-  just --unstable _auth | sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
+  curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sudo -A sh
+  sudo -A chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
 
 get-emudeck:
   echo 'Retrieving EmuDeck...'
@@ -24,10 +24,10 @@ get-emudeck:
   chmod +x ~/Desktop/EmuDeck.desktop
 
 install-nix: _auth
-  sudo curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
+  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | sudo -A bash
 
 remove-nix: _auth
-  sudo curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | bash
+  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | sudo -A bash
 
 get-greenlight:
   echo 'Retrieving Greenlight'
@@ -71,7 +71,7 @@ deckswap-off:
     echo 'deckswap is already disabled.'
   fi
 
-resize-deckswap:
+resize-deckswap: _auth
   #!/usr/bin/env bash
   CONFIG='/etc/default/deckswap'
   CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/SWAP_SIZE=//g')
@@ -82,7 +82,7 @@ resize-deckswap:
       NEW_SIZE=1
     fi
     if ((${NEW_SIZE} >= 1 && ${NEW_SIZE} <= 16)); then
-      just --unstable _auth | sudo sed -i 's/SWAP_SIZE='${CURRENT_SIZE}'G/SWAP_SIZE='${NEW_SIZE}'G/g' ${CONFIG}
+      sudo -A sed -i 's/SWAP_SIZE='${CURRENT_SIZE}'G/SWAP_SIZE='${NEW_SIZE}'G/g' ${CONFIG}
       echo 'Current size: '${NEW_SIZE}'G. Please reboot.'
     else
       echo 'Error: Input out of range (1-16). Running again.'
@@ -93,8 +93,8 @@ resize-deckswap:
     just resize-deckswap
   fi
 
-switch-to-ext4:
-  just --unstable _auth | sudo sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs
+switch-to-ext4: _auth
+  sudo -A sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs
 
 zram-on:
   #!/usr/bin/env bash
@@ -116,7 +116,7 @@ zram-off:
     echo 'ZRAM is already disabled.'
   fi
 
-resize-zram:
+resize-zram: _auth
   #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
   CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/zram-size=//g')
@@ -127,7 +127,7 @@ resize-zram:
       NEW_SIZE=1024
     fi
     if ((${NEW_SIZE} >= 512 && ${NEW_SIZE} <= 4096)); then
-      just --unstable _auth | sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
+      sudo -A sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
       echo 'Current size: '${NEW_SIZE}'. Please reboot.'
     else
       echo 'Error: Input out of range (512-4096). Running again.'
@@ -139,4 +139,4 @@ resize-zram:
   fi
 
 _auth:
-  kdialog --password "Please enter your password: "
+  export SUDO_ASKPASS='/usr/bin/ksshaskpass'

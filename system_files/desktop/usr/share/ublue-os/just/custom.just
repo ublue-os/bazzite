@@ -14,10 +14,10 @@ install-corectrl:
   rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
 
 install-nix: _auth
-  sudo curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
+  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | sudo -A bash
 
 remove-nix: _auth
-  sudo curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | bash
+  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | sudo -A bash
 
 enable-big-picture:
   systemctl enable --now plasma-autologin
@@ -62,7 +62,7 @@ zram-off:
     echo 'ZRAM is already disabled.'
   fi
 
-resize-zram:
+resize-zram: _auth
   #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
   CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/zram-size=//g')
@@ -73,7 +73,7 @@ resize-zram:
       NEW_SIZE=1024
     fi
     if ((${NEW_SIZE} >= 512 && ${NEW_SIZE} <= 4096)); then
-      just --unstable _auth | sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
+      sudo -A sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
       echo 'Current size: '${NEW_SIZE}'. Please reboot.'
     else
       echo 'Error: Input out of range (512-4096). Running again.'
@@ -85,4 +85,4 @@ resize-zram:
   fi
 
 _auth:
-  kdialog --password "Please enter your password: "
+  export SUDO_ASKPASS='/usr/bin/ksshaskpass'
