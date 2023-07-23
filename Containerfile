@@ -132,7 +132,6 @@ RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfra
     mesa \
     --remove=mesa-dri-drivers \
     --remove=mesa-filesystem \
-    --remove=mesa-libd3d \
     --remove=mesa-libEGL \
     --remove=mesa-libgbm \
     --remove=mesa-libGL \
