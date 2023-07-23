@@ -137,7 +137,6 @@ RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfra
     --remove=mesa-libGL \
     --remove=mesa-libglapi \
     --remove=mesa-libxatracker \
-    --remove=mesa-omx-drivers \
     --remove=mesa-vulkan-drivers \
     --install=mesa-dri-drivers \
     --install=mesa-filesystem \
