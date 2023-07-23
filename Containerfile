@@ -130,17 +130,27 @@ RUN rpm-ostree install \
 # Install gamescope-limiter patched Mesa.
 RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
     mesa \
-    mesa-dri-drivers \
-    mesa-filesystem \
-    mesa-libd3d \
-    mesa-libEGL \
-    mesa-libgbm \
-    mesa-libGL \
-    mesa-libglapi \
-    mesa-libOSMesa \
-    mesa-libxatracker \
-    mesa-omx-drivers \
-    mesa-vulkan-drivers
+    --remove=mesa-dri-drivers \
+    --remove=mesa-filesystem \
+    --remove=mesa-libd3d \
+    --remove=mesa-libEGL \
+    --remove=mesa-libgbm \
+    --remove=mesa-libGL \
+    --remove=mesa-libglapi \
+    --remove=mesa-libxatracker \
+    --remove=mesa-omx-drivers \
+    --remove=mesa-vulkan-drivers \
+    --install=mesa-dri-drivers \
+    --install=mesa-filesystem \
+    --install=mesa-libd3d \
+    --install=mesa-libEGL \
+    --install=mesa-libgbm \
+    --install=mesa-libGL \
+    --install=mesa-libglapi \
+    --install=mesa-libOSMesa \
+    --install=mesa-libxatracker \
+    --install=mesa-omx-drivers \
+    --install=mesa-vulkan-drivers
 
 # Remove system76-scheduler
 RUN rpm-ostree override remove system76-scheduler
