@@ -205,7 +205,7 @@ Provides:       libEGL-devel%{?_isa}
 
 %package dri-drivers
 Summary:        Mesa-based DRI drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{?with_va}
 Recommends:     %{name}-va-drivers%{?_isa}
@@ -222,7 +222,7 @@ Requires:       (%{name}-libEGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{releas
 %if 0%{?with_omx}
 %package omx-drivers
 Summary:        Mesa-based OMX drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 Provides:       %{name}-omx-drivers = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 
 %description omx-drivers
@@ -232,7 +232,7 @@ Provides:       %{name}-omx-drivers = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 %if 0%{?with_va}
 %package        va-drivers
 Summary:        Mesa-based VA-API video acceleration drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 Obsoletes:      %{name}-vaapi-drivers < 22.2.0-5
 
 %description va-drivers
@@ -242,7 +242,7 @@ Obsoletes:      %{name}-vaapi-drivers < 22.2.0-5
 %if 0%{?with_vdpau}
 %package        vdpau-drivers
 Summary:        Mesa-based VDPAU drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{base_ver}-%{release}
 
 %description vdpau-drivers
 %{summary}.

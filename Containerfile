@@ -130,7 +130,6 @@ RUN rpm-ostree install \
 # Install gamescope-limiter patched Mesa.
 RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
     mesa-dri-drivers \
-    mesa-filesystem \
     mesa-libEGL \
     mesa-libgbm \
     mesa-libGL \
