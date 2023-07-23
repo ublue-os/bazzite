@@ -131,14 +131,10 @@ RUN rpm-ostree install \
 RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
     mesa-dri-drivers \
     mesa-filesystem \
-    mesa-libd3d \
     mesa-libEGL \
     mesa-libgbm \
     mesa-libGL \
     mesa-libglapi \
-    mesa-libOSMesa \
-    mesa-libxatracker \
-    mesa-omx-drivers \
     mesa-vulkan-drivers
 
 # Remove system76-scheduler
