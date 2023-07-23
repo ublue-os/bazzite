@@ -26,7 +26,8 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) preinsalled and enabled (Available but default-disabled on the Deck variant)
 - Helpful first-start installer provides an easy way to install numerous helpful applications and tweaks, including installing [CoreCtrl](https://gitlab.com/corectrl/corectrl) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
 - Nix package manager, matching evidence in SteamOS 3.5 of this potentially being available in a future release.
-- GCAdapter_OC driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
+- [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
+- [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
 
 ### Desktop
 
@@ -51,14 +52,15 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 
 - Directly boots to Gamemode matching SteamOS's behavior
 - Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV)
+- Patched Mesa for proper framerate control from Gamescope.
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default
 - Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default
 - Option to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), and [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), among numerous other useful packages on installation
 - Custom update system allows for the OS, Flatpaks, and Distrobox images to be updated directly from the Gamemode UI
-- Steam and Lutris preinstalled on the image
+- Steam and Lutris preinstalled on the image as layered packages.
 - Comes with a default-disabled service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj)
 - Exclusively uses zram by default with the option to switch back to a swapfile and set a custom size if desired
-- Tuned I/O scheduler to reduce starvation when installing games or during background duperemove processes
+- Tuned BFQ I/O scheduler to reduce starvation when installing games or during background duperemove processes
 - Uses CFS scheduler parameters from [TKG](https://github.com/Frogging-Family/linux-tkg) for increased performance
 - Applies SteamOS's kernel parameters and enables amd-pstate by default
 
