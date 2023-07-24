@@ -24,6 +24,7 @@ screens:
           packages:
           - Install Bazzite Arch: just --unstable install-bazzite-arch
           - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
+          - Export SteamCMD: just --unstable export-steamcmd
           - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
           - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
           - Autostart Steam: cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
