@@ -21,11 +21,11 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
 - Support for [Wallpaper Engine](https://www.wallpaperengine.io/en) on KDE.
 - [Distrobox](https://github.com/89luca89/distrobox) preinstalled with automatic updates for created containers.
-- Automated duperemove services for pruning wine prefix contents.
+- Automated duperemove services for reducing the disk space used by wine prefix contents.
 - Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) preinsalled and enabled (Available but default-disabled on the Deck variant)
-- Helpful first-start installer provides an easy way to install numerous helpful applications and tweaks, including installing [CoreCtrl](https://gitlab.com/corectrl/corectrl) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
-- Nix package manager, matching evidence in SteamOS 3.5 of this potentially being available in a future release.
+- Helpful first-start installer provides an easy way to install numerous applications and tweaks, including installing [CoreCtrl](https://gitlab.com/corectrl/corectrl) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
+- [Nix](https://nixos.org/) package manager, matching evidence in SteamOS 3.5 of this potentially being available in a future release.
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
 - [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
 
