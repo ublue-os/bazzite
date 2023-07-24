@@ -23,6 +23,11 @@ get-emudeck:
   wget https://www.emudeck.com/EmuDeck.desktop -P ~/Desktop
   chmod +x ~/Desktop/EmuDeck.desktop
 
+get-steamcmd:
+  wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O /tmp/steamcmd.tar.gz
+  tar -xvzf steamcmd.tar.gz -C ~/.steam
+  rm /tmp/steamcmd.tar.gz
+
 install-nix: _auth
   curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | sudo -A bash
 

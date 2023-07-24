@@ -79,6 +79,11 @@ screens:
           default: true
           packages:
           - Install Nix Package Support: just --unstable install-nix
+        SteamCMD:
+          description: Installs SteamCMD
+          default: true
+          packages:
+          - Install SteamCMD: just --unstable get-steamcmd
         SteamDeckGyroDSU:
           description: Allows emulators and other applications to receive Steam Deck gyro motion data
           default: true
