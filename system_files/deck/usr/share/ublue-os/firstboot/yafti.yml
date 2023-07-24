@@ -20,7 +20,7 @@ screens:
           description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
           default: true
           packages:
-          - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
+          - Enable Duperemove: just --unstable enable-duperemove
         Autostart Steam:
           description: Launches Steam automatically on the desktop
           default: true
