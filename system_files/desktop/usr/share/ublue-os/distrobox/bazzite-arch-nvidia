@@ -6,3 +6,4 @@ pull=true
 root=false
 replace=false
 start_now=true
+volume=/usr/lib64/libnvidia-vulkan-producer.so:/usr/lib64/libnvidia-vulkan-producer.so
