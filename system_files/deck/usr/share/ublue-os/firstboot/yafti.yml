@@ -35,7 +35,7 @@ screens:
           description: A plugin loader for the Steam Deck
           default: false
           packages:
-          - Retrieve Decky: just --unstable get-decky
+          - Retrieve Decky: sudo -A just --unstable get-decky
         Chiaki4Deck:
           description: PlayStation Remote Play
           default: false
@@ -62,7 +62,7 @@ screens:
             NOTE: Press the escape key before boot to show the menu
           default: true
           packages:
-          - Hide GRUB: just --unstable hide-grub
+          - Hide GRUB: sudo -A just --unstable hide-grub
         Kernel Arguments:
           description: Sets kernel arguments used in SteamOS
           default: true
@@ -78,7 +78,7 @@ screens:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: true
           packages:
-          - Install Nix Package Support: just --unstable install-nix
+          - Install Nix Package Support: sudo -A just --unstable install-nix
         SteamCMD:
           description: Installs SteamCMD
           default: true
@@ -98,7 +98,7 @@ screens:
           description: Disable BTRFS support for SD cards for direct compatibility with SD cards formatted on stock SteamOS (Not recommended).
           default: false
           packages:
-          - Switch SteamOS-BTRFS config to EXT4: just --unstable switch-to-ext4
+          - Switch SteamOS-BTRFS config to EXT4: sudo -A just --unstable switch-to-ext4
         Wallpaper Engine:
           description: Enables Wallpaper Engine
           default: true

@@ -17,11 +17,11 @@ install-corectrl:
   rpm-ostree install corectrl
   rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
 
-install-nix: _auth
-  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | sudo -A bash
+install-nix:
+  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | sudo bash
 
-remove-nix: _auth
-  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | sudo -A bash
+remove-nix:
+  curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | sudo bash
 
 enable-big-picture:
   systemctl enable --now plasma-autologin
@@ -66,10 +66,14 @@ zram-off:
     echo 'ZRAM is already disabled.'
   fi
 
-resize-zram: _auth
+resize-zram:
   #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
-  CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/zram-size=//g')
+  if grep "zram-size" <<< $(cat ${CONFIG}); then
+    CURRENT_SIZE=$(cat "${CONFIG}" | grep "zram-size" | sed 's/zram-size=//g')
+  else
+    CURRENT_SIZE=1024
+  fi
   echo 'Current size: '${CURRENT_SIZE}
   read -p 'Enter new size (512-4096) in megabytes (1024): ' NEW_SIZE
   if [ -z "${NEW_SIZE//[0-9]}" ]; then
@@ -77,38 +81,39 @@ resize-zram: _auth
       NEW_SIZE=1024
     fi
     if ((${NEW_SIZE} >= 512 && ${NEW_SIZE} <= 4096)); then
-      sudo -A sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
+      if grep "zram-size" <<< $(cat ${CONFIG}); then
+        sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
+      else
+        sudo -A echo "zram-size=${NEW_SIZE}" >> ${CONFIG}
+      fi
       echo 'Current size: '${NEW_SIZE}'. Please reboot.'
     else
       echo 'Error: Input out of range (512-4096). Running again.'
-      just resize-zram
+      just --unstable resize-zram
     fi
   else
     echo 'Error: Input is not an integer. Running again.'
-    just resize-zram
+    just --unstable resize-zram
   fi
 
-hide-grub: _auth
+hide-grub:
   #!/usr/bin/env bash
-  sudo -A sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
-  echo 'GRUB_TIMEOUT_STYLE=hidden' | sudo -A tee -a /etc/default/grub 1>/dev/null
-  echo 'GRUB_HIDDEN_TIMEOUT=1' | sudo -A tee -a /etc/default/grub 1>/dev/null
+  sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
+  echo 'GRUB_TIMEOUT_STYLE=hidden' | sudo tee -a /etc/default/grub 1>/dev/null
+  echo 'GRUB_HIDDEN_TIMEOUT=1' | sudo tee -a /etc/default/grub 1>/dev/null
   if [ -f '/boot/efi/EFI/fedora/grub.cfg' ]; then
-    sudo -A grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+    sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
   else
-    sudo -A grub2-mkconfig -o /boot/grub2/grub.cfg
+    sudo grub2-mkconfig -o /boot/grub2/grub.cfg
   fi
 
-unhide-grub: _auth
+unhide-grub:
   #!/usr/bin/env bash
-  sudo -A sed -i '/GRUB_HIDDEN_TIMEOUT=1/d' /etc/default/grub
-  sudo -A sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub
-  sudo -A sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=5/g' /etc/default/grub
+  sudo sed -i '/GRUB_HIDDEN_TIMEOUT=1/d' /etc/default/grub
+  sudo sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub
+  sudo sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=5/g' /etc/default/grub
   if [ -f '/boot/efi/EFI/fedora/grub.cfg' ]; then
-    sudo -A grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+    sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
   else
-    sudo -A grub2-mkconfig -o /boot/grub2/grub.cfg
+    sudo grub2-mkconfig -o /boot/grub2/grub.cfg
   fi
-
-_auth:
-  export SUDO_ASKPASS='/usr/bin/ksshaskpass'
