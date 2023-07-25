@@ -50,7 +50,7 @@ screens:
             NOTE: Press the escape key before boot to show the menu
           default: true
           packages:
-          - Hide GRUB: just --unstable hide-grub
+          - Hide GRUB: sudo -A just --unstable hide-grub
         Memory Tuning:
           description: Adjust ZRAM configuration
           default: false
@@ -60,7 +60,7 @@ screens:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: true
           packages:
-          - Install Nix Package Support: just --unstable install-nix
+          - Install Nix Package Support: sudo -A just --unstable install-nix
         Start Steam in Big Picture Mode:
           description: For HTPCs, start Steam in Big Picture Mode automatically at login.
           default: false
