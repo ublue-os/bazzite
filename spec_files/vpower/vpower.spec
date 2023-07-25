@@ -1,11 +1,12 @@
 Name:           vpower
-Version:        1.4.0
-Release:        %autorelease
+Version:        {{{ git_dir_version }}}
+Release:        1%{?dist}
 Summary:        Service that calculates battery metrics and handles critical battery scenarios
 
 License:        MIT
 URL:            https://gitlab.com/evlaV/vpower/
 Source:         %{url}-/archive/main/vpower-main.tar.gz
+Patch0:         fedora.patch
 
 BuildRequires:  rust-packaging >= 21
 BuildRequires:  lm_sensors-devel
