@@ -15,6 +15,8 @@ create-steam-shortcuts:
   cp /etc/skel.d/Desktop/Return.desktop ~/Desktop
 
 get-decky:
+  #!/usr/bin/env bash
+  export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
   curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
   sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
 
