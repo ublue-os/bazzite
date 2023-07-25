@@ -62,7 +62,7 @@ screens:
           packages:
           - Install Nix Package Support: just --unstable install-nix
         Start Steam in Big Picture Mode:
-          descrption: For HTPCs, start Steam in Big Picture Mode automatically at login.
+          description: For HTPCs, start Steam in Big Picture Mode automatically at login.
           default: false
           packages:
           - Enable Big Picture Mode: just --unstable enable-big-picture
