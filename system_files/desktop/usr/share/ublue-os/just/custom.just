@@ -69,7 +69,11 @@ zram-off:
 resize-zram:
   #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
-  CURRENT_SIZE=$(cat "${CONFIG}" | sed 's/zram-size=//g')
+  if grep "zram-size" <<< $(cat ${CONFIG}); then
+    CURRENT_SIZE=$(cat "${CONFIG}" | grep "zram-size" | sed 's/zram-size=//g')
+  else
+    CURRENT_SIZE=1024
+  fi
   echo 'Current size: '${CURRENT_SIZE}
   read -p 'Enter new size (512-4096) in megabytes (1024): ' NEW_SIZE
   if [ -z "${NEW_SIZE//[0-9]}" ]; then
@@ -77,15 +81,19 @@ resize-zram:
       NEW_SIZE=1024
     fi
     if ((${NEW_SIZE} >= 512 && ${NEW_SIZE} <= 4096)); then
-      sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
+      if grep "zram-size" <<< $(cat ${CONFIG}); then
+        sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
+      else
+        sudo -A echo "zram-size=${NEW_SIZE}" >> ${CONFIG}
+      fi
       echo 'Current size: '${NEW_SIZE}'. Please reboot.'
     else
       echo 'Error: Input out of range (512-4096). Running again.'
-      just resize-zram
+      just --unstable resize-zram
     fi
   else
     echo 'Error: Input is not an integer. Running again.'
-    just resize-zram
+    just --unstable resize-zram
   fi
 
 hide-grub:
