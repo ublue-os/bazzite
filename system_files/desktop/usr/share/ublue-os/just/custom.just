@@ -34,7 +34,7 @@ get-greenlight:
   chmod +x ~/Desktop/Greenlight.AppImage
 
 enable-system76-scheduler:
-  git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --single-branch /tmp/kwin-system76-scheduler-integration
+  git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
   kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
   systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
   systemctl enable --now com.system76.Scheduler.service

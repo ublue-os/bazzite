@@ -177,7 +177,7 @@ RUN rpm-ostree override remove \
     krfb-libs
 
 # Install dock updater, this is done manually due to proprietary parts preventing it from being on Copr.
-RUN git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --single-branch /tmp/jupiter-dock-updater-bin && \
+RUN git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --depth 1 /tmp/jupiter-dock-updater-bin && \
     mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
 
 # Suspend using power button

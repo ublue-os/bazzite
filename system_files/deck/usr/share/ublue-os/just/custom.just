@@ -52,7 +52,7 @@ get-chiaki:
     jq -r ".assets[] | select(.name | test(\"flatpakref\")) | .browser_download_url")
 
 enable-wallpaper-engine:
-  git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --single-branch /tmp/wallpaper-engine-kde-plugin
+  git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
   plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
   rm -rf /tmp/wallpaper-engine-kde-plugin
 
