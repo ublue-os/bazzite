@@ -11,6 +11,7 @@ BuildArch:      noarch
 Patch0:         fedora.patch
 
 Requires:       python3
+Requires:       python3-inotify
 
 BuildRequires:  systemd-rpm-macros
 
