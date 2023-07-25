@@ -158,11 +158,15 @@ RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfra
 RUN rpm-ostree install \
     mesa-va-drivers
 
+# Use old version of gamescope
+RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
+    rpm-ostree install gamescope && \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo
+
 # Install new packages
 RUN rpm-ostree install \
     steam \
     lutris \
-    gamescope \
     gamescope-session \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
