@@ -167,6 +167,7 @@ RUN rpm-ostree install \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     steamdeck-kde-presets \
+    vpower \
     ds-inhibit \
     ryzenadj \
     gamemode \
@@ -199,6 +200,7 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
     systemctl enable plasma-autologin.service && \
     systemctl enable jupiter-fan-control.service && \
+    systemctl enable vpower.service && \
     systemctl enable ds-inhibit.service && \
     systemctl enable set-cfs-tweaks.service && \
     systemctl disable input-remapper.service && \
