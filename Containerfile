@@ -203,4 +203,5 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
         /tmp/* \
         /var/* && \
     mkdir -p /var/lib/duperemove && \
+    mkdir -p /var/lib/bluetooth && \
     ostree container commit
