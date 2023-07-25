@@ -98,10 +98,10 @@ RUN pip install --prefix=/usr yafti && \
     rm -rf \
         /tmp/* \
         /var/* && \
-    mkdir -p /var/lib/duperemove && \
-    ostree container commit && \
     mkdir -p /var/tmp && \
-    chmod -R 1777 /var/tmp
+    chmod -R 1777 /var/tmp && \
+    mkdir -p /var/lib/duperemove && \
+    ostree container commit
 
 FROM bazzite as bazzite-deck
 
@@ -181,7 +181,7 @@ RUN rpm-ostree override remove \
     krfb \
     krfb-libs
 
-# Install dock updater, this is done manually due to proprietary parts preventing it from being on Copr.
+# Install dock updater, this is done manually due to proprietary parts preventing it from being on Copr
 RUN git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --depth 1 /tmp/jupiter-dock-updater-bin && \
     mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
 
@@ -205,11 +205,13 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
     systemctl enable set-cfs-tweaks.service && \
     systemctl disable input-remapper.service && \
     systemctl --global disable ublue-update.timer && \
+    setcap cap_sys_nice=+ep /usr/bin/gamescope && \
     rm -f /usr/etc/sddm.conf && \
     rm -rf \
         /tmp/* \
         /var/* && \
+    mkdir -p /var/tmp && \
+    chmod -R 1777 /var/tmp && \
     mkdir -p /var/lib/duperemove && \
     mkdir -p /var/lib/bluetooth && \
-    setcap cap_sys_nice=+ep /usr/bin/gamescope && \
     ostree container commit
