@@ -23,6 +23,7 @@ DualShock 4/DualSense mouse inhibitor
 %prep
 %setup -n %{name}-main
 %patch 0
+chmod +x ds-inhibit.py
 
 %build
 
