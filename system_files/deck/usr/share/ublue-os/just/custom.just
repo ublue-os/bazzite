@@ -7,7 +7,7 @@ enable-plasma-autologin:
   systemctl enable --now plasma-autologin
 
 set-steamos-kargs:
-  rpm-ostree kargs --append="amd_pstate=active" --append="amd_iommu=off" --append="amdgpu.gttsize=8128" --append="spi_amd.speed_dev=1" --append="initcall_blacklist=simpledrm_platform_driver_init" --delete-if-present="nomodeset"
+  rpm-ostree kargs --append="amd_pstate=active" --append="amd_iommu=off" --append="amdgpu.gttsize=8128" --append="spi_amd.speed_dev=1" --append="audit=0" --append="initcall_blacklist=simpledrm_platform_driver_init" --delete-if-present="nomodeset"
 
 create-steam-shortcuts:
   cp /usr/share/applications/steam.desktop ~/Desktop
