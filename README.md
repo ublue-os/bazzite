@@ -38,7 +38,7 @@ Common variant available as `bazzite` and suitable for desktops and HTPCs.
 - Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
 - Option to automatically launch Steam in Big Picture Mode on boot for HTPCs.
 
-To rebase an existing system to this image: 
+To rebase an existing ostree system to this image: 
 
     podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-live --force-replacefiles $(find ~/.local/share/containers -name ublue-os-signing.noarch.rpm 2>/dev/null) && rpm-ostree rebase --uninstall $(rpm -q ublue-os-signing-* --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{Arch}') ostree-image-signed:docker://ghcr.io/ublue-os/bazzite:latest
 
@@ -66,7 +66,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 - TLS/SSL secured DNS and NTP by default <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>.
 - Applies SteamOS's kernel parameters and enables amd-pstate by default.
 
-To rebase an existing system to this image: 
+To rebase an existing ostree system to this image: 
 
     podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-live --force-replacefiles $(find ~/.local/share/containers -name ublue-os-signing.noarch.rpm 2>/dev/null) && rpm-ostree rebase --uninstall $(rpm -q ublue-os-signing-* --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{Arch}') ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-deck:latest
 
@@ -134,7 +134,7 @@ These images are signed with sisgstore's [cosign](https://docs.sigstore.dev/cosi
 
 Bazzite is a community effort and wouldn't exist without everyone's support. Below are some of the people who've helped us along the way:
 
- - [evlaV](https://gitlab.com/evlaV) - For making Valve's code available and for being [this guy](https://xkcd.com/2347/).
+ - [evlaV](https://gitlab.com/evlaV) - For making Valve's code available and for being [this person](https://xkcd.com/2347/).
  - [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.
- - [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out - It's our Nix-based cousin.
+ - [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out. It's our Nix-based cousin.
  - [cyrv6737](https://github.com/cyrv6737) - For the initial inspiration and the base that became bazzite-arch.
