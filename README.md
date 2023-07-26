@@ -72,11 +72,9 @@ To rebase an existing system to this image:
 
 Bazzite started as a project to resolve some of the issues that plague SteamOS, mainly out of date packages despite an Arch base and the lack of a functional package manager.
 
-Despite this project also being image-based you are able to install any Fedora package straight from the command line. These packages will persist across updates. Additionally, Bazzite is updated daily with packages from upstream [Fedora](https://fedoraproject.org/) giving you the best possible performance and latest features - all on a stable base.
+Despite this project also being image-based you are able to install any Fedora package straight from the command line. These packages will persist across updates <sub><sup>(So go ahead and install that obscure VPN software you spent an hour trying to get working in SteamOS)</sup></sub>. Additionally, Bazzite is updated daily with packages from upstream [Fedora](https://fedoraproject.org/) giving you the best possible performance and latest features - all on a stable base.
 
-Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot and disk encryption, making this a sensible solution for general computing.
-
-<sup><sub>Yes, you can print from Bazzite.</sub></sup>
+Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot and disk encryption, making this a sensible solution for general computing <sup><sub>(Yes, you can print from Bazzite)</sub></sup>.
 
 ![Default Theme](/repo_content/desktop1.png?raw=true "Default Theme")
 ![VGUI2 Theme](/repo_content/desktop2.png?raw=true "VGUI2 Theme")
