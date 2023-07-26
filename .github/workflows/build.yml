@@ -8,12 +8,16 @@ on:
     paths-ignore:
       - '**.md'
       - '**.txt'
+      - 'repo_content/**'
+      - 'spec_files/**'
   push:
     branches:
       - main
     paths-ignore:
       - '**.md'
       - '**.txt'
+      - 'repo_content/**'
+      - 'spec_files/**'
   merge_group:
   workflow_dispatch:
 env:
