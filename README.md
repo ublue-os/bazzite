@@ -14,10 +14,10 @@ Bazzite is an OCI image that serves as an alternative operating system for the [
 
 Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ublue-os/nvidia](https://github.com/ublue-os/nvidia), which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features: 
 
-- Proprietary Nvidia drivers included on the image
-- Full hardware accelerated codec support for H264 decoding
-- Full support for AMD's ROCM OpenCL/HIP runtimes
-- Includes Valve's KDE themes from SteamOS
+- Proprietary Nvidia drivers pre-installed.
+- Full hardware accelerated codec support for H264 decoding.
+- Full support for AMD's ROCM OpenCL/HIP runtimes.
+- Includes Valve's KDE themes from SteamOS.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
 - Support for [Wallpaper Engine](https://www.wallpaperengine.io/en) on KDE.
 - [Distrobox](https://github.com/89luca89/distrobox) preinstalled with automatic updates for created containers.
@@ -34,7 +34,8 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 Common variant available as `bazzite` and suitable for desktops and HTPCs.
 
 - Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
-- Ships with a ported version of [System76's Scheduler](https://github.com/pop-os/system76-scheduler), providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
+- Ships with a ported version of [System76-Scheduler](https://github.com/pop-os/system76-scheduler), providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
+- Customized System76-Scheduler config with additional rules and CFS paramaters from [Linux-TKG](https://github.com/Frogging-Family/linux-tkg).
 - Option to automatically launch Steam in Big Picture Mode on boot for HTPCs.
 
 To rebase an existing system to this image: 
@@ -51,19 +52,19 @@ Once you've completed the initial setup of the Nvidia build, [be sure to follow 
 
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, available as `bazzite-deck`:
 
-- Directly boots to Gamemode matching SteamOS's behavior
-- Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV)
+- Directly boots to Gamemode matching SteamOS's behavior.
+- Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV).
 - Patched Mesa for proper framerate control from Gamescope.
-- Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default
-- Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default
-- Option to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), and [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), among numerous other useful packages on installation
-- Custom update system allows for the OS, Flatpaks, and Distrobox images to be updated directly from the Gamemode UI
+- Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
+- Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default.
+- Option to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), and [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), among numerous other useful packages on installation.
+- Custom update system allows for the OS, Flatpaks, and Distrobox images to be updated directly from the Gamemode UI.
 - Steam and Lutris preinstalled on the image as layered packages.
-- Comes with a default-disabled service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj)
-- Exclusively uses zram by default with the option to switch back to a swapfile and set a custom size if desired
-- Tuned BFQ I/O scheduler to reduce starvation when installing games or during background duperemove processes
-- Uses CFS scheduler parameters from [TKG](https://github.com/Frogging-Family/linux-tkg) for increased performance
-- Applies SteamOS's kernel parameters and enables amd-pstate by default
+- Comes with a default-disabled service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj).
+- Exclusively uses ZRAM by default with the option to switch back to a swap file and set a custom size if desired (1GB by default).
+- BFQ I/O scheduler to prevent I/O starvation when installing games or during background duperemove processes.
+- CFS scheduler parameters from [Linux-TKG](https://github.com/Frogging-Family/linux-tkg) for increased performance.
+- Applies SteamOS's kernel parameters and enables amd-pstate by default.
 
 To rebase an existing system to this image: 
 
@@ -82,7 +83,7 @@ Bazzite ships with the latest Linux kernel and SELinux enabled by default with f
   
 ## Custom Packages
 
-Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built on Copr on [bazzite](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/) and [bazzite-multilib](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/).
+Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built on Copr in [bazzite](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/) and [bazzite-multilib](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/).
 
 |Package|Status|
 |---|---|
@@ -135,5 +136,5 @@ Bazzite is a community effort and wouldn't exist without everyone's support. Bel
 
  - [evlaV](https://gitlab.com/evlaV) - For making Valve's code available and for being [this guy](https://xkcd.com/2347/).
  - [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.
- - [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out. It's this but built on Nix.
+ - [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out - It's our Nix-based cousin.
  - [cyrv6737](https://github.com/cyrv6737) - For the initial inspiration and the base that became bazzite-arch.
