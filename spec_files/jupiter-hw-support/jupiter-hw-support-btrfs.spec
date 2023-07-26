@@ -7,6 +7,7 @@ License:        GPLv3
 URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/master/%{packagename}-master.tar.gz
+Source1:        power-button-handler.py
 Patch0:         fedora.patch
 Patch1:         selinux.patch
 Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch
@@ -17,11 +18,13 @@ Patch6:         systemd-run.patch
 Patch7:         priv-write.patch
 
 Requires:       python3
-Requires:       python3-libevdev
+Requires:       python3-evdev
 Requires:       python3-crcmod
 Requires:       python3-click
 Requires:       python3-progressbar2
 Requires:       python3-hid
+Requires:       python3-daemon
+Requires:       python3-psutil
 Requires:       hidapi
 Requires:       dmidecode
 Requires:       jq
@@ -55,7 +58,7 @@ cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}/
 cp usr/lib/hwsupport/cs35l41-dsp1-spk-prot.bin.mod %{buildroot}%{_prefix}/lib/hwsupport/cs35l41-dsp1-spk-prot.bin.mod
 cp usr/lib/hwsupport/cs35l41-dsp1-spk-prot.bin.orig %{buildroot}%{_prefix}/lib/hwsupport/cs35l41-dsp1-spk-prot.bin.orig
-cp usr/lib/hwsupport/power-button-handler.py %{buildroot}%{_prefix}/lib/hwsupport/power-button-handler.py
+cp %{SOURCE1} %{buildroot}%{_prefix}/lib/hwsupport/power-button-handler.py
 cp usr/lib/hwsupport/cirrus-fixup.sh %{buildroot}%{_sbindir}/cirrus-fixup
 cp usr/lib/hwsupport/ev2_cirrus_alsa_fixups.sh %{buildroot}%{_sbindir}/ev2_cirrus_alsa_fixups
 cp usr/lib/hwsupport/format-device.sh %{buildroot}%{_sbindir}/format-device
