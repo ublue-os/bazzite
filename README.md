@@ -45,6 +45,7 @@ or for devices with Nvidia GPUs:
 
     podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-live --force-replacefiles $(find ~/.local/share/containers -name ublue-os-signing.noarch.rpm 2>/dev/null) && rpm-ostree rebase --uninstall $(rpm -q ublue-os-signing-* --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{Arch}') ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-nvidia:latest
 
+Once you've completed the initial setup of the Nvidia build, [be sure to follow steps 2 and 3 from the ublue-os/nvidia guide](https://github.com/ublue-os/nvidia#2-set-kargs-after-rebasing).
 
 ### Deck
 
