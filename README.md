@@ -35,7 +35,7 @@ Common variant available as `bazzite` and suitable for desktops and HTPCs.
 
 - Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
 - Ships with a ported version of [System76-Scheduler](https://github.com/pop-os/system76-scheduler), providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
-- Customized System76-Scheduler config with additional rules and CFS paramaters from [Linux-TKG](https://github.com/Frogging-Family/linux-tkg).
+- Customized System76-Scheduler config with additional rules and CFS parameters from [Linux-TKG](https://github.com/Frogging-Family/linux-tkg).
 - Option to automatically launch Steam in Big Picture Mode on boot for HTPCs.
 
 To rebase an existing system to this image: 
@@ -46,7 +46,7 @@ or for devices with Nvidia GPUs:
 
     podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-live --force-replacefiles $(find ~/.local/share/containers -name ublue-os-signing.noarch.rpm 2>/dev/null) && rpm-ostree rebase --uninstall $(rpm -q ublue-os-signing-* --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{Arch}') ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-nvidia:latest
 
-Once you've completed the initial setup of the Nvidia build, [be sure to follow steps 2 and 3 from the ublue-os/nvidia guide](https://github.com/ublue-os/nvidia#2-set-kargs-after-rebasing).
+Once you've installed or rebased to a Nvidia build, [be sure to follow steps 2 and 3 from the ublue-os/nvidia guide](https://github.com/ublue-os/nvidia#2-set-kargs-after-rebasing).
 
 ### Deck
 
@@ -64,6 +64,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 - Exclusively uses ZRAM by default with the option to switch back to a swap file and set a custom size if desired (1GB by default).
 - BFQ I/O scheduler to prevent I/O starvation when installing games or during background duperemove processes.
 - CFS scheduler parameters from [Linux-TKG](https://github.com/Frogging-Family/linux-tkg) for increased performance.
+- TLS/SSL secured DNS and NTP by default. This is a handheld PC you're likely to use on random public networks after all.
 - Applies SteamOS's kernel parameters and enables amd-pstate by default.
 
 To rebase an existing system to this image: 

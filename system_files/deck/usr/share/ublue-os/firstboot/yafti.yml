@@ -247,7 +247,7 @@ screens:
     source: yafti.screen.title
     values:
       title: "All done!"
-      icon: "/path/to/icon"
+      icon: "/usr/share/ublue-os/bazzite/logo.svg"
       links:
       - "Install More Applications":
           run: /usr/bin/plasma-discover
@@ -256,4 +256,4 @@ screens:
       - "Join the Discord Community":
           run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
       description: |
-        Thank you for trying Bazzite, we hope you enjoy it!
+        Thank you for trying Bazzite (Steam Deck Edition), we hope you enjoy it!
