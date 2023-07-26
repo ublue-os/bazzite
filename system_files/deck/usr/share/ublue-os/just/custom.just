@@ -30,6 +30,14 @@ get-steamcmd:
   tar -xvzf steamcmd.tar.gz -C ~/.steam
   rm /tmp/steamcmd.tar.gz
 
+enable-system76-scheduler:
+  git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
+  kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
+  systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
+  systemctl enable --now com.system76.Scheduler.service
+  kcmshell5 kcm_kwin_scripts
+  rm -rf /tmp/kwin-system76-scheduler-integration
+
 install-nix:
   curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
 

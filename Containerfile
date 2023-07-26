@@ -140,11 +140,6 @@ RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfra
     mesa-libglapi \
     mesa-vulkan-drivers
 
-# Remove system76-scheduler
-RUN rpm-ostree override remove system76-scheduler
-RUN rm -f /etc/systemd/user/com.system76.Scheduler.dbusproxy.service
-RUN rm -f /usr/bin/system76-scheduler-dbus-proxy
-
 # Remove steamdeck-kde-presets-desktop
 RUN rpm-ostree override remove steamdeck-kde-presets-desktop
 
@@ -202,10 +197,8 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
     systemctl enable jupiter-fan-control.service && \
     systemctl enable vpower.service && \
     systemctl enable ds-inhibit.service && \
-    systemctl enable set-cfs-tweaks.service && \
     systemctl disable input-remapper.service && \
     systemctl --global disable ublue-update.timer && \
-    setcap cap_sys_nice=+ep /usr/bin/gamescope && \
     rm -f /usr/etc/sddm.conf && \
     rm -rf \
         /tmp/* \

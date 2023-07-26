@@ -99,6 +99,11 @@ screens:
           default: false
           packages:
           - Switch SteamOS-BTRFS config to EXT4: sudo -A just --unstable switch-to-ext4
+        System76 Scheduler:
+          description: Enables System76 scheduler
+          default: true
+          packages:
+          - Enable System76 Scheduler: just --unstable enable-system76-scheduler
         Wallpaper Engine:
           description: Enables Wallpaper Engine
           default: true

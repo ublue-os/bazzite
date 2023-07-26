@@ -22,6 +22,8 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Support for [Wallpaper Engine](https://www.wallpaperengine.io/en) on KDE.
 - [Distrobox](https://github.com/89luca89/distrobox) preinstalled with automatic updates for created containers.
 - Automated duperemove services for reducing the disk space used by wine prefix contents.
+- [System76-Scheduler](https://github.com/pop-os/system76-scheduler) preinstalled, providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
+- Customized System76-Scheduler config with additional rules and CFS parameters from [Linux-TKG](https://github.com/Frogging-Family/linux-tkg).
 - Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) preinsalled and enabled (Available but default-disabled on the Deck variant)
 - Helpful first-start installer provides an easy way to install numerous applications and tweaks, including installing [CoreCtrl](https://gitlab.com/corectrl/corectrl) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
@@ -34,8 +36,6 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 Common variant available as `bazzite` and suitable for desktops and HTPCs.
 
 - Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
-- Ships with a ported version of [System76-Scheduler](https://github.com/pop-os/system76-scheduler), providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
-- Customized System76-Scheduler config with additional rules and CFS parameters from [Linux-TKG](https://github.com/Frogging-Family/linux-tkg).
 - Option to automatically launch Steam in Big Picture Mode on boot for HTPCs.
 
 To rebase an existing system to this image: 
@@ -63,8 +63,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 - Comes with a default-disabled service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj).
 - Exclusively uses ZRAM by default with the option to switch back to a swap file and set a custom size if desired (1GB by default).
 - BFQ I/O scheduler to prevent I/O starvation when installing games or during background duperemove processes.
-- CFS scheduler parameters from [Linux-TKG](https://github.com/Frogging-Family/linux-tkg) for increased performance.
-- TLS/SSL secured DNS and NTP by default. This is a handheld PC you're likely to use on random public networks after all.
+- TLS/SSL secured DNS and NTP by default <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>.
 - Applies SteamOS's kernel parameters and enables amd-pstate by default.
 
 To rebase an existing system to this image: 
