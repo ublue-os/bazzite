@@ -23,8 +23,6 @@ Requires:       python3-crcmod
 Requires:       python3-click
 Requires:       python3-progressbar2
 Requires:       python3-hid
-Requires:       python3-daemon
-Requires:       python3-psutil
 Requires:       hidapi
 Requires:       dmidecode
 Requires:       jq
