@@ -66,6 +66,11 @@ screens:
           default: false
           packages:
           - Enable Big Picture Mode: just --unstable enable-big-picture
+        SteamOS BTRFS Mount Flags:
+          description: Sets SteamOS BTRFS mount flags
+          default: true
+          packages:
+          - Set SteamOS BTRFS mount flags: sudo -A just --unstable set-btrfs-flags
         System76 Scheduler:
           description: Enables System76 scheduler
           default: true

@@ -46,6 +46,9 @@ enable-wallpaper-engine:
   plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
   rm -rf /tmp/wallpaper-engine-kde-plugin
 
+set-btrfs-flags:
+  sudo sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
+
 zram-on:
   #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)

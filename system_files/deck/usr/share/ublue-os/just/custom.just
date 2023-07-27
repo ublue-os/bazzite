@@ -112,6 +112,9 @@ enable-duperemove:
   systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
   systemctl enable --now duperemove-weekly@$(systemd-escape /run/media/mmcblk0p1).timer
 
+set-btrfs-flags:
+  sudo sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
+
 switch-to-ext4:
   sudo sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs
 
