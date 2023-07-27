@@ -104,7 +104,7 @@ rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 %{_bindir}/thumbstick_cal
 %{_bindir}/thumbstick_fine_cal
 %{_bindir}/trigger_cal
-%{_bindir}/power-button-handler
+%{_bindir}/power-button-inhibitor
 %{_sbindir}/cirrus-fixup
 %{_sbindir}/ev2_cirrus_alsa_fixups
 %{_sbindir}/format-device
