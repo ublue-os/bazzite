@@ -19,23 +19,23 @@ for device in devices:
 
 longpresstimer = None
 
-inhibit = ['systemd-inhibit',
+systemd-inhibit = ['systemd-inhibit',
 	'--what=handle-power-key:handle-suspend-key:handle-hibernate-key',
 	'sleep',
 	'infinity']
 
 def inhibit():
 	for proc in psutil.process_iter():
-		if inhibit == proc.cmdline():
+		if systemd-inhibit == proc.cmdline():
 			return
 
 	print ( "Starting inhibitor" )
 	with daemon.DaemonContext():
-		subprocess.call(inhibit)
+		subprocess.call(systemd-inhibit)
 
 def uninhibit():
 	print ( "Stopping inhibitor" )
-	subprocess.call(['pkill', '-f', ' '.join(inhibit)])
+	subprocess.call(['pkill', '-f', ' '.join(systemd-inhibit)])
 
 def longpress():
 	os.system( "~/.steam/root/ubuntu12_32/steam -ifrunning steam://longpowerpress" )
