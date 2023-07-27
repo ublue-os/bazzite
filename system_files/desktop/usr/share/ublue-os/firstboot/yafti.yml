@@ -208,6 +208,7 @@ screens:
           - Barrier: com.github.debauchee.barrier
           - Bitwarden: com.bitwarden.desktop
           - Calibre: com.calibre_ebook.calibre
+          - Easy Effects: com.github.wwmm.easyeffects
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
           - GreenWithEnvy (Nvidia GPU Overclocking): com.leinardi.gwe
