@@ -45,6 +45,8 @@ RUN rpm-ostree install \
     rmlint \
     compsize \
     kdeconnectd \
+    ddccontrol \
+    ddccontrol-gtk \
     input-remapper \
     system76-scheduler \
     hl2linux-selinux \
