@@ -6,7 +6,7 @@ Summary:        Steam Deck Hardware Support Package
 License:        GPLv3
 URL:            https://github.com/ublue-os/bazzite
 
-Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/master/%{packagename}-master.tar.gz
+Source:         https://gitlab.com/evlaV/jupiter-hw-support/-/archive/5cb8f34ea8047bc208ffc4f93c673e31e3811f4d/jupiter-hw-support-5cb8f34ea8047bc208ffc4f93c673e31e3811f4d.tar.gz
 Source1:        power-button-handler.py
 Patch0:         fedora.patch
 Patch1:         selinux.patch
@@ -42,7 +42,7 @@ SteamOS 3.0 Steam Deck Hardware Support Package
 %define debug_package %{nil}
 
 %prep
-%autosetup -p1 -n %{packagename}-master
+%autosetup -p1 -n %{packagename}-5cb8f34ea8047bc208ffc4f93c673e31e3811f4d
 
 %build
 
