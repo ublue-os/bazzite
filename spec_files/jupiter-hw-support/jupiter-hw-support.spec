@@ -6,7 +6,7 @@ License:        MIT
 URL:            https://github.com/ublue-os/bazzite
 
 Source:        	https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz
-Source1:        power-button-handler.py
+Source1:        power-button-inhibitor.sh
 Patch0:         fedora.patch
 Patch1:         selinux.patch
 
@@ -51,6 +51,7 @@ cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}/
 cp usr/lib/hwsupport/cs35l41-dsp1-spk-prot.bin.mod %{buildroot}%{_prefix}/lib/hwsupport/cs35l41-dsp1-spk-prot.bin.mod
 cp usr/lib/hwsupport/cs35l41-dsp1-spk-prot.bin.orig %{buildroot}%{_prefix}/lib/hwsupport/cs35l41-dsp1-spk-prot.bin.orig
+cp usr/lib/hwsupport/power-button-handler.py %{buildroot}%{_prefix}/lib/hwsupport/power-button-handler.py
 cp usr/lib/hwsupport/cirrus-fixup.sh %{buildroot}%{_sbindir}/cirrus-fixup
 cp usr/lib/hwsupport/ev2_cirrus_alsa_fixups.sh %{buildroot}%{_sbindir}/ev2_cirrus_alsa_fixups
 cp usr/lib/hwsupport/format-device.sh %{buildroot}%{_sbindir}/format-device
@@ -60,7 +61,7 @@ cp usr/lib/hwsupport/steamos-automount.sh %{buildroot}%{_sbindir}/steamos-automo
 cp usr/lib/hwsupport/trim-devices.sh %{buildroot}%{_sbindir}/trim-devices
 cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
-cp %{SOURCE1} %{buildroot}%{_bindir}/power-button-handler
+cp %{SOURCE1} %{buildroot}%{_bindir}/power-button-inhibitor
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
 cp -rv etc/* %{buildroot}%{_sysconfdir}
 # Remove unneeded files
