@@ -59,6 +59,8 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 - Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default.
 - Option to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), and [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), among numerous other useful packages on installation.
 - Custom update system allows for the OS, Flatpaks, and Distrobox images to be updated directly from the Gamemode UI.
+- Built in support for dual-boot thanks to Fedora's installation of GRUB being left intact.
+- Update break something? Easily roll back to the previous version of Bazzite thanks to rpm-ostree's rollback functionality. You can even select previous images at boot.
 - Steam and Lutris preinstalled on the image as layered packages.
 - Comes with a default-disabled service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj).
 - Exclusively uses ZRAM by default with the option to switch back to a swap file and set a custom size if desired (1GB by default).
