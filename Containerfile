@@ -171,7 +171,10 @@ RUN rpm-ostree install \
     latencyflex-vulkan-layer \
     vkBasalt \
     mangohud \
-    sdgyrodsu
+    sdgyrodsu \
+    f3 \
+    python-vdf \
+    python-crcmod
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
