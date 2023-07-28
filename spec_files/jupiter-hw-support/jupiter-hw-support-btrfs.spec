@@ -7,7 +7,6 @@ License:        GPLv3
 URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/jupiter-hw-support/-/archive/5cb8f34ea8047bc208ffc4f93c673e31e3811f4d/jupiter-hw-support-5cb8f34ea8047bc208ffc4f93c673e31e3811f4d.tar.gz
-Source1:        power-button-inhibitor.sh
 Patch0:         fedora.patch
 Patch1:         selinux.patch
 Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch
@@ -66,7 +65,6 @@ cp usr/lib/hwsupport/steamos-automount.sh %{buildroot}%{_sbindir}/steamos-automo
 cp usr/lib/hwsupport/trim-devices.sh %{buildroot}%{_sbindir}/trim-devices
 cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
-cp %{SOURCE1} %{buildroot}%{_bindir}/power-button-inhibitor
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
 cp -rv etc/* %{buildroot}%{_sysconfdir}
 # Remove unneeded files
@@ -104,7 +102,6 @@ rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 %{_bindir}/thumbstick_cal
 %{_bindir}/thumbstick_fine_cal
 %{_bindir}/trigger_cal
-%{_bindir}/power-button-inhibitor
 %{_sbindir}/cirrus-fixup
 %{_sbindir}/ev2_cirrus_alsa_fixups
 %{_sbindir}/format-device

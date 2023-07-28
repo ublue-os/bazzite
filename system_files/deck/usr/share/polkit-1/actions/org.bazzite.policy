@@ -7,17 +7,6 @@
   <vendor>Bazzite</vendor>
   <vendor_url>https://github.com/ublue-os/bazzite/</vendor_url>
 
-  <action id="org.bazzite.power.button.pkexec">
-    <description>Allow inhibition of power button</description>
-    <icon_name>package-x-generic</icon_name>
-    <defaults>
-      <allow_any>yes</allow_any>
-      <allow_inactive>yes</allow_inactive>
-      <allow_active>yes</allow_active>
-    </defaults>
-    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/power-button-inhibitor</annotate>
-  </action>
-
   <action id="org.bazzite.dmidecode.pkexec">
     <description>Dump SMBIOS table contents</description>
     <icon_name>package-x-generic</icon_name>
