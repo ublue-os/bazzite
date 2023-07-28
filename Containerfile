@@ -166,7 +166,6 @@ RUN rpm-ostree install \
     vkBasalt \
     mangohud \
     sdgyrodsu \
-    f3 \
     python-vdf \
     python-crcmod
 
