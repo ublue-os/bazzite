@@ -56,7 +56,9 @@ rpm-ostree install \
     vkBasalt \
     mangohud \
     sdgyrodsu \
-    f3
+    f3 \
+    python-vdf \
+    python-crcmod
 
 # Install dock updater, this is done manually due to proprietary parts preventing it from being on Copr
 git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --depth 1 /tmp/jupiter-dock-updater-bin
