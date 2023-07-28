@@ -140,7 +140,9 @@ RUN rpm-ostree override remove \
     krfb \
     krfb-libs \
     ublue-os-wallpapers \
-    steamdeck-kde-presets-desktop
+    steamdeck-kde-presets-desktop \
+    ddccontrol \
+    ddccontrol-gtk
 
 # Install patched udisks2 (Needed for SteamOS SD card mounting)
 RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite udisks2
@@ -175,7 +177,9 @@ RUN git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --depth 1 /t
     mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
 
 # Cleanup & Finalize
-RUN ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
+RUN rm /usr/share/applications/org.kde.xwaylandvideobridge.desktop && \
+    rm /usr/share/applications/winetricks.desktop && \
+    ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
     sed -i 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/g' /etc/systemd/logind.conf && \
