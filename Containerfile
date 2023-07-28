@@ -64,7 +64,9 @@ RUN rpm-ostree install \
     ladspa-noise-suppression-for-voice \
     btop \
     neofetch \
-    fish
+    fish \
+    xdotool \
+    yad
 
 # Install newer Xwayland
 RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr xorg-x11-server-Xwayland
