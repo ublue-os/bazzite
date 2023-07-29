@@ -78,7 +78,7 @@ RUN if grep -v "nvidia" <<< "${IMAGE_NAME}"; then \
         rocm-opencl \
         waydroid \
         lzip \
-        weston
+        weston \
 ; fi 
 
 # Cleanup & Finalize
