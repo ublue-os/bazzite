@@ -139,7 +139,8 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         lzip \
         weston \
         firejail \
-        gamescope && \
+        gamescope \
+        OpenGamepadUI-session && \
     wget $(curl -s https://api.github.com/repos/ShadowBlip/OpenGamepadUI/releases/latest | \
     jq -r ".assets[] | select(.name | test(\"opengamepadui.tar.gz\")) | .browser_download_url") \
     -P /tmp && \
