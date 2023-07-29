@@ -99,7 +99,6 @@ RUN mkdir -p "/usr/etc/profile.d/" && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable input-remapper.service && \
-    systemctl enable waydroid-container.service && \
     rm -rf \
         /tmp/* \
         /var/* && \
