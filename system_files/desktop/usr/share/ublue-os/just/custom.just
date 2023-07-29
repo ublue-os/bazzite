@@ -15,7 +15,7 @@ configure-waydroid:
   git clone https://github.com/casualsnek/waydroid_script ${SCRIPT}
   sudo pip install --user -r ${SCRIPT}/requirements.txt
   sudo ${SCRIPT}/main.py
-  sudo pip uninstall --user -r ${SCRIPT}/requirements.txt
+  sudo pip uninstall -r ${SCRIPT}/requirements.txt
   rm -rf ${SCRIPT}
 
 export-steamcmd:
