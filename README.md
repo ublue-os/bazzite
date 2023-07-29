@@ -12,7 +12,7 @@
 
 Bazzite is an OCI image that serves as an alternative operating system for the [Steam Deck](https://www.steamdeck.com/), and a ready-to-game SteamOS-like for desktop computers and living room home theater PCs. 
 
-Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ublue-os/nvidia](https://github.com/ublue-os/nvidia), which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features: 
+Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ublue-os/nvidia](https://github.com/ublue-os/nvidia) using [Fedora](https://fedoraproject.org/) technology, which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features: 
 
 - Proprietary Nvidia drivers pre-installed.
 - Full hardware accelerated codec support for H264 decoding.
@@ -76,7 +76,7 @@ To rebase an existing ostree system to this image:
 
 Bazzite started as a project to resolve some of the issues that plague SteamOS, mainly out of date packages despite an Arch base and the lack of a functional package manager.
 
-Despite this project also being image-based you are able to install any Fedora package straight from the command line. These packages will persist across updates <sub><sup>(So go ahead and install that obscure VPN software you spent an hour trying to get working in SteamOS)</sup></sub>. Additionally, Bazzite is updated daily with packages from upstream [Fedora](https://fedoraproject.org/) giving you the best possible performance and latest features - all on a stable base.
+Despite this project also being image-based you are able to install any Fedora package straight from the command line. These packages will persist across updates <sub><sup>(So go ahead and install that obscure VPN software you spent an hour trying to get working in SteamOS)</sup></sub>. Additionally, Bazzite is updated daily with packages from upstream Fedora giving you the best possible performance and latest features - all on a stable base.
 
 Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot and disk encryption, making this a sensible solution for general computing <sup><sub>(Yes, you can print from Bazzite)</sub></sup>.
 
