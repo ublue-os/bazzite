@@ -18,7 +18,7 @@ BuildRequires:  systemd-rpm-macros
 Gamescope session for OpenGamepadUI
 
 %prep
-%autosetup -n main
+%autosetup -n %{name}-main
 
 %install
 mkdir -p %{buildroot}%{_bindir}/
