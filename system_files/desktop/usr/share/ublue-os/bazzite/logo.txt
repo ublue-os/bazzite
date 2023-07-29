@@ -1,0 +1,14 @@
+${c1}      .,;;;;,..............;::::;.      
+    .cccccccccccccccccccccccccccccc.    
+   .cc,...';lccccccccccccccc,....,c:.   
+   ::       .ccccccccccccc:       .c;   
+  ,l'        :llllllololll,        ;c'  
+ .lcc.      'l::coccoccl,:l.      'lcl. 
+ ;occcc;,,;cc.   .lccl,;,:';l;,,;cccco; 
+ odlccccccccc.   .lccc,;',;;ccccccccldo 
+'dddlccccccccc::cccccccc;:ccccccccclddd'
+;ddddolccccc;'............';ccccclodddd;
+,dddddddoll'                .lloddddddd,
+.ldddddddd'                  'ddddddddl.
+  ;oddddo.                    .lddddl,  
+    .;c;.                       ,;,.    

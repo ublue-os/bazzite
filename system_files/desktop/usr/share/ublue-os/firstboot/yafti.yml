@@ -5,10 +5,82 @@ screens:
   first-screen:
     source: yafti.screen.title
     values:
-      title: "Welcome to Bazzite (Desktop)"
-      icon: "/path/to/icon"
+      title: "Welcome to Bazzite"
+      icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
-        Pick some applications to get started
+        Configure your system to get started
+  configure-bazzite:
+    source: yafti.screen.package
+    values:
+      title: Configure Bazzite
+      show_terminal: true
+      package_manager: yafti.plugin.run
+      groups:
+        Bazzite Arch Distrobox:
+          description: This will install an Arch distrobox configured for gaming. Steam and Lutris will then be exported.
+          default: true
+          condition:
+            run: distrobox list | grep -v bazzite-arch
+          packages:
+          - Install Bazzite Arch: just --unstable install-bazzite-arch
+          - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
+          - Export SteamCMD: just --unstable export-steamcmd
+          - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
+          - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
+          - Autostart Steam: cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
+        Automatic Duplicate File Removal:
+          description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
+          default: true
+          packages:
+          - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
+        CoreCtrl:
+          description: AMD GPU Overclocking
+          condition:
+            run: grep -v "nvidia" <<< $(rpm-ostree status)
+          default: false
+          packages:
+          - Install CoreCtrl: just --unstable install-corectrl
+        Greenlight:
+          description: A utility for xCloud and xHome streaming
+          default: false
+          packages:
+          - Retrieve Greenlight: just --unstable get-greenlight
+        Hide GRUB Menu:
+          description: |
+            NOTE: Press the escape key before boot to show the menu
+          default: true
+          packages:
+          - Hide GRUB: sudo -A just --unstable hide-grub
+        Memory Tuning:
+          description: Adjust ZRAM configuration
+          default: false
+          packages:
+          - Disable ZRAM: just --unstable zram-off
+        Nix Package Manager:
+          description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
+          default: false
+          packages:
+          - Install Nix Package Support: sudo -A just --unstable install-nix
+        Start Steam in Big Picture Mode:
+          description: For HTPCs, start Steam in Big Picture Mode automatically at login.
+          default: false
+          packages:
+          - Enable Big Picture Mode: just --unstable enable-big-picture
+        SteamOS BTRFS Mount Flags:
+          description: Sets SteamOS BTRFS mount flags
+          default: true
+          packages:
+          - Set SteamOS BTRFS mount flags: sudo -A just --unstable set-btrfs-flags
+        System76 Scheduler:
+          description: Enables System76 scheduler
+          default: true
+          packages:
+          - Enable System76 Scheduler: just --unstable enable-system76-scheduler
+        Wallpaper Engine:
+          description: Enables Wallpaper Engine
+          default: true
+          packages:
+          - Enable Wallpaper Engine: just --unstable enable-wallpaper-engine
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
@@ -54,14 +126,20 @@ screens:
           - Bottles: com.usebottles.bottles
           - Chiaki (PlayStation Remote Play): re.chiaki.Chiaki
           - Discord: com.discordapp.Discord
+          - DOSBox Staging: io.github.dosbox-staging 
           - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
           - itch: io.itch.itch
+          - ludusavi (Game Save Backup): com.github.mtkennerly.ludusavi
           - Minecraft (Prism Launcher): org.prismlauncher.PrismLauncher
           - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
           - Moonlight: com.moonlight_stream.Moonlight
           - Mumble: info.mumble.Mumble
           - OpenMW: org.openmw.OpenMW
+          - osu: sh.ppy.osu
+          - Parsec: com.parsecgaming.parsec
+          - Space Cadet Pinball: com.github.k4zmu2a.spacecadetpinball
+          - Sonic Robo Blast 2: org.srb2.SRB2
           - Steam Link: com.valvesoftware.SteamLink
           - SuperTux: org.supertuxproject.SuperTux
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
@@ -78,6 +156,7 @@ screens:
           - melonDS: net.kuribo64.melonDS
           - mGBA: io.mgba.mGBA
           - PCSX2: net.pcsx2.PCSX2
+          - Pegasus: org.pegasus_frontend.Pegasus
           - PPSSPP: org.ppsspp.PPSSPP
           - RetroArch: org.libretro.RetroArch
           - RetroDECK: net.retrodeck.retrodeck
@@ -86,6 +165,7 @@ screens:
           - Ryujinx: org.ryujinx.Ryujinx
           - ScummVM: org.scummvm.ScummVM
           - Snes9x: om.snes9x.Snes9x
+          - Stella: io.github.stella_emu.Stella
           - xemu: app.xemu.xemu
           - yuzu: org.yuzu_emu.yuzu
         Streaming:
@@ -102,19 +182,28 @@ screens:
           description: "Rock and Roll!"
           default: false
           packages:
+          - Cider (Apple Music Client): sh.cider.Cider
           - Spotify: com.spotify.Client
           - Strawberry Music Player: org.strawberrymusicplayer.strawberry
           - Tidal-hifi: com.mastermindzh.tidal-hifi
-        Office:
+        Office/Productivity:
           description: Bow to Capitalism
           default: false
           packages:
+          - Ardour: org.ardour.Ardour
+          - Blender: org.blender.Blender
+          - darktable: org.darktable.Darktable
+          - GIMP: org.gimp.GIMP
+          - Inkscape: org.inkscape.Inkscape
           - Joplin: net.cozic.joplin_desktop
+          - Kdenlive: org.kde.kdenlive
+          - Krita: org.ardour.Ardour
           - LibreOffice: org.libreoffice.LibreOffice
           - Obsidian: md.obsidian.Obsidian
           - OnlyOffice: org.onlyoffice.desktopeditors
           - Slack: com.slack.Slack
           - Standard Notes: org.standardnotes.standardnotes
+          - Tenacity: org.tenacityaudio.Tenacity
           - Thunderbird Email: org.mozilla.Thunderbird
           - Xournal++: flathub com.github.xournalpp.xournalpp
         Utilities:
@@ -124,68 +213,21 @@ screens:
           - Barrier: com.github.debauchee.barrier
           - Bitwarden: com.bitwarden.desktop
           - Calibre: com.calibre_ebook.calibre
-          - CoreCtrl (AMD GPU Overclocking): just install-corectrl
+          - Easy Effects: com.github.wwmm.easyeffects
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
-          - GIMP: org.gimp.GIMP
           - GreenWithEnvy (Nvidia GPU Overclocking): com.leinardi.gwe
+          - JamesDSP: me.timschneeberger.jdsp4linux
           - KeePassXC: org.keepassxc.KeePassXC
+          - OpenRGB: org.openrgb.OpenRGB
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
-  configure-bazzite:
-    source: yafti.screen.package
-    values:
-      title: Configure Bazzite
-      show_terminal: true
-      package_manager: yafti.plugin.run
-      groups:
-        Bazzite Arch Distrobox:
-          description: This will install an Arch distrobox configured for gaming. Steam and Lutris will then be exported.
-          default: true
-          condition:
-            run: distrobox list | grep -v bazzite-arch
-          packages:
-          - Install Bazzite Arch: just install-bazzite-arch
-          - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
-          - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
-          - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
-          - Autostart Steam: cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
-        Automatic Duplicate File Removal:
-          description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
-          default: true
-          packages:
-          - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
-        Greenlight:
-          description: A utility for xCloud and xHome streaming
-          default: false
-          packages:
-          - Retrieve Greenlight: just get-greenlight
-        Memory Tuning:
-          description: Adjust ZRAM configuration
-          default: false
-          packages:
-          - Disable ZRAM: just zram-off
-        Nix Package Manager:
-          descrption: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
-          default: true
-          packages:
-          - Install Nix Package Support: just install-nix
-        System76 Scheduler:
-          description: Enables System76 scheduler
-          default: true
-          packages:
-          - Enable System76 Scheduler: just enable-system76-scheduler
-        Wallpaper Engine:
-          description: Enables Wallpaper Engine
-          default: true
-          packages:
-          - Enable Wallpaper Engine: just enable-wallpaper-engine
   final-screen:
     source: yafti.screen.title
     values:
       title: "All done!"
-      icon: "/path/to/icon"
+      icon: "/usr/share/ublue-os/bazzite/logo.svg"
       links:
       - "Install More Applications":
           run: /usr/bin/plasma-discover

@@ -6,7 +6,7 @@ Summary:        Steam Deck Hardware Support Package
 License:        GPLv3
 URL:            https://github.com/ublue-os/bazzite
 
-Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/master/%{packagename}-master.tar.gz
+Source:         https://gitlab.com/evlaV/jupiter-hw-support/-/archive/5cb8f34ea8047bc208ffc4f93c673e31e3811f4d/jupiter-hw-support-5cb8f34ea8047bc208ffc4f93c673e31e3811f4d.tar.gz
 Patch0:         fedora.patch
 Patch1:         selinux.patch
 Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch
@@ -14,9 +14,10 @@ Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/l
 Patch4:         user.patch
 Patch5:         bazzite-btrfs.patch
 Patch6:         systemd-run.patch
+Patch7:         priv-write.patch
 
 Requires:       python3
-Requires:       python3-libevdev
+Requires:       python3-evdev
 Requires:       python3-crcmod
 Requires:       python3-click
 Requires:       python3-progressbar2
@@ -38,7 +39,7 @@ SteamOS 3.0 Steam Deck Hardware Support Package
 %define debug_package %{nil}
 
 %prep
-%autosetup -p1 -n %{packagename}-master
+%autosetup -p1 -n %{packagename}-5cb8f34ea8047bc208ffc4f93c673e31e3811f4d
 
 %build
 

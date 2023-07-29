@@ -5,10 +5,115 @@ screens:
   first-screen:
     source: yafti.screen.title
     values:
-      title: "Welcome to Bazzite (Steam Deck)"
-      icon: "/path/to/icon"
+      title: "Welcome to Bazzite (Steam Deck Edition)"
+      icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
-        Pick some applications to get started
+        Configure your system to get started
+  configure-bazzite:
+    source: yafti.screen.package
+    values:
+      title: Configure Bazzite
+      show_terminal: true
+      package_manager: yafti.plugin.run
+      groups:
+        Automatic Duplicate File Removal:
+          description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
+          default: true
+          packages:
+          - Enable Duperemove: just --unstable enable-duperemove
+        Autostart Steam:
+          description: Launches Steam automatically on the desktop
+          default: true
+          packages:
+          - Enable Autostart: cp /usr/share/applications/steam.desktop ~/.config/autostart/steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/steam-silent.desktop
+        BoilR:
+          description: Adds games from various clients to Steam
+          default: false
+          packages:
+          - Retrieve BoilR: just --unstable get-boilr
+        Decky Loader:
+          description: A plugin loader for the Steam Deck
+          default: false
+          packages:
+          - Retrieve Decky: sudo -A just --unstable get-decky
+        Chiaki4Deck:
+          description: PlayStation Remote Play
+          default: false
+          packages:
+          - Install Chiaki4Deck: just --unstable get-chiaki
+        EmuDeck:
+          description: |
+            A utility for installing and configuring emulators on the Steam Deck
+          default: false
+          packages:
+          - Retrieve EmuDeck: just --unstable get-emudeck
+        Gamescope Autologin:
+          description: Autologin to Gamescope Session
+          default: true
+          packages:
+          - Enable Gamescope Autologin: just --unstable enable-gamescope-autologin
+        Greenlight:
+          description: A utility for xCloud and xHome streaming
+          default: false
+          packages:
+          - Retrieve Greenlight: just --unstable get-greenlight
+        Hide GRUB Menu:
+          description: |
+            NOTE: Press the escape key before boot to show the menu
+          default: true
+          packages:
+          - Hide GRUB: sudo -A just --unstable hide-grub
+        Kernel Arguments:
+          description: Sets kernel arguments used in SteamOS
+          default: true
+          packages:
+          - Set kargs: just --unstable set-steamos-kargs
+        Memory Tuning:
+          description: Adjust ZRAM and configure deckswap
+          default: false
+          packages:
+          - Deck Swap: just --unstable swap-on
+          - Disable ZRAM: just --unstable zram-off
+        Nix Package Manager:
+          description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
+          default: false
+          packages:
+          - Install Nix Package Support: sudo -A just --unstable install-nix
+        SteamCMD:
+          description: Installs SteamCMD
+          default: true
+          packages:
+          - Install SteamCMD: just --unstable get-steamcmd
+        SteamDeckGyroDSU:
+          description: Allows emulators and other applications to receive Steam Deck gyro motion data
+          default: true
+          packages:
+          - Enable SDGyroDSU Service: systemctl --user enable --now sdgyrodsu
+        Steam Desktop Shortcuts:
+          description: Creates Steam desktop shortcuts
+          default: true
+          packages:
+          - Create Steam shortcuts: just --unstable create-steam-shortcuts
+        SteamOS BTRFS Mount Flags:
+          description: Sets SteamOS BTRFS mount flags
+          default: true
+          packages:
+          - Set SteamOS BTRFS mount flags: sudo -A just --unstable set-btrfs-flags
+        Use EXT4 for SD Cards:
+          description: Disable BTRFS support for SD cards for direct compatibility with SD cards formatted on stock SteamOS (Not recommended).
+          default: false
+          packages:
+          - Switch SteamOS-BTRFS config to EXT4: sudo -A just --unstable switch-to-ext4
+        System76 Scheduler:
+          description: Enables System76 scheduler
+          default: true
+          packages:
+          - Enable System76 Scheduler: just --unstable enable-system76-scheduler
+        Wallpaper Engine:
+          description: Enables Wallpaper Engine
+          default: true
+          packages:
+          - Enable Wallpaper Engine: just --unstable enable-wallpaper-engine
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
@@ -53,16 +158,21 @@ screens:
           default: false
           packages:
           - Bottles: com.usebottles.bottles
-          - Chiaki4Deck (PlayStation Remote Play): just get-chiaki
           - Discord: com.discordapp.Discord
+          - DOSBox Staging: io.github.dosbox-staging 
           - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
           - itch: io.itch.itch
+          - ludusavi (Game Save Backup): com.github.mtkennerly.ludusavi
           - Minecraft (Prism Launcher): org.prismlauncher.PrismLauncher
           - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
           - Moonlight: com.moonlight_stream.Moonlight
           - Mumble: info.mumble.Mumble
           - OpenMW: org.openmw.OpenMW
+          - osu: sh.ppy.osu
+          - Parsec: com.parsecgaming.parsec
+          - Space Cadet Pinball: com.github.k4zmu2a.spacecadetpinball
+          - Sonic Robo Blast 2: org.srb2.SRB2
           - Steam Link: com.valvesoftware.SteamLink
           - SuperTux: org.supertuxproject.SuperTux
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
@@ -79,6 +189,7 @@ screens:
           - melonDS: net.kuribo64.melonDS
           - mGBA: io.mgba.mGBA
           - PCSX2: net.pcsx2.PCSX2
+          - Pegasus: org.pegasus_frontend.Pegasus
           - PPSSPP: org.ppsspp.PPSSPP
           - RetroArch: org.libretro.RetroArch
           - RetroDECK: net.retrodeck.retrodeck
@@ -87,6 +198,7 @@ screens:
           - Ryujinx: org.ryujinx.Ryujinx
           - ScummVM: org.scummvm.ScummVM
           - Snes9x: om.snes9x.Snes9x
+          - Stella: io.github.stella_emu.Stella
           - xemu: app.xemu.xemu
           - yuzu: org.yuzu_emu.yuzu
         Streaming:
@@ -103,19 +215,28 @@ screens:
           description: "Rock and Roll!"
           default: false
           packages:
+          - Cider (Apple Music Client): sh.cider.Cider
           - Spotify: com.spotify.Client
           - Strawberry Music Player: org.strawberrymusicplayer.strawberry
           - Tidal-hifi: com.mastermindzh.tidal-hifi
-        Office:
+        Office/Productivity:
           description: Bow to Capitalism
           default: false
           packages:
+          - Ardour: org.ardour.Ardour
+          - Blender: org.blender.Blender
+          - darktable: org.darktable.Darktable
+          - GIMP: org.gimp.GIMP
+          - Inkscape: org.inkscape.Inkscape
           - Joplin: net.cozic.joplin_desktop
+          - Kdenlive: org.kde.kdenlive
+          - Krita: org.ardour.Ardour
           - LibreOffice: org.libreoffice.LibreOffice
           - Obsidian: md.obsidian.Obsidian
           - OnlyOffice: org.onlyoffice.desktopeditors
           - Slack: com.slack.Slack
           - Standard Notes: org.standardnotes.standardnotes
+          - Tenacity: org.tenacityaudio.Tenacity
           - Thunderbird Email: org.mozilla.Thunderbird
           - Xournal++: flathub com.github.xournalpp.xournalpp
         Utilities:
@@ -127,85 +248,16 @@ screens:
           - Calibre: com.calibre_ebook.calibre
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
-          - GIMP: org.gimp.GIMP
           - KeePassXC: org.keepassxc.KeePassXC
+          - OpenRGB: org.openrgb.OpenRGB
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
-  configure-bazzite:
-    source: yafti.screen.package
-    values:
-      title: Configure Bazzite
-      show_terminal: true
-      package_manager: yafti.plugin.run
-      groups:
-        Automatic Duplicate File Removal:
-          description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
-          default: true
-          packages:
-          - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
-        Autostart Steam:
-          description: Launches Steam automatically on the desktop
-          default: true
-          packages:
-          - Enable Autostart: cp ~/usr/share/applications/steam.desktop ~/.config/autostart/steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/steam-silent.desktop
-        Decky Loader:
-          description: A plugin loader for the Steam Deck
-          default: false
-          packages:
-          - Retrieve Decky: just get-decky
-        EmuDeck:
-          description: |
-            A utility for installing and configuring emulators on the Steam Deck
-          default: false
-          packages:
-          - Retrieve EmuDeck: just get-emudeck
-        Gamescope Autologin:
-          description: Autologin to Gamescope Session
-          default: true
-          packages:
-          - Enable Gamescope Autologin: just enable-gamescope-autologin
-        Greenlight:
-          description: A utility for xCloud and xHome streaming
-          default: false
-          packages:
-          - Retrieve Greenlight: just get-greenlight
-        Kernel Arguments:
-          description: Sets kernel arguments used in SteamOS
-          default: true
-          packages:
-          - Set kargs: just set-steamos-kargs
-        Memory Tuning:
-          description: Adjust ZRAM and configure deckswap
-          default: false
-          packages:
-          - Deck Swap: just swap-on
-          - Disable ZRAM: just zram-off
-        Nix Package Manager:
-          description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
-          default: true
-          packages:
-          - Install Nix Package Support: just install-nix
-        SteamDeckGyroDSU:
-          description: Allows emulators and other applications to receive Steam Deck gyro motion data
-          default: true
-          packages:
-          - Enable SDGyroDSU Service: systemctl --user enable --now sdgyrodsu
-        Steam Desktop Shortcuts:
-          description: Creates Steam desktop shortcuts
-          default: true
-          packages:
-          - Create Steam shortcuts: just create-steam-shortcuts
-        Wallpaper Engine:
-          description: Enables Wallpaper Engine
-          default: true
-          packages:
-          - Enable Wallpaper Engine: just enable-wallpaper-engine
   final-screen:
     source: yafti.screen.title
     values:
       title: "All done!"
-      icon: "/path/to/icon"
+      icon: "/usr/share/ublue-os/bazzite/logo.svg"
       links:
       - "Install More Applications":
           run: /usr/bin/plasma-discover
@@ -214,4 +266,4 @@ screens:
       - "Join the Discord Community":
           run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
       description: |
-        Thank you for trying Bazzite, we hope you enjoy it!
+        Thank you for trying Bazzite (Steam Deck Edition), we hope you enjoy it!

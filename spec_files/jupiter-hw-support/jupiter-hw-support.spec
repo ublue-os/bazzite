@@ -10,7 +10,7 @@ Patch0:         fedora.patch
 Patch1:         selinux.patch
 
 Requires:       python3
-Requires:       python3-libevdev
+Requires:       python3-evdev
 Requires:       python3-crcmod
 Requires:       python3-click
 Requires:       python3-progressbar2

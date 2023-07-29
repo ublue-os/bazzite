@@ -1,0 +1,20 @@
+diff --git a/etc/xdg/kdeglobals b/etc/xdg/kdeglobals
+index 19fff81..42b336f 100644
+--- a/etc/xdg/kdeglobals
++++ b/etc/xdg/kdeglobals
+@@ -2,15 +2,6 @@
+ LookAndFeelPackage=com.valve.vapor.desktop
+ SingleClick=false
+ 
+-[KDE Action Restrictions][$i]
+-action/switch_user=false
+-action/start_new_session=false
+-action/lock_screen=false
+-
+-[KDE Control Module Restrictions][$i]
+-kcm_sddm.desktop=false
+-kcm_plymouth.desktop=false
+-
+ [General]
+ font=Noto Sans,11,-1,5,50,0,0,0,0,0
+ menuFont=Noto Sans,11,-1,5,50,0,0,0,0,0

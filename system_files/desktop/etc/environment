@@ -1,0 +1,6 @@
+# Required for use of OBS-VkCapture in X11 environments
+# Nvidia users must additionally have nvidia-drm.modeset=1 in their kargs
+OBS_USE_EGL=1
+
+# Required for Decky Loader on systems with SELinux
+DECKY_SELINUX=1

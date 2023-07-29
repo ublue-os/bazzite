@@ -1,0 +1,228 @@
+From c142933f0bc2d68d74c1f2f7d6902b8dc48699c7 Mon Sep 17 00:00:00 2001
+From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+Date: Mon, 21 Feb 2022 18:43:54 +0100
+Subject: [PATCH] STEAMOS: Dynamic swapchain override for gamescope limiter
+
+---
+ src/loader/loader_dri3_helper.c | 43 +++++++++++++++++++++++++++++++--
+ src/loader/loader_dri3_helper.h |  1 +
+ src/loader/meson.build          |  2 +-
+ src/vulkan/wsi/meson.build      |  2 +-
+ src/vulkan/wsi/wsi_common_x11.c | 38 +++++++++++++++++++++++++++++
+ 5 files changed, 82 insertions(+), 4 deletions(-)
+
+diff --git a/src/loader/loader_dri3_helper.c b/src/loader/loader_dri3_helper.c
+index 11bf6472894..21ad0c28937 100644
+--- a/src/loader/loader_dri3_helper.c
++++ b/src/loader/loader_dri3_helper.c
+@@ -37,6 +37,7 @@
+ #include "loader_dri_helper.h"
+ #include "loader_dri3_helper.h"
+ #include "util/macros.h"
++#include "util/simple_mtx.h"
+ #include "drm-uapi/drm_fourcc.h"
+ 
+ /**
+@@ -288,6 +289,30 @@ dri3_update_max_num_back(struct loader_dri3_drawable *draw)
+    }
+ }
+ 
++static unsigned
++gamescope_swapchain_override()
++{
++   const char *path = getenv("GAMESCOPE_LIMITER_FILE");
++   if (!path)
++      return 0;
++
++   static simple_mtx_t mtx = SIMPLE_MTX_INITIALIZER;
++   static int fd = -1;
++
++   simple_mtx_lock(&mtx);
++   if (fd < 0) {
++      fd = open(path, O_RDONLY);
++   }
++   simple_mtx_unlock(&mtx);
++
++   if (fd < 0)
++      return 0;
++
++   uint32_t override_value = 0;
++   pread(fd, &override_value, sizeof(override_value), 0);
++   return override_value;
++}
++
+ void
+ loader_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
+ {
+@@ -302,10 +327,12 @@ loader_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
+     * PS. changing from value A to B and A < B won't cause swap out of order but
+     * may still gets wrong target_msc value at the beginning.
+     */
+-   if (draw->swap_interval != interval)
+-      loader_dri3_swapbuffer_barrier(draw);
++   if (draw->orig_swap_interval != interval)
++       loader_dri3_swapbuffer_barrier(draw);
+ 
+-   draw->swap_interval = interval;
++   draw->orig_swap_interval = interval;
++   if (gamescope_swapchain_override() != 1)
++      draw->swap_interval = interval;
+ }
+ 
+ static void
+@@ -437,6 +464,12 @@ loader_dri3_drawable_init(xcb_connection_t *conn,
+    draw->swap_interval = dri_get_initial_swap_interval(draw->dri_screen_render_gpu,
+                                                        draw->ext->config);
+ 
++   draw->orig_swap_interval = draw->swap_interval;
++
++   unsigned gamescope_override = gamescope_swapchain_override();
++   if (gamescope_override == 1)
++      draw->swap_interval = 1;
++
+    dri3_update_max_num_back(draw);
+ 
+    /* Create a new drawable */
+@@ -1091,6 +1124,12 @@ loader_dri3_swap_buffers_msc(struct loader_dri3_drawable *draw,
+    if (draw->type == LOADER_DRI3_DRAWABLE_WINDOW) {
+       dri3_fence_reset(draw->conn, back);
+ 
++      unsigned gamescope_override = gamescope_swapchain_override();
++      if (gamescope_override == 1)
++         draw->swap_interval = 1;
++      else
++         draw->swap_interval = draw->orig_swap_interval;
++
+       /* Compute when we want the frame shown by taking the last known
+        * successful MSC and adding in a swap interval for each outstanding swap
+        * request. target_msc=divisor=remainder=0 means "Use glXSwapBuffers()
+diff --git a/src/loader/loader_dri3_helper.h b/src/loader/loader_dri3_helper.h
+index 1fd340bd145..b8f5eaaf190 100644
+--- a/src/loader/loader_dri3_helper.h
++++ b/src/loader/loader_dri3_helper.h
+@@ -178,6 +178,7 @@ struct loader_dri3_drawable {
+    bool block_on_depleted_buffers;
+    bool queries_buffer_age;
+    int swap_interval;
++   int orig_swap_interval;
+ 
+    struct loader_dri3_extensions *ext;
+    const struct loader_dri3_vtable *vtable;
+diff --git a/src/loader/meson.build b/src/loader/meson.build
+index 6334cb9815c..0dc8ef40c37 100644
+--- a/src/loader/meson.build
++++ b/src/loader/meson.build
+@@ -28,7 +28,7 @@ if with_platform_x11 and with_dri3
+     include_directories : [inc_include, inc_src],
+     dependencies : [
+       dep_libdrm, dep_xcb_dri3, dep_xcb_present, dep_xcb_sync, dep_xshmfence,
+-      dep_xcb_xfixes,
++      dep_xcb_xfixes, idep_mesautil
+     ],
+     build_by_default : false,
+   )
+diff --git a/src/vulkan/wsi/wsi_common_x11.c b/src/vulkan/wsi/wsi_common_x11.c
+index a42355971a7..ce03b95cb8e 100644
+--- a/src/vulkan/wsi/wsi_common_x11.c
++++ b/src/vulkan/wsi/wsi_common_x11.c
+@@ -42,6 +42,7 @@
+ #include "util/hash_table.h"
+ #include "util/os_file.h"
+ #include "util/os_time.h"
++#include "util/simple_mtx.h"
+ #include "util/u_debug.h"
+ #include "util/u_thread.h"
+ #include "util/xmlconfig.h"
+@@ -198,6 +199,30 @@ wsi_x11_detect_xwayland(xcb_connection_t *conn,
+    return is_xwayland;
+ }
+ 
++static unsigned
++gamescope_swapchain_override()
++{
++   const char *path = getenv("GAMESCOPE_LIMITER_FILE");
++   if (!path)
++      return 0;
++
++   static simple_mtx_t mtx = SIMPLE_MTX_INITIALIZER;
++   static int fd = -1;
++
++   simple_mtx_lock(&mtx);
++   if (fd < 0) {
++      fd = open(path, O_RDONLY);
++   }
++   simple_mtx_unlock(&mtx);
++
++   if (fd < 0)
++      return 0;
++
++   uint32_t override_value = 0;
++   pread(fd, &override_value, sizeof(override_value), 0);
++   return override_value;
++}
++
+ static struct wsi_x11_connection *
+ wsi_x11_connection_create(struct wsi_device *wsi_dev,
+                           xcb_connection_t *conn)
+@@ -1042,6 +1067,8 @@ struct x11_swapchain {
+    struct wsi_queue                             acquire_queue;
+    pthread_t                                    queue_manager;
+ 
++   VkPresentModeKHR                             orig_present_mode;
++
+    /* Lock and condition variable that lets callers monitor forward progress in the swapchain.
+     * This includes:
+     * - Present ID completion updates (present_id).
+@@ -1135,6 +1162,8 @@ static void x11_swapchain_notify_error(struct x11_swapchain *swapchain, VkResult
+  * is permanent once seen, and every subsequent call will return this. If
+  * this has not been seen, success will be returned.
+  */
++#define x11_swapchain_result(chain, result) \
++   _x11_swapchain_result(chain, result, __FILE__, __LINE__)
+ static VkResult
+ _x11_swapchain_result(struct x11_swapchain *chain, VkResult result,
+                       const char *file, int line)
+@@ -1146,6 +1175,12 @@ _x11_swapchain_result(struct x11_swapchain *chain, VkResult result,
+    if (chain->status < 0)
+       return chain->status;
+ 
++   unsigned gamescope_override = gamescope_swapchain_override();
++   if ((gamescope_override == 1 && chain->base.present_mode != VK_PRESENT_MODE_FIFO_KHR) ||
++       (gamescope_override != 1 && chain->base.present_mode != chain->orig_present_mode)) {
++      return x11_swapchain_result(chain, VK_ERROR_OUT_OF_DATE_KHR);
++   }
++
+    /* If we have a new error, mark it as permanent on the chain and return. */
+    if (result < 0) {
+ #ifndef NDEBUG
+@@ -1177,8 +1212,6 @@ _x11_swapchain_result(struct x11_swapchain *chain, VkResult result,
+    /* No changes, so return the last status. */
+    return chain->status;
+ }
+-#define x11_swapchain_result(chain, result) \
+-   _x11_swapchain_result(chain, result, __FILE__, __LINE__)
+ 
+ static struct wsi_image *
+ x11_get_wsi_image(struct wsi_swapchain *wsi_chain, uint32_t image_index)
+@@ -2554,6 +2587,10 @@ x11_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+    xcb_void_cookie_t cookie;
+    VkResult result;
+    VkPresentModeKHR present_mode = wsi_swapchain_get_present_mode(wsi_device, pCreateInfo);
++   VkPresentModeKHR orig_present_mode = present_mode;
++
++   if (gamescope_swapchain_override() == 1)
++      present_mode = VK_PRESENT_MODE_FIFO_KHR;
+ 
+    assert(pCreateInfo->sType == VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR);
+ 
+@@ -2666,6 +2703,7 @@ x11_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+    chain->base.wait_for_present = x11_wait_for_present;
+    chain->base.release_images = x11_release_images;
+    chain->base.present_mode = present_mode;
++   chain->orig_present_mode = orig_present_mode;
+    chain->base.image_count = num_images;
+    chain->conn = conn;
+    chain->window = window;
+-- 
+GitLab
+
