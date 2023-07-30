@@ -185,6 +185,10 @@ RUN rpm-ostree install \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --depth 1 /tmp/jupiter-dock-updater-bin && \
     mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
 
+# Add Flathub
+RUN flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && \
+    flatpak remote-modify --system flathub --no-filter --title="Flathub (System)"
+
 # Cleanup & Finalize
 RUN rm /usr/share/applications/winetricks.desktop && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
