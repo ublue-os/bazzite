@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cat /etc/flatpaks | while read line; do
+  flatpak install --system --noninteractive --no-pull flathub $line
+done && mv /etc/flatpak/install /etc/flatpak/installed

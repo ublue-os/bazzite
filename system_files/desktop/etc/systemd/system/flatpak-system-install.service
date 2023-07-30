@@ -1,0 +1,10 @@
+[Unit]
+Description=Install System Flatpak on boot
+Documentation=https://github.com/ublue-os/endlish-oesque/issues/10
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/ublue-flatpak-system-install
+
+[Install]
+WantedBy=multi-user.target
