@@ -78,6 +78,10 @@ RUN if grep -v "nvidia" <<< "${IMAGE_NAME}"; then \
         rocm-opencl \
 ; fi 
 
+# Add Flathub
+RUN flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && \
+    flatpak remote-modify --system flathub --no-filter --title="Flathub (System)"
+
 # Cleanup & Finalize
 RUN rm /usr/share/applications/shredder.desktop && \
     rm /usr/share/vulkan/icd.d/lvp_icd.*.json && \
