@@ -97,6 +97,10 @@ screens:
   applications:
     source: yafti.screen.package
     values:
+      title: Application Installation
+      show_terminal: true
+      package_manager: yafti.plugin.flatpak
+      groups:
         Web Browsers:
           description: Additional browsers to complement Firefox
           default: false
