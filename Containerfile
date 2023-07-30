@@ -76,11 +76,7 @@ RUN if grep -v "nvidia" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         rocm-hip \
         rocm-opencl \
-; fi 
-
-# Add Flathub
-RUN flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && \
-    flatpak remote-modify --system flathub --no-filter --title="Flathub (System)"
+; fi
 
 # Cleanup & Finalize
 RUN rm /usr/share/applications/shredder.desktop && \
@@ -100,6 +96,8 @@ RUN rm /usr/share/applications/shredder.desktop && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
     flatpak remove --system --noninteractive --all && \
+    mkdir -p /etc/flatpak/remotes.d && \
+    wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /etc/flatpak/remotes.d && \
     cat /etc/flatpak/install | while read line; do flatpak install --system --noninteractive --no-deploy flathub $line; done && \
     systemctl unmask flatpak-system-install.service && \
     systemctl enable flatpak-system-install.service && \
@@ -184,10 +182,6 @@ RUN rpm-ostree install \
     python-crcmod && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --depth 1 /tmp/jupiter-dock-updater-bin && \
     mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
-
-# Add Flathub
-RUN flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && \
-    flatpak remote-modify --system flathub --no-filter --title="Flathub (System)"
 
 # Cleanup & Finalize
 RUN rm /usr/share/applications/winetricks.desktop && \
