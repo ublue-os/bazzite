@@ -79,7 +79,8 @@ RUN if grep -v "nvidia" <<< "${IMAGE_NAME}"; then \
 ; fi 
 
 # Add Flathub
-RUN flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && \
+RUN flatpak remove --system --noninteractive --all && \
+    flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && \
     flatpak remote-modify --system flathub --no-filter --title="Flathub (System)"
 
 # Cleanup & Finalize
