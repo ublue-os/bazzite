@@ -80,6 +80,7 @@ RUN if grep -v "nvidia" <<< "${IMAGE_NAME}"; then \
 
 # Cleanup & Finalize
 RUN rm /usr/share/applications/shredder.desktop && \
+    rm /usr/share/vulkan/icd.d/lvp_icd.*.json && \
     mkdir -p "/usr/etc/profile.d/" && \
     ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
     "/usr/etc/profile.d/ublue-firstboot.sh" && \
