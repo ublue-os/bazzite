@@ -98,6 +98,8 @@ RUN rm /usr/share/applications/shredder.desktop && \
     flatpak remove --system --noninteractive --all && \
     mkdir -p /etc/flatpak/remotes.d && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /etc/flatpak/remotes.d && \
+    mkdir -p /etc/flatpak/cache && \
+    export FLATPAK_SYSTEM_CACHE_DIR='/etc/flatpak/cache' && \
     cat /etc/flatpak/install | while read line; do flatpak install --system --noninteractive --no-deploy flathub $line; done && \
     systemctl unmask flatpak-system-install.service && \
     systemctl enable flatpak-system-install.service && \
