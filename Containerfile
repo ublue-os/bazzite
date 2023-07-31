@@ -128,15 +128,6 @@ COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rp
 RUN rpm-ostree install \
     /tmp/akmods-rpms/kmods/*steamdeck*.rpm
 
-# Install gamescope-limiter patched Mesa
-RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-dri-drivers \
-    mesa-libEGL \
-    mesa-libgbm \
-    mesa-libGL \
-    mesa-libglapi \
-    mesa-vulkan-drivers
-
 # Remove unneeded packages
 RUN rpm-ostree override remove \
     krfb \
@@ -176,6 +167,15 @@ RUN rpm-ostree install \
     python-crcmod && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --depth 1 /tmp/jupiter-dock-updater-bin && \
     mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
+
+# Install gamescope-limiter patched Mesa
+RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    mesa-dri-drivers \
+    mesa-libEGL \
+    mesa-libgbm \
+    mesa-libGL \
+    mesa-libglapi \
+    mesa-vulkan-drivers
 
 # Cleanup & Finalize
 RUN rm /usr/share/applications/winetricks.desktop && \
