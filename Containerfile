@@ -162,7 +162,6 @@ RUN rpm-ostree install \
 # Install new packages & dock updater - done manually due to proprietary parts preventing it from being on Copr
 RUN rpm-ostree install \
     steam \
-    lutris \
     gamescope \
     gamescope-session \
     jupiter-fan-control \
