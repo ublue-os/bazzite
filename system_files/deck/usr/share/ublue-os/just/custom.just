@@ -113,7 +113,13 @@ enable-duperemove:
   systemctl enable --now duperemove-weekly@$(systemd-escape /run/media/mmcblk0p1).timer
 
 set-btrfs-flags:
+  #!/usr/bin/env bash
+  echo 'Configuring drive mount parameters'
   sudo sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
+  if grep '64GB' <<< $(lsblk -o MODEL); then
+    echo 'Increasing compression for detected 64GB EMMC'
+    sudo sed -i 's/compress-force=zstd:1/compress-force=zstd:3/g' /etc/fstab
+  fi
 
 switch-to-ext4:
   sudo sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs
