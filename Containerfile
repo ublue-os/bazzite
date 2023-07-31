@@ -79,7 +79,8 @@ RUN if grep -v "nvidia" <<< "${IMAGE_NAME}"; then \
 ; fi 
 
 # Cleanup & Finalize
-RUN mkdir -p "/usr/etc/profile.d/" && \
+RUN rm /usr/share/applications/shredder.desktop && \
+    mkdir -p "/usr/etc/profile.d/" && \
     ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
     "/usr/etc/profile.d/ublue-firstboot.sh" && \
     pip install --prefix=/usr yafti && \
