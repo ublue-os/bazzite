@@ -68,9 +68,9 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 - TLS/SSL secured DNS and NTP by default <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>.
 - Applies SteamOS's kernel parameters and enables amd-pstate by default.
 - 64GB Steam Decks gain several improvements over SteamOS, including:
-    - Higher disk compression ratio for increased storage space and performance.
-    - Automatic duperemove greatly trims the size of compatdata
-    - Latest version of Mesa creating smaller shader caches and not requiring them to prevent stutter.
+    - Higher disk compression ratio increases storage space and eMMC read speeds.
+    - Automatic duperemove greatly trims the size of compatdata.
+    - Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.
     - Able to be booted even if the drive is full.
 
 To rebase an existing ostree system to this image: 
