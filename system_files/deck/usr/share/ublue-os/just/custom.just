@@ -59,11 +59,6 @@ get-boilr:
     -O ~/Desktop/BoilR
   chmod +x ~/Desktop/BoilR
 
-get-chiaki:
-  flatpak install \
-    $(curl -s https://api.github.com/repos/streetpea/chiaki4deck/releases/latest | \
-    jq -r ".assets[] | select(.name | test(\"flatpakref\")) | .browser_download_url")
-
 enable-wallpaper-engine:
   echo 'Installing Wallpaper Engine Plugin for KDE...'
   git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin

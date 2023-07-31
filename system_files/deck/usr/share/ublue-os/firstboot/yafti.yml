@@ -36,11 +36,6 @@ screens:
           default: false
           packages:
           - Retrieve Decky: sudo -A just --unstable get-decky
-        Chiaki4Deck:
-          description: PlayStation Remote Play
-          default: false
-          packages:
-          - Install Chiaki4Deck: just --unstable get-chiaki
         EmuDeck:
           description: |
             A utility for installing and configuring emulators on the Steam Deck
@@ -152,8 +147,9 @@ screens:
           default: false
           packages:
           - Bottles: com.usebottles.bottles
+          - Chiaki4Deck (PlayStation Remote Play): io.github.streetpea.Chiaki4deck
           - Discord: com.discordapp.Discord
-          - DOSBox Staging: io.github.dosbox-staging 
+          - DOSBox Staging: io.github.dosbox-staging
           - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
           - itch: io.itch.itch
