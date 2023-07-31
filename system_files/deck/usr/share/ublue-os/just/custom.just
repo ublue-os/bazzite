@@ -7,6 +7,7 @@ enable-plasma-autologin:
   systemctl enable --now plasma-autologin
 
 set-steamos-kargs:
+  echo 'Setting kargs...'
   rpm-ostree kargs --append="amd_pstate=active" --append="amd_iommu=off" --append="amdgpu.gttsize=8128" --append="spi_amd.speed_dev=1" --append="audit=0" --append="initcall_blacklist=simpledrm_platform_driver_init" --delete-if-present="nomodeset"
 
 create-steam-shortcuts:
@@ -26,11 +27,13 @@ get-emudeck:
   chmod +x ~/Desktop/EmuDeck.desktop
 
 get-steamcmd:
+  echo 'Installing SteamCMD...'
   wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O /tmp/steamcmd.tar.gz
   tar -xvzf steamcmd.tar.gz -C ~/.steam
   rm /tmp/steamcmd.tar.gz
 
 enable-system76-scheduler:
+  echo 'Installing System76-Scheduler plugin for KDE...'
   git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
   kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
   systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
@@ -62,6 +65,7 @@ get-chiaki:
     jq -r ".assets[] | select(.name | test(\"flatpakref\")) | .browser_download_url")
 
 enable-wallpaper-engine:
+  echo 'Installing Wallpaper Engine Plugin for KDE...'
   git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
   plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
   rm -rf /tmp/wallpaper-engine-kde-plugin
@@ -114,10 +118,10 @@ enable-duperemove:
 
 set-btrfs-flags:
   #!/usr/bin/env bash
-  echo 'Configuring drive mount parameters'
+  echo 'Configuring drive mount parameters...'
   sudo sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
   if grep '64GB' <<< $(lsblk -o MODEL); then
-    echo 'Increasing compression for detected 64GB EMMC'
+    echo 'Increasing compression for detected 64GB eMMC'
     sudo sed -i 's/compress-force=zstd:1/compress-force=zstd:3/g' /etc/fstab
   fi
 

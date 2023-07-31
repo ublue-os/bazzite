@@ -10,11 +10,14 @@ install-bazzite-arch:
   fi
 
 export-steamcmd:
+  echo 'Installing SteamCMD...'
   distrobox-enter -n bazzite-arch -- '  distrobox-export --bin steamcmd --export-path ~/.steam'
   ln -s ~/.steam/steamcmd ~/.steam/steamcmd.sh
 
 install-corectrl:
+  echo 'Installing CoreCtrl...''
   rpm-ostree install corectrl
+  echo 'Setting needed kargs for CoreCtrl...'
   rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
 
 install-nix:
@@ -34,6 +37,7 @@ get-greenlight:
   chmod +x ~/Desktop/Greenlight.AppImage
 
 enable-system76-scheduler:
+  echo 'Installing System76-Scheduler plugin for KDE...'
   git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
   kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
   systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
@@ -42,11 +46,13 @@ enable-system76-scheduler:
   rm -rf /tmp/kwin-system76-scheduler-integration
 
 enable-wallpaper-engine:
+  echo 'Installing Wallpaper Engine Plugin for KDE...'
   git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --single-branch /tmp/wallpaper-engine-kde-plugin
   plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
   rm -rf /tmp/wallpaper-engine-kde-plugin
 
 set-btrfs-flags:
+  echo 'Configuring drive mount parameters...'
   sudo sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
 
 zram-on:
