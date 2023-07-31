@@ -162,6 +162,7 @@ RUN rpm-ostree install \
     steamdeck-kde-presets \
     vpower \
     ds-inhibit \
+    steam_notif_daemon \
     ryzenadj \
     gamemode \
     latencyflex-vulkan-layer \
