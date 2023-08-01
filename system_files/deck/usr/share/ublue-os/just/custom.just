@@ -29,7 +29,7 @@ get-emudeck:
 get-steamcmd:
   echo 'Installing SteamCMD...'
   wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O /tmp/steamcmd.tar.gz
-  tar -xvzf steamcmd.tar.gz -C ~/.steam
+  tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
   rm /tmp/steamcmd.tar.gz
 
 enable-system76-scheduler:
@@ -58,11 +58,6 @@ get-boilr:
     jq -r ".assets[] | select(.name | test(\"linux_BoilR\")) | .browser_download_url") \
     -O ~/Desktop/BoilR
   chmod +x ~/Desktop/BoilR
-
-get-chiaki:
-  flatpak install \
-    $(curl -s https://api.github.com/repos/streetpea/chiaki4deck/releases/latest | \
-    jq -r ".assets[] | select(.name | test(\"flatpakref\")) | .browser_download_url")
 
 enable-wallpaper-engine:
   echo 'Installing Wallpaper Engine Plugin for KDE...'

@@ -93,7 +93,6 @@ screens:
       - run: /usr/lib/fedora-third-party/fedora-third-party-opt-out
       - run: /usr/bin/fedora-third-party disable
       - run: flatpak remote-delete fedora --force
-      - run: flatpak remove --system --noninteractive --all
       - run: flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
   applications:
     source: yafti.screen.package
@@ -101,15 +100,10 @@ screens:
       title: Application Installation
       show_terminal: true
       package_manager: yafti.plugin.flatpak
+      package_manager_defaults:
+        user: true
+        system: false
       groups:
-        Bazzite:
-          description: Core Applications
-          default: true
-          packages:
-          - MangoHud (Flatpak): org.freedesktop.Platform.VulkanLayer.MangoHud//22.08
-          - Mozilla Firefox: org.mozilla.firefox
-          - ProtonUp-Qt (Proton Updater): net.davidotek.pupgui2
-          - vkBasalt (Flatpak): org.freedesktop.Platform.VulkanLayer.vkBasalt//22.08
         Web Browsers:
           description: Additional browsers to complement Firefox
           default: false
@@ -118,6 +112,7 @@ screens:
           - Google Chrome: com.google.Chrome
           - LibreWolf: io.gitlab.librewolf-community
           - Microsoft Edge: com.microsoft.Edge
+          - Mozilla Firefox: org.mozilla.firefox
           - Opera: com.opera.Opera
         Gaming:
           description: "Rock and Stone!"

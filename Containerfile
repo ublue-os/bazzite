@@ -76,7 +76,7 @@ RUN if grep -v "nvidia" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         rocm-hip \
         rocm-opencl \
-; fi 
+; fi
 
 # Cleanup & Finalize
 RUN rm /usr/share/applications/shredder.desktop && \
@@ -95,6 +95,15 @@ RUN rm /usr/share/applications/shredder.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
+    flatpak remove --system --noninteractive --all && \
+    mkdir -p /etc/flatpak/remotes.d && \
+    wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /etc/flatpak/remotes.d && \
+    cat /etc/flatpak/install | while read line; do flatpak install --system --noninteractive --no-deploy flathub $line; done && \
+    mkdir -p /etc/flatpak/{flathub,objects} && \
+    cp -r /var/lib/flatpak/repo/refs/remotes/flathub/* /etc/flatpak/flathub && \
+    cp -r /var/lib/flatpak/repo/objects/* /etc/flatpak/objects && \
+    systemctl unmask flatpak-system-install.service && \
+    systemctl enable flatpak-system-install.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable input-remapper.service && \
@@ -192,6 +201,11 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
+    flatpak remove --system --noninteractive --all && \
+    cat /etc/flatpak/install | while read line; do flatpak install --system --noninteractive --no-deploy flathub $line; done && \
+    rm -rf /etc/flatpak/{flathub,objects}/* && \
+    cp -r /var/lib/flatpak/repo/refs/remotes/flathub/* /etc/flatpak/flathub && \
+    cp -r /var/lib/flatpak/repo/objects/* /etc/flatpak/objects && \
     systemctl enable plasma-autologin.service && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable vpower.service && \
