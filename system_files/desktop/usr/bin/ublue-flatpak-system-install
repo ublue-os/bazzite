@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
 if [[ -f '/etc/flatpak/install' ]]; then
-  export FLATPAK_SYSTEM_CACHE_DIR='/etc/flatpak/cache'
+  cp -r /etc/flatpak/flathub/* /var/lib/flatpak/repo/refs/remotes/flathub
   cat /etc/flatpak/install | while read line; do
     flatpak install --system --noninteractive --no-pull flathub $line
   done && mv /etc/flatpak/install /etc/flatpak/installed
-  unset FLATPAK_SYSTEM_CACHE_DIR
-  rm -rf /etc/flatpak/cache
+  rm -rf /etc/flatpak/flathub
 fi
