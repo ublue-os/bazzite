@@ -29,7 +29,7 @@ get-emudeck:
 get-steamcmd:
   echo 'Installing SteamCMD...'
   wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O /tmp/steamcmd.tar.gz
-  tar -xvzf steamcmd.tar.gz -C ~/.steam
+  tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
   rm /tmp/steamcmd.tar.gz
 
 enable-system76-scheduler:
