@@ -17,8 +17,8 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Proprietary Nvidia drivers pre-installed.
 - Full hardware accelerated codec support for H264 decoding.
 - Full support for AMD's ROCM OpenCL/HIP runtimes.
-- XPadNeo driver fore wireless Xbox One controllers.
-- Full support for Displaylink.
+- [xpadneo](https://github.com/atar-axis/xpadneo) driver fore wireless Xbox One controllers.
+- Full support for [Displaylink](https://www.synaptics.com/products/displaylink-graphics).
 - Includes Valve's KDE themes from SteamOS.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
 - Support for [Wallpaper Engine](https://www.wallpaperengine.io/en) on KDE.
