@@ -140,15 +140,6 @@ COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rp
 RUN rpm-ostree install \
     /tmp/akmods-rpms/kmods/*steamdeck*.rpm
 
-# Install gamescope-limiter patched Mesa
-RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-dri-drivers \
-    mesa-libEGL \
-    mesa-libgbm \
-    mesa-libGL \
-    mesa-libglapi \
-    mesa-vulkan-drivers
-
 # Remove unneeded packages
 RUN rpm-ostree override remove \
     krfb \
@@ -161,16 +152,18 @@ RUN rpm-ostree override remove \
 # Install patched udisks2 (Needed for SteamOS SD card mounting)
 RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite udisks2
 
-# Install mesa-va-drivers shim (Needed due to dependency issues in Steam package)
-RUN rpm-ostree install \
-    mesa-va-drivers
+# Install gamescope-limiter patched Mesa
+RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    mesa-dri-drivers \
+    mesa-libEGL \
+    mesa-libgbm \
+    mesa-libGL \
+    mesa-libglapi \
+    mesa-vulkan-drivers
 
 # Install new packages & dock updater - done manually due to proprietary parts preventing it from being on Copr
 RUN rpm-ostree install \
-    steam \
-    lutris \
-    gamescope \
-    gamescope-session \
+    mesa-va-drivers \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     steamdeck-kde-presets \
@@ -178,7 +171,6 @@ RUN rpm-ostree install \
     ds-inhibit \
     steam_notif_daemon \
     ryzenadj \
-    gamemode \
     latencyflex-vulkan-layer \
     vkBasalt \
     mangohud \
@@ -188,6 +180,13 @@ RUN rpm-ostree install \
     python-crcmod && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --depth 1 /tmp/jupiter-dock-updater-bin && \
     mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
+
+# Install Steam and Lutris into their own OCI layer
+RUN rpm-ostree install \
+    steam \
+    lutris \
+    gamescope \
+    gamescope-session
 
 # Cleanup & Finalize
 RUN rm /usr/share/applications/winetricks.desktop && \
