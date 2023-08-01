@@ -17,7 +17,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Proprietary Nvidia drivers pre-installed.
 - Full hardware accelerated codec support for H264 decoding.
 - Full support for AMD's ROCM OpenCL/HIP runtimes.
-- [xpadneo](https://github.com/atar-axis/xpadneo) driver fore wireless Xbox One controllers.
+- [xpadneo](https://github.com/atar-axis/xpadneo) driver for wireless Xbox One controllers.
 - Full support for [Displaylink](https://www.synaptics.com/products/displaylink-graphics).
 - Includes Valve's KDE themes from SteamOS.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
@@ -32,6 +32,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [Nix](https://nixos.org/) package manager optionally available.
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
 - [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
+- Out of the box support for [Wooting](https://wooting.io/) keyboards.
 
 ### Desktop
 
