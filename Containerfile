@@ -99,8 +99,9 @@ RUN rm /usr/share/applications/shredder.desktop && \
     mkdir -p /etc/flatpak/remotes.d && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /etc/flatpak/remotes.d && \
     cat /etc/flatpak/install | while read line; do flatpak install --system --noninteractive --no-deploy flathub $line; done && \
-    mkdir -p /etc/flatpak/flathub && \
+    mkdir -p /etc/flatpak/{flathub,objects} && \
     cp -r /var/lib/flatpak/repo/refs/remotes/flathub/* /etc/flatpak/flathub && \
+    cp -r /var/lib/flatpak/repo/objects/* /etc/flatpak/objects && \
     systemctl unmask flatpak-system-install.service && \
     systemctl enable flatpak-system-install.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
@@ -202,8 +203,9 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
     flatpak remove --system --noninteractive --all && \
     cat /etc/flatpak/install | while read line; do flatpak install --system --noninteractive --no-deploy flathub $line; done && \
-    rm -rf /etc/flatpak/flathub/* && \
+    rm -rf /etc/flatpak/{flathub,objects}/* && \
     cp -r /var/lib/flatpak/repo/refs/remotes/flathub/* /etc/flatpak/flathub && \
+    cp -r /var/lib/flatpak/repo/objects/* /etc/flatpak/objects && \
     systemctl enable plasma-autologin.service && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable vpower.service && \
