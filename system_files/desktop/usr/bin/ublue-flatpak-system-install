@@ -7,4 +7,13 @@ if [[ -f '/etc/flatpak/install' ]]; then
     flatpak install --system --noninteractive --no-pull flathub $line
   done && mv /etc/flatpak/install /etc/flatpak/installed
 fi
-rm -rf /etc/flatpak/{flathub,objects}
+
+if [[ -f '/etc/flatpak/deck' ]]; then
+  if grep "deck" <<< $(rpm-ostree status); then
+    cat /etc/flatpak/deck | while read line; do
+      flatpak install --system --noninteractive --no-pull flathub $line
+    done && cat /etc/flatpak/deck >> /etc/flatpak/installed
+  fi
+fi
+
+rm -rf /etc/flatpak/{deck,flathub,objects}
