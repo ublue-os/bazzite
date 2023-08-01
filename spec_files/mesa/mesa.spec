@@ -58,7 +58,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 %global ver 23.1.4
 %global base_ver %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Version:        %{base_ver}.bazzite
+Version:        %{base_ver}.bazzite.{{{ git_dir_version }}}
 Release:        %autorelease
 License:        MIT
 URL:            http://www.mesa3d.org

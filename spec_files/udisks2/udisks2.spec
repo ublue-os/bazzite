@@ -43,7 +43,7 @@
 Name:    udisks2
 Summary: Disk Manager
 %define upstream_version 2.9.4
-Version: %{upstream_version}.bazzite
+Version: %{upstream_version}.bazzite.{{{ git_dir_version }}}
 Release: 7%{?dist}
 License: GPLv2+
 URL:     https://github.com/storaged-project/udisks
