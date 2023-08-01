@@ -6,5 +6,5 @@ if [[ -f '/etc/flatpak/install' ]]; then
   cat /etc/flatpak/install | while read line; do
     flatpak install --system --noninteractive --no-pull flathub $line
   done && mv /etc/flatpak/install /etc/flatpak/installed
-  rm -rf /etc/flatpak/{flathub,objects}
 fi
+rm -rf /etc/flatpak/{flathub,objects}
