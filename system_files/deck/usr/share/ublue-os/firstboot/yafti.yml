@@ -255,7 +255,7 @@ screens:
           run: /usr/bin/xdg-open https://ublue.it
       - "Join the Discord Community":
           run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
-      - "Reboot now"
+      - "Reboot now":
           run: systemctl reboot
       description: |
         Thank you for trying Bazzite (Steam Deck Edition). Please reboot to apply changes made by this setup utility.
