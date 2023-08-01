@@ -202,7 +202,7 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
     flatpak remove --system --noninteractive --all && \
     cat /etc/flatpak/install | while read line; do flatpak install --system --noninteractive --no-deploy flathub $line; done && \
-    mkdir -p /etc/flatpak/flathub && \
+    rm -rf /etc/flatpak/flathub/* && \
     cp -r /var/lib/flatpak/repo/refs/remotes/flathub/* /etc/flatpak/flathub && \
     systemctl enable plasma-autologin.service && \
     systemctl enable jupiter-fan-control.service && \
