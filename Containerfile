@@ -101,6 +101,7 @@ RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
         adw-gtk3-theme \
         gnome-tweaks \
         gnome-shell-extension-user-theme \
+        gnome-shell-extension-appindicator \
         gnome-shell-extension-gsconnect \
         gnome-shell-extension-system76-scheduler \
 ; fi
