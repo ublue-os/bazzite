@@ -50,13 +50,18 @@ install-extensions-cli:
   fi
 
 enable-system76-scheduler:
+  #!/usr/bin/env bash
   echo 'Installing System76-Scheduler plugin for KDE...'
-  git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
-  kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
-  systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
-  systemctl enable --now com.system76.Scheduler.service
-  kcmshell5 kcm_kwin_scripts
-  rm -rf /tmp/kwin-system76-scheduler-integration
+  if grep "gnome" <<< $(rpm-ostree status); then
+    git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
+    kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
+    systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
+    systemctl enable --now com.system76.Scheduler.service
+    kcmshell5 kcm_kwin_scripts
+    rm -rf /tmp/kwin-system76-scheduler-integration
+  else
+    gext install s76-scheduler@mattjakeman.com
+  fi
 
 enable-wallpaper-engine:
   #!/usr/bin/env bash
