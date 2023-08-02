@@ -56,6 +56,7 @@ RUN rpm-ostree override remove \
 RUN rpm-ostree install \
     python3-pip \
     libadwaita \
+    sddm-sugar-steamOS \
     distrobox \
     duperemove \
     rmlint \
@@ -78,6 +79,12 @@ RUN rpm-ostree install \
 # Install newer Xwayland
 RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr xorg-x11-server-Xwayland
 
+# Configure GNOME
+RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+    rpm-ostree install \
+        sddm \
+; fi
+
 # Configure KDE
 RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
     rpm-ostree override remove \
@@ -85,7 +92,6 @@ RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
         qt5-qdbusviewer \
     rpm-ostree install \
         steamdeck-kde-presets-desktop \
-        sddm-sugar-steamOS \
         wallpaper-engine-kde-plugin \
         kdeconnectd \
 ; fi
@@ -128,6 +134,10 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
+￼    if grep "gnome" <<< "${IMAGE_NAME}"; then \
+￼        systemctl disable gdm.service && \
+￼        systemctl enable sddm.service && \
+￼    ; fi && \
     rm -rf \
         /tmp/* \
         /var/* && \
@@ -237,8 +247,6 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
     if grep "gnome" <<< "${IMAGE_NAME}"; then \
-￼        systemctl disable gdm.service && \
-￼        systemctl enable sddm.service && \
 ￼        systemctl enable gnome-autologin.service \
 ￼    ; fi && \
 ￼    if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
