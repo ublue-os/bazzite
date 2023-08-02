@@ -106,6 +106,8 @@ screens:
           - Enable System76 Scheduler: just --unstable enable-system76-scheduler
         Wallpaper Engine:
           description: Enables Wallpaper Engine
+          condition:
+            run: grep -v "gnome" <<< $(rpm-ostree status)
           default: true
           packages:
           - Enable Wallpaper Engine: just --unstable enable-wallpaper-engine
