@@ -110,6 +110,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl enable flatpak-system-install.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl --global enable ublue-update.timer && \
+    systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
     rm -rf \
         /tmp/* \
