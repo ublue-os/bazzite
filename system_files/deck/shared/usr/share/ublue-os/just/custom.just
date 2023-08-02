@@ -68,10 +68,15 @@ get-boilr:
   chmod +x ~/Desktop/BoilR
 
 enable-wallpaper-engine:
-  echo 'Installing Wallpaper Engine Plugin for KDE...'
-  git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
-  plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
-  rm -rf /tmp/wallpaper-engine-kde-plugin
+  #!/usr/bin/env bash
+  if grep -v "gnome" <<< $(rpm-ostree status); then
+    echo 'Installing Wallpaper Engine Plugin for KDE...'
+    git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
+    plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
+    rm -rf /tmp/wallpaper-engine-kde-plugin
+  else
+    echo "This is only supported under KDE."
+  fi
 
 deckswap-on:
   #!/usr/bin/env bash
