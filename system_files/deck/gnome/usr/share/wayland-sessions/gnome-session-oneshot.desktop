@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=GNOME on Wayland (single time session)
+Comment=This session logs you into GNOME one time
+Exec=/usr/bin/gnome-session-oneshot
+TryExec=/usr/bin/gnome-session-oneshot
+Type=Application
+DesktopNames=GNOME
+X-GDM-SessionRegisters=true

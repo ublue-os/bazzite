@@ -1,0 +1,90 @@
+#! /usr/bin/bash
+
+set -e
+
+die() { echo >&2 "!! $*"; exit 1; }
+
+# File this script will modify, in addition to (potentially) the per-user sentinel file
+CONF_FILE="/etc/sddm.conf.d/zz-steamos-autologin.conf"
+
+SENTINEL_FILE="steamos-session-select"
+
+# For sanity this shipped file must be present, to ensure we're still on a normal-looking steamos setup.
+CHECK_FILE="/etc/sddm.conf.d/steamos.conf"
+
+session="${1:-gamescope}"
+session_type="wayland"
+
+session_launcher="gamescope-session"
+create_sentinel=""
+
+if [[ "$2" == "--sentinel-created" ]]; then
+  SENTINEL_CREATED=1
+  session_type="wayland"
+fi
+
+# Update config sentinel
+if [[ -z $SENTINEL_CREATED ]]; then
+  [[ $EUID == 0 ]] && die "Running $0 as root is not allowed"
+
+  [[ -n ${HOME+x} ]] || die "No \$HOME variable"
+  config_dir="${XDG_CONF_DIR:-"$HOME/.config"}"
+  session_type=$(
+    cd "$HOME"
+    mkdir -p "$config_dir"
+    cd "$config_dir"
+    if [[ -f "steamos-session-type" ]]; then
+      cp steamos-session-type "$SENTINEL_FILE"
+    else
+      echo "wayland" > "$SENTINEL_FILE"
+    fi
+    cat "$SENTINEL_FILE"
+  )
+
+  # clear steam game desktop shortcut clutter
+  DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
+  grep --files-with-matches "Exec=steam steam://rungameid/" ${DATA_HOME}/applications/* | tr '\n' '\0' | xargs -0 -I {} rm {} || true
+
+  # If we were executed as a session user and then re-execute as root below, we don't want to set root's sentinel too
+  export SENTINEL_CREATED=1
+fi
+
+# We use "plasma" as "desktop" to hook up to SteamOS's scripts
+case "$session" in
+  plasma-wayland-persistent)
+    session_launcher="gnome-session"
+  ;;
+  plasma-x11-persistent)
+    session_launcher="gnome-session"
+  ;;
+  desktop|plasma)
+    session_launcher="gnome-session-oneshot"
+    create_sentinel=1
+  ;;
+  gamescope)
+    session_launcher="gamescope-session"
+    create_sentinel=1
+  ;;
+  *)
+    echo >&2 "!! Unrecognized session '$session'"
+    exit 1
+  ;;
+esac
+
+echo "Updated user selected session to $session_launcher"
+
+# Become root
+if [[ $EUID != 0 ]]; then
+  exec pkexec "$(realpath $0)" "$session" --sentinel-created
+  exit 1
+fi
+
+{
+  echo "[Autologin]"
+  echo "Session=$session_launcher"
+} > "$CONF_FILE"
+
+echo "Updated system autologin session to $session_launcher"
+systemctl reset-failed sddm
+systemctl restart sddm
+echo "Restarted SDDM"
