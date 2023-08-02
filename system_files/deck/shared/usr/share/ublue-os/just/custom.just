@@ -40,6 +40,14 @@ get-steamcmd:
   tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
   rm /tmp/steamcmd.tar.gz
 
+install-extensions-cli:
+  #!/usr/bin/env bash
+  if grep "gnome" <<< $(rpm-ostree status); then
+    pip install --upgrade gnome-extensions-cli
+  else
+    echo "This is only supported under GNOME."
+  fi
+
 enable-system76-scheduler:
   echo 'Installing System76-Scheduler plugin for KDE...'
   git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration

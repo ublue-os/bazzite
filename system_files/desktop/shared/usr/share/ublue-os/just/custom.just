@@ -41,6 +41,14 @@ get-greenlight:
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta8/Greenlight-2.0.0-beta8.AppImage -O ~/Desktop/Greenlight.AppImage
   chmod +x ~/Desktop/Greenlight.AppImage
 
+install-extensions-cli:
+  #!/usr/bin/env bash
+  if grep "gnome" <<< $(rpm-ostree status); then
+    pip install --upgrade gnome-extensions-cli
+  else 
+    echo "This is only supported under GNOME."
+  fi
+
 enable-system76-scheduler:
   echo 'Installing System76-Scheduler plugin for KDE...'
   git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
