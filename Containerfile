@@ -178,9 +178,12 @@ RUN rpm-ostree install \
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
-    steamdeck-kde-presets-desktop \
     ddccontrol \
-    ddccontrol-gtk
+    ddccontrol-gtk && \
+    if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+        rpm-ostree override remove \
+            steamdeck-kde-presets-desktop \
+    ; fi
 
 # Install patched udisks2 (Needed for SteamOS SD card mounting)
 RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite udisks2
