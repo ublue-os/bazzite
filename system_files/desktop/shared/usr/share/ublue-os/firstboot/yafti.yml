@@ -9,6 +9,15 @@ screens:
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
         Configure your system to get started
+  extensions-cli:
+    source: yafti.screen.consent
+    values:
+      title: Installing GNOME Extensions CLI
+      condition:
+        run: grep "gnome" <<< $(rpm-ostree status)
+      description: This will allow you to install GNOME extensions.
+      actions:
+      - run: just --unstable install-extensions-cli
   configure-bazzite:
     source: yafti.screen.package
     values:
