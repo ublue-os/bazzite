@@ -99,6 +99,7 @@ RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
         sddm \
         gradience \
         adw-gtk3-theme \
+        gnome-tweaks \
 ; fi
 
 # Install ROCM on non-Nvidia images
