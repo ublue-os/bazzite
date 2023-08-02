@@ -82,8 +82,7 @@ RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
     rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
         mutter \
         gnome-control-center \
-        gnome-control-center-filesystem && \
-    echo MUTTER_DEBUG_FORCE_KMS_MODE=simple >> /etc/environment \
+        gnome-control-center-filesystem \
 ; fi
 
 # Configure KDE
