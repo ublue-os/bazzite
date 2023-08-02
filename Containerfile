@@ -236,7 +236,14 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
-    systemctl enable plasma-autologin.service && \
+    if grep "gnome" <<< "${IMAGE_NAME}"; then \
+￼        systemctl disable gdm.service && \
+￼        systemctl enable sddm.service && \
+￼        systemctl enable gnome-autologin.service \
+￼    ; fi && \
+￼    if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+￼        systemctl enable plasma-autologin.service \
+￼    ; fi && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable vpower.service && \
     systemctl enable ds-inhibit.service && \
