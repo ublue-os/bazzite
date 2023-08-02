@@ -73,20 +73,10 @@ RUN rpm-ostree install \
     xdotool \
     yad
 
-# Install newer Xwayland
-RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr xorg-x11-server-Xwayland
-
-# Configure GNOME
-RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
-    rpm-ostree install sddm && \
-    rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
-        mutter \
-        gnome-control-center \
-        gnome-control-center-filesystem \
-; fi
-
-# Configure KDE
+# Configure KDE & GNOME
 RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+    rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+        xorg-x11-server-Xwayland && \
     rpm-ostree override remove \
         plasma-welcome \
         qt5-qdbusviewer && \
@@ -94,6 +84,13 @@ RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
         steamdeck-kde-presets-desktop \
         wallpaper-engine-kde-plugin \
         kdeconnectd \
+; else \
+    rpm-ostree install sddm && \
+    rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+        mutter \
+        gnome-control-center \
+        gnome-control-center-filesystem \
+        xorg-x11-server-Xwayland \
 ; fi
 
 # Install ROCM on non-Nvidia images
