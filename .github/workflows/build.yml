@@ -36,6 +36,7 @@ jobs:
       matrix:
         image_flavor: [main, nvidia]
         base_name: [bazzite, bazzite-deck]
+        base_image_name: [kinoite, silverblue]
         major_version: [38]
         include:
           - major_version: 38
@@ -51,10 +52,20 @@ jobs:
 
       - name: Matrix Variables
         run: |
-          if [[ "${{ matrix.image_flavor }}" == "main" ]]; then
-              echo "IMAGE_NAME=${{ matrix.base_name }}" >> $GITHUB_ENV
+          echo "BASE_IMAGE_NAME=${{ matrix.base_image_name }}" >> $GITHUB_ENV
+          if [[ "${{ matrix.base_image_name }}" == "silverblue" ]]; then
+              DESKTOP="gnome"
+              if [[ "${{ matrix.image_flavor }}" == "main" ]]; then
+                  echo "IMAGE_NAME=${{ format('{0}-{1}', matrix.base_name, '${DESKTOP}') }}" >> $GITHUB_ENV
+              else
+                  echo "IMAGE_NAME=${{ format('{0}-{1}-{2}', matrix.base_name, '${DESKTOP}', matrix.image_flavor) }}" >> $GITHUB_ENV
+              fi
           else
-              echo "IMAGE_NAME=${{ format('{0}-{1}', matrix.base_name, matrix.image_flavor) }}" >> $GITHUB_ENV
+              if [[ "${{ matrix.image_flavor }}" == "main" ]]; then
+                  echo "IMAGE_NAME=${{ matrix.base_name }}" >> $GITHUB_ENV
+              else
+                  echo "IMAGE_NAME=${{ format('{0}-{1}', matrix.base_name, matrix.image_flavor) }}" >> $GITHUB_ENV
+              fi
           fi
 
       - name: Generate tags
@@ -101,7 +112,7 @@ jobs:
       - name: Get Current Fedora Version
         id: labels
         run: |
-          ver=$(skopeo inspect docker://ghcr.io/ublue-os/kinoite-${{ matrix.image_flavor }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
+          ver=$(skopeo inspect docker://ghcr.io/ublue-os/${{ matrix.base_image_name }}-${{ matrix.image_flavor }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
           echo "VERSION=$ver" >> $GITHUB_OUTPUT
 
       # Build metadata
@@ -131,6 +142,7 @@ jobs:
           build-args: |
             IMAGE_NAME=${{ env.IMAGE_NAME }}
             IMAGE_FLAVOR=${{ matrix.image_flavor }}
+            BASE_IMAGE_NAME=${{ matrix.base_image_name }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
