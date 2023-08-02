@@ -93,7 +93,7 @@ RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
 RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
     rpm-ostree override remove \
         plasma-welcome \
-        qt5-qdbusviewer \
+        qt5-qdbusviewer && \
     rpm-ostree install \
         steamdeck-kde-presets-desktop \
         wallpaper-engine-kde-plugin \
@@ -204,7 +204,7 @@ RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfra
 RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
     rpm-ostree override remove \
         krfb \
-        krfb-libs \
+        krfb-libs && \
     rpm-ostree install \
         steamdeck-kde-presets \
 ; fi
