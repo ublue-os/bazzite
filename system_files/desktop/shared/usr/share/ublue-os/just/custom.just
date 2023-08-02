@@ -27,7 +27,12 @@ remove-nix:
   curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/uninstaller-scripts/silverblue-nix-uninstaller.sh | sudo bash
 
 enable-big-picture:
-  systemctl enable --now plasma-autologin
+  #!/usr/bin/env bash
+  if grep "gnome" <<< $(rpm-ostree status); then
+    systemctl enable --now gnome-autologin
+  else
+    systemctl enable --now plasma-autologin
+  fi
   sed -i 's@/usr/bin/steam-runtime -silent %U@/usr/bin/steam-runtime -bigpicture %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
   mv ~/.config/autostart/bazzite-arch-steam-silent.desktop ~/.config/autostart/bazzite-arch-steam-bigpicture.desktop
 

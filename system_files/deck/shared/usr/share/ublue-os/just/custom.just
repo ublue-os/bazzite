@@ -1,10 +1,18 @@
 enable-gamescope-autologin:
-  systemctl disable --now plasma-autologin
+  if grep "gnome" <<< $(rpm-ostree status); then
+    systemctl disable --now gnome-autologin
+  else
+    systemctl disable --now plasma-autologin
+  fi
   systemctl enable --now gamescope-autologin
 
-enable-plasma-autologin:
+enable-desktop-autologin:
   systemctl disable --now gamescope-autologin
-  systemctl enable --now plasma-autologin
+  if grep "gnome" <<< $(rpm-ostree status); then
+    systemctl enable --now gnome-autologin
+  else
+    systemctl enable --now plasma-autologin
+  fi
 
 set-steamos-kargs:
   echo 'Setting kargs...'
