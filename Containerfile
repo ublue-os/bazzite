@@ -76,7 +76,9 @@ RUN rpm-ostree install \
 
 # Configure KDE & GNOME
 RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
-    rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
         xorg-x11-server-Xwayland && \
     rpm-ostree override remove \
         plasma-welcome \
@@ -86,7 +88,9 @@ RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
         wallpaper-engine-kde-plugin \
         kdeconnectd \
 ; else \
-    rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
         mutter \
         gnome-control-center \
         gnome-control-center-filesystem \
@@ -186,17 +190,20 @@ RUN rpm-ostree override remove \
             steamdeck-kde-presets-desktop \
     ; fi
 
-# Install patched udisks2 (Needed for SteamOS SD card mounting)
-RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite udisks2
-
-# Install gamescope-limiter patched Mesa
-RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-dri-drivers \
-    mesa-libEGL \
-    mesa-libgbm \
-    mesa-libGL \
-    mesa-libglapi \
-    mesa-vulkan-drivers
+# Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
+RUN rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+        mesa-dri-drivers \
+        mesa-libEGL \
+        mesa-libgbm \
+        mesa-libGL \
+        mesa-libglapi \
+        mesa-vulkan-drivers && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+        udisks2
 
 # Configure KDE
 RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
