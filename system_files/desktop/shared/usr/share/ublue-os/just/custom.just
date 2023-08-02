@@ -63,6 +63,18 @@ enable-system76-scheduler:
     gext install s76-scheduler@mattjakeman.com
   fi
 
+enable-supergfxctl:   
+  #!/usr/bin/env bash
+  status=$(rpm-ostree status) 
+  if grep "nvidia" <<< ${status}; then  
+    systemctl enable --now supergfxd.service  
+    if grep "gnome" <<< ${status}; then
+      gext install supergfxctl-gex@asus-linux.org
+    fi 
+  else
+    echo "This requires an Nvidia image."
+  fi
+
 enable-wallpaper-engine:
   #!/usr/bin/env bash
   if grep -v "gnome" <<< $(rpm-ostree status); then

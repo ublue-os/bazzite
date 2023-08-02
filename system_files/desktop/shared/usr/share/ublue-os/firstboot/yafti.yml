@@ -80,6 +80,13 @@ screens:
           default: true
           packages:
           - Set SteamOS BTRFS mount flags: sudo -A just --unstable set-btrfs-flags
+        Supergfxctl:
+          condition:
+            run: grep "nvidia" <<< $(rpm-ostree status)
+          description: A utility for Nvidia GPU switching
+          default: false
+          packages:
+          - Enable supergfxctl: just --unstable enable-supergfxctl
         System76 Scheduler:
           description: Enables System76 scheduler
           default: true
