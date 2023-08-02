@@ -39,23 +39,17 @@ RUN rpm-ostree override remove \
     ublue-os-update-services \
     firefox \
     firefox-langpacks \
-    plasma-welcome \
     toolbox \
-    htop \
-    qt5-qdbusviewer
+    htop
 
 # Install new packages
 RUN rpm-ostree install \
     python3-pip \
     libadwaita \
     distrobox \
-    steamdeck-kde-presets-desktop \
-    sddm-sugar-steamOS \
-    wallpaper-engine-kde-plugin \
     duperemove \
     rmlint \
     compsize \
-    kdeconnectd \
     ddccontrol \
     ddccontrol-gtk \
     input-remapper \
@@ -73,6 +67,18 @@ RUN rpm-ostree install \
 
 # Install newer Xwayland
 RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr xorg-x11-server-Xwayland
+
+# Configure KDE
+RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+    rpm-ostree override remove \
+        plasma-welcome \
+        qt5-qdbusviewer \
+    rpm-ostree install \
+        steamdeck-kde-presets-desktop \
+        sddm-sugar-steamOS \
+        wallpaper-engine-kde-plugin \
+        kdeconnectd \
+; fi
 
 # Install ROCM on non-Nvidia images
 RUN if grep -v "nvidia" <<< "${IMAGE_NAME}"; then \
@@ -144,8 +150,6 @@ RUN rpm-ostree install \
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
-    krfb \
-    krfb-libs \
     steamdeck-kde-presets-desktop \
     ddccontrol \
     ddccontrol-gtk
@@ -162,12 +166,20 @@ RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfra
     mesa-libglapi \
     mesa-vulkan-drivers
 
+# Configure KDE
+RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+    rpm-ostree override remove \
+        krfb \
+        krfb-libs \
+    rpm-ostree install \
+        steamdeck-kde-presets \
+; fi
+
 # Install new packages & dock updater - done manually due to proprietary parts preventing it from being on Copr
 RUN rpm-ostree install \
     mesa-va-drivers \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
-    steamdeck-kde-presets \
     vpower \
     ds-inhibit \
     steam_notif_daemon \
