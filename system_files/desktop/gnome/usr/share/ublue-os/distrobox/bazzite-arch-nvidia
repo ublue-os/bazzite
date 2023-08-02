@@ -7,4 +7,4 @@ root=false
 replace=false
 start_now=true
 volume=/usr/lib64/libnvidia-vulkan-producer.so:/usr/lib64/libnvidia-vulkan-producer.so
-init_hooks=pacman -R xdg-desktop-portal-kde && pacman -S xdg-desktop-portal-gnome
+init_hooks=paru -R xdg-desktop-portal-kde --noconfirm && paru -S xdg-desktop-portal-gnome adw-gtk3 --noconfirm
