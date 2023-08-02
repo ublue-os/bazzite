@@ -13,9 +13,9 @@ COPY system_files/desktop/shared /
 COPY system_files/desktop/gnome/* /tmp/gnome
 COPY system_files/desktop/kde/* /tmp/kde
 RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
-    rsync -v /tmp/gnome/ / \
+    rsync -rvK /tmp/gnome/ / \
 ; else \
-    rsync -v /tmp/kde/ / \
+    rsync -rvK /tmp/kde/ / \
 ; fi
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
@@ -155,9 +155,9 @@ COPY system_files/deck/shared /
 COPY system_files/deck/gnome/* /tmp/gnome
 COPY system_files/deck/kde/* /tmp/kde
 RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
-    rsync -v /tmp/gnome/ / \
+    rsync -rvK /tmp/gnome/ / \
 ; else \
-    rsync -v /tmp/kde/ / \
+    rsync -rvK /tmp/kde/ / \
 ; fi
 
 # Setup Copr repos
