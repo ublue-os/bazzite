@@ -80,9 +80,13 @@ RUN rpm-ostree install \
 RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr xorg-x11-server-Xwayland
 
 # Configure GNOME
-RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
-    rpm-ostree install \
-        sddm \
+RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
+    rpm-ostree install sddm && \
+    rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+        mutter \
+        gnome-control-center \
+        gnome-control-center-filesystem && \
+    echo MUTTER_DEBUG_FORCE_KMS_MODE=simple >> /etc/environment \
 ; fi
 
 # Configure KDE
