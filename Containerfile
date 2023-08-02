@@ -137,7 +137,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl enable input-remapper.service && \
     if grep "gnome" <<< "${IMAGE_NAME}"; then \
         systemctl disable gdm.service && \
-        systemctl enable sddm.service && \
+        systemctl enable sddm.service \
     ; fi && \
     rm -rf \
         /tmp/* \
