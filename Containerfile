@@ -10,14 +10,11 @@ ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 COPY system_files/desktop/shared /
-
-COPY system_files/desktop/gnome /tmp/gnome
+COPY system_files/desktop/gnome/* /tmp/gnome
+COPY system_files/desktop/kde/* /tmp/kde
 RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
     cp -rf /tmp/gnome/* / \
-￼; fi
-
-COPY system_files/desktop/kde /tmp/kde
-RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+; else \
     cp -rf /tmp/kde/* / \
 ￼; fi
 
@@ -156,14 +153,11 @@ ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 COPY system_files/deck/shared /
-
-COPY system_files/deck/gnome /tmp/gnome
+COPY system_files/deck/gnome/* /tmp/gnome
+COPY system_files/deck/kde/* /tmp/kde
 RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
     cp -rf /tmp/gnome/* / \
-￼; fi
-
-COPY system_files/deck/kde /tmp/kde
-RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+; else \
     cp -rf /tmp/kde/* / \
 ￼; fi
 
