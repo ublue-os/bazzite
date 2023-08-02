@@ -208,13 +208,16 @@ RUN rpm-ostree override replace \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         udisks2
 
-# Configure KDE
+# Configure KDE & GNOME
 RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
     rpm-ostree override remove \
         krfb \
         krfb-libs && \
     rpm-ostree install \
         steamdeck-kde-presets \
+; else \
+    rpm-ostree install \
+        gnome-shell-extension-bazzite-menu \
 ; fi
 
 # Install new packages & dock updater - done manually due to proprietary parts preventing it from being on Copr
