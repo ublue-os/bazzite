@@ -16,7 +16,7 @@ RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
     cp -rf /tmp/gnome/* / \
 ; else \
     cp -rf /tmp/kde/* / \
-￼; fi
+; fi
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
 COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
@@ -135,10 +135,10 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
-￼    if grep "gnome" <<< "${IMAGE_NAME}"; then \
-￼        systemctl disable gdm.service && \
-￼        systemctl enable sddm.service && \
-￼    ; fi && \
+    if grep "gnome" <<< "${IMAGE_NAME}"; then \
+        systemctl disable gdm.service && \
+        systemctl enable sddm.service && \
+    ; fi && \
     rm -rf \
         /tmp/* \
         /var/* && \
@@ -159,7 +159,7 @@ RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
     cp -rf /tmp/gnome/* / \
 ; else \
     cp -rf /tmp/kde/* / \
-￼; fi
+; fi
 
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-multilib-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
@@ -245,11 +245,11 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
     if grep "gnome" <<< "${IMAGE_NAME}"; then \
-￼        systemctl enable gnome-autologin.service \
-￼    ; fi && \
-￼    if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
-￼        systemctl enable plasma-autologin.service \
-￼    ; fi && \
+        systemctl enable gnome-autologin.service \
+    ; fi && \
+    if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+        systemctl enable plasma-autologin.service \
+    ; fi && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable vpower.service && \
     systemctl enable ds-inhibit.service && \
