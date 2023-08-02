@@ -54,13 +54,6 @@ screens:
           default: false
           packages:
           - Retrieve Greenlight: just --unstable get-greenlight
-        GSConnect:
-          condition:
-            run: grep "gnome" <<< $(rpm-ostree status)
-          description: A KDE connect implementation for GNOME
-          default: true
-          packages:
-          - Enable GSConnect: just --unstable enable-gsconnect
         Hide GRUB Menu:
           description: |
             NOTE: Press the escape key before boot to show the menu

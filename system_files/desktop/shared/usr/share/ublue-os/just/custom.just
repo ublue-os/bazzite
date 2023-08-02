@@ -60,7 +60,7 @@ enable-system76-scheduler:
     kcmshell5 kcm_kwin_scripts
     rm -rf /tmp/kwin-system76-scheduler-integration
   else
-    gext install s76-scheduler@mattjakeman.com
+    echo "This is only needed under KDE."
   fi
 
 enable-supergfxctl:   
@@ -73,14 +73,6 @@ enable-supergfxctl:
     fi 
   else
     echo "This requires an Nvidia image."
-  fi
-
-enable-gsconnect:
-  #!/usr/bin/env bash
-  if grep "gnome" <<< ${status}; then
-    gext install gsconnect@andyholmes.github.io
-  else
-    echo "This is only supported under GNOME."
   fi
 
 enable-wallpaper-engine:
