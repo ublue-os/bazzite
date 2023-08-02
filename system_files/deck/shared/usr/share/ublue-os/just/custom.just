@@ -62,6 +62,14 @@ enable-system76-scheduler:
     gext install s76-scheduler@mattjakeman.com
   fi
 
+enable-gsconnect:
+  #!/usr/bin/env bash
+  if grep "gnome" <<< ${status}; then
+    gext install gsconnect@andyholmes.github.io
+  else
+    echo "This is only supported under GNOME."
+  fi
+
 install-nix:
   curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
 

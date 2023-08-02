@@ -75,6 +75,14 @@ enable-supergfxctl:
     echo "This requires an Nvidia image."
   fi
 
+enable-gsconnect:
+  #!/usr/bin/env bash
+  if grep "gnome" <<< ${status}; then
+    gext install gsconnect@andyholmes.github.io
+  else
+    echo "This is only supported under GNOME."
+  fi
+
 enable-wallpaper-engine:
   #!/usr/bin/env bash
   if grep -v "gnome" <<< $(rpm-ostree status); then
