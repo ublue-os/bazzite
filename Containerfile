@@ -146,7 +146,6 @@ RUN rpm-ostree install \
 RUN rpm-ostree override remove \
     krfb \
     krfb-libs \
-    ublue-os-wallpapers \
     steamdeck-kde-presets-desktop \
     ddccontrol \
     ddccontrol-gtk
