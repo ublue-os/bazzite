@@ -9,7 +9,17 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
-COPY system_files/desktop /
+COPY system_files/desktop/shared /
+
+COPY system_files/desktop/gnome /tmp/gnome
+RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
+    cp -rf /tmp/gnome/* / \
+￼; fi
+
+COPY system_files/desktop/kde /tmp/kde
+RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+    cp -rf /tmp/kde/* / \
+￼; fi
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
 COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
@@ -131,8 +141,18 @@ FROM bazzite as bazzite-deck
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
-COPY system_files/deck /
-    
+COPY system_files/deck/shared /
+
+COPY system_files/deck/gnome /tmp/gnome
+RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
+    cp -rf /tmp/gnome/* / \
+￼; fi
+
+COPY system_files/deck/kde /tmp/kde
+RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+    cp -rf /tmp/kde/* / \
+￼; fi
+
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-multilib-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
