@@ -111,6 +111,7 @@ setup-gradience:
 enable-vapor-theme:
   #!/usr/bin/env bash
   if grep "gnome" <<< $(rpm-ostree status); then
+    gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
     gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/steamdeck/Steam\ Deck\ Logo\ Default.jpg
@@ -124,6 +125,7 @@ enable-vapor-theme:
 enable-vgui2-theme:
   #!/usr/bin/env bash
   if grep "gnome" <<< $(rpm-ostree status); then
+    gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
     gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/steamdeck/VGUI2.jpg
