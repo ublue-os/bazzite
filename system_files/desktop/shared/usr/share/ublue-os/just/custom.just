@@ -83,6 +83,37 @@ enable-wallpaper-engine:
     echo "This is only supported under KDE."
   fi
 
+setup-gradience:
+  #!/usr/bin/env bash
+  if grep "gnome" <<< $(rpm-ostree status); then
+    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
+    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
+  else 
+    echo "This is only supported under GNOME."
+  fi
+
+enable-vapor-theme:
+  #!/usr/bin/env bash
+  if grep "gnome" <<< $(rpm-ostree status); then
+    gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+    gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
+    gradience-cli flatpak-overrides -e both
+    gradience-cli apply -p /usr/share/ublue-os/bazzite/themes/vapor.json
+  else 
+    echo "This is only supported under GNOME."
+  fi
+
+enable-vgui2-theme:
+  #!/usr/bin/env bash
+  if grep "gnome" <<< $(rpm-ostree status); then
+    gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+    gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
+    gradience-cli flatpak-overrides -e both
+    gradience-cli apply -p /usr/share/ublue-os/bazzite/themes/vgui2.json
+  else 
+    echo "This is only supported under GNOME."
+  fi
+
 set-btrfs-flags:
   echo 'Configuring drive mount parameters...'
   sudo sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
