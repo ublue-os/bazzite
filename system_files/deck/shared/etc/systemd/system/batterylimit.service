@@ -1,0 +1,10 @@
+[Unit]
+Description=Service for setting the Steam Deck Battery Charging Limit
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/default/%p
+ExecStart=echo ${MAX_BATTERY_CHARGE_LEVEL} > /sys/class/hwmon/hwmon*/max_battery_charge_level
+
+[Install]
+WantedBy=multi-user.target
