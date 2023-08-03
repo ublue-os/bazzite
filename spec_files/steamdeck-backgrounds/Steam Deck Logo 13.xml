@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>Steam Deck Logo 13</name>
+    <filename>/usr/share/backgrounds/steamdeck/src/Steam Deck Logo 13.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#FEFEFE</pcolor>
+    <scolor>#D9D5CF</scolor>
+  </wallpaper>
+</wallpapers>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>Troll</name>
+    <filename>/usr/share/backgrounds/steamdeck/src/Troll.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#1F2E35</pcolor>
+    <scolor>#272F34</scolor>
+  </wallpaper>
+</wallpapers>
