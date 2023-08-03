@@ -63,14 +63,11 @@ enable-system76-scheduler:
     echo "This is only needed under KDE."
   fi
 
-enable-supergfxctl:   
+enable-supergfxctl: 
   #!/usr/bin/env bash
-  status=$(rpm-ostree status) 
-  if grep "nvidia" <<< ${status}; then  
-    systemctl enable --now supergfxd.service  
-    if grep "gnome" <<< ${status}; then
-      gext install supergfxctl-gex@asus-linux.org
-    fi 
+  status=$(rpm-ostree status)
+  if grep "nvidia" <<< ${status}; then
+    systemctl enable --now supergfxd.service
   else
     echo "This requires an Nvidia image."
   fi
