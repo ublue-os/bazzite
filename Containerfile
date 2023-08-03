@@ -7,16 +7,11 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-38}"
 FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 COPY system_files/desktop/shared /
-COPY system_files/desktop/gnome/* /tmp/gnome
-COPY system_files/desktop/kde/* /tmp/kde
-RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
-    rsync -rvK /tmp/gnome/ / \
-; else \
-    rsync -rvK /tmp/kde/ / \
-; fi
+COPY system_files/desktop/${BASE_IMAGE_NAME} /
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
 COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
@@ -164,16 +159,11 @@ RUN rm /usr/share/applications/shredder.desktop && \
 FROM bazzite as bazzite-deck
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 COPY system_files/deck/shared /
-COPY system_files/deck/gnome/* /tmp/gnome
-COPY system_files/deck/kde/* /tmp/kde
-RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
-    rsync -rvK /tmp/gnome/ / \
-; else \
-    rsync -rvK /tmp/kde/ / \
-; fi
+COPY system_files/deck/${BASE_IMAGE_NAME} /
 
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-multilib-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
