@@ -115,8 +115,6 @@ screens:
           - Switch SteamOS-BTRFS config to EXT4: sudo -A just --unstable switch-to-ext4
         System76 Scheduler:
           description: Enables System76 scheduler
-          condition:
-            run: grep -v "gnome" <<< $(rpm-ostree status)
           default: true
           packages:
           - Enable System76 Scheduler: just --unstable enable-system76-scheduler

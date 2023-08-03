@@ -1,4 +1,5 @@
 enable-gamescope-autologin:
+  #!/usr/bin/env bash
   if grep "gnome" <<< $(rpm-ostree status); then
     systemctl disable --now gnome-autologin
   else
@@ -7,6 +8,7 @@ enable-gamescope-autologin:
   systemctl enable --now gamescope-autologin
 
 enable-desktop-autologin:
+  #!/usr/bin/env bash
   systemctl disable --now gamescope-autologin
   if grep "gnome" <<< $(rpm-ostree status); then
     systemctl enable --now gnome-autologin
@@ -59,15 +61,7 @@ enable-system76-scheduler:
     kcmshell5 kcm_kwin_scripts
     rm -rf /tmp/kwin-system76-scheduler-integration
   else
-    gext install s76-scheduler@mattjakeman.com
-  fi
-
-enable-gsconnect:
-  #!/usr/bin/env bash
-  if grep "gnome" <<< ${status}; then
-    gext install gsconnect@andyholmes.github.io
-  else
-    echo "This is only supported under GNOME."
+    gsettings set org.gnome.shell enabled-extensions ['appindicatorsupport@rgcjonas.gmail.com', 'gsconnect@andyholmes.github.io', 's76-scheduler@mattjakeman.com', 'tofumenu@tofu', 'user-theme@gnome-shell-extensions.gcampax.github.com']
   fi
 
 install-nix:

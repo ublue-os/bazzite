@@ -60,7 +60,7 @@ enable-system76-scheduler:
     kcmshell5 kcm_kwin_scripts
     rm -rf /tmp/kwin-system76-scheduler-integration
   else
-    echo "This is only needed under KDE."
+    gsettings set org.gnome.shell enabled-extensions ['appindicatorsupport@rgcjonas.gmail.com', 'gsconnect@andyholmes.github.io', 's76-scheduler@mattjakeman.com', 'tofumenu@tofu', 'user-theme@gnome-shell-extensions.gcampax.github.com']
   fi
 
 enable-supergfxctl: 
