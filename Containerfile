@@ -104,7 +104,10 @@ RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
         gnome-shell-extension-user-theme \
         gnome-shell-extension-appindicator \
         gnome-shell-extension-gsconnect \
-        gnome-shell-extension-system76-scheduler \
+        gnome-shell-extension-system76-scheduler && \
+    if grep "nvidia" <<< "${IMAGE_NAME}"; then \
+        rpm-ostree install gnome-shell-extension-supergfxctl-gex \
+    ; fi \
 ; fi
 
 # Install ROCM on non-Nvidia images
