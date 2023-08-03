@@ -48,7 +48,7 @@ screens:
           packages:
           - Enable Gamescope Autologin: just --unstable enable-gamescope-autologin
         Gradience:
-          description: Adds custom Valve-inspired themes to Gradience
+          description: Adds Valve-inspired themes to Gradience
           condition:
             run: grep "gnome" <<< $(rpm-ostree status)
           default: true
@@ -261,6 +261,19 @@ screens:
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
+  theme:
+    source: yafti.screen.title
+    values:
+      title: "GNOME Theme"
+      condition:
+        run: grep "gnome" <<< $(rpm-ostree status)
+      links:
+      - "Vapor Theme":
+          run: just --unstable enable-vapor-theme
+      - "VGUI2 Theme":
+          run: just --unstable enable-vgui2-theme
+      description: |
+        Optionally apply a Valve-inspired theme to GNOME via Gradience. Note that when using custom themes in GNOME issues can occur. Please avoid reporting issues to application developers until you've tested against the default theme.
   final-screen:
     source: yafti.screen.title
     values:
