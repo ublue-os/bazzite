@@ -104,7 +104,10 @@ RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
         gnome-shell-extension-user-theme \
         gnome-shell-extension-appindicator \
         gnome-shell-extension-gsconnect \
-        gnome-shell-extension-system76-scheduler \
+        gnome-shell-extension-system76-scheduler && \
+    rpm-ostree override remove \
+        gnome-tour \
+        yelp \
 ; fi
 
 # Install ROCM on non-Nvidia images
@@ -148,7 +151,8 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl enable input-remapper.service && \
     if grep "gnome" <<< "${IMAGE_NAME}"; then \
         systemctl disable gdm.service && \
-        systemctl enable sddm.service \
+        systemctl enable sddm.service && \
+        rm /usr/share/applications/yad-icon-browser.desktop \
     ; fi && \
     rm -rf \
         /tmp/* \
