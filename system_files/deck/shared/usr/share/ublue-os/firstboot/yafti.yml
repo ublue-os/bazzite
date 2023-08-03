@@ -47,6 +47,13 @@ screens:
           default: true
           packages:
           - Enable Gamescope Autologin: just --unstable enable-gamescope-autologin
+        Gradience:
+          description: Adds custom Valve-inspired themes to Gradience
+          condition:
+            run: grep "gnome" <<< $(rpm-ostree status)
+          default: true
+          packages:
+          - Setup Gradience: just --unstable setup-gradience
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
@@ -108,6 +115,8 @@ screens:
           - Switch SteamOS-BTRFS config to EXT4: sudo -A just --unstable switch-to-ext4
         System76 Scheduler:
           description: Enables System76 scheduler
+          condition:
+            run: grep -v "gnome" <<< $(rpm-ostree status)
           default: true
           packages:
           - Enable System76 Scheduler: just --unstable enable-system76-scheduler
