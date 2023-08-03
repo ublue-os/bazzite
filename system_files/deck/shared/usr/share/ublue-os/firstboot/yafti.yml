@@ -156,7 +156,6 @@ screens:
           - Google Chrome: com.google.Chrome
           - LibreWolf: io.gitlab.librewolf-community
           - Microsoft Edge: com.microsoft.Edge
-          - Mozilla Firefox: org.mozilla.firefox
           - Opera: com.opera.Opera
         Gaming:
           description: "Rock and Stone!"
