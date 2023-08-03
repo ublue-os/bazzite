@@ -248,7 +248,7 @@ screens:
       - "VGUI2 Theme":
           run: just --unstable enable-vgui2-theme
       description: |
-        Optionally apply a Valve-inspired theme to GNOME via Gradience. Note that when using custom themes in GNOME issues can occur. Please avoid reporting issues to application developers until you've tested against the default theme.
+        Optionally apply a Valve-inspired theme to GNOME via Gradience. Note that custom themes are not officially supported by GNOME and some applications can break. Please avoid reporting issues to application developers until you've tested against the default theme.
   final-screen:
     source: yafti.screen.title
     values:
