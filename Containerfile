@@ -97,6 +97,7 @@ RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
         xorg-x11-server-Xwayland && \
     rpm-ostree install \
         sddm \
+        steamdeck-backgrounds \
         gradience \
         adw-gtk3-theme \
         gnome-tweaks \
