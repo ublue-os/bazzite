@@ -62,6 +62,7 @@ enable-system76-scheduler:
     rm -rf /tmp/kwin-system76-scheduler-integration
   else
     gsettings set org.gnome.shell enabled-extensions ['appindicatorsupport@rgcjonas.gmail.com', 'gsconnect@andyholmes.github.io', 's76-scheduler@mattjakeman.com', 'tofumenu@tofu', 'user-theme@gnome-shell-extensions.gcampax.github.com']
+    gsettings set org.gnome.shell.extensions.fedora-menu menu-button-icon-size 20
   fi
 
 install-nix:
