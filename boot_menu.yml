@@ -14,3 +14,18 @@ ublue_variants:
     flavors:
       - label: bazzite-deck
         info: Bazzite (Steam Deck Edition)
+  - label: ublue-os/bazzite-gnome
+    ks: /kickstart/ublue-os.ks
+    flavors:
+      - label: bazzite-gnome
+        info: Bazzite GNOME
+  - label: ublue-os/bazzite-gnome-nvidia
+    ks: /kickstart/ublue-os-nvidia.ks
+    flavors:
+      - label: bazzite-gnome-nvidia
+        info: Bazzite GNOME (For Nvidia GPUs)
+  - label: ublue-os/bazzite-deck-gnome
+    ks: /kickstart/ublue-os.ks
+    flavors:
+      - label: bazzite-deck-gnome
+        info: Bazzite GNOME (Steam Deck Edition)

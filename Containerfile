@@ -9,7 +9,14 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
-COPY system_files/desktop /
+COPY system_files/desktop/shared /
+COPY system_files/desktop/gnome/* /tmp/gnome
+COPY system_files/desktop/kde/* /tmp/kde
+RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
+    rsync -rvK /tmp/gnome/ / \
+; else \
+    rsync -rvK /tmp/kde/ / \
+; fi
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
 COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
@@ -32,30 +39,26 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/repo/fedora-$(rpm -E %fedora)/kylegospo-obs-vkcapture-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/repo/fedora-$(rpm -E %fedora)/kylegospo-wallpaper-engine-kde-plugin-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/repo/fedora-$(rpm -E %fedora)/kylegospo-gnome-vrr-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-gnome-vrr.repo && \
-    wget https://copr.fedorainfracloud.org/coprs/ycollet/audinux/repo/fedora-$(rpm -E %fedora)/ycollet-audinux-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_ycollet-audinux.repo
+    wget https://copr.fedorainfracloud.org/coprs/ycollet/audinux/repo/fedora-$(rpm -E %fedora)/ycollet-audinux-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/lyessaadi/gradience/repo/fedora-$(rpm -E %fedora)/lyessaadi-gradience-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_lyessaadi-gradience.repo
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
     ublue-os-update-services \
     firefox \
     firefox-langpacks \
-    plasma-welcome \
     toolbox \
-    htop \
-    qt5-qdbusviewer
+    htop
 
 # Install new packages
 RUN rpm-ostree install \
     python3-pip \
     libadwaita \
-    distrobox \
-    steamdeck-kde-presets-desktop \
     sddm-sugar-steamOS \
-    wallpaper-engine-kde-plugin \
+    distrobox \
     duperemove \
     rmlint \
     compsize \
-    kdeconnectd \
     ddccontrol \
     ddccontrol-gtk \
     input-remapper \
@@ -71,8 +74,41 @@ RUN rpm-ostree install \
     xdotool \
     yad
 
-# Install newer Xwayland
-RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr xorg-x11-server-Xwayland
+# Configure KDE & GNOME
+RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+        xorg-x11-server-Xwayland && \
+    rpm-ostree override remove \
+        plasma-welcome \
+        qt5-qdbusviewer && \
+    rpm-ostree install \
+        steamdeck-kde-presets-desktop \
+        wallpaper-engine-kde-plugin \
+        kdeconnectd \
+; else \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+        mutter \
+        gnome-control-center \
+        gnome-control-center-filesystem \
+        xorg-x11-server-Xwayland && \
+    rpm-ostree install \
+        sddm \
+        steamdeck-backgrounds \
+        gradience \
+        adw-gtk3-theme \
+        gnome-tweaks \
+        gnome-shell-extension-user-theme \
+        gnome-shell-extension-appindicator \
+        gnome-shell-extension-gsconnect \
+        gnome-shell-extension-system76-scheduler && \
+    if grep "nvidia" <<< "${IMAGE_NAME}"; then \
+        rpm-ostree install gnome-shell-extension-supergfxctl-gex \
+    ; fi \
+; fi
 
 # Install ROCM on non-Nvidia images
 RUN if grep -v "nvidia" <<< "${IMAGE_NAME}"; then \
@@ -96,6 +132,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-gnome-vrr.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_lyessaadi-gradience.repo && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
     flatpak remove --system --noninteractive --all && \
@@ -112,6 +149,10 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
+    if grep "gnome" <<< "${IMAGE_NAME}"; then \
+        systemctl disable gdm.service && \
+        systemctl enable sddm.service \
+    ; fi && \
     rm -rf \
         /tmp/* \
         /var/* && \
@@ -125,8 +166,15 @@ FROM bazzite as bazzite-deck
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
-COPY system_files/deck /
-    
+COPY system_files/deck/shared /
+COPY system_files/deck/gnome/* /tmp/gnome
+COPY system_files/deck/kde/* /tmp/kde
+RUN if grep "gnome" <<< "${IMAGE_NAME}"; then \
+    rsync -rvK /tmp/gnome/ / \
+; else \
+    rsync -rvK /tmp/kde/ / \
+; fi
+
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-multilib-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
@@ -144,30 +192,45 @@ RUN rpm-ostree install \
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
-    krfb \
-    krfb-libs \
-    steamdeck-kde-presets-desktop \
     ddccontrol \
-    ddccontrol-gtk
+    ddccontrol-gtk && \
+    if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+        rpm-ostree override remove \
+            steamdeck-kde-presets-desktop \
+    ; fi
 
-# Install patched udisks2 (Needed for SteamOS SD card mounting)
-RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite udisks2
+# Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
+RUN rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+        mesa-dri-drivers \
+        mesa-libEGL \
+        mesa-libgbm \
+        mesa-libGL \
+        mesa-libglapi \
+        mesa-vulkan-drivers && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+        udisks2
 
-# Install gamescope-limiter patched Mesa
-RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-dri-drivers \
-    mesa-libEGL \
-    mesa-libgbm \
-    mesa-libGL \
-    mesa-libglapi \
-    mesa-vulkan-drivers
+# Configure KDE & GNOME
+RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+    rpm-ostree override remove \
+        krfb \
+        krfb-libs && \
+    rpm-ostree install \
+        steamdeck-kde-presets \
+; else \
+    rpm-ostree install \
+        gnome-shell-extension-bazzite-menu \
+; fi
 
 # Install new packages & dock updater - done manually due to proprietary parts preventing it from being on Copr
 RUN rpm-ostree install \
     mesa-va-drivers \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
-    steamdeck-kde-presets \
     vpower \
     ds-inhibit \
     steam_notif_daemon \
@@ -204,7 +267,12 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
-    systemctl enable plasma-autologin.service && \
+    if grep "gnome" <<< "${IMAGE_NAME}"; then \
+        systemctl enable gnome-autologin.service \
+    ; fi && \
+    if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+        systemctl enable plasma-autologin.service \
+    ; fi && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable vpower.service && \
     systemctl enable ds-inhibit.service && \
