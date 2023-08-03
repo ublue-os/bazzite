@@ -8,6 +8,12 @@ if [[ -f '/etc/flatpak/install' ]]; then
   done && mv /etc/flatpak/install /etc/flatpak/installed
 fi
 
+if [[ -f '/etc/flatpak/remove' ]]; then
+  cat /etc/flatpak/remove | while read line; do
+    flatpak remove --system --noninteractive $line
+  done && mv /etc/flatpak/install /etc/flatpak/removed
+fi
+
 if [[ -f '/etc/flatpak/deck' ]]; then
   if grep "deck" <<< $(rpm-ostree status); then
     cat /etc/flatpak/deck | while read line; do
