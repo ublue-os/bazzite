@@ -72,10 +72,6 @@ RUN rpm-ostree install \
 
 # Configure KDE & GNOME
 RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
-        xorg-x11-server-Xwayland && \
     rpm-ostree override remove \
         plasma-welcome \
         qt5-qdbusviewer && \
@@ -89,8 +85,7 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
         mutter \
         gnome-control-center \
-        gnome-control-center-filesystem \
-        xorg-x11-server-Xwayland && \
+        gnome-control-center-filesystem && \
     rpm-ostree install \
         sddm \
         steamdeck-backgrounds \
