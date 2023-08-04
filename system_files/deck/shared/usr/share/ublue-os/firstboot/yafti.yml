@@ -111,13 +111,6 @@ screens:
           default: true
           packages:
           - Enable System76 Scheduler: just --unstable enable-system76-scheduler
-        Wallpaper Engine:
-          description: Enables Wallpaper Engine
-          condition:
-            run: grep -v "gnome" <<< $(rpm-ostree status)
-          default: true
-          packages:
-          - Enable Wallpaper Engine: just --unstable enable-wallpaper-engine
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
@@ -251,6 +244,16 @@ screens:
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
+  enable-wallpaper-engine:
+    source: yafti.screen.consent
+    values:
+      title: Enabling Wallpaper Engine
+      condition:
+        run: grep -v "gnome" <<< $(rpm-ostree status)
+      description: |
+        Enables the plugin for Wallpaper Engine, a utility that allows you to use live wallpapers on your desktop
+      actions:
+      - run: just --unstable enable-wallpaper-engine
   setup-gradience:
     source: yafti.screen.consent
     values:
