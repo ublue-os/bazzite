@@ -242,7 +242,7 @@ screens:
     values:
       title: Enabling Wallpaper Engine
       condition:
-        run: grep -v "gnome" <<< $(rpm-ostree status)
+        run: grep -v "gnome" <<< $(cat /etc/default/bazzite)
       description: |
         Enables the plugin for Wallpaper Engine, a utility that allows you to use live wallpapers on your desktop
       actions:
@@ -252,7 +252,7 @@ screens:
     values:
       title: Setting up Gradience
       condition:
-        run: grep "gnome" <<< $(rpm-ostree status)
+        run: grep "gnome" <<< $(cat /etc/default/bazzite)
       description: |
         Adds Valve-inspired themes to Gradience
       actions:
@@ -262,7 +262,7 @@ screens:
     values:
       title: "GNOME Theme"
       condition:
-        run: grep "gnome" <<< $(rpm-ostree status)
+        run: grep "gnome" <<< $(cat /etc/default/bazzite)
       links:
       - "Vapor Theme":
           run: just --unstable enable-vapor-theme

@@ -1,6 +1,6 @@
 enable-gamescope-autologin:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(rpm-ostree status); then
+  if grep "gnome" <<< $(cat /etc/default/bazzite); then
     systemctl disable --now gnome-autologin
   else
     systemctl disable --now plasma-autologin
@@ -10,7 +10,7 @@ enable-gamescope-autologin:
 enable-desktop-autologin:
   #!/usr/bin/env bash
   systemctl disable --now gamescope-autologin
-  if grep "gnome" <<< $(rpm-ostree status); then
+  if grep "gnome" <<< $(cat /etc/default/bazzite); then
     systemctl enable --now gnome-autologin
   else
     systemctl enable --now plasma-autologin
@@ -44,7 +44,7 @@ get-steamcmd:
 
 install-extensions-cli:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(rpm-ostree status); then
+  if grep "gnome" <<< $(cat /etc/default/bazzite); then
     pip install --upgrade gnome-extensions-cli
   else
     echo "This is only supported under GNOME."
@@ -52,7 +52,7 @@ install-extensions-cli:
 
 enable-system76-scheduler:
   #!/usr/bin/env bash
-  if grep -v "gnome" <<< $(rpm-ostree status); then
+  if grep -v "gnome" <<< $(cat /etc/default/bazzite); then
     echo 'Installing System76-Scheduler plugin for KDE...'
     git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
     kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
@@ -86,7 +86,7 @@ get-boilr:
 
 enable-wallpaper-engine:
   #!/usr/bin/env bash
-  if grep -v "gnome" <<< $(rpm-ostree status); then
+  if grep -v "gnome" <<< $(cat /etc/default/bazzite); then
     echo 'Installing Wallpaper Engine Plugin for KDE...'
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
     plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
@@ -97,7 +97,7 @@ enable-wallpaper-engine:
 
 setup-gradience:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(rpm-ostree status); then
+  if grep "gnome" <<< $(cat /etc/default/bazzite); then
     gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
     gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
   else 
@@ -106,7 +106,7 @@ setup-gradience:
 
 enable-vapor-theme:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(rpm-ostree status); then
+  if grep "gnome" <<< $(cat /etc/default/bazzite); then
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
@@ -120,7 +120,7 @@ enable-vapor-theme:
 
 enable-vgui2-theme:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(rpm-ostree status); then
+  if grep "gnome" <<< $(cat /etc/default/bazzite); then
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
