@@ -149,7 +149,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
         systemctl enable sddm.service && \
         rm /usr/share/applications/yad-icon-browser.desktop \
     ; fi && \
-    echo -e 'IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}' >> /etc/default/bazzite && \
+    echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
     rm -rf \
         /tmp/* \
         /var/* && \
@@ -162,6 +162,7 @@ FROM bazzite as bazzite-deck
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
+ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 COPY system_files/deck/shared /
@@ -271,6 +272,8 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     systemctl disable input-remapper.service && \
     systemctl --global disable ublue-update.timer && \
     rm -f /usr/etc/sddm.conf && \
+    rm -f /etc/default/bazzite && \
+    echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
     rm -rf \
         /tmp/* \
         /var/* && \
