@@ -40,13 +40,6 @@ screens:
           default: false
           packages:
           - Install CoreCtrl: just --unstable install-corectrl
-        Gradience:
-          description: Adds Valve-inspired themes to Gradience
-          condition:
-            run: grep "gnome" <<< $(rpm-ostree status)
-          default: true
-          packages:
-          - Setup Gradience: just --unstable setup-gradience
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
@@ -233,6 +226,16 @@ screens:
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
+  setup-gradience:
+    source: yafti.screen.consent
+    values:
+      title: Setting up Gradience
+      condition:
+        run: grep "gnome" <<< $(rpm-ostree status)
+      description: |
+        Adds Valve-inspired themes to Gradience
+      actions:
+      - run: just --unstable setup-gradience
   theme:
     source: yafti.screen.title
     values:
