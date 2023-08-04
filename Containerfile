@@ -8,6 +8,7 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
+ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 COPY system_files/desktop/shared /
@@ -148,6 +149,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
         systemctl enable sddm.service && \
         rm /usr/share/applications/yad-icon-browser.desktop \
     ; fi && \
+    echo -e 'IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}' >> /etc/default/bazzite && \
     rm -rf \
         /tmp/* \
         /var/* && \
