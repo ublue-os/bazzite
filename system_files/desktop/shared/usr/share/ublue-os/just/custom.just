@@ -1,7 +1,7 @@
 install-bazzite-arch:
   #!/usr/bin/env bash
-  KARGS=$(rpm-ostree kargs)
-  if grep -q 'nvidia' <<< ${KARGS}; then
+  source /etc/default/bazzite
+  if [[ ${IMAGE_FLAVOR} == 'nvidia' ]]; then
     echo 'Installing Bazzite Arch (Nvidia)...'
     distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch-nvidia
   else
@@ -28,9 +28,10 @@ remove-nix:
 
 enable-big-picture:
   #!/usr/bin/env bash
-  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     systemctl enable --now gnome-autologin
-  else
+  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     systemctl enable --now plasma-autologin
   fi
   sed -i 's@/usr/bin/steam-runtime -silent %U@/usr/bin/steam-runtime -bigpicture %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
@@ -43,7 +44,8 @@ get-greenlight:
 
 install-extensions-cli:
   #!/usr/bin/env bash
-  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     pip install --upgrade gnome-extensions-cli
   else 
     echo "This is only supported under GNOME."
@@ -51,7 +53,8 @@ install-extensions-cli:
 
 enable-system76-scheduler:
   #!/usr/bin/env bash
-  if grep -qv "gnome" <<< $(cat /etc/default/bazzite); then
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     echo 'Installing System76-Scheduler plugin for KDE...'
     git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
     kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
@@ -59,14 +62,15 @@ enable-system76-scheduler:
     systemctl enable --now com.system76.Scheduler.service
     kcmshell5 kcm_kwin_scripts
     rm -rf /tmp/kwin-system76-scheduler-integration
-  else
+  elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     echo 'Enabling System76-Scheduler GNOME extension...'
     gnome-shell-extension-cl -e s76-scheduler@mattjakeman.com
   fi
 
 enable-supergfxctl: 
   #!/usr/bin/env bash
-  if grep -q "nvidia" <<< $(cat /etc/default/bazzite); then
+  source /etc/default/bazzite
+  if [[ ${IMAGE_FLAVOR} == 'nvidia' ]]; then
     systemctl enable --now supergfxd.service
   else
     echo "This requires an Nvidia image."
@@ -74,7 +78,8 @@ enable-supergfxctl:
 
 setup-desktop-environment:
   #!/usr/bin/env bash
-  if grep -qv "gnome" <<< $(cat /etc/default/bazzite); then
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     echo 'Configuring GNOME extensions...'
     gnome-shell-extension-cl -d background-logo@fedorahosted.org
     gnome-shell-extension-cl -e appindicatorsupport@rgcjonas.gmail.com
@@ -82,7 +87,7 @@ setup-desktop-environment:
     mkdir -p $HOME/.config/presets/user/
     gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
     gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
-  else 
+  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     echo 'Installing Wallpaper Engine Plugin for KDE...'
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
     plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
@@ -91,7 +96,8 @@ setup-desktop-environment:
 
 enable-vapor-theme:
   #!/usr/bin/env bash
-  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     gnome-shell-extension-cl -e user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
@@ -106,7 +112,8 @@ enable-vapor-theme:
 
 enable-vgui2-theme:
   #!/usr/bin/env bash
-  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     gnome-shell-extension-cl -e user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark

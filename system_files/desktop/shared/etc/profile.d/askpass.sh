@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-if grep -qv "gnome" <<< $(cat /etc/default/bazzite); then
+source /etc/default/bazzite
+if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
   SUDO_ASKPASS='/usr/bin/ksshaskpass'
-else
+elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
   SUDO_ASKPASS='/usr/libexec/openssh/gnome-ssh-askpass'
 fi
 export SUDO_ASKPASS
