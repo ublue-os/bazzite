@@ -112,6 +112,9 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         rocm-hip \
         rocm-opencl \
+        waydroid \
+        lzip \
+        weston \
 ; fi
 
 # Cleanup & Finalize
