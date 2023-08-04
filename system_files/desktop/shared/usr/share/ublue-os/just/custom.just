@@ -106,6 +106,8 @@ enable-vapor-theme:
     gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/steamdeck/Steam\ Deck\ Logo\ Default.jpg
     gsettings set org.gnome.desktop.background picture-uri-dark file:///usr/share/backgrounds/steamdeck/Steam\ Deck\ Logo\ Default.jpg
     gradience-cli flatpak-overrides -e both
+    sudo flatpak override --filesystem=xdg-config/gtk-4.0
+    sudo flatpak override --filesystem=xdg-config/gtk-3.0
     gradience-cli apply -p /usr/share/ublue-os/bazzite/themes/vapor.json
   else
     echo "This is only supported under GNOME."
@@ -122,6 +124,8 @@ enable-vgui2-theme:
     gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/steamdeck/VGUI2.jpg
     gsettings set org.gnome.desktop.background picture-uri-dark file:///usr/share/backgrounds/steamdeck/VGUI2.jpg
     gradience-cli flatpak-overrides -e both
+    sudo flatpak override --filesystem=xdg-config/gtk-4.0
+    sudo flatpak override --filesystem=xdg-config/gtk-3.0
     gradience-cli apply -p /usr/share/ublue-os/bazzite/themes/vgui2.json
   else 
     echo "This is only supported under GNOME."

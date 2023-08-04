@@ -30,16 +30,19 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) preinstalled and enabled (Available but default-disabled on the Deck variant)
 - Helpful first-start installer provides an easy way to install numerous applications and tweaks, including installing [CoreCtrl](https://gitlab.com/corectrl/corectrl) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
 - [Nix](https://nixos.org/) package manager optionally available.
+- [Waydroid](https://waydro.id/) preinstalled for running Android apps. Future releases will offer to set this up for you.
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
 - [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
 - Out of the box support for [Wooting](https://wooting.io/) keyboards.
 
-### Desktop
+### Desktop/HTPCs
 
 Common variant available as `bazzite` and suitable for desktops and HTPCs.
 
 - Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
 - Option to automatically launch Steam in Big Picture Mode on boot for HTPCs.
+
+**For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
 
 To rebase an existing ostree system to this image: 
 
@@ -51,7 +54,7 @@ or for devices with Nvidia GPUs:
 
 Once you've installed or rebased to a Nvidia build, [be sure to follow steps 2 and 3 from the ublue-os/nvidia guide](https://github.com/ublue-os/nvidia#2-set-kargs-after-rebasing).
 
-### Deck
+### Steam Deck
 
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, available as `bazzite-deck`:
 
@@ -76,9 +79,33 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
     - Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.
     - Able to be booted even if the drive is full.
 
+**For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
+
 To rebase an existing ostree system to this image: 
 
     podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-live --force-replacefiles $(find ~/.local/share/containers -name ublue-os-signing.noarch.rpm 2>/dev/null) && rpm-ostree rebase --uninstall $(rpm -q ublue-os-signing-* --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{Arch}') ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-deck:latest
+
+### GNOME
+
+Builds with the GNOME desktop environment are available in both desktop and deck flavors. These builds come with the following additional features:
+
+- Custom menu in the top bar for returning to game mode, launching Steam, and opening a number of useful utilities.
+- [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) preinstalled and ready to use.
+- Features optional Valve-inspired themes matching Vapor and VGUI2 from SteamOS.
+
+**For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
+
+To rebase an existing ostree system to the **desktop** release: 
+
+    podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-live --force-replacefiles $(find ~/.local/share/containers -name ublue-os-signing.noarch.rpm 2>/dev/null) && rpm-ostree rebase --uninstall $(rpm -q ublue-os-signing-* --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{Arch}') ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-gnome:latest
+
+To rebase an existing ostree system to the **desktop with Nvidia drivers** release: 
+
+    podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-live --force-replacefiles $(find ~/.local/share/containers -name ublue-os-signing.noarch.rpm 2>/dev/null) && rpm-ostree rebase --uninstall $(rpm -q ublue-os-signing-* --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{Arch}') ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-gnome-nvidia:latest
+
+To rebase an existing ostree system to the **Steam Deck** release: 
+
+    podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-live --force-replacefiles $(find ~/.local/share/containers -name ublue-os-signing.noarch.rpm 2>/dev/null) && rpm-ostree rebase --uninstall $(rpm -q ublue-os-signing-* --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{Arch}') ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-deck-gnome:latest
 
 ## Why
 
@@ -88,9 +115,11 @@ Despite this project also being image-based you are able to install any Fedora p
 
 Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot and disk encryption, making this a sensible solution for general computing <sup><sub>(Yes, you can print from Bazzite)</sub></sup>.
 
-![Default Theme](/repo_content/desktop1.png?raw=true "Default Theme")
-![VGUI2 Theme](/repo_content/desktop2.png?raw=true "VGUI2 Theme")
-  
+![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
+![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
+![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
+![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
+
 ## Custom Packages
 
 Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built on Copr in [bazzite](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/) and [bazzite-multilib](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/).
