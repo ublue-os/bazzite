@@ -10,5 +10,5 @@ if [ ! -f ${SDDM_CONF} ]; then
 fi
 
 # Configure autologin
-sed -i 's/.*Session=.*/Session=gnome-session.desktop/g' ${SDDM_CONF}
+sed -i 's/.*Session=.*/Session=gnome-xorg.desktop/g' ${SDDM_CONF}
 sed -i 's/.*User=.*/User='${USER}'/g' ${SDDM_CONF}
