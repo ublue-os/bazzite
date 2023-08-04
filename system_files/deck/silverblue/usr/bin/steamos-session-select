@@ -13,14 +13,14 @@ SENTINEL_FILE="steamos-session-select"
 CHECK_FILE="/etc/sddm.conf.d/steamos.conf"
 
 session="${1:-gamescope}"
-session_type="wayland"
+session_type="x11"
 
 session_launcher="gamescope-session"
 create_sentinel=""
 
 if [[ "$2" == "--sentinel-created" ]]; then
   SENTINEL_CREATED=1
-  session_type="wayland"
+  session_type="x11"
 fi
 
 # Update config sentinel
@@ -36,7 +36,7 @@ if [[ -z $SENTINEL_CREATED ]]; then
     if [[ -f "steamos-session-type" ]]; then
       cp steamos-session-type "$SENTINEL_FILE"
     else
-      echo "wayland" > "$SENTINEL_FILE"
+      echo "x11" > "$SENTINEL_FILE"
     fi
     cat "$SENTINEL_FILE"
   )
@@ -52,13 +52,13 @@ fi
 # We use "plasma" as "desktop" to hook up to SteamOS's scripts
 case "$session" in
   plasma-wayland-persistent)
-    session_launcher="gnome-session"
+    session_launcher="gnome-xorg"
   ;;
   plasma-x11-persistent)
-    session_launcher="gnome-session"
+    session_launcher="gnome-xorg"
   ;;
   desktop|plasma)
-    session_launcher="gnome-session-oneshot"
+    session_launcher="gnome-xorg-oneshot"
     create_sentinel=1
   ;;
   gamescope)
