@@ -1,0 +1,275 @@
+#! /usr/bin/env bash
+
+#	Copyright (C) 2016
+#    	Alexandru Catalin Petrini <alexandru.c.petrini@gmail.com>
+#  This script is intended to usefully manage gnome-shell extensions,
+#  in compatible Gnome Shell versions.
+
+# Install this script by running this command:
+# $ sudo wget https://raw.githubusercontent.com/cyberalex4life/gnome-shell-extension-cl/master/gnome-shell-extension-cl -O /usr/local/bin/gnome-shell-extension-cl && sudo chmod +x /usr/local/bin/gnome-shell-extension-cl
+
+
+# -------------------------------------------------------------------------------
+
+function get_enabled_extensions() {
+    enabled_extensions=( $(gsettings get org.gnome.shell enabled-extensions | \
+                               sed -e 's|^@as ||g' | tr -d "[",",","]","\'") )
+}
+
+
+function print_enabled_extensions(){
+    get_enabled_extensions
+    for enabled_extension in "${enabled_extensions[@]}"
+    do
+        echo "$enabled_extension"
+    done
+}
+
+
+# -------------------------------------------------------------------------------
+
+function get_installed_extensions() {
+    global_installed_extensions=( $(find "/usr/share/gnome-shell/extensions/" \
+                                         -maxdepth 1 -type d -name "*@*" -exec \
+                                         /usr/bin/basename {} \;) )
+    local_installed_extensions=( $(find "$HOME/.local/share/gnome-shell/extensions/" \
+                                        -maxdepth 1 -type d -name "*@*" -exec \
+                                        /usr/bin/basename {} \;) )
+
+    if [ ${#local_installed_extensions[@]} -gt ${#global_installed_extensions[@]} ]
+    then
+        installed_extensions=( ${local_installed_extensions[@]} )
+        test_extensions=( ${global_installed_extensions[@]} )
+    else
+        installed_extensions=( ${global_installed_extensions[@]} )
+        test_extensions=( ${local_installed_extensions[@]} )
+    fi
+    for test_extension in "${test_extensions[@]}"
+    do
+        test_extension_not_doubled=true
+        for installed_extension in "${installed_extensions[@]}"
+        do
+            if [ "$test_extension" = "$installed_extension" ]
+            then
+                test_extension_not_doubled=false
+                break
+            fi
+        done
+        if  [ $test_extension_not_doubled = true ]
+        then
+            test_extension=( $test_extension )
+            installed_extensions=( "${installed_extensions[@]}" "${test_extension[@]}" )
+            #echo ${test_extension[@]}
+        fi
+    done
+    echo "${installed_extensions[@]}"
+}
+
+
+function print_installed_extensions() {
+    installed_extensions=( $(get_installed_extensions) )
+    for installed_extension in "${installed_extensions[@]}"
+    do
+        [ "$(check_extension_is_enabled "$installed_extension")" = true ] && \
+            status="enabled" || status="disabled";
+        printf "%-65s - %-10s \n" "$installed_extension" "$status"
+    done
+}
+
+
+# -------------------------------------------------------------------------------
+
+function check_extension_is_enabled() {
+    extension_to_check=$1
+    enabled_extensions=( $(gsettings get org.gnome.shell enabled-extensions | \
+                               sed -e 's|^@as ||g' | tr -d "[",",","]","\'") )
+    for enabled_extension in "${enabled_extensions[@]}"
+    do
+        if [ "$enabled_extension" = "$extension_to_check" ]
+        then
+            echo true
+            return
+        fi
+    done
+    echo false
+}
+
+
+function check_extension_in_all_extensions() {
+    extension_to_check=$1
+    installed_extensions=( $(get_installed_extensions) )
+    for installed_extension in "${installed_extensions[@]}"
+    do
+        if [ "$installed_extension" = "$extension_to_check" ]
+        then
+            echo true
+            return
+        fi
+    done
+    echo false
+}
+
+
+function version_greater() {
+    minimal_version=3.18.0
+    our_version=$(gnome-shell --version | awk '{print $3}')
+    if [ "$(echo "$our_version $minimal_version" | tr " " "\n" | sort -V | head -n 1)" != "$our_version" ]
+    then
+        echo true
+    else
+        echo false
+    fi
+}
+
+
+function disable_extension() {
+
+    arguments=("$@")
+    unset "arguments[0]"
+
+    for extension_to_disable in "${arguments[@]}"
+    do
+
+        if  [ "$(check_extension_in_all_extensions "$extension_to_disable")" = false ]
+        then
+            echo "'$extension_to_disable' is not installed."
+            continue
+        fi
+        if  [ "$(check_extension_is_enabled "$extension_to_disable")" = false ]
+        then
+            echo "'$extension_to_disable' is already disabled."
+            continue
+        fi
+        if [ "$(version_greater)" = true ]
+        then
+            gnome-shell-extension-tool -d "$extension_to_disable"
+            continue
+        fi
+        enabled_extensions=( $(gsettings get org.gnome.shell enabled-extensions | \
+                                   tr -d "[",",","]","\'") )
+        enabled_extensions_string=""
+        for enabled_extension in "${enabled_extensions[@]}"
+        do
+            if [ "$enabled_extension" != "$extension_to_disable" ]
+            then
+                enabled_extensions_string="$enabled_extensions_string '$enabled_extension', "
+            fi
+        done
+        enabled_extensions_string=${enabled_extensions_string:1:-2}
+        enabled_extensions_string="[ $enabled_extensions_string ]"
+
+        dbus-launch gsettings set org.gnome.shell enabled-extensions "$enabled_extensions_string"
+
+    done
+    return
+}
+
+
+function enable_extension() {
+
+    arguments=("$@")
+    unset "arguments[0]"
+
+    for extension_to_enable in "${arguments[@]}"
+    do
+
+        if  [ "$(check_extension_in_all_extensions "$extension_to_enable")" = false ]
+        then
+            echo "'$extension_to_enable' is not installed."
+            continue
+        fi
+        if  [ "$(check_extension_is_enabled "$extension_to_enable")" = true ]
+        then
+            echo "'$extension_to_enable' is already enabled."
+            continue
+        fi
+        if [ "$(version_greater)" = true ]
+        then
+            gnome-shell-extension-tool -e "$extension_to_enable"
+            continue
+        fi
+        enabled_extensions_string=$(gsettings get org.gnome.shell enabled-extensions | tr -d "]")
+        [ "$enabled_extensions_string" != "@as [" ] && delimiter=,
+        enabled_extensions_string="${enabled_extensions_string}${delimiter} '$extension_to_enable' ]"
+
+        gsettings set org.gnome.shell enabled-extensions "$enabled_extensions_string"
+
+    done
+    return
+}
+
+
+# -------------------------------------------------------------------------------
+
+function disable_all_extensions() {
+    get_enabled_extensions
+    for enabled_extension in "${enabled_extensions[@]}"
+    do
+        # Don't disable user-theme extensions to avoid breaking them
+        if [ "$enabled_extension" != "user-theme" ] && \
+               [ "$enabled_extension" != "user-themes" ] && \
+               [ "$enabled_extension" != "user-theme@gnome-shell-extensions.gcampax.github.com" ]
+        then
+            disable_extension "this element will be ignored" "$enabled_extension"
+        else
+            continue
+        fi
+    done
+}
+
+
+# -------------------------------------------------------------------------------
+
+function print_help() {
+
+    printf "
+GNOME Shell Extension Control Tool:
+
+usage: gnome-shell-extensions <option> [extension name]
+
+Options
+    -h,   --help                                Display help message.
+    -e,   --enable-extension <extension name>   Enable extension.
+    -d,   --disable-extension <extension name>  Disable extension.
+    -da,  --disable-all-extensions              Disables all extensions.
+    -le,  --list-enabled                        List enabled extensions.
+    -l,   --list                                List all extensions + state info.
+    -s,   --status <extension name>             Show status of extension.
+\n"
+
+}
+
+
+# -------------------------------------------------------------------------------
+
+case $1 in
+    -h|--help)
+        print_help
+        ;;
+    -e|--enable-extension)
+        enable_extension "$@"
+        ;;
+    -d|--disable-extension)
+        disable_extension "$@"
+        ;;
+    -da|--disable-all-extensions)
+        disable_all_extensions
+        ;;
+    -le|--list-enabled)
+        print_enabled_extensions
+        ;;
+    -l|--list)
+        print_installed_extensions
+        ;;
+    -s|--status)
+        if  [ "$(check_extension_is_enabled "$2")" = true ]
+        then
+            echo "enabled"
+        else
+            echo "disabled"
+        fi
+        ;;
+    *)
+        print_help
+        ;;
+esac
