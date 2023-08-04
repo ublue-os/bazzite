@@ -52,8 +52,8 @@ install-extensions-cli:
 
 enable-system76-scheduler:
   #!/usr/bin/env bash
-  echo 'Installing System76-Scheduler plugin for KDE...'
-  if grep "gnome" <<< $(rpm-ostree status); then
+  if grep -v "gnome" <<< $(rpm-ostree status); then
+    echo 'Installing System76-Scheduler plugin for KDE...'
     git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
     kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
     systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
@@ -61,6 +61,7 @@ enable-system76-scheduler:
     kcmshell5 kcm_kwin_scripts
     rm -rf /tmp/kwin-system76-scheduler-integration
   else
+    echo 'Enabling System76-Scheduler GNOME extension...'
     gsettings set org.gnome.shell enabled-extensions ['appindicatorsupport@rgcjonas.gmail.com', 'gsconnect@andyholmes.github.io', 's76-scheduler@mattjakeman.com', 'tofumenu@tofu', 'user-theme@gnome-shell-extensions.gcampax.github.com']
     gsettings set org.gnome.shell.extensions.fedora-menu menu-button-icon-size 20
   fi
