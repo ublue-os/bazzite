@@ -52,13 +52,6 @@ screens:
           default: true
           packages:
           - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
-        CoreCtrl:
-          description: AMD GPU Overclocking
-          condition:
-            run: grep -v "nvidia" <<< $(rpm-ostree status)
-          default: false
-          packages:
-          - Install CoreCtrl: just --unstable install-corectrl
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
@@ -90,18 +83,46 @@ screens:
           default: true
           packages:
           - Set SteamOS BTRFS mount flags: sudo -A just --unstable set-btrfs-flags
-        Supergfxctl:
-          condition:
-            run: grep "nvidia" <<< $(rpm-ostree status)
-          description: A utility for Nvidia GPU switching
-          default: false
-          packages:
-          - Enable supergfxctl: just --unstable enable-supergfxctl
         System76 Scheduler:
           description: Enables System76 scheduler
           default: true
           packages:
           - Enable System76 Scheduler: just --unstable enable-system76-scheduler
+  amd-additions:
+    source: yafti.screen.package
+    values:
+      title: AMD Additions
+      condition:
+        run: grep -v "nvidia" <<< $(rpm-ostree status)
+      show_terminal: true
+      package_manager: yafti.plugin.run
+      groups:
+        CoreCtrl:
+          description: AMD GPU Overclocking
+          condition:
+            run: grep -v "nvidia" <<< $(rpm-ostree status)
+          default: false
+          packages:
+          - Install CoreCtrl: just --unstable install-corectrl
+  nvidia-additions:
+    source: yafti.screen.package
+    values:
+      title: Nvidia Additions
+      condition:
+        run: grep "nvidia" <<< $(rpm-ostree status)
+      show_terminal: true
+      package_manager: yafti.plugin.run
+      groups:
+        GreenWithEnvy:
+          description: Nvidia GPU Overclocking
+          default: false
+          packages:
+          - Install GreenWithEnvy: flatpak install --user --noninteractive com.leinardi.gwe
+        Supergfxctl:
+          description: A utility for Nvidia GPU switching
+          default: false
+          packages:
+          - Enable Supergfxctl: just --unstable enable-supergfxctl
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
@@ -231,7 +252,6 @@ screens:
           - Easy Effects: com.github.wwmm.easyeffects
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - Flatseal Permissions Manager: com.github.tchx84.Flatseal
-          - GreenWithEnvy (Nvidia GPU Overclocking): com.leinardi.gwe
           - JamesDSP: me.timschneeberger.jdsp4linux
           - KeePassXC: org.keepassxc.KeePassXC
           - OpenRGB: org.openrgb.OpenRGB
