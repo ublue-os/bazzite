@@ -100,8 +100,8 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
         gnome-shell-extension-user-theme \
         gnome-shell-extension-appindicator \
         gnome-shell-extension-gsconnect \
-        gnome-shell-extension-system76-scheduler && \
-        openssh-askpass \
+        gnome-shell-extension-system76-scheduler \
+        openssh-askpass && \
     rpm-ostree override remove \
         gnome-tour \
         yelp \
