@@ -1,7 +1,7 @@
 install-bazzite-arch:
   #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
-  if grep 'nvidia' <<< ${KARGS}; then
+  if grep -q 'nvidia' <<< ${KARGS}; then
     echo 'Installing Bazzite Arch (Nvidia)...'
     distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch-nvidia
   else
@@ -28,7 +28,7 @@ remove-nix:
 
 enable-big-picture:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
     systemctl enable --now gnome-autologin
   else
     systemctl enable --now plasma-autologin
@@ -43,7 +43,7 @@ get-greenlight:
 
 install-extensions-cli:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
     pip install --upgrade gnome-extensions-cli
   else 
     echo "This is only supported under GNOME."
@@ -51,7 +51,7 @@ install-extensions-cli:
 
 enable-system76-scheduler:
   #!/usr/bin/env bash
-  if grep -v "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -qv "gnome" <<< $(cat /etc/default/bazzite); then
     echo 'Installing System76-Scheduler plugin for KDE...'
     git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
     kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
@@ -67,7 +67,7 @@ enable-system76-scheduler:
 
 enable-supergfxctl: 
   #!/usr/bin/env bash
-  if grep "nvidia" <<< $(cat /etc/default/bazzite); then
+  if grep -q "nvidia" <<< $(cat /etc/default/bazzite); then
     systemctl enable --now supergfxd.service
   else
     echo "This requires an Nvidia image."
@@ -75,7 +75,7 @@ enable-supergfxctl:
 
 enable-wallpaper-engine:
   #!/usr/bin/env bash
-  if grep -v "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -qv "gnome" <<< $(cat /etc/default/bazzite); then
     echo 'Installing Wallpaper Engine Plugin for KDE...'
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
     plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
@@ -86,7 +86,7 @@ enable-wallpaper-engine:
 
 setup-gradience:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
     gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
     gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
   else 
@@ -95,7 +95,7 @@ setup-gradience:
 
 enable-vapor-theme:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
@@ -103,13 +103,13 @@ enable-vapor-theme:
     gsettings set org.gnome.desktop.background picture-uri-dark file:///usr/share/backgrounds/steamdeck/Steam\ Deck\ Logo\ Default.jpg
     gradience-cli flatpak-overrides -e both
     gradience-cli apply -p /usr/share/ublue-os/bazzite/themes/vapor.json
-  else 
+  else
     echo "This is only supported under GNOME."
   fi
 
 enable-vgui2-theme:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
@@ -128,7 +128,7 @@ set-btrfs-flags:
 zram-on:
   #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
-  if grep 'zram' <<< ${KARGS}; then
+  if grep -q 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --delete=zram
     echo 'ZRAM enabled. Please reboot.'
   else
@@ -138,7 +138,7 @@ zram-on:
 zram-off:
   #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
-  if grep -v 'zram' <<< ${KARGS}; then
+  if grep -qv 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --append=zram=0
     echo 'ZRAM disabled. Please reboot.'
   else
@@ -148,7 +148,7 @@ zram-off:
 resize-zram:
   #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
-  if grep "zram-size" <<< $(cat ${CONFIG}); then
+  if grep -q "zram-size" <<< $(cat ${CONFIG}); then
     CURRENT_SIZE=$(cat "${CONFIG}" | grep "zram-size" | sed 's/zram-size=//g')
   else
     CURRENT_SIZE=1024

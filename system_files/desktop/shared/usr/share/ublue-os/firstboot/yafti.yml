@@ -14,7 +14,7 @@ screens:
     values:
       title: Configure Bazzite Arch
       condition:
-        run: grep -v "bazzite-arch" <<< $(distrobox list)
+        run: grep -qv "bazzite-arch" <<< $(distrobox list)
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
@@ -93,14 +93,14 @@ screens:
     values:
       title: AMD Additions
       condition:
-        run: grep -v "nvidia" <<< $(cat /etc/default/bazzite)
+        run: grep -qv "nvidia" <<< $(cat /etc/default/bazzite)
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
         CoreCtrl:
           description: AMD GPU Overclocking
           condition:
-            run: grep -v "nvidia" <<< $(cat /etc/default/bazzite)
+            run: grep -qv "nvidia" <<< $(cat /etc/default/bazzite)
           default: false
           packages:
           - Install CoreCtrl: just --unstable install-corectrl
@@ -109,7 +109,7 @@ screens:
     values:
       title: Nvidia Additions
       condition:
-        run: grep "nvidia" <<< $(cat /etc/default/bazzite)
+        run: grep -q "nvidia" <<< $(cat /etc/default/bazzite)
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
@@ -128,7 +128,7 @@ screens:
     values:
       title: Setting up Flathub
       condition:
-        run: flatpak remotes --system | grep fedora
+        run: flatpak remotes --system | grep -q fedora
       description: |
         WARNING: This will modify your Flatpaks if you are rebasing! If you do not want to do this exit the installer.
       actions:
@@ -263,7 +263,7 @@ screens:
     values:
       title: Enabling Wallpaper Engine
       condition:
-        run: grep -v "gnome" <<< $(cat /etc/default/bazzite)
+        run: grep -qv "gnome" <<< $(cat /etc/default/bazzite)
       description: |
         Enables the plugin for Wallpaper Engine, a utility that allows you to use live wallpapers on your desktop
       actions:
@@ -273,7 +273,7 @@ screens:
     values:
       title: Setting up Gradience
       condition:
-        run: grep "gnome" <<< $(cat /etc/default/bazzite)
+        run: grep -q "gnome" <<< $(cat /etc/default/bazzite)
       description: |
         Adds Valve-inspired themes to Gradience
       actions:
@@ -283,7 +283,7 @@ screens:
     values:
       title: "GNOME Theme"
       condition:
-        run: grep "gnome" <<< $(cat /etc/default/bazzite)
+        run: grep -q "gnome" <<< $(cat /etc/default/bazzite)
       links:
       - "Vapor Theme":
           run: just --unstable enable-vapor-theme

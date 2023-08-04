@@ -71,7 +71,7 @@ RUN rpm-ostree install \
     yad
 
 # Configure KDE & GNOME
-RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
@@ -108,7 +108,7 @@ RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
 ; fi
 
 # Install ROCM on non-Nvidia images
-RUN if grep -v "nvidia" <<< "${IMAGE_NAME}"; then \
+RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         rocm-hip \
         rocm-opencl \
@@ -145,7 +145,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
-    if grep "gnome" <<< "${IMAGE_NAME}"; then \
+    if grep -q "gnome" <<< "${IMAGE_NAME}"; then \
         systemctl disable gdm.service && \
         systemctl enable sddm.service && \
         rm /usr/share/applications/yad-icon-browser.desktop \
@@ -188,7 +188,7 @@ RUN rpm-ostree install \
 RUN rpm-ostree override remove \
     ddccontrol \
     ddccontrol-gtk && \
-    if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+    if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
         rpm-ostree override remove \
             steamdeck-kde-presets-desktop \
     ; fi
@@ -209,7 +209,7 @@ RUN rpm-ostree override replace \
         udisks2
 
 # Configure KDE & GNOME
-RUN if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
     rpm-ostree override remove \
         krfb \
         krfb-libs && \
@@ -261,10 +261,10 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
-    if grep "gnome" <<< "${IMAGE_NAME}"; then \
+    if grep -q "gnome" <<< "${IMAGE_NAME}"; then \
         systemctl enable gnome-autologin.service \
     ; fi && \
-    if grep -v "gnome" <<< "${IMAGE_NAME}"; then \
+    if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
         systemctl enable plasma-autologin.service \
     ; fi && \
     systemctl enable jupiter-fan-control.service && \

@@ -1,6 +1,6 @@
 enable-gamescope-autologin:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
     systemctl disable --now gnome-autologin
   else
     systemctl disable --now plasma-autologin
@@ -10,7 +10,7 @@ enable-gamescope-autologin:
 enable-desktop-autologin:
   #!/usr/bin/env bash
   systemctl disable --now gamescope-autologin
-  if grep "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
     systemctl enable --now gnome-autologin
   else
     systemctl enable --now plasma-autologin
@@ -44,7 +44,7 @@ get-steamcmd:
 
 install-extensions-cli:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
     pip install --upgrade gnome-extensions-cli
   else
     echo "This is only supported under GNOME."
@@ -52,7 +52,7 @@ install-extensions-cli:
 
 enable-system76-scheduler:
   #!/usr/bin/env bash
-  if grep -v "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -qv "gnome" <<< $(cat /etc/default/bazzite); then
     echo 'Installing System76-Scheduler plugin for KDE...'
     git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
     kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
@@ -86,7 +86,7 @@ get-boilr:
 
 enable-wallpaper-engine:
   #!/usr/bin/env bash
-  if grep -v "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -qv "gnome" <<< $(cat /etc/default/bazzite); then
     echo 'Installing Wallpaper Engine Plugin for KDE...'
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
     plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
@@ -97,7 +97,7 @@ enable-wallpaper-engine:
 
 setup-gradience:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
     gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
     gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
   else 
@@ -106,7 +106,7 @@ setup-gradience:
 
 enable-vapor-theme:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
@@ -120,7 +120,7 @@ enable-vapor-theme:
 
 enable-vgui2-theme:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(cat /etc/default/bazzite); then
+  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
@@ -135,7 +135,7 @@ enable-vgui2-theme:
 deckswap-on:
   #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
-  if grep 'inactive' <<< ${STATUS}; then
+  if grep -q 'inactive' <<< ${STATUS}; then
     systemctl enable deckswap.service
     echo 'deckswap enabled. Please reboot.'
   else
@@ -145,7 +145,7 @@ deckswap-on:
 deckswap-off:
   #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
-  if grep -v 'inactive' <<< ${STATUS}; then
+  if grep -qv 'inactive' <<< ${STATUS}; then
     systemctl disable deckswap.service
     echo 'deckswap disabled. Please reboot.'
   else
@@ -155,7 +155,7 @@ deckswap-off:
 resize-deckswap:
   #!/usr/bin/env bash
   CONFIG='/etc/default/deckswap'
-  CURRENT_SIZE=$(cat "${CONFIG}" | grep "SWAP_SIZE" | sed 's/SWAP_SIZE=//g')
+  CURRENT_SIZE=$(cat "${CONFIG}" | grep -q "SWAP_SIZE" | sed 's/SWAP_SIZE=//g')
   echo 'Current size: '${CURRENT_SIZE}
   read -p 'Enter new size (1-16) in gigabytes (1G): ' NEW_SIZE
   if [ -z "${NEW_SIZE//[0-9]}" ]; then
@@ -182,7 +182,7 @@ set-btrfs-flags:
   #!/usr/bin/env bash
   echo 'Configuring drive mount parameters...'
   sudo sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
-  if grep '64GB' <<< $(lsblk -o MODEL); then
+  if grep -q '64GB' <<< $(lsblk -o MODEL); then
     echo 'Increasing compression for detected 64GB eMMC'
     sudo sed -i 's/compress-force=zstd:1/compress-force=zstd:3/g' /etc/fstab
   fi
@@ -193,7 +193,7 @@ switch-to-ext4:
 zram-on:
   #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
-  if grep 'zram' <<< ${KARGS}; then
+  if grep -q 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --delete=zram
     echo 'ZRAM enabled. Please reboot.'
   else
@@ -203,7 +203,7 @@ zram-on:
 zram-off:
   #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
-  if grep -v 'zram' <<< ${KARGS}; then
+  if grep -qv 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --append=zram=0
     echo 'ZRAM disabled. Please reboot.'
   else
@@ -213,8 +213,8 @@ zram-off:
 resize-zram:
   #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
-  if grep "zram-size" <<< $(cat ${CONFIG}); then
-    CURRENT_SIZE=$(cat "${CONFIG}" | grep "zram-size" | sed 's/zram-size=//g')
+  if grep -q "zram-size" <<< $(cat ${CONFIG}); then
+    CURRENT_SIZE=$(cat "${CONFIG}" | grep -q "zram-size" | sed 's/zram-size=//g')
   else
     CURRENT_SIZE=1024
   fi
@@ -225,7 +225,7 @@ resize-zram:
       NEW_SIZE=1024
     fi
     if ((${NEW_SIZE} >= 512 && ${NEW_SIZE} <= 4096)); then
-      if grep "zram-size" <<< $(cat ${CONFIG}); then
+      if grep -q "zram-size" <<< $(cat ${CONFIG}); then
         sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
       else
         sudo -A echo "zram-size=${NEW_SIZE}" >> ${CONFIG}

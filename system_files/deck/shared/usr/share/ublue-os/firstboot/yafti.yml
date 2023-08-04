@@ -109,7 +109,7 @@ screens:
     values:
       title: Setting up Flathub
       condition:
-        run: flatpak remotes --system | grep fedora
+        run: flatpak remotes --system | grep -q fedora
       description: |
         WARNING: This will modify your Flatpaks if you are rebasing! If you do not want to do this exit the installer.
       actions:
@@ -242,7 +242,7 @@ screens:
     values:
       title: Enabling Wallpaper Engine
       condition:
-        run: grep -v "gnome" <<< $(cat /etc/default/bazzite)
+        run: grep -qv "gnome" <<< $(cat /etc/default/bazzite)
       description: |
         Enables the plugin for Wallpaper Engine, a utility that allows you to use live wallpapers on your desktop
       actions:
@@ -252,7 +252,7 @@ screens:
     values:
       title: Setting up Gradience
       condition:
-        run: grep "gnome" <<< $(cat /etc/default/bazzite)
+        run: grep -q "gnome" <<< $(cat /etc/default/bazzite)
       description: |
         Adds Valve-inspired themes to Gradience
       actions:
@@ -262,7 +262,7 @@ screens:
     values:
       title: "GNOME Theme"
       condition:
-        run: grep "gnome" <<< $(cat /etc/default/bazzite)
+        run: grep -q "gnome" <<< $(cat /etc/default/bazzite)
       links:
       - "Vapor Theme":
           run: just --unstable enable-vapor-theme

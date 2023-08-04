@@ -15,7 +15,7 @@ if [[ -f '/etc/flatpak/remove' ]]; then
 fi
 
 if [[ -f '/etc/flatpak/deck' ]]; then
-  if grep "deck" <<< $(cat /etc/default/bazzite); then
+  if grep -q "deck" <<< $(cat /etc/default/bazzite); then
     cat /etc/flatpak/deck | while read line; do
       flatpak install --system --noninteractive --no-pull flathub $line
     done && cat /etc/flatpak/deck >> /etc/flatpak/installed
