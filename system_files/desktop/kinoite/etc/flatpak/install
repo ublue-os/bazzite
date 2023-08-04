@@ -2,3 +2,4 @@ net.davidotek.pupgui2
 org.freedesktop.Platform.VulkanLayer.MangoHud//22.08
 org.freedesktop.Platform.VulkanLayer.vkBasalt//22.08
 org.mozilla.firefox
+com.github.tchx84.Flatseal

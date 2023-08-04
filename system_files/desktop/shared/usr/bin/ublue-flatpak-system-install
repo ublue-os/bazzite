@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+source /etc/default/bazzite
 
 if [[ -f '/etc/flatpak/install' ]]; then
   cp -r /etc/flatpak/flathub/* /var/lib/flatpak/repo/refs/remotes/flathub
@@ -15,7 +16,7 @@ if [[ -f '/etc/flatpak/remove' ]]; then
 fi
 
 if [[ -f '/etc/flatpak/deck' ]]; then
-  if grep "deck" <<< $(rpm-ostree status); then
+  if [[ ${IMAGE_NAME} == *'deck'* ]]; then
     cat /etc/flatpak/deck | while read line; do
       flatpak install --system --noninteractive --no-pull flathub $line
     done && cat /etc/flatpak/deck >> /etc/flatpak/installed

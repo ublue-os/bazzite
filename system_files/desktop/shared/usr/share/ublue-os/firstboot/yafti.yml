@@ -9,6 +9,37 @@ screens:
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
         Configure your system to get started
+  configure-bazzite-arch:
+    source: yafti.screen.package
+    values:
+      title: Configure Bazzite Arch
+      condition:
+        run: grep -qv "bazzite-arch" <<< $(distrobox list)
+      show_terminal: true
+      package_manager: yafti.plugin.run
+      groups:
+        Install Bazzite Arch:
+          description: This will install an Arch distrobox configured for gaming
+          default: true
+          packages:
+          - Install Bazzite Arch: just --unstable install-bazzite-arch
+        Export Launchers:
+          description: This exports Steam and Lutris
+          default: true
+          packages:
+          - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
+          - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
+        Export Utilities:
+          description: This exports SteamCMD and protontricks
+          default: true
+          packages:
+          - Export SteamCMD: just --unstable export-steamcmd
+          - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
+        Autostart Steam:
+          description: Starts Steam after logging in
+          default: true
+          packages:
+          - Autostart Steam: cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
   configure-bazzite:
     source: yafti.screen.package
     values:
@@ -16,37 +47,11 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
-        Bazzite Arch Distrobox:
-          description: This will install an Arch distrobox configured for gaming. Steam and Lutris will then be exported.
-          default: true
-          condition:
-            run: distrobox list | grep -v bazzite-arch
-          packages:
-          - Install Bazzite Arch: just --unstable install-bazzite-arch
-          - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
-          - Export SteamCMD: just --unstable export-steamcmd
-          - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
-          - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
-          - Autostart Steam: cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
         Automatic Duplicate File Removal:
           description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
           default: true
           packages:
           - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
-        CoreCtrl:
-          description: AMD GPU Overclocking
-          condition:
-            run: grep -v "nvidia" <<< $(rpm-ostree status)
-          default: false
-          packages:
-          - Install CoreCtrl: just --unstable install-corectrl
-        Gradience:
-          description: Adds Valve-inspired themes to Gradience
-          condition:
-            run: grep "gnome" <<< $(rpm-ostree status)
-          default: true
-          packages:
-          - Setup Gradience: just --unstable setup-gradience
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
@@ -78,31 +83,52 @@ screens:
           default: true
           packages:
           - Set SteamOS BTRFS mount flags: sudo -A just --unstable set-btrfs-flags
-        Supergfxctl:
-          condition:
-            run: grep "nvidia" <<< $(rpm-ostree status)
-          description: A utility for Nvidia GPU switching
-          default: false
-          packages:
-          - Enable supergfxctl: just --unstable enable-supergfxctl
         System76 Scheduler:
           description: Enables System76 scheduler
           default: true
           packages:
           - Enable System76 Scheduler: just --unstable enable-system76-scheduler
-        Wallpaper Engine:
-          description: Enables Wallpaper Engine
+  amd-additions:
+    source: yafti.screen.package
+    values:
+      title: AMD Additions
+      condition:
+        run: [[ ${IMAGE_FLAVOR} == 'main' ]]
+      show_terminal: true
+      package_manager: yafti.plugin.run
+      groups:
+        CoreCtrl:
+          description: AMD GPU Overclocking
           condition:
-            run: grep -v "gnome" <<< $(rpm-ostree status)
-          default: true
+            run: grep -qv "nvidia" <<< $(cat /etc/default/bazzite)
+          default: false
           packages:
-          - Enable Wallpaper Engine: just --unstable enable-wallpaper-engine
+          - Install CoreCtrl: just --unstable install-corectrl
+  nvidia-additions:
+    source: yafti.screen.package
+    values:
+      title: Nvidia Additions
+      condition:
+        run: [[ ${IMAGE_FLAVOR} == 'nvidia' ]]
+      show_terminal: true
+      package_manager: yafti.plugin.run
+      groups:
+        GreenWithEnvy:
+          description: Nvidia GPU Overclocking
+          default: false
+          packages:
+          - Install GreenWithEnvy: flatpak install --user --noninteractive com.leinardi.gwe
+        Supergfxctl:
+          description: A utility for Nvidia GPU switching
+          default: false
+          packages:
+          - Enable Supergfxctl: just --unstable enable-supergfxctl
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
       title: Setting up Flathub
       condition:
-        run: flatpak remotes --system | grep fedora
+        run: flatpak remotes --system | grep -q fedora
       description: |
         WARNING: This will modify your Flatpaks if you are rebasing! If you do not want to do this exit the installer.
       actions:
@@ -225,20 +251,26 @@ screens:
           - Calibre: com.calibre_ebook.calibre
           - Easy Effects: com.github.wwmm.easyeffects
           - Fedora Media Writer: org.fedoraproject.MediaWriter
-          - Flatseal Permissions Manager: com.github.tchx84.Flatseal
-          - GreenWithEnvy (Nvidia GPU Overclocking): com.leinardi.gwe
           - JamesDSP: me.timschneeberger.jdsp4linux
           - KeePassXC: org.keepassxc.KeePassXC
           - OpenRGB: org.openrgb.OpenRGB
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
+  setup-desktop-environment:
+    source: yafti.screen.consent
+    values:
+      title: Setting up your Desktop Environment
+      description: |
+        Configures your desktop environment, including needed plugins/extensions.
+      actions:
+      - run: just --unstable setup-desktop-environment
   theme:
     source: yafti.screen.title
     values:
       title: "GNOME Theme"
       condition:
-        run: grep "gnome" <<< $(rpm-ostree status)
+        run: [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]
       links:
       - "Vapor Theme":
           run: just --unstable enable-vapor-theme

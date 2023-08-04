@@ -47,25 +47,11 @@ screens:
           default: true
           packages:
           - Enable Gamescope Autologin: just --unstable enable-gamescope-autologin
-        Gradience:
-          description: Adds Valve-inspired themes to Gradience
-          condition:
-            run: grep "gnome" <<< $(rpm-ostree status)
-          default: true
-          packages:
-          - Setup Gradience: just --unstable setup-gradience
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
           packages:
           - Retrieve Greenlight: just --unstable get-greenlight
-        GSConnect:
-          condition:
-            run: grep "gnome" <<< $(rpm-ostree status)
-          description: A KDE connect implementation for GNOME
-          default: true
-          packages:
-          - Enable GSConnect: just --unstable enable-gsconnect
         Hide GRUB Menu:
           description: |
             NOTE: Press the escape key before boot to show the menu
@@ -118,19 +104,12 @@ screens:
           default: true
           packages:
           - Enable System76 Scheduler: just --unstable enable-system76-scheduler
-        Wallpaper Engine:
-          description: Enables Wallpaper Engine
-          condition:
-            run: grep -v "gnome" <<< $(rpm-ostree status)
-          default: true
-          packages:
-          - Enable Wallpaper Engine: just --unstable enable-wallpaper-engine
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
       title: Setting up Flathub
       condition:
-        run: flatpak remotes --system | grep fedora
+        run: flatpak remotes --system | grep -q fedora
       description: |
         WARNING: This will modify your Flatpaks if you are rebasing! If you do not want to do this exit the installer.
       actions:
@@ -252,18 +231,25 @@ screens:
           - Bitwarden: com.bitwarden.desktop
           - Calibre: com.calibre_ebook.calibre
           - Fedora Media Writer: org.fedoraproject.MediaWriter
-          - Flatseal Permissions Manager: com.github.tchx84.Flatseal
           - KeePassXC: org.keepassxc.KeePassXC
           - OpenRGB: org.openrgb.OpenRGB
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
+  setup-desktop-environment:
+    source: yafti.screen.consent
+    values:
+      title: Setting up your Desktop Environment
+      description: |
+        Configures your desktop environment, including needed plugins/extensions.
+      actions:
+      - run: just --unstable setup-desktop-environment
   theme:
     source: yafti.screen.title
     values:
       title: "GNOME Theme"
       condition:
-        run: grep "gnome" <<< $(rpm-ostree status)
+        run: [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]
       links:
       - "Vapor Theme":
           run: just --unstable enable-vapor-theme

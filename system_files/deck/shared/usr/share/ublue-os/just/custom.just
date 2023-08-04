@@ -1,18 +1,20 @@
 enable-gamescope-autologin:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(rpm-ostree status); then
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     systemctl disable --now gnome-autologin
-  else
+  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     systemctl disable --now plasma-autologin
   fi
   systemctl enable --now gamescope-autologin
 
 enable-desktop-autologin:
   #!/usr/bin/env bash
+  source /etc/default/bazzite
   systemctl disable --now gamescope-autologin
-  if grep "gnome" <<< $(rpm-ostree status); then
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     systemctl enable --now gnome-autologin
-  else
+  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     systemctl enable --now plasma-autologin
   fi
 
@@ -44,7 +46,8 @@ get-steamcmd:
 
 install-extensions-cli:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(rpm-ostree status); then
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     pip install --upgrade gnome-extensions-cli
   else
     echo "This is only supported under GNOME."
@@ -52,17 +55,18 @@ install-extensions-cli:
 
 enable-system76-scheduler:
   #!/usr/bin/env bash
-  echo 'Installing System76-Scheduler plugin for KDE...'
-  if grep "gnome" <<< $(rpm-ostree status); then
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+    echo 'Installing System76-Scheduler plugin for KDE...'
     git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
     kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
     systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
     systemctl enable --now com.system76.Scheduler.service
     kcmshell5 kcm_kwin_scripts
     rm -rf /tmp/kwin-system76-scheduler-integration
-  else
-    gsettings set org.gnome.shell enabled-extensions ['appindicatorsupport@rgcjonas.gmail.com', 'gsconnect@andyholmes.github.io', 's76-scheduler@mattjakeman.com', 'tofumenu@tofu', 'user-theme@gnome-shell-extensions.gcampax.github.com']
-    gsettings set org.gnome.shell.extensions.fedora-menu menu-button-icon-size 20
+  elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+    echo 'Enabling System76-Scheduler GNOME extension...'
+    gnome-shell-extension-cl -e s76-scheduler@mattjakeman.com
   fi
 
 install-nix:
@@ -83,29 +87,31 @@ get-boilr:
     -O ~/Desktop/BoilR
   chmod +x ~/Desktop/BoilR
 
-enable-wallpaper-engine:
+setup-desktop-environment:
   #!/usr/bin/env bash
-  if grep -v "gnome" <<< $(rpm-ostree status); then
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+    echo 'Configuring GNOME extensions...'
+    gnome-shell-extension-cl -d background-logo@fedorahosted.org
+    gnome-shell-extension-cl -e appindicatorsupport@rgcjonas.gmail.com
+    gnome-shell-extension-cl -e gsconnect@andyholmes.github.io
+    gnome-shell-extension-cl -e tofumenu@tofu
+    gsettings set org.gnome.shell.extensions.fedora-menu menu-button-icon-size 20
+    mkdir -p $HOME/.config/presets/user/
+    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
+    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
+  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     echo 'Installing Wallpaper Engine Plugin for KDE...'
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
     plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
     rm -rf /tmp/wallpaper-engine-kde-plugin
-  else
-    echo "This is only supported under KDE."
-  fi
-
-setup-gradience:
-  #!/usr/bin/env bash
-  if grep "gnome" <<< $(rpm-ostree status); then
-    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
-    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
-  else 
-    echo "This is only supported under GNOME."
   fi
 
 enable-vapor-theme:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(rpm-ostree status); then
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+    gnome-shell-extension-cl -e user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
@@ -119,7 +125,9 @@ enable-vapor-theme:
 
 enable-vgui2-theme:
   #!/usr/bin/env bash
-  if grep "gnome" <<< $(rpm-ostree status); then
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+    gnome-shell-extension-cl -e user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
@@ -134,7 +142,7 @@ enable-vgui2-theme:
 deckswap-on:
   #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
-  if grep 'inactive' <<< ${STATUS}; then
+  if grep -q 'inactive' <<< ${STATUS}; then
     systemctl enable deckswap.service
     echo 'deckswap enabled. Please reboot.'
   else
@@ -144,7 +152,7 @@ deckswap-on:
 deckswap-off:
   #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
-  if grep -v 'inactive' <<< ${STATUS}; then
+  if grep -qv 'inactive' <<< ${STATUS}; then
     systemctl disable deckswap.service
     echo 'deckswap disabled. Please reboot.'
   else
@@ -154,7 +162,7 @@ deckswap-off:
 resize-deckswap:
   #!/usr/bin/env bash
   CONFIG='/etc/default/deckswap'
-  CURRENT_SIZE=$(cat "${CONFIG}" | grep "SWAP_SIZE" | sed 's/SWAP_SIZE=//g')
+  CURRENT_SIZE=$(cat "${CONFIG}" | grep -q "SWAP_SIZE" | sed 's/SWAP_SIZE=//g')
   echo 'Current size: '${CURRENT_SIZE}
   read -p 'Enter new size (1-16) in gigabytes (1G): ' NEW_SIZE
   if [ -z "${NEW_SIZE//[0-9]}" ]; then
@@ -181,7 +189,7 @@ set-btrfs-flags:
   #!/usr/bin/env bash
   echo 'Configuring drive mount parameters...'
   sudo sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
-  if grep '64GB' <<< $(lsblk -o MODEL); then
+  if grep -q '64GB' <<< $(lsblk -o MODEL); then
     echo 'Increasing compression for detected 64GB eMMC'
     sudo sed -i 's/compress-force=zstd:1/compress-force=zstd:3/g' /etc/fstab
   fi
@@ -192,7 +200,7 @@ switch-to-ext4:
 zram-on:
   #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
-  if grep 'zram' <<< ${KARGS}; then
+  if grep -q 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --delete=zram
     echo 'ZRAM enabled. Please reboot.'
   else
@@ -202,7 +210,7 @@ zram-on:
 zram-off:
   #!/usr/bin/env bash
   KARGS=$(rpm-ostree kargs)
-  if grep -v 'zram' <<< ${KARGS}; then
+  if grep -qv 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --append=zram=0
     echo 'ZRAM disabled. Please reboot.'
   else
@@ -212,8 +220,8 @@ zram-off:
 resize-zram:
   #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
-  if grep "zram-size" <<< $(cat ${CONFIG}); then
-    CURRENT_SIZE=$(cat "${CONFIG}" | grep "zram-size" | sed 's/zram-size=//g')
+  if grep -q "zram-size" <<< $(cat ${CONFIG}); then
+    CURRENT_SIZE=$(cat "${CONFIG}" | grep -q "zram-size" | sed 's/zram-size=//g')
   else
     CURRENT_SIZE=1024
   fi
@@ -224,7 +232,7 @@ resize-zram:
       NEW_SIZE=1024
     fi
     if ((${NEW_SIZE} >= 512 && ${NEW_SIZE} <= 4096)); then
-      if grep "zram-size" <<< $(cat ${CONFIG}); then
+      if grep -q "zram-size" <<< $(cat ${CONFIG}); then
         sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
       else
         sudo -A echo "zram-size=${NEW_SIZE}" >> ${CONFIG}
