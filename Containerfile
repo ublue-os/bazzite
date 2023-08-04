@@ -107,7 +107,7 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
         yelp \
 ; fi
 
-# Install ROCM on non-Nvidia images
+# Install ROCM and Waydroid on non-Nvidia images
 RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         rocm-hip \

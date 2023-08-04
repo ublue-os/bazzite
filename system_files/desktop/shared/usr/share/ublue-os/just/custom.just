@@ -84,6 +84,7 @@ setup-desktop-environment:
     gnome-shell-extension-cl -d background-logo@fedorahosted.org
     gnome-shell-extension-cl -e appindicatorsupport@rgcjonas.gmail.com
     gnome-shell-extension-cl -e gsconnect@andyholmes.github.io
+    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate']"
     mkdir -p $HOME/.config/presets/user/
     gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
     gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json

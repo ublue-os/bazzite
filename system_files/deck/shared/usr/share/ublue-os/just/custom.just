@@ -97,6 +97,7 @@ setup-desktop-environment:
     gnome-shell-extension-cl -e gsconnect@andyholmes.github.io
     gnome-shell-extension-cl -e tofumenu@tofu
     gsettings set org.gnome.shell.extensions.fedora-menu menu-button-icon-size 20
+    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate']"
     mkdir -p $HOME/.config/presets/user/
     gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
     gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
