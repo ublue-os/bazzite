@@ -61,8 +61,7 @@ enable-system76-scheduler:
     rm -rf /tmp/kwin-system76-scheduler-integration
   else
     echo 'Enabling System76-Scheduler GNOME extension...'
-    gsettings set org.gnome.shell enabled-extensions ['appindicatorsupport@rgcjonas.gmail.com', 'gsconnect@andyholmes.github.io', 's76-scheduler@mattjakeman.com', 'tofumenu@tofu', 'user-theme@gnome-shell-extensions.gcampax.github.com']
-    gsettings set org.gnome.shell.extensions.fedora-menu menu-button-icon-size 20
+    gnome-shell-extension-cl -e s76-scheduler@mattjakeman.com
   fi
 
 enable-supergfxctl: 
@@ -73,29 +72,27 @@ enable-supergfxctl:
     echo "This requires an Nvidia image."
   fi
 
-enable-wallpaper-engine:
+setup-desktop-environment:
   #!/usr/bin/env bash
   if grep -qv "gnome" <<< $(cat /etc/default/bazzite); then
+    echo 'Configuring GNOME extensions...'
+    gnome-shell-extension-cl -d background-logo@fedorahosted.org
+    gnome-shell-extension-cl -e appindicatorsupport@rgcjonas.gmail.com
+    gnome-shell-extension-cl -e gsconnect@andyholmes.github.io
+    mkdir -p $HOME/.config/presets/user/
+    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
+    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
+  else 
     echo 'Installing Wallpaper Engine Plugin for KDE...'
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
     plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
     rm -rf /tmp/wallpaper-engine-kde-plugin
-  else
-    echo "This is only supported under KDE."
-  fi
-
-setup-gradience:
-  #!/usr/bin/env bash
-  if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
-    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
-    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
-  else 
-    echo "This is only supported under GNOME."
   fi
 
 enable-vapor-theme:
   #!/usr/bin/env bash
   if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
+    gnome-shell-extension-cl -e user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
@@ -110,6 +107,7 @@ enable-vapor-theme:
 enable-vgui2-theme:
   #!/usr/bin/env bash
   if grep -q "gnome" <<< $(cat /etc/default/bazzite); then
+    gnome-shell-extension-cl -e user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
