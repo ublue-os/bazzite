@@ -251,7 +251,6 @@ screens:
           - Calibre: com.calibre_ebook.calibre
           - Easy Effects: com.github.wwmm.easyeffects
           - Fedora Media Writer: org.fedoraproject.MediaWriter
-          - Flatseal Permissions Manager: com.github.tchx84.Flatseal
           - JamesDSP: me.timschneeberger.jdsp4linux
           - KeePassXC: org.keepassxc.KeePassXC
           - OpenRGB: org.openrgb.OpenRGB

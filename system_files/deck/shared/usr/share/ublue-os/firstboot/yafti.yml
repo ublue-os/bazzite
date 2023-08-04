@@ -231,7 +231,6 @@ screens:
           - Bitwarden: com.bitwarden.desktop
           - Calibre: com.calibre_ebook.calibre
           - Fedora Media Writer: org.fedoraproject.MediaWriter
-          - Flatseal Permissions Manager: com.github.tchx84.Flatseal
           - KeePassXC: org.keepassxc.KeePassXC
           - OpenRGB: org.openrgb.OpenRGB
           - qBittorrent: org.qbittorrent.qBittorrent
