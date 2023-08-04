@@ -3,7 +3,8 @@
 <wallpapers>
   <wallpaper deleted="false">
     <name>Troll</name>
-    <filename>/usr/share/backgrounds/steamdeck/src/Troll.jpg</filename>
+    <filename>/usr/share/backgrounds/steamdeck/Troll.jpg</filename>
+    <filename-dark>/usr/share/backgrounds/steamdeck/Troll.jpg</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#1F2E35</pcolor>

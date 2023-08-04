@@ -3,7 +3,8 @@
 <wallpapers>
   <wallpaper deleted="false">
     <name>Steam Deck Logo 4</name>
-    <filename>/usr/share/backgrounds/steamdeck/src/Steam Deck Logo 4.jpg</filename>
+    <filename>/usr/share/backgrounds/steamdeck/Steam Deck Logo 4.jpg</filename>
+    <filename-dark>/usr/share/backgrounds/steamdeck/Steam Deck Logo 4.jpg</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#FFFFFF</pcolor>
