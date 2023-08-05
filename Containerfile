@@ -219,7 +219,7 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
 ; fi
 
 # Replace nss
-rpm-ostree override replace \
+RUN rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         nss
