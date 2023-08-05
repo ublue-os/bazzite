@@ -93,14 +93,12 @@ screens:
     values:
       title: AMD Additions
       condition:
-        run: [[ ${IMAGE_FLAVOR} == 'main' ]]
+        run: grep -q 'main' <<< $(cat /etc/default/bazzite)
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
         CoreCtrl:
           description: AMD GPU Overclocking
-          condition:
-            run: grep -qv "nvidia" <<< $(cat /etc/default/bazzite)
           default: false
           packages:
           - Install CoreCtrl: just --unstable install-corectrl
@@ -109,7 +107,7 @@ screens:
     values:
       title: Nvidia Additions
       condition:
-        run: [[ ${IMAGE_FLAVOR} == 'nvidia' ]]
+        run: grep -q 'nvidia' <<< $(cat /etc/default/bazzite)
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
@@ -162,7 +160,7 @@ screens:
           - Bottles: com.usebottles.bottles
           - Chiaki (PlayStation Remote Play): re.chiaki.Chiaki
           - Discord: com.discordapp.Discord
-          - DOSBox Staging: io.github.dosbox-staging 
+          - DOSBox Staging: io.github.dosbox-staging
           - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
           - itch: io.itch.itch
@@ -270,7 +268,7 @@ screens:
     values:
       title: "GNOME Theme"
       condition:
-        run: [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]
+        run: grep -q 'silverblue' <<< $(cat /etc/default/bazzite)
       links:
       - "Vapor Theme":
           run: just --unstable enable-vapor-theme

@@ -249,7 +249,7 @@ screens:
     values:
       title: "GNOME Theme"
       condition:
-        run: [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]
+        run: grep -q 'silverblue' <<< $(cat /etc/default/bazzite)
       links:
       - "Vapor Theme":
           run: just --unstable enable-vapor-theme
