@@ -218,6 +218,12 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
         gnome-shell-extension-bazzite-menu \
 ; fi
 
+# Replace nss
+rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+        nss
+
 # Install new packages & dock updater - done manually due to proprietary parts preventing it from being on Copr
 RUN rpm-ostree install \
     mesa-va-drivers \
