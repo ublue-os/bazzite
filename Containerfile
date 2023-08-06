@@ -82,7 +82,7 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
-        xorg-x11-server-Xwayland.spec \
+        xorg-x11-server-Xwayland \
 ; else \
     rpm-ostree override replace \
     --experimental \
@@ -90,7 +90,7 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
         mutter \
         gnome-control-center \
         gnome-control-center-filesystem \
-        xorg-x11-server-Xwayland.spec && \
+        xorg-x11-server-Xwayland && \
     rpm-ostree install \
         steamdeck-backgrounds \
         gradience \
