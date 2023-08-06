@@ -133,11 +133,6 @@ RUN rm /usr/share/applications/shredder.desktop && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
     mkdir -p /etc/flatpak/remotes.d && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /etc/flatpak/remotes.d && \
-    cat /etc/flatpak/install | while read line; do flatpak install --system --noninteractive --no-deploy flathub $line; done && \
-    cat /etc/flatpak/deck | while read line; do flatpak install --system --noninteractive --no-deploy flathub $line; done && \
-    mkdir -p /etc/flatpak/{flathub,objects} && \
-    cp -r /var/lib/flatpak/repo/refs/remotes/flathub/* /etc/flatpak/flathub && \
-    cp -r /var/lib/flatpak/repo/objects/* /etc/flatpak/objects && \
     systemctl unmask flatpak-system-install.service && \
     systemctl enable flatpak-system-install.service && \
     systemctl disable rpm-ostreed-automatic.timer && \

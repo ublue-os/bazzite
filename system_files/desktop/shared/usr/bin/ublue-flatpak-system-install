@@ -2,23 +2,22 @@
 source /etc/default/bazzite
 
 if [[ -f '/etc/flatpak/install' ]]; then
-  cp -r /etc/flatpak/flathub/* /var/lib/flatpak/repo/refs/remotes/flathub
-  cp -r /etc/flatpak/objects/* /var/lib/flatpak/repo/objects
   cat /etc/flatpak/install | while read line; do
-    flatpak install --system --noninteractive --no-pull flathub $line
+    flatpak install --system --noninteractive flathub $line
   done && mv /etc/flatpak/install /etc/flatpak/installed
 fi
 
 if [[ -f '/etc/flatpak/remove' ]]; then
   cat /etc/flatpak/remove | while read line; do
-    flatpak remove --system --noninteractive $line
-  done && mv /etc/flatpak/install /etc/flatpak/removed
+    flatpak remove --system --noninteractive $line 2>/dev/null
+  done
+  mv /etc/flatpak/remove /etc/flatpak/removed
 fi
 
 if [[ -f '/etc/flatpak/deck' ]]; then
   if [[ ${IMAGE_NAME} == *'deck'* ]]; then
     cat /etc/flatpak/deck | while read line; do
-      flatpak install --system --noninteractive --no-pull flathub $line
+      flatpak install --system --noninteractive flathub $line
     done && cat /etc/flatpak/deck >> /etc/flatpak/installed
   fi
 fi
