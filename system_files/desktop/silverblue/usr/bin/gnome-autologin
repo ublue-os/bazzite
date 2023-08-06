@@ -2,13 +2,10 @@
 
 USER=$(id -nu 1000)
 
-# SteamOS SDDM config
-SDDM_CONF='/etc/sddm.conf.d/steamos.conf'
-if [ ! -f ${SDDM_CONF} ]; then
-    # Fallback to sddm.conf
-    SDDM_CONF = '/etc/sddm.conf'
-fi
+# GDM config
+GDM_CONF='/etc/gdm/custom.conf'
 
 # Configure autologin
-sed -i 's/.*Session=.*/Session=gnome-xorg.desktop/g' ${SDDM_CONF}
-sed -i 's/.*User=.*/User='${USER}'/g' ${SDDM_CONF}
+sed -i 's/.*AutomaticLoginEnable=.*/AutomaticLoginEnable=true/g' ${GDM_CONF}
+sed -i 's/.*AutomaticLogin=.*/AutomaticLogin='${USER}'/g' ${GDM_CONF}
+sed -i 's/.*DefaultSession=.*/DefaultSession=gnome-xorg/g' ${GDM_CONF}
