@@ -9,8 +9,9 @@ fi
 
 if [[ -f '/etc/flatpak/remove' ]]; then
   cat /etc/flatpak/remove | while read line; do
-    flatpak remove --system --noninteractive $line
-  done && mv /etc/flatpak/install /etc/flatpak/removed
+    flatpak remove --system --noninteractive $line 2>/dev/null
+  done
+  mv /etc/flatpak/remove /etc/flatpak/removed
 fi
 
 if [[ -f '/etc/flatpak/deck' ]]; then
