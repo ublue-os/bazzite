@@ -17,7 +17,7 @@ fi
 if [[ -f '/etc/flatpak/deck' ]]; then
   if [[ ${IMAGE_NAME} == *'deck'* ]]; then
     cat /etc/flatpak/deck | while read line; do
-      flatpak install --system --noninteractive --no-pull flathub $line
+      flatpak install --system --noninteractive flathub $line
     done && cat /etc/flatpak/deck >> /etc/flatpak/installed
   fi
 fi
