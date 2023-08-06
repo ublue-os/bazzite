@@ -78,16 +78,20 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         steamdeck-kde-presets-desktop \
         wallpaper-engine-kde-plugin \
-        kdeconnectd \
+        kdeconnectd && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+        xorg-x11-server-Xwayland \
 ; else \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
         mutter \
         gnome-control-center \
-        gnome-control-center-filesystem && \
+        gnome-control-center-filesystem \
+        xorg-x11-server-Xwayland && \
     rpm-ostree install \
-        sddm \
         steamdeck-backgrounds \
         gradience \
         adw-gtk3-theme \
@@ -119,6 +123,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
     mkdir -p "/usr/etc/profile.d/" && \
     ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
     "/usr/etc/profile.d/ublue-firstboot.sh" && \
+    cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     pip install --prefix=/usr yafti && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
@@ -133,11 +138,6 @@ RUN rm /usr/share/applications/shredder.desktop && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
     mkdir -p /etc/flatpak/remotes.d && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /etc/flatpak/remotes.d && \
-    cat /etc/flatpak/install | while read line; do flatpak install --system --noninteractive --no-deploy flathub $line; done && \
-    cat /etc/flatpak/deck | while read line; do flatpak install --system --noninteractive --no-deploy flathub $line; done && \
-    mkdir -p /etc/flatpak/{flathub,objects} && \
-    cp -r /var/lib/flatpak/repo/refs/remotes/flathub/* /etc/flatpak/flathub && \
-    cp -r /var/lib/flatpak/repo/objects/* /etc/flatpak/objects && \
     systemctl unmask flatpak-system-install.service && \
     systemctl enable flatpak-system-install.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
@@ -145,8 +145,6 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
     if grep -q "gnome" <<< "${IMAGE_NAME}"; then \
-        systemctl disable gdm.service && \
-        systemctl enable sddm.service && \
         rm /usr/share/applications/yad-icon-browser.desktop \
     ; fi && \
     echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
@@ -217,6 +215,7 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
 ; else \
     rpm-ostree install \
         gnome-shell-extension-bazzite-menu \
+        sddm \
 ; fi
 
 # Install new packages & dock updater - done manually due to proprietary parts preventing it from being on Copr
@@ -261,6 +260,8 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
     if grep -q "gnome" <<< "${IMAGE_NAME}"; then \
+        systemctl disable gdm.service && \
+        systemctl enable sddm.service && \
         systemctl enable gnome-autologin.service \
     ; fi && \
     if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
