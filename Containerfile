@@ -78,14 +78,19 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         steamdeck-kde-presets-desktop \
         wallpaper-engine-kde-plugin \
-        kdeconnectd \
+        kdeconnectd && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+        xorg-x11-server-Xwayland.spec \
 ; else \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
         mutter \
         gnome-control-center \
-        gnome-control-center-filesystem && \
+        gnome-control-center-filesystem \
+        xorg-x11-server-Xwayland.spec && \
     rpm-ostree install \
         steamdeck-backgrounds \
         gradience \
