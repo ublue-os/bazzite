@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+USER=$(id -nu 1000)
+
+# SteamOS SDDM config
+SDDM_CONF='/etc/sddm.conf.d/steamos.conf'
+if [ ! -f ${SDDM_CONF} ]; then
+    # Fallback to sddm.conf
+    SDDM_CONF = '/etc/sddm.conf'
+fi
+
+# Configure autologin
+sed -i 's/.*Session=.*/Session=gnome-xorg.desktop/g' ${SDDM_CONF}
+sed -i 's/.*User=.*/User='${USER}'/g' ${SDDM_CONF}

@@ -87,7 +87,6 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
         gnome-control-center \
         gnome-control-center-filesystem && \
     rpm-ostree install \
-        sddm \
         steamdeck-backgrounds \
         gradience \
         adw-gtk3-theme \
@@ -140,8 +139,6 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
     if grep -q "gnome" <<< "${IMAGE_NAME}"; then \
-        systemctl disable gdm.service && \
-        systemctl enable sddm.service && \
         rm /usr/share/applications/yad-icon-browser.desktop \
     ; fi && \
     echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
@@ -212,6 +209,7 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
 ; else \
     rpm-ostree install \
         gnome-shell-extension-bazzite-menu \
+        sddm \
 ; fi
 
 # Install new packages & dock updater - done manually due to proprietary parts preventing it from being on Copr
@@ -256,6 +254,8 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
     if grep -q "gnome" <<< "${IMAGE_NAME}"; then \
+        systemctl disable gdm.service && \
+        systemctl enable sddm.service && \
         systemctl enable gnome-autologin.service \
     ; fi && \
     if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
