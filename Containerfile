@@ -98,6 +98,7 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
         gnome-shell-extension-system76-scheduler \
         openssh-askpass && \
     rpm-ostree override remove \
+        gnome-classic-session.noarch \
         gnome-tour \
         yelp \
 ; fi
