@@ -50,7 +50,6 @@ RUN rpm-ostree override remove \
 RUN rpm-ostree install \
     python3-pip \
     libadwaita \
-    sddm-sugar-steamOS \
     distrobox \
     duperemove \
     rmlint \
@@ -78,6 +77,7 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         steamdeck-kde-presets-desktop \
         wallpaper-engine-kde-plugin \
+        sddm-sugar-steamOS \
         kdeconnectd && \
     rpm-ostree override replace \
     --experimental \
@@ -215,6 +215,7 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         gnome-shell-extension-bazzite-menu \
         sddm \
+        sddm-sugar-steamOS \
 ; fi
 
 # Install new packages & dock updater - done manually due to proprietary parts preventing it from being on Copr
