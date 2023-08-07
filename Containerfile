@@ -187,6 +187,7 @@ RUN rpm-ostree install \
 # Remove unneeded packages
 RUN rpm-ostree override remove \
     ddccontrol \
+    ddccontrol-db \
     ddccontrol-gtk && \
     if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
         rpm-ostree override remove \
