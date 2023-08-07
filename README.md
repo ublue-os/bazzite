@@ -150,6 +150,7 @@ Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built o
 Additionally, the following packages are used from other Copr repos:
 |Package|Status|
 |---|---|
+|[distrobox](https://github.com/89luca89/distrobox)-git|![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/distrobox-git/package/distrobox-git/status_image/last_build.png?)|
 |[gcadapter_oc-kmod](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/)|![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/package/gcadapter_oc-kmod/status_image/last_build.png?)|
 |[gnome-vrr](https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/package/mutter/status_image/last_build.png?)|
 |[gradience](https://copr.fedorainfracloud.org/coprs/lyessaadi/gradience/)|![Build Status](https://copr.fedorainfracloud.org/coprs/lyessaadi/gradience/package/gradience/status_image/last_build.png?)|
