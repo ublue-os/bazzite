@@ -72,7 +72,7 @@ RUN rpm-ostree install \
     yad
 
 # Configure KDE & GNOME
-RUN if grep -qv "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
+RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree override remove \
         plasma-welcome \
         qt5-qdbusviewer && \
