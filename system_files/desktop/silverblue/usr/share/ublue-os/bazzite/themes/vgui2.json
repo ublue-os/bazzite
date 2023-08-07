@@ -2,7 +2,7 @@
     "name": "VGUI2",
     "variables": {
         "accent_color": "#958831",
-        "accent_bg_color": "#636d5c",
+        "accent_bg_color": "#958831",
         "accent_fg_color": "#ffffff",
         "destructive_color": "#ff7b63",
         "destructive_bg_color": "#c01c28",
