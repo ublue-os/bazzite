@@ -145,7 +145,10 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
     if grep -q "gnome" <<< "${IMAGE_NAME}"; then \
-        rm /usr/share/applications/yad-icon-browser.desktop \
+        rm /usr/share/applications/yad-icon-browser.desktop && \
+        sed -i '/^PRETTY_NAME/s/Silverblue/Bazzite/' /usr/lib/os-release \
+    ; else \
+        sed -i '/^PRETTY_NAME/s/Kinoite/Bazzite/' /usr/lib/os-release \
     ; fi && \
     echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
     rm -rf \
