@@ -39,15 +39,6 @@ get-steamcmd:
   tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
   rm /tmp/steamcmd.tar.gz
 
-install-extensions-cli:
-  #!/usr/bin/env bash
-  source /etc/default/bazzite
-  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    pip install --upgrade gnome-extensions-cli
-  else
-    echo "This is only supported under GNOME."
-  fi
-
 enable-system76-scheduler:
   #!/usr/bin/env bash
   source /etc/default/bazzite

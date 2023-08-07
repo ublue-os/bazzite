@@ -42,15 +42,6 @@ get-greenlight:
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta8/Greenlight-2.0.0-beta8.AppImage -O ~/Desktop/Greenlight.AppImage
   chmod +x ~/Desktop/Greenlight.AppImage
 
-install-extensions-cli:
-  #!/usr/bin/env bash
-  source /etc/default/bazzite
-  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    pip install --upgrade gnome-extensions-cli
-  else 
-    echo "This is only supported under GNOME."
-  fi
-
 enable-system76-scheduler:
   #!/usr/bin/env bash
   source /etc/default/bazzite
