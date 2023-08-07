@@ -72,7 +72,7 @@ RUN rpm-ostree install \
     yad
 
 # Configure KDE & GNOME
-RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
+RUN if grep -qv "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree override remove \
         plasma-welcome \
         qt5-qdbusviewer && \
@@ -147,11 +147,11 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
-    if grep -q "gnome" <<< "${IMAGE_NAME}"; then \
+    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
+        sed -i '/^PRETTY_NAME/s/Kinoite/Bazzite/' /usr/lib/os-release \
+    ; else \
         rm /usr/share/applications/yad-icon-browser.desktop && \
         sed -i '/^PRETTY_NAME/s/Silverblue/Bazzite/' /usr/lib/os-release \
-    ; else \
-        sed -i '/^PRETTY_NAME/s/Kinoite/Bazzite/' /usr/lib/os-release \
     ; fi && \
     echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
     rm -rf \
@@ -192,7 +192,7 @@ RUN rpm-ostree override remove \
     ddccontrol \
     ddccontrol-db \
     ddccontrol-gtk && \
-    if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
+    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override remove \
             steamdeck-kde-presets-desktop \
     ; fi
@@ -213,7 +213,7 @@ RUN rpm-ostree override replace \
         udisks2
 
 # Configure KDE & GNOME
-RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
+RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree override remove \
         krfb \
         krfb-libs && \
@@ -267,13 +267,12 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
-    if grep -q "gnome" <<< "${IMAGE_NAME}"; then \
+    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
+        systemctl enable plasma-autologin.service \
+    ; else \
         systemctl disable gdm.service && \
         systemctl enable sddm.service && \
         systemctl enable gnome-autologin.service \
-    ; fi && \
-    if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
-        systemctl enable plasma-autologin.service \
     ; fi && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable vpower.service && \
