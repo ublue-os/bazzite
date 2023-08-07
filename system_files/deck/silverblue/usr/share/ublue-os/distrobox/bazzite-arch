@@ -1,9 +1,0 @@
-[bazzite-arch]
-image=ghcr.io/ublue-os/bazzite-arch
-init=false
-nvidia=false
-pull=true
-root=false
-replace=false
-start_now=true
-init_hooks=pacman -Rnsdd xdg-desktop-portal-kde --noconfirm && pacman -S xdg-desktop-portal-gnome rocm-opencl-runtime rocm-hip-runtime --noconfirm && runuser -u $USER -- paru -S adw-gtk3 --noconfirm

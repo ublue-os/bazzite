@@ -23,6 +23,18 @@ screens:
           default: true
           packages:
           - Install Bazzite Arch: just --unstable install-bazzite-arch
+        Export Launchers:
+          description: This exports Steam and Lutris
+          default: true
+          packages:
+          - Export Steam: distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
+          - Export Lutris: distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
+        Export Utilities:
+          description: This exports SteamCMD and protontricks
+          default: true
+          packages:
+          - Export SteamCMD: just --unstable export-steamcmd
+          - Export Protontricks: distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
         Autostart Steam:
           description: Starts Steam after logging in
           default: true
