@@ -93,7 +93,6 @@ setup-desktop-environment:
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     echo 'Configuring GNOME extensions...'
     gnome-shell-extension-cl -d background-logo@fedorahosted.org
-    gnome-shell-extension-cl -e appindicatorsupport@rgcjonas.gmail.com
     gnome-shell-extension-cl -e gsconnect@andyholmes.github.io
     gnome-shell-extension-cl -e tofumenu@tofu
     gsettings set org.gnome.shell.extensions.fedora-menu menu-button-icon-size 20

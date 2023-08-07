@@ -82,7 +82,6 @@ setup-desktop-environment:
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     echo 'Configuring GNOME extensions...'
     gnome-shell-extension-cl -d background-logo@fedorahosted.org
-    gnome-shell-extension-cl -e appindicatorsupport@rgcjonas.gmail.com
     gnome-shell-extension-cl -e gsconnect@andyholmes.github.io
     gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate']"
     mkdir -p $HOME/.config/presets/user/
