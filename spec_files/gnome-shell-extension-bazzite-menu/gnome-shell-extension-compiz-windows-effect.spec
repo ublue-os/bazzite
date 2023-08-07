@@ -22,11 +22,10 @@ Gnome shell extension that provides a Steam Deck icon in the top bar and helpful
 # Nothing to build
 
 %install
+rm makefile
+rm {preview,screenshot1,screenshot2}.png
 mkdir -p %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}
 cp -r * %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/
-rm %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/LICENSE
-rm %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/makefile
-rm %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/{preview,screenshot1,screenshot2}.png
 
 %files
 %license LICENSE
