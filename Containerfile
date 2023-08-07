@@ -99,6 +99,7 @@ RUN if grep -qv "gnome" <<< "${IMAGE_NAME}"; then \
         gnome-shell-extension-user-theme \
         gnome-shell-extension-gsconnect \
         gnome-shell-extension-system76-scheduler \
+        gnome-shell-extension-compiz-windows-effect \
         openssh-askpass && \
     rpm-ostree override remove \
         gnome-classic-session \
