@@ -1,0 +1,9 @@
+[bazzite-arch]
+image=ghcr.io/ublue-os/bazzite-arch
+init=false
+nvidia=false
+pull=true
+root=false
+replace=false
+start_now=true
+init_hooks=pacman -S rocm-opencl-runtime rocm-hip-runtime --noconfirm
