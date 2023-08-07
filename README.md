@@ -89,6 +89,7 @@ To rebase an existing ostree system to this image:
 
 Builds with the GNOME desktop environment are available in both desktop and deck flavors. These builds come with the following additional features:
 
+- [Variable refresh rate support enabled under Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
 - Custom menu in the top bar for returning to game mode, launching Steam, and opening a number of useful utilities.
 - [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) preinstalled and ready to use.
 - Features optional Valve-inspired themes matching Vapor and VGUI2 from SteamOS.
