@@ -30,6 +30,7 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
 
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/ublue-os/distrobox-git/repo/fedora-$(rpm -E %fedora)/ublue-os-distrobox-git-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_ublue-os-distrobox-git.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/repo/fedora-$(rpm -E %fedora)/kylegospo-system76-scheduler-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-system76-scheduler.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/hl2linux-selinux/repo/fedora-$(rpm -E %fedora)/kylegospo-hl2linux-selinux-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/repo/fedora-$(rpm -E %fedora)/kylegospo-obs-vkcapture-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
@@ -44,13 +45,14 @@ RUN rpm-ostree override remove \
     firefox \
     firefox-langpacks \
     toolbox \
-    htop
+    htop \
+    distrobox
 
 # Install new packages
 RUN rpm-ostree install \
     python3-pip \
     libadwaita \
-    distrobox \
+    distrobox-git \
     duperemove \
     rmlint \
     compsize \
@@ -126,6 +128,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     pip install --prefix=/usr yafti && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-distrobox-git.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-system76-scheduler.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
