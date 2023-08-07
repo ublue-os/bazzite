@@ -22,11 +22,6 @@ set-steamos-kargs:
   echo 'Setting kargs...'
   rpm-ostree kargs --append="amd_pstate=active" --append="amd_iommu=off" --append="amdgpu.gttsize=8128" --append="spi_amd.speed_dev=1" --append="audit=0" --append="initcall_blacklist=simpledrm_platform_driver_init" --delete-if-present="nomodeset"
 
-create-steam-shortcuts:
-  cp /usr/share/applications/steam.desktop ~/Desktop
-  sed -i 's@Steam (Runtime)@Steam@g' ~/Desktop/steam.desktop
-  cp /etc/skel.d/Desktop/Return.desktop ~/Desktop
-
 get-decky:
   #!/usr/bin/env bash
   export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
@@ -105,6 +100,10 @@ setup-desktop-environment:
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
     plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
     rm -rf /tmp/wallpaper-engine-kde-plugin
+    echo 'Creating Steam shortcuts..'
+    cp /usr/share/applications/steam.desktop ~/Desktop
+    sed -i 's@Steam (Runtime)@Steam@g' ~/Desktop/steam.desktop
+    cp /etc/skel.d/Desktop/Return.desktop ~/Desktop
   fi
 
 enable-vapor-theme:

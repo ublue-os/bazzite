@@ -84,11 +84,6 @@ screens:
           default: true
           packages:
           - Enable SDGyroDSU Service: systemctl --user enable --now sdgyrodsu
-        Steam Desktop Shortcuts:
-          description: Creates Steam desktop shortcuts
-          default: true
-          packages:
-          - Create Steam shortcuts: just --unstable create-steam-shortcuts
         SteamOS BTRFS Mount Flags:
           description: Sets SteamOS BTRFS mount flags
           default: true
