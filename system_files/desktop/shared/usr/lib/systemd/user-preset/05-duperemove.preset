@@ -1,0 +1,1 @@
+enable duperemove-weekly@$(systemd-escape $HOME).timer
