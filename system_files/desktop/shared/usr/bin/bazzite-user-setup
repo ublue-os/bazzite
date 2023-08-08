@@ -7,11 +7,6 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Enabling System76-Scheduler plugin'
   kcmshell5 kcm_kwin_scripts
 
-  echo 'Installing Wallpaper Engine Plugin'
-  git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
-  plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
-  rm -rf /tmp/wallpaper-engine-kde-plugin
-
   if [[ $IMAGE_NAME =~ "deck" ]]; then
     echo 'Creating Desktop shortcuts'
     cp /usr/share/applications/steam.desktop ~/Desktop
