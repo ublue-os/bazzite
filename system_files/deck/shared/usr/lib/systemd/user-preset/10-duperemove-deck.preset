@@ -1,2 +1,1 @@
 enable duperemove-weekly@$(systemd-escape /run/media/mmcblk0p1).timer
-enable sdgyrodsu.service

@@ -272,7 +272,8 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        systemctl enable plasma-autologin.service \
+        systemctl enable plasma-autologin.service && \
+        systemctl --global enable com.system76.Scheduler.dbusproxy.service \
     ; else \
         systemctl disable gdm.service && \
         systemctl enable sddm.service && \
@@ -281,6 +282,7 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable vpower.service && \
     systemctl enable ds-inhibit.service && \
+    systemctl --global enable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \
     systemctl --global disable ublue-update.timer && \
     rm -f /usr/etc/sddm.conf && \
