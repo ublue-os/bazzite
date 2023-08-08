@@ -78,7 +78,7 @@ index b7e7ebd61..0674d4bef 100644
  };
  
 diff --git a/src/main.c b/src/main.c
-index 8dfd2543b..e74394fb8 100644
+index 8dfd2543b..bf1870f57 100644
 --- a/src/main.c
 +++ b/src/main.c
 @@ -130,6 +130,7 @@ static const char *le_options[] = {
@@ -166,10 +166,12 @@ index 8dfd2543b..e74394fb8 100644
  #ifndef MIN
  #define MIN(x, y) ((x) < (y) ? (x) : (y))
  #endif
-@@ -421,6 +492,18 @@ static bool parse_config_string(GKeyFile *config, const char *group,
+@@ -420,6 +491,19 @@ static bool parse_config_string(GKeyFile *config, const char *group,
+ {
  	GError *err = NULL;
  	char *tmp;
- 
++	char **strlist;
++
 +	strlist = g_key_file_get_string_list(config, "LE",
 +						"SupportedPHYs",
 +						NULL, &err);
@@ -181,10 +183,9 @@ index 8dfd2543b..e74394fb8 100644
 +		btd_parse_phy_list(strlist);
 +		g_strfreev(strlist);
 +	}
-+
+ 
  	tmp = g_key_file_get_string(config, group, key, &err);
  	if (err) {
- 		if (err->code != G_KEY_FILE_ERROR_KEY_NOT_FOUND)
 diff --git a/src/main.conf b/src/main.conf
 index cb9b241df..c086a17d0 100644
 --- a/src/main.conf
