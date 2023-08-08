@@ -290,7 +290,7 @@ RUN rm /usr/share/applications/winetricks.desktop && \
         systemctl enable gnome-autologin.service \
     ; fi && \
     systemctl enable jupiter-fan-control.service && \
-    systemctl enable duperemove-weekly@$(systemd-escape /run/media/mmcblk0p1).timer
+    systemctl enable duperemove-weekly@$(systemd-escape /run/media/mmcblk0p1).timer && \
     systemctl enable vpower.service && \
     systemctl enable ds-inhibit.service && \
     systemctl --global enable sdgyrodsu.service && \
