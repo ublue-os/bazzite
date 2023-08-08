@@ -68,7 +68,6 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 - Built in support for dual-boot thanks to Fedora's installation of GRUB being left intact.
 - Update break something? Easily roll back to the previous version of Bazzite thanks to rpm-ostree's rollback functionality. You can even select previous images at boot.
 - Steam and Lutris preinstalled on the image as layered packages.
-- Comes with a default-disabled service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj).
 - Exclusively uses ZRAM by default with the option to switch back to a swap file and set a custom size if desired (1GB by default).
 - BFQ I/O scheduler to prevent I/O starvation when installing games or during background duperemove processes.
 - TLS/SSL secured DNS and NTP by default <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>.
@@ -78,6 +77,10 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
     - Automatic duperemove greatly trims the size of compatdata.
     - Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.
     - Able to be booted even if the drive is full.
+- Default-disabled power-user features, including:
+    - Service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj), see `ryzenadj.service` and `/etc/default/ryzenadj`.
+    - Service for limiting the max charge level of the battery, see `batterylimit.service` and `/etc/default/batterylimit`
+    - Built in support for display overclocking. For example you may add `GAMESCOPE_OVERRIDE_REFRESH_RATE=30,70` to `/etc/environment`.
 
 **For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
 
