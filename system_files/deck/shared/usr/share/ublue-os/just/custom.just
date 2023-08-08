@@ -48,7 +48,6 @@ enable-system76-scheduler:
     git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
     kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
     systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
-    systemctl enable --now com.system76.Scheduler.service
     kcmshell5 kcm_kwin_scripts
     rm -rf /tmp/kwin-system76-scheduler-integration
   elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
