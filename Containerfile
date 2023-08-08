@@ -148,17 +148,19 @@ RUN rm /usr/share/applications/shredder.desktop && \
     mkdir -p /etc/flatpak/remotes.d && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /etc/flatpak/remotes.d && \
     systemctl enable com.system76.Scheduler.service && \
+    systemctl enable displaylink.service && \
+    systemctl enable input-remapper.service && \
     systemctl unmask flatpak-system-install.service && \
     systemctl enable flatpak-system-install.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl --global enable ublue-update.timer && \
-    systemctl enable displaylink.service && \
-    systemctl enable input-remapper.service && \
+    systemctl enable bazzite-hardware-setup.service && \
+    systemctl --global enable bazzite-user-setup.service && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sed -i '/^PRETTY_NAME/s/Kinoite/Bazzite/' /usr/lib/os-release \
     ; else \
         rm /usr/share/applications/yad-icon-browser.desktop && \
-        sed -i '/^PRETTY_NAME/s/Silverblue/Bazzite/' /usr/lib/os-release \
+        sed -i '/^PRETTY_NAME/s/Silverblue/Bazzite GNOME/' /usr/lib/os-release \
     ; fi && \
     echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
     rm -rf \

@@ -8,6 +8,8 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   kcmshell5 kcm_kwin_scripts
 
   if [[ $IMAGE_NAME =~ "deck" ]]; then
+    echo 'Running setup for Kinoite on Steam Deck'
+
     echo 'Creating Desktop shortcuts'
     cp /usr/share/applications/steam.desktop ~/Desktop
     sed -i 's@Steam (Runtime)@Steam@g' ~/Desktop/steam.desktop
@@ -33,8 +35,12 @@ else
   if [[ $IMAGE_NAME =~ "deck" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
 
-    echo 'Enabling tofumenu fork'
+    echo 'Enabling Bazzite tofu menu fork'
     gsettings set org.gnome.shell.extensions.fedora-menu menu-button-icon-size 20
     gnome-shell-extension-cl -e tofumenu@tofu
   fi
 fi
+
+# Prevent future executions
+echo "Writing state file"
+touch $HOME/.bazzite-configured

@@ -1,0 +1,12 @@
+[Unit]
+Description=Configure Bazzite for current user
+Requires=xdg-desktop-autostart.target
+ConditionPathExists=!%h/.bazzite-configured
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/bazzite-user-setup
+
+[Install]
+WantedBy=multi-user.target
