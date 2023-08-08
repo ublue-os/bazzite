@@ -36,20 +36,6 @@ get-steamcmd:
   tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
   rm /tmp/steamcmd.tar.gz
 
-enable-system76-scheduler:
-  #!/usr/bin/env bash
-  source /etc/default/bazzite
-  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-    echo 'Installing System76-Scheduler plugin for KDE...'
-    git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
-    kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
-    kcmshell5 kcm_kwin_scripts
-    rm -rf /tmp/kwin-system76-scheduler-integration
-  elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    echo 'Enabling System76-Scheduler GNOME extension...'
-    gnome-shell-extension-cl -e s76-scheduler@mattjakeman.com
-  fi
-
 install-nix:
   curl -s https://raw.githubusercontent.com/dnkmmr69420/nix-installer-scripts/main/installer-scripts/silverblue-nix-installer.sh | bash
 
@@ -67,30 +53,6 @@ get-boilr:
     jq -r ".assets[] | select(.name | test(\"linux_BoilR\")) | .browser_download_url") \
     -O ~/Desktop/BoilR
   chmod +x ~/Desktop/BoilR
-
-setup-desktop-environment:
-  #!/usr/bin/env bash
-  source /etc/default/bazzite
-  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    echo 'Configuring GNOME extensions...'
-    gnome-shell-extension-cl -d background-logo@fedorahosted.org
-    gnome-shell-extension-cl -e gsconnect@andyholmes.github.io
-    gnome-shell-extension-cl -e tofumenu@tofu
-    gsettings set org.gnome.shell.extensions.fedora-menu menu-button-icon-size 20
-    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate']"
-    mkdir -p $HOME/.config/presets/user/
-    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
-    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
-  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-    echo 'Installing Wallpaper Engine Plugin for KDE...'
-    git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
-    plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
-    rm -rf /tmp/wallpaper-engine-kde-plugin
-    echo 'Creating Steam shortcuts..'
-    cp /usr/share/applications/steam.desktop ~/Desktop
-    sed -i 's@Steam (Runtime)@Steam@g' ~/Desktop/steam.desktop
-    cp /etc/skel.d/Desktop/Return.desktop ~/Desktop
-  fi
 
 enable-vapor-theme:
   #!/usr/bin/env bash
@@ -169,15 +131,6 @@ resize-deckswap:
 enable-duperemove:
   systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
   systemctl enable --now duperemove-weekly@$(systemd-escape /run/media/mmcblk0p1).timer
-
-set-btrfs-flags:
-  #!/usr/bin/env bash
-  echo 'Configuring drive mount parameters...'
-  sudo sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
-  if grep -q '64GB' <<< $(lsblk -o MODEL); then
-    echo 'Increasing compression for detected 64GB eMMC'
-    sudo sed -i 's/compress-force=zstd:1/compress-force=zstd:3/g' /etc/fstab
-  fi
 
 switch-to-ext4:
   sudo sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs

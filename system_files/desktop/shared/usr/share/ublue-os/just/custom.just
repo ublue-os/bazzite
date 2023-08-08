@@ -9,12 +9,6 @@ install-bazzite-arch:
     distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch
   fi
 
-export-steamcmd:
-  echo 'Installing SteamCMD...'
-  mkdir -p ~/.steam
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --bin steamcmd --export-path ~/.steam'
-  ln -s ~/.steam/steamcmd ~/.steam/steamcmd.sh
-
 install-corectrl:
   echo 'Installing CoreCtrl...''
   rpm-ostree install corectrl
@@ -43,20 +37,6 @@ get-greenlight:
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta8/Greenlight-2.0.0-beta8.AppImage -O ~/Desktop/Greenlight.AppImage
   chmod +x ~/Desktop/Greenlight.AppImage
 
-enable-system76-scheduler:
-  #!/usr/bin/env bash
-  source /etc/default/bazzite
-  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-    echo 'Installing System76-Scheduler plugin for KDE...'
-    git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
-    kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
-    kcmshell5 kcm_kwin_scripts
-    rm -rf /tmp/kwin-system76-scheduler-integration
-  elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    echo 'Enabling System76-Scheduler GNOME extension...'
-    gnome-shell-extension-cl -e s76-scheduler@mattjakeman.com
-  fi
-
 enable-supergfxctl: 
   #!/usr/bin/env bash
   source /etc/default/bazzite
@@ -64,24 +44,6 @@ enable-supergfxctl:
     systemctl enable --now supergfxd.service
   else
     echo "This requires an Nvidia image."
-  fi
-
-setup-desktop-environment:
-  #!/usr/bin/env bash
-  source /etc/default/bazzite
-  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    echo 'Configuring GNOME extensions...'
-    gnome-shell-extension-cl -d background-logo@fedorahosted.org
-    gnome-shell-extension-cl -e gsconnect@andyholmes.github.io
-    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate']"
-    mkdir -p $HOME/.config/presets/user/
-    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
-    gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
-  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-    echo 'Installing Wallpaper Engine Plugin for KDE...'
-    git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
-    plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
-    rm -rf /tmp/wallpaper-engine-kde-plugin
   fi
 
 enable-vapor-theme:

@@ -221,14 +221,6 @@ screens:
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
-  setup-desktop-environment:
-    source: yafti.screen.consent
-    values:
-      title: Setting up your Desktop Environment
-      description: |
-        Configures your desktop environment, including needed plugins/extensions.
-      actions:
-      - run: just --unstable setup-desktop-environment
   theme:
     source: yafti.screen.title
     values:

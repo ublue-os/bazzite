@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+source /etc/default/bazzite
+
+if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
+  echo 'Running setup for Kinoite'
+
+  echo 'Enabling System76-Scheduler plugin'
+  kcmshell5 kcm_kwin_scripts
+
+  echo 'Installing Wallpaper Engine Plugin'
+  git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin
+  plasmapkg2 -i /tmp/wallpaper-engine-kde-plugin/plugin
+  rm -rf /tmp/wallpaper-engine-kde-plugin
+
+  if [[ $IMAGE_NAME =~ "deck" ]]; then
+    echo 'Creating Desktop shortcuts'
+    cp /usr/share/applications/steam.desktop ~/Desktop
+    sed -i 's@Steam (Runtime)@Steam@g' ~/Desktop/steam.desktop
+    cp /etc/skel.d/Desktop/Return.desktop ~/Desktop
+    cp /usr/share/applications/lutris.desktop ~/Desktop
+  fi
+else
+  echo 'Running setup for Silverblue'
+
+  echo 'Enabling GNOME extensions'
+  gnome-shell-extension-cl -e s76-scheduler@mattjakeman.com
+  gnome-shell-extension-cl -d background-logo@fedorahosted.org
+  gnome-shell-extension-cl -e gsconnect@andyholmes.github.io
+
+  echo 'Enabling VRR'
+  gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate']"
+
+  echo 'Installing Gradience presets'
+  mkdir -p $HOME/.config/presets/user/
+  gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vapor.json
+  gradience-cli import -p /usr/share/ublue-os/bazzite/themes/vgui2.json
+
+  if [[ $IMAGE_NAME =~ "deck" ]]; then
+    echo 'Running setup for Silverblue on Steam Deck'
+
+    echo 'Enabling tofumenu fork'
+    gsettings set org.gnome.shell.extensions.fedora-menu menu-button-icon-size 20
+    gnome-shell-extension-cl -e tofumenu@tofu
+  fi
+fi

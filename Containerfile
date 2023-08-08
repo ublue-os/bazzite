@@ -84,7 +84,10 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
-        xorg-x11-server-Xwayland \
+        xorg-x11-server-Xwayland && \
+    git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration && \
+    kpackagetool5 --type=KWin/Script --global --install /tmp/kwin-system76-scheduler-integration && \
+    rm -rf /tmp/kwin-system76-scheduler-integration \
 ; else \
     rpm-ostree override replace \
     --experimental \
