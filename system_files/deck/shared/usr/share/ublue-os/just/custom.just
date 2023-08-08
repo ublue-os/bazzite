@@ -18,10 +18,6 @@ enable-desktop-autologin:
     systemctl enable --now plasma-autologin
   fi
 
-set-steamos-kargs:
-  echo 'Setting kargs...'
-  rpm-ostree kargs --append="amd_pstate=active" --append="amd_iommu=off" --append="amdgpu.gttsize=8128" --append="spi_amd.speed_dev=1" --append="audit=0" --append="initcall_blacklist=simpledrm_platform_driver_init" --delete-if-present="nomodeset"
-
 get-decky:
   #!/usr/bin/env bash
   export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
@@ -47,7 +43,6 @@ enable-system76-scheduler:
     echo 'Installing System76-Scheduler plugin for KDE...'
     git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration
     kpackagetool5 --type=KWin/Script -i /tmp/kwin-system76-scheduler-integration
-    systemctl --user enable --now com.system76.Scheduler.dbusproxy.service
     kcmshell5 kcm_kwin_scripts
     rm -rf /tmp/kwin-system76-scheduler-integration
   elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then

@@ -58,11 +58,6 @@ screens:
           default: true
           packages:
           - Hide GRUB: sudo -A just --unstable hide-grub
-        Kernel Arguments:
-          description: Sets kernel arguments used in SteamOS
-          default: true
-          packages:
-          - Set kargs: just --unstable set-steamos-kargs
         Memory Tuning:
           description: Adjust ZRAM and configure deckswap
           default: false
@@ -79,11 +74,6 @@ screens:
           default: true
           packages:
           - Install SteamCMD: just --unstable get-steamcmd
-        SteamDeckGyroDSU:
-          description: Allows emulators and other applications to receive Steam Deck gyro motion data
-          default: true
-          packages:
-          - Enable SDGyroDSU Service: systemctl --user enable --now sdgyrodsu
         SteamOS BTRFS Mount Flags:
           description: Sets SteamOS BTRFS mount flags
           default: true
