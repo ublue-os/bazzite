@@ -18,8 +18,8 @@ if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
 fi
 
 # DECK KERNEL ARGUMENTS
-if [[ $IMAGE_NAME =~ "deck"  ]] && [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
-  echo "Checking for needed kargs (deck)"
+if [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
+  echo "Checking for needed karg changes (Jupiter)"
 
   if [[ ! $KARGS =~ "amd_pstate" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=\"amd_pstate=active\""
@@ -44,14 +44,10 @@ if [[ $IMAGE_NAME =~ "deck"  ]] && [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
   if [[ ! $KARGS =~ "initcall_blacklist" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=\"initcall_blacklist=simpledrm_platform_driver_init\""
   fi
-
-  if [[ $KARGS =~ "nomodeset" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --delete=\"nomodeset\""
-  fi
 fi
 
 if [[ $IMAGE_NAME =~ "nvidia"  ]]; then
-  echo "Checking for needed kargs (nvidia)"
+  echo "Checking for needed karg changes (Nvidia)"
 
   if [[ ! $KARGS =~ "rd.driver.blacklist" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=\"rd.driver.blacklist=nouveau\""
@@ -66,8 +62,13 @@ if [[ $IMAGE_NAME =~ "nvidia"  ]]; then
   fi
 fi
 
+if [[ $KARGS =~ "nomodeset" ]]; then
+  echo "Removing nomodeset"
+  NEEDED_KARGS="$NEEDED_KARGS --delete=\"nomodeset\""
+fi
+
 if [[ ! -z "$NEEDED_KARGS" ]]; then
-  echo "Found needed kargs, applying the following: $NEEDED_KARGS"
+  echo "Found needed karg changes, applying the following: $NEEDED_KARGS"
   rpm-ostree kargs ${NEEDED_KARGS} --reboot
 fi
 echo "No karg changes needed"
