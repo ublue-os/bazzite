@@ -275,6 +275,7 @@ RUN rm /usr/share/applications/winetricks.desktop && \
         systemctl enable plasma-autologin.service && \
         systemctl --global enable com.system76.Scheduler.dbusproxy.service \
     ; else \
+        systemctl mask power-profiles-daemon.service && \
         systemctl disable gdm.service && \
         systemctl enable sddm.service && \
         systemctl enable gnome-autologin.service \
