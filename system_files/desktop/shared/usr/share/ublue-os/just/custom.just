@@ -11,6 +11,7 @@ install-bazzite-arch:
 
 export-steamcmd:
   echo 'Installing SteamCMD...'
+  mkdir -p ~/.steam
   distrobox-enter -n bazzite-arch -- '  distrobox-export --bin steamcmd --export-path ~/.steam'
   ln -s ~/.steam/steamcmd ~/.steam/steamcmd.sh
 

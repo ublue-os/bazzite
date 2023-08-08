@@ -36,6 +36,7 @@ get-emudeck:
 get-steamcmd:
   echo 'Installing SteamCMD...'
   wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O /tmp/steamcmd.tar.gz
+  mkdir -p ~/.steam
   tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
   rm /tmp/steamcmd.tar.gz
 
