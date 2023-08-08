@@ -259,3 +259,12 @@ unhide-grub:
   else
     sudo grub2-mkconfig -o /boot/grub2/grub.cfg
   fi
+
+_toggle_wayland:
+  #!/usr/bin/env bash
+  source /etc/default/desktop-wayland
+  if ${DESKTOP_WAYLAND}; then
+    sudo sed -i 's/true/false/g' /etc/default/desktop-wayland
+  else
+    sudo sed -i 's/false/true/g' /etc/default/desktop-wayland
+  fi
