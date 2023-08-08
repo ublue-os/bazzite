@@ -128,10 +128,6 @@ resize-deckswap:
     just --unstable resize-deckswap
   fi
 
-enable-duperemove:
-  systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
-  systemctl enable --now duperemove-weekly@$(systemd-escape /run/media/mmcblk0p1).timer
-
 switch-to-ext4:
   sudo sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs
 
