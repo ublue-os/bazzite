@@ -16,11 +16,6 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
-        Automatic Duplicate File Removal:
-          description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
-          default: true
-          packages:
-          - Enable Duperemove: just --unstable enable-duperemove
         Autostart Steam:
           description: Launches Steam automatically on the desktop
           default: true
@@ -74,21 +69,11 @@ screens:
           default: true
           packages:
           - Install SteamCMD: just --unstable get-steamcmd
-        SteamOS BTRFS Mount Flags:
-          description: Sets SteamOS BTRFS mount flags
-          default: true
-          packages:
-          - Set SteamOS BTRFS mount flags: sudo -A just --unstable set-btrfs-flags
         Use EXT4 for SD Cards:
           description: Disable BTRFS support for SD cards for direct compatibility with SD cards formatted on stock SteamOS (Not recommended).
           default: false
           packages:
           - Switch SteamOS-BTRFS config to EXT4: sudo -A just --unstable switch-to-ext4
-        System76 Scheduler:
-          description: Enables System76 scheduler
-          default: true
-          packages:
-          - Enable System76 Scheduler: just --unstable enable-system76-scheduler
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:

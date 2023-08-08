@@ -4,7 +4,7 @@ source /etc/default/bazzite
 if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Running setup for Kinoite'
 
-  echo 'Enabling System76-Scheduler plugin'
+  echo 'Enabling System76-Scheduler KWin script'
   kcmshell5 kcm_kwin_scripts
 
   if [[ $IMAGE_NAME =~ "deck" ]]; then

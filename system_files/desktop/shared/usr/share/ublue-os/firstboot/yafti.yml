@@ -35,11 +35,6 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
-        Automatic Duplicate File Removal:
-          description: Flattens duplicate files to take up no more space than a single copy, a considerable space savings for wine prefixes and compatdata
-          default: true
-          packages:
-          - Enable Duperemove: systemctl enable --now duperemove-weekly@$(systemd-escape $HOME).timer
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
@@ -66,16 +61,6 @@ screens:
           default: false
           packages:
           - Enable Big Picture Mode: just --unstable enable-big-picture
-        SteamOS BTRFS Mount Flags:
-          description: Sets SteamOS BTRFS mount flags
-          default: true
-          packages:
-          - Set SteamOS BTRFS mount flags: sudo -A just --unstable set-btrfs-flags
-        System76 Scheduler:
-          description: Enables System76 scheduler
-          default: true
-          packages:
-          - Enable System76 Scheduler: just --unstable enable-system76-scheduler
   amd-additions:
     source: yafti.screen.package
     values:
