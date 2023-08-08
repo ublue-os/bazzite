@@ -70,7 +70,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 - Steam and Lutris preinstalled on the image as layered packages.
 - Exclusively uses ZRAM by default with the option to switch back to a swap file and set a custom size if desired. <sub><sup>(1GB by default)</sup></sub>
 - BFQ I/O scheduler to prevent I/O starvation when installing games or during background duperemove processes.
-- TLS/SSL secured DNS and NTP by default. <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>.
+- TLS/SSL secured DNS and NTP by default. <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>
 - Applies SteamOS's kernel parameters and enables amd-pstate by default.
 - 64GB Steam Decks gain several improvements over SteamOS, including:
     - Higher disk compression ratio increases storage space and eMMC read speeds.
@@ -118,7 +118,7 @@ Bazzite started as a project to resolve some of the issues that plague SteamOS, 
 
 Despite this project also being image-based you are able to install any Fedora package straight from the command line. These packages will persist across updates <sub><sup>(So go ahead and install that obscure VPN software you spent an hour trying to get working in SteamOS)</sup></sub>. Additionally, Bazzite is updated multiple times a week with packages from upstream Fedora, giving you the best possible performance and latest features - all on a stable base.
 
-Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot and disk encryption, making this a sensible solution for general computing <sup><sub>(Yes, you can print from Bazzite)</sub></sup>.
+Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot and disk encryption, making this a sensible solution for general computing. <sup><sub>(Yes, you can print from Bazzite)</sub></sup>
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")

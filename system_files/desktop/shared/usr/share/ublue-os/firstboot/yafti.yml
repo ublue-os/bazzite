@@ -1,6 +1,7 @@
 title: Welcome to uBlue
 properties:
   mode: "run-once"
+  save_state: "always"
 screens:
   first-screen:
     source: yafti.screen.title
@@ -69,12 +70,8 @@ screens:
         run: grep -q 'main' <<< $(cat /etc/default/bazzite)
       show_terminal: true
       package_manager: yafti.plugin.run
-      groups:
-        CoreCtrl:
-          description: AMD GPU Overclocking
-          default: false
-          packages:
-          - Install CoreCtrl: just --unstable install-corectrl
+      packages:
+        - CoreCtrl (GPU Overclocking): just --unstable install-corectrl
   nvidia-additions:
     source: yafti.screen.package
     values:
@@ -83,17 +80,9 @@ screens:
         run: grep -q 'nvidia' <<< $(cat /etc/default/bazzite)
       show_terminal: true
       package_manager: yafti.plugin.run
-      groups:
-        GreenWithEnvy:
-          description: Nvidia GPU Overclocking
-          default: false
-          packages:
-          - Install GreenWithEnvy: flatpak install --user --noninteractive com.leinardi.gwe
-        Supergfxctl:
-          description: A utility for Nvidia GPU switching
-          default: false
-          packages:
-          - Enable Supergfxctl: just --unstable enable-supergfxctl
+      packages:
+        - GreenWithEnvy (GPU Overclocking): flatpak install --user --noninteractive com.leinardi.gwe
+        - Supergfxctl (Hybrid GPU Switching): just --unstable enable-supergfxctl
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent
     values:
