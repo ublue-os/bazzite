@@ -6,7 +6,6 @@ pull=true
 root=false
 replace=false
 start_now=true
-volume=/usr/lib64/libnvidia-vulkan-producer.so:/usr/lib64/libnvidia-vulkan-producer.so
 init_hooks=pacman -Rnsdd xdg-desktop-portal-kde --noconfirm && pacman -S xdg-desktop-portal-gnome --noconfirm && runuser -u $USER -- paru -S steamcmd adw-gtk3 --noconfirm
 exported_apps="steam lutris protontricks"
 exported_bins="/usr/bin/steamcmd"

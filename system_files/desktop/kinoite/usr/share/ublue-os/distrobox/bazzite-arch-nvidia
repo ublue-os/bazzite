@@ -7,7 +7,6 @@ root=false
 replace=false
 start_now=true
 init_hooks=runuser -u $USER -- paru -S steamcmd --noconfirm
-volume=/usr/lib64/libnvidia-vulkan-producer.so:/usr/lib64/libnvidia-vulkan-producer.so
 exported_apps="steam lutris protontricks"
 exported_bins="/usr/bin/steamcmd"
 exported_bins_path="~/.steam"
