@@ -8,7 +8,7 @@ screens:
       title: "Welcome to Bazzite (Steam Deck Edition)"
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
-        Configure your system to get started
+        Configure your system to get started. Completion of this process is required for Game mode to function.
   configure-bazzite:
     source: yafti.screen.package
     values:
