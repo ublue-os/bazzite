@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+
+source /etc/default/bazzite
+
+# GLOBAL
+REBOOT_NEEDED=false
+SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+KARGS=$(rpm-ostree kargs)
+NEEDED_KARGS=""
+echo "Current kargs: $KARGS"
+
+# DECK KERNEL ARGUMENTS
+if [[ $IMAGE_NAME =~ "deck"  ]] && [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
+  echo "Checking for needed kargs (deck)"
+
+  if [[ ! $KARGS =~ "amd_pstate" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=\"amd_pstate=active\""
+  fi
+
+  if [[ ! $KARGS =~ "amd_iommu" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=\"amd_iommu=off\""
+  fi
+
+  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=\"amdgpu.gttsize=8128\""
+  fi
+
+  if [[ ! $KARGS =~ "spi_amd.speed_dev" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=\"spi_amd.speed_dev=1\""
+  fi
+
+  if [[ ! $KARGS =~ "audit" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=\"audit=0\""
+  fi
+
+  if [[ ! $KARGS =~ "initcall_blacklist" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=\"initcall_blacklist=simpledrm_platform_driver_init\""
+  fi
+
+  if [[ $KARGS =~ "nomodeset" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --delete=\"nomodeset\""
+  fi
+fi
+
+if [[ $IMAGE_NAME =~ "nvidia"  ]]; then
+  echo "Checking for needed kargs (nvidia)"
+
+  if [[ ! $KARGS =~ "rd.driver.blacklist" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=\"rd.driver.blacklist=nouveau\""
+  fi
+
+  if [[ ! $KARGS =~ "modprobe.blacklist" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=\"modprobe.blacklist=nouveau\""
+  fi
+
+  if [[ ! $KARGS =~ "nvidia-drm.modeset" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=\"nvidia-drm.modeset=1\""
+  fi
+fi
+
+if [[ ! -z "$NEEDED_KARGS" ]]; then
+  echo "Found needed kargs, applying the following: $NEEDED_KARGS"
+  rpm-ostree kargs ${NEEDED_KARGS}
+  REBOOT_NEEDED=true
+fi
+
+# FSTAB CONFIGURATION
+if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
+  echo "Applying fstab param adjustments"
+  sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
+  if grep -q '64GB' <<< $(lsblk -o MODEL); then
+    echo 'Increasing compression for detected 64GB eMMC'
+    sed -i 's/compress-force=zstd:1/compress-force=zstd:3/g' /etc/fstab
+  fi
+
+  REBOOT_NEEDED=true
+fi
+
+# REBOOT CHECK
+if [[ $REBOOT_NEEDED = true ]]; then
+  echo "Forcing a reboot to apply changes."
+  systemctl reboot --force
+fi
