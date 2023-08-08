@@ -21,16 +21,16 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Full support for [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Includes Valve's KDE themes from SteamOS.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
-- Support for [Wallpaper Engine](https://www.wallpaperengine.io/en). (Only on KDE)
+- Support for [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Only on KDE)</sup></sub>
 - [Distrobox](https://github.com/89luca89/distrobox) preinstalled with automatic updates for created containers.
 - Automated duperemove services for reducing the disk space used by wine prefix contents.
 - [System76-Scheduler](https://github.com/pop-os/system76-scheduler) preinstalled, providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
 - Customized System76-Scheduler config with additional rules and CFS parameters from [Linux-TKG](https://github.com/Frogging-Family/linux-tkg).
 - Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
-- [Input Remapper](https://github.com/sezanzeb/input-remapper) preinstalled and enabled (Available but default-disabled on the Deck variant)
+- [Input Remapper](https://github.com/sezanzeb/input-remapper) preinstalled and enabled. <sub><sup>(Available but default-disabled on the Deck variant)</sup></sub>
 - Helpful first-start installer provides an easy way to install numerous applications and tweaks, including installing [CoreCtrl](https://gitlab.com/corectrl/corectrl) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
 - [Nix](https://nixos.org/) package manager optionally available.
-- [Waydroid](https://waydro.id/) preinstalled for running Android apps. Future releases will offer to set this up for you. (Not available on Nvidia builds)
+- [Waydroid](https://waydro.id/) preinstalled for running Android apps. Future releases will offer to set this up for you. <sub><sup>(Not available on Nvidia builds)</sup></sub>
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
 - [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
 - Out of the box support for [Wooting](https://wooting.io/) keyboards.
@@ -52,7 +52,7 @@ or for devices with Nvidia GPUs:
 
     podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-live --force-replacefiles $(find ~/.local/share/containers -name ublue-os-signing.noarch.rpm 2>/dev/null) && rpm-ostree rebase --uninstall $(rpm -q ublue-os-signing-* --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{Arch}') ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-nvidia:latest
 
-Once you've installed or rebased to a Nvidia build, [be sure to follow steps 2 and 3 from the ublue-os/nvidia guide](https://github.com/ublue-os/nvidia#2-set-kargs-after-rebasing).
+**For users with Secure Boot enabled:** Once you've installed or rebased to a Nvidia build, [be sure to follow step 3 from the ublue-os/nvidia guide](https://github.com/ublue-os/nvidia#3-enable-secure-boot-support).
 
 ### Steam Deck
 
@@ -68,9 +68,9 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 - Built in support for dual-boot thanks to Fedora's installation of GRUB being left intact.
 - Update break something? Easily roll back to the previous version of Bazzite thanks to rpm-ostree's rollback functionality. You can even select previous images at boot.
 - Steam and Lutris preinstalled on the image as layered packages.
-- Exclusively uses ZRAM by default with the option to switch back to a swap file and set a custom size if desired (1GB by default).
+- Exclusively uses ZRAM by default with the option to switch back to a swap file and set a custom size if desired. <sub><sup>(1GB by default)</sup></sub>
 - BFQ I/O scheduler to prevent I/O starvation when installing games or during background duperemove processes.
-- TLS/SSL secured DNS and NTP by default <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>.
+- TLS/SSL secured DNS and NTP by default. <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>.
 - Applies SteamOS's kernel parameters and enables amd-pstate by default.
 - 64GB Steam Decks gain several improvements over SteamOS, including:
     - Higher disk compression ratio increases storage space and eMMC read speeds.
@@ -79,8 +79,8 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
     - Able to be booted even if the drive is full.
 - Default-disabled power-user features, including:
     - Service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj), see `ryzenadj.service` and `/etc/default/ryzenadj`.
-    - Service for limiting the max charge level of the battery, see `batterylimit.service` and `/etc/default/batterylimit`
-    - Built in support for display overclocking. For example you may add `GAMESCOPE_OVERRIDE_REFRESH_RATE=30,70` to `/etc/environment`.
+    - Service for limiting the max charge level of the battery, see `batterylimit.service` and `/etc/default/batterylimit`. <sup><sub>(Works even when the device is off)</sub></sup>
+    - Built in support for display overclocking. For example, add `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` to `/etc/environment`.
 
 **For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
 
