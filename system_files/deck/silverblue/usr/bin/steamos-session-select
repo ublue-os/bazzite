@@ -1,8 +1,10 @@
-#! /usr/bin/bash
+#!/usr/bin/bash
 
 set -e
 
 die() { echo >&2 "!! $*"; exit 1; }
+
+source /etc/default/desktop-wayland
 
 # File this script will modify, in addition to (potentially) the per-user sentinel file
 CONF_FILE="/etc/sddm.conf.d/zz-steamos-autologin.conf"
@@ -13,14 +15,22 @@ SENTINEL_FILE="steamos-session-select"
 CHECK_FILE="/etc/sddm.conf.d/steamos.conf"
 
 session="${1:-gamescope}"
-session_type="x11"
+if ${DESKTOP_WAYLAND}; then
+  session_type="wayland"
+else
+  session_type="x11"
+fi
 
 session_launcher="gamescope-session"
 create_sentinel=""
 
 if [[ "$2" == "--sentinel-created" ]]; then
   SENTINEL_CREATED=1
-  session_type="x11"
+  if ${DESKTOP_WAYLAND}; then
+    session_type="wayland"
+  else
+    session_type="x11"
+  fi
 fi
 
 # Update config sentinel
@@ -36,7 +46,11 @@ if [[ -z $SENTINEL_CREATED ]]; then
     if [[ -f "steamos-session-type" ]]; then
       cp steamos-session-type "$SENTINEL_FILE"
     else
-      echo "x11" > "$SENTINEL_FILE"
+      if ${DESKTOP_WAYLAND}; then
+        echo "wayland" > "$SENTINEL_FILE"
+      else
+        echo "x11" > "$SENTINEL_FILE"
+      fi
     fi
     cat "$SENTINEL_FILE"
   )
@@ -52,13 +66,17 @@ fi
 # We use "plasma" as "desktop" to hook up to SteamOS's scripts
 case "$session" in
   plasma-wayland-persistent)
-    session_launcher="gnome-xorg"
+    session_launcher="gnome-session"
   ;;
   plasma-x11-persistent)
     session_launcher="gnome-xorg"
   ;;
   desktop|plasma)
-    session_launcher="gnome-xorg-oneshot"
+    if ${DESKTOP_WAYLAND}; then
+      session_launcher="gnome-session-oneshot"
+    else
+      session_launcher="gnome-xorg-oneshot"
+    fi
     create_sentinel=1
   ;;
   gamescope)
