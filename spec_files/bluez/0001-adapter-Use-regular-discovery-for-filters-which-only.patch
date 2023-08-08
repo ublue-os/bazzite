@@ -1,0 +1,124 @@
+From de8e7cfce25b8d717f5ee60ee3b79d426fdcc681 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Fri, 31 Mar 2023 22:03:29 +0200
+Subject: [PATCH] adapter: Use regular discovery for filters which only have
+ discoverable set
+
+discovery_filter_to_mgmt_cp() does not add discovery_filter.discoverable
+to the created mgmt_cp_start_service_discovery struct.
+
+Instead update_discovery_filter() separately checks
+client->discovery_filter->discoverable for all clients.
+
+This means that for discovery-filters which only have the discoverable
+flag set, to put the adapter in discoverable mode while discovering,
+the created mgmt_cp_start_service_discovery struct is empty.
+
+This empty mgmt_cp_start_service_discovery struct then gets sent
+to the kernel as part of a MGMT_OP_START_SERVICE_DISCOVERY msg
+by start_discovery_timeout().
+
+This use of an empty filter with MGMT_OP_START_SERVICE_DISCOVERY
+causes some bluetooth devices to not get seen with some (most?)
+Broadcom bluetooth adapters. This problem has been observed with
+the following Broadcom models: BCM4343A0, BCM43430A1, BCM43341B0 .
+
+On these models the following 2 devices were not being discovered
+when starting a scan with a filter with just discoverable set
+in the filter (as gnome-bluetooth does):
+
+Device 09:02:01:03:0F:87 (public)
+        Name: Bluetooth 3.0 Keyboard
+        Alias: Bluetooth 3.0 Keyboard
+        Class: 0x00000540
+        Icon: input-keyboard
+        Paired: yes
+        Bonded: yes
+        Trusted: yes
+        Blocked: no
+        Connected: yes
+        WakeAllowed: yes
+        LegacyPairing: yes
+        UUID: Service Discovery Serve.. (00001000-0000-1000-8000-00805f9b34fb)
+        UUID: Human Interface Device... (00001124-0000-1000-8000-00805f9b34fb)
+        UUID: PnP Information           (00001200-0000-1000-8000-00805f9b34fb)
+        Modalias: bluetooth:v05ACp022Cd011B
+
+Device 00:60:D1:00:00:34 (public)
+        Name: Bluetooth Mouse
+        Alias: Bluetooth Mouse
+        Class: 0x00002580
+        Icon: input-mouse
+        Paired: yes
+        Bonded: yes
+        Trusted: yes
+        Blocked: no
+        Connected: yes
+        WakeAllowed: yes
+        LegacyPairing: no
+        UUID: Human Interface Device... (00001124-0000-1000-8000-00805f9b34fb)
+        UUID: PnP Information           (00001200-0000-1000-8000-00805f9b34fb)
+        Modalias: usb:v0103p0204d001E
+
+Since setting the discoverable flag on a filter only is a way to
+automatically put the adapter in discoverable mode itself while
+it is discovering; and since this does not any device filtering
+at all; modify merge_discovery_filters() to treat discovery with
+such filters as regular unfiltered discovery.
+
+This results in start_discovery_timeout() starting regular
+discovery through a MGMT_OP_START_DISCOVERY message and this
+fixes these 2 example devices not getting discovered by the
+mentioned Broadcom BT adapter models.
+
+Link: https://gitlab.gnome.org/GNOME/gnome-bluetooth/-/merge_requests/163
+Reviewed-by: Bastien Nocera <hadess@hadess.net>
+---
+ src/adapter.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index 7947160a6c5c..cc7f891d96d9 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -2192,6 +2192,7 @@ static int merge_discovery_filters(struct btd_adapter *adapter, int *rssi,
+ 	bool empty_uuid = false;
+ 	bool has_regular_discovery = false;
+ 	bool has_filtered_discovery = false;
++	uint8_t adapter_scan_type = get_scan_type(adapter);
+ 
+ 	for (l = adapter->discovery_list; l != NULL; l = g_slist_next(l)) {
+ 		struct discovery_client *client = l->data;
+@@ -2202,6 +2203,20 @@ static int merge_discovery_filters(struct btd_adapter *adapter, int *rssi,
+ 			continue;
+ 		}
+ 
++		/*
++		 * Detect empty filter with only discoverable
++		 * (which does not require a kernel filter) set.
++		 */
++		if (item->uuids == NULL &&
++		    item->pathloss == DISTANCE_VAL_INVALID &&
++		    item->rssi == DISTANCE_VAL_INVALID &&
++		    item->type == adapter_scan_type &&
++		    item->duplicate == false &&
++		    item->pattern == NULL) {
++			has_regular_discovery = true;
++			continue;
++		}
++
+ 		has_filtered_discovery = true;
+ 
+ 		*transport |= item->type;
+@@ -2251,7 +2266,7 @@ static int merge_discovery_filters(struct btd_adapter *adapter, int *rssi,
+ 		 * It there is both regular and filtered scan running, then
+ 		 * clear whole fitler to report all devices.
+ 		 */
+-		*transport = get_scan_type(adapter);
++		*transport = adapter_scan_type;
+ 		*rssi = HCI_RSSI_INVALID;
+ 		g_slist_free(*uuids);
+ 		*uuids = NULL;
+-- 
+2.41.0
+
