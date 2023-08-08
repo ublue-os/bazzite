@@ -15,6 +15,7 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
     sed -i 's@Steam (Runtime)@Steam@g' ~/Desktop/steam.desktop
     cp /etc/skel.d/Desktop/Return.desktop ~/Desktop
     cp /usr/share/applications/lutris.desktop ~/Desktop
+    cp /usr/share/applications/yafti.desktop ~/Desktop
   fi
 else
   echo 'Running setup for Silverblue'
