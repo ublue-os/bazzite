@@ -1,13 +1,21 @@
 #!/usr/bin/env bash
-
 source /etc/default/bazzite
 
 # GLOBAL
-REBOOT_NEEDED=false
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 KARGS=$(rpm-ostree kargs)
 NEEDED_KARGS=""
 echo "Current kargs: $KARGS"
+
+# FSTAB CONFIGURATION
+if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
+  echo "Applying fstab param adjustments"
+  sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
+  if grep -q '64GB' <<< $(lsblk -o MODEL); then
+    echo 'Increasing compression for detected 64GB eMMC'
+    sed -i 's/compress-force=zstd:1/compress-force=zstd:3/g' /etc/fstab
+  fi
+fi
 
 # DECK KERNEL ARGUMENTS
 if [[ $IMAGE_NAME =~ "deck"  ]] && [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
@@ -60,24 +68,6 @@ fi
 
 if [[ ! -z "$NEEDED_KARGS" ]]; then
   echo "Found needed kargs, applying the following: $NEEDED_KARGS"
-  rpm-ostree kargs ${NEEDED_KARGS}
-  REBOOT_NEEDED=true
+  rpm-ostree kargs ${NEEDED_KARGS} --reboot
 fi
-
-# FSTAB CONFIGURATION
-if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
-  echo "Applying fstab param adjustments"
-  sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
-  if grep -q '64GB' <<< $(lsblk -o MODEL); then
-    echo 'Increasing compression for detected 64GB eMMC'
-    sed -i 's/compress-force=zstd:1/compress-force=zstd:3/g' /etc/fstab
-  fi
-
-  REBOOT_NEEDED=true
-fi
-
-# REBOOT CHECK
-if [[ $REBOOT_NEEDED = true ]]; then
-  echo "Forcing a reboot to apply changes."
-  systemctl reboot --force
-fi
+echo "No karg changes needed"

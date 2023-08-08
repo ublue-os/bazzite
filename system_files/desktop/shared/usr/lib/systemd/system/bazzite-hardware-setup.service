@@ -1,0 +1,10 @@
+[Unit]
+Description=Configure Bazzite for current hardware
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/bazzite-hardware-setup
+
+[Install]
+WantedBy=multi-user.target
