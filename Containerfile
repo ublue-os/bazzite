@@ -197,7 +197,7 @@ RUN rpm-ostree override remove \
             steamdeck-kde-presets-desktop \
     ; fi
 
-# Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
+# Install gamescope-limiter patched Mesa, patched Bluez, and patched udisks2 (Needed for SteamOS SD card mounting)
 RUN rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
@@ -210,7 +210,13 @@ RUN rpm-ostree override replace \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-        udisks2
+        udisks2 \
+        bluez \
+        bluez-cups \
+        bluez-hid2hci \
+        bluez-libs \
+        bluez-mesh \
+        bluez-obexd
 
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
