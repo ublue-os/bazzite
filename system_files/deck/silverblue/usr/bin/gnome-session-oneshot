@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 set -e
 
@@ -25,7 +25,7 @@ function check_sentinel()
     cd "$HOME"
     cd "$config_dir"
     sentinel_value="$(cat "$SENTINEL_FILE")"
-    if [[ "$sentinel_value" == "x11" ]]; then
+    if [[ "$sentinel_value" == "x11" || "$sentinel_value" == "wayland" ]]; then
       echo "/usr/bin/gnome-session"
     else
       return 1
