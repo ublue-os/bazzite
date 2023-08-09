@@ -248,7 +248,6 @@ RUN rpm-ostree install \
     vkBasalt \
     mangohud \
     sdgyrodsu \
-    winetricks \
     python-vdf \
     python-crcmod && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --depth 1 /tmp/jupiter-dock-updater-bin && \
@@ -259,7 +258,9 @@ RUN rpm-ostree install \
     steam \
     lutris \
     gamescope \
-    gamescope-session
+    gamescope-session \
+    wine-core \
+    winetricks
 
 # Cleanup & Finalize
 RUN rm /usr/share/applications/winetricks.desktop && \
