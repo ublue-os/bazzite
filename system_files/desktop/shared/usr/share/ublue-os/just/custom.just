@@ -8,6 +8,18 @@ install-bazzite-arch:
     echo 'Installing Bazzite Arch...'
     distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch
   fi
+  distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
+  cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop
+  sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
+  distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
+  distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
+  mkdir -p ~/.steam
+  distrobox-enter -n bazzite-arch -- '  distrobox-export --bin steamcmd --export-path ~/.steam'
+  ln -s ~/.steam/steamcmd ~/.steam/steamcmd.sh
+  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+    cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop
+    cp ~/.local/share/applications/bazzite-arch-lutris.desktop ~/Desktop
+  fi
 
 install-corectrl:
   echo 'Installing CoreCtrl...''
