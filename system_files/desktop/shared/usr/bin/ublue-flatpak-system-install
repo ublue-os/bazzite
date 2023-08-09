@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 source /etc/default/bazzite
 
+if grep -qz 'fedora' <<< $(flatpak remotes); then
+  /usr/lib/fedora-third-party/fedora-third-party-opt-out
+  /usr/bin/fedora-third-party disable
+fi
+
 if [[ -f '/etc/flatpak/install' ]]; then
   cat /etc/flatpak/install | while read line; do
     flatpak install --system --noninteractive flathub $line
