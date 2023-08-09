@@ -161,7 +161,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
     ; fi && \
     if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         systemctl disable waydroid-container.service \
-    fi && \
+    ; fi && \
     echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
     rm -rf \
         /tmp/* \
