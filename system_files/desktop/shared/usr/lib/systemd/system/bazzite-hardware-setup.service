@@ -1,5 +1,7 @@
 [Unit]
 Description=Configure Bazzite for current hardware
+After=rpm-ostreed.service
+Before=systemd-user-sessions.service
 
 [Service]
 Type=oneshot
