@@ -4,9 +4,8 @@ Requires=xdg-desktop-autostart.target
 ConditionPathExists=!%h/.bazzite-configured
 
 [Service]
-Type=oneshot
-RemainAfterExit=yes
+Type=simple
 ExecStart=/usr/bin/bazzite-user-setup
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
