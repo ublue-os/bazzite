@@ -23,6 +23,7 @@ else
   echo 'Enabling GNOME extensions'
   gnome-extensions enable s76-scheduler@mattjakeman.com
   gnome-extensions enable gsconnect@andyholmes.github.io
+  gnome-extensions enable blur-my-shell@aunetx
   gnome-extensions disable background-logo@fedorahosted.org
 
   echo 'Enabling VRR'
