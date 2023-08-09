@@ -23,7 +23,7 @@ screens:
           description: Sets up a custom Arch Linux OCI in Distrobox that Steam, Lutris, and other gaming workloads will be run inside of
           default: true
           packages:
-          - Install Bazzite Arch: just --unstable install-bazzite-arch
+          - Install Bazzite Arch: echo "PLEASE WAIT, THIS CAN TAKE A VERY LONG TIME" && just --unstable install-bazzite-arch
   configure-bazzite:
     source: yafti.screen.package
     values:
