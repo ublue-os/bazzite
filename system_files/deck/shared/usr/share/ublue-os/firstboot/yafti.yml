@@ -70,19 +70,6 @@ screens:
           default: false
           packages:
           - Switch SteamOS-BTRFS config to EXT4: sudo -A just --unstable switch-to-ext4
-  can-we-modify-your-flatpaks:
-    source: yafti.screen.consent
-    values:
-      title: Setting up Flathub
-      condition:
-        run: flatpak remotes --system | grep -q fedora
-      description: |
-        WARNING: This will modify your Flatpaks if you are rebasing! If you do not want to do this exit the installer.
-      actions:
-      - run: /usr/lib/fedora-third-party/fedora-third-party-opt-out
-      - run: /usr/bin/fedora-third-party disable
-      - run: flatpak remote-delete fedora --force
-      - run: flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
   applications:
     source: yafti.screen.package
     values:

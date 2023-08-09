@@ -42,6 +42,12 @@ else
   fi
 fi
 
+# Setup Flathub
+if grep -qz 'fedora' <<< $(flatpak remotes); then
+  flatpak remote-delete fedora --force
+fi
+flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
+
 # Prevent future executions
 echo "Writing state file"
 touch $HOME/.bazzite-configured
