@@ -37,7 +37,6 @@ else
     echo 'Running setup for Silverblue on Steam Deck'
 
     echo 'Enabling Bazzite tofu menu fork'
-    gsettings set org.gnome.shell.extensions.fedora-menu menu-button-icon-size 20
     gnome-extensions enable tofumenu@tofu
   fi
 fi
