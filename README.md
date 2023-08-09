@@ -81,6 +81,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
     - Service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj), see `ryzenadj.service` and `/etc/default/ryzenadj`.
     - Service for limiting the max charge level of the battery, see `batterylimit.service` and `/etc/default/batterylimit`. <sup><sub>(Works even when the device is off)</sub></sup>
     - Built in support for display overclocking. For example, add `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` to `/etc/environment`.
+    - Use Wayland on the Desktop by adding `DESKTOP_WAYLAND=1` to `/etc/environment`.
 
 **For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
 
