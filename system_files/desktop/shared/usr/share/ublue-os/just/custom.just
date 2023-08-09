@@ -8,6 +8,7 @@ install-bazzite-arch:
     echo 'Installing Bazzite Arch...'
     distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch
   fi
+  distrobox-enter -n bazzite-arch -- '  /usr/bin/steam --silent'
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
   cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop
   sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
@@ -19,6 +20,8 @@ install-bazzite-arch:
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop
     cp ~/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop ~/Desktop
+    sleep 10
+    rm ~/Desktop/steam.desktop
   fi
 
 install-corectrl:
