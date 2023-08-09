@@ -256,6 +256,7 @@ RUN rpm-ostree install \
 # Install Steam and Lutris into their own OCI layer
 RUN rpm-ostree install \
     steam \
+    extest.i686 \
     lutris \
     gamescope \
     gamescope-session \
