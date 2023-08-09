@@ -58,7 +58,7 @@ enable-vapor-theme:
   #!/usr/bin/env bash
   source /etc/default/bazzite
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    gnome-shell-extension-cl -e user-theme@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
@@ -74,7 +74,7 @@ enable-vgui2-theme:
   #!/usr/bin/env bash
   source /etc/default/bazzite
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    gnome-shell-extension-cl -e user-theme@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark

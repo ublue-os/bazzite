@@ -21,9 +21,9 @@ else
   echo 'Running setup for Silverblue'
 
   echo 'Enabling GNOME extensions'
-  gnome-shell-extension-cl -e s76-scheduler@mattjakeman.com
-  gnome-shell-extension-cl -d background-logo@fedorahosted.org
-  gnome-shell-extension-cl -e gsconnect@andyholmes.github.io
+  gnome-extensions enable s76-scheduler@mattjakeman.com
+  gnome-extensions enable gsconnect@andyholmes.github.io
+  gnome-extensions disable background-logo@fedorahosted.org
 
   echo 'Enabling VRR'
   gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate']"
@@ -38,7 +38,7 @@ else
 
     echo 'Enabling Bazzite tofu menu fork'
     gsettings set org.gnome.shell.extensions.fedora-menu menu-button-icon-size 20
-    gnome-shell-extension-cl -e tofumenu@tofu
+    gnome-extensions enable tofumenu@tofu
   fi
 fi
 
