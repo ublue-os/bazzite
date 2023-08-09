@@ -26,8 +26,7 @@ get-decky:
 
 get-emudeck:
   echo 'Retrieving EmuDeck...'
-  wget https://www.emudeck.com/EmuDeck.desktop -P ~/Desktop
-  chmod +x ~/Desktop/EmuDeck.desktop
+  wget https://www.emudeck.com/EmuDeck.desktop -O ~/Desktop/EmuDeck.desktop
 
 get-steamcmd:
   echo 'Installing SteamCMD...'
