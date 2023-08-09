@@ -4,6 +4,7 @@ source /etc/default/bazzite
 if grep -qz 'fedora' <<< $(flatpak remotes); then
   /usr/lib/fedora-third-party/fedora-third-party-opt-out
   /usr/bin/fedora-third-party disable
+  flatpak remote-delete fedora --force
 fi
 
 if [[ -f '/etc/flatpak/install' ]]; then

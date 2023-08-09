@@ -43,9 +43,9 @@ fi
 
 # Setup Flathub
 if grep -qz 'fedora' <<< $(flatpak remotes); then
-  flatpak remote-delete fedora --force
+  flatpak remote-delete --user fedora --force
 fi
-flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak remote-add --if-not-exists --user flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
 
 # Prevent future executions
 echo "Writing state file"
