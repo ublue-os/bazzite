@@ -26,10 +26,10 @@ get-decky:
 
 get-emudeck:
   echo 'Retrieving EmuDeck...'
-  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-    wget https://www.emudeck.com/EmuDeck.desktop -O ~/Desktop/EmuDeck.desktop
-  else
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     wget https://www.emudeck.com/EmuDeck.desktop -O ~/.local/share/applications/EmuDeck.desktop
+  else
+    wget https://www.emudeck.com/EmuDeck.desktop -O ~/Desktop/EmuDeck.desktop
   fi
 
 get-steamcmd:
