@@ -14,11 +14,11 @@ install-bazzite-arch:
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
   mkdir -p ~/.steam
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --bin steamcmd --export-path ~/.steam'
-  ln -s ~/.steam/steamcmd ~/.steam/steamcmd.sh
+  distrobox-enter -n bazzite-arch -- '  distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam'
+  mv ~/.steam/steamcmd ~/.steam/steamcmd.sh
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop
-    cp ~/.local/share/applications/bazzite-arch-lutris.desktop ~/Desktop
+    cp ~/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop ~/Desktop
   fi
 
 install-corectrl:
