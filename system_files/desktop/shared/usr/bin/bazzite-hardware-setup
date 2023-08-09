@@ -69,6 +69,10 @@ if [[ $KARGS =~ "nomodeset" ]]; then
   NEEDED_KARGS="$NEEDED_KARGS --delete=\"nomodeset\""
 fi
 
+if [[ ! $KARGS =~ "rd.luks.options" ]]; then
+  NEEDED_KARGS="$NEEDED_KARGS --append=\"rd.luks.options=discard\""
+fi
+
 if [[ ! -z "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: $NEEDED_KARGS"
   rpm-ostree kargs ${NEEDED_KARGS} --reboot
