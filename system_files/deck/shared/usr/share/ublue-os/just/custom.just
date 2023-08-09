@@ -26,7 +26,11 @@ get-decky:
 
 get-emudeck:
   echo 'Retrieving EmuDeck...'
-  wget https://www.emudeck.com/EmuDeck.desktop -O ~/Desktop/EmuDeck.desktop
+  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+    wget https://www.emudeck.com/EmuDeck.desktop -O ~/Desktop/EmuDeck.desktop
+  else
+    wget https://www.emudeck.com/EmuDeck.desktop -O ~/Downloads/EmuDeck.desktop
+  fi
 
 get-steamcmd:
   echo 'Installing SteamCMD...'
