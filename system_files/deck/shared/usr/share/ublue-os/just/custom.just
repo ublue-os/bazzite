@@ -25,6 +25,7 @@ get-decky:
   sudo chcon -t bin_t $HOME/homebrew/services/PluginLoader
 
 get-emudeck:
+  #!/usr/bin/env bash
   echo 'Retrieving EmuDeck...'
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     wget https://www.emudeck.com/EmuDeck.desktop -O ~/.local/share/applications/EmuDeck.desktop
