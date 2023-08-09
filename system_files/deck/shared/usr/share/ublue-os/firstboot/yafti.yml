@@ -13,15 +13,10 @@ screens:
   configure-bazzite:
     source: yafti.screen.package
     values:
-      title: Configure Bazzite
+      title: Setting up Bazzite
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
-        Autostart Steam:
-          description: Launches Steam automatically on the desktop
-          default: true
-          packages:
-          - Enable Autostart: cp /usr/share/applications/steam.desktop ~/.config/autostart/steam-silent.desktop && sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/steam-silent.desktop
         BoilR:
           description: Adds games from various clients to Steam
           default: false
