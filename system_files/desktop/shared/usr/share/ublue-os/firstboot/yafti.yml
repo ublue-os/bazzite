@@ -15,7 +15,7 @@ screens:
     values:
       title: Setting up Bazzite Arch
       condition:
-        run: grep -qv "bazzite-arch" <<< $(distrobox list)
+        run: grep -qvz "bazzite-arch" <<< $(distrobox list)
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:

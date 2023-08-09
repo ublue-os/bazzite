@@ -19,10 +19,11 @@ install-bazzite-arch:
   mv ~/.steam/steamcmd ~/.steam/steamcmd.sh
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop
+    sed -i 's@Steam (Runtime)@Steam@g' ~/Desktop/bazzite-arch-steam.desktop
     cp ~/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop ~/Desktop
-    sleep 10
-    rm ~/Desktop/steam.desktop
   fi
+  sleep 10
+  [ ! -e ~/Desktop/steam.desktop ] || rm ~/Desktop/steam.desktop
 
 install-corectrl:
   echo 'Installing CoreCtrl...''
