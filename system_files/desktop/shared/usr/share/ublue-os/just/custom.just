@@ -21,7 +21,6 @@ install-bazzite-arch:
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop/bazzite-arch-steam.desktop
     sed -i 's@Steam (Runtime)  (on bazzite-arch)@Steam@g' ~/Desktop/bazzite-arch-steam.desktop
-    sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/bazzite-steam-runtime  %U@g' ~/Desktop/bazzite-arch-steam.desktop
     cp ~/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop
     sed -i 's@Lutris  (on bazzite-arch)@Lutris@g' ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop
   fi
