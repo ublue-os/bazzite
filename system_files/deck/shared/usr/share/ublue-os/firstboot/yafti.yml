@@ -53,7 +53,7 @@ screens:
           description: Adjust ZRAM and configure deckswap
           default: false
           packages:
-          - Deck Swap: just --unstable swap-on
+          - Deck Swap: just --unstable deckswap-on
           - Disable ZRAM: just --unstable zram-off
         Nix Package Manager:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible

@@ -11,11 +11,12 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
     echo 'Running setup for Kinoite on Steam Deck'
 
     echo 'Creating Desktop shortcuts'
-    cp /usr/share/applications/steam.desktop ~/Desktop
+    cp /usr/share/applications/steam.desktop ~/Desktop/steam.desktop
     sed -i 's@Steam (Runtime)@Steam@g' ~/Desktop/steam.desktop
-    cp /etc/skel.d/Desktop/Return.desktop ~/Desktop
-    cp /usr/share/applications/lutris.desktop ~/Desktop
-    cp /usr/share/applications/yafti.desktop ~/Desktop
+    sed -i 's@/usr/bin/steam-runtime %U@/usr/bin/bazzite-steam-runtime %U@g' ~/Desktop/steam.desktop
+    cp /etc/skel.d/Desktop/Return.desktop ~/Desktop/Return.desktop
+    cp /usr/share/applications/lutris.desktop ~/Desktop/lutris.desktop
+    cp /usr/share/applications/yafti.desktop ~/Desktop/yafti.desktop
   fi
 else
   echo 'Running setup for Silverblue'

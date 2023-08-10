@@ -59,6 +59,7 @@ or for devices with Nvidia GPUs:
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, available as `bazzite-deck`:
 
 - Directly boots to Gamemode matching SteamOS's behavior.
+- Uses Wayland on the desktop with [full support for Steam input](https://github.com/Supreeeme/extest).
 - Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV).
 - Patched Mesa for proper framerate control from Gamescope.
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
@@ -81,7 +82,6 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
     - Service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj), see `ryzenadj.service` and `/etc/default/ryzenadj`.
     - Service for limiting the max charge level of the battery, see `batterylimit.service` and `/etc/default/batterylimit`. <sup><sub>(Works even when the device is off)</sub></sup>
     - Built in support for display overclocking. For example, add `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` to `/etc/environment`.
-    - Use Wayland on the Desktop by adding `DESKTOP_WAYLAND=1` to `/etc/environment`.
 
 **For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
 
@@ -94,7 +94,7 @@ To rebase an existing ostree system to this image:
 Builds with the GNOME desktop environment are available in both desktop and deck flavors. These builds come with the following additional features:
 
 - [Variable refresh rate support enabled under Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
-- Custom menu in the top bar for returning to game mode, launching Steam, and opening a number of useful utilities. (Only on Steam Deck builds)
+- Custom menu in the top bar for returning to game mode, launching Steam, and opening a number of useful utilities. <sub><sup>(Only on Steam Deck builds)</sup></sub>
 - [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) preinstalled and ready to use.
 - Features optional Valve-inspired themes matching Vapor and VGUI2 from SteamOS.
 - [Optional important user experience fix](https://www.youtube.com/watch?v=nbCg9_YgKgM).

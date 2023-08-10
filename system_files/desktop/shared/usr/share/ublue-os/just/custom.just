@@ -18,9 +18,9 @@ install-bazzite-arch:
   distrobox-enter -n bazzite-arch -- '  distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam'
   mv ~/.steam/steamcmd ~/.steam/steamcmd.sh
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-    cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop
+    cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop/bazzite-arch-steam.desktop
     sed -i 's@Steam (Runtime)  (on bazzite-arch)@Steam@g' ~/Desktop/bazzite-arch-steam.desktop
-    cp ~/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop ~/Desktop
+    cp ~/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop
     sed -i 's@Lutris  (on bazzite-arch)@Lutris@g' ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop
   fi
   sleep 10
