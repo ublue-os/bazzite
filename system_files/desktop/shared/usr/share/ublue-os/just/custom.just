@@ -27,6 +27,15 @@ install-bazzite-arch:
   sleep 10
   [ ! -e ~/Desktop/steam.desktop ] || rm ~/Desktop/steam.desktop
 
+configure-waydroid:
+  #!/usr/bin/env bash
+  SCRIPT='/tmp/waydroid_script'
+  git clone https://github.com/casualsnek/waydroid_script --depth 1 ${SCRIPT}
+  sudo pip install --user -r ${SCRIPT}/requirements.txt
+  sudo ${SCRIPT}/main.py
+  sudo pip uninstall -r ${SCRIPT}/requirements.txt
+  rm -rf ${SCRIPT}
+
 install-corectrl:
   echo 'Installing CoreCtrl...''
   rpm-ostree install corectrl

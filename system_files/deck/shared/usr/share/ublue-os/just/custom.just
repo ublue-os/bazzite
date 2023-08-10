@@ -18,6 +18,15 @@ enable-desktop-autologin:
     systemctl enable --now plasma-autologin
   fi
 
+configure-waydroid:
+  #!/usr/bin/env bash
+  SCRIPT='/tmp/waydroid_script'
+  git clone https://github.com/casualsnek/waydroid_script --depth 1 ${SCRIPT}
+  sudo pip install --user -r ${SCRIPT}/requirements.txt
+  sudo ${SCRIPT}/main.py
+  sudo pip uninstall -r ${SCRIPT}/requirements.txt
+  rm -rf ${SCRIPT}
+
 get-decky:
   #!/usr/bin/env bash
   export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
