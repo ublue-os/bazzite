@@ -12,7 +12,7 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
 
     echo 'Creating Desktop shortcuts'
     cp /usr/share/applications/steam.desktop ~/Desktop/steam.desktop
-    sed -i 's@Steam (Runtime)@Steam@g' ~/Desktop/steam.desktop
+    sed -i 's@ (Runtime)@@g' ~/Desktop/steam.desktop
     sed -i 's@/usr/bin/steam-runtime@/usr/bin/bazzite-steam-runtime@g' ~/Desktop/steam.desktop
     cp /etc/skel.d/Desktop/Return.desktop ~/Desktop/Return.desktop
     cp /usr/share/applications/lutris.desktop ~/Desktop/lutris.desktop
