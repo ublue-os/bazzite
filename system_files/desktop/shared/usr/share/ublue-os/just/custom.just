@@ -10,8 +10,9 @@ install-bazzite-arch:
   fi
   distrobox-enter -n bazzite-arch -- '  /usr/bin/steam --silent &'
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
+  sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/bazzite-steam-runtime  %U@g' ~/.local/share/applications/bazzite-arch-steam.desktop
   cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop
-  sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/steam-runtime -silent %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
+  sed -i 's@/usr/bin/bazzite-steam-runtime  %U@/usr/bin/bazzite-steam-runtime -silent  %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
   mkdir -p ~/.steam
@@ -20,6 +21,7 @@ install-bazzite-arch:
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop/bazzite-arch-steam.desktop
     sed -i 's@Steam (Runtime)  (on bazzite-arch)@Steam@g' ~/Desktop/bazzite-arch-steam.desktop
+    sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/bazzite-steam-runtime  %U@g' ~/Desktop/bazzite-arch-steam.desktop
     cp ~/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop
     sed -i 's@Lutris  (on bazzite-arch)@Lutris@g' ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop
   fi
@@ -46,7 +48,7 @@ enable-big-picture:
   elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     systemctl enable --now plasma-autologin
   fi
-  sed -i 's@/usr/bin/steam-runtime -silent %U@/usr/bin/steam-runtime -bigpicture %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
+  sed -i 's@/usr/bin/bazzite-steam-runtime -silent  %U@/usr/bin/bazzite-steam-runtime -bigpicture  %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
   mv ~/.config/autostart/bazzite-arch-steam-silent.desktop ~/.config/autostart/bazzite-arch-steam-bigpicture.desktop
 
 get-greenlight:
