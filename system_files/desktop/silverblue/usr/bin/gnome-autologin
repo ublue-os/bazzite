@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source /etc/default/desktop-wayland
+
 USER=$(id -nu 1000)
 
 # GDM config
@@ -8,4 +10,8 @@ GDM_CONF='/etc/gdm/custom.conf'
 # Configure autologin
 sed -i 's/.*AutomaticLoginEnable=.*/AutomaticLoginEnable=true/g' ${GDM_CONF}
 sed -i 's/.*AutomaticLogin=.*/AutomaticLogin='${USER}'/g' ${GDM_CONF}
-sed -i 's/.*DefaultSession=.*/DefaultSession=gnome-xorg/g' ${GDM_CONF}
+if ${DESKTOP_WAYLAND}; then
+  sed -i 's/.*DefaultSession=.*/DefaultSession=gnome-session/g' ${GDM_CONF}
+else
+  sed -i 's/.*DefaultSession=.*/DefaultSession=gnome-xorg/g' ${GDM_CONF}
+fi
