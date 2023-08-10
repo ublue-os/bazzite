@@ -165,7 +165,9 @@ RUN rm /usr/share/applications/shredder.desktop && \
         rm /usr/share/applications/yad-icon-browser.desktop && \
         sed -i '/^PRETTY_NAME/s/Silverblue/Bazzite GNOME/' /usr/lib/os-release \
     ; fi && \
-    if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
+    if grep -q "nvidia" <<< "${IMAGE_NAME}"; then \
+        sed -i 's@DESKTOP_WAYLAND=true@DESKTOP_WAYLAND=false@g' /etc/default/desktop-wayland \
+    ; else \
         systemctl disable waydroid-container.service \
     ; fi && \
     echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
@@ -288,9 +290,6 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
-    if grep -q "nvidia" <<< "${IMAGE_NAME}"; then \
-        sed -i 's@DESKTOP_WAYLAND=true@DESKTOP_WAYLAND=false@g' /etc/default/desktop-wayland \
-    ; fi && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl enable plasma-autologin.service && \
