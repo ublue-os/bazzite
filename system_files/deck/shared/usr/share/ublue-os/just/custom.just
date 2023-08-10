@@ -31,7 +31,7 @@ get-decky:
   #!/usr/bin/env bash
   export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
   curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
-  sudo chcon -t bin_t $HOME/homebrew/services/PluginLoader
+  sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
 
 get-emudeck:
   #!/usr/bin/env bash
