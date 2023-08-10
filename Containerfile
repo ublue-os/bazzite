@@ -107,6 +107,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-gsconnect \
         gnome-shell-extension-system76-scheduler \
         gnome-shell-extension-compiz-windows-effect \
+        gnome-shell-extension-just-perfection \
         openssh-askpass && \
     rpm-ostree override remove \
         gnome-classic-session \
@@ -258,12 +259,14 @@ RUN rpm-ostree install \
 
 # Install Steam and Lutris into their own OCI layer
 RUN rpm-ostree install \
-    steam \
-    lutris \
-    gamescope \
-    gamescope-session \
-    wine-core \
-    winetricks
+        steam \
+        lutris \
+        gamescope \
+        gamescope-session \
+        wine-core \
+        winetricks && \
+    rpm-ostree override remove \
+        gamemode
 
 # Cleanup & Finalize
 RUN rm /usr/share/applications/winetricks.desktop && \
