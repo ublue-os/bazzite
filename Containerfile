@@ -108,6 +108,8 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-system76-scheduler \
         gnome-shell-extension-compiz-windows-effect \
         gnome-shell-extension-just-perfection \
+        gnome-shell-extension-blur-my-shell \
+        gnome-shell-extension-caffeine \
         openssh-askpass && \
     rpm-ostree override remove \
         gnome-classic-session \
