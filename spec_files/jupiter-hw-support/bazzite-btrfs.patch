@@ -11,15 +11,15 @@ index dd700da..152e231 100644
  ExecStop=/usr/sbin/steamos-automount remove %i
  ExecReload=/usr/sbin/steamos-automount retrigger %i
 diff --git a/usr/lib/hwsupport/format-device.sh b/usr/lib/hwsupport/format-device.sh
-index 79afec7..43ea933 100755
+index b136413..d3cbb16 100755
 --- a/usr/lib/hwsupport/format-device.sh
 +++ b/usr/lib/hwsupport/format-device.sh
-@@ -3,6 +3,8 @@
+@@ -2,6 +2,8 @@
+ 
  set -e
- exec &> >(tee | logger -t steamos-format-device)
  
 +source /etc/default/steamos-btrfs
 +
- RUN_VALIDATION=1
- EXTENDED_OPTIONS="nodiscard"
- # default owner for the new filesystem
+ # If the script is not run from a tty then send a copy of stdout and
+ # stderr to the journal. In this case stderr is also redirected to stdout.
+ if ! tty -s; then
