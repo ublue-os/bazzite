@@ -10,7 +10,7 @@ install-bazzite-arch:
   fi
   distrobox-enter -n bazzite-arch -- '  /usr/bin/bazzite-steam-runtime --silent &'
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
-  sed -i 's@/usr/bin/steam-runtime  %U@/usr/bin/bazzite-steam-runtime  %U@g' ~/.local/share/applications/bazzite-arch-steam.desktop
+  sed -i 's@/usr/bin/steam-runtime@/usr/bin/bazzite-steam-runtime@g' ~/.local/share/applications/bazzite-arch-steam.desktop
   cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop
   sed -i 's@/usr/bin/bazzite-steam-runtime  %U@/usr/bin/bazzite-steam-runtime -silent  %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
