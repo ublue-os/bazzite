@@ -283,6 +283,9 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
+    if grep -q "nvidia" <<< "${IMAGE_NAME}"; then \
+        sed -i 's@DESKTOP_WAYLAND=true@DESKTOP_WAYLAND=false@g' /etc/default/desktop-wayland \
+    ; fi && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl enable plasma-autologin.service && \
