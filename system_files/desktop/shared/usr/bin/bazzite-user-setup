@@ -29,6 +29,10 @@ else
   echo 'Enabling VRR'
   gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate']"
 
+  echo 'Disabling automatic GNOME Software updates'
+  gsettings set org.gnome.software download-updates false
+  gsettings set org.gnome.software download-updates-notify false
+
   echo 'Installing Gradience presets'
   mkdir -p $HOME/.config/presets/user/
   ln -s /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.config/presets/user/vapor.json
