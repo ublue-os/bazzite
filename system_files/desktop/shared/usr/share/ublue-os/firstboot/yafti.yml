@@ -62,11 +62,30 @@ screens:
           default: false
           packages:
           - Install Nix Package Support: sudo -A just --unstable install-nix
-        Start Steam in Big Picture Mode:
-          description: For HTPCs, start Steam in Big Picture Mode automatically at login.
-          default: false
-          packages:
-          - Enable Big Picture Mode: just --unstable enable-big-picture
+  gamepadui:
+    source: yafti.screen.title
+    values:
+      title: "Select a gamepad UI to start to (for HTPCs)"
+      condition:
+        run: grep -qz 'main' <<< $(cat /etc/default/bazzite)
+      links:
+      - "Start OpenGamepadUI automatically at login":
+          run: just --unstable enable-opengamepadui
+      - "Start Steam in Big Picture Mode automatically at login":
+          run: just --unstable enable-big-picture
+      description: |
+        Optionally select a gamepad UI to start to at login.
+  big-picture:
+    source: yafti.screen.title
+    values:
+      title: "Start Steam in Big Picture Mode at login (for HTPCs)"
+      condition:
+        run: grep -qz 'nvidia' <<< $(cat /etc/default/bazzite)
+      links:
+      - "Steam Big Picture Mode":
+          run: just --unstable enable-big-picture
+      description: |
+        Optionally start Steam in Big Picture Mode automatically at login.
   amd-additions:
     source: yafti.screen.package
     values:

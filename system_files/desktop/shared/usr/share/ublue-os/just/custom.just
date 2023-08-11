@@ -58,6 +58,16 @@ enable-big-picture:
   sed -i 's@/usr/bin/bazzite-steam-runtime -silent  %U@/usr/bin/bazzite-steam-runtime -bigpicture  %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
   mv ~/.config/autostart/bazzite-arch-steam-silent.desktop ~/.config/autostart/bazzite-arch-steam-bigpicture.desktop
 
+enable-opengamepadui:
+  #!/usr/bin/env bash
+  source /etc/default/bazzite
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+    systemctl enable --now gnome-autologin
+  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+    systemctl enable --now plasma-autologin
+  fi
+  cp /usr/share/applications/opengamepadui.desktop ~/.config/autostart/opengamepadui.desktop
+
 get-greenlight:
   echo 'Retrieving Greenlight'
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta8/Greenlight-2.0.0-beta8.AppImage -O ~/Desktop/Greenlight.AppImage
