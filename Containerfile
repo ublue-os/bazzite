@@ -278,10 +278,10 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
-    sed -i 's@/usr/bin/steam-runtime@/usr/bin/bazzite-steam-runtime@g' /usr/share/applications/steam.desktop && \
+    sed -i 's@/usr/bin/steam@/usr/bin/bazzite-steam@g' /usr/share/applications/steam.desktop && \
     mkdir -p "/etc/xdg/autostart" && \
     cp "/usr/share/applications/steam.desktop" "/etc/xdg/autostart/steam.desktop" && \
-    sed -i 's@/usr/bin/bazzite-steam-runtime %U@/usr/bin/bazzite-steam-runtime -silent %U@g' /etc/xdg/autostart/steam.desktop && \
+    sed -i 's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' /etc/xdg/autostart/steam.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     sed -i 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/g' /etc/systemd/logind.conf && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \

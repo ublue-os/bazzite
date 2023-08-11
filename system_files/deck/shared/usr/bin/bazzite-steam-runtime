@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-if [[ "$XDG_SESSION_TYPE" = "wayland" ]]; then
-  env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam-runtime "$*"
-else
-  /usr/bin/steam-runtime "$*"
-fi
