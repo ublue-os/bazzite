@@ -1,0 +1,10 @@
+[Unit]
+Description=Enables autologin to gamepadui-with-qam-session
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/gamepadui-autologin
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Enables autologin to opengamepadui-session
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/opengamepadui-autologin
+
+[Install]
+WantedBy=multi-user.target

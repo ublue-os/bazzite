@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+USER=$(id -nu 1000)
+
+# SteamOS SDDM config
+SDDM_CONF='/etc/sddm.conf.d/steamos.conf'
+AUTOLOGIN_CONF='/etc/sddm.conf.d/zz-steamos-autologin.conf'
+
+# Avoid autologin conflict
+if [[ -f ${AUTOLOGIN_CONF} ]]; then
+  rm -f ${AUTOLOGIN_CONF}
+fi
+
+# Configure autologin
+sed -i 's/.*Session=.*/Session=opengamepadui-session.desktop/g' ${SDDM_CONF}
+sed -i 's/.*User=.*/User='${USER}'/g' ${SDDM_CONF}
