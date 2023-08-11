@@ -14,7 +14,7 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
     mkdir -p $HOME/Desktop/
     cp /usr/share/applications/steam.desktop ~/Desktop/steam.desktop
     cp /etc/skel.d/Desktop/Return.desktop ~/Desktop/Return.desktop
-    cp /usr/share/applications/lutris.desktop ~/Desktop/lutris.desktop
+    cp /usr/share/applications/net.lutris.Lutris.desktop ~/Desktop/net.lutris.Lutris.desktop
     cp /usr/share/applications/yafti.desktop ~/Desktop/yafti.desktop
   fi
 else

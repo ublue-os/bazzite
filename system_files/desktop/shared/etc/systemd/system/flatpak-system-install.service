@@ -2,8 +2,7 @@
 Description=Install System Flatpak on boot
 Documentation=https://github.com/ublue-os/endlish-oesque/issues/10
 Wants=network-online.target
-After=network-online.target
-After=bazzite-hardware-setup.service
+After=network-online.target bazzite-hardware-setup.service
 
 [Service]
 Type=oneshot
