@@ -98,8 +98,16 @@ case "$session" in
     fi
     create_sentinel=1
   ;;
-  gamescope)
+  gamescope|gamescope-session)
     session_launcher="gamescope-session.desktop"
+    create_sentinel=1
+  ;;
+  opengamepadui|opengamepadui-session)
+    session_launcher="opengamepadui-session.desktop"
+    create_sentinel=1
+  ;;
+  gamepadui-with-qam|gamepadui-with-qam-session)
+    session_launcher="gamepadui-with-qam-session.desktop"
     create_sentinel=1
   ;;
   *)
