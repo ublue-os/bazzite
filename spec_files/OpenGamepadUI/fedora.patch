@@ -1,0 +1,10 @@
+diff --git a/usr/share/opengamepadui/scripts/system_profiler.py b/usr/share/opengamepadui/scripts/system_profiler.py
+index d2ee383..f60ce70 100755
+--- a/usr/share/opengamepadui/scripts/system_profiler.py
++++ b/usr/share/opengamepadui/scripts/system_profiler.py
+@@ -1,4 +1,4 @@
+-#!/sbin/python3
++#!/usr/bin/python3
+ # System Profiler
+ # Copyright 2022-2023 Derek J. Clark <derekjohn dot clark at gmail dot com>
+ # Produces an output file that caputres relevant system data that can be uploaded

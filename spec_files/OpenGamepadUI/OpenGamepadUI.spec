@@ -7,12 +7,14 @@ URL:            https://github.com/ublue-os/bazzite
 
 License:        GPL-3.0-only
 Source:         https://github.com/ShadowBlip/OpenGamepadUI/archive/refs/heads/main.tar.gz
-BuildArch:	x86_64
+Patch0:         fedora.patch
+BuildArch:      x86_64
+
+Requires:       gamescope
+Requires:       python3
 
 BuildRequires:  jq
 BuildRequires:  wget
-Requires:       gamescope
-
 BuildRequires:  systemd-rpm-macros
 
 %define debug_package %{nil}
@@ -24,6 +26,7 @@ A free and open source game launcher and overlay written using the Godot Game En
 rm -rf main.tar.gz
 wget $(curl -s https://api.github.com/repos/ShadowBlip/OpenGamepadUI/releases/latest | jq -r ".assets[] | select(.name | test(\"opengamepadui.tar.gz\")) | .browser_download_url")
 tar xvfz opengamepadui.tar.gz --strip-components 1
+%patch0 -p1
 rm -rf opengamepadui.tar.gz
 
 %install
