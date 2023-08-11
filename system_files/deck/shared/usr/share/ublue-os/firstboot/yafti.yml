@@ -48,11 +48,6 @@ screens:
           default: false
           packages:
           - Retrieve EmuDeck: just --unstable get-emudeck
-        Gamescope Autologin:
-          description: Autologin to Gamescope Session
-          default: true
-          packages:
-          - Enable Gamescope Autologin: just --unstable enable-gamescope-autologin
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
@@ -85,6 +80,17 @@ screens:
           default: false
           packages:
           - Switch SteamOS-BTRFS config to EXT4: sudo -A just --unstable switch-to-ext4
+  gamepadui:
+    source: yafti.screen.title
+    values:
+      title: "Select a gamepad UI"
+      links:
+      - "OpenGamepadUI Session":
+          run: just --unstable enable-opengamepadui
+      - "Gamescope Session (Steam Deck UI)":
+          run: just --unstable enable-gamescope
+      description: |
+        Select a gamepad UI to start to.
   applications:
     source: yafti.screen.package
     values:

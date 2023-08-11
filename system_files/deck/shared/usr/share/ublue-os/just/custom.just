@@ -1,17 +1,45 @@
-enable-gamescope-autologin:
+enable-gamescope:
   #!/usr/bin/env bash
   source /etc/default/bazzite
+  systemctl is-active --quiet gamepadui-autologin && systemctl disable --now gamepadui-autologin
+  systemctl is-active --quiet opengamepadui-autologin && systemctl disable --now opengamepadui-autologin
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    systemctl disable --now gnome-autologin
+    systemctl is-active --quiet gnome-autologin && systemctl disable --now gnome-autologin
   elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-    systemctl disable --now plasma-autologin
+    systemctl is-active --quiet plasma-autologin && systemctl disable --now plasma-autologin
   fi
   systemctl enable --now gamescope-autologin
+
+enable-gamepadui:
+  #!/usr/bin/env bash
+  source /etc/default/bazzite
+  systemctl is-active --quiet gamescope-autologin && systemctl disable --now gamescope-autologin
+  systemctl is-active --quiet opengamepadui-autologin && systemctl disable --now opengamepadui-autologin
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+    systemctl is-active --quiet gnome-autologin && systemctl disable --now gnome-autologin
+  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+    systemctl is-active --quiet plasma-autologin && systemctl disable --now plasma-autologin
+  fi
+  systemctl enable --now gamepadui-autologin
+
+enable-opengamepadui:
+  #!/usr/bin/env bash
+  source /etc/default/bazzite
+  systemctl is-active --quiet gamescope-autologin && systemctl disable --now gamescope-autologin
+  systemctl is-active --quiet gamepadui-autologin && systemctl disable --now gamepadui-autologin
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+    systemctl is-active --quiet gnome-autologin && systemctl disable --now gnome-autologin
+  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+    systemctl is-active --quiet plasma-autologin && systemctl disable --now plasma-autologin
+  fi
+  systemctl enable --now opengamepadui-autologin
 
 enable-desktop-autologin:
   #!/usr/bin/env bash
   source /etc/default/bazzite
-  systemctl disable --now gamescope-autologin
+  systemctl is-active --quiet gamescope-autologin && systemctl disable --now gamescope-autologin
+  systemctl is-active --quiet gamepadui-autologin && systemctl disable --now gamepadui-autologin
+  systemctl is-active --quiet opengamepadui-autologin && systemctl disable --now opengamepadui-autologin
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     systemctl enable --now gnome-autologin
   elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
