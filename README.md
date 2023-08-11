@@ -29,9 +29,9 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) preinstalled and enabled. <sub><sup>(Available but default-disabled on the Deck variant)</sup></sub>
 - Helpful first-start installer provides an easy way to install numerous applications and tweaks, including installing [CoreCtrl](https://gitlab.com/corectrl/corectrl) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
-- [OpenGamepadUI](https://github.com/ShadowBlip/OpenGamepadUI) built in as an optional alternative to Valve's Game Mode.
 - [Nix](https://nixos.org/) package manager optionally available.
 - [Waydroid](https://waydro.id/) preinstalled for running Android apps. Future releases will offer to set this up for you. <sub><sup>(Not available on Nvidia builds)</sup></sub>
+- [OpenGamepadUI](https://github.com/ShadowBlip/OpenGamepadUI) built in as an optional alternative to Valve's Game Mode. <sub><sup>(Not available on Nvidia builds)</sup></sub>
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
 - [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
 - Out of the box support for [Wooting](https://wooting.io/) keyboards.
