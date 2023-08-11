@@ -1,7 +1,6 @@
 [Unit]
 Description=Configure Bazzite for current user
 Requires=xdg-desktop-autostart.target
-Before=plugin_loader.service
 ConditionPathExists=!%h/.bazzite-configured
 
 [Service]
