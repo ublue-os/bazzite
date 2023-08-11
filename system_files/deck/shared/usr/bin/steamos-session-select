@@ -72,7 +72,7 @@ case "$session" in
     if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
       session_launcher="plasma.desktop"
     elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      session_launcher="gnome-session.desktop"
+      session_launcher="gnome-wayland.desktop"
     fi
   ;;
   plasma-x11-persistent)
@@ -91,7 +91,7 @@ case "$session" in
       fi
     elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
       if ${DESKTOP_WAYLAND}; then
-        session_launcher="gnome-session-oneshot.desktop"
+        session_launcher="gnome-wayland-oneshot.desktop"
       else
         session_launcher="gnome-xorg-oneshot.desktop"
       fi

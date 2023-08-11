@@ -13,7 +13,7 @@ fi
 
 # Configure autologin
 if ${DESKTOP_WAYLAND}; then
-  sed -i 's/.*Session=.*/Session=gnome-session.desktop/g' ${SDDM_CONF}
+  sed -i 's/.*Session=.*/Session=gnome-wayland.desktop/g' ${SDDM_CONF}
 else
   sed -i 's/.*Session=.*/Session=gnome-xorg.desktop/g' ${SDDM_CONF}
 fi
