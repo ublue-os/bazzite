@@ -4,6 +4,7 @@ set -e
 
 die() { echo >&2 "!! $*"; exit 1; }
 
+source /etc/default/bazzite
 source /etc/default/desktop-wayland
 
 # File this script will modify, in addition to (potentially) the per-user sentinel file
@@ -55,22 +56,45 @@ if [[ -z $SENTINEL_CREATED ]]; then
     cat "$SENTINEL_FILE"
   )
 
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+    # clear steam game desktop shortcut clutter
+    DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
+    grep --files-with-matches "Exec=steam steam://rungameid/" ${DATA_HOME}/applications/* | tr '\n' '\0' | xargs -0 -I {} rm {} || true
+  fi
+
   # If we were executed as a session user and then re-execute as root below, we don't want to set root's sentinel too
   export SENTINEL_CREATED=1
 fi
 
+# We use "plasma" as "desktop" to hook up to SteamOS's scripts
 case "$session" in
   plasma-wayland-persistent)
-    session_launcher="plasma.desktop"
+    if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+      session_launcher="plasma.desktop"
+    elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+      session_launcher="gnome-session.desktop"
+    fi
   ;;
   plasma-x11-persistent)
-    session_launcher="plasmax11.desktop"
+    if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+      session_launcher="plasmax11.desktop"
+    elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+      session_launcher="gnome-xorg.desktop"
+    fi
   ;;
-  plasma)
-    if ${DESKTOP_WAYLAND}; then
-      session_launcher="plasma-steamos-wayland-oneshot.desktop"
-    else
-      session_launcher="plasma-steamos-oneshot.desktop"
+  desktop|plasma)
+    if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+      if ${DESKTOP_WAYLAND}; then
+        session_launcher="plasma-steamos-wayland-oneshot.desktop"
+      else
+        session_launcher="plasma-steamos-oneshot.desktop"
+      fi
+    elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+      if ${DESKTOP_WAYLAND}; then
+        session_launcher="gnome-session-oneshot.desktop"
+      else
+        session_launcher="gnome-xorg-oneshot.desktop"
+      fi
     fi
     create_sentinel=1
   ;;
