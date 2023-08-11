@@ -10,12 +10,11 @@ echo "Current kargs: $KARGS"
 # FSTAB CONFIGURATION
 if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
   echo "Applying fstab param adjustments"
-  sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,discard=async,compress-force=zstd:1,space_cache=v2/g' /etc/fstab
   if grep -q '64GB' <<< $(lsblk -o MODEL); then
-    echo "Increasing compression for detected 64GB eMMC"
-    sed -i 's/compress-force=zstd:1/compress-force=zstd:3/g' /etc/fstab
-    echo "Disabling commit and async discard changes for detected 64GB eMMC"
-    sed -i 's/commit=120,discard=async//g' /etc/fstab
+    echo "64GB eMMC detected"
+    sed -i 's/compress=zstd:1/noatime,lazytime,compress-force=zstd:3,space_cache=v2/g' /etc/fstab
+  else
+    sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,discard=async,compress-force=zstd:1,space_cache=v2/g' /etc/fstab
   fi
 else
   echo "No fstab param adjustments needed"
