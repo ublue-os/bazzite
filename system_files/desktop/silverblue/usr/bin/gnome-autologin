@@ -11,7 +11,7 @@ GDM_CONF='/etc/gdm/custom.conf'
 sed -i 's/.*AutomaticLoginEnable=.*/AutomaticLoginEnable=true/g' ${GDM_CONF}
 sed -i 's/.*AutomaticLogin=.*/AutomaticLogin='${USER}'/g' ${GDM_CONF}
 if ${DESKTOP_WAYLAND}; then
-  sed -i 's/.*DefaultSession=.*/DefaultSession=gnome-session/g' ${GDM_CONF}
+  sed -i 's/.*DefaultSession=.*/DefaultSession=gnome-wayland/g' ${GDM_CONF}
 else
   sed -i 's/.*DefaultSession=.*/DefaultSession=gnome-xorg/g' ${GDM_CONF}
 fi
