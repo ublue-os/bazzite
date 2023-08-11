@@ -12,7 +12,6 @@ BuildArch:	x86_64
 BuildRequires:  jq
 BuildRequires:  wget
 Requires:       gamescope
-Requires:       python3
 
 BuildRequires:  systemd-rpm-macros
 
