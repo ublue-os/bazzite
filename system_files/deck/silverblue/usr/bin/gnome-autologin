@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source /etc/default/desktop-wayland
+
 USER=$(id -nu 1000)
 
 # SteamOS SDDM config
@@ -10,5 +12,9 @@ if [ ! -f ${SDDM_CONF} ]; then
 fi
 
 # Configure autologin
-sed -i 's/.*Session=.*/Session=gnome-xorg.desktop/g' ${SDDM_CONF}
+if ${DESKTOP_WAYLAND}; then
+  sed -i 's/.*Session=.*/Session=gnome-session.desktop/g' ${SDDM_CONF}
+else
+  sed -i 's/.*Session=.*/Session=gnome-xorg.desktop/g' ${SDDM_CONF}
+fi
 sed -i 's/.*User=.*/User='${USER}'/g' ${SDDM_CONF}
