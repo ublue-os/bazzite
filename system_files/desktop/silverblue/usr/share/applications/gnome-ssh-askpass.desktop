@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=GNOME ssh-askpass
+GenericName=ssh-askpass
+Type=Application
+Exec=/usr/libexec/openssh/gnome-ssh-askpass
+Terminal=false
+NoDisplay=true
