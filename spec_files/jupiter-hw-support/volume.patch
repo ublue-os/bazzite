@@ -1,0 +1,30 @@
+diff --git a/usr/share/alsa/ucm2/conf.d/acp5x/HiFi-upstream.conf b/usr/share/alsa/ucm2/conf.d/acp5x/HiFi-upstream.conf
+index de8dcc5..b457109 100644
+--- a/usr/share/alsa/ucm2/conf.d/acp5x/HiFi-upstream.conf
++++ b/usr/share/alsa/ucm2/conf.d/acp5x/HiFi-upstream.conf
+@@ -13,8 +13,8 @@ SectionVerb {
+ 		cset "name='BIQ Coefficients' 0x03,0x5a,0x00,0x06,0xfc,0xac,0x00,0x00,0xfe,0x58,0x00,0x00,0x03,0x50,0x00,0x06,0xfe,0x58,0x00,0x08"
+ 		cset "name='Left Analog PCM Volume' 17"
+ 		cset "name='Right Analog PCM Volume' 17"
+-		cset "name='Left Digital PCM Volume' 817"
+-		cset "name='Right Digital PCM Volume' 817"
++		cset "name='Left Digital PCM Volume' 913"
++		cset "name='Right Digital PCM Volume' 913"
+ 		cset "name='Left PCM Source' DSP"
+ 		cset "name='Right PCM Source' DSP"
+ 	]
+diff --git a/usr/share/alsa/ucm2/conf.d/acp5x/HiFi.conf b/usr/share/alsa/ucm2/conf.d/acp5x/HiFi.conf
+index 9266050..14d66f7 100644
+--- a/usr/share/alsa/ucm2/conf.d/acp5x/HiFi.conf
++++ b/usr/share/alsa/ucm2/conf.d/acp5x/HiFi.conf
+@@ -18,8 +18,8 @@ SectionVerb {
+ 		cset "name='BIQ Coefficients' 0x03,0x5a,0x00,0x06,0xfc,0xac,0x00,0x00,0xfe,0x58,0x00,0x00,0x03,0x50,0x00,0x06,0xfe,0x58,0x00,0x08" 
+ 		cset "name='Left AMP PCM Gain' 17"
+ 		cset "name='Right AMP PCM Gain' 17"
+-		cset "name='Left Digital PCM Volume' 817"
+-		cset "name='Right Digital PCM Volume' 817"
++		cset "name='Left Digital PCM Volume' 913"
++		cset "name='Right Digital PCM Volume' 913"
+ 		cset "name='Left ASPRX1 Slot Position' 0"
+ 		cset "name='Left ASPRX2 Slot Position' 1"
+ 		cset "name='Left DSP RX1 Source' ASPRX1"
