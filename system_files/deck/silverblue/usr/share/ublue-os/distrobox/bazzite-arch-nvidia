@@ -6,4 +6,5 @@ pull=true
 root=false
 replace=false
 start_now=true
+volume=/usr/lib/extest/libextest.so:/usr/lib/extest/libextest.so
 init_hooks=pacman -Rnsdd xdg-desktop-portal-kde --noconfirm && pacman -S xdg-desktop-portal-gnome --noconfirm && runuser -u $USER -- paru -S adw-gtk3 --noconfirm

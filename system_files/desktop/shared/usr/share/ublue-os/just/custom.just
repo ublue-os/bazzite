@@ -2,7 +2,6 @@ install-bazzite-arch:
   #!/usr/bin/env bash
   source /etc/default/bazzite
 
-  mkdir -p ~/.steam
   if [[ ${IMAGE_FLAVOR} == 'nvidia' ]]; then
     echo 'Installing Bazzite Arch (Nvidia)...'
     distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch-nvidia
@@ -13,7 +12,7 @@ install-bazzite-arch:
   distrobox-enter -n bazzite-arch -- '  /usr/bin/bazzite-steam-runtime --silent &>/dev/null &'
   cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop
   sed -i 's@/usr/bin/bazzite-steam-runtime  %U@/usr/bin/bazzite-steam-runtime -silent  %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
-  mv ~/.steam/steamcmd ~/.steam/steamcmd.sh
+  distrobox-enter -n bazzite-arch -- '  mkdir -p ~/.steam && distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam && mv ~/.steam/steamcmd ~/.steam/steamcmd.sh'
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     echo 'Creating desktop shortcuts...'
     cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop/bazzite-arch-steam.desktop
