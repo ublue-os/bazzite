@@ -1,0 +1,122 @@
+diff --git a/usr/share/alsa/ucm2/conf.d/acp5x/HiFi-upstream.conf b/usr/share/alsa/ucm2/conf.d/acp5x/HiFi-upstream.conf
+index de8dcc5..46ebf51 100644
+--- a/usr/share/alsa/ucm2/conf.d/acp5x/HiFi-upstream.conf
++++ b/usr/share/alsa/ucm2/conf.d/acp5x/HiFi-upstream.conf
+@@ -3,7 +3,7 @@ SectionVerb {
+ 		TQ "HiFi"
+ 	}
+ 	EnableSequence [
+-		exec "echo Main Verb Config EnableSequence"
++		#exec "echo Main Verb Config EnableSequence"
+ 		cset "name='Left DSP1 Preload Switch' 0"
+ 		cset "name='Right DSP1 Preload Switch' 0"
+ 		cset "name='Digital Playback Volume' 207"
+@@ -13,8 +13,8 @@ SectionVerb {
+ 		cset "name='BIQ Coefficients' 0x03,0x5a,0x00,0x06,0xfc,0xac,0x00,0x00,0xfe,0x58,0x00,0x00,0x03,0x50,0x00,0x06,0xfe,0x58,0x00,0x08"
+ 		cset "name='Left Analog PCM Volume' 17"
+ 		cset "name='Right Analog PCM Volume' 17"
+-		cset "name='Left Digital PCM Volume' 817"
+-		cset "name='Right Digital PCM Volume' 817"
++		cset "name='Left Digital PCM Volume' 913"
++		cset "name='Right Digital PCM Volume' 913"
+ 		cset "name='Left PCM Source' DSP"
+ 		cset "name='Right PCM Source' DSP"
+ 	]
+@@ -31,11 +31,11 @@ SectionDevice."Headphones".0 {
+ 	ConflictingDevice [
+ 	]
+ 	EnableSequence [
+-		exec "echo Headphones EnableSequence"
++		#exec "echo Headphones EnableSequence"
+ 		cset "name='Headphone Switch' on"
+ 	]
+ 	DisableSequence [
+-		exec "echo Headphones DisableSequence"
++		#exec "echo Headphones DisableSequence"
+ 		cset "name='Headphone Switch' off"
+ 	]
+ }
+@@ -50,7 +50,7 @@ SectionDevice."Speaker".0 {
+ 	ConflictingDevice [
+ 	]
+ 	EnableSequence [
+-		exec "echo Speaker EnableSequence"
++		#exec "echo Speaker EnableSequence"
+ 		cset "name='Left DSP RX1 Source' ASPRX1"
+ 		cset "name='Right DSP RX1 Source' ASPRX2"
+ 		cset "name='Left DSP RX2 Source' ASPRX1"
+@@ -59,7 +59,7 @@ SectionDevice."Speaker".0 {
+ 		cset "name='Right DSP1 Preload Switch' 1"
+ 	]
+ 	DisableSequence [
+-		exec "echo Speaker DisableSequence"
++		#exec "echo Speaker DisableSequence"
+ 		cset "name='Left DSP RX1 Source' Zero"
+ 		cset "name='Right DSP RX1 Source' Zero"
+ 		cset "name='Left DSP RX2 Source' Zero"
+diff --git a/usr/share/alsa/ucm2/conf.d/acp5x/HiFi.conf b/usr/share/alsa/ucm2/conf.d/acp5x/HiFi.conf
+index 9266050..a99fddf 100644
+--- a/usr/share/alsa/ucm2/conf.d/acp5x/HiFi.conf
++++ b/usr/share/alsa/ucm2/conf.d/acp5x/HiFi.conf
+@@ -5,7 +5,7 @@ SectionVerb {
+ 	EnableSequence [
+ 		cdev "hw:acp5x"
+ 
+-		exec "echo Main Verb Config EnableSequence"
++		#exec "echo Main Verb Config EnableSequence"
+ 
+ 		cset "name='Left DSP Booted' 0"
+ 		cset "name='Right DSP Booted' 0"
+@@ -18,8 +18,8 @@ SectionVerb {
+ 		cset "name='BIQ Coefficients' 0x03,0x5a,0x00,0x06,0xfc,0xac,0x00,0x00,0xfe,0x58,0x00,0x00,0x03,0x50,0x00,0x06,0xfe,0x58,0x00,0x08" 
+ 		cset "name='Left AMP PCM Gain' 17"
+ 		cset "name='Right AMP PCM Gain' 17"
+-		cset "name='Left Digital PCM Volume' 817"
+-		cset "name='Right Digital PCM Volume' 817"
++		cset "name='Left Digital PCM Volume' 913"
++		cset "name='Right Digital PCM Volume' 913"
+ 		cset "name='Left ASPRX1 Slot Position' 0"
+ 		cset "name='Left ASPRX2 Slot Position' 1"
+ 		cset "name='Left DSP RX1 Source' ASPRX1"
+@@ -36,7 +36,7 @@ SectionVerb {
+ 	DisableSequence [
+ 		cdev "hw:acp5x"
+ 
+-		exec "echo Main Verb Config DisableSequence"
++		#exec "echo Main Verb Config DisableSequence"
+ 		cset "name='Left DSP Booted' 0"
+ 		cset "name='Right DSP Booted' 0"
+ 		cset "name='Left DSP1 Preload Switch' 0"
+@@ -56,12 +56,12 @@ SectionDevice."Headphones".0 {
+ 	]
+ 	EnableSequence [
+ 		cdev "hw:acp5x"
+-		exec "echo Headphones EnableSequence"
++		#exec "echo Headphones EnableSequence"
+ 		cset "name='Headphone Switch' on"		
+ 	]
+ 	DisableSequence [
+ 		cdev "hw:acp5x"
+-		exec "echo Headphones DisableSequence"
++		#exec "echo Headphones DisableSequence"
+ 		cset "name='Headphone Switch' off"		
+ 	]
+ }
+@@ -77,7 +77,7 @@ SectionDevice."Speaker".0 {
+ 	]
+ 	EnableSequence [
+ 		cdev "hw:acp5x"
+-		exec "echo Speaker EnableSequence"
++		#exec "echo Speaker EnableSequence"
+ 		cset "name='Left DSP1 Preload Switch' 1"
+ 		cset "name='Right DSP1 Preload Switch' 1"
+ 		cset "name='Left AMP Enable Switch' on"
+@@ -87,7 +87,7 @@ SectionDevice."Speaker".0 {
+ 	]
+ 	DisableSequence [
+ 		cdev "hw:acp5x"
+-		exec "echo Speaker DisableSequence"
++		#exec "echo Speaker DisableSequence"
+ 		cset "name='Left AMP Enable Switch' off"
+ 		cset "name='Right AMP Enable Switch' off"
+ 	]

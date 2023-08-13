@@ -15,7 +15,7 @@ Patch4:         user.patch
 Patch5:         bazzite-btrfs.patch
 Patch6:         systemd-run.patch
 Patch7:         priv-write.patch
-Patch8:         volume.patch
+Patch8:         audio.patch
 
 Requires:       python3
 Requires:       python3-evdev
@@ -36,8 +36,9 @@ BuildRequires:  systemd-rpm-macros
 %description
 SteamOS 3.0 Steam Deck Hardware Support Package
 
-# Disable debug packages
+# Disable debug packages and build ID links
 %define debug_package %{nil}
+%define _build_id_links none
 
 %prep
 %autosetup -p1 -n %{packagename}-master
