@@ -10,7 +10,7 @@ install-bazzite-arch:
     echo 'Installing Bazzite Arch...'
     distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch
   fi
-  distrobox-enter -n bazzite-arch -- '  /usr/bin/bazzite-steam-runtime --silent &'
+  distrobox-enter -n bazzite-arch -- '  /usr/bin/bazzite-steam-runtime --silent &>/dev/null'
   cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop
   sed -i 's@/usr/bin/bazzite-steam-runtime  %U@/usr/bin/bazzite-steam-runtime -silent  %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
   mv ~/.steam/steamcmd ~/.steam/steamcmd.sh
