@@ -33,7 +33,7 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
   fi
 
   if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
-    if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" = "31664740" ]]; then
+    if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
       echo "32GB Steam Deck detected"
       NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.gttsize=16256"
     else

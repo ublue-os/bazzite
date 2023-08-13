@@ -1,6 +1,8 @@
 install-bazzite-arch:
   #!/usr/bin/env bash
   source /etc/default/bazzite
+
+  mkdir -p ~/.steam
   if [[ ${IMAGE_FLAVOR} == 'nvidia' ]]; then
     echo 'Installing Bazzite Arch (Nvidia)...'
     distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch-nvidia
@@ -9,15 +11,11 @@ install-bazzite-arch:
     distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch
   fi
   distrobox-enter -n bazzite-arch -- '  /usr/bin/bazzite-steam-runtime --silent &'
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
   cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-silent.desktop
   sed -i 's@/usr/bin/bazzite-steam-runtime  %U@/usr/bin/bazzite-steam-runtime -silent  %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
-  mkdir -p ~/.steam
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam'
   mv ~/.steam/steamcmd ~/.steam/steamcmd.sh
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+    echo 'Creating desktop shortcuts...'
     cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop/bazzite-arch-steam.desktop
     sed -i 's@  (on bazzite-arch)@@g' ~/Desktop/bazzite-arch-steam.desktop
     cp ~/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop
