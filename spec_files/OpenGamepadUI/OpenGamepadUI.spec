@@ -20,6 +20,7 @@ BuildRequires:  systemd-rpm-macros
 A free and open source game launcher and overlay written using the Godot Game Engine 4 designed with a gamepad native experience in mind
 
 %define debug_package %{nil}
+%define _build_id_links none
 
 %prep
 %autosetup -p1 -n opengamepadui
