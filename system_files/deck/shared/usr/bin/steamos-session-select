@@ -11,6 +11,7 @@ source /etc/default/desktop-wayland
 CONF_FILE="/etc/sddm.conf.d/zz-steamos-autologin.conf"
 
 SENTINEL_FILE="steamos-session-select"
+RETURN_SESSION_FILE="steamos-session-return"
 
 # For sanity this shipped file must be present, to ensure we're still on a normal-looking steamos setup.
 CHECK_FILE="/etc/sddm.conf.d/steamos.conf"
@@ -54,6 +55,15 @@ if [[ -z $SENTINEL_CREATED ]]; then
       fi
     fi
     cat "$SENTINEL_FILE"
+  )
+
+  return_session=$(grep Session $CONF_FILE | cut -d = -f 2)
+  return_session=$(
+    cd "$HOME"
+    mkdir -p "$config_dir"
+    cd "$config_dir"
+    echo "$return_session" > "$RETURN_SESSION_FILE"
+    cat "$RETURN_SESSION_FILE"
   )
 
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
