@@ -1,32 +1,47 @@
 Name:           OpenGamepadUI
-Version:        0.19.7
+Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
 Summary:        A free and open source game launcher and overlay written using the Godot Game Engine 4 designed with a gamepad native experience in mind
 License:        GPL-3.0-only
 URL:            https://github.com/ShadowBlip/OpenGamepadUI
 
-Source:         https://github.com/ShadowBlip/OpenGamepadUI/releases/download/v%{version}/opengamepadui.tar.gz
+Source:         https://github.com/KyleGospo/OpenGamepadUI/archive/refs/heads/main.tar.gz
 BuildArch:      x86_64
-
-Patch0:         fedora.patch
 
 Requires:       gamescope
 Requires:       python3
+Requires:       firejail
 
-BuildRequires:  make
 BuildRequires:  systemd-rpm-macros
+BuildRequires:  godot
+BuildRequires:  pkgconf
+BuildRequires:  gcc
+BuildRequires:  libXcursor-devel
+BuildRequires:  libXinerama-devel
+BuildRequires:  libXi-devel
+BuildRequires:  libXrandr-devel
+BuildRequires:  mesa-libGLU-devel
+BuildRequires:  libglvnd-devel
+BuildRequires:  alsa-lib-devel
+BuildRequires:  make
+BuildRequires:  unzip
+BuildRequires:  wget
+BuildRequires:  git
 
 %description
 A free and open source game launcher and overlay written using the Godot Game Engine 4 designed with a gamepad native experience in mind
 
 %define debug_package %{nil}
-%define _build_id_links none
 
 %prep
-%autosetup -p1 -n opengamepadui
+%autosetup -p1 -n %{name}-main
+
+%build
+%configure
+%make_build
 
 %install
-make install PREFIX=%{buildroot}%{_prefix} INSTALL_PREFIX=%{_prefix}
+%make_install PREFIX=%{buildroot}%{_prefix} INSTALL_PREFIX=%{_prefix}
 
 %files
 %{_bindir}/opengamepadui

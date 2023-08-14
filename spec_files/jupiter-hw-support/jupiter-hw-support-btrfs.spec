@@ -35,7 +35,7 @@ BuildRequires:  systemd-rpm-macros
 %description
 SteamOS 3.0 Steam Deck Hardware Support Package
 
-# Disable debug packages and build ID links
+# Disable debug packages
 %define debug_package %{nil}
 
 %prep
