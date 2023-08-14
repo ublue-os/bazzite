@@ -56,6 +56,7 @@ RUN rpm-ostree install \
     libadwaita \
     distrobox-git \
     duperemove \
+    fuse-libs.i686 \
     rmlint \
     compsize \
     ddccontrol \
