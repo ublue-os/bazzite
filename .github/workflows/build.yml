@@ -85,7 +85,7 @@ jobs:
           BUILD_TAGS=()
           # Have tags for tracking builds during pull request
           SHA_SHORT="${GITHUB_SHA::7}"
-          COMMIT_TAGS+=("pr-${{ github.event.number }}-${MAJOR_VERSION}")
+          COMMIT_TAGS+=("pr-${{ github.event.pull_request.number }}-${MAJOR_VERSION}")
           COMMIT_TAGS+=("${SHA_SHORT}-${MAJOR_VERSION}")
           if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
              [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
