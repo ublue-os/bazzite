@@ -12,7 +12,7 @@ if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
   echo "Applying fstab param adjustments"
   if grep -q '64GB' <<< $(lsblk -o MODEL); then
     echo "64GB eMMC detected"
-    sed -i 's/compress=zstd:1/noatime,lazytime,commit=5,discard=sync,compress-force=zstd:3,space_cache=v2/g' /etc/fstab
+    sed -i 's/compress=zstd:1/noatime,lazytime,discard=sync,compress-force=zstd:3,space_cache=v2/g' /etc/fstab
   else
     sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,discard=async,compress-force=zstd:1,space_cache=v2/g' /etc/fstab
   fi
@@ -34,7 +34,7 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
 
   if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
     if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
-      echo "32GB Steam Deck detected"
+      echo "32GB RAM Steam Deck detected"
       NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.gttsize=16256"
     else
       NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.gttsize=8128"
