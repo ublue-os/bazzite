@@ -15,7 +15,6 @@ Patch4:         user.patch
 Patch5:         bazzite-btrfs.patch
 Patch6:         systemd-run.patch
 Patch7:         priv-write.patch
-Patch8:         audio.patch
 
 Requires:       python3
 Requires:       python3-evdev
@@ -38,7 +37,6 @@ SteamOS 3.0 Steam Deck Hardware Support Package
 
 # Disable debug packages and build ID links
 %define debug_package %{nil}
-%define _build_id_links none
 
 %prep
 %autosetup -p1 -n %{packagename}-master
@@ -75,6 +73,7 @@ rm %{buildroot}%{_datadir}/jupiter_bios_updater/h2offt-g
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/H2OFFTx64-G.sh
 rm -rf %{buildroot}%{_datadir}/jupiter_bios_updater/driver
 rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
+rm -rf %{buildroot}%{_datadir}/alsa
 
 # Do post-installation
 %post
@@ -114,7 +113,6 @@ rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 %{_prefix}/lib/hwsupport/*
 %{_prefix}/lib/systemd/system/*
 %{_prefix}/lib/udev/rules.d/*
-%{_datadir}/alsa/ucm2/conf.d/acp5x/*
 %{_datadir}/icons/steam/*
 %{_datadir}/steamos/steamos.png
 %{_datadir}/jupiter_bios/*
