@@ -1,6 +1,6 @@
 [Unit]
 Description=Enables autologin to opengamepadui-session
-Before=display-manager.service
+Before=systemd-user-sessions.service
 
 [Service]
 Type=oneshot
