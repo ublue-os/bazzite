@@ -279,8 +279,6 @@ RUN rpm-ostree install \
 
 # Cleanup & Finalize
 RUN rm /usr/share/applications/winetricks.desktop && \
-    rm /usr/share/alsa/ucm2/conf.d/acp5x/Valve-Jupiter-1.conf && \
-    ln -s /usr/share/alsa/ucm2/conf.d/acp5x/acp5x.conf /usr/share/alsa/ucm2/conf.d/acp5x/Valve-Jupiter-1.conf && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
