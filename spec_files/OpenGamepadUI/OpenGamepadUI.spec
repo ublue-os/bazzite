@@ -36,10 +36,6 @@ A free and open source game launcher and overlay written using the Godot Game En
 %prep
 %autosetup -p1 -n %{name}-main
 
-%build
-%configure
-%make_build
-
 %install
 %make_install PREFIX=%{buildroot}%{_prefix} INSTALL_PREFIX=%{_prefix}
 
