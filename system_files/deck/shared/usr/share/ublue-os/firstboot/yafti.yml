@@ -134,7 +134,7 @@ screens:
           - RPCS3: net.rpcs3.RPCS3
           - Ryujinx: org.ryujinx.Ryujinx
           - ScummVM: org.scummvm.ScummVM
-          - Snes9x: om.snes9x.Snes9x
+          - Snes9x: com.snes9x.Snes9x
           - Stella: io.github.stella_emu.Stella
           - xemu: app.xemu.xemu
           - yuzu: org.yuzu_emu.yuzu
@@ -143,7 +143,7 @@ screens:
           default: false
           packages:
           - OBS Studio: com.obsproject.Studio
-          - OBSVkCapture Layer: org.freedesktop.Platform.VulkanLayer.OBSVkCapture
+          - OBSVkCapture Layer: org.freedesktop.Platform.VulkanLayer.OBSVkCapture/22.08
           - OBSVkCapture Plugin: com.obsproject.Studio.Plugin.OBSVkCapture
           - Gstreamer for OBS: com.obsproject.Studio.Plugin.Gstreamer
           - Gstreamer VAAPI for OBS: com.obsproject.Studio.Plugin.GStreamerVaapi
