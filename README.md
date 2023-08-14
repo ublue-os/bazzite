@@ -127,6 +127,7 @@ Bazzite ships with the latest Linux kernel and SELinux enabled by default with f
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
 ![Steam Game Mode](/repo_content/gamemode.png?raw=true "Steam Game Mode")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
+![OpenGamepadUI](/repo_content/opengamepadui.png?raw=true "OpenGamepadUI")
 ![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
 ![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
 
