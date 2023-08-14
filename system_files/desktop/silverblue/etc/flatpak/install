@@ -1,6 +1,10 @@
 net.davidotek.pupgui2
 org.freedesktop.Platform.VulkanLayer.MangoHud//22.08
 org.freedesktop.Platform.VulkanLayer.vkBasalt//22.08
+org.freedesktop.Platform.VulkanLayer.OBSVkCapture//22.08
+com.obsproject.Studio.Plugin.OBSVkCapture
+com.obsproject.Studio.Plugin.Gstreamer
+com.obsproject.Studio.Plugin.GStreamerVaapi
 io.github.Foldex.AdwSteamGtk
 com.mattjakeman.ExtensionManager
 org.gtk.Gtk3theme.adw-gtk3

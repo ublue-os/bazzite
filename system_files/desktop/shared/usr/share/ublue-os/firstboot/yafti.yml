@@ -151,10 +151,6 @@ screens:
           default: false
           packages:
           - OBS Studio: com.obsproject.Studio
-          - OBSVkCapture Layer: org.freedesktop.Platform.VulkanLayer.OBSVkCapture/22.08
-          - OBSVkCapture Plugin: com.obsproject.Studio.Plugin.OBSVkCapture
-          - Gstreamer for OBS: com.obsproject.Studio.Plugin.Gstreamer
-          - Gstreamer VAAPI for OBS: com.obsproject.Studio.Plugin.GStreamerVaapi
           - Boatswain for Streamdeck: com.feaneron.Boatswain
         Music:
           description: "Rock and Roll!"
