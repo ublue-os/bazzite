@@ -49,8 +49,8 @@ screens:
           default: true
           packages:
           - Hide GRUB: sudo -A just --unstable hide-grub
-        Memory Tuning:
-          description: Adjust ZRAM and configure deckswap
+        Legacy Memory Configuration (Not recommended):
+          description: Disable ZRAM and enable adjustable swap file, defaults to 1GB.
           default: false
           packages:
           - Deck Swap: just --unstable deckswap-on
