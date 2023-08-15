@@ -42,6 +42,10 @@ else
 
     echo 'Enabling Bazzite tofu menu fork'
     gnome-extensions enable tofumenu@tofu
+
+    echo 'Disabling GNOME keyboard'
+    gsettings set org.gnome.desktop.interface toolkit-accessibility false
+    gnome-extensions enable cariboublocker@git.keringar.xyz
   fi
 fi
 

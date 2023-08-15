@@ -110,6 +110,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-user-theme \
         gnome-shell-extension-gsconnect \
         gnome-shell-extension-system76-scheduler \
+        gnome-shell-extension-caribou-blocker \
         gnome-shell-extension-compiz-windows-effect \
         gnome-shell-extension-just-perfection \
         gnome-shell-extension-blur-my-shell \
