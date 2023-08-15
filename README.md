@@ -44,7 +44,7 @@ Common variant available as `bazzite` and suitable for desktops and HTPCs.
 
 **For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
 
-To rebase an existing ostree system to this image: 
+If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image: 
 
     podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-live --force-replacefiles $(find ~/.local/share/containers -name ublue-os-signing.noarch.rpm 2>/dev/null) && rpm-ostree rebase --uninstall $(rpm -q ublue-os-signing-* --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{Arch}') ostree-image-signed:docker://ghcr.io/ublue-os/bazzite:latest
 
@@ -87,7 +87,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 
 **For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
 
-To rebase an existing ostree system to this image: 
+If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image: 
 
     podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-live --force-replacefiles $(find ~/.local/share/containers -name ublue-os-signing.noarch.rpm 2>/dev/null) && rpm-ostree rebase --uninstall $(rpm -q ublue-os-signing-* --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{Arch}') ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-deck:latest
 
