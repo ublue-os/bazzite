@@ -12,10 +12,10 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
 
     echo 'Creating Desktop shortcuts'
     mkdir -p $HOME/Desktop/
-    cp /usr/share/applications/steam.desktop ~/Desktop/steam.desktop
-    cp /etc/skel.d/Desktop/Return.desktop ~/Desktop/Return.desktop
-    cp /usr/share/applications/net.lutris.Lutris.desktop ~/Desktop/net.lutris.Lutris.desktop
-    cp /usr/share/applications/yafti.desktop ~/Desktop/yafti.desktop
+    cp /usr/share/applications/steam.desktop $HOME/Desktop/steam.desktop
+    cp /etc/skel.d/Desktop/Return.desktop $HOME/Desktop/Return.desktop
+    cp /usr/share/applications/net.lutris.Lutris.desktop $HOME/Desktop/net.lutris.Lutris.desktop
+    cp /usr/share/applications/yafti.desktop $HOME/Desktop/yafti.desktop
   fi
 else
   echo 'Running setup for Silverblue'
