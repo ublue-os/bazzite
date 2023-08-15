@@ -119,14 +119,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree override remove \
         gnome-classic-session \
         gnome-tour \
-        yelp && \
-    systemctl --global mask \
-        tracker-extract-3.service \
-        tracker-miner-fs-3.service \
-        tracker-miner-rss-3.service \
-        tracker-writeback-3.service \
-        tracker-xdg-portal-3.service \
-        tracker-miner-fs-control-3.service \
+        yelp \
 ; fi
 
 # Install ROCM and Waydroid on non-Nvidia images

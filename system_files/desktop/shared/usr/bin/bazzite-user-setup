@@ -46,6 +46,10 @@ else
     echo 'Disabling GNOME keyboard'
     gsettings set org.gnome.desktop.interface toolkit-accessibility false
     gnome-extensions enable cariboublocker@git.keringar.xyz
+
+    echo 'Tweaking GNOME indexer'
+    mkdir -p $HOME/.steam
+    touch $HOME/.steam/.trackerignore
   fi
 fi
 
