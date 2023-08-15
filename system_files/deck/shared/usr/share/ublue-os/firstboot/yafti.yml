@@ -89,6 +89,8 @@ screens:
           run: just --unstable enable-opengamepadui
       - "Gamescope Session (Steam Deck UI)":
           run: just --unstable enable-gamescope
+      - "Gamescope Session with OpenGamepadUI Quick Access Menu":
+          run: just --unstable enable-gamepadui
       description: |
         Select a gamepad UI to start to.
   applications:
