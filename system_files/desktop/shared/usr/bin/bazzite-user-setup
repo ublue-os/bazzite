@@ -50,6 +50,8 @@ else
     echo 'Tweaking GNOME indexer'
     mkdir -p $HOME/.steam
     touch $HOME/.steam/.trackerignore
+    mkdir -p $HOME/.local/share/Steam
+    touch $HOME/.local/share/Steam/.trackerignore
   fi
 fi
 
