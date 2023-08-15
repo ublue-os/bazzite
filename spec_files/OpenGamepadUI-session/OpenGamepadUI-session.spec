@@ -7,6 +7,7 @@ URL:            https://github.com/ublue-os/bazzite
 
 License:        GPL-3.0-only
 Source:        	https://github.com/ShadowBlip/OpenGamepadUI-session/archive/refs/heads/main.tar.gz
+Patch0:         session-select.patch
 BuildArch:      noarch
 
 Requires:       OpenGamepadUI
@@ -19,7 +20,7 @@ BuildRequires:  systemd-rpm-macros
 Gamescope session for OpenGamepadUI
 
 %prep
-%autosetup -n %{name}-main
+%autosetup -p1 -n %{name}-main
 
 %install
 mkdir -p %{buildroot}%{_bindir}/
@@ -28,12 +29,12 @@ mkdir -p %{buildroot}%{_userunitdir}/
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -v usr/lib/systemd/user/* %{buildroot}%{_userunitdir}
+rm -f %{buildroot}%{_bindir}/opengamepadui-session-select
 
 %files
 %doc README.md
 %{_bindir}/gamepadui-with-qam-session
 %{_bindir}/opengamepadui-session
-%{_bindir}/opengamepadui-session-select
 %{_userunitdir}/gamepadui-with-qam-session.service
 %{_userunitdir}/opengamepadui-session.service
 %{_datadir}/opengamepadui-session/device-quirks

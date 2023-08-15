@@ -1,0 +1,12 @@
+diff --git a/usr/share/polkit-1/actions/org.shadowblip.opengamepadui-session.policy b/usr/share/polkit-1/actions/org.shadowblip.opengamepadui-session.policy
+index 98308cc..f85ab15 100644
+--- a/usr/share/polkit-1/actions/org.shadowblip.opengamepadui-session.policy
++++ b/usr/share/polkit-1/actions/org.shadowblip.opengamepadui-session.policy
+@@ -11,6 +11,6 @@
+       <allow_inactive>yes</allow_inactive>
+       <allow_active>yes</allow_active>
+     </defaults>
+-    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/opengamepadui-session-select</annotate>
++    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-session-select</annotate>
+   </action>
+ </policyconfig>
