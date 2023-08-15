@@ -167,7 +167,8 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl enable bazzite-hardware-setup.service && \
     systemctl --global enable bazzite-user-setup.service && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        sed -i '/^PRETTY_NAME/s/Kinoite/Bazzite/' /usr/lib/os-release \
+        sed -i '/^PRETTY_NAME/s/Kinoite/Bazzite/' /usr/lib/os-release && \
+        systemctl --global enable com.system76.Scheduler.dbusproxy.service \
     ; else \
         rm /usr/share/applications/yad-icon-browser.desktop && \
         sed -i '/^PRETTY_NAME/s/Silverblue/Bazzite GNOME/' /usr/lib/os-release \
@@ -307,8 +308,7 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        systemctl enable plasma-autologin.service && \
-        systemctl --global enable com.system76.Scheduler.dbusproxy.service \
+        systemctl enable plasma-autologin.service \
     ; else \
         systemctl mask power-profiles-daemon.service && \
         systemctl disable gdm.service && \
