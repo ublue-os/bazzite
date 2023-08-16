@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 source /etc/default/bazzite
 
+# Apply Neofetch alias to Fish Shell
+mkdir -p $HOME/.config/fish/functions/
+ln -s /etc/profile.d/neofetch.sh $HOME/.config/fish/functions/neofetch.fish
+
 if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Running setup for Kinoite'
 
