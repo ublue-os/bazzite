@@ -201,3 +201,11 @@ Bazzite is a community effort and wouldn't exist without everyone's support. Bel
  - [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out. It's our Nix-based cousin.
   - [Steam Deck Homebrew](https://deckbrew.xyz) - For choosing to support distributions other than SteamOS despite the extra work, and a special thanks to [PartyWumpus](https://github.com/PartyWumpus) for getting Decky Loader working with SELinux for us.
  - [cyrv6737](https://github.com/cyrv6737) - For the initial inspiration and the base that became bazzite-arch.
+
+## Build your own
+
+Bazzite is built entirely in GitHub and creating your own custom version of it is as easy as forking this repository, adding a private signing key, and enabling GitHub actions.
+
+[Read the docs](https://docs.github.com/en/actions/security-guides/encrypted-secrets) on keeping secrets in github. You need to [generate a new keypair](https://docs.sigstore.dev/cosign/overview/) with cosign. The public key can be in your public repo (your users need it to check the signatures), and you can paste the private key in Settings -> Secrets -> Actions.
+
+We also ship a config for the popular [pull bot](https://github.com/wei/pull) if you'd like to keep your fork in sync with upstream. Simply enable this bot on your repo.
