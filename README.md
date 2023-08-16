@@ -42,7 +42,8 @@ Common variant available as `bazzite` and suitable for desktops and HTPCs.
 - Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
 - Option to automatically launch Steam in Big Picture Mode on boot for HTPCs.
 
-**For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
+> [!IMPORTANT]
+> **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.org/images/bazzite/installation/).**
 
 If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image: 
 
@@ -86,7 +87,8 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 > [!WARNING]  
 > **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time.**
 
-**For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
+> [!IMPORTANT]
+> **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.org/images/bazzite/installation/).**
 
 If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image: 
 
@@ -102,7 +104,8 @@ Builds with the GNOME desktop environment are available in both desktop and deck
 - Features optional Valve-inspired themes matching Vapor and VGUI2 from SteamOS.
 - [Optional important user experience fix](https://www.youtube.com/watch?v=nbCg9_YgKgM).
 
-**For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
+> [!IMPORTANT]
+> **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.org/images/bazzite/installation/).**
 
 To rebase an existing ostree system to the **desktop** release: 
 
