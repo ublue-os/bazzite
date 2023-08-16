@@ -109,7 +109,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree install \
         steamdeck-backgrounds \
         gradience \
-        adw-gtk3-theme \
         gnome-tweaks \
         gnome-shell-extension-user-theme \
         gnome-shell-extension-gsconnect \
