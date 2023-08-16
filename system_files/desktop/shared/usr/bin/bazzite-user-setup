@@ -49,7 +49,6 @@ else
 
     echo 'Configuring search replacement with Steam Deck Keyboard support'
     gnome-extensions enable search-light@icedman.github.com
-    gnome-extensions enable just-perfection-desktop@just-perfection
 
     echo 'Tweaking GNOME indexer'
     mkdir -p $HOME/.steam

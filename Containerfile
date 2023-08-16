@@ -249,9 +249,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-bazzite-menu \
         gnome-shell-extension-search-light \
         sddm \
-        sddm-sugar-steamOS && \
-    sed -i '/<key type="b" name="search">/{n;s/<default>true<\/default>/<default>false<\/default>/}' /usr/share/glib-2.0/schemas/org.gnome.shell.extensions.just-perfection.gschema.xml && \
-    sed -i '/<key type="b" name="type-to-search">/{n;s/<default>true<\/default>/<default>false<\/default>/}' /usr/share/glib-2.0/schemas/org.gnome.shell.extensions.just-perfection.gschema.xml \
+        sddm-sugar-steamOS \
 ; fi
 
 # Install new packages & dock updater - done manually due to proprietary parts preventing it from being on Copr
