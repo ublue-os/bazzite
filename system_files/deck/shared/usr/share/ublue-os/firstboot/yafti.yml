@@ -86,6 +86,11 @@ screens:
           default: false
           packages:
           - Install Solaar: ujust install-solaar
+        Sunshine:
+          description: A streaming utility that's better than Steam Link! Paired with Moonlight
+          default: false
+          packages:
+          - Retrieve Sunshine: sudo -A ujust get-sunshine
         Wootility:
           description: A configurator for Wooting keyboards
           default: false
