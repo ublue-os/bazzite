@@ -247,6 +247,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 ; else \
     rpm-ostree install \
         gnome-shell-extension-bazzite-menu \
+        gnome-shell-extension-search-light \
         sddm \
         sddm-sugar-steamOS \
 ; fi

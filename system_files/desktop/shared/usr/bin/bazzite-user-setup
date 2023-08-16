@@ -43,6 +43,9 @@ else
     echo 'Enabling Bazzite tofu menu fork'
     gnome-extensions enable tofumenu@tofu
 
+    echo 'Configuring search replacement with Steam Deck Keyboard support'
+    gnome-extensions enable search-light@icedman.github.com
+
     echo 'Disabling GNOME keyboard'
     gsettings set org.gnome.desktop.interface toolkit-accessibility false
     gnome-extensions enable cariboublocker@git.keringar.xyz
