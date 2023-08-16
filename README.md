@@ -59,6 +59,9 @@ or for devices with Nvidia GPUs:
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, available as `bazzite-deck`:
 
 - Directly boots to Gamemode matching SteamOS's behavior.
+- **Automatic duperemove greatly trims the size of compatdata.**
+- **Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.**
+- **Able to be booted even if the drive is full.**
 - Uses Wayland on the desktop with [full support for Steam input](https://github.com/Supreeeme/extest).
 - Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV).
 - Patched Mesa for proper framerate control from Gamescope.
@@ -73,17 +76,15 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
 - BFQ I/O scheduler to prevent I/O starvation when installing games or during background duperemove processes.
 - TLS/SSL secured DNS and NTP by default. <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>
 - Applies SteamOS's kernel parameters and enables amd-pstate by default.
-- 64GB Steam Decks gain several improvements over SteamOS, including:
-    - Higher disk compression ratio increases storage space and eMMC read speeds.
-    - Automatic duperemove greatly trims the size of compatdata.
-    - Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.
-    - Able to be booted even if the drive is full.
 - Default-disabled power-user features, including:
     - Service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj), see `ryzenadj.service` and `/etc/default/ryzenadj`.
     - Service for limiting the max charge level of the battery, see `batterylimit.service` and `/etc/default/batterylimit`. <sup><sub>(Works even when the device is off)</sub></sup>
     - Built in support for display overclocking. For example, add `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` to `/etc/environment`.
     - Ability to switch back to X11 on the desktop if desired by editing `/etc/default/desktop-wayland`.
     - 32GB RAM mod your Steam Deck? Enjoy double the maximum VRAM amount, automatically applied. <sup><sub>(Can you share your soldering skills?)</sub></sup>
+
+> [!WARNING]  
+> Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time.
 
 **For new installs ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases).**
 
@@ -110,6 +111,9 @@ To rebase an existing ostree system to the **desktop** release:
 To rebase an existing ostree system to the **desktop with Nvidia drivers** release: 
 
     podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-live --force-replacefiles $(find ~/.local/share/containers -name ublue-os-signing.noarch.rpm 2>/dev/null) && rpm-ostree rebase --uninstall $(rpm -q ublue-os-signing-* --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{Arch}') ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-gnome-nvidia:latest
+
+> [!WARNING]  
+> Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time.
 
 To rebase an existing ostree system to the **Steam Deck** release: 
 
