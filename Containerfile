@@ -47,7 +47,8 @@ RUN rpm-ostree override remove \
     firefox-langpacks \
     toolbox \
     htop \
-    distrobox
+    distrobox \
+    google-noto-sans-cjk-vf-fonts
 
 # Install new packages
 RUN rpm-ostree install \
@@ -72,7 +73,8 @@ RUN rpm-ostree install \
     neofetch \
     fish \
     xdotool \
-    yad
+    yad \
+    google-noto-sans-cjk-fonts
 
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
