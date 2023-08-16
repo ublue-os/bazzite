@@ -61,11 +61,34 @@ get-greenlight:
   chmod +x ~/Desktop/Greenlight.AppImage
 
 get-boilr:
-  wget \
+  curl \
     $(curl -s https://api.github.com/repos/PhilipK/BoilR/releases/latest | \
     jq -r ".assets[] | select(.name | test(\"linux_BoilR\")) | .browser_download_url") \
-    -O ~/Desktop/BoilR
-  chmod +x ~/Desktop/BoilR
+    --create-dirs -o ~/Applications/BoilR
+  chmod +x ~/Applications/BoilR
+  for px in 64 128 256;\
+  do \
+  curl $(curl -s https://api.github.com/repos/PhilipK/BoilR/contents/resources/$px/io.github.philipk.boilr.png | \
+  jq -r ".download_url") \
+  --create-dirs -o ~/.local/share/icons/hicolor/$px\x$px/apps/io.github.philipk.boilr.png;\
+  done
+  HOME=$HOME
+  echo -e \
+  "[Desktop Entry]\n\
+  Version=1.0\n\
+  Type=Application\n\
+  Name=BoilR\n\
+  Comment=Add non-steam games to your steam library\n\
+  Categories=Utility;Amusement;\n\
+  Keywords=Steam;Heroic;Lutris;Itch;Origin;GOG;UPlay;Icons;Images;Non-Steam;Games;\n\
+  Icon=io.github.philipk.boilr\n\
+  Exec=$HOME/Applications/BoilR\n\
+  Terminal=false\n\
+  StartupNotify=true" \
+  > ~/.local/share/applications/BoilR.desktop
+  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+    cp ~/.local/share/applications/BoilR.desktop ~/Desktop
+  fi
 
 enable-vapor-theme:
   #!/usr/bin/env bash
