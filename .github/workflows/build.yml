@@ -89,7 +89,7 @@ jobs:
           COMMIT_TAGS+=("${SHA_SHORT}-${MAJOR_VERSION}")
           if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
              [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-              COMMIT_TAGS+=("pr-${{ github.event.number }}")
+              COMMIT_TAGS+=("pr-${{ github.event.pull_request.number }}")
               COMMIT_TAGS+=("${SHA_SHORT}")
           fi
 
