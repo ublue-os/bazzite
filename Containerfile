@@ -74,7 +74,9 @@ RUN rpm-ostree install \
     fish \
     xdotool \
     yad \
-    google-noto-sans-cjk-fonts
+    google-noto-sans-cjk-fonts \
+    lato-fonts \
+    fira-code-fonts
 
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
