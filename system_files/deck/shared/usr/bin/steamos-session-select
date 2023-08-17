@@ -116,10 +116,6 @@ case "$session" in
     session_launcher="opengamepadui-session.desktop"
     create_sentinel=1
   ;;
-  gamepadui-with-qam|gamepadui-with-qam-session)
-    session_launcher="gamepadui-with-qam-session.desktop"
-    create_sentinel=1
-  ;;
   *)
     echo >&2 "!! Unrecognized session '$session'"
     exit 1
