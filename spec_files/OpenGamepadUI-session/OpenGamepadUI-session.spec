@@ -30,18 +30,18 @@ cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -v usr/lib/systemd/user/* %{buildroot}%{_userunitdir}
 rm -f %{buildroot}%{_bindir}/opengamepadui-session-select
+rm -f %{buildroot}%{_bindir}/gamepadui-with-qam-session
+rm -f %{buildroot}%{_datadir}/wayland-sessions/gamepadui-with-qam-session.desktop
+rm -f %{buildroot}%{_datadir}/opengamepadui-session/device-quirks
+rm -f %{buildroot}%{_datadir}/opengamepadui-session/gamepadui-with-qam-session
+rm -f %{buildroot}%{_datadir}/opengamepadui-session/gamescope-session-script
+rm -f %{buildroot}%{_userunitdir}/gamepadui-with-qam-session.service
 
 %files
 %doc README.md
-%{_bindir}/gamepadui-with-qam-session
 %{_bindir}/opengamepadui-session
-%{_userunitdir}/gamepadui-with-qam-session.service
 %{_userunitdir}/opengamepadui-session.service
-%{_datadir}/opengamepadui-session/device-quirks
-%{_datadir}/opengamepadui-session/gamepadui-with-qam-session
-%{_datadir}/opengamepadui-session/gamescope-session-script
 %{_datadir}/polkit-1/actions/org.shadowblip.opengamepadui-session.policy
-%{_datadir}/wayland-sessions/gamepadui-with-qam-session.desktop
 %{_datadir}/wayland-sessions/opengamepadui-session.desktop
 
 %changelog
