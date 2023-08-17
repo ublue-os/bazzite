@@ -25,8 +25,8 @@ else
   gnome-extensions enable gsconnect@andyholmes.github.io
   gnome-extensions disable background-logo@fedorahosted.org
 
-  echo 'Enabling VRR'
-  gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate']"
+  echo 'Enabling VRR & Fractional Scaling'
+  gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate','scale-monitor-framebuffer']"
 
   echo 'Disabling automatic GNOME Software updates'
   gsettings set org.gnome.software download-updates false
