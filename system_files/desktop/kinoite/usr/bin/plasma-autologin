@@ -8,8 +8,8 @@ USER=$(id -nu 1000)
 SDDM_CONF='/etc/sddm.conf.d/steamos.conf'
 if [ ! -f ${SDDM_CONF} ]; then
     # Fallback to sddm.conf
-    SDDM_CONF = '/etc/sddm.conf'
-    KDE_SETTINGS = '/etc/sddm.conf.d/kde_settings.conf'
+    SDDM_CONF='/etc/sddm.conf'
+    KDE_SETTINGS='/etc/sddm.conf.d/kde_settings.conf'
     if [ -f ${KDE_SETTINGS} ]; then
         rm -f ${KDE_SETTINGS}
     fi
