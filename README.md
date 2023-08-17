@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="https://github.com/ublue-os/bazzite/raw/main/repo_content/logo.png?raw=true" alt="Bazzite Logo"/>
+  <img src="/repo_content/logo.png?raw=true" alt="Bazzite Logo"/>
 </p>
 <p align="center">
-  <img src="https://github.com/ublue-os/bazzite/raw/main/repo_content/text_logo.png?raw=true" alt="Bazzite"/>
+  <img src="/repo_content/text_logo.png?raw=true" alt="Bazzite"/>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
