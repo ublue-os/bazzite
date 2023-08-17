@@ -61,6 +61,7 @@ get-greenlight:
   chmod +x ~/Desktop/Greenlight.AppImage
 
 get-boilr:
+  #!/usr/bin/env bash
   curl \
     $(curl -s https://api.github.com/repos/PhilipK/BoilR/releases/latest | \
     jq -r ".assets[] | select(.name | test(\"linux_BoilR\")) | .browser_download_url") \
