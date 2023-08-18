@@ -62,6 +62,7 @@ RUN rpm-ostree install \
     compsize \
     ddccontrol \
     ddccontrol-gtk \
+    ddccontrol-db \
     input-remapper \
     system76-scheduler \
     hl2linux-selinux \
@@ -216,16 +217,6 @@ COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rp
 RUN rpm-ostree install \
     /tmp/akmods-rpms/kmods/*steamdeck*.rpm
 
-# Remove unneeded packages
-RUN rpm-ostree override remove \
-    ddccontrol \
-    ddccontrol-db \
-    ddccontrol-gtk && \
-    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        rpm-ostree override remove \
-            steamdeck-kde-presets-desktop \
-    ; fi
-
 # Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
 RUN rpm-ostree override replace \
     --experimental \
@@ -244,6 +235,7 @@ RUN rpm-ostree override replace \
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree override remove \
+        steamdeck-kde-presets-desktop \
         krfb \
         krfb-libs && \
     rpm-ostree install \
@@ -259,6 +251,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 # Install new packages & dock updater - done manually due to proprietary parts preventing it from being on Copr
 RUN rpm-ostree install \
     mesa-va-drivers \
+    vulkan-tools \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     powerbuttond \
