@@ -40,7 +40,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 Common variant available as `bazzite`, suitable for desktop computers.
 
 - Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
-- Option to automatically launch Steam in Big Picture Mode on boot for HTPCs.
+- Automatic updates for the OS, Flatpaks, and all Distrobox containers.
 
 > [!IMPORTANT]
 > **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.org/images/bazzite/installation/).**
