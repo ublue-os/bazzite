@@ -323,6 +323,8 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable duperemove-weekly@$(systemd-escape /run/media/mmcblk0p1).timer && \
     systemctl enable vpower.service && \
+    systemctl enable jupiter-biosupdate.service && \
+    systemctl enable jupiter-controller-update.service && \
     systemctl enable ds-inhibit.service && \
     systemctl --global enable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \

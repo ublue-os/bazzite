@@ -246,6 +246,16 @@ disable-deck-services:
   #!/usr/bin/env bash
   sudo systemctl disable jupiter-fan-control.service
   sudo systemctl disable vpower.service
+  sudo systemctl disable jupiter-biosupdate.service
+  sudo systemctl disable jupiter-controller-update.service
+
+disable-bios-updates:
+  #!/usr/bin/env bash
+  sudo systemctl disable jupiter-biosupdate.service
+
+disable-firmware-updates:
+  #!/usr/bin/env bash
+  sudo systemctl disable jupiter-controller-update.service
 
 _toggle_wayland:
   #!/usr/bin/env bash
