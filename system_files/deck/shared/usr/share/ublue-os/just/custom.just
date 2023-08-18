@@ -91,6 +91,11 @@ get-boilr:
     cp ~/.local/share/applications/BoilR.desktop ~/Desktop
   fi
 
+fix-tf2-tcmalloc:
+  podman run \
+  -v $HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin:/hl2_linux:Z \
+  ghcr.io/maisatanel/tcmalloc-hl2-fixer:main
+
 enable-vapor-theme:
   #!/usr/bin/env bash
   source /etc/default/bazzite
