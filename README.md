@@ -35,9 +35,9 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
 - Out of the box support for [Wooting](https://wooting.io/) keyboards.
 
-### Desktop/Home Theater PCs (HTPCs)
+### Desktop
 
-Common variant available as `bazzite` and suitable for desktops and HTPCs.
+Common variant available as `bazzite`, suitable for desktop computers.
 
 - Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
 - Option to automatically launch Steam in Big Picture Mode on boot for HTPCs.
@@ -59,9 +59,9 @@ podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-li
 
 **For users with Secure Boot enabled:** Once you've installed or rebased to a Nvidia build, [be sure to follow step 3 from the ublue-os/nvidia guide](https://github.com/ublue-os/nvidia#3-enable-secure-boot-support).
 
-### Steam Deck
+### Steam Deck/Home Theater PCs (HTPCs)
 
-Variant designed for usage as an alternative to SteamOS on the Steam Deck, available as `bazzite-deck`:
+Variant designed for usage as an alternative to SteamOS on the Steam Deck, and for a console-like experience on HTPCs, available as `bazzite-deck`:
 
 - Directly boots to Gamemode matching SteamOS's behavior.
 - **Automatic `duperemove` greatly trims the size of compatdata.**
@@ -87,6 +87,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, avail
     - Built in support for display overclocking. For example, add `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` to `/etc/environment`.
     - Ability to switch back to X11 on the desktop if desired by editing `/etc/default/desktop-wayland`.
     - 32GB RAM mod your Steam Deck? Enjoy double the maximum VRAM amount, automatically applied. <sup><sub>(Can you share your soldering skills?)</sub></sup>
+- Steam Deck hardware-specific services can be disabled by running `just disable-deck-services` in the terminal, useful for trying this image on other handhelds or for HTPCs.
 
 > [!WARNING]  
 > **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time.**
