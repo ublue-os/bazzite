@@ -351,6 +351,15 @@ RUN systemctl disable jupiter-fan-control.service && \
         sdgyrodsu && \
     rm -rf /usr/lib/jupiter-dock-updater
 
+# Setup Asus Copr repos
+RUN wget https://copr.fedorainfracloud.org/coprs/lukenukem/asus-kernel/repo/fedora-$(rpm -E %fedora)/lukenukem-asus-kernel-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_lukenukem-asus-kernel.repo
+
+# Replace kernel with Asus kernel
+RUN rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:lukenukem:asus-kernel \
+        kernel
+
 RUN rm -f /etc/default/bazzite && \
     echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
     rm -rf \
