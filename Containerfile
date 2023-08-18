@@ -235,9 +235,7 @@ RUN rpm-ostree override replace \
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree override remove \
-        steamdeck-kde-presets-desktop \
-        krfb \
-        krfb-libs && \
+        steamdeck-kde-presets-desktop && \
     rpm-ostree install \
         steamdeck-kde-presets \
 ; else \
