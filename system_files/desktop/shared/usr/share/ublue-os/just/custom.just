@@ -70,6 +70,12 @@ enable-supergfxctl:
     echo "This requires an Nvidia image."
   fi
 
+fix-tf2-tcmalloc:
+  #!/usr/bin/env bash
+  podman run \
+  -v $HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin:/hl2_linux:Z \
+  ghcr.io/maisatanel/tcmalloc-hl2-fixer:main
+
 enable-vapor-theme:
   #!/usr/bin/env bash
   source /etc/default/bazzite
