@@ -21,7 +21,7 @@ else
 fi
 
 # DECK KERNEL ARGUMENTS
-if [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
+if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":ROG Ally:" =~ ":$SYS_ID:" ]]; then
   echo "Checking for needed karg changes (Jupiter)"
 
   if [[ ! $KARGS =~ "amd_pstate" ]]; then
