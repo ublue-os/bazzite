@@ -34,6 +34,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
 - [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
 - Out of the box support for [Wooting](https://wooting.io/) keyboards.
+- A fix is available for [a TF2 bug](https://github.com/ValveSoftware/Source-1-Games/issues/5043) that makes the game crash on launch - `just fix-tf2-tcmalloc`
 
 ### Desktop
 
