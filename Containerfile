@@ -332,3 +332,21 @@ RUN rm /usr/share/applications/winetricks.desktop && \
     mkdir -p /var/lib/duperemove && \
     mkdir -p /var/lib/bluetooth && \
     ostree container commit
+
+FROM bazzite-deck as bazzite-ally
+
+ARG IMAGE_NAME="${IMAGE_NAME}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
+ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
+
+RUN rm -f /etc/default/bazzite && \
+    echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
+    rm -rf \
+        /tmp/* \
+        /var/* && \
+    mkdir -p /var/tmp && \
+    chmod -R 1777 /var/tmp && \
+    mkdir -p /var/lib/duperemove && \
+    mkdir -p /var/lib/bluetooth && \
+    ostree container commit
