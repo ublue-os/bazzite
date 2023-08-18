@@ -51,6 +51,8 @@ jobs:
         exclude:
           - base_name: bazzite-deck
             image_flavor: nvidia
+          - base_name: bazzite-ally
+            image_flavor: nvidia
     steps:
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
