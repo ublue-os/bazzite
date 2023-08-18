@@ -74,6 +74,7 @@ RUN rpm-ostree install \
     fish \
     xdotool \
     yad \
+    f3 \
     google-noto-sans-cjk-fonts \
     lato-fonts \
     fira-code-fonts
