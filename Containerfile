@@ -340,6 +340,17 @@ ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
+# Remove Deck specific stuff
+RUN systemctl disable jupiter-fan-control.service && \
+    systemctl disable jupiter-bios-update.service && \
+    systemctl disable jupiter-controller-update.service && \
+    systemctl --global disable sdgyrodsu.service && \
+    rpm-ostree override remove \
+        jupiter-fan-control \
+        jupiter-hw-support-btrfs \
+        sdgyrodsu && \
+    rm -rf /usr/lib/jupiter-dock-updater
+
 RUN rm -f /etc/default/bazzite && \
     echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
     rm -rf \
