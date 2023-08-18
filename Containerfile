@@ -362,7 +362,13 @@ RUN wget https://copr.fedorainfracloud.org/coprs/lukenukem/asus-linux/repo/fedor
 RUN rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:lukenukem:asus-kernel \
-        kernel && \
+        kernel \
+        kernel-core \
+        kernel-modules \
+        kernel-modules-core \
+        kernel-modules-extra \
+        kernel-devel \
+        kernel-devel-matched && \
     rpm-ostree override install \
         asusctl
 
