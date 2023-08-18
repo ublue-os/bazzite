@@ -7,7 +7,7 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Enabling System76-Scheduler KWin script'
   kwriteconfig5 --file kwinrc --group Plugins --key kwin-system76-scheduler-integrationEnabled true
 
-  if [[ $IMAGE_NAME =~ "deck" ]]; then
+  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
     echo 'Running setup for Kinoite on Steam Deck'
 
     echo 'Creating Desktop shortcuts'
@@ -37,7 +37,7 @@ else
   ln -s /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.config/presets/user/vapor.json
   ln -s /usr/share/ublue-os/bazzite/themes/vgui2.json $HOME/.config/presets/user/vgui2.json
 
-  if [[ $IMAGE_NAME =~ "deck" ]]; then
+  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
 
     echo 'Enabling Bazzite tofu menu fork'
