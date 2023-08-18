@@ -242,6 +242,11 @@ unhide-grub:
     sudo grub2-mkconfig -o /boot/grub2/grub.cfg
   fi
 
+disable-deck-services:
+  #!/usr/bin/env bash
+  sudo systemctl disable jupiter-fan-control.service
+  sudo systemctl disable vpower.service
+
 _toggle_wayland:
   #!/usr/bin/env bash
   source /etc/default/desktop-wayland
