@@ -342,7 +342,7 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 # Remove Deck specific stuff
 RUN systemctl disable jupiter-fan-control.service && \
-    systemctl disable jupiter-bios-update.service && \
+    systemctl disable jupiter-biosupdate.service && \
     systemctl disable jupiter-controller-update.service && \
     systemctl disable vpower.service && \
     systemctl --global disable sdgyrodsu.service && \
