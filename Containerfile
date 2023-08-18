@@ -261,6 +261,7 @@ RUN rpm-ostree install \
     mesa-va-drivers \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
+    powerbuttond \
     vpower \
     ds-inhibit \
     steam_notif_daemon \
