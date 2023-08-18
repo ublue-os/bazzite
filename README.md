@@ -42,7 +42,7 @@ Common variant available as `bazzite`, suitable for desktop computers.
 - Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
 - Automatic updates for the OS, Flatpaks, and all Distrobox containers.
 
-> [!IMPORTANT]
+> [!IMPORTANT]  
 > **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.org/images/bazzite/installation/).**
 
 If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image:
@@ -92,7 +92,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 > [!WARNING]  
 > **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time.**
 
-> [!IMPORTANT]
+> [!IMPORTANT]  
 > **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.org/images/bazzite/installation/).**
 
 If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image: 
@@ -111,7 +111,7 @@ Builds with the GNOME desktop environment are available in both desktop and deck
 - Features optional Valve-inspired themes matching Vapor and VGUI2 from SteamOS.
 - [Optional important user experience fix](https://www.youtube.com/watch?v=nbCg9_YgKgM).
 
-> [!IMPORTANT]
+> [!IMPORTANT]  
 > **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.org/images/bazzite/installation/).**
 
 To rebase an existing ostree system to the **desktop** release:
@@ -179,6 +179,7 @@ Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built o
 |vpower|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/vpower/status_image/last_build.png?)|
 
 Additionally, the following packages are used from other Copr repos:
+
 |Package|Status|
 |---|---|
 |[distrobox](https://github.com/89luca89/distrobox)-git|![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/distrobox-git/package/distrobox-git/status_image/last_build.png?)|
