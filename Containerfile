@@ -352,15 +352,20 @@ RUN systemctl disable jupiter-fan-control.service && \
     rm -rf /usr/lib/jupiter-dock-updater
 
 # Setup Asus Copr repos
-RUN wget https://copr.fedorainfracloud.org/coprs/lukenukem/asus-kernel/repo/fedora-$(rpm -E %fedora)/lukenukem-asus-kernel-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_lukenukem-asus-kernel.repo
+RUN wget https://copr.fedorainfracloud.org/coprs/lukenukem/asus-linux/repo/fedora-$(rpm -E %fedora)/lukenukem-asus-linux-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_lukenukem-asus-linux.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/lukenukem/asus-kernel/repo/fedora-$(rpm -E %fedora)/lukenukem-asus-kernel-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_lukenukem-asus-kernel.repo
 
-# Replace kernel with Asus kernel
+# Asus additions
 RUN rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:lukenukem:asus-kernel \
-        kernel
+        kernel && \
+    rpm-ostree override install \
+        asusctl
 
-RUN rm -f /etc/default/bazzite && \
+RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_lukenukem-asus-linux.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_lukenukem-asus-kernel.repo && \
+    rm -f /etc/default/bazzite && \
     echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
     rm -rf \
         /tmp/* \
