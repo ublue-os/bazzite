@@ -64,10 +64,6 @@ if grep -qz 'fedora' <<< $(flatpak remotes); then
 fi
 flatpak remote-add --if-not-exists --user flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
 
-# Apply Neofetch alias to Fish Shell
-mkdir -p $HOME/.config/fish/functions/
-ln -s /etc/profile.d/neofetch.sh $HOME/.config/fish/functions/neofetch.fish
-
 # Prevent future executions
 echo "Writing state file"
 touch $HOME/.bazzite-configured
