@@ -32,7 +32,7 @@ configure-waydroid:
   rm -rf ${SCRIPT}
 
 install-corectrl:
-  echo 'Installing CoreCtrl...''
+  echo 'Installing CoreCtrl...'
   rpm-ostree install corectrl
   echo 'Setting needed kargs for CoreCtrl...'
   rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
