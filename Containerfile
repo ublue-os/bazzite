@@ -47,7 +47,6 @@ RUN rpm-ostree override remove \
     firefox-langpacks \
     toolbox \
     htop \
-    distrobox \
     google-noto-sans-cjk-vf-fonts
 
 # Install new packages
@@ -55,7 +54,6 @@ RUN rpm-ostree install \
     extest.i686 \
     python3-pip \
     libadwaita \
-    distrobox-git \
     duperemove \
     fuse-libs.i686 \
     rmlint \
@@ -126,6 +124,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 ; fi
 
 # Install ROCM and Waydroid on non-Nvidia images
+# Install distrobox-git on Nvidia images (while needed)
 RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         rocm-hip \
@@ -133,6 +132,11 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         waydroid \
         lzip \
         weston \
+; else \
+    rpm-ostree override remove \
+        distrobox && \
+    rpm-ostree install \
+        distrobox-git \
 ; fi
 
 # Cleanup & Finalize
