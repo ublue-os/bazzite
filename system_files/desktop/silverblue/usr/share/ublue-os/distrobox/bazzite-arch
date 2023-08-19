@@ -1,5 +1,5 @@
 [bazzite-arch]
-image=ghcr.io/ublue-os/bazzite-arch
+image=ghcr.io/ublue-os/bazzite-arch-gnome
 init=false
 nvidia=false
 pull=true
@@ -7,5 +7,4 @@ root=false
 replace=false
 start_now=true
 volume=/usr/lib/extest/libextest.so:/usr/lib/extest/libextest.so
-init_hooks=pacman -Rnsdd xdg-desktop-portal-kde --noconfirm && pacman -S xdg-desktop-portal-gnome rocm-opencl-runtime rocm-hip-runtime --noconfirm
 exported_apps="steam lutris protontricks"
