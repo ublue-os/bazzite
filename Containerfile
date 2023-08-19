@@ -71,6 +71,7 @@ RUN rpm-ostree install \
     btop \
     fish \
     xdotool \
+    wmctrl \
     yad \
     f3 \
     google-noto-sans-cjk-fonts \
