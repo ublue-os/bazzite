@@ -237,6 +237,8 @@ RUN rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
             udisks2 \
+            libudisks2 \
+            udisks2-btrfs \
     ; fi
 
 # Configure KDE & GNOME

@@ -145,7 +145,7 @@ Requires: libmount
 Recommends: polkit
 %endif
 
-Requires: lib%{name}%{?_isa} = %{upstream_version}-%{release}
+Requires: lib%{name}%{?_isa} = %{version}-%{release}
 
 # For mkntfs (not available on rhel or on ppc/ppc64)
 %if ! 0%{?rhel}
@@ -153,7 +153,7 @@ Requires: ntfsprogs
 Requires: ntfs-3g
 %endif
 
-Provides:  storaged = %{upstream_version}-%{release}
+Provides:  storaged = %{version}-%{release}
 Obsoletes: storaged
 
 %description
@@ -163,7 +163,7 @@ manipulate disks, storage devices and technologies.
 %package -n lib%{name}
 Summary: Dynamic library to access the udisksd daemon
 License: LGPLv2+
-Provides:  libstoraged = %{upstream_version}-%{release}
+Provides:  libstoraged = %{version}-%{release}
 Obsoletes: libstoraged
 
 %description -n lib%{name}
@@ -172,11 +172,11 @@ access to the udisksd daemon.
 
 %package -n %{name}-iscsi
 Summary: Module for iSCSI
-Requires: %{name}%{?_isa} = %{upstream_version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 License: LGPLv2+
 Requires: iscsi-initiator-utils
 BuildRequires: iscsi-initiator-utils-devel
-Provides:  storaged-iscsi = %{upstream_version}-%{release}
+Provides:  storaged-iscsi = %{version}-%{release}
 Obsoletes: storaged-iscsi
 
 %description -n %{name}-iscsi
@@ -184,13 +184,13 @@ This package contains module for iSCSI configuration.
 
 %package -n %{name}-lvm2
 Summary: Module for LVM2
-Requires: %{name}%{?_isa} = %{upstream_version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 License: LGPLv2+
 Requires: lvm2
 Requires: libblockdev-lvm >= %{libblockdev_version}
 BuildRequires: lvm2-devel
 BuildRequires: libblockdev-lvm-devel >= %{libblockdev_version}
-Provides:  storaged-lvm2 = %{upstream_version}-%{release}
+Provides:  storaged-lvm2 = %{version}-%{release}
 Obsoletes: storaged-lvm2
 
 %description -n %{name}-lvm2
@@ -198,9 +198,9 @@ This package contains module for LVM2 configuration.
 
 %package -n lib%{name}-devel
 Summary: Development files for lib%{name}
-Requires: lib%{name}%{?_isa} = %{upstream_version}-%{release}
+Requires: lib%{name}%{?_isa} = %{version}-%{release}
 License: LGPLv2+
-Provides:  libstoraged-devel = %{upstream_version}-%{release}
+Provides:  libstoraged-devel = %{version}-%{release}
 Obsoletes: libstoraged-devel
 
 %description -n lib%{name}-devel
@@ -210,11 +210,11 @@ dynamic library, which provides access to the udisksd daemon.
 %if 0%{?with_bcache}
 %package -n %{name}-bcache
 Summary: Module for Bcache
-Requires: %{name}%{?_isa} = %{upstream_version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 License: LGPLv2+
 Requires: libblockdev-kbd >= %{libblockdev_version}
 BuildRequires: libblockdev-kbd-devel >= %{libblockdev_version}
-Provides:  storaged-bcache = %{upstream_version}-%{release}
+Provides:  storaged-bcache = %{version}-%{release}
 Obsoletes: storaged-bcache
 
 %description -n %{name}-bcache
@@ -224,11 +224,11 @@ This package contains module for Bcache configuration.
 %if 0%{?with_btrfs}
 %package -n %{name}-btrfs
 Summary: Module for BTRFS
-Requires: %{name}%{?_isa} = %{upstream_version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 License: LGPLv2+
 Requires: libblockdev-btrfs >= %{libblockdev_version}
 BuildRequires: libblockdev-btrfs-devel >= %{libblockdev_version}
-Provides:  storaged-btrfs = %{upstream_version}-%{release}
+Provides:  storaged-btrfs = %{version}-%{release}
 Obsoletes: storaged-btrfs
 
 %description -n %{name}-btrfs
@@ -238,12 +238,12 @@ This package contains module for BTRFS configuration.
 %if 0%{?with_lsm}
 %package -n %{name}-lsm
 Summary: Module for LSM
-Requires: %{name}%{?_isa} = %{upstream_version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 License: LGPLv2+
 Requires: libstoragemgmt
 BuildRequires: libstoragemgmt-devel
 BuildRequires: libconfig-devel
-Provides:  storaged-lsm = %{upstream_version}-%{release}
+Provides:  storaged-lsm = %{version}-%{release}
 Obsoletes: storaged-lsm
 
 %description -n %{name}-lsm
@@ -253,13 +253,13 @@ This package contains module for LSM configuration.
 %if 0%{?with_zram}
 %package -n %{name}-zram
 Summary: Module for ZRAM
-Requires: %{name}%{?_isa} = %{upstream_version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 License: LGPLv2+
 Requires: libblockdev-kbd >= %{libblockdev_version}
 Requires: libblockdev-swap >= %{libblockdev_version}
 BuildRequires: libblockdev-kbd-devel >= %{libblockdev_version}
 BuildRequires: libblockdev-swap-devel
-Provides:  storaged-zram = %{upstream_version}-%{release}
+Provides:  storaged-zram = %{version}-%{release}
 Obsoletes: storaged-zram
 
 %description -n %{name}-zram
