@@ -232,10 +232,12 @@ RUN rpm-ostree override replace \
         mesa-libGL \
         mesa-libglapi \
         mesa-vulkan-drivers && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-        udisks2
+    if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
+        rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+            udisks2 \
+    ; fi
 
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
