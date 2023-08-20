@@ -4,6 +4,7 @@ install-bazzite-arch:
   
   echo 'Installing Bazzite Arch...'
   distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch
+  distrobox-enter -n bazzite-arch -- '  sudo locale-gen'
   distrobox-enter -n bazzite-arch -- '  /usr/bin/bazzite-steam-runtime --silent &>/dev/null &'
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
