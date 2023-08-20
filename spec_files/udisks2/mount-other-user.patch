@@ -1,0 +1,351 @@
+From ae24405030d6759f209a19d2eedaf5060715701a Mon Sep 17 00:00:00 2001
+From: Alberto Garcia <berto@igalia.com>
+Date: Wed, 8 Mar 2023 18:00:34 +0100
+Subject: [PATCH] Extend Filesystem.Mount() to allow mounting on behalf of
+ another user
+
+Filesystems are mounted for the user who makes the D-Bus API call.
+This has an effect on a few things, notably who has permissions
+to unmount it later and also the path of the mount point, usually in
+the form of /run/media/USER/LABEL
+
+This patch adds a new parameter to the Filesystem.Mount() method that
+allows mounting a filesystem on behalf of a different user.
+
+Fixes #1065
+
+(cherry picked from commit 2fddf2b951b993303fe07813ad2398ab91937911)
+---
+ data/org.freedesktop.UDisks2.policy.in     | 11 +++
+ data/org.freedesktop.UDisks2.xml           |  8 ++-
+ src/tests/dbus-tests/test_80_filesystem.py | 80 ++++++++++++++++++++++
+ src/udisksdaemonutil.c                     | 53 ++++++++++++++
+ src/udisksdaemonutil.h                     |  6 ++
+ src/udiskslinuxfilesystem.c                | 60 ++++++++++++----
+ 6 files changed, 202 insertions(+), 16 deletions(-)
+
+diff --git a/data/org.freedesktop.UDisks2.policy.in b/data/org.freedesktop.UDisks2.policy.in
+index 4b02f46f..816620d7 100644
+--- a/data/org.freedesktop.UDisks2.policy.in
++++ b/data/org.freedesktop.UDisks2.policy.in
+@@ -44,6 +44,17 @@
+     </defaults>
+   </action>
+ 
++  <!-- mount a device on behalf of another user -->
++  <action id="org.freedesktop.udisks2.filesystem-mount-other-user">
++    <description>Mount a filesystem on behalf of another user</description>
++    <message>Authentication is required to mount the filesystem</message>
++    <defaults>
++      <allow_any>auth_admin</allow_any>
++      <allow_inactive>auth_admin</allow_inactive>
++      <allow_active>auth_admin_keep</allow_active>
++    </defaults>
++  </action>
++
+   <!-- mount a device referenced in the /etc/fstab file with the x-udisks-auth option -->
+   <action id="org.freedesktop.udisks2.filesystem-fstab">
+     <description>Mount/unmount filesystems defined in the fstab file with the x-udisks-auth option</description>
+diff --git a/data/org.freedesktop.UDisks2.xml b/data/org.freedesktop.UDisks2.xml
+index a3ea4901..2a1704ee 100644
+--- a/data/org.freedesktop.UDisks2.xml
++++ b/data/org.freedesktop.UDisks2.xml
+@@ -1853,7 +1853,7 @@
+ 
+     <!--
+         Mount:
+-        @options: Options - known options (in addition to <link linkend="udisks-std-options">standard options</link>) includes <parameter>fstype</parameter> (of type 's') and <parameter>options</parameter> (of type 's').
++        @options: Options - known options (in addition to <link linkend="udisks-std-options">standard options</link>) includes <parameter>fstype</parameter> (of type 's'), <parameter>as-user</parameter> (of type 's') and <parameter>options</parameter> (of type 's').
+         @mount_path: The filesystem path where the device was mounted.
+ 
+         Mounts the filesystem.
+@@ -1875,6 +1875,12 @@
+         filesystem types are validated against a (small) whitelist to
+         avoid unexpected privilege escalation
+ 
++        If the <parameter>as-user</parameter> option is set, the
++        filesystem is mounted on behalf of the specified user instead
++        of the calling one. This has usually an effect on the returned
++        @mount_path and it also allows that user to unmount the
++        filesystem later. This option expects a user name, not a UID.
++
+         If the device in question is referenced in the
+         <filename>/etc/fstab</filename> file, the
+         <command>mount</command> command is called directly (as root)
+diff --git a/src/tests/dbus-tests/test_80_filesystem.py b/src/tests/dbus-tests/test_80_filesystem.py
+index c16d32ca..babc85f3 100644
+--- a/src/tests/dbus-tests/test_80_filesystem.py
++++ b/src/tests/dbus-tests/test_80_filesystem.py
+@@ -648,6 +648,86 @@ class UdisksFSTestCase(udiskstestcase.UdisksTestCase):
+ 
+ 
+ 
++    def _unmount_as_user(self, pipe, uid, gid, device):
++        """ Try to unmount @device as user with given @uid and @gid."""
++        os.setresgid(gid, gid, gid)
++        os.setresuid(uid, uid, uid)
++
++        try:
++            safe_dbus.call_sync(self.iface_prefix,
++                                self.path_prefix + '/block_devices/' + os.path.basename(device),
++                                self.iface_prefix + '.Filesystem',
++                                'Unmount',
++                                GLib.Variant('(a{sv})', ({},)))
++        except Exception as e:
++            pipe.send([False, 'Unmount DBus call failed: %s' % str(e)])
++            pipe.close()
++            return
++
++        pipe.send([True, ''])
++        pipe.close()
++
++    @udiskstestcase.tag_test(udiskstestcase.TestTags.UNSAFE)
++    def test_mount_as_user(self):
++        """ Test mounting a filesystem on behalf of a different user."""
++        if not self._can_create:
++            self.skipTest('Cannot create %s filesystem' % self._fs_name)
++
++        if not self._can_label:
++            self.skipTest('Cannot set label when creating %s filesystem' % self._fs_name)
++
++        if not self._can_mount:
++            self.skipTest('Cannot mount %s filesystem' % self._fs_name)
++
++        disk = self.get_object('/block_devices/' + os.path.basename(self.vdevs[0]))
++        self.assertIsNotNone(disk)
++
++        # create filesystem with label
++        d = dbus.Dictionary(signature='sv')
++        d['label'] = 'UDISKS'
++        disk.Format(self._fs_name, d, dbus_interface=self.iface_prefix + '.Block')
++        self.addCleanup(self.wipe_fs, self.vdevs[0])
++
++        # get real block object for the newly created filesystem
++        block_fs, block_fs_dev = self._get_formatted_block_object(self.vdevs[0])
++        self.assertIsNotNone(block_fs)
++        self.assertIsNotNone(block_fs_dev)
++
++        # create user for our test
++        self.addCleanup(self._remove_user, self.username)
++        uid, gid = self._add_user(self.username)
++
++        # prepare the mount options
++        d = dbus.Dictionary(signature='sv')
++        d['options'] = 'ro'
++        if self._fs_name:
++            d['fstype'] = self._fs_name
++
++        # try to mount it now: first with a nonexistent user
++        d['as-user'] = 'nonexistent'
++        with six.assertRaisesRegex(self, dbus.exceptions.DBusException, "User with name nonexistent does not exist"):
++            block_fs.Mount(d, dbus_interface=self.iface_prefix + '.Filesystem')
++
++        # now mount it with the actual user
++        d['as-user'] = self.username
++        mnt_path = block_fs.Mount(d, dbus_interface=self.iface_prefix + '.Filesystem')
++        self.addCleanup(self.try_unmount, block_fs_dev)
++        self.addCleanup(self.try_unmount, self.vdevs[0])
++
++        # check that the name of the mount point matches the expectation
++        self.assertTrue(mnt_path.endswith("%s/UDISKS" % self.username))
++
++        # try to unmount it as the other user
++        parent_conn, child_conn = Pipe()
++        proc = Process(target=self._unmount_as_user, args=(child_conn, int(uid), int(gid), block_fs_dev))
++        proc.start()
++        res = parent_conn.recv()
++        parent_conn.close()
++        proc.join()
++
++        if not res[0]:
++            self.fail(res[1])
++
+ class Ext2TestCase(UdisksFSTestCase):
+     _fs_name = 'ext2'
+     _can_create = True and UdisksFSTestCase.command_exists('mke2fs')
+diff --git a/src/udisksdaemonutil.c b/src/udisksdaemonutil.c
+index 1695b524..f7cc865d 100644
+--- a/src/udisksdaemonutil.c
++++ b/src/udisksdaemonutil.c
+@@ -1080,6 +1080,59 @@ out:
+   return FALSE;
+ }
+ 
++/**
++ * udisks_daemon_util_get_user_info_by_name:
++ * @out_uid: (out) (allow-none): Return location for resolved uid or %NULL.
++ * @out_gid: (out) (allow-none): Return location for resolved gid or %NULL.
++ * @error: Return location for error.
++ *
++ * Gets the UNIX id and group for a user name.
++ *
++ * Returns: %TRUE if the user information was obtained, %FALSE otherwise
++ */
++gboolean
++udisks_daemon_util_get_user_info_by_name (const gchar  *user_name,
++                                          uid_t        *out_uid,
++                                          gid_t        *out_gid,
++                                          GError      **error)
++{
++  struct passwd pwstruct;
++  gchar pwbuf[8192];
++  struct passwd *pw = NULL;
++  int rc;
++
++  g_return_val_if_fail (user_name != NULL, FALSE);
++
++  rc = getpwnam_r (user_name, &pwstruct, pwbuf, sizeof pwbuf, &pw);
++  if (rc == 0 && pw == NULL)
++    {
++      g_set_error (error,
++                   UDISKS_ERROR,
++                   UDISKS_ERROR_FAILED,
++                   "User with name %s does not exist", user_name);
++      goto out;
++    }
++  else if (pw == NULL)
++    {
++      g_set_error (error,
++                   UDISKS_ERROR,
++                   UDISKS_ERROR_FAILED,
++                   "Error looking up passwd struct for user %s: %m", user_name);
++      goto out;
++    }
++
++  if (out_uid != NULL)
++    *out_uid = pw->pw_uid;
++
++  if (out_gid != NULL)
++    *out_gid = pw->pw_gid;
++
++  return TRUE;
++
++out:
++  return FALSE;
++}
++
+ /**
+  * udisks_daemon_util_get_caller_uid_sync:
+  * @daemon: A #UDisksDaemon.
+diff --git a/src/udisksdaemonutil.h b/src/udisksdaemonutil.h
+index df584de4..cd263c76 100644
+--- a/src/udisksdaemonutil.h
++++ b/src/udisksdaemonutil.h
+@@ -94,6 +94,12 @@ gboolean udisks_daemon_util_get_user_info (const uid_t   uid,
+                                            gchar       **out_user_name,
+                                            GError      **error);
+ 
++gboolean
++udisks_daemon_util_get_user_info_by_name (const gchar  *user_name,
++                                          uid_t        *out_uid,
++                                          gid_t        *out_gid,
++                                          GError      **error);
++
+ gboolean udisks_daemon_util_get_caller_uid_sync (UDisksDaemon            *daemon,
+                                                  GDBusMethodInvocation   *invocation,
+                                                  GCancellable            *cancellable,
+diff --git a/src/udiskslinuxfilesystem.c b/src/udiskslinuxfilesystem.c
+index 619e0b85..92d3ab37 100644
+--- a/src/udiskslinuxfilesystem.c
++++ b/src/udiskslinuxfilesystem.c
+@@ -795,6 +795,7 @@ handle_mount (UDisksFilesystem      *filesystem,
+   UDisksBlock *block;
+   UDisksDaemon *daemon;
+   UDisksState *state = NULL;
++  gchar *opt_as_user = NULL;
+   uid_t caller_uid;
+   gid_t caller_gid;
+   const gchar * const *existing_mount_points;
+@@ -824,6 +825,14 @@ handle_mount (UDisksFilesystem      *filesystem,
+       goto out;
+     }
+ 
++  if (options != NULL)
++    {
++      g_variant_lookup (options,
++                        "as-user",
++                        "&s",
++                        &opt_as_user);
++    }
++
+   block = udisks_object_peek_block (object);
+   daemon = udisks_linux_block_object_get_daemon (UDISKS_LINUX_BLOCK_OBJECT (object));
+   state = udisks_daemon_get_state (daemon);
+@@ -862,22 +871,35 @@ handle_mount (UDisksFilesystem      *filesystem,
+       goto out;
+     }
+ 
+-  if (!udisks_daemon_util_get_caller_uid_sync (daemon,
+-                                               invocation,
+-                                               NULL /* GCancellable */,
+-                                               &caller_uid,
+-                                               &error))
++  if (opt_as_user)
+     {
+-      g_dbus_method_invocation_return_gerror (invocation, error);
+-      g_clear_error (&error);
+-      goto out;
++      if (!udisks_daemon_util_get_user_info_by_name (opt_as_user, &caller_uid, &caller_gid, &error))
++        {
++          g_dbus_method_invocation_return_gerror (invocation, error);
++          g_clear_error (&error);
++          goto out;
++        }
++      caller_user_name = g_strdup (opt_as_user);
+     }
++  else
++    {
++      if (!udisks_daemon_util_get_caller_uid_sync (daemon,
++                                                   invocation,
++                                                   NULL /* GCancellable */,
++                                                   &caller_uid,
++                                                   &error))
++        {
++          g_dbus_method_invocation_return_gerror (invocation, error);
++          g_clear_error (&error);
++          goto out;
++        }
+ 
+-  if (!udisks_daemon_util_get_user_info (caller_uid, &caller_gid, &caller_user_name, &error))
+-    {
+-      g_dbus_method_invocation_return_gerror (invocation, error);
+-      g_clear_error (&error);
+-      goto out;
++      if (!udisks_daemon_util_get_user_info (caller_uid, &caller_gid, &caller_user_name, &error))
++        {
++          g_dbus_method_invocation_return_gerror (invocation, error);
++          g_clear_error (&error);
++          goto out;
++        }
+     }
+ 
+   if (system_managed)
+@@ -896,7 +918,11 @@ handle_mount (UDisksFilesystem      *filesystem,
+            * will be replaced by the name of the drive/device in question
+            */
+           message = N_("Authentication is required to mount $(drive)");
+-          if (!udisks_daemon_util_setup_by_user (daemon, object, caller_uid))
++          if (opt_as_user != NULL)
++            {
++              action_id = "org.freedesktop.udisks2.filesystem-mount-other-user";
++            }
++          else if (!udisks_daemon_util_setup_by_user (daemon, object, caller_uid))
+             {
+               if (udisks_block_get_hint_system (block))
+                 {
+@@ -1078,7 +1104,11 @@ handle_mount (UDisksFilesystem      *filesystem,
+    * will be replaced by the name of the drive/device in question
+    */
+   message = N_("Authentication is required to mount $(drive)");
+-  if (!udisks_daemon_util_setup_by_user (daemon, object, caller_uid))
++  if (opt_as_user != NULL)
++    {
++      action_id = "org.freedesktop.udisks2.filesystem-mount-other-user";
++    }
++  else if (!udisks_daemon_util_setup_by_user (daemon, object, caller_uid))
+     {
+       if (udisks_block_get_hint_system (block))
+         {
+-- 
+2.30.2
+

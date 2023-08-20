@@ -81,7 +81,8 @@ Patch19: udisks-2.10.0-lvm2_vgcreate_uevent_sync.patch
 Patch20: udisks-2.9.4-tests_job_unstable.patch
 
 # Bazzite
-Patch21: https://gitlab.com/evlaV/jupiter-PKGBUILD/-/raw/master/udisks2/mount-other-user.patch
+Patch21: sanitize-mount-point.patch
+Patch22: mount-other-user.patch
 
 BuildRequires: make
 BuildRequires: glib2-devel >= %{glib2_version}
