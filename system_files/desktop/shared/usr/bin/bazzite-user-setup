@@ -58,6 +58,9 @@ else
   fi
 fi
 
+# Enable NTP
+timedatectl set-ntp true
+
 # Setup Flathub
 if grep -qz 'fedora' <<< $(flatpak remotes); then
   flatpak remote-delete --user fedora --force
