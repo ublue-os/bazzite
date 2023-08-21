@@ -9,7 +9,9 @@ install-bazzite-arch:
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
-  distrobox-enter -n bazzite-arch -- '  mkdir -p ~/.steam && distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam && mv ~/.steam/steamcmd ~/.steam/steamcmd.sh'
+  mkdir -p $HOME/.steam
+  distrobox-enter -n bazzite-arch -- '  distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam'
+  mv $HOME/.steam/steamcmd $HOME/.steam/steamcmd.sh
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     echo 'Creating desktop shortcuts...'
     cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop/bazzite-arch-steam.desktop
