@@ -110,6 +110,7 @@ Builds with the GNOME desktop environment are available in both desktop and deck
 - Custom menu in the top bar for returning to game mode, launching Steam, and opening a number of useful utilities. <sub><sup>(Only on Steam Deck builds)</sup></sub>
 - [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) preinstalled and ready to use.
 - Features optional Valve-inspired themes matching Vapor and VGUI2 from SteamOS.
+- Numerous optional extensions pre-installed.
 - [Optional important user experience fix](https://www.youtube.com/watch?v=nbCg9_YgKgM).
 
 > [!IMPORTANT]  
@@ -162,6 +163,7 @@ Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built o
 |[gamescope-session](https://github.com/ChimeraOS/gamescope-session)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gamescope-session/status_image/last_build.png?)|
 |gnome-shell-extension-bazzite-menu|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-bazzite-menu/status_image/last_build.png?)|
 |[gnome-shell-extension-caribou-blocker](https://extensions.gnome.org/extension/1326/block-caribou/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-caribou-blocker/status_image/last_build.png?)|
+|[gnome-shell-extension-hanabi](https://github.com/jeffshee/gnome-ext-hanabi)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-hanabi/status_image/last_build.png?)|
 |[gnome-shell-extension-search-light](https://extensions.gnome.org/extension/5489/search-light/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-search-light/status_image/last_build.png?)|
 |[gnome-shell-extension-compiz-windows-effect](https://github.com/hermes83/compiz-windows-effect)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-compiz-windows-effect/status_image/last_build.png?)|
 |jupiter-fan-control|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/jupiter-fan-control/status_image/last_build.png?)|
