@@ -280,6 +280,7 @@ RUN rpm-ostree install \
 RUN rpm-ostree install \
         steam \
         lutris \
+        libFAudio \
         gamescope \
         gamescope-session \
         wine-core \
