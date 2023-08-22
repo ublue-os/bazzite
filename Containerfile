@@ -55,7 +55,7 @@ RUN rpm-ostree install \
     python3-pip \
     libadwaita \
     duperemove \
-    fuse-libs.i686 \
+    xwininfo \
     rmlint \
     compsize \
     ddccontrol \
