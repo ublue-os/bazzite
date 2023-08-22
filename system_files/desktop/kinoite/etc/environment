@@ -4,3 +4,4 @@ OBS_USE_EGL=1
 
 # Required for Decky Loader on systems with SELinux
 DECKY_SELINUX=1
+KEEP_SYSTEMD_SERVICE=1
