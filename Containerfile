@@ -256,7 +256,9 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sddm-sugar-steamOS \
 ; fi
 
-# Install new packages & dock updater - done manually due to proprietary parts preventing it from being on Copr
+# Install new packages
+# Dock updater - done manually due to proprietary parts preventing it from being on Copr
+# Neptune firmware - done manually due to "TBD" license on needed audio firmware
 RUN rpm-ostree install \
     mesa-va-drivers \
     vulkan-tools \
@@ -273,8 +275,19 @@ RUN rpm-ostree install \
     sdgyrodsu \
     python-vdf \
     python-crcmod && \
-    git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git --depth 1 /tmp/jupiter-dock-updater-bin && \
-    mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater
+    git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
+        --depth 1 \
+        /tmp/jupiter-dock-updater-bin && \
+    mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater && \
+    rm -rf /tmp/jupiter-dock-updater-bin && \
+    mkdir -p /tmp/linux-firmware-neptune && \
+    wget https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/jupiter/cs35l41-dsp1-spk-cali.bin -O /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.bin && \
+    wget https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/jupiter/cs35l41-dsp1-spk-cali.wmfw -O /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.wmfw && \
+    wget https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/jupiter/cs35l41-dsp1-spk-prot.bin -O /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-prot.bin && \
+    wget https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/jupiter/cs35l41-dsp1-spk-prot.wmfw -O /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-prot.wmfw && \
+    xz --check=crc32 /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-{cali.bin,cali.wmfw,prot.bin,prot.wmfw} && \
+    mv -vf /tmp/linux-firmware-neptune/* /usr/lib/firmware/cirrus/ && \
+    rm -rf /tmp/linux-firmware-neptune
 
 # Install Steam and Lutris into their own OCI layer
 RUN rpm-ostree install \
