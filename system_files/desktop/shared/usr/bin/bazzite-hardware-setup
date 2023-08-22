@@ -45,10 +45,6 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=spi_amd.speed_dev=1"
   fi
 
-  if [[ ! $KARGS =~ "audit" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=audit=0"
-  fi
-
   if [[ ! $KARGS =~ "initcall_blacklist" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=initcall_blacklist=simpledrm_platform_driver_init"
   fi
