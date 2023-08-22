@@ -25,5 +25,6 @@ org.gnome.NautilusPreviewer
 org.gnome.TextEditor
 org.gnome.Weather
 org.gnome.baobab
+org.gnome.Totem
 org.gnome.clocks
 org.gnome.font-viewer

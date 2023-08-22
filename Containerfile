@@ -181,6 +181,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
         systemctl --global enable com.system76.Scheduler.dbusproxy.service \
     ; else \
         rm /usr/share/applications/yad-icon-browser.desktop && \
+        rm /usr/share/applications/com.github.rafostar.Clapper.desktop && \
         sed -i '/^PRETTY_NAME/s/Silverblue/Bazzite GNOME/' /usr/lib/os-release \
     ; fi && \
     if grep -q "nvidia" <<< "${IMAGE_NAME}"; then \
@@ -309,6 +310,8 @@ RUN rpm-ostree install \
 
 # Cleanup & Finalize
 RUN rm /usr/share/applications/winetricks.desktop && \
+    rm /usr/share/applications/wine.desktop && \
+    rm /usr/share/applications/wine-*.desktop && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
