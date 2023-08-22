@@ -17,6 +17,11 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
+        BIOS &amp; Firmware Updates:
+          description: Enables BIOS &amp; Firmware updates for Steam Deck hardware
+          default: true
+          packages:
+          - Enable Updates: just --unstable enable-deck-bios-firmware-updates
         BoilR:
           description: Adds games from various clients to Steam
           default: false

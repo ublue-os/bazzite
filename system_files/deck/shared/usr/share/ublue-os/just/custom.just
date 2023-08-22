@@ -252,6 +252,11 @@ unhide-grub:
     sudo grub2-mkconfig -o /boot/grub2/grub.cfg
   fi
 
+enable-deck-bios-firmware-updates:
+  #!/usr/bin/env bash
+  sudo systemctl enable jupiter-biosupdate.service
+  sudo systemctl enable jupiter-controller-update.service
+
 disable-deck-services:
   #!/usr/bin/env bash
   sudo systemctl disable --now jupiter-fan-control.service
