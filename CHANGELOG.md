@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.0.1](https://github.com/ublue-os/bazzite/compare/v1.0.0...v1.0.1) (2023-08-22)
+
+
+### Features
+
+* Add a script for fixing tcmalloc for TF2 ([35beec0](https://github.com/ublue-os/bazzite/commit/35beec01de16a194d557d457497027dfbab7c472))
+* Add Gear Lever flatpak for managing AppImages ([9a1c0cf](https://github.com/ublue-os/bazzite/commit/9a1c0cf5c9a69a486b9bd40fb46493b2870f25db))
+* Add wmctrl, useful for resizing windows under gamemode/gamescope ([f70ef09](https://github.com/ublue-os/bazzite/commit/f70ef092494aa102e91a5ea2393b1721b20bd3c7))
+* **deck:** Add just command to disable deck-hardware-specific services (just disable-deck-services) ([a19ae1f](https://github.com/ublue-os/bazzite/commit/a19ae1f7ae3d56664a2e1496ad17c709b67cedd7))
+* **deck:** Add just commands to disable bios updates & controller firmware updates if desired ([30905ea](https://github.com/ublue-os/bazzite/commit/30905ea74b1ec67aa310fc0dfa54f8f97154962b))
+* **deck:** Restore ddccontrol ([7e6ae0d](https://github.com/ublue-os/bazzite/commit/7e6ae0d6252c297b9d945f574796e7bdd9d02e71))
+* **deck:** Restore KRFB packages (No space is saved removing them) ([658aa0c](https://github.com/ublue-os/bazzite/commit/658aa0c8b5d6dd966f22360d4164855c8e9aaf4b))
+* **deck:** Use new powerbuttond daemon from upstream SteamOS ([676cfdd](https://github.com/ublue-os/bazzite/commit/676cfdde6abf8d1d684a029463f01192933bd556))
+* **desktop:** Include f3 package for drive validation ([83b36ce](https://github.com/ublue-os/bazzite/commit/83b36ce853211a9fd8fa1cc1df104a2748fe766e))
+* **gnome:** Add Hanabi, an extension for using videos as wallpapers. This is similar to KDE's Wallpaper Engine integration. ([86fd1c1](https://github.com/ublue-os/bazzite/commit/86fd1c16f30d536d3c8ee339e8eb49f7beb6c69c))
+* **gnome:** Use new bazzite-arch-gnome image, far faster initial setup than making these same changes on init. ([9746f60](https://github.com/ublue-os/bazzite/commit/9746f60c9afbe46aca1d36b1d4f0f36d2b141b1f))
+* Replace neofetch with more maintained hyfetch (Still available in terminal as neofetch) ([1a36315](https://github.com/ublue-os/bazzite/commit/1a363152f1c4784bb9dce161d47f8cb0457562ef))
+* **user-setup:** Enable NTP by default ([825d69c](https://github.com/ublue-os/bazzite/commit/825d69cadc07e3009b4765c7479c518075d7b349))
+
+
+### Bug Fixes
+
+* Add missing dependency for SteamTinkerLauncher ([1e161b6](https://github.com/ublue-os/bazzite/commit/1e161b6526b9070ac6976c4b02d0d3212ad7e11b))
+* **deck:** Add audio firmware from Valve ([e567213](https://github.com/ublue-os/bazzite/commit/e5672137fb8719b8eca311f6eb852fd40e64ec51))
+* **deck:** Add LibFAudio dependency for Lutris ([be0dd07](https://github.com/ublue-os/bazzite/commit/be0dd07d2ab4f907bef890493b9c293d56f01264))
+* **decky:** Preserve service during upgrades ([ff202a4](https://github.com/ublue-os/bazzite/commit/ff202a45514a17ecd0bde11c3f1d8e74f2273eda))
+* **desktop:** Break up export command for SteamCMD ([24a8945](https://github.com/ublue-os/bazzite/commit/24a89451c916088a1682b01a1311a2f4b477b8d4))
+* **desktop:** Fix syntax error in CoreCtrl setup script ([1558ecd](https://github.com/ublue-os/bazzite/commit/1558ecd58732e01cef6cd3c29c0b3a3bc02df7f7))
+* **desktop:** Generate locales during distrobox setup ([a6b34d3](https://github.com/ublue-os/bazzite/commit/a6b34d3703bf0281442c29a7d5c7a80f70c4333b))
+* **desktop:** Temporarily remove autostart while distrobox bug is worked out ([f2cd00d](https://github.com/ublue-os/bazzite/commit/f2cd00d7120885a64478420fce4843ebbf018be4))
+* Major distrobox cleanup, drop need for separate nvidia & non-nvidia images, drop init hooks, remove exported_apps from assemble to allow stable distrobox on non-nvidia systems. ([85593b6](https://github.com/ublue-os/bazzite/commit/85593b6b5ea3d4acab0e383722ac5a3372f9a07f))
+* Replace additional udisks2 packages ([038c2ae](https://github.com/ublue-os/bazzite/commit/038c2ae3d0f6abf19d1e6168263724394fdd7090))
+* Use system level alias for Fish shell ([73f267c](https://github.com/ublue-os/bazzite/commit/73f267c4916594a6712f70e757d3cd612dbb310f))
+
+
+### Miscellaneous Chores
+
+* release 1.0.1 ([9ad9ddb](https://github.com/ublue-os/bazzite/commit/9ad9ddbbad46fe866e58ef813ab9a64f8c1de77a))
+
 ## [1.0.0](https://github.com/ublue-os/bazzite/compare/v0.1.0...v1.0.0) (2023-08-17)
 
 
