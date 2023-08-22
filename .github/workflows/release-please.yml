@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Generate ISO
-        uses: ublue-os/isogenerator@v2.1.1
+        uses: ublue-os/isogenerator@v2.1.2
         id: isogenerator
         with:
           image-name: bazzite
