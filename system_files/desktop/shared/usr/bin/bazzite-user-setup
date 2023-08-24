@@ -32,6 +32,10 @@ else
   gsettings set org.gnome.software download-updates false
   gsettings set org.gnome.software download-updates-notify false
 
+  echo 'Adjusting Nautilus settings'
+  gsettings set org.gnome.nautilus.preferences show-create-link true
+  gsettings set org.gtk.gtk4.settings.file-chooser sort-directories-first true
+
   echo 'Installing Gradience presets'
   mkdir -p $HOME/.config/presets/user/
   ln -s /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.config/presets/user/vapor.json
