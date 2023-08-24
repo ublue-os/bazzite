@@ -306,6 +306,7 @@ RUN rpm-ostree install \
         rpm-ostree override remove \
             gamemode \
             gnome-shell-extension-gamemode \
+            gnome-shell-extension-appindicator \
     ; fi
 
 # Cleanup & Finalize
