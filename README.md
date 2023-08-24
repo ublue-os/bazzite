@@ -68,7 +68,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - **Automatic `duperemove` greatly trims the size of compatdata.**
 - **Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.**
 - **Able to be booted even if the drive is full.**
-- Uses Wayland on the desktop with [full support for Steam input](https://github.com/Supreeeme/extest).
+- Optionally use Wayland on the desktop with [full support for Steam input](https://github.com/Supreeeme/extest).
 - Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV).
 - Patched Mesa for proper framerate control from Gamescope.
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
@@ -86,7 +86,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
     - Service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj), see `ryzenadj.service` and `/etc/default/ryzenadj`.
     - Service for limiting the max charge level of the battery, see `batterylimit.service` and `/etc/default/batterylimit`. <sup><sub>(Works even when the device is off)</sub></sup>
     - Built in support for display overclocking. For example, add `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` to `/etc/environment`.
-    - Ability to switch back to X11 on the desktop if desired by editing `/etc/default/desktop-wayland`.
+    - Ability to enable Wayland on the desktop if desired by editing `/etc/default/desktop-wayland`.
     - 32GB RAM mod your Steam Deck? Enjoy double the maximum VRAM amount, automatically applied. <sup><sub>(Can you share your soldering skills?)</sub></sup>
 - Steam Deck hardware-specific services can be disabled by running `just disable-deck-services` in the terminal, useful for trying this image on other handhelds or for use on HTPCs.
 
