@@ -56,6 +56,7 @@ RUN rpm-ostree install \
     libadwaita \
     duperemove \
     xwininfo \
+    xrandr \
     rmlint \
     compsize \
     ddccontrol \
