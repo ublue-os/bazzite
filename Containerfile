@@ -116,7 +116,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-compiz-windows-effect \
         gnome-shell-extension-just-perfection \
         gnome-shell-extension-blur-my-shell \
-        gnome-shell-extension-caffeine \
         gnome-shell-extension-hanabi \
         openssh-askpass && \
     rpm-ostree override remove \
