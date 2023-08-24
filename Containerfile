@@ -315,7 +315,6 @@ RUN rm /usr/share/applications/wine*.desktop && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
-    sed -i 's/870/913/' /usr/share/alsa/ucm2/AMD/acp5x/acp5x.conf && \
     sed -i 's@/usr/bin/steam@/usr/bin/bazzite-steam@g' /usr/share/applications/steam.desktop && \
     mkdir -p "/etc/xdg/autostart" && \
     cp "/usr/share/applications/steam.desktop" "/etc/xdg/autostart/steam.desktop" && \
