@@ -123,6 +123,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree override remove \
         gnome-classic-session \
         gnome-tour \
+        gnome-extensions-app \
         yelp \
 ; fi
 
