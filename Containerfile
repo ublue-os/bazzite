@@ -104,6 +104,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
         mutter \
+        mutter-common \
         gnome-control-center \
         gnome-control-center-filesystem \
         xorg-x11-server-Xwayland && \
