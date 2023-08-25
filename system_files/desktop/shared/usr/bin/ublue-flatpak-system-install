@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 source /etc/default/bazzite
 
+FLATPAK_INSTALLED_CONDITION_CHECK="/etc/bazzite/sys_flatpak_configured"
+
+if [[ -f "$FLATPAK_INSTALLED_CONDITION_CHECK" ]] ; then
+  printf "System flatpaks are already installed (%s)" "$FLATPAK_INSTALLED_CONDITION_CHECK"
+  exit 0
+fi
+
 if grep -qz 'fedora' <<< $(flatpak remotes); then
   /usr/lib/fedora-third-party/fedora-third-party-opt-out
   /usr/bin/fedora-third-party disable
@@ -29,3 +36,5 @@ if [[ -f '/etc/flatpak/deck' ]]; then
 fi
 
 rm -rf /etc/flatpak/{deck,flathub,objects}
+mkdir /etc/bazzite
+touch "$FLATPAK_INSTALLED_CONDITION_CHECK"
