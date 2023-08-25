@@ -1,6 +1,23 @@
 #!/usr/bin/env bash
 source /etc/default/bazzite
 
+if [[ -f "${HOME}/.justfile" ]]; then
+  if grep -Eqvz "main|nvidia|custom" "${HOME}/.justfile"; then
+    mv "${HOME}/.justfile" "${HOME}/.justfile.old"
+    cd /usr/share/ublue-os/just
+    for justfile in *.just; do
+      echo "!include ${PWD}/${justfile}" >> "${HOME}/.justfile"
+    done
+    cd ~
+  fi
+else
+  cd /usr/share/ublue-os/just
+  for justfile in *.just; do
+    echo "!include ${PWD}/${justfile}" >> "${HOME}/.justfile"
+  done
+  cd ~
+fi
+
 if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Running setup for Kinoite'
 
