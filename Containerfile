@@ -306,7 +306,6 @@ RUN rpm-ostree install \
         steam \
         lutris \
         libFAudio \
-        gamescope \
         gamescope-session \
         wine-core \
         winetricks && \
