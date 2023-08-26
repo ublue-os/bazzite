@@ -138,8 +138,11 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         waydroid \
         lzip \
         weston \
-        firejail \
-        OpenGamepadUI \
+        firejail && \
+    wget $(curl -s https://api.github.com/repos/ShadowBlip/OpenGamepadUI/releases/latest | \
+    jq -r ".assets[] | select(.name | test(\"opengamepadui.tar.gz\")) | .browser_download_url") -P /tmp && \
+    tar xvfz /tmp/opengamepadui.tar.gz -C /tmp && \
+    make -C /tmp/opengamepadui install PREFIX=/usr \
 ; else \
     rpm-ostree override remove \
         distrobox && \
