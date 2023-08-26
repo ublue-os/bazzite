@@ -29,6 +29,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) preinstalled and enabled. <sub><sup>(Available but default-disabled on the Deck variant)</sup></sub>
 - Helpful first-start installer provides an easy way to install numerous applications and tweaks, including installing [CoreCtrl](https://gitlab.com/corectrl/corectrl) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
+- [OpenGamepadUI](https://github.com/ShadowBlip/OpenGamepadUI) built in as an optional alternative to Valve's Game Mode.
 - [Nix](https://nixos.org/) package manager optionally available.
 - [Waydroid](https://waydro.id/) preinstalled for running Android apps. Future releases will offer to set this up for you. <sub><sup>(Not available on Nvidia builds)</sup></sub>
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
@@ -171,6 +172,8 @@ Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built o
 |[mangohud](https://github.com/flightlessmango/MangoHud)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/package/mangohud/status_image/last_build.png?)|
 |mesa|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/package/mesa/status_image/last_build.png?)|
 |powerbuttond|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/powerbuttond/status_image/last_build.png?)|
+|[OpenGamepadUI](https://github.com/ShadowBlip/OpenGamepadUI)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/OpenGamepadUI/status_image/last_build.png?)|
+|OpenGamepadUI-session|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/OpenGamepadUI-session/status_image/last_build.png?)|
 |[python3-hid](https://github.com/apmorton/pyhidapi)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/python3-hid/status_image/last_build.png?)|
 |[ryzenadj](https://github.com/FlyGoat/RyzenAdj)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/ryzenadj/status_image/last_build.png?)|
 |[sddm-sugar-steamOS](https://github.com/JiayuanWen/sddm-sugar-steamOS)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/sddm-sugar-steamOS/status_image/last_build.png?)|
