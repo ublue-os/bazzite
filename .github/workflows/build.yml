@@ -1,4 +1,4 @@
-name: Bazzite
+name: Build Bazzite
 on:
   schedule:
     - cron: '0 9 * * 2,5' # 9 am utc tues thurs
