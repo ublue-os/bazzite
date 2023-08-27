@@ -14,6 +14,8 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
 
+Requires: python3-evdev
+
 %description
 Handheld Game Console Controller Support (Handy Geeks) for Linux
 
