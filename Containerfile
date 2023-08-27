@@ -7,6 +7,7 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-38}"
 FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
+ARG IMAGE_VENDOR="ublue-os"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
@@ -193,7 +194,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
         systemctl disable waydroid-container.service && \
         rm /usr/share/wayland-sessions/weston.desktop \
     ; fi && \
-    echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
+    echo -e "IMAGE_NAME=${IMAGE_NAME}\nIMAGE_VENDOR=${IMAGE_VENDOR}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
     rm -rf \
         /tmp/* \
         /var/* && \
@@ -205,6 +206,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
 FROM bazzite as bazzite-deck
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
+ARG IMAGE_VENDOR="ublue-os"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
@@ -352,7 +354,7 @@ RUN rm /usr/share/applications/wine*.desktop && \
     systemctl --global disable ublue-update.timer && \
     rm -f /usr/etc/sddm.conf && \
     rm -f /etc/default/bazzite && \
-    echo -e "IMAGE_NAME=${IMAGE_NAME}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
+    echo -e "IMAGE_NAME=${IMAGE_NAME}\nIMAGE_VENDOR=${IMAGE_VENDOR}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /etc/default/bazzite && \
     rm -rf \
         /tmp/* \
         /var/* && \
