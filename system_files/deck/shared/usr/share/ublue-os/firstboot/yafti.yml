@@ -205,6 +205,8 @@ screens:
         Optionally apply a Valve-inspired theme to GNOME via Gradience. Note that custom themes are not officially supported by GNOME and some applications can break. Please avoid reporting issues to application developers until you've tested against the default theme.
   sign-image:
     source: yafti.screen.consent
+    condition:
+      run: grep -qvz "signed" <<< $(rpm-ostree status)
     values:
       title: Sign Bazzite
       description: |
