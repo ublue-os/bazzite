@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 source /etc/default/bazzite
 
-FLATPAK_INSTALLED_CONDITION_CHECK="/etc/bazzite/sys_flatpak_configured"
+DONEFILE="/etc/bazzite/sys_flatpak_done"
 
-if [[ -f "$FLATPAK_INSTALLED_CONDITION_CHECK" ]] ; then
-  printf "System flatpaks are already installed (%s)" "$FLATPAK_INSTALLED_CONDITION_CHECK"
+if [[ -f "$DONEFILE" ]] ; then
+  printf "System flatpaks were already installed. To run this script again, delete %s\n" "$DONEFILE"
   exit 0
 fi
 
@@ -36,5 +36,5 @@ if [[ -f '/etc/flatpak/deck' ]]; then
 fi
 
 rm -rf /etc/flatpak/{deck,flathub,objects}
-mkdir /etc/bazzite
-touch "$FLATPAK_INSTALLED_CONDITION_CHECK"
+mkdir -p "$(dirname "$DONEFILE")"
+touch "$DONEFILE"

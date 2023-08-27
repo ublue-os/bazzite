@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 source /etc/default/bazzite
 
+DONEFILE=/etc/bazzite/hardware_setup_done
+if [[ -e "$DONEFILE" ]] ; then 
+  printf "Hardware was already properly set up. To run this script again, delete %s\n" "$DONEFILE"
+  exit 0
+fi
+
 # GLOBAL
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 KARGS=$(rpm-ostree kargs)
@@ -75,9 +81,11 @@ if [[ ! $KARGS =~ "rd.luks.options" ]]; then
   NEEDED_KARGS="$NEEDED_KARGS --append=rd.luks.options=discard"
 fi
 
-if [[ ! -z "$NEEDED_KARGS" ]]; then
+if [[ -n "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: $NEEDED_KARGS"
-  rpm-ostree kargs ${NEEDED_KARGS} --reboot
+  rpm-ostree kargs ${NEEDED_KARGS} --reboot || exit 1
+  mkdir -p "$(dirname "$DONEFILE")"
+  touch "$DONEFILE"
 else
   echo "No karg changes needed"
 fi
