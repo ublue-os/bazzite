@@ -35,7 +35,6 @@ configure-waydroid:
   deactivate
   rm -rf ~/waydroid_script
 
-
 install-corectrl:
   echo 'Installing CoreCtrl...'
   rpm-ostree install corectrl
@@ -192,3 +191,29 @@ unhide-grub:
   else
     sudo grub2-mkconfig -o /boot/grub2/grub.cfg
   fi
+
+sign-image:
+  rpm-ostree rebase ostree-image-signed:$(just --unstable _get-image)
+
+_get-image:
+  #!/usr/bin/env python
+  from json import loads
+  from subprocess import PIPE, run
+
+  """Pull deployment status via rpm-ostree"""
+  status = "rpm-ostree status --json"
+  out = run(status, shell=True, stdout=PIPE).stdout
+
+  """Parse current image"""
+  deployments = loads(out)["deployments"][0]
+  current_image = deployments["container-image-reference"].split(":", 1)
+
+  """Dissect current image to form URL to latest image"""
+  protocol = "docker://"
+  url = current_image[1]
+
+  """Add protocol if URL doesn't contain it"""
+  if protocol not in url:
+    url = protocol + url
+
+  print(url)
