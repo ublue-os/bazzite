@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 source /etc/default/bazzite
 
-DONEFILE="/etc/bazzite/sys_flatpak_done"
-
-if [[ -f "$DONEFILE" ]] ; then
-  printf "System flatpaks were already installed. To run this script again, delete %s\n" "$DONEFILE"
-  exit 0
-fi
-
 if grep -qz 'fedora' <<< $(flatpak remotes); then
   /usr/lib/fedora-third-party/fedora-third-party-opt-out
   /usr/bin/fedora-third-party disable
@@ -36,5 +29,3 @@ if [[ -f '/etc/flatpak/deck' ]]; then
 fi
 
 rm -rf /etc/flatpak/{deck,flathub,objects}
-mkdir -p "$(dirname "$DONEFILE")"
-touch "$DONEFILE"

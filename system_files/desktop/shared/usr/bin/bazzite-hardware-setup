@@ -2,10 +2,6 @@
 source /etc/default/bazzite
 
 DONEFILE=/etc/bazzite/hardware_setup_done
-if [[ -e "$DONEFILE" ]] ; then 
-  printf "Hardware was already properly set up. To run this script again, delete %s\n" "$DONEFILE"
-  exit 0
-fi
 
 # GLOBAL
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
