@@ -142,7 +142,8 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
     wget $(curl -s https://api.github.com/repos/ShadowBlip/OpenGamepadUI/releases/latest | \
     jq -r ".assets[] | select(.name | test(\"opengamepadui.tar.gz\")) | .browser_download_url") -P /tmp && \
     tar xvfz /tmp/opengamepadui.tar.gz -C /tmp && \
-    make -C /tmp/opengamepadui install PREFIX=/usr \
+    make -C /tmp/opengamepadui install PREFIX=/usr && \
+    rm /usr/lib/systemd/user/ogui-qam.service \
 ; else \
     rpm-ostree override remove \
         distrobox && \
@@ -153,7 +154,6 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
 # Cleanup & Finalize
 RUN rm /usr/share/applications/shredder.desktop && \
     rm /usr/share/vulkan/icd.d/lvp_icd.*.json && \
-    rm /usr/lib/systemd/user/ogui-qam.service && \
     mkdir -p "/usr/etc/profile.d/" && \
     ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
     "/usr/etc/profile.d/ublue-firstboot.sh" && \

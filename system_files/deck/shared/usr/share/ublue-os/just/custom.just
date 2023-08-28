@@ -2,7 +2,6 @@ enable-gamescope:
   #!/usr/bin/env bash
   source /etc/default/bazzite
   sudo sed -i 's/true/false/g' /etc/default/ogui-qam
-  systemctl is-enabled --quiet gamepadui-autologin && systemctl disable --now gamepadui-autologin
   systemctl is-enabled --quiet opengamepadui-autologin && systemctl disable --now opengamepadui-autologin
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     systemctl is-enabled --quiet gnome-autologin && systemctl disable --now gnome-autologin
@@ -15,7 +14,6 @@ enable-gamescope-ogui-qam:
   #!/usr/bin/env bash
   source /etc/default/bazzite
   sudo sed -i 's/false/true/g' /etc/default/ogui-qam
-  systemctl is-enabled --quiet gamepadui-autologin && systemctl disable --now gamepadui-autologin
   systemctl is-enabled --quiet opengamepadui-autologin && systemctl disable --now opengamepadui-autologin
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     systemctl is-enabled --quiet gnome-autologin && systemctl disable --now gnome-autologin
@@ -28,7 +26,6 @@ enable-opengamepadui:
   #!/usr/bin/env bash
   source /etc/default/bazzite
   systemctl is-enabled --quiet gamescope-autologin && systemctl disable --now gamescope-autologin
-  systemctl is-enabled --quiet gamepadui-autologin && systemctl disable --now gamepadui-autologin
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     systemctl is-enabled --quiet gnome-autologin && systemctl disable --now gnome-autologin
   elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
