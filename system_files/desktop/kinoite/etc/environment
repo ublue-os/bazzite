@@ -2,5 +2,5 @@
 # Nvidia users must additionally have nvidia-drm.modeset=1 in their kargs
 OBS_USE_EGL=1
 
-# Required for Decky Loader on systems with SELinux
-DECKY_SELINUX=1
+# VIM is more usable on deck due to control scheme
+EDITOR=/usr/bin/vim
