@@ -40,13 +40,13 @@ function check_sentinel()
     if [[ "$sentinel_value" == "wayland" ]]; then
       if [[ ${BASE_IMAGE_NAME} == "kinoite" ]]; then
         echo "/usr/bin/startplasma-wayland"
-      if [[ ${BASE_IMAGE_NAME} == "silverblue" ]]; then
+      elif [[ ${BASE_IMAGE_NAME} == "silverblue" ]]; then
         echo "/usr/bin/gnome-session"
       fi
     elif [[ "$sentinel_value" == "x11" ]]; then
       if [[ ${BASE_IMAGE_NAME} == "kinoite" ]]; then
         echo "/usr/bin/startplasma-x11"
-      if [[ ${BASE_IMAGE_NAME} == "silverblue" ]]; then
+      elif [[ ${BASE_IMAGE_NAME} == "silverblue" ]]; then
         echo "/usr/bin/gnome-session"
       fi
     else
