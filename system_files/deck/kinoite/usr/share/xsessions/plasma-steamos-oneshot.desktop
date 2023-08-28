@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=XSession
-Exec=/usr/bin/startplasma-steamos-oneshot
+Exec=/usr/bin/steamos-session-oneshot
 TryExec=/usr/bin/steamos-session-oneshot
 DesktopNames=KDE (One-Time Launch)
 Name=Plasma (One-Time Launch)
