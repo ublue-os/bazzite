@@ -35,7 +35,6 @@ configure-waydroid:
   deactivate
   rm -rf ~/waydroid_script
 
-
 install-corectrl:
   echo 'Installing CoreCtrl...'
   rpm-ostree install corectrl
@@ -192,3 +191,8 @@ unhide-grub:
   else
     sudo grub2-mkconfig -o /boot/grub2/grub.cfg
   fi
+
+sign-image:
+  #!/usr/bin/env bash
+  source /etc/default/bazzite
+  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/${IMAGE_VENDOR}/${IMAGE_NAME}:${FEDORA_MAJOR_VERSION}

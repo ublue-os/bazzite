@@ -31,8 +31,6 @@ configure-waydroid:
   deactivate
   rm -rf ~/waydroid_script
 
-
-
 get-decky:
   #!/usr/bin/env bash
   export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
@@ -284,3 +282,8 @@ _toggle_wayland:
   else
     sudo sed -i 's/false/true/g' /etc/default/desktop-wayland
   fi
+
+sign-image:
+  #!/usr/bin/env bash
+  source /etc/default/bazzite
+  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/${IMAGE_VENDOR}/${IMAGE_NAME}:${FEDORA_MAJOR_VERSION}

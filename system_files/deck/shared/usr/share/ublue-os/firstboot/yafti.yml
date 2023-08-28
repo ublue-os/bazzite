@@ -10,6 +10,16 @@ screens:
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
         Configure your system to get started. Completion of this process is required for Game mode to function.
+  sign-image:
+    source: yafti.screen.consent
+    condition:
+      run: grep -qvz "signed" <<< $(rpm-ostree status)
+    values:
+      title: Sign Bazzite
+      description: |
+        This will sign your current install of Bazzite. Note that this may take awhile.
+      actions:
+        - run: just --unstable sign-image
   configure-bazzite:
     source: yafti.screen.package
     values:

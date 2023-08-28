@@ -10,6 +10,16 @@ screens:
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
         Configure your system to get started
+  sign-image:
+    source: yafti.screen.consent
+    condition:
+      run: grep -qvz "signed" <<< $(rpm-ostree status)
+    values:
+      title: Sign Bazzite
+      description: |
+        This will sign your current install of Bazzite. Note that this may take awhile.
+      actions:
+        - run: just --unstable sign-image
   configure-bazzite-arch:
     source: yafti.screen.package
     values:
