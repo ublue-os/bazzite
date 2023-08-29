@@ -1,0 +1,10 @@
+diff --git a/etc/xdg/autostart/ibus.desktop b/etc/xdg/autostart/ibus.desktop
+index c4819e1..acb7b0f 100644
+--- a/etc/xdg/autostart/ibus.desktop
++++ b/etc/xdg/autostart/ibus.desktop
+@@ -3,4 +3,4 @@ Name=IBus
+ Comment=Input method framework daemon
+ OnlyShowIn=KDE
+ Type=Application
+-Exec=ibus-daemon --panel=/usr/lib/kimpanel-ibus-panel
++Exec=ibus-daemon --panel=/usr/libexec/kimpanel-ibus-panel

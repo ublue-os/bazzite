@@ -7,6 +7,7 @@ URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz
 BuildArch:      noarch
+Patch0:         fedora.patch
 
 Requires:       kde-filesystem
 
@@ -19,7 +20,7 @@ KDE Presets from Valve's SteamOS 3.0
 %define debug_package %{nil}
 
 %prep
-%setup -n %{name}-master
+%autosetup -p1 -n %{name}-master
 
 %build
 
