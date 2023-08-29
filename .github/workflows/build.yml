@@ -14,6 +14,7 @@ on:
   push:
     branches:
       - main
+      - testing
     paths-ignore:
       - '**.md'
       - '**.txt'
@@ -23,7 +24,8 @@ on:
   merge_group:
   workflow_dispatch:
 env:
-    IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  BRANCH_NAME: ${{ github.base_ref || github.ref_name }}
 
 jobs:
   push-ghcr:
@@ -116,11 +118,18 @@ jobs:
               COMMIT_TAGS+=("${SHA_SHORT}")
           fi
 
-          BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
-
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-             [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-              BUILD_TAGS+=("latest")
+          if [[ ${{ env.BRANCH_NAME }} == "refs/heads/testing" ]]; then
+             BUILD_TAGS=("${MAJOR_VERSION}-testing" "${MAJOR_VERSION}-testing-${TIMESTAMP}")
+             if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
+                [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
+                 BUILD_TAGS+=("testing")
+             fi
+          else
+             BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
+             if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
+                [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
+                 BUILD_TAGS+=("latest")
+             fi
           fi
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
