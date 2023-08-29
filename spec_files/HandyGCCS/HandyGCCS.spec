@@ -4,7 +4,7 @@ Version:        2.0.0
 Release:        1%{?dist}
 Summary:        Handheld Game Console Controller Support (Handy Geeks) for Linux
 
-License:        GPL-v3
+License:        GPLv3
 URL:            https://github.com/ShadowBlip/%{name}
 Source:         %{url}/archive/refs/heads/main.zip
 Patch0:         fedora.patch
