@@ -46,7 +46,6 @@ RUN rpm-ostree override remove \
     ublue-os-update-services \
     firefox \
     firefox-langpacks \
-    toolbox \
     htop \
     google-noto-sans-cjk-vf-fonts
 
