@@ -9,6 +9,9 @@ install-bazzite-arch:
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
   distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
+  mkdir -p ~/.config/autostart/
+  cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam.desktop
+  sed -i 's@/usr/bin/bazzite-steam-runtime  %U@/usr/bin/bazzite-steam-runtime -silent  %U@g' ~/.config/autostart/bazzite-arch-steam.desktop
   mkdir -p $HOME/.steam
   distrobox-enter -n bazzite-arch -- '  distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam'
   mv $HOME/.steam/steamcmd $HOME/.steam/steamcmd.sh
@@ -55,8 +58,11 @@ enable-big-picture:
   elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
     systemctl enable --now plasma-autologin
   fi
-  sed -i 's@/usr/bin/bazzite-steam-runtime -silent  %U@/usr/bin/bazzite-steam-runtime -bigpicture  %U@g' ~/.config/autostart/bazzite-arch-steam-silent.desktop
-  mv ~/.config/autostart/bazzite-arch-steam-silent.desktop ~/.config/autostart/bazzite-arch-steam-bigpicture.desktop
+  mkdir -p ~/.config/autostart/
+  rm ~/.config/autostart/bazzite-arch-steam.desktop
+  cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam.desktop
+  sed -i 's@/usr/bin/bazzite-steam-runtime  %U@/usr/bin/bazzite-steam-runtime -bigpicture  %U@g' ~/.config/autostart/bazzite-arch-steam.desktop
+  mv ~/.config/autostart/bazzite-arch-steam.desktop ~/.config/autostart/bazzite-arch-steam-bigpicture.desktop
 
 get-greenlight:
   echo 'Retrieving Greenlight'
