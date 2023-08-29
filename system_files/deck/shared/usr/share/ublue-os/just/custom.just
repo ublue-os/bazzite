@@ -294,6 +294,5 @@ _toggle_wayland:
   fi
 
 sign-image:
-  #!/usr/bin/env bash
-  source /etc/default/bazzite
+  source /etc/default/bazzite && \
   rpm-ostree rebase ostree-image-signed:docker://ghcr.io/${IMAGE_VENDOR}/${IMAGE_NAME}:${FEDORA_MAJOR_VERSION}
