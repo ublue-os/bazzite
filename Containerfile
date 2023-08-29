@@ -367,6 +367,7 @@ RUN rpm-ostree override replace \
         kernel-modules \
         kernel-modules-core \
         kernel-modules-extra \
+        kernel-uki-virt \
         kernel-devel \
         kernel-devel-matched && \
     rpm-ostree override install \
