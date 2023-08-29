@@ -15,6 +15,7 @@ on:
     branches:
       - main
       - testing
+      - unstable
     paths-ignore:
       - '**.md'
       - '**.txt'
@@ -118,7 +119,13 @@ jobs:
               COMMIT_TAGS+=("${SHA_SHORT}")
           fi
 
-          if [[ ${{ env.BRANCH_NAME }} == "refs/heads/testing" ]]; then
+          if [[ ${{ env.BRANCH_NAME }} == "refs/heads/unstable" ]]; then
+             BUILD_TAGS=("${MAJOR_VERSION}-unstable" "${MAJOR_VERSION}-unstable-${TIMESTAMP}")
+             if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
+                [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
+                 BUILD_TAGS+=("unstable")
+             fi
+          elif [[ ${{ env.BRANCH_NAME }} == "refs/heads/testing" ]]; then
              BUILD_TAGS=("${MAJOR_VERSION}-testing" "${MAJOR_VERSION}-testing-${TIMESTAMP}")
              if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
                 [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
