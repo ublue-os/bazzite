@@ -1,7 +1,28 @@
 #!/bin/bash
 
+# The Steam client is known to call this script with the following parameter combinations:
+# steamos-update --supports-duplicate-detection     -- should do nothing
+# steamos-update --enable-duplicate-detection check -- should check for update
+# steamos-update check                              -- should check for update
+# steamos-update                                    -- should perform an update
+
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    check)
+      CHECK=1
+      shift
+      ;;
+    *)
+      SKIP=1
+      shift
+      ;;
+  esac
+done
+
+
 if command -v ublue-update > /dev/null; then
-  if [ "$1" == "check" ]; then
+  if [ -n "${CHECK}" ]; then
     if [ -f '/tmp/upgrade-installed' ]; then
       exit 7 # Upgrade already installed
     else
@@ -19,7 +40,7 @@ if command -v ublue-update > /dev/null; then
         exit 7 # Connectivity check failed
       fi
     fi
-  elif [ "$1" == "--supports-duplicate-detection" ]; then
+  elif [ -n "${SKIP}" ]; then
     exit 0
   else
     # Fake upgrade progress bar
