@@ -126,7 +126,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-classic-session \
         gnome-tour \
         gnome-extensions-app \
-        yelp \
 ; fi
 
 # Install ROCM and Waydroid on non-Nvidia images
@@ -279,6 +278,9 @@ RUN rpm-ostree install \
     vkBasalt \
     mangohud \
     sdgyrodsu \
+    ibus-pinyin \
+    ibus-table-chinese-cangjie \
+    ibus-table-chinese-quick \
     python-vdf \
     python-crcmod && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
