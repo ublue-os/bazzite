@@ -10,8 +10,6 @@ on:
       - '**.txt'
       - 'repo_content/**'
       - 'spec_files/**'
-  pull_request_review:
-    type: [submitted]
   push:
     branches:
       - main
@@ -28,7 +26,6 @@ env:
 jobs:
   push-ghcr:
     name: Build and push image
-    if: github.event.review.state == 'approved' || github.event_name != 'pull_request_review'
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -100,7 +97,7 @@ jobs:
               BUILD_TAGS+=("latest")
           fi
 
-          if [[ "${{ github.event_name }}" == "pull_request_review" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
               echo "Generated the following commit tags: "
               for TAG in "${COMMIT_TAGS[@]}"; do
                   echo "${TAG}"
@@ -167,7 +164,7 @@ jobs:
       - name: Push To GHCR
         uses: redhat-actions/push-to-registry@v2
         id: push
-        if: github.event.review.state == 'approved' || github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request'
         env:
           REGISTRY_USER: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ github.token }}
@@ -182,7 +179,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
-        if: github.event.review.state == 'approved' || github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -190,10 +187,10 @@ jobs:
 
       # Sign container
       - uses: sigstore/cosign-installer@v3.1.1
-        if: github.event.review.state == 'approved' || github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request'
 
       - name: Sign container image
-        if: github.event.review.state == 'approved' || github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request'
         run: |
           cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
         env:
@@ -202,6 +199,6 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
 
       - name: Echo outputs
-        if: github.event.review.state == 'approved' || github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request'
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"
