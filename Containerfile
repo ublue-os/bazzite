@@ -284,6 +284,7 @@ RUN rpm-ostree install \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     powerbuttond \
+    HandyGCCS \
     vpower \
     ds-inhibit \
     steam_notif_daemon \
