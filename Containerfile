@@ -149,6 +149,8 @@ RUN rm /usr/share/applications/shredder.desktop && \
     mkdir -p "/usr/etc/profile.d/" && \
     ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
     "/usr/etc/profile.d/ublue-firstboot.sh" && \
+    ln -s "/usr/share/fonts/google-noto-sans-cjk-fonts" \
+    "/usr/share/fonts/noto-cjk" && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     pip install --prefix=/usr yafti && \
     pip install --prefix=/usr hyfetch && \
