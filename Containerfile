@@ -359,7 +359,9 @@ RUN wget https://copr.fedorainfracloud.org/coprs/lukenukem/asus-linux/repo/fedor
     wget https://copr.fedorainfracloud.org/coprs/lukenukem/asus-kernel/repo/fedora-$(rpm -E %fedora)/lukenukem-asus-kernel-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_lukenukem-asus-kernel.repo
 
 # Asus additions
-RUN rpm-ostree override replace \
+# Remove kmods to allow replacement kernel
+RUN rpm-ostree override remove $(rpm -qa kmod-* --qf "%{NAME} " | sed 's/kmod-libs//') && \
+    rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:lukenukem:asus-kernel \
         kernel \
