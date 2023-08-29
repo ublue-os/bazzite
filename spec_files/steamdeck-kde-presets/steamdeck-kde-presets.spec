@@ -36,6 +36,7 @@ cp -rv etc/* %{buildroot}%{_sysconfdir}
 mv %{buildroot}%{_sysconfdir}/skel %{buildroot}%{_sysconfdir}/skel.d
 # Remove unneeded files
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/steam.desktop
+rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
 rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
 
