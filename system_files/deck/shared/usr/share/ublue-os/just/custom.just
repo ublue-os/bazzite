@@ -20,16 +20,13 @@ enable-desktop-autologin:
 
 configure-waydroid:
   #!/usr/bin/env bash
-  cd ~
-  git clone https://github.com/casualsnek/waydroid_script
-  cd ~/waydroid_script
-  python -m venv venv
-  source venv/bin/activate
-  sudo pip install -r ~/waydroid_script/requirements.txt
-  sudo ~/waydroid_script/main.py
-  sudo pip uninstall -r ~/waydroid_script/requirements.txt -y
+  git clone https://github.com/casualsnek/waydroid_script.git --depth 1 /tmp/waydroid_script
+  python -m venv /tmp/waydroid_script/venv
+  source /tmp/waydroid_script/venv/bin/activate
+  sudo pip install -r /tmp/waydorid_script/requirements.txt
+  sudo /tmp/waydroid_script/main.py
   deactivate
-  rm -rf ~/waydroid_script
+  sudo rm -rf /tmp/waydroid_script
 
 get-decky:
   #!/usr/bin/env bash
