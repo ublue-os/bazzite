@@ -8,6 +8,7 @@ URL:            https://github.com/ublue-os/bazzite
 Source:        	https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz
 Patch0:         fedora.patch
 Patch1:         selinux.patch
+Patch2:         audio.patch
 
 Requires:       python3
 Requires:       python3-evdev

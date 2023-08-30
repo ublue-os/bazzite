@@ -1,10 +1,10 @@
 [Unit]
-Description=Enables autologin to Plasma (X11)
+Description=Enables autologin to opengamepadui-session
 Before=systemd-user-sessions.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/plasma-autologin
+ExecStart=/usr/bin/opengamepadui-autologin
 
 [Install]
 WantedBy=multi-user.target

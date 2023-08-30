@@ -136,6 +136,12 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         waydroid \
         lzip \
         weston \
+        firejail && \
+    wget $(curl -s https://api.github.com/repos/ShadowBlip/OpenGamepadUI/releases/latest | \
+    jq -r ".assets[] | select(.name | test(\"opengamepadui.tar.gz\")) | .browser_download_url") -P /tmp && \
+    tar xvfz /tmp/opengamepadui.tar.gz -C /tmp && \
+    make -C /tmp/opengamepadui install PREFIX=/usr && \
+    rm /usr/lib/systemd/user/ogui-qam.service \
 ; else \
     rpm-ostree override remove \
         distrobox && \
@@ -303,8 +309,8 @@ RUN rpm-ostree install \
         steam \
         lutris \
         libFAudio \
-        gamescope \
         gamescope-session \
+        OpenGamepadUI-session \
         wine-core \
         winetricks && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
