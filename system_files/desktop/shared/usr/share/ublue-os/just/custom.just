@@ -1,7 +1,26 @@
+help:
+  echo "install-bazzite-arch: Creates a bazzite-arch distrobox container"
+  echo "configure-waydroid: Sets up waydroid"
+  echo "install-corectl: Installs corectl"
+  echo "install-nix: Installs the nix package manager using determinate systems installer"
+  echo "remove-nix: Uninstalls the nix package manager"
+  echo "enable-auto-login: Enables auto login"
+  echo "get-greenlight: Installs greenlight AppImage"
+  echo "enable-supergfxctl: Enables supergfxctl"
+  echo "fix-tf2-tcmalloc: Fixes TF2 crash at start issue"
+  echo "enable-vapor-theme: Enables the vapor theme, only supported on GNOME"
+  echo "enable-vgui2-theme: Enables vgui2 theme, only supported on GNOME"
+  echo "set-btrfs-flags: Sets BTRFS flags"
+  echo "zram-on: Enables zram"
+  echo "zram-off: Disables zram"
+  echo "resize-zram: Resizes zram"
+  echo "hide-grub: System will boot without showing the grub screen with options"
+  echo "unhide-grub: System will boot with the grub screen showing options"
+  echo "sign-image: Signs the oci ostree image"
+  
 install-bazzite-arch:
   #!/usr/bin/env bash
-  source /etc/default/bazzite
-  
+  source /etc/default/bazzite  
   echo 'Installing Bazzite Arch...'
   distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch
   distrobox-enter -n bazzite-arch -- '  sudo locale-gen'
