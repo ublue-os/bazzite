@@ -27,16 +27,7 @@ install-bazzite-arch:
 
 configure-waydroid:
   #!/usr/bin/env bash
-  cd ~
-  git clone https://github.com/casualsnek/waydroid_script
-  cd ~/waydroid_script
-  python -m venv venv
-  source venv/bin/activate
-  sudo pip install -r ~/waydroid_script/requirements.txt
-  sudo ~/waydroid_script/main.py
-  sudo pip uninstall -r ~/waydroid_script/requirements.txt -y
-  deactivate
-  rm -rf ~/waydroid_script
+  cd ~ && sudo rm -rf ~/waydroid_script/ && git clone https://github.com/casualsnek/waydroid_script && cd ~/waydroid_script && python -m venv venv && source venv/bin/activate && sudo pip install -r requirements.txt && sudo ~/waydroid_script/main.py && deactivate && sudo rm -rf ~/waydroid_script/
 
 install-corectrl:
   echo 'Installing CoreCtrl...'
