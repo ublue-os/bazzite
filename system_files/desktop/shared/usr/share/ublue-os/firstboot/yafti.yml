@@ -41,6 +41,11 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
+        Enable Auto Login:
+          description: Skip the login screen and boot straight to the desktop
+          default: false
+          packages:
+          - Enable Auto Login: just --unstable enable-auto-login
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
@@ -62,11 +67,6 @@ screens:
           default: false
           packages:
           - Install Nix Package Support: sudo -A just --unstable install-nix
-        Start Steam in Big Picture Mode:
-          description: For HTPCs, start Steam in Big Picture Mode automatically at login.
-          default: false
-          packages:
-          - Enable Big Picture Mode: just --unstable enable-big-picture
   amd-additions:
     source: yafti.screen.package
     values:
