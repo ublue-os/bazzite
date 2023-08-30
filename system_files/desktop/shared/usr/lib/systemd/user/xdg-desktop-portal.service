@@ -1,0 +1,11 @@
+[Unit]
+Description=Portal service
+PartOf=graphical-session.target
+
+[Service]
+Restart=on-failure
+RestartSec=5s
+Type=dbus
+BusName=org.freedesktop.portal.Desktop
+ExecStart=/usr/libexec/xdg-desktop-portal
+Slice=session.slice
