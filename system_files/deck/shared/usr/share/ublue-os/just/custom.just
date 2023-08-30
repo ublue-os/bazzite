@@ -1,3 +1,32 @@
+help:
+  echo "enable-gamescope-autologin: Enables gamescope autologin"
+  echo "enable-desktop-autologin: Enables desktop autologin"
+  echo "configure-waydroid: Sets up waydroid"
+  echo "get-decky: Installs decky loader"
+  echo "get-emudeck: Sets up emudeck"
+  echo "get-steamcmd: Installs the command line version of the Steam client"
+  echo "install-nix: Installs the nix package manager using Determinate Systems installer"
+  echo "remove-nix: Removes the nix package manager"
+  echo "get-greenlight: Installs Greenlight AppImage"
+  echo "get-boilr: Sets up BoilR which puts all games on the system in the Steam library including image art"
+  echo "fix-tf2-tcmalloc: Fixes TF2 crash at start issue"
+  echo "enable-vapor-theme: Enables the vapor theme, only supported on GNOME"
+  echo "enable-vgui2-theme: Enables vgui2 theme, only supported on GNOME"
+  echo "deckswap-on: Enables deckswap service"
+  echo "deckswap-off: Disables deckswap service"
+  echo "resize-deckswap: Resizes the deckswap"
+  echo "switch-to-ext4: Sets SD card format to ext4"
+  echo "zram-on: Enables zram"
+  echo "zram-off: Disables zram"
+  echo "resize-zram: Resizes zram"
+  echo "hide-grub: System will boot without showing the grub screen with options"
+  echo "unhide-grub: System will boot with the grub screen showing options"
+  echo "enable-deck-bios-firmware-updates: Enables deck BIOS firmware updates"
+  echo "disable-deck-services: Disables any deck related hardware services"
+  echo "disable-bios-updates: Disables BIOS updates"
+  echo "toggle-wayland: Toggles wayland"
+  echo "sign-image: Signs the oci ostree image"
+
 enable-gamescope-autologin:
   #!/usr/bin/env bash
   source /etc/default/bazzite
@@ -277,7 +306,7 @@ disable-firmware-updates:
   #!/usr/bin/env bash
   sudo systemctl disable --now jupiter-controller-update.service
 
-_toggle_wayland:
+toggle-wayland:
   #!/usr/bin/env bash
   source /etc/default/desktop-wayland
   if ${DESKTOP_WAYLAND}; then
