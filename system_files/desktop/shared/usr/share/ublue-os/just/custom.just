@@ -1,25 +1,23 @@
 install-bazzite-arch:
-  #!/usr/bin/env bash
-  source /etc/default/bazzite
-  
-  echo 'Installing Bazzite Arch...'
-  distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch
-  distrobox-enter -n bazzite-arch -- '  sudo locale-gen'
-  distrobox-enter -n bazzite-arch -- '  /usr/bin/bazzite-steam-runtime --silent &>/dev/null &'
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam'
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris'
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks'
-  mkdir -p $HOME/.steam
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam'
-  mv $HOME/.steam/steamcmd $HOME/.steam/steamcmd.sh
-  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-    echo 'Creating desktop shortcuts...'
-    cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop/bazzite-arch-steam.desktop
-    sed -i 's@  (on bazzite-arch)@@g' ~/Desktop/bazzite-arch-steam.desktop
-    cp ~/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop
-    sed -i 's@  (on bazzite-arch)@@g' ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop
-  fi
-  sleep 10
+  source /etc/default/bazzite && \
+  echo 'Installing Bazzite Arch...' && \
+  distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch && \
+  distrobox-enter -n bazzite-arch -- '  sudo locale-gen' && \
+  distrobox-enter -n bazzite-arch -- '  /usr/bin/bazzite-steam-runtime --silent &>/dev/null &' && \
+  distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam' && \
+  distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris' && \
+  distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks' && \
+  mkdir -p $HOME/.steam && \
+  distrobox-enter -n bazzite-arch -- '  distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam' && \
+  mv $HOME/.steam/steamcmd $HOME/.steam/steamcmd.sh && \
+  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
+    echo 'Creating desktop shortcuts...' && \
+    cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop/bazzite-arch-steam.desktop && \
+    sed -i 's@  (on bazzite-arch)@@g' ~/Desktop/bazzite-arch-steam.desktop && \
+    cp ~/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop && \
+    sed -i 's@  (on bazzite-arch)@@g' ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop; \
+  fi && \
+  sleep 10 && \
   [ ! -e ~/Desktop/steam.desktop ] || rm ~/Desktop/steam.desktop
 
 configure-waydroid:
