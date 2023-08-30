@@ -2,12 +2,12 @@
 Description=Configure Bazzite for current hardware
 After=rpm-ostreed.service
 Before=systemd-user-sessions.service jupiter-biosupdate.service jupiter-controller-update.service
+ConditionPathExists=!/etc/bazzite/hardware_setup_done
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/usr/bin/bazzite-hardware-setup
-ConditionPathExists=!/etc/bazzite/hardware_setup_done
 
 [Install]
 WantedBy=multi-user.target
