@@ -214,8 +214,9 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 COPY system_files/deck/shared /
 COPY system_files/deck/${BASE_IMAGE_NAME} /
 
-# Setup Copr repos
+# Setup repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
+    wget https://dl.winehq.org/wine-builds/fedora/$(rpm -E %fedora)/winehq.repo -O /etc/yum.repos.d/winehq.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
@@ -305,8 +306,7 @@ RUN rpm-ostree install \
         libFAudio \
         gamescope \
         gamescope-session \
-        wine-core \
-        winetricks && \
+        winehq-staging && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override remove \
             gamemode \
@@ -339,6 +339,7 @@ RUN rm /usr/share/applications/wine*.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/winehq.repo && \
     mv /etc/sddm.conf /etc/sddm.conf.d/steamos.conf && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl enable plasma-autologin.service \
