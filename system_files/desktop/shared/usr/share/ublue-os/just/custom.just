@@ -77,6 +77,13 @@ fix-tf2-tcmalloc:
   -v $HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin:/hl2_linux:Z \
   ghcr.io/maisatanel/tcmalloc-hl2-fixer:main
 
+patch-gmod:
+  #!/usr/bin/env bash
+  curl -o ~/.patch-gmod https://github.com/solsticegamestudios/GModCEFCodecFix/releases/download/20230731/GModCEFCodecFix-Linux
+  chmod +x ~/.patch-gmod
+  ~/.patch-gmod
+  rm -f ~/.patch-gmod
+
 enable-vapor-theme:
   #!/usr/bin/env bash
   source /etc/default/bazzite
