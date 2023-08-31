@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-LAUNCH_OPTIONS="$*"
+LAUNCH_OPTIONS=""
 
 # If Steam has been launched before we can safely launch with -steamdeck
 # to maintain the gamemode update branch
 if [ -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]; then
-  LAUNCH_OPTIONS="-steamdeck $LAUNCH_OPTIONS"
+  LAUNCH_OPTIONS="-steamdeck"
 fi
 
 if [[ "$XDG_SESSION_TYPE" = "wayland" ]]; then
@@ -15,7 +15,7 @@ if [[ "$XDG_SESSION_TYPE" = "wayland" ]]; then
   # It's been primarily developed for allowing the desktop functionality
   # on the Steam Controller to work while Steam is open on Wayland.
   # Also supports Steam Input as a whole.
-  env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam "-pipewire $LAUNCH_OPTIONS"
+  env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam "$LAUNCH_OPTIONS" "$*"
 else
-  /usr/bin/steam "$LAUNCH_OPTIONS"
+  /usr/bin/steam "$LAUNCH_OPTIONS" "$*"
 fi
