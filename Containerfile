@@ -77,6 +77,7 @@ RUN rpm-ostree install \
     yad \
     f3 \
     google-noto-sans-cjk-fonts \
+    twitter-twemoji-fonts \
     lato-fonts \
     fira-code-fonts
 
