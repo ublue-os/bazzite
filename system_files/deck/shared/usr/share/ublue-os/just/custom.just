@@ -106,10 +106,13 @@ fix-tf2-tcmalloc:
 
 patch-gmod:
   #!/usr/bin/env bash
-  curl -o ~/.patch-gmod https://github.com/solsticegamestudios/GModCEFCodecFix/releases/download/20230731/GModCEFCodecFix-Linux
-  chmod +x ~/.patch-gmod
-  ~/.patch-gmod
-  rm -f ~/.patch-gmod
+  wget \
+    $(curl -s https://api.github.com/repos/solsticegamestudios/GModCEFCodecFix/releases/latest | \
+    jq -r ".assets[] | select(.name | test(\"GModCEFCodecFix-Linux\")) | .browser_download_url") \
+    -P /tmp/patch-gmod
+  chmod +x /tmp/patch-gmod
+  /tmp/patch-gmod
+  rm -f /tmp/patch-gmod
 
 enable-vapor-theme:
   #!/usr/bin/env bash
