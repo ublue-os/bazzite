@@ -57,11 +57,6 @@ screens:
           default: false
           packages:
           - Hide GRUB: sudo -A just --unstable hide-grub
-        Memory Tuning:
-          description: Adjust ZRAM configuration
-          default: false
-          packages:
-          - Disable ZRAM: just --unstable zram-off
         Nix Package Manager:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: false
