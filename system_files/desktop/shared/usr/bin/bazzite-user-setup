@@ -71,6 +71,9 @@ else
     echo 'Configuring search replacement with Steam Deck Keyboard support'
     gnome-extensions enable search-light@icedman.github.com
 
+    echo 'Setting mouse input profile'
+    gsettings set org.gnome.desktop.peripherals.mouse accel-profile "flat"
+
     echo 'Tweaking GNOME indexer'
     mkdir -p $HOME/.steam
     touch $HOME/.steam/.trackerignore
