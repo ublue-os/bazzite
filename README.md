@@ -81,7 +81,8 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Exclusively uses ZRAM by default with the option to switch back to a swap file and set a custom size if desired. <sub><sup>(1GB by default)</sup></sub>
 - BFQ I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` processes.
 - TLS/SSL secured DNS and NTP by default. <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>
-- Applies SteamOS's kernel parameters and enables `amd-pstate` by default.
+- Applies SteamOS's kernel parameters.
+- Color calibrated display profiles for matte and reflective Steam Deck screens included.
 - Default-disabled power-user features, including:
     - Service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj), see `ryzenadj.service` and `/etc/default/ryzenadj`.
     - Service for limiting the max charge level of the battery, see `batterylimit.service` and `/etc/default/batterylimit`. <sup><sub>(Works even when the device is off)</sub></sup>
@@ -106,7 +107,7 @@ podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-li
 
 Builds with the GNOME desktop environment are available in both desktop and deck flavors. These builds come with the following additional features:
 
-- [Variable refresh rate support enabled under Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
+- [Variable refresh rate support and fractional scaling enabled under Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
 - Custom menu in the top bar for returning to game mode, launching Steam, and opening a number of useful utilities. <sub><sup>(Only on Steam Deck builds)</sup></sub>
 - [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) preinstalled and ready to use.
 - Features optional Valve-inspired themes matching Vapor and VGUI2 from SteamOS.
@@ -233,6 +234,6 @@ Bazzite is built entirely in GitHub and creating your own custom version of it i
 
 We also ship a config for the popular [pull app](https://github.com/apps/pull) if you'd like to keep your fork in sync with upstream. Enable this app on your repo to keep track of Bazzite changes while also making your own modifications.
 
-## Community
+## Join The Community
 
-- [Discord](https://discord.gg/f8MUghG5PB)
+You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB).
