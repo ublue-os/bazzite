@@ -62,6 +62,12 @@ install-nix:
 remove-nix:
   sudo /nix/nix-installer uninstall
 
+install-fleek:
+  #!/usr/bin/env bash
+  mkdir -p $HOME/.config/nix
+  echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
+  curl -fsSL https://getfleek.dev/installer | sudo env FORCE=1 bash
+
 get-greenlight:
   echo 'Retrieving Greenlight'
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta8/Greenlight-2.0.0-beta8.AppImage -O ~/Desktop/Greenlight.AppImage
