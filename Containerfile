@@ -307,7 +307,8 @@ RUN rpm-ostree install \
         gamescope \
         gamescope-session \
         wine-core \
-        winetricks && \
+        winetricks \
+        protontricks && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override remove \
             gamemode \
