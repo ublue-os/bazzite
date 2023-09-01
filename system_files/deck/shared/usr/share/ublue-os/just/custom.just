@@ -68,6 +68,14 @@ install-fleek:
   echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
   curl -fsSL https://getfleek.dev/installer | env FORCE=1 bash
 
+fleek-install-themes:
+  #!/usr/bin/env bash
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+    fleek add adw-gtk3 --apply
+  else
+    fleek add breeze-icons --apply
+  fi
+
 get-greenlight:
   echo 'Retrieving Greenlight'
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O ~/Desktop/Greenlight.AppImage
