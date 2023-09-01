@@ -59,7 +59,9 @@ fleek-install-themes:
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     fleek add adw-gtk3 --apply
   else
-    fleek add breeze-icons --apply
+    fleek add breeze-icons
+    fleek add libsForQt5.breeze-qt5
+    fleek apply
   fi
 
 enable-auto-login:
