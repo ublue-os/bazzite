@@ -99,7 +99,7 @@ patch-gmod:
     -P /tmp/patch-gmod
   chmod +x /tmp/patch-gmod
   /tmp/patch-gmod
-  rm -f /tmp/patch-gmod
+  rm -rf /tmp/patch-gmod
 
 enable-vapor-theme:
   #!/usr/bin/env bash
