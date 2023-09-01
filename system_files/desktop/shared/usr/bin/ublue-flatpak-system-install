@@ -20,12 +20,4 @@ if [[ -f '/etc/flatpak/remove' ]]; then
   mv /etc/flatpak/remove /etc/flatpak/removed
 fi
 
-if [[ -f '/etc/flatpak/deck' ]]; then
-  if [[ ${IMAGE_NAME} == *'deck'* ]]; then
-    cat /etc/flatpak/deck | while read line; do
-      flatpak install --system --noninteractive flathub $line
-    done && cat /etc/flatpak/deck >> /etc/flatpak/installed
-  fi
-fi
-
-rm -rf /etc/flatpak/{deck,flathub,objects}
+rm -rf /etc/flatpak/{flathub,objects}
