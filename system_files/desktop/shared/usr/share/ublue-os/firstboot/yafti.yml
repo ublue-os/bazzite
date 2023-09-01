@@ -67,6 +67,7 @@ screens:
           default: false
           packages:
           - Install Nix Package Support: sudo -A just --unstable install-nix
+          - Install Fleek: sudo -A just --unstable install-fleek
   amd-additions:
     source: yafti.screen.package
     values:

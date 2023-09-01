@@ -48,6 +48,13 @@ install-nix:
 remove-nix:
   sudo /nix/nix-installer uninstall
 
+install-fleek:
+  #!/usr/bin/env bash
+  export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
+  mkdir -p $HOME/.config/nix
+  echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
+  curl -fsSL https://getfleek.dev/installer | sudo env FORCE=1 bash
+
 enable-auto-login:
   #!/usr/bin/env bash
   source /etc/default/bazzite

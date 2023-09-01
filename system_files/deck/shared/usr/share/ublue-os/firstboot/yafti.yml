@@ -80,6 +80,7 @@ screens:
           default: false
           packages:
           - Install Nix Package Support: sudo -A just --unstable install-nix
+          - Install Fleek: sudo -A just --unstable install-fleek
         SteamCMD:
           description: Installs SteamCMD
           default: true
