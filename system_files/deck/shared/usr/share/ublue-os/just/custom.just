@@ -70,6 +70,7 @@ install-fleek:
 
 fleek-install-themes:
   #!/usr/bin/env bash
+  source /etc/default/bazzite
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     fleek add adw-gtk3 --apply
   else
