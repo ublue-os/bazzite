@@ -36,6 +36,10 @@ install-corectrl:
   echo 'Setting needed kargs for CoreCtrl...'
   rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
 
+install-oversteer:
+  sudo wget https://copr.fedorainfracloud.org/coprs/kylegospo/oversteer/repo/fedora-$(rpm -E %fedora)/kylegospo-oversteer-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-oversteer.repo
+  rpm-ostree install oversteer
+
 install-nix:
   #!/usr/bin/env bash
   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sudo bash -s -- install --no-confirm
