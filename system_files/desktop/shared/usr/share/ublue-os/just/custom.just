@@ -54,9 +54,13 @@ remove-nix:
 
 install-fleek:
   #!/usr/bin/env bash
-  mkdir -p $HOME/.config/nix
-  echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
-  curl -fsSL https://getfleek.dev/installer | env FORCE=1 bash
+  if [[ -d "/nix" ]]; then
+    mkdir -p $HOME/.config/nix
+    echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
+    curl -fsSL https://getfleek.dev/installer | env FORCE=1 bash
+  else
+    echo "Install nix with just install-nix before running just install-fleek."
+  fi
 
 fleek-install-themes:
   #!/usr/bin/env bash
