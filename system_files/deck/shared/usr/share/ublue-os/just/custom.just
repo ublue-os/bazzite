@@ -52,6 +52,7 @@ get-steamcmd:
 
 install-oversteer:
   sudo wget https://copr.fedorainfracloud.org/coprs/kylegospo/oversteer/repo/fedora-$(rpm -E %fedora)/kylegospo-oversteer-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-oversteer.repo
+  ublue-update --wait
   rpm-ostree install oversteer
 
 install-nix:
@@ -217,6 +218,7 @@ switch-to-ext4:
 
 zram-on:
   #!/usr/bin/env bash
+  ublue-update --wait
   KARGS=$(rpm-ostree kargs)
   if grep -q 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --delete=zram
@@ -227,6 +229,7 @@ zram-on:
 
 zram-off:
   #!/usr/bin/env bash
+  ublue-update --wait
   KARGS=$(rpm-ostree kargs)
   if grep -qv 'zram' <<< ${KARGS}; then
     rpm-ostree kargs --append=zram=0
@@ -320,6 +323,7 @@ _toggle_wayland:
 
 sign-image:
   source /etc/default/bazzite && \
+  ublue-update --wait && \
   if grep -qvz "/var/${IMAGE_VENDOR}/image" <<< $(rpm-ostree status); then \
     rpm-ostree rebase ostree-image-signed:$(just --unstable _get-image); \
   else \
