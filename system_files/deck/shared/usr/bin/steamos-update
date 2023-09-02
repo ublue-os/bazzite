@@ -4,6 +4,7 @@
 # steamos-update --supports-duplicate-detection     -- should do nothing
 # steamos-update --enable-duplicate-detection check -- should check for update
 # steamos-update check                              -- should check for update
+# steamos-update --enable-duplicate-detection       -- should perform an update
 # steamos-update                                    -- should perform an update
 
 
@@ -13,8 +14,11 @@ while [[ $# -gt 0 ]]; do
       CHECK=1
       shift
       ;;
+    --supports-duplicate-detection)
+      EXIT=1
+      shift
+      ;;
     *)
-      SKIP=1
       shift
       ;;
   esac
@@ -40,7 +44,7 @@ if command -v ublue-update > /dev/null; then
         exit 7 # Connectivity check failed
       fi
     fi
-  elif [ -n "${SKIP}" ]; then
+  elif [ -n "${EXIT}" ]; then
     exit 0
   else
     # Fake upgrade progress bar
