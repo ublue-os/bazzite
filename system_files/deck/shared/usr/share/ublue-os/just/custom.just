@@ -88,6 +88,8 @@ install-fleek-themes:
       fleek add libsForQt5.breeze-qt5
       fleek apply
     fi
+  else
+    echo "Install fleek with just install-fleek before running just install-fleek-themes."
   fi
 
 get-greenlight:
