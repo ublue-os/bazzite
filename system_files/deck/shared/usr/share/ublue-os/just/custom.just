@@ -69,19 +69,25 @@ remove-nix:
 
 install-fleek:
   #!/usr/bin/env bash
-  mkdir -p $HOME/.config/nix
-  echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
-  curl -fsSL https://getfleek.dev/installer | env FORCE=1 bash
-
-fleek-install-themes:
-  #!/usr/bin/env bash
-  source /etc/default/bazzite
-  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    fleek add adw-gtk3 --apply
+  if [[ -d "/nix" ]]; then
+    mkdir -p $HOME/.config/nix
+    echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
+    curl -fsSL https://getfleek.dev/installer | env FORCE=1 bash
   else
-    fleek add breeze-icons
-    fleek add libsForQt5.breeze-qt5
-    fleek apply
+    echo "Install nix with just install-nix before running just install-fleek."
+  fi
+
+install-fleek-themes:
+  #!/usr/bin/env bash
+  if [[ -x "/var/usrlocal/bin/fleek" ]]; then
+    source /etc/default/bazzite
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+      fleek add adw-gtk3 --apply
+    else
+      fleek add breeze-icons
+      fleek add libsForQt5.breeze-qt5
+      fleek apply
+    fi
   fi
 
 get-greenlight:

@@ -64,15 +64,17 @@ install-fleek:
     echo "Install nix with just install-nix before running just install-fleek."
   fi
 
-fleek-install-themes:
+install-fleek-themes:
   #!/usr/bin/env bash
-  source /etc/default/bazzite
-  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    fleek add adw-gtk3 --apply
-  else
-    fleek add breeze-icons
-    fleek add libsForQt5.breeze-qt5
-    fleek apply
+  if [[ -x "/var/usrlocal/bin/fleek" ]]; then
+    source /etc/default/bazzite
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+      fleek add adw-gtk3 --apply
+    else
+      fleek add breeze-icons
+      fleek add libsForQt5.breeze-qt5
+      fleek apply
+    fi
   fi
 
 enable-auto-login:
