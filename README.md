@@ -61,6 +61,8 @@ podman pull ghcr.io/ublue-os/config && rpm-ostree install --assumeyes --apply-li
 **For users with Secure Boot enabled:** Once you've installed or rebased to a Nvidia build, [be sure to follow step 3 from the ublue-os/nvidia guide](https://github.com/ublue-os/nvidia#3-enable-secure-boot-support).
 
 ### Steam Deck/Home Theater PCs (HTPCs)
+> [!IMPORTANT]  
+Devices that are NOT the Steam Deck must use an AMD GPU at this time.
 
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, and for a console-like experience on HTPCs, available as `bazzite-deck`:
 
