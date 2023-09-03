@@ -18,7 +18,7 @@ install-bazzite-arch:
     sed -i 's@  (on bazzite-arch)@@g' ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop; \
   fi && \
   sleep 10 && \
-  [ ! -e ~/Desktop/steam.desktop ] || rm ~/Desktop/steam.desktop
+  [ ! -e ~/Desktop/steam.desktop ] || rm -f ~/Desktop/steam.desktop
 
 configure-waydroid:
   #!/usr/bin/env bash
