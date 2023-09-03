@@ -1,15 +1,15 @@
 install-bazzite-arch:
   source /etc/default/bazzite && \
   echo 'Installing Bazzite Arch...' && \
-  distrobox assemble create --file /usr/share/ublue-os/distrobox/bazzite-arch && \
-  distrobox-enter -n bazzite-arch -- '  sudo locale-gen' && \
+  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
+    distrobox create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --nvidia --pull --volume /usr/lib/extest/libextest.so:/usr/lib/extest/libextest.so:ro --volume /usr/share/icons:/usr/share/icons:ro --volume /usr/share/themes:/usr/share/themes:ro; \
+  else \
+    distrobox create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --nvidia --pull --volume /usr/lib/extest/libextest.so:/usr/lib/extest/libextest.so:ro --volume /usr/share/icons:/usr/share/icons:ro --volume /usr/share/themes:/usr/share/themes:ro; \
+  fi && \
+  echo 'Exporting applications...' && \
+  distrobox-enter -n bazzite-arch -- 'bash -c "sudo locale-gen && distrobox-export --app steam && distrobox-export --app lutris && distrobox-export --app protontricks && mkdir -p $HOME/.steam && distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam && mv $HOME/.steam/steamcmd $HOME/.steam/steamcmd.sh"' && \
+  echo 'Starting Steam...' && \
   distrobox-enter -n bazzite-arch -- '  /usr/bin/bazzite-steam-runtime --silent &>/dev/null &' && \
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --app steam' && \
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --app lutris' && \
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --app protontricks' && \
-  mkdir -p $HOME/.steam && \
-  distrobox-enter -n bazzite-arch -- '  distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam' && \
-  mv $HOME/.steam/steamcmd $HOME/.steam/steamcmd.sh && \
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
     echo 'Creating desktop shortcuts...' && \
     cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop/bazzite-arch-steam.desktop && \
@@ -17,8 +17,9 @@ install-bazzite-arch:
     cp ~/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop && \
     sed -i 's@  (on bazzite-arch)@@g' ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop; \
   fi && \
+  echo 'Finalizing...' && \
   sleep 10 && \
-  [ ! -e ~/Desktop/steam.desktop ] || rm -f ~/Desktop/steam.desktop
+  rm -f ~/Desktop/steam.desktop
 
 configure-waydroid:
   #!/usr/bin/env bash
