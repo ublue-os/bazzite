@@ -50,12 +50,8 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
   if [[ ! $KARGS =~ "initcall_blacklist" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=initcall_blacklist=simpledrm_platform_driver_init"
   fi
-elif [[ $IMAGE_NAME =~ "deck"  ]]; then
-  echo "Non-deck hardware detected on deck image, removing TDP controls for Steam to avoid 15W limit."
-  rm -f /etc/udev/rules.d/30-steamdeck.rules
 fi
 
-# NVIDIA KERNEL ARGUMENTS
 if [[ $IMAGE_NAME =~ "nvidia"  ]]; then
   echo "Checking for needed karg changes (Nvidia)"
 
