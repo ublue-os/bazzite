@@ -375,14 +375,12 @@ RUN rm /usr/share/applications/wine*.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
-    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        systemctl enable plasma-autologin.service \
-    ; else \
+    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl mask power-profiles-daemon.service && \
         systemctl disable gdm.service && \
-        systemctl enable sddm.service && \
-        systemctl enable gnome-autologin.service \
+        systemctl enable sddm.service \
     ; fi && \
+    systemctl enable desktop-autologin.service && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
     systemctl enable vpower.service && \
