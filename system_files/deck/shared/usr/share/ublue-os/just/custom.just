@@ -314,11 +314,11 @@ disable-deck-services:
 
 disable-bios-updates:
   #!/usr/bin/env bash
-  sudo systemctl disable --now jupiter-biosupdate.service
+  sudo systemctl mask --now jupiter-biosupdate.service
 
 disable-firmware-updates:
   #!/usr/bin/env bash
-  sudo systemctl disable --now jupiter-controller-update.service
+  sudo systemctl mask --now jupiter-controller-update.service
 
 _toggle_wayland:
   #!/usr/bin/env bash
