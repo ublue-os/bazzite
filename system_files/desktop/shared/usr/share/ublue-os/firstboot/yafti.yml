@@ -28,14 +28,14 @@ screens:
   configure-bazzite-arch:
     source: yafti.screen.package
     values:
-      title: Setting up Bazzite Arch
+      title: Setting up Bazzite Arch (This can take a long time)
       condition:
         run: grep -qvz "bazzite-arch" <<< $(distrobox list)
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
         Install Bazzite Arch:
-          description: Sets up a custom Arch Linux OCI in Distrobox that Steam, Lutris, and other gaming workloads will be run inside of. This can take a VERY long time.
+          description: Sets up a custom Arch Linux OCI in Distrobox that Steam, Lutris, and other gaming workloads will be run inside of.
           default: true
           packages:
           - Install Bazzite Arch: just --unstable install-bazzite-arch
