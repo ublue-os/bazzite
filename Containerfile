@@ -236,6 +236,7 @@ RUN rpm-ostree override replace \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         mesa-dri-drivers \
         mesa-libEGL \
+        mesa-libEGL-devel \
         mesa-libgbm \
         mesa-libGL \
         mesa-libglapi \
