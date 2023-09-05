@@ -23,7 +23,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
 - Support for [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Only on KDE)</sup></sub>
 - [Distrobox](https://github.com/89luca89/distrobox) preinstalled with automatic updates for created containers.
-- Automated `duperemove` services for reducing the disk space used by wine prefix contents.
+- Automated `duperemove` and `rmlint` services for reducing the disk space used by wine prefix contents.
 - [System76-Scheduler](https://github.com/pop-os/system76-scheduler) preinstalled, providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
 - Customized System76-Scheduler config with additional rules and CFS parameters from [Linux-TKG](https://github.com/Frogging-Family/linux-tkg).
 - Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
@@ -82,7 +82,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Update break something? Easily roll back to the previous version of Bazzite thanks to `rpm-ostree`'s rollback functionality. You can even select previous images at boot.
 - Steam and Lutris preinstalled on the image as layered packages.
 - Exclusively uses ZRAM by default with the option to switch back to a swap file and set a custom size if desired. <sub><sup>(1GB by default)</sup></sub>
-- BFQ I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` processes.
+- BFQ I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` and `rmlint` processes.
 - TLS/SSL secured DNS and NTP by default. <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>
 - Applies SteamOS's kernel parameters.
 - Color calibrated display profiles for matte and reflective Steam Deck screens included.
