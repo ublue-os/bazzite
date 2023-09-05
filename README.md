@@ -70,6 +70,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - **Automatic `duperemove` greatly trims the size of compatdata.**
 - **Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.**
 - **Able to be booted even if the drive is full.**
+- **Support for every language supported by upstream Fedora.**
 - Optionally use Wayland on the desktop with [full support for Steam input](https://github.com/Supreeeme/extest).
 - Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV).
 - Patched Mesa for proper framerate control from Gamescope.
