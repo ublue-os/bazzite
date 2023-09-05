@@ -5,7 +5,7 @@ shopt -s nullglob
 for firefox_gnome_theme in "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox/"*".default"*"/chrome/firefox-gnome-theme/"; do
   if [ -d "$firefox_gnome_theme" ]; then
     cd "$firefox_gnome_theme"
-    git pull origin master
+    git pull
   fi
 done
 
@@ -13,6 +13,6 @@ done
 for thunderbird_gnome_theme in "$HOME/.var/app/org.mozilla.Thunderbird/.thunderbird/"*".default"*"/chrome/thunderbird-gnome-theme/"; do
   if [ -d "$thunderbird_gnome_theme" ]; then
     cd "$thunderbird_gnome_theme"
-    git pull origin master
+    git pull
   fi
 done
