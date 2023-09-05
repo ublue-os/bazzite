@@ -203,7 +203,6 @@ RUN rm /usr/share/applications/shredder.desktop && \
         /var/* && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp && \
-    mkdir -p /var/lib/duperemove && \
     ostree container commit
 
 FROM bazzite as bazzite-deck
@@ -368,6 +367,5 @@ RUN rm /usr/share/applications/wine*.desktop && \
         /var/* && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp && \
-    mkdir -p /var/lib/duperemove && \
     mkdir -p /var/lib/bluetooth && \
     ostree container commit
