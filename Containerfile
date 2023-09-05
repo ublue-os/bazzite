@@ -175,7 +175,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /etc/flatpak/remotes.d && \
     systemctl enable com.system76.Scheduler.service && \
     systemctl enable displaylink.service && \
-    systemctl enable btrfs-dedup@$(systemd-escape /var/home).timer && \
+    systemctl enable btrfs-dedup@var-home.timer && \
     systemctl enable input-remapper.service && \
     systemctl unmask flatpak-system-install.service && \
     systemctl enable flatpak-system-install.service && \
@@ -354,7 +354,7 @@ RUN rm /usr/share/applications/wine*.desktop && \
         systemctl enable gnome-autologin.service \
     ; fi && \
     systemctl enable jupiter-fan-control.service && \
-    systemctl enable btrfs-dedup@$(systemd-escape /run/media/mmcblk0p1).timer && \
+    systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
     systemctl enable vpower.service && \
     systemctl enable ds-inhibit.service && \
     systemctl --global enable sdgyrodsu.service && \
