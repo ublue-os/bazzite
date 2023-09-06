@@ -96,7 +96,8 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         steamdeck-kde-presets-desktop \
         wallpaper-engine-kde-plugin \
         sddm-sugar-steamOS \
-        kdeconnectd && \
+        kdeconnectd \
+        rom-properties-kf5 && \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
@@ -127,6 +128,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-just-perfection \
         gnome-shell-extension-blur-my-shell \
         gnome-shell-extension-hanabi \
+        rom-properties-gtk3 \
         openssh-askpass && \
     rpm-ostree override remove \
         gnome-classic-session \
