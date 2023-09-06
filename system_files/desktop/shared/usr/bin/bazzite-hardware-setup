@@ -87,6 +87,20 @@ if [[ $IMAGE_NAME =~ "nvidia"  ]]; then
   if [[ ! $KARGS =~ "nvidia-drm.modeset" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=nvidia-drm.modeset=1"
   fi
+elif [[ $IMAGE_NAME =~ "main" ]]; then
+  echo "Checking for needed karg changes"
+
+  if [[ $KARGS =~ "rd.driver.blacklist" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --delete=rd.driver.blacklist=nouveau"
+  fi
+
+  if [[ $KARGS =~ "modprobe.blacklist" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --delete=modprobe.blacklist=nouveau"
+  fi
+
+  if [[ $KARGS =~ "nvidia-drm.modeset" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --delete=nvidia-drm.modeset=1"
+  fi
 fi
 
 if [[ $KARGS =~ "nomodeset" ]]; then
