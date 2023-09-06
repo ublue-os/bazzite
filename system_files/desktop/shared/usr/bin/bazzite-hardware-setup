@@ -1,13 +1,22 @@
 #!/usr/bin/env bash
 source /etc/default/bazzite
 
-DONEFILE=/etc/bazzite/hardware_setup_done
+# SCRIPT VERSION
+HWS_VER=1
+HWS_VER_FILE="/etc/bazzite/hws_version"
+HWS_VER_RAN=$(cat $HWS_VERSION_FILE)
+
+if [[ -f $HWS_VER_FILE && $HWS_VER = $HWS_VER_RAN ]]; then
+  echo "Hardware setup has already ran. Exiting..."
+  exit 0
+fi
 
 # GLOBAL
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 KARGS=$(rpm-ostree kargs)
 NEEDED_KARGS=""
 echo "Current kargs: $KARGS"
+mkdir -p /etc/bazzite
 
 # FSTAB CONFIGURATION
 if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
@@ -80,8 +89,8 @@ fi
 if [[ -n "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: $NEEDED_KARGS"
   rpm-ostree kargs ${NEEDED_KARGS} --reboot || exit 1
-  mkdir -p "$(dirname "$DONEFILE")"
-  touch "$DONEFILE"
 else
   echo "No karg changes needed"
 fi
+
+echo $HWS_VER > $HWS_VER_FILE
