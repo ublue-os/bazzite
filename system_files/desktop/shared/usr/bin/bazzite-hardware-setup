@@ -6,9 +6,21 @@ HWS_VER=1
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VERSION_FILE)
 
+# IMAGE IDENTIFIERS
+KNOWN_IMAGE_NAME_FILE="/etc/bazzite/image_name"
+KNOWN_IMAGE_NAME=$(cat $KNOWN_IMAGE_NAME_FILE)
+KNOWN_IMAGE_FLAVOR_FILE="/etc/bazzite/image_flavor"
+KNOWN_IMAGE_FLAVOR=$(cat $KNOWN_IMAGE_FLAVOR_FILE)
+
+# Run script if updated
 if [[ -f $HWS_VER_FILE && $HWS_VER = $HWS_VER_RAN ]]; then
-  echo "Hardware setup has already ran. Exiting..."
-  exit 0
+  if [[ -f $KNOWN_IMAGE_NAME_FILE && -f $KNOWN_IMAGE_FLAVOR_FILE ]]; then
+    # Run script if image has been rebased
+    if [[ $IMAGE_FLAVOR = $KNOWN_IMAGE_NAME && $IMAGE_FLAVOR = $KNOWN_IMAGE_FLAVOR ]]; then
+      echo "Hardware setup has already ran. Exiting..."
+      exit 0
+    fi
+  fi
 fi
 
 # GLOBAL
@@ -94,3 +106,5 @@ else
 fi
 
 echo $HWS_VER > $HWS_VER_FILE
+echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
+echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE
