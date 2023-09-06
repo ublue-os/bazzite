@@ -82,7 +82,7 @@ elif [[ $IMAGE_NAME =~ "deck"  ]]; then
   sudo systemctl disable --now batterylimit.service
 fi
 
-if [[ $IMAGE_NAME =~ "nvidia"  ]]; then
+if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then
   echo "Checking for needed karg changes (Nvidia)"
 
   if [[ ! $KARGS =~ "rd.driver.blacklist" ]]; then
@@ -96,7 +96,7 @@ if [[ $IMAGE_NAME =~ "nvidia"  ]]; then
   if [[ ! $KARGS =~ "nvidia-drm.modeset" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=nvidia-drm.modeset=1"
   fi
-elif [[ $IMAGE_NAME =~ "main" ]]; then
+elif [[ $IMAGE_FLAVOR = "main" ]]; then
   echo "Checking for needed karg changes"
 
   if [[ $KARGS =~ "rd.driver.blacklist" ]]; then
