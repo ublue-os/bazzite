@@ -267,3 +267,6 @@ _get-image:
     url = protocol + url
 
   print(url)
+
+enable-flatpak-theming:
+  flatpak override --user --filesystem=xdg-config/gtk-4.0:ro --filesystem=xdg-config/gtk-3.0:ro
