@@ -83,9 +83,7 @@ RUN rpm-ostree install \
     lato-fonts \
     fira-code-fonts && \
     wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.service -O /usr/lib/systemd/system/btrfs-dedup@.service && \
-    wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.timer -O /usr/lib/systemd/system/btrfs-dedup@.timer && \
-    sed -i 's/ExecStart=rmlint/ExecStart=rmlint --algorithm=xxhash/g' /usr/lib/systemd/system/btrfs-dedup@.service && \
-    sed -i 's/duperemove -r/duperemove --hash=xxhash -r/g' /usr/lib/systemd/system/btrfs-dedup@.service 
+    wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.timer -O /usr/lib/systemd/system/btrfs-dedup@.timer
 
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
