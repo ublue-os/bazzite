@@ -6,6 +6,12 @@ default:
 update:
   /usr/bin/ublue-update
 
+# Clean up old containers and flatpaks
+clean:
+  podman system prune -a
+  flatpak uninstall --unused
+  rpm-ostree cleanup -bm
+
 # Boot into this device's BIOS/UEFI screen
 bios:
   systemctl reboot --firmware-setup
