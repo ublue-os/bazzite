@@ -1,8 +1,16 @@
 diff --git a/src/loader/loader_dri3_helper.c b/src/loader/loader_dri3_helper.c
-index 11bf647..343980f 100644
+index 11bf647..e17b357 100644
 --- a/src/loader/loader_dri3_helper.c
 +++ b/src/loader/loader_dri3_helper.c
-@@ -288,6 +288,30 @@ dri3_update_max_num_back(struct loader_dri3_drawable *draw)
+@@ -37,6 +37,7 @@
+ #include "loader_dri_helper.h"
+ #include "loader_dri3_helper.h"
+ #include "util/macros.h"
++#include "util/simple_mtx.h"
+ #include "drm-uapi/drm_fourcc.h"
+ 
+ /**
+@@ -288,6 +289,30 @@ dri3_update_max_num_back(struct loader_dri3_drawable *draw)
     }
  }
  
@@ -33,7 +41,7 @@ index 11bf647..343980f 100644
  void
  loader_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
  {
-@@ -302,10 +326,12 @@ loader_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
+@@ -302,10 +327,12 @@ loader_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
      * PS. changing from value A to B and A < B won't cause swap out of order but
      * may still gets wrong target_msc value at the beginning.
      */
@@ -48,7 +56,7 @@ index 11bf647..343980f 100644
  }
  
  static void
-@@ -434,6 +460,12 @@ loader_dri3_drawable_init(xcb_connection_t *conn,
+@@ -434,6 +461,12 @@ loader_dri3_drawable_init(xcb_connection_t *conn,
     if (!draw->adaptive_sync)
        set_adaptive_sync_property(conn, draw->drawable, false);
  
@@ -61,7 +69,7 @@ index 11bf647..343980f 100644
     draw->swap_interval = dri_get_initial_swap_interval(draw->dri_screen_render_gpu,
                                                         draw->ext->config);
  
-@@ -1091,6 +1123,12 @@ loader_dri3_swap_buffers_msc(struct loader_dri3_drawable *draw,
+@@ -1091,6 +1124,12 @@ loader_dri3_swap_buffers_msc(struct loader_dri3_drawable *draw,
     if (draw->type == LOADER_DRI3_DRAWABLE_WINDOW) {
        dri3_fence_reset(draw->conn, back);
  
