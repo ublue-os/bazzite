@@ -76,6 +76,8 @@ Patch10:        gnome-shell-glthread-disable.patch
 
 Patch20:        gamescope.patch
 
+Patch30:        invariant.patch
+
 BuildRequires:  meson >= 1.0.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
