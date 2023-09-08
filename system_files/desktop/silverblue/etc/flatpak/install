@@ -10,6 +10,7 @@ com.mattjakeman.ExtensionManager
 org.gtk.Gtk3theme.adw-gtk3
 org.gtk.Gtk3theme.adw-gtk3-dark
 it.mijorus.gearlever
+io.missioncenter.MissionCenter
 org.mozilla.firefox
 com.github.tchx84.Flatseal
 org.gnome.Calculator
