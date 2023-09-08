@@ -370,16 +370,6 @@ enable-deck-bios-firmware-updates:
   sudo systemctl enable jupiter-biosupdate.service
   sudo systemctl enable jupiter-controller-update.service
 
-# Disable all Steam Deck hardware specific services
-disable-deck-services:
-  #!/usr/bin/env bash
-  sudo systemctl disable --now jupiter-fan-control.service
-  sudo systemctl disable --now vpower.service
-  sudo systemctl disable --now jupiter-biosupdate.service
-  sudo systemctl disable --now jupiter-controller-update.service
-  sudo systemctl disable --now ryzenadj.service
-  sudo systemctl disable --now batterylimit.service
-
 # Disable Steam Deck BIOS updates
 disable-bios-updates:
   #!/usr/bin/env bash
