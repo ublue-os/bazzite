@@ -80,7 +80,7 @@ elif [[ $IMAGE_NAME =~ "deck"  ]]; then
   systemctl disable --now jupiter-controller-update.service
   systemctl disable --now ryzenadj.service
   systemctl disable --now batterylimit.service
-  systemctl --global disable sdgyrodsu.service
+  systemctl --global disable --now sdgyrodsu.service
 fi
 
 if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then
