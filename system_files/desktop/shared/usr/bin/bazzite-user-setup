@@ -74,6 +74,16 @@ else
     echo 'Setting mouse input profile'
     gsettings set org.gnome.desktop.peripherals.mouse accel-profile "flat"
 
+    echo 'Setting default power settings'
+    gsettings set org.gnome.desktop.session idle-delay 0
+    gsettings set org.gnome.settings-daemon.plugins.power ambient-enabled true
+    gsettings set org.gnome.settings-daemon.plugins.power idle-dim true
+    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 300
+    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 900
+    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type "suspend"
+    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "suspend"
+    gsettings set org.gnome.settings-daemon.plugins.power power-button-action "suspend"
+
     echo 'Tweaking GNOME indexer'
     mkdir -p $HOME/.steam
     touch $HOME/.steam/.trackerignore
