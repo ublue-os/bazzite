@@ -1,6 +1,33 @@
+# Print this message
 default:
-  /usr/bin/just --list --list-heading $'Available commands:\n' --list-prefix $' - ' --justfile /usr/share/ublue-os/just/custom.just
+  @just --list --list-heading $'Available commands:\n' --list-prefix $' - ' --justfile /usr/share/ublue-os/just/custom.just
 
+# Update entire system
+update:
+  /usr/bin/ublue-update
+
+# Boot into this device's BIOS/UEFI screen
+bios:
+  systemctl reboot --firmware-setup
+
+# Enroll secure boot & Nvidia driver key
+enroll-secure-boot-key:
+    sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
+
+# Enable VAAPI in Firefox for Nvidia GPUs
+setup-firefox-flatpak-vaapi-nvidia:
+    flatpak override \
+        --user \
+        --filesystem=host-os \
+        --env=LIBVA_DRIVER_NAME=nvidia \
+        --env=LIBVA_DRIVERS_PATH=/run/host/usr/lib64/dri \
+        --env=LIBVA_MESSAGING_LEVEL=1 \
+        --env=MOZ_DISABLE_RDD_SANDBOX=1 \
+        --env=NVD_BACKEND=direct \
+        --env=MOZ_ENABLE_WAYLAND=1 \
+        org.mozilla.firefox
+
+# Set up Bazzite-Arch Distrobox container
 install-bazzite-arch:
   source /etc/default/bazzite && \
   echo 'Installing Bazzite Arch...' && \
@@ -24,6 +51,7 @@ install-bazzite-arch:
   sleep 10 && \
   rm -f ~/Desktop/steam.desktop
 
+# Launch Waydroid configuration helper
 configure-waydroid:
   #!/usr/bin/env bash
   git clone https://github.com/casualsnek/waydroid_script.git --depth 1 /tmp/waydroid_script
@@ -34,6 +62,7 @@ configure-waydroid:
   deactivate
   sudo rm -rf /tmp/waydroid_script
 
+# Install CoreCtrl for overclocking & undervolting AMD GPUs
 install-corectrl:
   echo 'Installing CoreCtrl...'
   ublue-update --wait
@@ -41,11 +70,13 @@ install-corectrl:
   echo 'Setting needed kargs for CoreCtrl...'
   rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
 
+# Install Oversteer for Logitech steering wheels
 install-oversteer:
   sudo wget https://copr.fedorainfracloud.org/coprs/kylegospo/oversteer/repo/fedora-$(rpm -E %fedora)/kylegospo-oversteer-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-oversteer.repo
   ublue-update --wait
   rpm-ostree install oversteer
 
+# Install Nix with the Determinate Nix Installer
 install-nix:
   #!/usr/bin/env bash
   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sudo bash -s -- install --no-confirm
@@ -55,9 +86,11 @@ install-nix:
   sudo cp $nix_systemd_file_location/lib/systemd/system/nix-daemon.service /etc/systemd/system/nix-daemon.service
   sudo cp $nix_systemd_file_location/lib/systemd/system/nix-daemon.socket /etc/systemd/system/nix-daemon.socket
 
+# Uninstall Nix
 remove-nix:
   sudo /nix/nix-installer uninstall
 
+# Install Fleek (https://getfleek.dev/)
 install-fleek:
   #!/usr/bin/env bash
   if [[ -d "/nix" ]]; then
@@ -68,6 +101,7 @@ install-fleek:
     echo "Install nix with just install-nix before running just install-fleek."
   fi
 
+# Integrate Nix/Fleek applications with system theme
 install-fleek-themes:
   #!/usr/bin/env bash
   if [[ -x "/var/usrlocal/bin/fleek" ]]; then
@@ -83,6 +117,7 @@ install-fleek-themes:
     echo "Install fleek with just install-fleek before running just install-fleek-themes."
   fi
 
+# Enable passwordless automatic login to the desktop
 enable-auto-login:
   #!/usr/bin/env bash
   source /etc/default/bazzite
@@ -92,11 +127,13 @@ enable-auto-login:
     systemctl enable --now plasma-autologin
   fi
 
+# Add Greenlight AppImage to the Desktop
 get-greenlight:
   echo 'Retrieving Greenlight'
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O ~/Desktop/Greenlight.AppImage
   chmod +x ~/Desktop/Greenlight.AppImage
 
+# Enable Supergfxctl, a Nvidia GPU switcher for hybrid laptops
 enable-supergfxctl: 
   #!/usr/bin/env bash
   source /etc/default/bazzite
@@ -106,12 +143,14 @@ enable-supergfxctl:
     echo "This requires an Nvidia image."
   fi
 
+# Fix a bug in TF2 that causes it to crash at startup
 fix-tf2-tcmalloc:
   #!/usr/bin/env bash
   podman run \
   -v $HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin:/hl2_linux:Z \
   ghcr.io/maisatanel/tcmalloc-hl2-fixer:main
 
+# Patch GMod's 64-bit beta to work properly on Linux
 patch-gmod:
   #!/usr/bin/env bash
   mkdir -p /tmp/patch-gmod
@@ -123,6 +162,7 @@ patch-gmod:
   /tmp/patch-gmod/GModCEFCodecFix-Linux
   rm -rf /tmp/patch-gmod
 
+# Activate Valve-inspired Vapor theme on GNOME
 enable-vapor-theme:
   #!/usr/bin/env bash
   source /etc/default/bazzite
@@ -142,6 +182,7 @@ enable-vapor-theme:
     echo "This is only supported under GNOME."
   fi
 
+# Activate Valve-inspired VGUI2 theme on GNOME
 enable-vgui2-theme:
   #!/usr/bin/env bash
   source /etc/default/bazzite
@@ -161,62 +202,7 @@ enable-vgui2-theme:
     echo "This is only supported under GNOME."
   fi
 
-set-btrfs-flags:
-  echo 'Configuring drive mount parameters...'
-  sudo sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,compress-force=zstd:1,space_cache=v2,discard=async/g' /etc/fstab
-
-zram-on:
-  #!/usr/bin/env bash
-  ublue-update --wait
-  KARGS=$(rpm-ostree kargs)
-  if grep -q 'zram' <<< ${KARGS}; then
-    rpm-ostree kargs --delete=zram
-    echo 'ZRAM enabled. Please reboot.'
-  else
-    echo 'ZRAM is already enabled.'
-  fi
-
-zram-off:
-  #!/usr/bin/env bash
-  ublue-update --wait
-  KARGS=$(rpm-ostree kargs)
-  if grep -qv 'zram' <<< ${KARGS}; then
-    rpm-ostree kargs --append=zram=0
-    echo 'ZRAM disabled. Please reboot.'
-  else
-    echo 'ZRAM is already disabled.'
-  fi
-
-resize-zram:
-  #!/usr/bin/env bash
-  CONFIG='/etc/systemd/zram-generator.conf'
-  if grep -q "zram-size" <<< $(cat ${CONFIG}); then
-    CURRENT_SIZE=$(cat "${CONFIG}" | grep "zram-size" | sed 's/zram-size=//g')
-  else
-    CURRENT_SIZE=1024
-  fi
-  echo 'Current size: '${CURRENT_SIZE}
-  read -p 'Enter new size (512-4096) in megabytes (1024): ' NEW_SIZE
-  if [ -z "${NEW_SIZE//[0-9]}" ]; then
-    if [ -z "${NEW_SIZE}" ]; then
-      NEW_SIZE=1024
-    fi
-    if ((${NEW_SIZE} >= 512 && ${NEW_SIZE} <= 4096)); then
-      if grep "zram-size" <<< $(cat ${CONFIG}); then
-        sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
-      else
-        sudo -A echo "zram-size=${NEW_SIZE}" >> ${CONFIG}
-      fi
-      echo 'Current size: '${NEW_SIZE}'. Please reboot.'
-    else
-      echo 'Error: Input out of range (512-4096). Running again.'
-      just --unstable resize-zram
-    fi
-  else
-    echo 'Error: Input is not an integer. Running again.'
-    just --unstable resize-zram
-  fi
-
+# Set system to boot without showing the grub screen with options
 hide-grub:
   #!/usr/bin/env bash
   sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
@@ -228,6 +214,7 @@ hide-grub:
     sudo grub2-mkconfig -o /boot/grub2/grub.cfg
   fi
 
+# Set system to boot with the grub screen showing options (Default)
 unhide-grub:
   #!/usr/bin/env bash
   sudo sed -i '/GRUB_HIDDEN_TIMEOUT=1/d' /etc/default/grub
@@ -239,6 +226,7 @@ unhide-grub:
     sudo grub2-mkconfig -o /boot/grub2/grub.cfg
   fi
 
+# Sign the current OCI OSTree Image (If unsigned)
 sign-image:
   source /etc/default/bazzite && \
   ublue-update --wait && \

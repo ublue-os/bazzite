@@ -1,6 +1,33 @@
+# Print this message
 default:
-  /usr/bin/just --list --list-heading $'Available commands:\n' --list-prefix $' - ' --justfile /usr/share/ublue-os/just/custom.just
+  @just --list --list-heading $'Available commands:\n' --list-prefix $' - ' --justfile /usr/share/ublue-os/just/custom.just
 
+# Update entire system
+update:
+  /usr/bin/ublue-update
+
+# Boot into this device's BIOS/UEFI screen
+bios:
+  systemctl reboot --firmware-setup
+
+# Enroll secure boot & Nvidia driver key
+enroll-secure-boot-key:
+    sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
+
+# Enable VAAPI in Firefox for Nvidia GPUs
+setup-firefox-flatpak-vaapi-nvidia:
+    flatpak override \
+        --user \
+        --filesystem=host-os \
+        --env=LIBVA_DRIVER_NAME=nvidia \
+        --env=LIBVA_DRIVERS_PATH=/run/host/usr/lib64/dri \
+        --env=LIBVA_MESSAGING_LEVEL=1 \
+        --env=MOZ_DISABLE_RDD_SANDBOX=1 \
+        --env=NVD_BACKEND=direct \
+        --env=MOZ_ENABLE_WAYLAND=1 \
+        org.mozilla.firefox
+
+# Enable autologin to gamescope session
 enable-gamescope-autologin:
   #!/usr/bin/env bash
   source /etc/default/bazzite
@@ -11,6 +38,7 @@ enable-gamescope-autologin:
   fi
   systemctl enable --now gamescope-autologin
 
+# Enable autologin to desktop
 enable-desktop-autologin:
   #!/usr/bin/env bash
   source /etc/default/bazzite
@@ -21,6 +49,7 @@ enable-desktop-autologin:
     systemctl enable --now plasma-autologin
   fi
 
+# Launch Waydroid configuration helper
 configure-waydroid:
   #!/usr/bin/env bash
   git clone https://github.com/casualsnek/waydroid_script.git --depth 1 /tmp/waydroid_script
@@ -31,12 +60,14 @@ configure-waydroid:
   deactivate
   sudo rm -rf /tmp/waydroid_script
 
+# Install Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader)
 get-decky:
   #!/usr/bin/env bash
   export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
   curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_prerelease.sh | sh
   sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
 
+# Install EmuDeck (https://www.emudeck.com/)
 get-emudeck:
   #!/usr/bin/env bash
   echo 'Retrieving EmuDeck...'
@@ -46,6 +77,7 @@ get-emudeck:
     wget https://www.emudeck.com/EmuDeck.desktop -O ~/Desktop/EmuDeck.desktop
   fi
 
+# Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD)
 get-steamcmd:
   echo 'Installing SteamCMD...'
   wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O /tmp/steamcmd.tar.gz
@@ -53,11 +85,13 @@ get-steamcmd:
   tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
   rm /tmp/steamcmd.tar.gz
 
+# Install Oversteer for Logitech steering wheels
 install-oversteer:
   sudo wget https://copr.fedorainfracloud.org/coprs/kylegospo/oversteer/repo/fedora-$(rpm -E %fedora)/kylegospo-oversteer-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-oversteer.repo
   ublue-update --wait
   rpm-ostree install oversteer
 
+# Install Nix with the Determinate Nix Installer
 install-nix:
   #!/usr/bin/env bash
   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sudo bash -s -- install --no-confirm
@@ -67,9 +101,11 @@ install-nix:
   sudo cp $nix_systemd_file_location/lib/systemd/system/nix-daemon.service /etc/systemd/system/nix-daemon.service
   sudo cp $nix_systemd_file_location/lib/systemd/system/nix-daemon.socket /etc/systemd/system/nix-daemon.socket
 
+# Uninstall Nix
 remove-nix:
   sudo /nix/nix-installer uninstall
 
+# Install Fleek (https://getfleek.dev/)
 install-fleek:
   #!/usr/bin/env bash
   if [[ -d "/nix" ]]; then
@@ -80,6 +116,7 @@ install-fleek:
     echo "Install nix with just install-nix before running just install-fleek."
   fi
 
+# Integrate Nix/Fleek applications with system theme
 install-fleek-themes:
   #!/usr/bin/env bash
   if [[ -x "/var/usrlocal/bin/fleek" ]]; then
@@ -95,11 +132,13 @@ install-fleek-themes:
     echo "Install fleek with just install-fleek before running just install-fleek-themes."
   fi
 
+# Add Greenlight AppImage to the Desktop
 get-greenlight:
   echo 'Retrieving Greenlight'
   wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O ~/Desktop/Greenlight.AppImage
   chmod +x ~/Desktop/Greenlight.AppImage
 
+# Install BoilR, a Steam Library and art management tool
 get-boilr:
   #!/usr/bin/env bash
   curl \
@@ -131,12 +170,14 @@ get-boilr:
     cp ~/.local/share/applications/BoilR.desktop ~/Desktop
   fi
 
+# Fix a bug in TF2 that causes it to crash at startup
 fix-tf2-tcmalloc:
   #!/usr/bin/env bash
   podman run \
   -v $HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin:/hl2_linux:Z \
   ghcr.io/maisatanel/tcmalloc-hl2-fixer:main
 
+# Patch GMod's 64-bit beta to work properly on Linux
 patch-gmod:
   #!/usr/bin/env bash
   mkdir -p /tmp/patch-gmod
@@ -148,6 +189,7 @@ patch-gmod:
   /tmp/patch-gmod/GModCEFCodecFix-Linux
   rm -rf /tmp/patch-gmod
 
+# Activate Valve-inspired Vapor theme on GNOME
 enable-vapor-theme:
   #!/usr/bin/env bash
   source /etc/default/bazzite
@@ -165,6 +207,7 @@ enable-vapor-theme:
     echo "This is only supported under GNOME."
   fi
 
+# Activate Valve-inspired VGUI2 theme on GNOME
 enable-vgui2-theme:
   #!/usr/bin/env bash
   source /etc/default/bazzite
@@ -182,6 +225,7 @@ enable-vgui2-theme:
     echo "This is only supported under GNOME."
   fi
 
+# Enable legacy swapfile (Not recommended)
 deckswap-on:
   #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
@@ -192,6 +236,7 @@ deckswap-on:
     echo 'deckswap is already enabled.'
   fi
 
+# Disable legacy swapfile
 deckswap-off:
   #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
@@ -202,6 +247,7 @@ deckswap-off:
     echo 'deckswap is already disabled.'
   fi
 
+# Resize legacy swapfile (Default 1GB, max 16GB)
 resize-deckswap:
   #!/usr/bin/env bash
   CONFIG='/etc/default/deckswap'
@@ -224,9 +270,11 @@ resize-deckswap:
     just --unstable resize-deckswap
   fi
 
+# Use EXT4 for SD Cards, allows use of SteamOS formatted SD cards
 switch-to-ext4:
   sudo sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs
 
+# Enable ZRAM (Enabled by default)
 zram-on:
   #!/usr/bin/env bash
   ublue-update --wait
@@ -238,6 +286,7 @@ zram-on:
     echo 'ZRAM is already enabled.'
   fi
 
+# Disable ZRAM (Not recommended)
 zram-off:
   #!/usr/bin/env bash
   ublue-update --wait
@@ -249,6 +298,7 @@ zram-off:
     echo 'ZRAM is already disabled.'
   fi
 
+# Resize ZRAM (Default 1GB)
 resize-zram:
   #!/usr/bin/env bash
   CONFIG='/etc/systemd/zram-generator.conf'
@@ -279,6 +329,7 @@ resize-zram:
     just --unstable resize-zram
   fi
 
+# Set system to boot without showing the grub screen with options
 hide-grub:
   #!/usr/bin/env bash  
   sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
@@ -290,6 +341,7 @@ hide-grub:
     sudo grub2-mkconfig -o /boot/grub2/grub.cfg
   fi
 
+# Set system to boot with the grub screen showing options (Default)
 unhide-grub:
   #!/usr/bin/env bash
   sudo sed -i '/GRUB_HIDDEN_TIMEOUT=3/d' /etc/default/grub
@@ -301,11 +353,13 @@ unhide-grub:
     sudo grub2-mkconfig -o /boot/grub2/grub.cfg
   fi
 
+# Enable BIOS & Firmware update services for the Steam Deck
 enable-deck-bios-firmware-updates:
   #!/usr/bin/env bash
   sudo systemctl enable jupiter-biosupdate.service
   sudo systemctl enable jupiter-controller-update.service
 
+# Disable all Steam Deck hardware specific services
 disable-deck-services:
   #!/usr/bin/env bash
   sudo systemctl disable --now jupiter-fan-control.service
@@ -315,10 +369,12 @@ disable-deck-services:
   sudo systemctl disable --now ryzenadj.service
   sudo systemctl disable --now batterylimit.service
 
+# Disable Steam Deck BIOS updates
 disable-bios-updates:
   #!/usr/bin/env bash
   sudo systemctl mask --now jupiter-biosupdate.service
 
+# Disable Steam Deck controller firmware updates
 disable-firmware-updates:
   #!/usr/bin/env bash
   sudo systemctl mask --now jupiter-controller-update.service
@@ -332,6 +388,7 @@ _toggle_wayland:
     sudo sed -i 's/false/true/g' /etc/default/desktop-wayland
   fi
 
+# Sign the current OCI OSTree Image (If unsigned)
 sign-image:
   source /etc/default/bazzite && \
   ublue-update --wait && \
