@@ -1,13 +1,48 @@
 diff --git a/src/loader/loader_dri3_helper.c b/src/loader/loader_dri3_helper.c
-index 11bf647..e17b357 100644
+index 11bf647..ffa3a02 100644
 --- a/src/loader/loader_dri3_helper.c
 +++ b/src/loader/loader_dri3_helper.c
-@@ -37,6 +37,7 @@
+@@ -37,13 +37,14 @@
  #include "loader_dri_helper.h"
  #include "loader_dri3_helper.h"
  #include "util/macros.h"
 +#include "util/simple_mtx.h"
  #include "drm-uapi/drm_fourcc.h"
+ 
+ /**
+  * A cached blit context.
+  */
+ struct loader_dri3_blit_context {
+-   mtx_t mtx;
++   simple_mtx_t mtx;
+    __DRIcontext *ctx;
+    __DRIscreen *cur_screen;
+    const __DRIcoreExtension *core;
+@@ -51,7 +52,7 @@ struct loader_dri3_blit_context {
+ 
+ /* For simplicity we maintain the cache only for a single screen at a time */
+ static struct loader_dri3_blit_context blit_context = {
+-   _MTX_INITIALIZER_NP, NULL
++   SIMPLE_MTX_INITIALIZER, NULL
+ };
+ 
+ static void
+@@ -162,7 +163,7 @@ static bool loader_dri3_have_image_blit(const struct loader_dri3_drawable *draw)
+ static __DRIcontext *
+ loader_dri3_blit_context_get(struct loader_dri3_drawable *draw)
+ {
+-   mtx_lock(&blit_context.mtx);
++   simple_mtx_lock(&blit_context.mtx);
+ 
+    if (blit_context.ctx && blit_context.cur_screen != draw->dri_screen_render_gpu) {
+       blit_context.core->destroyContext(blit_context.ctx);
+@@ -186,7 +187,7 @@ loader_dri3_blit_context_get(struct loader_dri3_drawable *draw)
+ static void
+ loader_dri3_blit_context_put(void)
+ {
+-   mtx_unlock(&blit_context.mtx);
++   simple_mtx_unlock(&blit_context.mtx);
+ }
  
  /**
 @@ -288,6 +289,30 @@ dri3_update_max_num_back(struct loader_dri3_drawable *draw)
@@ -82,6 +117,21 @@ index 11bf647..e17b357 100644
        /* Compute when we want the frame shown by taking the last known
         * successful MSC and adding in a swap interval for each outstanding swap
         * request. target_msc=divisor=remainder=0 means "Use glXSwapBuffers()
+@@ -2357,12 +2396,12 @@ loader_dri3_swapbuffer_barrier(struct loader_dri3_drawable *draw)
+ void
+ loader_dri3_close_screen(__DRIscreen *dri_screen)
+ {
+-   mtx_lock(&blit_context.mtx);
++   simple_mtx_lock(&blit_context.mtx);
+    if (blit_context.ctx && blit_context.cur_screen == dri_screen) {
+       blit_context.core->destroyContext(blit_context.ctx);
+       blit_context.ctx = NULL;
+    }
+-   mtx_unlock(&blit_context.mtx);
++   simple_mtx_unlock(&blit_context.mtx);
+ }
+ 
+ /**
 diff --git a/src/loader/loader_dri3_helper.h b/src/loader/loader_dri3_helper.h
 index 1fd340b..b8f5eaa 100644
 --- a/src/loader/loader_dri3_helper.h
