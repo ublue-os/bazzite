@@ -16,7 +16,7 @@ clean:
 bios:
   systemctl reboot --firmware-setup
 
-# Enroll secure boot & Nvidia driver key
+# Enroll Nvidia driver & KMOD signing key for secure boot
 enroll-secure-boot-key:
     sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
 
@@ -145,8 +145,8 @@ get-greenlight:
     wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O $HOME/Downloads/Greenlight.AppImage
     flatpak run it.mijorus.gearlever $HOME/Downloads/Greenlight.AppImage
   else
-    wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O ~/Desktop/Greenlight.AppImage
-    chmod +x ~/Desktop/Greenlight.AppImage
+    wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O $HOME/Desktop/Greenlight.AppImage
+    chmod +x $HOME/Desktop/Greenlight.AppImage
   fi
 
 # Install BoilR, a Steam Library and art management tool
