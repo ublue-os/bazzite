@@ -56,7 +56,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 23.1.6
+%global ver 23.1.7
 %global base_ver %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Version:        %{base_ver}.bazzite.{{{ git_dir_version }}}
 Release:        %autorelease
