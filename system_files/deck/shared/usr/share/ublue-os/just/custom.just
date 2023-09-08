@@ -1,3 +1,6 @@
+default:
+  /usr/bin/just --list --list-heading $'Available commands:\n' --list-prefix $' - ' --justfile /usr/share/ublue-os/just/custom.just
+
 enable-gamescope-autologin:
   #!/usr/bin/env bash
   source /etc/default/bazzite
