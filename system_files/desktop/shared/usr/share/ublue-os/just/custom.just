@@ -133,11 +133,16 @@ enable-auto-login:
     systemctl enable --now plasma-autologin
   fi
 
-# Add Greenlight AppImage to the Desktop
+# Install Greenlight xCloud and xHome streaming AppImage
 get-greenlight:
-  echo 'Retrieving Greenlight'
-  wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O ~/Desktop/Greenlight.AppImage
-  chmod +x ~/Desktop/Greenlight.AppImage
+  #!/usr/bin/env bash
+  if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
+    wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O $HOME/Downloads/Greenlight.AppImage
+    flatpak run it.mijorus.gearlever $HOME/Downloads/Greenlight.AppImage
+  else
+    wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O ~/Desktop/Greenlight.AppImage
+    chmod +x ~/Desktop/Greenlight.AppImage
+  fi
 
 # Enable Supergfxctl, a Nvidia GPU switcher for hybrid laptops
 enable-supergfxctl: 
