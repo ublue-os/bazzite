@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 source /etc/default/bazzite
 
+# Script Version
+FSI_VER=1
+FSI_VER_FILE="/etc/bazzite/fsi_version"
+FSI_VER_RAN=$(cat $FSI_VER_FILE)
+
+# Run script if updated
+if [[ -f $FSI_VER_FILE && $FSI_VER = $FSI_VER_RAN ]]; then
+  echo "Flatpak system installation has already ran. Exiting..."
+  exit 0
+fi
+
 # Opt out of and remove Fedora's flatpak repo
 if grep -qz 'fedora' <<< $(flatpak remotes); then
   /usr/lib/fedora-third-party/fedora-third-party-opt-out
@@ -38,3 +49,5 @@ if [[ -n $REMOVE_LIST ]]; then
     fi
   done
 fi
+
+echo $FSI_VER > $FSI_VER_FILE
