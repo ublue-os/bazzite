@@ -67,15 +67,10 @@ Source0:        https://archive.mesa3d.org/mesa-%{ver}.tar.xz
 # Source1 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
-# Bazzite: Use Valve's defaults
-Source2:        https://gitlab.com/evlaV/mesa/-/raw/steamos-23.9/src/util/00-mesa-defaults.conf
-Source3:        https://gitlab.com/evlaV/mesa/-/raw/steamos-23.9/src/util/00-radv-defaults.conf
 
 Patch10:        gnome-shell-glthread-disable.patch
 
 Patch20:        gamescope.patch
-
-Patch30:        invariant.patch
 
 BuildRequires:  meson >= 1.0.0
 BuildRequires:  gcc
@@ -361,11 +356,6 @@ The drivers with support for the Vulkan API.
 %prep
 %autosetup -n %{name}-%{ver} -p1
 cp %{SOURCE1} docs/
-# Bazzite: Use Valve's defaults
-rm src/util/00-mesa-defaults.conf
-cp %{SOURCE2} src/util/
-rm src/util/00-radv-defaults.conf
-cp %{SOURCE3} src/util/
 
 %build
 # ensure standard Rust compiler flags are set
