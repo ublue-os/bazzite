@@ -1,23 +1,40 @@
 #!/usr/bin/env bash
 source /etc/default/bazzite
 
+# Opt out of and remove Fedora's flatpak repo
 if grep -qz 'fedora' <<< $(flatpak remotes); then
   /usr/lib/fedora-third-party/fedora-third-party-opt-out
   /usr/bin/fedora-third-party disable
   flatpak remote-delete fedora --force
 fi
 
-if [[ -f '/etc/flatpak/install' ]]; then
-  cat /etc/flatpak/install | while read line; do
-    flatpak install --system --noninteractive flathub $line
-  done && mv /etc/flatpak/install /etc/flatpak/installed
+# Lists of flatpaks
+FLATPAK_LIST=$(flatpak list --column=application)
+INSTALL_LIST=$(cat /etc/flatpak/install)
+REMOVE_LIST=$(cat /etc/flatpak/remove)
+
+# Add Deck flatpaks to install list
+if [[ $IMAGE_NAME =~ "deck" ]]; then
+  DECK_LIST=$(cat /etc/flatpak/deck)
+  if [[ -n $DECK_LIST ]]; then
+    INSTALL_LIST="$INSTALL_LIST\n$DECK_LIST"
+  fi
 fi
 
-if [[ -f '/etc/flatpak/remove' ]]; then
-  cat /etc/flatpak/remove | while read line; do
-    flatpak remove --system --noninteractive $line 2>/dev/null
+# Install flatpaks in list
+if [[ -n $INSTALL_LIST ]]; then
+  for flatpak in $INSTALL_LIST; do
+    if grep -qvz $flatpak <<< $FLATPAK_LIST; then
+      flatpak install --system --noninteractive flathub $flatpak
+    fi
   done
-  mv /etc/flatpak/remove /etc/flatpak/removed
 fi
 
-rm -rf /etc/flatpak/{flathub,objects}
+# Remove flatpaks in list
+if [[ -n $REMOVE_LIST ]]; then
+  for flatpak in $REMOVE_LIST; do
+    if grep -qz $flatpak <<< $FLATPAK_LIST; then
+      flatpak remove --system --noninteractive $flatpak
+    fi
+  done
+fi
