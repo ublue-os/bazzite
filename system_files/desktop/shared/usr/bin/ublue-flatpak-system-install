@@ -10,12 +10,12 @@ fi
 
 # Lists of flatpaks
 FLATPAK_LIST=$(flatpak list --column=application)
-INSTALL_LIST=$(cat /etc/flatpak/install)
-REMOVE_LIST=$(cat /etc/flatpak/remove)
+INSTALL_LIST=$(cat /usr/etc/flatpak/install)
+REMOVE_LIST=$(cat /usr/etc/flatpak/remove)
 
 # Add Deck flatpaks to install list
 if [[ $IMAGE_NAME =~ "deck" ]]; then
-  DECK_LIST=$(cat /etc/flatpak/deck)
+  DECK_LIST=$(cat /usr/etc/flatpak/deck)
   if [[ -n $DECK_LIST ]]; then
     INSTALL_LIST="$INSTALL_LIST\n$DECK_LIST"
   fi
