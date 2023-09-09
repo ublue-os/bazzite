@@ -2,13 +2,13 @@
 source /etc/default/bazzite
 
 # Script Version
-FSI_VER=1
-FSI_VER_FILE="/etc/bazzite/fsi_version"
-FSI_VER_RAN=$(cat $FSI_VER_FILE)
+VER=1
+VER_FILE="/etc/bazzite/flatpak_manager_version"
+VER_RAN=$(cat $VER_FILE)
 
 # Run script if updated
-if [[ -f $FSI_VER_FILE && $FSI_VER = $FSI_VER_RAN ]]; then
-  echo "Flatpak system installation has already ran. Exiting..."
+if [[ -f $VER_FILE && $VER = $VER_RAN ]]; then
+  echo "Flatpak manager v$VER has already ran. Exiting..."
   exit 0
 fi
 
@@ -43,4 +43,4 @@ if [[ -n $REMOVE_LIST ]]; then
 fi
 
 mkdir -p /etc/bazzite
-echo $FSI_VER > $FSI_VER_FILE
+echo $VER > $VER_FILE
