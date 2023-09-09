@@ -50,4 +50,5 @@ if [[ -n $REMOVE_LIST ]]; then
   done
 fi
 
+mkdir -p /etc/bazzite
 echo $FSI_VER > $FSI_VER_FILE
