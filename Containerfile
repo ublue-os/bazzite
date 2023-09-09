@@ -240,6 +240,7 @@ RUN rpm-ostree install \
 RUN rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+        mesa-filesystem \
         mesa-dri-drivers \
         mesa-libEGL \
         mesa-libEGL-devel \
