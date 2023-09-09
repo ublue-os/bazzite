@@ -51,7 +51,7 @@ index b15149d..45791b6 100644
  
  enum {
 diff --git a/src/amd/vulkan/radv_instance.c b/src/amd/vulkan/radv_instance.c
-index 4dcb829..6607e82 100644
+index ebd2787..aa2ed8a 100644
 --- a/src/amd/vulkan/radv_instance.c
 +++ b/src/amd/vulkan/radv_instance.c
 @@ -62,7 +62,6 @@ static const struct debug_control radv_debug_options[] = {
@@ -62,15 +62,15 @@ index 4dcb829..6607e82 100644
     {"splitfma", RADV_DEBUG_SPLIT_FMA},
     {"nodisplaydcc", RADV_DEBUG_NO_DISPLAY_DCC},
     {"notccompatcmask", RADV_DEBUG_NO_TC_COMPAT_CMASK},
-@@ -133,7 +132,6 @@ static const driOptionDescription radv_dri_options[] = {
-       DRI_CONF_VK_WSI_FORCE_SWAPCHAIN_TO_CURRENT_EXTENT(false)
+@@ -132,7 +131,6 @@ static const driOptionDescription radv_dri_options[] = {
+       DRI_CONF_VK_WSI_FORCE_BGRA8_UNORM_FIRST(false)
        DRI_CONF_RADV_ZERO_VRAM(false)
        DRI_CONF_RADV_LOWER_DISCARD_TO_DEMOTE(false)
 -      DRI_CONF_RADV_INVARIANT_GEOM(false)
        DRI_CONF_RADV_SPLIT_FMA(false)
        DRI_CONF_RADV_DISABLE_TC_COMPAT_HTILE_GENERAL(false)
        DRI_CONF_RADV_DISABLE_DCC(false)
-@@ -178,9 +176,6 @@ radv_init_dri_options(struct radv_instance *instance)
+@@ -177,9 +175,6 @@ radv_init_dri_options(struct radv_instance *instance)
     if (driQueryOptionb(&instance->dri_options, "radv_lower_discard_to_demote"))
        instance->debug_flags |= RADV_DEBUG_DISCARD_TO_DEMOTE;
  
