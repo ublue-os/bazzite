@@ -68,9 +68,9 @@ Source0:        https://archive.mesa3d.org/mesa-%{ver}.tar.xz
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
-Patch10:        gnome-shell-glthread-disable.patch
-
-Patch20:        gamescope.patch
+Patch0:         valve_config.patch
+Patch1:         gnome-shell-glthread-disable.patch
+Patch2:         gamescope.patch
 
 BuildRequires:  meson >= 1.0.0
 BuildRequires:  gcc

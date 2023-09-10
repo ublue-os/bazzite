@@ -1,7 +1,8 @@
-diff -up mesa-22.3.0-rc4/src/util/00-mesa-defaults.conf.dma mesa-22.3.0-rc4/src/util/00-mesa-defaults.conf
---- mesa-22.3.0-rc4/src/util/00-mesa-defaults.conf.dma	2022-11-25 10:32:32.175879868 +1000
-+++ mesa-22.3.0-rc4/src/util/00-mesa-defaults.conf	2022-11-25 10:32:43.743067470 +1000
-@@ -653,6 +653,7 @@ TODO: document the other workarounds.
+diff --git a/src/util/00-mesa-defaults.conf b/src/util/00-mesa-defaults.conf
+index 603a6dd..0cf8099 100644
+--- a/src/util/00-mesa-defaults.conf
++++ b/src/util/00-mesa-defaults.conf
+@@ -729,6 +729,7 @@ TODO: document the other workarounds.
          <application name="gnome-shell" executable="gnome-shell">
              <option name="adaptive_sync" value="false" />
              <option name="v3d_nonmsaa_texture_size_limit" value="true" />
