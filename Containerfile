@@ -69,7 +69,6 @@ RUN rpm-ostree install \
     libobs_glcapture \
     libobs_vkcapture \
     obs-vkcapture \
-    rom-properties \
     ladspa-caps-plugins \
     ladspa-noise-suppression-for-voice \
     btop \
