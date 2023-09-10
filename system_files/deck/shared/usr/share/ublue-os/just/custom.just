@@ -163,6 +163,7 @@ get-boilr:
   --create-dirs -o ~/.local/share/icons/hicolor/$px\x$px/apps/io.github.philipk.boilr.png;\
   done
   HOME=$HOME
+  mkdir -p ~/.local/share/applications
   echo -e \
   "[Desktop Entry]\n\
   Version=1.0\n\
@@ -378,6 +379,11 @@ disable-bios-updates:
 disable-firmware-updates:
   #!/usr/bin/env bash
   sudo systemctl mask --now jupiter-controller-update.service
+
+# Disable SDGyroDSU
+disable-sdgyrodsu:
+  #!/usr/bin/env bash
+  sudo systemctl mask --user sdgyrodsu.service
 
 _toggle_wayland:
   #!/usr/bin/env bash
