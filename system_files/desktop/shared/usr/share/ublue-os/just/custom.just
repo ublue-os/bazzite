@@ -1,27 +1,26 @@
-# Print this message
-default:
+_default:
   @just --list --list-heading $'Available commands:\n' --list-prefix $' - ' --justfile /usr/share/ublue-os/just/custom.just
 
 # Update entire system
-update:
+update-system:
   /usr/bin/ublue-update
 
 # Clean up old containers and flatpaks
-clean:
+clean-system:
   podman system prune -a
   flatpak uninstall --unused
   rpm-ostree cleanup -bm
 
 # Boot into this device's BIOS/UEFI screen
-bios:
+boot-to-bios:
   systemctl reboot --firmware-setup
 
 # Enroll Nvidia driver & KMOD signing key for secure boot
-enroll-secure-boot-key:
+enroll-secure-boot-keys:
     sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
 
 # Enable VAAPI in Firefox for Nvidia GPUs
-setup-firefox-flatpak-vaapi-nvidia:
+setup-firefox-vaapi-nvidia:
     flatpak override \
         --user \
         --filesystem=host-os \
