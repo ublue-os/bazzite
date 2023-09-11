@@ -28,16 +28,6 @@ index 4f850b3..ce69763 100755
  
  set -euo pipefail
  
-diff --git a/usr/bin/steamos-polkit-helpers/jupiter-amp-control b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
-index 5f1d205..3e0ed02 100755
---- a/usr/bin/steamos-polkit-helpers/jupiter-amp-control
-+++ b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
-@@ -1,4 +1,4 @@
--#!/bin/bash
-+#!/usr/bin/sh
- 
- set -eu
- 
 diff --git a/usr/bin/steamos-polkit-helpers/jupiter-biosupdate b/usr/bin/steamos-polkit-helpers/jupiter-biosupdate
 index 1d7b792..c716d12 100755
 --- a/usr/bin/steamos-polkit-helpers/jupiter-biosupdate
@@ -258,26 +248,6 @@ index bae7403..1a7e948 100755
  
  set -eu
  
-diff --git a/usr/lib/hwsupport/cirrus-fixup.sh b/usr/lib/hwsupport/cirrus-fixup.sh
-index b21b103..99bfe5f 100755
---- a/usr/lib/hwsupport/cirrus-fixup.sh
-+++ b/usr/lib/hwsupport/cirrus-fixup.sh
-@@ -1,4 +1,4 @@
--#!/bin/bash
-+#!/usr/bin/sh
- 
- cd $1
- 
-diff --git a/usr/lib/hwsupport/ev2_cirrus_alsa_fixups.sh b/usr/lib/hwsupport/ev2_cirrus_alsa_fixups.sh
-index 995ec8d..cdfa14b 100755
---- a/usr/lib/hwsupport/ev2_cirrus_alsa_fixups.sh
-+++ b/usr/lib/hwsupport/ev2_cirrus_alsa_fixups.sh
-@@ -1,4 +1,4 @@
--#!/bin/bash
-+#!/usr/bin/sh
- 
- # These tend to persist, but they're not right on first boot
- # TODO call is_ev2.sh (doesn't exist yet) to only run it there?
 diff --git a/usr/lib/hwsupport/format-device.sh b/usr/lib/hwsupport/format-device.sh
 index 6529e23..9de19b1 100755
 --- a/usr/lib/hwsupport/format-device.sh
