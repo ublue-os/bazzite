@@ -36,6 +36,7 @@ cp -rv etc/* %{buildroot}%{_sysconfdir}
 mv %{buildroot}%{_sysconfdir}/skel %{buildroot}%{_sysconfdir}/skel.d
 # Remove unneeded files
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/steam.desktop
+rm %{buildroot}%{_bindir}/steamos-nested-desktop
 rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
 rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
@@ -73,7 +74,6 @@ rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
 %{_sysconfdir}/xdg/powermanagementprofilesrc
 %{_bindir}/jupiter-plasma-bootstrap
 %{_bindir}/steamos-add-to-steam
-%{_bindir}/steamos-nested-desktop
 %{_prefix}/lib/udev/rules.d/99-kwin-ignore-tablet-mode.rules
 %{_datadir}/X11/xorg.conf.d/99-pointer.conf
 %{_datadir}/icons/*
