@@ -162,8 +162,8 @@ get-boilr:
   jq -r ".download_url") \
   --create-dirs -o ~/.local/share/icons/hicolor/$px\x$px/apps/io.github.philipk.boilr.png;\
   done
+  mkdir -p $HOME/.local/share/applications
   HOME=$HOME
-  mkdir -p ~/.local/share/applications
   echo -e \
   "[Desktop Entry]\n\
   Version=1.0\n\

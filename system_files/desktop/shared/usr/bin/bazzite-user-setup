@@ -29,10 +29,18 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
 
     echo 'Creating Desktop shortcuts'
     mkdir -p $HOME/Desktop/
-    cp /usr/share/applications/steam.desktop $HOME/Desktop/steam.desktop
-    cp /etc/skel.d/Desktop/Return.desktop $HOME/Desktop/Return.desktop
-    cp /usr/share/applications/net.lutris.Lutris.desktop $HOME/Desktop/net.lutris.Lutris.desktop
-    cp /usr/share/applications/yafti.desktop $HOME/Desktop/yafti.desktop
+    if [[ ! -f "$HOME/Desktop/steam.desktop" ]]; then
+      cp /usr/share/applications/steam.desktop $HOME/Desktop/steam.desktop
+    fi
+    if [[ ! -f "$HOME/Desktop/Return.desktop" ]]; then
+      cp /etc/skel.d/Desktop/Return.desktop $HOME/Desktop/Return.desktop
+    fi
+    if [[ ! -f "$HOME/Desktop/net.lutris.Lutris.desktop" ]]; then
+      cp /usr/share/applications/net.lutris.Lutris.desktop $HOME/Desktop/net.lutris.Lutris.desktop
+    fi
+    if [[ ! -f "$HOME/Desktop/yafti.desktop" ]]; then
+      cp /usr/share/applications/yafti.desktop $HOME/Desktop/yafti.desktop
+    fi
   fi
 else
   echo 'Running setup for Silverblue'
@@ -55,8 +63,12 @@ else
 
   echo 'Installing Gradience presets'
   mkdir -p $HOME/.config/presets/user/
-  ln -s /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.config/presets/user/vapor.json
-  ln -s /usr/share/ublue-os/bazzite/themes/vgui2.json $HOME/.config/presets/user/vgui2.json
+  if [[ ! -f "$HOME/.config/presets/user/vapor.json" ]]; then
+    ln -s /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.config/presets/user/vapor.json
+  fi
+  if [[ ! -f "$HOME/.config/presets/user/vgui2.json" ]]; then
+    ln -s /usr/share/ublue-os/bazzite/themes/vgui2.json $HOME/.config/presets/user/vgui2.json
+  fi
 
   if [[ $IMAGE_NAME =~ "deck" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
