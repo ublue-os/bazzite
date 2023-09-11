@@ -362,7 +362,7 @@ RUN rm /usr/share/applications/wine*.desktop && \
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
     systemctl enable vpower.service && \
     systemctl enable ds-inhibit.service && \
-    systemctl enable steam-web-debug-portforward.service && \
+    systemctl --global enable steam-web-debug-portforward.service && \
     systemctl --global enable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \
     systemctl --global disable ublue-update.timer && \
