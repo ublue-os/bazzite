@@ -35,7 +35,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Generate ISO
         uses: ublue-os/isogenerator@v2.1.2
         id: isogenerator
