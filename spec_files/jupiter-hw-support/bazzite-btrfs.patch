@@ -7,9 +7,9 @@ index dd700da..152e231 100644
  Type=oneshot
  RemainAfterExit=true
 +EnvironmentFile=/etc/default/steamos-btrfs
- ExecStart=/usr/sbin/steamos-automount add %i
- ExecStop=/usr/sbin/steamos-automount remove %i
- ExecReload=/usr/sbin/steamos-automount retrigger %i
+ ExecStart=/usr/libexec/steamos-automount add %i
+ ExecStop=/usr/libexec/steamos-automount remove %i
+ ExecReload=/usr/libexec/steamos-automount retrigger %i
 diff --git a/usr/lib/hwsupport/format-device.sh b/usr/lib/hwsupport/format-device.sh
 index b136413..d3cbb16 100755
 --- a/usr/lib/hwsupport/format-device.sh
