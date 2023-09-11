@@ -1,5 +1,0 @@
-# Dir to store hash files. Each instance has own, named by $(systemd-escape <instance>).hashfile
-HashDir=/var/lib/duperemove
-# Additional options for duperemove binary
-OPTIONS="--skip-zeroes --hash=xxhash"
-
