@@ -400,6 +400,22 @@ _toggle_wayland:
     sudo sed -i 's/false/true/g' /etc/default/desktop-wayland
   fi
 
+# Use stock gamepad drivers
+use-stock-gamepads:
+  #!/usr/bin/env bash
+  sudo bash -c '> /etc/modprobe.d/xone.conf'
+  sudo bash -c '> /etc/modprobe.d/xpadneo.conf'
+  sudo bash -c '> /etc/modprobe.d/xpad-noone-blacklist.conf'
+  sudo bash -c '> /etc/modules-load.d/xpad-noone.conf'
+
+# Use uBlue gamepad drivers (Default)
+use-ublue-gamepads:
+  #!/usr/bin/env bash
+  sudo rm -f /etc/modprobe.d/xone.conf
+  sudo rm -f /etc/modprobe.d/xpadneo.conf
+  sudo rm -f /etc/modprobe.d/xpad-noone-blacklist.conf
+  sudo rm -f /etc/modules-load.d/xpad-noone.conf
+
 # Sign the current OCI OSTree Image (If unsigned)
 sign-image:
   source /etc/default/bazzite && \

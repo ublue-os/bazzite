@@ -242,6 +242,22 @@ sign-image:
     rpm-ostree rebase ostree-image-signed:docker://ghcr.io/${IMAGE_VENDOR}/${IMAGE_NAME}:${FEDORA_MAJOR_VERSION}; \
   fi
 
+# Use stock gamepad drivers
+use-stock-gamepads:
+  #!/usr/bin/env bash
+  sudo bash -c '> /etc/modprobe.d/xone.conf'
+  sudo bash -c '> /etc/modprobe.d/xpadneo.conf'
+  sudo bash -c '> /etc/modprobe.d/xpad-noone-blacklist.conf'
+  sudo bash -c '> /etc/modules-load.d/xpad-noone.conf'
+
+# Use uBlue gamepad drivers (Default)
+use-ublue-gamepads:
+  #!/usr/bin/env bash
+  sudo rm -f /etc/modprobe.d/xone.conf
+  sudo rm -f /etc/modprobe.d/xpadneo.conf
+  sudo rm -f /etc/modprobe.d/xpad-noone-blacklist.conf
+  sudo rm -f /etc/modules-load.d/xpad-noone.conf
+
 _get-image:
   #!/usr/bin/env python
   from json import loads
