@@ -194,9 +194,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
         rm /usr/share/applications/com.github.rafostar.Clapper.desktop && \
         sed -i '/^PRETTY_NAME/s/Silverblue/Bazzite GNOME/' /usr/lib/os-release \
     ; fi && \
-    if grep -q "nvidia" <<< "${IMAGE_NAME}"; then \
-        sed -i 's@DESKTOP_WAYLAND=true@DESKTOP_WAYLAND=false@g' /etc/default/desktop-wayland \
-    ; else \
+    if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         systemctl disable waydroid-container.service && \
         rm /usr/share/wayland-sessions/weston.desktop \
     ; fi && \
