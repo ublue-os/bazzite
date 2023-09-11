@@ -1,5 +1,5 @@
 diff --git a/src/util/00-mesa-defaults.conf b/src/util/00-mesa-defaults.conf
-index ab2ea4f..603a6dd 100644
+index 2b45eda..0cf8099 100644
 --- a/src/util/00-mesa-defaults.conf
 +++ b/src/util/00-mesa-defaults.conf
 @@ -166,6 +166,12 @@ TODO: document the other workarounds.
@@ -32,38 +32,15 @@ index ab2ea4f..603a6dd 100644
          <!-- Workarounds for SPECviewperf relying on invalid / non-conformant
               OpenGL behavior. Older SPECviewperf versions might also need this.
            -->
-@@ -585,9 +601,18 @@ TODO: document the other workarounds.
- 
-         <application name="Talos Principle" executable="Talos">
-             <option name="mesa_glthread" value="true"/>
-+            <option name="vk_wsi_force_swapchain_to_current_extent" value="true"/>
+@@ -713,6 +729,7 @@ TODO: document the other workarounds.
+         <application name="gnome-shell" executable="gnome-shell">
+             <option name="adaptive_sync" value="false" />
+             <option name="v3d_nonmsaa_texture_size_limit" value="true" />
++            <option name="mesa_glthread" value="false"/>
          </application>
-         <application name="Talos Principle (Unrestricted)" executable="Talos_Unrestricted">
-             <option name="mesa_glthread" value="true"/>
-+            <option name="vk_wsi_force_swapchain_to_current_extent" value="true"/>
-+        </application>
-+
-+        <application name="Serious Sam Fusion" executable="Sam2017">
-+            <option name="vk_wsi_force_swapchain_to_current_extent" value="true"/>
-+        </application>
-+        <application name="Serious Sam Fusion (Unrestricted)" executable="Sam2017_Unrestricted">
-+            <option name="vk_wsi_force_swapchain_to_current_extent" value="true"/>
-         </application>
- 
-         <!-- roughly 30% increase in fps -->
-@@ -812,6 +837,11 @@ TODO: document the other workarounds.
-             <option name="vk_wsi_force_bgra8_unorm_first" value="true" />
-         </application>
- 
-+        <application name="Rainbow Six Extraction (Wine)" executable="R6-Extraction.exe">
-+            <option name="vk_x11_override_min_image_count" value="2" />
-+            <option name="vk_x11_strict_image_count" value="true" />
-+        </application>
-+
-         <application name="Brink" executable="brink.exe">
-             <option name="glx_extension_override" value="-GLX_OML_swap_method" />
-             <option name="allow_higher_compat_version" value="true" />
-@@ -894,6 +924,49 @@ TODO: document the other workarounds.
+         <application name="Desktop — Plasma" executable="plasmashell">
+             <option name="adaptive_sync" value="false" />
+@@ -908,6 +925,49 @@ TODO: document the other workarounds.
              <!-- https://gitlab.freedesktop.org/mesa/mesa/-/issues/5437 -->
              <option name="vk_dont_care_as_load" value="true" />
          </application>
@@ -113,17 +90,7 @@ index ab2ea4f..603a6dd 100644
      </device>
      <!-- vmwgfx doesn't like full buffer swaps and can't sync to vertical retraces.-->
      <device driver="vmwgfx">
-@@ -921,6 +994,9 @@ TODO: document the other workarounds.
-         <application name="Exanima" executable="Exanima.exe">
-             <option name="radeonsi_zerovram" value="true"/>
-         </application>
-+        <application name="Nowhere Patrol" executable="NowherePatrol.exe">
-+            <option name="radeonsi_zerovram" value="true" />
-+        </application>
-         <application name="Rocket League" executable="RocketLeague">
-             <option name="radeonsi_zerovram" value="true" />
-         </application>
-@@ -999,6 +1075,11 @@ TODO: document the other workarounds.
+@@ -1016,6 +1076,11 @@ TODO: document the other workarounds.
              <option name="mesa_glthread" value="false"/>
          </application>
  
@@ -135,7 +102,7 @@ index ab2ea4f..603a6dd 100644
          <!-- GL_POINT_SMOOTH is used in Quake II to render particles -->
          <application name="Quake II" executable="quake2-engine">
              <option name="zink_emulate_point_smooth" value="true"/>
-@@ -1009,6 +1090,9 @@ TODO: document the other workarounds.
+@@ -1026,6 +1091,9 @@ TODO: document the other workarounds.
          <application name="Quake II (wine)" executable="quake2.exe">
              <option name="zink_emulate_point_smooth" value="true"/>
          </application>
@@ -145,7 +112,7 @@ index ab2ea4f..603a6dd 100644
      </device>
      <device driver="iris">
          <application name="Middle Earth: Shadow of Mordor" executable="ShadowOfMordor">
-@@ -1061,6 +1145,28 @@ TODO: document the other workarounds.
+@@ -1078,6 +1146,28 @@ TODO: document the other workarounds.
          <application name="NieR:Automata" executable="NieRAutomata.exe">
              <option name="limit_trig_input_range" value="true" />
          </application>

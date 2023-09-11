@@ -56,7 +56,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 23.1.6
+%global ver 23.1.7
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Release:        %autorelease.bazzite.{{{ git_dir_version }}}
 License:        MIT
@@ -69,8 +69,7 @@ Source0:        https://archive.mesa3d.org/mesa-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch0:         valve_config.patch
-Patch1:         gnome-shell-glthread-disable.patch
-Patch2:         gamescope.patch
+Patch1:         gamescope.patch
 
 BuildRequires:  meson >= 1.0.0
 BuildRequires:  gcc
