@@ -92,7 +92,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree install \
         steamdeck-kde-presets-desktop \
         wallpaper-engine-kde-plugin \
-        sddm-sugar-steamOS \
         kdeconnectd \
         rom-properties-kf5 && \
     rpm-ostree override replace \
@@ -267,7 +266,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-bazzite-menu \
         gnome-shell-extension-search-light \
         sddm \
-        sddm-sugar-steamOS \
 ; fi
 
 # Install new packages
@@ -287,6 +285,7 @@ RUN rpm-ostree install \
     vkBasalt \
     mangohud \
     sdgyrodsu \
+    sddm-sugar-steamOS \
     ibus-pinyin \
     ibus-table-chinese-cangjie \
     ibus-table-chinese-quick \
