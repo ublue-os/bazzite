@@ -85,6 +85,7 @@ elif [[ $IMAGE_NAME =~ "deck"  ]]; then
 fi
 
 if grep -qz "Kernel driver in use: radeon" <<< $GPU_ID; then
+  echo "Legacy AMD hardware detected, enabling CIK and SI support in AMDGPU"
   if [[ ! $KARGS =~ "radeon.si_support" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=radeon.si_support=0"
   fi
