@@ -267,16 +267,6 @@ index 36df682..3e13083 100755
 +#!/usr/bin/sh
  
  exec /usr/lib/hwsupport/format-device.sh --device /dev/mmcblk0 "$@"
-diff --git a/usr/lib/hwsupport/jupiter-amp-control b/usr/lib/hwsupport/jupiter-amp-control
-index c3d7add..68aa4e4 100755
---- a/usr/lib/hwsupport/jupiter-amp-control
-+++ b/usr/lib/hwsupport/jupiter-amp-control
-@@ -1,4 +1,4 @@
--#!/bin/bash
-+#!/usr/bin/sh
- 
- set -e
- 
 diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
 index 9e40c22..ce613b6 100755
 --- a/usr/lib/hwsupport/steamos-automount.sh

@@ -12,26 +12,6 @@ index e71a736..dd700da 100644
 +ExecStart=/usr/libexec/steamos-automount add %i
 +ExecStop=/usr/libexec/steamos-automount remove %i
 +ExecReload=/usr/libexec/steamos-automount retrigger %i
-diff --git a/usr/bin/steamos-polkit-helpers/jupiter-amp-control b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
-index 3e0ed02..85bae6f 100755
---- a/usr/bin/steamos-polkit-helpers/jupiter-amp-control
-+++ b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
-@@ -7,4 +7,4 @@ then
-     exec pkexec --disable-internal-agent "$0" "$@"
- fi
- 
--exec /usr/lib/hwsupport/jupiter-amp-control "$@"
-+exec /usr/libexec/jupiter-amp-control "$@"
-diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-device b/usr/bin/steamos-polkit-helpers/steamos-format-device
-index dcfe6b9..b8315a0 100755
---- a/usr/bin/steamos-polkit-helpers/steamos-format-device
-+++ b/usr/bin/steamos-polkit-helpers/steamos-format-device
-@@ -8,4 +8,4 @@ then
-     exec pkexec --disable-internal-agent "$0" --owner "$UID":"$gid" "$@"
- fi
- 
--exec /usr/lib/hwsupport/format-device.sh "$@"
-+exec /usr/libexec/format-device "$@"
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard b/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
 index 53b4f2a..9022762 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
@@ -61,16 +41,3 @@ index 3e13083..39f08ac 100755
  
 -exec /usr/lib/hwsupport/format-device.sh --device /dev/mmcblk0 "$@"
 +exec /usr/libexec/format-device --device /dev/mmcblk0 "$@"
-diff --git a/usr/lib/hwsupport/jupiter-amp-control b/usr/lib/hwsupport/jupiter-amp-control
-index 68aa4e4..ff52e6f 100755
---- a/usr/lib/hwsupport/jupiter-amp-control
-+++ b/usr/lib/hwsupport/jupiter-amp-control
-@@ -3,7 +3,7 @@
- set -e
- 
- # Source files
--SCRIPT_ROOT="$(dirname $(realpath "$0") )"
-+SCRIPT_ROOT="/usr/lib/hwsupport"
- SPK_PROT_ORIG_PATH="$SCRIPT_ROOT/cs35l41-dsp1-spk-prot.bin.orig"
- SPK_PROT_MOD_PATH="$SCRIPT_ROOT/cs35l41-dsp1-spk-prot.bin.mod"
- 
