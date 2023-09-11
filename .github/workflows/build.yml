@@ -35,7 +35,7 @@ jobs:
       fail-fast: false
       matrix:
         image_flavor: [main, nvidia]
-        base_name: [bazzite, bazzite-deck]
+        base_name: [bazzite, bazzite-surface, bazzite-deck]
         base_image_name: [kinoite, silverblue]
         major_version: [38]
         include:
