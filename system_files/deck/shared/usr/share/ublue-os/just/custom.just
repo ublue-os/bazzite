@@ -416,6 +416,10 @@ use-ublue-gamepads:
   sudo rm -f /etc/modprobe.d/xpad-noone-blacklist.conf
   sudo rm -f /etc/modules-load.d/xpad-noone.conf
 
+# Enable Flatpak Theming
+enable-flatpak-theming:
+  flatpak override --user --filesystem=xdg-config/gtk-4.0:ro --filesystem=xdg-config/gtk-3.0:ro --filesystem=~/.icons:ro --filesystem=~/.themes:ro
+
 # Sign the current OCI OSTree Image (If unsigned)
 sign-image:
   source /etc/default/bazzite && \
