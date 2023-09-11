@@ -9,9 +9,9 @@ index e71a736..dd700da 100644
 -ExecStart=/usr/lib/hwsupport/steamos-automount.sh add %i
 -ExecStop=/usr/lib/hwsupport/steamos-automount.sh remove %i
 -ExecReload=/usr/lib/hwsupport/steamos-automount.sh retrigger %i
-+ExecStart=/usr/sbin/steamos-automount add %i
-+ExecStop=/usr/sbin/steamos-automount remove %i
-+ExecReload=/usr/sbin/steamos-automount retrigger %i
++ExecStart=/usr/libexec/steamos-automount add %i
++ExecStop=/usr/libexec/steamos-automount remove %i
++ExecReload=/usr/libexec/steamos-automount retrigger %i
 diff --git a/usr/bin/steamos-polkit-helpers/jupiter-amp-control b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
 index 3e0ed02..85bae6f 100755
 --- a/usr/bin/steamos-polkit-helpers/jupiter-amp-control
@@ -21,7 +21,7 @@ index 3e0ed02..85bae6f 100755
  fi
  
 -exec /usr/lib/hwsupport/jupiter-amp-control "$@"
-+exec /usr/sbin/jupiter-amp-control "$@"
++exec /usr/libexec/jupiter-amp-control "$@"
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-device b/usr/bin/steamos-polkit-helpers/steamos-format-device
 index dcfe6b9..b8315a0 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-format-device
@@ -31,7 +31,7 @@ index dcfe6b9..b8315a0 100755
  fi
  
 -exec /usr/lib/hwsupport/format-device.sh "$@"
-+exec /usr/sbin/format-device "$@"
++exec /usr/libexec/format-device "$@"
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard b/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
 index 53b4f2a..9022762 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
@@ -41,7 +41,7 @@ index 53b4f2a..9022762 100755
  fi
  
 -exec /usr/lib/hwsupport/format-sdcard.sh "$@"
-+exec /usr/sbin/format-sdcard "$@"
++exec /usr/libexec/format-sdcard "$@"
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-trim-devices b/usr/bin/steamos-polkit-helpers/steamos-trim-devices
 index 296a6c7..698ee59 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-trim-devices
@@ -51,7 +51,7 @@ index 296a6c7..698ee59 100755
  fi
  
 -exec /usr/lib/hwsupport/trim-devices.sh "$@"
-+exec /usr/sbin/trim-devices "$@"
++exec /usr/libexec/trim-devices "$@"
 diff --git a/usr/lib/hwsupport/format-sdcard.sh b/usr/lib/hwsupport/format-sdcard.sh
 index 3e13083..39f08ac 100755
 --- a/usr/lib/hwsupport/format-sdcard.sh
@@ -60,7 +60,7 @@ index 3e13083..39f08ac 100755
  #!/usr/bin/sh
  
 -exec /usr/lib/hwsupport/format-device.sh --device /dev/mmcblk0 "$@"
-+exec /usr/sbin/format-device --device /dev/mmcblk0 "$@"
++exec /usr/libexec/format-device --device /dev/mmcblk0 "$@"
 diff --git a/usr/lib/hwsupport/jupiter-amp-control b/usr/lib/hwsupport/jupiter-amp-control
 index 68aa4e4..ff52e6f 100755
 --- a/usr/lib/hwsupport/jupiter-amp-control

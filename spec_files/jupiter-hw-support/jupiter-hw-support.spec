@@ -41,16 +41,16 @@ export QA_RPATHS=0x0003
 mkdir -p %{buildroot}%{_datadir}/
 mkdir -p %{buildroot}%{_unitdir}/
 mkdir -p %{buildroot}%{_bindir}/
-mkdir -p %{buildroot}%{_sbindir}/
+mkdir -p %{buildroot}%{_libexecdir}/
 mkdir -p %{buildroot}%{_sysconfdir}/
 mkdir -p %{buildroot}%{_prefix}/lib/hwsupport/
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}/
 cp usr/lib/hwsupport/power-button-handler.py %{buildroot}%{_prefix}/lib/hwsupport/power-button-handler.py
-cp usr/lib/hwsupport/format-device.sh %{buildroot}%{_sbindir}/format-device
-cp usr/lib/hwsupport/format-sdcard.sh %{buildroot}%{_sbindir}/format-sdcard
-cp usr/lib/hwsupport/steamos-automount.sh %{buildroot}%{_sbindir}/steamos-automount
-cp usr/lib/hwsupport/trim-devices.sh %{buildroot}%{_sbindir}/trim-devices
+cp usr/lib/hwsupport/format-device.sh %{buildroot}%{_libexecdir}/format-device
+cp usr/lib/hwsupport/format-sdcard.sh %{buildroot}%{_libexecdir}/format-sdcard
+cp usr/lib/hwsupport/steamos-automount.sh %{buildroot}%{_libexecdir}/steamos-automount
+cp usr/lib/hwsupport/trim-devices.sh %{buildroot}%{_libexecdir}/trim-devices
 cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
@@ -90,10 +90,10 @@ rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 %{_bindir}/thumbstick_cal
 %{_bindir}/thumbstick_fine_cal
 %{_bindir}/trigger_cal
-%{_sbindir}/format-device
-%{_sbindir}/format-sdcard
-%{_sbindir}/steamos-automount
-%{_sbindir}/trim-devices
+%{_libexecdir}/format-device
+%{_libexecdir}/format-sdcard
+%{_libexecdir}/steamos-automount
+%{_libexecdir}/trim-devices
 %{_prefix}/lib/hwsupport/*
 %{_prefix}/lib/systemd/system/*
 %{_prefix}/lib/udev/rules.d/*
