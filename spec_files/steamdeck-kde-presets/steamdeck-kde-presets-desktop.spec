@@ -34,6 +34,7 @@ cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv etc/* %{buildroot}%{_sysconfdir}
 mv %{buildroot}%{_sysconfdir}/skel %{buildroot}%{_sysconfdir}/skel.d
 # Remove unneeded files
+rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
 rm %{buildroot}%{_datadir}/kservices5/ServiceMenus/steam.desktop
 rm %{buildroot}%{_datadir}/X11/xorg.conf.d/99-pointer.conf
