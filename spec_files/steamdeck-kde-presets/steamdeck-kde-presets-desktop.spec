@@ -5,7 +5,8 @@ Summary:        KDE Presets from Valve's SteamOS 3.0 for desktops
 License:        GPLv2
 URL:            https://github.com/ublue-os/bazzite
 
-Source:         https://gitlab.com/evlaV/steamdeck-kde-presets/-/archive/master/steamdeck-kde-presets-master.tar.gz
+Source0:        https://gitlab.com/evlaV/steamdeck-kde-presets/-/archive/master/steamdeck-kde-presets-master.tar.gz
+Source1:        kdeglobals-desktop
 Patch0:         multiuser.patch
 Patch1:         lockscreen.patch
 
@@ -46,8 +47,13 @@ rm %{buildroot}%{_sysconfdir}/xdg/autostart/steam.desktop
 rm %{buildroot}%{_sysconfdir}/xdg/kcminputrc
 rm %{buildroot}%{_sysconfdir}/xdg/kwinrc
 rm %{buildroot}%{_sysconfdir}/xdg/kwinrulesrc
+rm %{buildroot}%{_sysconfdir}/xdg/plasma-nm
 rm %{buildroot}%{_sysconfdir}/xdg/plasma-workspace/env/ibus.sh
 rm %{buildroot}%{_sysconfdir}/xdg/powermanagementprofilesrc
+rm %{buildroot}%{_sysconfdir}/xdg/kscreenlockerrc
+rm %{buildroot}%{_sysconfdir}/xdg/baloofilerc
+rm %{buildroot}%{_sysconfdir}/xdg/kdeglobals
+cp %{SOURCE1} %{buildroot}%{_sysconfdir}/xdg/kdeglobals
 
 # Do post-installation
 %post
@@ -74,11 +80,8 @@ rm %{buildroot}%{_sysconfdir}/xdg/powermanagementprofilesrc
 %{_datadir}/wallpapers/*
 %{_sysconfdir}/xdg/gtk-2.0/gtkrc
 %{_sysconfdir}/xdg/gtk-3.0/settings.ini
-%{_sysconfdir}/xdg/baloofilerc
 %{_sysconfdir}/xdg/kdeglobals
-%{_sysconfdir}/xdg/kscreenlockerrc
 %{_sysconfdir}/xdg/ktrashrc
-%{_sysconfdir}/xdg/plasma-nm
 
 # Finally, changes from the latest release of your application are generated from
 # your project's Git history. It will be empty until you make first annotated Git tag.
