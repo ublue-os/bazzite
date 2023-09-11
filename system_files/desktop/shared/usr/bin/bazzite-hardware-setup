@@ -25,6 +25,7 @@ fi
 
 # GLOBAL
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+GPU_ID=$(lspci -k | grep -A 3 -E "(VGA|3D)")
 KARGS=$(rpm-ostree kargs)
 NEEDED_KARGS=""
 echo "Current kargs: $KARGS"
@@ -81,6 +82,24 @@ elif [[ $IMAGE_NAME =~ "deck"  ]]; then
   systemctl disable --now ryzenadj.service
   systemctl disable --now batterylimit.service
   systemctl --global disable --now sdgyrodsu.service
+fi
+
+if grep -qz "Kernel driver in use: radeon" <<< $GPU_ID; then
+  if [[ ! $KARGS =~ "radeon.si_support" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=radeon.si_support=0"
+  fi
+
+  if [[ ! $KARGS =~ "radeon.cik_support" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=radeon.cik_support=0"
+  fi
+
+  if [[ ! $KARGS =~ "amdgpu.si_support" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.si_support=1"
+  fi
+
+  if [[ ! $KARGS =~ "amdgpu.cik_support" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.cik_support=1"
+  fi
 fi
 
 if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then
