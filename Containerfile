@@ -181,8 +181,8 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl enable displaylink.service && \
     systemctl enable btrfs-dedup@var-home.timer && \
     systemctl enable input-remapper.service && \
-    systemctl unmask flatpak-system-install.service && \
-    systemctl enable flatpak-system-install.service && \
+    systemctl unmask bazzite-flatpak-manager.service && \
+    systemctl enable bazzite-flatpak-manager.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl --global enable ublue-update.timer && \
     systemctl enable bazzite-hardware-setup.service && \

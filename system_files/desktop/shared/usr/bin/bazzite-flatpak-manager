@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+source /etc/default/bazzite
+
+# Script Version
+VER=1
+VER_FILE="/etc/bazzite/flatpak_manager_version"
+VER_RAN=$(cat $VER_FILE)
+
+# Run script if updated
+if [[ -f $VER_FILE && $VER = $VER_RAN ]]; then
+  echo "Flatpak manager v$VER has already ran. Exiting..."
+  exit 0
+fi
+
+# Opt out of and remove Fedora's flatpak repo
+if grep -qz 'fedora' <<< $(flatpak remotes); then
+  /usr/lib/fedora-third-party/fedora-third-party-opt-out
+  /usr/bin/fedora-third-party disable
+  flatpak remote-delete fedora --force
+fi
+
+# Lists of flatpaks
+FLATPAK_LIST=$(flatpak list --column=application)
+INSTALL_LIST=$(cat /usr/etc/flatpak/install)
+REMOVE_LIST=$(cat /usr/etc/flatpak/remove)
+
+# Install flatpaks in list
+if [[ -n $INSTALL_LIST ]]; then
+  for flatpak in $INSTALL_LIST; do
+    if grep -qvz $flatpak <<< $FLATPAK_LIST; then
+      flatpak install --system --noninteractive flathub $flatpak
+    fi
+  done
+fi
+
+# Remove flatpaks in list
+if [[ -n $REMOVE_LIST ]]; then
+  for flatpak in $REMOVE_LIST; do
+    if grep -qz $flatpak <<< $FLATPAK_LIST; then
+      flatpak remove --system --noninteractive $flatpak
+    fi
+  done
+fi
+
+mkdir -p /etc/bazzite
+echo $VER > $VER_FILE
