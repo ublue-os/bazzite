@@ -46,11 +46,6 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
-        Enable Auto Login:
-          description: Skip the login screen and boot straight to the desktop
-          default: false
-          packages:
-          - Enable Auto Login: just --unstable enable-auto-login
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false

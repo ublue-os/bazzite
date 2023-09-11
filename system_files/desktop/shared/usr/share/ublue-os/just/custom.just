@@ -122,16 +122,6 @@ install-fleek-themes:
     echo "Install fleek with just install-fleek before running just install-fleek-themes."
   fi
 
-# Enable passwordless automatic login to the desktop
-enable-auto-login:
-  #!/usr/bin/env bash
-  source /etc/default/bazzite
-  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    systemctl enable --now gnome-autologin
-  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-    systemctl enable --now plasma-autologin
-  fi
-
 # Install Greenlight xCloud and xHome streaming AppImage
 get-greenlight:
   #!/usr/bin/env bash
