@@ -174,6 +174,9 @@ enable-vapor-theme:
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
     gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/steamdeck/Steam\ Deck\ Logo\ Default.jpg
     gsettings set org.gnome.desktop.background picture-uri-dark file:///usr/share/backgrounds/steamdeck/Steam\ Deck\ Logo\ Default.jpg
+    gsettings set org.gnome.desktop.wm.preferences titlebar-font "Noto Sans Medium 11"
+    gsettings set org.gnome.desktop.interface document-font-name "Noto Sans 11"
+    gsettings set org.gnome.desktop.interface font-name "Noto Sans 11"
     gradience-cli flatpak-overrides -e both
     sudo flatpak override --filesystem=xdg-config/gtk-4.0
     sudo flatpak override --filesystem=xdg-config/gtk-3.0
@@ -194,6 +197,9 @@ enable-vgui2-theme:
     gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
     gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/steamdeck/VGUI2.jpg
     gsettings set org.gnome.desktop.background picture-uri-dark file:///usr/share/backgrounds/steamdeck/VGUI2.jpg
+    gsettings set org.gnome.desktop.wm.preferences titlebar-font "Noto Sans Medium 11"
+    gsettings set org.gnome.desktop.interface document-font-name "Noto Sans 11"
+    gsettings set org.gnome.desktop.interface font-name "Noto Sans 11"
     gradience-cli flatpak-overrides -e both
     sudo flatpak override --filesystem=xdg-config/gtk-4.0
     sudo flatpak override --filesystem=xdg-config/gtk-3.0

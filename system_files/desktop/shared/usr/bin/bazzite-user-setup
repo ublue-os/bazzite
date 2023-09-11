@@ -70,11 +70,6 @@ else
     ln -s /usr/share/ublue-os/bazzite/themes/vgui2.json $HOME/.config/presets/user/vgui2.json
   fi
 
-  echo 'Setting default fonts to match SteamOS KDE'
-  gsettings set org.gnome.desktop.wm.preferences titlebar-font "Noto Sans Medium 11"
-  gsettings set org.gnome.desktop.interface document-font-name "Noto Sans 11"
-  gsettings set org.gnome.desktop.interface font-name "Noto Sans 11"
-
   if [[ $IMAGE_NAME =~ "deck" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
 
