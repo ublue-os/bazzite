@@ -1,10 +1,10 @@
 [Unit]
-Description=Enables autologin to desktop
+Description=Enables Bazzite autologin
 Before=display-manager.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/desktop-autologin
+ExecStart=/usr/bin/bazzite-autologin
 
 [Install]
 WantedBy=multi-user.target

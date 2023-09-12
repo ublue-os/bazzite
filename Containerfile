@@ -380,8 +380,7 @@ RUN rm /usr/share/applications/wine*.desktop && \
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
     ; fi && \
-    systemctl enable desktop-autologin.service && \
-    systemctl enable gamescope-autologin.service && \
+    systemctl enable bazzite-autologin.service && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
     systemctl enable vpower.service && \
