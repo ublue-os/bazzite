@@ -32,15 +32,15 @@ setup-firefox-vaapi-nvidia:
         --env=MOZ_ENABLE_WAYLAND=1 \
         org.mozilla.firefox
 
-# Enable autologin to gamescope session
-enable-gamescope-autologin:
-  systemctl disable --now desktop-autologin
-  systemctl enable --now gamescope-autologin
-
-# Enable autologin to desktop
-enable-desktop-autologin:
-  systemctl disable --now gamescope-autologin
-  systemctl enable --now desktop-autologin
+# Toggle between desktop/gamescope autologin
+toggle-autologin:
+  #!/usr/bin/env bash
+  DESKTOP_AUTOLOGIN="/etc/bazzite/desktop_autologin"
+  if [[ -f $DESKTOP_AUTOLOGIN ]]; then
+    sudo rm -f $DESKTOP_AUTOLOGIN
+  else
+    sudo touch $DESKTOP_AUTOLOGIN
+  fi
 
 # Launch Waydroid configuration helper
 configure-waydroid:
