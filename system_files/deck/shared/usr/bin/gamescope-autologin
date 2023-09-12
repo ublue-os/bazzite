@@ -11,6 +11,8 @@ if [[ -f ${AUTOLOGIN_CONF} ]]; then
   rm -f ${AUTOLOGIN_CONF}
 fi
 
-# Configure autologin
-sed -i 's/.*Session=.*/Session=gamescope-session.desktop/g' ${SDDM_CONF}
-sed -i 's/.*User=.*/User='${USER}'/g' ${SDDM_CONF}
+# Configure autologin if Steam has been updated
+if [[ -f /var/home/$USER/.local/share/Steam/ubuntu12_32/steamui.so ]]; then
+  sed -i 's/.*Session=.*/Session=gamescope-session.desktop/g' ${SDDM_CONF}
+  sed -i 's/.*User=.*/User='${USER}'/g' ${SDDM_CONF}
+fi
