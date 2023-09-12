@@ -208,40 +208,6 @@ enable-vgui2-theme:
     echo "This is only supported under GNOME."
   fi
 
-# Set system to boot without showing the grub screen with options
-hide-grub:
-  #!/usr/bin/env bash
-  sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
-  echo 'GRUB_TIMEOUT_STYLE=hidden' | sudo tee -a /etc/default/grub 1>/dev/null
-  echo 'GRUB_HIDDEN_TIMEOUT=1' | sudo tee -a /etc/default/grub 1>/dev/null
-  if [ -f '/boot/efi/EFI/fedora/grub.cfg' ]; then
-    sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
-  else
-    sudo grub2-mkconfig -o /boot/grub2/grub.cfg
-  fi
-
-# Set system to boot with the grub screen showing options (Default)
-unhide-grub:
-  #!/usr/bin/env bash
-  sudo sed -i '/GRUB_HIDDEN_TIMEOUT=1/d' /etc/default/grub
-  sudo sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub
-  sudo sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=5/g' /etc/default/grub
-  if [ -f '/boot/efi/EFI/fedora/grub.cfg' ]; then
-    sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
-  else
-    sudo grub2-mkconfig -o /boot/grub2/grub.cfg
-  fi
-
-# Sign the current OCI OSTree Image (If unsigned)
-sign-image:
-  source /etc/default/bazzite && \
-  ublue-update --wait && \
-  if grep -qvz "/var/${IMAGE_VENDOR}/image" <<< $(rpm-ostree status); then \
-    rpm-ostree rebase ostree-image-signed:$(just --unstable _get-image); \
-  else \
-    rpm-ostree rebase ostree-image-signed:docker://ghcr.io/${IMAGE_VENDOR}/${IMAGE_NAME}:${FEDORA_MAJOR_VERSION}; \
-  fi
-
 # Use stock gamepad drivers
 use-stock-gamepads:
   #!/usr/bin/env bash
@@ -261,6 +227,16 @@ use-ublue-gamepads:
 # Enable Flatpak Theming
 enable-flatpak-theming:
   flatpak override --user --filesystem=xdg-config/gtk-4.0:ro --filesystem=xdg-config/gtk-3.0:ro --filesystem=~/.icons:ro --filesystem=~/.themes:ro
+
+# Sign the current OCI OSTree Image (If unsigned)
+sign-image:
+  source /etc/default/bazzite && \
+  ublue-update --wait && \
+  if grep -qvz "/var/${IMAGE_VENDOR}/image" <<< $(rpm-ostree status); then \
+    rpm-ostree rebase ostree-image-signed:$(just --unstable _get-image); \
+  else \
+    rpm-ostree rebase ostree-image-signed:docker://ghcr.io/${IMAGE_VENDOR}/${IMAGE_NAME}:${FEDORA_MAJOR_VERSION}; \
+  fi
 
 _get-image:
   #!/usr/bin/env python

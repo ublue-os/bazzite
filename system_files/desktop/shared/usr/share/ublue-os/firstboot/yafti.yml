@@ -51,12 +51,6 @@ screens:
           default: false
           packages:
           - Retrieve Greenlight: just --unstable get-greenlight
-        Hide GRUB Menu:
-          description: |
-            NOTE: Press the escape key before boot to show the menu
-          default: false
-          packages:
-          - Hide GRUB: sudo -A just --unstable hide-grub
         Nix Package Manager:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: false
