@@ -24,6 +24,11 @@ ublue_variants:
     flavors:
       - label: bazzite-deck
         info: Bazzite (Steam Deck Edition)
+  - label: ublue-os/bazzite-deck
+    ks: /kickstart/ublue-os.ks
+    flavors:
+      - label: bazzite-deck
+        info: Bazzite (Steam Deck Edition for HTPCs)
   - label: ublue-os/bazzite-gnome
     ks: /kickstart/ublue-os.ks
     flavors:
@@ -49,3 +54,8 @@ ublue_variants:
     flavors:
       - label: bazzite-deck-gnome
         info: Bazzite GNOME (Steam Deck Edition)
+  - label: ublue-os/bazzite-deck-gnome
+    ks: /kickstart/ublue-os.ks
+    flavors:
+      - label: bazzite-deck-gnome
+        info: Bazzite GNOME (Steam Deck Edition for HTPCs)
