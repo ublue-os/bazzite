@@ -15,7 +15,7 @@
       <allow_inactive>yes</allow_inactive>
       <allow_active>yes</allow_active>
     </defaults>
-    <annotate key="org.freedesktop.policykit.exec.path">/usr/lib/os-session-select</annotate>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-session-select</annotate>
   </action>
 
 </policyconfig>
