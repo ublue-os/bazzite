@@ -63,7 +63,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:lat
 
 ### Steam Deck/Home Theater PCs (HTPCs)
 > [!IMPORTANT]  
-Devices that are NOT the Steam Deck must use an AMD GPU at this time.
+Devices that are NOT the Steam Deck can still use the bazzite-deck images, but must use an AMD/Intel GPU.
 
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, and for a console-like experience on HTPCs, available as `bazzite-deck`:
 
