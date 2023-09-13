@@ -1,0 +1,23 @@
+diff --git src/handycon/constants.py src/handycon/constants.py
+index c725ea0..ae4bd72 100755
+--- src/handycon/constants.py
++++ src/handycon/constants.py
+@@ -1,4 +1,4 @@
+-#!/sbin/python3
++#!/usr/bin/python3
+ # This file is part of Handheld Game Console Controller System (HandyGCCS)
+ # Copyright 2022-2023 Derek J. Clark <derekjohn.clark@gmail.com>
+ 
+diff --git usr/share/handygccs/scripts/capture-system.py usr/share/handygccs/scripts/capture-system.py
+index 50bdcfa..cc37d42 100755
+--- usr/share/handygccs/scripts/capture-system.py
++++ usr/share/handygccs/scripts/capture-system.py
+@@ -1,4 +1,4 @@
+-#!/sbin/python3
++#!/usr/bin/python3
+ # Capture System
+ # Copyright 2022 Derek J. Clark <derekjohn dot clark at gmail dot com>
+ # Produces an output file that caputres relevant system data that can be uploaded
+-- 
+2.39.3
+
