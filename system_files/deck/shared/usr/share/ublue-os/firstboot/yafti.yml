@@ -53,11 +53,6 @@ screens:
           default: false
           packages:
           - Retrieve EmuDeck: just --unstable get-emudeck
-        Gamescope Autologin:
-          description: Autologin to Gamescope Session
-          default: true
-          packages:
-          - Enable Gamescope Autologin: just --unstable enable-gamescope-autologin
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false

@@ -7,9 +7,17 @@ USER=$(id -nu 1000)
 
 # SteamOS SDDM config
 SDDM_CONF='/etc/sddm.conf.d/steamos.conf'
+DESKTOP_AUTOLOGIN="/etc/bazzite/desktop_autologin"
 
-# Configure SDDM autologin
-if [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
+# Configure autologin if Steam has been updated
+if [[ ! -f $DESKTOP_AUTOLOGIN && -f /var/home/$USER/.local/share/Steam/ubuntu12_32/steamui.so ]]; then
+  AUTOLOGIN_CONF='/etc/sddm.conf.d/zz-steamos-autologin.conf'
+  # Avoid autologin conflict
+  if [[ -f ${AUTOLOGIN_CONF} ]]; then
+    rm -f ${AUTOLOGIN_CONF}
+  fi
+  sed -i 's/.*Session=.*/Session=gamescope-session.desktop/g' ${SDDM_CONF}
+elif [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
   if ${DESKTOP_WAYLAND}; then
     sed -i 's/.*Session=.*/Session=plasma.desktop/g' ${SDDM_CONF}
   else
