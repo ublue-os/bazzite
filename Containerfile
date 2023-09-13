@@ -317,6 +317,7 @@ RUN rpm-ostree install \
     ibus-table-chinese-cangjie \
     ibus-table-chinese-quick \
     socat \
+    zstd \
     python-vdf \
     python-crcmod && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
@@ -334,6 +335,7 @@ RUN rpm-ostree install \
     rm -rf /tmp/linux-firmware-neptune
 
 # Install Steam and Lutris into their own OCI layer
+# Add bootstraplinux_ubuntu12_32.tar.xz used by gamescope-session (Thanks ChimeraOS! - https://chimeraos.org/)
 RUN rpm-ostree install \
         steam \
         lutris \
@@ -343,6 +345,10 @@ RUN rpm-ostree install \
         wine-core \
         winetricks \
         protontricks && \
+    wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/steam-jupiter-stable-1.0.0.76-1-x86_64.pkg.tar.zst -O /tmp/steam-jupiter.pkg.tar.zst && \
+    mkdir -p /etc/first-boot && \
+    tar -I zstd -xvf /tmp/steam-jupiter.pkg.tar.zst usr/lib/steam/bootstraplinux_ubuntu12_32.tar.xz -O > /etc/first-boot/bootstraplinux_ubuntu12_32.tar.xz && \
+    rm -f /tmp/steam-jupiter.pkg.tar.zst && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override remove \
             gamemode \
@@ -375,14 +381,12 @@ RUN rm /usr/share/applications/wine*.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
-    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        systemctl enable plasma-autologin.service \
-    ; else \
+    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl mask power-profiles-daemon.service && \
         systemctl disable gdm.service && \
-        systemctl enable sddm.service && \
-        systemctl enable gnome-autologin.service \
+        systemctl enable sddm.service \
     ; fi && \
+    systemctl enable desktop-autologin.service && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
     systemctl enable vpower.service && \

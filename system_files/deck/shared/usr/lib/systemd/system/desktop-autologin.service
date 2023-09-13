@@ -1,10 +1,10 @@
 [Unit]
-Description=Enables autologin to GNOME
+Description=Enables autologin to desktop
 Before=display-manager.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/gnome-autologin
+ExecStart=/usr/bin/desktop-autologin
 
 [Install]
 WantedBy=multi-user.target

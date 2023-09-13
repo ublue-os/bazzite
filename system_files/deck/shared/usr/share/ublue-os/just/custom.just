@@ -34,25 +34,13 @@ setup-firefox-vaapi-nvidia:
 
 # Enable autologin to gamescope session
 enable-gamescope-autologin:
-  #!/usr/bin/env bash
-  source /etc/default/bazzite
-  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    systemctl disable --now gnome-autologin
-  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-    systemctl disable --now plasma-autologin
-  fi
+  systemctl disable --now desktop-autologin
   systemctl enable --now gamescope-autologin
 
 # Enable autologin to desktop
 enable-desktop-autologin:
-  #!/usr/bin/env bash
-  source /etc/default/bazzite
   systemctl disable --now gamescope-autologin
-  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    systemctl enable --now gnome-autologin
-  elif [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-    systemctl enable --now plasma-autologin
-  fi
+  systemctl enable --now desktop-autologin
 
 # Launch Waydroid configuration helper
 configure-waydroid:
@@ -187,6 +175,7 @@ fix-tf2-tcmalloc:
   podman run \
   -v $HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin:/hl2_linux:Z \
   ghcr.io/maisatanel/tcmalloc-hl2-fixer:main
+  echo "TF2 patch complete."
 
 # Patch GMod's 64-bit beta to work properly on Linux
 patch-gmod:
