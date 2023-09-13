@@ -317,6 +317,7 @@ RUN rpm-ostree install \
     ibus-table-chinese-cangjie \
     ibus-table-chinese-quick \
     socat \
+    zstd \
     python-vdf \
     python-crcmod && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
@@ -334,6 +335,7 @@ RUN rpm-ostree install \
     rm -rf /tmp/linux-firmware-neptune
 
 # Install Steam and Lutris into their own OCI layer
+# Add bootstraplinux_ubuntu12_32.tar.xz used by gamescope-session (Thanks ChimeraOS! - https://chimeraos.org/)
 RUN rpm-ostree install \
         steam \
         lutris \
@@ -343,6 +345,10 @@ RUN rpm-ostree install \
         wine-core \
         winetricks \
         protontricks && \
+    wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/steam-jupiter-stable-1.0.0.76-1-x86_64.pkg.tar.zst -O /tmp/steam-jupiter.pkg.tar.zst && \
+    mkdir -p /etc/first-boot && \
+    tar -I zstd -xvf /tmp/steam-jupiter.pkg.tar.zst usr/lib/steam/bootstraplinux_ubuntu12_32.tar.xz -O > /etc/first-boot/bootstraplinux_ubuntu12_32.tar.xz && \
+    rm -f /tmp/steam-jupiter.pkg.tar.zst && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override remove \
             gamemode \
