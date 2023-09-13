@@ -2,7 +2,7 @@
 source /etc/default/bazzite
 
 # SCRIPT VERSION
-HWS_VER=2
+HWS_VER=1
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VERSION_FILE)
 
@@ -82,13 +82,6 @@ elif [[ $IMAGE_NAME =~ "deck"  ]]; then
   systemctl disable --now ryzenadj.service
   systemctl disable --now batterylimit.service
   systemctl --global disable --now sdgyrodsu.service
-fi
-
-# REVERT ME, disable desktop-autologin if gamescope-autologin is enabled
-if [[ $IMAGE_NAME =~ "deck"  ]]; then
-  if systemctl is-enabled --quiet gamescope-autologin; then
-    systemctl disable --now desktop-autologin
-  fi
 fi
 
 if grep -qz "Kernel driver in use: radeon" <<< $GPU_ID; then
