@@ -175,6 +175,7 @@ fix-tf2-tcmalloc:
   podman run \
   -v $HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin:/hl2_linux:Z \
   ghcr.io/maisatanel/tcmalloc-hl2-fixer:main
+  echo "TF2 patch complete."
 
 # Patch GMod's 64-bit beta to work properly on Linux
 patch-gmod:
