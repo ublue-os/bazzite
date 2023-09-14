@@ -4,6 +4,7 @@ Description=CPU Curve Undervolt for Steam Deck
 [Service]
 Type=oneshot
 EnvironmentFile=-/etc/default/%p
+ExecStartPre=/usr/bin/sleep 10
 ExecStart=/usr/sbin/ryzenadj --set-coall=${UNDERVOLT_AMOUNT}
 
 [Install]
