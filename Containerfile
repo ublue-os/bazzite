@@ -103,7 +103,8 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     kpackagetool5 --type=KWin/Script --global --install /tmp/kwin-system76-scheduler-integration && \
     kpackagetool5 --type=Plasma/Wallpaper --global --install /tmp/wallpaper-engine-kde-plugin/plugin && \
     rm -rf /tmp/kwin-system76-scheduler-integration && \
-    rm -rf /tmp/wallpaper-engine-kde-plugin \
+    rm -rf /tmp/wallpaper-engine-kde-plugin && \
+    sed -i 's@After=plasma-core.target@After=plasma-core.target\nAfter=xdg-desktop-portal.service@g' /usr/lib/systemd/user/plasma-xdg-desktop-portal-kde.service \
 ; else \
     rpm-ostree override replace \
     --experimental \
