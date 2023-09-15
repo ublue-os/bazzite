@@ -247,6 +247,7 @@ COPY system_files/deck/${BASE_IMAGE_NAME} /
 
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/mavit/discover-overlay/repo/fedora-$(rpm -E %fedora)/mavit-discover-overlay-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_mavit_discover.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
@@ -312,6 +313,7 @@ RUN rpm-ostree install \
     vkBasalt \
     mangohud \
     sdgyrodsu \
+    discover-overlay \
     sddm-sugar-steamOS \
     ibus-pinyin \
     ibus-table-chinese-cangjie \
@@ -361,6 +363,7 @@ RUN rpm-ostree install \
 
 # Cleanup & Finalize
 RUN rm /usr/share/applications/wine*.desktop && \
+    rm /usr/share/applications/discover_overlay.desktop && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
@@ -381,6 +384,7 @@ RUN rm /usr/share/applications/wine*.desktop && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_mavit_discover.repo && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl mask power-profiles-daemon.service && \
         systemctl disable gdm.service && \
