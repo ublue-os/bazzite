@@ -13,6 +13,7 @@ clean-system:
   rpm-ostree cleanup -bm
   if [ -x "$(command -v nix-store)" ]; then
     nix-store --gc
+    nix-store --optimise
   fi
 
 # Boot into this device's BIOS/UEFI screen
