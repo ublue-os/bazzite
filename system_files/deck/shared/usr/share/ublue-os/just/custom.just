@@ -7,9 +7,13 @@ update-system:
 
 # Clean up old containers and flatpaks
 clean-system:
+  #!/usr/bin/env bash
   podman system prune -a
   flatpak uninstall --unused
   rpm-ostree cleanup -bm
+  if [ -x "$(command -v nix-store)" ]; then
+    nix-store --gc
+  fi
 
 # Boot into this device's BIOS/UEFI screen
 boot-to-bios:
