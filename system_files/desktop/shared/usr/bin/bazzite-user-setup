@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 source /etc/default/bazzite
 
+if [[ -f "${HOME}/.justfile" ]]; then
+  echo "!include /usr/share/ublue-os/just/custom.just" >> "${HOME}/.justfile"
+fi
+
 if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Running setup for Kinoite'
 
