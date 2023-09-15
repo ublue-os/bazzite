@@ -196,7 +196,7 @@ Additionally, the following packages are used from other Copr repos:
 
 |Package|Status|
 |---|---|
-|[discover-overlay](https://github.com/trigg/Discover)-git|![Build Status](https://copr.fedorainfracloud.org/coprs/mavit/discover-overlay/package/discover-overlay/status_image/last_build.png?)|
+|[discover-overlay](https://github.com/trigg/Discover)|![Build Status](https://copr.fedorainfracloud.org/coprs/mavit/discover-overlay/package/discover-overlay/status_image/last_build.png?)|
 |[distrobox](https://github.com/89luca89/distrobox)-git|![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/distrobox-git/package/distrobox-git/status_image/last_build.png?)|
 |[gcadapter_oc-kmod](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/)|![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/package/gcadapter_oc-kmod/status_image/last_build.png?)|
 |[gnome-vrr](https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/package/mutter/status_image/last_build.png?)|
