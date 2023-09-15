@@ -48,8 +48,7 @@ RUN rpm-ostree override remove \
     ublue-os-update-services \
     firefox \
     firefox-langpacks \
-    htop \
-    google-noto-sans-cjk-vf-fonts
+    htop
 
 # Install new packages
 RUN rpm-ostree install \
@@ -78,7 +77,6 @@ RUN rpm-ostree install \
     wmctrl \
     yad \
     f3 \
-    google-noto-sans-cjk-fonts \
     twitter-twemoji-fonts \
     lato-fonts \
     fira-code-fonts && \
@@ -156,8 +154,6 @@ RUN rm /usr/share/applications/shredder.desktop && \
     mkdir -p "/usr/etc/profile.d/" && \
     ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
     "/usr/etc/profile.d/ublue-firstboot.sh" && \
-    ln -s "/usr/share/fonts/google-noto-sans-cjk-fonts" \
-    "/usr/share/fonts/noto-cjk" && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     pip install --prefix=/usr yafti && \
     pip install --prefix=/usr hyfetch && \
