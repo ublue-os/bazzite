@@ -295,7 +295,8 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree install \
         gnome-shell-extension-bazzite-menu \
         gnome-shell-extension-search-light \
-        sddm \
+        sddm && \
+    wget https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf -O /usr/etc/dxvk-example.conf \
 ; fi
 
 # Install new packages

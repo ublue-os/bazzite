@@ -96,6 +96,10 @@ else
     gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "suspend"
     gsettings set org.gnome.settings-daemon.plugins.power power-button-action "suspend"
 
+    echo 'Setting up templates'
+    ln -s /etc/vkBasalt.conf $HOME/Templates/vkBasalt.conf
+    ln -s /etc/dxvk-example.conf $HOME/Templates/dxvk.conf
+
     echo 'Tweaking GNOME indexer'
     mkdir -p $HOME/.steam
     touch $HOME/.steam/.trackerignore
