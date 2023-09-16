@@ -24,6 +24,7 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
     rpm-ostree install \
         /tmp/akmods-rpms/kmods/*gcadapter_oc*.rpm \
         /tmp/akmods-rpms/kmods/*openrgb*.rpm \
+        /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm \
         /tmp/akmods-rpms/kmods/*evdi*.rpm \
         /tmp/akmods-rpms/kmods/*wl*.rpm \
         /tmp/rpms/ublue-update.noarch.rpm \
