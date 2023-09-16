@@ -61,7 +61,7 @@ or for devices with Nvidia GPUs:
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:latest
 ```
 
-**For users with Secure Boot enabled:** Once you've installed or rebased to a Nvidia build, [be sure to follow step 3 from the ublue-os/nvidia guide](https://github.com/ublue-os/nvidia#3-enable-secure-boot-support).
+**For users with Secure Boot enabled:** Once you've installed or rebased to a Nvidia build, [be sure to follow step 3 from the ublue-os/nvidia guide](https://universal-blue.org/images/nvidia/#3-enable-secure-boot-support).
 
 ### Steam Deck/Home Theater PCs (HTPCs)
 > [!IMPORTANT]  
