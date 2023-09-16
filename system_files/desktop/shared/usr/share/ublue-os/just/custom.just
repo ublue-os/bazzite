@@ -39,6 +39,10 @@ setup-firefox-vaapi-nvidia:
 # Set up Bazzite-Arch Distrobox container
 install-bazzite-arch:
   source /etc/default/bazzite && \
+  if grep -qz "bazzite-arch" <<< $(distrobox list); then \
+    echo 'Removing existing Bazzite Arch install...' && \
+    distrobox rm bazzite-arch --force; \
+  fi && \
   echo 'Installing Bazzite Arch...' && \
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
     distrobox create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --nvidia --yes --volume /usr/lib/extest/libextest.so:/usr/lib/extest/libextest.so:ro --volume /usr/share/icons:/usr/share/icons:ro --volume /usr/share/themes:/usr/share/themes:ro; \
