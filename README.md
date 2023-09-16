@@ -18,7 +18,6 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Full hardware accelerated codec support for H264 decoding.
 - Full support for AMD's ROCM OpenCL/HIP run-times.
 - [xone](https://github.com/medusalix/xone), [xpadneo](https://github.com/atar-axis/xpadneo), and [xpad-noone](https://github.com/ublue-os/xpad-noone) drivers for Xbox controllers.
-- [OpenRazer](https://openrazer.github.io) drivers built in, Select OpenRazer in Bazzite Portal or run `just install-openrazer` in a terminal to begin using it.
 - Full support for [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Includes Valve's KDE themes from SteamOS.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
@@ -34,6 +33,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [Nix](https://nixos.org/) package manager and [Fleek](https://getfleek.dev/) optionally available for install via Bazzite Portal.
 - [Waydroid](https://waydro.id/) preinstalled for running Android apps. Future releases will offer to set this up for you through Bazzite Portal. <sub><sup>(Not available on Nvidia builds)</sup></sub>
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
+- [OpenRazer](https://openrazer.github.io) drivers built in, Select OpenRazer in Bazzite Portal or run `just install-openrazer` in a terminal to begin using it.
 - [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
 - Out of the box support for [Wooting](https://wooting.io/) keyboards.
 - Built in support for Southern Islands <sub><sup>(HD 7000)</sup></sub> and Sea Islands <sub><sup>(HD 8000)</sup></sub> AMD GPUs under the `amdgpu` driver.
