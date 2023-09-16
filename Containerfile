@@ -78,6 +78,7 @@ RUN rpm-ostree install \
     wmctrl \
     yad \
     f3 \
+    pulseaudio-utils \
     twitter-twemoji-fonts \
     lato-fonts \
     fira-code-fonts && \
