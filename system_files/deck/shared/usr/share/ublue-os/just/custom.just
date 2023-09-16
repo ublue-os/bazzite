@@ -183,10 +183,20 @@ get-boilr:
 # Fix a bug in TF2 that causes it to crash at startup
 fix-tf2-tcmalloc:
   #!/usr/bin/env bash
-  podman run \
-  -v $HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin:/hl2_linux:Z \
-  ghcr.io/maisatanel/tcmalloc-hl2-fixer:main
-  echo "TF2 patch complete."
+  if [ -f "$HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin/hl2_linux" ]; then
+    echo "Found TF2 on internal SSD"
+    podman run \
+    -v $HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin:/hl2_linux:Z \
+    ghcr.io/maisatanel/tcmalloc-hl2-fixer:main
+    echo "TF2 patch complete."
+  fi
+  if [ -f "/run/media/mmcblk0p1/steamapps/common/Team\ Fortress\ 2/bin/hl2_linux" ]; then
+    echo "Found TF2 on SD card"
+    podman run \
+    -v /run/media/mmcblk0p1/steamapps/common/Team\ Fortress\ 2/bin:/hl2_linux:Z \
+    ghcr.io/maisatanel/tcmalloc-hl2-fixer:main
+    echo "TF2 patch complete."
+  fi
 
 # Patch GMod's 64-bit beta to work properly on Linux
 patch-gmod:
