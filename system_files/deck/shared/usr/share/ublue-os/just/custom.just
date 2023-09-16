@@ -89,6 +89,12 @@ install-oversteer:
   ublue-update --wait
   rpm-ostree install oversteer
 
+# Install OpenRazer (https://openrazer.github.io)
+install-openrazer:
+  sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo
+  ublue-update --wait
+  rpm-ostree install openrazer-meta
+
 # Install Nix with the Determinate Nix Installer
 install-nix:
   #!/usr/bin/env bash
