@@ -409,6 +409,18 @@ use-ublue-gamepads:
   sudo rm -f /etc/modprobe.d/xpad-noone-blacklist.conf
   sudo rm -f /etc/modules-load.d/xpad-noone.conf
 
+# Disable Broadcom WL driver (Default - Breaks numerous other Wi-Fi adapters)
+disable-broadcom-wl:
+  #!/usr/bin/env bash
+  sudo bash -c '> /etc/modules-load.d/broadcom-wl-blacklist.conf'
+  sudo bash -c 'echo "wl" > /etc/modules-load.d/default-disable-broadcom-wl.conf'
+
+# Use Broadcom WL driver
+use-broadcom-wl:
+  #!/usr/bin/env bash
+  sudo rm -f /etc/modprobe.d/broadcom-wl-blacklist.conf
+  sudo rm -f /etc/modprobe.d/default-disable-broadcom-wl.conf
+
 # Enable Flatpak Theming
 enable-flatpak-theming:
   flatpak override --user --filesystem=xdg-config/gtk-4.0:ro --filesystem=xdg-config/gtk-3.0:ro --filesystem=~/.icons:ro --filesystem=~/.themes:ro
