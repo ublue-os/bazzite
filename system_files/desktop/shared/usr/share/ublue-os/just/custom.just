@@ -46,9 +46,9 @@ install-bazzite-arch:
   fi && \
   echo 'Installing Bazzite Arch...' && \
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
-    distrobox create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --nvidia --yes --volume /usr/lib/extest/libextest.so:/usr/lib/extest/libextest.so:ro --volume /usr/share/icons:/usr/share/icons:ro --volume /usr/share/themes:/usr/share/themes:ro; \
+    distrobox create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --nvidia --yes --volume /usr/lib/extest/libextest.so:/usr/lib/extest/libextest.so:ro; \
   else \
-    distrobox create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --nvidia --yes --volume /usr/lib/extest/libextest.so:/usr/lib/extest/libextest.so:ro --volume /usr/share/icons:/usr/share/icons:ro --volume /usr/share/themes:/usr/share/themes:ro; \
+    distrobox create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --nvidia --yes --volume /usr/lib/extest/libextest.so:/usr/lib/extest/libextest.so:ro; \
   fi && \
   echo 'Exporting applications...' && \
   distrobox-enter -n bazzite-arch -- 'bash -c "sudo locale-gen && distrobox-export --app steam && distrobox-export --app lutris && distrobox-export --app protontricks && mkdir -p $HOME/.steam && distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam && mv $HOME/.steam/steamcmd $HOME/.steam/steamcmd.sh"' && \
@@ -64,6 +64,17 @@ install-bazzite-arch:
   echo 'Finalizing...' && \
   sleep 10 && \
   rm -f ~/Desktop/steam.desktop
+
+# Install obs-studio-portable from wimpysworld, which bundles an extensive collection of 3rd party plugins 
+install-obs-studio-portable:
+  if grep -qz "obs-studio-portable" <<< $(distrobox list); then \
+    echo 'Removing existing obs-studio-portable install...' && \
+    distrobox rm obs-studio-portable --force; \
+  fi && \
+  echo 'Installing obs-studio-portable...' && \
+  distrobox create --no-entry --name obs-studio-portable --image ghcr.io/ublue-os/obs-studio-portable --nvidia --yes && \
+  distrobox-enter -n obs-studio-portable -- 'bash -c "distrobox-export --app obs"' && \
+  echo 'Install complete'
 
 # Launch Waydroid configuration helper
 configure-waydroid:
