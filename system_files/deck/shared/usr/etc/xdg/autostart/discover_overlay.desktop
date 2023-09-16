@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=Discover Overlay
-Comment=Voice chat overlay
-Exec=/usr/bin/bazzite-discover-overlay
-Terminal=false
-Type=Application
-Actions=close
