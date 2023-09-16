@@ -253,7 +253,7 @@ use-ublue-gamepads:
   sudo rm -f /etc/modprobe.d/xpad-noone-blacklist.conf
   sudo rm -f /etc/modules-load.d/xpad-noone.conf
 
-# Disable Broadcom WL driver (Default - Breaks numerous other Wi-Fi adapters)
+# Disable Broadcom WL driver (Default - WL breaks numerous other Wi-Fi adapters)
 disable-broadcom-wl:
   #!/usr/bin/env bash
   sudo bash -c '> /etc/modules-load.d/broadcom-wl-blacklist.conf'
