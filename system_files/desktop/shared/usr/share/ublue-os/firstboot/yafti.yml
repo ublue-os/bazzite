@@ -62,6 +62,11 @@ screens:
           default: false
           packages:
           - Install Oversteer: just --unstable install-oversteer
+        OpenRazer:
+          description: Enables additional capabilities for Razer Hardware
+          default: false
+          packages:
+          - Install OpenRazer: just --unstable install-openrazer
   amd-additions:
     source: yafti.screen.package
     values:
