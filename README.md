@@ -84,7 +84,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Built in support for Windows dual-boot thanks to Fedora's installation of GRUB being left intact.
 - Update break something? Easily roll back to the previous version of Bazzite thanks to `rpm-ostree`'s rollback functionality. You can even select previous images at boot.
 - Steam and Lutris preinstalled on the image as layered packages.
-- [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Gamemode and on the Desktop if Discord is installed.
+- [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Gamemode and on the Desktop if Discord is installed and feature is enabled. See `/etc/default/discover-overlay` to enable automatic launching.
 - Exclusively uses ZRAM by default with the option to switch back to a swap file and set a custom size if desired. <sub><sup>(1GB by default)</sup></sub>
 - BFQ I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` and `rmlint` processes.
 - TLS/SSL secured DNS and NTP by default. <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>

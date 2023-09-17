@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
+source /etc/default/discover-overlay
+
 # Run discover-overlay if discord is installed and we aren't using Wayland.
-if grep -q "com.discordapp.Discord" <<< $(flatpak list); then
-  if [[ "$XDG_SESSION_TYPE" != "wayland" ]]; then
-    /usr/bin/discover-overlay
+if [[ ${AUTO_LAUNCH_DISCOVER_OVERLAY} == 1 ]]; then
+  if grep -q "com.discordapp.Discord" <<< $(flatpak list); then
+    if [[ "$XDG_SESSION_TYPE" != "wayland" ]]; then
+      /usr/bin/discover-overlay
+    fi
   fi
 fi
