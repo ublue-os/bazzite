@@ -184,7 +184,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl unmask bazzite-flatpak-manager.service && \
     systemctl enable bazzite-flatpak-manager.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
-    systemctl --global enable ublue-update.timer && \
+    systemctl enable ublue-update.timer && \
     systemctl enable bazzite-hardware-setup.service && \
     systemctl --global enable bazzite-user-setup.service && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
@@ -403,7 +403,7 @@ RUN rm /usr/share/applications/wine*.desktop && \
     systemctl --global enable steam-web-debug-portforward.service && \
     systemctl --global enable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \
-    systemctl --global disable ublue-update.timer && \
+    systemctl disable ublue-update.timer && \
     rm -f /usr/etc/sddm.conf && \
     rm -f /usr/etc/default/bazzite && \
     echo -e "IMAGE_NAME=${IMAGE_NAME}\nIMAGE_VENDOR=${IMAGE_VENDOR}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /usr/etc/default/bazzite && \
