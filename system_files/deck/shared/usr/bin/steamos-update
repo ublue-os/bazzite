@@ -61,7 +61,7 @@ if command -v ublue-update > /dev/null; then
     }
     upgrade() {
       # Pull exit code from ublue-update
-      ublue-update --force > /dev/null 2>&1
+      systemctl start ublue-update-force > /dev/null 2>&1
       echo $? > /tmp/upgrade-check
     }
     upgrade | fake_progress
