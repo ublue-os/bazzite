@@ -20,7 +20,7 @@ clean-system:
 boot-to-bios:
   systemctl reboot --firmware-setup
 
-# Enroll Nvidia driver & KMOD signing key for secure boot
+# Enroll Nvidia driver & KMOD signing key for secure boot - Enter password "ublue-os" if prompted
 enroll-secure-boot-keys:
     sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
 
