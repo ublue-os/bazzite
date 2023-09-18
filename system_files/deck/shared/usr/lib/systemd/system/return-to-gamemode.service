@@ -1,0 +1,6 @@
+[Unit]
+Description=Return to Gaming Mode
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/return-to-gamemode
