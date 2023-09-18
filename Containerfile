@@ -54,7 +54,6 @@ RUN rpm-ostree override remove \
 
 # Install new packages
 RUN rpm-ostree install \
-    extest.i686 \
     python3-pip \
     libadwaita \
     duperemove \
@@ -304,6 +303,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 # Dock updater - done manually due to proprietary parts preventing it from being on Copr
 # Neptune firmware - done manually due to "TBD" license on needed audio firmware
 RUN rpm-ostree install \
+    extest.i686 \
     mesa-va-drivers \
     vulkan-tools \
     jupiter-fan-control \

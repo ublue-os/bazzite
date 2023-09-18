@@ -47,14 +47,14 @@ install-bazzite-arch:
   fi && \
   echo 'Installing Bazzite Arch...' && \
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
-    distrobox create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --nvidia --yes --volume /usr/lib/extest/libextest.so:/usr/lib/extest/libextest.so:ro; \
+    distrobox create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --nvidia --yes; \
   else \
-    distrobox create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --nvidia --yes --volume /usr/lib/extest/libextest.so:/usr/lib/extest/libextest.so:ro; \
+    distrobox create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --nvidia --yes; \
   fi && \
   echo 'Exporting applications...' && \
   distrobox-enter -n bazzite-arch -- 'bash -c "sudo locale-gen && distrobox-export --app steam && distrobox-export --app lutris && distrobox-export --app protontricks && mkdir -p $HOME/.steam && distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam && mv $HOME/.steam/steamcmd $HOME/.steam/steamcmd.sh"' && \
   echo 'Starting Steam...' && \
-  distrobox-enter -n bazzite-arch -- '  /usr/bin/bazzite-steam-runtime --silent &>/dev/null &' && \
+  distrobox-enter -n bazzite-arch -- '  /usr/bin/steam-runtime --silent &>/dev/null &' && \
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
     echo 'Creating desktop shortcuts...' && \
     cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop/bazzite-arch-steam.desktop && \
