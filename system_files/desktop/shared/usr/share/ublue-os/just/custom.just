@@ -287,6 +287,14 @@ use-broadcom-wl:
   sudo rm -f /etc/modprobe.d/broadcom-wl-blacklist.conf
   sudo rm -f /etc/modprobe.d/default-disable-broadcom-wl.conf
 
+# Installs virt-manager along with QEMU and libvirt daemon (remove-virtualization reverts this)
+setup-virtualization
+  rpm-ostree install libvirt qemu virt-manager
+
+# Removes virt-manager along with QEMU and libvirt daemon
+remove-virtualization
+  rpm-ostree remove libvirt qemu virt-manager
+
 # Enable Flatpak Theming
 enable-flatpak-theming:
   flatpak override --user --filesystem=xdg-config/gtk-4.0:ro --filesystem=xdg-config/gtk-3.0:ro --filesystem=~/.icons:ro --filesystem=~/.themes:ro
