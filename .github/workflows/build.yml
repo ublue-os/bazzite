@@ -35,7 +35,7 @@ jobs:
       fail-fast: false
       matrix:
         image_flavor: [main, nvidia]
-        base_name: [bazzite, bazzite-surface, bazzite-deck]
+        base_name: [bazzite, bazzite-surface, bazzite-deck, steam_container]
         base_image_name: [kinoite, silverblue]
         major_version: [38]
         include:
@@ -47,6 +47,8 @@ jobs:
             is_stable_version: true
         exclude:
           - base_name: bazzite-deck
+            image_flavor: nvidia
+          - base_name: steam_container
             image_flavor: nvidia
     steps:
       # Checkout push-to-registry action GitHub repository
