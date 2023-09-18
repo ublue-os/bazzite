@@ -238,6 +238,33 @@ RUN rm -rf \
     chmod -R 1777 /var/tmp && \
     ostree container commit
 
+# Build steam.rpm against ublue-os/main to make sure dependency versions match
+FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} as steam_container
+
+RUN rpm-ostree install rpmdevtools rpmlint && \
+    useradd -m --shell=/usr/bin/bash build && usermod -L build && \
+    echo "build ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+USER build
+WORKDIR /home/build
+
+RUN rpmdev-setuptree && \
+    git clone https://github.com/rpmfusion/steam.git \
+         --depth 1 \
+        /home/build/rpmbuild/SPECS/steam && \
+    rpmbuild -ba /home/build/rpmbuild/SPECS/steam/steam.spec
+
+USER root
+WORKDIR /
+RUN userdel -r build && \
+    rm -drf /home/build && \
+    sed -i '/build ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers && \
+    sed -i '/root ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers && \
+    rm -rf \
+        /tmp/* && \
+    ostree container commit
+
 FROM bazzite as bazzite-deck
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
