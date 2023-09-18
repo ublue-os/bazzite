@@ -106,6 +106,14 @@ install-openrazer:
   ublue-update --wait
   rpm-ostree install openrazer-meta
 
+# Installs virt-manager along with QEMU and libvirt daemon (remove-virtualization reverts this)
+setup-virtualization
+  rpm-ostree install libvirt qemu virt-manager
+
+# Removes virt-manager along with QEMU and libvirt daemon
+remove-virtualization
+  rpm-ostree remove libvirt qemu virt-manager
+
 # Install Nix with the Determinate Nix Installer
 install-nix:
   #!/usr/bin/env bash
