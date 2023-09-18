@@ -253,7 +253,7 @@ RUN rpmdev-setuptree && \
     git clone https://github.com/rpmfusion/steam.git \
          --depth 1 \
         /home/build/rpmbuild/SPECS/steam && \
-    rpmbuild -ba /home/build/rpmbuild/SPECS/steam/steam.spec
+    linux32 rpmbuild -ba /home/build/rpmbuild/SPECS/steam/steam.spec
 
 USER root
 WORKDIR /
