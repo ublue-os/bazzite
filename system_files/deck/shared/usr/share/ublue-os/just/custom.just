@@ -23,6 +23,7 @@ boot-to-bios:
 # Enroll Nvidia driver & KMOD signing key for secure boot - Enter password "ublue-os" if prompted
 enroll-secure-boot-keys:
     sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
+    echo 'Enter password "ublue-os" if prompted'
 
 # Enable VAAPI in Firefox for Nvidia GPUs
 setup-firefox-vaapi-nvidia:
@@ -236,6 +237,7 @@ enable-vapor-theme:
     gsettings set org.gnome.desktop.wm.preferences titlebar-font "Noto Sans Medium 11"
     gsettings set org.gnome.desktop.interface document-font-name "Noto Sans 11"
     gsettings set org.gnome.desktop.interface font-name "Noto Sans 11"
+    gsettings set org.gnome.desktop.sound theme-name "steam"
     gradience-cli flatpak-overrides -e both
     gradience-cli apply -p /usr/share/ublue-os/bazzite/themes/vapor.json
   else 
@@ -257,6 +259,7 @@ enable-vgui2-theme:
     gsettings set org.gnome.desktop.wm.preferences titlebar-font "Noto Sans Medium 11"
     gsettings set org.gnome.desktop.interface document-font-name "Noto Sans 11"
     gsettings set org.gnome.desktop.interface font-name "Noto Sans 11"
+    gsettings set org.gnome.desktop.sound theme-name "steam"
     gradience-cli flatpak-overrides -e both
     gradience-cli apply -p /usr/share/ublue-os/bazzite/themes/vgui2.json
   else 
