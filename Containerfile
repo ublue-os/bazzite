@@ -254,7 +254,7 @@ RUN rpmdev-setuptree && \
          --depth 1 \
          ${SOURCES} && \
     spectool -g ${SOURCES}/steam.spec --directory ${SOURCES} && \
-    linux32 rpmbuild -ba ${SOURCES}/steam.spec
+    linux32 rpmbuild -bl -vv ${SOURCES}/steam.spec --clean
 
 USER root
 WORKDIR /
@@ -280,8 +280,7 @@ COPY system_files/deck/shared /
 COPY system_files/deck/${BASE_IMAGE_NAME} /
 
 # Retrieve Steam
-COPY --from=ghcr.io/ublue-os/steam_container /rpms/* /tmp/steam-rpms/kinoite
-COPY --from=ghcr.io/ublue-os/steam_container-gnome /rpms/* /tmp/steam-rpms/silverblue
+COPY --from steam_container /rpms/* /tmp/steam-rpms/
 
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
@@ -378,7 +377,7 @@ RUN rpm-ostree install \
 # Install Steam and Lutris into their own OCI layer
 # Add bootstraplinux_ubuntu12_32.tar.xz used by gamescope-session (Thanks ChimeraOS! - https://chimeraos.org/)
 RUN rpm-ostree install \
-        /tmp/steam-rpms/${BASE_IMAGE_NAME}/steam*.rpm \
+        /tmp/steam-rpms/steam*.rpm \
         lutris \
         libFAudio \
         gamescope \
