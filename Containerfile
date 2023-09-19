@@ -237,6 +237,35 @@ RUN rm -rf \
     chmod -R 1777 /var/tmp && \
     ostree container commit
 
+# Build steam.rpm against ublue-os/main to make sure dependency versions match
+FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} as steam_container
+
+RUN rpm-ostree install rpmdevtools rpmlint && \
+    useradd -m --shell=/usr/bin/bash build && usermod -L build && \
+    echo "build ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+USER build
+WORKDIR /home/build
+
+ARG SOURCES="/home/build/rpmbuild/SOURCES"
+RUN rpmdev-setuptree && \
+    git clone https://github.com/rpmfusion/steam.git \
+         --depth 1 \
+         ${SOURCES} && \
+    spectool -g ${SOURCES}/steam.spec --directory ${SOURCES} && \
+    linux32 rpmbuild -ba ${SOURCES}/steam.spec
+
+USER root
+WORKDIR /
+RUN userdel -r build && \
+    rm -drf /home/build && \
+    sed -i '/build ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers && \
+    sed -i '/root ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers && \
+    rm -rf \
+        /tmp/* && \
+    ostree container commit
+
 FROM bazzite as bazzite-deck
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
@@ -247,6 +276,10 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 COPY system_files/deck/shared /
 COPY system_files/deck/${BASE_IMAGE_NAME} /
+
+# Retrieve Steam
+COPY --from=ghcr.io/ublue-os/steam_container:${FEDORA_MAJOR_VERSION} /home/build/rpmbuild/RPMS/i686 /tmp/steam-rpms/kinoite
+COPY --from=ghcr.io/ublue-os/steam_container-gnome:${FEDORA_MAJOR_VERSION} /home/build/rpmbuild/RPMS/i686 /tmp/steam-rpms/silverblue
 
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
@@ -343,7 +376,7 @@ RUN rpm-ostree install \
 # Install Steam and Lutris into their own OCI layer
 # Add bootstraplinux_ubuntu12_32.tar.xz used by gamescope-session (Thanks ChimeraOS! - https://chimeraos.org/)
 RUN rpm-ostree install \
-        steam \
+        /tmp/steam-rpms/${BASE_IMAGE_NAME}/steam*.rpm \
         lutris \
         libFAudio \
         gamescope \
