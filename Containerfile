@@ -254,13 +254,13 @@ RUN rpmdev-setuptree && \
          --depth 1 \
          ${SOURCES} && \
     spectool -g ${SOURCES}/steam.spec --directory ${SOURCES} && \
-    linux32 rpmbuild -ba ${SOURCES}/steam.spec && \
-    mkdir -p /tmp/rpms && \
-    cp /home/build/rpmbuild/RPMS/i686/* /tmp/rpms
+    linux32 rpmbuild -ba ${SOURCES}/steam.spec
 
 USER root
 WORKDIR /
-RUN userdel -r build && \
+RUN mkdir -p /rpms && \
+    cp /home/build/rpmbuild/RPMS/i686/* /rpms && \
+    userdel -r build && \
     rm -drf /home/build && \
     sed -i '/build ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers && \
     sed -i '/root ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers && \
@@ -280,7 +280,7 @@ COPY system_files/deck/shared /
 COPY system_files/deck/${BASE_IMAGE_NAME} /
 
 # Retrieve Steam
-COPY --from=steam_container /tmp/rpms/* /tmp/steam-rpms/
+COPY --from=steam_container /rpms/* /tmp/steam-rpms/
 
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
