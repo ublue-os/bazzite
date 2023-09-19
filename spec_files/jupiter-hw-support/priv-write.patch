@@ -1,14 +1,29 @@
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-priv-write b/usr/bin/steamos-polkit-helpers/steamos-priv-write
-index 907133b..caaa807 100755
+index 907133b..6ba1dd8 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-priv-write
 +++ b/usr/bin/steamos-polkit-helpers/steamos-priv-write
-@@ -13,15 +13,14 @@ WRITE_VALUE="$2"
+@@ -2,6 +2,9 @@
+ 
+ set -eu
+ 
++source /etc/default/steam-hardware-control
++SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
++
+ if [[ $EUID -ne 0 ]];
+ then
+     exec pkexec --disable-internal-agent "$0" "$@"
+@@ -12,16 +15,19 @@ WRITE_VALUE="$2"
+ 
  function CommitWrite()
  {
++   if [[ ":Jupiter:" =~ ":$SYS_ID:" || "$ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE" = 1 ]]; then
      echo "commit: $WRITE_VALUE -> $WRITE_PATH" | systemd-cat -t p-steamos-priv-write -p warning
 -    echo "$WRITE_VALUE" > "$WRITE_PATH"
      chmod a+w "$WRITE_PATH"
 +    echo "$WRITE_VALUE" > "$WRITE_PATH"
++   else
++    echo "commit: Skipped - see /etc/default/steam-hardware-control" | systemd-cat -t p-steamos-priv-write -p warning
++   fi
      exit 0
  }
  
