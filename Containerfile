@@ -278,6 +278,10 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 COPY system_files/deck/shared /
 COPY system_files/deck/${BASE_IMAGE_NAME} /
 
+# Retrieve Steam
+COPY --from=ghcr.io/ublue-os/steam_container:${FEDORA_MAJOR_VERSION} /home/build/rpmbuild/RPMS/i686 /tmp/steam-rpms/kinoite
+COPY --from=ghcr.io/ublue-os/steam_container-gnome:${FEDORA_MAJOR_VERSION} /home/build/rpmbuild/RPMS/i686 /tmp/steam-rpms/silverblue
+
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
     wget https://copr.fedorainfracloud.org/coprs/mavit/discover-overlay/repo/fedora-$(rpm -E %fedora)/mavit-discover-overlay-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_mavit_discover.repo && \
@@ -372,7 +376,7 @@ RUN rpm-ostree install \
 # Install Steam and Lutris into their own OCI layer
 # Add bootstraplinux_ubuntu12_32.tar.xz used by gamescope-session (Thanks ChimeraOS! - https://chimeraos.org/)
 RUN rpm-ostree install \
-        steam \
+        /tmp/steam-rpms/${BASE_IMAGE_NAME}/steam*.rpm \
         lutris \
         libFAudio \
         gamescope \
