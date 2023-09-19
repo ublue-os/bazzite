@@ -249,11 +249,13 @@ RUN rpm-ostree install rpmdevtools rpmlint && \
 USER build
 WORKDIR /home/build
 
+ARG SOURCES="/home/build/rpmbuild/SOURCES"
 RUN rpmdev-setuptree && \
     git clone https://github.com/rpmfusion/steam.git \
          --depth 1 \
-        /home/build/rpmbuild/SPECS/steam && \
-    linux32 rpmbuild -ba /home/build/rpmbuild/SPECS/steam/steam.spec
+         ${SOURCES} && \
+    spectool -g ${SOURCES}/steam.spec --directory ${SOURCES} && \
+    linux32 rpmbuild -ba ${SOURCES}/steam.spec
 
 USER root
 WORKDIR /
