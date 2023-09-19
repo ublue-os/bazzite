@@ -376,8 +376,13 @@ RUN rpm-ostree install \
 
 # Install Steam and Lutris into their own OCI layer
 # Add bootstraplinux_ubuntu12_32.tar.xz used by gamescope-session (Thanks ChimeraOS! - https://chimeraos.org/)
-RUN rpm-ostree install \
-        /tmp/steam-rpms/steam*.rpm \
+RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/fedora.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/fedora-updates.repo && \
+    rpm-ostree install \
+        /tmp/steam-rpms/steam*.rpm && \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/fedora.repo && \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/fedora-updates.repo && \
+    rpm-ostree install \
         lutris \
         libFAudio \
         gamescope \
