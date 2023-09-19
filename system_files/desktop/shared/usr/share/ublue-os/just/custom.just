@@ -246,6 +246,19 @@ enable-vgui2-theme:
     echo "This is only supported under GNOME."
   fi
 
+# Install Adwaita-for-Steam theme for CSS Loader (https://github.com/tkashkin/Adwaita-for-Steam)
+install-adwaita-for-steam:
+  #!/usr/bin/env bash
+  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+    if [ -d "$HOME/homebrew/themes" ]; then
+      git clone https://github.com/tkashkin/Adwaita-for-Steam.git --single-branch "$HOME/homebrew/themes/Adwaita-for-Steam"
+    else
+      echo 'Please install Decky Loader & CSS Loader first'
+    fi
+  else 
+    echo "This is only supported under GNOME."
+  fi
+
 # Set system to boot without showing the grub screen with options
 hide-grub:
   #!/usr/bin/env bash
