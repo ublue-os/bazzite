@@ -129,6 +129,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-just-perfection \
         gnome-shell-extension-blur-my-shell \
         gnome-shell-extension-hanabi \
+        gnome-shell-extension-gamerzilla \
         rom-properties-gtk3 \
         openssh-askpass && \
     rpm-ostree override remove \
@@ -189,6 +190,7 @@ RUN rm /usr/share/applications/shredder.desktop && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl enable ublue-update.timer && \
     systemctl enable bazzite-hardware-setup.service && \
+    systemctl enable tailscaled.service && \
     systemctl --global enable bazzite-user-setup.service && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sed -i '/^PRETTY_NAME/s/Kinoite/Bazzite/' /usr/lib/os-release && \
