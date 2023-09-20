@@ -207,35 +207,6 @@ RUN rm /usr/share/applications/shredder.desktop && \
     chmod -R 1777 /var/tmp && \
     ostree container commit
 
-FROM bazzite as bazzite-surface
-
-# Add Linux Surface repo
-RUN wget https://pkg.surfacelinux.com/fedora/linux-surface.repo -P /etc/yum.repos.d
-
-# Install Surface kernel
-RUN wget https://github.com/linux-surface/linux-surface/releases/download/silverblue-20201215-1/kernel-20201215-1.x86_64.rpm -O \
-    /tmp/surface-kernel.rpm && \
-    rpm-ostree cliwrap install-to-root / && \
-    rpm-ostree override replace /tmp/surface-kernel.rpm \
-        --remove kernel-core \
-        --remove kernel-devel-matched \
-        --remove kernel-modules \
-        --remove kernel-modules-extra \
-        --remove libwacom \
-        --remove libwacom-data \
-        --install kernel-surface \
-        --install iptsd \
-        --install libwacom-surface \
-        --install libwacom-surface-data
-
-# Cleanup & Finalize
-RUN rm -rf \
-        /tmp/* \
-        /var/* && \
-    mkdir -p /var/tmp && \
-    chmod -R 1777 /var/tmp && \
-    ostree container commit
-
 FROM bazzite as bazzite-deck
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
