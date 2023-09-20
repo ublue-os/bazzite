@@ -284,6 +284,7 @@ RUN rpm-ostree install \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     powerbuttond \
+    HandyGCCS \
     vpower \
     ds-inhibit \
     steam_notif_daemon \
@@ -411,6 +412,7 @@ RUN rm /usr/share/applications/wine*.desktop && \
         systemctl enable sddm.service \
     ; fi && \
     systemctl enable bazzite-autologin.service && \
+    systemctl enable handycon.service && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
     systemctl enable vpower.service && \
