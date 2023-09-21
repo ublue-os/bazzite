@@ -361,6 +361,7 @@ RUN rpm-ostree install \
     rm -f /tmp/steam-jupiter.pkg.tar.zst && \
     rpm-ostree install \
         lutris \
+        wxGTK \
         libFAudio \
         gamescope \
         gamescope-session \
