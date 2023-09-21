@@ -86,6 +86,11 @@ screens:
           default: false
           packages:
           - Install OpenRazer: just --unstable install-openrazer
+        Webapp Manager:
+          description: A utility for managing your webapps 
+          default: false
+          packages:
+          - Setup Webapp Manager: just --unstable setup-webapp-manager
         SteamCMD:
           description: Installs SteamCMD
           default: true

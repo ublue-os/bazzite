@@ -59,6 +59,19 @@ install-obs-studio-portable:
   distrobox-enter -n obs-studio-portable -- 'bash -c "distrobox-export --app obs"' && \
   echo 'Install complete'
 
+# Setup the Webapp manager
+setup-webapp-manager:
+  distrobox-create -i fedora:latest -n webapps
+  distrobox-enter -n webapps -- sudo sh -c "sudo dnf update -y && \
+    dnf install -y 'dnf-command(copr)' git && \
+    dnf copr enable -y kylegospo/webapp-manager && \
+    dnf install -y webapp-manager && \
+    /usr/bin/distrobox-host-exec &>/dev/null && \
+    ln -s /usr/bin/distrobox-host-exec /usr/bin/xdg-open && \
+    ln -s /usr/bin/distrobox-host-exec /usr/bin/flatpak && \
+    ln -s /usr/bin/distrobox-host-exec /usr/bin/firefox && \
+    distrobox-export --app webapp-manager"
+
 # Remove all waydroid-related files in your user folders
 reset-waydroid:
   bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
