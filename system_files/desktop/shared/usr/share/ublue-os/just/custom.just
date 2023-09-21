@@ -78,11 +78,8 @@ install-obs-studio-portable:
   echo 'Install complete'
 
 # Setup the Webapp manager
-setup-webapp-manager:
-  distrobox-create -i fedora:latest -n webapps
-  distrobox-enter -n webapps -- sudo sh -c "sudo dnf update -y && \
-    dnf install -y 'dnf-command(copr)' git && \
-    dnf copr enable -y kylegospo/webapp-manager && \
+setup-webapp-manager: _setup-utilities-toolbox
+  distrobox-enter -n utilities-toolbox -- sudo sh -c "dnf copr enable -y kylegospo/webapp-manager && \
     dnf install -y webapp-manager && \
     /usr/bin/distrobox-host-exec &>/dev/null && \
     ln -s /usr/bin/distrobox-host-exec /usr/bin/xdg-open && \
@@ -118,16 +115,12 @@ install-corectrl:
   rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
 
 # Install Oversteer for Logitech steering wheels
-install-oversteer:
-  sudo wget https://copr.fedorainfracloud.org/coprs/kylegospo/oversteer/repo/fedora-$(rpm -E %fedora)/kylegospo-oversteer-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-oversteer.repo
-  ublue-update --wait
-  rpm-ostree install oversteer
+install-oversteer: _setup-utilities-toolbox
+  distrobox enter -n utilities-toolbox -- bash -c 'sudo dnf copr enable -y kylegospo/oversteer && sudo dnf install python3-evdev oversteer'
 
 # Install OpenRazer (https://openrazer.github.io)
-install-openrazer:
-  sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo
-  ublue-update --wait
-  rpm-ostree install openrazer-meta
+install-openrazer: _setup-utilities-toolbox
+  distrobox-enter -n utilities-toolbox -- bash -c 'sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo && sudo dnf install openrazer-meta'
 
 # Install Nix with the Determinate Nix Installer
 install-nix:
@@ -360,3 +353,10 @@ _get-image:
     url = protocol + url
 
   print(url)
+
+_setup-utilities-toolbox:
+  #!/usr/bin/env bash
+  if ! podman container exists utilities-toolbox ; then 
+    distrobox create -i fedora:latest -n utilities-toolbox 
+    distrobox enter -n utilities-toolbox -- sudo sh -c "dnf update -y && dnf install -y 'dnf-command(copr)' git"
+  fi
