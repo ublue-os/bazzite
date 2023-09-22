@@ -84,7 +84,7 @@ get-greenlight:
 enable-supergfxctl: 
   #!/usr/bin/env bash
   IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-  IMAGE_FLAVOR=$(jq '."image-flavor"' $IMAGE_FLAVOR)
+  IMAGE_FLAVOR=$(jq '."image-flavor"' $IMAGE_INFO)
   if [[ ${IMAGE_FLAVOR} == 'nvidia' ]]; then
     systemctl enable --now supergfxd.service
   else
@@ -115,7 +115,7 @@ patch-gmod:
 enable-vapor-theme:
   #!/usr/bin/env bash
   IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-  BASE_IMAGE_NAME=$(jq '."base-image-name"' $BASE_IMAGE_NAME)
+  BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.mutter center-new-windows true
@@ -140,7 +140,7 @@ enable-vapor-theme:
 enable-vgui2-theme:
   #!/usr/bin/env bash
   IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-  BASE_IMAGE_NAME=$(jq '."base-image-name"' $BASE_IMAGE_NAME)
+  BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.mutter center-new-windows true
@@ -164,6 +164,8 @@ enable-vgui2-theme:
 # Install Adwaita-for-Steam theme for CSS Loader (https://github.com/tkashkin/Adwaita-for-Steam)
 install-adwaita-for-steam:
   #!/usr/bin/env bash
+  IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+  BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     if [ -d "$HOME/homebrew/themes" ]; then
       git clone https://github.com/tkashkin/Adwaita-for-Steam.git --single-branch "$HOME/homebrew/themes/Adwaita-for-Steam"
