@@ -4,8 +4,10 @@ set -e
 
 die() { echo >&2 "!! $*"; exit 1; }
 
-source /etc/default/bazzite
 source /etc/default/desktop-wayland
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
 
 # File this script will modify, in addition to (potentially) the per-user sentinel file
 CONF_FILE="/etc/sddm.conf.d/zz-steamos-autologin.conf"

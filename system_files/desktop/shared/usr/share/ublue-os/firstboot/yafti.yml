@@ -57,7 +57,7 @@ screens:
     values:
       title: AMD Additions
       condition:
-        run: grep -q 'main' <<< $(cat /etc/default/bazzite)
+        run: grep -q 'main' <<< $(jq '."image-flavor"' /usr/share/ublue-os/image-info.json)
       show_terminal: true
       package_manager: yafti.plugin.run
       packages:
@@ -67,7 +67,7 @@ screens:
     values:
       title: Nvidia Additions
       condition:
-        run: grep -q 'nvidia' <<< $(cat /etc/default/bazzite)
+        run: grep -q 'nvidia' <<< $(jq '."image-flavor"' /usr/share/ublue-os/image-info.json)
       show_terminal: true
       package_manager: yafti.plugin.run
       packages:
@@ -196,7 +196,7 @@ screens:
     values:
       title: "GNOME Theme"
       condition:
-        run: grep -q 'silverblue' <<< $(cat /etc/default/bazzite)
+        run: grep -q 'silverblue' <<< $(jq '."base-image-name"' /usr/share/ublue-os/image-info.json)
       links:
       - "Vapor Theme":
           run: just --unstable enable-vapor-theme
