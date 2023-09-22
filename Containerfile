@@ -14,6 +14,7 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 COPY system_files/desktop/shared /
 COPY system_files/desktop/${BASE_IMAGE_NAME} /
+COPY image-info.sh /tmp/image-info.sh
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
 COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
@@ -159,7 +160,8 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
 ; fi
 
 # Cleanup & Finalize
-RUN rm /usr/share/applications/shredder.desktop && \
+RUN /tmp/image-info.sh && \
+    rm /usr/share/applications/shredder.desktop && \
     rm /usr/share/vulkan/icd.d/lvp_icd.*.json && \
     mkdir -p "/usr/etc/profile.d/" && \
     ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
@@ -211,7 +213,6 @@ RUN rm /usr/share/applications/shredder.desktop && \
         rm /usr/share/wayland-sessions/weston.desktop \
     ; fi && \
     mkdir -p /usr/etc/default && \
-    echo -e "IMAGE_NAME=${IMAGE_NAME}\nIMAGE_VENDOR=${IMAGE_VENDOR}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /usr/etc/default/bazzite && \
     rm -rf \
         /tmp/* \
         /var/* && \
@@ -229,6 +230,7 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 COPY system_files/deck/shared /
 COPY system_files/deck/${BASE_IMAGE_NAME} /
+COPY image-info.sh /tmp/image-info.sh
 
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
@@ -385,7 +387,8 @@ RUN rpm-ostree install \
     ; fi
 
 # Cleanup & Finalize
-RUN rm /usr/share/applications/wine*.desktop && \
+RUN /tmp/image-info.sh && \
+    rm /usr/share/applications/wine*.desktop && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
@@ -430,7 +433,6 @@ RUN rm /usr/share/applications/wine*.desktop && \
     systemctl disable ublue-update.timer && \
     rm -f /usr/etc/sddm.conf && \
     rm -f /usr/etc/default/bazzite && \
-    echo -e "IMAGE_NAME=${IMAGE_NAME}\nIMAGE_VENDOR=${IMAGE_VENDOR}\nBASE_IMAGE_NAME=${BASE_IMAGE_NAME}\nIMAGE_FLAVOR=${IMAGE_FLAVOR}\nFEDORA_MAJOR_VERSION=${FEDORA_MAJOR_VERSION}" >> /usr/etc/default/bazzite && \
     rm -rf \
         /tmp/* \
         /var/* && \
