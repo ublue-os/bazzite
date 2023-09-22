@@ -40,7 +40,8 @@ setup-firefox-vaapi-nvidia:
 
 # Set up Bazzite-Arch Distrobox container
 install-bazzite-arch:
-  source /etc/default/bazzite && \
+  IMAGE_INFO="/usr/share/ublue-os/image-info.json" && \
+  BASE_IMAGE_NAME=$(jq '."base-image-name"' $BASE_IMAGE_NAME) && \
   if grep -qz "bazzite-arch" <<< $(distrobox list); then \
     echo 'Removing existing Bazzite Arch install...' && \
     distrobox rm bazzite-arch --force; \
@@ -145,7 +146,8 @@ install-fleek:
 install-fleek-themes:
   #!/usr/bin/env bash
   if [[ -x "/var/usrlocal/bin/fleek" ]]; then
-    source /etc/default/bazzite
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq '."base-image-name"' $BASE_IMAGE_NAME)
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
       fleek add adw-gtk3 --apply
     else
@@ -171,7 +173,8 @@ get-greenlight:
 # Enable Supergfxctl, a Nvidia GPU switcher for hybrid laptops
 enable-supergfxctl: 
   #!/usr/bin/env bash
-  source /etc/default/bazzite
+  IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+  IMAGE_FLAVOR=$(jq '."image-flavor"' $IMAGE_FLAVOR)
   if [[ ${IMAGE_FLAVOR} == 'nvidia' ]]; then
     systemctl enable --now supergfxd.service
   else
@@ -201,7 +204,8 @@ patch-gmod:
 # Activate Valve-inspired Vapor theme on GNOME
 enable-vapor-theme:
   #!/usr/bin/env bash
-  source /etc/default/bazzite
+  IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+  BASE_IMAGE_NAME=$(jq '."base-image-name"' $BASE_IMAGE_NAME)
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.mutter center-new-windows true
@@ -225,7 +229,8 @@ enable-vapor-theme:
 # Activate Valve-inspired VGUI2 theme on GNOME
 enable-vgui2-theme:
   #!/usr/bin/env bash
-  source /etc/default/bazzite
+  IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+  BASE_IMAGE_NAME=$(jq '."base-image-name"' $BASE_IMAGE_NAME)
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.mutter center-new-windows true
@@ -314,36 +319,3 @@ use-broadcom-wl:
 # Enable Flatpak Theming
 enable-flatpak-theming:
   flatpak override --user --filesystem=xdg-config/gtk-4.0:ro --filesystem=xdg-config/gtk-3.0:ro --filesystem=~/.icons:ro --filesystem=~/.themes:ro
-
-# Sign the current OCI OSTree Image (If unsigned)
-sign-image:
-  source /etc/default/bazzite && \
-  ublue-update --wait && \
-  if grep -qvz "/var/${IMAGE_VENDOR}/image" <<< $(rpm-ostree status); then \
-    rpm-ostree rebase ostree-image-signed:$(just --unstable _get-image); \
-  else \
-    rpm-ostree rebase ostree-image-signed:docker://ghcr.io/${IMAGE_VENDOR}/${IMAGE_NAME}:${FEDORA_MAJOR_VERSION}; \
-  fi
-
-_get-image:
-  #!/usr/bin/env python
-  from json import loads
-  from subprocess import PIPE, run
-
-  """Pull deployment status via rpm-ostree"""
-  status = "rpm-ostree status --json"
-  out = run(status, shell=True, stdout=PIPE).stdout
-
-  """Parse current image"""
-  deployments = loads(out)["deployments"][0]
-  current_image = deployments["container-image-reference"].split(":", 1)
-
-  """Dissect current image to form URL to latest image"""
-  protocol = "docker://"
-  url = current_image[1]
-
-  """Add protocol if URL doesn't contain it"""
-  if protocol not in url:
-    url = protocol + url
-
-  print(url)

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-source /etc/default/bazzite
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+IMAGE_NAME=$(jq '."image-name"' $IMAGE_INFO)
+BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
 
 # SCRIPT VERSION
 HWS_VER=1

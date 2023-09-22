@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-source /etc/default/bazzite
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
+
 if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
   SUDO_ASKPASS='/usr/bin/ksshaskpass'
 elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then

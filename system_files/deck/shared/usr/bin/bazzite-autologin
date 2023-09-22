@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-source /etc/default/bazzite
 source /etc/default/desktop-wayland
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
 
 USER=$(id -nu 1000)
 

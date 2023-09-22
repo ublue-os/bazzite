@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-source /etc/default/bazzite
 
 # Script Version
 VER=1
