@@ -49,7 +49,7 @@ distrobox-bazzite-arch:
 # Install Webapp manager
 install-webapp-manager:
   if grep -qz "fedora" <<< $(distrobox list); then \
-    /usr/bin/just distrobox-fedora \
+    /usr/bin/just --unstable distrobox-fedora \
   fi && \
   distrobox-enter -n fedora -- sudo sh -c "sudo dnf copr enable -y kylegospo/webapp-manager && \
     sudo dnf install -y webapp-manager && \
@@ -58,7 +58,7 @@ install-webapp-manager:
 # Install Oversteer for Logitech steering wheels
 install-oversteer:
   if grep -qz "fedora" <<< $(distrobox list); then \
-    /usr/bin/just distrobox-fedora \
+    /usr/bin/just --unstable distrobox-fedora \
   fi && \
   distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y kylegospo/oversteer && \
     sudo dnf install \
@@ -69,7 +69,7 @@ install-oversteer:
 # Install OpenRazer for Razer gaming hardware
 install-openrazer:
   if grep -qz "fedora" <<< $(distrobox list); then \
-    /usr/bin/just distrobox-fedora \
+    /usr/bin/just --unstable distrobox-fedora \
   fi && \
   distrobox-enter -n fedora -- bash -c 'sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo && \
     sudo dnf install -y \
@@ -78,7 +78,7 @@ install-openrazer:
 # Install Solaar for Logitech Mice, Keyboards, and Trackpads
 install-solaar:
   if grep -qz "fedora" <<< $(distrobox list); then \
-    /usr/bin/just distrobox-fedora \
+    /usr/bin/just --unstable distrobox-fedora \
   fi && \
   distrobox-enter -n fedora -- bash -c 'sudo dnf install -y \
     solaar && \
@@ -90,7 +90,7 @@ install-solaar:
 # Install Resilio Sync, a file synchronization utility powered by BitTorrent
 install-resilio-sync:
   if grep -qz "fedora" <<< $(distrobox list); then \
-    /usr/bin/just distrobox-fedora \
+    /usr/bin/just --unstable distrobox-fedora \
   fi && \
   distrobox-enter -n fedora -- bash -c 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc && \
     printf "[resilio-sync]\nname=Resilio Sync\nbaseurl=https://linux-packages.resilio.com/resilio-sync/rpm/\$basearch\nenabled=1\ngpgcheck=1\n" | sudo tee /etc/yum.repos.d/resilio-sync.repo && \
