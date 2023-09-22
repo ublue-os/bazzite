@@ -1,3 +1,5 @@
+# vim: set ft=make :
+
 # Remove all waydroid-related files in your user folders
 reset-waydroid:
   bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
