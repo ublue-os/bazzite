@@ -12,8 +12,7 @@ ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
-COPY system_files/desktop/shared /
-COPY system_files/desktop/${BASE_IMAGE_NAME} /
+COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 COPY image-info.sh /tmp/image-info.sh
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
@@ -228,8 +227,7 @@ ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
-COPY system_files/deck/shared /
-COPY system_files/deck/${BASE_IMAGE_NAME} /
+COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
 COPY image-info.sh /tmp/image-info.sh
 
 # Setup Copr repos
