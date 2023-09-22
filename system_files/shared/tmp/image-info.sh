@@ -2,6 +2,7 @@
 
 set -oue pipefail
 
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_REF="docker://ghcr.io/$IMAGE_VENDOR/$IMAGE_NAME"
 
 case $FEDORA_MAJOR_VERSION in
@@ -13,14 +14,14 @@ case $FEDORA_MAJOR_VERSION in
     ;;
 esac
 
+cat > $IMAGE_INFO <<EOF
 {
-  echo "{"
-  echo '"image-name": "'"$IMAGE_NAME"'",'
-  echo '"image-flavor": "'"$IMAGE_FLAVOR"'",'
-  echo '"image-vendor": "'"$IMAGE_VENDOR"'",'
-  echo '"image-ref": "'"$IMAGE_REF"'",'
-  echo '"image-tag":"'"$IMAGE_TAG"'",'
-  echo '"base-image-name": "'"$BASE_IMAGE_NAME"'",'
-  echo '"fedora-version": "'"$FEDORA_MAJOR_VERSION"'"'
-  echo "}"
-} > "/usr/share/ublue-os/image-info.json"
+  "image-name": "$IMAGE_NAME",
+  "image-flavor": "$IMAGE_FLAVOR",
+  "image-vendor": "$IMAGE_VENDOR",
+  "image-ref": "$IMAGE_REF",
+  "image-tag":"$IMAGE_TAG",
+  "base-image-name": "$BASE_IMAGE_NAME",
+  "fedora-version": "$FEDORA_MAJOR_VERSION"
+}
+EOF
