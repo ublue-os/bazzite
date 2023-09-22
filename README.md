@@ -8,6 +8,20 @@
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
 [![build-bazzite-arch](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml)
 
+---
+# Table of Contents
+- [Features for **All** Bazzite Images](https://github.com/ublue-os/bazzite#about--features)
+  - [Features for **Desktop** Images](https://github.com/ublue-os/bazzite#desktop)
+  - [Features for **Steam Deck / HTPC** Images](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
+  - [Features for **GNOME** Images](https://github.com/ublue-os/bazzite#gnome)
+- [Why, FAQ, Showcase](https://github.com/ublue-os/bazzite#why)
+- [Custom Packages](https://github.com/ublue-os/bazzite#custom-packages)
+- [Verification & Metrics](https://github.com/ublue-os/bazzite#verification)
+- [Special Thanks](https://github.com/ublue-os/bazzite#special-thanks)
+- [Building Your Own](https://github.com/ublue-os/bazzite#build-your-own)
+- [Community](https://github.com/ublue-os/bazzite#join-the-community)
+---
+
 ## About & Features
 
 Bazzite is an OCI image that serves as an alternative operating system for the [Steam Deck](https://www.steamdeck.com/), and a ready-to-game SteamOS-like for desktop computers and living room home theater PCs.
