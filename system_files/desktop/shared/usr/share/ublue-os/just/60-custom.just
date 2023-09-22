@@ -27,18 +27,6 @@ install-corectrl:
   echo 'Setting needed kargs for CoreCtrl...'
   rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
 
-# Install Oversteer for Logitech steering wheels
-install-oversteer:
-  sudo wget https://copr.fedorainfracloud.org/coprs/kylegospo/oversteer/repo/fedora-$(rpm -E %fedora)/kylegospo-oversteer-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-oversteer.repo
-  ublue-update --wait
-  rpm-ostree install oversteer
-
-# Install OpenRazer (https://openrazer.github.io)
-install-openrazer:
-  sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo
-  ublue-update --wait
-  rpm-ostree install openrazer-meta
-
 # Install Nix with the Determinate Nix Installer
 install-nix:
   #!/usr/bin/env bash

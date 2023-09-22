@@ -87,7 +87,7 @@ install-solaar:
   rm -f ~/.config/autostart/fedora-solaar.desktop && \
   cp ~/.local/share/applications/fedora-solaar.desktop ~/.config/autostart/fedora-solaar.desktop
 
-# Install Resilio Sync
+# Install Resilio Sync, a file synchronization utility powered by BitTorrent
 install-resilio-sync:
   if grep -qz "fedora" <<< $(distrobox list); then \
     /usr/bin/just distrobox-fedora \
