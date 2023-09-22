@@ -14,7 +14,7 @@
   - [Features for **Desktop** Images](https://github.com/ublue-os/bazzite#desktop)
   - [Features for **Steam Deck / HTPC** Images](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
   - [Features for **GNOME** Images](https://github.com/ublue-os/bazzite#gnome)
-- [Why, FAQ, Showcase](https://github.com/ublue-os/bazzite#why)
+- [Why, FAQ, & Showcase](https://github.com/ublue-os/bazzite#why)
 - [Custom Packages](https://github.com/ublue-os/bazzite#custom-packages)
 - [Verification & Metrics](https://github.com/ublue-os/bazzite#verification)
 - [Special Thanks](https://github.com/ublue-os/bazzite#special-thanks)
