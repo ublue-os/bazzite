@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_flavor: [main, nvidia]
+        image_flavor: [main, nokmods, nvidia]
         base_name: [bazzite, bazzite-deck]
         base_image_name: [kinoite, silverblue]
         major_version: [38]
