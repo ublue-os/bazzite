@@ -208,3 +208,14 @@ unhide-grub:
 # Enable Flatpak Theming
 enable-flatpak-theming:
   flatpak override --user --filesystem=xdg-config/gtk-4.0:ro --filesystem=xdg-config/gtk-3.0:ro --filesystem=~/.icons:ro --filesystem=~/.themes:ro
+
+# Enable xwaylandvideobridge for screensharing 
+fix-screenshare:
+  IMAGE_INFO="/usr/share/ublue-os/image-info.json" && \
+  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO) && \
+  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
+    mkdir -p $HOME/.config/autostart && \
+    cp /usr/share/applications/org.kde.xwaylandvideobridge.desktop $HOME/.config/autostart/; \
+  else \
+    echo "This is only supported under KDE."; \
+  fi
