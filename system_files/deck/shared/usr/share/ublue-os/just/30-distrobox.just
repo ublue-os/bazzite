@@ -48,8 +48,8 @@ distrobox-bazzite-arch:
 
 # Install Webapp manager
 install-webapp-manager:
-  if grep -qz "fedora" <<< $(distrobox list); then \
-    /usr/bin/just --unstable distrobox-fedora; \
+  if grep -qvz "fedora" <<< $(distrobox list); then \
+    distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
   fi && \
   distrobox-enter -n fedora -- bash -c "sudo dnf copr enable -y kylegospo/webapp-manager && \
     sudo dnf install -y webapp-manager && \
@@ -57,19 +57,17 @@ install-webapp-manager:
 
 # Install Oversteer for Logitech steering wheels
 install-oversteer:
-  if grep -qz "fedora" <<< $(distrobox list); then \
-    /usr/bin/just --unstable distrobox-fedora; \
+  if grep -qvz "fedora" <<< $(distrobox list); then \
+    distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
   fi && \
   distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y kylegospo/oversteer && \
-    sudo dnf install \
-      python3-evdev \
-      oversteer && \
+    sudo dnf install -y oversteer && \
     distrobox-export --app oversteer'
 
 # Install OpenRazer for Razer gaming hardware
 install-openrazer:
-  if grep -qz "fedora" <<< $(distrobox list); then \
-    /usr/bin/just --unstable distrobox-fedora; \
+  if grep -qvz "fedora" <<< $(distrobox list); then \
+    distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
   fi && \
   distrobox-enter -n fedora -- bash -c 'sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo && \
     sudo dnf install -y \
@@ -77,8 +75,8 @@ install-openrazer:
 
 # Install Solaar for Logitech Mice, Keyboards, and Trackpads
 install-solaar:
-  if grep -qz "fedora" <<< $(distrobox list); then \
-    /usr/bin/just --unstable distrobox-fedora; \
+  if grep -qvz "fedora" <<< $(distrobox list); then \
+    distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
   fi && \
   distrobox-enter -n fedora -- bash -c 'sudo dnf install -y \
     solaar && \
@@ -89,8 +87,8 @@ install-solaar:
 
 # Install Resilio Sync, a file synchronization utility powered by BitTorrent
 install-resilio-sync:
-  if grep -qz "fedora" <<< $(distrobox list); then \
-    /usr/bin/just --unstable distrobox-fedora; \
+  if grep -qvz "fedora" <<< $(distrobox list); then \
+    distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
   fi && \
   distrobox-enter -n fedora -- 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc' && \
   distrobox-enter -n fedora -- 'sudo wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/resilio-sync.repo -O /etc/yum.repos.d/resilio-sync.repo' && \
