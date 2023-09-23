@@ -14,7 +14,8 @@
   - [Features for **Desktop** Images](https://github.com/ublue-os/bazzite#desktop)
   - [Features for **Steam Deck / HTPC** Images](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
   - [Features for **GNOME** Images](https://github.com/ublue-os/bazzite#gnome)
-- [Why, FAQ, & Showcase](https://github.com/ublue-os/bazzite#why)
+- [Why & Frequently Asked Questions](https://github.com/ublue-os/bazzite#why)
+- [Showcase & Newsletter](https://github.com/ublue-os/bazzite#showcase)
 - [Custom Packages](https://github.com/ublue-os/bazzite#custom-packages)
 - [Verification & Metrics](https://github.com/ublue-os/bazzite#verification)
 - [Special Thanks](https://github.com/ublue-os/bazzite#special-thanks)
@@ -170,12 +171,16 @@ Bazzite ships with the latest Linux kernel and SELinux enabled by default with f
 
 Check out the [FAQ](https://universal-blue.org/images/bazzite/FAQ/) for other topics surrounding the project.
 
+## Showcase
+
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
 ![Steam Game Mode](/repo_content/gamemode.png?raw=true "Steam Game Mode")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
 ![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
+
+Check out our [newsletters](https://universal-blue.org/blog/) that get published on a regular basis for updates on the project.
 
 ## Custom Packages
 
