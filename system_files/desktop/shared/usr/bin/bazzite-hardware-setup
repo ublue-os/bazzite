@@ -120,7 +120,7 @@ if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then
   if [[ ! $KARGS =~ "nvidia-drm.modeset" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=nvidia-drm.modeset=1"
   fi
-elif [[ $IMAGE_FLAVOR = "main" ]]; then
+else
   echo "Checking for needed karg changes"
 
   if [[ $KARGS =~ "rd.driver.blacklist" ]]; then

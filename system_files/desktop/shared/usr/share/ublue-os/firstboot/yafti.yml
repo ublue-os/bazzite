@@ -67,7 +67,7 @@ screens:
     values:
       title: AMD Additions
       condition:
-        run: grep -q 'main' <<< $(jq -r '."image-flavor"' < /usr/share/ublue-os/image-info.json)
+        run: grep -qv 'nvidia' <<< $(jq -r '."image-flavor"' < /usr/share/ublue-os/image-info.json)
       show_terminal: true
       package_manager: yafti.plugin.run
       packages:
