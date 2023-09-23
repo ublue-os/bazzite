@@ -88,7 +88,7 @@ install-webapp-manager:
   if grep -qz "fedora" <<< $(distrobox list); then \
     /usr/bin/just --unstable distrobox-fedora; \
   fi && \
-  distrobox-enter -n fedora -- sudo sh -c "sudo dnf copr enable -y kylegospo/webapp-manager && \
+  distrobox-enter -n fedora -- bash -c "sudo dnf copr enable -y kylegospo/webapp-manager && \
     sudo dnf install -y webapp-manager && \
     distrobox-export --app webapp-manager"
 
@@ -129,10 +129,10 @@ install-resilio-sync:
   if grep -qz "fedora" <<< $(distrobox list); then \
     /usr/bin/just --unstable distrobox-fedora; \
   fi && \
-  distrobox-enter -n fedora -- bash -c 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc && \
-    printf "[resilio-sync]\nname=Resilio Sync\nbaseurl=https://linux-packages.resilio.com/resilio-sync/rpm/\$basearch\nenabled=1\ngpgcheck=1\n" | sudo tee /etc/yum.repos.d/resilio-sync.repo && \
-    sudo dnf install -y resilio-sync' && \
+  distrobox-enter -n fedora -- 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc' && \
+  distrobox-enter -n fedora -- 'sudo wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/resilio-sync.repo -O /etc/yum.repos.d/resilio-sync.repo' && \
+  distrobox-enter -n fedora -- 'sudo dnf install -y resilio-sync' && \
   mkdir -p ~/.config/systemd/user/ && \
   rm -f ~/.config/systemd/user/fedora-resilio-sync.service && \
   wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/fedora-resilio-sync.service -O ~/.config/systemd/user/fedora-resilio-sync.service && \
-  systemctl enable --user --now fedora-resilio-sync
+  systemctl enable --user --now fedora-resilio-sync.service
