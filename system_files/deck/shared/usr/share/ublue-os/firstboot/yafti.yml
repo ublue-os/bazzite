@@ -81,6 +81,11 @@ screens:
           default: false
           packages:
           - Install Resilio Sync: just --unstable install-resilio-sync
+        scrcpy:
+          description: scrcpy provides display and control of Android devices connected on USB (or over TCP/IP)
+          default: false
+          packages:
+          - Install Resilio Sync: just --unstable install-scrcpy
         SteamCMD:
           description: Installs SteamCMD
           default: true

@@ -97,3 +97,12 @@ install-resilio-sync:
   rm -f ~/.config/systemd/user/fedora-resilio-sync.service && \
   wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/fedora-resilio-sync.service -O ~/.config/systemd/user/fedora-resilio-sync.service && \
   systemctl enable --user --now fedora-resilio-sync.service
+
+# Install scrcpy, a utility that mirrors Android devices (video and audio) connected via USB or over TCP/IP
+install-scrcpy:
+  if grep -qvz "fedora" <<< $(distrobox list); then \
+    distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
+  fi && \
+  distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y zeno/scrcpy && \
+    sudo dnf install -y scrcpy && \
+    distrobox-export --app scrcpy'
