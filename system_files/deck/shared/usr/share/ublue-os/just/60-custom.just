@@ -1,43 +1,3 @@
-_default:
-  @just --list --list-heading $'Available commands:\n' --list-prefix $' - ' --justfile /usr/share/ublue-os/just/custom.just
-
-# Update entire system
-update-system:
-  /usr/bin/ublue-update
-
-# Clean up old containers and flatpaks
-clean-system:
-  #!/usr/bin/env bash
-  podman system prune -a
-  flatpak uninstall --unused
-  rpm-ostree cleanup -bm
-  if [ -x "$(command -v nix-store)" ]; then
-    nix-store --gc
-    nix-store --optimise
-  fi
-
-# Boot into this device's BIOS/UEFI screen
-boot-to-bios:
-  systemctl reboot --firmware-setup
-
-# Enroll Nvidia driver & KMOD signing key for secure boot - Enter password "ublue-os" if prompted
-enroll-secure-boot-keys:
-    sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
-    echo 'Enter password "ublue-os" if prompted'
-
-# Enable VAAPI in Firefox for Nvidia GPUs
-setup-firefox-vaapi-nvidia:
-    flatpak override \
-        --user \
-        --filesystem=host-os \
-        --env=LIBVA_DRIVER_NAME=nvidia \
-        --env=LIBVA_DRIVERS_PATH=/run/host/usr/lib64/dri \
-        --env=LIBVA_MESSAGING_LEVEL=1 \
-        --env=MOZ_DISABLE_RDD_SANDBOX=1 \
-        --env=NVD_BACKEND=direct \
-        --env=MOZ_ENABLE_WAYLAND=1 \
-        org.mozilla.firefox
-
 # Toggle between desktop/gamescope autologin
 toggle-autologin:
   #!/usr/bin/env bash
@@ -47,17 +7,6 @@ toggle-autologin:
   else
     sudo touch $DESKTOP_AUTOLOGIN
   fi
-
-# Install obs-studio-portable from wimpysworld, which bundles an extensive collection of 3rd party plugins 
-install-obs-studio-portable:
-  if grep -qz "obs-studio-portable" <<< $(distrobox list); then \
-    echo 'Removing existing obs-studio-portable install...' && \
-    distrobox rm obs-studio-portable --force; \
-  fi && \
-  echo 'Installing obs-studio-portable...' && \
-  distrobox create --no-entry --name obs-studio-portable --image ghcr.io/ublue-os/obs-studio-portable --nvidia --yes && \
-  distrobox-enter -n obs-studio-portable -- 'bash -c "distrobox-export --app obs"' && \
-  echo 'Install complete'
 
 # Remove all waydroid-related files in your user folders
 reset-waydroid:
@@ -103,18 +52,6 @@ get-steamcmd:
   tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
   rm /tmp/steamcmd.tar.gz
 
-# Install Oversteer for Logitech steering wheels
-install-oversteer:
-  sudo wget https://copr.fedorainfracloud.org/coprs/kylegospo/oversteer/repo/fedora-$(rpm -E %fedora)/kylegospo-oversteer-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-oversteer.repo
-  ublue-update --wait
-  rpm-ostree install oversteer
-
-# Install OpenRazer (https://openrazer.github.io)
-install-openrazer:
-  sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo
-  ublue-update --wait
-  rpm-ostree install openrazer-meta
-
 # Install Nix with the Determinate Nix Installer
 install-nix:
   #!/usr/bin/env bash
@@ -145,7 +82,7 @@ install-fleek-themes:
   #!/usr/bin/env bash
   if [[ -x "/var/usrlocal/bin/fleek" ]]; then
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq '."base-image-name"' $BASE_IMAGE_NAME)
+    BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
       fleek add adw-gtk3 --apply
     else
@@ -235,7 +172,7 @@ patch-gmod:
 enable-vapor-theme:
   #!/usr/bin/env bash
   IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-  BASE_IMAGE_NAME=$(jq '."base-image-name"' $BASE_IMAGE_NAME)
+  BASE_IMAGE_NAME=$(jq '."base-image-name"' IMAGE_INFO)
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.mutter center-new-windows true
@@ -258,7 +195,7 @@ enable-vapor-theme:
 enable-vgui2-theme:
   #!/usr/bin/env bash
   IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-  BASE_IMAGE_NAME=$(jq '."base-image-name"' $BASE_IMAGE_NAME)
+  BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.mutter center-new-windows true
@@ -281,7 +218,7 @@ enable-vgui2-theme:
 install-adwaita-for-steam:
   #!/usr/bin/env bash
   IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-  BASE_IMAGE_NAME=$(jq '."base-image-name"' $BASE_IMAGE_NAME)
+  BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     if [ -d "$HOME/homebrew/themes" ]; then
       git clone https://github.com/tkashkin/Adwaita-for-Steam.git --single-branch "$HOME/homebrew/themes/Adwaita-for-Steam"
@@ -449,34 +386,6 @@ _toggle_wayland:
   else
     sudo sed -i 's/false/true/g' /etc/default/desktop-wayland
   fi
-
-# Use stock gamepad drivers
-use-stock-gamepads:
-  #!/usr/bin/env bash
-  sudo bash -c '> /etc/modprobe.d/xone.conf'
-  sudo bash -c '> /etc/modprobe.d/xpadneo.conf'
-  sudo bash -c '> /etc/modprobe.d/xpad-noone-blacklist.conf'
-  sudo bash -c '> /etc/modules-load.d/xpad-noone.conf'
-
-# Use uBlue gamepad drivers (Default)
-use-ublue-gamepads:
-  #!/usr/bin/env bash
-  sudo rm -f /etc/modprobe.d/xone.conf
-  sudo rm -f /etc/modprobe.d/xpadneo.conf
-  sudo rm -f /etc/modprobe.d/xpad-noone-blacklist.conf
-  sudo rm -f /etc/modules-load.d/xpad-noone.conf
-
-# Disable Broadcom WL driver (Default - WL breaks numerous other Wi-Fi adapters)
-disable-broadcom-wl:
-  #!/usr/bin/env bash
-  sudo bash -c '> /etc/modules-load.d/broadcom-wl-blacklist.conf'
-  sudo bash -c 'echo "wl" > /etc/modules-load.d/default-disable-broadcom-wl.conf'
-
-# Use Broadcom WL driver
-use-broadcom-wl:
-  #!/usr/bin/env bash
-  sudo rm -f /etc/modprobe.d/broadcom-wl-blacklist.conf
-  sudo rm -f /etc/modprobe.d/default-disable-broadcom-wl.conf
 
 # Enable Flatpak Theming
 enable-flatpak-theming:

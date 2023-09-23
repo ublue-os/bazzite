@@ -52,6 +52,16 @@ screens:
           default: false
           packages:
           - Install OpenRazer: just --unstable install-openrazer
+        Solaar:
+          description: Application to control Logitech Mice, Keyboards, and Trackpads
+          default: false
+          packages:
+          - Install Solaar: just --unstable install-solaar
+        Resilio Sync:
+          description: A file synchronization utility powered by BitTorrent
+          default: false
+          packages:
+          - Install Resilio Sync: just --unstable install-resilio-sync
   amd-additions:
     source: yafti.screen.package
     values:
