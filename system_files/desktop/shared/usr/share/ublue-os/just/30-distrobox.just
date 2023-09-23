@@ -44,7 +44,7 @@ install-obs-studio-portable:
 # Set up Bazzite-Arch Distrobox container
 install-bazzite-arch:
   IMAGE_INFO="/usr/share/ublue-os/image-info.json" && \
-  BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO) && \
+  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO) && \
   if grep -qz "bazzite-arch" <<< $(distrobox list); then \
     echo 'Removing existing Bazzite Arch install...' && \
     distrobox rm bazzite-arch --force; \
@@ -73,7 +73,7 @@ install-bazzite-arch:
 # Remove container image for bazzite-arch and reinstall it
 reset-bazzite-arch:
   IMAGE_INFO="/usr/share/ublue-os/image-info.json" && \
-  BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO) && \
+  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO) && \
   distrobox stop bazzite-arch && \
   distrobox rm bazzite-arch --force && \
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \

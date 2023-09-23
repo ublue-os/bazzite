@@ -82,7 +82,7 @@ install-fleek-themes:
   #!/usr/bin/env bash
   if [[ -x "/var/usrlocal/bin/fleek" ]]; then
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
       fleek add adw-gtk3 --apply
     else
@@ -172,7 +172,7 @@ patch-gmod:
 enable-vapor-theme:
   #!/usr/bin/env bash
   IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-  BASE_IMAGE_NAME=$(jq '."base-image-name"' IMAGE_INFO)
+  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.mutter center-new-windows true
@@ -195,7 +195,7 @@ enable-vapor-theme:
 enable-vgui2-theme:
   #!/usr/bin/env bash
   IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-  BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
+  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
     gsettings set org.gnome.mutter center-new-windows true
@@ -218,7 +218,7 @@ enable-vgui2-theme:
 install-adwaita-for-steam:
   #!/usr/bin/env bash
   IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-  BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
+  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     if [ -d "$HOME/homebrew/themes" ]; then
       git clone https://github.com/tkashkin/Adwaita-for-Steam.git --single-branch "$HOME/homebrew/themes/Adwaita-for-Steam"
