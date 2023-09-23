@@ -209,7 +209,7 @@ unhide-grub:
 enable-flatpak-theming:
   flatpak override --user --filesystem=xdg-config/gtk-4.0:ro --filesystem=xdg-config/gtk-3.0:ro --filesystem=~/.icons:ro --filesystem=~/.themes:ro
 
-# Enable xwaylandvideobridge for screensharing 
+# Enable XwaylandVideoBridge for screensharing on KDE
 fix-screenshare:
   IMAGE_INFO="/usr/share/ublue-os/image-info.json" && \
   BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO) && \
