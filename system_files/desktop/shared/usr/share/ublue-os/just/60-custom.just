@@ -91,6 +91,10 @@ enable-supergfxctl:
     echo "This requires an Nvidia image."
   fi
 
+# Enable xwaylandvideobridge for screensharing 
+fix-screenshare:
+  mkdir -p $HOME/.config/autostart && cp /usr/share/applications/org.kde.xwaylandvideobridge.desktop $HOME/.config/autostart/
+
 # Fix a bug in TF2 that causes it to crash at startup
 fix-tf2-tcmalloc:
   #!/usr/bin/env bash

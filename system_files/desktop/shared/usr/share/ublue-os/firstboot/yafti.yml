@@ -62,6 +62,10 @@ screens:
           default: false
           packages:
           - Install Resilio Sync: just --unstable install-resilio-sync
+        Fix Wayland Screenshare(KDE only):
+          description: Fix screensharing on Wayland with XwaylandVideoBridge
+          default: false
+          run: just --unstable fix-screenshare
   amd-additions:
     source: yafti.screen.package
     values:
