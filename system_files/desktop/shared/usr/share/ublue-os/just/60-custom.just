@@ -91,8 +91,8 @@ enable-supergfxctl:
     echo "This requires an Nvidia image."
   fi
 
-# Fix a bug in TF2 that causes it to crash at startup
-fix-tf2-tcmalloc:
+# Patch a bug in TF2 that causes it to crash at startup
+patch-tf2-tcmalloc:
   #!/usr/bin/env bash
   podman run \
   -v $HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin:/hl2_linux:Z \
@@ -110,6 +110,11 @@ patch-gmod:
   chmod +x /tmp/patch-gmod/GModCEFCodecFix-Linux
   /tmp/patch-gmod/GModCEFCodecFix-Linux
   rm -rf /tmp/patch-gmod
+
+# Fix an error that occurs after installing SteamVR in Bazzite-Arch
+patch-steam-vr:
+  #!/usr/bin/env bash
+  sudo setcap CAP_SYS_NICE+ep $HOME/.local/share/Steam/steamapps/common/SteamVR/bin/linux64/vrcompositor-launcher
 
 # Activate Valve-inspired Vapor theme on GNOME
 enable-vapor-theme:

@@ -138,8 +138,8 @@ get-boilr:
     cp ~/.local/share/applications/BoilR.desktop ~/Desktop
   fi
 
-# Fix a bug in TF2 that causes it to crash at startup
-fix-tf2-tcmalloc:
+# Patch a bug in TF2 that causes it to crash at startup
+patch-tf2-tcmalloc:
   #!/usr/bin/env bash
   if [ -f "$HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin/hl2_linux" ]; then
     echo "Found TF2 on internal SSD"
