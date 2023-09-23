@@ -180,7 +180,7 @@ Check out the [FAQ](https://universal-blue.org/images/bazzite/FAQ/) for other to
 ![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
 ![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
 
-Check out our [newsletters](https://universal-blue.org/blog/) that get published on a regular basis for updates on the project.
+Check out our [newsletters](https://universal-blue.org/blog/category/bazzite/) that get published on a regular basis for updates on the project.
 
 ## Custom Packages
 
