@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
 if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
   SUDO_ASKPASS='/usr/bin/ksshaskpass'

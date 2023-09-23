@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-IMAGE_NAME=$(jq '."image-name"' $IMAGE_INFO)
-BASE_IMAGE_NAME=$(jq '."base-image-name"' $IMAGE_INFO)
+IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
 if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Running setup for Kinoite'
