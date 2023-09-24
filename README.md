@@ -53,7 +53,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Out of the box support for [Wooting](https://wooting.io/) keyboards.
 - Built in support for Southern Islands <sub><sup>(HD 7000)</sup></sub> and Sea Islands <sub><sup>(HD 8000)</sup></sub> AMD GPUs under the `amdgpu` driver.
 - A fix is available for [a TF2 bug](https://github.com/ValveSoftware/Source-1-Games/issues/5043) that makes the game crash on launch - `just patch-tf2-tcmalloc`
-- Support for [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge). <sub><sup>(Only on KDE)</sup></sub>
+- [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) is available for Discord screensharing on Wayland. <sub><sup>(Only on KDE)</sup></sub>
 ### Desktop
 
 Common variant available as `bazzite`, suitable for desktop computers.
