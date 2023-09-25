@@ -3,7 +3,7 @@
 # Create an Arch container
 distrobox-arch:
   echo 'Creating Arch distrobox ...'
-  distrobox create --nvidia --image quay.io/toolbx-images/archlinux-toolbox:latest -n arch -Y
+  distrobox create --nvidia --image ghcr.io/ublue-os/arch-distrobox:latest -n arch -Y
 
 # Create an Alpine boxkit container
 distrobox-boxkit:
