@@ -4,7 +4,7 @@ source /etc/default/discover-overlay
 
 # Run discover-overlay if discord is installed and we aren't using Wayland.
 if [[ ${AUTO_LAUNCH_DISCOVER_OVERLAY} == 1 ]]; then
-  if grep -q "com.discordapp.Discord" <<< $(flatpak list); then
+  if grep -q "com.discordapp.Discord\|xyz.armcord.ArmCord\|de.shorsh.discord-screenaudio\|io.github.spacingbat3.webcord" <<< $(flatpak list); then
     if [[ "$XDG_SESSION_TYPE" != "wayland" ]]; then
       /usr/bin/discover-overlay
     fi
