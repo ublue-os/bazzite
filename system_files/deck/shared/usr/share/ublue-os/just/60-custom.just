@@ -72,8 +72,7 @@ install-fleek:
   if [[ -d "/nix" ]]; then
     mkdir -p $HOME/.config/nix
     echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
-    nix run "https://getfleek.dev/latest.tar.gz" -- init
-    nix run "https://getfleek.dev/latest.tar.gz" -- apply
+    curl -fsSL https://getfleek.dev/installer | env FORCE=1 bash
   else
     echo "Install nix with just install-nix before running just install-fleek."
   fi
