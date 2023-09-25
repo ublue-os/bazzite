@@ -233,7 +233,6 @@ COPY system_files/shared system_files/deck/shared system_files/deck/${BASE_IMAGE
 
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-$(rpm -E %fedora)/kylegospo-LatencyFleX-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
-    wget https://copr.fedorainfracloud.org/coprs/mavit/discover-overlay/repo/fedora-$(rpm -E %fedora)/mavit-discover-overlay-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_mavit_discover.repo && \
     if grep -qv "nokmods" <<< ${IMAGE_FLAVOR}; then \
         sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo \
     ; fi && \
@@ -420,7 +419,6 @@ RUN /tmp/image-info.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_mavit_discover.repo && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl mask power-profiles-daemon.service && \
         systemctl disable gdm.service && \

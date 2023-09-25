@@ -1,2 +1,1 @@
-# Default disabled due to discover-overlay breaking mangohud in gamemode.
-AUTO_LAUNCH_DISCOVER_OVERLAY=0
+AUTO_LAUNCH_DISCOVER_OVERLAY=1
