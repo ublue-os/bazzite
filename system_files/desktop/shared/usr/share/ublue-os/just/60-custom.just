@@ -99,14 +99,14 @@ patch-tf2-tcmalloc:
   ghcr.io/maisatanel/tcmalloc-hl2-fixer:main
   echo "TF2 patch complete."
 
-# Patch GMod's 64-bit beta to work properly on Linux
+# Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModCEFCodecFix)
 patch-gmod:
   #!/usr/bin/env bash
   mkdir -p /tmp/patch-gmod
   wget \
     $(curl -s https://api.github.com/repos/solsticegamestudios/GModCEFCodecFix/releases/latest | \
     jq -r ".assets[] | select(.name | test(\"GModCEFCodecFix-Linux\")) | .browser_download_url") \
-    -P /tmp/patch-gmod/GModCEFCodecFix-Linux
+    -P /tmp/patch-gmod
   chmod +x /tmp/patch-gmod/GModCEFCodecFix-Linux
   /tmp/patch-gmod/GModCEFCodecFix-Linux
   rm -rf /tmp/patch-gmod
