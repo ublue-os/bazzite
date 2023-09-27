@@ -25,7 +25,9 @@ RUN if grep -qv "nokmods" <<< ${IMAGE_FLAVOR}; then \
         /tmp/akmods-rpms/kmods/*openrgb*.rpm \
         /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm \
         /tmp/akmods-rpms/kmods/*evdi*.rpm && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    mkdir -p /etc/akmods-rpms/ && \
+    mv /tmp/akmods-rpms/kmods/*steamdeck*.rpm /etc/akmods-rpms/steamdeck.rpm \
 ; fi
 
 # Setup Copr repos
@@ -252,10 +254,10 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedo
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo
 
 # Install Valve's Steam Deck drivers as kmods
-COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
 RUN if grep -qv "nokmods" <<< ${IMAGE_FLAVOR}; then \
     rpm-ostree install \
-    /tmp/akmods-rpms/kmods/*steamdeck*.rpm \
+    /etc/akmods-rpms/steamdeck.rpm && \
+    rm -rf /etc/akmods-rpms \
 ; fi
 
 # Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
