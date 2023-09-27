@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+# SCRIPT VERSION
+USER_SETUP_VER=2
+USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
+USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
+
+# Run script if updated
+if [[ -f $USER_SETUP_VER_FILE && $USER_SETUP_VER = $USER_SETUP_VER_RAN ]]; then
+  echo "User setup has already run. Exiting..."
+  exit 0
+fi
+
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
@@ -109,4 +120,4 @@ flatpak remote-add --if-not-exists --user flathub /etc/flatpak/remotes.d/flathub
 
 # Prevent future executions
 echo "Writing state file"
-touch $HOME/.bazzite-configured
+echo $USER_SETUP_VER > $USER_SETUP_VER_FILE

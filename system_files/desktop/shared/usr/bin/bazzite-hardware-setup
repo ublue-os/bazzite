@@ -8,7 +8,7 @@ BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 # SCRIPT VERSION
 HWS_VER=2
 HWS_VER_FILE="/etc/bazzite/hws_version"
-HWS_VER_RAN=$(cat $HWS_VERSION_FILE)
+HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
 # IMAGE IDENTIFIERS
 KNOWN_IMAGE_NAME_FILE="/etc/bazzite/image_name"
@@ -21,7 +21,7 @@ if [[ -f $HWS_VER_FILE && $HWS_VER = $HWS_VER_RAN ]]; then
   if [[ -f $KNOWN_IMAGE_NAME_FILE && -f $KNOWN_IMAGE_FLAVOR_FILE ]]; then
     # Run script if image has been rebased
     if [[ $IMAGE_NAME = $KNOWN_IMAGE_NAME && $IMAGE_FLAVOR = $KNOWN_IMAGE_FLAVOR ]]; then
-      echo "Hardware setup has already ran. Exiting..."
+      echo "Hardware setup has already run. Exiting..."
       exit 0
     fi
   fi
