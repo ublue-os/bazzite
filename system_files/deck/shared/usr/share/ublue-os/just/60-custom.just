@@ -393,11 +393,18 @@ enable-flatpak-theming:
 
 # Enable XwaylandVideoBridge for screensharing on KDE
 fix-screenshare:
-  IMAGE_INFO="/usr/share/ublue-os/image-info.json" && \
-  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO) && \
-  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
-    mkdir -p $HOME/.config/autostart && \
-    cp /usr/share/applications/org.kde.xwaylandvideobridge.desktop $HOME/.config/autostart/; \
-  else \
-    echo "This is only supported under KDE."; \
+  #!/usr/bin/env bash
+  IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+    mkdir -p $HOME/.config/autostart
+    cp /usr/share/applications/org.kde.xwaylandvideobridge.desktop $HOME/.config/autostart/
+  else
+    echo "This is only supported under KDE."
   fi
+
+# Add user to "input" group required by certain controller drivers
+add-user-to-input-group:
+  #!/usr/bin/env bash
+  getent group input || sudo groupadd input
+  sudo usermod -a -G input $USER
