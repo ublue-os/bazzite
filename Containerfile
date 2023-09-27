@@ -56,6 +56,7 @@ RUN rpm-ostree override remove \
 RUN rpm-ostree install \
     ublue-update \
     extest.i686 \
+    discover-overlay \
     python3-pip \
     libadwaita \
     duperemove \
@@ -166,6 +167,10 @@ RUN /tmp/image-info.sh && \
     mkdir -p "/usr/etc/profile.d/" && \
     ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
     "/usr/etc/profile.d/ublue-firstboot.sh" && \
+    mkdir -p "/usr/etc/xdg/autostart" && \
+    cp "/usr/share/applications/discover_overlay.desktop" "/usr/etc/xdg/autostart/discover_overlay.desktop" && \
+    sed -i 's@Exec=discover-overlay@Exec=/usr/bin/bazzite-discover-overlay@g' /usr/etc/xdg/autostart/discover_overlay.desktop && \
+    rm /usr/share/applications/discover_overlay.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     pip install --prefix=/usr yafti && \
     pip install --prefix=/usr hyfetch && \
@@ -306,7 +311,6 @@ RUN rpm-ostree install \
     vkBasalt \
     mangohud \
     sdgyrodsu \
-    discover-overlay \
     sddm-sugar-steamOS \
     ibus-pinyin \
     ibus-table-chinese-cangjie \
@@ -407,9 +411,6 @@ RUN /tmp/image-info.sh && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sed -i 's/Exec=.*/Exec=systemctl start return-to-gamemode.service/' /etc/skel.d/Desktop/Return.desktop \
     ; fi && \
-    cp "/usr/share/applications/discover_overlay.desktop" "/usr/etc/xdg/autostart/discover_overlay.desktop" && \
-    sed -i 's@Exec=discover-overlay@Exec=/usr/bin/bazzite-discover-overlay@g' /usr/etc/xdg/autostart/discover_overlay.desktop && \
-    rm /usr/share/applications/discover_overlay.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/usr/etc/yafti.yml" && \
     sed -i 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/g' /etc/systemd/logind.conf && \
     if grep -qv "nokmods" <<< ${IMAGE_FLAVOR}; then \
