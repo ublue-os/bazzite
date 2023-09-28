@@ -24,6 +24,7 @@ Requires:       python3dist(requests)
 Requires:       python3dist(setuptools)
 Requires:       python3dist(websocket-client)
 Requires:       python3dist(python-xlib)
+Requires:       gtk-layer-shell
 
 
 %description
