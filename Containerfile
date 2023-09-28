@@ -101,10 +101,12 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         wallpaper-engine-kde-plugin \
         kdeconnectd \
         rom-properties-kf5 && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
-        xorg-x11-server-Xwayland && \
+    if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
+        rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+            xorg-x11-server-Xwayland \
+    ; fi && \
     if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         rpm-ostree install colord-kde \
     ; fi && \
@@ -116,14 +118,24 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rm -rf /tmp/wallpaper-engine-kde-plugin && \
     sed -i 's@After=plasma-core.target@After=plasma-core.target\nAfter=xdg-desktop-portal.service@g' /usr/lib/systemd/user/plasma-xdg-desktop-portal-kde.service \
 ; else \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
-        mutter \
-        mutter-common \
-        gnome-control-center \
-        gnome-control-center-filesystem \
-        xorg-x11-server-Xwayland && \
+    if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
+        rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+            mutter \
+            mutter-common \
+            gnome-control-center \
+            gnome-control-center-filesystem \
+            xorg-x11-server-Xwayland \
+    ; else \
+        rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+            mutter \
+            mutter-common \
+            gnome-control-center \
+            gnome-control-center-filesystem \
+    ; fi && \
     rpm-ostree install \
         steamdeck-backgrounds \
         gradience \
