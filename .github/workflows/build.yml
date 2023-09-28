@@ -152,6 +152,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
           extra-args: |
+            --output=compression=zstd,compression-level=3,force-compression=true
             --target=${{ matrix.base_name }}
 
       # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
