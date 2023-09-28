@@ -80,6 +80,17 @@ get-greenlight:
     chmod +x $HOME/Desktop/Greenlight.AppImage
   fi
 
+# Install Wootility for configuring Wooting Keyboards
+get-wootility:
+  #!/usr/bin/env bash
+  if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
+    wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Downloads/wootility.AppImage
+    flatpak run it.mijorus.gearlever $HOME/Downloads/wootility.AppImage
+  else
+    wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Desktop/wootility.AppImage
+    chmod +x $HOME/Desktop/wootility.AppImage
+  fi
+
 # Enable Supergfxctl, a Nvidia GPU switcher for hybrid laptops
 enable-supergfxctl: 
   #!/usr/bin/env bash

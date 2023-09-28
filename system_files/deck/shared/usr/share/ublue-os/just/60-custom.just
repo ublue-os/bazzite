@@ -98,11 +98,22 @@ install-fleek-themes:
 get-greenlight:
   #!/usr/bin/env bash
   if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
-    wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O $HOME/Downloads/Greenlight.AppImage
+    wget "https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage" -O $HOME/Downloads/Greenlight.AppImage
     flatpak run it.mijorus.gearlever $HOME/Downloads/Greenlight.AppImage
   else
-    wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O $HOME/Desktop/Greenlight.AppImage
+    wget "https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage" -O $HOME/Desktop/Greenlight.AppImage
     chmod +x $HOME/Desktop/Greenlight.AppImage
+  fi
+
+# Install Wootility for configuring Wooting Keyboards
+get-wootility:
+  #!/usr/bin/env bash
+  if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
+    wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Downloads/wootility.AppImage
+    flatpak run it.mijorus.gearlever $HOME/Downloads/wootility.AppImage
+  else
+    wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Desktop/wootility.AppImage
+    chmod +x $HOME/Desktop/wootility.AppImage
   fi
 
 # Install BoilR, a Steam Library and art management tool

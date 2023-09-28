@@ -81,6 +81,11 @@ screens:
           default: false
           packages:
           - Install Solaar: just --unstable install-solaar
+        Wootility:
+          description: A configurator for Wooting keyboards
+          default: false
+          packages:
+          - Retrieve Wootility: just --unstable get-wootility
         Resilio Sync:
           description: A file synchronization utility powered by BitTorrent
           default: false
