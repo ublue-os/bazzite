@@ -10,6 +10,8 @@ if [[ ${AUTO_LAUNCH_DISCOVER_OVERLAY} == 1 ]]; then
   if grep -q "com.discordapp.Discord\|xyz.armcord.ArmCord\|de.shorsh.discord-screenaudio\|io.github.spacingbat3.webcord" <<< $(flatpak list); then
     if [[ ${BASE_IMAGE_NAME} =~ "kinoite" || "$XDG_SESSION_TYPE" != "wayland" ]]; then
       /usr/bin/discover-overlay
+    elif [[ ${BASE_IMAGE_NAME} =~ "silverblue" && "$XDG_SESSION_TYPE" == "wayland" && "${LAUNCH_DISCOVER_ON_GNOME_WAYLAND}" == 1 ]]; then
+      env GDK_BACKEND=x11 /usr/bin/discover-overlay
     fi
   fi
 fi
