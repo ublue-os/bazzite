@@ -417,5 +417,7 @@ fix-screenshare:
 # Add user to "input" group required by certain controller drivers
 add-user-to-input-group:
   #!/usr/bin/env bash
-  getent group input || sudo groupadd input
+  if ! grep -q "input" /etc/group; then
+    sudo bash -c 'grep "input" /lib/group >> /etc/group'
+  fi
   sudo usermod -a -G input $USER
