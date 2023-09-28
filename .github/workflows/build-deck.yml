@@ -1,4 +1,4 @@
-name: Build Bazzite
+name: Build Bazzite Deck
 on:
   schedule:
     - cron: '30 9 * * 2,5' # 9:30 am utc tues thurs
@@ -39,6 +39,7 @@ jobs:
         image_flavor: [main, nokmods]
         base_name: [bazzite-deck]
         base_image_name: [kinoite, silverblue]
+        bazzite_image_name: [bazzite, bazzite-gnome]
         major_version: [38]
         include:
           - major_version: 38
@@ -47,6 +48,11 @@ jobs:
           - major_version: 38
             is_latest_version: true
             is_stable_version: true
+        exclude:
+          - bazzite_image_name: bazzite
+            base_image_name: silverblue
+          - bazzite_image_name: bazzite-gnome
+            base_image_name: kinoite
     steps:
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
@@ -145,6 +151,7 @@ jobs:
             IMAGE_NAME=${{ env.IMAGE_NAME }}
             IMAGE_FLAVOR=${{ matrix.image_flavor }}
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
+            BAZZITE_IMAGE_NAME=${{ matrix.bazzite_image_name }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
