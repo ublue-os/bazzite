@@ -143,3 +143,12 @@ install-scrcpy:
   distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y zeno/scrcpy && \
     sudo dnf install -y scrcpy && \
     distrobox-export --app scrcpy'
+
+# Install OpenTabletDriver, an open source, cross-platform, user-mode tablet driver
+install-opentabletdriver:
+  if grep -qvz "arch" <<< $(distrobox list); then \
+    distrobox create --nvidia --image ghcr.io/ublue-os/arch-distrobox:latest -n arch -Y; \
+  fi && \
+  distrobox enter -n arch -- ' paru -S opentabletdriver' && \
+  wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenTabletDriver/opentabletdriver.service -O ~/.config/systemd/user/arch-opentabletdriver.service && \
+  systemctl enable --user --now arch-opentabletdriver.service

@@ -86,6 +86,11 @@ screens:
           default: false
           packages:
           - Retrieve Wootility: just --unstable get-wootility
+        OpenTabletDriver:
+          description: Open source, cross-platform, user-mode tablet driver
+          default: false
+          packages:
+          - Install OpenTabletDriver: just --unstable install-opentabletdriver
         Resilio Sync:
           description: A file synchronization utility powered by BitTorrent
           default: false
