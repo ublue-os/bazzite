@@ -1,0 +1,203 @@
+name: Build Bazzite
+on:
+  schedule:
+    - cron: '30 9 * * 2,5' # 9:30 am utc tues thurs
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - 'repo_content/**'
+      - 'spec_files/**'
+      - 'post_install_files/**'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - 'repo_content/**'
+      - 'spec_files/**'
+      - 'post_install_files/**'
+  merge_group:
+  workflow_dispatch:
+env:
+    IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  push-ghcr:
+    name: Build and push image
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        image_flavor: [main, nokmods]
+        base_name: [bazzite-deck]
+        base_image_name: [kinoite, silverblue]
+        major_version: [38]
+        include:
+          - major_version: 38
+            is_latest_version: false
+            is_stable_version: true
+          - major_version: 38
+            is_latest_version: true
+            is_stable_version: true
+    steps:
+      # Checkout push-to-registry action GitHub repository
+      - name: Checkout Push to Registry action
+        uses: actions/checkout@v4
+
+      - name: Matrix Variables
+        run: |
+          echo "BASE_IMAGE_NAME=${{ matrix.base_image_name }}" >> $GITHUB_ENV
+          if [[ "${{ matrix.base_image_name }}" == "silverblue" ]]; then
+              DESKTOP="gnome"
+              if [[ "${{ matrix.image_flavor }}" == "main" ]]; then
+                  echo "IMAGE_NAME=${{ format('{0}-{1}', matrix.base_name, '${DESKTOP}') }}" >> $GITHUB_ENV
+              else
+                  echo "IMAGE_NAME=${{ format('{0}-{1}-{2}', matrix.base_name, '${DESKTOP}', matrix.image_flavor) }}" >> $GITHUB_ENV
+              fi
+          else
+              if [[ "${{ matrix.image_flavor }}" == "main" ]]; then
+                  echo "IMAGE_NAME=${{ matrix.base_name }}" >> $GITHUB_ENV
+              else
+                  echo "IMAGE_NAME=${{ format('{0}-{1}', matrix.base_name, matrix.image_flavor) }}" >> $GITHUB_ENV
+              fi
+          fi
+
+      - name: Generate tags
+        id: generate-tags
+        shell: bash
+        run: |
+          # Generate a timestamp for creating an image version history
+          TIMESTAMP="$(date +%Y%m%d)"
+          MAJOR_VERSION="${{ matrix.major_version }}"
+          COMMIT_TAGS=()
+          BUILD_TAGS=()
+          # Have tags for tracking builds during pull request
+          SHA_SHORT="${GITHUB_SHA::7}"
+          COMMIT_TAGS+=("pr-${{ github.event.pull_request.number }}-${MAJOR_VERSION}")
+          COMMIT_TAGS+=("${SHA_SHORT}-${MAJOR_VERSION}")
+          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
+             [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
+              COMMIT_TAGS+=("pr-${{ github.event.pull_request.number }}")
+              COMMIT_TAGS+=("${SHA_SHORT}")
+          fi
+
+          BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
+
+          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
+             [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
+              BUILD_TAGS+=("latest")
+          fi
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+              echo "Generated the following commit tags: "
+              for TAG in "${COMMIT_TAGS[@]}"; do
+                  echo "${TAG}"
+              done
+              alias_tags=("${COMMIT_TAGS[@]}")
+          else
+              alias_tags=("${BUILD_TAGS[@]}")
+          fi
+          echo "Generated the following build tags: "
+          for TAG in "${BUILD_TAGS[@]}"; do
+              echo "${TAG}"
+          done
+          echo "alias_tags=${alias_tags[*]}" >> $GITHUB_OUTPUT
+
+      - name: Get Current Fedora Version
+        id: labels
+        run: |
+          ver=$(skopeo inspect docker://ghcr.io/ublue-os/${{ matrix.base_image_name }}-${{ matrix.image_flavor }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
+          echo "VERSION=$ver" >> $GITHUB_OUTPUT
+
+      # Build metadata
+      - name: Image Metadata
+        uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: |
+            ${{ env.IMAGE_NAME }}
+          labels: |
+            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
+            org.opencontainers.image.description=Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
+            io.artifacthub.package.readme-url=https://bazzite.gg/
+            io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
+
+      # Build image using Buildah action
+      - name: Build Image
+        id: build_image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          containerfiles: |
+            ./Containerfile-deck
+          image: ${{ env.IMAGE_NAME }}
+          tags: |
+            ${{ steps.generate-tags.outputs.alias_tags }}
+          build-args: |
+            IMAGE_NAME=${{ env.IMAGE_NAME }}
+            IMAGE_FLAVOR=${{ matrix.image_flavor }}
+            BASE_IMAGE_NAME=${{ matrix.base_image_name }}
+            FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
+          labels: ${{ steps.meta.outputs.labels }}
+          oci: false
+          extra-args: |
+            --target=${{ matrix.base_name }}
+
+      # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
+      # https://github.com/macbre/push-to-ghcr/issues/12
+      - name: Lowercase Registry
+        id: registry_case
+        uses: ASzc/change-string-case-action@v5
+        with:
+          string: ${{ env.IMAGE_REGISTRY }}
+
+      # Push the image to GHCR (Image Registry)
+      - name: Push To GHCR
+        uses: redhat-actions/push-to-registry@v2
+        id: push
+        if: github.event_name != 'pull_request'
+        env:
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ github.token }}
+        with:
+          image: ${{ steps.build_image.outputs.image }}
+          tags: ${{ steps.build_image.outputs.tags }}
+          registry: ${{ steps.registry_case.outputs.lowercase }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+          extra-args: |
+            --disable-content-trust
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Sign container
+      - uses: sigstore/cosign-installer@v3.1.2
+        if: github.event_name != 'pull_request'
+
+      - name: Sign container image
+        if: github.event_name != 'pull_request'
+        run: |
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
+        env:
+          TAGS: ${{ steps.push.outputs.digest }}
+          COSIGN_EXPERIMENTAL: false
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+
+      - name: Echo outputs
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "${{ toJSON(steps.push.outputs) }}"
