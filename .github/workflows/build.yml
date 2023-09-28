@@ -39,7 +39,7 @@ jobs:
         image_flavor: [main, nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
         base_name: [bazzite, bazzite-deck]
         base_image_name: [kinoite, silverblue]
-        major_version: [38]
+        major_version: [38, 39]
         include:
           - major_version: 38
             is_latest_version: false
@@ -47,6 +47,9 @@ jobs:
           - major_version: 38
             is_latest_version: true
             is_stable_version: true
+          - major_version: 38
+            is_latest_version: true
+            is_stable_version: false
         exclude:
           - base_name: bazzite-deck
             image_flavor: nvidia
