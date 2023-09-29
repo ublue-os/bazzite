@@ -51,7 +51,7 @@ screens:
           description: The missing package manager for macOS (or Linux)
           default: false
           package:
-          - Install Brew: just --unstable install-brew
+          - Install Brew: sudo -A just --unstable install-brew
           - Add Brew to shell: just --unstable install-brew-to-shell
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware
