@@ -133,6 +133,7 @@ install-resilio-sync:
   mkdir -p ~/.config/systemd/user/ && \
   rm -f ~/.config/systemd/user/fedora-resilio-sync.service && \
   wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/fedora-resilio-sync.service -O ~/.config/systemd/user/fedora-resilio-sync.service && \
+  systemctl --user daemon-reload && \
   systemctl enable --user --now fedora-resilio-sync.service
 
 # Install scrcpy, a utility that mirrors Android devices (video and audio) connected via USB or over TCP/IP
@@ -151,4 +152,5 @@ install-opentabletdriver:
   fi && \
   distrobox enter -n arch -- ' paru -S opentabletdriver' && \
   wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenTabletDriver/opentabletdriver.service -O ~/.config/systemd/user/arch-opentabletdriver.service && \
+  systemctl --user daemon-reload && \
   systemctl enable --user --now arch-opentabletdriver.service
