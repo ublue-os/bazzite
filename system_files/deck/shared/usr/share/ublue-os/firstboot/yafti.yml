@@ -69,7 +69,7 @@ screens:
         Brew Package Manager:
           description: The missing package manager for macOS (or Linux)
           default: false
-          package:
+          packages:
           - Install Brew: sudo -A just --unstable install-brew
           - Add Brew to shell: just --unstable install-brew-to-shell
         Oversteer:
