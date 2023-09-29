@@ -65,7 +65,13 @@ screens:
           default: false
           packages:
           - Install Nix Package Support: sudo -A just --unstable install-nix
-          - Install Fleek: just --unstable install-fleek
+          - Install Fleek (Requires Nix): just --unstable install-fleek
+        Brew Package Manager:
+          description: The missing package manager for macOS (or Linux)
+          default: false
+          package:
+          - Install Brew: just --unstable install-brew
+          - Add Brew to shell: just --unstable install-brew-to-shell
         Oversteer:
           description: Application to control Logitech steering wheels
           default: false
