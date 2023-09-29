@@ -155,6 +155,7 @@ screens:
           - SuperTux: org.supertuxproject.SuperTux
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
           - TeamSpeak: com.teamspeak.TeamSpeak
+          - XIV Launcher (Final Fantasy XIV): dev.goats.xivlauncher
         Emulation:
           description: Play games like it's 1972 (Leave these all unchecked if you're planning to use EmuDeck)
           default: false
