@@ -27,7 +27,7 @@ env:
 
 jobs:
   push-ghcr:
-    name: Build and push image
+    name: Make
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -51,6 +51,13 @@ jobs:
           - base_name: bazzite-deck
             image_flavor: nvidia
     steps:
+      - name: Maximize build space
+        uses: AdityaGarg8/remove-unwanted-software@v1
+        with:
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@v4
