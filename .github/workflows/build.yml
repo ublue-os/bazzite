@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_flavor: [main, nokmods, nvidia]
+        image_flavor: [main, nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
         base_name: [bazzite, bazzite-deck]
         base_image_name: [kinoite, silverblue]
         major_version: [38]
@@ -50,6 +50,12 @@ jobs:
         exclude:
           - base_name: bazzite-deck
             image_flavor: nvidia
+          - base_name: bazzite-deck
+            image_flavor: asus-nvidia
+          - base_name: bazzite-deck
+            image_flavor: surface
+          - base_name: bazzite-deck
+            image_flavor: surface-nvidia
     steps:
       - name: Maximize build space
         uses: AdityaGarg8/remove-unwanted-software@v1
@@ -65,18 +71,23 @@ jobs:
       - name: Matrix Variables
         run: |
           echo "BASE_IMAGE_NAME=${{ matrix.base_image_name }}" >> $GITHUB_ENV
+          DESKTOP=""
           if [[ "${{ matrix.base_image_name }}" == "silverblue" ]]; then
-              DESKTOP="gnome"
-              if [[ "${{ matrix.image_flavor }}" == "main" ]]; then
-                  echo "IMAGE_NAME=${{ format('{0}-{1}', matrix.base_name, '${DESKTOP}') }}" >> $GITHUB_ENV
+              DESKTOP="-gnome"
+          fi
+          if [[ "${{ matrix.base_name }}" == "bazzite-deck" ]]; then
+              if [[ "${{ matrix.image_flavor }}" == "asus" ]]; then
+                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-ally', '${DESKTOP}') }}" >> $GITHUB_ENV
+              elif [[ "${{ matrix.image_flavor }}" == "framework" ]]; then
+                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-framegame', '${DESKTOP}') }}" >> $GITHUB_ENV
               else
-                  echo "IMAGE_NAME=${{ format('{0}-{1}-{2}', matrix.base_name, '${DESKTOP}', matrix.image_flavor) }}" >> $GITHUB_ENV
+                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-deck', '${DESKTOP}') }}" >> $GITHUB_ENV
               fi
           else
               if [[ "${{ matrix.image_flavor }}" == "main" ]]; then
-                  echo "IMAGE_NAME=${{ matrix.base_name }}" >> $GITHUB_ENV
+                  echo "IMAGE_NAME=${{ format('{0}{1}', matrix.base_name, '${DESKTOP}') }}" >> $GITHUB_ENV
               else
-                  echo "IMAGE_NAME=${{ format('{0}-{1}', matrix.base_name, matrix.image_flavor) }}" >> $GITHUB_ENV
+                  echo "IMAGE_NAME=${{ format('{0}{1}-{2}', matrix.base_name, '${DESKTOP}', matrix.image_flavor) }}" >> $GITHUB_ENV
               fi
           fi
 
