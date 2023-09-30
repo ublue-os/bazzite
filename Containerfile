@@ -85,6 +85,8 @@ RUN rpm-ostree install \
     yad \
     f3 \
     pulseaudio-utils \
+    unrar \
+    lzip \
     twitter-twemoji-fonts \
     lato-fonts \
     fira-code-fonts && \
@@ -163,10 +165,12 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         rocm-hip \
-        rocm-opencl \
-        waydroid \
-        lzip \
-        weston \
+        rocm-opencl && \
+    if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
+        rpm-ostree install \
+            waydroid \
+            weston \
+    ; fi \
 ; else \
     rpm-ostree override remove \
         distrobox && \
