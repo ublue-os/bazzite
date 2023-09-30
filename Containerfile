@@ -87,6 +87,8 @@ RUN rpm-ostree install \
     pulseaudio-utils \
     unrar \
     lzip \
+    libxcrypt-compat \
+    mesa-libGLU \
     twitter-twemoji-fonts \
     lato-fonts \
     fira-code-fonts && \
@@ -286,6 +288,7 @@ RUN rpm-ostree override replace \
         mesa-libEGL-devel \
         mesa-libgbm \
         mesa-libGL \
+        mesa-libGLU \
         mesa-libglapi \
         mesa-vulkan-drivers && \
     if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
