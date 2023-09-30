@@ -275,3 +275,5 @@ We also ship a config for the popular [pull app](https://github.com/apps/pull) i
 ## Join The Community
 
 You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB).
+
+You can also discuss on our [Github Discussions](https://github.com/orgs/ublue-os/discussions/categories/bazzite) for any new features or issues you're experiencing with Bazzite.
