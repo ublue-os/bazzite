@@ -19,22 +19,22 @@
 %endif
 %global with_iris   1
 %global with_xa     1
-%global platform_vulkan ,intel,intel_hasvk
+%global intel_platform_vulkan ,intel,intel_hasvk
 %endif
 
-%ifarch aarch64
+%ifarch aarch64 x86_64 %{ix86}
 %if !0%{?rhel}
-%global with_etnaviv   1
 %global with_lima      1
 %global with_vc4       1
-%global with_v3d       1
 %endif
+%global with_etnaviv   1
 %global with_freedreno 1
 %global with_kmsro     1
 %global with_panfrost  1
 %global with_tegra     1
+%global with_v3d       1
 %global with_xa        1
-%global platform_vulkan ,broadcom,freedreno,panfrost
+%global extra_platform_vulkan ,broadcom,freedreno,panfrost
 %endif
 
 %ifnarch s390x
@@ -46,20 +46,25 @@
 %global with_vmware 1
 %endif
 
+%if !0%{?rhel}
+%global with_libunwind 1
+%global with_lmsensors 1
+%endif
+
 %ifarch %{valgrind_arches}
 %bcond_without valgrind
 %else
 %bcond_with valgrind
 %endif
 
-%global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
+%global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 23.1.8
+%global ver 23.2.1
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Release:        %autorelease.bazzite.{{{ git_dir_version }}}
-License:        MIT
+License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
 
 Source0:        https://archive.mesa3d.org/mesa-%{ver}.tar.xz
@@ -71,7 +76,7 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 Patch0:         valve_config.patch
 Patch1:         gamescope.patch
 
-BuildRequires:  meson >= 1.0.0
+BuildRequires:  meson >= 1.2.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
@@ -82,7 +87,9 @@ BuildRequires:  kernel-headers
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
 BuildRequires:  pkgconfig(libdrm) >= 2.4.97
+%if 0%{?with_libunwind}
 BuildRequires:  pkgconfig(libunwind)
+%endif
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libzstd)
@@ -112,7 +119,9 @@ BuildRequires:  pkgconfig(xcb-randr)
 BuildRequires:  pkgconfig(xrandr) >= 1.3
 BuildRequires:  bison
 BuildRequires:  flex
+%if 0%{?with_lmsensors}
 BuildRequires:  lm_sensors-devel
+%endif
 %if 0%{?with_vdpau}
 BuildRequires:  pkgconfig(vdpau) >= 1.1
 %endif
@@ -205,10 +214,6 @@ Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{relea
 %if 0%{?with_va}
 Recommends:     %{name}-va-drivers%{?_isa}
 %endif
-# If mesa-libEGL is installed, it must match in version. This is here to prevent using
-# mesa-libEGL < 23.0.3-1 (frozen in the 'fedora' repo) which didn't have strong enough
-# inter-dependencies. See https://bugzilla.redhat.com/show_bug.cgi?id=2193135 .
-Requires:       (%{name}-libEGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release} if %{name}-libEGL%{?_isa})
 
 %description dri-drivers
 %{summary}.
@@ -386,7 +391,7 @@ export RUSTFLAGS="%build_rustflags"
   -Dvulkan-drivers=%{?vulkan_drivers} \
   -Dvulkan-layers=device-select \
   -Dshared-glapi=enabled \
-  -Dgles1=disabled \
+  -Dgles1=enabled \
   -Dgles2=enabled \
   -Dopengl=true \
   -Dgbm=enabled \
@@ -402,6 +407,12 @@ export RUSTFLAGS="%build_rustflags"
   -Dvalgrind=%{?with_valgrind:enabled}%{!?with_valgrind:disabled} \
   -Dbuild-tests=false \
   -Dselinux=true \
+%if !0%{?with_libunwind}
+  -Dlibunwind=disabled \
+%endif
+%if !0%{?with_lmsensors}
+  -Dlmsensors=disabled \
+%endif
   -Dandroid-libbacktrace=disabled \
   %{nil}
 %meson_build
@@ -535,7 +546,7 @@ popd
 %{_libdir}/dri/i915_dri.so
 %{_libdir}/dri/iris_dri.so
 %endif
-%ifarch aarch64
+%ifarch aarch64 x86_64 %{ix86}
 %{_libdir}/dri/ingenic-drm_dri.so
 %{_libdir}/dri/imx-drm_dri.so
 %{_libdir}/dri/imx-lcdif_dri.so
@@ -643,7 +654,7 @@ popd
 %{_libdir}/libvulkan_intel_hasvk.so
 %{_datadir}/vulkan/icd.d/intel_hasvk_icd.*.json
 %endif
-%ifarch aarch64
+%ifarch aarch64 x86_64 %{ix86}
 %{_libdir}/libvulkan_broadcom.so
 %{_datadir}/vulkan/icd.d/broadcom_icd.*.json
 %{_libdir}/libvulkan_freedreno.so
