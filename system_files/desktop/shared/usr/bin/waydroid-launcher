@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+source /etc/default/waydroid-launcher
+
+if [ "$(systemctl is-active waydroid-container.service)" == 'active' ]; then
+	killall -9 weston
+	pkexec /usr/bin/stop-waydroid-container
+	exit
+fi
+
+killall -9 weston
+pkexec /usr/bin/start-waydroid-container
+if [ -z "$(pgrep weston)" ]; then
+	/usr/bin/weston --xwayland --width="${WAYDROID_WIDTH}" --height="${WAYDROID_HEIGHT}" &> /dev/null &
+fi
+
+sleep 2 &&
+export XDG_SESSION_TYPE='wayland'
+export DISPLAY=':1'
+/usr/bin/waydroid show-full-ui &
+while [ -n "$(pgrep weston)" ];do
+    sleep 1
+done
+
+pkexec /usr/bin/stop-waydroid-container

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+sudo systemctl start waydroid-container.service
