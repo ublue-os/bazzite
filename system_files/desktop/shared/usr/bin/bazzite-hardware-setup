@@ -16,17 +16,6 @@ KNOWN_IMAGE_NAME=$(cat $KNOWN_IMAGE_NAME_FILE)
 KNOWN_IMAGE_FLAVOR_FILE="/etc/bazzite/image_flavor"
 KNOWN_IMAGE_FLAVOR=$(cat $KNOWN_IMAGE_FLAVOR_FILE)
 
-# Run script if updated
-if [[ -f $HWS_VER_FILE && $HWS_VER = $HWS_VER_RAN ]]; then
-  if [[ -f $KNOWN_IMAGE_NAME_FILE && -f $KNOWN_IMAGE_FLAVOR_FILE ]]; then
-    # Run script if image has been rebased
-    if [[ $IMAGE_NAME = $KNOWN_IMAGE_NAME && $IMAGE_FLAVOR = $KNOWN_IMAGE_FLAVOR ]]; then
-      echo "Hardware setup has already run. Exiting..."
-      exit 0
-    fi
-  fi
-fi
-
 # GLOBAL
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 GPU_ID=$(lspci -k | grep -A 3 -E "(VGA|3D)")
@@ -35,20 +24,7 @@ NEEDED_KARGS=""
 echo "Current kargs: $KARGS"
 mkdir -p /etc/bazzite
 
-# FSTAB CONFIGURATION
-if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
-  echo "Applying fstab param adjustments"
-  if grep -q '64GB' <<< $(lsblk -o MODEL); then
-    echo "64GB eMMC detected"
-    sed -i 's/compress=zstd:1/noatime,lazytime,discard=sync,compress-force=zstd:3,space_cache=v2/g' /etc/fstab
-  else
-    sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,discard=async,compress-force=zstd:1,space_cache=v2/g' /etc/fstab
-  fi
-else
-  echo "No fstab param adjustments needed"
-fi
-
-# DECK KERNEL ARGUMENTS
+# KERNEL ARGUMENTS
 if [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
   echo "Checking for needed karg changes (Jupiter)"
 
@@ -76,16 +52,6 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
   if [[ ! $KARGS =~ "initcall_blacklist" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=initcall_blacklist=simpledrm_platform_driver_init"
   fi
-elif [[ $IMAGE_NAME =~ "deck"  ]]; then
-  echo "Generic device detected. Performing setup..."
-
-  systemctl disable --now jupiter-fan-control.service
-  systemctl disable --now vpower.service
-  systemctl disable --now jupiter-biosupdate.service
-  systemctl disable --now jupiter-controller-update.service
-  systemctl disable --now ryzenadj.service
-  systemctl disable --now batterylimit.service
-  systemctl --global disable --now sdgyrodsu.service
 fi
 
 if grep -qz "Kernel driver in use: radeon" <<< $GPU_ID; then
@@ -151,6 +117,46 @@ if [[ -n "$NEEDED_KARGS" ]]; then
   rpm-ostree kargs ${NEEDED_KARGS} --reboot || exit 1
 else
   echo "No karg changes needed"
+fi
+
+# RUN REMAINDER OF SCRIPT ONLY IF UPDATED
+if [[ -f $HWS_VER_FILE && $HWS_VER = $HWS_VER_RAN ]]; then
+  if [[ -f $KNOWN_IMAGE_NAME_FILE && -f $KNOWN_IMAGE_FLAVOR_FILE ]]; then
+    # Run script if image has been rebased
+    if [[ $IMAGE_NAME = $KNOWN_IMAGE_NAME && $IMAGE_FLAVOR = $KNOWN_IMAGE_FLAVOR ]]; then
+      echo "Hardware setup has already run. Exiting..."
+      exit 0
+    fi
+  fi
+fi
+
+if [[ $IMAGE_NAME =~ "deck"  ]]; then
+  if [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
+    # Future updates to deck on jupiter here
+  else
+    echo "Generic device detected. Performing setup..."
+
+    systemctl disable --now jupiter-fan-control.service
+    systemctl disable --now vpower.service
+    systemctl disable --now jupiter-biosupdate.service
+    systemctl disable --now jupiter-controller-update.service
+    systemctl disable --now ryzenadj.service
+    systemctl disable --now batterylimit.service
+    systemctl --global disable --now sdgyrodsu.service
+  fi
+fi
+
+# FSTAB CONFIGURATION
+if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
+  echo "Applying fstab param adjustments"
+  if grep -q '64GB' <<< $(lsblk -o MODEL); then
+    echo "64GB eMMC detected"
+    sed -i 's/compress=zstd:1/noatime,lazytime,discard=sync,compress-force=zstd:3,space_cache=v2/g' /etc/fstab
+  else
+    sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,discard=async,compress-force=zstd:1,space_cache=v2/g' /etc/fstab
+  fi
+else
+  echo "No fstab param adjustments needed"
 fi
 
 echo $HWS_VER > $HWS_VER_FILE
