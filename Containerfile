@@ -167,12 +167,10 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         rocm-hip \
-        rocm-opencl && \
-    if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
-        rpm-ostree install \
-            waydroid \
-            weston \
-    ; fi \
+        rocm-opencl \
+        waydroid \
+        lzip \
+        weston \
 ; else \
     rpm-ostree override remove \
         distrobox && \
