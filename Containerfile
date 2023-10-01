@@ -237,6 +237,7 @@ RUN /tmp/image-info.sh && \
     ; fi && \
     if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         systemctl disable waydroid-container.service && \
+        sed -i 's@Exec=waydroid first-launch@Exec=/usr/bin/waydroid-launcher@g' /usr/share/applications/Waydroid.desktop && \
         rm /usr/share/wayland-sessions/weston.desktop \
     ; fi && \
     mkdir -p /usr/etc/default && \
