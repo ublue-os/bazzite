@@ -20,8 +20,8 @@ fi
 
 # Lists of flatpaks
 FLATPAK_LIST=$(flatpak list --columns=application)
-INSTALL_LIST=$(cat /usr/etc/flatpak/install)
-REMOVE_LIST=$(cat /usr/etc/flatpak/remove)
+INSTALL_LIST=$(cat /etc/flatpak/install)
+REMOVE_LIST=$(cat /etc/flatpak/remove)
 
 # Install flatpaks in list
 if [[ -n $INSTALL_LIST ]]; then
