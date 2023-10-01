@@ -3,32 +3,32 @@
 # Create an Arch container
 distrobox-arch:
   echo 'Creating Arch distrobox ...'
-  distrobox create --nvidia --image ghcr.io/ublue-os/arch-distrobox:latest -n arch -Y
+  distrobox-create --nvidia --image ghcr.io/ublue-os/arch-distrobox:latest -n arch -Y
 
 # Create an Alpine boxkit container
 distrobox-boxkit:
   echo 'Creating Boxkit distrobox ...'
-  distrobox create --nvidia --image ghcr.io/ublue-os/boxkit -n boxkit -Y
+  distrobox-create --nvidia --image ghcr.io/ublue-os/boxkit -n boxkit -Y
 
 # Create a Debian container
 distrobox-debian:
   echo 'Creating Debian distrobox ...'
-  distrobox create --nvidia --image quay.io/toolbx-images/debian-toolbox:unstable -n debian -Y
+  distrobox-create --nvidia --image quay.io/toolbx-images/debian-toolbox:unstable -n debian -Y
 
 # Create a Fedora container
 distrobox-fedora:
   echo 'Creating Fedora distrobox ...'
-  distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y
+  distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y
 
 # Create an openSUSE container
 distrobox-opensuse:
   echo 'Creating openSUSE distrobox ...'
-  distrobox create --nvidia --image quay.io/toolbx-images/opensuse-toolbox:tumbleweed -n opensuse -Y
+  distrobox-create --nvidia --image quay.io/toolbx-images/opensuse-toolbox:tumbleweed -n opensuse -Y
 
 # Create an Ubuntu container
 distrobox-ubuntu:
   echo 'Creating Ubuntu distrobox ...'
-  distrobox create --nvidia --image quay.io/toolbx-images/ubuntu-toolbox:22.04 -n ubuntu -Y
+  distrobox-create --nvidia --image quay.io/toolbx-images/ubuntu-toolbox:22.04 -n ubuntu -Y
 
 # Install obs-studio-portable from wimpysworld, which bundles an extensive collection of 3rd party plugins 
 install-obs-studio-portable:
@@ -37,19 +37,19 @@ install-obs-studio-portable:
     distrobox rm obs-studio-portable --force; \
   fi && \
   echo 'Installing obs-studio-portable...' && \
-  distrobox create --no-entry --name obs-studio-portable --image ghcr.io/ublue-os/obs-studio-portable --nvidia --yes && \
+  distrobox-create --no-entry --name obs-studio-portable --image ghcr.io/ublue-os/obs-studio-portable --nvidia --yes && \
   distrobox-enter -n obs-studio-portable -- 'bash -c "distrobox-export --app obs"' && \
   echo 'Install complete'
 
 # Set up Bazzite-Arch container
 distrobox-bazzite-arch:
   echo 'Creating Bazzite-Arch distrobox ...'
-  distrobox create --nvidia --image ghcr.io/ublue-os/bazzite-arch -n bazzite-arch -Y
+  distrobox-create --unshare-netns --nvidia --image ghcr.io/ublue-os/bazzite-arch -n bazzite-arch -Y
 
 # Install Webapp manager
 install-webapp-manager:
   if grep -qvz "fedora" <<< $(distrobox list); then \
-    distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
+    distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
   fi && \
   distrobox-enter -n fedora -- bash -c "sudo dnf copr enable -y kylegospo/webapp-manager && \
     sudo dnf install -y webapp-manager && \
@@ -58,7 +58,7 @@ install-webapp-manager:
 # Install Oversteer for Logitech steering wheels
 install-oversteer:
   if grep -qvz "fedora" <<< $(distrobox list); then \
-    distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
+    distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
   fi && \
   distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y kylegospo/oversteer && \
     sudo dnf install -y oversteer && \
@@ -67,7 +67,7 @@ install-oversteer:
 # Install OpenRazer for Razer gaming hardware
 install-openrazer:
   if grep -qvz "fedora" <<< $(distrobox list); then \
-    distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
+    distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
   fi && \
   distrobox-enter -n fedora -- bash -c 'sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo && \
     sudo dnf install -y \
@@ -76,7 +76,7 @@ install-openrazer:
 # Install Solaar for Logitech Mice, Keyboards, and Trackpads
 install-solaar:
   if grep -qvz "fedora" <<< $(distrobox list); then \
-    distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
+    distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
   fi && \
   distrobox-enter -n fedora -- bash -c 'sudo dnf install -y \
     solaar && \
@@ -88,7 +88,7 @@ install-solaar:
 # Install Resilio Sync, a file synchronization utility powered by BitTorrent
 install-resilio-sync:
   if grep -qvz "fedora" <<< $(distrobox list); then \
-    distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
+    distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
   fi && \
   distrobox-enter -n fedora -- 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc' && \
   distrobox-enter -n fedora -- 'sudo wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/resilio-sync.repo -O /etc/yum.repos.d/resilio-sync.repo' && \
@@ -102,7 +102,7 @@ install-resilio-sync:
 # Install scrcpy, a utility that mirrors Android devices (video and audio) connected via USB or over TCP/IP
 install-scrcpy:
   if grep -qvz "fedora" <<< $(distrobox list); then \
-    distrobox create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
+    distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
   fi && \
   distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y zeno/scrcpy && \
     sudo dnf install -y scrcpy && \
@@ -111,7 +111,7 @@ install-scrcpy:
 # Install OpenTabletDriver, an open source, cross-platform, user-mode tablet driver
 install-opentabletdriver:
   if grep -qvz "arch" <<< $(distrobox list); then \
-    distrobox create --nvidia --image ghcr.io/ublue-os/arch-distrobox:latest -n arch -Y; \
+    distrobox-create --nvidia --image ghcr.io/ublue-os/arch-distrobox:latest -n arch -Y; \
   fi && \
   distrobox enter -n arch -- ' paru -S opentabletdriver' && \
   wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenTabletDriver/opentabletdriver.service -O ~/.config/systemd/user/arch-opentabletdriver.service && \
