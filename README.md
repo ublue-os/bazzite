@@ -116,7 +116,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Steam Deck hardware-specific services can be disabled by running `just disable-deck-services` in the terminal, useful for trying this image on other handhelds or for use on HTPCs.
 
 > [!WARNING]  
-> **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time.**
+> **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time. Upgrading the storage resolves the issue.**
 
 > [!IMPORTANT]  
 > **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.org/images/bazzite/installation/).**
