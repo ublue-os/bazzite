@@ -288,7 +288,6 @@ RUN rpm-ostree override replace \
         mesa-libEGL-devel \
         mesa-libgbm \
         mesa-libGL \
-        mesa-libGLU \
         mesa-libglapi \
         mesa-vulkan-drivers && \
     if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
