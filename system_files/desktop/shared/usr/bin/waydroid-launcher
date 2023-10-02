@@ -11,13 +11,13 @@ fi
 killall -9 weston
 pkexec /usr/bin/waydroid-container-start
 if [ -z "$(pgrep weston)" ]; then
-	/usr/bin/weston --xwayland --width="${WAYDROID_WIDTH}" --height="${WAYDROID_HEIGHT}" &> /dev/null &
+	/usr/bin/weston --socket=weston-waydroid --width=${WAYDROID_WIDTH} --height=${WAYDROID_HEIGHT} &> /dev/null &
 fi
 
 sleep 2 &&
 export XDG_SESSION_TYPE='wayland'
-export DISPLAY=':1'
-/usr/bin/waydroid show-full-ui &
+export WAYLAND_DISPLAY='weston-waydroid'
+/usr/bin/waydroid $@ &
 while [ -n "$(pgrep weston)" ];do
     sleep 1
 done
