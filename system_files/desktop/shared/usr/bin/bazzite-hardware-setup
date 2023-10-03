@@ -6,7 +6,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=3
+HWS_VER=4
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -144,6 +144,7 @@ if [[ $IMAGE_NAME =~ "deck"  ]]; then
   else
     echo "Generic device detected. Performing setup..."
 
+    systemctl enable --now handycon.service
     systemctl disable --now jupiter-fan-control.service
     systemctl disable --now vpower.service
     systemctl disable --now jupiter-biosupdate.service
