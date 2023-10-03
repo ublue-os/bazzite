@@ -100,10 +100,10 @@ install-brew-to-shell:
 get-greenlight:
   #!/usr/bin/env bash
   if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
-    wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O $HOME/Downloads/Greenlight.AppImage
+    wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta14/Greenlight-2.0.0-beta14.AppImage -O $HOME/Downloads/Greenlight.AppImage
     flatpak run it.mijorus.gearlever $HOME/Downloads/Greenlight.AppImage
   else
-    wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta12/Greenlight-2.0.0-beta12.AppImage -O $HOME/Desktop/Greenlight.AppImage
+    wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta14/Greenlight-2.0.0-beta14.AppImage -O $HOME/Desktop/Greenlight.AppImage
     chmod +x $HOME/Desktop/Greenlight.AppImage
   fi
 
@@ -266,3 +266,42 @@ add-user-to-input-group:
     sudo bash -c 'grep "input" /lib/group >> /etc/group'
   fi
   sudo usermod -a -G input $USER
+
+# Enable Virtualization and add workaround for a specific windows VM crash
+enable-virtualization:
+  echo "Installing QEMU and virt-manager..."
+  rpm-ostree install virt-manager edk2-ovmf qemu
+  rpm-ostree kargs \
+  --append-if-missing="kvm.ignore_msrs=1" \
+  --append-if-missing="kvm.report_ignored_msrs=0"
+
+# Enable VFIO on the system if virtualization is enabled
+enable-vfio:
+  #!/usr/bin/env bash
+  echo "Enabling VFIO..."
+  virt_test=$(rpm-ostree kargs)
+  cpu_vendor=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ $print $2 }')
+  vendor_karg="amd_iommu=on"
+  if [[ ${virt_test} == *kvm.report_ignored_msrs* ]]; then
+    rpm-ostree initramfs \
+      --enable \
+      --arg="--add-drivers" \
+      --arg="vfio vfio_iommu_type1 vfio-pci"
+    if [[ ${cpu_vendor} == "AuthenticAMD" ]]; then
+      vendor_karg="amd_iommu=on"
+    elif [[ ${cpu_vendor} == "GenuineIntel" ]]; then
+      vendor_karg="intel_iommu=on"  
+    fi
+    rpm-ostree kargs \
+      --append-if-missing="${vendor_karg}" \
+      --append-if-missing="iommu=pt" \
+      --append-if-missing="rd.driver.pre=vfio_pci" \
+      --append-if-missing="vfio.pci.disable_vga=1"
+    echo "VFIO enabled, make sure you enable IOMMU, VT-d or AMD-v in your BIOS!"
+    echo "Please understand that since this is such a niche use case, support will be very limited!"
+    echo "To add your unused/second GPU device ids to the vfio driver by running"
+    echo 'rpm-ostree kargs --append-if-missing="vfio-pci.ids=xxxx:yyyy,xxxx:yyzz"'
+    echo "NOTE: Your second GPU will not be usable by the host after you do this!"
+  else
+    echo "Enable virtualization with just enable-virtualization before running just enable-vfio."
+  fi
