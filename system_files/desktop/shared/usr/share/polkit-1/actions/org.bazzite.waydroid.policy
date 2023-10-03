@@ -27,7 +27,6 @@
     </defaults>
     <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/waydroid-container-stop</annotate>
   </action>
-</policyconfig>
 
   <action id="org.bazzite.policykit.waydroid.fix.controllers">
     <description>Fix Controllers in Waydroid</description>
