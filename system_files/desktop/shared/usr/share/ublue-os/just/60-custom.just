@@ -280,7 +280,7 @@ enable-vfio:
   #!/usr/bin/env bash
   echo "Enabling VFIO..."
   virt_test=$(rpm-ostree kargs)
-  cpu_vendor=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ $print $2 }')
+  cpu_vendor=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
   vendor_karg="amd_iommu=on"
   if [[ ${virt_test} == *kvm.report_ignored_msrs* ]]; then
     rpm-ostree initramfs \
