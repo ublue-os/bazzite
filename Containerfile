@@ -170,7 +170,8 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         rocm-opencl \
         waydroid \
         lzip \
-        weston \
+        weston && \
+    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh \
 ; else \
     rpm-ostree override remove \
         distrobox && \
