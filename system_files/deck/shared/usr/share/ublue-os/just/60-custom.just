@@ -10,7 +10,7 @@ toggle-autologin:
 
 # Remove all waydroid-related files in your user folders
 reset-waydroid:
-  bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
+  bash -c 'sudo rm -rf $(ls /var/lib/waydroid/*.!(cfg)) $(ls -d /var/lib/waydroid/*/) /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
 
 # Quickly initialize a waydroid image
 init-waydroid:
