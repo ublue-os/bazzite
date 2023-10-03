@@ -448,7 +448,6 @@ RUN /tmp/image-info.sh && \
         systemctl enable sddm.service \
     ; fi && \
     systemctl enable bazzite-autologin.service && \
-    systemctl enable handycon.service && \
     systemctl enable jupiter-fan-control.service && \
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
     systemctl enable vpower.service && \
@@ -457,6 +456,7 @@ RUN /tmp/image-info.sh && \
     systemctl --global enable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \
     systemctl disable ublue-update.timer && \
+    systemctl disable handycon.service && \
     rm -f /usr/etc/sddm.conf && \
     rm -f /usr/etc/default/bazzite && \
     rm -rf \
