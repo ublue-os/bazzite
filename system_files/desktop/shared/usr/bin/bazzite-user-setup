@@ -112,15 +112,17 @@ else
 fi
 
 # Steam Patch setup
-if [[ \
-    ":ROG Ally RC71L_RC71L:" =~ ":$SYS_ID:" || \
-    ":AYA NEO:AYANEO:AIR Plus:" =~ ":$PRODUCT_NAME:" || \
-    "ONEXPLAYER" =~ "$PRODUCT_NAME" || \
-    "AOKZOE" =~ "$PRODUCT_NAME" || \
-    ":G1619-01:G1621-02:MicroPC:" =~ ":$SYS_ID:" \
-   ]]; then
-    mkdir -p "$HOME/.steam/steam/"
-    touch "$HOME/.steam/steam/.cef-enable-remote-debugging"
+if [[ $IMAGE_NAME =~ "deck" ]]; then
+  if [[ \
+      ":ROG Ally RC71L_RC71L:" =~ ":$SYS_ID:" || \
+      ":AYA NEO:AYANEO:AIR Plus:" =~ ":$PRODUCT_NAME:" || \
+      "ONEXPLAYER" =~ "$PRODUCT_NAME" || \
+      "AOKZOE" =~ "$PRODUCT_NAME" || \
+      ":G1619-01:G1621-02:MicroPC:" =~ ":$SYS_ID:" \
+     ]]; then
+      mkdir -p "$HOME/.steam/steam/"
+      touch "$HOME/.steam/steam/.cef-enable-remote-debugging"
+  fi
 fi
 
 # Enable NTP
