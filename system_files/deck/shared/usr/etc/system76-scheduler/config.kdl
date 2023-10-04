@@ -80,17 +80,23 @@ process-scheduler enable=true {
         chrt
         dbus
         dbus-broker
+        ds-inhibit
         fancontrol.py
         fig
         fig_desktop
         gamemoderun
+        handycon
+        input-remapper-service
         ionice
         mangoapp
         nice
+        otd-daemon
+        oversteer
         powerbuttond
         rtkit-daemon
         systemd
         taskset
+        sdgyrodsu
         schedtool
         steam_notif_daemon
         vpower
