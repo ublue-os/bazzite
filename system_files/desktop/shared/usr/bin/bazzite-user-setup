@@ -119,8 +119,8 @@ if [[ \
     "AOKZOE" =~ "$PRODUCT_NAME" || \
     ":G1619-01:G1621-02:MicroPC:" =~ ":$SYS_ID:" \
    ]]; then
-    echo "Steam Patch supported handheld detected, installing (https://github.com/Maclay74/steam-patch/)"
-    curl -L https://github.com/Maclay74/steam-patch/releases/latest/download/install.sh | sh
+    mkdir -p "$HOME/.steam/steam/"
+    touch "$HOME/.steam/steam/.cef-enable-remote-debugging"
 fi
 
 # Enable NTP

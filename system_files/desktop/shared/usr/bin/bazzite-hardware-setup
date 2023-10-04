@@ -150,8 +150,12 @@ if [[ $IMAGE_NAME =~ "deck"  ]]; then
         "AOKZOE" =~ "$PRODUCT_NAME" || \
         ":G1619-01:G1621-02:MicroPC:" =~ ":$SYS_ID:" \
        ]]; then
-      echo "HandyGCCS supported handheld detected, enabling."
+      echo "HandyGCCS supported handheld detected, enabling handycon & steam-patch."
       systemctl enable --now handycon.service
+      systemctl enable --now --global steam-patch.service
+    elif [[ ":ROG Ally RC71L_RC71L:" =~ ":$SYS_ID:" ]]
+      echo "ROG Ally detected. Enabling steam-patch."
+      systemctl enable --now --global steam-patch.service
     fi
     systemctl disable --now jupiter-fan-control.service
     systemctl disable --now vpower.service
