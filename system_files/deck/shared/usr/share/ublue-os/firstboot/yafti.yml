@@ -6,7 +6,7 @@ screens:
   first-screen:
     source: yafti.screen.title
     values:
-      title: "Welcome to Bazzite (Steam Deck Edition)"
+      title: "Welcome to Bazzite (Steam Deck & HTPC Edition)"
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
         Configure your system to get started. Completion of this process is required for Game mode to function.
