@@ -180,6 +180,14 @@ else
   echo "No fstab param adjustments needed"
 fi
 
+# HOSTNAME FIX
+# If the hostname is too long Distrobox will fail during setup
+# Additonally, Anaconda likes to set the hostname to be the ipv6 address
+# Let's check the length and reset it to something sensible if that happens.
+if hostname | wc -m > 15; then
+  hostnamectl set-hostname bazzite
+fi
+
 echo $HWS_VER > $HWS_VER_FILE
 echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
 echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE
