@@ -19,7 +19,6 @@ KNOWN_IMAGE_FLAVOR=$(cat $KNOWN_IMAGE_FLAVOR_FILE)
 # GLOBAL
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 GPU_ID=$(lspci -k | grep -A 3 -E "(VGA|3D)")
-PRODUCT_NAME="$(cat /sys/devices/virtual/dmi/id/product_name)"
 KARGS=$(rpm-ostree kargs)
 NEEDED_KARGS=""
 echo "Current kargs: $KARGS"
@@ -139,23 +138,21 @@ if [[ -f $HWS_VER_FILE && $HWS_VER = $HWS_VER_RAN ]]; then
   fi
 fi
 
-if [[ $IMAGE_NAME =~ "deck"  ]]; then
+if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
   if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
     # Future updates to Deck on Jupiter here
+    echo "Jupiter hardware detected, skipping further setup..."
   else
     echo "Generic device detected. Performing setup..."
-    if [[ \
-        ":AYA NEO:AYANEO:AIR Plus:" =~ ":$PRODUCT_NAME:" || \
-        "ONEXPLAYER" =~ "$PRODUCT_NAME" || \
-        "AOKZOE" =~ "$PRODUCT_NAME" || \
-        ":G1619-01:G1621-02:MicroPC:" =~ ":$SYS_ID:" \
-       ]]; then
-      echo "HandyGCCS supported handheld detected, enabling handycon & steam-patch."
-      systemctl enable --now handycon.service
+    if [[ ":ROG Ally RC71L_RC71L:AYA NEO:AYANEO:AIR Plus:ONEXPLAYER:AOKZOE:G1619-01:G1621-02:MicroPC:G1619-01:G1621-02:MicroPC:AYA NEO:AYANEO:AIR Plus:AOKZOE:ONEXPLAYER:" =~ ":$SYS_ID:" ]]; then
+      echo "HandyGCCS supported handheld detected, enabling handycon & steam-patch..."
+      if [[ ":ROG Ally RC71L_RC71L:" =~ ":$SYS_ID:" ]]
+        echo "ROG Ally detected, skipping handycon".
+      else
+        systemctl enable --now handycon.service
+      fi
       systemctl enable --now --global steam-patch.service
-    elif [[ ":ROG Ally RC71L_RC71L:" =~ ":$SYS_ID:" ]]
-      echo "ROG Ally detected. Enabling steam-patch."
-      systemctl enable --now --global steam-patch.service
+      sed -i 's/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=1/g' /etc/default/steam-hardware-control
     fi
     systemctl disable --now jupiter-fan-control.service
     systemctl disable --now vpower.service
