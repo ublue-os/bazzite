@@ -1,11 +1,11 @@
 [Unit]
 Description=Steam Patches Loader
 Wants=network.target
-After=network.target
+After=network.target bazzite-user-setup.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/pkexec /usr/bin/steam-patch --user=%u
+ExecStart=/usr/bin/steam-patch-wrapper --user=%u
 
 [Install]
 WantedBy=multi-user.target
