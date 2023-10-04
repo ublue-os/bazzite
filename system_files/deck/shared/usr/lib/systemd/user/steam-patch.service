@@ -1,0 +1,11 @@
+[Unit]
+Description=Steam Patches Loader
+Wants=network.target
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/pkexec /usr/bin/steam-patch --user=%u
+
+[Install]
+WantedBy=multi-user.target
