@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-if grep -qz "bazzite-arch" <<< $(distrobox list --root); then
-	distrobox-enter -n bazzite-arch --root $@
-else
-	echo 'Rootful bazzite-arch container not found, please run "just reset-bazzite-arch".'
+if ! grep -qz "bazzite-arch" <<< $(distrobox list --root); then
+	/usr/bin/just --unstable reset-bazzite-arch
 fi
+distrobox-enter -n bazzite-arch --root $@

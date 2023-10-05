@@ -2,12 +2,12 @@
 
 if grep -qz "bazzite-arch" <<< $(distrobox list); then
 	echo 'Removing existing Bazzite Arch install...'
-	distrobox stop bazzite-arch
-	distrobox rm bazzite-arch --force
+	distrobox-stop bazzite-arch
+	distrobox-rm bazzite-arch --force
 fi
 
 if grep -qz "bazzite-arch" <<< $(distrobox list --root); then
 	echo 'Removing existing rootful Bazzite Arch install...'
-	distrobox stop bazzite-arch --root
-	distrobox rm bazzite-arch --root --force
+	distrobox-stop bazzite-arch --root
+	distrobox-rm bazzite-arch --root --force
 fi
