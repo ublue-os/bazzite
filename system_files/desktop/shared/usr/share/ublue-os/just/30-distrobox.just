@@ -45,28 +45,14 @@ install-obs-studio-portable:
 install-bazzite-arch:
   IMAGE_INFO="/usr/share/ublue-os/image-info.json" && \
   BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO) && \
-  if grep -qz "bazzite-arch" <<< $(distrobox list); then \
-    echo 'Removing existing Bazzite Arch install...' && \
-    distrobox rm bazzite-arch --force; \
-  fi && \
+  echo 'Removing existing Bazzite Arch install...' && \
+  /usr/bin/pkexec /usr/bin/bazzite-arch-destroy && \
   echo 'Installing Bazzite Arch...' && \
-  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
-    if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then \
-      distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --unshare-netns --additional-flags "--runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=nvidia.com/gpu=all -e NVIDIA_DRIVER_CAPABILITIES=all" --yes; \
-    else \
-      distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --unshare-netns --yes; \
-    fi \
-  else \
-    if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then \
-      distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --unshare-netns --additional-flags "--runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=nvidia.com/gpu=all -e NVIDIA_DRIVER_CAPABILITIES=all" --yes; \
-    else \
-      distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --unshare-netns --yes; \
-    fi \
-  fi && \
+  /usr/bin/pkexec /usr/bin/bazzite-arch-create && \
   echo 'Exporting applications...' && \
-  distrobox-enter -n bazzite-arch -- 'bash -c "sudo locale-gen && distrobox-export --app steam && distrobox-export --app lutris && distrobox-export --app protontricks && mkdir -p $HOME/.steam && distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam && mv $HOME/.steam/steamcmd $HOME/.steam/steamcmd.sh"' && \
+  /usr/bin/pkexec /usr/bin/bazzite-arch-enter -- 'bash -c "sudo locale-gen && distrobox-export --app steam && distrobox-export --app lutris && distrobox-export --app protontricks && mkdir -p $HOME/.steam && distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam && mv $HOME/.steam/steamcmd $HOME/.steam/steamcmd.sh"' && \
   echo 'Starting Steam...' && \
-  distrobox-enter -n bazzite-arch -- '  /usr/bin/steam-runtime --silent &>/dev/null &' && \
+  /usr/bin/pkexec /usr/bin/bazzite-arch-enter -- '  /usr/bin/steam-runtime --silent &>/dev/null &' && \
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
     echo 'Creating desktop shortcuts...' && \
     cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop/bazzite-arch-steam.desktop && \
@@ -82,14 +68,16 @@ install-bazzite-arch:
 reset-bazzite-arch:
   IMAGE_INFO="/usr/share/ublue-os/image-info.json" && \
   BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO) && \
-  distrobox stop bazzite-arch && \
-  distrobox rm bazzite-arch --force && \
+  echo 'Stopping & removing bazzite-arch...' && \
+  /usr/bin/pkexec /usr/bin/bazzite-arch-destroy
+  echo 'Removing bazzite-arch image cache...' && \
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
     podman image rm bazzite-arch --force; \
   else \
     podman image rm bazzite-arch-gnome --force; \
   fi && \
-  /usr/bin/just --unstable install-bazzite-arch
+  /usr/bin/just --unstable install-bazzite-arch && \
+  echo 'Complete'
 
 # Install Webapp manager
 install-webapp-manager:
