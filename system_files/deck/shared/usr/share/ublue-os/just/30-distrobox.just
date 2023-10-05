@@ -83,7 +83,8 @@ install-solaar:
     distrobox-export --app solaar' && \
   mkdir -p ~/.config/autostart && \
   rm -f ~/.config/autostart/fedora-solaar.desktop && \
-  cp ~/.local/share/applications/fedora-solaar.desktop ~/.config/autostart/fedora-solaar.desktop
+  cp ~/.local/share/applications/fedora-solaar.desktop ~/.config/autostart/fedora-solaar.desktop && \
+  sed -i 's/fedora --   solaar/fedora --   solaar --window=hide/g' ~/.config/autostart/fedora-solaar.desktop
 
 # Install Resilio Sync, a file synchronization utility powered by BitTorrent
 install-resilio-sync:
