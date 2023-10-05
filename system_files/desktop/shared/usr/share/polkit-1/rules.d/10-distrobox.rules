@@ -1,0 +1,8 @@
+polkit.addRule(function(action, subject) {
+    if ((action.id == "org.bazzite.policykit.distrobox.bazzite-arch.create" || 
+         action.id == "org.bazzite.policykit.distrobox.bazzite-arch.destroy" ||
+         action.id == "org.bazzite.policykit.distrobox.bazzite-arch.enter") &&
+         subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+    }
+});

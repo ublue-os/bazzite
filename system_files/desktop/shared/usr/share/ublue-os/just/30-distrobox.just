@@ -51,9 +51,17 @@ install-bazzite-arch:
   fi && \
   echo 'Installing Bazzite Arch...' && \
   if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
-    distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --unshare-netns --nvidia --yes; \
+    if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then \
+      distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --unshare-netns --additional-flags "--runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=nvidia.com/gpu=all -e NVIDIA_DRIVER_CAPABILITIES=all" --yes; \
+    else \
+      distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --unshare-netns --yes; \
+    fi \
   else \
-    distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --unshare-netns --nvidia --yes; \
+    if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then \
+      distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --unshare-netns --additional-flags "--runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=nvidia.com/gpu=all -e NVIDIA_DRIVER_CAPABILITIES=all" --yes; \
+    else \
+      distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --unshare-netns --yes; \
+    fi \
   fi && \
   echo 'Exporting applications...' && \
   distrobox-enter -n bazzite-arch -- 'bash -c "sudo locale-gen && distrobox-export --app steam && distrobox-export --app lutris && distrobox-export --app protontricks && mkdir -p $HOME/.steam && distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam && mv $HOME/.steam/steamcmd $HOME/.steam/steamcmd.sh"' && \

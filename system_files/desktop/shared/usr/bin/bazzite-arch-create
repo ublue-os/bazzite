@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
+
+echo 'Installing Bazzite Arch...'
+if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+	if [[ ${IMAGE_FLAVOR} = "nvidia"  ]]; then
+	  distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --unshare-netns --additional-flags "--runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=nvidia.com/gpu=all -e NVIDIA_DRIVER_CAPABILITIES=all" --root --yes;
+	else
+	  distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --unshare-netns --root --yes;
+	fi
+	else
+	if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then
+	  distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --unshare-netns --additional-flags "--runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=nvidia.com/gpu=all -e NVIDIA_DRIVER_CAPABILITIES=all" --root --yes;
+	else
+	  distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --unshare-netns --root --yes;
+	fi
+fi

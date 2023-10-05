@@ -34,7 +34,6 @@ RUN if [[ "${IMAGE_FLAVOR}" = "main" || "${IMAGE_NAME}" = "nvidia" ]]; then \
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-multilib-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
     wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-$(rpm -E %fedora)/ublue-os-staging-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_ublue-os-staging.repo && \
-    wget https://copr.fedorainfracloud.org/coprs/ublue-os/distrobox-git/repo/fedora-$(rpm -E %fedora)/ublue-os-distrobox-git-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_ublue-os-distrobox-git.repo && \
     wget https://copr.fedorainfracloud.org/coprs/ublue-os/bling/repo/fedora-$(rpm -E %fedora)/ublue-os-bling-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_ublue-os-bling.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/repo/fedora-$(rpm -E %fedora)/kylegospo-system76-scheduler-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-system76-scheduler.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/hl2linux-selinux/repo/fedora-$(rpm -E %fedora)/kylegospo-hl2linux-selinux-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
@@ -163,7 +162,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 ; fi
 
 # Install ROCM and Waydroid on non-Nvidia images
-# Install distrobox-git on Nvidia images (while needed)
 RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         rocm-hip \
@@ -171,11 +169,6 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         waydroid \
         weston && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh \
-; else \
-    rpm-ostree override remove \
-        distrobox && \
-    rpm-ostree install \
-        distrobox-git \
 ; fi
 
 # Cleanup & Finalize
@@ -199,7 +192,6 @@ RUN /tmp/image-info.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
     sed -i 's@enabled=1@enabeld=0@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-distrobox-git.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-bling.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-system76-scheduler.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
