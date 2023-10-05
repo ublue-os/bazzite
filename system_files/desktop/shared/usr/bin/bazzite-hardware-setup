@@ -148,8 +148,8 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     echo "Generic device detected. Performing setup..."
     if [[ ":ROG Ally RC71L_RC71L:AYA NEO:AYANEO:AIR Plus:ONEXPLAYER:AOKZOE:G1619-01:G1621-02:MicroPC:G1619-01:G1621-02:MicroPC:AYA NEO:AYANEO:AIR Plus:AOKZOE:ONEXPLAYER:" =~ ":$SYS_ID:" ]]; then
       echo "HandyGCCS supported handheld detected, enabling handycon & steam-patch..."
-      if [[ ":ROG Ally RC71L_RC71L:" =~ ":$SYS_ID:" ]]
-        echo "ROG Ally detected, skipping handycon".
+      if [[ ":ROG Ally RC71L_RC71L:" =~ ":$SYS_ID:" ]]; then
+        echo "ROG Ally detected, skipping handycon."
       else
         systemctl enable --now handycon.service
       fi
