@@ -40,6 +40,8 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
     if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
       echo "32GB RAM Steam Deck detected"
       NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.gttsize=16256"
+      sed -i 's/zram-size=1024/zram-size=2048/g' /etc/systemd/zram-generator.conf
+
     else
       NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.gttsize=8128"
     fi
