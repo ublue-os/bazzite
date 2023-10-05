@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # SCRIPT VERSION
-USER_SETUP_VER=3
+USER_SETUP_VER=5
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 
@@ -120,6 +120,18 @@ fi
 
 # Enable NTP
 timedatectl set-ntp true
+
+# Remove previously made bazzite-arch shortcuts
+# These are implemented differently now for rootful containers
+if [[ -f "$HOME/.local/share/applications/bazzite-arch-steam.desktop" ]]; then
+  rm "$HOME/.local/share/applications/bazzite-arch-steam.desktop"
+fi
+if [[ -f "$HOME/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop" ]]; then
+  rm "$HOME/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop"
+fi
+if [[ -f "$HOME/.local/share/applications/bazzite-arch-protontricks.desktop" ]]; then
+  rm "$HOME/.local/share/applications/bazzite-arch-protontricks.desktop"
+fi
 
 # Setup Flathub
 if grep -qz 'fedora' <<< $(flatpak remotes); then
