@@ -153,7 +153,6 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
       else
         systemctl enable --now handycon.service
       fi
-      systemctl enable --now --global steam-patch.service
       sed -i 's/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=1/g' /etc/default/steam-hardware-control
     fi
     systemctl disable --now jupiter-fan-control.service

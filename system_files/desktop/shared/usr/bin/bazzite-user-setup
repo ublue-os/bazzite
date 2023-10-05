@@ -115,6 +115,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   if [[ ":ROG Ally RC71L_RC71L:AYA NEO:AYANEO:AIR Plus:ONEXPLAYER:AOKZOE:G1619-01:G1621-02:MicroPC:G1619-01:G1621-02:MicroPC:AYA NEO:AYANEO:AIR Plus:AOKZOE:ONEXPLAYER:" =~ ":$SYS_ID:" ]]; then
       mkdir -p "$HOME/.steam/steam/"
       touch "$HOME/.steam/steam/.cef-enable-remote-debugging"
+      pkexec /usr/bin/bazzite-enable-steam-patch
   fi
 fi
 

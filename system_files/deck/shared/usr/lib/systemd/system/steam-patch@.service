@@ -1,0 +1,12 @@
+[Unit]
+Description=Steam Patch Loader for user %i
+Wants=network.target
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/steam-patch --user=%i
+
+[Install]
+WantedBy=multi-user.target
