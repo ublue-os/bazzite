@@ -12,7 +12,7 @@ toggle-autologin:
 reset-waydroid:
   bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
   sudo mkdir -p /var/lib/waydroid
-  sudo echo "[properties]\nro.hardware.gralloc=minigbm_gbm_mesa\npersist.waydroid.udev=true\npersist.waydroid.uevent=true\nro.sf.lcd_density=215" > /var/lib/waydroid/waydroid.cfg
+  sudo bash -c 'printf "[properties]\nro.hardware.gralloc=minigbm_gbm_mesa\npersist.waydroid.udev=true\npersist.waydroid.uevent=true\nro.sf.lcd_density=215" > /var/lib/waydroid/waydroid.cfg'
 
 # Quickly initialize a waydroid image
 init-waydroid:
