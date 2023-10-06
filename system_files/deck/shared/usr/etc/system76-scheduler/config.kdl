@@ -95,10 +95,11 @@ process-scheduler enable=true {
         powerbuttond
         rtkit-daemon
         systemd
-        taskset
-        sdgyrodsu
         schedtool
+        sdgyrodsu
         steam_notif_daemon
+        steam-patch
+        taskset
         vpower
     }
 }
