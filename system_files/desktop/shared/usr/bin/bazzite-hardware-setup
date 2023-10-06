@@ -6,7 +6,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=5
+HWS_VER=6
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -61,6 +61,9 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
 
   if [[ ! $KARGS =~ "nmi_watchdog" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=nmi_watchdog=0"
+  fi
+  if [[ ! $KARGS =~ "modprobe.blacklist=sp5100_tco" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --append=modprobe.blacklist=sp5100_tco"
   fi
 fi
 
