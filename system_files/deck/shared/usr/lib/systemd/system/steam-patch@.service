@@ -6,6 +6,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
+Restart=on-failure
+RestartSec=5s
 ExecStart=/usr/bin/steam-patch --user=%i
 
 [Install]
