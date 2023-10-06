@@ -82,6 +82,7 @@ RUN rpm-ostree install \
     fish \
     xdotool \
     wmctrl \
+    libcec \
     yad \
     f3 \
     pulseaudio-utils \
@@ -454,6 +455,9 @@ RUN /tmp/image-info.sh && \
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
     systemctl enable vpower.service && \
     systemctl enable ds-inhibit.service && \
+    systemctl enable cec-onboot.service && \
+    systemctl enable cec-onpoweroff.service && \
+    systemctl enable cec-onsleep.service && \
     systemctl --global enable steam-web-debug-portforward.service && \
     systemctl --global enable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \
