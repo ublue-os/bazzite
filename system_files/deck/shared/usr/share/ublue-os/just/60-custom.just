@@ -450,3 +450,9 @@ add-user-to-input-group:
     sudo bash -c 'grep "input" /lib/group >> /etc/group'
   fi
   sudo usermod -a -G input $USER
+
+# Disable DNS over TLS on Deck images (Default enabled)
+disable-secure-dns:
+  #!/usr/bin/env bash
+  sudo rm -f /etc/sysconfig
+  sudo rm -f /etc/systemd/resolved.conf
