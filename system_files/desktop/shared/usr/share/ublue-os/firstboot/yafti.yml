@@ -15,7 +15,7 @@ screens:
     values:
       title: Setting up Bazzite Arch (This can take a long time)
       condition:
-        run: grep -qvz "bazzite-arch" <<< $(distrobox list)
+        run: grep -qvz "bazzite-arch" <<< $(distrobox list) && grep -qv 'nvidia' <<< $(jq -r '."image-flavor"' < /usr/share/ublue-os/image-info.json)
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
