@@ -310,3 +310,27 @@ enable-vfio:
   else
     echo "Enable virtualization with just enable-virtualization before running just enable-vfio."
   fi
+
+# Enable watchdog (default, recovers the system in the event of a malfunction, possible impact to performance due to interrupts)
+enable-watchdog:
+  #!/usr/bin/env bash
+  CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
+  WATCHDOG_KARGS="--delete-if-present=nowatchdog"
+  if [[ "$CPU_MODEL" =~ "Intel" ]]; then
+    WATCHDOG_KARGS="$WATCHDOG_KARGS --delete-if-present=modprobe.blacklist=iTCO_wdt"
+  elif [[ "$CPU_MODEL" =~ "AMD" ]]; then
+    WATCHDOG_KARGS="$WATCHDOG_KARGS --delete-if-present=modprobe.blacklist=sp5100_tco"
+  fi
+  rpm-ostree kargs $WATCHDOG_KARGS
+
+# Disable watchdog (potential performance improvement due to fewer interrupts)
+disable-watchdog:
+  #!/usr/bin/env bash
+  CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
+  WATCHDOG_KARGS="--append-if-missing=nowatchdog"
+  if [[ "$CPU_MODEL" =~ "Intel" ]]; then
+    WATCHDOG_KARGS="$WATCHDOG_KARGS --append-if-missing=modprobe.blacklist=iTCO_wdt"
+  elif [[ "$CPU_MODEL" =~ "AMD" ]]; then
+    WATCHDOG_KARGS="$WATCHDOG_KARGS --append-if-missing=modprobe.blacklist=sp5100_tco"
+  fi
+  rpm-ostree kargs $WATCHDOG_KARGS
