@@ -215,6 +215,10 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         wine-core \
         winetricks \
         protontricks \
+        latencyflex-vulkan-layer \
+        vkBasalt \
+        mangohud \
+        vulkan-tools \
 ; fi
 
 # Cleanup & Finalize
