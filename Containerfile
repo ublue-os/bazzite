@@ -389,7 +389,7 @@ RUN rpm-ostree install \
     xz --check=crc32 /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-{cali.bin,cali.wmfw,prot.bin,prot.wmfw} && \
     mv -vf /tmp/linux-firmware-neptune/* /usr/lib/firmware/cirrus/ && \
     rm -rf /tmp/linux-firmware-neptune && \
-    wget $(jq -r '.assets[].browser_download_url | select(endswith("steam-patch"))' <<< $(curl -s 'https://api.github.com/repos/Maclay74/steam-patch/releases' | jq -r "first(.[] | select(.prerelease == "false"))")) -O /usr/bin/steam-patch && \
+    wget $(jq -r '.assets[].browser_download_url | select(endswith("steam-patch"))' <<< $(curl -s 'https://api.github.com/repos/KyleGospo/steam-patch/releases' | jq -r "first(.[] | select(.prerelease == "false"))")) -O /usr/bin/steam-patch && \
     chmod +x /usr/bin/steam-patch
 
 # Install Steam and Lutris into their own OCI layer
