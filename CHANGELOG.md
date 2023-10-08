@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/ublue-os/bazzite/compare/v1.2.1...v1.2.2) (2023-10-08)
+
+
+### Miscellaneous Chores
+
+* release 1.2.2 ([ff665a6](https://github.com/ublue-os/bazzite/commit/ff665a673229dcc53b52fb52716da1d43ea6bf35))
+
 ## [1.2.1](https://github.com/ublue-os/bazzite/compare/v1.2.0...v1.2.1) (2023-10-08)
 
 
