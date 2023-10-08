@@ -454,5 +454,5 @@ add-user-to-input-group:
 # Disable DNS over TLS on Deck images (Default enabled)
 disable-secure-dns:
   #!/usr/bin/env bash
-  sudo rm -f /etc/sysconfig
+  sudo rm -f /etc/sysconfig/network
   sudo rm -f /etc/systemd/resolved.conf

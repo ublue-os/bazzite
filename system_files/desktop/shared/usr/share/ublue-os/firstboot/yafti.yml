@@ -81,7 +81,7 @@ screens:
           description: scrcpy provides display and control of Android devices connected on USB (or over TCP/IP)
           default: false
           packages:
-          - Install Resilio Sync: just --unstable install-scrcpy
+          - Install scrcpy: just --unstable install-scrcpy
   amd-additions:
     source: yafti.screen.package
     values:
