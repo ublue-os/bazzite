@@ -57,7 +57,8 @@ RUN rpm-ostree override remove \
 # Install new packages
 RUN rpm-ostree install \
     ublue-update \
-    extest.i686 \
+    libei \
+    libei.i686 \
     discover-overlay \
     python3-pip \
     libadwaita \
@@ -105,6 +106,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         steamdeck-kde-presets-desktop \
         wallpaper-engine-kde-plugin \
         kdeconnectd \
+        extest.i686 \
         rom-properties-kf5 && \
     if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
         rpm-ostree override replace \

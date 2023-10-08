@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+
 LAUNCH_OPTIONS=""
 
 # If Steam has been launched before we can safely launch with -steamdeck
@@ -8,7 +11,7 @@ if [ -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]; then
   LAUNCH_OPTIONS="-steamdeck"
 fi
 
-if [[ "$XDG_SESSION_TYPE" = "wayland" ]]; then
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]] && [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
   # https://github.com/Supreeeme/extest
   # Extest is a drop in replacement for the X11 XTEST extension.
   # It creates a virtual device with the uinput kernel module.
