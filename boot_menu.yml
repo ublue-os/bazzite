@@ -32,47 +32,47 @@ ublue_variants:
   - label: ublue-os/bazzite-asus
     ks: /kickstart/ublue-os.ks
     flavors:
-      - label: bazzite
+      - label: bazzite-asus
         info: Bazzite (ASUS Laptop Edition)
   - label: ublue-os/bazzite-gnome-asus
     ks: /kickstart/ublue-os.ks
     flavors:
-      - label: bazzite
+      - label: bazzite-gnome-asus
         info: Bazzite GNOME (ASUS Laptop Edition)
   - label: ublue-os/bazzite-ally
     ks: /kickstart/ublue-os.ks
     flavors:
-      - label: bazzite
+      - label: bazzite-ally
         info: Bazzite (ASUS Ally Edition)
   - label: ublue-os/bazzite-ally-gnome
     ks: /kickstart/ublue-os.ks
     flavors:
-      - label: bazzite
+      - label: bazzite-ally-gnome
         info: Bazzite GNOME (ASUS Ally Edition)
   - label: ublue-os/bazzite-framework
     ks: /kickstart/ublue-os.ks
     flavors:
-      - label: bazzite
+      - label: bazzite-framework
         info: Bazzite (Framework Edition)
   - label: ublue-os/bazzite-gnome-framework
     ks: /kickstart/ublue-os.ks
     flavors:
-      - label: bazzite
+      - label: bazzite-gnome-framework
         info: Bazzite GNOME (Framework Edition)
   - label: ublue-os/bazzite-framegame
     ks: /kickstart/ublue-os.ks
     flavors:
-      - label: bazzite
+      - label: bazzite-framegame
         info: Bazzite (Framegame Edition)
   - label: ublue-os/bazzite-framegame-gnome
     ks: /kickstart/ublue-os.ks
     flavors:
-      - label: bazzite
+      - label: bazzite-framegame-gnome
         info: Bazzite GNOME (Framegame Edition)
   - label: ublue-os/bazzite-surface
     ks: /kickstart/ublue-os.ks
     flavors:
-      - label: bazzite
+      - label: bazzite-surface
         info: Bazzite (Surface Edition)
   - label: ublue-os/bazzite-surface-nvidia
     ks: /kickstart/ublue-os-nvidia.ks
