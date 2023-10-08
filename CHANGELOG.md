@@ -1,5 +1,61 @@
 # Changelog
 
+## [1.2.1](https://github.com/ublue-os/bazzite/compare/v1.2.0...v1.2.1) (2023-10-08)
+
+
+### Features
+
+* Add CEC control ([#412](https://github.com/ublue-os/bazzite/issues/412)) ([1761a17](https://github.com/ublue-os/bazzite/commit/1761a1739b2ab2b21783c3d9da222c7342085fed))
+* Add dependencies required by DaVinci Resolve ([290fe94](https://github.com/ublue-os/bazzite/commit/290fe94bb5682d69f68a26ad5371aeba9513c9ff))
+* add link to discussions ([#397](https://github.com/ublue-os/bazzite/issues/397)) ([eb5facc](https://github.com/ublue-os/bazzite/commit/eb5faccc747b824c194248b08bcd3264b26aad87))
+* Add option to download Wootility to Bazzite Portal. ([d171b8f](https://github.com/ublue-os/bazzite/commit/d171b8fd261b5862fd2f7bd01717f646d1728b80))
+* Add option to force discover-overlay to launch on GNOME Wayland (See /etc/default/discover-overlay) ([75f85d8](https://github.com/ublue-os/bazzite/commit/75f85d87192c9338509c658b91f824071ea8219e))
+* Add option to install Brew package manager. ([f5915c0](https://github.com/ublue-os/bazzite/commit/f5915c0fff01e05242bd51d4d4df95bfbc2ae46c))
+* Add option to install OpenTabletDriver in an arch distrobox ([5350368](https://github.com/ublue-os/bazzite/commit/535036819a5bb27db80b5c3cbe2901f86c7e0e39))
+* Add unrar by default, this is used by enough games & mods to be a default package. ([4ca5a6a](https://github.com/ublue-os/bazzite/commit/4ca5a6a18838f5947523ed8dd853d4fcf7e4b71c))
+* Add Weston launcher for Waydroid using policykit to start and stop service ([7a6085e](https://github.com/ublue-os/bazzite/commit/7a6085e7df39b536849260d990807d6772f91696))
+* Add XIV Launcher flatpak to list of games ([dc6722d](https://github.com/ublue-os/bazzite/commit/dc6722d3f635bebb29a914924be674c9457a215c))
+* Always check kargs ([#398](https://github.com/ublue-os/bazzite/issues/398)) ([ee4ab58](https://github.com/ublue-os/bazzite/commit/ee4ab58f44b011764ff4ef112728fcab6f2a2379))
+* Auto update brew packages with ublue-update ([f9ebb2b](https://github.com/ublue-os/bazzite/commit/f9ebb2bca253fd0f94b31ffbe0c6536c3c9879cb))
+* **ci:** Enable ASUS and Surface Nvidia images ([1acad66](https://github.com/ublue-os/bazzite/commit/1acad66a6f9f7d288c204c288029d8dc973abd87))
+* **deck:** Double zram size on 32GB decks ([a6236df](https://github.com/ublue-os/bazzite/commit/a6236df723b054e68da7e5a9b8c7043d4b077fcf))
+* **deck:** Switch to kyber I/O scheduler from BFQ, disable watchdog, and raise memlock limit ([0ea324d](https://github.com/ublue-os/bazzite/commit/0ea324d37b22928238d76931df9f206ff892c22d))
+* **desktop:** Add option to enable virtualization and vfio ([d9f7aaf](https://github.com/ublue-os/bazzite/commit/d9f7aafe07494e92e104849705177be46fcfb6a5))
+* **desktop:** Add options to disable/enable watchdog ([#413](https://github.com/ublue-os/bazzite/issues/413)) ([2cb3ad7](https://github.com/ublue-os/bazzite/commit/2cb3ad744a29cfcae3f0d751a4c52a69a569416f))
+* Enable TDP control on non-deck hardware covered by steam-patch. ([28fec8e](https://github.com/ublue-os/bazzite/commit/28fec8efdf8437789265732e967bb2a06be11f50))
+* **nvidia:** Switch to layered steam to avoid issues with 32-bit Nvidia libraries. ([#415](https://github.com/ublue-os/bazzite/issues/415)) ([f4452f0](https://github.com/ublue-os/bazzite/commit/f4452f0b40473a9c8d53aad2628b80cf25bdf182))
+* **waydroid:** Add new Waydroid launcher to streamline use ([708b25e](https://github.com/ublue-os/bazzite/commit/708b25e29e44385d4c91026a2de3143b1526416c))
+* **waydroid:** Add script to fix controllers in Waydroid ([2792919](https://github.com/ublue-os/bazzite/commit/2792919ca9cd9765b446f520a6fb7ea77f861bbb))
+
+
+### Bug Fixes
+
+* Add hostname reset to bazzite-hardware-setup if the hostname is too long for distrobox to reliably function ([3fa0d5d](https://github.com/ublue-os/bazzite/commit/3fa0d5ddac731ce90e626bdf820af15351e228b4))
+* Avoid creating ~/.steam/steam manually, create needed file in systemd service definition for steam-patch. ([edbfd0c](https://github.com/ublue-os/bazzite/commit/edbfd0c1c638cade3088ce78d324137c95b9c292))
+* Call daemon-reload when installing opentabletdriver & resilio sync ([da96cbe](https://github.com/ublue-os/bazzite/commit/da96cbe28eb80e4663e26bf839d74d9854560a78))
+* Check for Ally & Framegame everywhere Deck is currently checked for ([28fec8e](https://github.com/ublue-os/bazzite/commit/28fec8efdf8437789265732e967bb2a06be11f50))
+* Correct issue in reset-waydroid ([4cf2b8d](https://github.com/ublue-os/bazzite/commit/4cf2b8d79b18c59d93be8e2758d823813177ee94))
+* Correct issue with updater run from systemd ([cf7dd21](https://github.com/ublue-os/bazzite/commit/cf7dd2107fa7cd9af58d9b906a2af5d46af0960c))
+* Correct syntax issue in bazzite-hardware-setup ([99101d6](https://github.com/ublue-os/bazzite/commit/99101d69fd21bcb65d8192f45067e525869bcd3f))
+* Correct typo in Yafti config ([5ea2392](https://github.com/ublue-os/bazzite/commit/5ea2392517ba5732f863e1acd733d0c851f18eed))
+* Create input group another way for usermod command ([a0c10ff](https://github.com/ublue-os/bazzite/commit/a0c10ff89b38b4e7ac87e8c3ae0a64d9694452be))
+* **deck:** Block additional AMD watchdog kmod for Steam Deck ([#409](https://github.com/ublue-os/bazzite/issues/409)) ([5a0396d](https://github.com/ublue-os/bazzite/commit/5a0396d82f7a770839ab192a77137bc8361995b3))
+* **desktop:** Resolve issue with Steam refusing to start after sleeping ([5626a67](https://github.com/ublue-os/bazzite/commit/5626a67ade4ba9dbf1173519aac66a76b71a3a96)), closes [#321](https://github.com/ublue-os/bazzite/issues/321)
+* Exclude kmods from everything but main and nvidia ([a6b49c8](https://github.com/ublue-os/bazzite/commit/a6b49c890bf9d53ca12d85a283b60e60028be4b7))
+* Get username for steam-patch from param ([294de76](https://github.com/ublue-os/bazzite/commit/294de76eee15127fca9394108eb8eb4328885dba))
+* **HandyGCCS:** Enable globally ([#400](https://github.com/ublue-os/bazzite/issues/400)) ([17a7611](https://github.com/ublue-os/bazzite/commit/17a7611206dfd5ff80956444d72d19458357fa86))
+* Modify HandyGCCS setup to be explicit on device, automatically install Steam Patch (https://github.com/Maclay74/steam-patch/) on Handhelds that require it. ([e5821e9](https://github.com/ublue-os/bazzite/commit/e5821e9b5def49e91d6818a60732fd174fbf7627))
+* Prepare gnome-vrr patch for Fedora 39 ([024e0da](https://github.com/ublue-os/bazzite/commit/024e0dabbebd295c7c3d21dadbd102f634cd7b74))
+* Run brew installer as sudo ([f9ebb2b](https://github.com/ublue-os/bazzite/commit/f9ebb2bca253fd0f94b31ffbe0c6536c3c9879cb))
+* use new akmods:main-RELEASE tag structure ([eef361e](https://github.com/ublue-os/bazzite/commit/eef361eadfc6fb1f3752dadf6a77e94e2da9c776))
+* **waydroid:** Adjust network preference order ([7944f6e](https://github.com/ublue-os/bazzite/commit/7944f6effa95e1c024a8fa2a842cc583df35c74a))
+* **waydroid:** Disable locking in Weston ([afd20b6](https://github.com/ublue-os/bazzite/commit/afd20b67e614d5834069c2d9cd7ef68cd1c6f0da))
+
+
+### Miscellaneous Chores
+
+* release 1.2.1 ([f70f233](https://github.com/ublue-os/bazzite/commit/f70f233329dbfdffd38647e0696b1a12df4453d5))
+
 ## 1.2.0 (2023-09-28)
 
 
