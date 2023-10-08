@@ -111,6 +111,11 @@ screens:
           default: false
           packages:
           - Switch SteamOS-BTRFS config to EXT4: sudo -A just --unstable switch-to-ext4
+        Disable DNS-over-TLS:
+          description: Disables secure DNS, for users with problems connecting with DOT enabled.
+          default: false
+          packages:
+          - Disable DOT: sudo -A just --unstable disable-secure-dns
   applications:
     source: yafti.screen.package
     values:
