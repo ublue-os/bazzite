@@ -15,7 +15,7 @@ screens:
     values:
       title: Setting up Bazzite Arch (This can take a long time)
       condition:
-        run: grep -qvz "bazzite-arch" <<< $(distrobox list)
+        run: grep -qvz "bazzite-arch" <<< $(distrobox list) && grep -qv 'nvidia' <<< $(jq -r '."image-flavor"' < /usr/share/ublue-os/image-info.json)
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
@@ -47,12 +47,6 @@ screens:
           packages:
           - Install Nix Package Support: sudo -A just --unstable install-nix
           - Install Fleek (Requires Nix): just --unstable install-fleek
-        Brew Package Manager:
-          description: The missing package manager for macOS (or Linux)
-          default: false
-          packages:
-          - Install Brew: sudo -A just --unstable install-brew
-          - Add Brew to shell: just --unstable install-brew-to-shell
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware
           default: false

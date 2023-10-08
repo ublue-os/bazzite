@@ -38,8 +38,10 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
 - Support for [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Only on KDE)</sup></sub>
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) included.
+- Full support for Winesync/Fastsync.
 - [Distrobox](https://github.com/89luca89/distrobox) preinstalled with automatic updates for created containers.
 - Automated `duperemove` and `rmlint` services for reducing the disk space used by wine prefix contents.
+- Support for HDMI CEC via [libCEC](https://libcec.pulse-eight.com/).
 - [System76-Scheduler](https://github.com/pop-os/system76-scheduler) preinstalled, providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
 - Customized System76-Scheduler config with additional rules and CFS parameters from [Linux-TKG](https://github.com/Frogging-Family/linux-tkg).
 - Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
@@ -60,7 +62,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 
 Common variant available as `bazzite`, suitable for desktop computers.
 
-- Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox.
+- Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox. <sub><sup>(Except on Nvidia)</sup></sub>
 - Automatic updates for the OS, Flatpaks, Nix packages <sup><sub>(Via Fleek)</sub></sup>, and all Distrobox containers.
 
 > [!IMPORTANT]  
@@ -103,7 +105,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Steam and Lutris preinstalled on the image as layered packages.
 - [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Gamemode and on the Desktop if Discord is installed. [View the official documentation here](https://trigg.github.io/Discover/bazzite).
 - Exclusively uses ZRAM by default with the option to switch back to a swap file and set a custom size if desired. <sub><sup>(1GB by default)</sup></sub>
-- BFQ I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` and `rmlint` processes.
+- Kyber I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` and `rmlint` processes.
 - TLS/SSL secured DNS and NTP by default. <sup><sub>(This is a handheld PC you're likely to use on random public networks after all)</sub></sup>
 - Applies SteamOS's kernel parameters.
 - Color calibrated display profiles for matte and reflective Steam Deck screens included.
@@ -223,7 +225,6 @@ Additionally, the following packages are used from other Copr repos:
 
 |Package|Status|
 |---|---|
-|[distrobox](https://github.com/89luca89/distrobox)-git|![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/distrobox-git/package/distrobox-git/status_image/last_build.png?)|
 |[gcadapter_oc-kmod](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/)|![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/package/gcadapter_oc-kmod/status_image/last_build.png?)|
 |[gnome-vrr](https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/package/mutter/status_image/last_build.png?)|
 |[gradience](https://copr.fedorainfracloud.org/coprs/lyessaadi/gradience/)|![Build Status](https://copr.fedorainfracloud.org/coprs/lyessaadi/gradience/package/gradience/status_image/last_build.png?)|
