@@ -128,13 +128,13 @@ flatpak remote-add --if-not-exists --user flathub /etc/flatpak/remotes.d/flathub
 
 # Remove bazzite-arch on Nvidia
 # We ship layered copies now due to nvidia fun(tm)
-if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
+if [[ $IMAGE_NAME =~ "nvidia"  ]]; then
   if grep -qz "bazzite-arch" <<< $(distrobox list); then
-    distrobox rm bazzite-arch --force
-    if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
-      podman image rm bazzite-arch --force; \
+    distrobox-rm bazzite-arch --force
+    if [[ ${BASE_IMAGE_NAME} =~ 'kinoite' ]]; then
+      podman image rm bazzite-arch --force
     else
-      podman image rm bazzite-arch-gnome --force; \
+      podman image rm bazzite-arch-gnome --force
     fi
   fi
 fi
