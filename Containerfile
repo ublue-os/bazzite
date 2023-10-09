@@ -57,8 +57,6 @@ RUN rpm-ostree override remove \
 # Install new packages
 RUN rpm-ostree install \
     ublue-update \
-    libei \
-    libei.i686 \
     discover-overlay \
     python3-pip \
     libadwaita \

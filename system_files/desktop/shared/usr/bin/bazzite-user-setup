@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # SCRIPT VERSION
-USER_SETUP_VER=4
+USER_SETUP_VER=5
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 
@@ -111,9 +111,9 @@ else
 fi
 
 # Steam Patch setup
-if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
-  if [[ ":ROG Ally RC71L_RC71L:AYA NEO:AYANEO:AIR Plus:ONEXPLAYER:AOKZOE:G1619-01:G1621-02:MicroPC:G1619-01:G1621-02:MicroPC:AYA NEO:AYANEO:AIR Plus:AOKZOE:ONEXPLAYER:" =~ ":$SYS_ID:" ]]; then
-      pkexec /usr/bin/bazzite-enable-steam-patch "$USER"
+if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
+  if [[ ! ":Jupiter:" =~ ":$SYS_ID:" ]]; then
+    pkexec /usr/bin/bazzite-enable-steam-patch "$USER"
   fi
 fi
 
