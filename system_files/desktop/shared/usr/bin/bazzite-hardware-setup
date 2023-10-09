@@ -86,7 +86,7 @@ if grep -qz "Kernel driver in use: radeon" <<< $GPU_ID; then
   fi
 fi
 
-if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then
+if [[ $IMAGE_FLAVOR = "nvidia" ]]; then
   echo "Checking for needed karg changes (Nvidia)"
 
   if [[ ! $KARGS =~ "rd.driver.blacklist" ]]; then
@@ -149,7 +149,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     echo "Jupiter hardware detected, skipping further setup..."
   else
     echo "Generic device detected. Performing setup..."
-    if [[ ":ROG Ally RC71L_RC71L:AYA NEO:AYANEO:AIR Plus:ONEXPLAYER:AOKZOE:G1619-01:G1621-02:MicroPC:G1619-01:G1621-02:MicroPC:AYA NEO:AYANEO:AIR Plus:AOKZOE:ONEXPLAYER:" =~ ":$SYS_ID:" ]]; then
+    if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1619-04:" =~ ":$SYS_ID:" ]]; then
       echo "HandyGCCS supported handheld detected, enabling handycon & TDP control..."
       systemctl enable --now handycon.service
       sed -i 's/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=1/g' /etc/default/steam-hardware-control
