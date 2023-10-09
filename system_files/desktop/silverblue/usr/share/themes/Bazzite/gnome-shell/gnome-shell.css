@@ -1,0 +1,9 @@
+#panelRight .panel-button {
+  -natural-hpadding: 0px;
+  -minimum-hpadding: 0px;
+}
+
+#panelRight .appindicator-box,
+#panelRight .appindicator-trayicons-box {
+  padding: 0px 6px;
+}
