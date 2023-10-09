@@ -143,6 +143,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             gnome-control-center-filesystem \
     ; fi && \
     rpm-ostree install \
+        xwaylandvideobridge \
         steamdeck-backgrounds \
         gradience \
         gnome-randr-rust \
