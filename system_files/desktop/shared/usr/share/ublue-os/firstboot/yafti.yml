@@ -58,7 +58,7 @@ screens:
           packages:
           - Install OpenTabletDriver: just --unstable install-opentabletdriver
         Oversteer:
-          description: Application to control Logitech steering wheels
+          description: Application to control supported steering wheels
           default: false
           packages:
           - Install Oversteer: just --unstable install-oversteer

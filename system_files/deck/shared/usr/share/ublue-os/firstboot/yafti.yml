@@ -67,7 +67,7 @@ screens:
           - Install Nix Package Support: sudo -A just --unstable install-nix
           - Install Fleek (Requires Nix): just --unstable install-fleek
         Oversteer:
-          description: Application to control Logitech steering wheels
+          description: Application to control supported steering wheels
           default: false
           packages:
           - Install Oversteer: just --unstable install-oversteer
