@@ -86,7 +86,7 @@ if grep -qz "Kernel driver in use: radeon" <<< $GPU_ID; then
   fi
 fi
 
-if [[ $IMAGE_FLAVOR = "nvidia" ]]; then
+if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
   echo "Checking for needed karg changes (Nvidia)"
 
   if [[ ! $KARGS =~ "rd.driver.blacklist" ]]; then
