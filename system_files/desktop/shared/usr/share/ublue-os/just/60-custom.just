@@ -247,17 +247,9 @@ unhide-grub:
 enable-flatpak-theming:
   flatpak override --user --filesystem=xdg-config/gtk-4.0:ro --filesystem=xdg-config/gtk-3.0:ro --filesystem=~/.icons:ro --filesystem=~/.themes:ro
 
-# Enable XwaylandVideoBridge for screensharing on KDE
+# Enable XwaylandVideoBridge for screensharing under Wayland
 fix-screenshare:
-  #!/usr/bin/env bash
-  IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-    mkdir -p $HOME/.config/autostart
-    cp /usr/share/applications/org.kde.xwaylandvideobridge.desktop $HOME/.config/autostart/
-  else
-    echo "This is only supported under KDE."
-  fi
+  cp /usr/share/applications/org.kde.xwaylandvideobridge.desktop $HOME/.config/autostart/
 
 # Add user to "input" group required by certain controller drivers
 add-user-to-input-group:
