@@ -86,14 +86,14 @@ install-brew-to-shell:
     echo "Brew configuration already present in .zprofile"
   else 
     echo "Adding Brew configuration to .zprofile"
-    echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> $HOME/.zprofile
+    echo 'eval "$(/var/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> $HOME/.zprofile
   fi
   if grep -q "linuxbrew" $HOME/.bash_profile
   then
     echo "Brew configuration already present in .bash_profile"
   else 
     echo "Adding Brew configuration to .bash_profile"
-    echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> $HOME/.bash_profile
+    echo 'eval "$(/var/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> $HOME/.bash_profile
   fi
 
 # Install Greenlight xCloud and xHome streaming AppImage
