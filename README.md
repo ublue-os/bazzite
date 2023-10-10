@@ -80,7 +80,7 @@ or for devices with Nvidia GPUs:
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:latest
 ```
 
-**For users with Secure Boot enabled:** Once you've installed or rebased to a Nvidia build, [be sure to follow step 3 from the ublue-os/nvidia guide](https://universal-blue.org/images/nvidia/#3-enable-secure-boot-support).
+**For users with Secure Boot enabled:** Run `just enroll-secure-boot-key` and enter the password `ublue-os` if prompted to enroll the required key.
 
 ### Steam Deck/Home Theater PCs (HTPCs)
 > [!IMPORTANT]  
@@ -171,7 +171,7 @@ Bazzite started as a project to resolve some of the issues that plague SteamOS, 
 
 Despite this project also being image-based, you are able to install any Fedora package straight from the command line. These packages will persist across updates <sub><sup>(So go ahead and install that obscure VPN software you spent an hour trying to get working in SteamOS)</sup></sub>. Additionally, Bazzite is updated multiple times a week with packages from upstream Fedora, giving you the best possible performance and latest features - all on a stable base.
 
-Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot <sub><sup>(Run `just enroll-secure-boot-keys` and enter the password `ublue-os` if prompted to enroll our key)</sup></sub> and disk encryption, making this a sensible solution for general computing. <sup><sub>(Yes, you can print from Bazzite)</sub></sup>
+Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot <sub><sup>(Run `just enroll-secure-boot-key` and enter the password `ublue-os` if prompted to enroll our key)</sup></sub> and disk encryption, making this a sensible solution for general computing. <sup><sub>(Yes, you can print from Bazzite)</sub></sup>
 
 Check out the [FAQ](https://universal-blue.org/images/bazzite/FAQ/) for other topics surrounding the project.
 
