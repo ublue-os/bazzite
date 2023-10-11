@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # SCRIPT VERSION
-USER_SETUP_VER=6
+USER_SETUP_VER=7
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 
@@ -71,8 +71,8 @@ else
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
 
-    echo 'Enabling Bazzite tofu menu fork'
-    gnome-extensions enable tofumenu@tofu
+    echo 'Enabling Bazzite Logo Menu fork'
+    gnome-extensions enable logomenu@aryan_k
 
     echo 'Disabling GNOME keyboard'
     gsettings set org.gnome.desktop.interface toolkit-accessibility false
