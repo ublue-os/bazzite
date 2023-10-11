@@ -210,7 +210,7 @@ screens:
           - Inkscape: org.inkscape.Inkscape
           - Joplin: net.cozic.joplin_desktop
           - Kdenlive: org.kde.kdenlive
-          - Krita: org.ardour.Ardour
+          - Krita: org.kde.krita
           - LibreOffice: org.libreoffice.LibreOffice
           - Obsidian: md.obsidian.Obsidian
           - OnlyOffice: org.onlyoffice.desktopeditors
