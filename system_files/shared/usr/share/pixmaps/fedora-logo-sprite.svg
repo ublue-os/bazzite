@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="500"
+   height="500"
+   viewBox="0 0 500 500"
+   fill="none"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="fedora-logo-sprite.svg"
+   inkscape:export-filename="../Documents/system-logo-white.png"
+   inkscape:export-xdpi="48.383999"
+   inkscape:export-ydpi="48.383999"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview8"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.9583333"
+     inkscape:cx="250.21277"
+     inkscape:cy="249.95745"
+     inkscape:window-width="1509"
+     inkscape:window-height="1288"
+     inkscape:window-x="26"
+     inkscape:window-y="23"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg8" />
+  <path
+     d="M 0,100 C 0,44.7715 44.7715,0 100,0 h 150 c 138.071,0 250,111.929 250,250 v 0 c 0,138.071 -111.929,250 -250,250 v 0 C 111.929,500 0,388.071 0,250 Z"
+     fill="url(#paint0_linear_1016_105)"
+     id="path1"
+     style="fill:url(#paint0_linear_1016_105)" />
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="m 128,0 h 64 V 128 H 326.185 C 382.416,128 428,173.584 428,229.815 428,339.269 339.27,428 229.815,428 173.584,428 128,382.416 128,326.185 V 192 H 0 v -64 h 128 z m 64,192 V 326.185 C 192,347.07 208.93,364 229.815,364 303.923,364 364,303.923 364,229.815 364,208.93 347.07,192 326.185,192 Z"
+     fill="#ffffff"
+     fill-opacity="0.5"
+     id="path2" />
+  <path
+     d="M 192,60 C 192,43.4315 178.569,30 162,30 h -4 c -16.569,0 -30,13.4315 -30,30 v 68 H 60 c -16.5685,0 -30,13.431 -30,30 v 4 c 0,16.569 13.4315,30 30,30 h 68 v 68 c 0,16.569 13.431,30 30,30 h 4 c 16.569,0 30,-13.431 30,-30 v -68 h 68 c 16.569,0 30,-13.431 30,-30 v -4 c 0,-16.569 -13.431,-30 -30,-30 h -68 z"
+     fill="#ffffff"
+     fill-opacity="0.7"
+     id="path3" />
+  <path
+     d="m 262.5,155.67 c 3.333,1.924 3.333,6.736 0,8.66 l -21,12.124 c -3.333,1.925 -7.5,-0.481 -7.5,-4.33 v -24.248 c 0,-3.849 4.167,-6.255 7.5,-4.33 z"
+     fill="#ffffff"
+     id="path4" />
+  <path
+     d="m 164.33,262.5 c -1.924,3.333 -6.736,3.333 -8.66,0 l -12.124,-21 c -1.925,-3.333 0.481,-7.5 4.33,-7.5 h 24.248 c 3.849,0 6.255,4.167 4.33,7.5 z"
+     fill="#ffffff"
+     id="path5" />
+  <path
+     d="m 155.67,57.5 c 1.924,-3.333 6.736,-3.333 8.66,0 l 12.124,21 c 1.925,3.333 -0.481,7.5 -4.33,7.5 h -24.248 c -3.849,0 -6.255,-4.167 -4.33,-7.5 z"
+     fill="#ffffff"
+     id="path6" />
+  <path
+     d="m 57.5,164.33 c -3.333,-1.924 -3.333,-6.736 0,-8.66 l 21,-12.124 c 3.333,-1.925 7.5,0.481 7.5,4.33 v 24.248 c 0,3.849 -4.167,6.255 -7.5,4.33 z"
+     fill="#ffffff"
+     id="path7" />
+  <defs
+     id="defs8">
+    <linearGradient
+       id="paint0_linear_1016_105"
+       x1="50"
+       y1="50"
+       x2="550"
+       y2="550"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-50,-50)">
+      <stop
+         offset="0.0684898"
+         stop-color="#0047AB"
+         id="stop7" />
+      <stop
+         offset="0.741212"
+         stop-color="#8A2BE2"
+         id="stop8" />
+    </linearGradient>
+  </defs>
+</svg>

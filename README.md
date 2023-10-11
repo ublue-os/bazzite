@@ -1,8 +1,5 @@
 <p align="center">
-  <img src="/repo_content/logo.png?raw=true" alt="Bazzite Logo"/>
-</p>
-<p align="center">
-  <img src="/repo_content/text_logo.png?raw=true" alt="Bazzite"/>
+  <img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
@@ -254,6 +251,7 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 Bazzite is a community effort and wouldn't exist without everyone's support. Below are some of the people who've helped us along the way:
 
+- [rei0260](https://discord.com/users/rei0260) - For creating our logo and overall branding.
 - [evlaV](https://gitlab.com/evlaV) - For making Valve's code available and for being [this person](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out. It's our Nix-based cousin.

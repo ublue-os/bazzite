@@ -12,7 +12,7 @@ ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
-COPY system_files/shared system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
+COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
 COPY --from=ghcr.io/ublue-os/akmods:main-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
@@ -224,6 +224,7 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
 ; fi
 
 # Cleanup & Finalize
+COPY system_files/shared /
 RUN /tmp/image-info.sh && \
     rm /usr/share/applications/shredder.desktop && \
     rm /usr/share/vulkan/icd.d/lvp_icd.*.json && \
@@ -301,7 +302,7 @@ ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
-COPY system_files/shared system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
+COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
 
 # Setup Copr repos
 RUN if [[ "${IMAGE_FLAVOR}" = "main" || "${IMAGE_NAME}" = "nvidia" ]]; then \
@@ -461,6 +462,7 @@ RUN rpm-ostree install \
     ; fi
 
 # Cleanup & Finalize
+COPY system_files/shared /
 RUN /tmp/image-info.sh && \
     rm /usr/share/applications/wine*.desktop && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
