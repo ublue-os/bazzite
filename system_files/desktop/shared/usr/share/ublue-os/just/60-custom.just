@@ -326,3 +326,7 @@ disable-watchdog:
     WATCHDOG_KARGS="$WATCHDOG_KARGS --append-if-missing=modprobe.blacklist=sp5100_tco"
   fi
   rpm-ostree kargs $WATCHDOG_KARGS
+
+# Add SELinux file context for default looking-glass shm file
+selinux-looking-glass:
+  sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
