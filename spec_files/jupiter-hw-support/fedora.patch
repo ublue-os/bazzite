@@ -188,16 +188,6 @@ index 9e08cd6..189c805 100755
  
  set -eu
  
-diff --git a/usr/bin/steamos-polkit-helpers/steamos-retrigger-automounts b/usr/bin/steamos-polkit-helpers/steamos-retrigger-automounts
-index 4e92b57..2a5bfc4 100755
---- a/usr/bin/steamos-polkit-helpers/steamos-retrigger-automounts
-+++ b/usr/bin/steamos-polkit-helpers/steamos-retrigger-automounts
-@@ -1,4 +1,4 @@
--#!/bin/bash
-+#!/usr/bin/sh
- 
- # Helper to send reload to all active steamos-automount services, via pkexec if necessary/allowed
- 
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-select-branch b/usr/bin/steamos-polkit-helpers/steamos-select-branch
 index 1b1d6c1..73f8547 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-select-branch
