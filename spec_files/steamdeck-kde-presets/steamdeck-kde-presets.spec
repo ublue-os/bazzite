@@ -29,14 +29,14 @@ mkdir -p %{buildroot}%{_datadir}/
 mkdir -p %{buildroot}%{_bindir}/
 mkdir -p %{buildroot}%{_prefix}/lib/
 mkdir -p %{buildroot}%{_sysconfdir}/
-mv usr/share/icons/hicolor/scalable/places/distributor-logo.svg usr/share/icons/hicolor/scalable/places/steamdeck.svg
-rm usr/share/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/* %{buildroot}%{_prefix}/lib
 cp -rv etc/* %{buildroot}%{_sysconfdir}
 mv %{buildroot}%{_sysconfdir}/skel %{buildroot}%{_sysconfdir}/skel.d
+mv %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck.svg
 # Remove unneeded files
+rm %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/steam.desktop
 rm %{buildroot}%{_bindir}/steamos-nested-desktop
 rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
