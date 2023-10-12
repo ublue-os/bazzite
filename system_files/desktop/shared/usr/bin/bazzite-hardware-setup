@@ -6,7 +6,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=8
+HWS_VER=9
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -64,19 +64,6 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
   fi
   if [[ ! $KARGS =~ "modprobe.blacklist=sp5100_tco" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=modprobe.blacklist=sp5100_tco"
-  fi
-
-  # FSTAB CONFIGURATION
-  if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
-    echo "Applying fstab param adjustments"
-    if grep -q '64GB' <<< $(lsblk -o MODEL); then
-      echo "64GB eMMC detected"
-      sed -i 's/compress=zstd:1/noatime,lazytime,discard=sync,compress-force=zstd:3,space_cache=v2/g' /etc/fstab
-    else
-      sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,discard=async,compress-force=zstd:1,space_cache=v2/g' /etc/fstab
-    fi
-  else
-    echo "No fstab param adjustments needed"
   fi
 fi
 
@@ -175,6 +162,19 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     systemctl disable --now batterylimit.service
     systemctl --global disable --now sdgyrodsu.service
   fi
+fi
+
+# FSTAB CONFIGURATION
+if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
+  echo "Applying fstab param adjustments"
+  if grep -q '64GB' <<< $(lsblk -o MODEL); then
+    echo "64GB eMMC detected"
+    sed -i 's/compress=zstd:1/noatime,lazytime,discard=sync,compress-force=zstd:3,space_cache=v2/g' /etc/fstab
+  else
+    sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,discard=async,compress-force=zstd:1,space_cache=v2/g' /etc/fstab
+  fi
+else
+  echo "No fstab param adjustments needed"
 fi
 
 # HOSTNAME FIX
