@@ -27,7 +27,10 @@ REMOVE_LIST=$(cat /etc/flatpak/remove)
 if [[ -n $INSTALL_LIST ]]; then
   for flatpak in $INSTALL_LIST; do
     if grep -qvz $flatpak <<< $FLATPAK_LIST; then
-      flatpak install --system --noninteractive flathub $flatpak
+      if ! flatpak install --system --noninteractive flathub $flatpak; then
+        # exit on error
+        exit 1
+      fi
     fi
   done
 fi
@@ -40,6 +43,8 @@ if [[ -n $REMOVE_LIST ]]; then
     fi
   done
 fi
+
+notify-send "Bazzite Portal" "Finished installing system flatpaks" --app-name="Bazzite Portal" -u NORMAL -i /usr/share/ublue-os/bazzite/logo.svg
 
 mkdir -p /etc/bazzite
 echo $VER > $VER_FILE
