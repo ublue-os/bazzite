@@ -92,6 +92,7 @@ process-scheduler enable=true {
         nice
         otd-daemon
         oversteer
+        PluginLoader
         powerbuttond
         rtkit-daemon
         systemd
