@@ -29,6 +29,8 @@ mkdir -p %{buildroot}%{_datadir}/
 mkdir -p %{buildroot}%{_bindir}/
 mkdir -p %{buildroot}%{_prefix}/lib/
 mkdir -p %{buildroot}%{_sysconfdir}/
+mv usr/share/icons/hicolor/scalable/places/distributor-logo.svg usr/share/icons/hicolor/scalable/places/steamdeck.svg
+rm usr/share/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/* %{buildroot}%{_prefix}/lib
@@ -41,6 +43,7 @@ rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
 rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
 rm %{buildroot}%{_sysconfdir}/xdg/kcm-about-distrorc
+rm %{buildroot}%{_sysconfdir}/X11/Xsession.d/50rotate-screen
 
 # Do post-installation
 %post
@@ -56,7 +59,6 @@ rm %{buildroot}%{_sysconfdir}/xdg/kcm-about-distrorc
 %files
 %{_datadir}/color-schemes/Vapor.colors
 %{_datadir}/color-schemes/VGUI.colors
-%{_sysconfdir}/X11/Xsession.d/50rotate-screen
 %{_sysconfdir}/sddm.conf.d/steamdeck.conf
 %{_sysconfdir}/skel.d/Desktop/Return.desktop
 %{_sysconfdir}/xdg/autostart/ibus.desktop
