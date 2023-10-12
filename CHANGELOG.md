@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.3.0](https://github.com/ublue-os/bazzite/compare/v1.2.2...v1.3.0) (2023-10-12)
+
+
+### Features
+
+* Add option to disable DNS over TLS to Bazzite Portal ([52f6e30](https://github.com/ublue-os/bazzite/commit/52f6e30a55d0a1b25a2e4410b531d192fe29db21))
+* Enable Steam Patch for any hardware other than Steam Deck, fixes resolution issue that requires desktop gamers to select "Native" for every title in gamemode. ([3a9577c](https://github.com/ublue-os/bazzite/commit/3a9577cdfc1422ee8be44b755de272a52c7421bf))
+* **gnome:** Add optional shell theme that makes appindicators function like a proper tray ([de76430](https://github.com/ublue-os/bazzite/commit/de76430f553b5ddadebc5392234e64396b74d675))
+* **gnome:** Add xwaylandvideobridge ([4b91901](https://github.com/ublue-os/bazzite/commit/4b919010b34d3625d19a5afa0c9a5f8af3479c80))
+* **gnome:** Move from extest to libei ([77a6671](https://github.com/ublue-os/bazzite/commit/77a667162859dd48a4aa772d7919a6bf1505e4c5))
+* **gnome:** Restore appindicator ([4b54774](https://github.com/ublue-os/bazzite/commit/4b547745072cff586f3b3bb81952e3747cccd79e))
+* **gnome:** Switch to new Logo Menu fork ([98c2167](https://github.com/ublue-os/bazzite/commit/98c21679cefc36b935340e09a50e09d4030eb730))
+
+
+### Bug Fixes
+
+* Correct issue detecting nvidia flavor ([f6090db](https://github.com/ublue-os/bazzite/commit/f6090db760e35c7716c2b3902cf2a6b4d5ba831b))
+* Correct issue with opentabletdriver just command if ~/.config/systemd/user folder doesn't exist ([f42737a](https://github.com/ublue-os/bazzite/commit/f42737a09a30c3371bc3753bb8c0f36eef8fc3dc))
+* Correct PathExists check in steam-patch@.service ([84a0e36](https://github.com/ublue-os/bazzite/commit/84a0e36c6fd4b72898640272fb65c602d862152b))
+* install Krita instead of Ardour when user requests Krita ([#420](https://github.com/ublue-os/bazzite/issues/420)) ([793ea46](https://github.com/ublue-os/bazzite/commit/793ea46ef173849a20bd2af303b55c13eb9d3579))
+* **nvidia:** Add LatencyFlex, vkBasalt, MangoHUD, and Vulkan-Tools packages from Deck images. ([5b0ca63](https://github.com/ublue-os/bazzite/commit/5b0ca63022f6ae137bf275c777fb925141661898))
+
 ## [1.2.2](https://github.com/ublue-os/bazzite/compare/v1.2.1...v1.2.2) (2023-10-08)
 
 
