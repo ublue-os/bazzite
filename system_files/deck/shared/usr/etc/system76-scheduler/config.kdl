@@ -75,6 +75,7 @@ process-scheduler enable=true {
         include descends="gamemoderun"
         include descends="ionice"
         include descends="nice"
+        include descends="PluginLoader"
         include descends="taskset"
         include descends="schedtool"
         chrt
