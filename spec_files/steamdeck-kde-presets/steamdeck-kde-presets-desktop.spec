@@ -54,6 +54,7 @@ rm %{buildroot}%{_sysconfdir}/xdg/powermanagementprofilesrc
 rm %{buildroot}%{_sysconfdir}/xdg/kscreenlockerrc
 rm %{buildroot}%{_sysconfdir}/xdg/baloofilerc
 rm %{buildroot}%{_sysconfdir}/xdg/kdeglobals
+rm %{buildroot}%{_sysconfdir}/xdg/kcm-about-distrorc
 cp %{SOURCE1} %{buildroot}%{_sysconfdir}/xdg/kdeglobals
 
 # Do post-installation

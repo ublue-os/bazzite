@@ -40,6 +40,7 @@ rm %{buildroot}%{_bindir}/steamos-nested-desktop
 rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
 rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
+rm %{buildroot}%{_sysconfdir}/xdg/kcm-about-distrorc
 
 # Do post-installation
 %post
