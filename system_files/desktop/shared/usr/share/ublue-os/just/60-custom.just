@@ -292,7 +292,7 @@ enable-vfio:
         --append-if-missing="${VENDOR_KARG}" \
         --append-if-missing="iommu=pt" \
         --append-if-missing="rd.driver.pre=vfio_pci" \
-        --append-if-missing="vfio.pci.disable_vga=1"
+        --append-if-missing="vfio_pci.disable_vga=1"
       echo "VFIO enabled, make sure you enable IOMMU, VT-d or AMD-v in your BIOS!"
       echo "Please understand that since this is such a niche use case, support will be very limited!"
       echo "To add your unused/second GPU device ids to the vfio driver by running"
