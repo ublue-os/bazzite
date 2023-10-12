@@ -71,8 +71,13 @@ else
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
 
-    echo 'Enabling Bazzite Logo Menu fork'
-    gnome-extensions enable logomenu@aryan_k
+    if [ ${FEDORA_MAJOR_VERSION} -gt 38 ]; then
+      echo 'Enabling Bazzite Logo Menu fork'
+      gnome-extensions enable logomenu@aryan_k
+    else
+      echo 'Enabling Bazzite Tofu Menu fork'
+      gnome-extensions enable tofumenu@tofu
+    fi
 
     echo 'Disabling GNOME keyboard'
     gsettings set org.gnome.desktop.interface toolkit-accessibility false
