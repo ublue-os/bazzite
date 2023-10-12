@@ -327,6 +327,6 @@ disable-watchdog:
   fi
   rpm-ostree kargs $WATCHDOG_KARGS
 
-# Add SELinux file context for default looking-glass shm file
+# Add SELinux file context for default looking-glass shm file so that libvirt can create it when needed
 selinux-looking-glass:
   sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
