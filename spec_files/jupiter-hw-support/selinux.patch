@@ -1,17 +1,16 @@
 diff --git a/etc/systemd/system/steamos-automount@.service b/etc/systemd/system/steamos-automount@.service
-index e71a736..dd700da 100644
+index 96e8818..a16650c 100644
 --- a/etc/systemd/system/steamos-automount@.service
 +++ b/etc/systemd/system/steamos-automount@.service
-@@ -14,6 +14,6 @@ Description=Mount removable drive %i and notify Steam
+@@ -14,5 +14,5 @@ Description=Mount removable drive %i
  [Service]
  Type=oneshot
  RemainAfterExit=true
 -ExecStart=/usr/lib/hwsupport/steamos-automount.sh add %i
 -ExecStop=/usr/lib/hwsupport/steamos-automount.sh remove %i
--ExecReload=/usr/lib/hwsupport/steamos-automount.sh retrigger %i
 +ExecStart=/usr/libexec/steamos-automount add %i
 +ExecStop=/usr/libexec/steamos-automount remove %i
-+ExecReload=/usr/libexec/steamos-automount retrigger %i
+
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard b/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
 index 53b4f2a..9022762 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
