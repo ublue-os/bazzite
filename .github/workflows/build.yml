@@ -1,7 +1,7 @@
 name: Build Bazzite
 on:
   schedule:
-    - cron: '0 9 * * 2,5' # 9 am utc tues thurs
+    - cron: '0 9 * * 2,5' # 9 am utc tues fri
   pull_request:
     branches:
       - main
@@ -11,16 +11,16 @@ on:
       - 'repo_content/**'
       - 'spec_files/**'
       - 'post_install_files/**'
-  push:
-    branches:
+  #push:
+    #branches:
       - main
-    paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - 'repo_content/**'
-      - 'spec_files/**'
-      - 'post_install_files/**'
-  merge_group:
+    #paths-ignore:
+      #- '**.md'
+      #- '**.txt'
+      #- 'repo_content/**'
+      #- 'spec_files/**'
+      #- 'post_install_files/**'
+  #merge_group:
   workflow_dispatch:
 env:
     IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
@@ -36,9 +36,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_flavor: [main, nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
-        base_name: [bazzite, bazzite-deck]
-        base_image_name: [kinoite, silverblue]
+        image_flavor: [main, #nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
+        base_name: [bazzite, #bazzite-deck]
+        base_image_name: [kinoite, #sliverblue]
         major_version: [38, 39]
         include:
           - major_version: 38
