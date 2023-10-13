@@ -1,5 +1,6 @@
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
+ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-main}"
 ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$IMAGE_FLAVOR}"
 ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-38}"
@@ -8,16 +9,16 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG IMAGE_VENDOR="ublue-os"
-ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
+ARG AKMODS_FLAVOR="${AKMODS_FLAVOR}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
-COPY --from=ghcr.io/ublue-os/akmods:main-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
-RUN if [[ "${IMAGE_FLAVOR}" = "main" || "${IMAGE_NAME}" = "nvidia" ]]; then \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
+COPY --from=ghcr.io/ublue-os/akmods:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
+RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     wget https://negativo17.org/repos/fedora-multimedia.repo -O /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     if [[ "${FEDORA_MAJOR_VERSION}" -ge "39" ]]; then \
         rpm-ostree install \
@@ -39,8 +40,7 @@ RUN if [[ "${IMAGE_FLAVOR}" = "main" || "${IMAGE_NAME}" = "nvidia" ]]; then \
         /tmp/akmods-rpms/kmods/*winesync*.rpm && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     mkdir -p /etc/akmods-rpms/ && \
-    mv /tmp/akmods-rpms/kmods/*steamdeck*.rpm /etc/akmods-rpms/steamdeck.rpm \
-; fi
+    mv /tmp/akmods-rpms/kmods/*steamdeck*.rpm /etc/akmods-rpms/steamdeck.rpm
 
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
@@ -250,9 +250,7 @@ RUN /tmp/image-info.sh && \
     pip install --prefix=/usr yafti && \
     pip install --prefix=/usr hyfetch && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
-    if [[ "${IMAGE_FLAVOR}" = "main" || "${IMAGE_NAME}" = "nvidia" ]]; then \
-        sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo \
-    ; fi && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
     sed -i 's@enabled=1@enabeld=0@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo && \
@@ -272,7 +270,7 @@ RUN /tmp/image-info.sh && \
     mkdir -p /usr/etc/flatpak/remotes.d && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d && \
     systemctl enable com.system76.Scheduler.service && \
-    if [[ "${IMAGE_FLAVOR}" = "main" || "${IMAGE_NAME}" = "nvidia" ]]; then \
+    if [[ "${FEDORA_MAJOR_VERSION}" -le "38" ]]; then \
         systemctl enable displaylink.service \
     ; fi && \
     systemctl enable btrfs-dedup@var-home.timer && \
@@ -309,16 +307,14 @@ FROM bazzite as bazzite-deck
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG IMAGE_VENDOR="ublue-os"
-ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
 
 # Setup Copr repos
-RUN if [[ "${IMAGE_FLAVOR}" = "main" || "${IMAGE_NAME}" = "nvidia" ]]; then \
-        sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo \
-    ; fi && \
+RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
@@ -328,11 +324,9 @@ RUN if [[ "${IMAGE_FLAVOR}" = "main" || "${IMAGE_NAME}" = "nvidia" ]]; then \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo
 
 # Install Valve's Steam Deck drivers as kmod
-RUN if [[ "${IMAGE_FLAVOR}" = "main" || "${IMAGE_NAME}" = "nvidia" ]]; then \
-    rpm-ostree install \
+RUN rpm-ostree install \
     /etc/akmods-rpms/steamdeck.rpm && \
     rm -rf /etc/akmods-rpms \
-; fi
 
 # Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
 RUN rpm-ostree override replace \
@@ -491,9 +485,7 @@ RUN /tmp/image-info.sh && \
     ; fi && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/usr/etc/yafti.yml" && \
     sed -i 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/g' /etc/systemd/logind.conf && \
-    if [[ "${IMAGE_FLAVOR}" = "main" || "${IMAGE_NAME}" = "nvidia" ]]; then \
-        sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo \
-    ; fi && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
