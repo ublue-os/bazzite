@@ -451,7 +451,7 @@ RUN rpm-ostree install \
         lutris \
         wxGTK \
         libFAudio \
-        gamescope \
+        gamescope.x86_64 \
         gamescope.i686 \
         gamescope-session \
         wine-core \
