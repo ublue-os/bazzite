@@ -1,20 +1,25 @@
 #!/usr/bin/env bash
 
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
+SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+
 # SCRIPT VERSION
 USER_SETUP_VER=8
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
+USER_SETUP_FEDORA_VER_FILE="$HOME/.bazzite-configured-fedora-version"
+USER_SETUP_FEDORA_VER_RAN=$(cat $USER_SETUP_FEDORA_VERSION)
 
 # Run script if updated
 if [[ -f $USER_SETUP_VER_FILE && $USER_SETUP_VER = $USER_SETUP_VER_RAN ]]; then
-  echo "User setup has already run. Exiting..."
-  exit 0
+  if [[ -f USER_SETUP_FEDORA_VER_FILE && $FEDORA_VERSION = $USER_SETUP_FEDORA_VER_RAN ]]; then
+    echo "User setup has already run. Exiting..."
+    exit 0
+  fi
 fi
-
-IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
-BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
 if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Running setup for Kinoite'
@@ -154,3 +159,4 @@ fi
 # Prevent future executions
 echo "Writing state file"
 echo $USER_SETUP_VER > $USER_SETUP_VER_FILE
+echo $FEDORA_VERSION > $USER_SETUP_FEDORA_VER_FILE
