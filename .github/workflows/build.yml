@@ -11,16 +11,16 @@ on:
       - 'repo_content/**'
       - 'spec_files/**'
       - 'post_install_files/**'
-  #push:
-    #branches:
+   #myedit push:
+    #myedit branches:
       - main
-    #paths-ignore:
-      #- '**.md'
-      #- '**.txt'
-      #- 'repo_content/**'
-      #- 'spec_files/**'
-      #- 'post_install_files/**'
-  #merge_group:
+    #myedit paths-ignore:
+      #myedit - '**.md'
+      #myedit - '**.txt'
+      #myedit - 'repo_content/**'
+      #myedit - 'spec_files/**'
+      #myedit - 'post_install_files/**'
+  #myedit merge_group:
   workflow_dispatch:
 env:
     IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
@@ -36,9 +36,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_flavor: [main, #nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
-        base_name: [bazzite, #bazzite-deck]
-        base_image_name: [kinoite, #sliverblue]
+        image_flavor:[main] #myedit[main,nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
+        base_name: [bazzite] #myedit[bazzite,bazzite-deck]
+        base_image_name: [kinoite] #myedit [kinoite,sliverblue]
         major_version: [38, 39]
         include:
           - major_version: 38
