@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_flavor:[main] #myedit[main,nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
+        image_flavor: [main] #myedit[main,nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
         base_name: [bazzite] #myedit[bazzite,bazzite-deck]
         base_image_name: [kinoite] #myedit [kinoite,sliverblue]
         major_version: [38, 39]
