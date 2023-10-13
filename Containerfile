@@ -329,25 +329,25 @@ RUN rpm-ostree install \
     rm -rf /etc/akmods-rpms \
 
 # Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
-RUN rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        mesa-filesystem \
-        mesa-dri-drivers \
-        mesa-libEGL \
-        mesa-libEGL-devel \
-        mesa-libgbm \
-        mesa-libGL \
-        mesa-libglapi \
-        mesa-vulkan-drivers && \
-    if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
-        rpm-ostree override replace \
+RUN if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
+    rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+            mesa-filesystem \
+            mesa-dri-drivers \
+            mesa-libEGL \
+            mesa-libEGL-devel \
+            mesa-libgbm \
+            mesa-libGL \
+            mesa-libglapi \
+            mesa-vulkan-drivers && \
+    rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
             udisks2 \
             libudisks2 \
             udisks2-btrfs \
-    ; fi
+; fi
 
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
@@ -453,6 +453,7 @@ RUN rpm-ostree install \
         wxGTK \
         libFAudio \
         gamescope \
+        gamescope.i686 \
         gamescope-session \
         wine-core \
         winetricks \
