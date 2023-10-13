@@ -172,6 +172,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-classic-session \
         gnome-tour \
         gnome-extensions-app \
+        gnome-initial-setup \
 ; fi
 
 # Install ROCM and Waydroid on non-Nvidia images
