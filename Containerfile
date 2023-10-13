@@ -54,7 +54,6 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/repo/fedora-$(rpm -E %fedora)/kylegospo-wallpaper-engine-kde-plugin-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/repo/fedora-$(rpm -E %fedora)/kylegospo-gnome-vrr-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-gnome-vrr.repo && \
     wget https://copr.fedorainfracloud.org/coprs/ycollet/audinux/repo/fedora-$(rpm -E %fedora)/ycollet-audinux-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
-    wget https://copr.fedorainfracloud.org/coprs/lyessaadi/gradience/repo/fedora-$(rpm -E %fedora)/lyessaadi-gradience-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_lyessaadi-gradience.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/rom-properties/repo/fedora-$(rpm -E %fedora)/kylegospo-rom-properties-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-rom-properties.repo && \
     wget https://pkgs.tailscale.com/stable/fedora/tailscale.repo -O /etc/yum.repos.d/tailscale.repo && \
     sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo
@@ -118,7 +117,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         kdeconnectd \
         extest.i686 \
         rom-properties-kf5 && \
-    if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
+    if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
@@ -135,7 +134,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rm -rf /tmp/wallpaper-engine-kde-plugin && \
     sed -i 's@After=plasma-core.target@After=plasma-core.target\nAfter=xdg-desktop-portal.service@g' /usr/lib/systemd/user/plasma-xdg-desktop-portal-kde.service \
 ; else \
-    if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
+    if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
@@ -156,7 +155,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree install \
         xwaylandvideobridge \
         steamdeck-backgrounds \
-        gradience \
         gnome-randr-rust \
         gnome-shell-extension-user-theme \
         gnome-shell-extension-gsconnect \
@@ -262,7 +260,6 @@ RUN /tmp/image-info.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-gnome-vrr.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_lyessaadi-gradience.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-rom-properties.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/tailscale.repo && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
@@ -270,7 +267,7 @@ RUN /tmp/image-info.sh && \
     mkdir -p /usr/etc/flatpak/remotes.d && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d && \
     systemctl enable com.system76.Scheduler.service && \
-    if [[ "${FEDORA_MAJOR_VERSION}" -le "38" ]]; then \
+    if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
         systemctl enable displaylink.service \
     ; fi && \
     systemctl enable btrfs-dedup@var-home.timer && \
@@ -329,7 +326,7 @@ RUN rpm-ostree install \
     rm -rf /etc/akmods-rpms \
 
 # Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
-RUN if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
+RUN if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
     rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
