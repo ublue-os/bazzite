@@ -323,7 +323,7 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
 # Install Valve's Steam Deck drivers as kmod
 RUN rpm-ostree install \
     /etc/akmods-rpms/steamdeck.rpm && \
-    rm -rf /etc/akmods-rpms \
+    rm -rf /etc/akmods-rpms
 
 # Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
 RUN if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
