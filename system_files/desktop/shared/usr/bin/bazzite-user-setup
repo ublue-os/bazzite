@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # SCRIPT VERSION
-USER_SETUP_VER=7
+USER_SETUP_VER=8
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 
@@ -60,12 +60,12 @@ else
   gsettings set org.gtk.gtk4.settings.file-chooser sort-directories-first true
 
   echo 'Installing Gradience presets'
-  mkdir -p $HOME/.config/presets/user/
-  if [[ ! -f "$HOME/.config/presets/user/vapor.json" ]]; then
-    ln -s /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.config/presets/user/vapor.json
+  mkdir -p "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/"
+  if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json" ]]; then
+    ln -s /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json
   fi
-  if [[ ! -f "$HOME/.config/presets/user/vgui2.json" ]]; then
-    ln -s /usr/share/ublue-os/bazzite/themes/vgui2.json $HOME/.config/presets/user/vgui2.json
+  if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json" ]]; then
+    ln -s /usr/share/ublue-os/bazzite/themes/vgui2.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json
   fi
 
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then

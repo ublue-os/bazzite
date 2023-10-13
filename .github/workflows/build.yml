@@ -39,7 +39,7 @@ jobs:
         image_flavor: [main, nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
         base_name: [bazzite, bazzite-deck]
         base_image_name: [kinoite, silverblue]
-        major_version: [38]
+        major_version: [38, 39]
         include:
           - major_version: 38
             is_latest_version: false
@@ -47,6 +47,9 @@ jobs:
           - major_version: 38
             is_latest_version: true
             is_stable_version: true
+          - major_version: 38
+            is_latest_version: true
+            is_stable_version: false
         exclude:
           - base_name: bazzite-deck
             image_flavor: nvidia
@@ -85,6 +88,13 @@ jobs:
               else
                   echo "IMAGE_NAME=${{ format('{0}{1}-{2}', matrix.base_name, '${DESKTOP}', matrix.image_flavor) }}" >> $GITHUB_ENV
               fi
+          fi
+          if [[ "${{ matrix.image_flavor }}" =~ "asus" ]]; then
+              echo "AKMODS_FLAVOR=asus" >> $GITHUB_ENV
+          elif [[ "${{ matrix.image_flavor }}" =~ "surface" ]]; then
+              echo "AKMODS_FLAVOR=surface" >> $GITHUB_ENV
+          else
+              echo "AKMODS_FLAVOR=main" >> $GITHUB_ENV
           fi
 
       - name: Generate tags
@@ -163,6 +173,7 @@ jobs:
             IMAGE_FLAVOR=${{ matrix.image_flavor }}
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
+            AKMODS_FLAVOR=${{ env.AKMODS_FLAVOR }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
           extra-args: |

@@ -171,10 +171,10 @@ enable-vapor-theme:
     gsettings set org.gnome.desktop.interface document-font-name "Noto Sans 11"
     gsettings set org.gnome.desktop.interface font-name "Noto Sans 11"
     gsettings set org.gnome.desktop.sound theme-name "steam"
-    gradience-cli flatpak-overrides -e both
+    flatpak run --command=gradience-cli com.github.GradienceTeam.Gradience flatpak-overrides -e both
     sudo flatpak override --filesystem=xdg-config/gtk-4.0
     sudo flatpak override --filesystem=xdg-config/gtk-3.0
-    gradience-cli apply -p /usr/share/ublue-os/bazzite/themes/vapor.json
+    flatpak run --command=gradience-cli com.github.GradienceTeam.Gradience apply -n "Vapor"
   else
     echo "This is only supported under GNOME."
   fi
@@ -196,10 +196,10 @@ enable-vgui2-theme:
     gsettings set org.gnome.desktop.interface document-font-name "Noto Sans 11"
     gsettings set org.gnome.desktop.interface font-name "Noto Sans 11"
     gsettings set org.gnome.desktop.sound theme-name "steam"
-    gradience-cli flatpak-overrides -e both
+    flatpak run --command=gradience-cli com.github.GradienceTeam.Gradience flatpak-overrides -e both
     sudo flatpak override --filesystem=xdg-config/gtk-4.0
     sudo flatpak override --filesystem=xdg-config/gtk-3.0
-    gradience-cli apply -p /usr/share/ublue-os/bazzite/themes/vgui2.json
+    flatpak run --command=gradience-cli com.github.GradienceTeam.Gradience apply -n "VGUI2"
   else 
     echo "This is only supported under GNOME."
   fi
