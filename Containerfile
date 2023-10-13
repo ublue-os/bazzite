@@ -8,7 +8,7 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-38}"
 FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
-ARG IMAGE_VENDOR="caseya565"
+ARG IMAGE_VENDOR="caseya565" #myedit ARG IMAGE_VENDOR="ublue-os"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
 ARG AKMODS_FLAVOR="${AKMODS_FLAVOR}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
@@ -58,7 +58,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://pkgs.tailscale.com/stable/fedora/tailscale.repo -O /etc/yum.repos.d/tailscale.repo && \
     sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo
 
-
+#my edit
 # Setup Torguard
 RUN mkdir /var/opt && \
     rpm -Uvh https://updates.torguard.biz/Software/Linux/torguard-latest-amd64.rpm && \
@@ -111,10 +111,12 @@ RUN rpm-ostree install \
     twitter-twemoji-fonts \
     lato-fonts \
     fira-code-fonts && \
+    #my edit start
     corectrl \
     piper \
     xsensors \
     langpacks-en && \
+    #my edit end
     wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.service -O /usr/lib/systemd/system/btrfs-dedup@.service && \
     wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.timer -O /usr/lib/systemd/system/btrfs-dedup@.timer
 
