@@ -111,7 +111,7 @@ RUN rpm-ostree install \
     mesa-libGLU \
     twitter-twemoji-fonts \
     lato-fonts \
-    fira-code-fonts && \
+    fira-code-fonts \
     #my edit start
     corectrl \
     piper \
