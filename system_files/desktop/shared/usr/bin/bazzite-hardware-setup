@@ -23,6 +23,7 @@ KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 GPU_ID=$(lspci -k | grep -A 3 -E "(VGA|3D)")
 KARGS=$(rpm-ostree kargs)
+INITRAMFS=$(rpm-ostree initramfs)
 NEEDED_KARGS=""
 echo "Current kargs: $KARGS"
 mkdir -p /etc/bazzite
@@ -126,6 +127,10 @@ fi
 
 if [[ ! $KARGS =~ "rd.luks.options" ]]; then
   NEEDED_KARGS="$NEEDED_KARGS --append=rd.luks.options=discard"
+fi
+
+if [[ $INITRAMFS =~ "disabled" ]]; then
+  rpm-ostree initramfs --enable --arg=-I --arg=/etc/crypttab
 fi
 
 if [[ -n "$NEEDED_KARGS" ]]; then
