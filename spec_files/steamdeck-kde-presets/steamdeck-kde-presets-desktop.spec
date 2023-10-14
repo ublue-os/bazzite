@@ -33,13 +33,13 @@ mkdir -p %{buildroot}%{_sysconfdir}/
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv etc/* %{buildroot}%{_sysconfdir}
 mv %{buildroot}%{_sysconfdir}/skel %{buildroot}%{_sysconfdir}/skel.d
-mv %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck.svg
+mv %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck.svg
 # Remove unneeded files
 rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
 rm %{buildroot}%{_datadir}/kservices5/ServiceMenus/steam.desktop
 rm %{buildroot}%{_datadir}/X11/xorg.conf.d/99-pointer.conf
-rm %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg
+rm %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo.svg
 rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
 rm %{buildroot}%{_sysconfdir}/sddm.conf.d/steamdeck.conf
 rm %{buildroot}%{_sysconfdir}/skel.d/Desktop/Return.desktop
