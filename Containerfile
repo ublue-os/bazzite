@@ -142,7 +142,9 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             mutter-common \
             gnome-control-center \
             gnome-control-center-filesystem \
-            xorg-x11-server-Xwayland \
+            xorg-x11-server-Xwayland && \
+        rpm-ostree install \
+            gnome-shell-extension-tailscale-status \
     ; else \
         rpm-ostree override replace \
         --experimental \
@@ -150,7 +152,9 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             mutter \
             mutter-common \
             gnome-control-center \
-            gnome-control-center-filesystem \
+            gnome-control-center-filesystem && \
+        rpm-ostree install \
+            gnome-shell-extension-tailscale-gnome-qs \
     ; fi && \
     rpm-ostree install \
         xwaylandvideobridge \
@@ -165,7 +169,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-blur-my-shell \
         gnome-shell-extension-hanabi \
         gnome-shell-extension-gamerzilla \
-        gnome-shell-extension-tailscale-status \
         rom-properties-gtk3 \
         openssh-askpass && \
     rpm-ostree override remove \
