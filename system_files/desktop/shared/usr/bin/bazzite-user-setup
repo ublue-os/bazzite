@@ -67,10 +67,10 @@ else
   echo 'Installing Gradience presets'
   mkdir -p "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/"
   if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json" ]]; then
-    ln -s /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json
+    cp /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json
   fi
   if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json" ]]; then
-    ln -s /usr/share/ublue-os/bazzite/themes/vgui2.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json
+    cp /usr/share/ublue-os/bazzite/themes/vgui2.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json
   fi
 
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then

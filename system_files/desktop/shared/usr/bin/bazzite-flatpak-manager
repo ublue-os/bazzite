@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Script Version
-VER=2
+VER=3
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 
@@ -25,23 +25,15 @@ REMOVE_LIST=$(cat /etc/flatpak/remove)
 
 # Install flatpaks in list
 if [[ -n $INSTALL_LIST ]]; then
-  for flatpak in $INSTALL_LIST; do
-    if grep -qvz $flatpak <<< $FLATPAK_LIST; then
-      if ! flatpak install --system --noninteractive flathub $flatpak; then
-        # exit on error
-        exit 1
-      fi
-    fi
-  done
+  if ! flatpak install --system --noninteractive flathub ${INSTALL_LIST[@]}; then
+    # exit on error
+    exit 1
+  fi
 fi
 
 # Remove flatpaks in list
 if [[ -n $REMOVE_LIST ]]; then
-  for flatpak in $REMOVE_LIST; do
-    if grep -qz $flatpak <<< $FLATPAK_LIST; then
-      flatpak remove --system --noninteractive $flatpak
-    fi
-  done
+  flatpak remove --system --noninteractive ${REMOVE_LIST[@]}
 fi
 
 notify-send "Bazzite Portal" "Finished installing system flatpaks" --app-name="Bazzite Portal" -u NORMAL -i /usr/share/ublue-os/bazzite/logo.svg
