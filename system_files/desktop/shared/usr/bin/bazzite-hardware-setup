@@ -92,11 +92,11 @@ fi
 if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
   echo "Checking for needed karg changes (Nvidia)"
 
-  if [[ ! $KARGS =~ "rd.driver.blacklist" ]]; then
+  if [[ ! $KARGS =~ "rd.driver.blacklist=nouveau" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=rd.driver.blacklist=nouveau"
   fi
 
-  if [[ ! $KARGS =~ "modprobe.blacklist" ]]; then
+  if [[ ! $KARGS =~ "modprobe.blacklist=nouveau" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=modprobe.blacklist=nouveau"
   fi
 
@@ -106,22 +106,22 @@ if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
 else
   echo "Checking for needed karg changes"
 
-  if [[ $KARGS =~ "rd.driver.blacklist" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --delete=rd.driver.blacklist=nouveau"
+  if [[ $KARGS =~ "rd.driver.blacklist=nouveau" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --delete-if-present=rd.driver.blacklist=nouveau"
   fi
 
-  if [[ $KARGS =~ "modprobe.blacklist" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --delete=modprobe.blacklist=nouveau"
+  if [[ $KARGS =~ "modprobe.blacklist=nouveau" ]]; then
+    NEEDED_KARGS="$NEEDED_KARGS --delete-if-present=modprobe.blacklist=nouveau"
   fi
 
   if [[ $KARGS =~ "nvidia-drm.modeset" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --delete=nvidia-drm.modeset=1"
+    NEEDED_KARGS="$NEEDED_KARGS --delete-if-present=nvidia-drm.modeset=1"
   fi
 fi
 
 if [[ $KARGS =~ "nomodeset" ]]; then
   echo "Removing nomodeset"
-  NEEDED_KARGS="$NEEDED_KARGS --delete=nomodeset"
+  NEEDED_KARGS="$NEEDED_KARGS --delete-if-present=nomodeset"
 fi
 
 if [[ ! $KARGS =~ "rd.luks.options" ]]; then
