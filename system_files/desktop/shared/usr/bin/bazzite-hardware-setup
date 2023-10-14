@@ -149,6 +149,7 @@ if [[ -f $HWS_VER_FILE && $HWS_VER = $HWS_VER_RAN ]]; then
         echo "Hardware setup has already run. Exiting..."
         exit 0
       fi
+    fi
   fi
 fi
 
