@@ -130,11 +130,14 @@ if [[ ! $KARGS =~ "rd.luks.options" ]]; then
 fi
 
 if [[ $INITRAMFS =~ "disabled" ]]; then
+  echo "Found needed initramfs changes, applying."
+  plymouth display-message --text="Updating initramfs - Please wait" || true
   rpm-ostree initramfs --enable --arg=-I --arg=/etc/crypttab
 fi
 
 if [[ -n "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: $NEEDED_KARGS"
+  plymouth display-message --text="Updating kargs - Please wait" || true
   rpm-ostree kargs ${NEEDED_KARGS} --reboot || exit 1
 else
   echo "No karg changes needed"
