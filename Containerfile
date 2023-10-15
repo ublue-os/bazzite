@@ -178,6 +178,21 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-initial-setup \
 ; fi
 
+# Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
+RUN if [[ "${FEDORA_MAJOR_VERSION}" -ge "39" ]]; then \
+        rpm-ostree override replace \
+            --experimental \
+            --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+                mesa-filesystem \
+                mesa-dri-drivers \
+                mesa-libEGL \
+                mesa-libEGL-devel \
+                mesa-libgbm \
+                mesa-libGL \
+                mesa-libglapi \
+                mesa-vulkan-drivers \
+    ; fi
+
 # Install ROCM and Waydroid on non-Nvidia images
 # Install Steam & Lutris on Nvidia images (Avoids numerous driver issues under Distrobox)
 RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
@@ -188,6 +203,11 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         weston && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh \
 ; else \
+    if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
+        rpm-ostree install \
+            mesa-libGL.i686 \
+            mesa-libEGL.i686 \
+    ;fi && \
     rpm-ostree install \
         vulkan-loader.i686 \
         alsa-lib.i686 \
@@ -201,8 +221,6 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         libXinerama.i686 \
         libXtst.i686 \
         libXScrnSaver.i686 \
-        mesa-libGL.i686 \
-        mesa-libEGL.i686 \
         NetworkManager-libnm.i686 \
         nss.i686 \
         pulseaudio-libs.i686 \
@@ -330,19 +348,18 @@ RUN rpm-ostree install \
     /etc/akmods-rpms/steamdeck.rpm && \
     rm -rf /etc/akmods-rpms
 
-# Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
-RUN rpm-ostree override replace \
-        --experimental \
-        --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-            mesa-filesystem \
-            mesa-dri-drivers \
-            mesa-libEGL \
-            mesa-libEGL-devel \
-            mesa-libgbm \
-            mesa-libGL \
-            mesa-libglapi \
-            mesa-vulkan-drivers && \
-    if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
+RUN if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
+        rpm-ostree override replace \
+            --experimental \
+            --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+                mesa-filesystem \
+                mesa-dri-drivers \
+                mesa-libEGL \
+                mesa-libEGL-devel \
+                mesa-libgbm \
+                mesa-libGL \
+                mesa-libglapi \
+                mesa-vulkan-drivers && \
         rpm-ostree override replace \
             --experimental \
             --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
@@ -369,7 +386,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 # Dock updater - done manually due to proprietary parts preventing it from being on Copr
 # Neptune firmware - done manually due to "TBD" license on needed audio firmware
 RUN rpm-ostree install \
-    mesa-va-drivers \
     vulkan-tools \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
@@ -405,13 +421,15 @@ RUN rpm-ostree install \
     mv -vf /tmp/linux-firmware-neptune/* /usr/lib/firmware/cirrus/ && \
     rm -rf /tmp/linux-firmware-neptune && \
     wget $(jq -r '.assets[].browser_download_url | select(endswith("steam-patch"))' <<< $(curl -s 'https://api.github.com/repos/KyleGospo/steam-patch/releases' | jq -r "first(.[] | select(.prerelease == "false"))")) -O /usr/bin/steam-patch && \
-    chmod +x /usr/bin/steam-patch
+    chmod +x /usr/bin/steam-patch && \
+    if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
+        rpm-ostree install \
+           mesa-va-drivers \ 
+    ; fi
 
 # Install Steam and Lutris into their own OCI layer
 # Add bootstraplinux_ubuntu12_32.tar.xz used by gamescope-session (Thanks ChimeraOS! - https://chimeraos.org/)
 RUN rpm-ostree install \
-        mesa-dri-drivers.i686 \
-        mesa-vulkan-drivers.i686 \
         vulkan-loader.i686 \
         alsa-lib.i686 \
         fontconfig.i686 \
@@ -424,8 +442,6 @@ RUN rpm-ostree install \
         libXinerama.i686 \
         libXtst.i686 \
         libXScrnSaver.i686 \
-        mesa-libGL.i686 \
-        mesa-libEGL.i686 \
         NetworkManager-libnm.i686 \
         nss.i686 \
         pulseaudio-libs.i686 \
@@ -436,6 +452,13 @@ RUN rpm-ostree install \
         libdbusmenu-gtk3.i686 \
         libatomic.i686 \
         pipewire-alsa.i686 && \
+    if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
+        rpm-ostree install \
+            mesa-dri-drivers.i686 \
+            mesa-vulkan-drivers.i686 \
+            mesa-libGL.i686 \
+            mesa-libEGL.i686 \
+    ; fi && \
     sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree-steam.repo && \
     sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree.repo && \
     sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo && \
