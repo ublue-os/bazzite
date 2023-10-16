@@ -233,6 +233,7 @@ screens:
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
+          - Warehouse: io.github.flattool.Warehouse
   theme:
     source: yafti.screen.title
     values:
