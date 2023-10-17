@@ -62,7 +62,6 @@ else
 
   echo 'Adjusting Nautilus settings'
   gsettings set org.gnome.nautilus.preferences show-create-link true
-  gsettings set org.gtk.gtk4.settings.file-chooser sort-directories-first true
 
   echo 'Installing Gradience presets'
   mkdir -p "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/"

@@ -82,9 +82,8 @@ RUN rpm-ostree install \
     input-remapper \
     system76-scheduler \
     hl2linux-selinux \
-    libobs_glcapture \
-    libobs_vkcapture \
-    obs-vkcapture \
+    obs-vkcapture.x86_64 \
+    obs-vkcapture.i686 \
     ladspa-caps-plugins \
     ladspa-noise-suppression-for-voice \
     tailscale \
