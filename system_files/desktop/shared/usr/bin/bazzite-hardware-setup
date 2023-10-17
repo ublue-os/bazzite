@@ -194,7 +194,7 @@ fi
 # If the hostname is too long Distrobox will fail during setup
 # Additonally, Anaconda likes to set the hostname to be the ipv6 address
 # Let's check the length and reset it to something sensible if that happens.
-if hostname | wc -m > 15; then
+if (( $(hostname | wc -m) > 16 )); then
   hostnamectl set-hostname bazzite
 fi
 
