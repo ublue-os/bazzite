@@ -252,6 +252,8 @@ screens:
           run: /usr/bin/plasma-discover
       - "Website":
           run: /usr/bin/xdg-open https://ublue.it
+      - "Bazzite FAQ":
+          run: /usr/bin/xdg-open https://universal-blue.org/images/bazzite/FAQ/
       - "Join the Discord Community":
           run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
       - "Reboot now":
