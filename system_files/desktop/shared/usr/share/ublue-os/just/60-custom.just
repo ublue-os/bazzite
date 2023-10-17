@@ -325,3 +325,79 @@ disable-watchdog:
 # Add SELinux file context for default looking-glass shm file so that libvirt can create it when needed
 selinux-looking-glass:
   sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
+
+setup-virtual-channels:
+  #!/bin/bash
+  mkdir -p ~/.config/pipewire/pipewire.conf.d
+  cat << 'EOL' > ~/.config/pipewire/pipewire.conf.d/virtual-channels.conf
+  context.modules = [
+      { name = libpipewire-module-loopback
+          args = {
+              node.description = "Game"
+              capture.props = {
+                  node.name      = "game_output"
+                  media.class    = "Audio/Sink"
+                  audio.position = [ FL FR ]
+              }
+              playback.props = {
+                  node.name      = "playback.game_output"
+                  audio.position = [ FL FR ]
+                  node.passive   = true
+              }
+          }
+      }
+      { name = libpipewire-module-loopback
+          args = {
+              node.description = "Voice"
+              capture.props = {
+                  node.name      = "voice_output"
+                  media.class    = "Audio/Sink"
+                  audio.position = [ FL FR ]
+              }
+              playback.props = {
+                  node.name      = "playback.voice_output"
+                  audio.position = [ FL FR ]
+                  node.passive   = true
+              }
+          }
+      }
+      { name = libpipewire-module-loopback
+          args = {
+              node.description = "Browser"
+              capture.props = {
+                  node.name      = "browser_output"
+                  media.class    = "Audio/Sink"
+                  audio.position = [ FL FR ]
+              }
+              playback.props = {
+                  node.name      = "playback.browser_output"
+                  audio.position = [ FL FR ]
+                  node.passive   = true
+              }
+          }
+      }
+      { name = libpipewire-module-loopback
+          args = {
+              node.description = "Music"
+              capture.props = {
+                  node.name      = "music_output"
+                  media.class    = "Audio/Sink"
+                  audio.position = [ FL FR ]
+              }
+              playback.props = {
+                  node.name      = "playback.music_output"
+                  audio.position = [ FL FR ]
+                  node.passive   = true
+              }
+          }
+      }
+  ]
+  EOL
+  echo "Next time you log in, you will have audio channels for Game, Voice, Browser, Music that you can route game audio to"
+  echo "using programs like qpwgraph, helvum or carla."
+  echo "You can also add these channels to OBS audio mixer for separate audio control for yourself and your viewers."
+  echo "NOTE: It is recommended to mute the virtual channels so you do not have to listen to them twice if you are not exclusively routing the audio through said channel instead of splitting audio to them."
+
+remove-virtual-channels:
+  rm ~/.config/pipewire/pipewire.conf.d/virtual-channels.conf
+  echo "Virtual audio channels config removed, the channels will be removed next time you login."
