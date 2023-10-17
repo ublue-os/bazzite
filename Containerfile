@@ -82,12 +82,9 @@ RUN rpm-ostree install \
     input-remapper \
     system76-scheduler \
     hl2linux-selinux \
-    libobs_glcapture.x86_64 \
-    libobs_glcapture.i686 \
-    libobs_vkcapture.x86_64 \
-    libobs_vkcapture.i686 \
-    obs-vkcapture.x86_64 \
-    obs-vkcapture.i686 \
+    libobs_glcapture \
+    libobs_vkcapture \
+    obs-vkcapture \
     ladspa-caps-plugins \
     ladspa-noise-suppression-for-voice \
     tailscale \
@@ -235,8 +232,8 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         libvdpau.i686 \
         libdbusmenu-gtk3.i686 \
         libatomic.i686 \
-        pipewire-alsa.i686 && \
-        clinfo \
+        pipewire-alsa.i686 \
+        clinfo && \
     sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree-steam.repo && \
     sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree.repo && \
     sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo && \
