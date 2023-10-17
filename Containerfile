@@ -82,8 +82,6 @@ RUN rpm-ostree install \
     input-remapper \
     system76-scheduler \
     hl2linux-selinux \
-    obs-vkcapture.x86_64 \
-    obs-vkcapture.i686 \
     ladspa-caps-plugins \
     ladspa-noise-suppression-for-voice \
     tailscale \
@@ -256,6 +254,8 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         vkBasalt.i686 \
         mangohud.x86_64 \
         mangohud.i686 \
+        obs-vkcapture.x86_64 \
+        obs-vkcapture.i686 \
 ; fi
 
 # Cleanup & Finalize
@@ -403,6 +403,8 @@ RUN rpm-ostree install \
     vkBasalt.i686 \
     mangohud.x86_64 \
     mangohud.i686 \
+    obs-vkcapture.x86_64 \
+    obs-vkcapture.i686 \
     sdgyrodsu \
     sddm-sugar-steamOS \
     ibus-pinyin \
