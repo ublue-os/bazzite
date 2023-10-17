@@ -145,19 +145,6 @@ if grep -qz 'fedora' <<< $(flatpak remotes); then
 fi
 flatpak remote-add --if-not-exists --user flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
 
-# Remove bazzite-arch on Nvidia
-# We ship layered copies now due to nvidia fun(tm)
-if [[ $IMAGE_NAME =~ "nvidia"  ]]; then
-  if grep -qz "bazzite-arch" <<< $(distrobox list); then
-    distrobox-rm bazzite-arch --force
-    if [[ ${BASE_IMAGE_NAME} =~ 'kinoite' ]]; then
-      podman image rm bazzite-arch --force
-    else
-      podman image rm bazzite-arch-gnome --force
-    fi
-  fi
-fi
-
 # Prevent future executions
 echo "Writing state file"
 echo $USER_SETUP_VER > $USER_SETUP_VER_FILE
