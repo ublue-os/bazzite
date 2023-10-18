@@ -409,6 +409,7 @@ setup-virtual-surround-71:
   #!/bin/bash
   mkdir -p ~/.config/pipewire/pipewire.conf.d
   mkdir -p ~/.config/pipewire/hrir_hesuvi
+  echo "Downloading HeSuVi convolver profile Control Room 1 from https://github.com/ShanonPearce/ASH-Listening-Set"
   wget -O ~/.config/pipewire/hrir_hesuvi/Control_Room_1.wav https://github.com/ShanonPearce/ASH-Listening-Set/raw/main/HeSuVi/hrir/_Control_Room_1.wav
   cat << HESUVI > ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf
   context.modules = [
