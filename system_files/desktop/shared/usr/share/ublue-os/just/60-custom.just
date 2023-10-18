@@ -326,6 +326,7 @@ disable-watchdog:
 selinux-looking-glass:
   sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
 
+# Add virtual audio channels/sinks named Game, Voice, Browser and Music which you can split audio to using qpwgraph, helvum, carla or other pipewire patchbays for use in OBS and other use cases
 setup-virtual-channels:
   #!/bin/bash
   mkdir -p ~/.config/pipewire/pipewire.conf.d
@@ -398,6 +399,7 @@ setup-virtual-channels:
   echo "You can also add these channels to OBS audio mixer for separate audio control for yourself and your viewers."
   echo "NOTE: It is recommended to mute the virtual channels so you do not have to listen to them twice if you are not exclusively routing the audio through said channel instead of splitting audio to them."
 
+# Remove the virtual audio sinks
 remove-virtual-channels:
   rm ~/.config/pipewire/pipewire.conf.d/virtual-channels.conf
   echo "Virtual audio channels config removed, the channels will be removed next time you login."
