@@ -403,3 +403,119 @@ setup-virtual-channels:
 remove-virtual-channels:
   rm ~/.config/pipewire/pipewire.conf.d/virtual-channels.conf
   echo "Virtual audio channels config removed, the channels will be removed next time you login."
+
+# Setup a simple Virtual Surround 7.1 sink using the ASH Control Room 1 convolver file (you can change this yourself after setup)
+setup-virtual-surround-71:
+  #!/bin/bash
+  mkdir -p ~/.config/pipewire/pipewire.conf.d
+  mkdir -p ~/.config/pipewire/hrir_hesuvi
+  wget -O ~/.config/pipewire/hrir_hesuvi/Control_Room_1.wav https://github.com/ShanonPearce/ASH-Listening-Set/raw/main/HeSuVi/hrir/_Control_Room_1.wav
+  cat << HESUVI > ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf
+  context.modules = [
+      { name = libpipewire-module-filter-chain
+          flags = [ nofail ]
+          args = {
+              node.description = "Virtual Surround 7.1"
+              media.name       = "Virtual Surround 7.1"
+              filter.graph = {
+                  nodes = [
+                      # Duplicate inputs
+                      { type = builtin label = copy name = copyFL  }
+                      { type = builtin label = copy name = copyFR  }
+                      { type = builtin label = copy name = copyFC  }
+                      { type = builtin label = copy name = copyRL  }
+                      { type = builtin label = copy name = copyRR  }
+                      { type = builtin label = copy name = copySL  }
+                      { type = builtin label = copy name = copySR  }
+                      { type = builtin label = copy name = copyLFE }
+
+                      # Apply hrir - HeSuVi 14-channel WAV (not the *-.wav variants) (note: */44/* in HeSuVi are the same, but resampled to 44100)
+                      # The file paths HAS to be absolute paths
+                      { type = builtin label = convolver name = convFL_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  0 } }
+                      { type = builtin label = convolver name = convFL_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  1 } }
+                      { type = builtin label = convolver name = convSL_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  2 } }
+                      { type = builtin label = convolver name = convSL_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  3 } }
+                      { type = builtin label = convolver name = convRL_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  4 } }
+                      { type = builtin label = convolver name = convRL_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  5 } }
+                      { type = builtin label = convolver name = convFC_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  6 } }
+                      { type = builtin label = convolver name = convFR_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  7 } }
+                      { type = builtin label = convolver name = convFR_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  8 } }
+                      { type = builtin label = convolver name = convSR_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  9 } }
+                      { type = builtin label = convolver name = convSR_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel = 10 } }
+                      { type = builtin label = convolver name = convRR_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel = 11 } }
+                      { type = builtin label = convolver name = convRR_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel = 12 } }
+                      { type = builtin label = convolver name = convFC_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel = 13 } }
+
+                      # Treat LFE as FC
+                      { type = builtin label = convolver name = convLFE_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  6 } }
+                      { type = builtin label = convolver name = convLFE_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel = 13 } }
+
+                      # Stereo output
+                      { type = builtin label = mixer name = mixL }
+                      { type = builtin label = mixer name = mixR }
+                  ]
+                  links = [
+                      # Input
+                      { output = "copyFL:Out"  input="convFL_L:In"  }
+                      { output = "copyFL:Out"  input="convFL_R:In"  }
+                      { output = "copySL:Out"  input="convSL_L:In"  }
+                      { output = "copySL:Out"  input="convSL_R:In"  }
+                      { output = "copyRL:Out"  input="convRL_L:In"  }
+                      { output = "copyRL:Out"  input="convRL_R:In"  }
+                      { output = "copyFC:Out"  input="convFC_L:In"  }
+                      { output = "copyFR:Out"  input="convFR_R:In"  }
+                      { output = "copyFR:Out"  input="convFR_L:In"  }
+                      { output = "copySR:Out"  input="convSR_R:In"  }
+                      { output = "copySR:Out"  input="convSR_L:In"  }
+                      { output = "copyRR:Out"  input="convRR_R:In"  }
+                      { output = "copyRR:Out"  input="convRR_L:In"  }
+                      { output = "copyFC:Out"  input="convFC_R:In"  }
+                      { output = "copyLFE:Out" input="convLFE_L:In" }
+                      { output = "copyLFE:Out" input="convLFE_R:In" }
+
+                      # Output
+                      { output = "convFL_L:Out"  input="mixL:In 1" }
+                      { output = "convFL_R:Out"  input="mixR:In 1" }
+                      { output = "convSL_L:Out"  input="mixL:In 2" }
+                      { output = "convSL_R:Out"  input="mixR:In 2" }
+                      { output = "convRL_L:Out"  input="mixL:In 3" }
+                      { output = "convRL_R:Out"  input="mixR:In 3" }
+                      { output = "convFC_L:Out"  input="mixL:In 4" }
+                      { output = "convFC_R:Out"  input="mixR:In 4" }
+                      { output = "convFR_R:Out"  input="mixR:In 5" }
+                      { output = "convFR_L:Out"  input="mixL:In 5" }
+                      { output = "convSR_R:Out"  input="mixR:In 6" }
+                      { output = "convSR_L:Out"  input="mixL:In 6" }
+                      { output = "convRR_R:Out"  input="mixR:In 7" }
+                      { output = "convRR_L:Out"  input="mixL:In 7" }
+                      { output = "convLFE_R:Out" input="mixR:In 8" }
+                      { output = "convLFE_L:Out" input="mixL:In 8" }
+                  ]
+                  inputs  = [ "copyFL:In" "copyFR:In" "copyFC:In" "copyLFE:In" "copyRL:In" "copyRR:In", "copySL:In", "copySR:In" ]
+                  outputs = [ "mixL:Out" "mixR:Out" ]
+              }
+              capture.props = {
+                  node.name      = "effect_input.virtual-surround-7.1-hesuvi"
+                  media.class    = Audio/Sink
+                  audio.channels = 8
+                  audio.position = [ FL FR FC LFE RL RR SL SR ]
+              }
+              playback.props = {
+                  node.name      = "effect_output.virtual-surround-7.1-hesuvi"
+                  node.passive   = true
+                  audio.channels = 2
+                  audio.position = [ FL FR ]
+              }
+          }
+      }
+  ]
+  HESUVI
+  echo "Virtual Surround 7.1 has now been set up with a basic convolver file, either restart pipewire or reboot for it to take effect."
+  echo "Then select the Virtual Surround 7.1 audio output as your default audio output."
+  echo "If you want something like DTS, Atmos or OpenAL, you will have to aquire those convolver wav files yourself and edit ~/.config/pipewire/pipewire.conf.d/virtual-surround.conf to point to the one you want to use."
+
+# Remove Virtual Surround 7.1 sink
+remove-virtual-surround-71:
+  rm ~/.conf/pipewire/pipewire.conf.d/virtual-surround-71.conf
+  rm ~/.conf/pipewire/hrir_hesuvi/Control_Room_1.wav
+  echo "Virtual Surround 7.1 removed, please reboot or restart pipewire for it to take effect."
