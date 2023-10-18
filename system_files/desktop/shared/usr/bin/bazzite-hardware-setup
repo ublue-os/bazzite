@@ -66,6 +66,7 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "nmi_watchdog" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=nmi_watchdog=0"
   fi
+  
   if [[ ! $KARGS =~ "modprobe.blacklist=sp5100_tco" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=modprobe.blacklist=sp5100_tco"
   fi
