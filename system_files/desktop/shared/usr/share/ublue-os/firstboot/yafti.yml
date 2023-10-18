@@ -217,11 +217,17 @@ screens:
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - JamesDSP: me.timschneeberger.jdsp4linux
           - KeePassXC: org.keepassxc.KeePassXC
+          - Metadata Cleaner: fr.romainvigier.MetadataCleaner
           - OpenRGB: org.openrgb.OpenRGB
-          - PinApp: io.github.fabrialberio.pinapp
           - qBittorrent: org.qbittorrent.qBittorrent
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
+        System Management:
+          description: Manage application data
+          default: false
+          packages:
+          - PinApp: io.github.fabrialberio.pinapp
+          - SaveDesktop: io.github.vikdevelop.SaveDesktop
           - Warehouse: io.github.flattool.Warehouse
   theme:
     source: yafti.screen.title
@@ -246,8 +252,6 @@ screens:
           run: /usr/bin/plasma-discover
       - "Website":
           run: /usr/bin/xdg-open https://ublue.it
-      - "Bazzite FAQ":
-          run: /usr/bin/xdg-open https://universal-blue.org/images/bazzite/FAQ/
       - "Join the Discord Community":
           run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
       - "Reboot now":
