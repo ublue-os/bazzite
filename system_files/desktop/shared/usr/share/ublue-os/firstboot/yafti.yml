@@ -45,7 +45,7 @@ screens:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: false
           packages:
-          - Install Nix Package Support: sudo -A just --unstable install-nix
+          - Install Nix Package Support: pkexec just --justfile /usr/share/ublue-os/justfile --unstable install-nix
           - Install Fleek (Requires Nix): just --unstable install-fleek
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware

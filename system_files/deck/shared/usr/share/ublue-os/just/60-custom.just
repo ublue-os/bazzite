@@ -356,7 +356,7 @@ resize-zram:
       if grep -q "zram-size" <<< $(cat ${CONFIG}); then
         sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
       else
-        sudo -A echo "zram-size=${NEW_SIZE}" >> ${CONFIG}
+        sudo echo "zram-size=${NEW_SIZE}" >> ${CONFIG}
       fi
       echo 'Current size: '${NEW_SIZE}'. Please reboot.'
     else
