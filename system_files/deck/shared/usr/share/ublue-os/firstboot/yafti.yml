@@ -21,7 +21,7 @@ screens:
           description: Adds the input group to your current user. Required by certain controller drivers.
           default: true
           packages:
-          - Set input group: just --unstable add-user-to-input-group
+          - Set input group: ujust add-user-to-input-group
         BIOS &amp; Firmware Updates:
           description: Enables BIOS &amp; Firmware updates for Steam Deck hardware
           default: true
@@ -31,7 +31,7 @@ screens:
           description: Adds games from various clients to Steam
           default: false
           packages:
-          - Retrieve BoilR: just --unstable get-boilr
+          - Retrieve BoilR: ujust get-boilr
         Decky Loader:
           description: A plugin loader for the Steam Deck
           default: false
@@ -42,12 +42,12 @@ screens:
             A utility for installing and configuring emulators on the Steam Deck
           default: false
           packages:
-          - Retrieve EmuDeck: just --unstable get-emudeck
+          - Retrieve EmuDeck: ujust get-emudeck
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
           packages:
-          - Retrieve Greenlight: just --unstable get-greenlight
+          - Retrieve Greenlight: ujust get-greenlight
         Hide GRUB Menu:
           description: |
             NOTE: Press the escape key before boot to show the menu
@@ -58,54 +58,54 @@ screens:
           description: Disable ZRAM and enable adjustable swap file, defaults to 1GB.
           default: false
           packages:
-          - Deck Swap: just --unstable deckswap-on
-          - Disable ZRAM: just --unstable zram-off
+          - Deck Swap: ujust deckswap-on
+          - Disable ZRAM: ujust zram-off
         Nix Package Manager:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: false
           packages:
           - Install Nix Package Support: pkexec just --justfile /usr/share/ublue-os/justfile --unstable install-nix
-          - Install Fleek (Requires Nix): just --unstable install-fleek
+          - Install Fleek (Requires Nix): ujust install-fleek
         Oversteer:
           description: Application to control supported steering wheels
           default: false
           packages:
-          - Install Oversteer: just --unstable install-oversteer
+          - Install Oversteer: ujust install-oversteer
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware
           default: false
           packages:
-          - Install OpenRazer: just --unstable install-openrazer
+          - Install OpenRazer: ujust install-openrazer
         Solaar:
           description: Application to control Logitech Mice, Keyboards, and Trackpads
           default: false
           packages:
-          - Install Solaar: just --unstable install-solaar
+          - Install Solaar: ujust install-solaar
         Wootility:
           description: A configurator for Wooting keyboards
           default: false
           packages:
-          - Retrieve Wootility: just --unstable get-wootility
+          - Retrieve Wootility: ujust get-wootility
         OpenTabletDriver:
           description: Open source, cross-platform, user-mode tablet driver
           default: false
           packages:
-          - Install OpenTabletDriver: just --unstable install-opentabletdriver
+          - Install OpenTabletDriver: ujust install-opentabletdriver
         Resilio Sync:
           description: A file synchronization utility powered by BitTorrent
           default: false
           packages:
-          - Install Resilio Sync: just --unstable install-resilio-sync
+          - Install Resilio Sync: ujust install-resilio-sync
         scrcpy:
           description: scrcpy provides display and control of Android devices connected on USB (or over TCP/IP)
           default: false
           packages:
-          - Install scrcpy: just --unstable install-scrcpy
+          - Install scrcpy: ujust install-scrcpy
         SteamCMD:
           description: Installs SteamCMD
           default: true
           packages:
-          - Install SteamCMD: just --unstable get-steamcmd
+          - Install SteamCMD: ujust get-steamcmd
         Use EXT4 for SD Cards:
           description: Disable BTRFS support for SD cards for direct compatibility with SD cards formatted on stock SteamOS (Not recommended).
           default: false
@@ -243,9 +243,9 @@ screens:
         run: grep -q 'silverblue' <<< $(jq -r '."base-image-name"' < /usr/share/ublue-os/image-info.json)
       links:
       - "Vapor Theme":
-          run: just --unstable enable-vapor-theme
+          run: ujust enable-vapor-theme
       - "VGUI2 Theme":
-          run: just --unstable enable-vgui2-theme
+          run: ujust enable-vgui2-theme
       description: |
         Optionally apply a Valve-inspired theme to GNOME via Gradience. Note that custom themes are not officially supported by GNOME and some applications can break. Please avoid reporting issues to application developers until you've tested against the default theme.
   final-screen:
