@@ -44,7 +44,7 @@ install-fleek:
     echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
     curl -fsSL https://getfleek.dev/installer | env FORCE=1 bash
   else
-    echo "Install nix with just install-nix before running just install-fleek."
+    echo "Install nix with ujust install-nix before running ujust install-fleek."
   fi
 
 # Integrate Nix/Fleek applications with system theme
@@ -61,7 +61,7 @@ install-fleek-themes:
       fleek apply
     fi
   else
-    echo "Install fleek with just install-fleek before running just install-fleek-themes."
+    echo "Install fleek with ujust install-fleek before running ujust install-fleek-themes."
   fi
 
 # Install Homebrew for Linux
@@ -295,7 +295,7 @@ enable-vfio:
       echo "NOTE: Your second GPU will not be usable by the host after you do this!"
     fi
   else
-    echo "Enable virtualization with just enable-virtualization before running just enable-vfio."
+    echo "Enable virtualization with ujust enable-virtualization before running ujust enable-vfio."
   fi
 
 # Enable watchdog (default, recovers the system in the event of a malfunction, possible impact to performance due to interrupts)

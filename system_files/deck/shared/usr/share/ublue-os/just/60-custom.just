@@ -71,7 +71,7 @@ install-fleek:
     echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
     curl -fsSL https://getfleek.dev/installer | env FORCE=1 bash
   else
-    echo "Install nix with just install-nix before running just install-fleek."
+    echo "Install nix with ujust install-nix before running ujust install-fleek."
   fi
 
 # Integrate Nix/Fleek applications with system theme
@@ -88,7 +88,7 @@ install-fleek-themes:
       fleek apply
     fi
   else
-    echo "Install fleek with just install-fleek before running just install-fleek-themes."
+    echo "Install fleek with ujust install-fleek before running ujust install-fleek-themes."
   fi
 
 # Install Homebrew for Linux
@@ -258,7 +258,7 @@ install-adwaita-for-steam:
     if [ -d "$HOME/homebrew/themes" ]; then
       git clone https://github.com/tkashkin/Adwaita-for-Steam.git --single-branch "$HOME/homebrew/themes/Adwaita-for-Steam"
     else
-      echo 'Please install Decky Loader & CSS Loader first, see just get-decky'
+      echo 'Please install Decky Loader & CSS Loader first, see ujust get-decky'
     fi
   else 
     echo "This is only supported under GNOME."
@@ -302,11 +302,11 @@ resize-deckswap:
       echo 'Current size: '${NEW_SIZE}'G. Please reboot.'
     else
       echo 'Error: Input out of range (1-16). Running again.'
-      just --unstable resize-deckswap
+      ujust resize-deckswap
     fi
   else
     echo 'Error: Input is not an integer. Running again.'
-    just --unstable resize-deckswap
+    ujust resize-deckswap
   fi
 
 # Use EXT4 for SD Cards, allows use of SteamOS formatted SD cards
@@ -361,11 +361,11 @@ resize-zram:
       echo 'Current size: '${NEW_SIZE}'. Please reboot.'
     else
       echo 'Error: Input out of range (512-4096). Running again.'
-      just --unstable resize-zram
+      ujust resize-zram
     fi
   else
     echo 'Error: Input is not an integer. Running again.'
-    just --unstable resize-zram
+    ujust resize-zram
   fi
 
 # Set system to boot without showing the grub screen with options
