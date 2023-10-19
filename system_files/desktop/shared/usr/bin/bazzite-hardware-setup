@@ -33,53 +33,53 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
   echo "Checking for needed karg changes (Jupiter)"
 
   if [[ ! $KARGS =~ "amd_pstate" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=amd_pstate=active"
+    NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=amd_pstate=active"
   fi
 
   if [[ ! $KARGS =~ "amd_iommu" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=amd_iommu=off"
+    NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=amd_iommu=off"
   fi
 
   if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
     if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
       echo "32GB RAM Steam Deck detected"
-      NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.gttsize=16256"
+      NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=amdgpu.gttsize=16256"
       sed -i 's/zram-size=1024/zram-size=2048/g' /etc/systemd/zram-generator.conf
 
     else
-      NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.gttsize=8128"
+      NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=amdgpu.gttsize=8128"
     fi
   fi
 
   if [[ ! $KARGS =~ "spi_amd.speed_dev" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=spi_amd.speed_dev=1"
+    NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=spi_amd.speed_dev=1"
   fi
 
   if [[ ! $KARGS =~ "initcall_blacklist" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=initcall_blacklist=simpledrm_platform_driver_init"
+    NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=initcall_blacklist=simpledrm_platform_driver_init"
   fi
   
   if [[ ! $KARGS =~ "modprobe.blacklist=sp5100_tco" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=modprobe.blacklist=sp5100_tco"
+    NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=modprobe.blacklist=sp5100_tco"
   fi
 fi
 
 if grep -qz "Kernel driver in use: radeon" <<< $GPU_ID; then
   echo "Legacy AMD hardware detected, enabling CIK and SI support in AMDGPU"
   if [[ ! $KARGS =~ "radeon.si_support" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=radeon.si_support=0"
+    NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=radeon.si_support=0"
   fi
 
   if [[ ! $KARGS =~ "radeon.cik_support" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=radeon.cik_support=0"
+    NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=radeon.cik_support=0"
   fi
 
   if [[ ! $KARGS =~ "amdgpu.si_support" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.si_support=1"
+    NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=amdgpu.si_support=1"
   fi
 
   if [[ ! $KARGS =~ "amdgpu.cik_support" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.cik_support=1"
+    NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=amdgpu.cik_support=1"
   fi
 fi
 
@@ -87,15 +87,15 @@ if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
   echo "Checking for needed karg changes (Nvidia)"
 
   if [[ ! $KARGS =~ "rd.driver.blacklist=nouveau" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=rd.driver.blacklist=nouveau"
+    NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=rd.driver.blacklist=nouveau"
   fi
 
   if [[ ! $KARGS =~ "modprobe.blacklist=nouveau" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=modprobe.blacklist=nouveau"
+    NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=modprobe.blacklist=nouveau"
   fi
 
   if [[ ! $KARGS =~ "nvidia-drm.modeset" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=nvidia-drm.modeset=1"
+    NEEDED_KARGS="$NEEDED_KARGS --append-if-missing=nvidia-drm.modeset=1"
   fi
 else
   echo "Checking for needed karg changes"
@@ -116,10 +116,6 @@ fi
 if [[ $KARGS =~ "nomodeset" ]]; then
   echo "Removing nomodeset"
   NEEDED_KARGS="$NEEDED_KARGS --delete-if-present=nomodeset"
-fi
-
-if [[ ! $KARGS =~ "rd.luks.options" ]]; then
-  NEEDED_KARGS="$NEEDED_KARGS --append=rd.luks.options=discard"
 fi
 
 if [[ $INITRAMFS =~ "disabled" ]]; then
