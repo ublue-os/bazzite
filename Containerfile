@@ -252,9 +252,22 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         vkBasalt.x86_64 \
         vkBasalt.i686 \
         mangohud.x86_64 \
-        mangohud.i686 \
-        obs-vkcapture.x86_64 \
-        obs-vkcapture.i686 \
+        mangohud.i686 && \
+    if [[ "${FEDORA_MAJOR_VERSION}" -ge "39" ]]; then \
+        sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/fedora-updates.repo && \
+        rpm-ostree install \
+            libcurl.x86_64 \
+            libcurl.i686 \
+            obs-studio-libs.x86_64 \
+            obs-studio-libs.i686 \
+            obs-vkcapture.x86_64 \
+            obs-vkcapture.i686 && \
+        sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/fedora-updates.repo \
+    ; else \
+        rpm-ostree install \
+            obs-vkcapture.x86_64 \
+            obs-vkcapture.i686 \
+    ; fi \
 ; fi
 
 # Cleanup & Finalize
