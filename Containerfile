@@ -526,7 +526,6 @@ RUN /tmp/image-info.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
-        systemctl mask power-profiles-daemon.service && \
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
     ; fi && \
