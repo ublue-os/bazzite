@@ -21,6 +21,16 @@ if [[ -f $USER_SETUP_VER_FILE && $USER_SETUP_VER = $USER_SETUP_VER_RAN ]]; then
   fi
 fi
 
+# Enable Flathub
+if grep -qz 'fedora' <<< $(flatpak remotes); then
+  flatpak remote-delete --user fedora --force
+fi
+flatpak remote-add --if-not-exists --user flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
+flatpak remote-modify --user --enable flathub
+
+# Handle privileged tasks
+pkexec /usr/bin/bazzite-privileged-user-setup
+
 if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Running setup for Kinoite'
 
@@ -127,10 +137,6 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     pkexec /usr/bin/bazzite-enable-steam-patch "$USER"
   fi
 fi
-
-# Enable NTP
-# Setup Flathub
-pkexec /usr/bin/bazzite-privileged-user-setup
 
 # Prevent future executions
 echo "Writing state file"
