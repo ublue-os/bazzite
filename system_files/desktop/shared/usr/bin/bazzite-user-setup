@@ -129,10 +129,8 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
 fi
 
 # Enable NTP
-timedatectl set-ntp true
-
 # Setup Flathub
-pkexec /usr/bin/bazzite-flathub-setup
+pkexec /usr/bin/bazzite-privileged-user-setup
 
 # Prevent future executions
 echo "Writing state file"
