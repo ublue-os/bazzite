@@ -35,7 +35,7 @@ screens:
           description: Adds the input group to your current user. Required by certain controller drivers.
           default: true
           packages:
-          - Set input group: ujust add-user-to-input-group
+          - Set input group: pkexec ujust add-user-to-input-group
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
@@ -45,7 +45,7 @@ screens:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: false
           packages:
-          - Install Nix Package Support: pkexec just --justfile /usr/share/ublue-os/justfile --unstable install-nix
+          - Install Nix Package Support: pkexec ujust install-nix
           - Install Fleek (Requires Nix): ujust install-fleek
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware

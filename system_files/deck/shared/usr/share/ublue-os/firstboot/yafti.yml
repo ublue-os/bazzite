@@ -21,7 +21,7 @@ screens:
           description: Adds the input group to your current user. Required by certain controller drivers.
           default: true
           packages:
-          - Set input group: ujust add-user-to-input-group
+          - Set input group: pkexec ujust add-user-to-input-group
         BIOS &amp; Firmware Updates:
           description: Enables BIOS &amp; Firmware updates for Steam Deck hardware
           default: true
@@ -36,7 +36,7 @@ screens:
           description: A plugin loader for the Steam Deck
           default: false
           packages:
-          - Retrieve Decky: pkexec just --justfile /usr/share/ublue-os/justfile --unstable get-decky
+          - Retrieve Decky: pkexec ujust get-decky
         EmuDeck:
           description: |
             A utility for installing and configuring emulators on the Steam Deck
