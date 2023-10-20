@@ -81,7 +81,7 @@ reset-bazzite-arch:
   else \
     podman image rm bazzite-arch-gnome --force; \
   fi && \
-  /usr/bin/just --unstable install-bazzite-arch
+  /usr/bin/ujust install-bazzite-arch
 
 # Install Webapp manager
 install-webapp-manager:

@@ -1,1 +1,1 @@
-alias just='/usr/bin/just --unstable'
+alias just='/usr/bin/ujust'

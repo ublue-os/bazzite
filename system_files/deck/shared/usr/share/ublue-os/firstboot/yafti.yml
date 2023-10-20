@@ -26,7 +26,7 @@ screens:
           description: Enables BIOS &amp; Firmware updates for Steam Deck hardware
           default: true
           packages:
-          - Enable Updates: pkexec just --justfile /usr/share/ublue-os/justfile --unstable enable-deck-bios-firmware-updates
+          - Enable Updates: pkexec ujust enable-deck-bios-firmware-updates
         BoilR:
           description: Adds games from various clients to Steam
           default: false
@@ -53,7 +53,7 @@ screens:
             NOTE: Press the escape key before boot to show the menu
           default: true
           packages:
-          - Hide GRUB: pkexec just --justfile /usr/share/ublue-os/justfile --unstable hide-grub
+          - Hide GRUB: pkexec ujust hide-grub
         Legacy Memory Configuration (Not recommended):
           description: Disable ZRAM and enable adjustable swap file, defaults to 1GB.
           default: false
@@ -64,7 +64,7 @@ screens:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: false
           packages:
-          - Install Nix Package Support: pkexec just --justfile /usr/share/ublue-os/justfile --unstable install-nix
+          - Install Nix Package Support: pkexec ujust install-nix
           - Install Fleek (Requires Nix): ujust install-fleek
         Oversteer:
           description: Application to control supported steering wheels
@@ -110,7 +110,7 @@ screens:
           description: Disable BTRFS support for SD cards for direct compatibility with SD cards formatted on stock SteamOS (Not recommended).
           default: false
           packages:
-          - Switch SteamOS-BTRFS config to EXT4: pkexec just --justfile /usr/share/ublue-os/justfile --unstable switch-to-ext4
+          - Switch SteamOS-BTRFS config to EXT4: pkexec ujust switch-to-ext4
   applications:
     source: yafti.screen.package
     values:
