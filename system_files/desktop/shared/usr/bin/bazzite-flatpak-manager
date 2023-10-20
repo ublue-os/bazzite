@@ -39,7 +39,5 @@ if [[ -n $REMOVE_LIST ]]; then
   flatpak remove --system --noninteractive ${REMOVE_LIST[@]}
 fi
 
-notify-send "Bazzite Portal" "Finished installing system flatpaks" --app-name="Bazzite Portal" -u NORMAL -i /usr/share/ublue-os/bazzite/logo.svg
-
 mkdir -p /etc/bazzite
 echo $VER > $VER_FILE
