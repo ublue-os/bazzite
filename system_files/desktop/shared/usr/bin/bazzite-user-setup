@@ -7,7 +7,7 @@ FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
 # SCRIPT VERSION
-USER_SETUP_VER=9
+USER_SETUP_VER=10
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 USER_SETUP_FEDORA_VER_FILE="$HOME/.bazzite-configured-fedora-version"

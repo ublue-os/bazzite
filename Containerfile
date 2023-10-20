@@ -202,13 +202,15 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         rocm-clinfo \
         waydroid \
         weston && \
-    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh \
+    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
+    rm -f /usr/etc/modprobe.d/nvidia.conf \
 ; else \
+    rm -f /usr/etc/modprobe.d/amdgpu.conf && \
     if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
         rpm-ostree install \
             mesa-libGL.i686 \
             mesa-libEGL.i686 \
-    ;fi && \
+    ; fi && \
     rpm-ostree install \
         vulkan-loader.i686 \
         alsa-lib.i686 \
