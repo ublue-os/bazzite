@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Script Version
-VER=3
+VER=4
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 
@@ -17,6 +17,9 @@ if grep -qz 'fedora' <<< $(flatpak remotes); then
   /usr/bin/fedora-third-party disable
   flatpak remote-delete fedora --force
 fi
+
+# Ensure Flathub is enabled
+flatpak remote-modify --system --enable flathub
 
 # Lists of flatpaks
 FLATPAK_LIST=$(flatpak list --columns=application)
