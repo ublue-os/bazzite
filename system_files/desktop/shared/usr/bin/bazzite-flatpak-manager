@@ -23,8 +23,8 @@ flatpak remote-modify --system --enable flathub
 
 # Lists of flatpaks
 FLATPAK_LIST=$(flatpak list --columns=application)
-INSTALL_LIST=$(cat /etc/flatpak/install)
-REMOVE_LIST=$(cat /etc/flatpak/remove)
+INSTALL_LIST=$(cat /usr/share/ublue-os/bazzite/flatpak/install)
+REMOVE_LIST=$(cat /usr/share/ublue-os/bazzite/flatpak/remove)
 
 # Install flatpaks in list
 if [[ -n $INSTALL_LIST ]]; then
