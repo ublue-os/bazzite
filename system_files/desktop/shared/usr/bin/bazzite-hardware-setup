@@ -37,37 +37,33 @@ SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 GPU_ID=$(lspci -k | grep -A 3 -E "(VGA|3D)")
 KARGS=$(rpm-ostree kargs)
 NEEDED_KARGS=""
-echo "Current kargs: $KARGS"
 INITRAMFS=$(rpm-ostree initramfs)
-NEEDED_INITRAMFS=""
-echo "Current initramfs: $INITRAMFS"
+NEEDED_INITRAMFS="/etc/crypttab"
 
 # INITRAMFS
+echo "Current initramfs: $INITRAMFS"
+
 if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
-  if [[ ! $INITRAMFS =~ "/etc/modprobe.d/nvidia.conf" ]]; then
-    NEEDED_INITRAMFS="$NEEDED_INITRAMFS --arg=/etc/modprobe.d/nvidia.conf"
-  fi
+  NEEDED_INITRAMFS="$NEEDED_INITRAMFS /etc/modprobe.d/nvidia.conf"
 else
-  if [[ ! $INITRAMFS =~ "/etc/modprobe.d/amdgpu.conf" ]]; then
-    NEEDED_INITRAMFS="$NEEDED_INITRAMFS --arg=/etc/modprobe.d/amdgpu.conf"
-  fi
+  NEEDED_INITRAMFS="$NEEDED_INITRAMFS /etc/modprobe.d/amdgpu.conf"
 fi
 
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
-  if [[ ! $INITRAMFS =~ "/etc/modprobe.d/deck-blacklist.conf" ]]; then
-    NEEDED_INITRAMFS="$NEEDED_INITRAMFS --arg=/etc/modprobe.d/deck-blacklist.conf"
-  fi
+  NEEDED_INITRAMFS="$NEEDED_INITRAMFS /etc/modprobe.d/deck-blacklist.conf"
 fi
 
-if [[ -n "$NEEDED_INITRAMFS" ]]; then
+if [[ ! $INITRAMFS =~ "$NEEDED_INITRAMFS" ]]; then
   echo "Found needed initramfs changes, applying the following: $NEEDED_INITRAMFS"
   plymouth display-message --text="Updating initramfs - Please wait, this may take a while" || true
-  rpm-ostree initramfs --enable --arg=-I --arg=/etc/crypttab ${NEEDED_INITRAMFS}
+  rpm-ostree initramfs --enable --arg="-I ${NEEDED_INITRAMFS}"
 else
   echo "No initramfs changes needed"
 fi
 
 # KERNEL ARGUMENTS
+echo "Current kargs: $KARGS"
+
 if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
   echo "Checking for needed karg changes (Jupiter)"
 
