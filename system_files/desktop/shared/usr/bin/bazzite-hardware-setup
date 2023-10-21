@@ -43,10 +43,6 @@ NEEDED_INITRAMFS=""
 echo "Current initramfs: $INITRAMFS"
 
 # INITRAMFS
-if [[ ! $INITRAMFS =~ "/etc/crypttab" ]]; then
-  NEEDED_INITRAMFS="$NEEDED_INITRAMFS --arg=/etc/crypttab"
-fi
-
 if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
   if [[ ! $INITRAMFS =~ "/etc/modprobe.d/nvidia.conf" ]]; then
     NEEDED_INITRAMFS="$NEEDED_INITRAMFS --arg=/etc/modprobe.d/nvidia.conf"
@@ -66,7 +62,7 @@ fi
 if [[ -n "$NEEDED_INITRAMFS" ]]; then
   echo "Found needed initramfs changes, applying the following: $NEEDED_INITRAMFS"
   plymouth display-message --text="Updating initramfs - Please wait, this may take a while" || true
-  rpm-ostree initramfs --enable --arg=-I ${NEEDED_INITRAMFS}
+  rpm-ostree initramfs --enable --arg=-I --arg=/etc/crypttab ${NEEDED_INITRAMFS}
 else
   echo "No initramfs changes needed"
 fi
