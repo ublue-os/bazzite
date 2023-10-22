@@ -269,6 +269,7 @@ enable-vfio:
   VIRT_TEST=$(rpm-ostree kargs)
   CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
   VENDOR_KARG="unset"
+  INITRAMFS_ARGS=$(rpm-ostree status | grep -m 1 Initramfs | perl -pe "s/\s+(Initramfs: regenerate|Initramfs:)//" | perl -pe "s/ \'/ --arg='/")
   if [[ ${VIRT_TEST} == *kvm.report_ignored_msrs* ]]; then
       echo 'add_drivers+=" vfio vfio_iommu_type1 vfio-pci "' | sudo tee /etc/dracut.conf.d/vfio.conf
       echo $(($(cat /etc/bazzite/hws_version)-1)) | sudo tee /etc/bazzite/hws_version
