@@ -15,6 +15,8 @@ BuildArch:      noarch
 Requires:       kde-filesystem
 
 Conflicts:      steamdeck-kde-presets
+Conflicts:      steamdeck-backgrounds
+Conflicts:      steameck-gnome-presets
 
 %description
 KDE Presets from Valve's SteamOS 3.0 for desktops

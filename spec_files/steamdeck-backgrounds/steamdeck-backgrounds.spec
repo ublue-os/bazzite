@@ -10,6 +10,9 @@ Source1:        https://gitlab.com/evlaV/steamdeck-kde-presets/-/archive/master/
 
 BuildArch:      noarch
 
+Conflicts:      steamdeck-kde-presets
+Conflicts:      steamdeck-kde-presets-desktop
+
 %description
 Backgrounds from Valve's SteamOS 3.0
 
