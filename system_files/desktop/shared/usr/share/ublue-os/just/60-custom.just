@@ -270,10 +270,9 @@ enable-vfio:
   CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
   VENDOR_KARG="unset"
   if [[ ${VIRT_TEST} == *kvm.report_ignored_msrs* ]]; then
-    rpm-ostree initramfs \
-      --enable \
-      --arg="--add-drivers" \
-      --arg="vfio vfio_iommu_type1 vfio-pci"
+      echo 'add_drivers+=" vfio vfio_iommu_type1 vfio-pci "' | sudo tee /etc/dracut.conf.d/vfio.conf
+      echo $(($(cat /etc/bazzite/hws_version)-1)) | sudo tee /etc/bazzite/hws_version
+      rpm-ostree initramfs --enable $INITRAMFS_ARGS
     if [[ ${CPU_VENDOR} == "AuthenticAMD" ]]; then
       VENDOR_KARG="amd_iommu=on"
     elif [[ ${CPU_VENDOR} == "GenuineIntel" ]]; then
