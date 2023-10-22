@@ -13,7 +13,7 @@ fi
 killall -9 weston
 pkexec /usr/bin/waydroid-container-start
 if [ -z "$(pgrep weston)" ]; then
-	/usr/bin/weston --socket=weston-waydroid --width=${WAYDROID_WIDTH} --height=${WAYDROID_HEIGHT} &> /dev/null &
+	/usr/bin/weston --socket=weston-waydroid --width=${WAYDROID_WIDTH:-1280} --height=${WAYDROID_HEIGHT:-800} &> /dev/null &
 fi
 
 # Launch Waydroid

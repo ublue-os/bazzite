@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-if grep -q "wheel" <<< $(groups); then
-  /usr/bin/pkexec /usr/bin/steam-patch "$*"
-fi

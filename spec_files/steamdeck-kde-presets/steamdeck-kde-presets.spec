@@ -8,6 +8,7 @@ URL:            https://github.com/ublue-os/bazzite
 Source:         https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz
 BuildArch:      noarch
 Patch0:         fedora.patch
+Patch1:         nested-desktop-resolution.patch
 
 Requires:       kde-filesystem
 

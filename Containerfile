@@ -381,6 +381,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         steamdeck-kde-presets \
 ; else \
     rpm-ostree install \
+        steamdeck-gnome-presets \
         gnome-shell-extension-bazzite-menu \
         sddm && \
     wget https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf -O /usr/etc/dxvk-example.conf \
