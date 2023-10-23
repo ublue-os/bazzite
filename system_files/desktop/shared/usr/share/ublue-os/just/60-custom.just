@@ -272,7 +272,6 @@ enable-vfio:
   INITRAMFS_ARGS=$(rpm-ostree status | grep -m 1 Initramfs | perl -pe "s/\s+(Initramfs: regenerate|Initramfs:)//" | perl -pe "s/ \'/ --arg='/")
   if [[ ${VIRT_TEST} == *kvm.report_ignored_msrs* ]]; then
       echo 'add_drivers+=" vfio vfio_iommu_type1 vfio-pci "' | sudo tee /etc/dracut.conf.d/vfio.conf
-      echo $(($(cat /etc/bazzite/hws_version)-1)) | sudo tee /etc/bazzite/hws_version
       rpm-ostree initramfs --enable $INITRAMFS_ARGS
     if [[ ${CPU_VENDOR} == "AuthenticAMD" ]]; then
       VENDOR_KARG="amd_iommu=on"
