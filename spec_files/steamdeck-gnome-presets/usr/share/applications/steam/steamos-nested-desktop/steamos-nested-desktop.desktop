@@ -5,7 +5,7 @@ Exec=steamos-nested-desktop
 Categories=Desktop;
 
 # Regular icon/logo. Any size, 1:1.
-Icon=/usr/share/applications/steam/steamos-nested-desktop/icon.png
+Icon=/usr/share/applications/steam/steamos-nested-desktop/icon.svg
 # 600x900px Capsule Art
 X-Steam-Library-Capsule=/usr/share/applications/steam/steamos-nested-desktop/capsule.png
 # 3840x1240 Hero Art Background
