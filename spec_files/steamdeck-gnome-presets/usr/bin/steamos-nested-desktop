@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+if [[ "$(inxi -Gxx | grep compositor)" =~ "gnome-shell" ]]; then
+	zenity --info --text "This utility is meant to be executed through Steam Game Mode only."
+	exit 0
+fi
+
 source /etc/default/steamos-nested-desktop
 
 # Remove the performance overlay, it meddles with some tasks

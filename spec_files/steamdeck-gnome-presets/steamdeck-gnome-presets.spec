@@ -10,8 +10,9 @@ Source:         {{{ git_dir_pack }}}
 BuildArch:      noarch
 
 Requires:       steamdeck-backgrounds
-Requires:       zenity
 Requires:       dbus-x11
+Requires:       zenity
+Requires:       inxi
 
 Conflicts:      steamdeck-kde-presets
 Conflicts:      steamdeck-kde-presets-desktop
