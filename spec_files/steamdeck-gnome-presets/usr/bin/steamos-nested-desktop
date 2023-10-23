@@ -4,6 +4,7 @@ source /etc/default/steamos-nested-desktop
 # Remove the performance overlay, it meddles with some tasks
 unset LD_PRELOAD
 
+# Start a new DBus session
 eval $(dbus-launch --sh-syntax)
 
 env MUTTER_DEBUG_DUMMY_MODE_SPECS=${STEAMOS_NESTED_DESKTOP_WIDTH:-1280}x${STEAMOS_NESTED_DESKTOP_HEIGHT:-800} \

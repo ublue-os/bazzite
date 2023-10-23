@@ -11,6 +11,7 @@ BuildArch:      noarch
 
 Requires:       steamdeck-backgrounds
 Requires:       zenity
+Requires:       dbus-x11
 
 Conflicts:      steamdeck-kde-presets
 Conflicts:      steamdeck-kde-presets-desktop
