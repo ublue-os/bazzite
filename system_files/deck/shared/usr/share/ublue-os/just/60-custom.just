@@ -14,6 +14,9 @@ reset-waydroid:
   sudo mkdir -p /var/lib/waydroid
   sudo bash -c 'printf "[properties]\nro.hardware.gralloc=minigbm_gbm_mesa\npersist.waydroid.udev=true\npersist.waydroid.uevent=true\nro.sf.lcd_density=215" > /var/lib/waydroid/waydroid.cfg'
 
+add-nested-desktop-to-steam:
+  steamos-add-to-steam /usr/share/applications/steam/steamos-nested-desktop/steamos-nested-desktop.desktop
+
 # Quickly initialize a waydroid image
 init-waydroid:
   sudo waydroid init -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor'
