@@ -21,7 +21,7 @@ screens:
           description: Adds the input group to your current user. Required by certain controller drivers.
           default: true
           packages:
-          - Set input group: pkexec ujust add-user-to-input-group
+          - Set input group: sudo -A ujust add-user-to-input-group
         Add Nested Desktop to Steam:
           description: Adds a nested desktop environment to Steam gamemode.
           default: true
@@ -31,7 +31,7 @@ screens:
           description: Enables BIOS &amp; Firmware updates for Steam Deck hardware
           default: true
           packages:
-          - Enable Updates: pkexec ujust enable-deck-bios-firmware-updates
+          - Enable Updates: sudo -A ujust enable-deck-bios-firmware-updates
         BoilR:
           description: Adds games from various clients to Steam
           default: false
@@ -41,7 +41,7 @@ screens:
           description: A plugin loader for the Steam Deck
           default: false
           packages:
-          - Retrieve Decky: pkexec ujust get-decky
+          - Retrieve Decky: sudo -A ujust get-decky
         EmuDeck:
           description: |
             A utility for installing and configuring emulators on the Steam Deck
@@ -58,7 +58,7 @@ screens:
             NOTE: Press the escape key before boot to show the menu
           default: true
           packages:
-          - Hide GRUB: pkexec ujust hide-grub
+          - Hide GRUB: sudo -A ujust hide-grub
         Legacy Memory Configuration (Not recommended):
           description: Disable ZRAM and enable adjustable swap file, defaults to 1GB.
           default: false
@@ -69,7 +69,7 @@ screens:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: false
           packages:
-          - Install Nix Package Support: pkexec ujust install-nix
+          - Install Nix Package Support: sudo -A ujust install-nix
           - Install Fleek (Requires Nix): ujust install-fleek
         Oversteer:
           description: Application to control supported steering wheels
@@ -115,7 +115,7 @@ screens:
           description: Disable BTRFS support for SD cards for direct compatibility with SD cards formatted on stock SteamOS (Not recommended).
           default: false
           packages:
-          - Switch SteamOS-BTRFS config to EXT4: pkexec ujust switch-to-ext4
+          - Switch SteamOS-BTRFS config to EXT4: sudo -A ujust switch-to-ext4
   applications:
     source: yafti.screen.package
     values:
