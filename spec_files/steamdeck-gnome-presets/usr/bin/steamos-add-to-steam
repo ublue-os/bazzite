@@ -37,7 +37,7 @@ then
     echo "Usage: steamos-add-to-steam [-ui] <path>"
     exit 1
 fi
-mime=$(kmimetypefinder "$file")
+mime=$(xdg-mime query filetype "$file")
 case "$mime" in
     "application/x-desktop"|"application/x-ms-dos-executable")
         add_to_steam "$file"
