@@ -6,8 +6,9 @@ reset-waydroid:
 
 # Quickly initialize a waydroid image
 init-waydroid:
+  #!/usr/bin/env bash
   sudo waydroid init -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor'
-  steamos-add-to-steam /usr/share/applications/Waydroid.desktop
+  steamos-add-to-steam /usr/share/applications/Waydroid.desktop 2>&1 &
 
 # Launch Waydroid configuration helper
 configure-waydroid:
