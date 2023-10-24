@@ -186,7 +186,7 @@ screens:
           - Spotify: com.spotify.Client
           - Strawberry Music Player: org.strawberrymusicplayer.strawberry
           - Tidal-hifi: com.mastermindzh.tidal-hifi
-        Office/Productivity:
+        Office and Productivity:
           description: Bow to Capitalism
           default: false
           packages:
@@ -206,7 +206,7 @@ screens:
           - Tenacity: org.tenacityaudio.Tenacity
           - Thunderbird Email: org.mozilla.Thunderbird
           - Xournal++: com.github.xournalpp.xournalpp
-        Utilities:
+        Utilities and System Tools:
           description: Helpful tools
           default: false
           packages:
@@ -219,16 +219,12 @@ screens:
           - KeePassXC: org.keepassxc.KeePassXC
           - Metadata Cleaner: fr.romainvigier.MetadataCleaner
           - OpenRGB: org.openrgb.OpenRGB
+          - Pika Backup: org.gnome.World.PikaBackup
+          - PinApp: io.github.fabrialberio.pinapp
           - qBittorrent: org.qbittorrent.qBittorrent
+          - Resources: net.nokyan.Resources
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
-        System Management:
-          description: Manage application data
-          default: false
-          packages:
-          - PinApp: io.github.fabrialberio.pinapp
-          - SaveDesktop: io.github.vikdevelop.SaveDesktop
-          - Warehouse: io.github.flattool.Warehouse
   theme:
     source: yafti.screen.title
     values:
