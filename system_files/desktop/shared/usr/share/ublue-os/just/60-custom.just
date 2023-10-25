@@ -519,6 +519,6 @@ setup-virtual-surround-71:
 
 # Remove Virtual Surround 7.1 sink
 remove-virtual-surround-71:
-  rm ~/.conf/pipewire/pipewire.conf.d/virtual-surround-71.conf
-  rm ~/.conf/pipewire/hrir_hesuvi/Control_Room_1.wav
+  rm ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf
+  rm ~/.config/pipewire/hrir_hesuvi/Control_Room_1.wav
   echo "Virtual Surround 7.1 removed, please reboot or restart pipewire for it to take effect."
