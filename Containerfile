@@ -84,6 +84,7 @@ RUN rpm-ostree install \
     hl2linux-selinux \
     ladspa-caps-plugins \
     ladspa-noise-suppression-for-voice \
+    python3-icoextract \
     tailscale \
     btop \
     fish \
