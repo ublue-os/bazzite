@@ -203,6 +203,7 @@ screens:
           description: Bow to Capitalism
           default: false
           packages:
+          - AppImage Pool: io.github.prateekmedia.appimagepool
           - Ardour: org.ardour.Ardour
           - Blender: org.blender.Blender
           - darktable: org.darktable.Darktable
