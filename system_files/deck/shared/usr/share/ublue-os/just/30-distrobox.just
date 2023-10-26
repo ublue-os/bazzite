@@ -114,7 +114,7 @@ install-opentabletdriver:
   if grep -qvz "arch" <<< $(distrobox list); then \
     distrobox-create --nvidia --image ghcr.io/ublue-os/arch-distrobox:latest -n arch -Y; \
   fi && \
-  distrobox enter -n arch -- ' paru -S opentabletdriver' && \
+  distrobox enter -n arch -- ' paru -S opentabletdriver --noconfirm' && \
   mkdir -p ~/.config/systemd/user/ && \
   rm -f ~/.config/systemd/user/arch-opentabletdriver.service && \
   wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenTabletDriver/opentabletdriver.service -O ~/.config/systemd/user/arch-opentabletdriver.service && \
