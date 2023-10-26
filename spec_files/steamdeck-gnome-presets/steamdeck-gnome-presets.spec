@@ -13,6 +13,7 @@ Requires:       steamdeck-backgrounds
 Requires:       dbus-x11
 Requires:       zenity
 Requires:       inxi
+Requires:       nautilus-python
 
 Conflicts:      steamdeck-kde-presets
 Conflicts:      steamdeck-kde-presets-desktop
@@ -37,6 +38,7 @@ cp -rv usr/bin/* %{buildroot}%{_bindir}
 %files
 %{_bindir}/steamos-add-to-steam
 %{_bindir}/steamos-nested-desktop
+%{_datadir}/nautilus-python/extensions/steamos-add-to-steam.py
 %{_datadir}/applications/steam/steamos-nested-desktop/*
 
 # Finally, changes from the latest release of your application are generated from
