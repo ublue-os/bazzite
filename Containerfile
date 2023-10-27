@@ -420,6 +420,8 @@ RUN rpm-ostree install \
     ibus-table-chinese-quick \
     socat \
     zstd \
+    zenity
+    newt
     python-vdf \
     python-crcmod && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
