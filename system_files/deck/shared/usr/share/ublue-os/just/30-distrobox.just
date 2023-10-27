@@ -71,7 +71,9 @@ install-openrazer:
   fi && \
   distrobox-enter -n fedora -- bash -c 'sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo && \
     sudo dnf install -y \
-      openrazer-meta'
+      openrazer-meta \
+      razergenie && \
+    distrobox-export --app razergenie'
 
 # Install Solaar for Logitech Mice, Keyboards, and Trackpads
 install-solaar:
