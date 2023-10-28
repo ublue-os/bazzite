@@ -73,7 +73,15 @@ install-openrazer:
     sudo dnf install -y \
       openrazer-meta \
       razergenie && \
-    distrobox-export --app razergenie'
+    distrobox-export --app razergenie' && \
+  wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenRazer/openrazer-daemon.service -O ~/.config/systemd/user/openrazer-daemon.service && \
+  systemctl --user daemon-reload && \
+  systemctl enable --user --now openrazer-daemon.service && \
+  if ! grep -q "plugdev" /etc/group; then \
+    sudo bash -c 'grep "plugdev" /lib/group >> /etc/group' \
+  ; fi && \
+  sudo usermod -a -G plugdev $USER && \
+  echo "Please reboot to apply needed changes."
 
 # Install Solaar for Logitech Mice, Keyboards, and Trackpads
 install-solaar:

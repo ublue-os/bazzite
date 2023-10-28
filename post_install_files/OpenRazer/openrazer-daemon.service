@@ -1,0 +1,11 @@
+[Unit]
+Description=Daemon to manage razer devices in userspace
+Documentation=man:openrazer-daemon(8)
+
+[Service]
+Type=dbus
+BusName=org.razer
+ExecStart=/usr/bin/distrobox-enter  -n fedora -- ' /usr/bin/openrazer-daemon -F'
+
+[Install]
+WantedBy=default.target
