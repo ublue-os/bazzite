@@ -496,7 +496,8 @@ RUN rpm-ostree install \
         libFAudio \
         gamescope.x86_64 \
         gamescope.i686 \
-        gamescope-session \
+        gamescope-session-plus \
+        gamescope-session-steam \
         wine-core \
         winetricks \
         protontricks && \
