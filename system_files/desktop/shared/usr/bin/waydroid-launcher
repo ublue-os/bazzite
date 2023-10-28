@@ -6,7 +6,6 @@ source /etc/default/waydroid-launcher
 if [ "$(systemctl is-active waydroid-container.service)" == 'active' ]; then
 	killall -9 weston
 	pkexec /usr/bin/waydroid-container-stop
-	exit
 fi
 
 # Launch Weston
