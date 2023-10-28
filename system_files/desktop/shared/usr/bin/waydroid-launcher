@@ -4,7 +4,6 @@ source /etc/default/waydroid-launcher
 
 # Kill any previous remnants
 if [ "$(systemctl is-active waydroid-container.service)" == 'active' ]; then
-	killall -9 weston
 	pkexec /usr/bin/waydroid-container-stop
 fi
 
