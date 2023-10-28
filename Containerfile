@@ -238,8 +238,11 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         libvdpau.i686 \
         libdbusmenu-gtk3.i686 \
         libatomic.i686 \
-        pipewire-alsa.i686 \
         clinfo && \
+    if [[ "${IMAGE_FLAVOR}" != "surface-nvidia" ]]; then \
+        rpm-ostree install \
+            pipewire-alsa.i686 \
+    ; fi && \
     sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree-steam.repo && \
     sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree.repo && \
     sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo && \
