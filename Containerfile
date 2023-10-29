@@ -116,6 +116,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         steamdeck-kde-presets-desktop \
         wallpaper-engine-kde-plugin \
         kdeconnectd \
+        kdeplasma-addons \
         extest.i686 \
         rom-properties-kf5 && \
     if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
