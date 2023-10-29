@@ -261,6 +261,7 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         mangohud.i686 \
         obs-vkcapture.x86_64 \
         obs-vkcapture.i686 \
+        gperftools-libs.i686 \
 ; fi
 
 # Cleanup & Finalize
@@ -497,7 +498,8 @@ RUN rpm-ostree install \
         gamescope-session-steam \
         wine-core \
         winetricks \
-        protontricks && \
+        protontricks \
+        gperftools-libs.i686 && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override remove \
             gamemode \
