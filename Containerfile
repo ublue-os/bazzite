@@ -204,7 +204,12 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         rocm-opencl \
         rocm-clinfo \
         waydroid \
-        weston && \
+        weston \
+        firejail && \
+    wget $(curl -s https://api.github.com/repos/ShadowBlip/OpenGamepadUI/releases/latest | \
+    jq -r ".assets[] | select(.name | test(\"opengamepadui.tar.gz\")) | .browser_download_url") -P /tmp && \
+    tar xvfz /tmp/opengamepadui.tar.gz -C /tmp && \
+    make -C /tmp/opengamepadui install PREFIX=/usr && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     rm -f /usr/etc/modprobe.d/nvidia.conf \
 ; else \
