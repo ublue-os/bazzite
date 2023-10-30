@@ -8,6 +8,16 @@ toggle-autologin:
     sudo touch $DESKTOP_AUTOLOGIN
   fi
 
+# Toggle between Steam and OpenGamepadUI gamescope sessions
+toggle-gamescope-session:
+  #!/usr/bin/env bash
+  source /etc/default/gamescope-session
+  if [[ "${GAMESCOPE_SESSION}" = "gamescope-session" ]]; then
+    sudo echo 'GAMESCOPE_SESSION="gamescope-session"' > /etc/default/gamescope-session
+  else
+    sudo echo 'GAMESCOPE_SESSION="gamescope-session-opengamepadui"' > /etc/default/gamescope-session
+  fi
+
 # Remove all waydroid-related files in your user folders
 reset-waydroid:
   bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
