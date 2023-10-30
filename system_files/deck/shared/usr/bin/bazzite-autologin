@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 source /etc/default/desktop-wayland
+source /etc/default/gamescope-session
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
@@ -19,7 +20,7 @@ fi
 
 # Configure autologin if Steam has been updated
 if [[ ! -f ${DESKTOP_AUTOLOGIN} && -f /var/home/$USER/.local/share/Steam/ubuntu12_32/steamui.so ]]; then
-  sed -i 's/.*Session=.*/Session=gamescope-session.desktop/g' ${SDDM_CONF}
+  sed -i 's/.*Session=.*/Session='${GAMESCOPE_SESSION}'.desktop/g' ${SDDM_CONF}
 elif [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
   if ${DESKTOP_WAYLAND}; then
     sed -i 's/.*Session=.*/Session=plasma.desktop/g' ${SDDM_CONF}

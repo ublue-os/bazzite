@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source /etc/default/gamescope-session
+
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
@@ -12,7 +14,7 @@ AUTOLOGIN_CONF='/etc/sddm.conf.d/zz-steamos-autologin.conf'
 if [[ -f /var/home/$USER/.local/share/Steam/ubuntu12_32/steamui.so ]]; then
   {
     echo "[Autologin]"
-    echo "Session=gamescope-session.desktop"
+    echo "Session=${GAMESCOPE_SESSION}.desktop"
   } > "$AUTOLOGIN_CONF"
 fi
 
