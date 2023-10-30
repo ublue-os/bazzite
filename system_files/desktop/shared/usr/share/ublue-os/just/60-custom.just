@@ -126,13 +126,17 @@ enable-supergfxctl:
     echo "This requires an Nvidia image."
   fi
 
-# Patch a bug in TF2 that causes it to crash at startup
-patch-tf2-tcmalloc:
+# Patch a bug in some 32-bit Source 1.x titles that causes them to crash at startup
+patch-source1-tcmalloc:
   #!/usr/bin/env bash
-  podman run \
-  -v $HOME/.steam/steam/steamapps/common/Team\ Fortress\ 2/bin:/hl2_linux:Z \
-  ghcr.io/maisatanel/tcmalloc-hl2-fixer:main
-  echo "TF2 patch complete."
+  IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+  IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
+  echo 'Add the following as a launch option in Steam:'
+  if [[ ${IMAGE_FLAVOR} ~= 'nvidia' || ${IMAGE_FLAVOR} =~ "deck" || ${IMAGE_FLAVOR} =~ "ally" || ${IMAGE_FLAVOR} =~ "framegame" ]]; then
+    echo 'LD_PRELOAD=/usr/lib/libtcmalloc.so %command%'
+  else
+    echo 'LD_PRELOAD=/usr/lib32/libtcmalloc.so %command%'
+  fi
 
 # Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModCEFCodecFix)
 patch-gmod:
