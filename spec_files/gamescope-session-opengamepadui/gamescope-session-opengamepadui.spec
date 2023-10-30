@@ -6,7 +6,7 @@ Summary:        Gamescope session for OpenGamepadUI
 URL:            https://github.com/ublue-os/bazzite
 
 License:        GPLv3
-Source:        	https://github.com/ShadowBlip/OpenGamepadUI-session/archive/refs/heads/main.tar.gz
+Source:        	https://github.com/ShadowBlip/gamescope-session-opengamepadui/archive/refs/heads/main.tar.gz
 Patch0:         session-select.patch
 BuildArch:      noarch
 

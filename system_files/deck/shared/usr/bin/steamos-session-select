@@ -104,6 +104,9 @@ case "$session" in
     session_launcher="gamescope-session.desktop"
     create_sentinel=1
   ;;
+  opengamepadui)
+    session_launcher="gamescope-session-opengamepadui.desktop"
+  ;;
   *)
     echo >&2 "!! Unrecognized session '$session'"
     exit 1
