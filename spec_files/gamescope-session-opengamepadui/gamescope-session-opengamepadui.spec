@@ -23,6 +23,7 @@ Gamescope session for OpenGamepadUI
 %install
 mkdir -p %{buildroot}%{_datadir}/
 cp -rv usr/share/* %{buildroot}%{_datadir}
+rm %{buildroot}%{_datadir}/wayland-sessions/opengamepadui-session.desktop
 
 %files
 %doc README.md
