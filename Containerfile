@@ -270,7 +270,7 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
     mkdir -p /tmp/latencyflex && \
     tar --strip-components 1 -xvf /tmp/latencyflex.tar.xz -C /tmp/latencyflex && \
     rm -f /tmp/latencyflex.tar.xz && \
-    mv -v /tmp/latencyflex/wine/usr/lib/wine/* /usr/lib64/wine/ && \
+    cp -r /tmp/latencyflex/wine/usr/lib/wine/* /usr/lib64/wine/ && \
     rm -rf /tmp/latencyflex && \
     wget https://raw.githubusercontent.com/Shringe/LatencyFleX-Installer/main/install.sh -O /usr/bin/latencyflex-installer && \
     sed -i 's@/usr/lib/wine/@/usr/lib64/wine/@g' /usr/bin/latencyflex-installer && \
@@ -517,7 +517,7 @@ RUN rpm-ostree install \
     mkdir -p /tmp/latencyflex && \
     tar --strip-components 1 -xvf /tmp/latencyflex.tar.xz -C /tmp/latencyflex && \
     rm -f /tmp/latencyflex.tar.xz && \
-    mv -v /tmp/latencyflex/wine/usr/lib/wine/* /usr/lib64/wine/ && \
+    cp -r /tmp/latencyflex/wine/usr/lib/wine/* /usr/lib64/wine/ && \
     rm -rf /tmp/latencyflex && \
     wget https://raw.githubusercontent.com/Shringe/LatencyFleX-Installer/main/install.sh -O /usr/bin/latencyflex-installer && \
     sed -i 's@/usr/lib/wine/@/usr/lib64/wine/@g' /usr/bin/latencyflex-installer && \
