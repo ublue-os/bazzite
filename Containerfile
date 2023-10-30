@@ -265,7 +265,13 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         mangohud.i686 \
         obs-vkcapture.x86_64 \
         obs-vkcapture.i686 \
-        gperftools-libs.i686 \
+        gperftools-libs.i686 && \
+    wget $(curl https://api.github.com/repos/ishitatsuyuki/LatencyFleX/releases/latest | jq -r '.assets[] | select(.name| test(".*.tar.xz$")).browser_download_url') -O /tmp/latencyflex.tar.xz && \
+    mkdir -p /tmp/latencyflex && \
+    tar --strip-components 1 -xvf /tmp/latencyflex.tar.xz -C /tmp/latencyflex && \
+    rm -f /tmp/latencyflex.tar.xz && \
+    mv -v /tmp/latencyflex/wine/usr/lib/wine/* /usr/lib64/wine/ && \
+    rm -rf /tmp/latencyflex \
 ; fi
 
 # Cleanup & Finalize
@@ -504,6 +510,12 @@ RUN rpm-ostree install \
         winetricks \
         protontricks \
         gperftools-libs.i686 && \
+    wget $(curl https://api.github.com/repos/ishitatsuyuki/LatencyFleX/releases/latest | jq -r '.assets[] | select(.name| test(".*.tar.xz$")).browser_download_url') -O /tmp/latencyflex.tar.xz && \
+    mkdir -p /tmp/latencyflex && \
+    tar --strip-components 1 -xvf /tmp/latencyflex.tar.xz -C /tmp/latencyflex && \
+    rm -f /tmp/latencyflex.tar.xz && \
+    mv -v /tmp/latencyflex/wine/usr/lib/wine/* /usr/lib64/wine/ && \
+    rm -rf /tmp/latencyflex && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override remove \
             gamemode \
