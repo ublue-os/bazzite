@@ -186,10 +186,11 @@ patch-source1-tcmalloc:
   IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
   echo 'Add the following as a launch option in Steam:'
   if [[ ${IMAGE_FLAVOR} ~= 'nvidia' || ${IMAGE_FLAVOR} =~ "deck" || ${IMAGE_FLAVOR} =~ "ally" || ${IMAGE_FLAVOR} =~ "framegame" ]]; then
-    echo 'LD_PRELOAD=/usr/lib/libtcmalloc.so %command%'
+    echo 'LD_PRELOAD=/usr/lib/libtcmalloc_and_profiler.so.4 %command%'
   else
     echo 'LD_PRELOAD=/usr/lib32/libtcmalloc.so %command%'
   fi
+  echo "Delete libtcmalloc_minimal.so.x in the game's bin folder if present."
 
 # Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModCEFCodecFix)
 patch-gmod:
