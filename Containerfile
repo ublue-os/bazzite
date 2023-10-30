@@ -515,6 +515,7 @@ RUN rpm-ostree install \
         gamescope.i686 \
         gamescope-session-plus \
         gamescope-session-steam \
+        gamescope-session-opengamepadui \
         wine-core.x86_64 \
         wine-core.i686 \
         wine-pulseaudio.x86_64 \
