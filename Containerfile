@@ -255,7 +255,8 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         lutris \
         wxGTK \
         libFAudio \
-        wine-core \
+        wine-core.x86_64 \
+        wine-core.i686 \
         winetricks \
         protontricks \
         latencyflex-vulkan-layer \
@@ -510,7 +511,8 @@ RUN rpm-ostree install \
         gamescope.i686 \
         gamescope-session-plus \
         gamescope-session-steam \
-        wine-core \
+        wine-core.x86_64 \
+        wine-core.i686 \
         winetricks \
         protontricks \
         gperftools-libs.i686 && \
