@@ -11,8 +11,7 @@ BuildArch:      noarch
 
 Requires:       steamdeck-backgrounds
 Requires:       dbus-x11
-Requires:       zenity
-Requires:       inxi
+Requires:       xorg-x11-server-Xephyr
 Requires:       nautilus-python
 
 Conflicts:      steamdeck-kde-presets
