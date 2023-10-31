@@ -1,3 +1,6 @@
+// WARNING: Modifications to this file will not be preserved on upgrade.
+// To configure, make a config.kdl file under /etc/system76-scheduler/.
+
 // Version of the configuration file
 version "2.0"
 
@@ -43,7 +46,7 @@ process-scheduler enable=true {
         games-background nice=0 io="idle"
 
         // Desktop environments
-        desktop-environment nice=-10 io=(best-effort)0
+        desktop-environment nice=-3 io=(best-effort)0
 
         // Foreground process profile
         foreground nice=0 io=(best-effort)0
@@ -81,27 +84,18 @@ process-scheduler enable=true {
         chrt
         dbus
         dbus-broker
-        ds-inhibit
-        fancontrol.py
         fig
         fig_desktop
         gamemoderun
-        handycon
         input-remapper-service
         ionice
-        mangoapp
         nice
         otd-daemon
         oversteer
         PluginLoader
-        powerbuttond
         rtkit-daemon
         systemd
-        schedtool
-        sdgyrodsu
-        steam_notif_daemon
-        steam-patch
         taskset
-        vpower
+        schedtool
     }
 }
