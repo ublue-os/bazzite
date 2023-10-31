@@ -102,6 +102,7 @@ install-openrazer: distrobox-check-fedora
       openrazer-meta \
       razergenie && \
     distrobox-export --app razergenie' && \
+  mkdir -p ~/.config/systemd/user && \
   wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenRazer/openrazer-daemon.service -O ~/.config/systemd/user/openrazer-daemon.service && \
   systemctl --user daemon-reload && \
   systemctl enable --user openrazer-daemon.service && \
@@ -152,6 +153,8 @@ install-opentabletdriver:
 # Create fedora distrobox if it doesn't exist
 [private]
 distrobox-check-fedora:
-  if grep -qvz "fedora" <<< $(distrobox list); then \
-    /usr/bin/ujust distrobox-fedora; \
+  #!/bin/env bash
+  if grep -qvz "fedora" <<< $(distrobox list); then
+    echo "Setting up Fedora distrobox"
+    /usr/bin/ujust distrobox-fedora
   fi

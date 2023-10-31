@@ -169,7 +169,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-gsconnect \
         nautilus-gsconnect \
         gnome-shell-extension-system76-scheduler \
-        gnome-shell-extension-caribou-blocker \
         gnome-shell-extension-compiz-windows-effect \
         gnome-shell-extension-just-perfection \
         gnome-shell-extension-blur-my-shell \
@@ -257,7 +256,8 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         libFAudio \
         wine-core.x86_64 \
         wine-core.i686 \
-        wine-pulseaudio \
+        wine-pulseaudio.x86_64 \
+        wine-pulseaudio.i686 \
         winetricks \
         protontricks \
         latencyflex-vulkan-layer \
@@ -404,6 +404,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree install \
         steamdeck-gnome-presets \
         gnome-shell-extension-bazzite-menu \
+        gnome-shell-extension-caribou-blocker \
         sddm && \
     wget https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf -O /usr/etc/dxvk-example.conf \
 ; fi
@@ -436,6 +437,7 @@ RUN rpm-ostree install \
     zstd \
     zenity \
     newt \
+    qt5-qtvirtualkeyboard \
     python-vdf \
     python-crcmod && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
@@ -514,7 +516,8 @@ RUN rpm-ostree install \
         gamescope-session-steam \
         wine-core.x86_64 \
         wine-core.i686 \
-        wine-pulseaudio \
+        wine-pulseaudio.x86_64 \
+        wine-pulseaudio.i686 \
         winetricks \
         protontricks \
         gperftools-libs.i686 && \

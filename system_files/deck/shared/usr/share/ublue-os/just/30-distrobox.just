@@ -47,33 +47,25 @@ distrobox-bazzite-arch:
   distrobox-create --unshare-netns --nvidia --image ghcr.io/ublue-os/bazzite-arch -n bazzite-arch -Y
 
 # Install Webapp manager
-install-webapp-manager:
-  if grep -qvz "fedora" <<< $(distrobox list); then \
-    distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
-  fi && \
+install-webapp-manager: distrobox-check-fedora
   distrobox-enter -n fedora -- bash -c "sudo dnf copr enable -y kylegospo/webapp-manager && \
     sudo dnf install -y webapp-manager && \
     distrobox-export --app webapp-manager"
 
 # Install Oversteer for Logitech steering wheels
-install-oversteer:
-  if grep -qvz "fedora" <<< $(distrobox list); then \
-    distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
-  fi && \
+install-oversteer: distrobox-check-fedora
   distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y kylegospo/oversteer && \
     sudo dnf install -y oversteer && \
     distrobox-export --app oversteer'
 
 # Install OpenRazer for Razer gaming hardware
-install-openrazer:
-  if grep -qvz "fedora" <<< $(distrobox list); then \
-    distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
-  fi && \
+install-openrazer: distrobox-check-fedora
   distrobox-enter -n fedora -- bash -c 'sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo && \
     sudo dnf install -y \
       openrazer-meta \
       razergenie && \
     distrobox-export --app razergenie' && \
+  mkdir -p ~/.config/systemd/user && \
   wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenRazer/openrazer-daemon.service -O ~/.config/systemd/user/openrazer-daemon.service && \
   systemctl --user daemon-reload && \
   systemctl enable --user openrazer-daemon.service && \
@@ -84,10 +76,7 @@ install-openrazer:
   echo "Please reboot to apply needed changes."
 
 # Install Solaar for Logitech Mice, Keyboards, and Trackpads
-install-solaar:
-  if grep -qvz "fedora" <<< $(distrobox list); then \
-    distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
-  fi && \
+install-solaar: distrobox-check-fedora
   distrobox-enter -n fedora -- bash -c 'sudo dnf install -y \
     solaar && \
     distrobox-export --app solaar' && \
@@ -97,10 +86,7 @@ install-solaar:
   sed -i 's/fedora --   solaar/fedora --   solaar --window=hide/g' ~/.config/autostart/fedora-solaar.desktop
 
 # Install Resilio Sync, a file synchronization utility powered by BitTorrent
-install-resilio-sync:
-  if grep -qvz "fedora" <<< $(distrobox list); then \
-    distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
-  fi && \
+install-resilio-sync: distrobox-check-fedora
   distrobox-enter -n fedora -- 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc' && \
   distrobox-enter -n fedora -- 'sudo wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/resilio-sync.repo -O /etc/yum.repos.d/resilio-sync.repo' && \
   distrobox-enter -n fedora -- 'sudo dnf install -y resilio-sync' && \
@@ -111,10 +97,7 @@ install-resilio-sync:
   systemctl enable --user --now fedora-resilio-sync.service
 
 # Install scrcpy, a utility that mirrors Android devices (video and audio) connected via USB or over TCP/IP
-install-scrcpy:
-  if grep -qvz "fedora" <<< $(distrobox list); then \
-    distrobox-create --nvidia --image ghcr.io/ublue-os/fedora-distrobox:latest -n fedora -Y; \
-  fi && \
+install-scrcpy: distrobox-check-fedora
   distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y zeno/scrcpy && \
     sudo dnf install -y scrcpy && \
     distrobox-export --app scrcpy'
@@ -130,3 +113,12 @@ install-opentabletdriver:
   wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenTabletDriver/opentabletdriver.service -O ~/.config/systemd/user/arch-opentabletdriver.service && \
   systemctl --user daemon-reload && \
   systemctl enable --user --now arch-opentabletdriver.service
+
+# Create fedora distrobox if it doesn't exist
+[private]
+distrobox-check-fedora:
+  #!/bin/env bash
+  if grep -qvz "fedora" <<< $(distrobox list); then
+    echo "Setting up Fedora distrobox"
+    /usr/bin/ujust distrobox-fedora
+  fi
