@@ -56,7 +56,8 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://copr.fedorainfracloud.org/coprs/ycollet/audinux/repo/fedora-$(rpm -E %fedora)/ycollet-audinux-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/rom-properties/repo/fedora-$(rpm -E %fedora)/kylegospo-rom-properties-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-rom-properties.repo && \
     wget https://pkgs.tailscale.com/stable/fedora/tailscale.repo -O /etc/yum.repos.d/tailscale.repo && \
-    sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo
+    sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo && \
+    wget https://dl.winehq.org/wine-builds/fedora/$(rpm -E %fedora)/winehq.repo -O /etc/yum.repos.d/winehq.repo
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
@@ -254,12 +255,7 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         lutris \
         wxGTK \
         libFAudio \
-        wine-core.x86_64 \
-        wine-core.i686 \
-        wine-pulseaudio.x86_64 \
-        wine-pulseaudio.i686 \
-        winetricks \
-        protontricks \
+        winehq-staging \
         latencyflex-vulkan-layer \
         vkBasalt.x86_64 \
         vkBasalt.i686 \
@@ -310,6 +306,7 @@ RUN /tmp/image-info.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-rom-properties.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/tailscale.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/winehq.repo && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
     mkdir -p /usr/etc/flatpak/remotes.d && \
@@ -359,7 +356,7 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 
 COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
 
-# Setup Copr repos
+# Setup repos
 RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
@@ -367,7 +364,8 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/winehq.repo
 
 # Install Valve's Steam Deck drivers as kmod
 RUN rpm-ostree install \
@@ -512,12 +510,7 @@ RUN rpm-ostree install \
         gamescope.i686 \
         gamescope-session-plus \
         gamescope-session-steam \
-        wine-core.x86_64 \
-        wine-core.i686 \
-        wine-pulseaudio.x86_64 \
-        wine-pulseaudio.i686 \
-        winetricks \
-        protontricks \
+        winehq-staging \
         gperftools-libs.i686 && \
     wget $(curl https://api.github.com/repos/ishitatsuyuki/LatencyFleX/releases/latest | jq -r '.assets[] | select(.name| test(".*.tar.xz$")).browser_download_url') -O /tmp/latencyflex.tar.xz && \
     mkdir -p /tmp/latencyflex && \
@@ -541,7 +534,6 @@ RUN rpm-ostree install \
 # Cleanup & Finalize
 COPY system_files/shared /
 RUN /tmp/image-info.sh && \
-    rm /usr/share/applications/wine*.desktop && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
