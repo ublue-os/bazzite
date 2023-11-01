@@ -9,8 +9,8 @@ URL:            https://github.com/ublue-os/bazzite
 Source:         https://gitlab.com/evlaV/jupiter-hw-support/-/archive/master/jupiter-hw-support-master.tar.gz
 Patch0:         fedora.patch
 Patch1:         selinux.patch
-Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch
-Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/format-device.sh.patch
+Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch.old.20230929101010.20230927.1000
+Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/format-device.sh.patch.old.20230922091429.20230915.100
 Patch4:         user.patch
 Patch5:         bazzite-btrfs.patch
 Patch6:         systemd-run.patch
