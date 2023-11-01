@@ -129,7 +129,7 @@ fi
 
 # Steam Patch setup
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
-  if [[ ! ":Jupiter:" =~ ":$SYS_ID:" ]]; then
+  if [[ ":ROG Ally RC71L_RC71L:" =~ ":$SYS_ID:"  ]]; then
     echo 'Enabling Steam-Patch'
     pkexec /usr/bin/bazzite-enable-steam-patch "$USER"
   fi
