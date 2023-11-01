@@ -7,6 +7,11 @@ if [ "$(systemctl is-active waydroid-container.service)" == 'active' ]; then
 	pkexec /usr/bin/waydroid-container-stop
 fi
 
+# Check if Waydroid is initialized, initialize if not
+if grep -qz 'not initialized' <<< $(/usr/bin/waydroid status); then
+	/usr/bin/ujust init-waydroid
+fi
+
 # Launch Weston
 killall -9 weston
 pkexec /usr/bin/waydroid-container-start
@@ -18,7 +23,8 @@ fi
 sleep 2 &&
 export XDG_SESSION_TYPE='wayland'
 export WAYLAND_DISPLAY='weston-waydroid'
-/usr/bin/waydroid $@ &
+LAUNCH_PARAM=$@
+/usr/bin/waydroid ${LAUNCH_PARAM:-first-launch} &
 
 # Fix controllers, we know Waydroid has started because surfaceflinger is running
 while [ "" ==  "$(pgrep surfaceflinger)" ]; do
