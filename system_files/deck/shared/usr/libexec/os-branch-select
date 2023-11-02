@@ -1,0 +1,44 @@
+#!/bin/bash
+set -e
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+IMAGE_REF=$(jq -r '."image-ref"' < $IMAGE_INFO)
+
+if [[ $# -eq 1 ]]; then
+  case "$1" in
+    "-c")
+      branch=$(cut -d ":" -f4 <<< "$(rpm-ostree status | grep -m 1 'bazzite')")
+      case "$branch" in
+        "latest" | "testing" | "unstable")
+          echo "$branch"
+          exit 0
+          ;;
+        *)
+          # This can happen on CI builds or when downgrading from a newer build that knows of more branches.  The update
+          # path should decide how to handle it.
+          echo >&2 "Warning: Unrecognized currently selected branch name '$branch', updates may not succeed."
+          echo "$branch"
+          exit 0
+          ;;
+      esac
+      ;;
+    "-l")
+      echo latest
+      echo testing
+      echo unstable
+      exit 0
+      ;;
+    "latest" | "testing" | "unstable")
+      /usr/bin/rpm-ostree rebase "$IMAGE_REF":"$1"
+      exit 0
+      ;;
+    "unstable")
+      echo "The unstable branch has a high risk of breaking."
+      echo "Do NOT use it unless you know what you are doing."
+      /usr/bin/rpm-ostree rebase "$IMAGE_REF":"$1"
+      exit 0
+      ;;
+  esac
+fi
+
+echo "Usage: steamos-select-branch <latest|testing|unstable>" 1>&2
