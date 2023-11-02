@@ -316,7 +316,9 @@ RUN /tmp/image-info.sh && \
     mkdir -p /usr/etc/flatpak/remotes.d && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d && \
     systemctl enable com.system76.Scheduler.service && \
-    systemctl enable displaylink.service && \
+    if [[ "${AKMODS_FLAVOR}" != "asus" ]]; then \
+        systemctl enable displaylink.service \
+    ; fi && \
     systemctl enable btrfs-dedup@var-home.timer && \
     systemctl enable input-remapper.service && \
     systemctl unmask bazzite-flatpak-manager.service && \
