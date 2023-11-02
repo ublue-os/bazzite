@@ -263,9 +263,12 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         vkBasalt.i686 \
         mangohud.x86_64 \
         mangohud.i686 \
-        obs-vkcapture.x86_64 \
-        obs-vkcapture.i686 \
         gperftools-libs.i686 && \
+    if [[ "${IMAGE_FLAVOR}" != "surface-nvidia" ]]; then \
+        rpm-ostree install \
+            obs-vkcapture.x86_64 \
+            obs-vkcapture.i686 \
+    ; fi && \
     wget $(curl https://api.github.com/repos/ishitatsuyuki/LatencyFleX/releases/latest | jq -r '.assets[] | select(.name| test(".*.tar.xz$")).browser_download_url') -O /tmp/latencyflex.tar.xz && \
     mkdir -p /tmp/latencyflex && \
     tar --strip-components 1 -xvf /tmp/latencyflex.tar.xz -C /tmp/latencyflex && \
