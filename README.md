@@ -47,6 +47,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [Nix](https://nixos.org/) package manager with [Fleek](https://getfleek.dev/) optionally available for install via Bazzite Portal.
 - [Brew](https://brew.sh/) package manager optionally available for install via Bazzite Portal.
 - [Waydroid](https://waydro.id/) preinstalled for running Android apps. Future releases will offer to set this up for you through Bazzite Portal. <sub><sup>(Not available on Nvidia builds)</sup></sub>
+- Manage your applications using [Flatseal](https://flathub.org/apps/com.github.tchx84.Flatseal), [Warehouse](https://flathub.org/apps/io.github.flattool.Warehouse), and [Gear Lever](https://flathub.org/apps/it.mijorus.gearlever).
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
 - [OpenRazer](https://openrazer.github.io) drivers built in, Select OpenRazer in Bazzite Portal or run `just install-openrazer` in a terminal to begin using it.
 - [OpenTabletDriver](https://opentabletdriver.net/) udev rules built in, with the full software suite installable via Bazzite Portal or by running `just install-opentabletdriver` in a terminal.
