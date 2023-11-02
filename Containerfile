@@ -29,8 +29,11 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
             /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
             /tmp/akmods-rpms/kmods/*wl*.rpm \
     ; fi && \
+    if [[ "${AKMODS_FLAVOR}" != "asus" ]]; then \
+        rpm-ostree install \
+            /tmp/akmods-rpms/kmods/*evdi*.rpm \
+    ; fi && \
     rpm-ostree install \
-        /tmp/akmods-rpms/kmods/*evdi*.rpm \
         /tmp/akmods-rpms/kmods/*gcadapter_oc*.rpm \
         /tmp/akmods-rpms/kmods/*nct6687*.rpm \
         /tmp/akmods-rpms/kmods/*openrgb*.rpm \
@@ -313,7 +316,9 @@ RUN /tmp/image-info.sh && \
     mkdir -p /usr/etc/flatpak/remotes.d && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d && \
     systemctl enable com.system76.Scheduler.service && \
-    systemctl enable displaylink.service && \
+    if [[ "${AKMODS_FLAVOR}" != "asus" ]]; then \
+        systemctl enable displaylink.service \
+    ; fi && \
     systemctl enable btrfs-dedup@var-home.timer && \
     systemctl enable input-remapper.service && \
     systemctl unmask bazzite-flatpak-manager.service && \
