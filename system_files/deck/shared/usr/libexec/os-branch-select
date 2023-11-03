@@ -1,13 +1,15 @@
 #!/bin/bash
 set -e
 
-IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-IMAGE_REF=$(jq -r '."image-ref"' < $IMAGE_INFO)
-
 if [[ $# -eq 1 ]]; then
   case "$1" in
     "-c")
-      branch=$(cut -d ":" -f4 <<< "$(rpm-ostree status | grep -m 1 'bazzite')")
+      if [[ -f /var/ublue-update/branch ]]; then
+        branch=$(cat /var/ublue-update/branch)
+      else
+        branch=$(cut -d ":" -f4 <<< "$(rpm-ostree status | grep -m 1 'bazzite')")
+      fi
+
       case "$branch" in
         "latest" | "testing" | "unstable")
           echo "$branch"
@@ -28,14 +30,14 @@ if [[ $# -eq 1 ]]; then
       echo unstable
       exit 0
       ;;
-    "latest" | "testing" | "unstable")
-      /usr/bin/rpm-ostree rebase "$IMAGE_REF":"$1"
+    "latest" | "testing")
+      /usr/bin/pkexec /usr/libexec/ublue-update-rebase "$1"
       exit 0
       ;;
     "unstable")
       echo "The unstable branch has a high risk of breaking."
       echo "Do NOT use it unless you know what you are doing."
-      /usr/bin/rpm-ostree rebase "$IMAGE_REF":"$1"
+      /usr/bin/pkexec /usr/libexec/ublue-update-rebase "$1"
       exit 0
       ;;
   esac
