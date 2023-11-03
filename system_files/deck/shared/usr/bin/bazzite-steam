@@ -11,7 +11,7 @@ if [ -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]; then
   LAUNCH_OPTIONS="-steamdeck"
 fi
 
-if [[ "$XDG_SESSION_TYPE" == "wayland" ]] && [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
   # https://github.com/Supreeeme/extest
   # Extest is a drop in replacement for the X11 XTEST extension.
   # It creates a virtual device with the uinput kernel module.
