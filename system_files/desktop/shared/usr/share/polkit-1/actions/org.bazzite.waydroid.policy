@@ -14,7 +14,7 @@
       <allow_inactive>yes</allow_inactive>
       <allow_active>yes</allow_active>
     </defaults>
-    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/waydroid-container-start</annotate>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/waydroid-container-start</annotate>
   </action>
 
   <action id="org.bazzite.policykit.waydroid.container.stop">
@@ -25,7 +25,7 @@
       <allow_inactive>yes</allow_inactive>
       <allow_active>yes</allow_active>
     </defaults>
-    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/waydroid-container-stop</annotate>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/waydroid-container-stop</annotate>
   </action>
 
   <action id="org.bazzite.policykit.waydroid.fix.controllers">
@@ -36,6 +36,6 @@
       <allow_inactive>yes</allow_inactive>
       <allow_active>yes</allow_active>
     </defaults>
-    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/waydroid-fix-controllers</annotate>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/waydroid-fix-controllers</annotate>
   </action>
 </policyconfig>

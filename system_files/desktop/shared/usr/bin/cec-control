@@ -21,4 +21,5 @@ elif [ "${ACTION}" = "onpoweroff" ] && [ "$CEC_ONPOWEROFF_STANDBY" = true ]; the
 elif [ "${ACTION}" = "onsleep" ] && [ "$CEC_ONSLEEP_STANDBY" = true ]; then
     echo "standby $CEC_TVID" | cec-client -s -d 1
 fi
+
 exit 0
