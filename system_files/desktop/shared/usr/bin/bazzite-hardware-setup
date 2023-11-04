@@ -7,7 +7,7 @@ BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=12
+HWS_VER=13
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -115,7 +115,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     echo "Jupiter hardware detected, skipping further setup..."
   else
     echo "Generic device detected. Performing setup..."
-    if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1619-04:" =~ ":$SYS_ID:" ]]; then
+    if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1619-04:83E1:" =~ ":$SYS_ID:" ]]; then
       echo "HandyGCCS supported handheld detected, enabling handycon & TDP control..."
       systemctl enable --now handycon.service
       sed -i 's/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=1/g' /etc/default/steam-hardware-control
