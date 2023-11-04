@@ -29,7 +29,7 @@ flatpak remote-add --if-not-exists --user flathub /etc/flatpak/remotes.d/flathub
 flatpak remote-modify --user --enable flathub
 
 # Handle privileged tasks
-pkexec /usr/bin/bazzite-privileged-user-setup
+pkexec /usr/libexec/bazzite-privileged-user-setup
 
 if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Running setup for Kinoite'
