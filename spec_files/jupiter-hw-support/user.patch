@@ -2,7 +2,7 @@ diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-
 index 023d95e..d69fd03 100755
 --- a/usr/lib/hwsupport/steamos-automount.sh
 +++ b/usr/lib/hwsupport/steamos-automount.sh
-@@ -140,13 +140,14 @@ do_mount()
+@@ -162,13 +162,14 @@
      fi
  
      # Ask udisks to auto-mount. This needs a version of udisks that supports the 'as-user' option.
@@ -14,20 +14,11 @@ index 023d95e..d69fd03 100755
                  org.freedesktop.UDisks2.Filesystem                                                 \
                  Mount 'a{sv}' 4                                                                    \
 -                  as-user s deck                                                                   \
-+                  as-user s ${USER}                                                                \
++                  as-user s ${USER}                                                                  \
                    auth.no_user_interaction b true                                                  \
                    fstype                   s "$FSTYPE"                                             \
                    options                  s "$OPTS") || ret=$?
-@@ -157,7 +158,7 @@ do_mount()
-     fi
- 
-     # Expected reply is of the format
--    #  {"type":"s","data":["/run/media/deck/home"]}
-+    #  {"type":"s","data":["/run/media/${USER}/home"]}
-     mount_point=$(jq -r '.data[0] | select(type == "string")' <<< "$reply" || true)
-     if [[ -z $mount_point ]]; then
-         echo "Error when mounting ${DEVICE}: udisks returned success but could not parse reply:"
-@@ -198,9 +199,9 @@ do_mount()
+@@ -221,9 +222,9 @@
          # bind mount compatdata folder from internal disk
          mkdir -p "${mount_point}"/steamapps/compatdata
          chown 1000:1000 "${mount_point}"/steamapps{,/compatdata}
@@ -38,5 +29,5 @@ index 023d95e..d69fd03 100755
 +        chown 1000:1000 /home/${USER}/.local{,/share{,/Steam{,/steamapps{,/compatdata}}}}
 +        mount --rbind /home/${USER}/.local/share/Steam/steamapps/compatdata "${mount_point}"/steamapps/compatdata
      fi
- 
-     # backwards compatibility
+     chown 1000:1000 -- "${mount_point}"
+     #### SteamOS Btrfs End ####

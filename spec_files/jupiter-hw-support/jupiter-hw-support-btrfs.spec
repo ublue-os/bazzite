@@ -6,7 +6,7 @@ Summary:        Steam Deck Hardware Support Package
 License:        GPLv3
 URL:            https://github.com/ublue-os/bazzite
 
-Source:         https://gitlab.com/evlaV/jupiter-hw-support/-/archive/master/jupiter-hw-support-master.tar.gz
+Source:         https://gitlab.com/evlaV/jupiter-hw-support/-/archive/jupiter-20230927.2/jupiter-hw-support-jupiter-20230927.2.tar.gz
 Patch0:         fedora.patch
 Patch1:         selinux.patch
 Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch.old.20230929101010.20230927.1000
@@ -39,7 +39,7 @@ SteamOS 3.0 Steam Deck Hardware Support Package
 %define debug_package %{nil}
 
 %prep
-%autosetup -p1 -n %{packagename}-master
+%autosetup -p1 -n jupiter-hw-support-jupiter-20230927.2
 
 %build
 
