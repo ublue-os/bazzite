@@ -7,7 +7,7 @@ FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
 # SCRIPT VERSION
-USER_SETUP_VER=10
+USER_SETUP_VER=11
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 USER_SETUP_FEDORA_VER_FILE="$HOME/.bazzite-configured-fedora-version"
@@ -124,6 +124,14 @@ else
     touch $HOME/.steam/.trackerignore
     mkdir -p $HOME/.local/share/Steam
     touch $HOME/.local/share/Steam/.trackerignore
+  fi
+fi
+
+# Steam Patch setup
+if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
+  if [[ ! ":Jupiter:" =~ ":$SYS_ID:" ]]; then
+    echo 'Enabling Steam-Patch'
+    pkexec /usr/libexec/bazzite-enable-steam-patch "$USER"
   fi
 fi
 
