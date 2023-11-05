@@ -2,7 +2,7 @@
 Description=Steam Patch Loader for user %i
 Wants=network.target
 After=network.target
-ConditionPathExists=/var/home/%i/.local/share/Steam/
+ConditionPathIsDirectory=/var/home/%i/.local/share/Steam
 
 [Service]
 Type=simple
