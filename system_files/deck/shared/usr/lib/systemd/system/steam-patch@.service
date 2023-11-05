@@ -2,14 +2,14 @@
 Description=Steam Patch Loader for user %i
 Wants=network.target
 After=network.target
-ConditionPathExists=/var/home/%i/.steam/steam/
+ConditionPathExists=/var/home/%i/.local/share/Steam/
 
 [Service]
 Type=simple
 User=root
 Restart=on-failure
 RestartSec=5s
-ExecStartPre=touch "/var/home/%i/.steam/steam/.cef-enable-remote-debugging"
+ExecStartPre=touch "/var/home/%i/.local/share/Steam/.cef-enable-remote-debugging"
 ExecStart=/usr/bin/steam-patch --user=%i
 
 [Install]
