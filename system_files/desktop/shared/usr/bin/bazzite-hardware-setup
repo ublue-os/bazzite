@@ -35,6 +35,8 @@ fi
 # GLOBAL
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 GPU_ID=$(lspci -k | grep -A 3 -E "(VGA|3D)")
+MINIMUM_FREE_ZRAM=$(awk '/MemTotal/ {printf "%.0f", $2 * 0.01}' /proc/meminfo)
+CURRENT_FREE_ZRAM=$(sysctl vm.min_free_kbytes | awk '{print $3}')
 KARGS=$(rpm-ostree kargs)
 NEEDED_KARGS=()
 INITRAMFS=$(rpm-ostree initramfs)
@@ -141,6 +143,16 @@ if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
   fi
 else
   echo "No fstab param adjustments needed"
+fi
+
+# ZRAM MINIMUM-FREE CONFIGURATION
+echo "Current minimum-free ZRAM value: $CURRENT_FREE_ZRAM"
+
+if ((MINIMUM_FREE_ZRAM > CURRENT_FREE_ZRAM)); then
+    sysctl -w "vm.min_free_kbytes=${MINIMUM_FREE_ZRAM}"
+    echo "Found needed minimum-free ZRAM changes, applying the following: ${MINIMUM_FREE_ZRAM}"
+else
+  echo "No minimum-free ZRAM changes needed"
 fi
 
 # HOSTNAME FIX
