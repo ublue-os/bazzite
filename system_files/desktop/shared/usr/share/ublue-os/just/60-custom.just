@@ -28,6 +28,17 @@ install-corectrl:
   echo 'Setting needed kargs for CoreCtrl...'
   rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
 
+# Install OpenRazer for Razer gaming hardware
+install-openrazer:
+  sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo && \
+  ublue-update --wait && \
+  rpm-ostree install openrazer-meta razergenie && \
+  if ! grep -q "plugdev" /etc/group; then \
+    sudo bash -c 'grep "plugdev" /lib/group >> /etc/group' \
+  ; fi && \
+  sudo usermod -a -G plugdev $USER && \
+  echo "Please reboot to apply needed changes."
+
 # Install Nix with the Determinate Nix Installer
 install-nix:
   #!/usr/bin/env bash

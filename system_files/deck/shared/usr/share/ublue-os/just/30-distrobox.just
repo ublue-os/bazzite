@@ -58,23 +58,6 @@ install-oversteer: distrobox-check-fedora
     sudo dnf install -y oversteer && \
     distrobox-export --app oversteer'
 
-# Install OpenRazer for Razer gaming hardware
-install-openrazer: distrobox-check-fedora
-  distrobox-enter -n fedora -- bash -c 'sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo && \
-    sudo dnf install -y \
-      openrazer-meta \
-      razergenie && \
-    distrobox-export --app razergenie' && \
-  mkdir -p ~/.config/systemd/user && \
-  wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenRazer/openrazer-daemon.service -O ~/.config/systemd/user/openrazer-daemon.service && \
-  systemctl --user daemon-reload && \
-  systemctl enable --user openrazer-daemon.service && \
-  if ! grep -q "plugdev" /etc/group; then \
-    sudo bash -c 'grep "plugdev" /lib/group >> /etc/group' \
-  ; fi && \
-  sudo usermod -a -G plugdev $USER && \
-  echo "Please reboot to apply needed changes."
-
 # Install Solaar for Logitech Mice, Keyboards, and Trackpads
 install-solaar: distrobox-check-fedora
   distrobox-enter -n fedora -- bash -c 'sudo dnf install -y \
