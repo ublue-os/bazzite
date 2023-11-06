@@ -12,7 +12,7 @@ index 907133b..6ba1dd8 100755
  if [[ $EUID -ne 0 ]];
  then
      exec pkexec --disable-internal-agent "$0" "$@"
-@@ -12,16 +15,19 @@ WRITE_VALUE="$2"
+@@ -12,16 +15,19 @@
  
  function CommitWrite()
  {
@@ -34,3 +34,97 @@ index 907133b..6ba1dd8 100755
      exit 1
  }
  
+@@ -32,15 +38,90 @@
+ 
+ 
+ if [[ "$WRITE_PATH" == /sys/class/drm/card*/device/power_dpm_force_performance_level ]]; then
+-   CommitWrite
++   for i in $(ls /sys/class/drm/):
++   do
++      WRITE_PATH="/sys/class/drm/$i/device/power_dpm_force_performance_level"
++      CommitWrite
++   done
+ fi
+ 
+ if [[ "$WRITE_PATH" == /sys/class/drm/card*/device/pp_od_clk_voltage ]]; then
+-   CommitWrite
++   for i in $(ls /sys/class/drm/):
++   do
++      WRITE_PATH="/sys/class/drm/$i/device/pp_od_clk_voltage"
++
++      if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
++         CommitWrite
++      else
++         if [[ -n $(lscpu | grep 'Model name' | grep -v 'BIOS' | grep 'AMD Ryzen' | grep ' 6' | grep -v '6 ' | grep 'U ') ]]; then
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 1600/ 2200/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 1500/ 2000/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 1400/ 1800/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 1300/ 1600/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 1200/ 1400/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 1100/ 1300/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 1000/ 1200/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 900/ 1100/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 800/ 1000/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 700/ 900/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 600/ 800/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 500/ 700/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 400/ 600/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 300/ 400/g')
++            WRITE_VALUE=$(echo "$WRITE_VALUE" | sed -e 's/ 200/ 200/g')
++            CommitWrite
++         fi
++      fi
++   done
+ fi
+ 
+ if [[ "$WRITE_PATH" == /sys/class/hwmon/hwmon*/power*_cap ]]; then
+-   CommitWrite
++   if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
++      CommitWrite
++   else
++      if [[ -n $(lscpu | grep 'Model name' | grep -v 'BIOS' | grep 'AMD Ryzen' | grep ' 6' | grep -v '6 ' | grep 'U ') ]] || [[ -n $(lscpu | grep 'Model name' | grep -v 'BIOS' | grep 'AMD Ryzen' | grep ' 7' | grep -v '7 ' | grep 'U ') ]]; then
++         if [[ "$WRITE_VALUE" == "15000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 90
++         fi
++         if [[ "$WRITE_VALUE" == "14000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 86
++         fi
++         if [[ "$WRITE_VALUE" == "13000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 82
++         fi
++         if [[ "$WRITE_VALUE" == "12000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 78
++         fi
++         if [[ "$WRITE_VALUE" == "11000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 74
++         fi
++         if [[ "$WRITE_VALUE" == "10000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 70
++         fi
++         if [[ "$WRITE_VALUE" == "9000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 66
++         fi
++         if [[ "$WRITE_VALUE" == "8000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 62
++         fi
++         if [[ "$WRITE_VALUE" == "7000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 58
++         fi
++         if [[ "$WRITE_VALUE" == "6000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 54
++         fi
++         if [[ "$WRITE_VALUE" == "5000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 50
++         fi
++         if [[ "$WRITE_VALUE" == "4000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 46
++         fi
++         if [[ "$WRITE_VALUE" == "3000000" ]]; then
++               sudo /usr/sbin/ryzenadj -f 42
++         fi
++         exit 0
++      fi
++   fi
+ fi
+ 
+ if [[ "$WRITE_PATH" == /sys/devices/platform/*/*/*/iio:device*/in_illuminance_integration_time ]]; then
