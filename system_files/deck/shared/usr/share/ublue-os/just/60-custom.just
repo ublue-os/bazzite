@@ -305,7 +305,7 @@ resize-deckswap:
       NEW_SIZE=1
     fi
     if ((${NEW_SIZE} >= 1 && ${NEW_SIZE} <= 16)); then
-      sudo sed -i 's/SWAP_SIZE='${CURRENT_SIZE}'G/SWAP_SIZE='${NEW_SIZE}'G/g' ${CONFIG}
+      sudo sed -i 's/SWAP_SIZE=.*/SWAP_SIZE='${NEW_SIZE}'G/g' ${CONFIG}
       echo 'Current size: '${NEW_SIZE}'G. Please reboot.'
     else
       echo 'Error: Input out of range (1-16). Running again.'
@@ -361,7 +361,7 @@ resize-zram:
     fi
     if ((${NEW_SIZE} >= 512 && ${NEW_SIZE} <= 4096)); then
       if grep -q "zram-size" <<< $(cat ${CONFIG}); then
-        sudo sed -i 's/zram-size='${CURRENT_SIZE}'/zram-size='${NEW_SIZE}'/g' ${CONFIG}
+        sudo sed -i 's/zram-size=.*/zram-size='${NEW_SIZE}'/g' ${CONFIG}
       else
         sudo echo "zram-size=${NEW_SIZE}" >> ${CONFIG}
       fi
