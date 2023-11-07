@@ -306,11 +306,12 @@ resize-deckswap:
     fi
     if ((${NEW_SIZE} >= 1 && ${NEW_SIZE} <= 16)); then
       sudo sed -i 's/SWAP_SIZE=.*/SWAP_SIZE='${NEW_SIZE}'G/g' ${CONFIG}
-      echo 'Current size: '${NEW_SIZE}'G. Please reboot.'
+      echo 'Current size: '${NEW_SIZE}'G.'
     else
       echo 'Error: Input out of range (1-16). Running again.'
       ujust resize-deckswap
     fi
+    systemctl restart deckswap.service
   else
     echo 'Error: Input is not an integer. Running again.'
     ujust resize-deckswap
@@ -365,7 +366,9 @@ resize-zram:
       else
         sudo echo "zram-size=${NEW_SIZE}" >> ${CONFIG}
       fi
-      echo 'Current size: '${NEW_SIZE}'. Please reboot.'
+      systemctl daemon-reload
+      systemctl start /dev/zram0
+      zramctl
     else
       echo 'Error: Input out of range (512-4096). Running again.'
       ujust resize-zram
