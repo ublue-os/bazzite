@@ -1,7 +1,8 @@
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-main}"
-ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$IMAGE_FLAVOR}"
+ARG SOURCE_FLAVOR="${SOURCE_FLAVOR:-main}"
+ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$SOURCE_FLAVOR}"
 ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
 
@@ -18,26 +19,28 @@ COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
 COPY --from=ghcr.io/ublue-os/akmods:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
-RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    wget https://negativo17.org/repos/fedora-multimedia.repo -O /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-    if [[ "${FEDORA_MAJOR_VERSION}" -ge "39" ]]; then \
+RUN if [[ "${IMAGE_FLAVOR}" != nokmods ]]; then \
+        sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
+        wget https://negativo17.org/repos/fedora-multimedia.repo -O /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+        if [[ "${FEDORA_MAJOR_VERSION}" -ge "39" ]]; then \
+            rpm-ostree install \
+                /tmp/akmods-rpms/kmods/*xpadneo*.rpm \
+                /tmp/akmods-rpms/kmods/*xpad-noone*.rpm \
+                /tmp/akmods-rpms/kmods/*xone*.rpm \
+                /tmp/akmods-rpms/kmods/*openrazer*.rpm \
+                /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
+                /tmp/akmods-rpms/kmods/*wl*.rpm \
+        ; fi && \
         rpm-ostree install \
-            /tmp/akmods-rpms/kmods/*xpadneo*.rpm \
-            /tmp/akmods-rpms/kmods/*xpad-noone*.rpm \
-            /tmp/akmods-rpms/kmods/*xone*.rpm \
-            /tmp/akmods-rpms/kmods/*openrazer*.rpm \
-            /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
-            /tmp/akmods-rpms/kmods/*wl*.rpm \
-    ; fi && \
-    rpm-ostree install \
-        /tmp/akmods-rpms/kmods/*gcadapter_oc*.rpm \
-        /tmp/akmods-rpms/kmods/*nct6687*.rpm \
-        /tmp/akmods-rpms/kmods/*openrgb*.rpm \
-        /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm \
-        /tmp/akmods-rpms/kmods/*winesync*.rpm && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-    mkdir -p /etc/akmods-rpms/ && \
-    mv /tmp/akmods-rpms/kmods/*steamdeck*.rpm /etc/akmods-rpms/steamdeck.rpm
+            /tmp/akmods-rpms/kmods/*gcadapter_oc*.rpm \
+            /tmp/akmods-rpms/kmods/*nct6687*.rpm \
+            /tmp/akmods-rpms/kmods/*openrgb*.rpm \
+            /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm \
+            /tmp/akmods-rpms/kmods/*winesync*.rpm && \
+        sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+        mkdir -p /etc/akmods-rpms/ && \
+        mv /tmp/akmods-rpms/kmods/*steamdeck*.rpm /etc/akmods-rpms/steamdeck.rpm \
+    ; fi
 
 # Setup Copr repos
 RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$(rpm -E %fedora)/kylegospo-bazzite-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
@@ -375,9 +378,11 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo
 
 # Install Valve's Steam Deck drivers as kmod
-RUN rpm-ostree install \
-    /etc/akmods-rpms/steamdeck.rpm && \
-    rm -rf /etc/akmods-rpms
+RUN if [[ "${IMAGE_FLAVOR}" != "nokmods" ]]; then \
+        rpm-ostree install \
+        /etc/akmods-rpms/steamdeck.rpm && \
+        rm -rf /etc/akmods-rpms \
+    ; fi
 
 RUN if [[ "${FEDORA_MAJOR_VERSION}" -lt "39" ]]; then \
         rpm-ostree override replace \
