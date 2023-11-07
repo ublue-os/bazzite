@@ -276,8 +276,8 @@ deckswap-on:
   #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
   if grep -q 'inactive' <<< ${STATUS}; then
-    systemctl enable deckswap.service
-    echo 'deckswap enabled. Please reboot.'
+    systemctl enable --now deckswap.service
+    echo 'deckswap enabled.'
   else
     echo 'deckswap is already enabled.'
   fi
@@ -287,8 +287,8 @@ deckswap-off:
   #!/usr/bin/env bash
   STATUS=$(systemctl status deckswap.service)
   if grep -qv 'inactive' <<< ${STATUS}; then
-    systemctl disable deckswap.service
-    echo 'deckswap disabled. Please reboot.'
+    systemctl disable --now deckswap.service
+    echo 'deckswap disabled.'
   else
     echo 'deckswap is already disabled.'
   fi
