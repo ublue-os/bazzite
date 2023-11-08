@@ -24,3 +24,31 @@ index b136413..d3cbb16 100755
  # If the script is not run from a tty then send a copy of stdout and
  # stderr to the journal. In this case stderr is also redirected to stdout.
  if ! tty -s; then
+
+--- a/usr/lib/hwsupport/steamos-automount.sh
++++ b/usr/lib/hwsupport/steamos-automount.sh
+@@ -77,6 +77,7 @@
+     dev_json=$(lsblk -o PATH,LABEL,FSTYPE --json -- "$DEVICE" | jq '.blockdevices[0]')
+     ID_FS_LABEL=$(jq -r '.label | select(type == "string")' <<< "$dev_json")
+     ID_FS_TYPE=$(jq -r '.fstype | select(type == "string")' <<< "$dev_json")
++    FSTYPE_PREFIX=""
+ 
+     #### SteamOS Btrfs Begin ####
+     if [[ -f /etc/default/steamos-btrfs ]]; then
+@@ -120,6 +121,7 @@
+         UDISKS2_ALLOW='uid=$UID,gid=$GID,umask,dmask,fmask,locale,norecover,ignore_case,windows_names,compression,nocompression,big_writes,nls,nohidden,sys_immutable,sparse,showmeta,prealloc'
+         OPTS="${STEAMOS_BTRFS_SDCARD_NTFS_MOUNT_OPTS:-rw,noatime,lazytime,uid=1000,gid=1000,big_writes,umask=0022,ignore_case,windows_names}"
+         FSTYPE="lowntfs-3g"
++        FSTYPE_PREFIX="ntfs:"
+         if [[ ! -f /etc/filesystems ]] || ! grep -q '\b'"${FSTYPE}"'\b' /etc/filesystems; then
+             echo "${FSTYPE}" >> /etc/filesystems
+         fi
+@@ -132,7 +134,7 @@
+     if [[ -f "${udisks2_mount_options_conf}" && ! -f "${udisks2_mount_options_conf}.orig" ]]; then
+         mv -f "${udisks2_mount_options_conf}"{,.orig}
+     fi
+-    echo -e "[defaults]\n${FSTYPE}_allow=${UDISKS2_ALLOW},${OPTS}" > "${udisks2_mount_options_conf}"
++    echo -e "[defaults]\n${FSTYPE_PREFIX}${FSTYPE}_allow=${UDISKS2_ALLOW},${OPTS}" > "${udisks2_mount_options_conf}"
+     trap 'rm -f "${udisks2_mount_options_conf}" ; [[ -f "${udisks2_mount_options_conf}.orig" ]] && mv -f "${udisks2_mount_options_conf}"{.orig,}' EXIT
+     #### SteamOS Btrfs End ####
+ 
