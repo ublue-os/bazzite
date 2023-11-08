@@ -181,7 +181,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-initial-setup \
 ; fi
 
-# Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
+# Install gamescope-limiter patched Mesa
 RUN if [[ "${FEDORA_MAJOR_VERSION}" -ge "39" ]]; then \
         rpm-ostree override replace \
             --experimental \
@@ -594,5 +594,4 @@ RUN /tmp/image-info.sh && \
         /var/* && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp && \
-    mkdir -p /var/lib/bluetooth && \
     ostree container commit
