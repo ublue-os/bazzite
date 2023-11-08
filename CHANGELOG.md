@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.1](https://github.com/ublue-os/bazzite/compare/v2.0.0...v2.0.1) (2023-11-08)
+
+
+### Features
+
+* **deck:** Enhance and fix zram and deckswap scripts ([#512](https://github.com/ublue-os/bazzite/issues/512)) ([01ecbaf](https://github.com/ublue-os/bazzite/commit/01ecbaf524445f6d379da581fb8b2ffbb64b154a))
+
+
+### Miscellaneous Chores
+
+* release 2.0.1 ([4ac245d](https://github.com/ublue-os/bazzite/commit/4ac245d4f920737a45431814a83f9234fda0cb2e))
+
 ## [2.0.0](https://github.com/ublue-os/bazzite/compare/v1.3.0...v2.0.0) (2023-11-07)
 
 
