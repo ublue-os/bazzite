@@ -351,6 +351,8 @@ RUN /tmp/image-info.sh && \
         /var/* && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp && \
+    mkdir -p /var/lib/bluetooth && \
+    chmod -R 755 /var/lib/bluetooth && \
     ostree container commit
 
 FROM bazzite as bazzite-deck
@@ -596,4 +598,6 @@ RUN /tmp/image-info.sh && \
         /var/* && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp && \
+    mkdir -p /var/lib/bluetooth && \
+    chmod -R 755 /var/lib/bluetooth && \
     ostree container commit
