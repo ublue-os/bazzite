@@ -231,7 +231,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 ; fi
 
 # Install gamescope-limiter patched Mesa
-rpm-ostree override replace \
+RUN rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         mesa-filesystem \
