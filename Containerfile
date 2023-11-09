@@ -162,7 +162,7 @@ RUN rpm-ostree install \
         vk_hdr_layer.x86_64 \
         vk_hdr_layer.i686 \
         gperftools-libs.i686 && \
-    if [[ "${IMAGE_FLAVOR}" != "surface-nvidia" ]]; then \
+    if [[ ! "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
         rpm-ostree install \
             obs-vkcapture.x86_64 \
             obs-vkcapture.i686 \
