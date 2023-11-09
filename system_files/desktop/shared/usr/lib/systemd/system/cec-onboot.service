@@ -4,7 +4,7 @@ After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/cec-control onboot
+ExecStart=-/usr/bin/cec-control onboot
 
 [Install]
 WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target

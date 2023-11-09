@@ -5,7 +5,7 @@ Before=final.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/cec-control onpoweroff
+ExecStart=-/usr/bin/cec-control onpoweroff
 
 [Install]
 WantedBy=poweroff.target
