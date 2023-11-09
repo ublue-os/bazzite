@@ -241,7 +241,8 @@ RUN rpm-ostree override replace \
         mesa-libgbm \
         mesa-libGL \
         mesa-libglapi \
-        mesa-vulkan-drivers
+        mesa-vulkan-drivers \
+        mesa-libOSMesa
 
 # Install Gamescope, ROCM, and Waydroid on non-Nvidia images
 RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
