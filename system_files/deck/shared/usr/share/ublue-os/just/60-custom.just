@@ -187,15 +187,8 @@ get-boilr:
 
 # Patch a bug in some 32-bit Source 1.x titles that causes them to crash at startup
 patch-source1-tcmalloc:
-  #!/usr/bin/env bash
-  IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-  IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
   echo 'Add the following as a launch option in Steam:'
-  if [[ ${IMAGE_FLAVOR} ~= 'nvidia' || ${IMAGE_FLAVOR} =~ "deck" || ${IMAGE_FLAVOR} =~ "ally" || ${IMAGE_FLAVOR} =~ "framegame" ]]; then
-    echo 'LD_PRELOAD=/usr/lib/libtcmalloc_and_profiler.so.4 %command%'
-  else
-    echo 'LD_PRELOAD=/usr/lib32/libtcmalloc.so %command%'
-  fi
+  echo 'LD_PRELOAD=/usr/lib/libtcmalloc_and_profiler.so.4 %command%'
   echo "Delete libtcmalloc_minimal.so.x in the game's bin folder if present."
 
 # Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModCEFCodecFix)
