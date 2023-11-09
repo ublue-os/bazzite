@@ -7,7 +7,7 @@ FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
 # SCRIPT VERSION
-USER_SETUP_VER=12
+USER_SETUP_VER=13
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 USER_SETUP_FEDORA_VER_FILE="$HOME/.bazzite-configured-fedora-version"
@@ -37,23 +37,19 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Enabling System76-Scheduler KWin script'
   kwriteconfig5 --file kwinrc --group Plugins --key kwin-system76-scheduler-integrationEnabled true
 
-  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
-    echo 'Running setup for Kinoite on Steam Deck'
-
-    echo 'Creating Desktop shortcuts'
-    mkdir -p $HOME/Desktop/
-    if [[ ! -f "$HOME/Desktop/steam.desktop" ]]; then
-      cp /usr/share/applications/steam.desktop $HOME/Desktop/steam.desktop
-    fi
-    if [[ ! -f "$HOME/Desktop/Return.desktop" ]]; then
-      cp /etc/skel.d/Desktop/Return.desktop $HOME/Desktop/Return.desktop
-    fi
-    if [[ ! -f "$HOME/Desktop/net.lutris.Lutris.desktop" ]]; then
-      cp /usr/share/applications/net.lutris.Lutris.desktop $HOME/Desktop/net.lutris.Lutris.desktop
-    fi
-    if [[ ! -f "$HOME/Desktop/yafti.desktop" ]]; then
-      cp /usr/share/applications/yafti.desktop $HOME/Desktop/yafti.desktop
-    fi
+  echo 'Creating Desktop shortcuts'
+  mkdir -p $HOME/Desktop/
+  if [[ ! -f "$HOME/Desktop/steam.desktop" ]]; then
+    cp /usr/share/applications/steam.desktop $HOME/Desktop/steam.desktop
+  fi
+  if [[ ! -f "$HOME/Desktop/Return.desktop" ]]; then
+    cp /etc/skel.d/Desktop/Return.desktop $HOME/Desktop/Return.desktop
+  fi
+  if [[ ! -f "$HOME/Desktop/net.lutris.Lutris.desktop" ]]; then
+    cp /usr/share/applications/net.lutris.Lutris.desktop $HOME/Desktop/net.lutris.Lutris.desktop
+  fi
+  if [[ ! -f "$HOME/Desktop/yafti.desktop" ]]; then
+    cp /usr/share/applications/yafti.desktop $HOME/Desktop/yafti.desktop
   fi
 else
   echo 'Running setup for Silverblue'

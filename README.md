@@ -3,7 +3,6 @@
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
-[![build-bazzite-arch](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml)
 
 ---
 # Table of Contents
@@ -60,7 +59,6 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 
 Common variant available as `bazzite`, suitable for desktop computers.
 
-- Runs Steam and Lutris in a [custom Arch Linux OCI](https://github.com/ublue-os/bazzite-arch/) via Distrobox. <sub><sup>(Except on Nvidia)</sup></sub>
 - Automatic updates for the OS, Flatpaks, Nix packages <sup><sub>(Via Fleek)</sub></sup>, and all Distrobox containers.
 
 > [!IMPORTANT]  

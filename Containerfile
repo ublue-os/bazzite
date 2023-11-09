@@ -159,6 +159,8 @@ RUN rpm-ostree install \
         vkBasalt.i686 \
         mangohud.x86_64 \
         mangohud.i686 \
+        vk_hdr_layer.x86_64 \
+        vk_hdr_layer.i686 \
         gperftools-libs.i686 && \
     if [[ "${IMAGE_FLAVOR}" != "surface-nvidia" ]]; then \
         rpm-ostree install \
