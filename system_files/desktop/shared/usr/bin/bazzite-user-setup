@@ -7,7 +7,7 @@ FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
 # SCRIPT VERSION
-USER_SETUP_VER=13
+USER_SETUP_VER=14
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 USER_SETUP_FEDORA_VER_FILE="$HOME/.bazzite-configured-fedora-version"
@@ -128,6 +128,15 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
   if [[ ! ":Jupiter:" =~ ":$SYS_ID:" ]]; then
     echo 'Enabling Steam-Patch'
     pkexec /usr/libexec/bazzite-enable-steam-patch "$USER"
+  fi
+fi
+
+# Previous images used Bazzite-Arch to run Steam on desktop images
+# If the exported bazzite-arch-steam file exists it's safe to assume this copy of bazzite-arch is no longer needed.
+if grep -qvz "bazzite-arch" <<< $(distrobox list); then
+  if [[ -f "$HOME/.local/share/applications/bazzite-arch-steam.desktop" ]]; then
+    distrobox stop bazzite-arch
+    distrobox rm bazzite-arch --force
   fi
 fi
 
