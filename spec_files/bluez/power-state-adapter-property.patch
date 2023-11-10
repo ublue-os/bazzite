@@ -1,0 +1,28 @@
+From 70309219acd4c81e3a9e2b3652d2d93eb08b0aee Mon Sep 17 00:00:00 2001
+From: Bastien Nocera <hadess@hadess.net>
+Date: Wed, 31 Aug 2022 11:16:34 +0200
+Subject: [PATCH 6/6] adapter: Remove experimental flag for PowerState
+
+Now that the feature has been tested, that the API is deemed adequate
+and the reliability sufficient.
+---
+ src/adapter.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index 8fb2acdc8..841096d7f 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -3864,8 +3864,7 @@ static const GDBusPropertyTable adapter_properties[] = {
+ 	{ "Alias", "s", property_get_alias, property_set_alias },
+ 	{ "Class", "u", property_get_class },
+ 	{ "Powered", "b", property_get_powered, property_set_powered },
+-	{ "PowerState", "s", property_get_power_state, NULL, NULL,
+-			     G_DBUS_PROPERTY_FLAG_EXPERIMENTAL },
++	{ "PowerState", "s", property_get_power_state },
+ 	{ "Discoverable", "b", property_get_discoverable,
+ 					property_set_discoverable },
+ 	{ "DiscoverableTimeout", "u", property_get_discoverable_timeout,
+-- 
+2.37.2
+
