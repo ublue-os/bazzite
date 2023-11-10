@@ -443,6 +443,7 @@ RUN rpm-ostree install \
     zenity \
     newt \
     qt5-qtvirtualkeyboard \
+    xorg-x11-server-Xvfb \
     python-vdf \
     python-crcmod && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
