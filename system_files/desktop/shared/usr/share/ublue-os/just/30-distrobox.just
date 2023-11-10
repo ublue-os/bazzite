@@ -41,47 +41,10 @@ install-obs-studio-portable:
   distrobox-enter -n obs-studio-portable -- 'bash -c "distrobox-export --app obs"' && \
   echo 'Install complete'
 
-# Set up Bazzite-Arch Distrobox container
-install-bazzite-arch:
-  IMAGE_INFO="/usr/share/ublue-os/image-info.json" && \
-  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO) && \
-  if grep -qz "bazzite-arch" <<< $(distrobox list); then \
-    echo 'Removing existing Bazzite Arch install...' && \
-    distrobox rm bazzite-arch --force; \
-  fi && \
-  echo 'Installing Bazzite Arch...' && \
-  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
-    distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch --unshare-netns --nvidia --yes; \
-  else \
-    distrobox-create --name bazzite-arch --image ghcr.io/ublue-os/bazzite-arch-gnome --unshare-netns --nvidia --yes; \
-  fi && \
-  echo 'Exporting applications...' && \
-  distrobox-enter -n bazzite-arch -- 'bash -c "sudo locale-gen && distrobox-export --app steam && distrobox-export --app lutris && distrobox-export --app protontricks && mkdir -p $HOME/.steam && distrobox-export --bin /usr/bin/steamcmd --export-path ~/.steam && mv $HOME/.steam/steamcmd $HOME/.steam/steamcmd.sh"' && \
-  echo 'Starting Steam...' && \
-  distrobox-enter -n bazzite-arch -- '  /usr/bin/steam-runtime --silent &>/dev/null &' && \
-  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
-    echo 'Creating desktop shortcuts...' && \
-    cp ~/.local/share/applications/bazzite-arch-steam.desktop ~/Desktop/bazzite-arch-steam.desktop && \
-    sed -i 's@  (on bazzite-arch)@@g' ~/Desktop/bazzite-arch-steam.desktop && \
-    cp ~/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop && \
-    sed -i 's@  (on bazzite-arch)@@g' ~/Desktop/bazzite-arch-net.lutris.Lutris.desktop; \
-  fi && \
-  echo 'Finalizing...' && \
-  sleep 10 && \
-  rm -f ~/Desktop/steam.desktop
-
-# Remove container image for bazzite-arch and reinstall it
-reset-bazzite-arch:
-  IMAGE_INFO="/usr/share/ublue-os/image-info.json" && \
-  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO) && \
-  distrobox stop bazzite-arch && \
-  distrobox rm bazzite-arch --force && \
-  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
-    podman image rm bazzite-arch --force; \
-  else \
-    podman image rm bazzite-arch-gnome --force; \
-  fi && \
-  /usr/bin/ujust install-bazzite-arch
+# Set up Bazzite-Arch container
+distrobox-bazzite-arch:
+  echo 'Creating Bazzite-Arch distrobox ...'
+  distrobox-create --unshare-netns --nvidia --image ghcr.io/ublue-os/bazzite-arch -n bazzite-arch -Y
 
 # Install Webapp manager
 install-webapp-manager: distrobox-check-fedora

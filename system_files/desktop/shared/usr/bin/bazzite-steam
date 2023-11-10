@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 
 LAUNCH_OPTIONS=""
 
 # If Steam has been launched before we can safely launch with -steamdeck
 # to maintain the gamemode update branch
-if [ -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]; then
-  LAUNCH_OPTIONS="-steamdeck"
+if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
+  if [ -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]; then
+    LAUNCH_OPTIONS="-steamdeck"
+  fi
 fi
 
 if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then

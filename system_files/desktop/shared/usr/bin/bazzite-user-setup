@@ -7,7 +7,7 @@ FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
 # SCRIPT VERSION
-USER_SETUP_VER=12
+USER_SETUP_VER=14
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 USER_SETUP_FEDORA_VER_FILE="$HOME/.bazzite-configured-fedora-version"
@@ -37,23 +37,19 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Enabling System76-Scheduler KWin script'
   kwriteconfig5 --file kwinrc --group Plugins --key kwin-system76-scheduler-integrationEnabled true
 
-  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
-    echo 'Running setup for Kinoite on Steam Deck'
-
-    echo 'Creating Desktop shortcuts'
-    mkdir -p $HOME/Desktop/
-    if [[ ! -f "$HOME/Desktop/steam.desktop" ]]; then
-      cp /usr/share/applications/steam.desktop $HOME/Desktop/steam.desktop
-    fi
-    if [[ ! -f "$HOME/Desktop/Return.desktop" ]]; then
-      cp /etc/skel.d/Desktop/Return.desktop $HOME/Desktop/Return.desktop
-    fi
-    if [[ ! -f "$HOME/Desktop/net.lutris.Lutris.desktop" ]]; then
-      cp /usr/share/applications/net.lutris.Lutris.desktop $HOME/Desktop/net.lutris.Lutris.desktop
-    fi
-    if [[ ! -f "$HOME/Desktop/yafti.desktop" ]]; then
-      cp /usr/share/applications/yafti.desktop $HOME/Desktop/yafti.desktop
-    fi
+  echo 'Creating Desktop shortcuts'
+  mkdir -p $HOME/Desktop/
+  if [[ ! -f "$HOME/Desktop/steam.desktop" ]]; then
+    cp /usr/share/applications/steam.desktop $HOME/Desktop/steam.desktop
+  fi
+  if [[ ! -f "$HOME/Desktop/Return.desktop" ]]; then
+    cp /etc/skel.d/Desktop/Return.desktop $HOME/Desktop/Return.desktop
+  fi
+  if [[ ! -f "$HOME/Desktop/net.lutris.Lutris.desktop" ]]; then
+    cp /usr/share/applications/net.lutris.Lutris.desktop $HOME/Desktop/net.lutris.Lutris.desktop
+  fi
+  if [[ ! -f "$HOME/Desktop/yafti.desktop" ]]; then
+    cp /usr/share/applications/yafti.desktop $HOME/Desktop/yafti.desktop
   fi
 else
   echo 'Running setup for Silverblue'
@@ -132,6 +128,21 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
   if [[ ! ":Jupiter:" =~ ":$SYS_ID:" ]]; then
     echo 'Enabling Steam-Patch'
     pkexec /usr/libexec/bazzite-enable-steam-patch "$USER"
+  fi
+fi
+
+# Previous images used Bazzite-Arch to run Steam on desktop images
+# If the exported bazzite-arch-steam file exists it's safe to assume this copy of bazzite-arch is no longer needed.
+if grep -qvz "bazzite-arch" <<< $(distrobox list); then
+  if [[ -f "$HOME/.local/share/applications/bazzite-arch-steam.desktop" ]]; then
+    distrobox stop bazzite-arch
+    distrobox rm bazzite-arch --force
+    if [[ -f "$HOME/Desktop/bazzite-arch-steam.desktop" ]]; then
+      rm -f "$HOME/Desktop/bazzite-arch-steam.desktop"
+    fi
+    if [[ -f "$HOME/Desktop/bazzite-arch-net.lutris.Lutris.desktop" ]]; then
+      rm -f "$HOME/Desktop/bazzite-arch-net.lutris.Lutris.desktop"
+    fi
   fi
 fi
 
