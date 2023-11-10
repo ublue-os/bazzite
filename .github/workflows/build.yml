@@ -42,7 +42,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_flavor: [main, nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
+        image_flavor: [main, nokmods, nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
         base_name: [bazzite, bazzite-deck]
         base_image_name: [kinoite, silverblue]
         major_version: [39]
@@ -95,6 +95,11 @@ jobs:
               echo "AKMODS_FLAVOR=surface" >> $GITHUB_ENV
           else
               echo "AKMODS_FLAVOR=main" >> $GITHUB_ENV
+          fi
+          if [[ "${{ matrix.image_flavor }}" =~ "nokmods" ]]; then
+              echo "SOURCE_FLAVOR=main" >> $GITHUB_ENV
+          else
+              echo "SOURCE_FLAVOR=${{ matrix.image_flavor }}" >> $GITHUB_ENV
           fi
 
       - name: Generate tags
@@ -187,6 +192,7 @@ jobs:
             IMAGE_VENDOR=${{ github.repository_owner }}
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
+            SOURCE_FLAVOR=${{ env.SOURCE_FLAVOR }}
             AKMODS_FLAVOR=${{ env.AKMODS_FLAVOR }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
