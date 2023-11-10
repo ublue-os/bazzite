@@ -137,6 +137,12 @@ if grep -qvz "bazzite-arch" <<< $(distrobox list); then
   if [[ -f "$HOME/.local/share/applications/bazzite-arch-steam.desktop" ]]; then
     distrobox stop bazzite-arch
     distrobox rm bazzite-arch --force
+    if [[ -f "$HOME/Desktop/bazzite-arch-steam.desktop" ]]; then
+      rm -f "$HOME/Desktop/bazzite-arch-steam.desktop"
+    fi
+    if [[ -f "$HOME/Desktop/bazzite-arch-net.lutris.Lutris.desktop" ]]; then
+      rm -f "$HOME/Desktop/bazzite-arch-net.lutris.Lutris.desktop"
+    fi
   fi
 fi
 
