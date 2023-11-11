@@ -131,19 +131,25 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
   fi
 fi
 
-# Previous images used Bazzite-Arch to run Steam on desktop images
-# If the exported bazzite-arch-steam file exists it's safe to assume this copy of bazzite-arch is no longer needed.
-if grep -qvz "bazzite-arch" <<< $(distrobox list); then
-  if [[ -f "$HOME/.local/share/applications/bazzite-arch-steam.desktop" ]]; then
-    distrobox stop bazzite-arch
-    distrobox rm bazzite-arch --force
-    if [[ -f "$HOME/Desktop/bazzite-arch-steam.desktop" ]]; then
-      rm -f "$HOME/Desktop/bazzite-arch-steam.desktop"
-    fi
-    if [[ -f "$HOME/Desktop/bazzite-arch-net.lutris.Lutris.desktop" ]]; then
-      rm -f "$HOME/Desktop/bazzite-arch-net.lutris.Lutris.desktop"
-    fi
-  fi
+# Previous images used Bazzite-Arch to run Steam, Lutris, and Protontricks on desktop images
+if [[ -f "$HOME/.local/share/applications/bazzite-arch-steam.desktop" ]]; then
+  rm -f "$HOME/.local/share/applications/bazzite-arch-steam.desktop"
+fi
+
+if [[ -f "$HOME/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop" ]]; then
+  rm -f "$HOME/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop"
+fi
+
+if [[ -f "$HOME/.local/share/applications/bazzite-arch-protontricks.desktop" ]]; then
+  rm -f "$HOME/.local/share/applications/bazzite-arch-protontricks.desktop"
+fi
+
+if [[ -f "$HOME/Desktop/bazzite-arch-steam.desktop" ]]; then
+  rm -f "$HOME/Desktop/bazzite-arch-steam.desktop"
+fi
+
+if [[ -f "$HOME/Desktop/bazzite-arch-net.lutris.Lutris.desktop" ]]; then
+  rm -f "$HOME/Desktop/bazzite-arch-net.lutris.Lutris.desktop"
 fi
 
 # Prevent future executions
