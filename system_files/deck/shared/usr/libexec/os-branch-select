@@ -11,10 +11,17 @@ if [[ $# -eq 1 ]]; then
       fi
 
       case "$branch" in
-        "latest" | "testing" | "unstable")
-          echo "$branch"
+        "latest")
+          echo rel
           exit 0
           ;;
+        "testing")
+          echo rc
+          exit 0
+          ;;
+        "unstable")
+          echo main
+          exit 0
         *)
           # This can happen on CI builds or when downgrading from a newer build that knows of more branches.  The update
           # path should decide how to handle it.
@@ -25,19 +32,25 @@ if [[ $# -eq 1 ]]; then
       esac
       ;;
     "-l")
-      echo latest
-      echo testing
-      echo unstable
+      echo rel
+      echo rc
+      echo beta
+      echo bc
+      echo main
       exit 0
       ;;
-    "latest" | "testing")
-      /usr/bin/pkexec /usr/libexec/ublue-update-rebase "$1"
+    "rel" | "latest")
+      /usr/bin/pkexec /usr/libexec/ublue-update-rebase "latest"
       exit 0
       ;;
-    "unstable")
+    "rc" | "beta" | "testing")
+      /usr/bin/pkexec /usr/libexec/ublue-update-rebase "testing"
+      exit 0
+      ;;
+    "bc" | "main" | "unstable")
       echo "The unstable branch has a high risk of breaking."
       echo "Do NOT use it unless you know what you are doing."
-      /usr/bin/pkexec /usr/libexec/ublue-update-rebase "$1"
+      /usr/bin/pkexec /usr/libexec/ublue-update-rebase "unstable"
       exit 0
       ;;
   esac
