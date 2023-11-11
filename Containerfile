@@ -264,9 +264,6 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
 COPY system_files/shared /
 RUN /tmp/image-info.sh && \
     sed -i 's@/usr/bin/steam@/usr/bin/bazzite-steam@g' /usr/share/applications/steam.desktop && \
-    mkdir -p "/usr/etc/xdg/autostart" && \
-    cp "/usr/share/applications/steam.desktop" "/usr/etc/xdg/autostart/steam.desktop" && \
-    sed -i 's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' /usr/etc/xdg/autostart/steam.desktop && \
     rm /usr/share/applications/shredder.desktop && \
     rm /usr/share/vulkan/icd.d/lvp_icd.*.json && \
     mkdir -p "/usr/etc/profile.d/" && \
@@ -438,6 +435,9 @@ RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/
 # Cleanup & Finalize
 COPY system_files/shared /
 RUN /tmp/image-info.sh && \
+    mkdir -p "/usr/etc/xdg/autostart" && \
+    cp "/usr/share/applications/steam.desktop" "/usr/etc/xdg/autostart/steam.desktop" && \
+    sed -i 's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' /usr/etc/xdg/autostart/steam.desktop && \
     rm /usr/share/applications/wine*.desktop && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
