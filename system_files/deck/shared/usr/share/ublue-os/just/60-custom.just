@@ -332,7 +332,7 @@ zram-off:
   ublue-update --wait
   KARGS=$(rpm-ostree kargs)
   if grep -qv 'zram' <<< ${KARGS}; then
-    rpm-ostree kargs --append=zram=0
+    rpm-ostree kargs --append=systemd.zram=0
     echo 'ZRAM disabled. Please reboot.'
   else
     echo 'ZRAM is already disabled.'
