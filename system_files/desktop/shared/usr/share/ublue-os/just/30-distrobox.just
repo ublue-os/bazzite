@@ -32,8 +32,8 @@ distrobox-ubuntu:
 
 # Create an Alma Linux container
 distrobox-alma:
-	echo 'Creating Alma distrobox ...'
-	distrobox-create --nvidia --image quay.io/toolbx-images/almalinux-toolbox:latest -n alma -Y
+  echo 'Creating Alma distrobox ...'
+  distrobox-create --nvidia --image quay.io/toolbx-images/almalinux-toolbox:latest -n alma -Y
 
 # Install obs-studio-portable from wimpysworld, which bundles an extensive collection of 3rd party plugins 
 install-obs-studio-portable:
