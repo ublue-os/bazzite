@@ -10,6 +10,7 @@
   - [Features for **Desktop** Images](https://github.com/ublue-os/bazzite#desktop)
   - [Features for **Steam Deck / HTPC** Images](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
   - [Features for **GNOME** Images](https://github.com/ublue-os/bazzite#gnome)
+  - [Features from Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
 - [Why & Frequently Asked Questions](https://github.com/ublue-os/bazzite#why)
 - [Showcase & Newsletter](https://github.com/ublue-os/bazzite#showcase)
 - [Custom Packages](https://github.com/ublue-os/bazzite#custom-packages)
@@ -160,6 +161,24 @@ To rebase an existing ostree system to the **Steam Deck/HTPC** release:
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:latest
 ```
+
+### Features from Upstream
+
+#### Universal Blue
+
+- Flathub is enabled by default.
+- [`just`](https://github.com/casey/just) commands for convenience.
+- Multi-media codecs out of the box.
+- Rollback Bazzite from any build within the last 90 days.
+
+#### Features from Fedora Linux (Kinoite & Silverblue)
+
+- A rock solid and stable base.
+- System packages stay relatively up to date.
+- Can layer Fedora packages to the image without losing them between updates.
+- Security focused with [SELinux](https://github.com/SELinuxProject/selinux) preinstalled and configured out of the box.
+- The ability to rebase to different Fedora libostree images, if desired, without losing user data.
+- Printing support thanks to [CUPS](https://www.cups.org/) being preinstalled.
 
 ## Why
 
