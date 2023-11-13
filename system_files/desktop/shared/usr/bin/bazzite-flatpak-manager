@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Script Version
-VER=7
+VER=8
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 
