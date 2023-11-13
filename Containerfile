@@ -224,6 +224,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rom-properties-gtk3 \
         openssh-askpass && \
     rpm-ostree override remove \
+        gnome-software-rpm-ostree \
         gnome-classic-session \
         gnome-tour \
         gnome-extensions-app \
