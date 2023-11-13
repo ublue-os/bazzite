@@ -22,6 +22,7 @@ if [[ $# -eq 1 ]]; then
         "unstable")
           echo main
           exit 0
+          ;;
         *)
           # This can happen on CI builds or when downgrading from a newer build that knows of more branches.  The update
           # path should decide how to handle it.
