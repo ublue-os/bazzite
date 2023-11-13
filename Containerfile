@@ -22,6 +22,7 @@ RUN if [[ "${IMAGE_FLAVOR}" != "main" ]]; then \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     wget https://negativo17.org/repos/fedora-multimedia.repo -O /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     rpm-ostree install \
+        /tmp/akmods-rpms/kmods/*evdi*.rpm \
         /tmp/akmods-rpms/kmods/*xpadneo*.rpm \
         /tmp/akmods-rpms/kmods/*xpad-noone*.rpm \
         /tmp/akmods-rpms/kmods/*xone*.rpm \
