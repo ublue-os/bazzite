@@ -30,6 +30,11 @@ distrobox-ubuntu:
   echo 'Creating Ubuntu distrobox ...'
   distrobox-create --nvidia --image quay.io/toolbx-images/ubuntu-toolbox:22.04 -n ubuntu -Y
 
+# Create an Alma Linux container
+distrobox-alma:
+  echo 'Creating Alma distrobox ...'
+  distrobox-create --nvidia --image quay.io/toolbx-images/almalinux-toolbox:latest -n alma -Y
+
 # Install obs-studio-portable from wimpysworld, which bundles an extensive collection of 3rd party plugins 
 install-obs-studio-portable:
   if grep -qz "obs-studio-portable" <<< $(distrobox list); then \
