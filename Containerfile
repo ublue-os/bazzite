@@ -55,17 +55,19 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo
 
 # Install kernel-fsync
-RUN if [[ "${IMAGE_FLAVOR}" =~ main ]]; then \
-        rpm-ostree cliwrap install-to-root / && \
-        rpm-ostree override replace \
-        --experimental \
-        --from repo=copr:copr.fedorainfracloud.org:sentry:kernel-fsync \
-                kernel \
-                kernel-core \
-                kernel-modules \
-                kernel-modules-core \
-                kernel-modules-extra \
-    ; fi
+RUN case "${IMAGE_FLAVOR}" in \
+        main|nvidia) \
+            rpm-ostree cliwrap install-to-root / && \
+            rpm-ostree override replace \
+            --experimental \
+            --from repo=copr:copr.fedorainfracloud.org:sentry:kernel-fsync \
+                    kernel \
+                    kernel-core \
+                    kernel-modules \
+                    kernel-modules-core \
+                    kernel-modules-extra \
+            ;; \
+    esac
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
