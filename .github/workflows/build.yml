@@ -95,11 +95,19 @@ jobs:
               fi
           fi
           if [[ "${{ matrix.image_flavor }}" =~ "asus" ]]; then
-              echo "AKMODS_FLAVOR=asus" >> $GITHUB_ENV
+              if [[ "${{ env.IMAGE_NAME }}" =~ "ally" ]]; then
+                  echo "AKMODS_FLAVOR=fsync" >> $GITHUB_ENV
+              else
+                  echo "AKMODS_FLAVOR=asus" >> $GITHUB_ENV
+              fi
+          elif [[ "${{ matrix.image_flavor }}" =~ "framework" ]]; then
+              echo "AKMODS_FLAVOR=main" >> $GITHUB_ENV
           elif [[ "${{ matrix.image_flavor }}" =~ "surface" ]]; then
               echo "AKMODS_FLAVOR=surface" >> $GITHUB_ENV
-          else
+          elif [[ "${{ matrix.image_flavor }}" =~ "nvidia" ]]; then
               echo "AKMODS_FLAVOR=main" >> $GITHUB_ENV
+          else
+              echo "AKMODS_FLAVOR=fsync" >> $GITHUB_ENV
           fi
 
       - name: Generate tags
