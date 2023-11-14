@@ -219,6 +219,16 @@ install-adwaita-for-steam:
     echo "This is only supported under GNOME."
   fi
 
+# Upgrade Distrobox to the latest git version
+distrobox-git:
+  echo 'Installing latest git snapshot of Distrobox...'
+  curl -s https://raw.githubusercontent.com/89luca89/distrobox/main/install | sh -s -- --next --prefix ~/.local
+
+# Downgrades Distrobox to the Fedora version
+remove-distrobox-git:
+  echo 'Uninstalling latest git snapshot of Distrobox...'
+  curl -s https://raw.githubusercontent.com/89luca89/distrobox/main/uninstall | sh -s -- --prefix ~/.local
+
 # Set system to boot without showing the grub screen with options
 hide-grub:
   #!/usr/bin/env bash
