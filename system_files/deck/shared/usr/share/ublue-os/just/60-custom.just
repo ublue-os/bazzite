@@ -66,6 +66,16 @@ install-openrazer:
   sudo usermod -a -G plugdev $USER && \
   echo "Please reboot to apply needed changes."
 
+# Upgrade Distrobox to the latest git version
+distrobox-git:
+  echo 'Installing latest git snapshot of Distrobox...'
+  curl -s https://raw.githubusercontent.com/89luca89/distrobox/main/install | sh -s -- --next --prefix ~/.local
+
+# Downgrades Distrobox to the Fedora version
+remove-distrobox-git:
+  echo 'Uninstalling latest git snapshot of Distrobox...'
+  curl -s https://raw.githubusercontent.com/89luca89/distrobox/main/uninstall | sh -s -- --prefix ~/.local
+
 # Install Nix with the Determinate Nix Installer
 install-nix:
   #!/usr/bin/env bash
