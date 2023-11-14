@@ -56,7 +56,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
 
 # Install kernel-fsync
 RUN case "${IMAGE_FLAVOR}" in \
-        main|nvidia|ally) \
+        main|ally) \
             rpm-ostree cliwrap install-to-root / && \
             rpm-ostree override replace \
             --experimental \
