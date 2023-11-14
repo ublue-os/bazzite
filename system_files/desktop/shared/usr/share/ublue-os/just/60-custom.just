@@ -327,6 +327,56 @@ disable-watchdog:
   fi
   rpm-ostree kargs $WATCHDOG_KARGS
 
+# Install Webapp manager
+install-webapp-manager: distrobox-check-fedora
+  distrobox-enter -n fedora -- bash -c "sudo dnf copr enable -y kylegospo/webapp-manager && \
+    sudo dnf install -y webapp-manager && \
+    distrobox-export --app webapp-manager"
+
+# Install Oversteer for Logitech steering wheels
+install-oversteer: distrobox-check-fedora
+  distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y kylegospo/oversteer && \
+    sudo dnf install -y oversteer && \
+    distrobox-export --app oversteer'
+
+# Install Solaar for Logitech Mice, Keyboards, and Trackpads
+install-solaar: distrobox-check-fedora
+  distrobox-enter -n fedora -- bash -c 'sudo dnf install -y \
+    solaar && \
+    distrobox-export --app solaar' && \
+  mkdir -p ~/.config/autostart && \
+  rm -f ~/.config/autostart/fedora-solaar.desktop && \
+  cp ~/.local/share/applications/fedora-solaar.desktop ~/.config/autostart/fedora-solaar.desktop
+
+# Install Resilio Sync, a file synchronization utility powered by BitTorrent
+install-resilio-sync: distrobox-check-fedora
+  distrobox-enter -n fedora -- 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc' && \
+  distrobox-enter -n fedora -- 'sudo wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/resilio-sync.repo -O /etc/yum.repos.d/resilio-sync.repo' && \
+  distrobox-enter -n fedora -- 'sudo dnf install -y resilio-sync' && \
+  mkdir -p ~/.config/systemd/user/ && \
+  rm -f ~/.config/systemd/user/fedora-resilio-sync.service && \
+  wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/fedora-resilio-sync.service -O ~/.config/systemd/user/fedora-resilio-sync.service && \
+  systemctl --user daemon-reload && \
+  systemctl enable --user --now fedora-resilio-sync.service
+
+# Install scrcpy, a utility that mirrors Android devices (video and audio) connected via USB or over TCP/IP
+install-scrcpy: distrobox-check-fedora
+  distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y zeno/scrcpy && \
+    sudo dnf install -y scrcpy && \
+    distrobox-export --app scrcpy'
+
+# Install OpenTabletDriver, an open source, cross-platform, user-mode tablet driver
+install-opentabletdriver:
+  if grep -qvz "arch" <<< $(distrobox list); then \
+    distrobox-create --nvidia --image ghcr.io/ublue-os/arch-distrobox:latest -n arch -Y; \
+  fi && \
+  distrobox enter -n arch -- ' paru -S opentabletdriver --noconfirm' && \
+  mkdir -p ~/.config/systemd/user/ && \
+  rm -f ~/.config/systemd/user/arch-opentabletdriver.service && \
+  wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenTabletDriver/opentabletdriver.service -O ~/.config/systemd/user/arch-opentabletdriver.service && \
+  systemctl --user daemon-reload && \
+  systemctl enable --user --now arch-opentabletdriver.service
+
 # Add SELinux file context for default looking-glass shm file so that libvirt can create it when needed
 selinux-looking-glass:
   sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
@@ -525,3 +575,12 @@ remove-virtual-surround-71:
   rm ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf
   rm ~/.config/pipewire/hrir_hesuvi/Control_Room_1.wav
   echo "Virtual Surround 7.1 removed, please reboot or restart pipewire for it to take effect."
+
+# Create fedora distrobox if it doesn't exist
+[private]
+distrobox-check-fedora:
+  #!/bin/env bash
+  if grep -qvz "fedora" <<< $(distrobox list); then
+    echo "Setting up Fedora distrobox"
+    /usr/bin/ujust distrobox-fedora
+  fi
