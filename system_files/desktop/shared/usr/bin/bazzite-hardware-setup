@@ -73,8 +73,8 @@ fi
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
 
-if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
-  echo "Checking for needed karg changes (Jupiter)"
+if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
+  echo "Checking for needed karg changes (Jupiter/Galileo)"
 
   if [[ ! $KARGS =~ "amd_iommu" ]]; then
     NEEDED_KARGS+=("--append-if-missing=amd_iommu=off")
@@ -108,9 +108,9 @@ else
 fi
 
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
-  if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
-    # Future updates to Deck on Jupiter here
-    echo "Jupiter hardware detected, skipping further setup..."
+  if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
+    # Future updates to Deck here
+    echo "Jupiter/Galileo hardware detected, skipping further setup..."
   else
     echo "Generic device detected. Performing setup..."
     if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:83E1:" =~ ":$SYS_ID:" ]]; then

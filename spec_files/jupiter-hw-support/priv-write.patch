@@ -16,7 +16,7 @@ index 907133b..6ba1dd8 100755
  
  function CommitWrite()
  {
-+   if [[ ":Jupiter:" =~ ":$SYS_ID:" || "$ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE" = 1 ]]; then
++   if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" || "$ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE" = 1 ]]; then
      echo "commit: $WRITE_VALUE -> $WRITE_PATH" | systemd-cat -t p-steamos-priv-write -p warning
 -    echo "$WRITE_VALUE" > "$WRITE_PATH"
      chmod a+w "$WRITE_PATH"
@@ -52,7 +52,7 @@ index 907133b..6ba1dd8 100755
 +   do
 +      WRITE_PATH="/sys/class/drm/$i/device/pp_od_clk_voltage"
 +
-+      if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
++      if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
 +         CommitWrite
 +      else
 +         if [[ -n $(lscpu | grep 'Model name' | grep -v 'BIOS' | grep 'AMD Ryzen' | grep ' 6' | grep -v '6 ' | grep 'U ') ]]; then
@@ -79,7 +79,7 @@ index 907133b..6ba1dd8 100755
  
  if [[ "$WRITE_PATH" == /sys/class/hwmon/hwmon*/power*_cap ]]; then
 -   CommitWrite
-+   if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
++   if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
 +      CommitWrite
 +   else
 +      if [[ -n $(lscpu | grep 'Model name' | grep -v 'BIOS' | grep 'AMD Ryzen' | grep ' 6' | grep -v '6 ' | grep 'U ') ]] || [[ -n $(lscpu | grep 'Model name' | grep -v 'BIOS' | grep 'AMD Ryzen' | grep ' 7' | grep -v '7 ' | grep 'U ') ]]; then

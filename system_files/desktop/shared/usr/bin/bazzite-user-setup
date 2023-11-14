@@ -125,7 +125,7 @@ fi
 
 # Steam Patch setup
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
-  if [[ ! ":Jupiter:" =~ ":$SYS_ID:" ]]; then
+  if [[ ! (":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:")]]; then
     echo 'Enabling Steam-Patch'
     pkexec /usr/libexec/bazzite-enable-steam-patch "$USER"
   fi
