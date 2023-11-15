@@ -289,4 +289,4 @@ We also ship a config for the popular [pull app](https://github.com/apps/pull) i
 
 You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB).
 
-You can also discuss Bazzite on our [Discourse](https://universal-blue.discourse.group/c/bazzite/5) forums and find additional [documentation](https://universal-blue.discourse.group/docs?category=5) surrounding the project too.
+You can also discuss Bazzite on our [Discourse](https://universal-blue.discourse.group/c/bazzite/5) and find additional [documentation](https://universal-blue.discourse.group/docs?category=5) surrounding the project too.
