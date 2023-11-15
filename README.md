@@ -64,7 +64,7 @@ Common variant available as `bazzite`, suitable for desktop computers.
 - Automatic updates for the OS, Flatpaks, Nix packages <sup><sub>(Via Fleek)</sub></sup>, and all Distrobox containers.
 
 > [!IMPORTANT]  
-> **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.org/images/bazzite/installation/).**
+> **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).** If you experience any issues with installing Bazzite, then check out our [troubleshoot guide](https://universal-blue.discourse.group/docs?topic=34).
 
 If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image:
 
@@ -113,12 +113,13 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
     - Ability to use X11 on the desktop if desired by editing `/etc/default/desktop-wayland`.
     - 32GB RAM mod your Steam Deck? Enjoy double the maximum VRAM amount, automatically applied. <sup><sub>(Can you share your soldering skills?)</sub></sup>
 - Steam Deck hardware-specific services can be disabled by running `ujust disable-deck-services` in the terminal, useful for trying this image on other handhelds or for use on HTPCs.
+- More information can be found [here](https://universal-blue.discourse.group/docs?topic=37) on the Bazzite Steam Deck images.
 
 > [!WARNING]  
 > **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time. Upgrading the storage resolves the issue.**
 
 > [!IMPORTANT]  
-> **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.org/images/bazzite/installation/).**
+> **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).** If you experience any issues with installing Bazzite, then check out our [troubleshoot guide](https://universal-blue.discourse.group/docs?topic=34).
 
 If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image: 
 
@@ -139,7 +140,7 @@ Builds with the GNOME desktop environment are available in both desktop and deck
 - Automatic updates for the [Firefox GNOME theme](https://github.com/rafaelmardojai/firefox-gnome-theme) and [Thunderbird GNOME theme](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(If installed)</sub></sup>
 
 > [!IMPORTANT]  
-> **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.org/images/bazzite/installation/).**
+> **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).** If you experience any issues with installing Bazzite, then check out our [troubleshoot guide](https://universal-blue.discourse.group/docs?topic=34).
 
 To rebase an existing ostree system to the **desktop** release:
 
@@ -188,7 +189,7 @@ Despite this project also being image-based, you are able to install any Fedora 
 
 Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot <sub><sup>(Run `ujust enroll-secure-boot-key` and enter the password `ublue-os` if prompted to enroll our key)</sup></sub> and disk encryption, making this a sensible solution for general computing. <sup><sub>(Yes, you can print from Bazzite)</sub></sup>
 
-Check out the [FAQ](https://universal-blue.org/images/bazzite/FAQ/) for other topics surrounding the project.
+Check out the [Frequently Asked Questions](https://universal-blue.discourse.group/docs?topic=33) for details on what makes Bazzite stand out from other Linux operating systems.
 
 ## Showcase
 
@@ -200,7 +201,7 @@ Check out the [FAQ](https://universal-blue.org/images/bazzite/FAQ/) for other to
 ![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
 ![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
 
-Check out our [newsletters](https://universal-blue.org/blog/category/bazzite/) that get published on a regular basis for updates on the project.
+Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) that get published on a regular basis for updates on the project.
 
 ## Custom Packages
 
@@ -288,4 +289,4 @@ We also ship a config for the popular [pull app](https://github.com/apps/pull) i
 
 You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB).
 
-You can also discuss on our [Github Discussions](https://github.com/orgs/ublue-os/discussions/categories/bazzite) for any new features or issues you're experiencing with Bazzite.
+You can also discuss Bazzite on our [Discourse](https://universal-blue.discourse.group/c/bazzite/5) and find additional [documentation](https://universal-blue.discourse.group/docs?category=5) surrounding the project too.
