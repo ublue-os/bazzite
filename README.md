@@ -201,7 +201,7 @@ Check out the [Frequently Asked Questions](https://universal-blue.discourse.grou
 ![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
 ![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
 
-Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) that get published on a regular basis for updates on the project.
+Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) and [announcements](https://universal-blue.discourse.group/tags/c/bazzite/5/announcements) that get published on a regular basis for updates on the project.
 
 ## Custom Packages
 
