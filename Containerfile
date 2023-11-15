@@ -221,6 +221,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-blur-my-shell \
         gnome-shell-extension-hanabi \
         gnome-shell-extension-gamerzilla \
+        gnome-shell-extension-bazzite-menu \
         rom-properties-gtk3 \
         openssh-askpass && \
     rpm-ostree override remove \
@@ -372,10 +373,12 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 ; else \
     rpm-ostree install \
         steamdeck-gnome-presets \
-        gnome-shell-extension-bazzite-menu \
         gnome-shell-extension-caribou-blocker \
         sddm && \
-    wget https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf -O /usr/etc/dxvk-example.conf \
+    wget https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf -O /usr/etc/dxvk-example.conf  && \
+    sed -i '/show-gamemode/{n;s/false/true/}' /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas/org.gnome.shell.extensions.logo-menu.gschema.xml && \
+    rm -f /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas/gschemas.compiled && \
+    glib-compile-schemas /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas/ \
 ; fi
 
 # Install new packages

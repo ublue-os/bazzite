@@ -2,8 +2,26 @@
 
 set -e
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
+if [[ $BASE_IMAGE_NAME =~ "silverblue" && "$XDG_SESSION_TYPE" == "wayland" ]]; then
+  XRANDR_FUNC="gnome-randr modify"
+else
+  XRANDR_FUNC="xrandr --output"
+fi
+
+# Steam Deck
 if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
   # Rotate the builtin screen every time so it's the right way around.
-  xrandr --output "eDP" --rotate "right"
+  if [[ "$XDG_SESSION_TYPE" == "wayland" ]]
+    $XRANDR_FUNC "eDP" --rotate "normal"
+  else
+    $XRANDR_FUNC "eDP" --rotate "right"
+  fi
+fi
+
+# Lenovo Legion Go
+if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+  $XRANDR_FUNC "eDP" --rotate "normal"
 fi

@@ -7,7 +7,7 @@ FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
 # SCRIPT VERSION
-USER_SETUP_VER=14
+USER_SETUP_VER=15
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 USER_SETUP_FEDORA_VER_FILE="$HOME/.bazzite-configured-fedora-version"
@@ -57,6 +57,7 @@ else
   echo 'Enabling GNOME extensions'
   gnome-extensions enable s76-scheduler@mattjakeman.com
   gnome-extensions enable gsconnect@andyholmes.github.io
+  gnome-extensions enable logomenu@aryan_k
   gnome-extensions disable background-logo@fedorahosted.org
 
   echo 'Adjusting Nautilus settings'
@@ -75,14 +76,6 @@ else
 
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
-
-    if [ ${FEDORA_VERSION} -gt 38 ]; then
-      echo 'Enabling Bazzite Logo Menu fork'
-      gnome-extensions enable logomenu@aryan_k
-    else
-      echo 'Enabling Bazzite Tofu Menu fork'
-      gnome-extensions enable tofumenu@tofu
-    fi
 
     echo 'Disabling GNOME keyboard'
     gsettings set org.gnome.desktop.interface toolkit-accessibility false
