@@ -40,6 +40,8 @@ get-decky:
 # Install EmuDeck (https://www.emudeck.com/)
 get-emudeck:
   #!/usr/bin/env bash
+  IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
   echo 'Retrieving EmuDeck...'
   if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
     wget https://www.emudeck.com/EmuDeck.desktop -O ~/.local/share/applications/EmuDeck.desktop
