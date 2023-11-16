@@ -7,7 +7,7 @@ BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=14
+HWS_VER=15
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -91,6 +91,14 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
   
   if [[ $KARGS =~ "simpledrm_platform_driver_init" ]]; then
     NEEDED_KARGS+=("--delete-if-present=initcall_blacklist=simpledrm_platform_driver_init")
+  fi
+fi
+
+if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:83E1:" =~ ":$SYS_ID:" ]]; then
+  echo "Steam-Patch supported Handheld detected, Checking for needed karg changes"
+
+  if [[ ! $KARGS =~ "iomem" ]]; then
+    NEEDED_KARGS+=("--append-if-missing=iomem=relaxed")
   fi
 fi
 
