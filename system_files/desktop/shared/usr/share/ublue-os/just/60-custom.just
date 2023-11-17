@@ -375,7 +375,8 @@ install-opentabletdriver:
   rm -f ~/.config/systemd/user/arch-opentabletdriver.service && \
   wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenTabletDriver/opentabletdriver.service -O ~/.config/systemd/user/arch-opentabletdriver.service && \
   systemctl --user daemon-reload && \
-  systemctl enable --user --now arch-opentabletdriver.service
+  systemctl enable --user --now arch-opentabletdriver.service && \
+  distrobox enter -n arch -- 'distrobox-export --app otd-gui'
 
 # Add SELinux file context for default looking-glass shm file so that libvirt can create it when needed
 selinux-looking-glass:
