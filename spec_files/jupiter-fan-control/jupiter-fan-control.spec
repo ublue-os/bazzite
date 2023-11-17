@@ -49,7 +49,7 @@ cp -v usr/lib/systemd/system/jupiter-fan-control.service %{buildroot}%{_unitdir}
 %files
 %doc README.md
 %{_datadir}/jupiter-fan-control/fancontrol.py
-%{_datadir}/jupiter-fan-control/jupiter-fan-control-config.yaml
+%{_datadir}/jupiter-fan-control/*-config.yaml
 %{_datadir}/jupiter-fan-control/PID.py
 %{_unitdir}/jupiter-fan-control.service
 
