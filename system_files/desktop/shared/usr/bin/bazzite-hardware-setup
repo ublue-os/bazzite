@@ -167,6 +167,11 @@ if (( $(hostname | wc -m) > 16 )); then
   hostnamectl set-hostname bazzite
 fi
 
+# Set default target to graphical, fixes rebase from base image
+if grep -qv "graphical.target" <<< $(systemctl get-default); then
+  systemctl set-default graphical.target
+fi
+
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
 echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
