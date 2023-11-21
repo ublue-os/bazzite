@@ -34,8 +34,14 @@ configure-waydroid:
 install-sunshine:
     #!/usr/bin/env bash
     flatpak install --system --noninteractive flathub dev.lizardbyte.app.Sunshine
-    flatpak run --command=additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable
+    flatpak run --command=additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable || true
     echo "Sunshine is installed!"
+
+# Remove Sunshine
+remove-sunshine:
+    #!/usr/bin/env bash
+    flatpak run --command=remove-additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable || true
+    flatpak uninstall --delete-data --noninteractive dev.lizardbyte.sunshine
 
 # Autostart Sunshine
 autostart-sunshine:
