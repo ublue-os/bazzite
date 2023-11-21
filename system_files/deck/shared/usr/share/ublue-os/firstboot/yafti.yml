@@ -91,6 +91,7 @@ screens:
           default: false
           packages:
           - Install Sunshine: ujust install-sunshine
+          - Autostart Sunshine: ujust autostart-sunshine
         Wootility:
           description: A configurator for Wooting keyboards
           default: false

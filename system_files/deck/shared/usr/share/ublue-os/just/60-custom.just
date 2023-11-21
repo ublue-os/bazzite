@@ -37,6 +37,11 @@ install-sunshine:
     flatpak run --command=additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable
     echo "Sunshine is installed!"
 
+# Autostart Sunshine
+autostart-sunshine:
+    #!/usr/bin/env bash
+    systemctl enable --user --now sunshine.service
+
 # Install Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader)
 get-decky:
     #!/usr/bin/env bash
