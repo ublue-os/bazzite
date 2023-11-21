@@ -48,6 +48,12 @@ screens:
           default: false
           packages:
           - Retrieve EmuDeck: ujust get-emudeck
+        Sunshine:
+          description: A self-hosted game stream host for Moonlight
+          default: false
+          packages:
+          - Install Sunshine: ujust install-sunshine
+          - Autostart Sunshine: ujust autostart-sunshine
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
@@ -86,12 +92,6 @@ screens:
           default: false
           packages:
           - Install Solaar: ujust install-solaar
-        Sunshine:
-          description: A streaming utility that's better than Steam Link! Paired with Moonlight
-          default: false
-          packages:
-          - Install Sunshine: ujust install-sunshine
-          - Autostart Sunshine: ujust autostart-sunshine
         Wootility:
           description: A configurator for Wooting keyboards
           default: false
