@@ -397,6 +397,19 @@ unhide-grub:
       sudo grub2-mkconfig -o /etc/grub2.cfg
     fi
 
+# Install Deck HD BIOS
+install-deckhd-bios:
+    #!/usr/bin/env bash
+    RESOLUTION=$(sudo lshw -json -c display | jq -r .[]."configuration"."resolution")
+    if [[ "${RESOLUTION}" = "1200,1920" ]]; then
+        sudo systemctl mask --now jupiter-biosupdate.service
+        wget -q https://deckhd.com/downloads/install.sh -O /tmp/deckhd-install.sh
+        chmod +x /tmp/deckhd-install.sh
+        sudo ./tmp/deckhd-install.sh
+    else
+        echo "Unable to detect DeckHD. Aborting..."
+    fi
+
 # Enable BIOS & Firmware update services for the Steam Deck
 enable-deck-bios-firmware-updates:
     #!/usr/bin/env bash
