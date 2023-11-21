@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   width="75"
+   width="90"
    height="22"
-   viewBox="0 0 74.999998 22"
+   viewBox="0 0 89.999998 22"
    fill="none"
    version="1.1"
    id="svg18"
    sodipodi:docname="fedora_whitelogo.svg"
-   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   inkscape:version="1.3.1 (91b66b0783, 2023-11-16)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -22,17 +22,17 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="6.7873915"
-     inkscape:cx="18.195503"
-     inkscape:cy="26.888091"
-     inkscape:window-width="1920"
-     inkscape:window-height="1014"
+     inkscape:cx="18.269169"
+     inkscape:cy="3.3149701"
+     inkscape:window-width="3440"
+     inkscape:window-height="1374"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg18" />
   <g
      id="g1"
-     transform="matrix(0.99623686,0,0,0.99623686,0.24811708,2.3823061)">
+     transform="matrix(1.1422913,0,0,1.1422913,2.2867623,1.1188993)">
     <path
        d="M 0,3.4600983 C 0,1.5491572 1.5491572,0 3.4600983,0 h 5.1901474 c 4.7773953,0 8.6502463,3.8728507 8.6502463,8.6502457 0,4.7773953 -3.872851,8.6502463 -8.6502463,8.6502463 C 3.8728507,17.300492 0,13.427641 0,8.6502457 Z"
        fill="url(#paint0_linear_1016_57)"
