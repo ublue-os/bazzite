@@ -32,9 +32,10 @@ configure-waydroid:
 
 # Install Sunshine
 install-sunshine:
-  #!/usr/bin/env bash
-  flatpak install --system --noninteractive flathub dev.lizardbyte.app.Sunshine
-  echo "Sunshine is installed!"
+    #!/usr/bin/env bash
+    flatpak install --system --noninteractive flathub dev.lizardbyte.app.Sunshine
+    flatpak run --command=additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable
+    echo "Sunshine is installed!"
 
 # Install Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader)
 get-decky:
