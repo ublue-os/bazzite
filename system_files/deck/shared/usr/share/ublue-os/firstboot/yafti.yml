@@ -90,7 +90,7 @@ screens:
           description: A streaming utility that's better than Steam Link! Paired with Moonlight
           default: false
           packages:
-          - Retrieve Sunshine: sudo -A ujust get-sunshine
+          - Install Sunshine: ujust install-sunshine
         Wootility:
           description: A configurator for Wooting keyboards
           default: false

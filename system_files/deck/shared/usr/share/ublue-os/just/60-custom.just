@@ -30,40 +30,11 @@ configure-waydroid:
     deactivate
     sudo rm -rf /tmp/waydroid_script
 
-# Retrieve Sunshine
-get-sunshine:
-  wget \
-    $(curl -s https://api.github.com/repos/LizardByte/Sunshine/releases/latest | \
-    jq -r ".assets[] | select(.name | test(\"sunshine_x86_64.flatpak\")) | .browser_download_url") \
-    -O /tmp/sunshine.flatpak
-  sudo flatpak install --system /tmp/sunshine.flatpak -y
-  sudo mkdir -p /var/usrlocal/systemd/system
-  echo -e \
-  "[Unit]\n\
-  Description=Sunshine is a self-hosted game stream host for Moonlight.\n\
-  StartLimitIntervalSec=500\n\
-  StartLimitBurst=5\n\
-  \n\
-  [Service]\n\
-  Environment=PULSE_SERVER=unix:/run/user/1000/pulse/native\n\
-  ExecStart=flatpak run dev.lizardbyte.sunshine\n\
-  ExecStop=flatpak kill dev.lizardbyte.sunshine\n\
-  Restart=on-failure\n\
-  RestartSec=5s\n\
-  \n\
-  [Install]\n\
-  WantedBy=graphical.target" | \
-  sudo tee /var/usrlocal/systemd/system/sunshine.service
-  sudo systemctl enable sunshine
+# Install Sunshine
+install-sunshine:
+  #!/usr/bin/env bash
+  flatpak install --system --noninteractive flathub dev.lizardbyte.app.Sunshine
   echo "Sunshine is installed!"
-
-# Remove Sunshine
-remove-sunshine:
-  sudo systemctl disable sunshine.service
-  sudo systemctl stop sunshine.service
-  sudo flatpak remove --system dev.lizardbyte.sunshine -y
-  sudo rm /var/usrlocal/systemd/system/sunshine.service
-  echo "Sunshine successfully deinstalled."
 
 # Install Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader)
 get-decky:
