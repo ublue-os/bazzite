@@ -162,8 +162,8 @@ RUN rpm-ostree install \
         mangohud.i686 \
         vk_hdr_layer.x86_64 \
         vk_hdr_layer.i686 \
-        gperftools-libs.i686 && \
-        goverlay \
+        gperftools-libs.i686 \
+        goverlay && \
     if [[ ! "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
         rpm-ostree install \
             obs-vkcapture.x86_64 \
