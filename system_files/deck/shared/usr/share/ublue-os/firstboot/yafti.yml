@@ -48,6 +48,12 @@ screens:
           default: false
           packages:
           - Retrieve EmuDeck: ujust get-emudeck
+        Sunshine:
+          description: A self-hosted game stream host for Moonlight
+          default: false
+          packages:
+          - Install Sunshine: ujust install-sunshine
+          - Autostart Sunshine: ujust autostart-sunshine
         Greenlight:
           description: A utility for xCloud and xHome streaming
           default: false
