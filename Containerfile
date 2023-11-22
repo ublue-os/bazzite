@@ -72,9 +72,6 @@ RUN rpm-ostree install \
         xrandr \
         rmlint \
         compsize \
-        ddccontrol \
-        ddccontrol-gtk \
-        ddccontrol-db \
         input-remapper \
         system76-scheduler \
         hl2linux-selinux \
