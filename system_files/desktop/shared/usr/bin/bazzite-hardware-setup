@@ -116,16 +116,22 @@ else
 fi
 
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
-  if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
-    RESOLUTION=$(lshw -json -c display | jq -r .[]."configuration"."resolution")
-    if [[ "${RESOLUTION}" = "1200,1920" ]]; then
-      echo "Jupiter with DeckHD detected, disabling BIOS updates..."
-      systemctl disable --now jupiter-biosupdate.service
-    else
-      echo "Jupiter hardware detected, skipping further setup..."
+  if [[ ":Jupiter:Galileo:" =~ ":$SYS_ID:" ]]; then
+    if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
+      RESOLUTION=$(lshw -json -c display | jq -r .[]."configuration"."resolution")
+      if [[ "${RESOLUTION}" = "1200,1920" ]]; then
+        echo "Jupiter with DeckHD detected, disabling BIOS updates..."
+        systemctl disable --now jupiter-biosupdate.service
+      else
+        echo "Jupiter hardware detected, skipping further setup..."
+      fi
+    elif [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
+      echo "Galileo hardware detected, skipping further setup..."
     fi
-  elif [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
-    echo "Galileo hardware detected, skipping further setup..."
+
+    systemctl enable --now jupiter-fan-control.service
+    systemctl enable --now vpower.service
+    systemctl --global enable --now sdgyrodsu.service
   else
     echo "Generic device detected. Performing setup..."
     if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:83E1:" =~ ":$SYS_ID:" ]]; then

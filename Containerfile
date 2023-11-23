@@ -387,6 +387,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 RUN rpm-ostree install \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
+    steamdeck-dsp \
     powerbuttond \
     HandyGCCS \
     vpower \
@@ -471,18 +472,22 @@ RUN /tmp/image-info.sh && \
         systemctl enable sddm.service \
     ; fi && \
     systemctl enable bazzite-autologin.service && \
-    systemctl enable jupiter-fan-control.service && \
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
-    systemctl enable vpower.service && \
     systemctl enable ds-inhibit.service && \
     systemctl enable cec-onboot.service && \
     systemctl enable cec-onpoweroff.service && \
     systemctl enable cec-onsleep.service && \
     systemctl --global enable steam-web-debug-portforward.service && \
-    systemctl --global enable sdgyrodsu.service && \
+    systemctl --global disable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \
     systemctl disable ublue-update.timer && \
     systemctl disable handycon.service && \
+    systemctl disable jupiter-fan-control.service && \
+    systemctl disable vpower.service && \
+    systemctl disable jupiter-biosupdate.service && \
+    systemctl disable jupiter-controller-update.service && \
+    systemctl disable ryzenadj.service && \
+    systemctl disable batterylimit.service && \
     rm -f /usr/etc/sddm.conf && \
     rm -f /usr/etc/default/bazzite && \
     rm -rf \
