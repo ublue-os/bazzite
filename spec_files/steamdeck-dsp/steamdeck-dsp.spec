@@ -27,6 +27,7 @@ Steamdeck Audio Processing
 
 %install
 %make_install DEST_DIR="%{buildroot}"
+mkdir -p %{buildroot}%{_datadir}/licenses/%{name}/
 cp LICENSE %{buildroot}%{_datadir}/licenses/%{name}/LICENSE
 
 # This lists all the files that are included in the rpm package and that
