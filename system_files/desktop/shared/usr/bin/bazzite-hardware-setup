@@ -122,6 +122,9 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
       if [[ "${RESOLUTION}" = "1200,1920" ]]; then
         echo "Jupiter with DeckHD detected, disabling BIOS updates..."
         systemctl disable --now jupiter-biosupdate.service
+      elif [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
+        echo "Jupiter with 32GB RAM detected, disabling BIOS updates..."
+        systemctl disable --now jupiter-biosupdate.service
       else
         echo "Jupiter hardware detected, skipping further setup..."
       fi
