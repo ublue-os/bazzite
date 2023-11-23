@@ -7,11 +7,11 @@ Summary:        Steam Deck Hardware Support Package
 License:        GPLv3
 URL:            https://github.com/ublue-os/bazzite
 
-Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/jupiter-20230927.2/%{packagename}-%{packagever}.tar.gz
+Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/%{packagever}/%{packagename}-%{packagever}.tar.gz
 Patch0:         fedora.patch
 Patch1:         selinux.patch
-Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch.old.20231104103824.20231031.1000 
-Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/format-device.sh.patch.old.20230922091429.20230915.100
+Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/v1.2.6.20231104/files/usr/lib/hwsupport/steamos-automount.sh.patch.old.20231104103824.20231031.1000?ref_type=tags
+Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/v1.2.6.20231104/files/usr/lib/hwsupport/format-device.sh.patch.old.20230922091429.20230915.100?ref_type=tags
 Patch4:         user.patch
 Patch5:         bazzite-btrfs.patch
 Patch6:         systemd-run.patch
@@ -41,7 +41,7 @@ SteamOS 3.0 Steam Deck Hardware Support Package
 %define debug_package %{nil}
 
 %prep
-%autosetup -p1 -n jupiter-hw-support-jupiter-20230927.2-faaccd721214cbb705bdcba8d3eddfdec1ef4e3b
+%autosetup -p1 -n %{packagename}-%{packagever}
 
 %build
 
