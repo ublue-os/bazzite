@@ -1,4 +1,4 @@
-name: Build Bazzite
+name: Build Zircon
 on:
   schedule:
     - cron: '40 16 * * 2,5' # 16:40 utc tues thurs
@@ -44,8 +44,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_flavor: [main, nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
-        base_name: [bazzite, bazzite-deck]
+        image_flavor: [main]
+        base_name: [bazzite]
         base_image_name: [kinoite, silverblue]
         major_version: [39]
         include:
@@ -172,7 +172,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
             org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
-            org.opencontainers.image.description=Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
+            org.opencontainers.image.description=Zircon is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
             io.artifacthub.package.readme-url=https://bazzite.gg/
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
 
