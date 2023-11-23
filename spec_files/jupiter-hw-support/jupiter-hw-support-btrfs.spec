@@ -1,5 +1,7 @@
 %define packagename jupiter-hw-support
 %define packagever jupiter-3.5-20231115.1
+%global _default_patch_fuzz 2
+
 Name:           %{packagename}-btrfs
 Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
@@ -94,6 +96,7 @@ rm -rf %{buildroot}%{_datadir}/alsa
 %{_bindir}/amd_system_info
 %{_bindir}/foxnet-biosupdate
 %{_bindir}/jupiter-biosupdate
+%{_bindir}/jupiter-initial-firmware-update
 %{_bindir}/jupiter-check-support
 %{_bindir}/jupiter-controller-update
 %{_bindir}/steamos-polkit-helpers/*

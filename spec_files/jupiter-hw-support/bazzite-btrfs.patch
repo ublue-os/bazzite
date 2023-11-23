@@ -7,8 +7,8 @@ index 96e8818..33038bc 100644
  Type=oneshot
  RemainAfterExit=true
 +EnvironmentFile=/etc/default/steamos-btrfs
- ExecStart=/usr/lib/hwsupport/steamos-automount.sh add %i
- ExecStop=/usr/lib/hwsupport/steamos-automount.sh remove %i
+ ExecStart=-/usr/libexec/steamos-automount add %i
+ ExecStop=-/usr/libexec/steamos-automount remove %i
 diff --git a/usr/lib/hwsupport/format-device.sh b/usr/lib/hwsupport/format-device.sh
 index 566eea2..d6803ff 100755
 --- a/usr/lib/hwsupport/format-device.sh
