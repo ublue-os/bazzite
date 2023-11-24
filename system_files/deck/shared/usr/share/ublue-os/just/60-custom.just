@@ -373,21 +373,31 @@ unhide-grub:
 # Install Deck HD BIOS
 install-deckhd-bios:
     #!/usr/bin/env bash
-    RESOLUTION=$(sudo lshw -json -c display | jq -r .[]."configuration"."resolution")
-    if [[ "${RESOLUTION}" = "1200,1920" ]]; then
+    SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+    if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
+      RESOLUTION=$(sudo lshw -json -c display | jq -r .[]."configuration"."resolution")
+      if [[ "${RESOLUTION}" = "1200,1920" ]]; then
         sudo systemctl mask --now jupiter-biosupdate.service
         wget -q https://deckhd.com/downloads/install.sh -O /tmp/deckhd-install.sh
         chmod +x /tmp/deckhd-install.sh
         sudo ./tmp/deckhd-install.sh
-    else
+      else
         echo "Unable to detect DeckHD. Aborting..."
+      fi
+    else
+      echo "This is only applicable to LCD Steam Decks with the DeckHD screen. Aborting..."
     fi
 
 # Enable BIOS & Firmware update services for the Steam Deck
 enable-deck-bios-firmware-updates:
     #!/usr/bin/env bash
-    sudo systemctl enable jupiter-biosupdate.service
-    sudo systemctl enable jupiter-controller-update.service
+    SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+    if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
+      sudo systemctl enable jupiter-biosupdate.service
+      sudo systemctl enable jupiter-controller-update.service
+    else
+      echo "This is only applicable to Valve's Steam Deck. Aborting..."
+    fi
 
 # Disable Steam Deck BIOS updates
 disable-bios-updates:
