@@ -35,6 +35,8 @@ Requires:       e2fsprogs
 Requires:       f3
 
 BuildRequires:  systemd-rpm-macros
+BuildRequires:  xcursorgen
+BuildRequires:  sed
 
 %description
 SteamOS 3.0 Steam Deck Hardware Support Package
@@ -66,6 +68,8 @@ cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
 cp -rv etc/* %{buildroot}%{_sysconfdir}
+sed -i 's@steamos-cursor.png@usr/share/steamos/steamos-cursor.png@g' usr/share/steamos/steamos-cursor-config
+xcursorgen usr/share/steamos/steamos-cursor-config %{buildroot}%{_datadir}/icons/steam/cursors/default
 # Remove unneeded files
 rm %{buildroot}%{_sysconfdir}/default/grub-steamos
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/h2offt-g
