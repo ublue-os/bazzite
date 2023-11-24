@@ -388,6 +388,7 @@ RUN rpm-ostree install \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     steamdeck-dsp \
+    galileo-mura \
     powerbuttond \
     HandyGCCS \
     vpower \
