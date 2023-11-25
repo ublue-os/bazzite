@@ -19,7 +19,7 @@ COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
 COPY --from=ghcr.io/ublue-os/akmods:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
 RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    sed -i "0,/enabled/ s@enabled=0@enabled=1@g" /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     rpm-ostree install \
         /tmp/akmods-rpms/kmods/*xpadneo*.rpm \
         /tmp/akmods-rpms/kmods/*xpad-noone*.rpm \
