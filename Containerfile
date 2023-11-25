@@ -267,7 +267,7 @@ RUN rpm-ostree override replace \
 RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
     rpm-ostree install \
         gamescope.x86_64 \
-        gamescope.i686 \
+        gamescope-libs.i686 \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo \
