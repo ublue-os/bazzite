@@ -7,7 +7,7 @@ BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=15
+HWS_VER=16
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -99,8 +99,9 @@ if $NEEDS_INITRAMFS_APPLICATION; then
   echo "Found needed initramfs changes, applying the following: ${NEEDED_INITRAMFS[*]}"
   echo "--arg=\"-I ${NEEDED_INITRAMFS[*]}\"" > $INITRAMFS_BAZZITE_ARG_FILE
   INITRAMFS_BAZZITE_ARGS=$(cat $INITRAMFS_BAZZITE_ARG_FILE)
+  echo "Building initramfs with following custom args: $INITRAMFS_CUSTOM_ARGS"
   plymouth display-message --text="Updating initramfs - Please wait, this may take a while" || true
-  echo rpm-ostree initramfs --enable "$INITRAMFS_BAZZITE_ARGS" "$INITRAMFS_CUSTOM_ARGS"
+  rpm-ostree initramfs --enable "$INITRAMFS_BAZZITE_ARGS" "$INITRAMFS_CUSTOM_ARGS"
 else
   echo "No initramfs changes needed"
 fi
