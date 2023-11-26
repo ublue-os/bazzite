@@ -83,7 +83,7 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       packages:
-        - CoreCtrl (GPU Overclocking): ujust install-corectrl
+        - LACT (GPU Overclocking): ujust install-lact
   nvidia-additions:
     source: yafti.screen.package
     values:
