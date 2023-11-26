@@ -30,7 +30,7 @@ INITRAMFS_CUSTOM_ARGS=""
 # If the /etc/bazzite/initramfs/args.d dir exists
 if [[ -d "$INITRAMFS_CUSTOM_ARGS_DIR" ]]; then
   # Grab all the content of the files (minus comments) and join them together with spaces
-  INITRAMFS_CUSTOM_ARGS=$(grep -RvP "^(#|$)" $INITRAMFS_CUSTOM_ARGS_DIR/ | perl -pe 's/(^$INITRAMFS_CUSTOM_ARGS_DIR\/.+:|\\\n$)//g' | tr '\n' ' ')
+  INITRAMFS_CUSTOM_ARGS=$(grep -RvP "^(#|$)" $INITRAMFS_CUSTOM_ARGS_DIR/ | sort | perl -pe 's/(^$INITRAMFS_CUSTOM_ARGS_DIR\/.+:|\\\n$)//g' | tr '\n' ' ')
 fi
 
 # If no rebuild is requested
