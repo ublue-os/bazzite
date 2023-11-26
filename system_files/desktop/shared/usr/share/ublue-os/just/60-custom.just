@@ -242,37 +242,37 @@ enable-virtualization:
 
 # Enable VFIO on the system if virtualization is enabled
 enable-vfio:
-  #!/usr/bin/env bash
-  echo "Enabling VFIO..."
-  VIRT_TEST=$(rpm-ostree kargs)
-  CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
-  VENDOR_KARG="unset"
-  if [[ ${VIRT_TEST} == *kvm.report_ignored_msrs* ]]; then
-      echo 'add_drivers+=" vfio vfio_iommu_type1 vfio-pci "' | sudo tee /etc/dracut.conf.d/vfio.conf
-      sudo touch /etc/bazzite/initramfs/rebuild
-    if [[ ${CPU_VENDOR} == "AuthenticAMD" ]]; then
-      VENDOR_KARG="amd_iommu=on"
-    elif [[ ${CPU_VENDOR} == "GenuineIntel" ]]; then
-      VENDOR_KARG="intel_iommu=on"  
-    fi
-    if [[ ${VENDOR_KARG} == "unset" ]]; then
-      echo "Failed to get CPU vendor, exiting..."
-      exit 1
+    #!/usr/bin/env bash
+    echo "Enabling VFIO..."
+    VIRT_TEST=$(rpm-ostree kargs)
+    CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
+    VENDOR_KARG="unset"
+    if [[ ${VIRT_TEST} == *kvm.report_ignored_msrs* ]]; then
+        echo 'add_drivers+=" vfio vfio_iommu_type1 vfio-pci "' | sudo tee /etc/dracut.conf.d/vfio.conf
+        sudo touch /etc/bazzite/initramfs/rebuild
+      if [[ ${CPU_VENDOR} == "AuthenticAMD" ]]; then
+        VENDOR_KARG="amd_iommu=on"
+      elif [[ ${CPU_VENDOR} == "GenuineIntel" ]]; then
+        VENDOR_KARG="intel_iommu=on"  
+      fi
+      if [[ ${VENDOR_KARG} == "unset" ]]; then
+        echo "Failed to get CPU vendor, exiting..."
+        exit 1
+      else
+        rpm-ostree kargs \
+          --append-if-missing="${VENDOR_KARG}" \
+          --append-if-missing="iommu=pt" \
+          --append-if-missing="rd.driver.pre=vfio_pci" \
+          --append-if-missing="vfio_pci.disable_vga=1"
+        echo "VFIO will be enabled on next boot, make sure you enable IOMMU, VT-d or AMD-v in your BIOS!"
+        echo "Please understand that since this is such a niche use case, support will be very limited!"
+        echo "To add your unused/second GPU device ids to the vfio driver by running"
+        echo 'rpm-ostree kargs --append-if-missing="vfio-pci.ids=xxxx:yyyy,xxxx:yyzz"'
+        echo "NOTE: Your second GPU will not be usable by the host after you do this!"
+      fi
     else
-      rpm-ostree kargs \
-        --append-if-missing="${VENDOR_KARG}" \
-        --append-if-missing="iommu=pt" \
-        --append-if-missing="rd.driver.pre=vfio_pci" \
-        --append-if-missing="vfio_pci.disable_vga=1"
-      echo "VFIO will be enabled on next boot, make sure you enable IOMMU, VT-d or AMD-v in your BIOS!"
-      echo "Please understand that since this is such a niche use case, support will be very limited!"
-      echo "To add your unused/second GPU device ids to the vfio driver by running"
-      echo 'rpm-ostree kargs --append-if-missing="vfio-pci.ids=xxxx:yyyy,xxxx:yyzz"'
-      echo "NOTE: Your second GPU will not be usable by the host after you do this!"
+      echo "Enable virtualization with ujust enable-virtualization before running ujust enable-vfio."
     fi
-  else
-    echo "Enable virtualization with ujust enable-virtualization before running ujust enable-vfio."
-  fi
 
 # Enable watchdog (default, recovers the system in the event of a malfunction, possible impact to performance due to interrupts)
 enable-watchdog:
