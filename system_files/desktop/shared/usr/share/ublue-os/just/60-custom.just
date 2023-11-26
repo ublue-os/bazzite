@@ -20,13 +20,19 @@ configure-waydroid:
     deactivate
     sudo rm -rf /tmp/waydroid_script
 
-# Install CoreCtrl for overclocking & undervolting AMD GPUs
-install-corectrl:
-    echo 'Installing CoreCtrl...'
+# Install LACT for overclocking & undervolting AMD GPUs
+install-lact:
+    echo 'Installing LACT...'
     ublue-update --wait
-    rpm-ostree install corectrl
-    echo 'Setting needed kargs for CoreCtrl...'
+    wget \
+      $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
+      jq -r ".assets[] | select(.name | test(\"lact-.*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
+      -P /tmp/lact.rpm
+    rpm-ostree install /tmp/lact.rpm
+    rm /tmp/lact.rpm
+    echo 'Setting needed kargs for LACT...'
     rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
+    echo 'Done. Be sure to enable LACT with sudo systemctl enable --now lactd after you reboot.'
 
 # Install OpenRazer for Razer gaming hardware
 install-openrazer:
