@@ -20,18 +20,22 @@ COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 COPY --from=ghcr.io/ublue-os/akmods:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
 RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i "0,/enabled/ s@enabled=0@enabled=1@g" /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    if grep -qv "asus" <<< "${IMAGE_NAME}"; then \
+        rpm-ostree install \
+            /tmp/akmods-rpms/kmods/*evdi*.rpm \
+    ; fi && \
     rpm-ostree install \
-        /tmp/akmods-rpms/kmods/*xpadneo*.rpm \
-        /tmp/akmods-rpms/kmods/*xpad-noone*.rpm \
-        /tmp/akmods-rpms/kmods/*xone*.rpm \
-        /tmp/akmods-rpms/kmods/*openrazer*.rpm \
-        /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
-        /tmp/akmods-rpms/kmods/*wl*.rpm \
         /tmp/akmods-rpms/kmods/*gcadapter_oc*.rpm \
         /tmp/akmods-rpms/kmods/*nct6687*.rpm \
+        /tmp/akmods-rpms/kmods/*openrazer*.rpm \
         /tmp/akmods-rpms/kmods/*openrgb*.rpm \
         /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm \
-        /tmp/akmods-rpms/kmods/*winesync*.rpm && \
+        /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
+        /tmp/akmods-rpms/kmods/*winesync*.rpm \
+        /tmp/akmods-rpms/kmods/*wl*.rpm \
+        /tmp/akmods-rpms/kmods/*xone*.rpm \
+        /tmp/akmods-rpms/kmods/*xpad-noone*.rpm \
+        /tmp/akmods-rpms/kmods/*xpadneo*.rpm && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     mkdir -p /etc/akmods-rpms/ && \
     mv /tmp/akmods-rpms/kmods/*steamdeck*.rpm /etc/akmods-rpms/
@@ -362,6 +366,12 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
 RUN rpm-ostree install \
     /etc/akmods-rpms/*steamdeck*.rpm && \
     rm -rf /etc/akmods-rpms
+
+# Remove Displaylink/evdi from Deck images until issues with MangoHUD are sorted out.
+RUN if [[ -n $(rpm -qa | grep 'evdi\|displayport') ]]; then \
+        rpm-ostree remove \
+            $(rpm -qa | grep 'evdi\|displayport') \
+    ; fi
 
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
