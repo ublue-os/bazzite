@@ -328,3 +328,13 @@ index 1a46251..73f2a3d 100755
  
  import evdev
  import threading
+
+diff --git a/usr/bin/jupiter-initial-firmware-update b/usr/bin/jupiter-initial-firmware-update
+index 1a46251..73f2a3d 100755
+--- jupiter-initial-firmware-update
++++ jupiter-initial-firmware-update
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/usr/bin/sh
+ 
+ set -euo pipefail

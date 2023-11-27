@@ -1,5 +1,5 @@
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-priv-write b/usr/bin/steamos-polkit-helpers/steamos-priv-write
-index 907133b..6ba1dd8 100755
+index 296996e..ae0ae3e 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-priv-write
 +++ b/usr/bin/steamos-polkit-helpers/steamos-priv-write
 @@ -2,6 +2,9 @@
@@ -12,19 +12,31 @@ index 907133b..6ba1dd8 100755
  if [[ $EUID -ne 0 ]];
  then
      exec pkexec --disable-internal-agent "$0" "$@"
-@@ -12,16 +15,19 @@
+@@ -12,21 +15,25 @@ WRITE_VALUE="$2"
  
  function CommitWrite()
  {
+-   if [ ! -z "$WRITE_VALUE" ]
+-   then
+-      echo "commit: $WRITE_VALUE -> $WRITE_PATH" | systemd-cat -t p-steamos-priv-write -p warning
+-      echo "$WRITE_VALUE" > "$WRITE_PATH"
 +   if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" || "$ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE" = 1 ]]; then
-     echo "commit: $WRITE_VALUE -> $WRITE_PATH" | systemd-cat -t p-steamos-priv-write -p warning
--    echo "$WRITE_VALUE" > "$WRITE_PATH"
-     chmod a+w "$WRITE_PATH"
-+    echo "$WRITE_VALUE" > "$WRITE_PATH"
++      if [ ! -z "$WRITE_VALUE" ]
++      then
++         echo "commit: $WRITE_VALUE -> $WRITE_PATH" | systemd-cat -t p-steamos-priv-write -p warning
++         chmod a+w "$WRITE_PATH"
++         echo "$WRITE_VALUE" > "$WRITE_PATH"
++      fi
++
++      echo "chmod a+w: $WRITE_PATH" | systemd-cat -t p-steamos-priv-write -p warning
 +   else
-+    echo "commit: Skipped - see /etc/default/steam-hardware-control" | systemd-cat -t p-steamos-priv-write -p warning
-+   fi
-     exit 0
++      echo "commit: Skipped - see /etc/default/steam-hardware-control" | systemd-cat -t p-steamos-priv-write -p warning
+    fi
+-
+-   chmod a+w "$WRITE_PATH"
+-   echo "chmod a+w: $WRITE_PATH" | systemd-cat -t p-steamos-priv-write -p warning
++   
+    exit 0
  }
  
  function DeclineWrite()
@@ -34,8 +46,8 @@ index 907133b..6ba1dd8 100755
      exit 1
  }
  
-@@ -32,15 +38,90 @@
- 
+@@ -40,15 +47,90 @@ if [[ "$WRITE_PATH" == /dev/drm_dp_aux0 ]]; then
+ fi
  
  if [[ "$WRITE_PATH" == /sys/class/drm/card*/device/power_dpm_force_performance_level ]]; then
 -   CommitWrite
