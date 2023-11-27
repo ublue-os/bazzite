@@ -217,10 +217,8 @@ enable-vfio:
     CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
     VENDOR_KARG="unset"
     if [[ ${VIRT_TEST} == *kvm.report_ignored_msrs* ]]; then
-      rpm-ostree initramfs \
-        --enable \
-        --arg="--add-drivers" \
-        --arg="vfio vfio_iommu_type1 vfio-pci"
+        echo 'add_drivers+=" vfio vfio_iommu_type1 vfio-pci "' | sudo tee /etc/dracut.conf.d/vfio.conf
+        sudo touch /etc/bazzite/initramfs/rebuild
       if [[ ${CPU_VENDOR} == "AuthenticAMD" ]]; then
         VENDOR_KARG="amd_iommu=on"
       elif [[ ${CPU_VENDOR} == "GenuineIntel" ]]; then
@@ -235,7 +233,7 @@ enable-vfio:
           --append-if-missing="iommu=pt" \
           --append-if-missing="rd.driver.pre=vfio_pci" \
           --append-if-missing="vfio_pci.disable_vga=1"
-        echo "VFIO enabled, make sure you enable IOMMU, VT-d or AMD-v in your BIOS!"
+        echo "VFIO will be enabled on next boot, make sure you enable IOMMU, VT-d or AMD-v in your BIOS!"
         echo "Please understand that since this is such a niche use case, support will be very limited!"
         echo "To add your unused/second GPU device ids to the vfio driver by running"
         echo 'rpm-ostree kargs --append-if-missing="vfio-pci.ids=xxxx:yyyy,xxxx:yyzz"'
