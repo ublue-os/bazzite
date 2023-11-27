@@ -72,7 +72,8 @@ RUN rpm-ostree override remove \
         ublue-os-update-services \
         firefox \
         firefox-langpacks \
-        htop
+        htop \
+        power-profiles-daemon
 
 # Install new packages
 RUN rpm-ostree install \
@@ -87,6 +88,10 @@ RUN rpm-ostree install \
         compsize \
         input-remapper \
         system76-scheduler \
+        tuned \
+        tuned-utils \
+        tuned-utils-systemtap \
+        tuned-gtk \
         hl2linux-selinux \
         ladspa-caps-plugins \
         ladspa-noise-suppression-for-voice \
@@ -317,6 +322,7 @@ RUN /tmp/image-info.sh && \
     mkdir -p /usr/etc/flatpak/remotes.d && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d && \
     systemctl enable com.system76.Scheduler.service && \
+    systemctl enable tuned.service && \
     systemctl enable btrfs-dedup@var-home.timer && \
     systemctl enable input-remapper.service && \
     systemctl unmask bazzite-flatpak-manager.service && \
