@@ -7,7 +7,7 @@ BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=16
+HWS_VER=17
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -182,6 +182,11 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     systemctl disable --now ryzenadj.service
     systemctl disable --now batterylimit.service
     systemctl --global disable --now sdgyrodsu.service
+
+    if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+      echo "Lenovo Legion detected. Swapping to X11 by default."
+      sed -i 's/DESKTOP_WAYLAND=true/DESKTOP_WAYLAND=false/g' /etc/desktop-wayland
+    fi
   fi
 fi
 
