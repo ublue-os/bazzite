@@ -69,8 +69,8 @@ screens:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: false
           packages:
-          - Install Nix Package Support: sudo -A ujust install-nix
-          - Install Fleek (Requires Nix): ujust install-fleek
+          - Install Nix Package Support: sudo -A ujust nix-install
+          - Install Fleek (Requires Nix): ujust fleek-install
         Oversteer:
           description: Application to control supported steering wheels
           default: false

@@ -68,43 +68,6 @@ install-openrazer:
     sudo usermod -a -G plugdev $USER && \
     echo "Please reboot to apply needed changes."
 
-# Install Nix with the Determinate Nix Installer
-install-nix:
-    #!/usr/bin/env bash
-    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sudo bash -s -- install --no-confirm
-
-# Uninstall Nix
-remove-nix:
-    sudo /nix/nix-installer uninstall
-
-# Install Fleek (https://getfleek.dev/)
-install-fleek:
-    #!/usr/bin/env bash
-    if [[ -d "/nix" ]]; then
-      mkdir -p $HOME/.config/nix
-      echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
-      curl -fsSL https://getfleek.dev/installer | env FORCE=1 bash
-    else
-      echo "Install nix with ujust install-nix before running ujust install-fleek."
-    fi
-
-# Integrate Nix/Fleek applications with system theme
-install-fleek-themes:
-    #!/usr/bin/env bash
-    if [[ -x "/var/usrlocal/bin/fleek" ]]; then
-      IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-      BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-      if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-        fleek add adw-gtk3 --apply
-      else
-        fleek add breeze-icons
-        fleek add libsForQt5.breeze-qt5
-        fleek apply
-      fi
-    else
-      echo "Install fleek with ujust install-fleek before running ujust install-fleek-themes."
-    fi
-
 # Install Greenlight xCloud and xHome streaming AppImage
 get-greenlight:
     #!/usr/bin/env bash
