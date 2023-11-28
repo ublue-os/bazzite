@@ -226,7 +226,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-control-center-filesystem && \
     rpm-ostree install \
         gnome-shell-extension-tailscale-gnome-qs \
-        xwaylandvideobridge \
         steamdeck-backgrounds \
         gnome-randr-rust \
         gnome-shell-extension-user-theme \
