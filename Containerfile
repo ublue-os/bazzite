@@ -110,6 +110,7 @@ RUN rpm-ostree install \
         libxcrypt-compat \
         mesa-libGLU \
         vulkan-tools \
+        glibc.i686 \
         extest.i686 \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
