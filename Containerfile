@@ -74,7 +74,11 @@ RUN rpm-ostree override remove \
         power-profiles-daemon
 
 # Install new packages
-RUN rpm-ostree install \
+RUN if [[ "${IMAGE_FLAVOR}" =~ "nvidia" ]]; then \
+        rpm-ostree override remove \
+            glibc32 \
+    ; fi && \
+    rpm-ostree install \
         ublue-update \
         discover-overlay \
         python3-pip \
