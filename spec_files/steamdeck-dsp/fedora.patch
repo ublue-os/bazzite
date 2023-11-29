@@ -1,0 +1,11 @@
+--- a/pipewire-confs/filter-chain-mic.conf
++++ b/pipewire-confs/filter-chain-mic.conf
+@@ -14,7 +14,7 @@
+                     {
+                         type = ladspa
+                         name = rnnoise
+-                        plugin = /usr/lib/ladspa/librnnoise_ladspa.so
++                        plugin = /usr/lib64/ladspa/librnnoise_ladspa.so
+                         label = noise_suppressor_stereo
+                         control = {
+                             "VAD Threshold (%)" = 23.0
