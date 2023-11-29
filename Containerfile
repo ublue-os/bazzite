@@ -428,7 +428,12 @@ RUN rpm-ostree install \
     wget https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/jupiter/cs35l41-dsp1-spk-prot.wmfw -O /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-prot.wmfw && \
     xz --check=crc32 /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-{cali.bin,cali.wmfw,prot.bin,prot.wmfw} && \
     mv -vf /tmp/linux-firmware-neptune/* /usr/lib/firmware/cirrus/ && \
-    rm -rf /tmp/linux-firmware-neptune
+    rm -rf /tmp/linux-firmware-neptune && \
+    mkdir -p /tmp/linux-firmware-galileo && \
+    wget https://gitlab.com/evlaV/linux-firmware-neptune/-/archive/b21a6909486876f7b82870658ad548fc1c1547f9/linux-firmware-neptune-b21a6909486876f7b82870658ad548fc1c1547f9.tar.gz?path=ath11k/QCA206X -O /tmp/linux-firmware-galileo/ath11k.tar.gz && \
+    tar -xf ath11k.tar.gz --strip-components=1 && \
+    mv -vf /tmp/linux-firmware-galileo/ath11k/QCA206X /usr/lib/firmware/ath11k/QCA206X && \
+    rm -rf /tmp/linux-firmware-galileo
 
 # Install Gamescope Session & Supporting changes
 # Add bootstraplinux_ubuntu12_32.tar.xz used by gamescope-session (Thanks ChimeraOS! - https://chimeraos.org/)
