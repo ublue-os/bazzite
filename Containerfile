@@ -439,6 +439,7 @@ RUN rpm-ostree install \
     mkdir -p /tmp/linux-firmware-galileo && \
     wget https://gitlab.com/evlaV/linux-firmware-neptune/-/archive/jupiter-20231113.1/linux-firmware-neptune-jupiter-20231113.1.tar.gz?path=ath11k/QCA206X -O /tmp/linux-firmware-galileo/ath11k.tar.gz && \
     tar --strip-components 1 -xvf /tmp/linux-firmware-galileo/ath11k.tar.gz -C /tmp/linux-firmware-galileo && \
+    xz --check=crc32 /tmp/linux-firmware-galileo/ath11k/QCA206X/hw2.1/*.* && \
     mv -vf /tmp/linux-firmware-galileo/ath11k/QCA206X /usr/lib/firmware/ath11k/QCA206X && \
     rm -rf /tmp/linux-firmware-galileo
 
