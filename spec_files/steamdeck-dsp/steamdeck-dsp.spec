@@ -6,8 +6,8 @@ License:        GPLv2
 URL:            https://github.com/ublue-os/bazzite
 Source:         https://gitlab.com/evlaV/valve-hardware-audio-processing/-/archive/main/valve-hardware-audio-processing-main.tar.gz
 
-Requires:       ladspa
-Requires:       boost
+Patch0:         fedora.patch
+
 Requires:       ladspa-caps-plugins
 Requires:       ladspa-noise-suppression-for-voice
 
@@ -26,7 +26,8 @@ Steamdeck Audio Processing
 %define debug_package %{nil}
 
 %prep
-%autosetup -n valve-hardware-audio-processing-main
+%setup -n valve-hardware-audio-processing-main
+%patch 0 -p1
 
 %build
 %make_build FAUSTINC="/usr/include/faust"  FAUSTLIB="/usr/share/faust"
