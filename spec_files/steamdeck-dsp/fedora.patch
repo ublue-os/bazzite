@@ -9,3 +9,21 @@
                          label = noise_suppressor_stereo
                          control = {
                              "VAD Threshold (%)" = 23.0
+--- a/scripts/install_plugins.sh
++++ b/scripts/install_plugins.sh
+@@ -5,9 +5,9 @@
+ if [ -e $HARDCODED_PLUGIN_DEST_2 ]; then rm -r $HARDCODED_PLUGIN_DEST_2; fi;
+ 
+ 
+-mkdir -p $DEST_DIR/usr/lib/lv2
+-cp -r bin/lv2/g++/valve_deck_speakers.lv2 $DEST_DIR/usr/lib/lv2/valve_deck_speakers.lv2
+-cp -r bin/lv2/g++/valve_binaural.lv2 $DEST_DIR/usr/lib/lv2/valve_binaural.lv2
+-cp -r bin/lv2/g++/valve_deck_microphone.lv2 $DEST_DIR/usr/lib/lv2/valve_deck_microphone.dsp
+-cp -r bin/svg $DEST_DIR/usr/lib/lv2/svg
+-cp version.txt $DEST_DIR/usr/lib/lv2/valve_audio_dsp_version.txt
++mkdir -p $LIB_DIR/lv2
++cp -r bin/lv2/g++/valve_deck_speakers.lv2 $LIB_DIR/lv2/valve_deck_speakers.lv2
++cp -r bin/lv2/g++/valve_binaural.lv2 $LIB_DIR/lv2/valve_binaural.lv2
++cp -r bin/lv2/g++/valve_deck_microphone.lv2 $LIB_DIR/lv2/valve_deck_microphone.dsp
++cp -r bin/svg $LIB_DIR/lv2/svg
++cp version.txt $LIB_DIR/lv2/valve_audio_dsp_version.txt

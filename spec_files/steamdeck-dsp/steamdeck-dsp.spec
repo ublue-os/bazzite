@@ -32,7 +32,7 @@ Steamdeck Audio Processing
 %make_build FAUSTINC="/usr/include/faust"  FAUSTLIB="/usr/share/faust"
 
 %install
-%make_install DEST_DIR="%{buildroot}"
+%make_install DEST_DIR="%{buildroot}" LIB_DIR="%{buildroot}%{_libdir}"
 mkdir -p %{buildroot}%{_datadir}/licenses/%{name}/
 cp LICENSE %{buildroot}%{_datadir}/licenses/%{name}/LICENSE
 
@@ -41,8 +41,8 @@ cp LICENSE %{buildroot}%{_datadir}/licenses/%{name}/LICENSE
 %files
 %license LICENSE
 %{_prefix}/lib/firmware/amd/*
-%{_prefix}/lib/lv2/svg/valve_deck_*
-%{_prefix}/lib/lv2/valve_*
+%{_libdir}/lv2/svg/valve_deck_*
+%{_libdir}/lv2/valve_*
 %{_datadir}/alsa/ucm2/conf.d/acp5x/*.conf
 %{_datadir}/alsa/ucm2/conf.d/sof-nau8821-max/*.conf
 %{_datadir}/pipewire/pipewire.conf.d/*.conf
