@@ -90,6 +90,8 @@ RUN if [[ "${IMAGE_FLAVOR}" =~ "nvidia" ]]; then \
         input-remapper \
         system76-scheduler \
         hl2linux-selinux \
+        ladspa-caps-plugins \
+        ladspa-noise-suppression-for-voice \
         python3-icoextract \
         tailscale \
         btop \
