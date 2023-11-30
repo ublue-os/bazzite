@@ -1,7 +1,8 @@
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG BASE_IMAGE_FLAVOR="${BASE_IMAGE_FLAVOR:-main}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-main}"
-ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$IMAGE_FLAVOR}"
+ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$BASE_IMAGE_FLAVOR}"
 ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
 
@@ -34,10 +35,8 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo
 
 # Install kernel-fsync
-RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
-        wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo && \
-        rpm-ostree cliwrap install-to-root / \
-    ; fi && \
+RUN wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo && \
+    rpm-ostree cliwrap install-to-root / && \
     case "${IMAGE_FLAVOR}" in \
         main|asus|framework) \
             rpm-ostree override replace \
@@ -90,11 +89,7 @@ RUN rpm-ostree override remove \
         htop
 
 # Install new packages
-RUN if [[ "${IMAGE_FLAVOR}" =~ "nvidia" ]]; then \
-        rpm-ostree override remove \
-            glibc32 \
-    ; fi && \
-    rpm-ostree install \
+RUN rpm-ostree install \
         ublue-update \
         discover-overlay \
         python3-pip \
@@ -234,9 +229,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         kdeconnectd \
         kdeplasma-addons \
         rom-properties-kf5 && \
-    if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
-        rpm-ostree install colord-kde \
-    ; fi && \
     git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration && \
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin && \
     kpackagetool5 --type=KWin/Script --global --install /tmp/kwin-system76-scheduler-integration && \
@@ -295,8 +287,7 @@ RUN rpm-ostree override replace \
         https://download.copr.fedorainfracloud.org/results/kylegospo/bazzite-multilib/fedora-39-i386/06620403-bluez/bluez-libs-5.70-1.fc39.bazzite.0.0.git.1708.6d2818cf.i686.rpm
 
 # Install Gamescope, ROCM, and Waydroid on non-Nvidia images
-RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
-    rpm-ostree install \
+RUN rpm-ostree install \
         gamescope.x86_64 \
         gamescope-libs.i686 \
         rocm-hip \
@@ -304,11 +295,7 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         rocm-clinfo \
         waydroid \
         weston && \
-    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
-    rm -f /usr/etc/modprobe.d/nvidia.conf \
-; else \
-    rm -f /usr/etc/modprobe.d/amdgpu.conf \
-; fi
+    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh
 
 # Cleanup & Finalize
 COPY system_files/shared /
@@ -366,13 +353,11 @@ RUN /tmp/image-info.sh && \
         rm /usr/share/applications/com.github.rafostar.Clapper.desktop && \
         sed -i '/^PRETTY_NAME/s/Silverblue/Bazzite GNOME/' /usr/lib/os-release \
     ; fi && \
-    if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
-        systemctl disable waydroid-container.service && \
-        sed -i 's@Exec=waydroid first-launch@Exec=/usr/bin/waydroid-launcher first-launch\nX-Steam-Library-Capsule=/usr/share/applications/Waydroid/capsule.png\nX-Steam-Library-Hero=/usr/share/applications/Waydroid/hero.png\nX-Steam-Library-Logo=/usr/share/applications/Waydroid/logo.png\nX-Steam-Library-StoreCapsule=/usr/share/applications/Waydroid/store-logo.png\nX-Steam-Controller-Template=Desktop@g' /usr/share/applications/Waydroid.desktop && \
-        rm /usr/share/wayland-sessions/weston.desktop && \
-        wget https://raw.githubusercontent.com/Quackdoc/waydroid-scripts/main/waydroid-choose-gpu.sh -O /usr/bin/waydroid-choose-gpu && \
-        chmod +x /usr/bin/waydroid-choose-gpu \
-    ; fi && \
+    systemctl disable waydroid-container.service && \
+    sed -i 's@Exec=waydroid first-launch@Exec=/usr/bin/waydroid-launcher first-launch\nX-Steam-Library-Capsule=/usr/share/applications/Waydroid/capsule.png\nX-Steam-Library-Hero=/usr/share/applications/Waydroid/hero.png\nX-Steam-Library-Logo=/usr/share/applications/Waydroid/logo.png\nX-Steam-Library-StoreCapsule=/usr/share/applications/Waydroid/store-logo.png\nX-Steam-Controller-Template=Desktop@g' /usr/share/applications/Waydroid.desktop && \
+    rm /usr/share/wayland-sessions/weston.desktop && \
+    wget https://raw.githubusercontent.com/Quackdoc/waydroid-scripts/main/waydroid-choose-gpu.sh -O /usr/bin/waydroid-choose-gpu && \
+    chmod +x /usr/bin/waydroid-choose-gpu && \
     mkdir -p /usr/etc/default && \
     rm -rf \
         /tmp/* \
@@ -546,6 +531,47 @@ RUN /tmp/image-info.sh && \
     rm -f /usr/etc/sddm.conf && \
     rm -f /usr/etc/default/bazzite && \
     rm -rf \
+        /tmp/* \
+        /var/* && \
+    mkdir -p /var/tmp && \
+    chmod -R 1777 /var/tmp && \
+    mkdir -p /var/lib/bluetooth && \
+    chmod -R 755 /var/lib/bluetooth && \
+    ostree container commit
+
+FROM bazzite as bazzite-nvidia
+
+ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-nvidia}"
+ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
+ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-nvidia}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
+ARG NVIDIA_MAJOR_VERSION="535"
+
+# Fetch NVIDIA driver
+COPY --from=ghcr.io/ublue-os/akmods-nvidia:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
+
+# Remove everything that doesn't work well with NVIDIA
+RUN rm -f /usr/bin/waydroid-choose-gpu && \
+    rpm-ostree override remove \
+        colord-kde \
+        gamescope.x86_64 \
+        gamescope-libs.i686 \
+        rocm-hip \
+        rocm-opencl \
+        rocm-clinfo \
+        waydroid \
+        weston && \
+    rm -f /usr/etc/modprobe.d/amdgpu.conf
+
+# Install NVIDIA driver
+RUN wget https://raw.githubusercontent.com/ublue-os/nvidia/main/install.sh -O /tmp/nvidia-install.sh && \
+    wget https://raw.githubusercontent.com/ublue-os/nvidia/main/post-install.sh -O /tmp/nvidia-post-install.sh && \
+    /tmp/nvidia-install.sh && \
+    /tmp/nvidia-post-install.sh
+
+# Cleanup & Finalize
+RUN rm -rf \
         /tmp/* \
         /var/* && \
     mkdir -p /var/tmp && \
