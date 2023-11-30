@@ -34,10 +34,12 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo
 
 # Install kernel-fsync
-RUN case "${IMAGE_FLAVOR}" in \
+RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
+        wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo && \
+        rpm-ostree cliwrap install-to-root / \
+    ; fi && \
+    case "${IMAGE_FLAVOR}" in \
         main|asus|framework) \
-            wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo && \
-            rpm-ostree cliwrap install-to-root / && \
             rpm-ostree override replace \
             --experimental \
             --from repo=copr:copr.fedorainfracloud.org:sentry:kernel-fsync \
@@ -46,6 +48,21 @@ RUN case "${IMAGE_FLAVOR}" in \
                     kernel-modules \
                     kernel-modules-core \
                     kernel-modules-extra \
+            ;; \
+        surface) \
+            sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/linux-surface.repo && \
+            wget https://github.com/linux-surface/linux-surface/releases/download/silverblue-20201215-1/kernel-20201215-1.x86_64.rpm -O \
+            /tmp/surface-kernel.rpm && \
+            rpm-ostree override replace \
+            --experimental \
+            --from repo=copr:copr.fedorainfracloud.org:sentry:kernel-fsync \
+                /tmp/surface-kernel.rpm \
+                --remove kernel-surface \
+                --install kernel \
+                --install kernel-core \
+                --install kernel-modules \
+                --install kernel-modules-core \
+                --install kernel-modules-extra \
             ;; \
     esac
 

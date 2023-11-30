@@ -96,7 +96,7 @@ jobs:
           fi
           if [[ "${{ matrix.image_flavor }}" =~ "asus-nvidia" ]]; then
               echo "AKMODS_FLAVOR=asus" >> $GITHUB_ENV
-          elif [[ "${{ matrix.image_flavor }}" =~ "surface" ]]; then
+          elif [[ "${{ matrix.image_flavor }}" =~ "surface-nvidia" ]]; then
               echo "AKMODS_FLAVOR=surface" >> $GITHUB_ENV
           elif [[ "${{ matrix.image_flavor }}" =~ "nvidia" ]]; then
               echo "AKMODS_FLAVOR=main" >> $GITHUB_ENV
