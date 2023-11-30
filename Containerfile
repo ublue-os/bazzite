@@ -35,7 +35,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
 
 # Install kernel-fsync
 RUN case "${IMAGE_FLAVOR}" in \
-        main|asus) \
+        main|asus|framework) \
             wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo && \
             rpm-ostree cliwrap install-to-root / && \
             rpm-ostree override replace \
