@@ -8,8 +8,9 @@ Source:         https://gitlab.com/evlaV/valve-hardware-audio-processing/-/archi
 
 Patch0:         fedora.patch
 
-Requires:       ladspa-caps-plugins
+Requires:       pipewire-module-filter-chain-lv2
 Requires:       ladspa-noise-suppression-for-voice
+Requires:       boost
 
 BuildRequires:  make
 BuildRequires:  faust
