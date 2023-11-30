@@ -7,7 +7,7 @@ BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=17
+HWS_VER=18
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -127,6 +127,10 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
   
   if [[ $KARGS =~ "simpledrm_platform_driver_init" ]]; then
     NEEDED_KARGS+=("--delete-if-present=initcall_blacklist=simpledrm_platform_driver_init")
+  fi
+
+  if [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
   fi
 fi
 
