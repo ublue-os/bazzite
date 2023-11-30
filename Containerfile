@@ -11,7 +11,7 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
-ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-main}"
+ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-fsync}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
 
@@ -47,6 +47,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora
                     kernel-modules \
                     kernel-modules-core \
                     kernel-modules-extra \
+                    kernel-uki-virt \
             ;; \
         surface) \
             sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/linux-surface.repo && \
@@ -62,6 +63,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora
                 --install kernel-modules \
                 --install kernel-modules-core \
                 --install kernel-modules-extra \
+                --install kernel-uki-virt \
             ;; \
     esac
 
