@@ -541,7 +541,7 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
 ARG NVIDIA_MAJOR_VERSION="535"
 
 # Fetch NVIDIA driver
-COPY --from=ghcr.io/ublue-os/akmods-nvidia:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
+COPY --from=ghcr.io/ublue-os/akmods-nvidia:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION}-${NVIDIA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
 
 # Remove everything that doesn't work well with NVIDIA
 RUN rm -f /usr/bin/waydroid-choose-gpu && \
