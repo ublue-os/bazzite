@@ -546,7 +546,6 @@ COPY --from=ghcr.io/ublue-os/akmods-nvidia:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSI
 # Remove everything that doesn't work well with NVIDIA
 RUN rm -f /usr/bin/waydroid-choose-gpu && \
     rpm-ostree override remove \
-        colord-kde \
         gamescope.x86_64 \
         gamescope-libs.i686 \
         rocm-hip \
@@ -554,6 +553,10 @@ RUN rm -f /usr/bin/waydroid-choose-gpu && \
         rocm-clinfo \
         waydroid \
         weston && \
+    if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then \
+        rpm-ostree override remove \
+            colord-kde \
+    ; fi && \
     rm -f /usr/etc/modprobe.d/amdgpu.conf
 
 # Install NVIDIA driver
