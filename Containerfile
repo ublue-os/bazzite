@@ -148,6 +148,10 @@ RUN rpm-ostree override replace \
         pipewire-pulseaudio \
         pipewire-utils \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        vulkan-loader && \
     rpm-ostree install \
         vulkan-loader.i686 \
         alsa-lib.i686 \
