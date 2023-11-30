@@ -94,12 +94,8 @@ jobs:
                   echo "IMAGE_NAME=${{ format('{0}{1}-{2}', matrix.base_name, '${DESKTOP}', matrix.image_flavor) }}" >> $GITHUB_ENV
               fi
           fi
-          if [[ "${{ matrix.image_flavor }}" =~ "asus" ]]; then
-              if [[ "${{ env.IMAGE_NAME }}" =~ "ally" ]]; then
-                  echo "AKMODS_FLAVOR=fsync" >> $GITHUB_ENV
-              else
-                  echo "AKMODS_FLAVOR=asus" >> $GITHUB_ENV
-              fi
+          if [[ "${{ matrix.image_flavor }}" =~ "asus-nvidia" ]]; then
+              echo "AKMODS_FLAVOR=asus" >> $GITHUB_ENV
           elif [[ "${{ matrix.image_flavor }}" =~ "framework" ]]; then
               echo "AKMODS_FLAVOR=main" >> $GITHUB_ENV
           elif [[ "${{ matrix.image_flavor }}" =~ "surface" ]]; then
