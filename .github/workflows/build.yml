@@ -84,6 +84,12 @@ jobs:
               DESKTOP="-gnome"
           fi
 
+          if [[ "${{ matrix.base_image_flavor }}" == "framework" ]]; then
+              echo "BASE_IMAGE_FLAVOR=framework" >> $GITHUB_ENV
+          else
+              echo "BASE_IMAGE_FLAVOR=main" >> $GITHUB_ENV
+          fi
+
           if [[ "${{ matrix.base_name }}" == "bazzite-nvidia" ]]; then
               if [[ "${{ matrix.base_image_flavor }}" == "main" ]]; then
                   echo "IMAGE_FLAVOR=nvidia" >> $GITHUB_ENV
@@ -207,7 +213,7 @@ jobs:
             IMAGE_FLAVOR=${{ env.IMAGE_FLAVOR }}
             IMAGE_VENDOR=${{ github.repository_owner }}
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
-            BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }}
+            BASE_IMAGE_FLAVOR=${{ env.BASE_IMAGE_FLAVOR }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
             AKMODS_FLAVOR=${{ env.AKMODS_FLAVOR }}
           labels: ${{ steps.meta.outputs.labels }}
