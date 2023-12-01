@@ -37,11 +37,6 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
 # Install kernel-fsync
 RUN wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo && \
     rpm-ostree cliwrap install-to-root / && \
-    if [[ "" =~ "surface" ]]; then \
-        sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/linux-surface.repo && \
-        rpm-ostree override remove \
-	    kernel-surface \
-    ; fi && \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:sentry:kernel-fsync \
@@ -60,6 +55,18 @@ RUN if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
         git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
         cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
         rm -rf /tmp/asus-firmware \
+    ; fi
+
+# Setup Surface devices
+RUN if [[ "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
+        wget https://pkg.surfacelinux.com/fedora/linux-surface.repo -P /etc/yum.repos.d && \
+        rpm-ostree override remove \
+            libwacom \
+            libwacom-data && \
+        rpm-ostree install \
+            iptsd \
+            libwacom-surface \
+            libwacom-surface-data \
     ; fi
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
