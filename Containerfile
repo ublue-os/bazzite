@@ -563,8 +563,6 @@ COPY --from=ghcr.io/ublue-os/akmods-nvidia:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSI
 # Remove everything that doesn't work well with NVIDIA
 RUN rm -f /usr/bin/waydroid-choose-gpu && \
     rpm-ostree override remove \
-        gamescope.x86_64 \
-        gamescope-libs.i686 \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo \
