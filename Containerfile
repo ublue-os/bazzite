@@ -209,11 +209,11 @@ RUN rpm-ostree override replace \
         vk_hdr_layer.i686 \
         gperftools-libs.i686 \
         goverlay && \
-    if [[ ! "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
-        rpm-ostree install \
-            obs-vkcapture.x86_64 \
-            obs-vkcapture.i686 \
-    ; fi && \
+    #if [[ ! "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
+        #rpm-ostree install \
+            #obs-vkcapture.x86_64 \
+            #obs-vkcapture.i686 \
+    #; fi && \
     ln -s /usr/bin/wine64 /usr/bin/wine && \
     wget $(curl https://api.github.com/repos/ishitatsuyuki/LatencyFleX/releases/latest | jq -r '.assets[] | select(.name| test(".*.tar.xz$")).browser_download_url') -O /tmp/latencyflex.tar.xz && \
     mkdir -p /tmp/latencyflex && \
