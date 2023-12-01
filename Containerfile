@@ -569,6 +569,7 @@ RUN rm -f /usr/bin/waydroid-choose-gpu && \
         rocm-opencl \
         rocm-clinfo \
         waydroid \
+        waydroid-selinux \
         weston && \
     if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then \
         rpm-ostree override remove \
