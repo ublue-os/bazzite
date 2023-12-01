@@ -79,11 +79,6 @@ jobs:
           echo "AKMODS_FLAVOR=fsync" >> $GITHUB_ENV
           echo "BASE_IMAGE_NAME=${{ matrix.base_image_name }}" >> $GITHUB_ENV
 
-          DESKTOP=""
-          if [[ "${{ matrix.base_image_name }}" == "silverblue" ]]; then
-              DESKTOP="-gnome"
-          fi
-
           if [[ "${{ matrix.base_image_flavor }}" == "framework" ]]; then
               echo "BASE_IMAGE_FLAVOR=framework" >> $GITHUB_ENV
           else
@@ -102,6 +97,11 @@ jobs:
 
       - name: Set image name
         run: |
+          DESKTOP=""
+          if [[ "${{ matrix.base_image_name }}" == "silverblue" ]]; then
+              DESKTOP="-gnome"
+          fi
+
           if [[ "${{ matrix.base_name }}" == "bazzite-deck" ]]; then
               if [[ "${{ matrix.base_image_flavor }}" == "asus" ]]; then
                   echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-ally', '${DESKTOP}') }}" >> $GITHUB_ENV
