@@ -501,9 +501,6 @@ RUN /tmp/image-info.sh && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
-    sed -i 's/870/817/' /usr/share/alsa/ucm2/AMD/acp5x/acp5x.conf && \
-    sed -i 's/252/207/' /usr/share/alsa/ucm2/AMD/acp5x/acp5x.conf && \
-    sed -i 's/192/207/' /usr/share/alsa/ucm2/AMD/acp5x/acp5x.conf && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sed -i 's/Exec=.*/Exec=systemctl start return-to-gamemode.service/' /etc/skel.d/Desktop/Return.desktop \
     ; fi && \
