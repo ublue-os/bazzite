@@ -155,7 +155,8 @@ RUN rpm-ostree override replace \
     rpm-ostree override replace \
     --experimental \
     --from repo=updates \
-        vulkan-loader && \
+        vulkan-loader \
+        || true && \
     rpm-ostree install \
         vulkan-loader.i686 \
         alsa-lib.i686 \
