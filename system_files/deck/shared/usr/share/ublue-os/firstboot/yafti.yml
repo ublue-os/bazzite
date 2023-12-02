@@ -182,7 +182,6 @@ screens:
           - Ryujinx: org.ryujinx.Ryujinx
           - ScummVM: org.scummvm.ScummVM
           - Snes9x: com.snes9x.Snes9x
-          - Stella: io.github.stella_emu.Stella
           - xemu: app.xemu.xemu
           - yuzu: org.yuzu_emu.yuzu
         Streaming:
