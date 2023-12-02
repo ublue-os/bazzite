@@ -126,7 +126,6 @@ screens:
           - Mumble: info.mumble.Mumble
           - OpenMW: org.openmw.OpenMW
           - osu: sh.ppy.osu
-          - Parsec: com.parsecgaming.parsec
           - Space Cadet Pinball: com.github.k4zmu2a.spacecadetpinball
           - Sonic Robo Blast 2: org.srb2.SRB2
           - Steam Link: com.valvesoftware.SteamLink
