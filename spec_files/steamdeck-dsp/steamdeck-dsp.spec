@@ -19,7 +19,6 @@ BuildRequires:  boost-devel
 BuildRequires:  lv2-devel
 BuildRequires:  g++
 BuildRequires:  ladspa-devel
-BuildRequires:  xz
 
 %description
 Steamdeck Audio Processing
@@ -38,8 +37,6 @@ Steamdeck Audio Processing
 %make_install DEST_DIR="%{buildroot}" LIB_DIR="%{buildroot}%{_libdir}"
 mkdir -p %{buildroot}%{_datadir}/licenses/%{name}/
 cp LICENSE %{buildroot}%{_datadir}/licenses/%{name}/LICENSE
-xz --check=crc32 %{buildroot}%{_prefix}/lib/firmware/amd/sof/*
-xz --check=crc32 %{buildroot}%{_prefix}/lib/firmware/amd/sof-tplg/*
 
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.
