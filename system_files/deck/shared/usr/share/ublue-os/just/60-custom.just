@@ -72,10 +72,10 @@ install-openrazer:
 get-greenlight:
     #!/usr/bin/env bash
     if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
-      wget "https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta14/Greenlight-2.0.0-beta14.AppImage" -O $HOME/Downloads/Greenlight.AppImage
+      wget "https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta15/Greenlight-2.0.0-beta15.AppImage" -O $HOME/Downloads/Greenlight.AppImage
       flatpak run it.mijorus.gearlever $HOME/Downloads/Greenlight.AppImage
     else
-      wget "https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta14/Greenlight-2.0.0-beta14.AppImage" -O $HOME/Desktop/Greenlight.AppImage
+      wget "https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta15/Greenlight-2.0.0-beta15.AppImage" -O $HOME/Desktop/Greenlight.AppImage
       chmod +x $HOME/Desktop/Greenlight.AppImage
     fi
 
