@@ -45,7 +45,7 @@ install-lact:
     wget \
       $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
       jq -r ".assets[] | select(.name | test(\"lact-.*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
-      -P /tmp/lact.rpm
+      -O /tmp/lact.rpm
     rpm-ostree install /tmp/lact.rpm
     rm /tmp/lact.rpm
     echo 'Setting needed kargs for LACT...'
