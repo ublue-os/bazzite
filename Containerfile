@@ -273,7 +273,8 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-classic-session \
         gnome-tour \
         gnome-extensions-app \
-        gnome-initial-setup \
+        gnome-initial-setup && \
+    systemctl enable dconf-update.service \
 ; fi
 
 # Install gamescope-limiter patched Mesa
