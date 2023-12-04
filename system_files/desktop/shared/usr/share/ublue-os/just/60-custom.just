@@ -90,7 +90,7 @@ enable-supergfxctl:
     #!/usr/bin/env bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
-    if [[ ${IMAGE_FLAVOR} == 'nvidia' ]]; then
+    if [[ "$IMAGE_FLAVOR" =~ "nvidia" ]]; then
       systemctl enable --now supergfxd.service
     else
       echo "This requires an Nvidia image."
