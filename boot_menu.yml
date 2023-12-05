@@ -34,11 +34,21 @@ ublue_variants:
     flavors:
       - label: bazzite-asus
         info: Bazzite (ASUS Laptop Edition)
+  - label: ublue-os/bazzite-asus-nvidia
+    ks: /kickstart/ublue-os.ks
+    flavors:
+      - label: bazzite-asus-nvidia
+        info: Bazzite (ASUS Laptop Edition for NVIDIA GPUs)
   - label: ublue-os/bazzite-gnome-asus
     ks: /kickstart/ublue-os.ks
     flavors:
       - label: bazzite-gnome-asus
         info: Bazzite GNOME (ASUS Laptop Edition)
+  - label: ublue-os/bazzite-gnome-asus-nvidia
+    ks: /kickstart/ublue-os.ks
+    flavors:
+      - label: bazzite-gnome-asus-nvidia
+        info: Bazzite GNOME (ASUS Laptop Edition for NVIDIA GPUs)
   - label: ublue-os/bazzite-ally
     ks: /kickstart/ublue-os.ks
     flavors:
