@@ -1,0 +1,13 @@
+diff --git a/spa/plugins/alsa/alsa-pcm.h b/spa/plugins/alsa/alsa-pcm.h
+index c3cfe0e..fa75809 100644
+--- a/spa/plugins/alsa/alsa-pcm.h
++++ b/spa/plugins/alsa/alsa-pcm.h
+@@ -66,7 +66,7 @@ struct buffer {
+ #define BW_MAX		0.128
+ #define BW_MED		0.064
+ #define BW_MIN		0.016
+-#define BW_PERIOD	(3 * SPA_NSEC_PER_SEC)
++#define BW_PERIOD	(4 * SPA_NSEC_PER_SEC)
+ 
+ struct channel_map {
+ 	uint32_t channels;

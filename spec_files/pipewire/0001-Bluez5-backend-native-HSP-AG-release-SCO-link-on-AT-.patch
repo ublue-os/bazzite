@@ -1,0 +1,84 @@
+diff --git a/spa/plugins/bluez5/backend-native.c b/spa/plugins/bluez5/backend-native.c
+index 8144b09..51331a6 100644
+--- a/spa/plugins/bluez5/backend-native.c
++++ b/spa/plugins/bluez5/backend-native.c
+@@ -422,7 +422,7 @@ static void rfcomm_emit_volume_changed(struct rfcomm *rfcomm, int id, int hw_vol
+ static bool rfcomm_hsp_ag(struct rfcomm *rfcomm, char* buf)
+ {
+ 	struct impl *backend = rfcomm->backend;
+-	unsigned int gain, dummy;
++	unsigned int gain;
+ 
+ 	/* There are only three HSP AT commands:
+ 	 * AT+VGS=value: value between 0 and 15, sent by the HS to AG to set the speaker gain.
+@@ -445,8 +445,9 @@ static bool rfcomm_hsp_ag(struct rfcomm *rfcomm, char* buf)
+ 			rfcomm_send_reply(rfcomm, "ERROR");
+ 			spa_log_debug(backend->log, "RFCOMM receive unsupported VGM gain: %s", buf);
+ 		}
+-	} else if (sscanf(buf, "AT+CKPD=%d", &dummy) == 1) {
++	} else if (spa_strstartswith(buf, "AT+CKPD=200") == 1) {
+ 		rfcomm_send_reply(rfcomm, "OK");
++		spa_bt_device_emit_switch_profile(rfcomm->device);
+ 	} else {
+ 		return false;
+ 	}
+diff --git a/spa/plugins/bluez5/bluez5-device.c b/spa/plugins/bluez5/bluez5-device.c
+index 8d6ef49..40acd24 100644
+--- a/spa/plugins/bluez5/bluez5-device.c
++++ b/spa/plugins/bluez5/bluez5-device.c
+@@ -1370,11 +1370,33 @@ static void device_connected(void *userdata, bool connected)
+ 	}
+ }
+ 
++static void device_switch_profile(void *userdata)
++{
++	struct impl *this = userdata;
++	uint32_t profile;
++
++	switch(this->profile) {
++	case DEVICE_PROFILE_OFF:
++		profile = DEVICE_PROFILE_HSP_HFP;
++		break;
++	case DEVICE_PROFILE_HSP_HFP:
++		profile = DEVICE_PROFILE_OFF;
++		break;
++	default:
++		return;
++	}
++
++	spa_log_debug(this->log, "%p: device switch profile %d -> %d", this, this->profile, profile);
++
++	set_profile(this, profile, 0, false);
++}
++
+ static const struct spa_bt_device_events bt_dev_events = {
+ 	SPA_VERSION_BT_DEVICE_EVENTS,
+ 	.connected = device_connected,
+ 	.codec_switched = codec_switched,
+ 	.profiles_changed = profiles_changed,
++	.switch_profile = device_switch_profile,
+ 	.device_set_changed = device_set_changed,
+ };
+ 
+diff --git a/spa/plugins/bluez5/defs.h b/spa/plugins/bluez5/defs.h
+index 81e5164..258b4f6 100644
+--- a/spa/plugins/bluez5/defs.h
++++ b/spa/plugins/bluez5/defs.h
+@@ -459,6 +459,9 @@ struct spa_bt_device_events {
+ 	/** Profile configuration changed */
+ 	void (*profiles_changed) (void *data, uint32_t prev_profiles, uint32_t prev_connected);
+ 
++	/** Switch profile between OFF and HSP_HFP */
++	void (*switch_profile) (void *data);
++
+ 	/** Device set configuration changed */
+ 	void (*device_set_changed) (void *data);
+ 
+@@ -553,6 +556,7 @@ void spa_bt_device_update_last_bluez_action_time(struct spa_bt_device *device);
+ #define spa_bt_device_emit_connected(d,...)	        spa_bt_device_emit(d, connected, 0, __VA_ARGS__)
+ #define spa_bt_device_emit_codec_switched(d,...)	spa_bt_device_emit(d, codec_switched, 0, __VA_ARGS__)
+ #define spa_bt_device_emit_profiles_changed(d,...)	spa_bt_device_emit(d, profiles_changed, 0, __VA_ARGS__)
++#define spa_bt_device_emit_switch_profile(d)		spa_bt_device_emit(d, switch_profile, 0)
+ #define spa_bt_device_emit_device_set_changed(d)	spa_bt_device_emit(d, device_set_changed, 0)
+ #define spa_bt_device_emit_destroy(d)			spa_bt_device_emit(d, destroy, 0)
+ #define spa_bt_device_add_listener(d,listener,events,data)           \
