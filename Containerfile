@@ -139,10 +139,10 @@ RUN rpm-ostree install \
     wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.service -O /usr/lib/systemd/system/btrfs-dedup@.service && \
     wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.timer -O /usr/lib/systemd/system/btrfs-dedup@.timer
 
-# Install Steam & Lutris, plus supporting packages
+# Install Valve's patched Pipewire
 RUN rpm-ostree override replace \
     --experimental \
-    --from repo=updates \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         pipewire \
         pipewire-alsa \
         pipewire-gstreamer \
@@ -150,9 +150,10 @@ RUN rpm-ostree override replace \
         pipewire-jack-audio-connection-kit-libs \
         pipewire-libs \
         pipewire-pulseaudio \
-        pipewire-utils \
-        || true && \
-    rpm-ostree override replace \
+        pipewire-utils
+
+# Install Steam & Lutris, plus supporting packages
+RUN rpm-ostree override replace \
     --experimental \
     --from repo=updates \
         vulkan-loader \
