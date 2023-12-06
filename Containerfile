@@ -130,7 +130,8 @@ RUN rpm-ostree install \
         lato-fonts \
         fira-code-fonts \
         glow \
-        gum && \
+        gum \
+        redhat-lsb-core && \
     ln -s /usr/share/fonts/google-noto-sans-cjk-fonts /usr/share/fonts/noto-cjk && \
     wget https://raw.githubusercontent.com/scaronni/steam-proton-mf-wmv/master/installcab.py -O /usr/bin/installcab && \
     wget https://github.com/scaronni/steam-proton-mf-wmv/blob/master/install-mf-wmv.sh -O /usr/bin/install-mf-wmv && \
