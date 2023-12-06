@@ -374,7 +374,14 @@ enable-deck-bios-firmware-updates:
     #!/usr/bin/env bash
     SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
     if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
-      sudo systemctl enable jupiter-biosupdate.service
+      RESOLUTION=$(sudo lshw -json -c display | jq -r .[]."configuration"."resolution")
+      if [[ "${RESOLUTION}" = "1200,1920" ]]; then
+        echo "DeckHD detected. Firmware updates enabled. BIOS updates not enabled."
+      elif [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
+        echo "32GB RAM modded Deck detected. Firmware updates enabled. BIOS updates not enabled."
+      else
+        sudo systemctl enable jupiter-biosupdate.service
+      fi
       sudo systemctl enable jupiter-controller-update.service
     else
       echo "This is only applicable to Valve's Steam Deck. Aborting..."
