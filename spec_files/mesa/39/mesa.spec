@@ -6,17 +6,16 @@
 %if !0%{?rhel}
 %global with_nine 1
 %global with_omx 1
-%global with_opencl 1
+%global with_opencl 0
 %endif
 %global base_vulkan ,amd
 %endif
 
+%global _unpackaged_files_terminate_build 0
+
 %ifarch %{ix86} x86_64
 %global with_crocus 1
 %global with_i915   1
-%if !0%{?rhel}
-%global with_intel_clc 1
-%endif
 %global with_iris   1
 %global with_xa     1
 %global intel_platform_vulkan ,intel,intel_hasvk
@@ -79,8 +78,7 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 # expected to fix the crashes reported in #2238711
 Patch0:         0001-radeonsi-prefix-function-with-si_-to-prevent-name-co.patch
 
-Patch1:         valve_config.patch
-Patch2:         gamescope.patch
+Patch1:         valve.patch
 
 BuildRequires:  meson >= 1.2.0
 BuildRequires:  gcc
@@ -139,23 +137,14 @@ BuildRequires:  pkgconfig(libomxil-bellagio)
 %endif
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
-BuildRequires:  llvm-devel >= 7.0.0
-%if 0%{?with_opencl}
-BuildRequires:  clang-devel
-BuildRequires:  bindgen
-BuildRequires:  rust-packaging
+BuildRequires:  llvm16-devel
 BuildRequires:  pkgconfig(libclc)
 BuildRequires:  pkgconfig(SPIRV-Tools)
-BuildRequires:  pkgconfig(LLVMSPIRVLib)
-%endif
 %if %{with valgrind}
 BuildRequires:  pkgconfig(valgrind)
 %endif
 BuildRequires:  python3-devel
 BuildRequires:  python3-mako
-%if 0%{?with_intel_clc}
-BuildRequires:  python3-ply
-%endif
 BuildRequires:  vulkan-headers
 BuildRequires:  glslang
 %if 0%{?with_vulkan_hw}
@@ -321,25 +310,6 @@ Requires:       (%{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{r
 %description libglapi
 %{summary}.
 
-%if 0%{?with_opencl}
-%package libOpenCL
-Summary:        Mesa OpenCL runtime library
-Requires:       ocl-icd%{?_isa}
-Requires:       libclc%{?_isa}
-Requires:       %{name}-libgbm%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       opencl-filesystem
-
-%description libOpenCL
-%{summary}.
-
-%package libOpenCL-devel
-Summary:        Mesa OpenCL development package
-Requires:       %{name}-libOpenCL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description libOpenCL-devel
-%{summary}.
-%endif
-
 %if 0%{?with_nine}
 %package libd3d
 Summary:        Mesa Direct3D9 state tracker
@@ -390,10 +360,8 @@ export RUSTFLAGS="%build_rustflags"
   -Dgallium-va=%{?with_va:enabled}%{!?with_va:disabled} \
   -Dgallium-xa=%{?with_xa:enabled}%{!?with_xa:disabled} \
   -Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
-  -Dgallium-opencl=%{?with_opencl:icd}%{!?with_opencl:disabled} \
-%if 0%{?with_opencl}
-  -Dgallium-rusticl=true \
-%endif
+  -Dgallium-opencl=disabled \
+  -Dgallium-rusticl=false \
   -Dvulkan-drivers=%{?vulkan_drivers} \
   -Dvulkan-layers=device-select \
   -Dshared-glapi=enabled \
@@ -404,9 +372,7 @@ export RUSTFLAGS="%build_rustflags"
   -Dglx=dri \
   -Degl=enabled \
   -Dglvnd=true \
-%if 0%{?with_intel_clc}
-  -Dintel-clc=enabled \
-%endif
+  -Dintel-clc=disabled \
   -Dmicrosoft-clc=disabled \
   -Dllvm=enabled \
   -Dshared-llvm=enabled \
@@ -508,17 +474,6 @@ popd
 %endif
 %endif
 
-%if 0%{?with_opencl}
-%files libOpenCL
-%{_libdir}/libMesaOpenCL.so.*
-%{_libdir}/libRusticlOpenCL.so.*
-%{_sysconfdir}/OpenCL/vendors/mesa.icd
-%{_sysconfdir}/OpenCL/vendors/rusticl.icd
-%files libOpenCL-devel
-%{_libdir}/libMesaOpenCL.so
-%{_libdir}/libRusticlOpenCL.so
-%endif
-
 %if 0%{?with_nine}
 %files libd3d
 %dir %{_libdir}/d3d/
@@ -532,7 +487,9 @@ popd
 
 %files dri-drivers
 %dir %{_datadir}/drirc.d
+%ifarch %{ix86} x86_64
 %{_datadir}/drirc.d/00-mesa-defaults.conf
+%endif
 %{_libdir}/dri/kms_swrast_dri.so
 %{_libdir}/dri/swrast_dri.so
 %{_libdir}/dri/virtio_gpu_dri.so
@@ -591,10 +548,6 @@ popd
 %{_libdir}/dri/vmwgfx_dri.so
 %endif
 %endif
-%if 0%{?with_opencl}
-%dir %{_libdir}/gallium-pipe
-%{_libdir}/gallium-pipe/*.so
-%endif
 %if 0%{?with_kmsro}
 %{_libdir}/dri/armada-drm_dri.so
 %{_libdir}/dri/exynos_dri.so
@@ -652,9 +605,9 @@ popd
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
 %if 0%{?with_vulkan_hw}
 %{_libdir}/libvulkan_radeon.so
-%{_datadir}/drirc.d/00-radv-defaults.conf
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %ifarch %{ix86} x86_64
+%{_datadir}/drirc.d/00-radv-defaults.conf
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
 %{_libdir}/libvulkan_intel_hasvk.so
