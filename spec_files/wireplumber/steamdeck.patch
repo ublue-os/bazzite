@@ -1,16 +1,27 @@
-From 676e39c83f985f11fc5d87fb62040c6afd574d7c Mon Sep 17 00:00:00 2001
-From: Julian Bouzas <julian.bouzas@collabora.com>
-Date: Tue, 21 Mar 2023 09:18:30 -0400
-Subject: [PATCH 1/8] m-default-nodes: remove echo-cancel configuration
-
-This will be possible to do with the new module-filters-api.
----
- modules/module-default-nodes.c               | 75 --------------------
- src/config/main.lua.d/40-device-defaults.lua |  9 ---
- 2 files changed, 84 deletions(-)
-
+diff --git a/modules/meson.build b/modules/meson.build
+index 4930bfae..4a337017 100644
+--- a/modules/meson.build
++++ b/modules/meson.build
+@@ -159,6 +159,17 @@ shared_library(
+   dependencies : [wp_dep, pipewire_dep],
+ )
+ 
++shared_library(
++  'wireplumber-module-filters-api',
++  [
++    'module-filters-api.c',
++  ],
++  c_args : [common_c_args, '-DG_LOG_DOMAIN="m-filters-api"'],
++  install : true,
++  install_dir : wireplumber_module_dir,
++  dependencies : [wp_dep, pipewire_dep],
++)
++
+ if libsystemd_dep.found() or libelogind_dep.found()
+   shared_library(
+     'wireplumber-module-logind',
 diff --git a/modules/module-default-nodes.c b/modules/module-default-nodes.c
-index aaf2938..3bb93f0 100644
+index aaf29389..3bb93f00 100644
 --- a/modules/module-default-nodes.c
 +++ b/modules/module-default-nodes.c
 @@ -16,18 +16,12 @@
@@ -167,84 +178,12 @@ index aaf2938..3bb93f0 100644
            NULL));
    return TRUE;
  }
-diff --git a/src/config/main.lua.d/40-device-defaults.lua b/src/config/main.lua.d/40-device-defaults.lua
-index 1920291..91c4e18 100644
---- a/src/config/main.lua.d/40-device-defaults.lua
-+++ b/src/config/main.lua.d/40-device-defaults.lua
-@@ -10,15 +10,6 @@ device_defaults.properties = {
-   -- the default volumes to apply to ACP device nodes, in the linear scale
-   --["default-volume"] = 0.064,
-   --["default-input-volume"] = 1.0,
--
--  -- Whether to auto-switch to echo cancel sink and source nodes or not
--  ["auto-echo-cancel"] = true,
--
--  -- Sets the default echo-cancel-sink node name to automatically switch to
--  ["echo-cancel-sink-name"] = "echo-cancel-sink",
--
--  -- Sets the default echo-cancel-source node name to automatically switch to
--  ["echo-cancel-source-name"] = "echo-cancel-source",
- }
- 
- -- Sets persistent device profiles that should never change when wireplumber is
--- 
-2.42.0
-
-
-From d2b4bf11b37714bd1df561aa3d5b80c7e6a93920 Mon Sep 17 00:00:00 2001
-From: Julian Bouzas <julian.bouzas@collabora.com>
-Date: Fri, 17 Mar 2023 11:06:11 -0400
-Subject: [PATCH 2/8] modules: add new module-filters-api to enable smart
- filter policy
-
-This module provides an API to link filter nodes using the logic configured in
-'policy.lua.d/30-filters-config.lua'. This configuration file allows grouping
-filters together (sorted by priority) to use a common target node. A node is
-considered a filter node if it has the node.link-group property.
-
-This is disabled by default. You can enable smart filters policy in the
-'10-default-policy.lya' configuration file.
----
- modules/meson.build                           |  11 +
- modules/module-filters-api.c                  | 905 ++++++++++++++++++
- modules/module-lua-scripting/api/json.c       |   2 +-
- src/config/policy.lua.d/10-default-policy.lua |   9 +
- src/config/policy.lua.d/30-filters-config.lua |  73 ++
- src/scripts/filters-metadata.lua              |  39 +
- src/scripts/policy-node.lua                   | 120 ++-
- 7 files changed, 1156 insertions(+), 3 deletions(-)
- create mode 100644 modules/module-filters-api.c
- create mode 100644 src/config/policy.lua.d/30-filters-config.lua
- create mode 100644 src/scripts/filters-metadata.lua
-
-diff --git a/modules/meson.build b/modules/meson.build
-index 4930bfa..4a33701 100644
---- a/modules/meson.build
-+++ b/modules/meson.build
-@@ -159,6 +159,17 @@ shared_library(
-   dependencies : [wp_dep, pipewire_dep],
- )
- 
-+shared_library(
-+  'wireplumber-module-filters-api',
-+  [
-+    'module-filters-api.c',
-+  ],
-+  c_args : [common_c_args, '-DG_LOG_DOMAIN="m-filters-api"'],
-+  install : true,
-+  install_dir : wireplumber_module_dir,
-+  dependencies : [wp_dep, pipewire_dep],
-+)
-+
- if libsystemd_dep.found() or libelogind_dep.found()
-   shared_library(
-     'wireplumber-module-logind',
 diff --git a/modules/module-filters-api.c b/modules/module-filters-api.c
 new file mode 100644
-index 0000000..32c67c8
+index 00000000..8852a6c5
 --- /dev/null
 +++ b/modules/module-filters-api.c
-@@ -0,0 +1,905 @@
+@@ -0,0 +1,920 @@
 +/* WirePlumber
 + *
 + * Copyright © 2023 Collabora Ltd.
@@ -296,6 +235,12 @@ index 0000000..32c67c8
 +};
 +typedef struct _Filter Filter;
 +
++struct _Target {
++  gboolean exclusive;
++  WpNode *node;
++};
++typedef struct _Target Target;
++
 +static guint
 +get_filter_priority (const gchar *link_group)
 +{
@@ -332,6 +277,22 @@ index 0000000..32c67c8
 +  g_clear_object (&f->node);
 +  g_clear_object (&f->stream);
 +  g_free (f);
++}
++
++static Target *
++target_new (gboolean exclusive, WpNode *node)
++{
++  Target *t = g_malloc0 (sizeof (Target));
++  t->exclusive = exclusive;
++  t->node = node ? g_object_ref (node) : NULL;
++  return t;
++}
++
++static void
++target_free (Target *t)
++{
++  g_clear_object (&t->node);
++  g_free (t);
 +}
 +
 +static gint
@@ -380,16 +341,18 @@ index 0000000..32c67c8
 +  return found->enabled;
 +}
 +
-+static gint
++static WpSpaJson *
 +wp_filters_api_get_filter_target (WpFiltersApi * self, const gchar *direction,
 +    const gchar *link_group)
 +{
 +  WpDirection dir = WP_DIRECTION_INPUT;
 +  GList *filters;
 +  Filter *found;
++  g_autoptr (WpSpaJson) res = wp_spa_json_new_object (
++      "exclusive", "b", FALSE, "bound_id", "i", -1, NULL);
 +
-+  g_return_val_if_fail (direction, -1);
-+  g_return_val_if_fail (link_group, -1);
++  g_return_val_if_fail (direction, g_steal_pointer (&res));
++  g_return_val_if_fail (link_group, g_steal_pointer (&res));
 +
 +  /* Get the filters for the given direction */
 +  if (g_str_equal (direction, "output") || g_str_equal (direction, "Output"))
@@ -400,10 +363,10 @@ index 0000000..32c67c8
 +  filters = g_list_find_custom (filters, link_group,
 +      (GCompareFunc) filter_equal_func);
 +  if (!filters)
-+    return -1;
++    return g_steal_pointer (&res);
 +  found = filters->data;
 +  if (!found->enabled)
-+    return -1;
++    return g_steal_pointer (&res);
 +
 +  /* Return the previous filter with matching target that is enabled */
 +  while ((filters = g_list_previous (filters))) {
@@ -411,18 +374,27 @@ index 0000000..32c67c8
 +    if ((prev->target == found->target ||
 +        (prev->target && found->target &&
 +        g_str_equal (prev->target, found->target))) &&
-+        prev->enabled)
-+      return wp_proxy_get_bound_id (WP_PROXY (prev->node));
++        prev->enabled) {
++      return wp_spa_json_new_object (
++          "exclusive", "b", FALSE,
++          "bound_id", "i", wp_proxy_get_bound_id (WP_PROXY (prev->node)),
++          NULL);
++    }
 +  }
 +
 +  /* Find the target */
 +  if (found->target) {
-+    WpNode *node = g_hash_table_lookup (self->targets, found->target);
-+    if (node)
-+      return wp_proxy_get_bound_id (WP_PROXY (node));
++    Target *t = g_hash_table_lookup (self->targets, found->target);
++    if (t) {
++      return wp_spa_json_new_object (
++          "exclusive", "b", t->exclusive,
++          "bound_id", "i",
++              t->node ? (gint)wp_proxy_get_bound_id (WP_PROXY (t->node)) : -1,
++          NULL);
++    }
 +  }
 +
-+  return -1;
++  return g_steal_pointer (&res);
 +}
 +
 +static gint
@@ -445,12 +417,17 @@ index 0000000..32c67c8
 +  /* Find the first target matching target_id */
 +  while (filters) {
 +    Filter *f = (Filter *) filters->data;
-+    gint f_target_id = wp_filters_api_get_filter_target (self, direction,
-+        f->link_group);
-+    if (f_target_id == target_id && f->enabled) {
-+      target = f->target;
-+      found = TRUE;
-+      break;
++    if (f->enabled) {
++      gint f_target_id;
++      g_autoptr (WpSpaJson) f_target = wp_filters_api_get_filter_target (self,
++          direction, f->link_group);
++      if (f_target && wp_spa_json_is_object (f_target) &&
++          wp_spa_json_object_get (f_target, "bound_id", "i", &f_target_id, NULL)
++          && f_target_id == target_id) {
++        target = f->target;
++        found = TRUE;
++        break;
++      }
 +    }
 +
 +    /* Advance */
@@ -475,33 +452,6 @@ index 0000000..32c67c8
 +  }
 +
 +  return res;
-+}
-+
-+static gint
-+wp_filters_api_get_default_filter (WpFiltersApi * self, const gchar *direction)
-+{
-+  WpDirection dir = WP_DIRECTION_INPUT;
-+  GList *filters;
-+
-+  g_return_val_if_fail (direction, -1);
-+
-+  /* Get the filters for the given direction */
-+  if (g_str_equal (direction, "output") || g_str_equal (direction, "Output"))
-+    dir = WP_DIRECTION_OUTPUT;
-+  filters = self->filters[dir];
-+
-+  /* The default filter is the highest priority filter without target, this is
-+   * the first filer that is enabled because the list is sorted by priority */
-+  while (filters) {
-+    Filter *f = (Filter *) filters->data;
-+    if (f->enabled && !f->target)
-+      return wp_proxy_get_bound_id (WP_PROXY (f->node));
-+
-+    /* Advance */
-+    filters = g_list_next (filters);
-+  }
-+
-+  return -1;
 +}
 +
 +static void
@@ -597,9 +547,11 @@ index 0000000..32c67c8
 +  for (; wp_iterator_next (it, &item); g_value_unset (&item)) {
 +    WpSpaJson *j = g_value_get_boxed (&item);
 +    g_autofree gchar *key = NULL;
-+    WpSpaJson *props;
-+    g_autoptr (WpNode) target = NULL;
-+    WpNode *curr_target;
++    WpSpaJson *value;
++    gboolean exclusive = FALSE;
++    g_autoptr (WpSpaJson) props = NULL;
++    g_autoptr (WpNode) target_node = NULL;
++    Target *curr_target;
 +
 +    key = wp_spa_json_parse_string (j);
 +    g_value_unset (&item);
@@ -608,27 +560,36 @@ index 0000000..32c67c8
 +        "Could not get valid key-value pairs from target object");
 +      break;
 +    }
-+    props = g_value_get_boxed (&item);
++    value = g_value_get_boxed (&item);
++    if (!value || !wp_spa_json_is_object (value)) {
++      wp_warning_object (self, "Target value must be a JSON object");
++      break;
++    }
 +
-+    /* Get current target */
++    /* Get exclusive */
++    wp_spa_json_object_get (value, "exclusive", "b", &exclusive, NULL);
++
++    /* Get target node */
++    wp_spa_json_object_get (value, "props", "J", &props, NULL);
++    if (props)
++      target_node = find_target_node (self, props);
++
++    /* Update values if target exists in the table, otherwise add new target */
 +    curr_target = g_hash_table_lookup (self->targets, key);
-+
-+    /* Find the node and insert it into the table if found */
-+    target = find_target_node (self, props);
-+    if (target) {
-+      /* Check if the target changed */
-+      if (curr_target) {
-+        guint32 target_bound_id = wp_proxy_get_bound_id (WP_PROXY (target));
-+        guint32 curr_bound_id = wp_proxy_get_bound_id (WP_PROXY (curr_target));
-+        if (target_bound_id != curr_bound_id)
-+          changed = TRUE;
-+      }
-+
-+      g_hash_table_insert (self->targets, g_strdup (key),
-+          g_steal_pointer (&target));
-+    } else {
-+      if (curr_target)
++    if (curr_target) {
++      if (curr_target->exclusive != exclusive) {
++        curr_target->exclusive = exclusive;
 +        changed = TRUE;
++      }
++      if (curr_target->node != target_node) {
++        g_clear_object (&curr_target->node);
++        curr_target->node = g_steal_pointer (&target_node);
++        changed = TRUE;
++      }
++    } else {
++      g_hash_table_insert (self->targets, g_strdup (key),
++            target_new (exclusive, target_node));
++      changed = TRUE;
 +    }
 +  }
 +
@@ -1064,7 +1025,7 @@ index 0000000..32c67c8
 +  g_autoptr (WpCore) core = wp_object_get_core (WP_OBJECT (self));
 +
 +  self->targets = g_hash_table_new_full (g_str_hash, g_str_equal, g_free,
-+      g_object_unref);
++      (GDestroyNotify) target_free);
 +
 +  /* Create the metadata object manager */
 +  self->metadata_om = wp_object_manager_new ();
@@ -1119,7 +1080,7 @@ index 0000000..32c67c8
 +      G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 +      (GCallback) wp_filters_api_get_filter_target,
 +      NULL, NULL, NULL,
-+      G_TYPE_INT, 2, G_TYPE_STRING, G_TYPE_STRING);
++      WP_TYPE_SPA_JSON, 2, G_TYPE_STRING, G_TYPE_STRING);
 +
 +  signals[ACTION_GET_FILTER_FROM_TARGET] = g_signal_new_class_handler (
 +      "get-filter-from-target", G_TYPE_FROM_CLASS (klass),
@@ -1127,13 +1088,6 @@ index 0000000..32c67c8
 +      (GCallback) wp_filters_api_get_filter_from_target,
 +      NULL, NULL, NULL,
 +      G_TYPE_INT, 2, G_TYPE_STRING, G_TYPE_INT);
-+
-+  signals[ACTION_GET_DEFAULT_FILTER] = g_signal_new_class_handler (
-+      "get-default-filter", G_TYPE_FROM_CLASS (klass),
-+      G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-+      (GCallback) wp_filters_api_get_default_filter,
-+      NULL, NULL, NULL,
-+      G_TYPE_INT, 1, G_TYPE_STRING);
 +
 +  signals[SIGNAL_CHANGED] = g_signal_new (
 +      "changed", G_TYPE_FROM_CLASS (klass),
@@ -1151,7 +1105,7 @@ index 0000000..32c67c8
 +  return TRUE;
 +}
 diff --git a/modules/module-lua-scripting/api/json.c b/modules/module-lua-scripting/api/json.c
-index 2883a02..3d486be 100644
+index 2883a021..3d486be8 100644
 --- a/modules/module-lua-scripting/api/json.c
 +++ b/modules/module-lua-scripting/api/json.c
 @@ -264,7 +264,7 @@ spa_json_array_new (lua_State *L)
@@ -1163,8 +1117,62 @@ index 2883a02..3d486be 100644
                lua_typename(L, lua_type(L, -1)));
            break;
        }
+diff --git a/src/config/main.lua.d/40-device-defaults.lua b/src/config/main.lua.d/40-device-defaults.lua
+index 19202914..b87eec51 100644
+--- a/src/config/main.lua.d/40-device-defaults.lua
++++ b/src/config/main.lua.d/40-device-defaults.lua
+@@ -10,15 +10,6 @@ device_defaults.properties = {
+   -- the default volumes to apply to ACP device nodes, in the linear scale
+   --["default-volume"] = 0.064,
+   --["default-input-volume"] = 1.0,
+-
+-  -- Whether to auto-switch to echo cancel sink and source nodes or not
+-  ["auto-echo-cancel"] = true,
+-
+-  -- Sets the default echo-cancel-sink node name to automatically switch to
+-  ["echo-cancel-sink-name"] = "echo-cancel-sink",
+-
+-  -- Sets the default echo-cancel-source node name to automatically switch to
+-  ["echo-cancel-source-name"] = "echo-cancel-source",
+ }
+ 
+ -- Sets persistent device profiles that should never change when wireplumber is
+@@ -48,13 +39,13 @@ device_defaults.profile_priorities = {
+     },
+     -- lower the index higher the priority
+     priorities = {
+-      -- "a2dp-sink-sbc",
+-      -- "a2dp-sink-aptx_ll",
+-      -- "a2dp-sink-aptx",
+-      -- "a2dp-sink-aptx_hd",
+-      -- "a2dp-sink-ldac",
+-      -- "a2dp-sink-aac",
+-      -- "a2dp-sink-sbc_xq",
++      "a2dp-sink-aptx_ll",
++      "a2dp-sink-aptx",
++      "a2dp-sink-aptx_hd",
++      "a2dp-sink-ldac",
++      "a2dp-sink-aac",
++      "a2dp-sink-sbc",
++      "a2dp-sink-sbc_xq",
+     }
+   },
+ }
+diff --git a/src/config/main.lua.d/40-stream-defaults.lua b/src/config/main.lua.d/40-stream-defaults.lua
+index b869099b..d25aab0d 100644
+--- a/src/config/main.lua.d/40-stream-defaults.lua
++++ b/src/config/main.lua.d/40-stream-defaults.lua
+@@ -6,7 +6,7 @@ stream_defaults.properties = {
+   ["restore-props"] = true,
+ 
+   -- whether to restore the last stream target or not
+-  ["restore-target"] = true,
++  ["restore-target"] = false,
+ 
+   -- the default channel volume for new streams whose props were never saved
+   -- previously. This is only used if "restore-props" is set to true.
 diff --git a/src/config/policy.lua.d/10-default-policy.lua b/src/config/policy.lua.d/10-default-policy.lua
-index 83d0a3b..d3621a7 100644
+index 83d0a3b2..412d47a8 100644
 --- a/src/config/policy.lua.d/10-default-policy.lua
 +++ b/src/config/policy.lua.d/10-default-policy.lua
 @@ -12,6 +12,9 @@ default_policy.policy = {
@@ -1172,7 +1180,7 @@ index 83d0a3b..d3621a7 100644
    ["filter.forward-format"] = false,
  
 +  -- Whether to enable smart filter policy or not (experimental feature)
-+  ["filter.smart"] = false,
++  ["filter.smart"] = true,
 +
    -- Set to 'true' to disable channel splitting & merging on nodes and enable
    -- passthrough of audio in the same format as the format of the device.
@@ -1192,10 +1200,10 @@ index 83d0a3b..d3621a7 100644
  
 diff --git a/src/config/policy.lua.d/30-filters-config.lua b/src/config/policy.lua.d/30-filters-config.lua
 new file mode 100644
-index 0000000..76aecad
+index 00000000..8e8725fc
 --- /dev/null
 +++ b/src/config/policy.lua.d/30-filters-config.lua
-@@ -0,0 +1,73 @@
+@@ -0,0 +1,80 @@
 +-- The smart filter policy configuration.
 +-- You need to enable "filter.smart" in 10-default-policy.lua
 +--
@@ -1257,24 +1265,31 @@ index 0000000..76aecad
 +    }
 +  },
 +
-+  -- The target node properties (any node properties can be defined)
++  -- The filter targets
 +  ["targets"] = {
 +    ["speakers"] = {
-+      ["media.class"] = "Audio/Sink",
-+      ["alsa.card_name"] = "my-speakers-card-name",
++      ["exclusive"] = false,
++      ["props"] = {
++        ["media.class"] = "Audio/Sink",
++        ["alsa.card_name"] = "sof-nau8821-max",
++        ["device.profile.description"] = "Speaker",
++      }
 +    },
 +    ["microphone"] = {
-+      ["media.class"] = "Audio/Source",
-+      ["alsa.card_name"] = "my-microphone-card-name",
++      ["exclusive"] = false,
++      ["props"] = {
++        ["media.class"] = "Audio/Source",
++        ["alsa.card_name"] = "sof-nau8821-max",
++      }
 +    }
 +  }
 +}
 diff --git a/src/scripts/filters-metadata.lua b/src/scripts/filters-metadata.lua
 new file mode 100644
-index 0000000..04e3e6c
+index 00000000..49b4d0e8
 --- /dev/null
 +++ b/src/scripts/filters-metadata.lua
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,42 @@
 +-- WirePlumber
 +--
 +-- Copyright © 2023 Collabora Ltd.
@@ -1307,15 +1322,87 @@ index 0000000..04e3e6c
 +
 +  -- Set targets metadata
 +  local targets = {}
-+  for name, props in pairs(config["targets"]) do
-+    targets[name] = Json.Object (props)
++  for name, value in pairs(config["targets"]) do
++    targets[name] = Json.Object {
++        exclusive = value.exclusive and true or false,
++        props = Json.Object (value.props)
++    }
 +  end
 +  local targets_json = Json.Object (targets)
 +  m:set (0, "filters.configured.targets", "Spa:String:JSON",
 +          targets_json:to_string())
 +end)
+diff --git a/src/scripts/policy-device-profile.lua b/src/scripts/policy-device-profile.lua
+index af10f9b7..8d3a6d7e 100644
+--- a/src/scripts/policy-device-profile.lua
++++ b/src/scripts/policy-device-profile.lua
+@@ -34,12 +34,12 @@ createIntrestObjects(self.config.persistent)
+ createIntrestObjects(self.config.priorities)
+ 
+ -- Checks whether a device profile is persistent or not
+-function isProfilePersistent(device_props, profile_name)
+-  for _, p in ipairs(self.config.persistent or {}) do
++function isProfilePersistent (device_props, profile_name)
++  for _, p in ipairs (self.config.persistent or {}) do
+     if p.profile_names then
+-      for _, interest in ipairs(p.interests) do
+-        if interest:matches(device_props) then
+-          for _, pn in ipairs(p.profile_names) do
++      for _, interest in ipairs (p.interests) do
++        if interest:matches (device_props) then
++          for _, pn in ipairs (p.profile_names) do
+             if pn == profile_name then
+               return true
+             end
+@@ -72,7 +72,7 @@ function setDeviceProfile (device, dev_id, dev_name, profile)
+     index = profile.index,
+   }
+   Log.info ("Setting profile " .. profile.name .. " on " .. dev_name)
+-  device:set_param("Profile", param)
++  device:set_param ("Profile", param)
+ end
+ 
+ function findDefaultProfile (device)
+@@ -85,8 +85,8 @@ function findDefaultProfile (device)
+     return nil
+   end
+ 
+-  for p in device:iterate_params("EnumProfile") do
+-    local profile = parseParam(p, "EnumProfile")
++  for p in device:iterate_params ("EnumProfile") do
++    local profile = parseParam (p, "EnumProfile")
+     if profile.name == def_name then
+       return profile
+     end
+@@ -189,7 +189,7 @@ function handleProfiles (device, new_device)
+       isProfilePersistent (device.properties, self.active_profiles[dev_id].name) and
+       def_profile ~= nil and
+       self.active_profiles[dev_id].name == def_profile.name
+-      then
++  then
+     local active_profile = self.active_profiles[dev_id].name
+     Log.info ("Device profile " .. active_profile .. " is persistent for " .. dev_name)
+     return
+@@ -233,14 +233,14 @@ self.om = ObjectManager {
+   }
+ }
+ 
+-self.om:connect("object-added", function (_, device)
++self.om:connect ("object-added", function(_, device)
+   device:connect ("params-changed", onDeviceParamsChanged)
+   handleProfiles (device, true)
+ end)
+ 
+-self.om:connect("object-removed", function (_, device)
++self.om:connect ("object-removed", function(_, device)
+   local dev_id = device["bound-id"]
+   self.active_profiles[dev_id] = nil
+ end)
+ 
+-self.om:activate()
++self.om:activate ()
 diff --git a/src/scripts/policy-node.lua b/src/scripts/policy-node.lua
-index 99ad847..f249f34 100644
+index 99ad8473..035c3006 100644
 --- a/src/scripts/policy-node.lua
 +++ b/src/scripts/policy-node.lua
 @@ -18,6 +18,7 @@ self.scanning = false
@@ -1436,45 +1523,42 @@ index 99ad847..f249f34 100644
    -- Determine if we can handle item by this policy
    if endpoints_om:get_n_objects () > 0 and
        si_props["item.factory.name"] == "si-audio-adapter" then
-@@ -652,6 +718,37 @@ function checkFollowDefault (si, si_target, has_node_defined_target)
+@@ -652,6 +718,34 @@ function checkFollowDefault (si, si_target, has_node_defined_target)
    end
  end
  
 +function findFilterTarget (si)
-+  local node = si:get_associated_proxy ("node")
-+  local direction = getTargetDirection (si.properties)
-+  local link_group = node.properties["node.link-group"]
-+  local target_id = -1
-+
 +  -- always return nil if filters API is not loaded
 +  if self.filters_api == nil then
-+    return nil
++    return nil, false
 +  end
 +
++  -- always return nil if this is not a filter
++  local node = si:get_associated_proxy ("node")
++  local link_group = node.properties["node.link-group"]
 +  if link_group == nil then
-+    -- if this is a client stream that is not a filter, link it to the highest
-+    -- priority filter that does not have a group, if any.
-+    target_id = self.filters_api:call("get-default-filter", direction)
-+  else
-+    -- if this is a filter, get its target
-+    target_id = self.filters_api:call("get-filter-target",
-+      direction, link_group)
++    return nil, false
 +  end
 +
-+  if (target_id == -1) then
-+    return nil
++  -- get the filter target
++  local direction = getTargetDirection (si.properties)
++  local target_json = self.filters_api:call("get-filter-target", direction, link_group)
++  if target_json == nil then
++    return nil, false
 +  end
++  target = target_json:parse()
 +
-+  Log.info (".. filter target ID is " .. tostring(target_id))
++  Log.info (".. filter target ID is " .. tostring(target.bound_id) ..
++      " (" .. tostring (target.exclusive) .. ")")
 +  return linkables_om:lookup {
-+      Constraint { "node.id", "=", tostring(target_id) }
-+  }
++      Constraint { "node.id", "=", tostring(target.bound_id) }
++  }, target.exclusive
 +end
 +
  function handleLinkable (si)
    if checkPending () then
      return
-@@ -683,11 +780,19 @@ function handleLinkable (si)
+@@ -683,11 +777,23 @@ function handleLinkable (si)
    local si_target, has_defined_target, has_node_defined_target
        = findDefinedTarget(si_props)
    local can_passthrough = si_target and canPassthrough(si, si_target)
@@ -1485,7 +1569,11 @@ index 99ad847..f249f34 100644
  
 +  -- find filter target (always returns nil for non filters)
 +  if si_target == nil then
-+    si_target = findFilterTarget(si)
++    si_target, exclusive = findFilterTarget(si)
++    -- don't fallback if filter target is not found and exclusive is true
++    if si_target == nil and exclusive then
++      return
++    end
 +    local can_passthrough = si_target and canPassthrough(si, si_target)
 +    if si_target and si_must_passthrough and not can_passthrough then
 +      si_target = nil
@@ -1495,7 +1583,7 @@ index 99ad847..f249f34 100644
    -- if the client has seen a target that we haven't yet prepared, schedule
    -- a rescan one more time and hope for the best
    local si_id = si.id
-@@ -876,6 +981,17 @@ if config.follow and default_nodes ~= nil then
+@@ -876,6 +982,17 @@ if config.follow and default_nodes ~= nil then
    end)
  end
  
@@ -1513,585 +1601,3 @@ index 99ad847..f249f34 100644
  -- listen for target.node metadata changes if config.move is enabled
  if config.move then
    metadata_om:connect("object-added", function (om, metadata)
--- 
-2.42.0
-
-
-From 2e409744d3c027feb37da07db461aaccffeb4c05 Mon Sep 17 00:00:00 2001
-From: Julian Bouzas <julian.bouzas@collabora.com>
-Date: Thu, 23 Mar 2023 09:26:45 -0400
-Subject: [PATCH 3/8] config: do not restore stream target by default
-
----
- src/config/main.lua.d/40-stream-defaults.lua | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/config/main.lua.d/40-stream-defaults.lua b/src/config/main.lua.d/40-stream-defaults.lua
-index b869099..d25aab0 100644
---- a/src/config/main.lua.d/40-stream-defaults.lua
-+++ b/src/config/main.lua.d/40-stream-defaults.lua
-@@ -6,7 +6,7 @@ stream_defaults.properties = {
-   ["restore-props"] = true,
- 
-   -- whether to restore the last stream target or not
--  ["restore-target"] = true,
-+  ["restore-target"] = false,
- 
-   -- the default channel volume for new streams whose props were never saved
-   -- previously. This is only used if "restore-props" is set to true.
--- 
-2.42.0
-
-
-From eab5f0342bd4054184f26763db495b9f18c02b03 Mon Sep 17 00:00:00 2001
-From: Julian Bouzas <julian.bouzas@collabora.com>
-Date: Thu, 23 Mar 2023 09:41:23 -0400
-Subject: [PATCH 4/8] config: enable smart filter policy
-
----
- src/config/policy.lua.d/10-default-policy.lua | 2 +-
- src/config/policy.lua.d/30-filters-config.lua | 5 +++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/src/config/policy.lua.d/10-default-policy.lua b/src/config/policy.lua.d/10-default-policy.lua
-index d3621a7..412d47a 100644
---- a/src/config/policy.lua.d/10-default-policy.lua
-+++ b/src/config/policy.lua.d/10-default-policy.lua
-@@ -13,7 +13,7 @@ default_policy.policy = {
-   ["filter.forward-format"] = false,
- 
-   -- Whether to enable smart filter policy or not (experimental feature)
--  ["filter.smart"] = false,
-+  ["filter.smart"] = true,
- 
-   -- Set to 'true' to disable channel splitting & merging on nodes and enable
-   -- passthrough of audio in the same format as the format of the device.
-diff --git a/src/config/policy.lua.d/30-filters-config.lua b/src/config/policy.lua.d/30-filters-config.lua
-index 76aecad..8d919fb 100644
---- a/src/config/policy.lua.d/30-filters-config.lua
-+++ b/src/config/policy.lua.d/30-filters-config.lua
-@@ -63,11 +63,12 @@ default_policy.filters_metadata = {
-   ["targets"] = {
-     ["speakers"] = {
-       ["media.class"] = "Audio/Sink",
--      ["alsa.card_name"] = "my-speakers-card-name",
-+      ["alsa.card_name"] = "acp5x",
-+      ["device.profile.description"] = "Speaker",
-     },
-     ["microphone"] = {
-       ["media.class"] = "Audio/Source",
--      ["alsa.card_name"] = "my-microphone-card-name",
-+      ["alsa.card_name"] = "acp5x",
-     }
-   }
- }
--- 
-2.42.0
-
-
-From 4ef67b81a2eb4cd85cbbf32dd4bf599382b58761 Mon Sep 17 00:00:00 2001
-From: Julian Bouzas <julian.bouzas@collabora.com>
-Date: Fri, 3 Nov 2023 09:24:59 -0400
-Subject: [PATCH 5/8] m-filters-api: remove get-default-filter API
-
-This was redundant as you can get the default filter by calling
-'get-filter-from-target' using the default target. The policy logic
-should not change.
----
- modules/module-filters-api.c | 34 ----------------------------------
- src/scripts/policy-node.lua  | 17 +++++++----------
- 2 files changed, 7 insertions(+), 44 deletions(-)
-
-diff --git a/modules/module-filters-api.c b/modules/module-filters-api.c
-index 32c67c8..d7dc781 100644
---- a/modules/module-filters-api.c
-+++ b/modules/module-filters-api.c
-@@ -230,33 +230,6 @@ wp_filters_api_get_filter_from_target (WpFiltersApi * self,
-   return res;
- }
- 
--static gint
--wp_filters_api_get_default_filter (WpFiltersApi * self, const gchar *direction)
--{
--  WpDirection dir = WP_DIRECTION_INPUT;
--  GList *filters;
--
--  g_return_val_if_fail (direction, -1);
--
--  /* Get the filters for the given direction */
--  if (g_str_equal (direction, "output") || g_str_equal (direction, "Output"))
--    dir = WP_DIRECTION_OUTPUT;
--  filters = self->filters[dir];
--
--  /* The default filter is the highest priority filter without target, this is
--   * the first filer that is enabled because the list is sorted by priority */
--  while (filters) {
--    Filter *f = (Filter *) filters->data;
--    if (f->enabled && !f->target)
--      return wp_proxy_get_bound_id (WP_PROXY (f->node));
--
--    /* Advance */
--    filters = g_list_next (filters);
--  }
--
--  return -1;
--}
--
- static void
- sync_changed (WpCore * core, GAsyncResult * res, WpFiltersApi * self)
- {
-@@ -881,13 +854,6 @@ wp_filters_api_class_init (WpFiltersApiClass * klass)
-       NULL, NULL, NULL,
-       G_TYPE_INT, 2, G_TYPE_STRING, G_TYPE_INT);
- 
--  signals[ACTION_GET_DEFAULT_FILTER] = g_signal_new_class_handler (
--      "get-default-filter", G_TYPE_FROM_CLASS (klass),
--      G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
--      (GCallback) wp_filters_api_get_default_filter,
--      NULL, NULL, NULL,
--      G_TYPE_INT, 1, G_TYPE_STRING);
--
-   signals[SIGNAL_CHANGED] = g_signal_new (
-       "changed", G_TYPE_FROM_CLASS (klass),
-       G_SIGNAL_RUN_LAST, 0, NULL, NULL, NULL,
-diff --git a/src/scripts/policy-node.lua b/src/scripts/policy-node.lua
-index f249f34..c5a15ec 100644
---- a/src/scripts/policy-node.lua
-+++ b/src/scripts/policy-node.lua
-@@ -719,9 +719,6 @@ function checkFollowDefault (si, si_target, has_node_defined_target)
- end
- 
- function findFilterTarget (si)
--  local node = si:get_associated_proxy ("node")
--  local direction = getTargetDirection (si.properties)
--  local link_group = node.properties["node.link-group"]
-   local target_id = -1
- 
-   -- always return nil if filters API is not loaded
-@@ -729,16 +726,16 @@ function findFilterTarget (si)
-     return nil
-   end
- 
-+  -- always return nil if this is not a filter
-+  local node = si:get_associated_proxy ("node")
-+  local link_group = node.properties["node.link-group"]
-   if link_group == nil then
--    -- if this is a client stream that is not a filter, link it to the highest
--    -- priority filter that does not have a group, if any.
--    target_id = self.filters_api:call("get-default-filter", direction)
--  else
--    -- if this is a filter, get its target
--    target_id = self.filters_api:call("get-filter-target",
--      direction, link_group)
-+    return nil
-   end
- 
-+  -- get the filter target
-+  local direction = getTargetDirection (si.properties)
-+  target_id = self.filters_api:call("get-filter-target", direction, link_group)
-   if (target_id == -1) then
-     return nil
-   end
--- 
-2.42.0
-
-
-From 3908c5bdb3e65c1021a8e8a8f5c74d0866b2b0cf Mon Sep 17 00:00:00 2001
-From: Julian Bouzas <julian.bouzas@collabora.com>
-Date: Fri, 3 Nov 2023 11:44:57 -0400
-Subject: [PATCH 6/8] m-filters-api: add support for exclusive targets
-
-Filters whose target are exclusive won't be linked to the default device if the
-target does not exist.
----
- modules/module-filters-api.c                  | 127 ++++++++++++------
- src/config/policy.lua.d/30-filters-config.lua |  18 ++-
- src/scripts/filters-metadata.lua              |   7 +-
- src/scripts/policy-node.lua                   |  26 ++--
- 4 files changed, 120 insertions(+), 58 deletions(-)
-
-diff --git a/modules/module-filters-api.c b/modules/module-filters-api.c
-index d7dc781..8852a6c 100644
---- a/modules/module-filters-api.c
-+++ b/modules/module-filters-api.c
-@@ -49,6 +49,12 @@ struct _Filter {
- };
- typedef struct _Filter Filter;
- 
-+struct _Target {
-+  gboolean exclusive;
-+  WpNode *node;
-+};
-+typedef struct _Target Target;
-+
- static guint
- get_filter_priority (const gchar *link_group)
- {
-@@ -87,6 +93,22 @@ filter_free (Filter *f)
-   g_free (f);
- }
- 
-+static Target *
-+target_new (gboolean exclusive, WpNode *node)
-+{
-+  Target *t = g_malloc0 (sizeof (Target));
-+  t->exclusive = exclusive;
-+  t->node = node ? g_object_ref (node) : NULL;
-+  return t;
-+}
-+
-+static void
-+target_free (Target *t)
-+{
-+  g_clear_object (&t->node);
-+  g_free (t);
-+}
-+
- static gint
- filter_equal_func (const Filter *f, const gchar *link_group)
- {
-@@ -133,16 +155,18 @@ wp_filters_api_is_filter_enabled (WpFiltersApi * self, const gchar *direction,
-   return found->enabled;
- }
- 
--static gint
-+static WpSpaJson *
- wp_filters_api_get_filter_target (WpFiltersApi * self, const gchar *direction,
-     const gchar *link_group)
- {
-   WpDirection dir = WP_DIRECTION_INPUT;
-   GList *filters;
-   Filter *found;
-+  g_autoptr (WpSpaJson) res = wp_spa_json_new_object (
-+      "exclusive", "b", FALSE, "bound_id", "i", -1, NULL);
- 
--  g_return_val_if_fail (direction, -1);
--  g_return_val_if_fail (link_group, -1);
-+  g_return_val_if_fail (direction, g_steal_pointer (&res));
-+  g_return_val_if_fail (link_group, g_steal_pointer (&res));
- 
-   /* Get the filters for the given direction */
-   if (g_str_equal (direction, "output") || g_str_equal (direction, "Output"))
-@@ -153,10 +177,10 @@ wp_filters_api_get_filter_target (WpFiltersApi * self, const gchar *direction,
-   filters = g_list_find_custom (filters, link_group,
-       (GCompareFunc) filter_equal_func);
-   if (!filters)
--    return -1;
-+    return g_steal_pointer (&res);
-   found = filters->data;
-   if (!found->enabled)
--    return -1;
-+    return g_steal_pointer (&res);
- 
-   /* Return the previous filter with matching target that is enabled */
-   while ((filters = g_list_previous (filters))) {
-@@ -164,18 +188,27 @@ wp_filters_api_get_filter_target (WpFiltersApi * self, const gchar *direction,
-     if ((prev->target == found->target ||
-         (prev->target && found->target &&
-         g_str_equal (prev->target, found->target))) &&
--        prev->enabled)
--      return wp_proxy_get_bound_id (WP_PROXY (prev->node));
-+        prev->enabled) {
-+      return wp_spa_json_new_object (
-+          "exclusive", "b", FALSE,
-+          "bound_id", "i", wp_proxy_get_bound_id (WP_PROXY (prev->node)),
-+          NULL);
-+    }
-   }
- 
-   /* Find the target */
-   if (found->target) {
--    WpNode *node = g_hash_table_lookup (self->targets, found->target);
--    if (node)
--      return wp_proxy_get_bound_id (WP_PROXY (node));
-+    Target *t = g_hash_table_lookup (self->targets, found->target);
-+    if (t) {
-+      return wp_spa_json_new_object (
-+          "exclusive", "b", t->exclusive,
-+          "bound_id", "i",
-+              t->node ? (gint)wp_proxy_get_bound_id (WP_PROXY (t->node)) : -1,
-+          NULL);
-+    }
-   }
- 
--  return -1;
-+  return g_steal_pointer (&res);
- }
- 
- static gint
-@@ -198,12 +231,17 @@ wp_filters_api_get_filter_from_target (WpFiltersApi * self,
-   /* Find the first target matching target_id */
-   while (filters) {
-     Filter *f = (Filter *) filters->data;
--    gint f_target_id = wp_filters_api_get_filter_target (self, direction,
--        f->link_group);
--    if (f_target_id == target_id && f->enabled) {
--      target = f->target;
--      found = TRUE;
--      break;
-+    if (f->enabled) {
-+      gint f_target_id;
-+      g_autoptr (WpSpaJson) f_target = wp_filters_api_get_filter_target (self,
-+          direction, f->link_group);
-+      if (f_target && wp_spa_json_is_object (f_target) &&
-+          wp_spa_json_object_get (f_target, "bound_id", "i", &f_target_id, NULL)
-+          && f_target_id == target_id) {
-+        target = f->target;
-+        found = TRUE;
-+        break;
-+      }
-     }
- 
-     /* Advance */
-@@ -323,9 +361,11 @@ reevaluate_targets (WpFiltersApi *self)
-   for (; wp_iterator_next (it, &item); g_value_unset (&item)) {
-     WpSpaJson *j = g_value_get_boxed (&item);
-     g_autofree gchar *key = NULL;
--    WpSpaJson *props;
--    g_autoptr (WpNode) target = NULL;
--    WpNode *curr_target;
-+    WpSpaJson *value;
-+    gboolean exclusive = FALSE;
-+    g_autoptr (WpSpaJson) props = NULL;
-+    g_autoptr (WpNode) target_node = NULL;
-+    Target *curr_target;
- 
-     key = wp_spa_json_parse_string (j);
-     g_value_unset (&item);
-@@ -334,27 +374,36 @@ reevaluate_targets (WpFiltersApi *self)
-         "Could not get valid key-value pairs from target object");
-       break;
-     }
--    props = g_value_get_boxed (&item);
-+    value = g_value_get_boxed (&item);
-+    if (!value || !wp_spa_json_is_object (value)) {
-+      wp_warning_object (self, "Target value must be a JSON object");
-+      break;
-+    }
- 
--    /* Get current target */
--    curr_target = g_hash_table_lookup (self->targets, key);
-+    /* Get exclusive */
-+    wp_spa_json_object_get (value, "exclusive", "b", &exclusive, NULL);
- 
--    /* Find the node and insert it into the table if found */
--    target = find_target_node (self, props);
--    if (target) {
--      /* Check if the target changed */
--      if (curr_target) {
--        guint32 target_bound_id = wp_proxy_get_bound_id (WP_PROXY (target));
--        guint32 curr_bound_id = wp_proxy_get_bound_id (WP_PROXY (curr_target));
--        if (target_bound_id != curr_bound_id)
--          changed = TRUE;
--      }
-+    /* Get target node */
-+    wp_spa_json_object_get (value, "props", "J", &props, NULL);
-+    if (props)
-+      target_node = find_target_node (self, props);
- 
--      g_hash_table_insert (self->targets, g_strdup (key),
--          g_steal_pointer (&target));
--    } else {
--      if (curr_target)
-+    /* Update values if target exists in the table, otherwise add new target */
-+    curr_target = g_hash_table_lookup (self->targets, key);
-+    if (curr_target) {
-+      if (curr_target->exclusive != exclusive) {
-+        curr_target->exclusive = exclusive;
-+        changed = TRUE;
-+      }
-+      if (curr_target->node != target_node) {
-+        g_clear_object (&curr_target->node);
-+        curr_target->node = g_steal_pointer (&target_node);
-         changed = TRUE;
-+      }
-+    } else {
-+      g_hash_table_insert (self->targets, g_strdup (key),
-+            target_new (exclusive, target_node));
-+      changed = TRUE;
-     }
-   }
- 
-@@ -790,7 +839,7 @@ wp_filters_api_enable (WpPlugin * plugin, WpTransition * transition)
-   g_autoptr (WpCore) core = wp_object_get_core (WP_OBJECT (self));
- 
-   self->targets = g_hash_table_new_full (g_str_hash, g_str_equal, g_free,
--      g_object_unref);
-+      (GDestroyNotify) target_free);
- 
-   /* Create the metadata object manager */
-   self->metadata_om = wp_object_manager_new ();
-@@ -845,7 +894,7 @@ wp_filters_api_class_init (WpFiltersApiClass * klass)
-       G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-       (GCallback) wp_filters_api_get_filter_target,
-       NULL, NULL, NULL,
--      G_TYPE_INT, 2, G_TYPE_STRING, G_TYPE_STRING);
-+      WP_TYPE_SPA_JSON, 2, G_TYPE_STRING, G_TYPE_STRING);
- 
-   signals[ACTION_GET_FILTER_FROM_TARGET] = g_signal_new_class_handler (
-       "get-filter-from-target", G_TYPE_FROM_CLASS (klass),
-diff --git a/src/config/policy.lua.d/30-filters-config.lua b/src/config/policy.lua.d/30-filters-config.lua
-index 8d919fb..bf4b8d7 100644
---- a/src/config/policy.lua.d/30-filters-config.lua
-+++ b/src/config/policy.lua.d/30-filters-config.lua
-@@ -59,16 +59,22 @@ default_policy.filters_metadata = {
-     }
-   },
- 
--  -- The target node properties (any node properties can be defined)
-+  -- The filter targets
-   ["targets"] = {
-     ["speakers"] = {
--      ["media.class"] = "Audio/Sink",
--      ["alsa.card_name"] = "acp5x",
--      ["device.profile.description"] = "Speaker",
-+      ["exclusive"] = false,
-+      ["props"] = {
-+        ["media.class"] = "Audio/Sink",
-+        ["alsa.card_name"] = "acp5x",
-+        ["device.profile.description"] = "Speaker",
-+      }
-     },
-     ["microphone"] = {
--      ["media.class"] = "Audio/Source",
--      ["alsa.card_name"] = "acp5x",
-+      ["exclusive"] = false,
-+      ["props"] = {
-+        ["media.class"] = "Audio/Source",
-+        ["alsa.card_name"] = "acp5x",
-+      }
-     }
-   }
- }
-diff --git a/src/scripts/filters-metadata.lua b/src/scripts/filters-metadata.lua
-index 04e3e6c..49b4d0e 100644
---- a/src/scripts/filters-metadata.lua
-+++ b/src/scripts/filters-metadata.lua
-@@ -30,8 +30,11 @@ f_metadata:activate(Features.ALL, function (m, e)
- 
-   -- Set targets metadata
-   local targets = {}
--  for name, props in pairs(config["targets"]) do
--    targets[name] = Json.Object (props)
-+  for name, value in pairs(config["targets"]) do
-+    targets[name] = Json.Object {
-+        exclusive = value.exclusive and true or false,
-+        props = Json.Object (value.props)
-+    }
-   end
-   local targets_json = Json.Object (targets)
-   m:set (0, "filters.configured.targets", "Spa:String:JSON",
-diff --git a/src/scripts/policy-node.lua b/src/scripts/policy-node.lua
-index c5a15ec..035c300 100644
---- a/src/scripts/policy-node.lua
-+++ b/src/scripts/policy-node.lua
-@@ -719,31 +719,31 @@ function checkFollowDefault (si, si_target, has_node_defined_target)
- end
- 
- function findFilterTarget (si)
--  local target_id = -1
--
-   -- always return nil if filters API is not loaded
-   if self.filters_api == nil then
--    return nil
-+    return nil, false
-   end
- 
-   -- always return nil if this is not a filter
-   local node = si:get_associated_proxy ("node")
-   local link_group = node.properties["node.link-group"]
-   if link_group == nil then
--    return nil
-+    return nil, false
-   end
- 
-   -- get the filter target
-   local direction = getTargetDirection (si.properties)
--  target_id = self.filters_api:call("get-filter-target", direction, link_group)
--  if (target_id == -1) then
--    return nil
-+  local target_json = self.filters_api:call("get-filter-target", direction, link_group)
-+  if target_json == nil then
-+    return nil, false
-   end
-+  target = target_json:parse()
- 
--  Log.info (".. filter target ID is " .. tostring(target_id))
-+  Log.info (".. filter target ID is " .. tostring(target.bound_id) ..
-+      " (" .. tostring (target.exclusive) .. ")")
-   return linkables_om:lookup {
--      Constraint { "node.id", "=", tostring(target_id) }
--  }
-+      Constraint { "node.id", "=", tostring(target.bound_id) }
-+  }, target.exclusive
- end
- 
- function handleLinkable (si)
-@@ -783,7 +783,11 @@ function handleLinkable (si)
- 
-   -- find filter target (always returns nil for non filters)
-   if si_target == nil then
--    si_target = findFilterTarget(si)
-+    si_target, exclusive = findFilterTarget(si)
-+    -- don't fallback if filter target is not found and exclusive is true
-+    if si_target == nil and exclusive then
-+      return
-+    end
-     local can_passthrough = si_target and canPassthrough(si, si_target)
-     if si_target and si_must_passthrough and not can_passthrough then
-       si_target = nil
--- 
-2.42.0
-
-
-From 56054fb96e82014ed99138faa1ee02ec9ce91140 Mon Sep 17 00:00:00 2001
-From: Ethan Geller <ethang@valvesoftware.com>
-Date: Mon, 13 Nov 2023 22:10:05 -0800
-Subject: [PATCH 7/8] fix speaker tunings for galileo
-
----
- src/config/policy.lua.d/30-filters-config.lua | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/config/policy.lua.d/30-filters-config.lua b/src/config/policy.lua.d/30-filters-config.lua
-index bf4b8d7..37badd8 100644
---- a/src/config/policy.lua.d/30-filters-config.lua
-+++ b/src/config/policy.lua.d/30-filters-config.lua
-@@ -65,7 +65,7 @@ default_policy.filters_metadata = {
-       ["exclusive"] = false,
-       ["props"] = {
-         ["media.class"] = "Audio/Sink",
--        ["alsa.card_name"] = "acp5x",
-+        ["alsa.card_name"] = "sof-nau8821-max",
-         ["device.profile.description"] = "Speaker",
-       }
-     },
--- 
-2.42.0
-
-
-From 9c3daaebe8aefedee01fc7fbe51c148cb12f6bd0 Mon Sep 17 00:00:00 2001
-From: Ethan Geller <ethang@valvesoftware.com>
-Date: Wed, 15 Nov 2023 14:35:00 -0800
-Subject: [PATCH 8/8] fix filter chain targeting for mic.
-
----
- src/config/policy.lua.d/30-filters-config.lua | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/config/policy.lua.d/30-filters-config.lua b/src/config/policy.lua.d/30-filters-config.lua
-index 37badd8..8e8725f 100644
---- a/src/config/policy.lua.d/30-filters-config.lua
-+++ b/src/config/policy.lua.d/30-filters-config.lua
-@@ -73,7 +73,7 @@ default_policy.filters_metadata = {
-       ["exclusive"] = false,
-       ["props"] = {
-         ["media.class"] = "Audio/Source",
--        ["alsa.card_name"] = "acp5x",
-+        ["alsa.card_name"] = "sof-nau8821-max",
-       }
-     }
-   }
--- 
-2.42.0
-
