@@ -1,0 +1,15 @@
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index dda9a30..d0ae0a4 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -1210,6 +1210,10 @@ static GList *player_list_metadata(struct avrcp_player *player)
+ 					GUINT_TO_POINTER(str_to_metadata(key)));
+ 	}
+ 
++	if (attrs == NULL)
++		return g_list_prepend(NULL,
++				GUINT_TO_POINTER(AVRCP_MEDIA_ATTRIBUTE_TITLE));
++
+ 	return attrs;
+ }
+ 

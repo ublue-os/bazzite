@@ -23,6 +23,11 @@ Patch2: power-state-adapter-property.patch
 # https://github.com/bluez/bluez/commit/3a9c637010f8dc1ba3e8382abe01065761d4f5bb
 Patch3: controllers.patch
 
+# Valve
+Patch4: AVRCP_TG_MDI_BV-04-C.patch
+Patch5: 0001-valve-bluetooth-config.patch
+Patch6: 0002-valve-bluetooth-phy.patch
+
 BuildRequires: dbus-devel >= 1.6
 BuildRequires: glib2-devel
 BuildRequires: libell-devel >= 0.37
