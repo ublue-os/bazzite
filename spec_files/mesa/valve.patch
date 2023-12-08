@@ -27,15 +27,19 @@ index 8d280340091..cfa1baf6127 100644
     struct wl_event_queue *queue;
  
     struct wl_shm *wl_shm;
-@@ -155,6 +160,8 @@ struct wsi_wl_surface {
+@@ -157,8 +166,12 @@ struct wsi_wl_surface {
  struct wsi_wl_swapchain {
     struct wsi_swapchain base;
- 
+
 +   struct wl_event_queue *queue;
 +
     struct wsi_wl_surface *wsi_wl_surface;
- 
+    struct wp_tearing_control_v1 *tearing_control;
++   struct gamescope_commit_queue_v1 *commit_queue;
++   bool can_timestamp;
+
     struct wl_callback *frame;
+
 @@ -177,10 +184,7 @@ struct wsi_wl_swapchain {
        pthread_mutex_t lock; /* protects all members */
        uint64_t max_completed;
@@ -642,17 +646,6 @@ index cfa1baf6127..d01ff68781e 100644
     struct wl_buffer *buffer;
     bool busy;
     int shm_fd;
-@@ -163,6 +169,10 @@ struct wsi_wl_swapchain {
-    struct wl_event_queue *queue;
- 
-    struct wsi_wl_surface *wsi_wl_surface;
-+   struct wp_tearing_control_v1 *tearing_control;
-+   struct wp_commit_queue_v1 *commit_queue;
-+   struct wp_commit_timer_v1 *commit_timer;
-+   bool can_timestamp;
- 
-    struct wl_callback *frame;
- 
 @@ -178,13 +188,17 @@ struct wsi_wl_swapchain {
     const uint64_t *drm_modifiers;
  
@@ -672,35 +665,25 @@ index cfa1baf6127..d01ff68781e 100644
     } present_ids;
  
     struct wsi_wl_image images[0];
-@@ -928,6 +942,15 @@ registry_handle_global(void *data, struct wl_registry *registry,
-    if (strcmp(interface, wp_presentation_interface.name) == 0) {
-       display->wp_presentation_notwrapped =
-          wl_registry_bind(registry, name, &wp_presentation_interface, 1);
-+   } else if (strcmp(interface, wp_tearing_control_v1_interface.name) == 0) {
-+      display->tearing_control_manager =
-+         wl_registry_bind(registry, name, &wp_tearing_control_manager_v1_interface, 1);
-+   } else if (strcmp(interface, wp_commit_timing_manager_v1_interface.name) == 0) {
-+      display->commit_timing_manager =
-+         wl_registry_bind(registry, name, &wp_commit_timing_manager_v1_interface, 1);
-+   } else if (strcmp(interface, wp_commit_queue_manager_v1_interface.name) == 0) {
+@@ -801,6 +944,9 @@ registry_handle_global(void *data, struct wl_registry *registry,
+    } else if (strcmp(interface, wp_tearing_control_manager_v1_interface.name) == 0) {
+       display->tearing_control_manager =
+          wl_registry_bind(registry, name, &wp_tearing_control_manager_v1_interface, 1);
++   } else if (strcmp(interface, gamescope_commit_queue_manager_v1_interface.name) == 0) {
 +      display->commit_queue_manager =
-+         wl_registry_bind(registry, name, &wp_commit_queue_manager_v1_interface, 1);
++         wl_registry_bind(registry, name, &gamescope_commit_queue_manager_v1_interface, 1);
     }
  }
- 
-@@ -954,6 +977,12 @@ wsi_wl_display_finish(struct wsi_wl_display *display)
+
+@@ -973,6 +973,8 @@ wsi_wl_display_finish(struct wsi_wl_display *display)
        zwp_linux_dmabuf_v1_destroy(display->wl_dmabuf);
     if (display->wp_presentation_notwrapped)
        wp_presentation_destroy(display->wp_presentation_notwrapped);
 +   if (display->commit_queue_manager)
-+      wp_commit_queue_manager_v1_destroy(display->commit_queue_manager);
-+   if (display->commit_timing_manager)
-+      wp_commit_timing_manager_v1_destroy(display->commit_timing_manager);
-+   if (display->tearing_control_manager)
-+      wp_tearing_control_manager_v1_destroy(display->tearing_control_manager);
++      gamescope_commit_queue_manager_v1_destroy(display->commit_queue_manager);
+    if (display->tearing_control_manager)
+       wp_tearing_control_manager_v1_destroy(display->tearing_control_manager);
     if (display->wl_display_wrapper)
-       wl_proxy_wrapper_destroy(display->wl_display_wrapper);
-    if (display->queue)
 @@ -1875,6 +1904,16 @@ wsi_wl_swapchain_acquire_next_image(struct wsi_swapchain *wsi_chain,
        else
           time_left = end_time - now;
@@ -871,25 +854,17 @@ index cfa1baf6127..d01ff68781e 100644
     wsi_swapchain_finish(&chain->base);
  }
  
-@@ -2235,6 +2337,19 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
-    if (pCreateInfo->oldSwapchain) {
-       VK_FROM_HANDLE(wsi_wl_swapchain, old_chain, pCreateInfo->oldSwapchain);
-       old_chain->wsi_wl_surface = NULL;
-+      if (old_chain->tearing_control) {
-+         wp_tearing_control_v1_destroy(old_chain->tearing_control);
-+         old_chain->tearing_control = NULL;
-+      }
+@@ -2263,6 +2365,11 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+          wp_tearing_control_v1_destroy(old_chain->tearing_control);
+          old_chain->tearing_control = NULL;
+       }
 +      if (old_chain->commit_queue) {
-+         wp_commit_queue_v1_destroy(old_chain->commit_queue);
++         gamescope_commit_queue_v1_destroy(old_chain->commit_queue);
 +         old_chain->commit_queue = NULL;
 +         old_chain->can_timestamp = false;
 +      }
-+      if (old_chain->commit_timer) {
-+         wp_commit_timer_v1_destroy(old_chain->commit_timer);
-+         old_chain->commit_timer = NULL;
-+      }
     }
- 
+
     /* Take ownership of the wsi_wl_surface */
 @@ -2337,7 +2452,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
                           chain->queue);
@@ -986,33 +961,6 @@ index d01ff68781e..5e05f0488dc 100644
  
     struct wsi_wayland *wsi_wl;
  
-@@ -171,7 +169,6 @@ struct wsi_wl_swapchain {
-    struct wsi_wl_surface *wsi_wl_surface;
-    struct wp_tearing_control_v1 *tearing_control;
-    struct wp_commit_queue_v1 *commit_queue;
--   struct wp_commit_timer_v1 *commit_timer;
-    bool can_timestamp;
- 
-    struct wl_callback *frame;
-@@ -945,9 +942,6 @@ registry_handle_global(void *data, struct wl_registry *registry,
-    } else if (strcmp(interface, wp_tearing_control_v1_interface.name) == 0) {
-       display->tearing_control_manager =
-          wl_registry_bind(registry, name, &wp_tearing_control_manager_v1_interface, 1);
--   } else if (strcmp(interface, wp_commit_timing_manager_v1_interface.name) == 0) {
--      display->commit_timing_manager =
--         wl_registry_bind(registry, name, &wp_commit_timing_manager_v1_interface, 1);
-    } else if (strcmp(interface, wp_commit_queue_manager_v1_interface.name) == 0) {
-       display->commit_queue_manager =
-          wl_registry_bind(registry, name, &wp_commit_queue_manager_v1_interface, 1);
-@@ -979,8 +973,6 @@ wsi_wl_display_finish(struct wsi_wl_display *display)
-       wp_presentation_destroy(display->wp_presentation_notwrapped);
-    if (display->commit_queue_manager)
-       wp_commit_queue_manager_v1_destroy(display->commit_queue_manager);
--   if (display->commit_timing_manager)
--      wp_commit_timing_manager_v1_destroy(display->commit_timing_manager);
-    if (display->tearing_control_manager)
-       wp_tearing_control_manager_v1_destroy(display->tearing_control_manager);
-    if (display->wl_display_wrapper)
 @@ -2032,9 +2024,6 @@ set_timestamp(struct wsi_wl_swapchain *chain)
     }
  
@@ -1041,17 +989,6 @@ index d01ff68781e..5e05f0488dc 100644
     wsi_swapchain_finish(&chain->base);
  }
  
-@@ -2346,10 +2333,6 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
-          old_chain->commit_queue = NULL;
-          old_chain->can_timestamp = false;
-       }
--      if (old_chain->commit_timer) {
--         wp_commit_timer_v1_destroy(old_chain->commit_timer);
--         old_chain->commit_timer = NULL;
--      }
-    }
- 
-    /* Take ownership of the wsi_wl_surface */
 @@ -2454,12 +2437,9 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
  
     chain->legacy_fifo_ready = true;
@@ -1342,36 +1279,6 @@ index 5e05f0488dc..5f76491e7a1 100644
  
     struct wsi_wayland *wsi_wl;
  
-@@ -168,7 +168,7 @@ struct wsi_wl_swapchain {
- 
-    struct wsi_wl_surface *wsi_wl_surface;
-    struct wp_tearing_control_v1 *tearing_control;
--   struct wp_commit_queue_v1 *commit_queue;
-+   struct gamescope_commit_queue_v1 *commit_queue;
-    bool can_timestamp;
- 
-    struct wl_callback *frame;
-@@ -942,9 +942,9 @@ registry_handle_global(void *data, struct wl_registry *registry,
-    } else if (strcmp(interface, wp_tearing_control_v1_interface.name) == 0) {
-       display->tearing_control_manager =
-          wl_registry_bind(registry, name, &wp_tearing_control_manager_v1_interface, 1);
--   } else if (strcmp(interface, wp_commit_queue_manager_v1_interface.name) == 0) {
-+   } else if (strcmp(interface, gamescope_commit_queue_manager_v1_interface.name) == 0) {
-       display->commit_queue_manager =
--         wl_registry_bind(registry, name, &wp_commit_queue_manager_v1_interface, 1);
-+         wl_registry_bind(registry, name, &gamescope_commit_queue_manager_v1_interface, 1);
-    }
- }
- 
-@@ -972,7 +972,7 @@ wsi_wl_display_finish(struct wsi_wl_display *display)
-    if (display->wp_presentation_notwrapped)
-       wp_presentation_destroy(display->wp_presentation_notwrapped);
-    if (display->commit_queue_manager)
--      wp_commit_queue_manager_v1_destroy(display->commit_queue_manager);
-+      gamescope_commit_queue_manager_v1_destroy(display->commit_queue_manager);
-    if (display->tearing_control_manager)
-       wp_tearing_control_manager_v1_destroy(display->tearing_control_manager);
-    if (display->wl_display_wrapper)
 @@ -2025,8 +2025,8 @@ set_timestamp(struct wsi_wl_swapchain *chain)
  
     timespec_from_nsec(&target_ts, target);
@@ -1392,15 +1299,6 @@ index 5e05f0488dc..5f76491e7a1 100644
  
     wsi_swapchain_finish(&chain->base);
  }
-@@ -2329,7 +2329,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
-          old_chain->tearing_control = NULL;
-       }
-       if (old_chain->commit_queue) {
--         wp_commit_queue_v1_destroy(old_chain->commit_queue);
-+         gamescope_commit_queue_v1_destroy(old_chain->commit_queue);
-          old_chain->commit_queue = NULL;
-          old_chain->can_timestamp = false;
-       }
 @@ -2438,7 +2438,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
     chain->legacy_fifo_ready = true;
     struct wsi_wl_display *dpy = chain->wsi_wl_surface->display;
@@ -1640,275 +1538,6 @@ index 72ff193d30a..996fc230673 100644
     chain->base.image_count = num_images;
     chain->conn = conn;
     chain->window = window;
--- 
-2.42.0
-
-
-From 5879b667f90bf6e25e608f439ecd8ae047acc5aa Mon Sep 17 00:00:00 2001
-From: Simon Ser <contact@emersion.fr>
-Date: Fri, 26 Aug 2022 11:35:13 +0200
-Subject: [PATCH 7/8] vulkan/wsi/wayland: add support for IMMEDIATE
-
-Use the tearing-control-unstable-v1 protocol to indicate to the
-Wayland compositor that tearing is acceptable.
-
-Signed-off-by: Simon Ser <contact@emersion.fr>
-Reviewed-by: Eric Engestrom <eric@igalia.com>
-Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/18268>
----
- meson.build                             |  2 +-
- src/egl/wayland/wayland-drm/meson.build |  1 +
- src/vulkan/wsi/meson.build              |  1 +
- src/vulkan/wsi/wsi_common_wayland.c     | 84 +++++++++++++++++++------
- 4 files changed, 67 insertions(+), 21 deletions(-)
-
-diff --git a/meson.build b/meson.build
-index 59732981b8a..9a85e99446c 100644
---- a/meson.build
-+++ b/meson.build
-@@ -1924,7 +1924,7 @@ if with_platform_wayland
-   else
-     wl_scanner_arg = 'code'
-   endif
--  dep_wl_protocols = dependency('wayland-protocols', version : '>= 1.24')
-+  dep_wl_protocols = dependency('wayland-protocols', version : '>= 1.30')
-   dep_wayland_client = dependency('wayland-client', version : '>=1.18')
-   dep_wayland_server = dependency('wayland-server', version : '>=1.18')
-   if with_egl
-diff --git a/src/egl/wayland/wayland-drm/meson.build b/src/egl/wayland/wayland-drm/meson.build
-index a6f9bf2e10b..eae91e20998 100644
---- a/src/egl/wayland/wayland-drm/meson.build
-+++ b/src/egl/wayland/wayland-drm/meson.build
-@@ -63,6 +63,7 @@ wp_protos = {
-   #'commit-timing-v1': 'staging/commit-timing/commit-timing-v1.xml',
-   'linux-dmabuf-unstable-v1': 'unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml',
-   'presentation-time': 'stable/presentation-time/presentation-time.xml',
-+  'tearing-control-v1': 'staging/tearing-control/tearing-control-v1.xml',
- }
- wp_files = {}
- foreach name, xml : wp_protos
-diff --git a/src/vulkan/wsi/meson.build b/src/vulkan/wsi/meson.build
-index 43e23ca716d..fb0fab69ac6 100644
---- a/src/vulkan/wsi/meson.build
-+++ b/src/vulkan/wsi/meson.build
-@@ -35,6 +35,7 @@ if with_platform_wayland
-   #files_vulkan_wsi += wp_files['commit-timing-v1']
-   files_vulkan_wsi += wp_files['linux-dmabuf-unstable-v1']
-   files_vulkan_wsi += wp_files['presentation-time']
-+  files_vulkan_wsi += wp_files['tearing-control-v1']
- endif
- 
- if with_platform_windows
-diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
-index 5f76491e7a1..1b49553ea8c 100644
---- a/src/vulkan/wsi/wsi_common_wayland.c
-+++ b/src/vulkan/wsi/wsi_common_wayland.c
-@@ -44,6 +44,7 @@
- #include "gamescope-commit-queue-v1-client-protocol.h"
- #include "linux-dmabuf-unstable-v1-client-protocol.h"
- #include "presentation-time-client-protocol.h"
-+#include "tearing-control-v1-client-protocol.h"
- 
- #include <util/compiler.h>
- #include <util/hash_table.h>
-@@ -106,6 +107,7 @@ struct wsi_wl_display {
-    struct wl_shm *wl_shm;
-    struct zwp_linux_dmabuf_v1 *wl_dmabuf;
-    struct zwp_linux_dmabuf_feedback_v1 *wl_dmabuf_feedback;
-+   struct wp_tearing_control_manager_v1 *tearing_control_manager;
- 
-    struct dmabuf_feedback_format_table format_table;
- 
-@@ -1170,11 +1172,6 @@ wsi_wl_surface_get_support(VkIcdSurfaceBase *surface,
-    return VK_SUCCESS;
- }
- 
--static const VkPresentModeKHR present_modes[] = {
--   VK_PRESENT_MODE_MAILBOX_KHR,
--   VK_PRESENT_MODE_FIFO_KHR,
--};
--
- static uint32_t
- wsi_wl_surface_get_min_image_count(const VkSurfacePresentModeEXT *present_mode)
- {
-@@ -1301,15 +1298,30 @@ wsi_wl_surface_get_capabilities2(VkIcdSurfaceBase *surface,
-             vk_outarray_append_typed(VkPresentModeKHR, &modes, mode) {
-                *mode = present_mode->presentMode;
-             }
--            for (unsigned i = 0; i < ARRAY_SIZE(present_modes); i++) {
--               if (present_modes[i] != present_mode->presentMode) {
--                  vk_outarray_append_typed(VkPresentModeKHR, &modes, mode) {
--                     *mode = present_modes[i];
--                  }
-+            switch (present_mode->presentMode) {
-+            case VK_PRESENT_MODE_MAILBOX_KHR:
-+               vk_outarray_append_typed(VkPresentModeKHR, &modes, mode) {
-+                  *mode = VK_PRESENT_MODE_FIFO_KHR;
-+               }
-+               break;
-+            case VK_PRESENT_MODE_FIFO_KHR:
-+               vk_outarray_append_typed(VkPresentModeKHR, &modes, mode) {
-+                  *mode = VK_PRESENT_MODE_MAILBOX_KHR;
-                }
-+               break;
-+            default:
-+               break;
-             }
-          } else {
--            compat->presentModeCount = ARRAY_SIZE(present_modes);
-+            switch (present_mode->presentMode) {
-+            case VK_PRESENT_MODE_MAILBOX_KHR:
-+            case VK_PRESENT_MODE_FIFO_KHR:
-+               compat->presentModeCount = 2;
-+               break;
-+            default:
-+               compat->presentModeCount = 1;
-+               break;
-+            }
-          }
-          break;
-       }
-@@ -1401,20 +1413,42 @@ wsi_wl_surface_get_formats2(VkIcdSurfaceBase *icd_surface,
- }
- 
- static VkResult
--wsi_wl_surface_get_present_modes(VkIcdSurfaceBase *surface,
-+wsi_wl_surface_get_present_modes(VkIcdSurfaceBase *icd_surface,
-                                  struct wsi_device *wsi_device,
-                                  uint32_t* pPresentModeCount,
-                                  VkPresentModeKHR* pPresentModes)
- {
-+   VkIcdSurfaceWayland *surface = (VkIcdSurfaceWayland *)icd_surface;
-+   struct wsi_wayland *wsi =
-+      (struct wsi_wayland *)wsi_device->wsi[VK_ICD_WSI_PLATFORM_WAYLAND];
-+
-+   struct wsi_wl_display display;
-+   if (wsi_wl_display_init(wsi, &display, surface->display, true,
-+                           wsi_device->sw))
-+      return VK_ERROR_SURFACE_LOST_KHR;
-+
-+   VkPresentModeKHR present_modes[3];
-+   uint32_t present_modes_count = 0;
-+
-+   /* The following two modes are always supported */
-+   present_modes[present_modes_count++] = VK_PRESENT_MODE_MAILBOX_KHR;
-+   present_modes[present_modes_count++] = VK_PRESENT_MODE_FIFO_KHR;
-+
-+   if (display.tearing_control_manager)
-+      present_modes[present_modes_count++] = VK_PRESENT_MODE_IMMEDIATE_KHR;
-+
-+   assert(present_modes_count <= ARRAY_SIZE(present_modes));
-+   wsi_wl_display_finish(&display);
-+
-    if (pPresentModes == NULL) {
--      *pPresentModeCount = ARRAY_SIZE(present_modes);
-+      *pPresentModeCount = present_modes_count;
-       return VK_SUCCESS;
-    }
- 
--   *pPresentModeCount = MIN2(*pPresentModeCount, ARRAY_SIZE(present_modes));
-+   *pPresentModeCount = MIN2(*pPresentModeCount, present_modes_count);
-    typed_memcpy(pPresentModes, present_modes, *pPresentModeCount);
- 
--   if (*pPresentModeCount < ARRAY_SIZE(present_modes))
-+   if (*pPresentModeCount < present_modes_count)
-       return VK_INCOMPLETE;
-    else
-       return VK_SUCCESS;
-@@ -2253,6 +2287,8 @@ wsi_wl_swapchain_chain_free(struct wsi_wl_swapchain *chain,
- {
-    if (chain->frame)
-       wl_callback_destroy(chain->frame);
-+   if (chain->tearing_control)
-+      wp_tearing_control_v1_destroy(chain->tearing_control);
-    if (chain->wsi_wl_surface)
-       chain->wsi_wl_surface->chain = NULL;
- 
-@@ -2328,11 +2364,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
-          wp_tearing_control_v1_destroy(old_chain->tearing_control);
-          old_chain->tearing_control = NULL;
-       }
--      if (old_chain->commit_queue) {
--         gamescope_commit_queue_v1_destroy(old_chain->commit_queue);
--         old_chain->commit_queue = NULL;
--         old_chain->can_timestamp = false;
--      }
-+
-    }
- 
-    /* Take ownership of the wsi_wl_surface */
-@@ -2343,6 +2375,18 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
-    if (result != VK_SUCCESS)
-       goto fail;
- 
-+   if (chain->base.present_mode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
-+      chain->tearing_control =
-+         wp_tearing_control_manager_v1_get_tearing_control(wsi_wl_surface->display->tearing_control_manager,
-+                                                           wsi_wl_surface->surface);
-+      if (!chain->tearing_control) {
-+         result = VK_ERROR_OUT_OF_HOST_MEMORY;
-+         goto fail;
-+      }
-+      wp_tearing_control_v1_set_presentation_hint(chain->tearing_control,
-+                                                          WP_TEARING_CONTROL_V1_PRESENTATION_HINT_ASYNC);
-+   }
-+
-    enum wsi_wl_buffer_type buffer_type;
-    struct wsi_base_image_params *image_params = NULL;
-    struct wsi_cpu_image_params cpu_image_params;
--- 
-2.42.0
-
-
-From 8aee550e8d1d92db188ced660911b21131eefcf8 Mon Sep 17 00:00:00 2001
-From: Friedrich Vock <friedrich.vock@gmx.de>
-Date: Fri, 1 Dec 2023 15:18:44 +0100
-Subject: [PATCH 8/8] radv: Enable compute dispatch tunneling
-
-Compute tunneling can considerably lower the latency of high-priority
-compute work. Enabling it is beneficial in cases where high-priority
-work is dispatched while the GPU is already busy with other work (e.g.
-rendering on GFX). This is the case in VR compositors that dispatch
-latency-sensitive compositing work to ACE while GFX is busy rendering
-the next frame.
-
-Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26462>
----
- src/amd/vulkan/radv_device.c   | 7 +++++++
- src/amd/vulkan/si_cmd_buffer.c | 2 ++
- 2 files changed, 9 insertions(+)
-
-diff --git a/src/amd/vulkan/radv_device.c b/src/amd/vulkan/radv_device.c
-index 71929671830..92ab8134066 100644
---- a/src/amd/vulkan/radv_device.c
-+++ b/src/amd/vulkan/radv_device.c
-@@ -904,6 +904,13 @@ radv_CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCr
-        */
-       device->dispatch_initiator |= S_00B800_ORDER_MODE(1);
-    }
-+   if (device->physical_device->rad_info.gfx_level >= GFX10) {
-+      /* Enable asynchronous compute tunneling. The KMD restricts this feature
-+       * to high-priority compute queues, so setting the bit on any other queue
-+       * is a no-op. PAL always sets this bit as well.
-+       */
-+      device->dispatch_initiator |= S_00B800_TUNNEL_ENABLE(1);
-+   }
- 
-    /* Disable partial preemption for task shaders.
-     * The kernel may not support preemption, but PAL always sets this bit,
-diff --git a/src/amd/vulkan/si_cmd_buffer.c b/src/amd/vulkan/si_cmd_buffer.c
-index 7da3141edd1..9969fe5afbe 100644
---- a/src/amd/vulkan/si_cmd_buffer.c
-+++ b/src/amd/vulkan/si_cmd_buffer.c
-@@ -113,6 +113,8 @@ si_emit_compute(struct radv_device *device, struct radeon_cmdbuf *cs)
-       radeon_emit(cs, 0); /* R_00B894_COMPUTE_USER_ACCUM_1 */
-       radeon_emit(cs, 0); /* R_00B898_COMPUTE_USER_ACCUM_2 */
-       radeon_emit(cs, 0); /* R_00B89C_COMPUTE_USER_ACCUM_3 */
-+
-+      radeon_set_sh_reg(cs, R_00B9F4_COMPUTE_DISPATCH_TUNNEL, 0);
-    }
- 
-    /* This register has been moved to R_00CD20_COMPUTE_MAX_WAVE_ID
 -- 
 2.42.0
 
