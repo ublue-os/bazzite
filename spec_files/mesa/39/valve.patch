@@ -1,7 +1,7 @@
 From 722c3ec3202ee3c8f7055fc04d40d431d45b05cd Mon Sep 17 00:00:00 2001
 From: Derek Foreman <derek.foreman@collabora.com>
 Date: Wed, 20 Sep 2023 10:40:33 -0500
-Subject: [PATCH 1/7] vulkan/wsi/wayland: refactor wayland dispatch code
+Subject: [PATCH 1/8] vulkan/wsi/wayland: refactor wayland dispatch code
 
 We currently have two similar but different bits of code to dispatch
 wayland event queues. Pull out as much common code as possible.
@@ -568,7 +568,7 @@ index 8d280340091..cfa1baf6127 100644
 From 42c744d99ddd339d617851ac25fe625aa0f65711 Mon Sep 17 00:00:00 2001
 From: Derek Foreman <derek.foreman@collabora.com>
 Date: Fri, 10 Nov 2023 07:25:35 -0600
-Subject: [PATCH 2/7] vulkan/wsi/wayland: Use commit_timing/commit_queue
+Subject: [PATCH 2/8] vulkan/wsi/wayland: Use commit_timing/commit_queue
  protocol for FIFO
 
 The commit_timing protocol allows us to set a presentation timestamp,
@@ -916,7 +916,7 @@ index cfa1baf6127..d01ff68781e 100644
 From f40957ad3b4d0ee71a3c1f0728d9e44efde83e4a Mon Sep 17 00:00:00 2001
 From: Simon Ser <contact@emersion.fr>
 Date: Sat, 25 Nov 2023 16:25:58 +0100
-Subject: [PATCH 3/7] hack: rip out commit-timing-v1
+Subject: [PATCH 3/8] hack: rip out commit-timing-v1
 
 ---
  src/egl/wayland/wayland-drm/meson.build |  6 +++---
@@ -1073,7 +1073,7 @@ index d01ff68781e..5e05f0488dc 100644
 From 5bac67e0cc8c36ff1fc7836062790d6d96de00d4 Mon Sep 17 00:00:00 2001
 From: Joshua Ashton <joshua@froggi.es>
 Date: Wed, 29 Nov 2023 11:06:51 +0000
-Subject: [PATCH 4/7] wsi: Use vendored gamescope-commit-queue-v1 protocol
+Subject: [PATCH 4/8] wsi: Use vendored gamescope-commit-queue-v1 protocol
 
 ---
  .../wayland-drm/gamescope-commit-queue-v1.xml | 181 ++++++++++++++++++
@@ -1417,7 +1417,7 @@ index 5e05f0488dc..5f76491e7a1 100644
 From 4aa431b174c37b3bc0748ddc9bd2ca9c808881e2 Mon Sep 17 00:00:00 2001
 From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
 Date: Fri, 14 Jan 2022 15:58:45 +0100
-Subject: [PATCH 5/7] STEAMOS: radv: min image count override for FH5
+Subject: [PATCH 5/8] STEAMOS: radv: min image count override for FH5
 
 Otherwise in combination with the vblank time reservation in
 gamescope the game could get stuck in low power states.
@@ -1446,7 +1446,7 @@ index 9434dba1e3f..3c3ae562eb9 100644
 From 88327ee8507a323f48e43eeb87cf1f102d04f174 Mon Sep 17 00:00:00 2001
 From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
 Date: Mon, 21 Feb 2022 18:43:54 +0100
-Subject: [PATCH 6/7] STEAMOS: Dynamic swapchain override for gamescope limiter
+Subject: [PATCH 6/8] STEAMOS: Dynamic swapchain override for gamescope limiter
 
 ---
  src/loader/loader_dri3_helper.c | 42 +++++++++++++++++++++++++++++++--
@@ -1647,7 +1647,7 @@ index 72ff193d30a..996fc230673 100644
 From 5879b667f90bf6e25e608f439ecd8ae047acc5aa Mon Sep 17 00:00:00 2001
 From: Simon Ser <contact@emersion.fr>
 Date: Fri, 26 Aug 2022 11:35:13 +0200
-Subject: [PATCH 7/7] vulkan/wsi/wayland: add support for IMMEDIATE
+Subject: [PATCH 7/8] vulkan/wsi/wayland: add support for IMMEDIATE
 
 Use the tearing-control-unstable-v1 protocol to indicate to the
 Wayland compositor that tearing is acceptable.
@@ -1856,6 +1856,59 @@ index 5f76491e7a1..1b49553ea8c 100644
     enum wsi_wl_buffer_type buffer_type;
     struct wsi_base_image_params *image_params = NULL;
     struct wsi_cpu_image_params cpu_image_params;
+-- 
+2.42.0
+
+
+From 8aee550e8d1d92db188ced660911b21131eefcf8 Mon Sep 17 00:00:00 2001
+From: Friedrich Vock <friedrich.vock@gmx.de>
+Date: Fri, 1 Dec 2023 15:18:44 +0100
+Subject: [PATCH 8/8] radv: Enable compute dispatch tunneling
+
+Compute tunneling can considerably lower the latency of high-priority
+compute work. Enabling it is beneficial in cases where high-priority
+work is dispatched while the GPU is already busy with other work (e.g.
+rendering on GFX). This is the case in VR compositors that dispatch
+latency-sensitive compositing work to ACE while GFX is busy rendering
+the next frame.
+
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26462>
+---
+ src/amd/vulkan/radv_device.c   | 7 +++++++
+ src/amd/vulkan/si_cmd_buffer.c | 2 ++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/src/amd/vulkan/radv_device.c b/src/amd/vulkan/radv_device.c
+index 71929671830..92ab8134066 100644
+--- a/src/amd/vulkan/radv_device.c
++++ b/src/amd/vulkan/radv_device.c
+@@ -904,6 +904,13 @@ radv_CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCr
+        */
+       device->dispatch_initiator |= S_00B800_ORDER_MODE(1);
+    }
++   if (device->physical_device->rad_info.gfx_level >= GFX10) {
++      /* Enable asynchronous compute tunneling. The KMD restricts this feature
++       * to high-priority compute queues, so setting the bit on any other queue
++       * is a no-op. PAL always sets this bit as well.
++       */
++      device->dispatch_initiator |= S_00B800_TUNNEL_ENABLE(1);
++   }
+ 
+    /* Disable partial preemption for task shaders.
+     * The kernel may not support preemption, but PAL always sets this bit,
+diff --git a/src/amd/vulkan/si_cmd_buffer.c b/src/amd/vulkan/si_cmd_buffer.c
+index 7da3141edd1..9969fe5afbe 100644
+--- a/src/amd/vulkan/si_cmd_buffer.c
++++ b/src/amd/vulkan/si_cmd_buffer.c
+@@ -113,6 +113,8 @@ si_emit_compute(struct radv_device *device, struct radeon_cmdbuf *cs)
+       radeon_emit(cs, 0); /* R_00B894_COMPUTE_USER_ACCUM_1 */
+       radeon_emit(cs, 0); /* R_00B898_COMPUTE_USER_ACCUM_2 */
+       radeon_emit(cs, 0); /* R_00B89C_COMPUTE_USER_ACCUM_3 */
++
++      radeon_set_sh_reg(cs, R_00B9F4_COMPUTE_DISPATCH_TUNNEL, 0);
+    }
+ 
+    /* This register has been moved to R_00CD20_COMPUTE_MAX_WAVE_ID
 -- 
 2.42.0
 
