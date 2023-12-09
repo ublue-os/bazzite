@@ -85,6 +85,43 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
         /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
 
+# Update packages that commonly cause build issues.
+RUN rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        vulkan-loader \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        gnutls \
+        || true
+
+# Install Valve's patched Mesa, Pipewire and Bluez
+RUN rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+        mesa-filesystem \
+        mesa-dri-drivers \
+        mesa-libEGL \
+        mesa-libgbm \
+        mesa-libGL \
+        mesa-libglapi \
+        mesa-vulkan-drivers \
+        mesa-libOSMesa \
+        pipewire \
+        pipewire-alsa \
+        pipewire-gstreamer \
+        pipewire-jack-audio-connection-kit \
+        pipewire-jack-audio-connection-kit-libs \
+        pipewire-libs \
+        pipewire-pulseaudio \
+        pipewire-utils \
+        bluez \
+        bluez-cups \
+        bluez-libs \
+        bluez-obexd
+
 # Remove unneeded packages
 RUN rpm-ostree override remove \
         ublue-os-update-services \
@@ -140,31 +177,8 @@ RUN rpm-ostree install \
     wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.service -O /usr/lib/systemd/system/btrfs-dedup@.service && \
     wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.timer -O /usr/lib/systemd/system/btrfs-dedup@.timer
 
-# Install Valve's patched Pipewire
-RUN rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        pipewire \
-        pipewire-alsa \
-        pipewire-gstreamer \
-        pipewire-jack-audio-connection-kit \
-        pipewire-jack-audio-connection-kit-libs \
-        pipewire-libs \
-        pipewire-pulseaudio \
-        pipewire-utils
-
 # Install Steam & Lutris, plus supporting packages
-RUN rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        vulkan-loader \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        gnutls \
-        || true && \
-    rpm-ostree install \
+RUN rpm-ostree install \
         vulkan-loader.i686 \
         alsa-lib.i686 \
         fontconfig.i686 \
@@ -283,25 +297,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-initial-setup && \
     systemctl enable dconf-update.service \
 ; fi
-
-# Install gamescope-limiter patched Mesa
-RUN rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        mesa-filesystem \
-        mesa-dri-drivers \
-        mesa-libEGL \
-        mesa-libEGL-devel \
-        mesa-libgbm \
-        mesa-libGL \
-        mesa-libglapi \
-        mesa-vulkan-drivers \
-        mesa-libOSMesa \
-        https://download.copr.fedorainfracloud.org/results/kylegospo/bazzite-multilib/fedora-39-x86_64/06731179-bluez/bluez-5.70-1.fc39.bazzite.0.0.git.1841.c8af5e29.x86_64.rpm \
-        https://download.copr.fedorainfracloud.org/results/kylegospo/bazzite-multilib/fedora-39-x86_64/06731179-bluez/bluez-cups-5.70-1.fc39.bazzite.0.0.git.1841.c8af5e29.x86_64.rpm \
-        https://download.copr.fedorainfracloud.org/results/kylegospo/bazzite-multilib/fedora-39-x86_64/06731179-bluez/bluez-libs-5.70-1.fc39.bazzite.0.0.git.1841.c8af5e29.x86_64.rpm \
-        https://download.copr.fedorainfracloud.org/results/kylegospo/bazzite-multilib/fedora-39-x86_64/06731179-bluez/bluez-obexd-5.70-1.fc39.bazzite.0.0.git.1841.c8af5e29.x86_64.rpm \
-        https://download.copr.fedorainfracloud.org/results/kylegospo/bazzite-multilib/fedora-39-i386/06731179-bluez/bluez-libs-5.70-1.fc39.bazzite.0.0.git.1841.c8af5e29.i686.rpm
 
 # Install Gamescope, ROCM, and Waydroid on non-Nvidia images
 RUN rpm-ostree install \
