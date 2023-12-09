@@ -6,7 +6,7 @@
 
 Name:    bluez
 Version: 5.70
-Release: 1%{?dist}.bazzite.{{{ git_dir_version }}}
+Release: 5%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: Bluetooth utilities
 License: GPLv2+
 URL:     https://www.bluez.org/
@@ -19,14 +19,14 @@ Source1: bluez.gitignore
 #Patch1: 0001-obex-Use-GLib-helper-function-to-manipulate-paths.patch
 # https://lore.kernel.org/linux-bluetooth/20220901110719.176944-1-hadess@hadess.net/T/#m9c08d004cd5422783ee1d93154f42303bba9169f
 Patch2: power-state-adapter-property.patch
-# https://github.com/bluez/bluez/issues/614
-# https://github.com/bluez/bluez/commit/3a9c637010f8dc1ba3e8382abe01065761d4f5bb
-Patch3: controllers.patch
+# Upstream backport
+Patch3: rhbz2247548.patch
+Patch4: CVE-2023-45866.patch
 
 # Valve
-Patch4: AVRCP_TG_MDI_BV-04-C.patch
-Patch5: 0001-valve-bluetooth-config.patch
-Patch6: 0002-valve-bluetooth-phy.patch
+Patch5: AVRCP_TG_MDI_BV-04-C.patch
+Patch6: 0001-valve-bluetooth-config.patch
+Patch7: 0002-valve-bluetooth-phy.patch
 
 BuildRequires: dbus-devel >= 1.6
 BuildRequires: glib2-devel
@@ -161,6 +161,8 @@ autoreconf -vif
 %endif
            --enable-sixaxis --enable-cups --enable-nfc --enable-mesh \
            --enable-hid2hci --enable-testing --enable-experimental \
+           --enable-bap --enable-bass --enable-mcp --enable-micp \
+           --enable-csip --enable-vcp \
            --with-systemdsystemunitdir=%{_unitdir} \
            --with-systemduserunitdir=%{_userunitdir}
 
@@ -204,6 +206,9 @@ mkdir -p $RPM_BUILD_ROOT/%{_libdir}/bluetooth/
 #copy bluetooth config file and setup auto enable
 install -D -p -m0644 src/main.conf ${RPM_BUILD_ROOT}/etc/bluetooth/main.conf
 install -D -p -m0644 mesh/mesh-main.conf ${RPM_BUILD_ROOT}/etc/bluetooth/mesh-main.conf
+install -D -p -m0644 profiles/input/input.conf ${RPM_BUILD_ROOT}/etc/bluetooth/input.conf
+install -D -p -m0644 profiles/network/network.conf ${RPM_BUILD_ROOT}/etc/bluetooth/network.conf
+
 sed -i 's/#\[Policy\]$/\[Policy\]/; s/#AutoEnable=false/AutoEnable=true/' ${RPM_BUILD_ROOT}/%{_sysconfdir}/bluetooth/main.conf
 
 # Install the HCI emulator, useful for testing
@@ -241,8 +246,12 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %files
 %license COPYING
 %doc AUTHORS ChangeLog
-%dir %{_sysconfdir}/bluetooth
+# bluetooth.service expects configuraton directory to be read only
+# https://github.com/bluez/bluez/issues/329#issuecomment-1102459104
+%attr(0555, root, root) %dir %{_sysconfdir}/bluetooth
 %config(noreplace) %{_sysconfdir}/bluetooth/main.conf
+%config(noreplace) %{_sysconfdir}/bluetooth/input.conf
+%config(noreplace) %{_sysconfdir}/bluetooth/network.conf
 %{_bindir}/avinfo
 %{_bindir}/bluemoon
 %{_bindir}/bluetoothctl
@@ -265,7 +274,9 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %dir %{_libexecdir}/bluetooth
 %{_libexecdir}/bluetooth/bluetoothd
 %{_libdir}/bluetooth/
-%{_localstatedir}/lib/bluetooth
+# bluetooth.service expects StateDirectoryMode to be 700.
+%attr(0700, root, root) %dir %{_localstatedir}/lib/bluetooth
+%dir %{_localstatedir}/lib/bluetooth/mesh
 %{_datadir}/dbus-1/system.d/bluetooth.conf
 %{_datadir}/dbus-1/system-services/org.bluez.service
 %{_unitdir}/bluetooth.service
@@ -331,6 +342,21 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_userunitdir}/obex.service
 
 %changelog
+* Thu Dec 07 2023 Peter Robinson <pbrobinson@fedoraproject.org> - 5.70-5
+- Install default input.conf/network.conf
+
+* Thu Dec 07 2023 Peter Robinson <pbrobinson@fedoraproject.org> - 5.70-4
+- Add mitigation for CVE-2023-45866
+
+* Sun Nov 19 2023 Peter Robinson <pbrobinson@fedoraproject.org> - 5.70-3
+- Fix some input devices disconnecting right after connecting
+- Explicitly enable Bluetooth BAP/BASS/CSIP/MCP/MICP/VCP profiles
+
+* Mon Oct 02 2023 Sandro Bonazzola <sbonazzo@redhat.com> - 5.70-2
+- Fix access modes for /etc/bluetooth and /var/lib/bluetooth as expected
+  by bluetooth.service.
+- Resolves: fedora#2144504
+
 * Fri Sep 29 2023 Peter Robinson <pbrobinson@fedoraproject.org> - 5.70-1
 - Update to 5.70
 - Enable some Bluetooth LE features

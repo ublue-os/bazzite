@@ -1,5 +1,20 @@
+From 3a9c637010f8dc1ba3e8382abe01065761d4f5bb Mon Sep 17 00:00:00 2001
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Date: Tue, 10 Oct 2023 12:38:29 -0700
+Subject: [PATCH] input: Fix .device_probe failing if SDP record is not found
+
+Due to changes introduced by 67a26abe53bf
+("profile: Add probe_on_discover flag") profiles may get probed when
+their profile UUID are discovered, rather than resolved, which means
+the SDP record may not be available.
+
+Fixes: https://github.com/bluez/bluez/issues/614
+---
+ profiles/input/device.c | 182 +++++++++++++++++++---------------------
+ 1 file changed, 84 insertions(+), 98 deletions(-)
+
 diff --git a/profiles/input/device.c b/profiles/input/device.c
-index e2ac6ea60..4a50ea992 100644
+index e2ac6ea603..4a50ea9921 100644
 --- a/profiles/input/device.c
 +++ b/profiles/input/device.c
 @@ -60,7 +60,7 @@ struct input_device {
@@ -30,7 +45,7 @@ index e2ac6ea60..4a50ea992 100644
  						struct hidp_connadd_req *req)
  {
  	sdp_data_t *d;
-@@ -817,36 +818,40 @@ invalid_desc:
+@@ -817,36 +818,40 @@ static int extract_hid_desc_data(sdp_record_t *rec,
  	return -EINVAL;
  }
  
