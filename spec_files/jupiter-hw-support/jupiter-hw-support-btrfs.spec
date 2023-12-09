@@ -12,8 +12,8 @@ URL:            https://github.com/ublue-os/bazzite
 Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/%{packagever}/%{packagename}-%{packagever}.tar.gz
 Patch0:         fedora.patch
 Patch1:         selinux.patch
-Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/v1.2.6.20231104/files/usr/lib/hwsupport/steamos-automount.sh.patch.old.20231104103824.20231031.1000
-Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/v1.2.6.20231104/files/usr/lib/hwsupport/format-device.sh.patch.old.20230922091429.20230915.100
+Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch.old.20231126125001.20231122.1
+Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/format-device.sh.patch.old.20230922091429.20230915.100
 Patch4:         user.patch
 Patch5:         bazzite-btrfs.patch
 Patch6:         systemd-run.patch
