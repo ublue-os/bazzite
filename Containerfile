@@ -98,7 +98,9 @@ RUN rpm-ostree override replace \
         || true
 
 # Install Valve's patched Mesa, Pipewire and Bluez
-RUN rpm-ostree override replace \
+RUN rpm-ostree override remove \
+        mesa-va-drivers-freeworld && \
+    rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         mesa-filesystem \
@@ -109,6 +111,7 @@ RUN rpm-ostree override replace \
         mesa-libglapi \
         mesa-vulkan-drivers \
         mesa-libOSMesa \
+        mesa-va-drivers \
         pipewire \
         pipewire-alsa \
         pipewire-gstreamer \
