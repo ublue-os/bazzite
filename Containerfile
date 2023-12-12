@@ -183,6 +183,7 @@ RUN rpm-ostree install \
 # Install Steam & Lutris, plus supporting packages
 RUN rpm-ostree install \
         vulkan-loader.i686 \
+        mesa-vulkan-drivers.i686 \
         alsa-lib.i686 \
         fontconfig.i686 \
         gtk2.i686 \
