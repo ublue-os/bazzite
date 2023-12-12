@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+FLATPAK_LIST=$(/usr/bin/flatpak list --app --columns=application)
+if grep -q "org.gnome.Prompt.Devel" <<< $FLATPAK_LIST; then
+  /usr/bin/flatpak run org.gnome.Prompt.Devel -- "$@"
+elif grep -q "org.gnome.Prompt" <<< $FLATPAK_LIST; then
+  /usr/bin/flatpak run org.gnome.Prompt -- "$@"
+else
+  /usr/bin/gnome-terminal -- "$@"
+fi
