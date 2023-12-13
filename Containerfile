@@ -284,6 +284,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-user-theme \
         gnome-shell-extension-gsconnect \
         nautilus-gsconnect \
+        nautilus-open-any-terminal \
         gnome-shell-extension-system76-scheduler \
         gnome-shell-extension-compiz-windows-effect \
         gnome-shell-extension-just-perfection \
@@ -298,6 +299,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-classic-session \
         gnome-tour \
         gnome-extensions-app \
+        gnome-terminal-nautilus \
         gnome-initial-setup && \
     systemctl enable dconf-update.service \
 ; fi
