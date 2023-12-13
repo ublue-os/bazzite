@@ -64,10 +64,10 @@ else
   gsettings set org.gnome.nautilus.preferences show-create-link true
 
   echo 'Switching to Prompt in Nautilus'
-  gsettings set com.github.stunkymonkey.nautilus-open-any-terminal terminal prompt
-  gsettings set com.github.stunkymonkey.nautilus-open-any-terminal keybindings '<Ctrl><Alt>t'
-  gsettings set com.github.stunkymonkey.nautilus-open-any-terminal new-tab false
-  gsettings set com.github.stunkymonkey.nautilus-open-any-terminal flatpak system
+  #gsettings set com.github.stunkymonkey.nautilus-open-any-terminal terminal prompt
+  #gsettings set com.github.stunkymonkey.nautilus-open-any-terminal keybindings '<Ctrl><Alt>t'
+  #gsettings set com.github.stunkymonkey.nautilus-open-any-terminal new-tab false
+  #gsettings set com.github.stunkymonkey.nautilus-open-any-terminal flatpak system
 
   echo 'Installing Gradience presets'
   mkdir -p "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/"
