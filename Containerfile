@@ -123,7 +123,8 @@ RUN rpm-ostree override remove \
         bluez \
         bluez-cups \
         bluez-libs \
-        bluez-obexd
+        bluez-obexd \
+        xorg-x11-server-Xwayland
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
