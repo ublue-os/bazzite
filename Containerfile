@@ -95,6 +95,17 @@ RUN rpm-ostree override replace \
     --experimental \
     --from repo=updates \
         gnutls \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        glib2 \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        atk \
+        at-spi2-atk \
         || true
 
 # Install Valve's patched Mesa, Pipewire and Bluez
@@ -183,6 +194,8 @@ RUN rpm-ostree install \
 
 # Install Steam & Lutris, plus supporting packages
 RUN rpm-ostree install \
+        at-spi2-core.i686 \
+        atk.i686 \
         vulkan-loader.i686 \
         mesa-vulkan-drivers.i686 \
         alsa-lib.i686 \
