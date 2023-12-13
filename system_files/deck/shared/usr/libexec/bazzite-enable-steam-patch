@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-systemctl enable --now steam-patch@$(systemd-escape $1).service
-systemctl enable --now restart-steam-patch-on-boot.service
