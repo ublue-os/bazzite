@@ -322,6 +322,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 RUN rpm-ostree install \
         gamescope.x86_64 \
         gamescope-libs.i686 \
+        gamescope-shaders \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo \
