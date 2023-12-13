@@ -6,7 +6,7 @@
 Summary: X.Org X11 Protocol headers
 Name: xorg-x11-proto-devel
 %global xorg_version 2023.2
-Version: %{xorg_version}.vrr.1
+Version: %{xorg_version}.bazzite.{{{ git_dir_version }}}
 Release: 2%{?dist}
 License: MIT
 URL: https://www.x.org

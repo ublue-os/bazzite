@@ -1,6 +1,6 @@
 Name:           wayland-protocols
 %global         wayland_version 1.32
-Version:        %{wayland_version}.vrr.1
+Version:        %{wayland_version}.bazzite.{{{ git_dir_version }}}
 Release:        2%{?dist}
 Summary:        Wayland protocols that adds functionality not available in the core protocol
 

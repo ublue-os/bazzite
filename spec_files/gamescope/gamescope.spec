@@ -2,7 +2,7 @@
 
 Name:           gamescope
 Version:        3.13.18
-Release:    	1%{?dist}
+Release:    	1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
