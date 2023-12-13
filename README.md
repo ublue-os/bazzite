@@ -276,7 +276,7 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 Bazzite is a community effort and wouldn't exist without everyone's support. Below are some of the people who've helped us along the way:
 
-- [rei.svg](https://discord.com/users/rei.svg) - For creating our logo and overall branding.
+- [rei.svg](https://github.com/reisvg) - For creating our logo and overall branding.
 - [evlaV](https://gitlab.com/evlaV) - For making Valve's code available and for being [this person](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out. It's our Nix-based cousin.
