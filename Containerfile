@@ -435,7 +435,6 @@ RUN rpm-ostree install \
     ds-inhibit \
     steam_notif_daemon \
     ryzenadj \
-    steam-patch \
     sdgyrodsu \
     sddm-sugar-steamOS \
     ibus-pinyin \
