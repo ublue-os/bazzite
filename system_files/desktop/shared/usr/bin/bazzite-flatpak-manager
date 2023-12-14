@@ -21,22 +21,30 @@ fi
 # Ensure Flathub is enabled
 flatpak remote-modify --system --enable flathub
 
-# Lists of flatpaks
+# Installed flatpaks
 FLATPAK_LIST=$(flatpak list --columns=application)
-INSTALL_LIST=$(cat /usr/share/ublue-os/bazzite/flatpak/install)
-REMOVE_LIST=$(cat /usr/share/ublue-os/bazzite/flatpak/remove)
+
+# Flatpak list files
+INSTALL_LIST_FILE="/usr/share/ublue-os/bazzite/flatpak/install"
+REMOVE_LIST_FILE="/usr/share/ublue-os/bazzite/flatpak/remove"
 
 # Install flatpaks in list
-if [[ -n $INSTALL_LIST ]]; then
-  if ! flatpak install --system --noninteractive flathub ${INSTALL_LIST[@]}; then
-    # exit on error
-    exit 1
+if [[ -f $INSTALL_LIST_FILE ]]; then
+  INSTALL_LIST=$(echo $FLATPAK_LIST | grep -vf - $INSTALL_LIST_FILE)
+  if [[ -n $INSTALL_LIST ]]; then
+    if ! flatpak install --system --noninteractive flathub ${INSTALL_LIST[@]}; then
+      # exit on error
+      exit 1
+    fi
   fi
 fi
 
 # Remove flatpaks in list
-if [[ -n $REMOVE_LIST ]]; then
-  flatpak remove --system --noninteractive ${REMOVE_LIST[@]}
+if [[ -f $REMOVE_LIST_FILE ]]; then
+  REMOVE_LIST=$(echo $FLATPAK_LIST | grep -f - $REMOVE_LIST_FILE)
+  if [[ -n $REMOVE_LIST ]]; then
+    flatpak remove --system --noninteractive ${REMOVE_LIST[@]}
+  fi
 fi
 
 mkdir -p /etc/bazzite
