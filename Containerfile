@@ -53,6 +53,47 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://pkgs.tailscale.com/stable/fedora/tailscale.repo -O /etc/yum.repos.d/tailscale.repo && \
     sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo
 
+# Update packages that commonly cause build issues.
+RUN rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        vulkan-loader \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        gnutls \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        glib2 \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        atk \
+        at-spi2-atk \
+        || true
+
+# Install gamescope-limiter patched Mesa
+RUN rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+        mesa-filesystem \
+        mesa-dri-drivers \
+        mesa-libEGL \
+        mesa-libEGL-devel \
+        mesa-libgbm \
+        mesa-libGL \
+        mesa-libglapi \
+        mesa-vulkan-drivers \
+        mesa-libOSMesa \
+        bluez \
+        bluez-cups \
+        bluez-libs \
+        bluez-obexd
+
 # Remove unneeded packages
 RUN rpm-ostree override remove \
         ublue-os-update-services \
@@ -252,25 +293,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-initial-setup && \
     systemctl enable dconf-update.service \
 ; fi
-
-# Install gamescope-limiter patched Mesa
-RUN rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        mesa-filesystem \
-        mesa-dri-drivers \
-        mesa-libEGL \
-        mesa-libEGL-devel \
-        mesa-libgbm \
-        mesa-libGL \
-        mesa-libglapi \
-        mesa-vulkan-drivers \
-        mesa-libOSMesa \
-        https://download.copr.fedorainfracloud.org/results/kylegospo/bazzite-multilib/fedora-39-x86_64/06620403-bluez/bluez-5.70-1.fc39.bazzite.0.0.git.1708.6d2818cf.x86_64.rpm \
-        https://download.copr.fedorainfracloud.org/results/kylegospo/bazzite-multilib/fedora-39-x86_64/06620403-bluez/bluez-cups-5.70-1.fc39.bazzite.0.0.git.1708.6d2818cf.x86_64.rpm \
-        https://download.copr.fedorainfracloud.org/results/kylegospo/bazzite-multilib/fedora-39-x86_64/06620403-bluez/bluez-libs-5.70-1.fc39.bazzite.0.0.git.1708.6d2818cf.x86_64.rpm \
-        https://download.copr.fedorainfracloud.org/results/kylegospo/bazzite-multilib/fedora-39-x86_64/06620403-bluez/bluez-obexd-5.70-1.fc39.bazzite.0.0.git.1708.6d2818cf.x86_64.rpm \
-        https://download.copr.fedorainfracloud.org/results/kylegospo/bazzite-multilib/fedora-39-i386/06620403-bluez/bluez-libs-5.70-1.fc39.bazzite.0.0.git.1708.6d2818cf.i686.rpm
 
 # Install Gamescope, ROCM, and Waydroid on non-Nvidia images
 RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
