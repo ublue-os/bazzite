@@ -225,8 +225,8 @@ enable-vfio:
     CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
     VENDOR_KARG="unset"
     if [[ ${VIRT_TEST} == *kvm.report_ignored_msrs* ]]; then
-        echo 'add_drivers+=" vfio vfio_iommu_type1 vfio-pci "' | sudo tee /etc/dracut.conf.d/vfio.conf
-        sudo touch /etc/bazzite/initramfs/rebuild
+      echo 'add_drivers+=" vfio vfio_iommu_type1 vfio-pci "' | sudo tee /etc/dracut.conf.d/vfio.conf
+      sudo touch /etc/bazzite/initramfs/rebuild
       if [[ ${CPU_VENDOR} == "AuthenticAMD" ]]; then
         VENDOR_KARG="amd_iommu=on"
       elif [[ ${CPU_VENDOR} == "GenuineIntel" ]]; then
