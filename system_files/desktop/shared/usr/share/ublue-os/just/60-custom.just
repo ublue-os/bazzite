@@ -203,11 +203,19 @@ add-user-to-input-group:
 
 # Enable Virtualization and add workaround for a specific windows VM crash
 enable-virtualization:
-    echo "Installing QEMU and virt-manager..."
-    rpm-ostree install virt-manager edk2-ovmf qemu
-    rpm-ostree kargs \
-    --append-if-missing="kvm.ignore_msrs=1" \
-    --append-if-missing="kvm.report_ignored_msrs=0"
+    virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
+    if [[ -z ${virt_test} ]]; then
+      echo "Installing QEMU and virt-manager..."
+      rpm-ostree install virt-manager edk2-ovmf qemu
+      rpm-ostree kargs \
+      --append-if-missing="kvm.ignore_msrs=1" \
+      --append-if-missing="kvm.report_ignored_msrs=0"
+      echo 'Please re-run "ujust enable-virtualization" after the reboot to finish setup'
+    else
+      echo "Enabling libvirtd service"
+      sudo systemctl enable --now libvirtd
+      echo "libvirtd enabled! If virt-manager says libvirtd.sock is not available after a big update, re-run this command."
+    fi
 
 # Enable VFIO on the system if virtualization is enabled
 enable-vfio:
