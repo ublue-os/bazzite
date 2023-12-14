@@ -27,6 +27,9 @@ class AddToSteamExtension(GObject.GObject, Nautilus.MenuProvider):
         if file.get_uri_scheme() != "file":
             return []
 
+        if file.is_directory():
+            return []
+
         if not os.access(unquote(file.get_uri()[7:]), os.X_OK):
             return []
 
