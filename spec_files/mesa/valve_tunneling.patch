@@ -1,0 +1,50 @@
+From 2c785a81b2cd4fe6c36bbb499d2fa54219203c1b Mon Sep 17 00:00:00 2001
+From: Friedrich Vock <friedrich.vock@gmx.de>
+Date: Fri, 1 Dec 2023 15:18:44 +0100
+Subject: [PATCH] radv: Enable compute dispatch tunneling
+
+Compute tunneling can considerably lower the latency of high-priority
+compute work. Enabling it is beneficial in cases where high-priority
+work is dispatched while the GPU is already busy with other work (e.g.
+rendering on GFX). This is the case in VR compositors that dispatch
+latency-sensitive compositing work to ACE while GFX is busy rendering
+the next frame.
+---
+ src/amd/vulkan/radv_device.c   | 7 +++++++
+ src/amd/vulkan/si_cmd_buffer.c | 2 ++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/src/amd/vulkan/radv_device.c b/src/amd/vulkan/radv_device.c
+index dadfa1baa7c..121e993e1f5 100644
+--- a/src/amd/vulkan/radv_device.c
++++ b/src/amd/vulkan/radv_device.c
+@@ -933,6 +933,13 @@ radv_CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCr
+        */
+       device->dispatch_initiator |= S_00B800_ORDER_MODE(1);
+    }
++   if (device->physical_device->rad_info.gfx_level >= GFX10) {
++      /* Enable asynchronous compute tunneling. The KMD restricts this feature
++       * to high-priority compute queues, so setting the bit on any other queue
++       * is a no-op. PAL always sets this bit as well.
++       */
++      device->dispatch_initiator |= S_00B800_TUNNEL_ENABLE(1);
++   }
+ 
+    /* Disable partial preemption for task shaders.
+     * The kernel may not support preemption, but PAL always sets this bit,
+diff --git a/src/amd/vulkan/si_cmd_buffer.c b/src/amd/vulkan/si_cmd_buffer.c
+index 7da3141edd1..9969fe5afbe 100644
+--- a/src/amd/vulkan/si_cmd_buffer.c
++++ b/src/amd/vulkan/si_cmd_buffer.c
+@@ -113,6 +113,8 @@ si_emit_compute(struct radv_device *device, struct radeon_cmdbuf *cs)
+       radeon_emit(cs, 0); /* R_00B894_COMPUTE_USER_ACCUM_1 */
+       radeon_emit(cs, 0); /* R_00B898_COMPUTE_USER_ACCUM_2 */
+       radeon_emit(cs, 0); /* R_00B89C_COMPUTE_USER_ACCUM_3 */
++
++      radeon_set_sh_reg(cs, R_00B9F4_COMPUTE_DISPATCH_TUNNEL, 0);
+    }
+ 
+    /* This register has been moved to R_00CD20_COMPUTE_MAX_WAVE_ID
+-- 
+GitLab
+

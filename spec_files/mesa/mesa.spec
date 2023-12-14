@@ -100,6 +100,7 @@ Patch11: 0001-zink-initialize-drm_fd-to-1.patch
 
 # https://gitlab.com/evlaV/mesa/
 Patch3: valve.patch
+Patch4: valve_tunneling.patch
 
 # Performance bump
 # Original:
