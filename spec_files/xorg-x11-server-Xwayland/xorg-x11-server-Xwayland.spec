@@ -20,6 +20,7 @@ Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{xwayland_versio
 %endif
 
 Patch0:    967.patch
+Patch1:    0001-Valve.patch
 
 License:   MIT
 
