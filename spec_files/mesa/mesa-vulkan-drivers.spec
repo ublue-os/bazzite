@@ -81,15 +81,6 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 Patch3: valve.patch
 Patch4: valve_tunneling.patch
 
-# Performance bump
-# Original:
-# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25352
-# Proposed alternative:
-# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25576
-Patch2: 25352.patch
-# Disabled, currently has problem: https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25352#note_2145943
-#Patch2: 25576.patch
-
 Patch10:        gnome-shell-glthread-disable.patch
 
 BuildRequires:  meson >= 1.2.0
