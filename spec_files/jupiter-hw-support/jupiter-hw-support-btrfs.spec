@@ -1,5 +1,5 @@
 %define packagename jupiter-hw-support
-%define packagever jupiter-3.5-20231115.1
+%define packagever jupiter-3.5-20231211.1
 %global _default_patch_fuzz 2
 
 Name:           %{packagename}-btrfs
