@@ -244,7 +244,7 @@ Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built o
 |upower|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/upower/status_image/last_build.png?)|
 |vpower|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/vpower/status_image/last_build.png?)|
 |wireplumber|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/wireplumber/status_image/last_build.png?)|
-|xorg-x11-server-Xwayland|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/xorg-x11-server-Xwayland/status_image/last_build.png?)|
+|xorg-x11-server-Xwayland|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/package/xorg-x11-server-Xwayland/status_image/last_build.png?)|
 
 Additionally, the following packages are used from other Copr repos:
 
