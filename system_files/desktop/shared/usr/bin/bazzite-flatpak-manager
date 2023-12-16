@@ -39,8 +39,8 @@ if [[ -f $INSTALL_LIST_FILE ]]; then
   fi
 fi
 
-# Remove flatpaks in list
-if [[ -f $REMOVE_LIST_FILE ]]; then
+# Remove flatpaks in list once
+if [[ ! -f $VER_FILE && -f $REMOVE_LIST_FILE ]]; then
   REMOVE_LIST=$(echo $FLATPAK_LIST | grep -f - $REMOVE_LIST_FILE)
   if [[ -n $REMOVE_LIST ]]; then
     flatpak remove --system --noninteractive ${REMOVE_LIST[@]}
