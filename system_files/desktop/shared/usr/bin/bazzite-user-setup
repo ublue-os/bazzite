@@ -7,7 +7,7 @@ FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
 # SCRIPT VERSION
-USER_SETUP_VER=17
+USER_SETUP_VER=18
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 USER_SETUP_FEDORA_VER_FILE="$HOME/.bazzite-configured-fedora-version"
@@ -64,10 +64,10 @@ else
   gsettings set org.gnome.nautilus.preferences show-create-link true
 
   echo 'Switching to Prompt in Nautilus'
-  #gsettings set com.github.stunkymonkey.nautilus-open-any-terminal terminal prompt
-  #gsettings set com.github.stunkymonkey.nautilus-open-any-terminal keybindings '<Ctrl><Alt>t'
-  #gsettings set com.github.stunkymonkey.nautilus-open-any-terminal new-tab false
-  #gsettings set com.github.stunkymonkey.nautilus-open-any-terminal flatpak system
+  gsettings set com.github.stunkymonkey.nautilus-open-any-terminal terminal prompt
+  gsettings set com.github.stunkymonkey.nautilus-open-any-terminal keybindings '<Ctrl><Alt>t'
+  gsettings set com.github.stunkymonkey.nautilus-open-any-terminal new-tab false
+  gsettings set com.github.stunkymonkey.nautilus-open-any-terminal flatpak off
 
   echo 'Installing Gradience presets'
   mkdir -p "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/"

@@ -30,3 +30,9 @@ experimental-features=['variable-refresh-rate','scale-monitor-framebuffer']
 allow-updates=false
 download-updates=false
 download-updates-notify=false
+
+[com/github/stunkymonkey/nautilus-open-any-terminal]
+terminal='prompt'
+keybindings=['<Ctrl><Alt>t']
+new-tab=false
+flatpak='off'
