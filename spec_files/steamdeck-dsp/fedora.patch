@@ -83,3 +83,15 @@ index 48412ee..f0c5b82 100644
  	}
  	ConflictingDevice [
  	]
+diff -Naur a/wireplumber/systemd/system/wireplumber-sysconf.service  b/wireplumber/systemd/system/wireplumber-sysconf.service 
+--- a/wireplumber/systemd/system/wireplumber-sysconf.service
++++ b/wireplumber/systemd/system/wireplumber-sysconf.service
+@@ -17,7 +17,7 @@
+ [Service]
+ Type=oneshot
+ RemainAfterExit=yes
+-ExecStart=/usr/share/wireplumber/hardware-profiles/wireplumber-hwconfig
++ExecStart=/usr/libexec/wireplumber-hwconfig
+ 
+ [Install]
+ WantedBy=multi-user.target

@@ -41,12 +41,17 @@ mkdir -p %{buildroot}%{_datadir}/licenses/%{name}/
 cp LICENSE %{buildroot}%{_datadir}/licenses/%{name}/LICENSE
 xz --check=crc32 %{buildroot}%{_prefix}/lib/firmware/amd/sof/*
 xz --check=crc32 %{buildroot}%{_prefix}/lib/firmware/amd/sof-tplg/*
+rm -f %{buildroot}%{_unitdir}/multi-user.target.wants/wireplumber-sysconf.service
+rm -f %{buildroot}%{_sysconfdir}/wireplumber
+mkdir -p %{buildroot}%{_libexecdir}
+mv %{buildroot}%{_datadir}/wireplumber/hardware-profiles/wireplumber-hwconfig %{buildroot}%{_libexecdir}/wireplumber-hwconfig
 
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.
 %files
 %license LICENSE
 %{_prefix}/lib/firmware/amd/*
+%{_libexecdir}/wireplumber-hwconfig
 %{_libdir}/lv2/svg/valve_deck_*
 %{_libdir}/lv2/valve_*
 %{_datadir}/alsa/ucm2/conf.d/acp5x/*.conf
@@ -56,7 +61,6 @@ xz --check=crc32 %{buildroot}%{_prefix}/lib/firmware/amd/sof-tplg/*
 %{_datadir}/wireplumber/main.lua.d/*.lua
 %{_datadir}/wireplumber/scripts/*.lua
 %{_unitdir}/wireplumber-sysconf.service
-%{_unitdir}/multi-user.target.wants/wireplumber-sysconf.service
 
 %post
 %systemd_post wireplumber-sysconf.service
