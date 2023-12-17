@@ -542,6 +542,8 @@ RUN /tmp/image-info.sh && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
+    rm -rf /etc/wireplumber && \
+    ln -s /run/wireplumber /usr/etc/wireplumber && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sed -i 's/Exec=.*/Exec=systemctl start return-to-gamemode.service/' /etc/skel.d/Desktop/Return.desktop \
     ; fi && \
@@ -560,6 +562,7 @@ RUN /tmp/image-info.sh && \
         systemctl enable sddm.service \
     ; fi && \
     systemctl enable bazzite-autologin.service && \
+    systemctl enable wireplumber-sysconf.service && \
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
     systemctl enable ds-inhibit.service && \
     systemctl enable cec-onboot.service && \
