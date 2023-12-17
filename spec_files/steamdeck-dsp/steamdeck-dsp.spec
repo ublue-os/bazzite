@@ -20,6 +20,7 @@ BuildRequires:  lv2-devel
 BuildRequires:  g++
 BuildRequires:  ladspa-devel
 BuildRequires:  xz
+BuildRequires:  systemd-rpm-macros
 
 %description
 Steamdeck Audio Processing
@@ -51,9 +52,20 @@ xz --check=crc32 %{buildroot}%{_prefix}/lib/firmware/amd/sof-tplg/*
 %{_datadir}/alsa/ucm2/conf.d/acp5x/*.conf
 %{_datadir}/alsa/ucm2/conf.d/sof-nau8821-max/*.conf
 %{_datadir}/pipewire/pipewire.conf.d/*.conf
-%{_datadir}/wireplumber/bluetooth.lua.d/*.lua
+%{_datadir}/wireplumber/hardware-profiles/*
 %{_datadir}/wireplumber/main.lua.d/*.lua
 %{_datadir}/wireplumber/scripts/*.lua
+%{_unitdir}/wireplumber-sysconf.service
+%{_unitdir}/multi-user.target.wants/wireplumber-sysconf.service
+
+%post
+%systemd_post wireplumber-sysconf.service
+
+%preun
+%systemd_preun wireplumber-sysconf.service
+
+%postun
+%systemd_postun_with_restart wireplumber-sysconf.service
 
 # Finally, changes from the latest release of your application are generated from
 # your project's Git history. It will be empty until you make first annotated Git tag.
