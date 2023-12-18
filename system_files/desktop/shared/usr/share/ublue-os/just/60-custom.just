@@ -347,6 +347,10 @@ install-opentabletdriver:
 
 # Add SELinux file context for default looking-glass shm file so that libvirt can create it when needed
 selinux-looking-glass:
+    sudo tee << 'LOOKING_GLASS_TMP' > /etc/tmpfiles.d/10-looking-glass.conf
+    # Type Path               Mode UID  GID Age Argument
+    f /dev/shm/looking-glass 0660 1000 qemu -
+    LOOKING_GLASS_TMP
     sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
 
 # Add virtual audio channels/sinks named Game, Voice, Browser and Music which you can split audio to using qpwgraph, helvum, carla or other pipewire patchbays for use in OBS and other use cases
