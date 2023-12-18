@@ -33,6 +33,8 @@ BuildRequires:  systemd-rpm-macros
 # Make sure that we have -libs package in the same version
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 
+Requires:       steamdeck-dsp
+
 Provides:       pipewire-session-manager
 Conflicts:      pipewire-session-manager
 
@@ -79,6 +81,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/wireplumber/{bluetooth.lua.d,common,main.lua
 
 %find_lang %{name}
 
+ln -s /run/wireplumber %{buildroot}%{_datadir}/wireplumber/
+
 %posttrans
 %systemd_user_post %{name}.service
 
@@ -96,11 +100,7 @@ fi
 %{_bindir}/wireplumber
 %{_bindir}/wpctl
 %{_bindir}/wpexec
-%dir %{_sysconfdir}/wireplumber
-%dir %{_sysconfdir}/wireplumber/bluetooth.lua.d
-%dir %{_sysconfdir}/wireplumber/common
-%dir %{_sysconfdir}/wireplumber/main.lua.d
-%dir %{_sysconfdir}/wireplumber/policy.lua.d
+%{_sysconfdir}/wireplumber
 %{_datadir}/wireplumber/
 %{_datadir}/zsh/site-functions/_wpctl
 %{_userunitdir}/wireplumber.service
