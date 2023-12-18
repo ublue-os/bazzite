@@ -9,7 +9,7 @@ Bazzite is not a Linux distribution in the traditional sense. It is an OCI image
 - [View our governance](https://universal-blue.org/membership/)
 - [View available packages](https://github.com/orgs/ublue-os/packages?repo_name=bazzite)
 - [View releases](https://github.com/ublue-os/bazzite/releases)
-- [View newsletter](https://universal-blue.org/blog/category/bazzite/)
+- [View newsletter](https://universal-blue.discourse.group/tag/bazzite-buzz)
 - [View our open issues](https://github.com/ublue-os/bazzite/issues)
 - [Join our Discord server](https://discord.gg/QhwnC5PnqF)
 
