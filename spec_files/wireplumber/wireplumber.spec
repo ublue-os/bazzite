@@ -81,7 +81,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/wireplumber/{bluetooth.lua.d,common,main.lua
 
 %find_lang %{name}
 
-ln -s /run/wireplumber %{buildroot}%{_datadir}/wireplumber/
+ln -s /run/wireplumber %{buildroot}%{_datadir}/wireplumber
 
 %posttrans
 %systemd_user_post %{name}.service
