@@ -30,7 +30,11 @@ REMOVE_LIST_FILE="/usr/share/ublue-os/bazzite/flatpak/remove"
 
 # Install flatpaks in list
 if [[ -f $INSTALL_LIST_FILE ]]; then
-  INSTALL_LIST=$(echo $FLATPAK_LIST | grep -vf - $INSTALL_LIST_FILE)
+  if [[ -n $FLATPAK_LIST ]]; then
+    INSTALL_LIST=$(echo $FLATPAK_LIST | grep -vf - $INSTALL_LIST_FILE)
+  else
+    INSTALL_LIST=$(cat $INSTALL_LIST_FILE)
+  fi
   if [[ -n $INSTALL_LIST ]]; then
     if ! flatpak install --system --noninteractive flathub ${INSTALL_LIST[@]}; then
       # exit on error
