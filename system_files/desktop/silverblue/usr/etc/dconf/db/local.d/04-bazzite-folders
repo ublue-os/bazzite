@@ -12,7 +12,7 @@ name='X-Pardus-Apps.directory'
 translate=true
 
 [org/gnome/desktop/app-folders/folders/Utilities]
-apps=['fish.desktop', 'nvtop.desktop', 'yelp.desktop', 'btop.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.flattool.Warehouse.desktop', 'it.mijorus.gearlever.desktop', 'com.mattjakeman.ExtensionManager.desktop', 'io.github.fastrizwaan.WineZGUI.desktop', 'steamos-nested-desktop.desktop']
+apps=['fish.desktop', 'nvtop.desktop', 'yelp.desktop', 'btop.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.flattool.Warehouse.desktop', 'it.mijorus.gearlever.desktop', 'com.mattjakeman.ExtensionManager.desktop', 'steamos-nested-desktop.desktop', 'org.gnome.tweaks.desktop', 'com.github.GradienceTeam.Gradience']
 categories=['X-GNOME-Utilities']
 name='X-GNOME-Utilities.directory'
 translate=true
@@ -23,6 +23,7 @@ name='suse-yast.directory'
 translate=true
 
 [org/gnome/desktop/app-folders/folders/Wine]
+apps=['winetricks.desktop', 'io.github.fastrizwaan.WineZGUI.desktop']
 categories=['X-Wine', 'wine-wine']
 name='Wine'
 translate=false
