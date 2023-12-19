@@ -4,9 +4,6 @@ switch-applications-backward=['<Shift><Super>Tab']
 switch-windows=['<Alt>Tab']
 switch-windows-backward=['<Shift><Alt>Tab']
 
-[org/gnome/desktop/wm/preferences]
-button-layout=":minimize,maximize,close"
-
 [org/gnome/desktop/peripherals/touchpad]
 tap-to-click=true
 

@@ -1,0 +1,5 @@
+[org/gnome/shell/extensions/user-theme]
+name='Bazzite'
+
+[org/gnome/desktop/wm/preferences]
+button-layout=":minimize,maximize,close"
