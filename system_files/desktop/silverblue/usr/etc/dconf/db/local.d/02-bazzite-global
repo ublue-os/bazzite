@@ -10,10 +10,18 @@ button-layout=":minimize,maximize,close"
 [org/gnome/desktop/peripherals/touchpad]
 tap-to-click=true
 
-[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2]
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
+binding='<Control><Alt>KP_Delete'
+command='flatpak run io.missioncenter.MissionCenter'
+name='Mission Center'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
 binding='<Control><Shift>Escape'
 command="flatpak run io.missioncenter.MissionCenter"
-name='mission-center'
+name='Mission Center'
+
+[org/gnome/settings-daemon/plugins/media-keys]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/']
 
 [org/gtk/settings/file-chooser]
 sort-directories-first=true
@@ -25,7 +33,7 @@ sort-directories-first=true
 show-create-link=true
 
 [org/gnome/mutter]
-experimental-features=['variable-refresh-rate','scale-monitor-framebuffer']
+experimental-features=['variable-refresh-rate', 'scale-monitor-framebuffer']
 
 [org/gnome/software]
 allow-updates=false
