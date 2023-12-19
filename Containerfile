@@ -279,6 +279,8 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         kdeplasma-addons \
         rom-properties-kf5 \
         prompt && \
+    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.gnome.Terminal.desktop && \
+    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/gnome-system-monitor.desktop && \
     git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration && \
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin && \
     kpackagetool5 --type=KWin/Script --global --install /tmp/kwin-system76-scheduler-integration && \
@@ -342,7 +344,7 @@ RUN rpm-ostree install \
 COPY system_files/shared /
 RUN /tmp/image-info.sh && \
     sed -i 's@/usr/bin/steam@/usr/bin/bazzite-steam@g' /usr/share/applications/steam.desktop && \
-    rm /usr/share/applications/shredder.desktop && \
+    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/shredder.desktop && \
     rm /usr/share/vulkan/icd.d/lvp_icd.*.json && \
     mkdir -p "/usr/etc/profile.d/" && \
     ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
@@ -350,7 +352,7 @@ RUN /tmp/image-info.sh && \
     mkdir -p "/usr/etc/xdg/autostart" && \
     cp "/usr/share/applications/discover_overlay.desktop" "/usr/etc/xdg/autostart/discover_overlay.desktop" && \
     sed -i 's@Exec=discover-overlay@Exec=/usr/bin/bazzite-discover-overlay@g' /usr/etc/xdg/autostart/discover_overlay.desktop && \
-    rm /usr/share/applications/discover_overlay.desktop && \
+    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/discover_overlay.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     pip install --prefix=/usr yafti && \
     pip install --prefix=/usr hyfetch && \
@@ -391,8 +393,8 @@ RUN /tmp/image-info.sh && \
         sed -i '/^PRETTY_NAME/s/Kinoite/Bazzite/' /usr/lib/os-release && \
         systemctl --global enable com.system76.Scheduler.dbusproxy.service \
     ; else \
-        rm /usr/share/applications/yad-icon-browser.desktop && \
-        rm /usr/share/applications/com.github.rafostar.Clapper.desktop && \
+        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/yad-icon-browser.desktop && \
+        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/com.github.rafostar.Clapper.desktop && \
         sed -i '/^PRETTY_NAME/s/Silverblue/Bazzite GNOME/' /usr/lib/os-release \
     ; fi && \
     systemctl disable waydroid-container.service && \
