@@ -64,6 +64,12 @@ jobs:
           - base_name: bazzite-nvidia
             base_image_flavor: framework
     steps:
+      - name: Verify base image
+        uses: EyeCantCU/cosign-action/verify@v0.1.2
+        with:
+          container: ghcr.io/${{ github.repository_owner }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/main/main/cosign.pub
+
       - name: Maximize build space
         uses: ublue-os/remove-unwanted-software@v6
 
