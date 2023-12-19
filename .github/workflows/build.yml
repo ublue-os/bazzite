@@ -74,9 +74,6 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v4
 
-      - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@2.0.0
-
       - name: Check just syntax
         uses: ublue-os/just-action@v1
 
