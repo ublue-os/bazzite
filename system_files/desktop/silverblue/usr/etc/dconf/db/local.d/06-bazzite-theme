@@ -12,3 +12,18 @@ gtk-theme='adw-gtk3-dark'
 
 [org/gnome/mutter]
 center-new-windows=true
+
+[org/gnome/desktop/background]
+color-shading-type='solid'
+picture-options='zoom'
+picture-uri='file:///usr/share/backgrounds/steamdeck/Steam%20Deck%20Logo%20Default.jpg'
+picture-uri-dark='file:///usr/share/backgrounds/steamdeck/Steam%20Deck%20Logo%20Default.jpg'
+primary-color='#1A2336'
+secondary-color='#211B33'
+
+[org/gnome/desktop/screensaver]
+color-shading-type='solid'
+picture-options='zoom'
+picture-uri='file:///usr/share/backgrounds/steamdeck/Steam%20Deck%20Logo%20Default.jpg'
+primary-color='#1A2336'
+secondary-color='#211B33'
