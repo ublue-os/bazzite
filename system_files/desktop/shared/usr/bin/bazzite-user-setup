@@ -31,6 +31,17 @@ flatpak remote-modify --user --enable flathub
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup
 
+# Set up optional Gradience themes
+mkdir -p "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/"
+if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json" ]]; then
+  rm -f $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json
+  cp /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json
+fi
+if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json" ]]; then
+  rm -f $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json
+  cp /usr/share/ublue-os/bazzite/themes/vgui2.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json
+fi
+
 if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Running setup for Kinoite'
 
@@ -53,17 +64,6 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   fi
 else
   echo 'Running setup for Silverblue'
-
-  echo 'Installing Gradience presets'
-  mkdir -p "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/"
-  if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json" ]]; then
-    rm -f $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json
-    cp /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json
-  fi
-  if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json" ]]; then
-    rm -f $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json
-    cp /usr/share/ublue-os/bazzite/themes/vgui2.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json
-  fi
 
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'

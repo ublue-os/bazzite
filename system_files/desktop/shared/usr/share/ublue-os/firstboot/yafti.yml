@@ -208,6 +208,7 @@ screens:
           - Calibre: com.calibre_ebook.calibre
           - Easy Effects: com.github.wwmm.easyeffects
           - Fedora Media Writer: org.fedoraproject.MediaWriter
+          - Gradience: com.github.GradienceTeam.Gradience
           - JamesDSP: me.timschneeberger.jdsp4linux
           - KeePassXC: org.keepassxc.KeePassXC
           - Metadata Cleaner: fr.romainvigier.MetadataCleaner

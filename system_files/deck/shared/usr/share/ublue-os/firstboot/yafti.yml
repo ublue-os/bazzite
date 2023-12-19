@@ -234,6 +234,7 @@ screens:
           - Bitwarden: com.bitwarden.desktop
           - Calibre: com.calibre_ebook.calibre
           - Fedora Media Writer: org.fedoraproject.MediaWriter
+          - Gradience: com.github.GradienceTeam.Gradience
           - KeePassXC: org.keepassxc.KeePassXC
           - Metadata Cleaner: fr.romainvigier.MetadataCleaner
           - OpenRGB: org.openrgb.OpenRGB
