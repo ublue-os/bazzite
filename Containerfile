@@ -541,7 +541,6 @@ RUN /tmp/image-info.sh && \
     mkdir -p "/usr/etc/xdg/autostart" && \
     cp "/usr/share/applications/steam.desktop" "/usr/etc/xdg/autostart/steam.desktop" && \
     sed -i 's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' /usr/etc/xdg/autostart/steam.desktop && \
-    rm /usr/share/applications/wine*.desktop && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \

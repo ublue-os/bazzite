@@ -1,10 +1,10 @@
 [org/gnome/desktop/app-folders/]
-folder-children=['Utilities', 'YaST', 'Pardus', 'GamingUtilities']
+folder-children=['Utilities', 'YaST', 'Pardus', 'GamingUtilities', 'Wine']
 
 [org/gnome/desktop/app-folders/folders/GamingUtilities]
 apps=['protontricks.desktop', 'discover_overlay_configure.desktop', 'com.vysp3r.ProtonPlus.desktop', 'Waydroid.desktop', 'io.github.benjamimgois.goverlay.desktop', 'com.gerbilsoft.rom-properties.rp-config.desktop', 'input-remapper-gtk.desktop']
 name='Gaming Utilities'
-translate=true
+translate=false
 
 [org/gnome/desktop/app-folders/folders/Pardus]
 categories=['X-Pardus-Apps']
@@ -21,3 +21,8 @@ translate=true
 categories=['X-SuSE-YaST']
 name='suse-yast.directory'
 translate=true
+
+[org/gnome/desktop/app-folders/folders/Wine]
+categories=['X-Wine', 'wine-wine']
+name='Wine'
+translate=false
