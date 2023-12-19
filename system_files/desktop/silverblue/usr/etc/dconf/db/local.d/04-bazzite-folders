@@ -1,0 +1,24 @@
+[org/gnome/desktop/app-folders/]
+folder-children=['Utilities', 'YaST', 'Pardus', 'GamingUtilities']
+
+[org/gnome/desktop/app-folders/folders/GamingUtilities]
+apps=['protontricks.desktop', 'discover_overlay_configure.desktop', 'com.vysp3r.ProtonPlus.desktop', 'Waydroid.desktop', 'io.github.benjamimgois.goverlay.desktop', 'com.gerbilsoft.rom-properties.rp-config.desktop', 'input-remapper-gtk.desktop']
+name='Gaming Utilities'
+translate=true
+
+[org/gnome/desktop/app-folders/folders/Pardus]
+categories=['X-Pardus-Apps']
+name='X-Pardus-Apps.directory'
+translate=true
+
+[org/gnome/desktop/app-folders/folders/Utilities]
+apps=['gnome-abrt.desktop', 'gnome-system-log.desktop', 'nm-connection-editor.desktop', 'org.gnome.baobab.desktop', 'org.gnome.Connections.desktop', 'org.gnome.DejaDup.desktop', 'org.gnome.Dictionary.desktop', 'org.gnome.DiskUtility.desktop', 'org.gnome.Evince.desktop', 'org.gnome.FileRoller.desktop', 'org.gnome.fonts.desktop', 'org.gnome.seahorse.Application.desktop', 'org.gnome.tweaks.desktop', 'org.gnome.Usage.desktop', 'vinagre.desktop', 'fish.desktop', 'nvtop.desktop', 'yelp.desktop', 'btop.desktop', 'com.github.GradienceTeam.Gradience.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.flattool.Warehouse.desktop', 'it.mijorus.gearlever.desktop', 'com.mattjakeman.ExtensionManager.desktop', 'io.github.fastrizwaan.WineZGUI.desktop']
+categories=['X-GNOME-Utilities']
+excluded-apps=['io.github.benjamimgois.goverlay.desktop', 'com.gerbilsoft.rom-properties.rp-config.desktop', 'input-remapper-gtk.desktop', 'org.gnome.Loupe.desktop', 'org.gnome.font-viewer.desktop']
+name='X-GNOME-Utilities.directory'
+translate=true
+
+[org/gnome/desktop/app-folders/folders/YaST]
+categories=['X-SuSE-YaST']
+name='suse-yast.directory'
+translate=true
