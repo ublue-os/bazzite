@@ -143,6 +143,7 @@ get-boilr:
 
 # Patch a bug in some 32-bit Source 1.x titles that causes them to crash at startup
 patch-source1-tcmalloc:
+    #!/usr/bin/env bash
     echo 'Add the following as a launch option in Steam:'
     echo 'LD_PRELOAD=/usr/lib/libtcmalloc_and_profiler.so.4 %command%'
     echo "Delete libtcmalloc_minimal.so.x in the game's bin folder if present."
