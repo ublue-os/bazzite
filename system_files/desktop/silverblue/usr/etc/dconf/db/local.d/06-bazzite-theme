@@ -9,3 +9,6 @@ color-scheme='prefer-dark'
 
 [org/gnome/desktop/interface]
 gtk-theme='adw-gtk3-dark'
+
+[org/gnome/mutter]
+center-new-windows=true
