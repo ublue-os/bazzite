@@ -1,7 +1,7 @@
-From 09fb328975cee36e930d57974059498582981d26 Mon Sep 17 00:00:00 2001
+From d8906ba219ae663c5792182a61ee1b5d2d59f4f6 Mon Sep 17 00:00:00 2001
 From: Derek Foreman <derek.foreman@collabora.com>
 Date: Wed, 20 Sep 2023 10:40:33 -0500
-Subject: [PATCH 01/10] vulkan/wsi/wayland: refactor wayland dispatch code
+Subject: [PATCH 1/7] vulkan/wsi/wayland: refactor wayland dispatch code
 
 We currently have two similar but different bits of code to dispatch
 wayland event queues. Pull out as much common code as possible.
@@ -565,10 +565,10 @@ index 94b9217cbdf..9d410cf8fe1 100644
 2.42.0
 
 
-From d44e79fef5c4985c4a547e426744edf4f4df8de2 Mon Sep 17 00:00:00 2001
+From 5cf771328cecd21fcd0a7bd1c83fce87ddaec616 Mon Sep 17 00:00:00 2001
 From: Derek Foreman <derek.foreman@collabora.com>
 Date: Fri, 10 Nov 2023 07:25:35 -0600
-Subject: [PATCH 02/10] vulkan/wsi/wayland: Use commit_timing/commit_queue
+Subject: [PATCH 2/7] vulkan/wsi/wayland: Use commit_timing/commit_queue
  protocol for FIFO
 
 The commit_timing protocol allows us to set a presentation timestamp,
@@ -582,11 +582,11 @@ Signed-off-by: Derek Foreman <derek.foreman@collabora.com>
 ---
  src/egl/wayland/wayland-drm/meson.build |   2 +
  src/vulkan/wsi/meson.build              |   2 +
- src/vulkan/wsi/wsi_common_wayland.c     | 141 +++++++++++++++++++++---
- 3 files changed, 132 insertions(+), 13 deletions(-)
+ src/vulkan/wsi/wsi_common_wayland.c     | 138 +++++++++++++++++++++---
+ 3 files changed, 130 insertions(+), 12 deletions(-)
 
 diff --git a/src/egl/wayland/wayland-drm/meson.build b/src/egl/wayland/wayland-drm/meson.build
-index 442d7acd9b4..309196f7ee0 100644
+index ac822acec67..8b6044f09e5 100644
 --- a/src/egl/wayland/wayland-drm/meson.build
 +++ b/src/egl/wayland/wayland-drm/meson.build
 @@ -59,6 +59,8 @@ libwayland_drm = static_library(
@@ -612,7 +612,7 @@ index 9d0db011767..83ad71f06fa 100644
    files_vulkan_wsi += wp_files['presentation-time']
    files_vulkan_wsi += wp_files['tearing-control-v1']
 diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
-index 9d410cf8fe1..ee9ff68a048 100644
+index 9d410cf8fe1..86de6ca190c 100644
 --- a/src/vulkan/wsi/wsi_common_wayland.c
 +++ b/src/vulkan/wsi/wsi_common_wayland.c
 @@ -41,6 +41,8 @@
@@ -671,12 +671,8 @@ index 9d410cf8fe1..ee9ff68a048 100644
     } present_ids;
  
     struct wsi_wl_image images[0];
-@@ -931,9 +944,15 @@ registry_handle_global(void *data, struct wl_registry *registry,
-    if (strcmp(interface, wp_presentation_interface.name) == 0) {
-       display->wp_presentation_notwrapped =
-          wl_registry_bind(registry, name, &wp_presentation_interface, 1);
--   } else if (strcmp(interface, wp_tearing_control_manager_v1_interface.name) == 0) {
-+   } else if (strcmp(interface, wp_tearing_control_v1_interface.name) == 0) {
+@@ -934,6 +947,12 @@ registry_handle_global(void *data, struct wl_registry *registry,
+    } else if (strcmp(interface, wp_tearing_control_manager_v1_interface.name) == 0) {
        display->tearing_control_manager =
           wl_registry_bind(registry, name, &wp_tearing_control_manager_v1_interface, 1);
 +   } else if (strcmp(interface, wp_commit_timing_manager_v1_interface.name) == 0) {
@@ -869,11 +865,10 @@ index 9d410cf8fe1..ee9ff68a048 100644
     wsi_swapchain_finish(&chain->base);
  }
  
-@@ -2288,6 +2384,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2288,6 +2384,15 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
           wp_tearing_control_v1_destroy(old_chain->tearing_control);
           old_chain->tearing_control = NULL;
        }
-+
 +      if (old_chain->commit_queue) {
 +         wp_commit_queue_v1_destroy(old_chain->commit_queue);
 +         old_chain->commit_queue = NULL;
@@ -886,7 +881,7 @@ index 9d410cf8fe1..ee9ff68a048 100644
     }
  
     /* Take ownership of the wsi_wl_surface */
-@@ -2403,7 +2509,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2403,7 +2508,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
                           chain->queue);
     }
  
@@ -908,19 +903,19 @@ index 9d410cf8fe1..ee9ff68a048 100644
 2.42.0
 
 
-From 026c29380ea5a1c0a3f341859a1113469aca76d8 Mon Sep 17 00:00:00 2001
+From 05f047f5ddfcb09fb6432e96d5f0dd068b57d994 Mon Sep 17 00:00:00 2001
 From: Simon Ser <contact@emersion.fr>
 Date: Sat, 25 Nov 2023 16:25:58 +0100
-Subject: [PATCH 03/10] hack: rip out commit-timing-v1
+Subject: [PATCH 3/7] hack: rip out commit-timing-v1
 
 ---
- src/egl/wayland/wayland-drm/meson.build |  6 +++---
+ src/egl/wayland/wayland-drm/meson.build |  2 +-
  src/vulkan/wsi/meson.build              |  2 +-
  src/vulkan/wsi/wsi_common_wayland.c     | 24 ++----------------------
- 3 files changed, 6 insertions(+), 26 deletions(-)
+ 3 files changed, 4 insertions(+), 24 deletions(-)
 
 diff --git a/src/egl/wayland/wayland-drm/meson.build b/src/egl/wayland/wayland-drm/meson.build
-index 309196f7ee0..f0feab51461 100644
+index 8b6044f09e5..83a63385274 100644
 --- a/src/egl/wayland/wayland-drm/meson.build
 +++ b/src/egl/wayland/wayland-drm/meson.build
 @@ -60,7 +60,7 @@ libwayland_drm = static_library(
@@ -932,22 +927,6 @@ index 309196f7ee0..f0feab51461 100644
    'linux-dmabuf-unstable-v1': 'unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml',
    'presentation-time': 'stable/presentation-time/presentation-time.xml',
    'tearing-control-v1': 'staging/tearing-control/tearing-control-v1.xml',
-@@ -69,13 +69,13 @@ wp_files = {}
- foreach name, xml : wp_protos
-   code = custom_target(
-     name + '-protocol.c',
--    input : join_paths(wp_dir, xml),
-+    input : wp_dir / xml,
-     output : name + '-protocol.c',
-     command : [prog_wl_scanner, wl_scanner_arg, '@INPUT@', '@OUTPUT@'],
-   )
-   header = custom_target(
-     name + '-client-protocol.h',
--    input : join_paths(wp_dir, xml),
-+    input : wp_dir / xml,
-     output : name + '-client-protocol.h',
-     command : [prog_wl_scanner, 'client-header', '@INPUT@', '@OUTPUT@'],
-   )
 diff --git a/src/vulkan/wsi/meson.build b/src/vulkan/wsi/meson.build
 index 83ad71f06fa..dba95387975 100644
 --- a/src/vulkan/wsi/meson.build
@@ -962,7 +941,7 @@ index 83ad71f06fa..dba95387975 100644
    files_vulkan_wsi += wp_files['presentation-time']
    files_vulkan_wsi += wp_files['tearing-control-v1']
 diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
-index ee9ff68a048..c982f9401fe 100644
+index 86de6ca190c..7af1409b130 100644
 --- a/src/vulkan/wsi/wsi_common_wayland.c
 +++ b/src/vulkan/wsi/wsi_common_wayland.c
 @@ -42,7 +42,6 @@
@@ -990,7 +969,7 @@ index ee9ff68a048..c982f9401fe 100644
  
     struct wl_callback *frame;
 @@ -947,9 +944,6 @@ registry_handle_global(void *data, struct wl_registry *registry,
-    } else if (strcmp(interface, wp_tearing_control_v1_interface.name) == 0) {
+    } else if (strcmp(interface, wp_tearing_control_manager_v1_interface.name) == 0) {
        display->tearing_control_manager =
           wl_registry_bind(registry, name, &wp_tearing_control_manager_v1_interface, 1);
 -   } else if (strcmp(interface, wp_commit_timing_manager_v1_interface.name) == 0) {
@@ -1036,7 +1015,7 @@ index ee9ff68a048..c982f9401fe 100644
     wsi_swapchain_finish(&chain->base);
  }
  
-@@ -2390,10 +2377,6 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2389,10 +2376,6 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
           old_chain->commit_queue = NULL;
           old_chain->can_timestamp = false;
        }
@@ -1047,7 +1026,7 @@ index ee9ff68a048..c982f9401fe 100644
     }
  
     /* Take ownership of the wsi_wl_surface */
-@@ -2511,12 +2494,9 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2510,12 +2493,9 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
  
     chain->legacy_fifo_ready = true;
     struct wsi_wl_display *dpy = chain->wsi_wl_surface->display;
@@ -1065,10 +1044,10 @@ index ee9ff68a048..c982f9401fe 100644
 2.42.0
 
 
-From 283909af05db05c53d8809908334aa80a23eb92f Mon Sep 17 00:00:00 2001
+From 8efe5c9434578a27cc2ea66bf507685102fafe43 Mon Sep 17 00:00:00 2001
 From: Joshua Ashton <joshua@froggi.es>
 Date: Wed, 29 Nov 2023 11:06:51 +0000
-Subject: [PATCH 04/10] wsi: Use vendored gamescope-commit-queue-v1 protocol
+Subject: [PATCH 4/7] wsi: Use vendored gamescope-commit-queue-v1 protocol
 
 ---
  .../wayland-drm/gamescope-commit-queue-v1.xml | 181 ++++++++++++++++++
@@ -1266,7 +1245,7 @@ index 00000000000..d460e0bc10f
 +  </interface>
 +</protocol>
 diff --git a/src/egl/wayland/wayland-drm/meson.build b/src/egl/wayland/wayland-drm/meson.build
-index f0feab51461..12c14801db1 100644
+index 83a63385274..caba51b22a7 100644
 --- a/src/egl/wayland/wayland-drm/meson.build
 +++ b/src/egl/wayland/wayland-drm/meson.build
 @@ -59,7 +59,7 @@ libwayland_drm = static_library(
@@ -1316,7 +1295,7 @@ index dba95387975..fb0fab69ac6 100644
    files_vulkan_wsi += wp_files['linux-dmabuf-unstable-v1']
    files_vulkan_wsi += wp_files['presentation-time']
 diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
-index c982f9401fe..1797b61d852 100644
+index 7af1409b130..d21cae54f9b 100644
 --- a/src/vulkan/wsi/wsi_common_wayland.c
 +++ b/src/vulkan/wsi/wsi_common_wayland.c
 @@ -41,7 +41,7 @@
@@ -1347,7 +1326,7 @@ index c982f9401fe..1797b61d852 100644
  
     struct wl_callback *frame;
 @@ -944,9 +944,9 @@ registry_handle_global(void *data, struct wl_registry *registry,
-    } else if (strcmp(interface, wp_tearing_control_v1_interface.name) == 0) {
+    } else if (strcmp(interface, wp_tearing_control_manager_v1_interface.name) == 0) {
        display->tearing_control_manager =
           wl_registry_bind(registry, name, &wp_tearing_control_manager_v1_interface, 1);
 -   } else if (strcmp(interface, wp_commit_queue_manager_v1_interface.name) == 0) {
@@ -1387,16 +1366,16 @@ index c982f9401fe..1797b61d852 100644
  
     wsi_swapchain_finish(&chain->base);
  }
-@@ -2373,7 +2373,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2372,7 +2372,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+          old_chain->tearing_control = NULL;
        }
- 
        if (old_chain->commit_queue) {
 -         wp_commit_queue_v1_destroy(old_chain->commit_queue);
 +         gamescope_commit_queue_v1_destroy(old_chain->commit_queue);
           old_chain->commit_queue = NULL;
           old_chain->can_timestamp = false;
        }
-@@ -2495,7 +2495,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2494,7 +2494,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
     chain->legacy_fifo_ready = true;
     struct wsi_wl_display *dpy = chain->wsi_wl_surface->display;
     if (dpy->commit_queue_manager) {
@@ -1409,10 +1388,10 @@ index c982f9401fe..1797b61d852 100644
 2.42.0
 
 
-From 1719e4bccfb20a8771ccd887a9a42669ab301250 Mon Sep 17 00:00:00 2001
+From 4d4979994876abdabe4c2f3692451a38233dbf44 Mon Sep 17 00:00:00 2001
 From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
 Date: Fri, 14 Jan 2022 15:58:45 +0100
-Subject: [PATCH 05/10] STEAMOS: radv: min image count override for FH5
+Subject: [PATCH 5/7] STEAMOS: radv: min image count override for FH5
 
 Otherwise in combination with the vblank time reservation in
 gamescope the game could get stuck in low power states.
@@ -1438,11 +1417,10 @@ index b13d92f84ce..0f8234b4993 100644
 2.42.0
 
 
-From a3bfa6fb355721e1dc7494d7c3c82858ab75d369 Mon Sep 17 00:00:00 2001
+From 85c5c7b71a324ce60c427dee208cc4019013fadd Mon Sep 17 00:00:00 2001
 From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
 Date: Mon, 21 Feb 2022 18:43:54 +0100
-Subject: [PATCH 06/10] STEAMOS: Dynamic swapchain override for gamescope
- limiter
+Subject: [PATCH 6/7] STEAMOS: Dynamic swapchain override for gamescope limiter
 
 ---
  src/loader/loader_dri3_helper.c | 42 +++++++++++++++++++++++++++++++--
@@ -1640,10 +1618,10 @@ index cba1d1c5e7c..6d66387d5be 100644
 2.42.0
 
 
-From 5ba51d05742820783dcff7388c448999f735de59 Mon Sep 17 00:00:00 2001
+From 61a785c7cf06cd8c585fcac890c6b1bb9eccc374 Mon Sep 17 00:00:00 2001
 From: Friedrich Vock <friedrich.vock@gmx.de>
 Date: Fri, 1 Dec 2023 15:18:44 +0100
-Subject: [PATCH 07/10] radv: Enable compute dispatch tunneling
+Subject: [PATCH 7/7] radv: Enable compute dispatch tunneling
 
 Compute tunneling can considerably lower the latency of high-priority
 compute work. Enabling it is beneficial in cases where high-priority
@@ -1651,8 +1629,6 @@ work is dispatched while the GPU is already busy with other work (e.g.
 rendering on GFX). This is the case in VR compositors that dispatch
 latency-sensitive compositing work to ACE while GFX is busy rendering
 the next frame.
-
-Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26462>
 ---
  src/amd/vulkan/radv_device.c   | 7 +++++++
  src/amd/vulkan/si_cmd_buffer.c | 2 ++
@@ -1689,239 +1665,6 @@ index ecb00d98575..1b5e585ade4 100644
     }
  
     /* This register has been moved to R_00CD20_COMPUTE_MAX_WAVE_ID
--- 
-2.42.0
-
-
-From 0a5f523a32e553a1b5f56228b931e0bf54ed3751 Mon Sep 17 00:00:00 2001
-From: Samuel Pitoiset <samuel.pitoiset@gmail.com>
-Date: Tue, 7 Nov 2023 12:00:02 +0100
-Subject: [PATCH 08/10] radv: add drirc options to force re-compilation of
- shaders when needed
-
-On Steam Deck, shaders are pre-compiled for better performance (less
-stuttering, less CPU usage, etc). But when a compiler fix needs to be
-backported, there is currently no way to handle this properly.
-
-This introduces 3 drirc options
-radv_override_{graphics,compute,ray_tracing}_shader_version in order to
-force the driver to re-compile pipelines when needed. By default, the
-shader version is 0 for all pipelines.
-
-When one drirc is set for a specific game, RADV will re-compile all
-pipelines only once with the compiler fix included (because the
-pipeline key would be different).
-
-Signed-off-by: Samuel Pitoiset <samuel.pitoiset@gmail.com>
-Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26094>
----
- src/amd/vulkan/radv_instance.c          | 10 ++++++++++
- src/amd/vulkan/radv_pipeline_compute.c  |  7 ++++++-
- src/amd/vulkan/radv_pipeline_graphics.c |  2 ++
- src/amd/vulkan/radv_pipeline_rt.c       |  2 ++
- src/amd/vulkan/radv_private.h           |  3 +++
- src/amd/vulkan/radv_shader.h            |  3 +++
- src/util/driconf.h                      | 17 +++++++++++++++++
- 7 files changed, 43 insertions(+), 1 deletion(-)
-
-diff --git a/src/amd/vulkan/radv_instance.c b/src/amd/vulkan/radv_instance.c
-index 6cd78b4265f..cae837693a7 100644
---- a/src/amd/vulkan/radv_instance.c
-+++ b/src/amd/vulkan/radv_instance.c
-@@ -153,6 +153,9 @@ static const driOptionDescription radv_dri_options[] = {
-       DRI_CONF_RADV_FLUSH_BEFORE_TIMESTAMP_WRITE(false)
-       DRI_CONF_RADV_RT_WAVE64(false)
-       DRI_CONF_DUAL_COLOR_BLEND_BY_LOCATION(false)
-+      DRI_CONF_RADV_OVERRIDE_GRAPHICS_SHADER_VERSION(0)
-+      DRI_CONF_RADV_OVERRIDE_COMPUTE_SHADER_VERSION(0)
-+      DRI_CONF_RADV_OVERRIDE_RAY_TRACING_SHADER_VERSION(0)
-       DRI_CONF_RADV_APP_LAYER()
-    DRI_CONF_SECTION_END
- };
-@@ -211,6 +214,13 @@ radv_init_dri_options(struct radv_instance *instance)
-    instance->force_rt_wave64 = driQueryOptionb(&instance->dri_options, "radv_rt_wave64");
- 
-    instance->dual_color_blend_by_location = driQueryOptionb(&instance->dri_options, "dual_color_blend_by_location");
-+
-+   instance->override_graphics_shader_version =
-+      driQueryOptioni(&instance->dri_options, "radv_override_graphics_shader_version");
-+   instance->override_compute_shader_version =
-+      driQueryOptioni(&instance->dri_options, "radv_override_compute_shader_version");
-+   instance->override_ray_tracing_shader_version =
-+      driQueryOptioni(&instance->dri_options, "radv_override_ray_tracing_shader_version");
- }
- 
- static const struct vk_instance_extension_table radv_instance_extensions_supported = {
-diff --git a/src/amd/vulkan/radv_pipeline_compute.c b/src/amd/vulkan/radv_pipeline_compute.c
-index 26498998747..6cb6b333853 100644
---- a/src/amd/vulkan/radv_pipeline_compute.c
-+++ b/src/amd/vulkan/radv_pipeline_compute.c
-@@ -109,7 +109,12 @@ static struct radv_pipeline_key
- radv_generate_compute_pipeline_key(const struct radv_device *device, const struct radv_compute_pipeline *pipeline,
-                                    const VkComputePipelineCreateInfo *pCreateInfo)
- {
--   return radv_generate_pipeline_key(device, &pCreateInfo->stage, 1, pipeline->base.create_flags, pCreateInfo->pNext);
-+   struct radv_pipeline_key key =
-+      radv_generate_pipeline_key(device, &pCreateInfo->stage, 1, pipeline->base.create_flags, pCreateInfo->pNext);
-+
-+   key.shader_version = device->instance->override_compute_shader_version;
-+
-+   return key;
- }
- 
- void
-diff --git a/src/amd/vulkan/radv_pipeline_graphics.c b/src/amd/vulkan/radv_pipeline_graphics.c
-index 72ed9697f13..93a966ab4fc 100644
---- a/src/amd/vulkan/radv_pipeline_graphics.c
-+++ b/src/amd/vulkan/radv_pipeline_graphics.c
-@@ -1830,6 +1830,8 @@ radv_generate_graphics_pipeline_key(const struct radv_device *device, const stru
-    struct radv_pipeline_key key = radv_generate_pipeline_key(device, pCreateInfo->pStages, pCreateInfo->stageCount,
-                                                              pipeline->base.create_flags, pCreateInfo->pNext);
- 
-+   key.shader_version = device->instance->override_graphics_shader_version;
-+
-    key.lib_flags = lib_flags;
-    key.has_multiview_view_index = state->rp ? !!state->rp->view_mask : 0;
- 
-diff --git a/src/amd/vulkan/radv_pipeline_rt.c b/src/amd/vulkan/radv_pipeline_rt.c
-index 810f6041b1d..4bcd81de836 100644
---- a/src/amd/vulkan/radv_pipeline_rt.c
-+++ b/src/amd/vulkan/radv_pipeline_rt.c
-@@ -90,6 +90,8 @@ radv_generate_rt_pipeline_key(const struct radv_device *device, const struct rad
-    struct radv_pipeline_key key = radv_generate_pipeline_key(device, pCreateInfo->pStages, pCreateInfo->stageCount,
-                                                              pipeline->base.base.create_flags, pCreateInfo->pNext);
- 
-+   key.shader_version = device->instance->override_ray_tracing_shader_version;
-+
-    if (pCreateInfo->pLibraryInfo) {
-       for (unsigned i = 0; i < pCreateInfo->pLibraryInfo->libraryCount; ++i) {
-          RADV_FROM_HANDLE(radv_pipeline, pipeline_lib, pCreateInfo->pLibraryInfo->pLibraries[i]);
-diff --git a/src/amd/vulkan/radv_private.h b/src/amd/vulkan/radv_private.h
-index bb2b9925c7b..988c19f4cf3 100644
---- a/src/amd/vulkan/radv_private.h
-+++ b/src/amd/vulkan/radv_private.h
-@@ -420,6 +420,9 @@ struct radv_instance {
-    bool force_rt_wave64;
-    bool dual_color_blend_by_location;
-    char *app_layer;
-+   uint8_t override_graphics_shader_version;
-+   uint8_t override_compute_shader_version;
-+   uint8_t override_ray_tracing_shader_version;
- };
- 
- VkResult radv_init_wsi(struct radv_physical_device *physical_device);
-diff --git a/src/amd/vulkan/radv_shader.h b/src/amd/vulkan/radv_shader.h
-index 445f8b8e0a5..4d5fa6ee7ce 100644
---- a/src/amd/vulkan/radv_shader.h
-+++ b/src/amd/vulkan/radv_shader.h
-@@ -102,6 +102,9 @@ struct radv_pipeline_key {
-    uint32_t vertex_robustness1 : 1;
-    uint32_t mesh_fast_launch_2 : 1;
- 
-+   /* Pipeline shader version (up to 8) to force re-compilation when RADV_BUILD_ID_OVERRIDE is enabled. */
-+   uint32_t shader_version : 3;
-+
-    struct radv_shader_stage_key stage_info[MESA_VULKAN_SHADER_STAGES];
- 
-    struct {
-diff --git a/src/util/driconf.h b/src/util/driconf.h
-index e24c1eefd43..941d15a2f50 100644
---- a/src/util/driconf.h
-+++ b/src/util/driconf.h
-@@ -682,6 +682,23 @@
-    DRI_CONF_OPT_B(radv_rt_wave64, def, \
-                   "Force wave64 in RT shaders")
- 
-+/**
-+ * Overrides for forcing re-compilation of pipelines when RADV_BUILD_ID_OVERRIDE is enabled.
-+ * These need to be bumped every time a compiler bugfix is backported (up to 8 shader
-+ * versions are supported).
-+ */
-+#define DRI_CONF_RADV_OVERRIDE_GRAPHICS_SHADER_VERSION(def) \
-+   DRI_CONF_OPT_I(radv_override_graphics_shader_version, def, 0, 7, \
-+                  "Override the shader version of graphics pipelines to force re-compilation. (0 = default)")
-+
-+#define DRI_CONF_RADV_OVERRIDE_COMPUTE_SHADER_VERSION(def) \
-+   DRI_CONF_OPT_I(radv_override_compute_shader_version, def, 0, 7, \
-+                  "Override the shader version of compute pipelines to force re-compilation. (0 = default)")
-+
-+#define DRI_CONF_RADV_OVERRIDE_RAY_TRACING_SHADER_VERSION(def) \
-+   DRI_CONF_OPT_I(radv_override_ray_tracing_shader_version, def, 0, 7, \
-+                  "Override the shader version of ray tracing pipelines to force re-compilation. (0 = default)")
-+
- #define DRI_CONF_RADV_APP_LAYER() DRI_CONF_OPT_S_NODEF(radv_app_layer, "Select an application layer.")
- 
- /**
--- 
-2.42.0
-
-
-From dffd092ba1954be934c63bd6ae73f618c44fcfe1 Mon Sep 17 00:00:00 2001
-From: Samuel Pitoiset <samuel.pitoiset@gmail.com>
-Date: Tue, 14 Nov 2023 08:55:58 +0100
-Subject: [PATCH 09/10] radv: set radv_override_graphics_shader_version=1 for
- Lord Of The Fallen
-
-This forces recompilation of all graphics pipelines once to fix a GPU
-hang which was caused by an infinite loop in some vertex shaders.
-
-Signed-off-by: Samuel Pitoiset <samuel.pitoiset@gmail.com>
----
- src/util/00-radv-defaults.conf | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/src/util/00-radv-defaults.conf b/src/util/00-radv-defaults.conf
-index 0f8234b4993..5c521dea05b 100644
---- a/src/util/00-radv-defaults.conf
-+++ b/src/util/00-radv-defaults.conf
-@@ -184,5 +184,12 @@ Application bugs worked around in this file:
-         <application name="Forza Horizon 5" application_name_match="ForzaHorizon5.exe">
-             <option name="vk_x11_override_min_image_count" value="4" />
-         </application>
-+
-+        <!-- Force re-recompilation of all graphics pipelines once to apply
-+        "nir: fix inserting the break instruction for partial loop unrolling"
-+        which caused GPU hangs due to infinite loops in some vertex shaders -->
-+        <application name="Lords Of The Fallen" application_name_match="LOTF2-Win64-Shipping.exe">
-+            <option name="radv_override_graphics_shader_version" value="1" />
-+        </application>
-     </device>
- </driconf>
--- 
-2.42.0
-
-
-From 58ed6037fddb4da1760ad8e74bd1ee5c6367d7b5 Mon Sep 17 00:00:00 2001
-From: Samuel Pitoiset <samuel.pitoiset@gmail.com>
-Date: Tue, 14 Nov 2023 09:01:00 +0100
-Subject: [PATCH 10/10] radv: set radv_override_graphics_shader_version=1 for
- Jurassic World Evolution 2
-
-This forces recompilation of all graphics pipelines once to fix
-rendering issues with dino models.
-
-Signed-off-by: Samuel Pitoiset <samuel.pitoiset@gmail.com>
----
- src/util/00-radv-defaults.conf | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/src/util/00-radv-defaults.conf b/src/util/00-radv-defaults.conf
-index 5c521dea05b..851709b7357 100644
---- a/src/util/00-radv-defaults.conf
-+++ b/src/util/00-radv-defaults.conf
-@@ -191,5 +191,12 @@ Application bugs worked around in this file:
-         <application name="Lords Of The Fallen" application_name_match="LOTF2-Win64-Shipping.exe">
-             <option name="radv_override_graphics_shader_version" value="1" />
-         </application>
-+
-+        <!-- Force re-compilation of all graphics pipelines once to apply
-+        "nir/loop_analyze: Fix inverted condition handling in iterations calculation"
-+        which fixes rendering with dino models. -->
-+        <application name="Jurassic World Evolution 2" application_name_match="JWE2.exe">
-+            <option name="radv_override_graphics_shader_version" value="1" />
-+        </application>
-     </device>
- </driconf>
 -- 
 2.42.0
 

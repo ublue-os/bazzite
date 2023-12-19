@@ -1,0 +1,52 @@
+From e1b03c0d3dfb337c7f462ea7e146e727dbe35040 Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@redhat.com>
+Date: Mon, 18 Dec 2023 16:47:56 +1000
+Subject: [PATCH] intel/compiler: move gen5 final pass to actually be final
+ pass
+
+This got broken by the register conversion, this pass needs to be
+after all the others.
+
+Fixes: ce75c3c3fea9 ("intel: Switch to intrinsic-based registers")
+---
+ src/intel/compiler/brw_nir.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/src/intel/compiler/brw_nir.c b/src/intel/compiler/brw_nir.c
+index 8da98b0fbfd..c36269fd015 100644
+--- a/src/intel/compiler/brw_nir.c
++++ b/src/intel/compiler/brw_nir.c
+@@ -1753,14 +1753,6 @@ brw_postprocess_nir(nir_shader *nir, const struct brw_compiler *compiler,
+    if (OPT(nir_opt_rematerialize_compares))
+       OPT(nir_opt_dce);
+ 
+-   /* This is the last pass we run before we start emitting stuff.  It
+-    * determines when we need to insert boolean resolves on Gen <= 5.  We
+-    * run it last because it stashes data in instr->pass_flags and we don't
+-    * want that to be squashed by other NIR passes.
+-    */
+-   if (devinfo->ver <= 5)
+-      brw_nir_analyze_boolean_resolves(nir);
+-
+    OPT(nir_opt_dce);
+ 
+    /* The mesh stages require this pass to be called at the last minute,
+@@ -1773,6 +1765,15 @@ brw_postprocess_nir(nir_shader *nir, const struct brw_compiler *compiler,
+       brw_nir_adjust_payload(nir, compiler);
+ 
+    nir_trivialize_registers(nir);
++
++   /* This is the last pass we run before we start emitting stuff.  It
++    * determines when we need to insert boolean resolves on Gen <= 5.  We
++    * run it last because it stashes data in instr->pass_flags and we don't
++    * want that to be squashed by other NIR passes.
++    */
++   if (devinfo->ver <= 5)
++      brw_nir_analyze_boolean_resolves(nir);
++
+    nir_sweep(nir);
+ 
+    if (unlikely(debug_enabled)) {
+-- 
+2.43.0
+
