@@ -329,6 +329,7 @@ install-opentabletdriver:
 
 # Add SELinux file context for default looking-glass shm file so that libvirt can create it when needed
 selinux-looking-glass:
+    #!/usr/bin/env bash
     sudo tee << 'LOOKING_GLASS_TMP' > /etc/tmpfiles.d/10-looking-glass.conf
     # Type Path               Mode UID  GID Age Argument
     f /dev/shm/looking-glass 0660 1000 qemu -
