@@ -54,21 +54,6 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
 else
   echo 'Running setup for Silverblue'
 
-  echo 'Enabling GNOME extensions'
-  gnome-extensions enable s76-scheduler@mattjakeman.com
-  gnome-extensions enable gsconnect@andyholmes.github.io
-  gnome-extensions enable logomenu@aryan_k
-  gnome-extensions disable background-logo@fedorahosted.org
-
-  echo 'Adjusting Nautilus settings'
-  gsettings set org.gnome.nautilus.preferences show-create-link true
-
-  echo 'Switching to Prompt in Nautilus'
-  gsettings set com.github.stunkymonkey.nautilus-open-any-terminal terminal prompt
-  gsettings set com.github.stunkymonkey.nautilus-open-any-terminal keybindings '<Ctrl><Alt>t'
-  gsettings set com.github.stunkymonkey.nautilus-open-any-terminal new-tab false
-  gsettings set com.github.stunkymonkey.nautilus-open-any-terminal flatpak off
-
   echo 'Installing Gradience presets'
   mkdir -p "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/"
   if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json" ]]; then
@@ -82,29 +67,6 @@ else
 
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
-
-    echo 'Disabling GNOME keyboard'
-    gsettings set org.gnome.desktop.interface toolkit-accessibility false
-    gnome-extensions enable block-caribou-36@lxylxy123456.ercli.dev
-
-    echo 'Enabling Appindicator Support'
-    gnome-extenisons enable appindicatorsupport@rgcjonas.gmail.com
-
-    echo 'Setting mouse input profile'
-    gsettings set org.gnome.desktop.peripherals.mouse accel-profile "flat"
-
-    echo 'Adjusting trackpad settings'
-    gsettings set org.gnome.desktop.peripherals.touchpad send-events "enabled"
-
-    echo 'Setting default power settings'
-    gsettings set org.gnome.desktop.session idle-delay 0
-    gsettings set org.gnome.settings-daemon.plugins.power ambient-enabled true
-    gsettings set org.gnome.settings-daemon.plugins.power idle-dim true
-    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 300
-    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 900
-    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type "suspend"
-    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "suspend"
-    gsettings set org.gnome.settings-daemon.plugins.power power-button-action "suspend"
 
     echo 'Setting up templates'
     if [[ ! -f "$HOME/Templates/vkBasalt.conf" ]]; then

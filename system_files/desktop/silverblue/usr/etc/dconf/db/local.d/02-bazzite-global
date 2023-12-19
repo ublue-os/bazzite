@@ -4,13 +4,11 @@ switch-applications-backward = ['<Shift><Super>Tab']
 switch-windows = ['<Alt>Tab']
 switch-windows-backward = ['<Shift><Alt>Tab']
 
+[org/gnome/desktop/wm/preferences]
+button-layout=":minimize,maximize,close"
+
 [org/gnome/desktop/peripherals/touchpad]
 tap-to-click=true
-
-[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
-binding='<Control><Alt>t'
-command='gnome-terminal'
-name='gnome-terminal'
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2]
 binding='<Control><Shift>Escape'
@@ -22,6 +20,9 @@ sort-directories-first=true
 
 [org/gtk/gtk4/settings/file-chooser]
 sort-directories-first=true
+
+[org/gnome/nautilus/preferences]
+show-create-link=true
 
 [org/gnome/mutter]
 experimental-features=['variable-refresh-rate','scale-monitor-framebuffer']
