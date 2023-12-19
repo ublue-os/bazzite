@@ -1,5 +1,8 @@
 [org/gnome/shell/extensions/user-theme]
 name='Bazzite'
 
+[org/gnome/desktop/sound]
+theme-name='steam'
+
 [org/gnome/desktop/wm/preferences]
 button-layout=":minimize,maximize,close"
