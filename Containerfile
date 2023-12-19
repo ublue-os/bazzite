@@ -108,6 +108,9 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         atk \
         at-spi2-atk \
+        || true && \
+    rpm-ostree override remove \
+        glibc32 \
         || true
 
 # Install Valve's patched Mesa, Pipewire and Bluez
