@@ -252,26 +252,14 @@ jobs:
           extra-args: |
             --disable-content-trust
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Sign container image
+        uses: EyeCantCU/cosign-action/sign@v0.1.2
         if: github.event_name != 'pull_request'
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Sign container
-      - uses: sigstore/cosign-installer@v3.2.0
-        if: github.event_name != 'pull_request'
-
-      - name: Sign container image
-        if: github.event_name != 'pull_request'
-        run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
-        env:
-          TAGS: ${{ steps.push.outputs.digest }}
-          COSIGN_EXPERIMENTAL: false
-          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+          container: ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}
+          registry-token: ${{ secrets.GITHUB_TOKEN }}
+          signing-secret: ${{ secrets.SIGNING_SECRET }}
+          tags: ${{ steps.push.outputs.digest }}
 
       - name: Echo outputs
         if: github.event_name != 'pull_request'
