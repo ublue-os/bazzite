@@ -1,5 +1,5 @@
 [org/gnome/desktop/app-folders]
-folder-children=['Games', 'GamingUtilities', 'Utilities', 'Wine', 'YaST', 'Pardus']
+folder-children=['Games', 'GamingUtilities', 'Utilities', 'WaydroidApps', Wine', 'YaST', 'Pardus']
 
 [org/gnome/desktop/app-folders/folders/GamingUtilities]
 apps=['protontricks.desktop', 'discover_overlay_configure.desktop', 'com.vysp3r.ProtonPlus.desktop', 'Waydroid.desktop', 'io.github.benjamimgois.goverlay.desktop', 'com.gerbilsoft.rom-properties.rp-config.desktop', 'input-remapper-gtk.desktop']
@@ -26,6 +26,12 @@ translate=true
 apps=['winetricks.desktop', 'io.github.fastrizwaan.WineZGUI.desktop']
 categories=['X-Wine', 'wine-wine']
 name='Wine'
+translate=false
+
+[org/gnome/desktop/app-folders/folders/WaydroidApps]
+excluded-apps=['Waydroid.desktop']
+categories=['X-WayDroid-App']
+name='Waydroid Apps'
 translate=false
 
 [org/gnome/desktop/app-folders/folders/Games]
