@@ -63,7 +63,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 %global ver 23.3.1
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        %autorelease.bazzite.{{{ git_dir_version }}}
+Release:        100.bazzite.{{{ git_dir_version }}}
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
 
@@ -538,7 +538,7 @@ rm -Rf %{buildroot}%{_datadir}/drirc.d/00-mesa-defaults.conf
 
 %files dri-drivers
 %dir %{_datadir}/drirc.d
-%ifarch x86_64
+%ifarch aarch64 x86_64
 %{_datadir}/drirc.d/00-mesa-defaults.conf
 %endif
 %{_libdir}/dri/kms_swrast_dri.so
@@ -661,7 +661,7 @@ rm -Rf %{buildroot}%{_datadir}/drirc.d/00-mesa-defaults.conf
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
 %if 0%{?with_vulkan_hw}
 %{_libdir}/libvulkan_radeon.so
-%ifarch x86_64
+%ifarch aarch64 x86_64
 %{_datadir}/drirc.d/00-radv-defaults.conf
 %endif
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
