@@ -1,5 +1,5 @@
 [org/gnome/desktop/app-folders]
-folder-children=['Games', 'GamingUtilities', 'Utilities', 'WaydroidApps', Wine', 'YaST', 'Pardus']
+folder-children=['Games', 'GamingUtilities', 'Utilities', 'Distrobox', 'WaydroidApps', Wine', 'YaST', 'Pardus']
 
 [org/gnome/desktop/app-folders/folders/GamingUtilities]
 apps=['protontricks.desktop', 'discover_overlay_configure.desktop', 'com.vysp3r.ProtonPlus.desktop', 'Waydroid.desktop', 'io.github.benjamimgois.goverlay.desktop', 'com.gerbilsoft.rom-properties.rp-config.desktop', 'input-remapper-gtk.desktop']
@@ -16,6 +16,11 @@ apps=['fish.desktop', 'nvtop.desktop', 'yelp.desktop', 'btop.desktop', 'com.gith
 categories=['X-GNOME-Utilities']
 name='X-GNOME-Utilities.directory'
 translate=true
+
+[org/gnome/desktop/app-folders/folders/Distrobox]
+categories=['Distrobox']
+name='Distrobox'
+translate=false
 
 [org/gnome/desktop/app-folders/folders/YaST]
 categories=['X-SuSE-YaST']
