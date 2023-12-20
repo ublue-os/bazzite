@@ -42,3 +42,7 @@ terminal='prompt'
 keybindings=['<Ctrl><Alt>t']
 new-tab=false
 flatpak='off'
+
+[org/gnome/Prompt]
+restore-session=false
+restore-window-size=false
