@@ -29,6 +29,7 @@ name='Wine'
 translate=false
 
 [org/gnome/desktop/app-folders/folders/Games]
+excluded-apps=['io.github.benjamimgois.goverlay.desktop', 'com.vysp3r.ProtonPlus.desktop', 'io.github.fastrizwaan.WineZGUI.desktop']
 categories=['Game']
 name='Games'
 translate=false
