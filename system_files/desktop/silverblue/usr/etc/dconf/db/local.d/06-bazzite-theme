@@ -13,6 +13,16 @@ gtk-theme='adw-gtk3-dark'
 [org/gnome/mutter]
 center-new-windows=true
 
+[org/gnome/desktop/sound]
+theme-name='steam'
+
+[org/gnome/desktop/interface]
+document-font-name='Noto Sans 11'
+font-name='Noto Sans 11'
+
+[org/gnome/desktop/wm/preferences]
+titlebar-font='Noto Sans Medium 11'
+
 [org/gnome/desktop/background]
 color-shading-type='solid'
 picture-options='zoom'
