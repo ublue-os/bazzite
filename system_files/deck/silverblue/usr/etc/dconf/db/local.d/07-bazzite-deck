@@ -24,3 +24,4 @@ font-antialiasing='rgba'
 
 [org/gnome/shell/extensions/just-perfection]
 search=false
+theme=false

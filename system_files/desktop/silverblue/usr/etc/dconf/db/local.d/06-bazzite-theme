@@ -40,3 +40,4 @@ secondary-color='#211B33'
 
 [org/gnome/shell/extensions/just-perfection]
 animation=4
+theme=true
