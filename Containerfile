@@ -117,11 +117,7 @@ RUN rpm-ostree override remove \
         htop
 
 # Install new packages
-RUN if [[ "${IMAGE_FLAVOR}" =~ "nvidia" ]]; then \
-        rpm-ostree override remove \
-            glibc32 \
-    ; fi && \
-    rpm-ostree install \
+RUN rpm-ostree install \
         ublue-update \
         discover-overlay \
         python3-pip \
