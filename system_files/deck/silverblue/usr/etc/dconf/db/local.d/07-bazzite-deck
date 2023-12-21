@@ -21,3 +21,6 @@ power-button-action='suspend'
 
 [org/gnome/desktop/interface]
 font-antialiasing='rgba'
+
+[org/gnome/shell/extensions/just-perfection]
+search=false

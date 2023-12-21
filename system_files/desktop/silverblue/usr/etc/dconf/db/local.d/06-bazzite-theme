@@ -37,3 +37,6 @@ picture-options='zoom'
 picture-uri='file:///usr/share/backgrounds/steamdeck/Steam%20Deck%20Logo%20Default.jpg'
 primary-color='#1A2336'
 secondary-color='#211B33'
+
+[org/gnome/shell/extensions/just-perfection]
+animation=4
