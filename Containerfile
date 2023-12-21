@@ -109,6 +109,18 @@ RUN rpm-ostree override replace \
         atk \
         at-spi2-atk \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        gstreamer1 \
+        gstreamer1-plugins-base \
+        gstreamer1-plugins-bad-free-libs \
+        gstreamer1-plugins-good-qt \
+        gstreamer1-plugins-good \
+        gstreamer1-plugins-bad-free \
+        gstreamer1-plugin-libav \
+        gstreamer1-plugins-ugly-free \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true
