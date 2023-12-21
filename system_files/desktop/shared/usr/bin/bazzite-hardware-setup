@@ -7,7 +7,7 @@ BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=17
+HWS_VER=18
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -173,10 +173,15 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     systemctl --global enable --now sdgyrodsu.service
   else
     echo "Generic device detected. Performing setup..."
-    if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:83E1:" =~ ":$SYS_ID:" ]]; then
+    if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:" =~ ":$SYS_ID:" ]]; then
       echo "HandyGCCS supported handheld detected, enabling handycon & TDP control..."
       systemctl enable --now handycon.service
       sed -i 's/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=1/g' /etc/default/steam-hardware-control
+    elif [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+      echo "Lenovo Legion detected. Swapping to X11 by default. Disabling handycon & TDP control..."
+      systemctl disable --now handycon.service
+      sed -i 's/DESKTOP_WAYLAND=true/DESKTOP_WAYLAND=false/g' /etc/desktop-wayland
+      sed -i 's/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=1/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0/g' /etc/default/steam-hardware-control
     fi
     systemctl disable --now jupiter-fan-control.service
     systemctl disable --now vpower.service
@@ -185,11 +190,6 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     systemctl disable --now ryzenadj.service
     systemctl disable --now batterylimit.service
     systemctl --global disable --now sdgyrodsu.service
-
-    if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
-      echo "Lenovo Legion detected. Swapping to X11 by default."
-      sed -i 's/DESKTOP_WAYLAND=true/DESKTOP_WAYLAND=false/g' /etc/desktop-wayland
-    fi
   fi
 fi
 

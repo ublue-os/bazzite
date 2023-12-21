@@ -467,6 +467,7 @@ RUN rpm-ostree install \
     galileo-mura \
     powerbuttond \
     HandyGCCS \
+    hhd \
     vpower \
     ds-inhibit \
     steam_notif_daemon \

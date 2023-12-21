@@ -7,7 +7,7 @@ FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
 # SCRIPT VERSION
-USER_SETUP_VER=18
+USER_SETUP_VER=19
 USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 USER_SETUP_FEDORA_VER_FILE="$HOME/.bazzite-configured-fedora-version"
@@ -81,6 +81,14 @@ else
     touch $HOME/.steam/.trackerignore
     mkdir -p $HOME/.local/share/Steam
     touch $HOME/.local/share/Steam/.trackerignore
+  fi
+fi
+
+# HHD Setup for Lenovo Legion Go
+if [[ $IMAGE_NAME =~ "deck" ]]; then
+  if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+    echo 'Enabling HHD'
+    pkexec /usr/libexec/bazzite-enable-hhd "$USER"
   fi
 fi
 
