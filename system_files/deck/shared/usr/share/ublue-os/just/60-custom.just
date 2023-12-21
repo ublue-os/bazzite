@@ -55,6 +55,18 @@ get-decky:
     curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
     sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
 
+# Install SimpleDeckyTDP for TDP Control on the Lenovo Legion Go (Requires Decky Loader)
+get-simpledeckytdp:
+    #!/usr/bin/env bash
+    if [[ -d $HOME/homebrew/plugins ]]; then
+      sudo rm -rf $HOME/homebrew/plugins/SimpleDeckyTDP
+      curl -L $(curl -s https://api.github.com/repos/aarron-lee/SimpleDeckyTDP/releases/latest | grep "browser_download_url" | cut -d '"' -f 4) -o /tmp/SimpleDeckyTDP.tar.gz
+      sudo tar -xzf /tmp/SimpleDeckyTDP.tar.gz -C $HOME/homebrew/plugins
+      rm /tmp/SimpleDeckyTDP.tar.gz
+    else
+      echo 'Please install Decky Loader by running ujust get-decky first.'
+    fi
+
 # Install EmuDeck (https://www.emudeck.com/)
 get-emudeck:
     #!/usr/bin/env bash
