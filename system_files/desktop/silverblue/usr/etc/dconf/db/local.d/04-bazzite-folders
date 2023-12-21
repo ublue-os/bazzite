@@ -18,6 +18,7 @@ name='X-GNOME-Utilities.directory'
 translate=true
 
 [org/gnome/desktop/app-folders/folders/Distrobox]
+apps=['io.github.dvlv.boxbuddyrs.desktop']
 categories=['Distrobox']
 name='Distrobox'
 translate=false
