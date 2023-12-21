@@ -70,7 +70,8 @@ managing PipeWire.
        -Dsystemd=enabled \
        -Dsystemd-user-service=true \
        -Dintrospection=enabled \
-       -Delogind=disabled
+       -Delogind=disabled \
+       --sysconfdir=%{_rundir}
 %meson_build
 
 %install
@@ -80,8 +81,6 @@ managing PipeWire.
 mkdir -p %{buildroot}%{_sysconfdir}/wireplumber/{bluetooth.lua.d,common,main.lua.d,policy.lua.d}
 
 %find_lang %{name}
-
-ln -s /run/wireplumber %{buildroot}%{_datadir}/wireplumber
 
 %posttrans
 %systemd_user_post %{name}.service
@@ -100,7 +99,11 @@ fi
 %{_bindir}/wireplumber
 %{_bindir}/wpctl
 %{_bindir}/wpexec
-%{_sysconfdir}/wireplumber
+%dir %{_sysconfdir}/wireplumber
+%dir %{_sysconfdir}/wireplumber/bluetooth.lua.d
+%dir %{_sysconfdir}/wireplumber/common
+%dir %{_sysconfdir}/wireplumber/main.lua.d
+%dir %{_sysconfdir}/wireplumber/policy.lua.d
 %{_datadir}/wireplumber/
 %{_datadir}/zsh/site-functions/_wpctl
 %{_userunitdir}/wireplumber.service
