@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
 
 if command -v /usr/bin/prompt > /dev/null; then
-  /usr/bin/prompt -- "$@"
+  if test -z "$@"; then
+    /usr/bin/prompt --new-window
+  else
+    /usr/bin/prompt -- "$@"
+  fi
 elif grep '^org\.gnome\.Prompt$' <<< $(/usr/bin/flatpak list --app --columns=application); then
-  /usr/bin/flatpak run org.gnome.Prompt -- "$@"
+  if test -z "$@"; then
+    /usr/bin/flatpak run org.gnome.Prompt --new-window
+  else
+    /usr/bin/flatpak run org.gnome.Prompt -- "$@"
+  fi
 else
   /usr/bin/gnome-terminal -- "$@"
 fi
