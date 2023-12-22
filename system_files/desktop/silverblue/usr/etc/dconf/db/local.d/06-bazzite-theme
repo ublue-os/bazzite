@@ -41,3 +41,6 @@ secondary-color='#211B33'
 [org/gnome/shell/extensions/just-perfection]
 animation=4
 theme=true
+window-demands-attention-focus=true
+switcher-popup-delay=true
+workspace-wrap-around=true

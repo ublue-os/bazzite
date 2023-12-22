@@ -25,6 +25,7 @@ font-antialiasing='rgba'
 [org/gnome/shell/extensions/just-perfection]
 search=false
 theme=false
+osd-position=1
 
 [org/gnome/shell/extensions/Logo-menu]
 show-gamemode=true
