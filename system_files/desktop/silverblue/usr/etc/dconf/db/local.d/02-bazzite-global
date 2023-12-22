@@ -8,17 +8,22 @@ switch-windows-backward=['<Shift><Alt>Tab']
 tap-to-click=true
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
+binding='<Control><Alt>t'
+command='prompt --new-window'
+name='Prompt'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
 binding='<Control><Alt>KP_Delete'
 command='flatpak run io.missioncenter.MissionCenter'
 name='Mission Center'
 
-[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2]
 binding='<Control><Shift>Escape'
 command="flatpak run io.missioncenter.MissionCenter"
 name='Mission Center'
 
 [org/gnome/settings-daemon/plugins/media-keys]
-custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/']
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/']
 
 [org/gtk/settings/file-chooser]
 sort-directories-first=true
@@ -39,10 +44,25 @@ download-updates-notify=false
 
 [com/github/stunkymonkey/nautilus-open-any-terminal]
 terminal='prompt'
-keybindings=['<Ctrl><Alt>t']
+keybindings=''
 new-tab=false
 flatpak='off'
 
 [org/gnome/Prompt]
 restore-session=false
 restore-window-size=false
+
+[org/gnome/shell/extensions/Logo-menu]
+symbolic-icon=false
+menu-button-icon-image=0
+menu-button-icon-size=20
+hide-icon-shadow=false
+menu-button-terminal='prompt --new-window'
+menu-button-system-monitor='flatpak run io.missioncenter.MissionCenter'
+menu-button-extensions-app='com.mattjakeman.ExtensionManager.desktop'
+menu-button-software-center='gnome-software'
+show-activities-button=true
+show-lockscreen=false
+show-power-option=false
+show-gamemode=false
+hide-forcequit=true

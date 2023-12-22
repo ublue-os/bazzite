@@ -461,10 +461,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         steamdeck-gnome-presets \
         gnome-shell-extension-caribou-blocker \
         sddm && \
-    wget https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf -O /usr/etc/dxvk-example.conf  && \
-    sed -i '/show-gamemode/{n;s/false/true/}' /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas/org.gnome.shell.extensions.logo-menu.gschema.xml && \
-    rm -f /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas/gschemas.compiled && \
-    glib-compile-schemas /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas/ \
+    wget https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf -O /usr/etc/dxvk-example.conf \
 ; fi
 
 # Install new packages
