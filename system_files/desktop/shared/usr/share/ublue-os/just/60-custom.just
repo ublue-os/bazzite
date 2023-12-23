@@ -6,12 +6,12 @@ reset-waydroid:
 
 # Quickly initialize a waydroid image
 init-waydroid:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     sudo waydroid init -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor'
 
 # Launch Waydroid configuration helper
 configure-waydroid:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     git clone https://github.com/casualsnek/waydroid_script.git --depth 1 /tmp/waydroid_script
     python -m venv /tmp/waydroid_script/venv
     source /tmp/waydroid_script/venv/bin/activate
@@ -22,20 +22,20 @@ configure-waydroid:
 
 # Install Sunshine
 install-sunshine:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     flatpak install --system --noninteractive flathub dev.lizardbyte.app.Sunshine
     flatpak run --command=additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable || true
     echo "Sunshine is installed!"
 
 # Remove Sunshine
 remove-sunshine:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     flatpak run --command=remove-additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable || true
     flatpak uninstall --delete-data --noninteractive dev.lizardbyte.sunshine
 
 # Autostart Sunshine
 autostart-sunshine:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     systemctl enable --user --now sunshine.service
 
 # Install LACT for overclocking & undervolting AMD GPUs
@@ -65,7 +65,7 @@ install-openrazer:
 
 # Install Greenlight xCloud and xHome streaming AppImage
 get-greenlight:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
       wget https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta15/Greenlight-2.0.0-beta15.AppImage -O $HOME/Downloads/Greenlight.AppImage
       flatpak run it.mijorus.gearlever $HOME/Downloads/Greenlight.AppImage
@@ -76,7 +76,7 @@ get-greenlight:
 
 # Install Wootility for configuring Wooting Keyboards
 get-wootility:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
       wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Downloads/wootility.AppImage
       flatpak run it.mijorus.gearlever $HOME/Downloads/wootility.AppImage
@@ -87,7 +87,7 @@ get-wootility:
 
 # Enable Supergfxctl, a Nvidia GPU switcher for hybrid laptops
 enable-supergfxctl:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
     if [[ "$IMAGE_FLAVOR" =~ "nvidia" ]]; then
@@ -98,14 +98,14 @@ enable-supergfxctl:
 
 # Patch a bug in some 32-bit Source 1.x titles that causes them to crash at startup
 patch-source1-tcmalloc:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     echo 'Add the following as a launch option in Steam:'
     echo 'LD_PRELOAD=/usr/lib/libtcmalloc_and_profiler.so.4 %command%'
     echo "Delete libtcmalloc_minimal.so.x in the game's bin folder if present."
 
 # Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModCEFCodecFix)
 patch-gmod:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     mkdir -p /tmp/patch-gmod
     wget \
       $(curl -s https://api.github.com/repos/solsticegamestudios/GModCEFCodecFix/releases/latest | \
@@ -117,7 +117,7 @@ patch-gmod:
 
 # Install Adwaita-for-Steam theme for CSS Loader (https://github.com/tkashkin/Adwaita-for-Steam)
 install-adwaita-for-steam:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
@@ -132,7 +132,7 @@ install-adwaita-for-steam:
 
 # Set system to boot without showing the grub screen with options
 hide-grub:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
     echo 'GRUB_TIMEOUT_STYLE=hidden' | sudo tee -a /etc/default/grub 1>/dev/null
     echo 'GRUB_HIDDEN_TIMEOUT=1' | sudo tee -a /etc/default/grub 1>/dev/null
@@ -144,7 +144,7 @@ hide-grub:
 
 # Set system to boot with the grub screen showing options (Default)
 unhide-grub:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     sudo sed -i '/GRUB_HIDDEN_TIMEOUT=1/d' /etc/default/grub
     sudo sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub
     sudo sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=5/g' /etc/default/grub
@@ -164,7 +164,7 @@ fix-screenshare:
 
 # Add user to "input" group required by certain controller drivers
 add-user-to-input-group:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     if ! grep -q "input" /etc/group; then
       sudo bash -c 'grep "input" /lib/group >> /etc/group'
     fi
@@ -172,7 +172,7 @@ add-user-to-input-group:
 
 # Enable Virtualization and add workaround for a specific windows VM crash
 enable-virtualization:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
     if [[ -z ${virt_test} ]]; then
       echo "Installing QEMU and virt-manager..."
@@ -189,7 +189,7 @@ enable-virtualization:
 
 # Enable VFIO on the system if virtualization is enabled
 enable-vfio:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     echo "Enabling VFIO..."
     VIRT_TEST=$(rpm-ostree kargs)
     CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
@@ -223,7 +223,7 @@ enable-vfio:
 
 # Enable watchdog (default, recovers the system in the event of a malfunction, possible impact to performance due to interrupts)
 enable-watchdog:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
     WATCHDOG_KARGS="--delete-if-present=nowatchdog"
     if [[ "$CPU_MODEL" =~ "Intel" ]]; then
@@ -235,7 +235,7 @@ enable-watchdog:
 
 # Disable watchdog (potential performance improvement due to fewer interrupts)
 disable-watchdog:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
     WATCHDOG_KARGS="--append-if-missing=nowatchdog"
     if [[ "$CPU_MODEL" =~ "Intel" ]]; then
