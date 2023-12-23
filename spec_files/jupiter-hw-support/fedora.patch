@@ -4,7 +4,7 @@ index 7b7a206..273a162 100755
 +++ b/usr/bin/jupiter-biosupdate
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  set -e
  
  ## Environment overrides
@@ -14,7 +14,7 @@ index bd56a57..0bef6f2 100755
 +++ b/usr/bin/jupiter-check-support
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -e
  
@@ -24,7 +24,7 @@ index 4f850b3..ce69763 100755
 +++ b/usr/bin/jupiter-controller-update
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -euo pipefail
  
@@ -34,7 +34,7 @@ index 1d7b792..c716d12 100755
 +++ b/usr/bin/steamos-polkit-helpers/jupiter-biosupdate
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -44,7 +44,7 @@ index 9a442c8..862cec7 100755
 +++ b/usr/bin/steamos-polkit-helpers/jupiter-check-support
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -54,7 +54,7 @@ index 15c695b..8733486 100755
 +++ b/usr/bin/steamos-polkit-helpers/jupiter-dock-updater
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -64,7 +64,7 @@ index 2dfa176..ce77476 100755
 +++ b/usr/bin/steamos-polkit-helpers/jupiter-fan-control
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -74,7 +74,7 @@ index 775b5f4..f97753b 100755
 +++ b/usr/bin/steamos-polkit-helpers/jupiter-get-als-gain
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -84,7 +84,7 @@ index b93f523..1678640 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-devkit-mode
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -94,7 +94,7 @@ index 82b602c..ab77256 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-disable-wireless-power-management
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -104,7 +104,7 @@ index fa7698f..ba4ab84 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-enable-sshd
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -114,7 +114,7 @@ index 3a2a367..aaeb20a 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-factory-reset-config
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -124,7 +124,7 @@ index d9866a9..dcfe6b9 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-format-device
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -134,7 +134,7 @@ index 6d9859f..53b4f2a 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -144,7 +144,7 @@ index 1841ce0..e7e234e 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-poweroff-now
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -154,7 +154,7 @@ index 907133b..1c0f6c6 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-priv-write
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -164,7 +164,7 @@ index b4dcc81..6dc8018 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-reboot-now
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -174,7 +174,7 @@ index ad466f2..60f9f8c 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-reboot-other
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -184,7 +184,7 @@ index 9e08cd6..189c805 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-restart-sddm
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -194,7 +194,7 @@ index 1b1d6c1..73f8547 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-select-branch
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -204,7 +204,7 @@ index f63e164..400ab9e 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-set-hostname
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -214,7 +214,7 @@ index 2811d82..a3935c4 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-set-timezone
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -224,7 +224,7 @@ index 38f92a1..296a6c7 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-trim-devices
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -234,7 +234,7 @@ index bae7403..1a7e948 100755
 +++ b/usr/bin/steamos-polkit-helpers/steamos-update
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -eu
  
@@ -244,7 +244,7 @@ index 6529e23..9de19b1 100755
 +++ b/usr/lib/hwsupport/format-device.sh
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -e
  
@@ -254,7 +254,7 @@ index 36df682..3e13083 100755
 +++ b/usr/lib/hwsupport/format-sdcard.sh
 @@ -1,3 +1,3 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  exec /usr/lib/hwsupport/format-device.sh --device /dev/mmcblk0 "$@"
 diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
@@ -263,7 +263,7 @@ index 9e40c22..ce613b6 100755
 +++ b/usr/lib/hwsupport/steamos-automount.sh
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -euo pipefail
  
@@ -273,7 +273,7 @@ index f5b3e8e..cc438af 100755
 +++ b/usr/lib/hwsupport/trim-devices.sh
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -e
  
@@ -283,7 +283,7 @@ index 8089778..f0d591e 100755
 +++ b/usr/share/jupiter_bios_updater/H2OFFTx64-G.sh
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  TARGET_DIR=.
  EXE_FILE=h2offt-g
@@ -293,7 +293,7 @@ index ab3513f..9243bf3 100755
 +++ b/usr/share/jupiter_bios_updater/H2OFFTx64.sh
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  TARGET_DIR=.
  EXE_FILE=h2offt
@@ -317,7 +317,6 @@ index 5ee6d41..c662149 100755
  import click
  import crcmod
  import datetime
-
 diff --git a/usr/lib/hwsupport/power-button-handler.py b/usr/lib/hwsupport/power-button-handler.py
 index 1a46251..73f2a3d 100755
 --- a/usr/lib/hwsupport/power-button-handler.py
@@ -335,6 +334,36 @@ index 1a46251..73f2a3d 100755
 +++ jupiter-initial-firmware-update
 @@ -1,4 +1,4 @@
 -#!/bin/bash
-+#!/usr/bin/sh
++#!/usr/bin/bash
  
  set -euo pipefail
+
+diff --git a/usr/bin/amd_system_info b/usr/bin/amd_system_info
+index 1a46251..73f2a3d 100755
+--- a/usr/bin/amd_system_info
++++ b/usr/bin/amd_system_info
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/usr/bin/bash
+ 
+ # script from AMD to use when reporting bugs to them
+ 
+diff --git a/usr/bin/steamos-polkit-helpers/jupiter-amp-control b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
+index 1a46251..73f2a3d 100755
+--- a/usr/bin/steamos-polkit-helpers/jupiter-amp-control
++++ b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/usr/bin/bash
+ 
+ set -eu
+ 
+diff --git a/usr/bin/steamos-polkit-helpers/steamos-retrigger-automounts b/usr/bin/steamos-polkit-helpers/steamos-retrigger-automounts
+index 1a46251..73f2a3d 100755
+--- a/usr/bin/steamos-polkit-helpers/steamos-retrigger-automounts
++++ b/usr/bin/steamos-polkit-helpers/steamos-retrigger-automounts
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/usr/bin/bash
+ 
+ # Helper to send reload to all active steamos-automount services, via pkexec if necessary/allowed

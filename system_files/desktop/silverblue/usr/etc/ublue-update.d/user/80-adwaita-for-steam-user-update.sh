@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 shopt -s nullglob
 
 if [ -d "$HOME/homebrew/themes/Adwaita-for-Steam" ]; then

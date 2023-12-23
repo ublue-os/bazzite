@@ -4,7 +4,7 @@ index 7cc1b05..22b345f 100755
 +++ b/usr/bin/steamos-nested-desktop
 @@ -1,4 +1,4 @@
 -#!/bin/sh
-+#!/usr/bin/env bash
++#!/usr/bin/bash
  
  # Remove the performance overlay, it meddles with some tasks
  unset LD_PRELOAD
@@ -14,7 +14,7 @@ index 7cc1b05..22b345f 100755
  cat <<EOF > $XDG_RUNTIME_DIR/nested_plasma/kwin_wayland_wrapper
 -#!/bin/sh
 -/usr/bin/kwin_wayland_wrapper --width 1280 --height 800 --no-lockscreen \$@
-+#!/usr/bin/env bash
++#!/usr/bin/bash
 +source /etc/default/steamos-nested-desktop
 +
 +/usr/bin/kwin_wayland_wrapper --width ${STEAMOS_NESTED_DESKTOP_WIDTH:-1280} --height ${STEAMOS_NESTED_DESKTOP_HEIGHT:-800} --no-lockscreen \$@

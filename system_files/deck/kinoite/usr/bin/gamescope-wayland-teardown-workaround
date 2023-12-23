@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/usr/bin/bash
 
 set -eu
 
-TARGETS=('/bin/bash /usr/bin/gamescope-session'
+TARGETS=('/usr/bin/bash /usr/bin/gamescope-session'
          '/usr/bin/kwin_x11')
 
 for target in "${TARGETS[@]}"; do

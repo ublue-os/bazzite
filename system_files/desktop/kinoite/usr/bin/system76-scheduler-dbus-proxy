@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 DBUS_SERVICE="com.system76.Scheduler"
 DBUS_PATH="/com/system76/Scheduler"
 DBUS_INTERFACE="com.system76.Scheduler"

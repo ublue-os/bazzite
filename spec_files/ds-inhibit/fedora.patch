@@ -1,8 +1,8 @@
---- ds-inhibit.py
-+++ ds-inhibit.py
+--- ds_inhibit.py
++++ ds_inhibit.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/python
-+#!/bin/env python3 -u
++#!/usr/bin/python3
  # SPDX-License-Identifier: BSD-2-Clause
  # vim:ts=4:sw=4:et
  #

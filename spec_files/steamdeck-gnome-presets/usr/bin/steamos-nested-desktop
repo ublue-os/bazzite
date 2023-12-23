@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 source /etc/default/steamos-nested-desktop
 
 # Remove the performance overlay, it meddles with some tasks
