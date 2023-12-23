@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 if [[ $(podman ps -a --no-trunc --format {{.Names}} | grep -E '(^|\s)bazzite-arch($|\s)') ]]; then
 	unset SUDO_USER # avoid distrobox sudo checks

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 ACTION="$1"
 
 source /etc/default/cec-control

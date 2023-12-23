@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 set -e
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"

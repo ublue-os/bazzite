@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 # The Steam client is known to call this script with the following parameter combinations:
 # steamos-update --supports-duplicate-detection     -- should do nothing
