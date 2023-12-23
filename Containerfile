@@ -479,7 +479,6 @@ RUN rpm-ostree install \
     steam_notif_daemon \
     ryzenadj \
     sdgyrodsu \
-    sddm-sugar-steamOS \
     ibus-pinyin \
     ibus-table-chinese-cangjie \
     ibus-table-chinese-quick \
