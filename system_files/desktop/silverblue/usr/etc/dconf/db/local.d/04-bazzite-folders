@@ -1,5 +1,5 @@
 [org/gnome/desktop/app-folders]
-folder-children=['Games', 'GamingUtilities', 'Utilities', 'Distrobox', 'WaydroidApps', 'Wine', 'YaST', 'Pardus']
+folder-children=['Games', 'GamingUtilities', 'Utilities', 'Containers', 'WaydroidApps', 'Wine', 'YaST', 'Pardus']
 
 [org/gnome/desktop/app-folders/folders/GamingUtilities]
 apps=['protontricks.desktop', 'discover_overlay_configure.desktop', 'com.vysp3r.ProtonPlus.desktop', 'Waydroid.desktop', 'io.github.benjamimgois.goverlay.desktop', 'com.gerbilsoft.rom-properties.rp-config.desktop', 'input-remapper-gtk.desktop', 'steamos-nested-desktop.desktop']
@@ -17,10 +17,10 @@ categories=['X-GNOME-Utilities']
 name='X-GNOME-Utilities.directory'
 translate=true
 
-[org/gnome/desktop/app-folders/folders/Distrobox]
+[org/gnome/desktop/app-folders/folders/Containers]
 apps=['io.github.dvlv.boxbuddyrs.desktop']
 categories=['Distrobox']
-name='Distrobox'
+name='Containers'
 translate=false
 
 [org/gnome/desktop/app-folders/folders/YaST]
@@ -37,7 +37,7 @@ translate=false
 [org/gnome/desktop/app-folders/folders/WaydroidApps]
 excluded-apps=['Waydroid.desktop']
 categories=['X-WayDroid-App']
-name='Waydroid Apps'
+name='Android Apps'
 translate=false
 
 [org/gnome/desktop/app-folders/folders/Games]
