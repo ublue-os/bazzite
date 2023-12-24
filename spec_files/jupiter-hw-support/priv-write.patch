@@ -50,18 +50,18 @@ index 296996e..ae0ae3e 100755
  
  if [[ "$WRITE_PATH" == /sys/class/drm/card*/device/power_dpm_force_performance_level ]]; then
 -   CommitWrite
-+   for i in $(ls /sys/class/drm/):
++   for i in $(ls /sys/class/drm/card*/device/power_dpm_force_performance_level)
 +   do
-+      WRITE_PATH="/sys/class/drm/$i/device/power_dpm_force_performance_level"
++      WRITE_PATH="$i"
 +      CommitWrite
 +   done
  fi
  
  if [[ "$WRITE_PATH" == /sys/class/drm/card*/device/pp_od_clk_voltage ]]; then
 -   CommitWrite
-+   for i in $(ls /sys/class/drm/):
++   for i in $(ls /sys/class/drm/card*/device/pp_od_clk_voltage)
 +   do
-+      WRITE_PATH="/sys/class/drm/$i/device/pp_od_clk_voltage"
++      WRITE_PATH="$i"
 +      CommitWrite
 +   done
  fi
