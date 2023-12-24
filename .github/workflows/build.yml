@@ -65,10 +65,10 @@ jobs:
             base_image_flavor: framework
     steps:
       - name: Verify base image
-        uses: EyeCantCU/cosign-action/verify@v0.1.2
+        uses: EyeCantCU/cosign-action/verify@v0.2.0
         with:
-          container: ghcr.io/${{ github.repository_owner }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}
-          pubkey: https://raw.githubusercontent.com/ublue-os/main/main/cosign.pub
+          containers: ${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/${{ matrix.base_image_flavor }}/main/cosign.pub
 
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
@@ -253,10 +253,10 @@ jobs:
             --disable-content-trust
 
       - name: Sign container image
-        uses: EyeCantCU/cosign-action/sign@v0.1.2
+        uses: EyeCantCU/cosign-action/sign@v0.2.0
         if: github.event_name != 'pull_request'
         with:
-          container: ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}
+          containers: ${{ env.IMAGE_NAME }}
           registry-token: ${{ secrets.GITHUB_TOKEN }}
           signing-secret: ${{ secrets.SIGNING_SECRET }}
           tags: ${{ steps.push.outputs.digest }}
