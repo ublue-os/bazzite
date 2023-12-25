@@ -76,7 +76,6 @@ screens:
           default: false
           packages:
           - Install Nix Package Support: sudo -A ujust nix-install
-          - Install Fleek (Requires Nix): ujust fleek-install
         Oversteer:
           description: Application to control supported steering wheels
           default: false

@@ -38,7 +38,6 @@ screens:
           default: false
           packages:
           - Install Nix Package Support: sudo -A ujust nix-install
-          - Install Fleek (Requires Nix): ujust fleek-install
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware
           default: false
