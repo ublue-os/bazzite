@@ -1,0 +1,235 @@
+diff --git a/src/drm.cpp b/src/drm.cpp
+index c2694f0..3a876ba 100644
+--- a/src/drm.cpp
++++ b/src/drm.cpp
+@@ -40,6 +40,12 @@ extern "C" {
+ 
+ #include "gamescope-control-protocol.h"
+ 
++#define JUPITER_BOE_PID 0x3001
++#define JUPITER_B_PID   0x3002
++#define JUPITER_DHD_PID 0x4001
++#define GALILEO_SDC_PID 0x3003
++#define GALILEO_BOE_PID 0x3004
++
+ struct drm_t g_DRM = {};
+ 
+ uint32_t g_nDRMFormat = DRM_FORMAT_INVALID;
+@@ -521,7 +527,7 @@ drm_hdr_parse_edid(drm_t *drm, struct connector *connector, const struct di_edid
+ 			drm_log.errorf("[colorimetry]: GAMESCOPE_INTERNAL_COLORIMETRY_OVERRIDE specified, but could not parse \"rx ry gx gy bx by wx wy\"");
+ 		}
+ 	}
+-	else if (connector->is_steam_deck_display && !connector->is_galileo_display)
++	else if (connector->steam_deck_display_pid == JUPITER_BOE_PID || connector->steam_deck_display_pid == JUPITER_B_PID)
+ 	{
+ 		drm_log.infof("[colorimetry]: Steam Deck (internal display) detected.");
+ 
+@@ -827,9 +833,6 @@ void drm_update_patched_edid( drm_t *drm )
+ 	create_patched_edid(drm->connector->edid_data.data(), drm->connector->edid_data.size(), drm, drm->connector);
+ }
+ 
+-#define GALILEO_SDC_PID 0x3003
+-#define GALILEO_BOE_PID 0x3004
+-
+ static void parse_edid( drm_t *drm, struct connector *conn)
+ {
+ 	memset(conn->make_pnp, 0, sizeof(conn->make_pnp));
+@@ -892,21 +895,29 @@ static void parse_edid( drm_t *drm, struct connector *conn)
+ 		}
+ 	}
+ 
+-	drm_log.infof("Connector make %s model %s", conn->make_pnp, conn->model );
++	drm_log.infof("Connector make %s model %s pid 0x%x", conn->make_pnp, conn->model, vendor_product->product);
+ 
+-	conn->is_steam_deck_display =
++	bool is_steam_deck_display =
+ 		(strcmp(conn->make_pnp, "WLC") == 0 && strcmp(conn->model, "ANX7530 U") == 0) ||
+ 		(strcmp(conn->make_pnp, "ANX") == 0 && strcmp(conn->model, "ANX7530 U") == 0) ||
+ 		(strcmp(conn->make_pnp, "VLV") == 0 && strcmp(conn->model, "ANX7530 U") == 0) ||
+-		(strcmp(conn->make_pnp, "VLV") == 0 && strcmp(conn->model, "Jupiter") == 0);
++		(strcmp(conn->make_pnp, "VLV") == 0 && strcmp(conn->model, "Jupiter") == 0) ||
++		(strcmp(conn->make_pnp, "DHD") == 0 && strcmp(conn->model, "DeckHD-1200p") == 0);
+ 
+-	if ((vendor_product->product == GALILEO_SDC_PID) || (vendor_product->product == GALILEO_BOE_PID)) {
+-		conn->is_galileo_display = vendor_product->product;
+-		conn->valid_display_rates = std::span(galileo_display_rates);
+-	} else {
+-		conn->is_galileo_display = 0;
+-		if ( conn->is_steam_deck_display )
++	if (is_steam_deck_display) {
++		if ((strcmp(conn->make_pnp, "DHD") == 0 && strcmp(conn->model, "DeckHD-1200p") == 0)) {
++			// Hardcode the pid to support old DeckHD BIOS build where the pid matches to JUPITER_BOE_PID
++			conn->steam_deck_display_pid = JUPITER_DHD_PID;
++		} else {
++			conn->steam_deck_display_pid = vendor_product->product;
++		}
++		if (conn->steam_deck_display_pid == GALILEO_SDC_PID || conn->steam_deck_display_pid == GALILEO_BOE_PID) {
++			conn->valid_display_rates = std::span(galileo_display_rates);
++		} else {
+ 			conn->valid_display_rates = std::span(steam_deck_display_rates);
++		}
++	} else {
++		conn->steam_deck_display_pid = 0;
+ 	}
+ 
+ 	drm_hdr_parse_edid(drm, conn, edid);
+@@ -3072,7 +3083,7 @@ bool drm_set_refresh( struct drm_t *drm, int refresh )
+ 		case DRM_MODE_GENERATE_FIXED:
+ 			{
+ 				const drmModeModeInfo *preferred_mode = find_mode(connector, 0, 0, 0);
+-				generate_fixed_mode( &mode, preferred_mode, refresh, drm->connector->is_steam_deck_display, drm->connector->is_galileo_display );
++				generate_fixed_mode( &mode, preferred_mode, refresh, drm->connector->steam_deck_display_pid );
+ 				break;
+ 			}
+ 		}
+@@ -3272,4 +3283,4 @@ std::span<uint32_t> drm_get_valid_refresh_rates( struct drm_t *drm )
+ 		return drm->connector->valid_display_rates;
+ 
+ 	return std::span<uint32_t>{};
+-}
++}
+\ No newline at end of file
+diff --git a/src/drm.hpp b/src/drm.hpp
+index 6810797..7f80c5e 100644
+--- a/src/drm.hpp
++++ b/src/drm.hpp
+@@ -177,9 +177,8 @@ struct connector {
+ 	char make_pnp[4];
+ 	char *make;
+ 	char *model;
+-	bool is_steam_deck_display;
++	uint16_t steam_deck_display_pid;
+ 	std::span<uint32_t> valid_display_rates{};
+-	uint16_t is_galileo_display;
+ 
+ 	int target_refresh;
+ 	bool vrr_capable;
+@@ -414,4 +413,4 @@ extern bool g_bSupportsAsyncFlips;
+ const char* drm_get_patched_edid_path();
+ void drm_update_patched_edid(drm_t *drm);
+ 
+-void drm_send_gamescope_control(wl_resource *control, struct drm_t *drm);
++void drm_send_gamescope_control(wl_resource *control, struct drm_t *drm);
+\ No newline at end of file
+diff --git a/src/modegen.cpp b/src/modegen.cpp
+index 197641c..faaafe5 100644
+--- a/src/modegen.cpp
++++ b/src/modegen.cpp
+@@ -293,6 +293,21 @@ unsigned int galileo_boe_vfp[] =
+ 	172,152,136,120,100,84,68,52,36,20,8
+ };
+ 
++#define JUPITER_BOE_PID     0x3001
++#define JUPITER_B_PID       0x3002
++#define JUPITER_HFP         40
++#define JUPITER_HSYNC       4
++#define JUPITER_HBP         0
++#define JUPITER_VFP         30
++#define JUPITER_VSYNC       4
++#define JUPITER_VBP         8
++#define JUPITER_DHD_PID     0x4001
++#define JUPITER_DHD_HFP     40
++#define JUPITER_DHD_HSYNC   20
++#define JUPITER_DHD_HBP     40
++#define JUPITER_DHD_VFP     18
++#define JUPITER_DHD_VSYNC   2
++#define JUPITER_DHD_VBP     20
+ #define GALILEO_MIN_REFRESH 45
+ #define GALILEO_SDC_PID     0x3003
+ #define GALILEO_SDC_VSYNC   1
+@@ -312,16 +327,37 @@ unsigned int get_galileo_vfp( int vrefresh, unsigned int * vfp_array, unsigned i
+ 	return 0;
+ }
+ 
+-void generate_fixed_mode(drmModeModeInfo *mode, const drmModeModeInfo *base, int vrefresh, 
+-							bool use_tuned_clocks, unsigned int use_vfp )
++void generate_fixed_mode(drmModeModeInfo *mode, const drmModeModeInfo *base, int vrefresh, uint16_t display_pid)
+ {
+ 	*mode = *base;
+ 	if (!vrefresh)
+ 		vrefresh = 60;
+-	if ( use_vfp ) {
+-		unsigned int vfp, vsync, vbp = 0;
+-		if (GALILEO_SDC_PID == use_vfp) {
+-			vfp = get_galileo_vfp( vrefresh, galileo_sdc_vfp, ARRAY_SIZE(galileo_sdc_vfp) );
++	if (display_pid) {
++		unsigned int vfp = 0, vsync = 0, vbp = 0;
++		if (display_pid == JUPITER_BOE_PID || display_pid == JUPITER_B_PID) {
++			mode->hdisplay = 800;
++			mode->hsync_start = mode->hdisplay + JUPITER_HFP;
++			mode->hsync_end = mode->hsync_start + JUPITER_HSYNC;
++			mode->htotal = mode->hsync_end + JUPITER_HBP;
++
++			mode->vdisplay = 1280;
++			vfp = 30;
++			vsync = JUPITER_VSYNC;
++			vbp = JUPITER_VBP;
++			mode->clock = ( ( mode->htotal * mode->vtotal * vrefresh ) + 999 ) / 1000;
++		} else if (display_pid == JUPITER_DHD_PID) {
++			mode->hdisplay = 1200;
++			mode->hsync_start = mode->hdisplay + JUPITER_DHD_HFP;
++			mode->hsync_end = mode->hsync_start + JUPITER_DHD_HSYNC;
++			mode->htotal = mode->hsync_end + JUPITER_DHD_HBP;
++
++			mode->vdisplay = 1920;
++			vfp = JUPITER_DHD_VFP;
++			vsync = JUPITER_DHD_VSYNC;
++			vbp = JUPITER_DHD_VBP;
++			mode->clock = ( ( mode->htotal * mode->vtotal * vrefresh ) + 999 ) / 1000;
++		} else if (display_pid == GALILEO_SDC_PID) {
++			unsigned int vfp = get_galileo_vfp( vrefresh, galileo_sdc_vfp, ARRAY_SIZE(galileo_sdc_vfp) );
+ 			// if we did not find a matching rate then we default to 60 Hz
+ 			if ( !vfp ) {
+ 				vrefresh = 60;
+@@ -329,8 +365,8 @@ void generate_fixed_mode(drmModeModeInfo *mode, const drmModeModeInfo *base, int
+ 			}
+ 			vsync = GALILEO_SDC_VSYNC;
+ 			vbp = GALILEO_SDC_VBP;
+-		} else { // BOE Panel
+-			vfp = get_galileo_vfp( vrefresh, galileo_boe_vfp, ARRAY_SIZE(galileo_boe_vfp) );
++		} else if (display_pid == GALILEO_BOE_PID) {
++			unsigned int vfp = get_galileo_vfp( vrefresh, galileo_boe_vfp, ARRAY_SIZE(galileo_boe_vfp) );
+ 			// if we did not find a matching rate then we default to 60 Hz
+ 			if ( !vfp ) {
+ 				vrefresh = 60;
+@@ -338,28 +374,14 @@ void generate_fixed_mode(drmModeModeInfo *mode, const drmModeModeInfo *base, int
+ 			}
+ 			vsync = GALILEO_BOE_VSYNC;
+ 			vbp = GALILEO_BOE_VBP;
+-		} 
++		}
+ 		mode->vsync_start = mode->vdisplay + vfp;
+ 		mode->vsync_end = mode->vsync_start + vsync;
+ 		mode->vtotal = mode->vsync_end + vbp;
+ 	} else {
+-		if ( use_tuned_clocks )
+-		{
+-			mode->hdisplay = 800;
+-			mode->hsync_start = 840;
+-			mode->hsync_end = 844;
+-			mode->htotal = 884;
+-
+-			mode->vdisplay = 1280;
+-			mode->vsync_start = 1310;
+-			mode->vsync_end = 1314;
+-			mode->vtotal = 1322;
+-		}
+-
+ 		mode->clock = ( ( mode->htotal * mode->vtotal * vrefresh ) + 999 ) / 1000;
+ 	}
+ 	mode->vrefresh = (1000 * mode->clock) / (mode->htotal * mode->vtotal);
+ 
+ 	snprintf(mode->name, sizeof(mode->name), "%dx%d@%d.00", mode->hdisplay, mode->vdisplay, vrefresh);
+ }
+-
+diff --git a/src/modegen.hpp b/src/modegen.hpp
+index 2513d34..17605b5 100644
+--- a/src/modegen.hpp
++++ b/src/modegen.hpp
+@@ -9,4 +9,4 @@
+ void generate_cvt_mode(drmModeModeInfo *mode, int hdisplay, int vdisplay,
+ 	float vrefresh, bool reduced, bool interlaced);
+ void generate_fixed_mode(drmModeModeInfo *mode, const drmModeModeInfo *base,
+-	int vrefresh, bool use_tuned_clocks, unsigned int use_vfp);
++	int vrefresh, uint16_t display_pid);
+\ No newline at end of file
