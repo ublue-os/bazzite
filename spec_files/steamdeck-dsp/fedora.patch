@@ -31,36 +31,6 @@ index 591514a..6678045 100755
 +cp -r bin/lv2/g++/valve_deck_microphone.lv2 $LIB_DIR/lv2/valve_deck_microphone.dsp
 +cp -r bin/svg $LIB_DIR/lv2/svg
 +cp version.txt $LIB_DIR/lv2/valve_audio_dsp_version.txt
-diff --git a/ucm2/conf.d/acp5x/HiFi-upstream.conf b/ucm2/conf.d/acp5x/HiFi-upstream.conf
-index e7cecda..e58ca73 100644
---- a/ucm2/conf.d/acp5x/HiFi-upstream.conf
-+++ b/ucm2/conf.d/acp5x/HiFi-upstream.conf
-@@ -16,8 +16,8 @@ SectionVerb {
-                 cset "name='BIQ Coefficients' 0x03,0x5a,0x00,0x06,0xfc,0xac,0x00,0x00,0xfe,0x58,0x00,0x00,0x03,0x50,0x00,0x06,0xfe,0x58,0x00,0x08"
-                 cset "name='Left Analog PCM Volume' 17"
-                 cset "name='Right Analog PCM Volume' 17"
--                cset "name='Left Digital PCM Volume' 817"
--                cset "name='Right Digital PCM Volume' 817"
-+                cset "name='Left Digital PCM Volume' 913"
-+                cset "name='Right Digital PCM Volume' 913"
-                 cset "name='Left DSP RX1 Source' ASPRX1"
-                 cset "name='Left DSP RX2 Source' ASPRX1"
-                 cset "name='Right DSP RX1 Source' ASPRX2"
-diff --git a/ucm2/conf.d/acp5x/HiFi.conf b/ucm2/conf.d/acp5x/HiFi.conf
-index fd78ecb..35d037b 100644
---- a/ucm2/conf.d/acp5x/HiFi.conf
-+++ b/ucm2/conf.d/acp5x/HiFi.conf
-@@ -18,8 +18,8 @@ SectionVerb {
-                 cset "name='BIQ Coefficients' 0x03,0x5a,0x00,0x06,0xfc,0xac,0x00,0x00,0xfe,0x58,0x00,0x00,0x03,0x50,0x00,0x06,0xfe,0x58,0x00,0x08" 
-                 cset "name='Left AMP PCM Gain' 17"
-                 cset "name='Right AMP PCM Gain' 17"
--                cset "name='Left Digital PCM Volume' 817"
--                cset "name='Right Digital PCM Volume' 817"
-+                cset "name='Left Digital PCM Volume' 913"
-+                cset "name='Right Digital PCM Volume' 913"
-                 cset "name='Left ASPRX1 Slot Position' 0"
-                 cset "name='Left ASPRX2 Slot Position' 1"
-                 cset "name='Left DSP RX1 Source' ASPRX1"
 diff --git a/ucm2/conf.d/sof-nau8821-max/HiFi.conf b/ucm2/conf.d/sof-nau8821-max/HiFi.conf
 index 48412ee..f0c5b82 100644
 --- a/ucm2/conf.d/sof-nau8821-max/HiFi.conf
