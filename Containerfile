@@ -88,7 +88,7 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
         /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
 
-# Update packages that commonly cause build issues.
+# Update packages that commonly cause build issues
 RUN rpm-ostree override replace \
     --experimental \
     --from repo=updates \
@@ -126,7 +126,7 @@ RUN rpm-ostree override replace \
         glibc32 \
         || true
 
-# Install Valve's patched Mesa, Pipewire and Bluez
+# Install Valve's patched Mesa, Pipewire and Bluez, add p-state patched PPD
 RUN rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
@@ -150,7 +150,11 @@ RUN rpm-ostree override replace \
         bluez-cups \
         bluez-libs \
         bluez-obexd \
-        xorg-x11-server-Xwayland
+        xorg-x11-server-Xwayland && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+        power-profiles-daemon
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
