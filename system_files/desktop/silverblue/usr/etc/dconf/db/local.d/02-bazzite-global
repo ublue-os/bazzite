@@ -7,6 +7,9 @@ switch-windows-backward = ['<Shift><Alt>Tab']
 [org/gnome/desktop/input-sources]
 xkb-options=['caps:ctrl_modifier']
 
+[org/gnome/desktop/peripherals/keyboard]
+numlock-state=true
+
 [org/gnome/desktop/peripherals/touchpad]
 tap-to-click=true
 
