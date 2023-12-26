@@ -7,6 +7,8 @@ URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/galileo-mura-extractor/-/archive/main/galileo-mura-extractor-main.tar.gz
 
+Patch0:         fedora.patch
+
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  gcc
 BuildRequires:  meson >= 0.54.0
@@ -19,7 +21,7 @@ Utilities for setting and reading mura correction on Galileo
 %define debug_package %{nil}
 
 %prep
-%autosetup -n galileo-mura-extractor-main
+%autosetup -p1 -n galileo-mura-extractor-main
 
 %build
 %meson
