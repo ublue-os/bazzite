@@ -56,7 +56,7 @@ cp -v vpower.toml %{buildroot}%{_sysconfdir}/%{name}.toml
 
 %files
 %license LICENSE
-%{_bindir}/%{name}
+%{_libexecdir}/%{name}
 %{_unitdir}/%{name}.service
 %{_sysconfdir}/%{name}.toml
 
