@@ -12,7 +12,7 @@ init-waydroid:
 # Launch Waydroid configuration helper
 configure-waydroid:
     #!/usr/bin/bash
-    git clone https://github.com/casualsnek/waydroid_script.git --depth 1 /tmp/waydroid_script
+    git clone https://github.com/ublue-os/waydroid_script.git --depth 1 /tmp/waydroid_script
     python -m venv /tmp/waydroid_script/venv
     source /tmp/waydroid_script/venv/bin/activate
     sudo pip install -r /tmp/waydroid_script/requirements.txt
