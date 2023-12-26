@@ -5,7 +5,7 @@
  
  [Service]
 -ExecStart=/usr/lib/vpower
-+ExecStart=/usr/bin/vpower
++ExecStart=/usr/libexec/vpower
  Restart=on-failure
  RestartSec=1
  
