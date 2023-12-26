@@ -4,9 +4,6 @@ switch-applications-backward = ['<Shift><Super>Tab']
 switch-windows = ['<Alt>Tab']
 switch-windows-backward = ['<Shift><Alt>Tab']
 
-[org/gnome/desktop/input-sources]
-xkb-options=['caps:ctrl_modifier']
-
 [org/gnome/desktop/peripherals/keyboard]
 numlock-state=true
 
