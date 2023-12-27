@@ -32,11 +32,6 @@ screens:
           default: true
           packages:
           - Enable Updates: sudo -A ujust enable-deck-bios-firmware-updates
-        BoilR:
-          description: Adds games from various clients to Steam
-          default: false
-          packages:
-          - Retrieve BoilR: ujust get-boilr
         Decky Loader:
           description: A plugin loader for the Steam Deck
           default: false
@@ -145,6 +140,7 @@ screens:
           description: "Rock and Stone!"
           default: false
           packages:
+          - BoilR: io.github.philipk.boilr
           - Bottles: com.usebottles.bottles
           - Chiaki4Deck (PlayStation Remote Play): io.github.streetpea.Chiaki4deck
           - Discord (Discover Overlay Included): com.discordapp.Discord

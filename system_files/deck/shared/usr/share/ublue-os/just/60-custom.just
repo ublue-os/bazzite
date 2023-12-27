@@ -120,39 +120,6 @@ get-wootility:
       chmod +x $HOME/Desktop/wootility.AppImage
     fi
 
-# Install BoilR, a Steam Library and art management tool
-get-boilr:
-    #!/usr/bin/bash
-    curl \
-      $(curl -s https://api.github.com/repos/PhilipK/BoilR/releases/latest | \
-      jq -r ".assets[] | select(.name | test(\"linux_BoilR\")) | .browser_download_url") \
-      --create-dirs -o ~/Applications/BoilR
-    chmod +x ~/Applications/BoilR
-    for px in 64 128 256;\
-    do \
-    curl $(curl -s https://api.github.com/repos/PhilipK/BoilR/contents/resources/$px/io.github.philipk.boilr.png | \
-    jq -r ".download_url") \
-    --create-dirs -o ~/.local/share/icons/hicolor/$px\x$px/apps/io.github.philipk.boilr.png;\
-    done
-    mkdir -p $HOME/.local/share/applications
-    HOME=$HOME
-    echo -e \
-    "[Desktop Entry]\n\
-    Version=1.0\n\
-    Type=Application\n\
-    Name=BoilR\n\
-    Comment=Add non-steam games to your steam library\n\
-    Categories=Utility;Amusement;\n\
-    Keywords=Steam;Heroic;Lutris;Itch;Origin;GOG;UPlay;Icons;Images;Non-Steam;Games;\n\
-    Icon=io.github.philipk.boilr\n\
-    Exec=$HOME/Applications/BoilR\n\
-    Terminal=false\n\
-    StartupNotify=true" \
-    > ~/.local/share/applications/BoilR.desktop
-    if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-      cp ~/.local/share/applications/BoilR.desktop ~/Desktop
-    fi
-
 # Patch a bug in some 32-bit Source 1.x titles that causes them to crash at startup
 patch-source1-tcmalloc:
     #!/usr/bin/bash
