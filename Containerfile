@@ -122,6 +122,12 @@ RUN rpm-ostree override replace \
         gstreamer1-plugin-libav \
         gstreamer1-plugins-ugly-free \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        python3 \
+        python3-libs \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true
