@@ -62,12 +62,17 @@ jobs:
           - base_name: bazzite-deck
             image_flavor: surface-nvidia
     steps:
-      - name: Maximize build space
-        uses: ublue-os/remove-unwanted-software@v6
-
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@v4
+
+      - name: Verify base image
+        uses: EyeCantCU/cosign-action/verify@v0.2.1
+        with:
+          containers: ${{ matrix.base_image_name }}-${{ matrix.image_flavor }}:${{ matrix.major_version }}
+
+      - name: Maximize build space
+        uses: ublue-os/remove-unwanted-software@v6
 
       - name: Check just syntax
         uses: ublue-os/just-action@v1
