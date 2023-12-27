@@ -43,11 +43,6 @@ screens:
           default: false
           packages:
           - Retrieve EmuDeck: ujust get-emudeck
-        Greenlight:
-          description: A utility for xCloud and xHome streaming
-          default: false
-          packages:
-          - Retrieve Greenlight: ujust get-greenlight
         Hide GRUB Menu:
           description: |
             NOTE: Press the escape key before boot to show the menu
@@ -141,6 +136,7 @@ screens:
           - Discord (Discover Overlay Included): com.discordapp.Discord
           - DOSBox Staging: io.github.dosbox-staging
           - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
+          - Greenlight: io.github.unknownskl.greenlight
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
           - itch: io.itch.itch
           - ludusavi (Game Save Backup): com.github.mtkennerly.ludusavi

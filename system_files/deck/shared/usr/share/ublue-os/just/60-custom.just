@@ -68,17 +68,6 @@ install-openrazer:
     sudo usermod -a -G plugdev $USER && \
     echo "Please reboot to apply needed changes."
 
-# Install Greenlight xCloud and xHome streaming AppImage
-get-greenlight:
-    #!/usr/bin/env bash
-    if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
-      wget "https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta15/Greenlight-2.0.0-beta15.AppImage" -O $HOME/Downloads/Greenlight.AppImage
-      flatpak run it.mijorus.gearlever $HOME/Downloads/Greenlight.AppImage
-    else
-      wget "https://github.com/unknownskl/greenlight/releases/download/v2.0.0-beta15/Greenlight-2.0.0-beta15.AppImage" -O $HOME/Desktop/Greenlight.AppImage
-      chmod +x $HOME/Desktop/Greenlight.AppImage
-    fi
-
 # Install Wootility for configuring Wooting Keyboards
 get-wootility:
     #!/usr/bin/env bash
