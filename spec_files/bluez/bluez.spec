@@ -5,8 +5,8 @@
 %endif
 
 Name:    bluez
-Version: 5.70
-Release: 5%{?dist}.bazzite.{{{ git_dir_version }}}
+Version: 5.71
+Release: 1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: Bluetooth utilities
 License: GPLv2+
 URL:     https://www.bluez.org/
@@ -19,14 +19,11 @@ Source1: bluez.gitignore
 #Patch1: 0001-obex-Use-GLib-helper-function-to-manipulate-paths.patch
 # https://lore.kernel.org/linux-bluetooth/20220901110719.176944-1-hadess@hadess.net/T/#m9c08d004cd5422783ee1d93154f42303bba9169f
 Patch2: power-state-adapter-property.patch
-# Upstream backport
-Patch3: rhbz2247548.patch
-Patch4: CVE-2023-45866.patch
 
 # Valve
-Patch5: AVRCP_TG_MDI_BV-04-C.patch
-Patch6: 0001-valve-bluetooth-config.patch
-Patch7: 0002-valve-bluetooth-phy.patch
+Patch3: AVRCP_TG_MDI_BV-04-C.patch
+Patch4: 0001-valve-bluetooth-config.patch
+Patch5: 0002-valve-bluetooth-phy.patch
 
 BuildRequires: dbus-devel >= 1.6
 BuildRequires: glib2-devel
@@ -260,16 +257,12 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_bindir}/btmon
 %{_bindir}/hex2hcd
 %{_bindir}/l2ping
-%{_bindir}/l2test
 %{_bindir}/mpris-proxy
-%{_bindir}/rctest
-%{_mandir}/man1/bluetoothctl-mgmt.1.*
-%{_mandir}/man1/bluetoothctl-monitor.1.*
+%{_mandir}/man1/bluetoothctl-*.1.*
 %{_mandir}/man1/btmgmt.1.*
 %{_mandir}/man1/btattach.1.*
 %{_mandir}/man1/btmon.1.*
 %{_mandir}/man1/l2ping.1.*
-%{_mandir}/man1/rctest.1.*
 %{_mandir}/man8/bluetoothd.8.*
 %dir %{_libexecdir}/bluetooth
 %{_libexecdir}/bluetooth/bluetoothd
@@ -310,7 +303,11 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %files libs-devel
 %doc doc/*txt
 %{_bindir}/isotest
+%{_bindir}/l2test
+%{_bindir}/rctest
 %{_mandir}/man1/isotest.1.*
+%{_mandir}/man1/rctest.1.*
+%{_mandir}/man5/org.bluez.*.5.*
 %{_libdir}/libbluetooth.so
 %{_includedir}/bluetooth
 %{_libdir}/pkgconfig/bluez.pc
@@ -342,6 +339,9 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_userunitdir}/obex.service
 
 %changelog
+* Sat Dec 16 2023 Peter Robinson <pbrobinson@fedoraproject.org> - 5.71-1
+- Update to 5.71
+
 * Thu Dec 07 2023 Peter Robinson <pbrobinson@fedoraproject.org> - 5.70-5
 - Install default input.conf/network.conf
 
