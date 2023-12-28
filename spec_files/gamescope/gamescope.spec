@@ -10,7 +10,7 @@ URL:            https://github.com/ValveSoftware/gamescope
 
 # Create stb.pc to satisfy dependency('stb')
 Source1:        stb.pc
-Source2:        remove-720p-restrict.patch
+Source2:        chimeraos.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
