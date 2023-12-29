@@ -10,6 +10,7 @@ Source1:        steamdeck-le.svg
 BuildArch:      noarch
 Patch0:         fedora.patch
 Patch1:         nested-desktop-resolution.patch
+Patch2:         kdeglobals.patch
 
 Requires:       kde-filesystem
 

@@ -37,7 +37,7 @@ cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv etc/* %{buildroot}%{_sysconfdir}
 mv %{buildroot}%{_sysconfdir}/skel %{buildroot}%{_sysconfdir}/skel.d
 mv %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck.svg
-cp %{SOURCE1} %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck-le.svg
+cp %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck-le.svg
 # Remove unneeded files
 rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
