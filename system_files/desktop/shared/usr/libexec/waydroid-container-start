@@ -4,11 +4,11 @@ source /etc/default/waydroid-launcher
 
 # Ensure needed props are present
 if ! grep -q "persist.waydroid.udev=true" "/var/lib/waydroid/waydroid_base.prop"; then
-  sudo sh -c 'echo -e "persist.waydroid.udev=true\n" >> /var/lib/waydroid/waydroid_base.prop'
+  sudo sh -c 'echo -e "persist.waydroid.udev=true" >> /var/lib/waydroid/waydroid_base.prop'
 fi
 
 if ! grep -q "persist.waydroid.uevent=true" "/var/lib/waydroid/waydroid_base.prop"; then
-  sudo sh -c 'echo -e "persist.waydroid.uevent=true\n" >> /var/lib/waydroid/waydroid_base.prop'
+  sudo sh -c 'echo -e "persist.waydroid.uevent=true" >> /var/lib/waydroid/waydroid_base.prop'
 fi
 
 sudo sed -i "s/ro.sf.lcd_density=.*/ro.sf.lcd_density=${WAYDROID_DENSITY:-215}/g" /var/lib/waydroid/waydroid_base.prop
