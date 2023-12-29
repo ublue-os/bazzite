@@ -31,8 +31,9 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/vk_hdr_layer/repo/fedora-$(rpm -E %fedora)/kylegospo-vk_hdr_layer-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-vk_hdr_layer.repo && \
     wget https://copr.fedorainfracloud.org/coprs/ycollet/audinux/repo/fedora-$(rpm -E %fedora)/ycollet-audinux-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/rom-properties/repo/fedora-$(rpm -E %fedora)/kylegospo-rom-properties-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-rom-properties.repo && \
-    wget https://copr.fedorainfracloud.org/coprs/kylegospo/prompt/repo/fedora-$(rpm -E %fedora)/kylegospo-prompt-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-prompt.repo && \
-    wget https://copr.fedorainfracloud.org/coprs/kylegospo/joycond/repo/fedora-$(rpm -E %fedora)/kylegospo-joycond-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-joycond.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/kylegospo/prompt/repo/fedora-$(rpm -E %fedora)/kylegospo-prompt-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-prompt.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/kylegospo/joycond/repo/fedora-$(rpm -E %fedora)/kylegospo-joycond-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-joycond.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/kylegospo/VTFLib/repo/fedora-$(rpm -E %fedora)/kylegospo-VTFLib-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-VTFLib.repo && \
     wget https://pkgs.tailscale.com/stable/fedora/tailscale.repo -O /etc/yum.repos.d/tailscale.repo && \
     sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo
 
@@ -304,6 +305,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         kdeconnectd \
         kdeplasma-addons \
         rom-properties-kf5 \
+        qvtf \
         prompt && \
     git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration && \
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin && \
@@ -341,6 +343,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-gamerzilla \
         gnome-shell-extension-bazzite-menu \
         rom-properties-gtk3 \
+        pixbufloader-vtf \
         openssh-askpass && \
     rpm-ostree override remove \
         gnome-software-rpm-ostree \
@@ -400,6 +403,7 @@ RUN /tmp/image-info.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-rom-properties.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-prompt.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-joycond.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-VTFLib.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/tailscale.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/charm.repo && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
