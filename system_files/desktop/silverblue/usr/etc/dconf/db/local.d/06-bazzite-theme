@@ -52,9 +52,6 @@ alt-tab-small-icon-size=64
 alt-tab-icon-size=64
 osd-position=3
 
-[org/gnome/shell/extensions/blur-my-shell]
-hack-level=0
-
 [org/gnome/shell/extensions/blur-my-shell/panel]
 blur=true
 static-blur=true
