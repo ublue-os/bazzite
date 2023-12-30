@@ -169,7 +169,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 #### Universal Blue
 
 - Flathub is enabled by default.
-- [`just`](https://github.com/casey/just) commands for convenience.
+- [`ujust`](https://github.com/casey/just) commands for convenience.
 - Multi-media codecs out of the box.
 - Rollback Bazzite from any build within the last 90 days.
 
