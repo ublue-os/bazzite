@@ -234,12 +234,6 @@ disable-watchdog:
     fi
     rpm-ostree kargs $WATCHDOG_KARGS
 
-# Install Webapp manager
-install-webapp-manager: distrobox-check-fedora
-    distrobox-enter -n fedora -- bash -c "sudo dnf copr enable -y kylegospo/webapp-manager && \
-      sudo dnf install -y webapp-manager && \
-      distrobox-export --app webapp-manager"
-
 # Install Oversteer for Logitech steering wheels
 install-oversteer: distrobox-check-fedora
     distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y kylegospo/oversteer && \
