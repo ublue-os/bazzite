@@ -11,8 +11,9 @@
   - [Features for **Steam Deck / HTPC** Images](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
   - [Features for **GNOME** Images](https://github.com/ublue-os/bazzite#gnome)
   - [Features from Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
-- [Why & Frequently Asked Questions](https://github.com/ublue-os/bazzite#why)
-- [Showcase & Newsletter](https://github.com/ublue-os/bazzite#showcase)
+- [Why](https://github.com/ublue-os/bazzite#why)
+- [Showcase](https://github.com/ublue-os/bazzite#showcase)
+- [Documentation & Newsletters](https://github.com/ublue-os/bazzite#documentation--newsletters)
 - [Custom Packages](https://github.com/ublue-os/bazzite#custom-packages)
 - [Verification & Metrics](https://github.com/ublue-os/bazzite#verification)
 - [Special Thanks](https://github.com/ublue-os/bazzite#special-thanks)
@@ -190,7 +191,7 @@ Despite this project also being image-based, you are able to install any Fedora 
 
 Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot <sub><sup>(Run `ujust enroll-secure-boot-key` and enter the password `ublue-os` if prompted to enroll our key)</sup></sub> and disk encryption, making this a sensible solution for general computing. <sup><sub>(Yes, you can print from Bazzite)</sub></sup>
 
-Check out the [Frequently Asked Questions](https://universal-blue.discourse.group/docs?topic=33) for details on what makes Bazzite stand out from other Linux operating systems.
+Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details on what makes Bazzite stand out from other Linux operating systems.
 
 ## Showcase
 
@@ -202,7 +203,15 @@ Check out the [Frequently Asked Questions](https://universal-blue.discourse.grou
 ![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
 ![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
 
-Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) and [announcements](https://universal-blue.discourse.group/tags/c/bazzite/5/announcements) that get published on a regular basis for updates on the project.
+## Documentation & Newsletters
+
+- [Installing and Managing Applications](https://universal-blue.discourse.group/docs?topic=35)
+- [Updates, Rollbacks, and Rebasing](https://universal-blue.discourse.group/docs?topic=36)
+- [Gaming Guide](https://universal-blue.discourse.group/docs?topic=31)
+
+Find additional documentation surrounding the project [here](https://universal-blue.discourse.group/docs?category=5).
+
+Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) that get published on a regular basis for updates on the project.
 
 ## Custom Packages
 
@@ -300,6 +309,4 @@ We also ship a config for the popular [pull app](https://github.com/apps/pull) i
 
 ## Join The Community
 
-You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB).
-
-You can also discuss Bazzite on our [Discourse](https://universal-blue.discourse.group/c/bazzite/5) and find additional [documentation](https://universal-blue.discourse.group/docs?category=5) surrounding the project too.
+You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB) and also discuss Bazzite on our [Discourse forums](https://universal-blue.discourse.group/c/bazzite/5).
