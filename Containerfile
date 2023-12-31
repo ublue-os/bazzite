@@ -199,6 +199,7 @@ RUN rpm-ostree install \
         yad \
         f3 \
         pulseaudio-utils \
+        playerctl \
         unrar \
         lzip \
         libxcrypt-compat \
