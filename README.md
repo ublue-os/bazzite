@@ -209,7 +209,7 @@ Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details
 - [Updates, Rollbacks, and Rebasing](https://universal-blue.discourse.group/docs?topic=36)
 - [Gaming Guide](https://universal-blue.discourse.group/docs?topic=31)
 
-Find additional documentation surrounding the project [here](https://universal-blue.discourse.group/docs?category=5).
+Find additional documentation surrounding the project [here](https://universal-blue.discourse.group/docs).
 
 Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) that get published on a regular basis for updates on the project.
 
