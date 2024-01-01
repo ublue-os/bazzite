@@ -350,6 +350,12 @@ add-user-to-input-group:
     fi
     sudo usermod -a -G input $USER
 
+# Re-enable input remapper feature on non-desktop images
+enable-input-remapper:
+    systemctl enable --now input-remapper.service && \
+    cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
+    sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.deskto
+
 # Install Oversteer for Logitech steering wheels
 install-oversteer: distrobox-check-fedora
     distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y kylegospo/oversteer && \
