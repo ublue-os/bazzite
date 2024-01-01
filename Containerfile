@@ -193,6 +193,7 @@ RUN rpm-ostree install \
         webapp-manager \
         btop \
         fish \
+        lshw \
         xdotool \
         wmctrl \
         libcec \
