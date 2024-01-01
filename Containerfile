@@ -422,6 +422,7 @@ RUN /tmp/image-info.sh && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl enable ublue-update.timer && \
     systemctl enable gamescope-workaround.service && \
+    systemctl enable waydroid-workaround.service && \
     systemctl enable bazzite-hardware-setup.service && \
     systemctl enable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
