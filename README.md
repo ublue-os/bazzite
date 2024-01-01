@@ -134,7 +134,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:lates
 Builds with the GNOME desktop environment are available in both desktop and deck flavors. These builds come with the following additional features:
 
 - [Variable refresh rate support and fractional scaling enabled under Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
-- Custom menu in the top bar for returning to game mode, launching Steam, and opening a number of useful utilities. <sub><sup>(Only on Steam Deck builds)</sup></sub>
+- Custom menu in the top bar for returning to game mode, launching Steam, and opening a number of useful utilities.
 - [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) preinstalled and ready to use.
 - Features optional Valve-inspired themes matching Vapor and VGUI2 from SteamOS.
 - [Hanabi extension](https://github.com/jeffshee/gnome-ext-hanabi) included to offer similar features to Wallpaper Engine in KDE.
@@ -276,6 +276,7 @@ Additionally, the following packages are used from other Copr repos:
 |[VTFLib](https://copr.fedorainfracloud.org/coprs/kylegospo/VTFLib/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/VTFLib/package/VTFLib/status_image/last_build.png?)|
 |[wallpaper-engine-kde-plugin](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/package/wallpaper-engine-kde-plugin/status_image/last_build.png?)|
 |[webapp-manager](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/)|![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/package/webapp-manager/status_image/last_build.png?)|
+
 ## Verification
 
 These images are signed with sigstore's [cosign](https://docs.sigstore.dev/cosign/overview/). You can verify the signature by downloading the `cosign.pub` key from this repo and running the following command:
