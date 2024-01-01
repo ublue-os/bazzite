@@ -297,6 +297,7 @@ Bazzite is a community effort and wouldn't exist without everyone's support. Bel
 - [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out. It's our Nix-based cousin.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - For assistance with needed kernel patches and for creating the [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) we now use.
+- [nicknamenamenick](https://github.com/nicknamenamenick) - For being the MVP nearly single-handedly upkeeping our documentation and support literature, and countless cases of helping users.
 - [Steam Deck Homebrew](https://deckbrew.xyz) - For choosing to support distributions other than SteamOS despite the extra work, and a special thanks to [PartyWumpus](https://github.com/PartyWumpus) for getting Decky Loader working with SELinux for us.
 - [cyrv6737](https://github.com/cyrv6737) - For the initial inspiration and the base that became bazzite-arch.
 
