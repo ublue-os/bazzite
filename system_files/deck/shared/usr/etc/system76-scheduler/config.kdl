@@ -27,6 +27,9 @@ process-scheduler enable=true {
         sound-server nice=-15 sched=(fifo)49 io=(realtime)0 {
             "/usr/bin/pipewire"
             "/usr/bin/pipewire-pulse"
+            "/usr/bin/pipewire-avb"
+            "/usr/bin/pipewire-vulkan"
+            "/usr/bin/pipewire-aes67"
             "/usr/bin/jackd"
         }
 
@@ -43,7 +46,7 @@ process-scheduler enable=true {
         games-background nice=0 io="idle"
 
         // Desktop environments
-        desktop-environment nice=-10 io=(best-effort)0
+        desktop-environment nice=-3 io=(best-effort)0
 
         // Foreground process profile
         foreground nice=0 io=(best-effort)0
@@ -86,7 +89,9 @@ process-scheduler enable=true {
         fig
         fig_desktop
         gamemoderun
+        gamescope
         handycon
+        hhd
         input-remapper-service
         ionice
         mangoapp
@@ -97,11 +102,10 @@ process-scheduler enable=true {
         powerbuttond
         rtkit-daemon
         systemd
-        schedtool
         sdgyrodsu
         steam_notif_daemon
-        steam-patch
         taskset
         vpower
+        schedtool
     }
 }
