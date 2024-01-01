@@ -38,6 +38,37 @@ FLATPAK_LIST=$(flatpak list --columns=application)
 INSTALL_LIST_FILE="/usr/share/ublue-os/bazzite/flatpak/install"
 REMOVE_LIST_FILE="/usr/share/ublue-os/bazzite/flatpak/remove"
 
+# Configure needed params for flatpaks
+flatpak override \
+  --system \
+  --env=MOZ_ENABLE_WAYLAND=1 \
+  --env=MOZ_USE_XINPUT2=1 \
+  org.mozilla.firefox
+
+# Params needed for HW accelerated video on Nvidia (Ignoring hybrid systems)
+if [[ $IMAGE_FLAVOR =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C display) | wc -l) -le 1 ]; then
+  flatpak override \
+    --system \
+    --filesystem=host-os \
+    --env=LIBVA_DRIVER_NAME=nvidia \
+    --env=LIBVA_DRIVERS_PATH=/run/host/usr/lib64/dri \
+    --env=LIBVA_MESSAGING_LEVEL=1 \
+    --env=MOZ_DISABLE_RDD_SANDBOX=1 \
+    --env=NVD_BACKEND=direct \
+    org.mozilla.firefox
+else
+  # Undo if user was previously using a Nvidia image and is no longer
+  flatpak override \
+    --system \
+    --nofilesystem=host-os \
+    --unset-env=LIBVA_DRIVER_NAME \
+    --unset-env=LIBVA_DRIVERS_PATH \
+    --unset-env=LIBVA_MESSAGING_LEVEL \
+    --unset-env=MOZ_DISABLE_RDD_SANDBOX \
+    --unset-env=NVD_BACKEND \
+    org.mozilla.firefox
+fi
+
 # Install flatpaks in list
 if [[ -f $INSTALL_LIST_FILE ]]; then
   if [[ -n $FLATPAK_LIST ]]; then
@@ -59,37 +90,6 @@ if [[ ! -f $VER_FILE && -f $REMOVE_LIST_FILE ]]; then
   if [[ -n $REMOVE_LIST ]]; then
     flatpak remove --system --noninteractive ${REMOVE_LIST[@]}
   fi
-fi
-
-# Configure needed params for flatpaks
-flatpak override \
-  --system \
-  --env=MOZ_ENABLE_WAYLAND=1 \
-  --env=MOZ_USE_XINPUT2=1 \
-  org.mozilla.firefox
-
-# Params needed for HW accelerated video on Nvidia
-if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
-  flatpak override \
-    --system \
-    --filesystem=host-os \
-    --env=LIBVA_DRIVER_NAME=nvidia \
-    --env=LIBVA_DRIVERS_PATH=/run/host/usr/lib64/dri \
-    --env=LIBVA_MESSAGING_LEVEL=1 \
-    --env=MOZ_DISABLE_RDD_SANDBOX=1 \
-    --env=NVD_BACKEND=direct \
-    org.mozilla.firefox
-else
-  # Undo if user was previously using a Nvidia image and is no longer
-  flatpak override \
-    --system \
-    --nofilesystem=host-os \
-    --unset-env=LIBVA_DRIVER_NAME \
-    --unset-env=LIBVA_DRIVERS_PATH \
-    --unset-env=LIBVA_MESSAGING_LEVEL \
-    --unset-env=MOZ_DISABLE_RDD_SANDBOX \
-    --unset-env=NVD_BACKEND \
-    org.mozilla.firefox
 fi
 
 mkdir -p /etc/bazzite
