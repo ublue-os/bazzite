@@ -46,7 +46,7 @@ flatpak override \
   org.mozilla.firefox
 
 # Params needed for HW accelerated video on Nvidia (Ignoring hybrid systems)
-if [[ $IMAGE_FLAVOR =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C display) | wc -l) -le 1 ]; then
+if [[ $IMAGE_FLAVOR =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C display) | wc -l) -le 1 ] && grep -q "vendor: NVIDIA Corporation" <<< $(lshw -C display); then
   flatpak override \
     --system \
     --filesystem=host-os \
