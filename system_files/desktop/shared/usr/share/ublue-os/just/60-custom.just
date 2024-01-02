@@ -474,7 +474,7 @@ setup-virtual-surround-71:
     HESUVI
     echo "Virtual Surround 7.1 has now been set up with a basic convolver file, either restart pipewire or reboot for it to take effect."
     echo "Then select the Virtual Surround 7.1 audio output as your default audio output."
-    echo "If you want something like DTS, Atmos or OpenAL, you will have to aquire those convolver wav files yourself and edit ~/.config/pipewire/pipewire.conf.d/virtual-surround.conf to point to the one you want to use."
+    echo "If you want something like DTS, Atmos or OpenAL, you will have to acquire those convolver wav files yourself and edit ~/.config/pipewire/pipewire.conf.d/virtual-surround.conf to point to the one you want to use."
 
 # Remove Virtual Surround 7.1 sink
 remove-virtual-surround-71:
