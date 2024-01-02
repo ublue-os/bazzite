@@ -638,6 +638,7 @@ ARG NVIDIA_MAJOR_VERSION="545"
 
 # Fetch NVIDIA driver
 COPY --from=ghcr.io/ublue-os/akmods-nvidia:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION}-${NVIDIA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
+COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
 
 # Remove everything that doesn't work well with NVIDIA
 RUN rm -f /usr/bin/waydroid-choose-gpu && \
@@ -651,8 +652,7 @@ RUN rm -f /usr/bin/waydroid-choose-gpu && \
     if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then \
         rpm-ostree override remove \
             colord-kde \
-    ; fi && \
-    rm -f /usr/etc/modprobe.d/amdgpu.conf
+    ; fi
 
 # Install NVIDIA driver
 RUN wget https://raw.githubusercontent.com/ublue-os/nvidia/main/install.sh -O /tmp/nvidia-install.sh && \
