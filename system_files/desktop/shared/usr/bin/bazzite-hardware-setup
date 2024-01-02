@@ -72,7 +72,7 @@ NEEDS_INITRAMFS_APPLICATION=false
 echo "Current initramfs: $INITRAMFS"
 
 if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
-  NEEDED_INITRAMFS+=("/etc/modprobe.d/nvidia.conf")
+  NEEDED_INITRAMFS+=("/usr/lib/modprobe.d/nvidia.conf")
 else
   NEEDED_INITRAMFS+=("/etc/modprobe.d/amdgpu.conf")
 fi
@@ -124,11 +124,6 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
       NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
     fi
   fi
-  
-  if [[ $KARGS =~ "simpledrm_platform_driver_init" ]]; then
-    NEEDED_KARGS+=("--delete-if-present=initcall_blacklist=simpledrm_platform_driver_init")
-  fi
-fi
 
 if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:83E1:" =~ ":$SYS_ID:" ]]; then
   echo "Steam-Patch supported Handheld detected, Checking for needed karg changes"
@@ -219,7 +214,6 @@ fi
 
 # HOSTNAME FIX
 # If the hostname is too long Distrobox will fail during setup
-# Additonally, Anaconda likes to set the hostname to be the ipv6 address
 # Let's check the length and reset it to something sensible if that happens.
 if (( $(hostname | wc -m) > 16 )); then
   hostnamectl set-hostname bazzite
