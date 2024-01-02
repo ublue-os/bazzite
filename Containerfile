@@ -78,6 +78,11 @@ RUN rpm-ostree override replace \
     rpm-ostree override replace \
     --experimental \
     --from repo=updates \
+        libaom \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
         gstreamer1 \
         gstreamer1-plugins-base \
         gstreamer1-plugins-bad-free-libs \
