@@ -28,7 +28,7 @@ jobs:
     name: Generate and Release ISOs
     runs-on: ubuntu-latest
     needs: release-please
-    if: needs.release-please.outputs.releases_created
+    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
     container:
       image: fedora:39
       options: --privileged
