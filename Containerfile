@@ -652,10 +652,7 @@ RUN rm -f /usr/bin/waydroid-choose-gpu && \
     rpm-ostree override remove \
         rocm-hip \
         rocm-opencl \
-        rocm-clinfo \
-        waydroid \
-        waydroid-selinux \
-        weston && \
+        rocm-clinfo && \
     if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then \
         rpm-ostree override remove \
             colord-kde \
