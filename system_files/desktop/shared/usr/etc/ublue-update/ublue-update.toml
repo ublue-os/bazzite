@@ -1,5 +1,5 @@
 [checks]
-    min_battery_percent = 30.0
+    min_battery_percent = 10.0
     max_cpu_load_percent = 90.0
     max_mem_percent = 90.0
 [notify]
