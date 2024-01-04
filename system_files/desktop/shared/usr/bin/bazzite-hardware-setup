@@ -133,8 +133,8 @@ if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618
   fi
 fi
 
-if [[ ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
-  echo "AOKZOE A1 detected, fixing edid"
+if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
+  echo "AOKZOE A1 on deck build etected, fixing edid"
   if [[ ! $KARGS =~ "drm.edid_firmware" ]]
     NEEDED_KARGS+=("--append-if-missing=drm.edid_firmware=eDP-1:edid/aokzoea1ar07_edid.bin")
   fi
