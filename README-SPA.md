@@ -10,7 +10,7 @@
 
 - [Caracteristicas de **todas** las imagenes de Bazzite](https://github.com/ublue-os/bazzite#about--features)
   - [Caracteristicas de las imagenes para **Computadoras de Escritorio**](https://github.com/ublue-os/bazzite#desktop)
-  - [Features for **Steam Deck / HTPC** Images](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
+  - [Caracteristicas de las imagenes para Steam Deck/](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
   - [Features for **GNOME** Images](https://github.com/ublue-os/bazzite#gnome)
   - [Features from Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
 - [Why](https://github.com/ublue-os/bazzite#why)
