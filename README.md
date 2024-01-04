@@ -208,8 +208,8 @@ Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details
 - [Installing and Managing Applications](https://universal-blue.discourse.group/docs?topic=35)
 - [Updates, Rollbacks, and Rebasing](https://universal-blue.discourse.group/docs?topic=36)
 - [Gaming Guide](https://universal-blue.discourse.group/docs?topic=31)
-- [Dual Booting Guide](https://universal-blue.discourse.group/t/dual-booting-guide/129)
-- [Miscellaneous Documentation](https://universal-blue.discourse.group/t/bazzite-miscellaneous-documentation/287)
+- [Dual Booting Guide](https://universal-blue.discourse.group/docs?topic=129)
+- [Miscellaneous Documentation](https://universal-blue.discourse.group/docs?topic=287)
 
 Find additional documentation surrounding the project [here](https://universal-blue.discourse.group/docs).
 
@@ -317,4 +317,4 @@ You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB) a
 
 Discuss and create user guides over at the [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
 
-Follow Universal Blue on [Mastodon](https://fosstodon.org/@UniversalBlue)!
+Follow Universal Blue on [Mastodon](https://fosstodon.org/@UniversalBlue).
