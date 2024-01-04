@@ -8,7 +8,7 @@
 
 # Tabla de Contenidos
 
-- [Features for **All** Bazzite Images](https://github.com/ublue-os/bazzite#about--features)
+- [Características ](https://github.com/ublue-os/bazzite#about--features)
   - [Features for **Desktop** Images](https://github.com/ublue-os/bazzite#desktop)
   - [Features for **Steam Deck / HTPC** Images](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
   - [Features for **GNOME** Images](https://github.com/ublue-os/bazzite#gnome)
