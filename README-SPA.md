@@ -6,7 +6,7 @@
 
 ---
 
-# Table of Contents
+# Tabla de Contenidos
 
 - [Features for **All** Bazzite Images](https://github.com/ublue-os/bazzite#about--features)
   - [Features for **Desktop** Images](https://github.com/ublue-os/bazzite#desktop)
