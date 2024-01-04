@@ -209,6 +209,7 @@ Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details
 - [Updates, Rollbacks, and Rebasing](https://universal-blue.discourse.group/docs?topic=36)
 - [Gaming Guide](https://universal-blue.discourse.group/docs?topic=31)
 - [Dual Booting Guide](https://universal-blue.discourse.group/t/dual-booting-guide/129)
+- [Miscellaneous Documentation](https://universal-blue.discourse.group/t/bazzite-miscellaneous-documentation/287)
 
 Find additional documentation surrounding the project [here](https://universal-blue.discourse.group/docs).
 
@@ -312,4 +313,6 @@ We also ship a config for the popular [pull app](https://github.com/apps/pull) i
 
 ## Join The Community
 
-You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB) and also discuss Bazzite on our [Discourse forums](https://universal-blue.discourse.group/c/bazzite/5).
+You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB) and also discuss Bazzite on our [Discourse forums](https://universal-blue.discourse.group/c/bazzite/5).  
+
+Follow Universal Blue on [Mastodon](https://fosstodon.org/@UniversalBlue).
