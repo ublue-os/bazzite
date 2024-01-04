@@ -316,4 +316,3 @@ We also ship a config for the popular [pull app](https://github.com/apps/pull) i
 - You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB) and view support threads on the [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1087140957096517672) without making a Discord account.
 - Discuss and create user guides over at the [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
 - Follow Universal Blue on [Mastodon](https://fosstodon.org/@UniversalBlue)!
-
