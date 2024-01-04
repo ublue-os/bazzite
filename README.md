@@ -313,6 +313,6 @@ We also ship a config for the popular [pull app](https://github.com/apps/pull) i
 
 ## Join The Community
 
-- [Universal Blue Discord](https://discord.gg/f8MUghG5PB)
-- [Discourse forums](https://universal-blue.discourse.group/c/bazzite/5)
-- [Universal Blue Mastodon](https://fosstodon.org/@UniversalBlue)
+* [Universal Blue Discord](https://discord.gg/f8MUghG5PB)
+* [Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5)
+* [Universal Blue Mastodon](https://fosstodon.org/@UniversalBlue)
