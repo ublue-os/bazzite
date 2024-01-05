@@ -68,3 +68,7 @@ blur=false
 
 [org/gnome/shell/extensions/blur-my-shell/lockscreen]
 blur=false
+
+[org/gnome/shell/extensions/com/github/hermes83/compiz-windows-effect]
+maximize-effect=true
+resize-effect=true
