@@ -63,7 +63,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 %global ver 23.3.1
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        100.bazzite.{{{ git_dir_version }}}
+Release:        101.bazzite.{{{ git_dir_version }}}
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
 
@@ -76,8 +76,11 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 Patch10:        gnome-shell-glthread-disable.patch
 Patch11:        0001-intel-compiler-move-gen5-final-pass-to-actually-be-f.patch
 
+# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26105/
+Patch30:        26105.patch
+
 # https://gitlab.com/evlaV/mesa/
-Patch30:         valve.patch
+Patch40:        valve.patch
 
 BuildRequires:  meson >= 1.2.0
 BuildRequires:  gcc
