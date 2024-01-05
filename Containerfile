@@ -87,6 +87,8 @@ RUN rpm-ostree install \
     pulseaudio-utils \
     twitter-twemoji-fonts \
     lato-fonts \
+    setroubleshoot \
+    setools \
     fira-code-fonts && \
     wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.service -O /usr/lib/systemd/system/btrfs-dedup@.service && \
     wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.timer -O /usr/lib/systemd/system/btrfs-dedup@.timer
