@@ -341,7 +341,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         prompt \
         nautilus-open-any-terminal \
         nautilus-gsconnect \
-        gnome-shell-extension-tailscale-gnome-qs \
         steamdeck-backgrounds \
         gnome-randr-rust \
         gnome-shell-extension-user-theme \
@@ -353,6 +352,8 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-hanabi \
         gnome-shell-extension-gamerzilla \
         gnome-shell-extension-bazzite-menu \
+        gnome-shell-extension-hotedge \
+        gnome-shell-extension-tailscale-gnome-qs \
         rom-properties-gtk3 \
         pixbufloader-vtf \
         openssh-askpass && \

@@ -3,6 +3,7 @@ experimental-features=['variable-refresh-rate']
 
 [org/gnome/desktop/interface]
 toolkit-accessibility=false
+font-antialiasing='rgba'
 
 [org/gnome/desktop/peripherals/mouse]
 accel-profile='flat'
@@ -21,9 +22,6 @@ sleep-inactive-ac-timeout=900
 sleep-inactive-battery-type='suspend'
 sleep-inactive-ac-type='suspend'
 power-button-action='suspend'
-
-[org/gnome/desktop/interface]
-font-antialiasing='rgba'
 
 [org/gnome/shell/extensions/just-perfection]
 search=false
