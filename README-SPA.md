@@ -12,11 +12,11 @@
   - [Características de las imágenes para **Computadoras de Escritorio**](https://github.com/ublue-os/bazzite#desktop)
   - [Características de las imágenes para **Steam Deck/HTPC**](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
   - [Características de las imágenes con el entorno de escritorio **GNOME**](https://github.com/ublue-os/bazzite#gnome)
-  - [Características de Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
+  - [Características del Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
 - [¿Por qué?](https://github.com/ublue-os/bazzite#why)
-- [Demostración (Capturas de Pantalla)](https://github.com/ublue-os/bazzite#showcase)
+- [Mira como luce Bazzite (Capturas de Pantalla)](https://github.com/ublue-os/bazzite#showcase)
 - [Documentación y Boletín informativo/Newsletters (En inglés)](https://github.com/ublue-os/bazzite#documentation--newsletters)
-- [Paquetes personalizados](https://github.com/ublue-os/bazzite#custom-packages)
+- [Paquetes Personalizados](https://github.com/ublue-os/bazzite#custom-packages)
 - [Verificación y Métricas](https://github.com/ublue-os/bazzite#verification)
 - [Gracias Especiales](https://github.com/ublue-os/bazzite#special-thanks)
 - [Créalo tu Mismo](https://github.com/ublue-os/bazzite#build-your-own)
@@ -58,7 +58,7 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - Drivers de [OpenRazer](https://openrazer.github.io) incorporados, Sólo selecciona OpenRazer en el Bazzite Portal o ejecuta el comando `ujust install-openrazer` en una terminal para empezar a usarlos.
 - Reglas para udev de [OpenTabletDriver](https://opentabletdriver.net/) incorporadas, con la suite completa de software siendo instalable usando el Bazzite Portal ó ejecutando el comando `ujust install-opentabletdriver` en una terminal.
 - Driver [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) para aumentar la frecuencia del reloj (overclocking) del adaptador para el mando de videojuegos del Gamecube de Nintendo para obtener una taza de sondeo (polling rate) de 1000hz.
-- Soporte fuera de la caja (out of the box) para los teclados hechos por [Wooting](https://wooting.io/).
+- Soporte fuera de la caja para los teclados hechos por [Wooting](https://wooting.io/).
 - Soporte incorporado de las GPU de las familias <sub><sup>(HD 7000)</sup></sub> y Sea Islands <sub><sup>(HD 8000)</sup></sub> de AMD bajo el driver `amdgpu`.
 - Un parche esta disponible [para un bug en juegos de 32 bits que usen el motor Source 1](https://github.com/ValveSoftware/Source-1-Games/issues/5043)<sub><sup>[(Por ejemplo: TF2)](https://github.com/ValveSoftware/Source-1-Games/issues/5043)</sup></sub> que provoca que el juego se bloqueé al ser iniciado, para aplicar el parche, ejecuta el siguiente comando en una terminal: `ujust patch-source1-tcmalloc`
 - [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) esta disponible para hacer posible compartir tu pantalla con Discord usando Wayland.
@@ -208,7 +208,7 @@ Bazzite se entrega con el kernel de Linux mas nuevo y SELinux esta habilitado po
 
 Lee nuestras [preguntas frecuentes (en inglés)](https://universal-blue.discourse.group/docs?topic=33) para saber más en lo que hace a Bazzite sobresalir de otras distribuciones de GNU Linux.
 
-## Presentación del software (Capturas de Pantalla)
+## Mira como luce Bazzite (Capturas de Pantalla)
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 
@@ -224,23 +224,22 @@ Lee nuestras [preguntas frecuentes (en inglés)](https://universal-blue.discours
 
 ![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
 
-## Documentation & Newsletters
+## Documentación y Boletín informativo/Newsletters (En inglés)
 
-- [Installing and Managing Applications](https://universal-blue.discourse.group/docs?topic=35)
-- [Updates, Rollbacks, and Rebasing](https://universal-blue.discourse.group/docs?topic=36)
-- [Gaming Guide](https://universal-blue.discourse.group/docs?topic=31)
-- [Dual Booting Guide](https://universal-blue.discourse.group/docs?topic=129)
-- [Miscellaneous Documentation](https://universal-blue.discourse.group/docs?topic=287)
+- [Actualizaciones, Reversiones y Cambio de Base (Rebasing)](https://universal-blue.discourse.group/docs?topic=36)
+- [Guía para Jugar en Linux](https://universal-blue.discourse.group/docs?topic=31)
+- [Guía para Configurar el Arranque Dual con Windows (Dual Boot)](https://universal-blue.discourse.group/docs?topic=129)
+- [Documentación Miscelánea](https://universal-blue.discourse.group/docs?topic=287)
 
-Find additional documentation surrounding the project [here](https://universal-blue.discourse.group/docs).
+Puedes encontrar documentación adicional relacionada al proyecto [aquí](https://universal-blue.discourse.group/docs).
 
-Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) that get published on a regular basis for updates on the project.
+Checa nuestros [boletines informativos](https://universal-blue.discourse.group/tag/bazzite-buzz), estos son publicados regularmente y los cuales hablan de las últimas actualizaciones del proyecto.
 
-## Custom Packages
+## Paquetes Personalizados
 
-Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built on Copr in [bazzite](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/) and [bazzite-multilib](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/).
+Todos los paquetes que son porteados de SteamOS, ChimeraOS u otros que son utilzados por Bazzite, son creados usando [Copr](https://copr.fedorainfracloud.org/coprs/) en los repositorios [bazzite](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/) y [bazzite-multilib](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/).
 
-| Package                                                                                             | Status                                                                                                                                                      |
+| Nombre del Paquete                                                                                  | Estado                                                                                                                                                      |
 | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | bluez                                                                                               | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/package/bluez/status_image/last_build.png?)                              |
 | [discover-overlay](https://github.com/trigg/Discover)                                               | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/discover-overlay/status_image/last_build.png?)                            |
@@ -255,9 +254,8 @@ Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built o
 | [gnome-randr-rust](https://github.com/maxwellainatchi/gnome-randr-rust)                             | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-randr-rust/status_image/last_build.png?)                            |
 | gnome-shell-extension-bazzite-menu                                                                  | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-bazzite-menu/status_image/last_build.png?)          |
 | [gnome-shell-extension-caribou-blocker](https://extensions.gnome.org/extension/1326/block-caribou/) | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-caribou-blocker/status_image/last_build.png?)       |
-| [gnome-shell-extension-compiz-windows-effect](https://github.com/hermes83/compiz-windows-effect)    | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-compiz-windows-effect/status_image/last_build.png?) |
 | [gnome-shell-extension-hanabi](https://github.com/jeffshee/gnome-ext-hanabi)                        | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-hanabi/status_image/last_build.png?)                |
-| [gnome-shell-extension-hotedge](https://github.com/jdoda/hotedge)                                   | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-hotedge/status_image/last_build.png?)               |
+| [gnome-shell-extension-compiz-windows-effect](https://github.com/hermes83/compiz-windows-effect)    | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-compiz-windows-effect/status_image/last_build.png?) |
 | [hhd](https://github.com/antheas/hhd)                                                               | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/hhd/status_image/last_build.png?)                                         |
 | jupiter-fan-control                                                                                 | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/jupiter-fan-control/status_image/last_build.png?)                         |
 | jupiter-hw-support-[btrfs](https://gitlab.com/popsulfr/steamos-btrfs)                               | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/jupiter-hw-support-btrfs/status_image/last_build.png?)                    |
@@ -280,9 +278,9 @@ Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built o
 | wireplumber                                                                                         | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/wireplumber/status_image/last_build.png?)                                 |
 | xorg-x11-server-Xwayland                                                                            | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/package/xorg-x11-server-Xwayland/status_image/last_build.png?)           |
 
-Additionally, the following packages are used from other Copr repos:
+Adicionalmente, los paquetes listados a continuación provienen de otros repositorios de Copr:
 
-| Package                                                                                                       | Status                                                                                                                                                          |
+| Nombre del Paquete                                                                                            | Estado                                                                                                                                                          |
 | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [gcadapter_oc-kmod](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/)                                 | ![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/package/gcadapter_oc-kmod/status_image/last_build.png?)                                 |
 | [gnome-vrr](https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/)                                     | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/package/mutter/status_image/last_build.png?)                                        |
@@ -300,43 +298,43 @@ Additionally, the following packages are used from other Copr repos:
 | [wallpaper-engine-kde-plugin](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/) | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/package/wallpaper-engine-kde-plugin/status_image/last_build.png?) |
 | [webapp-manager](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/)                           | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/package/webapp-manager/status_image/last_build.png?)                           |
 
-## Verification
+## Verificación
 
-These images are signed with sigstore's [cosign](https://docs.sigstore.dev/cosign/overview/). You can verify the signature by downloading the `cosign.pub` key from this repo and running the following command:
+Estas imágenes son firmadas digitalmente con [cosign](https://docs.sigstore.dev/cosign/overview/) de Sigstore. Para verificar la firma digital manualmente, primero tienes que descargar la llave `cosign.pub` directamente de este repositorio, y después, ejecuta el siguiente comando en una terminal:
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 ```
 
-### Contributor Metrics
+### Métricas de Contribución
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
-## Special Thanks
+## Gracias Especiales
 
-Bazzite is a community effort and wouldn't exist without everyone's support. Below are some of the people who've helped us along the way:
+Bazzite es producto de esfuerzo comunitario, y no existiría sin la contribución de todos. A continuación, están listadas unas cuantas personas que nos han ayudado a lo largo del camino:
 
-- [rei.svg](https://github.com/reisvg) - For creating our logo and overall branding.
-- [evlaV](https://gitlab.com/evlaV) - For making Valve's code available and for being [this person](https://xkcd.com/2347/).
-- [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.
-- [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out. It's our Nix-based cousin.
-- [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - For assistance with needed kernel patches and for creating the [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) we now use.
-- [nicknamenamenick](https://github.com/nicknamenamenick) - For being the MVP nearly single-handedly upkeeping our documentation and support literature, and countless cases of helping users.
-- [Steam Deck Homebrew](https://deckbrew.xyz) - For choosing to support distributions other than SteamOS despite the extra work, and a special thanks to [PartyWumpus](https://github.com/PartyWumpus) for getting Decky Loader working with SELinux for us.
-- [cyrv6737](https://github.com/cyrv6737) - For the initial inspiration and the base that became bazzite-arch.
+- [rei.svg](https://github.com/reisvg) - Por crear nuestro logo, y en general, nuestro branding.
+- [evlaV](https://gitlab.com/evlaV) - Por ser [esta persona](https://xkcd.com/2347/) y liberar el código de Valve públicamente.
+- [ChimeraOS](https://chimeraos.org/) - Por la creación de gamescope-session y su invaluable apoyo a lo largo del camino.
+- [Jovian-NixOS](https://github.com/Jovian-Experiments) - Por brindarnos su soporte con problemas técnicos y por crear un proyecto similar. ¡En serio!, [chécalo](https://github.com/Jovian-Experiments/Jovian-NixOS), es nuestro primo basado en Nix.
+- [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - Por su asistencia con unos parches necesarios en el kernel, y por crear el repositorio [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) que usamos actualmente.
+- [nicknamenamenick](https://github.com/nicknamenamenick) - Por ser el MVP, ya que casi por si solo, mantiene toda nuestra documentación general y de soporte, ademas de los innumerables casos donde ayuda a nuestros usuarios.
+- [Steam Deck Homebrew](https://deckbrew.xyz) - Por escoger brindar soporte a otras distribuciones ademas de SteamOS, a pesar de todo el trabajo extra que esto conlleva, y damos gracias especiales a [PartyWumpus](https://github.com/PartyWumpus) por lograr que Decky Loader funcione con SELinux en Bazzite.
+- [cyrv6737](https://github.com/cyrv6737) - Por la inspiración inicial para crear el proyecto, y la base que eventualmente se volvió [bazzite-arch](https://github.com/ublue-os/bazzite-arch).
 
-## Build Your Own
+## Hazlo tu Mismo
 
-Bazzite is built entirely in GitHub and creating your own custom version of it is as easy as forking this repository, adding a private signing key, and enabling GitHub actions.
+Bazzite esta construido enteramente en GitHub, y crear tu propia versión personalizada es muy fácil, tan solo crea un fork de este repositorio, añade tu propia llave digital privada, y habilita las acciones de GitHub.
 
-[Familiarize yourself](https://docs.github.com/en/actions/security-guides/encrypted-secrets) on keeping secrets in github. You'll need to [generate a new keypair](https://docs.sigstore.dev/cosign/overview/) with cosign. The public key can be in your public repo <sub><sup>(Your users need it to check the signatures)</sup></sub>, and you can paste the private key in `Settings -> Secrets -> Actions` with the name `SIGNING_SECRET`.
+[Familiarízate](https://docs.github.com/en/actions/security-guides/encrypted-secrets) en como mantener secretos en GitHub. Necesitaras [generar tus nuevas pares de claves](https://docs.sigstore.dev/cosign/overview/) con cosign. La llave digital pública puede ubicarse en tu repositorio público <sub><sup>(Tus usuarios van a necesitar verificar las firmas digitales.)</sup></sub>, y puedes pegar tu llave digital privada en `Settings -> Secrets -> Actions` con el nombre `SIGNING_SECRET`.
 
-We also ship a config for the popular [pull app](https://github.com/apps/pull) if you'd like to keep your fork in sync with upstream. Enable this app on your repo to keep track of Bazzite changes while also making your own modifications.
+También incluimos una configuración para la popular app de GitHub [Pull](https://github.com/apps/pull), por si gustas mantener tu fork en sincronía con el upstream. Habilita esta aplicación en tu repositorio para realizar un seguimiento de los cambios en Bazzite, mientras al mismo tiempo, haces tus propias modificaciones.
 
-## Join The Community
+## Únete a la Comunidad
 
-You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB) and view the archive of support threads on our [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1087140957096517672).
+Puedes encontrarnos en el [Discord de Universal Blue (en inglés)](https://discord.gg/f8MUghG5PB) y puedes ver todo el archivo de los hilos de ayuda en nuestro [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1087140957096517672).
 
-Discuss and create user guides over at the [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
+Discute y crea guias para los usuarios en nuestro [foro de Discourse de Universal Blue Discourse (en inglés)](https://universal-blue.discourse.group/c/bazzite/5).
 
-Follow Universal Blue on [Mastodon](https://fosstodon.org/@UniversalBlue).
+Sigue a Universal Blue en [Mastodon](https://fosstodon.org/@UniversalBlue).
