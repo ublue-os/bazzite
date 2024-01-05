@@ -12,11 +12,11 @@
   - [Características de las imágenes para **Computadoras de Escritorio**](https://github.com/ublue-os/bazzite#desktop)
   - [Características de las imágenes para **Steam Deck/HTPC**](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
   - [Características de las imágenes con el entorno de escritorio **GNOME**](https://github.com/ublue-os/bazzite#gnome)
-  - [Características de Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
+  - [Características del Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
 - [¿Por qué?](https://github.com/ublue-os/bazzite#why)
-- [Demostración (Capturas de Pantalla)](https://github.com/ublue-os/bazzite#showcase)
+- [Mira como luce Bazzite (Capturas de Pantalla)](https://github.com/ublue-os/bazzite#showcase)
 - [Documentación y Boletín informativo/Newsletters (En inglés)](https://github.com/ublue-os/bazzite#documentation--newsletters)
-- [Paquetes personalizados](https://github.com/ublue-os/bazzite#custom-packages)
+- [Paquetes Personalizados](https://github.com/ublue-os/bazzite#custom-packages)
 - [Verificación y Métricas](https://github.com/ublue-os/bazzite#verification)
 - [Gracias Especiales](https://github.com/ublue-os/bazzite#special-thanks)
 - [Créalo tu Mismo](https://github.com/ublue-os/bazzite#build-your-own)
@@ -58,78 +58,82 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - Drivers de [OpenRazer](https://openrazer.github.io) incorporados, Sólo selecciona OpenRazer en el Bazzite Portal o ejecuta el comando `ujust install-openrazer` en una terminal para empezar a usarlos.
 - Reglas para udev de [OpenTabletDriver](https://opentabletdriver.net/) incorporadas, con la suite completa de software siendo instalable usando el Bazzite Portal ó ejecutando el comando `ujust install-opentabletdriver` en una terminal.
 - Driver [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) para aumentar la frecuencia del reloj (overclocking) del adaptador para el mando de videojuegos del Gamecube de Nintendo para obtener una taza de sondeo (polling rate) de 1000hz.
-- Soporte fuera de la caja (out of the box) para los teclados hechos por [Wooting](https://wooting.io/).
+- Soporte fuera de la caja para los teclados hechos por [Wooting](https://wooting.io/).
 - Soporte incorporado de las GPU de las familias <sub><sup>(HD 7000)</sup></sub> y Sea Islands <sub><sup>(HD 8000)</sup></sub> de AMD bajo el driver `amdgpu`.
 - Un parche esta disponible [para un bug en juegos de 32 bits que usen el motor Source 1](https://github.com/ValveSoftware/Source-1-Games/issues/5043)<sub><sup>[(Por ejemplo: TF2)](https://github.com/ValveSoftware/Source-1-Games/issues/5043)</sup></sub> que provoca que el juego se bloqueé al ser iniciado, para aplicar el parche, ejecuta el siguiente comando en una terminal: `ujust patch-source1-tcmalloc`
 - [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) esta disponible para hacer posible compartir tu pantalla con Discord usando Wayland.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) esta disponible para crear aplicaciones de sitios web con una variedad de navegadores web, incluyendo Firefox.
 
-### Desktop
+### Computadoras de Escritorio
 
-Common variant available as `bazzite`, suitable for desktop computers.
+Esta variante común/genérica esta disponible como `bazzite`, la cual es adecuada para computadoras de escritorio, esta variante incluye la siguiente característica:
 
-- Automatic updates for the OS, Flatpaks, Nix packages <sup><sub>(Via Fleek)</sub></sup>, and all Distrobox containers.
+- Actualizaciones automáticas para el sistema operativo, Flatpaks, paquetes Nix <sup><sub>(Usando Fleek)</sub></sup>, y todos los contenedores Distrobox.
 
 > \[!IMPORTANT\]\
-> \*\***ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).** If you experience any issues with installing Bazzite, then check out our [troubleshoot guide](https://universal-blue.discourse.group/docs?topic=34).
+> **Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).** Si experimentas errores y/o problemas instalando Bazzite, checa nuestra [guía de solución de problemas (en inglés)](https://universal-blue.discourse.group/docs?topic=34).
 
-If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image:
+Si estas actualmente usando una imagen de Universal Blue, por favor [sigue estas instrucciones (en inglés)](https://universal-blue.org/images/#image-list). 
+
+Si deseas cambiar la base (rebase) de una imagen upstream existente de un sistema ostree de Fedora Silverblue/Kinoite a la imagen **para computadoras de escritorio usando una GPU AMD o Intel**, ejecuta el siguiente comando en una terminal:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:latest
 ```
 
-or for devices with Nvidia GPUs:
+Si deseas realizar un rebase a la imagen **para computadoras de escritorio con una GPU NVIDIA**, ejecuta el siguiente comando en una terminal:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:latest
 ```
 
-**For users with Secure Boot enabled:** Run `ujust enroll-secure-boot-key` and enter the password `ublue-os` if prompted to enroll the required key.
+**Para usuarios con Secure Boot habilitado:** Ejecuta el comando `ujust enroll-secure-boot-key` en una terminal e introduce la contraseña `ublue-os` si el sistema te lo requiere para registrar la clave de seguridad requerida.
 
-### Steam Deck/Home Theater PCs (HTPCs)
+### Steam Deck/Computadoras para Cine en Casa (HTPCs)
 
 > \[!IMPORTANT\]\
-> Devices that are NOT the Steam Deck can still use the bazzite-deck images, but must use an AMD/Intel GPU.
+> Los dispositivos que **NO** son una Steam Deck también pueden utilizar las imágenes bazzite-deck, sin embargo tienen que usar una GPU de AMD o Intel, GPUs de NVIDIA no son compatibles por el momento con esta variante.
 
-Variant designed for usage as an alternative to SteamOS on the Steam Deck, and for a console-like experience on HTPCs, available as `bazzite-deck`:
+Esta variante esta diseñada para usarse como una alternativa de SteamOS en la Steam Deck, e igualmente para proporcionar una experiencia como de consola de videojuegos en HTPCs y otros dispositivos portátiles, disponible como `bazzite-deck`:
 
-- Directly boots to Gamemode matching SteamOS's behavior.
-- **Automatic `duperemove` greatly trims the size of compatdata.**
-- **Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.**
-- **Able to be booted even if the drive is full.**
-- **Support for every language supported by upstream Fedora.**
-- **Uses Wayland on the desktop with [support for Steam input](https://github.com/Supreeeme/extest).**
-- Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV).
-- Patched Mesa for proper framerate control from Gamescope.
-- Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
-- Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default.
-- Option to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), and [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), among numerous other useful packages on installation.
-- Custom update system allows for the OS, Flatpaks, Nix packages <sup><sub>(Via Fleek)</sub></sup>, and Distrobox images to be updated directly from the Gamemode UI.
-- Built in support for Windows dual-boot thanks to Fedora's installation of GRUB being left intact.
-- Update break something? Easily roll back to the previous version of Bazzite thanks to `rpm-ostree`'s rollback functionality. You can even select previous images at boot.
-- Steam and Lutris preinstalled on the image as layered packages.
-- [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Gamemode and on the Desktop if Discord is installed. [View the official documentation here](https://trigg.github.io/Discover/bazzite).
-- Uses ZRAM<sub><sup>(4GB)</sup></sub> with the ZSTD compression algorithm by default with the option to switch back to a 1GB swap file and set a custom size for it if desired.
-- Kyber I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` and `rmlint` processes.
-- Applies SteamOS's kernel parameters.
-- Color calibrated display profiles for matte and reflective Steam Deck screens included.
-- Default-disabled power-user features, including:
-  - Service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) and [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), see `ryzenadj.service` and `/etc/default/ryzenadj`.
-  - Service for limiting the max charge level of the battery, see `batterylimit.service` and `/etc/default/batterylimit`. <sup><sub>(Works even when the device is off)</sub></sup>
-  - Built in support for display overclocking. For example, add `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` to `/etc/environment`.
-  - Ability to use X11 on the desktop if desired by editing `/etc/default/desktop-wayland`.
-  - 32GB RAM mod your Steam Deck? Enjoy double the maximum VRAM amount, automatically applied. <sup><sub>(Can you share your soldering skills?)</sub></sup>
-- Steam Deck hardware-specific services can be disabled by running `ujust disable-deck-services` in the terminal, useful for trying this image on other handhelds or for use on HTPCs.
-- More information can be found [here](https://universal-blue.discourse.group/docs?topic=37) on the Bazzite Steam Deck images.
+- Al arrancar tu dispositivo, inicia directamente en el modo de juego (Gamemode), emulando el mismo comportamiento que SteamOS.
+- **Se aplica el servicio `duperemove` automáticamente el cual recorta por mucho el tamaño del directorio compatdata, el directorio usado por Proton para almacenar los prefijos de WINE para correr juegos de Windows en Linux.**
+- **Incluye la versión mas actual de Mesa, el cual crea cachés de shaders mas pequeños, y los cuales no son requeridos para prevenir tirones/parones.**
+- **Habilidad de arrancar el sistema incluso si el disco esta lleno.**
+- **Soporte para cada uno de los lenguajes directamente soportados por Fedora (upstream).**
+- **Uso del servidor gráfico Wayland en el escritorio con [soporte para Steam input](https://github.com/Supreeeme/extest).**
+- Incluye versiones portadas de la mayoría de los paquetes de SteamOS, incluyendo drivers, actualizadores de firmware y controladores de ventiladores [del repositorio de evlaV](https://gitlab.com/evlaV).
+- Version parchada de Mesa para controlar correctamente la tasa de fotogramas (framerate) usando Gamescope.
+- Incluye los parches de [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) por defecto, los cuales proveen soporte completo del sistema de archivos BTRFS para tarjetas SD.
+- Se incluye una copia portada de [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), habilitada por defecto.
+- Opción para instalar [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), y [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), ademas de un sin fin de paquetes útiles al momento de instalar el sistema.
+- Un sistema personalizado de actualizaciones que permite que tanto el sistema operativo, los Flatpaks, los paquetes Nix <sup><sub>(Usando Fleek)</sub></sup>, y las imagenes de Distrobox sean actualizables directamente desde la interfaz de Gamemode.
+- Soporte incluido para el arranque dual (dual-boot) con Windows, gracias a que se deja intacta la instalación de GRUB por defecto de Fedora.
+- ¿Algo se rompió o dejo de funcionar después de actualizar?, ¡descuida!, puedes fácilmente retroceder a una versión previa de Bazzite, gracias a la función de reversión (rollback) de `rpm-ostree`. Inclusive puedes seleccionar imágenes previas del sistema directamente desde el menú que aparece al arrancar tu dispositivo.
+- Steam y Lutris vienen pre-instalados en la imagen como paquetes en capas (layered).
+- La utilidad [Discover Overlay](https://github.com/trigg/Discover) para Discord viene pre-instalada y es lanzada automáticamente tanto en Gamemode como en el escritorio, si Discord esta instalado. [Puedes ver la documentación oficial aquí (en inglés)](https://trigg.github.io/Discover/bazzite).
+- Se incluye ZRAM<sub><sup>(4GB)</sup></sub>, un avanzado sistema de swap ubicado directamente en la memoria RAM, con el algoritmo de compresión de datos ZSTD por defecto, con la opción de cambiar de vuelta a un simple archivo swap de 1GB, y si deseas, puedes cambiarlo a un tamaño personalizado.
+- Se incluye el planificador (scheduler) Kyber I/O para prevenir la inanición (starvation) de E/S al instalar juegos o cuando los procesos `duperemove` y `rmlint` corren en el fondo.
+- Se aplican los parámetros del kernel de SteamOS.
+- Se incluyen perfiles de color calibrados para los diferentes tipos de pantalla de la Steam Deck, mate o glossy.
+- Características para usuarios avanzados que vienen desactivadas por defecto, las cuales incluyen:
+  - Un servicio de bajo riesgo para reducir el voltaje de la Steam Deck gracias a [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) y [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), véase `ryzenadj.service` y `/etc/default/ryzenadj`.
+  - Un servicio que limita el nivel máximo de recarga de la batería, véase `batterylimit.service` y `/etc/default/batterylimit`. <sup><sub>(Funciona incluso cuando el dispositivo esta apagado)</sub></sup>
+  - Soporte incorporado para el overclock de la pantalla, es decir, para incrementar la tasa de refresco que el panel tiene por defecto (60Hz en modelos LCD). Por ejemplo, añade `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` a `/etc/environment`.
+  - La habilidad de utilizar el servidor gráfico X11 en vez de Wayland, si así se desea, tan solo editando `/etc/default/desktop-wayland`.
+  - ¿Aplicaste el mod de 32 GB de memoria RAM en tu Steam Deck?, disfruta del doble de la cantidad máxima de VRAM, el cual es aplicado automáticamente. <sup><sub>(Hablando de, ¿crees que podrías compartirnos semejante habilidad para soldar?)</sub></sup>
+- Servicios que son específicos para el hardware de la Steam Deck pueden ser deshabilitados simplemente ejecutando el siguiente comando en una terminal: `ujust disable-deck-services`, algo muy útil cuando tratas de usar esta variante en otras computadoras portátiles o HTPCs.
+- Puedes encontrar más información acerca de las imágenes Steam Deck de Bazzite [aquí](https://universal-blue.discourse.group/docs?topic=37).
 
 > \[!WARNING\]\
-> \*\***Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time. Upgrading the storage resolves the issue.**
+> **Debido a un bug en upstream, Bazzite no puede ser utilizado por el momento en Steam Decks con solo 64 GB de almacenamiento eMMC. Ampliar tu almacenamiento cambiando el disco interno soluciona este problema.**
 
 > \[!IMPORTANT\]\
-> \*\***ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).** If you experience any issues with installing Bazzite, then check out our [troubleshoot guide](https://universal-blue.discourse.group/docs?topic=34).
+> **Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).** Si experimentas errores y/o problemas instalando Bazzite, checa nuestra [guía de solución de problemas (en inglés)](https://universal-blue.discourse.group/docs?topic=34).
 
-If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image:
+Si estas actualmente usando una imagen de Universal Blue, por favor [sigue estas instrucciones (en inglés)](https://universal-blue.org/images/#image-list). 
+
+Si deseas cambiar la base (rebase) de una imagen upstream existente de un sistema ostree de Fedora Silverblue/Kinoite a la imagen **para Steam Deck/HTPCs**, ejecuta el siguiente comando en una terminal:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:latest
@@ -137,69 +141,74 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:lates
 
 ### GNOME
 
-Builds with the GNOME desktop environment are available in both desktop and deck flavors. These builds come with the following additional features:
+Las sub-variantes con el entorno de escritorio GNOME están disponibles tanto para la variante para **Computadoras de Escritorio**, como la de **Steam Deck/HTPCs**. Estas imágenes cuentan con las siguientes características adicionales:
 
-- [Variable refresh rate support and fractional scaling enabled under Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
-- Custom menu in the top bar for returning to game mode, launching Steam, and opening a number of useful utilities.
-- [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) preinstalled and ready to use.
-- Features optional Valve-inspired themes matching Vapor and VGUI2 from SteamOS.
-- [Hanabi extension](https://github.com/jeffshee/gnome-ext-hanabi) included to offer similar features to Wallpaper Engine in KDE.
-- Numerous optional extensions pre-installed, including [important user experience fixes](https://www.youtube.com/watch?v=nbCg9_YgKgM).
-- Automatic updates for the [Firefox GNOME theme](https://github.com/rafaelmardojai/firefox-gnome-theme) and [Thunderbird GNOME theme](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(If installed)</sub></sup>
+- [Soporte tanto para pantallas con tasa de refresco variable y como para la escala fraccional de la interfaz de usuario bajo el servidor gráfico Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
+- Menú personalizado en la barra superior para regresar al modo de juego (gamemode), lanzar Steam, y para abrir otras utilidades.
+- [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/), la versión de KDE Connect para GNOME, viene pre-instalado y listo para usarse.
+- Incluye temas opcionales inspirados en el software de Valve, emulando la interfaz de SteamOS, Vapor, y la interfaz de los primeros juegos que usaban el motor gráfico Source, VGUI2.
+- La [extension Hanabi](https://github.com/jeffshee/gnome-ext-hanabi) viene incluida, la cual ofrece características similares al Wallpaper Engine en KDE.
+- Numerosas extensiones opcionales pre-instaladas, incluyendo [importantísimos parches para una mejor experiencia del usuario](https://www.youtube.com/watch?v=nbCg9_YgKgM).
+- Actualizaciones automáticas para el [tema de GNOME para Firefox](https://github.com/rafaelmardojai/firefox-gnome-theme) y el [tema de GNOME para Thunderbird](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(Si se encuentran instalados)</sub></sup>
 
 > \[!IMPORTANT\]\
-> \*\***ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).** If you experience any issues with installing Bazzite, then check out our [troubleshoot guide](https://universal-blue.discourse.group/docs?topic=34).
+> \**Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).** Si experimentas errores y/o problemas instalando Bazzite, checa nuestra [guía de solución de problemas (en inglés)](https://universal-blue.discourse.group/docs?topic=34).
 
-To rebase an existing ostree system to the **desktop** release:
+Si estas actualmente usando una imagen de Universal Blue, por favor [sigue estas instrucciones (en inglés)](https://universal-blue.org/images/#image-list). 
+
+Si deseas cambiar la base (rebase) de una imagen upstream existente de un sistema ostree de Fedora Silverblue/Kinoite a la imagen **para computadoras de escritorio con una GPU AMD ó Intel**, ejecuta el siguiente comando en una terminal:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:latest
 ```
 
-To rebase an existing ostree system to the **desktop with Nvidia drivers** release:
+Si deseas realizar un rebase a la imagen **para computadoras de escritorio con una GPU NVIDIA**, ejecuta el siguiente comando en una terminal:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:latest
 ```
 
 > \[!WARNING\]\
-> \*\***Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time.**
+> **Debido a un bug en upstream, Bazzite no puede ser utilizado por el momento en Steam Decks con solo 64 GB de almacenamiento eMMC. Ampliar tu almacenamiento cambiando el disco interno soluciona este problema.**
 
-To rebase an existing ostree system to the **Steam Deck/HTPC** release:
+> \[!IMPORTANT]  
+> Los dispositivos que **NO** son una Steam Deck, también pueden utilizar las imágenes bazzite-deck, sin embargo tienen que usar una GPU de AMD o Intel, GPUs de NVIDIA no son compatibles por el momento con esta variante.
+
+Si necesitas realizar un rebase a la imagen **para Steam Deck/HTPC**, ejecuta el siguiente comando en una terminal:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:latest
 ```
 
-### Features from Upstream
+### Características del Upstream
 
 #### Universal Blue
 
-- Flathub is enabled by default.
-- [`ujust`](https://github.com/casey/just) commands for convenience.
-- Multi-media codecs out of the box.
-- Rollback Bazzite from any build within the last 90 days.
+- Flathub se encuentra habilitado por defecto.
+- Lanzador de comandos [`ujust`](https://github.com/casey/just) incluido, con diversos comandos muy convenientes.
+- Codecs multimedia fuera de la caja.
+- Revierte tu instalación de Bazzite desde cualquier versión dentro de los últimos 90 días.
 
-#### Features from Fedora Linux (Kinoite & Silverblue)
+#### Características de Fedora Linux (Kinoite & Silverblue)
 
-- A rock solid and stable base.
-- System packages stay relatively up to date.
-- Can layer Fedora packages to the image without losing them between updates.
-- Security focused with [SELinux](https://github.com/SELinuxProject/selinux) preinstalled and configured out of the box.
-- The ability to rebase to different Fedora libostree images, if desired, without losing user data.
-- Printing support thanks to [CUPS](https://www.cups.org/) being preinstalled.
+- Una base estable y sólida como una roca.
+- Los paquetes del sistema se mantienen relativamente actualizados a su última versión.
+- Puedes instalar paquetes de Fedora en capas (layered) sin que se pierdan entre actualizaciones.
+- Enfocado en seguridad con [SELinux](https://github.com/SELinuxProject/selinux) pre-instalado y configurado fuera de la caja.
+- La habilidad de cambiar de base (rebase) de una imagen libostree de Fedora, si así se desea, sin perder datos del usuario.
+- Soporte para impresoras gracias a que el servidor de impresión [CUPS](https://www.cups.org/) viene pre-instalado.
 
-## Why
+## ¿Por qué?
 
-Bazzite started as a project to resolve some of the issues that plague SteamOS, mainly out of date packages (despite an Arch base) and the lack of a functional package manager.
+Bazzite inicio como un proyecto para resolver los problemas que plagan SteamOS, principalmente los paquetes desactualizados (a pesar de estar basado en Arch Linux) y la carencia de un gestor de paquetes funcional.
 
-Despite this project also being image-based, you are able to install any Fedora package straight from the command line. These packages will persist across updates <sub><sup>(So go ahead and install that obscure VPN software you spent an hour trying to get working in SteamOS)</sup></sub>. Additionally, Bazzite is updated multiple times a week with packages from upstream Fedora, giving you the best possible performance and latest features - all on a stable base.
+A pesar que este proyecto también esta basado en imágenes, tienes la capacidad de instalar **cualquier** paquete de Fedora, directamente desde la terminal. Estos paquetes persistirán a través de las actualizaciones  <sub><sup>(Así que descuida, tu instala ese oscuro software de VPN con el que pasaste una hora y múltiples migrañas tratando de hacer funcionar en SteamOS)</sup></sub>. Ademas, Bazzite es actualizado múltiples veces a la semana con paquetes del upstream de Fedora, dándote el mejor rendimiento posible y las últimas características - todo con una base sólida y estable.
 
-Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot <sub><sup>(Run `ujust enroll-secure-boot-key` and enter the password `ublue-os` if prompted to enroll our key)</sup></sub> and disk encryption, making this a sensible solution for general computing. <sup><sub>(Yes, you can print from Bazzite)</sub></sup>
+Bazzite se entrega con el kernel de Linux mas nuevo y SELinux esta habilitado por defecto con soporte completo de Secure Boot <sub><sup>(Ejecuta el comando `ujust enroll-secure-boot-key` en una terminal e introduce la contraseña  `ublue-os` si es requerido para registrar nuestra llave de seguridad)</sup></sub>, además de soporte para la encriptación completa de tu disco, lo que convierte a Bazzite una opción razonable para la informática general. <sup><sub>(Así es, puedes mandar a imprimir el último reporte financiero de tu empresa con Bazzite)</sub></sup>
 
-Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details on what makes Bazzite stand out from other Linux operating systems.
+Lee nuestras [preguntas frecuentes (en inglés)](https://universal-blue.discourse.group/docs?topic=33) para saber más en lo que hace a Bazzite sobresalir de otras distribuciones de GNU Linux.
 
-## Showcase
+## Mira como luce Bazzite (Capturas de Pantalla)
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 
@@ -215,23 +224,22 @@ Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details
 
 ![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
 
-## Documentation & Newsletters
+## Documentación y Boletín informativo/Newsletters (En inglés)
 
-- [Installing and Managing Applications](https://universal-blue.discourse.group/docs?topic=35)
-- [Updates, Rollbacks, and Rebasing](https://universal-blue.discourse.group/docs?topic=36)
-- [Gaming Guide](https://universal-blue.discourse.group/docs?topic=31)
-- [Dual Booting Guide](https://universal-blue.discourse.group/docs?topic=129)
-- [Miscellaneous Documentation](https://universal-blue.discourse.group/docs?topic=287)
+- [Actualizaciones, Reversiones y Cambio de Base (Rebasing)](https://universal-blue.discourse.group/docs?topic=36)
+- [Guía para Jugar en Linux](https://universal-blue.discourse.group/docs?topic=31)
+- [Guía para Configurar el Arranque Dual con Windows (Dual Boot)](https://universal-blue.discourse.group/docs?topic=129)
+- [Documentación Miscelánea](https://universal-blue.discourse.group/docs?topic=287)
 
-Find additional documentation surrounding the project [here](https://universal-blue.discourse.group/docs).
+Puedes encontrar documentación adicional relacionada al proyecto [aquí](https://universal-blue.discourse.group/docs).
 
-Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) that get published on a regular basis for updates on the project.
+Checa nuestros [boletines informativos](https://universal-blue.discourse.group/tag/bazzite-buzz), estos son publicados regularmente y los cuales hablan de las últimas actualizaciones del proyecto.
 
-## Custom Packages
+## Paquetes Personalizados
 
-Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built on Copr in [bazzite](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/) and [bazzite-multilib](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/).
+Todos los paquetes que son porteados de SteamOS, ChimeraOS u otros que son utilzados por Bazzite, son creados usando [Copr](https://copr.fedorainfracloud.org/coprs/) en los repositorios [bazzite](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/) y [bazzite-multilib](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/).
 
-| Package                                                                                             | Status                                                                                                                                                      |
+| Nombre del Paquete                                                                                  | Estado                                                                                                                                                      |
 | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | bluez                                                                                               | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/package/bluez/status_image/last_build.png?)                              |
 | [discover-overlay](https://github.com/trigg/Discover)                                               | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/discover-overlay/status_image/last_build.png?)                            |
@@ -246,9 +254,8 @@ Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built o
 | [gnome-randr-rust](https://github.com/maxwellainatchi/gnome-randr-rust)                             | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-randr-rust/status_image/last_build.png?)                            |
 | gnome-shell-extension-bazzite-menu                                                                  | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-bazzite-menu/status_image/last_build.png?)          |
 | [gnome-shell-extension-caribou-blocker](https://extensions.gnome.org/extension/1326/block-caribou/) | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-caribou-blocker/status_image/last_build.png?)       |
-| [gnome-shell-extension-compiz-windows-effect](https://github.com/hermes83/compiz-windows-effect)    | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-compiz-windows-effect/status_image/last_build.png?) |
 | [gnome-shell-extension-hanabi](https://github.com/jeffshee/gnome-ext-hanabi)                        | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-hanabi/status_image/last_build.png?)                |
-| [gnome-shell-extension-hotedge](https://github.com/jdoda/hotedge)                                   | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-hotedge/status_image/last_build.png?)               |
+| [gnome-shell-extension-compiz-windows-effect](https://github.com/hermes83/compiz-windows-effect)    | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-compiz-windows-effect/status_image/last_build.png?) |
 | [hhd](https://github.com/antheas/hhd)                                                               | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/hhd/status_image/last_build.png?)                                         |
 | jupiter-fan-control                                                                                 | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/jupiter-fan-control/status_image/last_build.png?)                         |
 | jupiter-hw-support-[btrfs](https://gitlab.com/popsulfr/steamos-btrfs)                               | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/jupiter-hw-support-btrfs/status_image/last_build.png?)                    |
@@ -271,9 +278,9 @@ Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built o
 | wireplumber                                                                                         | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/wireplumber/status_image/last_build.png?)                                 |
 | xorg-x11-server-Xwayland                                                                            | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/package/xorg-x11-server-Xwayland/status_image/last_build.png?)           |
 
-Additionally, the following packages are used from other Copr repos:
+Adicionalmente, los paquetes listados a continuación provienen de otros repositorios de Copr:
 
-| Package                                                                                                       | Status                                                                                                                                                          |
+| Nombre del Paquete                                                                                            | Estado                                                                                                                                                          |
 | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [gcadapter_oc-kmod](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/)                                 | ![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/package/gcadapter_oc-kmod/status_image/last_build.png?)                                 |
 | [gnome-vrr](https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/)                                     | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/package/mutter/status_image/last_build.png?)                                        |
@@ -291,43 +298,43 @@ Additionally, the following packages are used from other Copr repos:
 | [wallpaper-engine-kde-plugin](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/) | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/package/wallpaper-engine-kde-plugin/status_image/last_build.png?) |
 | [webapp-manager](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/)                           | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/package/webapp-manager/status_image/last_build.png?)                           |
 
-## Verification
+## Verificación
 
-These images are signed with sigstore's [cosign](https://docs.sigstore.dev/cosign/overview/). You can verify the signature by downloading the `cosign.pub` key from this repo and running the following command:
+Estas imágenes son firmadas digitalmente con [cosign](https://docs.sigstore.dev/cosign/overview/) de Sigstore. Para verificar la firma digital manualmente, primero tienes que descargar la llave `cosign.pub` directamente de este repositorio, y después, ejecuta el siguiente comando en una terminal:
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 ```
 
-### Contributor Metrics
+### Métricas de Contribución
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
-## Special Thanks
+## Gracias Especiales
 
-Bazzite is a community effort and wouldn't exist without everyone's support. Below are some of the people who've helped us along the way:
+Bazzite es producto de esfuerzo comunitario, y no existiría sin la contribución de todos. A continuación, están listadas unas cuantas personas que nos han ayudado a lo largo del camino:
 
-- [rei.svg](https://github.com/reisvg) - For creating our logo and overall branding.
-- [evlaV](https://gitlab.com/evlaV) - For making Valve's code available and for being [this person](https://xkcd.com/2347/).
-- [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.
-- [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out. It's our Nix-based cousin.
-- [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - For assistance with needed kernel patches and for creating the [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) we now use.
-- [nicknamenamenick](https://github.com/nicknamenamenick) - For being the MVP nearly single-handedly upkeeping our documentation and support literature, and countless cases of helping users.
-- [Steam Deck Homebrew](https://deckbrew.xyz) - For choosing to support distributions other than SteamOS despite the extra work, and a special thanks to [PartyWumpus](https://github.com/PartyWumpus) for getting Decky Loader working with SELinux for us.
-- [cyrv6737](https://github.com/cyrv6737) - For the initial inspiration and the base that became bazzite-arch.
+- [rei.svg](https://github.com/reisvg) - Por crear nuestro logo, y en general, nuestro branding.
+- [evlaV](https://gitlab.com/evlaV) - Por ser [esta persona](https://xkcd.com/2347/) y liberar el código de Valve públicamente.
+- [ChimeraOS](https://chimeraos.org/) - Por la creación de gamescope-session y su invaluable apoyo a lo largo del camino.
+- [Jovian-NixOS](https://github.com/Jovian-Experiments) - Por brindarnos su soporte con problemas técnicos y por crear un proyecto similar. ¡En serio!, [chécalo](https://github.com/Jovian-Experiments/Jovian-NixOS), es nuestro primo basado en Nix.
+- [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - Por su asistencia con unos parches necesarios en el kernel, y por crear el repositorio [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) que usamos actualmente.
+- [nicknamenamenick](https://github.com/nicknamenamenick) - Por ser el MVP, ya que casi por si solo, mantiene toda nuestra documentación general y de soporte, ademas de los innumerables casos donde ayuda a nuestros usuarios.
+- [Steam Deck Homebrew](https://deckbrew.xyz) - Por escoger brindar soporte a otras distribuciones ademas de SteamOS, a pesar de todo el trabajo extra que esto conlleva, y damos gracias especiales a [PartyWumpus](https://github.com/PartyWumpus) por lograr que Decky Loader funcione con SELinux en Bazzite.
+- [cyrv6737](https://github.com/cyrv6737) - Por la inspiración inicial para crear el proyecto, y la base que eventualmente se volvió [bazzite-arch](https://github.com/ublue-os/bazzite-arch).
 
-## Build Your Own
+## Hazlo tu Mismo
 
-Bazzite is built entirely in GitHub and creating your own custom version of it is as easy as forking this repository, adding a private signing key, and enabling GitHub actions.
+Bazzite esta construido enteramente en GitHub, y crear tu propia versión personalizada es muy fácil, tan solo crea un fork de este repositorio, añade tu propia llave digital privada, y habilita las acciones de GitHub.
 
-[Familiarize yourself](https://docs.github.com/en/actions/security-guides/encrypted-secrets) on keeping secrets in github. You'll need to [generate a new keypair](https://docs.sigstore.dev/cosign/overview/) with cosign. The public key can be in your public repo <sub><sup>(Your users need it to check the signatures)</sup></sub>, and you can paste the private key in `Settings -> Secrets -> Actions` with the name `SIGNING_SECRET`.
+[Familiarízate](https://docs.github.com/en/actions/security-guides/encrypted-secrets) en como mantener secretos en GitHub. Necesitaras [generar tus nuevas pares de claves](https://docs.sigstore.dev/cosign/overview/) con cosign. La llave digital pública puede ubicarse en tu repositorio público <sub><sup>(Tus usuarios van a necesitar verificar las firmas digitales.)</sup></sub>, y puedes pegar tu llave digital privada en `Settings -> Secrets -> Actions` con el nombre `SIGNING_SECRET`.
 
-We also ship a config for the popular [pull app](https://github.com/apps/pull) if you'd like to keep your fork in sync with upstream. Enable this app on your repo to keep track of Bazzite changes while also making your own modifications.
+También incluimos una configuración para la popular app de GitHub [Pull](https://github.com/apps/pull), por si gustas mantener tu fork en sincronía con el upstream. Habilita esta aplicación en tu repositorio para realizar un seguimiento de los cambios en Bazzite, mientras al mismo tiempo, haces tus propias modificaciones.
 
-## Join The Community
+## Únete a la Comunidad
 
-You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB) and view the archive of support threads on our [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1087140957096517672).
+Puedes encontrarnos en el [Discord de Universal Blue (en inglés)](https://discord.gg/f8MUghG5PB) y puedes ver todo el archivo de los hilos de ayuda en nuestro [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1087140957096517672).
 
-Discuss and create user guides over at the [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
+Discute y crea guias para los usuarios en nuestro [foro de Discourse de Universal Blue Discourse (en inglés)](https://universal-blue.discourse.group/c/bazzite/5).
 
-Follow Universal Blue on [Mastodon](https://fosstodon.org/@UniversalBlue).
+Sigue a Universal Blue en [Mastodon](https://fosstodon.org/@UniversalBlue).
