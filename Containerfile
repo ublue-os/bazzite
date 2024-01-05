@@ -166,7 +166,6 @@ RUN rpm-ostree install \
         fira-code-fonts \
         glow \
         gum \
-        setroubleshoot \
         setools \
         redhat-lsb-core && \
     ln -s /usr/share/fonts/google-noto-sans-cjk-fonts /usr/share/fonts/noto-cjk && \
