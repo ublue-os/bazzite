@@ -8,59 +8,61 @@
 
 # Tabla de Contenidos
 
-- [Caracteristicas de **todas** las imagenes de Bazzite](https://github.com/ublue-os/bazzite#about--features)
-  - [Caracteristicas de las imagenes para **Computadoras de Escritorio**](https://github.com/ublue-os/bazzite#desktop)
-  - [Caracteristicas de las imagenes para **Steam Deck/HTPC**](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
-  - [Caracteristicas de las imagenes con el entorno de escritorio **GNOME**](https://github.com/ublue-os/bazzite#gnome)
-  - [Features from Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
-- [Why](https://github.com/ublue-os/bazzite#why)
-- [Showcase](https://github.com/ublue-os/bazzite#showcase)
-- [Documentation & Newsletters](https://github.com/ublue-os/bazzite#documentation--newsletters)
-- [Custom Packages](https://github.com/ublue-os/bazzite#custom-packages)
-- [Verification & Metrics](https://github.com/ublue-os/bazzite#verification)
-- [Special Thanks](https://github.com/ublue-os/bazzite#special-thanks)
-- [Building Your Own](https://github.com/ublue-os/bazzite#build-your-own)
-- [Community](https://github.com/ublue-os/bazzite#join-the-community)
+- [Características de **todas** las imágenes de Bazzite](https://github.com/ublue-os/bazzite#about--features)
+  - [Características de las imágenes para **Computadoras de Escritorio**](https://github.com/ublue-os/bazzite#desktop)
+  - [Características de las imágenes para **Steam Deck/HTPC**](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
+  - [Características de las imágenes con el entorno de escritorio **GNOME**](https://github.com/ublue-os/bazzite#gnome)
+  - [Características de Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
+- [¿Por qué?](https://github.com/ublue-os/bazzite#why)
+- [Demostración (Capturas de Pantalla)](https://github.com/ublue-os/bazzite#showcase)
+- [Documentación y Boletín informativo/Newsletters (En inglés)](https://github.com/ublue-os/bazzite#documentation--newsletters)
+- [Paquetes personalizados](https://github.com/ublue-os/bazzite#custom-packages)
+- [Verificación y Métricas](https://github.com/ublue-os/bazzite#verification)
+- [Gracias Especiales](https://github.com/ublue-os/bazzite#special-thanks)
+- [Créalo tu Mismo](https://github.com/ublue-os/bazzite#build-your-own)
+- [Comunidad (en inglés)](https://github.com/ublue-os/bazzite#join-the-community)
 
 ---
 
-## About & Features
+## Acerca de y Características
 
-Bazzite is an OCI image that serves as an alternative operating system for the [Steam Deck](https://www.steamdeck.com/), and a ready-to-game SteamOS-like for desktop computers and living room home theater PCs.
+Bazzite es una imagen OCI que sirve como un sistema operativo alterno para la [Steam Deck](https://www.steamdeck.com/), y como un sistema tipo SteamOS listo para jugar para computadoras de 
+escritorio, computadoras para cine en casa (HTPC), y un sinnúmero de 
+otras computadoras portátiles.
 
-Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ublue-os/nvidia](https://github.com/ublue-os/nvidia) using [Fedora](https://fedoraproject.org/) technology, which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features:
+Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue-os/nvidia](https://github.com/ublue-os/nvidia) usando tecnología de [Fedora](https://fedoraproject.org/), lo que significa un soporte expandido de hardware y drivers incluidos. Adicionalmente, Bazzite añade las siguientes características:
 
-- Proprietary Nvidia drivers pre-installed.
-- Full hardware accelerated codec support for H264 decoding.
-- Full support for AMD's ROCM OpenCL/HIP run-times.
-- [xone](https://github.com/medusalix/xone), [xpadneo](https://github.com/atar-axis/xpadneo), and [xpad-noone](https://github.com/ublue-os/xpad-noone) drivers for Xbox controllers.
-- Full support for [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
-- Includes Valve's KDE themes from SteamOS.
-- [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
-- Support for [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Only on KDE)</sup></sub>
-- [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) included.
-- Full support for [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
-- [Distrobox](https://github.com/89luca89/distrobox) preinstalled with automatic updates for created containers.
-- Automated `duperemove` and `rmlint` services for reducing the disk space used by wine prefix contents.
-- Support for HDMI CEC via [libCEC](https://libcec.pulse-eight.com/).
-- [System76-Scheduler](https://github.com/pop-os/system76-scheduler) preinstalled, providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
-- Customized System76-Scheduler config with additional rules.
-- Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
-- [Input Remapper](https://github.com/sezanzeb/input-remapper) preinstalled and enabled. <sub><sup>(Available but default-disabled on the Deck variant, may be enabled with `ujust enable-input-remapper`)</sup></sub>
-- Bazzite Portal provides an easy way to install numerous applications and tweaks, including installing [LACT](https://github.com/ilya-zlobintsev/LACT) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
-- [Nix](https://nixos.org/) package manager with [Fleek](https://getfleek.dev/) optionally available for install via Bazzite Portal.
-- [Brew](https://brew.sh/) package manager optionally available for install via Bazzite Portal.
-- [Waydroid](https://waydro.id/) preinstalled for running Android apps. Set it up with this [quick guide](https://universal-blue.discourse.group/docs?topic=32).
-- Manage applications using [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), and [Gear Lever](https://github.com/mijorus/gearlever).
-- [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
-- [OpenRazer](https://openrazer.github.io) drivers built in, Select OpenRazer in Bazzite Portal or run `ujust install-openrazer` in a terminal to begin using it.
-- [OpenTabletDriver](https://opentabletdriver.net/) udev rules built in, with the full software suite installable via Bazzite Portal or by running `ujust install-opentabletdriver` in a terminal.
-- [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
-- Out of the box support for [Wooting](https://wooting.io/) keyboards.
-- Built in support for Southern Islands <sub><sup>(HD 7000)</sup></sub> and Sea Islands <sub><sup>(HD 8000)</sup></sub> AMD GPUs under the `amdgpu` driver.
-- A fix is available for [a 32-bit Source 1 engine game bug ](https://github.com/ValveSoftware/Source-1-Games/issues/5043)<sub><sup>[(IE: TF2)](https://github.com/ValveSoftware/Source-1-Games/issues/5043)</sup></sub> that makes the game crash on launch - `ujust patch-source1-tcmalloc`
-- [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) is available for Discord screensharing on Wayland.
-- [Webapp Manager](https://github.com/linuxmint/webapp-manager) is available for creating applications from websites for a variety of browsers, including Firefox.
+- Drivers propietarios de NVIDIA pre-instalados.
+- Soporte total de decodificación acelerada por hardware del codec de video H264.
+- Soporte completo para los tiempos de ejecución (runtimes) de ROCM OpenCL/HIP de AMD
+- Drivers [xone](https://github.com/medusalix/xone), [xpadneo](https://github.com/atar-axis/xpadneo), y [xpad-noone](https://github.com/ublue-os/xpad-noone) para mandos de videojuegos de Xbox.
+- Soporte completo de [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
+- Incluye los temas para KDE de SteamOS, hechos por Valve.
+- [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), y [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) instalados y disponibles por defecto.
+- Soporte para [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Solo en KDE)</sup></sub>
+- Incluida la [extensión de la shell para mostrar las propiedades de ROMs](https://github.com/GerbilSoft/rom-properties) (usados para la emulación de consolas) en el navegador de archivos.
+- Soporte completo para [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
+- [Distrobox](https://github.com/89luca89/distrobox) pre-instalado con actualizaciones automáticas para los contenedores creados.
+- Servicios automatizados `duperemove` y `rmlint` incluidos para reducir el espacio de disco utilizados por los contenidos de los prefijos de WINE.
+- Soporte de HDMI CEC (para poder controlar todos los dispositivos conectados por HDMI) usando [libCEC](https://libcec.pulse-eight.com/).
+- [System76-Scheduler](https://github.com/pop-os/system76-scheduler) pre-instalado, proveyendo ajustes automáticos de la prioridad de procesos a tu aplicación actualmente en uso, manteniendo al mínimo el tiempo que tu procesador (CPU) trabaja con procesos de fondo.
+- Configuración personalizada del System76-Scheduler con reglas adicionales.
+- Uso del [control de congestión TCP BBR hecho por Google](https://github.com/google/bbr) por defecto.
+- [Input Remapper](https://github.com/sezanzeb/input-remapper) pre-instalado y habilitado. <sub><sup>(Disponible pero desactivado por defecto en la variante Deck, puede ser habilitado ejecutando el siguiente comando en una terminal: `ujust enable-input-remapper`)</sup></sub>
+- El portal de Bazzite (Bazzite Portal) provee una manera fácil de instalar un sin fin de aplicaciones y ajustes, incluyendo la instalación de [LACT](https://github.com/ilya-zlobintsev/LACT) (para mejor controlar tu GPU de AMD) y [GreenWithEnvy](https://gitlab.com/leinardi/gwe) (para mejor controlar tu GPU de NVIDIA).
+- Gestor de paquetes [Nix](https://nixos.org/) con la opción de instalar [Fleek](https://getfleek.dev/) usando el Bazzite Portal.
+- Opción para instalar el gestor de paquetes [Brew](https://brew.sh/) usando el Bazzite Portal.
+- [Waydroid](https://waydro.id/) pre-instalado para correr aplicaciones de Android. Para configurarlo, usa esta [guía rápida (en inglés)](https://universal-blue.discourse.group/docs?topic=32).
+- Administra tus aplicaciones usando [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), y [Gear Lever](https://github.com/mijorus/gearlever).
+- Drivers i2c-piix4 y i2c-nct6775 de [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) incluidos para controlar las luces RGB de ciertas tarjetas madre (motherboards).
+- Drivers de [OpenRazer](https://openrazer.github.io) incorporados, Sólo selecciona OpenRazer en el Bazzite Portal o ejecuta el comando `ujust install-openrazer` en una terminal para empezar a usarlos.
+- Reglas para udev de [OpenTabletDriver](https://opentabletdriver.net/) incorporadas, con la suite completa de software siendo instalable usando el Bazzite Portal ó ejecutando el comando `ujust install-opentabletdriver` en una terminal.
+- Driver [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) para aumentar la frecuencia del reloj (overclocking) del adaptador para el mando de videojuegos del Gamecube de Nintendo para obtener una taza de sondeo (polling rate) de 1000hz.
+- Soporte fuera de la caja (out of the box) para los teclados hechos por [Wooting](https://wooting.io/).
+- Soporte incorporado de las GPU de las familias <sub><sup>(HD 7000)</sup></sub> y Sea Islands <sub><sup>(HD 8000)</sup></sub> de AMD bajo el driver `amdgpu`.
+- Un parche esta disponible [para un bug en juegos de 32 bits que usen el motor Source 1](https://github.com/ValveSoftware/Source-1-Games/issues/5043)<sub><sup>[(Por ejemplo: TF2)](https://github.com/ValveSoftware/Source-1-Games/issues/5043)</sup></sub> que provoca que el juego se bloqueé al ser iniciado, para aplicar el parche, ejecuta el siguiente comando en una terminal: `ujust patch-source1-tcmalloc`
+- [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) esta disponible para hacer posible compartir tu pantalla con Discord usando Wayland.
+- [Webapp Manager](https://github.com/linuxmint/webapp-manager) esta disponible para crear aplicaciones de sitios web con una variedad de navegadores web, incluyendo Firefox.
 
 ### Desktop
 
