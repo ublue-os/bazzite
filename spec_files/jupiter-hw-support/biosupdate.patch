@@ -1,0 +1,13 @@
+--- a/usr/bin/jupiter-biosupdate
++++ b/usr/bin/jupiter-biosupdate
+@@ -141,6 +141,10 @@
+ # Die early if inhibited
+ [[ ! -f $BIOS_INHIBIT_FILE ]] || die "Bios updates inhibited, no action ($BIOS_INHIBIT_FILE)"
+ 
++if ! systemctl is-enabled jupiter-biosupdate.service; then
++  die "Bios updates inhibited, no action (Service disabled)"
++fi
++
+ # Print action
+ modestring="Performing"
+ [[ -z $checkmode ]] || modestring="Checking for"

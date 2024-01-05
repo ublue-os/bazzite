@@ -1,6 +1,5 @@
 [Unit]
 Description=Configure Bazzite for current user
-Requires=xdg-desktop-autostart.target
 
 [Service]
 Type=simple

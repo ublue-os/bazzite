@@ -1,4 +1,7 @@
 %define packagename jupiter-hw-support
+%define packagever jupiter-3.5-20231211.1
+%global _default_patch_fuzz 2
+
 Name:           %{packagename}-btrfs
 Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
@@ -6,15 +9,16 @@ Summary:        Steam Deck Hardware Support Package
 License:        GPLv3
 URL:            https://github.com/ublue-os/bazzite
 
-Source:         https://gitlab.com/evlaV/jupiter-hw-support/-/archive/master/jupiter-hw-support-master.tar.gz
+Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/%{packagever}/%{packagename}-%{packagever}.tar.gz
 Patch0:         fedora.patch
 Patch1:         selinux.patch
-Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch
-Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/format-device.sh.patch
+Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch.old.20231126125001.20231122.1
+Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/format-device.sh.patch.old.20230922091429.20230915.100
 Patch4:         user.patch
 Patch5:         bazzite-btrfs.patch
 Patch6:         systemd-run.patch
 Patch7:         priv-write.patch
+Patch8:         biosupdate.patch
 
 Requires:       python3
 Requires:       python3-evdev
@@ -31,6 +35,8 @@ Requires:       e2fsprogs
 Requires:       f3
 
 BuildRequires:  systemd-rpm-macros
+BuildRequires:  xcursorgen
+BuildRequires:  sed
 
 %description
 SteamOS 3.0 Steam Deck Hardware Support Package
@@ -39,7 +45,7 @@ SteamOS 3.0 Steam Deck Hardware Support Package
 %define debug_package %{nil}
 
 %prep
-%autosetup -p1 -n %{packagename}-master
+%autosetup -p1 -n %{packagename}-%{packagever}
 
 %build
 
@@ -62,6 +68,8 @@ cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
 cp -rv etc/* %{buildroot}%{_sysconfdir}
+sed -i 's@steamos-cursor.png@usr/share/steamos/steamos-cursor.png@g' usr/share/steamos/steamos-cursor-config
+xcursorgen usr/share/steamos/steamos-cursor-config %{buildroot}%{_datadir}/icons/steam/cursors/default
 # Remove unneeded files
 rm %{buildroot}%{_sysconfdir}/default/grub-steamos
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/h2offt-g
@@ -92,6 +100,7 @@ rm -rf %{buildroot}%{_datadir}/alsa
 %{_bindir}/amd_system_info
 %{_bindir}/foxnet-biosupdate
 %{_bindir}/jupiter-biosupdate
+%{_bindir}/jupiter-initial-firmware-update
 %{_bindir}/jupiter-check-support
 %{_bindir}/jupiter-controller-update
 %{_bindir}/steamos-polkit-helpers/*

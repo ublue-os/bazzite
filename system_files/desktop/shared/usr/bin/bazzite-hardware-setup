@@ -4,9 +4,10 @@ IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=2
+HWS_VER=18
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -15,25 +16,186 @@ KNOWN_IMAGE_NAME_FILE="/etc/bazzite/image_name"
 KNOWN_IMAGE_NAME=$(cat $KNOWN_IMAGE_NAME_FILE)
 KNOWN_IMAGE_FLAVOR_FILE="/etc/bazzite/image_flavor"
 KNOWN_IMAGE_FLAVOR=$(cat $KNOWN_IMAGE_FLAVOR_FILE)
+KNOWN_FEDORA_VERSION_FILE="/etc/bazzite/fedora_version"
+KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
 
-# Run script if updated
-if [[ -f $HWS_VER_FILE && $HWS_VER = $HWS_VER_RAN ]]; then
-  if [[ -f $KNOWN_IMAGE_NAME_FILE && -f $KNOWN_IMAGE_FLAVOR_FILE ]]; then
-    # Run script if image has been rebased
-    if [[ $IMAGE_NAME = $KNOWN_IMAGE_NAME && $IMAGE_FLAVOR = $KNOWN_IMAGE_FLAVOR ]]; then
-      echo "Hardware setup has already run. Exiting..."
-      exit 0
+# INITRAMFS CONFIG
+INITRAMFS_DIR="/etc/bazzite/initramfs"
+INITRAMFS_REBUILD_TRIGGER="$INITRAMFS_DIR/rebuild"
+INITRAMFS_BAZZITE_ARG_FILE="$INITRAMFS_DIR/hardware-setup.args"
+INITRAMFS_BAZZITE_ARGS=$(cat $INITRAMFS_BAZZITE_ARG_FILE)
+INITRAMFS_CUSTOM_ARGS_DIR="$INITRAMFS_DIR/args.d"
+INITRAMFS_CUSTOM_ARGS=""
+
+# If the /etc/bazzite/initramfs/args.d dir exists
+if [[ -d "$INITRAMFS_CUSTOM_ARGS_DIR" ]]; then
+  # Grab all the content of the files (minus comments) and join them together with spaces
+  INITRAMFS_CUSTOM_ARGS=$(grep -RvP "^(#|$)" $INITRAMFS_CUSTOM_ARGS_DIR/ | sort | perl -pe 's/(^$INITRAMFS_CUSTOM_ARGS_DIR\/.+:|\\\n$)//g' | tr '\n' ' ')
+fi
+
+# If no rebuild is requested
+if [[ ! -f $INITRAMFS_REBUILD_TRIGGER ]]; then
+  # RUN REMAINDER OF SCRIPT ONLY IF UPDATED
+  if [[ -f $HWS_VER_FILE && $HWS_VER = $HWS_VER_RAN ]]; then
+    if [[ -f $KNOWN_IMAGE_NAME_FILE && -f $KNOWN_IMAGE_FLAVOR_FILE ]]; then
+      if [[ -f $KNOWN_FEDORA_VERSION_FILE && -f $KNOWN_FEDORA_VERSION_FILE ]]; then
+        # Run script if image has been rebased
+        if [[ $IMAGE_NAME = $KNOWN_IMAGE_NAME && $IMAGE_FLAVOR = $KNOWN_IMAGE_FLAVOR && $FEDORA_VERSION = $KNOWN_FEDORA_VERSION ]]; then
+          echo "Hardware setup has already run. Exiting..."
+          exit 0
+        fi
+      fi
     fi
   fi
+else
+  # REMOVE REBUILD TRIGGER TO AVOID INFINITE BOOT LOOP!
+  rm $INITRAMFS_REBUILD_TRIGGER
+  # Rebuild current initramfs (this will add any new configs added to /etc/dracut.conf.d/) then reboot
+  echo "Initramfs rebuild triggered, using: $INITRAMFS_BAZZITE_ARGS $INITRAMFS_CUSTOM_ARGS"
+  plymouth display-message --text="Updating initramfs - Please wait, this may take a while" || true
+  rpm-ostree initramfs --enable "$INITRAMFS_BAZZITE_ARGS" "$INITRAMFS_CUSTOM_ARGS" --reboot
+  exit 0 
 fi
 
 # GLOBAL
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 GPU_ID=$(lspci -k | grep -A 3 -E "(VGA|3D)")
+MINIMUM_FREE_ZRAM=$(awk '/MemTotal/ {printf "%.0f", $2 * 0.01}' /proc/meminfo)
+CURRENT_FREE_ZRAM=$(sysctl vm.min_free_kbytes | awk '{print $3}')
 KARGS=$(rpm-ostree kargs)
-NEEDED_KARGS=""
+NEEDED_KARGS=()
+INITRAMFS=$(rpm-ostree initramfs)
+NEEDED_INITRAMFS=("/etc/crypttab")
+NEEDS_INITRAMFS_APPLICATION=false
+
+# INITRAMFS
+echo "Current initramfs: $INITRAMFS"
+
+if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
+  NEEDED_INITRAMFS+=("/etc/modprobe.d/nvidia.conf")
+else
+  NEEDED_INITRAMFS+=("/etc/modprobe.d/amdgpu.conf")
+fi
+
+if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
+  NEEDED_INITRAMFS+=("/etc/modprobe.d/deck-blacklist.conf")
+fi
+
+for INITRAMFS_ARG in ${NEEDED_INITRAMFS[@]}; do
+  if [[ ! $INITRAMFS =~ "$INITRAMFS_ARG" ]]; then
+    NEEDS_INITRAMFS_APPLICATION=true
+  fi
+done
+
+# If there is nothing in INITRAMFS_BAZZITE_ARGS
+if [[ ! $INITRAMFS_BAZZITE_ARGS ]]; then
+  # Make sure we will have /etc/bazzite/initramfs/bazzite.args for the future
+  mkdir -p /etc/bazzite/initramfs/args.d
+  echo "--arg=\"-I ${NEEDED_INITRAMFS[*]}\"" > $INITRAMFS_BAZZITE_ARG_FILE
+  INITRAMFS_BAZZITE_ARGS=$(cat $INITRAMFS_BAZZITE_ARG_FILE)
+fi
+
+if $NEEDS_INITRAMFS_APPLICATION; then
+  echo "Found needed initramfs changes, applying the following: ${NEEDED_INITRAMFS[*]}"
+  echo "--arg=\"-I ${NEEDED_INITRAMFS[*]}\"" > $INITRAMFS_BAZZITE_ARG_FILE
+  INITRAMFS_BAZZITE_ARGS=$(cat $INITRAMFS_BAZZITE_ARG_FILE)
+  echo "Building initramfs with following custom args: $INITRAMFS_CUSTOM_ARGS"
+  plymouth display-message --text="Updating initramfs - Please wait, this may take a while" || true
+  rpm-ostree initramfs --enable "$INITRAMFS_BAZZITE_ARGS" "$INITRAMFS_CUSTOM_ARGS"
+else
+  echo "No initramfs changes needed"
+fi
+
+# KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
-mkdir -p /etc/bazzite
+
+if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
+  echo "Checking for needed karg changes (Jupiter/Galileo)"
+
+  if [[ ! $KARGS =~ "amd_iommu" ]]; then
+    NEEDED_KARGS+=("--append-if-missing=amd_iommu=off")
+  fi
+
+  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
+    if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
+      echo "32GB RAM Steam Deck detected"
+      NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=16256")
+    else
+      NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
+    fi
+  fi
+  
+  if [[ $KARGS =~ "simpledrm_platform_driver_init" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=initcall_blacklist=simpledrm_platform_driver_init")
+  fi
+
+  if [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
+  fi
+fi
+
+if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:83E1:" =~ ":$SYS_ID:" ]]; then
+  echo "Steam-Patch supported Handheld detected, Checking for needed karg changes"
+
+  if [[ ! $KARGS =~ "iomem" ]]; then
+    NEEDED_KARGS+=("--append-if-missing=iomem=relaxed")
+  fi
+fi
+
+if [[ $KARGS =~ "nomodeset" ]]; then
+  echo "Removing nomodeset"
+  NEEDED_KARGS+=("--delete-if-present=nomodeset")
+fi
+
+if [[ -n "$NEEDED_KARGS" ]]; then
+  echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
+  plymouth display-message --text="Updating kargs - Please wait, this may take a while" || true
+  rpm-ostree kargs ${NEEDED_KARGS[*]} --reboot || exit 1
+else
+  echo "No karg changes needed"
+fi
+
+if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
+  if [[ ":Jupiter:Galileo:" =~ ":$SYS_ID:" ]]; then
+    if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
+      RESOLUTION=$(lshw -json -c display | jq -r .[]."configuration"."resolution")
+      if [[ "${RESOLUTION}" = "1200,1920" ]]; then
+        echo "Jupiter with DeckHD detected, disabling BIOS updates..."
+        systemctl disable --now jupiter-biosupdate.service
+      elif [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
+        echo "Jupiter with 32GB RAM detected, disabling BIOS updates..."
+        systemctl disable --now jupiter-biosupdate.service
+      else
+        echo "Jupiter hardware detected, skipping further setup..."
+      fi
+    elif [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
+      echo "Galileo hardware detected, skipping further setup..."
+    fi
+
+    systemctl enable --now jupiter-fan-control.service
+    systemctl enable --now vpower.service
+    systemctl --global enable --now sdgyrodsu.service
+  else
+    echo "Generic device detected. Performing setup..."
+    if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:83E1:" =~ ":$SYS_ID:" ]]; then
+      echo "HandyGCCS supported handheld detected, enabling handycon & TDP control..."
+      systemctl enable --now handycon.service
+      sed -i 's/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=1/g' /etc/default/steam-hardware-control
+    fi
+    systemctl disable --now jupiter-fan-control.service
+    systemctl disable --now vpower.service
+    systemctl disable --now jupiter-biosupdate.service
+    systemctl disable --now jupiter-controller-update.service
+    systemctl disable --now ryzenadj.service
+    systemctl disable --now batterylimit.service
+    systemctl --global disable --now sdgyrodsu.service
+
+    if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+      echo "Lenovo Legion detected. Swapping to X11 by default."
+      sed -i 's/DESKTOP_WAYLAND=true/DESKTOP_WAYLAND=false/g' /etc/desktop-wayland
+    fi
+  fi
+fi
 
 # FSTAB CONFIGURATION
 if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
@@ -48,111 +210,31 @@ else
   echo "No fstab param adjustments needed"
 fi
 
-# DECK KERNEL ARGUMENTS
-if [[ ":Jupiter:" =~ ":$SYS_ID:"  ]]; then
-  echo "Checking for needed karg changes (Jupiter)"
+# ZRAM MINIMUM-FREE CONFIGURATION
+echo "Current minimum-free ZRAM value: $CURRENT_FREE_ZRAM"
 
-  if [[ ! $KARGS =~ "amd_pstate" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=amd_pstate=active"
-  fi
-
-  if [[ ! $KARGS =~ "amd_iommu" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=amd_iommu=off"
-  fi
-
-  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
-    if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
-      echo "32GB RAM Steam Deck detected"
-      NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.gttsize=16256"
-    else
-      NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.gttsize=8128"
-    fi
-  fi
-
-  if [[ ! $KARGS =~ "spi_amd.speed_dev" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=spi_amd.speed_dev=1"
-  fi
-
-  if [[ ! $KARGS =~ "initcall_blacklist" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=initcall_blacklist=simpledrm_platform_driver_init"
-  fi
-elif [[ $IMAGE_NAME =~ "deck"  ]]; then
-  echo "Generic device detected. Performing setup..."
-
-  systemctl disable --now jupiter-fan-control.service
-  systemctl disable --now vpower.service
-  systemctl disable --now jupiter-biosupdate.service
-  systemctl disable --now jupiter-controller-update.service
-  systemctl disable --now ryzenadj.service
-  systemctl disable --now batterylimit.service
-  systemctl --global disable --now sdgyrodsu.service
-fi
-
-if grep -qz "Kernel driver in use: radeon" <<< $GPU_ID; then
-  echo "Legacy AMD hardware detected, enabling CIK and SI support in AMDGPU"
-  if [[ ! $KARGS =~ "radeon.si_support" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=radeon.si_support=0"
-  fi
-
-  if [[ ! $KARGS =~ "radeon.cik_support" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=radeon.cik_support=0"
-  fi
-
-  if [[ ! $KARGS =~ "amdgpu.si_support" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.si_support=1"
-  fi
-
-  if [[ ! $KARGS =~ "amdgpu.cik_support" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=amdgpu.cik_support=1"
-  fi
-fi
-
-if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then
-  echo "Checking for needed karg changes (Nvidia)"
-
-  if [[ ! $KARGS =~ "rd.driver.blacklist" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=rd.driver.blacklist=nouveau"
-  fi
-
-  if [[ ! $KARGS =~ "modprobe.blacklist" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=modprobe.blacklist=nouveau"
-  fi
-
-  if [[ ! $KARGS =~ "nvidia-drm.modeset" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --append=nvidia-drm.modeset=1"
-  fi
+if ((MINIMUM_FREE_ZRAM > CURRENT_FREE_ZRAM)); then
+    sysctl -w "vm.min_free_kbytes=${MINIMUM_FREE_ZRAM}"
+    echo "Found needed minimum-free ZRAM changes, applying the following: ${MINIMUM_FREE_ZRAM}"
 else
-  echo "Checking for needed karg changes"
-
-  if [[ $KARGS =~ "rd.driver.blacklist" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --delete=rd.driver.blacklist=nouveau"
-  fi
-
-  if [[ $KARGS =~ "modprobe.blacklist" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --delete=modprobe.blacklist=nouveau"
-  fi
-
-  if [[ $KARGS =~ "nvidia-drm.modeset" ]]; then
-    NEEDED_KARGS="$NEEDED_KARGS --delete=nvidia-drm.modeset=1"
-  fi
+  echo "No minimum-free ZRAM changes needed"
 fi
 
-if [[ $KARGS =~ "nomodeset" ]]; then
-  echo "Removing nomodeset"
-  NEEDED_KARGS="$NEEDED_KARGS --delete=nomodeset"
+# HOSTNAME FIX
+# If the hostname is too long Distrobox will fail during setup
+# Additonally, Anaconda likes to set the hostname to be the ipv6 address
+# Let's check the length and reset it to something sensible if that happens.
+if (( $(hostname | wc -m) > 16 )); then
+  hostnamectl set-hostname bazzite
 fi
 
-if [[ ! $KARGS =~ "rd.luks.options" ]]; then
-  NEEDED_KARGS="$NEEDED_KARGS --append=rd.luks.options=discard"
+# Set default target to graphical, fixes rebase from base image
+if grep -qv "graphical.target" <<< $(systemctl get-default); then
+  systemctl set-default graphical.target
 fi
 
-if [[ -n "$NEEDED_KARGS" ]]; then
-  echo "Found needed karg changes, applying the following: $NEEDED_KARGS"
-  rpm-ostree kargs ${NEEDED_KARGS} --reboot || exit 1
-else
-  echo "No karg changes needed"
-fi
-
+mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
 echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
 echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE
+echo $FEDORA_VERSION > $KNOWN_FEDORA_VERSION_FILE

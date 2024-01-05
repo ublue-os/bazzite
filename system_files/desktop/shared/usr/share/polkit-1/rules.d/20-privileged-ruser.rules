@@ -1,0 +1,6 @@
+polkit.addRule(function(action, subject) {
+    if ((action.id == "org.bazzite.policykit.privileged.user.setup") &&
+         subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+    }
+});

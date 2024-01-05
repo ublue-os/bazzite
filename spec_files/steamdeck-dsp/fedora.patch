@@ -1,0 +1,67 @@
+diff --git a/pipewire-confs/filter-chain-mic.conf b/pipewire-confs/filter-chain-mic.conf
+index 0b9fcac..0859402 100644
+--- a/pipewire-confs/filter-chain-mic.conf
++++ b/pipewire-confs/filter-chain-mic.conf
+@@ -14,7 +14,7 @@ context.modules = [
+                     {
+                         type = ladspa
+                         name = rnnoise
+-                        plugin = /usr/lib/ladspa/librnnoise_ladspa.so
++                        plugin = /usr/lib64/ladspa/librnnoise_ladspa.so
+                         label = noise_suppressor_stereo
+                         control = {
+                             "VAD Threshold (%)" = 23.0
+diff --git a/scripts/install_plugins.sh b/scripts/install_plugins.sh
+index 591514a..6678045 100755
+--- a/scripts/install_plugins.sh
++++ b/scripts/install_plugins.sh
+@@ -5,9 +5,9 @@ if [ -e $HARDCODED_PLUGIN_DEST_1 ]; then rm -r $HARDCODED_PLUGIN_DEST_1; fi;
+ if [ -e $HARDCODED_PLUGIN_DEST_2 ]; then rm -r $HARDCODED_PLUGIN_DEST_2; fi;
+ 
+ 
+-mkdir -p $DEST_DIR/usr/lib/lv2
+-cp -r bin/lv2/g++/valve_deck_speakers.lv2 $DEST_DIR/usr/lib/lv2/valve_deck_speakers.lv2
+-cp -r bin/lv2/g++/valve_binaural.lv2 $DEST_DIR/usr/lib/lv2/valve_binaural.lv2
+-cp -r bin/lv2/g++/valve_deck_microphone.lv2 $DEST_DIR/usr/lib/lv2/valve_deck_microphone.dsp
+-cp -r bin/svg $DEST_DIR/usr/lib/lv2/svg
+-cp version.txt $DEST_DIR/usr/lib/lv2/valve_audio_dsp_version.txt
++mkdir -p $LIB_DIR/lv2
++cp -r bin/lv2/g++/valve_deck_speakers.lv2 $LIB_DIR/lv2/valve_deck_speakers.lv2
++cp -r bin/lv2/g++/valve_binaural.lv2 $LIB_DIR/lv2/valve_binaural.lv2
++cp -r bin/lv2/g++/valve_deck_microphone.lv2 $LIB_DIR/lv2/valve_deck_microphone.dsp
++cp -r bin/svg $LIB_DIR/lv2/svg
++cp version.txt $LIB_DIR/lv2/valve_audio_dsp_version.txt
+diff --git a/ucm2/conf.d/sof-nau8821-max/HiFi.conf b/ucm2/conf.d/sof-nau8821-max/HiFi.conf
+index 48412ee..f0c5b82 100644
+--- a/ucm2/conf.d/sof-nau8821-max/HiFi.conf
++++ b/ucm2/conf.d/sof-nau8821-max/HiFi.conf
+@@ -32,7 +32,7 @@ SectionDevice."Headphones".0 {
+ 	Value {
+ 		PlaybackPriority 200
+ 		PlaybackPCM "hw:${CardId},0"
+-		JackControl "Headset Jack"
++		JackControl "Headphone Jack"
+ 	}
+ 	ConflictingDevice [
+ 	]
+@@ -89,7 +89,7 @@ SectionDevice."Headset" {
+ 	Value {
+ 		CapturePriority 300
+ 		CapturePCM "hw:${CardId},0"
+-		JackControl "Headset Jack"
++		JackControl "Headset Mic Jack"
+ 	}
+ 	ConflictingDevice [
+ 	]
+diff -Naur a/wireplumber/systemd/system/wireplumber-sysconf.service  b/wireplumber/systemd/system/wireplumber-sysconf.service 
+--- a/wireplumber/systemd/system/wireplumber-sysconf.service
++++ b/wireplumber/systemd/system/wireplumber-sysconf.service
+@@ -17,7 +17,7 @@
+ [Service]
+ Type=oneshot
+ RemainAfterExit=yes
+-ExecStart=/usr/share/wireplumber/hardware-profiles/wireplumber-hwconfig
++ExecStart=/usr/libexec/wireplumber-hwconfig
+ 
+ [Install]
+ WantedBy=multi-user.target

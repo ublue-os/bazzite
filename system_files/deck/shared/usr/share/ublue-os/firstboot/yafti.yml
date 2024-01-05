@@ -6,7 +6,7 @@ screens:
   first-screen:
     source: yafti.screen.title
     values:
-      title: "Welcome to Bazzite (Steam Deck Edition)"
+      title: "Welcome to Bazzite (Steam Deck & HTPC Edition)"
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
         Configure your system to get started. Completion of this process is required for Game mode to function.
@@ -21,102 +21,91 @@ screens:
           description: Adds the input group to your current user. Required by certain controller drivers.
           default: true
           packages:
-          - Set input group: just --unstable add-user-to-input-group
+          - Set input group: sudo -A ujust add-user-to-input-group
+        Add Nested Desktop to Steam:
+          description: Adds a nested desktop environment to Steam gamemode.
+          default: true
+          packages:
+          - Add to steam: ujust add-nested-desktop-to-steam
         BIOS &amp; Firmware Updates:
           description: Enables BIOS &amp; Firmware updates for Steam Deck hardware
           default: true
           packages:
-          - Enable Updates: just --unstable enable-deck-bios-firmware-updates
-        BoilR:
-          description: Adds games from various clients to Steam
-          default: false
-          packages:
-          - Retrieve BoilR: just --unstable get-boilr
+          - Enable Updates: sudo -A ujust enable-deck-bios-firmware-updates
         Decky Loader:
           description: A plugin loader for the Steam Deck
           default: false
           packages:
-          - Retrieve Decky: sudo -A just --unstable get-decky
+          - Retrieve Decky: sudo -A ujust get-decky
         EmuDeck:
           description: |
             A utility for installing and configuring emulators on the Steam Deck
           default: false
           packages:
-          - Retrieve EmuDeck: just --unstable get-emudeck
-        Greenlight:
-          description: A utility for xCloud and xHome streaming
-          default: false
-          packages:
-          - Retrieve Greenlight: just --unstable get-greenlight
+          - Retrieve EmuDeck: ujust get-emudeck
         Hide GRUB Menu:
           description: |
             NOTE: Press the escape key before boot to show the menu
           default: true
           packages:
-          - Hide GRUB: sudo -A just --unstable hide-grub
+          - Hide GRUB: sudo -A ujust hide-grub
         Legacy Memory Configuration (Not recommended):
           description: Disable ZRAM and enable adjustable swap file, defaults to 1GB.
           default: false
           packages:
-          - Deck Swap: just --unstable deckswap-on
-          - Disable ZRAM: just --unstable zram-off
+          - Deck Swap: ujust deckswap-on
+          - Disable ZRAM: ujust zram-off
         Nix Package Manager:
           description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
           default: false
           packages:
-          - Install Nix Package Support: sudo -A just --unstable install-nix
-          - Install Fleek (Requires Nix): just --unstable install-fleek
-        Brew Package Manager:
-          description: The missing package manager for macOS (or Linux)
-          default: false
-          packages:
-          - Install Brew: sudo -A just --unstable install-brew
-          - Add Brew to shell: just --unstable install-brew-to-shell
+          - Install Nix Package Support: sudo -A ujust nix-install
+          - Install Fleek (Requires Nix): ujust fleek-install
         Oversteer:
-          description: Application to control Logitech steering wheels
+          description: Application to control supported steering wheels
           default: false
           packages:
-          - Install Oversteer: just --unstable install-oversteer
+          - Install Oversteer: ujust install-oversteer
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware
           default: false
           packages:
-          - Install OpenRazer: just --unstable install-openrazer
+          - Install OpenRazer: ujust install-openrazer
         Solaar:
           description: Application to control Logitech Mice, Keyboards, and Trackpads
           default: false
           packages:
-          - Install Solaar: just --unstable install-solaar
+          - Install Solaar: ujust install-solaar
         Wootility:
           description: A configurator for Wooting keyboards
           default: false
           packages:
-          - Retrieve Wootility: just --unstable get-wootility
+          - Retrieve Wootility: ujust get-wootility
         OpenTabletDriver:
           description: Open source, cross-platform, user-mode tablet driver
           default: false
           packages:
-          - Install OpenTabletDriver: just --unstable install-opentabletdriver
+          - Install OpenTabletDriver: ujust install-opentabletdriver
         Resilio Sync:
           description: A file synchronization utility powered by BitTorrent
           default: false
           packages:
-          - Install Resilio Sync: just --unstable install-resilio-sync
+          - Install Resilio Sync: ujust install-resilio-sync
         scrcpy:
           description: scrcpy provides display and control of Android devices connected on USB (or over TCP/IP)
           default: false
           packages:
-          - Install Resilio Sync: just --unstable install-scrcpy
+          - Install scrcpy: ujust install-scrcpy
         SteamCMD:
           description: Installs SteamCMD
           default: true
           packages:
-          - Install SteamCMD: just --unstable get-steamcmd
+          - Install SteamCMD: ujust get-steamcmd
         Use EXT4 for SD Cards:
           description: Disable BTRFS support for SD cards for direct compatibility with SD cards formatted on stock SteamOS (Not recommended).
           default: false
           packages:
-          - Switch SteamOS-BTRFS config to EXT4: sudo -A just --unstable switch-to-ext4
+          - Switch SteamOS-BTRFS config to EXT4: sudo -A ujust switch-to-ext4
   applications:
     source: yafti.screen.package
     values:
@@ -136,15 +125,18 @@ screens:
           - LibreWolf: io.gitlab.librewolf-community
           - Microsoft Edge: com.microsoft.Edge
           - Opera: com.opera.Opera
+          - Vivaldi: com.vivaldi.Vivaldi
         Gaming:
           description: "Rock and Stone!"
           default: false
           packages:
+          - BoilR: io.github.philipk.boilr
           - Bottles: com.usebottles.bottles
           - Chiaki4Deck (PlayStation Remote Play): io.github.streetpea.Chiaki4deck
           - Discord (Discover Overlay Included): com.discordapp.Discord
           - DOSBox Staging: io.github.dosbox-staging
           - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
+          - Greenlight: io.github.unknownskl.greenlight
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
           - itch: io.itch.itch
           - ludusavi (Game Save Backup): com.github.mtkennerly.ludusavi
@@ -154,9 +146,9 @@ screens:
           - Mumble: info.mumble.Mumble
           - OpenMW: org.openmw.OpenMW
           - osu: sh.ppy.osu
-          - Parsec: com.parsecgaming.parsec
           - Space Cadet Pinball: com.github.k4zmu2a.spacecadetpinball
           - Sonic Robo Blast 2: org.srb2.SRB2
+          - Sonic Robo Blast 2 Kart: org.srb2.SRB2Kart
           - Steam Link: com.valvesoftware.SteamLink
           - SuperTux: org.supertuxproject.SuperTux
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
@@ -174,6 +166,7 @@ screens:
           - melonDS: net.kuribo64.melonDS
           - mGBA: io.mgba.mGBA
           - PCSX2: net.pcsx2.PCSX2
+          - Parallel Launcher: ca.parallel_launcher.ParallelLauncher
           - Pegasus: org.pegasus_frontend.Pegasus
           - PPSSPP: org.ppsspp.PPSSPP
           - RetroArch: org.libretro.RetroArch
@@ -183,7 +176,6 @@ screens:
           - Ryujinx: org.ryujinx.Ryujinx
           - ScummVM: org.scummvm.ScummVM
           - Snes9x: com.snes9x.Snes9x
-          - Stella: io.github.stella_emu.Stella
           - xemu: app.xemu.xemu
           - yuzu: org.yuzu_emu.yuzu
         Streaming:
@@ -200,7 +192,7 @@ screens:
           - Spotify: com.spotify.Client
           - Strawberry Music Player: org.strawberrymusicplayer.strawberry
           - Tidal-hifi: com.mastermindzh.tidal-hifi
-        Office/Productivity:
+        Office and Productivity:
           description: Bow to Capitalism
           default: false
           packages:
@@ -211,7 +203,7 @@ screens:
           - Inkscape: org.inkscape.Inkscape
           - Joplin: net.cozic.joplin_desktop
           - Kdenlive: org.kde.kdenlive
-          - Krita: org.ardour.Ardour
+          - Krita: org.kde.krita
           - LibreOffice: org.libreoffice.LibreOffice
           - Obsidian: md.obsidian.Obsidian
           - OnlyOffice: org.onlyoffice.desktopeditors
@@ -220,18 +212,23 @@ screens:
           - Tenacity: org.tenacityaudio.Tenacity
           - Thunderbird Email: org.mozilla.Thunderbird
           - Xournal++: com.github.xournalpp.xournalpp
-        Utilities:
+        Utilities and System Tools:
           description: Helpful tools
           default: false
           packages:
+          - AppImage Pool: io.github.prateekmedia.appimagepool
           - Barrier: com.github.debauchee.barrier
           - Bitwarden: com.bitwarden.desktop
           - Calibre: com.calibre_ebook.calibre
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - KeePassXC: org.keepassxc.KeePassXC
+          - Metadata Cleaner: fr.romainvigier.MetadataCleaner
           - OpenRGB: org.openrgb.OpenRGB
+          - Pika Backup: org.gnome.World.PikaBackup
           - PinApp: io.github.fabrialberio.pinapp
           - qBittorrent: org.qbittorrent.qBittorrent
+          - Resources: net.nokyan.Resources
+          - SaveDesktop: io.github.vikdevelop.SaveDesktop
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
   theme:
@@ -242,9 +239,9 @@ screens:
         run: grep -q 'silverblue' <<< $(jq -r '."base-image-name"' < /usr/share/ublue-os/image-info.json)
       links:
       - "Vapor Theme":
-          run: just --unstable enable-vapor-theme
+          run: ujust enable-vapor-theme
       - "VGUI2 Theme":
-          run: just --unstable enable-vgui2-theme
+          run: ujust enable-vgui2-theme
       description: |
         Optionally apply a Valve-inspired theme to GNOME via Gradience. Note that custom themes are not officially supported by GNOME and some applications can break. Please avoid reporting issues to application developers until you've tested against the default theme.
   final-screen:
@@ -255,8 +252,8 @@ screens:
       links:
       - "Install More Applications":
           run: /usr/bin/plasma-discover
-      - "Website":
-          run: /usr/bin/xdg-open https://ublue.it
+      - "Forums":
+          run: /usr/bin/xdg-open https://universal-blue.discourse.group/c/bazzite/5
       - "Join the Discord Community":
           run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
       - "Reboot now":

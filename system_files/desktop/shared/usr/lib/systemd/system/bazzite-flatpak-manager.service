@@ -8,6 +8,8 @@ After=network-online.target bazzite-hardware-setup.service
 Type=oneshot
 ExecStart=/usr/bin/bazzite-flatpak-manager
 Restart=on-failure
+RestartSec=30
+StartLimitInterval=0
 
 [Install]
 WantedBy=multi-user.target

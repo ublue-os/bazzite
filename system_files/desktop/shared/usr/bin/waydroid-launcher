@@ -1,0 +1,41 @@
+#!/usr/bin/bash
+
+source /etc/default/waydroid-launcher
+
+# Kill any previous remnants
+if [ "$(systemctl is-active waydroid-container.service)" == 'active' ]; then
+	pkexec /usr/libexec/waydroid-container-stop
+fi
+
+# Check if Waydroid is initialized, initialize if not
+if grep -qz 'not initialized' <<< $(/usr/bin/waydroid status); then
+	/usr/bin/ujust init-waydroid
+fi
+
+# Launch Weston
+killall -9 weston
+pkexec /usr/libexec/waydroid-container-start
+if [ -z "$(pgrep weston)" ]; then
+	/usr/bin/weston --socket=weston-waydroid --width=${WAYDROID_WIDTH:-1280} --height=${WAYDROID_HEIGHT:-800} &> /dev/null &
+fi
+
+# Launch Waydroid
+sleep 2 &&
+export XDG_SESSION_TYPE='wayland'
+export WAYLAND_DISPLAY='weston-waydroid'
+LAUNCH_PARAM=$@
+/usr/bin/waydroid ${LAUNCH_PARAM:-first-launch} &
+
+# Fix controllers, we know Waydroid has started because surfaceflinger is running
+while [ "" ==  "$(pgrep surfaceflinger)" ]; do
+    sleep 1
+done
+pkexec /usr/libexec/waydroid-fix-controllers
+
+# Waydroid is now live!
+# Wait for exit and then clean up
+while [ -n "$(pgrep weston)" ]; do
+    sleep 1
+done
+
+pkexec /usr/libexec/waydroid-container-stop

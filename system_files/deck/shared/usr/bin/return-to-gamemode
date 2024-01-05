@@ -4,12 +4,13 @@ IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
 USER=$(id -nu 1000)
+HOME=$(getent passwd $USER | cut -d: -f6)
 
 # SteamOS autologin SDDM config
 AUTOLOGIN_CONF='/etc/sddm.conf.d/zz-steamos-autologin.conf'
 
 # Configure autologin if Steam has been updated
-if [[ -f /var/home/$USER/.local/share/Steam/ubuntu12_32/steamui.so ]]; then
+if [[ -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]]; then
   {
     echo "[Autologin]"
     echo "Session=gamescope-session.desktop"

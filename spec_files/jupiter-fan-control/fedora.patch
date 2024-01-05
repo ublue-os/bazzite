@@ -3,7 +3,7 @@ diff -ur usr/share/jupiter-fan-control/fancontrol.py usr/share/jupiter-fan-contr
 +++ usr/share/jupiter-fan-control/fancontrol.py	2022-12-23 00:42:03.223412367 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/python -u
-+#!/bin/env python3 -u
++#!/usr/bin/python3 -u
  """jupiter-fan-controller"""
  import signal
  import os
@@ -12,7 +12,7 @@ diff -ur usr/share/jupiter-fan-control/PID.py usr/share/jupiter-fan-control/PID.
 +++ usr/share/jupiter-fan-control/PID.py	2022-12-23 00:42:03.222412347 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/python
-+#!/bin/env python3
++#!/usr/bin/python3
  #
  # This file is part of IvPID.
  # Copyright (C) 2015 Ivmech Mechatronics Ltd. <bilgi@ivmech.com>

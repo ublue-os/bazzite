@@ -1,18 +1,20 @@
 %define _legacy_common_support 1
 
 Name:           duperemove
-Version:        0.12
+Version:        0.14.1
 Release:        5%{?dist}
 Summary:        Tools for deduping file systems
 License:        GPL-2.0-only
 URL:            https://github.com/markfasheh/%{name}
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(sqlite3)
+BuildRequires:  pkgconfig(uuid)
 BuildRequires:  libgcrypt-devel
 BuildRequires:  xxhash-devel
 BuildRequires:  libatomic
 BuildRequires:  gcc
 BuildRequires:  git
+BuildRequires:  pandoc
 # Enable devtoolset so we get libatomic in EPEL-7
 %if 0%{?el7}
 BuildRequires:  devtoolset-7-toolchain, devtoolset-7-libatomic-devel
@@ -49,7 +51,6 @@ make install DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_sbindir}
 %{_sbindir}/btrfs-extent-same
 %{_sbindir}/%{name}
 %{_sbindir}/hashstats
-%{_sbindir}/show-shared-extents
 
 %changelog
 * Wed Jul 19 2023 Fedora Release Engineering <releng@fedoraproject.org> - 0.11.3-5

@@ -1,0 +1,24 @@
+diff --git a/src/main.conf b/src/main.conf
+index 085c81a..ca2abcd 100644
+--- a/src/main.conf
++++ b/src/main.conf
+@@ -60,7 +60,7 @@
+ # or both Multiple Profiles Single Device (MPSD) and Multiple Profiles Multiple
+ # Devices (MPMD) configurations.
+ # Possible values: "off", "single", "multiple"
+-#MultiProfile = off
++MultiProfile = multiple
+ 
+ # Permanently enables the Fast Connectable setting for adapters that
+ # support it. When enabled other devices can connect faster to us,
+@@ -193,8 +193,8 @@
+ 
+ # LE scanning parameters used for passive scanning supporting wake from suspend
+ # scenarios
+-#ScanIntervalSuspend=
+-#ScanWindowSuspend=
++ScanIntervalSuspend=2240
++ScanWindowSuspend=224
+ 
+ # LE scanning parameters used for active scanning supporting discovery
+ # proceedure

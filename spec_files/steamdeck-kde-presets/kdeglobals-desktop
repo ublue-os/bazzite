@@ -3,10 +3,11 @@ LookAndFeelPackage=com.valve.vapor.desktop
 SingleClick=false
 
 [General]
-font=Noto Sans,11,-1,5,50,0,0,0,0,0
-menuFont=Noto Sans,11,-1,5,50,0,0,0,0,0
-smallestReadableFont=Noto Sans,9,-1,5,50,0,0,0,0,0
-toolBarFont=Noto Sans,11,-1,5,50,0,0,0,0,0
+fixed=Fira Code,10,-1,5,50,0,0,0,0,0
+font=Noto Sans,10,-1,5,50,0,0,0,0,0
+menuFont=Noto Sans,10,-1,5,50,0,0,0,0,0
+smallestReadableFont=Noto Sans,8,-1,5,50,0,0,0,0,0
+toolBarFont=Noto Sans,9,-1,5,50,0,0,0,0,0
 
 # This is a konsole specific setting belonging to /etc/xdg/konsolerc
 # However we cannot ship this file anymore since upstream konsole ships now this file

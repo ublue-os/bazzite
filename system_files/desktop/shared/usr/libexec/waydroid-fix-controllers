@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+sudo sh -c 'for i in $(seq 7 9); do echo add > /sys/class/input/event$i/uevent; done'

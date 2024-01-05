@@ -5,13 +5,18 @@ Summary:        KDE Presets from Valve's SteamOS 3.0
 License:        GPLv2
 URL:            https://github.com/ublue-os/bazzite
 
-Source:         https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz
+Source0:        https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz
+Source1:        steamdeck-le.svg
 BuildArch:      noarch
 Patch0:         fedora.patch
+Patch1:         nested-desktop-resolution.patch
+Patch2:         kdeglobals.patch
 
 Requires:       kde-filesystem
 
-Conflicts:      steamdeck-kde-themes
+Conflicts:      steamdeck-kde-presets-desktop
+Conflicts:      steamdeck-backgrounds
+Conflicts:      steameck-gnome-presets
 
 %description
 KDE Presets from Valve's SteamOS 3.0
@@ -34,12 +39,15 @@ cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/* %{buildroot}%{_prefix}/lib
 cp -rv etc/* %{buildroot}%{_sysconfdir}
 mv %{buildroot}%{_sysconfdir}/skel %{buildroot}%{_sysconfdir}/skel.d
+mv %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck.svg
+cp %{SOURCE1} %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck-le.svg
 # Remove unneeded files
+rm %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo.svg
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/steam.desktop
-rm %{buildroot}%{_bindir}/steamos-nested-desktop
-rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
 rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
+rm %{buildroot}%{_sysconfdir}/xdg/kcm-about-distrorc
+rm %{buildroot}%{_sysconfdir}/X11/Xsession.d/50rotate-screen
 
 # Do post-installation
 %post
@@ -55,7 +63,6 @@ rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
 %files
 %{_datadir}/color-schemes/Vapor.colors
 %{_datadir}/color-schemes/VGUI.colors
-%{_sysconfdir}/X11/Xsession.d/50rotate-screen
 %{_sysconfdir}/sddm.conf.d/steamdeck.conf
 %{_sysconfdir}/skel.d/Desktop/Return.desktop
 %{_sysconfdir}/xdg/autostart/ibus.desktop
@@ -74,7 +81,9 @@ rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
 %{_sysconfdir}/xdg/powermanagementprofilesrc
 %{_bindir}/jupiter-plasma-bootstrap
 %{_bindir}/steamos-add-to-steam
+%{_bindir}/steamos-nested-desktop
 %{_prefix}/lib/udev/rules.d/99-kwin-ignore-tablet-mode.rules
+%{_datadir}/applications/steam/steamos-nested-desktop
 %{_datadir}/X11/xorg.conf.d/99-pointer.conf
 %{_datadir}/icons/*
 %{_datadir}/konsole/*

@@ -24,14 +24,14 @@ DualShock 4/DualSense mouse inhibitor
 %prep
 %setup -n %{name}-main
 %patch 0
-chmod +x ds-inhibit.py
+chmod +x ds_inhibit.py
 
 %build
 
 %install
 mkdir -p %{buildroot}%{_bindir}/
 mkdir -p %{buildroot}%{_unitdir}/
-cp -v ds-inhibit.py %{buildroot}%{_bindir}/ds-inhibit
+cp -v ds_inhibit.py %{buildroot}%{_bindir}/ds-inhibit
 cp -v systemd.service %{buildroot}%{_unitdir}/ds-inhibit.service
 
 # Do post-installation

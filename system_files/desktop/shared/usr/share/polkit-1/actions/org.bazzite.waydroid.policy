@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>Bazzite</vendor>
+  <vendor_url>https://bazzite.gg</vendor_url>
+
+  <action id="org.bazzite.policykit.waydroid.container.start">
+    <description>Start Waydroid Container</description>
+    <icon_name>package-x-generic</icon_name>
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/waydroid-container-start</annotate>
+  </action>
+
+  <action id="org.bazzite.policykit.waydroid.container.stop">
+    <description>Stop Waydroid Container</description>
+    <icon_name>package-x-generic</icon_name>
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/waydroid-container-stop</annotate>
+  </action>
+
+  <action id="org.bazzite.policykit.waydroid.fix.controllers">
+    <description>Fix Controllers in Waydroid</description>
+    <icon_name>package-x-generic</icon_name>
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/waydroid-fix-controllers</annotate>
+  </action>
+</policyconfig>

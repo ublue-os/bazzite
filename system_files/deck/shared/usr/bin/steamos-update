@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 # The Steam client is known to call this script with the following parameter combinations:
 # steamos-update --supports-duplicate-detection     -- should do nothing
@@ -51,7 +51,7 @@ if command -v ublue-update > /dev/null; then
     fake_progress() {
       local value=0
       while [ ! -f '/tmp/upgrade-check' ]; do
-        sleep 3
+        sleep 12
         if [ ${value} -lt '100' ]; then
           echo ${value}'%'
           value=$(( value + 1 ))

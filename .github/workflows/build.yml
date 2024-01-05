@@ -1,10 +1,12 @@
 name: Build Bazzite
 on:
   schedule:
-    - cron: '0 9 * * 2,5' # 9 am utc tues thurs
+    - cron: '40 16 * * 2,5' # 16:40 utc tues thurs
   pull_request:
     branches:
       - main
+      - testing
+      - unstable
     paths-ignore:
       - '**.md'
       - '**.txt'
@@ -14,6 +16,8 @@ on:
   push:
     branches:
       - main
+      - testing
+      - unstable
     paths-ignore:
       - '**.md'
       - '**.txt'
@@ -23,7 +27,11 @@ on:
   merge_group:
   workflow_dispatch:
 env:
-    IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   push-ghcr:
@@ -39,12 +47,9 @@ jobs:
         image_flavor: [main, nvidia, asus, asus-nvidia, framework, surface, surface-nvidia]
         base_name: [bazzite, bazzite-deck]
         base_image_name: [kinoite, silverblue]
-        major_version: [38]
+        major_version: [39]
         include:
-          - major_version: 38
-            is_latest_version: false
-            is_stable_version: true
-          - major_version: 38
+          - major_version: 39
             is_latest_version: true
             is_stable_version: true
         exclude:
@@ -57,16 +62,20 @@ jobs:
           - base_name: bazzite-deck
             image_flavor: surface-nvidia
     steps:
-      - name: Maximize build space
-        uses: AdityaGarg8/remove-unwanted-software@v1
-        with:
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@v4
+
+      - name: Verify base image
+        uses: EyeCantCU/cosign-action/verify@v0.2.1
+        with:
+          containers: ${{ matrix.base_image_name }}-${{ matrix.image_flavor }}:${{ matrix.major_version }}
+
+      - name: Maximize build space
+        uses: ublue-os/remove-unwanted-software@v6
+
+      - name: Check just syntax
+        uses: ublue-os/just-action@v1
 
       - name: Matrix Variables
         run: |
@@ -90,6 +99,13 @@ jobs:
                   echo "IMAGE_NAME=${{ format('{0}{1}-{2}', matrix.base_name, '${DESKTOP}', matrix.image_flavor) }}" >> $GITHUB_ENV
               fi
           fi
+          if [[ "${{ matrix.image_flavor }}" =~ "asus" ]]; then
+              echo "AKMODS_FLAVOR=asus" >> $GITHUB_ENV
+          elif [[ "${{ matrix.image_flavor }}" =~ "surface" ]]; then
+              echo "AKMODS_FLAVOR=surface" >> $GITHUB_ENV
+          else
+              echo "AKMODS_FLAVOR=main" >> $GITHUB_ENV
+          fi
 
       - name: Generate tags
         id: generate-tags
@@ -110,11 +126,24 @@ jobs:
               COMMIT_TAGS+=("${SHA_SHORT}")
           fi
 
-          BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
-
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-             [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-              BUILD_TAGS+=("latest")
+          if [[ ${{ github.ref_name }} == "unstable" ]]; then
+             BUILD_TAGS=("${MAJOR_VERSION}-unstable" "${MAJOR_VERSION}-unstable-${TIMESTAMP}")
+             if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
+                [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
+                 BUILD_TAGS+=("unstable")
+             fi
+          elif [[ ${{ github.ref_name }} == "testing" ]]; then
+             BUILD_TAGS=("${MAJOR_VERSION}-testing" "${MAJOR_VERSION}-testing-${TIMESTAMP}")
+             if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
+                [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
+                 BUILD_TAGS+=("testing")
+             fi
+          else
+             BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
+             if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
+                [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
+                 BUILD_TAGS+=("latest")
+             fi
           fi
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
@@ -165,8 +194,10 @@ jobs:
           build-args: |
             IMAGE_NAME=${{ env.IMAGE_NAME }}
             IMAGE_FLAVOR=${{ matrix.image_flavor }}
+            IMAGE_VENDOR=${{ github.repository_owner }}
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
+            AKMODS_FLAVOR=${{ env.AKMODS_FLAVOR }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
           extra-args: |
@@ -176,7 +207,7 @@ jobs:
       # https://github.com/macbre/push-to-ghcr/issues/12
       - name: Lowercase Registry
         id: registry_case
-        uses: ASzc/change-string-case-action@v5
+        uses: ASzc/change-string-case-action@v6
         with:
           string: ${{ env.IMAGE_REGISTRY }}
 
@@ -206,7 +237,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Sign container
-      - uses: sigstore/cosign-installer@v3.1.2
+      - uses: sigstore/cosign-installer@v3.3.0
         if: github.event_name != 'pull_request'
 
       - name: Sign container image

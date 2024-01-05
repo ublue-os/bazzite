@@ -30,6 +30,8 @@ Service that calculates battery metrics and handles critical battery scenarios
 
 %install
 %cargo_install
+mkdir -p %{buildroot}%{_libexecdir}
+mv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_libexecdir}/%{name}
 mkdir -p %{buildroot}%{_unitdir}/
 cp -v vpower.service %{buildroot}%{_unitdir}/%{name}.service
 mkdir -p %{buildroot}%{_sysconfdir}/
@@ -54,7 +56,7 @@ cp -v vpower.toml %{buildroot}%{_sysconfdir}/%{name}.toml
 
 %files
 %license LICENSE
-%{_bindir}/%{name}
+%{_libexecdir}/%{name}
 %{_unitdir}/%{name}.service
 %{_sysconfdir}/%{name}.toml
 

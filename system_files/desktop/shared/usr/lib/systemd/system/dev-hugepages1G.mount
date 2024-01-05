@@ -1,0 +1,31 @@
+#  This file is a modified version of dev-hugepages.mount from systemd.
+#
+#  With this unit file enabled you can set 1GB hugepages using kernel args
+#  and have them auto mounted, just as you would with 2MB hugepages.
+#
+#  For normal systems use "hugepagesz=1G hugepages=16"
+#  to allocate 16 hugepages with a pagesize of 1GB
+#  
+#  For systems with numa nodes use "hugepagesz=1G hugepages=0:16"
+#  to allocate 16 hugepages on numa node 0 with a pagesize of 1GB
+# 
+#  For more info, consult the kernel.org documentation linked in this file
+
+[Unit]
+Description=1GB Huge Pages File System
+Documentation=https://docs.kernel.org/admin-guide/mm/hugetlbpage.html
+Documentation=https://www.freedesktop.org/wiki/Software/systemd/APIFileSystems
+ConditionPathExists=/sys/kernel/mm/hugepages
+DefaultDependencies=no
+ConditionCapability=CAP_SYS_ADMIN
+ConditionVirtualization=!private-users
+ConditionKernelCommandLine=hugepagesz=1G
+
+[Install]
+WantedBy=multi-user.target
+
+[Mount]
+What=hugetlbfs
+Where=/dev/hugepages1G
+Type=hugetlbfs
+Options=pagesize=1G

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 set -e
 
@@ -122,12 +122,6 @@ fi
   echo "[Autologin]"
   echo "Session=$session_launcher"
 } > "$CONF_FILE"
-
-if [[ $session_launcher = "gamescope-session.desktop" ]]; then
-  systemctl start handycon.service
-else
-  systemctl stop handycon.service
-fi
 
 echo "Updated system autologin session to $session_launcher"
 systemctl reset-failed sddm

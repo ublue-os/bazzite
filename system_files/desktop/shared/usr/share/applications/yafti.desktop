@@ -2,4 +2,5 @@
 Type=Application
 Name=Bazzite Portal
 Icon=/usr/share/ublue-os/bazzite/logo.svg
+Categories=Utility;
 Exec=/usr/bin/yafti --force

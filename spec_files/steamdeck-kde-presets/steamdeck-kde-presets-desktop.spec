@@ -7,6 +7,7 @@ URL:            https://github.com/ublue-os/bazzite
 
 Source0:        https://gitlab.com/evlaV/steamdeck-kde-presets/-/archive/master/steamdeck-kde-presets-master.tar.gz
 Source1:        kdeglobals-desktop
+Source2:        steamdeck-le.svg
 Patch0:         multiuser.patch
 Patch1:         lockscreen.patch
 
@@ -15,6 +16,8 @@ BuildArch:      noarch
 Requires:       kde-filesystem
 
 Conflicts:      steamdeck-kde-presets
+Conflicts:      steamdeck-backgrounds
+Conflicts:      steameck-gnome-presets
 
 %description
 KDE Presets from Valve's SteamOS 3.0 for desktops
@@ -33,11 +36,14 @@ mkdir -p %{buildroot}%{_sysconfdir}/
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv etc/* %{buildroot}%{_sysconfdir}
 mv %{buildroot}%{_sysconfdir}/skel %{buildroot}%{_sysconfdir}/skel.d
+mv %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck.svg
+cp %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck-le.svg
 # Remove unneeded files
 rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
 rm %{buildroot}%{_datadir}/kservices5/ServiceMenus/steam.desktop
 rm %{buildroot}%{_datadir}/X11/xorg.conf.d/99-pointer.conf
+rm %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo.svg
 rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
 rm %{buildroot}%{_sysconfdir}/sddm.conf.d/steamdeck.conf
 rm %{buildroot}%{_sysconfdir}/skel.d/Desktop/Return.desktop
@@ -54,6 +60,7 @@ rm %{buildroot}%{_sysconfdir}/xdg/powermanagementprofilesrc
 rm %{buildroot}%{_sysconfdir}/xdg/kscreenlockerrc
 rm %{buildroot}%{_sysconfdir}/xdg/baloofilerc
 rm %{buildroot}%{_sysconfdir}/xdg/kdeglobals
+rm %{buildroot}%{_sysconfdir}/xdg/kcm-about-distrorc
 cp %{SOURCE1} %{buildroot}%{_sysconfdir}/xdg/kdeglobals
 
 # Do post-installation
