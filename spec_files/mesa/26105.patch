@@ -1,26 +1,8 @@
-From 1e3541728b63cd635aac7211b76798edfa8c34eb Mon Sep 17 00:00:00 2001
-From: Friedrich Vock <friedrich.vock@gmx.de>
-Date: Tue, 7 Nov 2023 22:28:44 +0100
-Subject: [PATCH] radv,aco: Convert 1D ray launches to 2D
-
-Because we use unaligned dispatches, 1D launches only use 8 threads per
-wave. Converting to 2D and fixing up launch IDs in the prolog
-significantly increases occupancy.
-
-Gives ~30% uplift in Ghostwire Tokyo.
-
-Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26105>
----
- .../compiler/aco_instruction_selection.cpp    | 43 ++++++++++-
- src/amd/compiler/aco_interface.h              |  3 +
- src/amd/vulkan/radv_cmd_buffer.c              | 76 +++++++++++++++----
- 3 files changed, 103 insertions(+), 19 deletions(-)
-
 diff --git a/src/amd/compiler/aco_instruction_selection.cpp b/src/amd/compiler/aco_instruction_selection.cpp
-index 4bcf85f8ed644..bdf81dff3589d 100644
+index 561f3cc02e0..ebc54a900e3 100644
 --- a/src/amd/compiler/aco_instruction_selection.cpp
 +++ b/src/amd/compiler/aco_instruction_selection.cpp
-@@ -12534,7 +12534,8 @@ select_rt_prolog(Program* program, ac_shader_config* config,
+@@ -12526,7 +12526,8 @@ select_rt_prolog(Program* program, ac_shader_config* config,
      */
     PhysReg out_uniform_shader_addr = get_arg_reg(out_args, out_args->rt.uniform_shader_addr);
     PhysReg out_launch_size_x = get_arg_reg(out_args, out_args->rt.launch_size);
@@ -30,7 +12,7 @@ index 4bcf85f8ed644..bdf81dff3589d 100644
     PhysReg out_launch_ids[3];
     for (unsigned i = 0; i < 3; i++)
        out_launch_ids[i] = get_arg_reg(out_args, out_args->rt.launch_id).advance(i * 4);
-@@ -12542,9 +12543,13 @@ select_rt_prolog(Program* program, ac_shader_config* config,
+@@ -12534,9 +12535,13 @@ select_rt_prolog(Program* program, ac_shader_config* config,
     PhysReg out_record_ptr = get_arg_reg(out_args, out_args->rt.shader_record);
  
     /* Temporaries: */
@@ -47,7 +29,7 @@ index 4bcf85f8ed644..bdf81dff3589d 100644
  
     /* Confirm some assumptions about register aliasing */
     assert(in_ring_offsets == out_uniform_shader_addr);
-@@ -12618,6 +12623,36 @@ select_rt_prolog(Program* program, ac_shader_config* config,
+@@ -12610,6 +12615,36 @@ select_rt_prolog(Program* program, ac_shader_config* config,
     bld.vop1(aco_opcode::v_mov_b32, Definition(out_record_ptr.advance(4), v1),
              Operand(tmp_raygen_sbt.advance(4), s1));
  
@@ -85,21 +67,21 @@ index 4bcf85f8ed644..bdf81dff3589d 100644
     bld.sop1(aco_opcode::s_setpc_b64, Operand(out_uniform_shader_addr, s2));
  
 diff --git a/src/amd/compiler/aco_interface.h b/src/amd/compiler/aco_interface.h
-index 85c270ba19983..15e5398416b3c 100644
+index 8f35e18b5b0..9d2c1dbb2af 100644
 --- a/src/amd/compiler/aco_interface.h
 +++ b/src/amd/compiler/aco_interface.h
-@@ -34,6 +34,9 @@
+@@ -32,6 +32,9 @@
  extern "C" {
  #endif
  
 +/* Special launch size to indicate this dispatch is a 1D dispatch converted into a 2D one */
 +#define ACO_RT_CONVERTED_2D_LAUNCH_SIZE -1u
 +
+ typedef struct nir_shader nir_shader;
  struct ac_shader_config;
  struct aco_shader_info;
- struct aco_vs_prolog_info;
 diff --git a/src/amd/vulkan/radv_cmd_buffer.c b/src/amd/vulkan/radv_cmd_buffer.c
-index dab2230d778a5..81d553cf32fe7 100644
+index cdede679552..c7dd4b216d4 100644
 --- a/src/amd/vulkan/radv_cmd_buffer.c
 +++ b/src/amd/vulkan/radv_cmd_buffer.c
 @@ -42,6 +42,8 @@
@@ -111,7 +93,7 @@ index dab2230d778a5..81d553cf32fe7 100644
  #include "util/fast_idiv_by_const.h"
  
  enum {
-@@ -9963,7 +9965,26 @@ enum radv_rt_mode {
+@@ -10003,7 +10005,26 @@ enum radv_rt_mode {
  };
  
  static void
@@ -139,7 +121,7 @@ index dab2230d778a5..81d553cf32fe7 100644
                  enum radv_rt_mode mode)
  {
     if (cmd_buffer->device->instance->debug_flags & RADV_DEBUG_NO_RT)
-@@ -9984,34 +10005,43 @@ radv_trace_rays(struct radv_cmd_buffer *cmd_buffer, const VkTraceRaysIndirectCom
+@@ -10024,34 +10045,43 @@ radv_trace_rays(struct radv_cmd_buffer *cmd_buffer, const VkTraceRaysIndirectCom
     cmd_buffer->compute_scratch_size_per_wave_needed =
        MAX2(cmd_buffer->compute_scratch_size_per_wave_needed, scratch_bytes_per_wave);
  
@@ -197,7 +179,7 @@ index dab2230d778a5..81d553cf32fe7 100644
     } else
        info.va = launch_size_va;
  
-@@ -10045,6 +10075,22 @@ radv_trace_rays(struct radv_cmd_buffer *cmd_buffer, const VkTraceRaysIndirectCom
+@@ -10085,6 +10115,22 @@ radv_trace_rays(struct radv_cmd_buffer *cmd_buffer, const VkTraceRaysIndirectCom
     assert(cmd_buffer->cs->cdw <= cdw_max);
  
     radv_dispatch(cmd_buffer, &info, pipeline, rt_prolog, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR);
@@ -220,6 +202,3 @@ index dab2230d778a5..81d553cf32fe7 100644
  }
  
  VKAPI_ATTR void VKAPI_CALL
--- 
-GitLab
-
