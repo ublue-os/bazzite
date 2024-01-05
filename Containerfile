@@ -386,7 +386,7 @@ RUN /tmp/image-info.sh && \
     rm -f /etc/profile.d/toolbox.sh && \
     sed -i 's@/usr/bin/steam@/usr/bin/bazzite-steam@g' /usr/share/applications/steam.desktop && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/shredder.desktop && \
-    rm /usr/share/vulkan/icd.d/lvp_icd.*.json && \
+    rm -f /usr/share/vulkan/icd.d/lvp_icd.*.json && \
     mkdir -p "/usr/etc/profile.d/" && \
     ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
     "/usr/etc/profile.d/ublue-firstboot.sh" && \
@@ -670,6 +670,7 @@ RUN wget https://raw.githubusercontent.com/ublue-os/nvidia/main/install.sh -O /t
 RUN rm -rf \
         /tmp/* \
         /var/* && \
+    rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp && \
     mkdir -p /var/lib/bluetooth && \
