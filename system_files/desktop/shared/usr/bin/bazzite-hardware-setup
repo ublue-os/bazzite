@@ -176,7 +176,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     systemctl --global enable --now sdgyrodsu.service
   else
     echo "Generic device detected. Performing setup..."
-    if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:" =~ ":$SYS_ID:" ]]; then
+    if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:Win600:" =~ ":$SYS_ID:" ]]; then
       echo "HandyGCCS supported handheld detected, enabling handycon & TDP control..."
       systemctl enable --now handycon.service
       sed -i 's/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=1/g' /etc/default/steam-hardware-control
