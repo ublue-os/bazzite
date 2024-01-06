@@ -28,11 +28,6 @@ screens:
           packages:
           - Install Sunshine: ujust install-sunshine
           - Autostart Sunshine: ujust autostart-sunshine
-        Nix Package Manager:
-          description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
-          default: false
-          packages:
-          - Install Nix Package Support: sudo -A ujust nix-install
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware
           default: false
