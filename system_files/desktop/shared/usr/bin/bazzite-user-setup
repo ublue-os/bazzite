@@ -6,17 +6,30 @@ BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
+# INIT
+BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
+mkdir -p "$BAZZITE_CONFIG_DIR"
+
 # SCRIPT VERSION
 USER_SETUP_VER=19
-USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
+USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
+USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
+
+if [[ -f "$HOME/.bazzite-configured" ]]; then
+  mv -f "$HOME/.bazzite-configured" "$USER_SETUP_VER_FILE"
+fi
+
+if [[ -f "$HOME/.bazzite-configured-fedora-version" ]]; then
+  mv -f "$HOME/.bazzite-configured-fedora-version" "$USER_SETUP_FEDORA_VER_FILE"
+fi
+
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
-USER_SETUP_FEDORA_VER_FILE="$HOME/.bazzite-configured-fedora-version"
 USER_SETUP_FEDORA_VER_RAN=$(cat $USER_SETUP_FEDORA_VER_FILE)
 
 # Run script if updated
 if [[ -f $USER_SETUP_VER_FILE && $USER_SETUP_VER = $USER_SETUP_VER_RAN ]]; then
   if [[ -f $USER_SETUP_FEDORA_VER_FILE && $FEDORA_VERSION = $USER_SETUP_FEDORA_VER_RAN ]]; then
-    echo "User setup has already run. Exiting..."
+    echo "User setup v$USER_SETUP_VER has already run. Exiting..."
     exit 0
   fi
 fi
@@ -32,14 +45,16 @@ flatpak remote-modify --user --enable flathub
 pkexec /usr/libexec/bazzite-privileged-user-setup
 
 # Set up optional Gradience themes
-mkdir -p "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/"
-if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json" ]]; then
-  rm -f $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json
-  cp /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json
+THEME_DIR="/usr/share/ublue-os/bazzite/themes"
+GRADIENCE_DIR="$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
+mkdir -p "$GRADIENCE_DIR"
+if [[ ! -f "$GRADIENCE_DIR/vapor.json" ]]; then
+  rm -f "$GRADIENCE_DIR/vapor.json"
+  cp "$THEME_DIR/vapor.json" "$GRADIENCE_DIR/vapor.json"
 fi
-if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json" ]]; then
-  rm -f $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json
-  cp /usr/share/ublue-os/bazzite/themes/vgui2.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json
+if [[ ! -f "$GRADIENCE_DIR/vgui2.json" ]]; then
+  rm -f "$GRADIENCE_DIR/vgui2.json"
+  cp "$THEME_DIR/vgui2.json" "$GRADIENCE_DIR/vgui2.json"
 fi
 
 if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
@@ -51,16 +66,16 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
   echo 'Creating Desktop shortcuts'
   mkdir -p $HOME/Desktop/
   if [[ ! -f "$HOME/Desktop/steam.desktop" ]]; then
-    cp /usr/share/applications/steam.desktop $HOME/Desktop/steam.desktop
+    cp "/usr/share/applications/steam.desktop" "$HOME/Desktop/steam.desktop"
   fi
   if [[ ! -f "$HOME/Desktop/net.lutris.Lutris.desktop" ]]; then
-    cp /usr/share/applications/net.lutris.Lutris.desktop $HOME/Desktop/net.lutris.Lutris.desktop
+    cp "/usr/share/applications/net.lutris.Lutris.desktop" "$HOME/Desktop/net.lutris.Lutris.desktop"
   fi
 
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Kinoite on Steam Deck'
     if [[ ! -f "$HOME/Desktop/Return.desktop" ]]; then
-      cp /etc/skel.d/Desktop/Return.desktop $HOME/Desktop/Return.desktop
+      cp "/etc/skel.d/Desktop/Return.desktop" "$HOME/Desktop/Return.desktop"
     fi
   fi
 else
@@ -71,17 +86,21 @@ else
 
     echo 'Setting up templates'
     if [[ ! -f "$HOME/Templates/vkBasalt.conf" ]]; then
-      ln -s /etc/vkBasalt.conf $HOME/Templates/vkBasalt.conf
+      ln -s "/etc/vkBasalt.conf" "$HOME/Templates/vkBasalt.conf"
     fi
     if [[ ! -f "$HOME/Templates/dxvk.conf" ]]; then
-      ln -s /etc/dxvk-example.conf $HOME/Templates/dxvk.conf
+      ln -s "/etc/dxvk-example.conf" "$HOME/Templates/dxvk.conf"
     fi
 
     echo 'Tweaking GNOME indexer'
-    mkdir -p $HOME/.steam
-    touch $HOME/.steam/.trackerignore
-    mkdir -p $HOME/.local/share/Steam
-    touch $HOME/.local/share/Steam/.trackerignore
+    if [[ ! -f "$HOME/.steam/.trackerignore" ]]; then
+      mkdir -p "$HOME/.steam"
+      touch "$HOME/.steam/.trackerignore"
+    fi
+    if [[ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/Steam/.trackerignore" ]]; then
+      mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/Steam"
+      touch "${XDG_DATA_HOME:-$HOME/.local/share}/Steam/.trackerignore"
+    fi
   fi
 fi
 
@@ -91,27 +110,6 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
     echo 'Enabling HHD'
     pkexec /usr/libexec/bazzite-enable-hhd "$USER"
   fi
-fi
-
-# Previous images used Bazzite-Arch to run Steam, Lutris, and Protontricks on desktop images
-if [[ -f "$HOME/.local/share/applications/bazzite-arch-steam.desktop" ]]; then
-  rm -f "$HOME/.local/share/applications/bazzite-arch-steam.desktop"
-fi
-
-if [[ -f "$HOME/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop" ]]; then
-  rm -f "$HOME/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop"
-fi
-
-if [[ -f "$HOME/.local/share/applications/bazzite-arch-protontricks.desktop" ]]; then
-  rm -f "$HOME/.local/share/applications/bazzite-arch-protontricks.desktop"
-fi
-
-if [[ -f "$HOME/Desktop/bazzite-arch-steam.desktop" ]]; then
-  rm -f "$HOME/Desktop/bazzite-arch-steam.desktop"
-fi
-
-if [[ -f "$HOME/Desktop/bazzite-arch-net.lutris.Lutris.desktop" ]]; then
-  rm -f "$HOME/Desktop/bazzite-arch-net.lutris.Lutris.desktop"
 fi
 
 # Prevent future executions
