@@ -331,7 +331,8 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     rm -f /usr/etc/modprobe.d/nvidia.conf \
 ; else \
-    rm -f /usr/etc/modprobe.d/amdgpu.conf \
+    rm -f /usr/etc/modprobe.d/amdgpu.conf && \
+    rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json \
 ; fi
 
 # Cleanup & Finalize
