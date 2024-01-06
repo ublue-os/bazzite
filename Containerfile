@@ -214,6 +214,7 @@ RUN rpm-ostree install \
         vulkan-tools \
         glibc.i686 \
         extest.i686 \
+        xwiimote-ng \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
         lato-fonts \
