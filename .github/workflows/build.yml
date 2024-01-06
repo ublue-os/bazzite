@@ -198,6 +198,7 @@ jobs:
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
             AKMODS_FLAVOR=${{ env.AKMODS_FLAVOR }}
+            IMAGE_BRANCH=${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
           extra-args: |
