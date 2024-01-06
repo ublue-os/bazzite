@@ -50,7 +50,7 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - Uso del [control de congestión TCP BBR hecho por Google](https://github.com/google/bbr) por defecto.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) pre-instalado y habilitado. <sub><sup>(Disponible pero desactivado por defecto en la variante Deck, puede ser habilitado ejecutando el siguiente comando en una terminal: `ujust enable-input-remapper`)</sup></sub>
 - El portal de Bazzite (Bazzite Portal) provee una manera fácil de instalar un sin fin de aplicaciones y ajustes, incluyendo la instalación de [LACT](https://github.com/ilya-zlobintsev/LACT) (para mejor controlar tu GPU de AMD) y [GreenWithEnvy](https://gitlab.com/leinardi/gwe) (para mejor controlar tu GPU de NVIDIA).
-- Gestor de paquetes [Nix](https://nixos.org/) con la opción de instalar [Fleek](https://getfleek.dev/) usando el Bazzite Portal.
+- Gestor de paquetes [Nix](https://nixos.org/) con la opción de instalar [Fleek](https://getfleek.dev/) usando el `ujust`.
 - Opción para instalar el gestor de paquetes [Brew](https://brew.sh/) usando el Bazzite Portal.
 - [Waydroid](https://waydro.id/) pre-instalado para correr aplicaciones de Android. Para configurarlo, usa esta [guía rápida (en inglés)](https://universal-blue.discourse.group/docs?topic=32).
 - Administra tus aplicaciones usando [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), y [Gear Lever](https://github.com/mijorus/gearlever).
