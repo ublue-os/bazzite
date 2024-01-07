@@ -11,7 +11,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=19
+USER_SETUP_VER=20
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 
@@ -57,7 +57,7 @@ if [[ ! -f "$GRADIENCE_DIR/vgui2.json" ]]; then
   cp "$THEME_DIR/vgui2.json" "$GRADIENCE_DIR/vgui2.json"
 fi
 
-if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
+if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   echo 'Running setup for Kinoite'
 
   echo 'Enabling System76-Scheduler KWin script'
@@ -85,6 +85,7 @@ else
     echo 'Running setup for Silverblue on Steam Deck'
 
     echo 'Setting up templates'
+    mkdir -p "$HOME/Templates"
     if [[ ! -f "$HOME/Templates/vkBasalt.conf" ]]; then
       ln -s "/etc/vkBasalt.conf" "$HOME/Templates/vkBasalt.conf"
     fi
@@ -104,11 +105,25 @@ else
   fi
 fi
 
-# HHD Setup for Lenovo Legion Go
+# Deck Build Setup
 if [[ $IMAGE_NAME =~ "deck" ]]; then
-  if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+  # HHD Setup
+  if [[ ":ROG Ally RC71L_RC71L:83E1:" =~ ":$SYS_ID:" ]]; then
     echo 'Enabling HHD'
     pkexec /usr/libexec/bazzite-enable-hhd "$USER"
+  fi
+
+  # Legion Rotation Fix
+  AUTOSTART_FOLDER=${XDG_CONFIG_HOME:-$HOME/.config}
+  if [[ ":83E1:" =~ ":$SYS_ID" ]] && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+    if [[ ! -f "$AUTOSTART_FOLDER/autostart/legionfix" ]]; then
+      echo 'Adding legion rotation fix'
+      mkdir -p "$AUTOSTART_FOLDER/autostart"
+      ln -s "/usr/libexec/bazzite-handle-legion-go-rotation" "$AUTOSTART_FOLDER/autostart/legionfix"
+    fi
+  elif [[ -f "$AUTOSTART_FOLDER/autostart/legionfix" ]]; then
+    echo 'Non-legion or GNOME detected, removing legionfix'
+    rm -f "$AUTOSTART_FOLDER/autostart/legionfix"
   fi
 fi
 
