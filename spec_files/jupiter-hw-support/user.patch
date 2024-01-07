@@ -1,8 +1,8 @@
 diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
-index 023d95e..d69fd03 100755
+index cf264fd..6dd3a2f 100755
 --- a/usr/lib/hwsupport/steamos-automount.sh
 +++ b/usr/lib/hwsupport/steamos-automount.sh
-@@ -162,13 +162,14 @@
+@@ -153,13 +153,14 @@ do_mount()
      fi
  
      # Ask udisks to auto-mount. This needs a version of udisks that supports the 'as-user' option.
@@ -18,7 +18,7 @@ index 023d95e..d69fd03 100755
                    auth.no_user_interaction b true                                                  \
                    fstype                   s "$FSTYPE"                                             \
                    options                  s "$OPTS") || ret=$?
-@@ -221,9 +222,9 @@
+@@ -212,9 +213,9 @@ do_mount()
          # bind mount compatdata folder from internal disk
          mkdir -p "${mount_point}"/steamapps/compatdata
          chown 1000:1000 "${mount_point}"/steamapps{,/compatdata}

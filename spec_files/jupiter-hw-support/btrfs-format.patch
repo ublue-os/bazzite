@@ -1,0 +1,37 @@
+diff --git a/usr/lib/hwsupport/format-device.sh b/usr/lib/hwsupport/format-device.sh
+index 3ff5a9e..566eea2 100755
+--- a/usr/lib/hwsupport/format-device.sh
++++ b/usr/lib/hwsupport/format-device.sh
+@@ -138,7 +138,31 @@ echo "stage=formatting"
+ sync
+ parted --script "$STORAGE_DEVICE" mklabel gpt mkpart primary 0% 100%
+ sync
+-mkfs.ext4 -m 0 -O casefold -E "$EXTENDED_OPTIONS" "${EXTRA_MKFS_ARGS[@]}" -F "$STORAGE_PARTITION"
++#### SteamOS Btrfs Begin ####
++if [[ -f /etc/default/steamos-btrfs ]]; then
++    source /etc/default/steamos-btrfs
++fi
++if [[ "$STEAMOS_BTRFS_SDCARD_FORMAT_FS" == "btrfs" ]]; then
++    mkfs.btrfs ${STEAMOS_BTRFS_SDCARD_BTRFS_FORMAT_OPTS:--f -K} "$STORAGE_PARTITION"
++    MOUNT_DIR="/var/run/sdcard-mount"
++    mkdir -p "$MOUNT_DIR"
++    mount -o "${STEAMOS_BTRFS_SDCARD_BTRFS_MOUNT_OPTS:-rw,noatime,lazytime,compress-force=zstd,space_cache=v2,autodefrag,ssd_spread}" "$STORAGE_PARTITION" "$MOUNT_DIR"
++    btrfs subvolume create "$MOUNT_DIR/${STEAMOS_BTRFS_SDCARD_BTRFS_MOUNT_SUBVOL:-@}"
++    btrfs subvolume set-default "$MOUNT_DIR/${STEAMOS_BTRFS_SDCARD_BTRFS_MOUNT_SUBVOL:-@}"
++    umount -l "$MOUNT_DIR"
++    rmdir "$MOUNT_DIR"
++elif [[ "$STEAMOS_BTRFS_SDCARD_FORMAT_FS" == "f2fs" ]]; then
++    mkfs.f2fs ${STEAMOS_BTRFS_SDCARD_F2FS_FORMAT_OPTS:--O encrypt,extra_attr,inode_checksum,sb_checksum,casefold,compression -C utf8 -f -t 0} "$STORAGE_PARTITION"
++elif [[ "$STEAMOS_BTRFS_SDCARD_FORMAT_FS" == "fat" ]]; then
++    mkfs.vfat ${STEAMOS_BTRFS_SDCARD_FAT_FORMAT_OPTS:--F 32 -I} "$STORAGE_PARTITION"
++elif [[ "$STEAMOS_BTRFS_SDCARD_FORMAT_FS" == "exfat" ]]; then
++    mkfs.exfat ${STEAMOS_BTRFS_SDCARD_EXFAT_FORMAT_OPTS:---pack-bitmap} "$STORAGE_PARTITION"
++elif [[ "$STEAMOS_BTRFS_SDCARD_FORMAT_FS" == "ntfs" ]]; then
++    mkfs.ntfs ${STEAMOS_BTRFS_SDCARD_NTFS_FORMAT_OPTS:--f -F} "$STORAGE_PARTITION"
++else
++    mkfs.ext4 -E "$EXTENDED_OPTIONS" ${STEAMOS_BTRFS_SDCARD_EXT4_FORMAT_OPTS:--m 0 -O casefold -F} "$STORAGE_PARTITION"
++fi
++#### SteamOS Btrfs End ####
+ sync
+ udevadm settle
+ 

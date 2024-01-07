@@ -1,0 +1,159 @@
+diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
+index f581966..cf264fd 100755
+--- a/usr/lib/hwsupport/steamos-automount.sh
++++ b/usr/lib/hwsupport/steamos-automount.sh
+@@ -67,19 +67,63 @@ do_mount()
+     ID_FS_LABEL=$(jq -r '.label | select(type == "string")' <<< "$dev_json")
+     ID_FS_TYPE=$(jq -r '.fstype | select(type == "string")' <<< "$dev_json")
+ 
+-    # Global mount options
+-    OPTS="noatime"
+-
+-    # File system type specific mount options
+-    #if [[ ${ID_FS_TYPE} == "vfat" ]]; then
+-    #    OPTS+=",users,gid=100,umask=000,shortname=mixed,utf8=1,flush"
+-    #fi
+-
+-    # We need symlinks for Steam for now, so only automount ext4 as that'll Steam will format right now
+-    if [[ ${ID_FS_TYPE} != "ext4" ]]; then
++    #### SteamOS Btrfs Begin ####
++    if [[ -f /etc/default/steamos-btrfs ]]; then
++        source /etc/default/steamos-btrfs
++    fi
++    if [[ "${ID_FS_TYPE}" == "ext4" ]]; then
++        UDISKS2_ALLOW='errors=remount-ro'
++        OPTS="${STEAMOS_BTRFS_SDCARD_EXT4_MOUNT_OPTS:-rw,noatime,lazytime}"
++        FSTYPE="ext4"
++    elif [[ "${ID_FS_TYPE}" == "f2fs" ]]; then
++        UDISKS2_ALLOW='discard,nodiscard,compress_algorithm,compress_log_size,compress_extension,alloc_mode'
++        OPTS="${STEAMOS_BTRFS_SDCARD_F2FS_MOUNT_OPTS:-rw,noatime,lazytime,compress_algorithm=zstd,compress_chksum,atgc,gc_merge}"
++        FSTYPE="f2fs"
++        if [[ ! -f /etc/filesystems ]] || ! grep -q '\b'"${FSTYPE}"'\b' /etc/filesystems; then
++            echo "${FSTYPE}" >> /etc/filesystems
++        fi
++    elif [[ "${ID_FS_TYPE}" == "btrfs" ]]; then
++        UDISKS2_ALLOW='compress,compress-force,datacow,nodatacow,datasum,nodatasum,autodefrag,noautodefrag,degraded,device,discard,nodiscard,subvol,subvolid,space_cache'
++        OPTS="${STEAMOS_BTRFS_SDCARD_BTRFS_MOUNT_OPTS:-rw,noatime,lazytime,compress-force=zstd,space_cache=v2,autodefrag,ssd_spread}"
++        FSTYPE="btrfs"
++        # check for main subvol
++        mount_point_tmp="${MOUNT_LOCK%.*}.tmp"
++        mkdir -p "${mount_point_tmp}"
++        if /bin/mount -t btrfs -o ro "${DEVICE}" "${mount_point_tmp}"; then
++            if [[ -d "${mount_point_tmp}/${STEAMOS_BTRFS_SDCARD_BTRFS_MOUNT_SUBVOL:-@}" ]] && \
++                btrfs subvolume show "${mount_point_tmp}/${STEAMOS_BTRFS_SDCARD_BTRFS_MOUNT_SUBVOL:-@}" &>/dev/null; then
++                OPTS+=",subvol=${STEAMOS_BTRFS_SDCARD_BTRFS_MOUNT_SUBVOL:-@}"
++            fi
++            /bin/umount -l "${mount_point_tmp}"
++            rmdir "${mount_point_tmp}"
++        fi
++    elif [[ "${ID_FS_TYPE}" == "vfat" ]]; then
++        UDISKS2_ALLOW='uid=$UID,gid=$GID,flush,utf8,shortname,umask,dmask,fmask,codepage,iocharset,usefree,showexec'
++        OPTS="${STEAMOS_BTRFS_SDCARD_FAT_MOUNT_OPTS:-rw,noatime,lazytime,uid=1000,gid=1000,utf8=1}"
++        FSTYPE="vfat"
++    elif [[ "${ID_FS_TYPE}" == "exfat" ]]; then
++        UDISKS2_ALLOW='uid=$UID,gid=$GID,dmask,errors,fmask,iocharset,namecase,umask'
++        OPTS="${STEAMOS_BTRFS_SDCARD_EXFAT_MOUNT_OPTS:-rw,noatime,lazytime,uid=1000,gid=1000}"
++        FSTYPE="exfat"
++    elif [[ "${ID_FS_TYPE}" == "ntfs" ]]; then
++        UDISKS2_ALLOW='uid=$UID,gid=$GID,umask,dmask,fmask,locale,norecover,ignore_case,windows_names,compression,nocompression,big_writes,nls,nohidden,sys_immutable,sparse,showmeta,prealloc'
++        OPTS="${STEAMOS_BTRFS_SDCARD_NTFS_MOUNT_OPTS:-rw,noatime,lazytime,uid=1000,gid=1000,big_writes,umask=0022,ignore_case,windows_names}"
++        FSTYPE="lowntfs-3g"
++        if [[ ! -f /etc/filesystems ]] || ! grep -q '\b'"${FSTYPE}"'\b' /etc/filesystems; then
++            echo "${FSTYPE}" >> /etc/filesystems
++        fi
++    else
+         echo "Error mounting ${DEVICE}: wrong fstype: ${ID_FS_TYPE} - ${dev_json}"
+         exit 2
+     fi
++    udisks2_mount_options_conf='/etc/udisks2/mount_options.conf'
++    mkdir -p "$(dirname "${udisks2_mount_options_conf}")"
++    if [[ -f "${udisks2_mount_options_conf}" && ! -f "${udisks2_mount_options_conf}.orig" ]]; then
++        mv -f "${udisks2_mount_options_conf}"{,.orig}
++    fi
++    echo -e "[defaults]\n${FSTYPE}_allow=${UDISKS2_ALLOW},${OPTS}" > "${udisks2_mount_options_conf}"
++    trap 'rm -f "${udisks2_mount_options_conf}" ; [[ -f "${udisks2_mount_options_conf}.orig" ]] && mv -f "${udisks2_mount_options_conf}"{.orig,}' EXIT
++    #### SteamOS Btrfs End ####
+ 
+     # Prior to talking to udisks, we need all udev hooks (we were started by one) to finish, so we know it has knowledge
+     # of the drive.  Our own rule starts us as a service with --no-block, so we can wait for rules to settle here
+@@ -93,7 +137,13 @@ do_mount()
+     # ret=0 means no errors, 1 means that errors were corrected.
+     # In all other cases we try to mount the fs read-only and report an error.
+     ret=0
+-    fsck.ext4 -y "${DEVICE}" || ret=$?
++    #### SteamOS Btrfs Begin ####
++    if [[ "${ID_FS_TYPE}" == "ntfs" ]]; then
++        ntfsfix "${DEVICE}" || ret=$?
++    else
++        fsck."${ID_FS_TYPE}" -y "${DEVICE}" || ret=$?
++    fi
++    #### SteamOS Btrfs End ####
+     if (( ret != 0 && ret != 1 )); then
+         send_steam_url "system/devicemountresult" "${DEVBASE}/${FSCK_ERROR}"
+         echo "Error running fsck on ${DEVICE} (status = $ret)"
+@@ -108,9 +158,10 @@ do_mount()
+                 org.freedesktop.UDisks2                                                            \
+                 /org/freedesktop/UDisks2/block_devices/"${DEVBASE}"                                \
+                 org.freedesktop.UDisks2.Filesystem                                                 \
+-                Mount 'a{sv}' 3                                                                    \
++                Mount 'a{sv}' 4                                                                    \
+                   as-user s deck                                                                   \
+                   auth.no_user_interaction b true                                                  \
++                  fstype                   s "$FSTYPE"                                             \
+                   options                  s "$OPTS") || ret=$?
+ 
+     if (( ret != 0 )); then
+@@ -144,6 +195,30 @@ do_mount()
+             ;;
+     esac
+ 
++    #### SteamOS Btrfs Begin ####
++    if [[ "${ID_FS_TYPE}" == "btrfs" ]]; then
++        # Workaround for for Steam compression bug
++        for d in "${mount_point}"/steamapps/{downloading,temp} ; do
++            if ! btrfs subvolume show "$d" &>/dev/null; then
++                mkdir -p "$d"
++                rm -rf "$d"
++                btrfs subvolume create "$d"
++                chattr +C "$d"
++                chown 1000:1000 "${d%/*}" "$d"
++            fi
++        done
++    elif [[ "${STEAMOS_BTRFS_SDCARD_COMPATDATA_BIND_MOUNT:-1}" == "1" ]] && \
++        [[ "${ID_FS_TYPE}" == "vfat" || "${ID_FS_TYPE}" == "exfat" || "${ID_FS_TYPE}" == "ntfs" ]]; then
++        # bind mount compatdata folder from internal disk
++        mkdir -p "${mount_point}"/steamapps/compatdata
++        chown 1000:1000 "${mount_point}"/steamapps{,/compatdata}
++        mkdir -p /home/deck/.local/share/Steam/steamapps/compatdata
++        chown 1000:1000 /home/deck/.local{,/share{,/Steam{,/steamapps{,/compatdata}}}}
++        mount --rbind /home/deck/.local/share/Steam/steamapps/compatdata "${mount_point}"/steamapps/compatdata
++    fi
++    chown 1000:1000 -- "${mount_point}"
++    #### SteamOS Btrfs End ####
++
+     echo "**** Mounted ${DEVICE} at ${mount_point} ****"
+ }
+ 
+@@ -157,6 +232,22 @@ do_unmount()
+         # If we don't know the mount point then remove all broken symlinks
+         find /run/media -maxdepth 1 -xdev -xtype l -exec rm -- {} \;
+     fi
++    #### SteamOS Btrfs Begin ####
++    if [[ -L /run/media/mmcblk0p1 && "$(realpath /run/media/mmcblk0p1)" == "$(realpath "${mount_point}")" ]]; then
++        rm -f /run/media/mmcblk0p1
++    fi
++    if mountpoint -q "${mount_point}"/steamapps/compatdata; then
++        /bin/umount -l -R "${mount_point}"/steamapps/compatdata
++    fi
++    systemd-run --uid=1000 --pipe                                                          \
++      busctl call --allow-interactive-authorization=false --expect-reply=true --json=short \
++        org.freedesktop.UDisks2                                                            \
++        /org/freedesktop/UDisks2/block_devices/"${DEVBASE}"                                \
++        org.freedesktop.UDisks2.Filesystem                                                 \
++        Unmount 'a{sv}' 2                                                                  \
++          auth.no_user_interaction b true                                                  \
++          force                    b true
++    #### SteamOS Btrfs End ####
+ }
+ 
+ case "${ACTION}" in

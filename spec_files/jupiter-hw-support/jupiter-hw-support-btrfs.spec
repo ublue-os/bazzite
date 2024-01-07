@@ -1,5 +1,5 @@
 %define packagename jupiter-hw-support
-%define packagever jupiter-3.5-20231211.1
+%define packagever jupiter-3.5-20240103.1
 %global _default_patch_fuzz 2
 
 Name:           %{packagename}-btrfs
@@ -12,13 +12,14 @@ URL:            https://github.com/ublue-os/bazzite
 Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/%{packagever}/%{packagename}-%{packagever}.tar.gz
 Patch0:         fedora.patch
 Patch1:         selinux.patch
-Patch2:	        https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/steamos-automount.sh.patch.old.20231126125001.20231122.1
-Patch3:         https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/hwsupport/format-device.sh.patch.old.20230922091429.20230915.100
+Patch2:	        btrfs-automount.patch
+Patch3:         btrfs-format.patch
 Patch4:         user.patch
 Patch5:         bazzite-btrfs.patch
 Patch6:         systemd-run.patch
 Patch7:         priv-write.patch
 Patch8:         biosupdate.patch
+Patch9:         gnome.patch
 
 Requires:       python3
 Requires:       python3-evdev
