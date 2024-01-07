@@ -106,11 +106,18 @@ else
 fi
 
 # Deck Build Setup
-if [[ $IMAGE_NAME =~ "deck" ]]; then
+if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
   # HHD Setup
   if [[ ":ROG Ally RC71L_RC71L:83E1:" =~ ":$SYS_ID:" ]]; then
     echo 'Enabling HHD'
     pkexec /usr/libexec/bazzite-enable-hhd "$USER"
+  fi
+
+  # SDGyroDSU Setup
+  if [[ ":Jupiter:Galileo:" =~ ":$SYS_ID:" ]]; then
+    systemctl --user enable --now sdgyrodsu.service
+  else
+    systemctl --user disable --now sdgyrodsu.service
   fi
 
   # Legion Rotation Fix

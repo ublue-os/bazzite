@@ -160,7 +160,6 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
 
     systemctl enable --now jupiter-fan-control.service
     systemctl enable --now vpower.service
-    systemctl --global enable --now sdgyrodsu.service
   else
     echo "Generic device detected. Performing setup..."
     if [[ ":ROG Ally RC71L_RC71L:83E1:" =~ ":$SYS_ID:" ]]; then
@@ -178,7 +177,6 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     systemctl disable --now jupiter-controller-update.service
     systemctl disable --now ryzenadj.service
     systemctl disable --now batterylimit.service
-    systemctl --global disable --now sdgyrodsu.service
   fi
 fi
 
