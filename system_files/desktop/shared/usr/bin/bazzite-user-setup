@@ -123,14 +123,14 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
   # Legion Rotation Fix
   AUTOSTART_FOLDER=${XDG_CONFIG_HOME:-$HOME/.config}
   if [[ ":83E1:" =~ ":$SYS_ID" ]] && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
-    if [[ ! -f "$AUTOSTART_FOLDER/autostart/legionfix" ]]; then
+    if [[ ! -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop" ]]; then
       echo 'Adding legion rotation fix'
       mkdir -p "$AUTOSTART_FOLDER/autostart"
-      ln -s "/usr/libexec/bazzite-handle-legion-go-rotation" "$AUTOSTART_FOLDER/autostart/legionfix"
+      printf "[Desktop Entry]\nExec=/usr/libexec/bazzite-handle-legion-go-rotation\nIcon=dialog-scripts\nName=bazzite-handle-legion-go-rotation\nType=Application\nX-KDE-AutostartScript=true\n" > "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop"
     fi
-  elif [[ -f "$AUTOSTART_FOLDER/autostart/legionfix" ]]; then
+  elif [[ -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop" ]]; then
     echo 'Non-legion or GNOME detected, removing legionfix'
-    rm -f "$AUTOSTART_FOLDER/autostart/legionfix"
+    rm -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop"
   fi
 fi
 
