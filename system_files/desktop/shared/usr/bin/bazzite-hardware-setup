@@ -4,7 +4,6 @@ IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
-BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
@@ -39,10 +38,10 @@ fi
 # If no rebuild is requested
 if [[ ! -f $INITRAMFS_REBUILD_TRIGGER ]]; then
   # RUN REMAINDER OF SCRIPT ONLY IF UPDATED
-  if [[ -f $HWS_VER_FILE && $HWS_VER = $HWS_VER_RAN ]]; then
+  if [[ -f $HWS_VER_FILE && $HWS_VER = "$HWS_VER_RAN" ]]; then
     if [[ -f $KNOWN_IMAGE_NAME_FILE && -f $KNOWN_IMAGE_FLAVOR_FILE && -f $KNOWN_FEDORA_VERSION_FILE && -f $KNOWN_IMAGE_BRANCH_FILE ]]; then
       # Run script if image has been rebased
-      if [[ $IMAGE_NAME = $KNOWN_IMAGE_NAME && $IMAGE_FLAVOR = $KNOWN_IMAGE_FLAVOR && $FEDORA_VERSION = $KNOWN_FEDORA_VERSION && $IMAGE_BRANCH = $KNOWN_IMAGE_BRANCH ]]; then
+      if [[ $IMAGE_NAME = "$KNOWN_IMAGE_NAME" && $IMAGE_FLAVOR = "$KNOWN_IMAGE_FLAVOR" && $FEDORA_VERSION = "$KNOWN_FEDORA_VERSION" && $IMAGE_BRANCH = "$KNOWN_IMAGE_BRANCH" ]]; then
         echo "Hardware setup has already run. Exiting..."
         exit 0
       fi
@@ -60,7 +59,6 @@ fi
 
 # GLOBAL
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
-GPU_ID=$(lspci -k | grep -A 3 -E "(VGA|3D)")
 MINIMUM_FREE_ZRAM=$(awk '/MemTotal/ {printf "%.0f", $2 * 0.01}' /proc/meminfo)
 CURRENT_FREE_ZRAM=$(sysctl vm.min_free_kbytes | awk '{print $3}')
 KARGS=$(rpm-ostree kargs)
@@ -125,18 +123,11 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
       NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
     fi
   fi
-
-if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:83E1:" =~ ":$SYS_ID:" ]]; then
-  echo "Steam-Patch supported Handheld detected, Checking for needed karg changes"
-
-  if [[ ! $KARGS =~ "iomem" ]]; then
-    NEEDED_KARGS+=("--append-if-missing=iomem=relaxed")
-  fi
 fi
 
 if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
   echo "AOKZOE A1 on deck build detected, fixing edid"
-  if [[ ! $KARGS =~ "drm.edid_firmware" ]]
+  if [[ ! $KARGS =~ "drm.edid_firmware" ]]; then
     NEEDED_KARGS+=("--append-if-missing=drm.edid_firmware=eDP-1:edid/aokzoea1ar07_edid.bin")
   fi
 fi
@@ -194,7 +185,7 @@ fi
 # FSTAB CONFIGURATION
 if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
   echo "Applying fstab param adjustments"
-  if grep -q '64GB' <<< $(lsblk -o MODEL); then
+  if grep -q '64GB' <<< "$(lsblk -o MODEL)"; then
     echo "64GB eMMC detected"
     sed -i 's/compress=zstd:1/noatime,lazytime,discard=sync,compress-force=zstd:3,space_cache=v2/g' /etc/fstab
   else
@@ -222,7 +213,7 @@ if (( $(hostname | wc -m) > 16 )); then
 fi
 
 # Set default target to graphical, fixes rebase from base image
-if grep -qv "graphical.target" <<< $(systemctl get-default); then
+if grep -qv "graphical.target" <<< "$(systemctl get-default)"; then
   systemctl set-default graphical.target
 fi
 
