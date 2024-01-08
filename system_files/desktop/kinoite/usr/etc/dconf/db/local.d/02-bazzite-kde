@@ -1,0 +1,9 @@
+[org/gnome/Prompt]
+restore-session=false
+restore-window-size=false
+profile-uuids=['2871e8027773ae74d6c87a5f659bbc74']
+default-profile-uuid='2871e8027773ae74d6c87a5f659bbc74'
+
+[org/gnome/Prompt/Profiles/2871e8027773ae74d6c87a5f659bbc74]
+palette='Breeze'
+opacity=0.9
