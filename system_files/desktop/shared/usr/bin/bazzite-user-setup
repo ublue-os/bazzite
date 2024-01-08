@@ -63,19 +63,12 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   echo 'Enabling System76-Scheduler KWin script'
   kwriteconfig5 --file kwinrc --group Plugins --key kwin-system76-scheduler-integrationEnabled true
 
-  echo 'Creating Desktop shortcuts'
-  mkdir -p $HOME/Desktop/
-  if [[ ! -f "$HOME/Desktop/steam.desktop" ]]; then
-    cp "/usr/share/applications/steam.desktop" "$HOME/Desktop/steam.desktop"
-  fi
-  if [[ ! -f "$HOME/Desktop/net.lutris.Lutris.desktop" ]]; then
-    cp "/usr/share/applications/net.lutris.Lutris.desktop" "$HOME/Desktop/net.lutris.Lutris.desktop"
-  fi
-
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Kinoite on Steam Deck'
     if [[ ! -f "$HOME/Desktop/Return.desktop" ]]; then
-      cp "/etc/skel.d/Desktop/Return.desktop" "$HOME/Desktop/Return.desktop"
+      echo 'Re-creating return to gamemode shortcut'
+      mkdir -p $HOME/Desktop/
+      cp "/etc/skel/Desktop/Return.desktop" "$HOME/Desktop/Return.desktop"
     fi
   fi
 else
