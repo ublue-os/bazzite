@@ -67,7 +67,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Verify base image
-        uses: EyeCantCU/cosign-action/verify@v0.2.1
+        uses: EyeCantCU/cosign-action/verify@v0.2.2
         with:
           containers: ${{ matrix.base_image_name }}-${{ matrix.image_flavor }}:${{ matrix.major_version }}
 
