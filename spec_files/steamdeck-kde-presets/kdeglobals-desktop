@@ -3,6 +3,8 @@ LookAndFeelPackage=com.valve.vapor.desktop
 SingleClick=false
 
 [General]
+TerminalApplication=prompt
+TerminalService=org.gnome.Prompt.desktop
 fixed=Fira Code,10,-1,5,50,0,0,0,0,0
 font=Noto Sans,10,-1,5,50,0,0,0,0,0
 menuFont=Noto Sans,10,-1,5,50,0,0,0,0,0
