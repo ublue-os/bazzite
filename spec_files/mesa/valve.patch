@@ -1,4 +1,4 @@
-From d8906ba219ae663c5792182a61ee1b5d2d59f4f6 Mon Sep 17 00:00:00 2001
+From 39b7df3a64e9cfe9c649cd7cda896cef57ae2270 Mon Sep 17 00:00:00 2001
 From: Derek Foreman <derek.foreman@collabora.com>
 Date: Wed, 20 Sep 2023 10:40:33 -0500
 Subject: [PATCH 1/7] vulkan/wsi/wayland: refactor wayland dispatch code
@@ -12,7 +12,7 @@ Signed-off-by: Derek Foreman <derek.foreman@collabora.com>
  1 file changed, 208 insertions(+), 191 deletions(-)
 
 diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
-index 94b9217cbdf..9d410cf8fe1 100644
+index 22e26bacbc5..d8ae6e36626 100644
 --- a/src/vulkan/wsi/wsi_common_wayland.c
 +++ b/src/vulkan/wsi/wsi_common_wayland.c
 @@ -96,6 +96,11 @@ struct wsi_wl_display {
@@ -539,9 +539,9 @@ index 94b9217cbdf..9d410cf8fe1 100644
        pthread_mutex_destroy(&chain->present_ids.lock);
     }
  
-@@ -2372,18 +2391,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
-    chain->num_drm_modifiers = num_drm_modifiers;
-    chain->drm_modifiers = drm_modifiers;
+@@ -2383,18 +2402,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+       chain->drm_modifiers = drm_modifiers_copy;
+    }
  
 +   chain->queue = wl_display_create_queue(chain->wsi_wl_surface->display->wl_display);
 +
@@ -565,7 +565,7 @@ index 94b9217cbdf..9d410cf8fe1 100644
 2.42.0
 
 
-From 5cf771328cecd21fcd0a7bd1c83fce87ddaec616 Mon Sep 17 00:00:00 2001
+From ad381d34e00a89f1961cf345668b939830ed1d39 Mon Sep 17 00:00:00 2001
 From: Derek Foreman <derek.foreman@collabora.com>
 Date: Fri, 10 Nov 2023 07:25:35 -0600
 Subject: [PATCH 2/7] vulkan/wsi/wayland: Use commit_timing/commit_queue
@@ -612,7 +612,7 @@ index 9d0db011767..83ad71f06fa 100644
    files_vulkan_wsi += wp_files['presentation-time']
    files_vulkan_wsi += wp_files['tearing-control-v1']
 diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
-index 9d410cf8fe1..86de6ca190c 100644
+index d8ae6e36626..dd78d98dfce 100644
 --- a/src/vulkan/wsi/wsi_common_wayland.c
 +++ b/src/vulkan/wsi/wsi_common_wayland.c
 @@ -41,6 +41,8 @@
@@ -862,10 +862,10 @@ index 9d410cf8fe1..86de6ca190c 100644
 +   if (chain->commit_timer)
 +      wp_commit_timer_v1_destroy(chain->commit_timer);
 +
-    wsi_swapchain_finish(&chain->base);
- }
+    vk_free(pAllocator, (void *)chain->drm_modifiers);
  
-@@ -2288,6 +2384,15 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+    wsi_swapchain_finish(&chain->base);
+@@ -2290,6 +2386,15 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
           wp_tearing_control_v1_destroy(old_chain->tearing_control);
           old_chain->tearing_control = NULL;
        }
@@ -881,7 +881,7 @@ index 9d410cf8fe1..86de6ca190c 100644
     }
  
     /* Take ownership of the wsi_wl_surface */
-@@ -2403,7 +2508,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2414,7 +2519,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
                           chain->queue);
     }
  
@@ -903,7 +903,7 @@ index 9d410cf8fe1..86de6ca190c 100644
 2.42.0
 
 
-From 05f047f5ddfcb09fb6432e96d5f0dd068b57d994 Mon Sep 17 00:00:00 2001
+From dfa0495e9fbe27216cfbcfd3564eeeb1c00a4e6e Mon Sep 17 00:00:00 2001
 From: Simon Ser <contact@emersion.fr>
 Date: Sat, 25 Nov 2023 16:25:58 +0100
 Subject: [PATCH 3/7] hack: rip out commit-timing-v1
@@ -941,7 +941,7 @@ index 83ad71f06fa..dba95387975 100644
    files_vulkan_wsi += wp_files['presentation-time']
    files_vulkan_wsi += wp_files['tearing-control-v1']
 diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
-index 86de6ca190c..7af1409b130 100644
+index dd78d98dfce..1efe9e449e8 100644
 --- a/src/vulkan/wsi/wsi_common_wayland.c
 +++ b/src/vulkan/wsi/wsi_common_wayland.c
 @@ -42,7 +42,6 @@
@@ -1012,10 +1012,10 @@ index 86de6ca190c..7af1409b130 100644
 -   if (chain->commit_timer)
 -      wp_commit_timer_v1_destroy(chain->commit_timer);
 -
-    wsi_swapchain_finish(&chain->base);
- }
+    vk_free(pAllocator, (void *)chain->drm_modifiers);
  
-@@ -2389,10 +2376,6 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+    wsi_swapchain_finish(&chain->base);
+@@ -2391,10 +2378,6 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
           old_chain->commit_queue = NULL;
           old_chain->can_timestamp = false;
        }
@@ -1026,7 +1026,7 @@ index 86de6ca190c..7af1409b130 100644
     }
  
     /* Take ownership of the wsi_wl_surface */
-@@ -2510,12 +2493,9 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2521,12 +2504,9 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
  
     chain->legacy_fifo_ready = true;
     struct wsi_wl_display *dpy = chain->wsi_wl_surface->display;
@@ -1044,7 +1044,7 @@ index 86de6ca190c..7af1409b130 100644
 2.42.0
 
 
-From 8efe5c9434578a27cc2ea66bf507685102fafe43 Mon Sep 17 00:00:00 2001
+From fbb52f6f45b02583a0b496e4cc34af34251cb1bd Mon Sep 17 00:00:00 2001
 From: Joshua Ashton <joshua@froggi.es>
 Date: Wed, 29 Nov 2023 11:06:51 +0000
 Subject: [PATCH 4/7] wsi: Use vendored gamescope-commit-queue-v1 protocol
@@ -1295,7 +1295,7 @@ index dba95387975..fb0fab69ac6 100644
    files_vulkan_wsi += wp_files['linux-dmabuf-unstable-v1']
    files_vulkan_wsi += wp_files['presentation-time']
 diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
-index 7af1409b130..d21cae54f9b 100644
+index 1efe9e449e8..68d9088f936 100644
 --- a/src/vulkan/wsi/wsi_common_wayland.c
 +++ b/src/vulkan/wsi/wsi_common_wayland.c
 @@ -41,7 +41,7 @@
@@ -1364,9 +1364,9 @@ index 7af1409b130..d21cae54f9b 100644
 -      wp_commit_queue_v1_destroy(chain->commit_queue);
 +      gamescope_commit_queue_v1_destroy(chain->commit_queue);
  
-    wsi_swapchain_finish(&chain->base);
- }
-@@ -2372,7 +2372,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+    vk_free(pAllocator, (void *)chain->drm_modifiers);
+ 
+@@ -2374,7 +2374,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
           old_chain->tearing_control = NULL;
        }
        if (old_chain->commit_queue) {
@@ -1375,7 +1375,7 @@ index 7af1409b130..d21cae54f9b 100644
           old_chain->commit_queue = NULL;
           old_chain->can_timestamp = false;
        }
-@@ -2494,7 +2494,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2505,7 +2505,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
     chain->legacy_fifo_ready = true;
     struct wsi_wl_display *dpy = chain->wsi_wl_surface->display;
     if (dpy->commit_queue_manager) {
@@ -1388,7 +1388,7 @@ index 7af1409b130..d21cae54f9b 100644
 2.42.0
 
 
-From 4d4979994876abdabe4c2f3692451a38233dbf44 Mon Sep 17 00:00:00 2001
+From f0be8700af09a5a1c94d84c1b3b4ee3096de0b69 Mon Sep 17 00:00:00 2001
 From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
 Date: Fri, 14 Jan 2022 15:58:45 +0100
 Subject: [PATCH 5/7] STEAMOS: radv: min image count override for FH5
@@ -1400,10 +1400,10 @@ gamescope the game could get stuck in low power states.
  1 file changed, 4 insertions(+)
 
 diff --git a/src/util/00-radv-defaults.conf b/src/util/00-radv-defaults.conf
-index b13d92f84ce..0f8234b4993 100644
+index 0dcec733e52..f0d535df2f8 100644
 --- a/src/util/00-radv-defaults.conf
 +++ b/src/util/00-radv-defaults.conf
-@@ -180,5 +180,9 @@ Application bugs worked around in this file:
+@@ -188,5 +188,9 @@ Application bugs worked around in this file:
          <application name="Rocket League" executable="RocketLeague">
              <option name="radv_zero_vram" value="true" />
          </application>
@@ -1417,7 +1417,7 @@ index b13d92f84ce..0f8234b4993 100644
 2.42.0
 
 
-From 85c5c7b71a324ce60c427dee208cc4019013fadd Mon Sep 17 00:00:00 2001
+From 2ab76c1153f55d82c3f49a25f8f8a1f1e1e74075 Mon Sep 17 00:00:00 2001
 From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
 Date: Mon, 21 Feb 2022 18:43:54 +0100
 Subject: [PATCH 6/7] STEAMOS: Dynamic swapchain override for gamescope limiter
@@ -1618,7 +1618,7 @@ index cba1d1c5e7c..6d66387d5be 100644
 2.42.0
 
 
-From 61a785c7cf06cd8c585fcac890c6b1bb9eccc374 Mon Sep 17 00:00:00 2001
+From f00348f08f42a1ce3be4e71f9fba186fb629c723 Mon Sep 17 00:00:00 2001
 From: Friedrich Vock <friedrich.vock@gmx.de>
 Date: Fri, 1 Dec 2023 15:18:44 +0100
 Subject: [PATCH 7/7] radv: Enable compute dispatch tunneling

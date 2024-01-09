@@ -61,9 +61,9 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 23.3.1
+%global ver 23.3.2
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        102.bazzite.{{{ git_dir_version }}}
+Release:        100.bazzite.{{{ git_dir_version }}}
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
 
@@ -74,7 +74,9 @@ Source0:        https://archive.mesa3d.org/mesa-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
-Patch11:        0001-intel-compiler-move-gen5-final-pass-to-actually-be-f.patch
+Patch11:        0001-intel-compiler-reemit-boolean-resolve-for-inverted-i.patch
+Patch12:        0001-intel-compiler-fix-release-build-unused-variable.patch
+Patch13:        disable-zink-egl-fallback.patch
 
 # https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26105/
 Patch30:        26105.patch
