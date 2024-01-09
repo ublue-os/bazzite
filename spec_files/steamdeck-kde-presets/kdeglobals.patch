@@ -4,7 +4,7 @@
  kcm_plymouth.desktop=false
  
  [General]
-+TerminalApplication=prompt
++TerminalApplication=kde-prompt
 +TerminalService=org.gnome.Prompt.desktop
 +fixed=Fira Code,9,-1,5,50,0,0,0,0,0
  font=Noto Sans,11,-1,5,50,0,0,0,0,0
