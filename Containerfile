@@ -276,6 +276,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         wallpaper-engine-kde-plugin \
         kdeconnectd \
         kdeplasma-addons \
+        ksystemlog \
         rom-properties-kf5 && \
     if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         rpm-ostree install colord-kde \
