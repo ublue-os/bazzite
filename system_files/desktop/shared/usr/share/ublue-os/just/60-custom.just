@@ -1,24 +1,57 @@
 # vim: set ft=make :
 
+# Restore the default Terminal
+restore-original-terminal:
+    #!/usr/bin/bash
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+        rm -f $HOME/.local/share/applications/org.gnome.Terminal.desktop
+        cp /usr/share/applications/org.gnome.Terminal.desktop $HOME/.local/share/applications/org.gnome.Terminal.desktop
+        sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.gnome.Terminal.desktop
+    else
+        rm -f $HOME/.local/share/applications/org.kde.konsole.desktop
+        cp /usr/share/applications/org.gnome.Terminal.desktop $HOME/.local/share/applications/org.kde.konsole.desktop
+        sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.kde.konsole.desktop
+    fi
+
 # Remove all waydroid-related files in your user folders
 reset-waydroid:
     bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
 
 # Quickly initialize a waydroid image
 init-waydroid:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     sudo waydroid init -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor'
 
 # Launch Waydroid configuration helper
 configure-waydroid:
-    #!/usr/bin/env bash
-    git clone https://github.com/casualsnek/waydroid_script.git --depth 1 /tmp/waydroid_script
+    #!/usr/bin/bash
+    git clone https://github.com/ublue-os/waydroid_script.git --depth 1 /tmp/waydroid_script
     python -m venv /tmp/waydroid_script/venv
     source /tmp/waydroid_script/venv/bin/activate
     sudo pip install -r /tmp/waydroid_script/requirements.txt
     sudo /tmp/waydroid_script/main.py
     deactivate
     sudo rm -rf /tmp/waydroid_script
+
+# Install Sunshine
+install-sunshine:
+    #!/usr/bin/bash
+    flatpak install --system --noninteractive flathub dev.lizardbyte.app.Sunshine
+    flatpak run --command=additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable || true
+    echo "Sunshine is installed!"
+
+# Remove Sunshine
+remove-sunshine:
+    #!/usr/bin/bash
+    flatpak run --command=remove-additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable || true
+    flatpak uninstall --delete-data --noninteractive dev.lizardbyte.sunshine
+
+# Autostart Sunshine
+autostart-sunshine:
+    #!/usr/bin/bash
+    systemctl enable --user --now sunshine.service
 
 # Install LACT for overclocking & undervolting AMD GPUs
 install-lact:
@@ -57,7 +90,7 @@ install-openrazer:
 
 # Install Wootility for configuring Wooting Keyboards
 get-wootility:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
       wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Downloads/wootility.AppImage
       flatpak run it.mijorus.gearlever $HOME/Downloads/wootility.AppImage
@@ -68,7 +101,7 @@ get-wootility:
 
 # Enable Supergfxctl, a Nvidia GPU switcher for hybrid laptops
 enable-supergfxctl:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
     if [[ "$IMAGE_FLAVOR" =~ "nvidia" ]]; then
@@ -79,14 +112,14 @@ enable-supergfxctl:
 
 # Patch a bug in some 32-bit Source 1.x titles that causes them to crash at startup
 patch-source1-tcmalloc:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     echo 'Add the following as a launch option in Steam:'
     echo 'LD_PRELOAD=/usr/lib/libtcmalloc_and_profiler.so.4 %command%'
     echo "Delete libtcmalloc_minimal.so.x in the game's bin folder if present."
 
 # Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModCEFCodecFix)
 patch-gmod:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     mkdir -p /tmp/patch-gmod
     wget \
       $(curl -s https://api.github.com/repos/solsticegamestudios/GModCEFCodecFix/releases/latest | \
@@ -96,59 +129,9 @@ patch-gmod:
     /tmp/patch-gmod/GModCEFCodecFix-Linux
     rm -rf /tmp/patch-gmod
 
-# Activate Valve-inspired Vapor theme on GNOME
-enable-vapor-theme:
-    #!/usr/bin/env bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
-      gsettings set org.gnome.mutter center-new-windows true
-      gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
-      gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-      gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
-      gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/steamdeck/Steam\ Deck\ Logo\ Default.jpg
-      gsettings set org.gnome.desktop.background picture-uri-dark file:///usr/share/backgrounds/steamdeck/Steam\ Deck\ Logo\ Default.jpg
-      gsettings set org.gnome.desktop.wm.preferences titlebar-font "Noto Sans Medium 11"
-      gsettings set org.gnome.desktop.interface document-font-name "Noto Sans 11"
-      gsettings set org.gnome.desktop.interface font-name "Noto Sans 11"
-      gsettings set org.gnome.desktop.sound theme-name "steam"
-      flatpak run --command=gradience-cli com.github.GradienceTeam.Gradience flatpak-overrides -e both
-      sudo flatpak override --filesystem=xdg-config/gtk-4.0
-      sudo flatpak override --filesystem=xdg-config/gtk-3.0
-      flatpak run --command=gradience-cli com.github.GradienceTeam.Gradience apply -n "Vapor"
-    else
-      echo "This is only supported under GNOME."
-    fi
-
-# Activate Valve-inspired VGUI2 theme on GNOME
-enable-vgui2-theme:
-    #!/usr/bin/env bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
-      gsettings set org.gnome.mutter center-new-windows true
-      gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
-      gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-      gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
-      gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/steamdeck/VGUI2.jpg
-      gsettings set org.gnome.desktop.background picture-uri-dark file:///usr/share/backgrounds/steamdeck/VGUI2.jpg
-      gsettings set org.gnome.desktop.wm.preferences titlebar-font "Noto Sans Medium 11"
-      gsettings set org.gnome.desktop.interface document-font-name "Noto Sans 11"
-      gsettings set org.gnome.desktop.interface font-name "Noto Sans 11"
-      gsettings set org.gnome.desktop.sound theme-name "steam"
-      flatpak run --command=gradience-cli com.github.GradienceTeam.Gradience flatpak-overrides -e both
-      sudo flatpak override --filesystem=xdg-config/gtk-4.0
-      sudo flatpak override --filesystem=xdg-config/gtk-3.0
-      flatpak run --command=gradience-cli com.github.GradienceTeam.Gradience apply -n "VGUI2"
-    else 
-      echo "This is only supported under GNOME."
-    fi
-
 # Install Adwaita-for-Steam theme for CSS Loader (https://github.com/tkashkin/Adwaita-for-Steam)
 install-adwaita-for-steam:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
@@ -163,7 +146,7 @@ install-adwaita-for-steam:
 
 # Set system to boot without showing the grub screen with options
 hide-grub:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
     echo 'GRUB_TIMEOUT_STYLE=hidden' | sudo tee -a /etc/default/grub 1>/dev/null
     echo 'GRUB_HIDDEN_TIMEOUT=1' | sudo tee -a /etc/default/grub 1>/dev/null
@@ -175,7 +158,7 @@ hide-grub:
 
 # Set system to boot with the grub screen showing options (Default)
 unhide-grub:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     sudo sed -i '/GRUB_HIDDEN_TIMEOUT=1/d' /etc/default/grub
     sudo sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub
     sudo sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=5/g' /etc/default/grub
@@ -195,7 +178,7 @@ fix-screenshare:
 
 # Add user to "input" group required by certain controller drivers
 add-user-to-input-group:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     if ! grep -q "input" /etc/group; then
       sudo bash -c 'grep "input" /lib/group >> /etc/group'
     fi
@@ -203,7 +186,7 @@ add-user-to-input-group:
 
 # Enable Virtualization and add workaround for a specific windows VM crash
 enable-virtualization:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
     if [[ -z ${virt_test} ]]; then
       echo "Installing QEMU and virt-manager..."
@@ -220,7 +203,7 @@ enable-virtualization:
 
 # Enable VFIO on the system if virtualization is enabled
 enable-vfio:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     echo "Enabling VFIO..."
     VIRT_TEST=$(rpm-ostree kargs)
     CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
@@ -254,7 +237,7 @@ enable-vfio:
 
 # Enable watchdog (default, recovers the system in the event of a malfunction, possible impact to performance due to interrupts)
 enable-watchdog:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
     WATCHDOG_KARGS="--delete-if-present=nowatchdog"
     if [[ "$CPU_MODEL" =~ "Intel" ]]; then
@@ -266,7 +249,7 @@ enable-watchdog:
 
 # Disable watchdog (potential performance improvement due to fewer interrupts)
 disable-watchdog:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
     WATCHDOG_KARGS="--append-if-missing=nowatchdog"
     if [[ "$CPU_MODEL" =~ "Intel" ]]; then
@@ -275,12 +258,6 @@ disable-watchdog:
       WATCHDOG_KARGS="$WATCHDOG_KARGS --append-if-missing=modprobe.blacklist=sp5100_tco"
     fi
     rpm-ostree kargs $WATCHDOG_KARGS
-
-# Install Webapp manager
-install-webapp-manager: distrobox-check-fedora
-    distrobox-enter -n fedora -- bash -c "sudo dnf copr enable -y kylegospo/webapp-manager && \
-      sudo dnf install -y webapp-manager && \
-      distrobox-export --app webapp-manager"
 
 # Install Oversteer for Logitech steering wheels
 install-oversteer: distrobox-check-fedora
@@ -329,7 +306,6 @@ install-opentabletdriver:
 
 # Add SELinux file context for default looking-glass shm file so that libvirt can create it when needed
 selinux-looking-glass:
-    #!/usr/bin/env bash
     sudo tee << 'LOOKING_GLASS_TMP' > /etc/tmpfiles.d/10-looking-glass.conf
     # Type Path               Mode UID  GID Age Argument
     f /dev/shm/looking-glass 0660 1000 qemu -

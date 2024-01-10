@@ -6,17 +6,30 @@ BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
+# INIT
+BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
+mkdir -p "$BAZZITE_CONFIG_DIR"
+
 # SCRIPT VERSION
-USER_SETUP_VER=16
-USER_SETUP_VER_FILE="$HOME/.bazzite-configured"
+USER_SETUP_VER=21
+USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
+USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
+
+if [[ -f "$HOME/.bazzite-configured" ]]; then
+  mv -f "$HOME/.bazzite-configured" "$USER_SETUP_VER_FILE"
+fi
+
+if [[ -f "$HOME/.bazzite-configured-fedora-version" ]]; then
+  mv -f "$HOME/.bazzite-configured-fedora-version" "$USER_SETUP_FEDORA_VER_FILE"
+fi
+
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
-USER_SETUP_FEDORA_VER_FILE="$HOME/.bazzite-configured-fedora-version"
 USER_SETUP_FEDORA_VER_RAN=$(cat $USER_SETUP_FEDORA_VER_FILE)
 
 # Run script if updated
 if [[ -f $USER_SETUP_VER_FILE && $USER_SETUP_VER = $USER_SETUP_VER_RAN ]]; then
   if [[ -f $USER_SETUP_FEDORA_VER_FILE && $FEDORA_VERSION = $USER_SETUP_FEDORA_VER_RAN ]]; then
-    echo "User setup has already run. Exiting..."
+    echo "User setup v$USER_SETUP_VER has already run. Exiting..."
     exit 0
   fi
 fi
@@ -31,119 +44,98 @@ flatpak remote-modify --user --enable flathub
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup
 
-if [[ $BASE_IMAGE_NAME =~ "kinoite"  ]]; then
+# Set up optional Gradience themes
+THEME_DIR="/usr/share/ublue-os/bazzite/themes"
+GRADIENCE_DIR="$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
+mkdir -p "$GRADIENCE_DIR"
+if [[ ! -f "$GRADIENCE_DIR/vapor.json" ]]; then
+  rm -f "$GRADIENCE_DIR/vapor.json"
+  cp "$THEME_DIR/vapor.json" "$GRADIENCE_DIR/vapor.json"
+fi
+if [[ ! -f "$GRADIENCE_DIR/vgui2.json" ]]; then
+  rm -f "$GRADIENCE_DIR/vgui2.json"
+  cp "$THEME_DIR/vgui2.json" "$GRADIENCE_DIR/vgui2.json"
+fi
+
+# Initialize Prompt config
+# This is intentionally run on both images to ensure a user rebasing from Silverblue to Kinoite
+# doesn't get their Prompt config wiped out.
+echo 'Configuring Prompt'
+if [[ ! -f "$BAZZITE_CONFIG_DIR/prompt-initialized" ]]; then
+  if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+    dconf load / < /etc/dconf/db/local.d/02-bazzite-kde
+  fi
+  touch "$BAZZITE_CONFIG_DIR/prompt-initialized"
+fi
+
+if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   echo 'Running setup for Kinoite'
 
   echo 'Enabling System76-Scheduler KWin script'
   kwriteconfig5 --file kwinrc --group Plugins --key kwin-system76-scheduler-integrationEnabled true
 
-  echo 'Creating Desktop shortcuts'
-  mkdir -p $HOME/Desktop/
-  if [[ ! -f "$HOME/Desktop/steam.desktop" ]]; then
-    cp /usr/share/applications/steam.desktop $HOME/Desktop/steam.desktop
-  fi
-  if [[ ! -f "$HOME/Desktop/net.lutris.Lutris.desktop" ]]; then
-    cp /usr/share/applications/net.lutris.Lutris.desktop $HOME/Desktop/net.lutris.Lutris.desktop
-  fi
-
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Kinoite on Steam Deck'
     if [[ ! -f "$HOME/Desktop/Return.desktop" ]]; then
-      cp /etc/skel.d/Desktop/Return.desktop $HOME/Desktop/Return.desktop
+      echo 'Re-creating return to gamemode shortcut'
+      mkdir -p $HOME/Desktop/
+      cp "/etc/skel/Desktop/Return.desktop" "$HOME/Desktop/Return.desktop"
     fi
   fi
 else
   echo 'Running setup for Silverblue'
 
-  echo 'Enabling GNOME extensions'
-  gnome-extensions enable s76-scheduler@mattjakeman.com
-  gnome-extensions enable gsconnect@andyholmes.github.io
-  gnome-extensions enable logomenu@aryan_k
-  gnome-extensions disable background-logo@fedorahosted.org
-
-  echo 'Adjusting Nautilus settings'
-  gsettings set org.gnome.nautilus.preferences show-create-link true
-
-  echo 'Installing Gradience presets'
-  mkdir -p "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/"
-  if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json" ]]; then
-    rm -f $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json
-    cp /usr/share/ublue-os/bazzite/themes/vapor.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vapor.json
-  fi
-  if [[ ! -f "$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json" ]]; then
-    rm -f $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json
-    cp /usr/share/ublue-os/bazzite/themes/vgui2.json $HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user/vgui2.json
-  fi
-
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
 
-    echo 'Disabling GNOME keyboard'
-    gsettings set org.gnome.desktop.interface toolkit-accessibility false
-    gnome-extensions enable block-caribou-36@lxylxy123456.ercli.dev
-
-    echo 'Enabling Appindicator Support'
-    gnome-extenisons enable appindicatorsupport@rgcjonas.gmail.com
-
-    echo 'Setting mouse input profile'
-    gsettings set org.gnome.desktop.peripherals.mouse accel-profile "flat"
-
-    echo 'Adjusting trackpad settings'
-    gsettings set org.gnome.desktop.peripherals.touchpad send-events "enabled"
-
-    echo 'Setting default power settings'
-    gsettings set org.gnome.desktop.session idle-delay 0
-    gsettings set org.gnome.settings-daemon.plugins.power ambient-enabled true
-    gsettings set org.gnome.settings-daemon.plugins.power idle-dim true
-    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 300
-    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 900
-    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type "suspend"
-    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "suspend"
-    gsettings set org.gnome.settings-daemon.plugins.power power-button-action "suspend"
-
     echo 'Setting up templates'
+    mkdir -p "$HOME/Templates"
     if [[ ! -f "$HOME/Templates/vkBasalt.conf" ]]; then
-      ln -s /etc/vkBasalt.conf $HOME/Templates/vkBasalt.conf
+      ln -s "/etc/vkBasalt.conf" "$HOME/Templates/vkBasalt.conf"
     fi
     if [[ ! -f "$HOME/Templates/dxvk.conf" ]]; then
-      ln -s /etc/dxvk-example.conf $HOME/Templates/dxvk.conf
+      ln -s "/etc/dxvk-example.conf" "$HOME/Templates/dxvk.conf"
     fi
 
     echo 'Tweaking GNOME indexer'
-    mkdir -p $HOME/.steam
-    touch $HOME/.steam/.trackerignore
-    mkdir -p $HOME/.local/share/Steam
-    touch $HOME/.local/share/Steam/.trackerignore
+    if [[ ! -f "$HOME/.steam/.trackerignore" ]]; then
+      mkdir -p "$HOME/.steam"
+      touch "$HOME/.steam/.trackerignore"
+    fi
+    if [[ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/Steam/.trackerignore" ]]; then
+      mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/Steam"
+      touch "${XDG_DATA_HOME:-$HOME/.local/share}/Steam/.trackerignore"
+    fi
   fi
 fi
 
-# Steam Patch setup
+# Deck Build Setup
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
-  if [[ ! (":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:")]]; then
-    echo 'Enabling Steam-Patch'
-    pkexec /usr/libexec/bazzite-enable-steam-patch "$USER"
+  # HHD Setup
+  if [[ ":ROG Ally RC71L_RC71L:83E1:" =~ ":$SYS_ID:" ]]; then
+    echo 'Enabling HHD'
+    pkexec /usr/libexec/bazzite-enable-hhd "$USER"
   fi
-fi
 
-# Previous images used Bazzite-Arch to run Steam, Lutris, and Protontricks on desktop images
-if [[ -f "$HOME/.local/share/applications/bazzite-arch-steam.desktop" ]]; then
-  rm -f "$HOME/.local/share/applications/bazzite-arch-steam.desktop"
-fi
+  # SDGyroDSU Setup
+  if [[ ":Jupiter:Galileo:" =~ ":$SYS_ID:" ]]; then
+    systemctl --user enable --now sdgyrodsu.service
+  else
+    systemctl --user disable --now sdgyrodsu.service
+  fi
 
-if [[ -f "$HOME/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop" ]]; then
-  rm -f "$HOME/.local/share/applications/bazzite-arch-net.lutris.Lutris.desktop"
-fi
-
-if [[ -f "$HOME/.local/share/applications/bazzite-arch-protontricks.desktop" ]]; then
-  rm -f "$HOME/.local/share/applications/bazzite-arch-protontricks.desktop"
-fi
-
-if [[ -f "$HOME/Desktop/bazzite-arch-steam.desktop" ]]; then
-  rm -f "$HOME/Desktop/bazzite-arch-steam.desktop"
-fi
-
-if [[ -f "$HOME/Desktop/bazzite-arch-net.lutris.Lutris.desktop" ]]; then
-  rm -f "$HOME/Desktop/bazzite-arch-net.lutris.Lutris.desktop"
+  # Legion Rotation Fix
+  AUTOSTART_FOLDER=${XDG_CONFIG_HOME:-$HOME/.config}
+  if [[ ":83E1:" =~ ":$SYS_ID" ]] && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+    if [[ ! -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop" ]]; then
+      echo 'Adding legion rotation fix'
+      mkdir -p "$AUTOSTART_FOLDER/autostart"
+      printf "[Desktop Entry]\nExec=/usr/libexec/bazzite-handle-legion-go-rotation\nIcon=dialog-scripts\nName=bazzite-handle-legion-go-rotation\nType=Application\nX-KDE-AutostartScript=true\n" > "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop"
+    fi
+  elif [[ -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop" ]]; then
+    echo 'Non-legion or GNOME detected, removing legionfix'
+    rm -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop"
+  fi
 fi
 
 # Prevent future executions

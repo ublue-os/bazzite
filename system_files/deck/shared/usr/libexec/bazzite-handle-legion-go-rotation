@@ -1,0 +1,34 @@
+#!/usr/bin/bash
+
+# This script fixes the screen orientation in the Desktop Mode in Bazzite-Deck KDE
+# Author: d3Xt3r
+
+sleep 1
+echo $(date '+%Y-%m-%d %H:%M:%S') Starting Bazzite Desktop Orientation Fix script...| tee -a /tmp/bazrotfix.log
+
+IS_GAMEMODE="$(cat /proc/*/comm | grep gamescope-ses*)"
+
+if [[ ! -z "$IS_GAMEMODE" ]]; then
+	exit 0
+fi
+
+# This bit is needed to allow enough time for the desktop to load, otherwise the fix won't work
+# Since Steam launches automatically in the Desktop mode in Bazzite-Deck, we can use it 
+# to determine whether or not the desktop has loaded.
+while ! pgrep -x "steam" > /dev/null; do
+	echo $(date '+%Y-%m-%d %H:%M:%S') Waiting for Steam to start.. | tee -a /tmp/bazrotfix.log
+	sleep 0.5
+done
+
+sleep 1
+
+# Debug: Get current outputs
+kscreen-doctor --outputs 2>&1 | tee -a /tmp/bazrotfix.log
+
+# Fix desktop orientation
+# Rotation options: right, normal, left, inverted
+echo $(date '+%Y-%m-%d %H:%M:%S') Fixing desktop orientation... | tee -a /tmp/bazrotfix.log
+kscreen-doctor output.1.rotation.left 2>&1 | tee -a /tmp/bazrotfix.log
+
+echo $(date '+%Y-%m-%d %H:%M:%S') Ending Bazzite Desktop Orientation Fix script >> /tmp/bazrotfix.log
+echo -e '\n' >> /tmp/bazrotfix.log

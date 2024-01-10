@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
@@ -22,5 +22,5 @@ if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
   # Also supports Steam Input as a whole.
   env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam "$LAUNCH_OPTIONS" "$*"
 else
-  /usr/bin/steam "$LAUNCH_OPTIONS" "$*"
+  /usr/bin/steam "$LAUNCH_OPTIONS" "$@"
 fi

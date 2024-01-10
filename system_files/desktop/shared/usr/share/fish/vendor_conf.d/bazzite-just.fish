@@ -1,1 +1,0 @@
-alias just='/usr/bin/ujust'

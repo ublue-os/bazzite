@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+systemctl enable --now hhd@$(systemd-escape $1).service

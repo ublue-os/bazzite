@@ -3,5 +3,5 @@
     max_cpu_load_percent = 100.0
     max_mem_percent = 90.0
 [notify]
-    dbus_notify = true
+    dbus_notify = false
 

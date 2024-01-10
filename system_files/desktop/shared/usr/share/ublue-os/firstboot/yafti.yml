@@ -22,12 +22,12 @@ screens:
           default: true
           packages:
           - Set input group: sudo -A ujust add-user-to-input-group
-        Nix Package Manager:
-          description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
+        Sunshine:
+          description: A self-hosted game stream host for Moonlight
           default: false
           packages:
-          - Install Nix Package Support: sudo -A ujust nix-install
-          - Install Fleek (Requires Nix): ujust fleek-install
+          - Install Sunshine: ujust install-sunshine
+          - Autostart Sunshine: ujust autostart-sunshine
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware
           default: false
@@ -124,6 +124,7 @@ screens:
           - Mumble: info.mumble.Mumble
           - OpenMW: org.openmw.OpenMW
           - osu: sh.ppy.osu
+          - Parsec: com.parsecgaming.parsec
           - Space Cadet Pinball: com.github.k4zmu2a.spacecadetpinball
           - Sonic Robo Blast 2: org.srb2.SRB2
           - Sonic Robo Blast 2 Kart: org.srb2.SRB2Kart
@@ -154,6 +155,7 @@ screens:
           - Ryujinx: org.ryujinx.Ryujinx
           - ScummVM: org.scummvm.ScummVM
           - Snes9x: com.snes9x.Snes9x
+          - Stella: io.github.stella_emu.Stella
           - xemu: app.xemu.xemu
           - yuzu: org.yuzu_emu.yuzu
         Streaming:
@@ -200,6 +202,7 @@ screens:
           - Calibre: com.calibre_ebook.calibre
           - Easy Effects: com.github.wwmm.easyeffects
           - Fedora Media Writer: org.fedoraproject.MediaWriter
+          - Gradience: com.github.GradienceTeam.Gradience
           - JamesDSP: me.timschneeberger.jdsp4linux
           - KeePassXC: org.keepassxc.KeePassXC
           - Metadata Cleaner: fr.romainvigier.MetadataCleaner
@@ -211,19 +214,6 @@ screens:
           - SaveDesktop: io.github.vikdevelop.SaveDesktop
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
-  theme:
-    source: yafti.screen.title
-    values:
-      title: "GNOME Theme"
-      condition:
-        run: grep -q 'silverblue' <<< $(jq -r '."base-image-name"' < /usr/share/ublue-os/image-info.json)
-      links:
-      - "Vapor Theme":
-          run: ujust enable-vapor-theme
-      - "VGUI2 Theme":
-          run: ujust enable-vgui2-theme
-      description: |
-        Optionally apply a Valve-inspired theme to GNOME via Gradience. Note that custom themes are not officially supported by GNOME and some applications can break. Please avoid reporting issues to application developers until you've tested against the default theme.
   final-screen:
     source: yafti.screen.title
     values:
@@ -232,6 +222,8 @@ screens:
       links:
       - "Install More Applications":
           run: /usr/bin/plasma-discover
+      - "Documentation":
+          run: /usr/bin/xdg-open https://universal-blue.discourse.group/docs?category=5
       - "Forums":
           run: /usr/bin/xdg-open https://universal-blue.discourse.group/c/bazzite/5
       - "Join the Discord Community":

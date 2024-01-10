@@ -30,6 +30,9 @@ process-scheduler enable=true {
         sound-server nice=-15 sched=(fifo)49 io=(realtime)0 {
             "/usr/bin/pipewire"
             "/usr/bin/pipewire-pulse"
+            "/usr/bin/pipewire-avb"
+            "/usr/bin/pipewire-vulkan"
+            "/usr/bin/pipewire-aes67"
             "/usr/bin/jackd"
         }
 
@@ -87,6 +90,7 @@ process-scheduler enable=true {
         fig
         fig_desktop
         gamemoderun
+        gamescope
         input-remapper-service
         ionice
         nice

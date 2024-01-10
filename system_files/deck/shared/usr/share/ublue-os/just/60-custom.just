@@ -1,11 +1,26 @@
 # Toggle between desktop/gamescope autologin
 toggle-autologin:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     DESKTOP_AUTOLOGIN="/etc/bazzite/desktop_autologin"
     if [[ -f $DESKTOP_AUTOLOGIN ]]; then
       sudo rm -f $DESKTOP_AUTOLOGIN
     else
       sudo touch $DESKTOP_AUTOLOGIN
+    fi
+
+# Restore the default Terminal
+restore-original-terminal:
+    #!/usr/bin/bash
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+        rm -f $HOME/.local/share/applications/org.gnome.Terminal.desktop
+        cp /usr/share/applications/org.gnome.Terminal.desktop $HOME/.local/share/applications/org.gnome.Terminal.desktop
+        sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.gnome.Terminal.desktop
+    else
+        rm -f $HOME/.local/share/applications/org.kde.konsole.desktop
+        cp /usr/share/applications/org.gnome.Terminal.desktop $HOME/.local/share/applications/org.kde.konsole.desktop
+        sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.kde.konsole.desktop
     fi
 
 # Remove all waydroid-related files in your user folders
@@ -16,13 +31,13 @@ reset-waydroid:
 
 # Quickly initialize a waydroid image
 init-waydroid:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     sudo waydroid init -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor'
 
 # Launch Waydroid configuration helper
 configure-waydroid:
-    #!/usr/bin/env bash
-    git clone https://github.com/casualsnek/waydroid_script.git --depth 1 /tmp/waydroid_script
+    #!/usr/bin/bash
+    git clone https://github.com/ublue-os/waydroid_script.git --depth 1 /tmp/waydroid_script
     python -m venv /tmp/waydroid_script/venv
     source /tmp/waydroid_script/venv/bin/activate
     sudo pip install -r /tmp/waydroid_script/requirements.txt
@@ -30,16 +45,70 @@ configure-waydroid:
     deactivate
     sudo rm -rf /tmp/waydroid_script
 
+# Install Sunshine
+install-sunshine:
+    #!/usr/bin/bash
+    flatpak install --system --noninteractive flathub dev.lizardbyte.app.Sunshine
+    flatpak run --command=additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable || true
+    echo "Sunshine is installed!"
+
+# Remove Sunshine
+remove-sunshine:
+    #!/usr/bin/bash
+    flatpak run --command=remove-additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable || true
+    flatpak uninstall --delete-data --noninteractive dev.lizardbyte.sunshine
+
+# Autostart Sunshine
+autostart-sunshine:
+    #!/usr/bin/bash
+    systemctl enable --user --now sunshine.service
+
+# Install LACT for overclocking & undervolting AMD GPUs (For HTPC use only)
+install-lact:
+    #!/usr/bin/bash
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    ublue-update --wait
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+        echo 'Installing LACT Libadwaita...'
+        wget \
+          $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
+          jq -r ".assets[] | select(.name | test(\"lact-libadwaita.*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
+          -O /tmp/lact.rpm
+    else
+        echo 'Installing LACT...'
+        wget \
+          $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
+          jq -r ".assets[] | select(.name | test(\"lact-[0-9].*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
+          -O /tmp/lact.rpm
+    fi
+    rpm-ostree install --apply-live -y /tmp/lact.rpm
+    sudo systemctl enable --now lactd
+    rm /tmp/lact.rpm
+    echo 'Complete.'
+
 # Install Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader)
 get-decky:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
     curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
     sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
 
+# Install SimpleDeckyTDP for TDP Control on the Lenovo Legion Go (Requires Decky Loader)
+get-simpledeckytdp:
+    #!/usr/bin/bash
+    if [[ -d $HOME/homebrew/plugins ]]; then
+      sudo rm -rf $HOME/homebrew/plugins/SimpleDeckyTDP
+      curl -L $(curl -s https://api.github.com/repos/aarron-lee/SimpleDeckyTDP/releases/latest | grep "browser_download_url" | cut -d '"' -f 4) -o /tmp/SimpleDeckyTDP.tar.gz
+      sudo tar -xzf /tmp/SimpleDeckyTDP.tar.gz -C $HOME/homebrew/plugins
+      rm /tmp/SimpleDeckyTDP.tar.gz
+    else
+      echo 'Please install Decky Loader by running ujust get-decky first.'
+    fi
+
 # Install EmuDeck (https://www.emudeck.com/)
 get-emudeck:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
     echo 'Retrieving EmuDeck...'
@@ -70,7 +139,7 @@ install-openrazer:
 
 # Install Wootility for configuring Wooting Keyboards
 get-wootility:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
       wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Downloads/wootility.AppImage
       flatpak run it.mijorus.gearlever $HOME/Downloads/wootility.AppImage
@@ -81,14 +150,14 @@ get-wootility:
 
 # Patch a bug in some 32-bit Source 1.x titles that causes them to crash at startup
 patch-source1-tcmalloc:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     echo 'Add the following as a launch option in Steam:'
     echo 'LD_PRELOAD=/usr/lib/libtcmalloc_and_profiler.so.4 %command%'
     echo "Delete libtcmalloc_minimal.so.x in the game's bin folder if present."
 
 # Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModCEFCodecFix)
 patch-gmod:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     mkdir -p /tmp/patch-gmod
     wget \
       $(curl -s https://api.github.com/repos/solsticegamestudios/GModCEFCodecFix/releases/latest | \
@@ -98,55 +167,9 @@ patch-gmod:
     /tmp/patch-gmod/GModCEFCodecFix-Linux
     rm -rf /tmp/patch-gmod
 
-# Activate Valve-inspired Vapor theme on GNOME
-enable-vapor-theme:
-    #!/usr/bin/env bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
-      gsettings set org.gnome.mutter center-new-windows true
-      gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
-      gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-      gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
-      gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/steamdeck/Steam\ Deck\ Logo\ Default.jpg
-      gsettings set org.gnome.desktop.background picture-uri-dark file:///usr/share/backgrounds/steamdeck/Steam\ Deck\ Logo\ Default.jpg
-      gsettings set org.gnome.desktop.wm.preferences titlebar-font "Noto Sans Medium 11"
-      gsettings set org.gnome.desktop.interface document-font-name "Noto Sans 11"
-      gsettings set org.gnome.desktop.interface font-name "Noto Sans 11"
-      gsettings set org.gnome.desktop.sound theme-name "steam"
-      gradience-cli flatpak-overrides -e both
-      gradience-cli apply -p /usr/share/ublue-os/bazzite/themes/vapor.json
-    else 
-      echo "This is only supported under GNOME."
-    fi
-
-# Activate Valve-inspired VGUI2 theme on GNOME
-enable-vgui2-theme:
-    #!/usr/bin/env bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
-      gsettings set org.gnome.mutter center-new-windows true
-      gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
-      gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-      gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
-      gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/steamdeck/VGUI2.jpg
-      gsettings set org.gnome.desktop.background picture-uri-dark file:///usr/share/backgrounds/steamdeck/VGUI2.jpg
-      gsettings set org.gnome.desktop.wm.preferences titlebar-font "Noto Sans Medium 11"
-      gsettings set org.gnome.desktop.interface document-font-name "Noto Sans 11"
-      gsettings set org.gnome.desktop.interface font-name "Noto Sans 11"
-      gsettings set org.gnome.desktop.sound theme-name "steam"
-      gradience-cli flatpak-overrides -e both
-      gradience-cli apply -p /usr/share/ublue-os/bazzite/themes/vgui2.json
-    else 
-      echo "This is only supported under GNOME."
-    fi
-
 # Install Adwaita-for-Steam theme for CSS Loader (https://github.com/tkashkin/Adwaita-for-Steam)
 install-adwaita-for-steam:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
@@ -161,7 +184,7 @@ install-adwaita-for-steam:
 
 # Enable legacy swapfile (Not recommended)
 deckswap-on:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     STATUS=$(systemctl status deckswap.service)
     if grep -q 'inactive' <<< ${STATUS}; then
       systemctl enable --now deckswap.service
@@ -172,7 +195,7 @@ deckswap-on:
 
 # Disable legacy swapfile
 deckswap-off:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     STATUS=$(systemctl status deckswap.service)
     if grep -qv 'inactive' <<< ${STATUS}; then
       systemctl disable --now deckswap.service
@@ -183,7 +206,7 @@ deckswap-off:
 
 # Resize legacy swapfile (Default 1GB, max 16GB)
 resize-deckswap:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     CONFIG='/etc/default/deckswap'
     CURRENT_SIZE=$(cat "${CONFIG}" | grep -q "SWAP_SIZE" | sed 's/SWAP_SIZE=//g')
     echo 'Current size: '${CURRENT_SIZE}
@@ -211,7 +234,7 @@ switch-to-ext4:
 
 # Enable ZRAM (Enabled by default)
 zram-on:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     ublue-update --wait
     KARGS=$(rpm-ostree kargs)
     if grep -q 'zram' <<< ${KARGS}; then
@@ -223,7 +246,7 @@ zram-on:
 
 # Disable ZRAM (Not recommended)
 zram-off:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     ublue-update --wait
     KARGS=$(rpm-ostree kargs)
     if grep -qv 'zram' <<< ${KARGS}; then
@@ -235,7 +258,7 @@ zram-off:
 
 # Resize ZRAM (Default 1GB)
 resize-zram:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     CONFIG='/etc/systemd/zram-generator.conf'
     if grep -q "zram-size" <<< $(cat ${CONFIG}); then
       CURRENT_SIZE=$(cat "${CONFIG}" | grep -q "zram-size" | sed 's/zram-size=//g')
@@ -268,7 +291,7 @@ resize-zram:
 
 # Set system to boot without showing the grub screen with options
 hide-grub:
-    #!/usr/bin/env bash  
+    #!/usr/bin/bash  
     sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
     echo 'GRUB_TIMEOUT_STYLE=hidden' | sudo tee -a /etc/default/grub 1>/dev/null
     echo 'GRUB_HIDDEN_TIMEOUT=3' | sudo tee -a /etc/default/grub 1>/dev/null
@@ -280,7 +303,7 @@ hide-grub:
 
 # Set system to boot with the grub screen showing options (Default)
 unhide-grub:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     sudo sed -i '/GRUB_HIDDEN_TIMEOUT=3/d' /etc/default/grub
     sudo sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub
     sudo sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=5/g' /etc/default/grub
@@ -292,7 +315,7 @@ unhide-grub:
 
 # Install Deck HD BIOS
 install-deckhd-bios:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
     if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
       RESOLUTION=$(sudo lshw -json -c display | jq -r .[]."configuration"."resolution")
@@ -310,7 +333,7 @@ install-deckhd-bios:
 
 # Enable BIOS & Firmware update services for the Steam Deck
 enable-deck-bios-firmware-updates:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
     if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
       RESOLUTION=$(sudo lshw -json -c display | jq -r .[]."configuration"."resolution")
@@ -328,21 +351,21 @@ enable-deck-bios-firmware-updates:
 
 # Disable Steam Deck BIOS updates
 disable-bios-updates:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     sudo systemctl mask --now jupiter-biosupdate.service
 
 # Disable Steam Deck controller firmware updates
 disable-firmware-updates:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     sudo systemctl mask --now jupiter-controller-update.service
 
 # Disable SDGyroDSU
 disable-sdgyrodsu:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     sudo systemctl mask --user sdgyrodsu.service
 
 _toggle_wayland:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     source /etc/default/desktop-wayland
     if ${DESKTOP_WAYLAND}; then
       sudo sed -i 's/true/false/g' /etc/default/desktop-wayland
@@ -360,17 +383,17 @@ fix-screenshare:
 
 # Add user to "input" group required by certain controller drivers
 add-user-to-input-group:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     if ! grep -q "input" /etc/group; then
       sudo bash -c 'grep "input" /lib/group >> /etc/group'
     fi
     sudo usermod -a -G input $USER
 
-# Install Webapp manager
-install-webapp-manager: distrobox-check-fedora
-    distrobox-enter -n fedora -- bash -c "sudo dnf copr enable -y kylegospo/webapp-manager && \
-      sudo dnf install -y webapp-manager && \
-      distrobox-export --app webapp-manager"
+# Re-enable input remapper feature on non-desktop images
+enable-input-remapper:
+    systemctl enable --now input-remapper.service && \
+    cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
+    sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.deskto
 
 # Install Oversteer for Logitech steering wheels
 install-oversteer: distrobox-check-fedora

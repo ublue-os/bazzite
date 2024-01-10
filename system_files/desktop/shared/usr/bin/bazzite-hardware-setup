@@ -1,14 +1,13 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
-BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=18
+HWS_VER=20
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -39,10 +38,10 @@ fi
 # If no rebuild is requested
 if [[ ! -f $INITRAMFS_REBUILD_TRIGGER ]]; then
   # RUN REMAINDER OF SCRIPT ONLY IF UPDATED
-  if [[ -f $HWS_VER_FILE && $HWS_VER = $HWS_VER_RAN ]]; then
+  if [[ -f $HWS_VER_FILE && $HWS_VER = "$HWS_VER_RAN" ]]; then
     if [[ -f $KNOWN_IMAGE_NAME_FILE && -f $KNOWN_IMAGE_FLAVOR_FILE && -f $KNOWN_FEDORA_VERSION_FILE && -f $KNOWN_IMAGE_BRANCH_FILE ]]; then
       # Run script if image has been rebased
-      if [[ $IMAGE_NAME = $KNOWN_IMAGE_NAME && $IMAGE_FLAVOR = $KNOWN_IMAGE_FLAVOR && $FEDORA_VERSION = $KNOWN_FEDORA_VERSION && $IMAGE_BRANCH = $KNOWN_IMAGE_BRANCH ]]; then
+      if [[ $IMAGE_NAME = "$KNOWN_IMAGE_NAME" && $IMAGE_FLAVOR = "$KNOWN_IMAGE_FLAVOR" && $FEDORA_VERSION = "$KNOWN_FEDORA_VERSION" && $IMAGE_BRANCH = "$KNOWN_IMAGE_BRANCH" ]]; then
         echo "Hardware setup has already run. Exiting..."
         exit 0
       fi
@@ -60,7 +59,6 @@ fi
 
 # GLOBAL
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
-GPU_ID=$(lspci -k | grep -A 3 -E "(VGA|3D)")
 MINIMUM_FREE_ZRAM=$(awk '/MemTotal/ {printf "%.0f", $2 * 0.01}' /proc/meminfo)
 CURRENT_FREE_ZRAM=$(sysctl vm.min_free_kbytes | awk '{print $3}')
 KARGS=$(rpm-ostree kargs)
@@ -73,7 +71,7 @@ NEEDS_INITRAMFS_APPLICATION=false
 echo "Current initramfs: $INITRAMFS"
 
 if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
-  NEEDED_INITRAMFS+=("/etc/modprobe.d/nvidia.conf")
+  NEEDED_INITRAMFS+=("/usr/lib/modprobe.d/nvidia.conf")
 else
   NEEDED_INITRAMFS+=("/etc/modprobe.d/amdgpu.conf")
 fi
@@ -125,21 +123,12 @@ if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
       NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
     fi
   fi
-  
-  if [[ $KARGS =~ "simpledrm_platform_driver_init" ]]; then
-    NEEDED_KARGS+=("--delete-if-present=initcall_blacklist=simpledrm_platform_driver_init")
-  fi
-
-  if [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
-    NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
-  fi
 fi
 
-if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:83E1:" =~ ":$SYS_ID:" ]]; then
-  echo "Steam-Patch supported Handheld detected, Checking for needed karg changes"
-
-  if [[ ! $KARGS =~ "iomem" ]]; then
-    NEEDED_KARGS+=("--append-if-missing=iomem=relaxed")
+if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
+  echo "AOKZOE A1 on deck build detected, fixing edid"
+  if [[ ! $KARGS =~ "drm.edid_firmware" ]]; then
+    NEEDED_KARGS+=("--append-if-missing=drm.edid_firmware=eDP-1:edid/aokzoea1ar07_edid.bin")
   fi
 fi
 
@@ -166,22 +155,21 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
       elif [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
         echo "Jupiter with 32GB RAM detected, disabling BIOS updates..."
         systemctl disable --now jupiter-biosupdate.service
-      else
-        echo "Jupiter hardware detected, skipping further setup..."
       fi
-    elif [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
-      echo "Galileo hardware detected, skipping further setup..."
     fi
 
     systemctl enable --now jupiter-fan-control.service
     systemctl enable --now vpower.service
-    systemctl --global enable --now sdgyrodsu.service
   else
     echo "Generic device detected. Performing setup..."
-    if [[ ":ROG Ally RC71L_RC71L:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:83E1:" =~ ":$SYS_ID:" ]]; then
-      echo "HandyGCCS supported handheld detected, enabling handycon & TDP control..."
+    if [[ ":ROG Ally RC71L_RC71L:83E1:" =~ ":$SYS_ID:" ]]; then
+      echo "HHD supported handheld detected, disabling handycon & ds-inhibit..."
+      systemctl disable --now handycon.service
+      systemctl disable --now ds-inhibit.service
+    elif [[ ":AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:Win600:" =~ ":$SYS_ID:" ]]; then
+      echo "HandyGCCS supported handheld detected, enabling handycon & ds-inhibit..."
       systemctl enable --now handycon.service
-      sed -i 's/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=1/g' /etc/default/steam-hardware-control
+      systemctl enable --now ds-inhbit.service
     fi
     systemctl disable --now jupiter-fan-control.service
     systemctl disable --now vpower.service
@@ -189,19 +177,13 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     systemctl disable --now jupiter-controller-update.service
     systemctl disable --now ryzenadj.service
     systemctl disable --now batterylimit.service
-    systemctl --global disable --now sdgyrodsu.service
-
-    if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
-      echo "Lenovo Legion detected. Swapping to X11 by default."
-      sed -i 's/DESKTOP_WAYLAND=true/DESKTOP_WAYLAND=false/g' /etc/default/desktop-wayland
-    fi
   fi
 fi
 
 # FSTAB CONFIGURATION
 if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
   echo "Applying fstab param adjustments"
-  if grep -q '64GB' <<< $(lsblk -o MODEL); then
+  if grep -q '64GB' <<< "$(lsblk -o MODEL)"; then
     echo "64GB eMMC detected"
     sed -i 's/compress=zstd:1/noatime,lazytime,discard=sync,compress-force=zstd:3,space_cache=v2/g' /etc/fstab
   else
@@ -223,14 +205,13 @@ fi
 
 # HOSTNAME FIX
 # If the hostname is too long Distrobox will fail during setup
-# Additonally, Anaconda likes to set the hostname to be the ipv6 address
 # Let's check the length and reset it to something sensible if that happens.
 if (( $(hostname | wc -m) > 16 )); then
   hostnamectl set-hostname bazzite
 fi
 
 # Set default target to graphical, fixes rebase from base image
-if grep -qv "graphical.target" <<< $(systemctl get-default); then
+if grep -qv "graphical.target" <<< "$(systemctl get-default)"; then
   systemctl set-default graphical.target
 fi
 
