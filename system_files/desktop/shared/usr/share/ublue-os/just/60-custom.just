@@ -22,23 +22,33 @@ configure-waydroid:
 
 # Install LACT for overclocking & undervolting AMD GPUs
 install-lact:
-    echo 'Installing LACT...'
+    #!/usr/bin/bash
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
     ublue-update --wait
-    wget \
-      $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
-      jq -r ".assets[] | select(.name | test(\"lact-.*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
-      -O /tmp/lact.rpm
-    rpm-ostree install /tmp/lact.rpm
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+        echo 'Installing LACT Libadwaita...'
+        wget \
+          $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
+          jq -r ".assets[] | select(.name | test(\"lact-libadwaita.*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
+          -O /tmp/lact.rpm
+    else
+        echo 'Installing LACT...'
+        wget \
+          $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
+          jq -r ".assets[] | select(.name | test(\"lact-[0-9].*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
+          -O /tmp/lact.rpm
+    fi
+    rpm-ostree install --apply-live -y /tmp/lact.rpm
+    sudo systemctl enable --now lactd
     rm /tmp/lact.rpm
-    echo 'Setting needed kargs for LACT...'
-    rpm-ostree kargs --append="amdgpu.ppfeaturemask=0xffffffff"
-    echo 'Done. Be sure to enable LACT with sudo systemctl enable --now lactd after you reboot.'
+    echo 'Complete.'
 
 # Install OpenRazer for Razer gaming hardware
 install-openrazer:
     sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo && \
     ublue-update --wait && \
-    rpm-ostree install openrazer-meta razergenie && \
+    rpm-ostree install -y openrazer-meta razergenie && \
     if ! grep -q "plugdev" /etc/group; then \
       sudo bash -c 'grep "plugdev" /lib/group >> /etc/group' \
     ; fi && \
@@ -197,7 +207,7 @@ enable-virtualization:
     virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
     if [[ -z ${virt_test} ]]; then
       echo "Installing QEMU and virt-manager..."
-      rpm-ostree install virt-manager edk2-ovmf qemu
+      rpm-ostree install -y virt-manager edk2-ovmf qemu
       rpm-ostree kargs \
       --append-if-missing="kvm.ignore_msrs=1" \
       --append-if-missing="kvm.report_ignored_msrs=0"
