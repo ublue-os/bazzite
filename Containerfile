@@ -384,6 +384,7 @@ RUN /tmp/image-info.sh && \
     systemctl enable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
     systemctl --global enable bazzite-user-setup.service && \
+    systemctl --global enable podman.socket && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sed -i '/^PRETTY_NAME/s/Kinoite/Bazzite/' /usr/lib/os-release && \
         systemctl --global enable com.system76.Scheduler.dbusproxy.service \
