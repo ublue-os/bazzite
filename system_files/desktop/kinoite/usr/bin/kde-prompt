@@ -4,9 +4,8 @@
 args=("${@//-e/--}")
  
 # Dolphin integration requires --new-window to function properly
-unshift() { local -n ary=$1; shift; ary=("$@" "${ary[@]}"); }
 if [[ ! "${args[@]}" =~ "--" && ! "${args[@]}" =~ "-h" && ! "${args[@]}" =~ "-x" ]]; then
-        unshift args "--new-window"
+        /usr/bin/prompt --new-window "${args[@]}"
+else
+        /usr/bin/prompt "${args[@]}"
 fi
- 
-/usr/bin/prompt "${args[@]}"
