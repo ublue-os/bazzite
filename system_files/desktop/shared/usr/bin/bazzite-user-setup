@@ -57,14 +57,22 @@ if [[ ! -f "$GRADIENCE_DIR/vgui2.json" ]]; then
   cp "$THEME_DIR/vgui2.json" "$GRADIENCE_DIR/vgui2.json"
 fi
 
+# Initialize Prompt config
+# This is intentionally run on both images to ensure a user rebasing from Silverblue to Kinoite
+# doesn't get their Prompt config wiped out.
+echo 'Configuring Prompt'
+if [[ ! -f "$BAZZITE_CONFIG_DIR/prompt-initialized" ]]; then
+  if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+    dconf load / < /etc/dconf/db/local.d/02-bazzite-kde
+  fi
+  touch "$BAZZITE_CONFIG_DIR/prompt-initialized"
+fi
+
 if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   echo 'Running setup for Kinoite'
 
   echo 'Enabling System76-Scheduler KWin script'
   kwriteconfig5 --file kwinrc --group Plugins --key kwin-system76-scheduler-integrationEnabled true
-
-  echo 'Configuring Prompt'
-  dconf load / < /etc/dconf/db/local.d/02-bazzite-kde
 
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Kinoite on Steam Deck'
