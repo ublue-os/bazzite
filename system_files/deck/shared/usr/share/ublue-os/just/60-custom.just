@@ -8,6 +8,21 @@ toggle-autologin:
       sudo touch $DESKTOP_AUTOLOGIN
     fi
 
+# Restore the default Terminal
+restore-original-terminal:
+    #!/usr/bin/bash
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+        rm -f $HOME/.local/share/applications/org.gnome.Terminal.desktop
+        cp /usr/share/applications/org.gnome.Terminal.desktop $HOME/.local/share/applications/org.gnome.Terminal.desktop
+        sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.gnome.Terminal.desktop
+    else
+        rm -f $HOME/.local/share/applications/org.kde.konsole.desktop
+        cp /usr/share/applications/org.gnome.Terminal.desktop $HOME/.local/share/applications/org.kde.konsole.desktop
+        sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.kde.konsole.desktop
+    fi
+
 # Remove all waydroid-related files in your user folders
 reset-waydroid:
     bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
