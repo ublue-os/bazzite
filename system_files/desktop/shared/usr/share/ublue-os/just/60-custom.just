@@ -514,6 +514,10 @@ restore-bazzite-breeze-gtk-theme:
     cp /usr/etc/skel/.config/gtk-4.0/gtk.css $HOME/.config/gtk-4.0/gtk.css
     cp /usr/etc/skel/.config/gtk-4.0/kde_window_geometry.css $HOME/.config/gtk-4.0/kde_window_geometry.css
 
+# Blacklist K10 Temp and switch to Zenpower3
+switch-to-zenpower:
+    sudo bash -c 'sudo echo -e "\n# replaced with zenpower\nblacklist k10temp" >> /etc/modprobe.d/amdcpu.conf'
+
 # Restore Bazzite customized DE settings (GNOME only)
 restore-gnome-de-settings:
     #!/usr/bin/bash
