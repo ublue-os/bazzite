@@ -288,6 +288,15 @@ These images are signed with sigstore's [cosign](https://docs.sigstore.dev/cosig
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 ```
 
+## Secure Boot
+
+Secure boot is supported with our custom key. The pub key can be found in the root of this repository [here](https://github.com/ublue-os/bazzite/blob/main/secure_boot_key.der).
+If you'd like to enroll this key prior to installation, download the key and run the following:
+
+```bash
+sudo mokutil --import secure_boot_key.der
+```
+
 ### Contributor Metrics
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")

@@ -1,7 +1,7 @@
 From 4df5f53e64568e6e89bb98bd30ee9c61056ff1d5 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 6 Oct 2023 17:22:41 -0500
-Subject: [PATCH 1/8] Add initial rotation atom controls
+Subject: [PATCH 1/9] Add initial rotation atom controls
 
 ---
  src/drm.cpp          | 42 ++++++++++++++++++++++++++++++++++++++++++
@@ -182,7 +182,7 @@ index 5764c4b..6231007 100644
 From b5e4f4a86489d5c532befa98f9b07ac3fa24e8f8 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sat, 7 Oct 2023 10:38:09 -0500
-Subject: [PATCH 2/8] Flag drm_out_of_date to ensure rotation logic gets reset
+Subject: [PATCH 2/9] Flag drm_out_of_date to ensure rotation logic gets reset
 
 ---
  src/steamcompmgr.cpp | 1 +
@@ -207,7 +207,7 @@ index 277a54c..236bba4 100644
 From c96169787802b2c6219538d7fd2d41c5cba4bd5e Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Tue, 25 Apr 2023 06:45:01 -0500
-Subject: [PATCH 3/8] Add --force-panel-type and --force-external-orientation
+Subject: [PATCH 3/9] Add --force-panel-type and --force-external-orientation
  arguments (#2)
 
 * Add --force-panel-type and --force-external-orientation arguments.
@@ -422,7 +422,7 @@ index 76721d6..f6ba34f 100644
 From 03fcf2bbc63d933f06279e5cb6cba32969ba93a9 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Tue, 25 Jul 2023 18:05:05 -0500
-Subject: [PATCH 4/8] Set default to native resolution of display if Steam
+Subject: [PATCH 4/9] Set default to native resolution of display if Steam
  tries to force 720p/800p
 
 You can select 720p/800p still in game or via Steam's resolution setting
@@ -459,7 +459,7 @@ index 236bba4..60f9828 100644
 From fb4e8f3671784e99b61a39a110c64433212ebf0c Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Wed, 26 Jul 2023 20:46:29 -0500
-Subject: [PATCH 5/8] Fix internal display touchscreen orientation when it's
+Subject: [PATCH 5/9] Fix internal display touchscreen orientation when it's
  forced
 
 ---
@@ -554,7 +554,7 @@ index 3fbc4ff..dc37f97 100644
 From 3f29efe4a5ccbd0bb621cc59df94e70e4666d935 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 6 Oct 2023 23:58:17 -0500
-Subject: [PATCH 6/8] Add initial display selection atom
+Subject: [PATCH 6/9] Add initial display selection atom
 
 ---
  src/drm.cpp          | 20 +++++++++++++
@@ -726,7 +726,7 @@ index 6231007..9dbc544 100644
 From de09101c507e4882b28d03056a047cbd92c68231 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Mon, 9 Oct 2023 11:21:11 -0500
-Subject: [PATCH 7/8] Use sysfs connector_ids for target device selection.
+Subject: [PATCH 7/9] Use sysfs connector_ids for target device selection.
 
 ---
  src/drm.cpp          | 14 +++--------
@@ -869,7 +869,7 @@ index aeef706..9a3f495 100644
 From 35345954588044a3cd48eb35ce2664e9576c68e6 Mon Sep 17 00:00:00 2001
 From: Lionel Landwerlin <lionel.g.landwerlin@intel.com>
 Date: Thu, 14 Dec 2023 16:13:22 +0200
-Subject: [PATCH 8/8] renderervulkan: only consider modifiers support all the
+Subject: [PATCH 8/9] renderervulkan: only consider modifiers support all the
  image properties
 
 If you have a modifier with image compression that is only support for
@@ -976,6 +976,60 @@ index 8940b77..936c1d6 100644
  		if ( ( modifierProps[j].drmFormatModifierTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT ) == 0 )
  		{
  			continue;
+-- 
+2.42.0
+
+
+From 051fcd47c74de31954e11f6cb11fd300fed6fa7b Mon Sep 17 00:00:00 2001
+From: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
+Date: Wed, 3 Jan 2024 17:03:04 +0100
+Subject: [PATCH 9/9] remove hacky texture
+
+This will use more hardware planes, causing some devices to composite yeilding lower framerates
+---
+ src/steamcompmgr.cpp | 29 -----------------------------
+ 1 file changed, 29 deletions(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 9a3f495..9e7eee5 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -2540,35 +2540,6 @@ paint_all(bool async)
+ 		if ( overlay == global_focus.inputFocusWindow )
+ 			update_touch_scaling( &frameInfo );
+ 	}
+-	else
+-	{
+-		auto tex = vulkan_get_hacky_blank_texture();
+-		if ( !BIsNested() && tex != nullptr )
+-		{
+-			// HACK! HACK HACK HACK
+-			// To avoid stutter when toggling the overlay on 
+-			int curLayer = frameInfo.layerCount++;
+-
+-			FrameInfo_t::Layer_t *layer = &frameInfo.layers[ curLayer ];
+-
+-
+-			layer->scale.x = g_nOutputWidth == tex->width() ? 1.0f : tex->width() / (float)g_nOutputWidth;
+-			layer->scale.y = g_nOutputHeight == tex->height() ? 1.0f : tex->height() / (float)g_nOutputHeight;
+-			layer->offset.x = 0.0f;
+-			layer->offset.y = 0.0f;
+-			layer->opacity = 1.0f; // BLAH
+-			layer->zpos = g_zposOverlay;
+-			layer->applyColorMgmt = g_ColorMgmt.pending.enabled;
+-
+-			layer->colorspace = GAMESCOPE_APP_TEXTURE_COLORSPACE_LINEAR;
+-			layer->ctm = nullptr;
+-			layer->tex = tex;
+-			layer->fbid = tex->fbid();
+-
+-			layer->filter = GamescopeUpscaleFilter::NEAREST;
+-			layer->blackBorder = true;
+-		}
+-	}
+ 
+ 	if (notification)
+ 	{
 -- 
 2.42.0
 
