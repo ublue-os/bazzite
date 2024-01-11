@@ -106,6 +106,18 @@ get-simpledeckytdp:
       echo 'Please install Decky Loader by running ujust get-decky first.'
     fi
 
+# Install HHD Decky Plugin for controlling input on the Lenovo Legion Go and ASUS Ally
+get-hhd-decky:
+    #!/usr/bin/bash
+    if [[ -d $HOME/homebrew/plugins ]]; then
+      sudo rm -rf $HOME/homebrew/plugins/hhd-decky
+      curl -L $(curl -s https://api.github.com/repos/hhd-dev/hhd-decky/releases/latest | grep "browser_download_url" | cut -d '"' -f 4) -o /tmp/hhd-decky.tar.gz
+      sudo tar -xzf /tmp/hhd-decky.tar.gz -C $HOME/homebrew/plugins
+      rm /tmp/hhd-decky.tar.gz
+    else
+      echo 'Please install Decky Loader by running ujust get-decky first.'
+    fi
+
 # Install EmuDeck (https://www.emudeck.com/)
 get-emudeck:
     #!/usr/bin/bash
