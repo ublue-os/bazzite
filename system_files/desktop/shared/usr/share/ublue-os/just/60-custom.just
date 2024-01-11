@@ -507,6 +507,31 @@ remove-virtual-surround-71:
     rm ~/.config/pipewire/hrir_hesuvi/Control_Room_1.wav
     echo "Virtual Surround 7.1 removed, please reboot or restart pipewire for it to take effect."
 
+# Restore Bazzite customized DE settings (GNOME only)
+restore-gnome-de-settings:
+    #!/usr/bin/bash
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+      dconf load / < /usr/etc/dconf/db/local.d/02-bazzite-global
+      dconf load / < /usr/etc/dconf/db/local.d/03-bazzite-dash
+      dconf load / < /usr/etc/dconf/db/local.d/05-bazzite-extensions
+      dconf load / < /usr/etc/dconf/db/local.d/06-bazzite-theme
+    else
+      echo 'This command may only be used on GNOME.'
+    fi
+
+# Restore Bazzite customized applications folders (GNOME only)
+restore-gnome-folders:
+    #!/usr/bin/bash
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+      dconf load / < /usr/etc/dconf/db/local.d/04-bazzite-folders
+    else
+      echo 'This command may only be used on GNOME.'
+    fi
+
 # Create fedora distrobox if it doesn't exist
 [private]
 distrobox-check-fedora:
