@@ -441,6 +441,13 @@ install-opentabletdriver:
     systemctl enable --user --now arch-opentabletdriver.service && \
     distrobox enter -n arch -- 'distrobox-export --app otd-gui'
 
+# Restore Bazzite Breeze GTK4 theme (KDE Only)
+restore-bazzite-breeze-gtk-theme:
+    rm -f $HOME/.config/gtk-4.0/gtk.css
+    rm -f $HOME/.config/gtk-4.0/kde_window_geometry.css
+    cp /usr/etc/skel/.config/gtk-4.0/gtk.css $HOME/.config/gtk-4.0/gtk.css
+    cp /usr/etc/skel/.config/gtk-4.0/kde_window_geometry.css $HOME/.config/gtk-4.0/kde_window_geometry.css
+
 # Restore Bazzite customized DE settings (GNOME only)
 restore-gnome-de-settings:
     #!/usr/bin/bash

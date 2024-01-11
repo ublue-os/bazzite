@@ -507,6 +507,13 @@ remove-virtual-surround-71:
     rm ~/.config/pipewire/hrir_hesuvi/Control_Room_1.wav
     echo "Virtual Surround 7.1 removed, please reboot or restart pipewire for it to take effect."
 
+# Restore Bazzite Breeze GTK4 theme (KDE Only)
+restore-bazzite-breeze-gtk-theme:
+    rm -f $HOME/.config/gtk-4.0/gtk.css
+    rm -f $HOME/.config/gtk-4.0/kde_window_geometry.css
+    cp /usr/etc/skel/.config/gtk-4.0/gtk.css $HOME/.config/gtk-4.0/gtk.css
+    cp /usr/etc/skel/.config/gtk-4.0/kde_window_geometry.css $HOME/.config/gtk-4.0/kde_window_geometry.css
+
 # Restore Bazzite customized DE settings (GNOME only)
 restore-gnome-de-settings:
     #!/usr/bin/bash
