@@ -17,6 +17,7 @@
 - [Mira como luce Bazzite (Capturas de Pantalla)](https://github.com/ublue-os/bazzite#showcase)
 - [Documentación y Boletín informativo/Newsletters (En inglés)](https://github.com/ublue-os/bazzite#documentation--newsletters)
 - [Paquetes Personalizados](https://github.com/ublue-os/bazzite#custom-packages)
+- [Arranque Seguro (Secure Boot)](https://github.com/ublue-os/bazzite#secure-boot)
 - [Verificación y Métricas](https://github.com/ublue-os/bazzite#verification)
 - [Gracias Especiales](https://github.com/ublue-os/bazzite#special-thanks)
 - [Créalo tu Mismo](https://github.com/ublue-os/bazzite#build-your-own)
@@ -32,17 +33,22 @@ otras computadoras portátiles.
 
 Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue-os/nvidia](https://github.com/ublue-os/nvidia) usando tecnología de [Fedora](https://fedoraproject.org/), lo que significa un soporte expandido de hardware y drivers incluidos. Adicionalmente, Bazzite añade las siguientes características:
 
+- Utilizamos el [kernel fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) para obtener compatibilidad con HDR (alto rango dinámico) y un soporte expandido de hardware, además de otra gran cantidad de parches incluidos.
+- HDR esta disponible en la sesión de Gamescope.
 - Drivers propietarios de NVIDIA pre-instalados.
+- El nuevo driver de Vulkan, NVK, esta disponibles en imágenes sin el driver proprietario de NVIDIA.
 - Soporte total de decodificación acelerada por hardware del codec de video H264.
 - Soporte completo para los tiempos de ejecución (runtimes) de ROCM OpenCL/HIP de AMD
 - Drivers [xone](https://github.com/medusalix/xone), [xpadneo](https://github.com/atar-axis/xpadneo), y [xpad-noone](https://github.com/ublue-os/xpad-noone) para mandos de videojuegos de Xbox.
 - Soporte completo de [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Incluye los temas para KDE de SteamOS, hechos por Valve.
+- También se incluyen temas opcionales de GTK3/4 inspirados en Valve, que igualan a los temas Vapor y VGUI2 de SteamOS. Para poderlos utilizar, solo tienes que instalar [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience).
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), y [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) instalados y disponibles por defecto.
 - Soporte para [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Solo en KDE)</sup></sub>
 - Incluida la [extensión de la shell para mostrar las propiedades de ROMs](https://github.com/GerbilSoft/rom-properties) (usados para la emulación de consolas) en el navegador de archivos.
 - Soporte completo para [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - [Distrobox](https://github.com/89luca89/distrobox) pre-instalado con actualizaciones automáticas para los contenedores creados.
+- Se usa por defecto la [terminal Prompt](https://gitlab.gnome.org/chergert/prompt) en todas las imágenes. Esta terminal esta especificamente diseñada para el flujo de trabajo basado en contenedores que usamos en Bazzite. Si deseas regresar a como estaba antes, simplemente ejecuta el siguiente comando en una terminal: `ujust restore-original-terminal`
 - Servicios automatizados `duperemove` y `rmlint` incluidos para reducir el espacio de disco utilizados por los contenidos de los prefijos de WINE.
 - Soporte de HDMI CEC (para poder controlar todos los dispositivos conectados por HDMI) usando [libCEC](https://libcec.pulse-eight.com/).
 - [System76-Scheduler](https://github.com/pop-os/system76-scheduler) pre-instalado, proveyendo ajustes automáticos de la prioridad de procesos a tu aplicación actualmente en uso, manteniendo al mínimo el tiempo que tu procesador (CPU) trabaja con procesos de fondo.
@@ -102,6 +108,7 @@ Esta variante esta diseñada para usarse como una alternativa de SteamOS en la S
 - **Habilidad de arrancar el sistema incluso si el disco esta lleno.**
 - **Soporte para cada uno de los lenguajes directamente soportados por Fedora (upstream).**
 - **Uso del servidor gráfico Wayland en el escritorio con [soporte para Steam input](https://github.com/Supreeeme/extest).**
+- Se incluye [HHD](https://github.com/hhd-dev/hhd) y [HandyGCCS](https://github.com/ShadowBlip/HandyGCCS) para expander el soporte de los mandos de videojuegos integrados en otras computadoras handheld que no sean de Valve
 - Incluye versiones portadas de la mayoría de los paquetes de SteamOS, incluyendo drivers, actualizadores de firmware y controladores de ventiladores [del repositorio de evlaV](https://gitlab.com/evlaV).
 - Version parchada de Mesa para controlar correctamente la tasa de fotogramas (framerate) usando Gamescope.
 - Incluye los parches de [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) por defecto, los cuales proveen soporte completo del sistema de archivos BTRFS para tarjetas SD.
@@ -146,7 +153,6 @@ Las sub-variantes con el entorno de escritorio GNOME están disponibles tanto pa
 - [Soporte tanto para pantallas con tasa de refresco variable y como para la escala fraccional de la interfaz de usuario bajo el servidor gráfico Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
 - Menú personalizado en la barra superior para regresar al modo de juego (gamemode), lanzar Steam, y para abrir otras utilidades.
 - [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/), la versión de KDE Connect para GNOME, viene pre-instalado y listo para usarse.
-- Incluye temas opcionales inspirados en el software de Valve, emulando la interfaz de SteamOS, Vapor, y la interfaz de los primeros juegos que usaban el motor gráfico Source, VGUI2.
 - La [extension Hanabi](https://github.com/jeffshee/gnome-ext-hanabi) viene incluida, la cual ofrece características similares al Wallpaper Engine en KDE.
 - Numerosas extensiones opcionales pre-instaladas, incluyendo [importantísimos parches para una mejor experiencia del usuario](https://www.youtube.com/watch?v=nbCg9_YgKgM).
 - Actualizaciones automáticas para el [tema de GNOME para Firefox](https://github.com/rafaelmardojai/firefox-gnome-theme) y el [tema de GNOME para Thunderbird](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(Si se encuentran instalados)</sub></sup>
@@ -305,6 +311,17 @@ Estas imágenes son firmadas digitalmente con [cosign](https://docs.sigstore.dev
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
+```
+
+## Arranque Seguro (Secure Boot)
+
+El Arranque Seguro (Secure Boot) tiene soporte gracias a nuestra llave digital personalizada. La llave pública puede encontrarse en la raíz de [este](https://github.com/ublue-os/bazzite/blob/main/secure_boot_key.der) repositorio.
+
+
+Si gustas registrar esta llave antes de instalar Bazzite, descarga la llave y ejecuta el siguiente comando en una terminal:
+
+```bash
+sudo mokutil --import secure_boot_key.der
 ```
 
 ### Métricas de Contribución

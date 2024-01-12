@@ -55,6 +55,11 @@ screens:
           default: true
           packages:
           - Hide GRUB: sudo -A ujust hide-grub
+        Install Game Mode Startup Video:
+          description: Adds a Bazzite themed startup video for Steam's game mode.
+          default: true
+          packages:
+          - Install Video: ujust install-gamemode-video
         Legacy Memory Configuration (Not recommended):
           description: Disable ZRAM and enable adjustable swap file, defaults to 1GB.
           default: false
