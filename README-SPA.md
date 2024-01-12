@@ -212,7 +212,7 @@ A pesar que este proyecto también esta basado en imágenes, tienes la capacidad
 
 Bazzite se entrega con el kernel de Linux mas nuevo y SELinux esta habilitado por defecto con soporte completo de Secure Boot <sub><sup>(Ejecuta el comando `ujust enroll-secure-boot-key` en una terminal e introduce la contraseña  `ublue-os` si es requerido para registrar nuestra llave de seguridad)</sup></sub>, además de soporte para la encriptación completa de tu disco, lo que convierte a Bazzite una opción razonable para la informática general. <sup><sub>(Así es, puedes mandar a imprimir el último reporte financiero de tu empresa con Bazzite)</sub></sup>
 
-Lee nuestras [preguntas frecuentes (en inglés)](https://universal-blue.discourse.group/docs?topic=33) para saber más en lo que hace a Bazzite sobresalir de otras distribuciones de GNU Linux.
+Lee nuestras [preguntas frecuentes](https://universal-blue.discourse.group/docs?topic=411) para saber más en lo que hace a Bazzite sobresalir de otras distribuciones de GNU Linux.
 
 ## Mira como luce Bazzite (Capturas de Pantalla)
 
