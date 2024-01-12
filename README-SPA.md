@@ -333,6 +333,7 @@ sudo mokutil --import secure_boot_key.der
 Bazzite es producto de esfuerzo comunitario, y no existiría sin la contribución de todos. A continuación, están listadas unas cuantas personas que nos han ayudado a lo largo del camino:
 
 - [rei.svg](https://github.com/reisvg) - Por crear nuestro logo, y en general, nuestro branding.
+- [SuperRiderTH](https://github.com/SuperRiderTH) - Por crear nuestro lindo video de arranque al iniciar el Game Mode de Steam.
 - [evlaV](https://gitlab.com/evlaV) - Por ser [esta persona](https://xkcd.com/2347/) y liberar el código de Valve públicamente.
 - [ChimeraOS](https://chimeraos.org/) - Por la creación de gamescope-session y su invaluable apoyo a lo largo del camino.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - Por brindarnos su soporte con problemas técnicos y por crear un proyecto similar. ¡En serio!, [chécalo](https://github.com/Jovian-Experiments/Jovian-NixOS), es nuestro primo basado en Nix.
