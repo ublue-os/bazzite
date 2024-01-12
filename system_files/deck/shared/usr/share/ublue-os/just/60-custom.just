@@ -10,9 +10,9 @@ toggle-autologin:
 
 # Install Bazzite's Steam Game Mode Startup Video
 install-gamemode-video:
-    mkdir -p $HOME/.steam/root/config/uioverrides/movies/deck_startup.webm
-    rm -f $HOME/.steam/root/config/uioverrides/movies/deck_startup.webm
-    ln -s /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.steam/root/config/uioverrides/movies/deck_startup.webm
+    mkdir -p $HOME/.local/share/Steam/config/uioverrides/movies
+    rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
+    ln -s /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
 
 # Restore the default Terminal
 restore-original-terminal:
