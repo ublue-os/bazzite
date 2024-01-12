@@ -6,19 +6,19 @@
 
 ---
 # Daftar Isi
-- [Fitur untuk **SEMUA** Image Bazzite](https://github.com/ublue-os/bazzite#about--features)
-  - [Fitur untuk Image **Desktop** ](https://github.com/ublue-os/bazzite#desktop)
-  - [Fitur untuk Image **Steam Deck / HTPC**](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
-  - [Fitur untuk Image **GNOME** ](https://github.com/ublue-os/bazzite#gnome)
-  - [Fitur dari upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
-- [Alasan](https://github.com/ublue-os/bazzite#why)
-- [Showcase](https://github.com/ublue-os/bazzite#showcase)
-- [Dokumentasi & Buletin](https://github.com/ublue-os/bazzite#documentation--newsletters)
-- [Paket Kustom](https://github.com/ublue-os/bazzite#custom-packages)
-- [Verifikasi & Metrik](https://github.com/ublue-os/bazzite#verification)
-- [Ucapan Terimakasih](https://github.com/ublue-os/bazzite#special-thanks)
-- [Membuat Image Anda Sendiri](https://github.com/ublue-os/bazzite#build-your-own)
-- [Komunitas](https://github.com/ublue-os/bazzite#join-the-community)
+- [Fitur untuk **SEMUA** Image Bazzite](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#tentang--fitur)
+  - [Fitur untuk Image **Desktop** ](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#desktop)
+  - [Fitur untuk Image **Steam Deck / HTPC**](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#steam-deckhome-theater-pcs-htpcs)
+  - [Fitur untuk Image **GNOME** ](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#gnome)
+  - [Fitur dari upstream](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#fitur-dari-upstream)
+- [Alasan](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#alasan)
+- [Pameran](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#pameran)
+- [Dokumentasi & Buletin](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#dokumentasi--buletin)
+- [Paket Kustom](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#paket-kustom)
+- [Verifikasi & Metrik](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#paket-kustom)
+- [Ucapan Terimakasih](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#ucapan-terimakasih)
+- [Membuat Image Anda Sendiri](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#membuat-image-anda-sendiri)
+- [Komunitas](https://github.com/ublue-os/bazzite/blob/main/README-ID.md#bergabung-dengan-komunitas)
 ---
 
 ## Tentang & Fitur
@@ -35,13 +35,13 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Dukungan untuk [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Hanya ada di KDE)</sup></sub>
 - Disediakan [Ekstensi shell untuk ROM Properties Page ](https://github.com/GerbilSoft/rom-properties).
 - Dukungan penuh untuk [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
-- Pra-install [Distrobox](https://github.com/89luca89/distrobox) preinstalled dengan update otomatis untuk kontainer yang dibuat.
-- Otomatisasi layanan `duperemove` dan `rmlint`untuk mengurangi penggunaan penyimpanan yang digunakan untuk konten prefix wine.
+- Pra-install [Distrobox](https://github.com/89luca89/distrobox) dengan update otomatis untuk kontainer yang dibuat.
+- Otomatisasi layanan `duperemove` dan `rmlint`untuk mengurangi penggunaan penyimpanan yang digunakan prefix wine.
 - Dukungan untuk HDMI CEC dengan [libCEC](https://libcec.pulse-eight.com/).
-- Pra-install [System76-Scheduler](https://github.com/pop-os/system76-scheduler), menyediakan otomatisasi providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
+- Pra-install [System76-Scheduler](https://github.com/pop-os/system76-scheduler), menyediakan otomatisasi dan oprekan untuk proses yang berjalan dilatar belakang, serta meminimalkan CPU untuk proses latar belakang.
 - Menkustomisasi konfigurasi System76-Scheduler dengan aturan tambahan.
 - Menggunakan [Google's BBR TCP congestion control](https://github.com/google/bbr) secara bawaan.
-- Pra-install[Input Remapper](https://github.com/sezanzeb/input-remapper) dan diaktifkan secara bawaan. <sub><sup>(Dimatikan secara bawaan di varian Deck tapi tersedia dan dapat diaktifkan dengan `ujust enable-input-remapper`)</sup></sub>
+- Pra-install [Input Remapper](https://github.com/sezanzeb/input-remapper) dan diaktifkan secara bawaan. <sub><sup>(Dinonaktifkan secara bawaan di varian Deck tapi tersedia dan dapat diaktifkan dengan `ujust enable-input-remapper`)</sup></sub>
 - Portal Bazzite menyediakan cara mudah untuk menginstall berbagai macam aplikasi dan oprekan, termasuk menginstall [LACT](https://github.com/ilya-zlobintsev/LACT) dan [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
 - Manajemen paket [Nix](https://nixos.org/) dengan [Fleek](https://getfleek.dev/) tersedia secara optional dan dapat diinstall dengan `ujust`.
 - Manajemen paket [Brew](https://brew.sh/) tersedia secara optional dan dapat diinstall dengan Portal Bazzite.
@@ -49,13 +49,13 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Mengatur aplikasi dengan [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), dan [Gear Lever](https://github.com/mijorus/gearlever).
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) driver i2c-piix4 dan i2c-nct6775 untuk mengatur RGB di beberapa jenis motherboard. 
 - Disediakan secara bawaan driver [OpenRazer](https://openrazer.github.io), Pilih OpenRazer di portal bazzite atau jalankan perintah `ujust install-openrazer` diterminal untuk menggunakannya.
-- Disediakan secara bawaan [OpenTabletDriver](https://opentabletdriver.net/) udev rules , dengan perangkat lunaknya yang dapat diinstall dengan portal bazzite atau dengan mengetikkan `ujust install-opentabletdriver` di terminal.
-- Driver [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) untuk men-overclocking Kontroller Gamecube Nintendo sampai dengan 1000hz polling.
+- Disediakan secara bawaan [OpenTabletDriver](https://opentabletdriver.net/) udev rules, dengan perangkat lunaknya yang dapat dipasang dengan portal bazzite atau dengan mengetikkan `ujust install-opentabletdriver` di terminal.
+- Driver [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) untuk men-overclocking Kontroller Nintendo Gamecube sampai dengan 1000hz polling.
 - Dukungan untuk keyboard [Wooting](https://wooting.io/).
-- Dukungan untuk kartu grafis Southern Islands <sub><sup>(HD 7000)</sup></sub> and Sea Islands <sub><sup>(HD 8000)</sup></sub> AMD GPUs dengan driver `amdgpu`.
+- Dukungan untuk kartu grafis Southern Islands <sub><sup>(HD 7000)</sup></sub> and Sea Islands <sub><sup>(HD 8000)</sup></sub> dengan driver `amdgpu`.
 - Memperbaiki masalah untuk [game yang menggunakan engine Source 1 <sub><sup>(Contoh: TF2)</sup></sub>](https://github.com/ValveSoftware/Source-1-Games/issues/5043) yang membuat game-nya crash saat dijalankan `ujust patch-source1-tcmalloc`
 - [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) untuk Discord screensharing di Wayland.
-- [Webapp Manager](https://github.com/linuxmint/webapp-manager) tersedia untuk membuat aplikasi dari situs web dengan berbagai macam peramban,  termasuk Firefox.
+- [Webapp Manager](https://github.com/linuxmint/webapp-manager) tersedia untuk membuat aplikasi dari situs web dengan berbagai macam peramban, termasuk Firefox.
   
 ### Desktop
 
@@ -86,28 +86,28 @@ Perangkat yang bukan Steam Deck masih bisa menggunakan image bazzite-deck, tetap
 Varian `bazzite-deck` ini didesain untuk digunakan sebagai alternatif untuk SteamOS di perangkat Steam Deck dan HTPC dengan pengalaman seperti konsol:
 
 - Langsung boot ke Gamemode seperti SteamOS.
-- **Automatic `duperemove` greatly trims the size of compatdata.**
-- **Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.**
-- **Able to be booted even if the drive is full.**
-- **Support for every language supported by upstream Fedora.**
+- **`duperemove` secara otomatis yang berguna untuk mengurangi ukuran folder compatdata.**
+- **Versi terbaru dari Mesa yang menghasilkan ukuran shaders cache yang lebih kecil dan tidak diperlukan lagi untuk mencegah stutter.**
+- **Langsung bisa booting walaupun diska penuh.**
+- **Dukungan untuk setiap bahasa yang disupport oleh Fedora.**
 - **Menggunakan Wayland di desktop dengan [dukungan untuk Steam input](https://github.com/Supreeeme/extest).**
 - Fitur yang diporting dari SteamOS meliputi driver, pembaruan perangkat tegar, dan pengatur kecepatan kipas [dari repositori evlaV ](https://gitlab.com/evlaV).
 - Mesa yang dipatch untuk mengatur framerate di Gamescope.
 - Hadir dengan patch dari [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) untuk dukungan BTRFS di SD Card secara bawaan.
 - [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU) tersedia dan diaktifkan secara bawaan.
 - Pilihan untuk menginstall [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), dan [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), serta berbagai macam paket/aplikasi yang berguna selama pemasangan.
-- Sistem pembaruan kustom memungkinkan Sistem Operasi,Flatpal,Paket Nix<sup><sub>(dengan fleek)</sub></sup>, dan Distrobox image untuk diupdate dari Gamemode UI.
+- Sistem pembaruan kustom memungkinkan Sistem Operasi,Flatpak,Paket Nix<sup><sub>(dengan fleek)</sub></sup>, dan Distrobox image untuk diupdate dari Gamemode UI.
 - Dukungan untuk dual-boot dengan Windows karena GRUB dari Fedora.
-- Pembaruan merusak sesuatu? tinggal rollback ke versi sebelumnya berkat fitur rollback`rpm-ostree`. Anda bisa memilih versi image sebelumnya di boot menuY.
+- Pembaruan merusak sesuatu? tinggal rollback ke versi sebelumnya berkat fitur rollback `rpm-ostree`. Anda bisa memilih versi image sebelumnya di boot menu.
 - Pra-install Steam dan Lutris sebagai paket sistem.
-- Pra-install [Discover Overlay](https://github.com/trigg/Discover) untuk Discord dan otomatis diluncurkan di Gamemode,dan di desktop jika Discord terinstall. [Lihat dokumentasinya disini](https://trigg.github.io/Discover/bazzite).
+- Pra-install [Discover Overlay](https://github.com/trigg/Discover) untuk Discord dan otomatis diluncurkan di Gamemode,dan di desktop jika Discord terinstall, [Lihat dokumentasinya disini](https://trigg.github.io/Discover/bazzite).
 - Menggunakan ZRAM<sub><sup>(4GB)</sup></sub> dengan kompresi ZSTD secara bawaan dengan opsi untuk menggunakan 1GB swap file dan bisa diatur sesuai kebutuhan.
-- Penjadwal I/O untuk mencegah I/O starvation ketika memasang game atau ketika proses latar belakang `duperemove` dan `rmlint`.
+- Penjadwal I/O untuk mencegah I/O starvation ketika memasang game atau ketika proses latar belakang `duperemove` dan `rmlint` bekerja.
 - Mengaplikasikan parameter kernel dari SteamOS.
 - Kalibrasi Warna Layar untuk layar matte dan reflektif Steam Deck.
 - Fitur-fitur pengguna advance yang tidak diaktifkan secara bawaan seperti:
-    - Service untuk undervolting Steam Deck yang beresiko rendah dengan [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) dan [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), anda bisa mencek `ryzenadj.service` dan `/etc/default/ryzenadj`.
-    - Service untuk membatasi kapasitas maksimal saat mengisi ulang, anda bisa mencek `batterylimit.service` dan `/etc/default/batterylimit`. <sup><sub>(Bekerja walaupun perangkat dalam posisi non aktif)</sub></sup>
+    - Service untuk undervolting Steam Deck yang beresiko rendah dengan [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) dan [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), anda bisa mengecek `ryzenadj.service` dan `/etc/default/ryzenadj`.
+    - Service untuk membatasi kapasitas maksimal saat mengisi ulang, anda bisa mengeceknya di `batterylimit.service` dan `/etc/default/batterylimit`. <sup><sub>(Bekerja walaupun perangkat dalam posisi non aktif)</sub></sup>
     - Dukungan bawaan untuk overclocking layar. Contohnya seperti ini, anda menambahkan `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` di `/etc/environment`.
     - Anda bisa menggunakan X11 jika diperlukan dengan mengedit `/etc/default/desktop-wayland`.
     - Lu punya RAM 32 GB? anda bisa memakai 2x lipat VRAM yang diaplikasikan secara otomatis!. <sup><sub>(Coba bagikan skill ngesolder lu dong)</sub></sup>
@@ -128,7 +128,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:lates
 
 ### GNOME
 
-Varian desktop GNOME tersedia dalam versi desktop dan GNOME.varian ini memiliki beberapa fitur tambahan seperti :
+Varian desktop GNOME tersedia dalam versi desktop dan deck.varian ini memiliki beberapa fitur tambahan seperti :
 
 - [Dukungan untuk Variable refresh rate dan fractional scaling di sesi wayland secara bawaan](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
 - Menu kustom di bar atas untuk kembali ke game mode, meluncurkan Steam, dan membuka berbagai macam peralatan yang berguna.
@@ -178,19 +178,18 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 - Paket sistem yang terbarukan.
 - Layer paket fedora tanpa perlu takut paket tersebut hilang saat memperbarui sistem.
 - Pra-install [SELinux](https://github.com/SELinuxProject/selinux) untuk keamanan dan telah dikonfigurasi secara bawaan.
-- The ability to rebase to different Fedora libostree images, if desired, without losing user data.
-- Bisa rebase ke image Fedora ostree yang lain jika mau, tanpa kehilangan data pengguna.
-- Dukungan printing berkat [CUPS](https://www.cups.org/) yang terinstall secara bawaan
+- Bisa rebase ke image Fedora ostree yang lain jika mau,tanpa kehilangan data pengguna.
+- Dukungan printing berkat [CUPS](https://www.cups.org/) yang terinstall secara bawaan.
 
 ## Alasan
 
 Bazzite dimulai sebagai proyek untuk menyelesaikan berbagai masalah yang ada di SteamOS, terutama paket-paket yang tidak terbarukan (walaupun menggunakan ArchLinux sebagai base) dan tidak ada manajemen paket yang fungsional.
 
-Walaupun proyek ini juga menggunakan image. anda masih bisa menginstall berbagai macam paket Fedora dari perintah shell. Paket-paket ini akan tetap bertahan setelah pembaruan <sub><sup>(Jadi anda bisa install aplikasi VPN yang anda g bisa install di SteamOS).
+Walaupun proyek ini juga menggunakan image. anda masih bisa menginstall berbagai macam paket Fedora dari perintah shell. Paket-paket ini akan tetap bertahan setelah pembaruan <sub><sup>(Jadi anda bisa install aplikasi VPN yang anda g bisa install di SteamOS)<sub><sup>.
 Sebagai tambahan, Bazzite sering diupdate beberapa kali dalam satu minggu dengan paket-paket dari upstream Fedora, memberikan anda performa terbaik dan fitur-fitur terbaru di base yang stabil.
 
 Bazzite hadir dengan versi Linux kernel yang terbaru dan SELinux diaktifkan secara bawaan dengan dukungan penuh untuk secure boot <sub><sup>(Jalankan `ujust enroll-secure-boot-key` dan masukan password `ublue-os` jika diperintahkan untuk menroll key dari kita)</sup></sub> 
-dan enkripsi disk membuat ini aman dan sempurna untuk komputasi general. <sup><sub>(Yes, lu bisa ngeprint dari Bazzite!)</sub></sup>.
+dan enkripsi disk membuat ini aman dan sempurna untuk komputasi general. <sup><sub>(Yes, anda bisa ngeprint dari Bazzite!)</sub></sup>.
 
 Baca [FAQ](https://universal-blue.discourse.group/docs?topic=33) untuk tahu apa saja yang membuat Bazzite beda dari Sistem Operasi Linux yang lain.
 
@@ -214,7 +213,7 @@ Baca [FAQ](https://universal-blue.discourse.group/docs?topic=33) untuk tahu apa 
 
 Temukan dokumentasi tambahan project ini [disini](https://universal-blue.discourse.group/docs).
 
-Cek [buletin](https://universal-blue.discourse.group/tag/bazzite-buzz) kami yang selalu update secara regular tentang project ini.
+Cek [buletin](https://universal-blue.discourse.group/tag/bazzite-buzz) kami yang selalu update secara regular tentang proyek ini.
 
 ## Paket Kustom
 Paket-paket ini diporting dari SteamOS dan ChimeraOS, dan digunakan oleh Bazzite dan dibuat di Copr [bazzite](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/) and [bazzite-multilib](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/).
@@ -282,7 +281,7 @@ Sebagai tambahan, paket-paket berikut ini digunakan dari repository Copr:
 
 ## Verifikasi
 
-Image berikut ini telah disigned oleh sigstore's [cosign](https://docs.sigstore.dev/cosign/overview/).Anda bisa menverifikasi signature dengan mengunduh key `cosign.pub` dari repo ini dan menjalankan perintah ini:
+Image berikut ini telah disigned oleh sigstore's [cosign](https://docs.sigstore.dev/cosign/overview/). Anda bisa menverifikasi signature dengan mengunduh key `cosign.pub` dari repo ini dan menjalankan perintah ini:
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -290,7 +289,7 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## Secure Boot
 
-Secure boot didukung dengan key dari kami. Pub key dapat ditemukan di root repositori ini[disini bro](https://github.com/ublue-os/bazzite/blob/main/secure_boot_key.der).
+Secure boot didukung dengan key dari kami. Pub key dapat ditemukan di root repositori [ini](https://github.com/ublue-os/bazzite/blob/main/secure_boot_key.der).
 Jika anda ingin menenroll key ini sebelum instalasi, unduh key ini dan jalankan:
 
 ```bash
