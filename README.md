@@ -15,7 +15,7 @@
 - [Showcase](https://github.com/ublue-os/bazzite#showcase)
 - [Documentation & Newsletters](https://github.com/ublue-os/bazzite#documentation--newsletters)
 - [Custom Packages](https://github.com/ublue-os/bazzite#custom-packages)
-- [Verification, Secure Boot & Metrics](https://github.com/ublue-os/bazzite#verification)
+- [Image Verification](https://github.com/ublue-os/bazzite#verification)
 - [Secure Boot](https://github.com/ublue-os/bazzite#secure-boot)
 - [Metrics](https://github.com/ublue-os/bazzite#contributor-metrics)
 - [Special Thanks](https://github.com/ublue-os/bazzite#special-thanks)
