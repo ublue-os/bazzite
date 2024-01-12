@@ -250,6 +250,10 @@ resize-deckswap:
 switch-to-ext4:
     sudo sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs
 
+# Force-enable AMD pstate
+pstate-force-enable:
+    rpm-ostree kargs --append-if-missing=amd_pstate=active
+
 # Enable ZRAM (Enabled by default)
 zram-on:
     #!/usr/bin/bash
@@ -268,7 +272,7 @@ zram-off:
     ublue-update --wait
     KARGS=$(rpm-ostree kargs)
     if grep -qv 'zram' <<< ${KARGS}; then
-      rpm-ostree kargs --append=systemd.zram=0
+      rpm-ostree kargs --append-if-missing=systemd.zram=0
       echo 'ZRAM disabled. Please reboot.'
     else
       echo 'ZRAM is already disabled.'

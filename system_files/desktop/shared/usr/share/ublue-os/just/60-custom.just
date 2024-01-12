@@ -144,6 +144,10 @@ install-adwaita-for-steam:
       echo "This is only supported under GNOME."
     fi
 
+# Force-enable AMD pstate
+pstate-force-enable:
+    rpm-ostree kargs --append-if-missing=amd_pstate=active
+
 # Set system to boot without showing the grub screen with options
 hide-grub:
     #!/usr/bin/bash
