@@ -87,7 +87,7 @@ or for devices with Nvidia GPUs:
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:latest
 ```
 
-**For users with Secure Boot enabled:** Run `ujust enroll-secure-boot-key` and enter the password `ublue-os` if prompted to enroll the required key.
+**For users with Secure Boot enabled:** Follow our [secure boot documentation](https://github.com/ublue-os/bazzite#secure-boot) prior to rebasing.
 
 ### Steam Deck/Home Theater PCs (HTPCs)
 > [!IMPORTANT]  
@@ -171,6 +171,8 @@ To rebase an existing ostree system to the **Steam Deck/HTPC** release:
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:latest
 ```
+
+**For users with Secure Boot enabled:** Follow our [secure boot documentation](https://github.com/ublue-os/bazzite#secure-boot) prior to rebasing.
 
 ### Features from Upstream
 
@@ -298,11 +300,16 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 ## Secure Boot
 
 Secure boot is supported with our custom key. The pub key can be found in the root of this repository [here](https://github.com/ublue-os/bazzite/blob/main/secure_boot_key.der).
-If you'd like to enroll this key prior to installation, download the key and run the following:
+If you'd like to enroll this key prior to installation or rebase, download the key and run the following:
 
 ```bash
+sudo mokutil --timeout -1
 sudo mokutil --import secure_boot_key.der
 ```
+
+For users already on a Universal Blue image, you may instead run `ujust enroll-secure-boot-key`.
+
+If asked for a password, use `ublue-os`.
 
 ### Contributor Metrics
 
