@@ -41,7 +41,7 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Pra-install [System76-Scheduler](https://github.com/pop-os/system76-scheduler), menyediakan otomatisasi dan oprekan untuk proses yang berjalan dilatar belakang, serta meminimalkan CPU untuk proses latar belakang.
 - Menkustomisasi konfigurasi System76-Scheduler dengan aturan tambahan.
 - Menggunakan [Google's BBR TCP congestion control](https://github.com/google/bbr) secara bawaan.
-- Pra-install[Input Remapper](https://github.com/sezanzeb/input-remapper) dan diaktifkan secara bawaan. <sub><sup>(Dinonaktifkan secara bawaan di varian Deck tapi tersedia dan dapat diaktifkan dengan `ujust enable-input-remapper`)</sup></sub>
+- Pra-install [Input Remapper](https://github.com/sezanzeb/input-remapper) dan diaktifkan secara bawaan. <sub><sup>(Dinonaktifkan secara bawaan di varian Deck tapi tersedia dan dapat diaktifkan dengan `ujust enable-input-remapper`)</sup></sub>
 - Portal Bazzite menyediakan cara mudah untuk menginstall berbagai macam aplikasi dan oprekan, termasuk menginstall [LACT](https://github.com/ilya-zlobintsev/LACT) dan [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
 - Manajemen paket [Nix](https://nixos.org/) dengan [Fleek](https://getfleek.dev/) tersedia secara optional dan dapat diinstall dengan `ujust`.
 - Manajemen paket [Brew](https://brew.sh/) tersedia secara optional dan dapat diinstall dengan Portal Bazzite.
@@ -96,11 +96,11 @@ Varian `bazzite-deck` ini didesain untuk digunakan sebagai alternatif untuk Stea
 - Hadir dengan patch dari [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) untuk dukungan BTRFS di SD Card secara bawaan.
 - [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU) tersedia dan diaktifkan secara bawaan.
 - Pilihan untuk menginstall [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), dan [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), serta berbagai macam paket/aplikasi yang berguna selama pemasangan.
-- Sistem pembaruan kustom memungkinkan Sistem Operasi,Flatpal,Paket Nix<sup><sub>(dengan fleek)</sub></sup>, dan Distrobox image untuk diupdate dari Gamemode UI.
+- Sistem pembaruan kustom memungkinkan Sistem Operasi,Flatpak,Paket Nix<sup><sub>(dengan fleek)</sub></sup>, dan Distrobox image untuk diupdate dari Gamemode UI.
 - Dukungan untuk dual-boot dengan Windows karena GRUB dari Fedora.
-- Pembaruan merusak sesuatu? tinggal rollback ke versi sebelumnya berkat fitur rollback`rpm-ostree`. Anda bisa memilih versi image sebelumnya di boot menuY.
+- Pembaruan merusak sesuatu? tinggal rollback ke versi sebelumnya berkat fitur rollback `rpm-ostree`. Anda bisa memilih versi image sebelumnya di boot menu.
 - Pra-install Steam dan Lutris sebagai paket sistem.
-- Pra-install [Discover Overlay](https://github.com/trigg/Discover) untuk Discord dan otomatis diluncurkan di Gamemode,dan di desktop jika Discord terinstall. [Lihat dokumentasinya disini](https://trigg.github.io/Discover/bazzite).
+- Pra-install [Discover Overlay](https://github.com/trigg/Discover) untuk Discord dan otomatis diluncurkan di Gamemode,dan di desktop jika Discord terinstall, [Lihat dokumentasinya disini](https://trigg.github.io/Discover/bazzite).
 - Menggunakan ZRAM<sub><sup>(4GB)</sup></sub> dengan kompresi ZSTD secara bawaan dengan opsi untuk menggunakan 1GB swap file dan bisa diatur sesuai kebutuhan.
 - Penjadwal I/O untuk mencegah I/O starvation ketika memasang game atau ketika proses latar belakang `duperemove` dan `rmlint` bekerja.
 - Mengaplikasikan parameter kernel dari SteamOS.
