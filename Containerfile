@@ -131,6 +131,10 @@ RUN rpm-ostree override remove \
     if ! [[ "${IMAGE_FLAVOR}" =~ "framework" ]]; then \
         rpm-ostree override remove \
             power-profiles-daemon \
+    ; else
+        rpm-ostree override remove \
+            tlp \
+            tlp-rdw \
     ; fi
 
 # Install new packages
@@ -150,6 +154,7 @@ RUN rpm-ostree install \
         tuned-utils \
         tuned-utils-systemtap \
         tuned-gtk \
+        powertop \
         hl2linux-selinux \
         ladspa-caps-plugins \
         ladspa-noise-suppression-for-voice \
