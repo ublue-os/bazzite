@@ -4,7 +4,10 @@
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
 
+[🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md)
+
 ---
+
 # Daftar Isi
 - [Fitur untuk **SEMUA** Image Bazzite](https://github.com/ublue-os/bazzite#about--features)
   - [Fitur untuk Image **Desktop** ](https://github.com/ublue-os/bazzite#desktop)

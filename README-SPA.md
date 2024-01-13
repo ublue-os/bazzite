@@ -4,6 +4,8 @@
 
 ![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)
 
+[🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md)
+
 ---
 
 # Tabla de Contenidos
