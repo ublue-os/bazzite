@@ -182,7 +182,7 @@ RUN rpm-ostree override remove \
     if ! [[ "${IMAGE_FLAVOR}" =~ "framework" ]]; then \
         rpm-ostree override remove \
             power-profiles-daemon \
-    ; else
+    ; else \
         rpm-ostree override remove \
             tlp \
             tlp-rdw \
