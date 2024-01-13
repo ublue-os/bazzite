@@ -153,6 +153,7 @@ RUN rpm-ostree install \
         tuned \
         tuned-utils \
         tuned-utils-systemtap \
+        tuned-ppd \
         tuned-gtk \
         tuned-profiles-compat \
         tuned-profiles-atomic \
