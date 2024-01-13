@@ -302,6 +302,195 @@ sudo mokutil --import secure_boot_key.der
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
 <!-- readme: collaborators,contributors -start -->
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/KyleGospo">
+            <img src="https://avatars.githubusercontent.com/u/10704358?v=4" width="100;" alt="KyleGospo"/>
+            <br />
+            <sub><b>Kyle Gospodnetich</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/EyeCantCU">
+            <img src="https://avatars.githubusercontent.com/u/18015150?v=4" width="100;" alt="EyeCantCU"/>
+            <br />
+            <sub><b>RJ Trujillo</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/nicknamenamenick">
+            <img src="https://avatars.githubusercontent.com/u/121328689?v=4" width="100;" alt="nicknamenamenick"/>
+            <br />
+            <sub><b>Pat Connors</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/HikariKnight">
+            <img src="https://avatars.githubusercontent.com/u/2557889?v=4" width="100;" alt="HikariKnight"/>
+            <br />
+            <sub><b>HikariKnight</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/castrojo">
+            <img src="https://avatars.githubusercontent.com/u/1264109?v=4" width="100;" alt="castrojo"/>
+            <br />
+            <sub><b>Jorge O. Castro</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/RodoMa92">
+            <img src="https://avatars.githubusercontent.com/u/16669146?v=4" width="100;" alt="RodoMa92"/>
+            <br />
+            <sub><b>Marco Rodolfi</b></sub>
+        </a>
+    </td></tr>
+<tr>
+    <td align="center">
+        <a href="https://github.com/dnkmmr69420">
+            <img src="https://avatars.githubusercontent.com/u/104856296?v=4" width="100;" alt="dnkmmr69420"/>
+            <br />
+            <sub><b>Dnkmmr</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/fiftydinar">
+            <img src="https://avatars.githubusercontent.com/u/65243233?v=4" width="100;" alt="fiftydinar"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/Gecked-Deck">
+            <img src="https://avatars.githubusercontent.com/u/104325921?v=4" width="100;" alt="Gecked-Deck"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/tulilirockz">
+            <img src="https://avatars.githubusercontent.com/u/120808662?v=4" width="100;" alt="tulilirockz"/>
+            <br />
+            <sub><b>Tulili</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/sekalengrengginang">
+            <img src="https://avatars.githubusercontent.com/u/49896401?v=4" width="100;" alt="sekalengrengginang"/>
+            <br />
+            <sub><b>Dreamyuki</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/Zindswini">
+            <img src="https://avatars.githubusercontent.com/u/7989183?v=4" width="100;" alt="Zindswini"/>
+            <br />
+            <sub><b>Bailey</b></sub>
+        </a>
+    </td></tr>
+<tr>
+    <td align="center">
+        <a href="https://github.com/CharlieBros">
+            <img src="https://avatars.githubusercontent.com/u/8083960?v=4" width="100;" alt="CharlieBros"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/noelmiller">
+            <img src="https://avatars.githubusercontent.com/u/4983138?v=4" width="100;" alt="noelmiller"/>
+            <br />
+            <sub><b>Noel Miller</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/drokath">
+            <img src="https://avatars.githubusercontent.com/u/6271945?v=4" width="100;" alt="drokath"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/bobslept">
+            <img src="https://avatars.githubusercontent.com/u/38557801?v=4" width="100;" alt="bobslept"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/ArtikusHG">
+            <img src="https://avatars.githubusercontent.com/u/24320212?v=4" width="100;" alt="ArtikusHG"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/duhow">
+            <img src="https://avatars.githubusercontent.com/u/1145001?v=4" width="100;" alt="duhow"/>
+            <br />
+            <sub><b>David Girón</b></sub>
+        </a>
+    </td></tr>
+<tr>
+    <td align="center">
+        <a href="https://github.com/badlydrawnface">
+            <img src="https://avatars.githubusercontent.com/u/53501005?v=4" width="100;" alt="badlydrawnface"/>
+            <br />
+            <sub><b>David Marrero</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/eltociear">
+            <img src="https://avatars.githubusercontent.com/u/22633385?v=4" width="100;" alt="eltociear"/>
+            <br />
+            <sub><b>Ikko Eltociear Ashimine</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/ashylily">
+            <img src="https://avatars.githubusercontent.com/u/20535390?v=4" width="100;" alt="ashylily"/>
+            <br />
+            <sub><b>Lily</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/gerblesh">
+            <img src="https://avatars.githubusercontent.com/u/101901964?v=4" width="100;" alt="gerblesh"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/h7io">
+            <img src="https://avatars.githubusercontent.com/u/1141177?v=4" width="100;" alt="h7io"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/karajan9">
+            <img src="https://avatars.githubusercontent.com/u/6549509?v=4" width="100;" alt="karajan9"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td></tr>
+<tr>
+    <td align="center">
+        <a href="https://github.com/leechgrrl">
+            <img src="https://avatars.githubusercontent.com/u/58349791?v=4" width="100;" alt="leechgrrl"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/zelikos">
+            <img src="https://avatars.githubusercontent.com/u/26857149?v=4" width="100;" alt="zelikos"/>
+            <br />
+            <sub><b>Patrick Csikos</b></sub>
+        </a>
+    </td></tr>
+</table>
 <!-- readme: collaborators,contributors -end -->
 
 ## Special Thanks
