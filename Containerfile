@@ -451,6 +451,7 @@ RUN /tmp/image-info.sh && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d && \
     systemctl enable com.system76.Scheduler.service && \
     systemctl enable tuned.service && \
+    systemctl enable tuned-ppd.service && \
     systemctl enable btrfs-dedup@var-home.timer && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
