@@ -38,6 +38,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-$
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/VTFLib/repo/fedora-$(rpm -E %fedora)/kylegospo-VTFLib-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-VTFLib.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/repo/fedora-$(rpm -E %fedora)/kylegospo-webapp-manager-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_kylegospo-webapp-manager.repo && \
     wget https://copr.fedorainfracloud.org/coprs/hhd-dev/hhd/repo/fedora-$(rpm -E %fedora)/hhd-dev-hhd-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_hhd-dev-hhd.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-$(rpm -E %fedora)/che-nerd-fonts-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_che-nerd-fonts.repo && \
     wget https://pkgs.tailscale.com/stable/fedora/tailscale.repo -O /etc/yum.repos.d/tailscale.repo && \
     sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo
 
@@ -239,6 +240,7 @@ RUN rpm-ostree install \
         google-noto-sans-cjk-fonts \
         lato-fonts \
         fira-code-fonts \
+        nerd-fonts \
         glow \
         gum \
         setools \
@@ -445,6 +447,7 @@ RUN /tmp/image-info.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-VTFLib.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-webapp-manager.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_hhd-dev-hhd.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_che-nerd-fonts.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/tailscale.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/charm.repo && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
