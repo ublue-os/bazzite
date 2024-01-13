@@ -23,7 +23,7 @@ screens:
           packages:
           - Set input group: sudo -A ujust add-user-to-input-group
         Add Nested Desktop to Steam:
-          description: Adds a nested desktop environment to Steam gamemode.
+          description: Adds a nested desktop environment to Steam game mode.
           default: true
           packages:
           - Add to steam: ujust add-nested-desktop-to-steam
@@ -60,6 +60,11 @@ screens:
           default: true
           packages:
           - Install Video: ujust install-gamemode-video
+        Fix Steam Download Speed:
+          description: Adds a config file that fixes download speed under Steam for Linux.
+          default: true
+          packages:
+          - Fix Download Speed: ujust fix-steam-download-speed
         Legacy Memory Configuration (Not recommended):
           description: Disable ZRAM and enable adjustable swap file, defaults to 1GB.
           default: false

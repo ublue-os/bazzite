@@ -22,6 +22,11 @@ screens:
           default: true
           packages:
           - Set input group: sudo -A ujust add-user-to-input-group
+        Fix Steam Download Speed:
+          description: Adds a config file that fixes download speed under Steam for Linux.
+          default: true
+          packages:
+          - Fix Download Speed: ujust fix-steam-download-speed
         Sunshine:
           description: A self-hosted game stream host for Moonlight
           default: false
