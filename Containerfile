@@ -154,6 +154,7 @@ RUN rpm-ostree install \
         tuned-utils \
         tuned-utils-systemtap \
         tuned-gtk \
+        tuned-profiles-compat \
         tuned-profiles-atomic \
         tuned-profiles-cpu-partitioning \
         powertop \
