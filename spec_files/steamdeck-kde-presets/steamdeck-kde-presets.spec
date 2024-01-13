@@ -7,10 +7,12 @@ URL:            https://github.com/ublue-os/bazzite
 
 Source0:        https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz
 Source1:        steamdeck-le.svg
+Source2:        bazzite_logo.svgz
 BuildArch:      noarch
 Patch0:         fedora.patch
 Patch1:         nested-desktop-resolution.patch
 Patch2:         kdeglobals.patch
+Patch3:         bazzite_logo.patch
 
 Requires:       kde-filesystem
 
@@ -47,6 +49,10 @@ rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
 rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
 rm %{buildroot}%{_sysconfdir}/xdg/kcm-about-distrorc
 rm %{buildroot}%{_sysconfdir}/X11/Xsession.d/50rotate-screen
+rm %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/images/deck_logo.svgz
+rm %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/deck_logo.svgz
+cp %{SOURCE2} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/images/bazzite_logo.svgz
+cp %{SOURCE2} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/bazzite_logo.svgz
 
 # Do post-installation
 %post
