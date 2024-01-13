@@ -33,8 +33,7 @@ Bazzite is an OCI image that serves as an alternative operating system for the [
 Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ublue-os/nvidia](https://github.com/ublue-os/nvidia) using [Fedora](https://fedoraproject.org/) technology, which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features:
 
 - Uses the [fsync kernel](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) to achieve HDR and expanded hardware support, among numerous other included patches.
-- HDR available in Gamescope Session.
-- Proprietary Nvidia drivers pre-installed.
+- HDR available in Game mode.
 - NVK available on non-Nvidia builds.
 - Full hardware accelerated codec support for H264 decoding.
 - Full support for AMD's ROCM OpenCL/HIP run-times.
@@ -98,7 +97,7 @@ Devices that are NOT the Steam Deck can still use the bazzite-deck images, but m
 
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, and for a console-like experience on HTPCs, available as `bazzite-deck`:
 
-- Directly boots to Gamemode matching SteamOS's behavior.
+- Directly boots to Game mode matching SteamOS's behavior.
 - **Automatic `duperemove` greatly trims the size of compatdata.**
 - **Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.**
 - **Able to be booted even if the drive is full.**
@@ -110,11 +109,11 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
 - Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default.
 - Option to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), and [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), among numerous other useful packages on installation.
-- Custom update system allows for the OS, Flatpaks, Nix packages <sup><sub>(Via Fleek)</sub></sup>, and Distrobox images to be updated directly from the Gamemode UI.
+- Custom update system allows for the OS, Flatpaks, Nix packages <sup><sub>(Via Fleek)</sub></sup>, and Distrobox images to be updated directly from the Game mode UI.
 - Built in support for Windows dual-boot thanks to Fedora's installation of GRUB being left intact.
 - Update break something? Easily roll back to the previous version of Bazzite thanks to `rpm-ostree`'s rollback functionality. You can even select previous images at boot.
 - Steam and Lutris preinstalled on the image as layered packages.
-- [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Gamemode and on the Desktop if Discord is installed. [View the official documentation here](https://trigg.github.io/Discover/bazzite).
+- [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Game mode and on the Desktop if Discord is installed. [View the official documentation here](https://trigg.github.io/Discover/bazzite).
 - Uses ZRAM<sub><sup>(4GB)</sup></sub> with the ZSTD compression algorithm by default with the option to switch back to a 1GB swap file and set a custom size for it if desired.
 - Kyber I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` and `rmlint` processes.
 - Applies SteamOS's kernel parameters.
@@ -181,6 +180,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 #### Universal Blue
 
+- Proprietary Nvidia drivers pre-installed.
 - Flathub is enabled by default.
 - [`ujust`](https://github.com/casey/just) commands for convenience.
 - Multi-media codecs out of the box.
