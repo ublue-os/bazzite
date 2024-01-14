@@ -406,7 +406,7 @@ RUN /tmp/image-info.sh && \
     sed -i 's@Exec=discover-overlay@Exec=/usr/bin/bazzite-discover-overlay@g' /usr/etc/xdg/autostart/discover_overlay.desktop && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/discover_overlay.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
-    echo "import \"/usr/share/ublue-os/just/70-bazzite.just\"" >> "/usr/share/ublue-os/justfile" && \
+    echo "import \"/usr/share/ublue-os/just/80-bazzite.just\"" >> /usr/share/ublue-os/justfile && \
     pip install --prefix=/usr yafti && \
     pip install --prefix=/usr hyfetch && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
