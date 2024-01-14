@@ -10,10 +10,10 @@ License:        GPLv3
 URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/%{packagever}/%{packagename}-%{packagever}.tar.gz
-Source2:		bazzite.png
+Source2:        bazzite.png
 Patch0:         fedora.patch
 Patch1:         selinux.patch
-Patch2:	        btrfs-automount.patch
+Patch2:         btrfs-automount.patch
 Patch3:         btrfs-format.patch
 Patch4:         user.patch
 Patch5:         bazzite-btrfs.patch
