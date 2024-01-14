@@ -81,7 +81,7 @@ Source1:        pipewire.sysusers
 # Holo: TODO: Bug reference
 Patch0:         bc435841c141ad38768b6cb1a7ad45e8bb13c7d2.patch
 # Holo: TODO: Bug reference
-Patch1:         acf7c0af0bf31b937c41e916a73c67ae0a253632.patch
+#Patch1:         acf7c0af0bf31b937c41e916a73c67ae0a253632.patch
 # Holo: upstream MR 1792
 Patch2:         0001-Bluez5-backend-native-HSP-AG-release-SCO-link-on-AT-.patch
 
