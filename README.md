@@ -309,21 +309,21 @@ sudo mokutil --import secure_boot_key.der
         <a href="https://github.com/KyleGospo">
             <img src="https://avatars.githubusercontent.com/u/10704358?v=4" width="100;" alt="KyleGospo"/>
             <br />
-            <sub><b>Kyle Gospodnetich</b></sub>
+            <sub><b>KyleGospo</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/EyeCantCU">
             <img src="https://avatars.githubusercontent.com/u/18015150?v=4" width="100;" alt="EyeCantCU"/>
             <br />
-            <sub><b>RJ Trujillo</b></sub>
+            <sub><b>EyeCantCU</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/nicknamenamenick">
             <img src="https://avatars.githubusercontent.com/u/121328689?v=4" width="100;" alt="nicknamenamenick"/>
             <br />
-            <sub><b>Pat Connors</b></sub>
+            <sub><b>nicknamenamenick</b></sub>
         </a>
     </td>
     <td align="center">
@@ -337,14 +337,14 @@ sudo mokutil --import secure_boot_key.der
         <a href="https://github.com/castrojo">
             <img src="https://avatars.githubusercontent.com/u/1264109?v=4" width="100;" alt="castrojo"/>
             <br />
-            <sub><b>Jorge O. Castro</b></sub>
+            <sub><b>castrojo</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/RodoMa92">
             <img src="https://avatars.githubusercontent.com/u/16669146?v=4" width="100;" alt="RodoMa92"/>
             <br />
-            <sub><b>Marco Rodolfi</b></sub>
+            <sub><b>RodoMa92</b></sub>
         </a>
     </td></tr>
 <tr>
@@ -352,42 +352,42 @@ sudo mokutil --import secure_boot_key.der
         <a href="https://github.com/dnkmmr69420">
             <img src="https://avatars.githubusercontent.com/u/104856296?v=4" width="100;" alt="dnkmmr69420"/>
             <br />
-            <sub><b>Dnkmmr</b></sub>
+            <sub><b>dnkmmr69420</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/fiftydinar">
             <img src="https://avatars.githubusercontent.com/u/65243233?v=4" width="100;" alt="fiftydinar"/>
             <br />
-            <sub><b>Null</b></sub>
+            <sub><b>fiftydinar</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/Gecked-Deck">
             <img src="https://avatars.githubusercontent.com/u/104325921?v=4" width="100;" alt="Gecked-Deck"/>
             <br />
-            <sub><b>Null</b></sub>
+            <sub><b>Gecked-Deck</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/tulilirockz">
             <img src="https://avatars.githubusercontent.com/u/120808662?v=4" width="100;" alt="tulilirockz"/>
             <br />
-            <sub><b>Tulili</b></sub>
+            <sub><b>tulilirockz</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/sekalengrengginang">
             <img src="https://avatars.githubusercontent.com/u/49896401?v=4" width="100;" alt="sekalengrengginang"/>
             <br />
-            <sub><b>Dreamyuki</b></sub>
+            <sub><b>sekalengrengginang</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/Zindswini">
             <img src="https://avatars.githubusercontent.com/u/7989183?v=4" width="100;" alt="Zindswini"/>
             <br />
-            <sub><b>Bailey</b></sub>
+            <sub><b>Zindswini</b></sub>
         </a>
     </td></tr>
 <tr>
@@ -395,42 +395,42 @@ sudo mokutil --import secure_boot_key.der
         <a href="https://github.com/CharlieBros">
             <img src="https://avatars.githubusercontent.com/u/8083960?v=4" width="100;" alt="CharlieBros"/>
             <br />
-            <sub><b>Null</b></sub>
+            <sub><b>CharlieBros</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/noelmiller">
             <img src="https://avatars.githubusercontent.com/u/4983138?v=4" width="100;" alt="noelmiller"/>
             <br />
-            <sub><b>Noel Miller</b></sub>
+            <sub><b>noelmiller</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/drokath">
             <img src="https://avatars.githubusercontent.com/u/6271945?v=4" width="100;" alt="drokath"/>
             <br />
-            <sub><b>Null</b></sub>
+            <sub><b>drokath</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/bobslept">
             <img src="https://avatars.githubusercontent.com/u/38557801?v=4" width="100;" alt="bobslept"/>
             <br />
-            <sub><b>Null</b></sub>
+            <sub><b>bobslept</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/ArtikusHG">
             <img src="https://avatars.githubusercontent.com/u/24320212?v=4" width="100;" alt="ArtikusHG"/>
             <br />
-            <sub><b>Null</b></sub>
+            <sub><b>ArtikusHG</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/duhow">
             <img src="https://avatars.githubusercontent.com/u/1145001?v=4" width="100;" alt="duhow"/>
             <br />
-            <sub><b>David Girón</b></sub>
+            <sub><b>duhow</b></sub>
         </a>
     </td></tr>
 <tr>
@@ -438,42 +438,42 @@ sudo mokutil --import secure_boot_key.der
         <a href="https://github.com/badlydrawnface">
             <img src="https://avatars.githubusercontent.com/u/53501005?v=4" width="100;" alt="badlydrawnface"/>
             <br />
-            <sub><b>David Marrero</b></sub>
+            <sub><b>badlydrawnface</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/eltociear">
             <img src="https://avatars.githubusercontent.com/u/22633385?v=4" width="100;" alt="eltociear"/>
             <br />
-            <sub><b>Ikko Eltociear Ashimine</b></sub>
+            <sub><b>eltociear</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/ashylily">
             <img src="https://avatars.githubusercontent.com/u/20535390?v=4" width="100;" alt="ashylily"/>
             <br />
-            <sub><b>Lily</b></sub>
+            <sub><b>ashylily</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/gerblesh">
             <img src="https://avatars.githubusercontent.com/u/101901964?v=4" width="100;" alt="gerblesh"/>
             <br />
-            <sub><b>Null</b></sub>
+            <sub><b>gerblesh</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/h7io">
             <img src="https://avatars.githubusercontent.com/u/1141177?v=4" width="100;" alt="h7io"/>
             <br />
-            <sub><b>Null</b></sub>
+            <sub><b>h7io</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/karajan9">
             <img src="https://avatars.githubusercontent.com/u/6549509?v=4" width="100;" alt="karajan9"/>
             <br />
-            <sub><b>Null</b></sub>
+            <sub><b>karajan9</b></sub>
         </a>
     </td></tr>
 <tr>
@@ -481,14 +481,14 @@ sudo mokutil --import secure_boot_key.der
         <a href="https://github.com/leechgrrl">
             <img src="https://avatars.githubusercontent.com/u/58349791?v=4" width="100;" alt="leechgrrl"/>
             <br />
-            <sub><b>Null</b></sub>
+            <sub><b>leechgrrl</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/zelikos">
             <img src="https://avatars.githubusercontent.com/u/26857149?v=4" width="100;" alt="zelikos"/>
             <br />
-            <sub><b>Patrick Csikos</b></sub>
+            <sub><b>zelikos</b></sub>
         </a>
     </td></tr>
 </table>
