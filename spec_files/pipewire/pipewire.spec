@@ -1,6 +1,6 @@
 %global majorversion 1
 %global minorversion 0
-%global microversion 0
+%global microversion 1
 
 %global apiversion   0.3
 %global spaversion   0.2
@@ -818,6 +818,12 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %endif
 
 %changelog
+* Thu Jan 11 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.1-1
+- Update version to 1.0.1
+
+* Thu Dec 14 2023 Wim Taymans <wtaymans@redhat.com> - 1.0.0-2
+- Add patch to avoid crash in deviceprovider.
+
 * Sun Nov 26 2023 Wim Taymans <wtaymans@redhat.com> - 1.0.0-1
 - Update version to 1.0.0
 - Disable ROC until updated in Fedora.
