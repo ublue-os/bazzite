@@ -17,6 +17,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - uses: akhilmhdh/contributors-readme-action@v2.3.6
+      - name: Contribute List
+        uses: akhilmhdh/contributors-readme-action@v2.3.6
+        with:
+          use_username: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
