@@ -1,5 +1,5 @@
 Name:       wireplumber
-Version:    0.4.16
+Version:    0.4.17
 Release:    1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary:    A modular session/policy manager for PipeWire
 
@@ -8,7 +8,7 @@ URL:        https://pipewire.pages.freedesktop.org/wireplumber/
 Source0:    https://gitlab.freedesktop.org/pipewire/%{name}/-/archive/%{version}/%{name}-%{version}.tar.bz2
 
 ## upstream patches
-Patch0:     steamdeck.patch
+Patch0:     valve.patch
 
 ## upstreamable patches
 
@@ -80,6 +80,9 @@ managing PipeWire.
 # Create local config skeleton
 mkdir -p %{buildroot}%{_sysconfdir}/wireplumber/{bluetooth.lua.d,common,main.lua.d,policy.lua.d}
 
+# Create missing empty system config dirs for other packages to drop files in
+mkdir -p %{buildroot}%{_datadir}/wireplumber/wireplumber.conf.d
+
 %find_lang %{name}
 
 %posttrans
@@ -105,6 +108,7 @@ fi
 %dir %{_sysconfdir}/wireplumber/main.lua.d
 %dir %{_sysconfdir}/wireplumber/policy.lua.d
 %{_datadir}/wireplumber/
+%dir %{_datadir}/wireplumber/wireplumber.conf.d
 %{_datadir}/zsh/site-functions/_wpctl
 %{_userunitdir}/wireplumber.service
 %{_userunitdir}/wireplumber@.service
@@ -123,6 +127,12 @@ fi
 %{_datadir}/gir-1.0/Wp-0.4.gir
 
 %changelog
+* Mon Dec 4 2023 Wim Taymans <wtaymans@redhat.com> - 0.4.17-1
+- wireplumber 0.4.17
+
+* Mon Dec 4 2023 Hector Martin <marcan@fedoraproject.org> - 0.4.16-2
+- Create and own /usr/share/wireplumber/wireplumber.conf.d
+
 * Thu Nov 23 2023 Wim Taymans <wtaymans@redhat.com> - 0.4.16-1
 - wireplumber 0.4.16
 
