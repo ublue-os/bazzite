@@ -182,10 +182,6 @@ unhide-grub:
 enable-flatpak-theming:
     flatpak override --user --filesystem=xdg-config/gtk-4.0:ro --filesystem=xdg-config/gtk-3.0:ro --filesystem=~/.icons:ro --filesystem=~/.themes:ro
 
-# Enable XwaylandVideoBridge for screensharing under Wayland
-fix-screenshare:
-    cp /usr/share/applications/org.kde.xwaylandvideobridge.desktop $HOME/.config/autostart/
-
 # Add user to "input" group required by certain controller drivers
 add-user-to-input-group:
     #!/usr/bin/bash
