@@ -17,7 +17,7 @@ restore-original-terminal:
         sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.gnome.Terminal.desktop
     else
         rm -f $HOME/.local/share/applications/org.kde.konsole.desktop
-        cp /usr/share/applications/org.gnome.Terminal.desktop $HOME/.local/share/applications/org.kde.konsole.desktop
+        cp /usr/share/applications/org.kde.konsole.desktop $HOME/.local/share/applications/org.kde.konsole.desktop
         sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.kde.konsole.desktop
     fi
 
