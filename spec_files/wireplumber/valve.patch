@@ -1,7 +1,7 @@
 From 9911c8532eb9072d93eb39b02aa94699f0a735a1 Mon Sep 17 00:00:00 2001
 From: Julian Bouzas <julian.bouzas@collabora.com>
 Date: Tue, 21 Mar 2023 09:18:30 -0400
-Subject: [PATCH 01/12] m-default-nodes: remove echo-cancel configuration
+Subject: [PATCH 01/11] m-default-nodes: remove echo-cancel configuration
 
 This will be possible to do with the new module-filters-api.
 ---
@@ -194,7 +194,7 @@ index 19202914..91c4e189 100644
 From a9b6f3bcb4c525c1e257873875feb6223fa6b660 Mon Sep 17 00:00:00 2001
 From: Julian Bouzas <julian.bouzas@collabora.com>
 Date: Fri, 17 Mar 2023 11:06:11 -0400
-Subject: [PATCH 02/12] modules: add new module-filters-api to enable smart
+Subject: [PATCH 02/11] modules: add new module-filters-api to enable smart
  filter policy
 
 This module provides an API to link filter nodes using the logic configured in
@@ -1520,7 +1520,7 @@ index 99ad8473..f249f343 100644
 From bea7195a12ba1014f62e40f80c0f2e127a1aaa2e Mon Sep 17 00:00:00 2001
 From: Julian Bouzas <julian.bouzas@collabora.com>
 Date: Thu, 23 Mar 2023 09:26:45 -0400
-Subject: [PATCH 03/12] config: do not restore stream target by default
+Subject: [PATCH 03/11] config: do not restore stream target by default
 
 ---
  src/config/main.lua.d/40-stream-defaults.lua | 2 +-
@@ -1546,7 +1546,7 @@ index b869099b..d25aab0d 100644
 From f4d88774670d561b3a2d37c0d6534b204cdcb14f Mon Sep 17 00:00:00 2001
 From: Julian Bouzas <julian.bouzas@collabora.com>
 Date: Thu, 23 Mar 2023 09:41:23 -0400
-Subject: [PATCH 04/12] config: enable smart filter policy
+Subject: [PATCH 04/11] config: enable smart filter policy
 
 ---
  src/config/policy.lua.d/10-default-policy.lua | 2 +-
@@ -1589,101 +1589,10 @@ index 76aecad0..8d919fb7 100644
 2.42.0
 
 
-From c736d19638aed46fc3cb7381a75a5d699bb41299 Mon Sep 17 00:00:00 2001
-From: Ashok Sidipotu <ashok.sidipotu@collabora.com>
-Date: Wed, 12 Jul 2023 09:54:46 +0530
-Subject: [PATCH 05/12] policy-device-profile.lua: align style
-
----
- src/scripts/policy-device-profile.lua | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
-
-diff --git a/src/scripts/policy-device-profile.lua b/src/scripts/policy-device-profile.lua
-index af10f9b7..ddd86fee 100644
---- a/src/scripts/policy-device-profile.lua
-+++ b/src/scripts/policy-device-profile.lua
-@@ -10,7 +10,7 @@ self.config = ... or {}
- self.config.persistent = self.config.persistent or {}
- self.config.priorities = self.config.priorities or {}
- self.active_profiles = {}
--self.default_profile_plugin = Plugin.find("default-profile")
-+self.default_profile_plugin = Plugin.find ("default-profile")
- 
- function createIntrestObjects(t)
-   for _, p in ipairs(t or {}) do
-@@ -34,12 +34,12 @@ createIntrestObjects(self.config.persistent)
- createIntrestObjects(self.config.priorities)
- 
- -- Checks whether a device profile is persistent or not
--function isProfilePersistent(device_props, profile_name)
--  for _, p in ipairs(self.config.persistent or {}) do
-+function isProfilePersistent (device_props, profile_name)
-+  for _, p in ipairs (self.config.persistent or {}) do
-     if p.profile_names then
--      for _, interest in ipairs(p.interests) do
--        if interest:matches(device_props) then
--          for _, pn in ipairs(p.profile_names) do
-+      for _, interest in ipairs (p.interests) do
-+        if interest:matches (device_props) then
-+          for _, pn in ipairs (p.profile_names) do
-             if pn == profile_name then
-               return true
-             end
-@@ -72,7 +72,7 @@ function setDeviceProfile (device, dev_id, dev_name, profile)
-     index = profile.index,
-   }
-   Log.info ("Setting profile " .. profile.name .. " on " .. dev_name)
--  device:set_param("Profile", param)
-+  device:set_param ("Profile", param)
- end
- 
- function findDefaultProfile (device)
-@@ -85,8 +85,8 @@ function findDefaultProfile (device)
-     return nil
-   end
- 
--  for p in device:iterate_params("EnumProfile") do
--    local profile = parseParam(p, "EnumProfile")
-+  for p in device:iterate_params ("EnumProfile") do
-+    local profile = parseParam (p, "EnumProfile")
-     if profile.name == def_name then
-       return profile
-     end
-@@ -189,7 +189,7 @@ function handleProfiles (device, new_device)
-       isProfilePersistent (device.properties, self.active_profiles[dev_id].name) and
-       def_profile ~= nil and
-       self.active_profiles[dev_id].name == def_profile.name
--      then
-+  then
-     local active_profile = self.active_profiles[dev_id].name
-     Log.info ("Device profile " .. active_profile .. " is persistent for " .. dev_name)
-     return
-@@ -233,14 +233,14 @@ self.om = ObjectManager {
-   }
- }
- 
--self.om:connect("object-added", function (_, device)
-+self.om:connect ("object-added", function(_, device)
-   device:connect ("params-changed", onDeviceParamsChanged)
-   handleProfiles (device, true)
- end)
- 
--self.om:connect("object-removed", function (_, device)
-+self.om:connect ("object-removed", function(_, device)
-   local dev_id = device["bound-id"]
-   self.active_profiles[dev_id] = nil
- end)
- 
--self.om:activate()
-+self.om:activate ()
--- 
-2.42.0
-
-
-From 8d805bd8be1b542a3880a95b5182cf8bc50e765d Mon Sep 17 00:00:00 2001
+From 30d26697a83ce11c4a2343c0ad4ddb113e64f72b Mon Sep 17 00:00:00 2001
 From: Ashok Sidipotu <ashok.sidipotu@collabora.com>
 Date: Wed, 12 Jul 2023 10:17:37 +0530
-Subject: [PATCH 06/12] policy-device-profile.lua: introduce user profile
+Subject: [PATCH 05/11] policy-device-profile.lua: introduce user profile
  priority list
 
 ---
@@ -1719,10 +1628,10 @@ index 91c4e189..b87eec51 100644
 2.42.0
 
 
-From 08f90a7ace0a059280ec4c974d0a9c1a19a7589a Mon Sep 17 00:00:00 2001
+From 4c6762c41a0d8f6298e2f35cea42a86ea3ef8ff9 Mon Sep 17 00:00:00 2001
 From: Julian Bouzas <julian.bouzas@collabora.com>
 Date: Fri, 3 Nov 2023 09:24:59 -0400
-Subject: [PATCH 07/12] m-filters-api: remove get-default-filter API
+Subject: [PATCH 06/11] m-filters-api: remove get-default-filter API
 
 This was redundant as you can get the default filter by calling
 'get-filter-from-target' using the default target. The policy logic
@@ -1826,10 +1735,10 @@ index f249f343..c5a15ec6 100644
 2.42.0
 
 
-From c36b75303296d206041c0de856e51267aa56b1be Mon Sep 17 00:00:00 2001
+From 1acb97e5606dfd842a71c9a2de520ee665f17fd0 Mon Sep 17 00:00:00 2001
 From: Julian Bouzas <julian.bouzas@collabora.com>
 Date: Fri, 3 Nov 2023 11:44:57 -0400
-Subject: [PATCH 08/12] m-filters-api: add support for exclusive targets
+Subject: [PATCH 07/11] m-filters-api: add support for exclusive targets
 
 Filters whose target are exclusive won't be linked to the default device if the
 target does not exist.
@@ -2174,10 +2083,10 @@ index c5a15ec6..035c3006 100644
 2.42.0
 
 
-From 1bc1cc43aeaff5834972820f934e70db0167c8db Mon Sep 17 00:00:00 2001
+From 0010f03fafa2841f7618dad4b609466b6dad11c7 Mon Sep 17 00:00:00 2001
 From: Julian Bouzas <julian.bouzas@collabora.com>
 Date: Mon, 6 Nov 2023 14:33:34 -0500
-Subject: [PATCH 09/12] policy-bluetooth: remove application names array and
+Subject: [PATCH 08/11] policy-bluetooth: remove application names array and
  use BT loopback filter
 
 Uses a BT loopback filter to know when an application wants to capture audio
@@ -2514,10 +2423,10 @@ index f8f69a14..7aecb8b0 100644
 2.42.0
 
 
-From 0d21bae817420a077cb3177f4d434bd2095a0ede Mon Sep 17 00:00:00 2001
+From ae7cde6dd7c7660da5bbd07f27fe18a624c8c67d Mon Sep 17 00:00:00 2001
 From: Ethan Geller <ethang@valvesoftware.com>
 Date: Mon, 13 Nov 2023 22:10:05 -0800
-Subject: [PATCH 10/12] fix speaker tunings for galileo
+Subject: [PATCH 09/11] fix speaker tunings for galileo
 
 ---
  src/config/policy.lua.d/30-filters-config.lua | 2 +-
@@ -2540,10 +2449,10 @@ index 88429cdc..a4b617d8 100644
 2.42.0
 
 
-From 0d1869297e857f59dfc460d4476d4426a30e4de1 Mon Sep 17 00:00:00 2001
+From 0ed6dc783bcb4033fb82c0f9b3e2c26977c3e19e Mon Sep 17 00:00:00 2001
 From: Ethan Geller <ethang@valvesoftware.com>
 Date: Wed, 15 Nov 2023 14:32:56 -0800
-Subject: [PATCH 11/12] Revert "policy-bluetooth: remove application names
+Subject: [PATCH 10/11] Revert "policy-bluetooth: remove application names
  array and use BT loopback filter"
 
 This reverts commit 5a760629b6e81268383f32406119fbb4ac3a42b0.
@@ -2877,10 +2786,10 @@ index 7aecb8b0..f8f69a14 100644
 2.42.0
 
 
-From a9f4a5f6bbbbf88004be9bb19afcb3ca0e51dd3a Mon Sep 17 00:00:00 2001
+From 043390080937c05df74a48eaff5a9713ff0ea12f Mon Sep 17 00:00:00 2001
 From: Ethan Geller <ethang@valvesoftware.com>
 Date: Wed, 15 Nov 2023 14:35:00 -0800
-Subject: [PATCH 12/12] fix filter chain targeting for mic.
+Subject: [PATCH 11/11] fix filter chain targeting for mic.
 
 ---
  src/config/policy.lua.d/30-filters-config.lua | 2 +-
