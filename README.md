@@ -302,6 +302,8 @@ sudo mokutil --import secure_boot_key.der
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
+[![Star History Chart](https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date)](https://star-history.com/#ublue-os/bazzite&Date)
+
 <!-- readme: collaborators,contributors -start -->
 <table>
 <tr>
