@@ -44,8 +44,8 @@
  }
  
  unidentified ()
---- a/wireplumber/systemd/system/multi-user.target.wants/wireplumber-sysconf.service
-+++ b/wireplumber/systemd/system/multi-user.target.wants/wireplumber-sysconf.service
+--- a/wireplumber/systemd/system/wireplumber-sysconf.service
++++ b/wireplumber/systemd/system/wireplumber-sysconf.service
 @@ -11,7 +11,7 @@
  Description=Hardware Specific Wireplumber Configuration
  After=multi-user.target

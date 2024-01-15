@@ -30,8 +30,7 @@ Steamdeck Audio Processing
 %define debug_package %{nil}
 
 %prep
-%setup -n valve-hardware-audio-processing-main
-%patch 0 -p1
+%autosetup -n valve-hardware-audio-processing-main -p1
 
 %build
 %make_build FAUSTINC="/usr/include/faust"  FAUSTLIB="/usr/share/faust"
