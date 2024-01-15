@@ -623,6 +623,7 @@ RUN /tmp/image-info.sh && \
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
     ; fi && \
+    systemctl enable wireplumber-workaround.service && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-sysconf.service && \
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
