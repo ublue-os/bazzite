@@ -179,15 +179,7 @@ RUN rpm-ostree override remove \
         ublue-os-update-services \
         firefox \
         firefox-langpacks \
-        htop && \
-    if ! [[ "${IMAGE_FLAVOR}" =~ "framework" ]]; then \
-        rpm-ostree override remove \
-            power-profiles-daemon \
-    ; else \
-        rpm-ostree override remove \
-            tlp \
-            tlp-rdw \
-    ; fi
+        htop
 
 # Install new packages
 RUN rpm-ostree install \
@@ -202,15 +194,6 @@ RUN rpm-ostree install \
         compsize \
         input-remapper \
         system76-scheduler \
-        tuned \
-        tuned-utils \
-        tuned-utils-systemtap \
-        tuned-ppd \
-        tuned-gtk \
-        tuned-profiles-compat \
-        tuned-profiles-atomic \
-        tuned-profiles-cpu-partitioning \
-        powertop \
         hl2linux-selinux \
         joycond \
         ladspa-caps-plugins \
@@ -456,8 +439,6 @@ RUN /tmp/image-info.sh && \
     mkdir -p /usr/etc/flatpak/remotes.d && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d && \
     systemctl enable com.system76.Scheduler.service && \
-    systemctl enable tuned.service && \
-    systemctl enable tuned-ppd.service && \
     systemctl enable btrfs-dedup@var-home.timer && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
