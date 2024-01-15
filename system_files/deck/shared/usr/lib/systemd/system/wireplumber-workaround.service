@@ -1,0 +1,17 @@
+[Unit]
+Description=Workaround wireplumber needing to be written into by steamdeck-dsp
+ConditionPathExists=/usr/share/wireplumber
+After=local-fs.target
+
+[Service]
+Type=oneshot
+# Copy if it doesn't exist
+ExecStartPre=/usr/bin/bash -c "[ -d /usr/local/share/.wireplumber ] || /usr/bin/cp -r /usr/share/wireplumber /usr/local/share/.wireplumber"
+ExecStart=/usr/bin/mount --bind /usr/local/share/.wireplumber /usr/share/wireplumber
+# Clean-up after ourselves
+ExecStop=/usr/bin/umount /usr/share/wireplumber
+ExecStop=/usr/bin/rm -r /usr/local/share/.wireplumber
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
