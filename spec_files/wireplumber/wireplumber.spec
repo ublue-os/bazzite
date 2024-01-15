@@ -70,8 +70,7 @@ managing PipeWire.
        -Dsystemd=enabled \
        -Dsystemd-user-service=true \
        -Dintrospection=enabled \
-       -Delogind=disabled \
-       --sysconfdir=%{_rundir}
+       -Delogind=disabled
 %meson_build
 
 %install
