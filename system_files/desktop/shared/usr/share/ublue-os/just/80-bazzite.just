@@ -21,6 +21,12 @@ restore-original-terminal:
         sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.kde.konsole.desktop
     fi
 
+# Install Bazzite's Steam Game Mode Startup Video
+install-gamemode-video:
+    mkdir -p $HOME/.local/share/Steam/config/uioverrides/movies
+    rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
+    ln -s /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
+
 # Remove all waydroid-related files in your user folders
 reset-waydroid:
     bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
