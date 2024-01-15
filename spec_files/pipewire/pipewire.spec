@@ -1,6 +1,6 @@
 %global majorversion 1
 %global minorversion 0
-%global microversion 0
+%global microversion 1
 
 %global apiversion   0.3
 %global spaversion   0.2
@@ -81,7 +81,7 @@ Source1:        pipewire.sysusers
 # Holo: TODO: Bug reference
 Patch0:         bc435841c141ad38768b6cb1a7ad45e8bb13c7d2.patch
 # Holo: TODO: Bug reference
-Patch1:         acf7c0af0bf31b937c41e916a73c67ae0a253632.patch
+#Patch1:         acf7c0af0bf31b937c41e916a73c67ae0a253632.patch
 # Holo: upstream MR 1792
 Patch2:         0001-Bluez5-backend-native-HSP-AG-release-SCO-link-on-AT-.patch
 
@@ -818,6 +818,12 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %endif
 
 %changelog
+* Thu Jan 11 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.1-1
+- Update version to 1.0.1
+
+* Thu Dec 14 2023 Wim Taymans <wtaymans@redhat.com> - 1.0.0-2
+- Add patch to avoid crash in deviceprovider.
+
 * Sun Nov 26 2023 Wim Taymans <wtaymans@redhat.com> - 1.0.0-1
 - Update version to 1.0.0
 - Disable ROC until updated in Fedora.
