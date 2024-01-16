@@ -10,20 +10,20 @@
 
 # Tabla de Contenidos
 
-- [Características de **todas** las imágenes de Bazzite](https://github.com/ublue-os/bazzite#about--features)
-  - [Características de las imágenes para **Computadoras de Escritorio**](https://github.com/ublue-os/bazzite#desktop)
-  - [Características de las imágenes para **Steam Deck/HTPC**](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
-  - [Características de las imágenes con el entorno de escritorio **GNOME**](https://github.com/ublue-os/bazzite#gnome)
-  - [Características del Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
-- [¿Por qué?](https://github.com/ublue-os/bazzite#why)
-- [Mira como luce Bazzite (Capturas de Pantalla)](https://github.com/ublue-os/bazzite#showcase)
-- [Documentación y Boletín informativo/Newsletters (En inglés)](https://github.com/ublue-os/bazzite#documentation--newsletters)
-- [Paquetes Personalizados](https://github.com/ublue-os/bazzite#custom-packages)
-- [Arranque Seguro (Secure Boot)](https://github.com/ublue-os/bazzite#secure-boot)
-- [Verificación y Métricas](https://github.com/ublue-os/bazzite#verification)
-- [Gracias Especiales](https://github.com/ublue-os/bazzite#special-thanks)
-- [Créalo tu Mismo](https://github.com/ublue-os/bazzite#build-your-own)
-- [Comunidad (en inglés)](https://github.com/ublue-os/bazzite#join-the-community)
+- [Características de **todas** las imágenes de Bazzite](#about--features)
+  - [Características de las imágenes para **Computadoras de Escritorio**](#desktop)
+  - [Características de las imágenes para **Steam Deck/HTPC**](#steam-deckhome-theater-pcs-htpcs)
+  - [Características de las imágenes con el entorno de escritorio **GNOME**](#gnome)
+  - [Características del Upstream](#features-from-upstream)
+- [¿Por qué?](#why)
+- [Mira como luce Bazzite (Capturas de Pantalla)](#showcase)
+- [Documentación y Boletín informativo/Newsletters (En inglés)](#documentation--newsletters)
+- [Paquetes Personalizados](#custom-packages)
+- [Arranque Seguro (Secure Boot)](#secure-boot)
+- [Verificación y Métricas](#verification)
+- [Gracias Especiales](#special-thanks)
+- [Créalo tu Mismo](#build-your-own)
+- [Comunidad (en inglés)](#join-the-community)
 
 ---
 

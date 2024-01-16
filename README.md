@@ -9,21 +9,21 @@
 ---
 
 # Table of Contents
-- [Features for **All** Bazzite Images](https://github.com/ublue-os/bazzite#about--features)
-  - [Features for **Desktop** Images](https://github.com/ublue-os/bazzite#desktop)
-  - [Features for **Steam Deck / HTPC** Images](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
-  - [Features for **GNOME** Images](https://github.com/ublue-os/bazzite#gnome)
-  - [Features from Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
-- [Why](https://github.com/ublue-os/bazzite#why)
-- [Showcase](https://github.com/ublue-os/bazzite#showcase)
-- [Documentation & Newsletters](https://github.com/ublue-os/bazzite#documentation--newsletters)
-- [Custom Packages](https://github.com/ublue-os/bazzite#custom-packages)
-- [Image Verification](https://github.com/ublue-os/bazzite#verification)
-- [Secure Boot](https://github.com/ublue-os/bazzite#secure-boot)
-- [Metrics](https://github.com/ublue-os/bazzite#contributor-metrics)
-- [Special Thanks](https://github.com/ublue-os/bazzite#special-thanks)
-- [Building Your Own](https://github.com/ublue-os/bazzite#build-your-own)
-- [Community](https://github.com/ublue-os/bazzite#join-the-community)
+- [Features for **All** Bazzite Images](#about--features)
+  - [Features for **Desktop** Images](#desktop)
+  - [Features for **Steam Deck / HTPC** Images](#steam-deckhome-theater-pcs-htpcs)
+  - [Features for **GNOME** Images](#gnome)
+  - [Features from Upstream](#features-from-upstream)
+- [Why](#why)
+- [Showcase](#showcase)
+- [Documentation & Newsletters](#documentation--newsletters)
+- [Custom Packages](#custom-packages)
+- [Image Verification](#verification)
+- [Secure Boot](#secure-boot)
+- [Metrics](#contributor-metrics)
+- [Special Thanks](#special-thanks)
+- [Building Your Own](#build-your-own)
+- [Community](#join-the-community)
 ---
 
 ## About & Features
@@ -89,7 +89,7 @@ or for devices with Nvidia GPUs:
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:latest
 ```
 
-**For users with Secure Boot enabled:** Follow our [secure boot documentation](https://github.com/ublue-os/bazzite#secure-boot) prior to rebasing.
+**For users with Secure Boot enabled:** Follow our [secure boot documentation](#secure-boot) prior to rebasing.
 
 ### Steam Deck/Home Theater PCs (HTPCs)
 > [!IMPORTANT]  
@@ -174,7 +174,7 @@ To rebase an existing ostree system to the **Steam Deck/HTPC** release:
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:latest
 ```
 
-**For users with Secure Boot enabled:** Follow our [secure boot documentation](https://github.com/ublue-os/bazzite#secure-boot) prior to rebasing.
+**For users with Secure Boot enabled:** Follow our [secure boot documentation](#secure-boot) prior to rebasing.
 
 ### Features from Upstream
 
