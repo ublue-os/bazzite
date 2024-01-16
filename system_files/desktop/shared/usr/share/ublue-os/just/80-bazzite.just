@@ -50,15 +50,22 @@ configure-waydroid:
 # Install Sunshine
 install-sunshine:
     #!/usr/bin/bash
-    flatpak install --system --noninteractive flathub dev.lizardbyte.app.Sunshine
-    flatpak run --command=additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable || true
+    sudo sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree.repo
+    sudo sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
+    systemctl enable sunshine-workaround.service
+    ublue-update --wait
+    rpm-ostree install -y sunshine
     echo "Sunshine is installed!"
 
 # Remove Sunshine
 remove-sunshine:
     #!/usr/bin/bash
-    flatpak run --command=remove-additional-install.sh app/dev.lizardbyte.app.Sunshine/x86_64/stable || true
-    flatpak uninstall --delete-data --noninteractive dev.lizardbyte.sunshine
+    sudo sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree.repo
+    sudo sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
+    systemctl disable sunshine-workaround.service
+    ublue-update --wait
+    rpm-ostree remove -y sunshine
+    echo "Sunshine has been uninstalled."
 
 # Autostart Sunshine
 autostart-sunshine:
