@@ -62,20 +62,20 @@ install-sunshine:
     #!/usr/bin/bash
     sudo sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree.repo
     sudo sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
-    systemctl enable sunshine-workaround.service
+    sudo systemctl enable sunshine-workaround.service
     ublue-update --wait
     rpm-ostree install -y sunshine
-    echo "Sunshine is installed!"
+    echo "Sunshine is installed, please reboot to apply changes."
 
 # Remove Sunshine
 remove-sunshine:
     #!/usr/bin/bash
     sudo sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree.repo
     sudo sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
-    systemctl disable sunshine-workaround.service
+    sudo systemctl disable sunshine-workaround.service
     ublue-update --wait
     rpm-ostree remove -y sunshine
-    echo "Sunshine has been uninstalled."
+    echo "Sunshine has been uninstalled, please reboot to apply changes."
 
 # Autostart Sunshine
 autostart-sunshine:
