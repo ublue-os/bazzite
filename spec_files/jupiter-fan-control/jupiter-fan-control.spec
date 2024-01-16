@@ -9,6 +9,8 @@ Source:         https://gitlab.com/evlaV/%{name}/-/archive/main/%{name}-main.tar
 BuildArch:      noarch
 
 Patch0:         fedora.patch
+# Valve does the funny (Thanks RodoMa92)
+Patch1:         fan_fix.patch
 
 Requires:       python3
 
