@@ -8,8 +8,10 @@ URL:            https://github.com/ublue-os/bazzite
 Source0:        https://gitlab.com/evlaV/steamdeck-kde-presets/-/archive/master/steamdeck-kde-presets-master.tar.gz
 Source1:        kdeglobals-desktop
 Source2:        steamdeck-le.svg
+Source3:        bazzite_logo.svgz
 Patch0:         multiuser.patch
 Patch1:         lockscreen.patch
+Patch2:         bazzite_logo.patch
 
 BuildArch:      noarch
 
@@ -61,6 +63,10 @@ rm %{buildroot}%{_sysconfdir}/xdg/baloofilerc
 rm %{buildroot}%{_sysconfdir}/xdg/kdeglobals
 rm %{buildroot}%{_sysconfdir}/xdg/kcm-about-distrorc
 cp %{SOURCE1} %{buildroot}%{_sysconfdir}/xdg/kdeglobals
+rm %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/images/deck_logo.svgz
+rm %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/deck_logo.svgz
+cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/images/bazzite_logo.svgz
+cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/bazzite_logo.svgz
 
 # Do post-installation
 %post

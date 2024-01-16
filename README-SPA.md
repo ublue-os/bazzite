@@ -4,24 +4,26 @@
 
 ![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)
 
+# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md)
+
 ---
 
 # Tabla de Contenidos
 
-- [Características de **todas** las imágenes de Bazzite](https://github.com/ublue-os/bazzite#about--features)
-  - [Características de las imágenes para **Computadoras de Escritorio**](https://github.com/ublue-os/bazzite#desktop)
-  - [Características de las imágenes para **Steam Deck/HTPC**](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
-  - [Características de las imágenes con el entorno de escritorio **GNOME**](https://github.com/ublue-os/bazzite#gnome)
-  - [Características del Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
-- [¿Por qué?](https://github.com/ublue-os/bazzite#why)
-- [Mira como luce Bazzite (Capturas de Pantalla)](https://github.com/ublue-os/bazzite#showcase)
-- [Documentación y Boletín informativo/Newsletters (En inglés)](https://github.com/ublue-os/bazzite#documentation--newsletters)
-- [Paquetes Personalizados](https://github.com/ublue-os/bazzite#custom-packages)
-- [Arranque Seguro (Secure Boot)](https://github.com/ublue-os/bazzite#secure-boot)
-- [Verificación y Métricas](https://github.com/ublue-os/bazzite#verification)
-- [Gracias Especiales](https://github.com/ublue-os/bazzite#special-thanks)
-- [Créalo tu Mismo](https://github.com/ublue-os/bazzite#build-your-own)
-- [Comunidad (en inglés)](https://github.com/ublue-os/bazzite#join-the-community)
+- [Características de **todas** las imágenes de Bazzite](#about--features)
+  - [Características de las imágenes para **Computadoras de Escritorio**](#desktop)
+  - [Características de las imágenes para **Steam Deck/HTPC**](#steam-deckhome-theater-pcs-htpcs)
+  - [Características de las imágenes con el entorno de escritorio **GNOME**](#gnome)
+  - [Características del Upstream](#features-from-upstream)
+- [¿Por qué?](#why)
+- [Mira como luce Bazzite (Capturas de Pantalla)](#showcase)
+- [Documentación y Boletín informativo/Newsletters (En inglés)](#documentation--newsletters)
+- [Paquetes Personalizados](#custom-packages)
+- [Arranque Seguro (Secure Boot)](#secure-boot)
+- [Verificación y Métricas](#verification)
+- [Gracias Especiales](#special-thanks)
+- [Créalo tu Mismo](#build-your-own)
+- [Comunidad (en inglés)](#join-the-community)
 
 ---
 
@@ -315,13 +317,14 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## Arranque Seguro (Secure Boot)
 
-El Arranque Seguro (Secure Boot) tiene soporte gracias a nuestra llave digital personalizada. La llave pública puede encontrarse en la raíz de [este](https://github.com/ublue-os/bazzite/blob/main/secure_boot_key.der) repositorio.
+El Arranque Seguro (Secure Boot) tiene soporte gracias a nuestra llave digital personalizada. La llave pública puede encontrarse en la raíz de [este](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der) repositorio.
 
 
 Si gustas registrar esta llave antes de instalar Bazzite, descarga la llave y ejecuta el siguiente comando en una terminal:
 
 ```bash
-sudo mokutil --import secure_boot_key.der
+sudo mokutil --timeout -1
+sudo mokutil --import secure_boot.der
 ```
 
 ### Métricas de Contribución

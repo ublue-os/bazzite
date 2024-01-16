@@ -1,0 +1,8 @@
+{
+  "32218213-d8cf-444e-84c7-7f67b9765acd": {
+    "uuid": "32218213-d8cf-444e-84c7-7f67b9765acd",
+    "name": "System",
+    "url": "unix:///run/user/1000/podman/podman.sock",
+    "rgb": null
+  }
+}

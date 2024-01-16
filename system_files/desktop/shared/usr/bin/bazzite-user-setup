@@ -11,7 +11,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=21
+USER_SETUP_VER=22
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 
@@ -126,15 +126,21 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
 
   # Legion Rotation Fix
   AUTOSTART_FOLDER=${XDG_CONFIG_HOME:-$HOME/.config}
-  if [[ ":83E1:" =~ ":$SYS_ID" ]] && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
-    if [[ ! -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop" ]]; then
-      echo 'Adding legion rotation fix'
-      mkdir -p "$AUTOSTART_FOLDER/autostart"
-      printf "[Desktop Entry]\nExec=/usr/libexec/bazzite-handle-legion-go-rotation\nIcon=dialog-scripts\nName=bazzite-handle-legion-go-rotation\nType=Application\nX-KDE-AutostartScript=true\n" > "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop"
-    fi
-  elif [[ -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop" ]]; then
-    echo 'Non-legion or GNOME detected, removing legionfix'
+
+  # Remove old legion-only file
+  if [[ -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop" ]]; then
     rm -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop"
+  fi
+
+  if [[ ":ROG Ally RC71L_RC71L:83E1:" =~ ":$SYS_ID" ]] && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+    if [[ ! -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop" ]]; then
+      echo 'Adding rotation fix'
+      mkdir -p "$AUTOSTART_FOLDER/autostart"
+      printf "[Desktop Entry]\nExec=/usr/libexec/bazzite-rotation-fix\nIcon=dialog-scripts\nName=bazzite-rotation-fix\nType=Application\nX-KDE-AutostartScript=true\n" > "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop"
+    fi
+  elif [[ -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop" ]]; then
+    echo 'Non-supported or GNOME detected, removing rotaion fix'
+    rm -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop"
   fi
 fi
 

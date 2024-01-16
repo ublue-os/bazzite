@@ -3,6 +3,8 @@
 # This script fixes the screen orientation in the Desktop Mode in Bazzite-Deck KDE
 # Author: d3Xt3r
 
+SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+
 sleep 1
 echo $(date '+%Y-%m-%d %H:%M:%S') Starting Bazzite Desktop Orientation Fix script...| tee -a /tmp/bazrotfix.log
 
@@ -28,7 +30,11 @@ kscreen-doctor --outputs 2>&1 | tee -a /tmp/bazrotfix.log
 # Fix desktop orientation
 # Rotation options: right, normal, left, inverted
 echo $(date '+%Y-%m-%d %H:%M:%S') Fixing desktop orientation... | tee -a /tmp/bazrotfix.log
-kscreen-doctor output.1.rotation.left 2>&1 | tee -a /tmp/bazrotfix.log
+if [[ ":83E1:" =~ ":$SYS_ID" ]]; then
+	kscreen-doctor output.1.rotation.left 2>&1 | tee -a /tmp/bazrotfix.log
+else
+	kscreen-doctor output.1.rotation.normal 2>&1 | tee -a /tmp/bazrotfix.log
+fi
 
 echo $(date '+%Y-%m-%d %H:%M:%S') Ending Bazzite Desktop Orientation Fix script >> /tmp/bazrotfix.log
 echo -e '\n' >> /tmp/bazrotfix.log

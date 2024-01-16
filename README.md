@@ -4,23 +4,26 @@
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
 
+# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md)
+
 ---
+
 # Table of Contents
-- [Features for **All** Bazzite Images](https://github.com/ublue-os/bazzite#about--features)
-  - [Features for **Desktop** Images](https://github.com/ublue-os/bazzite#desktop)
-  - [Features for **Steam Deck / HTPC** Images](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
-  - [Features for **GNOME** Images](https://github.com/ublue-os/bazzite#gnome)
-  - [Features from Upstream](https://github.com/ublue-os/bazzite#features-from-upstream)
-- [Why](https://github.com/ublue-os/bazzite#why)
-- [Showcase](https://github.com/ublue-os/bazzite#showcase)
-- [Documentation & Newsletters](https://github.com/ublue-os/bazzite#documentation--newsletters)
-- [Custom Packages](https://github.com/ublue-os/bazzite#custom-packages)
-- [Image Verification](https://github.com/ublue-os/bazzite#verification)
-- [Secure Boot](https://github.com/ublue-os/bazzite#secure-boot)
-- [Metrics](https://github.com/ublue-os/bazzite#contributor-metrics)
-- [Special Thanks](https://github.com/ublue-os/bazzite#special-thanks)
-- [Building Your Own](https://github.com/ublue-os/bazzite#build-your-own)
-- [Community](https://github.com/ublue-os/bazzite#join-the-community)
+- [Features for **All** Bazzite Images](#about--features)
+  - [Features for **Desktop** Images](#desktop)
+  - [Features for **Steam Deck / HTPC** Images](#steam-deckhome-theater-pcs-htpcs)
+  - [Features for **GNOME** Images](#gnome)
+  - [Features from Upstream](#features-from-upstream)
+- [Why](#why)
+- [Showcase](#showcase)
+- [Documentation & Newsletters](#documentation--newsletters)
+- [Custom Packages](#custom-packages)
+- [Image Verification](#verification)
+- [Secure Boot](#secure-boot)
+- [Metrics](#contributor-metrics)
+- [Special Thanks](#special-thanks)
+- [Building Your Own](#build-your-own)
+- [Community](#join-the-community)
 ---
 
 ## About & Features
@@ -30,8 +33,7 @@ Bazzite is an OCI image that serves as an alternative operating system for the [
 Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ublue-os/nvidia](https://github.com/ublue-os/nvidia) using [Fedora](https://fedoraproject.org/) technology, which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features:
 
 - Uses the [fsync kernel](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) to achieve HDR and expanded hardware support, among numerous other included patches.
-- HDR available in Gamescope Session.
-- Proprietary Nvidia drivers pre-installed.
+- HDR available in Game mode.
 - NVK available on non-Nvidia builds.
 - Full hardware accelerated codec support for H264 decoding.
 - Full support for AMD's ROCM OpenCL/HIP run-times.
@@ -87,7 +89,7 @@ or for devices with Nvidia GPUs:
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:latest
 ```
 
-**For users with Secure Boot enabled:** Run `ujust enroll-secure-boot-key` and enter the password `ublue-os` if prompted to enroll the required key.
+**For users with Secure Boot enabled:** Follow our [secure boot documentation](#secure-boot) prior to rebasing.
 
 ### Steam Deck/Home Theater PCs (HTPCs)
 > [!IMPORTANT]  
@@ -95,7 +97,7 @@ Devices that are NOT the Steam Deck can still use the bazzite-deck images, but m
 
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, and for a console-like experience on HTPCs, available as `bazzite-deck`:
 
-- Directly boots to Gamemode matching SteamOS's behavior.
+- Directly boots to Game mode matching SteamOS's behavior.
 - **Automatic `duperemove` greatly trims the size of compatdata.**
 - **Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.**
 - **Able to be booted even if the drive is full.**
@@ -107,11 +109,11 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
 - Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default.
 - Option to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), and [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), among numerous other useful packages on installation.
-- Custom update system allows for the OS, Flatpaks, Nix packages <sup><sub>(Via Fleek)</sub></sup>, and Distrobox images to be updated directly from the Gamemode UI.
+- Custom update system allows for the OS, Flatpaks, Nix packages <sup><sub>(Via Fleek)</sub></sup>, and Distrobox images to be updated directly from the Game mode UI.
 - Built in support for Windows dual-boot thanks to Fedora's installation of GRUB being left intact.
 - Update break something? Easily roll back to the previous version of Bazzite thanks to `rpm-ostree`'s rollback functionality. You can even select previous images at boot.
 - Steam and Lutris preinstalled on the image as layered packages.
-- [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Gamemode and on the Desktop if Discord is installed. [View the official documentation here](https://trigg.github.io/Discover/bazzite).
+- [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Game mode and on the Desktop if Discord is installed. [View the official documentation here](https://trigg.github.io/Discover/bazzite).
 - Uses ZRAM<sub><sup>(4GB)</sup></sub> with the ZSTD compression algorithm by default with the option to switch back to a 1GB swap file and set a custom size for it if desired.
 - Kyber I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` and `rmlint` processes.
 - Applies SteamOS's kernel parameters.
@@ -122,7 +124,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
     - Built in support for display overclocking. For example, add `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` to `/etc/environment`.
     - Ability to use X11 on the desktop if desired by editing `/etc/default/desktop-wayland`.
     - 32GB RAM mod your Steam Deck? Enjoy double the maximum VRAM amount, automatically applied. <sup><sub>(Can you share your soldering skills?)</sub></sup>
-- Steam Deck hardware-specific services can be disabled by running `ujust disable-deck-services` in the terminal, useful for trying this image on other handhelds or for use on HTPCs.
+- Steam Deck hardware-specific services can be disabled by running `ujust disable-bios-updates` and `ujust disable-firmware-updates` in the terminal. These are automatically disabled on non-Deck hardware, and on Decks with DeckHD displays or 32GB RAM mods.
 - More information can be found [here](https://universal-blue.discourse.group/docs?topic=37) on the Bazzite Steam Deck images.
 
 > [!WARNING]  
@@ -172,10 +174,13 @@ To rebase an existing ostree system to the **Steam Deck/HTPC** release:
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:latest
 ```
 
+**For users with Secure Boot enabled:** Follow our [secure boot documentation](#secure-boot) prior to rebasing.
+
 ### Features from Upstream
 
 #### Universal Blue
 
+- Proprietary Nvidia drivers pre-installed.
 - Flathub is enabled by default.
 - [`ujust`](https://github.com/casey/just) commands for convenience.
 - Multi-media codecs out of the box.
@@ -277,6 +282,7 @@ Additionally, the following packages are used from other Copr repos:
 | [joycond](https://copr.fedorainfracloud.org/coprs/kylegospo/joycond/)                                         | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/joycond/package/joycond/status_image/last_build.png?)                                         |
 | [kernel-fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/)                                  | ![Build Status](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/package/kernel/status_image/last_build.png?)                                        |
 | [latencyflex-vulkan-layer](https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/)                    | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/package/latencyflex-vulkan-layer/status_image/last_build.png?)                    |
+| [nerd-fonts](https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/)                                         | ![Build Status](https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/package/nerd-fonts/status_image/last_build.png?)                                         |
 | [noise-suppression-for-voice](https://copr.fedorainfracloud.org/coprs/ycollet/audinux/)                       | ![Build Status](https://copr.fedorainfracloud.org/coprs/ycollet/audinux/package/noise-suppression-for-voice/status_image/last_build.png?)                       |
 | [obs-vkcapture](https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/)                             | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/package/obs-vkcapture/status_image/last_build.png?)                             |
 | [prompt](https://gitlab.gnome.org/chergert/prompt)                                                            | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/prompt/package/prompt/status_image/last_build.png?)                                           |
@@ -297,16 +303,31 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## Secure Boot
 
-Secure boot is supported with our custom key. The pub key can be found in the root of this repository [here](https://github.com/ublue-os/bazzite/blob/main/secure_boot_key.der).
-If you'd like to enroll this key prior to installation, download the key and run the following:
+Secure boot is supported with our custom key. The pub key can be found in the root of this repository [here](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der).
+If you'd like to enroll this key prior to installation or rebase, download the key and run the following:
 
 ```bash
-sudo mokutil --import secure_boot_key.der
+sudo mokutil --timeout -1
+sudo mokutil --import secure_boot.der
 ```
+
+For users already on a Universal Blue image, you may instead run `ujust enroll-secure-boot-key`.
+
+If asked for a password, use `ublue-os`.
 
 ### Contributor Metrics
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
+
+#### Star History
+
+<a href="https://star-history.com/#ublue-os/bazzite&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date" />
+  </picture>
+</a>
 
 ## Special Thanks
 

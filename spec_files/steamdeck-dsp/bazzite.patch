@@ -1,0 +1,57 @@
+--- a/wireplumber/hardware-profiles/wireplumber-hwconfig
++++ b/wireplumber/hardware-profiles/wireplumber-hwconfig
+@@ -45,39 +45,23 @@
+ install_hwprofile ()
+ {
+     local -r prpath="$1"
+-    local -r runconf=/run/wireplumber
++    local -r confdir=/usr/share/wireplumber
+     local confd
+     local conffile
+ 
+-    echo "Installing wireplumber hardware profile from '$prpath' in $runconf"
+-
+-    rm -rf $runconf
++    echo "Installing wireplumber hardware profile from '$prpath' in $confdir"
+ 
+     for confd in "${confdirs[@]}"
+     do
+         if [ -d "$prpath"/"$confd" ]
+         then
+-            mkdir -p $runconf/"$confd"
++            mkdir -p $confdir/"$confd"
+             for conffile in "$prpath"/"$confd"/*.lua
+             do
+-                cp -av $conffile $runconf/"$confd"
++                /usr/bin/cp -avf $conffile $confdir/"$confd"
+             done
+         fi
+     done
+-
+-    cat - <<EOF > $runconf/README
+-This configuration was:
+-
+- - installed in $runconf
+- - by $0
+- - from $prpath
+-
+-It will be regenerated every time the system restarts.
+-
+-To alter it permanently either:
+- - edit $prpath
+- - override in \$XDG_CONFIG_DIR/wireplumber/
+-EOF
+ }
+ 
+ unidentified ()
+--- a/wireplumber/systemd/system/wireplumber-sysconf.service
++++ b/wireplumber/systemd/system/wireplumber-sysconf.service
+@@ -11,7 +11,7 @@
+ Description=Hardware Specific Wireplumber Configuration
+ After=multi-user.target
+ Requisite=multi-user.target
+-ConditionPathIsDirectory=/run
++Requires=wireplumber-workaround.service
+ Before=shutdown.target
+ 
+ [Service]

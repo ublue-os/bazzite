@@ -10,9 +10,10 @@ License:        GPLv3
 URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/%{packagever}/%{packagename}-%{packagever}.tar.gz
+Source2:        bazzite.png
 Patch0:         fedora.patch
 Patch1:         selinux.patch
-Patch2:	        btrfs-automount.patch
+Patch2:         btrfs-automount.patch
 Patch3:         btrfs-format.patch
 Patch4:         user.patch
 Patch5:         bazzite-btrfs.patch
@@ -69,6 +70,7 @@ cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
 cp -rv etc/* %{buildroot}%{_sysconfdir}
+cp %{SOURCE2} %{buildroot}%{_datadir}/plymouth/themes/steamos/bazzite.png
 sed -i 's@steamos-cursor.png@usr/share/steamos/steamos-cursor.png@g' usr/share/steamos/steamos-cursor-config
 xcursorgen usr/share/steamos/steamos-cursor-config %{buildroot}%{_datadir}/icons/steam/cursors/default
 # Remove unneeded files
