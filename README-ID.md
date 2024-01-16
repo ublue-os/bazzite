@@ -292,11 +292,11 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## Secure Boot
 
-Secure boot didukung dengan key dari kami. Pub key dapat ditemukan di root repositori [ini](https://github.com/ublue-os/bazzite/blob/main/secure_boot_key.der).
+Secure boot didukung dengan key dari kami. Pub key dapat ditemukan di root repositori [ini](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der).
 Jika anda ingin menenroll key ini sebelum instalasi, unduh key ini dan jalankan:
 
 ```bash
-sudo mokutil --import secure_boot_key.der
+sudo mokutil --import secure_boot.der
 ```
 
 ### Metrik Kontribusi

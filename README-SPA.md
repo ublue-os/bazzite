@@ -317,13 +317,13 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## Arranque Seguro (Secure Boot)
 
-El Arranque Seguro (Secure Boot) tiene soporte gracias a nuestra llave digital personalizada. La llave pública puede encontrarse en la raíz de [este](https://github.com/ublue-os/bazzite/blob/main/secure_boot_key.der) repositorio.
+El Arranque Seguro (Secure Boot) tiene soporte gracias a nuestra llave digital personalizada. La llave pública puede encontrarse en la raíz de [este](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der) repositorio.
 
 
 Si gustas registrar esta llave antes de instalar Bazzite, descarga la llave y ejecuta el siguiente comando en una terminal:
 
 ```bash
-sudo mokutil --import secure_boot_key.der
+sudo mokutil --import secure_boot.der
 ```
 
 ### Métricas de Contribución

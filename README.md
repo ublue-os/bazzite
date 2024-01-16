@@ -303,12 +303,12 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## Secure Boot
 
-Secure boot is supported with our custom key. The pub key can be found in the root of this repository [here](https://github.com/ublue-os/bazzite/blob/main/secure_boot_key.der).
+Secure boot is supported with our custom key. The pub key can be found in the root of this repository [here](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der).
 If you'd like to enroll this key prior to installation or rebase, download the key and run the following:
 
 ```bash
 sudo mokutil --timeout -1
-sudo mokutil --import secure_boot_key.der
+sudo mokutil --import secure_boot.der
 ```
 
 For users already on a Universal Blue image, you may instead run `ujust enroll-secure-boot-key`.
