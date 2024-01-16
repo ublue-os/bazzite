@@ -585,3 +585,43 @@ RUN /tmp/image-info.sh && \
     mkdir -p /var/lib/bluetooth && \
     chmod -R 755 /var/lib/bluetooth && \
     ostree container commit
+
+FROM bazzite as bazzite-dx
+
+ARG IMAGE_NAME="${IMAGE_NAME}"
+ARG IMAGE_VENDOR="${IMAGE_VENDOR}"
+ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
+
+COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
+
+# Apply IP Forwarding before installing Docker to prevent messing with LXC networking
+RUN sysctl -p && \
+    wget https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -O /tmp/docker-compose && \
+    install -c -m 0755 /tmp/docker-compose /usr/bin
+
+COPY --from=cgr.dev/chainguard/flux:latest /usr/bin/flux /usr/bin/flux
+COPY --from=cgr.dev/chainguard/helm:latest /usr/bin/helm /usr/bin/helm
+COPY --from=cgr.dev/chainguard/ko:latest /usr/bin/ko /usr/bin/ko
+COPY --from=cgr.dev/chainguard/minio-client:latest /usr/bin/mc /usr/bin/mc
+
+# Install DevPod
+RUN rpm-ostree install https://github.com/loft-sh/devpod/releases/download/v0.3.7/DevPod_linux_x86_64.rpm && \
+    wget https://github.com/loft-sh/devpod/releases/download/v0.3.7/devpod-linux-amd64 -O /tmp/devpod && \
+    install -c -m 0755 /tmp/devpod /usr/bin
+
+# Cleanup & Finalize
+COPY system_files/shared /
+RUN /tmp/image-info.sh && \
+    systemctl enable podman.socket && \
+    systemctl disable pmie.service && \
+    systemctl disable pmlogger.service && \
+    rm -rf \
+        /tmp/* \
+        /var/* && \
+    mkdir -p /var/tmp && \
+    chmod -R 1777 /var/tmp && \
+    mkdir -p /var/lib/bluetooth && \
+    chmod -R 755 /var/lib/bluetooth && \
+    ostree container commit
