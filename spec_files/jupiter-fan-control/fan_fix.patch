@@ -1,7 +1,7 @@
-diff --git a/jupiter-fan-contro/jupiter-config.yaml b/jupiter-fan-contro/jupiter-config.yaml
+diff --git usr/share/jupiter-fan-control/jupiter-config.yaml usr/share/jupiter-fan-control/jupiter-config.yaml
 index c907f3f..b036518 100644
---- a/jupiter-fan-contro/jupiter-config.yaml
-+++ b/jupiter-fan-contro/jupiter-config.yaml
+--- usr/share/jupiter-fan-control/jupiter-config.yaml
++++ usr/share/jupiter-fan-control/jupiter-config.yaml
 @@ -17,6 +17,8 @@ fan_min_time_on: 120
  fan_gain: 10
  ec_ramp_rate: 10

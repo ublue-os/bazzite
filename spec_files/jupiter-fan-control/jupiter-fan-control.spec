@@ -23,8 +23,7 @@ SteamOS 3.0 Steam Deck Fan Controller
 %define debug_package %{nil}
 
 %prep
-%setup -n %{name}-main
-%patch 0 -p0
+%autosetup -n %{name}-main -p0
 
 %build
 
