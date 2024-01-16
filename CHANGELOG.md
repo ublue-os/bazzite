@@ -1,5 +1,58 @@
 # Changelog
 
+## [2.2.0](https://github.com/Asofwar/bazzite/compare/v2.1.0...v2.2.0) (2024-01-16)
+
+
+### Features
+
+* Add an alias for hyfetch to use Bazzite logo ([3d1e296](https://github.com/Asofwar/bazzite/commit/3d1e296aa63e54d0fc04dd68c06633fbee3fa24f))
+* Add Pods as a default feature, great for managing distrobox/containers. ([028884a](https://github.com/Asofwar/bazzite/commit/028884ac6994222df35402a1619fbe64f816b249))
+* Add Selinux Troubleshooting packages ([#651](https://github.com/Asofwar/bazzite/issues/651)) ([65fd72c](https://github.com/Asofwar/bazzite/commit/65fd72ce7b735fbadaa0030e7494501a8dd7af6d))
+* added a few apps to yafti ([#624](https://github.com/Asofwar/bazzite/issues/624)) ([af6f449](https://github.com/Asofwar/bazzite/commit/af6f449f73e4b1a871bb9b3c5fa5a957ecd9d721))
+* Allow Discover to launch for Vesktop ([f5e327e](https://github.com/Asofwar/bazzite/commit/f5e327eafd19fff8f2f49b64e1ad16c7e149ac06))
+* **ci:** Verify base image with cosign before building ([06555ee](https://github.com/Asofwar/bazzite/commit/06555eed1509965cce9c068545d1973dd1e90d49))
+* **deck:** Add DeckHD patch to gamescope ([842a14b](https://github.com/Asofwar/bazzite/commit/842a14bba35ee81c51129ff682d5a802b66b7f72))
+* **documentation:** Initial translation of the readme to Spanish ([#652](https://github.com/Asofwar/bazzite/issues/652)) ([7cc1187](https://github.com/Asofwar/bazzite/commit/7cc11878433ca27c8adddece0a3e506311918680))
+* **documentation:** Translation of the readme to Spanish complete, sans fixing the table of contents links. ([#654](https://github.com/Asofwar/bazzite/issues/654)) ([a18523f](https://github.com/Asofwar/bazzite/commit/a18523fe6c3fad97e4c977c1991d98c06d0e2820))
+* Enable libvirtd service if virt-manager layered ([#613](https://github.com/Asofwar/bazzite/issues/613)) ([7409500](https://github.com/Asofwar/bazzite/commit/7409500bc3b46cfc2d7a6ad63b7f077af813bbeb))
+* Enable MTU Probing matching upstream ([692550e](https://github.com/Asofwar/bazzite/commit/692550eeccfb488f647b71dabf43e77c4d1cd262))
+* **gamescope:** Bring in additional patches from ChimeraOS ([3036d90](https://github.com/Asofwar/bazzite/commit/3036d9003a66b92d5c9a856f7ab529357fc65cbc))
+* **gnome:** Enable num-lock by default ([#629](https://github.com/Asofwar/bazzite/issues/629)) ([18bd602](https://github.com/Asofwar/bazzite/commit/18bd602959aea5d9c447c79ac64b900c684bbc13))
+* **gnome:** Fix caps-lock input delay ([#630](https://github.com/Asofwar/bazzite/issues/630)) ([36ee23c](https://github.com/Asofwar/bazzite/commit/36ee23c00d15fe608403fd71aa85244ff9c76a50))
+* **kde:** Use prompt terminal by default ([ee90e79](https://github.com/Asofwar/bazzite/commit/ee90e790a24043caf1e3bd2a54902467c856d093))
+* **mesa:** Add patch for drastically improved RADV RT performance ([566bb40](https://github.com/Asofwar/bazzite/commit/566bb401ee61798b563eb9f1b649c87a98faeff8))
+* **nvidia:** Build nouveau-experimental vulkan driver in Mesa ([240863c](https://github.com/Asofwar/bazzite/commit/240863cd6ef42f86770a26a425aa7f383b47d852))
+* Use stock fedora gamepad drivers by default. If you are using a controller better served by xpad/xpadneo, switch with "ujust use-ublue-gamepads" ([080e40c](https://github.com/Asofwar/bazzite/commit/080e40c59224aeecd066c5468791aef0ba9b70a9))
+
+
+### Bug Fixes
+
+* Add fix for black screen on intel in gamescope ([e5a6bff](https://github.com/Asofwar/bazzite/commit/e5a6bffee4ed699d9174cce51c1206c5e0294b8b))
+* add missing shebang to selinux-looking-glass ([d9cad8e](https://github.com/Asofwar/bazzite/commit/d9cad8e807caaf9e184eadcd02b4385c2ec028d3))
+* Better handle drm path, fixes issues with DisplayLink ([7975627](https://github.com/Asofwar/bazzite/commit/79756279aaa7d709d73b888ed361e5a4f20ddd9a))
+* build Release ISO condition ([27f2973](https://github.com/Asofwar/bazzite/commit/27f2973aecdf0b8f50ddcdfb52c1658d294dcef6))
+* Correct a syntax issue in waydroid's prop file ([04aa2a1](https://github.com/Asofwar/bazzite/commit/04aa2a1d36af2008d67e07a219a6a1ad1073a67c))
+* Correct fan control on Jupiter (Thanks RodoMa92) ([a6e0b97](https://github.com/Asofwar/bazzite/commit/a6e0b97a38f5b278958edb1f4eb638de66f91ba7))
+* **desktop:** Adjust font sizes for Vapor KDE theme ([3bf5725](https://github.com/Asofwar/bazzite/commit/3bf5725748e1222e62e1c8f789acde161c71de1d))
+* **flatpak-manager:** Don't install packages that are already present or remove packages that aren't there ([eff2949](https://github.com/Asofwar/bazzite/commit/eff294926efc91cb4786fec4d4547e9fe3129a79))
+* **gnome:** Fix directory check for Add to Steam option in Nautilus ([5fbec9e](https://github.com/Asofwar/bazzite/commit/5fbec9ef245f3cd9fd034beb19efa9c51556f0e0))
+* **just:** Fixed source1 patch 60-custom.just ([#621](https://github.com/Asofwar/bazzite/issues/621)) ([d8885d2](https://github.com/Asofwar/bazzite/commit/d8885d25b03fa670bee812c22008d8569b79be72))
+* **kde:** Only add Return.desktop on Deck builds, remove Bazzite Portal from desktop ([8612ad8](https://github.com/Asofwar/bazzite/commit/8612ad8eccb7485f32b2776e83cba116cf4737f1))
+* **legion:** Adjust priv-write patch to only prevent writes to non-backlight hardware control without the enable flag ([8a0df51](https://github.com/Asofwar/bazzite/commit/8a0df51b7b852caef4940c794d37e79b7503242b))
+* Lock to previous version of btrfs dedup script ([73479f5](https://github.com/Asofwar/bazzite/commit/73479f50eaee9ec233b4590ac1bd2ac1dfa05ec1))
+* Move Bazzite-Portal into Utilities folder and out of Lost & Found ([3a1c1da](https://github.com/Asofwar/bazzite/commit/3a1c1da3fd5f85a540280feaf600414a87521006))
+* Move from BoilR AppImage to Flatpak ([076c3ff](https://github.com/Asofwar/bazzite/commit/076c3ff85bfd51e3e526e9534a4f095e661cfd05))
+* Move from Greenlight AppImage to Flatpak ([b80f66b](https://github.com/Asofwar/bazzite/commit/b80f66bcb739be84961c5a4af120238df2da3f2f))
+* **readme:** capitalization ([5feeaf4](https://github.com/Asofwar/bazzite/commit/5feeaf4f6efcf7264604a4410d6b004e3a201f2a))
+* **readme:** Fix documentation links ([68cc665](https://github.com/Asofwar/bazzite/commit/68cc665b7755209c4ea68f1f935db36bf8d70a2f))
+* **readme:** Too many spaces ([dbc5b2e](https://github.com/Asofwar/bazzite/commit/dbc5b2ead481fd4c62bd122e42f2892b698c4c4c))
+* Remove rundir change from wireplumber, this will be implemented another way ([0b3eb46](https://github.com/Asofwar/bazzite/commit/0b3eb4682dc2daad2bb447cffab1d8673451081f))
+* Set up bazzite-hardware-setup to re-run if the branch changes ([5fc342f](https://github.com/Asofwar/bazzite/commit/5fc342f8653bb16b9567646a832d89a55a999842))
+* Update LACT installer to download the correct version for KDE & GNOME, apply live to avoid needing to reboot and enable the service after reboot. ([f09a2d2](https://github.com/Asofwar/bazzite/commit/f09a2d2426954211f37f1eb69b65ebfb0f645119))
+* Use python3 (libs) from updates ([b01de10](https://github.com/Asofwar/bazzite/commit/b01de108beb5cb6b3930c33c77105b6276ddf1e0))
+* **yafti:** Use new just shortcuts for nix/fleek ([4bdb3a1](https://github.com/Asofwar/bazzite/commit/4bdb3a1df8ebdcbc6a01e79d2f565ad9000a62c4))
+* Zramd-generator generalization ([#674](https://github.com/Asofwar/bazzite/issues/674)) ([90d7589](https://github.com/Asofwar/bazzite/commit/90d7589929d513a848f8e9aec0477fe82d6b484a))
+
 ## [2.1.0](https://github.com/ublue-os/bazzite/compare/v2.0.2...v2.1.0) (2023-12-13)
 
 
