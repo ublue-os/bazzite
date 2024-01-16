@@ -323,6 +323,7 @@ El Arranque Seguro (Secure Boot) tiene soporte gracias a nuestra llave digital p
 Si gustas registrar esta llave antes de instalar Bazzite, descarga la llave y ejecuta el siguiente comando en una terminal:
 
 ```bash
+sudo mokutil --timeout -1
 sudo mokutil --import secure_boot.der
 ```
 

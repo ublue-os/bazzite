@@ -296,6 +296,7 @@ Secure boot didukung dengan key dari kami. Pub key dapat ditemukan di root repos
 Jika anda ingin menenroll key ini sebelum instalasi, unduh key ini dan jalankan:
 
 ```bash
+sudo mokutil --timeout -1
 sudo mokutil --import secure_boot.der
 ```
 
