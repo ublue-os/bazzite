@@ -1,0 +1,6 @@
+[include]
+paths = ["/etc/topgrade.toml"]
+
+[misc]
+disable = ["toolbx", "self_update"]
+ignore_failures = ["distrobox, "pip3"]
