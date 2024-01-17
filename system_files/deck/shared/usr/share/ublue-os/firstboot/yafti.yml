@@ -22,11 +22,6 @@ screens:
           default: true
           packages:
           - Set input group: sudo -A ujust add-user-to-input-group
-        Add Nested Desktop to Steam:
-          description: Adds a nested desktop environment to Steam game mode.
-          default: true
-          packages:
-          - Add to steam: ujust add-nested-desktop-to-steam
         BIOS &amp; Firmware Updates:
           description: Enables BIOS &amp; Firmware updates for Steam Deck hardware
           default: true
