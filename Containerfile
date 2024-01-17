@@ -127,11 +127,9 @@ RUN rpm-ostree override remove \
         ublue-os-update-services \
         firefox \
         firefox-langpacks \
-        htop && \
-    if ! [[ "${IMAGE_FLAVOR}" =~ "framework" ]]; then \
-        rpm-ostree override remove \
-            power-profiles-daemon \
-    ; else \
+        htop \
+        power-profiles-daemon && \
+    if [[ "${IMAGE_FLAVOR}" =~ "framework" ]]; then \
         rpm-ostree override remove \
             tlp \
             tlp-rdw \
