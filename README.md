@@ -34,7 +34,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Full support for [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Includes Valve's KDE themes from SteamOS.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
-- Uses [TuneD](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/getting-started-with-tuned_monitoring-and-managing-system-status-and-performance) in place of PPD, with full integration into GNOME, KDE, and Game mode. This is an incredibly powerful tool that RedHat offers [entire classes on](https://www.redhat.com/en/services/training/rh442-red-hat-enterprise-performance-tuning).
+- Uses [TuneD](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/getting-started-with-tuned_monitoring-and-managing-system-status-and-performance) in place of PPD, with full integration into GNOME, KDE, and Game mode. This is an incredibly powerful tool that Red Hat offers [entire classes on](https://www.redhat.com/en/services/training/rh442-red-hat-enterprise-performance-tuning).
 - Support for [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Only on KDE)</sup></sub>
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) included.
 - Full support for [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
