@@ -150,9 +150,9 @@ RUN rpm-ostree install \
         input-remapper \
         system76-scheduler \
         tuned \
+        tuned-ppd \
         tuned-utils \
         tuned-utils-systemtap \
-        tuned-ppd \
         tuned-gtk \
         tuned-profiles-compat \
         tuned-profiles-atomic \
