@@ -9,6 +9,8 @@ Source:         https://gitlab.com/evlaV/%{name}/-/archive/main/%{name}-main.tar
 BuildArch:      noarch
 
 Patch0:         fedora.patch
+# Valve does the funny (Thanks RodoMa92)
+Patch1:         fan_fix.patch
 
 Requires:       python3
 
@@ -21,8 +23,7 @@ SteamOS 3.0 Steam Deck Fan Controller
 %define debug_package %{nil}
 
 %prep
-%setup -n %{name}-main
-%patch 0 -p0
+%autosetup -n %{name}-main -p0
 
 %build
 
