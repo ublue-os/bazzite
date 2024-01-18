@@ -139,6 +139,11 @@ RUN rpm-ostree override replace \
         python3 \
         python3-libs \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libdecor \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true
