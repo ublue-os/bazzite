@@ -1,0 +1,20 @@
+diff --git usr/share/jupiter-fan-control/jupiter-config.yaml usr/share/jupiter-fan-control/jupiter-config.yaml
+index c907f3f..b036518 100644
+--- usr/share/jupiter-fan-control/jupiter-config.yaml
++++ usr/share/jupiter-fan-control/jupiter-config.yaml
+@@ -17,6 +17,8 @@ fan_min_time_on: 120
+ fan_gain: 10
+ ec_ramp_rate: 10
+ 
++dry_run: False
++
+ sensors:
+   - hwmon_name: amdgpu
+     nice_name: P_APU
+@@ -62,4 +64,4 @@ devices:
+     B: -531
+     C: 17394
+     T_threshold: 55
+-    # quadratic fit {{60, 2000}, {78, 3800}, {85, 5300}}
+\ No newline at end of file
++    # quadratic fit {{60, 2000}, {78, 3800}, {85, 5300}}

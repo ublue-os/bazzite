@@ -8,7 +8,7 @@
 
 Summary:   Xwayland
 Name:      xorg-x11-server-Xwayland
-%global    xwayland_version 23.2.2
+%global    xwayland_version 23.2.4
 Version:   %{xwayland_version}.bazzite.{{{ git_dir_version }}}
 Release:   1%{?gitdate:.%{gitdate}git%{shortcommit}}%{?dist}
 
@@ -24,7 +24,8 @@ Patch1:    0001-Valve.patch
 
 License:   MIT
 
-Requires: xorg-x11-server-common
+Requires: xkeyboard-config
+Requires: xkbcomp
 Requires: libEGL
 Requires: libepoxy >= 1.5.5
 
@@ -111,6 +112,7 @@ necessary for developing Wayland compositors using Xwayland.
         -Ddefault_font_path=%{default_font_path} \
         -Dbuilder_string="Build ID: %{name} %{xwayland_version}-%{release}" \
         -Dxkb_output_dir=%{_localstatedir}/lib/xkb \
+        -Dserverconfigdir=%{_datadir}/xwayland \
         -Dxcsecurity=true \
         -Dglamor=true \
         -Ddri3=true
@@ -122,23 +124,35 @@ necessary for developing Wayland compositors using Xwayland.
 
 # Remove unwanted files/dirs
 rm $RPM_BUILD_ROOT%{_mandir}/man1/Xserver.1*
-rm -Rf $RPM_BUILD_ROOT%{_libdir}/xorg
 rm -Rf $RPM_BUILD_ROOT%{_includedir}/xorg
 rm -Rf $RPM_BUILD_ROOT%{_datadir}/aclocal
-rm -Rf $RPM_BUILD_ROOT%{_localstatedir}/lib/xkb
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 %files
+%dir %{_datadir}/xwayland
 %{_bindir}/Xwayland
 %{_mandir}/man1/Xwayland.1*
 %{_datadir}/applications/org.freedesktop.Xwayland.desktop
+%{_datadir}/xwayland/protocol.txt
 
 %files devel
 %{_libdir}/pkgconfig/xwayland.pc
 
 %changelog
+* Tue Jan 16 2024 Olivier Fourdan <ofourdan@redhat.com> - 23.2.4-1
+- xwayland 23.2.4 - (#2254280)
+  CVE fix for: CVE-2023-6816, CVE-2024-0229, CVE-2024-21885, CVE-2024-21886,
+  CVE-2024-0408, CVE-2024-0409
+
+* Wed Dec 13 2023 Peter Hutterer <peter.hutterer@redhat.com> - 23.2.3-1
+- xwayland 23.2.3 
+  CVE fix for: CVE-2023-6377, CVE-2023-6478
+
+* Fri Nov 24 2023 Olivier Fourdan <ofourdan@redhat.com> - 23.2.2-2
+- Drop dependency on xorg-x11-server-common
+
 * Thu Oct 26 2023 Olivier Fourdan <ofourdan@redhat.com> - 23.2.2-1
 - xwayland 23.2.2 - (#2246029)
 
