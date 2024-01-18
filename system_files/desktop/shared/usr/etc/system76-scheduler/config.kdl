@@ -101,5 +101,7 @@ process-scheduler enable=true {
         systemd
         taskset
         schedtool
+        tuned
+        tuned-ppd
     }
 }
