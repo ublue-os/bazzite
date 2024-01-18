@@ -178,7 +178,14 @@ RUN rpm-ostree override remove \
         ublue-os-update-services \
         firefox \
         firefox-langpacks \
-        htop
+        htop && \
+    rpm-ostree override remove \
+        power-profiles-daemon \
+        || true && \
+    rpm-ostree override remove \
+        tlp \
+        tlp-rdw \
+        || true
 
 # Install new packages
 RUN rpm-ostree install \
@@ -193,6 +200,15 @@ RUN rpm-ostree install \
         compsize \
         input-remapper \
         system76-scheduler \
+        tuned \
+        tuned-ppd \
+        tuned-utils \
+        tuned-utils-systemtap \
+        tuned-gtk \
+        tuned-profiles-compat \
+        tuned-profiles-atomic \
+        tuned-profiles-cpu-partitioning \
+        powertop \
         hl2linux-selinux \
         joycond \
         ladspa-caps-plugins \
@@ -226,6 +242,7 @@ RUN rpm-ostree install \
         gum \
         setools \
         redhat-lsb-core && \
+    sed -i 's@Name=tuned-gui@Name=TuneD Manager@g' /usr/share/applications/tuned-gui.desktop && \
     ln -s /usr/share/fonts/google-noto-sans-cjk-fonts /usr/share/fonts/noto-cjk && \
     wget https://raw.githubusercontent.com/KyleGospo/steam-proton-mf-wmv/master/installcab.py -O /usr/bin/installcab && \
     wget https://github.com/KyleGospo/steam-proton-mf-wmv/blob/master/install-mf-wmv.sh -O /usr/bin/install-mf-wmv && \
@@ -437,6 +454,7 @@ RUN /tmp/image-info.sh && \
     mkdir -p /usr/etc/flatpak/remotes.d && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d && \
     systemctl enable com.system76.Scheduler.service && \
+    systemctl enable tuned.service && \
     systemctl enable btrfs-dedup@var-home.timer && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
