@@ -107,5 +107,7 @@ process-scheduler enable=true {
         taskset
         vpower
         schedtool
+        tuned
+        tuned-ppd
     }
 }
