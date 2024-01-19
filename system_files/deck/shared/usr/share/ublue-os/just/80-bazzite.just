@@ -60,22 +60,14 @@ configure-waydroid:
 # Install Sunshine
 install-sunshine:
     #!/usr/bin/bash
-    sudo sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-free.repo
-    sudo sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-free-updates.repo
-    sudo sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree.repo
-    sudo sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
     sudo systemctl enable sunshine-workaround.service
     ublue-update --wait
-    rpm-ostree install -y sunshine
+    rpm-ostree install -y https://github.com/LizardByte/Sunshine/releases/download/nightly-dev/sunshine-fedora-$(rpm -E %fedora)-amd64.rpm
     echo "Sunshine is installed, please reboot to apply changes."
 
 # Remove Sunshine
 remove-sunshine:
     #!/usr/bin/bash
-    sudo sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-free.repo
-    sudo sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-free-updates.repo
-    sudo sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree.repo
-    sudo sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
     sudo systemctl disable sunshine-workaround.service
     ublue-update --wait
     rpm-ostree remove -y sunshine
