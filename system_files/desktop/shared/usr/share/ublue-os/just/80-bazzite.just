@@ -312,8 +312,10 @@ install-scrcpy: distrobox-check-fedora
 
 # Install OpenTabletDriver, an open source, cross-platform, user-mode tablet driver
 install-opentabletdriver:
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
     if grep -qvz "arch" <<< $(distrobox list); then \
-      distrobox-create --nvidia --image ghcr.io/ublue-os/arch-distrobox:latest -n arch -Y; \
+      Assemble noconfirmcreate "" "arch"; \
     fi && \
     distrobox enter -n arch -- ' paru -S opentabletdriver --noconfirm' && \
     mkdir -p ~/.config/systemd/user/ && \
@@ -566,7 +568,8 @@ restore-gnome-folders:
 [private]
 distrobox-check-fedora:
     #!/bin/env bash
+    source /usr/lib/ujust/ujust.sh
     if grep -qvz "fedora" <<< $(distrobox list); then
       echo "Setting up Fedora distrobox"
-      /usr/bin/ujust distrobox-fedora
+      Assemble noconfirmcreate "" "fedora"
     fi
