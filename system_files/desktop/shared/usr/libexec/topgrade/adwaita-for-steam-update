@@ -1,9 +1,15 @@
 #!/usr/bin/bash
 shopt -s nullglob
 
+echo "Looking for updates..."
+
 if [ -d "$HOME/homebrew/themes/Adwaita-for-Steam" ]; then
   cd "$HOME/homebrew/themes/Adwaita-for-Steam"
+  echo "Theme found, pulling latest with git."
   git pull
+  echo "Update complete."
+else
+  echo -e "\nNothing to do."
 fi
 
 exit 0
