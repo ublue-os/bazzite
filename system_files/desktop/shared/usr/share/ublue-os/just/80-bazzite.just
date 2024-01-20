@@ -92,6 +92,14 @@ install-lact:
     rm /tmp/lact.rpm
     echo 'Complete.'
 
+# Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD)
+get-steamcmd:
+    echo 'Installing SteamCMD...'
+    wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O /tmp/steamcmd.tar.gz
+    mkdir -p ~/.steam
+    tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
+    rm /tmp/steamcmd.tar.gz
+
 # Install OpenRazer for Razer gaming hardware
 install-openrazer:
     sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo && \
@@ -186,10 +194,6 @@ unhide-grub:
     else
       sudo grub2-mkconfig -o /etc/grub2.cfg
     fi
-
-# Enable Flatpak Theming
-enable-flatpak-theming:
-    flatpak override --user --filesystem=xdg-config/gtk-4.0:ro --filesystem=xdg-config/gtk-3.0:ro --filesystem=~/.icons:ro --filesystem=~/.themes:ro
 
 # Add user to "input" group required by certain controller drivers
 add-user-to-input-group:
@@ -320,14 +324,6 @@ install-opentabletdriver:
     systemctl --user daemon-reload && \
     systemctl enable --user --now arch-opentabletdriver.service && \
     distrobox enter -n arch -- 'distrobox-export --app otd-gui'
-
-# Add SELinux file context for default looking-glass shm file so that libvirt can create it when needed
-selinux-looking-glass:
-    sudo tee << 'LOOKING_GLASS_TMP' > /etc/tmpfiles.d/10-looking-glass.conf
-    # Type Path               Mode UID  GID Age Argument
-    f /dev/shm/looking-glass 0660 1000 qemu -
-    LOOKING_GLASS_TMP
-    sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
 
 # Add virtual audio channels/sinks named Game, Voice, Browser and Music which you can split audio to using qpwgraph, helvum, carla or other pipewire patchbays for use in OBS and other use cases
 setup-virtual-channels:
