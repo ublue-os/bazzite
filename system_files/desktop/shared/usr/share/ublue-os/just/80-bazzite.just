@@ -19,6 +19,7 @@ restore-original-terminal:
         rm -f $HOME/.local/share/applications/org.kde.konsole.desktop
         cp /usr/share/applications/org.kde.konsole.desktop $HOME/.local/share/applications/org.kde.konsole.desktop
         sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.kde.konsole.desktop
+        echo "Done. Change your default Terminal in System Settings to complete the swap."
     fi
 
 # Install Bazzite's Steam Game Mode Startup Video
