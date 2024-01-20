@@ -1,0 +1,3 @@
+[commands]
+"Firefox GNOME Theme" = "/usr/libexec/topgrade/mozilla-gnome-theme-update"
+"Steam Adwaita Theme" = "/usr/libexec/topgrade/adwaita-for-steam-update"
