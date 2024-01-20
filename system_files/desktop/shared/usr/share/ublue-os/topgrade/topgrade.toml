@@ -3,4 +3,8 @@ paths = ["/etc/topgrade.toml"]
 
 [misc]
 disable = ["toolbx", "self_update"]
-ignore_failures = ["distrobox, "pip3"]
+ignore_failures = ["distrobox", "pip3"]
+
+[commands]
+"Firefox GNOME Theme" = "/usr/libexec/topgrade/mozilla-gnome-theme-update"
+"Steam Adwaita Theme" = "/usr/libexec/topgrade/adwaita-for-steam-update"
