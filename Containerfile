@@ -92,6 +92,7 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
         /tmp/akmods-rpms/kmods/*nct6687*.rpm \
         /tmp/akmods-rpms/kmods/*evdi*.rpm \
         /tmp/akmods-rpms/kmods/*zenpower3*.rpm \
+        /tmp/akmods-rpms/kmods/*bmi260*.rpm \
         /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
 
@@ -432,6 +433,7 @@ RUN /tmp/image-info.sh && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     echo "import \"/usr/share/ublue-os/just/80-bazzite.just\"" >> /usr/share/ublue-os/justfile && \
     pip install --prefix=/usr yafti && \
+    pip install --prefix=/usr topgrade && \
     pip install --prefix=/usr hyfetch && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \

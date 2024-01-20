@@ -117,6 +117,7 @@ get-simpledeckytdp:
       curl -L $(curl -s https://api.github.com/repos/aarron-lee/SimpleDeckyTDP/releases/latest | grep "browser_download_url" | cut -d '"' -f 4) -o /tmp/SimpleDeckyTDP.tar.gz
       sudo tar -xzf /tmp/SimpleDeckyTDP.tar.gz -C $HOME/homebrew/plugins
       rm /tmp/SimpleDeckyTDP.tar.gz
+      sudo sed -i 's/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=1/g' /etc/default/steam-hardware-control
     else
       echo 'Please install Decky Loader by running ujust get-decky first.'
     fi
@@ -457,8 +458,10 @@ install-scrcpy: distrobox-check-fedora
 
 # Install OpenTabletDriver, an open source, cross-platform, user-mode tablet driver
 install-opentabletdriver:
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
     if grep -qvz "arch" <<< $(distrobox list); then \
-      distrobox-create --nvidia --image ghcr.io/ublue-os/arch-distrobox:latest -n arch -Y; \
+      Assemble noconfirmcreate "" "arch"; \
     fi && \
     distrobox enter -n arch -- ' paru -S opentabletdriver --noconfirm' && \
     mkdir -p ~/.config/systemd/user/ && \
@@ -505,7 +508,8 @@ restore-gnome-folders:
 [private]
 distrobox-check-fedora:
     #!/bin/env bash
+    source /usr/lib/ujust/ujust.sh
     if grep -qvz "fedora" <<< $(distrobox list); then
       echo "Setting up Fedora distrobox"
-      /usr/bin/ujust distrobox-fedora
+      Assemble noconfirmcreate "" "fedora"
     fi

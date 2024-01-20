@@ -1,0 +1,6 @@
+[include]
+paths = ["/etc/ublue-os/topgrade.toml"]
+
+[misc]
+disable = ["toolbx", "self_update"]
+ignore_failures = ["distrobox", "flatpak", "brew_cask", "brew_formula", "nix", "pip3"]
