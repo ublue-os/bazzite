@@ -1,5 +1,5 @@
 [include]
-paths = ["/etc/topgrade.toml"]
+paths = ["/etc/ublue-os/topgrade.toml"]
 
 [misc]
 disable = ["toolbx", "self_update"]
