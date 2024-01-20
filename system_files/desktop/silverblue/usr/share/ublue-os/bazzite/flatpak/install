@@ -19,7 +19,7 @@ org.gnome.NautilusPreviewer
 org.gnome.TextEditor
 org.gnome.Weather
 org.gnome.baobab
-org.gnome.Totem
+io.github.celluloid_player.Celluloid
 org.gnome.clocks
 org.gnome.font-viewer
 org.freedesktop.Platform.VulkanLayer.MangoHud//23.08
