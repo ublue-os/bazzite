@@ -142,8 +142,8 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:lates
 #### Alternative Handhelds
 
 If you're using this image on a handheld other than the Steam Deck, you can get TDP control via the SimpleDeckyTDP Decky Loader Plugin.
-First install Decky Loader with: `ujust get-decky`
-Then install SimpleDeckyTDP with: `ujust get-simpledeckytdp`
+- First install Decky Loader with: `ujust get-decky`
+- Then install SimpleDeckyTDP with: `ujust get-simpledeckytdp`
 
 If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd), you can also get the plugin to integrate it into game mode with: `ujust get-hhd-decky`
 
