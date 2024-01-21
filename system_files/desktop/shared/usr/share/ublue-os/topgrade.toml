@@ -7,4 +7,4 @@ disable = ["toolbx", "self_update"]
 ignore_failures = ["distrobox", "flatpak", "brew_cask", "brew_formula", "nix", "pip3"]
 
 [linux]
-rpm-ostree = true
+rpm_ostree = true
