@@ -60,12 +60,6 @@ screens:
           default: true
           packages:
           - Fix Download Speed: ujust fix-steam-download-speed
-        Legacy Memory Configuration (Not recommended):
-          description: Disable ZRAM and enable adjustable swap file, defaults to 1GB.
-          default: false
-          packages:
-          - Deck Swap: ujust deckswap-on
-          - Disable ZRAM: ujust zram-off
         Oversteer:
           description: Application to control supported steering wheels
           default: false

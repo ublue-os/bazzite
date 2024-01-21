@@ -54,112 +54,9 @@ get-emudeck:
       wget https://www.emudeck.com/EmuDeck.desktop -O ~/Desktop/EmuDeck.desktop
     fi
 
-# Enable legacy swapfile (Not recommended)
-deckswap-on:
-    #!/usr/bin/bash
-    STATUS=$(systemctl status deckswap.service)
-    if grep -q 'inactive' <<< ${STATUS}; then
-      systemctl enable --now deckswap.service
-      echo 'deckswap enabled.'
-    else
-      echo 'deckswap is already enabled.'
-    fi
-
-# Disable legacy swapfile
-deckswap-off:
-    #!/usr/bin/bash
-    STATUS=$(systemctl status deckswap.service)
-    if grep -qv 'inactive' <<< ${STATUS}; then
-      systemctl disable --now deckswap.service
-      echo 'deckswap disabled.'
-    else
-      echo 'deckswap is already disabled.'
-    fi
-
-# Resize legacy swapfile (Default 1GB, max 16GB)
-resize-deckswap:
-    #!/usr/bin/bash
-    CONFIG='/etc/default/deckswap'
-    CURRENT_SIZE=$(cat "${CONFIG}" | grep -q "SWAP_SIZE" | sed 's/SWAP_SIZE=//g')
-    echo 'Current size: '${CURRENT_SIZE}
-    read -p 'Enter new size (1-16) in gigabytes (1G): ' NEW_SIZE
-    if [ -z "${NEW_SIZE//[0-9]}" ]; then
-      if [ -z "${NEW_SIZE}" ]; then
-        NEW_SIZE=1
-      fi
-      if ((${NEW_SIZE} >= 1 && ${NEW_SIZE} <= 16)); then
-        sudo sed -i 's/SWAP_SIZE=.*/SWAP_SIZE='${NEW_SIZE}'G/g' ${CONFIG}
-        echo 'Current size: '${NEW_SIZE}'G.'
-      else
-        echo 'Error: Input out of range (1-16). Running again.'
-        ujust resize-deckswap
-      fi
-      systemctl restart deckswap.service
-    else
-      echo 'Error: Input is not an integer. Running again.'
-      ujust resize-deckswap
-    fi
-
 # Use EXT4 for SD Cards, allows use of SteamOS formatted SD cards
 switch-to-ext4:
     sudo sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs
-
-# Enable ZRAM (Enabled by default)
-zram-on:
-    #!/usr/bin/bash
-    ublue-update --wait
-    KARGS=$(rpm-ostree kargs)
-    if grep -q 'zram' <<< ${KARGS}; then
-      rpm-ostree kargs --delete=systemd.zram=0
-      echo 'ZRAM enabled. Please reboot.'
-    else
-      echo 'ZRAM is already enabled.'
-    fi
-
-# Disable ZRAM (Not recommended)
-zram-off:
-    #!/usr/bin/bash
-    ublue-update --wait
-    KARGS=$(rpm-ostree kargs)
-    if grep -qv 'zram' <<< ${KARGS}; then
-      rpm-ostree kargs --append-if-missing=systemd.zram=0
-      echo 'ZRAM disabled. Please reboot.'
-    else
-      echo 'ZRAM is already disabled.'
-    fi
-
-# Resize ZRAM (Default 1GB)
-resize-zram:
-    #!/usr/bin/bash
-    CONFIG='/etc/systemd/zram-generator.conf'
-    if grep -q "zram-size" <<< $(cat ${CONFIG}); then
-      CURRENT_SIZE=$(cat "${CONFIG}" | grep -q "zram-size" | sed 's/zram-size=//g')
-    else
-      CURRENT_SIZE=1024
-    fi
-    echo 'Current size: '${CURRENT_SIZE}
-    read -p 'Enter new size (512-4096) in megabytes (1024): ' NEW_SIZE
-    if [ -z "${NEW_SIZE//[0-9]}" ]; then
-      if [ -z "${NEW_SIZE}" ]; then
-        NEW_SIZE=1024
-      fi
-      if ((${NEW_SIZE} >= 512 && ${NEW_SIZE} <= 4096)); then
-        if grep -q "zram-size" <<< $(cat ${CONFIG}); then
-          sudo sed -i 's/zram-size=.*/zram-size='${NEW_SIZE}'/g' ${CONFIG}
-        else
-          sudo echo "zram-size=${NEW_SIZE}" >> ${CONFIG}
-        fi
-        systemctl daemon-reload
-        systemctl start /dev/zram0
-        zramctl
-      else
-        echo 'Error: Input out of range (512-4096). Running again.'
-        ujust resize-zram
-      fi
-    else
-      echo 'Error: Input is not an integer. Running again.'
-      ujust resize-zram
-    fi
 
 # Install Deck HD BIOS
 install-deckhd-bios:
@@ -212,6 +109,12 @@ disable-sdgyrodsu:
     #!/usr/bin/bash
     sudo systemctl mask --user sdgyrodsu.service
 
+# Re-enable input remapper feature on non-desktop images
+restore-input-remapper:
+    systemctl enable --now input-remapper.service && \
+    cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
+    sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
+
 _toggle_wayland:
     #!/usr/bin/bash
     source /etc/default/desktop-wayland
@@ -220,9 +123,3 @@ _toggle_wayland:
     else
       sudo sed -i 's/false/true/g' /etc/default/desktop-wayland
     fi
-
-# Re-enable input remapper feature on non-desktop images
-enable-input-remapper:
-    systemctl enable --now input-remapper.service && \
-    cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
-    sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.deskto
