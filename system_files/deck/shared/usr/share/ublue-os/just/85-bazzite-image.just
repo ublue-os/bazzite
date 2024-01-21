@@ -17,7 +17,7 @@ get-decky:
     curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
     sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
 
-# Install SimpleDeckyTDP for TDP Control on the Lenovo Legion Go (Requires Decky Loader)
+# Install SimpleDeckyTDP, a simple TDP plugin for alternative PC handhelds
 get-simpledeckytdp:
     #!/usr/bin/bash
     if [[ -d $HOME/homebrew/plugins ]]; then
