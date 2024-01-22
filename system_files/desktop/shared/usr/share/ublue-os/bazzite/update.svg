@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<svg
+   fill="#000000"
+   width="800"
+   height="800"
+   viewBox="-1.7 0 20.4 20.4"
+   class="cf-icon-svg"
+   version="1.1"
+   id="svg1"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient10">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop10" />
+      <stop
+         style="stop-color:#f1e3fe;stop-opacity:1;"
+         offset="1"
+         id="stop11" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient6">
+      <stop
+         style="stop-color:#294528;stop-opacity:1;"
+         offset="0"
+         id="stop6" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop7" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient1">
+      <stop
+         style="stop-color:#0047ab;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#8a2be2;stop-opacity:1;"
+         offset="1"
+         id="stop2" />
+    </linearGradient>
+    <linearGradient
+       xlink:href="#linearGradient1"
+       id="linearGradient2"
+       x1="2.8567808"
+       y1="4.882319"
+       x2="12.167582"
+       y2="13.969824"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       xlink:href="#linearGradient6"
+       id="linearGradient7"
+       x1="1.7610795"
+       y1="3.842427"
+       x2="15.253079"
+       y2="16.473698"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       xlink:href="#linearGradient10"
+       id="linearGradient11"
+       x1="1.7153908"
+       y1="10.156913"
+       x2="15.387341"
+       y2="10.156913"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <ellipse
+     style="display:inline;fill:url(#linearGradient11);stroke:url(#linearGradient7);stroke-width:0.0255"
+     id="path2"
+     ry="6.3601246"
+     rx="6.823225"
+     cy="10.156913"
+     cx="8.5513659"
+     mask="none" />
+  <path
+     d="M 16.416,10.283 A 7.917,7.917 0 1 1 8.5,2.366 7.916,7.916 0 0 1 16.416,10.283 Z M 4.546,7.329 a 5.084,5.084 0 0 0 -0.908,2.139 0.792,0.792 0 0 0 0.646,0.915 0.813,0.813 0 0 0 0.135,0.011 0.792,0.792 0 0 0 0.78,-0.657 3.506,3.506 0 0 1 0.498,-1.29 v 0.324 a 0.792,0.792 0 0 0 1.584,0 V 6.537 A 0.792,0.792 0 0 0 6.489,5.745 H 4.255 a 0.792,0.792 0 0 0 0,1.584 z m 1.117,4.865 a 3.548,3.548 0 0 1 -0.285,-0.58 0.792,0.792 0 1 0 -1.479,0.566 5.097,5.097 0 0 0 0.412,0.839 0.792,0.792 0 1 0 1.352,-0.825 z m 1.941,1.518 a 3.54,3.54 0 0 1 -0.596,-0.249 0.792,0.792 0 0 0 -0.742,1.399 5.163,5.163 0 0 0 0.862,0.36 0.792,0.792 0 1 0 0.476,-1.51 z M 8.74,6.825 A 0.792,0.792 0 0 0 8.754,5.242 H 8.746 A 0.792,0.792 0 1 0 8.718,6.825 h 0.007 z m 1.601,8.33 a 0.792,0.792 0 1 0 -0.523,-1.495 3.381,3.381 0 0 1 -0.309,0.092 0.792,0.792 0 0 0 0.19,1.56 0.806,0.806 0 0 0 0.193,-0.023 c 0.151,-0.038 0.302,-0.083 0.45,-0.134 z M 10.922,7.467 A 0.792,0.792 0 0 0 11.336,6 L 11.333,5.998 a 0.792,0.792 0 0 0 -0.835,1.346 l 0.013,0.007 a 0.787,0.787 0 0 0 0.411,0.116 z m 1.722,4.692 a 0.792,0.792 0 0 0 -1.103,0.195 3.574,3.574 0 0 1 -0.196,0.256 0.792,0.792 0 0 0 1.208,1.023 c 0.1,-0.12 0.197,-0.244 0.286,-0.371 A 0.792,0.792 0 0 0 12.644,12.159 Z M 11.768,8.701 11.775,8.714 A 0.792,0.792 0 0 0 13.173,7.97 L 13.171,7.968 a 0.792,0.792 0 1 0 -1.403,0.733 z m 1.233,1.066 a 0.792,0.792 0 0 0 -0.83,0.75 3.623,3.623 0 0 1 -0.01,0.13 0.791,0.791 0 0 0 0.72,0.857 0.767,0.767 0 0 0 0.07,0.004 0.792,0.792 0 0 0 0.787,-0.723 c 0.006,-0.062 0.01,-0.124 0.013,-0.187 a 0.791,0.791 0 0 0 -0.75,-0.83 z"
+     id="path3"
+     style="display:inline;fill:url(#linearGradient2)" />
+</svg>
