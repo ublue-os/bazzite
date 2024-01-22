@@ -123,17 +123,6 @@ get-wootility:
       chmod +x $HOME/Desktop/wootility.AppImage
     fi
 
-# Enable Supergfxctl, a Nvidia GPU switcher for hybrid laptops
-enable-supergfxctl:
-    #!/usr/bin/bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
-    if [[ "$IMAGE_FLAVOR" =~ "nvidia" ]]; then
-      systemctl enable --now supergfxd.service
-    else
-      echo "This requires an Nvidia image."
-    fi
-
 # Patch a bug in some 32-bit Source 1.x titles that causes them to crash at startup
 patch-source1-tcmalloc:
     #!/usr/bin/bash
