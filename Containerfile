@@ -424,6 +424,7 @@ RUN /tmp/image-info.sh && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     echo "import \"/usr/share/ublue-os/just/80-bazzite.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/85-bazzite-image.just\"" >> /usr/share/ublue-os/justfile && \
+    echo "import \"/usr/share/ublue-os/just/90-bazzite-de.just\"" >> /usr/share/ublue-os/justfile && \
     pip install --prefix=/usr yafti && \
     pip install --prefix=/usr topgrade && \
     pip install --prefix=/usr hyfetch && \
@@ -707,6 +708,7 @@ RUN rm -rf \
         /tmp/* \
         /var/* && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
+    echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp && \
     mkdir -p /var/lib/bluetooth && \

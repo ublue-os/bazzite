@@ -156,16 +156,10 @@ patch-gmod:
 # Install Adwaita-for-Steam theme for CSS Loader (https://github.com/tkashkin/Adwaita-for-Steam)
 install-adwaita-for-steam:
     #!/usr/bin/bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      if [ -d "$HOME/homebrew/themes" ]; then
+    if [ -d "$HOME/homebrew/themes" ]; then
         git clone https://github.com/tkashkin/Adwaita-for-Steam.git --single-branch "$HOME/homebrew/themes/Adwaita-for-Steam"
-      else
+    else
         echo 'Please install Decky Loader & CSS Loader first'
-      fi
-    else 
-      echo "This is only supported under GNOME."
     fi
 
 # Force-enable AMD pstate
@@ -520,42 +514,6 @@ remove-virtual-surround-71:
     rm ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf
     rm ~/.config/pipewire/hrir_hesuvi/Control_Room_1.wav
     echo "Virtual Surround 7.1 removed, please reboot or restart pipewire for it to take effect."
-
-# Restore Bazzite Breeze GTK4 theme (KDE Only)
-restore-bazzite-breeze-gtk-theme:
-    rm -f $HOME/.config/gtk-4.0/gtk.css
-    rm -f $HOME/.config/gtk-4.0/kde_window_geometry.css
-    cp /usr/etc/skel/.config/gtk-4.0/gtk.css $HOME/.config/gtk-4.0/gtk.css
-    cp /usr/etc/skel/.config/gtk-4.0/kde_window_geometry.css $HOME/.config/gtk-4.0/kde_window_geometry.css
-
-# Blacklist K10 Temp and switch to Zenpower3
-switch-to-zenpower:
-    sudo bash -c 'sudo echo -e "\n# replaced with zenpower\nblacklist k10temp" >> /etc/modprobe.d/amdcpu.conf'
-
-# Restore Bazzite customized DE settings (GNOME only)
-restore-gnome-de-settings:
-    #!/usr/bin/bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      dconf load / < /usr/etc/dconf/db/local.d/02-bazzite-global
-      dconf load / < /usr/etc/dconf/db/local.d/03-bazzite-dash
-      dconf load / < /usr/etc/dconf/db/local.d/05-bazzite-extensions
-      dconf load / < /usr/etc/dconf/db/local.d/06-bazzite-theme
-    else
-      echo 'This command may only be used on GNOME.'
-    fi
-
-# Restore Bazzite customized applications folders (GNOME only)
-restore-gnome-folders:
-    #!/usr/bin/bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      dconf load / < /usr/etc/dconf/db/local.d/04-bazzite-folders
-    else
-      echo 'This command may only be used on GNOME.'
-    fi
 
 # Create fedora distrobox if it doesn't exist
 [private]
