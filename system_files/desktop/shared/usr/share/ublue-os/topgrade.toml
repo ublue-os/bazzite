@@ -3,7 +3,8 @@ paths = ["/etc/ublue-os/topgrade.toml"]
 
 [misc]
 no_self_update = true
-assume_yes = true
-no_retry = true
 disable = ["toolbx", "self_update"]
 ignore_failures = ["distrobox", "flatpak", "brew_cask", "brew_formula", "nix", "pip3"]
+
+[linux]
+rpm_ostree = true

@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=21
+HWS_VER=22
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -162,11 +162,11 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     systemctl enable --now vpower.service
   else
     echo "Generic device detected. Performing setup..."
-    if [[ ":ROG Ally RC71L_RC71L:83E1:" =~ ":$SYS_ID:" ]]; then
+    if [[ ":ROG Ally RC71L_RC71L:83E1:G1618-04:G1617-01:G1619-05:" =~ ":$SYS_ID:" ]]; then
       echo "HHD supported handheld detected, disabling handycon & ds-inhibit..."
       systemctl disable --now handycon.service
       systemctl disable --now ds-inhibit.service
-    elif [[ ":AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1618-04:G1619-04:Win600:" =~ ":$SYS_ID:" ]]; then
+    elif [[ ":AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1619-04:Win600:" =~ ":$SYS_ID:" ]]; then
       echo "HandyGCCS supported handheld detected, enabling handycon & ds-inhibit..."
       systemctl enable --now handycon.service
       systemctl enable --now ds-inhbit.service
