@@ -1,0 +1,22 @@
+[Unit]
+Description=Workaround SELinux issues with Incus...
+ConditionPathExists=/usr/bin/incus
+ConditionPathExists=/usr/bin/incus-agent
+ConditionPathExists=/usr/lib/incus
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/mount --bind -o rw /usr/bin/incus /usr/bin/incus
+ExecStart=/usr/bin/mount --bind -o rw /usr/bin/incus-agent /usr/bin/incus-agent
+ExecStart=/usr/bin/mount --bind -o rw /usr/lib/incus /usr/lib/incus
+ExecStart=/usr/sbin/restorecon -R -v /usr/bin/incus
+ExecStart=/usr/sbin/restorecon -R -v /usr/bin/incus-agent
+ExecStart=/usr/sbin/restorecon -R -v /usr/lib/incus
+ExecStart=/usr/bin/umount /usr/bin/incus
+ExecStart=/usr/bin/umount /usr/bin/incus-agent
+ExecStart=/usr/bin/umount /usr/lib/incus
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
