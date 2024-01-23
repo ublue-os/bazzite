@@ -67,7 +67,7 @@ jobs:
             base_image_flavor: framework
     steps:
       - name: Verify base image
-        uses: EyeCantCU/cosign-action/verify@v0.2.0
+        uses: EyeCantCU/cosign-action/verify@v0.2.2
         with:
           containers: ${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}
           pubkey: https://raw.githubusercontent.com/ublue-os/${{ matrix.base_image_flavor }}/main/cosign.pub
@@ -264,7 +264,7 @@ jobs:
             --disable-content-trust
 
       - name: Sign container image
-        uses: EyeCantCU/cosign-action/sign@v0.2.0
+        uses: EyeCantCU/cosign-action/sign@v0.2.2
         if: github.event_name != 'pull_request'
         with:
           containers: ${{ env.IMAGE_NAME }}
