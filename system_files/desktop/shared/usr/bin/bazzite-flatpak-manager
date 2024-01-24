@@ -62,7 +62,8 @@ flatpak override \
 
 # Allow MangoHUD config for Flatpaks
 flatpak override \
-  --filesystem=xdg-config/Mangohud:ro
+  --filesystem=xdg-config/Mangohud:ro \
+  --filesystem=xdg-config/vkBasalt:ro
 
 # Params needed for HW accelerated video on Nvidia (Ignoring hybrid systems)
 if [[ $IMAGE_FLAVOR =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C display) | wc -l) -le 1 ] && grep -q "vendor: NVIDIA Corporation" <<< $(lshw -C display); then
