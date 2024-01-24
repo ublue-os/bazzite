@@ -49,11 +49,9 @@ THEME_DIR="/usr/share/ublue-os/bazzite/themes"
 GRADIENCE_DIR="$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
 mkdir -p "$GRADIENCE_DIR"
 if [[ ! -f "$GRADIENCE_DIR/vapor.json" ]]; then
-  rm -f "$GRADIENCE_DIR/vapor.json"
   cp "$THEME_DIR/vapor.json" "$GRADIENCE_DIR/vapor.json"
 fi
 if [[ ! -f "$GRADIENCE_DIR/vgui2.json" ]]; then
-  rm -f "$GRADIENCE_DIR/vgui2.json"
   cp "$THEME_DIR/vgui2.json" "$GRADIENCE_DIR/vgui2.json"
 fi
 
