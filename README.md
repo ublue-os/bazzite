@@ -12,6 +12,7 @@
 - [Features for **All** Bazzite Images](#about--features)
   - [Features for **Desktop** Images](#desktop)
   - [Features for **Steam Deck / HTPC** Images](#steam-deckhome-theater-pcs-htpcs)
+    - [Alternative Handhelds](#alternative-handhelds)
   - [Features for **GNOME** Images](#gnome)
   - [Features from Upstream](#features-from-upstream)
 - [Why](#why)
