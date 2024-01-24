@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SCRIPT VERSION
-VER=15
+VER=16
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -52,6 +52,13 @@ flatpak override \
   --env=MOZ_ENABLE_WAYLAND=1 \
   --env=MOZ_USE_XINPUT2=1 \
   org.mozilla.firefox
+
+# Fix printing on LibreOffice
+flatpak override \
+  --system \
+  --socket=cups \
+  --socket=session-bus \
+  org.libreoffice.LibreOffice
 
 # Params needed for HW accelerated video on Nvidia (Ignoring hybrid systems)
 if [[ $IMAGE_FLAVOR =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C display) | wc -l) -le 1 ] && grep -q "vendor: NVIDIA Corporation" <<< $(lshw -C display); then
