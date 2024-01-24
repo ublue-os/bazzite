@@ -707,8 +707,8 @@ RUN rm -f /usr/bin/waydroid-choose-gpu && \
 # Install NVIDIA driver
 RUN wget https://raw.githubusercontent.com/ublue-os/nvidia/main/install.sh -O /tmp/nvidia-install.sh && \
     wget https://raw.githubusercontent.com/ublue-os/nvidia/main/post-install.sh -O /tmp/nvidia-post-install.sh && \
-    chmod +x /tmp/nvidia-install.sh && /tmp/nvidia-install.sh && \
-    chmod +x /tmp/nvidia-post-install.sh && /tmp/nvidia-post-install.sh
+    chmod +x /tmp/nvidia-install.sh && IMAGE_NAME="${BASE_IMAGE_NAME}" /tmp/nvidia-install.sh && \
+    chmod +x /tmp/nvidia-post-install.sh && IMAGE_NAME="${BASE_IMAGE_NAME}" /tmp/nvidia-post-install.sh
 
 # Cleanup & Finalize
 RUN rm -rf \
