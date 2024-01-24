@@ -13,6 +13,7 @@
 - [Características de **todas** las imágenes de Bazzite](#about--features)
   - [Características de las imágenes para **Computadoras de Escritorio**](#desktop)
   - [Características de las imágenes para **Steam Deck/HTPC**](#steam-deckhome-theater-pcs-htpcs)
+     - [Computadoras Handheld Alternativas](#alternative-handhelds)
   - [Características de las imágenes con el entorno de escritorio **GNOME**](#gnome)
   - [Características del Upstream](#features-from-upstream)
 - [¿Por qué?](#why)
@@ -147,6 +148,13 @@ Si deseas cambiar la base (rebase) de una imagen upstream existente de un sistem
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:latest
 ```
+#### Computadoras handheld alternativas
+
+Si estas usando esta imagen en otras computadoras Handheld que no son la Steam Deck, como la Legion Go o la AYN Loki Max, puedes controlar el TDP usando el plugin de Decky Loader llamado SimpleDeckyTDP, esto también aplica para aquellas computadoras Handheld que usan una imagen personalizada basada en `-deck` que brindan soporte especializado a ciertos dispositivos como la Ally.
+- Primero, instala Decky Loader ejecutando el siguiente comando en una terminal: `ujust get-decky`
+- Despues, instala SimpleDeckyTDP ejecutando el siguiente comando en una terminal: `ujust get-simpledeckytdp`
+
+Si estas usando una computadora Handheld que tiene soporte por parte de [hhd](https://github.com/hhd-dev/hhd), tambien puedes obtener un plugin que integra esta funcionalidad con game mode, solo ejecuta el siguiente comando en una terminal: `ujust get-hhd-decky`
 
 ### GNOME
 
