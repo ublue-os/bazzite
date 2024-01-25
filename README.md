@@ -147,7 +147,31 @@ If you're using this image on a handheld other than the Steam Deck, you can get 
 - First install Decky Loader with: `ujust get-decky`
 - Then install SimpleDeckyTDP with: `ujust get-simpledeckytdp`
 
-If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd), you can also get the plugin to integrate it into game mode with: `ujust get-hhd-decky`
+If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Such as the Lenovo Legion Go and the ASUS Ally)</sup></sub>, you can also get the plugin to integrate an option menu for it into game mode with: `ujust get-hhd-decky`
+
+#### ASUS Ally
+
+Bazzite has separate images specific for the ASUS Ally due to extra driver & software requirements for that hardware. You can pick the Ally images from the installer, or rebase using one of the following:
+
+```bash
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-ally:stable
+```
+
+```bash
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-ally-gnome:stable
+```
+
+#### Framegame
+
+[Build one of these?](https://www.youtube.com/watch?v=zd6WtTUf-30) Here's an image for you. This is the deck variant of the framework laptop image.
+
+```bash
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-framegame:stable
+```
+
+```bash
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-framegame-gnome:stable
+```
 
 ### GNOME
 
