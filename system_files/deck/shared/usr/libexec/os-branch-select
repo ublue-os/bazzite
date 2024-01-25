@@ -11,7 +11,7 @@ if [[ $# -eq 1 ]]; then
       fi
 
       case "$branch" in
-        "latest")
+        "latest" | "stable")
           echo rel
           exit 0
           ;;
@@ -40,8 +40,8 @@ if [[ $# -eq 1 ]]; then
       echo main
       exit 0
       ;;
-    "rel" | "latest")
-      /usr/bin/pkexec /usr/libexec/ublue-update-rebase "latest"
+    "rel" | "latest" | "stable")
+      /usr/bin/pkexec /usr/libexec/ublue-update-rebase "stable"
       exit 0
       ;;
     "rc" | "beta" | "testing")
@@ -57,4 +57,4 @@ if [[ $# -eq 1 ]]; then
   esac
 fi
 
-echo "Usage: steamos-select-branch <latest|testing|unstable>" 1>&2
+echo "Usage: steamos-select-branch <latest|stable|testing|unstable>" 1>&2

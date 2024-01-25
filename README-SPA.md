@@ -87,13 +87,13 @@ Si estas actualmente usando una imagen de Universal Blue, por favor [sigue estas
 Si deseas cambiar la base (rebase) de una imagen upstream existente de un sistema ostree de Fedora Silverblue/Kinoite a la imagen **para computadoras de escritorio usando una GPU AMD o Intel**, ejecuta el siguiente comando en una terminal:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
 ```
 
 Si deseas realizar un rebase a la imagen **para computadoras de escritorio con una GPU NVIDIA**, ejecuta el siguiente comando en una terminal:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:stable
 ```
 
 **Para usuarios con Secure Boot habilitado:** Ejecuta el comando `ujust enroll-secure-boot-key` en una terminal e introduce la contraseña `ublue-os` si el sistema te lo requiere para registrar la clave de seguridad requerida.
@@ -146,7 +146,7 @@ Si estas actualmente usando una imagen de Universal Blue, por favor [sigue estas
 Si deseas cambiar la base (rebase) de una imagen upstream existente de un sistema ostree de Fedora Silverblue/Kinoite a la imagen **para Steam Deck/HTPCs**, ejecuta el siguiente comando en una terminal:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stable
 ```
 #### Computadoras handheld alternativas
 
@@ -175,13 +175,13 @@ Si estas actualmente usando una imagen de Universal Blue, por favor [sigue estas
 Si deseas cambiar la base (rebase) de una imagen upstream existente de un sistema ostree de Fedora Silverblue/Kinoite a la imagen **para computadoras de escritorio con una GPU AMD ó Intel**, ejecuta el siguiente comando en una terminal:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:stable
 ```
 
 Si deseas realizar un rebase a la imagen **para computadoras de escritorio con una GPU NVIDIA**, ejecuta el siguiente comando en una terminal:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
 ```
 
 > \[!WARNING\]\
@@ -193,7 +193,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvid
 Si necesitas realizar un rebase a la imagen **para Steam Deck/HTPC**, ejecuta el siguiente comando en una terminal:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:stable
 ```
 
 ### Características del Upstream
