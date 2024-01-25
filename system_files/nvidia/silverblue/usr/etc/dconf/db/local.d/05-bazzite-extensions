@@ -1,0 +1,3 @@
+[org/gnome/shell] 
+enabled-extensions=['s76-scheduler@mattjakeman.com', 'logomenu@aryan_k', 'appindicatorsupport@rgcjonas.gmail.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'gsconnect@andyholmes.github.io', 'just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx', 'hotedge@jonathan.jdoda.ca', 'supergfxctl-gex@asus-linux.org']
+disabled-extensions=['background-logo@fedorahosted.org']
