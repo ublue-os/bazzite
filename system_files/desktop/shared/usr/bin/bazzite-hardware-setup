@@ -132,6 +132,13 @@ if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
   fi
 fi
 
+if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+  if [[ ! $KARGS =~ "video" ]]; then
+    echo "Adding panel orientation for Lenovo Legion Go"
+    NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")
+  fi
+fi
+
 if [[ $KARGS =~ "nomodeset" ]]; then
   echo "Removing nomodeset"
   NEEDED_KARGS+=("--delete-if-present=nomodeset")
