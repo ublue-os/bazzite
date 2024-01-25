@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SCRIPT VERSION
-VER=16
+VER=17
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -59,6 +59,11 @@ flatpak override \
   --socket=cups \
   --socket=session-bus \
   org.libreoffice.LibreOffice
+
+# Allow MangoHUD config for Flatpaks
+flatpak override \
+  --filesystem=xdg-config/Mangohud:ro \
+  --filesystem=xdg-config/vkBasalt:ro
 
 # Params needed for HW accelerated video on Nvidia (Ignoring hybrid systems)
 if [[ $IMAGE_FLAVOR =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C display) | wc -l) -le 1 ] && grep -q "vendor: NVIDIA Corporation" <<< $(lshw -C display); then

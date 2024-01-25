@@ -12,6 +12,7 @@
 - [Features for **All** Bazzite Images](#about--features)
   - [Features for **Desktop** Images](#desktop)
   - [Features for **Steam Deck / HTPC** Images](#steam-deckhome-theater-pcs-htpcs)
+    - [Alternative Handhelds](#alternative-handhelds)
   - [Features for **GNOME** Images](#gnome)
   - [Features from Upstream](#features-from-upstream)
 - [Why](#why)
@@ -81,13 +82,13 @@ Common variant available as `bazzite`, suitable for desktop computers.
 If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
 ```
 
 or for devices with Nvidia GPUs:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:stable
 ```
 
 **For users with Secure Boot enabled:** Follow our [secure boot documentation](#secure-boot) prior to rebasing.
@@ -137,7 +138,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image: 
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stable
 ```
 
 #### Alternative Handhelds
@@ -165,13 +166,13 @@ Builds with the GNOME desktop environment are available in both desktop and deck
 To rebase an existing ostree system to the **desktop** release:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:stable
 ```
 
 To rebase an existing ostree system to the **desktop with Nvidia drivers** release:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
 ```
 
 > [!WARNING]  
@@ -180,7 +181,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvid
 To rebase an existing ostree system to the **Steam Deck/HTPC** release: 
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:stable
 ```
 
 **For users with Secure Boot enabled:** Follow our [secure boot documentation](#secure-boot) prior to rebasing.

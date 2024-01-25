@@ -71,13 +71,13 @@ Varian umum yang tersedia sebagai `bazzite`, cocok untuk komputer desktop.
 Jika anda telah menggunakan image dari Universal Blue anda dapat mengikuti [instruksi ini](https://universal-blue.org/images/#image-list). Untuk berganti image dari image upstream Fedora Silverblue/Kinoite ostree anda dapat mengikuti perintah ini:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
 ```
 
 atau perangkat dengan kartu grafis Nvidia:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:stable
 ```
 
 **Untuk pengguna dengan Secure Boot aktif:** Jalankan `ujust enroll-secure-boot-key` dan masukan password `ublue-os` jika diperintahkan untuk menenroll kunci yang dibutuhkan.
@@ -126,7 +126,7 @@ Varian `bazzite-deck` ini didesain untuk digunakan sebagai alternatif untuk Stea
 Jika anda telah menggunakan image dari Universal Blue anda dapat mengikuti [instruksi ini](https://universal-blue.org/images/#image-list). Untuk berganti image dari image upstream Fedora Silverblue/Kinoite ostree anda dapat mengikuti perintah ini:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stable
 ```
 
 ### GNOME
@@ -147,13 +147,13 @@ Varian desktop GNOME tersedia dalam versi desktop dan deck.varian ini memiliki b
 Untuk rebase dari sistem ostree yang ada ke varian **desktop**:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:stable
 ```
 
 Untuk rebase dari sistem ostree yang ada ke varian **desktop dengan driver Nvidia** release:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
 ```
 
 > [!WARNING]  
@@ -163,7 +163,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvid
 Untuk rebase dari sistem ostree yang ada ke varian **Steam Deck/HTPC**: 
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:stable
 ```
 
 ### Fitur dari Upstream

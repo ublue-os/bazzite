@@ -23,7 +23,7 @@ done
 for thunderbird_gnome_theme in "$HOME/.var/app/org.mozilla.Thunderbird/.thunderbird/"*".default"*"/chrome/thunderbird-gnome-theme"; do
   if [ -d "$thunderbird_gnome_theme" ]; then
     if [ ! -d "$thunderbird_gnome_theme/.git" ]; then
-      echo "Firefox theme found, but not a git repository. Correcting."
+      echo "Thunderbird theme found, but not a git repository. Correcting."
       rm -rf "$thunderbird_gnome_theme"
       git clone https://github.com/rafaelmardojai/thunderbird-gnome-theme.git --single-branch "$thunderbird_gnome_theme"
     else

@@ -159,9 +159,10 @@ jobs:
              fi
           else
              BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
+             BUILD_TAGS+=("${MAJOR_VERSION}-stable" "${MAJOR_VERSION}-stable-${TIMESTAMP}")
              if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
                 [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-                 BUILD_TAGS+=("latest")
+                 BUILD_TAGS+=("latest" "stable")
              fi
           fi
 

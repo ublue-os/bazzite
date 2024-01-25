@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=23
+HWS_VER=24
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -129,6 +129,13 @@ if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
   echo "AOKZOE A1 on deck build detected, fixing edid"
   if [[ ! $KARGS =~ "drm.edid_firmware" ]]; then
     NEEDED_KARGS+=("--append-if-missing=drm.edid_firmware=eDP-1:edid/aokzoea1ar07_edid.bin")
+  fi
+fi
+
+if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+  if [[ ! $KARGS =~ "video" ]]; then
+    echo "Adding panel orientation for Lenovo Legion Go"
+    NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")
   fi
 fi
 
