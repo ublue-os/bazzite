@@ -4,21 +4,33 @@ shopt -s nullglob
 echo "Looking for updates..."
 
 # Flatpak Firefox
-for firefox_gnome_theme in "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox/"*".default"*"/chrome/firefox-gnome-theme/"; do
+for firefox_gnome_theme in "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox/"*".default"*"/chrome/firefox-gnome-theme"; do
   if [ -d "$firefox_gnome_theme" ]; then
-    echo "Firefox theme found, pulling latest with git"
-    cd "$firefox_gnome_theme"
-    git pull
+    if [ ! -d "$firefox_gnome_theme/.git" ]; then
+      echo "Firefox theme found, but not a git repository. Correcting."
+      rm -rf "$firefox_gnome_theme"
+      git clone https://github.com/rafaelmardojai/firefox-gnome-theme.git --single-branch "$firefox_gnome_theme"
+    else
+      echo "Firefox theme found, pulling latest with git"
+      cd "$firefox_gnome_theme"
+      git pull
+    fi
     echo "Update complete"
   fi
 done
 
 # Flatpak Thunderbird
-for thunderbird_gnome_theme in "$HOME/.var/app/org.mozilla.Thunderbird/.thunderbird/"*".default"*"/chrome/thunderbird-gnome-theme/"; do
+for thunderbird_gnome_theme in "$HOME/.var/app/org.mozilla.Thunderbird/.thunderbird/"*".default"*"/chrome/thunderbird-gnome-theme"; do
   if [ -d "$thunderbird_gnome_theme" ]; then
-    echo "Thunderbird theme found, pulling latest with git"
-    cd "$thunderbird_gnome_theme"
-    git pull
+    if [ ! -d "$thunderbird_gnome_theme/.git" ]; then
+      echo "Thunderbird theme found, but not a git repository. Correcting."
+      rm -rf "$thunderbird_gnome_theme"
+      git clone https://github.com/rafaelmardojai/thunderbird-gnome-theme.git --single-branch "$thunderbird_gnome_theme"
+    else
+      echo "Thunderbird theme found, pulling latest with git"
+      cd "$thunderbird_gnome_theme"
+      git pull
+    fi
     echo "Update complete"
   fi
 done
