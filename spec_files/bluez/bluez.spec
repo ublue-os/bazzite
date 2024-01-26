@@ -5,8 +5,8 @@
 %endif
 
 Name:    bluez
-Version: 5.71
-Release: 1%{?dist}.bazzite.{{{ git_dir_version }}}
+Version: 5.72
+Release: 3%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: Bluetooth utilities
 License: GPLv2+
 URL:     https://www.bluez.org/
@@ -14,9 +14,6 @@ URL:     https://www.bluez.org/
 Source0: https://www.kernel.org/pub/linux/bluetooth/%{name}-%{version}.tar.xz
 Source1: bluez.gitignore
 
-# https://github.com/hadess/bluez/commits/obex-5.46
-# Upstream's logic has changed so needs a rebase
-#Patch1: 0001-obex-Use-GLib-helper-function-to-manipulate-paths.patch
 # https://lore.kernel.org/linux-bluetooth/20220901110719.176944-1-hadess@hadess.net/T/#m9c08d004cd5422783ee1d93154f42303bba9169f
 Patch2: power-state-adapter-property.patch
 
@@ -43,6 +40,7 @@ BuildRequires: cups-devel
 BuildRequires: libtool automake autoconf
 # For man pages
 BuildRequires: python3-docutils
+BuildRequires: python3-pygments
 
 Requires: dbus >= 1.6
 Requires(post): systemd
@@ -258,6 +256,7 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_bindir}/hex2hcd
 %{_bindir}/l2ping
 %{_bindir}/mpris-proxy
+%{_mandir}/man1/bluetoothctl.1.*
 %{_mandir}/man1/bluetoothctl-*.1.*
 %{_mandir}/man1/btmgmt.1.*
 %{_mandir}/man1/btattach.1.*
@@ -339,6 +338,21 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_userunitdir}/obex.service
 
 %changelog
+* Tue Jan 23 2024 Fedora Release Engineering <releng@fedoraproject.org> - 5.72-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
+
+* Fri Jan 19 2024 Fedora Release Engineering <releng@fedoraproject.org> - 5.72-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
+
+* Sun Jan 14 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.72-1
+- Update to 5.72
+
+* Sun Jan 07 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.71-3
+- Upstream fix for crash on A2DP audio suspend
+
+* Fri Dec 29 2023 Peter Robinson <pbrobinson@fedoraproject.org> - 5.71-2
+- Fix link key address type for old kernels
+
 * Sat Dec 16 2023 Peter Robinson <pbrobinson@fedoraproject.org> - 5.71-1
 - Update to 5.71
 
