@@ -209,9 +209,7 @@ RUN rpm-ostree override remove \
         || true
 
 # Install new packages
-RUN pip install --prefix=/usr topgrade && \
-    rpm-ostree install \
-        ublue-update \
+RUN rpm-ostree install \
         discover-overlay \
         python3-pip \
         libadwaita \
@@ -263,6 +261,9 @@ RUN pip install --prefix=/usr topgrade && \
         gum \
         setools \
         redhat-lsb-core && \
+    pip install --prefix=/usr topgrade && \
+    rpm-ostree install \
+        ublue-update && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo && \
     rpm-ostree install \
         nerd-fonts && \
