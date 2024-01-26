@@ -1,0 +1,46 @@
+#!/usr/bin/bash
+shopt -s nullglob
+
+echo "Looking for updates..."
+
+# Adwaita for Steam
+if [ -d "$HOME/homebrew/themes/Adwaita-for-Steam/.git" ]; then
+  cd "$HOME/homebrew/themes/Adwaita-for-Steam"
+  echo "Adwaita for Steam theme found, pulling latest with git."
+  git pull
+  echo "Update complete."
+else
+  echo -e "\nNothing to do."
+fi
+
+# ROG Ally Theme
+if [ -d "$HOME/homebrew/themes/SBP-ROG-Ally/.git" ]; then
+  cd "$HOME/homebrew/themes/SBP-ROG-Ally"
+  echo "SBP-ROG-Ally theme found, pulling latest with git."
+  git pull
+  echo "Update complete."
+else
+  echo -e "\nNothing to do."
+fi
+
+# Legion GO Theme
+if [ -d "$HOME/homebrew/themes/SBP-Legion-Go-Theme/.git" ]; then
+  cd "$HOME/homebrew/themes/SBP-Legion-Go-Theme"
+  echo "SBP-Legion-Go-Theme theme found, pulling latest with git."
+  git pull
+  echo "Update complete."
+else
+  echo -e "\nNothing to do."
+fi
+
+# HHD Theme
+if [ -d "$HOME/homebrew/themes/PS5-to-Xbox-glyphs/.git" ]; then
+  cd "$HOME/homebrew/themes/PS5-to-Xbox-glyphs"
+  echo "PS5 to Xbox Glyphs theme found, pulling latest with git."
+  git pull
+  echo "Update complete."
+else
+  echo -e "\nNothing to do."
+fi
+
+exit 0

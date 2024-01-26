@@ -44,6 +44,36 @@ get-hhd-decky:
       echo 'Please install Decky Loader by running ujust get-decky first.'
     fi
 
+# Install ROG Ally Theme for CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
+install-rog-ally-theme:
+    #!/usr/bin/bash
+    if [ -d "$HOME/homebrew/themes" ]; then
+        rm -rf "$HOME/homebrew/themes/SBP-ROG-Ally"
+        git clone https://github.com/semakusut/SBP-ROG-Ally.git --single-branch "$HOME/homebrew/themes/SBP-ROG-Ally"
+    else
+        echo 'Please install Decky Loader & CSS Loader first'
+    fi
+
+# Install Lenovo Legion Go for CSS Loader (https://github.com/frazse/SBP-Legion-Go-Theme)
+install-legion-go-theme:
+    #!/usr/bin/bash
+    if [ -d "$HOME/homebrew/themes" ]; then
+        rm -rf "$HOME/homebrew/themes/SBP-Legion-Go-Theme"
+        git clone https://github.com/frazse/SBP-Legion-Go-Theme.git --single-branch "$HOME/homebrew/themes/SBP-Legion-Go-Theme"
+    else
+        echo 'Please install Decky Loader & CSS Loader first'
+    fi
+
+# Install PS5-to-Xbox glyph theme for hhd & CSS Loader (https://github.com/frazse/PS5-to-Xbox-glyphs)
+install-hhd-xbox-glyph-theme:
+    #!/usr/bin/bash
+    if [ -d "$HOME/homebrew/themes" ]; then
+        rm -rf "$HOME/homebrew/themes/PS5-to-Xbox-glyphs"
+        git clone https://github.com/frazse/PS5-to-Xbox-glyphs.git --single-branch "$HOME/homebrew/themes/PS5-to-Xbox-glyphs"
+    else
+        echo 'Please install Decky Loader & CSS Loader first'
+    fi
+
 # Install EmuDeck (https://www.emudeck.com/)
 get-emudeck:
     #!/usr/bin/bash

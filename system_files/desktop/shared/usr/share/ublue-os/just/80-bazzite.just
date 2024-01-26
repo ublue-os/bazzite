@@ -146,6 +146,7 @@ patch-gmod:
 install-adwaita-for-steam:
     #!/usr/bin/bash
     if [ -d "$HOME/homebrew/themes" ]; then
+        rm -rf "$HOME/homebrew/themes/Adwaita-for-Steam"
         git clone https://github.com/tkashkin/Adwaita-for-Steam.git --single-branch "$HOME/homebrew/themes/Adwaita-for-Steam"
     else
         echo 'Please install Decky Loader & CSS Loader first'
