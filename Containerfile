@@ -256,6 +256,7 @@ RUN rpm-ostree install \
         google-noto-sans-cjk-fonts \
         lato-fonts \
         fira-code-fonts \
+        nerd-fonts \
         glow \
         gum \
         setools \
@@ -268,10 +269,6 @@ RUN rpm-ostree install \
     sed -i 's/max_cpu_load_percent.*/max_cpu_load_percent = 100.0/' /usr/etc/ublue-update/ublue-update.toml && \
     sed -i 's/max_mem_percent.*/max_mem_percent = 90.0/' /usr/etc/ublue-update/ublue-update.toml && \
     sed -i 's/dbus_notify.*/dbus_notify = false/' /usr/etc/ublue-update/ublue-update.toml && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo && \
-    rpm-ostree install \
-        nerd-fonts && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo && \
     sed -i 's@Name=tuned-gui@Name=TuneD Manager@g' /usr/share/applications/tuned-gui.desktop && \
     ln -s /usr/share/fonts/google-noto-sans-cjk-fonts /usr/share/fonts/noto-cjk && \
     wget https://raw.githubusercontent.com/KyleGospo/steam-proton-mf-wmv/master/installcab.py -O /usr/bin/installcab && \
