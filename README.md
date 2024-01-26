@@ -149,6 +149,18 @@ If you're using this image on a handheld other than the Steam Deck, you can get 
 
 If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Such as the Lenovo Legion Go and the ASUS Ally)</sup></sub>, you can also get the plugin to integrate an option menu for it into game mode with: `ujust get-hhd-decky`
 
+We also ship `ujust` commands to install various CSS Loader themes that can't be found on the CSS Loader store. These will be automatically updated with Bazzite if installed.
+```bash
+# Install ROG Ally Theme for CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
+ujust install-rog-ally-theme
+
+# Install Lenovo Legion Go for CSS Loader (https://github.com/frazse/SBP-Legion-Go-Theme)
+ujust install-legion-go-theme
+
+# Install PS5-to-Xbox glyph theme for hhd & CSS Loader (https://github.com/frazse/PS5-to-Xbox-glyphs)
+ujust install-hhd-xbox-glyph-theme
+```
+
 #### ASUS Ally
 
 Bazzite has separate images specific for the ASUS Ally due to extra driver & software requirements for that hardware. You can pick the Ally images from the installer, or rebase using one of the following:
@@ -298,7 +310,6 @@ Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built o
 | steamdeck-kde-presets                                                                               | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/steamdeck-kde-presets/status_image/last_build.png?)                       |
 | steamdeck-kde-presets-desktop                                                                       | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/steamdeck-kde-presets-desktop/status_image/last_build.png?)               |
 | steam_notif_daemon                                                                                  | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/steam_notif_daemon/status_image/last_build.png?)                          |
-| [tuned](https://github.com/redhat-performance/tuned)-ppd                                            | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/tuned/status_image/last_build.png?)     
 | udisks2                                                                                             | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/udisks2/status_image/last_build.png?)                                     |
 | upower                                                                                              | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/upower/status_image/last_build.png?)                                      |
 | vpower                                                                                              | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/vpower/status_image/last_build.png?)                                      |
@@ -324,6 +335,8 @@ Additionally, the following packages are used from other Copr repos:
 | [rom-properties](https://copr.fedorainfracloud.org/coprs/kylegospo/rom-properties/)                           | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/rom-properties/package/rom-properties/status_image/last_build.png?)                           |
 | [steamdeck-kmod](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/)                                    | ![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/package/jupiter-kmod/status_image/last_build.png?)                                      |
 | [system76-scheduler](https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/)                   | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/package/system76-scheduler/status_image/last_build.png?)                   |
+| [tuned](https://github.com/redhat-performance/tuned)-ppd                                                      | ![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/tuned/status_image/last_build.png?)                                            |
+| [ublue-update](https://github.com/ublue-os/ublue-update)                                                      | ![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/ublue-update/status_image/last_build.png?)                                     |
 | [VTFLib](https://copr.fedorainfracloud.org/coprs/kylegospo/VTFLib/)                                           | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/VTFLib/package/VTFLib/status_image/last_build.png?)                                           |
 | [wallpaper-engine-kde-plugin](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/) | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/package/wallpaper-engine-kde-plugin/status_image/last_build.png?) |
 | [webapp-manager](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/)                           | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/package/webapp-manager/status_image/last_build.png?)                           |
