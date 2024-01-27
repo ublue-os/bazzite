@@ -33,7 +33,7 @@ kscreen-doctor --outputs 2>&1 | tee -a /tmp/bazrotfix.log
 echo $(date '+%Y-%m-%d %H:%M:%S') Fixing desktop orientation... | tee -a /tmp/bazrotfix.log
 if [[ ! -z "$IS_GAMEMODE" ]]; then
 	kscreen-doctor output.1.rotation.normal 2>&1 | tee -a /tmp/bazrotfix.log
-elif [[ ":83E1:" =~ ":$SYS_ID" ]]; then
+elif [[ ":83E1:Loki Max:" =~ ":$SYS_ID:" ]]; then
 	kscreen-doctor output.1.rotation.left 2>&1 | tee -a /tmp/bazrotfix.log
 else
 	kscreen-doctor output.1.rotation.normal 2>&1 | tee -a /tmp/bazrotfix.log
