@@ -156,6 +156,21 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         libtirpc \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libuuid \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libblkid \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libmount \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true
