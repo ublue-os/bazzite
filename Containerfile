@@ -62,8 +62,7 @@ RUN if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
             asusctl-rog-gui && \
         git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
         cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
-        rm -rf /tmp/asus-firmware && \
-        printf "blacklist bmi150_core\nblacklist bmi150_i2c\nblacklist bmi150_spi" >> /usr/lib/modprobe.d/bmi150-blacklist.conf \
+        rm -rf /tmp/asus-firmware \
     ; fi
 
 # Setup Surface devices
@@ -663,6 +662,7 @@ RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/
 # Cleanup & Finalize
 COPY system_files/shared /
 RUN /tmp/image-info.sh && \
+    printf "blacklist bmi150_core\nblacklist bmi150_i2c\nblacklist bmi150_spi" >> /usr/lib/modprobe.d/bmi150-blacklist.conf && \
     mkdir -p "/usr/etc/xdg/autostart" && \
     cp "/usr/share/applications/steam.desktop" "/usr/etc/xdg/autostart/steam.desktop" && \
     sed -i 's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' /usr/etc/xdg/autostart/steam.desktop && \

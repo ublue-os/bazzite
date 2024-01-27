@@ -11,7 +11,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=23
+USER_SETUP_VER=24
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 
@@ -110,7 +110,7 @@ fi
 # Deck Build Setup
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
   # HHD Setup
-  if [[ ":ROG Ally RC71L_RC71L:83E1:" =~ ":$SYS_ID:" ]]; then
+  if [[ "ROG Ally RC71L_RC71L:83E1:G1618-04:G1617-01:G1619-05:AIR Plus:" =~ ":$SYS_ID:" ]]; then
     echo 'Enabling HHD'
     pkexec /usr/libexec/bazzite-enable-hhd "$USER"
   fi
