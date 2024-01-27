@@ -62,7 +62,8 @@ RUN if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
             asusctl-rog-gui && \
         git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
         cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
-        rm -rf /tmp/asus-firmware \
+        rm -rf /tmp/asus-firmware && \
+        printf "blacklist bmi150_core\nblacklist bmi150_i2c\nblacklist bmi150_spi" >> /usr/lib/modprobe.d/bmi150-blacklist.conf \
     ; fi
 
 # Setup Surface devices
@@ -92,6 +93,7 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
         /tmp/akmods-rpms/kmods/*zenergy*.rpm \
         /tmp/akmods-rpms/kmods/*ayn-platform*.rpm \
         /tmp/akmods-rpms/kmods/*bmi260*.rpm \
+        /tmp/akmods-rpms/kmods/*bmi323*.rpm \
         /tmp/akmods-rpms/kmods/*rtl88xxau*.rpm \
         /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
