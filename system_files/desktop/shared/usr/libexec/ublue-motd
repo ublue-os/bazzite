@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+TIP_FILE=$(ls "/usr/share/ublue-os/motd/tips/"* | shuf -n 1)
+if [[ -f "$TIP_FILE" ]]; then
+	IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+	IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
+	IMAGE_TAG=$(jq -r '."image-tag"' < $IMAGE_INFO)
+	TIP=$(shuf -n 1 "$TIP_FILE")
+	/usr/bin/glow -s /usr/share/ublue-os/motd/design/dark.json /usr/share/ublue-os/motd/design/bazzite.md | sed -e "s/%IMAGE_NAME%/$IMAGE_NAME/g" -e "s/%IMAGE_TAG%/$IMAGE_TAG/g" -e "s/%TIP%/$TIP/g"
+fi
