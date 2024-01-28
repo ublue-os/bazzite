@@ -177,7 +177,6 @@ RUN rpm-ostree override replace \
         || true
 
 # Install Valve's patched Mesa, Pipewire and Bluez
-# Install ublue patched power-profiles-daemon and fontconfig
 RUN rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
@@ -201,11 +200,7 @@ RUN rpm-ostree override replace \
         bluez-cups \
         bluez-libs \
         bluez-obexd \
-        xorg-x11-server-Xwayland && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
-        fontconfig
+        xorg-x11-server-Xwayland
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
