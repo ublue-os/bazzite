@@ -1,0 +1,5 @@
+It is always better to install packages with Distrobox than to layer them with rpm-ostree.
+Packages installed in Distrobox can be exported to appear like any other application.
+Update break something? You can roll back and pin the previous release or rebase by build date.
+Lutris is pre-installed for better handling of non-Steam games.
+BTRFS is used by default for external drives, and we recommend that or EXT4 over NTFS.
