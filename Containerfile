@@ -662,7 +662,6 @@ RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/
 # Cleanup & Finalize
 COPY system_files/shared /
 RUN /tmp/image-info.sh && \
-    printf "blacklist bmi150_core\nblacklist bmi150_i2c\nblacklist bmi150_spi" >> /usr/lib/modprobe.d/bmi150-blacklist.conf && \
     mkdir -p "/usr/etc/xdg/autostart" && \
     cp "/usr/share/applications/steam.desktop" "/usr/etc/xdg/autostart/steam.desktop" && \
     sed -i 's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' /usr/etc/xdg/autostart/steam.desktop && \
