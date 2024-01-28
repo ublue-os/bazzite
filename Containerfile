@@ -447,6 +447,7 @@ RUN rpm-ostree install \
 # Cleanup & Finalize
 COPY system_files/shared /
 RUN /tmp/image-info.sh && \
+    glow -s /tmp/motd/dark.json /tmp/motd/bazzite.md > /usr/share/ublue-os/user-motd && \
     rm -f /etc/profile.d/toolbox.sh && \
     sed -i 's@/usr/bin/steam@/usr/bin/bazzite-steam@g' /usr/share/applications/steam.desktop && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/shredder.desktop && \
