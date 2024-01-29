@@ -213,7 +213,7 @@ fi
 # HOSTNAME FIX
 # If the hostname is too long Distrobox will fail during setup
 # Let's check the length and reset it to something sensible if that happens.
-if (( $(hostname | wc -m) > 16 )); then
+if (( $(hostname | wc -m) > 20 )); then
   hostnamectl set-hostname bazzite
 fi
 

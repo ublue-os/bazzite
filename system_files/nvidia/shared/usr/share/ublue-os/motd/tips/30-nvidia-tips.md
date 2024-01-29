@@ -1,0 +1,1 @@
+Using a Nvidia GPU and getting flickering issues? Switch to X11 from your login screen *(Can't wait for NVK)*.

@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SCRIPT VERSION
-VER=17
+VER=18
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -64,6 +64,11 @@ flatpak override \
 flatpak override \
   --filesystem=xdg-config/Mangohud:ro \
   --filesystem=xdg-config/vkBasalt:ro
+
+# Fix permissions for XIV Launcher
+flatpak override \
+  --device=dri \
+  dev.goats.xivlauncher
 
 # Params needed for HW accelerated video on Nvidia (Ignoring hybrid systems)
 if [[ $IMAGE_FLAVOR =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C display) | wc -l) -le 1 ] && grep -q "vendor: NVIDIA Corporation" <<< $(lshw -C display); then

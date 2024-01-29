@@ -177,7 +177,6 @@ RUN rpm-ostree override replace \
         || true
 
 # Install Valve's patched Mesa, Pipewire and Bluez
-# Install ublue patched power-profiles-daemon and fontconfig
 RUN rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
@@ -201,11 +200,7 @@ RUN rpm-ostree override replace \
         bluez-cups \
         bluez-libs \
         bluez-obexd \
-        xorg-x11-server-Xwayland && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
-        fontconfig
+        xorg-x11-server-Xwayland
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
@@ -662,7 +657,6 @@ RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/
 # Cleanup & Finalize
 COPY system_files/shared /
 RUN /tmp/image-info.sh && \
-    printf "blacklist bmi150_core\nblacklist bmi150_i2c\nblacklist bmi150_spi" >> /usr/lib/modprobe.d/bmi150-blacklist.conf && \
     mkdir -p "/usr/etc/xdg/autostart" && \
     cp "/usr/share/applications/steam.desktop" "/usr/etc/xdg/autostart/steam.desktop" && \
     sed -i 's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' /usr/etc/xdg/autostart/steam.desktop && \

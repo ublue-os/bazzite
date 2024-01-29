@@ -11,7 +11,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=24
+USER_SETUP_VER=25
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 
@@ -43,6 +43,11 @@ flatpak remote-modify --user --enable flathub
 
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup
+
+# Refresh fontconfig
+if [[ -f "$HOME/.config/fontconfig" ]]; then
+  rm -rf "$HOME/.config/fontconfig"
+fi
 
 # Set up optional Gradience themes
 THEME_DIR="/usr/share/ublue-os/bazzite/themes"
@@ -130,7 +135,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     rm -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop"
   fi
 
-  if [[ ":ROG Ally RC71L_RC71L:83E1:Loki Max:" =~ ":$SYS_ID:" ]] && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+  if [[ ":ROG Ally RC71L_RC71L:83E1:Loki Max:G1618-04:" =~ ":$SYS_ID:" ]] && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
     if [[ ! -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop" ]]; then
       echo 'Adding rotation fix'
       mkdir -p "$AUTOSTART_FOLDER/autostart"

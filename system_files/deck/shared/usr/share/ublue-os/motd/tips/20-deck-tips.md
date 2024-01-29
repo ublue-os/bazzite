@@ -1,0 +1,2 @@
+Using a handheld other than the Steam Deck? Check out our alternative handheld documentation [here](https://github.com/ublue-os/bazzite#alternative-handhelds).
+Want to install Decky Loader? There's a `ujust` command for that! `ujust get-decky`
