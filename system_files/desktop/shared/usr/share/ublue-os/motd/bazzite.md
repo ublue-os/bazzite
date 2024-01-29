@@ -8,5 +8,6 @@
 | `neofetch` | View system information |
 
 *󰋼 %TIP%*
+- [ Report an issue](https://github.com/ublue-os/bazzite/issues)
 - [󰙯 Discord](https://discord.bazzite.gg/)
 - [󰈙 Documentation](http://docs.bazzite.gg/)
