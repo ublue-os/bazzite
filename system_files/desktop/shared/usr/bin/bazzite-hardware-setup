@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=26
+HWS_VER=27
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -136,6 +136,13 @@ if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
     echo "Adding panel orientation for Lenovo Legion Go"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")
+  fi
+fi
+
+if [[ ":ROG Ally RC71L_RC71L:83E1:G1618-04:G1617-01:G1619-05:AIR Plus:" =~ ":$SYS_ID:" ]]; then
+  if [[ ! $KARGS =~ "iomem" ]]; then
+    echo "Adding needed kargs for ryzenadj"
+    NEEDED_KARGS+=("--append-if-missing=iomem=relaxed")
   fi
 fi
 
