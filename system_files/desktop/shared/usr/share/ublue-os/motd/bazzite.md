@@ -7,7 +7,7 @@
 | `ujust toggle-user-motd` | Toggle this banner on/off |
 | `neofetch` | View system information |
 
-󰋼 *%TIP%*
+󰋼 %TIP%
 - [ Report an issue](https://github.com/ublue-os/bazzite/issues)
 - [󰙯 Discord](https://discord.bazzite.gg/)
 - [󰈙 Documentation](http://docs.bazzite.gg/)
