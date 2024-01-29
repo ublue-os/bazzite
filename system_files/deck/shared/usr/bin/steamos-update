@@ -66,9 +66,9 @@ if command -v ublue-update > /dev/null; then
     }
     upgrade | fake_progress
     # Check if upgrade failed
-    UPGRADE_CHECK=/tmp/upgrade-check
+    UPGRADE_CHECK=$(cat /tmp/upgrade-check)
     rm /tmp/upgrade-check
-    if [ ${UPGRADE_CHECK} -eq 0 ]; then
+    if [ "${UPGRADE_CHECK}" -eq 0 ]; then
       touch /tmp/upgrade-installed
     else
       exit 0 # Upgrade failed
