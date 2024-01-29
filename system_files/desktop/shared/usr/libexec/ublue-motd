@@ -1,9 +1,16 @@
 #!/usr/bin/bash
+escape() {
+	sed 's/[&/\]/\\&/g' <<< "$1"
+}
+
 TIP_FILE=$(ls "/usr/share/ublue-os/motd/tips/"*".md" | shuf -n 1)
 if [[ -f "$TIP_FILE" ]]; then
 	IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 	IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
+	IMAGE_NAME_ESCAPED=$(escape "$IMAGE_NAME")
 	IMAGE_TAG=$(jq -r '."image-tag"' < $IMAGE_INFO)
+	IMAGE_TAG_ESCAPED=$(escape "$IMAGE_TAG")
 	TIP=$(shuf -n 1 "$TIP_FILE")
-	sed -e "s/%IMAGE_NAME%/$IMAGE_NAME/g" -e "s/%IMAGE_TAG%/$IMAGE_TAG/g" -e "s/%TIP%/$TIP/g" /usr/share/ublue-os/motd/bazzite.md | /usr/bin/glow -s auto -
+	TIP_ESCAPED=$(escape "$TIP")
+	sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" -e "s/%IMAGE_TAG%/$IMAGE_TAG_ESCAPED/g" -e "s/%TIP%/$TIP_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | /usr/bin/glow -s auto -
 fi
