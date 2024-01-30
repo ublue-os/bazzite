@@ -1,4 +1,5 @@
 *Using a handheld other than the Steam Deck?* Be sure to follow our [alternative handheld documentation](https://github.com/ublue-os/bazzite#alternative-handhelds).
+*Having issues with controls on a handheld other than the Steam Deck?* Be sure to read the [hhd after install guide](https://github.com/hhd-dev/hhd#after-install). 
 *Want to install Decky Loader?* There's a `ujust` command for that! `ujust get-decky`
 The updater built into 󰓓 Steam game mode has been modified to update Bazzite, Flatpaks, and Distrobox containers. *Just ignore the changelog.*
 *Install a game with Lutris?* Right click on it and `Create steam shortcut` to easily play it in 󰓓 Steam game mode.
