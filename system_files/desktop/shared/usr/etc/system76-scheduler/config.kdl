@@ -1,6 +1,3 @@
-// WARNING: Modifications to this file will not be preserved on upgrade.
-// To configure, make a config.kdl file under /etc/system76-scheduler/.
-
 // Version of the configuration file
 version "2.0"
 
@@ -87,8 +84,6 @@ process-scheduler enable=true {
         chrt
         dbus
         dbus-broker
-        fig
-        fig_desktop
         gamemoderun
         gamescope
         input-remapper-service

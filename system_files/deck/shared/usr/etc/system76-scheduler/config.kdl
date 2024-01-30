@@ -86,8 +86,6 @@ process-scheduler enable=true {
         dbus-broker
         ds-inhibit
         fancontrol.py
-        fig
-        fig_desktop
         gamemoderun
         gamescope
         handycon
