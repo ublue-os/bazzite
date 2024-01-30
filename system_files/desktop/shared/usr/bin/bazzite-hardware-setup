@@ -139,7 +139,7 @@ if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
   fi
 fi
 
-if /usr/libexec/hardware/hhd-supported-hardware; then
+if /usr/libexec/hardware/simpledeckytdp-supported-hardware; then
   if [[ ! $KARGS =~ "iomem" ]]; then
     echo "Adding needed kargs for ryzenadj"
     NEEDED_KARGS+=("--append-if-missing=iomem=relaxed")
