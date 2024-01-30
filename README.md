@@ -225,7 +225,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 #### Universal Blue
 
-- Proprietary Nvidia drivers pre-installed.
+- Proprietary Nvidia drivers pre-installed. <sub><sup>(Only for Nvidia images)</sup></sub>
 - Flathub is enabled by default.
 - [`ujust`](https://github.com/casey/just) commands for convenience.
 - Multi-media codecs out of the box.
@@ -268,7 +268,7 @@ Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details
 - [Dual Booting Guide](https://universal-blue.discourse.group/docs?topic=129)
 - [Miscellaneous Documentation](https://universal-blue.discourse.group/docs?topic=287)
 
-Find additional documentation surrounding the project [here](https://universal-blue.discourse.group/docs).
+Find additional documentation surrounding the project [here](https://universal-blue.discourse.group/docs?category=5).
 
 Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) that get published on a regular basis for updates on the project.
 
