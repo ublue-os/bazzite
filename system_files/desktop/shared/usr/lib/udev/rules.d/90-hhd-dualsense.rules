@@ -1,3 +1,0 @@
-## Motion Sensors
-SUBSYSTEM=="input", KERNEL=="event*|input*", KERNELS=="*054C:0CE6*", TAG+="uaccess"
-SUBSYSTEM=="input", KERNEL=="event*|input*", KERNELS=="*054C:0DF2*", TAG+="uaccess"
