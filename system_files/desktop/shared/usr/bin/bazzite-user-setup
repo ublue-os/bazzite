@@ -4,7 +4,6 @@ IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
-SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
 # INIT
 BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
@@ -14,6 +13,7 @@ mkdir -p "$BAZZITE_CONFIG_DIR"
 USER_SETUP_VER=25
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
+USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
 
 if [[ -f "$HOME/.bazzite-configured" ]]; then
   mv -f "$HOME/.bazzite-configured" "$USER_SETUP_VER_FILE"
@@ -25,10 +25,11 @@ fi
 
 USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
 USER_SETUP_FEDORA_VER_RAN=$(cat $USER_SETUP_FEDORA_VER_FILE)
+USER_SETUP_IMAGE_VER_RAN=$(cat $USER_SETUP_IMAGE_VER_FILE)
 
 # Run script if updated
 if [[ -f $USER_SETUP_VER_FILE && $USER_SETUP_VER = $USER_SETUP_VER_RAN ]]; then
-  if [[ -f $USER_SETUP_FEDORA_VER_FILE && $FEDORA_VERSION = $USER_SETUP_FEDORA_VER_RAN ]]; then
+  if [[ -f $USER_SETUP_FEDORA_VER_FILE && $FEDORA_VERSION = $USER_SETUP_FEDORA_VER_RAN && $BASE_IMAGE_NAME == USER_SETUP_IMAGE_VER_RAN ]]; then
     echo "User setup v$USER_SETUP_VER has already run. Exiting..."
     exit 0
   fi
@@ -115,13 +116,13 @@ fi
 # Deck Build Setup
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
   # HHD Setup
-  if [[ "ROG Ally RC71L_RC71L:83E1:G1618-04:G1617-01:G1619-05:AIR Plus:" =~ ":$SYS_ID:" ]]; then
+  if /usr/libexec/hardware/hhd-supported-hardware; then
     echo 'Enabling HHD'
     pkexec /usr/libexec/bazzite-enable-hhd "$USER"
   fi
 
   # SDGyroDSU Setup
-  if [[ ":Jupiter:Galileo:" =~ ":$SYS_ID:" ]]; then
+  if /usr/libexec/hardware/valve-hardware; then
     systemctl --user enable --now sdgyrodsu.service
   else
     systemctl --user disable --now sdgyrodsu.service
@@ -135,7 +136,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     rm -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop"
   fi
 
-  if [[ ":ROG Ally RC71L_RC71L:83E1:Loki Max:G1618-04:" =~ ":$SYS_ID:" ]] && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+  if /usr/libexec/rotation-fix-hardware && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
     if [[ ! -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop" ]]; then
       echo 'Adding rotation fix'
       mkdir -p "$AUTOSTART_FOLDER/autostart"
@@ -151,3 +152,4 @@ fi
 echo "Writing state file"
 echo $USER_SETUP_VER > $USER_SETUP_VER_FILE
 echo $FEDORA_VERSION > $USER_SETUP_FEDORA_VER_FILE
+echo $BASE_IMAGE_NAME > $USER_SETUP_IMAGE_VER_FILE
