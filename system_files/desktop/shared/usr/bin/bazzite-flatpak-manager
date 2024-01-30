@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SCRIPT VERSION
-VER=18
+VER=19
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -30,6 +30,7 @@ if grep -qz 'fedora' <<< $(flatpak remotes); then
 fi
 
 # Ensure Flathub is enabled
+flatpak remote-add --if-not-exists --system flathub /usr/etc/flatpak/remotes.d/flathub.flatpakrepo
 flatpak remote-modify --system --enable flathub
 
 # Installed flatpaks
