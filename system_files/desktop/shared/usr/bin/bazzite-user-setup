@@ -10,7 +10,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=25
+USER_SETUP_VER=26
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -40,7 +40,7 @@ if grep -qz 'fedora' <<< $(flatpak remotes); then
   flatpak remote-delete --user fedora --force
 fi
 flatpak remote-add --if-not-exists --user flathub /usr/etc/flatpak/remotes.d/flathub.flatpakrepo
-flatpak remote-modify --user --enable flathub
+flatpak remote-modify --user --enable --prio=2 flathub
 
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup

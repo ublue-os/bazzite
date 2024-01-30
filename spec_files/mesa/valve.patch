@@ -1,18 +1,18 @@
-From 39b7df3a64e9cfe9c649cd7cda896cef57ae2270 Mon Sep 17 00:00:00 2001
+From 90d0b4fd8cab8d6fa8d92f799073f6022dad9f23 Mon Sep 17 00:00:00 2001
 From: Derek Foreman <derek.foreman@collabora.com>
 Date: Wed, 20 Sep 2023 10:40:33 -0500
-Subject: [PATCH 1/7] vulkan/wsi/wayland: refactor wayland dispatch code
+Subject: [PATCH 1/8] vulkan/wsi/wayland: refactor wayland dispatch code
 
 We currently have two similar but different bits of code to dispatch
 wayland event queues. Pull out as much common code as possible.
 
 Signed-off-by: Derek Foreman <derek.foreman@collabora.com>
 ---
- src/vulkan/wsi/wsi_common_wayland.c | 399 +++++++++++++++-------------
- 1 file changed, 208 insertions(+), 191 deletions(-)
+ src/vulkan/wsi/wsi_common_wayland.c | 397 +++++++++++++++-------------
+ 1 file changed, 208 insertions(+), 189 deletions(-)
 
 diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
-index 22e26bacbc5..d8ae6e36626 100644
+index 5fd9aaf24ae..114337944a9 100644
 --- a/src/vulkan/wsi/wsi_common_wayland.c
 +++ b/src/vulkan/wsi/wsi_common_wayland.c
 @@ -96,6 +96,11 @@ struct wsi_wl_display {
@@ -292,7 +292,7 @@ index 22e26bacbc5..d8ae6e36626 100644
 -      if (!chain->present_ids.dispatch_in_progress)
 -         break;
 -   }
--
+ 
 -   assert(!chain->present_ids.dispatch_in_progress);
 -   chain->present_ids.dispatch_in_progress = true;
 -
@@ -342,7 +342,7 @@ index 22e26bacbc5..d8ae6e36626 100644
 -         ret = VK_ERROR_OUT_OF_DATE_KHR;
 -         goto relinquish_dispatch;
 -      }
- 
+-
 -      /* Drop the lock around poll, so people can wait whilst we sleep. */
 -      pthread_mutex_unlock(&chain->present_ids.lock);
 -
@@ -413,12 +413,12 @@ index 22e26bacbc5..d8ae6e36626 100644
 -   struct timespec start_time, end_time;
 -   struct timespec rel_timeout;
 -   int wl_fd = wl_display_get_fd(wsi_wl_surface->display->wl_display);
--
--   timespec_from_nsec(&rel_timeout, info->timeout);
 +   uint64_t end_time, time_left, now;
 +   bool expired = false;
 +   int ret;
  
+-   timespec_from_nsec(&rel_timeout, info->timeout);
+-
 -   clock_gettime(CLOCK_MONOTONIC, &start_time);
 -   timespec_add(&end_time, &rel_timeout, &start_time);
 +   if (info->timeout == UINT64_MAX)
@@ -539,15 +539,16 @@ index 22e26bacbc5..d8ae6e36626 100644
        pthread_mutex_destroy(&chain->present_ids.lock);
     }
  
-@@ -2383,18 +2402,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2386,6 +2405,8 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
        chain->drm_modifiers = drm_modifiers_copy;
     }
  
 +   chain->queue = wl_display_create_queue(chain->wsi_wl_surface->display->wl_display);
 +
     if (chain->wsi_wl_surface->display->wp_presentation_notwrapped) {
--      if (!wsi_init_pthread_cond_monotonic(&chain->present_ids.list_advanced))
--         goto fail;
+       if (!wsi_init_pthread_cond_monotonic(&chain->present_ids.list_advanced)) {
+          result = VK_ERROR_OUT_OF_HOST_MEMORY;
+@@ -2394,12 +2415,10 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
        pthread_mutex_init(&chain->present_ids.lock, NULL);
  
        wl_list_init(&chain->present_ids.outstanding_list);
@@ -565,10 +566,10 @@ index 22e26bacbc5..d8ae6e36626 100644
 2.42.0
 
 
-From ad381d34e00a89f1961cf345668b939830ed1d39 Mon Sep 17 00:00:00 2001
+From c21b55b27dbb7ac0df850fc92740298f1a2f83d8 Mon Sep 17 00:00:00 2001
 From: Derek Foreman <derek.foreman@collabora.com>
 Date: Fri, 10 Nov 2023 07:25:35 -0600
-Subject: [PATCH 2/7] vulkan/wsi/wayland: Use commit_timing/commit_queue
+Subject: [PATCH 2/8] vulkan/wsi/wayland: Use commit_timing/commit_queue
  protocol for FIFO
 
 The commit_timing protocol allows us to set a presentation timestamp,
@@ -612,7 +613,7 @@ index 9d0db011767..83ad71f06fa 100644
    files_vulkan_wsi += wp_files['presentation-time']
    files_vulkan_wsi += wp_files['tearing-control-v1']
 diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
-index d8ae6e36626..dd78d98dfce 100644
+index 114337944a9..5b2eec168e0 100644
 --- a/src/vulkan/wsi/wsi_common_wayland.c
 +++ b/src/vulkan/wsi/wsi_common_wayland.c
 @@ -41,6 +41,8 @@
@@ -865,7 +866,7 @@ index d8ae6e36626..dd78d98dfce 100644
     vk_free(pAllocator, (void *)chain->drm_modifiers);
  
     wsi_swapchain_finish(&chain->base);
-@@ -2290,6 +2386,15 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2291,6 +2387,15 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
           wp_tearing_control_v1_destroy(old_chain->tearing_control);
           old_chain->tearing_control = NULL;
        }
@@ -881,7 +882,7 @@ index d8ae6e36626..dd78d98dfce 100644
     }
  
     /* Take ownership of the wsi_wl_surface */
-@@ -2414,7 +2519,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2421,7 +2526,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
                           chain->queue);
     }
  
@@ -903,10 +904,10 @@ index d8ae6e36626..dd78d98dfce 100644
 2.42.0
 
 
-From dfa0495e9fbe27216cfbcfd3564eeeb1c00a4e6e Mon Sep 17 00:00:00 2001
+From 136846b41c96c68415b4541fd8ead392b4b44790 Mon Sep 17 00:00:00 2001
 From: Simon Ser <contact@emersion.fr>
 Date: Sat, 25 Nov 2023 16:25:58 +0100
-Subject: [PATCH 3/7] hack: rip out commit-timing-v1
+Subject: [PATCH 3/8] hack: rip out commit-timing-v1
 
 ---
  src/egl/wayland/wayland-drm/meson.build |  2 +-
@@ -941,7 +942,7 @@ index 83ad71f06fa..dba95387975 100644
    files_vulkan_wsi += wp_files['presentation-time']
    files_vulkan_wsi += wp_files['tearing-control-v1']
 diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
-index dd78d98dfce..1efe9e449e8 100644
+index 5b2eec168e0..953be5e1e85 100644
 --- a/src/vulkan/wsi/wsi_common_wayland.c
 +++ b/src/vulkan/wsi/wsi_common_wayland.c
 @@ -42,7 +42,6 @@
@@ -1015,7 +1016,7 @@ index dd78d98dfce..1efe9e449e8 100644
     vk_free(pAllocator, (void *)chain->drm_modifiers);
  
     wsi_swapchain_finish(&chain->base);
-@@ -2391,10 +2378,6 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2392,10 +2379,6 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
           old_chain->commit_queue = NULL;
           old_chain->can_timestamp = false;
        }
@@ -1026,7 +1027,7 @@ index dd78d98dfce..1efe9e449e8 100644
     }
  
     /* Take ownership of the wsi_wl_surface */
-@@ -2521,12 +2504,9 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2528,12 +2511,9 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
  
     chain->legacy_fifo_ready = true;
     struct wsi_wl_display *dpy = chain->wsi_wl_surface->display;
@@ -1044,10 +1045,10 @@ index dd78d98dfce..1efe9e449e8 100644
 2.42.0
 
 
-From fbb52f6f45b02583a0b496e4cc34af34251cb1bd Mon Sep 17 00:00:00 2001
+From 829608aeae5a8db0f8aab820791df2629830b23b Mon Sep 17 00:00:00 2001
 From: Joshua Ashton <joshua@froggi.es>
 Date: Wed, 29 Nov 2023 11:06:51 +0000
-Subject: [PATCH 4/7] wsi: Use vendored gamescope-commit-queue-v1 protocol
+Subject: [PATCH 4/8] wsi: Use vendored gamescope-commit-queue-v1 protocol
 
 ---
  .../wayland-drm/gamescope-commit-queue-v1.xml | 181 ++++++++++++++++++
@@ -1295,7 +1296,7 @@ index dba95387975..fb0fab69ac6 100644
    files_vulkan_wsi += wp_files['linux-dmabuf-unstable-v1']
    files_vulkan_wsi += wp_files['presentation-time']
 diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
-index 1efe9e449e8..68d9088f936 100644
+index 953be5e1e85..30ff69ae223 100644
 --- a/src/vulkan/wsi/wsi_common_wayland.c
 +++ b/src/vulkan/wsi/wsi_common_wayland.c
 @@ -41,7 +41,7 @@
@@ -1366,7 +1367,7 @@ index 1efe9e449e8..68d9088f936 100644
  
     vk_free(pAllocator, (void *)chain->drm_modifiers);
  
-@@ -2374,7 +2374,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2375,7 +2375,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
           old_chain->tearing_control = NULL;
        }
        if (old_chain->commit_queue) {
@@ -1375,7 +1376,7 @@ index 1efe9e449e8..68d9088f936 100644
           old_chain->commit_queue = NULL;
           old_chain->can_timestamp = false;
        }
-@@ -2505,7 +2505,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+@@ -2512,7 +2512,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
     chain->legacy_fifo_ready = true;
     struct wsi_wl_display *dpy = chain->wsi_wl_surface->display;
     if (dpy->commit_queue_manager) {
@@ -1388,10 +1389,10 @@ index 1efe9e449e8..68d9088f936 100644
 2.42.0
 
 
-From f0be8700af09a5a1c94d84c1b3b4ee3096de0b69 Mon Sep 17 00:00:00 2001
+From 04afaf13b208f5c58c0b057f3dfc2dfa5c19a334 Mon Sep 17 00:00:00 2001
 From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
 Date: Fri, 14 Jan 2022 15:58:45 +0100
-Subject: [PATCH 5/7] STEAMOS: radv: min image count override for FH5
+Subject: [PATCH 5/8] STEAMOS: radv: min image count override for FH5
 
 Otherwise in combination with the vblank time reservation in
 gamescope the game could get stuck in low power states.
@@ -1400,10 +1401,10 @@ gamescope the game could get stuck in low power states.
  1 file changed, 4 insertions(+)
 
 diff --git a/src/util/00-radv-defaults.conf b/src/util/00-radv-defaults.conf
-index 0dcec733e52..f0d535df2f8 100644
+index 1cbb2e087c9..43488ada6bc 100644
 --- a/src/util/00-radv-defaults.conf
 +++ b/src/util/00-radv-defaults.conf
-@@ -188,5 +188,9 @@ Application bugs worked around in this file:
+@@ -189,5 +189,9 @@ Application bugs worked around in this file:
          <application name="Rocket League" executable="RocketLeague">
              <option name="radv_zero_vram" value="true" />
          </application>
@@ -1417,10 +1418,10 @@ index 0dcec733e52..f0d535df2f8 100644
 2.42.0
 
 
-From 2ab76c1153f55d82c3f49a25f8f8a1f1e1e74075 Mon Sep 17 00:00:00 2001
+From b1c0d3de07bf958317f386585ce541b1c336e929 Mon Sep 17 00:00:00 2001
 From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
 Date: Mon, 21 Feb 2022 18:43:54 +0100
-Subject: [PATCH 6/7] STEAMOS: Dynamic swapchain override for gamescope limiter
+Subject: [PATCH 6/8] STEAMOS: Dynamic swapchain override for gamescope limiter
 
 ---
  src/loader/loader_dri3_helper.c | 42 +++++++++++++++++++++++++++++++--
@@ -1618,10 +1619,10 @@ index cba1d1c5e7c..6d66387d5be 100644
 2.42.0
 
 
-From f00348f08f42a1ce3be4e71f9fba186fb629c723 Mon Sep 17 00:00:00 2001
+From 12cf7ebfcb7e47c1e5d99fe2d2c0b83a03bfa6cb Mon Sep 17 00:00:00 2001
 From: Friedrich Vock <friedrich.vock@gmx.de>
 Date: Fri, 1 Dec 2023 15:18:44 +0100
-Subject: [PATCH 7/7] radv: Enable compute dispatch tunneling
+Subject: [PATCH 7/8] radv: Enable compute dispatch tunneling
 
 Compute tunneling can considerably lower the latency of high-priority
 compute work. Enabling it is beneficial in cases where high-priority
@@ -1635,7 +1636,7 @@ the next frame.
  2 files changed, 9 insertions(+)
 
 diff --git a/src/amd/vulkan/radv_device.c b/src/amd/vulkan/radv_device.c
-index 1bf900d073c..db5347dc0be 100644
+index 247192d8a38..1b7117e08f7 100644
 --- a/src/amd/vulkan/radv_device.c
 +++ b/src/amd/vulkan/radv_device.c
 @@ -969,6 +969,13 @@ radv_CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCr
@@ -1653,7 +1654,7 @@ index 1bf900d073c..db5347dc0be 100644
     /* Disable partial preemption for task shaders.
      * The kernel may not support preemption, but PAL always sets this bit,
 diff --git a/src/amd/vulkan/si_cmd_buffer.c b/src/amd/vulkan/si_cmd_buffer.c
-index ecb00d98575..1b5e585ade4 100644
+index 86a3c4c4571..eaa88b426d1 100644
 --- a/src/amd/vulkan/si_cmd_buffer.c
 +++ b/src/amd/vulkan/si_cmd_buffer.c
 @@ -113,6 +113,8 @@ si_emit_compute(struct radv_device *device, struct radeon_cmdbuf *cs)
@@ -1665,6 +1666,34 @@ index ecb00d98575..1b5e585ade4 100644
     }
  
     /* This register has been moved to R_00CD20_COMPUTE_MAX_WAVE_ID
+-- 
+2.42.0
+
+
+From fbb5d9e6c4cb7a9b383b4b1ae104ebc1ba52b8bd Mon Sep 17 00:00:00 2001
+From: Kyle Gospodnetich <me@kylegospodneti.ch>
+Date: Tue, 30 Jan 2024 00:44:58 -0800
+Subject: [PATCH 8/8] bazzite: Fix unneeded condition
+
+---
+ src/vulkan/wsi/wsi_common_wayland.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
+index 30ff69ae223..37b226a3993 100644
+--- a/src/vulkan/wsi/wsi_common_wayland.c
++++ b/src/vulkan/wsi/wsi_common_wayland.c
+@@ -2496,10 +2496,6 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+    chain->queue = wl_display_create_queue(chain->wsi_wl_surface->display->wl_display);
+ 
+    if (chain->wsi_wl_surface->display->wp_presentation_notwrapped) {
+-      if (!wsi_init_pthread_cond_monotonic(&chain->present_ids.list_advanced)) {
+-         result = VK_ERROR_OUT_OF_HOST_MEMORY;
+-         goto fail_free_wl_chain;
+-      }
+       pthread_mutex_init(&chain->present_ids.lock, NULL);
+ 
+       wl_list_init(&chain->present_ids.outstanding_list);
 -- 
 2.42.0
 
