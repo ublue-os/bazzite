@@ -136,7 +136,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     rm -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop"
   fi
 
-  if /usr/libexec/rotation-fix-hardware && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+  if /usr/libexec/hardware/rotation-fix-hardware && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
     if [[ ! -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop" ]]; then
       echo 'Adding rotation fix'
       mkdir -p "$AUTOSTART_FOLDER/autostart"
