@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 
 source /etc/default/waydroid-launcher
+source /etc/default/steamos-nested-desktop
 
 # Kill any previous remnants
 if [ "$(systemctl is-active waydroid-container.service)" == 'active' ]; then
@@ -16,7 +17,7 @@ fi
 killall -9 weston
 pkexec /usr/libexec/waydroid-container-start
 if [ -z "$(pgrep weston)" ]; then
-	/usr/bin/weston --socket=weston-waydroid --width=${WAYDROID_WIDTH:-1280} --height=${WAYDROID_HEIGHT:-800} &> /dev/null &
+	/usr/bin/weston --socket=weston-waydroid --width=${STEAMOS_NESTED_DESKTOP_WIDTH:-1280} --height=${STEAMOS_NESTED_DESKTOP_HEIGHT:-800} &> /dev/null &
 fi
 
 # Launch Waydroid
