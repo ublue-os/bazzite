@@ -5,3 +5,4 @@ The updater built into 󰓓 Steam game mode has been modified to update Bazzite,
 *Install a game with Lutris?* Right click on it and `Create steam shortcut` to easily play it in 󰓓 Steam game mode.
 *Games missing icons?* The `SteamGridDB` plugin for Decky Loader makes it easy to add missing art - [More info](https://github.com/SteamGridDB/decky-steamgriddb)
 *Confused about what games are compatible with Linux?* The `ProtonDB Badges` plugin for Decky Loader adds community-powered game compatibility badges to your entire 󰓓 Steam Library - [More info](https://github.com/OMGDuke/protondb-decky)
+*Looking for more security?* Tailscale and OpenVPN are built in, and can be controlled from 󰓓 Steam game mode by the `Tailscale Control` and `TunnelDeck` Decky loader plugins. Other VPN solutions can be layered with `rpm-ostree`.
