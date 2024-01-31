@@ -148,6 +148,8 @@ If you're using this image on a handheld other than the Steam Deck, you can get 
 
 If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Such as the Lenovo Legion Go and the ASUS Ally)</sup></sub>, you can also get the plugin to integrate an option menu for it into game mode with: `ujust get-hhd-decky`
 
+**Be sure to also read the [hhd documentation](https://github.com/hhd-dev/hhd#after-install), some handhelds require specific setting changes/tweaks to function properly.**
+
 We also ship `ujust` commands to install various CSS Loader themes that can't be found on the CSS Loader store. These will be automatically updated with Bazzite if installed.
 ```bash
 # Install ROG Ally Theme for CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)

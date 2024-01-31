@@ -10,7 +10,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=26
+USER_SETUP_VER=28
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -51,14 +51,24 @@ if [[ -f "$HOME/.config/fontconfig" ]]; then
 fi
 
 # Set up optional Gradience themes
-THEME_DIR="/usr/share/ublue-os/bazzite/themes"
+GRADIENCE_THEME_DIR="/usr/etc/skel/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
 GRADIENCE_DIR="$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
 mkdir -p "$GRADIENCE_DIR"
 if [[ ! -f "$GRADIENCE_DIR/vapor.json" ]]; then
-  cp "$THEME_DIR/vapor.json" "$GRADIENCE_DIR/vapor.json"
+  cp "$GRADIENCE_THEME_DIR/vapor.json" "$GRADIENCE_DIR/vapor.json"
 fi
 if [[ ! -f "$GRADIENCE_DIR/vgui2.json" ]]; then
-  cp "$THEME_DIR/vgui2.json" "$GRADIENCE_DIR/vgui2.json"
+  cp "$GRADIENCE_THEME_DIR/vgui2.json" "$GRADIENCE_DIR/vgui2.json"
+fi
+
+PROMPT_THEME_DIR="/usr/etc/skel/.local/share/org.gnome.Prompt/palettes"
+PROMPT_DIR="$HOME/.local/share/org.gnome.Prompt/palettes"
+mkdir -p "$PROMPT_DIR"
+if [[ ! -f "$PROMPT_DIR/vapor.palette" ]]; then
+  cp "$PROMPT_THEME_DIR/vapor.palette" "$PROMPT_DIR/vapor.palette"
+fi
+if [[ ! -f "$PROMPT_DIR/vgui2.palette" ]]; then
+  cp "$PROMPT_THEME_DIR/vgui2.palette" "$PROMPT_DIR/vgui2.palette"
 fi
 
 # Initialize Prompt config
@@ -118,7 +128,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
   # HHD Setup
   if /usr/libexec/hardware/hhd-supported-hardware; then
     echo 'Enabling HHD'
-    pkexec /usr/libexec/bazzite-enable-hhd "$USER"
+    pkexec /usr/libexec/bazzite-enable-hhd
   fi
 
   # SDGyroDSU Setup

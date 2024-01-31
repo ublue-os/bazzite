@@ -10,7 +10,18 @@ if [[ -f "$TIP_FILE" ]]; then
 	IMAGE_NAME_ESCAPED=$(escape "$IMAGE_NAME")
 	IMAGE_TAG=$(jq -r '."image-tag"' < $IMAGE_INFO)
 	IMAGE_TAG_ESCAPED=$(escape "$IMAGE_TAG")
-	TIP=$(shuf -n 1 "$TIP_FILE")
+	TIP="󰋼 $(shuf -n 1 "$TIP_FILE")"
+
+	IMAGE_DATE=$(rpm-ostree status --booted | sed -n 's/.*Timestamp: \(.*\)/\1/p')
+	IMAGE_DATE_SECONDS=$(date -d "$IMAGE_DATE" +%s)
+	CURRENT_SECONDS=$(date +%s)
+	DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE_SECONDS))
+	MONTH=$((30 * 24 * 60 * 60))
+	if [ "$DIFFERENCE" -ge "$MONTH" ]; then
+		TIP='# 󰇻 Your current image is over 1 month old, run `ujust update`'
+	fi
+
 	TIP_ESCAPED=$(escape "$TIP")
+
 	sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" -e "s/%IMAGE_TAG%/$IMAGE_TAG_ESCAPED/g" -e "s/%TIP%/$TIP_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | /usr/bin/glow -s auto -
 fi
