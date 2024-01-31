@@ -118,7 +118,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
   # HHD Setup
   if /usr/libexec/hardware/hhd-supported-hardware; then
     echo 'Enabling HHD'
-    pkexec /usr/libexec/bazzite-enable-hhd "$USER"
+    pkexec /usr/libexec/bazzite-enable-hhd
   fi
 
   # SDGyroDSU Setup
