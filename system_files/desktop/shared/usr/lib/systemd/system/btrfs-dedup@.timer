@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly Btrfs deduplication on %f
+
+[Timer]
+OnCalendar=weekly
+AccuracySec=1h
+RandomizedDelaySec=1d
+Persistent=true
+
+[Install]
+WantedBy=timers.target
