@@ -1,12 +1,11 @@
 [Unit]
 Description=Manage system flatpaks
-Documentation=https://github.com/ublue-os/endlish-oesque/issues/10
 Wants=network-online.target
 After=network-online.target bazzite-hardware-setup.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bazzite-flatpak-manager
+ExecStart=/usr/libexec/bazzite-flatpak-manager
 Restart=on-failure
 RestartSec=30
 StartLimitInterval=0
