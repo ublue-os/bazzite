@@ -1,4 +1,4 @@
-From 4df5f53e64568e6e89bb98bd30ee9c61056ff1d5 Mon Sep 17 00:00:00 2001
+From 4cafbd696c342c1f45eea6242dcaadd26e8e4a3d Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 6 Oct 2023 17:22:41 -0500
 Subject: [PATCH 1/9] Add initial rotation atom controls
@@ -179,7 +179,7 @@ index 5764c4b..6231007 100644
 2.42.0
 
 
-From b5e4f4a86489d5c532befa98f9b07ac3fa24e8f8 Mon Sep 17 00:00:00 2001
+From 4d8f1c32f1be873bf009b3d14b1ff3756495da63 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sat, 7 Oct 2023 10:38:09 -0500
 Subject: [PATCH 2/9] Flag drm_out_of_date to ensure rotation logic gets reset
@@ -204,7 +204,7 @@ index 277a54c..236bba4 100644
 2.42.0
 
 
-From c96169787802b2c6219538d7fd2d41c5cba4bd5e Mon Sep 17 00:00:00 2001
+From b145e5cde74d026ffceddee7f4096a23e60e6112 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Tue, 25 Apr 2023 06:45:01 -0500
 Subject: [PATCH 3/9] Add --force-panel-type and --force-external-orientation
@@ -419,7 +419,7 @@ index 76721d6..f6ba34f 100644
 2.42.0
 
 
-From 03fcf2bbc63d933f06279e5cb6cba32969ba93a9 Mon Sep 17 00:00:00 2001
+From 4d1f8e34b70fee42e4e30feac16eda7aa2aa63e7 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Tue, 25 Jul 2023 18:05:05 -0500
 Subject: [PATCH 4/9] Set default to native resolution of display if Steam
@@ -456,7 +456,7 @@ index 236bba4..60f9828 100644
 2.42.0
 
 
-From fb4e8f3671784e99b61a39a110c64433212ebf0c Mon Sep 17 00:00:00 2001
+From 8959ef22543eb94d329ef9c117ec662061a3db6c Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Wed, 26 Jul 2023 20:46:29 -0500
 Subject: [PATCH 5/9] Fix internal display touchscreen orientation when it's
@@ -551,7 +551,7 @@ index 3fbc4ff..dc37f97 100644
 2.42.0
 
 
-From 3f29efe4a5ccbd0bb621cc59df94e70e4666d935 Mon Sep 17 00:00:00 2001
+From 17a8118d9ede790f27fa085a1d287f31e81abb64 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 6 Oct 2023 23:58:17 -0500
 Subject: [PATCH 6/9] Add initial display selection atom
@@ -723,7 +723,7 @@ index 6231007..9dbc544 100644
 2.42.0
 
 
-From de09101c507e4882b28d03056a047cbd92c68231 Mon Sep 17 00:00:00 2001
+From 8b94b4297324bddf48f3578592cdb6f9fe20e5a4 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Mon, 9 Oct 2023 11:21:11 -0500
 Subject: [PATCH 7/9] Use sysfs connector_ids for target device selection.
@@ -866,121 +866,60 @@ index aeef706..9a3f495 100644
 2.42.0
 
 
-From 35345954588044a3cd48eb35ce2664e9576c68e6 Mon Sep 17 00:00:00 2001
-From: Lionel Landwerlin <lionel.g.landwerlin@intel.com>
-Date: Thu, 14 Dec 2023 16:13:22 +0200
-Subject: [PATCH 8/9] renderervulkan: only consider modifiers support all the
- image properties
+From 40cb952642118fb983ec4e3deedd7410dbf69a07 Mon Sep 17 00:00:00 2001
+From: Matthew Anderson <ruinairas1992@gmail.com>
+Date: Tue, 16 Jan 2024 13:57:50 -0600
+Subject: [PATCH 8/9] Add edge gesture support to open Home and QAM
 
-If you have a modifier with image compression that is only support for
-some image formats like :
-   - B8G8R8A8_UNORM : compression supported
-   - B8G8R8A8_SRB   : compression not supported
-
-Then the render will not use compression but the modifier indicates it
-is present, so the compositor will try to make use of the side
-compressed data and this will lead to corruptions.
-
-This fixes issues on Intel HW of Gfx9 generations.
 ---
- src/rendervulkan.cpp | 65 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 65 insertions(+)
+ src/wlserver.cpp | 28 +++++++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
 
-diff --git a/src/rendervulkan.cpp b/src/rendervulkan.cpp
-index 8940b77..936c1d6 100644
---- a/src/rendervulkan.cpp
-+++ b/src/rendervulkan.cpp
-@@ -2449,6 +2449,49 @@ int CVulkanTexture::memoryFence()
- 	return fence;
- }
+diff --git a/src/wlserver.cpp b/src/wlserver.cpp
+index dc37f97..e7fb7c9 100644
+--- a/src/wlserver.cpp
++++ b/src/wlserver.cpp
+@@ -2048,8 +2048,34 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time )
  
-+static bool is_image_format_modifier_supported(VkFormat format, uint32_t drmFormat, uint64_t modifier)
-+{
-+  VkPhysicalDeviceImageFormatInfo2 imageFormatInfo = {
-+    .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2,
-+    .format = format,
-+    .type = VK_IMAGE_TYPE_2D,
-+    .tiling = VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT,
-+    .usage = VK_IMAGE_USAGE_SAMPLED_BIT,
-+  };
-+
-+  std::array<VkFormat, 2> formats = {
-+    DRMFormatToVulkan(drmFormat, false),
-+    DRMFormatToVulkan(drmFormat, true),
-+  };
-+
-+  VkImageFormatListCreateInfo formatList = {
-+    .sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO,
-+    .viewFormatCount = (uint32_t)formats.size(),
-+    .pViewFormats = formats.data(),
-+  };
-+
-+  if ( formats[0] != formats[1] )
-+    {
-+      formatList.pNext = std::exchange(imageFormatInfo.pNext,
-+				       &formatList);
-+      imageFormatInfo.flags |= VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT;
-+    }
-+
-+  VkPhysicalDeviceImageDrmFormatModifierInfoEXT modifierInfo = {
-+    .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT,
-+    .pNext = nullptr,
-+    .drmFormatModifier = modifier,
-+  };
-+
-+  modifierInfo.pNext = std::exchange(imageFormatInfo.pNext, &modifierInfo);
-+
-+  VkImageFormatProperties2 imageFormatProps = {
-+    .sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2,
-+  };
-+
-+  VkResult res = g_device.vk.GetPhysicalDeviceImageFormatProperties2( g_device.physDev(), &imageFormatInfo, &imageFormatProps );
-+  return res == VK_SUCCESS;
-+}
- 
- bool vulkan_init_format(VkFormat format, uint32_t drmFormat)
- {
-@@ -2461,6 +2504,25 @@ bool vulkan_init_format(VkFormat format, uint32_t drmFormat)
- 		.usage = VK_IMAGE_USAGE_SAMPLED_BIT,
- 	};
- 
-+	std::array<VkFormat, 2> formats = {
-+		DRMFormatToVulkan(drmFormat, false),
-+		DRMFormatToVulkan(drmFormat, true),
-+	};
-+
-+	VkImageFormatListCreateInfo formatList = {
-+		.sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO,
-+		.viewFormatCount = (uint32_t)formats.size(),
-+		.pViewFormats = formats.data(),
-+	};
-+
-+	if ( formats[0] != formats[1] )
-+	{
-+		formatList.pNext = std::exchange(imageFormatInfo.pNext,
-+						 &formatList);
-+		imageFormatInfo.flags |= VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT;
-+	}
-+
-+
- 	VkImageFormatProperties2 imageFormatProps = {
- 		.sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2,
- 	};
-@@ -2518,6 +2580,9 @@ bool vulkan_init_format(VkFormat format, uint32_t drmFormat)
- 
- 		uint64_t modifier = modifierProps[j].drmFormatModifier;
- 
-+		if ( !is_image_format_modifier_supported( format, drmFormat, modifier ) )
-+		  continue;
-+
- 		if ( ( modifierProps[j].drmFormatModifierTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT ) == 0 )
+ 		if ( get_effective_touch_mode() == WLSERVER_TOUCH_CLICK_PASSTHROUGH )
  		{
- 			continue;
++			bool start_gesture = false;
+ 			wlr_seat_touch_notify_motion( wlserver.wlr.seat, time, touch_id, wlserver.mouse_surface_cursorx, wlserver.mouse_surface_cursory );
+-		}
++
++			// Round the x-coordinate to the nearest whole number
++			uint32_t roundedCursorX = static_cast<int>(std::round(wlserver.mouse_surface_cursorx));
++			// Grab 2% of the display to be used for the edge range
++			double edge_range = g_nOutputWidth * 0.02;
++
++			// if the touch cursor x position is less or equal to the range then start the gesture for left to right
++			if (roundedCursorX <= edge_range) {
++				start_gesture = true;
++			}
++			// if the touch cursor x position is the output width minus the edge range value then we are doing right to left
++			if (roundedCursorX >= g_nOutputWidth - edge_range) {
++				start_gesture = true;
++			}
++			// when the gesture is started and we are moving to the end of the edge range open home
++			if (start_gesture && roundedCursorX >= 1 && roundedCursorX <= edge_range) {
++				wl_log.infof("Detected Home gesture");
++				wlserver_open_steam_menu(0);
++				start_gesture = false;
++			}
++			// when the gesture is started and we are moving from the output width minus the edge range to the output width open QAM
++			if (start_gesture && roundedCursorX >= g_nOutputWidth - edge_range && roundedCursorX <= g_nOutputWidth ) {
++				wl_log.infof("Detected QAM gesture");
++				wlserver_open_steam_menu(1);
++				start_gesture = false;
++			}		}
+ 		else if ( get_effective_touch_mode() == WLSERVER_TOUCH_CLICK_DISABLED )
+ 		{
+ 			return;
 -- 
 2.42.0
 
 
-From 051fcd47c74de31954e11f6cb11fd300fed6fa7b Mon Sep 17 00:00:00 2001
+From f975e7a804100bb031fab0526d6714530381ec45 Mon Sep 17 00:00:00 2001
 From: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
 Date: Wed, 3 Jan 2024 17:03:04 +0100
 Subject: [PATCH 9/9] remove hacky texture
