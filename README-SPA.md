@@ -13,15 +13,16 @@
 - [Características de **todas** las imágenes de Bazzite](#about--features)
   - [Características de las imágenes para **Computadoras de Escritorio**](#desktop)
   - [Características de las imágenes para **Steam Deck/HTPC**](#steam-deckhome-theater-pcs-htpcs)
-     - [Computadoras Handheld Alternativas](#alternative-handhelds)
+    - [Computadoras Handheld Alternativas](#alternative-handhelds)
   - [Características de las imágenes con el entorno de escritorio **GNOME**](#gnome)
   - [Características del Upstream](#features-from-upstream)
 - [¿Por qué?](#why)
 - [Mira como luce Bazzite (Capturas de Pantalla)](#showcase)
 - [Documentación y Boletín informativo/Newsletters (En inglés)](#documentation--newsletters)
 - [Paquetes Personalizados](#custom-packages)
+- [Verificación de la Imagen](#verification)
 - [Arranque Seguro (Secure Boot)](#secure-boot)
-- [Verificación y Métricas](#verification)
+- [Métricas](#contributor-metrics)
 - [Gracias Especiales](#special-thanks)
 - [Créalo tu Mismo](#build-your-own)
 - [Comunidad (en inglés)](#join-the-community)
@@ -39,16 +40,16 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - Utilizamos el [kernel fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) para obtener compatibilidad con HDR (alto rango dinámico) y un soporte expandido de hardware, además de otra gran cantidad de parches incluidos.
 - HDR esta disponible en la sesión de Gamescope.
 - Drivers propietarios de NVIDIA pre-instalados.
-- El nuevo driver de Vulkan, NVK, esta disponibles en imágenes sin el driver proprietario de NVIDIA.
 - Soporte total de decodificación acelerada por hardware del codec de video H264.
 - Soporte completo para los tiempos de ejecución (runtimes) de ROCM OpenCL/HIP de AMD
-- Drivers [xone](https://github.com/medusalix/xone), [xpadneo](https://github.com/atar-axis/xpadneo), y [xpad-noone](https://github.com/ublue-os/xpad-noone) para mandos de videojuegos de Xbox.
+- Se incluye el driver [xone](https://github.com/medusalix/xone), para mandos de videojuegos de Xbox.
 - Soporte completo de [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Incluye los temas para KDE de SteamOS, hechos por Valve.
 - También se incluyen temas opcionales de GTK3/4 inspirados en Valve, que igualan a los temas Vapor y VGUI2 de SteamOS. Para poderlos utilizar, solo tienes que instalar [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience).
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), y [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) instalados y disponibles por defecto.
+- Utilizamos [TuneD](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/getting-started-with-tuned_monitoring-and-managing-system-status-and-performance) en lugar de PPD, para una integración completa con GNOME, KDE, y Game Mode. Esta es una herramienta tan increiblemente poderosa, que Red Hat ofrece [clases para aprender a utilizarla](https://www.redhat.com/en/services/training/rh442-red-hat-enterprise-performance-tuning).
 - Soporte para [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Solo en KDE)</sup></sub>
-- Incluida la [extensión de la shell para mostrar las propiedades de ROMs](https://github.com/GerbilSoft/rom-properties) (usados para la emulación de consolas) en el navegador de archivos.
+- Incluida una [extensión de la shell para mostrar las propiedades de ROMs](https://github.com/GerbilSoft/rom-properties) (usados para la emulación de consolas) en el navegador de archivos.
 - Soporte completo para [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - [Distrobox](https://github.com/89luca89/distrobox) pre-instalado con actualizaciones automáticas para los contenedores creados.
 - Se usa por defecto la [terminal Prompt](https://gitlab.gnome.org/chergert/prompt) en todas las imágenes. Esta terminal esta especificamente diseñada para el flujo de trabajo basado en contenedores que usamos en Bazzite. Si deseas regresar a como estaba antes, simplemente ejecuta el siguiente comando en una terminal: `ujust restore-original-terminal`
@@ -59,7 +60,6 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - Uso del [control de congestión TCP BBR hecho por Google](https://github.com/google/bbr) por defecto.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) pre-instalado y habilitado. <sub><sup>(Disponible pero desactivado por defecto en la variante Deck, puede ser habilitado ejecutando el siguiente comando en una terminal: `ujust restore-input-remapper`)</sup></sub>
 - El portal de Bazzite (Bazzite Portal) provee una manera fácil de instalar un sin fin de aplicaciones y ajustes, incluyendo la instalación de [LACT](https://github.com/ilya-zlobintsev/LACT) (para mejor controlar tu GPU de AMD) y [GreenWithEnvy](https://gitlab.com/leinardi/gwe) (para mejor controlar tu GPU de NVIDIA).
-- Gestor de paquetes [Nix](https://nixos.org/) con la opción de instalar [Fleek](https://getfleek.dev/) usando el `ujust`.
 - Opción para instalar el gestor de paquetes [Brew](https://brew.sh/) usando el Bazzite Portal.
 - [Waydroid](https://waydro.id/) pre-instalado para correr aplicaciones de Android. Para configurarlo, usa esta [guía rápida (en inglés)](https://universal-blue.discourse.group/docs?topic=32).
 - Administra tus aplicaciones usando [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), y [Gear Lever](https://github.com/mijorus/gearlever).
@@ -69,7 +69,7 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - Driver [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) para aumentar la frecuencia del reloj (overclocking) del adaptador para el mando de videojuegos del Gamecube de Nintendo para obtener una taza de sondeo (polling rate) de 1000hz.
 - Soporte fuera de la caja para los teclados hechos por [Wooting](https://wooting.io/).
 - Soporte incorporado de las GPU de las familias <sub><sup>(HD 7000)</sup></sub> y Sea Islands <sub><sup>(HD 8000)</sup></sub> de AMD bajo el driver `amdgpu`.
-- Un parche esta disponible [para un bug en juegos de 32 bits que usen el motor Source 1](https://github.com/ValveSoftware/Source-1-Games/issues/5043)<sub><sup>[(Por ejemplo: TF2)](https://github.com/ValveSoftware/Source-1-Games/issues/5043)</sup></sub> que provoca que el juego se bloqueé al ser iniciado, para aplicar el parche, ejecuta el siguiente comando en una terminal: `ujust patch-source1-tcmalloc`
+- Un parche esta disponible [para un bug en juegos de 32 bits que usen el motor Source 1](https://github.com/ValveSoftware/Source-1-Games/issues/5043)<sub><sup>[(Por ejemplo: TF2)](https://github.com/ValveSoftware/Source-1-Games/issues/5043)</sup></sub> que provoca que el juego se congele al ser iniciado, para aplicar el parche, ejecuta el siguiente comando en una terminal: `ujust patch-source1-tcmalloc`
 - [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) esta disponible para hacer posible compartir tu pantalla con Discord usando Wayland.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) esta disponible para crear aplicaciones de sitios web con una variedad de navegadores web, incluyendo Firefox.
 
@@ -96,7 +96,7 @@ Si deseas realizar un rebase a la imagen **para computadoras de escritorio con u
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:stable
 ```
 
-**Para usuarios con Secure Boot habilitado:** Ejecuta el comando `ujust enroll-secure-boot-key` en una terminal e introduce la contraseña `ublue-os` si el sistema te lo requiere para registrar la clave de seguridad requerida.
+**Para usuarios con Secure Boot habilitado:** Sigue nuestra [documentación para usuarios de Secure Boot](#secure-boot) antes de cambiar la base.
 
 ### Steam Deck/Computadoras para Cine en Casa (HTPCs)
 
@@ -105,7 +105,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 
 Esta variante esta diseñada para usarse como una alternativa de SteamOS en la Steam Deck, e igualmente para proporcionar una experiencia como de consola de videojuegos en HTPCs y otros dispositivos portátiles, disponible como `bazzite-deck`:
 
-- Al arrancar tu dispositivo, inicia directamente en el modo de juego (Gamemode), emulando el mismo comportamiento que SteamOS.
+- Al arrancar tu dispositivo, inicia directamente en Game Mode, emulando el mismo comportamiento que SteamOS.
 - **Se aplica el servicio `duperemove` automáticamente el cual recorta por mucho el tamaño del directorio compatdata, el directorio usado por Proton para almacenar los prefijos de WINE para correr juegos de Windows en Linux.**
 - **Incluye la versión mas actual de Mesa, el cual crea cachés de shaders mas pequeños, y los cuales no son requeridos para prevenir tirones/parones.**
 - **Habilidad de arrancar el sistema incluso si el disco esta lleno.**
@@ -117,7 +117,7 @@ Esta variante esta diseñada para usarse como una alternativa de SteamOS en la S
 - Incluye los parches de [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) por defecto, los cuales proveen soporte completo del sistema de archivos BTRFS para tarjetas SD.
 - Se incluye una copia portada de [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), habilitada por defecto.
 - Opción para instalar [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), y [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), ademas de un sin fin de paquetes útiles al momento de instalar el sistema.
-- Un sistema personalizado de actualizaciones que permite que tanto el sistema operativo, los Flatpaks, los paquetes Nix <sup><sub>(Usando Fleek)</sub></sup>, y las imagenes de Distrobox sean actualizables directamente desde la interfaz de Gamemode.
+- Un sistema personalizado de actualizaciones que permite que tanto el sistema operativo, los Flatpaks, los paquetes Nix <sup><sub>(Usando Fleek)</sub></sup>, y las imagenes de Distrobox sean actualizables directamente desde la interfaz de Gamemode gracias al poder de [ublue-update](https://github.com/ublue-os/ublue-update) y [topgrade](https://github.com/topgrade-rs/topgrade).
 - Soporte incluido para el arranque dual (dual-boot) con Windows, gracias a que se deja intacta la instalación de GRUB por defecto de Fedora.
 - ¿Algo se rompió o dejo de funcionar después de actualizar?, ¡descuida!, puedes fácilmente retroceder a una versión previa de Bazzite, gracias a la función de reversión (rollback) de `rpm-ostree`. Inclusive puedes seleccionar imágenes previas del sistema directamente desde el menú que aparece al arrancar tu dispositivo.
 - Steam y Lutris vienen pre-instalados en la imagen como paquetes en capas (layered).
@@ -148,20 +148,69 @@ Si deseas cambiar la base (rebase) de una imagen upstream existente de un sistem
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stable
 ```
+
 #### Computadoras handheld alternativas
 
-Si estas usando esta imagen en otras computadoras Handheld que no son la Steam Deck, como la Legion Go o la AYN Loki Max, puedes controlar el TDP usando el plugin de Decky Loader llamado SimpleDeckyTDP, esto también aplica para aquellas computadoras Handheld que usan una imagen personalizada basada en `-deck` que brindan soporte especializado a ciertos dispositivos como la Ally.
+Si estas usando esta imagen en otras computadoras Handheld que no son la Steam Deck,  puedes controlar el TDP usando el plugin de Decky Loader llamado SimpleDeckyTDP.
+
 - Primero, instala Decky Loader ejecutando el siguiente comando en una terminal: `ujust get-decky`
 - Despues, instala SimpleDeckyTDP ejecutando el siguiente comando en una terminal: `ujust get-simpledeckytdp`
 
-Si estas usando una computadora Handheld que tiene soporte por parte de [hhd](https://github.com/hhd-dev/hhd), tambien puedes obtener un plugin que integra esta funcionalidad con game mode, solo ejecuta el siguiente comando en una terminal: `ujust get-hhd-decky`
+Si estas usando una computadora Handheld que tiene soporte por parte de [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Como la Lenovo Legion Go o la ASUS ROG Ally)</sup></sub>, tambien puedes obtener un plugin que integra esta funcionalidad en Game Mode, solo ejecuta el siguiente comando en una terminal: `ujust get-hhd-decky`
+
+**Igualmente, asegurate de tambien leer la [documentación de HHD (en inglés)](https://github.com/hhd-dev/hhd#after-install), algunas computadoras Handheld requieren ciertos ajustes o tweaks especificos para funcionar correctamente.**
+
+Tambien incluimos ciertos comandos de `ujust` para instalar varios temas para CSS Loader que no estan disponibles en su propia tienda. Si instalas estos temas, estos tambien serán actualizados automáticamente junto con Bazzite.
+
+```bash
+# Instala el tema de la ROG Ally para CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
+ujust install-rog-ally-theme
+
+# Instala el tema de la Lenovo Legion Go para CSS Loader (https://github.com/frazse/SBP-Legion-Go-Theme)
+ujust install-legion-go-theme
+
+# Instala el tema para pasar los glifos de Playstation a Xbox (PS5-to-Xbox) para hhd y CSS Loader (https://github.com/frazse/PS5-to-Xbox-glyphs)
+ujust install-hhd-xbox-glyph-theme
+```
+
+#### ASUS Ally
+
+Bazzite tiene imágenes especificas para la ASUS ROG Ally, debido a los requerimientos adicionales en cuanto drivers y software especificos para ese hardware. Puedes escoger las imágenes `-ally` desde el instalador de Bazzite, o puedes cambiar de base (rebase) utilizando cualquiera de los siguientes comandos en una terminal:
+
+Para usar KDE (Entorno default de SteamOS):
+
+```bash
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-ally:stable
+```
+
+Para usar GNOME:
+
+```bash
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-ally-gnome:stable
+```
+
+#### Framegame
+
+[¿Te armaste una de estas bellezas?](https://www.youtube.com/watch?v=zd6WtTUf-30), tambien tenemos una imagen especifica para ti. Esta es la variante Deck de nuestras imágenes para las laptops de Framework.
+
+Para usar KDE (Entorno default de SteamOS):
+
+```bash
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-framegame:stable
+```
+
+Para usar GNOME:
+
+```bash
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-framegame-gnome:stable
+```
 
 ### GNOME
 
-Las sub-variantes con el entorno de escritorio GNOME están disponibles tanto para la variante para **Computadoras de Escritorio**, como la de **Steam Deck/HTPCs**. Estas imágenes cuentan con las siguientes características adicionales:
+Las sub-variantes con el entorno de escritorio GNOME están disponibles tanto para las imágenes para **Computadoras de Escritorio**, como las de **Steam Deck/HTPCs**. Estas imágenes cuentan con las siguientes características adicionales:
 
 - [Soporte tanto para pantallas con tasa de refresco variable y como para la escala fraccional de la interfaz de usuario bajo el servidor gráfico Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
-- Menú personalizado en la barra superior para regresar al modo de juego (gamemode), lanzar Steam, y para abrir otras utilidades.
+- Menú personalizado en la barra superior para regresar a Game Mode, lanzar Steam, y para abrir otras utilidades.
 - [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/), la versión de KDE Connect para GNOME, viene pre-instalado y listo para usarse.
 - La [extension Hanabi](https://github.com/jeffshee/gnome-ext-hanabi) viene incluida, la cual ofrece características similares al Wallpaper Engine en KDE.
 - Numerosas extensiones opcionales pre-instaladas, incluyendo [importantísimos parches para una mejor experiencia del usuario](https://www.youtube.com/watch?v=nbCg9_YgKgM).
@@ -170,9 +219,7 @@ Las sub-variantes con el entorno de escritorio GNOME están disponibles tanto pa
 > \[!IMPORTANT\]\
 > \**Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).** Si experimentas errores y/o problemas instalando Bazzite, checa nuestra [guía de solución de problemas (en inglés)](https://universal-blue.discourse.group/docs?topic=34).
 
-Si estas actualmente usando una imagen de Universal Blue, por favor [sigue estas instrucciones (en inglés)](https://universal-blue.org/images/#image-list). 
-
-Si deseas cambiar la base (rebase) de una imagen upstream existente de un sistema ostree de Fedora Silverblue/Kinoite a la imagen **para computadoras de escritorio con una GPU AMD ó Intel**, ejecuta el siguiente comando en una terminal:
+Si deseas cambiar la base (rebase) a la imagen **para computadoras de escritorio con una GPU AMD ó Intel**, ejecuta el siguiente comando en una terminal:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:stable
@@ -187,19 +234,18 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvid
 > \[!WARNING\]\
 > **Debido a un bug en upstream, Bazzite no puede ser utilizado por el momento en Steam Decks con solo 64 GB de almacenamiento eMMC. Ampliar tu almacenamiento cambiando el disco interno soluciona este problema.**
 
-> \[!IMPORTANT]  
-> Los dispositivos que **NO** son una Steam Deck, también pueden utilizar las imágenes bazzite-deck, sin embargo tienen que usar una GPU de AMD o Intel, GPUs de NVIDIA no son compatibles por el momento con esta variante.
-
-Si necesitas realizar un rebase a la imagen **para Steam Deck/HTPC**, ejecuta el siguiente comando en una terminal:
+Si necesitas realizar un rebase a la imagen **para Steam Deck/HTPC con GPUs AMD ó Intel**, ejecuta el siguiente comando en una terminal:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:stable
 ```
+**Para usuarios con Secure Boot habilitado:** Sigue nuestra [documentación para usuarios de Secure Boot](#secure-boot) antes de cambiar la base.
 
 ### Características del Upstream
 
 #### Universal Blue
 
+- Drivers propietarios de NVIDIA pre-instalados. <sub><sup>(Solo para imágenes NVDIA)</sup></sub>
 - Flathub se encuentra habilitado por defecto.
 - Lanzador de comandos [`ujust`](https://github.com/casey/just) incluido, con diversos comandos muy convenientes.
 - Codecs multimedia fuera de la caja.
@@ -247,9 +293,9 @@ Lee nuestras [preguntas frecuentes](https://universal-blue.discourse.group/docs?
 - [Guía para Configurar el Arranque Dual con Windows (Dual Boot)](https://universal-blue.discourse.group/docs?topic=129)
 - [Documentación Miscelánea](https://universal-blue.discourse.group/docs?topic=287)
 
-Puedes encontrar documentación adicional relacionada al proyecto [aquí](https://universal-blue.discourse.group/docs).
+Puedes encontrar documentación adicional relacionada al proyecto [aquí](https://universal-blue.discourse.group/docs?category=5).
 
-Checa nuestros [boletines informativos](https://universal-blue.discourse.group/tag/bazzite-buzz), estos son publicados regularmente y los cuales hablan de las últimas actualizaciones del proyecto.
+Checa nuestros [boletines informativos (disponibles en español](https://universal-blue.discourse.group/tag/bazzite-buzz), estos son publicados regularmente y los cuales hablan de las últimas actualizaciones del proyecto.
 
 ## Paquetes Personalizados
 
@@ -327,17 +373,29 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 El Arranque Seguro (Secure Boot) tiene soporte gracias a nuestra llave digital personalizada. La llave pública puede encontrarse en la raíz de [este](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der) repositorio.
 
-
 Si gustas registrar esta llave antes de instalar Bazzite, descarga la llave y ejecuta el siguiente comando en una terminal:
 
 ```bash
 sudo mokutil --timeout -1
 sudo mokutil --import secure_boot.der
 ```
+Alternativamente, los usuarios que ya cuenten con una imagen de Universal Blue instalada, pueden ejecutar el siguiente comando en una terminal: `ujust enroll-secure-boot-key`.
+
+Si se te pide una contraseña, introduce `ublue-os`.
 
 ### Métricas de Contribución
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
+
+#### Historial de Estrellas
+
+<a href="https://star-history.com/#ublue-os/bazzite&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date" />
+  </picture>
+</a>
 
 ## Gracias Especiales
 
