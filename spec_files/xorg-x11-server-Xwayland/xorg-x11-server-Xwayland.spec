@@ -19,7 +19,6 @@ Source0:   https://gitlab.freedesktop.org/xorg/%{pkgname}/-/archive/%{commit}/%{
 Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{xwayland_version}.tar.xz
 %endif
 
-Patch0:    967.patch
 Patch1:    0001-Valve.patch
 
 License:   MIT

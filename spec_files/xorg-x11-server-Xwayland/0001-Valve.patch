@@ -1,20 +1,21 @@
-From 654500be494e1a19f2d1bb44099f294805bec228 Mon Sep 17 00:00:00 2001
+From 99a6338ca012d4273153981bfa8b8b05aa8df185 Mon Sep 17 00:00:00 2001
 From: Kyle Gospodnetich <me@kylegospodneti.ch>
-Date: Fri, 15 Dec 2023 01:22:10 -0800
-Subject: [PATCH 1/2] Revert "xwayland: add support for wp-tearing-control-v1"
+Date: Wed, 31 Jan 2024 17:06:08 -0800
+Subject: [PATCH 1/3] Revert "xwayland: add support for wp-tearing-control-v1"
 
 This reverts commit 1ce2025822244c85826ab36febfa5945186b4a2a.
 ---
  hw/xwayland/meson.build        |  3 ---
- hw/xwayland/xwayland-present.c | 13 +------------
+ hw/xwayland/xwayland-present.c | 21 +++------------------
+ hw/xwayland/xwayland-present.h |  1 -
  hw/xwayland/xwayland-screen.c  |  5 -----
  hw/xwayland/xwayland-screen.h  |  1 -
  hw/xwayland/xwayland-window.c  |  9 ---------
  hw/xwayland/xwayland-window.h  |  1 -
- 6 files changed, 1 insertion(+), 31 deletions(-)
+ 7 files changed, 3 insertions(+), 38 deletions(-)
 
 diff --git a/hw/xwayland/meson.build b/hw/xwayland/meson.build
-index 57a01cef4..41be1240e 100644
+index 54529b64e..fbdbb2458 100644
 --- a/hw/xwayland/meson.build
 +++ b/hw/xwayland/meson.build
 @@ -48,7 +48,6 @@ xdg_shell_xml = join_paths(protodir, 'stable', 'xdg-shell', 'xdg-shell.xml')
@@ -22,48 +23,47 @@ index 57a01cef4..41be1240e 100644
  shortcuts_inhibit_xml = join_paths(protodir, 'unstable', 'keyboard-shortcuts-inhibit', 'keyboard-shortcuts-inhibit-unstable-v1.xml')
  xwayland_shell_xml = join_paths(protodir, 'staging', 'xwayland-shell', 'xwayland-shell-v1.xml')
 -tearing_xml = join_paths(protodir, 'staging', 'tearing-control', 'tearing-control-v1.xml')
- syncobj_xml = join_paths(protodir, 'staging', 'linux-drm-syncobj', 'linux-drm-syncobj-v1.xml')
  
  client_header = generator(scanner,
-@@ -78,7 +77,6 @@ srcs += client_header.process(xdg_shell_xml)
+     output : '@BASENAME@-client-protocol.h',
+@@ -77,7 +76,6 @@ srcs += client_header.process(xdg_shell_xml)
  srcs += client_header.process(drm_lease_xml)
  srcs += client_header.process(shortcuts_inhibit_xml)
  srcs += client_header.process(xwayland_shell_xml)
 -srcs += client_header.process(tearing_xml)
- srcs += client_header.process(syncobj_xml)
  srcs += code.process(relative_xml)
  srcs += code.process(pointer_xml)
-@@ -92,7 +90,6 @@ srcs += code.process(xdg_shell_xml)
+ srcs += code.process(gestures_xml)
+@@ -90,7 +88,6 @@ srcs += code.process(xdg_shell_xml)
  srcs += code.process(drm_lease_xml)
  srcs += code.process(shortcuts_inhibit_xml)
  srcs += code.process(xwayland_shell_xml)
 -srcs += code.process(tearing_xml)
- srcs += code.process(syncobj_xml)
  
  if build_ei
+     xwayland_dep += libei_dep
 diff --git a/hw/xwayland/xwayland-present.c b/hw/xwayland/xwayland-present.c
-index f611bb9ec..be8d00c05 100644
+index 941be06da..bb3310dc9 100644
 --- a/hw/xwayland/xwayland-present.c
 +++ b/hw/xwayland/xwayland-present.c
-@@ -34,10 +34,9 @@
+@@ -34,9 +34,8 @@
  #include "xwayland-pixmap.h"
  #include "glamor.h"
  
 -#include "tearing-control-v1-client-protocol.h"
- #include "linux-drm-syncobj-v1-client-protocol.h"
  
 -#define XWL_PRESENT_CAPS PresentCapabilityAsync | PresentCapabilityAsyncMayTear
 +#define XWL_PRESENT_CAPS PresentCapabilityAsync
  
  
  /*
-@@ -889,16 +888,6 @@ xwl_present_flip(present_vblank_ptr vblank, RegionPtr damage)
+@@ -797,16 +796,6 @@ xwl_present_flip(present_vblank_ptr vblank, RegionPtr damage)
                         damage_box->x2 - damage_box->x1,
                         damage_box->y2 - damage_box->y1);
  
 -    if (xwl_window->tearing_control) {
 -        uint32_t hint;
--        if (event->options & PresentOptionAsyncMayTear)
+-        if (event->async_may_tear)
 -            hint = WP_TEARING_CONTROL_V1_PRESENTATION_HINT_ASYNC;
 -        else
 -            hint = WP_TEARING_CONTROL_V1_PRESENTATION_HINT_VSYNC;
@@ -74,8 +74,38 @@ index f611bb9ec..be8d00c05 100644
      wl_surface_commit(xwl_window->surface);
  
      if (!vblank->sync_flip) {
+@@ -1010,15 +999,11 @@ xwl_present_pixmap(WindowPtr window,
+     }
+ 
+     vblank->event_id = ++xwl_present_event_id;
+-    event->async_may_tear = options & PresentOptionAsyncMayTear;
+ 
+-    /* Synchronous Xwayland presentations always complete (at least) one frame after they
++    /* Xwayland presentations always complete (at least) one frame after they
+      * are executed
+      */
+-    if (event->async_may_tear)
+-        vblank->exec_msc = vblank->target_msc;
+-    else
+-        vblank->exec_msc = vblank->target_msc - 1;
++    vblank->exec_msc = vblank->target_msc - 1;
+ 
+     vblank->queued = TRUE;
+     if (crtc_msc < vblank->exec_msc) {
+diff --git a/hw/xwayland/xwayland-present.h b/hw/xwayland/xwayland-present.h
+index 4fd1e579f..806272089 100644
+--- a/hw/xwayland/xwayland-present.h
++++ b/hw/xwayland/xwayland-present.h
+@@ -59,7 +59,6 @@ struct xwl_present_event {
+     present_vblank_rec vblank;
+ 
+     PixmapPtr pixmap;
+-    Bool async_may_tear;
+ };
+ 
+ Bool xwl_present_entered_for_each_frame_callback(void);
 diff --git a/hw/xwayland/xwayland-screen.c b/hw/xwayland/xwayland-screen.c
-index e4c212795..2d373ad8f 100644
+index cc14e0771..2bc553b50 100644
 --- a/hw/xwayland/xwayland-screen.c
 +++ b/hw/xwayland/xwayland-screen.c
 @@ -63,7 +63,6 @@
@@ -83,10 +113,10 @@ index e4c212795..2d373ad8f 100644
  #include "xdg-shell-client-protocol.h"
  #include "xwayland-shell-v1-client-protocol.h"
 -#include "tearing-control-v1-client-protocol.h"
- #include "linux-drm-syncobj-v1-client-protocol.h"
  
  static DevPrivateKeyRec xwl_screen_private_key;
-@@ -463,10 +462,6 @@ registry_global(void *data, struct wl_registry *registry, uint32_t id,
+ static DevPrivateKeyRec xwl_client_private_key;
+@@ -462,10 +461,6 @@ registry_global(void *data, struct wl_registry *registry, uint32_t id,
          xwl_screen->xwayland_shell =
              wl_registry_bind(registry, id, &xwayland_shell_v1_interface, 1);
      }
@@ -98,7 +128,7 @@ index e4c212795..2d373ad8f 100644
      else if (xwl_screen->glamor) {
          xwl_glamor_init_wl_registry(xwl_screen, registry, id, interface,
 diff --git a/hw/xwayland/xwayland-screen.h b/hw/xwayland/xwayland-screen.h
-index fce351072..3e93f2512 100644
+index bd66dd681..656d2afde 100644
 --- a/hw/xwayland/xwayland-screen.h
 +++ b/hw/xwayland/xwayland-screen.h
 @@ -110,7 +110,6 @@ struct xwl_screen {
@@ -106,11 +136,11 @@ index fce351072..3e93f2512 100644
      struct wp_viewporter *viewporter;
      struct xwayland_shell_v1 *xwayland_shell;
 -    struct wp_tearing_control_manager_v1 *tearing_control_manager;
-     struct wp_linux_drm_syncobj_v1 *explicit_sync;
      struct xorg_list drm_lease_devices;
      struct xorg_list queued_drm_lease_devices;
+     struct xorg_list drm_leases;
 diff --git a/hw/xwayland/xwayland-window.c b/hw/xwayland/xwayland-window.c
-index 070d40dc2..3319d7962 100644
+index 4978f37c7..b018d9656 100644
 --- a/hw/xwayland/xwayland-window.c
 +++ b/hw/xwayland/xwayland-window.c
 @@ -46,7 +46,6 @@
@@ -121,7 +151,7 @@ index 070d40dc2..3319d7962 100644
  #include "viewporter-client-protocol.h"
  #include "xdg-shell-client-protocol.h"
  #include "xwayland-shell-v1-client-protocol.h"
-@@ -942,11 +941,6 @@ ensure_surface_for_window(WindowPtr window)
+@@ -967,11 +966,6 @@ ensure_surface_for_window(WindowPtr window)
          xwl_window_check_resolution_change_emulation(xwl_window);
      }
  
@@ -133,18 +163,18 @@ index 070d40dc2..3319d7962 100644
      return TRUE;
  
  err:
-@@ -1157,9 +1151,6 @@ xwl_unrealize_window(WindowPtr window)
+@@ -1182,9 +1176,6 @@ xwl_unrealize_window(WindowPtr window)
          xwl_present_for_each_frame_callback(xwl_window, xwl_present_unrealize_window);
  #endif
  
 -    if (xwl_window->tearing_control)
 -        wp_tearing_control_v1_destroy(xwl_window->tearing_control);
 -
-     if (xwl_window->surface_sync)
-         wp_linux_drm_syncobj_surface_v1_destroy(xwl_window->surface_sync);
- 
+     release_wl_surface_for_window(xwl_window);
+     xorg_list_del(&xwl_window->link_damage);
+     xorg_list_del(&xwl_window->link_window);
 diff --git a/hw/xwayland/xwayland-window.h b/hw/xwayland/xwayland-window.h
-index 51ce91b57..2d1bb1c08 100644
+index 7fbb2a623..f8200d537 100644
 --- a/hw/xwayland/xwayland-window.h
 +++ b/hw/xwayland/xwayland-window.h
 @@ -121,7 +121,6 @@ struct xwl_window {
@@ -152,66 +182,65 @@ index 51ce91b57..2d1bb1c08 100644
      /* If TRUE, the window buffer format supports scanout with implicit modifier */
      Bool has_implicit_scanout_support;
 -    struct wp_tearing_control_v1 *tearing_control;
-     struct wp_linux_drm_syncobj_surface_v1 *surface_sync;
  };
  
+ struct xwl_window *xwl_window_get(WindowPtr window);
 -- 
 2.42.0
 
 
-From bd8b66f63a832798db890aa2d4212e9eceb84e66 Mon Sep 17 00:00:00 2001
-From: Kyle Gospodnetich <me@kylegospodneti.ch>
-Date: Thu, 14 Dec 2023 23:47:22 -0800
-Subject: [PATCH 2/2] Add Gamescope Tearing Protocol
+From 63f5eb6358a1bc71583ea18d5c5922a8ad1ea362 Mon Sep 17 00:00:00 2001
+From: Joshua Ashton <joshua@froggi.es>
+Date: Wed, 24 Aug 2022 23:16:24 +0000
+Subject: [PATCH 2/3] xwayland: Implement tearing protocol
 
 ---
  hw/xwayland/meson.build                       |   3 +
- .../gamescope-tearing-control-unstable-v1.xml | 141 ++++++++++++++++++
- hw/xwayland/xwayland-output.c                 |  15 +-
- hw/xwayland/xwayland-present.c                |  17 ++-
+ .../tearing-control-unstable-v1.xml           | 142 ++++++++++++++++++
+ hw/xwayland/xwayland-present.c                |  11 ++
  hw/xwayland/xwayland-screen.c                 |   4 +
  hw/xwayland/xwayland-screen.h                 |   1 +
  hw/xwayland/xwayland-window.c                 |  11 ++
  hw/xwayland/xwayland-window.h                 |   1 +
- 8 files changed, 191 insertions(+), 2 deletions(-)
- create mode 100644 hw/xwayland/protocols/unstable/tearing-control/gamescope-tearing-control-unstable-v1.xml
+ 7 files changed, 173 insertions(+)
+ create mode 100644 hw/xwayland/protocols/unstable/tearing-control/tearing-control-unstable-v1.xml
 
 diff --git a/hw/xwayland/meson.build b/hw/xwayland/meson.build
-index 41be1240e..6b12f0ce7 100644
+index fbdbb2458..d29e55d7d 100644
 --- a/hw/xwayland/meson.build
 +++ b/hw/xwayland/meson.build
-@@ -48,6 +48,7 @@ xdg_shell_xml = join_paths(protodir, 'stable', 'xdg-shell', 'xdg-shell.xml')
+@@ -46,6 +46,7 @@ dmabuf_xml = join_paths(protodir, 'unstable', 'linux-dmabuf', 'linux-dmabuf-unst
+ viewporter_xml = join_paths(protodir, 'stable', 'viewporter', 'viewporter.xml')
+ xdg_shell_xml = join_paths(protodir, 'stable', 'xdg-shell', 'xdg-shell.xml')
  drm_lease_xml = join_paths(protodir, 'staging', 'drm-lease', 'drm-lease-v1.xml')
++tearing_xml = join_paths('protocols', 'unstable', 'tearing-control', 'tearing-control-unstable-v1.xml')
  shortcuts_inhibit_xml = join_paths(protodir, 'unstable', 'keyboard-shortcuts-inhibit', 'keyboard-shortcuts-inhibit-unstable-v1.xml')
  xwayland_shell_xml = join_paths(protodir, 'staging', 'xwayland-shell', 'xwayland-shell-v1.xml')
-+tearing_xml = join_paths('protocols', 'unstable', 'tearing-control', 'gamescope-tearing-control-unstable-v1.xml')
- syncobj_xml = join_paths(protodir, 'staging', 'linux-drm-syncobj', 'linux-drm-syncobj-v1.xml')
  
- client_header = generator(scanner,
-@@ -77,6 +78,7 @@ srcs += client_header.process(xdg_shell_xml)
+@@ -74,6 +75,7 @@ srcs += client_header.process(dmabuf_xml)
+ srcs += client_header.process(viewporter_xml)
+ srcs += client_header.process(xdg_shell_xml)
  srcs += client_header.process(drm_lease_xml)
++srcs += client_header.process(tearing_xml)
  srcs += client_header.process(shortcuts_inhibit_xml)
  srcs += client_header.process(xwayland_shell_xml)
-+srcs += client_header.process(tearing_xml)
- srcs += client_header.process(syncobj_xml)
  srcs += code.process(relative_xml)
- srcs += code.process(pointer_xml)
-@@ -90,6 +92,7 @@ srcs += code.process(xdg_shell_xml)
+@@ -86,6 +88,7 @@ srcs += code.process(dmabuf_xml)
+ srcs += code.process(viewporter_xml)
+ srcs += code.process(xdg_shell_xml)
  srcs += code.process(drm_lease_xml)
++srcs += code.process(tearing_xml)
  srcs += code.process(shortcuts_inhibit_xml)
  srcs += code.process(xwayland_shell_xml)
-+srcs += code.process(tearing_xml)
- srcs += code.process(syncobj_xml)
  
- if build_ei
-diff --git a/hw/xwayland/protocols/unstable/tearing-control/gamescope-tearing-control-unstable-v1.xml b/hw/xwayland/protocols/unstable/tearing-control/gamescope-tearing-control-unstable-v1.xml
+diff --git a/hw/xwayland/protocols/unstable/tearing-control/tearing-control-unstable-v1.xml b/hw/xwayland/protocols/unstable/tearing-control/tearing-control-unstable-v1.xml
 new file mode 100644
-index 000000000..7cdb5dd57
+index 000000000..ce130718e
 --- /dev/null
-+++ b/hw/xwayland/protocols/unstable/tearing-control/gamescope-tearing-control-unstable-v1.xml
-@@ -0,0 +1,141 @@
++++ b/hw/xwayland/protocols/unstable/tearing-control/tearing-control-unstable-v1.xml
+@@ -0,0 +1,142 @@
 +<?xml version="1.0" encoding="UTF-8"?>
-+<protocol name="gamescope_tearing_control_unstable_v1">
++<protocol name="zwp_tearing_control_unstable_v1">
 +
 +  <copyright>
 +    Copyright © 2021 Xaver Hugl
@@ -236,7 +265,7 @@ index 000000000..7cdb5dd57
 +    DEALINGS IN THE SOFTWARE.
 +  </copyright>
 +
-+  <interface name="gamescope_tearing_control_v1" version="1">
++  <interface name="zwp_tearing_control_v1" version="1">
 +    <description summary="protocol for tearing control">
 +      This global is a factory interface, allowing clients to request
 +      the compositor to use asynchronous page flips on a per-surface basis.
@@ -260,7 +289,7 @@ index 000000000..7cdb5dd57
 +    <request name="destroy" type="destructor">
 +      <description summary="destroy tearing control factory object">
 +        Destroy this tearing control factory object. Other objects, including
-+        gamescope_surface_tearing_control_v1 objects created by this factory,
++        zwp_surface_tearing_control_v1 objects created by this factory,
 +        shall not be affected by this request.
 +      </description>
 +    </request>
@@ -275,19 +304,19 @@ index 000000000..7cdb5dd57
 +        Instantiate an interface extension for the given wl_surface to
 +        request asynchronous page flips for presentation.
 +
-+        If the given wl_surface already has a gamescope_surface_tearing_control_v1
++        If the given wl_surface already has a zwp_surface_tearing_control_v1
 +        object associated, the tearing_control_exists protocol error is raised.
 +      </description>
 +
 +      <arg name="id" type="new_id"
-+           interface="gamescope_surface_tearing_control_v1"
++           interface="zwp_surface_tearing_control_v1"
 +           summary="the new surface tearing interface id"/>
 +      <arg name="surface" type="object" interface="wl_surface"
 +           summary="the surface"/>
 +    </request>
 +  </interface>
 +
-+  <interface name="gamescope_surface_tearing_control_v1" version="1">
++  <interface name="zwp_surface_tearing_control_v1" version="1">
 +    <description summary="per-surface tearing control request">
 +      An additional interface to a wl_surface object, which allows the client
 +      to hint to the compositor if and when it should use asynchronous page
@@ -351,167 +380,100 @@ index 000000000..7cdb5dd57
 +  </interface>
 +
 +</protocol>
-\ No newline at end of file
-diff --git a/hw/xwayland/xwayland-output.c b/hw/xwayland/xwayland-output.c
-index fe7a9232e..ea95a6c64 100644
---- a/hw/xwayland/xwayland-output.c
-+++ b/hw/xwayland/xwayland-output.c
-@@ -338,6 +338,19 @@ const int32_t xwl_output_fake_modes[][2] = {
-     {  640,  350 },
- };
- 
-+/* Enables always exposing extra modes without
-+ * supporting viewporter.
-+ * Useful for some wayland compositors
-+ * that work kiosk-like with a single window, that handle scaling
-+ * themselves where viewporter wouldn't make sense.
-+ */
-+static Bool
-+always_expose_extra_modes(void)
-+{
-+    const char *extra_mode_env = getenv("XWAYLAND_FORCE_ENABLE_EXTRA_MODES");
-+    return extra_mode_env && atoi(extra_mode_env) != 0;
-+}
 +
- /* Build an array with RRModes the first mode is the actual output mode, the
-  * rest are fake modes from the xwl_output_fake_modes list. We do this for apps
-  * which want to change resolution when they go fullscreen.
-@@ -363,7 +376,7 @@ output_get_rr_modes(struct xwl_output *xwl_output,
- 
-     *count = 1;
- 
--    if (!xwl_screen_has_resolution_change_emulation(xwl_screen) && !xwl_screen->force_xrandr_emulation)
-+    if (!xwl_screen_has_resolution_change_emulation(xwl_screen) && !xwl_screen->force_xrandr_emulation && !always_expose_extra_modes())
-         return rr_modes;
- 
-     /* Add fake modes */
 diff --git a/hw/xwayland/xwayland-present.c b/hw/xwayland/xwayland-present.c
-index be8d00c05..600c0aaa7 100644
+index bb3310dc9..6f1d57a42 100644
 --- a/hw/xwayland/xwayland-present.c
 +++ b/hw/xwayland/xwayland-present.c
-@@ -34,6 +34,7 @@
+@@ -34,6 +34,8 @@
  #include "xwayland-pixmap.h"
  #include "glamor.h"
  
-+#include "gamescope-tearing-control-unstable-v1-client-protocol.h"
- #include "linux-drm-syncobj-v1-client-protocol.h"
++#include "tearing-control-unstable-v1-client-protocol.h"
++
  
  #define XWL_PRESENT_CAPS PresentCapabilityAsync
-@@ -705,6 +706,7 @@ xwl_present_check_flip(RRCrtcPtr crtc,
-     WindowPtr toplvl_window = xwl_present_toplvl_pixmap_window(present_window);
-     struct xwl_window *xwl_window = xwl_window_from_window(present_window);
-     ScreenPtr screen = pixmap->drawable.pScreen;
-+    PixmapPtr window_pixmap;
-     struct xwl_screen *xwl_screen = xwl_screen_get(screen);
  
-     if (reason)
-@@ -714,6 +716,7 @@ xwl_present_check_flip(RRCrtcPtr crtc,
-         return FALSE;
- 
-     xwl_present_maybe_set_reason(xwl_window, reason);
-+    window_pixmap = screen->GetWindowPixmap(xwl_window->window);
- 
-     if (!crtc)
-         return FALSE;
-@@ -742,6 +745,10 @@ xwl_present_check_flip(RRCrtcPtr crtc,
-     if (!xwl_glamor_check_flip(present_window, pixmap))
-         return FALSE;
- 
-+    /* If this is a dummy window, we can always flip to it */
-+    if (window_pixmap->drawable.width == 1 && window_pixmap->drawable.height == 1)
-+        return TRUE;
-+
-     /* If glamor doesn't support implicit sync and the compositor doesn't
-      * support explicit sync, we cannot flip
-      */
-@@ -753,7 +760,7 @@ xwl_present_check_flip(RRCrtcPtr crtc,
-      * window's, e.g. because a client redirected this window or one of its
-      * parents.
-      */
--    if (screen->GetWindowPixmap(xwl_window->window) != screen->GetWindowPixmap(present_window))
-+    if (window_pixmap != screen->GetWindowPixmap(present_window))
-         return FALSE;
- 
-     /*
-@@ -888,6 +895,14 @@ xwl_present_flip(present_vblank_ptr vblank, RegionPtr damage)
+@@ -796,6 +798,15 @@ xwl_present_flip(present_vblank_ptr vblank, RegionPtr damage)
                         damage_box->x2 - damage_box->x1,
                         damage_box->y2 - damage_box->y1);
  
++
 +    // Josh: No support for VSync relaxed, this is something that should
 +    // be determined by a user setting in gamescope.
 +    if (xwl_window->tearing_control)
-+        gamescope_surface_tearing_control_v1_set_presentation_hint(xwl_window->tearing_control,
-+            vblank->sync_flip
-+                ? GAMESCOPE_SURFACE_TEARING_CONTROL_V1_PRESENTATION_HINT_VSYNC
-+                : GAMESCOPE_SURFACE_TEARING_CONTROL_V1_PRESENTATION_HINT_ASYNC);
++        zwp_surface_tearing_control_v1_set_presentation_hint(xwl_window->tearing_control, 
++            sync_flip
++                ? ZWP_SURFACE_TEARING_CONTROL_V1_PRESENTATION_HINT_VSYNC
++                : ZWP_SURFACE_TEARING_CONTROL_V1_PRESENTATION_HINT_ASYNC);
 +
      wl_surface_commit(xwl_window->surface);
  
      if (!vblank->sync_flip) {
 diff --git a/hw/xwayland/xwayland-screen.c b/hw/xwayland/xwayland-screen.c
-index 2d373ad8f..3eb8ceee4 100644
+index 2bc553b50..e35861e46 100644
 --- a/hw/xwayland/xwayland-screen.c
 +++ b/hw/xwayland/xwayland-screen.c
-@@ -63,6 +63,7 @@
+@@ -62,6 +62,7 @@
+ #include "xdg-output-unstable-v1-client-protocol.h"
  #include "viewporter-client-protocol.h"
  #include "xdg-shell-client-protocol.h"
++#include "tearing-control-unstable-v1-client-protocol.h"
  #include "xwayland-shell-v1-client-protocol.h"
-+#include "gamescope-tearing-control-unstable-v1-client-protocol.h"
- #include "linux-drm-syncobj-v1-client-protocol.h"
  
  static DevPrivateKeyRec xwl_screen_private_key;
-@@ -462,6 +463,9 @@ registry_global(void *data, struct wl_registry *registry, uint32_t id,
+@@ -457,6 +458,9 @@ registry_global(void *data, struct wl_registry *registry, uint32_t id,
+     else if (strcmp(interface, "wp_viewporter") == 0) {
+         xwl_screen->viewporter = wl_registry_bind(registry, id, &wp_viewporter_interface, 1);
+     }
++    else if (strcmp(interface, "zwp_tearing_control_v1") == 0) {
++        xwl_screen->tearing_control = wl_registry_bind(registry, id, &zwp_tearing_control_v1_interface, 1);
++    }
+     else if (strcmp(interface, "xwayland_shell_v1") == 0 && xwl_screen->rootless) {
          xwl_screen->xwayland_shell =
              wl_registry_bind(registry, id, &xwayland_shell_v1_interface, 1);
-     }
-+    else if (strcmp(interface, "gamescope_tearing_control_v1") == 0) {
-+        xwl_screen->tearing_control = wl_registry_bind(registry, id, &gamescope_tearing_control_v1_interface, 1);
-+    }
- #ifdef XWL_HAS_GLAMOR
-     else if (xwl_screen->glamor) {
-         xwl_glamor_init_wl_registry(xwl_screen, registry, id, interface,
 diff --git a/hw/xwayland/xwayland-screen.h b/hw/xwayland/xwayland-screen.h
-index 3e93f2512..206a0d2ae 100644
+index 656d2afde..bf75278fd 100644
 --- a/hw/xwayland/xwayland-screen.h
 +++ b/hw/xwayland/xwayland-screen.h
-@@ -117,6 +117,7 @@ struct xwl_screen {
+@@ -113,6 +113,7 @@ struct xwl_screen {
+     struct xorg_list drm_lease_devices;
+     struct xorg_list queued_drm_lease_devices;
+     struct xorg_list drm_leases;
++    struct zwp_tearing_control_v1 *tearing_control;
      struct xwl_output *fixed_output;
      struct xorg_list pending_wl_surface_destroy;
      uint64_t surface_association_serial;
-+    struct gamescope_tearing_control_v1 *tearing_control;
-     uint32_t serial;
- 
- #define XWL_FORMAT_ARGB8888 (1 << 0)
 diff --git a/hw/xwayland/xwayland-window.c b/hw/xwayland/xwayland-window.c
-index 3319d7962..beef826a0 100644
+index b018d9656..7b3534385 100644
 --- a/hw/xwayland/xwayland-window.c
 +++ b/hw/xwayland/xwayland-window.c
-@@ -49,6 +49,7 @@
+@@ -48,6 +48,7 @@
+ #include "linux-dmabuf-unstable-v1-client-protocol.h"
  #include "viewporter-client-protocol.h"
  #include "xdg-shell-client-protocol.h"
++#include "tearing-control-unstable-v1-client-protocol.h"
  #include "xwayland-shell-v1-client-protocol.h"
-+#include "gamescope-tearing-control-unstable-v1-client-protocol.h"
- #include "linux-drm-syncobj-v1-client-protocol.h"
  
  #define DELAYED_WL_SURFACE_DESTROY 1000 /* ms */
-@@ -900,6 +901,11 @@ ensure_surface_for_window(WindowPtr window)
-             xwl_screen->xwayland_shell, xwl_window->surface);
+@@ -920,6 +921,11 @@ ensure_surface_for_window(WindowPtr window)
+         goto err;
      }
  
 +    if (xwl_screen->tearing_control) {
 +        xwl_window->tearing_control =
-+            gamescope_tearing_control_v1_get_tearing_control(xwl_screen->tearing_control, xwl_window->surface);
++            zwp_tearing_control_v1_get_tearing_control(xwl_screen->tearing_control, xwl_window->surface);
 +    }
 +
-     if (!xwl_screen->rootless && !xwl_create_root_surface(xwl_window))
-         goto err;
- 
-@@ -1144,6 +1150,11 @@ xwl_unrealize_window(WindowPtr window)
+     if (xwl_screen->xwayland_shell) {
+         xwl_window->xwayland_surface = xwayland_shell_v1_get_xwayland_surface(
+             xwl_screen->xwayland_shell, xwl_window->surface);
+@@ -1169,6 +1175,11 @@ xwl_unrealize_window(WindowPtr window)
      if (xwl_window_has_viewport_enabled(xwl_window))
          xwl_window_disable_viewport(xwl_window);
  
 +    if (xwl_window->tearing_control) {
-+        gamescope_surface_tearing_control_v1_destroy(xwl_window->tearing_control);
++        zwp_surface_tearing_control_v1_destroy(xwl_window->tearing_control);
 +        xwl_window->tearing_control = NULL;
 +    }
 +
@@ -519,17 +481,214 @@ index 3319d7962..beef826a0 100644
  
  #ifdef GLAMOR_HAS_GBM
 diff --git a/hw/xwayland/xwayland-window.h b/hw/xwayland/xwayland-window.h
-index 2d1bb1c08..ed32a1a1c 100644
+index f8200d537..519d9394c 100644
 --- a/hw/xwayland/xwayland-window.h
 +++ b/hw/xwayland/xwayland-window.h
-@@ -121,6 +121,7 @@ struct xwl_window {
-     struct xwl_dmabuf_feedback feedback;
-     /* If TRUE, the window buffer format supports scanout with implicit modifier */
-     Bool has_implicit_scanout_support;
-+    struct gamescope_surface_tearing_control_v1 *tearing_control;
-     struct wp_linux_drm_syncobj_surface_v1 *surface_sync;
- };
+@@ -99,6 +99,7 @@ struct xwl_window {
+     struct wp_viewport *viewport;
+     float scale_x, scale_y;
+     struct xdg_surface *xdg_surface;
++    struct zwp_surface_tearing_control_v1 *tearing_control;
+     struct xdg_toplevel *xdg_toplevel;
+     WindowPtr window;
+     struct xorg_list link_damage;
+-- 
+2.42.0
+
+
+From 611f140aded7608097769490060b5f8b8f95eccb Mon Sep 17 00:00:00 2001
+From: Joshua Ashton <joshua@froggi.es>
+Date: Wed, 31 Aug 2022 12:57:09 +0000
+Subject: [PATCH 3/3] Use gamescope tearing protocol instead
+
+Renamed to not clash
+---
+ hw/xwayland/meson.build                              |  2 +-
+ ...xml => gamescope-tearing-control-unstable-v1.xml} | 12 ++++++------
+ hw/xwayland/xwayland-present.c                       |  8 ++++----
+ hw/xwayland/xwayland-screen.c                        |  6 +++---
+ hw/xwayland/xwayland-screen.h                        |  2 +-
+ hw/xwayland/xwayland-window.c                        |  6 +++---
+ hw/xwayland/xwayland-window.h                        |  2 +-
+ 7 files changed, 19 insertions(+), 19 deletions(-)
+ rename hw/xwayland/protocols/unstable/tearing-control/{tearing-control-unstable-v1.xml => gamescope-tearing-control-unstable-v1.xml} (93%)
+
+diff --git a/hw/xwayland/meson.build b/hw/xwayland/meson.build
+index d29e55d7d..73f2bdd94 100644
+--- a/hw/xwayland/meson.build
++++ b/hw/xwayland/meson.build
+@@ -46,7 +46,7 @@ dmabuf_xml = join_paths(protodir, 'unstable', 'linux-dmabuf', 'linux-dmabuf-unst
+ viewporter_xml = join_paths(protodir, 'stable', 'viewporter', 'viewporter.xml')
+ xdg_shell_xml = join_paths(protodir, 'stable', 'xdg-shell', 'xdg-shell.xml')
+ drm_lease_xml = join_paths(protodir, 'staging', 'drm-lease', 'drm-lease-v1.xml')
+-tearing_xml = join_paths('protocols', 'unstable', 'tearing-control', 'tearing-control-unstable-v1.xml')
++tearing_xml = join_paths('protocols', 'unstable', 'tearing-control', 'gamescope-tearing-control-unstable-v1.xml')
+ shortcuts_inhibit_xml = join_paths(protodir, 'unstable', 'keyboard-shortcuts-inhibit', 'keyboard-shortcuts-inhibit-unstable-v1.xml')
+ xwayland_shell_xml = join_paths(protodir, 'staging', 'xwayland-shell', 'xwayland-shell-v1.xml')
  
+diff --git a/hw/xwayland/protocols/unstable/tearing-control/tearing-control-unstable-v1.xml b/hw/xwayland/protocols/unstable/tearing-control/gamescope-tearing-control-unstable-v1.xml
+similarity index 93%
+rename from hw/xwayland/protocols/unstable/tearing-control/tearing-control-unstable-v1.xml
+rename to hw/xwayland/protocols/unstable/tearing-control/gamescope-tearing-control-unstable-v1.xml
+index ce130718e..3c7cfb09e 100644
+--- a/hw/xwayland/protocols/unstable/tearing-control/tearing-control-unstable-v1.xml
++++ b/hw/xwayland/protocols/unstable/tearing-control/gamescope-tearing-control-unstable-v1.xml
+@@ -1,5 +1,5 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+-<protocol name="zwp_tearing_control_unstable_v1">
++<protocol name="gamescope_tearing_control_unstable_v1">
+ 
+   <copyright>
+     Copyright © 2021 Xaver Hugl
+@@ -24,7 +24,7 @@
+     DEALINGS IN THE SOFTWARE.
+   </copyright>
+ 
+-  <interface name="zwp_tearing_control_v1" version="1">
++  <interface name="gamescope_tearing_control_v1" version="1">
+     <description summary="protocol for tearing control">
+       This global is a factory interface, allowing clients to request
+       the compositor to use asynchronous page flips on a per-surface basis.
+@@ -48,7 +48,7 @@
+     <request name="destroy" type="destructor">
+       <description summary="destroy tearing control factory object">
+         Destroy this tearing control factory object. Other objects, including
+-        zwp_surface_tearing_control_v1 objects created by this factory,
++        gamescope_surface_tearing_control_v1 objects created by this factory,
+         shall not be affected by this request.
+       </description>
+     </request>
+@@ -63,19 +63,19 @@
+         Instantiate an interface extension for the given wl_surface to
+         request asynchronous page flips for presentation.
+ 
+-        If the given wl_surface already has a zwp_surface_tearing_control_v1
++        If the given wl_surface already has a gamescope_surface_tearing_control_v1
+         object associated, the tearing_control_exists protocol error is raised.
+       </description>
+ 
+       <arg name="id" type="new_id"
+-           interface="zwp_surface_tearing_control_v1"
++           interface="gamescope_surface_tearing_control_v1"
+            summary="the new surface tearing interface id"/>
+       <arg name="surface" type="object" interface="wl_surface"
+            summary="the surface"/>
+     </request>
+   </interface>
+ 
+-  <interface name="zwp_surface_tearing_control_v1" version="1">
++  <interface name="gamescope_surface_tearing_control_v1" version="1">
+     <description summary="per-surface tearing control request">
+       An additional interface to a wl_surface object, which allows the client
+       to hint to the compositor if and when it should use asynchronous page
+diff --git a/hw/xwayland/xwayland-present.c b/hw/xwayland/xwayland-present.c
+index 6f1d57a42..5cbd767c9 100644
+--- a/hw/xwayland/xwayland-present.c
++++ b/hw/xwayland/xwayland-present.c
+@@ -34,7 +34,7 @@
+ #include "xwayland-pixmap.h"
+ #include "glamor.h"
+ 
+-#include "tearing-control-unstable-v1-client-protocol.h"
++#include "gamescope-tearing-control-unstable-v1-client-protocol.h"
+ 
+ 
+ #define XWL_PRESENT_CAPS PresentCapabilityAsync
+@@ -802,10 +802,10 @@ xwl_present_flip(present_vblank_ptr vblank, RegionPtr damage)
+     // Josh: No support for VSync relaxed, this is something that should
+     // be determined by a user setting in gamescope.
+     if (xwl_window->tearing_control)
+-        zwp_surface_tearing_control_v1_set_presentation_hint(xwl_window->tearing_control, 
++        gamescope_surface_tearing_control_v1_set_presentation_hint(xwl_window->tearing_control, 
+             sync_flip
+-                ? ZWP_SURFACE_TEARING_CONTROL_V1_PRESENTATION_HINT_VSYNC
+-                : ZWP_SURFACE_TEARING_CONTROL_V1_PRESENTATION_HINT_ASYNC);
++                ? GAMESCOPE_SURFACE_TEARING_CONTROL_V1_PRESENTATION_HINT_VSYNC
++                : GAMESCOPE_SURFACE_TEARING_CONTROL_V1_PRESENTATION_HINT_ASYNC);
+ 
+     wl_surface_commit(xwl_window->surface);
+ 
+diff --git a/hw/xwayland/xwayland-screen.c b/hw/xwayland/xwayland-screen.c
+index e35861e46..2a025db18 100644
+--- a/hw/xwayland/xwayland-screen.c
++++ b/hw/xwayland/xwayland-screen.c
+@@ -62,7 +62,7 @@
+ #include "xdg-output-unstable-v1-client-protocol.h"
+ #include "viewporter-client-protocol.h"
+ #include "xdg-shell-client-protocol.h"
+-#include "tearing-control-unstable-v1-client-protocol.h"
++#include "gamescope-tearing-control-unstable-v1-client-protocol.h"
+ #include "xwayland-shell-v1-client-protocol.h"
+ 
+ static DevPrivateKeyRec xwl_screen_private_key;
+@@ -458,8 +458,8 @@ registry_global(void *data, struct wl_registry *registry, uint32_t id,
+     else if (strcmp(interface, "wp_viewporter") == 0) {
+         xwl_screen->viewporter = wl_registry_bind(registry, id, &wp_viewporter_interface, 1);
+     }
+-    else if (strcmp(interface, "zwp_tearing_control_v1") == 0) {
+-        xwl_screen->tearing_control = wl_registry_bind(registry, id, &zwp_tearing_control_v1_interface, 1);
++    else if (strcmp(interface, "gamescope_tearing_control_v1") == 0) {
++        xwl_screen->tearing_control = wl_registry_bind(registry, id, &gamescope_tearing_control_v1_interface, 1);
+     }
+     else if (strcmp(interface, "xwayland_shell_v1") == 0 && xwl_screen->rootless) {
+         xwl_screen->xwayland_shell =
+diff --git a/hw/xwayland/xwayland-screen.h b/hw/xwayland/xwayland-screen.h
+index bf75278fd..d6b1a1d84 100644
+--- a/hw/xwayland/xwayland-screen.h
++++ b/hw/xwayland/xwayland-screen.h
+@@ -113,7 +113,7 @@ struct xwl_screen {
+     struct xorg_list drm_lease_devices;
+     struct xorg_list queued_drm_lease_devices;
+     struct xorg_list drm_leases;
+-    struct zwp_tearing_control_v1 *tearing_control;
++    struct gamescope_tearing_control_v1 *tearing_control;
+     struct xwl_output *fixed_output;
+     struct xorg_list pending_wl_surface_destroy;
+     uint64_t surface_association_serial;
+diff --git a/hw/xwayland/xwayland-window.c b/hw/xwayland/xwayland-window.c
+index 7b3534385..d3bbe703d 100644
+--- a/hw/xwayland/xwayland-window.c
++++ b/hw/xwayland/xwayland-window.c
+@@ -48,7 +48,7 @@
+ #include "linux-dmabuf-unstable-v1-client-protocol.h"
+ #include "viewporter-client-protocol.h"
+ #include "xdg-shell-client-protocol.h"
+-#include "tearing-control-unstable-v1-client-protocol.h"
++#include "gamescope-tearing-control-unstable-v1-client-protocol.h"
+ #include "xwayland-shell-v1-client-protocol.h"
+ 
+ #define DELAYED_WL_SURFACE_DESTROY 1000 /* ms */
+@@ -923,7 +923,7 @@ ensure_surface_for_window(WindowPtr window)
+ 
+     if (xwl_screen->tearing_control) {
+         xwl_window->tearing_control =
+-            zwp_tearing_control_v1_get_tearing_control(xwl_screen->tearing_control, xwl_window->surface);
++            gamescope_tearing_control_v1_get_tearing_control(xwl_screen->tearing_control, xwl_window->surface);
+     }
+ 
+     if (xwl_screen->xwayland_shell) {
+@@ -1176,7 +1176,7 @@ xwl_unrealize_window(WindowPtr window)
+         xwl_window_disable_viewport(xwl_window);
+ 
+     if (xwl_window->tearing_control) {
+-        zwp_surface_tearing_control_v1_destroy(xwl_window->tearing_control);
++        gamescope_surface_tearing_control_v1_destroy(xwl_window->tearing_control);
+         xwl_window->tearing_control = NULL;
+     }
+ 
+diff --git a/hw/xwayland/xwayland-window.h b/hw/xwayland/xwayland-window.h
+index 519d9394c..95f770c07 100644
+--- a/hw/xwayland/xwayland-window.h
++++ b/hw/xwayland/xwayland-window.h
+@@ -99,7 +99,7 @@ struct xwl_window {
+     struct wp_viewport *viewport;
+     float scale_x, scale_y;
+     struct xdg_surface *xdg_surface;
+-    struct zwp_surface_tearing_control_v1 *tearing_control;
++    struct gamescope_surface_tearing_control_v1 *tearing_control;
+     struct xdg_toplevel *xdg_toplevel;
+     WindowPtr window;
+     struct xorg_list link_damage;
 -- 
 2.42.0
 
