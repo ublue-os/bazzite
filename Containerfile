@@ -276,7 +276,13 @@ RUN rpm-ostree install \
         glow \
         gum \
         setools \
-        redhat-lsb-core && \
+        redhat-lsb-core \
+        cockpit-networkmanager \
+        cockpit-podman \
+        cockpit-selinux \
+        cockpit-system \
+        cockpit-navigator \
+        cockpit-storaged && \
     pip install --prefix=/usr topgrade && \
     rpm-ostree install \
         ublue-update && \
