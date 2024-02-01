@@ -1,7 +1,7 @@
-From 99a6338ca012d4273153981bfa8b8b05aa8df185 Mon Sep 17 00:00:00 2001
+From e496ed0a6b6c467ac01e33fa14e05dc2e0888a74 Mon Sep 17 00:00:00 2001
 From: Kyle Gospodnetich <me@kylegospodneti.ch>
-Date: Wed, 31 Jan 2024 17:06:08 -0800
-Subject: [PATCH 1/3] Revert "xwayland: add support for wp-tearing-control-v1"
+Date: Wed, 31 Jan 2024 17:22:32 -0800
+Subject: [PATCH 1/4] Revert "xwayland: add support for wp-tearing-control-v1"
 
 This reverts commit 1ce2025822244c85826ab36febfa5945186b4a2a.
 ---
@@ -189,10 +189,10 @@ index 7fbb2a623..f8200d537 100644
 2.42.0
 
 
-From 63f5eb6358a1bc71583ea18d5c5922a8ad1ea362 Mon Sep 17 00:00:00 2001
+From 01a8a454f04dca944db446815f28bf46f8f822b6 Mon Sep 17 00:00:00 2001
 From: Joshua Ashton <joshua@froggi.es>
 Date: Wed, 24 Aug 2022 23:16:24 +0000
-Subject: [PATCH 2/3] xwayland: Implement tearing protocol
+Subject: [PATCH 2/4] xwayland: Implement tearing protocol
 
 ---
  hw/xwayland/meson.build                       |   3 +
@@ -496,10 +496,10 @@ index f8200d537..519d9394c 100644
 2.42.0
 
 
-From 611f140aded7608097769490060b5f8b8f95eccb Mon Sep 17 00:00:00 2001
+From 3357fc57deb1e397e6a2023a4b0254aeed957349 Mon Sep 17 00:00:00 2001
 From: Joshua Ashton <joshua@froggi.es>
 Date: Wed, 31 Aug 2022 12:57:09 +0000
-Subject: [PATCH 3/3] Use gamescope tearing protocol instead
+Subject: [PATCH 3/4] Use gamescope tearing protocol instead
 
 Renamed to not clash
 ---
@@ -689,6 +689,41 @@ index 519d9394c..95f770c07 100644
      struct xdg_toplevel *xdg_toplevel;
      WindowPtr window;
      struct xorg_list link_damage;
+-- 
+2.42.0
+
+
+From c799ef123d1ed4eddc7972451b1b313b14195935 Mon Sep 17 00:00:00 2001
+From: Kyle Gospodnetich <me@kylegospodneti.ch>
+Date: Wed, 31 Jan 2024 17:36:04 -0800
+Subject: [PATCH 4/4] Fix missing sync_flip param
+
+---
+ hw/xwayland/xwayland-present.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/hw/xwayland/xwayland-present.c b/hw/xwayland/xwayland-present.c
+index 5cbd767c9..f22e8f987 100644
+--- a/hw/xwayland/xwayland-present.c
++++ b/hw/xwayland/xwayland-present.c
+@@ -754,7 +754,7 @@ xwl_present_clear_window_flip(WindowPtr window)
+ }
+ 
+ static Bool
+-xwl_present_flip(present_vblank_ptr vblank, RegionPtr damage)
++xwl_present_flip(present_vblank_ptr vblank, RegionPtr damage, Bool sync_flip)
+ {
+     WindowPtr present_window = vblank->window;
+     PixmapPtr pixmap = vblank->pixmap;
+@@ -873,7 +873,7 @@ xwl_present_execute(present_vblank_ptr vblank, uint64_t ust, uint64_t crtc_msc)
+             } else
+                 damage = RegionDuplicate(&window->clipList);
+ 
+-            if (xwl_present_flip(vblank, damage)) {
++            if (xwl_present_flip(vblank, damage, vblank->sync_flip)) {
+                 WindowPtr toplvl_window = xwl_present_toplvl_pixmap_window(vblank->window);
+                 PixmapPtr old_pixmap = screen->GetWindowPixmap(window);
+ 
 -- 
 2.42.0
 
