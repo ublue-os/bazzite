@@ -179,16 +179,15 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
 
     systemctl enable --now jupiter-fan-control.service
     systemctl enable --now vpower.service
+    systemctl enable --now ds-inhibit.service
   else
     echo "Generic device detected. Performing setup..."
     if /usr/libexec/hardware/hhd-supported-hardware; then
-      echo "HHD supported handheld detected, disabling handycon & ds-inhibit..."
+      echo "HHD supported handheld detected, disabling handycon"
       systemctl disable --now handycon.service
-      systemctl disable --now ds-inhibit.service
     elif /usr/libexec/hardware/handycon-supported-hardware; then
-      echo "HandyGCCS supported handheld detected, enabling handycon & ds-inhibit..."
+      echo "HandyGCCS supported handheld detected, enabling handycon"
       systemctl enable --now handycon.service
-      systemctl enable --now ds-inhbit.service
     fi
     systemctl disable --now jupiter-fan-control.service
     systemctl disable --now vpower.service
