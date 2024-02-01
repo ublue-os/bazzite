@@ -1,0 +1,10 @@
+diff --git a/bin/mangoplot.py b/bin/mangoplot.py
+index 7d82b3a..b974aa7 100755
+--- a/bin/mangoplot.py
++++ b/bin/mangoplot.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/python3
+ 
+ r"""
+     Script to plot all the MangoHud benchmarks contained in a given folder.
