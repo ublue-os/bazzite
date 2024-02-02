@@ -9,7 +9,7 @@ screens:
       title: "Welcome to Bazzite"
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
-        Configure your system to get started
+        Configure your system to get started. This utility can be re-opened at any time, so don't feel like you have to get it perfect your first go-through.
   configure-bazzite:
     source: yafti.screen.package
     values:

@@ -1,4 +1,4 @@
-From e496ed0a6b6c467ac01e33fa14e05dc2e0888a74 Mon Sep 17 00:00:00 2001
+From 0151613de184f0ac8bc2c685f37492919602e15f Mon Sep 17 00:00:00 2001
 From: Kyle Gospodnetich <me@kylegospodneti.ch>
 Date: Wed, 31 Jan 2024 17:22:32 -0800
 Subject: [PATCH 1/4] Revert "xwayland: add support for wp-tearing-control-v1"
@@ -140,7 +140,7 @@ index bd66dd681..656d2afde 100644
      struct xorg_list queued_drm_lease_devices;
      struct xorg_list drm_leases;
 diff --git a/hw/xwayland/xwayland-window.c b/hw/xwayland/xwayland-window.c
-index 4978f37c7..b018d9656 100644
+index a4f02a058..54ba9d896 100644
 --- a/hw/xwayland/xwayland-window.c
 +++ b/hw/xwayland/xwayland-window.c
 @@ -46,7 +46,6 @@
@@ -151,7 +151,7 @@ index 4978f37c7..b018d9656 100644
  #include "viewporter-client-protocol.h"
  #include "xdg-shell-client-protocol.h"
  #include "xwayland-shell-v1-client-protocol.h"
-@@ -967,11 +966,6 @@ ensure_surface_for_window(WindowPtr window)
+@@ -941,11 +940,6 @@ ensure_surface_for_window(WindowPtr window)
          xwl_window_check_resolution_change_emulation(xwl_window);
      }
  
@@ -163,7 +163,7 @@ index 4978f37c7..b018d9656 100644
      return TRUE;
  
  err:
-@@ -1182,9 +1176,6 @@ xwl_unrealize_window(WindowPtr window)
+@@ -1156,9 +1150,6 @@ xwl_unrealize_window(WindowPtr window)
          xwl_present_for_each_frame_callback(xwl_window, xwl_present_unrealize_window);
  #endif
  
@@ -174,7 +174,7 @@ index 4978f37c7..b018d9656 100644
      xorg_list_del(&xwl_window->link_damage);
      xorg_list_del(&xwl_window->link_window);
 diff --git a/hw/xwayland/xwayland-window.h b/hw/xwayland/xwayland-window.h
-index 7fbb2a623..f8200d537 100644
+index 45ae16da0..92c700e41 100644
 --- a/hw/xwayland/xwayland-window.h
 +++ b/hw/xwayland/xwayland-window.h
 @@ -121,7 +121,6 @@ struct xwl_window {
@@ -189,7 +189,7 @@ index 7fbb2a623..f8200d537 100644
 2.42.0
 
 
-From 01a8a454f04dca944db446815f28bf46f8f822b6 Mon Sep 17 00:00:00 2001
+From 7e43bb1113e7732d587d783a8db7ae86aefdb04d Mon Sep 17 00:00:00 2001
 From: Joshua Ashton <joshua@froggi.es>
 Date: Wed, 24 Aug 2022 23:16:24 +0000
 Subject: [PATCH 2/4] xwayland: Implement tearing protocol
@@ -445,7 +445,7 @@ index 656d2afde..bf75278fd 100644
      struct xorg_list pending_wl_surface_destroy;
      uint64_t surface_association_serial;
 diff --git a/hw/xwayland/xwayland-window.c b/hw/xwayland/xwayland-window.c
-index b018d9656..7b3534385 100644
+index 54ba9d896..527f41c90 100644
 --- a/hw/xwayland/xwayland-window.c
 +++ b/hw/xwayland/xwayland-window.c
 @@ -48,6 +48,7 @@
@@ -456,7 +456,7 @@ index b018d9656..7b3534385 100644
  #include "xwayland-shell-v1-client-protocol.h"
  
  #define DELAYED_WL_SURFACE_DESTROY 1000 /* ms */
-@@ -920,6 +921,11 @@ ensure_surface_for_window(WindowPtr window)
+@@ -894,6 +895,11 @@ ensure_surface_for_window(WindowPtr window)
          goto err;
      }
  
@@ -468,7 +468,7 @@ index b018d9656..7b3534385 100644
      if (xwl_screen->xwayland_shell) {
          xwl_window->xwayland_surface = xwayland_shell_v1_get_xwayland_surface(
              xwl_screen->xwayland_shell, xwl_window->surface);
-@@ -1169,6 +1175,11 @@ xwl_unrealize_window(WindowPtr window)
+@@ -1143,6 +1149,11 @@ xwl_unrealize_window(WindowPtr window)
      if (xwl_window_has_viewport_enabled(xwl_window))
          xwl_window_disable_viewport(xwl_window);
  
@@ -481,7 +481,7 @@ index b018d9656..7b3534385 100644
  
  #ifdef GLAMOR_HAS_GBM
 diff --git a/hw/xwayland/xwayland-window.h b/hw/xwayland/xwayland-window.h
-index f8200d537..519d9394c 100644
+index 92c700e41..efbb1f2fc 100644
 --- a/hw/xwayland/xwayland-window.h
 +++ b/hw/xwayland/xwayland-window.h
 @@ -99,6 +99,7 @@ struct xwl_window {
@@ -496,7 +496,7 @@ index f8200d537..519d9394c 100644
 2.42.0
 
 
-From 3357fc57deb1e397e6a2023a4b0254aeed957349 Mon Sep 17 00:00:00 2001
+From ac5a78ddabf16b6876bf286e93d770f50d8e9315 Mon Sep 17 00:00:00 2001
 From: Joshua Ashton <joshua@froggi.es>
 Date: Wed, 31 Aug 2022 12:57:09 +0000
 Subject: [PATCH 3/4] Use gamescope tearing protocol instead
@@ -646,7 +646,7 @@ index bf75278fd..d6b1a1d84 100644
      struct xorg_list pending_wl_surface_destroy;
      uint64_t surface_association_serial;
 diff --git a/hw/xwayland/xwayland-window.c b/hw/xwayland/xwayland-window.c
-index 7b3534385..d3bbe703d 100644
+index 527f41c90..3e42eb1c0 100644
 --- a/hw/xwayland/xwayland-window.c
 +++ b/hw/xwayland/xwayland-window.c
 @@ -48,7 +48,7 @@
@@ -658,7 +658,7 @@ index 7b3534385..d3bbe703d 100644
  #include "xwayland-shell-v1-client-protocol.h"
  
  #define DELAYED_WL_SURFACE_DESTROY 1000 /* ms */
-@@ -923,7 +923,7 @@ ensure_surface_for_window(WindowPtr window)
+@@ -897,7 +897,7 @@ ensure_surface_for_window(WindowPtr window)
  
      if (xwl_screen->tearing_control) {
          xwl_window->tearing_control =
@@ -667,7 +667,7 @@ index 7b3534385..d3bbe703d 100644
      }
  
      if (xwl_screen->xwayland_shell) {
-@@ -1176,7 +1176,7 @@ xwl_unrealize_window(WindowPtr window)
+@@ -1150,7 +1150,7 @@ xwl_unrealize_window(WindowPtr window)
          xwl_window_disable_viewport(xwl_window);
  
      if (xwl_window->tearing_control) {
@@ -677,7 +677,7 @@ index 7b3534385..d3bbe703d 100644
      }
  
 diff --git a/hw/xwayland/xwayland-window.h b/hw/xwayland/xwayland-window.h
-index 519d9394c..95f770c07 100644
+index efbb1f2fc..f62a7f1bd 100644
 --- a/hw/xwayland/xwayland-window.h
 +++ b/hw/xwayland/xwayland-window.h
 @@ -99,7 +99,7 @@ struct xwl_window {
@@ -693,7 +693,7 @@ index 519d9394c..95f770c07 100644
 2.42.0
 
 
-From c799ef123d1ed4eddc7972451b1b313b14195935 Mon Sep 17 00:00:00 2001
+From c1451e6720b20505b7ce4fef3294a493fe4fe312 Mon Sep 17 00:00:00 2001
 From: Kyle Gospodnetich <me@kylegospodneti.ch>
 Date: Wed, 31 Jan 2024 17:36:04 -0800
 Subject: [PATCH 4/4] Fix missing sync_flip param

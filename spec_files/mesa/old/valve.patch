@@ -1,0 +1,1670 @@
+From 39b7df3a64e9cfe9c649cd7cda896cef57ae2270 Mon Sep 17 00:00:00 2001
+From: Derek Foreman <derek.foreman@collabora.com>
+Date: Wed, 20 Sep 2023 10:40:33 -0500
+Subject: [PATCH 1/7] vulkan/wsi/wayland: refactor wayland dispatch code
+
+We currently have two similar but different bits of code to dispatch
+wayland event queues. Pull out as much common code as possible.
+
+Signed-off-by: Derek Foreman <derek.foreman@collabora.com>
+---
+ src/vulkan/wsi/wsi_common_wayland.c | 399 +++++++++++++++-------------
+ 1 file changed, 208 insertions(+), 191 deletions(-)
+
+diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
+index 22e26bacbc5..d8ae6e36626 100644
+--- a/src/vulkan/wsi/wsi_common_wayland.c
++++ b/src/vulkan/wsi/wsi_common_wayland.c
+@@ -96,6 +96,11 @@ struct wsi_wl_display {
+    struct wl_display *wl_display;
+    /* Actually a proxy wrapper around the event queue */
+    struct wl_display *wl_display_wrapper;
++
++   pthread_mutex_t wl_fd_lock;
++   pthread_cond_t wl_fd_reader_finished;
++   bool wl_fd_read_in_progress;
++
+    struct wl_event_queue *queue;
+ 
+    struct wl_shm *wl_shm;
+@@ -157,6 +162,8 @@ struct wsi_wl_surface {
+ struct wsi_wl_swapchain {
+    struct wsi_swapchain base;
+ 
++   struct wl_event_queue *queue;
++
+    struct wsi_wl_surface *wsi_wl_surface;
+    struct wp_tearing_control_v1 *tearing_control;
+ 
+@@ -180,10 +187,7 @@ struct wsi_wl_swapchain {
+       pthread_mutex_t lock; /* protects all members */
+       uint64_t max_completed;
+       struct wl_list outstanding_list;
+-      pthread_cond_t list_advanced;
+-      struct wl_event_queue *queue;
+       struct wp_presentation *wp_presentation;
+-      bool dispatch_in_progress;
+    } present_ids;
+ 
+    struct wsi_wl_image images[0];
+@@ -208,6 +212,135 @@ find_format(struct u_vector *formats, VkFormat format)
+    return NULL;
+ }
+ 
++static int
++wsi_wl_display_read_queue_with_timeout_internal(struct wsi_wl_display *wsi_wl_display,
++                                                struct wl_event_queue *queue,
++                                                uint64_t atimeout)
++{
++   uint64_t current_time_nsec;
++   struct timespec rel_timeout, end_time, current_time;
++   int ret;
++
++   if (wl_display_prepare_read_queue(wsi_wl_display->wl_display, queue) < 0) {
++      /* Another thread might have read events for our queue already. Go
++       * back to dispatch them.
++       */
++      pthread_mutex_unlock(&wsi_wl_display->wl_fd_lock);
++      if (errno == EAGAIN)
++         return VK_SUCCESS;
++
++      return VK_ERROR_OUT_OF_DATE_KHR;
++   }
++
++   wsi_wl_display->wl_fd_read_in_progress = true;
++   pthread_mutex_unlock(&wsi_wl_display->wl_fd_lock);
++
++   while (1) {
++      struct pollfd pollfd = {
++         .fd = wl_display_get_fd(wsi_wl_display->wl_display),
++         .events = POLLIN
++      };
++
++      current_time_nsec = os_time_get_nano();
++      if (current_time_nsec > atimeout) {
++         rel_timeout.tv_sec = 0;
++         rel_timeout.tv_nsec = 0;
++      } else {
++         timespec_from_nsec(&current_time, current_time_nsec);
++         timespec_from_nsec(&end_time, atimeout);
++         timespec_sub(&rel_timeout, &end_time, &current_time);
++      }
++
++      ret = ppoll(&pollfd, 1, &rel_timeout, NULL);
++      if (ret < 0) {
++         if (errno == EINTR || errno == EAGAIN)
++            continue;
++
++         ret = VK_ERROR_OUT_OF_DATE_KHR;
++      } else if (ret == 0)
++         ret = VK_TIMEOUT;
++      else
++         ret = VK_SUCCESS;
++
++      break;
++   }
++
++   if (ret != VK_SUCCESS) {
++         wl_display_cancel_read(wsi_wl_display->wl_display);
++   } else {
++      ret = wl_display_read_events(wsi_wl_display->wl_display);
++      if (ret != 0)
++        ret = VK_ERROR_OUT_OF_DATE_KHR;
++   }
++
++   pthread_mutex_lock(&wsi_wl_display->wl_fd_lock);
++   wsi_wl_display->wl_fd_read_in_progress = false;
++   pthread_cond_broadcast(&wsi_wl_display->wl_fd_reader_finished);
++   return ret;
++}
++
++static int
++wsi_wl_display_dispatch_queue_with_timeout(struct wsi_wl_display *wsi_wl_display,
++                                           struct wl_event_queue *queue,
++                                           uint64_t timeout)
++{
++   int err;
++   int n_events;
++   uint64_t atimeout, now;
++
++   if (timeout == UINT64_MAX)
++      atimeout = timeout;
++   else
++      atimeout = os_time_get_absolute_timeout(timeout);
++
++   while (1) {
++      n_events = wl_display_dispatch_queue_pending(wsi_wl_display->wl_display,
++                                                   queue);
++      if (n_events > 0) {
++         err = VK_SUCCESS;
++         break;
++      }
++      pthread_mutex_lock(&wsi_wl_display->wl_fd_lock);
++
++      if (wsi_wl_display->wl_fd_read_in_progress) {
++         struct timespec end_time;
++
++         timespec_from_nsec(&end_time, atimeout);
++
++         err = pthread_cond_timedwait(&wsi_wl_display->wl_fd_reader_finished,
++                                      &wsi_wl_display->wl_fd_lock,
++                                      &end_time);
++         if (err) {
++            if (errno == ETIMEDOUT)
++               err = VK_TIMEOUT;
++            else
++               err = VK_ERROR_OUT_OF_DATE_KHR;
++         } else {
++            /* We don't know if the other thread actually
++             * dispatched anything, so let the caller decide
++             * whether it should continue.
++             */
++            err = VK_INCOMPLETE;
++         }
++      } else {
++         err = wsi_wl_display_read_queue_with_timeout_internal(wsi_wl_display,
++                                                               queue,
++                                                               timeout);
++      }
++
++      pthread_mutex_unlock(&wsi_wl_display->wl_fd_lock);
++
++      now = os_time_get_nano();
++      if (now > atimeout) {
++         err = VK_TIMEOUT;
++         break;
++      }
++
++   }
++
++   return err;
++}
++
+ static struct wsi_wl_format *
+ wsi_wl_display_add_vk_format(struct wsi_wl_display *display,
+                              struct u_vector *formats,
+@@ -833,6 +966,8 @@ wsi_wl_display_finish(struct wsi_wl_display *display)
+       wl_proxy_wrapper_destroy(display->wl_display_wrapper);
+    if (display->queue)
+       wl_event_queue_destroy(display->queue);
++   pthread_mutex_destroy(&display->wl_fd_lock);
++   pthread_cond_destroy(&display->wl_fd_reader_finished);
+ }
+ 
+ static VkResult
+@@ -851,6 +986,11 @@ wsi_wl_display_init(struct wsi_wayland *wsi_wl,
+    display->wl_display = wl_display;
+    display->sw = sw;
+ 
++   display->wl_fd_read_in_progress = false;
++   pthread_mutex_init(&display->wl_fd_lock, NULL);
++   if (!wsi_init_pthread_cond_monotonic(&display->wl_fd_reader_finished))
++      goto fail;
++
+    display->queue = wl_display_create_queue(wl_display);
+    if (!display->queue) {
+       result = VK_ERROR_OUT_OF_HOST_MEMORY;
+@@ -951,6 +1091,7 @@ fail_registry:
+       wl_registry_destroy(registry);
+ 
+ fail:
++   pthread_mutex_destroy(&display->wl_fd_lock);
+    wsi_wl_display_finish(display);
+    return result;
+ }
+@@ -1675,19 +1816,15 @@ wsi_wl_swapchain_wait_for_present(struct wsi_swapchain *wsi_chain,
+                                   uint64_t timeout)
+ {
+    struct wsi_wl_swapchain *chain = (struct wsi_wl_swapchain *)wsi_chain;
+-   struct wl_display *wl_display = chain->wsi_wl_surface->display->wl_display;
+-   struct timespec end_time;
+-   int wl_fd = wl_display_get_fd(wl_display);
+-   VkResult ret;
+-   int err;
++   uint64_t end_time, time_left, now;
++   int ret;
++   bool expired = false;
++   bool finished;
+ 
+-   uint64_t atimeout;
+-   if (timeout == 0 || timeout == UINT64_MAX)
+-      atimeout = timeout;
++   if (timeout == UINT64_MAX)
++      end_time = timeout;
+    else
+-      atimeout = os_time_get_absolute_timeout(timeout);
+-
+-   timespec_from_nsec(&end_time, atimeout);
++      end_time = os_time_get_absolute_timeout(timeout);
+ 
+    /* Need to observe that the swapchain semaphore has been unsignalled,
+     * as this is guaranteed when a present is complete. */
+@@ -1703,141 +1840,45 @@ wsi_wl_swapchain_wait_for_present(struct wsi_swapchain *wsi_chain,
+       return VK_SUCCESS;
+    }
+ 
++   while (1) {
++      ret = wl_display_dispatch_queue_pending(chain->wsi_wl_surface->display->wl_display,
++                                              chain->queue);
++      if (ret < 0)
++         return VK_ERROR_OUT_OF_DATE_KHR;
++
+    /* PresentWait can be called concurrently.
+     * If there is contention on this mutex, it means there is currently a dispatcher in flight holding the lock.
+     * The lock is only held while there is forward progress processing events from Wayland,
+     * so there should be no problem locking without timeout.
+     * We would like to be able to support timeout = 0 to query the current max_completed count.
+     * A timedlock with no timeout can be problematic in that scenario. */
+-   err = pthread_mutex_lock(&chain->present_ids.lock);
+-   if (err != 0)
+-      return VK_ERROR_OUT_OF_DATE_KHR;
+-
+-   if (chain->present_ids.max_completed >= present_id) {
++      pthread_mutex_lock(&chain->present_ids.lock);
++      finished = chain->present_ids.max_completed >= present_id;
+       pthread_mutex_unlock(&chain->present_ids.lock);
+-      return VK_SUCCESS;
+-   }
+-
+-   /* Someone else is dispatching events; wait for them to update the chain
+-    * status and wake us up. */
+-   while (chain->present_ids.dispatch_in_progress) {
+-      /* We only own the lock when the wait succeeds. */
+-      err = pthread_cond_timedwait(&chain->present_ids.list_advanced,
+-                                   &chain->present_ids.lock, &end_time);
+-
+-      if (err == ETIMEDOUT) {
+-         pthread_mutex_unlock(&chain->present_ids.lock);
+-         return VK_TIMEOUT;
+-      } else if (err != 0) {
+-         pthread_mutex_unlock(&chain->present_ids.lock);
+-         return VK_ERROR_OUT_OF_DATE_KHR;
+-      }
+-
+-      if (chain->present_ids.max_completed >= present_id) {
+-         pthread_mutex_unlock(&chain->present_ids.lock);
++      if (finished)
+          return VK_SUCCESS;
+-      }
+-
+-      /* Whoever was previously dispatching the events isn't anymore, so we
+-       * will take over and fall through below. */
+-      if (!chain->present_ids.dispatch_in_progress)
+-         break;
+-   }
+-
+-   assert(!chain->present_ids.dispatch_in_progress);
+-   chain->present_ids.dispatch_in_progress = true;
+-
+-   /* Whether or not we were dispatching the events before, we are now: pull
+-    * all the new events from our event queue, post them, and wake up everyone
+-    * else who might be waiting. */
+-   while (1) {
+-      ret = wl_display_dispatch_queue_pending(wl_display, chain->present_ids.queue);
+-      if (ret < 0) {
+-         ret = VK_ERROR_OUT_OF_DATE_KHR;
+-         goto relinquish_dispatch;
+-      }
+-
+-      /* Some events dispatched: check the new completions. */
+-      if (ret > 0) {
+-         /* Completed our own present; stop our own dispatching and let
+-          * someone else pick it up. */
+-         if (chain->present_ids.max_completed >= present_id) {
+-            ret = VK_SUCCESS;
+-            goto relinquish_dispatch;
+-         }
+-
+-         /* Wake up other waiters who may have been unblocked by the events
+-          * we just read. */
+-         pthread_cond_broadcast(&chain->present_ids.list_advanced);
+-      }
+-
+-      /* Check for timeout, and relinquish the dispatch to another thread
+-       * if we're over our budget. */
+-      uint64_t current_time_nsec = os_time_get_nano();
+-      if (current_time_nsec > atimeout) {
+-         ret = VK_TIMEOUT;
+-         goto relinquish_dispatch;
+-      }
+-
+-      /* To poll and read from WL fd safely, we must be cooperative.
+-       * See wl_display_prepare_read_queue in https://wayland.freedesktop.org/docs/html/apb.html */
+-
+-      /* Try to read events from the server. */
+-      ret = wl_display_prepare_read_queue(wl_display, chain->present_ids.queue);
+-      if (ret < 0) {
+-         /* Another thread might have read events for our queue already. Go
+-          * back to dispatch them.
+-          */
+-         if (errno == EAGAIN)
+-            continue;
+-         ret = VK_ERROR_OUT_OF_DATE_KHR;
+-         goto relinquish_dispatch;
+-      }
+ 
+-      /* Drop the lock around poll, so people can wait whilst we sleep. */
+-      pthread_mutex_unlock(&chain->present_ids.lock);
+-
+-      struct pollfd pollfd = {
+-         .fd = wl_fd,
+-         .events = POLLIN
+-      };
+-      struct timespec current_time, rel_timeout;
+-      timespec_from_nsec(&current_time, current_time_nsec);
+-      timespec_sub(&rel_timeout, &end_time, &current_time);
+-      ret = ppoll(&pollfd, 1, &rel_timeout, NULL);
++      if (expired)
++         return VK_TIMEOUT;
+ 
+-      /* Re-lock after poll; either we're dispatching events under the lock or
+-       * bouncing out from an error also under the lock. We can't use timedlock
+-       * here because we need to acquire to clear dispatch_in_progress. */
+-      pthread_mutex_lock(&chain->present_ids.lock);
++      now = os_time_get_nano();
++      if (now > end_time)
++         time_left = 0;
++      else
++         time_left = end_time - now;
+ 
+-      if (ret <= 0) {
+-         int lerrno = errno;
+-         wl_display_cancel_read(wl_display);
+-         if (ret < 0) {
+-            /* If ppoll() was interrupted, try again. */
+-            if (lerrno == EINTR || lerrno == EAGAIN)
+-               continue;
+-            ret = VK_ERROR_OUT_OF_DATE_KHR;
+-            goto relinquish_dispatch;
+-         }
+-         assert(ret == 0);
++      ret = wsi_wl_display_dispatch_queue_with_timeout(chain->wsi_wl_surface->display,
++                                                       chain->queue,
++                                                       time_left);
++      if (ret == VK_INCOMPLETE)
+          continue;
+-      }
+ 
+-      ret = wl_display_read_events(wl_display);
+-      if (ret < 0) {
+-         ret = VK_ERROR_OUT_OF_DATE_KHR;
+-         goto relinquish_dispatch;
+-      }
+-   }
++      if (ret != VK_SUCCESS && ret != VK_TIMEOUT)
++         return ret;
+ 
+-relinquish_dispatch:
+-   assert(chain->present_ids.dispatch_in_progress);
+-   chain->present_ids.dispatch_in_progress = false;
+-   pthread_cond_broadcast(&chain->present_ids.list_advanced);
+-   pthread_mutex_unlock(&chain->present_ids.lock);
+-   return ret;
++      if (time_left == 0)
++         expired = true;
++   }
+ }
+ 
+ static VkResult
+@@ -1847,19 +1888,18 @@ wsi_wl_swapchain_acquire_next_image(struct wsi_swapchain *wsi_chain,
+ {
+    struct wsi_wl_swapchain *chain = (struct wsi_wl_swapchain *)wsi_chain;
+    struct wsi_wl_surface *wsi_wl_surface = chain->wsi_wl_surface;
+-   struct timespec start_time, end_time;
+-   struct timespec rel_timeout;
+-   int wl_fd = wl_display_get_fd(wsi_wl_surface->display->wl_display);
+-
+-   timespec_from_nsec(&rel_timeout, info->timeout);
++   uint64_t end_time, time_left, now;
++   bool expired = false;
++   int ret;
+ 
+-   clock_gettime(CLOCK_MONOTONIC, &start_time);
+-   timespec_add(&end_time, &rel_timeout, &start_time);
++   if (info->timeout == UINT64_MAX)
++      end_time = info->timeout;
++   else
++      end_time = os_time_get_absolute_timeout(info->timeout);
+ 
+    while (1) {
+-      /* Try to dispatch potential events. */
+-      int ret = wl_display_dispatch_queue_pending(wsi_wl_surface->display->wl_display,
+-                                                  wsi_wl_surface->display->queue);
++      ret = wl_display_dispatch_queue_pending(wsi_wl_surface->display->wl_display,
++                                              wsi_wl_surface->display->queue);
+       if (ret < 0)
+          return VK_ERROR_OUT_OF_DATE_KHR;
+ 
+@@ -1873,46 +1913,26 @@ wsi_wl_swapchain_acquire_next_image(struct wsi_swapchain *wsi_chain,
+          }
+       }
+ 
+-      /* Check for timeout. */
+-      struct timespec current_time;
+-      clock_gettime(CLOCK_MONOTONIC, &current_time);
+-      if (timespec_after(&current_time, &end_time))
+-         return (info->timeout ? VK_TIMEOUT : VK_NOT_READY);
++      if (expired)
++         return info->timeout ? VK_TIMEOUT : VK_NOT_READY;
+ 
+-      /* Try to read events from the server. */
+-      ret = wl_display_prepare_read_queue(wsi_wl_surface->display->wl_display,
+-                                          wsi_wl_surface->display->queue);
+-      if (ret < 0) {
+-         /* Another thread might have read events for our queue already. Go
+-          * back to dispatch them.
+-          */
+-         if (errno == EAGAIN)
+-            continue;
+-         return VK_ERROR_OUT_OF_DATE_KHR;
+-      }
++      now = os_time_get_nano();
++      if (now > end_time)
++         time_left = 0;
++      else
++         time_left = end_time - now;
+ 
+-      struct pollfd pollfd = {
+-         .fd = wl_fd,
+-         .events = POLLIN
+-      };
+-      timespec_sub(&rel_timeout, &end_time, &current_time);
+-      ret = ppoll(&pollfd, 1, &rel_timeout, NULL);
+-      if (ret <= 0) {
+-         int lerrno = errno;
+-         wl_display_cancel_read(wsi_wl_surface->display->wl_display);
+-         if (ret < 0) {
+-            /* If ppoll() was interrupted, try again. */
+-            if (lerrno == EINTR || lerrno == EAGAIN)
+-               continue;
+-            return VK_ERROR_OUT_OF_DATE_KHR;
+-         }
+-         assert(ret == 0);
++      ret = wsi_wl_display_dispatch_queue_with_timeout(wsi_wl_surface->display,
++                                                       wsi_wl_surface->display->queue,
++                                                       time_left);
++      if (ret == VK_ERROR_OUT_OF_DATE_KHR)
++         return ret;
++
++      if (ret == VK_INCOMPLETE)
+          continue;
+-      }
+ 
+-      ret = wl_display_read_events(wsi_wl_surface->display->wl_display);
+-      if (ret < 0)
+-         return VK_ERROR_OUT_OF_DATE_KHR;
++      if (ret == VK_TIMEOUT)
++         expired = true;
+    }
+ }
+ 
+@@ -1933,9 +1953,10 @@ presentation_handle_presented(void *data,
+ {
+    struct wsi_wl_present_id *id = data;
+ 
+-   /* present_ids.lock already held around dispatch */
++   pthread_mutex_lock(&id->chain->present_ids.lock);
+    if (id->present_id > id->chain->present_ids.max_completed)
+       id->chain->present_ids.max_completed = id->present_id;
++   pthread_mutex_unlock(&id->chain->present_ids.lock);
+ 
+    wp_presentation_feedback_destroy(feedback);
+    wl_list_remove(&id->link);
+@@ -1948,9 +1969,10 @@ presentation_handle_discarded(void *data,
+ {
+    struct wsi_wl_present_id *id = data;
+ 
+-   /* present_ids.lock already held around dispatch */
++   pthread_mutex_lock(&id->chain->present_ids.lock);
+    if (id->present_id > id->chain->present_ids.max_completed)
+       id->chain->present_ids.max_completed = id->present_id;
++   pthread_mutex_unlock(&id->chain->present_ids.lock);
+ 
+    wp_presentation_feedback_destroy(feedback);
+    wl_list_remove(&id->link);
+@@ -2198,8 +2220,6 @@ wsi_wl_swapchain_chain_free(struct wsi_wl_swapchain *chain,
+       chain->wsi_wl_surface->chain = NULL;
+ 
+    if (chain->present_ids.wp_presentation) {
+-      assert(!chain->present_ids.dispatch_in_progress);
+-
+       /* In VK_EXT_swapchain_maintenance1 there is no requirement to wait for all present IDs to be complete.
+        * Waiting for the swapchain fence is enough.
+        * Just clean up anything user did not wait for. */
+@@ -2211,7 +2231,6 @@ wsi_wl_swapchain_chain_free(struct wsi_wl_swapchain *chain,
+       }
+ 
+       wl_proxy_wrapper_destroy(chain->present_ids.wp_presentation);
+-      pthread_cond_destroy(&chain->present_ids.list_advanced);
+       pthread_mutex_destroy(&chain->present_ids.lock);
+    }
+ 
+@@ -2383,18 +2402,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+       chain->drm_modifiers = drm_modifiers_copy;
+    }
+ 
++   chain->queue = wl_display_create_queue(chain->wsi_wl_surface->display->wl_display);
++
+    if (chain->wsi_wl_surface->display->wp_presentation_notwrapped) {
+-      if (!wsi_init_pthread_cond_monotonic(&chain->present_ids.list_advanced))
+-         goto fail;
+       pthread_mutex_init(&chain->present_ids.lock, NULL);
+ 
+       wl_list_init(&chain->present_ids.outstanding_list);
+-      chain->present_ids.queue =
+-            wl_display_create_queue(chain->wsi_wl_surface->display->wl_display);
+       chain->present_ids.wp_presentation =
+             wl_proxy_create_wrapper(chain->wsi_wl_surface->display->wp_presentation_notwrapped);
+       wl_proxy_set_queue((struct wl_proxy *) chain->present_ids.wp_presentation,
+-                         chain->present_ids.queue);
++                         chain->queue);
+    }
+ 
+    chain->fifo_ready = true;
+-- 
+2.42.0
+
+
+From ad381d34e00a89f1961cf345668b939830ed1d39 Mon Sep 17 00:00:00 2001
+From: Derek Foreman <derek.foreman@collabora.com>
+Date: Fri, 10 Nov 2023 07:25:35 -0600
+Subject: [PATCH 2/7] vulkan/wsi/wayland: Use commit_timing/commit_queue
+ protocol for FIFO
+
+The commit_timing protocol allows us to set a presentation timestamp,
+and the commit_queue protocol allows us to request FIFO semantics for
+committed state (instead of the default mailbox).
+
+I these are available, use them to implement Vulkan's FIFO presentation
+mode.
+
+Signed-off-by: Derek Foreman <derek.foreman@collabora.com>
+---
+ src/egl/wayland/wayland-drm/meson.build |   2 +
+ src/vulkan/wsi/meson.build              |   2 +
+ src/vulkan/wsi/wsi_common_wayland.c     | 138 +++++++++++++++++++++---
+ 3 files changed, 130 insertions(+), 12 deletions(-)
+
+diff --git a/src/egl/wayland/wayland-drm/meson.build b/src/egl/wayland/wayland-drm/meson.build
+index ac822acec67..8b6044f09e5 100644
+--- a/src/egl/wayland/wayland-drm/meson.build
++++ b/src/egl/wayland/wayland-drm/meson.build
+@@ -59,6 +59,8 @@ libwayland_drm = static_library(
+ # here for now as the maybe-least-bad solution.
+ wp_dir = dep_wl_protocols.get_variable(pkgconfig : 'pkgdatadir', internal : 'pkgdatadir')
+ wp_protos = {
++  'commit-queue-v1': 'staging/commit-queue/commit-queue-v1.xml',
++  'commit-timing-v1': 'staging/commit-timing/commit-timing-v1.xml',
+   'linux-dmabuf-unstable-v1': 'unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml',
+   'presentation-time': 'stable/presentation-time/presentation-time.xml',
+   'tearing-control-v1': 'staging/tearing-control/tearing-control-v1.xml',
+diff --git a/src/vulkan/wsi/meson.build b/src/vulkan/wsi/meson.build
+index 9d0db011767..83ad71f06fa 100644
+--- a/src/vulkan/wsi/meson.build
++++ b/src/vulkan/wsi/meson.build
+@@ -31,6 +31,8 @@ endif
+ 
+ if with_platform_wayland
+   files_vulkan_wsi += files('wsi_common_wayland.c')
++  files_vulkan_wsi += wp_files['commit-queue-v1']
++  files_vulkan_wsi += wp_files['commit-timing-v1']
+   files_vulkan_wsi += wp_files['linux-dmabuf-unstable-v1']
+   files_vulkan_wsi += wp_files['presentation-time']
+   files_vulkan_wsi += wp_files['tearing-control-v1']
+diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
+index d8ae6e36626..dd78d98dfce 100644
+--- a/src/vulkan/wsi/wsi_common_wayland.c
++++ b/src/vulkan/wsi/wsi_common_wayland.c
+@@ -41,6 +41,8 @@
+ #include "vk_util.h"
+ #include "wsi_common_entrypoints.h"
+ #include "wsi_common_private.h"
++#include "commit-queue-v1-client-protocol.h"
++#include "commit-timing-v1-client-protocol.h"
+ #include "linux-dmabuf-unstable-v1-client-protocol.h"
+ #include "presentation-time-client-protocol.h"
+ #include "tearing-control-v1-client-protocol.h"
+@@ -113,6 +115,9 @@ struct wsi_wl_display {
+    /* users want per-chain wsi_wl_swapchain->present_ids.wp_presentation */
+    struct wp_presentation *wp_presentation_notwrapped;
+ 
++   struct wp_commit_queue_manager_v1 *commit_queue_manager;
++   struct wp_commit_timing_manager_v1 *commit_timing_manager;
++
+    struct wsi_wayland *wsi_wl;
+ 
+    /* Formats populated by zwp_linux_dmabuf_v1 or wl_shm interfaces */
+@@ -135,6 +140,7 @@ struct wsi_wayland {
+ 
+ struct wsi_wl_image {
+    struct wsi_image base;
++   struct wsi_wl_swapchain *chain;
+    struct wl_buffer *buffer;
+    bool busy;
+    int shm_fd;
+@@ -166,6 +172,9 @@ struct wsi_wl_swapchain {
+ 
+    struct wsi_wl_surface *wsi_wl_surface;
+    struct wp_tearing_control_v1 *tearing_control;
++   struct wp_commit_queue_v1 *commit_queue;
++   struct wp_commit_timer_v1 *commit_timer;
++   bool can_timestamp;
+ 
+    struct wl_callback *frame;
+ 
+@@ -181,13 +190,17 @@ struct wsi_wl_swapchain {
+    const uint64_t *drm_modifiers;
+ 
+    VkPresentModeKHR present_mode;
+-   bool fifo_ready;
++   bool legacy_fifo_ready;
++
++   uint64_t last_target_time;
+ 
+    struct {
+       pthread_mutex_t lock; /* protects all members */
+       uint64_t max_completed;
+       struct wl_list outstanding_list;
+       struct wp_presentation *wp_presentation;
++      uint64_t phase_time;
++      unsigned int refresh_nsec;
+    } present_ids;
+ 
+    struct wsi_wl_image images[0];
+@@ -934,6 +947,12 @@ registry_handle_global(void *data, struct wl_registry *registry,
+    } else if (strcmp(interface, wp_tearing_control_manager_v1_interface.name) == 0) {
+       display->tearing_control_manager =
+          wl_registry_bind(registry, name, &wp_tearing_control_manager_v1_interface, 1);
++   } else if (strcmp(interface, wp_commit_timing_manager_v1_interface.name) == 0) {
++      display->commit_timing_manager =
++         wl_registry_bind(registry, name, &wp_commit_timing_manager_v1_interface, 1);
++   } else if (strcmp(interface, wp_commit_queue_manager_v1_interface.name) == 0) {
++      display->commit_queue_manager =
++         wl_registry_bind(registry, name, &wp_commit_queue_manager_v1_interface, 1);
+    }
+ }
+ 
+@@ -960,6 +979,10 @@ wsi_wl_display_finish(struct wsi_wl_display *display)
+       zwp_linux_dmabuf_v1_destroy(display->wl_dmabuf);
+    if (display->wp_presentation_notwrapped)
+       wp_presentation_destroy(display->wp_presentation_notwrapped);
++   if (display->commit_queue_manager)
++      wp_commit_queue_manager_v1_destroy(display->commit_queue_manager);
++   if (display->commit_timing_manager)
++      wp_commit_timing_manager_v1_destroy(display->commit_timing_manager);
+    if (display->tearing_control_manager)
+       wp_tearing_control_manager_v1_destroy(display->tearing_control_manager);
+    if (display->wl_display_wrapper)
+@@ -1922,6 +1945,16 @@ wsi_wl_swapchain_acquire_next_image(struct wsi_swapchain *wsi_chain,
+       else
+          time_left = end_time - now;
+ 
++      /* If we can use timestamps, we want to make sure to dispatch the queue
++       * feedback events are in so we can get a refresh rate and a vsync time to
++       * phase lock to */
++      if (chain->can_timestamp) {
++         ret = wl_display_dispatch_queue_pending(wsi_wl_surface->display->wl_display,
++                                                 chain->queue);
++         if (ret < 0)
++            return VK_ERROR_OUT_OF_DATE_KHR;
++      }
++
+       ret = wsi_wl_display_dispatch_queue_with_timeout(wsi_wl_surface->display,
+                                                        wsi_wl_surface->display->queue,
+                                                        time_left);
+@@ -1952,10 +1985,16 @@ presentation_handle_presented(void *data,
+                               uint32_t flags)
+ {
+    struct wsi_wl_present_id *id = data;
++   struct timespec presentation_time;
+ 
+    pthread_mutex_lock(&id->chain->present_ids.lock);
+    if (id->present_id > id->chain->present_ids.max_completed)
+       id->chain->present_ids.max_completed = id->present_id;
++
++   presentation_time.tv_sec = ((uint64_t)tv_sec_hi << 32) + tv_sec_lo;
++   presentation_time.tv_nsec = tv_nsec;
++   id->chain->present_ids.phase_time = timespec_to_nsec(&presentation_time);
++   id->chain->present_ids.refresh_nsec = refresh;
+    pthread_mutex_unlock(&id->chain->present_ids.lock);
+ 
+    wp_presentation_feedback_destroy(feedback);
+@@ -1991,8 +2030,10 @@ frame_handle_done(void *data, struct wl_callback *callback, uint32_t serial)
+ {
+    struct wsi_wl_swapchain *chain = data;
+ 
++   assert(!chain->can_timestamp);
++
+    chain->frame = NULL;
+-   chain->fifo_ready = true;
++   chain->legacy_fifo_ready = true;
+ 
+    wl_callback_destroy(callback);
+ }
+@@ -2001,6 +2042,46 @@ static const struct wl_callback_listener frame_listener = {
+    frame_handle_done,
+ };
+ 
++static void
++set_timestamp(struct wsi_wl_swapchain *chain)
++{
++   uint64_t now, target;
++   struct timespec target_ts;
++   uint64_t refresh;
++   uint64_t phase_time;
++
++   now = os_time_get_nano();
++
++   pthread_mutex_lock(&chain->present_ids.lock);
++   phase_time = chain->present_ids.phase_time;
++   refresh = chain->present_ids.refresh_nsec;
++   pthread_mutex_unlock(&chain->present_ids.lock);
++
++   if (refresh == 0)
++      refresh = 16666666;
++
++   target = chain->last_target_time + refresh;
++
++   if (now > target) {
++      uint64_t offset;
++
++      if (phase_time > now)
++         now = phase_time;
++
++      offset = (now - phase_time) % refresh;
++      target = now - offset + refresh;
++   }
++
++   timespec_from_nsec(&target_ts, target);
++   wp_commit_timer_v1_set_timestamp(chain->commit_timer,
++                                    target_ts.tv_sec >> 32, target_ts.tv_sec,
++                                    target_ts.tv_nsec);
++
++   wp_commit_queue_v1_set_queue_mode(chain->commit_queue,
++                                     WP_COMMIT_QUEUE_V1_QUEUE_MODE_FIFO);
++   chain->last_target_time = target;
++}
++
+ static VkResult
+ wsi_wl_swapchain_queue_present(struct wsi_swapchain *wsi_chain,
+                                uint32_t image_index,
+@@ -2009,6 +2090,7 @@ wsi_wl_swapchain_queue_present(struct wsi_swapchain *wsi_chain,
+ {
+    struct wsi_wl_swapchain *chain = (struct wsi_wl_swapchain *)wsi_chain;
+    struct wsi_wl_surface *wsi_wl_surface = chain->wsi_wl_surface;
++   bool mode_fifo = chain->base.present_mode == VK_PRESENT_MODE_FIFO_KHR;
+ 
+    if (chain->buffer_type == WSI_WL_BUFFER_SHM_MEMCPY) {
+       struct wsi_wl_image *image = &chain->images[image_index];
+@@ -2018,7 +2100,7 @@ wsi_wl_swapchain_queue_present(struct wsi_swapchain *wsi_chain,
+ 
+    /* For EXT_swapchain_maintenance1. We might have transitioned from FIFO to MAILBOX.
+     * In this case we need to let the FIFO request complete, before presenting MAILBOX. */
+-   while (!chain->fifo_ready) {
++   while (!chain->can_timestamp && !chain->legacy_fifo_ready) {
+       int ret = wl_display_dispatch_queue(wsi_wl_surface->display->wl_display,
+                                           wsi_wl_surface->display->queue);
+       if (ret < 0)
+@@ -2041,16 +2123,19 @@ wsi_wl_swapchain_queue_present(struct wsi_swapchain *wsi_chain,
+       wl_surface_damage(wsi_wl_surface->surface, 0, 0, INT32_MAX, INT32_MAX);
+    }
+ 
+-   if (chain->base.present_mode == VK_PRESENT_MODE_FIFO_KHR) {
+-      chain->frame = wl_surface_frame(wsi_wl_surface->surface);
+-      wl_callback_add_listener(chain->frame, &frame_listener, chain);
+-      chain->fifo_ready = false;
+-   } else {
+-      /* If we present MAILBOX, any subsequent presentation in FIFO can replace this image. */
+-      chain->fifo_ready = true;
++   if (!chain->can_timestamp) {
++      if (mode_fifo) {
++         chain->frame = wl_surface_frame(wsi_wl_surface->surface);
++         wl_callback_add_listener(chain->frame, &frame_listener, chain);
++         chain->legacy_fifo_ready = false;
++      } else {
++         /* If we present MAILBOX, any subsequent presentation in FIFO can replace this image. */
++         chain->legacy_fifo_ready = true;
++      }
+    }
+ 
+-   if (present_id > 0 && chain->present_ids.wp_presentation) {
++   if (chain->present_ids.wp_presentation &&
++       (present_id > 0 || (chain->can_timestamp && mode_fifo))) {
+       struct wsi_wl_present_id *id =
+          vk_zalloc(chain->wsi_wl_surface->display->wsi_wl->alloc, sizeof(*id), sizeof(uintptr_t),
+                    VK_SYSTEM_ALLOCATION_SCOPE_OBJECT);
+@@ -2069,6 +2154,10 @@ wsi_wl_swapchain_queue_present(struct wsi_swapchain *wsi_chain,
+    }
+ 
+    chain->images[image_index].busy = true;
++
++   if (chain->can_timestamp && mode_fifo)
++      set_timestamp(chain);
++
+    wl_surface_commit(wsi_wl_surface->surface);
+    wl_display_flush(wsi_wl_surface->display->wl_display);
+ 
+@@ -2184,6 +2273,7 @@ wsi_wl_image_init(struct wsi_wl_swapchain *chain,
+       goto fail_image;
+ 
+    wl_buffer_add_listener(image->buffer, &buffer_listener, image);
++   image->chain = chain;
+ 
+    return VK_SUCCESS;
+ 
+@@ -2234,6 +2324,12 @@ wsi_wl_swapchain_chain_free(struct wsi_wl_swapchain *chain,
+       pthread_mutex_destroy(&chain->present_ids.lock);
+    }
+ 
++   if (chain->commit_queue)
++      wp_commit_queue_v1_destroy(chain->commit_queue);
++
++   if (chain->commit_timer)
++      wp_commit_timer_v1_destroy(chain->commit_timer);
++
+    vk_free(pAllocator, (void *)chain->drm_modifiers);
+ 
+    wsi_swapchain_finish(&chain->base);
+@@ -2290,6 +2386,15 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+          wp_tearing_control_v1_destroy(old_chain->tearing_control);
+          old_chain->tearing_control = NULL;
+       }
++      if (old_chain->commit_queue) {
++         wp_commit_queue_v1_destroy(old_chain->commit_queue);
++         old_chain->commit_queue = NULL;
++         old_chain->can_timestamp = false;
++      }
++      if (old_chain->commit_timer) {
++         wp_commit_timer_v1_destroy(old_chain->commit_timer);
++         old_chain->commit_timer = NULL;
++      }
+    }
+ 
+    /* Take ownership of the wsi_wl_surface */
+@@ -2414,7 +2519,16 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+                          chain->queue);
+    }
+ 
+-   chain->fifo_ready = true;
++   chain->legacy_fifo_ready = true;
++   struct wsi_wl_display *dpy = chain->wsi_wl_surface->display;
++   if (dpy->commit_queue_manager &&
++       dpy->commit_timing_manager) {
++      chain->commit_queue = wp_commit_queue_manager_v1_get_queue_controller(dpy->commit_queue_manager,
++                                                                            chain->wsi_wl_surface->surface);
++      chain->commit_timer = wp_commit_timing_manager_v1_get_timer(dpy->commit_timing_manager,
++                                                                  chain->wsi_wl_surface->surface);
++      chain->can_timestamp = true;
++   }
+ 
+    for (uint32_t i = 0; i < chain->base.image_count; i++) {
+       result = wsi_wl_image_init(chain, &chain->images[i],
+-- 
+2.42.0
+
+
+From dfa0495e9fbe27216cfbcfd3564eeeb1c00a4e6e Mon Sep 17 00:00:00 2001
+From: Simon Ser <contact@emersion.fr>
+Date: Sat, 25 Nov 2023 16:25:58 +0100
+Subject: [PATCH 3/7] hack: rip out commit-timing-v1
+
+---
+ src/egl/wayland/wayland-drm/meson.build |  2 +-
+ src/vulkan/wsi/meson.build              |  2 +-
+ src/vulkan/wsi/wsi_common_wayland.c     | 24 ++----------------------
+ 3 files changed, 4 insertions(+), 24 deletions(-)
+
+diff --git a/src/egl/wayland/wayland-drm/meson.build b/src/egl/wayland/wayland-drm/meson.build
+index 8b6044f09e5..83a63385274 100644
+--- a/src/egl/wayland/wayland-drm/meson.build
++++ b/src/egl/wayland/wayland-drm/meson.build
+@@ -60,7 +60,7 @@ libwayland_drm = static_library(
+ wp_dir = dep_wl_protocols.get_variable(pkgconfig : 'pkgdatadir', internal : 'pkgdatadir')
+ wp_protos = {
+   'commit-queue-v1': 'staging/commit-queue/commit-queue-v1.xml',
+-  'commit-timing-v1': 'staging/commit-timing/commit-timing-v1.xml',
++  #'commit-timing-v1': 'staging/commit-timing/commit-timing-v1.xml',
+   'linux-dmabuf-unstable-v1': 'unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml',
+   'presentation-time': 'stable/presentation-time/presentation-time.xml',
+   'tearing-control-v1': 'staging/tearing-control/tearing-control-v1.xml',
+diff --git a/src/vulkan/wsi/meson.build b/src/vulkan/wsi/meson.build
+index 83ad71f06fa..dba95387975 100644
+--- a/src/vulkan/wsi/meson.build
++++ b/src/vulkan/wsi/meson.build
+@@ -32,7 +32,7 @@ endif
+ if with_platform_wayland
+   files_vulkan_wsi += files('wsi_common_wayland.c')
+   files_vulkan_wsi += wp_files['commit-queue-v1']
+-  files_vulkan_wsi += wp_files['commit-timing-v1']
++  #files_vulkan_wsi += wp_files['commit-timing-v1']
+   files_vulkan_wsi += wp_files['linux-dmabuf-unstable-v1']
+   files_vulkan_wsi += wp_files['presentation-time']
+   files_vulkan_wsi += wp_files['tearing-control-v1']
+diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
+index dd78d98dfce..1efe9e449e8 100644
+--- a/src/vulkan/wsi/wsi_common_wayland.c
++++ b/src/vulkan/wsi/wsi_common_wayland.c
+@@ -42,7 +42,6 @@
+ #include "wsi_common_entrypoints.h"
+ #include "wsi_common_private.h"
+ #include "commit-queue-v1-client-protocol.h"
+-#include "commit-timing-v1-client-protocol.h"
+ #include "linux-dmabuf-unstable-v1-client-protocol.h"
+ #include "presentation-time-client-protocol.h"
+ #include "tearing-control-v1-client-protocol.h"
+@@ -116,7 +115,6 @@ struct wsi_wl_display {
+    struct wp_presentation *wp_presentation_notwrapped;
+ 
+    struct wp_commit_queue_manager_v1 *commit_queue_manager;
+-   struct wp_commit_timing_manager_v1 *commit_timing_manager;
+ 
+    struct wsi_wayland *wsi_wl;
+ 
+@@ -173,7 +171,6 @@ struct wsi_wl_swapchain {
+    struct wsi_wl_surface *wsi_wl_surface;
+    struct wp_tearing_control_v1 *tearing_control;
+    struct wp_commit_queue_v1 *commit_queue;
+-   struct wp_commit_timer_v1 *commit_timer;
+    bool can_timestamp;
+ 
+    struct wl_callback *frame;
+@@ -947,9 +944,6 @@ registry_handle_global(void *data, struct wl_registry *registry,
+    } else if (strcmp(interface, wp_tearing_control_manager_v1_interface.name) == 0) {
+       display->tearing_control_manager =
+          wl_registry_bind(registry, name, &wp_tearing_control_manager_v1_interface, 1);
+-   } else if (strcmp(interface, wp_commit_timing_manager_v1_interface.name) == 0) {
+-      display->commit_timing_manager =
+-         wl_registry_bind(registry, name, &wp_commit_timing_manager_v1_interface, 1);
+    } else if (strcmp(interface, wp_commit_queue_manager_v1_interface.name) == 0) {
+       display->commit_queue_manager =
+          wl_registry_bind(registry, name, &wp_commit_queue_manager_v1_interface, 1);
+@@ -981,8 +975,6 @@ wsi_wl_display_finish(struct wsi_wl_display *display)
+       wp_presentation_destroy(display->wp_presentation_notwrapped);
+    if (display->commit_queue_manager)
+       wp_commit_queue_manager_v1_destroy(display->commit_queue_manager);
+-   if (display->commit_timing_manager)
+-      wp_commit_timing_manager_v1_destroy(display->commit_timing_manager);
+    if (display->tearing_control_manager)
+       wp_tearing_control_manager_v1_destroy(display->tearing_control_manager);
+    if (display->wl_display_wrapper)
+@@ -2073,9 +2065,6 @@ set_timestamp(struct wsi_wl_swapchain *chain)
+    }
+ 
+    timespec_from_nsec(&target_ts, target);
+-   wp_commit_timer_v1_set_timestamp(chain->commit_timer,
+-                                    target_ts.tv_sec >> 32, target_ts.tv_sec,
+-                                    target_ts.tv_nsec);
+ 
+    wp_commit_queue_v1_set_queue_mode(chain->commit_queue,
+                                      WP_COMMIT_QUEUE_V1_QUEUE_MODE_FIFO);
+@@ -2091,6 +2080,7 @@ wsi_wl_swapchain_queue_present(struct wsi_swapchain *wsi_chain,
+    struct wsi_wl_swapchain *chain = (struct wsi_wl_swapchain *)wsi_chain;
+    struct wsi_wl_surface *wsi_wl_surface = chain->wsi_wl_surface;
+    bool mode_fifo = chain->base.present_mode == VK_PRESENT_MODE_FIFO_KHR;
++   //fprintf(stderr, "FIFO = %d\n", mode_fifo);
+ 
+    if (chain->buffer_type == WSI_WL_BUFFER_SHM_MEMCPY) {
+       struct wsi_wl_image *image = &chain->images[image_index];
+@@ -2327,9 +2317,6 @@ wsi_wl_swapchain_chain_free(struct wsi_wl_swapchain *chain,
+    if (chain->commit_queue)
+       wp_commit_queue_v1_destroy(chain->commit_queue);
+ 
+-   if (chain->commit_timer)
+-      wp_commit_timer_v1_destroy(chain->commit_timer);
+-
+    vk_free(pAllocator, (void *)chain->drm_modifiers);
+ 
+    wsi_swapchain_finish(&chain->base);
+@@ -2391,10 +2378,6 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+          old_chain->commit_queue = NULL;
+          old_chain->can_timestamp = false;
+       }
+-      if (old_chain->commit_timer) {
+-         wp_commit_timer_v1_destroy(old_chain->commit_timer);
+-         old_chain->commit_timer = NULL;
+-      }
+    }
+ 
+    /* Take ownership of the wsi_wl_surface */
+@@ -2521,12 +2504,9 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+ 
+    chain->legacy_fifo_ready = true;
+    struct wsi_wl_display *dpy = chain->wsi_wl_surface->display;
+-   if (dpy->commit_queue_manager &&
+-       dpy->commit_timing_manager) {
++   if (dpy->commit_queue_manager) {
+       chain->commit_queue = wp_commit_queue_manager_v1_get_queue_controller(dpy->commit_queue_manager,
+                                                                             chain->wsi_wl_surface->surface);
+-      chain->commit_timer = wp_commit_timing_manager_v1_get_timer(dpy->commit_timing_manager,
+-                                                                  chain->wsi_wl_surface->surface);
+       chain->can_timestamp = true;
+    }
+ 
+-- 
+2.42.0
+
+
+From fbb52f6f45b02583a0b496e4cc34af34251cb1bd Mon Sep 17 00:00:00 2001
+From: Joshua Ashton <joshua@froggi.es>
+Date: Wed, 29 Nov 2023 11:06:51 +0000
+Subject: [PATCH 4/7] wsi: Use vendored gamescope-commit-queue-v1 protocol
+
+---
+ .../wayland-drm/gamescope-commit-queue-v1.xml | 181 ++++++++++++++++++
+ src/egl/wayland/wayland-drm/meson.build       |  22 ++-
+ src/vulkan/wsi/meson.build                    |   2 +-
+ src/vulkan/wsi/wsi_common_wayland.c           |  22 +--
+ 4 files changed, 214 insertions(+), 13 deletions(-)
+ create mode 100644 src/egl/wayland/wayland-drm/gamescope-commit-queue-v1.xml
+
+diff --git a/src/egl/wayland/wayland-drm/gamescope-commit-queue-v1.xml b/src/egl/wayland/wayland-drm/gamescope-commit-queue-v1.xml
+new file mode 100644
+index 00000000000..d460e0bc10f
+--- /dev/null
++++ b/src/egl/wayland/wayland-drm/gamescope-commit-queue-v1.xml
+@@ -0,0 +1,181 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<protocol name="gamescope_commit_queue_v1">
++  <copyright>
++    Copyright © 2023 Valve Corporation
++
++    Permission is hereby granted, free of charge, to any person obtaining a
++    copy of this software and associated documentation files (the "Software"),
++    to deal in the Software without restriction, including without limitation
++    the rights to use, copy, modify, merge, publish, distribute, sublicense,
++    and/or sell copies of the Software, and to permit persons to whom the
++    Software is furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice (including the next
++    paragraph) shall be included in all copies or substantial portions of the
++    Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++    DEALINGS IN THE SOFTWARE.
++  </copyright>
++
++  <interface name="gamescope_commit_queue_manager_v1" version="1">
++    <description summary="commit queuing">
++      By design Wayland uses a "mailbox" style presentation model. Under
++      the mailbox model, when wl_surface.commit is called, the currently
++      pending state is intended to replace the current state immediately.
++
++      If state is committed many times before the compositor repaints a
++      scene, each commit takes place immediately, updating the existing
++      state. When the compositor repaints the display only the most
++      recent accumulation of state is visible. This may lead to client
++      buffers being released without presentation if they were replaced
++      before being displayed.
++
++      There are other presentation models such as FIFO (First In First
++      Out) in which state commits are explicitly queued for future
++      repaint intervals, and client buffers should not be released
++      without being displayed.
++
++      Graphics APIs such as Vulkan aim to support these presentation
++      models, but they are not implementable on top of our mailbox model
++      without the ability to change the default surface state handling
++      behaviour.
++
++      This interface provides a way to control the compositor's surface
++      state handling to enable presentation models other than mailbox.
++
++      It does so by exposing control of a compositor surface state queue,
++      and specifying for each call of wl_surface.commit whether the
++      pending state should be handled in a mailbox or a FIFO fashion.
++
++      Warning! The protocol described in this file is currently in the testing
++      phase. Backward compatible changes may be added together with the
++      corresponding interface version bump. Backward incompatible changes can
++      only be done by creating a new major version of the extension.
++    </description>
++    <enum name="error">
++      <description summary="fatal presentation error">
++        These fatal protocol errors may be emitted in response to
++        illegal requests.
++      </description>
++      <entry name="queue_controller_already_exists" value="0"
++             summary="commit queue controller already exists for surface"/>
++    </enum>
++
++    <request name="destroy" type="destructor">
++      <description summary="unbind from the surface queuing interface">
++        Informs the server that the client will no longer be using
++        this protocol object. Existing objects created by this object
++        are not affected.
++      </description>
++    </request>
++
++    <request name="get_queue_controller">
++      <description summary="request commit queue submission interface for surface">
++        Establish a queue controller for a surface.
++
++        Graphics APIs (EGL, Vulkan) will likely use this protocol
++        internally, so clients using them shouldn't directly use this
++        protocol on surfaces managed by those APIs, or a
++        queue_controller_already_exists protocol error will occur.
++      </description>
++      <arg name="id" type="new_id" interface="gamescope_commit_queue_v1"/>
++      <arg name="surface" type="object" interface="wl_surface"/>
++    </request>
++  </interface>
++
++  <interface name="gamescope_commit_queue_v1" version="1">
++    <description summary="commit queue controller">
++      A queue controller for a surface.
++
++      A wayland compositor may implicitly queue surface state to
++      allow it to pick the most recently ready state at repaint time,
++      or to allow surface state to contain timing information.
++
++      The commit queue controller object allows explicit control over
++      the queue of upcoming surface state by allowing a client to attach
++      a queue drain mode to pending surface state before it calls
++      wl_surface.commit.
++    </description>
++
++    <enum name="error">
++      <description summary="fatal presentation error">
++        These fatal protocol errors may be emitted in response to
++        illegal requests.
++      </description>
++      <entry name="invalid_queue_mode" value="0"
++             summary="invalid queue mode"/>
++    </enum>
++
++    <enum name="queue_mode">
++      <description summary="Queue drain mode">
++        This enum is used to choose how the compositor processes a queue
++        entry at output repaint time.
++      </description>
++      <entry name="mailbox" value="0">
++        <description summary="Fast forward through past timestamps">
++          State from this queue slot may be updated immediately (without
++          completing a repaint) if newer state is ready to display at
++          repaint time.
++        </description>
++      </entry>
++      <entry name="fifo" value="1">
++        <description summary="Attempt to display each queued commit">
++          This queue slot will be the last state update for this surface
++          that the compositor will process during the repaint in which
++          it is ready for display.
++
++          If the compositor is presenting with tearing, the surface state
++          must be made current for an iteration of the compositor's repaint
++          loop. This may result in the state being visible for a very short
++          duration, with visible artifacts, or even not visible at all for
++          surfaces that aren't full screen.
++
++          The compositor must not cause state processing to stall indefinitely
++          for a surface that is occluded or otherwise not visible. Instead,
++          if the compositor is choosing not to present a surface for reasons
++          unrelated to state readiness, the FIFO condition must be considered
++          satisfied at the moment new state becomes ready to replace the
++          undisplayed state.
++        </description>
++      </entry>
++    </enum>
++
++    <request name="set_queue_mode">
++      <description summary="set the queue draining mode for the pending commit">
++        This request adds a queue drain mode to the pending surface
++        state, which will be commit by the next wl_surface.commit.
++
++        This request tells the compositor how to process the state
++        from that commit when handling its internal state queue.
++
++        If the drain mode is "mailbox", the compositor may continue
++        processing the next state in the queue before it repaints
++        the display.
++
++        If the drain mode is "fifo", the compositor should ensure the
++        queue is not advanced until after this state has been current
++        for a repaint. The queue may be advance without repaint in the
++        case of off-screen or occluded surfaces.
++
++        The default drain mode when none is specified is "mailbox".
++      </description>
++      <arg name="mode" type="uint" enum="drain_mode"/>
++    </request>
++
++    <request name="destroy" type="destructor">
++      <description summary="Destroy the surface queue controller">
++        Informs the server that the client will no longer be using
++        this protocol object.
++
++        Surface state changes previously made by this protocol are
++        unaffected by this object's destruction.
++      </description>
++    </request>
++  </interface>
++</protocol>
+diff --git a/src/egl/wayland/wayland-drm/meson.build b/src/egl/wayland/wayland-drm/meson.build
+index 83a63385274..caba51b22a7 100644
+--- a/src/egl/wayland/wayland-drm/meson.build
++++ b/src/egl/wayland/wayland-drm/meson.build
+@@ -59,7 +59,7 @@ libwayland_drm = static_library(
+ # here for now as the maybe-least-bad solution.
+ wp_dir = dep_wl_protocols.get_variable(pkgconfig : 'pkgdatadir', internal : 'pkgdatadir')
+ wp_protos = {
+-  'commit-queue-v1': 'staging/commit-queue/commit-queue-v1.xml',
++  #'commit-queue-v1': 'staging/commit-queue/commit-queue-v1.xml',
+   #'commit-timing-v1': 'staging/commit-timing/commit-timing-v1.xml',
+   'linux-dmabuf-unstable-v1': 'unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml',
+   'presentation-time': 'stable/presentation-time/presentation-time.xml',
+@@ -81,3 +81,23 @@ foreach name, xml : wp_protos
+   )
+   wp_files += { name: [code, header] }
+ endforeach
++
++gamescope_protos = {
++  'gamescope-commit-queue-v1': 'gamescope-commit-queue-v1.xml',
++}
++foreach name, xml : gamescope_protos
++  code = custom_target(
++    name + '-protocol.c',
++    input : xml,
++    output : name + '-protocol.c',
++    command : [prog_wl_scanner, wl_scanner_arg, '@INPUT@', '@OUTPUT@'],
++  )
++  header = custom_target(
++    name + '-client-protocol.h',
++    input : xml,
++    output : name + '-client-protocol.h',
++    command : [prog_wl_scanner, 'client-header', '@INPUT@', '@OUTPUT@'],
++  )
++  wp_files += { name: [code, header] }
++endforeach
++
+diff --git a/src/vulkan/wsi/meson.build b/src/vulkan/wsi/meson.build
+index dba95387975..fb0fab69ac6 100644
+--- a/src/vulkan/wsi/meson.build
++++ b/src/vulkan/wsi/meson.build
+@@ -31,7 +31,7 @@ endif
+ 
+ if with_platform_wayland
+   files_vulkan_wsi += files('wsi_common_wayland.c')
+-  files_vulkan_wsi += wp_files['commit-queue-v1']
++  files_vulkan_wsi += wp_files['gamescope-commit-queue-v1']
+   #files_vulkan_wsi += wp_files['commit-timing-v1']
+   files_vulkan_wsi += wp_files['linux-dmabuf-unstable-v1']
+   files_vulkan_wsi += wp_files['presentation-time']
+diff --git a/src/vulkan/wsi/wsi_common_wayland.c b/src/vulkan/wsi/wsi_common_wayland.c
+index 1efe9e449e8..68d9088f936 100644
+--- a/src/vulkan/wsi/wsi_common_wayland.c
++++ b/src/vulkan/wsi/wsi_common_wayland.c
+@@ -41,7 +41,7 @@
+ #include "vk_util.h"
+ #include "wsi_common_entrypoints.h"
+ #include "wsi_common_private.h"
+-#include "commit-queue-v1-client-protocol.h"
++#include "gamescope-commit-queue-v1-client-protocol.h"
+ #include "linux-dmabuf-unstable-v1-client-protocol.h"
+ #include "presentation-time-client-protocol.h"
+ #include "tearing-control-v1-client-protocol.h"
+@@ -114,7 +114,7 @@ struct wsi_wl_display {
+    /* users want per-chain wsi_wl_swapchain->present_ids.wp_presentation */
+    struct wp_presentation *wp_presentation_notwrapped;
+ 
+-   struct wp_commit_queue_manager_v1 *commit_queue_manager;
++   struct gamescope_commit_queue_manager_v1 *commit_queue_manager;
+ 
+    struct wsi_wayland *wsi_wl;
+ 
+@@ -170,7 +170,7 @@ struct wsi_wl_swapchain {
+ 
+    struct wsi_wl_surface *wsi_wl_surface;
+    struct wp_tearing_control_v1 *tearing_control;
+-   struct wp_commit_queue_v1 *commit_queue;
++   struct gamescope_commit_queue_v1 *commit_queue;
+    bool can_timestamp;
+ 
+    struct wl_callback *frame;
+@@ -944,9 +944,9 @@ registry_handle_global(void *data, struct wl_registry *registry,
+    } else if (strcmp(interface, wp_tearing_control_manager_v1_interface.name) == 0) {
+       display->tearing_control_manager =
+          wl_registry_bind(registry, name, &wp_tearing_control_manager_v1_interface, 1);
+-   } else if (strcmp(interface, wp_commit_queue_manager_v1_interface.name) == 0) {
++   } else if (strcmp(interface, gamescope_commit_queue_manager_v1_interface.name) == 0) {
+       display->commit_queue_manager =
+-         wl_registry_bind(registry, name, &wp_commit_queue_manager_v1_interface, 1);
++         wl_registry_bind(registry, name, &gamescope_commit_queue_manager_v1_interface, 1);
+    }
+ }
+ 
+@@ -974,7 +974,7 @@ wsi_wl_display_finish(struct wsi_wl_display *display)
+    if (display->wp_presentation_notwrapped)
+       wp_presentation_destroy(display->wp_presentation_notwrapped);
+    if (display->commit_queue_manager)
+-      wp_commit_queue_manager_v1_destroy(display->commit_queue_manager);
++      gamescope_commit_queue_manager_v1_destroy(display->commit_queue_manager);
+    if (display->tearing_control_manager)
+       wp_tearing_control_manager_v1_destroy(display->tearing_control_manager);
+    if (display->wl_display_wrapper)
+@@ -2066,8 +2066,8 @@ set_timestamp(struct wsi_wl_swapchain *chain)
+ 
+    timespec_from_nsec(&target_ts, target);
+ 
+-   wp_commit_queue_v1_set_queue_mode(chain->commit_queue,
+-                                     WP_COMMIT_QUEUE_V1_QUEUE_MODE_FIFO);
++   gamescope_commit_queue_v1_set_queue_mode(chain->commit_queue,
++                                     GAMESCOPE_COMMIT_QUEUE_V1_QUEUE_MODE_FIFO);
+    chain->last_target_time = target;
+ }
+ 
+@@ -2315,7 +2315,7 @@ wsi_wl_swapchain_chain_free(struct wsi_wl_swapchain *chain,
+    }
+ 
+    if (chain->commit_queue)
+-      wp_commit_queue_v1_destroy(chain->commit_queue);
++      gamescope_commit_queue_v1_destroy(chain->commit_queue);
+ 
+    vk_free(pAllocator, (void *)chain->drm_modifiers);
+ 
+@@ -2374,7 +2374,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+          old_chain->tearing_control = NULL;
+       }
+       if (old_chain->commit_queue) {
+-         wp_commit_queue_v1_destroy(old_chain->commit_queue);
++         gamescope_commit_queue_v1_destroy(old_chain->commit_queue);
+          old_chain->commit_queue = NULL;
+          old_chain->can_timestamp = false;
+       }
+@@ -2505,7 +2505,7 @@ wsi_wl_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+    chain->legacy_fifo_ready = true;
+    struct wsi_wl_display *dpy = chain->wsi_wl_surface->display;
+    if (dpy->commit_queue_manager) {
+-      chain->commit_queue = wp_commit_queue_manager_v1_get_queue_controller(dpy->commit_queue_manager,
++      chain->commit_queue = gamescope_commit_queue_manager_v1_get_queue_controller(dpy->commit_queue_manager,
+                                                                             chain->wsi_wl_surface->surface);
+       chain->can_timestamp = true;
+    }
+-- 
+2.42.0
+
+
+From f0be8700af09a5a1c94d84c1b3b4ee3096de0b69 Mon Sep 17 00:00:00 2001
+From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+Date: Fri, 14 Jan 2022 15:58:45 +0100
+Subject: [PATCH 5/7] STEAMOS: radv: min image count override for FH5
+
+Otherwise in combination with the vblank time reservation in
+gamescope the game could get stuck in low power states.
+---
+ src/util/00-radv-defaults.conf | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/util/00-radv-defaults.conf b/src/util/00-radv-defaults.conf
+index 0dcec733e52..f0d535df2f8 100644
+--- a/src/util/00-radv-defaults.conf
++++ b/src/util/00-radv-defaults.conf
+@@ -188,5 +188,9 @@ Application bugs worked around in this file:
+         <application name="Rocket League" executable="RocketLeague">
+             <option name="radv_zero_vram" value="true" />
+         </application>
++
++        <application name="Forza Horizon 5" application_name_match="ForzaHorizon5.exe">
++            <option name="vk_x11_override_min_image_count" value="4" />
++        </application>
+     </device>
+ </driconf>
+-- 
+2.42.0
+
+
+From 2ab76c1153f55d82c3f49a25f8f8a1f1e1e74075 Mon Sep 17 00:00:00 2001
+From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+Date: Mon, 21 Feb 2022 18:43:54 +0100
+Subject: [PATCH 6/7] STEAMOS: Dynamic swapchain override for gamescope limiter
+
+---
+ src/loader/loader_dri3_helper.c | 42 +++++++++++++++++++++++++++++++--
+ src/loader/loader_dri3_helper.h |  1 +
+ src/loader/meson.build          |  2 +-
+ src/vulkan/wsi/wsi_common_x11.c | 38 +++++++++++++++++++++++++++++
+ 4 files changed, 80 insertions(+), 3 deletions(-)
+
+diff --git a/src/loader/loader_dri3_helper.c b/src/loader/loader_dri3_helper.c
+index 2631a9e2fd5..dbf6db349c6 100644
+--- a/src/loader/loader_dri3_helper.c
++++ b/src/loader/loader_dri3_helper.c
+@@ -289,6 +289,30 @@ dri3_update_max_num_back(struct loader_dri3_drawable *draw)
+    }
+ }
+ 
++static unsigned
++gamescope_swapchain_override()
++{
++   const char *path = getenv("GAMESCOPE_LIMITER_FILE");
++   if (!path)
++      return 0;
++
++   static simple_mtx_t mtx = SIMPLE_MTX_INITIALIZER;
++   static int fd = -1;
++
++   simple_mtx_lock(&mtx);
++   if (fd < 0) {
++      fd = open(path, O_RDONLY);
++   }
++   simple_mtx_unlock(&mtx);
++
++   if (fd < 0)
++      return 0;
++
++   uint32_t override_value = 0;
++   pread(fd, &override_value, sizeof(override_value), 0);
++   return override_value;
++}
++
+ void
+ loader_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
+ {
+@@ -303,10 +327,12 @@ loader_dri3_set_swap_interval(struct loader_dri3_drawable *draw, int interval)
+     * PS. changing from value A to B and A < B won't cause swap out of order but
+     * may still gets wrong target_msc value at the beginning.
+     */
+-   if (draw->swap_interval != interval)
++   if (draw->orig_swap_interval != interval)
+       loader_dri3_swapbuffer_barrier(draw);
+ 
+-   draw->swap_interval = interval;
++   draw->orig_swap_interval = interval;
++   if (gamescope_swapchain_override() != 1)
++      draw->swap_interval = interval;
+ }
+ 
+ static void
+@@ -438,6 +464,12 @@ loader_dri3_drawable_init(xcb_connection_t *conn,
+    draw->swap_interval = dri_get_initial_swap_interval(draw->dri_screen_render_gpu,
+                                                        draw->ext->config);
+ 
++   draw->orig_swap_interval = draw->swap_interval;
++
++   unsigned gamescope_override = gamescope_swapchain_override();
++   if (gamescope_override == 1)
++      draw->swap_interval = 1;
++
+    dri3_update_max_num_back(draw);
+ 
+    /* Create a new drawable */
+@@ -1085,6 +1117,12 @@ loader_dri3_swap_buffers_msc(struct loader_dri3_drawable *draw,
+    if (draw->type == LOADER_DRI3_DRAWABLE_WINDOW) {
+       dri3_fence_reset(draw->conn, back);
+ 
++      unsigned gamescope_override = gamescope_swapchain_override();
++      if (gamescope_override == 1)
++         draw->swap_interval = 1;
++      else
++         draw->swap_interval = draw->orig_swap_interval;
++
+       /* Compute when we want the frame shown by taking the last known
+        * successful MSC and adding in a swap interval for each outstanding swap
+        * request. target_msc=divisor=remainder=0 means "Use glXSwapBuffers()
+diff --git a/src/loader/loader_dri3_helper.h b/src/loader/loader_dri3_helper.h
+index cc2362dd599..fe73b3f329c 100644
+--- a/src/loader/loader_dri3_helper.h
++++ b/src/loader/loader_dri3_helper.h
+@@ -178,6 +178,7 @@ struct loader_dri3_drawable {
+    bool block_on_depleted_buffers;
+    bool queries_buffer_age;
+    int swap_interval;
++   int orig_swap_interval;
+ 
+    struct loader_dri3_extensions *ext;
+    const struct loader_dri3_vtable *vtable;
+diff --git a/src/loader/meson.build b/src/loader/meson.build
+index 35f9991ba2f..154cf809a69 100644
+--- a/src/loader/meson.build
++++ b/src/loader/meson.build
+@@ -29,7 +29,7 @@ if with_platform_x11 and with_dri3
+     dependencies : [
+       idep_mesautil,
+       dep_libdrm, dep_xcb_dri3, dep_xcb_present, dep_xcb_sync, dep_xshmfence,
+-      dep_xcb_xfixes,
++      dep_xcb_xfixes, dep_xcb_xrandr, idep_mesautil
+     ],
+     build_by_default : false,
+   )
+diff --git a/src/vulkan/wsi/wsi_common_x11.c b/src/vulkan/wsi/wsi_common_x11.c
+index cba1d1c5e7c..6d66387d5be 100644
+--- a/src/vulkan/wsi/wsi_common_x11.c
++++ b/src/vulkan/wsi/wsi_common_x11.c
+@@ -48,6 +48,7 @@
+ #include "util/hash_table.h"
+ #include "util/os_file.h"
+ #include "util/os_time.h"
++#include "util/simple_mtx.h"
+ #include "util/u_debug.h"
+ #include "util/u_thread.h"
+ #include "util/xmlconfig.h"
+@@ -219,6 +220,30 @@ wsi_x11_detect_xwayland(xcb_connection_t *conn,
+    return is_xwayland;
+ }
+ 
++static unsigned
++gamescope_swapchain_override()
++{
++   const char *path = getenv("GAMESCOPE_LIMITER_FILE");
++   if (!path)
++      return 0;
++
++   static simple_mtx_t mtx = SIMPLE_MTX_INITIALIZER;
++   static int fd = -1;
++
++   simple_mtx_lock(&mtx);
++   if (fd < 0) {
++      fd = open(path, O_RDONLY);
++   }
++   simple_mtx_unlock(&mtx);
++
++   if (fd < 0)
++      return 0;
++
++   uint32_t override_value = 0;
++   pread(fd, &override_value, sizeof(override_value), 0);
++   return override_value;
++}
++
+ static struct wsi_x11_connection *
+ wsi_x11_connection_create(struct wsi_device *wsi_dev,
+                           xcb_connection_t *conn)
+@@ -1107,6 +1132,8 @@ struct x11_swapchain {
+    /* Total number of images returned to application in AcquireNextImage. */
+    uint64_t                                     present_poll_acquire_count;
+ 
++   VkPresentModeKHR                             orig_present_mode;
++
+    struct x11_image                             images[0];
+ };
+ VK_DEFINE_NONDISP_HANDLE_CASTS(x11_swapchain, base.base, VkSwapchainKHR,
+@@ -1857,6 +1884,12 @@ x11_queue_present(struct wsi_swapchain *anv_chain,
+    if (chain->status < 0)
+       return chain->status;
+ 
++   unsigned gamescope_override = gamescope_swapchain_override();
++   if ((gamescope_override == 1 && chain->base.present_mode != VK_PRESENT_MODE_FIFO_KHR) ||
++       (gamescope_override != 1 && chain->base.present_mode != chain->orig_present_mode)) {
++      return x11_swapchain_result(chain, VK_ERROR_OUT_OF_DATE_KHR);
++   }
++
+    if (damage && damage->pRectangles && damage->rectangleCount > 0 &&
+       damage->rectangleCount <= MAX_DAMAGE_RECTS) {
+       xcb_rectangle_t rects[MAX_DAMAGE_RECTS];
+@@ -2615,6 +2648,10 @@ x11_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+    xcb_void_cookie_t cookie;
+    VkResult result;
+    VkPresentModeKHR present_mode = wsi_swapchain_get_present_mode(wsi_device, pCreateInfo);
++   VkPresentModeKHR orig_present_mode = present_mode;
++
++   if (gamescope_swapchain_override() == 1)
++      present_mode = VK_PRESENT_MODE_FIFO_KHR;
+ 
+    assert(pCreateInfo->sType == VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR);
+ 
+@@ -2727,6 +2764,7 @@ x11_surface_create_swapchain(VkIcdSurfaceBase *icd_surface,
+    chain->base.wait_for_present = x11_wait_for_present;
+    chain->base.release_images = x11_release_images;
+    chain->base.present_mode = present_mode;
++   chain->orig_present_mode = orig_present_mode;
+    chain->base.image_count = num_images;
+    chain->conn = conn;
+    chain->window = window;
+-- 
+2.42.0
+
+
+From f00348f08f42a1ce3be4e71f9fba186fb629c723 Mon Sep 17 00:00:00 2001
+From: Friedrich Vock <friedrich.vock@gmx.de>
+Date: Fri, 1 Dec 2023 15:18:44 +0100
+Subject: [PATCH 7/7] radv: Enable compute dispatch tunneling
+
+Compute tunneling can considerably lower the latency of high-priority
+compute work. Enabling it is beneficial in cases where high-priority
+work is dispatched while the GPU is already busy with other work (e.g.
+rendering on GFX). This is the case in VR compositors that dispatch
+latency-sensitive compositing work to ACE while GFX is busy rendering
+the next frame.
+---
+ src/amd/vulkan/radv_device.c   | 7 +++++++
+ src/amd/vulkan/si_cmd_buffer.c | 2 ++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/src/amd/vulkan/radv_device.c b/src/amd/vulkan/radv_device.c
+index 1bf900d073c..db5347dc0be 100644
+--- a/src/amd/vulkan/radv_device.c
++++ b/src/amd/vulkan/radv_device.c
+@@ -969,6 +969,13 @@ radv_CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCr
+        */
+       device->dispatch_initiator |= S_00B800_ORDER_MODE(1);
+    }
++   if (device->physical_device->rad_info.gfx_level >= GFX10) {
++      /* Enable asynchronous compute tunneling. The KMD restricts this feature
++       * to high-priority compute queues, so setting the bit on any other queue
++       * is a no-op. PAL always sets this bit as well.
++       */
++      device->dispatch_initiator |= S_00B800_TUNNEL_ENABLE(1);
++   }
+ 
+    /* Disable partial preemption for task shaders.
+     * The kernel may not support preemption, but PAL always sets this bit,
+diff --git a/src/amd/vulkan/si_cmd_buffer.c b/src/amd/vulkan/si_cmd_buffer.c
+index ecb00d98575..1b5e585ade4 100644
+--- a/src/amd/vulkan/si_cmd_buffer.c
++++ b/src/amd/vulkan/si_cmd_buffer.c
+@@ -113,6 +113,8 @@ si_emit_compute(struct radv_device *device, struct radeon_cmdbuf *cs)
+       radeon_emit(cs, 0); /* R_00B894_COMPUTE_USER_ACCUM_1 */
+       radeon_emit(cs, 0); /* R_00B898_COMPUTE_USER_ACCUM_2 */
+       radeon_emit(cs, 0); /* R_00B89C_COMPUTE_USER_ACCUM_3 */
++
++      radeon_set_sh_reg(cs, R_00B9F4_COMPUTE_DISPATCH_TUNNEL, 0);
+    }
+ 
+    /* This register has been moved to R_00CD20_COMPUTE_MAX_WAVE_ID
+-- 
+2.42.0
+
