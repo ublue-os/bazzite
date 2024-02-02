@@ -16,16 +16,9 @@ fi
 # Launch Weston
 killall -9 weston
 pkexec /usr/libexec/waydroid-container-start
-if [ -z "$(pgrep weston)" ]; then
-	/usr/bin/weston --socket=weston-waydroid --width=${STEAMOS_NESTED_DESKTOP_WIDTH:-1280} --height=${STEAMOS_NESTED_DESKTOP_HEIGHT:-800} &> /dev/null &
+if [ -z "$(pgrep wlr-randr)" ]; then
+	cage -- bash -c "wlr-randr --output X11-1 --custom-mode ${STEAMOS_NESTED_DESKTOP_WIDTH:-1280}x${STEAMOS_NESTED_DESKTOP_HEIGHT:-800}; sleep 1; waydroid show-full-ui &> /dev/null &"
 fi
-
-# Launch Waydroid
-sleep 2 &&
-export XDG_SESSION_TYPE='wayland'
-export WAYLAND_DISPLAY='weston-waydroid'
-LAUNCH_PARAM=$@
-/usr/bin/waydroid ${LAUNCH_PARAM:-first-launch} &
 
 # Fix controllers, we know Waydroid has started because surfaceflinger is running
 while [ "" ==  "$(pgrep surfaceflinger)" ]; do
