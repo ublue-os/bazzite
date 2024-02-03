@@ -174,12 +174,6 @@ RUN rpm-ostree override replace \
         || true && \
     rpm-ostree override replace \
     --experimental \
-    --from repo=updates-archive \
-        glibc-headers \
-        glibc-devel \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
     --from repo=updates \
         glibc \
         glibc-common \
