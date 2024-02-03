@@ -56,7 +56,6 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) preinstalled and enabled. <sub><sup>(Available but default-disabled on the Deck variant, may be enabled with `ujust restore-input-remapper`)</sup></sub>
 - Bazzite Portal provides an easy way to install numerous applications and tweaks, including installing [LACT](https://github.com/ilya-zlobintsev/LACT) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
-- [Brew](https://brew.sh/) package manager optionally available for install via Bazzite Portal.
 - [Waydroid](https://waydro.id/) preinstalled for running Android apps. Set it up with this [quick guide](https://universal-blue.discourse.group/docs?topic=32).
 - Manage applications using [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), and [Gear Lever](https://github.com/mijorus/gearlever).
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
