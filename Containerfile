@@ -172,14 +172,6 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         libmount \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        glibc \
-        glibc-common \
-        glibc-all-langpacks \
-        glibc-gconv-extra \
-        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true
