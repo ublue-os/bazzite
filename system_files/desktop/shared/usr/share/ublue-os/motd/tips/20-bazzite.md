@@ -9,4 +9,4 @@ Bazzite uses ZSTD compression in BTRFS by default, and deduplicates files across
 *Have a large library of ROMs to manage?* ROM Properties Page shell extension is installed by default and makes it much easier, with thumbnails and additional info for all of your files.
 *Need more control over your Flatpaks?* Check out the Warehouse and Flatseal applications to manage them.
 *Want more tips and tricks?* - [View Documentation](https://universal-blue.discourse.group/docs?topic=287)
-*Desktop users:  Want a to easily customize MangoHud and vkBasalt?* Use the GOverlay application as a graphical user interface to adjust settings.
+*Desktop users:  Want to easily customize MangoHud and vkBasalt?* Use the GOverlay application as a graphical user interface to adjust settings.
