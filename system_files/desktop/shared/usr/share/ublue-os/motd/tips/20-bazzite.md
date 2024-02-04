@@ -1,5 +1,5 @@
-*Installing a Windows game that isn't on Steam?* Lutris is pre-installed and recommended for better handling of wine prefixes<br>[View gaming guide](https://universal-blue.discourse.group/docs?topic=31)
-BTRFS is used by default for external drives, and we recommend that or EXT4 over NTFS in all circumstances<br>[More info](https://github.com/ValveSoftware/Proton/wiki/Using-a-NTFS-disk-with-Linux-and-Windows)
+*Installing a Windows game that isn't on Steam?* Lutris is pre-installed and recommended for better handling of wine prefixes ~ [View gaming guide](https://universal-blue.discourse.group/docs?topic=31)
+BTRFS is used by default for external drives, and we recommend that or EXT4 over NTFS in all circumstances ~ [More info](https://github.com/ValveSoftware/Proton/wiki/Using-a-NTFS-disk-with-Linux-and-Windows)
 *No Flatpak or distro packaging available?* The Gear Lever app is included to make managing and integrating AppImages easy!
 *Want to control your device from your phone?* The KDE Connect app functions with all Bazzite images - [More info](https://kdeconnect.kde.org/)
 *Trying to use Feral Gamemode?* System76-Scheduler in Bazzite replaces it, offering automatic nice value adjustments for applications based on the currently focused window and preconfigured rules - [More info](https://github.com/pop-os/system76-scheduler)
