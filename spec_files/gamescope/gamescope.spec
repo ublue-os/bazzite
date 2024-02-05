@@ -11,6 +11,7 @@ URL:            https://github.com/ValveSoftware/gamescope
 # Create stb.pc to satisfy dependency('stb')
 Source1:        stb.pc
 Source2:        chimeraos.patch
+Source3:        crashfix.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -74,6 +75,7 @@ git submodule update --init --recursive
 mkdir -p pkgconfig
 cp %{SOURCE1} pkgconfig/stb.pc
 patch -Np1 < %{SOURCE2}
+patch -Np1 < %{SOURCE3}
 
 %build
 cd gamescope
