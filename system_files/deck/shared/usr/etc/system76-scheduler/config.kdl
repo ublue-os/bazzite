@@ -88,7 +88,6 @@ process-scheduler enable=true {
         fancontrol.py
         gamemoderun
         gamescope
-        handycon
         hhd
         input-remapper-service
         ionice

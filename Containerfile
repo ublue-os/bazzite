@@ -90,7 +90,9 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
         /tmp/akmods-rpms/kmods/*nct6687*.rpm \
         /tmp/akmods-rpms/kmods/*evdi*.rpm \
         /tmp/akmods-rpms/kmods/*zenergy*.rpm \
+        /tmp/akmods-rpms/kmods/*ayaneo-platform*.rpm \
         /tmp/akmods-rpms/kmods/*ayn-platform*.rpm \
+        /tmp/akmods-rpms/kmods/*bmi160*.rpm \
         /tmp/akmods-rpms/kmods/*bmi260*.rpm \
         /tmp/akmods-rpms/kmods/*bmi323*.rpm \
         /tmp/akmods-rpms/kmods/*rtl8814au*.rpm \
@@ -102,6 +104,11 @@ RUN rpm-ostree override replace \
     --experimental \
     --from repo=updates \
         vulkan-loader \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        alsa-libs \
         || true && \
     rpm-ostree override replace \
     --experimental \
@@ -589,7 +596,6 @@ RUN rpm-ostree install \
     jupiter-hw-support-btrfs \
     galileo-mura \
     powerbuttond \
-    HandyGCCS \
     hhd \
     vpower \
     ds-inhibit \
@@ -706,7 +712,6 @@ RUN /tmp/image-info.sh && \
     systemctl --global disable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \
     systemctl disable ublue-update.timer && \
-    systemctl disable handycon.service && \
     systemctl disable jupiter-fan-control.service && \
     systemctl disable vpower.service && \
     systemctl disable jupiter-biosupdate.service && \

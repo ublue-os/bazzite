@@ -1,7 +1,6 @@
 #!/usr/bin/bash
 
 source /etc/default/waydroid-launcher
-source /etc/default/steamos-nested-desktop
 
 # Kill any previous remnants
 if [ "$(systemctl is-active waydroid-container.service)" == 'active' ]; then
@@ -17,7 +16,7 @@ fi
 killall -9 weston
 pkexec /usr/libexec/waydroid-container-start
 if [ -z "$(pgrep wlr-randr)" ]; then
-	cage -- bash -c "wlr-randr --output X11-1 --custom-mode ${STEAMOS_NESTED_DESKTOP_WIDTH:-1280}x${STEAMOS_NESTED_DESKTOP_HEIGHT:-800}; sleep 1; waydroid show-full-ui &> /dev/null &"
+	cage -- bash -c "wlr-randr --output X11-1 --custom-mode ${WAYDROID_WIDTH:-1280}x${WAYDROID_HEIGHT:-800}; sleep 1; waydroid show-full-ui &> /dev/null &"
 fi
 
 # Fix controllers, we know Waydroid has started because surfaceflinger is running

@@ -1,0 +1,47 @@
+From 1c8d6300c3a64d124534182f92d6f714573e8821 Mon Sep 17 00:00:00 2001
+From: Wim Taymans <wtaymans@redhat.com>
+Date: Wed, 31 Jan 2024 12:21:02 +0100
+Subject: [PATCH 1/2] Revert "spa: libcamera: bump minimum supported version to
+ 0.2.0"
+
+This reverts commit 01cb3fa862d36adfded8f02540660b43b9c1584c.
+---
+ spa/meson.build                            | 3 ++-
+ spa/plugins/libcamera/libcamera-device.cpp | 2 ++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/spa/meson.build b/spa/meson.build
+index db0a84425..0ee750d6e 100644
+--- a/spa/meson.build
++++ b/spa/meson.build
+@@ -96,8 +96,9 @@ if get_option('spa-plugins').allowed()
+   endif
+   summary({'Vulkan': have_vulkan}, bool_yn: true, section: 'Misc dependencies')
+ 
+-  libcamera_dep = dependency('libcamera', version: '>= 0.2.0', required: get_option('libcamera'))
++  libcamera_dep = dependency('libcamera', required: get_option('libcamera'))
+   summary({'libcamera': libcamera_dep.found()}, bool_yn: true, section: 'Backend')
++  cdata.set('HAVE_LIBCAMERA_SYSTEM_DEVICES', libcamera_dep.version().version_compare('>= 0.1.0'))
+ 
+   compress_offload_option = get_option('compress-offload')
+   summary({'Compress-Offload': compress_offload_option.allowed()}, bool_yn: true, section: 'Backend')
+diff --git a/spa/plugins/libcamera/libcamera-device.cpp b/spa/plugins/libcamera/libcamera-device.cpp
+index b25a4eb72..0abf2f619 100644
+--- a/spa/plugins/libcamera/libcamera-device.cpp
++++ b/spa/plugins/libcamera/libcamera-device.cpp
+@@ -61,10 +61,12 @@ struct impl {
+ static const libcamera::Span<const int64_t> cameraDevice(
+ 			const Camera *camera)
+ {
++#ifdef HAVE_LIBCAMERA_SYSTEM_DEVICES
+ 	const ControlList &props = camera->properties();
+ 
+ 	if (auto devices = props.get(properties::SystemDevices))
+ 		return devices.value();
++#endif
+ 
+ 	return {};
+ }
+-- 
+2.43.0
+

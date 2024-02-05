@@ -93,7 +93,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 
 ### Steam Deck/Home Theater PCs (HTPCs)
 > [!IMPORTANT]  
-Devices that are NOT the Steam Deck can still use the bazzite-deck images, but must use an AMD/Intel GPU.
+Devices that are NOT the Steam Deck can still use the `bazzite-deck` images, but must use a modern AMD GPU. Intel Arc GPUs also have been confirmed to work.
 
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, and for a console-like experience on HTPCs, available as `bazzite-deck`:
 
@@ -103,7 +103,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - **Able to be booted even if the drive is full.**
 - **Support for every language supported by upstream Fedora.**
 - **Uses Wayland on the desktop with [support for Steam input](https://github.com/Supreeeme/extest).**
-- Includes [HHD](https://github.com/hhd-dev/hhd) and [HandyGCCS](https://github.com/ShadowBlip/HandyGCCS) for expanded input support on non-Valve handhelds. 
+- Includes [HHD](https://github.com/hhd-dev/hhd) for expanded input support on non-Valve handhelds. 
 - Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV).
 - Patched Mesa for proper framerate control from Gamescope.
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
