@@ -1,2 +1,9 @@
-WAYDROID_DENSITY=215
 WAYDROID_GRALLOC=minigbm_gbm_mesa
+
+# Handle custom Waydroid DPI for known devices.
+case "$(cat /sys/devices/virtual/dmi/id/product_name)" in
+	"Jupiter" | "Galileo" | "AYANEO GEEK" | "G1619-05")
+		WAYDROID_DENSITY=215 ;;
+	"83E1")
+		WAYDROID_DENSITY=340 ;;
+esac

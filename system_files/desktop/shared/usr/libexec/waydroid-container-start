@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 
 source /etc/default/waydroid-launcher
+source /etc/default/steamos-nested-desktop
 
 # Ensure needed props are present
 if ! grep -q "persist.waydroid.udev=true" "/var/lib/waydroid/waydroid_base.prop"; then
@@ -11,7 +12,15 @@ if ! grep -q "persist.waydroid.uevent=true" "/var/lib/waydroid/waydroid_base.pro
   sudo sh -c 'echo -e "persist.waydroid.uevent=true" >> /var/lib/waydroid/waydroid_base.prop'
 fi
 
-sudo sed -i "s/ro.sf.lcd_density=.*/ro.sf.lcd_density=${WAYDROID_DENSITY:-215}/g" /var/lib/waydroid/waydroid_base.prop
+if [[ ! -z "$WAYDROID_DENSITY" ]]; then
+  sudo sed -i "s/ro.sf.lcd_density=.*/ro.sf.lcd_density=${WAYDROID_DENSITY}/g" /var/lib/waydroid/waydroid_base.prop
+fi
 sudo sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=${WAYDROID_GRALLOC:-minigbm_gbm_mesa}/g" /var/lib/waydroid/waydroid_base.prop
+
+# Add controller fixes automatically
+if [[ -f "/usr/share/ublue-os/waydroid/Vendor_28de_Product_11ff.kl" ]]; then
+  mkdir -p "/var/lib/waydroid/overlay/system/usr/keylayout"
+  cp "/usr/share/ublue-os/waydroid/Vendor_28de_Product_11ff.kl" "/var/lib/waydroid/overlay/system/usr/keylayout/"
+fi
 
 sudo systemctl start waydroid-container.service
