@@ -23,6 +23,7 @@ fi
 while [ "" ==  "$(pgrep surfaceflinger)" ]; do
     sleep 1
 done
+sleep 10
 pkexec /usr/libexec/waydroid-fix-controllers
 
 # Waydroid is now live!
