@@ -108,6 +108,11 @@ RUN rpm-ostree override replace \
     rpm-ostree override replace \
     --experimental \
     --from repo=updates \
+        alsa-libs \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
         gnutls \
         || true && \
     rpm-ostree override replace \
