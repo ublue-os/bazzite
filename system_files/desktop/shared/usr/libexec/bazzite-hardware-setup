@@ -226,29 +226,6 @@ if grep -qv "graphical.target" <<< "$(systemctl get-default)"; then
   systemctl set-default graphical.target
 fi
 
-# CLEAN UP
-# AMDGPU settings change that the fsync kernel now handles.
-if [[ -f "/etc/modprobe.d/amdgpu.conf" ]]; then
-  rm -f "/etc/modprobe.d/amdgpu.conf"
-fi
-# Controller changes are no longer needed thanks to patched xone driver.
-if [[ -f "/etc/modprobe.d/xone.conf" ]]; then
-  rm -f "/etc/modprobe.d/xone.conf"
-fi
-if [[ -f "/etc/modprobe.d/xpad-noone-blacklist.conf" ]]; then
-  rm -f "/etc/modprobe.d/xpad-noone-blacklist.conf"
-fi
-if [[ -f "/etc/modules-load.d/xpad-noone.conf" ]]; then
-  rm -f "/etc/modules-load.d/xpad-noone.conf"
-fi
-if [[ -f "/etc/modprobe.d/xpadneo.conf" ]]; then
-  rm -f "/etc/modprobe.d/xpadneo.conf"
-fi
-# Previous optional solution for zenpower3 that has been replaced with zenergy.
-if [[ -f "/etc/modprobe.d/amdcpu.conf" ]]; then
-  rm -f "/etc/modprobe.d/amdcpu.conf"
-fi
-
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
 echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
