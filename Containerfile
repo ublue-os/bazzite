@@ -588,7 +588,6 @@ RUN rpm-ostree install \
     jupiter-hw-support-btrfs \
     galileo-mura \
     powerbuttond \
-    HandyGCCS \
     hhd \
     vpower \
     ds-inhibit \
@@ -705,7 +704,6 @@ RUN /tmp/image-info.sh && \
     systemctl --global disable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \
     systemctl disable ublue-update.timer && \
-    systemctl disable handycon.service && \
     systemctl disable jupiter-fan-control.service && \
     systemctl disable vpower.service && \
     systemctl disable jupiter-biosupdate.service && \
