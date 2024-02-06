@@ -293,7 +293,7 @@ Lee nuestras [preguntas frecuentes](https://universal-blue.discourse.group/docs?
 - [Guía para Configurar el Arranque Dual con Windows (Dual Boot)](https://universal-blue.discourse.group/docs?topic=129)
 - [Documentación Miscelánea](https://universal-blue.discourse.group/docs?topic=287)
 
-Puedes encontrar documentación adicional relacionada al proyecto [aquí](https://universal-blue.discourse.group/docs?category=5).
+Puedes encontrar documentación adicional relacionada al proyecto [aquí](http://docs.bazzite.gg/).
 
 Checa nuestros [boletines informativos (disponibles en español](https://universal-blue.discourse.group/tag/bazzite-buzz), estos son publicados regularmente y los cuales hablan de las últimas actualizaciones del proyecto.
 

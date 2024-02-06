@@ -269,7 +269,7 @@ Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details
 - [Dual Booting Guide](https://universal-blue.discourse.group/docs?topic=129)
 - [Miscellaneous Documentation](https://universal-blue.discourse.group/docs?topic=287)
 
-Find additional documentation surrounding the project [here](https://universal-blue.discourse.group/docs?category=5).
+Find additional documentation surrounding the project [here](http://docs.bazzite.gg/).
 
 Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) that get published on a regular basis for updates on the project.
 
