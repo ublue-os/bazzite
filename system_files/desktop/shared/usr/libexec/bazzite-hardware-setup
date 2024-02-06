@@ -226,11 +226,32 @@ if grep -qv "graphical.target" <<< "$(systemctl get-default)"; then
   systemctl set-default graphical.target
 fi
 
-# Ensure file needed for topgrade is present
+# Ensure files needed for topgrade are always present
 if [[ ! -f "/etc/ublue-os/topgrade.toml" ]]; then
   mkdir -p "/etc/ublue-os"
   cp "/usr/etc/ublue-os/topgrade.toml" "/etc/ublue-os/topgrade.toml"
 fi
+
+if [[ ! -f "/etc/ublue-update/topgrade-system.toml" ]]; then
+  mkdir -p "/etc/ublue-update"
+  cp "/usr/etc/ublue-update/topgrade-system.toml" "/etc/ublue-update/topgrade-system.toml"
+fi
+
+if [[ ! -f "/etc/ublue-update/topgrade-user.toml" ]]; then
+  mkdir -p "/etc/ublue-update"
+  cp "/usr/etc/ublue-update/topgrade-user.toml" "/etc/ublue-update/topgrade-user.toml"
+fi
+
+if [[ ! -f "/etc/ublue-update/ublue-update.toml" ]]; then
+  mkdir -p "/etc/ublue-update"
+  cp "/usr/etc/ublue-update/ublue-update.toml" "/etc/ublue-update/ublue-update.toml"
+fi
+
+if [[ ! -f "/etc/ublue-update.d/system/00-system-update.py" ]]; then
+  mkdir -p "/etc/ublue-update.d/system"
+  cp "/usr/etc/ublue-update.d/system/00-system-update.py" "/etc/ublue-update.d/system/00-system-update.py"
+fi
+
 
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
