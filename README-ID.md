@@ -214,7 +214,7 @@ Baca [FAQ](https://universal-blue.discourse.group/docs?topic=33) untuk tahu apa 
 - [Panduan dual booting](https://universal-blue.discourse.group/docs?topic=129)
 - [Dokumentasi yang lain](https://universal-blue.discourse.group/docs?topic=287)
 
-Temukan dokumentasi tambahan project ini [disini](https://universal-blue.discourse.group/docs).
+Temukan dokumentasi tambahan project ini [disini](http://docs.bazzite.gg/).
 
 Cek [buletin](https://universal-blue.discourse.group/tag/bazzite-buzz) kami yang selalu update secara regular tentang proyek ini.
 
