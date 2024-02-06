@@ -421,7 +421,7 @@ También incluimos una configuración para la popular app de GitHub [Pull](https
 
 ## Únete a la Comunidad
 
-Puedes encontrarnos en el [Discord de Universal Blue (en inglés)](https://discord.gg/f8MUghG5PB) y puedes ver todo el archivo de los hilos de ayuda en nuestro [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1087140957096517672).
+Puedes encontrarnos en el [Discord de Universal Blue (en inglés)](https://discord.gg/f8MUghG5PB) y puedes ver todo el archivo de los hilos de ayuda en nuestro [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769).
 
 Discute y crea guias para los usuarios en nuestro [foro de Discourse de Universal Blue Discourse (en inglés)](https://universal-blue.discourse.group/c/bazzite/5).
 
