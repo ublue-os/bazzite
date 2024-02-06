@@ -401,7 +401,7 @@ We also ship a config for the popular [pull app](https://github.com/apps/pull) i
 
 ## Join The Community
 
-You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB) and view the archive of support threads on our [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1087140957096517672).
+You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB) and view the [archive](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769) of support threads without an account.
 
 Discuss and create user guides over at the [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
 
