@@ -183,6 +183,7 @@ jobs:
 
       - name: Get Current Fedora Version
         id: labels
+        shell: bash
         run: |
           if [[ "${{ matrix.base_name }}" == "bazzite-nvidia" ]]; then
               ver=$(skopeo inspect docker://ghcr.io/ublue-os/bazzite-${{ env.IMAGE_FLAVOR }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
@@ -190,6 +191,10 @@ jobs:
               ver=$(skopeo inspect docker://ghcr.io/ublue-os/${{ matrix.base_image_name }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
           else
               ver=$(skopeo inspect docker://ghcr.io/ublue-os/${{ matrix.base_image_name }}-${{ env.IMAGE_FLAVOR }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
+          fi
+          if [ -z "$ver" ] || [ "null" = "$ver" ]; then
+            echo "inspected image version must not be empty or null"
+            exit 1
           fi
           echo "VERSION=$ver" >> $GITHUB_OUTPUT
 
