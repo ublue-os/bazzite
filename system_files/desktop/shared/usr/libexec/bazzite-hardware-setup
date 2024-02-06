@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=29
+HWS_VER=30
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -224,6 +224,12 @@ fi
 # Set default target to graphical, fixes rebase from base image
 if grep -qv "graphical.target" <<< "$(systemctl get-default)"; then
   systemctl set-default graphical.target
+fi
+
+# Ensure file needed for topgrade is present
+if [[ ! -f "/etc/ublue-os/topgrade.toml" ]]; then
+  mkdir -p "/etc/ublue-os"
+  cp "/usr/etc/ublue-os/topgrade.toml" "/etc/ublue-os/topgrade.toml"
 fi
 
 mkdir -p /etc/bazzite
