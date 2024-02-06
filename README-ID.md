@@ -326,7 +326,7 @@ Bazzite dibuat secara penuh di Github dan membuat versi anda sendiri sangat muda
 Kami juga membawakan konfigurasi untuk [pull app](https://github.com/apps/pull) jika anda ingin fork anda selalu up to date dengan upstream. Aktifkan ini di repo anda untuk melacak perubahan dari Bazzite ketika anda membuat modifikasi anda sendiri.
 
 ## Bergabung Dengan Komunitas
-Anda bisa menemukan kami di [Discord Universal Blue](https://discord.gg/f8MUghG5PB) dan melihat arsip dari utas bantuan di [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1087140957096517672).
+Anda bisa menemukan kami di [Discord Universal Blue](https://discord.gg/f8MUghG5PB) dan melihat arsip dari utas bantuan di [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769).
 
 Berdiskusi dan membuat panduan untuk pengguna di [Forum Discourse Universal Blue](https://universal-blue.discourse.group/c/bazzite/5).
 
