@@ -238,7 +238,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 - System packages stay relatively up to date.
 - Can layer Fedora packages to the image without losing them between updates.
 - Security focused with [SELinux](https://github.com/SELinuxProject/selinux) preinstalled and configured out of the box.
-- The ability to rebase to different Fedora libostree images, if desired, without losing user data.
+- The ability to rebase to different Fedora Atomic images, if desired, without losing user data.
 - Printing support thanks to [CUPS](https://www.cups.org/) being preinstalled.
 
 ## Why
@@ -267,9 +267,8 @@ Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details
 - [Updates, Rollbacks, and Rebasing](https://universal-blue.discourse.group/docs?topic=36)
 - [Gaming Guide](https://universal-blue.discourse.group/docs?topic=31)
 - [Dual Booting Guide](https://universal-blue.discourse.group/docs?topic=129)
-- [Miscellaneous Documentation](https://universal-blue.discourse.group/docs?topic=287)
 
-Find additional documentation surrounding the project [here](http://docs.bazzite.gg/).
+View [additional documentation](http://docs.bazzite.gg/) surrounding the project.
 
 Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) that get published on a regular basis for updates on the project.
 
