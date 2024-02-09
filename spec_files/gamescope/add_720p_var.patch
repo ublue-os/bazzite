@@ -1,0 +1,24 @@
+From dab64a97b336c13c4d48a14550b72508f98cc1d4 Mon Sep 17 00:00:00 2001
+From: Sterophonick <sterophonick@gmail.com>
+Date: Wed, 17 Jan 2024 12:00:44 -0700
+Subject: [PATCH] steamcompmgr: add env var to enable/disable 720p restriction
+
+---
+ src/steamcompmgr.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index e50265c..22e9345 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -5822,7 +5822,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 			int width = xwayland_mode_ctl[ 1 ];
+ 			int height = xwayland_mode_ctl[ 2 ];
+
+-			if ( g_nOutputWidth != 1280 && width == 1280 )
++			if ( ( g_nOutputWidth != 1280 && width == 1280 ) && !getenv("GAMESCOPE_ENABLE_720P_RESTRICT") )
+ 			{
+ 				width = g_nOutputWidth;
+ 				height = g_nOutputHeight;
+--
+2.43.0

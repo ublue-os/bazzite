@@ -12,6 +12,7 @@ URL:            https://github.com/ValveSoftware/gamescope
 Source1:        stb.pc
 Source2:        chimeraos.patch
 Source3:        crashfix.patch
+Source4:        add_720p_var.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -76,6 +77,7 @@ mkdir -p pkgconfig
 cp %{SOURCE1} pkgconfig/stb.pc
 patch -Np1 < %{SOURCE2}
 patch -Np1 < %{SOURCE3}
+patch -Np1 < %{SOURCE4}
 
 %build
 cd gamescope
