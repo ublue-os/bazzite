@@ -1,8 +1,7 @@
-diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
-index dda9a30..d0ae0a4 100644
---- a/profiles/audio/avrcp.c
-+++ b/profiles/audio/avrcp.c
-@@ -1210,6 +1210,10 @@ static GList *player_list_metadata(struct avrcp_player *player)
+diff -ru bluez-5.66.orig/profiles/audio/avrcp.c bluez-5.66/profiles/audio/avrcp.c
+--- bluez-5.66.orig/profiles/audio/avrcp.c	2022-03-16 08:06:20.000000000 -0700
++++ bluez-5.66/profiles/audio/avrcp.c	2023-07-30 08:03:17.414213611 -0700
+@@ -1210,6 +1210,10 @@
  					GUINT_TO_POINTER(str_to_metadata(key)));
  	}
  
@@ -13,3 +12,4 @@ index dda9a30..d0ae0a4 100644
  	return attrs;
  }
  
+Only in bluez-5.66/profiles/audio: avrcp.c.orig

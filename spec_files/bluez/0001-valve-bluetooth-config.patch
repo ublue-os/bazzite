@@ -1,5 +1,5 @@
 diff --git a/src/main.conf b/src/main.conf
-index 085c81a..ca2abcd 100644
+index 2796f155e..f7b032b9f 100644
 --- a/src/main.conf
 +++ b/src/main.conf
 @@ -60,7 +60,7 @@
@@ -11,7 +11,7 @@ index 085c81a..ca2abcd 100644
  
  # Permanently enables the Fast Connectable setting for adapters that
  # support it. When enabled other devices can connect faster to us,
-@@ -193,8 +193,8 @@
+@@ -182,8 +182,8 @@
  
  # LE scanning parameters used for passive scanning supporting wake from suspend
  # scenarios
