@@ -14,6 +14,7 @@ Source2:        chimeraos.patch
 Source3:        crashfix.patch
 Source4:        add_720p_var.patch
 Source5:        touch_gestures_env.patch
+Source6:        legion_go.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -80,6 +81,7 @@ patch -Np1 < %{SOURCE2}
 patch -Np1 < %{SOURCE3}
 patch -Np1 < %{SOURCE4}
 patch -Np1 < %{SOURCE5}
+patch -Np1 < %{SOURCE6}
 
 %build
 cd gamescope
