@@ -79,6 +79,7 @@ cp %{SOURCE1} pkgconfig/stb.pc
 patch -Np1 < %{SOURCE2}
 patch -Np1 < %{SOURCE3}
 patch -Np1 < %{SOURCE4}
+patch -Np1 < %{SOURCE5}
 
 %build
 cd gamescope
