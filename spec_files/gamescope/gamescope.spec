@@ -13,6 +13,7 @@ Source1:        stb.pc
 Source2:        chimeraos.patch
 Source3:        crashfix.patch
 Source4:        add_720p_var.patch
+Source5:        touch_gestures_env.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
