@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=29
+HWS_VER=32
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -132,7 +132,12 @@ if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
   fi
 fi
 
-if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+if [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
+  if [[ ! $KARGS =~ "video" ]]; then
+    echo "Adding panel orientation for Steam Deck OLED"
+    NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
+  fi
+elif [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
     echo "Adding panel orientation for Lenovo Legion Go"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")
@@ -154,6 +159,11 @@ fi
 if [[ $KARGS =~ "nomodeset" ]]; then
   echo "Removing nomodeset"
   NEEDED_KARGS+=("--delete-if-present=nomodeset")
+fi
+
+if [[ ! $KARGS =~ "gpu_sched.sched_policy" ]]; then
+  echo "Fixing GPU scheduler default"
+  NEEDED_KARGS+=("--append-if-missing=gpu_sched.sched_policy=0")
 fi
 
 if [[ -n "$NEEDED_KARGS" ]]; then
@@ -226,28 +236,32 @@ if grep -qv "graphical.target" <<< "$(systemctl get-default)"; then
   systemctl set-default graphical.target
 fi
 
-# CLEAN UP
-# AMDGPU settings change that the fsync kernel now handles.
-if [[ -f "/etc/modprobe.d/amdgpu.conf" ]]; then
-  rm -f "/etc/modprobe.d/amdgpu.conf"
+# Ensure files needed for topgrade are always present
+if [[ ! -f "/etc/ublue-os/topgrade.toml" ]]; then
+  mkdir -p "/etc/ublue-os"
+  cp "/usr/etc/ublue-os/topgrade.toml" "/etc/ublue-os/topgrade.toml"
 fi
-# Controller changes are no longer needed thanks to patched xone driver.
-if [[ -f "/etc/modprobe.d/xone.conf" ]]; then
-  rm -f "/etc/modprobe.d/xone.conf"
+
+if [[ ! -f "/etc/ublue-update/topgrade-system.toml" ]]; then
+  mkdir -p "/etc/ublue-update"
+  cp "/usr/etc/ublue-update/topgrade-system.toml" "/etc/ublue-update/topgrade-system.toml"
 fi
-if [[ -f "/etc/modprobe.d/xpad-noone-blacklist.conf" ]]; then
-  rm -f "/etc/modprobe.d/xpad-noone-blacklist.conf"
+
+if [[ ! -f "/etc/ublue-update/topgrade-user.toml" ]]; then
+  mkdir -p "/etc/ublue-update"
+  cp "/usr/etc/ublue-update/topgrade-user.toml" "/etc/ublue-update/topgrade-user.toml"
 fi
-if [[ -f "/etc/modules-load.d/xpad-noone.conf" ]]; then
-  rm -f "/etc/modules-load.d/xpad-noone.conf"
+
+if [[ ! -f "/etc/ublue-update/ublue-update.toml" ]]; then
+  mkdir -p "/etc/ublue-update"
+  cp "/usr/etc/ublue-update/ublue-update.toml" "/etc/ublue-update/ublue-update.toml"
 fi
-if [[ -f "/etc/modprobe.d/xpadneo.conf" ]]; then
-  rm -f "/etc/modprobe.d/xpadneo.conf"
+
+if [[ ! -f "/etc/ublue-update.d/system/00-system-update.py" ]]; then
+  mkdir -p "/etc/ublue-update.d/system"
+  cp "/usr/etc/ublue-update.d/system/00-system-update.py" "/etc/ublue-update.d/system/00-system-update.py"
 fi
-# Previous optional solution for zenpower3 that has been replaced with zenergy.
-if [[ -f "/etc/modprobe.d/amdcpu.conf" ]]; then
-  rm -f "/etc/modprobe.d/amdcpu.conf"
-fi
+
 
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE

@@ -21,6 +21,11 @@ Patch2: power-state-adapter-property.patch
 Patch3: AVRCP_TG_MDI_BV-04-C.patch
 Patch4: 0001-valve-bluetooth-config.patch
 Patch5: 0002-valve-bluetooth-phy.patch
+Patch6: 0006-shared-gatt-Prevent-security-level-change-for-PTS-GA.patch
+Patch7: 0007-btgatt-client-Add-command-to-prevent-security-level-.patch
+Patch8: 0008-btgatt-client-Add-function-to-search-service-based-o.patch
+Patch9: 0009-btgatt-client-Add-function-to-search-characteristics.patch
+Patch10: 0010-btgatt-client-Add-function-to-search-all-primary-ser.patch
 
 BuildRequires: dbus-devel >= 1.6
 BuildRequires: glib2-devel

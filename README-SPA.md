@@ -60,7 +60,6 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - Uso del [control de congestión TCP BBR hecho por Google](https://github.com/google/bbr) por defecto.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) pre-instalado y habilitado. <sub><sup>(Disponible pero desactivado por defecto en la variante Deck, puede ser habilitado ejecutando el siguiente comando en una terminal: `ujust restore-input-remapper`)</sup></sub>
 - El portal de Bazzite (Bazzite Portal) provee una manera fácil de instalar un sin fin de aplicaciones y ajustes, incluyendo la instalación de [LACT](https://github.com/ilya-zlobintsev/LACT) (para mejor controlar tu GPU de AMD) y [GreenWithEnvy](https://gitlab.com/leinardi/gwe) (para mejor controlar tu GPU de NVIDIA).
-- Opción para instalar el gestor de paquetes [Brew](https://brew.sh/) usando el Bazzite Portal.
 - [Waydroid](https://waydro.id/) pre-instalado para correr aplicaciones de Android. Para configurarlo, usa esta [guía rápida (en inglés)](https://universal-blue.discourse.group/docs?topic=32).
 - Administra tus aplicaciones usando [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), y [Gear Lever](https://github.com/mijorus/gearlever).
 - Drivers i2c-piix4 y i2c-nct6775 de [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) incluidos para controlar las luces RGB de ciertas tarjetas madre (motherboards).
@@ -101,7 +100,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 ### Steam Deck/Computadoras para Cine en Casa (HTPCs)
 
 > \[!IMPORTANT\]\
-> Los dispositivos que **NO** son una Steam Deck también pueden utilizar las imágenes bazzite-deck, sin embargo tienen que usar una GPU de AMD o Intel, GPUs de NVIDIA no son compatibles por el momento con esta variante.
+> Los dispositivos que **NO** son una Steam Deck también pueden utilizar las imágenes `bazzite-deck`, sin embargo tienen que usar una GPU de AMD moderna, se ha confirmado que las GPUs Intel ARC tambien funcionan.
 
 Esta variante esta diseñada para usarse como una alternativa de SteamOS en la Steam Deck, e igualmente para proporcionar una experiencia como de consola de videojuegos en HTPCs y otros dispositivos portátiles, disponible como `bazzite-deck`:
 
@@ -111,7 +110,7 @@ Esta variante esta diseñada para usarse como una alternativa de SteamOS en la S
 - **Habilidad de arrancar el sistema incluso si el disco esta lleno.**
 - **Soporte para cada uno de los lenguajes directamente soportados por Fedora (upstream).**
 - **Uso del servidor gráfico Wayland en el escritorio con [soporte para Steam input](https://github.com/Supreeeme/extest).**
-- Se incluye [HHD](https://github.com/hhd-dev/hhd) y [HandyGCCS](https://github.com/ShadowBlip/HandyGCCS) para expander el soporte de los mandos de videojuegos integrados en otras computadoras handheld que no sean de Valve
+- Se incluye [HHD](https://github.com/hhd-dev/hhd) para expander el soporte de los mandos de videojuegos integrados en otras computadoras handheld que no sean de Valve
 - Incluye versiones portadas de la mayoría de los paquetes de SteamOS, incluyendo drivers, actualizadores de firmware y controladores de ventiladores [del repositorio de evlaV](https://gitlab.com/evlaV).
 - Version parchada de Mesa para controlar correctamente la tasa de fotogramas (framerate) usando Gamescope.
 - Incluye los parches de [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) por defecto, los cuales proveen soporte completo del sistema de archivos BTRFS para tarjetas SD.
@@ -234,7 +233,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvid
 > \[!WARNING\]\
 > **Debido a un bug en upstream, Bazzite no puede ser utilizado por el momento en Steam Decks con solo 64 GB de almacenamiento eMMC. Ampliar tu almacenamiento cambiando el disco interno soluciona este problema.**
 
-Si necesitas realizar un rebase a la imagen **para Steam Deck/HTPC con GPUs AMD ó Intel**, ejecuta el siguiente comando en una terminal:
+Si necesitas realizar un rebase a la imagen **para Steam Deck/HTPC con GPUs AMD modernas ó Intel ARC**, ejecuta el siguiente comando en una terminal:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:stable
@@ -293,7 +292,7 @@ Lee nuestras [preguntas frecuentes](https://universal-blue.discourse.group/docs?
 - [Guía para Configurar el Arranque Dual con Windows (Dual Boot)](https://universal-blue.discourse.group/docs?topic=129)
 - [Documentación Miscelánea](https://universal-blue.discourse.group/docs?topic=287)
 
-Puedes encontrar documentación adicional relacionada al proyecto [aquí](https://universal-blue.discourse.group/docs?category=5).
+Puedes encontrar documentación adicional relacionada al proyecto [aquí](http://docs.bazzite.gg/).
 
 Checa nuestros [boletines informativos (disponibles en español](https://universal-blue.discourse.group/tag/bazzite-buzz), estos son publicados regularmente y los cuales hablan de las últimas actualizaciones del proyecto.
 
@@ -421,7 +420,7 @@ También incluimos una configuración para la popular app de GitHub [Pull](https
 
 ## Únete a la Comunidad
 
-Puedes encontrarnos en el [Discord de Universal Blue (en inglés)](https://discord.gg/f8MUghG5PB) y puedes ver todo el archivo de los hilos de ayuda en nuestro [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1087140957096517672).
+Puedes encontrarnos en el [Discord de Universal Blue (en inglés)](https://discord.gg/f8MUghG5PB) y puedes ver todo el archivo de los hilos de ayuda en nuestro [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769).
 
 Discute y crea guias para los usuarios en nuestro [foro de Discourse de Universal Blue Discourse (en inglés)](https://universal-blue.discourse.group/c/bazzite/5).
 

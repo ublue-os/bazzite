@@ -1,5 +1,27 @@
+From d1ef0be0d84b909a88dccf28af52d5a1c0e49992 Mon Sep 17 00:00:00 2001
+From: Vicki Pfau <vi@endrift.com>
+Date: Fri, 8 Sep 2023 16:53:02 -0700
+Subject: [PATCH 2/2] Experimental patch to enable alternate Bluetooth
+ connection modes
+
+This should improve Bluetooth connectivity, especially with multiple controllers and while docked.
+
+Testing:
+sudo btmgmt
+[mgmt]# phy
+Verify that LE2MRX, LE2MTX, LECODEDRX, LECODEDTX are in the selected phys list.
+Verify that multiple controllers can connect and work well.
+
+Co-Authored-By: Rachel Blackman <rachel.blackman@synapse.com>
+---
+ src/adapter.c | 46 ++++++++++++++++++++++++++++
+ src/btd.h     |  2 ++
+ src/main.c    | 85 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/main.conf |  5 +++
+ 4 files changed, 138 insertions(+)
+
 diff --git a/src/adapter.c b/src/adapter.c
-index 8a7c53a..b941559 100644
+index 5ebfc4752..bc1e1d418 100644
 --- a/src/adapter.c
 +++ b/src/adapter.c
 @@ -86,6 +86,18 @@
@@ -58,7 +80,7 @@ index 8a7c53a..b941559 100644
  static bool pairable_timeout_handler(gpointer user_data)
  {
  	struct btd_adapter *adapter = user_data;
-@@ -10389,6 +10431,10 @@ static void read_info_complete(uint8_t status, uint16_t length,
+@@ -10387,6 +10429,10 @@ static void read_info_complete(uint8_t status, uint16_t length,
  	if (btd_adapter_get_powered(adapter))
  		adapter_start(adapter);
  
@@ -70,7 +92,7 @@ index 8a7c53a..b941559 100644
  
  failed:
 diff --git a/src/btd.h b/src/btd.h
-index b7e7ebd..2b84f7a 100644
+index b7e7ebd61..2b84f7a51 100644
 --- a/src/btd.h
 +++ b/src/btd.h
 @@ -151,6 +151,8 @@ struct btd_opts {
@@ -83,10 +105,10 @@ index b7e7ebd..2b84f7a 100644
  
  extern struct btd_opts btd_opts;
 diff --git a/src/main.c b/src/main.c
-index cddf139..1f3301b 100644
+index 2134fcf75..700c83c78 100644
 --- a/src/main.c
 +++ b/src/main.c
-@@ -128,6 +128,7 @@ static const char *le_options[] = {
+@@ -127,6 +127,7 @@ static const char *le_options[] = {
  	"AdvMonAllowlistScanDuration",
  	"AdvMonNoFilterScanDuration",
  	"EnableAdvMonInterleaveScan",
@@ -94,7 +116,7 @@ index cddf139..1f3301b 100644
  	NULL
  };
  
-@@ -182,10 +183,32 @@ static const struct group_table {
+@@ -180,10 +181,32 @@ static const struct group_table {
  	{ }
  };
  
@@ -127,7 +149,7 @@ index cddf139..1f3301b 100644
  static int8_t check_sirk_alpha_numeric(char *str)
  {
  	int8_t val = 0;
-@@ -226,6 +249,54 @@ static size_t hex2bin(const char *hexstr, uint8_t *buf, size_t buflen)
+@@ -224,6 +247,54 @@ static size_t hex2bin(const char *hexstr, uint8_t *buf, size_t buflen)
  	return len;
  }
  
@@ -182,7 +204,7 @@ index cddf139..1f3301b 100644
  GKeyFile *btd_get_main_conf(void)
  {
  	return main_conf;
-@@ -678,6 +749,20 @@ static void parse_le_config(GKeyFile *config)
+@@ -674,6 +745,20 @@ static void parse_le_config(GKeyFile *config)
  		return;
  
  	parse_mode_config(config, "LE", params, ARRAY_SIZE(params));
@@ -204,10 +226,10 @@ index cddf139..1f3301b 100644
  
  static bool match_experimental(const void *data, const void *match_data)
 diff --git a/src/main.conf b/src/main.conf
-index ca2abcd..cd535e1 100644
+index cb9b241df..c086a17d0 100644
 --- a/src/main.conf
 +++ b/src/main.conf
-@@ -231,6 +231,11 @@ ScanWindowSuspend=224
+@@ -231,6 +231,11 @@ MultiProfile = multiple
  # Defaults to 1
  #EnableAdvMonInterleaveScan=
  
@@ -219,3 +241,6 @@ index ca2abcd..cd535e1 100644
  [GATT]
  # GATT attribute cache.
  # Possible values:
+-- 
+2.41.0
+
