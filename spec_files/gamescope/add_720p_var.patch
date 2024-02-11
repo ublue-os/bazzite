@@ -26,7 +26,7 @@ index 00c00e9..795898c 100644
  			int height = xwayland_mode_ctl[ 2 ];
 
 -			if ( g_nOutputWidth != 1280 && width == 1280 )
-+			if ( g_nOutputWidth != 1280 && width == 1280 && !env_to_bool( getenv("GAMESCOPE_ENABLE_720P_RESTRICT") ) )
++			if ( g_nOutputWidth != 1280 && width == 1280 && !env_to_bool(getenv("GAMESCOPE_ENABLE_720P_RESTRICT")) )
  			{
  				width = g_nOutputWidth;
  				height = g_nOutputHeight;
