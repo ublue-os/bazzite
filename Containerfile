@@ -299,6 +299,7 @@ RUN rpm-ostree install \
     wget https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer -O /usr/share/thumbnailers/exe-thumbnailer.thumbnailer
 
 # Install Steam & Lutris, plus supporting packages
+# Remove Feral gamemode, System76 Scheduler supersedes this
 RUN rpm-ostree install \
         at-spi2-core.i686 \
         atk.i686 \
@@ -364,6 +365,14 @@ RUN rpm-ostree install \
         rpm-ostree install \
             obs-vkcapture.x86_64 \
             obs-vkcapture.i686 \
+    ; fi && \
+    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
+        rpm-ostree override remove \
+            gamemode \
+    ; else \
+        rpm-ostree override remove \
+            gamemode \
+            gnome-shell-extension-gamemode \
     ; fi && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/winetricks.desktop && \
     ln -s /usr/bin/wine64 /usr/bin/wine && \
@@ -657,22 +666,13 @@ RUN rpm-ostree override replace \
 
 # Install Gamescope Session & Supporting changes
 # Add bootstraplinux_ubuntu12_32.tar.xz used by gamescope-session (Thanks ChimeraOS! - https://chimeraos.org/)
-# Remove Feral gamemode, System76-Scheduler supersedes this
 RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/steam-jupiter-stable-1.0.0.78-1.2-x86_64.pkg.tar.zst -O /tmp/steam-jupiter.pkg.tar.zst && \
     mkdir -p /usr/etc/first-boot && \
     tar -I zstd -xvf /tmp/steam-jupiter.pkg.tar.zst usr/lib/steam/bootstraplinux_ubuntu12_32.tar.xz -O > /usr/etc/first-boot/bootstraplinux_ubuntu12_32.tar.xz && \
     rm -f /tmp/steam-jupiter.pkg.tar.zst && \
     rpm-ostree install \
         gamescope-session-plus \
-        gamescope-session-steam && \
-    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        rpm-ostree override remove \
-            gamemode \
-    ; else \
-        rpm-ostree override remove \
-            gamemode \
-            gnome-shell-extension-gamemode \
-    ; fi
+        gamescope-session-steam
 
 # Cleanup & Finalize
 COPY system_files/shared /

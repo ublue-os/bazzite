@@ -60,8 +60,13 @@ if command -v ublue-update > /dev/null; then
       echo 100%
     }
     upgrade() {
+      # Log rotate the last session
+      if [ -f "${HOME}"/.steamos-update.log ]; then
+          cp "${HOME}"/.steamos-update.log "${HOME}"/.steamos-update.log.old
+      fi
+
       # Pull exit code from ublue-update
-      systemctl start ublue-update-force > /dev/null 2>&1
+      systemctl start ublue-update-force > "${HOME}"/.steamos-update.log 2>&1
       echo $? > /tmp/upgrade-check
     }
     upgrade | fake_progress
