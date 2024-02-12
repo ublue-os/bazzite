@@ -392,10 +392,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree override remove \
         plasma-welcome \
         qt5-qdbusviewer && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:prompt \
-        libadwaita && \
     rpm-ostree install \
         steamdeck-kde-presets-desktop \
         wallpaper-engine-kde-plugin \
