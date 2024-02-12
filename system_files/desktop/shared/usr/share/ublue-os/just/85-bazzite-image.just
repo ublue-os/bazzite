@@ -53,8 +53,9 @@ enable-vfio:
 
 # Add SELinux file context for default looking-glass shm file so that libvirt can create it when needed
 selinux-looking-glass:
-    sudo tee << 'LOOKING_GLASS_TMP' > /etc/tmpfiles.d/10-looking-glass.conf
+    #!/usr/bin/bash
+    sudo bash -c "tee << LOOKING_GLASS_TMP > /etc/tmpfiles.d/10-looking-glass.conf
     # Type Path               Mode UID  GID Age Argument
     f /dev/shm/looking-glass 0660 1000 qemu -
-    LOOKING_GLASS_TMP
+    LOOKING_GLASS_TMP"
     sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
