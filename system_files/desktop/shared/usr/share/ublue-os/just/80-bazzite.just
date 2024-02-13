@@ -314,7 +314,7 @@ install-opentabletdriver:
 setup-virtual-channels:
     #!/bin/bash
     mkdir -p ~/.config/pipewire/pipewire.conf.d
-    cat << 'EOL' > ~/.config/pipewire/pipewire.conf.d/virtual-channels.conf
+    bash -c 'cat << EOL > ~/.config/pipewire/pipewire.conf.d/virtual-channels.conf
     context.modules = [
         { name = libpipewire-module-loopback
             args = {
@@ -377,7 +377,7 @@ setup-virtual-channels:
             }
         }
     ]
-    EOL
+    EOL'
     echo "Next time you log in, you will have audio channels for Game, Voice, Browser, Music that you can route game audio to"
     echo "using programs like qpwgraph, helvum or carla."
     echo "You can also add these channels to OBS audio mixer for separate audio control for yourself and your viewers."
@@ -395,7 +395,7 @@ setup-virtual-surround-71:
     mkdir -p ~/.config/pipewire/hrir_hesuvi
     echo "Downloading HeSuVi convolver profile Control Room 1 from https://github.com/ShanonPearce/ASH-Listening-Set"
     wget -O ~/.config/pipewire/hrir_hesuvi/Control_Room_1.wav https://github.com/ShanonPearce/ASH-Listening-Set/raw/main/HeSuVi/hrir/_Control_Room_1.wav
-    cat << HESUVI > ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf
+    bash -c 'cat << HESUVI > ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf
     context.modules = [
         { name = libpipewire-module-filter-chain
             flags = [ nofail ]
@@ -494,7 +494,7 @@ setup-virtual-surround-71:
             }
         }
     ]
-    HESUVI
+    HESUVI'
     echo "Virtual Surround 7.1 has now been set up with a basic convolver file, either restart pipewire or reboot for it to take effect."
     echo "Then select the Virtual Surround 7.1 audio output as your default audio output."
     echo "If you want something like DTS, Atmos or OpenAL, you will have to acquire those convolver wav files yourself and edit ~/.config/pipewire/pipewire.conf.d/virtual-surround.conf to point to the one you want to use."
