@@ -44,7 +44,7 @@ enable-vfio:
         echo "VFIO will be enabled on next boot, make sure you enable IOMMU, VT-d or AMD-v in your BIOS!"
         echo "Please understand that since this is such a niche use case, support will be very limited!"
         echo "To add your unused/second GPU device ids to the vfio driver by running"
-        echo 'rpm-ostree kargs --append-if-missing="vfio-pci.ids=xxxx:yyyy,xxxx:yyzz"'
+        echo 'rpm-ostree kargs --append-if-missing="vfio_pci.ids=xxxx:yyyy,xxxx:yyzz"'
         echo "NOTE: Your second GPU will not be usable by the host after you do this!"
       fi
     else
