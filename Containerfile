@@ -245,6 +245,7 @@ RUN rpm-ostree install \
         tuned-profiles-atomic \
         tuned-profiles-cpu-partitioning \
         powertop \
+        joystickwake \
         hl2linux-selinux \
         joycond \
         ladspa-caps-plugins \
