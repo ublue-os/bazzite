@@ -91,6 +91,7 @@ process-scheduler enable=true {
         hhd
         input-remapper-service
         ionice
+        joystickwake
         mangoapp
         nice
         otd-daemon
