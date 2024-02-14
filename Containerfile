@@ -386,7 +386,12 @@ RUN rpm-ostree install \
     wget https://raw.githubusercontent.com/KyleGospo/LatencyFleX-Installer/main/install.sh -O /usr/bin/latencyflex && \
     sed -i 's@/usr/lib/wine/@/usr/lib64/wine/@g' /usr/bin/latencyflex && \
     sed -i 's@"dxvk.conf"@"/usr/share/latencyflex/dxvk.conf"@g' /usr/bin/latencyflex && \
-    chmod +x /usr/bin/latencyflex
+    chmod +x /usr/bin/latencyflex && \
+    wget $(curl https://api.github.com/repos/vosen/ZLUDA/releases/latest | jq -r '.assets[] | select(.name| test(".*-linux.tar.gz$")).browser_download_url') -O /tmp/zluda.tar.gz && \
+    mkdir -p /tmp/zluda && \
+    tar --strip-components 1 -xvzf /tmp/zluda.tar.gz -C /tmp/zluda && \
+    mv /tmp/zluda /usr/lib64/zluda && \
+    rm -f /tmp/zluda.tar.gz
 
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
@@ -766,11 +771,20 @@ RUN wget https://raw.githubusercontent.com/ublue-os/nvidia/main/install.sh -O /t
     chmod +x /tmp/nvidia-install.sh && IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-install.sh && \
     chmod +x /tmp/nvidia-post-install.sh && IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-post-install.sh
 
+# Install Explicit Sync Patches
+RUN wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nvidia-explicit-sync/repo/fedora-$(rpm -E %fedora)/gloriouseggroll-nvidia-explicit-sync-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
+        xorg-x11-server-Xwayland
+
 # Cleanup & Finalize
 RUN rm -rf \
         /tmp/* \
         /var/* && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
+    rm -rf /usr/lib64/zluda && \
     echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp && \
