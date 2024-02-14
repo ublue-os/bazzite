@@ -386,7 +386,12 @@ RUN rpm-ostree install \
     wget https://raw.githubusercontent.com/KyleGospo/LatencyFleX-Installer/main/install.sh -O /usr/bin/latencyflex && \
     sed -i 's@/usr/lib/wine/@/usr/lib64/wine/@g' /usr/bin/latencyflex && \
     sed -i 's@"dxvk.conf"@"/usr/share/latencyflex/dxvk.conf"@g' /usr/bin/latencyflex && \
-    chmod +x /usr/bin/latencyflex
+    chmod +x /usr/bin/latencyflex && \
+    wget $(curl https://api.github.com/repos/vosen/ZLUDA/releases/latest | jq -r '.assets[] | select(.name| test(".*-linux.tar.gz$")).browser_download_url') -O /tmp/zluda.tar.gz && \
+    mkdir -p /tmp/zluda && \
+    tar --strip-components 1 -xvzf /tmp/zluda.tar.gz -C /tmp/zluda && \
+    mv /tmp/zluda /usr/lib64/zluda && \
+    rm -f /tmp/zluda.tar.gz
 
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
@@ -778,6 +783,7 @@ RUN rm -rf \
         /var/* && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
+    rm -rf /usr/lib64/zluda && \
     echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp && \
