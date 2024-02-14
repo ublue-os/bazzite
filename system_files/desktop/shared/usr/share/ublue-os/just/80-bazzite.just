@@ -266,29 +266,48 @@ enable-vfio:
       echo "Enable virtualization with ujust enable-virtualization before running ujust enable-vfio."
     fi
 
-# Enable watchdog (default, recovers the system in the event of a malfunction, possible impact to performance due to interrupts)
-enable-watchdog:
-    #!/usr/bin/bash
+# Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
+configure-watchdog ACTION="":
+    #!/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    WATCHDOG_STATE="$(rpm-ostree kargs)"
     CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
-    WATCHDOG_KARGS="--delete-if-present=nowatchdog"
-    if [[ "$CPU_MODEL" =~ "Intel" ]]; then
-      WATCHDOG_KARGS="$WATCHDOG_KARGS --delete-if-present=modprobe.blacklist=iTCO_wdt"
-    elif [[ "$CPU_MODEL" =~ "AMD" ]]; then
-      WATCHDOG_KARGS="$WATCHDOG_KARGS --delete-if-present=modprobe.blacklist=sp5100_tco"
+    OPTION={{ ACTION }}
+    if [[ "$WATCHDOG_STATE" =~ (nowatchdog|modprobe\.blacklist=(iTCO_wdt|sp5100_tco)) ]]; then
+        WATCHDOG_STATE="${red}${b}Disabled${n}"
+    else
+        WATCHDOG_STATE="${green}${b}Enabled${n}"
     fi
-    rpm-ostree kargs $WATCHDOG_KARGS
-
-# Disable watchdog (potential performance improvement due to fewer interrupts)
-disable-watchdog:
-    #!/usr/bin/bash
-    CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
-    WATCHDOG_KARGS="--append-if-missing=nowatchdog"
-    if [[ "$CPU_MODEL" =~ "Intel" ]]; then
-      WATCHDOG_KARGS="$WATCHDOG_KARGS --append-if-missing=modprobe.blacklist=iTCO_wdt"
-    elif [[ "$CPU_MODEL" =~ "AMD" ]]; then
-      WATCHDOG_KARGS="$WATCHDOG_KARGS --append-if-missing=modprobe.blacklist=sp5100_tco"
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust configure-watchdog <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'enable' to select Enable Watchdog"
+      echo "  Use 'disable' to select Disable Watchdog"
+      exit 0
+    elif [ "$OPTION" == "" ]; then
+      echo "${bold}Watchdog configuration${normal}"
+      echo "Having the watchdog enabled will let it recover the system in the event of a malfunction, however"
+      echo "disabling the watchdog can give a potential performance improvement due to fewer interrupts"
+      echo "Watchdog is $WATCHDOG_STATE"
+      OPTION=$(Choose "Enable Watchdog" "Disable Watchdog")
     fi
-    rpm-ostree kargs $WATCHDOG_KARGS
+    if [[ "$OPTION" =~ ^enable ]]; then
+      WATCHDOG_KARGS="--delete-if-present=nowatchdog"
+      if [[ "$CPU_MODEL" =~ "Intel" ]]; then
+        WATCHDOG_KARGS="$WATCHDOG_KARGS --delete-if-present=modprobe.blacklist=iTCO_wdt"
+      elif [[ "$CPU_MODEL" =~ "AMD" ]]; then
+        WATCHDOG_KARGS="$WATCHDOG_KARGS --delete-if-present=modprobe.blacklist=sp5100_tco"
+      fi
+      rpm-ostree kargs $WATCHDOG_KARGS
+    elif [[ "$OPTION" =~ ^disable ]]; then
+      WATCHDOG_KARGS="--append-if-missing=nowatchdog"
+      if [[ "$CPU_MODEL" =~ "Intel" ]]; then
+        WATCHDOG_KARGS="$WATCHDOG_KARGS --append-if-missing=modprobe.blacklist=iTCO_wdt"
+      elif [[ "$CPU_MODEL" =~ "AMD" ]]; then
+        WATCHDOG_KARGS="$WATCHDOG_KARGS --append-if-missing=modprobe.blacklist=sp5100_tco"
+      fi
+      rpm-ostree kargs $WATCHDOG_KARGS
+    fi
 
 # Install Oversteer for Logitech steering wheels
 install-oversteer: distrobox-check-fedora
