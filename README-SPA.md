@@ -256,7 +256,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 - Los paquetes del sistema se mantienen relativamente actualizados a su última versión.
 - Puedes instalar paquetes de Fedora en capas (layered) sin que se pierdan entre actualizaciones.
 - Enfocado en seguridad con [SELinux](https://github.com/SELinuxProject/selinux) pre-instalado y configurado fuera de la caja.
-- La habilidad de cambiar de base (rebase) de una imagen libostree de Fedora, si así se desea, sin perder datos del usuario.
+- La habilidad de cambiar de base (rebase) de una imagen atómica de Fedora, si así se desea, sin perder datos del usuario.
 - Soporte para impresoras gracias a que el servidor de impresión [CUPS](https://www.cups.org/) viene pre-instalado.
 
 ## ¿Por qué?
@@ -317,6 +317,7 @@ Todos los paquetes que son porteados de SteamOS, ChimeraOS u otros que son utilz
 | [gnome-shell-extension-caribou-blocker](https://extensions.gnome.org/extension/1326/block-caribou/) | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-caribou-blocker/status_image/last_build.png?)       |
 | [gnome-shell-extension-hanabi](https://github.com/jeffshee/gnome-ext-hanabi)                        | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-hanabi/status_image/last_build.png?)                |
 | [gnome-shell-extension-compiz-windows-effect](https://github.com/hermes83/compiz-windows-effect)    | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/gnome-shell-extension-compiz-windows-effect/status_image/last_build.png?) |
+| [joystickwake](https://github.com/foresto/joystickwake)                                             | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/joystickwake/status_image/last_build.png?)                                |
 | jupiter-fan-control                                                                                 | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/jupiter-fan-control/status_image/last_build.png?)                         |
 | jupiter-hw-support-[btrfs](https://gitlab.com/popsulfr/steamos-btrfs)                               | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/jupiter-hw-support-btrfs/status_image/last_build.png?)                    |
 | [mangohud](https://github.com/flightlessmango/MangoHud)                                             | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/package/mangohud/status_image/last_build.png?)                           |
@@ -369,6 +370,8 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 ```
 
 ## Arranque Seguro (Secure Boot)
+
+**ADVERTENCIA:** ¡Los usuarios de la Steam Deck **NO** deben activar Secure Boot o registrar nuestras llaves digitales!
 
 El Arranque Seguro (Secure Boot) tiene soporte gracias a nuestra llave digital personalizada. La llave pública puede encontrarse en la raíz de [este](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der) repositorio.
 
