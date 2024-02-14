@@ -88,8 +88,12 @@ setup-sunshine ACTION="":
       ublue-update --wait
       rpm-ostree remove -y sunshine
       echo "Sunshine has been uninstalled."
-    elif [[ "${OPTION,,}" =~ ^autostart ]]; then
-      systemctl enable --user --now sunshine.service
+    elif [[ "${OPTION,,}" =~ autostart ]]; then
+      if [[ "${SERVICE_STATE,,}" =~ disabled ]]; then
+        systemctl enable --user --now sunshine.service
+      else
+        systemctl disable --user --now sunshine.service 
+      fi
     fi
 
 # Install LACT for overclocking & undervolting AMD GPUs
