@@ -24,6 +24,8 @@ install-lact:
     rm /tmp/lact.rpm
     echo 'Complete.'
 
+alias get-steamcmd := install-steamcmd
+
 # Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD)
 install-steamcmd:
     echo 'Installing SteamCMD...'
@@ -42,6 +44,8 @@ install-openrazer:
     ; fi && \
     sudo usermod -a -G plugdev $USER && \
     echo "Please reboot to apply needed changes."
+
+alias get-wootility := install-wootility
 
 # Install Wootility for configuring Wooting Keyboards
 install-wootility:
