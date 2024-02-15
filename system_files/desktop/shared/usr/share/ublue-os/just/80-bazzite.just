@@ -183,28 +183,54 @@ install-adwaita-for-steam:
 pstate-force-enable:
     rpm-ostree kargs --append-if-missing=amd_pstate=active
 
-# Set system to boot without showing the grub screen with options
-hide-grub:
-    #!/usr/bin/bash
-    sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
-    echo 'GRUB_TIMEOUT_STYLE=hidden' | sudo tee -a /etc/default/grub 1>/dev/null
-    echo 'GRUB_HIDDEN_TIMEOUT=1' | sudo tee -a /etc/default/grub 1>/dev/null
-    if [ -d /sys/firmware/efi ]; then
-      sudo grub2-mkconfig -o /etc/grub2-efi.cfg
+# Configure grub bootmenu visibility and fix duplicate entries
+configure-grub ACTION="":
+    #!/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    GRUB_STATE="$(grep -P "^GRUB_TIMEOUT_STYLE=hidden" /etc/default/grub)"
+    OPTION={{ ACTION }}
+    if [ "$GRUB_STATE" == "GRUB_TIMEOUT_STYLE=hidden" ]; then
+        GRUB_STATE="${b}Hidden${n}"
     else
-      sudo grub2-mkconfig -o /etc/grub2.cfg
+        GRUB_STATE="${b}Not Hidden${n}"
     fi
-
-# Set system to boot with the grub screen showing options (Default)
-unhide-grub:
-    #!/usr/bin/bash
-    sudo sed -i '/GRUB_HIDDEN_TIMEOUT=1/d' /etc/default/grub
-    sudo sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub
-    sudo sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=5/g' /etc/default/grub
-    if [ -d /sys/firmware/efi ]; then
-      sudo grub2-mkconfig -o /etc/grub2-efi.cfg
-    else
-      sudo grub2-mkconfig -o /etc/grub2.cfg
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust configure-grub <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'hide' to select Hide Grub"
+      echo "  Use 'unhide' to select Unhide Grub"
+      echo "  Use 'fix' to select Fix double ostree entry"
+      exit 0
+    elif [ "$OPTION" == "" ]; then
+      echo "${bold}Grub menu configuration${normal}"
+      echo "Grub menu is set to: $GRUB_STATE"
+      OPTION=$(Choose "Hide Grub" "Unhide Grub" "Fix double ostree entry")
+    fi
+    if [[ "${OPTION,,}" =~ ^hide ]]; then
+      sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
+      echo 'GRUB_TIMEOUT_STYLE=hidden' | sudo tee -a /etc/default/grub 1>/dev/null
+      echo 'GRUB_HIDDEN_TIMEOUT=1' | sudo tee -a /etc/default/grub 1>/dev/null
+      if [ -d /sys/firmware/efi ]; then
+        sudo grub2-mkconfig -o /etc/grub2-efi.cfg
+      else
+        sudo grub2-mkconfig -o /etc/grub2.cfg
+      fi
+    elif [[ "${OPTION,,}" =~ ^unhide ]]; then
+      sudo sed -i '/GRUB_HIDDEN_TIMEOUT=1/d' /etc/default/grub
+      sudo sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub
+      sudo sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=5/g' /etc/default/grub
+      if [ -d /sys/firmware/efi ]; then
+        sudo grub2-mkconfig -o /etc/grub2-efi.cfg
+      else
+        sudo grub2-mkconfig -o /etc/grub2.cfg
+      fi
+    elif [[ "${OPTION,,}" =~ ^fix ]]; then
+      sudo grub2-switch-to-blscfg
+      if [ -d /sys/firmware/efi ]; then
+        sudo grub2-mkconfig -o /etc/grub2-efi.cfg
+      else
+        sudo grub2-mkconfig -o /etc/grub2.cfg
+      fi
     fi
 
 # Add user to "input" group required by certain controller drivers
