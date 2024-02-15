@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+WAYDROID_USER=$1
+
+sudo umount /var/home/$WAYDROID_USER/.local/share/waydroid/data/media/0/WaydroidShare

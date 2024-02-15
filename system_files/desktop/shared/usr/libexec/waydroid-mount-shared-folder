@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+
+WAYDROID_USER=$1
+WAYDROID_SHARE_PATH=/var/home/$WAYDROID_USER/.local/share/waydroid/data/media/0/WaydroidShare
+
+sudo mkdir -p $WAYDROID_SHARE_PATH
+
+sudo mount --bind /var/home/$WAYDROID_USER/WaydroidShare $WAYDROID_SHARE_PATH

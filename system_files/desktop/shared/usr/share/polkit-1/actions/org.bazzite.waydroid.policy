@@ -38,4 +38,26 @@
     </defaults>
     <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/waydroid-fix-controllers</annotate>
   </action>
+
+  <action id="org.bazzite.policykit.waydroid.mount.shared.folder">
+    <description>Mount Shared Folder in Waydroid</description>
+    <icon_name>package-x-generic</icon_name>
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/waydroid-mount-shared-folder</annotate>
+  </action>
+
+  <action id="org.bazzite.policykit.waydroid.unmount.shared.folder">
+    <description>Unmount Shared Folder in Waydroid</description>
+    <icon_name>package-x-generic</icon_name>
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/waydroid-unmount-shared-folder</annotate>
+  </action>
 </policyconfig>

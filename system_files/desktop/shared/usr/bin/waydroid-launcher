@@ -25,6 +25,11 @@ done
 sleep 10
 pkexec /usr/libexec/waydroid-fix-controllers
 
+mkdir -p /var/home/$USER/WaydroidShare
+
+# mount must happen after container is already running
+pkexec /usr/libexec/waydroid-mount-shared-folder $USER
+
 # Waydroid is now live!
 # Wait for exit and then clean up
 while [ -n "$(pgrep cage)" ]; do
@@ -32,3 +37,5 @@ while [ -n "$(pgrep cage)" ]; do
 done
 
 pkexec /usr/libexec/waydroid-container-stop
+
+pkexec /usr/libexec/waydroid-unmount-shared-folder $USER
