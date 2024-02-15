@@ -28,26 +28,6 @@ install-gamemode-video:
     rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
     ln -s /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
 
-# Remove all waydroid-related files in your user folders
-reset-waydroid:
-    bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
-
-# Quickly initialize a waydroid image
-init-waydroid:
-    #!/usr/bin/bash
-    sudo waydroid init -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor'
-
-# Launch Waydroid configuration helper
-configure-waydroid:
-    #!/usr/bin/bash
-    git clone https://github.com/ublue-os/waydroid_script.git --depth 1 /tmp/waydroid_script
-    python -m venv /tmp/waydroid_script/venv
-    source /tmp/waydroid_script/venv/bin/activate
-    sudo pip install -r /tmp/waydroid_script/requirements.txt
-    sudo /tmp/waydroid_script/main.py
-    deactivate
-    sudo rm -rf /tmp/waydroid_script
-
 # Patch a bug in some 32-bit Source 1.x titles that causes them to crash at startup
 patch-source1-tcmalloc:
     #!/usr/bin/bash
