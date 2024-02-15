@@ -214,7 +214,7 @@ jobs:
       # Build image using Buildah action
       - name: Build Image
         id: build_image
-        uses: redhat-actions/buildah-build@v2
+        uses: ublue-os/buildah-build@v3
         with:
           containerfiles: |
             ./Containerfile
@@ -234,6 +234,7 @@ jobs:
           oci: false
           extra-args: |
             --target=${{ matrix.base_name }}
+            --layers=true
 
       - name: Sign kernel
         uses: EyeCantCU/kernel-signer@v0.1.3
