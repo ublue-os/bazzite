@@ -43,7 +43,6 @@ install-openrazer:
     sudo usermod -a -G plugdev $USER && \
     echo "Please reboot to apply needed changes."
 
-
 # Install Wootility for configuring Wooting Keyboards
 get-wootility:
     #!/usr/bin/bash
@@ -112,3 +111,12 @@ install-opentabletdriver:
     systemctl enable --user --now arch-opentabletdriver.service && \
     distrobox enter -n arch -- 'distrobox-export --app otd-gui'
 
+# Create fedora distrobox if it doesn't exist
+[private]
+distrobox-check-fedora:
+    #!/bin/env bash
+    source /usr/lib/ujust/ujust.sh
+    if grep -qvz "fedora" <<< $(distrobox list); then
+      echo "Setting up Fedora distrobox"
+      Assemble noconfirmcreate "" "fedora"
+    fi

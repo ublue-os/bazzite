@@ -151,13 +151,3 @@ configure-watchdog ACTION="":
       fi
       rpm-ostree kargs $WATCHDOG_KARGS
     fi
-
-# Create fedora distrobox if it doesn't exist
-[private]
-distrobox-check-fedora:
-    #!/bin/env bash
-    source /usr/lib/ujust/ujust.sh
-    if grep -qvz "fedora" <<< $(distrobox list); then
-      echo "Setting up Fedora distrobox"
-      Assemble noconfirmcreate "" "fedora"
-    fi
