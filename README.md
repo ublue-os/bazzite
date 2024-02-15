@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/>
+  <a href="https://bazzite.gg/"><img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
