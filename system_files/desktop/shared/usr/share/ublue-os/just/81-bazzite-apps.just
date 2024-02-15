@@ -25,7 +25,7 @@ install-lact:
     echo 'Complete.'
 
 # Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD)
-get-steamcmd:
+install-steamcmd:
     echo 'Installing SteamCMD...'
     wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O /tmp/steamcmd.tar.gz
     mkdir -p ~/.steam
@@ -44,7 +44,7 @@ install-openrazer:
     echo "Please reboot to apply needed changes."
 
 # Install Wootility for configuring Wooting Keyboards
-get-wootility:
+install-wootility:
     #!/usr/bin/bash
     if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
       wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Downloads/wootility.AppImage
