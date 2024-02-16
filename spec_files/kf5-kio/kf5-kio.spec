@@ -12,7 +12,7 @@ URL:     https://invent.kde.org/frameworks/%{framework}
 
 %global majmin %majmin_ver_kf5
 %global stable %stable_kf5
-Source0: http://download.kde.org/%{stable}/frameworks/%{majmin}/%{framework}-%{version}.tar.xz
+Source0: https://download.kde.org/%{stable}/frameworks/%{majmin}/%{framework}-%{version}.tar.xz
 
 ## upstream patches (lookaside)
 # https://invent.kde.org/frameworks/kio/-/merge_requests/1536
