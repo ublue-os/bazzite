@@ -3,16 +3,15 @@
 %bcond kf6_compat %[0%{?fedora} >= 40 || 0%{?rhel} >= 10]
 
 Name:    kf5-%{framework}
-Version: 5.113.0
+%global  majmin 5.113
+Version: %{majmin}.0
 Release: 2%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: KDE Frameworks 5 Tier 3 solution for filesystem abstraction
 
 License: BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LicenseRef-KDE-Accepted-GPL AND LicenseRef-KDE-Accepted-LGPL AND MIT
 URL:     https://invent.kde.org/frameworks/%{framework}
 
-%global majmin %majmin_ver_kf5
-%global stable %stable_kf5
-Source0: https://download.kde.org/%{stable}/frameworks/%{majmin}/%{framework}-%{version}.tar.xz
+Source0: https://download.kde.org/stable/frameworks/%{majmin}/%{framework}-%{version}.tar.xz
 
 ## upstream patches (lookaside)
 # https://invent.kde.org/frameworks/kio/-/merge_requests/1536
