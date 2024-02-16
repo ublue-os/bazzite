@@ -4,7 +4,6 @@ on:
     - cron: '40 16 * * 2,5' # 16:40 utc tues thurs
   pull_request:
     branches:
-      - main
       - testing
       - unstable
     paths-ignore:
@@ -16,7 +15,6 @@ on:
       - 'press_kit/**'
   push:
     branches:
-      - main
       - testing
       - unstable
     paths-ignore:

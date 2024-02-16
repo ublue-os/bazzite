@@ -354,7 +354,8 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## Secure Boot
 
-**Warning:** Steam Deck users should **NOT** turn on Secure Boot or enroll our keys!
+> [!WARNING]  
+> **Steam Deck Users: The Steam Deck does not come with secure boot enabled and does not ship with any keys enrolled by default. Do not enable this unless you absolutely know what you're doing.**
 
 Secure boot is supported with our custom key. The pub key can be found in the root of this repository [here](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der).
 If you'd like to enroll this key prior to installation or rebase, download the key and run the following:
