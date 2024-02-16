@@ -1,0 +1,10 @@
+diff -up kio-5.50.0/src/ioslaves/CMakeLists.txt.no-help-protocol kio-5.50.0/src/ioslaves/CMakeLists.txt
+--- kio-5.50.0/src/ioslaves/CMakeLists.txt.no-help-protocol	2018-09-20 15:52:32.993328851 -0400
++++ kio-5.50.0/src/ioslaves/CMakeLists.txt	2018-09-20 15:52:40.006176294 -0400
+@@ -1,6 +1,5 @@
+ 
+ add_subdirectory( file )
+-add_subdirectory( help )
+ add_subdirectory( http )
+ add_subdirectory( ftp )
+ add_subdirectory( telnet )

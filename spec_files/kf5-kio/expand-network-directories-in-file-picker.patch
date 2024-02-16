@@ -1,0 +1,30 @@
+From af3af80d30025711574d1ca450dc0aed9d44d7fd Mon Sep 17 00:00:00 2001
+From: Alessandro Astone <ales.astone@gmail.com>
+Date: Wed, 10 Jan 2024 22:18:58 +0100
+Subject: [PATCH] KDirModel: Allow expanding network directories in file picker
+ again
+
+Closes: https://invent.kde.org/frameworks/kio/-/issues/29
+
+BUG: 479531
+---
+ src/widgets/kdirmodel.cpp | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/src/widgets/kdirmodel.cpp b/src/widgets/kdirmodel.cpp
+index c274256811..9dbd8e3e9e 100644
+--- a/src/widgets/kdirmodel.cpp
++++ b/src/widgets/kdirmodel.cpp
+@@ -1329,8 +1329,7 @@ bool KDirModel::canFetchMore(const QModelIndex &parent) const
+ 
+     KDirModelNode *node = static_cast<KDirModelNode *>(parent.internalPointer());
+     const KFileItem &item = node->item();
+-    return item.isDir() && !static_cast<KDirModelDirNode *>(node)->isOnNetwork() && !static_cast<KDirModelDirNode *>(node)->isPopulated()
+-        && static_cast<KDirModelDirNode *>(node)->m_childNodes.isEmpty();
++    return item.isDir() && !static_cast<KDirModelDirNode *>(node)->isPopulated() && static_cast<KDirModelDirNode *>(node)->m_childNodes.isEmpty();
+ }
+ 
+ void KDirModel::fetchMore(const QModelIndex &parent)
+-- 
+GitLab
+

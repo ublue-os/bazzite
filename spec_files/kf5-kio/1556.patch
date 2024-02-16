@@ -1,0 +1,57 @@
+From 73e8c790f08dba536a5cf4e56c9dd4f3a68d16cd Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20Dr=C3=B6gehoff?= <sentrycraft123@gmail.com>
+Date: Thu, 15 Feb 2024 14:38:21 +0100
+Subject: [PATCH] Improve discrete GPU detection using switcheroo-control
+
+---
+ src/gui/gpudetection.cpp | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+
+diff --git a/src/gui/gpudetection.cpp b/src/gui/gpudetection.cpp
+index 5c4e1c60ac..492e3654da 100644
+--- a/src/gui/gpudetection.cpp
++++ b/src/gui/gpudetection.cpp
+@@ -62,6 +62,40 @@ static bool checkGpuWithSwitcheroo()
+     QList<QVariantMap> gpus;
+     arg >> gpus;
+ 
++    if (gpus.length() < 2) {
++        // Skip checking for Default or Discrete GPUs when 1 or no GPU is available
++        return false;
++    }
++
++    // Check if the Default GPU is Discrete
++    for (const auto &gpu : gpus) {
++        bool defaultGpu = qvariant_cast<bool>(gpu[QStringLiteral("Default")]);
++        if (defaultGpu) {
++            bool discreteGpu = qvariant_cast<bool>(gpu.value(QStringLiteral("Discrete"), false));
++            if (discreteGpu) {
++                // If the default GPU is Discret there is no need to apply the env vars
++                s_gpuCheck = GpuCheck::Present;
++                return true;
++            }
++            break;
++        }
++    }
++
++    // Find the first Discrete GPU
++    for (const auto &gpu : gpus) {
++        bool discreteGpu = qvariant_cast<bool>(gpu.value(QStringLiteral("Discrete"), false));
++        if (!discreteGpu) {
++            s_gpuCheck = GpuCheck::Present;
++            QStringList envList = qvariant_cast<QStringList>(gpu[QStringLiteral("Environment")]);
++            for (int i = 0; i + 1 < envList.size(); i += 2) {
++                s_gpuEnv.insert(envList[i], envList[i + 1]);
++            }
++            return true;
++        }
++    }
++
++    // fallback to old behavior
++    // find the first non-Default GPU
+     for (const auto &gpu : gpus) {
+         bool defaultGpu = qvariant_cast<bool>(gpu[QStringLiteral("Default")]);
+         if (!defaultGpu) {
+-- 
+GitLab
+
