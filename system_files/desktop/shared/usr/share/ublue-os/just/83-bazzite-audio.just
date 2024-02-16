@@ -3,8 +3,21 @@
 # Add virtual audio channels/sinks named Game, Voice, Browser and Music which you can split audio to using qpwgraph, helvum, carla or other pipewire patchbays for use in OBS and other use cases
 setup-virtual-channels:
     #!/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
+    # Set default props
+    PROPS='node.name      = "playback.game_output"
+                    audio.position = [ FL FR ]
+                    node.passive   = true'
+    if [[ "$IMAGE_NAME" =~ deck ]]; then
+        PROPS='node.name      = "playback.game_output"
+                    audio.position = [ FL FR ]
+                    node.passive   = true
+                    target.object = "input.virtual-sink"'
+    fi
     mkdir -p ~/.config/pipewire/pipewire.conf.d
-    bash -c 'cat << EOL > ~/.config/pipewire/pipewire.conf.d/virtual-channels.conf
+    PLAYBACK_PROPS=$PROPS bash -c 'cat << EOL > ~/.config/pipewire/pipewire.conf.d/virtual-channels.conf
     context.modules = [
         { name = libpipewire-module-loopback
             args = {
@@ -15,9 +28,7 @@ setup-virtual-channels:
                     audio.position = [ FL FR ]
                 }
                 playback.props = {
-                    node.name      = "playback.game_output"
-                    audio.position = [ FL FR ]
-                    node.passive   = true
+                    $PLAYBACK_PROPS
                 }
             }
         }
@@ -30,9 +41,7 @@ setup-virtual-channels:
                     audio.position = [ FL FR ]
                 }
                 playback.props = {
-                    node.name      = "playback.voice_output"
-                    audio.position = [ FL FR ]
-                    node.passive   = true
+                    $PLAYBACK_PROPS
                 }
             }
         }
@@ -45,9 +54,7 @@ setup-virtual-channels:
                     audio.position = [ FL FR ]
                 }
                 playback.props = {
-                    node.name      = "playback.browser_output"
-                    audio.position = [ FL FR ]
-                    node.passive   = true
+                    $PLAYBACK_PROPS
                 }
             }
         }
@@ -60,9 +67,7 @@ setup-virtual-channels:
                     audio.position = [ FL FR ]
                 }
                 playback.props = {
-                    node.name      = "playback.music_output"
-                    audio.position = [ FL FR ]
-                    node.passive   = true
+                    $PLAYBACK_PROPS
                 }
             }
         }
