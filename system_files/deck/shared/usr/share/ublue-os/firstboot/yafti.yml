@@ -223,6 +223,7 @@ screens:
           - Bitwarden: com.bitwarden.desktop
           - BoxBuddy: io.github.dvlv.boxbuddyrs
           - Calibre: com.calibre_ebook.calibre
+          - DejaDup: org.gnome.DejaDup
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - Gradience: com.github.GradienceTeam.Gradience
           - KeePassXC: org.keepassxc.KeePassXC
