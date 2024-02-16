@@ -219,6 +219,7 @@ screens:
           default: false
           packages:
           - AppImage Pool: io.github.prateekmedia.appimagepool
+          - Backup: org.gnome.DejaDup
           - Barrier: com.github.debauchee.barrier
           - Bitwarden: com.bitwarden.desktop
           - BoxBuddy: io.github.dvlv.boxbuddyrs
