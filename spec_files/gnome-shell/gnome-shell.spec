@@ -2,7 +2,7 @@
 
 Name:           gnome-shell
 Version:        45.4
-Release:        %autorelease
+Release:        %autorelease.bazzite.{{{ git_dir_version }}}
 Summary:        Window management and application launching for GNOME
 
 License:        GPLv2+
