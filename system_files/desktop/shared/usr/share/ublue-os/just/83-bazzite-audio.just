@@ -6,7 +6,7 @@ setup-virtual-channels:
     source /usr/lib/ujust/ujust.sh
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
-    # Set default props
+    # Set default props, for deck images make sure default output is valves virtual-sink
     PROPS='node.name      = "playback.game_output"
                     audio.position = [ FL FR ]
                     node.passive   = true'
@@ -74,7 +74,7 @@ setup-virtual-channels:
     ]
     EOL'
     echo "Next time you log in, you will have audio channels for Game, Voice, Browser, Music that you can route game audio to"
-    echo "using programs like qpwgraph, helvum or carla."
+    echo "using programs like Pulseaudio volume control, coppwr, qpwgraph, helvum or carla."
     echo "You can also add these channels to OBS audio mixer for separate audio control for yourself and your viewers."
     echo "NOTE: It is recommended to mute the virtual channels so you do not have to listen to them twice if you are not exclusively routing the audio through said channel instead of splitting audio to them."
 
