@@ -407,6 +407,13 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+        kf5-kio-ntlm \
+        kf5-kio-doc \
+        kf5-kio-widgets-libs \
+        kf5-kio-core-libs \
+        kf5-kio-widgets \
+        kf5-kio-file-widgets \
+        kf5-kio-core \
         kf5-kio-gui && \
     rpm-ostree install \
         steamdeck-kde-presets-desktop \
