@@ -15,8 +15,8 @@ tap-to-click=true
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
 binding='<Control><Alt>t'
-command='prompt --new-window'
-name='Prompt'
+command='ptyxis --new-window'
+name='Ptyxis'
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
 binding='<Control><Alt>KP_Delete'
@@ -49,12 +49,12 @@ download-updates=false
 download-updates-notify=false
 
 [com/github/stunkymonkey/nautilus-open-any-terminal]
-terminal='prompt'
+terminal='ptyxis'
 keybindings=''
 new-tab=false
 flatpak='off'
 
-[org/gnome/Prompt]
+[org/gnome/Ptyxis]
 restore-session=false
 restore-window-size=false
 
@@ -63,7 +63,7 @@ symbolic-icon=false
 menu-button-icon-image=0
 menu-button-icon-size=20
 hide-icon-shadow=false
-menu-button-terminal='prompt --new-window'
+menu-button-terminal='ptyxis --new-window'
 menu-button-system-monitor='flatpak run io.missioncenter.MissionCenter'
 menu-button-extensions-app='com.mattjakeman.ExtensionManager.desktop'
 menu-button-software-center='gnome-software'

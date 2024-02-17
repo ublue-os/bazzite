@@ -4,8 +4,8 @@
  kcm_plymouth.desktop=false
  
  [General]
-+TerminalApplication=kde-prompt
-+TerminalService=org.gnome.Prompt.desktop
++TerminalApplication=kde-ptyxis
++TerminalService=org.gnome.Ptyxis.desktop
 +fixed=Fira Code,9,-1,5,50,0,0,0,0,0
  font=Noto Sans,11,-1,5,50,0,0,0,0,0
  menuFont=Noto Sans,11,-1,5,50,0,0,0,0,0

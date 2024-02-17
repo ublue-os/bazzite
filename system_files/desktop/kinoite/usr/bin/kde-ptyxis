@@ -5,7 +5,7 @@ args=("${@//-e/--}")
  
 # Dolphin integration requires --new-window to function properly
 if [[ ! "${args[@]}" =~ "--" && ! "${args[@]}" =~ "-h" && ! "${args[@]}" =~ "-x" ]]; then
-        /usr/bin/prompt --new-window "${args[@]}"
+        /usr/bin/ptyxis --new-window "${args[@]}"
 else
-        /usr/bin/prompt "${args[@]}"
+        /usr/bin/ptyxis "${args[@]}"
 fi

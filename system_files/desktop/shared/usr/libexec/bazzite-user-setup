@@ -61,25 +61,25 @@ if [[ ! -f "$GRADIENCE_DIR/vgui2.json" ]]; then
   cp "$GRADIENCE_THEME_DIR/vgui2.json" "$GRADIENCE_DIR/vgui2.json"
 fi
 
-PROMPT_THEME_DIR="/usr/etc/skel/.local/share/org.gnome.Prompt/palettes"
-PROMPT_DIR="$HOME/.local/share/org.gnome.Prompt/palettes"
-mkdir -p "$PROMPT_DIR"
-if [[ ! -f "$PROMPT_DIR/vapor.palette" ]]; then
-  cp "$PROMPT_THEME_DIR/vapor.palette" "$PROMPT_DIR/vapor.palette"
+PTYXIS_THEME_DIR="/usr/etc/skel/.local/share/org.gnome.Ptyxis/palettes"
+PTYXIS_DIR="$HOME/.local/share/org.gnome.Ptyxis/palettes"
+mkdir -p "$PTYXIS_DIR"
+if [[ ! -f "$PTYXIS_DIR/vapor.palette" ]]; then
+  cp "$PTYXIS_THEME_DIR/vapor.palette" "$PTYXIS_DIR/vapor.palette"
 fi
-if [[ ! -f "$PROMPT_DIR/vgui2.palette" ]]; then
-  cp "$PROMPT_THEME_DIR/vgui2.palette" "$PROMPT_DIR/vgui2.palette"
+if [[ ! -f "$PTYXIS_DIR/vgui2.palette" ]]; then
+  cp "$PTYXIS_THEME_DIR/vgui2.palette" "$PTYXIS_DIR/vgui2.palette"
 fi
 
-# Initialize Prompt config
+# Initialize Ptyxis config
 # This is intentionally run on both images to ensure a user rebasing from Silverblue to Kinoite
-# doesn't get their Prompt config wiped out.
-echo 'Configuring Prompt'
-if [[ ! -f "$BAZZITE_CONFIG_DIR/prompt-initialized" ]]; then
+# doesn't get their Ptyxis config wiped out.
+echo 'Configuring Ptyxis'
+if [[ ! -f "$BAZZITE_CONFIG_DIR/ptyxis-initialized" ]]; then
   if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
     dconf load / < /etc/dconf/db/local.d/02-bazzite-kde
   fi
-  touch "$BAZZITE_CONFIG_DIR/prompt-initialized"
+  touch "$BAZZITE_CONFIG_DIR/ptyxis-initialized"
 fi
 
 if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
