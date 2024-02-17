@@ -251,6 +251,7 @@ RUN rpm-ostree install \
         tuned-profiles-atomic \
         tuned-profiles-cpu-partitioning \
         powertop \
+        i2c-tools \
         joystickwake \
         hl2linux-selinux \
         joycond \
