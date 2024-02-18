@@ -53,7 +53,7 @@ install-sunshine:
     #!/usr/bin/bash
     systemctl enable sunshine-workaround.service
     ublue-update --wait
-    rpm-ostree install -y https://github.com/LizardByte/Sunshine/releases/download/nightly-dev/sunshine-fedora-$(rpm -E %fedora)-amd64.rpm
+    rpm-ostree install --apply-live -y sunshine
     echo "Sunshine is installed!"
 
 # Remove Sunshine
