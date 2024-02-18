@@ -147,6 +147,11 @@ elif [[ ":G1617-01:" =~ ":$SYS_ID:" ]]; then
     echo "Adding panel orientation for GPD Win Mini"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
   fi
+elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
+  if [[ ! $KARGS =~ "video" ]]; then
+    echo "Adding panel orientation for GPD Win 2"
+    NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
+  fi
 fi
 
 if /usr/libexec/hardware/simpledeckytdp-supported-hardware; then
