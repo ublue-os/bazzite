@@ -47,10 +47,9 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
     --filesystem=xdg-config/gtk-4.0:ro
 fi
 
-# Wayland and XInput for Firefox
+# XInput for Firefox
 flatpak override \
   --system \
-  --env=MOZ_ENABLE_WAYLAND=1 \
   --env=MOZ_USE_XINPUT2=1 \
   org.mozilla.firefox
 

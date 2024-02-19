@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+
+if /usr/libexec/hardware/valve-hardware; then
+  # Don't do anything on Valve hardware, prevents lizard mode from working properly.
+  exit 0
+fi
+
+if [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
+  /usr/bin/joystickwake --command "qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement wakeup" "$@"
+else
+  /usr/bin/joystickwake "$@"
+fi

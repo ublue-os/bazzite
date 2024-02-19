@@ -1,0 +1,29 @@
+[Desktop Entry]
+NoDisplay=true
+Name=Ptyxis
+Comment=A container-oriented terminal for GNOME
+Exec=kde-ptyxis
+# Translators: Do NOT translate or transliterate this text (this is an icon file name)!
+Icon=@APP_ID@
+DBusActivatable=true
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=GNOME;GTK;System;TerminalEmulator;
+# Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+Keywords=terminal;prompt;ptyxis;shell;command;commandline;cmd;cli;
+Actions=new-window;new-tab;preferences;
+X-ExecArg=--
+X-KDE-AuthorizeAction=shell_access
+
+[Desktop Action new-window]
+Name=New Window
+Exec=ptyxis --new-window
+
+[Desktop Action new-tab]
+Name=New Tab
+Exec=ptyxis --tab
+
+[Desktop Action preferences]
+Name=Preferences
+Exec=ptyxis --preferences
