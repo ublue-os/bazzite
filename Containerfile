@@ -247,7 +247,6 @@ RUN rpm-ostree install \
         tuned \
         tuned-ppd \
         tuned-utils \
-        tuned-utils-systemtap \
         tuned-gtk \
         tuned-profiles-atomic \
         tuned-profiles-cpu-partitioning \
