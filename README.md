@@ -8,6 +8,9 @@
 
 ---
 
+# Image Picker 
+Use our [image picker](https://bazzite.gg/#image-picker) to find the right image for your hardware and preferences.
+
 # Table of Contents
 - [Features for **All** Bazzite Images](#about--features)
   - [Features for **Desktop** Images](#desktop)

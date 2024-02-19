@@ -232,7 +232,6 @@ jobs:
           oci: false
           extra-args: |
             --target=${{ matrix.base_name }}
-            --layers=true
 
       - name: Sign kernel
         uses: EyeCantCU/kernel-signer@v0.1.3
