@@ -62,7 +62,7 @@ flatpak override \
 
 # Allow MangoHUD config for Flatpaks
 flatpak override \
-  --filesystem=xdg-config/Mangohud:ro \
+  --filesystem=xdg-config/MangoHud:ro \
   --filesystem=xdg-config/vkBasalt:ro
 
 # Fix permissions for XIV Launcher
