@@ -12,6 +12,7 @@ org.gnome.Calendar
 org.gnome.Characters
 org.gnome.Contacts
 org.gnome.Evince
+org.gnome.FileRoller
 org.gnome.Logs
 org.gnome.Loupe
 org.gnome.Maps
