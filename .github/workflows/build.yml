@@ -312,6 +312,7 @@ jobs:
       matrix:
         image_name: [bazzite, bazzite-nvidia, bazzite-gnome, bazzite-gnome-nvidia, bazzite-deck, bazzite-deck-gnome, bazzite-ally, bazzite-ally-gnome, bazzite-asus, bazzite-gnome-asus, bazzite-asus-nvidia, bazzite-gnome-asus-nvidia]
         major_version: [39]
+        image_tag: [stable]
     steps:
       - name: Build ISOs
         #if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
@@ -322,6 +323,6 @@ jobs:
           IMAGE_REPO: ghcr.io/ublue-os
           VARIANT: 'Kinoite'
           VERSION: ${{ matrix.major_version }}
-          IMAGE_TAG: ${{ matrix.major_version }}
+          IMAGE_TAG: ${{ matrix.image_tag }}
           ACTION_REPO: ublue-os/isogenerator
-          ACTION_REF: 1.0.1
+          ACTION_REF: 1.0.2
