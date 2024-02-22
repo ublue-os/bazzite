@@ -1,6 +1,7 @@
 name: Build Bazzite ISOs
 on:
   workflow_dispatch:
+  push:
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
@@ -39,3 +40,12 @@ jobs:
           IMAGE_TAG: ${{ matrix.image_tag }}
           ACTION_REPO: ublue-os/isogenerator
           ACTION_REF: 1.0.2
+      - name: Upload ISOs to R2
+        uses: ryand56/r2-upload-action@latest
+        with:
+          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
+          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
+          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          r2-bucket: ${{ secrets.R2_BUCKET }}
+          source-dir: ./end_iso
+          destination-dir: ./
