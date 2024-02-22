@@ -1,6 +1,7 @@
 name: Build Bazzite ISOs
 on:
   workflow_dispatch:
+  push:
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
