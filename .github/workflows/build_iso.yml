@@ -43,12 +43,12 @@ jobs:
       - name: Upload ISOs to R2
         uses: wei/rclone@v1
         env:
-          RCLONE_CONFIG_R2_TYPE=s3
-          RCLONE_CONFIG_R2_PROVIDER=Cloudflare
-          RCLONE_CONFIG_R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
-          RCLONE_CONFIG_R2_REGION=auto 
-          RCLONE_CONFIG_R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
-          RCLONE_CONFIG_R2_ACL=public
+          RCLONE_CONFIG_R2_TYPE: s3
+          RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+          RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          RCLONE_CONFIG_R2_REGION: auto
+          RCLONE_CONFIG_R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          RCLONE_CONFIG_R2_ACL: public
         with:
           args: copy ./end_iso R2:bazzite
 
