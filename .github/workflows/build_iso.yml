@@ -41,11 +41,24 @@ jobs:
           ACTION_REPO: ublue-os/isogenerator
           ACTION_REF: 1.0.2
       - name: Upload ISOs to R2
-        uses: ryand56/r2-upload-action@latest
+        uses: wei/rclone@v1
+        env:
+          RCLONE_CONFIG_R2_TYPE=s3
+          RCLONE_CONFIG_R2_PROVIDER=Cloudflare
+          RCLONE_CONFIG_R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
+          RCLONE_CONFIG_R2_REGION=auto 
+          RCLONE_CONFIG_R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
+          RCLONE_CONFIG_R2_ACL=public
         with:
-          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
-          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
-          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          r2-bucket: ${{ secrets.R2_BUCKET }}
-          source-dir: ./end_iso
-          destination-dir: ./
+          args: copy ./end_iso R2:bazzite
+
+
+#      - name: Upload ISOs to R2
+#        uses: ryand56/r2-upload-action@latest
+#        with:
+#          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
+#          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
+#          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+#          r2-bucket: ${{ secrets.R2_BUCKET }}
+#          source-dir: ./end_iso
+#          destination-dir: ./
