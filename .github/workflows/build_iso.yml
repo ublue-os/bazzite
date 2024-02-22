@@ -41,7 +41,7 @@ jobs:
           ACTION_REPO: ublue-os/isogenerator
           ACTION_REF: 1.0.2
       - name: Upload ISOs to R2
-        uses: wei/rclone@v1
+        uses: wei/rclone@latest
         env:
           RCLONE_CONFIG_R2_TYPE: s3
           RCLONE_CONFIG_R2_PROVIDER: Cloudflare
