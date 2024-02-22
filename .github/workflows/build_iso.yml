@@ -43,12 +43,12 @@ jobs:
       - name: Upload ISOs to R2
         shell: bash
         run: |
-          RCLONE_CONFIG_R2_TYPE=s3
-          RCLONE_CONFIG_R2_PROVIDER=Cloudflare
-          RCLONE_CONFIG_R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
-          RCLONE_CONFIG_R2_REGION=auto
-          RCLONE_CONFIG_R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
-          RCLONE_CONFIG_R2_ACL=public
+          export RCLONE_CONFIG_R2_TYPE=s3
+          export RCLONE_CONFIG_R2_PROVIDER=Cloudflare
+          export RCLONE_CONFIG_R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
+          export RCLONE_CONFIG_R2_REGION=auto
+          export RCLONE_CONFIG_R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
+          export RCLONE_CONFIG_R2_ACL=public
           dnf install -y rclone
           rclone copy ./end_iso R2:bazzite
 
