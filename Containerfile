@@ -243,6 +243,7 @@ RUN rpm-ostree install \
         rmlint \
         compsize \
         input-remapper \
+        rclone \
         system76-scheduler \
         tuned \
         tuned-ppd \
