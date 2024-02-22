@@ -46,6 +46,7 @@ jobs:
           export RCLONE_CONFIG_R2_TYPE=s3
           export RCLONE_CONFIG_R2_PROVIDER=Cloudflare
           export RCLONE_CONFIG_R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
+          export RCLONE_CONFIG_R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
           export RCLONE_CONFIG_R2_REGION=auto
           export RCLONE_CONFIG_R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
           export RCLONE_CONFIG_R2_ACL=public
