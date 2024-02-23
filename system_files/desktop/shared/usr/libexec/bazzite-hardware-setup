@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=33
+HWS_VER=34
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -194,7 +194,6 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
 
     systemctl enable --now jupiter-fan-control.service
     systemctl enable --now vpower.service
-    systemctl enable --now ds-inhibit.service
   else
     echo "Generic device detected. Performing setup..."
     systemctl disable --now jupiter-fan-control.service
@@ -204,6 +203,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     systemctl disable --now ryzenadj.service
     systemctl disable --now batterylimit.service
   fi
+  systemctl enable --now ds-inhibit.service
 fi
 
 # FSTAB CONFIGURATION
