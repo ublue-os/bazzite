@@ -72,4 +72,4 @@ show-lockscreen=false
 show-power-option=false
 show-gamemode=false
 hide-forcequit=true
-show-pods=true
+show-boxbuddy=true
