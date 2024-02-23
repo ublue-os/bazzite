@@ -8,8 +8,9 @@
 
 ---
 
-# Image Picker 
-Use our [image picker](https://bazzite.gg/#image-picker) to find the right image for your hardware and preferences.
+<p align="center">
+  <a href="https://bazzite.gg/#image-picker"><img src="/repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
+</p>
 
 # Table of Contents
 - [Features for **All** Bazzite Images](#about--features)
