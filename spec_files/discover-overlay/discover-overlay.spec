@@ -1,5 +1,5 @@
 %global forgeurl https://github.com/trigg/Discover
-Version:        0.6.9
+Version:        0.7.0
 %forgemeta
 
 Name:           discover-overlay
