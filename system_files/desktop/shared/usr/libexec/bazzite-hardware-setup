@@ -180,7 +180,7 @@ else
 fi
 
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
-  if [[ ":Jupiter:Galileo:" =~ ":$SYS_ID:" ]]; then
+  if /usr/libexec/hardware/valve-hardware; then
     if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
       RESOLUTION=$(lshw -json -c display | jq -r .[]."configuration"."resolution")
       if [[ "${RESOLUTION}" = "1200,1920" ]]; then

@@ -82,8 +82,6 @@ Patch0002:  0002-Revert-spa-libcamera-use-CameraConfiguration-orienta.patch
 
 # Holo: TODO: Bug reference
 Patch10:         bc435841c141ad38768b6cb1a7ad45e8bb13c7d2.patch
-# Holo: TODO: Bug reference
-#Patch20:         acf7c0af0bf31b937c41e916a73c67ae0a253632.patch
 # Holo: upstream MR 1792
 Patch30:         0001-Bluez5-backend-native-HSP-AG-release-SCO-link-on-AT-.patch
 
