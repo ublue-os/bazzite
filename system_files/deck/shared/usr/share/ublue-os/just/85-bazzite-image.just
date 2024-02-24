@@ -1,15 +1,5 @@
 # vim: set ft=make :
 
-# Toggle between desktop/gamescope autologin
-toggle-autologin:
-    #!/usr/bin/bash
-    DESKTOP_AUTOLOGIN="/etc/bazzite/desktop_autologin"
-    if [[ -f $DESKTOP_AUTOLOGIN ]]; then
-      sudo rm -f $DESKTOP_AUTOLOGIN
-    else
-      sudo touch $DESKTOP_AUTOLOGIN
-    fi
-
 # Install Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader)
 get-decky:
     #!/usr/bin/bash
@@ -156,4 +146,13 @@ _toggle_wayland:
       sudo sed -i 's/true/false/g' /etc/default/desktop-wayland
     else
       sudo sed -i 's/false/true/g' /etc/default/desktop-wayland
+    fi
+
+_toggle-autologin:
+    #!/usr/bin/bash
+    DESKTOP_AUTOLOGIN="/etc/bazzite/desktop_autologin"
+    if [[ -f $DESKTOP_AUTOLOGIN ]]; then
+      sudo rm -f $DESKTOP_AUTOLOGIN
+    else
+      sudo touch $DESKTOP_AUTOLOGIN
     fi
