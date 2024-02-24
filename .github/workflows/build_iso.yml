@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Build ISOs
         #if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
-        uses: ublue-os/isogenerator@1.0.3
+        uses: ublue-os/isogenerator@latest
         with:
           ARCH: x86_64
           IMAGE_NAME: ${{ matrix.image_name }}
@@ -37,9 +37,7 @@ jobs:
           VARIANT: 'Kinoite'
           VERSION: ${{ matrix.major_version }}
           IMAGE_TAG: ${{ matrix.image_tag }}
-          ACTION_REPO: ublue-os/isogenerator
-          ACTION_REF: 1.0.3
-      - name: Upload ISOs to R2
+      - name: Upload ISOs and SHA Checksum Files to R2
         shell: bash
         run: |
           export RCLONE_CONFIG_R2_TYPE=s3
