@@ -37,6 +37,8 @@ jobs:
           VARIANT: 'Kinoite'
           VERSION: ${{ matrix.major_version }}
           IMAGE_TAG: ${{ matrix.image_tag }}
+          ACTION_REPO: ublue-os/isogenerator
+          ACTION_REF: 1.0.4
       - name: Upload ISOs and SHA Checksum Files to R2
         shell: bash
         run: |
