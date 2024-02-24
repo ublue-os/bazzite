@@ -166,30 +166,6 @@ ujust install-legion-go-theme
 ujust install-hhd-xbox-glyph-theme
 ```
 
-#### ASUS Ally
-
-Bazzite has separate images specific for the ASUS Ally due to extra driver & software requirements for that hardware. You can pick the Ally images from the installer, or rebase using one of the following:
-
-```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-ally:stable
-```
-
-```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-ally-gnome:stable
-```
-
-#### Framegame
-
-[Build one of these?](https://www.youtube.com/watch?v=zd6WtTUf-30) Here's an image for you. This is the deck variant of the framework laptop image.
-
-```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-framegame:stable
-```
-
-```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-framegame-gnome:stable
-```
-
 ### GNOME
 
 Builds with the GNOME desktop environment are available in both desktop and deck flavors. These builds come with the following additional features:
