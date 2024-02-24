@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Build ISOs
         #if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
-        uses: ublue-os/isogenerator@latest
+        uses: ublue-os/isogenerator@1.0.4
         with:
           ARCH: x86_64
           IMAGE_NAME: ${{ matrix.image_name }}
@@ -48,13 +48,3 @@ jobs:
           export RCLONE_CONFIG_R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
           dnf install -y rclone
           rclone copy ./end_iso R2:bazzite
-
-#      - name: Upload ISOs to R2
-#        uses: ryand56/r2-upload-action@latest
-#        with:
-#          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
-#          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
-#          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-#          r2-bucket: ${{ secrets.R2_BUCKET }}
-#          source-dir: ./end_iso
-#          destination-dir: ./
