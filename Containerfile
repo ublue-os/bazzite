@@ -185,7 +185,7 @@ RUN rpm-ostree override replace \
         glibc32 \
         || true
 
-# Install Valve's patched Mesa, Pipewire and Bluez
+# Install Valve's patched Mesa
 # Install patched switcheroo control with proper discrete GPU support
 RUN rpm-ostree override replace \
     --experimental \
@@ -198,18 +198,6 @@ RUN rpm-ostree override replace \
         mesa-libglapi \
         mesa-vulkan-drivers \
         mesa-libOSMesa \
-        pipewire \
-        pipewire-alsa \
-        pipewire-gstreamer \
-        pipewire-jack-audio-connection-kit \
-        pipewire-jack-audio-connection-kit-libs \
-        pipewire-libs \
-        pipewire-pulseaudio \
-        pipewire-utils \
-        bluez \
-        bluez-cups \
-        bluez-libs \
-        bluez-obexd \
         xorg-x11-server-Xwayland && \
     rpm-ostree install \
         mesa-vdpau-drivers-freeworld.x86_64 && \
@@ -683,10 +671,22 @@ RUN rpm-ostree install \
     rm -rf /tmp/linux-firmware-galileo && \
     rm -rf /usr/share/alsa/ucm2/conf.d/acp5x/Valve-Jupiter-1.conf
 
-# Install Steam Deck patched Wireplumber & UPower
+# Install Steam Deck patched Pipewire, Wireplumber, Bluez & UPower
 RUN rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+        pipewire \
+        pipewire-alsa \
+        pipewire-gstreamer \
+        pipewire-jack-audio-connection-kit \
+        pipewire-jack-audio-connection-kit-libs \
+        pipewire-libs \
+        pipewire-pulseaudio \
+        pipewire-utils \
+        bluez \
+        bluez-cups \
+        bluez-libs \
+        bluez-obexd \
         wireplumber \
         wireplumber-libs \
         upower \
