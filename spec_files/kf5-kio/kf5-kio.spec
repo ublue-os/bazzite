@@ -3,7 +3,7 @@
 %bcond kf6_compat %[0%{?fedora} >= 40 || 0%{?rhel} >= 10]
 
 Name:    kf5-%{framework}
-%global  majmin 5.113
+%global  majmin 5.115
 Version: %{majmin}.0
 Release: 2%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: KDE Frameworks 5 Tier 3 solution for filesystem abstraction
@@ -14,11 +14,8 @@ URL:     https://invent.kde.org/frameworks/%{framework}
 Source0: https://download.kde.org/stable/frameworks/%{majmin}/%{framework}-%{version}.tar.xz
 
 ## upstream patches (lookaside)
-# https://invent.kde.org/frameworks/kio/-/merge_requests/1536
-Patch0: expand-network-directories-in-file-picker.patch
-
 # https://invent.kde.org/frameworks/kio/-/merge_requests/1556
-Patch1: 1556.patch
+Patch0: 1556.patch
 
 ## upstreamable patches
 
@@ -299,6 +296,9 @@ rm %{buildroot}%{_datadir}/applications/kcm_trash.desktop
 %{_kf5_libdir}/cmake/KF5KIO/
 
 %changelog
+* Sat Feb 10 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 5.115.0-1
+- 5.115.0 
+
 * Sun Jan 14 2024 Alessandro Astone <ales.astone@gmail.com> - 5.113.0-2
 - Backport patch to fix expanding network directories in file picker
 
