@@ -34,7 +34,7 @@ jobs:
               EXTRA_BOOT_PARAMS="inst.resolution=1280x800"
           fi
       - name: Build ISOs
-        uses: ublue-os/isogenerator@1.0.6
+        uses: ublue-os/isogenerator@1.0.7
         with:
           ARCH: x86_64
           IMAGE_NAME: ${{ matrix.image_name }}
@@ -43,7 +43,7 @@ jobs:
           VERSION: ${{ matrix.major_version }}
           IMAGE_TAG: ${{ matrix.image_tag }}
           ACTION_REPO: ublue-os/isogenerator
-          ACTION_REF: 1.0.6
+          ACTION_REF: 1.0.7
           EXTRA_BOOT_PARAMS: ${{ env.EXTRA_BOOT_PARAMS }}
       - name: Upload ISOs and SHA Checksum Files to R2
         shell: bash
