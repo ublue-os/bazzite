@@ -684,7 +684,7 @@ RUN rpm-ostree install \
 # Install Steam Deck patched Pipewire, Wireplumber, Bluez & UPower
 RUN rpm-ostree override replace \
     --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         pipewire \
         pipewire-alsa \
         pipewire-gstreamer \
@@ -696,7 +696,10 @@ RUN rpm-ostree override replace \
         bluez \
         bluez-cups \
         bluez-libs \
-        bluez-obexd \
+        bluez-obexd && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         wireplumber \
         wireplumber-libs \
         upower \
