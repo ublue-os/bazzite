@@ -30,7 +30,7 @@ jobs:
       - name: Set EXTRA_BOOT_PARAMS
         run: |
           EXTRA_BOOT_PARAMS=""
-          if [[ "${{ matrix.image_name }}" == "bazzite=deck" || "${{ matrix.image_name }}" == "bazzite-deck-gnome" || "${{ matrix.image_name }}" == "bazzite-deck-budgie" ]]; then
+          if [[ "${{ matrix.image_name }}" == "bazzite-deck" || "${{ matrix.image_name }}" == "bazzite-deck-gnome" || "${{ matrix.image_name }}" == "bazzite-deck-budgie" ]]; then
               EXTRA_BOOT_PARAMS="inst.resolution=1280x800"
           fi
       - name: Build ISOs
