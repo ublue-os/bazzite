@@ -187,7 +187,8 @@ RUN rpm-ostree override replace \
 
 # Install Valve's patched Mesa
 # Install patched switcheroo control with proper discrete GPU support
-RUN rpm-ostree override replace \
+RUN rpm -qa | grep mesa && \
+    rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         mesa-filesystem \
