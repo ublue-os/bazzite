@@ -1,4 +1,4 @@
-name: Build Bazzite ISOs
+name: Build ISOs
 on:
   workflow_dispatch:
 env:
