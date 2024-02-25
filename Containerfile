@@ -181,6 +181,11 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         libmount \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        cups-libs \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true
