@@ -811,7 +811,12 @@ RUN wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nvidia-explicit
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
-        xorg-x11-server-Xwayland
+        xorg-x11-server-Xwayland && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
+        egl-wayland \
+        || true
 
 # Cleanup & Finalize
 RUN rm -rf \
