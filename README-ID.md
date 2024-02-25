@@ -70,7 +70,7 @@ Varian umum yang tersedia sebagai `bazzite`, cocok untuk komputer desktop.
 - Pembaruan otomatis untuk Sistem Operasi,Flatpak,Nix package <sup><sub>(dengan Fleek)</sub></sup>, dan semua kontainer Distrobox.
 
 > [!IMPORTANT]  
-> **ISO bisa diunduh dari halaman rilis kami [disini](https://github.com/ublue-os/bazzite/releases), dan berbagai macam panduan instalasi dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=30).** Jika anda menemukan masalah ketika menginstall Bazzite, anda dapat mengunjungi [panduan memecahkan masalah](https://universal-blue.discourse.group/docs?topic=34).
+> **ISO bisa diunduh dari halaman rilis kami [disini](https://github.com/ublue-os/bazzite/releases), dan berbagai macam panduan instalasi dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=30).**
 
 Jika anda telah menggunakan image dari Universal Blue anda dapat mengikuti [instruksi ini](https://universal-blue.org/images/#image-list). Untuk berganti image dari image upstream Fedora Silverblue/Kinoite ostree anda dapat mengikuti perintah ini:
 
@@ -125,7 +125,7 @@ Varian `bazzite-deck` ini didesain untuk digunakan sebagai alternatif untuk Stea
 > **Dikarenakan ada bug/kutu dari upstream,Bazzite tidak bisa digunakan pada perangkat SteamDeck yang memiliki penyimpanan 64GB eMMC. meningkatkan penyimpanan menyelesaikan masalah ini.**
 
 > [!IMPORTANT]  
-> **ISO bisa diunduh dari halaman rilis kami [disini](https://github.com/ublue-os/bazzite/releases), dan berbagai macam panduan instalasi dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=30).** Jika anda menemukan masalah ketika menginstall Bazzite, anda dapat mengunjungi [panduan memecahkan masalah](https://universal-blue.discourse.group/docs?topic=34).
+> **ISO bisa diunduh dari halaman rilis kami [disini](https://github.com/ublue-os/bazzite/releases), dan berbagai macam panduan instalasi dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=30).**
 
 Jika anda telah menggunakan image dari Universal Blue anda dapat mengikuti [instruksi ini](https://universal-blue.org/images/#image-list). Untuk berganti image dari image upstream Fedora Silverblue/Kinoite ostree anda dapat mengikuti perintah ini:
 
@@ -146,7 +146,7 @@ Varian desktop GNOME tersedia dalam versi desktop dan deck.varian ini memiliki b
 - Pembaruan otomatis untuk [Firefox GNOME theme](https://github.com/rafaelmardojai/firefox-gnome-theme) dan [Thunderbird GNOME theme](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(jika terinstall)</sub></sup>
 
 > [!IMPORTANT]  
-> **ISO bisa diunduh dari halaman rilis kami [disini](https://github.com/ublue-os/bazzite/releases), dan berbagai macam panduan instalasi dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=30).** Jika anda menemukan masalah ketika menginstall Bazzite, anda dapat mengunjungi [panduan memecahkan masalah](https://universal-blue.discourse.group/docs?topic=34).
+> **ISO bisa diunduh dari halaman rilis kami [disini](https://github.com/ublue-os/bazzite/releases), dan berbagai macam panduan instalasi dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=30).**
 
 Untuk rebase dari sistem ostree yang ada ke varian **desktop**:
 
