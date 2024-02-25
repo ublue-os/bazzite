@@ -375,8 +375,10 @@ RUN rpm-ostree install \
             gamemode \
     ; else \
         rpm-ostree override remove \
-            gamemode \
+            gamemode && \
+        rpm-ostree override remove \
             gnome-shell-extension-gamemode \
+            || true \
     ; fi && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/winetricks.desktop && \
     ln -s /usr/bin/wine64 /usr/bin/wine && \
