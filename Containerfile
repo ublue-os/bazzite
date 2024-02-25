@@ -181,25 +181,33 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         libmount \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        cups-libs \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true
 
 # Install Valve's patched Mesa
 # Install patched switcheroo control with proper discrete GPU support
-RUN rpm-ostree override replace \
+RUN rpm-ostree override remove \
+        mesa-va-drivers-freeworld && \
+    rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         mesa-filesystem \
-        mesa-dri-drivers \
-        mesa-libEGL \
-        mesa-libgbm \
-        mesa-libGL \
+        mesa-libxatracker \
         mesa-libglapi \
+        mesa-dri-drivers \
+        mesa-libgbm \
+        mesa-libEGL \
         mesa-vulkan-drivers \
-        mesa-libOSMesa \
+        mesa-libGL \
         xorg-x11-server-Xwayland && \
     rpm-ostree install \
+        mesa-va-drivers-freeworld \
         mesa-vdpau-drivers-freeworld.x86_64 && \
     rpm-ostree override replace \
     --experimental \
@@ -367,8 +375,10 @@ RUN rpm-ostree install \
             gamemode \
     ; else \
         rpm-ostree override remove \
-            gamemode \
+            gamemode && \
+        rpm-ostree override remove \
             gnome-shell-extension-gamemode \
+            || true \
     ; fi && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/winetricks.desktop && \
     ln -s /usr/bin/wine64 /usr/bin/wine && \
