@@ -27,11 +27,11 @@ jobs:
         major_version: [39]
         image_tag: [stable]
     steps:
-      - name: Set EXTRA_BOOT_ARGS
+      - name: Set EXTRA_BOOT_PARAMS
         run: |
-          EXTRA_BOOT_ARGS=""
+          EXTRA_BOOT_PARAMS=""
           if [[ "${{ matrix.image_name }}" == "bazzite=deck" || "${{ matrix.image_name }}" == "bazzite-deck-gnome" || "${{ matrix.image_name }}" == "bazzite-deck-budgie" ]]; then
-              EXTRA_BOOT_ARGS="inst.resolution=1280x800"
+              EXTRA_BOOT_PARAMS="inst.resolution=1280x800"
           fi
       - name: Build ISOs
         uses: ublue-os/isogenerator@1.0.6
@@ -44,7 +44,7 @@ jobs:
           IMAGE_TAG: ${{ matrix.image_tag }}
           ACTION_REPO: ublue-os/isogenerator
           ACTION_REF: 1.0.6
-          EXTRA_BOOT_ARGS: ${{ env.EXTRA_BOOT_ARGS }}
+          EXTRA_BOOT_PARAMS: ${{ env.EXTRA_BOOT_PARAMS }}
       - name: Upload ISOs and SHA Checksum Files to R2
         shell: bash
         run: |
