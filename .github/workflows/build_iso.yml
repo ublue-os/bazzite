@@ -30,11 +30,10 @@ jobs:
       - name: Set EXTRA_BOOT_ARGS
         run: |
           EXTRA_BOOT_ARGS=""
-          if [[ "${{ matrix.image_name }}" == "bazzite=deck" || "${{ matrix.image_name }}" == "bazzite-deck-gnome" ]]; then
+          if [[ "${{ matrix.image_name }}" == "bazzite=deck" || "${{ matrix.image_name }}" == "bazzite-deck-gnome" || "${{ matrix.image_name }}" == "bazzite-deck-budgie" ]]; then
               EXTRA_BOOT_ARGS="inst.resolution=1280x800"
           fi
       - name: Build ISOs
-        #if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
         uses: ublue-os/isogenerator@1.0.6
         with:
           ARCH: x86_64
