@@ -187,7 +187,9 @@ RUN rpm-ostree override replace \
 
 # Install Valve's patched Mesa
 # Install patched switcheroo control with proper discrete GPU support
-RUN rpm-ostree override replace \
+RUN rpm-ostree override remove \
+        mesa-va-drivers-freeworld && \
+    rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         mesa-filesystem \
@@ -198,9 +200,9 @@ RUN rpm-ostree override replace \
         mesa-libEGL \
         mesa-vulkan-drivers \
         mesa-libGL \
-        mesa-va-drivers-freeworld \
         xorg-x11-server-Xwayland && \
     rpm-ostree install \
+        mesa-va-drivers-freeworld \
         mesa-vdpau-drivers-freeworld.x86_64 && \
     rpm-ostree override replace \
     --experimental \
