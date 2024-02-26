@@ -154,7 +154,7 @@ If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd) <s
 
 **Be sure to also read the [hhd documentation](https://github.com/hhd-dev/hhd#after-install), some handhelds require specific setting changes/tweaks to function properly.**
 
-We also ship `ujust` commands to install various CSS Loader themes that can't be found on the CSS Loader store. These will be automatically updated with Bazzite if installed.
+We also ship `ujust` commands to install various [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) themes that can't be found on the CSS Loader store. These will be automatically updated with Bazzite if installed.
 ```bash
 # Install ROG Ally Theme for CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
 ujust install-rog-ally-theme
