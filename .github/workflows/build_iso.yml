@@ -33,6 +33,7 @@ jobs:
           if [[ "${{ matrix.image_name }}" == "bazzite-deck" || "${{ matrix.image_name }}" == "bazzite-deck-gnome" || "${{ matrix.image_name }}" == "bazzite-deck-budgie" ]]; then
               EXTRA_BOOT_PARAMS="inst.resolution=1280x800"
           fi
+          echo "EXTRA_BOOT_PARAMS=$EXTRA_BOOT_PARAMS" >> $GITHUB_ENV
       - name: Build ISOs
         uses: ublue-os/isogenerator@1.0.7
         with:
