@@ -53,6 +53,12 @@ flatpak override \
   --env=MOZ_USE_XINPUT2=1 \
   org.mozilla.firefox
 
+# Allow custom home for BoxBuddy
+flatpak override \
+  --system \
+  --filesystem=home \
+  io.github.dvlv.boxbuddyrs
+
 # Fix printing on LibreOffice
 flatpak override \
   --system \
