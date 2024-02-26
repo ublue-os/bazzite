@@ -163,7 +163,7 @@ Si estas usando una computadora Handheld que tiene soporte por parte de [hhd](ht
 
 **Igualmente, asegurate de tambien leer la [documentación de HHD (en inglés)](https://github.com/hhd-dev/hhd#after-install), algunas computadoras Handheld requieren ciertos ajustes o tweaks especificos para funcionar correctamente.**
 
-Tambien incluimos ciertos comandos de `ujust` para instalar varios temas para CSS Loader que no estan disponibles en su propia tienda. Si instalas estos temas, estos tambien serán actualizados automáticamente junto con Bazzite.
+Tambien incluimos ciertos comandos de `ujust` para instalar varios temas para [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) que no estan disponibles en su propia tienda. Si instalas estos temas, estos tambien serán actualizados automáticamente junto con Bazzite.
 
 ```bash
 # Instala el tema de la ROG Ally para CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
