@@ -222,3 +222,7 @@ setup-virtual-surround ACTION="":
       rm ~/.config/pipewire/hrir_hesuvi/Control_Room_1.wav
       echo "Virtual Surround 7.1 removed, please reboot or restart pipewire for it to take effect." 
     fi
+
+# Restart pipewire
+restart-pipewire:
+    systemctl --user restart pipewire.service
