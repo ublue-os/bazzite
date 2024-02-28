@@ -44,6 +44,7 @@ jobs:
           VERSION: ${{ matrix.major_version }}
           IMAGE_TAG: ${{ matrix.image_tag }}
           SECURE_BOOT_KEY_URL: 'https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
+          ENROLLMENT_PASSWORD: 'ublue-os'
           ACTION_REPO: ublue-os/isogenerator
           ACTION_REF: 1.0.8
           EXTRA_BOOT_PARAMS: ${{ env.EXTRA_BOOT_PARAMS }}
