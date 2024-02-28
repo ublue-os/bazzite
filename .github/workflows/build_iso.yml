@@ -35,7 +35,7 @@ jobs:
           fi
           echo "EXTRA_BOOT_PARAMS=$EXTRA_BOOT_PARAMS" >> $GITHUB_ENV
       - name: Build ISOs
-        uses: ublue-os/isogenerator@1.0.7
+        uses: ublue-os/isogenerator@1.0.8
         with:
           ARCH: x86_64
           IMAGE_NAME: ${{ matrix.image_name }}
@@ -43,8 +43,9 @@ jobs:
           VARIANT: 'Kinoite'
           VERSION: ${{ matrix.major_version }}
           IMAGE_TAG: ${{ matrix.image_tag }}
+          SECURE_BOOT_KEY_URL: 'https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
           ACTION_REPO: ublue-os/isogenerator
-          ACTION_REF: 1.0.7
+          ACTION_REF: 1.0.8
           EXTRA_BOOT_PARAMS: ${{ env.EXTRA_BOOT_PARAMS }}
       - name: Upload ISOs and SHA Checksum Files to R2
         shell: bash
