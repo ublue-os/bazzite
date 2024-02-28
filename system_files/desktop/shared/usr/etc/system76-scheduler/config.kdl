@@ -91,6 +91,7 @@ process-scheduler enable=true {
         systemd
         taskset
         schedtool
+        sunshine
         tuned
         tuned-ppd
     }
