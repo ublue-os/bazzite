@@ -7,6 +7,7 @@ com.github.tchx84.Flatseal
 io.github.flattool.Warehouse
 io.missioncenter.MissionCenter
 com.vysp3r.ProtonPlus
+io.github.celluloid_player.Celluloid
 org.gnome.Calculator
 org.gnome.Calendar
 org.gnome.Characters
@@ -20,7 +21,6 @@ org.gnome.NautilusPreviewer
 org.gnome.TextEditor
 org.gnome.Weather
 org.gnome.baobab
-io.github.celluloid_player.Celluloid
 org.gnome.clocks
 org.gnome.font-viewer
 org.freedesktop.Platform.VulkanLayer.MangoHud//23.08
