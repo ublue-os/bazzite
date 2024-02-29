@@ -68,7 +68,7 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - Driver [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) para aumentar la frecuencia del reloj (overclocking) del adaptador para el mando de videojuegos del Gamecube de Nintendo para obtener una taza de sondeo (polling rate) de 1000hz.
 - Soporte fuera de la caja para los teclados hechos por [Wooting](https://wooting.io/).
 - Soporte incorporado de las GPU de las familias <sub><sup>(HD 7000)</sup></sub> y Sea Islands <sub><sup>(HD 8000)</sup></sub> de AMD bajo el driver `amdgpu`.
-- Un parche esta disponible [para un bug en juegos de 32 bits que usen el motor Source 1](https://github.com/ValveSoftware/Source-1-Games/issues/5043)<sub><sup>[(Por ejemplo: TF2)](https://github.com/ValveSoftware/Source-1-Games/issues/5043)</sup></sub> que provoca que el juego se congele al ser iniciado, para aplicar el parche, ejecuta el siguiente comando en una terminal: `ujust patch-source1-tcmalloc`
+- Un parche esta disponible [para un bug en juegos de 32 bits que usen el motor Source 1](https://github.com/ValveSoftware/Source-1-Games/issues/5043)<sub><sup>[(Por ejemplo: TF2)](https://github.com/ValveSoftware/Source-1-Games/issues/5043)</sup></sub> que provoca que el juego se congele al ser iniciado, para aplicar el parche, ejecuta el siguiente comando en una terminal: `ujust fix-source1-tcmalloc`
 - [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) esta disponible para hacer posible compartir tu pantalla con Discord usando Wayland.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) esta disponible para crear aplicaciones de sitios web con una variedad de navegadores web, incluyendo Firefox.
 
@@ -152,10 +152,10 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 
 Si estas usando esta imagen en otras computadoras Handheld que no son la Steam Deck,  puedes controlar el TDP usando el plugin de Decky Loader llamado SimpleDeckyTDP.
 
-- Primero, instala Decky Loader ejecutando el siguiente comando en una terminal: `ujust get-decky`
-- Despues, instala SimpleDeckyTDP ejecutando el siguiente comando en una terminal: `ujust get-simpledeckytdp`
+- Primero, instala Decky Loader ejecutando el siguiente comando en una terminal: `ujust setup-decky`
+- Despues, instala SimpleDeckyTDP ejecutando el siguiente comando en una terminal: `ujust setup-decky simpledeckytdp`
 
-Si estas usando una computadora Handheld que tiene soporte por parte de [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Como la Lenovo Legion Go o la ASUS ROG Ally)</sup></sub>, tambien puedes obtener un plugin que integra esta funcionalidad en Game Mode, solo ejecuta el siguiente comando en una terminal: `ujust get-hhd-decky`
+Si estas usando una computadora Handheld que tiene soporte por parte de [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Como la Lenovo Legion Go o la ASUS ROG Ally)</sup></sub>, tambien puedes obtener un plugin que integra esta funcionalidad en Game Mode, solo ejecuta el siguiente comando en una terminal: `ujust setup-decky hhd-decky`
 
 **Igualmente, asegurate de tambien leer la [documentación de HHD (en inglés)](https://github.com/hhd-dev/hhd#after-install), algunas computadoras Handheld requieren ciertos ajustes o tweaks especificos para funcionar correctamente.**
 
