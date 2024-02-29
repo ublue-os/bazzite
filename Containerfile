@@ -282,7 +282,6 @@ RUN rpm-ostree install \
         glow \
         gum \
         setools \
-        redhat-lsb-core \
         cockpit-networkmanager \
         cockpit-podman \
         cockpit-selinux \
