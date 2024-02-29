@@ -24,12 +24,13 @@ setup-virtualization ACTION="":
       echo "  Use 'enable' to select Enable Virtualization"
       echo "  Use 'disable' to select Disable Virtualization"
       echo "  Use 'vfio' to select Enable VFIO drivers"
+      echo "  Use 'shm' to select Autocreate Looking-Glass shm"
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Virtualization Setup${normal}"
       echo "NOTE: Enabling Virtualization will layer virt-manager and qemu"
       echo "      this will slow down system updates by a lot."
-      OPTION=$(Choose "Enable Virtualization" "Disable Virtualization" "Enable VFIO drivers")
+      OPTION=$(Choose "Enable Virtualization" "Disable Virtualization" "Enable VFIO drivers" "Autocreate Looking-Glass shm")
     fi
     if [[ "${OPTION,,}" =~ ^enable[[:space:]]virt ]]; then
       virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
@@ -84,4 +85,12 @@ setup-virtualization ACTION="":
           echo "NOTE: Your second GPU will not be usable by the host after you do this!"
         fi
       fi
+    elif [[ "${OPTION,,}" =~ shm ]]; then
+      echo "Creating tmpfile definition for shm file in /etc/tmpfiles.d/"
+      sudo bash -c "tee << LOOKING_GLASS_TMP > /etc/tmpfiles.d/10-looking-glass.conf
+      # Type Path               Mode UID  GID Age Argument
+      f /dev/shm/looking-glass 0660 1000 qemu -
+      LOOKING_GLASS_TMP"
+      echo "Adding SELinux context record for /dev/shm/looking-glass"
+      sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
     fi
