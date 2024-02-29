@@ -1,6 +1,13 @@
 name: Build ISOs
+
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/build_iso.yml'
+
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
@@ -34,28 +41,43 @@ jobs:
               EXTRA_BOOT_PARAMS="inst.resolution=1280x800"
           fi
           echo "EXTRA_BOOT_PARAMS=$EXTRA_BOOT_PARAMS" >> $GITHUB_ENV
+
       - name: Build ISOs
-        uses: ublue-os/isogenerator@1.0.8
+        uses: ublue-os/isogenerator@1.0.9
+        id: build
         with:
           ARCH: x86_64
           IMAGE_NAME: ${{ matrix.image_name }}
-          IMAGE_REPO: ghcr.io/ublue-os
+          IMAGE_REPO: ${{ env.IMAGE_REGISTRY }}
           VARIANT: 'Kinoite'
           VERSION: ${{ matrix.major_version }}
           IMAGE_TAG: ${{ matrix.image_tag }}
           SECURE_BOOT_KEY_URL: 'https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
           ENROLLMENT_PASSWORD: 'ublue-os'
-          ACTION_REPO: ublue-os/isogenerator
-          ACTION_REF: 1.0.8
           EXTRA_BOOT_PARAMS: ${{ env.EXTRA_BOOT_PARAMS }}
-      - name: Upload ISOs and SHA Checksum Files to R2
+
+      - name: Upload ISOs and Checksum to Job Artifacts
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.image_name }}-${{ matrix.image_tag }}-${{ matrix.major_version}}
+          path: ${{ steps.build.outputs.output-directory }}
+          if-no-files-found: error
+          retention-days: 0
+          compression-level: 0
+          overwrite: true
+
+      - name: Upload ISOs and Checksum to R2
+        if: github.event_name == 'workflow_dispatch'
         shell: bash
+        env:
+          RCLONE_CONFIG_R2_TYPE: s3
+          RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+          RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          RCLONE_CONFIG_R2_REGION: auto
+          RCLONE_CONFIG_R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          SOURCE_DIR: ${{ steps.build.outputs.output-directory }}
         run: |
-          export RCLONE_CONFIG_R2_TYPE=s3
-          export RCLONE_CONFIG_R2_PROVIDER=Cloudflare
-          export RCLONE_CONFIG_R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
-          export RCLONE_CONFIG_R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
-          export RCLONE_CONFIG_R2_REGION=auto
-          export RCLONE_CONFIG_R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
           dnf install -y rclone
-          rclone copy ./end_iso R2:bazzite
+          rclone copy $SOURCE_DIR R2:bazzite
