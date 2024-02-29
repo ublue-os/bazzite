@@ -159,6 +159,8 @@ configure-powerprofile ACTION="":
       bazzite-powersave
     elif [[ "${OPTION,,}" =~ balanced ]]; then
       echo "Setting default powerprofile to ${b}Balanced${n}"
-      rm ~/.config/autostart/bazzite-powersave.desktop
+      if [ -f "~/.config/autostart/bazzite-powersave.desktop" ]; then
+        rm ~/.config/autostart/bazzite-powersave.desktop
+      fi
       bazzite-powersave 0
     fi
