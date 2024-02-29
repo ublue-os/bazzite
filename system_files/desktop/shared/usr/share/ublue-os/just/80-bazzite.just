@@ -126,3 +126,35 @@ configure-watchdog ACTION="":
       fi
       rpm-ostree kargs $WATCHDOG_KARGS
     fi
+
+configure-powerprofile ACTION="":
+    #!/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    OPTION={{ ACTION }}
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust configure-powerprofile <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'powersave' to select Powersave"
+      echo "  Use 'balanced' to select Balanced"
+      exit 0
+    elif [ "$OPTION" == "" ]; then
+      echo "${bold}Power profile configuration${normal}"
+      echo "This lets you set the default power profile for when the desktop loads"
+      echo "We do not recommend changing this from ${b}Balanced${n} if you use this device primarily for gaming!"
+      echo ""
+      echo "Which power profile do you want to use when the desktop loads?"
+      OPTION=$(Choose "Powersave" "Balanced")
+    fi
+    if [[ "${OPTION,,}" =~ powersave ]]; then
+      echo "Setting default powerprofile to ${b}Powersave${n}"
+      bash -c 'cat << PPD > ~/.config/autostart/bazzite-powersave.desktop
+    [Desktop Entry]
+    Exec=/usr/bin/bazzite-powersave
+    Icon=dialog-scripts
+    Name=bazzite-powersave
+    Type=Application
+    PPD'
+    elif [[ "${OPTION,,}" =~ balanced ]]; then
+      echo "Setting default powerprofile to ${b}Balanced${n}"
+      rm ~/.config/autostart/bazzite-powersave.desktop
+    fi
