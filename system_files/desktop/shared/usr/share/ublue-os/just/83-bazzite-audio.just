@@ -225,4 +225,5 @@ setup-virtual-surround ACTION="":
 
 # Restart pipewire
 restart-pipewire:
+    echo "Restarting pipewire..."
     systemctl --user restart pipewire.service
