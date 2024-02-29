@@ -42,14 +42,14 @@ screens:
           description: A self-hosted game stream host for Moonlight
           default: false
           packages:
-          - Install Sunshine: ujust install-sunshine
-          - Autostart Sunshine: ujust autostart-sunshine
+          - Install Sunshine: ujust setup-sunshine install
+          - Autostart Sunshine: ujust setup-sunshine autostart
         Hide GRUB Menu:
           description: |
             NOTE: Press the escape key before boot to show the menu
           default: true
           packages:
-          - Hide GRUB: sudo -A ujust hide-grub
+          - Hide GRUB: sudo -A ujust configure-grub hide
         Install Game Mode Startup Video:
           description: Adds a Bazzite themed startup video for Steam's game mode.
           default: true
