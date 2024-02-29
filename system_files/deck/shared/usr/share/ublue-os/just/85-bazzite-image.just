@@ -139,6 +139,8 @@ restore-input-remapper:
     cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
     sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
 
+alias _toggle-wayland := _toggle_wayland
+
 _toggle_wayland:
     #!/usr/bin/bash
     source /etc/default/desktop-wayland
