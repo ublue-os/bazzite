@@ -5,7 +5,7 @@
  [[ ! -f $BIOS_INHIBIT_FILE ]] || die "Bios updates inhibited, no action ($BIOS_INHIBIT_FILE)"
  
 +if ! systemctl is-enabled jupiter-biosupdate.service; then
-+  die "Bios updates inhibited, no action (Service disabled)"
++  finish 0 no "Bios updates inhibited, no action (Service disabled)"
 +fi
 +
  # Print action

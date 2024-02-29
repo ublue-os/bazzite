@@ -2,14 +2,15 @@
   <a href="https://bazzite.gg/"><img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
 </p>
 
-[![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
+[![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
 
 # [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md)
 
----
+<p align="center">
+  <a href="https://bazzite.gg/#image-picker"><img src="/repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
+</p>
 
-# Image Picker 
-Use our [image picker](https://bazzite.gg/#image-picker) to find the right image for your hardware and preferences.
+---
 
 # Table of Contents
 - [Features for **All** Bazzite Images](#about--features)
@@ -79,9 +80,9 @@ Common variant available as `bazzite`, suitable for desktop computers.
 - Automatic updates for the OS, Flatpaks, and all Distrobox containers - powered by [ublue-update](https://github.com/ublue-os/ublue-update) and [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]  
-> **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).** If you experience any issues with installing Bazzite, then check out our [troubleshoot guide](https://universal-blue.discourse.group/docs?topic=34).
+> **ISOs can be downloaded from our [releases page](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
 
-If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image:
+Rebase from an existing upstream Fedora Atomic to this image:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
@@ -135,9 +136,9 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 > **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time. Upgrading the storage resolves the issue.**
 
 > [!IMPORTANT]  
-> **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).** If you experience any issues with installing Bazzite, then check out our [troubleshoot guide](https://universal-blue.discourse.group/docs?topic=34).
+> **ISOs can be downloaded from our [releases page](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
 
-If you're on an existing Universal Blue image follow [these instructions](https://universal-blue.org/images/#image-list). To rebase an existing upstream Fedora Silverblue/Kinoite ostree system to this image: 
+Rebase from an existing upstream Fedora Atomic to this image:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stable
@@ -153,7 +154,7 @@ If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd) <s
 
 **Be sure to also read the [hhd documentation](https://github.com/hhd-dev/hhd#after-install), some handhelds require specific setting changes/tweaks to function properly.**
 
-We also ship `ujust` commands to install various CSS Loader themes that can't be found on the CSS Loader store. These will be automatically updated with Bazzite if installed.
+We also ship `ujust` commands to install various [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) themes that can't be found on the CSS Loader store. These will be automatically updated with Bazzite if installed.
 ```bash
 # Install ROG Ally Theme for CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
 ujust install-rog-ally-theme
@@ -163,30 +164,6 @@ ujust install-legion-go-theme
 
 # Install PS5-to-Xbox glyph theme for hhd & CSS Loader (https://github.com/frazse/PS5-to-Xbox-glyphs)
 ujust install-hhd-xbox-glyph-theme
-```
-
-#### ASUS Ally
-
-Bazzite has separate images specific for the ASUS Ally due to extra driver & software requirements for that hardware. You can pick the Ally images from the installer, or rebase using one of the following:
-
-```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-ally:stable
-```
-
-```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-ally-gnome:stable
-```
-
-#### Framegame
-
-[Build one of these?](https://www.youtube.com/watch?v=zd6WtTUf-30) Here's an image for you. This is the deck variant of the framework laptop image.
-
-```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-framegame:stable
-```
-
-```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-framegame-gnome:stable
 ```
 
 ### GNOME
@@ -201,9 +178,9 @@ Builds with the GNOME desktop environment are available in both desktop and deck
 - Automatic updates for the [Firefox GNOME theme](https://github.com/rafaelmardojai/firefox-gnome-theme) and [Thunderbird GNOME theme](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(If installed)</sub></sup>
 
 > [!IMPORTANT]  
-> **ISOs can be downloaded from our releases page [here](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).** If you experience any issues with installing Bazzite, then check out our [troubleshoot guide](https://universal-blue.discourse.group/docs?topic=34).
+> **ISOs can be downloaded from our [releases page](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
 
-To rebase an existing ostree system to the **desktop** release:
+Rebase from an existing upstream Fedora Atomic to this image:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:stable

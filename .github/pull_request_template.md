@@ -2,6 +2,10 @@
 Thank you for contributing to the Universal Blue project!
 Here are some tips for you:
 
+## Thank you for contributing to the Universal Blue project!
+
+Please [read the Contributor's Guide](https://universal-blue.org/CONTRIBUTING/) before submitting a pull request.
+
 In this project we follow [Semantic PRs][1] and [Conventional Commits][2] to describe features and fixes we made. It would be nice if you did too as we use this to generate changelogs with the right sections: 
 
     feat(deck): enable this deck specific feature

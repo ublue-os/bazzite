@@ -181,37 +181,33 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         libmount \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        cups-libs \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true
 
-# Install Valve's patched Mesa, Pipewire and Bluez
+# Install Valve's patched Mesa
 # Install patched switcheroo control with proper discrete GPU support
-RUN rpm-ostree override replace \
+RUN rpm-ostree override remove \
+        mesa-va-drivers-freeworld && \
+    rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         mesa-filesystem \
-        mesa-dri-drivers \
-        mesa-libEGL \
-        mesa-libgbm \
-        mesa-libGL \
+        mesa-libxatracker \
         mesa-libglapi \
+        mesa-dri-drivers \
+        mesa-libgbm \
+        mesa-libEGL \
         mesa-vulkan-drivers \
-        mesa-libOSMesa \
-        pipewire \
-        pipewire-alsa \
-        pipewire-gstreamer \
-        pipewire-jack-audio-connection-kit \
-        pipewire-jack-audio-connection-kit-libs \
-        pipewire-libs \
-        pipewire-pulseaudio \
-        pipewire-utils \
-        bluez \
-        bluez-cups \
-        bluez-libs \
-        bluez-obexd \
+        mesa-libGL \
         xorg-x11-server-Xwayland && \
     rpm-ostree install \
+        mesa-va-drivers-freeworld \
         mesa-vdpau-drivers-freeworld.x86_64 && \
     rpm-ostree override replace \
     --experimental \
@@ -286,7 +282,6 @@ RUN rpm-ostree install \
         glow \
         gum \
         setools \
-        redhat-lsb-core \
         cockpit-networkmanager \
         cockpit-podman \
         cockpit-selinux \
@@ -296,7 +291,7 @@ RUN rpm-ostree install \
     pip install --prefix=/usr topgrade && \
     rpm-ostree install \
         ublue-update && \
-    sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/etc/ublue-update/topgrade-user.toml && \
+    sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
     sed -i 's/min_battery_percent.*/min_battery_percent = 20.0/' /usr/etc/ublue-update/ublue-update.toml && \
     sed -i 's/max_cpu_load_percent.*/max_cpu_load_percent = 100.0/' /usr/etc/ublue-update/ublue-update.toml && \
     sed -i 's/max_mem_percent.*/max_mem_percent = 90.0/' /usr/etc/ublue-update/ublue-update.toml && \
@@ -379,8 +374,10 @@ RUN rpm-ostree install \
             gamemode \
     ; else \
         rpm-ostree override remove \
-            gamemode \
+            gamemode && \
+        rpm-ostree override remove \
             gnome-shell-extension-gamemode \
+            || true \
     ; fi && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/winetricks.desktop && \
     ln -s /usr/bin/wine64 /usr/bin/wine && \
@@ -689,8 +686,23 @@ RUN rpm-ostree install \
     rm -rf /tmp/linux-firmware-galileo && \
     rm -rf /usr/share/alsa/ucm2/conf.d/acp5x/Valve-Jupiter-1.conf
 
-# Install Steam Deck patched Wireplumber & UPower
+# Install Steam Deck patched Pipewire, Wireplumber, Bluez & UPower
 RUN rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+        pipewire \
+        pipewire-alsa \
+        pipewire-gstreamer \
+        pipewire-jack-audio-connection-kit \
+        pipewire-jack-audio-connection-kit-libs \
+        pipewire-libs \
+        pipewire-pulseaudio \
+        pipewire-utils \
+        bluez \
+        bluez-cups \
+        bluez-libs \
+        bluez-obexd && \
+    rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         wireplumber \
@@ -803,7 +815,12 @@ RUN wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nvidia-explicit
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
-        xorg-x11-server-Xwayland
+        xorg-x11-server-Xwayland && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
+        egl-wayland \
+        || true
 
 # Cleanup & Finalize
 RUN rm -rf \

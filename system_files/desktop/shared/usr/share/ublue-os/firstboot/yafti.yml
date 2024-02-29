@@ -210,7 +210,6 @@ screens:
           - AppImage Pool: io.github.prateekmedia.appimagepool
           - Barrier: com.github.debauchee.barrier
           - Bitwarden: com.bitwarden.desktop
-          - BoxBuddy: io.github.dvlv.boxbuddyrs
           - Calibre: com.calibre_ebook.calibre
           - DejaDup: org.gnome.DejaDup
           - Easy Effects: com.github.wwmm.easyeffects

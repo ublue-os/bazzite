@@ -1,0 +1,61 @@
+name: Build ISOs
+on:
+  workflow_dispatch:
+env:
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    container:
+      image: fedora:${{ matrix.major_version }}
+      options: "--privileged"
+      volumes:
+        - "/:/host"
+    strategy:
+      fail-fast: false
+      matrix:
+        image_name: [bazzite, bazzite-nvidia, bazzite-gnome, bazzite-gnome-nvidia, bazzite-deck, bazzite-deck-gnome, bazzite-ally, bazzite-ally-gnome, bazzite-asus, bazzite-gnome-asus, bazzite-asus-nvidia, bazzite-gnome-asus-nvidia]
+        major_version: [39]
+        image_tag: [stable]
+    steps:
+      - name: Set EXTRA_BOOT_PARAMS
+        run: |
+          EXTRA_BOOT_PARAMS=""
+          if [[ "${{ matrix.image_name }}" == "bazzite-deck" || "${{ matrix.image_name }}" == "bazzite-deck-gnome" || "${{ matrix.image_name }}" == "bazzite-deck-budgie" ]]; then
+              EXTRA_BOOT_PARAMS="inst.resolution=1280x800"
+          fi
+          echo "EXTRA_BOOT_PARAMS=$EXTRA_BOOT_PARAMS" >> $GITHUB_ENV
+      - name: Build ISOs
+        uses: ublue-os/isogenerator@1.0.8
+        with:
+          ARCH: x86_64
+          IMAGE_NAME: ${{ matrix.image_name }}
+          IMAGE_REPO: ghcr.io/ublue-os
+          VARIANT: 'Kinoite'
+          VERSION: ${{ matrix.major_version }}
+          IMAGE_TAG: ${{ matrix.image_tag }}
+          SECURE_BOOT_KEY_URL: 'https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
+          ENROLLMENT_PASSWORD: 'ublue-os'
+          ACTION_REPO: ublue-os/isogenerator
+          ACTION_REF: 1.0.8
+          EXTRA_BOOT_PARAMS: ${{ env.EXTRA_BOOT_PARAMS }}
+      - name: Upload ISOs and SHA Checksum Files to R2
+        shell: bash
+        run: |
+          export RCLONE_CONFIG_R2_TYPE=s3
+          export RCLONE_CONFIG_R2_PROVIDER=Cloudflare
+          export RCLONE_CONFIG_R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
+          export RCLONE_CONFIG_R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
+          export RCLONE_CONFIG_R2_REGION=auto
+          export RCLONE_CONFIG_R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
+          dnf install -y rclone
+          rclone copy ./end_iso R2:bazzite
