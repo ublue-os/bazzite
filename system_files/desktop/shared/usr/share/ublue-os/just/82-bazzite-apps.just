@@ -65,7 +65,7 @@ install-adwaita-for-steam:
         rm -rf "$HOME/homebrew/themes/Adwaita-for-Steam"
         git clone https://github.com/tkashkin/Adwaita-for-Steam.git --single-branch "$HOME/homebrew/themes/Adwaita-for-Steam"
     else
-        echo 'Please install Decky Loader & CSS Loader first'
+        echo 'Please install Decky Loader by running "ujust setup-decky install" first, then install CSS Loader from the Decky Plugin Store.'
     fi
 
 # Install Oversteer for Logitech steering wheels
