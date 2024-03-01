@@ -92,15 +92,26 @@ setup-virtualization ACTION="":
       CONFIRM=$(Choose Cancel Continue)
       if [ "$CONFIRM" == "Continue" ]; then
         echo "Disabling VFIO..."
+        VFIO_IDS="$(rpm-ostree kargs | sed -E 's/.+(vfio_pci.ids=.+\s)/\1/' | awk '{ print $1 }' | grep vfio_pci.ids)"
+        VFIO_IDS_KARG=""
+        if [ -n "$VFIO_IDS" ]; then
+          echo "Found VFIO ids in kargs, adding the below line to removal list"
+          echo "$VFIO_IDS"
+          VFIO_IDS_KARG="--delete-if-present=\"$VFIO_IDS\""
+        fi
+        echo "Removing dracut modules"
         sudo rm /etc/dracut.conf.d/vfio.conf
+        echo "Issuing initramfs rebuild for next boot"
         sudo touch /etc/bazzite/initramfs/rebuild
         rpm-ostree kargs \
-        --delete-if-present="iommu" \
-        --delete-if-present="amd_iommu" \
-        --delete-if-present="intel_iommu" \
+        --delete-if-present="iommu=pt" \
+        --delete-if-present="iommu=on" \
+        --delete-if-present="amd_iommu=on" \
+        --delete-if-present="intel_iommu=on" \
         --delete-if-present="rd.driver.pre=vfio_pci" \
-        --delete-if-present="vfio_pci.disable_vga" \
-        --delete-if-present="vfio_pci.ids"
+        --delete-if-present="vfio_pci.disable_vga=1" \
+        --delete-if-present="vfio_pci.disable_vga=0" \
+        $VFIO_IDS_KARG
       fi
     elif [[ "${OPTION,,}" =~ shm ]]; then
       echo "Creating tmpfile definition for shm file in /etc/tmpfiles.d/"
