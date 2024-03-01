@@ -31,7 +31,7 @@ screens:
           description: A plugin loader for the Steam Deck
           default: false
           packages:
-          - Retrieve Decky: sudo -A ujust get-decky
+          - Retrieve Decky: sudo -A ujust setup-decky install
         EmuDeck:
           description: |
             A utility for installing and configuring emulators on the Steam Deck
@@ -42,14 +42,14 @@ screens:
           description: A self-hosted game stream host for Moonlight
           default: false
           packages:
-          - Install Sunshine: ujust install-sunshine
-          - Autostart Sunshine: ujust autostart-sunshine
+          - Install Sunshine: ujust setup-sunshine install
+          - Autostart Sunshine: ujust setup-sunshine autostart
         Hide GRUB Menu:
           description: |
             NOTE: Press the escape key before boot to show the menu
           default: true
           packages:
-          - Hide GRUB: sudo -A ujust hide-grub
+          - Hide GRUB: sudo -A ujust configure-grub hide
         Install Game Mode Startup Video:
           description: Adds a Bazzite themed startup video for Steam's game mode.
           default: true
@@ -79,7 +79,7 @@ screens:
           description: A configurator for Wooting keyboards
           default: false
           packages:
-          - Retrieve Wootility: ujust get-wootility
+          - Retrieve Wootility: ujust install-wootility
         OpenTabletDriver:
           description: Open source, cross-platform, user-mode tablet driver
           default: false
@@ -99,7 +99,7 @@ screens:
           description: Installs SteamCMD
           default: true
           packages:
-          - Install SteamCMD: ujust get-steamcmd
+          - Install SteamCMD: ujust install-steamcmd
         Use EXT4 for SD Cards:
           description: Disable BTRFS support for SD cards for direct compatibility with SD cards formatted on stock SteamOS (Not recommended).
           default: false

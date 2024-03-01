@@ -69,7 +69,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
 - Out of the box support for [Wooting](https://wooting.io/) keyboards.
 - Built in support for Southern Islands <sub><sup>(HD 7000)</sup></sub> and Sea Islands <sub><sup>(HD 8000)</sup></sub> AMD GPUs under the `amdgpu` driver.
-- A fix is available for [a 32-bit Source 1 engine game bug <sub><sup>(IE: TF2)</sup></sub>](https://github.com/ValveSoftware/Source-1-Games/issues/5043) that makes the game crash on launch - `ujust patch-source1-tcmalloc`
+- A fix is available for [a 32-bit Source 1 engine game bug <sub><sup>(IE: TF2)</sup></sub>](https://github.com/ValveSoftware/Source-1-Games/issues/5043) that makes the game crash on launch - `ujust fix-source1-tcmalloc`
 - [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) is available for Discord screensharing on Wayland.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) is available for creating applications from websites for a variety of browsers, including Firefox.
 
@@ -147,10 +147,10 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 #### Alternative Handhelds
 
 If you're using this image on a handheld other than the Steam Deck, you can get TDP control via the SimpleDeckyTDP Decky Loader Plugin.
-- First install Decky Loader with: `ujust get-decky`
-- Then install SimpleDeckyTDP with: `ujust get-simpledeckytdp`
+- First install Decky Loader with: `ujust setup-decky`
+- Then install SimpleDeckyTDP with: `ujust setup-decky simpledeckytdp`
 
-If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Such as the Lenovo Legion Go and the ASUS Ally)</sup></sub>, you can also get the plugin to integrate an option menu for it into game mode with: `ujust get-hhd-decky`
+If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Such as the Lenovo Legion Go and the ASUS Ally)</sup></sub>, you can also get the plugin to integrate an option menu for it into game mode with: `ujust setup-decky hhd-decky`
 
 **Be sure to also read the [hhd documentation](https://github.com/hhd-dev/hhd#after-install), some handhelds require specific setting changes/tweaks to function properly.**
 
