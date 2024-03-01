@@ -39,9 +39,6 @@ process-scheduler enable=true {
         // Video games
         games nice=-5 io=(best-effort)0
 
-        // Video game background tasks
-        games-background nice=0 io="idle"
-
         // Desktop environments
         desktop-environment nice=-3 io=(best-effort)0
 
@@ -102,6 +99,7 @@ process-scheduler enable=true {
         taskset
         vpower
         schedtool
+        sunshine
         tuned
         tuned-ppd
     }

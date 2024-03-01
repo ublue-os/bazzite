@@ -83,7 +83,7 @@ Esta variante común/genérica esta disponible como `bazzite`, la cual es adecua
 - Actualizaciones automáticas para el sistema operativo, Flatpaks, paquetes Nix <sup><sub>(Usando Fleek)</sub></sup>, y todos los contenedores Distrobox.
 
 > \[!IMPORTANT\]\
-> **Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).** Si experimentas errores y/o problemas instalando Bazzite, checa nuestra [guía de solución de problemas (en inglés)](https://universal-blue.discourse.group/docs?topic=34).
+> **Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).**
 
 Si estas actualmente usando una imagen de Universal Blue, por favor [sigue estas instrucciones (en inglés)](https://universal-blue.org/images/#image-list). 
 
@@ -142,7 +142,7 @@ Esta variante esta diseñada para usarse como una alternativa de SteamOS en la S
 > **Debido a un bug en upstream, Bazzite no puede ser utilizado por el momento en Steam Decks con solo 64 GB de almacenamiento eMMC. Ampliar tu almacenamiento cambiando el disco interno soluciona este problema.**
 
 > \[!IMPORTANT\]\
-> **Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).** Si experimentas errores y/o problemas instalando Bazzite, checa nuestra [guía de solución de problemas (en inglés)](https://universal-blue.discourse.group/docs?topic=34).
+> **Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).**
 
 Si estas actualmente usando una imagen de Universal Blue, por favor [sigue estas instrucciones (en inglés)](https://universal-blue.org/images/#image-list). 
 
@@ -163,7 +163,7 @@ Si estas usando una computadora Handheld que tiene soporte por parte de [hhd](ht
 
 **Igualmente, asegurate de tambien leer la [documentación de HHD (en inglés)](https://github.com/hhd-dev/hhd#after-install), algunas computadoras Handheld requieren ciertos ajustes o tweaks especificos para funcionar correctamente.**
 
-Tambien incluimos ciertos comandos de `ujust` para instalar varios temas para CSS Loader que no estan disponibles en su propia tienda. Si instalas estos temas, estos tambien serán actualizados automáticamente junto con Bazzite.
+Tambien incluimos ciertos comandos de `ujust` para instalar varios temas para [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) que no estan disponibles en su propia tienda. Si instalas estos temas, estos tambien serán actualizados automáticamente junto con Bazzite.
 
 ```bash
 # Instala el tema de la ROG Ally para CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
@@ -220,7 +220,7 @@ Las sub-variantes con el entorno de escritorio GNOME están disponibles tanto pa
 - Actualizaciones automáticas para el [tema de GNOME para Firefox](https://github.com/rafaelmardojai/firefox-gnome-theme) y el [tema de GNOME para Thunderbird](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(Si se encuentran instalados)</sub></sup>
 
 > \[!IMPORTANT\]\
-> \**Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).** Si experimentas errores y/o problemas instalando Bazzite, checa nuestra [guía de solución de problemas (en inglés)](https://universal-blue.discourse.group/docs?topic=34).
+> \**Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).**
 
 Si deseas cambiar la base (rebase) a la imagen **para computadoras de escritorio con una GPU AMD ó Intel**, ejecuta el siguiente comando en una terminal:
 
