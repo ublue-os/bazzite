@@ -60,7 +60,7 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Driver [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) untuk men-overclocking Kontroller Nintendo Gamecube sampai dengan 1000hz polling.
 - Dukungan untuk keyboard [Wooting](https://wooting.io/).
 - Dukungan untuk kartu grafis Southern Islands <sub><sup>(HD 7000)</sup></sub> and Sea Islands <sub><sup>(HD 8000)</sup></sub> dengan driver `amdgpu`.
-- Memperbaiki masalah untuk [game yang menggunakan engine Source 1 <sub><sup>(Contoh: TF2)</sup></sub>](https://github.com/ValveSoftware/Source-1-Games/issues/5043) yang membuat game-nya crash saat dijalankan `ujust patch-source1-tcmalloc`
+- Memperbaiki masalah untuk [game yang menggunakan engine Source 1 <sub><sup>(Contoh: TF2)</sup></sub>](https://github.com/ValveSoftware/Source-1-Games/issues/5043) yang membuat game-nya crash saat dijalankan `ujust fix-source1-tcmalloc`
 - [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) untuk Discord screensharing di Wayland.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) tersedia untuk membuat aplikasi dari situs web dengan berbagai macam peramban, termasuk Firefox.
   

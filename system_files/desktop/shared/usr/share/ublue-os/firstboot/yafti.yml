@@ -36,8 +36,8 @@ screens:
           description: A self-hosted game stream host for Moonlight
           default: false
           packages:
-          - Install Sunshine: ujust install-sunshine
-          - Autostart Sunshine: ujust autostart-sunshine
+          - Install Sunshine: ujust setup-sunshine install
+          - Autostart Sunshine: ujust setup-sunshine autostart
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware
           default: false
@@ -62,7 +62,7 @@ screens:
           description: A configurator for Wooting keyboards
           default: false
           packages:
-          - Retrieve Wootility: ujust get-wootility
+          - Retrieve Wootility: ujust install-wootility
         Resilio Sync:
           description: A file synchronization utility powered by BitTorrent
           default: false
