@@ -25,9 +25,12 @@ jobs:
         shell: pwsh
       - name: Checkout Repository
         uses: actions/checkout@v4
+      - name: Shorten Changelog
+        run : |
+          awk '/^## / {count++} count <= 2 {print;}' CHANGELOG.md > CHANGELOG-SHORT.md
       - name: Create BB Code Changelog for Steam
         run: |
-          markdown_to_bbcodesteam -i "CHANGELOG.md" -o "CHANGELOG-BBCODE.txt";
+          markdown_to_bbcodesteam -i "CHANGELOG-SHORT.md" -o "CHANGELOG-BBCODE.txt";
         shell: pwsh
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
@@ -41,3 +44,4 @@ jobs:
           signoff: false
           add-paths: |
             CHANGELOG-BBCODE.txt
+            CHANGELOG-SHORT.md
