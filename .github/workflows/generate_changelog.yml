@@ -27,5 +27,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Create Steam BBCode Changelog
         run: |
-          markdown_to_bbcodesteam -i "/CHANGELOG.md" -o "/CHANGELOG-BBCODE.txt";
+          markdown_to_bbcodesteam -i "CHANGELOG.md" -o "CHANGELOG-BBCODE.txt";
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add CHANGELOG-BBCODE.txt
+          git commit -m "chore(changelog): Update CHANGELOG_BBCODE.txt for Steam game mode"
+          git push
         shell: pwsh
