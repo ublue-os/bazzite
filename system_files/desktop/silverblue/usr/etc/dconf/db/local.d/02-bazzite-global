@@ -57,6 +57,7 @@ flatpak='off'
 [org/gnome/Ptyxis]
 restore-session=false
 restore-window-size=false
+audible-bell=false
 
 [org/gnome/shell/extensions/Logo-menu]
 symbolic-icon=false
