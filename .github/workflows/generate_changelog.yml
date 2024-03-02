@@ -20,11 +20,11 @@ jobs:
         with:
           release-type: simple
           package-name: release-please-action
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Install MarkdownToBBCodeSteam
         run: dotnet tool install -g Converter.MarkdownToBBCodeSteam.Tool
         shell: pwsh
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Create Steam BBCode Changelog
         run: |
           markdown_to_bbcodesteam -i "/CHANGELOG.md" -o "/CHANGELOG-BBCODE.txt";
