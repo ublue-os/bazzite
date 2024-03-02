@@ -12,7 +12,7 @@ permissions:
 
 name: Generate Changelog
 jobs:
-  release-please:
+  generate-changelog:
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v4
@@ -20,3 +20,12 @@ jobs:
         with:
           release-type: simple
           package-name: release-please-action
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install MarkdownToBBCodeSteam
+        run: dotnet tool install -g Converter.MarkdownToBBCodeSteam.Tool
+        shell: pwsh
+      - name: Create Steam BBCode Changelog
+        run: |
+          markdown_to_bbcodesteam -i "/CHANGELOG.md" -o "/CHANGELOG-BBCODE.txt";
+        shell: pwsh
