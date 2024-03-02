@@ -21,6 +21,7 @@ Patch6:         systemd-run.patch
 Patch7:         priv-write.patch
 Patch8:         biosupdate.patch
 Patch9:         gnome.patch
+Patch10:        fstrim.patch
 
 Requires:       python3
 Requires:       python3-evdev

@@ -12,7 +12,7 @@ permissions:
 
 name: Generate Changelog
 jobs:
-  release-please:
+  generate-changelog:
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v4
@@ -20,3 +20,28 @@ jobs:
         with:
           release-type: simple
           package-name: release-please-action
+      - name: Install MarkdownToBBCodeSteam
+        run: dotnet tool install -g Converter.MarkdownToBBCodeSteam.Tool
+        shell: pwsh
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Shorten Changelog
+        run : |
+          awk '/^## / {count++} count <= 2 {print;}' CHANGELOG.md > CHANGELOG-SHORT.md
+      - name: Create BB Code Changelog for Steam
+        run: |
+          markdown_to_bbcodesteam -i "CHANGELOG-SHORT.md" -o "CHANGELOG-BBCODE.txt";
+        shell: pwsh
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore(main): Update Steam BBCode Changelog"
+          branch: steam-changelog
+          title: "chore(main): Update Steam BBCode Changelog"
+          body: |
+            :robot: I have updated the Steam game mode changelog *beep* *boop*
+          delete-branch: true
+          signoff: false
+          add-paths: |
+            CHANGELOG-BBCODE.txt
+            CHANGELOG-SHORT.md

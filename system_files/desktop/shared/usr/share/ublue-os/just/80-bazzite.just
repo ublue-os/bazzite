@@ -20,7 +20,7 @@ restore-original-terminal:
 install-gamemode-video:
     mkdir -p $HOME/.local/share/Steam/config/uioverrides/movies
     rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
-    ln -s /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
+    cp /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
 
 # Force-enable AMD pstate
 pstate-force-enable:
@@ -127,6 +127,7 @@ configure-watchdog ACTION="":
       rpm-ostree kargs $WATCHDOG_KARGS
     fi
 
+# Set the default powerprofile to load when the desktop starts
 configure-powerprofile ACTION="":
     #!/bin/bash
     source /usr/lib/ujust/ujust.sh

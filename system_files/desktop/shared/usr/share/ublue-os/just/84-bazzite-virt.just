@@ -23,14 +23,15 @@ setup-virtualization ACTION="":
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'enable' to select Enable Virtualization"
       echo "  Use 'disable' to select Disable Virtualization"
-      echo "  Use 'vfio' to select Enable VFIO drivers"
+      echo "  Use 'vfio-on' to select Enable VFIO drivers"
+      echo "  Use 'vfio-off' to select Disable VFIO drivers"
       echo "  Use 'shm' to select Autocreate Looking-Glass shm"
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Virtualization Setup${normal}"
       echo "NOTE: Enabling Virtualization will layer virt-manager and qemu"
       echo "      this will slow down system updates by a lot."
-      OPTION=$(Choose "Enable Virtualization" "Disable Virtualization" "Enable VFIO drivers" "Autocreate Looking-Glass shm")
+      OPTION=$(Choose "Enable Virtualization" "Disable Virtualization" "Enable VFIO drivers" "Disable VFIO drivers" "Autocreate Looking-Glass shm")
     fi
     if [[ "${OPTION,,}" =~ ^enable[[:space:]]virt ]]; then
       virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
@@ -42,7 +43,7 @@ setup-virtualization ACTION="":
         --append-if-missing="kvm.report_ignored_msrs=0"
         echo 'Please re-run "ujust setup-virtualization" after the reboot to enable libvirtd service'
       fi
-    elif [[ "${OPTION,,}" =~ ^disable ]]; then
+    elif [[ "${OPTION,,}" =~ ^disable[[:space:]]virt ]]; then
       virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
       if [[ ${virt_test} ]]; then
         if [ "$(systemctl is-enabled libvirtd.service)" == "enabled" ]; then
@@ -56,7 +57,7 @@ setup-virtualization ACTION="":
         --delete-if-present="kvm.report_ignored_msrs=0"
         echo 'Please re-run "ujust enable-virtualization" after the reboot to finish setup'
       fi
-    elif [[ "${OPTION,,}" =~ vfio ]]; then
+    elif [[ "${OPTION,,}" =~ (^enable[[:space:]]vfio|vfio-on) ]]; then
       echo "Enabling VFIO..."
       VIRT_TEST=$(rpm-ostree kargs)
       CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
@@ -84,6 +85,33 @@ setup-virtualization ACTION="":
           echo 'rpm-ostree kargs --append-if-missing="vfio-pci.ids=xxxx:yyyy,xxxx:yyzz"'
           echo "NOTE: Your second GPU will not be usable by the host after you do this!"
         fi
+      fi
+    elif [[ "${OPTION,,}" =~ (^disable[[:space:]]vfio|vfio-off) ]]; then
+      echo ""
+      echo "Make sure you have ${b}disabled autostart of all VMs using VFIO${n} before continuing!"
+      CONFIRM=$(Choose Cancel Continue)
+      if [ "$CONFIRM" == "Continue" ]; then
+        echo "Disabling VFIO..."
+        VFIO_IDS="$(rpm-ostree kargs | sed -E 's/.+(vfio_pci.ids=.+\s)/\1/' | awk '{ print $1 }' | grep vfio_pci.ids)"
+        VFIO_IDS_KARG=""
+        if [ -n "$VFIO_IDS" ]; then
+          echo "Found VFIO ids in kargs, adding the below line to removal list"
+          echo "$VFIO_IDS"
+          VFIO_IDS_KARG="--delete-if-present=\"$VFIO_IDS\""
+        fi
+        echo "Removing dracut modules"
+        sudo rm /etc/dracut.conf.d/vfio.conf
+        echo "Issuing initramfs rebuild for next boot"
+        sudo touch /etc/bazzite/initramfs/rebuild
+        rpm-ostree kargs \
+        --delete-if-present="iommu=pt" \
+        --delete-if-present="iommu=on" \
+        --delete-if-present="amd_iommu=on" \
+        --delete-if-present="intel_iommu=on" \
+        --delete-if-present="rd.driver.pre=vfio_pci" \
+        --delete-if-present="vfio_pci.disable_vga=1" \
+        --delete-if-present="vfio_pci.disable_vga=0" \
+        $VFIO_IDS_KARG
       fi
     elif [[ "${OPTION,,}" =~ shm ]]; then
       echo "Creating tmpfile definition for shm file in /etc/tmpfiles.d/"

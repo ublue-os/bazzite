@@ -1,0 +1,21 @@
+--- a/usr/lib/hwsupport/trim-devices.sh
++++ b/usr/lib/hwsupport/trim-devices.sh
+@@ -78,6 +78,18 @@
+     return;
+ }
+ 
++# If fstrim has been disabled by the end-user, do nothing
++if ! systemctl is-enabled fstrim.timer; then
++    echo "fstrim.timer disabled, exiting trim-devices.sh"
++    exit
++fi
++
++# If the upstream fstrim service is currently running, do nothing
++if systemctl is-active fstrim.service; then
++    echo "fstrim.service is currently active, exiting trim-devices.sh"
++    exit
++fi
++
+ # In some cases it is unsafe to trim an sdcard. When we detect this case
+ # lets just trim the partitions on the internal drive which we know are
+ # safe to trim/discard
