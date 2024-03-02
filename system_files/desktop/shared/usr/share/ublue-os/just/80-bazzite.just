@@ -127,6 +127,7 @@ configure-watchdog ACTION="":
       rpm-ostree kargs $WATCHDOG_KARGS
     fi
 
+# Set the default powerprofile to load when the desktop starts
 configure-powerprofile ACTION="":
     #!/bin/bash
     source /usr/lib/ujust/ujust.sh
