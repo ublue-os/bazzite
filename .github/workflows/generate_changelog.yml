@@ -25,12 +25,19 @@ jobs:
         shell: pwsh
       - name: Checkout Repository
         uses: actions/checkout@v4
-      - name: Create Steam BBCode Changelog
+      - name: Create BB Code Changelog for Steam
         run: |
           markdown_to_bbcodesteam -i "CHANGELOG.md" -o "CHANGELOG-BBCODE.txt";
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add CHANGELOG-BBCODE.txt
-          git commit -m "chore(changelog): Update CHANGELOG_BBCODE.txt for Steam game mode"
-          git push
         shell: pwsh
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore(main): Update Steam BBCode Changelog"
+          branch: steam-changelog
+          title: "chore(main): Update Steam BBCode Changelog"
+          body: |
+            :robot: I have updated the Steam game mode changelog *beep* *boop*
+          delete-branch: true
+          signoff: false
+          add-paths: |
+            CHANGELOG-BBCODE.txt
