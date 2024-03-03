@@ -35,8 +35,10 @@ KDE Presets from Valve's SteamOS 3.0 for desktops
 %install
 mkdir -p %{buildroot}%{_datadir}/
 mkdir -p %{buildroot}%{_sysconfdir}/
+mkdir -p %{buildroot}%{_bindir}/
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv etc/* %{buildroot}%{_sysconfdir}
+cp usr/bin/steamos-add-to-steam %{buildroot}%{_bindir}/steamos-add-to-steam
 mv %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck.svg
 cp %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck-le.svg
 # Remove unneeded files
@@ -80,6 +82,7 @@ cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.deskto
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.
 %files
+%{_bindir}/steamos-add-to-steam
 %{_datadir}/color-schemes/Vapor.colors
 %{_datadir}/color-schemes/VGUI.colors
 %{_datadir}/icons/*
