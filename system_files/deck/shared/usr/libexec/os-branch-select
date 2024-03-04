@@ -58,4 +58,4 @@ if [[ $# -eq 1 ]]; then
   esac
 fi
 
-echo "Usage: steamos-select-branch <latest|stable|testing|unstable>" 1>&2
+echo "Usage: steamos-select-branch <stable|testing|unstable>" 1>&2
