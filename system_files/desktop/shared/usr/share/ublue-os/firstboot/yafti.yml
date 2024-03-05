@@ -148,7 +148,6 @@ screens:
           default: false
           packages:
           - Cemu: info.cemu.Cemu
-          - Citra: org.citra_emu.citra
           - Dolphin: org.DolphinEmu.dolphin-emu
           - DuckStation: org.duckstation.DuckStation
           - MAME: org.mamedev.MAME
@@ -167,7 +166,6 @@ screens:
           - Snes9x: com.snes9x.Snes9x
           - Stella: io.github.stella_emu.Stella
           - xemu: app.xemu.xemu
-          - yuzu: org.yuzu_emu.yuzu
         Streaming:
           description: Stream to the Internet
           default: false
