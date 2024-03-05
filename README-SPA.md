@@ -264,7 +264,6 @@ Lee nuestras [preguntas frecuentes](https://universal-blue.discourse.group/docs?
 - [Actualizaciones, Reversiones y Cambio de Base (Rebasing)](https://universal-blue.discourse.group/docs?topic=36)
 - [Guía para Jugar en Linux](https://universal-blue.discourse.group/docs?topic=31)
 - [Guía para Configurar el Arranque Dual con Windows (Dual Boot)](https://universal-blue.discourse.group/docs?topic=129)
-- [Documentación Miscelánea](https://universal-blue.discourse.group/docs?topic=287)
 
 Puedes encontrar documentación adicional relacionada al proyecto [aquí](http://docs.bazzite.gg/).
 
