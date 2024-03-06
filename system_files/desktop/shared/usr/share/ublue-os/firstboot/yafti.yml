@@ -115,7 +115,7 @@ screens:
           - Opera: com.opera.Opera
           - Vivaldi: com.vivaldi.Vivaldi
         Communication:
-          description: Voice & text chat
+          description: Voice and text chat
           default: false
           packages:
           - Discord: com.discordapp.Discord
@@ -149,22 +149,22 @@ screens:
           description: Freebies
           default: false
           packages:
-		      - Battle for Wesnoth: org.wesnoth.Wesnoth
-		      - Beyond All Reason: info.beyondallreason.bar
-		      - Cave Story NX: com.gitlab.coringao.cavestory-nx
-		      - Freedoom 1: io.github.freedoom.Phase1
-		      - Mindustry: com.github.Anuken.Mindustry
-		      - Minetest: net.minetest.Minetest
-		      - OpenRA: net.openra.OpenRA
-		      - OpenRCT2: io.openrct2.OpenRCT2
-		      - OpenTTD: org.openttd.OpenTTD
+	  - Battle for Wesnoth: org.wesnoth.Wesnoth
+   	  - Beyond All Reason: info.beyondallreason.bar
+          - Cave Story NX: com.gitlab.coringao.cavestory-nx
+	  - Freedoom 1: io.github.freedoom.Phase1
+	  - Mindustry: com.github.Anuken.Mindustry
+	  - Minetest: net.minetest.Minetest
+	  - OpenRA: net.openra.OpenRA
+	  - OpenRCT2: io.openrct2.OpenRCT2
+	  - OpenTTD: org.openttd.OpenTTD
           - osu: sh.ppy.osu
           - Space Cadet Pinball: com.github.k4zmu2a.spacecadetpinball
           - Sonic Robo Blast 2: org.srb2.SRB2
           - Sonic Robo Blast 2 Kart: org.srb2.SRB2Kart
           - SuperTux: org.supertuxproject.SuperTux
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
-		      - Xonotic: org.xonotic.Xonotic
+	  - Xonotic: org.xonotic.Xonotic
         Emulation:
           description: Play games like it's 1972
           default: false
