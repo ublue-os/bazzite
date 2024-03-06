@@ -13,7 +13,7 @@ screens:
   configure-bazzite:
     source: yafti.screen.package
     values:
-      title: Setting up Bazzite
+      title: Setting up Bazzite (This may take a long time)
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
@@ -76,7 +76,7 @@ screens:
   amd-additions:
     source: yafti.screen.package
     values:
-      title: AMD Additions
+      title: AMD/Intel Additions
       condition:
         run: grep -qv 'nvidia' <<< $(jq -r '."image-flavor"' < /usr/share/ublue-os/image-info.json)
       show_terminal: true
@@ -114,35 +114,57 @@ screens:
           - Microsoft Edge: com.microsoft.Edge
           - Opera: com.opera.Opera
           - Vivaldi: com.vivaldi.Vivaldi
-        Gaming:
-          description: "Rock and Stone!"
+        Communication:
+          description: Voice & text chat
+          default: false
+          packages:
+          - Discord: com.discordapp.Discord
+          - Mumble: info.mumble.Mumble
+          - TeamSpeak: com.teamspeak.TeamSpeak
+          - Slack: com.slack.Slack
+        Gaming Frontends and Tools:
+          description: For all your gaming needs
           default: false
           packages:
           - BoilR: io.github.philipk.boilr
           - Bottles: com.usebottles.bottles
-          - Chiaki (PlayStation Remote Play): re.chiaki.Chiaki
-          - Discord: com.discordapp.Discord
-          - DOSBox Staging: io.github.dosbox-staging
-          - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
-          - Greenlight: io.github.unknownskl.greenlight
-          - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
+          - DOSBox-X: com.dosbox_x.DOSBox-X
+          - Heroic Games Launcher (Epic): com.heroicgameslauncher.hgl
           - itch: io.itch.itch
           - ludusavi (Game Save Backup): com.github.mtkennerly.ludusavi
           - Minecraft (Prism Launcher): org.prismlauncher.PrismLauncher
           - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
-          - Moonlight: com.moonlight_stream.Moonlight
-          - Mumble: info.mumble.Mumble
           - OpenMW: org.openmw.OpenMW
+          - XIV Launcher (Final Fantasy XIV): dev.goats.xivlauncher
+        Game Streaming:
+          description: Cloud not-so-native computing
+          default: false
+          packages:
+          - Chiaki (PlayStation Remote Play): re.chiaki.Chiaki
+          - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
+          - Greenlight: io.github.unknownskl.greenlight
+          - Moonlight: com.moonlight_stream.Moonlight
+          - Steam Link: com.valvesoftware.SteamLink
+        Free Games:
+          description: Freebies
+          default: false
+          packages:
+		      - Battle for Wesnoth: org.wesnoth.Wesnoth
+		      - Beyond All Reason: info.beyondallreason.bar
+		      - Cave Story NX: com.gitlab.coringao.cavestory-nx
+		      - Freedoom 1: io.github.freedoom.Phase1
+		      - Mindustry: com.github.Anuken.Mindustry
+		      - Minetest: net.minetest.Minetest
+		      - OpenRA: net.openra.OpenRA
+		      - OpenRCT2: io.openrct2.OpenRCT2
+		      - OpenTTD: org.openttd.OpenTTD
           - osu: sh.ppy.osu
-          - Parsec: com.parsecgaming.parsec
           - Space Cadet Pinball: com.github.k4zmu2a.spacecadetpinball
           - Sonic Robo Blast 2: org.srb2.SRB2
           - Sonic Robo Blast 2 Kart: org.srb2.SRB2Kart
-          - Steam Link: com.valvesoftware.SteamLink
           - SuperTux: org.supertuxproject.SuperTux
           - SuperTuxKart: net.supertuxkart.SuperTuxKart
-          - TeamSpeak: com.teamspeak.TeamSpeak
-          - XIV Launcher (Final Fantasy XIV): dev.goats.xivlauncher
+		      - Xonotic: org.xonotic.Xonotic
         Emulation:
           description: Play games like it's 1972
           default: false
@@ -164,28 +186,14 @@ screens:
           - Ryujinx: org.ryujinx.Ryujinx
           - ScummVM: org.scummvm.ScummVM
           - Snes9x: com.snes9x.Snes9x
-          - Stella: io.github.stella_emu.Stella
           - xemu: app.xemu.xemu
-        Streaming:
-          description: Stream to the Internet
-          default: false
-          packages:
-          - OBS Studio: com.obsproject.Studio
-          - Boatswain for Streamdeck: com.feaneron.Boatswain
-        Music:
-          description: "Rock and Roll!"
-          default: false
-          packages:
-          - Cider (Apple Music Client): sh.cider.Cider
-          - Spotify: com.spotify.Client
-          - Strawberry Music Player: org.strawberrymusicplayer.strawberry
-          - Tidal-hifi: com.mastermindzh.tidal-hifi
-        Office and Productivity:
+        Multi-Media, Office, and Productivity:
           description: Bow to Capitalism
           default: false
           packages:
           - Ardour: org.ardour.Ardour
           - Blender: org.blender.Blender
+          - Cider (Apple Music): sh.cider.Cider
           - darktable: org.darktable.Darktable
           - GIMP: org.gimp.GIMP
           - Inkscape: org.inkscape.Inkscape
@@ -193,20 +201,25 @@ screens:
           - Kdenlive: org.kde.kdenlive
           - Krita: org.kde.krita
           - LibreOffice: org.libreoffice.LibreOffice
+          - OBS Studio: com.obsproject.Studio
           - Obsidian: md.obsidian.Obsidian
           - OnlyOffice: org.onlyoffice.desktopeditors
           - Planify: io.github.alainm23.planify
-          - Slack: com.slack.Slack
+          - Spotify: com.spotify.Client
           - Standard Notes: org.standardnotes.standardnotes
+          - Strawberry Music Player: org.strawberrymusicplayer.strawberry
           - Tenacity: org.tenacityaudio.Tenacity
+          - Tidal-hifi: com.mastermindzh.tidal-hifi
           - Thunderbird Email: org.mozilla.Thunderbird
+          - VLC: org.videolan.VLC		  
           - Xournal++: com.github.xournalpp.xournalpp
         Utilities and System Tools:
-          description: Helpful tools
+          description: Helpful utilties for your device
           default: false
           packages:
           - AppImage Pool: io.github.prateekmedia.appimagepool
           - Barrier: com.github.debauchee.barrier
+          - Boatswain for Streamdeck: com.feaneron.Boatswain
           - Bitwarden: com.bitwarden.desktop
           - Calibre: com.calibre_ebook.calibre
           - DejaDup: org.gnome.DejaDup
@@ -220,10 +233,8 @@ screens:
           - Pika Backup: org.gnome.World.PikaBackup
           - PinApp: io.github.fabrialberio.pinapp
           - qBittorrent: org.qbittorrent.qBittorrent
-          - Resources: net.nokyan.Resources
           - SaveDesktop: io.github.vikdevelop.SaveDesktop
           - Syncthing: com.github.zocker_160.SyncThingy
-          - VLC: org.videolan.VLC
   final-screen:
     source: yafti.screen.title
     values:
@@ -233,7 +244,7 @@ screens:
       - "Install More Applications":
           run: /usr/bin/plasma-discover
       - "Documentation":
-          run: /usr/bin/xdg-open https://universal-blue.discourse.group/docs?category=5
+          run: /usr/bin/xdg-open https://docs.bazzite.gg
       - "Forums":
           run: /usr/bin/xdg-open https://universal-blue.discourse.group/c/bazzite/5
       - "Join the Discord Community":
