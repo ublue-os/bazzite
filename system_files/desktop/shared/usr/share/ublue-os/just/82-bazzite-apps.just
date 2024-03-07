@@ -24,6 +24,15 @@ install-lact:
     rm /tmp/lact.rpm
     echo 'Complete.'
 
+# Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
+install-coolercontrol:
+    #!/usr/bin/bash
+    ublue-update --wait
+    wget https://copr.fedorainfracloud.org/coprs/codifryed/CoolerControl/repo/fedora-$(rpm -E %fedora)/codifryed-CoolerControl-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_codifryed-CoolerControl.repo
+    rpm-ostree install --apply-live -y liquidctl coolercontrol
+    systemctl enable coolercontrold.service
+    echo 'Complete.'
+
 alias get-steamcmd := install-steamcmd
 
 # Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD)
