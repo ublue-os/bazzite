@@ -31,6 +31,8 @@ install-coolercontrol:
     wget https://copr.fedorainfracloud.org/coprs/codifryed/CoolerControl/repo/fedora-$(rpm -E %fedora)/codifryed-CoolerControl-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_codifryed-CoolerControl.repo
     rpm-ostree install --apply-live -y liquidctl coolercontrol
     systemctl enable coolercontrold.service
+    mkdir -p $HOME/.config/autostart
+    cp /usr/share/application/org.coolercontrol.CoolerControl.desktop $HOME/.config/autostart/org.coolercontrol.CoolerControl.desktop
     echo 'Complete.'
 
 alias get-steamcmd := install-steamcmd
