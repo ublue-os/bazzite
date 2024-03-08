@@ -216,7 +216,6 @@ Baca [FAQ](https://universal-blue.discourse.group/docs?topic=33) untuk tahu apa 
 - [Updates, Rollbacks, and Rebasing](https://universal-blue.discourse.group/docs?topic=36)
 - [Panduan Gim](https://universal-blue.discourse.group/docs?topic=31)
 - [Panduan dual booting](https://universal-blue.discourse.group/docs?topic=129)
-- [Dokumentasi yang lain](https://universal-blue.discourse.group/docs?topic=287)
 
 Temukan dokumentasi tambahan project ini [disini](http://docs.bazzite.gg/).
 
