@@ -8,6 +8,7 @@ if [[ $(rpm -qa | grep lact) ]]; then
       if [[ ! $(rpm-ostree status | grep lact | grep $LACT_VERSION) ]]; then
             # This will check if *any* rpm-ostree pin has the newest version, so we don't update needlessly if a user just needs to reboot or is trying an older pin.
             echo "Found upstream version v$LACT_VERSION, updating..."
+            rpm-ostree remove $(rpm -qa | grep lact)
             /usr/bin/ujust install-lact
             echo "Update complete"
       fi
