@@ -100,7 +100,7 @@ if $NEEDS_INITRAMFS_APPLICATION; then
   INITRAMFS_BAZZITE_ARGS=$(cat $INITRAMFS_BAZZITE_ARG_FILE)
   echo "Building initramfs with following custom args: $INITRAMFS_CUSTOM_ARGS"
   plymouth display-message --text="Updating initramfs - Please wait, this may take a while" || true
-  rpm-ostree initramfs --enable "$INITRAMFS_BAZZITE_ARGS" "$INITRAMFS_CUSTOM_ARGS"
+  rpm-ostree initramfs --enable "${INITRAMFS_BAZZITE_ARGS} ${INITRAMFS_CUSTOM_ARGS}"
 else
   echo "No initramfs changes needed"
 fi
