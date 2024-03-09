@@ -23,6 +23,7 @@ setup-virtualization ACTION="":
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'enable' to select Enable Virtualization"
       echo "  Use 'disable' to select Disable Virtualization"
+      echo "  Use 'group' to select Add $USER to libvirt group"
       echo "  Use 'vfio-on' to select Enable VFIO drivers"
       echo "  Use 'vfio-off' to select Disable VFIO drivers"
       echo "  Use 'shm' to select Autocreate Looking-Glass shm"
@@ -31,7 +32,14 @@ setup-virtualization ACTION="":
       echo "${bold}Virtualization Setup${normal}"
       echo "NOTE: Enabling Virtualization will layer virt-manager and qemu"
       echo "      this will slow down system updates by a lot."
-      OPTION=$(Choose "Enable Virtualization" "Disable Virtualization" "Enable VFIO drivers" "Disable VFIO drivers" "Autocreate Looking-Glass shm")
+      OPTION=$(Choose \
+        "Enable Virtualization" \
+        "Disable Virtualization" \
+        "Add $USER to libvirt group" \
+        "Enable VFIO drivers" \
+        "Disable VFIO drivers" \
+        "Autocreate Looking-Glass shm" \
+      )
     fi
     if [[ "${OPTION,,}" =~ ^enable[[:space:]]virt ]]; then
       virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
@@ -121,4 +129,6 @@ setup-virtualization ACTION="":
       LOOKING_GLASS_TMP"
       echo "Adding SELinux context record for /dev/shm/looking-glass"
       sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
+    elif [[ "${OPTION,,}" =~ group ]]; then
+      sudo usermod -aG libvirt $USER
     fi
