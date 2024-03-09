@@ -213,7 +213,6 @@ screens:
           - Kdenlive: org.kde.kdenlive
           - Krita: org.kde.krita
           - LibreOffice: org.libreoffice.LibreOffice
-          - OBS Studio: com.obsproject.Studio
           - Obsidian: md.obsidian.Obsidian
           - OnlyOffice: org.onlyoffice.desktopeditors
           - Planify: io.github.alainm23.planify
