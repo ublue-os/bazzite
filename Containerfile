@@ -657,6 +657,8 @@ RUN rpm-ostree install \
     xorg-x11-server-Xvfb \
     python-vdf \
     python-crcmod && \
+    curl -L $(curl -s "https://api.github.com/repos/hhd-dev/hhd-ui/releases/latest" | grep "browser_download_url" | cut -d '"' -f 4) -o /usr/bin/hhd-ui && \
+    chmod +x /usr/bin/hhd-ui && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
         --depth 1 \
         /tmp/jupiter-dock-updater-bin && \
