@@ -120,6 +120,7 @@ screens:
           default: false
           packages:
           - Discord: com.discordapp.Discord
+	  - Element: im.riot.Riot
           - Mumble: info.mumble.Mumble
           - TeamSpeak: com.teamspeak.TeamSpeak
           - Slack: com.slack.Slack
