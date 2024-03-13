@@ -53,7 +53,7 @@ else
   # Rebuild current initramfs (this will add any new configs added to /etc/dracut.conf.d/) then reboot
   echo "Initramfs rebuild triggered, using: $INITRAMFS_BAZZITE_ARGS $INITRAMFS_CUSTOM_ARGS"
   plymouth display-message --text="Updating initramfs - Please wait, this may take a while" || true
-  rpm-ostree initramfs --enable "$INITRAMFS_BAZZITE_ARGS" "$INITRAMFS_CUSTOM_ARGS" --reboot
+  rpm-ostree initramfs --enable "${INITRAMFS_BAZZITE_ARGS} ${INITRAMFS_CUSTOM_ARGS}" --reboot
   exit 0 
 fi
 
