@@ -250,6 +250,7 @@ RUN rpm-ostree install \
         i2c-tools \
         joystickwake \
         hl2linux-selinux \
+        udica \
         joycond \
         ladspa-caps-plugins \
         ladspa-noise-suppression-for-voice \
