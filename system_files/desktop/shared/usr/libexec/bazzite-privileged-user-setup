@@ -4,4 +4,4 @@
 timedatectl set-ntp true
 
 # Allow Tailscale Control
-tailscale set --operator="$(getent passwd $PKEXEC_UID | cut -d: -f1)"
+tailscale set --operator="$(systemd-escape $1)"

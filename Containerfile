@@ -641,6 +641,7 @@ RUN rpm-ostree install \
     galileo-mura \
     powerbuttond \
     hhd \
+    adjustor \
     vpower \
     ds-inhibit \
     steam_notif_daemon \
