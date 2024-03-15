@@ -1,6 +1,6 @@
 %global majorversion 1
 %global minorversion 0
-%global microversion 3
+%global microversion 4
 
 %global apiversion   0.3
 %global spaversion   0.2
@@ -9,7 +9,7 @@
 %global ms_version   0.4.2
 
 # For rpmdev-bumpspec and releng automation
-%global baserelease 1
+%global baserelease 2
 
 #global snapdate   20210107
 #global gitcommit  b17db2cebc1a5ab2c01851d29c05f79cd2f262bb
@@ -430,6 +430,7 @@ cp %{SOURCE1} subprojects/packagefiles/
     -D bluez5-codec-ldac=disabled						\
 %endif
     -D session-managers=[] 							\
+    -D rtprio-server=60 -D rtprio-client=55 -D rlimits-rtprio=70        \
     %{!?with_jack:-D pipewire-jack=disabled} 					\
     %{!?with_jackserver_plugin:-D jack=disabled} 				\
     %{!?with_libcamera_plugin:-D libcamera=disabled} 				\
@@ -535,6 +536,7 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %{_datadir}/pipewire/pipewire-aes67.conf
 %{_datadir}/pipewire/pipewire-vulkan.conf
 %{_mandir}/man5/pipewire.conf.5*
+%{_mandir}/man5/pipewire-filter-chain.conf.5*
 %config(noreplace) %{_sysconfdir}/security/limits.d/*.conf
 %{_sysusersdir}/pipewire.conf
 
@@ -600,6 +602,8 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %{_datadir}/pipewire/client.conf.avail/20-upmix.conf
 %{_datadir}/pipewire/client-rt.conf
 %{_datadir}/pipewire/client-rt.conf.avail/20-upmix.conf
+%{_mandir}/man5/pipewire-client.conf.5.gz
+%{_mandir}/man7/pipewire-devices.7.gz 
 %{_mandir}/man7/libpipewire-module-access.7.gz
 %{_mandir}/man7/libpipewire-module-adapter.7.gz
 %{_mandir}/man7/libpipewire-module-avb.7.gz
@@ -642,6 +646,7 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %{_mandir}/man7/libpipewire-module-x11-bell.7.gz
 %{_mandir}/man7/libpipewire-module-zeroconf-discover.7.gz
 %{_mandir}/man7/libpipewire-modules.7.gz
+
 
 %files gstreamer
 %{_libdir}/gstreamer-1.0/libgstpipewire.*
@@ -688,7 +693,13 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %{_mandir}/man1/pw-mididump.1*
 %{_mandir}/man1/pw-mon.1*
 %{_mandir}/man1/pw-profiler.1*
+%{_mandir}/man1/pw-reserve.1*
 %{_mandir}/man1/pw-top.1*
+%{_mandir}/man1/spa-acp-tool.1*
+%{_mandir}/man1/spa-inspect.1*
+%{_mandir}/man1/spa-json-dump.1*
+%{_mandir}/man1/spa-monitor.1*
+%{_mandir}/man1/spa-resample.1* 
 
 %{_bindir}/spa-acp-tool
 %{_bindir}/spa-inspect
@@ -714,6 +725,7 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %{_libdir}/pipewire-%{apiversion}/jack/libjacknet.so.*
 %{_libdir}/pipewire-%{apiversion}/jack/libjackserver.so.*
 %{_datadir}/pipewire/jack.conf
+%{_mandir}/man5/pipewire-jack.conf.5*
 
 %files jack-audio-connection-kit
 %{_sysconfdir}/ld.so.conf.d/pipewire-jack-%{_arch}.conf
@@ -791,6 +803,7 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %files v4l2
 %{_bindir}/pw-v4l2
 %{_libdir}/pipewire-%{apiversion}/v4l2/libpw-v4l2.so
+%{_mandir}/man1/pw-v4l2.1*
 %endif
 
 %files module-x11
@@ -818,6 +831,12 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %endif
 
 %changelog
+* Wed Mar 13 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.4-2
+- Configure server, client and rlimit priorities to be the same as JACK. 
+
+* Wed Mar 13 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.4-1
+- Update version to 1.0.4 
+
 * Thu Jan 11 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.1-1
 - Update version to 1.0.1
 
