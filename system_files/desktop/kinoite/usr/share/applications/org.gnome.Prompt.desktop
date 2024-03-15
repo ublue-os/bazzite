@@ -11,7 +11,7 @@ Terminal=false
 Type=Application
 Categories=GNOME;GTK;System;TerminalEmulator;
 # Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
-Keywords=terminal;prompt;ptyxis;shell;command;commandline;cmd;cli;
+Keywords=terminal;prompt;ptyxis;shell;command;commandline;cmd;cli;console
 Actions=new-window;new-tab;preferences;
 X-ExecArg=--
 X-KDE-AuthorizeAction=shell_access
