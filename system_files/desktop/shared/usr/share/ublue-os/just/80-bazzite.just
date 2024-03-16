@@ -5,6 +5,7 @@ restore-original-terminal:
     #!/usr/bin/bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    mkdir -p $HOME/.local/share/applications
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
         rm -f $HOME/.local/share/applications/org.gnome.Terminal.desktop
         cp /usr/share/applications/org.gnome.Terminal.desktop $HOME/.local/share/applications/org.gnome.Terminal.desktop

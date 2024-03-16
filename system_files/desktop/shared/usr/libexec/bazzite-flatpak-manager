@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SCRIPT VERSION
-VER=21
+VER=22
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -40,12 +40,11 @@ FLATPAK_LIST=$(flatpak list --columns=application)
 INSTALL_LIST_FILE="/usr/share/ublue-os/bazzite/flatpak/install"
 REMOVE_LIST_FILE="/usr/share/ublue-os/bazzite/flatpak/remove"
 
-# Configure needed params for flatpaks
-if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
-  # GTK4 theme for KDE
-  flatpak override \
-    --filesystem=xdg-config/gtk-4.0:ro
-fi
+# Flatpak theming support
+flatpak override \
+  --filesystem=xdg-config/gtk-4.0:ro \
+  --filesystem=xdg-config/gtk-3.0:ro \
+  --filesystem=xdg-data/icons:ro
 
 # XInput for Firefox
 flatpak override \

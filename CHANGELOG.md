@@ -1,5 +1,39 @@
 # Changelog
 
+## [2.4.0](https://github.com/ublue-os/bazzite/compare/v2.3.0...v2.4.0) (2024-03-14)
+
+
+### Features
+
+* Add ujust command to install CoolerControl, an excellent GUI for controlling fan speeds on a wide array of hardware ([30eac4a](https://github.com/ublue-os/bazzite/commit/30eac4aae913e8b3eacdac9571efa102ea9aeb8f))
+* **amd:** Add LACT to topgrade ([cf5e0f0](https://github.com/ublue-os/bazzite/commit/cf5e0f0f3d06bba93adc6653c3f4493a1e250d78))
+* **deck:** Add HHD-UI ([a8f5feb](https://github.com/ublue-os/bazzite/commit/a8f5febcb282d2290b444ce4b014a7b8cd82957b))
+* **just:** add option to add user to libvirt group ([#865](https://github.com/ublue-os/bazzite/issues/865)) ([36388bc](https://github.com/ublue-os/bazzite/commit/36388bc8ada8ae6b7b9f0c71f2388d4f2bf44a2e))
+* **just:** add option to disable vfio ([#830](https://github.com/ublue-os/bazzite/issues/830)) ([c86a56a](https://github.com/ublue-os/bazzite/commit/c86a56aee547b43f3990e6b010befa41299d85b6))
+* **nvidia:** Update to Nvidia 550 drivers ([95123e0](https://github.com/ublue-os/bazzite/commit/95123e0d5d855e3c25790be440192343b4cb1e90))
+* Update isogenerator to latest version ([#822](https://github.com/ublue-os/bazzite/issues/822)) ([fe48ae0](https://github.com/ublue-os/bazzite/commit/fe48ae09067b44493e643a7ff905c07c4cab7098))
+
+
+### Bug Fixes
+
+* Add patch to avoid conflicts with Fedora's trim service ([ed02a65](https://github.com/ublue-os/bazzite/commit/ed02a6526c2a49baa6f142702d44d451dca96624))
+* Add version gating for the fsync kernel ([07e0e33](https://github.com/ublue-os/bazzite/commit/07e0e33efa7484be0d4aea9d6f5241861671812a)), closes [#873](https://github.com/ublue-os/bazzite/issues/873)
+* **ci:** issues with enrollment password ([#823](https://github.com/ublue-os/bazzite/issues/823)) ([1e26697](https://github.com/ublue-os/bazzite/commit/1e26697007dfd22903d627bec1a3006c4ff26400))
+* Correct issue with user setup script execution check ([93bc12f](https://github.com/ublue-os/bazzite/commit/93bc12f3044b0e559f7edc3188d375521f238db8))
+* correct orientation for GPD Win Max 2 (2022) ([#819](https://github.com/ublue-os/bazzite/issues/819)) ([0f2fb7d](https://github.com/ublue-os/bazzite/commit/0f2fb7daee3b6cfc0b342c608a8d4e920a278049))
+* custom initramfs args actually get applied ([2bef48a](https://github.com/ublue-os/bazzite/commit/2bef48a149944a62e0f854f35b1dfc58b3032758))
+* **deck:** Correct the default display scale on KDE images ([c86fc7d](https://github.com/ublue-os/bazzite/commit/c86fc7dbd7274c9277b4675390469a2e75f2a049))
+* **deck:** Ensure the detected branch name is always lowercase ([26b1d53](https://github.com/ublue-os/bazzite/commit/26b1d533b93e09bdbd052cde6a6e9d1d00b56001))
+* **deck:** Replace die with finish 0, may correct update errors some users have been experiencing ([e980853](https://github.com/ublue-os/bazzite/commit/e980853e3cce651e3476f5046784163ebd3d546e))
+* **desktop:** Correct missing steamos-add-to-steam executable in KDE ([a8e77d1](https://github.com/ublue-os/bazzite/commit/a8e77d1731021fff27bf6b90a0a500783f880677))
+* distrobox-export ([#803](https://github.com/ublue-os/bazzite/issues/803)) ([55cf1cb](https://github.com/ublue-os/bazzite/commit/55cf1cb3b5df85b4f1845ed7293f2da0e5842811))
+* dont remove waydroid-choose-gpu ([#856](https://github.com/ublue-os/bazzite/issues/856)) ([d58a511](https://github.com/ublue-os/bazzite/commit/d58a511a0e023dcc5ab81b7bb131357f858e277b))
+* **just:** Add missing description ([#834](https://github.com/ublue-os/bazzite/issues/834)) ([0805791](https://github.com/ublue-os/bazzite/commit/080579142775482ca5e3930a4b8dfd7985795717))
+* **just:** Create repo file with sudo ([ba72610](https://github.com/ublue-os/bazzite/commit/ba7261081a6e333e2c2cc293ad4b58b460d9307b))
+* make sure custom initramfs args are set ([6bd4949](https://github.com/ublue-os/bazzite/commit/6bd4949a87287327e443074e973c64e91bab2724))
+* **nvidia:** Always reboot at the end of bazzite-hardware-setup, potentially fixes frozen screen that makes kargs appear to take an infinite amount of time. NVK soon? I want off Mr. Nvidia's wild ride. ([c267cbe](https://github.com/ublue-os/bazzite/commit/c267cbe82e7dbae8844b1fccee01d702028cb0da))
+* **readme:** Bold ([7c35c11](https://github.com/ublue-os/bazzite/commit/7c35c11ebe9624309ea1cedea6efa0d8b24db74f))
+
 ## 2.3.0 (2024-02-23)
 
 

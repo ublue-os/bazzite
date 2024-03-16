@@ -1,3 +1,4 @@
 #!/usr/bin/bash
 
-systemctl enable --now hhd@$(systemd-escape "$(getent passwd $PKEXEC_UID | cut -d: -f1)").service
+systemctl enable --now hhd@$(systemd-escape $1).service
+systemctl disable --now hhd@root.service

@@ -53,7 +53,7 @@ else
   # Rebuild current initramfs (this will add any new configs added to /etc/dracut.conf.d/) then reboot
   echo "Initramfs rebuild triggered, using: $INITRAMFS_BAZZITE_ARGS $INITRAMFS_CUSTOM_ARGS"
   plymouth display-message --text="Updating initramfs - Please wait, this may take a while" || true
-  rpm-ostree initramfs --enable "$INITRAMFS_BAZZITE_ARGS" "$INITRAMFS_CUSTOM_ARGS" --reboot
+  rpm-ostree initramfs --enable "${INITRAMFS_BAZZITE_ARGS} ${INITRAMFS_CUSTOM_ARGS}" --reboot
   exit 0 
 fi
 
@@ -100,7 +100,7 @@ if $NEEDS_INITRAMFS_APPLICATION; then
   INITRAMFS_BAZZITE_ARGS=$(cat $INITRAMFS_BAZZITE_ARG_FILE)
   echo "Building initramfs with following custom args: $INITRAMFS_CUSTOM_ARGS"
   plymouth display-message --text="Updating initramfs - Please wait, this may take a while" || true
-  rpm-ostree initramfs --enable "$INITRAMFS_BAZZITE_ARGS" "$INITRAMFS_CUSTOM_ARGS"
+  rpm-ostree initramfs --enable "${INITRAMFS_BAZZITE_ARGS} ${INITRAMFS_CUSTOM_ARGS}"
 else
   echo "No initramfs changes needed"
 fi
@@ -241,36 +241,14 @@ if grep -qv "graphical.target" <<< "$(systemctl get-default)"; then
   systemctl set-default graphical.target
 fi
 
-# Ensure files needed for topgrade are always present
-if [[ ! -f "/etc/ublue-os/topgrade.toml" ]]; then
-  mkdir -p "/etc/ublue-os"
-  cp "/usr/etc/ublue-os/topgrade.toml" "/etc/ublue-os/topgrade.toml"
-fi
-
-if [[ ! -f "/etc/ublue-update/topgrade-system.toml" ]]; then
-  mkdir -p "/etc/ublue-update"
-  cp "/usr/etc/ublue-update/topgrade-system.toml" "/etc/ublue-update/topgrade-system.toml"
-fi
-
-if [[ ! -f "/etc/ublue-update/topgrade-user.toml" ]]; then
-  mkdir -p "/etc/ublue-update"
-  cp "/usr/etc/ublue-update/topgrade-user.toml" "/etc/ublue-update/topgrade-user.toml"
-fi
-
-if [[ ! -f "/etc/ublue-update/ublue-update.toml" ]]; then
-  mkdir -p "/etc/ublue-update"
-  cp "/usr/etc/ublue-update/ublue-update.toml" "/etc/ublue-update/ublue-update.toml"
-fi
-
-if [[ ! -f "/etc/ublue-update.d/system/00-system-update.py" ]]; then
-  mkdir -p "/etc/ublue-update.d/system"
-  cp "/usr/etc/ublue-update.d/system/00-system-update.py" "/etc/ublue-update.d/system/00-system-update.py"
-fi
-
-
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
 echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
 echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE
 echo $FEDORA_VERSION > $KNOWN_FEDORA_VERSION_FILE
 echo $IMAGE_BRANCH > $KNOWN_IMAGE_BRANCH_FILE
+
+if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
+  echo "Nvidia image detected, rebooting to avoid screen freeze issue in 550."
+  systemctl reboot
+fi

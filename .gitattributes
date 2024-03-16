@@ -1,0 +1,13 @@
+*.yml linguist-detectable=true
+*.yml linguist-language=YAML
+
+*.yaml linguist-detectable=true
+*.yaml linguist-language=YAML
+
+*.just linguist-detectable=true
+*.just linguist-documentation=false
+*.just linguist-language=Just
+
+*.json linguist-detectable=true
+*.json linguist-documentation=false
+*.json linguist-language=JSON

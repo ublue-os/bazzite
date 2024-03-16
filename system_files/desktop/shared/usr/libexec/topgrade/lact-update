@@ -1,0 +1,19 @@
+#!/usr/bin/bash
+shopt -s nullglob
+
+echo "Looking for updates..."
+
+if [[ $(rpm -qa | grep lact) ]]; then
+      LACT_VERSION=$(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | jq -r '.tag_name | ltrimstr("v")')
+      if [[ ! $(rpm-ostree status | grep lact | grep $LACT_VERSION) ]]; then
+            # This will check if *any* rpm-ostree pin has the newest version, so we don't update needlessly if a user just needs to reboot or is trying an older pin.
+            echo "Found upstream version v$LACT_VERSION, updating..."
+            rpm-ostree remove $(rpm -qa | grep lact) -y
+            /usr/bin/ujust install-lact
+            echo "Update complete"
+      fi
+else
+      echo "LACT not installed, skipping."
+fi
+
+exit 0
