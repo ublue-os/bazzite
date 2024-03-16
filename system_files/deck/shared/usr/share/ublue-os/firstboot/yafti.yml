@@ -244,6 +244,7 @@ screens:
           - OpenRGB: org.openrgb.OpenRGB
           - Pika Backup: org.gnome.World.PikaBackup
           - PinApp: io.github.fabrialberio.pinapp
+          - Pods: com.github.marhkb.Pods
           - qBittorrent: org.qbittorrent.qBittorrent
           - SaveDesktop: io.github.vikdevelop.SaveDesktop
           - Syncthing: com.github.zocker_160.SyncThingy
