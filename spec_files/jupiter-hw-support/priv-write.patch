@@ -49,7 +49,7 @@ index e307823..45946ed 100755
 +         CommitWrite
 +      done
 +   else
-+      echo "commit: Skipped $WRITE_PATH - see /etc/default/steam-hardware-control" | systemd-cat -t p-steamos-priv-write -p warning
++      echo "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - see /etc/default/steam-hardware-control" | systemd-cat -t p-steamos-priv-write -p warning
 +   fi
  fi
  
@@ -62,7 +62,7 @@ index e307823..45946ed 100755
 +         CommitWrite
 +      done
 +   else
-+      echo "commit: Skipped $WRITE_PATH - see /etc/default/steam-hardware-control" | systemd-cat -t p-steamos-priv-write -p warning
++      echo "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - see /etc/default/steam-hardware-control" | systemd-cat -t p-steamos-priv-write -p warning
 +   fi
  fi
  
@@ -71,7 +71,7 @@ index e307823..45946ed 100755
 +   if [[ /usr/libexec/hardware/valve-hardware || "$ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE" = 1 ]]; then
 +      CommitWrite
 +   else
-+      echo "commit: Skipped $WRITE_PATH - see /etc/default/steam-hardware-control" | systemd-cat -t p-steamos-priv-write -p warning
++      echo "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - see /etc/default/steam-hardware-control" | systemd-cat -t p-steamos-priv-write -p warning
 +   fi
  fi
  
