@@ -76,6 +76,8 @@ process-scheduler enable=true {
         include descends="taskset"
         include descends="schedtool"
         chrt
+        coolercontrold
+        coolercontrol-liqctld
         dbus
         dbus-broker
         gamemoderun
@@ -83,6 +85,7 @@ process-scheduler enable=true {
         input-remapper-service
         ionice
         joystickwake
+        lact
         nice
         otd-daemon
         oversteer
