@@ -1,0 +1,544 @@
+From 85432af61b779a02b636fdc29d98aba5e89fcff7 Mon Sep 17 00:00:00 2001
+From: Andrew O'Neil <andy@andyofniall.net>
+Date: Sat, 24 Feb 2024 11:40:08 +1100
+Subject: [PATCH] Update AMD color management for Linux 6.8
+
+---
+ src/drm.cpp       | 258 ++++++++++++++++++++++++++--------------------
+ src/drm_include.h |  76 +++++++-------
+ 2 files changed, 188 insertions(+), 146 deletions(-)
+
+diff --git a/src/drm.cpp b/src/drm.cpp
+index 9420ccbe4..29b8d06f5 100644
+--- a/src/drm.cpp
++++ b/src/drm.cpp
+@@ -148,15 +148,15 @@ namespace gamescope
+ 			std::optional<CDRMAtomicProperty> rotation;
+ 			std::optional<CDRMAtomicProperty> COLOR_ENCODING;
+ 			std::optional<CDRMAtomicProperty> COLOR_RANGE;
+-			std::optional<CDRMAtomicProperty> VALVE1_PLANE_DEGAMMA_TF;
+-			std::optional<CDRMAtomicProperty> VALVE1_PLANE_DEGAMMA_LUT;
+-			std::optional<CDRMAtomicProperty> VALVE1_PLANE_CTM;
+-			std::optional<CDRMAtomicProperty> VALVE1_PLANE_HDR_MULT;
+-			std::optional<CDRMAtomicProperty> VALVE1_PLANE_SHAPER_LUT;
+-			std::optional<CDRMAtomicProperty> VALVE1_PLANE_SHAPER_TF;
+-			std::optional<CDRMAtomicProperty> VALVE1_PLANE_LUT3D;
+-			std::optional<CDRMAtomicProperty> VALVE1_PLANE_BLEND_TF;
+-			std::optional<CDRMAtomicProperty> VALVE1_PLANE_BLEND_LUT;
++			std::optional<CDRMAtomicProperty> AMD_PLANE_DEGAMMA_TF;
++			std::optional<CDRMAtomicProperty> AMD_PLANE_DEGAMMA_LUT;
++			std::optional<CDRMAtomicProperty> AMD_PLANE_CTM;
++			std::optional<CDRMAtomicProperty> AMD_PLANE_HDR_MULT;
++			std::optional<CDRMAtomicProperty> AMD_PLANE_SHAPER_LUT;
++			std::optional<CDRMAtomicProperty> AMD_PLANE_SHAPER_TF;
++			std::optional<CDRMAtomicProperty> AMD_PLANE_LUT3D;
++			std::optional<CDRMAtomicProperty> AMD_PLANE_BLEND_TF;
++			std::optional<CDRMAtomicProperty> AMD_PLANE_BLEND_LUT;
+ 			std::optional<CDRMAtomicProperty> DUMMY_END;
+ 		};
+ 		      PlaneProperties &GetProperties()       { return m_Props; }
+@@ -187,7 +187,7 @@ namespace gamescope
+ 			std::optional<CDRMAtomicProperty> CTM;
+ 			std::optional<CDRMAtomicProperty> VRR_ENABLED;
+ 			std::optional<CDRMAtomicProperty> OUT_FENCE_PTR;
+-			std::optional<CDRMAtomicProperty> VALVE1_CRTC_REGAMMA_TF;
++			std::optional<CDRMAtomicProperty> AMD_CRTC_REGAMMA_TF;
+ 			std::optional<CDRMAtomicProperty> DUMMY_END;
+ 		};
+ 		      CRTCProperties &GetProperties()       { return m_Props; }
+@@ -401,7 +401,7 @@ struct drm_t {
+ 		uint32_t color_mgmt_serial;
+ 		std::shared_ptr<gamescope::BackendBlob> lut3d_id[ EOTF_Count ];
+ 		std::shared_ptr<gamescope::BackendBlob> shaperlut_id[ EOTF_Count ];
+-		drm_valve1_transfer_function output_tf = DRM_VALVE1_TRANSFER_FUNCTION_DEFAULT;
++		amdgpu_transfer_function output_tf = AMDGPU_TRANSFER_FUNCTION_DEFAULT;
+ 	} current, pending;
+ 
+ 	/* FBs in the atomic request, but not yet submitted to KMS */
+@@ -1287,8 +1287,8 @@ void finish_drm(struct drm_t *drm)
+ 		if ( pCRTC->GetProperties().OUT_FENCE_PTR )
+ 			pCRTC->GetProperties().OUT_FENCE_PTR->SetPendingValue( req, 0, true );
+ 
+-		if ( pCRTC->GetProperties().VALVE1_CRTC_REGAMMA_TF )
+-			pCRTC->GetProperties().VALVE1_CRTC_REGAMMA_TF->SetPendingValue( req, 0, true );
++		if ( pCRTC->GetProperties().AMD_CRTC_REGAMMA_TF )
++			pCRTC->GetProperties().AMD_CRTC_REGAMMA_TF->SetPendingValue( req, 0, true );
+ 	}
+ 
+ 	for ( std::unique_ptr< gamescope::CDRMPlane > &pPlane : drm->planes )
+@@ -1313,32 +1313,32 @@ void finish_drm(struct drm_t *drm)
+ 		//if ( pPlane->GetProperties().zpos )
+ 		//	pPlane->GetProperties().zpos->SetPendingValue( req, , true );
+ 
+-		if ( pPlane->GetProperties().VALVE1_PLANE_DEGAMMA_TF )
+-			pPlane->GetProperties().VALVE1_PLANE_DEGAMMA_TF->SetPendingValue( req, DRM_VALVE1_TRANSFER_FUNCTION_DEFAULT, true );
++		if ( pPlane->GetProperties().AMD_PLANE_DEGAMMA_TF )
++			pPlane->GetProperties().AMD_PLANE_DEGAMMA_TF->SetPendingValue( req, AMDGPU_TRANSFER_FUNCTION_DEFAULT, true );
+ 
+-		if ( pPlane->GetProperties().VALVE1_PLANE_DEGAMMA_LUT )
+-			pPlane->GetProperties().VALVE1_PLANE_DEGAMMA_LUT->SetPendingValue( req, 0, true );
++		if ( pPlane->GetProperties().AMD_PLANE_DEGAMMA_LUT )
++			pPlane->GetProperties().AMD_PLANE_DEGAMMA_LUT->SetPendingValue( req, 0, true );
+ 
+-		if ( pPlane->GetProperties().VALVE1_PLANE_CTM )
+-			pPlane->GetProperties().VALVE1_PLANE_CTM->SetPendingValue( req, 0, true );
++		if ( pPlane->GetProperties().AMD_PLANE_CTM )
++			pPlane->GetProperties().AMD_PLANE_CTM->SetPendingValue( req, 0, true );
+ 
+-		if ( pPlane->GetProperties().VALVE1_PLANE_HDR_MULT )
+-			pPlane->GetProperties().VALVE1_PLANE_HDR_MULT->SetPendingValue( req, 0x100000000ULL, true );
++		if ( pPlane->GetProperties().AMD_PLANE_HDR_MULT )
++			pPlane->GetProperties().AMD_PLANE_HDR_MULT->SetPendingValue( req, 0x100000000ULL, true );
+ 
+-		if ( pPlane->GetProperties().VALVE1_PLANE_SHAPER_TF )
+-			pPlane->GetProperties().VALVE1_PLANE_SHAPER_TF->SetPendingValue( req, DRM_VALVE1_TRANSFER_FUNCTION_DEFAULT, true );
++		if ( pPlane->GetProperties().AMD_PLANE_SHAPER_TF )
++			pPlane->GetProperties().AMD_PLANE_SHAPER_TF->SetPendingValue( req, AMDGPU_TRANSFER_FUNCTION_DEFAULT, true );
+ 
+-		if ( pPlane->GetProperties().VALVE1_PLANE_SHAPER_LUT )
+-			pPlane->GetProperties().VALVE1_PLANE_SHAPER_LUT->SetPendingValue( req, 0, true );
++		if ( pPlane->GetProperties().AMD_PLANE_SHAPER_LUT )
++			pPlane->GetProperties().AMD_PLANE_SHAPER_LUT->SetPendingValue( req, 0, true );
+ 
+-		if ( pPlane->GetProperties().VALVE1_PLANE_LUT3D )
+-			pPlane->GetProperties().VALVE1_PLANE_LUT3D->SetPendingValue( req, 0, true );
++		if ( pPlane->GetProperties().AMD_PLANE_LUT3D )
++			pPlane->GetProperties().AMD_PLANE_LUT3D->SetPendingValue( req, 0, true );
+ 
+-		if ( pPlane->GetProperties().VALVE1_PLANE_BLEND_TF )
+-			pPlane->GetProperties().VALVE1_PLANE_BLEND_TF->SetPendingValue( req, DRM_VALVE1_TRANSFER_FUNCTION_DEFAULT, true );
++		if ( pPlane->GetProperties().AMD_PLANE_BLEND_TF )
++			pPlane->GetProperties().AMD_PLANE_BLEND_TF->SetPendingValue( req, AMDGPU_TRANSFER_FUNCTION_DEFAULT, true );
+ 
+-		if ( pPlane->GetProperties().VALVE1_PLANE_BLEND_LUT )
+-			pPlane->GetProperties().VALVE1_PLANE_BLEND_LUT->SetPendingValue( req, 0, true );
++		if ( pPlane->GetProperties().AMD_PLANE_BLEND_LUT )
++			pPlane->GetProperties().AMD_PLANE_BLEND_LUT->SetPendingValue( req, 0, true );
+ 	}
+ 
+ 	// We can't do a non-blocking commit here or else risk EBUSY in case the
+@@ -1637,37 +1637,73 @@ struct LiftoffStateCacheEntryKasher
+ 
+ std::unordered_set<LiftoffStateCacheEntry, LiftoffStateCacheEntryKasher> g_LiftoffStateCache;
+ 
+-static inline drm_valve1_transfer_function colorspace_to_plane_degamma_tf(GamescopeAppTextureColorspace colorspace)
++static inline amdgpu_transfer_function colorspace_to_plane_degamma_tf(GamescopeAppTextureColorspace colorspace)
+ {
+ 	switch ( colorspace )
+ 	{
+ 		default: // Linear in this sense is SRGB. Linear = sRGB image view doing automatic sRGB -> Linear which doesn't happen on DRM side.
+ 		case GAMESCOPE_APP_TEXTURE_COLORSPACE_SRGB:
+-			return DRM_VALVE1_TRANSFER_FUNCTION_SRGB;
++			return AMDGPU_TRANSFER_FUNCTION_SRGB_EOTF;
+ 		case GAMESCOPE_APP_TEXTURE_COLORSPACE_PASSTHRU:
+ 		case GAMESCOPE_APP_TEXTURE_COLORSPACE_SCRGB:
+ 			// Use LINEAR TF for scRGB float format as 80 nit = 1.0 in scRGB, which matches
+ 			// what PQ TF decodes to/encodes from.
+ 			// AMD internal format is FP16, and generally expected for 1.0 -> 80 nit.
+ 			// which just so happens to match scRGB.
+-			return DRM_VALVE1_TRANSFER_FUNCTION_LINEAR;
++			return AMDGPU_TRANSFER_FUNCTION_IDENTITY;
+ 		case GAMESCOPE_APP_TEXTURE_COLORSPACE_HDR10_PQ:
+-			return DRM_VALVE1_TRANSFER_FUNCTION_PQ;
++			return AMDGPU_TRANSFER_FUNCTION_PQ_EOTF;
+ 	}
+ }
+ 
+-static inline drm_valve1_transfer_function colorspace_to_plane_shaper_tf(GamescopeAppTextureColorspace colorspace)
++static inline amdgpu_transfer_function colorspace_to_plane_shaper_tf(GamescopeAppTextureColorspace colorspace)
+ {
+ 	switch ( colorspace )
+ 	{
+ 		default:
+ 		case GAMESCOPE_APP_TEXTURE_COLORSPACE_SRGB:
+-			return DRM_VALVE1_TRANSFER_FUNCTION_SRGB;
++			return AMDGPU_TRANSFER_FUNCTION_SRGB_INV_EOTF;
+ 		case GAMESCOPE_APP_TEXTURE_COLORSPACE_SCRGB: // scRGB Linear -> PQ for shaper + 3D LUT
+ 		case GAMESCOPE_APP_TEXTURE_COLORSPACE_HDR10_PQ:
+-			return DRM_VALVE1_TRANSFER_FUNCTION_PQ;
++			return AMDGPU_TRANSFER_FUNCTION_PQ_INV_EOTF;
+ 		case GAMESCOPE_APP_TEXTURE_COLORSPACE_PASSTHRU:
+-			return DRM_VALVE1_TRANSFER_FUNCTION_DEFAULT;
++			return AMDGPU_TRANSFER_FUNCTION_DEFAULT;
++	}
++}
++
++static inline amdgpu_transfer_function inverse_tf(amdgpu_transfer_function tf)
++{
++	switch ( tf )
++	{
++		default:
++		case AMDGPU_TRANSFER_FUNCTION_DEFAULT:
++			return AMDGPU_TRANSFER_FUNCTION_DEFAULT;
++		case AMDGPU_TRANSFER_FUNCTION_IDENTITY:
++			return AMDGPU_TRANSFER_FUNCTION_IDENTITY;
++		case AMDGPU_TRANSFER_FUNCTION_SRGB_EOTF:
++			return AMDGPU_TRANSFER_FUNCTION_SRGB_INV_EOTF;
++		case AMDGPU_TRANSFER_FUNCTION_BT709_OETF:
++			return AMDGPU_TRANSFER_FUNCTION_BT709_INV_OETF;
++		case AMDGPU_TRANSFER_FUNCTION_PQ_EOTF:
++			return AMDGPU_TRANSFER_FUNCTION_PQ_INV_EOTF;
++		case AMDGPU_TRANSFER_FUNCTION_GAMMA22_EOTF:
++			return AMDGPU_TRANSFER_FUNCTION_GAMMA22_INV_EOTF;
++		case AMDGPU_TRANSFER_FUNCTION_GAMMA24_EOTF:
++			return AMDGPU_TRANSFER_FUNCTION_GAMMA24_INV_EOTF;
++		case AMDGPU_TRANSFER_FUNCTION_GAMMA26_EOTF:
++			return AMDGPU_TRANSFER_FUNCTION_GAMMA26_INV_EOTF;
++		case AMDGPU_TRANSFER_FUNCTION_SRGB_INV_EOTF:
++			return AMDGPU_TRANSFER_FUNCTION_SRGB_EOTF;
++		case AMDGPU_TRANSFER_FUNCTION_BT709_INV_OETF:
++			return AMDGPU_TRANSFER_FUNCTION_BT709_OETF;
++		case AMDGPU_TRANSFER_FUNCTION_PQ_INV_EOTF:
++			return AMDGPU_TRANSFER_FUNCTION_PQ_EOTF;
++		case AMDGPU_TRANSFER_FUNCTION_GAMMA22_INV_EOTF:
++			return AMDGPU_TRANSFER_FUNCTION_GAMMA22_EOTF;
++		case AMDGPU_TRANSFER_FUNCTION_GAMMA24_INV_EOTF:
++			return AMDGPU_TRANSFER_FUNCTION_GAMMA24_EOTF;
++		case AMDGPU_TRANSFER_FUNCTION_GAMMA26_INV_EOTF:
++			return AMDGPU_TRANSFER_FUNCTION_GAMMA26_EOTF;
+ 	}
+ }
+ 
+@@ -1862,33 +1898,33 @@ namespace gamescope
+ 		auto rawProperties = GetRawProperties();
+ 		if ( rawProperties )
+ 		{
+-			m_Props.type                     = CDRMAtomicProperty::Instantiate( "type",                     this, *rawProperties );
+-			m_Props.IN_FORMATS               = CDRMAtomicProperty::Instantiate( "IN_FORMATS",               this, *rawProperties );
+-
+-			m_Props.FB_ID                    = CDRMAtomicProperty::Instantiate( "FB_ID",                    this, *rawProperties );
+-			m_Props.CRTC_ID                  = CDRMAtomicProperty::Instantiate( "CRTC_ID",                  this, *rawProperties );
+-			m_Props.SRC_X                    = CDRMAtomicProperty::Instantiate( "SRC_X",                    this, *rawProperties );
+-			m_Props.SRC_Y                    = CDRMAtomicProperty::Instantiate( "SRC_Y",                    this, *rawProperties );
+-			m_Props.SRC_W                    = CDRMAtomicProperty::Instantiate( "SRC_W",                    this, *rawProperties );
+-			m_Props.SRC_H                    = CDRMAtomicProperty::Instantiate( "SRC_H",                    this, *rawProperties );
+-			m_Props.CRTC_X                   = CDRMAtomicProperty::Instantiate( "CRTC_X",                   this, *rawProperties );
+-			m_Props.CRTC_Y                   = CDRMAtomicProperty::Instantiate( "CRTC_Y",                   this, *rawProperties );
+-			m_Props.CRTC_W                   = CDRMAtomicProperty::Instantiate( "CRTC_W",                   this, *rawProperties );
+-			m_Props.CRTC_H                   = CDRMAtomicProperty::Instantiate( "CRTC_H",                   this, *rawProperties );
+-			m_Props.zpos                     = CDRMAtomicProperty::Instantiate( "zpos",                     this, *rawProperties );
+-			m_Props.alpha                    = CDRMAtomicProperty::Instantiate( "alpha",                    this, *rawProperties );
+-			m_Props.rotation                 = CDRMAtomicProperty::Instantiate( "rotation",                 this, *rawProperties );
+-			m_Props.COLOR_ENCODING           = CDRMAtomicProperty::Instantiate( "COLOR_ENCODING",           this, *rawProperties );
+-			m_Props.COLOR_RANGE              = CDRMAtomicProperty::Instantiate( "COLOR_RANGE",              this, *rawProperties );
+-			m_Props.VALVE1_PLANE_DEGAMMA_TF  = CDRMAtomicProperty::Instantiate( "VALVE1_PLANE_DEGAMMA_TF",  this, *rawProperties );
+-			m_Props.VALVE1_PLANE_DEGAMMA_LUT = CDRMAtomicProperty::Instantiate( "VALVE1_PLANE_DEGAMMA_LUT", this, *rawProperties );
+-			m_Props.VALVE1_PLANE_CTM         = CDRMAtomicProperty::Instantiate( "VALVE1_PLANE_CTM",         this, *rawProperties );
+-			m_Props.VALVE1_PLANE_HDR_MULT    = CDRMAtomicProperty::Instantiate( "VALVE1_PLANE_HDR_MULT",    this, *rawProperties );
+-			m_Props.VALVE1_PLANE_SHAPER_LUT  = CDRMAtomicProperty::Instantiate( "VALVE1_PLANE_SHAPER_LUT",  this, *rawProperties );
+-			m_Props.VALVE1_PLANE_SHAPER_TF   = CDRMAtomicProperty::Instantiate( "VALVE1_PLANE_SHAPER_TF",   this, *rawProperties );
+-			m_Props.VALVE1_PLANE_LUT3D       = CDRMAtomicProperty::Instantiate( "VALVE1_PLANE_LUT3D",       this, *rawProperties );
+-			m_Props.VALVE1_PLANE_BLEND_TF    = CDRMAtomicProperty::Instantiate( "VALVE1_PLANE_BLEND_TF",    this, *rawProperties );
+-			m_Props.VALVE1_PLANE_BLEND_LUT   = CDRMAtomicProperty::Instantiate( "VALVE1_PLANE_BLEND_LUT",   this, *rawProperties );
++			m_Props.type                  = CDRMAtomicProperty::Instantiate( "type",                  this, *rawProperties );
++			m_Props.IN_FORMATS            = CDRMAtomicProperty::Instantiate( "IN_FORMATS",            this, *rawProperties );
++
++			m_Props.FB_ID                 = CDRMAtomicProperty::Instantiate( "FB_ID",                 this, *rawProperties );
++			m_Props.CRTC_ID               = CDRMAtomicProperty::Instantiate( "CRTC_ID",               this, *rawProperties );
++			m_Props.SRC_X                 = CDRMAtomicProperty::Instantiate( "SRC_X",                 this, *rawProperties );
++			m_Props.SRC_Y                 = CDRMAtomicProperty::Instantiate( "SRC_Y",                 this, *rawProperties );
++			m_Props.SRC_W                 = CDRMAtomicProperty::Instantiate( "SRC_W",                 this, *rawProperties );
++			m_Props.SRC_H                 = CDRMAtomicProperty::Instantiate( "SRC_H",                 this, *rawProperties );
++			m_Props.CRTC_X                = CDRMAtomicProperty::Instantiate( "CRTC_X",                this, *rawProperties );
++			m_Props.CRTC_Y                = CDRMAtomicProperty::Instantiate( "CRTC_Y",                this, *rawProperties );
++			m_Props.CRTC_W                = CDRMAtomicProperty::Instantiate( "CRTC_W",                this, *rawProperties );
++			m_Props.CRTC_H                = CDRMAtomicProperty::Instantiate( "CRTC_H",                this, *rawProperties );
++			m_Props.zpos                  = CDRMAtomicProperty::Instantiate( "zpos",                  this, *rawProperties );
++			m_Props.alpha                 = CDRMAtomicProperty::Instantiate( "alpha",                 this, *rawProperties );
++			m_Props.rotation              = CDRMAtomicProperty::Instantiate( "rotation",              this, *rawProperties );
++			m_Props.COLOR_ENCODING        = CDRMAtomicProperty::Instantiate( "COLOR_ENCODING",        this, *rawProperties );
++			m_Props.COLOR_RANGE           = CDRMAtomicProperty::Instantiate( "COLOR_RANGE",           this, *rawProperties );
++			m_Props.AMD_PLANE_DEGAMMA_TF  = CDRMAtomicProperty::Instantiate( "AMD_PLANE_DEGAMMA_TF",  this, *rawProperties );
++			m_Props.AMD_PLANE_DEGAMMA_LUT = CDRMAtomicProperty::Instantiate( "AMD_PLANE_DEGAMMA_LUT", this, *rawProperties );
++			m_Props.AMD_PLANE_CTM         = CDRMAtomicProperty::Instantiate( "AMD_PLANE_CTM",         this, *rawProperties );
++			m_Props.AMD_PLANE_HDR_MULT    = CDRMAtomicProperty::Instantiate( "AMD_PLANE_HDR_MULT",    this, *rawProperties );
++			m_Props.AMD_PLANE_SHAPER_LUT  = CDRMAtomicProperty::Instantiate( "AMD_PLANE_SHAPER_LUT",  this, *rawProperties );
++			m_Props.AMD_PLANE_SHAPER_TF   = CDRMAtomicProperty::Instantiate( "AMD_PLANE_SHAPER_TF",   this, *rawProperties );
++			m_Props.AMD_PLANE_LUT3D       = CDRMAtomicProperty::Instantiate( "AMD_PLANE_LUT3D",       this, *rawProperties );
++			m_Props.AMD_PLANE_BLEND_TF    = CDRMAtomicProperty::Instantiate( "AMD_PLANE_BLEND_TF",    this, *rawProperties );
++			m_Props.AMD_PLANE_BLEND_LUT   = CDRMAtomicProperty::Instantiate( "AMD_PLANE_BLEND_LUT",   this, *rawProperties );
+ 		}
+ 	}
+ 
+@@ -1908,14 +1944,14 @@ namespace gamescope
+ 		auto rawProperties = GetRawProperties();
+ 		if ( rawProperties )
+ 		{
+-			m_Props.ACTIVE                   = CDRMAtomicProperty::Instantiate( "ACTIVE",                 this, *rawProperties );
+-			m_Props.MODE_ID                  = CDRMAtomicProperty::Instantiate( "MODE_ID",                this, *rawProperties );
+-			m_Props.GAMMA_LUT                = CDRMAtomicProperty::Instantiate( "GAMMA_LUT",              this, *rawProperties );
+-			m_Props.DEGAMMA_LUT              = CDRMAtomicProperty::Instantiate( "DEGAMMA_LUT",            this, *rawProperties );
+-			m_Props.CTM                      = CDRMAtomicProperty::Instantiate( "CTM",                    this, *rawProperties );
+-			m_Props.VRR_ENABLED              = CDRMAtomicProperty::Instantiate( "VRR_ENABLED",            this, *rawProperties );
+-			m_Props.OUT_FENCE_PTR            = CDRMAtomicProperty::Instantiate( "OUT_FENCE_PTR",          this, *rawProperties );
+-			m_Props.VALVE1_CRTC_REGAMMA_TF   = CDRMAtomicProperty::Instantiate( "VALVE1_CRTC_REGAMMA_TF", this, *rawProperties );
++			m_Props.ACTIVE              = CDRMAtomicProperty::Instantiate( "ACTIVE",              this, *rawProperties );
++			m_Props.MODE_ID             = CDRMAtomicProperty::Instantiate( "MODE_ID",             this, *rawProperties );
++			m_Props.GAMMA_LUT           = CDRMAtomicProperty::Instantiate( "GAMMA_LUT",           this, *rawProperties );
++			m_Props.DEGAMMA_LUT         = CDRMAtomicProperty::Instantiate( "DEGAMMA_LUT",         this, *rawProperties );
++			m_Props.CTM                 = CDRMAtomicProperty::Instantiate( "CTM",                 this, *rawProperties );
++			m_Props.VRR_ENABLED         = CDRMAtomicProperty::Instantiate( "VRR_ENABLED",         this, *rawProperties );
++			m_Props.OUT_FENCE_PTR       = CDRMAtomicProperty::Instantiate( "OUT_FENCE_PTR",       this, *rawProperties );
++			m_Props.AMD_CRTC_REGAMMA_TF = CDRMAtomicProperty::Instantiate( "AMD_CRTC_REGAMMA_TF", this, *rawProperties );
+ 		}
+ 	}
+ 
+@@ -2376,8 +2412,8 @@ drm_prepare_liftoff( struct drm_t *drm, const struct FrameInfo_t *frameInfo, boo
+ 
+ 				if ( drm_supports_color_mgmt( drm ) )
+ 				{
+-					drm_valve1_transfer_function degamma_tf = colorspace_to_plane_degamma_tf( entry.layerState[i].colorspace );
+-					drm_valve1_transfer_function shaper_tf = colorspace_to_plane_shaper_tf( entry.layerState[i].colorspace );
++					amdgpu_transfer_function degamma_tf = colorspace_to_plane_degamma_tf( entry.layerState[i].colorspace );
++					amdgpu_transfer_function shaper_tf = colorspace_to_plane_shaper_tf( entry.layerState[i].colorspace );
+ 
+ 					if ( entry.layerState[i].ycbcr )
+ 					{
+@@ -2389,27 +2425,27 @@ drm_prepare_liftoff( struct drm_t *drm, const struct FrameInfo_t *frameInfo, boo
+ 						//
+ 						// Doing LINEAR/DEFAULT here introduces banding so... this is the best way.
+ 						// (sRGB DEGAMMA does NOT work on YUV planes!)
+-						degamma_tf = DRM_VALVE1_TRANSFER_FUNCTION_BT709;
+-						shaper_tf = DRM_VALVE1_TRANSFER_FUNCTION_BT709;
++						degamma_tf = AMDGPU_TRANSFER_FUNCTION_BT709_OETF;
++						shaper_tf = AMDGPU_TRANSFER_FUNCTION_BT709_INV_OETF;
+ 					}
+ 
+ 					if (!g_bDisableDegamma)
+-						liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_DEGAMMA_TF", degamma_tf );
++						liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_DEGAMMA_TF", degamma_tf );
+ 					else
+-						liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_DEGAMMA_TF", 0 );
++						liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_DEGAMMA_TF", 0 );
+ 
+ 					if ( !g_bDisableShaperAnd3DLUT )
+ 					{
+-						liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_SHAPER_LUT", drm->pending.shaperlut_id[ ColorSpaceToEOTFIndex( entry.layerState[i].colorspace ) ]->GetBlobValue() );
+-						liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_SHAPER_TF", shaper_tf );
+-						liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_LUT3D", drm->pending.lut3d_id[ ColorSpaceToEOTFIndex( entry.layerState[i].colorspace ) ]->GetBlobValue() );
++						liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_SHAPER_LUT", drm->pending.shaperlut_id[ ColorSpaceToEOTFIndex( entry.layerState[i].colorspace ) ]->GetBlobValue() );
++						liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_SHAPER_TF", shaper_tf );
++						liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_LUT3D", drm->pending.lut3d_id[ ColorSpaceToEOTFIndex( entry.layerState[i].colorspace ) ]->GetBlobValue() );
+ 						// Josh: See shaders/colorimetry.h colorspace_blend_tf if you have questions as to why we start doing sRGB for BLEND_TF despite potentially working in Gamma 2.2 space prior.
+ 					}
+ 					else
+ 					{
+-						liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_SHAPER_LUT", 0 );
+-						liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_SHAPER_TF", 0 );
+-						liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_LUT3D", 0 );
++						liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_SHAPER_LUT", 0 );
++						liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_SHAPER_TF", 0 );
++						liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_LUT3D", 0 );
+ 					}
+ 				}
+ 			}
+@@ -2417,25 +2453,25 @@ drm_prepare_liftoff( struct drm_t *drm, const struct FrameInfo_t *frameInfo, boo
+ 			{
+ 				if ( drm_supports_color_mgmt( drm ) )
+ 				{
+-					liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_DEGAMMA_TF", DRM_VALVE1_TRANSFER_FUNCTION_DEFAULT );
+-					liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_SHAPER_LUT", 0 );
+-					liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_SHAPER_TF", 0 );
+-					liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_LUT3D", 0 );
+-					liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_CTM", 0 );
++					liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_DEGAMMA_TF", AMDGPU_TRANSFER_FUNCTION_DEFAULT );
++					liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_SHAPER_LUT", 0 );
++					liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_SHAPER_TF", 0 );
++					liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_LUT3D", 0 );
++					liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_CTM", 0 );
+ 				}
+ 			}
+ 
+ 			if ( drm_supports_color_mgmt( drm ) )
+ 			{
+ 				if (!g_bDisableBlendTF && !bSinglePlane)
+-					liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_BLEND_TF", drm->pending.output_tf );
++					liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_BLEND_TF", drm->pending.output_tf );
+ 				else
+-					liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_BLEND_TF", DRM_VALVE1_TRANSFER_FUNCTION_DEFAULT );
++					liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_BLEND_TF", AMDGPU_TRANSFER_FUNCTION_DEFAULT );
+ 
+ 				if (frameInfo->layers[i].ctm != nullptr)
+-					liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_CTM", frameInfo->layers[i].ctm->GetBlobValue() );
++					liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_CTM", frameInfo->layers[i].ctm->GetBlobValue() );
+ 				else
+-					liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_CTM", 0 );
++					liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_CTM", 0 );
+ 			}
+ 		}
+ 		else
+@@ -2447,12 +2483,12 @@ drm_prepare_liftoff( struct drm_t *drm, const struct FrameInfo_t *frameInfo, boo
+ 
+ 			if ( drm_supports_color_mgmt( drm ) )
+ 			{
+-				liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_DEGAMMA_TF", DRM_VALVE1_TRANSFER_FUNCTION_DEFAULT );
+-				liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_SHAPER_LUT", 0 );
+-				liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_SHAPER_TF", 0 );
+-				liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_LUT3D", 0 );
+-				liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_BLEND_TF", DRM_VALVE1_TRANSFER_FUNCTION_DEFAULT );
+-				liftoff_layer_set_property( drm->lo_layers[ i ], "VALVE1_PLANE_CTM", 0 );
++				liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_DEGAMMA_TF", AMDGPU_TRANSFER_FUNCTION_DEFAULT );
++				liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_SHAPER_LUT", 0 );
++				liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_SHAPER_TF", 0 );
++				liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_LUT3D", 0 );
++				liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_BLEND_TF", AMDGPU_TRANSFER_FUNCTION_DEFAULT );
++				liftoff_layer_set_property( drm->lo_layers[ i ], "AMD_PLANE_CTM", 0 );
+ 			}
+ 		}
+ 	}
+@@ -2533,7 +2569,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+ 			drm->needs_modeset = true;
+ 	}
+ 
+-	uint32_t uColorimetry = DRM_MODE_COLORIMETRY_DEFAULT;
++	drm_colorspace uColorimetry = DRM_MODE_COLORIMETRY_DEFAULT;
+ 
+ 	const bool bWantsHDR10 = g_bOutputHDREnabled && frameInfo->outputEncodingEOTF == EOTF_PQ;
+ 	gamescope::BackendBlob *pHDRMetadata = nullptr;
+@@ -2571,17 +2607,17 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+ 		if ( !g_bDisableRegamma && !bSinglePlane )
+ 		{
+ 			drm->pending.output_tf = g_bOutputHDREnabled
+-				? DRM_VALVE1_TRANSFER_FUNCTION_PQ
+-				: DRM_VALVE1_TRANSFER_FUNCTION_SRGB;
++				? AMDGPU_TRANSFER_FUNCTION_PQ_EOTF
++				: AMDGPU_TRANSFER_FUNCTION_SRGB_EOTF;
+ 		}
+ 		else
+ 		{
+-			drm->pending.output_tf = DRM_VALVE1_TRANSFER_FUNCTION_DEFAULT;
++			drm->pending.output_tf = AMDGPU_TRANSFER_FUNCTION_DEFAULT;
+ 		}
+ 	}
+ 	else
+ 	{
+-		drm->pending.output_tf = DRM_VALVE1_TRANSFER_FUNCTION_DEFAULT;
++		drm->pending.output_tf = AMDGPU_TRANSFER_FUNCTION_DEFAULT;
+ 	}
+ 
+ 	uint32_t flags = DRM_MODE_ATOMIC_NONBLOCK;
+@@ -2644,8 +2680,8 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+ 			if ( pCRTC->GetProperties().OUT_FENCE_PTR )
+ 				pCRTC->GetProperties().OUT_FENCE_PTR->SetPendingValue( drm->req, 0, bForceInRequest );
+ 
+-			if ( pCRTC->GetProperties().VALVE1_CRTC_REGAMMA_TF )
+-				pCRTC->GetProperties().VALVE1_CRTC_REGAMMA_TF->SetPendingValue( drm->req, 0, bForceInRequest );
++			if ( pCRTC->GetProperties().AMD_CRTC_REGAMMA_TF )
++				pCRTC->GetProperties().AMD_CRTC_REGAMMA_TF->SetPendingValue( drm->req, 0, bForceInRequest );
+ 		}
+ 
+ 		if ( drm->pConnector )
+@@ -2679,8 +2715,8 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+ 
+ 	if ( drm->pCRTC )
+ 	{
+-		if ( drm->pCRTC->GetProperties().VALVE1_CRTC_REGAMMA_TF )
+-			drm->pCRTC->GetProperties().VALVE1_CRTC_REGAMMA_TF->SetPendingValue( drm->req, drm->pending.output_tf, bForceInRequest );
++		if ( drm->pCRTC->GetProperties().AMD_CRTC_REGAMMA_TF )
++			drm->pCRTC->GetProperties().AMD_CRTC_REGAMMA_TF->SetPendingValue( drm->req, inverse_tf(drm->pending.output_tf), bForceInRequest );
+ 	}
+ 
+ 	drm->flags = flags;
+@@ -2995,7 +3031,7 @@ bool drm_supports_color_mgmt(struct drm_t *drm)
+ 	if ( !drm->pPrimaryPlane )
+ 		return false;
+ 
+-	return drm->pPrimaryPlane->GetProperties().VALVE1_PLANE_CTM.has_value();
++	return drm->pPrimaryPlane->GetProperties().AMD_PLANE_CTM.has_value();
+ }
+ 
+ std::span<const uint32_t> drm_get_valid_refresh_rates( struct drm_t *drm )
+diff --git a/src/drm_include.h b/src/drm_include.h
+index 500c3040a..d0ed3ce9e 100644
+--- a/src/drm_include.h
++++ b/src/drm_include.h
+@@ -28,19 +28,22 @@ enum drm_color_range {
+ 	DRM_COLOR_RANGE_MAX,
+ };
+ 
+-enum drm_valve1_transfer_function {
+-	DRM_VALVE1_TRANSFER_FUNCTION_DEFAULT,
+-
+-	DRM_VALVE1_TRANSFER_FUNCTION_SRGB,
+-	DRM_VALVE1_TRANSFER_FUNCTION_BT709,
+-	DRM_VALVE1_TRANSFER_FUNCTION_PQ,
+-	DRM_VALVE1_TRANSFER_FUNCTION_LINEAR,
+-	DRM_VALVE1_TRANSFER_FUNCTION_UNITY,
+-	DRM_VALVE1_TRANSFER_FUNCTION_HLG,
+-	DRM_VALVE1_TRANSFER_FUNCTION_GAMMA22,
+-	DRM_VALVE1_TRANSFER_FUNCTION_GAMMA24,
+-	DRM_VALVE1_TRANSFER_FUNCTION_GAMMA26,
+-	DRM_VALVE1_TRANSFER_FUNCTION_MAX,
++enum amdgpu_transfer_function {
++	AMDGPU_TRANSFER_FUNCTION_DEFAULT,
++	AMDGPU_TRANSFER_FUNCTION_SRGB_EOTF,
++	AMDGPU_TRANSFER_FUNCTION_BT709_INV_OETF,
++	AMDGPU_TRANSFER_FUNCTION_PQ_EOTF,
++	AMDGPU_TRANSFER_FUNCTION_IDENTITY,
++	AMDGPU_TRANSFER_FUNCTION_GAMMA22_EOTF,
++	AMDGPU_TRANSFER_FUNCTION_GAMMA24_EOTF,
++	AMDGPU_TRANSFER_FUNCTION_GAMMA26_EOTF,
++	AMDGPU_TRANSFER_FUNCTION_SRGB_INV_EOTF,
++	AMDGPU_TRANSFER_FUNCTION_BT709_OETF,
++	AMDGPU_TRANSFER_FUNCTION_PQ_INV_EOTF,
++	AMDGPU_TRANSFER_FUNCTION_GAMMA22_INV_EOTF,
++	AMDGPU_TRANSFER_FUNCTION_GAMMA24_INV_EOTF,
++	AMDGPU_TRANSFER_FUNCTION_GAMMA26_INV_EOTF,
++	AMDGPU_TRANSFER_FUNCTION_COUNT
+ };
+ 
+ enum drm_panel_orientation {
+@@ -51,28 +54,31 @@ enum drm_panel_orientation {
+ 	DRM_MODE_PANEL_ORIENTATION_RIGHT_UP,
+ };
+ 
+-/* For Default case, driver will set the colorspace */
+-#define DRM_MODE_COLORIMETRY_DEFAULT			0
+-/* CEA 861 Normal Colorimetry options */
+-#define DRM_MODE_COLORIMETRY_NO_DATA			0
+-#define DRM_MODE_COLORIMETRY_SMPTE_170M_YCC		1
+-#define DRM_MODE_COLORIMETRY_BT709_YCC			2
+-/* CEA 861 Extended Colorimetry Options */
+-#define DRM_MODE_COLORIMETRY_XVYCC_601			3
+-#define DRM_MODE_COLORIMETRY_XVYCC_709			4
+-#define DRM_MODE_COLORIMETRY_SYCC_601			5
+-#define DRM_MODE_COLORIMETRY_OPYCC_601			6
+-#define DRM_MODE_COLORIMETRY_OPRGB			7
+-#define DRM_MODE_COLORIMETRY_BT2020_CYCC		8
+-#define DRM_MODE_COLORIMETRY_BT2020_RGB			9
+-#define DRM_MODE_COLORIMETRY_BT2020_YCC			10
+-/* Additional Colorimetry extension added as part of CTA 861.G */
+-#define DRM_MODE_COLORIMETRY_DCI_P3_RGB_D65		11
+-#define DRM_MODE_COLORIMETRY_DCI_P3_RGB_THEATER		12
+-/* Additional Colorimetry Options added for DP 1.4a VSC Colorimetry Format */
+-#define DRM_MODE_COLORIMETRY_RGB_WIDE_FIXED		13
+-#define DRM_MODE_COLORIMETRY_RGB_WIDE_FLOAT		14
+-#define DRM_MODE_COLORIMETRY_BT601_YCC			15
++enum drm_colorspace {
++	/* For Default case, driver will set the colorspace */
++	DRM_MODE_COLORIMETRY_DEFAULT 		= 0,
++	/* CEA 861 Normal Colorimetry options */
++	DRM_MODE_COLORIMETRY_NO_DATA		= 0,
++	DRM_MODE_COLORIMETRY_SMPTE_170M_YCC	= 1,
++	DRM_MODE_COLORIMETRY_BT709_YCC		= 2,
++	/* CEA 861 Extended Colorimetry Options */
++	DRM_MODE_COLORIMETRY_XVYCC_601		= 3,
++	DRM_MODE_COLORIMETRY_XVYCC_709		= 4,
++	DRM_MODE_COLORIMETRY_SYCC_601		= 5,
++	DRM_MODE_COLORIMETRY_OPYCC_601		= 6,
++	DRM_MODE_COLORIMETRY_OPRGB		= 7,
++	DRM_MODE_COLORIMETRY_BT2020_CYCC	= 8,
++	DRM_MODE_COLORIMETRY_BT2020_RGB		= 9,
++	DRM_MODE_COLORIMETRY_BT2020_YCC		= 10,
++	/* Additional Colorimetry extension added as part of CTA 861.G */
++	DRM_MODE_COLORIMETRY_DCI_P3_RGB_D65	= 11,
++	DRM_MODE_COLORIMETRY_DCI_P3_RGB_THEATER	= 12,
++	/* Additional Colorimetry Options added for DP 1.4a VSC Colorimetry Format */
++	DRM_MODE_COLORIMETRY_RGB_WIDE_FIXED	= 13,
++	DRM_MODE_COLORIMETRY_RGB_WIDE_FLOAT	= 14,
++	DRM_MODE_COLORIMETRY_BT601_YCC		= 15,
++	DRM_MODE_COLORIMETRY_COUNT
++};
+ 
+ /* Content type options */
+ #define DRM_MODE_CONTENT_TYPE_NO_DATA		0
