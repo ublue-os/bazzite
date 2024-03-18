@@ -4,6 +4,11 @@
 setup-virtualization ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
+    # Check if we are running on a Steam Deck
+    if /usr/libexec/hardware/valve-hardware; then
+      echo "${red}${b}WARNING${n}: Virtualization is not properly supported on Steam Deck by Valve"
+      echo "Use at your own risk and performance may not be ideal."
+    fi
     if [ "$(systemctl is-enabled libvirtd.service)" == "disabled" ]; then
       echo "${b}libvirtd${n} service is ${red}disabled${n}!"
       echo "${green}enabling${n} and starting libvirtd"
