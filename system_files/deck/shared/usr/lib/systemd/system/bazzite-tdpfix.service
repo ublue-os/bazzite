@@ -1,0 +1,11 @@
+[Unit]
+Description=Resets power1_cap permissions to 644 if it is 666 at boot
+After=multi-user.target rc-local.service systemd-user-sessions.service
+Wants=modprobe@amdgpu.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/bazzite-tdpfix
+
+[Install]
+WantedBy=multi-user.target

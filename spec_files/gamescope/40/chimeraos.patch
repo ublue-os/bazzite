@@ -1,0 +1,974 @@
+From 4cafbd696c342c1f45eea6242dcaadd26e8e4a3d Mon Sep 17 00:00:00 2001
+From: Matthew Anderson <ruinairas1992@gmail.com>
+Date: Fri, 6 Oct 2023 17:22:41 -0500
+Subject: [PATCH 1/9] Add initial rotation atom controls
+
+---
+ src/drm.cpp          | 42 ++++++++++++++++++++++++++++++++++++++++++
+ src/drm.hpp          | 11 +++++++++++
+ src/steamcompmgr.cpp | 32 ++++++++++++++++++++++++++++++++
+ src/xwayland_ctx.hpp |  1 +
+ 4 files changed, 86 insertions(+)
+
+diff --git a/src/drm.cpp b/src/drm.cpp
+index c2694f0..de5e3ca 100644
+--- a/src/drm.cpp
++++ b/src/drm.cpp
+@@ -45,6 +45,7 @@ struct drm_t g_DRM = {};
+ uint32_t g_nDRMFormat = DRM_FORMAT_INVALID;
+ uint32_t g_nDRMFormatOverlay = DRM_FORMAT_INVALID; // for partial composition, we may have more limited formats than base planes + alpha.
+ bool g_bRotated = false;
++bool g_rotate_ctl_enable = false;
+ bool g_bUseLayers = true;
+ bool g_bDebugLayers = false;
+ const char *g_sOutputName = nullptr;
+@@ -65,6 +66,7 @@ bool g_bSupportsAsyncFlips = false;
+ 
+ enum drm_mode_generation g_drmModeGeneration = DRM_MODE_GENERATE_CVT;
+ enum g_panel_orientation g_drmModeOrientation = PANEL_ORIENTATION_AUTO;
++enum g_rotate_ctl g_drmRotateCTL;
+ std::atomic<uint64_t> g_drmEffectiveOrientation[DRM_SCREEN_TYPE_COUNT]{ {DRM_MODE_ROTATE_0}, {DRM_MODE_ROTATE_0} };
+ 
+ bool g_bForceDisableColorMgmt = false;
+@@ -2010,6 +2012,27 @@ static void update_drm_effective_orientation(struct drm_t *drm, struct connector
+ static void update_drm_effective_orientations(struct drm_t *drm, struct connector *conn, const drmModeModeInfo *mode)
+ {
+ 	drm_screen_type screenType = drm_get_connector_type(conn->connector);
++
++	if (g_rotate_ctl_enable)
++	{
++		switch (g_drmRotateCTL)
++		{
++			default:
++			case NORMAL:
++				g_drmEffectiveOrientation[screenType] = DRM_MODE_ROTATE_0;
++				break;
++			case LEFT_UP:
++				g_drmEffectiveOrientation[screenType] = DRM_MODE_ROTATE_90;
++				break;
++			case UPSIDEDOWN:
++				g_drmEffectiveOrientation[screenType] = DRM_MODE_ROTATE_180;
++				break;
++			case RIGHT_UP:
++				g_drmEffectiveOrientation[screenType] = DRM_MODE_ROTATE_270;
++				break;
++		}
++		return;
++	}
+ 	if (screenType == DRM_SCREEN_TYPE_INTERNAL)
+ 	{
+ 		update_drm_effective_orientation(drm, conn, mode);
+@@ -3083,6 +3106,25 @@ bool drm_set_refresh( struct drm_t *drm, int refresh )
+ 	return drm_set_mode(drm, &mode);
+ }
+ 
++void drm_set_orientation( struct drm_t *drm, bool isRotated)
++{
++	int width = g_nOutputWidth;
++	int height = g_nOutputHeight;
++	g_bRotated = isRotated;
++	if ( g_bRotated ) {
++		int tmp = width;
++		width = height;
++		height = tmp;
++	}
++
++	if (!drm->connector || !drm->connector->connector)
++		return;
++
++	drmModeConnector *connector = drm->connector->connector;
++	const drmModeModeInfo *mode = find_mode(connector, width, height, 0);
++	update_drm_effective_orientations(drm, drm->connector, mode);
++}
++
+ bool drm_set_resolution( struct drm_t *drm, int width, int height )
+ {
+ 	if (!drm->connector || !drm->connector->connector)
+diff --git a/src/drm.hpp b/src/drm.hpp
+index 6810797..b2ab49f 100644
+--- a/src/drm.hpp
++++ b/src/drm.hpp
+@@ -325,13 +325,24 @@ enum g_panel_orientation {
+ 	PANEL_ORIENTATION_AUTO,
+ };
+ 
++enum g_rotate_ctl{
++	NORMAL,
++	LEFT_UP,
++	UPSIDEDOWN,
++	RIGHT_UP,
++};
++
+ extern enum drm_mode_generation g_drmModeGeneration;
+ extern enum g_panel_orientation g_drmModeOrientation;
++extern enum g_rotate_ctl g_drmRotateCTL;
++extern bool g_rotate_ctl_enable;
+ 
+ extern std::atomic<uint64_t> g_drmEffectiveOrientation[DRM_SCREEN_TYPE_COUNT]; // DRM_MODE_ROTATE_*
+ 
+ extern bool g_bForceDisableColorMgmt;
+ 
++void drm_set_orientation( struct drm_t *drm, bool isRotated );
++
+ bool init_drm(struct drm_t *drm, int width, int height, int refresh, bool wants_adaptive_sync);
+ void finish_drm(struct drm_t *drm);
+ int drm_commit(struct drm_t *drm, const struct FrameInfo_t *frameInfo );
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index b02fa33..277a54c 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -5644,6 +5644,37 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 		if ( g_upscaleFilter == GamescopeUpscaleFilter::FSR || g_upscaleFilter == GamescopeUpscaleFilter::NIS )
+ 			hasRepaint = true;
+ 	}
++	if ( ev->atom == ctx->atoms.gamescopeRotateControl )
++	{
++			std::vector< uint32_t > drm_rot_ctl;
++			bool rotate = get_prop( ctx, ctx->root, ctx->atoms.gamescopeRotateControl, drm_rot_ctl );
++			bool rotated = false;
++			if ( rotate && drm_rot_ctl.size() == 1 )
++			{
++				xwm_log.debugf("drm_rot_ctl %d", drm_rot_ctl[0]);
++				g_rotate_ctl_enable = true;
++				switch ( drm_rot_ctl[0] )
++				{
++					case 0:
++						g_drmRotateCTL = NORMAL;
++						rotated = false;
++						break;
++					case 1:
++						g_drmRotateCTL = LEFT_UP;
++						rotated = true;
++						break;
++					case 2:
++						g_drmRotateCTL = UPSIDEDOWN;
++						rotated = false;
++						break;
++					case 3:
++						g_drmRotateCTL = RIGHT_UP;
++						rotated = true;
++						break;
++				}
++				drm_set_orientation(&g_DRM, rotated);
++			}
++	}
+ 	if ( ev->atom == ctx->atoms.gamescopeXWaylandModeControl )
+ 	{
+ 		std::vector< uint32_t > xwayland_mode_ctl;
+@@ -7248,6 +7279,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
+ 	ctx->atoms.gamescopeFSRSharpness = XInternAtom( ctx->dpy, "GAMESCOPE_FSR_SHARPNESS", false );
+ 	ctx->atoms.gamescopeSharpness = XInternAtom( ctx->dpy, "GAMESCOPE_SHARPNESS", false );
+ 
++	ctx->atoms.gamescopeRotateControl = XInternAtom( ctx->dpy, "GAMESCOPE_ROTATE_CONTROL", false );
+ 	ctx->atoms.gamescopeXWaylandModeControl = XInternAtom( ctx->dpy, "GAMESCOPE_XWAYLAND_MODE_CONTROL", false );
+ 	ctx->atoms.gamescopeFPSLimit = XInternAtom( ctx->dpy, "GAMESCOPE_FPS_LIMIT", false );
+ 	ctx->atoms.gamescopeDynamicRefresh[DRM_SCREEN_TYPE_INTERNAL] = XInternAtom( ctx->dpy, "GAMESCOPE_DYNAMIC_REFRESH", false );
+diff --git a/src/xwayland_ctx.hpp b/src/xwayland_ctx.hpp
+index 5764c4b..6231007 100644
+--- a/src/xwayland_ctx.hpp
++++ b/src/xwayland_ctx.hpp
+@@ -146,6 +146,7 @@ struct xwayland_ctx_t final : public gamescope::IWaitable
+ 		Atom gamescopeFSRSharpness;
+ 		Atom gamescopeSharpness;
+ 
++		Atom gamescopeRotateControl;
+ 		Atom gamescopeXWaylandModeControl;
+ 
+ 		Atom gamescopeFPSLimit;
+-- 
+2.42.0
+
+
+From 4d8f1c32f1be873bf009b3d14b1ff3756495da63 Mon Sep 17 00:00:00 2001
+From: Matthew Anderson <ruinairas1992@gmail.com>
+Date: Sat, 7 Oct 2023 10:38:09 -0500
+Subject: [PATCH 2/9] Flag drm_out_of_date to ensure rotation logic gets reset
+
+---
+ src/steamcompmgr.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 277a54c..236bba4 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -5673,6 +5673,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 						break;
+ 				}
+ 				drm_set_orientation(&g_DRM, rotated);
++				g_DRM.out_of_date = 2;
+ 			}
+ 	}
+ 	if ( ev->atom == ctx->atoms.gamescopeXWaylandModeControl )
+-- 
+2.42.0
+
+
+From b145e5cde74d026ffceddee7f4096a23e60e6112 Mon Sep 17 00:00:00 2001
+From: Matthew Anderson <ruinairas1992@gmail.com>
+Date: Tue, 25 Apr 2023 06:45:01 -0500
+Subject: [PATCH 3/9] Add --force-panel-type and --force-external-orientation
+ arguments (#2)
+
+* Add --force-panel-type and --force-external-orientation arguments.
+
+* Rotate only the internal display when faked as "external"
+
+* Try to prevent the external display from being rotated when --force-panel-type external is used.
+
+* Fixed docking issue when --force-panel-type external is used and you dock/undock the handheld.
+---
+ src/drm.cpp  | 54 +++++++++++++++++++++++++++++++++++++++++++++-------
+ src/drm.hpp  | 15 +++++++++++++++
+ src/main.cpp | 36 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 98 insertions(+), 7 deletions(-)
+
+diff --git a/src/drm.cpp b/src/drm.cpp
+index de5e3ca..f4fe8fd 100644
+--- a/src/drm.cpp
++++ b/src/drm.cpp
+@@ -46,6 +46,7 @@ uint32_t g_nDRMFormat = DRM_FORMAT_INVALID;
+ uint32_t g_nDRMFormatOverlay = DRM_FORMAT_INVALID; // for partial composition, we may have more limited formats than base planes + alpha.
+ bool g_bRotated = false;
+ bool g_rotate_ctl_enable = false;
++bool g_bDisplayTypeInternal = false;
+ bool g_bUseLayers = true;
+ bool g_bDebugLayers = false;
+ const char *g_sOutputName = nullptr;
+@@ -68,6 +69,8 @@ enum drm_mode_generation g_drmModeGeneration = DRM_MODE_GENERATE_CVT;
+ enum g_panel_orientation g_drmModeOrientation = PANEL_ORIENTATION_AUTO;
+ enum g_rotate_ctl g_drmRotateCTL;
+ std::atomic<uint64_t> g_drmEffectiveOrientation[DRM_SCREEN_TYPE_COUNT]{ {DRM_MODE_ROTATE_0}, {DRM_MODE_ROTATE_0} };
++enum g_panel_external_orientation g_drmModeExternalOrientation = PANEL_EXTERNAL_ORIENTATION_AUTO;
++enum g_panel_type g_drmPanelType = PANEL_TYPE_AUTO;
+ 
+ bool g_bForceDisableColorMgmt = false;
+ 
+@@ -1981,8 +1984,29 @@ static uint64_t determine_drm_orientation(struct drm_t *drm, struct connector *c
+ static void update_drm_effective_orientation(struct drm_t *drm, struct connector *conn, const drmModeModeInfo *mode)
+ {
+ 	drm_screen_type screenType = drm_get_connector_type(conn->connector);
+-
+-	if (screenType == DRM_SCREEN_TYPE_INTERNAL)
++	if ( screenType == DRM_SCREEN_TYPE_EXTERNAL && g_bDisplayTypeInternal == true )
++	{
++		switch ( g_drmModeExternalOrientation )
++		{
++			case PANEL_EXTERNAL_ORIENTATION_0:
++				g_drmEffectiveOrientation[screenType]  = DRM_MODE_ROTATE_0;
++				break;
++			case PANEL_EXTERNAL_ORIENTATION_90:
++				g_drmEffectiveOrientation[screenType]  = DRM_MODE_ROTATE_90;
++				break;
++			case PANEL_EXTERNAL_ORIENTATION_180:
++				g_drmEffectiveOrientation[screenType]  = DRM_MODE_ROTATE_180;
++				break;
++			case PANEL_EXTERNAL_ORIENTATION_270:
++				g_drmEffectiveOrientation[screenType]  = DRM_MODE_ROTATE_270;
++				break;
++			case PANEL_EXTERNAL_ORIENTATION_AUTO:
++				g_drmEffectiveOrientation[screenType]  = determine_drm_orientation(drm, conn, mode);
++				break;
++		}
++		return;
++	}
++	else if ( screenType == DRM_SCREEN_TYPE_INTERNAL )
+ 	{
+ 		switch ( g_drmModeOrientation )
+ 		{
+@@ -2933,11 +2957,27 @@ bool drm_get_vrr_in_use(struct drm_t *drm)
+ 
+ drm_screen_type drm_get_connector_type(drmModeConnector *connector)
+ {
+-	if (connector->connector_type == DRM_MODE_CONNECTOR_eDP ||
+-		connector->connector_type == DRM_MODE_CONNECTOR_LVDS ||
+-		connector->connector_type == DRM_MODE_CONNECTOR_DSI)
+-		return DRM_SCREEN_TYPE_INTERNAL;
+-
++	// Set to the default state of false to make sure the external display isn't rotated when a system is docked
++	g_bDisplayTypeInternal = false;
++	switch ( g_drmPanelType )
++	{
++		case PANEL_TYPE_INTERNAL:
++			return DRM_SCREEN_TYPE_INTERNAL;
++			break;
++		case PANEL_TYPE_EXTERNAL:
++			if (connector->connector_type == DRM_MODE_CONNECTOR_eDP ||
++					connector->connector_type == DRM_MODE_CONNECTOR_LVDS ||
++					connector->connector_type == DRM_MODE_CONNECTOR_DSI)
++					g_bDisplayTypeInternal = true;
++			return DRM_SCREEN_TYPE_EXTERNAL;
++			break;
++		case PANEL_TYPE_AUTO:
++			if (connector->connector_type == DRM_MODE_CONNECTOR_eDP ||
++					connector->connector_type == DRM_MODE_CONNECTOR_LVDS ||
++					connector->connector_type == DRM_MODE_CONNECTOR_DSI)
++					return DRM_SCREEN_TYPE_INTERNAL;
++			break;
++	}
+ 	return DRM_SCREEN_TYPE_EXTERNAL;
+ }
+ 
+diff --git a/src/drm.hpp b/src/drm.hpp
+index b2ab49f..53fc540 100644
+--- a/src/drm.hpp
++++ b/src/drm.hpp
+@@ -331,11 +331,26 @@ enum g_rotate_ctl{
+ 	UPSIDEDOWN,
+ 	RIGHT_UP,
+ };
++enum g_panel_external_orientation {
++	PANEL_EXTERNAL_ORIENTATION_0,	/* NORMAL */
++	PANEL_EXTERNAL_ORIENTATION_270,	/* RIGHT */
++	PANEL_EXTERNAL_ORIENTATION_90,	/* LEFT */
++	PANEL_EXTERNAL_ORIENTATION_180,	/* UPSIDE DOWN */
++	PANEL_EXTERNAL_ORIENTATION_AUTO,
++};
++
++enum g_panel_type {
++	PANEL_TYPE_INTERNAL,
++	PANEL_TYPE_EXTERNAL,
++	PANEL_TYPE_AUTO,
++};
+ 
+ extern enum drm_mode_generation g_drmModeGeneration;
+ extern enum g_panel_orientation g_drmModeOrientation;
+ extern enum g_rotate_ctl g_drmRotateCTL;
+ extern bool g_rotate_ctl_enable;
++extern enum g_panel_external_orientation g_drmModeExternalOrientation;
++extern enum g_panel_type g_drmPanelType;
+ 
+ extern std::atomic<uint64_t> g_drmEffectiveOrientation[DRM_SCREEN_TYPE_COUNT]; // DRM_MODE_ROTATE_*
+ 
+diff --git a/src/main.cpp b/src/main.cpp
+index 76721d6..f6ba34f 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -118,6 +118,8 @@ const struct option *gamescope_options = (struct option[]){
+ 	{ "disable-xres", no_argument, nullptr, 'x' },
+ 	{ "fade-out-duration", required_argument, nullptr, 0 },
+ 	{ "force-orientation", required_argument, nullptr, 0 },
++	{ "force-external-orientation", required_argument, nullptr, 0 },
++	{ "force-panel-type", required_argument, nullptr, 0 },
+ 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
+ 
+ 	{ "disable-color-management", no_argument, nullptr, 0 },
+@@ -167,6 +169,8 @@ const char usage[] =
+ 	"  --xwayland-count               create N xwayland servers\n"
+ 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
+ 	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
++	"  --force-external-orientation   rotate the external display (left, right, normal, upsidedown)\n"
++	"  --force-panel-type             force gamescope to treat the display as either internal or external\n"
+ 	"  --force-windows-fullscreen     force windows inside of gamescope to be the size of the nested display (fullscreen)\n"
+ 	"  --cursor-scale-height          if specified, sets a base output height to linearly scale the cursor against.\n"
+ 	"  --hdr-enabled                  enable HDR output (needs Gamescope WSI layer enabled for support from clients)\n"
+@@ -353,6 +357,18 @@ static enum drm_mode_generation parse_drm_mode_generation(const char *str)
+ 	}
+ }
+ 
++static enum g_panel_type force_panel_type(const char *str)
++{
++	if (strcmp(str, "internal") == 0) {
++		return PANEL_TYPE_INTERNAL;
++	} else if (strcmp(str, "external") == 0) {
++		return PANEL_TYPE_EXTERNAL;
++	} else {
++		fprintf( stderr, "gamescope: invalid value for --force-panel-type\n" );
++		exit(1);
++	}
++}
++
+ static enum g_panel_orientation force_orientation(const char *str)
+ {
+ 	if (strcmp(str, "normal") == 0) {
+@@ -408,6 +424,22 @@ static enum GamescopeUpscaleFilter parse_upscaler_filter(const char *str)
+ struct sigaction handle_signal_action = {};
+ extern pid_t child_pid;
+ 
++static enum g_panel_external_orientation force_external_orientation(const char *str)
++{
++	if (strcmp(str, "normal") == 0) {
++		return PANEL_EXTERNAL_ORIENTATION_0;
++	} else if (strcmp(str, "right") == 0) {
++		return PANEL_EXTERNAL_ORIENTATION_270;
++	} else if (strcmp(str, "left") == 0) {
++		return PANEL_EXTERNAL_ORIENTATION_90;
++	} else if (strcmp(str, "upsidedown") == 0) {
++		return PANEL_EXTERNAL_ORIENTATION_180;
++	} else {
++		fprintf( stderr, "gamescope: invalid value for --force-external-orientation\n" );
++		exit(1);
++	}
++}
++
+ static void handle_signal( int sig )
+ {
+ 	switch ( sig ) {
+@@ -614,6 +646,10 @@ int main(int argc, char **argv)
+ 					g_drmModeGeneration = parse_drm_mode_generation( optarg );
+ 				} else if (strcmp(opt_name, "force-orientation") == 0) {
+ 					g_drmModeOrientation = force_orientation( optarg );
++				} else if (strcmp(opt_name, "force-external-orientation") == 0) {
++					g_drmModeExternalOrientation = force_external_orientation( optarg );
++				} else if (strcmp(opt_name, "force-panel-type") == 0) {
++					g_drmPanelType = force_panel_type( optarg );
+ 				} else if (strcmp(opt_name, "sharpness") == 0 ||
+ 						   strcmp(opt_name, "fsr-sharpness") == 0) {
+ 					g_upscaleFilterSharpness = atoi( optarg );
+-- 
+2.42.0
+
+
+From 4d1f8e34b70fee42e4e30feac16eda7aa2aa63e7 Mon Sep 17 00:00:00 2001
+From: Matthew Anderson <ruinairas1992@gmail.com>
+Date: Tue, 25 Jul 2023 18:05:05 -0500
+Subject: [PATCH 4/9] Set default to native resolution of display if Steam
+ tries to force 720p/800p
+
+You can select 720p/800p still in game or via Steam's resolution setting
+Steam > Settings > Display > Resolution
+
+This effectively reverts the changes Valve made a year ago forcing us to
+720p.
+---
+ src/steamcompmgr.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 236bba4..60f9828 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -5685,6 +5685,13 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 			size_t server_idx = size_t{ xwayland_mode_ctl[ 0 ] };
+ 			int width = xwayland_mode_ctl[ 1 ];
+ 			int height = xwayland_mode_ctl[ 2 ];
++
++			if ( g_nOutputWidth != 1280 && width == 1280 )
++			{
++				width = g_nOutputWidth;
++				height = g_nOutputHeight;
++			}
++
+ 			bool allowSuperRes = !!xwayland_mode_ctl[ 3 ];
+ 
+ 			if ( !allowSuperRes )
+-- 
+2.42.0
+
+
+From 8959ef22543eb94d329ef9c117ec662061a3db6c Mon Sep 17 00:00:00 2001
+From: Matthew Anderson <ruinairas1992@gmail.com>
+Date: Wed, 26 Jul 2023 20:46:29 -0500
+Subject: [PATCH 5/9] Fix internal display touchscreen orientation when it's
+ forced
+
+---
+ src/main.cpp     |  6 ++++++
+ src/main.hpp     |  2 ++
+ src/wlserver.cpp | 25 +++++++++++++++++++++++++
+ 3 files changed, 33 insertions(+)
+
+diff --git a/src/main.cpp b/src/main.cpp
+index f6ba34f..17409b5 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -269,6 +269,8 @@ bool g_bHeadless = false;
+ 
+ bool g_bGrabbed = false;
+ 
++bool g_bExternalForced = false;
++
+ GamescopeUpscaleFilter g_upscaleFilter = GamescopeUpscaleFilter::LINEAR;
+ GamescopeUpscaleScaler g_upscaleScaler = GamescopeUpscaleScaler::AUTO;
+ 
+@@ -427,12 +429,16 @@ extern pid_t child_pid;
+ static enum g_panel_external_orientation force_external_orientation(const char *str)
+ {
+ 	if (strcmp(str, "normal") == 0) {
++		g_bExternalForced = true;
+ 		return PANEL_EXTERNAL_ORIENTATION_0;
+ 	} else if (strcmp(str, "right") == 0) {
++		g_bExternalForced = true;
+ 		return PANEL_EXTERNAL_ORIENTATION_270;
+ 	} else if (strcmp(str, "left") == 0) {
++		g_bExternalForced = true;
+ 		return PANEL_EXTERNAL_ORIENTATION_90;
+ 	} else if (strcmp(str, "upsidedown") == 0) {
++		g_bExternalForced = true;
+ 		return PANEL_EXTERNAL_ORIENTATION_180;
+ 	} else {
+ 		fprintf( stderr, "gamescope: invalid value for --force-external-orientation\n" );
+diff --git a/src/main.hpp b/src/main.hpp
+index 7d8e9f1..97ec0a8 100644
+--- a/src/main.hpp
++++ b/src/main.hpp
+@@ -23,6 +23,8 @@ extern bool g_bFullscreen;
+ 
+ extern bool g_bGrabbed;
+ 
++extern bool g_bExternalForced;
++
+ enum class GamescopeUpscaleFilter : uint32_t
+ {
+     LINEAR = 0,
+diff --git a/src/wlserver.cpp b/src/wlserver.cpp
+index 3fbc4ff..dc37f97 100644
+--- a/src/wlserver.cpp
++++ b/src/wlserver.cpp
+@@ -1976,6 +1976,31 @@ static void apply_touchscreen_orientation(double *x, double *y )
+ 			ty = 1.0 - *x;
+ 			break;
+ 	}
++	// Rotate screen if it's forced with --force-external-orientation
++
++	if ( g_bExternalForced == true)
++	{
++		switch ( g_drmEffectiveOrientation[DRM_SCREEN_TYPE_EXTERNAL] )
++		{
++			default:
++			case DRM_MODE_ROTATE_0:
++				tx = *x;
++				ty = *y;
++				break;
++			case DRM_MODE_ROTATE_90:
++				tx = 1.0 - *y;
++				ty = *x;
++				break;
++			case DRM_MODE_ROTATE_180:
++				tx = 1.0 - *x;
++				ty = 1.0 - *y;
++				break;
++			case DRM_MODE_ROTATE_270:
++				tx = *y;
++				ty = 1.0 - *x;
++				break;
++		}
++	}
+ 
+ 	*x = tx;
+ 	*y = ty;
+-- 
+2.42.0
+
+
+From 17a8118d9ede790f27fa085a1d287f31e81abb64 Mon Sep 17 00:00:00 2001
+From: Matthew Anderson <ruinairas1992@gmail.com>
+Date: Fri, 6 Oct 2023 23:58:17 -0500
+Subject: [PATCH 6/9] Add initial display selection atom
+
+---
+ src/drm.cpp          | 20 +++++++++++++
+ src/drm.hpp          |  1 +
+ src/steamcompmgr.cpp | 69 ++++++++++++++++++++++++++++++++++++++++++++
+ src/xwayland_ctx.hpp |  1 +
+ 4 files changed, 91 insertions(+)
+
+diff --git a/src/drm.cpp b/src/drm.cpp
+index f4fe8fd..d2f7677 100644
+--- a/src/drm.cpp
++++ b/src/drm.cpp
+@@ -50,6 +50,7 @@ bool g_bDisplayTypeInternal = false;
+ bool g_bUseLayers = true;
+ bool g_bDebugLayers = false;
+ const char *g_sOutputName = nullptr;
++char* targetConnector = (char*)"eDP-1";
+ 
+ #ifndef DRM_CAP_ATOMIC_ASYNC_PAGE_FLIP
+ #define DRM_CAP_ATOMIC_ASYNC_PAGE_FLIP 0x15
+@@ -1245,6 +1246,19 @@ static bool setup_best_connector(struct drm_t *drm, bool force, bool initial)
+ 		}
+ 	}
+ 
++	for (auto &kv : drm->connectors) {
++		struct connector *conn = &kv.second;
++		drm_log.debugf("force set adapter");
++		drm_log.debugf("conn->name: %s", conn->name);
++		drm_log.debugf("targetConnector: %s", targetConnector);
++		if (strcmp(conn->name, targetConnector) == 0)
++		{
++			drm_log.debugf("target was found!!!");
++			drm_log.infof("  %s (%s)", conn->name, targetConnector);
++			best = conn;
++		}
++	}
++
+ 	if (!force) {
+ 		if ((!best && drm->connector) || (best && best == drm->connector)) {
+ 			// Let's keep our current connector
+@@ -2907,6 +2921,12 @@ static bool drm_set_crtc( struct drm_t *drm, struct crtc *crtc )
+ 	return true;
+ }
+ 
++void drm_set_prefered_connector( struct drm_t *drm, char* name )
++{
++	drm_log.infof("selecting prefered connector %s", name);
++	targetConnector = name;
++}
++
+ bool drm_set_connector( struct drm_t *drm, struct connector *conn )
+ {
+ 	drm_log.infof("selecting connector %s", conn->name);
+diff --git a/src/drm.hpp b/src/drm.hpp
+index 53fc540..739f51b 100644
+--- a/src/drm.hpp
++++ b/src/drm.hpp
+@@ -368,6 +368,7 @@ uint32_t drm_fbid_from_dmabuf( struct drm_t *drm, struct wlr_buffer *buf, struct
+ void drm_lock_fbid( struct drm_t *drm, uint32_t fbid );
+ void drm_unlock_fbid( struct drm_t *drm, uint32_t fbid );
+ void drm_drop_fbid( struct drm_t *drm, uint32_t fbid );
++void drm_set_prefered_connector( struct drm_t *drm, char* name );
+ bool drm_set_connector( struct drm_t *drm, struct connector *conn );
+ bool drm_set_mode( struct drm_t *drm, const drmModeModeInfo *mode );
+ bool drm_set_refresh( struct drm_t *drm, int refresh );
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 60f9828..aeef706 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -5719,6 +5719,74 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 			}
+ 		}
+ 	}
++	if ( ev->atom == ctx->atoms.gamescopeConnectorControl )
++	{
++		std::vector< uint32_t > connector_ctl;
++		bool hasConnectorCtrl = get_prop( ctx, ctx->root, ctx->atoms.gamescopeConnectorControl, connector_ctl );
++		char* adapter_type;
++		if ( hasConnectorCtrl && connector_ctl.size() == 1 )
++		{
++			switch (connector_ctl[0])
++			{
++				case 0:
++					adapter_type = (char*)"eDP-1";
++					break;
++				case 1:
++					adapter_type = (char*)"eDP-2";
++					break;
++				case 2:
++					adapter_type = (char*)"eDP-3";
++					break;
++				case 3:
++					adapter_type = (char*)"DP-1";
++					break;
++				case 4:
++					adapter_type = (char*)"DP-2";
++					break;
++				case 5:
++					adapter_type = (char*)"DP-3";
++					break;
++				case 6:
++					adapter_type = (char*)"HDMI-A-1";
++					break;
++				case 7:
++					adapter_type = (char*)"HDMI-A-2";
++					break;
++				case 8:
++					adapter_type = (char*)"HDMI-A-3";
++					break;
++				case 9:
++					adapter_type = (char*)"HDMI-B-1";
++					break;
++				case 10:
++					adapter_type = (char*)"HDMI-B-2";
++					break;
++				case 11:
++					adapter_type = (char*)"HDMI-B-3";
++					break;
++				case 12:
++					adapter_type = (char*)"HDMI-C-1";
++					break;
++				case 13:
++					adapter_type = (char*)"HDMI-C-2";
++					break;
++				case 14:
++					adapter_type = (char*)"HDMI-C-3";
++					break;
++				case 15:
++					adapter_type = (char*)"DSI-1";
++					break;
++				case 16:
++					adapter_type = (char*)"DSI-2";
++					break;
++				case 17:
++					adapter_type = (char*)"DSI-3";
++					break;
++			}
++			g_DRM.out_of_date = 2;
++			drm_set_prefered_connector(&g_DRM, adapter_type);
++		}
++	}
+ 	if ( ev->atom == ctx->atoms.gamescopeFPSLimit )
+ 	{
+ 		g_nSteamCompMgrTargetFPS = get_prop( ctx, ctx->root, ctx->atoms.gamescopeFPSLimit, 0 );
+@@ -7289,6 +7357,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
+ 
+ 	ctx->atoms.gamescopeRotateControl = XInternAtom( ctx->dpy, "GAMESCOPE_ROTATE_CONTROL", false );
+ 	ctx->atoms.gamescopeXWaylandModeControl = XInternAtom( ctx->dpy, "GAMESCOPE_XWAYLAND_MODE_CONTROL", false );
++	ctx->atoms.gamescopeConnectorControl = XInternAtom(ctx->dpy, "GAMESCOPE_CONNECTOR_CONTROL", false );
+ 	ctx->atoms.gamescopeFPSLimit = XInternAtom( ctx->dpy, "GAMESCOPE_FPS_LIMIT", false );
+ 	ctx->atoms.gamescopeDynamicRefresh[DRM_SCREEN_TYPE_INTERNAL] = XInternAtom( ctx->dpy, "GAMESCOPE_DYNAMIC_REFRESH", false );
+ 	ctx->atoms.gamescopeDynamicRefresh[DRM_SCREEN_TYPE_EXTERNAL] = XInternAtom( ctx->dpy, "GAMESCOPE_DYNAMIC_REFRESH_EXTERNAL", false );
+diff --git a/src/xwayland_ctx.hpp b/src/xwayland_ctx.hpp
+index 6231007..9dbc544 100644
+--- a/src/xwayland_ctx.hpp
++++ b/src/xwayland_ctx.hpp
+@@ -149,6 +149,7 @@ struct xwayland_ctx_t final : public gamescope::IWaitable
+ 		Atom gamescopeRotateControl;
+ 		Atom gamescopeXWaylandModeControl;
+ 
++		Atom gamescopeConnectorControl;
+ 		Atom gamescopeFPSLimit;
+ 		Atom gamescopeDynamicRefresh[DRM_SCREEN_TYPE_COUNT];
+ 		Atom gamescopeLowLatency;
+-- 
+2.42.0
+
+
+From 8b94b4297324bddf48f3578592cdb6f9fe20e5a4 Mon Sep 17 00:00:00 2001
+From: Matthew Anderson <ruinairas1992@gmail.com>
+Date: Mon, 9 Oct 2023 11:21:11 -0500
+Subject: [PATCH 7/9] Use sysfs connector_ids for target device selection.
+
+---
+ src/drm.cpp          | 14 +++--------
+ src/drm.hpp          |  2 +-
+ src/steamcompmgr.cpp | 60 +-------------------------------------------
+ 3 files changed, 6 insertions(+), 70 deletions(-)
+
+diff --git a/src/drm.cpp b/src/drm.cpp
+index d2f7677..59516c7 100644
+--- a/src/drm.cpp
++++ b/src/drm.cpp
+@@ -50,7 +50,7 @@ bool g_bDisplayTypeInternal = false;
+ bool g_bUseLayers = true;
+ bool g_bDebugLayers = false;
+ const char *g_sOutputName = nullptr;
+-char* targetConnector = (char*)"eDP-1";
++uint32_t targetConnector;
+ 
+ #ifndef DRM_CAP_ATOMIC_ASYNC_PAGE_FLIP
+ #define DRM_CAP_ATOMIC_ASYNC_PAGE_FLIP 0x15
+@@ -1248,13 +1248,8 @@ static bool setup_best_connector(struct drm_t *drm, bool force, bool initial)
+ 
+ 	for (auto &kv : drm->connectors) {
+ 		struct connector *conn = &kv.second;
+-		drm_log.debugf("force set adapter");
+-		drm_log.debugf("conn->name: %s", conn->name);
+-		drm_log.debugf("targetConnector: %s", targetConnector);
+-		if (strcmp(conn->name, targetConnector) == 0)
++		if ( conn->id == targetConnector)
+ 		{
+-			drm_log.debugf("target was found!!!");
+-			drm_log.infof("  %s (%s)", conn->name, targetConnector);
+ 			best = conn;
+ 		}
+ 	}
+@@ -2921,10 +2916,9 @@ static bool drm_set_crtc( struct drm_t *drm, struct crtc *crtc )
+ 	return true;
+ }
+ 
+-void drm_set_prefered_connector( struct drm_t *drm, char* name )
++void drm_set_prefered_connector( struct drm_t *drm, uint32_t connector_type_id )
+ {
+-	drm_log.infof("selecting prefered connector %s", name);
+-	targetConnector = name;
++	targetConnector = connector_type_id;
+ }
+ 
+ bool drm_set_connector( struct drm_t *drm, struct connector *conn )
+diff --git a/src/drm.hpp b/src/drm.hpp
+index 739f51b..6320bf7 100644
+--- a/src/drm.hpp
++++ b/src/drm.hpp
+@@ -368,7 +368,7 @@ uint32_t drm_fbid_from_dmabuf( struct drm_t *drm, struct wlr_buffer *buf, struct
+ void drm_lock_fbid( struct drm_t *drm, uint32_t fbid );
+ void drm_unlock_fbid( struct drm_t *drm, uint32_t fbid );
+ void drm_drop_fbid( struct drm_t *drm, uint32_t fbid );
+-void drm_set_prefered_connector( struct drm_t *drm, char* name );
++void drm_set_prefered_connector( struct drm_t *drm, uint32_t connector_type_id );
+ bool drm_set_connector( struct drm_t *drm, struct connector *conn );
+ bool drm_set_mode( struct drm_t *drm, const drmModeModeInfo *mode );
+ bool drm_set_refresh( struct drm_t *drm, int refresh );
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index aeef706..9a3f495 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -5723,68 +5723,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 	{
+ 		std::vector< uint32_t > connector_ctl;
+ 		bool hasConnectorCtrl = get_prop( ctx, ctx->root, ctx->atoms.gamescopeConnectorControl, connector_ctl );
+-		char* adapter_type;
+ 		if ( hasConnectorCtrl && connector_ctl.size() == 1 )
+ 		{
+-			switch (connector_ctl[0])
+-			{
+-				case 0:
+-					adapter_type = (char*)"eDP-1";
+-					break;
+-				case 1:
+-					adapter_type = (char*)"eDP-2";
+-					break;
+-				case 2:
+-					adapter_type = (char*)"eDP-3";
+-					break;
+-				case 3:
+-					adapter_type = (char*)"DP-1";
+-					break;
+-				case 4:
+-					adapter_type = (char*)"DP-2";
+-					break;
+-				case 5:
+-					adapter_type = (char*)"DP-3";
+-					break;
+-				case 6:
+-					adapter_type = (char*)"HDMI-A-1";
+-					break;
+-				case 7:
+-					adapter_type = (char*)"HDMI-A-2";
+-					break;
+-				case 8:
+-					adapter_type = (char*)"HDMI-A-3";
+-					break;
+-				case 9:
+-					adapter_type = (char*)"HDMI-B-1";
+-					break;
+-				case 10:
+-					adapter_type = (char*)"HDMI-B-2";
+-					break;
+-				case 11:
+-					adapter_type = (char*)"HDMI-B-3";
+-					break;
+-				case 12:
+-					adapter_type = (char*)"HDMI-C-1";
+-					break;
+-				case 13:
+-					adapter_type = (char*)"HDMI-C-2";
+-					break;
+-				case 14:
+-					adapter_type = (char*)"HDMI-C-3";
+-					break;
+-				case 15:
+-					adapter_type = (char*)"DSI-1";
+-					break;
+-				case 16:
+-					adapter_type = (char*)"DSI-2";
+-					break;
+-				case 17:
+-					adapter_type = (char*)"DSI-3";
+-					break;
+-			}
+ 			g_DRM.out_of_date = 2;
+-			drm_set_prefered_connector(&g_DRM, adapter_type);
++			drm_set_prefered_connector(&g_DRM, connector_ctl[0]);
+ 		}
+ 	}
+ 	if ( ev->atom == ctx->atoms.gamescopeFPSLimit )
+-- 
+2.42.0
+
+
+From 40cb952642118fb983ec4e3deedd7410dbf69a07 Mon Sep 17 00:00:00 2001
+From: Matthew Anderson <ruinairas1992@gmail.com>
+Date: Tue, 16 Jan 2024 13:57:50 -0600
+Subject: [PATCH 8/9] Add edge gesture support to open Home and QAM
+
+---
+ src/wlserver.cpp | 28 +++++++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
+
+diff --git a/src/wlserver.cpp b/src/wlserver.cpp
+index dc37f97..e7fb7c9 100644
+--- a/src/wlserver.cpp
++++ b/src/wlserver.cpp
+@@ -2048,8 +2048,34 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time )
+ 
+ 		if ( get_effective_touch_mode() == WLSERVER_TOUCH_CLICK_PASSTHROUGH )
+ 		{
++			bool start_gesture = false;
+ 			wlr_seat_touch_notify_motion( wlserver.wlr.seat, time, touch_id, wlserver.mouse_surface_cursorx, wlserver.mouse_surface_cursory );
+-		}
++
++			// Round the x-coordinate to the nearest whole number
++			uint32_t roundedCursorX = static_cast<int>(std::round(wlserver.mouse_surface_cursorx));
++			// Grab 2% of the display to be used for the edge range
++			double edge_range = g_nOutputWidth * 0.02;
++
++			// if the touch cursor x position is less or equal to the range then start the gesture for left to right
++			if (roundedCursorX <= edge_range) {
++				start_gesture = true;
++			}
++			// if the touch cursor x position is the output width minus the edge range value then we are doing right to left
++			if (roundedCursorX >= g_nOutputWidth - edge_range) {
++				start_gesture = true;
++			}
++			// when the gesture is started and we are moving to the end of the edge range open home
++			if (start_gesture && roundedCursorX >= 1 && roundedCursorX <= edge_range) {
++				wl_log.infof("Detected Home gesture");
++				wlserver_open_steam_menu(0);
++				start_gesture = false;
++			}
++			// when the gesture is started and we are moving from the output width minus the edge range to the output width open QAM
++			if (start_gesture && roundedCursorX >= g_nOutputWidth - edge_range && roundedCursorX <= g_nOutputWidth ) {
++				wl_log.infof("Detected QAM gesture");
++				wlserver_open_steam_menu(1);
++				start_gesture = false;
++			}		}
+ 		else if ( get_effective_touch_mode() == WLSERVER_TOUCH_CLICK_DISABLED )
+ 		{
+ 			return;
+-- 
+2.42.0
+
+
+From f975e7a804100bb031fab0526d6714530381ec45 Mon Sep 17 00:00:00 2001
+From: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
+Date: Wed, 3 Jan 2024 17:03:04 +0100
+Subject: [PATCH 9/9] remove hacky texture
+
+This will use more hardware planes, causing some devices to composite yeilding lower framerates
+---
+ src/steamcompmgr.cpp | 29 -----------------------------
+ 1 file changed, 29 deletions(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 9a3f495..9e7eee5 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -2540,35 +2540,6 @@ paint_all(bool async)
+ 		if ( overlay == global_focus.inputFocusWindow )
+ 			update_touch_scaling( &frameInfo );
+ 	}
+-	else
+-	{
+-		auto tex = vulkan_get_hacky_blank_texture();
+-		if ( !BIsNested() && tex != nullptr )
+-		{
+-			// HACK! HACK HACK HACK
+-			// To avoid stutter when toggling the overlay on 
+-			int curLayer = frameInfo.layerCount++;
+-
+-			FrameInfo_t::Layer_t *layer = &frameInfo.layers[ curLayer ];
+-
+-
+-			layer->scale.x = g_nOutputWidth == tex->width() ? 1.0f : tex->width() / (float)g_nOutputWidth;
+-			layer->scale.y = g_nOutputHeight == tex->height() ? 1.0f : tex->height() / (float)g_nOutputHeight;
+-			layer->offset.x = 0.0f;
+-			layer->offset.y = 0.0f;
+-			layer->opacity = 1.0f; // BLAH
+-			layer->zpos = g_zposOverlay;
+-			layer->applyColorMgmt = g_ColorMgmt.pending.enabled;
+-
+-			layer->colorspace = GAMESCOPE_APP_TEXTURE_COLORSPACE_LINEAR;
+-			layer->ctm = nullptr;
+-			layer->tex = tex;
+-			layer->fbid = tex->fbid();
+-
+-			layer->filter = GamescopeUpscaleFilter::NEAREST;
+-			layer->blackBorder = true;
+-		}
+-	}
+ 
+ 	if (notification)
+ 	{
+-- 
+2.42.0
+
