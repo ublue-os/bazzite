@@ -762,6 +762,7 @@ RUN /tmp/image-info.sh && \
     systemctl enable cec-onboot.service && \
     systemctl enable cec-onpoweroff.service && \
     systemctl enable cec-onsleep.service && \
+    systemctl enable bazzite-tdpfix.service && \
     systemctl --global enable steam-web-debug-portforward.service && \
     systemctl --global disable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \
