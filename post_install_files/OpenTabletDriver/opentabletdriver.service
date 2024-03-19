@@ -6,7 +6,7 @@ ConditionEnvironment=|WAYLAND_DISPLAY
 ConditionEnvironment=|DISPLAY
 
 [Service]
-ExecStart=/usr/bin/distrobox-enter  -n arch -- ' /usr/bin/otd-daemon'
+ExecStart=/usr/bin/distrobox-enter -n arch -- /usr/bin/otd-daemon
 Restart=always
 RestartSec=3
 
