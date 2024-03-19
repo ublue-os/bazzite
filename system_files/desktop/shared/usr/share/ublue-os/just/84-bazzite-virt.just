@@ -144,5 +144,8 @@ setup-virtualization ACTION="":
       echo "Adding SELinux context record for /dev/shm/looking-glass"
       sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
     elif [[ "${OPTION,,}" =~ group ]]; then
+      if ! grep -q "^libvirt" /etc/group; then
+        grep '^libvirt' /usr/lib/group | sudo tee -a /etc/group > /dev/null
+      fi
       sudo usermod -aG libvirt $USER
     fi
