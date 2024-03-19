@@ -6,16 +6,15 @@ setup-virtualization ACTION="":
     source /usr/lib/ujust/ujust.sh
     # Check if we are running on a Steam Deck
     if /usr/libexec/hardware/valve-hardware; then
-      echo "Virtualization is not supported on Steam Deck"
-      exit 0
-    else
-      if [ "$(systemctl is-enabled libvirtd.service)" == "disabled" ]; then
-        echo "${b}libvirtd${n} service is ${red}disabled${n}!"
-        echo "${green}enabling${n} and starting libvirtd"
-        echo "If virt-manager says libvirtd.sock is not available after a big update, re-run this command."
-        sudo systemctl enable --now libvirtd 2> /dev/null
-        echo "Press ESC if you want to exit and do not need to do anything"
-      fi
+      echo "${red}${b}WARNING${n}: Virtualization is not properly supported on Steam Deck by Valve"
+      echo "Use at your own risk and performance may not be ideal."
+    fi
+    if [ "$(systemctl is-enabled libvirtd.service)" == "disabled" ]; then
+      echo "${b}libvirtd${n} service is ${red}disabled${n}!"
+      echo "${green}enabling${n} and starting libvirtd"
+      echo "If virt-manager says libvirtd.sock is not available after a big update, re-run this command."
+      sudo systemctl enable --now libvirtd 2> /dev/null
+      echo "Press ESC if you want to exit and do not need to do anything"
     fi
     OPTION={{ ACTION }}
     if [ "$OPTION" == "help" ]; then
@@ -41,7 +40,7 @@ setup-virtualization ACTION="":
         "Autocreate Looking-Glass shm" \
       )
     fi
-    if [[ "${OPTION,,}" =~ ^enable[[:space:]]virt ]]; then
+    if [[ "${OPTION,,}" =~ ^enable(|[[:space:]]virtualization) ]]; then
       virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
       if [[ -z ${virt_test} ]]; then
         echo "Installing QEMU and virt-manager..."
@@ -51,7 +50,7 @@ setup-virtualization ACTION="":
         --append-if-missing="kvm.report_ignored_msrs=0"
         echo 'Please re-run "ujust setup-virtualization" after the reboot to enable libvirtd service'
       fi
-    elif [[ "${OPTION,,}" =~ ^disable[[:space:]]virt ]]; then
+    elif [[ "${OPTION,,}" =~ ^disable(|[[:space:]]virtualization) ]]; then
       virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
       if [[ ${virt_test} ]]; then
         if [ "$(systemctl is-enabled libvirtd.service)" == "enabled" ]; then
@@ -66,6 +65,11 @@ setup-virtualization ACTION="":
         echo 'Please re-run "ujust enable-virtualization" after the reboot to finish setup'
       fi
     elif [[ "${OPTION,,}" =~ (^enable[[:space:]]vfio|vfio-on) ]]; then
+      # Check if we are running on a Steam Deck
+      if /usr/libexec/hardware/valve-hardware; then
+        echo "IOMMU is not supported on Steam Deck"
+        exit 0
+      fi
       echo "Enabling VFIO..."
       VIRT_TEST=$(rpm-ostree kargs)
       CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
@@ -95,6 +99,11 @@ setup-virtualization ACTION="":
         fi
       fi
     elif [[ "${OPTION,,}" =~ (^disable[[:space:]]vfio|vfio-off) ]]; then
+      # Check if we are running on a Steam Deck
+      if /usr/libexec/hardware/valve-hardware; then
+        echo "IOMMU is not supported on Steam Deck"
+        exit 0
+      fi
       echo ""
       echo "Make sure you have ${b}disabled autostart of all VMs using VFIO${n} before continuing!"
       CONFIRM=$(Choose Cancel Continue)
@@ -122,6 +131,11 @@ setup-virtualization ACTION="":
         $VFIO_IDS_KARG
       fi
     elif [[ "${OPTION,,}" =~ shm ]]; then
+      # Check if we are running on a Steam Deck
+      if /usr/libexec/hardware/valve-hardware; then
+        echo "IOMMU is not supported on Steam Deck"
+        exit 0
+      fi
       echo "Creating tmpfile definition for shm file in /etc/tmpfiles.d/"
       sudo bash -c "tee << LOOKING_GLASS_TMP > /etc/tmpfiles.d/10-looking-glass.conf
       # Type Path               Mode UID  GID Age Argument
@@ -130,5 +144,8 @@ setup-virtualization ACTION="":
       echo "Adding SELinux context record for /dev/shm/looking-glass"
       sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
     elif [[ "${OPTION,,}" =~ group ]]; then
+      if ! grep -q "^libvirt" /etc/group; then
+        grep '^libvirt' /usr/lib/group | sudo tee -a /etc/group > /dev/null
+      fi
       sudo usermod -aG libvirt $USER
     fi

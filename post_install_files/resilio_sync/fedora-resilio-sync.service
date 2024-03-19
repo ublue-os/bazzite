@@ -4,7 +4,7 @@ After=network.target
  
 [Service]
 Type=simple
-ExecStart=/usr/bin/distrobox-enter  -n fedora -- ' /usr/bin/rslsync --nodaemon'
+ExecStart=/usr/bin/distrobox-enter -n fedora -- /usr/bin/rslsync --nodaemon
 
 [Install]
 WantedBy=default.target

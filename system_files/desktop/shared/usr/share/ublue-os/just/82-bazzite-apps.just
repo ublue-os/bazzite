@@ -96,9 +96,9 @@ install-solaar: distrobox-check-fedora
 
 # Install Resilio Sync, a file synchronization utility powered by BitTorrent
 install-resilio-sync: distrobox-check-fedora
-    distrobox-enter -n fedora -- 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc' && \
-    distrobox-enter -n fedora -- 'sudo wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/resilio-sync.repo -O /etc/yum.repos.d/resilio-sync.repo' && \
-    distrobox-enter -n fedora -- 'sudo dnf install -y resilio-sync' && \
+    distrobox-enter -n fedora -- bash -c 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc' && \
+    distrobox-enter -n fedora -- bash -c 'sudo wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/resilio-sync.repo -O /etc/yum.repos.d/resilio-sync.repo' && \
+    distrobox-enter -n fedora -- bash -c 'sudo dnf install -y resilio-sync' && \
     mkdir -p ~/.config/systemd/user/ && \
     rm -f ~/.config/systemd/user/fedora-resilio-sync.service && \
     wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/fedora-resilio-sync.service -O ~/.config/systemd/user/fedora-resilio-sync.service && \
@@ -118,13 +118,13 @@ install-opentabletdriver:
     if grep -qvz "arch" <<< $(distrobox list); then \
       Assemble noconfirmcreate "" "arch"; \
     fi && \
-    distrobox enter -n arch -- ' paru -S opentabletdriver --noconfirm' && \
+    distrobox enter -n arch -- bash -c 'paru -S opentabletdriver --noconfirm' && \
     mkdir -p ~/.config/systemd/user/ && \
     rm -f ~/.config/systemd/user/arch-opentabletdriver.service && \
     wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenTabletDriver/opentabletdriver.service -O ~/.config/systemd/user/arch-opentabletdriver.service && \
     systemctl --user daemon-reload && \
     systemctl enable --user --now arch-opentabletdriver.service && \
-    distrobox enter -n arch -- 'distrobox-export --app otd-gui'
+    distrobox enter -n arch -- bash -c 'distrobox-export --app otd-gui'
 
 # Create fedora distrobox if it doesn't exist
 [private]
