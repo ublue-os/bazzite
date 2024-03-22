@@ -99,7 +99,7 @@ disable-sdgyrodsu:
     #!/usr/bin/bash
     sudo systemctl mask --user sdgyrodsu.service
 
-# Disable Game Mode swap gestures
+# Disable Game Mode swipe gestures
 disable-swipe-gestures:
   #!/usr/bin/bash
   echo "disabling swipe gestures for QAM and HOME"
