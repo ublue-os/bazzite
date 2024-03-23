@@ -146,7 +146,7 @@ configure-powerprofile ACTION="":
       fi
       # New method from here on
       echo "${bold}Power profile configuration${normal}"
-      echo "This lets you set the default power profile for when the desktop loads."
+      echo "This lets you set the default power profile."
       echo "We do not recommend changing this from ${b}Balanced${n} if you use this device primarily for gaming!"
       echo "If you have any performance or audio related issues..."
       echo "${invert}${b}Please test with the default power profile set to Balanced${n} before reporting!"
