@@ -24,7 +24,7 @@ process-scheduler enable=true {
     // Preset process assignment profiles
     assignments {
         // Prevent crackling and distortion from the sound server
-        sound-server nice=-15 sched=(fifo)49 io=(realtime)0 {
+        sound-server nice=-15 io=(realtime)0 {
             "/usr/bin/pipewire"
             "/usr/bin/pipewire-pulse"
             "/usr/bin/jackd"

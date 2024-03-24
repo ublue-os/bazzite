@@ -430,7 +430,9 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rom-properties-kf5 \
         qvtf \
         ptyxis && \
-    git clone https://github.com/maxiberta/kwin-system76-scheduler-integration.git --depth 1 /tmp/kwin-system76-scheduler-integration && \
+    mkdir -p /tmp/kwin-system76-scheduler-integration && \
+    wget https://github.com/maxiberta/kwin-system76-scheduler-integration/archive/374a261497c772571df93f59fbced0ad02e64ad5.tar.gz -O /tmp/kwin-system76-scheduler-integration/archive.tar.gz && \
+    tar --strip-components 1 -xvf /tmp/kwin-system76-scheduler-integration/archive.tar.gz -C /tmp/kwin-system76-scheduler-integration && \
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin && \
     kpackagetool5 --type=KWin/Script --global --install /tmp/kwin-system76-scheduler-integration && \
     kpackagetool5 --type=Plasma/Wallpaper --global --install /tmp/wallpaper-engine-kde-plugin/plugin && \
