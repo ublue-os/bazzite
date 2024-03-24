@@ -294,7 +294,8 @@ RUN rpm-ostree install \
         cockpit-selinux \
         cockpit-system \
         cockpit-navigator \
-        cockpit-storaged && \
+        cockpit-storaged \
+        lsb_release && \
     pip install --prefix=/usr topgrade && \
     rpm-ostree install \
         ublue-update && \
