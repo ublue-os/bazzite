@@ -6,7 +6,7 @@ screens:
   first-screen:
     source: yafti.screen.title
     values:
-      title: "Welcome to Bazzite (Steam Deck & HTPC Edition)"
+      title: "Welcome to Bazzite (Handheld & HTPC Edition)"
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
         Configure your system to get started. This utility can be re-opened at any time, so don't feel like you have to get it perfect your first go-through.  This may take a long time to install applications and you can view the progress by pressing the "Show Console" button.  If you did not select anything, then press "Next" twice to continue.
