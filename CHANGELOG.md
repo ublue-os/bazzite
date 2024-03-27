@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.5.0](https://github.com/ublue-os/bazzite/compare/v2.4.0...v2.5.0) (2024-03-27)
+
+
+### Features
+
+* Add auto-vram kargs for Legion GO and ASUS Ally ([d8f450c](https://github.com/ublue-os/bazzite/commit/d8f450c4dc6bf0c0345826291a9c801f775a8a90))
+* Add udica for generating SELinux policies for containers ([b18c31b](https://github.com/ublue-os/bazzite/commit/b18c31b44a35006b0308e68ae090919bd557716f))
+* **deck:** add tdpfix for cards that has 15W TDP on boot due to writable sysfs on boot ([#892](https://github.com/ublue-os/bazzite/issues/892)) ([0bbd9a5](https://github.com/ublue-os/bazzite/commit/0bbd9a53d9fe0247d6c96a2c5f0728fbdba3d8a5))
+* **just:** Enable virtualization for deck hardware ([#895](https://github.com/ublue-os/bazzite/issues/895)) ([2139735](https://github.com/ublue-os/bazzite/commit/21397351e7267fcc58731a698b7b19747034ed4c))
+* **just:** update recipe to edit tuned default profile using ppd.conf ([#907](https://github.com/ublue-os/bazzite/issues/907)) ([eed757d](https://github.com/ublue-os/bazzite/commit/eed757d5004b6c2892d64ec2d391648436ec0193))
+
+
+### Bug Fixes
+
+* Add lsb_release package for EmuDeck ([2c8bfc3](https://github.com/ublue-os/bazzite/commit/2c8bfc371b6a5e93364a5680ca6d6333b4d0b6fd))
+* Correct issue with hhd being enabled on root, add HHD adjustor package. ([929cee4](https://github.com/ublue-os/bazzite/commit/929cee487d31ebc400f94485b974748465df9bea))
+* Correct issues with newest version of distrobox ([bae2fae](https://github.com/ublue-os/bazzite/commit/bae2fae95b7adcaf2309f9c98637efac3f51c65d))
+* Pull in s76 scheduler fixes from fruitchewy ([b60b1e6](https://github.com/ublue-os/bazzite/commit/b60b1e621fb643c4ea59a8254ca5bc0250637367))
+* Remove unneeded file checks from hardware setup ([7133fc7](https://github.com/ublue-os/bazzite/commit/7133fc773a5c600290d6f9f492a638a23b851cb2))
+
 ## [2.4.0](https://github.com/ublue-os/bazzite/compare/v2.3.0...v2.4.0) (2024-03-14)
 
 
