@@ -245,7 +245,6 @@ RUN rpm-ostree install \
         duperemove \
         xwininfo \
         xrandr \
-        rmlint \
         compsize \
         input-remapper \
         system76-scheduler \
