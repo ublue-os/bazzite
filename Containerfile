@@ -389,7 +389,6 @@ RUN rpm-ostree install \
             || true \
     ; fi && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/winetricks.desktop && \
-    ln -s /usr/bin/wine64 /usr/bin/wine && \
     wget $(curl https://api.github.com/repos/ishitatsuyuki/LatencyFleX/releases/latest | jq -r '.assets[] | select(.name| test(".*.tar.xz$")).browser_download_url') -O /tmp/latencyflex.tar.xz && \
     mkdir -p /tmp/latencyflex && \
     tar --strip-components 1 -xvf /tmp/latencyflex.tar.xz -C /tmp/latencyflex && \
