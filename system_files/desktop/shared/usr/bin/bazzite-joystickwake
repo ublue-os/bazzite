@@ -13,4 +13,5 @@ if [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
 else
   # Temporarily disabled due to newly discovered screen lock issue.
   # /usr/bin/joystickwake "$@"
+  exit 0
 fi
