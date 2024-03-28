@@ -59,7 +59,7 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - Soporte completo para [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - [Distrobox](https://github.com/89luca89/distrobox) pre-instalado con actualizaciones automáticas para los contenedores creados.
 - Se usa por defecto la [terminal Ptyxis](https://gitlab.gnome.org/chergert/ptyxis) en todas las imágenes. Esta terminal esta especificamente diseñada para el flujo de trabajo basado en contenedores que usamos en Bazzite. Si deseas regresar a como estaba antes, simplemente ejecuta el siguiente comando en una terminal: `ujust restore-original-terminal`
-- Servicios automatizados `duperemove` y `rmlint` incluidos para reducir el espacio de disco utilizados por los contenidos de los prefijos de WINE.
+- Servicio automatizado `duperemove` incluido para reducir el espacio de disco utilizados por los contenidos de los prefijos de WINE.
 - Soporte de HDMI CEC (para poder controlar todos los dispositivos conectados por HDMI) usando [libCEC](https://libcec.pulse-eight.com/).
 - [System76-Scheduler](https://github.com/pop-os/system76-scheduler) pre-instalado, proveyendo ajustes automáticos de la prioridad de procesos a tu aplicación actualmente en uso, manteniendo al mínimo el tiempo que tu procesador (CPU) trabaja con procesos de fondo.
 - Configuración personalizada del System76-Scheduler con reglas adicionales.
@@ -128,7 +128,7 @@ Esta variante esta diseñada para usarse como una alternativa de SteamOS en la S
 - Steam y Lutris vienen pre-instalados en la imagen como paquetes en capas (layered).
 - La utilidad [Discover Overlay](https://github.com/trigg/Discover) para Discord viene pre-instalada y es lanzada automáticamente tanto en Gamemode como en el escritorio, si Discord esta instalado. [Puedes ver la documentación oficial aquí (en inglés)](https://trigg.github.io/Discover/bazzite).
 - Se incluye ZRAM<sub><sup>(4GB)</sup></sub>, un avanzado sistema de swap ubicado directamente en la memoria RAM, con el algoritmo de compresión de datos ZSTD por defecto, con la opción de cambiar de vuelta a un simple archivo swap de 1GB, y si deseas, puedes cambiarlo a un tamaño personalizado.
-- Se incluye el planificador (scheduler) Kyber I/O para prevenir la inanición (starvation) de E/S al instalar juegos o cuando los procesos `duperemove` y `rmlint` corren en el fondo.
+- Se incluye el planificador (scheduler) Kyber I/O para prevenir la inanición (starvation) de E/S al instalar juegos o cuando el proceso `duperemove` corre en el fondo.
 - Se aplican los parámetros del kernel de SteamOS.
 - Se incluyen perfiles de color calibrados para los diferentes tipos de pantalla de la Steam Deck, mate o glossy.
 - Características para usuarios avanzados que vienen desactivadas por defecto, las cuales incluyen:
@@ -300,7 +300,6 @@ Todos los paquetes que son porteados de SteamOS, ChimeraOS u otros que son utilz
 | pipewire                                                                                            | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/package/pipewire/status_image/last_build.png?)                           |
 | powerbuttond                                                                                        | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/powerbuttond/status_image/last_build.png?)                                |
 | [python3-hid](https://github.com/apmorton/pyhidapi)                                                 | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/python3-hid/status_image/last_build.png?)                                 |
-| rmlint                                                                                              | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/rmlint/status_image/last_build.png?)                                      |
 | [ryzenadj](https://github.com/FlyGoat/RyzenAdj)                                                     | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/ryzenadj/status_image/last_build.png?)                                    |
 | [sdgyrodsu](https://github.com/kmicki/SteamDeckGyroDSU)                                             | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/sdgyrodsu/status_image/last_build.png?)                                   |
 | steamdeck-dsp                                                                                       | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/steamdeck-dsp/status_image/last_build.png?)                               |
