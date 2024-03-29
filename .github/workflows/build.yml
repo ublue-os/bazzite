@@ -30,6 +30,7 @@ on:
   workflow_dispatch:
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  KERNEL_VERSION: 6.7.9-207.fsync
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -84,7 +85,7 @@ jobs:
 
       - name: Matrix Variables
         run: |
-          echo "AKMODS_FLAVOR=6.7.9-207.fsync" >> $GITHUB_ENV
+          echo "AKMODS_FLAVOR=${{ env.KERNEL_VERSION }}" >> $GITHUB_ENV
           echo "BASE_IMAGE_NAME=${{ matrix.base_image_name }}" >> $GITHUB_ENV
 
           if [[ "${{ matrix.base_image_flavor }}" == "framework" ]]; then
@@ -205,6 +206,7 @@ jobs:
           images: |
             ${{ env.IMAGE_NAME }}
           labels: |
+            ostree.linux=${{ env.KERNEL_VERSION }}.fc${{ matrix.major_version }}.x86_64
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
             org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
             org.opencontainers.image.description=Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
