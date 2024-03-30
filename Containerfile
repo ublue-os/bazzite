@@ -420,6 +420,10 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         kf5-kio-file-widgets \
         kf5-kio-core \
         kf5-kio-gui && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+        gtk4 && \
     rpm-ostree install \
         steamdeck-kde-presets-desktop \
         wallpaper-engine-kde-plugin \
