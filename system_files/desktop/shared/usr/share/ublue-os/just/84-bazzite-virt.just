@@ -136,6 +136,16 @@ setup-virtualization ACTION="":
         echo "IOMMU is not supported on Steam Deck"
         exit 0
       fi
+      echo "Bazzite currently uses a deprecated implementation of the Looking Glass shm."
+      echo "This implementation will not be supported in the future and we are in the process"
+      echo "of moving over to the KVMFR kernel module."
+      echo "Until this is done please open any Looking Glass issues you have in Bazzite"
+      echo "in the $(Urllink "https://discord.bazzite.gg/" "Bazzite Discord") or the $(Urllink "https://github.com/ublue-os/bazzite/issues" "Bazzite Github issue tracker")"
+      echo "~ @HikariKnight"
+      CONFIRM=$(Choose Ok Cancel)
+      if [ "$CONFIRM" == "Cancel" ]; then
+        exit 0
+      fi
       echo "Creating tmpfile definition for shm file in /etc/tmpfiles.d/"
       sudo bash -c "tee << LOOKING_GLASS_TMP > /etc/tmpfiles.d/10-looking-glass.conf
       # Type Path               Mode UID  GID Age Argument
