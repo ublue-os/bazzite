@@ -87,5 +87,5 @@ jobs:
         with:
           access-key: ${{ secrets.IA_ACCESS_KEY }}
           secret-key: ${{ secrets.IA_SECRET_KEY }}
-          identifier: ${{ env.IMAGE_NAME }}-${{ matrix.major_version }}
+          identifier: ${{ matrix.image_name }}
           files: ${{ steps.build.outputs.output-directory }}
