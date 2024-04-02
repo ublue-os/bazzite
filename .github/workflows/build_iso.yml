@@ -133,7 +133,8 @@ jobs:
         id: upload-directory
         shell: bash
         run: |
-          ISO_UPLOAD_DIR=$(mkdir ${{ github.workspace }}/upload)
+          ISO_UPLOAD_DIR=${{ github.workspace }}/upload
+          mkdir ${ISO_UPLOAD_DIR}
           mv ${{ steps.build.outputs.iso_path }} ${ISO_UPLOAD_DIR}
           mv ${{ steps.build.outputs.iso_path }}-CHECKSUM ${ISO_UPLOAD_DIR}
           echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
