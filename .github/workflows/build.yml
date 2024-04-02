@@ -85,7 +85,7 @@ jobs:
 
       - name: Matrix Variables
         run: |
-          echo "AKMODS_FLAVOR=${{ env.KERNEL_VERSION }}" >> $GITHUB_ENV
+          echo "AKMODS_FLAVOR=fsync" >> $GITHUB_ENV
           echo "BASE_IMAGE_NAME=${{ matrix.base_image_name }}" >> $GITHUB_ENV
 
           if [[ "${{ matrix.base_image_flavor }}" == "framework" ]]; then

@@ -1,7 +1,7 @@
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG BASE_IMAGE_FLAVOR="${BASE_IMAGE_FLAVOR:-main}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
-ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-fsync}"
+ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-main}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$BASE_IMAGE_FLAVOR}"
 ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
@@ -44,23 +44,23 @@ RUN wget https://raw.githubusercontent.com/ublue-os/COPR-command/main/copr -O /u
     sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo
 
 # Install kernel-fsync
-RUN wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-"${FEDORA_MAJOR_VERSION}"/sentry-kernel-fsync-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo && \
+RUN wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo && \
     rpm-ostree cliwrap install-to-root / && \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:sentry:kernel-fsync \
-        kernel-"${AKMODS_FLAVOR}".fc"${FEDORA_MAJOR_VERSION}".x86_64 \
-        kernel-core-"${AKMODS_FLAVOR}".fc"${FEDORA_MAJOR_VERSION}".x86_64 \
-        kernel-modules-"${AKMODS_FLAVOR}".fc"${FEDORA_MAJOR_VERSION}".x86_64 \
-        kernel-modules-core-"${AKMODS_FLAVOR}".fc"${FEDORA_MAJOR_VERSION}".x86_64 \
-        kernel-modules-extra-"${AKMODS_FLAVOR}".fc"${FEDORA_MAJOR_VERSION}".x86_64 \
-        kernel-uki-virt-"${AKMODS_FLAVOR}".fc"${FEDORA_MAJOR_VERSION}".x86_64 \
-        kernel-headers-"${AKMODS_FLAVOR}".fc"${FEDORA_MAJOR_VERSION}".x86_64 \
-        kernel-devel-"${AKMODS_FLAVOR}".fc"${FEDORA_MAJOR_VERSION}".x86_64
+        kernel \
+        kernel-core \
+        kernel-modules \
+        kernel-modules-core \
+        kernel-modules-extra \
+        kernel-uki-virt \
+        kernel-headers \
+        kernel-devel
 
 # Setup firmware and asusctl for ASUS devices
 RUN if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
-        wget https://copr.fedorainfracloud.org/coprs/lukenukem/asus-linux/repo/fedora-"${FEDORA_MAJOR_VERSION}"/lukenukem-asus-linux-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_lukenukem-asus-linux.repo && \
+        wget https://copr.fedorainfracloud.org/coprs/lukenukem/asus-linux/repo/fedora-$(rpm -E %fedora)/lukenukem-asus-linux-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_lukenukem-asus-linux.repo && \
         rpm-ostree install \
             asusctl \
             asusctl-rog-gui && \
@@ -818,7 +818,7 @@ RUN wget https://raw.githubusercontent.com/ublue-os/hwe/main/nvidia-install.sh -
     IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-install.sh
 
 # Install Explicit Sync Patches
-RUN wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nvidia-explicit-sync/repo/fedora-"${FEDORA_MAJOR_VERSION}"/gloriouseggroll-nvidia-explicit-sync-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 -O /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
+RUN wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nvidia-explicit-sync/repo/fedora-$(rpm -E %fedora)/gloriouseggroll-nvidia-explicit-sync-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
