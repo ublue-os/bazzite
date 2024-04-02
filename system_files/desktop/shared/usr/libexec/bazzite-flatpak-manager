@@ -22,24 +22,6 @@ if [[ -f $VER_FILE && $VER = $VER_RAN ]]; then
   fi
 fi
 
-# Opt out of and remove Fedora's flatpak repo
-if grep -qz 'fedora' <<< $(flatpak remotes); then
-  /usr/lib/fedora-third-party/fedora-third-party-opt-out
-  /usr/bin/fedora-third-party disable
-  flatpak remote-delete fedora --force
-fi
-
-# Ensure Flathub is enabled
-flatpak remote-add --if-not-exists --system flathub /usr/etc/flatpak/remotes.d/flathub.flatpakrepo
-flatpak remote-modify --system --enable flathub
-
-# Installed flatpaks
-FLATPAK_LIST=$(flatpak list --columns=application)
-
-# Flatpak list files
-INSTALL_LIST_FILE="/usr/share/ublue-os/bazzite/flatpak/install"
-REMOVE_LIST_FILE="/usr/share/ublue-os/bazzite/flatpak/remove"
-
 # Flatpak theming support
 flatpak override \
   --filesystem=xdg-config/gtk-4.0:ro \
@@ -98,28 +80,12 @@ mkdir -p /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stab
 rm -f /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stable/defaults/pref/*bazzite*.js
 /usr/bin/cp -rf /usr/share/ublue-os/firefox-config/* /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stable/defaults/pref/
 
-# Install flatpaks in list
-if [[ -f $INSTALL_LIST_FILE ]]; then
-  if [[ -n $FLATPAK_LIST ]]; then
-    INSTALL_LIST=$(echo $FLATPAK_LIST | grep -vf - $INSTALL_LIST_FILE)
-  else
-    INSTALL_LIST=$(cat $INSTALL_LIST_FILE)
-  fi
-  if [[ -n $INSTALL_LIST ]]; then
-    if ! flatpak install --system --noninteractive flathub ${INSTALL_LIST[@]}; then
-      # exit on error
-      exit 1
-    fi
-  fi
-fi
+# Update Flatpaks
 
-# Remove flatpaks in list once
-if [[ ! -f $VER_FILE && -f $REMOVE_LIST_FILE ]]; then
-  REMOVE_LIST=$(echo $FLATPAK_LIST | grep -f - $REMOVE_LIST_FILE)
-  if [[ -n $REMOVE_LIST ]]; then
-    flatpak remove --system --noninteractive ${REMOVE_LIST[@]}
-  fi
-fi
+# Use until yafti rework is done
+flatpak --system update -y
+
+notify-send "Welcome to Bazzite" "Your computer is ready!" --app-name="Flatpak Manager Service" -u NORMAL
 
 mkdir -p /etc/bazzite
 echo $VER > $VER_FILE
