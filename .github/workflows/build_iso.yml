@@ -81,3 +81,11 @@ jobs:
         run: |
           dnf install -y rclone
           rclone copy $SOURCE_DIR R2:bazzite
+
+      - name: Upload ISOs to archive.org
+        uses: qoijjj/internet-archive-upload@v7
+        with:
+          access-key: ${{ secrets.IA_ACCESS_KEY }}
+          secret-key: ${{ secrets.IA_SECRET_KEY }}
+          identifier: ${{ env.IMAGE_NAME }}-${{ matrix.major_version }}
+          files: ${{ steps.build.outputs.output-directory }}
