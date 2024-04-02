@@ -144,7 +144,7 @@ jobs:
         #if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.image_name }}-${{ matrix.image_tag }}-${{ matrix.major_version}}
+          name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
           path: ${{ steps.upload-directory.outputs.iso-upload-dir }}
           if-no-files-found: error
           retention-days: 0
