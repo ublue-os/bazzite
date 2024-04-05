@@ -10,18 +10,12 @@ URL:            https://github.com/ValveSoftware/gamescope
 
 # Create stb.pc to satisfy dependency('stb')
 Source1:        stb.pc
-
-# https://github.com/ValveSoftware/gamescope/pull/1149
-Source2:        amd_hdr.patch
-
-# https://github.com/ChimeraOS/gamescope
-Source3:        chimeraos.patch
-
-# https://github.com/KyleGospo/gamescope
-Source4:        crashfix.patch
-Source5:        add_720p_var.patch
-Source6:        touch_gestures_env.patch
-Source7:        legion_go.patch
+Source2:        chimeraos.patch
+Source3:        crashfix.patch
+Source4:        add_720p_var.patch
+Source5:        touch_gestures_env.patch
+Source6:        legion_go.patch
+Source7:        loki.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
