@@ -163,7 +163,8 @@ jobs:
           RCLONE_CONFIG_R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           SOURCE_DIR: ${{ steps.upload-directory.outputs.iso-upload-dir }}
         run: |
-          dnf install -y rclone
+          sudo apt-get update
+          sudo apt-get install -y rclone
           rclone copy $SOURCE_DIR R2:bazzite
 
       - name: Upload ISOs to archive.org
