@@ -1,0 +1,67 @@
+From 036583f9bbec8540fbd85b980674aad4916d3093 Mon Sep 17 00:00:00 2001
+From: Dimitris <dimitris.on.linux@gmail.com>
+Date: Thu, 4 Apr 2024 11:30:50 -0700
+Subject: [PATCH] device: Add btd_device_bearer_is_connected
+
+This adds btd_device_bearer_is_connected and use it when testing if
+device needs to be disconnected.
+
+Fixes: https://github.com/bluez/bluez/issues/785
+---
+ src/adapter.c | 2 +-
+ src/device.c  | 7 ++++++-
+ src/device.h  | 1 +
+ 3 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index 4bcc464de..017e60233 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -7486,7 +7486,7 @@ static void adapter_remove_connection(struct btd_adapter *adapter,
+ 		device_cancel_authentication(device, TRUE);
+ 
+ 	/* If another bearer is still connected */
+-	if (btd_device_is_connected(device))
++	if (btd_device_bearer_is_connected(device))
+ 		return;
+ 
+ 	adapter->connections = g_slist_remove(adapter->connections, device);
+diff --git a/src/device.c b/src/device.c
+index 5e74633c6..74dd67a09 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -3273,13 +3273,18 @@ uint8_t btd_device_get_bdaddr_type(struct btd_device *dev)
+ 
+ bool btd_device_is_connected(struct btd_device *dev)
+ {
+-	if (dev->bredr_state.connected || dev->le_state.connected)
++	if (btd_device_bearer_is_connected(dev))
+ 		return true;
+ 
+ 	return find_service_with_state(dev->services,
+ 						BTD_SERVICE_STATE_CONNECTED);
+ }
+ 
++bool btd_device_bearer_is_connected(struct btd_device *dev)
++{
++	return dev->bredr_state.connected || dev->le_state.connected;
++}
++
+ static void clear_temporary_timer(struct btd_device *dev)
+ {
+ 	if (dev->temporary_timer) {
+diff --git a/src/device.h b/src/device.h
+index d4e70b7ef..5722ca9ca 100644
+--- a/src/device.h
++++ b/src/device.h
+@@ -104,6 +104,7 @@ void device_set_rssi(struct btd_device *device, int8_t rssi);
+ void device_set_tx_power(struct btd_device *device, int8_t tx_power);
+ void device_set_flags(struct btd_device *device, uint8_t flags);
+ bool btd_device_is_connected(struct btd_device *dev);
++bool btd_device_bearer_is_connected(struct btd_device *dev);
+ uint8_t btd_device_get_bdaddr_type(struct btd_device *dev);
+ bool device_is_retrying(struct btd_device *device);
+ void device_bonding_complete(struct btd_device *device, uint8_t bdaddr_type,
+-- 
+2.44.0
+
