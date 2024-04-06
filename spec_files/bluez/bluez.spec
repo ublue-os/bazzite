@@ -5,7 +5,7 @@
 %endif
 
 Name:    bluez
-Version: 5.72
+Version: 5.73
 Release: 3%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: Bluetooth utilities
 License: GPLv2+
@@ -14,18 +14,16 @@ URL:     https://www.bluez.org/
 Source0: https://www.kernel.org/pub/linux/bluetooth/%{name}-%{version}.tar.xz
 Source1: bluez.gitignore
 
-# https://lore.kernel.org/linux-bluetooth/20220901110719.176944-1-hadess@hadess.net/T/#m9c08d004cd5422783ee1d93154f42303bba9169f
-Patch2: power-state-adapter-property.patch
+Patch0:   device-fix-device_is_connected-checking-for-services.patch
+# https://git.kernel.org/pub/scm/bluetooth/bluez.git/commit/?id=036583f9bbec8540fbd85b980674aad4916d3093
+# https://github.com/bluez/bluez/issues/785
+# https://bugzilla.redhat.com/show_bug.cgi?id=2269516
+# Fix busy loop when disabling interface while device is connected
+Patch1:   0001-device-Add-btd_device_bearer_is_connected.patch
 
 # Valve
-Patch3: AVRCP_TG_MDI_BV-04-C.patch
 Patch4: 0001-valve-bluetooth-config.patch
 Patch5: 0002-valve-bluetooth-phy.patch
-Patch6: 0006-shared-gatt-Prevent-security-level-change-for-PTS-GA.patch
-Patch7: 0007-btgatt-client-Add-command-to-prevent-security-level-.patch
-Patch8: 0008-btgatt-client-Add-function-to-search-service-based-o.patch
-Patch9: 0009-btgatt-client-Add-function-to-search-characteristics.patch
-Patch10: 0010-btgatt-client-Add-function-to-search-all-primary-ser.patch
 
 BuildRequires: dbus-devel >= 1.6
 BuildRequires: glib2-devel
@@ -61,10 +59,7 @@ Utilities for use in Bluetooth applications:
 	- btattach
 	- btmon
 	- hex2hcd
-	- l2ping
-	- l2test
 	- mpris-proxy
-	- rctest
 
 The BLUETOOTH trademarks are owned by Bluetooth SIG, Inc., U.S.A.
 
@@ -92,6 +87,7 @@ be dropped by upstream. Utilities include:
 	- hciconfig
 	- hcidump
 	- hcitool
+	- meshctl
 	- rfcomm
 	- sdptool
 %endif
@@ -259,14 +255,12 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_bindir}/btmgmt
 %{_bindir}/btmon
 %{_bindir}/hex2hcd
-%{_bindir}/l2ping
 %{_bindir}/mpris-proxy
 %{_mandir}/man1/bluetoothctl.1.*
 %{_mandir}/man1/bluetoothctl-*.1.*
 %{_mandir}/man1/btmgmt.1.*
 %{_mandir}/man1/btattach.1.*
 %{_mandir}/man1/btmon.1.*
-%{_mandir}/man1/l2ping.1.*
 %{_mandir}/man8/bluetoothd.8.*
 %dir %{_libexecdir}/bluetooth
 %{_libexecdir}/bluetooth/bluetoothd
@@ -308,8 +302,10 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %doc doc/*txt
 %{_bindir}/isotest
 %{_bindir}/l2test
+%{_bindir}/l2ping
 %{_bindir}/rctest
 %{_mandir}/man1/isotest.1.*
+%{_mandir}/man1/l2ping.1.*
 %{_mandir}/man1/rctest.1.*
 %{_mandir}/man5/org.bluez.*.5.*
 %{_libdir}/libbluetooth.so
@@ -340,9 +336,19 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %files obexd
 %{_libexecdir}/bluetooth/obexd
 %{_datadir}/dbus-1/services/org.bluez.obex.service
+/usr/lib/systemd/user/dbus-org.bluez.obex.service
 %{_userunitdir}/obex.service
 
 %changelog
+* Thu Apr 04 2024 Adam Williamson <awilliam@redhat.com> - 5.73-3
+- Backport further upstream fix for connected device checks (#2269516) 
+
+* Mon Mar 18 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.73-2
+- Upstream fix for connected device checks 
+
+* Fri Mar 08 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.73-1
+- Update to 5.73 
+
 * Tue Jan 23 2024 Fedora Release Engineering <releng@fedoraproject.org> - 5.72-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
 
