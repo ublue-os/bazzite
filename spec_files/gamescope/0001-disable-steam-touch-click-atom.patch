@@ -1,0 +1,32 @@
+From d98d69ad4238288fa4f79e6563a4cac68cd9c667 Mon Sep 17 00:00:00 2001
+From: antheas <git@antheas.dev>
+Date: Sun, 31 Mar 2024 21:54:56 +0200
+Subject: [PATCH] disable steam touch click atom
+
+Steam sets this atom to 4 (which is the default) in certain games. Then sets it
+back to 1 when it exits the game. Setting this atom to 1 makes a cursor appear
+and breaks touchscreen functionality. So disable steam from being able to
+play with the touch screen.
+
+---
+ src/steamcompmgr.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 3bd958c..3d9ff74 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -3603,7 +3603,9 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 	}
+ 	if (ev->atom == ctx->atoms.steamTouchClickModeAtom )
+ 	{
+-		g_nTouchClickMode = (enum wlserver_touch_click_mode) get_prop(ctx, ctx->root, ctx->atoms.steamTouchClickModeAtom, g_nDefaultTouchClickMode );
++		// When steam changes this to 1 stuff breaks, make it not shoot itself
++		// in the foot
++		// g_nTouchClickMode = (enum wlserver_touch_click_mode) get_prop(ctx, ctx->root, ctx->atoms.steamTouchClickModeAtom, g_nDefaultTouchClickMode );
+ #if HAVE_OPENVR
+ 		if (BIsVRSession())
+ 			vrsession_update_touch_mode();
+-- 
+2.44.0
+
