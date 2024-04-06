@@ -215,7 +215,7 @@ RUN rpm-ostree override replace \
         glibc32 \
         || true
 
-# Install Valve's patched Mesa & Pipewire
+# Install Valve's patched Mesa, Pipewire & Bluez
 # Install patched switcheroo control with proper discrete GPU support
 RUN rpm-ostree override remove \
         mesa-va-drivers-freeworld && \
@@ -230,6 +230,10 @@ RUN rpm-ostree override remove \
         mesa-libEGL \
         mesa-vulkan-drivers \
         mesa-libGL \
+        bluez \
+        bluez-cups \
+        bluez-libs \
+        bluez-obexd \
         pipewire \
         pipewire-alsa \
         pipewire-gstreamer \
@@ -703,15 +707,8 @@ RUN rpm-ostree install \
     mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater && \
     rm -rf /tmp/jupiter-dock-updater-bin
 
-# Install Steam Deck patched Wireplumber, Bluez & UPower
+# Install Steam Deck patched Wireplumber & UPower
 RUN rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        bluez \
-        bluez-cups \
-        bluez-libs \
-        bluez-obexd && \
-    rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         wireplumber \
