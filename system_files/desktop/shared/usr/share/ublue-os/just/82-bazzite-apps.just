@@ -32,7 +32,7 @@ install-coolercontrol:
     rpm-ostree install --apply-live -y liquidctl coolercontrol
     systemctl enable coolercontrold.service
     mkdir -p $HOME/.config/autostart
-    cp /usr/share/application/org.coolercontrol.CoolerControl.desktop $HOME/.config/autostart/org.coolercontrol.CoolerControl.desktop
+    cp /usr/share/applications/org.coolercontrol.CoolerControl.desktop $HOME/.config/autostart/org.coolercontrol.CoolerControl.desktop
     echo 'Complete.'
 
 alias get-steamcmd := install-steamcmd
@@ -84,15 +84,6 @@ install-oversteer: distrobox-check-fedora
     distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y kylegospo/oversteer && \
       sudo dnf install -y oversteer && \
       distrobox-export --app oversteer'
-
-# Install Solaar for Logitech Mice, Keyboards, and Trackpads
-install-solaar: distrobox-check-fedora
-    distrobox-enter -n fedora -- bash -c 'sudo dnf install -y \
-      solaar && \
-      distrobox-export --app solaar' && \
-    mkdir -p ~/.config/autostart && \
-    rm -f ~/.config/autostart/fedora-solaar.desktop && \
-    cp ~/.local/share/applications/fedora-solaar.desktop ~/.config/autostart/fedora-solaar.desktop
 
 # Install Resilio Sync, a file synchronization utility powered by BitTorrent
 install-resilio-sync: distrobox-check-fedora
