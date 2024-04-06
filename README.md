@@ -7,7 +7,7 @@
 # [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md)
 
 <p align="center">
-  <a href="https://bazzite.gg/#image-picker"><img src="/repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
+  <a href="https://download.bazzite.gg/"><img src="/repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
 </p>
 
 ---
@@ -32,6 +32,8 @@
 ---
 
 ## About & Features
+
+[Please see our website](https://bazzite.gg/) for a newcomer-friendly explaination of Bazzite. This readme will cover everything in-depth.
 
 [Bazzite](https://bazzite.gg/) is an OCI image that serves as an alternative operating system for the [Steam Deck](https://www.steamdeck.com/), and a ready-to-game SteamOS-like for desktop computers and living room home theater PCs.
 
