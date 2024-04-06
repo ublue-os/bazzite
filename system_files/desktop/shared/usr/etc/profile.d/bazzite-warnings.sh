@@ -7,6 +7,6 @@ if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then
 	fi
 else
 	if ! grep -q "xone-dongle" <<< $(lsmod); then
-		echo -e 'Requires drivers could not be loaded:\n - If you are using secure boot, run "ujust enroll-secure-boot-key", then reboot and enter the password "ublue-os" when prompted.\n - This message will not appear if the issue is resolved.\n'
+		echo -e 'Required drivers could not be loaded:\n - If you are using secure boot, run "ujust enroll-secure-boot-key", then reboot and enter the password "ublue-os" when prompted.\n - This message will not appear if the issue is resolved.\n'
 	fi
 fi
