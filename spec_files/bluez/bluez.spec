@@ -5,7 +5,7 @@
 %endif
 
 Name:    bluez
-Version: 5.72
+Version: 5.73
 Release: 3%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: Bluetooth utilities
 License: GPLv2+
