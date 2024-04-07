@@ -108,6 +108,7 @@ RUN if [[ "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
 COPY --from=ghcr.io/ublue-os/akmods:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
 RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_rok-cdemu.repo && \
     wget https://negativo17.org/repos/fedora-multimedia.repo -O /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     rpm-ostree install \
         /tmp/akmods-rpms/kmods/*xone*.rpm \
@@ -123,7 +124,8 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
         /tmp/akmods-rpms/kmods/*bmi260*.rpm \
         /tmp/akmods-rpms/kmods/*bmi323*.rpm \
         /tmp/akmods-rpms/kmods/*rtl8814au*.rpm \
-        /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm && \
+        /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm \
+        /tmp/akmods-rpms/kmods/*vhba*.rpm && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
 
 # Update packages that commonly cause build issues
@@ -327,7 +329,9 @@ RUN rpm-ostree install \
         cockpit-navigator \
         cockpit-storaged \
         wl-clipboard \
-        lsb_release && \
+        lsb_release \
+        cdemu-daemon \
+        cdemu-client && \
     pip install --prefix=/usr topgrade && \
     rpm-ostree install \
         ublue-update && \
@@ -521,7 +525,8 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-hotedge \
         rom-properties-gtk3 \
         pixbufloader-vtf \
-        openssh-askpass && \
+        openssh-askpass \
+        gcdemu && \
     rpm-ostree override remove \
         gnome-software-rpm-ostree \
         gnome-classic-session \
