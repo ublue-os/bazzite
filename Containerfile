@@ -40,6 +40,7 @@ RUN wget https://raw.githubusercontent.com/ublue-os/COPR-command/main/copr -O /u
     wget https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-"${FEDORA_MAJOR_VERSION}"/che-nerd-fonts-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_che-nerd-fonts.repo && \
     wget https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/repo/fedora-"${FEDORA_MAJOR_VERSION}"/sentry-switcheroo-control_discrete-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_sentry-switcheroo-control_discrete.repo && \
     wget https://copr.fedorainfracloud.org/coprs/matte-schwartz/sunshine/repo/fedora-"${FEDORA_MAJOR_VERSION}"/matte-schwartz-sunshine-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_matte-schwartz-sunshine.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/rodoma92/kde-cdemu-manager/repo/fedora-"${FEDORA_MAJOR_VERSION}"/rodoma92-kde-cdemu-manager-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_rodoma92-kde-cdemu-manager.repo && \
     wget https://pkgs.tailscale.com/stable/fedora/tailscale.repo -O /etc/yum.repos.d/tailscale.repo && \
     sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo
 
@@ -469,7 +470,8 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         kdeplasma-addons \
         rom-properties-kf5 \
         qvtf \
-        ptyxis && \
+        ptyxis \
+        kde-cdemu-manager && \
     mkdir -p /tmp/kwin-system76-scheduler-integration && \
     wget https://github.com/maxiberta/kwin-system76-scheduler-integration/archive/374a261497c772571df93f59fbced0ad02e64ad5.tar.gz -O /tmp/kwin-system76-scheduler-integration/archive.tar.gz && \
     tar --strip-components 1 -xvf /tmp/kwin-system76-scheduler-integration/archive.tar.gz -C /tmp/kwin-system76-scheduler-integration && \
