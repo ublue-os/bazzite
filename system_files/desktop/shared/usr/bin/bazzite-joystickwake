@@ -11,5 +11,7 @@ fi
 if [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
   /usr/bin/joystickwake --command "qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement wakeup" "$@"
 else
-  /usr/bin/joystickwake --command "gnome-session-inhibit sleep 5" "$@"
+  # Do nothing on GNOME until issue with this making the lock screen irrelevant is fully resolved.
+  exit 0
+  #/usr/bin/joystickwake "$@"
 fi
