@@ -271,6 +271,7 @@ RUN rpm-ostree install \
         python3-pip \
         libadwaita \
         duperemove \
+        sqlite \
         xwininfo \
         xrandr \
         compsize \
@@ -388,6 +389,9 @@ RUN rpm-ostree install \
     sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/fedora-updates.repo && \
     rpm-ostree install \
         lutris \
+        fluidsynth \
+        fluid-soundfont-gm \
+        qsynth \
         wxGTK \
         libFAudio \
         wine-core.x86_64 \
