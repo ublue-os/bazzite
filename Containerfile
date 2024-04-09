@@ -285,7 +285,6 @@ RUN rpm-ostree install \
         tuned-profiles-cpu-partitioning \
         powertop \
         i2c-tools \
-        joystickwake \
         udica \
         joycond \
         ladspa-caps-plugins \
@@ -469,6 +468,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         kdeplasma-addons \
         rom-properties-kf5 \
         qvtf \
+        joystickwake \
         ptyxis && \
     mkdir -p /tmp/kwin-system76-scheduler-integration && \
     wget https://github.com/maxiberta/kwin-system76-scheduler-integration/archive/374a261497c772571df93f59fbced0ad02e64ad5.tar.gz -O /tmp/kwin-system76-scheduler-integration/archive.tar.gz && \
@@ -523,6 +523,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-gamerzilla \
         gnome-shell-extension-bazzite-menu \
         gnome-shell-extension-hotedge \
+        gnome-shell-extension-caffeine \
         rom-properties-gtk3 \
         pixbufloader-vtf \
         openssh-askpass && \
