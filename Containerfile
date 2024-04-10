@@ -93,8 +93,7 @@ RUN mkdir -p /tmp/linux-firmware-neptune && \
         git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
         cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
         rm -rf /tmp/asus-firmware \
-    ; fi && \
-    if [[ "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
+    ; elif [[ "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
         wget https://pkg.surfacelinux.com/fedora/linux-surface.repo -P /etc/yum.repos.d && \
         rpm-ostree override remove \
             libwacom \
