@@ -30,7 +30,7 @@ on:
   workflow_dispatch:
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-  KERNEL_VERSION: 6.7.11-201.fsync
+  KERNEL_VERSION: 6.8.4-202.fsync
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}

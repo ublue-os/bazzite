@@ -272,6 +272,7 @@ RUN rpm-ostree install \
         python3-pip \
         libadwaita \
         duperemove \
+        sqlite \
         xwininfo \
         xrandr \
         compsize \
@@ -285,7 +286,6 @@ RUN rpm-ostree install \
         tuned-profiles-cpu-partitioning \
         powertop \
         i2c-tools \
-        joystickwake \
         udica \
         joycond \
         ladspa-caps-plugins \
@@ -332,6 +332,7 @@ RUN rpm-ostree install \
     pip install --prefix=/usr topgrade && \
     rpm-ostree install \
         ublue-update && \
+    mkdir -p /usr/etc/xdg/autostart && \
     echo "X-GNOME-Autostart-enabled=false" >> /usr/etc/xdg/autostart/sealertauto.desktop && \
     sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
     sed -i 's/min_battery_percent.*/min_battery_percent = 20.0/' /usr/etc/ublue-update/ublue-update.toml && \
@@ -389,6 +390,9 @@ RUN rpm-ostree install \
     sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/fedora-updates.repo && \
     rpm-ostree install \
         lutris \
+        fluidsynth \
+        fluid-soundfont-gm \
+        qsynth \
         wxGTK \
         libFAudio \
         wine-core.x86_64 \
@@ -466,6 +470,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         kdeplasma-addons \
         rom-properties-kf5 \
         qvtf \
+        joystickwake \
         ptyxis && \
     mkdir -p /tmp/kwin-system76-scheduler-integration && \
     wget https://github.com/maxiberta/kwin-system76-scheduler-integration/archive/374a261497c772571df93f59fbced0ad02e64ad5.tar.gz -O /tmp/kwin-system76-scheduler-integration/archive.tar.gz && \
@@ -520,6 +525,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-gamerzilla \
         gnome-shell-extension-bazzite-menu \
         gnome-shell-extension-hotedge \
+        gnome-shell-extension-caffeine \
         rom-properties-gtk3 \
         pixbufloader-vtf \
         openssh-askpass && \
@@ -618,6 +624,7 @@ RUN /tmp/image-info.sh && \
     systemctl enable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
     systemctl enable joycond && \
+    systemctl enable custom-device-pollrates.service && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
