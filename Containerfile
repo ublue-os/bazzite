@@ -566,9 +566,10 @@ RUN rpm-ostree install \
     ostree container commit
 
 # Cleanup & Finalize
-COPY system_files/shared /
-RUN /tmp/image-info.sh && \
-    glow -s /tmp/motd/dark.json /tmp/motd/bazzite.md > /usr/share/ublue-os/user-motd && \
+COPY system_files/overrides /
+RUN wget https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/image-info.sh -O /tmp/image-info.sh && \
+    chmod +x /tmp/image-info.sh && \
+    /tmp/image-info.sh && \
     rm -f /etc/profile.d/toolbox.sh && \
     sed -i 's@/usr/bin/steam@/usr/bin/bazzite-steam@g' /usr/share/applications/steam.desktop && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/fish.desktop && \
@@ -746,8 +747,9 @@ RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/
     ostree container commit
 
 # Cleanup & Finalize
-COPY system_files/shared /
-RUN /tmp/image-info.sh && \
+RUN wget https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/image-info.sh -O /tmp/image-info.sh && \
+    chmod +x /tmp/image-info.sh && \
+    /tmp/image-info.sh && \
     mkdir -p "/usr/etc/xdg/autostart" && \
     cp "/usr/share/applications/steam.desktop" "/usr/etc/xdg/autostart/steam.desktop" && \
     sed -i 's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' /usr/etc/xdg/autostart/steam.desktop && \
