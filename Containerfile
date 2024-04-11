@@ -41,7 +41,8 @@ RUN wget https://raw.githubusercontent.com/ublue-os/COPR-command/main/copr -O /u
     wget https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/repo/fedora-"${FEDORA_MAJOR_VERSION}"/sentry-switcheroo-control_discrete-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_sentry-switcheroo-control_discrete.repo && \
     wget https://copr.fedorainfracloud.org/coprs/matte-schwartz/sunshine/repo/fedora-"${FEDORA_MAJOR_VERSION}"/matte-schwartz-sunshine-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_matte-schwartz-sunshine.repo && \
     wget https://pkgs.tailscale.com/stable/fedora/tailscale.repo -O /etc/yum.repos.d/tailscale.repo && \
-    sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo
+    sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo && \
+    ostree container commit
 
 # Install kernel-fsync
 # RUN wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo && \
@@ -91,10 +92,7 @@ RUN mkdir -p /tmp/linux-firmware-neptune && \
         git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
         cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
         rm -rf /tmp/asus-firmware \
-    ; fi
-
-# Setup Surface devices
-RUN if [[ "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
+    ; elif [[ "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
         wget https://pkg.surfacelinux.com/fedora/linux-surface.repo -P /etc/yum.repos.d && \
         rpm-ostree override remove \
             libwacom \
@@ -103,7 +101,8 @@ RUN if [[ "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
             iptsd \
             libwacom-surface \
             libwacom-surface-data \
-    ; fi
+    ; fi && \
+    ostree container commit
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
 COPY --from=ghcr.io/ublue-os/akmods:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
@@ -125,7 +124,8 @@ COPY --from=ghcr.io/ublue-os/akmods:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rp
 #        /tmp/akmods-rpms/kmods/*bmi323*.rpm \
 #        /tmp/akmods-rpms/kmods/*rtl8814au*.rpm \
 #        /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm && \
-#    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
+#    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+#    ostree container commit
 
 # Update packages that commonly cause build issues
 RUN rpm-ostree override replace \
@@ -212,9 +212,15 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         cups-libs \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libinput \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
-        || true
+        || true && \
+    ostree container commit
 
 # Install Valve's patched Mesa, Pipewire & Bluez
 # Install patched switcheroo control with proper discrete GPU support
@@ -250,7 +256,8 @@ RUN rpm-ostree override remove \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:sentry:switcheroo-control_discrete \
-        switcheroo-control
+        switcheroo-control && \
+    ostree container commit
 
 # Remove unneeded packages
 RUN rpm-ostree override remove \
@@ -264,7 +271,8 @@ RUN rpm-ostree override remove \
     rpm-ostree override remove \
         tlp \
         tlp-rdw \
-        || true
+        || true && \
+    ostree container commit
 
 # Install new packages
 RUN rpm-ostree install \
@@ -342,7 +350,8 @@ RUN rpm-ostree install \
     sed -i 's@Name=tuned-gui@Name=TuneD Manager@g' /usr/share/applications/tuned-gui.desktop && \
     wget https://raw.githubusercontent.com/KyleGospo/steam-proton-mf-wmv/master/installcab.py -O /usr/bin/installcab && \
     wget https://github.com/KyleGospo/steam-proton-mf-wmv/blob/master/install-mf-wmv.sh -O /usr/bin/install-mf-wmv && \
-    wget https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer -O /usr/share/thumbnailers/exe-thumbnailer.thumbnailer
+    wget https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer -O /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
+    ostree container commit
 
 # Install Steam & Lutris, plus supporting packages
 # Remove Feral gamemode, System76 Scheduler supersedes this
@@ -440,106 +449,108 @@ RUN rpm-ostree install \
     mkdir -p /tmp/zluda && \
     tar --strip-components 1 -xvzf /tmp/zluda.tar.gz -C /tmp/zluda && \
     mv /tmp/zluda /usr/lib64/zluda && \
-    rm -f /tmp/zluda.tar.gz
+    rm -f /tmp/zluda.tar.gz && \
+    ostree container commit
 
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-    rpm-ostree override remove \
-        plasma-welcome \
-        qt5-qdbusviewer && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-        kf5-kio-ntlm \
-        kf5-kio-doc \
-        kf5-kio-widgets-libs \
-        kf5-kio-core-libs \
-        kf5-kio-widgets \
-        kf5-kio-file-widgets \
-        kf5-kio-core \
-        kf5-kio-gui && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
-        libadwaita \
-        gtk4 && \
-    rpm-ostree install \
-        steamdeck-kde-presets-desktop \
-        wallpaper-engine-kde-plugin \
-        kdeconnectd \
-        kdeplasma-addons \
-        rom-properties-kf5 \
-        qvtf \
-        joystickwake \
-        ptyxis && \
-    mkdir -p /tmp/kwin-system76-scheduler-integration && \
-    wget https://github.com/maxiberta/kwin-system76-scheduler-integration/archive/374a261497c772571df93f59fbced0ad02e64ad5.tar.gz -O /tmp/kwin-system76-scheduler-integration/archive.tar.gz && \
-    tar --strip-components 1 -xvf /tmp/kwin-system76-scheduler-integration/archive.tar.gz -C /tmp/kwin-system76-scheduler-integration && \
-    git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin && \
-    kpackagetool5 --type=KWin/Script --global --install /tmp/kwin-system76-scheduler-integration && \
-    kpackagetool5 --type=Plasma/Wallpaper --global --install /tmp/wallpaper-engine-kde-plugin/plugin && \
-    rm -rf /tmp/kwin-system76-scheduler-integration && \
-    rm -rf /tmp/wallpaper-engine-kde-plugin && \
-    sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:net.lutris.Lutris.desktop,applications:org.gnome.Ptyxis.desktop,applications:org.kde.discover.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
-    sed -i '/<entry name="favorites" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,steam.desktop,net.lutris.Lutris.desktop,systemsettings.desktop,org.kde.dolphin.desktop,org.kde.kate.desktop,org.gnome.Ptyxis.desktop,org.kde.discover.desktop,system-update.desktop<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.kickoff/contents/config/main.xml && \
-    sed -i 's@\[Desktop Action new-window\]@\[Desktop Action new-window\]\nX-KDE-Shortcuts=Ctrl+Alt+T@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
-    sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
-    sed -i 's@Keywords=@Keywords=konsole;console;@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
-    cp /usr/share/applications/org.gnome.Ptyxis.desktop /usr/share/kglobalaccel/org.gnome.Ptyxis.desktop && \
-    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.kde.konsole.desktop && \
-    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/yad-icon-browser.desktop && \
-    rm -f /usr/share/kglobalaccel/org.kde.konsole.desktop && \
-    systemctl enable kde-sysmonitor-workaround.service \
-; else \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
-        mutter \
-        mutter-common \
-        gnome-control-center \
-        gnome-control-center-filesystem && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-        gnome-shell && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
-        gtk4 \
-        vte291 \
-        vte-profile \
-        libadwaita && \
-    rpm-ostree install \
-        ptyxis \
-        nautilus-open-any-terminal \
-        nautilus-gsconnect \
-        steamdeck-backgrounds \
-        gnome-randr-rust \
-        gnome-shell-extension-user-theme \
-        gnome-shell-extension-gsconnect \
-        gnome-shell-extension-system76-scheduler \
-        gnome-shell-extension-compiz-windows-effect \
-        gnome-shell-extension-just-perfection \
-        gnome-shell-extension-blur-my-shell \
-        gnome-shell-extension-hanabi \
-        gnome-shell-extension-gamerzilla \
-        gnome-shell-extension-bazzite-menu \
-        gnome-shell-extension-hotedge \
-        gnome-shell-extension-caffeine \
-        rom-properties-gtk3 \
-        pixbufloader-vtf \
-        openssh-askpass && \
-    rpm-ostree override remove \
-        gnome-software-rpm-ostree \
-        gnome-classic-session \
-        gnome-tour \
-        gnome-extensions-app \
-        gnome-terminal-nautilus \
-        gnome-initial-setup && \
-    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.gnome.Terminal.desktop && \
-    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/gnome-system-monitor.desktop && \
-    systemctl enable dconf-update.service \
-; fi
+        rpm-ostree override remove \
+            plasma-welcome \
+            qt5-qdbusviewer && \
+        rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+            kf5-kio-ntlm \
+            kf5-kio-doc \
+            kf5-kio-widgets-libs \
+            kf5-kio-core-libs \
+            kf5-kio-widgets \
+            kf5-kio-file-widgets \
+            kf5-kio-core \
+            kf5-kio-gui && \
+        rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+            libadwaita \
+            gtk4 && \
+        rpm-ostree install \
+            steamdeck-kde-presets-desktop \
+            wallpaper-engine-kde-plugin \
+            kdeconnectd \
+            kdeplasma-addons \
+            rom-properties-kf5 \
+            qvtf \
+            joystickwake \
+            ptyxis && \
+        mkdir -p /tmp/kwin-system76-scheduler-integration && \
+        wget https://github.com/maxiberta/kwin-system76-scheduler-integration/archive/374a261497c772571df93f59fbced0ad02e64ad5.tar.gz -O /tmp/kwin-system76-scheduler-integration/archive.tar.gz && \
+        tar --strip-components 1 -xvf /tmp/kwin-system76-scheduler-integration/archive.tar.gz -C /tmp/kwin-system76-scheduler-integration && \
+        git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin && \
+        kpackagetool5 --type=KWin/Script --global --install /tmp/kwin-system76-scheduler-integration && \
+        kpackagetool5 --type=Plasma/Wallpaper --global --install /tmp/wallpaper-engine-kde-plugin/plugin && \
+        rm -rf /tmp/kwin-system76-scheduler-integration && \
+        rm -rf /tmp/wallpaper-engine-kde-plugin && \
+        sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:net.lutris.Lutris.desktop,applications:org.gnome.Ptyxis.desktop,applications:org.kde.discover.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
+        sed -i '/<entry name="favorites" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,steam.desktop,net.lutris.Lutris.desktop,systemsettings.desktop,org.kde.dolphin.desktop,org.kde.kate.desktop,org.gnome.Ptyxis.desktop,org.kde.discover.desktop,system-update.desktop<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.kickoff/contents/config/main.xml && \
+        sed -i 's@\[Desktop Action new-window\]@\[Desktop Action new-window\]\nX-KDE-Shortcuts=Ctrl+Alt+T@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
+        sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
+        sed -i 's@Keywords=@Keywords=konsole;console;@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
+        cp /usr/share/applications/org.gnome.Ptyxis.desktop /usr/share/kglobalaccel/org.gnome.Ptyxis.desktop && \
+        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.kde.konsole.desktop && \
+        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/yad-icon-browser.desktop && \
+        rm -f /usr/share/kglobalaccel/org.kde.konsole.desktop && \
+        systemctl enable kde-sysmonitor-workaround.service \
+    ; else \
+        rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+            mutter \
+            mutter-common \
+            gnome-control-center \
+            gnome-control-center-filesystem && \
+        rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+            gnome-shell && \
+        rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+            gtk4 \
+            vte291 \
+            vte-profile \
+            libadwaita && \
+        rpm-ostree install \
+            ptyxis \
+            nautilus-open-any-terminal \
+            nautilus-gsconnect \
+            steamdeck-backgrounds \
+            gnome-randr-rust \
+            gnome-shell-extension-user-theme \
+            gnome-shell-extension-gsconnect \
+            gnome-shell-extension-system76-scheduler \
+            gnome-shell-extension-compiz-windows-effect \
+            gnome-shell-extension-just-perfection \
+            gnome-shell-extension-blur-my-shell \
+            gnome-shell-extension-hanabi \
+            gnome-shell-extension-gamerzilla \
+            gnome-shell-extension-bazzite-menu \
+            gnome-shell-extension-hotedge \
+            gnome-shell-extension-caffeine \
+            rom-properties-gtk3 \
+            pixbufloader-vtf \
+            openssh-askpass && \
+        rpm-ostree override remove \
+            gnome-software-rpm-ostree \
+            gnome-classic-session \
+            gnome-tour \
+            gnome-extensions-app \
+            gnome-terminal-nautilus \
+            gnome-initial-setup && \
+        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.gnome.Terminal.desktop && \
+        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/gnome-system-monitor.desktop && \
+        systemctl enable dconf-update.service \
+    ; fi && \
+    ostree container commit
 
 # Install Gamescope, ROCM, and Waydroid on non-Nvidia images
 RUN rpm-ostree install \
@@ -552,7 +563,8 @@ RUN rpm-ostree install \
         waydroid \
         cage \
         wlr-randr && \
-    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh
+    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
+    ostree container commit
 
 # Cleanup & Finalize
 COPY system_files/shared /
@@ -640,14 +652,6 @@ RUN /tmp/image-info.sh && \
     sed -i 's@Exec=waydroid first-launch@Exec=/usr/bin/waydroid-launcher first-launch\nX-Steam-Library-Capsule=/usr/share/applications/Waydroid/capsule.png\nX-Steam-Library-Hero=/usr/share/applications/Waydroid/hero.png\nX-Steam-Library-Logo=/usr/share/applications/Waydroid/logo.png\nX-Steam-Library-StoreCapsule=/usr/share/applications/Waydroid/store-logo.png\nX-Steam-Controller-Template=Desktop@g' /usr/share/applications/Waydroid.desktop && \
     wget https://raw.githubusercontent.com/KyleGospo/waydroid-scripts/main/waydroid-choose-gpu.sh -O /usr/bin/waydroid-choose-gpu && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
-    mkdir -p /usr/etc/default && \
-    rm -rf \
-        /tmp/* \
-        /var/* && \
-    mkdir -p /var/tmp && \
-    chmod -R 1777 /var/tmp && \
-    mkdir -p /var/lib/bluetooth && \
-    chmod -R 755 /var/lib/bluetooth && \
     ostree container commit
 
 FROM bazzite as bazzite-deck
@@ -669,21 +673,23 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_hhd-dev-hhd.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
+    ostree container commit
 
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-    rpm-ostree override remove \
-        steamdeck-kde-presets-desktop && \
-    rpm-ostree install \
-        steamdeck-kde-presets \
-; else \
-    rpm-ostree install \
-        steamdeck-gnome-presets \
-        gnome-shell-extension-caribou-blocker \
-        sddm && \
-    wget https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf -O /usr/etc/dxvk-example.conf \
-; fi
+        rpm-ostree override remove \
+            steamdeck-kde-presets-desktop && \
+        rpm-ostree install \
+            steamdeck-kde-presets \
+    ; else \
+        rpm-ostree install \
+            steamdeck-gnome-presets \
+            gnome-shell-extension-caribou-blocker \
+            sddm && \
+        wget https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf -O /usr/etc/dxvk-example.conf \
+    ; fi && \
+    ostree container commit
 
 # Install new packages
 # Dock updater - done manually due to proprietary parts preventing it from being on Copr
@@ -716,7 +722,8 @@ RUN rpm-ostree install \
         --depth 1 \
         /tmp/jupiter-dock-updater-bin && \
     mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/lib/jupiter-dock-updater && \
-    rm -rf /tmp/jupiter-dock-updater-bin
+    rm -rf /tmp/jupiter-dock-updater-bin && \
+    ostree container commit
 
 # Install Steam Deck patched Wireplumber & UPower
 RUN rpm-ostree override replace \
@@ -725,7 +732,8 @@ RUN rpm-ostree override replace \
         wireplumber \
         wireplumber-libs \
         upower \
-        upower-libs
+        upower-libs && \
+    ostree container commit
 
 # Install Gamescope Session & Supporting changes
 # Add bootstraplinux_ubuntu12_32.tar.xz used by gamescope-session (Thanks ChimeraOS! - https://chimeraos.org/)
@@ -735,7 +743,8 @@ RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/
     rm -f /tmp/steam-jupiter.pkg.tar.zst && \
     rpm-ostree install \
         gamescope-session-plus \
-        gamescope-session-steam
+        gamescope-session-steam && \
+    ostree container commit
 
 # Cleanup & Finalize
 COPY system_files/shared /
@@ -786,13 +795,6 @@ RUN /tmp/image-info.sh && \
     systemctl disable batterylimit.service && \
     rm -f /usr/etc/sddm.conf && \
     rm -f /usr/etc/default/bazzite && \
-    rm -rf \
-        /tmp/* \
-        /var/* && \
-    mkdir -p /var/tmp && \
-    chmod -R 1777 /var/tmp && \
-    mkdir -p /var/lib/bluetooth && \
-    chmod -R 755 /var/lib/bluetooth && \
     ostree container commit
 
 FROM bazzite as bazzite-nvidia
@@ -807,7 +809,6 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
 ARG NVIDIA_MAJOR_VERSION="550"
 
 # Fetch NVIDIA driver
-COPY --from=ghcr.io/ublue-os/akmods-nvidia:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION}-${NVIDIA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
 COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
 
 # Remove everything that doesn't work well with NVIDIA
@@ -818,12 +819,15 @@ RUN rpm-ostree override remove \
     if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then \
         rpm-ostree override remove \
             colord-kde \
-    ; fi
+    ; fi && \
+    ostree container commit
 
 # Install NVIDIA driver
+COPY --from=ghcr.io/ublue-os/akmods-nvidia:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION}-${NVIDIA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
 RUN wget https://raw.githubusercontent.com/ublue-os/hwe/main/nvidia-install.sh -O /tmp/nvidia-install.sh && \
     chmod +x /tmp/nvidia-install.sh && \
-    IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-install.sh
+    IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-install.sh && \
+    ostree container commit
 
 # Install Explicit Sync Patches
 RUN wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nvidia-explicit-sync/repo/fedora-$(rpm -E %fedora)/gloriouseggroll-nvidia-explicit-sync-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
@@ -835,7 +839,8 @@ RUN wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nvidia-explicit
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
         egl-wayland \
-        || true
+        || true && \
+    ostree container commit
 
 # Cleanup & Finalize
 RUN rm -rf \
@@ -845,8 +850,4 @@ RUN rm -rf \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
     rm -rf /usr/lib64/zluda && \
     echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
-    mkdir -p /var/tmp && \
-    chmod -R 1777 /var/tmp && \
-    mkdir -p /var/lib/bluetooth && \
-    chmod -R 755 /var/lib/bluetooth && \
     ostree container commit
