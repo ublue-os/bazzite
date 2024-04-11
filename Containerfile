@@ -570,6 +570,9 @@ COPY system_files/overrides /
 RUN wget https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/image-info.sh -O /tmp/image-info.sh && \
     chmod +x /tmp/image-info.sh && \
     /tmp/image-info.sh && \
+    wget https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/initramfs.sh -O /tmp/initramfs.sh && \
+    chmod +x /tmp/initramfs.sh && \
+    /tmp/initramfs.sh && \
     rm -f /etc/profile.d/toolbox.sh && \
     sed -i 's@/usr/bin/steam@/usr/bin/bazzite-steam@g' /usr/share/applications/steam.desktop && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/fish.desktop && \
@@ -844,7 +847,10 @@ RUN wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nvidia-explicit
     ostree container commit
 
 # Cleanup & Finalize
-RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
+RUN wget https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/initramfs.sh -O /tmp/initramfs.sh && \
+    chmod +x /tmp/initramfs.sh && \
+    /tmp/initramfs.sh && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
     rm -rf /usr/lib64/zluda && \
     echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
