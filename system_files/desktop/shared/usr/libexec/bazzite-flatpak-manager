@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SCRIPT VERSION
-VER=22
+VER=23
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -81,7 +81,6 @@ rm -f /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stable/
 /usr/bin/cp -rf /usr/share/ublue-os/firefox-config/* /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stable/defaults/pref/
 
 # Update Flatpaks
-
 # Use until yafti rework is done
 flatpak --system update -y
 
