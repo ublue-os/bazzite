@@ -249,7 +249,6 @@ Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details
 - [Installing and Managing Applications](https://universal-blue.discourse.group/docs?topic=35)
 - [Updates, Rollbacks, and Rebasing](https://universal-blue.discourse.group/docs?topic=36)
 - [Gaming Guide](https://universal-blue.discourse.group/docs?topic=31)
-- [Dual Booting Guide](https://universal-blue.discourse.group/docs?topic=129)
 
 View [additional documentation](http://docs.bazzite.gg/) surrounding the project.
 
