@@ -106,7 +106,7 @@ if [[ $KARGS =~ "nomodeset" ]]; then
   NEEDED_KARGS+=("--delete-if-present=nomodeset")
 fi
 
-if [[ ! $KARGS =~ "gpu_sched.sched_policy" ]]; then
+if [[ ! $KARGS =~ "gpu_sched.sched_policy" && ! $IMAGE_FLAVOR =~ "nvidia" ]]; then
   echo "Fixing GPU scheduler default"
   NEEDED_KARGS+=("--append-if-missing=gpu_sched.sched_policy=0")
 fi
@@ -196,8 +196,3 @@ echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
 echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE
 echo $FEDORA_VERSION > $KNOWN_FEDORA_VERSION_FILE
 echo $IMAGE_BRANCH > $KNOWN_IMAGE_BRANCH_FILE
-
-if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
-  echo "Nvidia image detected, rebooting to avoid screen freeze issue in 550."
-  systemctl reboot
-fi
