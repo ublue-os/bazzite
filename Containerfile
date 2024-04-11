@@ -634,7 +634,7 @@ RUN /tmp/image-info.sh && \
     systemctl enable bazzite-hardware-setup.service && \
     systemctl enable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
-    systemctl enable joycond && \
+    systemctl enable joycond.service && \
     systemctl enable custom-device-pollrates.service && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
@@ -842,10 +842,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nvidia-explicit
     ostree container commit
 
 # Cleanup & Finalize
-RUN rm -rf \
-        /tmp/* \
-        /var/* && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
+RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
     rm -rf /usr/lib64/zluda && \
     echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
