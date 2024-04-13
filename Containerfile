@@ -309,7 +309,6 @@ RUN rpm-ostree install \
         yad \
         f3 \
         pulseaudio-utils \
-        playerctl \
         unrar \
         lzip \
         libxcrypt-compat \
@@ -334,7 +333,6 @@ RUN rpm-ostree install \
         cockpit-system \
         cockpit-navigator \
         cockpit-storaged \
-        wl-clipboard \
         lsb_release && \
     pip install --prefix=/usr topgrade && \
     rpm-ostree install \
@@ -417,7 +415,6 @@ RUN rpm-ostree install \
         vk_hdr_layer.x86_64 \
         vk_hdr_layer.i686 \
         gperftools-libs.i686 \
-        goverlay && \
     if [[ ! "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
         rpm-ostree install \
             obs-vkcapture.x86_64 \
@@ -478,7 +475,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             kdeconnectd \
             kdeplasma-addons \
             rom-properties-kf5 \
-            qvtf \
             joystickwake \
             ptyxis && \
         mkdir -p /tmp/kwin-system76-scheduler-integration && \
@@ -536,7 +532,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             gnome-shell-extension-hotedge \
             gnome-shell-extension-caffeine \
             rom-properties-gtk3 \
-            pixbufloader-vtf \
             openssh-askpass && \
         rpm-ostree override remove \
             gnome-software-rpm-ostree \
