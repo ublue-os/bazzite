@@ -214,6 +214,11 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         cups-libs \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libinput \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true
@@ -274,6 +279,7 @@ RUN rpm-ostree install \
         python3-pip \
         libadwaita \
         duperemove \
+        sqlite \
         xwininfo \
         xrandr \
         compsize \
@@ -287,7 +293,6 @@ RUN rpm-ostree install \
         tuned-profiles-cpu-partitioning \
         powertop \
         i2c-tools \
-        joystickwake \
         udica \
         joycond \
         ladspa-caps-plugins \
@@ -393,6 +398,9 @@ RUN rpm-ostree install \
     sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/fedora-updates.repo && \
     rpm-ostree install \
         lutris \
+        fluidsynth \
+        fluid-soundfont-gm \
+        qsynth \
         wxGTK \
         libFAudio \
         wine-core.x86_64 \
@@ -470,6 +478,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         kdeplasma-addons \
         rom-properties-kf5 \
         qvtf \
+        joystickwake \
         ptyxis \
         kde-cdemu-manager && \
     mkdir -p /tmp/kwin-system76-scheduler-integration && \
@@ -525,6 +534,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-gamerzilla \
         gnome-shell-extension-bazzite-menu \
         gnome-shell-extension-hotedge \
+        gnome-shell-extension-caffeine \
         rom-properties-gtk3 \
         pixbufloader-vtf \
         openssh-askpass \
