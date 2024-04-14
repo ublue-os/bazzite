@@ -30,6 +30,7 @@ on:
   workflow_dispatch:
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  KERNEL_VERSION: 6.8.4-202.fsync
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -85,7 +86,7 @@ jobs:
 
       - name: Matrix Variables
         run: |
-          echo "AKMODS_FLAVOR=fsync-lts" >> $GITHUB_ENV
+          echo "AKMODS_FLAVOR=fsync" >> $GITHUB_ENV
           echo "BASE_IMAGE_NAME=${{ matrix.base_image_name }}" >> $GITHUB_ENV
 
           if [[ "${{ matrix.base_image_flavor }}" == "framework" ]]; then
