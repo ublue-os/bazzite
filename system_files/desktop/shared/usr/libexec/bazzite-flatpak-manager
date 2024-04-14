@@ -22,6 +22,10 @@ if [[ -f $VER_FILE && $VER = $VER_RAN ]]; then
   fi
 fi
 
+# Ensure Flathub is enabled
+flatpak remote-add --if-not-exists --system flathub /usr/etc/flatpak/remotes.d/flathub.flatpakrepo
+flatpak remote-modify --system --enable flathub
+
 # Flatpak theming support
 flatpak override \
   --filesystem=xdg-config/gtk-4.0:ro \
@@ -81,10 +85,7 @@ rm -f /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stable/
 /usr/bin/cp -rf /usr/share/ublue-os/firefox-config/* /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stable/defaults/pref/
 
 # Update Flatpaks
-# Use until yafti rework is done
 flatpak --system update -y
-
-notify-send "Welcome to Bazzite" "Your computer is ready!" --app-name="Flatpak Manager Service" -u NORMAL
 
 mkdir -p /etc/bazzite
 echo $VER > $VER_FILE
