@@ -26,7 +26,10 @@ done
 
 
 if command -v ublue-update > /dev/null; then
-  if [ -n "${CHECK}" ]; then
+  if [ ! -f '/etc/gamemode-update-check' ]; then
+    touch /etc/gamemode-update-check
+    exit 7 # Skip the first update to simplify new installs.
+  elif [ -n "${CHECK}" ]; then
     if [ -f '/tmp/upgrade-installed' ]; then
       exit 7 # Upgrade already installed
     else

@@ -30,7 +30,7 @@ on:
   workflow_dispatch:
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-  KERNEL_VERSION: 6.7.11-201.fsync
+  KERNEL_VERSION: 6.8.4-202.fsync
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -40,6 +40,7 @@ jobs:
   push-ghcr:
     name: Make
     runs-on: ubuntu-22.04
+    continue-on-error: false
     permissions:
       contents: read
       packages: write
@@ -283,3 +284,12 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"
+
+  build_iso:
+    name: build iso
+    needs: [push-ghcr]
+    if: github.ref_name == 'testing'
+    # Eventually would be nice for building images in PRs
+    #if: ${{ endsWith(github.event.pull_request.title, '[ISO]') }}
+    uses: ./.github/workflows/build_iso.yml
+    secrets: inherit

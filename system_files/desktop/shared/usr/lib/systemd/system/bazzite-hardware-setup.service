@@ -1,6 +1,6 @@
 [Unit]
 Description=Configure Bazzite for current hardware
-After=rpm-ostreed.service
+After=rpm-ostreed.service tuned.service
 Before=systemd-user-sessions.service jupiter-biosupdate.service jupiter-controller-update.service
 
 [Service]

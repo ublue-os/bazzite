@@ -126,7 +126,6 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Applies SteamOS's kernel parameters.
 - Color calibrated display profiles for matte and reflective Steam Deck screens included.
 - Default-disabled power-user features, including:
-    - Service for low-risk undervolting of the Steam Deck via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) and [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), see `ryzenadj.service` and `/etc/default/ryzenadj`.
     - Service for limiting the max charge level of the battery, see `batterylimit.service` and `/etc/default/batterylimit`. <sup><sub>(Works even when the device is off)</sub></sup>
     - Built in support for display overclocking. For example, add `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` to `/etc/environment`.
     - Ability to use X11 on the desktop if desired by editing `/etc/default/desktop-wayland`.
@@ -249,7 +248,6 @@ Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details
 - [Installing and Managing Applications](https://universal-blue.discourse.group/docs?topic=35)
 - [Updates, Rollbacks, and Rebasing](https://universal-blue.discourse.group/docs?topic=36)
 - [Gaming Guide](https://universal-blue.discourse.group/docs?topic=31)
-- [Dual Booting Guide](https://universal-blue.discourse.group/docs?topic=129)
 
 View [additional documentation](http://docs.bazzite.gg/) surrounding the project.
 

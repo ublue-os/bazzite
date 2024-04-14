@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=36
+HWS_VER=37
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -21,89 +21,12 @@ KNOWN_IMAGE_FLAVOR=$(cat $KNOWN_IMAGE_FLAVOR_FILE)
 KNOWN_FEDORA_VERSION_FILE="/etc/bazzite/fedora_version"
 KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
 
-# INITRAMFS CONFIG
-INITRAMFS_DIR="/etc/bazzite/initramfs"
-INITRAMFS_REBUILD_TRIGGER="$INITRAMFS_DIR/rebuild"
-INITRAMFS_BAZZITE_ARG_FILE="$INITRAMFS_DIR/hardware-setup.args"
-INITRAMFS_BAZZITE_ARGS=$(cat $INITRAMFS_BAZZITE_ARG_FILE)
-INITRAMFS_CUSTOM_ARGS_DIR="$INITRAMFS_DIR/args.d"
-INITRAMFS_CUSTOM_ARGS=""
-
-# If the /etc/bazzite/initramfs/args.d dir exists
-if [[ -d "$INITRAMFS_CUSTOM_ARGS_DIR" ]]; then
-  # Grab all the content of the files (minus comments) and join them together with spaces
-  INITRAMFS_CUSTOM_ARGS=$(grep -RvP "^(#|$)" $INITRAMFS_CUSTOM_ARGS_DIR/ | sort | perl -pe 's/(^$INITRAMFS_CUSTOM_ARGS_DIR\/.+:|\\\n$)//g' | tr '\n' ' ')
-fi
-
-# If no rebuild is requested
-if [[ ! -f $INITRAMFS_REBUILD_TRIGGER ]]; then
-  # RUN REMAINDER OF SCRIPT ONLY IF UPDATED
-  if [[ -f $HWS_VER_FILE && $HWS_VER = "$HWS_VER_RAN" ]]; then
-    if [[ -f $KNOWN_IMAGE_NAME_FILE && -f $KNOWN_IMAGE_FLAVOR_FILE && -f $KNOWN_FEDORA_VERSION_FILE && -f $KNOWN_IMAGE_BRANCH_FILE ]]; then
-      # Run script if image has been rebased
-      if [[ $IMAGE_NAME = "$KNOWN_IMAGE_NAME" && $IMAGE_FLAVOR = "$KNOWN_IMAGE_FLAVOR" && $FEDORA_VERSION = "$KNOWN_FEDORA_VERSION" && $IMAGE_BRANCH = "$KNOWN_IMAGE_BRANCH" ]]; then
-        echo "Hardware setup v$HWS_VER has already run. Exiting..."
-        exit 0
-      fi
-    fi
-  fi
-else
-  # REMOVE REBUILD TRIGGER TO AVOID INFINITE BOOT LOOP!
-  rm $INITRAMFS_REBUILD_TRIGGER
-  # Rebuild current initramfs (this will add any new configs added to /etc/dracut.conf.d/) then reboot
-  echo "Initramfs rebuild triggered, using: $INITRAMFS_BAZZITE_ARGS $INITRAMFS_CUSTOM_ARGS"
-  plymouth display-message --text="Updating initramfs - Please wait, this may take a while" || true
-  rpm-ostree initramfs --enable "${INITRAMFS_BAZZITE_ARGS} ${INITRAMFS_CUSTOM_ARGS}" --reboot
-  exit 0 
-fi
-
 # GLOBAL
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 MINIMUM_FREE_ZRAM=$(awk '/MemTotal/ {printf "%.0f", $2 * 0.01}' /proc/meminfo)
 CURRENT_FREE_ZRAM=$(sysctl vm.min_free_kbytes | awk '{print $3}')
 KARGS=$(rpm-ostree kargs)
 NEEDED_KARGS=()
-INITRAMFS=$(rpm-ostree initramfs)
-NEEDED_INITRAMFS=("/etc/crypttab")
-NEEDS_INITRAMFS_APPLICATION=false
-
-# INITRAMFS
-echo "Current initramfs: $INITRAMFS"
-
-if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
-  NEEDED_INITRAMFS+=("/usr/lib/modprobe.d/nvidia.conf")
-else
-  NEEDED_INITRAMFS+=("/etc/modprobe.d/amdgpu.conf")
-fi
-
-if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
-  NEEDED_INITRAMFS+=("/etc/modprobe.d/deck-blacklist.conf")
-fi
-
-for INITRAMFS_ARG in ${NEEDED_INITRAMFS[@]}; do
-  if [[ ! $INITRAMFS =~ "$INITRAMFS_ARG" ]]; then
-    NEEDS_INITRAMFS_APPLICATION=true
-  fi
-done
-
-# If there is nothing in INITRAMFS_BAZZITE_ARGS
-if [[ ! $INITRAMFS_BAZZITE_ARGS ]]; then
-  # Make sure we will have /etc/bazzite/initramfs/bazzite.args for the future
-  mkdir -p /etc/bazzite/initramfs/args.d
-  echo "--arg=\"-I ${NEEDED_INITRAMFS[*]}\"" > $INITRAMFS_BAZZITE_ARG_FILE
-  INITRAMFS_BAZZITE_ARGS=$(cat $INITRAMFS_BAZZITE_ARG_FILE)
-fi
-
-if $NEEDS_INITRAMFS_APPLICATION; then
-  echo "Found needed initramfs changes, applying the following: ${NEEDED_INITRAMFS[*]}"
-  echo "--arg=\"-I ${NEEDED_INITRAMFS[*]}\"" > $INITRAMFS_BAZZITE_ARG_FILE
-  INITRAMFS_BAZZITE_ARGS=$(cat $INITRAMFS_BAZZITE_ARG_FILE)
-  echo "Building initramfs with following custom args: $INITRAMFS_CUSTOM_ARGS"
-  plymouth display-message --text="Updating initramfs - Please wait, this may take a while" || true
-  rpm-ostree initramfs --enable "${INITRAMFS_BAZZITE_ARGS} ${INITRAMFS_CUSTOM_ARGS}"
-else
-  echo "No initramfs changes needed"
-fi
 
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
@@ -183,7 +106,7 @@ if [[ $KARGS =~ "nomodeset" ]]; then
   NEEDED_KARGS+=("--delete-if-present=nomodeset")
 fi
 
-if [[ ! $KARGS =~ "gpu_sched.sched_policy" ]]; then
+if [[ ! $KARGS =~ "gpu_sched.sched_policy" && ! $IMAGE_FLAVOR =~ "nvidia" ]]; then
   echo "Fixing GPU scheduler default"
   NEEDED_KARGS+=("--append-if-missing=gpu_sched.sched_policy=0")
 fi
@@ -246,6 +169,15 @@ else
   echo "No minimum-free ZRAM changes needed"
 fi
 
+# NO-PSTATE FIX
+if grep -q "acpi-cpufreq" <<< "$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_driver)"; then
+  sed -i 's/balanced=balanced$/balanced=balanced-no-pstate/g' /etc/tuned/ppd.conf
+  tuned-adm profile balanced-no-pstate
+else
+  sed -i 's/balanced=balanced-no-pstate/balanced=balanced/g' /etc/tuned/ppd.conf
+  tuned-adm profile balanced
+fi
+
 # HOSTNAME FIX
 # If the hostname is too long Distrobox will fail during setup
 # Let's check the length and reset it to something sensible if that happens.
@@ -264,8 +196,3 @@ echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
 echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE
 echo $FEDORA_VERSION > $KNOWN_FEDORA_VERSION_FILE
 echo $IMAGE_BRANCH > $KNOWN_IMAGE_BRANCH_FILE
-
-if [[ $IMAGE_FLAVOR =~ "nvidia" ]]; then
-  echo "Nvidia image detected, rebooting to avoid screen freeze issue in 550."
-  systemctl reboot
-fi

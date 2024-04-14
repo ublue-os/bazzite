@@ -36,11 +36,8 @@ if [[ -f $USER_SETUP_VER_FILE && -f $USER_SETUP_FEDORA_VER_RAN && -f $USER_SETUP
 fi
 
 # Enable Flathub
-if grep -qz 'fedora' <<< $(flatpak remotes); then
-  flatpak remote-delete --user fedora --force
-fi
 flatpak remote-add --if-not-exists --user flathub /usr/etc/flatpak/remotes.d/flathub.flatpakrepo
-flatpak remote-modify --user --enable --prio=2 flathub
+flatpak remote-modify --user --enable flathub
 
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup "$USER"
