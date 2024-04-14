@@ -28,15 +28,13 @@ sleep 1
 # Debug: Get current outputs
 kscreen-doctor --outputs 2>&1 | tee -a /tmp/bazrotfix.log
 
-# Fix default scale on for Steam Deck hardware
-if /usr/libexec/hardware/valve-hardware; then
-	kscreen-doctor output.1.scale.1.00 2>&1 | tee -a /tmp/bazrotfix.log
-fi
-
 # Fix desktop orientation
 # Rotation options: right, normal, left, inverted
 echo $(date '+%Y-%m-%d %H:%M:%S') Fixing desktop orientation... | tee -a /tmp/bazrotfix.log
-if [[ ! -z "$IS_GAMEMODE" ]]; then
+if /usr/libexec/hardware/valve-hardware; then
+	# Fix default scale on for Steam Deck hardware
+	kscreen-doctor output.1.scale.1.00 2>&1 | tee -a /tmp/bazrotfix.log
+elif [[ ! -z "$IS_GAMEMODE" ]]; then
 	kscreen-doctor output.1.rotation.normal 2>&1 | tee -a /tmp/bazrotfix.log
 elif [[ ":83E1:Loki Max:AIR Plus:" =~ ":$SYS_ID:" ]]; then
 	kscreen-doctor output.1.rotation.left 2>&1 | tee -a /tmp/bazrotfix.log

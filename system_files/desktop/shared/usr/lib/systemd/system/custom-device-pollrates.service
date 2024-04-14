@@ -1,0 +1,10 @@
+[Unit]
+Description=Set custom polling rates for specific devices
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bash /usr/bin/custom-device-pollrates
+
+[Install]
+WantedBy=multi-user.target
+

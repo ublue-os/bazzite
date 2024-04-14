@@ -1,2 +1,2 @@
-# Lenovo Legion Go
+# Lenovo Legion Go Controller
 ACTION=="add", ATTRS{idVendor}=="17ef", ATTRS{idProduct}=="6182", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 17ef 6182 > /sys/bus/usb/drivers/xpad/new_id'"
