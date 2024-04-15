@@ -6,7 +6,7 @@
 [h3]Features[/h3]
 [list]
 [*] New ISO install experience with Flatpaks now included.
-[*] Removal of initramfs building at first boot thanks to new in-image generation. Existing users who haven't customized initramfs can run [code single]rpm-ostree initramfs --disable[/code] after updating to speed up future updates.
+[*] Removal of initramfs building at first boot thanks to new in-image generation. Existing users who haven't customized initramfs can run [b]rpm-ostree initramfs --disable[/b] after updating to speed up future updates.
 [*] Add auto-vram kargs for Legion GO and ASUS Ally ([url=https://github.com/ublue-os/bazzite/commit/d8f450c4dc6bf0c0345826291a9c801f775a8a90]d8f450c[/url])
 [*] Add copr helper ([url=https://github.com/ublue-os/bazzite/commit/df62cd604aba1dd7329a56c17ddba164ac63ea53]df62cd6[/url])
 [*] Add ISO torrents via archive.org, huge thanks to [url=https://github.com/qoijjj]@qoijjj[/url] for all the work on this ([url=https://github.com/ublue-os/bazzite/issues/933]#933[/url]) ([url=https://github.com/ublue-os/bazzite/commit/022bf16b7da14001060b8de1e393ce8929a0a665]022bf16[/url])
