@@ -36,7 +36,7 @@ if /usr/libexec/hardware/valve-hardware; then
 	kscreen-doctor output.1.scale.1.00 2>&1 | tee -a /tmp/bazrotfix.log
 elif [[ ! -z "$IS_GAMEMODE" ]]; then
 	kscreen-doctor output.1.rotation.normal 2>&1 | tee -a /tmp/bazrotfix.log
-elif [[ ":83E1:Loki Max:AIR Plus:" =~ ":$SYS_ID:" ]]; then
+elif [[ ":83E1:Loki Max:AIR Plus:SLIDE:" =~ ":$SYS_ID:" ]]; then
 	kscreen-doctor output.1.rotation.left 2>&1 | tee -a /tmp/bazrotfix.log
 else
 	kscreen-doctor output.1.rotation.normal 2>&1 | tee -a /tmp/bazrotfix.log
