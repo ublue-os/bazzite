@@ -45,19 +45,19 @@ RUN wget https://raw.githubusercontent.com/ublue-os/COPR-command/main/copr -O /u
     ostree container commit
 
 # Install kernel-fsync
-# RUN wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo && \
-#    rpm-ostree cliwrap install-to-root / && \
-#    rpm-ostree override replace \
-#    --experimental \
-#    --from repo=copr:copr.fedorainfracloud.org:sentry:kernel-fsync \
-#        kernel \
-#        kernel-core \
-#        kernel-modules \
-#        kernel-modules-core \
-#        kernel-modules-extra \
-#        kernel-uki-virt \
-#        kernel-headers \
-#        kernel-devel
+ RUN wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo && \
+    rpm-ostree cliwrap install-to-root / && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:sentry:kernel-fsync \
+        kernel \
+        kernel-core \
+        kernel-modules \
+        kernel-modules-core \
+        kernel-modules-extra \
+        kernel-uki-virt \
+        kernel-headers \
+        kernel-devel
 
 # Setup firmware
 RUN mkdir -p /tmp/linux-firmware-neptune && \
@@ -106,26 +106,22 @@ RUN mkdir -p /tmp/linux-firmware-neptune && \
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
 COPY --from=ghcr.io/ublue-os/akmods:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
-#RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-#    wget https://negativo17.org/repos/fedora-multimedia.repo -O /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-#    rpm-ostree install \
-#        /tmp/akmods-rpms/kmods/*xone*.rpm \
-#        /tmp/akmods-rpms/kmods/*openrazer*.rpm \
-#        /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
-#        /tmp/akmods-rpms/kmods/*wl*.rpm \
-#        /tmp/akmods-rpms/kmods/*gcadapter_oc*.rpm \
-#        /tmp/akmods-rpms/kmods/*nct6687*.rpm \
-#        /tmp/akmods-rpms/kmods/*evdi*.rpm \
-#        /tmp/akmods-rpms/kmods/*zenergy*.rpm \
-#        /tmp/akmods-rpms/kmods/*ayaneo-platform*.rpm \
-#        /tmp/akmods-rpms/kmods/*ayn-platform*.rpm \
-#        /tmp/akmods-rpms/kmods/*bmi160*.rpm \
-#        /tmp/akmods-rpms/kmods/*bmi260*.rpm \
-#        /tmp/akmods-rpms/kmods/*bmi323*.rpm \
-#        /tmp/akmods-rpms/kmods/*rtl8814au*.rpm \
-#        /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm && \
-#    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-#    ostree container commit
+RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
+    wget https://negativo17.org/repos/fedora-multimedia.repo -O /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    rpm-ostree install \
+        /tmp/akmods-rpms/kmods/*xone*.rpm \
+        /tmp/akmods-rpms/kmods/*openrazer*.rpm \
+        /tmp/akmods-rpms/kmods/*wl*.rpm \
+        /tmp/akmods-rpms/kmods/*gcadapter_oc*.rpm \
+        /tmp/akmods-rpms/kmods/*nct6687*.rpm \
+        /tmp/akmods-rpms/kmods/*evdi*.rpm \
+        /tmp/akmods-rpms/kmods/*zenergy*.rpm \
+        /tmp/akmods-rpms/kmods/*ayaneo-platform*.rpm \
+        /tmp/akmods-rpms/kmods/*ayn-platform*.rpm \
+        /tmp/akmods-rpms/kmods/*rtl8814au*.rpm \
+        /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    ostree container commit
 
 # Update packages that commonly cause build issues
 RUN rpm-ostree override replace \
