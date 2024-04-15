@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-if [ "$EUID" == 0 ]; then
+if [ "${EUID:-$(id -u)}" -eq 0 ]; then
   echo "Bazzite user setup ran as root user. Exiting."
   exit 0
 fi
