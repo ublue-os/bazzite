@@ -12,7 +12,7 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
-ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-fsync}"
+ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-fsync-lts}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
@@ -45,11 +45,11 @@ RUN wget https://raw.githubusercontent.com/ublue-os/COPR-command/main/copr -O /u
     ostree container commit
 
 # Install kernel-fsync
-RUN wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo && \
+RUN wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-ba/repo/fedora-$(rpm -E %fedora)/sentry-kernel-ba-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_sentry-kernel-ba.repo && \
     rpm-ostree cliwrap install-to-root / && \
     rpm-ostree override replace \
     --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:sentry:kernel-fsync \
+    --from repo=copr:copr.fedorainfracloud.org:sentry:kernel-ba \
         kernel \
         kernel-core \
         kernel-modules \
@@ -805,7 +805,7 @@ FROM bazzite as bazzite-nvidia
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-nvidia}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-nvidia}"
-ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-fsync}"
+ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-fsync-lts}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
