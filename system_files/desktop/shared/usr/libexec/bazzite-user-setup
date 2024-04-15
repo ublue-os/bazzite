@@ -1,5 +1,10 @@
 #!/usr/bin/bash
 
+if [ "${EUID:-$(id -u)}" -eq 0 ]; then
+  echo "Bazzite user setup ran as root user. Exiting."
+  exit 0
+fi
+
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)

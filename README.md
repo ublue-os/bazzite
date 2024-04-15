@@ -147,6 +147,8 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 
 #### Alternative Handhelds
 
+Please refer to our [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) for required setting changes and Decky Loader plugins for Steam Gaming Mode on your specific Handheld.
+
 If you're using this image on a handheld other than the Steam Deck, you can get TDP control via the SimpleDeckyTDP Decky Loader Plugin.
 - First install Decky Loader with: `ujust setup-decky`
 - Then install SimpleDeckyTDP with: `ujust setup-decky simpledeckytdp`
