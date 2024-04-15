@@ -820,24 +820,10 @@ RUN wget https://raw.githubusercontent.com/ublue-os/hwe/main/nvidia-install.sh -
     IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-install.sh && \
     ostree container commit
 
-# Install Explicit Sync Patches
-RUN wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nvidia-explicit-sync/repo/fedora-$(rpm -E %fedora)/gloriouseggroll-nvidia-explicit-sync-fedora-$(rpm -E %fedora).repo?arch=x86_64 -O /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
-        xorg-x11-server-Xwayland && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
-        egl-wayland \
-        || true && \
-    ostree container commit
-
 # Cleanup & Finalize
 RUN wget https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/initramfs.sh -O /tmp/initramfs.sh && \
     chmod +x /tmp/initramfs.sh && \
     /tmp/initramfs.sh && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
     rm -rf /usr/lib64/zluda && \
     echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
