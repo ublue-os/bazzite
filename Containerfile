@@ -460,14 +460,14 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-            kf5-kio-ntlm \
-            kf5-kio-doc \
-            kf5-kio-widgets-libs \
-            kf5-kio-core-libs \
-            kf5-kio-widgets \
-            kf5-kio-file-widgets \
-            kf5-kio-core \
-            kf5-kio-gui && \
+            kf6-kio-ntlm \
+            kf6-kio-doc \
+            kf6-kio-widgets-libs \
+            kf6-kio-core-libs \
+            kf6-kio-widgets \
+            kf6-kio-file-widgets \
+            kf6-kio-core \
+            kf6-kio-gui && \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
@@ -478,11 +478,11 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             wallpaper-engine-kde-plugin \
             kdeconnectd \
             kdeplasma-addons \
-            rom-properties-kf5 \
+            rom-properties-kf6 \
             joystickwake \
             ptyxis && \
         mkdir -p /tmp/kwin-system76-scheduler-integration && \
-        curl -Lo /tmp/kwin-system76-scheduler-integration/archive.tar.gz https://github.com/maxiberta/kwin-system76-scheduler-integration/archive/374a261497c772571df93f59fbced0ad02e64ad5.tar.gz && \
+        curl -Lo /tmp/kwin-system76-scheduler-integration/archive.tar.gz https://github.com/maxiberta/kwin-system76-scheduler-integration/archive/refs/heads/main.tar.gz && \
         tar --strip-components 1 -xvf /tmp/kwin-system76-scheduler-integration/archive.tar.gz -C /tmp/kwin-system76-scheduler-integration && \
         git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin && \
         kpackagetool5 --type=KWin/Script --global --install /tmp/kwin-system76-scheduler-integration && \
