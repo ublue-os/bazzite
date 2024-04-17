@@ -5,25 +5,17 @@
 %endif
 
 Name:    bluez
-Version: 5.73
-Release: 3%{?dist}.bazzite.{{{ git_dir_version }}}
+Version: 5.75
+Release: 1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: Bluetooth utilities
 License: GPLv2+
-URL:     https://www.bluez.org/
+URL:     http://www.bluez.org/
 
 Source0: https://www.kernel.org/pub/linux/bluetooth/%{name}-%{version}.tar.xz
-Source1: bluez.gitignore
-
-Patch0:   device-fix-device_is_connected-checking-for-services.patch
-# https://git.kernel.org/pub/scm/bluetooth/bluez.git/commit/?id=036583f9bbec8540fbd85b980674aad4916d3093
-# https://github.com/bluez/bluez/issues/785
-# https://bugzilla.redhat.com/show_bug.cgi?id=2269516
-# Fix busy loop when disabling interface while device is connected
-Patch1:   0001-device-Add-btd_device_bearer_is_connected.patch
 
 # Valve
-Patch4: 0001-valve-bluetooth-config.patch
-Patch5: 0002-valve-bluetooth-phy.patch
+Patch0: 0001-valve-bluetooth-config.patch
+Patch1: 0002-valve-bluetooth-phy.patch
 
 BuildRequires: dbus-devel >= 1.6
 BuildRequires: glib2-devel
@@ -340,14 +332,21 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_userunitdir}/obex.service
 
 %changelog
+* Mon Apr 15 2024 Adam Williamson <awilliam@redhat.com> - 5.75-1
+- Update to 5.75
+
+* Sun Apr 14 2024 Adam Williamson <awilliam@redhat.com> - 5.74-1
+- Update to 5.74
+- Drop patches (merged upstream)
+
 * Thu Apr 04 2024 Adam Williamson <awilliam@redhat.com> - 5.73-3
-- Backport further upstream fix for connected device checks (#2269516) 
+- Backport further upstream fix for connected device checks (#2269516)
 
 * Mon Mar 18 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.73-2
-- Upstream fix for connected device checks 
+- Upstream fix for connected device checks
 
 * Fri Mar 08 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.73-1
-- Update to 5.73 
+- Update to 5.73
 
 * Tue Jan 23 2024 Fedora Release Engineering <releng@fedoraproject.org> - 5.72-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
