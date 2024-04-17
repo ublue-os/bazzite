@@ -1,6 +1,6 @@
 %global majorversion 1
 %global minorversion 0
-%global microversion 4
+%global microversion 5
 
 %global apiversion   0.3
 %global spaversion   0.2
@@ -9,7 +9,7 @@
 %global ms_version   0.4.2
 
 # For rpmdev-bumpspec and releng automation
-%global baserelease 2
+%global baserelease 1
 
 #global snapdate   20210107
 #global gitcommit  b17db2cebc1a5ab2c01851d29c05f79cd2f262bb
@@ -77,17 +77,16 @@ Source0:        https://gitlab.freedesktop.org/pipewire/pipewire/-/archive/%{ver
 Source1:        pipewire.sysusers
 
 ## upstream patches
-Patch0001:  0001-Revert-spa-libcamera-bump-minimum-supported-version-.patch
-Patch0002:  0002-Revert-spa-libcamera-use-CameraConfiguration-orienta.patch
-
-# Holo: TODO: Bug reference
-Patch10:         bc435841c141ad38768b6cb1a7ad45e8bb13c7d2.patch
-# Holo: upstream MR 1792
-Patch30:         0001-Bluez5-backend-native-HSP-AG-release-SCO-link-on-AT-.patch
 
 ## upstreamable patches
 
 ## fedora patches
+
+## valve patches
+# Holo: TODO: Bug reference
+Patch10:         bc435841c141ad38768b6cb1a7ad45e8bb13c7d2.patch
+# Holo: upstream MR 1792
+Patch30:         0001-Bluez5-backend-native-HSP-AG-release-SCO-link-on-AT-.patch
 
 BuildRequires:  gettext
 BuildRequires:  meson >= 0.59.0
@@ -123,7 +122,11 @@ BuildRequires:  libsndfile-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  avahi-devel
+%if 0%{?fedora} >= 40 || 0%{?rhel} >= 10
+BuildRequires:  pkgconfig(webrtc-audio-processing-1)
+%else
 BuildRequires:  pkgconfig(webrtc-audio-processing) >= 0.2
+%endif
 BuildRequires:  libusb1-devel
 BuildRequires:  readline-devel
 BuildRequires:  openssl-devel
@@ -430,7 +433,7 @@ cp %{SOURCE1} subprojects/packagefiles/
     -D bluez5-codec-ldac=disabled						\
 %endif
     -D session-managers=[] 							\
-    -D rtprio-server=60 -D rtprio-client=55 -D rlimits-rtprio=70        \
+    -D rtprio-server=60 -D rtprio-client=55 -D rlimits-rtprio=70		\
     %{!?with_jack:-D pipewire-jack=disabled} 					\
     %{!?with_jackserver_plugin:-D jack=disabled} 				\
     %{!?with_libcamera_plugin:-D libcamera=disabled} 				\
@@ -603,7 +606,7 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %{_datadir}/pipewire/client-rt.conf
 %{_datadir}/pipewire/client-rt.conf.avail/20-upmix.conf
 %{_mandir}/man5/pipewire-client.conf.5.gz
-%{_mandir}/man7/pipewire-devices.7.gz 
+%{_mandir}/man7/pipewire-devices.7.gz
 %{_mandir}/man7/libpipewire-module-access.7.gz
 %{_mandir}/man7/libpipewire-module-adapter.7.gz
 %{_mandir}/man7/libpipewire-module-avb.7.gz
@@ -699,7 +702,7 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %{_mandir}/man1/spa-inspect.1*
 %{_mandir}/man1/spa-json-dump.1*
 %{_mandir}/man1/spa-monitor.1*
-%{_mandir}/man1/spa-resample.1* 
+%{_mandir}/man1/spa-resample.1*
 
 %{_bindir}/spa-acp-tool
 %{_bindir}/spa-inspect
@@ -831,14 +834,33 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %endif
 
 %changelog
+* Mon Apr 15 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.5-1
+- Update version to 1.0.5
+
 * Wed Mar 13 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.4-2
-- Configure server, client and rlimit priorities to be the same as JACK. 
+- Configure server, client and rlimit priorities to be the same as JACK.
 
 * Wed Mar 13 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.4-1
-- Update version to 1.0.4 
+- Update version to 1.0.4
+
+* Tue Feb 13 2024 Yaakov Selkowitz <yselkowi@redhat.com> - 1.0.3-2
+- Use webrtc-audio-processing-1 on F40 and RHEL 10
+
+* Fri Feb 02 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.3-1
+- Update version to 1.0.3
+
+* Wed Jan 31 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.2-1
+- Update version to 1.0.2
+
+* Thu Jan 25 2024 Fedora Release Engineering <releng@fedoraproject.org> - 1.0.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
+
+* Sun Jan 21 2024 Fedora Release Engineering <releng@fedoraproject.org> - 1.0.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
 
 * Thu Jan 11 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.1-1
 - Update version to 1.0.1
+- Add patch to support libcamera 0.2
 
 * Thu Dec 14 2023 Wim Taymans <wtaymans@redhat.com> - 1.0.0-2
 - Add patch to avoid crash in deviceprovider.
