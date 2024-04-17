@@ -76,7 +76,7 @@ setup-virtualization ACTION="":
       VENDOR_KARG="unset"
       if [[ ${VIRT_TEST} == *kvm.report_ignored_msrs* ]]; then
         echo 'add_drivers+=" vfio vfio_iommu_type1 vfio-pci "' | sudo tee /etc/dracut.conf.d/vfio.conf
-        sudo touch /etc/bazzite/initramfs/rebuild
+        rpm-ostree initramfs --enable
         if [[ ${CPU_VENDOR} == "AuthenticAMD" ]]; then
           VENDOR_KARG="amd_iommu=on"
         elif [[ ${CPU_VENDOR} == "GenuineIntel" ]]; then
@@ -118,8 +118,7 @@ setup-virtualization ACTION="":
         fi
         echo "Removing dracut modules"
         sudo rm /etc/dracut.conf.d/vfio.conf
-        echo "Issuing initramfs rebuild for next boot"
-        sudo touch /etc/bazzite/initramfs/rebuild
+        rpm-ostree initramfs --enable
         rpm-ostree kargs \
         --delete-if-present="iommu=pt" \
         --delete-if-present="iommu=on" \
