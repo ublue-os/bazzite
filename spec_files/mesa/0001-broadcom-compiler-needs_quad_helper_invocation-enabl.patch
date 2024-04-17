@@ -1,0 +1,41 @@
+From 97f5721bfc4bbbce5c3a39cf48eeb6ad1fb9cf97 Mon Sep 17 00:00:00 2001
+From: Jose Maria Casanova Crespo <jmcasanova@igalia.com>
+Date: Mon, 15 Apr 2024 12:22:31 +0200
+Subject: [PATCH] broadcom/compiler: needs_quad_helper_invocation enable
+ PER_QUAD TMU access
+
+We take advantage of the needs_quad_helper_invocation information to
+only enable the PER_QUAD TMU access on Fragment Shaders when it is needed.
+
+PER_QUAD access is also disabled on stages different to fragment shader.
+Being enabled was causing MMU errors when TMU was doing indexed by vertexid
+reads on disabled lanes on vertex stage. This problem was exercised by some
+shaders from the GTK new GSK_RENDERER=ngl that were accessing a constant buffer
+offset[6], but having PER_QUAD enabled on the TMU access by VertexID was
+doing hidden incorrect access to not existing vertex 6 and 7 as TMU was
+accessing the full quad.
+
+cc: mesa-stable
+
+Reviewed-by: Iago Toral Quiroga <itoral@igalia.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/28740>
+---
+ src/broadcom/compiler/nir_to_vir.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/broadcom/compiler/nir_to_vir.c b/src/broadcom/compiler/nir_to_vir.c
+index ff98e4b5961..0303ca96103 100644
+--- a/src/broadcom/compiler/nir_to_vir.c
++++ b/src/broadcom/compiler/nir_to_vir.c
+@@ -656,6 +656,8 @@ ntq_emit_tmu_general(struct v3d_compile *c, nir_intrinsic_instr *instr,
+                          */
+                         uint32_t perquad =
+                                 is_load && !vir_in_nonuniform_control_flow(c) &&
++                                c->s->info.stage == MESA_SHADER_FRAGMENT &&
++                                c->s->info.fs.needs_quad_helper_invocations &&
+                                 !c->emitted_discard ?
+                                 GENERAL_TMU_LOOKUP_PER_QUAD :
+                                 GENERAL_TMU_LOOKUP_PER_PIXEL;
+-- 
+2.44.0
+
