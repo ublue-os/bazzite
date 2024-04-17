@@ -68,7 +68,7 @@ RUN mkdir -p /tmp/linux-firmware-neptune && \
     rm -rf /tmp/linux-firmware-neptune && \
     mkdir -p /tmp/linux-firmware-galileo && \
     curl https://gitlab.com/evlaV/linux-firmware-neptune/-/archive/jupiter-20231113.1/linux-firmware-neptune-jupiter-20231113.1.tar.gz?path=ath11k/QCA206X -o /tmp/linux-firmware-galileo/ath11k.tar.gz && \
-    tar --strip-components 1 -xvf /tmp/linux-firmware-galileo/ath11k.tar.gz -C /tmp/linux-firmware-galileo && \
+    tar --strip-components 1 --no-same-owner --no-same-permissions -xvf /tmp/linux-firmware-galileo/ath11k.tar.gz -C /tmp/linux-firmware-galileo && \
     xz --check=crc32 /tmp/linux-firmware-galileo/ath11k/QCA206X/hw2.1/* && \
     mv -vf /tmp/linux-firmware-galileo/ath11k/QCA206X /usr/lib/firmware/ath11k/QCA206X && \
     rm -rf /tmp/linux-firmware-galileo/ath11k && \
@@ -422,7 +422,7 @@ RUN rpm-ostree install \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/winetricks.desktop && \
     curl -Lo /tmp/latencyflex.tar.xz $(curl https://api.github.com/repos/ishitatsuyuki/LatencyFleX/releases/latest | jq -r '.assets[] | select(.name| test(".*.tar.xz$")).browser_download_url') && \
     mkdir -p /tmp/latencyflex && \
-    tar --strip-components 1 -xvf /tmp/latencyflex.tar.xz -C /tmp/latencyflex && \
+    tar --no-same-owner --no-same-permissions --strip-components 1 -xvf /tmp/latencyflex.tar.xz -C /tmp/latencyflex && \
     rm -f /tmp/latencyflex.tar.xz && \
     cp -r /tmp/latencyflex/wine/usr/lib/wine/* /usr/lib64/wine/ && \
     rm -rf /tmp/latencyflex && \
@@ -433,7 +433,7 @@ RUN rpm-ostree install \
     chmod +x /usr/bin/latencyflex && \
     curl -Lo /tmp/zluda.tar.gz $(curl https://api.github.com/repos/vosen/ZLUDA/releases/latest | jq -r '.assets[] | select(.name| test(".*-linux.tar.gz$")).browser_download_url') && \
     mkdir -p /tmp/zluda && \
-    tar --strip-components 1 -xvzf /tmp/zluda.tar.gz -C /tmp/zluda && \
+    tar --no-same-owner --no-same-permissions --strip-components 1 -xvzf /tmp/zluda.tar.gz -C /tmp/zluda && \
     mv /tmp/zluda /usr/lib64/zluda && \
     rm -f /tmp/zluda.tar.gz && \
     ostree container commit
@@ -469,7 +469,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             ptyxis && \
         mkdir -p /tmp/kwin-system76-scheduler-integration && \
         curl -Lo /tmp/kwin-system76-scheduler-integration/archive.tar.gz https://github.com/maxiberta/kwin-system76-scheduler-integration/archive/refs/heads/main.tar.gz && \
-        tar --strip-components 1 -xvf /tmp/kwin-system76-scheduler-integration/archive.tar.gz -C /tmp/kwin-system76-scheduler-integration && \
+        tar --no-same-owner --no-same-permissions --strip-components 1 -xvf /tmp/kwin-system76-scheduler-integration/archive.tar.gz -C /tmp/kwin-system76-scheduler-integration && \
         git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin && \
         kpackagetool5 --type=KWin/Script --global --install /tmp/kwin-system76-scheduler-integration && \
         kpackagetool5 --type=Plasma/Wallpaper --global --install /tmp/wallpaper-engine-kde-plugin/plugin && \
@@ -717,7 +717,7 @@ RUN rpm-ostree override replace \
 # Add bootstraplinux_ubuntu12_32.tar.xz used by gamescope-session (Thanks ChimeraOS! - https://chimeraos.org/)
 RUN curl -Lo /tmp/steam-jupiter.pkg.tar.zst https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/steam-jupiter-stable-1.0.0.79-1-x86_64.pkg.tar.zst && \
     mkdir -p /usr/etc/first-boot && \
-    tar -I zstd -xvf /tmp/steam-jupiter.pkg.tar.zst usr/lib/steam/bootstraplinux_ubuntu12_32.tar.xz -o > /usr/etc/first-boot/bootstraplinux_ubuntu12_32.tar.xz && \
+    tar --no-same-owner --no-same-permissions -I zstd -xvf /tmp/steam-jupiter.pkg.tar.zst usr/lib/steam/bootstraplinux_ubuntu12_32.tar.xz -o > /usr/etc/first-boot/bootstraplinux_ubuntu12_32.tar.xz && \
     rm -f /tmp/steam-jupiter.pkg.tar.zst && \
     rpm-ostree install \
         gamescope-session-plus \
