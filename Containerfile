@@ -264,13 +264,6 @@ RUN rpm-ostree override remove \
         firefox \
         firefox-langpacks \
         htop && \
-    rpm-ostree override remove \
-        power-profiles-daemon \
-        || true && \
-    rpm-ostree override remove \
-        tlp \
-        tlp-rdw \
-        || true && \
     ostree container commit
 
 # Install new packages
@@ -286,12 +279,6 @@ RUN rpm-ostree install \
         compsize \
         input-remapper \
         system76-scheduler \
-        tuned \
-        tuned-ppd \
-        tuned-utils \
-        tuned-gtk \
-        tuned-profiles-atomic \
-        tuned-profiles-cpu-partitioning \
         powertop \
         i2c-tools \
         udica \
@@ -345,7 +332,6 @@ RUN rpm-ostree install \
     sed -i 's/max_cpu_load_percent.*/max_cpu_load_percent = 100.0/' /usr/etc/ublue-update/ublue-update.toml && \
     sed -i 's/max_mem_percent.*/max_mem_percent = 90.0/' /usr/etc/ublue-update/ublue-update.toml && \
     sed -i 's/dbus_notify.*/dbus_notify = false/' /usr/etc/ublue-update/ublue-update.toml && \
-    sed -i 's@Name=tuned-gui@Name=TuneD Manager@g' /usr/share/applications/tuned-gui.desktop && \
     curl -Lo /usr/bin/installcab https://raw.githubusercontent.com/KyleGospo/steam-proton-mf-wmv/master/installcab.py && \
     chmod +x /usr/bin/installcab && \
     curl -Lo /usr/bin/install-mf-wmv https://github.com/KyleGospo/steam-proton-mf-wmv/blob/master/install-mf-wmv.sh && \
@@ -614,7 +600,6 @@ RUN curl -Lo /tmp/image-info.sh https://raw.githubusercontent.com/ublue-os/bazzi
     mkdir -p /usr/etc/flatpak/remotes.d && \
     curl -Lo /usr/etc/flatpak/remotes.d https://dl.flathub.org/repo/flathub.flatpakrepo && \
     systemctl enable com.system76.Scheduler.service && \
-    systemctl enable tuned.service && \
     systemctl enable btrfs-dedup@var-home.timer && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
