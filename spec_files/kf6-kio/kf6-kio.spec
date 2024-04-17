@@ -1,5 +1,8 @@
 %global framework kio
 
+%global stable_kf6 stable
+%global majmin_ver_kf6 6.1
+
 Name:    kf6-%{framework}
 Version: 6.1.0
 Release: 1%{?dist}.bazzite.{{{ git_dir_version }}}
