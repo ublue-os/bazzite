@@ -80,6 +80,9 @@ Patch10:        gnome-shell-glthread-disable.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2269412
 Patch11:        0001-broadcom-compiler-needs_quad_helper_invocation-enabl.patch
 
+# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25352
+Patch20:        25352.patch
+
 # https://gitlab.com/evlaV/mesa/
 Patch21:        valve.patch
 
