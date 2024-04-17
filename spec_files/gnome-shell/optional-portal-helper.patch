@@ -1,0 +1,47 @@
+diff --git a/js/portalHelper/main.js b/js/portalHelper/main.js
+index 7000089fa..d9a768a3f 100644
+--- a/js/portalHelper/main.js
++++ b/js/portalHelper/main.js
+@@ -3,7 +3,13 @@ import Gio from 'gi://Gio';
+ import GLib from 'gi://GLib';
+ import GObject from 'gi://GObject';
+ import Gtk from 'gi://Gtk?version=4.0';
+-import WebKit from 'gi://WebKit?version=6.0';
++
++let WebKit;
++try {
++    WebKit = (await import('gi://WebKit?version=6.0')).default;
++} catch {
++    WebKit = null;
++}
+ 
+ import * as Gettext from 'gettext';
+ import {programInvocationName, programArgs} from 'system';
+@@ -365,5 +371,9 @@ class WebPortalHelper extends Adw.Application {
+ Gettext.bindtextdomain(Config.GETTEXT_PACKAGE, Config.LOCALEDIR);
+ Gettext.textdomain(Config.GETTEXT_PACKAGE);
+ 
+-const app = new WebPortalHelper();
+-await app.runAsync([programInvocationName, ...programArgs]);
++if (WebKit) {
++    const app = new WebPortalHelper();
++    await app.runAsync([programInvocationName, ...programArgs]);
++} else {
++    log('WebKit typelib is not installed, captive portal helper will be disabled');
++}
+diff --git a/js/ui/status/network.js b/js/ui/status/network.js
+index 322d7d91a..afca42e31 100644
+--- a/js/ui/status/network.js
++++ b/js/ui/status/network.js
+@@ -2147,7 +2147,9 @@ class Indicator extends SystemIndicator {
+                 await this._portalHelperProxy.init_async(
+                     GLib.PRIORITY_DEFAULT, null);
+             } catch (e) {
+-                console.error(`Error launching the portal helper: ${e.message}`);
++                // Timeout is expected if WebKit is unavailable
++                if (!error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.TIMED_OUT))
++                    console.error(`Error launching the portal helper: ${e.message}`);
+             }
+         }
+ 
+
