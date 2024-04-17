@@ -668,6 +668,7 @@ RUN rpm-ostree install \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     galileo-mura \
+    steamdeck-dsp \
     powerbuttond \
     hhd \
     hhd-ui \
@@ -695,12 +696,10 @@ RUN rpm-ostree install \
     rm -rf /tmp/jupiter-dock-updater-bin && \
     ostree container commit
 
-# Install Steam Deck patched Wireplumber & UPower
+# Install Steam Deck patched UPower
 RUN rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-        wireplumber \
-        wireplumber-libs \
         upower \
         upower-libs && \
     ostree container commit
