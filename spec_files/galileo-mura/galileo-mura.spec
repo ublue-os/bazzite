@@ -36,6 +36,7 @@ Utilities for setting and reading mura correction on Galileo
 %license LICENSE
 %attr(4755, root, root) %{_bindir}/galileo-mura-extractor
 %{_bindir}/galileo-mura-setup
+%{_bindir}/galileo-mura-download
 
 # Finally, changes from the latest release of your application are generated from
 # your project's Git history. It will be empty until you make first annotated Git tag.
