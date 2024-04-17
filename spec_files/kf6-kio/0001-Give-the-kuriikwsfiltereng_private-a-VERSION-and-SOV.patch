@@ -1,0 +1,30 @@
+From 0cc287336b32e601e70b26d60d9335abde538a18 Mon Sep 17 00:00:00 2001
+From: Adam Williamson <awilliam@redhat.com>
+Date: Mon, 16 Oct 2023 17:57:16 -0700
+Subject: [PATCH] Give the kuriikwsfiltereng_private a VERSION and SOVERSION
+ (#26)
+
+Signed-off-by: Adam Williamson <awilliam@redhat.com>
+---
+ src/urifilters/ikws/CMakeLists.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/urifilters/ikws/CMakeLists.txt b/src/urifilters/ikws/CMakeLists.txt
+index 7d42584c3..393588993 100644
+--- a/src/urifilters/ikws/CMakeLists.txt
++++ b/src/urifilters/ikws/CMakeLists.txt
+@@ -1,6 +1,11 @@
+ add_subdirectory(searchproviders)
+ 
+ add_library(kuriikwsfiltereng_private kuriikwsfiltereng.cpp searchprovider.cpp searchproviderregistry.cpp)
++set_target_properties(kuriikwsfiltereng_private PROPERTIES
++    VERSION     ${KIO_VERSION}
++    SOVERSION   ${KIO_SOVERSION}
++    EXPORT_NAME kuriikwsfiltereng_private
++)
+ generate_export_header(kuriikwsfiltereng_private) # We need this to be a shared lib, because otherwise we have duplicate Q_GLOBAL_STATICs
+ target_link_libraries(kuriikwsfiltereng_private PUBLIC KF6::KIOGui)
+ install(TARGETS kuriikwsfiltereng_private ${KF_INSTALL_TARGETS_DEFAULT_ARGS})
+-- 
+2.41.0
+
