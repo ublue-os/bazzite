@@ -28,7 +28,7 @@ Patch101: kio-no-help-protocol.patch
 # https://invent.kde.org/frameworks/kio/-/merge_requests/1556
 Patch201: 1556.patch
 
-BuildRequires:  extra-cmake-modules >= 6.0.0
+BuildRequires:  extra-cmake-modules >= %{version}
 BuildRequires:  gcc-c++
 BuildRequires:  kf6-rpm-macros
 BuildRequires:  cmake
