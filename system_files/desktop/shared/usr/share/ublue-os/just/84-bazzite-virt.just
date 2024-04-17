@@ -20,8 +20,8 @@ setup-virtualization ACTION="":
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust configure-grub <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
-      echo "  Use 'enable' to select Enable Virtualization"
-      echo "  Use 'disable' to select Disable Virtualization"
+      echo "  Use 'virt-on' to select Enable Virtualization"
+      echo "  Use 'virt-off' to select Disable Virtualization"
       echo "  Use 'group' to select Add $USER to libvirt group"
       echo "  Use 'vfio-on' to select Enable VFIO drivers"
       echo "  Use 'vfio-off' to select Disable VFIO drivers"
@@ -40,7 +40,7 @@ setup-virtualization ACTION="":
         "Autocreate Looking-Glass shm" \
       )
     fi
-    if [[ "${OPTION,,}" =~ ^enable(|[[:space:]]virtualization) ]]; then
+    if [[ "${OPTION,,}" =~ (^enable[[:space:]]virtualization|virt-on) ]]; then
       virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
       if [[ -z ${virt_test} ]]; then
         echo "Installing QEMU and virt-manager..."
@@ -50,7 +50,7 @@ setup-virtualization ACTION="":
         --append-if-missing="kvm.report_ignored_msrs=0"
         echo 'Please re-run "ujust setup-virtualization" after the reboot to enable libvirtd service'
       fi
-    elif [[ "${OPTION,,}" =~ ^disable(|[[:space:]]virtualization) ]]; then
+    elif [[ "${OPTION,,}" =~ (^disable[[:space:]]virtualization|virt-off) ]]; then
       virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
       if [[ ${virt_test} ]]; then
         if [ "$(systemctl is-enabled libvirtd.service)" == "enabled" ]; then
@@ -76,7 +76,7 @@ setup-virtualization ACTION="":
       VENDOR_KARG="unset"
       if [[ ${VIRT_TEST} == *kvm.report_ignored_msrs* ]]; then
         echo 'add_drivers+=" vfio vfio_iommu_type1 vfio-pci "' | sudo tee /etc/dracut.conf.d/vfio.conf
-        sudo touch /etc/bazzite/initramfs/rebuild
+        rpm-ostree initramfs --enable
         if [[ ${CPU_VENDOR} == "AuthenticAMD" ]]; then
           VENDOR_KARG="amd_iommu=on"
         elif [[ ${CPU_VENDOR} == "GenuineIntel" ]]; then
@@ -118,8 +118,7 @@ setup-virtualization ACTION="":
         fi
         echo "Removing dracut modules"
         sudo rm /etc/dracut.conf.d/vfio.conf
-        echo "Issuing initramfs rebuild for next boot"
-        sudo touch /etc/bazzite/initramfs/rebuild
+        rpm-ostree initramfs --enable
         rpm-ostree kargs \
         --delete-if-present="iommu=pt" \
         --delete-if-present="iommu=on" \
@@ -147,10 +146,10 @@ setup-virtualization ACTION="":
         exit 0
       fi
       echo "Creating tmpfile definition for shm file in /etc/tmpfiles.d/"
-      sudo bash -c "tee << LOOKING_GLASS_TMP > /etc/tmpfiles.d/10-looking-glass.conf
-      # Type Path               Mode UID  GID Age Argument
-      f /dev/shm/looking-glass 0660 1000 qemu -
-      LOOKING_GLASS_TMP"
+      sudo bash -c "cat << LOOKING_GLASS_TMP > /etc/tmpfiles.d/10-looking-glass.conf
+    # Type Path               Mode UID  GID Age Argument
+    f /dev/shm/looking-glass 0660 1000 qemu -
+    LOOKING_GLASS_TMP"
       echo "Adding SELinux context record for /dev/shm/looking-glass"
       sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
     elif [[ "${OPTION,,}" =~ group ]]; then
