@@ -569,8 +569,6 @@ RUN curl -Lo /tmp/image-info.sh https://raw.githubusercontent.com/ublue-os/bazzi
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_mavit-discover-overlay.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/tailscale.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/charm.repo && \
-    sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
-    sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
     mkdir -p /usr/etc/flatpak/remotes.d && \
     curl -Lo /usr/etc/flatpak/remotes.d https://dl.flathub.org/repo/flathub.flatpakrepo && \
     systemctl enable com.system76.Scheduler.service && \
