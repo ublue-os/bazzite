@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        base_image_flavor: [main, asus, framework, surface]
+        base_image_flavor: [main, asus, surface]
         base_name: [bazzite, bazzite-deck, bazzite-nvidia]
         base_image_name: [kinoite, silverblue]
         major_version: [40]
@@ -64,8 +64,6 @@ jobs:
             base_image_flavor: surface
           - base_name: bazzite-deck
             base_image_flavor: surface-nvidia
-          - base_name: bazzite-nvidia
-            base_image_flavor: framework
     steps:
       - name: Verify base image
         uses: EyeCantCU/cosign-action/verify@v0.2.2
@@ -87,12 +85,7 @@ jobs:
         run: |
           echo "AKMODS_FLAVOR=fsync" >> $GITHUB_ENV
           echo "BASE_IMAGE_NAME=${{ matrix.base_image_name }}" >> $GITHUB_ENV
-
-          if [[ "${{ matrix.base_image_flavor }}" == "framework" ]]; then
-              echo "BASE_IMAGE_FLAVOR=framework" >> $GITHUB_ENV
-          else
-              echo "BASE_IMAGE_FLAVOR=main" >> $GITHUB_ENV
-          fi
+          echo "BASE_IMAGE_FLAVOR=main" >> $GITHUB_ENV
 
           if [[ "${{ matrix.base_name }}" == "bazzite-nvidia" ]]; then
               if [[ "${{ matrix.base_image_flavor }}" == "main" ]]; then
@@ -114,8 +107,6 @@ jobs:
           if [[ "${{ matrix.base_name }}" == "bazzite-deck" ]]; then
               if [[ "${{ matrix.base_image_flavor }}" == "asus" ]]; then
                   echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-ally', '${DESKTOP}') }}" >> $GITHUB_ENV
-              elif [[ "${{ matrix.base_image_flavor }}" == "framework" ]]; then
-                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-framegame', '${DESKTOP}') }}" >> $GITHUB_ENV
               else
                   echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-deck', '${DESKTOP}') }}" >> $GITHUB_ENV
               fi
@@ -187,11 +178,7 @@ jobs:
         shell: bash
         run: |
           set -eo pipefail
-          if [[ "${{ matrix.base_name }}" == "bazzite-nvidia" ]]; then
-              ver=$(skopeo inspect docker://ghcr.io/ublue-os/bazzite-${{ env.IMAGE_FLAVOR }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
-          else
-              ver=$(skopeo inspect docker://ghcr.io/ublue-os/${{ matrix.base_image_name }}-${{ env.IMAGE_FLAVOR }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
-          fi
+          ver=$(skopeo inspect docker://ghcr.io/ublue-os/${{ matrix.base_image_name }}-${{ env.IMAGE_FLAVOR }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
           if [ -z "$ver" ] || [ "null" = "$ver" ]; then
             echo "inspected image version must not be empty or null"
             exit 1
