@@ -268,7 +268,6 @@ RUN rpm-ostree override remove \
 
 # Install new packages
 RUN rpm-ostree install \
-        clevis-dracut \
         discover-overlay \
         python3-pip \
         libadwaita \
