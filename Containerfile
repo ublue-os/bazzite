@@ -436,8 +436,7 @@ RUN rpm-ostree install \
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override remove \
-            plasma-welcome \
-            qt5-qdbusviewer && \
+            plasma-welcome && \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
@@ -496,7 +495,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             gnome-shell-extension-system76-scheduler \
             gnome-shell-extension-compiz-windows-effect \
             gnome-shell-extension-just-perfection \
-            gnome-shell-extension-blur-my-shell \
             gnome-shell-extension-hanabi \
             gnome-shell-extension-gamerzilla \
             gnome-shell-extension-bazzite-menu \
@@ -507,6 +505,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override remove \
             gnome-software-rpm-ostree \
             gnome-classic-session \
+            gnome-classic-session-xsession \
             gnome-tour \
             gnome-extensions-app \
             gnome-terminal-nautilus \
