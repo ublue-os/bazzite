@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        base_image_flavor: [main, asus, surface]
+        base_image_flavor: [main, asus]
         base_name: [bazzite, bazzite-deck, bazzite-nvidia]
         base_image_name: [kinoite, silverblue]
         major_version: [40]
@@ -60,10 +60,6 @@ jobs:
             base_image_flavor: nvidia
           - base_name: bazzite-deck
             base_image_flavor: asus-nvidia
-          - base_name: bazzite-deck
-            base_image_flavor: surface
-          - base_name: bazzite-deck
-            base_image_flavor: surface-nvidia
     steps:
       - name: Verify base image
         uses: EyeCantCU/cosign-action/verify@v0.2.2

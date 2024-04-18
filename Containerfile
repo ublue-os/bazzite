@@ -91,15 +91,6 @@ RUN mkdir -p /tmp/linux-firmware-neptune && \
         git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
         cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
         rm -rf /tmp/asus-firmware \
-    ; elif [[ "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
-        curl -Lo /etc/yum.repos.d/linux-surface.repo\ https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
-        rpm-ostree override remove \
-            libwacom \
-            libwacom-data && \
-        rpm-ostree install \
-            iptsd \
-            libwacom-surface \
-            libwacom-surface-data \
     ; fi && \
     ostree container commit
 
@@ -403,11 +394,6 @@ RUN rpm-ostree install \
         vk_hdr_layer.x86_64 \
         vk_hdr_layer.i686 \
         gperftools-libs.i686 && \
-    if [[ ! "${IMAGE_FLAVOR}" =~ "surface" ]]; then \
-        rpm-ostree install \
-            obs-vkcapture.x86_64 \
-            obs-vkcapture.i686 \
-    ; fi && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override remove \
             gamemode \
