@@ -431,11 +431,6 @@ RUN rpm-ostree install \
     sed -i 's@/usr/lib/wine/@/usr/lib64/wine/@g' /usr/bin/latencyflex && \
     sed -i 's@"dxvk.conf"@"/usr/share/latencyflex/dxvk.conf"@g' /usr/bin/latencyflex && \
     chmod +x /usr/bin/latencyflex && \
-    curl -Lo /tmp/zluda.tar.gz $(curl https://api.github.com/repos/vosen/ZLUDA/releases/latest | jq -r '.assets[] | select(.name| test(".*-linux.tar.gz$")).browser_download_url') && \
-    mkdir -p /tmp/zluda && \
-    sudo tar --no-same-owner --no-same-permissions --no-overwrite-dir --strip-components 1 -xvf /tmp/zluda.tar.gz -C /tmp/zluda && \
-    mv /tmp/zluda /usr/lib64/zluda && \
-    rm -f /tmp/zluda.tar.gz && \
     ostree container commit
 
 # Configure KDE & GNOME
