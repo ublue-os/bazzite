@@ -44,6 +44,8 @@ RUN curl -Lo /usr/bin/copr https://raw.githubusercontent.com/ublue-os/COPR-comma
     ostree container commit
 
 # Install kernel-fsync
+RUN rpm-ostree cliwrap install-to-root / && \
+    ostree container commit
 #RUN curl -Lo /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo && \
 #    rpm-ostree cliwrap install-to-root / && \
 #    rpm-ostree override replace \
@@ -56,7 +58,8 @@ RUN curl -Lo /usr/bin/copr https://raw.githubusercontent.com/ublue-os/COPR-comma
 #        kernel-modules-extra \
 #        kernel-uki-virt \
 #        kernel-headers \
-#        kernel-devel
+#        kernel-devel && \
+#    ostree container commit
 
 # Setup firmware
 RUN mkdir -p /tmp/linux-firmware-neptune && \
