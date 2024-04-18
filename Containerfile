@@ -440,7 +440,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-            kf6-kio-ntlm \
             kf6-kio-doc \
             kf6-kio-widgets-libs \
             kf6-kio-core-libs \
@@ -511,7 +510,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             gnome-terminal-nautilus \
             gnome-initial-setup && \
         sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.gnome.Terminal.desktop && \
-        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/gnome-system-monitor.desktop && \
         systemctl enable dconf-update.service \
     ; fi && \
     ostree container commit
