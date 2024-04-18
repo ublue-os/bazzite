@@ -433,7 +433,7 @@ RUN rpm-ostree install \
     chmod +x /usr/bin/latencyflex && \
     curl -Lo /tmp/zluda.tar.gz $(curl https://api.github.com/repos/vosen/ZLUDA/releases/latest | jq -r '.assets[] | select(.name| test(".*-linux.tar.gz$")).browser_download_url') && \
     mkdir -p /tmp/zluda && \
-    tar --no-same-owner --no-same-permissions --no-overwrite-dir --strip-components 1 -xvf /tmp/zluda.tar.gz -C /tmp/zluda && \
+    sudo tar --no-same-owner --no-same-permissions --no-overwrite-dir --strip-components 1 -xvf /tmp/zluda.tar.gz -C /tmp/zluda && \
     mv /tmp/zluda /usr/lib64/zluda && \
     rm -f /tmp/zluda.tar.gz && \
     ostree container commit
