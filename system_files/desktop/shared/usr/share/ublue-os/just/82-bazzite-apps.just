@@ -189,7 +189,7 @@ install-ollama:
     systemctl --user daemon-reload
     systemctl --user start ollama.service
     echo "Please install the ollama cli via \`brew install ollama\`"
-    echo "If you don't have brew yet, please install it via \`ujust install-brew\`"
+    echo "If you do not have brew yet, please install it via \`ujust install-brew\`"
 
 # Create fedora distrobox if it doesn't exist
 [private]
