@@ -10,9 +10,8 @@ Source1:        steamdeck-le.svg
 Source2:        bazzite_logo.svgz
 BuildArch:      noarch
 Patch0:         fedora.patch
-Patch1:         nested-desktop-resolution.patch
-Patch2:         kdeglobals.patch
-Patch3:         bazzite_logo.patch
+Patch1:         kdeglobals.patch
+Patch2:         bazzite_logo.patch
 
 Requires:       kde-filesystem
 
@@ -54,6 +53,8 @@ rm %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents
 rm %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/deck_logo.svgz
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/jupiter-plasma-bootstrap.desktop
 rm %{buildroot}%{_bindir}/jupiter-plasma-bootstrap
+rm %{buildroot}%{_bindir}/steamos-nested-desktop
+rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 cp %{SOURCE2} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/images/bazzite_logo.svgz
 cp %{SOURCE2} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/bazzite_logo.svgz
 
@@ -86,9 +87,7 @@ cp %{SOURCE2} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.deskto
 %{_sysconfdir}/xdg/plasma-workspace/env/ibus.sh
 %{_sysconfdir}/xdg/powermanagementprofilesrc
 %{_bindir}/steamos-add-to-steam
-%{_bindir}/steamos-nested-desktop
 %{_prefix}/lib/udev/rules.d/99-kwin-ignore-tablet-mode.rules
-%{_datadir}/applications/steam/steamos-nested-desktop
 %{_datadir}/X11/xorg.conf.d/99-pointer.conf
 %{_datadir}/icons/*
 %{_datadir}/konsole/*
