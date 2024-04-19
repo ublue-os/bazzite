@@ -440,8 +440,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree install \
             qt6-qttools && \
         rpm-ostree override remove \
-            plasma-welcome \
-            qt6-qdbusviewer && \
+            plasma-welcome && \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
