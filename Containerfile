@@ -731,9 +731,11 @@ RUN curl -Lo /tmp/image-info.sh https://raw.githubusercontent.com/ublue-os/bazzi
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
     ; fi && \
-    systemctl enable wireplumber-workaround.service && \
     systemctl enable bazzite-autologin.service && \
+    systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \
+    systemctl enable pipewire-workaround.service && \
+    systemctl enable pipewire-sysconf.service && \
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
     systemctl enable ds-inhibit.service && \
     systemctl enable cec-onboot.service && \
