@@ -423,8 +423,11 @@ RUN rpm-ostree install \
 
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
+        rpm-ostree install \
+            qt6-qttools && \
         rpm-ostree override remove \
-            plasma-welcome && \
+            plasma-welcome \
+            qt6-qdbusviewer && \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
