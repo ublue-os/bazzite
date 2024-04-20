@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=37
+HWS_VER=38
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -59,6 +59,9 @@ if [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
     echo "Adding panel orientation for Steam Deck OLED"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
+  fi
+  if [[ ! $KARGS =~ "drm.edid_firmware" ]]; then
+    NEEDED_KARGS+=("--append-if-missing=drm.edid_firmware=eDP-1:edid/sdoled_edid.bin")
   fi
 elif [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
