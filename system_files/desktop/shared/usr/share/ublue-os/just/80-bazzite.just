@@ -156,7 +156,7 @@ configure-powerprofile ACTION="":
     fi
     if [[ "${OPTION,,}" =~ powersave ]]; then
       echo "Setting default powerprofile to ${b}Powersave${n}"
-      sudo sed -iE 's/default=(.+)/default=powersave/' /etc/tuned/ppd.conf
+      sudo sed -iE 's/default=(.+)/default=power-saver/' /etc/tuned/ppd.conf
       bazzite-powersave
     elif [[ "${OPTION,,}" =~ balanced ]]; then
       echo "Setting default powerprofile to ${b}Balanced${n}"
