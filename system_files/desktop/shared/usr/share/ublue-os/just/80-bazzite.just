@@ -17,6 +17,19 @@ restore-original-terminal:
         echo "Done. Change your default Terminal in System Settings to complete the swap."
     fi
 
+# Install System Flatpaks (Support for Rebasing)
+_install-system-flatpaks:
+    #!/usr/bin/bash
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+        FLATPAKS="gnome_flatpaks/flatpaks"
+    else
+        FLATPAKS="kde_flatpaks/flatpaks"
+    fi
+    FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/${FLATPAKS} | tr '\n' ' ')"
+    flatpak --system -y install ${FLATPAK_LIST}
+
 # Install Bazzite's Steam Game Mode Startup Video
 install-gamemode-video:
     mkdir -p $HOME/.local/share/Steam/config/uioverrides/movies
@@ -140,8 +153,13 @@ configure-powerprofile ACTION="":
       echo "  Use 'balanced' to select Balanced"
       exit 0
     elif [ "$OPTION" == "" ]; then
+      # Cleanup old method
+      if [ -f "~/.config/autostart/bazzite-powersave.desktop" ]; then
+        rm ~/.config/autostart/bazzite-powersave.desktop
+      fi
+      # New method from here on
       echo "${bold}Power profile configuration${normal}"
-      echo "This lets you set the default power profile for when the desktop loads."
+      echo "This lets you set the default power profile."
       echo "We do not recommend changing this from ${b}Balanced${n} if you use this device primarily for gaming!"
       echo "If you have any performance or audio related issues..."
       echo "${invert}${b}Please test with the default power profile set to Balanced${n} before reporting!"
@@ -151,19 +169,11 @@ configure-powerprofile ACTION="":
     fi
     if [[ "${OPTION,,}" =~ powersave ]]; then
       echo "Setting default powerprofile to ${b}Powersave${n}"
-      bash -c 'cat << PPD > ~/.config/autostart/bazzite-powersave.desktop
-    [Desktop Entry]
-    Exec=/usr/bin/bazzite-powersave
-    Icon=dialog-scripts
-    Name=bazzite-powersave
-    Type=Application
-    PPD'
+      sudo sed -iE 's/default=(.+)/default=powersave/' /etc/tuned/ppd.conf
       bazzite-powersave
     elif [[ "${OPTION,,}" =~ balanced ]]; then
       echo "Setting default powerprofile to ${b}Balanced${n}"
-      if [ -f "~/.config/autostart/bazzite-powersave.desktop" ]; then
-        rm ~/.config/autostart/bazzite-powersave.desktop
-      fi
+      sudo sed -iE 's/default=(.+)/default=balanced/' /etc/tuned/ppd.conf
       bazzite-powersave 0
     fi
 

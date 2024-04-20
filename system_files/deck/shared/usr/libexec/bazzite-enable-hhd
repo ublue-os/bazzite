@@ -1,4 +1,9 @@
 #!/usr/bin/bash
 
+if [ "$1" == "root" ]; then
+	echo "Do not run this for root."
+	exit 0
+fi
+
 systemctl enable --now hhd@$(systemd-escape $1).service
 systemctl disable --now hhd@root.service

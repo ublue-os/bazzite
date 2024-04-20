@@ -32,7 +32,7 @@ install-coolercontrol:
     rpm-ostree install --apply-live -y liquidctl coolercontrol
     systemctl enable coolercontrold.service
     mkdir -p $HOME/.config/autostart
-    cp /usr/share/application/org.coolercontrol.CoolerControl.desktop $HOME/.config/autostart/org.coolercontrol.CoolerControl.desktop
+    cp /usr/share/applications/org.coolercontrol.CoolerControl.desktop $HOME/.config/autostart/org.coolercontrol.CoolerControl.desktop
     echo 'Complete.'
 
 alias get-steamcmd := install-steamcmd
@@ -85,15 +85,6 @@ install-oversteer: distrobox-check-fedora
       sudo dnf install -y oversteer && \
       distrobox-export --app oversteer'
 
-# Install Solaar for Logitech Mice, Keyboards, and Trackpads
-install-solaar: distrobox-check-fedora
-    distrobox-enter -n fedora -- bash -c 'sudo dnf install -y \
-      solaar && \
-      distrobox-export --app solaar' && \
-    mkdir -p ~/.config/autostart && \
-    rm -f ~/.config/autostart/fedora-solaar.desktop && \
-    cp ~/.local/share/applications/fedora-solaar.desktop ~/.config/autostart/fedora-solaar.desktop
-
 # Install Resilio Sync, a file synchronization utility powered by BitTorrent
 install-resilio-sync: distrobox-check-fedora
     distrobox-enter -n fedora -- bash -c 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc' && \
@@ -125,6 +116,80 @@ install-opentabletdriver:
     systemctl --user daemon-reload && \
     systemctl enable --user --now arch-opentabletdriver.service && \
     distrobox enter -n arch -- bash -c 'distrobox-export --app otd-gui'
+
+# This installs ollama, a way to run various open LLMs locally on the CPU or GPU
+install-ollama:
+    #!/usr/bin/env bash
+    echo 'Follow the prompts and check the tutorial: '
+    echo
+    GPU_CHOICES=()
+    # Detect nvidia drivers
+    if which nvidia-smi > /dev/null 2>&1; then
+        GPU_CHOICES+=("Nvidia (CUDA)")
+    fi
+    # Detect radeon hardware
+    if lspci | grep ' VGA ' | grep -sq Radeon; then
+        GPU_CHOICES+=("AMD (ROCm)")
+    fi
+    GPU_SELECTION=$(printf '%s\n' "${GPU_CHOICES[@]}" | gum choose --select-if-one --header "Select the type of graphics card you have")
+    echo "Selected ${GPU_SELECTION}!"
+    case "$GPU_SELECTION" in
+        "Nvidia (CUDA)")
+            IMAGE=latest
+            CUSTOM_ARGS="AddDevice=nvidia.com/gpu=all"
+            ;;
+ 
+        "AMD (ROCm)")
+            IMAGE=rocm
+            read -r -d '' CUSTOM_ARGS <<-'EOF'
+    AddDevice=/dev/dri
+    AddDevice=/dev/kfd
+    EOF
+            ;;
+    esac
+ 
+    read -r -d '' QUADLET <<-EOF
+    [Unit]
+    Description=The Ollama container
+    After=local-fs.target
+ 
+    [Service]
+    Restart=always
+    TimeoutStartSec=60
+    # Ensure there's a userland podman.sock
+    ExecStartPre=/bin/systemctl --user enable podman.socket
+    # Ensure that the dir exists
+    ExecStartPre=-mkdir -p %h/.ollama
+ 
+    [Container]
+    ContainerName=ollama
+    PublishPort=11434:11434
+    RemapUsers=keep-id
+    RunInit=yes
+    NoNewPrivileges=no
+    Volume=%h/.ollama:/.ollama
+    PodmanArgs=--userns=keep-id
+    PodmanArgs=--group-add=keep-groups
+    PodmanArgs=--ulimit=host
+    PodmanArgs=--security-opt=label=disable
+    PodmanArgs=--cgroupns=host
+ 
+    Image=docker.io/ollama/ollama:${IMAGE}
+    ${CUSTOM_ARGS}
+ 
+    [Install]
+    RequiredBy=default.target
+    EOF
+    if [  ! -f ~/.config/containers/systemd/ollama.container ]; then
+        mkdir -p ~/.config/containers/systemd
+        echo "${QUADLET}" > ~/.config/containers/systemd/ollama.container
+    else
+        echo "Ollama container already exists, skipping..."
+    fi
+    systemctl --user daemon-reload
+    systemctl --user start ollama.service
+    echo "Please install the ollama cli via \`brew install ollama\`"
+    echo "If you do not have brew yet, please install it via \`ujust install-brew\`"
 
 # Create fedora distrobox if it doesn't exist
 [private]

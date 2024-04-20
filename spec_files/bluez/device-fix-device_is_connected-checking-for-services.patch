@@ -1,0 +1,57 @@
+From 9a0e675193666a36d76fe7da89fdd74ef50217a5 Mon Sep 17 00:00:00 2001
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Date: Mon, 18 Mar 2024 16:08:31 +0000
+Subject: [PATCH] device: Fix device_is_connected checking for services being
+ connected
+
+Change 44d3f67277f83983e1e9697eda7b9aeb40ca231d since to have introduced
+quite a few bugs related to device_is_connected return true which
+prevents proper cleanup of connection.
+
+Fixes: https://github.com/bluez/bluez/issues/774
+Fixes: https://github.com/bluez/bluez/issues/778
+Fixes: https://github.com/bluez/bluez/issues/783
+Fixes: https://github.com/bluez/bluez/issues/784
+---
+ src/device.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/src/device.c b/src/device.c
+index aecceb100..b5b574233 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -3324,22 +3324,24 @@ void device_add_connection(struct btd_device *dev, uint8_t bdaddr_type,
+ 								"Connected");
+ }
+ 
++static bool device_service_connected(struct btd_device *dev)
++{
++	if (find_service_with_state(dev->services,
++					BTD_SERVICE_STATE_CONNECTING))
++		return true;
++
++	return find_service_with_state(dev->services,
++					BTD_SERVICE_STATE_CONNECTED);
++}
++
+ static bool device_disappeared(gpointer user_data)
+ {
+ 	struct btd_device *dev = user_data;
+ 
+-	if (btd_device_is_connected(dev)) {
+-		char addr[18];
+-		ba2str(&dev->bdaddr, addr);
+-		DBG("Device %s is marked as connected", dev->path);
+-		return TRUE;
+-	}
+-
+-	/* If there are services connecting restart the timer to give more time
++	/* If there are services connected restart the timer to give more time
+ 	 * for the service to either complete the connection or disconnect.
+ 	 */
+-	if (find_service_with_state(dev->services,
+-					BTD_SERVICE_STATE_CONNECTING))
++	if (device_service_connected(dev))
+ 		return TRUE;
+ 
+ 	dev->temporary_timer = 0;

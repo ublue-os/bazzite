@@ -70,11 +70,6 @@ screens:
           default: false
           packages:
           - Install OpenRazer: ujust install-openrazer
-        Solaar:
-          description: Application to control Logitech Mice, Keyboards, and Trackpads
-          default: false
-          packages:
-          - Install Solaar: ujust install-solaar
         Wootility:
           description: A configurator for Wooting keyboards
           default: false
@@ -231,6 +226,7 @@ screens:
           - qBittorrent: org.qbittorrent.qBittorrent
           - Resources: net.nokyan.Resources
           - SaveDesktop: io.github.vikdevelop.SaveDesktop
+          - Solaar: io.github.pwr_solaar.solaar
           - Syncthing: com.github.zocker_160.SyncThingy
           - VLC: org.videolan.VLC
   final-screen:

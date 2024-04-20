@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 # Returns true for hardware that is supported by HHD
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
-if [[ ":ROG Ally RC71L_RC71L:ROG Ally RC71L:83E1:G1618-04:G1617-01:G1619-05:AIR Plus:AIR:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1619-04:Win600:Loki Max:" =~ ":$SYS_ID:" ]]; then
+if [[ ":ROG Ally RC71L_RC71L:ROG Ally RC71L:83E1:G1618-04:G1617-01:G1619-05:AIR Plus:AIR:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:G1619-04:Win600:Loki Max:Loki Zero:Loki MiniPro:" =~ ":$SYS_ID:" ]]; then
 	exit 0
 else
 	exit 1

@@ -2,73 +2,157 @@ name: Build ISOs
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/build_iso.yml'
-
-env:
-  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  workflow_call:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}-iso
   cancel-in-progress: true
 
 jobs:
   build-iso:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       id-token: write
-    container:
-      image: fedora:${{ matrix.major_version }}
-      options: "--privileged"
-      volumes:
-        - "/:/host"
     strategy:
       fail-fast: false
       matrix:
-        image_name: [bazzite, bazzite-nvidia, bazzite-gnome, bazzite-gnome-nvidia, bazzite-deck, bazzite-deck-gnome, bazzite-ally, bazzite-ally-gnome, bazzite-asus, bazzite-gnome-asus, bazzite-asus-nvidia, bazzite-gnome-asus-nvidia]
+        image_name:
+          - bazzite
+          - bazzite-nvidia
+          - bazzite-gnome
+          - bazzite-gnome-nvidia
+          - bazzite-deck
+          - bazzite-deck-gnome
+          - bazzite-ally
+          - bazzite-ally-gnome
+          - bazzite-asus
+          - bazzite-gnome-asus
+          - bazzite-asus-nvidia
+          - bazzite-gnome-asus-nvidia
         major_version: [39]
-        image_tag: [stable]
     steps:
+
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@v1.3.1
+
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Set Image Tag
+        id: generate-tag
+        shell: bash
+        run: |
+          TAG="stable"
+
+          if [[ "${{ github.ref_name }}" == "testing" ]]; then
+              TAG="testing"
+          fi
+
+          # Would like to implement in the future. This will allow us to support image tags from a PR.
+          #if [[ github.event.number ]]; then
+          #  TAG="pr-${{ github.event.number }}-${{ matrix.major_version }}"
+          #fi
+
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
       - name: Set EXTRA_BOOT_PARAMS
+        id: generate-extra-params
+        shell: bash
         run: |
           EXTRA_BOOT_PARAMS=""
-          if [[ "${{ matrix.image_name }}" == "bazzite-deck" || "${{ matrix.image_name }}" == "bazzite-deck-gnome" || "${{ matrix.image_name }}" == "bazzite-deck-budgie" ]]; then
+          if [[ "${{ matrix.image_name }}" =~ "deck" ]]; then
               EXTRA_BOOT_PARAMS="inst.resolution=1280x800"
           fi
-          echo "EXTRA_BOOT_PARAMS=$EXTRA_BOOT_PARAMS" >> $GITHUB_ENV
+          echo "extra-boot-params=${EXTRA_BOOT_PARAMS}" >> $GITHUB_OUTPUT
+
+      - name: Set Flatpaks Directory Shortname
+        id: generate-flatpak-dir-shortname
+        shell: bash
+        run: |
+          FLATPAK_DIR_SHORTNAME="scripts/kde_flatpaks"
+
+          if [[ "${{ matrix.image_name }}" =~ "gnome" ]]; then
+            FLATPAK_DIR_SHORTNAME="scripts/gnome_flatpaks"
+          fi
+
+          echo "flatpak-dir-shortname=${FLATPAK_DIR_SHORTNAME}" >> $GITHUB_OUTPUT
+
+      - name: Determine Flatpak Dependencies
+        id: flatpak_dependencies
+        shell: bash
+        run: |
+          set -ex
+          image="ghcr.io/ublue-os/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}"
+          # Make temp space
+          TEMP_FLATPAK_INSTALL_DIR=$(mktemp -d -p ${{ github.workspace }} flatpak.XXX)
+          # Get list of refs from directory
+          FLATPAK_REFS_DIR=${{ github.workspace }}/${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}
+          FLATPAK_REFS_DIR_LIST=$(cat ${FLATPAK_REFS_DIR}/* | tr '\n' ' ' )
+          # Generate install script
+          cat << EOF > ${TEMP_FLATPAK_INSTALL_DIR}/script.sh
+          cat /temp_flatpak_install_dir/script.sh
+          mkdir -p /flatpak/flatpak /flatpak/triggers
+          mkdir /var/tmp || true
+          chmod -R 1777 /var/tmp
+          flatpak config --system --set languages "*"
+          flatpak remote-add --system flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install --system -y ${FLATPAK_REFS_DIR_LIST}
+          ostree refs --repo=\${FLATPAK_SYSTEM_DIR}/repo | grep '^deploy/' | grep -v 'org\.freedesktop\.Platform\.openh264' | sed 's/^deploy\///g' > /output/flatpaks_with_deps
+          EOF
+          docker run --rm --privileged \
+            --entrypoint bash \
+            -e FLATPAK_SYSTEM_DIR=/flatpak/flatpak \
+            -e FLATPAK_TRIGGERSDIR=/flatpak/triggers \
+            --volume ${FLATPAK_REFS_DIR}:/output \
+            --volume ${TEMP_FLATPAK_INSTALL_DIR}:/temp_flatpak_install_dir \
+            ${image} /temp_flatpak_install_dir/script.sh
+          docker rmi ${image}
 
       - name: Build ISOs
-        uses: ublue-os/isogenerator@1.0.9
+        uses: jasonn3/build-container-installer@v1.2.0
         id: build
         with:
-          ARCH: x86_64
-          IMAGE_NAME: ${{ matrix.image_name }}
-          IMAGE_REPO: ${{ env.IMAGE_REGISTRY }}
-          VARIANT: 'Kinoite'
-          VERSION: ${{ matrix.major_version }}
-          IMAGE_TAG: ${{ matrix.image_tag }}
-          SECURE_BOOT_KEY_URL: 'https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
-          ENROLLMENT_PASSWORD: 'ublue-os'
-          EXTRA_BOOT_PARAMS: ${{ env.EXTRA_BOOT_PARAMS }}
+          arch: x86_64
+          image_name: ${{ matrix.image_name }}
+          image_repo: ghcr.io/ublue-os
+          variant: 'Kinoite'
+          version: ${{ matrix.major_version }}
+          image_tag: ${{ steps.generate-tag.outputs.tag }}
+          secure_boot_key_url: 'https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
+          enrollment_password: 'ublue-os'
+          iso_name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}.iso
+          enable_cache_dnf: "false"
+          enable_cache_skopeo: "false"
+          flatpak_remote_refs_dir: ${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}
+          enable_flatpak_dependencies: "false"
+          extra_boot_params: ${{ steps.generate-extra-params.outputs.extra-boot-params }}
+
+      - name: Move ISOs to Upload Directory
+        id: upload-directory
+        shell: bash
+        run: |
+          ISO_UPLOAD_DIR=${{ github.workspace }}/upload
+          mkdir ${ISO_UPLOAD_DIR}
+          mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }} ${ISO_UPLOAD_DIR}
+          mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM ${ISO_UPLOAD_DIR}
+          echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
 
       - name: Upload ISOs and Checksum to Job Artifacts
-        if: github.event_name == 'pull_request'
+        if: github.ref_name == 'testing'
+        #if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.image_name }}-${{ matrix.image_tag }}-${{ matrix.major_version}}
-          path: ${{ steps.build.outputs.output-directory }}
+          name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
+          path: ${{ steps.upload-directory.outputs.iso-upload-dir }}
           if-no-files-found: error
           retention-days: 0
           compression-level: 0
           overwrite: true
 
       - name: Upload ISOs and Checksum to R2
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
         shell: bash
         env:
           RCLONE_CONFIG_R2_TYPE: s3
@@ -77,7 +161,17 @@ jobs:
           RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           RCLONE_CONFIG_R2_REGION: auto
           RCLONE_CONFIG_R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
-          SOURCE_DIR: ${{ steps.build.outputs.output-directory }}
+          SOURCE_DIR: ${{ steps.upload-directory.outputs.iso-upload-dir }}
         run: |
-          dnf install -y rclone
+          sudo apt-get update
+          sudo apt-get install -y rclone
           rclone copy $SOURCE_DIR R2:bazzite
+
+      - name: Upload ISOs to archive.org
+        if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
+        uses: qoijjj/internet-archive-upload@v7
+        with:
+          access-key: ${{ secrets.IA_ACCESS_KEY }}
+          secret-key: ${{ secrets.IA_SECRET_KEY }}
+          identifier: ${{ matrix.image_name }}
+          files: ${{ steps.upload-directory.outputs.iso-upload-dir }}

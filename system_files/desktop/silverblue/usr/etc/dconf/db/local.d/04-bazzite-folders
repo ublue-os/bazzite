@@ -2,7 +2,7 @@
 folder-children=['Games', 'GamingUtilities', 'Utilities', 'Containers', 'Waydroid', 'Wine', 'YaST', 'Pardus']
 
 [org/gnome/desktop/app-folders/folders/GamingUtilities]
-apps=['protontricks.desktop', 'discover_overlay_configure.desktop', 'com.vysp3r.ProtonPlus.desktop', 'io.github.benjamimgois.goverlay.desktop', 'com.gerbilsoft.rom-properties.rp-config.desktop', 'input-remapper-gtk.desktop', 'steamos-nested-desktop.desktop']
+apps=['protontricks.desktop', 'discover_overlay_configure.desktop', 'com.vysp3r.ProtonPlus.desktop', 'io.github.benjamimgois.goverlay.desktop', 'com.gerbilsoft.rom-properties.rp-config.desktop', 'input-remapper-gtk.desktop', 'steamos-nested-desktop.desktop', 'hhd-ui.desktop']
 name='Gaming Utilities'
 translate=false
 
@@ -12,7 +12,7 @@ name='X-Pardus-Apps.directory'
 translate=true
 
 [org/gnome/desktop/app-folders/folders/Utilities]
-apps=['yafti.desktop', 'system-update.desktop', 'webapp-manager.desktop', 'tuned-gui.desktop', 'rog-control-center.desktop', 'fish.desktop', 'tuned-gui.desktop', 'nvtop.desktop', 'yelp.desktop', 'btop.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.flattool.Warehouse.desktop', 'it.mijorus.gearlever.desktop', 'com.mattjakeman.ExtensionManager.desktop', 'org.gnome.tweaks.desktop', 'com.github.GradienceTeam.Gradience', 'io.github.fastrizwaan.WineZGUI.desktop']
+apps=['yafti.desktop', 'system-update.desktop', 'webapp-manager.desktop', 'tuned-gui.desktop', 'rog-control-center.desktop', 'fish.desktop', 'tuned-gui.desktop', 'nvtop.desktop', 'yelp.desktop', 'btop.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.flattool.Warehouse.desktop', 'it.mijorus.gearlever.desktop', 'com.mattjakeman.ExtensionManager.desktop', 'org.gnome.tweaks.desktop', 'com.github.GradienceTeam.Gradience', 'io.github.fastrizwaan.WineZGUI.desktop', 'setroubleshoot.desktop', 'org.rncbc.qsynth.desktop']
 categories=['X-GNOME-Utilities']
 name='X-GNOME-Utilities.directory'
 translate=true
