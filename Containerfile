@@ -537,12 +537,12 @@ RUN rpm-ostree install \
 
 # Cleanup & Finalize
 COPY system_files/overrides /
-RUN curl -Lo /tmp/image-info.sh https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/image-info.sh && \
-    chmod +x /tmp/image-info.sh && \
-    /tmp/image-info.sh && \
-    curl -Lo /tmp/initramfs.sh https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/initramfs.sh && \
+RUN curl -Lo /tmp/initramfs.sh https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/initramfs.sh && \
     chmod +x /tmp/initramfs.sh && \
     /tmp/initramfs.sh && \
+    curl -Lo /tmp/image-info.sh https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/image-info.sh && \
+    chmod +x /tmp/image-info.sh && \
+    /tmp/image-info.sh && \
     rm -f /etc/profile.d/toolbox.sh && \
     sed -i 's@/usr/bin/steam@/usr/bin/bazzite-steam@g' /usr/share/applications/steam.desktop && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/fish.desktop && \
@@ -673,6 +673,8 @@ RUN rpm-ostree install \
     galileo-mura \
     steamdeck-dsp \
     powerbuttond \
+    unl0kr \
+    unl0kr-dracut \
     hhd \
     hhd-ui \
     adjustor \
@@ -719,7 +721,10 @@ RUN curl -Lo /tmp/steam-jupiter.pkg.tar.zst https://steamdeck-packages.steamos.c
     ostree container commit
 
 # Cleanup & Finalize
-RUN curl -Lo /tmp/image-info.sh https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/image-info.sh && \
+RUN curl -Lo /tmp/initramfs.sh https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/initramfs.sh && \
+    chmod +x /tmp/initramfs.sh && \
+    /tmp/initramfs.sh && \
+    curl -Lo /tmp/image-info.sh https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/image-info.sh && \
     chmod +x /tmp/image-info.sh && \
     /tmp/image-info.sh && \
     mkdir -p "/usr/etc/xdg/autostart" && \
@@ -807,6 +812,9 @@ RUN curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/h
 RUN curl -Lo /tmp/initramfs.sh https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/initramfs.sh && \
     chmod +x /tmp/initramfs.sh && \
     /tmp/initramfs.sh && \
+    curl -Lo /tmp/image-info.sh https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/image-info.sh && \
+    chmod +x /tmp/image-info.sh && \
+    /tmp/image-info.sh && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
     echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
     ostree container commit
