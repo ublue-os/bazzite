@@ -691,7 +691,7 @@ RUN rpm-ostree install \
     zstd \
     zenity \
     newt \
-    qt5-qtvirtualkeyboard \
+    qt6-qtvirtualkeyboard \
     xorg-x11-server-Xvfb \
     python-vdf \
     python-crcmod && \
