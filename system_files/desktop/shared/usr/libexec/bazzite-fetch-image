@@ -1,11 +1,10 @@
 #!/usr/bin/bash
-RED='\033[0;31m'
-LIGHTBLUE='\033[1;34m'
+RED='\033[6;31m'
 
 echo -n $(jq -r '"\(.["image-name"]):\(.["image-branch"])"' < /usr/share/ublue-os/image-info.json)
 
 if [[ "$(rpm-ostree status --json --booted)" =~ "ostree-image-signed" ]]; then
-    echo -n -e " ${LIGHTBLUE}"
+    echo -n -e " "
 else
     echo -n -e " ${RED}"
 fi
