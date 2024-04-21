@@ -105,6 +105,23 @@ restore-input-remapper:
     cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
     sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
 
+# Disable Steam Gaming Mode swipe gestures
+disable-swipe-gestures ACTION="":
+    #!/usr/bin/bash
+    OPTION={{ ACTION }
+    source /usr/lib/ujust/ujust.sh
+    if [-d $HOME/.config/environment.d]; then
+        echo environment.d exists
+        rm "$HOME/.config/environment.d/bazzite-disable-gamescope-gestures.conf"
+    else
+    mkdir -p $HOME/.config/environment.d
+    cat <<EOF > "$HOME/.config/environment.d/bazzite-disable-gamescope-gestures.conf"
+    export GAMESCOPE_DISABLE_TOUCH_GESTURES=1
+    echo "disabling swipe gestures for QAM and HOME"
+    echo "Done. Please restart Steam Game Mode to see changes"
+    fi
+EOF
+
 alias _toggle-wayland := _toggle_wayland
 
 _toggle_wayland:
