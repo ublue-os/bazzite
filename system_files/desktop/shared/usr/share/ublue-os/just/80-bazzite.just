@@ -17,6 +17,19 @@ restore-original-terminal:
         echo "Done. Change your default Terminal in System Settings to complete the swap."
     fi
 
+# Install System Flatpaks (Support for Rebasing)
+_install-system-flatpaks:
+    #!/usr/bin/bash
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+        FLATPAKS="gnome_flatpaks/flatpaks"
+    else
+        FLATPAKS="kde_flatpaks/flatpaks"
+    fi
+    FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/${FLATPAKS} | tr '\n' ' ')"
+    flatpak --system -y install ${FLATPAK_LIST}
+
 # Install Bazzite's Steam Game Mode Startup Video
 install-gamemode-video:
     mkdir -p $HOME/.local/share/Steam/config/uioverrides/movies
