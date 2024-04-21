@@ -771,8 +771,6 @@ RUN curl -Lo /tmp/initramfs.sh https://raw.githubusercontent.com/ublue-os/bazzit
     systemctl disable jupiter-biosupdate.service && \
     systemctl disable jupiter-controller-update.service && \
     systemctl disable batterylimit.service && \
-    rm -f /usr/etc/sddm.conf && \
-    rm -f /usr/etc/default/bazzite && \
     ostree container commit
 
 FROM bazzite as bazzite-nvidia
