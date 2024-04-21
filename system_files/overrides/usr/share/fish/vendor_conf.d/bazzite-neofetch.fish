@@ -1,3 +1,4 @@
-alias neofetch='/usr/bin/neowofetch --source /usr/share/ublue-os/bazzite/logo.txt --ascii_colors 12 7 13 --config /usr/share/ublue-os/bazzite/neofetch.conf --package_separate off'
-alias neowofetch='/usr/bin/neowofetch --source /usr/share/ublue-os/bazzite/logo.txt --ascii_colors 12 7 13 --config /usr/share/ublue-os/bazzite/neofetch.conf --package_separate off'
-alias hyfetch='/usr/bin/hyfetch --ascii-file /usr/share/ublue-os/bazzite/logo.txt'
+alias neofetch='/usr/bin/fastfetch -c /usr/share/ublue-os/bazzite/fastfetch.jsonc'
+alias neowofetch='/usr/bin/fastfetch -c /usr/share/ublue-os/bazzite/fastfetch.jsonc'
+alias hyfetch='/usr/bin/fastfetch -c /usr/share/ublue-os/bazzite/fastfetch.jsonc'
+alias fastfetch='/usr/bin/fastfetch -c /usr/share/ublue-os/bazzite/fastfetch.jsonc'
