@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+echo -n $(jq -r '"\(.["image-name"]):\(.["image-branch"])"' < /usr/share/ublue-os/image-info.json)
+
+if [[ "$(rpm-ostree status --json --booted)" =~ "ostree-image-signed" ]]; then
+    echo -n " "
+else
+    echo -n " "
+fi
