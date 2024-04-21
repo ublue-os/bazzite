@@ -131,6 +131,10 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
   if /usr/libexec/hardware/hhd-supported-hardware; then
     echo 'Enabling HHD'
     pkexec /usr/libexec/bazzite-enable-hhd "$USER"
+  elif /usr/libexec/hardware/valve-hardware; then
+    echo 'Hiding HHD-UI on Deck hardware'
+    cp /usr/share/applications/hhd-ui.desktop "${XDG_DATA_HOME:-$HOME/.local/share}/applications/hhd-ui.desktop"
+    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' "${XDG_DATA_HOME:-$HOME/.local/share}/applications/hhd-ui.desktop"
   fi
 
   # SDGyroDSU Setup
