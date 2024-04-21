@@ -138,7 +138,7 @@ install-ollama:
             IMAGE=latest
             CUSTOM_ARGS="AddDevice=nvidia.com/gpu=all"
             ;;
- 
+
         "AMD (ROCm)")
             IMAGE=rocm
             read -r -d '' CUSTOM_ARGS <<-'EOF'
@@ -147,12 +147,12 @@ install-ollama:
     EOF
             ;;
     esac
- 
+
     read -r -d '' QUADLET <<-EOF
     [Unit]
     Description=The Ollama container
     After=local-fs.target
- 
+
     [Service]
     Restart=always
     TimeoutStartSec=60
@@ -160,7 +160,7 @@ install-ollama:
     ExecStartPre=/bin/systemctl --user enable podman.socket
     # Ensure that the dir exists
     ExecStartPre=-mkdir -p %h/.ollama
- 
+
     [Container]
     ContainerName=ollama
     PublishPort=11434:11434
@@ -173,10 +173,10 @@ install-ollama:
     PodmanArgs=--ulimit=host
     PodmanArgs=--security-opt=label=disable
     PodmanArgs=--cgroupns=host
- 
+
     Image=docker.io/ollama/ollama:${IMAGE}
     ${CUSTOM_ARGS}
- 
+
     [Install]
     RequiredBy=default.target
     EOF
