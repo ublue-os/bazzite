@@ -439,7 +439,7 @@ RUN rpm-ostree install \
 # Configure KDE & GNOME
 RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree install \
-            qt6-qttools && \
+            qt && \
         rpm-ostree override remove \
             plasma-welcome && \
         rpm-ostree override replace \
