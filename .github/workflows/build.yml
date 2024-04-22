@@ -56,9 +56,6 @@ jobs:
             is_latest_version: true
             is_stable_version: true
             kernel_flavor: main  # must match a kernel_flavor from akmods repo
-        exclude:
-          - base_name: bazzite-deck
-            base_image_flavor: asus
     steps:
       - name: Matrix Variables
         run: |
