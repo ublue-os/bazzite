@@ -5,12 +5,12 @@ set -oue pipefail
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_REF="ostree-image-signed:docker://ghcr.io/$IMAGE_VENDOR/$IMAGE_NAME"
 
-case $FEDORA_MAJOR_VERSION in
-  38|39)
+case $FEDORA_VERSION in
+  39|40)
     IMAGE_TAG="stable"
     ;;
   *)
-    IMAGE_TAG="$FEDORA_MAJOR_VERSION"
+    IMAGE_TAG="$FEDORA_VERSION"
     ;;
 esac
 
@@ -23,6 +23,6 @@ cat > $IMAGE_INFO <<EOF
   "image-tag": "$IMAGE_TAG",
   "image-branch": "$IMAGE_BRANCH",
   "base-image-name": "$BASE_IMAGE_NAME",
-  "fedora-version": "$FEDORA_MAJOR_VERSION"
+  "fedora-version": "$FEDORA_VERSION"
 }
 EOF
