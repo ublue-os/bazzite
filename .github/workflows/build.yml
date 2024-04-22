@@ -57,9 +57,8 @@ jobs:
             is_stable_version: true
             kernel_flavor: main  # must match a kernel_flavor from akmods repo
     steps:
-      - name: Matrix Variables
+      - name: Define env.IMAGE_FLAVOR
         run: |
-          # set env.IMAGE_FLAVOR for use in Containerfile and image-info
           if [[ "${{ matrix.base_name }}" == "bazzite-nvidia" ]]; then
               if [[ "${{ matrix.base_image_flavor }}" == "main" ]]; then
                   echo "IMAGE_FLAVOR=nvidia" >> $GITHUB_ENV
@@ -70,7 +69,8 @@ jobs:
               echo "IMAGE_FLAVOR=${{ matrix.base_image_flavor }}" >> $GITHUB_ENV
           fi
 
-          # set env.IMAGE_NAME
+      - name: Define env.IMAGE_NAME
+        run: |
           DESKTOP=""
           if [[ "${{ matrix.base_image_name }}" == "silverblue" ]]; then
               DESKTOP="-gnome"
