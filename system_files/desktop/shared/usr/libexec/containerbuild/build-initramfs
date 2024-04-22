@@ -2,7 +2,7 @@
 
 set -oue pipefail
 
-if [[ "${AKMODS_FLAVOR}" == "surface" ]]; then
+if [[ "${KERNEL_FLAVOR}" == "surface" ]]; then
     KERNEL_SUFFIX="surface"
 else
     KERNEL_SUFFIX=""
