@@ -284,7 +284,8 @@ jobs:
           containers: ${{ env.IMAGE_NAME }}
           registry-token: ${{ secrets.GITHUB_TOKEN }}
           signing-secret: ${{ secrets.SIGNING_SECRET }}
-          tags: ${{ steps.push.outputs.digest }}
+          tags: ${{ steps.push.outputs.outputs && fromJSON(steps.push.outputs.outputs).digest }}
+
 
       - name: Echo outputs
         if: github.event_name != 'pull_request'
