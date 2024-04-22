@@ -4,8 +4,6 @@ set -e
 
 die() { echo >&2 "!! $*"; exit 1; }
 
-source /etc/default/desktop-wayland
-
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
@@ -18,22 +16,14 @@ SENTINEL_FILE="steamos-session-select"
 CHECK_FILE="/etc/sddm.conf.d/steamos.conf"
 
 session="${1:-gamescope}"
-if ${DESKTOP_WAYLAND}; then
-  session_type="wayland"
-else
-  session_type="x11"
-fi
+session_type="wayland"
 
 session_launcher=""
 create_sentinel=""
 
 if [[ "$2" == "--sentinel-created" ]]; then
   SENTINEL_CREATED=1
-  if ${DESKTOP_WAYLAND}; then
-      session_type="wayland"
-  else
-      session_type="x11"
-  fi
+  session_type="wayland"
 fi
 
 # Update config sentinel
@@ -49,11 +39,7 @@ if [[ -z $SENTINEL_CREATED ]]; then
     if [[ -f "steamos-session-type" ]]; then
       cp steamos-session-type "$SENTINEL_FILE"
     else
-      if ${DESKTOP_WAYLAND}; then
-        echo "wayland" > "$SENTINEL_FILE"
-      else
-        echo "x11" > "$SENTINEL_FILE"
-      fi
+      echo "wayland" > "$SENTINEL_FILE"
     fi
     cat "$SENTINEL_FILE"
   )
@@ -86,17 +72,9 @@ case "$session" in
   ;;
   desktop|plasma)
     if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-      if ${DESKTOP_WAYLAND}; then
-        session_launcher="plasma-steamos-wayland-oneshot.desktop"
-      else
-        session_launcher="plasma-steamos-oneshot.desktop"
-      fi
+      session_launcher="plasma-steamos-wayland-oneshot.desktop"
     elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      if ${DESKTOP_WAYLAND}; then
-        session_launcher="gnome-wayland-oneshot.desktop"
-      else
-        session_launcher="gnome-xorg-oneshot.desktop"
-      fi
+      session_launcher="gnome-wayland-oneshot.desktop"
     fi
     create_sentinel=1
   ;;

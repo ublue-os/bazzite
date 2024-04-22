@@ -107,15 +107,6 @@ restore-input-remapper:
 
 alias _toggle-wayland := _toggle_wayland
 
-_toggle_wayland:
-    #!/usr/bin/bash
-    source /etc/default/desktop-wayland
-    if ${DESKTOP_WAYLAND}; then
-      sudo sed -i 's/true/false/g' /etc/default/desktop-wayland
-    else
-      sudo sed -i 's/false/true/g' /etc/default/desktop-wayland
-    fi
-
 _toggle-autologin:
     #!/usr/bin/bash
     DESKTOP_AUTOLOGIN="/etc/bazzite/desktop_autologin"
