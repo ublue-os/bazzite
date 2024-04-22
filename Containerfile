@@ -45,6 +45,7 @@ RUN curl -Lo /usr/bin/copr https://raw.githubusercontent.com/ublue-os/COPR-comma
 
 # Install kernel-fsync, if needed
 RUN if [[ "${KERNEL_FLAVOR}" =~ "fsync" ]]; then \
+        echo "will install ${KERNEL_FLAVOR} kernel from COPR" && \
         curl -Lo /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo && \
         rpm-ostree cliwrap install-to-root / && \
         rpm-ostree override replace \
@@ -57,7 +58,9 @@ RUN if [[ "${KERNEL_FLAVOR}" =~ "fsync" ]]; then \
             kernel-modules-extra \
             kernel-uki-virt \
             kernel-headers \
-            kernel-devel && \
+            kernel-devel \
+    ; else \
+        echo "will use kernel from ${KERNEL_FLAVOR} images" \
     ; fi && \
     ostree container commit
 
