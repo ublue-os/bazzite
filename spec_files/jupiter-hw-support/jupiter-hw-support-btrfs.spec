@@ -61,13 +61,13 @@ mkdir -p %{buildroot}%{_libexecdir}/hwsupport/
 mkdir -p %{buildroot}%{_sysconfdir}/
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}/
-cp usr/lib/hwsupport/format-device.sh %{buildroot}%{_libexecdir}/hwsupport/format-device
-cp usr/lib/hwsupport/format-sdcard.sh %{buildroot}%{_libexecdir}/hwsupport/format-sdcard
-cp usr/lib/hwsupport/sdcard-rescan.sh %{buildroot}%{_libexecdir}/hwsupport/sdcard-rescan
-cp usr/lib/hwsupport/steamos-automount.sh %{buildroot}%{_libexecdir}/hwsupport/steamos-automount
-cp usr/lib/hwsupport/trim-devices.sh %{buildroot}%{_libexecdir}/hwsupport/trim-devices
+cp usr/lib/hwsupport/format-device.sh %{buildroot}%{_libexecdir}/hwsupport/format-device.sh
+cp usr/lib/hwsupport/format-sdcard.sh %{buildroot}%{_libexecdir}/hwsupport/format-sdcard.sh
+cp usr/lib/hwsupport/sdcard-rescan.sh %{buildroot}%{_libexecdir}/hwsupport/sdcard-rescan.sh
+cp usr/lib/hwsupport/steamos-automount.sh %{buildroot}%{_libexecdir}/hwsupport/steamos-automount.sh
+cp usr/lib/hwsupport/trim-devices.sh %{buildroot}%{_libexecdir}/hwsupport/trim-devices.sh
 cp usr/lib/hwsupport/common-functions %{buildroot}%{_libexecdir}/hwsupport/common-functions
-cp usr/lib/hwsupport/block-device-event.sh %{buildroot}%{_libexecdir}/hwsupport/block-device-event
+cp usr/lib/hwsupport/block-device-event.sh %{buildroot}%{_libexecdir}/hwsupport/block-device-event.sh
 cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
@@ -111,13 +111,13 @@ rm -rf %{buildroot}%{_datadir}/alsa
 %{_bindir}/thumbstick_cal
 %{_bindir}/thumbstick_fine_cal
 %{_bindir}/trigger_cal
-%{_libexecdir}/hwsupport/format-device
-%{_libexecdir}/hwsupport/format-sdcard
-%{_libexecdir}/hwsupport/sdcard-rescan
-%{_libexecdir}/hwsupport/steamos-automount
-%{_libexecdir}/hwsupport/trim-devices
+%{_libexecdir}/hwsupport/format-device.sh
+%{_libexecdir}/hwsupport/format-sdcard.sh
+%{_libexecdir}/hwsupport/sdcard-rescan.sh
+%{_libexecdir}/hwsupport/steamos-automount.sh
+%{_libexecdir}/hwsupport/trim-devices.sh
 %{_libexecdir}/hwsupport/common-functions
-%{_libexecdir}/hwsupport/block-device-event
+%{_libexecdir}/hwsupport/block-device-event.sh
 %{_prefix}/lib/systemd/system/*
 %{_prefix}/lib/udev/rules.d/*
 %{_datadir}/icons/steam/*
