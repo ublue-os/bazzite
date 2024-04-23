@@ -326,6 +326,7 @@ RUN rpm-ostree install \
         glow \
         gum \
         vim \
+        zoxide \
         setools \
         setroubleshoot \
         cockpit-networkmanager \
