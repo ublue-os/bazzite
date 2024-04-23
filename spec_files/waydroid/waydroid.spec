@@ -40,7 +40,8 @@ BuildRequires:  systemd-rpm-macros
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 
-Requires:       python3-gbinder >= 1.1.0
+Requires:       python3dist(gbinder-python) >= 1.1.0
+Requires:       python3dist(dbus-python) 
 Requires:       python3-gobject
 Requires:       lxc
 Requires:       gtk3
