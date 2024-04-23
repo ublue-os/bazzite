@@ -6,7 +6,7 @@ Version:        1.4.2
 
 %forgemeta
 Name:           waydroid
-Release:        1%{?dist}.bazzite
+Release:        100%{?dist}.bazzite
 Summary:        Container-based approach to boot a full Android system on GNU/Linux
 License:        GPL-3.0-only
 URL:            %{forgeurl}
