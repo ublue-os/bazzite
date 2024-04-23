@@ -24,7 +24,7 @@ setup-cdemu ACTION="":
       echo "  Use 'install' to select Install CDEmu"
       echo "  Use 'remove' to select Remove CDEmu"
       echo "  Use 'autostart' to select Toggle Autostart"
-      echo " Use 'remove-gui-helper' if you don't want to have the GUI
+      echo "  Use 'remove-gui-helper' if you don't want to have the GUI"
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}CDEmu setup and configuration${normal}"
@@ -79,7 +79,7 @@ setup-cdemu ACTION="":
           echo "GUI has already been removed or the package is not yet installed!"
         else
           rpm-ostree remove -y kde-cdemu-manager-kf6
-          echo "GUI has been removed, you can still mount images using the CLI with the cdemu command"
+          echo "GUI has been removed, you can still mount images using the CLI with the cdemu command."
         fi
       else
         GUI_STATE="$(rpm -qa gcdemu)"
@@ -87,7 +87,7 @@ setup-cdemu ACTION="":
           echo "GUI has already been removed or the package is not yet installed!"
         else
           rpm-ostree remove -y gcdemu
-          echo "GUI has been removed, you can still mount images using the CLI with the cdemu command"
+          echo "GUI has been removed, you can still mount images using the CLI with the cdemu command."
         fi
       fi
     fi
