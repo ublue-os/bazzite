@@ -13,6 +13,8 @@ fix-source1-tcmalloc:
     echo 'LD_PRELOAD=/usr/lib/libtcmalloc_and_profiler.so.4 %command%'
     echo "Delete libtcmalloc_minimal.so.x in the game's bin folder if present."
 
+alias patch-gmod := fix-gmod
+
 # Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModCEFCodecFix)
 fix-gmod:
     #!/usr/bin/bash
