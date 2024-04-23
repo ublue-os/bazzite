@@ -1,7 +1,7 @@
 # vim: set ft=make :
 
-# Setup and configure Sunshine Game Streaming host
-setup-sunshine ACTION="":
+# Setup and configure CDEmu Daemon and Client plus GUI Apps
+setup-cdemu ACTION="":
     #!/bin/bash
     source /usr/lib/ujust/ujust.sh
     CDEMU_STATE="$(rpm -qa cdemu-daemon)"
