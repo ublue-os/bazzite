@@ -170,11 +170,11 @@ configure-powerprofile ACTION="":
     if [[ "${OPTION,,}" =~ powersave ]]; then
       echo "Setting default powerprofile to ${b}Powersave${n}"
       sudo sed -iE 's/default=(.+)/default=power-saver/' /etc/tuned/ppd.conf
-      bazzite-powersave
+      /usr/libexec/bazzite-powersave
     elif [[ "${OPTION,,}" =~ balanced ]]; then
       echo "Setting default powerprofile to ${b}Balanced${n}"
       sudo sed -iE 's/default=(.+)/default=balanced/' /etc/tuned/ppd.conf
-      bazzite-powersave 0
+      /usr/libexec/bazzite-powersave 0
     fi
 
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
