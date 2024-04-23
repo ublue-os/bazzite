@@ -34,7 +34,7 @@ setup-cdemu ACTION="":
     fi
     if [[ "${OPTION,,}" =~ ^install ]]; then
       ublue-update --wait
-      if [[ "$(GUI_EDITION) = "kinoite" ]]; then
+      if [[ "$(GUI_EDITION) == "kinoite" ]]; then
             # Install packages for KDE 6
             rpm-ostree install --apply-live -y cdemu-daemon cdemu-client kde-cdemu-manager-kf6
       else
@@ -46,7 +46,7 @@ setup-cdemu ACTION="":
     elif [[ "${OPTION,,}" =~ ^(remove|uninstall) ]]; then
       ublue-update --wait
       systemctl disable --user cdemu-daemon.service
-      if [[ "$(GUI_EDITION) = "kinoite" ]]; then
+      if [[ "$GUI_EDITION" == "kinoite" ]]; then
         # Remove packages for KDE 6
         GUI_STATE="$(rpm -qa kde-cdemu-manager-kf6)"
         #GUI already removed
@@ -59,7 +59,7 @@ setup-cdemu ACTION="":
         # Remove packages for GNOME
         GUI_STATE="$(rpm -qa gcdemu)"
         #GUI already removed
-        if [[GUI_STATE == ""]]; then
+        if [["${GUI_STATE,,}" == ""]]; then
           rpm-ostree remove -y cdemu-daemon cdemu-client
         else
           rpm-ostree remove -y cdemu-daemon cdemu-client gcdemu
@@ -73,9 +73,9 @@ setup-cdemu ACTION="":
         systemctl disable --user --now cdemu-daemon.service
       fi
       elif [[ "${OPTION,,}" =~ remove-gui-helper ]]; then
-      if [[ "$(GUI_EDITION) = "kinoite" ]]; then
+      if [[ "$GUI_EDITION" == "kinoite" ]]; then
         GUI_STATE="$(rpm -qa kde-cdemu-manager-kf6)"
-        if [[GUI_STATE == ""]]; then
+        if [["$GUI_STATE" == ""]]; then
           echo "GUI has already been removed or the package is not yet installed!"
         else
           rpm-ostree remove -y kde-cdemu-manager-kf6
@@ -83,7 +83,7 @@ setup-cdemu ACTION="":
         fi
       else
         GUI_STATE="$(rpm -qa gcdemu)"
-        if [[GUI_STATE == ""]]; then
+        if [["$GUI_STATE" == ""]]; then
           echo "GUI has already been removed or the package is not yet installed!"
         else
           rpm-ostree remove -y gcdemu
