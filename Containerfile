@@ -416,7 +416,8 @@ RUN rpm-ostree install \
         mangohud.x86_64 \
         mangohud.i686 \
         vk_hdr_layer.x86_64 \
-        vk_hdr_layer.i686 && \
+        vk_hdr_layer.i686 \
+        goverlay && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override remove \
             gamemode \
