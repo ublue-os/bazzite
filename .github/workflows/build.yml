@@ -56,7 +56,7 @@ jobs:
           - fedora_version: 40
             is_latest_version: true
             is_stable_version: true
-            kernel_flavor: main  # must match a kernel_flavor from akmods repo
+            kernel_flavor: fsync  # must match a kernel_flavor from akmods repo
     steps:
       - name: Define env.IMAGE_FLAVOR
         run: |
