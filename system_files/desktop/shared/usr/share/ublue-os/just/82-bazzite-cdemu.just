@@ -34,7 +34,7 @@ setup-cdemu ACTION="":
     fi
     if [[ "${OPTION,,}" =~ ^install ]]; then
       ublue-update --wait
-      if [[ "$(GUI_EDITION) == "kinoite" ]]; then
+      if [[ "$GUI_EDITION" == "kinoite" ]]; then
             # Install packages for KDE 6
             rpm-ostree install --apply-live -y cdemu-daemon cdemu-client kde-cdemu-manager-kf6
       else
