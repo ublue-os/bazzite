@@ -1,0 +1,2 @@
+# Fixes a bug that causes battery drain on the ASUS Ally when the device is fully powered off
+ACTION=="add", SUBSYSTEM=="usb", TEST=="power/control", ATTR{idVendor}=="1c7a", ATTR{idProduct}=="0588", ATTR{power/control}="auto"
