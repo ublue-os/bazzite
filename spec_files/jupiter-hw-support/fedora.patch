@@ -317,6 +317,29 @@ index f5b3e8e..84897df 100755
  
  set -e
  
+diff --git a/usr/lib/udev/rules.d/99-sdcard-rescan.rules b/usr/lib/udev/rules.d/99-sdcard-rescan.rules
+index 05b6167..f184d9e 100644
+--- a/usr/lib/udev/rules.d/99-sdcard-rescan.rules
++++ b/usr/lib/udev/rules.d/99-sdcard-rescan.rules
+@@ -1,3 +1,3 @@
+ # Work around the misdetection of some SanDisk microSD cards
+ 
+-ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/bin/systemd-run --no-block --collect /usr/lib/hwsupport/sdcard-rescan.sh %k"
++ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/sdcard-rescan.sh %k"
+diff --git a/usr/lib/udev/rules.d/99-steamos-automount.rules b/usr/lib/udev/rules.d/99-steamos-automount.rules
+index 49a5968..18b5149 100644
+--- a/usr/lib/udev/rules.d/99-steamos-automount.rules
++++ b/usr/lib/udev/rules.d/99-steamos-automount.rules
+@@ -5,7 +5,7 @@ KERNEL!="mmcblk*|sd*",          GOTO="steamos_automount_end"
+ ENV{ID_FS_USAGE}!="filesystem", GOTO="steamos_automount_end"
+ 
+ # The service expects to be asynchronous and shouldn't block udev rules
+-ACTION=="add",    RUN+="/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh add %k"
+-ACTION=="remove", RUN+="/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh remove %k"
++ACTION=="add",    RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh add %k"
++ACTION=="remove", RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh remove %k"
+ 
+ LABEL="steamos_automount_end"
 diff --git a/usr/share/jupiter_bios_updater/H2OFFTx64-G.sh b/usr/share/jupiter_bios_updater/H2OFFTx64-G.sh
 index 8089778..a47f449 100755
 --- a/usr/share/jupiter_bios_updater/H2OFFTx64-G.sh

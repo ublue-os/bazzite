@@ -120,25 +120,25 @@ index 60bbc93..67c6ec1 100755
  # Originally from https://serverfault.com/a/767079
  
 diff --git a/usr/lib/udev/rules.d/99-sdcard-rescan.rules b/usr/lib/udev/rules.d/99-sdcard-rescan.rules
-index 05b6167..35ec61a 100644
+index f184d9e..da1ecf0 100644
 --- a/usr/lib/udev/rules.d/99-sdcard-rescan.rules
 +++ b/usr/lib/udev/rules.d/99-sdcard-rescan.rules
 @@ -1,3 +1,3 @@
  # Work around the misdetection of some SanDisk microSD cards
  
--ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/bin/systemd-run --no-block --collect /usr/lib/hwsupport/sdcard-rescan.sh %k"
-+ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/bin/systemd-run --no-block --collect /usr/libexec/hwsupport/sdcard-rescan.sh %k"
+-ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/sdcard-rescan.sh %k"
++ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/usr/bin/systemd-run --no-block --collect /usr/libexec/hwsupport/sdcard-rescan.sh %k"
 diff --git a/usr/lib/udev/rules.d/99-steamos-automount.rules b/usr/lib/udev/rules.d/99-steamos-automount.rules
-index 49a5968..724d60e 100644
+index 18b5149..fb69a18 100644
 --- a/usr/lib/udev/rules.d/99-steamos-automount.rules
 +++ b/usr/lib/udev/rules.d/99-steamos-automount.rules
 @@ -5,7 +5,7 @@ KERNEL!="mmcblk*|sd*",          GOTO="steamos_automount_end"
  ENV{ID_FS_USAGE}!="filesystem", GOTO="steamos_automount_end"
  
  # The service expects to be asynchronous and shouldn't block udev rules
--ACTION=="add",    RUN+="/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh add %k"
--ACTION=="remove", RUN+="/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh remove %k"
-+ACTION=="add",    RUN+="/bin/systemd-run --no-block --collect /usr/libexec/hwsupport/block-device-event.sh add %k"
-+ACTION=="remove", RUN+="/bin/systemd-run --no-block --collect /usr/libexec/hwsupport/block-device-event.sh remove %k"
+-ACTION=="add",    RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh add %k"
+-ACTION=="remove", RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh remove %k"
++ACTION=="add",    RUN+="/usr/bin/systemd-run --no-block --collect /usr/libexec/hwsupport/block-device-event.sh add %k"
++ACTION=="remove", RUN+="/usr/bin/systemd-run --no-block --collect /usr/libexec/hwsupport/block-device-event.sh remove %k"
  
  LABEL="steamos_automount_end"
