@@ -335,9 +335,7 @@ RUN rpm-ostree install \
         cockpit-navigator \
         cockpit-storaged \
         wl-clipboard \
-        lsb_release \
-        cdemu-daemon \
-        cdemu-client && \
+        lsb_release && \
     pip install --prefix=/usr topgrade && \
     rpm-ostree install \
         ublue-update && \
@@ -479,8 +477,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rom-properties-kf5 \
         qvtf \
         joystickwake \
-        ptyxis \
-        kde-cdemu-manager && \
+        ptyxis && \
     mkdir -p /tmp/kwin-system76-scheduler-integration && \
     wget https://github.com/maxiberta/kwin-system76-scheduler-integration/archive/374a261497c772571df93f59fbced0ad02e64ad5.tar.gz -O /tmp/kwin-system76-scheduler-integration/archive.tar.gz && \
     tar --strip-components 1 -xvf /tmp/kwin-system76-scheduler-integration/archive.tar.gz -C /tmp/kwin-system76-scheduler-integration && \
@@ -537,8 +534,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         gnome-shell-extension-caffeine \
         rom-properties-gtk3 \
         pixbufloader-vtf \
-        openssh-askpass \
-        gcdemu && \
+        openssh-askpass && \
     rpm-ostree override remove \
         gnome-software-rpm-ostree \
         gnome-classic-session \
