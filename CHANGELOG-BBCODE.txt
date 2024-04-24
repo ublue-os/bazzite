@@ -5,7 +5,7 @@
 
 [h3]Features[/h3]
 [list]
-[*] Update to Fedora 40 base
+[*] Upgrade to Fedora 40 base
 [*] add bazzite-rollback-helper util ([url=https://github.com/ublue-os/bazzite/issues/1002]#1002[/url]) ([url=https://github.com/ublue-os/bazzite/commit/1d146d6bbc7ce57bac7fef9b8b0734af07641f1f]1d146d6[/url])
 [*] add command to support rebasing ([url=https://github.com/ublue-os/bazzite/issues/989]#989[/url]) ([url=https://github.com/ublue-os/bazzite/commit/c96bc6fb6985365d569f1f157b8d640c45607779]c96bc6f[/url])
 [*] Add framework-laptop kmod ([url=https://github.com/ublue-os/bazzite/commit/1ab933cb4b705c174ddab37ffc53db25a6ac58ec]1ab933c[/url])
