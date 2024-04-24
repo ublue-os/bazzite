@@ -617,7 +617,6 @@ RUN /usr/libexec/containerbuild/build-initramfs && \
     systemctl enable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
     systemctl enable joycond.service && \
-    systemctl enable custom-device-pollrates.service && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
