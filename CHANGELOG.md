@@ -22,7 +22,6 @@
 * Include zoxide by default ([8ae44a7](https://github.com/ublue-os/bazzite/commit/8ae44a7b63d9461b10fa2d6f3d61c20054db4dff))
 * New fetch logo ([b9419a9](https://github.com/ublue-os/bazzite/commit/b9419a9badb156ee3b25b6d9a9152ff6e35c4641))
 * **nvidia:** Restore X11 support on KDE until Nvidia successfully moves on from 80s Deco ([4885be3](https://github.com/ublue-os/bazzite/commit/4885be3b92e7f56ba7579e4f96818f93a7e20831))
-* Re-add clevis by popular demand ([0299d93](https://github.com/ublue-os/bazzite/commit/0299d93322d5b6a6d51b3aef4ac0e272ff8a20fa))
 * Switch to fastfetch from hyfetch ([8c921a5](https://github.com/ublue-os/bazzite/commit/8c921a5780a86d3b4e3f0a29f0618bac54e3d5ae))
 * **ujust:** add ujust for disabling/enabling swipe gestures ([#1005](https://github.com/ublue-os/bazzite/issues/1005)) ([1ecb734](https://github.com/ublue-os/bazzite/commit/1ecb734b1026da62224d0934d8a2841a6bbc93e7))
 
