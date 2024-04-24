@@ -57,6 +57,7 @@ rm %{buildroot}%{_bindir}/steamos-nested-desktop
 rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 cp %{SOURCE2} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/images/bazzite_logo.svgz
 cp %{SOURCE2} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/bazzite_logo.svgz
+mv %{buildroot}%{_datadir}/kservices5/ %{buildroot}%{_datadir}/kservices6
 
 # Do post-installation
 %post
@@ -91,7 +92,7 @@ cp %{SOURCE2} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.deskto
 %{_datadir}/X11/xorg.conf.d/99-pointer.conf
 %{_datadir}/icons/*
 %{_datadir}/konsole/*
-%{_datadir}/kservices5/ServiceMenus/steam.desktop
+%{_datadir}/kservices6/ServiceMenus/steam.desktop
 %{_datadir}/plasma/avatars/*
 %{_datadir}/plasma/desktoptheme/*
 %{_datadir}/plasma/kickeractions/steam.desktop
