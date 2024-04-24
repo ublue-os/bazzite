@@ -1,7 +1,7 @@
 %global libliftoff_minver 0.4.1
 
 Name:           gamescope
-Version:        3.13.19
+Version:        100.3.13.19
 Release:    	1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary:        Micro-compositor for video games on Wayland
 
