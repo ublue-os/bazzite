@@ -34,6 +34,19 @@ index b64aa42..c9b611d 100644
                          label = noise_suppressor_stereo
                          control = {
                              "VAD Threshold (%)" = 23.0
+diff --git a/pipewire-confs/systemd/system/pipewire-sysconf.service b/pipewire-confs/systemd/system/pipewire-sysconf.service
+index abc1f5d..1528ccc 100644
+--- a/pipewire-confs/systemd/system/pipewire-sysconf.service
++++ b/pipewire-confs/systemd/system/pipewire-sysconf.service
+@@ -17,7 +17,7 @@ Before=shutdown.target
+ [Service]
+ Type=oneshot
+ RemainAfterExit=yes
+-ExecStart=/usr/share/pipewire/hardware-profiles/pipewire-hwconfig
++ExecStart=/usr/libexec/hwsupport/pipewire-hwconfig
+ 
+ [Install]
+ WantedBy=multi-user.target
 diff --git a/scripts/install_plugins.sh b/scripts/install_plugins.sh
 index 591514a..6678045 100755
 --- a/scripts/install_plugins.sh
@@ -65,7 +78,7 @@ index 842edb2..3f03354 100755
  set -eu
  
 diff --git a/wireplumber/systemd/system/wireplumber-sysconf.service b/wireplumber/systemd/system/wireplumber-sysconf.service
-index 4ba3ad6..0e3f481 100644
+index 4ba3ad6..6ae50a9 100644
 --- a/wireplumber/systemd/system/wireplumber-sysconf.service
 +++ b/wireplumber/systemd/system/wireplumber-sysconf.service
 @@ -17,7 +17,7 @@ Before=shutdown.target
