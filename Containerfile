@@ -682,8 +682,6 @@ RUN rpm-ostree install \
     galileo-mura \
     steamdeck-dsp \
     powerbuttond \
-    unl0kr \
-    unl0kr-dracut \
     hhd \
     hhd-ui \
     adjustor \
@@ -730,8 +728,7 @@ RUN curl -Lo /tmp/steam-jupiter.pkg.tar.zst https://steamdeck-packages.steamos.c
     ostree container commit
 
 # Cleanup & Finalize
-RUN /usr/libexec/containerbuild/build-initramfs && \
-    /usr/libexec/containerbuild/image-info && \
+RUN /usr/libexec/containerbuild/image-info && \
     mkdir -p "/usr/etc/xdg/autostart" && \
     cp "/usr/share/applications/steam.desktop" "/usr/etc/xdg/autostart/steam.desktop" && \
     sed -i 's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' /usr/etc/xdg/autostart/steam.desktop && \
