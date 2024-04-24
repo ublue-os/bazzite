@@ -15,7 +15,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=30
+USER_SETUP_VER=31
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -128,13 +128,17 @@ fi
 # Deck Build Setup
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
   # HHD Setup
-  if /usr/libexec/hardware/hhd-supported-hardware; then
+  if /usr/libexec/hwsupport/hhd-supported-hardware; then
     echo 'Enabling HHD'
     pkexec /usr/libexec/bazzite-enable-hhd "$USER"
+  elif /usr/libexec/hwsupport/valve-hardware; then
+    echo 'Hiding HHD-UI on Deck hardware'
+    cp /usr/share/applications/hhd-ui.desktop "${XDG_DATA_HOME:-$HOME/.local/share}/applications/hhd-ui.desktop"
+    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' "${XDG_DATA_HOME:-$HOME/.local/share}/applications/hhd-ui.desktop"
   fi
 
   # SDGyroDSU Setup
-  if /usr/libexec/hardware/valve-hardware; then
+  if /usr/libexec/hwsupport/valve-hardware; then
     systemctl --user enable --now sdgyrodsu.service
   else
     systemctl --user disable --now sdgyrodsu.service
@@ -148,14 +152,8 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     rm -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop"
   fi
 
-  if /usr/libexec/hardware/rotation-fix-hardware && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
-    if [[ ! -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop" ]]; then
-      echo 'Adding rotation fix'
-      mkdir -p "$AUTOSTART_FOLDER/autostart"
-      printf "[Desktop Entry]\nExec=/usr/libexec/bazzite-rotation-fix\nIcon=dialog-scripts\nName=bazzite-rotation-fix\nType=Application\nX-KDE-AutostartScript=true\n" > "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop"
-    fi
-  elif [[ -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop" ]]; then
-    echo 'Non-supported or GNOME detected, removing rotaion fix'
+  # Remove old rotation fix
+  if [[ -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop" ]]; then
     rm -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop"
   fi
 fi

@@ -1,7 +1,5 @@
 #!/usr/bin/bash
 
-source /etc/default/desktop-wayland
-
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
@@ -22,16 +20,8 @@ fi
 if [[ ! -f ${DESKTOP_AUTOLOGIN} && -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]]; then
   sed -i 's/.*Session=.*/Session=gamescope-session.desktop/g' ${SDDM_CONF}
 elif [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
-  if ${DESKTOP_WAYLAND}; then
-    sed -i 's/.*Session=.*/Session=plasma.desktop/g' ${SDDM_CONF}
-  else
-    sed -i 's/.*Session=.*/Session=plasmax11.desktop/g' ${SDDM_CONF}
-  fi
+  sed -i 's/.*Session=.*/Session=plasma.desktop/g' ${SDDM_CONF}
 elif [[ ${BASE_IMAGE_NAME} =~ "silverblue" ]]; then
-  if ${DESKTOP_WAYLAND}; then
-    sed -i 's/.*Session=.*/Session=gnome-wayland.desktop/g' ${SDDM_CONF}
-  else
-    sed -i 's/.*Session=.*/Session=gnome-xorg.desktop/g' ${SDDM_CONF}
-  fi
+  sed -i 's/.*Session=.*/Session=gnome-wayland.desktop/g' ${SDDM_CONF}
 fi
 sed -i 's/.*User=.*/User='${USER}'/g' ${SDDM_CONF}

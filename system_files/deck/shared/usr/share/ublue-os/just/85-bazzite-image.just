@@ -66,6 +66,19 @@ install-deckhd-bios:
       echo "This is only applicable to LCD Steam Decks with the DeckHD screen. Aborting..."
     fi
 
+disable-swipe-gestures:
+    #!/usr/bin/bash
+    echo "disabling swipe gestures for QAM and HOME"
+    mkdir -p $HOME/.config/environment.d
+    echo "export GAMESCOPE_DISABLE_TOUCH_GESTURES=1" > "$HOME/.config/environment.d/bazzite-disable-gamescope-gestures.conf"
+    echo "Done. Please restart Steam Game Mode to see changes"
+
+enable-swipe-gestures:
+    #!/usr/bin/bash
+    echo "enabling swipe gestures for QAM and HOME"
+    rm -f "$HOME/.config/environment.d/bazzite-disable-gamescope-gestures.conf"
+    echo "Done. Please restart Steam Game Mode to see changes"
+
 # Enable BIOS & Firmware update services for the Steam Deck
 enable-deck-bios-firmware-updates:
     #!/usr/bin/bash
@@ -104,17 +117,6 @@ restore-input-remapper:
     systemctl enable --now input-remapper.service && \
     cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
     sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
-
-alias _toggle-wayland := _toggle_wayland
-
-_toggle_wayland:
-    #!/usr/bin/bash
-    source /etc/default/desktop-wayland
-    if ${DESKTOP_WAYLAND}; then
-      sudo sed -i 's/true/false/g' /etc/default/desktop-wayland
-    else
-      sudo sed -i 's/false/true/g' /etc/default/desktop-wayland
-    fi
 
 _toggle-autologin:
     #!/usr/bin/bash

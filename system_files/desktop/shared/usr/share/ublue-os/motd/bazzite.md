@@ -1,11 +1,11 @@
 # Welcome to Bazzite 󰊴
-󱋩 `%IMAGE_NAME%:%IMAGE_TAG%`
+󱋩 `%IMAGE_NAME%:%IMAGE_BRANCH%`
 
 |  Command | Description |
 | ------- | ----------- |
 | `ujust`  | List all available commands |
 | `ujust toggle-user-motd` | Toggle this banner on/off |
-| `neofetch` | View system information |
+| `fastfetch` | View system information |
 
 %TIP%
 - [ Report an issue](https://github.com/ublue-os/bazzite/issues)

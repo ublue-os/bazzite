@@ -1,5 +1,5 @@
 %define packagename jupiter-hw-support
-%define packagever jupiter-3.5-20240103.1
+%define packagever jupiter-20240416.1
 %global _default_patch_fuzz 2
 
 Name:           %{packagename}-btrfs
@@ -22,6 +22,7 @@ Patch7:         priv-write.patch
 Patch8:         biosupdate.patch
 Patch9:         gnome.patch
 Patch10:        fstrim.patch
+Patch11:        cursor-path.patch
 
 Requires:       python3
 Requires:       python3-evdev
@@ -39,7 +40,6 @@ Requires:       f3
 
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  xcursorgen
-BuildRequires:  sed
 
 %description
 SteamOS 3.0 Steam Deck Hardware Support Package
@@ -57,22 +57,22 @@ export QA_RPATHS=0x0003
 mkdir -p %{buildroot}%{_datadir}/
 mkdir -p %{buildroot}%{_unitdir}/
 mkdir -p %{buildroot}%{_bindir}/
-mkdir -p %{buildroot}%{_libexecdir}/
+mkdir -p %{buildroot}%{_libexecdir}/hwsupport/
 mkdir -p %{buildroot}%{_sysconfdir}/
-mkdir -p %{buildroot}%{_prefix}/lib/hwsupport/
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}/
-cp usr/lib/hwsupport/power-button-handler.py %{buildroot}%{_prefix}/lib/hwsupport/power-button-handler.py
-cp usr/lib/hwsupport/format-device.sh %{buildroot}%{_libexecdir}/format-device
-cp usr/lib/hwsupport/format-sdcard.sh %{buildroot}%{_libexecdir}/format-sdcard
-cp usr/lib/hwsupport/steamos-automount.sh %{buildroot}%{_libexecdir}/steamos-automount
-cp usr/lib/hwsupport/trim-devices.sh %{buildroot}%{_libexecdir}/trim-devices
+cp usr/lib/hwsupport/format-device.sh %{buildroot}%{_libexecdir}/hwsupport/format-device.sh
+cp usr/lib/hwsupport/format-sdcard.sh %{buildroot}%{_libexecdir}/hwsupport/format-sdcard.sh
+cp usr/lib/hwsupport/sdcard-rescan.sh %{buildroot}%{_libexecdir}/hwsupport/sdcard-rescan.sh
+cp usr/lib/hwsupport/steamos-automount.sh %{buildroot}%{_libexecdir}/hwsupport/steamos-automount.sh
+cp usr/lib/hwsupport/trim-devices.sh %{buildroot}%{_libexecdir}/hwsupport/trim-devices.sh
+cp usr/lib/hwsupport/common-functions %{buildroot}%{_libexecdir}/hwsupport/common-functions
+cp usr/lib/hwsupport/block-device-event.sh %{buildroot}%{_libexecdir}/hwsupport/block-device-event.sh
 cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
 cp -rv etc/* %{buildroot}%{_sysconfdir}
 cp %{SOURCE2} %{buildroot}%{_datadir}/plymouth/themes/steamos/bazzite.png
-sed -i 's@steamos-cursor.png@usr/share/steamos/steamos-cursor.png@g' usr/share/steamos/steamos-cursor-config
 xcursorgen usr/share/steamos/steamos-cursor-config %{buildroot}%{_datadir}/icons/steam/cursors/default
 # Remove unneeded files
 rm %{buildroot}%{_sysconfdir}/default/grub-steamos
@@ -111,11 +111,13 @@ rm -rf %{buildroot}%{_datadir}/alsa
 %{_bindir}/thumbstick_cal
 %{_bindir}/thumbstick_fine_cal
 %{_bindir}/trigger_cal
-%{_libexecdir}/format-device
-%{_libexecdir}/format-sdcard
-%{_libexecdir}/steamos-automount
-%{_libexecdir}/trim-devices
-%{_prefix}/lib/hwsupport/*
+%{_libexecdir}/hwsupport/format-device.sh
+%{_libexecdir}/hwsupport/format-sdcard.sh
+%{_libexecdir}/hwsupport/sdcard-rescan.sh
+%{_libexecdir}/hwsupport/steamos-automount.sh
+%{_libexecdir}/hwsupport/trim-devices.sh
+%{_libexecdir}/hwsupport/common-functions
+%{_libexecdir}/hwsupport/block-device-event.sh
 %{_prefix}/lib/systemd/system/*
 %{_prefix}/lib/udev/rules.d/*
 %{_datadir}/icons/steam/*
@@ -126,8 +128,7 @@ rm -rf %{buildroot}%{_datadir}/alsa
 %{_datadir}/plymouth/themes/steamos/*
 %{_datadir}/polkit-1/actions/org.valve.steamos.policy
 %{_datadir}/polkit-1/rules.d/org.valve.steamos.rules
-%{_datadir}/steamos/steamos-cursor-config
-%{_datadir}/steamos/steamos-cursor.png
+%{_datadir}/steamos/*
 
 # Finally, changes from the latest release of your application are generated from
 # your project's Git history. It will be empty until you make first annotated Git tag.

@@ -18,6 +18,7 @@ Source6:        legion_go.patch
 Source7:	    loki.patch
 Source8:        0001-disable-steam-touch-click-atom.patch
 Source9:        3.13.16.9-splitgate.patch
+Source10:       amd_hdr.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -88,6 +89,7 @@ patch -Np1 < %{SOURCE6}
 patch -Np1 < %{SOURCE7}
 patch -Np1 < %{SOURCE8}
 patch -Np1 < %{SOURCE9}
+patch -Np1 < %{SOURCE10}
 
 %build
 cd gamescope

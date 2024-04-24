@@ -8,8 +8,8 @@ if [[ -f "$TIP_FILE" ]]; then
 	IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 	IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 	IMAGE_NAME_ESCAPED=$(escape "$IMAGE_NAME")
-	IMAGE_TAG=$(jq -r '."image-tag"' < $IMAGE_INFO)
-	IMAGE_TAG_ESCAPED=$(escape "$IMAGE_TAG")
+	IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
+	IMAGE_BRANCH_ESCAPED=$(escape "$IMAGE_BRANCH")
 	TIP="󰋼 $(shuf -n 1 "$TIP_FILE")"
 
 	IMAGE_DATE=$(rpm-ostree status --booted | sed -n 's/.*Timestamp: \(.*\)/\1/p')
@@ -23,5 +23,5 @@ if [[ -f "$TIP_FILE" ]]; then
 
 	TIP_ESCAPED=$(escape "$TIP")
 
-	sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" -e "s/%IMAGE_TAG%/$IMAGE_TAG_ESCAPED/g" -e "s/%TIP%/$TIP_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | tr '~' '\n' | /usr/bin/glow -s auto -
+	sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" -e "s/%IMAGE_BRANCH%/$IMAGE_BRANCH_ESCAPED/g" -e "s/%TIP%/$TIP_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | tr '~' '\n' | /usr/bin/glow -s auto -
 fi

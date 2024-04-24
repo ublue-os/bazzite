@@ -1,8 +1,0 @@
-#!/usr/bin/bash
-# Returns true for hardware that needs a rotation fix in KDE
-SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
-if [[ ":ROG Ally RC71L_RC71L:ROG Ally RC71L:83E1:Loki Max:G1618-04:G1619-04:21A0007TUK:HP ENVY x360 Convertible 13-ay0xxx:" =~ ":$SYS_ID:" ]]; then
-	exit 0
-else
-	exit 1
-fi

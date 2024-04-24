@@ -5,7 +5,7 @@ setup-virtualization ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     # Check if we are running on a Steam Deck
-    if /usr/libexec/hardware/valve-hardware; then
+    if /usr/libexec/hwsupport/valve-hardware; then
       echo "${red}${b}WARNING${n}: Virtualization is not properly supported on Steam Deck by Valve"
       echo "Use at your own risk and performance may not be ideal."
     fi
@@ -66,7 +66,7 @@ setup-virtualization ACTION="":
       fi
     elif [[ "${OPTION,,}" =~ (^enable[[:space:]]vfio|vfio-on) ]]; then
       # Check if we are running on a Steam Deck
-      if /usr/libexec/hardware/valve-hardware; then
+      if /usr/libexec/hwsupport/valve-hardware; then
         echo "IOMMU is not supported on Steam Deck"
         exit 0
       fi
@@ -100,7 +100,7 @@ setup-virtualization ACTION="":
       fi
     elif [[ "${OPTION,,}" =~ (^disable[[:space:]]vfio|vfio-off) ]]; then
       # Check if we are running on a Steam Deck
-      if /usr/libexec/hardware/valve-hardware; then
+      if /usr/libexec/hwsupport/valve-hardware; then
         echo "IOMMU is not supported on Steam Deck"
         exit 0
       fi
@@ -131,7 +131,7 @@ setup-virtualization ACTION="":
       fi
     elif [[ "${OPTION,,}" =~ shm ]]; then
       # Check if we are running on a Steam Deck
-      if /usr/libexec/hardware/valve-hardware; then
+      if /usr/libexec/hwsupport/valve-hardware; then
         echo "IOMMU is not supported on Steam Deck"
         exit 0
       fi

@@ -1,0 +1,16 @@
+[Desktop Entry]
+Exec=/usr/bin/bazzite-plasma-bootstrap
+GenericName[en_US]=Desktop Bootstrap
+GenericName=Desktop Bootstrap
+Icon=system-run
+MimeType=
+Name[en_US]=Desktop Bootstrap
+Name=Desktop Bootstrap
+Path=
+StartupNotify=true
+Terminal=false
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=

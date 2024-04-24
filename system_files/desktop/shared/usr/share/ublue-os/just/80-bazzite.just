@@ -27,7 +27,7 @@ _install-system-flatpaks:
     else
         FLATPAKS="kde_flatpaks/flatpaks"
     fi
-    FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/scripts/${FLATPAKS} | tr '\n' ' ')"
+    FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install ${FLATPAK_LIST}
 
 # Install Bazzite's Steam Game Mode Startup Video
@@ -169,12 +169,12 @@ configure-powerprofile ACTION="":
     fi
     if [[ "${OPTION,,}" =~ powersave ]]; then
       echo "Setting default powerprofile to ${b}Powersave${n}"
-      sudo sed -iE 's/default=(.+)/default=powersave/' /etc/tuned/ppd.conf
-      bazzite-powersave
+      sudo sed -iE 's/default=(.+)/default=power-saver/' /etc/tuned/ppd.conf
+      /usr/libexec/bazzite-powersave
     elif [[ "${OPTION,,}" =~ balanced ]]; then
       echo "Setting default powerprofile to ${b}Balanced${n}"
       sudo sed -iE 's/default=(.+)/default=balanced/' /etc/tuned/ppd.conf
-      bazzite-powersave 0
+      /usr/libexec/bazzite-powersave 0
     fi
 
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
@@ -230,4 +230,21 @@ setup-decky ACTION="":
       else
         echo 'Please install Decky Loader by running "ujust setup-decky install" first.'
       fi
+    fi
+
+# Ptyxis terminal transparency
+ptyxis-transparency opacity="0.95":
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    if [[ -n "$(echo "{{ opacity }}" | grep -v '^[.0-9]*$')" ]]; then
+      printf "Value must be numeric: %s.\n" "{{ opacity }}"
+    elif [[ $(echo "0<{{ opacity }} && 1>{{ opacity }}" | bc -q) -eq 1 ]]; then
+      raw="$(gsettings get org.gnome.Ptyxis profile-uuids)"
+      uuids="$(sed -En 's|[^0-9a-z]*||g; s|([0-9a-z]{32})|\1\n|gp' <<<${raw})"
+      for i in ${uuids}; do
+        location="org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${i}/"
+        gsettings set "${location}" opacity "{{ opacity }}"; done
+      printf "Ptyxis opacity is now %s.\n" "{{ opacity }}"
+    else
+      printf "Value must be between 0 and 1: %s.\n" "{{ opacity }}"
     fi

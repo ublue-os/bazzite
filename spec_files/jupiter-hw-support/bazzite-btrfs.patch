@@ -1,32 +1,32 @@
-diff --git a/etc/systemd/system/steamos-automount@.service b/etc/systemd/system/steamos-automount@.service
-index 96e8818..33038bc 100644
---- a/etc/systemd/system/steamos-automount@.service
-+++ b/etc/systemd/system/steamos-automount@.service
-@@ -14,5 +14,6 @@ Description=Mount removable drive %i
- [Service]
- Type=oneshot
- RemainAfterExit=true
-+EnvironmentFile=/etc/default/steamos-btrfs
- ExecStart=-/usr/libexec/steamos-automount add %i
- ExecStop=-/usr/libexec/steamos-automount remove %i
 diff --git a/usr/lib/hwsupport/format-device.sh b/usr/lib/hwsupport/format-device.sh
-index 566eea2..d6803ff 100755
+index 58d66d3..768a6fc 100755
 --- a/usr/lib/hwsupport/format-device.sh
 +++ b/usr/lib/hwsupport/format-device.sh
-@@ -2,6 +2,8 @@
+@@ -2,7 +2,9 @@
  
  set -e
  
+-. /usr/libexec/hwsupport/common-functions
 +source /etc/default/steamos-btrfs
 +
++. /usr/libexec/common-functions
+ 
  # If the script is not run from a tty then send a copy of stdout and
  # stderr to the journal. In this case stderr is also redirected to stdout.
- if ! tty -s; then
 diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
-index 6dd3a2f..ca1c5ca 100755
+index 366bef3..f627175 100755
 --- a/usr/lib/hwsupport/steamos-automount.sh
 +++ b/usr/lib/hwsupport/steamos-automount.sh
-@@ -66,6 +66,7 @@ do_mount()
+@@ -2,6 +2,8 @@
+ 
+ set -euo pipefail
+ 
++source /etc/default/steamos-btrfs
++
+ . /usr/libexec/hwsupport/common-functions
+ 
+ # Originally from https://serverfault.com/a/767079
+@@ -60,6 +62,7 @@ do_mount()
      dev_json=$(lsblk -o PATH,LABEL,FSTYPE --json -- "$DEVICE" | jq '.blockdevices[0]')
      ID_FS_LABEL=$(jq -r '.label | select(type == "string")' <<< "$dev_json")
      ID_FS_TYPE=$(jq -r '.fstype | select(type == "string")' <<< "$dev_json")
@@ -34,7 +34,7 @@ index 6dd3a2f..ca1c5ca 100755
  
      #### SteamOS Btrfs Begin ####
      if [[ -f /etc/default/steamos-btrfs ]]; then
-@@ -109,6 +110,7 @@ do_mount()
+@@ -103,6 +106,7 @@ do_mount()
          UDISKS2_ALLOW='uid=$UID,gid=$GID,umask,dmask,fmask,locale,norecover,ignore_case,windows_names,compression,nocompression,big_writes,nls,nohidden,sys_immutable,sparse,showmeta,prealloc'
          OPTS="${STEAMOS_BTRFS_SDCARD_NTFS_MOUNT_OPTS:-rw,noatime,lazytime,uid=1000,gid=1000,big_writes,umask=0022,ignore_case,windows_names}"
          FSTYPE="lowntfs-3g"
@@ -42,7 +42,7 @@ index 6dd3a2f..ca1c5ca 100755
          if [[ ! -f /etc/filesystems ]] || ! grep -q '\b'"${FSTYPE}"'\b' /etc/filesystems; then
              echo "${FSTYPE}" >> /etc/filesystems
          fi
-@@ -121,7 +123,7 @@ do_mount()
+@@ -115,7 +119,7 @@ do_mount()
      if [[ -f "${udisks2_mount_options_conf}" && ! -f "${udisks2_mount_options_conf}.orig" ]]; then
          mv -f "${udisks2_mount_options_conf}"{,.orig}
      fi

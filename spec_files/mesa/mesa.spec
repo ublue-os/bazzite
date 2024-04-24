@@ -5,10 +5,11 @@
 %global with_va 1
 %if !0%{?rhel}
 %global with_nine 1
+%global with_nvk %{with vulkan_hw}
 %global with_omx 1
 %global with_opencl 1
 %endif
-%global base_vulkan ,amd,nouveau-experimental
+%global base_vulkan ,amd
 %endif
 
 %ifarch %{ix86} x86_64
@@ -34,7 +35,7 @@
 %global with_tegra     1
 %global with_v3d       1
 %global with_xa        1
-%global extra_platform_vulkan ,broadcom,freedreno,panfrost
+%global extra_platform_vulkan ,broadcom,freedreno,panfrost,imagination-experimental
 %endif
 
 %ifnarch s390x
@@ -57,11 +58,11 @@
 %bcond_with valgrind
 %endif
 
-%global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}
+%global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}%{?with_nvk:,nouveau-experimental}
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 23.3.6
+%global ver 24.0.5
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Release:        100.bazzite.{{{ git_dir_version }}}
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -74,15 +75,15 @@ Source0:        https://archive.mesa3d.org/mesa-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
-Patch12:        mesa-meson-c99.patch
-
-# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26105/
-Patch30:        26105.patch
+# Backport of https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/28740
+# to fix rendering issues using GTK's GSK_RENDERER=ngl on Raspberry Pi:
+# https://bugzilla.redhat.com/show_bug.cgi?id=2269412
+Patch11:        0001-broadcom-compiler-needs_quad_helper_invocation-enabl.patch
 
 # https://gitlab.com/evlaV/mesa/
-Patch40:        valve.patch
+Patch21:        valve.patch
 
-BuildRequires:  meson >= 1.2.0
+BuildRequires:  meson >= 1.3.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
@@ -140,13 +141,19 @@ BuildRequires:  pkgconfig(libomxil-bellagio)
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
 BuildRequires:  llvm-devel >= 7.0.0
-%if 0%{?with_opencl}
+%if 0%{?with_opencl} || 0%{?with_nvk}
 BuildRequires:  clang-devel
 BuildRequires:  bindgen
 BuildRequires:  rust-packaging
 BuildRequires:  pkgconfig(libclc)
 BuildRequires:  pkgconfig(SPIRV-Tools)
 BuildRequires:  pkgconfig(LLVMSPIRVLib)
+%endif
+%if 0%{?with_nvk}
+BuildRequires:  (crate(proc-macro2) >= 1.0.56 with crate(proc-macro2) < 2)
+BuildRequires:  (crate(quote) >= 1.0.25 with crate(quote) < 2)
+BuildRequires:  (crate(syn/clone-impls) >= 2.0.15 with crate(syn/clone-impls) < 3)
+BuildRequires:  (crate(unicode-ident) >= 1.0.6 with crate(unicode-ident) < 2)
 %endif
 %if %{with valgrind}
 BuildRequires:  pkgconfig(valgrind)
@@ -371,6 +378,18 @@ cp %{SOURCE1} docs/
 # ensure standard Rust compiler flags are set
 export RUSTFLAGS="%build_rustflags"
 
+%if 0%{?with_nvk}
+export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
+# So... Meson can't actually find them without tweaks
+%define inst_crate_nameversion() %(basename %{cargo_registry}/%{1}-*)
+%define rewrite_wrap_file() sed -e "/source.*/d" -e "s/%{1}-.*/%{inst_crate_nameversion %{1}}/" -i subprojects/%{1}.wrap
+
+%rewrite_wrap_file proc-macro2
+%rewrite_wrap_file quote
+%rewrite_wrap_file syn
+%rewrite_wrap_file unicode-ident
+%endif
+
 # We've gotten a report that enabling LTO for mesa breaks some games. See
 # https://bugzilla.redhat.com/show_bug.cgi?id=1862771 for details.
 # Disable LTO for now
@@ -411,7 +430,6 @@ export RUSTFLAGS="%build_rustflags"
   -Dllvm=enabled \
   -Dshared-llvm=enabled \
   -Dvalgrind=%{?with_valgrind:enabled}%{!?with_valgrind:disabled} \
-  -Dxlib-lease=enabled \
   -Dbuild-tests=false \
   -Dselinux=true \
 %if !0%{?with_libunwind}
@@ -448,11 +466,6 @@ for i in libOSMesa*.so libGL.so ; do
     eu-findtextrel $i && exit 1
 done
 popd
-
-%ifarch %{ix86}
-rm -Rf %{buildroot}%{_datadir}/drirc.d/00-radv-defaults.conf
-rm -Rf %{buildroot}%{_datadir}/drirc.d/00-mesa-defaults.conf
-%endif
 
 %files filesystem
 %doc docs/Mesa-MLAA-License-Clarification-Email.txt
@@ -541,9 +554,7 @@ rm -Rf %{buildroot}%{_datadir}/drirc.d/00-mesa-defaults.conf
 
 %files dri-drivers
 %dir %{_datadir}/drirc.d
-%ifarch aarch64 x86_64
 %{_datadir}/drirc.d/00-mesa-defaults.conf
-%endif
 %{_libdir}/dri/kms_swrast_dri.so
 %{_libdir}/dri/swrast_dri.so
 %{_libdir}/dri/virtio_gpu_dri.so
@@ -609,20 +620,26 @@ rm -Rf %{buildroot}%{_datadir}/drirc.d/00-mesa-defaults.conf
 %if 0%{?with_kmsro}
 %{_libdir}/dri/armada-drm_dri.so
 %{_libdir}/dri/exynos_dri.so
+%{_libdir}/dri/gm12u320_dri.so
 %{_libdir}/dri/hdlcd_dri.so
 %{_libdir}/dri/hx8357d_dri.so
+%{_libdir}/dri/ili9163_dri.so
 %{_libdir}/dri/ili9225_dri.so
 %{_libdir}/dri/ili9341_dri.so
+%{_libdir}/dri/ili9486_dri.so
 %{_libdir}/dri/imx-dcss_dri.so
 %{_libdir}/dri/mediatek_dri.so
 %{_libdir}/dri/meson_dri.so
 %{_libdir}/dri/mi0283qt_dri.so
+%{_libdir}/dri/panel-mipi-dbi_dri.so
 %{_libdir}/dri/pl111_dri.so
 %{_libdir}/dri/repaper_dri.so
 %{_libdir}/dri/rockchip_dri.so
 %{_libdir}/dri/st7586_dri.so
 %{_libdir}/dri/st7735r_dri.so
+%{_libdir}/dri/sti_dri.so
 %{_libdir}/dri/sun4i-drm_dri.so
+%{_libdir}/dri/udl_dri.so
 %endif
 %if 0%{?with_vulkan_hw}
 %{_libdir}/dri/zink_dri.so
@@ -664,12 +681,12 @@ rm -Rf %{buildroot}%{_datadir}/drirc.d/00-mesa-defaults.conf
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
 %if 0%{?with_vulkan_hw}
 %{_libdir}/libvulkan_radeon.so
-%ifarch aarch64 x86_64
 %{_datadir}/drirc.d/00-radv-defaults.conf
-%endif
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
+%if 0%{?with_nvk}
 %{_libdir}/libvulkan_nouveau.so
 %{_datadir}/vulkan/icd.d/nouveau_icd.*.json
+%endif
 %ifarch %{ix86} x86_64
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
@@ -683,6 +700,9 @@ rm -Rf %{buildroot}%{_datadir}/drirc.d/00-mesa-defaults.conf
 %{_datadir}/vulkan/icd.d/freedreno_icd.*.json
 %{_libdir}/libvulkan_panfrost.so
 %{_datadir}/vulkan/icd.d/panfrost_icd.*.json
+%{_libdir}/libpowervr_rogue.so
+%{_libdir}/libvulkan_powervr_mesa.so
+%{_datadir}/vulkan/icd.d/powervr_mesa_icd.*.json
 %endif
 %endif
 
