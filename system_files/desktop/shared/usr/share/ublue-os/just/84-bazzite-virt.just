@@ -201,10 +201,14 @@ setup-virtualization ACTION="":
       checkmodule -M -m -o "$HOME/.config/selinux_te/mod/kvmfr.mod" "$HOME/.config/selinux_te/kvmfr.te"
       semodule_package -o "$HOME/.config/selinux_te/pp/kvmfr.pp" -m "$HOME/.config/selinux_te/mod/kvmfr.mod"
       sudo semodule -i "$HOME/.config/selinux_te/pp/kvmfr.pp"
+      echo "Loading kvmfr module so you do not have to reboot to use it the first time"
+      sudo modprobe kvmfr static_size_mb=128
+      sudo chown $USER:qemu /dev/kvmfr0
       echo ""
       echo "Kvmfr0 $(Urllink "https://looking-glass.io/docs/B7-rc1/install_libvirt/#determining-memory" "static size is set to 128mb by default")"
       echo "this will work with up to 4K SDR resolutiion, as most dummy plugs go up to 4K"
-      echo "some games will try use 4k resolution on first boot and crash looking-glass if the value is too low."
+      echo "some games will try use the adapters max resolution on first boot and cause issues if the value is too low."
+      echo "Most ghost display adapters max out at 4k, hence the default value of 128mb."
       echo ""
       echo "If you need to change it to a different value"
       echo "you can do that in /etc/modprobe.d/kvmfr.conf"
@@ -212,6 +216,7 @@ setup-virtualization ACTION="":
       echo ""
       echo "Press OK to start the process of regenerating your initramfs, this will take a long time"
       echo "and there is no good way to track progress for it, if anything is wrong it will error out."
+      echo "${b}NOTE: You can start using kvmfr right now without rebooting, but you will need to regenerate initramfs for it to auto load next boot.${n}"
       CONFIRM=$(Choose OK)
       rpm-ostree initramfs --enable
     elif [[ "${OPTION,,}" =~ group ]]; then
