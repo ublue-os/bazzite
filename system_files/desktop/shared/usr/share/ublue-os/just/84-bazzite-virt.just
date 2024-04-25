@@ -157,6 +157,22 @@ setup-virtualization ACTION="":
       sudo bash -c 'cat << KVMFR_UDEV > /etc/udev/rules.d/99-kvmfr.rules
     SUBSYSTEM=="kvmfr", OWNER="'$USER'", GROUP="qemu", MODE="0660"
     KVMFR_UDEV'
+      echo "Adding /dev/kvmfr0 to qemu cgroup_device_acl"
+      sudo perl -0777 -pi -e 's/
+    #cgroup_device_acl = \[
+    #    "\/dev\/null", "\/dev\/full", "\/dev\/zero",
+    #    "\/dev\/random", "\/dev\/urandom",
+    #    "\/dev\/ptmx", "\/dev\/kvm",
+    #    "\/dev\/userfaultfd"
+    #\]
+    /
+    cgroup_device_acl = \[
+        "\/dev\/null", "\/dev\/full", "\/dev\/zero",
+        "\/dev\/random", "\/dev\/urandom",
+        "\/dev\/ptmx", "\/dev\/kvm",
+        "\/dev\/userfaultfd", "\/dev\/kvmfr0"
+    \]
+    /' /etc/libvirt/qemu.conf
       echo "Adding SELinux context record for /dev/kvmfr0"
       sudo semanage fcontext -a -t svirt_tmpfs_t /dev/kvmfr0
       echo "Adding SELinux access rules for /dev/kvmfr0"
