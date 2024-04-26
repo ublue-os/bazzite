@@ -185,13 +185,13 @@ setup-virtualization ACTION="":
       fi
       bash -c "cat << KVMFR_SELINUX > $HOME/.config/selinux_te/kvmfr.te
     module kvmfr 1.0;
-    
+
     require {
         type device_t;
         type svirt_t;
         class chr_file { open read write map };
     }
-    
+
     #============= svirt_t ==============
     allow svirt_t device_t:chr_file { open read write map };
     KVMFR_SELINUX"
