@@ -25,7 +25,7 @@ setup-virtualization ACTION="":
       echo "  Use 'group' to select Add $USER to libvirt group"
       echo "  Use 'vfio-on' to select Enable VFIO drivers"
       echo "  Use 'vfio-off' to select Disable VFIO drivers"
-      echo "  Use 'shm' to select Autocreate Looking-Glass shm"
+      echo "  Use 'kvmfr' to select Autocreate Looking-Glass shm"
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Virtualization Setup${normal}"
@@ -37,7 +37,7 @@ setup-virtualization ACTION="":
         "Add $USER to libvirt group" \
         "Enable VFIO drivers" \
         "Disable VFIO drivers" \
-        "Autocreate Looking-Glass shm" \
+        "Enable kvmfr module" \
       )
     fi
     if [[ "${OPTION,,}" =~ (^enable[[:space:]]virtualization|virt-on) ]]; then
@@ -129,29 +129,97 @@ setup-virtualization ACTION="":
         --delete-if-present="vfio_pci.disable_vga=0" \
         $VFIO_IDS_KARG
       fi
-    elif [[ "${OPTION,,}" =~ shm ]]; then
+    elif [[ "${OPTION,,}" =~ kvmfr ]]; then
       # Check if we are running on a Steam Deck
       if /usr/libexec/hwsupport/valve-hardware; then
         echo "IOMMU is not supported on Steam Deck"
         exit 0
       fi
-      echo "Bazzite currently uses a deprecated implementation of the Looking Glass shm."
-      echo "This implementation will not be supported in the future and we are in the process"
-      echo "of moving over to the KVMFR kernel module."
-      echo "Until this is done please open any Looking Glass issues you have in Bazzite"
-      echo "in the $(Urllink "https://discord.bazzite.gg/" "Bazzite Discord") or the $(Urllink "https://github.com/ublue-os/bazzite/issues" "Bazzite Github issue tracker")"
+      echo "$(Urllink "https://looking-glass.io/docs/rc/ivshmem_kvmfr/#libvirt" "This module") along with $(Urllink "https://looking-glass.io" "Looking Glass") is very experimental and not recommended for production use!"
+      echo "The ublue team packages the kvmfr module only because it has to be supplied with the system image while using an atomic desktop."
+      echo "If you do plan to use Looking Glass, please $(Urllink "https://universal-blue.discourse.group/docs?topic=956" "follow the guide here") on how to compile it for your system."
+      echo "To use the kvmfr module after enabling it, just add and edit the xml for libvirt from the documentation in the first link."
+      echo "Since we package the kvmfr module please open kvmfr related issues you have on Bazzite"
+      echo "in the $(Urllink "https://discord.bazzite.gg/" "Bazzite Discord") or the $(Urllink "https://github.com/ublue-os/bazzite/issues" "Bazzite Github issue tracker")."
       echo "~ @HikariKnight"
       CONFIRM=$(Choose Ok Cancel)
       if [ "$CONFIRM" == "Cancel" ]; then
         exit 0
       fi
-      echo "Creating tmpfile definition for shm file in /etc/tmpfiles.d/"
-      sudo bash -c "cat << LOOKING_GLASS_TMP > /etc/tmpfiles.d/10-looking-glass.conf
-    # Type Path               Mode UID  GID Age Argument
-    f /dev/shm/looking-glass 0660 1000 qemu -
-    LOOKING_GLASS_TMP"
-      echo "Adding SELinux context record for /dev/shm/looking-glass"
-      sudo semanage fcontext -a -t svirt_tmpfs_t /dev/shm/looking-glass
+      echo ""
+      echo "Setting up kvmfr module so it loads next boot"
+      sudo bash -c 'cat << KVMFR_DRACUT > /etc/dracut.conf.d/kvmfr.conf
+    install_items+=" /etc/modprobe.d/kvmfr.conf "
+    KVMFR_DRACUT'
+      sudo bash -c "cat << KVMFR_MODPROBE > /etc/modprobe.d/kvmfr.conf
+    options kvmfr static_size_mb=128
+    KVMFR_MODPROBE"
+      echo "Adding udev rule for /dev/kvmfr0"
+      sudo bash -c 'cat << KVMFR_UDEV > /etc/udev/rules.d/99-kvmfr.rules
+    SUBSYSTEM=="kvmfr", OWNER="'$USER'", GROUP="qemu", MODE="0660"
+    KVMFR_UDEV'
+      echo "Adding /dev/kvmfr0 to qemu cgroup_device_acl"
+      sudo perl -0777 -pi -e 's/
+    #cgroup_device_acl = \[
+    #    "\/dev\/null", "\/dev\/full", "\/dev\/zero",
+    #    "\/dev\/random", "\/dev\/urandom",
+    #    "\/dev\/ptmx", "\/dev\/kvm",
+    #    "\/dev\/userfaultfd"
+    #\]
+    /
+    cgroup_device_acl = \[
+        "\/dev\/null", "\/dev\/full", "\/dev\/zero",
+        "\/dev\/random", "\/dev\/urandom",
+        "\/dev\/ptmx", "\/dev\/kvm",
+        "\/dev\/userfaultfd", "\/dev\/kvmfr0"
+    \]
+    /' /etc/libvirt/qemu.conf
+      echo "Adding SELinux context record for /dev/kvmfr0"
+      sudo semanage fcontext -a -t svirt_tmpfs_t /dev/kvmfr0
+      echo "Adding SELinux access rules for /dev/kvmfr0"
+      if [ ! -d "$HOME/.config/selinux_te/mod" ]; then
+        mkdir -p "$HOME/.config/selinux_te/mod"
+      fi
+      if [ ! -d "$HOME/.config/selinux_te/pp" ]; then
+        mkdir -p "$HOME/.config/selinux_te/pp"
+      fi
+      bash -c "cat << KVMFR_SELINUX > $HOME/.config/selinux_te/kvmfr.te
+    module kvmfr 1.0;
+
+    require {
+        type device_t;
+        type svirt_t;
+        class chr_file { open read write map };
+    }
+
+    #============= svirt_t ==============
+    allow svirt_t device_t:chr_file { open read write map };
+    KVMFR_SELINUX"
+      echo "This is the type enforcement we wrote for SELinux and you can find it in $HOME/.config/selinux_te/kvmfr.te"
+      echo "#======= start of kvmfr.te ======="
+      cat "$HOME/.config/selinux_te/kvmfr.te"
+      echo "#======== end of kvmfr.te ========"
+      checkmodule -M -m -o "$HOME/.config/selinux_te/mod/kvmfr.mod" "$HOME/.config/selinux_te/kvmfr.te"
+      semodule_package -o "$HOME/.config/selinux_te/pp/kvmfr.pp" -m "$HOME/.config/selinux_te/mod/kvmfr.mod"
+      sudo semodule -i "$HOME/.config/selinux_te/pp/kvmfr.pp"
+      echo "Loading kvmfr module so you do not have to reboot to use it the first time"
+      sudo modprobe kvmfr static_size_mb=128
+      sudo chown $USER:qemu /dev/kvmfr0
+      echo ""
+      echo "Kvmfr0 $(Urllink "https://looking-glass.io/docs/B7-rc1/install_libvirt/#determining-memory" "static size is set to 128mb by default")"
+      echo "this will work with up to 4K SDR resolutiion, as most dummy plugs go up to 4K"
+      echo "some games will try use the adapters max resolution on first boot and cause issues if the value is too low."
+      echo "Most ghost display adapters max out at 4k, hence the default value of 128mb."
+      echo ""
+      echo "If you need to change it to a different value"
+      echo "you can do that in /etc/modprobe.d/kvmfr.conf"
+      echo "$(Urllink "https://looking-glass.io/docs/rc/ivshmem_kvmfr/#libvirt" "Please read official documentation for kvmfr for how to use it")"
+      echo ""
+      echo "Press OK to start the process of regenerating your initramfs, this will take a long time"
+      echo "and there is no good way to track progress for it, if anything is wrong it will error out."
+      echo "${b}NOTE: You can start using kvmfr right now without rebooting, but you will need to regenerate initramfs for it to auto load next boot.${n}"
+      CONFIRM=$(Choose OK)
+      rpm-ostree initramfs --enable
     elif [[ "${OPTION,,}" =~ group ]]; then
       if ! grep -q "^libvirt" /etc/group; then
         grep '^libvirt' /usr/lib/group | sudo tee -a /etc/group > /dev/null

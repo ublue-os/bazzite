@@ -113,6 +113,7 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
         /tmp/akmods-rpms/kmods/*openrazer*.rpm \
         /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
         /tmp/akmods-rpms/kmods/*wl*.rpm \
+        /tmp/akmods-rpms/kmods/*gcadapter_oc*.rpm \
         /tmp/akmods-rpms/kmods/*nct6687*.rpm \
         /tmp/akmods-rpms/kmods/*evdi*.rpm \
         /tmp/akmods-rpms/kmods/*zenergy*.rpm \
@@ -463,7 +464,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             kf6-kio-gui && \
         rpm-ostree install \
             steamdeck-kde-presets-desktop \
-            wallpaper-engine-kde-plugin \
             kdeconnectd \
             kdeplasma-addons \
             rom-properties-kf6 \
@@ -472,11 +472,8 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         mkdir -p /tmp/kwin-system76-scheduler-integration && \
         curl -Lo /tmp/kwin-system76-scheduler-integration/archive.tar.gz https://github.com/maxiberta/kwin-system76-scheduler-integration/archive/refs/heads/main.tar.gz && \
         tar --no-same-owner --no-same-permissions --no-overwrite-dir --strip-components 1 -xvf /tmp/kwin-system76-scheduler-integration/archive.tar.gz -C /tmp/kwin-system76-scheduler-integration && \
-        git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 /tmp/wallpaper-engine-kde-plugin && \
         kpackagetool6 --type=KWin/Script --global --install /tmp/kwin-system76-scheduler-integration && \
-        kpackagetool5 --type=Plasma/Wallpaper --global --install /tmp/wallpaper-engine-kde-plugin/plugin && \
         rm -rf /tmp/kwin-system76-scheduler-integration && \
-        rm -rf /tmp/wallpaper-engine-kde-plugin && \
         sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:net.lutris.Lutris.desktop,applications:org.gnome.Ptyxis.desktop,applications:org.kde.discover.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
         sed -i '/<entry name="favorites" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,steam.desktop,net.lutris.Lutris.desktop,systemsettings.desktop,org.kde.dolphin.desktop,org.kde.kate.desktop,org.gnome.Ptyxis.desktop,org.kde.discover.desktop,system-update.desktop<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.kickoff/contents/config/main.xml && \
         sed -i 's@\[Desktop Action new-window\]@\[Desktop Action new-window\]\nX-KDE-Shortcuts=Ctrl+Alt+T@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
@@ -495,7 +492,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
-            mutter \
             vte291 \
             vte-profile && \
         rpm-ostree install \
@@ -617,7 +613,6 @@ RUN /usr/libexec/containerbuild/build-initramfs && \
     systemctl enable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
     systemctl enable joycond.service && \
-    systemctl enable custom-device-pollrates.service && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
@@ -682,8 +677,6 @@ RUN rpm-ostree install \
     galileo-mura \
     steamdeck-dsp \
     powerbuttond \
-    unl0kr \
-    unl0kr-dracut \
     hhd \
     hhd-ui \
     adjustor \
@@ -730,8 +723,7 @@ RUN curl -Lo /tmp/steam-jupiter.pkg.tar.zst https://steamdeck-packages.steamos.c
     ostree container commit
 
 # Cleanup & Finalize
-RUN /usr/libexec/containerbuild/build-initramfs && \
-    /usr/libexec/containerbuild/image-info && \
+RUN /usr/libexec/containerbuild/image-info && \
     mkdir -p "/usr/etc/xdg/autostart" && \
     cp "/usr/share/applications/steam.desktop" "/usr/etc/xdg/autostart/steam.desktop" && \
     sed -i 's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' /usr/etc/xdg/autostart/steam.desktop && \
@@ -760,6 +752,8 @@ RUN /usr/libexec/containerbuild/build-initramfs && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \
+    systemctl enable pipewire-workaround.service && \
+    systemctl enable pipewire-sysconf.service && \
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer && \
     systemctl enable ds-inhibit.service && \
     systemctl enable cec-onboot.service && \

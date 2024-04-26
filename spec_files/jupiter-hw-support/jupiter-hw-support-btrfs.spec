@@ -39,7 +39,6 @@ Requires:       e2fsprogs
 Requires:       f3
 
 BuildRequires:  systemd-rpm-macros
-BuildRequires:  xcursorgen
 
 %description
 SteamOS 3.0 Steam Deck Hardware Support Package
@@ -58,7 +57,6 @@ mkdir -p %{buildroot}%{_datadir}/
 mkdir -p %{buildroot}%{_unitdir}/
 mkdir -p %{buildroot}%{_bindir}/
 mkdir -p %{buildroot}%{_libexecdir}/hwsupport/
-mkdir -p %{buildroot}%{_sysconfdir}/
 cp -rv usr/share/* %{buildroot}%{_datadir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}/
 cp usr/lib/hwsupport/format-device.sh %{buildroot}%{_libexecdir}/hwsupport/format-device.sh
@@ -71,16 +69,15 @@ cp usr/lib/hwsupport/block-device-event.sh %{buildroot}%{_libexecdir}/hwsupport/
 cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
-cp -rv etc/* %{buildroot}%{_sysconfdir}
 cp %{SOURCE2} %{buildroot}%{_datadir}/plymouth/themes/steamos/bazzite.png
-xcursorgen usr/share/steamos/steamos-cursor-config %{buildroot}%{_datadir}/icons/steam/cursors/default
 # Remove unneeded files
-rm %{buildroot}%{_sysconfdir}/default/grub-steamos
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/h2offt-g
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/H2OFFTx64-G.sh
 rm -rf %{buildroot}%{_datadir}/jupiter_bios_updater/driver
 rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 rm -rf %{buildroot}%{_datadir}/alsa
+rm -rf %{buildroot}%{_datadir}/icons/steam
+rm %{buildroot}%{_datadir}/steamos/steamos.png
 
 # Do post-installation
 %post
@@ -100,7 +97,6 @@ rm -rf %{buildroot}%{_datadir}/alsa
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.
 %files
-%{_sysconfdir}/systemd/system/*
 %{_bindir}/amd_system_info
 %{_bindir}/foxnet-biosupdate
 %{_bindir}/jupiter-biosupdate
@@ -120,8 +116,6 @@ rm -rf %{buildroot}%{_datadir}/alsa
 %{_libexecdir}/hwsupport/block-device-event.sh
 %{_prefix}/lib/systemd/system/*
 %{_prefix}/lib/udev/rules.d/*
-%{_datadir}/icons/steam/*
-%{_datadir}/steamos/steamos.png
 %{_datadir}/jupiter_bios/*
 %{_datadir}/jupiter_bios_updater/*
 %{_datadir}/jupiter_controller_fw_updater/*

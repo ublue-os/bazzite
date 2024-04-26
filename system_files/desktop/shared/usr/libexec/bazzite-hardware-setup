@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=37
+HWS_VER=38
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -162,6 +162,12 @@ if ((MINIMUM_FREE_ZRAM > CURRENT_FREE_ZRAM)); then
     echo "Found needed minimum-free ZRAM changes, applying the following: ${MINIMUM_FREE_ZRAM}"
 else
   echo "No minimum-free ZRAM changes needed"
+fi
+
+# WAYDROID FIX
+if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
+  echo "Removing unneeded apparmor entry from Waydroid LXC"
+  sed -i '/lxc\.apparmor\.profile\s*=\s*unconfined/d' "/var/lib/waydroid/lxc/waydroid/config"
 fi
 
 # NO-PSTATE FIX

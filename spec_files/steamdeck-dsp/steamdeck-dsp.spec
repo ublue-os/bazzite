@@ -48,6 +48,8 @@ rm -f %{buildroot}%{_sysconfdir}/pipewire
 mkdir -p %{buildroot}%{_libexecdir}/hwsupport
 mv %{buildroot}%{_datadir}/wireplumber/hardware-profiles/wireplumber-hwconfig %{buildroot}%{_libexecdir}/hwsupport/wireplumber-hwconfig
 mv %{buildroot}%{_datadir}/pipewire/hardware-profiles/pipewire-hwconfig %{buildroot}%{_libexecdir}/hwsupport/pipewire-hwconfig
+rm %{buildroot}%{_datadir}/wireplumber/hardware-profiles/default
+rm %{buildroot}%{_datadir}/pipewire/hardware-profiles/default
 
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.

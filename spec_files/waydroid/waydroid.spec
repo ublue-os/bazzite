@@ -6,7 +6,7 @@ Version:        1.4.2
 
 %forgemeta
 Name:           waydroid
-Release:        1%{?dist}.bazzite
+Release:        100%{?dist}.bazzite
 Summary:        Container-based approach to boot a full Android system on GNU/Linux
 License:        GPL-3.0-only
 URL:            %{forgeurl}
@@ -21,10 +21,13 @@ Patch0:         setup-firewalld.patch
 # Mount the android rootfs with a default selinux context
 Patch1:         mount-secontext.patch
 
+# Fedora LXC is compiled without AppArmor support and fails to parse lxc.apparmor.profile config
+Patch2:         no-apparmor.patch 
+
 # https://github.com/waydroid/waydroid/commit/66c8343c4d2ea118601ba5d8ce52fa622cbcd665
-Patch2:         regex.patch
+Patch3:         regex.patch
 # https://github.com/waydroid/waydroid/commit/6eea5cf63f4a724e66a2857b8f67ee2bbc82f0bd
-Patch3:         sse3.patch
+Patch4:         sse3.patch
 
 BuildArch:      noarch
 
@@ -37,7 +40,8 @@ BuildRequires:  systemd-rpm-macros
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 
-Requires:       python3-gbinder >= 1.1.0
+Requires:       python3dist(gbinder-python) >= 1.1.0
+Requires:       python3dist(dbus-python) 
 Requires:       python3-gobject
 Requires:       lxc
 Requires:       gtk3
@@ -149,6 +153,9 @@ fi
 %{_datadir}/selinux/%{selinuxtype}/%{name}.pp
 
 %changelog
+* Thu Mar 14 2024 Alessandro Astone <ales.astone@gmail.com> - 1.4.2-3
+- Completely disable apparmor
+
 * Tue Oct 31 2023 Alessandro Astone <ales.astone@gmail.com> - 1.4.2-1
 - Update to 1.4.2
 

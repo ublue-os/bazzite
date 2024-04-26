@@ -1,7 +1,8 @@
 %global libliftoff_minver 0.4.1
+%global gamescope_version 3.13.19
 
 Name:           gamescope
-Version:        3.13.19
+Version:        100.%{gamescope_version}
 Release:    	1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary:        Micro-compositor for video games on Wayland
 
@@ -76,7 +77,7 @@ Summary:	libs for %{name}
 %summary
 
 %prep
-git clone --single-branch --branch %{version} https://github.com/ValveSoftware/gamescope.git
+git clone --single-branch --branch %{gamescope_version} https://github.com/ValveSoftware/gamescope.git
 cd gamescope
 git submodule update --init --recursive
 mkdir -p pkgconfig
