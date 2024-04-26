@@ -28,12 +28,12 @@ if [[ -f "$HOME/.bazzite-configured-fedora-version" ]]; then
   mv -f "$HOME/.bazzite-configured-fedora-version" "$USER_SETUP_FEDORA_VER_FILE"
 fi
 
-USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
-USER_SETUP_FEDORA_VER_RAN=$(cat $USER_SETUP_FEDORA_VER_FILE)
-USER_SETUP_IMAGE_VER_RAN=$(cat $USER_SETUP_IMAGE_VER_FILE)
-
 # Run script if updated
-if [[ -f $USER_SETUP_VER_FILE && -f $USER_SETUP_FEDORA_VER_FILE && -f $USER_SETUP_FEDORA_VER_FILE ]]; then
+if [[ -f $USER_SETUP_VER_FILE && -f $USER_SETUP_FEDORA_VER_FILE && -f $USER_SETUP_IMAGE_VER_FILE ]]; then
+  USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
+  USER_SETUP_FEDORA_VER_RAN=$(cat $USER_SETUP_FEDORA_VER_FILE)
+  USER_SETUP_IMAGE_VER_RAN=$(cat $USER_SETUP_IMAGE_VER_FILE)
+
   if [[ $USER_SETUP_VER = "$USER_SETUP_VER_RAN" && $FEDORA_VERSION = "$USER_SETUP_FEDORA_VER_RAN" && $BASE_IMAGE_NAME = "$USER_SETUP_IMAGE_VER_RAN" ]]; then
     echo "User setup v$USER_SETUP_VER has already run. Exiting..."
     exit 0
