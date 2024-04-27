@@ -5,7 +5,7 @@
 
 Name:           gamescope
 Version:        100.3.14.6
-Release:        %{rel_build}.bazzite
+Release:        %{autorelease}.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
