@@ -10,14 +10,14 @@ index 42c67b9..6373e22 100644
 +{
 +	60,
 +	144,
-+}
++};
 +
 +static constexpr uint32_t s_kLokiRates[] =
 +{
 +	40,
 +	50,
 +	60,
-+}
++};
 +
  static void update_connector_display_info_wl(struct drm_t *drm)
  {
