@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 ## setup auto-unlock LUKS2 encrypted root on Fedora/Silverblue/maybe others
 ## From https://github.com/bsherman/ublue-custom/blob/main/usr/bin/luks-enable-tpm2-autounlock
 set -u
