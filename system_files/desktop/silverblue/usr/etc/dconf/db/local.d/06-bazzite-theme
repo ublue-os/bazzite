@@ -64,10 +64,10 @@ style-dialogs=0
 blur=false
 
 [org/gnome/shell/extensions/blur-my-shell/screenshot]
-blur=false
+blur=true
 
 [org/gnome/shell/extensions/blur-my-shell/lockscreen]
-blur=false
+blur=true
 
 [org/gnome/shell/extensions/com/github/hermes83/compiz-windows-effect]
 maximize-effect=true
