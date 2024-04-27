@@ -122,6 +122,7 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
         /tmp/akmods-rpms/kmods/*ayaneo-platform*.rpm \
         /tmp/akmods-rpms/kmods/*ayn-platform*.rpm \
         /tmp/akmods-rpms/kmods/*framework-laptop*.rpm \
+        /tmp/akmods-rpms/kmods/*bmi260*.rpm \
         /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     ostree container commit
