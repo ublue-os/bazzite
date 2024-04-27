@@ -1,17 +1,11 @@
 %global libliftoff_minver 0.4.1
 
-# latest git
-%define commit f6cd671cb4ee139f470fc55b580cc6ff3a50384b
-
-%global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
 
-%global rel_build 1.git.%{build_timestamp}.%{shortcommit}%{?dist}
-
 Name:           gamescope
-Version:        3.14.6
-Release:        %{rel_build}
+Version:        100.3.14.6
+Release:        %{rel_build}.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -89,7 +83,6 @@ Obsoletes: gamescope-libs
 %prep
 git clone --single-branch --branch jupiter-3.6 https://github.com/ValveSoftware/gamescope
 cd gamescope
-git checkout %{commit}
 git submodule update --init --recursive
 mkdir -p pkgconfig
 cp %{SOURCE0} pkgconfig/stb.pc
