@@ -1,4 +1,4 @@
-From 05a740206a73c6aab3762eb449b0733e5b9a4c7a Mon Sep 17 00:00:00 2001
+From 05cd68c9eee28c2223cc192b9744cff493f940cc Mon Sep 17 00:00:00 2001
 From: Aleksei Bavshin <alebastr89@gmail.com>
 Date: Sat, 25 Jun 2022 21:22:08 -0700
 Subject: [PATCH] Revert "layer-shell: error on 0 dimension without anchors"
@@ -8,19 +8,20 @@ This reverts commit 8dec751a6d84335fb04288b8efab6dd5c90288d3.
  types/wlr_layer_shell_v1.c | 20 --------------------
  1 file changed, 20 deletions(-)
 
-diff --git a/types/wlr_layer_shell_v1.c b/types/wlr_layer_shell_v1.c
-index fa054d3c..062fa96d 100644
+diff --git a/wlr_layer_shell_v1.c b/wlr_layer_shell_v1.c
+index a59f110..75a1931 100644
 --- a/types/wlr_layer_shell_v1.c
 +++ b/types/wlr_layer_shell_v1.c
-@@ -335,26 +335,6 @@
+@@ -335,26 +335,6 @@ static void layer_surface_role_client_commit(struct wlr_surface *wlr_surface) {
+ 			"layer_surface has never been configured");
  		return;
  	}
- 
+-
 -	const uint32_t horiz = ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT |
 -		ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT;
 -	if (surface->pending.desired_width == 0 &&
--		(surface->pending.anchor & horiz) != horiz) {
--		wl_resource_post_error(surface->resource,
+-			(surface->pending.anchor & horiz) != horiz) {
+-		wlr_surface_reject_pending(wlr_surface, surface->resource,
 -			ZWLR_LAYER_SURFACE_V1_ERROR_INVALID_SIZE,
 -			"width 0 requested without setting left and right anchors");
 -		return;
@@ -29,16 +30,15 @@ index fa054d3c..062fa96d 100644
 -	const uint32_t vert = ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP |
 -		ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM;
 -	if (surface->pending.desired_height == 0 &&
--		(surface->pending.anchor & vert) != vert) {
--		wl_resource_post_error(surface->resource,
+-			(surface->pending.anchor & vert) != vert) {
+-		wlr_surface_reject_pending(wlr_surface, surface->resource,
 -			ZWLR_LAYER_SURFACE_V1_ERROR_INVALID_SIZE,
 -			"height 0 requested without setting top and bottom anchors");
 -		return;
 -	}
--
- 	if (surface->surface->unmap_commit) {
- 		layer_surface_reset(surface);
- 
--- 
-2.37.3
+ }
+
+ static void layer_surface_role_commit(struct wlr_surface *wlr_surface) {
+--
+2.41.0
 
