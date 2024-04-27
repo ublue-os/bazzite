@@ -2,7 +2,7 @@
 
 # Add virtual audio channels/sinks named Game, Voice, Browser and Music which you can split audio to using qpwgraph, helvum, carla or other pipewire patchbays for use in OBS and other use cases
 setup-virtual-channels ACTION="":
-    #!/bin/bash
+    #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
@@ -96,7 +96,7 @@ setup-virtual-channels ACTION="":
 
 # Setup a simple Virtual Surround 7.1 sink using the ASH Control Room 1 convolver file (you can change this yourself after setup)
 setup-virtual-surround ACTION="":
-    #!/bin/bash
+    #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     mkdir -p ~/.config/pipewire/pipewire.conf.d
     mkdir -p ~/.config/pipewire/hrir_hesuvi

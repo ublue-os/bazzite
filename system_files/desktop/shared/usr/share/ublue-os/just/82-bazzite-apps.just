@@ -119,7 +119,7 @@ install-opentabletdriver:
 
 # This installs ollama, a way to run various open LLMs locally on the CPU or GPU
 install-ollama:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     echo 'Follow the prompts and check the tutorial: '
     echo
     GPU_CHOICES=()
@@ -194,7 +194,7 @@ install-ollama:
 # Create fedora distrobox if it doesn't exist
 [private]
 distrobox-check-fedora:
-    #!/bin/env bash
+    #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     if grep -qvz "fedora" <<< $(distrobox list); then
       echo "Setting up Fedora distrobox"
