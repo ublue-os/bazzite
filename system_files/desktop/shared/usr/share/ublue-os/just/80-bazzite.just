@@ -36,13 +36,18 @@ install-gamemode-video:
     rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
     cp /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
 
+# Set up automatic LUKS unlock via TPM
+setup-luks-tpm-unlock:
+    #!/usr/bin/bash
+    sudo /usr/libexec/luks-enable-tpm2-autounlock
+
 # Force-enable AMD pstate
 pstate-force-enable:
     rpm-ostree kargs --append-if-missing=amd_pstate=active
 
 # Configure grub bootmenu visibility and fix duplicate entries
 configure-grub ACTION="":
-    #!/bin/bash
+    #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     GRUB_STATE="$(grep -P "^GRUB_TIMEOUT_STYLE=hidden" /etc/default/grub)"
     OPTION={{ ACTION }}
@@ -100,7 +105,7 @@ add-user-to-input-group:
 
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 configure-watchdog ACTION="":
-    #!/bin/bash
+    #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     WATCHDOG_STATE="$(rpm-ostree kargs)"
     CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
@@ -143,7 +148,7 @@ configure-watchdog ACTION="":
 
 # Set the default powerprofile to load when the desktop starts
 configure-powerprofile ACTION="":
-    #!/bin/bash
+    #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
     if [ "$OPTION" == "help" ]; then
@@ -179,7 +184,7 @@ configure-powerprofile ACTION="":
 
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
 setup-decky ACTION="":
-    #!/bin/bash
+    #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     DECKY_STATE="${b}${red}Not Installed${n}"
     if [[ -d $HOME/homebrew/plugins ]]; then
@@ -234,7 +239,7 @@ setup-decky ACTION="":
 
 # Ptyxis terminal transparency
 ptyxis-transparency opacity="0.95":
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
     set -euxo pipefail
     if [[ -n "$(echo "{{ opacity }}" | grep -v '^[.0-9]*$')" ]]; then
       printf "Value must be numeric: %s.\n" "{{ opacity }}"
