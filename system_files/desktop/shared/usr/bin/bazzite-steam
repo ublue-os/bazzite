@@ -3,19 +3,19 @@
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 
-LAUNCH_OPTIONS=""
-
+DECK_OPTION=""
 # If Steam has been launched before we can safely launch with -steamdeck
 # to maintain the gamemode update branch
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
   if [ -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]; then
-    LAUNCH_OPTIONS+=" -steamdeck"
+    DECK_OPTION="-steamdeck"
   fi
 fi
 
+DGPU_OPTION=""
 # If we're running this on a dGPU, disable accelerated cef
 if [[ $(switcherooctl list | grep -o 'Device:' | wc -l) > 1 ]]; then
-  LAUNCH_OPTIONS+=" -cef-disable-gpu"
+  DGPU_OPTION="-cef-disable-gpu"
 fi
 
 if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
@@ -25,7 +25,7 @@ if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
   # It's been primarily developed for allowing the desktop functionality
   # on the Steam Controller to work while Steam is open on Wayland.
   # Also supports Steam Input as a whole.
-  env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam "$LAUNCH_OPTIONS" "$@"
+  env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam "$DECK_OPTION" "$DGPU_OPTION" "$@"
 else
-  /usr/bin/steam "$LAUNCH_OPTIONS" "$@"
+  /usr/bin/steam "$DECK_OPTION" "$DGPU_OPTION" "$@"
 fi
