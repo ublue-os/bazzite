@@ -1,7 +1,17 @@
-diff --git a/pipewire-confs/filter-chain-mic.conf b/pipewire-confs/filter-chain-mic.conf
-index 0b9fcac..0859402 100644
---- a/pipewire-confs/filter-chain-mic.conf
-+++ b/pipewire-confs/filter-chain-mic.conf
+diff --git a/pipewire-confs/hardware-profiles/pipewire-hwconfig b/pipewire-confs/hardware-profiles/pipewire-hwconfig
+index 11c8bd2..ac7adb6 100755
+--- a/pipewire-confs/hardware-profiles/pipewire-hwconfig
++++ b/pipewire-confs/hardware-profiles/pipewire-hwconfig
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/usr/bin/bash
+ 
+ set -eu
+ 
+diff --git a/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain.conf b/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain.conf
+index 9246254..51cc545 100644
+--- a/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain.conf
++++ b/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain.conf
 @@ -14,7 +14,7 @@ context.modules = [
                      {
                          type = ladspa
@@ -11,6 +21,32 @@ index 0b9fcac..0859402 100644
                          label = noise_suppressor_stereo
                          control = {
                              "VAD Threshold (%)" = 23.0
+diff --git a/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/filter-chain.conf b/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/filter-chain.conf
+index b64aa42..c9b611d 100644
+--- a/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/filter-chain.conf
++++ b/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/filter-chain.conf
+@@ -14,7 +14,7 @@ context.modules = [
+                     {
+                         type = ladspa
+                         name = rnnoise
+-                        plugin = /usr/lib/ladspa/librnnoise_ladspa.so
++                        plugin = /usr/lib64/ladspa/librnnoise_ladspa.so
+                         label = noise_suppressor_stereo
+                         control = {
+                             "VAD Threshold (%)" = 23.0
+diff --git a/pipewire-confs/systemd/system/pipewire-sysconf.service b/pipewire-confs/systemd/system/pipewire-sysconf.service
+index abc1f5d..1528ccc 100644
+--- a/pipewire-confs/systemd/system/pipewire-sysconf.service
++++ b/pipewire-confs/systemd/system/pipewire-sysconf.service
+@@ -17,7 +17,7 @@ Before=shutdown.target
+ [Service]
+ Type=oneshot
+ RemainAfterExit=yes
+-ExecStart=/usr/share/pipewire/hardware-profiles/pipewire-hwconfig
++ExecStart=/usr/libexec/hwsupport/pipewire-hwconfig
+ 
+ [Install]
+ WantedBy=multi-user.target
 diff --git a/scripts/install_plugins.sh b/scripts/install_plugins.sh
 index 591514a..6678045 100755
 --- a/scripts/install_plugins.sh
@@ -31,37 +67,26 @@ index 591514a..6678045 100755
 +cp -r bin/lv2/g++/valve_deck_microphone.lv2 $LIB_DIR/lv2/valve_deck_microphone.dsp
 +cp -r bin/svg $LIB_DIR/lv2/svg
 +cp version.txt $LIB_DIR/lv2/valve_audio_dsp_version.txt
-diff --git a/ucm2/conf.d/sof-nau8821-max/HiFi.conf b/ucm2/conf.d/sof-nau8821-max/HiFi.conf
-index 48412ee..f0c5b82 100644
---- a/ucm2/conf.d/sof-nau8821-max/HiFi.conf
-+++ b/ucm2/conf.d/sof-nau8821-max/HiFi.conf
-@@ -32,7 +32,7 @@ SectionDevice."Headphones".0 {
- 	Value {
- 		PlaybackPriority 200
- 		PlaybackPCM "hw:${CardId},0"
--		JackControl "Headset Jack"
-+		JackControl "Headphone Jack"
- 	}
- 	ConflictingDevice [
- 	]
-@@ -89,7 +89,7 @@ SectionDevice."Headset" {
- 	Value {
- 		CapturePriority 300
- 		CapturePCM "hw:${CardId},0"
--		JackControl "Headset Jack"
-+		JackControl "Headset Mic Jack"
- 	}
- 	ConflictingDevice [
- 	]
-diff -Naur a/wireplumber/systemd/system/wireplumber-sysconf.service  b/wireplumber/systemd/system/wireplumber-sysconf.service 
+diff --git a/wireplumber/hardware-profiles/wireplumber-hwconfig b/wireplumber/hardware-profiles/wireplumber-hwconfig
+index 842edb2..3f03354 100755
+--- a/wireplumber/hardware-profiles/wireplumber-hwconfig
++++ b/wireplumber/hardware-profiles/wireplumber-hwconfig
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/usr/bin/bash
+ 
+ set -eu
+ 
+diff --git a/wireplumber/systemd/system/wireplumber-sysconf.service b/wireplumber/systemd/system/wireplumber-sysconf.service
+index 4ba3ad6..6ae50a9 100644
 --- a/wireplumber/systemd/system/wireplumber-sysconf.service
 +++ b/wireplumber/systemd/system/wireplumber-sysconf.service
-@@ -17,7 +17,7 @@
+@@ -17,7 +17,7 @@ Before=shutdown.target
  [Service]
  Type=oneshot
  RemainAfterExit=yes
 -ExecStart=/usr/share/wireplumber/hardware-profiles/wireplumber-hwconfig
-+ExecStart=/usr/libexec/wireplumber-hwconfig
++ExecStart=/usr/libexec/hwsupport/wireplumber-hwconfig
  
  [Install]
  WantedBy=multi-user.target

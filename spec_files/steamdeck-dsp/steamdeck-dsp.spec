@@ -43,24 +43,31 @@ xz --check=crc32 %{buildroot}%{_prefix}/lib/firmware/amd/sof/*
 xz --check=crc32 %{buildroot}%{_prefix}/lib/firmware/amd/sof-tplg/*
 rm -f %{buildroot}%{_unitdir}/multi-user.target.wants/wireplumber-sysconf.service
 rm -f %{buildroot}%{_sysconfdir}/wireplumber
-mkdir -p %{buildroot}%{_libexecdir}
-mv %{buildroot}%{_datadir}/wireplumber/hardware-profiles/wireplumber-hwconfig %{buildroot}%{_libexecdir}/wireplumber-hwconfig
+rm -f %{buildroot}%{_unitdir}/multi-user.target.wants/pipewire-sysconf.service
+rm -f %{buildroot}%{_sysconfdir}/pipewire
+mkdir -p %{buildroot}%{_libexecdir}/hwsupport
+mv %{buildroot}%{_datadir}/wireplumber/hardware-profiles/wireplumber-hwconfig %{buildroot}%{_libexecdir}/hwsupport/wireplumber-hwconfig
+mv %{buildroot}%{_datadir}/pipewire/hardware-profiles/pipewire-hwconfig %{buildroot}%{_libexecdir}/hwsupport/pipewire-hwconfig
+rm %{buildroot}%{_datadir}/wireplumber/hardware-profiles/default
+rm %{buildroot}%{_datadir}/pipewire/hardware-profiles/default
 
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.
 %files
 %license LICENSE
 %{_prefix}/lib/firmware/amd/*
-%{_libexecdir}/wireplumber-hwconfig
+%{_libexecdir}/hwsupport/wireplumber-hwconfig
+%{_libexecdir}/hwsupport/pipewire-hwconfig
 %{_libdir}/lv2/svg/valve_deck_*
 %{_libdir}/lv2/valve_*
 %{_datadir}/alsa/ucm2/conf.d/acp5x/*.conf
 %{_datadir}/alsa/ucm2/conf.d/sof-nau8821-max/*.conf
-%{_datadir}/pipewire/pipewire.conf.d/*.conf
 %{_datadir}/wireplumber/hardware-profiles/*
 %{_datadir}/wireplumber/main.lua.d/*.lua
 %{_datadir}/wireplumber/scripts/*.lua
 %{_unitdir}/wireplumber-sysconf.service
+%{_datadir}/pipewire/hardware-profiles/*
+%{_unitdir}/pipewire-sysconf.service
 
 %post
 %systemd_post wireplumber-sysconf.service

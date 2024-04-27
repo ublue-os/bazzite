@@ -31,7 +31,7 @@ jobs:
           - bazzite-gnome-asus
           - bazzite-asus-nvidia
           - bazzite-gnome-asus-nvidia
-        major_version: [39]
+        major_version: [40]
     steps:
 
       - name: Free Disk Space (Ubuntu)
@@ -71,10 +71,10 @@ jobs:
         id: generate-flatpak-dir-shortname
         shell: bash
         run: |
-          FLATPAK_DIR_SHORTNAME="scripts/kde_flatpaks"
+          FLATPAK_DIR_SHORTNAME="installer/kde_flatpaks"
 
           if [[ "${{ matrix.image_name }}" =~ "gnome" ]]; then
-            FLATPAK_DIR_SHORTNAME="scripts/gnome_flatpaks"
+            FLATPAK_DIR_SHORTNAME="installer/gnome_flatpaks"
           fi
 
           echo "flatpak-dir-shortname=${FLATPAK_DIR_SHORTNAME}" >> $GITHUB_OUTPUT
@@ -166,12 +166,3 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y rclone
           rclone copy $SOURCE_DIR R2:bazzite
-
-      - name: Upload ISOs to archive.org
-        if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
-        uses: qoijjj/internet-archive-upload@v7
-        with:
-          access-key: ${{ secrets.IA_ACCESS_KEY }}
-          secret-key: ${{ secrets.IA_SECRET_KEY }}
-          identifier: ${{ matrix.image_name }}
-          files: ${{ steps.upload-directory.outputs.iso-upload-dir }}

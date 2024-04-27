@@ -1,5 +1,5 @@
 Name:       wireplumber
-Version:    0.4.17
+Version:    0.5.1
 Release:    1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary:    A modular session/policy manager for PipeWire
 
@@ -8,11 +8,13 @@ URL:        https://pipewire.pages.freedesktop.org/wireplumber/
 Source0:    https://gitlab.freedesktop.org/pipewire/%{name}/-/archive/%{version}/%{name}-%{version}.tar.bz2
 
 ## upstream patches
-Patch0:     valve.patch
 
 ## upstreamable patches
 
 ## fedora patches
+
+## valve patches
+Patch0:     valve.patch
 
 BuildRequires:  gettext
 BuildRequires:  meson gcc pkgconfig
@@ -54,6 +56,13 @@ Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 %description    devel
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
+
+%package        doc
+Summary:        Documentation for %{name}
+Recommends:     %{name}%{?_isa} = %{version}-%{release}
+
+%description doc
+This package contains the documentation for WirePlumber.
 
 %description
 WirePlumber is a modular session/policy manager for PipeWire and a
@@ -107,25 +116,43 @@ fi
 %dir %{_sysconfdir}/wireplumber/main.lua.d
 %dir %{_sysconfdir}/wireplumber/policy.lua.d
 %{_datadir}/wireplumber/
-%dir %{_datadir}/wireplumber/wireplumber.conf.d
 %{_datadir}/zsh/site-functions/_wpctl
 %{_userunitdir}/wireplumber.service
 %{_userunitdir}/wireplumber@.service
 
 %files libs -f %{name}.lang
 %license LICENSE
-%dir %{_libdir}/wireplumber-0.4/
-%{_libdir}/wireplumber-0.4/libwireplumber-*.so
-%{_libdir}/libwireplumber-0.4.so.*
-%{_libdir}/girepository-1.0/Wp-0.4.typelib
+%dir %{_libdir}/wireplumber-0.5/
+%{_libdir}/wireplumber-0.5/libwireplumber-*.so
+%{_libdir}/libwireplumber-0.5.so.*
+%{_libdir}/girepository-1.0/Wp-0.5.typelib
 
 %files devel
-%{_includedir}/wireplumber-0.4/
-%{_libdir}/libwireplumber-0.4.so
-%{_libdir}/pkgconfig/wireplumber-0.4.pc
-%{_datadir}/gir-1.0/Wp-0.4.gir
+%{_includedir}/wireplumber-0.5/
+%{_libdir}/libwireplumber-0.5.so
+%{_libdir}/pkgconfig/wireplumber-0.5.pc
+%{_datadir}/gir-1.0/Wp-0.5.gir
+
+%files doc
+%{_datadir}/doc/wireplumber/
 
 %changelog
+* Tue Apr 02 2024 Wim Taymans <wtaymans@redhat.com> - 0.5.1-1
+- wireplumber 0.5.1
+
+* Mon Mar 25 2024 Adam Williamson <awilliam@redhat.com> - 0.5.0-2
+- Backport MR #620 to fix issues with bluetooth headsets etc.
+- Resolves: rhbz#2269343
+
+* Mon Mar 18 2024 Wim Taymans <wtaymans@redhat.com> - 0.5.0-1
+- wireplumber 0.5.0
+
+* Mon Mar 11 2024 Wim Taymans <wtaymans@redhat.com> - 0.4.90-1
+- wireplumber 0.4.90
+
+* Thu Jan 25 2024 Wim Taymans <wtaymans@redhat.com> - 0.4.81-1
+- wireplumber 0.4.81
+
 * Mon Dec 4 2023 Wim Taymans <wtaymans@redhat.com> - 0.4.17-1
 - wireplumber 0.4.17
 

@@ -5,7 +5,8 @@ Summary:        DualShock 4/DualSense mouse inhibitor
 License:        BSD-2-Clause
 URL:            https://github.com/ublue-os/bazzite
 
-Source:         https://gitlab.com/evlaV/%{name}/-/archive/main/%{name}-main.tar.gz
+Source0:         https://gitlab.com/evlaV/%{name}/-/archive/main/%{name}-main.tar.gz
+Source1:        10-modprobe-ds.conf
 BuildArch:      noarch
 
 Patch0:         fedora.patch
@@ -31,8 +32,10 @@ chmod +x ds_inhibit.py
 %install
 mkdir -p %{buildroot}%{_bindir}/
 mkdir -p %{buildroot}%{_unitdir}/
+mkdir -p %{buildroot}%{_sysconfdir}/modules-load.d
 cp -v ds_inhibit.py %{buildroot}%{_bindir}/ds-inhibit
 cp -v systemd.service %{buildroot}%{_unitdir}/ds-inhibit.service
+cp %{SOURCE1} %{buildroot}%{_sysconfdir}/modules-load.d
 
 # Do post-installation
 %post
@@ -52,6 +55,7 @@ cp -v systemd.service %{buildroot}%{_unitdir}/ds-inhibit.service
 %license LICENSE
 %{_bindir}/ds-inhibit
 %{_unitdir}/ds-inhibit.service
+%{_sysconfdir}/modules-load.d/10-modprobe-ds.conf
 
 # Finally, changes from the latest release of your application are generated from
 # your project's Git history. It will be empty until you make first annotated Git tag.

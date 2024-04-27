@@ -4,21 +4,11 @@ set -e
 
 die() { echo >&2 "!! $*"; exit 1; }
 
-source /etc/default/desktop-wayland
-
 SENTINEL_FILE="steamos-session-select"
-if ${DESKTOP_WAYLAND}; then
-  SENTINEL_VALUE="wayland"
-else
-  SENTINEL_VALUE="x11"
-fi
+SENTINEL_VALUE="wayland"
 
 # If we proceed, execute this
-if ${DESKTOP_WAYLAND}; then
-  CHAINED_SESSION="/usr/bin/startplasma-wayland"
-else
-  CHAINED_SESSION="/usr/bin/startplasma-x11"
-fi
+CHAINED_SESSION="/usr/bin/startplasma-wayland"
 
 # If we decide the sentinel is consumed, execute this command instead and fail
 RESTORE_SESSION=(steamos-session-select) # No arguments restores the session

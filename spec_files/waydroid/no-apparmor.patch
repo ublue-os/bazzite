@@ -1,0 +1,37 @@
+diff --git a/data/configs/config_1 b/data/configs/config_1
+index 365cac30..45112766 100644
+--- a/data/configs/config_1
++++ b/data/configs/config_1
+@@ -2,7 +2,6 @@ lxc.utsname = waydroid
+ 
+ lxc.init_cmd = /init
+ 
+-lxc.aa_profile = unconfined
+ lxc.seccomp = /var/lib/waydroid/lxc/waydroid/waydroid.seccomp
+ 
+ lxc.network.type = veth
+diff --git a/data/configs/config_3 b/data/configs/config_3
+index 3c822264..7e5e44f8 100644
+--- a/data/configs/config_3
++++ b/data/configs/config_3
+@@ -1,6 +1,5 @@
+ lxc.uts.name = waydroid
+ 
+-lxc.apparmor.profile = unconfined
+ lxc.seccomp.profile = /var/lib/waydroid/lxc/waydroid/waydroid.seccomp
+ 
+ lxc.no_new_privs = 1
+diff --git a/tools/helpers/lxc.py b/tools/helpers/lxc.py
+index 6be7b7dd..9c8c9e55 100644
+--- a/tools/helpers/lxc.py
++++ b/tools/helpers/lxc.py
+@@ -161,9 +161,6 @@ def set_lxc_config(args):
+     tools.helpers.run.user(args, command)
+     command = ["cp", "-fpr", seccomp_profile, lxc_path + "/waydroid.seccomp"]
+     tools.helpers.run.user(args, command)
+-    if get_apparmor_status(args):
+-        command = ["sed", "-i", "-E", "/lxc.aa_profile|lxc.apparmor.profile/ s/unconfined/{}/g".format(LXC_APPARMOR_PROFILE), lxc_path + "/config"]
+-        tools.helpers.run.user(args, command)
+ 
+     nodes = generate_nodes_lxc_config(args)
+     config_nodes_tmp_path = args.work + "/config_nodes"

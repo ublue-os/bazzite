@@ -47,64 +47,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        base_image_flavor: [main, asus, framework, surface]
+        base_image_flavor: [main]
         base_name: [bazzite, bazzite-deck, bazzite-nvidia]
         base_image_name: [kinoite, silverblue]
-        major_version: [39]
+        target_image_flavor: [main, asus]
+        fedora_version: [40]
         include:
-          - major_version: 39
+          - fedora_version: 40
             is_latest_version: true
             is_stable_version: true
-        exclude:
-          - base_name: bazzite-deck
-            base_image_flavor: nvidia
-          - base_name: bazzite-deck
-            base_image_flavor: asus-nvidia
-          - base_name: bazzite-deck
-            base_image_flavor: surface
-          - base_name: bazzite-deck
-            base_image_flavor: surface-nvidia
-          - base_name: bazzite-nvidia
-            base_image_flavor: framework
+            kernel_flavor: fsync  # must match a kernel_flavor from akmods repo
     steps:
-      - name: Verify base image
-        uses: EyeCantCU/cosign-action/verify@v0.2.2
-        with:
-          containers: ${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}
-          pubkey: https://raw.githubusercontent.com/ublue-os/${{ matrix.base_image_flavor }}/main/cosign.pub
-
-      # Checkout push-to-registry action GitHub repository
-      - name: Checkout Push to Registry action
-        uses: actions/checkout@v4
-
-      - name: Check just syntax
-        uses: ublue-os/just-action@v1
-
-      - name: Maximize build space
-        uses: ublue-os/remove-unwanted-software@v6
-
-      - name: Matrix Variables
+      - name: Define env.IMAGE_FLAVOR
         run: |
-          echo "AKMODS_FLAVOR=fsync-lts" >> $GITHUB_ENV
-          echo "BASE_IMAGE_NAME=${{ matrix.base_image_name }}" >> $GITHUB_ENV
-
-          if [[ "${{ matrix.base_image_flavor }}" == "framework" ]]; then
-              echo "BASE_IMAGE_FLAVOR=framework" >> $GITHUB_ENV
-          else
-              echo "BASE_IMAGE_FLAVOR=main" >> $GITHUB_ENV
-          fi
-
           if [[ "${{ matrix.base_name }}" == "bazzite-nvidia" ]]; then
-              if [[ "${{ matrix.base_image_flavor }}" == "main" ]]; then
+              if [[ "${{ matrix.target_image_flavor }}" == "main" ]]; then
                   echo "IMAGE_FLAVOR=nvidia" >> $GITHUB_ENV
               else
-                  echo "IMAGE_FLAVOR=${{ format('{0}-{1}', matrix.base_image_flavor, 'nvidia') }}" >> $GITHUB_ENV
+                  echo "IMAGE_FLAVOR=${{ format('{0}-{1}', matrix.target_image_flavor, 'nvidia') }}" >> $GITHUB_ENV
               fi
           else
-              echo "IMAGE_FLAVOR=${{ matrix.base_image_flavor }}" >> $GITHUB_ENV
+              echo "IMAGE_FLAVOR=${{ matrix.target_image_flavor }}" >> $GITHUB_ENV
           fi
 
-      - name: Set image name
+      - name: Define env.IMAGE_NAME
         run: |
           DESKTOP=""
           if [[ "${{ matrix.base_image_name }}" == "silverblue" ]]; then
@@ -112,10 +78,8 @@ jobs:
           fi
 
           if [[ "${{ matrix.base_name }}" == "bazzite-deck" ]]; then
-              if [[ "${{ matrix.base_image_flavor }}" == "asus" ]]; then
+              if [[ "${{ matrix.target_image_flavor }}" == "asus" ]]; then
                   echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-ally', '${DESKTOP}') }}" >> $GITHUB_ENV
-              elif [[ "${{ matrix.base_image_flavor }}" == "framework" ]]; then
-                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-framegame', '${DESKTOP}') }}" >> $GITHUB_ENV
               else
                   echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-deck', '${DESKTOP}') }}" >> $GITHUB_ENV
               fi
@@ -127,19 +91,50 @@ jobs:
               fi
           fi
 
+      - name: Verify main image
+        uses: EyeCantCU/cosign-action/verify@v0.2.2
+        with:
+          containers: ${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/${{ matrix.base_image_flavor }}/main/cosign.pub
+          registry: ${{ env.IMAGE_REGISTRY }}
+
+      - name: Verify akmods image
+        uses: EyeCantCU/cosign-action/verify@v0.2.2
+        with:
+          containers: akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
+          registry: ${{ env.IMAGE_REGISTRY }}
+
+      - name: Verify akmods-nvidia image
+        uses: EyeCantCU/cosign-action/verify@v0.2.2
+        with:
+          containers: akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
+          registry: ${{ env.IMAGE_REGISTRY }}
+
+      # Checkout push-to-registry action GitHub repository
+      - name: Checkout Push to Registry action
+        uses: actions/checkout@v4
+
+      - name: Check just syntax
+        uses: ublue-os/just-action@v1
+
+      - name: Maximize build space
+        uses: ublue-os/remove-unwanted-software@v6
+
       - name: Generate tags
         id: generate-tags
         shell: bash
         run: |
           # Generate a timestamp for creating an image version history
           TIMESTAMP="$(date +%Y%m%d)"
-          MAJOR_VERSION="${{ matrix.major_version }}"
+          FEDORA_VERSION="${{ matrix.fedora_version }}"
           COMMIT_TAGS=()
           BUILD_TAGS=()
           # Have tags for tracking builds during pull request
           SHA_SHORT="${GITHUB_SHA::7}"
-          COMMIT_TAGS+=("pr-${{ github.event.pull_request.number }}-${MAJOR_VERSION}")
-          COMMIT_TAGS+=("${SHA_SHORT}-${MAJOR_VERSION}")
+          COMMIT_TAGS+=("pr-${{ github.event.pull_request.number }}-${FEDORA_VERSION}")
+          COMMIT_TAGS+=("${SHA_SHORT}-${FEDORA_VERSION}")
           if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
              [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
               COMMIT_TAGS+=("pr-${{ github.event.pull_request.number }}")
@@ -147,20 +142,20 @@ jobs:
           fi
 
           if [[ ${{ github.ref_name }} == "unstable" ]]; then
-             BUILD_TAGS=("${MAJOR_VERSION}-unstable" "${MAJOR_VERSION}-unstable-${TIMESTAMP}")
+             BUILD_TAGS=("${FEDORA_VERSION}-unstable" "${FEDORA_VERSION}-unstable-${TIMESTAMP}")
              if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
                 [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
                  BUILD_TAGS+=("unstable")
              fi
           elif [[ ${{ github.ref_name }} == "testing" ]]; then
-             BUILD_TAGS=("${MAJOR_VERSION}-testing" "${MAJOR_VERSION}-testing-${TIMESTAMP}")
+             BUILD_TAGS=("${FEDORA_VERSION}-testing" "${FEDORA_VERSION}-testing-${TIMESTAMP}")
              if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
                 [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
                  BUILD_TAGS+=("testing")
              fi
           else
-             BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
-             BUILD_TAGS+=("${MAJOR_VERSION}-stable" "${MAJOR_VERSION}-stable-${TIMESTAMP}")
+             BUILD_TAGS=("${FEDORA_VERSION}" "${FEDORA_VERSION}-${TIMESTAMP}")
+             BUILD_TAGS+=("${FEDORA_VERSION}-stable" "${FEDORA_VERSION}-stable-${TIMESTAMP}")
              if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
                 [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
                  BUILD_TAGS+=("latest" "stable")
@@ -182,21 +177,30 @@ jobs:
           done
           echo "alias_tags=${alias_tags[*]}" >> $GITHUB_OUTPUT
 
-      - name: Get Current Fedora Version
+      - name: Pull main and akmods images
+        uses: Wandalen/wretry.action@v3.4.0
+        with:
+          attempt_limit: 3
+          attempt_delay: 15000
+          command: |
+            # pull the base images used for FROM in Containerfile so
+            # we can retry on that unfortunately common failure case
+            podman pull ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
+            podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+            podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+
+      - name: Get kernel version
         id: labels
         shell: bash
         run: |
           set -eo pipefail
-          if [[ "${{ matrix.base_name }}" == "bazzite-nvidia" ]]; then
-              ver=$(skopeo inspect docker://ghcr.io/ublue-os/bazzite-${{ env.IMAGE_FLAVOR }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
-          else
-              ver=$(skopeo inspect docker://ghcr.io/ublue-os/${{ matrix.base_image_name }}-${{ env.IMAGE_FLAVOR }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
-          fi
-          if [ -z "$ver" ] || [ "null" = "$ver" ]; then
-            echo "inspected image version must not be empty or null"
+          skopeo inspect docker://${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor }}-${{ matrix.fedora_version }} > akmods.json
+          linux=$(jq -r '.Labels["ostree.linux"]' akmods.json)
+          if [ -z "$linux" ] || [ "null" = "$linux" ]; then
+            echo "inspected image linux version must not be empty or null"
             exit 1
           fi
-          echo "VERSION=$ver" >> $GITHUB_OUTPUT
+          echo "KERNEL_VERSION=$linux" >> $GITHUB_ENV
 
       # Build metadata
       - name: Image Metadata
@@ -206,9 +210,8 @@ jobs:
           images: |
             ${{ env.IMAGE_NAME }}
           labels: |
-            ostree.linux=${{ env.KERNEL_VERSION }}.fc${{ matrix.major_version }}.x86_64
+            ostree.linux=${{ env.KERNEL_VERSION }}
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
-            org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
             org.opencontainers.image.description=Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
             io.artifacthub.package.readme-url=https://bazzite.gg/
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
@@ -228,9 +231,9 @@ jobs:
             IMAGE_FLAVOR=${{ env.IMAGE_FLAVOR }}
             IMAGE_VENDOR=${{ github.repository_owner }}
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
-            BASE_IMAGE_FLAVOR=${{ env.BASE_IMAGE_FLAVOR }}
-            FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
-            AKMODS_FLAVOR=${{ env.AKMODS_FLAVOR }}
+            BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }}
+            FEDORA_VERSION=${{ matrix.fedora_version }}
+            KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
             IMAGE_BRANCH=${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
@@ -255,20 +258,24 @@ jobs:
 
       # Push the image to GHCR (Image Registry)
       - name: Push To GHCR
-        uses: redhat-actions/push-to-registry@v2
+        uses: Wandalen/wretry.action@v3.4.0
         id: push
         if: github.event_name != 'pull_request'
         env:
           REGISTRY_USER: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ github.token }}
         with:
-          image: ${{ steps.build_image.outputs.image }}
-          tags: ${{ steps.build_image.outputs.tags }}
-          registry: ${{ steps.registry_case.outputs.lowercase }}
-          username: ${{ env.REGISTRY_USER }}
-          password: ${{ env.REGISTRY_PASSWORD }}
-          extra-args: |
-            --disable-content-trust
+          action: redhat-actions/push-to-registry@v2
+          attempt_limit: 3
+          attempt_delay: 15000
+          with: |
+            image: ${{ steps.build_image.outputs.image }}
+            tags: ${{ steps.build_image.outputs.tags }}
+            registry: ${{ steps.registry_case.outputs.lowercase }}
+            username: ${{ env.REGISTRY_USER }}
+            password: ${{ env.REGISTRY_PASSWORD }}
+            extra-args: |
+              --disable-content-trust
 
       - name: Sign container image
         uses: EyeCantCU/cosign-action/sign@v0.2.2
@@ -277,7 +284,8 @@ jobs:
           containers: ${{ env.IMAGE_NAME }}
           registry-token: ${{ secrets.GITHUB_TOKEN }}
           signing-secret: ${{ secrets.SIGNING_SECRET }}
-          tags: ${{ steps.push.outputs.digest }}
+          tags: ${{ steps.push.outputs.outputs && fromJSON(steps.push.outputs.outputs).digest }}
+
 
       - name: Echo outputs
         if: github.event_name != 'pull_request'

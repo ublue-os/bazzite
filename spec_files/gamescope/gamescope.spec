@@ -1,7 +1,8 @@
 %global libliftoff_minver 0.4.1
+%global gamescope_version 3.13.19
 
 Name:           gamescope
-Version:        3.13.19
+Version:        100.%{gamescope_version}
 Release:    	1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary:        Micro-compositor for video games on Wayland
 
@@ -18,6 +19,7 @@ Source6:        legion_go.patch
 Source7:	    loki.patch
 Source8:        0001-disable-steam-touch-click-atom.patch
 Source9:        3.13.16.9-splitgate.patch
+Source10:       amd_hdr.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -75,7 +77,7 @@ Summary:	libs for %{name}
 %summary
 
 %prep
-git clone --single-branch --branch %{version} https://github.com/ValveSoftware/gamescope.git
+git clone --single-branch --branch %{gamescope_version} https://github.com/ValveSoftware/gamescope.git
 cd gamescope
 git submodule update --init --recursive
 mkdir -p pkgconfig
@@ -88,6 +90,7 @@ patch -Np1 < %{SOURCE6}
 patch -Np1 < %{SOURCE7}
 patch -Np1 < %{SOURCE8}
 patch -Np1 < %{SOURCE9}
+patch -Np1 < %{SOURCE10}
 
 %build
 cd gamescope

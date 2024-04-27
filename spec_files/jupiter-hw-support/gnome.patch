@@ -1,18 +1,17 @@
 diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
-index bf58da0..390fa6d 100755
+index 0f31509..1c64336 100755
 --- a/usr/lib/hwsupport/steamos-automount.sh
 +++ b/usr/lib/hwsupport/steamos-automount.sh
-@@ -2,6 +2,9 @@
- 
+@@ -3,6 +3,8 @@
  set -euo pipefail
  
+ source /etc/default/steamos-btrfs
 +IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 +BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-+
- # Originally from https://serverfault.com/a/767079
  
- # This script is called from our systemd unit file to mount or unmount
-@@ -198,6 +201,10 @@ do_mount()
+ . /usr/libexec/hwsupport/common-functions
+ 
+@@ -174,6 +176,10 @@ do_mount()
              ;;
      esac
  

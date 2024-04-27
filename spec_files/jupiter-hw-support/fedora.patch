@@ -1,5 +1,15 @@
+diff --git a/usr/bin/amd_system_info b/usr/bin/amd_system_info
+index ada6104..e40e82a 100755
+--- a/usr/bin/amd_system_info
++++ b/usr/bin/amd_system_info
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/usr/bin/bash
+ 
+ # script from AMD to use when reporting bugs to them
+ 
 diff --git a/usr/bin/jupiter-biosupdate b/usr/bin/jupiter-biosupdate
-index 7b7a206..273a162 100755
+index 26bcd14..1f89423 100755
 --- a/usr/bin/jupiter-biosupdate
 +++ b/usr/bin/jupiter-biosupdate
 @@ -1,4 +1,4 @@
@@ -9,7 +19,7 @@ index 7b7a206..273a162 100755
  
  ## Environment overrides
 diff --git a/usr/bin/jupiter-check-support b/usr/bin/jupiter-check-support
-index bd56a57..0bef6f2 100755
+index bd56a57..4571cc9 100755
 --- a/usr/bin/jupiter-check-support
 +++ b/usr/bin/jupiter-check-support
 @@ -1,4 +1,4 @@
@@ -19,7 +29,7 @@ index bd56a57..0bef6f2 100755
  set -e
  
 diff --git a/usr/bin/jupiter-controller-update b/usr/bin/jupiter-controller-update
-index 4f850b3..ce69763 100755
+index a7d36f4..246787b 100755
 --- a/usr/bin/jupiter-controller-update
 +++ b/usr/bin/jupiter-controller-update
 @@ -1,4 +1,4 @@
@@ -28,8 +38,28 @@ index 4f850b3..ce69763 100755
  
  set -euo pipefail
  
+diff --git a/usr/bin/jupiter-initial-firmware-update b/usr/bin/jupiter-initial-firmware-update
+index 53f335f..db4f759 100755
+--- a/usr/bin/jupiter-initial-firmware-update
++++ b/usr/bin/jupiter-initial-firmware-update
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/usr/bin/bash
+ 
+ set -euo pipefail
+ 
+diff --git a/usr/bin/steamos-polkit-helpers/jupiter-amp-control b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
+index 5f1d205..69dafad 100755
+--- a/usr/bin/steamos-polkit-helpers/jupiter-amp-control
++++ b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/usr/bin/bash
+ 
+ set -eu
+ 
 diff --git a/usr/bin/steamos-polkit-helpers/jupiter-biosupdate b/usr/bin/steamos-polkit-helpers/jupiter-biosupdate
-index 1d7b792..c716d12 100755
+index 1d7b792..d90a443 100755
 --- a/usr/bin/steamos-polkit-helpers/jupiter-biosupdate
 +++ b/usr/bin/steamos-polkit-helpers/jupiter-biosupdate
 @@ -1,4 +1,4 @@
@@ -39,7 +69,7 @@ index 1d7b792..c716d12 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/jupiter-check-support b/usr/bin/steamos-polkit-helpers/jupiter-check-support
-index 9a442c8..862cec7 100755
+index 9a442c8..4df43e8 100755
 --- a/usr/bin/steamos-polkit-helpers/jupiter-check-support
 +++ b/usr/bin/steamos-polkit-helpers/jupiter-check-support
 @@ -1,4 +1,4 @@
@@ -49,7 +79,7 @@ index 9a442c8..862cec7 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/jupiter-dock-updater b/usr/bin/steamos-polkit-helpers/jupiter-dock-updater
-index 15c695b..8733486 100755
+index 15c695b..ef206ba 100755
 --- a/usr/bin/steamos-polkit-helpers/jupiter-dock-updater
 +++ b/usr/bin/steamos-polkit-helpers/jupiter-dock-updater
 @@ -1,4 +1,4 @@
@@ -59,7 +89,7 @@ index 15c695b..8733486 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/jupiter-fan-control b/usr/bin/steamos-polkit-helpers/jupiter-fan-control
-index 2dfa176..ce77476 100755
+index 2dfa176..975f552 100755
 --- a/usr/bin/steamos-polkit-helpers/jupiter-fan-control
 +++ b/usr/bin/steamos-polkit-helpers/jupiter-fan-control
 @@ -1,4 +1,4 @@
@@ -69,7 +99,7 @@ index 2dfa176..ce77476 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/jupiter-get-als-gain b/usr/bin/steamos-polkit-helpers/jupiter-get-als-gain
-index 775b5f4..f97753b 100755
+index 0337e69..add9e8e 100755
 --- a/usr/bin/steamos-polkit-helpers/jupiter-get-als-gain
 +++ b/usr/bin/steamos-polkit-helpers/jupiter-get-als-gain
 @@ -1,4 +1,4 @@
@@ -79,7 +109,7 @@ index 775b5f4..f97753b 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-devkit-mode b/usr/bin/steamos-polkit-helpers/steamos-devkit-mode
-index b93f523..1678640 100755
+index b93f523..70ca709 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-devkit-mode
 +++ b/usr/bin/steamos-polkit-helpers/steamos-devkit-mode
 @@ -1,4 +1,4 @@
@@ -89,7 +119,7 @@ index b93f523..1678640 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-disable-wireless-power-management b/usr/bin/steamos-polkit-helpers/steamos-disable-wireless-power-management
-index 82b602c..ab77256 100755
+index 82b602c..4d0c684 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-disable-wireless-power-management
 +++ b/usr/bin/steamos-polkit-helpers/steamos-disable-wireless-power-management
 @@ -1,4 +1,4 @@
@@ -99,7 +129,7 @@ index 82b602c..ab77256 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-enable-sshd b/usr/bin/steamos-polkit-helpers/steamos-enable-sshd
-index fa7698f..ba4ab84 100755
+index fa7698f..2f129a8 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-enable-sshd
 +++ b/usr/bin/steamos-polkit-helpers/steamos-enable-sshd
 @@ -1,4 +1,4 @@
@@ -109,7 +139,7 @@ index fa7698f..ba4ab84 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-factory-reset-config b/usr/bin/steamos-polkit-helpers/steamos-factory-reset-config
-index 3a2a367..aaeb20a 100755
+index 3a2a367..580beb0 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-factory-reset-config
 +++ b/usr/bin/steamos-polkit-helpers/steamos-factory-reset-config
 @@ -1,4 +1,4 @@
@@ -119,7 +149,7 @@ index 3a2a367..aaeb20a 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-device b/usr/bin/steamos-polkit-helpers/steamos-format-device
-index d9866a9..dcfe6b9 100755
+index d9866a9..a133624 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-format-device
 +++ b/usr/bin/steamos-polkit-helpers/steamos-format-device
 @@ -1,4 +1,4 @@
@@ -129,7 +159,7 @@ index d9866a9..dcfe6b9 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard b/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
-index 6d9859f..53b4f2a 100755
+index 6d9859f..e43e952 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
 +++ b/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
 @@ -1,4 +1,4 @@
@@ -139,7 +169,7 @@ index 6d9859f..53b4f2a 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-poweroff-now b/usr/bin/steamos-polkit-helpers/steamos-poweroff-now
-index 1841ce0..e7e234e 100755
+index 1841ce0..9cfa9a6 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-poweroff-now
 +++ b/usr/bin/steamos-polkit-helpers/steamos-poweroff-now
 @@ -1,4 +1,4 @@
@@ -149,7 +179,7 @@ index 1841ce0..e7e234e 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-priv-write b/usr/bin/steamos-polkit-helpers/steamos-priv-write
-index 907133b..1c0f6c6 100755
+index e307823..d78a81d 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-priv-write
 +++ b/usr/bin/steamos-polkit-helpers/steamos-priv-write
 @@ -1,4 +1,4 @@
@@ -159,7 +189,7 @@ index 907133b..1c0f6c6 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-reboot-now b/usr/bin/steamos-polkit-helpers/steamos-reboot-now
-index b4dcc81..6dc8018 100755
+index b4dcc81..5ff87b5 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-reboot-now
 +++ b/usr/bin/steamos-polkit-helpers/steamos-reboot-now
 @@ -1,4 +1,4 @@
@@ -169,7 +199,7 @@ index b4dcc81..6dc8018 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-reboot-other b/usr/bin/steamos-polkit-helpers/steamos-reboot-other
-index ad466f2..60f9f8c 100755
+index ad466f2..073927b 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-reboot-other
 +++ b/usr/bin/steamos-polkit-helpers/steamos-reboot-other
 @@ -1,4 +1,4 @@
@@ -179,7 +209,7 @@ index ad466f2..60f9f8c 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-restart-sddm b/usr/bin/steamos-polkit-helpers/steamos-restart-sddm
-index 9e08cd6..189c805 100755
+index 9e08cd6..0711514 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-restart-sddm
 +++ b/usr/bin/steamos-polkit-helpers/steamos-restart-sddm
 @@ -1,4 +1,4 @@
@@ -189,7 +219,7 @@ index 9e08cd6..189c805 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-select-branch b/usr/bin/steamos-polkit-helpers/steamos-select-branch
-index 1b1d6c1..73f8547 100755
+index 1b1d6c1..73c1bb2 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-select-branch
 +++ b/usr/bin/steamos-polkit-helpers/steamos-select-branch
 @@ -1,4 +1,4 @@
@@ -199,7 +229,7 @@ index 1b1d6c1..73f8547 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-set-hostname b/usr/bin/steamos-polkit-helpers/steamos-set-hostname
-index f63e164..400ab9e 100755
+index f63e164..56c7905 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-set-hostname
 +++ b/usr/bin/steamos-polkit-helpers/steamos-set-hostname
 @@ -1,4 +1,4 @@
@@ -209,7 +239,7 @@ index f63e164..400ab9e 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-set-timezone b/usr/bin/steamos-polkit-helpers/steamos-set-timezone
-index 2811d82..a3935c4 100755
+index 2811d82..427314a 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-set-timezone
 +++ b/usr/bin/steamos-polkit-helpers/steamos-set-timezone
 @@ -1,4 +1,4 @@
@@ -219,7 +249,7 @@ index 2811d82..a3935c4 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-trim-devices b/usr/bin/steamos-polkit-helpers/steamos-trim-devices
-index 38f92a1..296a6c7 100755
+index 38f92a1..296d5d6 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-trim-devices
 +++ b/usr/bin/steamos-polkit-helpers/steamos-trim-devices
 @@ -1,4 +1,4 @@
@@ -229,7 +259,7 @@ index 38f92a1..296a6c7 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-update b/usr/bin/steamos-polkit-helpers/steamos-update
-index bae7403..1a7e948 100755
+index bae7403..8a69dd8 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-update
 +++ b/usr/bin/steamos-polkit-helpers/steamos-update
 @@ -1,4 +1,4 @@
@@ -238,8 +268,18 @@ index bae7403..1a7e948 100755
  
  set -eu
  
+diff --git a/usr/lib/hwsupport/block-device-event.sh b/usr/lib/hwsupport/block-device-event.sh
+index ee67e29..6ff1eb4 100755
+--- a/usr/lib/hwsupport/block-device-event.sh
++++ b/usr/lib/hwsupport/block-device-event.sh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/usr/bin/bash
+ 
+ set -euo pipefail
+ 
 diff --git a/usr/lib/hwsupport/format-device.sh b/usr/lib/hwsupport/format-device.sh
-index 6529e23..9de19b1 100755
+index 65d77f8..315c588 100755
 --- a/usr/lib/hwsupport/format-device.sh
 +++ b/usr/lib/hwsupport/format-device.sh
 @@ -1,4 +1,4 @@
@@ -249,7 +289,7 @@ index 6529e23..9de19b1 100755
  set -e
  
 diff --git a/usr/lib/hwsupport/format-sdcard.sh b/usr/lib/hwsupport/format-sdcard.sh
-index 36df682..3e13083 100755
+index 36df682..99ed89a 100755
 --- a/usr/lib/hwsupport/format-sdcard.sh
 +++ b/usr/lib/hwsupport/format-sdcard.sh
 @@ -1,3 +1,3 @@
@@ -258,7 +298,7 @@ index 36df682..3e13083 100755
  
  exec /usr/lib/hwsupport/format-device.sh --device /dev/mmcblk0 "$@"
 diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
-index 9e40c22..ce613b6 100755
+index 386f4d8..60bbc93 100755
 --- a/usr/lib/hwsupport/steamos-automount.sh
 +++ b/usr/lib/hwsupport/steamos-automount.sh
 @@ -1,4 +1,4 @@
@@ -268,7 +308,7 @@ index 9e40c22..ce613b6 100755
  set -euo pipefail
  
 diff --git a/usr/lib/hwsupport/trim-devices.sh b/usr/lib/hwsupport/trim-devices.sh
-index f5b3e8e..cc438af 100755
+index f5b3e8e..84897df 100755
 --- a/usr/lib/hwsupport/trim-devices.sh
 +++ b/usr/lib/hwsupport/trim-devices.sh
 @@ -1,4 +1,4 @@
@@ -277,8 +317,31 @@ index f5b3e8e..cc438af 100755
  
  set -e
  
+diff --git a/usr/lib/udev/rules.d/99-sdcard-rescan.rules b/usr/lib/udev/rules.d/99-sdcard-rescan.rules
+index 05b6167..f184d9e 100644
+--- a/usr/lib/udev/rules.d/99-sdcard-rescan.rules
++++ b/usr/lib/udev/rules.d/99-sdcard-rescan.rules
+@@ -1,3 +1,3 @@
+ # Work around the misdetection of some SanDisk microSD cards
+ 
+-ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/bin/systemd-run --no-block --collect /usr/lib/hwsupport/sdcard-rescan.sh %k"
++ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/sdcard-rescan.sh %k"
+diff --git a/usr/lib/udev/rules.d/99-steamos-automount.rules b/usr/lib/udev/rules.d/99-steamos-automount.rules
+index 49a5968..18b5149 100644
+--- a/usr/lib/udev/rules.d/99-steamos-automount.rules
++++ b/usr/lib/udev/rules.d/99-steamos-automount.rules
+@@ -5,7 +5,7 @@ KERNEL!="mmcblk*|sd*",          GOTO="steamos_automount_end"
+ ENV{ID_FS_USAGE}!="filesystem", GOTO="steamos_automount_end"
+ 
+ # The service expects to be asynchronous and shouldn't block udev rules
+-ACTION=="add",    RUN+="/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh add %k"
+-ACTION=="remove", RUN+="/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh remove %k"
++ACTION=="add",    RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh add %k"
++ACTION=="remove", RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh remove %k"
+ 
+ LABEL="steamos_automount_end"
 diff --git a/usr/share/jupiter_bios_updater/H2OFFTx64-G.sh b/usr/share/jupiter_bios_updater/H2OFFTx64-G.sh
-index 8089778..f0d591e 100755
+index 8089778..a47f449 100755
 --- a/usr/share/jupiter_bios_updater/H2OFFTx64-G.sh
 +++ b/usr/share/jupiter_bios_updater/H2OFFTx64-G.sh
 @@ -1,4 +1,4 @@
@@ -288,7 +351,7 @@ index 8089778..f0d591e 100755
  TARGET_DIR=.
  EXE_FILE=h2offt-g
 diff --git a/usr/share/jupiter_bios_updater/H2OFFTx64.sh b/usr/share/jupiter_bios_updater/H2OFFTx64.sh
-index ab3513f..9243bf3 100755
+index ab3513f..6259a69 100755
 --- a/usr/share/jupiter_bios_updater/H2OFFTx64.sh
 +++ b/usr/share/jupiter_bios_updater/H2OFFTx64.sh
 @@ -1,4 +1,4 @@
@@ -298,7 +361,7 @@ index ab3513f..9243bf3 100755
  TARGET_DIR=.
  EXE_FILE=h2offt
 diff --git a/usr/share/jupiter_controller_fw_updater/d20bootloader.py b/usr/share/jupiter_controller_fw_updater/d20bootloader.py
-index dadd0ef..27b8bc8 100755
+index 6b0ba2b..32c0329 100755
 --- a/usr/share/jupiter_controller_fw_updater/d20bootloader.py
 +++ b/usr/share/jupiter_controller_fw_updater/d20bootloader.py
 @@ -1,4 +1,4 @@
@@ -317,53 +380,3 @@ index 5ee6d41..c662149 100755
  import click
  import crcmod
  import datetime
-diff --git a/usr/lib/hwsupport/power-button-handler.py b/usr/lib/hwsupport/power-button-handler.py
-index 1a46251..73f2a3d 100755
---- a/usr/lib/hwsupport/power-button-handler.py
-+++ b/usr/lib/hwsupport/power-button-handler.py
-@@ -1,4 +1,4 @@
--#!/usr/bin/python
-+#!/usr/bin/python3
- 
- import evdev
- import threading
-
-diff --git a/usr/bin/jupiter-initial-firmware-update b/usr/bin/jupiter-initial-firmware-update
-index 1a46251..73f2a3d 100755
---- jupiter-initial-firmware-update
-+++ jupiter-initial-firmware-update
-@@ -1,4 +1,4 @@
--#!/bin/bash
-+#!/usr/bin/bash
- 
- set -euo pipefail
-
-diff --git a/usr/bin/amd_system_info b/usr/bin/amd_system_info
-index 1a46251..73f2a3d 100755
---- a/usr/bin/amd_system_info
-+++ b/usr/bin/amd_system_info
-@@ -1,4 +1,4 @@
--#!/bin/bash
-+#!/usr/bin/bash
- 
- # script from AMD to use when reporting bugs to them
- 
-diff --git a/usr/bin/steamos-polkit-helpers/jupiter-amp-control b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
-index 1a46251..73f2a3d 100755
---- a/usr/bin/steamos-polkit-helpers/jupiter-amp-control
-+++ b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
-@@ -1,4 +1,4 @@
--#!/bin/bash
-+#!/usr/bin/bash
- 
- set -eu
- 
-diff --git a/usr/bin/steamos-polkit-helpers/steamos-retrigger-automounts b/usr/bin/steamos-polkit-helpers/steamos-retrigger-automounts
-index 1a46251..73f2a3d 100755
---- a/usr/bin/steamos-polkit-helpers/steamos-retrigger-automounts
-+++ b/usr/bin/steamos-polkit-helpers/steamos-retrigger-automounts
-@@ -1,4 +1,4 @@
--#!/bin/bash
-+#!/usr/bin/bash
- 
- # Helper to send reload to all active steamos-automount services, via pkexec if necessary/allowed

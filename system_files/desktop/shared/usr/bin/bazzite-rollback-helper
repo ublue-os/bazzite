@@ -1,0 +1,86 @@
+#!/bin/bash
+
+image="$(echo $2 | cut -d ':' -f1)"
+branch="$(echo $2 | cut -d ':' -f2)"
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+DEFAULT_IMAGE=$(jq -r '."image-name"' < $IMAGE_INFO)
+DEFAULT_BRANCH=stable
+
+
+helptext=$(cat << EOF
+
+====== Bazzite Rollback Helper Util ======
+
+This tool aims to help with rollbacks and rebases
+
+Usage: bazzite-rollback-helper [OPTION] [ARGUMENT]
+
+Options:
+  list      List available Bazzite images, Default is "$DEFAULT_BRANCH"
+  rollback  Rolls back to previously installed Bazzite image. alias for "rpm-ostree rollback"
+  current   Show currently active Bazzite image
+  rebase    Rebase/rollback to specified Bazzite image, Default is $DEFAULT_IMAGE:$DEFAULT_BRANCH
+
+Examples:
+  bazzite-rollback-helper list stable
+  bazzite-rollback-helper rollback
+  bazzite-rollback-helper current
+  bazzite-rollback-helper rebase bazzite-deck:39-20240315
+  bazzite-rollback-helper rebase bazzite-deck:stable
+  bazzite-rollback-helper rebase stable
+
+For more help, visit https://discord.bazzite.gg.
+
+EOF
+)
+
+
+if [[ "$1" == "list" ]]; then
+  if [ -z "$2" ]; then
+      echo "Listing images for $DEFAULT_BRANCH"
+      skopeo list-tags docker://ghcr.io/ublue-os/bazzite | grep -- "-$DEFAULT_BRANCH-" | sort -rV
+  else
+      echo "Listing images for $2"
+      skopeo list-tags docker://ghcr.io/ublue-os/bazzite | grep -- "-$2-" | sort -rV
+  fi
+
+elif [[ "$1" == "rollback" ]]; then
+  rpm-ostree rollback
+
+elif [[ "$1" == "current" ]]; then
+  # current image
+  rpm-ostree status | grep ●
+  # current version
+  rpm-ostree status | grep -A 5 "●" | tail -n +2
+
+elif [[ "$1" == "rebase" ]]; then
+  base_image=ostree-image-signed:docker://ghcr.io/ublue-os
+  rebase_target=$DEFAULT_IMAGE:$DEFAULT_BRANCH
+
+  if [ -z "$2" ]; then
+    rebase_target=$DEFAULT_IMAGE:$DEFAULT_BRANCH
+  else
+    if [ "$image" == "$branch" ]; then
+      # only branch was provided as an arg, use default image
+      rebase_target=$DEFAULT_IMAGE:$branch
+    else
+      rebase_target=$image:$branch
+    fi
+  fi
+  full_image_path=$base_image/$rebase_target
+
+question=$(cat <<EOF
+Rebasing to $full_image_path. Continue? [y/N]:
+EOF
+)
+  read -p "$question" yn
+  case $yn in
+      [Yy]) echo "rebasing to $rebase_target" && rpm-ostree rebase $full_image_path;;
+      *) echo "Unknown option, exiting.";;
+  esac
+
+# display the helptext
+elif [[ "$1" == "-h" || "$1" == "--h" || "$1" == "-help" || "$1" == "--help" || "$1" == "help" || -z "$1" ]]; then
+ echo "$helptext"
+fi

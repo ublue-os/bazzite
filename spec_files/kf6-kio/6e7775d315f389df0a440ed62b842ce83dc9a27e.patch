@@ -1,0 +1,34 @@
+From 6e7775d315f389df0a440ed62b842ce83dc9a27e Mon Sep 17 00:00:00 2001
+From: Nicolas Fella <nicolas.fella@gmx.de>
+Date: Fri, 1 Mar 2024 22:16:07 +0100
+Subject: [PATCH] [kterminallauncherjob] Inherit default process environment
+ from parent
+
+Before Qt 6.3, an empty (default constructed) QProcessEnvironment caused
+QProcess to incorrectly inherit the environment variables from the parent
+process. This was fixed in qtbase 5fc9c02a695.
+
+CommandLauncherJob was adjusted for this in 916984940f64e07db9b4d152be9f2a87dda0cfb4,
+however here we are overriding its default env with our own default-constructed one
+
+BUG: 482107
+---
+ src/gui/kterminallauncherjob.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gui/kterminallauncherjob.cpp b/src/gui/kterminallauncherjob.cpp
+index c4e83fb11b..edd99327bd 100644
+--- a/src/gui/kterminallauncherjob.cpp
++++ b/src/gui/kterminallauncherjob.cpp
+@@ -22,7 +22,7 @@ public:
+     QString m_fullCommand; // "xterm -e ls"
+     QString m_desktopName;
+     QByteArray m_startupId;
+-    QProcessEnvironment m_environment;
++    QProcessEnvironment m_environment{QProcessEnvironment::InheritFromParent};
+ };
+ 
+ KTerminalLauncherJob::KTerminalLauncherJob(const QString &command, QObject *parent)
+-- 
+GitLab
+

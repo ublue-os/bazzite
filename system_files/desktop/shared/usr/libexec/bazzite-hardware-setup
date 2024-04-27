@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=37
+HWS_VER=38
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -31,7 +31,7 @@ NEEDED_KARGS=()
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
 
-if /usr/libexec/hardware/valve-hardware; then
+if /usr/libexec/hwsupport/valve-hardware; then
   echo "Checking for needed karg changes (Jupiter/Galileo)"
 
   if [[ ! $KARGS =~ "amd_iommu" ]]; then
@@ -55,12 +55,7 @@ if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
   fi
 fi
 
-if [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "video" ]]; then
-    echo "Adding panel orientation for Steam Deck OLED"
-    NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
-  fi
-elif [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
     echo "Adding panel orientation for Lenovo Legion Go"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")
@@ -94,7 +89,7 @@ elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
   fi
 fi
 
-if /usr/libexec/hardware/simpledeckytdp-supported-hardware; then
+if /usr/libexec/hwsupport/simpledeckytdp-supported-hardware; then
   if [[ ! $KARGS =~ "iomem" ]]; then
     echo "Adding needed kargs for ryzenadj"
     NEEDED_KARGS+=("--append-if-missing=iomem=relaxed")
@@ -120,7 +115,7 @@ else
 fi
 
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
-  if /usr/libexec/hardware/valve-hardware; then
+  if /usr/libexec/hwsupport/valve-hardware; then
     if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
       RESOLUTION=$(lshw -json -c display | jq -r .[]."configuration"."resolution")
       if [[ "${RESOLUTION}" = "1200,1920" ]]; then
@@ -167,6 +162,12 @@ if ((MINIMUM_FREE_ZRAM > CURRENT_FREE_ZRAM)); then
     echo "Found needed minimum-free ZRAM changes, applying the following: ${MINIMUM_FREE_ZRAM}"
 else
   echo "No minimum-free ZRAM changes needed"
+fi
+
+# WAYDROID FIX
+if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
+  echo "Removing unneeded apparmor entry from Waydroid LXC"
+  sed -i '/lxc\.apparmor\.profile\s*=\s*unconfined/d' "/var/lib/waydroid/lxc/waydroid/config"
 fi
 
 # NO-PSTATE FIX

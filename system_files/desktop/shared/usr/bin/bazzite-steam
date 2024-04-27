@@ -9,8 +9,13 @@ LAUNCH_OPTIONS=""
 # to maintain the gamemode update branch
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
   if [ -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]; then
-    LAUNCH_OPTIONS="-steamdeck"
+    LAUNCH_OPTIONS+=" -steamdeck"
   fi
+fi
+
+# If we're running this on a dGPU, disable accelerated cef
+if [[ $(switcherooctl list | grep -o 'Device:' | wc -l) > 1 ]]; then
+  LAUNCH_OPTIONS+=" -cef-disable-gpu"
 fi
 
 if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then

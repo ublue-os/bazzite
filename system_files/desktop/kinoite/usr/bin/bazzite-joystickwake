@@ -3,7 +3,7 @@
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
-if /usr/libexec/hardware/valve-hardware; then
+if /usr/libexec/hwsupport/valve-hardware; then
   # Don't do anything on Valve hardware, prevents lizard mode from working properly.
   exit 0
 fi
