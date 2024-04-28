@@ -25,8 +25,6 @@ Patch9:         gnome.patch
 Patch10:        fstrim.patch
 
 Requires:       jq
-Requires:       parted
-Requires:       e2fsprogs
 
 BuildRequires:  systemd-rpm-macros
 
