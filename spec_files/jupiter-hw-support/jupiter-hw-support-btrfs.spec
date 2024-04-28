@@ -75,6 +75,7 @@ xcursorgen usr/share/steamos/steamos-cursor-config %{buildroot}%{_datadir}/icons
 # Remove unneeded files
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/h2offt-g
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/H2OFFTx64-G.sh
+rn %{buildroot}%{_datadir}/steamos/steamos.png
 rm -rf %{buildroot}%{_datadir}/jupiter_bios_updater/driver
 rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 rm -rf %{buildroot}%{_datadir}/alsa
@@ -117,7 +118,6 @@ rm -rf %{buildroot}%{_datadir}/alsa
 %{_prefix}/lib/systemd/system/*
 %{_prefix}/lib/udev/rules.d/*
 %{_datadir}/icons/steam/*
-%{_datadir}/steamos/steamos.png
 %{_datadir}/jupiter_bios/*
 %{_datadir}/jupiter_bios_updater/*
 %{_datadir}/jupiter_controller_fw_updater/*
