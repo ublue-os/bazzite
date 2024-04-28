@@ -228,7 +228,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 - Una base estable y sólida como una roca.
 - Los paquetes del sistema se mantienen relativamente actualizados a su última versión.
-- Puedes instalar paquetes de Fedora en capas (layered) sin que se pierdan entre actualizaciones.
 - Enfocado en seguridad con [SELinux](https://github.com/SELinuxProject/selinux) pre-instalado y configurado fuera de la caja.
 - La habilidad de cambiar de base (rebase) de una imagen atómica de Fedora, si así se desea, sin perder datos del usuario.
 - Soporte para impresoras gracias a que el servidor de impresión [CUPS](https://www.cups.org/) viene pre-instalado.
