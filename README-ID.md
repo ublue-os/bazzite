@@ -183,7 +183,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 - Base sistem yang stabil dan kuat.
 - Paket sistem yang terbarukan.
-- Layer paket fedora tanpa perlu takut paket tersebut hilang saat memperbarui sistem.
 - Pra-install [SELinux](https://github.com/SELinuxProject/selinux) untuk keamanan dan telah dikonfigurasi secara bawaan.
 - Bisa rebase ke image Fedora ostree yang lain jika mau,tanpa kehilangan data pengguna.
 - Dukungan printing berkat [CUPS](https://www.cups.org/) yang terinstall secara bawaan.
