@@ -142,16 +142,17 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
 fi
 
 # FSTAB CONFIGURATION
-if [[ $(grep "compress=zstd" /etc/fstab) ]]; then
-  echo "Applying fstab param adjustments"
-  if grep -q '64GB' <<< "$(lsblk -o MODEL)"; then
-    echo "64GB eMMC detected"
-    sed -i 's/compress=zstd:1/noatime,lazytime,discard=sync,compress-force=zstd:3,space_cache=v2/g' /etc/fstab
-  else
-    sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,discard=async,compress-force=zstd:1,space_cache=v2/g' /etc/fstab
-  fi
+if [[ ! -e /etc/ublue-os/.fstab_adjusted.flag ]]; then
+    echo "Applying fstab param adjustments"
+    if grep -q '64GB' <<< "$(lsblk -o MODEL)"; then
+        echo "64GB eMMC detected"
+        sed -i 's/compress=zstd:1/noatime,lazytime,discard=sync,compress-force=zstd:3,space_cache=v2/g' /etc/fstab
+    else
+        sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,discard=async,compress-force=zstd:1,space_cache=v2/g' /etc/fstab
+    fi
+    touch /etc/ublue-os/.fstab_adjusted.flag
 else
-  echo "No fstab param adjustments needed"
+    echo "No fstab param adjustments needed"
 fi
 
 # ZRAM MINIMUM-FREE CONFIGURATION
