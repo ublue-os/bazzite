@@ -171,15 +171,6 @@ if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
   sed -i '/lxc\.apparmor\.profile\s*=\s*unconfined/d' "/var/lib/waydroid/lxc/waydroid/config"
 fi
 
-# NO-PSTATE FIX
-if grep -q "acpi-cpufreq" <<< "$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_driver)"; then
-  sed -i 's/balanced=balanced$/balanced=balanced-no-pstate/g' /etc/tuned/ppd.conf
-  tuned-adm profile balanced-no-pstate
-else
-  sed -i 's/balanced=balanced-no-pstate/balanced=balanced/g' /etc/tuned/ppd.conf
-  tuned-adm profile balanced
-fi
-
 # HOSTNAME FIX
 # If the hostname is too long Distrobox will fail during setup
 # Let's check the length and reset it to something sensible if that happens.
