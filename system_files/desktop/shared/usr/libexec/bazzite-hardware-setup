@@ -142,7 +142,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
 fi
 
 # FSTAB CONFIGURATION
-if [[ ! -e /etc/ublue-os/.fstab_adjusted.flag ]]; then
+if [[ ! -e /etc/ublue-os/.fstab_adjusted.flag && $(grep "compress=zstd" /etc/fstab) ]]; then
     echo "Applying fstab param adjustments"
     if grep -q '64GB' <<< "$(lsblk -o MODEL)"; then
         echo "64GB eMMC detected"
