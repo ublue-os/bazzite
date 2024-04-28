@@ -218,7 +218,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 - A rock solid and stable base.
 - System packages stay relatively up to date.
-- Can layer Fedora packages to the image without losing them between updates.
 - Security focused with [SELinux](https://github.com/SELinuxProject/selinux) preinstalled and configured out of the box.
 - The ability to rebase to different Fedora Atomic images, if desired, without losing user data.
 - Printing support thanks to [CUPS](https://www.cups.org/) being preinstalled.
