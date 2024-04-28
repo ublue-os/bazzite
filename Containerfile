@@ -459,7 +459,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             plasma-welcome && \
         rpm-ostree override replace \
         --experimental \
-        --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+        --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
             kf6-kio-doc \
             kf6-kio-widgets-libs \
             kf6-kio-core-libs \
@@ -493,13 +493,12 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     ; else \
         rpm-ostree override replace \
         --experimental \
-        --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-            gnome-shell && \
-        rpm-ostree override replace \
-        --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+            gnome-shell \
             vte291 \
-            vte-profile && \
+            vte-profile \
+            mutter \
+            gnome-settings-daemon && \
         rpm-ostree install \
             ptyxis \
             nautilus-open-any-terminal \
@@ -510,6 +509,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             gnome-shell-extension-gsconnect \
             gnome-shell-extension-system76-scheduler \
             gnome-shell-extension-compiz-windows-effect \
+            gnome-shell-extension-compiz-alike-magic-lamp-effect \
             gnome-shell-extension-just-perfection \
             gnome-shell-extension-blur-my-shell \
             gnome-shell-extension-hanabi \

@@ -72,3 +72,6 @@ blur=false
 [org/gnome/shell/extensions/com/github/hermes83/compiz-windows-effect]
 maximize-effect=true
 resize-effect=true
+
+[org/gnome/shell/extensions/ncom/github/hermes83/compiz-alike-magic-lamp-effect]
+duration=250
