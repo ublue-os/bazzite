@@ -352,6 +352,7 @@ RUN rpm-ostree install \
 # Install Steam & Lutris, plus supporting packages
 # Remove Feral gamemode, System76 Scheduler supersedes this
 RUN rpm-ostree install \
+        jupiter-sd-mounting-btrfs \
         at-spi2-core.i686 \
         atk.i686 \
         vulkan-loader.i686 \
@@ -455,7 +456,6 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             kf6-kio-gui && \
         rpm-ostree install \
             steamdeck-kde-presets-desktop \
-            jupiter-sd-mounting-btrfs \
             kdeconnectd \
             kdeplasma-addons \
             rom-properties-kf6 \
@@ -519,8 +519,15 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     ostree container commit
 
 # Install Gamescope, ROCM, and Waydroid on non-Nvidia images
-RUN rpm-ostree install \
-        gamescope \
+RUN if [[ "${IMAGE_BRANCH}" != "main" ]]; then \
+        rpm-ostree install \
+            gamescope \
+    ; else \
+        rpm-ostree install \
+            gamescope.x86_64 \
+            gamescope-libs.i686 \
+    ; fi && \
+    rpm-ostree install \
         gamescope-shaders \
         rocm-hip \
         rocm-opencl \
