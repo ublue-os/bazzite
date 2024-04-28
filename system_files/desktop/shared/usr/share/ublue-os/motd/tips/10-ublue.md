@@ -5,3 +5,4 @@ Packages installed in Distrobox can be exported to appear like any other applica
 **Support the app store!**~[Donate to  Flatpak](https://opencollective.com/flatpak)
 **Support indie game preservation and OSS developers!**~[Join Hit Save!'s Patreon](https://patreon.com/hitsave)
 **H.264 hardware acceleration is supported out of the box.** No tweaks necessary!
+*Using full disk encryption and tired of entering your password?* `ujust setup-luks-tpm-unlock` can help you use your CPU's TPM to unlock your device.
