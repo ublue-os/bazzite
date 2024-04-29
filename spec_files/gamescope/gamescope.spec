@@ -2,9 +2,10 @@
 
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
+%global gamescope_tag 3.14.7
 
 Name:           gamescope
-Version:        100.3.14.6
+Version:        100.%{gamescope_tag}
 Release:        %{autorelease}.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
@@ -81,7 +82,7 @@ Obsoletes: gamescope-libs
 %{name} is the micro-compositor optimized for running video games on Wayland.
 
 %prep
-git clone --single-branch --branch jupiter-3.6 https://github.com/ValveSoftware/gamescope
+git clone --depth 1 --branch %{gamescope_tag} https://github.com/ValveSoftware/gamescope
 cd gamescope
 git submodule update --init --recursive
 mkdir -p pkgconfig
