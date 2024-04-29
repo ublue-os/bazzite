@@ -36,11 +36,6 @@ install-gamemode-video:
     rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
     cp /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
 
-# Set up automatic LUKS unlock via TPM
-setup-luks-tpm-unlock:
-    #!/usr/bin/bash
-    sudo /usr/libexec/luks-enable-tpm2-autounlock
-
 # Force-enable AMD pstate
 pstate-force-enable:
     rpm-ostree kargs --append-if-missing=amd_pstate=active
