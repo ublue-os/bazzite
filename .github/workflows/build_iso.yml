@@ -141,7 +141,7 @@ jobs:
           echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
 
       - name: Upload ISOs and Checksum to Job Artifacts
-        #if: github.ref_name == 'testing'
+        if: github.ref_name == 'testing'
         #if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
