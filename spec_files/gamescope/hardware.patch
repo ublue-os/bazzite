@@ -1,8 +1,8 @@
 diff --git a/src/drm.cpp b/src/drm.cpp
-index 42c67b9..6373e22 100644
+index 628bfc9..7776422 100644
 --- a/src/drm.cpp
 +++ b/src/drm.cpp
-@@ -549,6 +549,19 @@ static constexpr uint32_t s_kSteamDeckOLEDRates[] =
+@@ -550,6 +550,19 @@ static constexpr uint32_t s_kSteamDeckOLEDRates[] =
  	90, 
  };
  
@@ -22,35 +22,29 @@ index 42c67b9..6373e22 100644
  static void update_connector_display_info_wl(struct drm_t *drm)
  {
  	wlserver_lock();
-@@ -2127,6 +2140,18 @@ namespace gamescope
+@@ -2109,6 +2122,10 @@ namespace gamescope
+ 			( m_Mutable.szMakePNP == "VLV"sv && m_Mutable.szModel == "ANX7530 U"sv ) ||
+ 			( m_Mutable.szMakePNP == "VLV"sv && m_Mutable.szModel == "Jupiter"sv ) ||
+ 			( m_Mutable.szMakePNP == "VLV"sv && m_Mutable.szModel == "Galileo"sv );
++		const bool bLegionGoDisplay =
++			( m_Mutable.szMakePNP == "LEN"sv && m_Mutable.szModel == "Go Display"sv );
++		const bool bLokiDisplay =
++			( m_Mutable.szMakePNP == "AYN"sv && m_Mutable.szModel == "LK-GOLDSPV58"sv );
+ 
+ 		if ( bSteamDeckDisplay )
+ 		{
+@@ -2131,6 +2148,14 @@ namespace gamescope
+ 				m_Mutable.ValidDynamicRefreshRates = std::span( s_kSteamDeckLCDRates );
  			}
  		}
++		else if ( bLegionGoDisplay )
++		{
++			m_Mutable.ValidDynamicRefreshRates = std::span( s_kLegionGoRates );
++		}
++		else if ( bLokiDisplay )
++		{
++			m_Mutable.ValidDynamicRefreshRates = std::span( s_kLokiRates );
++		}
  
-+		if ( m_Mutable.szMakePNP == "LEN"sv && m_Mutable.szModel == "Go Display"sv )
-+		{
-+				m_Mutable.eKnownDisplay = GAMESCOPE_KNOWN_DISPLAY_LEGION_GO;
-+				m_Mutable.ValidDynamicRefreshRates = std::span( s_kLegionGoRates );
-+		}
-+
-+		if ( m_Mutable.szMakePNP == "AYN"sv && m_Mutable.szModel == "LK-GOLDSPV58"sv )
-+		{
-+				m_Mutable.eKnownDisplay = GAMESCOPE_KNOWN_DISPLAY_LOKI;
-+				m_Mutable.ValidDynamicRefreshRates = std::span( s_kLokiRates );
-+		}
-+
  		// Colorimetry
  		const char *pszColorOverride = getenv( "GAMESCOPE_INTERNAL_COLORIMETRY_OVERRIDE" );
- 		if ( pszColorOverride && *pszColorOverride && GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL )
-diff --git a/src/gamescope_shared.h b/src/gamescope_shared.h
-index f34174e..08e7b17 100644
---- a/src/gamescope_shared.h
-+++ b/src/gamescope_shared.h
-@@ -10,6 +10,8 @@ namespace gamescope
- 		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD,      // Jupiter
- 		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_SDC, // Galileo SDC
- 		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_BOE, // Galileo BOE
-+		GAMESCOPE_KNOWN_DISPLAY_LEGION_GO,           // Lenovo Legion Go
-+		GAMESCOPE_KNOWN_DISPLAY_LOKI,                // Ayn Loki
- 	};
- 
- 	enum GamescopeModeGeneration
