@@ -8,10 +8,13 @@ URL:            https://github.com/ublue-os/bazzite
 Source0:        https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz
 Source1:        steamdeck-le.svg
 Source2:        bazzite_logo.svgz
+Source3:        metadata_vapor.json
+Source4:        metadata_vgui2.json
 BuildArch:      noarch
 Patch0:         fedora.patch
 Patch1:         kdeglobals.patch
 Patch2:         bazzite_logo.patch
+Patch3:         ublue.patch
 
 Requires:       kde-filesystem
 
@@ -57,6 +60,8 @@ rm %{buildroot}%{_bindir}/steamos-nested-desktop
 rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 cp %{SOURCE2} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/images/bazzite_logo.svgz
 cp %{SOURCE2} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/bazzite_logo.svgz
+cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/metadata.json
+cp %{SOURCE4} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/metadata.json
 mkdir -p %{buildroot}%{_datadir}/kio/servicemenus
 mv %{buildroot}%{_datadir}/kservices5/ServiceMenus/steam.desktop %{buildroot}%{_datadir}/kio/servicemenus/steam.desktop
 rm -rf %{buildroot}%{_datadir}/kservices5

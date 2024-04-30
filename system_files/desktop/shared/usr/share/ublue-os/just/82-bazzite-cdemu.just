@@ -2,7 +2,7 @@
 
 # Setup and configure CDEmu Daemon and Client plus GUI Apps
 setup-cdemu ACTION="":
-    #!/bin/bash
+    #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     CDEMU_STATE="$(rpm -qa cdemu-daemon)"
     SERVICE_STATE="$(systemctl is-enabled --user cdemu-daemon.service)"

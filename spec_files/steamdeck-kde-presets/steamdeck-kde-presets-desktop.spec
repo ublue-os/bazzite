@@ -9,9 +9,12 @@ Source0:        https://gitlab.com/evlaV/steamdeck-kde-presets/-/archive/master/
 Source1:        kdeglobals-desktop
 Source2:        steamdeck-le.svg
 Source3:        bazzite_logo.svgz
+Source4:        metadata_vapor.json
+Source5:        metadata_vgui2.json
 Patch0:         multiuser.patch
 Patch1:         lockscreen.patch
 Patch2:         bazzite_logo.patch
+Patch3:         ublue.patch
 
 BuildArch:      noarch
 
@@ -69,6 +72,8 @@ rm %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents
 rm %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/deck_logo.svgz
 cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/images/bazzite_logo.svgz
 cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/bazzite_logo.svgz
+cp %{SOURCE4} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/metadata.json
+cp %{SOURCE5} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/metadata.json
 
 # Do post-installation
 %post

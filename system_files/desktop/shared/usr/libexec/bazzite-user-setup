@@ -10,12 +10,14 @@ IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
+VEN_ID="$(cat /sys/devices/virtual/dmi/id/chassis_vendor)"
+
 # INIT
 BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=31
+USER_SETUP_VER=32
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -103,6 +105,11 @@ else
 
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
+
+    if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
+      echo 'Enabling automatic power profile extension'
+      gnome-extensions enable power-profile-switcher@eliapasquali.github.io
+    fi
 
     echo 'Setting up templates'
     mkdir -p "$HOME/Templates"

@@ -18,7 +18,7 @@ setup-virtualization ACTION="":
     fi
     OPTION={{ ACTION }}
     if [ "$OPTION" == "help" ]; then
-      echo "Usage: ujust configure-grub <option>"
+      echo "Usage: ujust setup-virtualization <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'virt-on' to select Enable Virtualization"
       echo "  Use 'virt-off' to select Disable Virtualization"

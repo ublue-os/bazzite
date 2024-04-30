@@ -24,17 +24,17 @@ titlebar-font='Noto Sans Medium 11'
 [org/gnome/desktop/background]
 color-shading-type='solid'
 picture-options='zoom'
-picture-uri='file:///usr/share/backgrounds/steamdeck/Steam%20Deck%20Logo%20Default.jpg'
-picture-uri-dark='file:///usr/share/backgrounds/steamdeck/Steam%20Deck%20Logo%20Default.jpg'
-primary-color='#1A2336'
-secondary-color='#211B33'
+picture-uri='file:///usr/share/backgrounds/ublue.png'
+picture-uri-dark='file:///usr/share/backgrounds/ublue.png'
+primary-color='#202646'
+secondary-color='#36438E'
 
 [org/gnome/desktop/screensaver]
 color-shading-type='solid'
 picture-options='zoom'
-picture-uri='file:///usr/share/backgrounds/steamdeck/Steam%20Deck%20Logo%20Default.jpg'
-primary-color='#1A2336'
-secondary-color='#211B33'
+picture-uri='file:///usr/share/backgrounds/ublue.png'
+primary-color='#202646'
+secondary-color='#36438E'
 
 [org/gnome/shell/extensions/just-perfection]
 animation=4
@@ -64,11 +64,14 @@ style-dialogs=0
 blur=false
 
 [org/gnome/shell/extensions/blur-my-shell/screenshot]
-blur=false
+blur=true
 
 [org/gnome/shell/extensions/blur-my-shell/lockscreen]
-blur=false
+blur=true
 
 [org/gnome/shell/extensions/com/github/hermes83/compiz-windows-effect]
 maximize-effect=true
 resize-effect=true
+
+[org/gnome/shell/extensions/ncom/github/hermes83/compiz-alike-magic-lamp-effect]
+duration=250

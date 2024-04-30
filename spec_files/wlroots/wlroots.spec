@@ -1,9 +1,10 @@
 # Version of the .so library
-%global abi_ver 12
+%global abi_ver 13
+%global gitcommit a5c9826e6d7d8b504b07d1c02425e6f62b020791
 
 Name:           wlroots
-Version:        0.17.0
-Release:        3%{?dist}
+Version:        0.18.0
+Release:        2%{?dist}
 Summary:        A modular Wayland compositor library
 
 # Source files/overall project licensed as MIT, but
@@ -16,61 +17,54 @@ Summary:        A modular Wayland compositor library
 #   * protocol/wlr-layer-shell-unstable-v1.xml
 #   * protocol/wlr-output-management-unstable-v1.xml
 # - LGPL-2.1-or-later
-#   * protocol/idle.xml
 #   * protocol/server-decoration.xml
 # Those files are processed to C-compilable files by the
 # `wayland-scanner` binary during build and don't alter
 # the main license of the binaries linking with them by
 # the underlying licenses.
 License:        MIT
-URL:            https://gitlab.freedesktop.org/wlroots/wlroots
-Source0:        %{url}/-/releases/%{version}/downloads/%{name}-%{version}.tar.gz
-Source1:        %{url}/-/releases/%{version}/downloads/%{name}-%{version}.tar.gz.sig
-# 0FDE7BE0E88F5E48: emersion <contact@emersion.fr>
-Source2:        https://emersion.fr/.well-known/openpgpkey/hu/dj3498u4hyyarh35rkjfnghbjxug6b19#/gpgkey-0FDE7BE0E88F5E48.gpg
+URL:            https://github.com/Joshua-Ashton/wlroots
+Source0:        %{url}/archive/%{gitcommit}/wlroots-%{gitcommit}.tar.gz
 
 # this file is a modification of examples/meson.build so as to:
 # - make it self-contained
 # - only has targets for examples known to compile well (cf. "examples) global)
 Source3:        examples.meson.build
 
+# Upstream patches
+
 # Fedora patches
 # Following patch is required for phoc.
-Patch10:        Revert-layer-shell-error-on-0-dimension-without-anch.patch
+Patch:          Revert-layer-shell-error-on-0-dimension-without-anch.patch
 
 BuildRequires:  gcc
 BuildRequires:  glslang
 BuildRequires:  gnupg2
 BuildRequires:  meson >= 0.59.0
+
+BuildRequires:  (pkgconfig(libdisplay-info) >= 0.1.1 with pkgconfig(libdisplay-info) < 0.2)
+BuildRequires:  (pkgconfig(libliftoff) >= 0.4.0 with pkgconfig(libliftoff) < 0.5.0)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gbm) >= 17.1.0
 BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(hwdata)
-BuildRequires:  pkgconfig(libdrm) >= 2.4.113
+BuildRequires:  pkgconfig(libdrm) >= 2.4.114
 BuildRequires:  pkgconfig(libinput) >= 1.21.0
 BuildRequires:  pkgconfig(libseat)
 BuildRequires:  pkgconfig(libudev)
-BuildRequires:  pkgconfig(pixman-1)
+BuildRequires:  pkgconfig(pixman-1) >= 0.42.0
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-client)
-BuildRequires:  pkgconfig(wayland-protocols) >= 1.27
+BuildRequires:  pkgconfig(wayland-protocols) >= 1.32
 BuildRequires:  pkgconfig(wayland-scanner)
-BuildRequires:  pkgconfig(wayland-server) >= 1.21
+BuildRequires:  pkgconfig(wayland-server) >= 1.22
 BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb)
+BuildRequires:  pkgconfig(xcb-errors)
 BuildRequires:  pkgconfig(xcb-icccm)
 BuildRequires:  pkgconfig(xcb-renderutil)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xwayland)
-BuildRequires:  pkgconfig(libdisplay-info)
-
-# protocol files required to compile examples (see SOURCE3)
-%global example_protocols \
-    input-method-unstable-v2 wlr-export-dmabuf-unstable-v1 \
-    wlr-foreign-toplevel-management-unstable-v1 wlr-gamma-control-unstable-v1 \
-    wlr-input-inhibitor-unstable-v1 wlr-layer-shell-unstable-v1 \
-    wlr-output-power-management-unstable-v1 wlr-screencopy-unstable-v1 \
-    wlr-virtual-pointer-unstable-v1
 
 %description
 %{summary}.
@@ -84,10 +78,6 @@ Recommends:     pkgconfig(xcb-icccm)
 # for examples
 Suggests:       gcc
 Suggests:       meson >= 0.58.0
-Suggests:       pkgconfig(libpng)
-Suggests:       pkgconfig(libavutil)
-Suggests:       pkgconfig(libavcodec)
-Suggests:       pkgconfig(libavformat)
 Suggests:       pkgconfig(wayland-egl)
 
 %description    devel
@@ -95,18 +85,16 @@ Development files for %{name}.
 
 
 %prep
-%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
-%autosetup -N
-# apply unconditional patches
-%autopatch -p1 -M19
-# apply conditional patches
+%autosetup -N -n wlroots-%{gitcommit}
+# apply unconditional patches (0..99)
+%autopatch -p1 -M99
+# apply conditional patches (100..)
 
 
 %build
 MESON_OPTIONS=(
     # Disable options requiring extra/unpackaged dependencies
     -Dexamples=false
-    -Dxcb-errors=disabled
 )
 
 %{meson} "${MESON_OPTIONS[@]}"
@@ -115,12 +103,6 @@ MESON_OPTIONS=(
 
 %install
 %{meson_install}
-
-EXAMPLE_PROTOCOLS=( %{example_protocols} )  # Normalize whitespace by creating an array
-install -pm0644 -Dt '%{buildroot}/%{_pkgdocdir}/examples' examples/*.[ch]
-for proto in "${EXAMPLE_PROTOCOLS[@]}"; do
-    install -pm0644 -Dt '%{buildroot}/%{_pkgdocdir}/examples/protocol' "protocol/${proto}.xml"
-done
 install -pm0644 -D '%{SOURCE3}' '%{buildroot}/%{_pkgdocdir}/examples/meson.build'
 
 
@@ -131,7 +113,7 @@ install -pm0644 -D '%{SOURCE3}' '%{buildroot}/%{_pkgdocdir}/examples/meson.build
 %files
 %license LICENSE
 %doc README.md
-%{_libdir}/lib%{name}.so.%{abi_ver}*
+%{_libdir}/lib%{name}.so.%{abi_ver}{,.*}
 
 
 %files  devel
@@ -142,6 +124,20 @@ install -pm0644 -D '%{SOURCE3}' '%{buildroot}/%{_pkgdocdir}/examples/meson.build
 
 
 %changelog
+* Mon Mar 11 2024 Aleksei Bavshin <alebastr@fedoraproject.org> - 0.17.2-1
+- Update to 0.17.2 (#2269046)
+
+* Sat Jan 27 2024 Fedora Release Engineering <releng@fedoraproject.org> - 0.17.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
+
+* Thu Dec 21 2023 Aleksei Bavshin <alebastr@fedoraproject.org> - 0.17.1-1
+- Update to 0.17.1 (#2255547)
+
+* Tue Nov 21 2023 Aleksei Bavshin <alebastr@fedoraproject.org> - 0.17.0-1
+- Update to 0.17.0 (#2250885)
+- Use xcb-errors util library
+- Apply patches from 0.17.x bugfix branch
+
 * Sat Jul 22 2023 Fedora Release Engineering <releng@fedoraproject.org> - 0.16.2-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
 

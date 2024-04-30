@@ -74,3 +74,7 @@ show-power-option=false
 show-gamemode=false
 hide-forcequit=true
 show-boxbuddy=true
+
+[org/gnome/shell/extensions/power-profile-switcher]
+ac='balanced'
+bat='power-saver'

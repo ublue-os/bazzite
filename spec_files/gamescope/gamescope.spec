@@ -1,25 +1,25 @@
 %global libliftoff_minver 0.4.1
-%global gamescope_version 3.13.19
+
+%global _default_patch_fuzz 2
+%global build_timestamp %(date +"%Y%m%d")
+%global gamescope_tag 3.14.11
 
 Name:           gamescope
-Version:        100.%{gamescope_version}
-Release:    	1%{?dist}.bazzite.{{{ git_dir_version }}}
+Version:        100.%{gamescope_tag}
+Release:        %{autorelease}.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
 URL:            https://github.com/ValveSoftware/gamescope
 
 # Create stb.pc to satisfy dependency('stb')
-Source1:        stb.pc
-Source2:        chimeraos.patch
-Source3:        crashfix.patch
-Source4:        add_720p_var.patch
-Source5:        touch_gestures_env.patch
-Source6:        legion_go.patch
-Source7:	    loki.patch
-Source8:        0001-disable-steam-touch-click-atom.patch
-Source9:        3.13.16.9-splitgate.patch
-Source10:       amd_hdr.patch
+Source0:        stb.pc
+
+Patch0:         hardware.patch
+Patch1:         720p.patch
+Patch2:         disable-steam-touch-click-atom.patch
+Patch3:         external-rotation.patch
+Patch4:         panel-type.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -28,8 +28,11 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  glm-devel
 BuildRequires:  google-benchmark-devel
+BuildRequires:  libeis-devel
 BuildRequires:  libXmu-devel
+BuildRequires:  libXcursor-devel
 BuildRequires:  pkgconfig(libdisplay-info)
+BuildRequires:  pkgconfig(libeis-1.0)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xdamage)
 BuildRequires:  pkgconfig(xcomposite)
@@ -47,24 +50,33 @@ BuildRequires:  pkgconfig(wayland-protocols) >= 1.17
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(libpipewire-0.3)
-BuildRequires:  (pkgconfig(wlroots) >= 0.17.0 with pkgconfig(wlroots) < 0.18.0)
+BuildRequires:  pkgconfig(libavif)
+BuildRequires:  (pkgconfig(wlroots) >= 0.18.0 with pkgconfig(wlroots) < 0.19.0)
 BuildRequires:  (pkgconfig(libliftoff) >= 0.4.1 with pkgconfig(libliftoff) < 0.5)
 BuildRequires:  pkgconfig(libcap)
 BuildRequires:  pkgconfig(hwdata)
-BuildRequires:  pkgconfig(xwayland)
-BuildRequires:  pkgconfig(xcursor)
-BuildRequires:  vkroots-devel
-BuildRequires:  /usr/bin/glslangValidator
-BuildRequires:  git
-BuildRequires:  stb_image-devel
-BuildRequires:  stb_image_write-devel
+BuildRequires:  spirv-headers-devel
+# Enforce the the minimum EVR to contain fixes for all of:
+# CVE-2021-28021 CVE-2021-42715 CVE-2021-42716 CVE-2022-28041 CVE-2023-43898
+# CVE-2023-45661 CVE-2023-45662 CVE-2023-45663 CVE-2023-45664 CVE-2023-45666
+# CVE-2023-45667
+BuildRequires:  stb_image-devel >= 2.28^20231011gitbeebb24-12
+# Header-only library: -static is for tracking per guidelines
+BuildRequires:  stb_image-static
 BuildRequires:  stb_image_resize-devel
+BuildRequires:  stb_image_resize-static
+BuildRequires:  stb_image_write-devel
+BuildRequires:  stb_image_write-static
+BuildRequires:  /usr/bin/glslangValidator
+BuildRequires:  libdecor-devel
+BuildRequires:  libXdamage-devel
+BuildRequires:  xorg-x11-server-Xwayland-devel
+BuildRequires:  git
 
 # libliftoff hasn't bumped soname, but API/ABI has changed for 0.2.0 release
 Requires:       libliftoff%{?_isa} >= %{libliftoff_minver}
 Requires:       xorg-x11-server-Xwayland
-Requires:       google-benchmark
-Requires:	    gamescope-libs = %{version}-%{release}
+Requires:       gamescope-libs = %{version}
 Recommends:     mesa-dri-drivers
 Recommends:     mesa-vulkan-drivers
 
@@ -77,25 +89,21 @@ Summary:	libs for %{name}
 %summary
 
 %prep
-git clone --single-branch --branch %{gamescope_version} https://github.com/ValveSoftware/gamescope.git
+git clone --depth 1 --branch %{gamescope_tag} https://github.com/ValveSoftware/gamescope
 cd gamescope
 git submodule update --init --recursive
 mkdir -p pkgconfig
-cp %{SOURCE1} pkgconfig/stb.pc
-patch -Np1 < %{SOURCE2}
-patch -Np1 < %{SOURCE3}
-patch -Np1 < %{SOURCE4}
-patch -Np1 < %{SOURCE5}
-patch -Np1 < %{SOURCE6}
-patch -Np1 < %{SOURCE7}
-patch -Np1 < %{SOURCE8}
-patch -Np1 < %{SOURCE9}
-patch -Np1 < %{SOURCE10}
+cp %{SOURCE0} pkgconfig/stb.pc
+
+# Replace spirv-headers include with the system directory
+sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/meson.build
+
+%autopatch -p1
 
 %build
 cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
-%meson -Dpipewire=enabled -Denable_gamescope=true -Denable_gamescope_wsi_layer=true -Denable_openvr_support=true -Dforce_fallback_for=[]
+%meson -Dpipewire=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dinput_emulation=enabled -Dsdl2_backend=enabled -Dforce_fallback_for=vkroots
 %meson_build
 
 %install
@@ -108,8 +116,8 @@ cd gamescope
 %attr(0755, root, root) %caps(cap_sys_nice=eip) %{_bindir}/gamescope
 
 %files libs
-%{_libdir}/*.so
-%{_datadir}/vulkan/implicit_layer.d/
+%{_libdir}/libVkLayer_FROG_gamescope_wsi_*.so
+%{_datadir}/vulkan/implicit_layer.d/VkLayer_FROG_gamescope_wsi.*.json
 
 %changelog
 {{{ git_dir_changelog }}}

@@ -39,6 +39,7 @@ Requires:       e2fsprogs
 Requires:       f3
 
 BuildRequires:  systemd-rpm-macros
+BuildRequires:  xcursorgen
 
 %description
 SteamOS 3.0 Steam Deck Hardware Support Package
@@ -70,14 +71,14 @@ cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
 cp %{SOURCE2} %{buildroot}%{_datadir}/plymouth/themes/steamos/bazzite.png
+xcursorgen usr/share/steamos/steamos-cursor-config %{buildroot}%{_datadir}/icons/steam/cursors/default
 # Remove unneeded files
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/h2offt-g
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/H2OFFTx64-G.sh
+rm %{buildroot}%{_datadir}/steamos/steamos.png
 rm -rf %{buildroot}%{_datadir}/jupiter_bios_updater/driver
 rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 rm -rf %{buildroot}%{_datadir}/alsa
-rm -rf %{buildroot}%{_datadir}/icons/steam
-rm %{buildroot}%{_datadir}/steamos/steamos.png
 
 # Do post-installation
 %post
@@ -116,6 +117,7 @@ rm %{buildroot}%{_datadir}/steamos/steamos.png
 %{_libexecdir}/hwsupport/block-device-event.sh
 %{_prefix}/lib/systemd/system/*
 %{_prefix}/lib/udev/rules.d/*
+%{_datadir}/icons/steam/*
 %{_datadir}/jupiter_bios/*
 %{_datadir}/jupiter_bios_updater/*
 %{_datadir}/jupiter_controller_fw_updater/*
