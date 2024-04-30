@@ -519,15 +519,9 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     ostree container commit
 
 # Install Gamescope, ROCM, and Waydroid on non-Nvidia images
-RUN if [[ "${IMAGE_BRANCH}" != "main" ]]; then \
-        rpm-ostree install \
-            gamescope \
-    ; else \
-        rpm-ostree install \
-            gamescope.x86_64 \
-            gamescope-libs.i686 \
-    ; fi && \
-    rpm-ostree install \
+RUN rpm-ostree install \
+        gamescope.x86_64 \
+        gamescope-libs.i686 \
         gamescope-shaders \
         rocm-hip \
         rocm-opencl \
