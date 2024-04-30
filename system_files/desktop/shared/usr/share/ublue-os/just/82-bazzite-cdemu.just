@@ -37,6 +37,8 @@ setup-cdemu ACTION="":
             # Install packages for GNOME
             rpm-ostree install --apply-live -y cdemu-daemon cdemu-client gcdemu
       fi
+      # Kickstart the service manually on first install, it doesn't seem to be doing that by default.
+      systemctl start --user cdemu-daemon.service
       echo "CDEmu is installed!"
     elif [[ "${OPTION,,}" =~ ^(remove|uninstall) ]]; then
       if [[ "$CDEMU_STATE" == "" ]]; then
