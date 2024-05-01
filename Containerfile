@@ -231,7 +231,7 @@ RUN rpm-ostree override replace \
         || true && \
     ostree container commit
 
-# Install Valve's patched Mesa, Pipewire & Bluez
+# Install Valve's patched Mesa & Pipewire
 # Install patched switcheroo control with proper discrete GPU support
 RUN rpm-ostree override remove \
         mesa-va-drivers-freeworld && \
@@ -246,10 +246,6 @@ RUN rpm-ostree override remove \
         mesa-libEGL \
         mesa-vulkan-drivers \
         mesa-libGL \
-        bluez \
-        bluez-cups \
-        bluez-libs \
-        bluez-obexd \
         pipewire \
         pipewire-alsa \
         pipewire-gstreamer \
