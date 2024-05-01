@@ -25,6 +25,7 @@ KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 VEN_ID="$(cat /sys/devices/virtual/dmi/id/chassis_vendor)"
 CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
+CPU_MODEL=$(grep "model name" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
 MINIMUM_FREE_ZRAM=$(awk '/MemTotal/ {printf "%.0f", $2 * 0.01}' /proc/meminfo)
 CURRENT_FREE_ZRAM=$(sysctl vm.min_free_kbytes | awk '{print $3}')
 KARGS=$(rpm-ostree kargs)
@@ -88,9 +89,9 @@ elif [[ ":ROG Ally RC71L_RC71L:ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
     echo "Adding SG Display for ASUS Ally"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.sg_display=0")
   fi
-elif [[ ":G1617-01:" =~ ":$SYS_ID:" ]]; then
+elif [[ ":G1617-01:" =~ ":$SYS_ID:" && ! $CPU_MODEL =~ 8640U|8840U ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
-    echo "Adding panel orientation for GPD Win Mini"
+    echo "Adding panel orientation for GPD Win Mini 2023"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
   fi
 elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
