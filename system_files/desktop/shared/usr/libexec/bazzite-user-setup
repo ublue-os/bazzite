@@ -17,7 +17,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=32
+USER_SETUP_VER=33
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -78,8 +78,8 @@ fi
 # Initialize Ptyxis config
 # This is intentionally run on both images to ensure a user rebasing from Silverblue to Kinoite
 # doesn't get their Ptyxis config wiped out.
-echo 'Configuring Ptyxis'
 if [[ ! -f "$BAZZITE_CONFIG_DIR/ptyxis-initialized" ]]; then
+  echo 'Configuring Ptyxis'
   if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
     dconf load / < /etc/dconf/db/local.d/02-bazzite-kde
   fi
@@ -107,8 +107,14 @@ else
     echo 'Running setup for Silverblue on Steam Deck'
 
     if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
-      echo 'Enabling automatic power profile extension'
-      gnome-extensions enable power-profile-switcher@eliapasquali.github.io
+      if [[ ! -f "$BAZZITE_CONFIG_DIR/framework-initialized" ]]; then
+        echo 'Enabling automatic power profile extension'
+        gnome-extensions enable power-profile-switcher@eliapasquali.github.io
+        echo 'Setting Framework logo menu'
+        dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
+        dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 4
+        touch "$BAZZITE_CONFIG_DIR/framework-initialized"
+      fi
     fi
 
     echo 'Setting up templates'
