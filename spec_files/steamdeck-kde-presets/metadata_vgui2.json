@@ -11,7 +11,7 @@
         "Description": "Any color you like, as long as it's green",
         "Id": "com.valve.vgui.desktop",
         "License": "GPLv2+",
-        "Name": "Aurora",
+        "Name": "VGUI2",
         "ServiceTypes": [
             "Plasma/LookAndFeel"
         ],
