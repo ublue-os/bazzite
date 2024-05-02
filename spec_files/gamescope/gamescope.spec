@@ -20,6 +20,7 @@ Patch1:         720p.patch
 Patch2:         disable-steam-touch-click-atom.patch
 Patch3:         external-rotation.patch
 Patch4:         panel-type.patch
+Patch5:         gestures.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build

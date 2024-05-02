@@ -89,34 +89,37 @@ index 4e4e9a7..be9a9dd 100644
  enum class GamescopeUpscaleFilter : uint32_t
  {
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 9afaab7..7b78bbc 100644
+index 9afaab7..b3f9f31 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -2130,6 +2130,29 @@ static void apply_touchscreen_orientation(double *x, double *y )
+@@ -2130,6 +2130,32 @@ static void apply_touchscreen_orientation(double *x, double *y )
  			break;
  	}
  
 +	// Rotate screen if it's forced with --force-external-orientation
-+	switch ( GetBackend()->GetConnector( gamescope::GAMESCOPE_SCREEN_TYPE_EXTERNAL )->GetCurrentOrientation() )
++	if ( g_bExternalForced == true )
 +	{
-+		default:
-+		case GAMESCOPE_PANEL_ORIENTATION_AUTO:
-+		case GAMESCOPE_PANEL_ORIENTATION_0:
-+			tx = *x;
-+			ty = *y;
-+			break;
-+		case GAMESCOPE_PANEL_ORIENTATION_90:
-+			tx = 1.0 - *y;
-+			ty = *x;
-+			break;
-+		case GAMESCOPE_PANEL_ORIENTATION_180:
-+			tx = 1.0 - *x;
-+			ty = 1.0 - *y;
-+			break;
-+		case GAMESCOPE_PANEL_ORIENTATION_270:
-+			tx = *y;
-+			ty = 1.0 - *x;
-+			break;
++		switch ( GetBackend()->GetConnector( gamescope::GAMESCOPE_SCREEN_TYPE_EXTERNAL )->GetCurrentOrientation() )
++		{
++			default:
++			case GAMESCOPE_PANEL_ORIENTATION_AUTO:
++			case GAMESCOPE_PANEL_ORIENTATION_0:
++				tx = *x;
++				ty = *y;
++				break;
++			case GAMESCOPE_PANEL_ORIENTATION_90:
++				tx = 1.0 - *y;
++				ty = *x;
++				break;
++			case GAMESCOPE_PANEL_ORIENTATION_180:
++				tx = 1.0 - *x;
++				ty = 1.0 - *y;
++				break;
++			case GAMESCOPE_PANEL_ORIENTATION_270:
++				tx = *y;
++				ty = 1.0 - *x;
++				break;
++		}
 +	}
 +
  	*x = tx;
