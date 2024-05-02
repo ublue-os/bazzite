@@ -1,5 +1,5 @@
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 7b78bbc..2b43edd 100644
+index b3f9f31..38a3365 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
 @@ -70,6 +70,8 @@
@@ -11,7 +11,7 @@ index 7b78bbc..2b43edd 100644
  struct wlserver_t wlserver = {
  	.touch_down_ids = {}
  };
-@@ -2189,6 +2191,36 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time )
+@@ -2192,6 +2194,36 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time )
  		if ( eMode == gamescope::TouchClickModes::Passthrough )
  		{
  			wlr_seat_touch_notify_motion( wlserver.wlr.seat, time, touch_id, tx, ty );
@@ -35,13 +35,13 @@ index 7b78bbc..2b43edd 100644
 +				// when the gesture is started and we are moving to the end of the edge range open home
 +				if (start_gesture && roundedCursorX >= 1 && roundedCursorX <= edge_range) {
 +					wl_log.infof("Detected Home gesture");
-+					wlserver_open_steam_menu(0);
++					wlserver_open_steam_menu(false);
 +					start_gesture = false;
 +				}
 +				// when the gesture is started and we are moving from the output width minus the edge range to the output width open QAM
 +				if (start_gesture && roundedCursorX >= g_nOutputWidth - edge_range && roundedCursorX <= g_nOutputWidth ) {
 +					wl_log.infof("Detected QAM gesture");
-+					wlserver_open_steam_menu(1);
++					wlserver_open_steam_menu(true);
 +					start_gesture = false;
 +				}
 +			}
