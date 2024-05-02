@@ -1,5 +1,44 @@
 [h1]Changelog[/h1]
 
+[h2][url=https://github.com/ublue-os/bazzite/compare/v3.0.0...v3.0.1]3.0.1[/url] (2024-05-02)[/h2]
+
+
+[h3]Features[/h3]
+[list]
+[*] Add [b]ujust setup-luks-tpm-unlock[/b] ([url=https://github.com/ublue-os/bazzite/commit/5402f530ef2cfe9403fc0baee79c664699a811d2]5402f53[/url])
+[*] Add new ublue wallpaper as the default ([url=https://github.com/ublue-os/bazzite/commit/3c79d312556f3d8ec87fa804dcc4d4cc91a4db83]3c79d31[/url])
+[*] Add new version of gamescope ([url=https://github.com/ublue-os/bazzite/commit/60a94cd5173cc8bb6545a149ea553ab47dfb7c3a]60a94cd[/url])
+[*] Add Steam Deck SD card mounting to desktop images ([url=https://github.com/ublue-os/bazzite/commit/a683b3bc97063394eebea183605c63a5115262c6]a683b3b[/url])
+[*] [b]deck:[/b] Add Handheld Controller Glyphs... ([url=https://github.com/ublue-os/bazzite/issues/1059]#1059[/url]) ([url=https://github.com/ublue-os/bazzite/commit/e1f026ee6f3d107ced604e0324e86264c3b59ba2]e1f026e[/url])
+[*] Deprecate looking-glass shm in favor of kvmfr module ([url=https://github.com/ublue-os/bazzite/issues/1013]#1013[/url]) ([url=https://github.com/ublue-os/bazzite/commit/8f7bb0bd6854c1d6a67f30903161a5f870c9e3d0]8f7bb0b[/url])
+[*] [b]framework:[/b] Add needed kargs and extensions to setup scripts ([url=https://github.com/ublue-os/bazzite/commit/96f1be0198e890d9a2979a61650fa004c5c5725e]96f1be0[/url])
+[*] [b]framework:[/b] Use Framework logo in logo menu by default 3 ([url=https://github.com/ublue-os/bazzite/commit/4a8e70bf7f199816507a232787fb9796475befb6]4a8e70b[/url])
+[*] [b]gnome:[/b] Add compiz alike magic lamp effect extension, default disabled ([url=https://github.com/ublue-os/bazzite/commit/dbc7862607eb97ab62615fa5fff447a79814242c]dbc7862[/url])
+[*] [b]gnome:[/b] Add power profile switcher extension (pre-configured, but disabled by default) ([url=https://github.com/ublue-os/bazzite/commit/fb006c2fb7b8302053d17a9490342aed78b74464]fb006c2[/url])
+[*] [b]gnome:[/b] Restore xwayland fractional scaling ([url=https://github.com/ublue-os/bazzite/commit/dbc7862607eb97ab62615fa5fff447a79814242c]dbc7862[/url])
+[*] remove root password option from installer ([url=https://github.com/ublue-os/bazzite/commit/ad9ec4011ee0d07d97107e992e8a884864af6e8d]ad9ec40[/url])
+[/list]
+
+[h3]Bug Fixes[/h3]
+[list]
+[*] Always install jupiter-sd-mounting-btrfs ([url=https://github.com/ublue-os/bazzite/commit/821e9ea6a104f1ae6811255e50525446ae6b4e77]821e9ea[/url])
+[*] bazzite-user-setup should only run when needed ([url=https://github.com/ublue-os/bazzite/issues/1020]#1020[/url]) ([url=https://github.com/ublue-os/bazzite/commit/f33d1e799a090693c3adb3bbbdf2577975515fb2]f33d1e7[/url])
+[*] [b]bazzite-user-setup:[/b] include  in file check and move  after first if statement ([url=https://github.com/ublue-os/bazzite/issues/1023]#1023[/url]) ([url=https://github.com/ublue-os/bazzite/commit/c4670d271d3b97740b6b6ffdb128e9f8668661a4]c4670d2[/url])
+[*] [b]ci:[/b] set image version to match source ([url=https://github.com/ublue-os/bazzite/issues/1031]#1031[/url]) ([url=https://github.com/ublue-os/bazzite/commit/57b0d1f2461b402bba106d153bc397c77bd7b060]57b0d1f[/url])
+[*] Correct issue with Steam refusing to launch on some multi-gpu hardware when launched on the dGPU. ([url=https://github.com/ublue-os/bazzite/commit/0c1a55c629c3a12bd42818f3a487f897a9d6115f]0c1a55c[/url])
+[*] disable requirement for testing branch ([url=https://github.com/ublue-os/bazzite/commit/224e8838454267fd3e195c35da4c6124fdb1cb36]224e883[/url])
+[*] Drop patched bluez ([url=https://github.com/ublue-os/bazzite/commit/857f933088d18f3341037faff3089e74fb9e6059]857f933[/url])
+[*] fix typo ([url=https://github.com/ublue-os/bazzite/commit/f49e0c0f2512ba83b525291a34dffdc186c7ee60]f49e0c0[/url])
+[*] fully qualify path ([url=https://github.com/ublue-os/bazzite/commit/e1cbc25b8ff4d07b614ac85f08cf714b82e1025f]e1cbc25[/url])
+[*] [b]kde:[/b] Fix issue with theme picker under KDE6 for Vapor and VGUI2. ([url=https://github.com/ublue-os/bazzite/commit/3c79d312556f3d8ec87fa804dcc4d4cc91a4db83]3c79d31[/url])
+[*] no longer tell people to configure grub when showing virtualization helptext ([url=https://github.com/ublue-os/bazzite/issues/1042]#1042[/url]) ([url=https://github.com/ublue-os/bazzite/commit/3457926faa785a6d8d66f3286703156d64e1bcdd]3457926[/url])
+[*] simplify code and add if back for testing ([url=https://github.com/ublue-os/bazzite/commit/ca4434389e3762f1af878c10d25494d1a3e502a2]ca44343[/url])
+[/list]
+
+[h3]Miscellaneous Chores[/h3]
+[list]
+[*] release 3.0.1 ([url=https://github.com/ublue-os/bazzite/commit/2370baa1db1ceda0b6bfb6252758ecb58b32a0ff]2370baa[/url])
+[/list]
 [h2][url=https://github.com/ublue-os/bazzite/compare/v2.5.0...v3.0.0]3.0.0[/url] (2024-04-24)[/h2]
 
 
@@ -17,7 +56,6 @@
 [*] [b]deck:[/b] Automatically hide HHD-UI desktop icon on Steam Deck hardware where it's not applicable. ([url=https://github.com/ublue-os/bazzite/commit/59e4c38ce8fb2446652283253007281d0d9e6dfa]59e4c38[/url])
 [*] [b]deck:[/b] End X11 support ([url=https://github.com/ublue-os/bazzite/commit/21e5f14fcffe0d38788a5cc9ec1c3b4efabc5044]21e5f14[/url])
 [*] [b]deck:[/b] Remove nested desktop support. This has been broken under GNOME since launch, and is now broken under KDE as of KDE6. ([url=https://github.com/ublue-os/bazzite/commit/3032dae4d77465acd3e7d93a4b4cdd53f027a9d6]3032dae[/url])
-[*] [b]deck:[/b] Use gamescope patched edid for SD OLED by default to work around HDR issues in KDE6. ([url=https://github.com/ublue-os/bazzite/commit/f3e9f68eb00ff59a213e48d223250bb1992aa70c]f3e9f68[/url])
 [*] [b]desktop:[/b] add an action to install ollama on a Bazzite system ([url=https://github.com/ublue-os/bazzite/issues/994]#994[/url]) ([url=https://github.com/ublue-os/bazzite/commit/2dba9b14e54ea94865fa60f2e6b5738e5c6563c8]2dba9b1[/url])
 [*] [b]gnome:[/b] Add patched mutter with triple buffering and nvidia secondary gpu copy acceleration ([url=https://github.com/ublue-os/bazzite/commit/4889453f1648192017e0430b640a9f2b6b40ccb7]4889453[/url])
 [*] Include zoxide by default ([url=https://github.com/ublue-os/bazzite/commit/8ae44a7b63d9461b10fa2d6f3d61c20054db4dff]8ae44a7[/url])
@@ -42,55 +80,4 @@
 [h3]Miscellaneous Chores[/h3]
 [list]
 [*] release 3.0.0 ([url=https://github.com/ublue-os/bazzite/commit/f138206ef72bddb81138d4a24ab2654d46aa0769]f138206[/url])
-[/list]
-[h2][url=https://github.com/ublue-os/bazzite/compare/v2.4.0...v2.5.0]2.5.0[/url] (2024-04-14)[/h2]
-
-
-[h3]Features[/h3]
-[list]
-[*] New ISO install experience with Flatpaks now included.
-[*] Removal of initramfs building at first boot thanks to new in-image generation. Existing users who haven't customized initramfs can run [b]rpm-ostree initramfs --disable[/b] after updating to speed up future updates.
-[*] Add auto-vram kargs for Legion GO and ASUS Ally ([url=https://github.com/ublue-os/bazzite/commit/d8f450c4dc6bf0c0345826291a9c801f775a8a90]d8f450c[/url])
-[*] Add copr helper ([url=https://github.com/ublue-os/bazzite/commit/df62cd604aba1dd7329a56c17ddba164ac63ea53]df62cd6[/url])
-[*] Add ISO torrents via archive.org, huge thanks to [url=https://github.com/qoijjj]@qoijjj[/url] for all the work on this ([url=https://github.com/ublue-os/bazzite/issues/933]#933[/url]) ([url=https://github.com/ublue-os/bazzite/commit/022bf16b7da14001060b8de1e393ce8929a0a665]022bf16[/url])
-[*] Add Nobara USB Polling Rate Patch ([url=https://github.com/ublue-os/bazzite/issues/964]#964[/url]) ([url=https://github.com/ublue-os/bazzite/commit/f349a396daa18716aab40c739278165af6e221cb]f349a39[/url])
-[*] Add pre-image initramfs generation, preload fido2, tpm2-tss, and clevis ([url=https://github.com/ublue-os/bazzite/commit/f9b4ef92c9800487a7ea4ecce285967561292884]f9b4ef9[/url])
-[*] add readme for how to trigger initramfs rebuild ([url=https://github.com/ublue-os/bazzite/commit/6834f49cd588ac89b879ec001e3f59db8ea9d429]6834f49[/url])
-[*] Add setroubleshoot by default, with alerts disabled ([url=https://github.com/ublue-os/bazzite/commit/142e5732a6b734a5eacc50e5236f71ea73d0bd91]142e573[/url])
-[*] Add support for midi in Lutris ([url=https://github.com/ublue-os/bazzite/commit/540367916c6b07f5581936d46cbb57a659ea5e6d]5403679[/url])
-[*] Add udica for generating SELinux policies for containers ([url=https://github.com/ublue-os/bazzite/commit/b18c31b44a35006b0308e68ae090919bd557716f]b18c31b[/url])
-[*] [b]deck:[/b] add tdpfix for cards that has 15W TDP on boot due to writable sysfs on boot ([url=https://github.com/ublue-os/bazzite/issues/892]#892[/url]) ([url=https://github.com/ublue-os/bazzite/commit/0bbd9a53d9fe0247d6c96a2c5f0728fbdba3d8a5]0bbd9a5[/url])
-[*] [b]gamescope:[/b] Add HDR patch for Kernel 6.8 ([url=https://github.com/ublue-os/bazzite/commit/f8ad9ab8f3dadf13d0b64d49d65c0b9b59356530]f8ad9ab[/url])
-[*] [b]just:[/b] add warning message for looking-glass shm creation. ([url=https://github.com/ublue-os/bazzite/commit/1700ea7ab320cc10f516a005e1a942d757d64bfc]1700ea7[/url])
-[*] [b]just:[/b] Enable virtualization for deck hardware ([url=https://github.com/ublue-os/bazzite/issues/895]#895[/url]) ([url=https://github.com/ublue-os/bazzite/commit/21397351e7267fcc58731a698b7b19747034ed4c]2139735[/url])
-[*] [b]just:[/b] update recipe to edit tuned default profile using ppd.conf ([url=https://github.com/ublue-os/bazzite/issues/907]#907[/url]) ([url=https://github.com/ublue-os/bazzite/commit/eed757d5004b6c2892d64ec2d391648436ec0193]eed757d[/url])
-[*] remove custom rpm-ostree initramfs arg support ([url=https://github.com/ublue-os/bazzite/commit/c8dc6d8f32efb2142226d50a42bfdd3e4317620c]c8dc6d8[/url])
-[*] Remove initramfs step that takes a long time on first startup ([url=https://github.com/ublue-os/bazzite/commit/b48a3ec7265139afbdd016337f0b80a4dfcf9eb6]b48a3ec[/url])
-[*] Switch yafti to use the new Solaar flatpak ([url=https://github.com/ublue-os/bazzite/commit/020060e4570609a95842b890a9b56b4aadb06b6c]020060e[/url])
-[*] update image label with actual kernel version ([url=https://github.com/ublue-os/bazzite/issues/924]#924[/url]) ([url=https://github.com/ublue-os/bazzite/commit/2bbdf25f2aa10bbfdb21c7d7d4dd708cae415a1a]2bbdf25[/url])
-[*] Use new https://github.com/ublue-os/hwe Nvidia install script ([url=https://github.com/ublue-os/bazzite/commit/a692a2faa08de3a586a9a998792eb9753ab9d643]a692a2f[/url])
-[*] Use zstd compression for initramfs ([url=https://github.com/ublue-os/bazzite/commit/65923774b2c7efd8625861118fd161d2fa2df0d4]6592377[/url])
-[/list]
-
-[h3]Bug Fixes[/h3]
-[list]
-[*] Add lsb_release package for EmuDeck ([url=https://github.com/ublue-os/bazzite/commit/2c8bfc371b6a5e93364a5680ca6d6333b4d0b6fd]2c8bfc3[/url])
-[*] Add missing sqlite package for duperemove, fixes [url=https://github.com/ublue-os/bazzite/issues/959]#959[/url] ([url=https://github.com/ublue-os/bazzite/commit/540367916c6b07f5581936d46cbb57a659ea5e6d]5403679[/url])
-[*] [b]ally:[/b] Fix a bug where the power drains when the device is fully powered off caused by the fingerprint reader. ([url=https://github.com/ublue-os/bazzite/commit/f5f033424281f88f0a132ec0561a5a5f002faf24]f5f0334[/url])
-[*] Correct issue with hhd being enabled on root, add HHD adjustor package. ([url=https://github.com/ublue-os/bazzite/commit/929cee487d31ebc400f94485b974748465df9bea]929cee4[/url])
-[*] Correct issues with newest version of distrobox ([url=https://github.com/ublue-os/bazzite/commit/bae2fae95b7adcaf2309f9c98637efac3f51c65d]bae2fae[/url])
-[*] [b]deck:[/b] Restore all settings in restore-gnome-de-settings ujust command on deck images ([url=https://github.com/ublue-os/bazzite/commit/89ca085912f0896c26577a4bce0d83a3bb31da10]89ca085[/url])
-[*] [b]deck:[/b] Skip the first update in gaming mode on new installs ([url=https://github.com/ublue-os/bazzite/commit/5eede4578872b43cebbafda5f1925cb1b5bcedd6]5eede45[/url])
-[*] [b]gamescope:[/b] add 3.13.16.9 backport ([url=https://github.com/ublue-os/bazzite/issues/967]#967[/url]) ([url=https://github.com/ublue-os/bazzite/commit/45a8e4ab6be1c02483b0684fd6cb1e3ee711a5ed]45a8e4a[/url])
-[*] [b]gnome:[/b] Disable joystickwake on GNOME until lock screen issue can be triaged and fixed. ([url=https://github.com/ublue-os/bazzite/commit/57f144fd858cbccd9aabbece2d65ed1c6e0a78c6]57f144f[/url])
-[*] Install firmware on all images, allows desktop images to be used on some handhelds (with caveats) ([url=https://github.com/ublue-os/bazzite/commit/a5a7b952453aa84a9f277e5739e5e9f31a6e1f50]a5a7b95[/url])
-[*] [b]kde:[/b] Update gtk4 package for Ptyxis ([url=https://github.com/ublue-os/bazzite/commit/0109f9af67b89fe7535bbc01267654d58b3d88b1]0109f9a[/url])
-[*] Pull in s76 scheduler fixes from fruitchewy ([url=https://github.com/ublue-os/bazzite/commit/b60b1e621fb643c4ea59a8254ca5bc0250637367]b60b1e6[/url])
-[*] [b]readme:[/b] Remove Dual Boot documentation ([url=https://github.com/ublue-os/bazzite/issues/969]#969[/url]) ([url=https://github.com/ublue-os/bazzite/commit/5bd73aa4d609ad32d71aea8f4ad7df10c5527764]5bd73aa[/url])
-[*] remove clevis from dracut.conf.d ([url=https://github.com/ublue-os/bazzite/commit/977321b5097b59bfe4ee8eb032c4a32fcbea7ecd]977321b[/url])
-[*] Remove unneeded file checks from hardware setup ([url=https://github.com/ublue-os/bazzite/commit/7133fc773a5c600290d6f9f492a638a23b851cb2]7133fc7[/url])
-[*] Remove unneeded secure boot message ([url=https://github.com/ublue-os/bazzite/commit/7a3a9c13627bba4ba2fb5cc1f9bb48817486ba97]7a3a9c1[/url])
-[*] Use balanced-no-pstate profile on CPUs that don't support a pstate governor. ([url=https://github.com/ublue-os/bazzite/commit/1dcda86fe048a269ee1a79eacbb18377fc27379f]1dcda86[/url])
-[*] Use Ptyxis from ublue-os/staging copr ([url=https://github.com/ublue-os/bazzite/commit/a1d47b006c6cdeaa8edd5c4083c7da9519a47eb6]a1d47b0[/url])
-[*] Use xone driver as canary for secure boot check ([url=https://github.com/ublue-os/bazzite/commit/61136504b97255352ce8c38cdf30ea1f09e9e534]6113650[/url])
 [/list]
