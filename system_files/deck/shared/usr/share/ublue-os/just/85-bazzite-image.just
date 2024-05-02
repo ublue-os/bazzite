@@ -30,6 +30,16 @@ install-hhd-xbox-glyph-theme:
         echo 'Please install Decky Loader & CSS Loader first'
     fi
 
+# Install Handheld Controller Glyphs theme for hhd & CSS Loader (https://github.com/victor-borges/handheld-controller-glyphs)
+install-hhd-controller-glyph-theme:
+    #!/usr/bin/bash
+    if [ -d "$HOME/homebrew/themes" ]; then
+        rm -rf "$HOME/homebrew/themes/Handheld-Controller-Glyphs"
+        git clone https://github.com/victor-borges/handheld-controller-glyphs.git --single-branch "$HOME/homebrew/themes/Handheld-Controller-Glyphs"
+    else
+        echo 'Please install Decky Loader & CSS Loader first'
+    fi
+
 # Install EmuDeck (https://www.emudeck.com/)
 get-emudeck:
     #!/usr/bin/bash
