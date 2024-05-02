@@ -22,7 +22,7 @@ index 42c67b9..628bfc9 100644
  		{
  			if ( this->GetProperties().panel_orientation )
 diff --git a/src/main.cpp b/src/main.cpp
-index 88c4c7c..3efd0c8 100644
+index 88c4c7c..2f5fc0a 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -121,6 +121,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -50,16 +50,10 @@ index 88c4c7c..3efd0c8 100644
  bool g_bGrabbed = false;
  
  float g_mouseSensitivity = 1.0;
-@@ -348,7 +352,28 @@ static GamescopePanelOrientation force_orientation(const char *str)
- 	} else if (strcmp(str, "upsidedown") == 0) {
- 		return GAMESCOPE_PANEL_ORIENTATION_180;
- 	} else {
--		fprintf( stderr, "gamescope: invalid value for --force-orientation\n" );
-+		fprintf( stderr, "gamescope: invalid value for given for --force-orientation\n" );
-+		exit(1);
-+	}
-+}
-+
+@@ -353,6 +357,27 @@ static GamescopePanelOrientation force_orientation(const char *str)
+ 	}
+ }
+ 
 +GamescopePanelOrientation g_DesiredExternalOrientation = GAMESCOPE_PANEL_ORIENTATION_AUTO;
 +static GamescopePanelOrientation force_external_orientation(const char *str)
 +{
@@ -76,10 +70,14 @@ index 88c4c7c..3efd0c8 100644
 +		g_bExternalForced = true;
 +		return GAMESCOPE_PANEL_ORIENTATION_180;
 +	} else {
-+		fprintf( stderr, "gamescope: invalid value for given for --force-external-orientation\n" );
- 		exit(1);
- 	}
- }
++		fprintf( stderr, "gamescope: invalid value for --force-external-orientation\n" );
++		exit(1);
++	}
++}
++
+ static enum GamescopeUpscaleScaler parse_upscaler_scaler(const char *str)
+ {
+ 	if (strcmp(str, "auto") == 0) {
 @@ -648,6 +673,8 @@ int main(int argc, char **argv)
  					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
  				} else if (strcmp(opt_name, "force-orientation") == 0) {
