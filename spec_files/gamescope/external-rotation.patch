@@ -22,7 +22,7 @@ index 42c67b9..628bfc9 100644
  		{
  			if ( this->GetProperties().panel_orientation )
 diff --git a/src/main.cpp b/src/main.cpp
-index 88c4c7c..6f4cae4 100644
+index 88c4c7c..3efd0c8 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -121,6 +121,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -41,7 +41,16 @@ index 88c4c7c..6f4cae4 100644
  	"  --force-windows-fullscreen     force windows inside of gamescope to be the size of the nested display (fullscreen)\n"
  	"  --cursor-scale-height          if specified, sets a base output height to linearly scale the cursor against.\n"
  	"  --hdr-enabled                  enable HDR output (needs Gamescope WSI layer enabled for support from clients)\n"
-@@ -348,7 +350,24 @@ static GamescopePanelOrientation force_orientation(const char *str)
+@@ -267,6 +269,8 @@ bool g_bOutputHDREnabled = false;
+ bool g_bFullscreen = false;
+ bool g_bForceRelativeMouse = false;
+ 
++bool g_bExternalForced = false;
++
+ bool g_bGrabbed = false;
+ 
+ float g_mouseSensitivity = 1.0;
+@@ -348,7 +352,28 @@ static GamescopePanelOrientation force_orientation(const char *str)
  	} else if (strcmp(str, "upsidedown") == 0) {
  		return GAMESCOPE_PANEL_ORIENTATION_180;
  	} else {
@@ -55,19 +64,23 @@ index 88c4c7c..6f4cae4 100644
 +static GamescopePanelOrientation force_external_orientation(const char *str)
 +{
 +	if (strcmp(str, "normal") == 0) {
++		g_bExternalForced = true;
 +		return GAMESCOPE_PANEL_ORIENTATION_0;
 +	} else if (strcmp(str, "right") == 0) {
++		g_bExternalForced = true;
 +		return GAMESCOPE_PANEL_ORIENTATION_270;
 +	} else if (strcmp(str, "left") == 0) {
++		g_bExternalForced = true;
 +		return GAMESCOPE_PANEL_ORIENTATION_90;
 +	} else if (strcmp(str, "upsidedown") == 0) {
++		g_bExternalForced = true;
 +		return GAMESCOPE_PANEL_ORIENTATION_180;
 +	} else {
 +		fprintf( stderr, "gamescope: invalid value for given for --force-external-orientation\n" );
  		exit(1);
  	}
  }
-@@ -648,6 +667,8 @@ int main(int argc, char **argv)
+@@ -648,6 +673,8 @@ int main(int argc, char **argv)
  					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
  				} else if (strcmp(opt_name, "force-orientation") == 0) {
  					g_DesiredInternalOrientation = force_orientation( optarg );
