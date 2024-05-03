@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+shopt -s nullglob
+
+/usr/bin/zap update
+
+exit 0
