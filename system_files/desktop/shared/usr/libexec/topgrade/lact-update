@@ -12,7 +12,6 @@ if [[ $(rpm -qa | grep lact) ]]; then
             # This will check if *any* rpm-ostree pin has the newest version, so we don't update needlessly if a user just needs to reboot or is trying an older pin.
             echo "Found upstream version v$LACT_VERSION, updating..."
             ublue-update --wait
-            rpm-ostree remove -y $(rpm -qa | grep lact)
             if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
                 echo 'Installing LACT Libadwaita...'
                 wget \
@@ -26,7 +25,7 @@ if [[ $(rpm -qa | grep lact) ]]; then
                   jq -r ".assets[] | select(.name | test(\"lact-[0-9].*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
                   -O /tmp/lact.rpm
             fi
-            rpm-ostree install -y /tmp/lact.rpm
+            rpm-ostree override replace /tmp/lact.rpm
             echo "Update complete"
       fi
 else
