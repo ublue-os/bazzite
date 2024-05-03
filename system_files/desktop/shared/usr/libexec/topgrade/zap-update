@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 shopt -s nullglob
 
-/usr/bin/zap update
+/usr/bin/zap upgrade
 
 exit 0

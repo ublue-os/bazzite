@@ -61,7 +61,13 @@ alias get-wootility := install-wootility
 # Install Wootility for configuring Wooting Keyboards
 install-wootility:
     #!/usr/bin/bash
-    zap install --from https://api.wooting.io/public/wootility/download?os=linux&branch=lekker wootility
+    if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
+      wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Downloads/wootility.AppImage
+      flatpak run it.mijorus.gearlever $HOME/Downloads/wootility.AppImage
+    else
+      wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Desktop/wootility.AppImage
+      chmod +x $HOME/Desktop/wootility.AppImage
+    fi
 
 # Install Adwaita-for-Steam theme for CSS Loader (https://github.com/tkashkin/Adwaita-for-Steam)
 install-adwaita-for-steam:
