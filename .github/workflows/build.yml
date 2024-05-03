@@ -9,6 +9,7 @@ on:
     paths-ignore:
       - '**.md'
       - '**.txt'
+      - 'installer/**'
       - 'repo_content/**'
       - 'spec_files/**'
       - 'post_install_files/**'
