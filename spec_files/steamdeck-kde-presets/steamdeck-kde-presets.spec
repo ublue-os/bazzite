@@ -15,6 +15,7 @@ Patch0:         fedora.patch
 Patch1:         kdeglobals.patch
 Patch2:         bazzite_logo.patch
 Patch3:         ublue.patch
+Patch4:         wayland-remove-env.patch
 
 Requires:       kde-filesystem
 
