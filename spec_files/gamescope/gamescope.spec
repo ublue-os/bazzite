@@ -2,11 +2,11 @@
 
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
-%global gamescope_tag 3.14.11
+%global gamescope_tag 3.14.12
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        2.bazzite
+Release:        1.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -33,7 +33,9 @@ BuildRequires:  google-benchmark-devel
 BuildRequires:  libeis-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  libXcursor-devel
+BuildRequires:  pixman-devel
 BuildRequires:  pkgconfig(libdisplay-info)
+BuildRequires:  pkgconfig(pixman-1)
 BuildRequires:  pkgconfig(libeis-1.0)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xdamage)
@@ -105,7 +107,7 @@ sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/m
 %build
 cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
-%meson -Dpipewire=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dinput_emulation=enabled -Dsdl2_backend=enabled -Dforce_fallback_for=vkroots
+%meson -Dpipewire=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dinput_emulation=enabled -Dsdl2_backend=enabled -Dforce_fallback_for=vkroots -Dforce_fallback_for=wlroots
 %meson_build
 
 %install
