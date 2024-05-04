@@ -232,6 +232,21 @@ setup-decky ACTION="":
       fi
     fi
 
+
+# Install EmuDeck (https://www.emudeck.com/)
+install-emudeck:
+    #!/usr/bin/bash
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    echo 'Retrieving EmuDeck...'
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+      wget https://www.emudeck.com/EmuDeck.desktop -O ~/.local/share/applications/EmuDeck.desktop
+      echo 'EmuDeck installer added to your application grid.'
+    else
+      wget https://www.emudeck.com/EmuDeck.desktop -O ~/Desktop/EmuDeck.desktop
+      echo 'EmuDeck installer added to your desktop.'
+    fi
+
 # Ptyxis terminal transparency
 ptyxis-transparency opacity="0.95":
     #!/usr/bin/bash
