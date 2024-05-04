@@ -1,5 +1,4 @@
 [commands]
-"Zap" = "/usr/libexec/topgrade/zap-update"
 "Linux AMDGPU Control Application" = "/usr/libexec/topgrade/lact-update"
 "Mozilla GNOME Themes" = "/usr/libexec/topgrade/mozilla-gnome-theme-update"
 "Third Party CSS Loader Themes" = "/usr/libexec/topgrade/third-party-css-loader-update"

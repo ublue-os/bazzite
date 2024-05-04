@@ -425,8 +425,6 @@ RUN rpm-ostree install \
     rm -rf /tmp/latencyflex && \
     curl -Lo /usr/bin/latencyflex https://raw.githubusercontent.com/KyleGospo/LatencyFleX-Installer/main/install.sh && \
     chmod +x /usr/bin/latencyflex && \
-    curl -Lo /usr/bin/zap https://github.com/srevinsaju/zap/releases/download/continuous/zap-amd64 && \
-    chmod +x /usr/bin/zap && \
     sed -i 's@/usr/lib/wine/@/usr/lib64/wine/@g' /usr/bin/latencyflex && \
     sed -i 's@"dxvk.conf"@"/usr/share/latencyflex/dxvk.conf"@g' /usr/bin/latencyflex && \
     chmod +x /usr/bin/latencyflex && \

@@ -211,6 +211,7 @@ screens:
           description: Helpful tools
           default: false
           packages:
+          - AppImage Pool: io.github.prateekmedia.appimagepool
           - Barrier: com.github.debauchee.barrier
           - Bitwarden: com.bitwarden.desktop
           - Calibre: com.calibre_ebook.calibre
