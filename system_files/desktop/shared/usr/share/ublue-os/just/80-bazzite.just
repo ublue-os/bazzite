@@ -234,7 +234,7 @@ setup-decky ACTION="":
 
 
 # Install EmuDeck (https://www.emudeck.com/)
-get-emudeck:
+install-emudeck:
     #!/usr/bin/bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
