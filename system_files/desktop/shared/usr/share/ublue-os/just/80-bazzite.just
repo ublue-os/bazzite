@@ -232,7 +232,6 @@ setup-decky ACTION="":
       fi
     fi
 
-
 # Install EmuDeck (https://www.emudeck.com/)
 install-emudeck:
     #!/usr/bin/bash
