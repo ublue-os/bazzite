@@ -6,5 +6,6 @@ BTRFS is used by default for external drives, and we recommend that or EXT4 over
 Discover Overlay is preinstalled, allowing Discord to overlay your games during voice chats~[More info](https://trigg.github.io/Discover/)
 *Looking to setup Waydroid?*~[View our documentation](https://universal-blue.discourse.group/docs?topic=32)
 Bazzite uses ZSTD compression in BTRFS by default, and deduplicates files across your entire drive. **More space for your games!**
-*Have a large library of ROMs to manage?* ROM Properties Page shell extension is installed by default and makes it much easier, with thumbnails and additional info for all of your files.
-*Need more control over your Flatpaks?* Check out the Warehouse and Flatseal applications to manage them.
+*Have a large library of ROMs to manage?* ROM Properties Page shell extension is installed by default and makes it much easier, with thumbnails and additional info for all of your files
+*Need more control over your Flatpaks?* Check out the Warehouse and Flatseal applications to manage them
+The `bazzite-rollback-helper` command can guide you for rolling back or rebasing to older Bazzite builds
