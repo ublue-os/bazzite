@@ -48,7 +48,7 @@ index ac7adb6..d46bb14 100755
  
  unidentified ()
 diff --git a/pipewire-confs/systemd/system/pipewire-sysconf.service b/pipewire-confs/systemd/system/pipewire-sysconf.service
-index abc1f5d..6678964 100644
+index 1528ccc..361c2ad 100644
 --- a/pipewire-confs/systemd/system/pipewire-sysconf.service
 +++ b/pipewire-confs/systemd/system/pipewire-sysconf.service
 @@ -11,7 +11,7 @@
@@ -120,7 +120,7 @@ index 3f03354..1e43489 100755
  
  unidentified ()
 diff --git a/wireplumber/systemd/system/wireplumber-sysconf.service b/wireplumber/systemd/system/wireplumber-sysconf.service
-index 0e3f481..63595c3 100644
+index 6ae50a9..cac828f 100644
 --- a/wireplumber/systemd/system/wireplumber-sysconf.service
 +++ b/wireplumber/systemd/system/wireplumber-sysconf.service
 @@ -11,7 +11,7 @@

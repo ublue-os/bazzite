@@ -1,0 +1,120 @@
+diff --git a/Test.wav b/Test.wav
+index a3691b9..b0738ee 100644
+Binary files a/Test.wav and b/Test.wav differ
+diff --git a/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain-sink.conf b/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain-sink.conf
+index 7df5622..55d6bad 100644
+--- a/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain-sink.conf
++++ b/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain-sink.conf
+@@ -27,7 +27,7 @@ context.modules = [
+             }
+             capture.props = {
+                 node.name = "filter-chain-sink"
+-                media.class = Audio/Sink/Internal
++                media.class = Audio/Sink
+                 audio.channels = 2
+                 audio.position = [ FL FR ]
+                 filter.smart = true
+diff --git a/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain.conf b/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain.conf
+index 9246254..262fa0f 100644
+--- a/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain.conf
++++ b/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain.conf
+@@ -39,7 +39,7 @@ context.modules = [
+             }
+             playback.props = {
+                 node.name = "filter-chain-source"
+-                media.class = Audio/Source/Internal
++                media.class = Audio/Source
+                 filter.smart = true
+                 filter.smart.name = filter-chain-source
+                 filter.smart.target = { media.class = Audio/Source, alsa.card_name = sof-nau8821-max }
+diff --git a/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/virtual-sink.conf b/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/virtual-sink.conf
+index e44aa2f..37e1083 100644
+--- a/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/virtual-sink.conf
++++ b/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/virtual-sink.conf
+@@ -5,7 +5,7 @@ context.modules = [
+             node.description = "Virtual Sink"
+             capture.props = {
+                 audio.position = [ FL FR ]
+-                media.class = Audio/Sink/Internal
++                media.class = Audio/Sink
+                 filter.smart = true
+                 filter.smart.name = virtual-sink
+                 filter.smart.before = [ filter-chain-sink ]
+diff --git a/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/virtual-source.conf b/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/virtual-source.conf
+index a2cec34..ed84976 100644
+--- a/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/virtual-source.conf
++++ b/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/virtual-source.conf
+@@ -10,7 +10,7 @@ context.modules = [
+             }
+             playback.props = {
+                 audio.position = [ FL FR ]
+-                media.class = Audio/Source/Internal
++                media.class = Audio/Source
+                 filter.smart = true
+                 filter.smart.name = virtual-source
+                 filter.smart.before = [ filter-chain-source ]
+diff --git a/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/filter-chain.conf b/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/filter-chain.conf
+index b64aa42..90a1e12 100644
+--- a/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/filter-chain.conf
++++ b/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/filter-chain.conf
+@@ -39,7 +39,7 @@ context.modules = [
+             }
+             playback.props = {
+                 node.name = "filter-chain-source"
+-                media.class = Audio/Source/Internal
++                media.class = Audio/Source
+                 filter.smart = true
+                 filter.smart.name = filter-chain-source
+ 
+diff --git a/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/virtual-source.conf b/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/virtual-source.conf
+index a2cec34..ed84976 100644
+--- a/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/virtual-source.conf
++++ b/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/virtual-source.conf
+@@ -10,7 +10,7 @@ context.modules = [
+             }
+             playback.props = {
+                 audio.position = [ FL FR ]
+-                media.class = Audio/Source/Internal
++                media.class = Audio/Source
+                 filter.smart = true
+                 filter.smart.name = virtual-source
+                 filter.smart.before = [ filter-chain-source ]
+diff --git a/scripts/install_plugins.sh b/scripts/install_plugins.sh
+index 591514a..ad10f23 100755
+--- a/scripts/install_plugins.sh
++++ b/scripts/install_plugins.sh
+@@ -1,13 +1,17 @@
++#!/bin/sh
++
++set -eu
++
+ HARDCODED_PLUGIN_DEST_1=${DEST_DIR}/usr/lib/lv2/valve_deck_speakers.lv2
+ HARDCODED_PLUGIN_DEST_2=${DEST_DIR}/lib/lv2/valve_deck_speakers.lv2
+- 
+-if [ -e $HARDCODED_PLUGIN_DEST_1 ]; then rm -r $HARDCODED_PLUGIN_DEST_1; fi;
+-if [ -e $HARDCODED_PLUGIN_DEST_2 ]; then rm -r $HARDCODED_PLUGIN_DEST_2; fi;
++
++if [ -e "$HARDCODED_PLUGIN_DEST_1" ]; then rm -r "$HARDCODED_PLUGIN_DEST_1"; fi;
++if [ -e "$HARDCODED_PLUGIN_DEST_2" ]; then rm -r "$HARDCODED_PLUGIN_DEST_2"; fi;
+ 
+ 
+-mkdir -p $DEST_DIR/usr/lib/lv2
+-cp -r bin/lv2/g++/valve_deck_speakers.lv2 $DEST_DIR/usr/lib/lv2/valve_deck_speakers.lv2
+-cp -r bin/lv2/g++/valve_binaural.lv2 $DEST_DIR/usr/lib/lv2/valve_binaural.lv2
+-cp -r bin/lv2/g++/valve_deck_microphone.lv2 $DEST_DIR/usr/lib/lv2/valve_deck_microphone.dsp
+-cp -r bin/svg $DEST_DIR/usr/lib/lv2/svg
+-cp version.txt $DEST_DIR/usr/lib/lv2/valve_audio_dsp_version.txt
++mkdir -p "$DEST_DIR"/usr/lib/lv2
++cp -r bin/lv2/g++/valve_deck_speakers.lv2 "$DEST_DIR"/usr/lib/lv2/valve_deck_speakers.lv2
++cp -r bin/lv2/g++/valve_binaural.lv2 "$DEST_DIR"/usr/lib/lv2/valve_binaural.lv2
++cp -r bin/lv2/g++/valve_deck_microphone.lv2 "$DEST_DIR"/usr/lib/lv2/valve_deck_microphone.dsp
++# cp -r bin/svg $DEST_DIR/usr/lib/lv2/svg
++# cp version.txt $DEST_DIR/usr/lib/lv2/valve_audio_dsp_version.txt
+diff --git a/version.txt b/version.txt
+index 60d8e2b..a7ccba2 100644
+--- a/version.txt
++++ b/version.txt
+@@ -1,2 +1,2 @@
+ Valve Audio Signal Processing Plugins
+-Version 0.31, 09/15/2023
++Version 0.44, 09/15/2023
