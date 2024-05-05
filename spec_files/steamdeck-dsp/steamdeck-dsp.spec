@@ -6,8 +6,9 @@ License:        GPLv2
 URL:            https://github.com/ublue-os/bazzite
 Source:         https://gitlab.com/evlaV/valve-hardware-audio-processing/-/archive/main/valve-hardware-audio-processing-main.tar.gz
 
-Patch0:         fedora.patch
-Patch1:         bazzite.patch
+Patch0:         internal.patch
+Patch1:         fedora.patch
+Patch2:         bazzite.patch
 
 Requires:       pipewire-module-filter-chain-lv2
 Requires:       ladspa-noise-suppression-for-voice
@@ -58,7 +59,6 @@ rm %{buildroot}%{_datadir}/pipewire/hardware-profiles/default
 %{_prefix}/lib/firmware/amd/*
 %{_libexecdir}/hwsupport/wireplumber-hwconfig
 %{_libexecdir}/hwsupport/pipewire-hwconfig
-%{_libdir}/lv2/svg/valve_deck_*
 %{_libdir}/lv2/valve_*
 %{_datadir}/alsa/ucm2/conf.d/acp5x/*.conf
 %{_datadir}/alsa/ucm2/conf.d/sof-nau8821-max/*.conf
@@ -71,12 +71,15 @@ rm %{buildroot}%{_datadir}/pipewire/hardware-profiles/default
 
 %post
 %systemd_post wireplumber-sysconf.service
+%systemd_post pipewire-sysconf.service
 
 %preun
 %systemd_preun wireplumber-sysconf.service
+%systemd_preun pipewire-sysconf.service
 
 %postun
 %systemd_postun_with_restart wireplumber-sysconf.service
+%systemd_postun_with_restart pipewire-sysconf.service
 
 # Finally, changes from the latest release of your application are generated from
 # your project's Git history. It will be empty until you make first annotated Git tag.
