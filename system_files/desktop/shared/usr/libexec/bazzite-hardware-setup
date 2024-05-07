@@ -177,6 +177,23 @@ else
   echo "No minimum-free ZRAM changes needed"
 fi
 
+# FRAMEWORK 13 AMD FIXES
+if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
+  if [[ $SYS_ID == "Laptop ("* ]];
+    if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
+      if [[ ! -f /etc/modprobe.d/alsa.conf ]]; then
+        echo 'Fixing 3.5mm jack'
+        sudo tee /etc/modprobe.d/alsa.conf <<< "options snd-hda-intel index=1,0 model=auto,dell-headset-multi"
+        echo 0 | sudo tee /sys/module/snd_hda_intel/parameters/power_save
+      fi
+      if [[ ! -f /etc/udev/rules.d/20-suspend-fixes.rules ]]; then
+        echo 'Fixing suspend issue'
+        echo "ACTION==\"add\", SUBSYSTEM==\"serio\", DRIVERS==\"atkbd\", ATTR{power/wakeup}=\"disabled\"" > /etc/udev/rules.d/20-suspend-fixes.rules'
+      fi
+    fi
+  fi
+fi
+
 # WAYDROID FIX
 if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
   echo "Removing unneeded apparmor entry from Waydroid LXC"
