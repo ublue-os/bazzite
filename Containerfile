@@ -473,6 +473,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
             mutter \
+            mutter-common \
             gnome-shell \
             vte291 \
             vte-profile && \
