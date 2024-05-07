@@ -116,7 +116,11 @@ else
         echo 'Enabling natural scroll'
         dconf write /org/gnome/desktop/peripherals/mouse/natural-scroll true
         echo 'Adjusting OSD position'
-        dconf watch /org/gnome/shell/extensions/just-perfection/osd-position 4
+        dconf write /org/gnome/shell/extensions/just-perfection/osd-position 4
+        if [[ $SYS_ID == "Laptop ("* ]]; then
+          echo 'Applying font fix for Framework 13'
+          dconf write /org/gnome/desktop/interface/text-scaling-factor 1.25
+        fi
         touch "$BAZZITE_CONFIG_DIR/framework-initialized"
       fi
     fi
