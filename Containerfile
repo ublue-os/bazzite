@@ -472,6 +472,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+            mutter \
             gnome-shell \
             vte291 \
             vte-profile && \
