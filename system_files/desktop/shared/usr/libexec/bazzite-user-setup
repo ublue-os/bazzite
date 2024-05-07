@@ -3,6 +3,9 @@
 if [ "${EUID:-$(id -u)}" -eq 0 ]; then
   echo "Bazzite user setup ran as root user. Exiting."
   exit 0
+elif [ "$(whoami)" = "sddm" ]; then
+  echo "Bazzite user setup ran as sddm user. Exiting."
+  exit 0
 fi
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
