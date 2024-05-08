@@ -179,7 +179,7 @@ fi
 
 # FRAMEWORK 13 AMD FIXES
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
-  if [[ $SYS_ID == "Laptop ("* ]];
+  if [[ $SYS_ID == "Laptop ("* ]]; then
     if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
       if [[ ! -f /etc/modprobe.d/alsa.conf ]]; then
         echo 'Fixing 3.5mm jack'
