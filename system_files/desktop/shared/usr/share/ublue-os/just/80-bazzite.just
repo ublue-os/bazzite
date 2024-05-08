@@ -28,7 +28,7 @@ _install-system-flatpaks:
         FLATPAKS="kde_flatpaks/flatpaks"
     fi
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
-    flatpak --system -y install ${FLATPAK_LIST}
+    flatpak --system -y install --or-update ${FLATPAK_LIST}
 
 # Install Bazzite's Steam Game Mode Startup Video
 install-gamemode-video:
