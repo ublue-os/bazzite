@@ -36,9 +36,9 @@ if [ -d "$HOME/homebrew/themes/PS5-to-Xbox-glyphs/.git" ]; then
 fi
 
 # Handheld Controller Glyphs
-if [ -d "$HOME/homebrew/themes/Handheld-Controller-Glyphs/.git" ]; then
-  cd "$HOME/homebrew/themes/Handheld-Controller-Glyphs"
-  echo "Handheld-Controller-Glyphs theme found, pulling latest with git."
+if [ -d "$HOME/homebrew/themes/handheld-controller-glyphs/.git" ]; then
+  cd "$HOME/homebrew/themes/handheld-controller-glyphs"
+  echo "handheld-controller-glyphs theme found, pulling latest with git."
   git pull
   echo "Update complete."
 fi
