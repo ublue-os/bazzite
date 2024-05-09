@@ -6,9 +6,8 @@ License:        GPLv2
 URL:            https://github.com/ublue-os/bazzite
 Source:         https://gitlab.com/evlaV/valve-hardware-audio-processing/-/archive/main/valve-hardware-audio-processing-main.tar.gz
 
-Patch0:         internal.patch
-Patch1:         fedora.patch
-Patch2:         bazzite.patch
+Patch0:         fedora.patch
+Patch1:         bazzite.patch
 
 Requires:       pipewire-module-filter-chain-lv2
 Requires:       ladspa-noise-suppression-for-voice
