@@ -502,7 +502,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             gnome-shell-extension-bazzite-menu \
             gnome-shell-extension-hotedge \
             gnome-shell-extension-caffeine \
-            gnome-shell-extension-power-profile-switcher \
+            gnome-shell-extension-auto-power-profile \
             rom-properties-gtk3 \
             openssh-askpass && \
         rpm-ostree override remove \

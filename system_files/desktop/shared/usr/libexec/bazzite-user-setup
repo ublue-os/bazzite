@@ -1,10 +1,7 @@
 #!/usr/bin/bash
 
-if [ "${EUID:-$(id -u)}" -eq 0 ]; then
-  echo "Bazzite user setup ran as root user. Exiting."
-  exit 0
-elif [ "$(whoami)" = "sddm" ]; then
-  echo "Bazzite user setup ran as sddm user. Exiting."
+if [ "${EUID:-$(id -u)}" -lt 1000 ]; then
+  echo "Bazzite user setup ran as unsupported user. Exiting."
   exit 0
 fi
 
@@ -112,7 +109,7 @@ else
     if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
       if [[ ! -f "$BAZZITE_CONFIG_DIR/framework-initialized" ]]; then
         echo 'Enabling automatic power profile extension'
-        gnome-extensions enable power-profile-switcher@eliapasquali.github.io
+        ujust configure-auto-power-profile enable
         echo 'Setting Framework logo menu'
         dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
         dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 4
