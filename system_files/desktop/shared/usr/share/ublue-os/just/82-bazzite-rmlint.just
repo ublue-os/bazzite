@@ -27,7 +27,6 @@ enable-rmlint ACTION="":
         exit 0
       fi
       ublue-update --wait
-      # Install packages for KDE 6
       rpm-ostree install --apply-live -y rmlint
       mkdir /etc/systemd/system/btrfs-dedup@.service.d/
       bash -c 'cat << EOL > /etc/systemd/system/btrfs-dedup@.service.d/override.conf
