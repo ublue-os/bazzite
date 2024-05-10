@@ -17,3 +17,11 @@ fix-gmod:
     chmod +x /tmp/patch-gmod/GModCEFCodecFix-Linux
     /tmp/patch-gmod/GModCEFCodecFix-Linux
     rm -rf /tmp/patch-gmod
+
+# Kills all processes related to wine and proton. This forces it to restart next time you launch the game (you might still have to press STOP in steam to kill the game binary)
+fix-proton-hang:
+    #!/usr/bin/bash
+    PROTONCORE=(pv-bwrap pressure-vessel reaper explorer.exe rpcss.exe plugplay.exe services.exe svchost.exe winedevice.exe winedevice.exe wineserver)
+    for PROG in "${PROTONCORE[@]}"; do
+      killall -9 "$PROG"
+    done
