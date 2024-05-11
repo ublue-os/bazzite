@@ -1,4 +1,4 @@
-From 22df9fa5e3c973d5a194f2bbdbcdd4a64511bc93 Mon Sep 17 00:00:00 2001
+From ff73f820b1398e5d60b8984b0003db46ad70b8ec Mon Sep 17 00:00:00 2001
 From: Benjamin Berg <bberg@redhat.com>
 Date: Wed, 28 Apr 2021 16:50:03 +0200
 Subject: [PATCH] gdm: Work around failing fingerprint auth
@@ -13,29 +13,29 @@ failure instead.
  1 file changed, 18 insertions(+)
 
 diff --git a/js/gdm/util.js b/js/gdm/util.js
-index b02cd4d73..118a05100 100644
+index 97df6d687e..371953cb25 100644
 --- a/js/gdm/util.js
 +++ b/js/gdm/util.js
-@@ -157,6 +157,7 @@ var ShellUserVerifier = class {
-             null,
-             null,
-             Gio.DBusProxyFlags.DO_NOT_LOAD_PROPERTIES);
+@@ -109,6 +109,7 @@ export class ShellUserVerifier extends Signals.EventEmitter {
+         this._defaultService = null;
+         this._preemptingService = null;
+         this._fingerprintReaderType = FingerprintReaderType.NONE;
 +        this._fprintStartTime = -1;
-         this._smartcardManager = SmartcardManager.getSmartcardManager();
  
-         // We check for smartcards right away, since an inserted smartcard
-@@ -543,6 +544,10 @@ var ShellUserVerifier = class {
-     async _startService(serviceName) {
+         this._messageQueue = [];
+         this._messageQueueTimeoutId = 0;
+@@ -669,6 +670,10 @@ export class ShellUserVerifier extends Signals.EventEmitter {
          this._hold.acquire();
          try {
-+            if (serviceName == FINGERPRINT_SERVICE_NAME) {
+             this._activeServices.add(serviceName);
++
++            if (serviceName == FINGERPRINT_SERVICE_NAME)
 +                this._fprintStartTime = GLib.get_monotonic_time();
-+            }
 +
              if (this._userName) {
                  await this._userVerifier.call_begin_verification_for_user(
                      serviceName, this._userName, this._cancellable);
-@@ -624,6 +629,7 @@ var ShellUserVerifier = class {
+@@ -763,6 +768,7 @@ export class ShellUserVerifier extends Signals.EventEmitter {
                  const cancellable = this._cancellable;
                  this._fingerprintFailedId = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
                      FINGERPRINT_ERROR_TIMEOUT_WAIT, () => {
@@ -43,7 +43,7 @@ index b02cd4d73..118a05100 100644
                          this._fingerprintFailedId = 0;
                          if (!cancellable.is_cancelled())
                              this._verificationFailed(serviceName, false);
-@@ -689,6 +695,18 @@ var ShellUserVerifier = class {
+@@ -829,6 +835,18 @@ export class ShellUserVerifier extends Signals.EventEmitter {
          if (serviceName === FINGERPRINT_SERVICE_NAME) {
              if (this._fingerprintFailedId)
                  GLib.source_remove(this._fingerprintFailedId);
@@ -63,5 +63,5 @@ index b02cd4d73..118a05100 100644
  
          // For Not Listed / enterprise logins, immediately reset
 -- 
-2.31.1
+2.43.2
 

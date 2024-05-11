@@ -7,4 +7,4 @@ EnvironmentFile=-/etc/default/%p
 ExecStart=/usr/bin/bash -c "echo ${MAX_BATTERY_CHARGE_LEVEL} > /sys/class/hwmon/hwmon*/max_battery_charge_level"
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target reboot.target hibernate.target hybrid-sleep.target sleep.target suspend-then-hibernate.target suspend.target

@@ -1,0 +1,23 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "",
+                "Name": "Valve"
+            }
+        ],
+        "Category": "",
+        "Description": "Any color you like, as long as it's green",
+        "Id": "com.valve.vgui.desktop",
+        "License": "GPLv2+",
+        "Name": "VGUI2",
+        "ServiceTypes": [
+            "Plasma/LookAndFeel"
+        ],
+        "Version": "0.01",
+        "Website": "https://steampowered.com/"
+    },
+    "X-KDE-ParentApp": "",
+    "X-Plasma-MainScript": "defaults"
+}

@@ -1,0 +1,69 @@
+diff --git a/src/drm.cpp b/src/drm.cpp
+index 7776422..b7d822c 100644
+--- a/src/drm.cpp
++++ b/src/drm.cpp
+@@ -2122,6 +2122,8 @@ namespace gamescope
+ 			( m_Mutable.szMakePNP == "VLV"sv && m_Mutable.szModel == "ANX7530 U"sv ) ||
+ 			( m_Mutable.szMakePNP == "VLV"sv && m_Mutable.szModel == "Jupiter"sv ) ||
+ 			( m_Mutable.szMakePNP == "VLV"sv && m_Mutable.szModel == "Galileo"sv );
++		const bool bDeckHDDisplay =
++			( m_Mutable.szMakePNP == "DHD"sv && m_Mutable.szModel == "DeckHD-1200p"sv );
+ 		const bool bLegionGoDisplay =
+ 			( m_Mutable.szMakePNP == "LEN"sv && m_Mutable.szModel == "Go Display"sv );
+ 		const bool bLokiDisplay =
+@@ -2148,6 +2150,11 @@ namespace gamescope
+ 				m_Mutable.ValidDynamicRefreshRates = std::span( s_kSteamDeckLCDRates );
+ 			}
+ 		}
++		else if ( bDeckHDDisplay )
++		{
++			m_Mutable.eKnownDisplay = GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD;
++			m_Mutable.ValidDynamicRefreshRates = std::span( s_kSteamDeckLCDRates );
++		}
+ 		else if ( bLegionGoDisplay )
+ 		{
+ 			m_Mutable.ValidDynamicRefreshRates = std::span( s_kLegionGoRates );
+@@ -2309,7 +2316,7 @@ namespace gamescope
+ 				.uMinContentLightLevel = nits_to_u16_dark( 0 ),
+ 			};
+ 		}
+-		else if ( eKnownDisplay == GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD )
++		else if ( eKnownDisplay == GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD || GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD )
+ 		{
+ 			// Set up some HDR fallbacks for undocking
+ 			return BackendConnectorHDRInfo
+diff --git a/src/gamescope_shared.h b/src/gamescope_shared.h
+index ed30d8c..f53ed4a 100644
+--- a/src/gamescope_shared.h
++++ b/src/gamescope_shared.h
+@@ -8,6 +8,7 @@ namespace gamescope
+ 	{
+ 		GAMESCOPE_KNOWN_DISPLAY_UNKNOWN,
+ 		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD,      // Jupiter
++		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD,  // Jupiter DeckHD
+ 		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_SDC, // Galileo SDC
+ 		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_BOE, // Galileo BOE
+ 	};
+diff --git a/src/modegen.cpp b/src/modegen.cpp
+index d174c2d..bfb782d 100644
+--- a/src/modegen.cpp
++++ b/src/modegen.cpp
+@@ -356,6 +356,18 @@ void generate_fixed_mode(drmModeModeInfo *mode, const drmModeModeInfo *base, int
+ 			mode->vsync_end = 1314;
+ 			mode->vtotal = 1322;
+ 		}
++		else if ( eKnownDisplay = gamescope::GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD )
++		{
++			mode->hdisplay = 1200;
++			mode->hsync_start = 1240;
++			mode->hsync_end = 1260;
++			mode->htotal = 1300;
++
++			mode->vdisplay = 1920;
++			mode->vsync_start = 1938;
++			mode->vsync_end = 1940;
++			mode->vtotal = 1960;
++		}
+ 
+ 		mode->clock = ( ( mode->htotal * mode->vtotal * vrefresh ) + 999 ) / 1000;
+ 	}

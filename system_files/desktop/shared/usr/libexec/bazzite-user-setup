@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-if [ "${EUID:-$(id -u)}" -eq 0 ]; then
-  echo "Bazzite user setup ran as root user. Exiting."
+if [ "${EUID:-$(id -u)}" -lt 1000 ]; then
+  echo "Bazzite user setup ran as unsupported user. Exiting."
   exit 0
 fi
 
@@ -10,12 +10,14 @@ IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
+VEN_ID="$(cat /sys/devices/virtual/dmi/id/chassis_vendor)"
+
 # INIT
 BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=30
+USER_SETUP_VER=33
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -28,12 +30,12 @@ if [[ -f "$HOME/.bazzite-configured-fedora-version" ]]; then
   mv -f "$HOME/.bazzite-configured-fedora-version" "$USER_SETUP_FEDORA_VER_FILE"
 fi
 
-USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
-USER_SETUP_FEDORA_VER_RAN=$(cat $USER_SETUP_FEDORA_VER_FILE)
-USER_SETUP_IMAGE_VER_RAN=$(cat $USER_SETUP_IMAGE_VER_FILE)
-
 # Run script if updated
-if [[ -f $USER_SETUP_VER_FILE && -f $USER_SETUP_FEDORA_VER_RAN && -f $USER_SETUP_FEDORA_VER_FILE ]]; then
+if [[ -f $USER_SETUP_VER_FILE && -f $USER_SETUP_FEDORA_VER_FILE && -f $USER_SETUP_IMAGE_VER_FILE ]]; then
+  USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
+  USER_SETUP_FEDORA_VER_RAN=$(cat $USER_SETUP_FEDORA_VER_FILE)
+  USER_SETUP_IMAGE_VER_RAN=$(cat $USER_SETUP_IMAGE_VER_FILE)
+
   if [[ $USER_SETUP_VER = "$USER_SETUP_VER_RAN" && $FEDORA_VERSION = "$USER_SETUP_FEDORA_VER_RAN" && $BASE_IMAGE_NAME = "$USER_SETUP_IMAGE_VER_RAN" ]]; then
     echo "User setup v$USER_SETUP_VER has already run. Exiting..."
     exit 0
@@ -76,8 +78,8 @@ fi
 # Initialize Ptyxis config
 # This is intentionally run on both images to ensure a user rebasing from Silverblue to Kinoite
 # doesn't get their Ptyxis config wiped out.
-echo 'Configuring Ptyxis'
 if [[ ! -f "$BAZZITE_CONFIG_DIR/ptyxis-initialized" ]]; then
+  echo 'Configuring Ptyxis'
   if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
     dconf load / < /etc/dconf/db/local.d/02-bazzite-kde
   fi
@@ -104,6 +106,23 @@ else
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
 
+    if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
+      if [[ ! -f "$BAZZITE_CONFIG_DIR/framework-initialized" ]]; then
+        echo 'Enabling automatic power profile extension'
+        ujust configure-auto-power-profile enable
+        echo 'Setting Framework logo menu'
+        dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
+        dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 4
+        echo 'Adjusting OSD position'
+        dconf write /org/gnome/shell/extensions/just-perfection/osd-position 4
+        if [[ $SYS_ID == "Laptop ("* ]]; then
+          echo 'Applying font fix for Framework 13'
+          dconf write /org/gnome/desktop/interface/text-scaling-factor 1.25
+        fi
+        touch "$BAZZITE_CONFIG_DIR/framework-initialized"
+      fi
+    fi
+
     echo 'Setting up templates'
     mkdir -p "$HOME/Templates"
     if [[ ! -f "$HOME/Templates/vkBasalt.conf" ]]; then
@@ -128,13 +147,17 @@ fi
 # Deck Build Setup
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
   # HHD Setup
-  if /usr/libexec/hardware/hhd-supported-hardware; then
+  if /usr/libexec/hwsupport/hhd-supported-hardware; then
     echo 'Enabling HHD'
     pkexec /usr/libexec/bazzite-enable-hhd "$USER"
+  elif /usr/libexec/hwsupport/valve-hardware; then
+    echo 'Hiding HHD-UI on Deck hardware'
+    cp /usr/share/applications/hhd-ui.desktop "${XDG_DATA_HOME:-$HOME/.local/share}/applications/hhd-ui.desktop"
+    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' "${XDG_DATA_HOME:-$HOME/.local/share}/applications/hhd-ui.desktop"
   fi
 
   # SDGyroDSU Setup
-  if /usr/libexec/hardware/valve-hardware; then
+  if /usr/libexec/hwsupport/valve-hardware; then
     systemctl --user enable --now sdgyrodsu.service
   else
     systemctl --user disable --now sdgyrodsu.service
@@ -148,14 +171,8 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
     rm -f "$AUTOSTART_FOLDER/autostart/bazzite-handle-legion-go-rotation.desktop"
   fi
 
-  if /usr/libexec/hardware/rotation-fix-hardware && [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
-    if [[ ! -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop" ]]; then
-      echo 'Adding rotation fix'
-      mkdir -p "$AUTOSTART_FOLDER/autostart"
-      printf "[Desktop Entry]\nExec=/usr/libexec/bazzite-rotation-fix\nIcon=dialog-scripts\nName=bazzite-rotation-fix\nType=Application\nX-KDE-AutostartScript=true\n" > "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop"
-    fi
-  elif [[ -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop" ]]; then
-    echo 'Non-supported or GNOME detected, removing rotaion fix'
+  # Remove old rotation fix
+  if [[ -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop" ]]; then
     rm -f "$AUTOSTART_FOLDER/autostart/bazzite-rotation-fix.desktop"
   fi
 fi

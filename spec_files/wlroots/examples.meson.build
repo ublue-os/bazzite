@@ -1,3 +1,5 @@
+# Client examples are now available from a separate repository,
+# https://gitlab.freedesktop.org/wlroots/wlr-clients
 project(
         'wlroots-examples',
         'c',
@@ -12,47 +14,25 @@ project(
 cc = meson.get_compiler('c')
 add_global_arguments('-DWLR_USE_UNSTABLE', language : 'c')
 
-math = cc.find_library('m')
-rt = cc.find_library('rt')
-
-threads = dependency('threads')
-wayland_egl = dependency('wayland-egl')
-wayland_cursor = dependency('wayland-cursor')
+cairo = dependency('cairo')
+drm = dependency('libdrm')
+egl = dependency('egl')
+glesv2 = dependency('glesv2')
+# Only needed for drm_fourcc.h
+libdrm = dependency('libdrm').partial_dependency(compile_args: true, includes: true)
 wayland_client = dependency('wayland-client')
-wayland_server = dependency('wayland-server')
+wayland_egl = dependency('wayland-egl')
 wayland_protos = dependency('wayland-protocols', version: '>=1.27')
 wayland_scanner_dep = dependency('wayland-scanner', native: true)
 wayland_scanner = find_program(
 	wayland_scanner_dep.get_variable('wayland_scanner'),
 	native: true,
 )
-wlroots = dependency('wlroots')
+wayland_server = dependency('wayland-server')
+wlroots = dependency('wlroots', version: ['>=0.17.0', '<0.18.0'])
 xkbcommon = dependency('xkbcommon')
-libpng = dependency('libpng', required: false, disabler: true)
-drm = dependency('libdrm')
-egl = dependency('egl', required: false, disabler: true)
-glesv2 = dependency('glesv2', required: false, disabler: true)
-gbm = dependency('gbm', required: false, disabler: true)
-# These versions correspond to ffmpeg 4.0
-libavutil = dependency('libavutil', version: '>=56.14.100', required: false, disabler: true)
-libavcodec = dependency('libavcodec', version: '>=58.18.100', required: false, disabler: true)
-libavformat = dependency('libavformat', version: '>=58.12.100', required: false, disabler: true)
-# Only needed for drm_fourcc.h
-libdrm = dependency('libdrm').partial_dependency(compile_args: true, includes: true)
-
-# epoll is a separate library in FreeBSD
-if host_machine.system() == 'freebsd'
-	libepoll = dependency('epoll-shim')
-else
-	libepoll = declare_dependency()
-endif
-
-if not cc.has_header('libavutil/hwcontext_drm.h', dependencies: libavutil)
-	libavutil = disabler()
-endif
 
 wl_protocol_dir = wayland_protos.get_variable('pkgdatadir')
-wlr_protocol_dir = 'protocol'
 
 protocols = {
 	# Stable upstream protocols
@@ -60,197 +40,11 @@ protocols = {
 
 	# Unstable upstream protocols
 	'fullscreen-shell-unstable-v1': wl_protocol_dir / 'unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml',
-	'idle-inhibit-unstable-v1': wl_protocol_dir / 'unstable/idle-inhibit/idle-inhibit-unstable-v1.xml',
-	'keyboard-shortcuts-inhibit-unstable-v1': wl_protocol_dir / 'unstable/keyboard-shortcuts-inhibit/keyboard-shortcuts-inhibit-unstable-v1.xml',
-	'linux-dmabuf-unstable-v1': wl_protocol_dir / 'unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml',
-	'pointer-constraints-unstable-v1': wl_protocol_dir / 'unstable/pointer-constraints/pointer-constraints-unstable-v1.xml',
-	'relative-pointer-unstable-v1': wl_protocol_dir / 'unstable/relative-pointer/relative-pointer-unstable-v1.xml',
-	'text-input-unstable-v3': wl_protocol_dir / 'unstable/text-input/text-input-unstable-v3.xml',
-	'xdg-decoration-unstable-v1': wl_protocol_dir / 'unstable/xdg-decoration/xdg-decoration-unstable-v1.xml',
-
-	# Other protocols
-	'input-method-unstable-v2': wlr_protocol_dir / 'input-method-unstable-v2.xml',
-	'kde-idle': wlr_protocol_dir / 'idle.xml',
-	'wlr-export-dmabuf-unstable-v1': wlr_protocol_dir / 'wlr-export-dmabuf-unstable-v1.xml',
-	'wlr-foreign-toplevel-management-unstable-v1': wlr_protocol_dir / 'wlr-foreign-toplevel-management-unstable-v1.xml',
-	'wlr-gamma-control-unstable-v1': wlr_protocol_dir / 'wlr-gamma-control-unstable-v1.xml',
-	'wlr-input-inhibitor-unstable-v1': wlr_protocol_dir / 'wlr-input-inhibitor-unstable-v1.xml',
-	'wlr-layer-shell-unstable-v1': wlr_protocol_dir / 'wlr-layer-shell-unstable-v1.xml',
-	'wlr-output-power-management-unstable-v1': wlr_protocol_dir / 'wlr-output-power-management-unstable-v1.xml',
-	'wlr-screencopy-unstable-v1': wlr_protocol_dir / 'wlr-screencopy-unstable-v1.xml',
-	'wlr-virtual-pointer-unstable-v1': wlr_protocol_dir / 'wlr-virtual-pointer-unstable-v1.xml',
-}
-
-compositors = {
-	'simple': {
-		'src': 'simple.c',
-	},
-	'pointer': {
-		'src': 'pointer.c',
-	},
-	'touch': {
-		'src': ['touch.c', 'cat.c'],
-	},
-	'tablet': {
-		'src': 'tablet.c',
-	},
-	'rotation': {
-		'src': ['rotation.c', 'cat.c'],
-	},
-	'multi-pointer': {
-		'src': 'multi-pointer.c',
-	},
-	'output-layout': {
-		'src': ['output-layout.c', 'cat.c'],
-	},
-	'fullscreen-shell': {
-		'src': 'fullscreen-shell.c',
-		'proto': ['fullscreen-shell-unstable-v1'],
-	},
-	'quads': {
-		'src': 'quads.c',
-	},
-	'scene-graph': {
-		'src': 'scene-graph.c',
-		'proto': ['xdg-shell'],
-	},
-}
-
-clients = {
-	'idle': {
-		'src': 'idle.c',
-		'dep': [threads],
-		'proto': ['kde-idle'],
-	},
-	'idle-inhibit': {
-		'src': ['idle-inhibit.c', 'egl_common.c'],
-		'dep': [wayland_egl, egl, glesv2],
-		'proto': [
-			'idle-inhibit-unstable-v1',
-			'xdg-shell',
-		],
-	},
-	'keyboard-shortcuts-inhibit': {
-		'src': ['keyboard-shortcuts-inhibit.c', 'egl_common.c'],
-		'dep': [wayland_egl, wayland_cursor, egl, glesv2],
-		'proto': [
-			'keyboard-shortcuts-inhibit-unstable-v1',
-			'xdg-shell',
-		],
-	},
-	'layer-shell': {
-		'src': ['layer-shell.c', 'egl_common.c'],
-		'dep': [wayland_egl, wayland_cursor, egl, glesv2],
-		'proto': [
-			'wlr-layer-shell-unstable-v1',
-			'xdg-shell',
-		],
-	},
-	'input-inhibitor': {
-		'src': ['input-inhibitor.c', 'egl_common.c'],
-		'dep': [wayland_egl, wayland_cursor, egl, glesv2],
-		'proto': [
-			'wlr-input-inhibitor-unstable-v1',
-			'xdg-shell',
-		],
-	},
-	'gamma-control': {
-		'src': 'gamma-control.c',
-		'dep': [wayland_cursor, math],
-		'proto': ['wlr-gamma-control-unstable-v1'],
-	},
-	'output-power-management': {
-		'src': 'output-power-management.c',
-		'dep': [wayland_client],
-		'proto': ['wlr-output-power-management-unstable-v1'],
-	},
-	'pointer-constraints': {
-		'src': ['pointer-constraints.c', 'egl_common.c'],
-		'dep': [wayland_egl, egl, glesv2],
-		'proto': [
-			'pointer-constraints-unstable-v1',
-			'xdg-shell',
-		],
-	},
-	'relative-pointer': {
-		'src': ['relative-pointer-unstable-v1.c', 'egl_common.c'],
-		'dep': [wayland_egl, egl, glesv2],
-		'proto': [
-			'pointer-constraints-unstable-v1',
-			'relative-pointer-unstable-v1',
-			'xdg-shell',
-		],
-	},
-	'dmabuf-capture': {
-		'src': 'dmabuf-capture.c',
-		'dep': [
-			libavcodec,
-			libavformat,
-			libavutil,
-			drm,
-			threads,
-		],
-		'proto': ['wlr-export-dmabuf-unstable-v1'],
-	},
-	'screencopy': {
-		'src': 'screencopy.c',
-		'dep': [libpng, rt],
-		'proto': ['wlr-screencopy-unstable-v1'],
-	},
-	'screencopy-dmabuf': {
-		'src': 'screencopy-dmabuf.c',
-		'dep': [libpng, rt, gbm, drm],
-		'proto': [
-			'wlr-screencopy-unstable-v1',
-			'linux-dmabuf-unstable-v1',
-		],
-	},
-	'toplevel-decoration': {
-		'src': ['toplevel-decoration.c', 'egl_common.c'],
-		'dep': [wayland_egl, egl, glesv2],
-		'proto': [
-			'xdg-decoration-unstable-v1',
-			'xdg-shell',
-		],
-	},
-	'input-method': {
-		'src': 'input-method.c',
-		'dep': [wayland_egl, libepoll],
-		'proto': [
-			'input-method-unstable-v2',
-			'text-input-unstable-v3',
-			'xdg-shell',
-		],
-	},
-	'text-input': {
-		'src': ['text-input.c', 'egl_common.c'],
-		'dep': [wayland_egl, wayland_cursor, egl, glesv2],
-		'proto': [
-			'text-input-unstable-v3',
-			'xdg-shell',
-		],
-	},
-	'foreign-toplevel': {
-		'src': 'foreign-toplevel.c',
-		'proto': ['wlr-foreign-toplevel-management-unstable-v1'],
-	},
-	'virtual-pointer': {
-		'src': 'virtual-pointer.c',
-		'proto': ['wlr-virtual-pointer-unstable-v1'],
-	},
-	'input-method-keyboard-grab': {
-		'src': 'input-method-keyboard-grab.c',
-		'dep': [xkbcommon],
-		'proto': [
-			'input-method-unstable-v2',
-		],
-	},
 }
 
 protocols_code = {}
 protocols_server_header = {}
 protocols_client_header = {}
-proto_inc = include_directories('protocol')
 
 foreach name, path : protocols
 	code = custom_target(
@@ -280,6 +74,54 @@ foreach name, path : protocols
 	protocols_client_header += { name: client_header }
 endforeach
 
+
+compositors = {
+	'simple': {
+		'src': 'simple.c',
+	},
+	'pointer': {
+		'src': 'pointer.c',
+	},
+	'touch': {
+		'src': ['touch.c', 'cat.c'],
+	},
+	'tablet': {
+		'src': 'tablet.c',
+	},
+	'rotation': {
+		'src': ['rotation.c', 'cat.c'],
+	},
+	'output-layout': {
+		'src': ['output-layout.c', 'cat.c'],
+	},
+	'fullscreen-shell': {
+		'src': 'fullscreen-shell.c',
+		'proto': ['fullscreen-shell-unstable-v1'],
+	},
+	'scene-graph': {
+		'src': 'scene-graph.c',
+		'proto': ['xdg-shell'],
+	},
+	'output-layers': {
+		'src': 'output-layers.c',
+		'proto': [
+			'xdg-shell',
+		],
+	},
+	'cairo-buffer': {
+		'src': 'cairo-buffer.c',
+		'dep': cairo,
+	},
+	'embedded': {
+		'src': [
+			'embedded.c',
+			protocols_code['xdg-shell'],
+			protocols_client_header['xdg-shell'],
+		],
+		'dep': [wayland_client, wayland_egl, egl, glesv2],
+	},
+}
+
 foreach name, info : compositors
 	extra_src = []
 	foreach p : info.get('proto', [])
@@ -289,29 +131,6 @@ foreach name, info : compositors
 	executable(
 		name,
 		[info.get('src'), extra_src],
-		dependencies: [libdrm, wlroots, wayland_server, xkbcommon],
-		include_directories: [proto_inc],
+		dependencies: [libdrm, wlroots, wayland_server, xkbcommon, info.get('dep', [])],
 	)
-endforeach
-
-foreach name, info : clients
-	all_dep_found = true
-	extra_src = []
-	foreach d : info.get('dep', [])
-		all_dep_found = all_dep_found and d.found()
-	endforeach
-	foreach p : info.get('proto')
-		extra_src += protocols_code[p]
-		extra_src += protocols_client_header[p]
-	endforeach
-
-	if all_dep_found
-		executable(
-			name,
-			[info.get('src'), extra_src],
-			dependencies: [wayland_client, info.get('dep', [])],
-		)
-	else
-		warning('Dependencies not satisfied for ' + name)
-	endif
 endforeach

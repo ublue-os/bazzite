@@ -36,9 +36,7 @@ cp -rv usr/bin/* %{buildroot}%{_bindir}
 # are going to be installed into target system where the rpm is installed.
 %files
 %{_bindir}/steamos-add-to-steam
-%{_bindir}/steamos-nested-desktop
 %{_datadir}/nautilus-python/extensions/steamos-add-to-steam.py
-%{_datadir}/applications/steam/steamos-nested-desktop/*
 
 # Finally, changes from the latest release of your application are generated from
 # your project's Git history. It will be empty until you make first annotated Git tag.

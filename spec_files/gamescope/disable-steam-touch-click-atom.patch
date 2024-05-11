@@ -1,0 +1,13 @@
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 05337c1..d6d883b 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -4949,7 +4949,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 			focusDirty = true;
+ 		}
+ 	}
+-	if (ev->atom == ctx->atoms.steamTouchClickModeAtom )
++	if (ev->atom == ctx->atoms.steamTouchClickModeAtom && !env_to_bool(getenv("GAMESCOPE_DISABLE_TOUCH_CLICK_MODE")))
+ 	{
+ 		gamescope::cv_touch_click_mode = (gamescope::TouchClickMode) get_prop(ctx, ctx->root, ctx->atoms.steamTouchClickModeAtom, 0u );
+ 	}

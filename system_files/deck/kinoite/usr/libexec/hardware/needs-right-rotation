@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+
+# Steam Deck
+if /usr/libexec/hwsupport/valve-hardware; then
+	exit 0
+fi
+
+exit 1

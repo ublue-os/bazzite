@@ -1,6 +1,8 @@
+diff --git a/usr/lib/hwsupport/trim-devices.sh b/usr/lib/hwsupport/trim-devices.sh
+index 84897df..0f22352 100755
 --- a/usr/lib/hwsupport/trim-devices.sh
 +++ b/usr/lib/hwsupport/trim-devices.sh
-@@ -78,6 +78,18 @@
+@@ -78,6 +78,18 @@ function is_known_bad_device()
      return;
  }
  

@@ -11,6 +11,8 @@ URL:         https://github.com/hermes83/compiz-windows-effect
 Source0:     https://github.com/KyleGospo/compiz-windows-effect/archive/refs/heads/master.tar.gz
 BuildArch:   noarch
 
+BuildRequires: glib2
+
 Requires:    gnome-shell >= 3.12
 %description
 Compiz wobbly windows effect with compiz plugin engine.
@@ -26,6 +28,7 @@ rm -rf assets
 rm README.md
 mkdir -p %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}
 cp -r * %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/
+glib-compile-schemas %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/schemas/
 
 %files
 %license LICENSE

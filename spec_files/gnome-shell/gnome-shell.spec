@@ -1,24 +1,24 @@
 %global tarball_version %%(echo %{version} | tr '~' '.')
+%global major_version 46
 
 Name:           gnome-shell
-Version:        45.4
+Version:        %{major_version}.0
 Release:        %autorelease.bazzite.{{{ git_dir_version }}}
 Summary:        Window management and application launching for GNOME
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            https://wiki.gnome.org/Projects/GnomeShell
-Source0:        https://download.gnome.org/sources/gnome-shell/45/%{name}-%{tarball_version}.tar.xz
+Source0:        https://download.gnome.org/sources/gnome-shell/%{major_version}/%{name}-%{tarball_version}.tar.xz
 
 # Replace Epiphany with Firefox in the default favourite apps list
 Patch: gnome-shell-favourite-apps-firefox.patch
 
+# No portal helper if WebKitGTK is not installed
+Patch: optional-portal-helper.patch
+
 # Some users might have a broken PAM config, so we really need this
 # downstream patch to stop trying on configuration errors.
 Patch: 0001-gdm-Work-around-failing-fingerprint-auth.patch
-
-Patch: 0001-status-keyboard-Add-a-catch-around-reload-call.patch
-Patch: 0002-status-keyboard-Load-keyboard-from-system-settings-i.patch
-Patch: 0003-status-keyboard-Use-gnome-desktop-API-for-getting-de.patch
 
 # shell-app: improve discrete GPU detectio
 # https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/3193
@@ -31,9 +31,9 @@ Patch: 3193.patch
 %define gjs_version 1.73.1
 %define gtk4_version 4.0.0
 %define adwaita_version 1.0.0
-%define mutter_version 45.0
+%define mutter_version 46.0
 %define polkit_version 0.100
-%define gsettings_desktop_schemas_version 42~beta
+%define gsettings_desktop_schemas_version 46~beta
 %define ibus_version 1.5.2
 %define gnome_bluetooth_version 1:42.3
 %define gstreamer_version 1.4.5
@@ -126,13 +126,23 @@ Requires:       libgweather4%{?_isa}
 # for gnome-extensions CLI tool
 Requires:  gettext
 # needed for thunderbolt support
-Requires:       bolt%{?_isa}
+Recommends:     bolt%{?_isa}
 # Needed for launching flatpak apps etc
 # 1.8.0 is needed for source type support in the screencast portal.
 Requires:       xdg-desktop-portal-gtk >= 1.8.0
 Requires:       xdg-desktop-portal-gnome
 # needed by the welcome dialog
 Recommends:     gnome-tour
+
+%if !0%{?rhel}
+# needed for captive portal helper
+Recommends:     webkitgtk6.0%{?_isa}
+%endif
+
+# https://github.com/containers/composefs/pull/229#issuecomment-1838735764
+%if 0%{?rhel} >= 10
+ExcludeArch:    %{ix86}
+%endif
 
 Provides:       desktop-notification-daemon = %{version}-%{release}
 Provides:       PolicyKit-authentication-agent = %{version}-%{release}
@@ -184,7 +194,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/org.gnome.Shell.Porta
 
 %files -f %{name}.lang
 %license COPYING
-%doc README.md
+%doc NEWS README.md
 %{_bindir}/gnome-shell
 %{_bindir}/gnome-extensions
 %{_bindir}/gnome-shell-extension-prefs
@@ -220,10 +230,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/org.gnome.Shell.Porta
 %{_userunitdir}/org.gnome.Shell.target
 %{_userunitdir}/org.gnome.Shell@wayland.service
 %{_userunitdir}/org.gnome.Shell@x11.service
-# Co own directory instead of pulling in xdg-desktop-portal - we
-# are providing a backend to the portal, not depending on it
-%dir %{_datadir}/xdg-desktop-portal/portals/
-%{_datadir}/xdg-desktop-portal/portals/gnome-shell.portal
 %{_libdir}/gnome-shell/
 %{_libexecdir}/gnome-shell-calendar-server
 %{_libexecdir}/gnome-shell-perf-helper

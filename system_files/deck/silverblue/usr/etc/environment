@@ -2,8 +2,8 @@
 # Nvidia users must additionally have nvidia-drm.modeset=1 in their kargs
 OBS_USE_EGL=1
 
-# Required for GNOME VRR MR
-MUTTER_DEBUG_FORCE_KMS_MODE=simple
+# https://gitlab.gnome.org/GNOME/mutter/-/issues/3037
+MUTTER_DEBUG_KMS_THREAD_TYPE=user
 
 # VIM is more usable on deck due to control scheme
 EDITOR=/usr/bin/vim

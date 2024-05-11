@@ -30,6 +30,16 @@ install-hhd-xbox-glyph-theme:
         echo 'Please install Decky Loader & CSS Loader first'
     fi
 
+# Install Handheld Controller Glyphs theme for hhd & CSS Loader (https://github.com/victor-borges/handheld-controller-glyphs)
+install-hhd-controller-glyph-theme:
+    #!/usr/bin/bash
+    if [ -d "$HOME/homebrew/themes" ]; then
+        rm -rf "$HOME/homebrew/themes/handheld-controller-glyphs"
+        git clone https://github.com/victor-borges/handheld-controller-glyphs.git --single-branch "$HOME/homebrew/themes/handheld-controller-glyphs"
+    else
+        echo 'Please install Decky Loader & CSS Loader first'
+    fi
+
 # Install EmuDeck (https://www.emudeck.com/)
 get-emudeck:
     #!/usr/bin/bash
@@ -65,6 +75,19 @@ install-deckhd-bios:
     else
       echo "This is only applicable to LCD Steam Decks with the DeckHD screen. Aborting..."
     fi
+
+disable-swipe-gestures:
+    #!/usr/bin/bash
+    echo "disabling swipe gestures for QAM and HOME"
+    mkdir -p $HOME/.config/environment.d
+    echo "export GAMESCOPE_DISABLE_TOUCH_GESTURES=1" > "$HOME/.config/environment.d/bazzite-disable-gamescope-gestures.conf"
+    echo "Done. Please restart Steam Game Mode to see changes"
+
+enable-swipe-gestures:
+    #!/usr/bin/bash
+    echo "enabling swipe gestures for QAM and HOME"
+    rm -f "$HOME/.config/environment.d/bazzite-disable-gamescope-gestures.conf"
+    echo "Done. Please restart Steam Game Mode to see changes"
 
 # Enable BIOS & Firmware update services for the Steam Deck
 enable-deck-bios-firmware-updates:
@@ -104,17 +127,6 @@ restore-input-remapper:
     systemctl enable --now input-remapper.service && \
     cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
     sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
-
-alias _toggle-wayland := _toggle_wayland
-
-_toggle_wayland:
-    #!/usr/bin/bash
-    source /etc/default/desktop-wayland
-    if ${DESKTOP_WAYLAND}; then
-      sudo sed -i 's/true/false/g' /etc/default/desktop-wayland
-    else
-      sudo sed -i 's/false/true/g' /etc/default/desktop-wayland
-    fi
 
 _toggle-autologin:
     #!/usr/bin/bash

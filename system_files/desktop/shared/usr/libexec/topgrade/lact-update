@@ -1,6 +1,9 @@
 #!/usr/bin/bash
 shopt -s nullglob
 
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+
 echo "Looking for updates..."
 
 if [[ $(rpm -qa | grep lact) ]]; then
@@ -8,8 +11,21 @@ if [[ $(rpm -qa | grep lact) ]]; then
       if [[ ! $(rpm-ostree status | grep lact | grep $LACT_VERSION) ]]; then
             # This will check if *any* rpm-ostree pin has the newest version, so we don't update needlessly if a user just needs to reboot or is trying an older pin.
             echo "Found upstream version v$LACT_VERSION, updating..."
-            rpm-ostree remove $(rpm -qa | grep lact) -y
-            /usr/bin/ujust install-lact
+            ublue-update --wait
+            if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+                echo 'Installing LACT Libadwaita...'
+                wget \
+                  $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
+                  jq -r ".assets[] | select(.name | test(\"lact-libadwaita.*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
+                  -O /tmp/lact.rpm
+            else
+                echo 'Installing LACT...'
+                wget \
+                  $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
+                  jq -r ".assets[] | select(.name | test(\"lact-[0-9].*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
+                  -O /tmp/lact.rpm
+            fi
+            rpm-ostree override replace /tmp/lact.rpm
             echo "Update complete"
       fi
 else

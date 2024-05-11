@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>Universal Blue</name>
+    <filename>/usr/share/backgrounds/ublue.png</filename>
+    <filename-dark>/usr/share/backgrounds/ublue.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#202646</pcolor>
+    <scolor>#36438E</scolor>
+  </wallpaper>
+</wallpapers>

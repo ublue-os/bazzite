@@ -2,7 +2,7 @@
 
 # Setup and configure Sunshine Game Streaming host
 setup-sunshine ACTION="":
-    #!/bin/bash
+    #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     SUNSHINE_STATE="$(rpm -qa sunshine)"
     SERVICE_STATE="$(systemctl is-enabled --user sunshine.service)"

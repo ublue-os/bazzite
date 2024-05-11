@@ -6,6 +6,8 @@ alias configure-waydroid := setup-waydroid
 setup-waydroid ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
     OPTION={{ ACTION }}
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust configure-waydroid <option>"
@@ -21,6 +23,9 @@ setup-waydroid ACTION="":
       OPTION=$(Choose "Initialize Waydroid" "Configure Waydroid" "Select GPU for Waydroid" "Reset Waydroid (also removes waydroid-related files from user folder)")
     fi
     if [[ "${OPTION,,}" =~ ^init ]]; then
+      if [[ ! $IMAGE_NAME =~ "deck" && ! $IMAGE_NAME =~ "ally" && ! $IMAGE_NAME =~ "framegame" ]]; then
+        sudo systemctl enable --now waydroid-container
+      fi
       sudo waydroid init -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor'
       echo "Waydroid has been initialized, please run waydroid once before you Configure Waydroid"
     elif [[ "${OPTION,,}" =~ ^configure ]]; then

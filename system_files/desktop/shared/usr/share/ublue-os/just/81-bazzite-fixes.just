@@ -6,13 +6,6 @@ fix-steam-download-speed:
     rm -f $HOME/.local/share/Steam/steam_dev.cfg
     bash -c 'printf "@nClientDownloadEnableHTTP2PlatformLinux 0\n@fDownloadRateImprovementToAddAnotherConnection 1.0\n" > $HOME/.local/share/Steam/steam_dev.cfg'
 
-# Patch a bug in some 32-bit Source 1.x titles that causes them to crash at startup
-fix-source1-tcmalloc:
-    #!/usr/bin/bash
-    echo 'Add the following as a launch option in Steam:'
-    echo 'LD_PRELOAD=/usr/lib/libtcmalloc_and_profiler.so.4 %command%'
-    echo "Delete libtcmalloc_minimal.so.x in the game's bin folder if present."
-
 alias patch-gmod := fix-gmod
 
 # Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModCEFCodecFix)
@@ -26,3 +19,11 @@ fix-gmod:
     chmod +x /tmp/patch-gmod/GModCEFCodecFix-Linux
     /tmp/patch-gmod/GModCEFCodecFix-Linux
     rm -rf /tmp/patch-gmod
+
+# Kills all processes related to wine and proton. This forces it to restart next time you launch the game (you might still have to press STOP in steam to kill the game binary)
+fix-proton-hang:
+    #!/usr/bin/bash
+    PROTONCORE=(pv-bwrap pressure-vessel reaper explorer.exe rpcss.exe plugplay.exe services.exe svchost.exe winedevice.exe winedevice.exe wineserver)
+    for PROG in "${PROTONCORE[@]}"; do
+      killall -9 "$PROG"
+    done

@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+
+SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+
+# Legion Go
+# Loki Max
+# AYANEO Air Plus
+if [[ ":83E1:Loki Max:AIR Plus:" =~ ":$SYS_ID:" ]]; then
+	exit 0
+fi
+
+exit 1
