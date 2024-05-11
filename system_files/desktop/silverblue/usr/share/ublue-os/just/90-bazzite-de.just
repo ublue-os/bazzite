@@ -21,7 +21,7 @@ configure-auto-power-profile ACTION="help":
       echo "  Use 'enable' to allow automatic power profile switching based on power state
       echo "  Use 'disable' to prevent automatic power profile switching based on power state
       exit 0
-    if [[ "${OPTION,,}" =~ enable ]]; then
+    elif [[ "${OPTION,,}" =~ enable ]]; then
       gnome-extensions enable auto-power-profile@dmy3k.github.io
     elif [[ "${OPTION,,}" =~ disable ]]; then
       gnome-extensions disable auto-power-profile@dmy3k.github.io
