@@ -6,6 +6,8 @@ fix-steam-download-speed:
     rm -f $HOME/.local/share/Steam/steam_dev.cfg
     bash -c 'printf "@nClientDownloadEnableHTTP2PlatformLinux 0\n@fDownloadRateImprovementToAddAnotherConnection 1.0\n" > $HOME/.local/share/Steam/steam_dev.cfg'
 
+alias patch-gmod := fix-gmod
+
 # Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModCEFCodecFix)
 fix-gmod:
     #!/usr/bin/bash
