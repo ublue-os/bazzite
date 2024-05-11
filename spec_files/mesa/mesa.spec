@@ -148,7 +148,8 @@ BuildRequires:  pkgconfig(SPIRV-Tools)
 BuildRequires:  pkgconfig(LLVMSPIRVLib)
 %endif
 %if 0%{?with_nvk}
-BuildRequires:  (crate(proc-macro2) >= 1.0.56 with crate(proc-macro2) < 1.0.80)
+BuildRequires:  (rust >= 1.78.0 with rust < 2)
+BuildRequires:  (crate(proc-macro2) >= 1.0.56 with crate(proc-macro2) < 2)
 BuildRequires:  (crate(quote) >= 1.0.25 with crate(quote) < 2)
 BuildRequires:  (crate(syn/clone-impls) >= 2.0.15 with crate(syn/clone-impls) < 2.0.59)
 BuildRequires:  (crate(unicode-ident) >= 1.0.6 with crate(unicode-ident) < 2)
