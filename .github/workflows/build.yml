@@ -179,7 +179,7 @@ jobs:
           echo "alias_tags=${alias_tags[*]}" >> $GITHUB_OUTPUT
 
       - name: Pull main and akmods images
-        uses: Wandalen/wretry.action@v3.4.0
+        uses: Wandalen/wretry.action@v3.5.0
         with:
           attempt_limit: 3
           attempt_delay: 15000
@@ -192,7 +192,7 @@ jobs:
 
       - name: Get source versions
         id: labels
-        uses: Wandalen/wretry.action@v3.4.0
+        uses: Wandalen/wretry.action@v3.5.0
         with:
           attempt_limit: 3
           attempt_delay: 15000
@@ -271,7 +271,7 @@ jobs:
 
       # Push the image to GHCR (Image Registry)
       - name: Push To GHCR
-        uses: Wandalen/wretry.action@v3.4.0
+        uses: Wandalen/wretry.action@v3.5.0
         id: push
         if: github.event_name != 'pull_request'
         env:
