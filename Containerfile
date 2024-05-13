@@ -235,7 +235,7 @@ RUN rpm-ostree override replace \
         || true && \
     ostree container commit
 
-# Install Valve's patched Mesa & Pipewire
+# Install Valve's patched Mesa, Pipewire, and Xwayland
 # Install patched switcheroo control with proper discrete GPU support
 RUN rpm-ostree override remove \
         mesa-va-drivers-freeworld && \
@@ -257,7 +257,8 @@ RUN rpm-ostree override remove \
         pipewire-jack-audio-connection-kit-libs \
         pipewire-libs \
         pipewire-pulseaudio \
-        pipewire-utils && \
+        pipewire-utils \
+        xorg-x11-server-Xwayland && \
     rpm-ostree install \
         mesa-va-drivers-freeworld \
         mesa-vdpau-drivers-freeworld.x86_64 && \
