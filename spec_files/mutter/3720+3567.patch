@@ -1,0 +1,52 @@
+diff --git a/src/x11/window-x11.c b/src/x11/window-x11.c
+index 6d2016e3e..6ba8988c9 100644
+--- a/src/x11/window-x11.c
++++ b/src/x11/window-x11.c
+@@ -2400,6 +2400,7 @@ meta_window_x11_update_input_region (MetaWindow *window)
+   g_autoptr (MtkRegion) region = NULL;
+   MetaWindowX11 *window_x11 = META_WINDOW_X11 (window);
+   MetaWindowX11Private *priv = meta_window_x11_get_instance_private (window_x11);
++  MtkRectangle bounding_rect = { 0 };
+   Window xwindow;
+ 
+   if (window->decorated)
+@@ -2411,10 +2412,14 @@ meta_window_x11_update_input_region (MetaWindow *window)
+           return;
+         }
+       xwindow = window->frame->xwindow;
++      bounding_rect.width = window->buffer_rect.width;
++      bounding_rect.height = window->buffer_rect.height;
+     }
+   else
+     {
+       xwindow = priv->xwindow;
++      bounding_rect.width = priv->client_rect.width;
++      bounding_rect.height = priv->client_rect.height;
+     }
+ 
+   if (META_X11_DISPLAY_HAS_SHAPE (x11_display))
+@@ -2458,8 +2463,8 @@ meta_window_x11_update_input_region (MetaWindow *window)
+       else if (n_rects == 1 &&
+                (rects[0].x == 0 &&
+                 rects[0].y == 0 &&
+-                rects[0].width == window->buffer_rect.width &&
+-                rects[0].height == window->buffer_rect.height))
++                rects[0].width == bounding_rect.width &&
++                rects[0].height == bounding_rect.height))
+         {
+           /* This is the bounding region case. Keep the
+            * region as NULL. */
+@@ -2476,13 +2481,6 @@ meta_window_x11_update_input_region (MetaWindow *window)
+ 
+   if (region != NULL)
+     {
+-      MtkRectangle bounding_rect;
+-
+-      bounding_rect.x = 0;
+-      bounding_rect.y = 0;
+-      bounding_rect.width = window->buffer_rect.width;
+-      bounding_rect.height = window->buffer_rect.height;
+-
+       /* The shape we get back from the client may have coordinates
+        * outside of the frame. The X SHAPE Extension requires that
+        * the overall shape the client provides never exceeds the
