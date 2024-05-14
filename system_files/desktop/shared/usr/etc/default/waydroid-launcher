@@ -13,7 +13,7 @@ case "$(cat /sys/devices/virtual/dmi/id/product_name)" in
 	"ROG Ally RC71L_RC71L" | "G1618-04" | "G1617-01" | "Loki Max")
 		WAYDROID_WIDTH=1920
 		WAYDROID_HEIGHT=1080 ;;
-	"AYANEO 2" | "AYANEO 2S" | "AOKZOE A1 AR07" | "G1619-04" | "AIR Plus")
+	"AYANEO 2" | "AYANEO 2S" | "AOKZOE A1 AR07" | "AOKZOE A1 Pro" | "G1619-04" | "AIR Plus")
 		WAYDROID_WIDTH=1920
 		WAYDROID_HEIGHT=1200 ;;
 	"83E1")
