@@ -40,9 +40,6 @@ orig_image=$2
 # Set Container tag name
 tag=$(just _tag "${image}")
 
-# Don't use -build suffix, flatpak dependency using ghcr
-ghcr_tag=${tag::-6}
-
 # Remove old ISO if present
 sudoif rm -f "${project_root}/just_scripts/output/${tag}-${git_branch}.iso"
 sudoif rm -f "${project_root}/just_scripts/output/${tag}-${git_branch}.iso-CHECKSUM"
@@ -52,12 +49,6 @@ if [[ ${image} =~ "gnome" ]]; then
     base_image="silverblue"
 else
     base_image="kinoite"
-fi
-
-if [[ ${target} =~ "nvidia" ]]; then
-    flavor="nvidia"
-else
-    flavor="main"
 fi
 
 # Set variant and flatpak dir
