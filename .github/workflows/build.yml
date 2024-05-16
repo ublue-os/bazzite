@@ -39,7 +39,7 @@ concurrency:
 jobs:
   push-ghcr:
     name: Make
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     continue-on-error: false
     permissions:
       contents: read
@@ -121,7 +121,7 @@ jobs:
         uses: ublue-os/just-action@v1
 
       - name: Maximize build space
-        uses: ublue-os/remove-unwanted-software@v6
+        uses: ublue-os/remove-unwanted-software@v7
 
       - name: Generate tags
         id: generate-tags
@@ -254,7 +254,7 @@ jobs:
             --target=${{ matrix.base_name }}
 
       - name: Sign kernel
-        uses: EyeCantCU/kernel-signer@v0.1.3
+        uses: EyeCantCU/kernel-signer@v0.2.0
         with:
           image: ${{ steps.build_image.outputs.image }}
           privkey: ${{ secrets.AKMOD_PRIVKEY_20230518 }}
@@ -298,7 +298,6 @@ jobs:
           registry-token: ${{ secrets.GITHUB_TOKEN }}
           signing-secret: ${{ secrets.SIGNING_SECRET }}
           tags: ${{ steps.push.outputs.outputs && fromJSON(steps.push.outputs.outputs).digest }}
-
 
       - name: Echo outputs
         if: github.event_name != 'pull_request'
