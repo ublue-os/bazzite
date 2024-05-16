@@ -56,6 +56,24 @@ install-openrazer:
     sudo usermod -a -G plugdev $USER && \
     echo "Please reboot to apply needed changes."
 
+# Install EmuDeck (https://www.emudeck.com/)
+install-emudeck:
+    #!/usr/bin/bash
+    if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
+      wget \
+        $(curl -s https://api.github.com/repos/EmuDeck/emudeck-electron/releases/latest | \
+        jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
+        -O $HOME/Downloads/EmuDeck.AppImage
+      chmod +x $HOME/Downloads/EmuDeck.AppImage
+      flatpak run it.mijorus.gearlever $HOME/Downloads/EmuDeck.AppImage
+    else
+      wget \
+        $(curl -s https://api.github.com/repos/EmuDeck/emudeck-electron/releases/latest | \
+        jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
+        -O $HOME/Desktop/EmuDeck.AppImage
+      chmod +x $HOME/Desktop/EmuDeck.AppImage
+    fi
+
 alias get-wootility := install-wootility
 
 # Install Wootility for configuring Wooting Keyboards
