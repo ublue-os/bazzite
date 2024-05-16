@@ -8,5 +8,8 @@ ConditionPathExists=/home/linuxbrew/.linuxbrew/bin/brew
 # Override the user if different UID/User
 User=1000
 Type=oneshot
+Environment=HOMEBREW_CELLAR=/home/linuxbrew/.linuxbrew/Cellar
+Environment=HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
+Environment=HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew/Homebrew
 ExecStart=/home/linuxbrew/.linuxbrew/bin/brew upgrade
 StandardOutput=journal
