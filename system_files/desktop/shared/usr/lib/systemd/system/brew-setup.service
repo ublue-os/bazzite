@@ -7,6 +7,9 @@ ConditionPathExists=!/var/home/linuxbrew/.linuxbrew
 
 [Service]
 Type=oneshot
+Environment=HOMEBREW_CELLAR=/home/linuxbrew/.linuxbrew/Cellar
+Environment=HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
+Environment=HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew/Homebrew
 ExecStart=/usr/bin/cp -R -n /usr/share/homebrew/.linuxbrew /var/home/linuxbrew
 ExecStart=/home/linuxbrew/.linuxbrew/bin/brew update
 ExecStart=/home/linuxbrew/.linuxbrew/bin/brew upgrade
