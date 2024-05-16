@@ -7,13 +7,11 @@ ConditionPathExists=!/var/home/linuxbrew/.linuxbrew
 
 [Service]
 Type=oneshot
-Environment=HOMEBREW_CELLAR=/home/linuxbrew/.linuxbrew/Cellar
-Environment=HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
-Environment=HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew/Homebrew
-ExecStart=/usr/bin/cp -R -n /usr/share/homebrew/.linuxbrew /var/home/linuxbrew
-ExecStart=/home/linuxbrew/.linuxbrew/bin/brew update
-ExecStart=/home/linuxbrew/.linuxbrew/bin/brew upgrade
+ExecStart=/usr/bin/mkdir -p /tmp/homebrew
+ExecStart=/usr/bin/tar --zstd -xvf /usr/share/homebrew.tar.zst -C /tmp/homebrew
+ExecStart=/usr/bin/cp -R -n /tmp/homebrew/home/linuxbrew/.linuxbrew /var/home/linuxbrew
 ExecStart=/usr/bin/chown -R 1000:1000 /var/home/linuxbrew
+ExecStart=/usr/bin/rm -rf /tmp/homebrew
 ExecStart=/usr/bin/touch /etc/.linuxbrew
 
 [Install]
