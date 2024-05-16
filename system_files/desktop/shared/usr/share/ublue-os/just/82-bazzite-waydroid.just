@@ -37,7 +37,7 @@ setup-waydroid ACTION="":
       deactivate
       sudo rm -rf /tmp/waydroid_script
     elif [[ "${OPTION,,}" =~ gpu ]]; then
-      /usr/bin/waydroid-choose-gpu
+      sudo /usr/bin/waydroid-choose-gpu
     elif [[ "${OPTION,,}" =~ ^reset ]]; then
       echo "Resetting Waydroid"
       bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
