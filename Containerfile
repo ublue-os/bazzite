@@ -9,6 +9,7 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
 
 FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION} as akmods
 FROM ghcr.io/ublue-os/akmods-extra:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION} as akmods-extra
+FROM ghcr.io/ublue-os/bluefin-cli:latest as bluefin-cli
 
 FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 
@@ -538,15 +539,8 @@ RUN rpm-ostree install \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     ostree container commit
 
-# Install Homebrew on Image
-RUN touch /.dockerenv && \
-    mkdir -p /var/home && \
-    mkdir -p /var/roothome && \
-    curl -Lo /tmp/brew-install https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh && \
-    chmod +x /tmp/brew-install && \
-    /tmp/brew-install && \
-    cp -R /home/linuxbrew /usr/share/homebrew && \
-    ostree container commit
+# Copy Homebrew
+COPY --from=bluefin-cli /home/homebrew /usr/share/homebrew
 
 # Cleanup & Finalize
 COPY system_files/overrides /
