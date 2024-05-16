@@ -545,7 +545,7 @@ RUN touch /.dockerenv && \
     curl -Lo /tmp/brew-install https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh && \
     chmod +x /tmp/brew-install && \
     /tmp/brew-install && \
-    rm -rf /home/linuxbrew/.linuxbrew/Homebrew/Library/vendor && \
+    rm -rf /home/linuxbrew/.linuxbrew/Homebrew/Library/Homebrew/vendor && \
     rm -rf /home/linuxbrew/.linuxbrew/Homebrew/.git && \
     cp -R /home/linuxbrew /usr/share/homebrew && \
     ostree container commit
