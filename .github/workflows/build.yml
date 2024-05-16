@@ -254,9 +254,9 @@ jobs:
             --target=${{ matrix.base_name }}
 
       - name: Sign kernel
-        uses: EyeCantCU/kernel-signer@v0.1.3
+        uses: EyeCantCU/kernel-signer@v0.2.0
         with:
-          image: localhost/${{ steps.build_image.outputs.image }}
+          image: ${{ steps.build_image.outputs.image }}
           privkey: ${{ secrets.AKMOD_PRIVKEY_20230518 }}
           pubkey: /etc/pki/akmods/certs/akmods-ublue.der
           tags: ${{ steps.build_image.outputs.tags }}
