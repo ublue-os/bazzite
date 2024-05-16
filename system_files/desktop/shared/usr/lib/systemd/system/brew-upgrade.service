@@ -1,0 +1,13 @@
+[Unit]
+Description=Upgrade Brew packages
+After=local-fs.target
+After=network-online.target
+ConditionPathExists=/home/linuxbrew/.linuxbrew/bin/brew
+
+[Service]
+# Override the user if different UID/User
+User=1000
+Type=oneshot
+Environment=HOMEBREW_NO_AUTO_UPDATE=1
+ExecStart=/home/linuxbrew/.linuxbrew/bin/brew upgrade
+StandardOutput=journal
