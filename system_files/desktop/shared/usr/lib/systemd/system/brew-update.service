@@ -2,7 +2,6 @@
 Description=Auto update brew for mutable brew installs
 After=local-fs.target
 After=network-online.target
-ConditionPathIsMountPoint=!/var/home/linuxbrew
 ConditionPathExists=/home/linuxbrew/.linuxbrew/bin/brew
 
 [Service]

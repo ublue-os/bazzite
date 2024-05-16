@@ -1,0 +1,13 @@
+[Unit]
+Description=Setup Brew
+ConditionPathExists=!/etc/.linuxbrew
+ConditionPathExists=!/var/home/linuxbrew/.linuxbrew
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/cp -R -n /usr/share/homebrew /var/home/linuxbrew
+ExecStart=/usr/bin/chown -R 1000:1000 /var/home/linuxbrew
+ExecStart=/usr/bin/touch /etc/.linuxbrew
+
+[Install]
+WantedBy=default.target multi-user.target

@@ -15,7 +15,4 @@ if status --is-interactive
             set -p fish_complete_path (brew --prefix)/share/fish/vendor_completions.d
         end
     end
-    if systemctl --quiet is-active var-home-linuxbrew.mount
-        set -gx HOMEBREW_NO_AUTO_UPDATE 1
-    end
 end

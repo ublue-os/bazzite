@@ -545,11 +545,7 @@ RUN touch /.dockerenv && \
     curl -Lo /tmp/brew-install https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh && \
     chmod +x /tmp/brew-install && \
     /tmp/brew-install && \
-    /home/linuxbrew/.linuxbrew/bin/brew update && \
     cp -R /home/linuxbrew /usr/share/homebrew && \
-    chown -R 1000:1000 /usr/share/homebrew && \
-    rm -f /usr/share/homebrew/.linuxbrew/Homebrew/Library/Homebrew/cmd/update.sh && \
-    rm -f /usr/share/homebrew/.linuxbrew/Homebrew/Library/Homebrew/cmd/update-reset.sh && \
     ostree container commit
 
 # Cleanup & Finalize
@@ -613,7 +609,7 @@ RUN /usr/libexec/containerbuild/build-initramfs && \
     sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /usr/lib/systemd/system.conf && \
     mkdir -p /usr/etc/flatpak/remotes.d && \
     curl -Lo /usr/etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
-    systemctl enable var-home-linuxbrew.mount && \
+    systemctl enable brew-setup.service && \
     systemctl enable brew-upgrade.timer && \
     systemctl enable brew-update.timer && \
     systemctl enable com.system76.Scheduler.service && \
