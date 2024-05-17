@@ -3,7 +3,7 @@ Description=Timer for brew update for mutable brew
 Wants=network-online.target
 
 [Timer]
-OnBootSec=20min
+OnBootSec=10min
 OnUnitInactiveSec=6h
 Persistent=true
 
