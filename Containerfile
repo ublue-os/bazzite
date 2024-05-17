@@ -413,6 +413,8 @@ RUN rpm-ostree install \
         latencyflex-vulkan-layer \
         vkBasalt.x86_64 \
         vkBasalt.i686 \
+        obs-vkcapture.x86_64 \
+        obs-vkcapture.i686 \
         mangohud.x86_64 \
         mangohud.i686 && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
