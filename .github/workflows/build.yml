@@ -147,12 +147,14 @@ jobs:
              if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
                 [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
                  BUILD_TAGS+=("unstable")
+                 echo "DEFAULT_TAG=unstable" >> $GITHUB_ENV
              fi
           elif [[ ${{ github.ref_name }} == "testing" ]]; then
              BUILD_TAGS=("${FEDORA_VERSION}-testing" "${FEDORA_VERSION}-testing-${TIMESTAMP}")
              if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
                 [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
                  BUILD_TAGS+=("testing")
+                 echo "DEFAULT_TAG=testing" >> $GITHUB_ENV
              fi
           else
              BUILD_TAGS=("${FEDORA_VERSION}" "${FEDORA_VERSION}-${TIMESTAMP}")
@@ -160,6 +162,7 @@ jobs:
              if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
                 [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
                  BUILD_TAGS+=("latest" "stable")
+                 echo "DEFAULT_TAG=latest" >> $GITHUB_ENV
              fi
           fi
 
@@ -254,9 +257,10 @@ jobs:
             --target=${{ matrix.base_name }}
 
       - name: Sign kernel
-        uses: EyeCantCU/kernel-signer@v0.2.0
+        uses: EyeCantCU/kernel-signer@v0.2.1
         with:
           image: ${{ steps.build_image.outputs.image }}
+          default-tag: ${{ env.DEFAULT_TAG }}
           privkey: ${{ secrets.AKMOD_PRIVKEY_20230518 }}
           pubkey: /etc/pki/akmods/certs/akmods-ublue.der
           tags: ${{ steps.build_image.outputs.tags }}
