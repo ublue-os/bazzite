@@ -9,8 +9,6 @@ Source:         https://gitlab.com/evlaV/%{name}/-/archive/main/%{name}-main.tar
 BuildArch:      noarch
 
 Patch0:         fedora.patch
-# Valve does the funny (Thanks RodoMa92)
-Patch1:         fan_fix.patch
 
 Requires:       python3
 
@@ -29,8 +27,10 @@ SteamOS 3.0 Steam Deck Fan Controller
 
 %install
 mkdir -p %{buildroot}%{_unitdir}/
-mkdir -p %{buildroot}%{_datadir}/
-cp -rv usr/share/* %{buildroot}%{_datadir}
+mkdir -p %{buildroot}%{_datadir}/jupiter-fan-control
+mkdir -p %{buildroot}%{_libexecdir}/jupiter-fan-control
+cp -rv usr/share/jupiter-fan-control/*.yaml %{buildroot}%{_datadir}
+cp -rv usr/share/jupiter-fan-control/*.py %{buildroot}%{_libexecdir}/jupiter-fan-control
 cp -v usr/lib/systemd/system/jupiter-fan-control.service %{buildroot}%{_unitdir}/jupiter-fan-control.service
 
 # Do post-installation
@@ -49,9 +49,9 @@ cp -v usr/lib/systemd/system/jupiter-fan-control.service %{buildroot}%{_unitdir}
 # are going to be installed into target system where the rpm is installed.
 %files
 %doc README.md
-%{_datadir}/jupiter-fan-control/fancontrol.py
-%{_datadir}/jupiter-fan-control/*-config.yaml
-%{_datadir}/jupiter-fan-control/PID.py
+%{_libexecdir}/jupiter-fan-control/fancontrol.py
+%{_libexecdir}/jupiter-fan-control/PID.py
+%{_datadir}/jupiter-fan-control/*.yaml
 %{_unitdir}/jupiter-fan-control.service
 
 # Finally, changes from the latest release of your application are generated from
