@@ -29,8 +29,8 @@ SteamOS 3.0 Steam Deck Fan Controller
 mkdir -p %{buildroot}%{_unitdir}/
 mkdir -p %{buildroot}%{_datadir}/jupiter-fan-control
 mkdir -p %{buildroot}%{_libexecdir}/jupiter-fan-control
-cp -rv usr/share/jupiter-fan-control/*.yaml %{buildroot}%{_datadir}
-cp -rv usr/share/jupiter-fan-control/*.py %{buildroot}%{_libexecdir}/jupiter-fan-control
+cp -v usr/share/jupiter-fan-control/*.yaml %{buildroot}%{_datadir}/jupiter-fan-control/
+cp -v usr/share/jupiter-fan-control/*.py %{buildroot}%{_libexecdir}/jupiter-fan-control/
 cp -v usr/lib/systemd/system/jupiter-fan-control.service %{buildroot}%{_unitdir}/jupiter-fan-control.service
 
 # Do post-installation
