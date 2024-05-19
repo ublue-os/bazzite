@@ -40,6 +40,12 @@
             "type": "uptime",
             "key": " 󰅐"
         },
+        {
+            "type": "command",
+            "key": " 󰔠",
+            "text": "ls -alct /|tail -1|awk '{print $6, $7, $8}'",
+            "shell": "/bin/bash"
+        },
         "break",
         {
             "type": "command",
