@@ -256,8 +256,7 @@ RUN rpm-ostree override remove \
         bluez \
         bluez-obexd \
         bluez-cups \
-        bluez-libs.x86_64 \
-        bluez-libs.i686 \
+        bluez-libs \
         xorg-x11-server-Xwayland && \
     rpm-ostree install \
         mesa-va-drivers-freeworld \
