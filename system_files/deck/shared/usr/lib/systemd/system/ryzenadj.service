@@ -1,0 +1,11 @@
+[Unit]
+Description=CPU Curve Undervolt for Steam Deck
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/default/%p
+ExecStartPre=/usr/bin/sleep 10
+ExecStart=/usr/bin/ryzenadj --set-coall=${UNDERVOLT_AMOUNT}
+
+[Install]
+WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target ac.target battery.target
