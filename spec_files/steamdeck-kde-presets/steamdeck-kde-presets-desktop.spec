@@ -15,6 +15,7 @@ Patch0:         multiuser.patch
 Patch1:         lockscreen.patch
 Patch2:         bazzite_logo.patch
 Patch3:         ublue.patch
+Patch4:         splash.patch
 
 BuildArch:      noarch
 
