@@ -30,13 +30,12 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  glm-devel
 BuildRequires:  google-benchmark-devel
-BuildRequires:  libeis-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  libXcursor-devel
+BuildRequires:  libeis-devel
 BuildRequires:  pixman-devel
 BuildRequires:  pkgconfig(libdisplay-info)
 BuildRequires:  pkgconfig(pixman-1)
-BuildRequires:  pkgconfig(libeis-1.0)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xdamage)
 BuildRequires:  pkgconfig(xcomposite)
@@ -80,7 +79,8 @@ BuildRequires:  git
 # libliftoff hasn't bumped soname, but API/ABI has changed for 0.2.0 release
 Requires:       libliftoff%{?_isa} >= %{libliftoff_minver}
 Requires:       xorg-x11-server-Xwayland
-Requires:       gamescope-libs = %{version}
+Requires:       gamescope-libs = %{version}-%{release}
+Requires:       gamescope-libs(x86-32) = %{version}-%{release}
 Recommends:     mesa-dri-drivers
 Recommends:     mesa-vulkan-drivers
 
@@ -93,7 +93,7 @@ Summary:	libs for %{name}
 %summary
 
 %prep
-git clone --depth 1 --branch %{gamescope_tag} https://github.com/ValveSoftware/gamescope
+git clone --depth 1 --branch %{gamescope_tag} %{url}.git
 cd gamescope
 git submodule update --init --recursive
 mkdir -p pkgconfig
@@ -107,7 +107,7 @@ sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/m
 %build
 cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
-%meson -Dpipewire=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dinput_emulation=enabled -Dsdl2_backend=enabled -Dforce_fallback_for=vkroots,wlroots,libliftoff
+%meson -Dpipewire=enabled -Dinput_emulation=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dsdl2_backend=enabled -Dforce_fallback_for=vkroots,wlroots,libliftoff
 %meson_build
 
 %install
@@ -117,7 +117,8 @@ cd gamescope
 %files
 %license gamescope/LICENSE
 %doc gamescope/README.md
-%attr(0755, root, root) %caps(cap_sys_nice=eip) %{_bindir}/gamescope
+%caps(cap_sys_nice=eip) %{_bindir}/gamescope
+%{_bindir}/gamescopestream
 
 %files libs
 %{_libdir}/libVkLayer_FROG_gamescope_wsi_*.so
