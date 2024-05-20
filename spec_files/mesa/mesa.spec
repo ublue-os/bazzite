@@ -75,10 +75,10 @@ Source0:        https://archive.mesa3d.org/mesa-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
-# Backport of https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/28740
-# to fix rendering issues using GTK's GSK_RENDERER=ngl on Raspberry Pi:
-# https://bugzilla.redhat.com/show_bug.cgi?id=2269412
-Patch11:        0001-broadcom-compiler-needs_quad_helper_invocation-enabl.patch
+# Work around for the meson bug until an upstream fix lands
+# https://bugzilla.redhat.com/show_bug.cgi?id=2277018
+# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/28923
+Patch11:        mesa-28923.patch
 
 # https://gitlab.com/evlaV/mesa/
 Patch21:        valve.patch
