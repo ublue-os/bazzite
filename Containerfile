@@ -230,7 +230,7 @@ RUN rpm-ostree override replace \
         || true && \
     ostree container commit
 
-# Install Valve's patched Mesa, Pipewire, and Xwayland
+# Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
 # Install patched switcheroo control with proper discrete GPU support
 RUN rpm-ostree override remove \
         mesa-va-drivers-freeworld && \
@@ -253,6 +253,11 @@ RUN rpm-ostree override remove \
         pipewire-libs \
         pipewire-pulseaudio \
         pipewire-utils \
+        bluez \
+        bluez-obexd \
+        bluez-cups \
+        bluez-libs.x86_64 \
+        bluez-libs.i686 \
         xorg-x11-server-Xwayland && \
     rpm-ostree install \
         mesa-va-drivers-freeworld \
