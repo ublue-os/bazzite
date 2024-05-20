@@ -21,6 +21,7 @@ Patch2:         disable-steam-touch-click-atom.patch
 Patch3:         external-rotation.patch
 Patch4:         panel-type.patch
 Patch5:         deckhd.patch
+Patch6:         modifiers.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
