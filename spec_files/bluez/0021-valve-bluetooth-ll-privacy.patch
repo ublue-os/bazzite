@@ -1,0 +1,13 @@
+diff --git a/src/main.conf b/src/main.conf
+index 5b2dc83..a24fb0b 100644
+--- a/src/main.conf
++++ b/src/main.conf
+@@ -142,7 +142,7 @@ FastConnectable = true
+ # 6fbaf188-05e0-496a-9885-d6ddfdb4e03e (BlueZ Experimental ISO socket)
+ # 69518c4c-b69f-4679-8bc1-c021b47b5733 (BlueZ Experimental Poll Errqueue)
+ # Defaults to false.
+-#KernelExperimental = false
++KernelExperimental = 15c0a148-c273-11ea-b3de-0242ac130004
+ 
+ # The duration to avoid retrying to resolve a peer's name, if the previous
+ # try failed.

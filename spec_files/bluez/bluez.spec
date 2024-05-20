@@ -5,10 +5,10 @@
 %endif
 
 Name:    bluez
-Version: 5.75
+Version: 5.76
 Release: 1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: Bluetooth utilities
-License: GPLv2+
+License: GPL-2.0-or-later
 URL:     http://www.bluez.org/
 
 Source0: https://www.kernel.org/pub/linux/bluetooth/%{name}-%{version}.tar.xz
@@ -16,6 +16,11 @@ Source0: https://www.kernel.org/pub/linux/bluetooth/%{name}-%{version}.tar.xz
 # Valve
 Patch0: 0001-valve-bluetooth-config.patch
 Patch1: 0002-valve-bluetooth-phy.patch
+Patch2: 0014-shared-gatt-Add-env-variable-to-prefer-indication-ov.patch
+Patch3: 0018-disable-unreliable-vcp-tests.patch
+Patch4: 0019-plugins-Add-new-plugin-to-manage-wake-policy.patch
+Patch5: 0020-plugins-wake-policy-Only-allow-Peripherals-to-wake-u.patch
+Patch6: 0021-valve-bluetooth-ll-privacy.patch
 
 BuildRequires: dbus-devel >= 1.6
 BuildRequires: glib2-devel
@@ -332,6 +337,9 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_userunitdir}/obex.service
 
 %changelog
+* Mon May 20 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.76-1
+- Update to 5.76
+
 * Mon Apr 15 2024 Adam Williamson <awilliam@redhat.com> - 5.75-1
 - Update to 5.75
 
