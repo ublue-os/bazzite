@@ -74,6 +74,14 @@ install-emudeck:
       chmod +x $HOME/Desktop/EmuDeck.AppImage
     fi
 
+# Install Boxtron, a Steam Play compatibility tool to run DOS games using native Linux DOSBox
+install-boxtron: distrobox-check-fedora
+    distrobox enter -n fedora -- bash -c '\
+      sudo dnf install dosbox-staging inotify-tools timidity++ fluid-soundfont-gm -y && \
+      cd ~/.steam/root/compatibilitytools.d/ && \
+      curl -L https://github.com/dreamer/boxtron/releases/download/v0.5.4/boxtron.tar.xz | tar xJf - && \
+      distrobox-export --bin /usr/bin/dosbox'
+
 alias get-wootility := install-wootility
 
 # Install Wootility for configuring Wooting Keyboards
