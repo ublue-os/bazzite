@@ -11,6 +11,7 @@ URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/%{packagever}/%{packagename}-%{packagever}.tar.gz
 Source2:        bazzite.png
+Source3:        99-framework-steam-automount.rules
 Patch0:         fedora.patch
 Patch1:         selinux.patch
 Patch2:         btrfs-automount.patch
@@ -71,6 +72,7 @@ cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
 cp %{SOURCE2} %{buildroot}%{_datadir}/plymouth/themes/steamos/bazzite.png
+cp %{SOURCE3} %{buildroot}%{_prefix}/lib/udev/rules.d/99-framework-steam-automount.rules
 xcursorgen usr/share/steamos/steamos-cursor-config %{buildroot}%{_datadir}/icons/steam/cursors/default
 # Remove unneeded files
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/h2offt-g
