@@ -76,6 +76,7 @@ xcursorgen usr/share/steamos/steamos-cursor-config %{buildroot}%{_datadir}/icons
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/h2offt-g
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/H2OFFTx64-G.sh
 rm %{buildroot}%{_datadir}/steamos/steamos.png
+rm %{buildroot}%{_prefix}/lib/udev/rules.d/80-gpu-reset.rules
 rm -rf %{buildroot}%{_datadir}/jupiter_bios_updater/driver
 rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 rm -rf %{buildroot}%{_datadir}/alsa

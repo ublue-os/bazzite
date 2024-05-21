@@ -1,0 +1,5 @@
+# If a GPU crash is caused by a specific process, kill the PID
+ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{PID}!="0", RUN+="/sbin/kill -9 %E{PID}"
+
+# Kill SDDM and Gamescope if the GPU crashes and VRAM is lost
+ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{FLAGS}=="1", RUN+="/usr/sbin/systemctl restart gdm"
