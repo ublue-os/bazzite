@@ -2,6 +2,7 @@
 # Mount drives labeled "steamgames" to support FrameworkComputer's steam-drive-mounter
 # https://github.com/FrameworkComputer/steam-drive-mounter
 
+KERNEL!="sd*",                  GOTO="steamos_automount_end"
 ENV{ID_FS_USAGE}!="filesystem", GOTO="steamos_automount_end"
 ENV{ID_FS_LABEL}!="steamgames", GOTO="steamos_automount_end"
 
