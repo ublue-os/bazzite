@@ -141,42 +141,6 @@ configure-watchdog ACTION="":
       rpm-ostree kargs $WATCHDOG_KARGS
     fi
 
-# Set the default powerprofile to load when the desktop starts
-configure-powerprofile ACTION="":
-    #!/usr/bin/bash
-    source /usr/lib/ujust/ujust.sh
-    OPTION={{ ACTION }}
-    if [ "$OPTION" == "help" ]; then
-      echo "Usage: ujust configure-powerprofile <option>"
-      echo "  <option>: Specify the quick option to skip the prompt"
-      echo "  Use 'powersave' to select Powersave"
-      echo "  Use 'balanced' to select Balanced"
-      exit 0
-    elif [ "$OPTION" == "" ]; then
-      # Cleanup old method
-      if [ -f "~/.config/autostart/bazzite-powersave.desktop" ]; then
-        rm ~/.config/autostart/bazzite-powersave.desktop
-      fi
-      # New method from here on
-      echo "${bold}Power profile configuration${normal}"
-      echo "This lets you set the default power profile."
-      echo "We do not recommend changing this from ${b}Balanced${n} if you use this device primarily for gaming!"
-      echo "If you have any performance or audio related issues..."
-      echo "${invert}${b}Please test with the default power profile set to Balanced${n} before reporting!"
-      echo ""
-      echo "Which power profile do you want to use when the desktop loads?"
-      OPTION=$(Choose "Powersave" "Balanced")
-    fi
-    if [[ "${OPTION,,}" =~ powersave ]]; then
-      echo "Setting default powerprofile to ${b}Powersave${n}"
-      sudo sed -iE 's/default=(.+)/default=power-saver/' /etc/tuned/ppd.conf
-      /usr/libexec/bazzite-powersave
-    elif [[ "${OPTION,,}" =~ balanced ]]; then
-      echo "Setting default powerprofile to ${b}Balanced${n}"
-      sudo sed -iE 's/default=(.+)/default=balanced/' /etc/tuned/ppd.conf
-      /usr/libexec/bazzite-powersave 0
-    fi
-
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
 setup-decky ACTION="":
     #!/usr/bin/bash
