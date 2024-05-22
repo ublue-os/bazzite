@@ -803,9 +803,7 @@ RUN rpm-ostree override remove \
         rocm-clinfo && \
     if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then \
         rpm-ostree override remove \
-            colord-kde && \
-        rpm-ostree install \
-            plasma-workspace-x11 \
+            colord-kde \
     ; fi && \
     ostree container commit
 
