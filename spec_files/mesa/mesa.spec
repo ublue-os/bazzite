@@ -151,9 +151,9 @@ BuildRequires:  pkgconfig(LLVMSPIRVLib)
 %endif
 %if 0%{?with_nvk}
 BuildRequires:  (rust >= 1.78.0 with rust < 2)
-# BuildRequires:  (crate(proc-macro2) >= 1.0.56 with crate(proc-macro2) < 2)
+BuildRequires:  (crate(proc-macro2) >= 1.0.56 with crate(proc-macro2) < 2)
 BuildRequires:  (crate(quote) >= 1.0.25 with crate(quote) < 2)
-# BuildRequires:  (crate(syn/clone-impls) >= 2.0.15 with crate(syn/clone-impls) < 3)
+BuildRequires:  (crate(syn/clone-impls) >= 2.0.15 with crate(syn/clone-impls) < 3)
 BuildRequires:  (crate(unicode-ident) >= 1.0.6 with crate(unicode-ident) < 2)
 BuildRequires:  (crate(paste) >= 1.0.14 with crate(paste) < 2)
 %endif
@@ -380,18 +380,18 @@ cp %{SOURCE1} docs/
 # ensure standard Rust compiler flags are set
 export RUSTFLAGS="%build_rustflags"
 
-# %if 0%{?with_nvk}
-# export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
-# # So... Meson can't actually find them without tweaks
-# %define inst_crate_nameversion() %(basename %{cargo_registry}/%{1}-*)
-# %define rewrite_wrap_file() sed -e "/source.*/d" -e "s/%{1}-.*/%{inst_crate_nameversion %{1}}/" -i subprojects/%{1}.wrap
+%if 0%{?with_nvk}
+export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
+# So... Meson can't actually find them without tweaks
+%define inst_crate_nameversion() %(basename %{cargo_registry}/%{1}-*)
+%define rewrite_wrap_file() sed -e "/source.*/d" -e "s/%{1}-.*/%{inst_crate_nameversion %{1}}/" -i subprojects/%{1}.wrap
 
-# %rewrite_wrap_file proc-macro2
-# %rewrite_wrap_file quote
-# %rewrite_wrap_file syn
-# %rewrite_wrap_file unicode-ident
-# %rewrite_wrap_file paste
-# %endif
+%rewrite_wrap_file proc-macro2
+%rewrite_wrap_file quote
+%rewrite_wrap_file syn
+%rewrite_wrap_file unicode-ident
+%rewrite_wrap_file paste
+%endif
 
 # We've gotten a report that enabling LTO for mesa breaks some games. See
 # https://bugzilla.redhat.com/show_bug.cgi?id=1862771 for details.
@@ -399,8 +399,6 @@ export RUSTFLAGS="%build_rustflags"
 %define _lto_cflags %{nil}
 
 %meson \
-  --wrap-mode=default \
-  --force-fallback-for=proc-macro2,syn \
 %ifnarch x86_64
   -Dintel-rt=disabled \
 %endif
