@@ -1,5 +1,5 @@
 Name:       wireplumber
-Version:    0.5.1
+Version:    0.5.2
 Release:    1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary:    A modular session/policy manager for PipeWire
 
@@ -137,6 +137,12 @@ fi
 %{_datadir}/doc/wireplumber/
 
 %changelog
+* Mon Apr 22 2024 Wim Taymans <wtaymans@redhat.com> - 0.5.2-1
+- wireplumber 0.5.2
+
+* Thu Apr 18 2024 Neal Gompa <ngompa@fedoraproject.org> - 0.5.1-2
+- Backport support for loading external WpConf from disk
+
 * Tue Apr 02 2024 Wim Taymans <wtaymans@redhat.com> - 0.5.1-1
 - wireplumber 0.5.1
 

@@ -34,8 +34,8 @@ install-hhd-xbox-glyph-theme:
 install-hhd-controller-glyph-theme:
     #!/usr/bin/bash
     if [ -d "$HOME/homebrew/themes" ]; then
-        rm -rf "$HOME/homebrew/themes/Handheld-Controller-Glyphs"
-        git clone https://github.com/victor-borges/handheld-controller-glyphs.git --single-branch "$HOME/homebrew/themes/Handheld-Controller-Glyphs"
+        rm -rf "$HOME/homebrew/themes/handheld-controller-glyphs"
+        git clone https://github.com/victor-borges/handheld-controller-glyphs.git --single-branch "$HOME/homebrew/themes/handheld-controller-glyphs"
     else
         echo 'Please install Decky Loader & CSS Loader first'
     fi

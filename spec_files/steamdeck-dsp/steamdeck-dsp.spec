@@ -59,6 +59,7 @@ rm %{buildroot}%{_datadir}/pipewire/hardware-profiles/default
 %{_prefix}/lib/firmware/amd/*
 %{_libexecdir}/hwsupport/wireplumber-hwconfig
 %{_libexecdir}/hwsupport/pipewire-hwconfig
+%{_libdir}/lv2/valve_*
 %{_datadir}/alsa/ucm2/conf.d/acp5x/*.conf
 %{_datadir}/alsa/ucm2/conf.d/sof-nau8821-max/*.conf
 %{_datadir}/wireplumber/hardware-profiles/*

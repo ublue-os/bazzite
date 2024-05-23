@@ -12,13 +12,13 @@ name='X-Pardus-Apps.directory'
 translate=true
 
 [org/gnome/desktop/app-folders/folders/Utilities]
-apps=['yafti.desktop', 'system-update.desktop', 'webapp-manager.desktop', 'tuned-gui.desktop', 'rog-control-center.desktop', 'fish.desktop', 'tuned-gui.desktop', 'nvtop.desktop', 'yelp.desktop', 'btop.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.flattool.Warehouse.desktop', 'it.mijorus.gearlever.desktop', 'com.mattjakeman.ExtensionManager.desktop', 'org.gnome.tweaks.desktop', 'com.github.GradienceTeam.Gradience', 'io.github.fastrizwaan.WineZGUI.desktop', 'setroubleshoot.desktop', 'org.rncbc.qsynth.desktop']
+apps=['yafti.desktop', 'system-update.desktop', 'webapp-manager.desktop', 'tuned-gui.desktop', 'rog-control-center.desktop', 'fish.desktop', 'tuned-gui.desktop', 'nvtop.desktop', 'yelp.desktop', 'btop.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.flattool.Warehouse.desktop', 'it.mijorus.gearlever.desktop', 'com.mattjakeman.ExtensionManager.desktop', 'org.gnome.tweaks.desktop', 'com.github.GradienceTeam.Gradience', 'io.github.fastrizwaan.WineZGUI.desktop', 'setroubleshoot.desktop', 'org.rncbc.qsynth.desktop', 'bazzite-documentation.desktop', 'bazzite-landing.desktop']
 categories=['X-GNOME-Utilities']
 name='X-GNOME-Utilities.directory'
 translate=true
 
 [org/gnome/desktop/app-folders/folders/Containers]
-apps=['io.github.dvlv.boxbuddyrs']
+apps=['io.github.dvlv.boxbuddyrs.desktop', 'io.podman_desktop.PodmanDesktop.desktop', 'com.github.marhkb.Pods.desktop']
 categories=['Distrobox']
 name='Containers'
 translate=false

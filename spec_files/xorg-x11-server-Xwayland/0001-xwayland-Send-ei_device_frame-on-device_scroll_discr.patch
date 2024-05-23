@@ -1,0 +1,28 @@
+From 317712eb5a1aa4a1c3d737a8fcaee57add9981c9 Mon Sep 17 00:00:00 2001
+From: Joshua Ashton <joshua@froggi.es>
+Date: Sat, 11 May 2024 07:25:48 +0100
+Subject: [PATCH] xwayland: Send ei_device_frame on device_scroll_discrete
+
+This fixes the scroll action in Steam Input in SteamOS/Gamescope when using the new libeis backend.
+
+Fixes: a13333427072dfb27792c5c9ff22ed145ede0f0a ("xwayland: Add XTEST support using EIS")
+Signed-off-by: Joshua Ashton <joshua@froggi.es>
+---
+ hw/xwayland/xwayland-xtest.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/hw/xwayland/xwayland-xtest.c b/hw/xwayland/xwayland-xtest.c
+index 756a6d8f7..4976a3d7e 100644
+--- a/hw/xwayland/xwayland-xtest.c
++++ b/hw/xwayland/xwayland-xtest.c
+@@ -584,6 +584,7 @@ xwl_send_event_to_ei(struct xwl_ei_client *xwl_ei_client,
+                 } else if (detail == 7) {
+                     ei_device_scroll_discrete(ei_device, SCROLL_STEP, 0);
+                 }
++                ei_device_frame(ei_device, ei_now(ei));
+             }
+             break;
+         case KeyPress:
+-- 
+2.44.0
+

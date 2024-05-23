@@ -9,8 +9,10 @@ setup-cdemu ACTION="":
     OPTION={{ ACTION }}
     if [ "$CDEMU_STATE" == "" ]; then
         CDEMU_STATE="${red}${b}Not Installed${n}"
+        CDEMU_STATE_FLAG="0"
     else
         CDEMU_STATE="${green}${b}Installed${n}"
+        CDEMU_STATE_FLAG="1"
     fi
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust setup-cdemu <option>"
@@ -25,7 +27,7 @@ setup-cdemu ACTION="":
       OPTION=$(Choose "Install CDEmu" "Remove CDEmu" "Remove GUI Helper")
     fi
     if [[ "${OPTION,,}" =~ ^install ]]; then
-      if [[ "$CDEMU_STATE" != "" ]]; then
+      if [[ "$CDEMU_STATE_FLAG" == "1" ]]; then
         echo "${red} CDEmu has already been installed!"
         exit 0
       fi
@@ -41,7 +43,7 @@ setup-cdemu ACTION="":
       systemctl start --user cdemu-daemon.service
       echo "CDEmu is installed!"
     elif [[ "${OPTION,,}" =~ ^(remove|uninstall) ]]; then
-      if [[ "$CDEMU_STATE" == "" ]]; then
+      if [[ "$CDEMU_STATE_FLAG" == "0" ]]; then
         echo "${red} CDEmu has already been removed!"
         exit 0
       fi

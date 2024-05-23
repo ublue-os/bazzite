@@ -1,0 +1,2012 @@
+diff --git a/data/dbus-interfaces/org.gnome.Mutter.DisplayConfig.xml b/data/dbus-interfaces/org.gnome.Mutter.DisplayConfig.xml
+index b05337d74..7294c57a8 100644
+--- a/data/dbus-interfaces/org.gnome.Mutter.DisplayConfig.xml
++++ b/data/dbus-interfaces/org.gnome.Mutter.DisplayConfig.xml
+@@ -426,10 +426,6 @@
+ 				       always use the same scale. Absence of
+ 				       this means logical monitor scales can
+ 				       differ.
+-	* "legacy-ui-scaling-factor" (i): The legacy scaling factor traditionally
+-				          used to scale X11 clients (commonly
+-					  communicated via the
+-					  Gdk/WindowScalingFactor XSetting entry).
+     -->
+     <method name="GetCurrentState">
+       <arg name="serial" direction="out" type="u" />
+diff --git a/data/dbus-interfaces/org.gnome.Mutter.X11.xml b/data/dbus-interfaces/org.gnome.Mutter.X11.xml
+new file mode 100644
+index 000000000..3d3c8a42f
+--- /dev/null
++++ b/data/dbus-interfaces/org.gnome.Mutter.X11.xml
+@@ -0,0 +1,8 @@
++<!DOCTYPE node PUBLIC
++'-//freedesktop//DTD D-BUS Object Introspection 1.0//EN'
++'http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd'>
++<node>
++  <interface name="org.gnome.Mutter.X11">
++    <property name="UiScalingFactor" type="i" access="readwrite" />
++  </interface>
++</node>
+diff --git a/data/org.gnome.mutter.gschema.xml.in b/data/org.gnome.mutter.gschema.xml.in
+index 92c97b12e..18abd8d51 100644
+--- a/data/org.gnome.mutter.gschema.xml.in
++++ b/data/org.gnome.mutter.gschema.xml.in
+@@ -5,6 +5,7 @@
+     <value nick="kms-modifiers" value="2"/>
+     <value nick="autoclose-xwayland" value="4"/>
+     <value nick="variable-refresh-rate" value="8"/>
++    <value nick="xwayland-native-scaling" value="9"/>
+   </flags>
+ 
+   <schema id="org.gnome.mutter" path="/org/gnome/mutter/"
+@@ -136,6 +137,12 @@
+                                         GPU and DRM driver. Configurable in
+                                         Settings. Requires a restart.
+ 
++        • “xwayland-native-scaling”   — lets Xwayland clients use their native
++                                        scaling support. If scaling is not
++                                        supported by client, the client will
++                                        be unscaled. Setting only takes effect
++                                        when “scale-monitor-framebuffer” is
++                                        enabled as well.
+       </description>
+     </key>
+ 
+diff --git a/src/backends/meta-monitor-manager-private.h b/src/backends/meta-monitor-manager-private.h
+index 0760a341a..6ed3fc2c3 100644
+--- a/src/backends/meta-monitor-manager-private.h
++++ b/src/backends/meta-monitor-manager-private.h
+@@ -436,3 +436,5 @@ gboolean meta_monitor_manager_apply_monitors_config (MetaMonitorManager        *
+                                                      MetaMonitorsConfig        *config,
+                                                      MetaMonitorsConfigMethod   method,
+                                                      GError                   **error);
++
++MetaLogicalMonitorLayoutMode meta_monitor_manager_get_layout_mode (MetaMonitorManager *manager);
+diff --git a/src/backends/meta-monitor-manager.c b/src/backends/meta-monitor-manager.c
+index 77743bc72..45033d966 100644
+--- a/src/backends/meta-monitor-manager.c
++++ b/src/backends/meta-monitor-manager.c
+@@ -2051,14 +2051,12 @@ meta_monitor_manager_handle_get_current_state (MetaDBusDisplayConfig *skeleton,
+                                                GDBusMethodInvocation *invocation,
+                                                MetaMonitorManager    *manager)
+ {
+-  MetaSettings *settings = meta_backend_get_settings (manager->backend);
+   GVariantBuilder monitors_builder;
+   GVariantBuilder logical_monitors_builder;
+   GVariantBuilder properties_builder;
+   GList *l;
+   int i;
+   MetaMonitorManagerCapability capabilities;
+-  int ui_scaling_factor;
+   int max_screen_width, max_screen_height;
+ 
+   g_variant_builder_init (&monitors_builder,
+@@ -2261,11 +2259,6 @@ meta_monitor_manager_handle_get_current_state (MetaDBusDisplayConfig *skeleton,
+                              g_variant_new_boolean (TRUE));
+     }
+ 
+-  ui_scaling_factor = meta_settings_get_ui_scaling_factor (settings);
+-  g_variant_builder_add (&properties_builder, "{sv}",
+-                         "legacy-ui-scaling-factor",
+-                         g_variant_new_int32 (ui_scaling_factor));
+-
+   if (meta_monitor_manager_get_max_screen_size (manager,
+                                                 &max_screen_width,
+                                                 &max_screen_height))
+@@ -4123,3 +4116,9 @@ meta_monitor_manager_get_virtual_monitors (MetaMonitorManager *manager)
+ 
+   return priv->virtual_monitors;
+ }
++
++MetaLogicalMonitorLayoutMode
++meta_monitor_manager_get_layout_mode (MetaMonitorManager *manager)
++{
++  return manager->layout_mode;
++}
+diff --git a/src/backends/meta-settings-private.h b/src/backends/meta-settings-private.h
+index afbba054a..2081a81b1 100644
+--- a/src/backends/meta-settings-private.h
++++ b/src/backends/meta-settings-private.h
+@@ -32,6 +32,7 @@ typedef enum _MetaExperimentalFeature
+   META_EXPERIMENTAL_FEATURE_KMS_MODIFIERS  = (1 << 1),
+   META_EXPERIMENTAL_FEATURE_AUTOCLOSE_XWAYLAND  = (1 << 2),
+   META_EXPERIMENTAL_FEATURE_VARIABLE_REFRESH_RATE = (1 << 3),
++  META_EXPERIMENTAL_FEATURE_XWAYLAND_NATIVE_SCALING  = (1 << 4),
+ } MetaExperimentalFeature;
+ 
+ typedef enum _MetaXwaylandExtension
+diff --git a/src/backends/meta-settings.c b/src/backends/meta-settings.c
+index 3703b23b0..1ae59d636 100644
+--- a/src/backends/meta-settings.c
++++ b/src/backends/meta-settings.c
+@@ -296,6 +296,8 @@ experimental_features_handler (GVariant *features_variant,
+         feature = META_EXPERIMENTAL_FEATURE_AUTOCLOSE_XWAYLAND;
+       else if (g_str_equal (feature_str, "variable-refresh-rate"))
+         feature = META_EXPERIMENTAL_FEATURE_VARIABLE_REFRESH_RATE;
++      else if (g_str_equal (feature_str, "xwayland-native-scaling"))
++        feature = META_EXPERIMENTAL_FEATURE_XWAYLAND_NATIVE_SCALING;
+ 
+       if (feature)
+         g_message ("Enabling experimental feature '%s'", feature_str);
+diff --git a/src/compositor/meta-window-actor-x11.c b/src/compositor/meta-window-actor-x11.c
+index 7d5e46ac7..577ed2760 100644
+--- a/src/compositor/meta-window-actor-x11.c
++++ b/src/compositor/meta-window-actor-x11.c
+@@ -696,11 +696,23 @@ meta_window_actor_x11_process_damage (MetaWindowActorX11 *actor_x11,
+ 
+   surface = meta_window_actor_get_surface (META_WINDOW_ACTOR (actor_x11));
+   if (surface)
+-    meta_surface_actor_process_damage (surface,
+-                                       event->area.x,
+-                                       event->area.y,
+-                                       event->area.width,
+-                                       event->area.height);
++    {
++      MetaWindow *window =
++        meta_window_actor_get_meta_window (META_WINDOW_ACTOR (actor_x11));
++      MetaWindowX11 *window_x11 = META_WINDOW_X11 (window);
++      MtkRectangle damage;
++
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         event->area.x, event->area.y,
++                                         event->area.width,  event->area.height,
++                                         &damage.x, &damage.y,
++                                         &damage.width, &damage.height);
++      meta_surface_actor_process_damage (surface,
++                                         damage.x,
++                                         damage.y,
++                                         damage.width,
++                                         damage.height);
++    }
+ 
+   meta_window_actor_notify_damaged (META_WINDOW_ACTOR (actor_x11));
+ }
+diff --git a/src/core/frame.c b/src/core/frame.c
+index c74a2e04e..d45a8759b 100644
+--- a/src/core/frame.c
++++ b/src/core/frame.c
+@@ -33,6 +33,7 @@
+ #include "x11/meta-x11-display-private.h"
+ #include "x11/window-x11-private.h"
+ #include "x11/window-props.h"
++#include "x11/window-x11.h"
+ 
+ #include <X11/Xatom.h>
+ #include <X11/extensions/shape.h>
+@@ -66,6 +67,7 @@ meta_window_x11_set_frame_xwindow (MetaWindow *window,
+   XSetWindowAttributes attrs;
+   gulong create_serial = 0;
+   MetaFrame *frame;
++  int child_x, child_y;
+ 
+   if (window->frame)
+     return;
+@@ -127,11 +129,19 @@ meta_window_x11_set_frame_xwindow (MetaWindow *window,
+   meta_stack_tracker_record_remove (window->display->stack_tracker,
+                                     meta_window_x11_get_xwindow (window),
+                                     XNextRequest (x11_display->xdisplay));
++  meta_window_x11_stage_to_protocol (META_WINDOW_X11 (window),
++                                     frame->child_x,
++                                     frame->child_y,
++                                     0, 0,
++                                     &child_x,
++                                     &child_y,
++                                     NULL, NULL);
++
+   XReparentWindow (x11_display->xdisplay,
+                    meta_window_x11_get_xwindow (window),
+                    frame->xwindow,
+-                   frame->child_x,
+-                   frame->child_y);
++                   child_x,
++                   child_y);
+   window->reparents_pending += 1;
+   /* FIXME handle this error */
+   mtk_x11_error_trap_pop (x11_display->xdisplay);
+@@ -201,6 +211,8 @@ meta_window_destroy_frame (MetaWindow *window)
+ 
+   if (!x11_display->closing)
+     {
++      int child_x, child_y;
++
+       if (!window->unmanaging)
+         {
+           meta_stack_tracker_record_add (window->display->stack_tracker,
+@@ -208,6 +220,14 @@ meta_window_destroy_frame (MetaWindow *window)
+                                          XNextRequest (x11_display->xdisplay));
+         }
+ 
++      meta_window_x11_stage_to_protocol (META_WINDOW_X11 (window),
++                                         window->frame->rect.x + borders.invisible.left,
++                                         window->frame->rect.y + borders.invisible.top,
++                                         0, 0,
++                                         &child_x,
++                                         &child_y,
++                                         NULL, NULL);
++
+       XReparentWindow (x11_display->xdisplay,
+                        meta_window_x11_get_xwindow (window),
+                        x11_display->xroot,
+@@ -215,8 +235,7 @@ meta_window_destroy_frame (MetaWindow *window)
+                         * coordinates here means we'll need to ensure a configure
+                         * notify event is sent; see bug 399552.
+                         */
+-                       window->frame->rect.x + borders.invisible.left,
+-                       window->frame->rect.y + borders.invisible.top);
++                       child_x, child_y);
+       window->reparents_pending += 1;
+     }
+ 
+@@ -270,6 +289,7 @@ meta_frame_query_borders (MetaFrame        *frame,
+                           MetaFrameBorders *borders)
+ {
+   MetaWindow *window = frame->window;
++  MetaWindowX11 *window_x11 = META_WINDOW_X11 (window);
+   MetaX11Display *x11_display = window->display->x11_display;
+   int format, res;
+   Atom type;
+@@ -293,12 +313,22 @@ meta_frame_query_borders (MetaFrame        *frame,
+   if (mtk_x11_error_trap_pop_with_return (x11_display->xdisplay) == Success &&
+       res == Success && nitems == 4)
+     {
+-      borders->invisible = (MetaFrameBorder) {
+-        ((long *) data)[0],
+-        ((long *) data)[1],
+-        ((long *) data)[2],
+-        ((long *) data)[3],
+-      };
++      int left, right, top, bottom;
++
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         ((long *) data)[0],
++                                         ((long *) data)[1],
++                                         ((long *) data)[2],
++                                         ((long *) data)[3],
++                                         &left,
++                                         &right,
++                                         &top,
++                                         &bottom);
++
++      borders->invisible.left = left;
++      borders->invisible.right = right;
++      borders->invisible.top = top;
++      borders->invisible.bottom = bottom;
+     }
+   else
+     {
+@@ -321,12 +351,21 @@ meta_frame_query_borders (MetaFrame        *frame,
+   if (mtk_x11_error_trap_pop_with_return (x11_display->xdisplay) == Success &&
+       res == Success && nitems == 4)
+     {
+-      borders->visible = (MetaFrameBorder) {
+-        ((long *) data)[0],
+-        ((long *) data)[1],
+-        ((long *) data)[2],
+-        ((long *) data)[3],
+-      };
++      int left, right, top, bottom;
++
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         ((long *) data)[0],
++                                         ((long *) data)[1],
++                                         ((long *) data)[2],
++                                         ((long *) data)[3],
++                                         &left,
++                                         &right,
++                                         &top,
++                                         &bottom);
++      borders->visible.left = left;
++      borders->visible.right = right;
++      borders->visible.top = top;
++      borders->visible.bottom = bottom;
+     }
+   else
+     {
+@@ -374,7 +413,9 @@ meta_frame_sync_to_window (MetaFrame *frame,
+                            gboolean   need_resize)
+ {
+   MetaWindow *window = frame->window;
++  MetaWindowX11 *window_x11 = META_WINDOW_X11 (window);
+   MetaX11Display *x11_display = window->display->x11_display;
++  MtkRectangle rect;
+ 
+   meta_topic (META_DEBUG_GEOMETRY,
+               "Syncing frame geometry %d,%d %dx%d (SE: %d,%d)",
+@@ -385,12 +426,22 @@ meta_frame_sync_to_window (MetaFrame *frame,
+ 
+   mtk_x11_error_trap_push (x11_display->xdisplay);
+ 
++  meta_window_x11_stage_to_protocol (window_x11,
++                                     frame->rect.x,
++                                     frame->rect.y,
++                                     frame->rect.width,
++                                     frame->rect.height,
++                                     &rect.x,
++                                     &rect.y,
++                                     &rect.width,
++                                     &rect.height);
++
+   XMoveResizeWindow (x11_display->xdisplay,
+                      frame->xwindow,
+-                     frame->rect.x,
+-                     frame->rect.y,
+-                     frame->rect.width,
+-                     frame->rect.height);
++                     rect.x,
++                     rect.y,
++                     rect.width,
++                     rect.height);
+ 
+   mtk_x11_error_trap_pop (x11_display->xdisplay);
+ 
+@@ -427,6 +478,7 @@ static void
+ send_configure_notify (MetaFrame *frame)
+ {
+   MetaX11Display *x11_display = frame->window->display->x11_display;
++  MetaWindowX11 *window_x11 = META_WINDOW_X11 (frame->window);
+   XEvent event = { 0 };
+ 
+   /* We never get told by the frames client, just reassert the
+@@ -436,10 +488,16 @@ send_configure_notify (MetaFrame *frame)
+   event.xconfigure.display = x11_display->xdisplay;
+   event.xconfigure.event = frame->xwindow;
+   event.xconfigure.window = frame->xwindow;
+-  event.xconfigure.x = frame->rect.x;
+-  event.xconfigure.y = frame->rect.y;
+-  event.xconfigure.width = frame->rect.width;
+-  event.xconfigure.height = frame->rect.height;
++
++  meta_window_x11_stage_to_protocol (window_x11,
++                                     frame->rect.x,
++                                     frame->rect.y,
++                                     frame->rect.width,
++                                     frame->rect.height,
++                                     &event.xconfigure.x,
++                                     &event.xconfigure.y,
++                                     &event.xconfigure.width,
++                                     &event.xconfigure.height);
+   event.xconfigure.border_width = 0;
+   event.xconfigure.above = None;
+   event.xconfigure.override_redirect = False;
+diff --git a/src/meson.build b/src/meson.build
+index 05df3bfd2..e658f98ca 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -949,6 +949,11 @@ dbus_interfaces = [
+     'interface': 'org.gnome.Mutter.DebugControl.xml',
+     'prefix': 'org.gnome.Mutter',
+   },
++  {
++    'name': 'meta-dbus-x11',
++    'interface': 'org.gnome.Mutter.X11.xml',
++    'prefix': 'org.gnome.Mutter',
++  },
+ ]
+ 
+ if have_profiler
+diff --git a/src/meta/meta-context.h b/src/meta/meta-context.h
+index ef36bd2c3..2adb9b07e 100644
+--- a/src/meta/meta-context.h
++++ b/src/meta/meta-context.h
+@@ -101,3 +101,8 @@ gboolean meta_context_raise_rlimit_nofile (MetaContext  *context,
+ META_EXPORT
+ gboolean meta_context_restore_rlimit_nofile (MetaContext  *context,
+                                              GError      **error);
++
++#ifdef HAVE_WAYLAND
++META_EXPORT
++MetaWaylandCompositor * meta_context_get_wayland_compositor (MetaContext *context);
++#endif
+diff --git a/src/meta/meta-wayland-compositor.h b/src/meta/meta-wayland-compositor.h
+index 7f4a50705..3df92fda5 100644
+--- a/src/meta/meta-wayland-compositor.h
++++ b/src/meta/meta-wayland-compositor.h
+@@ -31,9 +31,6 @@ G_DECLARE_FINAL_TYPE (MetaWaylandCompositor,
+                       META, WAYLAND_COMPOSITOR,
+                       GObject)
+ 
+-META_EXPORT
+-MetaWaylandCompositor *meta_context_get_wayland_compositor (MetaContext *context);
+-
+ META_EXPORT
+ struct wl_display *meta_wayland_compositor_get_wayland_display (MetaWaylandCompositor *compositor);
+ 
+diff --git a/src/meta/types.h b/src/meta/types.h
+index cbe2a9a3d..8fba4a839 100644
+--- a/src/meta/types.h
++++ b/src/meta/types.h
+@@ -38,3 +38,7 @@ typedef struct _MetaSettings    MetaSettings;
+ 
+ typedef struct _MetaWorkspaceManager MetaWorkspaceManager;
+ typedef struct _MetaSelection   MetaSelection;
++
++#ifdef HAVE_WAYLAND
++typedef struct _MetaWaylandCompositor MetaWaylandCompositor;
++#endif
+diff --git a/src/wayland/meta-wayland-cursor-surface.c b/src/wayland/meta-wayland-cursor-surface.c
+index 87a8895c8..5a16ce7d8 100644
+--- a/src/wayland/meta-wayland-cursor-surface.c
++++ b/src/wayland/meta-wayland-cursor-surface.c
+@@ -92,37 +92,29 @@ cursor_sprite_prepare_at (MetaCursorSprite         *cursor_sprite,
+ {
+   MetaWaylandSurfaceRole *role = META_WAYLAND_SURFACE_ROLE (cursor_surface);
+   MetaWaylandSurface *surface = meta_wayland_surface_role_get_surface (role);
+-
+-  if (!meta_wayland_surface_is_xwayland (surface))
++  MetaContext *context =
++    meta_wayland_compositor_get_context (surface->compositor);
++  MetaBackend *backend = meta_context_get_backend (context);
++  MetaMonitorManager *monitor_manager =
++    meta_backend_get_monitor_manager (backend);
++  MetaLogicalMonitor *logical_monitor;
++
++  logical_monitor =
++    meta_monitor_manager_get_logical_monitor_at (monitor_manager, x, y);
++  if (logical_monitor)
+     {
+-      MetaWaylandSurfaceRole *surface_role =
+-        META_WAYLAND_SURFACE_ROLE (cursor_surface);
+-      MetaWaylandSurface *surface =
+-        meta_wayland_surface_role_get_surface (surface_role);
+-      MetaContext *context =
+-        meta_wayland_compositor_get_context (surface->compositor);
+-      MetaBackend *backend = meta_context_get_backend (context);
+-      MetaMonitorManager *monitor_manager =
+-        meta_backend_get_monitor_manager (backend);
+-      MetaLogicalMonitor *logical_monitor;
+-
+-      logical_monitor =
+-        meta_monitor_manager_get_logical_monitor_at (monitor_manager, x, y);
+-      if (logical_monitor)
+-        {
+-          int surface_scale = surface->applied_state.scale;
+-          float texture_scale;
+-
+-          if (meta_backend_is_stage_views_scaled (backend))
+-            texture_scale = 1.0 / surface_scale;
+-          else
+-            texture_scale = (meta_logical_monitor_get_scale (logical_monitor) /
+-                             surface_scale);
+-
+-          meta_cursor_sprite_set_texture_scale (cursor_sprite, texture_scale);
+-          meta_cursor_sprite_set_texture_transform (cursor_sprite,
+-                                                    surface->buffer_transform);
+-        }
++      int surface_scale = surface->applied_state.scale;
++      float texture_scale;
++
++      if (meta_backend_is_stage_views_scaled (backend))
++        texture_scale = 1.0 / surface_scale;
++      else
++        texture_scale = (meta_logical_monitor_get_scale (logical_monitor) /
++                         surface_scale);
++
++      meta_cursor_sprite_set_texture_scale (cursor_sprite, texture_scale);
++      meta_cursor_sprite_set_texture_transform (cursor_sprite,
++                                                surface->buffer_transform);
+     }
+ 
+   meta_wayland_surface_update_outputs (surface);
+diff --git a/src/wayland/meta-wayland-outputs.c b/src/wayland/meta-wayland-outputs.c
+index 89ae86445..f957bc339 100644
+--- a/src/wayland/meta-wayland-outputs.c
++++ b/src/wayland/meta-wayland-outputs.c
+@@ -31,6 +31,10 @@
+ #include "backends/meta-monitor-manager-private.h"
+ #include "wayland/meta-wayland-private.h"
+ 
++#ifdef HAVE_XWAYLAND
++#include "wayland/meta-xwayland.h"
++#endif
++
+ #include "xdg-output-unstable-v1-server-protocol.h"
+ 
+ /* Wayland protocol headers list new additions, not deprecations */
+@@ -50,6 +54,8 @@ struct _MetaWaylandOutput
+ {
+   GObject parent;
+ 
++  MetaWaylandCompositor *compositor;
++
+   struct wl_global *global;
+   GList *resources;
+   GList *xdg_output_resources;
+@@ -422,6 +428,7 @@ meta_wayland_output_new (MetaWaylandCompositor *compositor,
+   MetaWaylandOutput *wayland_output;
+ 
+   wayland_output = g_object_new (META_TYPE_WAYLAND_OUTPUT, NULL);
++  wayland_output->compositor = compositor;
+   wayland_output->global = wl_global_create (compositor->wayland_display,
+                                              &wl_output_interface,
+                                              META_WL_OUTPUT_VERSION,
+@@ -596,6 +603,37 @@ static const struct zxdg_output_v1_interface
+     meta_xdg_output_destroy,
+   };
+ 
++#ifdef HAVE_XWAYLAND
++static gboolean
++is_xwayland_resource (MetaWaylandOutput  *wayland_output,
++                      struct wl_resource *resource)
++{
++  MetaXWaylandManager *manager = &wayland_output->compositor->xwayland_manager;
++
++  return resource && wl_resource_get_client (resource) == manager->client;
++}
++#endif
++
++static void
++maybe_scale_for_xwayland (MetaWaylandOutput  *wayland_output,
++                          struct wl_resource *resource,
++                          int                *x,
++                          int                *y)
++{
++#ifdef HAVE_XWAYLAND
++  if (is_xwayland_resource (wayland_output, resource))
++    {
++      MetaXWaylandManager *xwayland_manager =
++        &wayland_output->compositor->xwayland_manager;
++      int xwayland_scale;
++
++      xwayland_scale = meta_xwayland_get_effective_scale (xwayland_manager);
++      *x *= xwayland_scale;
++      *y *= xwayland_scale;
++    }
++#endif
++}
++
+ static void
+ send_xdg_output_events (struct wl_resource *resource,
+                         MetaWaylandOutput  *wayland_output,
+@@ -616,6 +654,7 @@ send_xdg_output_events (struct wl_resource *resource,
+   if (need_all_events ||
+       old_layout.x != layout.x || old_layout.y != layout.y)
+     {
++      maybe_scale_for_xwayland (wayland_output, resource, &layout.x, &layout.y);
+       zxdg_output_v1_send_logical_position (resource, layout.x, layout.y);
+       need_done = TRUE;
+     }
+@@ -623,6 +662,7 @@ send_xdg_output_events (struct wl_resource *resource,
+   if (need_all_events ||
+       old_layout.width != layout.width || old_layout.height != layout.height)
+     {
++      maybe_scale_for_xwayland (wayland_output, resource, &layout.width, &layout.height);
+       zxdg_output_v1_send_logical_size (resource, layout.width, layout.height);
+       need_done = TRUE;
+     }
+@@ -745,7 +785,7 @@ meta_wayland_outputs_init (MetaWaylandCompositor *compositor)
+   MetaMonitorManager *monitor_manager =
+     meta_backend_get_monitor_manager (backend);
+ 
+-  g_signal_connect (monitor_manager, "monitors-changed-internal",
++  g_signal_connect (monitor_manager, "monitors-changed",
+                     G_CALLBACK (on_monitors_changed), compositor);
+ 
+   compositor->outputs =
+diff --git a/src/wayland/meta-wayland-pointer.c b/src/wayland/meta-wayland-pointer.c
+index 88b27f84d..324092970 100644
+--- a/src/wayland/meta-wayland-pointer.c
++++ b/src/wayland/meta-wayland-pointer.c
+@@ -1244,6 +1244,20 @@ pointer_set_cursor (struct wl_client *client,
+       cursor_surface = META_WAYLAND_CURSOR_SURFACE (surface->role);
+       meta_wayland_cursor_surface_set_renderer (cursor_surface,
+                                                 cursor_renderer);
++
++#ifdef HAVE_XWAYLAND
++      if (meta_wayland_surface_is_xwayland (surface))
++        {
++          MetaXWaylandManager *xwayland_manager =
++            &surface->compositor->xwayland_manager;
++          int scale;
++
++          scale = meta_xwayland_get_effective_scale (xwayland_manager);
++          hot_x = round (hot_x / (double) scale);
++          hot_y = round (hot_y / (double) scale);
++        }
++#endif
++
+       meta_wayland_cursor_surface_set_hotspot (cursor_surface,
+                                                hot_x, hot_y);
+ 
+diff --git a/src/wayland/meta-wayland-private.h b/src/wayland/meta-wayland-private.h
+index e8d442c03..834753ffd 100644
+--- a/src/wayland/meta-wayland-private.h
++++ b/src/wayland/meta-wayland-private.h
+@@ -77,6 +77,8 @@ struct _MetaXWaylandManager
+   int rr_error_base;
+ 
+   gboolean should_enable_ei_portal;
++
++  double highest_monitor_scale;
+ };
+ 
+ struct _MetaWaylandCompositor
+diff --git a/src/wayland/meta-wayland-surface.c b/src/wayland/meta-wayland-surface.c
+index 6dc5006b7..81ee47bbd 100644
+--- a/src/wayland/meta-wayland-surface.c
++++ b/src/wayland/meta-wayland-surface.c
+@@ -781,8 +781,19 @@ meta_wayland_surface_apply_state (MetaWaylandSurface      *surface,
+           state->buffer->type != META_WAYLAND_BUFFER_TYPE_SINGLE_PIXEL));
+     }
+ 
+-  if (state->scale > 0)
+-    surface->applied_state.scale = state->scale;
++  if (meta_wayland_surface_is_xwayland (surface))
++    {
++#ifdef HAVE_XWAYLAND
++      MetaXWaylandManager *xwayland_manager =
++        &surface->compositor->xwayland_manager;
++
++      surface->applied_state.scale = meta_xwayland_get_effective_scale (xwayland_manager);
++#endif
++    }
++  else if (state->scale > 0)
++    {
++      surface->applied_state.scale = state->scale;
++    }
+ 
+   if (state->has_new_buffer_transform)
+     surface->buffer_transform = state->buffer_transform;
+@@ -977,8 +988,9 @@ meta_wayland_surface_commit (MetaWaylandSurface *surface)
+       MetaMultiTexture *committed_texture = surface->committed_state.texture;
+       int committed_scale = surface->committed_state.scale;
+ 
+-      if ((meta_multi_texture_get_width (committed_texture) % committed_scale != 0) ||
+-          (meta_multi_texture_get_height (committed_texture) % committed_scale != 0))
++      if (((meta_multi_texture_get_width (committed_texture) % committed_scale != 0) ||
++           (meta_multi_texture_get_height (committed_texture) % committed_scale != 0)) &&
++          !meta_wayland_surface_is_xwayland (surface))
+         {
+           if (!surface->role || !META_IS_WAYLAND_CURSOR_SURFACE (surface->role))
+             {
+@@ -1506,6 +1518,16 @@ meta_wayland_surface_update_outputs (MetaWaylandSurface *surface)
+   g_hash_table_foreach (surface->compositor->outputs,
+                         update_surface_output_state,
+                         surface);
++
++  if (meta_wayland_surface_is_xwayland (surface))
++    {
++#ifdef HAVE_XWAYLAND
++      MetaXWaylandManager *xwayland_manager =
++        &surface->compositor->xwayland_manager;
++
++      surface->applied_state.scale = meta_xwayland_get_effective_scale (xwayland_manager);
++#endif
++    }
+ }
+ 
+ void
+diff --git a/src/wayland/meta-window-xwayland.c b/src/wayland/meta-window-xwayland.c
+index 1299a351c..5fb006962 100644
+--- a/src/wayland/meta-window-xwayland.c
++++ b/src/wayland/meta-window-xwayland.c
+@@ -27,8 +27,9 @@
+ #include "x11/window-x11-private.h"
+ #include "x11/xprops.h"
+ #include "wayland/meta-window-xwayland.h"
+-#include "wayland/meta-wayland.h"
++#include "wayland/meta-wayland-private.h"
+ #include "wayland/meta-wayland-surface-private.h"
++#include "wayland/meta-xwayland.h"
+ 
+ enum
+ {
+@@ -315,6 +316,72 @@ meta_window_xwayland_process_property_notify (MetaWindow     *window,
+     meta_window_queue (window, META_QUEUE_MOVE_RESIZE);
+ }
+ 
++static void
++meta_window_xwayland_stage_to_protocol (MetaWindowX11 *window_x11,
++                                        int            stage_x,
++                                        int            stage_y,
++                                        int            stage_width,
++                                        int            stage_height,
++                                        int           *protocol_x,
++                                        int           *protocol_y,
++                                        int           *protocol_width,
++                                        int           *protocol_height)
++{
++  MetaDisplay *display = meta_window_get_display (META_WINDOW (window_x11));
++  MetaContext *context = meta_display_get_context (display);
++  MetaWaylandCompositor *wayland_compositor =
++    meta_context_get_wayland_compositor (context);
++  MetaXWaylandManager *xwayland_manager = &wayland_compositor->xwayland_manager;
++  int scale;
++
++  scale = meta_xwayland_get_effective_scale (xwayland_manager);
++  if (protocol_x)
++    *protocol_x = stage_x * scale;
++  if (protocol_y)
++    *protocol_y = stage_y * scale;
++  if (protocol_width)
++    *protocol_width = stage_width * scale;
++  if (protocol_height)
++    *protocol_height = stage_height * scale;
++}
++
++static void
++meta_window_xwayland_protocol_to_stage (MetaWindowX11 *window_x11,
++                                        int            protocol_x,
++                                        int            protocol_y,
++                                        int            protocol_width,
++                                        int            protocol_height,
++                                        int           *stage_x,
++                                        int           *stage_y,
++                                        int           *stage_width,
++                                        int           *stage_height)
++{
++  MetaDisplay *display = meta_window_get_display (META_WINDOW (window_x11));
++  MetaContext *context = meta_display_get_context (display);
++  MetaWaylandCompositor *wayland_compositor =
++    meta_context_get_wayland_compositor (context);
++  MetaXWaylandManager *xwayland_manager = &wayland_compositor->xwayland_manager;
++  MtkRectangle rect;
++  int scale;
++
++  rect.x = protocol_x;
++  rect.y = protocol_y;
++  rect.width = protocol_width;
++  rect.height = protocol_height;
++
++  scale = meta_xwayland_get_effective_scale (xwayland_manager);
++  mtk_rectangle_scale_double (&rect, 1.0 / scale, MTK_ROUNDING_STRATEGY_GROW, &rect);
++
++  if (stage_x)
++    *stage_x = rect.x;
++  if (stage_y)
++    *stage_y = rect.y;
++  if (stage_width)
++    *stage_width = rect.width;
++  if (stage_height)
++    *stage_height = rect.height;
++}
++
+ static void
+ meta_window_xwayland_class_init (MetaWindowXwaylandClass *klass)
+ {
+@@ -331,6 +398,8 @@ meta_window_xwayland_class_init (MetaWindowXwaylandClass *klass)
+   window_x11_class->thaw_commits = meta_window_xwayland_thaw_commits;
+   window_x11_class->always_update_shape = meta_window_xwayland_always_update_shape;
+   window_x11_class->process_property_notify = meta_window_xwayland_process_property_notify;
++  window_x11_class->stage_to_protocol = meta_window_xwayland_stage_to_protocol;
++  window_x11_class->protocol_to_stage = meta_window_xwayland_protocol_to_stage;
+ 
+   gobject_class->get_property = meta_window_xwayland_get_property;
+   gobject_class->set_property = meta_window_xwayland_set_property;
+diff --git a/src/wayland/meta-xwayland-private.h b/src/wayland/meta-xwayland-private.h
+index 7a9cb73fd..9e06f0315 100644
+--- a/src/wayland/meta-xwayland-private.h
++++ b/src/wayland/meta-xwayland-private.h
+@@ -20,6 +20,7 @@
+ #include <glib.h>
+ 
+ #include "wayland/meta-wayland-private.h"
++#include "wayland/meta-xwayland.h"
+ 
+ gboolean
+ meta_xwayland_init (MetaXWaylandManager    *manager,
+diff --git a/src/wayland/meta-xwayland-surface.c b/src/wayland/meta-xwayland-surface.c
+index 8fa1c72a9..c6daf9b26 100644
+--- a/src/wayland/meta-xwayland-surface.c
++++ b/src/wayland/meta-xwayland-surface.c
+@@ -163,13 +163,19 @@ meta_xwayland_surface_get_relative_coordinates (MetaWaylandSurfaceRole *surface_
+                                                 float                  *out_sy)
+ {
+   MetaXwaylandSurface *xwayland_surface = META_XWAYLAND_SURFACE (surface_role);
++  MetaWaylandSurface *surface =
++    meta_wayland_surface_role_get_surface (surface_role);
++  MetaWaylandCompositor *compositor =
++    meta_wayland_surface_get_compositor (surface);
+   MtkRectangle window_rect = { 0 };
++  int xwayland_scale;
+ 
+   if (xwayland_surface->window)
+     meta_window_get_buffer_rect (xwayland_surface->window, &window_rect);
+ 
+-  *out_sx = abs_x - window_rect.x;
+-  *out_sy = abs_y - window_rect.y;
++  xwayland_scale = meta_xwayland_get_effective_scale (&compositor->xwayland_manager);
++  *out_sx = (abs_x - window_rect.x) * xwayland_scale;
++  *out_sy = (abs_y - window_rect.y) * xwayland_scale;
+ }
+ 
+ static MetaWaylandSurface *
+diff --git a/src/wayland/meta-xwayland.c b/src/wayland/meta-xwayland.c
+index ea9c27d74..828e6f64e 100644
+--- a/src/wayland/meta-xwayland.c
++++ b/src/wayland/meta-xwayland.c
+@@ -1051,6 +1051,29 @@ meta_xwayland_shutdown (MetaWaylandCompositor *compositor)
+     }
+ }
+ 
++static void
++update_highest_monitor_scale (MetaXWaylandManager *manager)
++{
++  MetaWaylandCompositor *compositor = manager->compositor;
++  MetaContext *context = meta_wayland_compositor_get_context (compositor);
++  MetaBackend *backend = meta_context_get_backend (context);
++  MetaMonitorManager *monitor_manager =
++    meta_backend_get_monitor_manager (backend);
++  GList *logical_monitors;
++  GList *l;
++  double scale = 1.0;
++
++  logical_monitors = meta_monitor_manager_get_logical_monitors (monitor_manager);
++  for (l = logical_monitors; l; l = l->next)
++    {
++      MetaLogicalMonitor *logical_monitor = l->data;
++
++      scale = MAX (scale, meta_logical_monitor_get_scale (logical_monitor));
++    }
++
++  manager->highest_monitor_scale = scale;
++}
++
+ gboolean
+ meta_xwayland_init (MetaXWaylandManager    *manager,
+                     MetaWaylandCompositor  *compositor,
+@@ -1058,6 +1081,9 @@ meta_xwayland_init (MetaXWaylandManager    *manager,
+                     GError                **error)
+ {
+   MetaContext *context = compositor->context;
++  MetaBackend *backend = meta_context_get_backend (context);
++  MetaMonitorManager *monitor_manager =
++    meta_backend_get_monitor_manager (backend);
+   MetaX11DisplayPolicy policy;
+   int display = 0;
+ 
+@@ -1121,6 +1147,10 @@ meta_xwayland_init (MetaXWaylandManager    *manager,
+   /* Xwayland specific protocol, needs to be filtered out for all other clients */
+   meta_xwayland_grab_keyboard_init (compositor);
+ 
++  g_signal_connect_swapped (monitor_manager, "monitors-changed-internal",
++                            G_CALLBACK (update_highest_monitor_scale), manager);
++  update_highest_monitor_scale (manager);
++
+   return TRUE;
+ }
+ 
+@@ -1312,3 +1342,29 @@ meta_xwayland_set_should_enable_ei_portal (MetaXWaylandManager  *manager,
+ {
+   manager->should_enable_ei_portal = should_enable_ei_portal;
+ }
++
++int
++meta_xwayland_get_effective_scale (MetaXWaylandManager *manager)
++{
++  MetaWaylandCompositor *compositor = manager->compositor;
++  MetaContext *context = meta_wayland_compositor_get_context (compositor);
++  MetaBackend *backend = meta_context_get_backend (context);
++  MetaMonitorManager *monitor_manager =
++    meta_backend_get_monitor_manager (backend);
++  MetaSettings *settings = meta_backend_get_settings (backend);
++
++  switch (meta_monitor_manager_get_layout_mode (monitor_manager))
++    {
++    case META_LOGICAL_MONITOR_LAYOUT_MODE_PHYSICAL:
++      break;
++
++    case META_LOGICAL_MONITOR_LAYOUT_MODE_LOGICAL:
++      if (meta_settings_is_experimental_feature_enabled (settings,
++                                                         META_EXPERIMENTAL_FEATURE_XWAYLAND_NATIVE_SCALING) &&
++          meta_settings_is_experimental_feature_enabled (settings,
++                                                         META_EXPERIMENTAL_FEATURE_SCALE_MONITOR_FRAMEBUFFER))
++        return ceil (manager->highest_monitor_scale);
++    }
++
++  return 1;
++}
+diff --git a/src/wayland/meta-xwayland.h b/src/wayland/meta-xwayland.h
+index daf9d1abb..ae7a06977 100644
+--- a/src/wayland/meta-xwayland.h
++++ b/src/wayland/meta-xwayland.h
+@@ -48,3 +48,5 @@ META_EXPORT_TEST
+ gboolean meta_xwayland_signal (MetaXWaylandManager  *manager,
+                                int                   signum,
+                                GError              **error);
++
++int meta_xwayland_get_effective_scale (MetaXWaylandManager *manager);
+diff --git a/src/x11/meta-x11-display.c b/src/x11/meta-x11-display.c
+index 438f3bd1e..f2a613392 100644
+--- a/src/x11/meta-x11-display.c
++++ b/src/x11/meta-x11-display.c
+@@ -70,7 +70,7 @@
+ #include "wayland/meta-xwayland-private.h"
+ #endif
+ 
+-G_DEFINE_TYPE (MetaX11Display, meta_x11_display, G_TYPE_OBJECT)
++#include "meta-dbus-x11.h"
+ 
+ static GQuark quark_x11_display_logical_monitor_data = 0;
+ 
+@@ -89,6 +89,14 @@ typedef struct _MetaX11DisplayLogicalMonitorData
+   int xinerama_index;
+ } MetaX11DisplayLogicalMonitorData;
+ 
++typedef struct _MetaX11DisplayPrivate
++{
++  MetaDBusX11 *dbus_api;
++  guint dbus_name_id;
++} MetaX11DisplayPrivate;
++
++G_DEFINE_TYPE_WITH_PRIVATE (MetaX11Display, meta_x11_display, G_TYPE_OBJECT)
++
+ static char *get_screen_name (Display *xdisplay,
+                               int      number);
+ 
+@@ -122,6 +130,42 @@ backend_from_x11_display (MetaX11Display *x11_display)
+   return meta_context_get_backend (context);
+ }
+ 
++static void
++stage_to_protocol (MetaX11Display *x11_display,
++                   int             stage_x,
++                   int             stage_y,
++                   int            *protocol_x,
++                   int            *protocol_y)
++{
++  MetaDisplay *display = meta_x11_display_get_display (x11_display);
++  MetaContext *context = meta_display_get_context (display);
++  int scale = 1;
++
++  switch (meta_context_get_compositor_type (context))
++    {
++    case META_COMPOSITOR_TYPE_WAYLAND:
++      {
++#ifdef HAVE_XWAYLAND
++        MetaWaylandCompositor *wayland_compositor =
++          meta_context_get_wayland_compositor (context);
++        MetaXWaylandManager *xwayland_manager =
++          &wayland_compositor->xwayland_manager;
++
++        scale = meta_xwayland_get_effective_scale (xwayland_manager);
++#endif
++        break;
++      }
++
++    case META_COMPOSITOR_TYPE_X11:
++      break;
++    }
++
++  if (protocol_x)
++    *protocol_x = stage_x * scale;
++  if (protocol_y)
++    *protocol_y = stage_y * scale;
++}
++
+ static void
+ meta_x11_display_unmanage_windows (MetaX11Display *x11_display)
+ {
+@@ -151,13 +195,68 @@ meta_x11_event_filter_free (MetaX11EventFilter *filter)
+   g_free (filter);
+ }
+ 
++static void
++on_bus_acquired (GDBusConnection *connection,
++                 const char      *name,
++                 gpointer         user_data)
++{
++  MetaX11Display *x11_display = user_data;
++  MetaX11DisplayPrivate *priv =
++    meta_x11_display_get_instance_private (x11_display);
++
++  g_dbus_interface_skeleton_export (G_DBUS_INTERFACE_SKELETON (priv->dbus_api),
++                                    connection,
++                                    "/org/gnome/Mutter/X11",
++                                    NULL);
++}
++
++static void
++update_ui_scaling_factor (MetaX11Display *x11_display)
++{
++  MetaX11DisplayPrivate *priv =
++    meta_x11_display_get_instance_private (x11_display);
++  MetaBackend *backend = backend_from_x11_display (x11_display);
++  MetaContext *context = meta_backend_get_context (backend);
++  int ui_scaling_factor = 1;
++
++  switch (meta_context_get_compositor_type (context))
++    {
++    case META_COMPOSITOR_TYPE_WAYLAND:
++      {
++#ifdef HAVE_XWAYLAND
++        MetaWaylandCompositor *wayland_compositor =
++          meta_context_get_wayland_compositor (context);
++        MetaXWaylandManager *xwayland_manager =
++          &wayland_compositor->xwayland_manager;
++
++        ui_scaling_factor = meta_xwayland_get_effective_scale (xwayland_manager);
++#endif
++        break;
++      }
++    case META_COMPOSITOR_TYPE_X11:
++      {
++        MetaSettings *settings = meta_backend_get_settings (backend);
++
++        ui_scaling_factor = meta_settings_get_ui_scaling_factor (settings);
++        break;
++      }
++    }
++
++  meta_dbus_x11_set_ui_scaling_factor (priv->dbus_api, ui_scaling_factor);
++}
++
+ static void
+ meta_x11_display_dispose (GObject *object)
+ {
+   MetaX11Display *x11_display = META_X11_DISPLAY (object);
++  MetaX11DisplayPrivate *priv =
++    meta_x11_display_get_instance_private (x11_display);
+ 
+   x11_display->closing = TRUE;
+ 
++  g_clear_handle_id (&priv->dbus_name_id, g_bus_unown_name);
++  g_clear_object (&priv->dbus_api);
++
+   g_clear_pointer (&x11_display->alarm_filters, g_ptr_array_unref);
+ 
+   g_clear_list (&x11_display->event_funcs,
+@@ -572,6 +671,9 @@ set_desktop_geometry_hint (MetaX11Display *x11_display)
+     return;
+ 
+   meta_display_get_size (x11_display->display, &monitor_width, &monitor_height);
++  stage_to_protocol (x11_display,
++                     monitor_width, monitor_height,
++                     &monitor_width, &monitor_height);
+ 
+   data[0] = monitor_width;
+   data[1] = monitor_height;
+@@ -981,14 +1083,22 @@ set_workspace_work_area_hint (MetaWorkspace  *workspace,
+ 
+   for (l = logical_monitors; l; l = l->next)
+     {
+-      MtkRectangle area;
++      MtkRectangle stage_area;
++      MtkRectangle protocol_area;
+ 
+-      meta_workspace_get_work_area_for_logical_monitor (workspace, l->data, &area);
++      meta_workspace_get_work_area_for_logical_monitor (workspace, l->data,
++                                                        &stage_area);
+ 
+-      tmp[0] = area.x;
+-      tmp[1] = area.y;
+-      tmp[2] = area.width;
+-      tmp[3] = area.height;
++      stage_to_protocol (x11_display,
++                         stage_area.x, stage_area.y,
++                         &protocol_area.x, &protocol_area.y);
++      stage_to_protocol (x11_display,
++                         stage_area.width, stage_area.height,
++                         &protocol_area.width, &protocol_area.height);
++      tmp[0] = protocol_area.x;
++      tmp[1] = protocol_area.y;
++      tmp[2] = protocol_area.width;
++      tmp[3] = protocol_area.height;
+ 
+       tmp += 4;
+     }
+@@ -1017,7 +1127,6 @@ set_work_area_hint (MetaDisplay    *display,
+   int num_workspaces;
+   GList *l;
+   unsigned long *data, *tmp;
+-  MtkRectangle area;
+ 
+   num_workspaces = meta_workspace_manager_get_n_workspaces (workspace_manager);
+   data = g_new (unsigned long, num_workspaces * 4);
+@@ -1026,14 +1135,22 @@ set_work_area_hint (MetaDisplay    *display,
+   for (l = workspace_manager->workspaces; l; l = l->next)
+     {
+       MetaWorkspace *workspace = l->data;
++      MtkRectangle stage_area;
++      MtkRectangle protocol_area;
+ 
+-      meta_workspace_get_work_area_all_monitors (workspace, &area);
++      meta_workspace_get_work_area_all_monitors (workspace, &stage_area);
+       set_workspace_work_area_hint (workspace, x11_display);
+ 
+-      tmp[0] = area.x;
+-      tmp[1] = area.y;
+-      tmp[2] = area.width;
+-      tmp[3] = area.height;
++      stage_to_protocol (x11_display,
++                         stage_area.x, stage_area.y,
++                         &protocol_area.x, &protocol_area.y);
++      stage_to_protocol (x11_display,
++                         stage_area.width, stage_area.height,
++                         &protocol_area.width, &protocol_area.height);
++      tmp[0] = protocol_area.x;
++      tmp[1] = protocol_area.y;
++      tmp[2] = protocol_area.width;
++      tmp[3] = protocol_area.height;
+ 
+       tmp += 4;
+     }
+@@ -1196,6 +1313,58 @@ meta_x11_display_init_frames_client (MetaX11Display *x11_display)
+                            on_frames_client_died, x11_display);
+ }
+ 
++static void
++initialize_dbus_interface (MetaX11Display *x11_display)
++{
++  MetaX11DisplayPrivate *priv =
++    meta_x11_display_get_instance_private (x11_display);
++
++  priv->dbus_api = meta_dbus_x11_skeleton_new ();
++  priv->dbus_name_id =
++    g_bus_own_name (G_BUS_TYPE_SESSION,
++                    "org.gnome.Mutter.X11",
++                    G_BUS_NAME_OWNER_FLAGS_NONE,
++                    on_bus_acquired,
++                    NULL, NULL,
++                    x11_display, NULL);
++  update_ui_scaling_factor (x11_display);
++}
++
++static void
++experimental_features_changed (MetaSettings           *settings,
++                               MetaExperimentalFeature old_experimental_features,
++                               MetaX11Display         *x11_display)
++{
++  gboolean was_xwayland_native_scaling;
++  gboolean was_stage_views_scaled;
++  gboolean is_xwayland_native_scaling;
++  gboolean is_stage_views_scaled;
++
++  was_xwayland_native_scaling =
++    !!(old_experimental_features &
++       META_EXPERIMENTAL_FEATURE_XWAYLAND_NATIVE_SCALING);
++  was_stage_views_scaled =
++    !!(old_experimental_features &
++       META_EXPERIMENTAL_FEATURE_SCALE_MONITOR_FRAMEBUFFER);
++
++  is_xwayland_native_scaling =
++    meta_settings_is_experimental_feature_enabled (
++      settings,
++      META_EXPERIMENTAL_FEATURE_XWAYLAND_NATIVE_SCALING);
++  is_stage_views_scaled =
++    meta_settings_is_experimental_feature_enabled (
++      settings,
++      META_EXPERIMENTAL_FEATURE_SCALE_MONITOR_FRAMEBUFFER);
++
++  if (is_xwayland_native_scaling != was_xwayland_native_scaling ||
++      is_stage_views_scaled != was_stage_views_scaled)
++    {
++      update_ui_scaling_factor (x11_display);
++      set_desktop_geometry_hint (x11_display);
++      set_work_area_hint (x11_display->display, x11_display);
++    }
++}
++
+ /**
+  * meta_x11_display_new:
+  *
+@@ -1214,6 +1383,7 @@ meta_x11_display_new (MetaDisplay  *display,
+   MetaBackend *backend = meta_context_get_backend (context);
+   MetaMonitorManager *monitor_manager =
+     meta_backend_get_monitor_manager (backend);
++  MetaSettings *settings = meta_backend_get_settings (backend);
+   g_autoptr (MetaX11Display) x11_display = NULL;
+   Display *xdisplay;
+   Screen *xscreen;
+@@ -1290,6 +1460,8 @@ meta_x11_display_new (MetaDisplay  *display,
+   x11_display = g_object_new (META_TYPE_X11_DISPLAY, NULL);
+   x11_display->display = display;
+ 
++  initialize_dbus_interface (x11_display);
++
+   /* here we use XDisplayName which is what the user
+    * probably put in, vs. DisplayString(display) which is
+    * canonicalized by XOpenDisplay()
+@@ -1382,7 +1554,7 @@ meta_x11_display_new (MetaDisplay  *display,
+                            "monitors-changed-internal",
+                            G_CALLBACK (on_monitors_changed_internal),
+                            x11_display,
+-                           0);
++                           G_CONNECT_AFTER);
+ 
+   init_leader_window (x11_display, &timestamp);
+   x11_display->timestamp = timestamp;
+@@ -1475,6 +1647,11 @@ meta_x11_display_new (MetaDisplay  *display,
+ 
+   meta_prefs_add_listener (prefs_changed_callback, x11_display);
+ 
++  g_signal_connect_object (settings,
++                           "experimental-features-changed",
++                           G_CALLBACK (experimental_features_changed),
++                           x11_display, 0);
++
+   set_work_area_hint (display, x11_display);
+ 
+   g_signal_connect_object (display, "workareas-changed",
+@@ -1683,16 +1860,12 @@ meta_x11_display_reload_cursor (MetaX11Display *x11_display)
+ }
+ 
+ static void
+-set_cursor_theme (Display     *xdisplay,
+-                  MetaBackend *backend)
++set_cursor_theme (Display    *xdisplay,
++                  const char *theme,
++                  int         size)
+ {
+-  MetaSettings *settings = meta_backend_get_settings (backend);
+-  int scale;
+-
+-  scale = meta_settings_get_ui_scaling_factor (settings);
+-  XcursorSetTheme (xdisplay, meta_prefs_get_cursor_theme ());
+-  XcursorSetDefaultSize (xdisplay,
+-                         meta_prefs_get_cursor_size () * scale);
++  XcursorSetTheme (xdisplay, theme);
++  XcursorSetDefaultSize (xdisplay, size);
+ }
+ 
+ static void
+@@ -1744,8 +1917,37 @@ static void
+ update_cursor_theme (MetaX11Display *x11_display)
+ {
+   MetaBackend *backend = backend_from_x11_display (x11_display);
++  MetaContext *context = meta_backend_get_context (backend);
++  MetaSettings *settings = meta_backend_get_settings (backend);
++  int scale = 1;
++  int size;
++  const char *theme;
++
++  switch (meta_context_get_compositor_type (context))
++    {
++    case META_COMPOSITOR_TYPE_WAYLAND:
++      {
++#ifdef HAVE_XWAYLAND
++        MetaWaylandCompositor *wayland_compositor =
++          meta_context_get_wayland_compositor (context);
++        MetaXWaylandManager *xwayland_manager =
++          &wayland_compositor->xwayland_manager;
+ 
+-  set_cursor_theme (x11_display->xdisplay, backend);
++        scale = meta_xwayland_get_effective_scale (xwayland_manager);
++#endif
++        break;
++      }
++
++    case META_COMPOSITOR_TYPE_X11:
++      scale = meta_settings_get_ui_scaling_factor (settings);
++      break;
++    }
++
++  size = meta_prefs_get_cursor_size () * scale;
++
++  theme = meta_prefs_get_cursor_theme ();
++
++  set_cursor_theme (x11_display->xdisplay, theme, size);
+   schedule_reload_x11_cursor (x11_display);
+ 
+   if (META_IS_BACKEND_X11 (backend))
+@@ -1753,7 +1955,7 @@ update_cursor_theme (MetaX11Display *x11_display)
+       MetaBackendX11 *backend_x11 = META_BACKEND_X11 (backend);
+       Display *xdisplay = meta_backend_x11_get_xdisplay (backend_x11);
+ 
+-      set_cursor_theme (xdisplay, backend);
++      set_cursor_theme (xdisplay, theme, size);
+       meta_backend_x11_reload_cursor (backend_x11);
+     }
+ }
+@@ -1946,6 +2148,8 @@ on_monitors_changed_internal (MetaMonitorManager *monitor_manager,
+     }
+ 
+   x11_display->has_xinerama_indices = FALSE;
++
++  update_ui_scaling_factor (x11_display);
+ }
+ 
+ static Bool
+diff --git a/src/x11/window-props.c b/src/x11/window-props.c
+index c18b3eab5..494fbe843 100644
+--- a/src/x11/window-props.c
++++ b/src/x11/window-props.c
+@@ -305,10 +305,15 @@ reload_icon_geometry (MetaWindow    *window,
+         {
+           MtkRectangle geometry;
+ 
+-          geometry.x = (int)value->v.cardinal_list.cardinals[0];
+-          geometry.y = (int)value->v.cardinal_list.cardinals[1];
+-          geometry.width = (int)value->v.cardinal_list.cardinals[2];
+-          geometry.height = (int)value->v.cardinal_list.cardinals[3];
++          meta_window_x11_protocol_to_stage (META_WINDOW_X11 (window),
++                                             value->v.cardinal_list.cardinals[0],
++                                             value->v.cardinal_list.cardinals[1],
++                                             value->v.cardinal_list.cardinals[2],
++                                             value->v.cardinal_list.cardinals[3],
++                                             &geometry.x,
++                                             &geometry.y,
++                                             &geometry.width,
++                                             &geometry.height);
+ 
+           meta_window_set_icon_geometry (window, &geometry);
+         }
+@@ -370,11 +375,24 @@ reload_gtk_frame_extents (MetaWindow    *window,
+         }
+       else
+         {
++          int left, right, top, bottom;
+           MetaFrameBorder extents;
+-          extents.left   = (int)value->v.cardinal_list.cardinals[0];
+-          extents.right  = (int)value->v.cardinal_list.cardinals[1];
+-          extents.top    = (int)value->v.cardinal_list.cardinals[2];
+-          extents.bottom = (int)value->v.cardinal_list.cardinals[3];
++
++          meta_window_x11_protocol_to_stage (META_WINDOW_X11 (window),
++                                             value->v.cardinal_list.cardinals[0],
++                                             value->v.cardinal_list.cardinals[1],
++                                             value->v.cardinal_list.cardinals[2],
++                                             value->v.cardinal_list.cardinals[3],
++                                             &left,
++                                             &right,
++                                             &top,
++                                             &bottom);
++
++          extents.left = left;
++          extents.right = right;
++          extents.top = top;
++          extents.bottom = bottom;
++
+           meta_window_set_custom_frame_extents (window, &extents, initial);
+         }
+     }
+@@ -678,10 +696,16 @@ reload_opaque_region (MetaWindow    *window,
+         {
+           MtkRectangle *rect = &rects[rect_index];
+ 
+-          rect->x = region[i++];
+-          rect->y = region[i++];
+-          rect->width = region[i++];
+-          rect->height = region[i++];
++          meta_window_x11_protocol_to_stage (META_WINDOW_X11 (window),
++                                             region[i + 0],
++                                             region[i + 1],
++                                             region[i + 2],
++                                             region[i + 3],
++                                             &rect->x,
++                                             &rect->y,
++                                             &rect->width,
++                                             &rect->height);
++          i += 4;
+ 
+           rect_index++;
+         }
+@@ -1245,9 +1269,65 @@ meta_set_normal_hints (MetaWindow *window,
+    * as if flags were zero
+    */
+   if (hints)
+-    window->size_hints = *(MetaSizeHints*)(hints);
++    {
++      MetaWindowX11 *window_x11 = META_WINDOW_X11 (window);
++
++      window->size_hints = *(MetaSizeHints *) hints;
++
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         hints->x, hints->y,
++                                         hints->width, hints->height,
++                                         &window->size_hints.x,
++                                         &window->size_hints.y,
++                                         &window->size_hints.width,
++                                         &window->size_hints.height);
++
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         hints->min_width, hints->min_height,
++                                         0, 0,
++                                         &window->size_hints.min_width,
++                                         &window->size_hints.min_height,
++                                         NULL, NULL);
++
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         hints->max_width, hints->max_height,
++                                         0, 0,
++                                         &window->size_hints.max_width,
++                                         &window->size_hints.max_height,
++                                         NULL, NULL);
++
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         hints->width_inc, hints->height_inc,
++                                         0, 0,
++                                         &window->size_hints.width_inc,
++                                         &window->size_hints.height_inc,
++                                         NULL, NULL);
++
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         hints->min_aspect.x, hints->min_aspect.y,
++                                         0, 0,
++                                         &window->size_hints.min_aspect.x,
++                                         &window->size_hints.min_aspect.y,
++                                         NULL, NULL);
++
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         hints->max_aspect.x, hints->max_aspect.y,
++                                         0, 0,
++                                         &window->size_hints.max_aspect.x,
++                                         &window->size_hints.max_aspect.y,
++                                         NULL, NULL);
++
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         hints->base_width, hints->base_height,
++                                         0, 0,
++                                         &window->size_hints.base_width,
++                                         &window->size_hints.base_height,
++                                         NULL, NULL);
++    }
+   else
+-    window->size_hints.flags = 0;
++    {
++      window->size_hints.flags = 0;
++    }
+ 
+   /* Put back saved ConfigureRequest. */
+   window->size_hints.x = x;
+diff --git a/src/x11/window-x11.c b/src/x11/window-x11.c
+index 6d2016e3e..897bf946d 100644
+--- a/src/x11/window-x11.c
++++ b/src/x11/window-x11.c
+@@ -110,6 +110,113 @@ meta_window_x11_get_private (MetaWindowX11 *window_x11)
+   return meta_window_x11_get_instance_private (window_x11);
+ }
+ 
++static void
++meta_window_x11_real_stage_to_protocol (MetaWindowX11 *window_x11,
++                                        int            stage_x,
++                                        int            stage_y,
++                                        int            stage_width,
++                                        int            stage_height,
++                                        int           *protocol_x,
++                                        int           *protocol_y,
++                                        int           *protocol_width,
++                                        int           *protocol_height)
++{
++  if (protocol_x)
++    *protocol_x = stage_x;
++  if (protocol_y)
++    *protocol_y = stage_y;
++  if (protocol_width)
++    *protocol_width = stage_width;
++  if (protocol_height)
++    *protocol_height = stage_height;
++}
++
++static void
++meta_window_x11_real_protocol_to_stage (MetaWindowX11 *window_x11,
++                                        int            protocol_x,
++                                        int            protocol_y,
++                                        int            protocol_width,
++                                        int            protocol_height,
++                                        int           *stage_x,
++                                        int           *stage_y,
++                                        int           *stage_width,
++                                        int           *stage_height)
++{
++  if (stage_x)
++    *stage_x = protocol_x;
++  if (stage_y)
++    *stage_y = protocol_y;
++  if (stage_width)
++    *stage_width = protocol_width;
++  if (stage_height)
++    *stage_height = protocol_height;
++}
++
++void
++meta_window_x11_stage_to_protocol (MetaWindowX11 *window_x11,
++                                   int            stage_x,
++                                   int            stage_y,
++                                   int            stage_width,
++                                   int            stage_height,
++                                   int           *protocol_x,
++                                   int           *protocol_y,
++                                   int           *protocol_width,
++                                   int           *protocol_height)
++{
++  MetaWindowX11Class *klass = META_WINDOW_X11_GET_CLASS (window_x11);
++
++  klass->stage_to_protocol (window_x11,
++                            stage_x, stage_y,
++                            stage_width, stage_height,
++                            protocol_x, protocol_y,
++                            protocol_width, protocol_height);
++}
++
++void
++meta_window_x11_protocol_to_stage (MetaWindowX11 *window_x11,
++                                   int            protocol_x,
++                                   int            protocol_y,
++                                   int            protocol_width,
++                                   int            protocol_height,
++                                   int           *stage_x,
++                                   int           *stage_y,
++                                   int           *stage_width,
++                                   int           *stage_height)
++{
++  MetaWindowX11Class *klass = META_WINDOW_X11_GET_CLASS (window_x11);
++
++  klass->protocol_to_stage (window_x11,
++                            protocol_x, protocol_y,
++                            protocol_width, protocol_height,
++                            stage_x, stage_y,
++                            stage_width, stage_height);
++}
++
++static MtkRegion *
++region_protocol_to_stage (MtkRegion     *region,
++                          MetaWindowX11 *window_x11)
++{
++  int n_rects, i;
++  MtkRectangle *rects;
++  MtkRegion *scaled_region;
++
++  n_rects = mtk_region_num_rectangles (region);
++  MTK_RECTANGLE_CREATE_ARRAY_SCOPED (n_rects, rects);
++  for (i = 0; i < n_rects; i++)
++    {
++      rects[i] = mtk_region_get_rectangle (region, i);
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         rects[i].x, rects[i].y,
++                                         rects[i].width, rects[i].height,
++                                         &rects[i].x, &rects[i].y,
++                                         &rects[i].width, &rects[i].height);
++    }
++
++  scaled_region = mtk_region_create_rectangles (rects, n_rects);
++
++  return scaled_region;
++}
++
+ static void
+ send_icccm_message (MetaWindow *window,
+                     Atom        atom,
+@@ -254,8 +361,13 @@ send_configure_notify (MetaWindow *window)
+   event.xconfigure.display = x11_display->xdisplay;
+   event.xconfigure.event = priv->xwindow;
+   event.xconfigure.window = priv->xwindow;
+-  event.xconfigure.x = priv->client_rect.x - priv->border_width;
+-  event.xconfigure.y = priv->client_rect.y - priv->border_width;
++  meta_window_x11_stage_to_protocol (window_x11,
++                                     priv->client_rect.x - priv->border_width,
++                                     priv->client_rect.y - priv->border_width,
++                                     0, 0,
++                                     &event.xconfigure.x,
++                                     &event.xconfigure.y,
++                                     NULL, NULL);
+   if (window->frame)
+     {
+       if (window->withdrawn)
+@@ -267,19 +379,42 @@ send_configure_notify (MetaWindow *window)
+ 
+           meta_frame_calc_borders (window->frame, &borders);
+ 
+-          event.xconfigure.x = window->frame->rect.x + borders.invisible.left;
+-          event.xconfigure.y = window->frame->rect.y + borders.invisible.top;
++          meta_window_x11_stage_to_protocol (window_x11,
++                                             window->frame->rect.x + borders.invisible.left,
++                                             window->frame->rect.y + borders.invisible.top,
++                                             0, 0,
++                                             &event.xconfigure.x,
++                                             &event.xconfigure.y,
++                                             NULL, NULL);
+         }
+       else
+         {
++          int dx, dy;
++
+           /* Need to be in root window coordinates */
+-          event.xconfigure.x += window->frame->rect.x;
+-          event.xconfigure.y += window->frame->rect.y;
++          meta_window_x11_stage_to_protocol (window_x11,
++                                             window->frame->rect.x,
++                                             window->frame->rect.y,
++                                             0, 0,
++                                             &dx,
++                                             &dy,
++                                             NULL, NULL);
++          event.xconfigure.x += dx;
++          event.xconfigure.y += dy;
+         }
+     }
+-  event.xconfigure.width = priv->client_rect.width;
+-  event.xconfigure.height = priv->client_rect.height;
+-  event.xconfigure.border_width = priv->border_width; /* requested not actual */
++  meta_window_x11_stage_to_protocol (window_x11,
++                                     priv->client_rect.width,
++                                     priv->client_rect.height,
++                                     0, 0,
++                                     &event.xconfigure.width,
++                                     &event.xconfigure.height,
++                                     NULL, NULL);
++  meta_window_x11_stage_to_protocol (window_x11,
++                                     priv->border_width,
++                                     0, 0, 0,
++                                     &event.xconfigure.border_width,
++                                     NULL, NULL, NULL);
+   event.xconfigure.above = None; /* FIXME */
+   event.xconfigure.override_redirect = False;
+ 
+@@ -1137,20 +1272,26 @@ static void
+ update_net_frame_extents (MetaWindow *window)
+ {
+   MetaX11Display *x11_display = window->display->x11_display;
+-
++  int left, right, top, bottom;
+   unsigned long data[4];
+   MetaFrameBorders borders;
+   Window xwindow = meta_window_x11_get_xwindow (window);
+ 
+   meta_frame_calc_borders (window->frame, &borders);
+-  /* Left */
+-  data[0] = borders.visible.left;
+-  /* Right */
+-  data[1] = borders.visible.right;
+-  /* Top */
+-  data[2] = borders.visible.top;
+-  /* Bottom */
+-  data[3] = borders.visible.bottom;
++  meta_window_x11_stage_to_protocol (META_WINDOW_X11 (window),
++                                     borders.visible.left,
++                                     borders.visible.right,
++                                     borders.visible.top,
++                                     borders.visible.bottom,
++                                     &left,
++                                     &right,
++                                     &top,
++                                     &bottom);
++
++  data[0] = left;
++  data[1] = right;
++  data[2] = top;
++  data[3] = bottom;
+ 
+   meta_topic (META_DEBUG_GEOMETRY,
+               "Setting _NET_FRAME_EXTENTS on managed window 0x%lx "
+@@ -1482,10 +1623,11 @@ meta_window_x11_move_resize_internal (MetaWindow                *window,
+     configure_frame_first = size_dx + size_dy >= 0;
+ 
+   values.border_width = 0;
+-  values.x = client_rect.x;
+-  values.y = client_rect.y;
+-  values.width = client_rect.width;
+-  values.height = client_rect.height;
++  meta_window_x11_stage_to_protocol (window_x11,
++                                     client_rect.x, client_rect.y,
++                                     client_rect.width, client_rect.height,
++                                     &values.x, &values.y,
++                                     &values.width, &values.height);
+ 
+   mask = 0;
+   if (is_configure_request && priv->border_width != 0)
+@@ -1591,6 +1733,10 @@ meta_window_x11_update_struts (MetaWindow *window)
+               strut_begin = struts[4+(i*2)];
+               strut_end   = struts[4+(i*2)+1];
+ 
++              meta_window_x11_protocol_to_stage (META_WINDOW_X11 (window),
++                                                 strut_begin, strut_end, thickness, 0,
++                                                 &strut_begin, &strut_end, &thickness, NULL);
++
+               temp = g_new0 (MetaStrut, 1);
+               temp->side = 1 << i; /* See MetaSide def.  Matches nicely, eh? */
+               meta_display_get_size (window->display,
+@@ -1655,6 +1801,10 @@ meta_window_x11_update_struts (MetaWindow *window)
+               if (thickness == 0)
+                 continue;
+ 
++              meta_window_x11_protocol_to_stage (META_WINDOW_X11 (window),
++                                                 thickness, 0, 0, 0,
++                                                 &thickness, NULL, NULL, NULL);
++
+               temp = g_new0 (MetaStrut, 1);
+               temp->side = 1 << i;
+               meta_display_get_size (window->display,
+@@ -2040,9 +2190,10 @@ static void
+ meta_window_x11_constructed (GObject *object)
+ {
+   MetaWindow *window = META_WINDOW (object);
+-  MetaWindowX11 *x11_window = META_WINDOW_X11 (object);
+-  MetaWindowX11Private *priv = meta_window_x11_get_instance_private (x11_window);
++  MetaWindowX11 *window_x11 = META_WINDOW_X11 (object);
++  MetaWindowX11Private *priv = meta_window_x11_get_instance_private (window_x11);
+   XWindowAttributes attrs = priv->attributes;
++  MtkRectangle rect;
+ 
+   meta_verbose ("attrs->map_state = %d (%s)",
+                 attrs.map_state,
+@@ -2057,16 +2208,17 @@ meta_window_x11_constructed (GObject *object)
+   window->client_type = META_WINDOW_CLIENT_TYPE_X11;
+   window->override_redirect = attrs.override_redirect;
+ 
+-  window->rect.x = attrs.x;
+-  window->rect.y = attrs.y;
+-  window->rect.width = attrs.width;
+-  window->rect.height = attrs.height;
++  meta_window_x11_protocol_to_stage (window_x11,
++                                     attrs.x, attrs.y, attrs.width, attrs.height,
++                                     &rect.x, &rect.y, &rect.width, &rect.height);
++
++  window->rect = rect;
+ 
+   /* size_hints are the "request" */
+-  window->size_hints.x = attrs.x;
+-  window->size_hints.y = attrs.y;
+-  window->size_hints.width = attrs.width;
+-  window->size_hints.height = attrs.height;
++  window->size_hints.x = rect.x;
++  window->size_hints.y = rect.y;
++  window->size_hints.width = rect.width;
++  window->size_hints.height = rect.height;
+ 
+   window->depth = attrs.depth;
+   priv->xvisual = attrs.visual;
+@@ -2076,11 +2228,11 @@ meta_window_x11_constructed (GObject *object)
+ 
+   window->decorated = TRUE;
+   window->hidden = FALSE;
+-  priv->border_width = attrs.border_width;
+   priv->xclient_leader = None;
+ 
+-  priv->keys_grabbed = FALSE;
+-  priv->grab_on_frame = FALSE;
++  meta_window_x11_protocol_to_stage (window_x11,
++                                     attrs.border_width, 0, 0, 0,
++                                     &priv->border_width, NULL, NULL, NULL);
+ 
+   g_signal_connect (window, "notify::decorated",
+                     G_CALLBACK (meta_window_x11_update_input_region),
+@@ -2192,6 +2344,8 @@ meta_window_x11_class_init (MetaWindowX11Class *klass)
+   klass->thaw_commits = meta_window_x11_impl_thaw_commits;
+   klass->always_update_shape = meta_window_x11_impl_always_update_shape;
+   klass->process_property_notify = meta_window_x11_impl_process_property_notify;
++  klass->stage_to_protocol = meta_window_x11_real_stage_to_protocol;
++  klass->protocol_to_stage = meta_window_x11_real_protocol_to_stage;
+ 
+   obj_props[PROP_ATTRIBUTES] =
+     g_param_spec_pointer ("attributes", NULL, NULL,
+@@ -2400,6 +2554,7 @@ meta_window_x11_update_input_region (MetaWindow *window)
+   g_autoptr (MtkRegion) region = NULL;
+   MetaWindowX11 *window_x11 = META_WINDOW_X11 (window);
+   MetaWindowX11Private *priv = meta_window_x11_get_instance_private (window_x11);
++  MtkRectangle bounding_rect = { 0 };
+   Window xwindow;
+ 
+   if (window->decorated)
+@@ -2411,10 +2566,14 @@ meta_window_x11_update_input_region (MetaWindow *window)
+           return;
+         }
+       xwindow = window->frame->xwindow;
++      bounding_rect.width = window->buffer_rect.width;
++      bounding_rect.height = window->buffer_rect.height;
+     }
+   else
+     {
+       xwindow = priv->xwindow;
++      bounding_rect.width = priv->client_rect.width;
++      bounding_rect.height = priv->client_rect.height;
+     }
+ 
+   if (META_X11_DISPLAY_HAS_SHAPE (x11_display))
+@@ -2458,8 +2617,8 @@ meta_window_x11_update_input_region (MetaWindow *window)
+       else if (n_rects == 1 &&
+                (rects[0].x == 0 &&
+                 rects[0].y == 0 &&
+-                rects[0].width == window->buffer_rect.width &&
+-                rects[0].height == window->buffer_rect.height))
++                rects[0].width == bounding_rect.width &&
++                rects[0].height == bounding_rect.height))
+         {
+           /* This is the bounding region case. Keep the
+            * region as NULL. */
+@@ -2468,7 +2627,10 @@ meta_window_x11_update_input_region (MetaWindow *window)
+       else
+         {
+           /* Window has a custom shape. */
+-          region = region_create_from_x_rectangles (rects, n_rects);
++          g_autoptr (MtkRegion) protocol_region = NULL;
++
++          protocol_region = region_create_from_x_rectangles (rects, n_rects);
++          region = region_protocol_to_stage (protocol_region, window_x11);
+         }
+ 
+       meta_XFree (rects);
+@@ -2476,13 +2638,6 @@ meta_window_x11_update_input_region (MetaWindow *window)
+ 
+   if (region != NULL)
+     {
+-      MtkRectangle bounding_rect;
+-
+-      bounding_rect.x = 0;
+-      bounding_rect.y = 0;
+-      bounding_rect.width = window->buffer_rect.width;
+-      bounding_rect.height = window->buffer_rect.height;
+-
+       /* The shape we get back from the client may have coordinates
+        * outside of the frame. The X SHAPE Extension requires that
+        * the overall shape the client provides never exceeds the
+@@ -2551,7 +2706,10 @@ meta_window_x11_update_shape_region (MetaWindow *window)
+ 
+       if (rects)
+         {
+-          region = region_create_from_x_rectangles (rects, n_rects);
++          g_autoptr (MtkRegion) protocol_region = NULL;
++
++          protocol_region = region_create_from_x_rectangles (rects, n_rects);
++          region = region_protocol_to_stage (protocol_region, window_x11);
+           XFree (rects);
+         }
+     }
+@@ -2829,6 +2987,7 @@ meta_window_x11_configure_request (MetaWindow *window,
+ {
+   MetaWindowX11 *window_x11 = META_WINDOW_X11 (window);
+   MetaWindowX11Private *priv = meta_window_x11_get_instance_private (window_x11);
++  int new_x, new_y, new_width, new_height;
+ 
+   /* Note that x, y is the corner of the window border,
+    * and width, height is the size of the window inside
+@@ -2837,15 +2996,25 @@ meta_window_x11_configure_request (MetaWindow *window,
+    * requested border here.
+    */
+   if (event->xconfigurerequest.value_mask & CWBorderWidth)
+-    priv->border_width = event->xconfigurerequest.border_width;
++    {
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         event->xconfigurerequest.border_width, 0, 0, 0,
++                                         &priv->border_width, NULL, NULL, NULL);
++    }
+ 
+-  meta_window_move_resize_request(window,
+-                                  event->xconfigurerequest.value_mask,
+-                                  window->size_hints.win_gravity,
+-                                  event->xconfigurerequest.x,
+-                                  event->xconfigurerequest.y,
+-                                  event->xconfigurerequest.width,
+-                                  event->xconfigurerequest.height);
++  meta_window_x11_protocol_to_stage (window_x11,
++                                     event->xconfigurerequest.x, event->xconfigurerequest.y,
++                                     event->xconfigurerequest.width, event->xconfigurerequest.height,
++                                     &new_x, &new_y,
++                                     &new_width, &new_height);
++
++  meta_window_move_resize_request (window,
++                                   event->xconfigurerequest.value_mask,
++                                   window->size_hints.win_gravity,
++                                   new_x,
++                                   new_y,
++                                   new_width,
++                                   new_height);
+ 
+   /* Handle stacking. We only handle raises/lowers, mostly because
+    * stack.c really can't deal with anything else.  I guess we'll fix
+@@ -3340,8 +3509,13 @@ meta_window_x11_client_message (MetaWindow *window,
+       guint32 timestamp;
+       MetaWindowDrag *window_drag;
+ 
+-      x_root = event->xclient.data.l[0];
+-      y_root = event->xclient.data.l[1];
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         event->xclient.data.l[0],
++                                         event->xclient.data.l[1],
++                                         0, 0,
++                                         &x_root,
++                                         &y_root,
++                                         NULL, NULL);
+       action = event->xclient.data.l[2];
+       button = event->xclient.data.l[3];
+ 
+@@ -3505,6 +3679,7 @@ meta_window_x11_client_message (MetaWindow *window,
+     {
+       MetaGravity gravity;
+       guint value_mask;
++      int x, y, width, height;
+ 
+       gravity = (MetaGravity) (event->xclient.data.l[0] & 0xff);
+       value_mask = (event->xclient.data.l[0] & 0xf00) >> 8;
+@@ -3513,13 +3688,20 @@ meta_window_x11_client_message (MetaWindow *window,
+       if (gravity == 0)
+         gravity = window->size_hints.win_gravity;
+ 
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         event->xclient.data.l[1],
++                                         event->xclient.data.l[2],
++                                         event->xclient.data.l[3],
++                                         event->xclient.data.l[4],
++                                         &x, &y, &width, &height);
++
+       meta_window_move_resize_request(window,
+                                       value_mask,
+                                       gravity,
+-                                      event->xclient.data.l[1],  /* x */
+-                                      event->xclient.data.l[2],  /* y */
+-                                      event->xclient.data.l[3],  /* width */
+-                                      event->xclient.data.l[4]); /* height */
++                                      x,
++                                      y,
++                                      width,
++                                      height);
+     }
+   else if (event->xclient.message_type ==
+            x11_display->atom__NET_ACTIVE_WINDOW &&
+@@ -3576,11 +3758,15 @@ meta_window_x11_client_message (MetaWindow *window,
+   else if (event->xclient.message_type ==
+            x11_display->atom__GTK_SHOW_WINDOW_MENU)
+     {
+-      gulong x, y;
++      int x, y;
+ 
+       /* l[0] is device_id, which we don't use */
+-      x = event->xclient.data.l[1];
+-      y = event->xclient.data.l[2];
++      meta_window_x11_protocol_to_stage (window_x11,
++                                         event->xclient.data.l[1],
++                                         event->xclient.data.l[2],
++                                         0, 0,
++                                         &x, &y,
++                                         NULL, NULL);
+ 
+       meta_window_show_menu (window, META_WINDOW_MENU_WM, x, y);
+     }
+@@ -4102,10 +4288,11 @@ meta_window_x11_configure_notify (MetaWindow      *window,
+   g_assert (window->override_redirect);
+   g_assert (window->frame == NULL);
+ 
+-  window->rect.x = event->x;
+-  window->rect.y = event->y;
+-  window->rect.width = event->width;
+-  window->rect.height = event->height;
++  meta_window_x11_protocol_to_stage (window_x11,
++                                     event->x, event->y,
++                                     event->width, event->height,
++                                     &window->rect.x, &window->rect.y,
++                                     &window->rect.width, &window->rect.height);
+ 
+   priv->client_rect = window->rect;
+   window->buffer_rect = window->rect;
+diff --git a/src/x11/window-x11.h b/src/x11/window-x11.h
+index 205eaaa63..fa3fbea6a 100644
+--- a/src/x11/window-x11.h
++++ b/src/x11/window-x11.h
+@@ -45,6 +45,24 @@ struct _MetaWindowX11Class
+   gboolean (*always_update_shape) (MetaWindow *window);
+   void (*process_property_notify) (MetaWindow     *window,
+                                    XPropertyEvent *event);
++  void (*stage_to_protocol) (MetaWindowX11 *window_x11,
++                             int            stage_x,
++                             int            stage_y,
++                             int            stage_width,
++                             int            stage_height,
++                             int           *protocol_x,
++                             int           *protocol_y,
++                             int           *protocol_width,
++                             int           *protocol_height);
++  void (*protocol_to_stage) (MetaWindowX11 *window_x11,
++                             int            protocol_x,
++                             int            protocol_y,
++                             int            protocol_width,
++                             int            protocol_height,
++                             int           *stage_x,
++                             int           *stage_y,
++                             int           *stage_width,
++                             int           *stage_height);
+ };
+ 
+ MetaWindow * meta_window_x11_new           (MetaDisplay        *display,
+@@ -112,3 +130,23 @@ gboolean meta_window_x11_has_alpha_channel (MetaWindow *window);
+ 
+ META_EXPORT
+ Window meta_window_x11_get_xwindow (MetaWindow *window);
++
++void meta_window_x11_stage_to_protocol (MetaWindowX11 *window_x11,
++                                        int            stage_x,
++                                        int            stage_y,
++                                        int            stage_width,
++                                        int            stage_heigth,
++                                        int           *protocol_x,
++                                        int           *protocol_y,
++                                        int           *protocol_width,
++                                        int           *protocol_height);
++
++void meta_window_x11_protocol_to_stage (MetaWindowX11 *window_x11,
++                                        int            protocol_x,
++                                        int            protocol_y,
++                                        int            protocol_width,
++                                        int            protocol_height,
++                                        int           *stage_x,
++                                        int           *stage_y,
++                                        int           *stage_width,
++                                        int           *stage_heigth);

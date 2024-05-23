@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+NoDisplay=false
+Terminal=false
+Exec=xdg-open https://docs.bazzite.gg
+Icon=/usr/share/ublue-os/bazzite/docs.svg
+Name=Bazzite Documentation
+Comment=Bazzite documentation
+Categories=Utility;

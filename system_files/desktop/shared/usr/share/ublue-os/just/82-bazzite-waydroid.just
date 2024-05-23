@@ -6,6 +6,8 @@ alias configure-waydroid := setup-waydroid
 setup-waydroid ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
     OPTION={{ ACTION }}
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust configure-waydroid <option>"
@@ -13,6 +15,7 @@ setup-waydroid ACTION="":
       echo "  Use 'init' to select Initialize Waydroid"
       echo "  Use 'configure' to select Configure Waydroid"
       echo "  Use 'gpu' to choose Select GPU for Waydroid"
+      echo "  Use 'integration' to enable desktop window integration for Waydroid"
       echo "  Use 'reset' to select Configure Waydroid"
       exit 0
     elif [ "$OPTION" == "" ]; then
@@ -21,6 +24,9 @@ setup-waydroid ACTION="":
       OPTION=$(Choose "Initialize Waydroid" "Configure Waydroid" "Select GPU for Waydroid" "Reset Waydroid (also removes waydroid-related files from user folder)")
     fi
     if [[ "${OPTION,,}" =~ ^init ]]; then
+      if [[ ! $IMAGE_NAME =~ "deck" && ! $IMAGE_NAME =~ "ally" && ! $IMAGE_NAME =~ "framegame" ]]; then
+        sudo systemctl enable --now waydroid-container
+      fi
       sudo waydroid init -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor'
       echo "Waydroid has been initialized, please run waydroid once before you Configure Waydroid"
     elif [[ "${OPTION,,}" =~ ^configure ]]; then
@@ -32,7 +38,9 @@ setup-waydroid ACTION="":
       deactivate
       sudo rm -rf /tmp/waydroid_script
     elif [[ "${OPTION,,}" =~ gpu ]]; then
-      /usr/bin/waydroid-choose-gpu
+      sudo /usr/bin/waydroid-choose-gpu
+    elif [[ "${OPTION,,}" =~ integration ]]; then
+      waydroid prop set persist.waydroid.multi_windows true
     elif [[ "${OPTION,,}" =~ ^reset ]]; then
       echo "Resetting Waydroid"
       bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'

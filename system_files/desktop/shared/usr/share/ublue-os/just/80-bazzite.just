@@ -28,7 +28,7 @@ _install-system-flatpaks:
         FLATPAKS="kde_flatpaks/flatpaks"
     fi
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
-    flatpak --system -y install ${FLATPAK_LIST}
+    flatpak --system -y install --or-update ${FLATPAK_LIST}
 
 # Install Bazzite's Steam Game Mode Startup Video
 install-gamemode-video:
@@ -141,42 +141,6 @@ configure-watchdog ACTION="":
       rpm-ostree kargs $WATCHDOG_KARGS
     fi
 
-# Set the default powerprofile to load when the desktop starts
-configure-powerprofile ACTION="":
-    #!/usr/bin/bash
-    source /usr/lib/ujust/ujust.sh
-    OPTION={{ ACTION }}
-    if [ "$OPTION" == "help" ]; then
-      echo "Usage: ujust configure-powerprofile <option>"
-      echo "  <option>: Specify the quick option to skip the prompt"
-      echo "  Use 'powersave' to select Powersave"
-      echo "  Use 'balanced' to select Balanced"
-      exit 0
-    elif [ "$OPTION" == "" ]; then
-      # Cleanup old method
-      if [ -f "~/.config/autostart/bazzite-powersave.desktop" ]; then
-        rm ~/.config/autostart/bazzite-powersave.desktop
-      fi
-      # New method from here on
-      echo "${bold}Power profile configuration${normal}"
-      echo "This lets you set the default power profile."
-      echo "We do not recommend changing this from ${b}Balanced${n} if you use this device primarily for gaming!"
-      echo "If you have any performance or audio related issues..."
-      echo "${invert}${b}Please test with the default power profile set to Balanced${n} before reporting!"
-      echo ""
-      echo "Which power profile do you want to use when the desktop loads?"
-      OPTION=$(Choose "Powersave" "Balanced")
-    fi
-    if [[ "${OPTION,,}" =~ powersave ]]; then
-      echo "Setting default powerprofile to ${b}Powersave${n}"
-      sudo sed -iE 's/default=(.+)/default=power-saver/' /etc/tuned/ppd.conf
-      /usr/libexec/bazzite-powersave
-    elif [[ "${OPTION,,}" =~ balanced ]]; then
-      echo "Setting default powerprofile to ${b}Balanced${n}"
-      sudo sed -iE 's/default=(.+)/default=balanced/' /etc/tuned/ppd.conf
-      /usr/libexec/bazzite-powersave 0
-    fi
-
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
 setup-decky ACTION="":
     #!/usr/bin/bash
@@ -232,27 +196,13 @@ setup-decky ACTION="":
       fi
     fi
 
-# Install EmuDeck (https://www.emudeck.com/)
-install-emudeck:
-    #!/usr/bin/bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-    echo 'Retrieving EmuDeck...'
-    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      wget https://www.emudeck.com/EmuDeck.desktop -O ~/.local/share/applications/EmuDeck.desktop
-      echo 'EmuDeck installer added to your application grid.'
-    else
-      wget https://www.emudeck.com/EmuDeck.desktop -O ~/Desktop/EmuDeck.desktop
-      echo 'EmuDeck installer added to your desktop.'
-    fi
-
 # Ptyxis terminal transparency
 ptyxis-transparency opacity="0.95":
     #!/usr/bin/bash
     set -euxo pipefail
     if [[ -n "$(echo "{{ opacity }}" | grep -v '^[.0-9]*$')" ]]; then
       printf "Value must be numeric: %s.\n" "{{ opacity }}"
-    elif [[ $(echo "0<{{ opacity }} && 1>{{ opacity }}" | bc -q) -eq 1 ]]; then
+    elif [[ $(echo "0<{{ opacity }} && 1>={{ opacity }}" | bc -q) -eq 1 ]]; then
       raw="$(gsettings get org.gnome.Ptyxis profile-uuids)"
       uuids="$(sed -En 's|[^0-9a-z]*||g; s|([0-9a-z]{32})|\1\n|gp' <<<${raw})"
       for i in ${uuids}; do

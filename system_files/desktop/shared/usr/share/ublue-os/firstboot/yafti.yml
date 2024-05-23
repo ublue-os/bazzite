@@ -38,9 +38,8 @@ screens:
           packages:
           - Install Sunshine: ujust setup-sunshine install
           - Autostart Sunshine: ujust setup-sunshine autostart
-          EmuDeck:
-          description: |
-            A utility for installing and configuring emulators.
+        EmuDeck:
+          description: A utility for installing and configuring emulators.
           default: false
           packages:
           - Retrieve EmuDeck: ujust install-emudeck

@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-if [ "${EUID:-$(id -u)}" -eq 0 ]; then
-  echo "Bazzite user setup ran as root user. Exiting."
+if [ "${EUID:-$(id -u)}" -lt 1000 ]; then
+  echo "Bazzite user setup ran as unsupported user. Exiting."
   exit 0
 fi
 
@@ -108,13 +108,15 @@ else
 
     if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
       if [[ ! -f "$BAZZITE_CONFIG_DIR/framework-initialized" ]]; then
-        echo 'Enabling automatic power profile extension'
-        gnome-extensions enable power-profile-switcher@eliapasquali.github.io
         echo 'Setting Framework logo menu'
         dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
         dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 4
-        echo 'Enabling natural scroll'
-        dconf write /org/gnome/desktop/peripherals/mouse/natural-scroll true
+        echo 'Adjusting OSD position'
+        dconf write /org/gnome/shell/extensions/just-perfection/osd-position 4
+        if [[ $SYS_ID == "Laptop ("* ]]; then
+          echo 'Applying font fix for Framework 13'
+          dconf write /org/gnome/desktop/interface/text-scaling-factor 1.25
+        fi
         touch "$BAZZITE_CONFIG_DIR/framework-initialized"
       fi
     fi
