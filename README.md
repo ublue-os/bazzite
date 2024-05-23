@@ -81,13 +81,14 @@ Common variant available as `bazzite`, suitable for desktop computers.
 > [!IMPORTANT]  
 > **ISOs can be downloaded from our [releases page](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
 
-Rebase from an existing upstream Fedora Atomic to this image:
+Rebase from an existing upstream Fedora Atomic to this image if you want **Open Source GPU Drivers**: 
+(Please note: Mesa's Open Source option for NVIDIA GPUs, NVK is still prone to errors at the time of writing, for any issues relating to NVK [please submit a report with Mesa]([url](https://docs.mesa3d.org/bugs.html)), not Ublue/Bazzite)
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
 ```
 
-or for devices with Nvidia GPUs:
+or for devices with Nvidia GPUs wanting the **NVIDIA Proprietary Drivers**:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:stable
@@ -189,7 +190,7 @@ Rebase from an existing upstream Fedora Atomic to this image:
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:stable
 ```
 
-To rebase an existing ostree system to the **desktop with Nvidia drivers** release:
+To rebase an existing ostree system to a Desktop Enviornment with the **Proprietary NVIDIA Drivers** release:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
