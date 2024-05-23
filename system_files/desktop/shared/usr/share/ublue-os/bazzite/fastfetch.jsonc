@@ -43,7 +43,7 @@
         {
             "type": "command",
             "key": " 󰔠",
-            "text": "ls -alct /|tail -1|awk '{print $6, $7, $8}'",
+            "text": "stat / | grep 'Birth' | sed 's/Birth: //g' | cut -b 2-11",
             "shell": "/bin/bash"
         },
         "break",
