@@ -1,0 +1,8 @@
+# https://github.com/NGnius/PowerTools/issues/84#issuecomment-1482736698
+# https://www.amd.com/system/files/documents/faq-curve-optimizer.pdf
+# Expect your UV to be 3-5x your set curve value. IE: -5 = -15mv to -25mv
+# 0x100000 - 5 (Range: -30, 30)
+UNDERVOLT_AMOUNT=0xFFFFB
+# WARNING: As with any undervolt exercise caution.
+# There is no guarantee you won't damage your hardware.
+# USE AT YOUR OWN RISK.

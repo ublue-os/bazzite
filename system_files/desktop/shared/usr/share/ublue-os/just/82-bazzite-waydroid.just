@@ -15,6 +15,7 @@ setup-waydroid ACTION="":
       echo "  Use 'init' to select Initialize Waydroid"
       echo "  Use 'configure' to select Configure Waydroid"
       echo "  Use 'gpu' to choose Select GPU for Waydroid"
+      echo "  Use 'integration' to enable desktop window integration for Waydroid"
       echo "  Use 'reset' to select Configure Waydroid"
       exit 0
     elif [ "$OPTION" == "" ]; then
@@ -37,7 +38,9 @@ setup-waydroid ACTION="":
       deactivate
       sudo rm -rf /tmp/waydroid_script
     elif [[ "${OPTION,,}" =~ gpu ]]; then
-      /usr/bin/waydroid-choose-gpu
+      sudo /usr/bin/waydroid-choose-gpu
+    elif [[ "${OPTION,,}" =~ integration ]]; then
+      waydroid prop set persist.waydroid.multi_windows true
     elif [[ "${OPTION,,}" =~ ^reset ]]; then
       echo "Resetting Waydroid"
       bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'

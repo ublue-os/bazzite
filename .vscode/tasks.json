@@ -1,0 +1,109 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Connect to VM",
+            "dependsOn": [
+                "Run-ISO",
+                "Open Browser"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Open Browser",
+            "command": "${input:openSimpleBrowser}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Container",
+            "command": "just",
+            "args": [
+                "build",
+                "${input:outputChoice}"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Build ISO",
+            "command": "just",
+            "args": [
+                "${input:installerChoice}",
+                "${input:outputChoice}"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Run-ISO",
+            "command": "just",
+            "args": [
+                "run-iso",
+                "${input:outputChoice}"
+            ],
+            "problemMatcher": [],
+            "isBackground": true
+        },
+        {
+            "label": "List Images",
+            "command": "just",
+            "args": [
+                "list-images"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Check justfiles",
+            "command": "just",
+            "args": [
+                "just-check"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Container",
+            "command": "just",
+            "args": [
+                "run-container",
+                "${input:outputChoice}"
+            ],
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "openSimpleBrowser",
+            "type": "command",
+            "command": "simpleBrowser.show",
+            "args": [
+                "http://localhost:8006"
+            ]
+        },
+        {
+            "id": "installerChoice",
+            "type": "pickString",
+            "description": "Choose which Installer Builder to use",
+            "default": "build-iso",
+            "options": [
+                "build-iso",
+                "build-iso-git"
+            ]
+        },
+        {
+            "id": "outputChoice",
+            "type": "pickString",
+            "description": "Choose which container to build",
+            "default": "bazzite",
+            "options": [
+                "bazzite",
+                "bazzite-deck",
+                "bazzite-nvidia",
+                "bazzite gnome",
+                "bazzite-deck gnome",
+                "bazzite-nvidia gnome"
+            ]
+        }
+    ]
+}

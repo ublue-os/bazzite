@@ -1,0 +1,104 @@
+From 312e25b14640f3fa88469b57e898a4b2c069a186 Mon Sep 17 00:00:00 2001
+From: Joshua Ashton <joshua@froggi.es>
+Date: Thu, 16 May 2024 08:56:56 +0100
+Subject: [PATCH] InputEmulation: refcounting/lifetime fixes
+
+---
+ src/InputEmulation.cpp | 70 +++++++++++++++++++++++++++++-------------
+ 1 file changed, 49 insertions(+), 21 deletions(-)
+
+diff --git a/src/InputEmulation.cpp b/src/InputEmulation.cpp
+index 5a63e4f48..236cb4df3 100644
+--- a/src/InputEmulation.cpp
++++ b/src/InputEmulation.cpp
+@@ -77,7 +77,7 @@ namespace gamescope
+                     eis_seat_configure_capability( pSeat, EIS_DEVICE_CAP_POINTER );
+                     eis_seat_configure_capability( pSeat, EIS_DEVICE_CAP_POINTER_ABSOLUTE );
+                     eis_seat_configure_capability( pSeat, EIS_DEVICE_CAP_KEYBOARD );
+-                    eis_seat_configure_capability( pSeat, EIS_DEVICE_CAP_TOUCH );
++                    //eis_seat_configure_capability( pSeat, EIS_DEVICE_CAP_TOUCH );
+                     eis_seat_configure_capability( pSeat, EIS_DEVICE_CAP_BUTTON );
+                     eis_seat_configure_capability( pSeat, EIS_DEVICE_CAP_SCROLL );
+                     eis_seat_add( pSeat );
+@@ -98,33 +98,61 @@ namespace gamescope
+                     eis_client *pClient = eis_event_get_client( pEisEvent );
+                     eis_seat *pSeat = eis_event_get_seat( pEisEvent );
+ 
+-                    eis_device *pVirtualInput = eis_seat_new_device( pSeat );
+-                    eis_device_configure_name( pVirtualInput, "Gamescope Virtual Input" );
+-                    eis_device_configure_capability( pVirtualInput, EIS_DEVICE_CAP_POINTER );
+-		            eis_device_configure_capability( pVirtualInput, EIS_DEVICE_CAP_POINTER_ABSOLUTE );
+-                    eis_device_configure_capability( pVirtualInput, EIS_DEVICE_CAP_BUTTON );
+-                    eis_device_configure_capability( pVirtualInput, EIS_DEVICE_CAP_SCROLL );
+-                    eis_device_configure_capability( pVirtualInput, EIS_DEVICE_CAP_KEYBOARD );
+-                    // Can add this someday if we want it.
+-                    //eis_device_configure_capability( pVirtualInput, EIS_DEVICE_CAP_TOUCH );
+-
+-                    eis_region *pVirtualInputRegion = eis_device_new_region( pVirtualInput );
+-                    eis_region_set_mapping_id( pVirtualInputRegion, "Mr. Worldwide" );
+-                    eis_region_set_size( pVirtualInputRegion, INT32_MAX, INT32_MAX );
+-                    eis_region_set_offset( pVirtualInputRegion, 0, 0 );
+-                    eis_region_add( pVirtualInputRegion );
+-
+-                    eis_device_add( pVirtualInput );
+-                    eis_device_resume( pVirtualInput );
+-                    if ( !eis_client_is_sender( pClient ) )
+-                        eis_device_start_emulating( pVirtualInput, ++s_uSequence );
++                    bool bWantsDevice = eis_event_seat_has_capability( pEisEvent, EIS_DEVICE_CAP_POINTER ) || 
++                                        eis_event_seat_has_capability( pEisEvent, EIS_DEVICE_CAP_POINTER_ABSOLUTE ) ||
++                                        eis_event_seat_has_capability( pEisEvent, EIS_DEVICE_CAP_BUTTON ) ||
++                                        eis_event_seat_has_capability( pEisEvent, EIS_DEVICE_CAP_SCROLL ) ||
++                                        eis_event_seat_has_capability( pEisEvent, EIS_DEVICE_CAP_KEYBOARD );
++
++                    bool bHasDevice = eis_client_get_user_data( pClient ) != nullptr;
++
++                    if ( bWantsDevice && !bHasDevice )
++                    {
++                        eis_device *pVirtualInput = eis_seat_new_device( pSeat );
++                        eis_device_configure_name( pVirtualInput, "Gamescope Virtual Input" );
++                        eis_device_configure_capability( pVirtualInput, EIS_DEVICE_CAP_POINTER );
++                        eis_device_configure_capability( pVirtualInput, EIS_DEVICE_CAP_POINTER_ABSOLUTE );
++                        eis_device_configure_capability( pVirtualInput, EIS_DEVICE_CAP_BUTTON );
++                        eis_device_configure_capability( pVirtualInput, EIS_DEVICE_CAP_SCROLL );
++                        eis_device_configure_capability( pVirtualInput, EIS_DEVICE_CAP_KEYBOARD );
++                        // Can add this someday if we want it.
++                        //eis_device_configure_capability( pVirtualInput, EIS_DEVICE_CAP_TOUCH );
++
++                        eis_region *pVirtualInputRegion = eis_device_new_region( pVirtualInput );
++                        eis_region_set_mapping_id( pVirtualInputRegion, "Mr. Worldwide" );
++                        eis_region_set_size( pVirtualInputRegion, INT32_MAX, INT32_MAX );
++                        eis_region_set_offset( pVirtualInputRegion, 0, 0 );
++                        eis_region_add( pVirtualInputRegion );
++                        // We don't want this anymore, but pVirtualInput can own it
++                        eis_region_unref( pVirtualInputRegion );
++
++                        eis_device_add( pVirtualInput );
++                        eis_device_resume( pVirtualInput );
++                        if ( !eis_client_is_sender( pClient ) )
++                            eis_device_start_emulating( pVirtualInput, ++s_uSequence );
++
++                        // We have a ref on pVirtualInput, store that in pClient's userdata so we can remove device later.
++                        eis_client_set_user_data( pClient, (void *) pVirtualInput );
++                    }
++                    else if ( !bWantsDevice && bHasDevice )
++                    {
++                        eis_device *pDevice = (eis_device *) eis_client_get_user_data( pClient );
++                        eis_device_remove( pDevice );
++                        eis_device_unref( pDevice );
++                        eis_client_set_user_data( pClient, nullptr );
++                    }
+                 }
+                 break;
+ 
+                 case EIS_EVENT_DEVICE_CLOSED:
+                 {
++                    eis_client *pClient = eis_event_get_client( pEisEvent );
+                     eis_device *pDevice = eis_event_get_device( pEisEvent );
++
++                    // Remove the device from our tracking on the client.
+                     eis_device_remove( pDevice );
++                    eis_device_unref( pDevice );
++                    eis_client_set_user_data( pClient, nullptr );
+                 }
+                 break;
+ 

@@ -12,6 +12,7 @@ URL:            https://github.com/ublue-os/bazzite
 Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/%{packagever}/%{packagename}-%{packagever}.tar.gz
 Source1:        99-sdcard-rescan.rules
 Source2:        99-steamos-automount.rules
+Source3:        99-framework-steam-automount.rules
 Patch0:         fedora.patch
 Patch1:         selinux.patch
 Patch2:         btrfs-automount.patch
@@ -51,6 +52,7 @@ cp usr/lib/hwsupport/common-functions %{buildroot}%{_libexecdir}/hwsupport/commo
 cp usr/lib/hwsupport/block-device-event.sh %{buildroot}%{_libexecdir}/hwsupport/block-device-event.sh
 cp %{SOURCE1} %{buildroot}%{_prefix}/lib/udev/rules.d/99-sdcard-rescan.rules
 cp %{SOURCE2} %{buildroot}%{_prefix}/lib/udev/rules.d/99-steamos-automount.rules
+cp %{SOURCE3} %{buildroot}%{_prefix}/lib/udev/rules.d/99-framework-steam-automount.rules
 
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.

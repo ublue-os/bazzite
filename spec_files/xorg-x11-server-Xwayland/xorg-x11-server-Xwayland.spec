@@ -8,7 +8,7 @@
 
 Summary:   Xwayland
 Name:      xorg-x11-server-Xwayland
-%global    xwayland_version 23.2.4
+%global    xwayland_version 23.2.6
 Version:   %{xwayland_version}.bazzite.{{{ git_dir_version }}}
 Release:   1%{?gitdate:.%{gitdate}git%{shortcommit}}%{?dist}
 
@@ -19,7 +19,8 @@ Source0:   https://gitlab.freedesktop.org/xorg/%{pkgname}/-/archive/%{commit}/%{
 Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{xwayland_version}.tar.xz
 %endif
 
-Patch1:    0001-Valve.patch
+Patch0:    xwayland-pointer-warp-fix.patch
+Patch1:    0001-xwayland-Send-ei_device_frame-on-device_scroll_discr.patch
 
 License:   MIT
 
@@ -95,7 +96,7 @@ Xwayland is an X server for running X clients under Wayland.
 %package devel
 Summary: Development package
 Requires: pkgconfig
-Requires: %{name}%{?_isa} = %{xwayland_version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description devel
 The development package provides the developmental files which are
@@ -106,10 +107,10 @@ necessary for developing Wayland compositors using Xwayland.
 
 %build
 %meson \
-  %{?gitdate:-Dxwayland=true -D{xorg,xnest,xvfb,udev}=false} \
+	%{?gitdate:-Dxwayland=true -D{xorg,xnest,xvfb,udev}=false} \
         -Dxwayland_eglstream=true \
         -Ddefault_font_path=%{default_font_path} \
-        -Dbuilder_string="Build ID: %{name} %{xwayland_version}-%{release}" \
+        -Dbuilder_string="Build ID: %{name} %{version}-%{release}" \
         -Dxkb_output_dir=%{_localstatedir}/lib/xkb \
         -Dserverconfigdir=%{_datadir}/xwayland \
         -Dxcsecurity=true \
@@ -140,6 +141,19 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_libdir}/pkgconfig/xwayland.pc
 
 %changelog
+* Tue Apr 09 2024 Olivier Fourdan <ofourdan@redhat.com> - 23.2.6-1
+- xwayland 23.2.6 - (#2273002)
+
+* Wed Apr 03 2024 José Expósito <jexposit@redhat.com> - 23.2.5-1
+- CVE fix for: CVE-2024-31080, CVE-2024-31081, CVE-2024-31082 and
+  CVE-2024-31083
+
+* Mon Jan 29 2024 Florian Weimer <fweimer@redhat.com> - 23.2.4-3
+- Fix C compatibility issue on i686
+
+* Sat Jan 27 2024 Fedora Release Engineering <releng@fedoraproject.org> - 23.2.4-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
+
 * Tue Jan 16 2024 Olivier Fourdan <ofourdan@redhat.com> - 23.2.4-1
 - xwayland 23.2.4 - (#2254280)
   CVE fix for: CVE-2023-6816, CVE-2024-0229, CVE-2024-21885, CVE-2024-21886,
