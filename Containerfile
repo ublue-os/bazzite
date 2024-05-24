@@ -260,7 +260,9 @@ RUN rpm-ostree override remove \
         xorg-x11-server-Xwayland && \
     rpm-ostree install \
         mesa-va-drivers-freeworld \
-        mesa-vdpau-drivers-freeworld.x86_64 && \
+        mesa-vdpau-drivers-freeworld.x86_64 \
+        libaacs \
+        libbluray && \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:sentry:switcheroo-control_discrete \
