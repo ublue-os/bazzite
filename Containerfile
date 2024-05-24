@@ -262,6 +262,7 @@ RUN rpm-ostree override remove \
         mesa-va-drivers-freeworld \
         mesa-vdpau-drivers-freeworld.x86_64 \
         libaacs \
+        libbdplus \
         libbluray && \
     rpm-ostree override replace \
     --experimental \
