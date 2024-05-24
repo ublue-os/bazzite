@@ -2,7 +2,7 @@
 
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
-%global gamescope_tag 3.14.17
+%global gamescope_tag 3.14.18
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
