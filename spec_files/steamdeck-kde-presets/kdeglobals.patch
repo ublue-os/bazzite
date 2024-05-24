@@ -1,6 +1,12 @@
 --- a/etc/xdg/kdeglobals
 +++ b/etc/xdg/kdeglobals
-@@ -12,6 +12,9 @@
+@@ -1,5 +1,4 @@
+ [KDE]
+-LookAndFeelPackage=com.valve.vapor.desktop
+ SingleClick=false
+ 
+ [KDE Action Restrictions][$i]
+@@ -12,13 +11,10 @@
  kcm_plymouth.desktop=false
  
  [General]
@@ -10,3 +16,10 @@
  font=Noto Sans,11,-1,5,50,0,0,0,0,0
  menuFont=Noto Sans,11,-1,5,50,0,0,0,0,0
  smallestReadableFont=Noto Sans,9,-1,5,50,0,0,0,0,0
+ toolBarFont=Noto Sans,11,-1,5,50,0,0,0,0,0
+-
+-# This is a konsole specific setting belonging to /etc/xdg/konsolerc
+-# However we cannot ship this file anymore since upstream konsole ships now this file
+-# https://gitlab.steamos.cloud/jupiter/tasks/-/issues/854
+-[Desktop Entry]
+-DefaultProfile=Vapor.profile
