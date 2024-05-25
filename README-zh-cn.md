@@ -18,22 +18,22 @@
   - [关于 \& 特性](#关于--特性)
     - [Desktop](#desktop)
     - [Steam Deck/家庭影院PC(HTPCs)](#steam-deck家庭影院pchtpcs)
-      - [Alternative Handhelds](#alternative-handhelds)
+      - [其他掌上电脑](#其他掌上电脑)
     - [GNOME](#gnome)
-    - [Features from Upstream](#features-from-upstream)
+    - [上游系统特性](#上游系统特性)
       - [Universal Blue](#universal-blue)
-      - [Features from Fedora Linux (Kinoite \& Silverblue)](#features-from-fedora-linux-kinoite--silverblue)
-  - [Why](#why)
-  - [Showcase](#showcase)
-  - [Documentation \& Newsletters](#documentation--newsletters)
-  - [Custom Packages](#custom-packages)
-  - [Verification](#verification)
+      - [Fedora Linux (Kinoite \& Silverblue)的特性](#fedora-linux-kinoite--silverblue的特性)
+  - [目的](#目的)
+  - [展示](#展示)
+  - [文档 \& 时事通讯](#文档--时事通讯)
+  - [自定义软件包](#自定义软件包)
+  - [验证](#验证)
   - [安全启动](#安全启动)
-    - [Contributor Metrics](#contributor-metrics)
+    - [贡献者指标](#贡献者指标)
       - [Star History](#star-history)
-  - [Special Thanks](#special-thanks)
-  - [Build Your Own](#build-your-own)
-  - [Join The Community](#join-the-community)
+  - [特别鸣谢](#特别鸣谢)
+  - [构建自己的版本](#构建自己的版本)
+  - [加入社区](#加入社区)
 ---
 
 ## 关于 & 特性
@@ -86,7 +86,7 @@ Bazzite是使用[Fedora](https://fedoraproject.org/)技术基于[ublue-os/main](
 > [!重要]  
 > **ISOs可以从我们的[发布页面](https://github.com/ublue-os/bazzite/releases)下载，也可以[在此处](https://universal-blue.discourse.group/docs?topic=30)找到有用的安装指南。**
 
-从现有的上游Fedora Atomic桌面变基（rebase）到此镜像：
+从已安装的上游Fedora Atomic桌面变基（rebase）到此镜像：
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
@@ -129,118 +129,118 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - 包括用于磨砂和镜面Steam Deck屏幕的颜色校准显示配置文件。
 - 默认禁用的高级用户功能，包括：
     - 通过[RyzenAdj](https://github.com/FlyGoat/RyzenAdj) 和 [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu)提供的Steam Deck的低风险欠压服务进程, 参阅`ryzenadj.service` 和 `/etc/default/ryzenadj`。
-    - Service for limiting the max charge level of the battery, see `batterylimit.service` and `/etc/default/batterylimit`. <sup><sub>(Works even when the device is off)</sub></sup>
-    - Built in support for display overclocking. For example, add `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` to `/etc/environment`.
-    - 32GB RAM mod your Steam Deck? Enjoy double the maximum VRAM amount, automatically applied. <sup><sub>(Can you share your soldering skills?)</sub></sup>
-- Steam Deck hardware-specific services can be disabled by running `ujust disable-bios-updates` and `ujust disable-firmware-updates` in the terminal. These are automatically disabled on non-Deck hardware, and on Decks with DeckHD displays or 32GB RAM mods.
-- More information can be found [here](https://universal-blue.discourse.group/docs?topic=37) on the Bazzite Steam Deck images.
+    - 限制电池最大充电水平的服务进程，参阅`batterylimit.service` 和 `/etc/default/batterylimit`。<sup><sub>(即使设备关闭也能工作)</sub></sup>
+    - 内置超频显示支持。例如添加`GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` 到 `/etc/environment`。
+    - 你的Steam Deck改了32GB内存？享受双倍最大显存，自动启用。<sup><sub>(可以分享你的焊接技巧吗？)</sub></sup>
+- Steam Deck硬件特定的服务可以通过在终端中运行`ujust disable-bios-updates` 和 `ujust disable-firmware-updates` 以禁用。这些服务在非Deck硬件、改装了DeckHD显示屏或改装了32GB内存的Deck上自动禁用。
+- 更多关于Bazzite Steam Deck镜像的信息可以在[此处](https://universal-blue.discourse.group/docs?topic=37)找到。
 
-> [!WARNING]  
-> **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time. Upgrading the storage resolves the issue.**
+> [!警告]  
+> **由于上游错误，Bazzite目前无法在具有64GB eMMC存储空间的Steam Deck上使用。升级存储空间可以解决此问题。**
 
-> [!IMPORTANT]  
-> **ISOs can be downloaded from our [releases page](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
+> [!重要]  
+> **镜像文件可以从我们的[发布页面](https://github.com/ublue-os/bazzite/releases)下载，也可以在[此处](https://universal-blue.discourse.group/docs?topic=30)找到有用的安装指南。**
 
-Rebase from an existing upstream Fedora Atomic to this image:
+从已安装的上游Fedora Atomic桌面变基（rebase）到此镜像：
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stable
 ```
 
-#### Alternative Handhelds
+#### 其他掌上电脑
 
-Please refer to our [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) for required setting changes and Decky Loader plugins for Steam Gaming Mode on your specific Handheld.
+请参阅我们的[掌上电脑Wiki](https://universal-blue.discourse.group/docs?topic=1038)了解所需要的设置更改以及你的掌机在Steam游戏模式下需要的Decky Loader插件。
 
-If you're using this image on a handheld other than the Steam Deck, you can get TDP control via the SimpleDeckyTDP Decky Loader Plugin.
-- First install Decky Loader with: `ujust setup-decky`
-- Then install SimpleDeckyTDP with: `ujust setup-decky simpledeckytdp`
+如果你在Steam Deck之外的掌机上使用此镜像，你可以通过SimpleDeckyTDP Decky Loader插件获得TDP控制。
+- 首先安装Decky Loader：`ujust setup-decky`
+- 其次安装SimpleDeckyTDP：`ujust setup-decky simpledeckytdp`
 
-If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Such as the Lenovo Legion Go and the ASUS Ally)</sup></sub>, you can also get the plugin to integrate an option menu for it into game mode with: `ujust setup-decky hhd-decky`
+如果你使用的是[hhd](https://github.com/hhd-dev/hhd)支持的掌机<sub><sup>(例如联想 Legion Go 和 华硕ASUS Ally)</sup></sub>，你还可以将插件集成到游戏模式的菜单选项中：`ujust setup-decky hhd-decky`
 
-**Be sure to also read the [hhd documentation](https://github.com/hhd-dev/hhd#after-install), some handhelds require specific setting changes/tweaks to function properly.**
+**请务必同时阅读[hhd文档](https://github.com/hhd-dev/hhd#after-install)，一些掌机需要特别的设置更改/调整才能正常运行。**
 
-We also ship `ujust` commands to install various [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) themes that can't be found on the CSS Loader store. These will be automatically updated with Bazzite if installed.
+我们还提供了用于安装各种[CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck)主题的`ujust`命令。这些主题在CSS Loader商店中找不到。这些主题如果被安装，将随着Bazzite一起自动更新。
 ```bash
-# Install ROG Ally Theme for CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
+# 为CSS Loader安装ROG Ally主题(https://github.com/semakusut/SBP-ROG-Ally)
 ujust install-rog-ally-theme
 
-# Install Lenovo Legion Go for CSS Loader (https://github.com/frazse/SBP-Legion-Go-Theme)
+# 为CSS Loader安装Lenovo Legion Go主题(https://github.com/frazse/SBP-Legion-Go-Theme)
 ujust install-legion-go-theme
 
-# Install Handheld Controller Theme (https://github.com/victor-borges/handheld-controller-glyphs)
+# 为CSS Loader安装Handheld Controller主题(https://github.com/victor-borges/handheld-controller-glyphs)
 ujust install-hhd-controller-glyph-theme
 
-# Install PS5-to-Xbox glyph theme for hhd & CSS Loader (https://github.com/frazse/PS5-to-Xbox-glyphs)
+# 为hhd & CSS Loader安装PS5-to-Xbox glyph主题(https://github.com/frazse/PS5-to-Xbox-glyphs)
 ujust install-hhd-xbox-glyph-theme
 ```
 
 ### GNOME
 
-Builds with the GNOME desktop environment are available in both desktop and deck flavors. These builds come with the following additional features:
+桌面和Deck版本都可以使用GNOME桌面环境构建。这些版本具有如下的额外特性：
 
-- [Variable refresh rate support and fractional scaling enabled under Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
-- Custom menu in the top bar for returning to game mode, launching Steam, and opening a number of useful utilities.
-- [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) preinstalled and ready to use.
-- [Hanabi extension](https://github.com/jeffshee/gnome-ext-hanabi) included to offer similar features to Wallpaper Engine in KDE.
-- Numerous optional extensions pre-installed, including [important user experience fixes](https://www.youtube.com/watch?v=nbCg9_YgKgM).
-- Automatic updates for the [Firefox GNOME theme](https://github.com/rafaelmardojai/firefox-gnome-theme) and [Thunderbird GNOME theme](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(If installed)</sub></sup>
+- [Wayland协议下支持可变刷新率和非整数倍缩放](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
+- 顶部栏中的自定义菜单，可用于返回游戏模式，启动Steam和打开许多有用的实用程序。
+- 默认安装启用[GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/)。
+- 包含了[Hanabi扩展](https://github.com/jeffshee/gnome-ext-hanabi)以提供与KDE中Wallpaper Engine类似的功能。
+- 预装了许多可选的扩展，包括[重要的用户体验修复](https://www.youtube.com/watch?v=nbCg9_YgKgM).
+- 自动更新[Firefox GNOME主题](https://github.com/rafaelmardojai/firefox-gnome-theme) 和 [Thunderbird GNOME 主题](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(如果已安装)</sub></sup>
 
-> [!IMPORTANT]  
-> **ISOs can be downloaded from our [releases page](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
+> [!重要]  
+> **镜像文件可以从我们的[发布页面](https://github.com/ublue-os/bazzite/releases)下载，也可以[在此处](https://universal-blue.discourse.group/docs?topic=30)找到有用的安装指南。**
 
-Rebase from an existing upstream Fedora Atomic to this image:
+从已安装的上游Fedora Atomic桌面变基（rebase）到此镜像：
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:stable
 ```
 
-To rebase an existing ostree system to the **desktop with Nvidia drivers** release:
+将现有的ostree系统变基（rebase）到**Nvidia驱动的桌面系统**版本：
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
 ```
 
-> [!WARNING]  
-> **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time.**
+> [!警告]  
+> **由于上游错误，Bazzite目前无法在具有64GB eMMC存储空间的Steam Deck上使用。**
 
-To rebase an existing ostree system to the **Steam Deck/HTPC** release: 
+将现有的ostree系统变基（rebase）到**Steam Deck/HTPC**版本：
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:stable
 ```
 
-**For users with Secure Boot enabled:** Follow our [secure boot documentation](#secure-boot) prior to rebasing.
+**对于设置了安全启动的用户：** 请遵循我们的[安全启动文档](#安全启动)进行变基（rebase）。
 
-### Features from Upstream
+### 上游系统特性
 
 #### Universal Blue
 
-- Proprietary Nvidia drivers pre-installed. <sub><sup>(Only for Nvidia images)</sup></sub>
-- Flathub is enabled by default.
-- [`ujust`](https://github.com/casey/just) commands for convenience.
-- Multi-media codecs out of the box.
-- Rollback Bazzite from any build within the last 90 days.
+- 预装了专有的Nvidia驱动程序<sub><sup>(仅限Nvidia镜像)</sup></sub>
+- 默认启用Flathub。
+- 方便使用的[`ujust`](https://github.com/casey/just)命令。
+- 开箱即用的多媒体编解码器。
+- 从任何最近90天内的版本回滚Bazzite。
 
-#### Features from Fedora Linux (Kinoite & Silverblue)
+#### Fedora Linux (Kinoite & Silverblue)的特性
 
-- A rock solid and stable base.
-- System packages stay relatively up to date.
-- Can layer Fedora packages to the image without losing them between updates.
-- Security focused with [SELinux](https://github.com/SELinuxProject/selinux) preinstalled and configured out of the box.
-- The ability to rebase to different Fedora Atomic images, if desired, without losing user data.
-- Printing support thanks to [CUPS](https://www.cups.org/) being preinstalled.
+- 坚如磐石的基础。
+- 系统软件包保持相对最新。
+- 可以将Fedora软件包部署到镜像中以防止更新时丢失。
+- 预装和设置好开箱即用的[SELinux](https://github.com/SELinuxProject/selinux)以关注安全性。
+- 如果需要的话，可以在不丢失用户数据的情况下变基（rebase）到不同的Fedora Atomic镜像。
+- 预装[CUPS](https://www.cups.org/)以支持打印机。
 
-## Why
+## 目的
 
-Bazzite started as a project to resolve some of the issues that plague SteamOS, mainly out of date packages (despite an Arch base) and the lack of a functional package manager.
+Bazzite项目最初的目的是在于解决困扰SteamOS的一系列问题，主要是过时的软件包（尽管基于Arch）和缺少一个软件包管理器。
 
-Despite this project also being image-based, you are able to install any Fedora package straight from the command line. These packages will persist across updates <sub><sup>(So go ahead and install that obscure VPN software you spent an hour trying to get working in SteamOS)</sup></sub>. Additionally, Bazzite is updated multiple times a week with packages from upstream Fedora, giving you the best possible performance and latest features - all on a stable base.
+尽管此项目是基于镜像的，你仍然可以直接通过命令行安装任何Fedora软件包。这些软件包在更新后依然会保留<sub><sup>(所以尽管放心的去安装那些你需要花费一个小时以上才能在SteamOS上正常工作的晦涩的VPN软件)</sup></sub>。此外，Bazzite每周都会多次更新来自上游Fedora的软件包，在稳定的基础上为你提供最佳性能和最新特性。
 
-Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot <sub><sup>(Run `ujust enroll-secure-boot-key` and enter the password `ublue-os` if prompted to enroll our key)</sup></sub> and disk encryption, making this a sensible solution for general computing. <sup><sub>(Yes, you can print from Bazzite)</sub></sup>
+Bazzite带来最新的Linux内核，默认启用的SELinux为安全启动提供了完整的支持<sub><sup>(如果系统提示注册密钥，那么运行`ujust enroll-secure-boot-key`并输入密码`ublue-os`)</sup></sub>和磁盘加密。使此系统成为大众计算机的一个明智的解决方案。<sup><sub>(是的，你可以从Bazzite打印)</sub></sup>
 
-Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details on what makes Bazzite stand out from other Linux operating systems.
+阅读[常见问题解答](https://universal-blue.discourse.group/docs?topic=33)以了解Bazzite不同于其它Linux操作系统的细节。
 
-## Showcase
+## 展示
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
@@ -250,19 +250,19 @@ Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details
 ![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
 ![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
 
-## Documentation & Newsletters
+## 文档 & 时事通讯
 
-- [Installing and Managing Applications](https://universal-blue.discourse.group/docs?topic=35)
-- [Updates, Rollbacks, and Rebasing](https://universal-blue.discourse.group/docs?topic=36)
-- [Gaming Guide](https://universal-blue.discourse.group/docs?topic=31)
+- [安装和管理应用程序](https://universal-blue.discourse.group/docs?topic=35)
+- [更新、回滚和变基](https://universal-blue.discourse.group/docs?topic=36)
+- [游戏指南](https://universal-blue.discourse.group/docs?topic=31)
 
-View [additional documentation](http://docs.bazzite.gg/) surrounding the project.
+查看有关该项目的[其他文档](http://docs.bazzite.gg/)。
 
-Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) that get published on a regular basis for updates on the project.
+查看我们定期发布的[时事通讯](https://universal-blue.discourse.group/tag/bazzite-buzz)以了解项目的最新信息。
 
-## Custom Packages
+## 自定义软件包
 
-Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built on Copr in [bazzite](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/) and [bazzite-multilib](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/).
+移植的SteamOS和ChimeraOS软件包，以及Bazzite使用的其他软件包，都是在[bazzite](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/)和[bazzite-multilib](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/)的Copr存储库构建的。
 
 | Package                                                                                             | Status                                                                                                                                                      |
 | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -306,7 +306,7 @@ Ported SteamOS and ChimeraOS packages, among others used by Bazzite, are built o
 | wireplumber                                                                                         | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/wireplumber/status_image/last_build.png?)                                 |
 | [xwiimote-ng](https://github.com/dev-0x7C6/xwiimote-ng)                                             | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/package/xwiimote-ng/status_image/last_build.png?)                                 |
 
-Additionally, the following packages are used from other Copr repos:
+此外，以下软件包来自于其他Copr存储库：
 
 | Package                                                                                                       | Status                                                                                                                                                          |
 | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -325,9 +325,9 @@ Additionally, the following packages are used from other Copr repos:
 | [wallpaper-engine-kde-plugin](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/) | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/package/wallpaper-engine-kde-plugin/status_image/last_build.png?) |
 | [webapp-manager](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/)                           | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/package/webapp-manager/status_image/last_build.png?)                           |
 
-## Verification
+## 验证
 
-These images are signed with sigstore's [cosign](https://docs.sigstore.dev/cosign/overview/). You can verify the signature by downloading the `cosign.pub` key from this repo and running the following command:
+这些镜像使用sigstore的[cosign](https://docs.sigstore.dev/cosign/overview/)。你可以通过此存储库下载 `cosign.pub`密钥，并运行以下命令来验证签名：
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -335,22 +335,22 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## 安全启动
 
-> [!WARNING]  
-> **Steam Deck Users: The Steam Deck does not come with secure boot enabled and does not ship with any keys enrolled by default. Do not enable this unless you absolutely know what you're doing.**
+> [!警告]  
+> **Steam Deck用户：Steam Deck并未启用安全启动功能，并且默认情况下也未提供任何注册的密钥。不要启用此功能，除非你确切的知道自己在做什么。**
 
-Secure boot is supported with our custom key. The pub key can be found in the root of this repository [here](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der).
-If you'd like to enroll this key prior to installation or rebase, download the key and run the following:
+我们的自定义密钥支持安全启动。公钥可以在[此存储库](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der)的根目录中找到。
+如果要在安装或变基之前注册此密钥，请下载该密钥并运行如下命令：
 
 ```bash
 sudo mokutil --timeout -1
 sudo mokutil --import secure_boot.der
 ```
 
-For users already on a Universal Blue image, you may instead run `ujust enroll-secure-boot-key`.
+对于已安装Universal Blue镜像的用户，你可以改为运行`ujust enroll-secure-boot-key`。
 
-If asked for a password, use `ublue-os`.
+如果要求输入密码，就使用`ublue-os`。
 
-### Contributor Metrics
+### 贡献者指标
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
@@ -364,35 +364,35 @@ If asked for a password, use `ublue-os`.
   </picture>
 </a>
 
-## Special Thanks
+## 特别鸣谢
 
-Bazzite is a community effort and wouldn't exist without everyone's support. Below are some of the people who've helped us along the way:
-  
-- [rei.svg](https://github.com/reisvg) - For creating our logo and overall branding.
-- [SuperRiderTH](https://github.com/SuperRiderTH) - For creating our Steam game mode startup video.
-- [evlaV](https://gitlab.com/evlaV) - For making Valve's code available and for being [this person](https://xkcd.com/2347/).
+Bazzite是社区努力的结果，离不开每个人的支持。以下是那些一路帮助过我们的人：
+
+- [rei.svg](https://github.com/reisvg) - 创作了我们的徽标和整体品牌。
+- [SuperRiderTH](https://github.com/SuperRiderTH) - 创作了我们Steam游戏模式的启动视频。
+- [evlaV](https://gitlab.com/evlaV) - 使Valve的代码可用并成为[this person](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.
-- [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out. It's our Nix-based cousin.
-- [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - For assistance with needed kernel patches and for creating the [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) we now use.
-- [nicknamenamenick](https://github.com/nicknamenamenick) - For being the MVP nearly single-handedly upkeeping our documentation and support literature, and countless cases of helping users.
-- [Steam Deck Homebrew](https://deckbrew.xyz) - For choosing to support distributions other than SteamOS despite the extra work, and a special thanks to [PartyWumpus](https://github.com/PartyWumpus) for getting Decky Loader working with SELinux for us.
-- [cyrv6737](https://github.com/cyrv6737) - For the initial inspiration and the base that became bazzite-arch.
+- [Jovian-NixOS](https://github.com/Jovian-Experiments) - 支持我们解决技术问题并创建了一个类似的项目。Seriously, go check it out. It's our Nix-based cousin.
+- [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - 帮助提供所需的内核补丁和创建我们现在使用的[kernel-fsync 仓库](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/)。
+- [nicknamenamenick](https://github.com/nicknamenamenick) - 作为MVP，几乎单枪匹马维护着我们的文档和支持文献，和无数的帮助用户的案例。
+- [Steam Deck Homebrew](https://deckbrew.xyz) - 尽管需要额外的工作，但还是选择支持SteamOS以外的发行版，特别感谢[PartyWumpus](https://github.com/PartyWumpus)使Decky Loader在SELinux下正常工作。
+- [cyrv6737](https://github.com/cyrv6737) - 最初的灵感和成为Bazzite-arch的基础。
 
-## Build Your Own
+## 构建自己的版本
 
-Bazzite is built entirely in GitHub and creating your own custom version of it is as easy as forking this repository, adding a private signing key, and enabling GitHub actions.
+Bazzite完全在GitHub上构建，创建你自己的版本只需要fork此仓库，添加私钥，然后启用GitHub actions。
 
-[Familiarize yourself](https://docs.github.com/en/actions/security-guides/encrypted-secrets) on keeping secrets in github. You'll need to [generate a new keypair](https://docs.sigstore.dev/cosign/overview/) with cosign. The public key can be in your public repo <sub><sup>(Your users need it to check the signatures)</sup></sub>, and you can paste the private key in `Settings -> Secrets -> Actions` with the name `SIGNING_SECRET`.
+熟悉github[加密机制](https://docs.github.com/en/actions/security-guides/encrypted-secrets)。你需要[生成带有cosign的新密钥对](https://docs.sigstore.dev/cosign/overview/)。公钥可以放置在你的公有仓库中<sub><sup>(你的用户需要用它来检查签名)</sup></sub>，你可以用`SIGNING_SECRET`作为名字把私钥粘贴到`Settings -> Secrets -> Actions`。
 
-We also ship a config for the popular [pull app](https://github.com/apps/pull) if you'd like to keep your fork in sync with upstream. Enable this app on your repo to keep track of Bazzite changes while also making your own modifications.
+如果你想使你的fork与上游保持同步，我们同样提供了一个流行的[pull app](https://github.com/apps/pull)的设置。在你的仓库上启用此应用程序以追踪Bazzite的更新，同时进行你自己的修改。
 
-## Join The Community
+## 加入社区
 
-You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB) and view the [archive](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769) of support threads without an account.
+你可以在[Universal Blue Discord](https://discord.gg/f8MUghG5PB)找到我们，同时免账号查看[支持文档](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769)。
 
-Discuss and create user guides over at the [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
+在[Universal Blue Discourse 论坛](https://universal-blue.discourse.group/c/bazzite/5)上讨论并创建用户指南。
 
-Follow Universal Blue on [Mastodon](https://fosstodon.org/@UniversalBlue).
+在[Mastodon](https://fosstodon.org/@UniversalBlue)上关注Universal Blue。
 
 
 [def]: #--
