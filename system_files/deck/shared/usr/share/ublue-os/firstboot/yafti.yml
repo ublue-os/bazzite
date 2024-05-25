@@ -129,6 +129,7 @@ screens:
           - Chiaki4Deck (PlayStation Remote Play): io.github.streetpea.Chiaki4deck
           - Discord (Discover Overlay Included): com.discordapp.Discord
           - DOSBox Staging: io.github.dosbox-staging
+          - Fightcade: com.fightcade.Fightcade
           - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
           - Greenlight: io.github.unknownskl.greenlight
           - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
