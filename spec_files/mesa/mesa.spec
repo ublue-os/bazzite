@@ -58,11 +58,11 @@
 %bcond_with valgrind
 %endif
 
-%global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}%{?with_nvk:,nouveau-experimental}
+%global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}%{?with_nvk:,nouveau}
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 24.0.7
+%global ver 24.1.0
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Release:        100.bazzite.{{{ git_dir_version }}}
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -75,10 +75,6 @@ Source0:        https://archive.mesa3d.org/mesa-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
-# Work around for the meson bug until an upstream fix lands
-# https://bugzilla.redhat.com/show_bug.cgi?id=2277018
-# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/28923
-Patch11:        mesa-28923.patch
 
 # https://gitlab.com/evlaV/mesa/
 Patch21:        valve.patch
@@ -87,6 +83,10 @@ BuildRequires:  meson >= 1.3.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
+BuildRequires:  python3-pycparser >= 2.20
+BuildRequires:  cbindgen >= 0.26.0
+BuildRequires:  libbsd-devel
+BuildRequires:  libxml2-devel
 %if 0%{?with_hardware}
 BuildRequires:  kernel-headers
 %endif
@@ -102,7 +102,7 @@ BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(libselinux)
 BuildRequires:  pkgconfig(wayland-scanner)
-BuildRequires:  pkgconfig(wayland-protocols) >= 1.8
+BuildRequires:  pkgconfig(wayland-protocols) >= 1.34
 BuildRequires:  pkgconfig(wayland-client) >= 1.11
 BuildRequires:  pkgconfig(wayland-server) >= 1.11
 BuildRequires:  pkgconfig(wayland-egl-backend) >= 3
@@ -150,10 +150,12 @@ BuildRequires:  pkgconfig(SPIRV-Tools)
 BuildRequires:  pkgconfig(LLVMSPIRVLib)
 %endif
 %if 0%{?with_nvk}
+BuildRequires:  (rust >= 1.78.0 with rust < 2)
 BuildRequires:  (crate(proc-macro2) >= 1.0.56 with crate(proc-macro2) < 2)
 BuildRequires:  (crate(quote) >= 1.0.25 with crate(quote) < 2)
 BuildRequires:  (crate(syn/clone-impls) >= 2.0.15 with crate(syn/clone-impls) < 3)
 BuildRequires:  (crate(unicode-ident) >= 1.0.6 with crate(unicode-ident) < 2)
+BuildRequires:  (crate(paste) >= 1.0.14 with crate(paste) < 2)
 %endif
 %if %{with valgrind}
 BuildRequires:  pkgconfig(valgrind)
@@ -388,6 +390,7 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
 %rewrite_wrap_file quote
 %rewrite_wrap_file syn
 %rewrite_wrap_file unicode-ident
+%rewrite_wrap_file paste
 %endif
 
 # We've gotten a report that enabling LTO for mesa breaks some games. See
@@ -396,6 +399,9 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
 %define _lto_cflags %{nil}
 
 %meson \
+%ifnarch x86_64
+  -Dintel-rt=disabled \
+%endif
   -Dplatforms=x11,wayland \
   -Ddri3=enabled \
   -Dosmesa=true \
@@ -558,6 +564,10 @@ popd
 %{_libdir}/dri/kms_swrast_dri.so
 %{_libdir}/dri/swrast_dri.so
 %{_libdir}/dri/virtio_gpu_dri.so
+%{_libdir}/dri/panthor_dri.so
+%{_libdir}/dri/rzg2l-du_dri.so
+%{_libdir}/dri/ssd130x_dri.so
+%{_libdir}/dri/zynqmp-dpsub_dri.so
 
 %if 0%{?with_hardware}
 %if 0%{?with_r300}
