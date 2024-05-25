@@ -14,7 +14,7 @@ fi
 
 DGPU_OPTION=""
 # If we're running this on a dGPU, disable accelerated cef
-if [[ $(switcherooctl list | grep -o 'Device:' | wc -l) > 1 ]]; then
+if [[ $(switcherooctl list | grep -o 'Device:' | wc -l) -gt 1 ]]; then
   DGPU_OPTION="-cef-disable-gpu"
 fi
 
