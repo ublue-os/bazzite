@@ -13,7 +13,7 @@
 ---
 
 # Table of Contents
-- [🇺🇸 🇪🇸 🇮🇩 :cn:](#---cn)
+- [Language](#---cn)
 - [Table of Contents](#table-of-contents)
   - [About \& Features](#about--features)
     - [Desktop](#desktop)
