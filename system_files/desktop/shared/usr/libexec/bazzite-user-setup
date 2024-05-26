@@ -129,10 +129,10 @@ else
       TEMPLATES_DIR="$HOME/Templates"
     fi
     mkdir -p "$TEMPLATES_DIR"
-    if [[ ! -f "$TEMPLATES_DIR/vkBasalt.conf" ]]; then
+    if [[ ! -f "$TEMPLATES_DIR/vkBasalt.conf" && -f "/etc/vkBasalt.conf" ]]; then
       ln -s "/etc/vkBasalt.conf" "$TEMPLATES_DIR/vkBasalt.conf"
     fi
-    if [[ ! -f "$TEMPLATES_DIR/dxvk.conf" ]]; then
+    if [[ ! -f "$TEMPLATES_DIR/dxvk.conf" && -f "/etc/dxvk-example.conf" ]]; then
       ln -s "/etc/dxvk-example.conf" "$TEMPLATES_DIR/dxvk.conf"
     fi
 
