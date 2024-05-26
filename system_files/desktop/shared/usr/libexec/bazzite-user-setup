@@ -122,12 +122,18 @@ else
     fi
 
     echo 'Setting up templates'
-    mkdir -p "$HOME/Templates"
-    if [[ ! -f "$HOME/Templates/vkBasalt.conf" ]]; then
-      ln -s "/etc/vkBasalt.conf" "$HOME/Templates/vkBasalt.conf"
+    TEMPLATES_DIR=$(/usr/bin/xdg-user-dir TEMPLATES || true)
+    if [[ -z "$TEMPLATES_DIR" || "$TEMPLATES_DIR" == "$HOME" ]]; then
+      # xdg-user-dir might return only $HOME, in that case, use fallback $HOME/Templates.
+      echo "Using fallback '$HOME/Templates'"
+      TEMPLATES_DIR="$HOME/Templates"
     fi
-    if [[ ! -f "$HOME/Templates/dxvk.conf" ]]; then
-      ln -s "/etc/dxvk-example.conf" "$HOME/Templates/dxvk.conf"
+    mkdir -p "$TEMPLATES_DIR"
+    if [[ ! -f "$TEMPLATES_DIR/vkBasalt.conf" ]]; then
+      ln -s "/etc/vkBasalt.conf" "$TEMPLATES_DIR/vkBasalt.conf"
+    fi
+    if [[ ! -f "$TEMPLATES_DIR/dxvk.conf" ]]; then
+      ln -s "/etc/dxvk-example.conf" "$TEMPLATES_DIR/dxvk.conf"
     fi
 
     echo 'Tweaking GNOME indexer'
