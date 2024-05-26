@@ -19,10 +19,18 @@ if grep -qz 'not initialized' <<< $(/usr/bin/waydroid status); then
 	/usr/bin/ujust init-waydroid
 fi
 
+launch_waydroid() {
+        wlr-randr --output X11-1 --custom-mode "$1"
+        sleep 1
+        shift
+        exec waydroid "$@" &> /dev/null
+}
+export -f launch_waydroid
+
 # Launch Cage & Waydroid
 pkexec /usr/libexec/waydroid-container-start
 if [ -z "$(pgrep wlr-randr)" ]; then
-    cage -- bash -uxc 'wlr-randr --output X11-1 --custom-mode "$1"; sleep 1; shift; waydroid "$@" &> /dev/null' _ "${WAYDROID_WIDTH:-1280}x${WAYDROID_HEIGHT:-800}" "$@" &
+    cage -- bash -uxc 'launch_waydroid "$@"' _ "${WAYDROID_WIDTH:-1280}x${WAYDROID_HEIGHT:-800}" "$@" &
 fi
 
 # Fix controllers, we know Waydroid has started because surfaceflinger is running
