@@ -182,10 +182,16 @@ else
   echo "No minimum-free ZRAM changes needed"
 fi
 
-# FRAMEWORK 13 AMD FIXES
+# FRAMEWORK AMD FIXES
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
-  if [[ $SYS_ID == "Laptop ("* ]]; then
-    if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
+  if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
+    # Load Ryzen SMU on AMD Framework Laptops
+    if ! [[ -f "/etc/modules-load.d/ryzen_smu.conf" ]]; then
+      mkdir -p "/etc/modules-load.d"
+      printf "# Load ryzen_smu driver upon startup\nryzen_smu\n" >> "/etc/modules-load.d/ryzen_smu.conf"
+    fi
+    # Framework 13 AMD fixes
+    if [[ $SYS_ID == "Laptop ("* ]]; then
       if [[ ! -f /etc/modprobe.d/alsa.conf ]]; then
         echo 'Fixing 3.5mm jack'
         sudo tee /etc/modprobe.d/alsa.conf <<< "options snd-hda-intel index=1,0 model=auto,dell-headset-multi"
