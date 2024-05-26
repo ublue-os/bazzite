@@ -49,11 +49,6 @@ flatpak remote-modify --user --enable flathub
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup "$USER"
 
-# Refresh fontconfig
-if [[ -f "$HOME/.config/fontconfig" ]]; then
-  rm -rf "$HOME/.config/fontconfig"
-fi
-
 # Set up optional Gradience themes
 GRADIENCE_THEME_DIR="/usr/etc/skel/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
 GRADIENCE_DIR="$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
