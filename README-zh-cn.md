@@ -4,7 +4,7 @@
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
 
-# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md)
+# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [:cn:](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md)
 
 <p align="center">
   <a href="https://download.bazzite.gg/"><img src="/repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
@@ -13,7 +13,7 @@
 ---
 
 # 目录
-- [🇺🇸 🇪🇸 🇮🇩](#--)
+- [🇺🇸 🇪🇸 🇮🇩 :cn:](#---cn)
 - [目录](#目录)
   - [关于 \& 特性](#关于--特性)
     - [Desktop](#desktop)
@@ -40,7 +40,7 @@
 
 [请访问我们的网站](https://bazzite.gg/) 了解Bazzite的新手指引。此自述文件将深入介绍所有内容。
 
-[Bazzite](https://bazzite.gg/) 是一个OCI镜像，可以作为[Steam Deck](https://www.steamdeck.com/)的替代操作系统,，以及适用于台式电脑和客厅家庭影院PC的类似SteamOS的即开即用型游戏系统。
+[Bazzite](https://bazzite.gg/) 是一个OCI镜像，可以作为[Steam Deck](https://www.steamdeck.com/)的替代操作系统，以及适用于台式电脑和客厅家庭影院PC的类似SteamOS的即开即用型游戏系统。
 
 Bazzite是使用[Fedora](https://fedoraproject.org/)技术基于[ublue-os/main](https://github.com/ublue-os/main) 和 [ublue-os/nvidia](https://github.com/ublue-os/nvidia)构建的，这意味着更多的硬件支持和内置驱动程序。此外，Bazzite还添加了以下特性：
 
@@ -65,7 +65,7 @@ Bazzite是使用[Fedora](https://fedoraproject.org/)技术基于[ublue-os/main](
 - 预装[System76-Scheduler](https://github.com/pop-os/system76-scheduler)，为你的重点应用程序提供自动的进程优先级调整，并将后台进程的CPU时间保持在最低限度。
 - 使用附加规则自定义System76-Scheduler配置。
 - 默认启用 [Google's BBR TCP congestion control](https://github.com/google/bbr) 。
-- 预装并启用[Input Remapper](https://github.com/sezanzeb/input-remapper) 。<sub><sup>(在Deck变体上默认禁用（或可用），可运行 `ujust restore-input-remapper`以启用)。</sup></sub>
+- 预装并启用[Input Remapper](https://github.com/sezanzeb/input-remapper) <sub><sup>(在Deck变体上默认禁用（或可用），可运行 `ujust restore-input-remapper`以启用)。</sup></sub>
 - Bazzite Portal 提供了一个安装应用程序和调整系统的简单方式，包括安装 [LACT](https://github.com/ilya-zlobintsev/LACT) 和 [GreenWithEnvy](https://gitlab.com/leinardi/gwe)。
 - 预装了[Waydroid](https://waydro.id/) 用于运行Android应用程序。阅读这篇[快速指南](https://universal-blue.discourse.group/docs?topic=32)对其进行设置。
 - 使用 [Flatseal](https://github.com/tchx84/Flatseal)，[Warehouse](https://github.com/flattool/warehouse)，和[Gear Lever](https://github.com/mijorus/gearlever)管理应用程序。
@@ -122,13 +122,13 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - 内置对Windows双系统的支持，这要归功于Fedora的安装保持了GRUB的完整性。
 - 更新破坏了一些东西？借助于`rpm-ostree`的回滚功能，你可以轻松回滚到先前版本的Bazzite。你甚至可以在启动时选定先前版本的镜像。
 - Steam and Lutris作为分层包预装在镜像上。
-- 为Discord预装了[Discover Overlay](https://github.com/trigg/Discover)，如果Discord已经安装，则会在游戏模式和桌面模式自动启动。[在此查看官方文档](https://trigg.github.io/Discover/bazzite).
+- 为Discord预装了[Discover Overlay](https://github.com/trigg/Discover)，如果Discord已经安装，则会在游戏模式和桌面模式自动启动。[在此查看官方文档](https://trigg.github.io/Discover/bazzite)。
 - 默认情况下将使用ZRAM<sub><sup>(4GB)</sup></sub> 及ZSTD压缩算法。可以选择切换回1GB交换文件，然后根据需要自定义其大小。
 - Kyber I/O 调度程序用来防止安装游戏或后台运行`duperemove`进程时出现I/O starvation。
 - 应用SteamOS的内核参数。
 - 包括用于磨砂和镜面Steam Deck屏幕的颜色校准显示配置文件。
 - 默认禁用的高级用户功能，包括：
-    - 通过[RyzenAdj](https://github.com/FlyGoat/RyzenAdj) 和 [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu)提供的Steam Deck的低风险欠压服务进程, 参阅`ryzenadj.service` 和 `/etc/default/ryzenadj`。
+    - 通过[RyzenAdj](https://github.com/FlyGoat/RyzenAdj) 和 [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu)提供的Steam Deck的低风险欠压服务进程，参阅`ryzenadj.service` 和 `/etc/default/ryzenadj`。
     - 限制电池最大充电水平的服务进程，参阅`batterylimit.service` 和 `/etc/default/batterylimit`。<sup><sub>(即使设备关闭也能工作)</sub></sup>
     - 内置超频显示支持。例如添加`GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` 到 `/etc/environment`。
     - 你的Steam Deck改了32GB内存？享受双倍最大显存，自动启用。<sup><sub>(可以分享你的焊接技巧吗？)</sub></sup>
@@ -178,12 +178,12 @@ ujust install-hhd-xbox-glyph-theme
 
 桌面和Deck版本都可以使用GNOME桌面环境构建。这些版本具有如下的额外特性：
 
-- [Wayland协议下支持可变刷新率和非整数倍缩放](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
+- [Wayland协议下支持可变刷新率和非整数倍缩放](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154)。
 - 顶部栏中的自定义菜单，可用于返回游戏模式，启动Steam和打开许多有用的实用程序。
 - 默认安装启用[GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/)。
 - 包含了[Hanabi扩展](https://github.com/jeffshee/gnome-ext-hanabi)以提供与KDE中Wallpaper Engine类似的功能。
-- 预装了许多可选的扩展，包括[重要的用户体验修复](https://www.youtube.com/watch?v=nbCg9_YgKgM).
-- 自动更新[Firefox GNOME主题](https://github.com/rafaelmardojai/firefox-gnome-theme) 和 [Thunderbird GNOME 主题](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(如果已安装)</sub></sup>
+- 预装了许多可选的扩展，包括[重要的用户体验修复](https://www.youtube.com/watch?v=nbCg9_YgKgM)。
+- 自动更新[Firefox GNOME主题](https://github.com/rafaelmardojai/firefox-gnome-theme) 和 [Thunderbird GNOME 主题](https://github.com/rafaelmardojai/thunderbird-gnome-theme)。 <sup><sub>(如果已安装)</sub></sup>
 
 > [!重要]  
 > **镜像文件可以从我们的[发布页面](https://github.com/ublue-os/bazzite/releases)下载，也可以[在此处](https://universal-blue.discourse.group/docs?topic=30)找到有用的安装指南。**
@@ -215,7 +215,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 #### Universal Blue
 
-- 预装了专有的Nvidia驱动程序<sub><sup>(仅限Nvidia镜像)</sup></sub>
+- 预装了专有的Nvidia驱动程序<sub><sup>(仅限Nvidia镜像)</sup></sub>。
 - 默认启用Flathub。
 - 方便使用的[`ujust`](https://github.com/casey/just)命令。
 - 开箱即用的多媒体编解码器。
