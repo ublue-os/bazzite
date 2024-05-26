@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=40
+HWS_VER=41
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -59,7 +59,12 @@ if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
 fi
 
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
-  if [[ "GenuineIntel" == "$CPU_VENDOR" ]]; then
+  if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
+    if [[ ! $KARGS =~ "iomem" ]]; then
+      echo "AMD Framework Laptop detected, adding needed kargs for ryzenadj"
+      NEEDED_KARGS+=("--append-if-missing=iomem=relaxed")
+    fi
+  elif [[ "GenuineIntel" == "$CPU_VENDOR" ]]; then
     if [[ ! $KARGS =~ "hid_sensor_hub" ]]; then
       echo "Intel Framework Laptop detected, applying needed keyboard fix"
       NEEDED_KARGS+=("--append-if-missing=module_blacklist=hid_sensor_hub");
@@ -177,10 +182,16 @@ else
   echo "No minimum-free ZRAM changes needed"
 fi
 
-# FRAMEWORK 13 AMD FIXES
+# FRAMEWORK AMD FIXES
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
-  if [[ $SYS_ID == "Laptop ("* ]]; then
-    if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
+  if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
+    # Load Ryzen SMU on AMD Framework Laptops
+    if ! [[ -f "/etc/modules-load.d/ryzen_smu.conf" ]]; then
+      mkdir -p "/etc/modules-load.d"
+      printf "# Load ryzen_smu driver upon startup\nryzen_smu\n" >> "/etc/modules-load.d/ryzen_smu.conf"
+    fi
+    # Framework 13 AMD fixes
+    if [[ $SYS_ID == "Laptop ("* ]]; then
       if [[ ! -f /etc/modprobe.d/alsa.conf ]]; then
         echo 'Fixing 3.5mm jack'
         sudo tee /etc/modprobe.d/alsa.conf <<< "options snd-hda-intel index=1,0 model=auto,dell-headset-multi"
