@@ -17,7 +17,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=33
+USER_SETUP_VER=34
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -48,11 +48,6 @@ flatpak remote-modify --user --enable flathub
 
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup "$USER"
-
-# Refresh fontconfig
-if [[ -f "$HOME/.config/fontconfig" ]]; then
-  rm -rf "$HOME/.config/fontconfig"
-fi
 
 # Set up optional Gradience themes
 GRADIENCE_THEME_DIR="/usr/etc/skel/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
@@ -122,12 +117,18 @@ else
     fi
 
     echo 'Setting up templates'
-    mkdir -p "$HOME/Templates"
-    if [[ ! -f "$HOME/Templates/vkBasalt.conf" ]]; then
-      ln -s "/etc/vkBasalt.conf" "$HOME/Templates/vkBasalt.conf"
+    TEMPLATES_DIR=$(/usr/bin/xdg-user-dir TEMPLATES || true)
+    if [[ -z "$TEMPLATES_DIR" || "$TEMPLATES_DIR" == "$HOME" ]]; then
+      # xdg-user-dir might return only $HOME, in that case, use fallback $HOME/Templates.
+      echo "Using fallback '$HOME/Templates'"
+      TEMPLATES_DIR="$HOME/Templates"
     fi
-    if [[ ! -f "$HOME/Templates/dxvk.conf" ]]; then
-      ln -s "/etc/dxvk-example.conf" "$HOME/Templates/dxvk.conf"
+    mkdir -p "$TEMPLATES_DIR"
+    if [[ ! -f "$TEMPLATES_DIR/vkBasalt.conf" && -f "/etc/vkBasalt.conf" ]]; then
+      ln -s "/etc/vkBasalt.conf" "$TEMPLATES_DIR/vkBasalt.conf"
+    fi
+    if [[ ! -f "$TEMPLATES_DIR/dxvk.conf" && -f "/etc/dxvk-example.conf" ]]; then
+      ln -s "/etc/dxvk-example.conf" "$TEMPLATES_DIR/dxvk.conf"
     fi
 
     echo 'Tweaking GNOME indexer'

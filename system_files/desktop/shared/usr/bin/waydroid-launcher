@@ -1,6 +1,13 @@
 #!/usr/bin/bash
 
+set -eux
+
 source /etc/default/waydroid-launcher
+
+# for backwards compatibility, default to show-full-ui
+if (($# == 0)); then
+	set -- show-full-ui
+fi
 
 # Kill any previous remnants
 if [ "$(systemctl is-active waydroid-container.service)" == 'active' ]; then
@@ -12,10 +19,18 @@ if grep -qz 'not initialized' <<< $(/usr/bin/waydroid status); then
 	/usr/bin/ujust init-waydroid
 fi
 
+launch_waydroid() {
+        wlr-randr --output X11-1 --custom-mode "$1"
+        sleep 1
+        shift
+        exec waydroid "$@" &> /dev/null
+}
+export -f launch_waydroid
+
 # Launch Cage & Waydroid
 pkexec /usr/libexec/waydroid-container-start
 if [ -z "$(pgrep wlr-randr)" ]; then
-	cage -- bash -c "wlr-randr --output X11-1 --custom-mode ${WAYDROID_WIDTH:-1280}x${WAYDROID_HEIGHT:-800}; sleep 1; waydroid show-full-ui &> /dev/null &" &
+    cage -- bash -uxc 'launch_waydroid "$@"' _ "${WAYDROID_WIDTH:-1280}x${WAYDROID_HEIGHT:-800}" "$@" &
 fi
 
 # Fix controllers, we know Waydroid has started because surfaceflinger is running
