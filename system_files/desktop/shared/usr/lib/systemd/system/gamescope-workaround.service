@@ -2,6 +2,7 @@
 Description=Workaround gamescope not having the correct caps
 ConditionFileIsExecutable=/usr/bin/gamescope
 After=local-fs.target
+Before=graphical-session-pre.target
 
 [Service]
 Type=oneshot

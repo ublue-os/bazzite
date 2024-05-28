@@ -135,7 +135,7 @@ install-opentabletdriver:
     if grep -qvz "arch" <<< $(distrobox list); then \
       Assemble noconfirmcreate "" "arch"; \
     fi && \
-    distrobox enter -n arch -- bash -c 'paru -S opentabletdriver --noconfirm' && \
+    distrobox enter -n arch -- bash -c 'paru -Syu --noconfirm && paru -S opentabletdriver --noconfirm' && \
     mkdir -p ~/.config/systemd/user/ && \
     rm -f ~/.config/systemd/user/arch-opentabletdriver.service && \
     wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenTabletDriver/opentabletdriver.service -O ~/.config/systemd/user/arch-opentabletdriver.service && \
