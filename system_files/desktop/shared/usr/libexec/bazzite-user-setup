@@ -98,23 +98,23 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
 else
   echo 'Running setup for Silverblue'
 
+  if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
+    if [[ ! -f "$BAZZITE_CONFIG_DIR/framework-initialized" ]]; then
+      echo 'Setting Framework logo menu'
+      dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
+      dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 4
+      echo 'Adjusting OSD position'
+      dconf write /org/gnome/shell/extensions/just-perfection/osd-position 4
+      if [[ $SYS_ID == "Laptop ("* ]]; then
+        echo 'Applying font fix for Framework 13'
+        dconf write /org/gnome/desktop/interface/text-scaling-factor 1.25
+      fi
+      touch "$BAZZITE_CONFIG_DIR/framework-initialized"
+    fi
+  fi
+
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
-
-    if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
-      if [[ ! -f "$BAZZITE_CONFIG_DIR/framework-initialized" ]]; then
-        echo 'Setting Framework logo menu'
-        dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
-        dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 4
-        echo 'Adjusting OSD position'
-        dconf write /org/gnome/shell/extensions/just-perfection/osd-position 4
-        if [[ $SYS_ID == "Laptop ("* ]]; then
-          echo 'Applying font fix for Framework 13'
-          dconf write /org/gnome/desktop/interface/text-scaling-factor 1.25
-        fi
-        touch "$BAZZITE_CONFIG_DIR/framework-initialized"
-      fi
-    fi
 
     echo 'Setting up templates'
     TEMPLATES_DIR=$(/usr/bin/xdg-user-dir TEMPLATES || true)
