@@ -6,7 +6,7 @@
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        1.bazzite
+Release:        2.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -21,6 +21,7 @@ Patch2:         disable-steam-touch-click-atom.patch
 Patch3:         external-rotation.patch
 Patch4:         panel-type.patch
 Patch5:         deckhd.patch
+Patch6:         gamescope-libliftoff-revert.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -95,6 +96,10 @@ Summary:	libs for %{name}
 git clone --depth 1 --branch %{gamescope_tag} %{url}.git
 cd gamescope
 git submodule update --init --recursive
+#-HACK: Reset libliftoff submodule to a non-problematic commit
+cd subprojects/libliftoff
+git checkout c63676eda7d242684bd226ce5c3f94d3728d2f18
+cd ../../
 mkdir -p pkgconfig
 cp %{SOURCE0} pkgconfig/stb.pc
 
@@ -106,7 +111,7 @@ sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/m
 %build
 cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
-%meson -Dpipewire=enabled -Dinput_emulation=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dsdl2_backend=enabled -Dforce_fallback_for=vkroots,wlroots
+%meson -Dpipewire=enabled -Dinput_emulation=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dsdl2_backend=enabled -Dforce_fallback_for=vkroots,wlroots,libliftoff
 %meson_build
 
 %install
