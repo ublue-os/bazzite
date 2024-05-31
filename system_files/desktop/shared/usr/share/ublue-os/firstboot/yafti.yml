@@ -134,7 +134,6 @@ screens:
           - Mumble: info.mumble.Mumble
           - OpenMW: org.openmw.OpenMW
           - osu: sh.ppy.osu
-          - Parsec: com.parsecgaming.parsec
           - Space Cadet Pinball: com.github.k4zmu2a.spacecadetpinball
           - Sonic Robo Blast 2: org.srb2.SRB2
           - Sonic Robo Blast 2 Kart: org.srb2.SRB2Kart
@@ -215,10 +214,10 @@ screens:
           - Gradience: com.github.GradienceTeam.Gradience
           - JamesDSP: me.timschneeberger.jdsp4linux
           - KeePassXC: org.keepassxc.KeePassXC
+          - Main Menu: page.codeberg.libre_menu_editor.LibreMenuEditor
           - Metadata Cleaner: fr.romainvigier.MetadataCleaner
           - OpenRGB: org.openrgb.OpenRGB
           - Pika Backup: org.gnome.World.PikaBackup
-          - PinApp: io.github.fabrialberio.pinapp
           - qBittorrent: org.qbittorrent.qBittorrent
           - Resources: net.nokyan.Resources
           - SaveDesktop: io.github.vikdevelop.SaveDesktop
@@ -234,7 +233,7 @@ screens:
       - "Install More Applications":
           run: /usr/bin/plasma-discover
       - "Documentation":
-          run: /usr/bin/xdg-open https://universal-blue.discourse.group/docs?category=5
+          run: /usr/bin/xdg-open https://docs.bazzite.gg
       - "Forums":
           run: /usr/bin/xdg-open https://universal-blue.discourse.group/c/bazzite/5
       - "Join the Discord Community":

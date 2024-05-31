@@ -6,7 +6,7 @@ screens:
   first-screen:
     source: yafti.screen.title
     values:
-      title: "Welcome to Bazzite (Steam Deck & HTPC Edition)"
+      title: "Welcome to Bazzite (Handheld & HTPC Edition)"
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
         Configure your system to get started. This utility can be re-opened at any time, so don't feel like you have to get it perfect your first go-through.
@@ -141,7 +141,6 @@ screens:
           - Mumble: info.mumble.Mumble
           - OpenMW: org.openmw.OpenMW
           - osu: sh.ppy.osu
-          - Parsec: com.parsecgaming.parsec
           - Space Cadet Pinball: com.github.k4zmu2a.spacecadetpinball
           - Sonic Robo Blast 2: org.srb2.SRB2
           - Sonic Robo Blast 2 Kart: org.srb2.SRB2Kart
@@ -220,10 +219,10 @@ screens:
           - Fedora Media Writer: org.fedoraproject.MediaWriter
           - Gradience: com.github.GradienceTeam.Gradience
           - KeePassXC: org.keepassxc.KeePassXC
+          - Main Menu: page.codeberg.libre_menu_editor.LibreMenuEditor
           - Metadata Cleaner: fr.romainvigier.MetadataCleaner
           - OpenRGB: org.openrgb.OpenRGB
           - Pika Backup: org.gnome.World.PikaBackup
-          - PinApp: io.github.fabrialberio.pinapp
           - qBittorrent: org.qbittorrent.qBittorrent
           - Resources: net.nokyan.Resources
           - SaveDesktop: io.github.vikdevelop.SaveDesktop
@@ -239,7 +238,7 @@ screens:
       - "Install More Applications":
           run: /usr/bin/plasma-discover
       - "Documentation":
-          run: /usr/bin/xdg-open https://universal-blue.discourse.group/docs?category=5
+          run: /usr/bin/xdg-open https://docs.bazzite.gg
       - "Forums":
           run: /usr/bin/xdg-open https://universal-blue.discourse.group/c/bazzite/5
       - "Join the Discord Community":
@@ -247,4 +246,4 @@ screens:
       - "Reboot now":
           run: systemctl reboot
       description: |
-        Thank you for trying Bazzite (Steam Deck Edition). Please reboot to apply changes made by this setup utility.
+        Thank you for trying Bazzite (Handheld & HTPC Edition). Please reboot to apply changes made by this setup utility.
