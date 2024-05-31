@@ -6,7 +6,7 @@ enable-rmlint ACTION="":
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
     if [[ ! -f "/etc/systemd/system/btrfs-dedup@.service.d/override.conf" ]]; then
-        RMLINT_STATE="${red}${b}not enabled{n}"
+        RMLINT_STATE="${red}${b}not enabled${n}"
     else
         RMLINT_STATE="${green}${b}already enabled${n}"
     fi
