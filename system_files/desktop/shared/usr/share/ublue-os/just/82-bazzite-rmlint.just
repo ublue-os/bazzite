@@ -6,7 +6,7 @@ enable-rmlint ACTION="":
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
     if [[ ! -f "/etc/systemd/system/btrfs-dedup@.service.d/override.conf" ]]; then
-        RMLINT_STATE="${red}${b}not enabled{n}"
+        RMLINT_STATE="${red}${b}not enabled${n}"
     else
         RMLINT_STATE="${green}${b}already enabled${n}"
     fi
@@ -28,8 +28,8 @@ enable-rmlint ACTION="":
       fi
       ublue-update --wait
       rpm-ostree install --apply-live -y rmlint
-      mkdir /etc/systemd/system/btrfs-dedup@.service.d/
-      bash -c 'cat << EOL > /etc/systemd/system/btrfs-dedup@.service.d/override.conf
+      sudo mkdir /etc/systemd/system/btrfs-dedup@.service.d/
+      sudo bash -c 'cat << EOL > /etc/systemd/system/btrfs-dedup@.service.d/override.conf
       [Unit]
       Description=Btrfs deduplication on %f
       ConditionPathIsMountPoint=%f
@@ -69,7 +69,7 @@ enable-rmlint ACTION="":
       fi
       ublue-update --wait
       rpm-ostree remove -y rmlint
-      rm /etc/systemd/system/btrfs-dedup@.service.d/override.conf
-      rmdir /etc/systemd/system/btrfs-dedup@.service.d/
+      sudo rm /etc/systemd/system/btrfs-dedup@.service.d/override.conf
+      sudo rmdir /etc/systemd/system/btrfs-dedup@.service.d/
       echo "rmlint has been disabled."
     fi
