@@ -2,7 +2,15 @@
     "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
     "logo": {
         "type": "file",
-        "source": "/usr/share/ublue-os/bazzite/logo.txt"
+        "source": "/usr/share/ublue-os/bazzite/logo.txt",
+        "color": {
+            "1": "94",
+            "2": "47",
+            "3": "95",
+            "4": "0",
+            "5": "8",
+            "6": "55"
+        }
     },
     "display": {
         "separator": "  ",
@@ -24,8 +32,7 @@
         {
             "type": "command",
             "key": " 󱋩",
-            "text": "/usr/libexec/bazzite-fetch-image",
-            "shell": "/bin/bash"
+            "text": "/usr/libexec/bazzite-fetch-image"
         },
         {
             "type": "os",
@@ -44,14 +51,12 @@
             "type": "command",
             "key": " 󰔠",
             "text": "date -d$(ls -alct / --time-style=full-iso|tail -1|awk '{print $6}') +'Spawned on %b %d %G'",
-            "shell": "/bin/bash"
+            "shell": "/usr/bin/bash"
         },
         "break",
         {
-            "type": "command",
-            "key": " 󰾰",
-            "text": "cat /sys/devices/virtual/dmi/id/product_name",
-            "shell": "/bin/bash"
+            "type": "host",
+            "key": " 󰾰"
         },
         {
             "type": "cpu",
