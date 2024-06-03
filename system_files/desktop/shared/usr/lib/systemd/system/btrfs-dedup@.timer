@@ -4,7 +4,7 @@ Description=Weekly Btrfs deduplication on %f
 [Timer]
 OnCalendar=weekly
 AccuracySec=1h
-RandomizedDelaySec=1d
+RandomizedDelaySec=2d
 Persistent=true
 
 [Install]
