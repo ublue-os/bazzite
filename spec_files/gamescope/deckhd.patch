@@ -1,69 +1,218 @@
+From 90f972dfb4de9c8245f6fc5370a294653de828cc Mon Sep 17 00:00:00 2001
+From: Marco Rodolfi <marco.rodolfi@tuta.io>
+Date: Thu, 2 May 2024 14:16:40 +0200
+Subject: [PATCH 1/2] Rebase DHD on latest gamescope master
+
+---
+ src/drm.cpp            | 11 +++++++++--
+ src/gamescope_shared.h |  1 +
+ src/modegen.cpp        | 34 ++++++++++++++++++++++++++++++----
+ 3 files changed, 40 insertions(+), 6 deletions(-)
+
 diff --git a/src/drm.cpp b/src/drm.cpp
-index 7776422..b7d822c 100644
+index 511a571..6ee3bd3 100644
 --- a/src/drm.cpp
 +++ b/src/drm.cpp
-@@ -2122,6 +2122,8 @@ namespace gamescope
+@@ -2121,6 +2121,7 @@ namespace gamescope
+ 			( m_Mutable.szMakePNP == "WLC"sv && m_Mutable.szModel == "ANX7530 U"sv ) ||
+ 			( m_Mutable.szMakePNP == "ANX"sv && m_Mutable.szModel == "ANX7530 U"sv ) ||
  			( m_Mutable.szMakePNP == "VLV"sv && m_Mutable.szModel == "ANX7530 U"sv ) ||
++			( m_Mutable.szMakePNP == "DHD"sv && m_Mutable.szModel == "DeckHD-1200p"sv ) ||
  			( m_Mutable.szMakePNP == "VLV"sv && m_Mutable.szModel == "Jupiter"sv ) ||
  			( m_Mutable.szMakePNP == "VLV"sv && m_Mutable.szModel == "Galileo"sv );
-+		const bool bDeckHDDisplay =
-+			( m_Mutable.szMakePNP == "DHD"sv && m_Mutable.szModel == "DeckHD-1200p"sv );
  		const bool bLegionGoDisplay =
- 			( m_Mutable.szMakePNP == "LEN"sv && m_Mutable.szModel == "Go Display"sv );
- 		const bool bLokiDisplay =
-@@ -2148,6 +2150,11 @@ namespace gamescope
- 				m_Mutable.ValidDynamicRefreshRates = std::span( s_kSteamDeckLCDRates );
- 			}
- 		}
-+		else if ( bDeckHDDisplay )
-+		{
-+			m_Mutable.eKnownDisplay = GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD;
-+			m_Mutable.ValidDynamicRefreshRates = std::span( s_kSteamDeckLCDRates );
-+		}
- 		else if ( bLegionGoDisplay )
+@@ -2132,6 +2133,7 @@ namespace gamescope
  		{
- 			m_Mutable.ValidDynamicRefreshRates = std::span( s_kLegionGoRates );
-@@ -2309,7 +2316,7 @@ namespace gamescope
+ 			static constexpr uint32_t kPIDGalileoSDC = 0x3003;
+ 			static constexpr uint32_t kPIDGalileoBOE = 0x3004;
++			static constexpr uint32_t kPIDJupiterDHD = 0x4001;
+
+ 			if ( pProduct->product == kPIDGalileoSDC )
+ 			{
+@@ -2120,6 +2122,10 @@ namespace gamescope
+ 				m_Mutable.eKnownDisplay = GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_BOE;
+ 				m_Mutable.ValidDynamicRefreshRates = std::span( s_kSteamDeckOLEDRates );
+ 			}
++			else if (pProduct-> product == kPIDJupiterDHD ) {
++				m_Mutable.eKnownDisplay = GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD;
++				m_Mutable.ValidDynamicRefreshRates = std::span( s_kSteamDeckLCDRates );
++			}
+ 			else
+ 			{
+ 				m_Mutable.eKnownDisplay = GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD;
+@@ -2149,7 +2155,8 @@ namespace gamescope
+ 			drm_log.infof( "[colorimetry]: Steam Deck LCD detected. Using known colorimetry" );
+ 			m_Mutable.DisplayColorimetry = displaycolorimetry_steamdeck_measured;
+ 		}
+-		else
++		else if (m_Mutable.eKnownDisplay == GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_BOE ||
++				 m_Mutable.eKnownDisplay == GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_SDC )
+ 		{
+ 			// Steam Deck OLED has calibrated chromaticity coordinates in the EDID
+ 			// for each unit.
+@@ -2279,7 +2286,7 @@ namespace gamescope
  				.uMinContentLightLevel = nits_to_u16_dark( 0 ),
  			};
  		}
 -		else if ( eKnownDisplay == GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD )
-+		else if ( eKnownDisplay == GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD || GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD )
++		else if ( eKnownDisplay == GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD || eKnownDisplay == GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD )
  		{
  			// Set up some HDR fallbacks for undocking
  			return BackendConnectorHDRInfo
 diff --git a/src/gamescope_shared.h b/src/gamescope_shared.h
-index ed30d8c..f53ed4a 100644
+index f34174e59..3b11e82f6 100644
 --- a/src/gamescope_shared.h
 +++ b/src/gamescope_shared.h
 @@ -8,6 +8,7 @@ namespace gamescope
  	{
  		GAMESCOPE_KNOWN_DISPLAY_UNKNOWN,
  		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD,      // Jupiter
-+		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD,  // Jupiter DeckHD
++		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD,	 // Jupiter Deck HD
  		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_SDC, // Galileo SDC
  		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_BOE, // Galileo BOE
  	};
 diff --git a/src/modegen.cpp b/src/modegen.cpp
-index d174c2d..bfb782d 100644
+index d174c2d21..d08622555 100644
 --- a/src/modegen.cpp
 +++ b/src/modegen.cpp
-@@ -356,6 +356,18 @@ void generate_fixed_mode(drmModeModeInfo *mode, const drmModeModeInfo *base, int
- 			mode->vsync_end = 1314;
- 			mode->vtotal = 1322;
- 		}
-+		else if ( eKnownDisplay = gamescope::GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD )
-+		{
+@@ -293,6 +293,21 @@ unsigned int galileo_boe_vfp[] =
+ 	172,152,136,120,100,84,68,52,36,20,8
+ };
+
++#define JUPITER_BOE_PID     0x3001
++#define JUPITER_B_PID       0x3002
++#define JUPITER_HFP         40
++#define JUPITER_HSYNC       4
++#define JUPITER_HBP         0
++#define JUPITER_VFP         30
++#define JUPITER_VSYNC       4
++#define JUPITER_VBP         8
++#define JUPITER_DHD_PID     0x4001
++#define JUPITER_DHD_HFP     40
++#define JUPITER_DHD_HSYNC   20
++#define JUPITER_DHD_HBP     40
++#define JUPITER_DHD_VFP     18
++#define JUPITER_DHD_VSYNC   2
++#define JUPITER_DHD_VBP     20
+ #define GALILEO_MIN_REFRESH 45
+ #define GALILEO_SDC_PID     0x3003
+ #define GALILEO_SDC_VSYNC   1
+@@ -344,7 +359,18 @@ void generate_fixed_mode(drmModeModeInfo *mode, const drmModeModeInfo *base, int
+ 		mode->vsync_end = mode->vsync_start + vsync;
+ 		mode->vtotal = mode->vsync_end + vbp;
+ 	} else {
+-		if ( eKnownDisplay == gamescope::GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD )
++		if ( eKnownDisplay == gamescope:: GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD ) {
 +			mode->hdisplay = 1200;
-+			mode->hsync_start = 1240;
-+			mode->hsync_end = 1260;
-+			mode->htotal = 1300;
++			mode->hsync_start = mode->hdisplay + JUPITER_DHD_HFP;
++			mode->hsync_end = mode->hsync_start + JUPITER_DHD_HSYNC;
++			mode->htotal = mode->hsync_end + JUPITER_DHD_HBP;
 +
 +			mode->vdisplay = 1920;
-+			mode->vsync_start = 1938;
-+			mode->vsync_end = 1940;
-+			mode->vtotal = 1960;
++			mode->vsync_start = mode->vdisplay + JUPITER_DHD_VFP;
++			mode->vsync_end = mode->vsync_start + JUPITER_DHD_VSYNC;
++			mode->vtotal = mode->vsync_end + JUPITER_DHD_VBP;
 +		}
- 
++		else if ( eKnownDisplay == gamescope::GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD )
+ 		{
+ 			mode->hdisplay = 800;
+ 			mode->hsync_start = 840;
+@@ -352,9 +378,9 @@ void generate_fixed_mode(drmModeModeInfo *mode, const drmModeModeInfo *base, int
+ 			mode->htotal = 884;
+
+ 			mode->vdisplay = 1280;
+-			mode->vsync_start = 1310;
+-			mode->vsync_end = 1314;
+-			mode->vtotal = 1322;
++			mode->vsync_start = mode->vdisplay + JUPITER_VFP;
++			mode->vsync_end = mode->vsync_start + JUPITER_VSYNC;
++			mode->vtotal = mode->vsync_end + JUPITER_VBP;
+ 		}
+
  		mode->clock = ( ( mode->htotal * mode->vtotal * vrefresh ) + 999 ) / 1000;
- 	}
+
+From a01b1937fe2f898d3aa8628ca6a38465da29e78b Mon Sep 17 00:00:00 2001
+From: Marco Rodolfi <marco.rodolfi@tuta.io>
+Date: Fri, 3 May 2024 10:23:30 +0200
+Subject: [PATCH 2/2] Couple of stylistic fixes and corrected a timing typo
+ from the original patch
+
+---
+ src/gamescope_shared.h |  2 +-
+ src/modegen.cpp        | 16 ++++++++++------
+ 2 files changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/src/gamescope_shared.h b/src/gamescope_shared.h
+index 3b11e82f6..60e38293c 100644
+--- a/src/gamescope_shared.h
++++ b/src/gamescope_shared.h
+@@ -8,7 +8,7 @@ namespace gamescope
+ 	{
+ 		GAMESCOPE_KNOWN_DISPLAY_UNKNOWN,
+ 		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD,      // Jupiter
+-		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD,	 // Jupiter Deck HD
++		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD,  // Jupiter Deck HD
+ 		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_SDC, // Galileo SDC
+ 		GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_BOE, // Galileo BOE
+ 	};
+diff --git a/src/modegen.cpp b/src/modegen.cpp
+index d08622555..5dd113697 100644
+--- a/src/modegen.cpp
++++ b/src/modegen.cpp
+@@ -293,14 +293,16 @@ unsigned int galileo_boe_vfp[] =
+ 	172,152,136,120,100,84,68,52,36,20,8
+ };
+
++//SD LCD Stock Timings
+ #define JUPITER_BOE_PID     0x3001
+ #define JUPITER_B_PID       0x3002
+ #define JUPITER_HFP         40
+ #define JUPITER_HSYNC       4
+-#define JUPITER_HBP         0
++#define JUPITER_HBP         40
+ #define JUPITER_VFP         30
+ #define JUPITER_VSYNC       4
+ #define JUPITER_VBP         8
++//SD LCD DeckHD Timings
+ #define JUPITER_DHD_PID     0x4001
+ #define JUPITER_DHD_HFP     40
+ #define JUPITER_DHD_HSYNC   20
+@@ -308,13 +310,15 @@ unsigned int galileo_boe_vfp[] =
+ #define JUPITER_DHD_VFP     18
+ #define JUPITER_DHD_VSYNC   2
+ #define JUPITER_DHD_VBP     20
+-#define GALILEO_MIN_REFRESH 45
++//SD OLED SDC Timings
+ #define GALILEO_SDC_PID     0x3003
+ #define GALILEO_SDC_VSYNC   1
+ #define GALILEO_SDC_VBP     22
++//SD OLED BOE Timings
+ #define GALILEO_BOE_PID     0x3004
+ #define GALILEO_BOE_VSYNC   2
+ #define GALILEO_BOE_VBP     30
++#define GALILEO_MIN_REFRESH 45
+ #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
+
+ unsigned int get_galileo_vfp( int vrefresh, unsigned int * vfp_array, unsigned int num_rates )
+@@ -359,7 +363,7 @@ void generate_fixed_mode(drmModeModeInfo *mode, const drmModeModeInfo *base, int
+ 		mode->vsync_end = mode->vsync_start + vsync;
+ 		mode->vtotal = mode->vsync_end + vbp;
+ 	} else {
+-		if ( eKnownDisplay == gamescope:: GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD ) {
++		if ( eKnownDisplay == gamescope::GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD_DHD ) {
+ 			mode->hdisplay = 1200;
+ 			mode->hsync_start = mode->hdisplay + JUPITER_DHD_HFP;
+ 			mode->hsync_end = mode->hsync_start + JUPITER_DHD_HSYNC;
+@@ -373,9 +377,9 @@ void generate_fixed_mode(drmModeModeInfo *mode, const drmModeModeInfo *base, int
+ 		else if ( eKnownDisplay == gamescope::GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_LCD )
+ 		{
+ 			mode->hdisplay = 800;
+-			mode->hsync_start = 840;
+-			mode->hsync_end = 844;
+-			mode->htotal = 884;
++			mode->hsync_start = mode->hdisplay + JUPITER_HFP;
++			mode->hsync_end = mode->hsync_start + JUPITER_HSYNC;
++			mode->htotal = mode->hsync_end + JUPITER_HBP;
+
+ 			mode->vdisplay = 1280;
+ 			mode->vsync_start = mode->vdisplay + JUPITER_VFP;
