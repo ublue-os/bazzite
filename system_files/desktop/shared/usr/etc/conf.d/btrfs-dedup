@@ -1,0 +1,28 @@
+# name of the rmlint database file stored in the target folder
+#RMLINT_DB=".rmlint.json"
+# name of the duperemove database stored in the target folder
+#DUPEREMOVE_DB=".duperemove.hash"
+# the udev rules file that is created to handle power change events
+#UDEV_RULE_FILE="/run/udev/rules.d/90-btrfs-dedup.rules"
+# the file to check for power online status
+#POWER_SUPPLY_ONLINE_FILE="/sys/class/power_supply/ACAD/online"
+# the arguments to pass to rmlint
+#RMLINT_ARGS="--hidden --types=duplicates --config=sh:handler=clone --xattr"
+# the arguments to pass to the rmlint script
+#RMLINT_SCRIPT_ARGS="-d -r -k"
+# the arguments to pass to duperemove
+#DUPEREMOVE_ARGS="-r -d -h -q --skip-zeroes"
+# the timeout for the deduplication process
+#TIMEOUT="4h"
+# the maximum age in days for the database files before they get deleted
+#DB_MAX_AGE="14"
+# set to 1 to disable pausing the deduplication process when power chord is disconnected
+#POWERCHANGE_DISABLE="0"
+# set to 0 to enable executing rmlint replay before doing a proper pass
+#RMLINT_REPLAY_DISABLE="1"
+# set to 1 to skip rmlint
+RMLINT_SKIP="1"
+# set to 1 to skip duperemove
+#DUPEREMOVE_SKIP="0"
+# set to 1 to prevent adjusting the filesystem thread pool
+#THREADPOOL_ADJUST_DISABLE="0"

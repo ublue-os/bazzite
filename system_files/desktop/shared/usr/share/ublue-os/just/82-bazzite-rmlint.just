@@ -5,7 +5,8 @@ enable-rmlint ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
-    if [[ ! -f "/etc/systemd/system/btrfs-dedup@.service.d/override.conf" ]]; then
+    STATUS="$(cat /etc/conf.d/btrfs-dedup | grep RMLINT_SKIP=\"1\")"
+    if [[ $STATUS != "" ]]; then
         RMLINT_STATE="${red}${b}not enabled${n}"
     else
         RMLINT_STATE="${green}${b}already enabled${n}"
@@ -28,8 +29,7 @@ enable-rmlint ACTION="":
       fi
       ublue-update --wait
       rpm-ostree install --apply-live -y rmlint
-      sudo mkdir /etc/systemd/system/btrfs-dedup@.service.d/
-      sudo cp /usr/share/ublue-os/just/rmlint-override.conf /etc/systemd/system/btrfs-dedup@.service.d/override.conf
+      sudo sed -i 's@RMLINT_SKIP="1"@RMLINT_SKIP="0"@g' /etc/conf.d/btrfs-dedup
       echo "rmlint has been reenabled!"
     elif [[ "${OPTION,,}" =~ ^(disable|uninstall) ]]; then
       if [[ "${RMLINT_STATE,,}" =~ "^not" ]]; then
@@ -38,7 +38,6 @@ enable-rmlint ACTION="":
       fi
       ublue-update --wait
       rpm-ostree remove -y rmlint
-      sudo rm /etc/systemd/system/btrfs-dedup@.service.d/override.conf
-      sudo rmdir /etc/systemd/system/btrfs-dedup@.service.d/
+      sudo sed -i 's@RMLINT_SKIP="0"@RMLINT_SKIP="1"@g' /etc/conf.d/btrfs-dedup
       echo "rmlint has been disabled."
     fi

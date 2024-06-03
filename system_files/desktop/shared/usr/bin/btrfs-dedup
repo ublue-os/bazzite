@@ -1,0 +1,330 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+RMLINT_DB="${RMLINT_DB:-".rmlint.json"}"
+DUPEREMOVE_DB="${DUPEREMOVE_DB:-".duperemove.hash"}"
+UDEV_RULE_FILE="${UDEV_RULE_FILE:-"/run/udev/rules.d/90-btrfs-dedup.rules"}"
+POWER_SUPPLY_ONLINE_FILE="${POWER_SUPPLY_ONLINE_FILE:-"/sys/class/power_supply/ACAD/online"}"
+RMLINT_ARGS="${RMLINT_ARGS:-"--hidden --types=duplicates --config=sh:handler=clone --xattr"}"
+RMLINT_SCRIPT_ARGS="${RMLINT_SCRIPT_ARGS:-"-d -r -k"}"
+DUPEREMOVE_ARGS="${DUPEREMOVE_ARGS:-"-r -d -h -q --skip-zeroes"}"
+TIMEOUT="${TIMEOUT:-"4h"}"
+DB_MAX_AGE="${DB_MAX_AGE:-14}"
+POWERCHANGE_DISABLE="${POWERCHANGE_DISABLE:-0}"
+RMLINT_REPLAY_DISABLE="${RMLINT_REPLAY_DISABLE:-1}"
+RMLINT_SKIP="${RMLINT_SKIP:-0}"
+DUPEREMOVE_SKIP="${DUPEREMOVE_SKIP:-0}"
+THREADPOOL_ADJUST_DISABLE="${THREADPOOL_ADJUST_DISABLE:-0}"
+
+UDEV_RULE_TMPL='SUBSYSTEM=="power_supply", RUN+="%s --powerchange"\n'
+
+eprint() {
+	echo -e ":: $*" >&2
+}
+
+cmd() {
+	eprint '[$]' "${@@Q}"
+	"$@"
+}
+
+is_true() {
+	local v="${1:-}"
+	v="${v//[[:space:]]/}"
+	v="${v,,}"
+	if [[ -n "${v}" && "${v}" != '0' && "${v}" != 'n' && "${v}" != 'no' && "${v}" != 'false' ]]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+TARGET="${1:?"Missing target."}"
+
+if [[ "$EUID" != 0 ]]; then
+	eprint 'Needs to be run as root.'
+	exit 1
+fi
+
+if [[ "$TARGET" == '--powerchange' ]]; then
+	xargs -r kill -s SIGHUP < <(cat /run/btrfs-dedup/*.pid 2>/dev/null) &>/dev/null
+	exit 0
+fi
+
+TARGET="${TARGET%/}"
+
+if [[ "$(stat -f -c '%T' "$TARGET"/)" != 'btrfs' ]]; then
+	eprint "${TARGET@Q} is not a btrfs filesystem."
+	exit 1
+fi
+
+TARGETREAL="$(realpath "$TARGET"/)"
+TARGETSLUG="$(systemd-escape -p "$TARGETREAL")"
+LOCKFILE="/run/btrfs-dedup/${TARGETSLUG}.lock"
+PIDFILE="/run/btrfs-dedup/${TARGETSLUG}.pid"
+WORKDIR="/run/btrfs-dedup/${TARGETSLUG}"
+
+mkdir -p '/run/btrfs-dedup'
+
+# lock the process for a given path
+if [[ "${FLOCKER:-}" != "$LOCKFILE" ]]; then
+	exec env FLOCKER="$LOCKFILE" flock -en "$LOCKFILE" "$0" "$@"
+fi
+
+WATCHERPID="$BASHPID"
+TIMEOUTPID=''
+MAINPID=''
+
+get_all_child_pids() {
+	local pids=()
+	local stack_pids=("$1")
+	while [[ "${#stack_pids[@]}" -gt 0 ]]; do
+		local pid="${stack_pids[0]}"
+		stack_pids=("${stack_pids[@]:1}")
+		local pos="${#stack_pids[@]}"
+		readarray -t -O "$pos" stack_pids < <(ps --ppid "$pid" -o pid= | sed 's/\s\+//g')
+		pids+=("${stack_pids[@]:$pos}")
+	done
+	if [[ "${#pids[@]}" -gt 0 ]]; then
+		printf '%s\n' "${pids[@]}"
+	fi
+}
+
+get_current_thread_pool() {
+	local nrcpus=$(($(nproc)+2))
+	local tp=$((nrcpus < 8 ? nrcpus : 8))
+	local opts=()
+	readarray -t -d ',' opts < <(findmnt -n -u -o OPTIONS "$(stat -c '%m' "$TARGET"/)")
+	for o in "${opts[@]}"; do
+		local k="${o%%=*}"
+		local v="${o#*=}"
+		if [[ "$k" == 'thread_pool' ]]; then
+			echo "$v"
+			return
+		fi
+	done
+	echo "$tp"
+}
+
+ONCE=0
+# shellcheck disable=SC2317
+quit() {
+	local exit_code="$?"
+	if [[ "$ONCE" == 1 ]]; then
+		exit "$exit_code"
+	fi
+	ONCE=1
+	trap '' SIGHUP
+	if [[ "$exit_code" -gt 128 ]]; then
+		exit_code=0
+	fi
+	cd /
+	cmd rm -f "$PIDFILE" "$LOCKFILE" || true
+	if [[ -n "$TIMEOUTPID" ]]; then
+		local ret=0
+		kill "$TIMEOUTPID" || true
+		wait "$TIMEOUTPID" || ret="$?"
+		TIMEOUTPID=''
+		if [[ "$ret" -le 128 && "$ret" -gt "$exit_code" ]]; then
+			exit_code="$ret"
+		fi
+	fi
+	if [[ -n "$MAINPID" ]]; then
+		local ret=0
+		local pids=("$MAINPID")
+		readarray -t -O 1 pids < <(get_all_child_pids "$MAINPID")
+		kill -s SIGCONT "${pids[@]}" || true
+		kill "$MAINPID" || true
+		wait "$MAINPID" || ret="$?"
+		MAINPID=''
+		if [[ "$ret" -le 128 && "$ret" -gt "$exit_code" ]]; then
+			exit_code="$ret"
+		fi
+	fi
+	exit "$exit_code"
+}
+trap quit SIGINT SIGQUIT SIGTERM EXIT ERR
+
+powerchange() {
+	if ! is_true "$POWERCHANGE_DISABLE" && [[ -f "$POWER_SUPPLY_ONLINE_FILE" ]]; then
+		local pids=("$MAINPID")
+		readarray -t -O 1 pids < <(get_all_child_pids "$MAINPID")
+		if [[ "$(cat "$POWER_SUPPLY_ONLINE_FILE")" == "1" ]]; then
+			if [[ "$(ps --pid "$MAINPID" -o stat=)" =~ ^T ]]; then
+				eprint "Resuming btrfs-dedup for ${TARGET@Q}."
+				cmd kill -s SIGCONT "${pids[@]}" || true
+			fi
+		else
+			if ! [[ "$(ps --pid "$MAINPID" -o stat=)" =~ ^T ]]; then
+				eprint "Pausing btrfs-dedup for ${TARGET@Q}."
+				cmd kill -s SIGSTOP "${pids[@]}" || true
+			fi
+		fi
+	fi
+}
+trap powerchange SIGHUP
+echo "$WATCHERPID" > "$PIDFILE"
+
+# timeout process
+(
+	set -euo pipefail
+	TIMEOUTREACHED=0
+	SLEEPPID=''
+	# shellcheck disable=SC2317
+	timeout_quit() {
+		if [[ -n "$SLEEPPID" ]]; then
+			kill "$SLEEPPID" || true
+			wait "$SLEEPPID" || true
+			SLEEPPID=''
+		fi
+		exit "$TIMEOUTREACHED"
+	}
+	trap timeout_quit SIGINT SIGQUIT SIGTERM EXIT ERR
+	while true; do
+		sleep "$TIMEOUT" &
+		SLEEPPID="$!"
+		wait "$SLEEPPID"
+		SLEEPPID=''
+		TIMEOUTREACHED=2
+		eprint "Timeout reached."
+		cmd kill "$WATCHERPID"
+	done
+) &
+TIMEOUTPID="$!"
+
+# generate a udev rule to notify when power is connected
+if [[ ! -f "$UDEV_RULE_FILE" ]]; then
+	eprint "Write udev rule for power change to ${UDEV_RULE_FILE@Q}."
+	cmd mkdir -p "$(dirname "$UDEV_RULE_FILE")"
+	eprint "${UDEV_RULE_TMPL@Q} > ${UDEV_RULE_FILE@Q}"
+	# shellcheck disable=SC2059
+	printf "$UDEV_RULE_TMPL" "$(realpath "$0")" > "$UDEV_RULE_FILE"
+	cmd udevadm control --reload
+fi
+
+(
+	set -euo pipefail
+
+	MAINPID="$BASHPID"
+	WORKERPID=''
+
+	OLDTP="$(get_current_thread_pool)"
+
+	ONCE=0
+	# shellcheck disable=SC2317
+	worker_quit() {
+		local exit_code="$?"
+		if [[ "$ONCE" == 1 ]]; then
+			exit "$exit_code"
+		fi
+		ONCE=1
+		if [[ "$exit_code" -gt 128 ]]; then
+			exit_code=0
+		fi
+		cd /
+		if [[ -n "$WORKERPID" ]]; then
+			local ret=0
+			local pids=("$WORKERPID")
+			readarray -t -O 1 pids < <(get_all_child_pids "$WORKERPID")
+			kill -s SIGCONT "${pids[@]}" || true
+			kill "$WORKERPID" || true
+			wait "$WORKERPID" || ret="$?"
+			WORKERPID=''
+			if [[ "$ret" -le 128 && "$ret" -gt "$exit_code" ]]; then
+				exit_code="$ret"
+			fi
+		fi
+		if [[ -f "$WORKDIR"/rmlint.json ]]; then
+			cmd cp -a "$WORKDIR"/rmlint.json "$TARGET"/"$RMLINT_DB" || true
+		fi
+		if [[ -f "$WORKDIR"/"$DUPEREMOVE_DB" ]]; then
+			cmd cp -a "$WORKDIR"/"$DUPEREMOVE_DB" "$TARGET"/ || true
+		fi
+		if [[ "$(get_current_thread_pool)" != "$OLDTP" ]]; then
+			eprint "Reverting thread_pool size to $OLDTP."
+			cmd mount -o remount,thread_pool="$OLDTP" "$(stat -c '%m' "$TARGET"/)" || true
+		fi
+		cmd rm -rf "$WORKDIR" || true
+		exit "$exit_code"
+	}
+	trap worker_quit SIGINT SIGQUIT SIGTERM EXIT ERR
+
+	worker_waiter() {
+		WORKERPID="$!"
+		wait "$WORKERPID"
+		WORKERPID=''
+	}
+
+	eprint "Working directory is ${WORKDIR@Q}."
+	cmd mkdir -p "$WORKDIR"
+	cd "$WORKDIR"
+	nrcpus="$(nproc)"
+	if ! is_true "$THREADPOOL_ADJUST_DISABLE" && [[ "$nrcpus" -le 8 ]]; then
+		if [[ "$nrcpus" -gt 4 ]]; then
+			tp=4
+		elif [[ "$nrcpus" -ge 2 ]]; then
+			tp=2
+		else
+			tp=1
+		fi
+		if [[ "$tp" != "$OLDTP" ]]; then
+			eprint "Adjust thread_pool size to $tp."
+			cmd mount -o remount,thread_pool="$tp" "$(stat -c '%m' "$TARGET"/)"
+		fi
+	fi
+	cmd find "$TARGET"/ -mindepth 1 -maxdepth 1 -mtime +"$DB_MAX_AGE" \( -name "$RMLINT_DB" -or -name "$DUPEREMOVE_DB" \) -delete
+	powerchange || true
+	cmd compsize "$TARGET"/ &
+	worker_waiter
+	if ! is_true "$RMLINT_SKIP"; then
+		if ! is_true "$RMLINT_REPLAY_DISABLE" && [[ -f "$TARGET"/"$RMLINT_DB" ]]; then
+			# shellcheck disable=SC2086
+			cmd rmlint --replay "$TARGET"/"$RMLINT_DB" ${RMLINT_ARGS} "$TARGET"/ &
+			worker_waiter
+			if [[ -f 'rmlint.replay.sh' ]]; then
+				# shellcheck disable=SC2086
+				cmd ./rmlint.replay.sh ${RMLINT_SCRIPT_ARGS} &
+				worker_waiter
+			fi
+		fi
+		# shellcheck disable=SC2086
+		cmd rmlint ${RMLINT_ARGS} "$TARGET"/ &
+		worker_waiter
+		if [[ -f 'rmlint.sh' ]]; then
+			# shellcheck disable=SC2086
+			cmd ./rmlint.sh ${RMLINT_SCRIPT_ARGS} &
+			worker_waiter
+		fi
+		if [[ -f 'rmlint.json' ]]; then
+			cmd cp -a 'rmlint.json' "$TARGET"/"$RMLINT_DB"
+		fi
+		cmd rm -f rmlint*
+		cmd compsize "$TARGET"/ &
+		worker_waiter
+	fi
+	if ! is_true "$DUPEREMOVE_SKIP"; then
+		if [[ -f "$TARGET"/"$DUPEREMOVE_DB" ]]; then
+			cmd cp -a "$TARGET"/"$DUPEREMOVE_DB" .
+		fi
+		if [[ -f "$DUPEREMOVE_DB" && "$(sqlite3 -readonly "$DUPEREMOVE_DB" "SELECT keyval FROM config where keyname='version_major'")" -lt 4 ]]; then
+			cmd rm -f "$DUPEREMOVE_DB"
+		fi
+		# shellcheck disable=SC2086
+		cmd duperemove --hashfile="$DUPEREMOVE_DB" --exclude="$TARGET/$RMLINT_DB" --exclude="$TARGET/$DUPEREMOVE_DB" --exclude="$TARGET/@swapfile/swapfile" ${DUPEREMOVE_ARGS} "$TARGET"/ &
+		worker_waiter
+		cmd cp -a "$DUPEREMOVE_DB" "$TARGET"/
+		cmd rm -f "$DUPEREMOVE_DB"
+		cmd compsize "$TARGET"/ &
+		worker_waiter
+	fi
+) &
+MAINPID="$!"
+while true; do
+	ret=0
+	wait "$MAINPID" || ret="$?"
+	# 129 is what wait returns when the current process receives a SIGHUP 
+	if [[ "$ret" != 129 ]]; then
+		break
+	fi
+done
+MAINPID=''
+exit "$ret"
