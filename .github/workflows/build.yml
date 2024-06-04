@@ -255,7 +255,6 @@ jobs:
           oci: false
           extra-args: |
             --target=${{ matrix.base_name }}
-            --compression-format=zstd:chunked
 
       - name: Sign kernel
         uses: EyeCantCU/kernel-signer@v0.2.1
