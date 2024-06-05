@@ -704,7 +704,6 @@ RUN rpm-ostree install \
     ibus-pinyin \
     ibus-table-chinese-cangjie \
     ibus-table-chinese-quick \
-    fcitx5-mozc \
     socat \
     zstd \
     zenity \
