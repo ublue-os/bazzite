@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 # Returns true for hardware that is supported by SimpleDeckyTDP
 SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
-if [[ ":ROG Ally RC71L_RC71L:ROG Ally RC71L:83E1:G1618-04:G1619-04:G1617-01:G1619-05:AIR Plus:AIR:SLIDE:V3:AOKZOE A1 AR07:AOKZOE A1 Pro:" =~ ":$SYS_ID:" ]]; then
+if [[ ":ROG Ally RC71L_RC71L:ROG Ally RC71L:83E1:G1618-04:G1619-04:G1617-01:G1619-05:AIR Plus:AIR 1S:AIR 1S Limited:AIR:SLIDE:V3:AOKZOE A1 AR07:AOKZOE A1 Pro:ONEXPLAYER 2 ARP23:ONEXPLAYER 2 PRO ARP23P:ONEXPLAYER 2 PRO ARP23P EVA-01:" =~ ":$SYS_ID:" ]]; then
 	exit 0
 fi
 
