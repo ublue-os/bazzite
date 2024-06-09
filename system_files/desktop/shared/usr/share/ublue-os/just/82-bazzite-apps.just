@@ -143,7 +143,7 @@ install-opentabletdriver:
     systemctl enable --user --now arch-opentabletdriver.service && \
     distrobox enter -n arch -- bash -c 'distrobox-export --app otd-gui'
 
-# Install hhd main branch locally until reboot, helpful for hhd testing and debugging.
+# Install hhd main branch locally until reboot, helpful for hhd testing and debugging. (rename to install-hhd-dev if we unhide)
 _hhd-dev:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
