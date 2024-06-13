@@ -11,18 +11,16 @@
 </p>
 
 ---
-
 # Table des matières
-- [Langue](#langue)
 - [Table des matières](#table-des-matières)
   - [À propos et fonctionnalités](#à-propos-et-fonctionnalités)
-    - [Environment de bureau](#environment-de-bureau)
-    - [SteamDeck/PC Home Theater (HTPCs)](#SteamDeck-PC-Home-Theater-(HTPCs))
+    - [Environnement de bureau](#environnement-de-bureau)
+    - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
       - [Consoles portables alternatives](#consoles-portables-alternatives)
     - [GNOME](#gnome)
-    - [Fonctionnalités provenant d'autres sources](#fonctionnalités-provenant-d-autres-sources)
+    - [Fonctionnalités provenant d'autres sources](#fonctionnalités-provenant-dautres-sources)
       - [Universal Blue](#universal-blue)
-      - [Fonctionnalités de Fedora Linux (Kinoite \& Silverblue)](#fonctionnalités-de-fedora-linux-kinoite--silverblue)
+      - [Fonctionnalités de Fedora Linux (Kinoite & Silverblue)](#fonctionnalités-de-fedora-linux-kinoite--silverblue)
   - [Pourquoi](#pourquoi)
   - [Vitrine](#vitrine)
   - [Documentation et newsletters](#documentation-et-newsletters)
@@ -77,7 +75,7 @@ Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/m
 - [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) est disponible pour le partage d'écran Discord sur Wayland.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) est disponible pour créer des applications à partir de sites web pour une variété de navigateurs, y compris Firefox.
 
-### Environment de bureau
+### Environnement de bureau
 
 De nombreuses variantes communes sont disponibles sous le nom `bazzite`, adaptée aux ordinateurs de bureau.
 
@@ -101,7 +99,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 
 **Pour les utilisateurs avec Secure Boot activé :** Suivez notre [documentation sur le démarrage sécurisé](#démarrage-sécurisé) avant de faire le rebase.
 
-### SteamDeck/PC Home Theater (HTPCs)
+### Steam Deck/Home Theater PCs (HTPCs)
 
 > [!IMPORTANT]  
 Les appareils qui NE sont PAS des SteamDeck peuvent toujours utiliser les images `bazzite-deck`, mais doivent utiliser un GPU AMD moderne. Les GPU Intel Arc ont également été confirmés comme fonctionnels.
@@ -380,7 +378,7 @@ Bazzite est un effort communautaire et ne serait pas possible sans le soutien de
 - [Steam Deck Homebrew](https://deckbrew.xyz) - Pour choisir de soutenir des distributions autres que SteamOS malgré le travail supplémentaire, et un merci spécial à [PartyWumpus](https://github.com/PartyWumpus) pour avoir fait fonctionner Decky Loader avec SELinux pour nous.
 - [cyrv6737](https://github.com/cyrv6737) - Pour l'inspiration initiale et la base qui est devenue bazzite-arch.
 
-## Construisez votre propre version
+## Construisez le vôtre
 
 Bazzite est entièrement construit sur GitHub et créer votre propre version personnalisée est aussi simple que de forker ce dépôt, ajouter une clé de signature privée et activer les actions GitHub.
 
