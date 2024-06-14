@@ -8,7 +8,7 @@ Type=oneshot
 # Copy if it doesn't exist
 ExecStartPre=/usr/bin/bash -c "[ -x /usr/local/bin/.sunshine ] || /usr/bin/cp /usr/bin/sunshine /usr/local/bin/.sunshine"
 # This is faster than using .mount unit. Also allows for the previous line/cleanup
-ExecStartPre=/usr/bin/bash -c "/usr/bin/mount --bind /usr/local/bin/.sunshine /usr/bin/sunshine
+ExecStartPre=/usr/bin/bash -c "/usr/bin/mount --bind /usr/local/bin/.sunshine /usr/bin/sunshine"
 # Fix caps
 ExecStart=/usr/sbin/setcap 'cap_sys_admin+p' /usr/bin/sunshine
 # Clean-up after ourselves
