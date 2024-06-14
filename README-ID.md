@@ -4,7 +4,8 @@
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
 
-# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md)
+# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md)
+
 
 <p align="center">
   <a href="https://bazzite.gg/#image-picker"><img src="/repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
@@ -54,7 +55,7 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Manajemen paket [Brew](https://brew.sh/) tersedia secara optional dan dapat diinstall dengan Portal Bazzite.
 - Pra-install [Waydroid](https://waydro.id/) untuk menjalankan aplikasi Android. Dapat diatur dengan mengikuti [panduan cepat](https://universal-blue.discourse.group/docs?topic=32).
 - Mengatur aplikasi dengan [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), dan [Gear Lever](https://github.com/mijorus/gearlever).
-- [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) driver i2c-piix4 dan i2c-nct6775 untuk mengatur RGB di beberapa jenis motherboard. 
+- [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) driver i2c-piix4 dan i2c-nct6775 untuk mengatur RGB di beberapa jenis motherboard.
 - Disediakan secara bawaan driver [OpenRazer](https://openrazer.github.io), Pilih OpenRazer di portal bazzite atau jalankan perintah `ujust install-openrazer` diterminal untuk menggunakannya.
 - Disediakan secara bawaan [OpenTabletDriver](https://opentabletdriver.net/) udev rules, dengan perangkat lunaknya yang dapat dipasang dengan portal bazzite atau dengan mengetikkan `ujust install-opentabletdriver` di terminal.
 - Driver [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) untuk men-overclocking Kontroller Nintendo Gamecube sampai dengan 1000hz polling.
@@ -63,7 +64,7 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Memperbaiki masalah untuk [game yang menggunakan engine Source 1 <sub><sup>(Contoh: TF2)</sup></sub>](https://github.com/ValveSoftware/Source-1-Games/issues/5043) yang membuat game-nya crash saat dijalankan `ujust fix-source1-tcmalloc`
 - [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) untuk Discord screensharing di Wayland.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) tersedia untuk membuat aplikasi dari situs web dengan berbagai macam peramban, termasuk Firefox.
-  
+
 ### Desktop
 
 Varian umum yang tersedia sebagai `bazzite`, cocok untuk komputer desktop.
@@ -87,7 +88,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 **Untuk pengguna dengan Secure Boot aktif:** Jalankan `ujust enroll-secure-boot-key` dan masukan password `ublue-os` jika diperintahkan untuk menenroll kunci yang dibutuhkan.
 
 ### Steam Deck/Home Theater PCs (HTPCs)
-> [!IMPORTANT] 
+> [!IMPORTANT]
 Perangkat yang bukan Steam Deck masih bisa menggunakan image bazzite-deck, tetapi harus menggunakan Kartu grafis dari AMD/Intel.
 
 Varian `bazzite-deck` ini didesain untuk digunakan sebagai alternatif untuk SteamOS di perangkat Steam Deck dan HTPC dengan pengalaman seperti konsol:
@@ -164,7 +165,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvid
 > **Dikarenakan ada bug/kutu dari upstream,Bazzite tidak bisa digunakan pada perangkat SteamDeck yang memiliki penyimpanan 64GB eMMC saat ini.**
 
 
-Untuk rebase dari sistem ostree yang ada ke varian **Steam Deck/HTPC**: 
+Untuk rebase dari sistem ostree yang ada ke varian **Steam Deck/HTPC**:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:stable
@@ -195,7 +196,7 @@ Bazzite dimulai sebagai proyek untuk menyelesaikan berbagai masalah yang ada di 
 Walaupun proyek ini juga menggunakan image. anda masih bisa menginstall berbagai macam paket Fedora dari perintah shell. Paket-paket ini akan tetap bertahan setelah pembaruan <sub><sup>(Jadi anda bisa install aplikasi VPN yang anda g bisa install di SteamOS)<sub><sup>.
 Sebagai tambahan, Bazzite sering diupdate beberapa kali dalam satu minggu dengan paket-paket dari upstream Fedora, memberikan anda performa terbaik dan fitur-fitur terbaru di base yang stabil.
 
-Bazzite hadir dengan versi Linux kernel yang terbaru dan SELinux diaktifkan secara bawaan dengan dukungan penuh untuk secure boot <sub><sup>(Jalankan `ujust enroll-secure-boot-key` dan masukan password `ublue-os` jika diperintahkan untuk menroll key dari kita)</sup></sub> 
+Bazzite hadir dengan versi Linux kernel yang terbaru dan SELinux diaktifkan secara bawaan dengan dukungan penuh untuk secure boot <sub><sup>(Jalankan `ujust enroll-secure-boot-key` dan masukan password `ublue-os` jika diperintahkan untuk menroll key dari kita)</sup></sub>
 dan enkripsi disk membuat ini aman dan sempurna untuk komputasi general. <sup><sub>(Yes, anda bisa ngeprint dari Bazzite!)</sub></sup>.
 
 Baca [FAQ](https://universal-blue.discourse.group/docs?topic=33) untuk tahu apa saja yang membuat Bazzite beda dari Sistem Operasi Linux yang lain.
@@ -308,7 +309,7 @@ sudo mokutil --import secure_boot.der
 
 ## Ucapan Terimakasih
 Bazzite merupakan upaya dari komunitas dan tidak akan pernah ada tanpa dukungan dari semua orang. berikut ini merupakan orang-orang yang telah membantu kami:
-  
+
 - [rei.svg](https://github.com/reisvg) - Yang membuat logo dan branding.
 - [evlaV](https://gitlab.com/evlaV) - Untuk membuat kode dari Valve tersedia dan menjadi [orang ini](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - Untuk gamescope-sesion dan mendukung kami diperjalanan ini.
