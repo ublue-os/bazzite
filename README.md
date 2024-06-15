@@ -4,7 +4,7 @@
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
 
-# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [:cn:](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md)
+# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [:cn:](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md)
 
 <p align="center">
   <a href="https://download.bazzite.gg/"><img src="/repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
@@ -13,27 +13,26 @@
 ---
 
 # Table of Contents
-- [Language](#---cn)
-- [Table of Contents](#table-of-contents)
-  - [About \& Features](#about--features)
-    - [Desktop](#desktop)
-    - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
-      - [Alternative Handhelds](#alternative-handhelds)
-    - [GNOME](#gnome)
-    - [Features from Upstream](#features-from-upstream)
-      - [Universal Blue](#universal-blue)
-      - [Features from Fedora Linux (Kinoite \& Silverblue)](#features-from-fedora-linux-kinoite--silverblue)
-  - [Why](#why)
-  - [Showcase](#showcase)
-  - [Documentation \& Newsletters](#documentation--newsletters)
-  - [Custom Packages](#custom-packages)
-  - [Verification](#verification)
-  - [Secure Boot](#secure-boot)
-    - [Contributor Metrics](#contributor-metrics)
-      - [Star History](#star-history)
-  - [Special Thanks](#special-thanks)
-  - [Build Your Own](#build-your-own)
-  - [Join The Community](#join-the-community)
+- [README Language](#---cn)
+- [About \& Features](#about--features)
+  - [Desktop](#desktop)
+  - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
+    - [Alternative Handhelds](#alternative-handhelds)
+  - [GNOME](#gnome)
+  - [Features from Upstream](#features-from-upstream)
+    - [Universal Blue](#universal-blue)
+    - [Features from Fedora Linux (Kinoite \& Silverblue)](#features-from-fedora-linux-kinoite--silverblue)
+- [Why](#why)
+- [Showcase](#showcase)
+- [Documentation \& Newsletters](#documentation--newsletters)
+- [Custom Packages](#custom-packages)
+- [Verification](#verification)
+- [Secure Boot](#secure-boot)
+- [Contributor Metrics](#contributor-metrics)
+- [Star History](#star-history)
+- [Special Thanks](#special-thanks)
+- [Build Your Own](#build-your-own)
+- [Join The Community](#join-the-community)
 ---
 
 ## About & Features
@@ -86,7 +85,7 @@ Common variant available as `bazzite`, suitable for desktop computers.
 > [!IMPORTANT]  
 > **ISOs can be downloaded from our [releases page](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
 
-Rebase from an existing upstream Fedora Atomic to this image if you want **Open Source GPU Drivers**: 
+Rebase from an existing upstream Fedora Atomic to this image if you want **Open Source GPU Drivers**:
 (Please note: Mesa's Open Source option for NVIDIA GPUs, NVK is still prone to errors at the time of writing, for any issues relating to NVK [please submit a report with Mesa]([url](https://docs.mesa3d.org/bugs.html)), not Ublue/Bazzite)
 
 ```bash
@@ -113,7 +112,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - **Able to be booted even if the drive is full.**
 - **Support for every language supported by upstream Fedora.**
 - **Uses Wayland on the desktop with [support for Steam input](https://github.com/Supreeeme/extest).**
-- Includes [HHD](https://github.com/hhd-dev/hhd) for expanded input support on non-Valve handhelds. 
+- Includes [HHD](https://github.com/hhd-dev/hhd) for expanded input support on non-Valve handhelds.
 - Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV).
 - Patched Mesa for proper framerate control from Gamescope.
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
@@ -204,7 +203,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvid
 > [!WARNING]  
 > **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time.**
 
-To rebase an existing ostree system to the **Steam Deck/HTPC** release: 
+To rebase an existing ostree system to the **Steam Deck/HTPC** release:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome:stable
@@ -368,7 +367,7 @@ If asked for a password, use `ublue-os`.
 ## Special Thanks
 
 Bazzite is a community effort and wouldn't exist without everyone's support. Below are some of the people who've helped us along the way:
-  
+
 - [rei.svg](https://github.com/reisvg) - For creating our logo and overall branding.
 - [SuperRiderTH](https://github.com/SuperRiderTH) - For creating our Steam game mode startup video.
 - [evlaV](https://gitlab.com/evlaV) - For making Valve's code available and for being [this person](https://xkcd.com/2347/).
