@@ -70,6 +70,11 @@ screens:
           default: false
           packages:
           - Install OpenRazer: ujust install-openrazer
+        OpenRGB:
+          description: Open source RGB lighting control that doesn't depend on manufacturer software
+          default: false
+          packages:
+          - Install OpenRGB: ujust install-openrgb
         Wootility:
           description: A configurator for Wooting keyboards
           default: false
@@ -221,7 +226,6 @@ screens:
           - KeePassXC: org.keepassxc.KeePassXC
           - Main Menu: page.codeberg.libre_menu_editor.LibreMenuEditor
           - Metadata Cleaner: fr.romainvigier.MetadataCleaner
-          - OpenRGB: org.openrgb.OpenRGB
           - Pika Backup: org.gnome.World.PikaBackup
           - qBittorrent: org.qbittorrent.qBittorrent
           - Resources: net.nokyan.Resources
