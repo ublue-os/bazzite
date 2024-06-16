@@ -118,11 +118,6 @@ if [[ $KARGS =~ "nomodeset" ]]; then
   NEEDED_KARGS+=("--delete-if-present=nomodeset")
 fi
 
-if [[ ! $KARGS =~ "gpu_sched.sched_policy" && ! $IMAGE_FLAVOR =~ "nvidia" ]]; then
-  echo "Fixing GPU scheduler default"
-  NEEDED_KARGS+=("--append-if-missing=gpu_sched.sched_policy=0")
-fi
-
 if [[ -n "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
   plymouth display-message --text="Updating kargs - Please wait, this may take a while" || true
