@@ -74,6 +74,20 @@ install-emudeck:
       chmod +x $HOME/Desktop/EmuDeck.AppImage
     fi
 
+# Install OpenRGB (https://openrgb.org/)
+install-openrgb:
+    #!/usr/bin/bash
+    if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
+      wget https://openrgb.org/releases/release_0.9/OpenRGB_0.9_x86_64_b5f46e3.AppImage \
+        -O $HOME/Downloads/OpenRGB.AppImage
+      chmod +x $HOME/Downloads/OpenRGB.AppImage
+      flatpak run it.mijorus.gearlever $HOME/Downloads/OpenRGB.AppImage
+    else
+      wget https://openrgb.org/releases/release_0.9/OpenRGB_0.9_x86_64_b5f46e3.AppImage \
+        -O $HOME/Desktop/OpenRGB.AppImage
+      chmod +x $HOME/Desktop/OpenRGB.AppImage
+    fi
+
 # Install Boxtron, a Steam Play compatibility tool to run DOS games using native Linux DOSBox
 install-boxtron: distrobox-check-fedora
     distrobox enter -n fedora -- bash -c '\
