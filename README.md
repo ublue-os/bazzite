@@ -255,10 +255,11 @@ Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details
 - [Installing and Managing Applications](https://universal-blue.discourse.group/docs?topic=35)
 - [Updates, Rollbacks, and Rebasing](https://universal-blue.discourse.group/docs?topic=36)
 - [Gaming Guide](https://universal-blue.discourse.group/docs?topic=31)
+- [Steam Gaming Mode
 
 View [additional documentation](http://docs.bazzite.gg/) surrounding the project.
 
-Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) that get published on a regular basis for updates on the project.
+Check out our [newsletters](https://universal-blue.discourse.group/docs?topic=2252) that get published on a regular basis for updates on the project.
 
 ## Custom Packages
 
