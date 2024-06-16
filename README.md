@@ -258,7 +258,7 @@ Read the [FAQ](https://universal-blue.discourse.group/docs?topic=33) for details
 
 View [additional documentation](http://docs.bazzite.gg/) surrounding the project.
 
-Check out our [newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) that get published on a regular basis for updates on the project.
+Check out our [newsletters](https://universal-blue.discourse.group/docs?topic=2252) that get published on a regular basis for updates on the project.
 
 ## Custom Packages
 
