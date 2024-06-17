@@ -128,6 +128,13 @@ restore-input-remapper:
     cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
     sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
 
+# Install hhd main branch locally until reboot, helpful for hhd testing and debugging. (rename to install-hhd-dev if we unhide)
+_hhd-dev:
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    echo "Installing ${b}Handheld Daemon${n} locally until next reboot."
+    curl -L https://raw.githubusercontent.com/hhd-dev/hhd/master/local_hhd.sh | bash
+
 _toggle-autologin:
     #!/usr/bin/bash
     DESKTOP_AUTOLOGIN="/etc/bazzite/desktop_autologin"
