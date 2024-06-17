@@ -476,6 +476,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             kdeplasma-addons \
             rom-properties-kf6 \
             joystickwake \
+            fcitx5-mozc \
             ptyxis && \
         mkdir -p /tmp/kwin-system76-scheduler-integration && \
         curl -Lo /tmp/kwin-system76-scheduler-integration/archive.tar.gz https://github.com/maxiberta/kwin-system76-scheduler-integration/archive/refs/heads/main.tar.gz && \
@@ -520,6 +521,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             gnome-shell-extension-hotedge \
             gnome-shell-extension-caffeine \
             rom-properties-gtk3 \
+            ibus-mozc \
             openssh-askpass && \
         rpm-ostree override remove \
             gnome-software-rpm-ostree \
