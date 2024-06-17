@@ -13,9 +13,9 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
 fi
 
 DGPU_OPTION=""
-# If we're running this on a dGPU, disable accelerated cef
+# If we're running this on a dGPU, apply workaround for blank Steam window
 if [[ $(switcherooctl list | grep -o 'Device:' | wc -l) -gt 1 ]]; then
-  DGPU_OPTION="-cef-disable-gpu"
+  DGPU_OPTION="-system-composer"
 fi
 
 if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
