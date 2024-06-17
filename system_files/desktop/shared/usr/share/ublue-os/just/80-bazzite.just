@@ -1,7 +1,7 @@
 # vim: set ft=make :
 
 # Restore the default Terminal
-restore-original-terminal:
+_restore-original-terminal:
     #!/usr/bin/bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
@@ -37,7 +37,7 @@ install-gamemode-video:
     cp /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
 
 # Force-enable AMD pstate
-pstate-force-enable:
+_pstate-force-enable:
     rpm-ostree kargs --append-if-missing=amd_pstate=active
 
 # Configure grub bootmenu visibility and fix duplicate entries
