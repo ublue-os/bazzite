@@ -1,0 +1,11 @@
+--- a/galileo-mura-setup
++++ b/galileo-mura-setup
+@@ -16,7 +16,7 @@
+ deck_serial=${deck_serial^^}
+ manufacturer=$(sed -n 's/.*Manufacturer: \(.*\)/\1/p' < /tmp/mura/info.txt)
+ 
+-mura_base_path=/home/deck/.config/gamescope/mura
++mura_base_path="${XDG_CONFIG_HOME:-$HOME/.config}/gamescope/mura"
+ mkdir -p "$mura_base_path"
+ 
+ if [ "$manufacturer" != "SDC" ]; then
