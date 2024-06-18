@@ -12,10 +12,8 @@ FINAL_RE="$POLARIS_RE"
 # Get the users homedirs so we can check for export-gpu configs
 HOMES=$(grep "/home" /etc/passwd | awk -F ":" '{ print $6 }')
 
-# Use switcherooctl to find all GPUs and conveniently does not list gpus used by vfio-pci <3
-#VGA_CONTROLLERS=$(switcherooctl list | grep -a -A 1 -P 'Name:' | perl -pe 's/\n/;/')
+# Find all GPUs using lspci
 VGA_CONTROLLERS=$(lspci -nn | grep -P "(VGA compatible|3D) controller")
-VULKAN_GPU=""
 
 # Check inside users home if gamescope is configured to use a specific GPU
 # This at least does not break gamescope on systems where users have re-enabled the sddm login screen
@@ -43,7 +41,7 @@ do
     # If we match with a card that requires drm workaround
     if [[ "$GPU" =~ ($FINAL_RE) ]]; then
         # Write info to journal
-        echo "INFO: $(echo "$GPU" | awk -F ';' '{ print $1 }' | sed -E 's/\s+Name:\s+//') detected" | systemd-cat -t gamescope-drm-workaround -p info
+        echo "INFO: $GPU detected" | systemd-cat -t gamescope-drm-workaround -p info
         echo "INFO: DRM workaround will be applied." | systemd-cat -t gamescope-drm-workaround -p info
 
         # This gpu requires drm workaround, exit 0 (true)
@@ -53,7 +51,7 @@ done <<< "$VGA_CONTROLLERS"
 
 # Write info to journalctl
 echo "INFO: DRM workaround not required for this system" | systemd-cat -t gamescope-drm-workaround -p info
-echo 'INFO: If DRM workaround IS required for your card. Provide your "lspci -nn | grep '"'"'(VGA compatible|3D) controller'"'"'" to the developers.' | systemd-cat -t gamescope-drm-workaround -p info
+echo 'INFO: If DRM workaround IS required for your card. Provide your "lspci -nn | grep -P '"'"'(VGA compatible|3D) controller'"'"'" to the developers.' | systemd-cat -t gamescope-drm-workaround -p info
 
 # This GPU does not require drm workaround, exit 1 (false)
 exit 1
