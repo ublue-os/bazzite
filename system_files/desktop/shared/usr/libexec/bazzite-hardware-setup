@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=41
+HWS_VER=42
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -85,7 +85,7 @@ if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
     echo "Adding SG Display for Lenovo Legion Go"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.sg_display=0")
   fi
-elif [[ ":ROG Ally RC71L_RC71L:ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
+elif [[ ":ROG Ally RC71L_RC71L:ROG Ally RC71L_Action:ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
     echo "Adding GTTSize for ASUS Ally"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
@@ -201,7 +201,7 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
 fi
 
 # ALLY POWER SAVE FIX
-ALLY_LIST="ROG Ally RC71L_RC71L:ROG Ally RC71L"
+ALLY_LIST="ROG Ally RC71L_RC71L:ROG Ally RC71L:ROG Ally RC71L_Action"
 if [[ ":$ALLY_LIST:" =~ ":$SYS_ID:"  ]]; then
   echo 0 | sudo tee /sys/devices/platform/asus-nb-wmi/mcu_powersave
 fi

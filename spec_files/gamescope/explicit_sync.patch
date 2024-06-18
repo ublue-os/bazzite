@@ -1,0 +1,11 @@
+--- a/src/drm.cpp
++++ b/src/drm.cpp
+@@ -63,7 +63,7 @@
+ gamescope::ConVar<bool> cv_drm_debug_disable_regamma_tf( "drm_debug_disable_regamma_tf", false, "Regamma chicken bit. (Forces REGAMMA_TF to DEFAULT, does not affect other logic)" );
+ gamescope::ConVar<bool> cv_drm_debug_disable_output_tf( "drm_debug_disable_output_tf", false, "Force default (identity) output TF, affects other logic. Not a property directly." );
+ gamescope::ConVar<bool> cv_drm_debug_disable_blend_tf( "drm_debug_disable_blend_tf", false, "Blending chicken bit. (Forces BLEND_TF to DEFAULT, does not affect other logic)" );
+-gamescope::ConVar<bool> cv_drm_debug_disable_explicit_sync( "drm_debug_disable_explicit_sync", false, "Force disable explicit sync on the DRM backend." );
++gamescope::ConVar<bool> cv_drm_debug_disable_explicit_sync( "drm_debug_disable_explicit_sync", true, "Force disable explicit sync on the DRM backend." );
+ gamescope::ConVar<bool> cv_drm_debug_disable_in_fence_fd( "drm_debug_disable_in_fence_fd", false, "Force disable IN_FENCE_FD being set to avoid over-synchronization on the DRM backend." );
+ 
+ namespace gamescope
