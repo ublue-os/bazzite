@@ -55,21 +55,16 @@ setup-virtualization ACTION="":
         fi
       )
     elif [[ "${OPTION,,}" =~ (^disable[[:space:]]virtualization|virt-off) ]]; then
-      (
-        virt_test=$(rpm-ostree status -v --jsonpath '.deployments[0].packages')
-        if [[ ${virt_test} == *virt-manager* ]]; then
-          if [ "$(systemctl is-enabled libvirtd.service)" == "enabled" ]; then
-            echo "${red}Disabling${n} libvirtd before removal"
-            sudo systemctl disable --now libvirtd 2> /dev/null
-          fi
-          echo "Removing QEMU and virt-manager..."
-          rpm-ostree remove -y virt-manager edk2-ovmf qemu
-          rpm-ostree kargs \
-          --delete-if-present="kvm.ignore_msrs=1" \
-          --delete-if-present="kvm.report_ignored_msrs=0"
-          echo 'Please reboot to apply changes'
-        fi
-      )
+      if [ "$(systemctl is-enabled libvirtd.service)" == "enabled" ]; then
+        echo "${red}Disabling${n} libvirtd before removal"
+        sudo systemctl disable --now libvirtd 2> /dev/null
+      fi
+      echo "Removing QEMU and virt-manager..."
+      rpm-ostree remove -y virt-manager edk2-ovmf qemu
+      rpm-ostree kargs \
+      --delete-if-present="kvm.ignore_msrs=1" \
+      --delete-if-present="kvm.report_ignored_msrs=0"
+      echo 'Please reboot to apply changes'
     elif [[ "${OPTION,,}" =~ (^enable[[:space:]]vfio|vfio-on) ]]; then
       # Check if we are running on a Steam Deck
       if /usr/libexec/hwsupport/valve-hardware; then
