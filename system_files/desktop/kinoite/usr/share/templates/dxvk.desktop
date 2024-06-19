@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=Create a new DXVK config from template
+Icon=text-x-makefile
+Name=DXVK Config...
+Type=Link
+URL=file:/etc/dxvk-example.conf

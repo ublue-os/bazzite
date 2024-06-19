@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=Create a new vkBasalt config from template
+Icon=text-x-makefile
+Name=vkBasalt Config...
+Type=Link
+URL=file:/etc/vkBasalt.conf

@@ -8,6 +8,7 @@ URL:            https://github.com/ublue-os/bazzite
 Source:         https://gitlab.com/evlaV/galileo-mura-extractor/-/archive/main/galileo-mura-extractor-main.tar.gz
 
 Patch0:         fedora.patch
+Patch1:         valve.patch
 
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  gcc

@@ -6,7 +6,7 @@
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        5.bazzite
+Release:        6.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -21,6 +21,7 @@ Patch2:         disable-steam-touch-click-atom.patch
 Patch3:         external-rotation.patch
 Patch4:         panel-type.patch
 Patch5:         deckhd.patch
+Patch6:         explicit_sync.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build

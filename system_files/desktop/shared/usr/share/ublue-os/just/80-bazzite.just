@@ -1,7 +1,7 @@
 # vim: set ft=make :
 
 # Restore the default Terminal
-restore-original-terminal:
+_restore-original-terminal:
     #!/usr/bin/bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
@@ -37,7 +37,7 @@ install-gamemode-video:
     cp /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
 
 # Force-enable AMD pstate
-pstate-force-enable:
+_pstate-force-enable:
     rpm-ostree kargs --append-if-missing=amd_pstate=active
 
 # Configure grub bootmenu visibility and fix duplicate entries
@@ -155,7 +155,6 @@ setup-decky ACTION="":
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'install' to select Install Decky"
       echo "  Use 'simpledeckytdp' to select Get SimpleDeckyTDP"
-      echo "  Use 'hhd-decky' to select Get HHD-decky"
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Setup Decky Loader${normal}"
@@ -165,8 +164,7 @@ setup-decky ACTION="":
       OPTION=$(
         Choose \
         "Install Decky" \
-        "Get $(Urllink "https://github.com/aarron-lee/SimpleDeckyTDP" SimpleDeckyTDP)${n}" \
-        "Get $(Urllink "https://github.com/hhd-dev/hhd-decky" HHD-Decky)${n}"
+        "Get $(Urllink "https://github.com/aarron-lee/SimpleDeckyTDP" SimpleDeckyTDP)${n}"
         )
     fi
     if [[ "${OPTION,,}" =~ install ]]; then
@@ -181,16 +179,6 @@ setup-decky ACTION="":
         rm /tmp/SimpleDeckyTDP.tar.gz
         sudo sed -i 's/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=1/g' /etc/default/steam-hardware-control
         echo 'Installed. Please reboot to apply needed changes.'
-      else
-        echo 'Please install Decky Loader by running "ujust setup-decky install" first.'
-      fi
-    elif [[ "${OPTION,,}" =~ hhd-decky ]]; then
-      if [[ -d $HOME/homebrew/plugins ]]; then
-        sudo rm -rf $HOME/homebrew/plugins/hhd-decky
-        curl -L $(curl -s https://api.github.com/repos/hhd-dev/hhd-decky/releases/latest | grep "browser_download_url" | cut -d '"' -f 4) -o /tmp/hhd-decky.tar.gz
-        sudo tar -xzf /tmp/hhd-decky.tar.gz -C $HOME/homebrew/plugins
-        rm /tmp/hhd-decky.tar.gz
-        echo 'Installed.'
       else
         echo 'Please install Decky Loader by running "ujust setup-decky install" first.'
       fi

@@ -17,7 +17,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=35
+USER_SETUP_VER=36
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -85,7 +85,7 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   echo 'Running setup for Kinoite'
 
   echo 'Enabling System76-Scheduler KWin script'
-  kwriteconfig5 --file kwinrc --group Plugins --key kwin-system76-scheduler-integrationEnabled true
+  kwriteconfig6 --file kwinrc --group Plugins --key kwin-system76-scheduler-integrationEnabled true
 
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Kinoite on Steam Deck'
@@ -113,23 +113,27 @@ else
     fi
   fi
 
+  echo 'Setting up templates'
+  TEMPLATES_DIR=$(/usr/bin/xdg-user-dir TEMPLATES || true)
+  if [[ -z "$TEMPLATES_DIR" || "$TEMPLATES_DIR" == "$HOME" ]]; then
+    # xdg-user-dir might return only $HOME, in that case, use fallback $HOME/Templates.
+    echo "Using fallback '$HOME/Templates'"
+    TEMPLATES_DIR="$HOME/Templates"
+  fi
+  mkdir -p "$TEMPLATES_DIR"
+
+  if [[ ! -f "$TEMPLATES_DIR/vkBasalt.conf" && -f "/etc/vkBasalt.conf" ]]; then
+    ln -s "/etc/vkBasalt.conf" "$TEMPLATES_DIR/vkBasalt.conf"
+  fi
+  if [[ ! -f "$TEMPLATES_DIR/dxvk.conf" && -f "/etc/dxvk-example.conf" ]]; then
+    ln -s "/etc/dxvk-example.conf" "$TEMPLATES_DIR/dxvk.conf"
+  fi
+  if [[ ! -f "$TEMPLATES_DIR/MangoHud.conf" && -f "/usr/share/doc/mangohud/MangoHud.conf.example" ]]; then
+    ln -s "/usr/share/doc/mangohud/MangoHud.conf.example" "$TEMPLATES_DIR/MangoHud.conf"
+  fi
+
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
-
-    echo 'Setting up templates'
-    TEMPLATES_DIR=$(/usr/bin/xdg-user-dir TEMPLATES || true)
-    if [[ -z "$TEMPLATES_DIR" || "$TEMPLATES_DIR" == "$HOME" ]]; then
-      # xdg-user-dir might return only $HOME, in that case, use fallback $HOME/Templates.
-      echo "Using fallback '$HOME/Templates'"
-      TEMPLATES_DIR="$HOME/Templates"
-    fi
-    mkdir -p "$TEMPLATES_DIR"
-    if [[ ! -f "$TEMPLATES_DIR/vkBasalt.conf" && -f "/etc/vkBasalt.conf" ]]; then
-      ln -s "/etc/vkBasalt.conf" "$TEMPLATES_DIR/vkBasalt.conf"
-    fi
-    if [[ ! -f "$TEMPLATES_DIR/dxvk.conf" && -f "/etc/dxvk-example.conf" ]]; then
-      ln -s "/etc/dxvk-example.conf" "$TEMPLATES_DIR/dxvk.conf"
-    fi
 
     echo 'Tweaking GNOME indexer'
     if [[ ! -f "$HOME/.steam/.trackerignore" ]]; then

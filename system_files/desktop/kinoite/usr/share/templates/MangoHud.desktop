@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=Create a new MangoHud config from template
+Icon=text-x-makefile
+Name=MangoHud Config...
+Type=Link
+URL=file:/usr/share/doc/mangohud/MangoHud.conf.example
