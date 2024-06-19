@@ -3,4 +3,4 @@ Comment=Create a new MangoHud config from template
 Icon=text-x-makefile
 Name=MangoHud Config...
 Type=Link
-URL[$e]=file:/usr/share/doc/mangohud/MangoHud.conf.example
+URL=file:/usr/share/doc/mangohud/MangoHud.conf.example
