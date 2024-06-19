@@ -49,7 +49,8 @@ setup-virtualization ACTION="":
           rpm-ostree kargs \
           --append-if-missing="kvm.ignore_msrs=1" \
           --append-if-missing="kvm.report_ignored_msrs=0"
-          systemctl enable bazzite-libvirtd-setup.service
+          sudo systemctl enable bazzite-libvirtd-setup.service \
+            && echo "libvirtd will be enabled at next reboot"
           echo 'Please reboot to apply changes'
         fi
       )
@@ -66,7 +67,7 @@ setup-virtualization ACTION="":
           rpm-ostree kargs \
           --delete-if-present="kvm.ignore_msrs=1" \
           --delete-if-present="kvm.report_ignored_msrs=0"
-          echo 'Please re-run "ujust enable-virtualization" after the reboot to finish setup'
+          echo 'Please reboot to apply changes'
         fi
       )
     elif [[ "${OPTION,,}" =~ (^enable[[:space:]]vfio|vfio-on) ]]; then
