@@ -12,11 +12,16 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
   fi
 fi
 
+switcheroo_state="$(switcherooctl list)"
 DGPU_OPTION=""
 # If we're running this on a dGPU, apply workaround for blank Steam window
-if [[ $(switcherooctl list | grep -o 'Device:' | wc -l) -gt 1 ]]; then
-  DGPU_OPTION="-system-composer"
+if [[ $(echo "${switcheroo_state}" | grep -o 'Device:' | wc -l) -gt 1 ]]; then
+  # TODO: Check if -system-composer is needed with nvidia >=555 driver
+  if ! grep -Pq 'Name:\s+NVIDIA' <<< "$switcheroo_state"; then
+    DGPU_OPTION="-system-composer"
+  fi
 fi
+unset -v switcheroo_state
 
 if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
   # https://github.com/Supreeeme/extest
