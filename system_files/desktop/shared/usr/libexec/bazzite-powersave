@@ -2,8 +2,8 @@
 # This script sends the Power Profile Daemon dbus call to set tuneD to power-saver mode
 # This is useful only for battery powered devices where you want to start in power-saver mode by default
 POWERSAVE=1
-if [ -z "$1" ]; then
-    if [ "$1" == 0 ]; then
+if [ -n "$1" ]; then
+    if [ "$1" == "0" ]; then
         POWERSAVE=0
     fi
 fi
@@ -11,14 +11,14 @@ fi
 # Check what DE we are on
 if command -v /usr/bin/mutter > /dev/null; then
     # If we are on Gnome send the dbus signal with gdbus
-    if [ $POWERSAVE == 0 ]; then
+    if [ "$POWERSAVE" == "0" ]; then
         gdbus call --system --dest net.hadess.PowerProfiles --object-path /net/hadess/PowerProfiles --method org.freedesktop.DBus.Properties.Set 'net.hadess.PowerProfiles' 'ActiveProfile' "<'balanced'>"
     else
         gdbus call --system --dest net.hadess.PowerProfiles --object-path /net/hadess/PowerProfiles --method org.freedesktop.DBus.Properties.Set 'net.hadess.PowerProfiles' 'ActiveProfile' "<'power-saver'>"
     fi
 else
     # Assume we are on KDE and send the dbus signal with qdbus
-    if [ $POWERSAVE == 0 ]; then
+    if [ "$POWERSAVE" == "0" ]; then
         qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/PowerProfile setProfile balanced
     else
         qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/PowerProfile setProfile power-saver
