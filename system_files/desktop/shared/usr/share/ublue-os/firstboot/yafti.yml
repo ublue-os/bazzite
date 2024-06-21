@@ -97,7 +97,6 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       packages:
-        - GreenWithEnvy (GPU Overclocking): flatpak install --user --noninteractive com.leinardi.gwe
         - Supergfxctl (Hybrid GPU Switching): ujust enable-supergfxctl
   applications:
     source: yafti.screen.package
