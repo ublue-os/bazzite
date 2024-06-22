@@ -62,8 +62,6 @@ RUN rpm-ostree cliwrap install-to-root / && \
             kernel-modules-core \
             kernel-modules-extra \
             kernel-uki-virt \
-            kernel-headers \
-            kernel-devel \
     ; else \
         echo "will use kernel from ${KERNEL_FLAVOR} images" \
     ; fi && \
