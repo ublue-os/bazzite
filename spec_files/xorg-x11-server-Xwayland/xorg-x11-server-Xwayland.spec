@@ -20,7 +20,6 @@ Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{xwayland_versio
 %endif
 
 Patch0:    xwayland-pointer-warp-fix.patch
-Patch1:    0001-xwayland-Send-ei_device_frame-on-device_scroll_discr.patch
 
 License:   MIT
 
