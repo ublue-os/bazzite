@@ -1,0 +1,12 @@
+#!/bin/bash
+# Get the SYS_ID
+SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+
+# Check SYS_IDs that have multiple revisions with insignificant hardware changes
+if [[ "$SYS_ID" =~ ROG[[:space:]]Ally[[:space:]]RC71L.+ ]]; then
+    # Trunctate ROG Ally SYS_ID
+    echo "ROG Ally RC71L"
+else
+    # Probably a sensible SYS_ID so we echo it
+    echo "$SYS_ID"
+fi
