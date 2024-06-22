@@ -827,6 +827,8 @@ RUN rpm-ostree override remove \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo && \
+    rpm-ostree override replace
+        https://kojipkgs.fedoraproject.org//packages/xorg-x11-server-Xwayland/24.1.0/1.fc40/x86_64/xorg-x11-server-Xwayland-24.1.0-1.fc40.x86_64.rpm && \
     if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then \
         rpm-ostree override remove \
             colord-kde \
