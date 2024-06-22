@@ -84,9 +84,6 @@ fi
 if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   echo 'Running setup for Kinoite'
 
-  echo 'Enabling System76-Scheduler KWin script'
-  kwriteconfig6 --file kwinrc --group Plugins --key kwin-system76-scheduler-integrationEnabled true
-
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     echo 'Running setup for Kinoite on Steam Deck'
     if [[ ! -f "$HOME/Desktop/Return.desktop" ]]; then
