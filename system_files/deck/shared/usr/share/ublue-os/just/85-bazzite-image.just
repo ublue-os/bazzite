@@ -61,7 +61,7 @@ switch-to-ext4:
 # Install Deck HD BIOS
 install-deckhd-bios:
     #!/usr/bin/bash
-    SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+    SYS_ID="$(/usr/libexec/hwsupport/sysid)"
     if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
       RESOLUTION=$(sudo lshw -json -c display | jq -r .[]."configuration"."resolution")
       if [[ "${RESOLUTION}" = "1200,1920" ]]; then
@@ -92,7 +92,7 @@ enable-swipe-gestures:
 # Enable BIOS & Firmware update services for the Steam Deck
 enable-deck-bios-firmware-updates:
     #!/usr/bin/bash
-    SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+    SYS_ID="$(/usr/libexec/hwsupport/sysid)"
     if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
       RESOLUTION=$(sudo lshw -json -c display | jq -r .[]."configuration"."resolution")
       if [[ "${RESOLUTION}" = "1200,1920" ]]; then

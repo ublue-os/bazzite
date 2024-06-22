@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+SYS_ID="$(/usr/libexec/hwsupport/sysid)"
 
 # Legion Go
 # Loki Max
