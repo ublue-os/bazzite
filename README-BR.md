@@ -335,7 +335,7 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 ## Secure Boot
 
 > [!AVISO]  
-> **Usuários do Steam Deck: O Steam Deck não habilita o secure boot e não vem com quaisquer chaves inclusas por padrão. Não ative se não tiver certeza absoluta que sabe o que está fazendo.**
+> **Usuários do Steam Deck: O Steam Deck não habilita o secure boot e não vem com quaisquer chaves inclusas por padrão. Não ative se não tiver certeza absoluta de que sabe o que está fazendo.**
 
 Secure boot é suportado com a nossa chave própria. A chave pública se encontra [aqui](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der) na raiz deste repositório. Se você quiser adicionar a nossa chave antes da instalação ou rebase, baixe a chave e execute o seguinte:
 
