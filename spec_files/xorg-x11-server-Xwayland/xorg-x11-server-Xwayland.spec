@@ -8,7 +8,7 @@
 
 Summary:   Xwayland
 Name:      xorg-x11-server-Xwayland
-%global    xwayland_version 23.2.6
+%global    xwayland_version 24.1.0
 Version:   %{xwayland_version}.bazzite.{{{ git_dir_version }}}
 Release:   1%{?gitdate:.%{gitdate}git%{shortcommit}}%{?dist}
 
@@ -20,7 +20,6 @@ Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{xwayland_versio
 %endif
 
 Patch0:    xwayland-pointer-warp-fix.patch
-Patch1:    0001-xwayland-Send-ei_device_frame-on-device_scroll_discr.patch
 
 License:   MIT
 
@@ -37,7 +36,7 @@ BuildRequires: wayland-devel
 BuildRequires: desktop-file-utils
 
 BuildRequires: pkgconfig(wayland-client) >= 1.21.0
-BuildRequires: pkgconfig(wayland-protocols) >= 1.30
+BuildRequires: pkgconfig(wayland-protocols) >= 1.34
 BuildRequires: pkgconfig(wayland-eglstream-protocols)
 
 BuildRequires: pkgconfig(epoxy) >= 1.5.5
@@ -68,7 +67,7 @@ BuildRequires: pkgconfig(libxcvt)
 BuildRequires: pkgconfig(libdecor-0) >= 0.1.1
 BuildRequires: pkgconfig(liboeffis-1.0) >= 1.0.0
 BuildRequires: pkgconfig(libei-1.0) >= 1.0.0
-BuildRequires: xorg-x11-proto-devel >= 2023.2-1
+BuildRequires: xorg-x11-proto-devel >= 2024.1-1
 
 BuildRequires: mesa-libGL-devel >= 9.2
 BuildRequires: mesa-libEGL-devel
@@ -108,7 +107,6 @@ necessary for developing Wayland compositors using Xwayland.
 %build
 %meson \
 	%{?gitdate:-Dxwayland=true -D{xorg,xnest,xvfb,udev}=false} \
-        -Dxwayland_eglstream=true \
         -Ddefault_font_path=%{default_font_path} \
         -Dbuilder_string="Build ID: %{name} %{version}-%{release}" \
         -Dxkb_output_dir=%{_localstatedir}/lib/xkb \
@@ -141,6 +139,15 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_libdir}/pkgconfig/xwayland.pc
 
 %changelog
+* Wed May 15 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.1.0-1
+- xwayland 24.1.0
+
+* Thu May 02 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.0.99.902-1
+- xwayland 24.0.99.902 (xwayland 24.1.0 rc2) 
+
+* Wed Apr 17 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.0.99.901-1
+- xwayland 24.0.99.901 (xwayland 24.1.0 rc1) - (#2275466)
+
 * Tue Apr 09 2024 Olivier Fourdan <ofourdan@redhat.com> - 23.2.6-1
 - xwayland 23.2.6 - (#2273002)
 

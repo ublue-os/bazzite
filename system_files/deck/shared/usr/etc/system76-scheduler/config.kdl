@@ -27,9 +27,16 @@ process-scheduler enable=true {
         sound-server nice=-19 sched=(fifo)89 io=(realtime)0 {
             "/usr/bin/pipewire"
             "/usr/bin/pipewire-pulse"
+            "/usr/bin/pipewire-avb"
+            "/usr/bin/pipewire-aes67"
+            "/usr/bin/pipewire-vulkan"
             "/usr/bin/jackd"
+            "/usr/bin/pw-jack"
             "/usr/bin/wireplumber"
         }
+
+        // Applications that directly interface with pipewire to affect the output
+        sound-processing nice=-19 sched=(fifo)89 io=(realtime)0
 
         // Applications with realtime audio processing needs
         recording nice=-9 io=(best-effort)0
