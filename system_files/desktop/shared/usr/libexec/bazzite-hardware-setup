@@ -22,7 +22,7 @@ KNOWN_FEDORA_VERSION_FILE="/etc/bazzite/fedora_version"
 KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
 
 # GLOBAL
-SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+SYS_ID="$(/usr/libexec/hwsupport/sysid)"
 VEN_ID="$(cat /sys/devices/virtual/dmi/id/chassis_vendor)"
 CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
 CPU_MODEL=$(grep "model name" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
@@ -85,7 +85,7 @@ if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
     echo "Adding SG Display for Lenovo Legion Go"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.sg_display=0")
   fi
-elif [[ ":ROG Ally RC71L_RC71L:ROG Ally RC71L_Action:ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
+elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
     echo "Adding GTTSize for ASUS Ally"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")

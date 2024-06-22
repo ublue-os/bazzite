@@ -5,7 +5,7 @@
 
 set -eo pipefail
 
-SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+SYS_ID="$(/usr/libexec/hwsupport/sysid)"
 
 if [[ "${XDG_SESSION_TYPE}" = "wayland" ]]; then
   if /usr/libexec/hwsupport/needs-left-rotation || /usr/libexec/hwsupport/needs-right-rotation; then
