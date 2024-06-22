@@ -107,7 +107,7 @@ Imagem feita pra ser utilizada como alternativa ao SteamOS no Steam Deck, e para
 
 - Inicializa diretamente no Game mode, assim como o SteamOS.
 - **`duperemove` automático reduz bastante o tamanho da compatdata.**
-- **A última versão do Mesa cria caches de shader menores e não requer seu uso pra previnir travamentos.**
+- **A última versão do Mesa cria caches de shader menores e não requer seu uso pra prevenir travamentos.**
 - **Inicia mesmo se o disco estiver  cheio.**
 - **Suporte a todos os idiomas suportados pelo Fedora.**
 - **Usa o desktop em Wayland com [suporte a Steam Input](https://github.com/Supreeeme/extest).**
@@ -123,7 +123,7 @@ Imagem feita pra ser utilizada como alternativa ao SteamOS no Steam Deck, e para
 - Steam e Lutris pré-instalados via pacotes sobrepostos na imagem.
 - [Discover Overlay](https://github.com/trigg/Discover) pra Discord pré-instalado e iniciado automaticamente tanto no Game mode quanto no Desktop se o Discord estiver instalado. [Confira a documentação oficial aqui](https://trigg.github.io/Discover/bazzite).
 - Usa ZRAM<sub><sup>(4GB)</sup></sub> com o algoritmo de compressão ZSTD por padrão com a opção de trocar de volta para um arquivo de swap de 1GB e definir um tamanho arbitrário pra ele se desejado.
-- Scheduler de I/O Kyber para previnir inanição de I/O ao instalar jogos ou durante o processo de `duperemove` rodando em segundo plano.
+- Scheduler de I/O Kyber para prevenir inanição de I/O ao instalar jogos ou durante o processo de `duperemove` rodando em segundo plano.
 - Aplica os parâmetros de kernel do SteamOS.
 - Perfis de cor calibrada para as telas padrão e antirreflexo do Steam Deck inclusos.
 - Recursos para usuários avançados e desabilitados por padrão, incluindo:
