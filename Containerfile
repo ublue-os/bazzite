@@ -256,6 +256,8 @@ RUN rpm-ostree override remove \
         pipewire \
         pipewire-alsa \
         pipewire-gstreamer \
+        pipewire-jack-audio-connection-kit \
+        pipewire-jack-audio-connection-kit-libs \
         pipewire-libs \
         pipewire-pulseaudio \
         pipewire-utils \
