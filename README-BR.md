@@ -378,7 +378,7 @@ O Bazzite é um esforço comunitário e não existiria sem o apoio de todos. Lis
 
 ## Faça Sua Própria
 
-O Bazzite é construído inteiramente no GitHub e criar sua própria versão customizada e tão simples quanto fazer um fork deste repositório, adicionar uma chave privada pra assinatura, e habilitar as GitHub actions.
+O Bazzite é construído inteiramente no GitHub e criar sua própria versão customizada é tão simples quanto fazer um fork deste repositório, adicionar uma chave privada pra assinatura, e habilitar as GitHub actions.
 
 [Se familiarize](https://docs.github.com/en/actions/security-guides/encrypted-secrets) com o uso de segredos no github. Você vai precisar [gerar um novo par de chaves](https://docs.sigstore.dev/cosign/overview/) com o cosign. A chave pública pode ficar no seu repositório público <sub><sup>(Seus usuários precisam dela pra verificar a assinatura)</sup></sub>, e você pode colar a chave privada em `Settings -> Secrets -> Actions` com o nome `SIGNING_SECRET`.
 
