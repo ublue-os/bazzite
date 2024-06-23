@@ -59,6 +59,10 @@ setup-virtualization ACTION="":
         echo "${red}Disabling${n} libvirtd before removal"
         sudo systemctl disable --now libvirtd 2> /dev/null
       fi
+      if [ "$(systemctl is-enabled bazzite-libvirtd-setup.service)" == "enabled" ]; then
+        echo "${red}Disabling${n} bazzite-libvirtd-setup"
+        sudo systemctl disable --now bazzite-libvirtd-setup.service 2> /dev/null
+      fi
       echo "Removing QEMU and virt-manager..."
       rpm-ostree remove -y virt-manager edk2-ovmf qemu
       rpm-ostree kargs \
