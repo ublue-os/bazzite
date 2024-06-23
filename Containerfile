@@ -579,9 +579,6 @@ RUN /usr/libexec/containerbuild/build-initramfs && \
     echo "import \"/usr/share/ublue-os/just/90-bazzite-de.just\"" >> /usr/share/ublue-os/justfile && \
     pip install --prefix=/usr yafti && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
-    if [[ "${KERNEL_FLAVOR}" =~ "fsync" ]]; then \
-        sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo \
-    ; fi && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
