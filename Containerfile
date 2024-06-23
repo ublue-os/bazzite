@@ -346,6 +346,7 @@ RUN rpm-ostree install \
         cockpit-system \
         cockpit-navigator \
         cockpit-storaged \
+        ydotool \
         lsb_release && \
     pip install --prefix=/usr topgrade && \
     rpm-ostree install \
