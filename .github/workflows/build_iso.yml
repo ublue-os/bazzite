@@ -111,7 +111,7 @@ jobs:
           docker rmi ${image}
 
       - name: Build ISOs
-        uses: jasonn3/build-container-installer@v1.2.0
+        uses: jasonn3/build-container-installer@v1.2.1
         id: build
         with:
           arch: x86_64
