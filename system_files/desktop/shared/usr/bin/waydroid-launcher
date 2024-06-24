@@ -14,9 +14,9 @@ if [ "$(systemctl is-active waydroid-container.service)" == 'active' ]; then
 	pkexec /usr/libexec/waydroid-container-stop
 fi
 
-# Check if Waydroid is initialized, initialize if not
+# Check if Waydroid is initialized, send user to the docs
 if grep -qz 'not initialized' <<< $(/usr/bin/waydroid status); then
-	/usr/bin/ujust init-waydroid
+	xdg-open "https://universal-blue.discourse.group/docs?topic=32"
 fi
 
 launch_waydroid() {
