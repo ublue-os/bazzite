@@ -31,3 +31,5 @@ cat > $IMAGE_INFO <<EOF
   "fedora-version": "$FEDORA_MAJOR_VERSION"
 }
 EOF
+
+sed -i "s/VARIANT_ID.*/VARIANT_ID=$IMAGE_NAME/" /etc/os-release
