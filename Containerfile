@@ -466,6 +466,7 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
             rom-properties-kf6 \
             joystickwake \
             fcitx5-mozc \
+            fcitx5-chinese-addons \
             ptyxis && \
         git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 --branch qt6 /tmp/wallpaper-engine-kde-plugin && \
         kpackagetool6 --type=Plasma/Wallpaper --global --install /tmp/wallpaper-engine-kde-plugin/plugin && \

@@ -1,0 +1,12 @@
+[Unit]
+Description=Enable libvirtd service after reboot
+After=local-fs.target
+ConditionPathExists=/usr/lib/systemd/system/libvirtd.service
+
+[Service]
+Type=oneshot
+# TODO: Rewrite this whenever systemd allows to queue ephemeral commands for next boot without modifying kernel args
+ExecStart=/usr/bin/bash -c "systemctl enable --now libvirtd; systemctl disable %n"
+
+[Install]
+WantedBy=multi-user.target

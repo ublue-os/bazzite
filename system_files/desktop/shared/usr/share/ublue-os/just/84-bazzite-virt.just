@@ -41,29 +41,34 @@ setup-virtualization ACTION="":
       )
     fi
     if [[ "${OPTION,,}" =~ (^enable[[:space:]]virtualization|virt-on) ]]; then
-      virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
-      if [[ -z ${virt_test} ]]; then
-        echo "Installing QEMU and virt-manager..."
-        rpm-ostree install -y virt-manager edk2-ovmf qemu
-        rpm-ostree kargs \
-        --append-if-missing="kvm.ignore_msrs=1" \
-        --append-if-missing="kvm.report_ignored_msrs=0"
-        echo 'Please re-run "ujust setup-virtualization" after the reboot to enable libvirtd service'
-      fi
-    elif [[ "${OPTION,,}" =~ (^disable[[:space:]]virtualization|virt-off) ]]; then
-      virt_test=$(rpm-ostree status | grep -A 4 "●" | grep "virt-manager")
-      if [[ ${virt_test} ]]; then
-        if [ "$(systemctl is-enabled libvirtd.service)" == "enabled" ]; then
-          echo "${red}Disabling${n} libvirtd before removal"
-          sudo systemctl disable --now libvirtd 2> /dev/null
+      (
+        virt_test=$(rpm-ostree status -v --jsonpath '.deployments[0].packages')
+        if [[ ${virt_test} == *virt-manager* ]]; then
+          echo "Installing QEMU and virt-manager..."
+          rpm-ostree install -y virt-manager edk2-ovmf qemu
+          rpm-ostree kargs \
+          --append-if-missing="kvm.ignore_msrs=1" \
+          --append-if-missing="kvm.report_ignored_msrs=0"
+          sudo systemctl enable bazzite-libvirtd-setup.service \
+            && echo "libvirtd will be enabled at next reboot"
+          echo 'Please reboot to apply changes'
         fi
-        echo "Removing QEMU and virt-manager..."
-        rpm-ostree remove -y virt-manager edk2-ovmf qemu
-        rpm-ostree kargs \
-        --delete-if-present="kvm.ignore_msrs=1" \
-        --delete-if-present="kvm.report_ignored_msrs=0"
-        echo 'Please re-run "ujust enable-virtualization" after the reboot to finish setup'
+      )
+    elif [[ "${OPTION,,}" =~ (^disable[[:space:]]virtualization|virt-off) ]]; then
+      if [ "$(systemctl is-enabled libvirtd.service)" == "enabled" ]; then
+        echo "${red}Disabling${n} libvirtd before removal"
+        sudo systemctl disable --now libvirtd 2> /dev/null
       fi
+      if [ "$(systemctl is-enabled bazzite-libvirtd-setup.service)" == "enabled" ]; then
+        echo "${red}Disabling${n} bazzite-libvirtd-setup"
+        sudo systemctl disable --now bazzite-libvirtd-setup.service 2> /dev/null
+      fi
+      echo "Removing QEMU and virt-manager..."
+      rpm-ostree remove -y virt-manager edk2-ovmf qemu
+      rpm-ostree kargs \
+      --delete-if-present="kvm.ignore_msrs=1" \
+      --delete-if-present="kvm.report_ignored_msrs=0"
+      echo 'Please reboot to apply changes'
     elif [[ "${OPTION,,}" =~ (^enable[[:space:]]vfio|vfio-on) ]]; then
       # Check if we are running on a Steam Deck
       if /usr/libexec/hwsupport/valve-hardware; then
