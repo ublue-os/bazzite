@@ -813,6 +813,7 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/rpmfusion-nonfree.repo && 
 # Cleanup & Finalize
 RUN /usr/libexec/containerbuild/build-initramfs && \
     /usr/libexec/containerbuild/image-info && \
+    rm -f /usr/lib/dracut/dracut.conf.d/99-nvidia.conf && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
     echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree.repo && \
