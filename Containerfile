@@ -545,9 +545,7 @@ RUN touch /.dockerenv && \
 
 # Cleanup & Finalize
 COPY system_files/overrides /
-RUN /usr/libexec/containerbuild/build-initramfs && \
-    /usr/libexec/containerbuild/image-info && \
-    rm -f /etc/profile.d/toolbox.sh && \
+RUN rm -f /etc/profile.d/toolbox.sh && \
     cp --no-dereference --preserve=links /usr/lib/libdrm.so.2 /usr/lib/libdrm.so && \
     cp --no-dereference --preserve=links /usr/lib64/libdrm.so.2 /usr/lib64/libdrm.so && \
     sed -i 's@/usr/bin/steam@/usr/bin/bazzite-steam@g' /usr/share/applications/steam.desktop && \
@@ -635,6 +633,8 @@ RUN /usr/libexec/containerbuild/build-initramfs && \
     curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/KyleGospo/waydroid-scripts/main/waydroid-choose-gpu.sh && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
     curl -Lo /usr/lib/sysctl.d/99-bore-scheduler.conf https://github.com/CachyOS/CachyOS-Settings/raw/master/usr/lib/sysctl.d/99-bore-scheduler.conf && \
+    /usr/libexec/containerbuild/build-initramfs && \
+    /usr/libexec/containerbuild/image-info && \
     ostree container commit
 
 FROM bazzite as bazzite-deck
@@ -809,11 +809,11 @@ RUN curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/h
     IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-install.sh && \
     rm -f /usr/lib/dracut/dracut.conf.d/99-nvidia.conf && \
     cp "/etc/modprobe.d/nvidia-modeset.conf" "/usr/lib/modprobe.d/nvidia-modeset.conf" && \
+    rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
     ostree container commit
 
 # Cleanup & Finalize
-RUN /usr/libexec/containerbuild/build-initramfs && \
+RUN echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
+    /usr/libexec/containerbuild/build-initramfs && \
     /usr/libexec/containerbuild/image-info && \
-    rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
-    echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
     ostree container commit
