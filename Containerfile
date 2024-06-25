@@ -49,7 +49,7 @@ RUN curl -Lo /usr/bin/copr https://raw.githubusercontent.com/ublue-os/COPR-comma
     sed -i 's@#Recommends=true@Recommends=false@g' /etc/rpm-ostreed.conf && \
     ostree container commit
 
-# Install kernel-fsync, if needed
+# Install kernel-fsync
 RUN rpm-ostree cliwrap install-to-root / && \
     if [[ "${KERNEL_FLAVOR}" =~ "fsync" ]]; then \
         echo "will install ${KERNEL_FLAVOR} kernel from COPR" && \
@@ -710,6 +710,9 @@ RUN rpm-ostree install \
         /tmp/jupiter-dock-updater-bin && \
     mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/libexec/jupiter-dock-updater && \
     rm -rf /tmp/jupiter-dock-updater-bin && \
+    ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
+    ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
+    ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
     ostree container commit
 
 # Install Steam Deck patched UPower
@@ -736,9 +739,6 @@ RUN /usr/libexec/containerbuild/image-info && \
     mkdir -p "/usr/etc/xdg/autostart" && \
     mv "/usr/etc/skel/.config/autostart/steam.desktop" "/usr/etc/xdg/autostart/steam.desktop" && \
     sed -i 's@Exec=waydroid first-launch@Exec=/usr/bin/waydroid-launcher first-launch\nX-Steam-Library-Capsule=/usr/share/applications/Waydroid/capsule.png\nX-Steam-Library-Hero=/usr/share/applications/Waydroid/hero.png\nX-Steam-Library-Logo=/usr/share/applications/Waydroid/logo.png\nX-Steam-Library-StoreCapsule=/usr/share/applications/Waydroid/store-logo.png\nX-Steam-Controller-Template=Desktop@g' /usr/share/applications/Waydroid.desktop && \
-    ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
-    ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
-    ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sed -i 's/Exec=.*/Exec=systemctl start return-to-gamemode.service/' /etc/skel/Desktop/Return.desktop && \
         rm -f /usr/share/applications/com.github.maliit.keyboard.desktop \
