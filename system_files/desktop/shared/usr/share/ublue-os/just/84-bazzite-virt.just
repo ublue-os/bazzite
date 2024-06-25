@@ -41,7 +41,7 @@ setup-virtualization ACTION="":
       )
     fi
     if [[ "${OPTION,,}" =~ (^enable[[:space:]]virtualization|virt-on) ]]; then
-        if rpm -q virt-manager | grep -P "^virt-manager-" 1>/dev/null; then
+        if ! rpm -q virt-manager | grep -P "^virt-manager-" 1>/dev/null; then
           echo "Installing QEMU and virt-manager..."
           rpm-ostree install -y virt-manager edk2-ovmf qemu
           rpm-ostree kargs \
