@@ -316,6 +316,7 @@ RUN rpm-ostree install \
         libcec \
         yad \
         f3 \
+        pulseaudio-utils \
         unrar \
         lzip \
         libxcrypt-compat \
