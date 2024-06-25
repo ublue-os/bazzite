@@ -629,7 +629,6 @@ RUN /usr/libexec/containerbuild/build-initramfs && \
         sed -i '/^PRETTY_NAME/s/Kinoite/Bazzite/' /usr/lib/os-release \
     ; else \
         sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/yad-icon-browser.desktop && \
-        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/com.github.rafostar.Clapper.desktop && \
         sed -i '/^PRETTY_NAME/s/Silverblue/Bazzite GNOME/' /usr/lib/os-release \
     ; fi && \
     systemctl disable waydroid-container.service && \
