@@ -50,7 +50,7 @@ Python bindings for FUSE (User space File System)
 %license COPYING
 %doc README.* FAQ AUTHORS
 %{python3_sitearch}/fuse.py
-%{python3_sitearch}/__pycache__
+%{python3_sitearch}/__pycache__/fuse*.py*
 %{python3_sitearch}/fuseparts
 %{python3_sitearch}/fuse_python-%{version}.dist-info
 
