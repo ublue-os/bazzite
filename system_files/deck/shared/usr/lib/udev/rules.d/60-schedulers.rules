@@ -1,6 +1,6 @@
 # SSD/MicroSD
 ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="kyber"
 # HDD
-ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="kyber"
+ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
 # NVME
 ACTION=="add|change", KERNEL=="nvme[0-9]n1", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="kyber"
