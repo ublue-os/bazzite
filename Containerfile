@@ -808,6 +808,7 @@ RUN curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/h
     chmod +x /tmp/nvidia-install.sh && \
     IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-install.sh && \
     rm -f /usr/lib/dracut/dracut.conf.d/99-nvidia.conf && \
+    cp "/etc/modprobe.d/nvidia-modeset.conf" "/usr/lib/modprobe.d/nvidia-modeset.conf" && \
     ostree container commit
 
 # Cleanup & Finalize
