@@ -41,9 +41,7 @@ setup-virtualization ACTION="":
       )
     fi
     if [[ "${OPTION,,}" =~ (^enable[[:space:]]virtualization|virt-on) ]]; then
-      (
-        virt_test=$(rpm-ostree status -v --jsonpath '.deployments[0].packages')
-        if [[ ${virt_test} == *virt-manager* ]]; then
+        if ! rpm -q virt-manager | grep -P "^virt-manager-" 1>/dev/null; then
           echo "Installing QEMU and virt-manager..."
           rpm-ostree install -y virt-manager edk2-ovmf qemu
           rpm-ostree kargs \
@@ -53,7 +51,6 @@ setup-virtualization ACTION="":
             && echo "libvirtd will be enabled at next reboot"
           echo 'Please reboot to apply changes'
         fi
-      )
     elif [[ "${OPTION,,}" =~ (^disable[[:space:]]virtualization|virt-off) ]]; then
       if [ "$(systemctl is-enabled libvirtd.service)" == "enabled" ]; then
         echo "${red}Disabling${n} libvirtd before removal"
