@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SCRIPT VERSION
-VER=24
+VER=23
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -65,7 +65,6 @@ if [[ $IMAGE_FLAVOR =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C disp
     --env=LIBVA_MESSAGING_LEVEL=1 \
     --env=MOZ_DISABLE_RDD_SANDBOX=1 \
     --env=NVD_BACKEND=direct \
-    --env=MOZ_ENABLE_WAYLAND=0 \
     org.mozilla.firefox
 else
   # Undo if user was previously using a Nvidia image and is no longer
@@ -77,7 +76,6 @@ else
     --unset-env=LIBVA_MESSAGING_LEVEL \
     --unset-env=MOZ_DISABLE_RDD_SANDBOX \
     --unset-env=NVD_BACKEND \
-    --unset-env=MOZ_ENABLE_WAYLAND \
     org.mozilla.firefox
 fi
 
