@@ -368,8 +368,8 @@ Als er voor een wachtwoord gevraagd wordt, gebruik `ublue-os`.
 
 Bazzite is een gemeenschapsinspanning en bestaat niet zonder hen. Zie hieronder mensen die ons hulp hebben verleend since het begin:
 
-- [rei.svg](https://github.com/reisvg) - Voor het creeren van ons logo en branding.
-- [SuperRiderTH](https://github.com/SuperRiderTH) - Voor het creeren van de Steam Game Mode start video.
+- [rei.svg](https://github.com/reisvg) - Voor het creëren van ons logo en branding.
+- [SuperRiderTH](https://github.com/SuperRiderTH) - Voor het creëren van de Steam Game Mode start video.
 - [evlaV](https://gitlab.com/evlaV) - Om Valve's code beschikbaar te maken en om [dit persoon](https://xkcd.com/2347/) te zijn.
 - [ChimeraOS](https://chimeraos.org/) - Voor gamescope-sessies en voor belangrijk hulp.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - Met de hulp van techische problemen en het maken van projecten net als Bazzite. Serieus, ge kijken. Het is onze op Nix gebaseerde neef.
@@ -390,6 +390,6 @@ We hebben ook een populaire config voor de [pull app](https://github.com/apps/pu
 
 Je kunt ons vinden in de  [Universal Blue Discord](https://discord.gg/f8MUghG5PB) en de [archive](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769) zien van hulp threads zonder een account.
 
-Discusieer en creer gebruikers gidsen in de [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
+Discusieer en creër gebruikers gidsen in de [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
 
 Volg Universal Blue op [Mastodon](https://fosstodon.org/@UniversalBlue).
