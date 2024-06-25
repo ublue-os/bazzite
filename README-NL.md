@@ -82,7 +82,7 @@ Gangbare variant beschikbaar als `bazzite`, voor desktop computers.
 
 - Automatische updates voor Flatpaks en alle Distrobox containers - aangedreven door [ublue-update](https://github.com/ublue-os/ublue-update) en [topgrade](https://github.com/topgrade-rs/topgrade).
 
-> [!BELANGRIJK]  
+> [!IMPORTANT]  
 > **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases), en een installatiegids kan [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
 
 Rebase van een bestaande upstream Fedora Atomic naar deze image als je **Open Source GPU Drivers** wilt:
@@ -92,7 +92,7 @@ Rebase van een bestaande upstream Fedora Atomic naar deze image als je **Open So
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
 ```
 
-or for devices with Nvidia GPUs wanting the **NVIDIA Proprietary Drivers**:
+of voor apparaten met Nvidia GPUs die de **NVIDIA Proprietary Drivers** willen gebruiken:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:stable
@@ -104,7 +104,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 > [!IMPORTANT]  
 Apparaten die NIET de Steam Deck zijn kunnen nogsteeds de  `bazzite-deck` images gebruiken maar moeten een moderne AMD GPU hebben. Intel Arc GPUs werken ook.
 
-Variant voor gebruik als alternatief voor SteamOS op de Steam Deck, en voor console-achtige ervaring op HTPCs beschikbaar als `bazzite-deck`:
+Varianten voor gebruik als alternatief voor SteamOS op de Steam Deck en voor console-achtige ervaring op HTPCs beschikbaar als `bazzite-deck`:
 
 - Start direct in Game mode.
 - **Automatische `duperemove` verminderd de grootte van compatdata.**
@@ -112,96 +112,96 @@ Variant voor gebruik als alternatief voor SteamOS op de Steam Deck, en voor cons
 - **Kan gestart worden ook al is de drive vol.**
 - **Al de talen die in Upstream Fedora beschikbaar zijn zijn hier ook beschikbaar.**
 - **Gebruikt Wayland in de desktop met [ondersteuning van Steam input](https://github.com/Supreeeme/extest).**
-- Gebruikt [HHD](https://github.com/hhd-dev/hhd) voor beteren input met non-Valve draagbare computers.
-- Gebruik overgezetten functions va SteamOS paketten, zoals bestuurprogrammas, firmware updaters, en ventilatie controle [van de evlaV repo](https://gitlab.com/evlaV).
+- Gebruikt [HHD](https://github.com/hhd-dev/hhd) voor beteren invoer met non-Valve draagbare computers.
+- Gebruikt overgezetten functions va SteamOS paketten, zoals bestuurprogrammas, firmware updaters, en ventilatie controle [van de evlaV repo](https://gitlab.com/evlaV).
 - Aangepaste Mesa voor betere framerate controle in Gamescope.
 - Komt met patches voor [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) voor een volledige BTRFS beschikbaarheid voor SD kaarten.
 - Komt met [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU).
-- Optic om [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), en [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) te instaleren, met velen anderen opties.
-- Custom update system allows for the OS, Flatpaks, and Distrobox images to be updated directly from the Game mode UI powered by [ublue-update](https://github.com/ublue-os/ublue-update) and [topgrade](https://github.com/topgrade-rs/topgrade).
-- Built in support for Windows dual-boot thanks to Fedora's installation of GRUB being left intact.
-- Update break something? Easily roll back to the previous version of Bazzite thanks to `rpm-ostree`'s rollback functionality. You can even select previous images at boot.
-- Steam and Lutris preinstalled on the image as layered packages.
-- [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Game mode and on the Desktop if Discord is installed. [View the official documentation here](https://trigg.github.io/Discover/bazzite).
-- Uses ZRAM<sub><sup>(4GB)</sup></sub> with the ZSTD compression algorithm by default with the option to switch back to a 1GB swap file and set a custom size for it if desired.
-- Kyber I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` process.
-- Applies SteamOS's kernel parameters.
-- Color calibrated display profiles for matte and reflective Steam Deck screens included.
-- Default-disabled power-user features, including:
-    - Service for low-risk undervolting of the Steam Deck as well as AMD Framework Laptops via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) and [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), see `ryzenadj.service` and `/etc/default/ryzenadj`.
-    - Service for limiting the max charge level of the battery, see `batterylimit.service` and `/etc/default/batterylimit`. <sup><sub>(Works even when the device is off)</sub></sup>
-    - Built in support for display overclocking. For example, add `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` to `/etc/environment`.
-    - 32GB RAM mod your Steam Deck? Enjoy double the maximum VRAM amount, automatically applied. <sup><sub>(Can you share your soldering skills?)</sub></sup>
-- Steam Deck hardware-specific services can be disabled by running `ujust disable-bios-updates` and `ujust disable-firmware-updates` in the terminal. These are automatically disabled on non-Deck hardware, and on Decks with DeckHD displays or 32GB RAM mods.
-- More information can be found [here](https://universal-blue.discourse.group/docs?topic=37) on the Bazzite Steam Deck images.
+- Optie om [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), en [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) te instaleren, met velen anderen opties.
+- Aangepaste update systeem die het mogelijk maken om het bestuuringsysteem, Flatpaks en Distrobox images direct te updaten via de Game mode UI. Medemogelijk gemaat door [ublue-update](https://github.com/ublue-os/ublue-update) en [topgrade](https://github.com/topgrade-rs/topgrade).
+- Makkelijk om Windows te Dual-Booten dankzij Fedora die GRUB intact laat.
+- Gaat een update fout? Ga gemakelijk terug naar een ouderen versie van Bazzite met `rpm-ostree`'s rollback functionaliteit. Je kan zelfs ouderen images selecteren tijdens het starten.
+- Steam en Lutris geïnstaleerd in de image.
+- [Discover Overlay](https://github.com/trigg/Discover) voor Discord geïntaleerd en start automatisch in Game mode en de Desktop als Discord beschikbaar is. [Zie de officiële documentatie hier](https://trigg.github.io/Discover/bazzite).
+- Gebruik van de <sub><sup>(4GB)</sup></sub> ZRAM met ZSTD compressie algoritme met de optie om terug te gaan naar een 1GB swap file en mogelijkheid om een eigen grooten te kiezen.
+- Kyber I/O scheduler om I/O starvation tegen te gaan tijdens het installeren van spellen of de achtergrond `duperemove` process.
+- Gebruikt SteamOS's kernel parameters.
+- Kleur gecalibreerde display profielen voor matte and reflectieven Steam Deck schermen.
+- Standaard uit, power-user opties zoals:
+    - Mogelijkheid voor laag-risico undervolting van de Steam Deck en AMD Framework Laptops via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) en [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), zie `ryzenadj.service` en `/etc/default/ryzenadj`.
+    - Batterij oplaad limiet, zie `batterylimit.service` en `/etc/default/batterylimit`. <sup><sub>(Werkt ook als het apparaat uit is)</sub></sup>
+    - Mogelijkheid om het scherm te overclocken. Bijvoorbeeld, voeg `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` toe in `/etc/environment`.
+    - Heb je 32GB ram in je Steam Deck? Geniet van de dubbelen maximalen VRAM, automatisch ingeschakeld <sup><sub>(Kan je je soldeer skills delen?)</sub></sup>
+- Steam Deck hardware-specifieken services kunnen uit gezet worden met `ujust disable-bios-updates` en `ujust disable-firmware-updates` in de terminal. Dezen staan al uit op non-Deck hardware, en op Decks met DeckHD schermen of 32GB RAM mods.
+- Meer informatie kan [hier](https://universal-blue.discourse.group/docs?topic=37) gevonden worden voor de Bazzite Steam Deck images.
 
 > [!WARNING]  
-> **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time. Upgrading the storage resolves the issue.**
+> **Door een upstream probleem kan Bazzite niet gebruikt worden op Steam Decks met 64GB eMMC opslag. De opslag vervangen helpt met dit probleem.**
 
 > [!IMPORTANT]  
-> **ISOs can be downloaded from our [releases page](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
+> **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases), en installatie instructies kunnen [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
 
-Rebase from an existing upstream Fedora Atomic to this image:
+Rebase van een bestaande upstream Fedora Atomic naar deze image:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stable
 ```
 
-#### Alternative Handhelds
+#### Alternatieve Draagbare Computers
 
-Please refer to our [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) for required setting changes and Decky Loader plugins for Steam Gaming Mode on your specific Handheld.
+Zie onze [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) voor nodige instellingen en Decky Loader plugins voor Steam Gaming Mode op jou Draagbare Computer.
 
-If you're using this image on a handheld other than the Steam Deck, you can get TDP control via the SimpleDeckyTDP Decky Loader Plugin.
-- First install Decky Loader with: `ujust setup-decky`
-- Then install SimpleDeckyTDP with: `ujust setup-decky simpledeckytdp`
+Als je deze image gebruikt op een systeem anders dan de Steam Deck, kan je TDP control krijgen via de SimpleDeckyTDP Decky Loader Plugin.
+- Installeer Decky Loader met: `ujust setup-decky`
+- Daarna, installeer SimpleDeckyTDP met: `ujust setup-decky simpledeckytdp`
 
-If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Such as the Lenovo Legion Go and the ASUS Ally)</sup></sub>, you can also get the plugin to integrate an option menu for it into game mode with: `ujust setup-decky hhd-decky`
+Als je een Draagbare Computer gebruikt die  [hhd](https://github.com/hhd-dev/hhd) kan gebruiken <sub><sup>(Zoals de Lenovo Legion Go en de ASUS Ally)</sup></sub>, kan je een plugin krijgen om het optie menu te integreren in Game Mode met: `ujust setup-decky hhd-decky`
 
-**Be sure to also read the [hhd documentation](https://github.com/hhd-dev/hhd#after-install), some handhelds require specific setting changes/tweaks to function properly.**
+**Lees de  [hhd documentatie](https://github.com/hhd-dev/hhd#after-install), somigen Draagbare Computers hebben specifieken tweaks nodig om te werken.**
 
-We also ship `ujust` commands to install various [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) themes that can't be found on the CSS Loader store. These will be automatically updated with Bazzite if installed.
+We hebben ook een `ujust` command om verschilende [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) themas te installeren, dezen kunnen in de CSS Loader store gevonden worden. De themas worden automatisch geüpdate door Bazzite als de geïntalleerd zijn.
 ```bash
-# Install ROG Ally Theme for CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
+# Installeer ROG Ally Thema voor CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
 ujust install-rog-ally-theme
 
-# Install Lenovo Legion Go for CSS Loader (https://github.com/frazse/SBP-Legion-Go-Theme)
+# Installeer Lenovo Legion Go Thema voor CSS Loader (https://github.com/frazse/SBP-Legion-Go-Theme)
 ujust install-legion-go-theme
 
-# Install Handheld Controller Theme (https://github.com/victor-borges/handheld-controller-glyphs)
+# Installeer Handheld Controller Thema (https://github.com/victor-borges/handheld-controller-glyphs)
 ujust install-hhd-controller-glyph-theme
 
-# Install PS5-to-Xbox glyph theme for hhd & CSS Loader (https://github.com/frazse/PS5-to-Xbox-glyphs)
+# Installeer PS5-to-Xbox glyph thema voor hhd & CSS Loader (https://github.com/frazse/PS5-to-Xbox-glyphs)
 ujust install-hhd-xbox-glyph-theme
 ```
 
 ### GNOME
 
-Builds with the GNOME desktop environment are available in both desktop and deck flavors. These builds come with the following additional features:
+GNOME desktop environment is beschikbaar in  desktop and deck varianten. Deze versies hebben de volgende toegevoegde functies:
 
-- [Variable refresh rate support and fractional scaling enabled under Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
-- Custom menu in the top bar for returning to game mode, launching Steam, and opening a number of useful utilities.
-- [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) preinstalled and ready to use.
-- [Hanabi extension](https://github.com/jeffshee/gnome-ext-hanabi) included to offer similar features to Wallpaper Engine in KDE.
-- Numerous optional extensions pre-installed, including [important user experience fixes](https://www.youtube.com/watch?v=nbCg9_YgKgM).
-- Automatic updates for the [Firefox GNOME theme](https://github.com/rafaelmardojai/firefox-gnome-theme) and [Thunderbird GNOME theme](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(If installed)</sub></sup>
+- [Variabelen refresh rate en fractionele scaling onder Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
+- Menu in het top menu om naar Game Mode te gaan, Steam te starten en veel meer.
+- [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) geïnstalleerd en klaar voor gebruik.
+- [Hanabi extensie](https://github.com/jeffshee/gnome-ext-hanabi) met vergelijkbaren functinaliteiten voor Wallpaper Engine net als in KDE.
+- Meerderen beschikbaaren extensies geïnstalleerd zoals [belangrijken gebruikers ervaring fixes](https://www.youtube.com/watch?v=nbCg9_YgKgM).
+- Automatische updates voor [Firefox GNOME thema](https://github.com/rafaelmardojai/firefox-gnome-theme) en [Thunderbird GNOME thema](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(Als deze geïnstalleerd zijn)</sub></sup>
 
 > [!IMPORTANT]  
-> **ISOs can be downloaded from our [releases page](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
+> **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases), en een installatiegids kan [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
 
-Rebase from an existing upstream Fedora Atomic to this image:
+Rebase van een bestaande upstream Fedora Atomic naar deze image:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:stable
 ```
 
-To rebase an existing ostree system to a Desktop Enviornment with the **Proprietary NVIDIA Drivers** release:
+Bestaande rebase ostree systeem naar een Desktop Environment met de **Proprietary NVIDIA Drivers** release:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
 ```
 
 > [!WARNING]  
-> **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time.**
+> **Door een upstream probleem kan Bazzite niet gebruikt worden op Steam Decks met 64GB eMMC opslag.**
 
 To rebase an existing ostree system to the **Steam Deck/HTPC** release:
 
