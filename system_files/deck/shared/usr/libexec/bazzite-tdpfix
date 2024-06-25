@@ -1,17 +1,21 @@
 #!/usr/bin/bash
 # This is a workaround for cards that somehow has their sysfs power1_cap permission set to 666 on boot
 # Which in turn makes steam directly set the TDP to 15W
-POWER_CAP_PATH=$(find /sys/class/hwmon/*/ -name "power1_cap")
+SYSFS_PATH=$(find /sys/class/hwmon/*/ -name "power1_cap")
 
-# If the permissions are set to writable
-if [ "$(stat -c %a "$POWER_CAP_PATH")" == "666" ]; then
-    chmod 644 "$POWER_CAP_PATH"
-    echo "fix: Permissions reset to 644 on $POWER_CAP_PATH" | systemd-cat -t bazzite-tdpfix -p warning
-fi
+# Loop through the SYSFS paths that has a "power1_cap"
+for POWER_CAP_PATH in $SYSFS_PATH
+do
+    # If the permissions are set to writable
+    if [ "$(stat -c %a "$POWER_CAP_PATH")" == "666" ]; then
+        chmod 644 "$POWER_CAP_PATH"
+        echo "fix: Permissions reset to 644 on $POWER_CAP_PATH" | systemd-cat -t bazzite-tdpfix -p warning
+    fi
 
-# If TDP is 15W and default TDP is higher than 45W, set card to use default TDP
-# This will then be handled by firmware or software afterwards as this is set once
-if [ "$(cat "$POWER_CAP_PATH")" == "15000000" ] && [ "$(cat "${POWER_CAP_PATH}_default")" -gt "45000000" ]; then
-    "$(cat "${POWER_CAP_PATH}_default")" > "$POWER_CAP_PATH"
-    echo "fix: TDP reset to default on $POWER_CAP_PATH" | systemd-cat -t bazzite-tdpfix -p warning
-fi
+    # If TDP is 15W and default TDP is higher than 45W, set card to use default TDP
+    # This will then be handled by firmware or software afterwards as this is set once
+    if [ "$(cat "$POWER_CAP_PATH")" == "15000000" ] && [ "$(cat "${POWER_CAP_PATH}_default")" -gt "45000000" ]; then
+        "$(cat "${POWER_CAP_PATH}_default")" > "$POWER_CAP_PATH"
+        echo "fix: TDP reset to default on $POWER_CAP_PATH" | systemd-cat -t bazzite-tdpfix -p warning
+    fi
+done
