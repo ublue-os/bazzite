@@ -31,7 +31,7 @@
 - [Bijdragers metriek](#bijdragers-metriek)
 - [Ster Geschiedenis](#ster-geschiedenis)
 - [Speciale Dank](#speciale-dank)
-- [Bouw Je Eigen](#bouw-je-eigen)
+- [Zelf Bouwen](#zelf-bouwen)
 - [Lid worden](#lid-worden)
 ---
 
@@ -39,7 +39,7 @@
 
 [Bezoek onze website](https://bazzite.gg/) voor een nieuwkomer vriendelijke uitleg. Deze readme dekt alles grondig.
 
-[Bazzite](https://bazzite.gg/) is een OCI image die als alternatief besturingssysteem werkt voor de [Steam Deck](https://www.steamdeck.com/), en een klaar-om-te-gamen SteamOS-achtig voor desktop computers woonkamer home theater PCs.
+[Bazzite](https://bazzite.gg/) is een OCI image die als alternatief besturingssysteem werkt voor de [Steam Deck](https://www.steamdeck.com/) en een klaar-om-te-gamen SteamOS-achtig alternatief voor desktop computers en woonkamer home theater PCs.
 
 Bazzite is gebouwd van [ublue-os/main](https://github.com/ublue-os/main) en [ublue-os/nvidia](https://github.com/ublue-os/nvidia) met [Fedora](https://fedoraproject.org/) technologie, wat betekent dat uitgebreide hardwareondersteuning en ingebouwde stuurprogramma's zijn inbegrepen. Daarnaast voegt Bazzite de volgende functies toe:
 
@@ -51,9 +51,9 @@ Bazzite is gebouwd van [ublue-os/main](https://github.com/ublue-os/main) en [ubl
 - [xone](https://github.com/medusalix/xone) stuurprogramma voor Xbox controllers.
 - Volledige ondersteuning voor [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Bevat Valve's KDE-thema's van SteamOS.
-- Met optionele Valve-geinspireerde GTK3/4 thema's die overeenkomen met Vapor en VGUI2 van SteamOS. Installeer [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience) om die te gebruiken.
-- [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), en [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) standaard geïnstalleerd en beschikbaar.
-- [Gepatcht Switcheroo-Control](https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/) om gebroken iGPU/dGPU-omschakeling te herstellen.
+- Met optionele Valve-geïnspireerde GTK3/4 thema's die overeenkomen met Vapor en VGUI2 van SteamOS. Installeer [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience) om die te gebruiken.
+- [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud) en [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) zijn standaard geïnstalleerd en beschikbaar.
+- [Gepatchte Switcheroo-Control](https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/) om gebroken iGPU/dGPU-omschakeling te herstellen.
 - Ondersteuning van [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Alleen met KDE)</sup></sub>
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) inbegrepen.
 - Volledige ondersteuning van [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
@@ -67,7 +67,7 @@ Bazzite is gebouwd van [ublue-os/main](https://github.com/ublue-os/main) en [ubl
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) geïnstaleerd en in gebruik. <sub><sup>(Beschikbaar maar is uitgeschakeld in de Deck variant, kan ingeschakeld worden met `ujust restore-input-remapper`)</sup></sub>
 - Bazzite Portal is een makkelijke manier om applicaties en aanpassingen te installeren, zoals [LACT](https://github.com/ilya-zlobintsev/LACT) en [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
 - [Waydroid](https://waydro.id/) geïnstaleerd om Android apps tend to gebruiken. Stel het in met de [quick guide](https://universal-blue.discourse.group/docs?topic=32).
-- Applicaties beheren met [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), en [Gear Lever](https://github.com/mijorus/gearlever).
+- Applicaties beheren met [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse) en [Gear Lever](https://github.com/mijorus/gearlever).
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
 - [OpenRazer](https://openrazer.github.io) stuurprogrammas ingebouwd. Selecteer OpenRazer in de Bazzite Portal of gebruik `ujust install-openrazer` in een terminal.
 - [OpenTabletDriver](https://opentabletdriver.net/) udev regels ingebouwd, met voledige software suite installeerbaar via de Bazzite Portal of met `ujust install-opentabletdriver` in een terminal.
@@ -83,7 +83,7 @@ Gangbare variant beschikbaar als `bazzite`, voor desktop computers.
 - Automatische updates voor Flatpaks en alle Distrobox containers - aangedreven door [ublue-update](https://github.com/ublue-os/ublue-update) en [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]  
-> **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases), en een installatiegids kan [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
+> **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases) en een installatiegids kan [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
 
 Rebase van een bestaande upstream Fedora Atomic naar deze image als je **Open Source GPU Drivers** wilt:
 (Let op: Mesa's Open Source optie voor NVIDIA GPU's, NVK is nog steeds gevoelig voor fouten op het moment van schrijven, voor problemen met NVK [dien een rapport in bij Mesa].([url](https://docs.mesa3d.org/bugs.html)), niet Ublue/Bazzite)
@@ -113,11 +113,11 @@ Varianten voor gebruik als alternatief voor SteamOS op de Steam Deck en voor con
 - **Al de talen die in Upstream Fedora beschikbaar zijn zijn hier ook beschikbaar.**
 - **Gebruikt Wayland in de desktop met [ondersteuning van Steam input](https://github.com/Supreeeme/extest).**
 - Gebruikt [HHD](https://github.com/hhd-dev/hhd) voor beteren invoer met non-Valve draagbare computers.
-- Gebruikt overgezetten functions va SteamOS paketten, zoals bestuurprogrammas, firmware updaters, en ventilatie controle [van de evlaV repo](https://gitlab.com/evlaV).
+- Gebruikt overgezetten functions va SteamOS paketten, zoals bestuurprogrammas, firmware updaters en ventilatie controle [van de evlaV repo](https://gitlab.com/evlaV).
 - Aangepaste Mesa voor betere framerate controle in Gamescope.
 - Komt met patches voor [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) voor een volledige BTRFS beschikbaarheid voor SD kaarten.
 - Komt met [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU).
-- Optie om [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), en [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) te instaleren, met velen anderen opties.
+- Optie om [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/) en [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) te instaleren, met velen anderen opties.
 - Aangepaste update systeem die het mogelijk maken om het bestuuringsysteem, Flatpaks en Distrobox images direct te updaten via de Game mode UI. Medemogelijk gemaat door [ublue-update](https://github.com/ublue-os/ublue-update) en [topgrade](https://github.com/topgrade-rs/topgrade).
 - Makkelijk om Windows te Dual-Booten dankzij Fedora die GRUB intact laat.
 - Gaat een update fout? Ga gemakelijk terug naar een ouderen versie van Bazzite met `rpm-ostree`'s rollback functionaliteit. Je kan zelfs ouderen images selecteren tijdens het starten.
@@ -132,14 +132,14 @@ Varianten voor gebruik als alternatief voor SteamOS op de Steam Deck en voor con
     - Batterij oplaad limiet, zie `batterylimit.service` en `/etc/default/batterylimit`. <sup><sub>(Werkt ook als het apparaat uit is)</sub></sup>
     - Mogelijkheid om het scherm te overclocken. Bijvoorbeeld, voeg `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` toe in `/etc/environment`.
     - Heb je 32GB ram in je Steam Deck? Geniet van de dubbelen maximalen VRAM, automatisch ingeschakeld <sup><sub>(Kan je je soldeer skills delen?)</sub></sup>
-- Steam Deck hardware-specifieken services kunnen uit gezet worden met `ujust disable-bios-updates` en `ujust disable-firmware-updates` in de terminal. Dezen staan al uit op non-Deck hardware, en op Decks met DeckHD schermen of 32GB RAM mods.
+- Steam Deck hardware-specifieken services kunnen uit gezet worden met `ujust disable-bios-updates` en `ujust disable-firmware-updates` in de terminal. Dezen staan al uit op non-Deck hardware en op Decks met DeckHD schermen of 32GB RAM mods.
 - Meer informatie kan [hier](https://universal-blue.discourse.group/docs?topic=37) gevonden worden voor de Bazzite Steam Deck images.
 
 > [!WARNING]  
 > **Door een upstream probleem kan Bazzite niet gebruikt worden op Steam Decks met 64GB eMMC opslag. De opslag vervangen helpt met dit probleem.**
 
 > [!IMPORTANT]  
-> **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases), en installatie instructies kunnen [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
+> **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases) en installatie instructies kunnen [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
 
 Rebase van een bestaande upstream Fedora Atomic naar deze image:
 
@@ -159,7 +159,7 @@ Als je een Draagbare Computer gebruikt die  [hhd](https://github.com/hhd-dev/hhd
 
 **Lees de  [hhd documentatie](https://github.com/hhd-dev/hhd#after-install), somigen Draagbare Computers hebben specifieken tweaks nodig om te werken.**
 
-We hebben ook een `ujust` command om verschilende [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) themas te installeren, dezen kunnen in de CSS Loader store gevonden worden. De themas worden automatisch geüpdate door Bazzite als de geïntalleerd zijn.
+We hebben ook een `ujust` command om verschilende [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) thema's te installeren, dezen kunnen in de CSS Loader store gevonden worden. De themas worden automatisch geüpdate door Bazzite als die geïntalleerd zijn.
 ```bash
 # Installeer ROG Ally Thema voor CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
 ujust install-rog-ally-theme
@@ -176,17 +176,17 @@ ujust install-hhd-xbox-glyph-theme
 
 ### GNOME
 
-GNOME desktop environment is beschikbaar in  desktop and deck varianten. Deze versies hebben de volgende toegevoegde functies:
+GNOME desktop environment is beschikbaar in alle desktop and deck varianten. Deze versies hebben de volgende toegevoegde functies:
 
 - [Variabelen refresh rate en fractionele scaling onder Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
-- Menu in het top menu om naar Game Mode te gaan, Steam te starten en veel meer.
+- Optiess in het top menu om naar Game Mode te gaan, Steam te starten en veel meer.
 - [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) geïnstalleerd en klaar voor gebruik.
 - [Hanabi extensie](https://github.com/jeffshee/gnome-ext-hanabi) met vergelijkbaren functinaliteiten voor Wallpaper Engine net als in KDE.
 - Meerderen beschikbaaren extensies geïnstalleerd zoals [belangrijken gebruikers ervaring fixes](https://www.youtube.com/watch?v=nbCg9_YgKgM).
 - Automatische updates voor [Firefox GNOME thema](https://github.com/rafaelmardojai/firefox-gnome-theme) en [Thunderbird GNOME thema](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(Als deze geïnstalleerd zijn)</sub></sup>
 
 > [!IMPORTANT]  
-> **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases), en een installatiegids kan [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
+> **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases) en een installatiegids kan [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
 
 Rebase van een bestaande upstream Fedora Atomic naar deze image:
 
@@ -253,7 +253,7 @@ Lees de [FAQ](https://universal-blue.discourse.group/docs?topic=33) om te zien w
 ## Documentatie & Nieuwsbrief
 
 - [Applicaties intalleren en beheren](https://universal-blue.discourse.group/docs?topic=35)
-- [Updates, Rollbacks, en Rebasing](https://universal-blue.discourse.group/docs?topic=36)
+- [Updates, Rollbacks en Rebasing](https://universal-blue.discourse.group/docs?topic=36)
 - [Gaming Gids](https://universal-blue.discourse.group/docs?topic=31)
 
 Zie [extra documentatie](http://docs.bazzite.gg/) rondom het project.
@@ -350,7 +350,7 @@ Voor gebruikers die de Universal Blue image al gebruiken kun je `ujust enroll-se
 
 Als er voor een wachtwoord gevraagd wordt, gebruik `ublue-os`.
 
-### bijdragers metriek
+### Bijdragers Metriek
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
@@ -378,11 +378,11 @@ Bazzite is een gemeenschapsinspanning en bestaat niet zonder hen. Zie hieronder 
 - [Steam Deck Homebrew](https://deckbrew.xyz) - Om ons te ondersteunen ondanks het extra werk, met speciale dank aan [PartyWumpus](https://github.com/PartyWumpus) om Decky Loader beschikbaar te maken onder SELinux.
 - [cyrv6737](https://github.com/cyrv6737) - Voor de inspiratie en de basis die bazzite-arch werd.
 
-## Bouw Je Eigen
+## Zelf Bouwen
 
 Bazzite word in z'n geheel in Github gemaakt en je eigen versie maken is even makkelijk als deze repo forken, een prive sleutel toe te voegen en GithubActions in te schakelen.
 
-[Zie hier](https://docs.github.com/en/actions/security-guides/encrypted-secrets) om geheimen te behouden op GitHub. Je moet  [nieuwe sleutels genereren](https://docs.sigstore.dev/cosign/overview/) met cosign. De publieke sleutel kan in jou repo gezet worden. <sub><sup>(Jou gebruikers hebben het nodig om de signatures te checken)</sup></sub>, en je kan je prive sleutel in `Settings -> Secrets -> Actions` toevoegen met de naam  `SIGNING_SECRET`.
+[Zie hier](https://docs.github.com/en/actions/security-guides/encrypted-secrets) om geheimen te behouden op GitHub. Je moet  [nieuwe sleutels genereren](https://docs.sigstore.dev/cosign/overview/) met cosign. De publieke sleutel kan in jou repo gezet worden. <sub><sup>(Jou gebruikers hebben het nodig om de signatures te checken)</sup></sub> en je kan je prive sleutel in `Settings -> Secrets -> Actions` toevoegen met de naam  `SIGNING_SECRET`.
 
 We hebben ook een populaire config voor de [pull app](https://github.com/apps/pull) als je jou fork up-to-date wilt houden met upstream.Zet deze app aan in jou repo on Bazzite updates te gebruiken zodra die uitkomen terwijl je zelf ook dingen kan veranderen.
 
