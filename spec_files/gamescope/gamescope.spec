@@ -114,6 +114,7 @@ cd gamescope
 %license gamescope/LICENSE
 %doc gamescope/README.md
 %caps(cap_sys_nice=eip) %{_bindir}/gamescope
+%{_bindir}/gamescopectl
 %{_bindir}/gamescopestream
 
 %files libs
