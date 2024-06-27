@@ -790,9 +790,7 @@ RUN rpm-ostree override remove \
 COPY --from=nvidia-akmods /rpms /tmp/akmods-rpms
 RUN curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/hwe/nega-nv/nvidia-install.sh && \
     chmod +x /tmp/nvidia-install.sh && \
-    IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-install.sh && \
-    rm -f /usr/lib/dracut/dracut.conf.d/99-nvidia.conf && \
-    cp "/etc/modprobe.d/nvidia-modeset.conf" "/usr/lib/modprobe.d/nvidia-modeset.conf" && \
+    IMAGE_NAME="${BASE_IMAGE_NAME}" /tmp/nvidia-install.sh && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
     ostree container commit
 
