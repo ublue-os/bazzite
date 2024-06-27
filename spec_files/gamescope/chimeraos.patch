@@ -1,0 +1,88 @@
+diff --git a/src/main.cpp b/src/main.cpp
+index 59dec4f..037a22f 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -107,6 +107,8 @@ const struct option *gamescope_options = (struct option[]){
+ 
+ 	// wlserver options
+ 	{ "xwayland-count", required_argument, nullptr, 0 },
++	{ "touch-gestures", no_argument, nullptr, 0 },
++
+ 
+ 	// steamcompmgr options
+ 	{ "cursor", required_argument, nullptr, 0 },
+@@ -184,6 +186,7 @@ const char usage[] =
+ 	"  -T, --stats-path               write statistics to path\n"
+ 	"  -C, --hide-cursor-delay        hide cursor image after delay\n"
+ 	"  -e, --steam                    enable Steam integration\n"
++	"  --touch-gestures               enable touch gestures for Steam menus\n"
+ 	"  --xwayland-count               create N xwayland servers\n"
+ 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
+ 	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
+@@ -766,6 +769,8 @@ int main(int argc, char **argv)
+ 					g_bDebugLayers = true;
+ 				} else if (strcmp(opt_name, "disable-color-management") == 0) {
+ 					g_bForceDisableColorMgmt = true;
++				} else if (strcmp(opt_name, "touch-gestures") == 0) {
++					cv_touch_gestures = true;
+ 				} else if (strcmp(opt_name, "xwayland-count") == 0) {
+ 					g_nXWaylandCount = atoi( optarg );
+ 				} else if (strcmp(opt_name, "composite-debug") == 0) {
+diff --git a/src/wlserver.cpp b/src/wlserver.cpp
+index d9182aa..e4ea445 100644
+--- a/src/wlserver.cpp
++++ b/src/wlserver.cpp
+@@ -73,6 +73,7 @@
+ static LogScope wl_log("wlserver");
+ 
+ //#define GAMESCOPE_SWAPCHAIN_DEBUG
++gamescope::ConVar<bool> cv_touch_gestures( "enable_touch_gestures", false, "Enable/Disable the usage of touch gestures" );
+ 
+ struct wlserver_t wlserver = {
+ 	.touch_down_ids = {}
+@@ -2534,6 +2535,33 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool
+ 
+ 			if ( bAlwaysWarpCursor )
+ 				wlserver_mousewarp( tx, ty, time, false );
++
++			if (cv_touch_gestures) {
++				bool start_gesture = false;
++
++				// Round the x-coordinate to the nearest whole number
++				uint32_t roundedCursorX = static_cast<int>(std::round(tx));
++				// Grab 2% of the display to be used for the edge range
++				uint32_t edge_range = static_cast<uint32_t>(g_nOutputWidth * 0.02);
++
++				// Determine if the gesture should start
++				if (roundedCursorX <= edge_range || roundedCursorX >= g_nOutputWidth - edge_range) {
++					start_gesture = true;
++				}
++
++				// Handle Home gesture
++				if (start_gesture && roundedCursorX >= edge_range) {
++					wlserver_open_steam_menu(0);
++					start_gesture = false;
++				}
++
++				// Handle QAM gesture
++				if (start_gesture && roundedCursorX >= g_nOutputWidth - edge_range && roundedCursorX <= g_nOutputWidth) {
++					wlserver_open_steam_menu(1);
++					start_gesture = false;
++				}
++			}
++
+ 		}
+ 		else if ( eMode == gamescope::TouchClickModes::Disabled )
+ 		{
+diff --git a/src/wlserver.hpp b/src/wlserver.hpp
+index 0d8f3ac..0d7759e 100644
+--- a/src/wlserver.hpp
++++ b/src/wlserver.hpp
+@@ -287,6 +287,7 @@ void wlserver_x11_surface_info_finish( struct wlserver_x11_surface_info *surf );
+ void wlserver_set_xwayland_server_mode( size_t idx, int w, int h, int refresh );
+ 
+ extern std::atomic<bool> g_bPendingTouchMovement;
++extern gamescope::ConVar<bool> cv_touch_gestures;
+ 
+ void wlserver_open_steam_menu( bool qam );
+ 
