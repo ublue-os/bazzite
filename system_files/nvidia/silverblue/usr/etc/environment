@@ -3,3 +3,6 @@ OBS_USE_EGL=1
 
 # https://gitlab.gnome.org/GNOME/mutter/-/issues/3037
 MUTTER_DEBUG_KMS_THREAD_TYPE=user
+
+# Nvidia - https://bugzilla.mozilla.org/show_bug.cgi?id=1898476
+MOZ_ENABLE_WAYLAND=0
