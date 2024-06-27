@@ -122,12 +122,6 @@ disable-sdgyrodsu:
     #!/usr/bin/bash
     sudo systemctl mask --user sdgyrodsu.service
 
-# Re-enable input remapper feature on non-desktop images
-restore-input-remapper:
-    systemctl enable --now input-remapper.service && \
-    cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
-    sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
-
 # Install hhd main branch locally until reboot, helpful for hhd testing and debugging. (rename to install-hhd-dev if we unhide)
 _hhd-dev:
     #!/usr/bin/bash
