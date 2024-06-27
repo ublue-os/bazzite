@@ -102,15 +102,15 @@ jobs:
       - name: Verify akmods image
         uses: EyeCantCU/cosign-action/verify@v0.2.2
         with:
-          containers: akmods-nvtest:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
-          pubkey: https://raw.githubusercontent.com/ublue-os/akmods-nvtest/main/cosign.pub
+          containers: akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
           registry: ${{ env.IMAGE_REGISTRY }}
 
-      - name: Verify akmods-nvtest-nvidia image
+      - name: Verify akmods-nvidia image
         uses: EyeCantCU/cosign-action/verify@v0.2.2
         with:
-          containers: akmods-nvtest-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
-          pubkey: https://raw.githubusercontent.com/ublue-os/akmods-nvtest/main/cosign.pub
+          containers: akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
           registry: ${{ env.IMAGE_REGISTRY }}
 
       # Checkout push-to-registry action GitHub repository
@@ -190,8 +190,8 @@ jobs:
             # pull the base images used for FROM in Containerfile so
             # we can retry on that unfortunately common failure case
             podman pull ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
-            podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvtest:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
-            podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvtest-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+            podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+            podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
 
       - name: Get source versions
         id: labels
@@ -209,7 +209,7 @@ jobs:
             fi
             echo "SOURCE_IMAGE_VERSION=$ver" >> $GITHUB_ENV
 
-            skopeo inspect docker://${{ env.IMAGE_REGISTRY }}/akmods-nvtest:${{ matrix.kernel_flavor }}-${{ matrix.fedora_version }} > akmods.json
+            skopeo inspect docker://${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor }}-${{ matrix.fedora_version }} > akmods.json
             linux=$(jq -r '.Labels["ostree.linux"]' akmods.json)
             if [ -z "$linux" ] || [ "null" = "$linux" ]; then
               echo "inspected image linux version must not be empty or null"
