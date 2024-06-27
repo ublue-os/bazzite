@@ -291,7 +291,6 @@ RUN rpm-ostree install \
         xrandr \
         compsize \
         ryzenadj \
-        powertop \
         i2c-tools \
         udica \
         joycond \
@@ -785,10 +784,6 @@ RUN rpm-ostree override remove \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo && \
-    if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then \
-        rpm-ostree override remove \
-            colord-kde \
-    ; fi && \
     ostree container commit
 
 # Install NVIDIA driver
