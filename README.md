@@ -13,7 +13,6 @@
 ---
 
 # Table of Contents
-- [README Language](#---cn)
 - [About \& Features](#about--features)
   - [Desktop](#desktop)
   - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
