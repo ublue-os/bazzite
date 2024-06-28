@@ -19,6 +19,7 @@ BuildRequires:  faust-tools
 BuildRequires:  boost-devel
 BuildRequires:  lv2-devel
 BuildRequires:  g++
+BuildRequires:  qt5-qtbase-devel
 BuildRequires:  ladspa-devel
 BuildRequires:  xz
 BuildRequires:  systemd-rpm-macros
