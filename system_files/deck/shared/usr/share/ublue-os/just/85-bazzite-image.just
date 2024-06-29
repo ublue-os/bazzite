@@ -76,19 +76,6 @@ install-deckhd-bios:
       echo "This is only applicable to LCD Steam Decks with the DeckHD screen. Aborting..."
     fi
 
-disable-swipe-gestures:
-    #!/usr/bin/bash
-    echo "disabling swipe gestures for QAM and HOME"
-    mkdir -p $HOME/.config/environment.d
-    echo "export GAMESCOPE_DISABLE_TOUCH_GESTURES=1" > "$HOME/.config/environment.d/bazzite-disable-gamescope-gestures.conf"
-    echo "Done. Please restart Steam Game Mode to see changes"
-
-enable-swipe-gestures:
-    #!/usr/bin/bash
-    echo "enabling swipe gestures for QAM and HOME"
-    rm -f "$HOME/.config/environment.d/bazzite-disable-gamescope-gestures.conf"
-    echo "Done. Please restart Steam Game Mode to see changes"
-
 # Enable BIOS & Firmware update services for the Steam Deck
 enable-deck-bios-firmware-updates:
     #!/usr/bin/bash
