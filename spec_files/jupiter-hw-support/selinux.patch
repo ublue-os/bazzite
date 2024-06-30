@@ -19,7 +19,7 @@ index ef206ba..04ba88a 100755
 -exec /usr/lib/jupiter-dock-updater/jupiter-dock-updater.sh "$@"
 +exec /usr/libexec/jupiter-dock-updater/jupiter-dock-updater.sh "$@"
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-device b/usr/bin/steamos-polkit-helpers/steamos-format-device
-index a133624..2c2480b 100755
+index a133624..63fe3bc 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-format-device
 +++ b/usr/bin/steamos-polkit-helpers/steamos-format-device
 @@ -8,4 +8,4 @@ then
@@ -29,7 +29,7 @@ index a133624..2c2480b 100755
 -exec /usr/lib/hwsupport/format-device.sh "$@"
 +exec /usr/libexec/hwsupport/format-device.sh "$@"
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard b/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
-index e43e952..c0f8034 100755
+index e43e952..1898244 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
 +++ b/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
 @@ -8,4 +8,4 @@ then
@@ -39,7 +39,7 @@ index e43e952..c0f8034 100755
 -exec /usr/lib/hwsupport/format-sdcard.sh "$@"
 +exec /usr/libexec/hwsupport/format-sdcard.sh "$@"
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-trim-devices b/usr/bin/steamos-polkit-helpers/steamos-trim-devices
-index 296d5d6..e8d0ded 100755
+index 296d5d6..c8a31ef 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-trim-devices
 +++ b/usr/bin/steamos-polkit-helpers/steamos-trim-devices
 @@ -7,4 +7,4 @@ then
@@ -49,7 +49,7 @@ index 296d5d6..e8d0ded 100755
 -exec /usr/lib/hwsupport/trim-devices.sh "$@"
 +exec /usr/libexec/hwsupport/trim-devices.sh "$@"
 diff --git a/usr/lib/hwsupport/block-device-event.sh b/usr/lib/hwsupport/block-device-event.sh
-index 6ff1eb4..4c65aa1 100755
+index 6ff1eb4..132d94c 100755
 --- a/usr/lib/hwsupport/block-device-event.sh
 +++ b/usr/lib/hwsupport/block-device-event.sh
 @@ -2,7 +2,7 @@
@@ -77,7 +77,7 @@ index 6ff1eb4..4c65aa1 100755
  
  case "${ACTION}" in
 diff --git a/usr/lib/hwsupport/format-device.sh b/usr/lib/hwsupport/format-device.sh
-index 315c588..87a8e7d 100755
+index 315c588..3a4098d 100755
 --- a/usr/lib/hwsupport/format-device.sh
 +++ b/usr/lib/hwsupport/format-device.sh
 @@ -2,7 +2,7 @@
@@ -108,7 +108,7 @@ index 315c588..87a8e7d 100755
      exit 5
  fi
 diff --git a/usr/lib/hwsupport/format-sdcard.sh b/usr/lib/hwsupport/format-sdcard.sh
-index 99ed89a..19c307c 100755
+index 99ed89a..d608ff3 100755
 --- a/usr/lib/hwsupport/format-sdcard.sh
 +++ b/usr/lib/hwsupport/format-sdcard.sh
 @@ -1,3 +1,3 @@
@@ -130,7 +130,7 @@ index 60bbc93..67c6ec1 100755
  # Originally from https://serverfault.com/a/767079
  
 diff --git a/usr/lib/udev/rules.d/99-sdcard-rescan.rules b/usr/lib/udev/rules.d/99-sdcard-rescan.rules
-index f184d9e..0f8c791 100644
+index f184d9e..da1ecf0 100644
 --- a/usr/lib/udev/rules.d/99-sdcard-rescan.rules
 +++ b/usr/lib/udev/rules.d/99-sdcard-rescan.rules
 @@ -1,3 +1,3 @@
@@ -139,7 +139,7 @@ index f184d9e..0f8c791 100644
 -ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/sdcard-rescan.sh %k"
 +ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/usr/bin/systemd-run --no-block --collect /usr/libexec/hwsupport/sdcard-rescan.sh %k"
 diff --git a/usr/lib/udev/rules.d/99-steamos-automount.rules b/usr/lib/udev/rules.d/99-steamos-automount.rules
-index 18b5149..c68abf0 100644
+index 18b5149..fb69a18 100644
 --- a/usr/lib/udev/rules.d/99-steamos-automount.rules
 +++ b/usr/lib/udev/rules.d/99-steamos-automount.rules
 @@ -5,7 +5,7 @@ KERNEL!="mmcblk*|sd*",          GOTO="steamos_automount_end"

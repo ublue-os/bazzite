@@ -13,7 +13,6 @@
 ---
 
 # Table of Contents
-- [README Language](#---cn)
 - [About \& Features](#about--features)
   - [Desktop](#desktop)
   - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
@@ -61,11 +60,8 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [Ptyxis Terminal](https://gitlab.gnome.org/chergert/ptyxis) used as the default in all images. This terminal is specifically designed for the container workflow you'll use in Bazzite. If you wish to return to stock, run `ujust restore-original-terminal`
 - Automated `duperemove` service for reducing the disk space used by wine prefix contents.
 - Support for HDMI CEC via [libCEC](https://libcec.pulse-eight.com/).
-- [System76-Scheduler](https://github.com/pop-os/system76-scheduler) preinstalled, providing automatic process priority tweaks to your focused application and keeping CPU time for background processes to a minimum.
-- Customized System76-Scheduler config with additional rules.
 - Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
-- [Input Remapper](https://github.com/sezanzeb/input-remapper) preinstalled and enabled. <sub><sup>(Available but default-disabled on the Deck variant, may be enabled with `ujust restore-input-remapper`)</sup></sub>
-- Bazzite Portal provides an easy way to install numerous applications and tweaks, including installing [LACT](https://github.com/ilya-zlobintsev/LACT) and [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
+- Bazzite Portal provides an easy way to install numerous applications and tweaks, including installing [LACT](https://github.com/ilya-zlobintsev/LACT).
 - [Waydroid](https://waydro.id/) preinstalled for running Android apps. Set it up with this [quick guide](https://universal-blue.discourse.group/docs?topic=32).
 - Manage applications using [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), and [Gear Lever](https://github.com/mijorus/gearlever).
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
@@ -83,7 +79,7 @@ Common variant available as `bazzite`, suitable for desktop computers.
 - Automatic updates for the OS, Flatpaks, and all Distrobox containers - powered by [ublue-update](https://github.com/ublue-os/ublue-update) and [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]  
-> **ISOs can be downloaded from our [releases page](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
+> **ISOs can be downloaded from our [website](https://download.bazzite.gg), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
 
 Rebase from an existing upstream Fedora Atomic to this image if you want **Open Source GPU Drivers**:
 (Please note: Mesa's Open Source option for NVIDIA GPUs, NVK is still prone to errors at the time of writing, for any issues relating to NVK [please submit a report with Mesa]([url](https://docs.mesa3d.org/bugs.html)), not Ublue/Bazzite)
@@ -124,6 +120,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Steam and Lutris preinstalled on the image as layered packages.
 - [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Game mode and on the Desktop if Discord is installed. [View the official documentation here](https://trigg.github.io/Discover/bazzite).
 - Uses ZRAM<sub><sup>(4GB)</sup></sub> with the ZSTD compression algorithm by default with the option to switch back to a 1GB swap file and set a custom size for it if desired.
+- [BORE CPU scheduler](https://github.com/firelzrd/bore-scheduler) for smooth and responsive gameplay.
 - Kyber I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` process.
 - Applies SteamOS's kernel parameters.
 - Color calibrated display profiles for matte and reflective Steam Deck screens included.
@@ -139,7 +136,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 > **Due to an upstream bug, Bazzite cannot be used on Steam Decks with 64GB eMMC storage at this time. Upgrading the storage resolves the issue.**
 
 > [!IMPORTANT]  
-> **ISOs can be downloaded from our [releases page](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
+> **ISOs can be downloaded from our [website](https://download.bazzite.gg), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
 
 Rebase from an existing upstream Fedora Atomic to this image:
 
@@ -186,7 +183,7 @@ Builds with the GNOME desktop environment are available in both desktop and deck
 - Automatic updates for the [Firefox GNOME theme](https://github.com/rafaelmardojai/firefox-gnome-theme) and [Thunderbird GNOME theme](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(If installed)</sub></sup>
 
 > [!IMPORTANT]  
-> **ISOs can be downloaded from our [releases page](https://github.com/ublue-os/bazzite/releases), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
+> **ISOs can be downloaded from our [website](https://download.bazzite.gg), and a helpful install guide can be found [here](https://universal-blue.discourse.group/docs?topic=30).**
 
 Rebase from an existing upstream Fedora Atomic to this image:
 
@@ -321,7 +318,6 @@ Additionally, the following packages are used from other Copr repos:
 | [ptyxis](https://gitlab.gnome.org/chergert/ptyxis)                                                            | ![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/ptyxis/status_image/last_build.png?)                                           |
 | [rom-properties](https://copr.fedorainfracloud.org/coprs/kylegospo/rom-properties/)                           | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/rom-properties/package/rom-properties/status_image/last_build.png?)                           |
 | [steamdeck-kmod](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/)                                    | ![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/package/jupiter-kmod/status_image/last_build.png?)                                      |
-| [system76-scheduler](https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/)                   | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/package/system76-scheduler/status_image/last_build.png?)                   |
 | [wallpaper-engine-kde-plugin](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/) | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/package/wallpaper-engine-kde-plugin/status_image/last_build.png?) |
 | [webapp-manager](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/)                           | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/package/webapp-manager/status_image/last_build.png?)                           |
 

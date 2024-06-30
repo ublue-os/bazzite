@@ -30,11 +30,15 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --or-update ${FLATPAK_LIST}
 
-# Install Bazzite's Steam Game Mode Startup Video
+# Install Bazzite's Steam Game Mode Startup & Suspend Videos
 install-gamemode-video:
     mkdir -p $HOME/.local/share/Steam/config/uioverrides/movies
     rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
+    rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
+    rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
     cp /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
+    cp /usr/share/ublue-os/bazzite/bazzite-suspend.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
+    cp /usr/share/ublue-os/bazzite/bazzite-suspend.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
 
 # Force-enable AMD pstate
 _pstate-force-enable:
@@ -169,6 +173,10 @@ setup-decky ACTION="":
     fi
     if [[ "${OPTION,,}" =~ install ]]; then
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
+      if [ ! -L "/home/deck" ] && [ ! -e "/home/deck" ]  && [ "$HOME" != "/home/deck" ]; then
+        echo "Making a /home/deck symlink to fix plugins that do not use environment variables."
+        sudo ln -sf "$HOME" /home/deck
+      fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
       sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
     elif [[ "${OPTION,,}" =~ simpledeckytdp ]]; then

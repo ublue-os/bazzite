@@ -76,19 +76,6 @@ install-deckhd-bios:
       echo "This is only applicable to LCD Steam Decks with the DeckHD screen. Aborting..."
     fi
 
-disable-swipe-gestures:
-    #!/usr/bin/bash
-    echo "disabling swipe gestures for QAM and HOME"
-    mkdir -p $HOME/.config/environment.d
-    echo "export GAMESCOPE_DISABLE_TOUCH_GESTURES=1" > "$HOME/.config/environment.d/bazzite-disable-gamescope-gestures.conf"
-    echo "Done. Please restart Steam Game Mode to see changes"
-
-enable-swipe-gestures:
-    #!/usr/bin/bash
-    echo "enabling swipe gestures for QAM and HOME"
-    rm -f "$HOME/.config/environment.d/bazzite-disable-gamescope-gestures.conf"
-    echo "Done. Please restart Steam Game Mode to see changes"
-
 # Enable BIOS & Firmware update services for the Steam Deck
 enable-deck-bios-firmware-updates:
     #!/usr/bin/bash
@@ -121,12 +108,6 @@ disable-firmware-updates:
 disable-sdgyrodsu:
     #!/usr/bin/bash
     sudo systemctl mask --user sdgyrodsu.service
-
-# Re-enable input remapper feature on non-desktop images
-restore-input-remapper:
-    systemctl enable --now input-remapper.service && \
-    cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
-    sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
 
 # Install hhd main branch locally until reboot, helpful for hhd testing and debugging. (rename to install-hhd-dev if we unhide)
 _hhd-dev:

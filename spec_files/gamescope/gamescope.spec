@@ -2,7 +2,7 @@
 
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
-%global gamescope_tag 3.14.18
+%global gamescope_tag 3.14.22
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
@@ -15,13 +15,9 @@ URL:            https://github.com/ValveSoftware/gamescope
 # Create stb.pc to satisfy dependency('stb')
 Source0:        stb.pc
 
-Patch0:         hardware.patch
-Patch1:         720p.patch
-Patch2:         disable-steam-touch-click-atom.patch
-Patch3:         external-rotation.patch
-Patch4:         panel-type.patch
-Patch5:         deckhd.patch
-Patch6:         explicit_sync.patch
+Patch0:         chimeraos.patch
+Patch1:         disable-steam-touch-click-atom.patch
+Patch2:         deckhd.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -107,7 +103,7 @@ sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/m
 %build
 cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
-%meson -Dpipewire=enabled -Dinput_emulation=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dsdl2_backend=enabled -Dforce_fallback_for=vkroots,wlroots
+%meson -Dpipewire=enabled -Dinput_emulation=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dsdl2_backend=enabled
 %meson_build
 
 %install
@@ -118,6 +114,7 @@ cd gamescope
 %license gamescope/LICENSE
 %doc gamescope/README.md
 %caps(cap_sys_nice=eip) %{_bindir}/gamescope
+%{_bindir}/gamescopectl
 %{_bindir}/gamescopestream
 
 %files libs
