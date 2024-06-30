@@ -1,4 +1,5 @@
 # Required for use of OBS-VkCapture in X11 environments
+# Nvidia users must additionally have nvidia-drm.modeset=1 in their kargs
 OBS_USE_EGL=1
 
 # https://gitlab.gnome.org/GNOME/mutter/-/issues/3037
