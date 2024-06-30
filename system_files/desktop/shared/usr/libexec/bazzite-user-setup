@@ -10,6 +10,7 @@ IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
+SYS_ID="$(/usr/libexec/hwsupport/sysid)"
 VEN_ID="$(cat /sys/devices/virtual/dmi/id/chassis_vendor)"
 
 # INIT
@@ -108,6 +109,12 @@ else
       fi
       touch "$BAZZITE_CONFIG_DIR/framework-initialized"
     fi
+  fi
+
+  if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+      echo 'Setting Legion logo menu'
+      dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon false
+      dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 31
   fi
 
   echo 'Setting up templates'
