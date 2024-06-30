@@ -15,7 +15,6 @@
 Usa nuestro [seleccionador de imágenes](https://bazzite.gg/#image-picker) para encontrar la imagen correcta basada en tu hardware y tus preferencias.
 
 # Tabla de Contenidos
-
 - [Características de **todas** las imágenes de Bazzite](#about--features)
   - [Características de las imágenes para **Computadoras de Escritorio**](#desktop)
   - [Características de las imágenes para **Steam Deck/HTPC**](#steam-deckhome-theater-pcs-htpcs)

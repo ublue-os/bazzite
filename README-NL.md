@@ -13,7 +13,6 @@
 ---
 
 # Inhoudsopgave
-- [README Taal](#---cn)
 - [Over \& Kenmerken](#over--kenmerken)
   - [Desktop](#desktop)
   - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
