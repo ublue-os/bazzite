@@ -9,7 +9,7 @@ index ada6104..e40e82a 100755
  # script from AMD to use when reporting bugs to them
  
 diff --git a/usr/bin/jupiter-biosupdate b/usr/bin/jupiter-biosupdate
-index 26bcd14..1f89423 100755
+index c0665c4..a8d6059 100755
 --- a/usr/bin/jupiter-biosupdate
 +++ b/usr/bin/jupiter-biosupdate
 @@ -1,4 +1,4 @@
@@ -179,15 +179,15 @@ index 1841ce0..9cfa9a6 100755
  set -eu
  
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-priv-write b/usr/bin/steamos-polkit-helpers/steamos-priv-write
-index e307823..d78a81d 100755
+index d1456c8..8fcd1d4 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-priv-write
 +++ b/usr/bin/steamos-polkit-helpers/steamos-priv-write
 @@ -1,4 +1,4 @@
 -#!/bin/bash
 +#!/usr/bin/bash
  
- set -eu
- 
+ set -euo pipefail
+ shopt -s nullglob
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-reboot-now b/usr/bin/steamos-polkit-helpers/steamos-reboot-now
 index b4dcc81..5ff87b5 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-reboot-now

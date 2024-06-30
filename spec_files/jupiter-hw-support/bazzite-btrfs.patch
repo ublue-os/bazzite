@@ -1,53 +1,13 @@
-diff --git a/usr/lib/hwsupport/format-device.sh b/usr/lib/hwsupport/format-device.sh
-index 58d66d3..768a6fc 100755
---- a/usr/lib/hwsupport/format-device.sh
-+++ b/usr/lib/hwsupport/format-device.sh
-@@ -2,7 +2,9 @@
- 
- set -e
- 
--. /usr/libexec/hwsupport/common-functions
-+source /etc/default/steamos-btrfs
-+
-+. /usr/libexec/common-functions
- 
- # If the script is not run from a tty then send a copy of stdout and
- # stderr to the journal. In this case stderr is also redirected to stdout.
 diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
-index 366bef3..f627175 100755
+index a9408dd..b5a0e6b 100755
 --- a/usr/lib/hwsupport/steamos-automount.sh
 +++ b/usr/lib/hwsupport/steamos-automount.sh
-@@ -2,6 +2,8 @@
- 
- set -euo pipefail
- 
-+source /etc/default/steamos-btrfs
-+
- . /usr/libexec/hwsupport/common-functions
- 
- # Originally from https://serverfault.com/a/767079
-@@ -60,6 +62,7 @@ do_mount()
-     dev_json=$(lsblk -o PATH,LABEL,FSTYPE --json -- "$DEVICE" | jq '.blockdevices[0]')
-     ID_FS_LABEL=$(jq -r '.label | select(type == "string")' <<< "$dev_json")
-     ID_FS_TYPE=$(jq -r '.fstype | select(type == "string")' <<< "$dev_json")
-+    FSTYPE_PREFIX=""
- 
-     #### SteamOS Btrfs Begin ####
-     if [[ -f /etc/default/steamos-btrfs ]]; then
-@@ -103,6 +106,7 @@ do_mount()
-         UDISKS2_ALLOW='uid=$UID,gid=$GID,umask,dmask,fmask,locale,norecover,ignore_case,windows_names,compression,nocompression,big_writes,nls,nohidden,sys_immutable,sparse,showmeta,prealloc'
-         OPTS="${STEAMOS_BTRFS_SDCARD_NTFS_MOUNT_OPTS:-rw,noatime,lazytime,uid=1000,gid=1000,big_writes,umask=0022,ignore_case,windows_names}"
-         FSTYPE="lowntfs-3g"
-+        FSTYPE_PREFIX="ntfs:"
-         if [[ ! -f /etc/filesystems ]] || ! grep -q '\b'"${FSTYPE}"'\b' /etc/filesystems; then
-             echo "${FSTYPE}" >> /etc/filesystems
-         fi
-@@ -115,7 +119,7 @@ do_mount()
-     if [[ -f "${udisks2_mount_options_conf}" && ! -f "${udisks2_mount_options_conf}.orig" ]]; then
-         mv -f "${udisks2_mount_options_conf}"{,.orig}
-     fi
--    echo -e "[defaults]\n${FSTYPE}_allow=${UDISKS2_ALLOW},${OPTS}" > "${udisks2_mount_options_conf}"
-+    echo -e "[defaults]\n${FSTYPE_PREFIX}${FSTYPE}_allow=${UDISKS2_ALLOW},${OPTS}" > "${udisks2_mount_options_conf}"
-     trap 'rm -f "${udisks2_mount_options_conf}" ; [[ -f "${udisks2_mount_options_conf}.orig" ]] && mv -f "${udisks2_mount_options_conf}"{.orig,}' EXIT
-     #### SteamOS Btrfs End ####
- 
+@@ -36,7 +36,7 @@ send_steam_url()
+   if pgrep -x "steam" > /dev/null; then
+       # TODO use -ifrunning and check return value - if there was a steam process and it returns -1, the message wasn't sent
+       # need to retry until either steam process is gone or -ifrunning returns 0, or timeout i guess
+-      systemd-run -M ${DECK_UID}@ --user --collect --wait sh -c "./.steam/root/ubuntu12_32/steam steam://${command}/${encoded@Q}"
++      systemd-run --uid=${DECK_UID} --collect --wait sh -c "/usr/bin/steam steam://${command}/${encoded@Q}"
+       echo "Sent URL to steam: steam://${command}/${arg} (steam://${command}/${encoded})"
+   else
+       echo "Could not send steam URL steam://${command}/${arg} (steam://${command}/${encoded}) -- steam not running"

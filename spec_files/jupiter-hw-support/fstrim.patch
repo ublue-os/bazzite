@@ -1,8 +1,8 @@
 diff --git a/usr/lib/hwsupport/trim-devices.sh b/usr/lib/hwsupport/trim-devices.sh
-index 84897df..0f22352 100755
+index 84897df..bd203ab 100755
 --- a/usr/lib/hwsupport/trim-devices.sh
 +++ b/usr/lib/hwsupport/trim-devices.sh
-@@ -78,6 +78,18 @@ function is_known_bad_device()
+@@ -78,12 +78,23 @@ function is_known_bad_device()
      return;
  }
  
@@ -21,3 +21,9 @@ index 84897df..0f22352 100755
  # In some cases it is unsafe to trim an sdcard. When we detect this case
  # lets just trim the partitions on the internal drive which we know are
  # safe to trim/discard
+ if is_known_bad_device; then
+     _fstrim /var
+-    _fstrim /home
+     exit
+ fi
+ 

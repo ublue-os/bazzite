@@ -1,5 +1,5 @@
 diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
-index 3f34ee8..4a78916 100755
+index e5ba74b..a9408dd 100755
 --- a/usr/lib/hwsupport/steamos-automount.sh
 +++ b/usr/lib/hwsupport/steamos-automount.sh
 @@ -25,8 +25,8 @@ if [[ "${FLOCKER:-}" != "$0" ]] ; then exec env FLOCKER="$0" flock -e -w 20 "$0"
@@ -32,7 +32,7 @@ index 3f34ee8..4a78916 100755
          [[ "${ID_FS_TYPE}" == "vfat" || "${ID_FS_TYPE}" == "exfat" || "${ID_FS_TYPE}" == "ntfs" ]]; then
          # bind mount compatdata folder from internal disk
 -        DECK_HOME="$(getent passwd deck | cut -d: -f6)"
-+        DECK_HOME="/home/${USER}"
++        DECK_HOME="/var/home/${USER}"
          mkdir -p "${mount_point}"/steamapps/compatdata
          chown "${DECK_UID}:${DECK_GID}" "${mount_point}"/steamapps{,/compatdata}
          mkdir -p "${DECK_HOME}"/.local/share/Steam/steamapps/compatdata
