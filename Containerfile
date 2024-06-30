@@ -781,10 +781,15 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
 COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
 
 # Remove everything that doesn't work well with NVIDIA
+# Install X11 session (Remove me for Fedora 41)
 RUN rpm-ostree override remove \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo && \
+    if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then \
+        rpm-ostree install \
+            plasma-workspace-x11 \
+    ; fi && \
     ostree container commit
 
 # Install NVIDIA driver
