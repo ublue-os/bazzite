@@ -1,5 +1,5 @@
 %define packagename jupiter-hw-support
-%define packagever jupiter-20240416.1
+%define packagever jupiter-3.6-20240624.1
 %global _default_patch_fuzz 2
 
 Name:           jupiter-sd-mounting-btrfs
