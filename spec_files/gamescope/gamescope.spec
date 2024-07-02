@@ -18,7 +18,6 @@ Source0:        stb.pc
 Patch0:         chimeraos.patch
 Patch1:         disable-steam-touch-click-atom.patch
 Patch2:         deckhd.patch
-Patch3:         external-fix.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
