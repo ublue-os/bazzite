@@ -212,7 +212,6 @@ RUN rpm-ostree override replace \
     --experimental \
     --from repo=updates \
         libinput \
-        libinput.i686 \
         || true && \
     rpm-ostree override replace \
     --experimental \
