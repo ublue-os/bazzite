@@ -212,6 +212,7 @@ RUN rpm-ostree override replace \
     --experimental \
     --from repo=updates \
         libinput \
+        libinput.i686 \
         || true && \
     rpm-ostree override replace \
     --experimental \
@@ -292,6 +293,7 @@ RUN rpm-ostree install \
         xrandr \
         compsize \
         ryzenadj \
+        input-remapper \
         i2c-tools \
         udica \
         joycond \
