@@ -60,11 +60,9 @@ O Bazzite é feito a partir do [ublue-os/main](https://github.com/ublue-os/main)
 - [Ptyxis Terminal](https://gitlab.gnome.org/chergert/ptyxis) é utilizado como terminal padrão em todas as imagens. Esse terminal é feito especialmente para o workflow em containers que você deve usar no Bazzite. Se desejar restaurar o terminal padrão do Fedora, execute `ujust _restore-original-terminal`
 - Serviço `duperemove` automatizado para reduzir o espaço em disco usado por arquivos em prefixos do wine.
 - Suporte a HDMI CEC via [libCEC](https://libcec.pulse-eight.com/).
-- [System76-Scheduler](https://github.com/pop-os/system76-scheduler) pré-instalado,  provendo ajustes automáticos de prioridade favorecendo o processo em primeiro plano e mantendo o mínimo de tempo de CPU necessário para outros processos.
-- Configuração customizada do System76-Scheduler com regras adicionais.
 - Usa o [controle de congestionamento TCP BBR da Google](https://github.com/google/bbr) por padrão.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) pré-instalado e habilitado. <sub><sup>(Disponível mas desabilitado por padrão na versão Deck, ative executando `ujust _restore-input-remapper`)</sup></sub>
-- O Bazzite Portal traz um jeito simples de instalar múltiplos aplicativos e ajustes, incluindo a instalação do [LACT](https://github.com/ilya-zlobintsev/LACT) e do [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
+- O Bazzite Portal traz um jeito simples de instalar múltiplos aplicativos e ajustes, incluindo a instalação do [LACT](https://github.com/ilya-zlobintsev/LACT).
 - [Waydroid](https://waydro.id/) pré-instalado para rodar aplicativos Android. Confira esse [guia rápido](https://universal-blue.discourse.group/docs?topic=32) para configurá-lo.
 - Gerencie aplicativos usando o [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), e [Gear Lever](https://github.com/mijorus/gearlever).
 - Drivers i2c-piix4 e i2c-nct6775 pra [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) para controlar o RGB em certas placas-mãe.
@@ -81,8 +79,8 @@ Imagem genérica disponível como `bazzite`, própria para computadores desktop.
 
 - Atualiza automaticamente o sistema, Flatpaks, e todos os containers Distrobox - via [ublue-update](https://github.com/ublue-os/ublue-update) e [topgrade](https://github.com/topgrade-rs/topgrade).
 
-> [!IMPORTANTE]  
-> **ISOs podem ser baixadas da [página de releases](https://github.com/ublue-os/bazzite/releases), com um guia de instalação conveniente disponível [aqui](https://universal-blue.discourse.group/docs?topic=30).**
+> [!IMPORTANT]  
+> **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://universal-blue.discourse.group/docs?topic=30).**
 
 Rebaseie de uma instalação existente de Fedora Atômico para esta imagem se você quiser **Drivers de GPU Open Source**:
 (Nota: A solução Open Source Mesa para GPUs NVIDIA, NVK ainda é propensa a erros quando esta orientação é redigida, pra qualquer problema pertinente à NVK [por favor mande um relatório ao projeto Mesa]([url](https://docs.mesa3d.org/bugs.html)), não ao Ublue/Bazzite)
@@ -100,7 +98,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 **Usuários com o Secure Boot ativado:** Sigam nossa [documentação para secure boot](#secure-boot) antes do rebase.
 
 ### Steam Deck/PCs Centros de Mídia (HTPCs)
-> [!IMPORTANTE]
+> [!IMPORTANT]  
 Dispositivos que NÃO SÃO o Steam Deck também podem usar as imagens `bazzite-deck`, mas precisam ter uma GPU recente da AMD. GPUs Arc da Intel também foram confirmadas como funcionando.
 
 Imagem feita pra ser utilizada como alternativa ao SteamOS no Steam Deck, e para uma experiência semelhante a consoles em HTPCs, disponível como `bazzite-deck`:
@@ -134,11 +132,11 @@ Imagem feita pra ser utilizada como alternativa ao SteamOS no Steam Deck, e para
 - Serviços específicos para o hardware do Steam Deck podem ser desabilitados rodando `ujust disable-bios-updates` e `ujust disable-firmware-updates` no terminal. Eles são desabilitados automaticamente em hardware que não seja o Deck, e em Decks com telas DeckHD ou mods de 32GB de RAM.
 - Mais informações sobre as imagens Bazzite Steam Deck podem ser encontradas [aqui](https://universal-blue.discourse.group/docs?topic=37).
 
-> [!AVISO]  
+> [!WARNING]  
 > **Devido a um bug upstream, o Bazzite não pode ser utilizado em Steam Decks com 64GB de armazenamento eMMC no momento. Fazer um upgrade de armazenamento resolve o problema.**
 
-> [!IMPORTANTE]  
-> **ISOs podem ser baixadas da [página de releases](https://github.com/ublue-os/bazzite/releases), com um guia de instalação conveniente disponível [aqui](https://universal-blue.discourse.group/docs?topic=30).**
+> [!IMPORTANT]  
+> **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://universal-blue.discourse.group/docs?topic=30).**
 
 Pra fazer rebase de uma instalação existente de Fedora Atômico para esta imagem:
 
@@ -184,8 +182,8 @@ Imagens com o ambiente desktop GNOME estão disponíveis pra ambas as versões d
 - Várias extensões opcionais pré-instaladas, incluindo [correções importantes para a experiência de usuário](https://www.youtube.com/watch?v=nbCg9_YgKgM).
 - Atualizações automáticas para o [tema GNOME pro Firefox](https://github.com/rafaelmardojai/firefox-gnome-theme) e o [tema GNOME pro Thunderbird](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(Se instalados)</sub></sup>
 
-> [!IMPORTANTE]  
-> **ISOs podem ser baixadas da [página de releases](https://github.com/ublue-os/bazzite/releases), com um guia de instalação conveniente disponível [aqui](https://universal-blue.discourse.group/docs?topic=30).**
+> [!IMPORTANT]  
+> **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://universal-blue.discourse.group/docs?topic=30).**
 
 Pra fazer rebase de uma instalação existente de Fedora Atômico para esta imagem:
 
@@ -199,7 +197,7 @@ Pra fazer rebase de um sistema ostree existente para uma versão com Ambiente De
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
 ```
 
-> [!AVISO]  
+> [!WARNING]  
 > **Devido a um bug upstream, o Bazzite não pode ser utilizado em Steam Decks com 64GB de armazenamento eMMC no momento.**
 
 Pra fazer rebase de um sistema ostree existente para a versão **Steam Deck/HTPC**:
@@ -320,7 +318,6 @@ Adicionalmente, os seguintes pacotes são utilizados de outros repositórios Cop
 | [ptyxis](https://gitlab.gnome.org/chergert/ptyxis)                                                            | ![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/ptyxis/status_image/last_build.png?)                                           |
 | [rom-properties](https://copr.fedorainfracloud.org/coprs/kylegospo/rom-properties/)                           | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/rom-properties/package/rom-properties/status_image/last_build.png?)                           |
 | [steamdeck-kmod](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/)                                    | ![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/package/jupiter-kmod/status_image/last_build.png?)                                      |
-| [system76-scheduler](https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/)                   | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/package/system76-scheduler/status_image/last_build.png?)                   |
 | [wallpaper-engine-kde-plugin](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/) | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/package/wallpaper-engine-kde-plugin/status_image/last_build.png?) |
 | [webapp-manager](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/)                           | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/package/webapp-manager/status_image/last_build.png?)                           |
 
@@ -334,7 +331,7 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## Secure Boot
 
-> [!AVISO]  
+> [!WARNING]  
 > **Usuários do Steam Deck: O Steam Deck não habilita o secure boot e não vem com quaisquer chaves inclusas por padrão. Não ative se não tiver certeza absoluta de que sabe o que está fazendo.**
 
 Secure boot é suportado com a nossa chave própria. A chave pública se encontra [aqui](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der) na raiz deste repositório. Se você quiser adicionar a nossa chave antes da instalação ou rebase, baixe a chave e execute o seguinte:
