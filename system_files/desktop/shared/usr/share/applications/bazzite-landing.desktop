@@ -3,7 +3,7 @@ Type=Application
 NoDisplay=false
 Terminal=false
 Exec=xdg-open https://universal-blue.discourse.group/docs?topic=8
-Icon=/usr/share/ublue-os/bazzite/welcome.svg
+Icon=/usr/share/ublue-os/bazzite/Landing.svg
 Name=Bazzite Landing
 Comment=Announcements, newsletters, and the forums
 Categories=Utility;
