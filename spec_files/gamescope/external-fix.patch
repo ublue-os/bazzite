@@ -1,0 +1,22 @@
+From 508e697c8038cd947405850aa86d121b51bdeb72 Mon Sep 17 00:00:00 2001
+From: Kyle Gospodnetich <me@kylegospodneti.ch>
+Date: Tue, 2 Jul 2024 14:12:47 -0700
+Subject: [PATCH] Only change refresh rates on internal displays
+
+---
+ src/drm.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/drm.cpp b/src/drm.cpp
+index 8309140f5..5defb305e 100644
+--- a/src/drm.cpp
++++ b/src/drm.cpp
+@@ -2138,7 +2138,7 @@ namespace gamescope
+ 			( m_Mutable.szMakePNP == "VLV"sv && m_Mutable.szModel == "Jupiter"sv ) ||
+ 			( m_Mutable.szMakePNP == "VLV"sv && m_Mutable.szModel == "Galileo"sv );
+ 
+-		if ( g_customRefreshRates.size() > 0 ) {
++		if ( g_customRefreshRates.size() > 0 && GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL ) {
+ 					m_Mutable.ValidDynamicRefreshRates = std::span(g_customRefreshRates);
+ 					return;
+ 		}
