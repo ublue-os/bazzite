@@ -599,6 +599,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl enable brew-update.timer && \
     systemctl enable btrfs-dedup@var-home.timer && \
     systemctl enable displaylink.service && \
+    systemctl enable input-remapper.service && \
     systemctl unmask bazzite-flatpak-manager.service && \
     systemctl enable bazzite-flatpak-manager.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
@@ -732,6 +733,7 @@ RUN /usr/libexec/containerbuild/image-info && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sed -i 's/Exec=.*/Exec=systemctl start return-to-gamemode.service/' /etc/skel/Desktop/Return.desktop \
     ; fi && \
+    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/input-remapper-gtk.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/usr/etc/yafti.yml" && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
@@ -758,6 +760,7 @@ RUN /usr/libexec/containerbuild/image-info && \
     systemctl enable bazzite-tdpfix.service && \
     systemctl --global enable steam-web-debug-portforward.service && \
     systemctl --global disable sdgyrodsu.service && \
+    systemctl disable input-remapper.service && \
     systemctl disable ublue-update.timer && \
     systemctl disable jupiter-fan-control.service && \
     systemctl disable vpower.service && \
