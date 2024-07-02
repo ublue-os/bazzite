@@ -61,6 +61,7 @@ O Bazzite é feito a partir do [ublue-os/main](https://github.com/ublue-os/main)
 - Serviço `duperemove` automatizado para reduzir o espaço em disco usado por arquivos em prefixos do wine.
 - Suporte a HDMI CEC via [libCEC](https://libcec.pulse-eight.com/).
 - Usa o [controle de congestionamento TCP BBR da Google](https://github.com/google/bbr) por padrão.
+- [Input Remapper](https://github.com/sezanzeb/input-remapper) pré-instalado e habilitado. <sub><sup>(Disponível mas desabilitado por padrão na versão Deck, ative executando `ujust _restore-input-remapper`)</sup></sub>
 - O Bazzite Portal traz um jeito simples de instalar múltiplos aplicativos e ajustes, incluindo a instalação do [LACT](https://github.com/ilya-zlobintsev/LACT).
 - [Waydroid](https://waydro.id/) pré-instalado para rodar aplicativos Android. Confira esse [guia rápido](https://universal-blue.discourse.group/docs?topic=32) para configurá-lo.
 - Gerencie aplicativos usando o [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), e [Gear Lever](https://github.com/mijorus/gearlever).
