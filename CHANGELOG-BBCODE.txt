@@ -1,5 +1,12 @@
 [h1]Changelog[/h1]
 
+[h2][url=https://github.com/ublue-os/bazzite/compare/v3.5.0...v3.5.1]3.5.1[/url] (2024-07-03)[/h2]
+
+
+[h3]Bug Fixes[/h3]
+[list]
+[*] [b]mesa:[/b] Add missing patches from upstream ([url=https://github.com/ublue-os/bazzite/commit/c50dc8ee9eb570ad15e4cf59f0b06125f2e75a15]c50dc8e[/url])
+[/list]
 [h2]3.5.0 (2024-06-30)[/h2]
 
 
@@ -156,43 +163,4 @@
 [list]
 [*] release 3.0.1 ([url=https://github.com/ublue-os/bazzite/commit/2370baa1db1ceda0b6bfb6252758ecb58b32a0ff]2370baa[/url])
 [*] release 3.5.0 ([url=https://github.com/ublue-os/bazzite/commit/d47ff4114ab6b238017c0f9e14fbbf20d3f5a1ae]d47ff41[/url])
-[/list]
-[h2][url=https://github.com/ublue-os/bazzite/compare/v3.0.0...v3.0.1]3.0.1[/url] (2024-05-02)[/h2]
-
-
-[h3]Features[/h3]
-[list]
-[*] Add [b]ujust setup-luks-tpm-unlock[/b] ([url=https://github.com/ublue-os/bazzite/commit/5402f530ef2cfe9403fc0baee79c664699a811d2]5402f53[/url])
-[*] Add new ublue wallpaper as the default ([url=https://github.com/ublue-os/bazzite/commit/3c79d312556f3d8ec87fa804dcc4d4cc91a4db83]3c79d31[/url])
-[*] Add new version of gamescope ([url=https://github.com/ublue-os/bazzite/commit/60a94cd5173cc8bb6545a149ea553ab47dfb7c3a]60a94cd[/url])
-[*] Add Steam Deck SD card mounting to desktop images ([url=https://github.com/ublue-os/bazzite/commit/a683b3bc97063394eebea183605c63a5115262c6]a683b3b[/url])
-[*] [b]deck:[/b] Add Handheld Controller Glyphs... ([url=https://github.com/ublue-os/bazzite/issues/1059]#1059[/url]) ([url=https://github.com/ublue-os/bazzite/commit/e1f026ee6f3d107ced604e0324e86264c3b59ba2]e1f026e[/url])
-[*] Deprecate looking-glass shm in favor of kvmfr module ([url=https://github.com/ublue-os/bazzite/issues/1013]#1013[/url]) ([url=https://github.com/ublue-os/bazzite/commit/8f7bb0bd6854c1d6a67f30903161a5f870c9e3d0]8f7bb0b[/url])
-[*] [b]framework:[/b] Add needed kargs and extensions to setup scripts ([url=https://github.com/ublue-os/bazzite/commit/96f1be0198e890d9a2979a61650fa004c5c5725e]96f1be0[/url])
-[*] [b]framework:[/b] Use Framework logo in logo menu by default 3 ([url=https://github.com/ublue-os/bazzite/commit/4a8e70bf7f199816507a232787fb9796475befb6]4a8e70b[/url])
-[*] [b]gnome:[/b] Add compiz alike magic lamp effect extension, default disabled ([url=https://github.com/ublue-os/bazzite/commit/dbc7862607eb97ab62615fa5fff447a79814242c]dbc7862[/url])
-[*] [b]gnome:[/b] Add power profile switcher extension (pre-configured, but disabled by default) ([url=https://github.com/ublue-os/bazzite/commit/fb006c2fb7b8302053d17a9490342aed78b74464]fb006c2[/url])
-[*] [b]gnome:[/b] Restore xwayland fractional scaling ([url=https://github.com/ublue-os/bazzite/commit/dbc7862607eb97ab62615fa5fff447a79814242c]dbc7862[/url])
-[*] remove root password option from installer ([url=https://github.com/ublue-os/bazzite/commit/ad9ec4011ee0d07d97107e992e8a884864af6e8d]ad9ec40[/url])
-[/list]
-
-[h3]Bug Fixes[/h3]
-[list]
-[*] Always install jupiter-sd-mounting-btrfs ([url=https://github.com/ublue-os/bazzite/commit/821e9ea6a104f1ae6811255e50525446ae6b4e77]821e9ea[/url])
-[*] bazzite-user-setup should only run when needed ([url=https://github.com/ublue-os/bazzite/issues/1020]#1020[/url]) ([url=https://github.com/ublue-os/bazzite/commit/f33d1e799a090693c3adb3bbbdf2577975515fb2]f33d1e7[/url])
-[*] [b]bazzite-user-setup:[/b] include  in file check and move  after first if statement ([url=https://github.com/ublue-os/bazzite/issues/1023]#1023[/url]) ([url=https://github.com/ublue-os/bazzite/commit/c4670d271d3b97740b6b6ffdb128e9f8668661a4]c4670d2[/url])
-[*] [b]ci:[/b] set image version to match source ([url=https://github.com/ublue-os/bazzite/issues/1031]#1031[/url]) ([url=https://github.com/ublue-os/bazzite/commit/57b0d1f2461b402bba106d153bc397c77bd7b060]57b0d1f[/url])
-[*] Correct issue with Steam refusing to launch on some multi-gpu hardware when launched on the dGPU. ([url=https://github.com/ublue-os/bazzite/commit/0c1a55c629c3a12bd42818f3a487f897a9d6115f]0c1a55c[/url])
-[*] disable requirement for testing branch ([url=https://github.com/ublue-os/bazzite/commit/224e8838454267fd3e195c35da4c6124fdb1cb36]224e883[/url])
-[*] Drop patched bluez ([url=https://github.com/ublue-os/bazzite/commit/857f933088d18f3341037faff3089e74fb9e6059]857f933[/url])
-[*] fix typo ([url=https://github.com/ublue-os/bazzite/commit/f49e0c0f2512ba83b525291a34dffdc186c7ee60]f49e0c0[/url])
-[*] fully qualify path ([url=https://github.com/ublue-os/bazzite/commit/e1cbc25b8ff4d07b614ac85f08cf714b82e1025f]e1cbc25[/url])
-[*] [b]kde:[/b] Fix issue with theme picker under KDE6 for Vapor and VGUI2. ([url=https://github.com/ublue-os/bazzite/commit/3c79d312556f3d8ec87fa804dcc4d4cc91a4db83]3c79d31[/url])
-[*] no longer tell people to configure grub when showing virtualization helptext ([url=https://github.com/ublue-os/bazzite/issues/1042]#1042[/url]) ([url=https://github.com/ublue-os/bazzite/commit/3457926faa785a6d8d66f3286703156d64e1bcdd]3457926[/url])
-[*] simplify code and add if back for testing ([url=https://github.com/ublue-os/bazzite/commit/ca4434389e3762f1af878c10d25494d1a3e502a2]ca44343[/url])
-[/list]
-
-[h3]Miscellaneous Chores[/h3]
-[list]
-[*] release 3.0.1 ([url=https://github.com/ublue-os/bazzite/commit/2370baa1db1ceda0b6bfb6252758ecb58b32a0ff]2370baa[/url])
 [/list]
