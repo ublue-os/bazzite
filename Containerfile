@@ -226,6 +226,11 @@ RUN rpm-ostree override replace \
     rpm-ostree override replace \
     --experimental \
     --from repo=updates \
+        zlib-ng-compat \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
         fontconfig \
         || true && \
     rpm-ostree override remove \
