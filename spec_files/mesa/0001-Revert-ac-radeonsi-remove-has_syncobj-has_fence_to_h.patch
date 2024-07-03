@@ -1,0 +1,153 @@
+From fddf49504e1bebb7efc52c1a0516300c0f217f18 Mon Sep 17 00:00:00 2001
+From: Pierre-Eric Pelloux-Prayer <pierre-eric.pelloux-prayer@amd.com>
+Date: Wed, 26 Jun 2024 12:11:48 +0200
+Subject: [PATCH] Revert "ac, radeonsi: remove has_syncobj,
+ has_fence_to_handle"
+
+This reverts commit 02fe3c32cdfc3cf48cd691d6321978b8d4c3e61b.
+
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/issues/11352
+---
+ src/amd/common/ac_gpu_info.c                | 12 ++++++++++++
+ src/amd/common/ac_gpu_info.h                |  2 ++
+ src/gallium/drivers/r600/r600_pipe_common.c |  1 +
+ src/gallium/drivers/radeonsi/si_fence.c     | 10 ++++++++++
+ src/gallium/drivers/radeonsi/si_get.c       |  8 ++++++--
+ 5 files changed, 31 insertions(+), 2 deletions(-)
+
+diff --git a/src/amd/common/ac_gpu_info.c b/src/amd/common/ac_gpu_info.c
+index 78febf796b4..3f711bd45ec 100644
+--- a/src/amd/common/ac_gpu_info.c
++++ b/src/amd/common/ac_gpu_info.c
+@@ -355,6 +355,14 @@ static intptr_t readlink(const char *path, char *buf, size_t bufsiz)
+ 
+ #define CIK_TILE_MODE_COLOR_2D 14
+ 
++static bool has_syncobj(int fd)
++{
++   uint64_t value;
++   if (drmGetCap(fd, DRM_CAP_SYNCOBJ, &value))
++      return false;
++   return value ? true : false;
++}
++
+ static bool has_timeline_syncobj(int fd)
+ {
+    uint64_t value;
+@@ -1068,7 +1076,9 @@ bool ac_query_gpu_info(int fd, void *dev_p, struct radeon_info *info,
+    info->memory_freq_mhz_effective *= ac_memory_ops_per_clock(info->vram_type);
+ 
+    info->has_userptr = true;
++   info->has_syncobj = has_syncobj(fd);
+    info->has_timeline_syncobj = has_timeline_syncobj(fd);
++   info->has_fence_to_handle = info->has_syncobj;
+    info->has_local_buffers = true;
+    info->has_bo_metadata = true;
+    info->has_eqaa_surface_allocator = info->gfx_level < GFX11;
+@@ -1974,7 +1984,9 @@ void ac_print_gpu_info(const struct radeon_info *info, FILE *f)
+    fprintf(f, "Kernel & winsys capabilities:\n");
+    fprintf(f, "    drm = %i.%i.%i\n", info->drm_major, info->drm_minor, info->drm_patchlevel);
+    fprintf(f, "    has_userptr = %i\n", info->has_userptr);
++   fprintf(f, "    has_syncobj = %u\n", info->has_syncobj);
+    fprintf(f, "    has_timeline_syncobj = %u\n", info->has_timeline_syncobj);
++   fprintf(f, "    has_fence_to_handle = %u\n", info->has_fence_to_handle);
+    fprintf(f, "    has_local_buffers = %u\n", info->has_local_buffers);
+    fprintf(f, "    has_bo_metadata = %u\n", info->has_bo_metadata);
+    fprintf(f, "    has_eqaa_surface_allocator = %u\n", info->has_eqaa_surface_allocator);
+diff --git a/src/amd/common/ac_gpu_info.h b/src/amd/common/ac_gpu_info.h
+index 68fbe909a97..40670d87770 100644
+--- a/src/amd/common/ac_gpu_info.h
++++ b/src/amd/common/ac_gpu_info.h
+@@ -218,7 +218,9 @@ struct radeon_info {
+    uint32_t max_submitted_ibs[AMD_NUM_IP_TYPES];
+    bool is_amdgpu;
+    bool has_userptr;
++   bool has_syncobj;
+    bool has_timeline_syncobj;
++   bool has_fence_to_handle;
+    bool has_local_buffers;
+    bool has_bo_metadata;
+    bool has_eqaa_surface_allocator;
+diff --git a/src/gallium/drivers/r600/r600_pipe_common.c b/src/gallium/drivers/r600/r600_pipe_common.c
+index aaa171a07ed..5a10aad5907 100644
+--- a/src/gallium/drivers/r600/r600_pipe_common.c
++++ b/src/gallium/drivers/r600/r600_pipe_common.c
+@@ -1338,6 +1338,7 @@ bool r600_common_screen_init(struct r600_common_screen *rscreen,
+ 		printf("drm = %i.%i.%i\n", rscreen->info.drm_major,
+ 		       rscreen->info.drm_minor, rscreen->info.drm_patchlevel);
+ 		printf("has_userptr = %i\n", rscreen->info.has_userptr);
++		printf("has_syncobj = %u\n", rscreen->info.has_syncobj);
+ 
+ 		printf("r600_max_quad_pipes = %i\n", rscreen->info.r600_max_quad_pipes);
+ 		printf("max_gpu_freq_mhz = %i\n", rscreen->info.max_gpu_freq_mhz);
+diff --git a/src/gallium/drivers/radeonsi/si_fence.c b/src/gallium/drivers/radeonsi/si_fence.c
+index a1ae9125e00..1d2406df9fd 100644
+--- a/src/gallium/drivers/radeonsi/si_fence.c
++++ b/src/gallium/drivers/radeonsi/si_fence.c
+@@ -374,10 +374,16 @@ static void si_create_fence_fd(struct pipe_context *ctx, struct pipe_fence_handl
+ 
+    switch (type) {
+    case PIPE_FD_TYPE_NATIVE_SYNC:
++      if (!sscreen->info.has_fence_to_handle)
++         goto finish;
++
+       sfence->gfx = ws->fence_import_sync_file(ws, fd);
+       break;
+ 
+    case PIPE_FD_TYPE_SYNCOBJ:
++      if (!sscreen->info.has_syncobj)
++         goto finish;
++
+       sfence->gfx = ws->fence_import_syncobj(ws, fd);
+       break;
+ 
+@@ -385,6 +391,7 @@ static void si_create_fence_fd(struct pipe_context *ctx, struct pipe_fence_handl
+       unreachable("bad fence fd type when importing");
+    }
+ 
++finish:
+    if (!sfence->gfx) {
+       FREE(sfence);
+       return;
+@@ -400,6 +407,9 @@ static int si_fence_get_fd(struct pipe_screen *screen, struct pipe_fence_handle
+    struct si_fence *sfence = (struct si_fence *)fence;
+    int gfx_fd = -1;
+ 
++   if (!sscreen->info.has_fence_to_handle)
++      return -1;
++
+    util_queue_fence_wait(&sfence->ready);
+ 
+    /* Deferred fences aren't supported. */
+diff --git a/src/gallium/drivers/radeonsi/si_get.c b/src/gallium/drivers/radeonsi/si_get.c
+index a9ac90dca52..3c8a75e9583 100644
+--- a/src/gallium/drivers/radeonsi/si_get.c
++++ b/src/gallium/drivers/radeonsi/si_get.c
+@@ -168,8 +168,6 @@ static int si_get_param(struct pipe_screen *pscreen, enum pipe_cap param)
+    case PIPE_CAP_ALLOW_GLTHREAD_BUFFER_SUBDATA_OPT: /* TODO: remove if it's slow */
+    case PIPE_CAP_NULL_TEXTURES:
+    case PIPE_CAP_HAS_CONST_BW:
+-   case PIPE_CAP_FENCE_SIGNAL:
+-   case PIPE_CAP_NATIVE_FENCE_FD:
+    case PIPE_CAP_CL_GL_SHARING:
+       return 1;
+ 
+@@ -287,9 +285,15 @@ static int si_get_param(struct pipe_screen *pscreen, enum pipe_cap param)
+              PIPE_CONTEXT_PRIORITY_MEDIUM |
+              PIPE_CONTEXT_PRIORITY_HIGH;
+ 
++   case PIPE_CAP_FENCE_SIGNAL:
++      return sscreen->info.has_syncobj;
++
+    case PIPE_CAP_CONSTBUF0_FLAGS:
+       return SI_RESOURCE_FLAG_32BIT;
+ 
++   case PIPE_CAP_NATIVE_FENCE_FD:
++      return sscreen->info.has_fence_to_handle;
++
+    case PIPE_CAP_DRAW_PARAMETERS:
+    case PIPE_CAP_MULTI_DRAW_INDIRECT:
+    case PIPE_CAP_MULTI_DRAW_INDIRECT_PARAMS:
+-- 
+2.45.2
+
