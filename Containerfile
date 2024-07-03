@@ -60,8 +60,6 @@ RUN rpm-ostree cliwrap install-to-root / && \
             /tmp/fsync-rpms/kernel-6*.rpm \
             /tmp/fsync-rpms/kernel-core-*.rpm \
             /tmp/fsync-rpms/kernel-modules-*.rpm \
-            /tmp/fsync-rpms/kernel-modules-core-*.rpm \
-            /tmp/fsync-rpms/kernel-modules-extra-*.rpm \
             /tmp/fsync-rpms/kernel-uki-virt-*.rpm \
     ; else \
         echo "will use kernel from ${KERNEL_FLAVOR} images" \
