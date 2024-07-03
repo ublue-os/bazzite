@@ -7,8 +7,9 @@ ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$BASE_IMAGE_FLAVOR}"
 ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
 
-FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION} as akmods
-FROM ghcr.io/ublue-os/akmods-extra:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION} as akmods-extra
+FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION} AS akmods
+FROM ghcr.io/ublue-os/akmods-extra:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION} AS akmods-extra
+FROM ghcr.io/ublue-os/fsync:latest AS fsync
 
 FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 
@@ -50,19 +51,18 @@ RUN curl -Lo /usr/bin/copr https://raw.githubusercontent.com/ublue-os/COPR-comma
     ostree container commit
 
 # Install kernel-fsync
+COPY --from=fsync /tmp/rpms /tmp/fsync-rpms
 RUN rpm-ostree cliwrap install-to-root / && \
     if [[ "${KERNEL_FLAVOR}" =~ "fsync" ]]; then \
-        echo "will install ${KERNEL_FLAVOR} kernel from COPR" && \
-        curl -Lo /etc/yum.repos.d/_copr_sentry-kernel-fsync.repo https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora-$(rpm -E %fedora)/sentry-kernel-fsync-fedora-$(rpm -E %fedora).repo && \
+        echo "Will install ${KERNEL_FLAVOR} kernel" && \
         rpm-ostree override replace \
         --experimental \
-        --from repo=copr:copr.fedorainfracloud.org:sentry:kernel-fsync \
-            kernel \
-            kernel-core \
-            kernel-modules \
-            kernel-modules-core \
-            kernel-modules-extra \
-            kernel-uki-virt \
+            /tmp/fsync-rpms/kernel-(\d+\.\d+\.\d+)*.rpm \
+            /tmp/fsync-rpms/kernel-core-(\d+\.\d+\.\d+)*.rpm \
+            /tmp/fsync-rpms/kernel-modules-(\d+\.\d+\.\d+)*.rpm \
+            /tmp/fsync-rpms/kernel-modules-core-(\d+\.\d+\.\d+)*.rpm \
+            /tmp/fsync-rpms/kernel-modules-extra-(\d+\.\d+\.\d+)*rpm \
+            /tmp/fsync-rpms/kernel-uki-virt-(\d+\.\d+\.\d+)*.rpm \
     ; else \
         echo "will use kernel from ${KERNEL_FLAVOR} images" \
     ; fi && \
@@ -635,7 +635,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     /usr/libexec/containerbuild/build-initramfs && \
     ostree container commit
 
-FROM bazzite as bazzite-deck
+FROM bazzite AS bazzite-deck
 
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-deck}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
@@ -775,8 +775,9 @@ RUN /usr/libexec/containerbuild/image-info && \
     systemctl disable batterylimit.service && \
     ostree container commit
 
-FROM ghcr.io/ublue-os/akmods-nvidia:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION} as nvidia-akmods
-FROM bazzite as bazzite-nvidia
+FROM ghcr.io/ublue-os/akmods-nvidia:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION} AS nvidia-akmods
+
+FROM bazzite AS bazzite-nvidia
 
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-nvidia}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
