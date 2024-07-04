@@ -234,6 +234,7 @@ RUN rpm-ostree override replace \
     rpm-ostree override replace \
     --experimental \
     --from repo=updates \
+        gcc \
         libgcc \
         || true && \
     rpm-ostree override replace \
