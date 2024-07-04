@@ -1,0 +1,63 @@
+From 2e4d7ad1bf2cb98eb67ff8f9385cf6657cf2e912 Mon Sep 17 00:00:00 2001
+From: Matthew Schwartz <njtransit215@gmail.com>
+Date: Wed, 3 Jul 2024 15:20:08 -0700
+Subject: [PATCH] drm: Separate BOE and SDC OLED Deck panel valid refresh rates
+
+OLED Decks with BOE panels seem to struggle with a few different
+specific modesets (51hz/55hz/65hz) that SDC panels have no issues with.
+To work around this, let's make use of Gamescope recognizing each
+display manufacturer to correct the bad modesets while leaving
+SDC panel units alone. This can be reverted if an underlying cause can
+be found in the kernel in the future.
+---
+ src/Backends/DRMBackend.cpp | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
+index 97ef446..9f93c7f 100644
+--- a/src/Backends/DRMBackend.cpp
++++ b/src/Backends/DRMBackend.cpp
+@@ -554,7 +554,7 @@ static constexpr uint32_t s_kSteamDeckLCDRates[] =
+ 	60,
+ };
+ 
+-static constexpr uint32_t s_kSteamDeckOLEDRates[] =
++static constexpr uint32_t s_kSteamDeckOLEDSDCRates[] =
+ {
+ 	45, 47, 48, 49, 
+ 	50, 51, 53, 55, 56, 59, 
+@@ -564,6 +564,16 @@ static constexpr uint32_t s_kSteamDeckOLEDRates[] =
+ 	90, 
+ };
+ 
++static constexpr uint32_t s_kSteamDeckOLEDBOERates[] =
++{
++	45, 47, 48, 49, 
++	50, 53, 56, 59, 
++	60, 62, 64, 66, 68, 
++	72, 73, 76, 77, 78, 
++	80, 81, 82, 84, 85, 86, 87, 88, 
++	90, 
++};
++
+ static void update_connector_display_info_wl(struct drm_t *drm)
+ {
+ 	wlserver_lock();
+@@ -2128,12 +2138,12 @@ namespace gamescope
+ 			if ( pProduct->product == kPIDGalileoSDC )
+ 			{
+ 				m_Mutable.eKnownDisplay = GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_SDC;
+-				m_Mutable.ValidDynamicRefreshRates = std::span( s_kSteamDeckOLEDRates );
++				m_Mutable.ValidDynamicRefreshRates = std::span( s_kSteamDeckOLEDSDCRates );
+ 			}
+ 			else if ( pProduct->product == kPIDGalileoBOE )
+ 			{
+ 				m_Mutable.eKnownDisplay = GAMESCOPE_KNOWN_DISPLAY_STEAM_DECK_OLED_BOE;
+-				m_Mutable.ValidDynamicRefreshRates = std::span( s_kSteamDeckOLEDRates );
++				m_Mutable.ValidDynamicRefreshRates = std::span( s_kSteamDeckOLEDBOERates );
+ 			}
+ 			else
+ 			{
+-- 
+2.45.2
+
