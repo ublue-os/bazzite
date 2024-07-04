@@ -241,6 +241,11 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         libstdc++ \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libgomp \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true && \
