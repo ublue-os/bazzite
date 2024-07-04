@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.1](https://github.com/ublue-os/bazzite/compare/v3.5.0...v3.5.1) (2024-07-03)
+
+
+### Bug Fixes
+
+* **mesa:** Add missing patches from upstream ([c50dc8e](https://github.com/ublue-os/bazzite/commit/c50dc8ee9eb570ad15e4cf59f0b06125f2e75a15))
+
 ## 3.5.0 (2024-06-30)
 
 
