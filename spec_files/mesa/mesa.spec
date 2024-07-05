@@ -66,7 +66,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 %global ver 24.1.2
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        100.bazzite.{{{ git_dir_version }}}
+Release:        101.bazzite.{{{ git_dir_version }}}
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
 
@@ -82,6 +82,9 @@ Patch12:        0001-Revert-ac-radeonsi-remove-has_syncobj-has_fence_to_h.patch
 
 # s390x only
 Patch100:       fix-egl-on-s390x.patch
+
+# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/29979
+Patch150:       29979.patch
 
 # https://gitlab.com/evlaV/mesa/
 Patch200:       valve.patch
