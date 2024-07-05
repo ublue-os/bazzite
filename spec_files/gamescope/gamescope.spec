@@ -127,6 +127,7 @@ cd gamescope
 %caps(cap_sys_nice=eip) %{_bindir}/gamescope
 %{_bindir}/gamescopectl
 %{_bindir}/gamescopestream
+%{_bindir}/gamescopereaper
 
 %files libs
 %{_libdir}/libVkLayer_FROG_gamescope_wsi_*.so
