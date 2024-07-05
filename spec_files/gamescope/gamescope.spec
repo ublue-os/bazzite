@@ -29,8 +29,6 @@ Patch4:         revert-299bc34.patch
 Patch5:         1335.patch
 # https://github.com/ValveSoftware/gamescope/pull/1231
 Patch6:         1231.patch
-# https://github.com/ValveSoftware/gamescope/pull/1394
-Patch7:         1394.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -104,13 +102,14 @@ Summary:	libs for %{name}
 %prep
 git clone --depth 1 --branch %{gamescope_tag} %{url}.git
 cd gamescope
-%autopatch -p1
 git submodule update --init --recursive
 mkdir -p pkgconfig
 cp %{SOURCE0} pkgconfig/stb.pc
 
 # Replace spirv-headers include with the system directory
 sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/meson.build
+
+%autopatch -p1
 
 %build
 cd gamescope
