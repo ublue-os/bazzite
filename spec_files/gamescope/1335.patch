@@ -1,0 +1,127 @@
+From 35f5ba8bb9297d06b7d8238295ae3601367d91ad Mon Sep 17 00:00:00 2001
+From: sharkautarch <128002472+sharkautarch@users.noreply.github.com>
+Date: Fri, 24 May 2024 15:43:09 -0400
+Subject: [PATCH 1/2] sdlwindow.cpp: close m_thread w/o std::terminate being
+ called
+
+---
+ src/Backends/SDLBackend.cpp | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/src/Backends/SDLBackend.cpp b/src/Backends/SDLBackend.cpp
+index d7456b6a4..5420683a3 100644
+--- a/src/Backends/SDLBackend.cpp
++++ b/src/Backends/SDLBackend.cpp
+@@ -53,6 +53,7 @@ namespace gamescope
+ 		GAMESCOPE_SDL_EVENT_CURSOR,
+ 
+ 		GAMESCOPE_SDL_EVENT_COUNT,
++		GAMESCOPE_SDL_EVENT_REQ_EXIT,
+ 	};
+ 
+ 	class CSDLConnector final : public IBackendConnector
+@@ -111,6 +112,7 @@ namespace gamescope
+ 	{
+ 	public:
+ 		CSDLBackend();
++		~CSDLBackend();
+ 
+ 		/////////////
+ 		// IBackend
+@@ -548,7 +550,12 @@ namespace gamescope
+ 	{
+ 		// Do nothing.
+ 	}
+-
++	
++	CSDLBackend::~CSDLBackend() {
++		PushUserEvent(GAMESCOPE_SDL_EVENT_REQ_EXIT);
++		m_SDLThread.join();
++	}
++	
+ 	void CSDLBackend::SDLThreadFunc()
+ 	{
+ 		pthread_setname_np( pthread_self(), "gamescope-sdl" );
+@@ -944,6 +951,9 @@ namespace gamescope
+ 
+ 						SDL_SetCursor( m_pCursor );
+ 					}
++					else if ( event.type == GetUserEventIndex( GAMESCOPE_SDL_EVENT_REQ_EXIT ) ) {
++						return;
++					}
+ 				}
+ 				break;
+ 			}
+
+From 61392a9e545e0a3341c0d510aaa453c08826cc5b Mon Sep 17 00:00:00 2001
+From: sharkautarch <128002472+sharkautarch@users.noreply.github.com>
+Date: Thu, 30 May 2024 14:02:00 -0400
+Subject: [PATCH 2/2] steamcompmgr, rendervulkan: prevent segfault that occured
+ when closing gamescope, due to a race condition between present thread @
+ present_wait_thread_func & compositor thread @ steamcompmgr_exit
+
+---
+ src/rendervulkan.cpp | 7 ++++++-
+ src/rendervulkan.hpp | 4 ++++
+ src/steamcompmgr.cpp | 8 ++++++++
+ 3 files changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/src/rendervulkan.cpp b/src/rendervulkan.cpp
+index ffd0783da..094141839 100644
+--- a/src/rendervulkan.cpp
++++ b/src/rendervulkan.cpp
+@@ -2669,7 +2669,8 @@ bool acquire_next_image( void )
+ }
+ 
+ 
+-static std::atomic<uint64_t> g_currentPresentWaitId = {0u};
++inline std::atomic<uint64_t> g_currentPresentWaitId = {0u};
++inline std::atomic<bool> g_presentThreadShouldExit = {false};
+ static std::mutex present_wait_lock;
+ 
+ extern void mangoapp_output_update( uint64_t vblanktime );
+@@ -2693,6 +2694,10 @@ static void present_wait_thread_func( void )
+ 				uint64_t vblanktime = get_time_in_nanos();
+ 				GetVBlankTimer().MarkVBlank( vblanktime, true );
+ 				mangoapp_output_update( vblanktime );
++			} else if ( g_presentThreadShouldExit.load(std::memory_order_acquire)) {
++				g_presentThreadShouldExit = 0;
++				g_presentThreadShouldExit.notify_all();
++				return;
+ 			}
+ 		}
+ 	}
+diff --git a/src/rendervulkan.hpp b/src/rendervulkan.hpp
+index 177468228..a2e0dd972 100644
+--- a/src/rendervulkan.hpp
++++ b/src/rendervulkan.hpp
+@@ -74,6 +74,10 @@ enum EStreamColorspace : int
+ #include <vulkan/vulkan.h>
+ #include <drm_fourcc.h>
+ 
++extern std::atomic<uint64_t> g_currentPresentWaitId;
++
++extern std::atomic<bool> g_presentThreadShouldExit;
++
+ struct VulkanRenderer_t
+ {
+ 	struct wlr_renderer base;
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 910ed3912..f6539829e 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -5840,6 +5840,14 @@ steamcompmgr_exit(void)
+ 		}
+ 	}
+ 
++    //request the present_wait thread to exit
++    //needed to avoid getting a segfault at exit due to race condition:
++    g_presentThreadShouldExit.store(true, std::memory_order_release);
++    g_currentPresentWaitId = 0; //present thread will check if it should exit if this is zero
++    g_currentPresentWaitId.notify_all();
++    g_presentThreadShouldExit.wait(true); //present thread will toggle this atomic when it sees the exit request
++                                          //this allows us to wait for present thread to close before deleting the backend
++
+     gamescope::IBackend::Set( nullptr );
+ 
+     wlserver_lock();
