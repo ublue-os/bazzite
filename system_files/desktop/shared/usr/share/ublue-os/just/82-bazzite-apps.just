@@ -167,9 +167,15 @@ install-resolve:
     chmod +x $SETUPSCRIPT
     # Check if the installer is in HOME or DOWNLOAD
     DOWNLOADDIR=$(xdg-user-dir DOWNLOAD || echo ${HOME})
-    for f in {$HOME,$DOWNLOADDIR}/DaVinci_Resolve_*_Linux.run; do
-      if [ -f "$f" ]; then 
-        RUNFILE="$f"
+    for f in {$HOME,$DOWNLOADDIR}/DaVinci_Resolve_*_Linux.{zip,run}; do
+      if [ -f "$f" ]; then
+        if [[ $f =~ .zip$ ]]; then
+          dir=$(mktemp -p)
+          unzip -d "$dir" "$f"
+          RUNFILE=$dir/*.run
+        else
+          RUNFILE="$f"
+        fi
         echo "Installer found: ${RUNFILE}"
       else
         echo "${red}Installer not found${n}"; 
