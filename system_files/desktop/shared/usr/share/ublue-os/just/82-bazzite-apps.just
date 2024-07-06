@@ -197,6 +197,8 @@ install-resolve:
     echo "${b}Instalation was successful${n}"
     echo "${dim}TIP: You can always update by running 'ujust install-resolve'${n}"
 
+alias install-resolve-studio := install-resolve
+
 # Create fedora distrobox if it doesn't exist
 [private]
 distrobox-check-fedora:
