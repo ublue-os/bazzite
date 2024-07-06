@@ -1,0 +1,75 @@
+From cbd19e09d1e293b6b34a30312aac3c865f42b244 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Michel=20D=C3=A4nzer?= <mdaenzer@redhat.com>
+Date: Mon, 1 Jul 2024 10:05:52 +0200
+Subject: [PATCH] dri: Go back to hard-coded list of RGBA formats
+
+Catching these programmatically without false positives / negatives is
+surprisingly tricky, go back to the known-working list for now.
+
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/issues/11398
+Fixes: ad0edea53a73 ("st/dri: Check format properties from format helpers")
+Fixes: 5ca85d75c05d ("dri: Fix BGR format exclusion")
+
+v2:
+* Also put back lima fails removed by 9eeaa4618f8a ("egl/gbm: Enable
+  RGBA configs"), as those tests are now failing again.
+
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/29979>
+---
+ src/gallium/drivers/lima/ci/lima-fails.txt |  2 ++
+ src/gallium/frontends/dri/dri_screen.c     | 25 +++++++++-------------
+ 2 files changed, 12 insertions(+), 15 deletions(-)
+
+diff --git a/src/gallium/drivers/lima/ci/lima-fails.txt b/src/gallium/drivers/lima/ci/lima-fails.txt
+index 155498dbb5679..d6c4edbb5ef5e 100644
+--- a/src/gallium/drivers/lima/ci/lima-fails.txt
++++ b/src/gallium/drivers/lima/ci/lima-fails.txt
+@@ -55,7 +55,9 @@ wayland-dEQP-EGL.functional.wide_color.window_888_colorspace_srgb,Fail
+ 
+ x11-dEQP-EGL.functional.create_context.no_config,Fail
+ x11-dEQP-EGL.functional.image.modify.renderbuffer_depth16_renderbuffer_clear_depth,Fail
++x11-dEQP-EGL.functional.render.multi_context.gles2.rgb888_window,Fail
+ x11-dEQP-EGL.functional.render.multi_context.gles2.rgba8888_pbuffer,Fail
++x11-dEQP-EGL.functional.render.multi_thread.gles2.rgb888_window,Fail
+ x11-dEQP-EGL.functional.render.multi_thread.gles2.rgba8888_pbuffer,Fail
+ x11-dEQP-EGL.functional.wide_color.pbuffer_8888_colorspace_srgb,Fail
+ x11-dEQP-EGL.functional.wide_color.window_8888_colorspace_srgb,Fail
+diff --git a/src/gallium/frontends/dri/dri_screen.c b/src/gallium/frontends/dri/dri_screen.c
+index 2e9ce01147a89..15dde5152b837 100644
+--- a/src/gallium/frontends/dri/dri_screen.c
++++ b/src/gallium/frontends/dri/dri_screen.c
+@@ -386,21 +386,16 @@ dri_fill_in_modes(struct dri_screen *screen)
+       uint8_t msaa_modes[MSAA_VISUAL_MAX_SAMPLES];
+ 
+       /* Expose only BGRA ordering if the loader doesn't support RGBA ordering. */
+-      if (!allow_rgba_ordering) {
+-          unsigned sh_ax = util_format_get_component_shift(pipe_formats[f], UTIL_FORMAT_COLORSPACE_RGB, 3);
+-          unsigned sh_b = util_format_get_component_shift(pipe_formats[f], UTIL_FORMAT_COLORSPACE_RGB, 2);
+-#if UTIL_ARCH_BIG_ENDIAN
+-          unsigned sz_b = util_format_get_component_bits(pipe_formats[f], UTIL_FORMAT_COLORSPACE_RGB, 2);
+-
+-          if (sz_b + sh_b == sh_ax)
+-             continue;
+-#else
+-          unsigned sz_ax = util_format_get_component_bits(pipe_formats[f], UTIL_FORMAT_COLORSPACE_RGB, 3);
+-
+-          if (sz_ax + sh_ax == sh_b)
+-             continue;
+-#endif
+-       }
++      if (!allow_rgba_ordering &&
++          (pipe_formats[f] == PIPE_FORMAT_RGBA8888_UNORM ||
++           pipe_formats[f] == PIPE_FORMAT_RGBX8888_UNORM ||
++           pipe_formats[f] == PIPE_FORMAT_RGBA8888_SRGB  ||
++           pipe_formats[f] == PIPE_FORMAT_RGBX8888_SRGB  ||
++           pipe_formats[f] == PIPE_FORMAT_R5G5B5A1_UNORM ||
++           pipe_formats[f] == PIPE_FORMAT_R5G5B5X1_UNORM ||
++           pipe_formats[f] == PIPE_FORMAT_R4G4B4A4_UNORM ||
++           pipe_formats[f] == PIPE_FORMAT_R4G4B4X4_UNORM))
++         continue;
+ 
+       if (!allow_rgb10 &&
+           util_format_get_component_bits(pipe_formats[f],
+-- 
+GitLab
+

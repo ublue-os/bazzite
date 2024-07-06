@@ -2,11 +2,11 @@
 
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
-%global gamescope_tag 3.14.22
+%global gamescope_tag 3.14.23
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        9.bazzite
+Release:        11.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -15,10 +15,20 @@ URL:            https://github.com/ValveSoftware/gamescope
 # Create stb.pc to satisfy dependency('stb')
 Source0:        stb.pc
 
+# https://github.com/ChimeraOS/gamescope
 Patch0:         chimeraos.patch
+# https://hhd.dev/
 Patch1:         disable-steam-touch-click-atom.patch
+# https://github.com/ValveSoftware/gamescope/pull/1281
 Patch2:         deckhd.patch
+# https://github.com/ValveSoftware/gamescope/issues/1398
 Patch3:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
+# https://github.com/ValveSoftware/gamescope/issues/1369
+Patch4:         revert-299bc34.patch
+# https://github.com/ValveSoftware/gamescope/pull/1335
+Patch5:         1335.patch
+# https://github.com/ValveSoftware/gamescope/pull/1231
+Patch6:         1231.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
