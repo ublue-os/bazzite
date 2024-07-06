@@ -157,7 +157,7 @@ install-opentabletdriver:
     systemctl enable --user --now arch-opentabletdriver.service && \
     distrobox enter -n arch -- bash -c 'distrobox-export --app otd-gui'
 
-# Install/update Davinci Resolve, a close source video editing utility
+# Install/update Davinci Resolve, a closed-source video editing utility
 install-resolve:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
