@@ -1,5 +1,5 @@
 %define packagename jupiter-hw-support
-%define packagever jupiter-20240416.1
+%define packagever jupiter-3.6-20240624.1
 %global _default_patch_fuzz 2
 
 Name:           jupiter-sd-mounting-btrfs
@@ -19,11 +19,10 @@ Patch2:         btrfs-automount.patch
 Patch3:         btrfs-format.patch
 Patch4:         user.patch
 Patch5:         bazzite-btrfs.patch
-Patch6:         systemd-run.patch
-Patch7:         priv-write.patch
-Patch8:         biosupdate.patch
-Patch9:         gnome.patch
-Patch10:        fstrim.patch
+Patch6:         priv-write.patch
+Patch7:         biosupdate.patch
+Patch8:         gnome.patch
+Patch9:         fstrim.patch
 
 Requires:       jq
 

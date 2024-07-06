@@ -2,7 +2,7 @@
 folder-children=['Games', 'GamingUtilities', 'Utilities', 'Containers', 'Waydroid', 'Wine', 'YaST', 'Pardus']
 
 [org/gnome/desktop/app-folders/folders/GamingUtilities]
-apps=['protontricks.desktop', 'discover_overlay_configure.desktop', 'com.vysp3r.ProtonPlus.desktop', 'io.github.benjamimgois.goverlay.desktop', 'com.gerbilsoft.rom-properties.rp-config.desktop', 'steamos-nested-desktop.desktop', 'hhd-ui.desktop']
+apps=['protontricks.desktop', 'discover_overlay_configure.desktop', 'com.vysp3r.ProtonPlus.desktop', 'io.github.benjamimgois.goverlay.desktop', 'com.gerbilsoft.rom-properties.rp-config.desktop', 'input-remapper-gtk.desktop', 'steamos-nested-desktop.desktop', 'hhd-ui.desktop']
 name='Gaming Utilities'
 translate=false
 

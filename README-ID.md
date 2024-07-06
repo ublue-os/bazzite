@@ -49,7 +49,7 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Pra-install [System76-Scheduler](https://github.com/pop-os/system76-scheduler), menyediakan otomatisasi dan oprekan untuk proses yang berjalan dilatar belakang, serta meminimalkan CPU untuk proses latar belakang.
 - Menkustomisasi konfigurasi System76-Scheduler dengan aturan tambahan.
 - Menggunakan [Google's BBR TCP congestion control](https://github.com/google/bbr) secara bawaan.
-- Pra-install [Input Remapper](https://github.com/sezanzeb/input-remapper) dan diaktifkan secara bawaan. <sub><sup>(Dinonaktifkan secara bawaan di varian Deck tapi tersedia dan dapat diaktifkan dengan `ujust restore-input-remapper`)</sup></sub>
+- Pra-install [Input Remapper](https://github.com/sezanzeb/input-remapper) dan diaktifkan secara bawaan. <sub><sup>(Dinonaktifkan secara bawaan di varian Deck tapi tersedia dan dapat diaktifkan dengan `ujust _restore-input-remapper`)</sup></sub>
 - Portal Bazzite menyediakan cara mudah untuk menginstall berbagai macam aplikasi dan oprekan, termasuk menginstall [LACT](https://github.com/ilya-zlobintsev/LACT) dan [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
 - Manajemen paket [Nix](https://nixos.org/) dengan [Fleek](https://getfleek.dev/) tersedia secara optional dan dapat diinstall dengan `ujust`.
 - Manajemen paket [Brew](https://brew.sh/) tersedia secara optional dan dapat diinstall dengan Portal Bazzite.

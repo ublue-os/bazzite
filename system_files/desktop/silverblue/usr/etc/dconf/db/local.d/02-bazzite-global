@@ -74,3 +74,6 @@ show-power-option=false
 show-gamemode=false
 hide-forcequit=true
 show-boxbuddy=true
+
+[org/gnome/shell/extensions/appindicator]
+legacy-tray-enabled=false

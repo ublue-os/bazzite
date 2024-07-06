@@ -1,8 +1,8 @@
 diff --git a/usr/bin/jupiter-biosupdate b/usr/bin/jupiter-biosupdate
-index 1f89423..ee3abd4 100755
+index a8d6059..7dfac37 100755
 --- a/usr/bin/jupiter-biosupdate
 +++ b/usr/bin/jupiter-biosupdate
-@@ -185,6 +185,10 @@ fi
+@@ -187,6 +187,10 @@ fi
  # Die early if inhibited
  [[ ! -f $BIOS_INHIBIT_FILE ]] || die "Bios updates inhibited, no action ($BIOS_INHIBIT_FILE)"
  

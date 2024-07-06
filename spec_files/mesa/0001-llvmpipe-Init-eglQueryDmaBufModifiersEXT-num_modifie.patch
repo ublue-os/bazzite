@@ -1,0 +1,41 @@
+From 1f3ea20998329788f6a14166d8ba9b3948b7e864 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jexposit@redhat.com>
+Date: Thu, 27 Jun 2024 13:07:11 +0200
+Subject: [PATCH] llvmpipe: Init eglQueryDmaBufModifiersEXT num_modifiers
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Initialize the number of modifiers when `max` is 0 as documented [1]:
+
+  If <max_formats> is 0, no formats are returned, but the total number
+  of formats is returned in <num_formats>, and no error is generated.
+
+[1] https://registry.khronos.org/EGL/extensions/EXT/EGL_EXT_image_dma_buf_import_modifiers.txt
+Fixes: d74ea2c117fe ("llvmpipe: Implement dmabuf handling")
+Signed-off-by: José Expósito <jexposit@redhat.com>
+---
+ src/gallium/drivers/llvmpipe/lp_texture.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/gallium/drivers/llvmpipe/lp_texture.c b/src/gallium/drivers/llvmpipe/lp_texture.c
+index 0044e689aab..30d5057cf9f 100644
+--- a/src/gallium/drivers/llvmpipe/lp_texture.c
++++ b/src/gallium/drivers/llvmpipe/lp_texture.c
+@@ -1724,10 +1724,10 @@ llvmpipe_resource_get_param(struct pipe_screen *screen,
+ static void
+ llvmpipe_query_dmabuf_modifiers(struct pipe_screen *pscreen, enum pipe_format format, int max, uint64_t *modifiers, unsigned int *external_only, int *count)
+ {
+-   if (max) {
+-      *count = 1;
++   *count = 1;
++
++   if (max)
+       *modifiers = DRM_FORMAT_MOD_LINEAR;
+-   }
+ }
+ 
+ static bool
+-- 
+2.45.2
+

@@ -13,7 +13,6 @@
 ---
 
 # 目录
-- [🇺🇸 🇪🇸 🇮🇩 :cn:](#---cn)
 - [目录](#目录)
   - [关于 \& 特性](#关于--特性)
     - [Desktop](#desktop)
@@ -59,13 +58,13 @@ Bazzite是使用[Fedora](https://fedoraproject.org/)技术基于[ublue-os/main](
 - 包含[ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) 。
 - 完全支持 [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - 预装[Distrobox](https://github.com/89luca89/distrobox) 并添加了已创建容器的自动更新。
-- [Ptyxis](https://gitlab.gnome.org/chergert/ptyxis) 用作所有镜像的默认终端。此终端专为你将在Bazzite中使用的容器工作流设计。如果你想切换回原始终端，请运行 `ujust restore-original-terminal` 。
+- [Ptyxis](https://gitlab.gnome.org/chergert/ptyxis) 用作所有镜像的默认终端。此终端专为你将在Bazzite中使用的容器工作流设计。如果你想切换回原始终端，请运行 `ujust _restore-original-terminal` 。
 - `duperemove`服务进程用于减少wine前缀内容所占用的磁盘空间。
 - 通过[libCEC](https://libcec.pulse-eight.com/)支持HDMI CEC。
 - 预装[System76-Scheduler](https://github.com/pop-os/system76-scheduler)，为你的重点应用程序提供自动的进程优先级调整，并将后台进程的CPU时间保持在最低限度。
 - 使用附加规则自定义System76-Scheduler配置。
 - 默认启用 [Google's BBR TCP congestion control](https://github.com/google/bbr) 。
-- 预装并启用[Input Remapper](https://github.com/sezanzeb/input-remapper) <sub><sup>(在Deck变体上默认禁用（或可用），可运行 `ujust restore-input-remapper`以启用)。</sup></sub>
+- 预装并启用[Input Remapper](https://github.com/sezanzeb/input-remapper) <sub><sup>(在Deck变体上默认禁用（或可用），可运行 `ujust _restore-input-remapper`以启用)。</sup></sub>
 - Bazzite Portal 提供了一个安装应用程序和调整系统的简单方式，包括安装 [LACT](https://github.com/ilya-zlobintsev/LACT) 和 [GreenWithEnvy](https://gitlab.com/leinardi/gwe)。
 - 预装了[Waydroid](https://waydro.id/) 用于运行Android应用程序。阅读这篇[快速指南](https://universal-blue.discourse.group/docs?topic=32)对其进行设置。
 - 使用 [Flatseal](https://github.com/tchx84/Flatseal)，[Warehouse](https://github.com/flattool/warehouse)，和[Gear Lever](https://github.com/mijorus/gearlever)管理应用程序。

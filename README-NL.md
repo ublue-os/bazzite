@@ -13,7 +13,6 @@
 ---
 
 # Inhoudsopgave
-- [README Taal](#---cn)
 - [Over \& Kenmerken](#over--kenmerken)
   - [Desktop](#desktop)
   - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
@@ -58,13 +57,13 @@ Bazzite is gebouwd van [ublue-os/main](https://github.com/ublue-os/main) en [ubl
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) inbegrepen.
 - Volledige ondersteuning van [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - [Distrobox](https://github.com/89luca89/distrobox) voorgeïnstalleerd met automatische updates voor aangemaakte containers.
-- [Ptyxis Terminal](https://gitlab.gnome.org/chergert/ptyxis) in gebruik voor al de varianten. Deze terminal is specifiek ge-designed voor de container workflow die je gebruikt in Bazzite. Als je terug wilt naar de standaard terminal, gebruik `ujust restore-original-terminal`
+- [Ptyxis Terminal](https://gitlab.gnome.org/chergert/ptyxis) in gebruik voor al de varianten. Deze terminal is specifiek ge-designed voor de container workflow die je gebruikt in Bazzite. Als je terug wilt naar de standaard terminal, gebruik `ujust _restore-original-terminal`
 - Automatische `duperemove` service voor het verminderen van de schijfruimte die wordt gebruikt door de inhoud van de wine-voorvoegsel.
 - Ondersteuning voor HDMI CEC via [libCEC](https://libcec.pulse-eight.com/).
 - [System76-Scheduler](https://github.com/pop-os/system76-scheduler) geïnstaleerd. Dit biedt automatische procesprioriteitaanpassingen voor applicaties die in gebruik zijn en beperkt de CPU-tijd voor achtergrondprocessen tot een minimum.
 - Aangepasten System76-Scheduler config met extra regels.
 - Gebruikt standaard [Google's BBR TCP congestiecontrole](https://github.com/google/bbr).
-- [Input Remapper](https://github.com/sezanzeb/input-remapper) geïnstaleerd en in gebruik. <sub><sup>(Beschikbaar maar is uitgeschakeld in de Deck variant, kan ingeschakeld worden met `ujust restore-input-remapper`)</sup></sub>
+- [Input Remapper](https://github.com/sezanzeb/input-remapper) geïnstaleerd en in gebruik. <sub><sup>(Beschikbaar maar is uitgeschakeld in de Deck variant, kan ingeschakeld worden met `ujust _restore-input-remapper`)</sup></sub>
 - Bazzite Portal is een makkelijke manier om applicaties en aanpassingen te installeren, zoals [LACT](https://github.com/ilya-zlobintsev/LACT) en [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
 - [Waydroid](https://waydro.id/) geïnstaleerd om Android apps tend to gebruiken. Stel het in met de [quick guide](https://universal-blue.discourse.group/docs?topic=32).
 - Applicaties beheren met [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse) en [Gear Lever](https://github.com/mijorus/gearlever).

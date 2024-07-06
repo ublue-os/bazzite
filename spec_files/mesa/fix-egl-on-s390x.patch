@@ -1,0 +1,131 @@
+From 5ca85d75c05de9df7c3170122dfdb04bc795b43a Mon Sep 17 00:00:00 2001
+From: Daniel Stone <daniels@collabora.com>
+Date: Fri, 21 Jun 2024 11:24:31 +0100
+Subject: [PATCH 1/3] dri: Fix BGR format exclusion
+
+The check we had for BGR vs. RGB formats was testing completely the
+wrong thing. Fix it so we can restore the previous set of configs we
+expose to the frontend, which also fixes surfaceless platform on s390x.
+
+Signed-off-by: Daniel Stone <daniels@collabora.com>
+Fixes: ad0edea53a73 ("st/dri: Check format properties from format helpers")
+Closes: mesa/mesa#11360
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/29837>
+---
+ src/gallium/frontends/dri/dri_screen.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/src/gallium/frontends/dri/dri_screen.c b/src/gallium/frontends/dri/dri_screen.c
+index 97d11f324ee0b..2e9ce01147a89 100644
+--- a/src/gallium/frontends/dri/dri_screen.c
++++ b/src/gallium/frontends/dri/dri_screen.c
+@@ -386,17 +386,21 @@ dri_fill_in_modes(struct dri_screen *screen)
+       uint8_t msaa_modes[MSAA_VISUAL_MAX_SAMPLES];
+ 
+       /* Expose only BGRA ordering if the loader doesn't support RGBA ordering. */
+-      if (!allow_rgba_ordering &&
+-          util_format_get_component_shift(pipe_formats[f],
+-                                          UTIL_FORMAT_COLORSPACE_RGB, 0)
++      if (!allow_rgba_ordering) {
++          unsigned sh_ax = util_format_get_component_shift(pipe_formats[f], UTIL_FORMAT_COLORSPACE_RGB, 3);
++          unsigned sh_b = util_format_get_component_shift(pipe_formats[f], UTIL_FORMAT_COLORSPACE_RGB, 2);
+ #if UTIL_ARCH_BIG_ENDIAN
+-         >
++          unsigned sz_b = util_format_get_component_bits(pipe_formats[f], UTIL_FORMAT_COLORSPACE_RGB, 2);
++
++          if (sz_b + sh_b == sh_ax)
++             continue;
+ #else
+-         <
++          unsigned sz_ax = util_format_get_component_bits(pipe_formats[f], UTIL_FORMAT_COLORSPACE_RGB, 3);
++
++          if (sz_ax + sh_ax == sh_b)
++             continue;
+ #endif
+-          util_format_get_component_shift(pipe_formats[f],
+-                                          UTIL_FORMAT_COLORSPACE_RGB, 2))
+-         continue;
++       }
+ 
+       if (!allow_rgb10 &&
+           util_format_get_component_bits(pipe_formats[f],
+-- 
+GitLab
+
+
+From 94e15d0f64a3a5ca6b86a3e02343cac0d453aed6 Mon Sep 17 00:00:00 2001
+From: Daniel Stone <daniels@collabora.com>
+Date: Fri, 21 Jun 2024 14:19:06 +0100
+Subject: [PATCH 2/3] egl/surfaceless: Enable RGBA configs
+
+Doing this is harmless since we operate on an allowlist of pipe_configs
+anyway.
+
+Signed-off-by: Daniel Stone <daniels@collabora.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/29837>
+---
+ src/egl/drivers/dri2/platform_surfaceless.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/egl/drivers/dri2/platform_surfaceless.c b/src/egl/drivers/dri2/platform_surfaceless.c
+index 0668ec9285ff3..4b69874d3f60a 100644
+--- a/src/egl/drivers/dri2/platform_surfaceless.c
++++ b/src/egl/drivers/dri2/platform_surfaceless.c
+@@ -190,6 +190,8 @@ surfaceless_get_capability(void *loaderPrivate, enum dri_loader_cap cap)
+    switch (cap) {
+    case DRI_LOADER_CAP_FP16:
+       return 1;
++   case DRI_LOADER_CAP_RGBA_ORDERING:
++      return 1;
+    default:
+       return 0;
+    }
+-- 
+GitLab
+
+
+From 9eeaa4618f8a7bc8215ac3f195ced7f8eae4342e Mon Sep 17 00:00:00 2001
+From: Daniel Stone <daniels@collabora.com>
+Date: Fri, 21 Jun 2024 14:19:06 +0100
+Subject: [PATCH 3/3] egl/gbm: Enable RGBA configs
+
+Doing this is harmless since we operate on an allowlist of pipe_configs
+anyway.
+
+Signed-off-by: Daniel Stone <daniels@collabora.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/29837>
+---
+ src/gallium/drivers/lima/ci/lima-fails.txt | 2 --
+ src/gbm/backends/dri/gbm_dri.c             | 2 ++
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/gallium/drivers/lima/ci/lima-fails.txt b/src/gallium/drivers/lima/ci/lima-fails.txt
+index d6c4edbb5ef5e..155498dbb5679 100644
+--- a/src/gallium/drivers/lima/ci/lima-fails.txt
++++ b/src/gallium/drivers/lima/ci/lima-fails.txt
+@@ -55,9 +55,7 @@ wayland-dEQP-EGL.functional.wide_color.window_888_colorspace_srgb,Fail
+ 
+ x11-dEQP-EGL.functional.create_context.no_config,Fail
+ x11-dEQP-EGL.functional.image.modify.renderbuffer_depth16_renderbuffer_clear_depth,Fail
+-x11-dEQP-EGL.functional.render.multi_context.gles2.rgb888_window,Fail
+ x11-dEQP-EGL.functional.render.multi_context.gles2.rgba8888_pbuffer,Fail
+-x11-dEQP-EGL.functional.render.multi_thread.gles2.rgb888_window,Fail
+ x11-dEQP-EGL.functional.render.multi_thread.gles2.rgba8888_pbuffer,Fail
+ x11-dEQP-EGL.functional.wide_color.pbuffer_8888_colorspace_srgb,Fail
+ x11-dEQP-EGL.functional.wide_color.window_8888_colorspace_srgb,Fail
+diff --git a/src/gbm/backends/dri/gbm_dri.c b/src/gbm/backends/dri/gbm_dri.c
+index 0526f4f8dc16f..6cc2d5d8197f5 100644
+--- a/src/gbm/backends/dri/gbm_dri.c
++++ b/src/gbm/backends/dri/gbm_dri.c
+@@ -108,6 +108,8 @@ dri_get_capability(void *loaderPrivate, enum dri_loader_cap cap)
+    switch (cap) {
+    case DRI_LOADER_CAP_FP16:
+       return 1;
++   case DRI_LOADER_CAP_RGBA_ORDERING:
++      return 1;
+    default:
+       return 0;
+    }
+-- 
+GitLab
+
