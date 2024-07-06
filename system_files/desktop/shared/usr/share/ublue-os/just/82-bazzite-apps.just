@@ -162,6 +162,7 @@ install-resolve:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     set -eo pipefail
+    SCRIPT_URL="https://raw.githubusercontent.com/zelikos/davincibox/d089ea16fd674018ec48f06cb9f563ec1e6a1514/setup.sh"
     # Remove the existing container
     if podman container inspect davincibox >/dev/null 2>&1; then 
       echo "Removing existing davincibox container"
@@ -172,7 +173,7 @@ install-resolve:
     echo "${bold}https://www.blackmagicdesign.com/event/davinciresolvedownload${n}"
     # Download davincibox setup script
     SETUPSCRIPT=/tmp/davincibox_setup.sh
-    wget -O $SETUPSCRIPT https://raw.githubusercontent.com/zelikos/davincibox/main/setup.sh
+    wget -O $SETUPSCRIPT ${SCRIPT_URL}
     chmod +x $SETUPSCRIPT
     # Check if the installer is in HOME or DOWNLOAD
     shopt -s nullglob && possible_installers=({$HOME,$DOWNLOADDIR}/DaVinci_Resolve_{,Studio_}*_Linux.{zip,run}) \
