@@ -162,10 +162,14 @@ install-resolve:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     set -eo pipefail
+    # Remove the existing container
+    if podman container inspect davincibox >/dev/null 2>&1; then 
+      echo "Removing existing davincibox container"
+      podman rm davincibox
+    fi
     DOWNLOADDIR=$(xdg-user-dir DOWNLOAD || echo ${HOME})
-    echo "${bold}This script requires you to download DaVinci Resolve installer manually from their website and place it in ${HOME}${n}"
+    echo "${bold}This script requires you to download DaVinci Resolve installer manually from their website and place it in ${HOME} or ${DOWNLOADDIR}${n}"
     echo "${bold}https://www.blackmagicdesign.com/event/davinciresolvedownload${n}"
-    unset -v urllink
     # Download davincibox setup script
     SETUPSCRIPT=/tmp/davincibox_setup.sh
     wget -O $SETUPSCRIPT https://raw.githubusercontent.com/zelikos/davincibox/main/setup.sh
@@ -178,8 +182,8 @@ install-resolve:
       if [[ $runfile =~ .zip$ ]]; then
         dir=$(mktemp -d)
         unzip -d "$dir" "$runfile"
+        trap "[[ $dir =~ /tmp/ ]] && rm $dir -rf" EXIT INT
         RUNFILE=$dir/*.run
-        unset -v dir
       else
         RUNFILE="$runfile"
       fi
