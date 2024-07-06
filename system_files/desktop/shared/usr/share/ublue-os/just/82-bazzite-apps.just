@@ -172,9 +172,9 @@ install-resolve:
         && shopt -u nullglob
     runfile=$(Choose ${possible_installers[@]})
     if [[ ! -z $runfile && -f $runfile ]]; then
-      if [[ $f =~ .zip$ ]]; then
+      if [[ $runfile =~ .zip$ ]]; then
         dir=$(mktemp -d)
-        unzip -d "$dir" "$f"
+        unzip -d "$dir" "$runfile"
         RUNFILE=$dir/*.run
         unset -v dir
       else
