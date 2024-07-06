@@ -171,7 +171,7 @@ install-resolve:
     wget -O $SETUPSCRIPT https://raw.githubusercontent.com/zelikos/davincibox/main/setup.sh
     chmod +x $SETUPSCRIPT
     # Check if the installer is in HOME or DOWNLOAD
-    shopt -s nullglob && possible_installers=({$HOME,$DOWNLOADDIR}/DaVinci_Resolve_*_Linux.{zip,run}) \
+    shopt -s nullglob && possible_installers=({$HOME,$DOWNLOADDIR}/DaVinci_Resolve_{,Studio_}*_Linux.{zip,run}) \
         && shopt -u nullglob
     runfile=$(Choose ${possible_installers[@]})
     if [[ ! -z $runfile && -f $runfile ]]; then
