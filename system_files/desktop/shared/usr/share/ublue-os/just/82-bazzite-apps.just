@@ -157,17 +157,20 @@ install-opentabletdriver:
     systemctl enable --user --now arch-opentabletdriver.service && \
     distrobox enter -n arch -- bash -c 'distrobox-export --app otd-gui'
 
-# Install Davinci Resolve, a close source video editing utility
+# Install/update Davinci Resolve, a close source video editing utility
 install-resolve:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     set -eo pipefail
+    DOWNLOADDIR=$(xdg-user-dir DOWNLOAD || echo ${HOME})
+    echo "${bold}This script requires you to download DaVinci Resolve installer manually from their website and place it in ${HOME}${n}"
+    echo "${bold}https://www.blackmagicdesign.com/event/davinciresolvedownload${n}"
+    unset -v urllink
     # Download davincibox setup script
     SETUPSCRIPT=/tmp/davincibox_setup.sh
     wget -O $SETUPSCRIPT https://raw.githubusercontent.com/zelikos/davincibox/main/setup.sh
     chmod +x $SETUPSCRIPT
     # Check if the installer is in HOME or DOWNLOAD
-    DOWNLOADDIR=$(xdg-user-dir DOWNLOAD || echo ${HOME})
     shopt -s nullglob && possible_installers=({$HOME,$DOWNLOADDIR}/DaVinci_Resolve_*_Linux.{zip,run}) \
         && shopt -u nullglob
     runfile=$(Choose ${possible_installers[@]})
@@ -187,6 +190,8 @@ install-resolve:
       exit 1
     fi
     $SETUPSCRIPT $RUNFILE
+    echo "${b}Instalation was successful${n}"
+    echo "${dim}TIP: You can always update by running 'ujust install-resolve'${n}"
 
 # Create fedora distrobox if it doesn't exist
 [private]
