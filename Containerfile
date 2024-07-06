@@ -24,6 +24,109 @@ ARG JUPITER_KERNEL_VERSION="${JUPITER_KERNEL_VERSION:-jupiter-20240605.1}"
 
 COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 
+# Update packages that commonly cause build issues
+RUN rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        vulkan-loader \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        alsa-lib \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        gnutls \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        glib2 \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        gtk3 \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        atk \
+        at-spi2-atk \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libaom \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        gstreamer1 \
+        gstreamer1-plugins-base \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libdecor \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libtirpc \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libuuid \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libblkid \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libmount \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        cups-libs \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libinput \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libopenmpt \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        llvm-libs \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        zlib-ng-compat \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        fontconfig \
+        || true && \
+    rpm-ostree override remove \
+        glibc32 \
+        || true && \
+    ostree container commit
+
 # Setup Copr repos
 RUN curl -Lo /usr/bin/copr https://raw.githubusercontent.com/ublue-os/COPR-command/main/copr && \
     chmod +x /usr/bin/copr && \
@@ -125,115 +228,6 @@ RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo
         /tmp/akmods-rpms/kmods/*bmi260*.rpm \
         /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-    ostree container commit
-
-# Update packages that commonly cause build issues
-RUN rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        vulkan-loader \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        alsa-lib \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        gnutls \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        glib2 \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        gtk3 \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        atk \
-        at-spi2-atk \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        libaom \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        gstreamer1 \
-        gstreamer1-plugins-base \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        python3 \
-        python3-libs \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        libdecor \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        libtirpc \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        libuuid \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        libblkid \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        libmount \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        cups-libs \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        libinput \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        libopenmpt \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        llvm-libs \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        zlib-ng-compat \
-        || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
-        fontconfig \
-        || true && \
-    rpm-ostree override remove \
-        glibc32 \
-        || true && \
     ostree container commit
 
 # Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
