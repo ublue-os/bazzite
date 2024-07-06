@@ -161,29 +161,31 @@ install-opentabletdriver:
 install-resolve:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
+    set -eo pipefail
     # Download davincibox setup script
     SETUPSCRIPT=/tmp/davincibox_setup.sh
     wget -O $SETUPSCRIPT https://raw.githubusercontent.com/zelikos/davincibox/main/setup.sh
     chmod +x $SETUPSCRIPT
     # Check if the installer is in HOME or DOWNLOAD
     DOWNLOADDIR=$(xdg-user-dir DOWNLOAD || echo ${HOME})
-    for f in {$HOME,$DOWNLOADDIR}/DaVinci_Resolve_*_Linux.{zip,run}; do
-      if [ -f "$f" ]; then
-        if [[ $f =~ .zip$ ]]; then
-          dir=$(mktemp -p)
-          unzip -d "$dir" "$f"
-          RUNFILE=$dir/*.run
-        else
-          RUNFILE="$f"
-        fi
-        echo "Installer found: ${RUNFILE}"
+    shopt -s nullglob && possible_installers=({$HOME,$DOWNLOADDIR}/DaVinci_Resolve_*_Linux.{zip,run}) \
+        && shopt -u nullglob
+    runfile=$(Choose ${possible_installers[@]})
+    if [[ ! -z $runfile && -f $runfile ]]; then
+      if [[ $f =~ .zip$ ]]; then
+        dir=$(mktemp -d)
+        unzip -d "$dir" "$f"
+        RUNFILE=$dir/*.run
+        unset -v dir
       else
-        echo "${red}Installer not found${n}"; 
-        echo "${red}Please place the file DaVinci_Resolve_*_Linux.run in ${HOME} or ${DOWNLOADDIR}${n}";
-        exit 1
+        RUNFILE="$runfile"
       fi
-      break
-    done
+      echo "Installer found: ${RUNFILE}"
+    else
+      echo "${red}Installer not found${n}"; 
+      echo "${red}Please place the file DaVinci_Resolve_*_Linux.run in ${HOME} or ${DOWNLOADDIR}${n}";
+      exit 1
+    fi
     $SETUPSCRIPT $RUNFILE
 
 # Create fedora distrobox if it doesn't exist
