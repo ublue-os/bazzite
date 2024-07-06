@@ -157,6 +157,29 @@ install-opentabletdriver:
     systemctl enable --user --now arch-opentabletdriver.service && \
     distrobox enter -n arch -- bash -c 'distrobox-export --app otd-gui'
 
+# Install Davinci Resolve, a close source video editing utility
+install-resolve:
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    # Download davincibox setup script
+    SETUPSCRIPT=/tmp/davincibox_setup.sh
+    wget -O $SETUPSCRIPT https://raw.githubusercontent.com/zelikos/davincibox/main/setup.sh
+    chmod +x $SETUPSCRIPT
+    # Check if the installer is in HOME or DOWNLOAD
+    DOWNLOADDIR=$(xdg-user-dir DOWNLOAD || echo ${HOME})
+    for f in {$HOME,$DOWNLOADDIR}/DaVinci_Resolve_*_Linux.run; do
+      if [ -f "$f" ]; then 
+        RUNFILE="$f"
+        echo "Installer found: ${RUNFILE}"
+      else
+        echo "${red}Installer not found${n}"; 
+        echo "${red}Please place the file DaVinci_Resolve_*_Linux.run in ${HOME} or ${DOWNLOADDIR}${n}";
+        exit 1
+      fi
+      break
+    done
+    $SETUPSCRIPT $RUNFILE
+
 # Create fedora distrobox if it doesn't exist
 [private]
 distrobox-check-fedora:
