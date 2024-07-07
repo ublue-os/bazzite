@@ -11,6 +11,7 @@ Source2:        steamdeck-le.svg
 Source3:        bazzite_logo.svgz
 Source4:        metadata_vapor.json
 Source5:        metadata_vgui2.json
+Source6:        plasmarc
 Patch0:         multiuser.patch
 Patch1:         lockscreen.patch
 Patch2:         bazzite_logo.patch
@@ -45,6 +46,7 @@ cp -rv etc/* %{buildroot}%{_sysconfdir}
 cp usr/bin/steamos-add-to-steam %{buildroot}%{_bindir}/steamos-add-to-steam
 mv %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck.svg
 cp %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck-le.svg
+cp %{SOURCE6} %{buildroot}%{_datadir}/plasma/desktoptheme/Vapor/plasmarc
 # Remove unneeded files
 rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop

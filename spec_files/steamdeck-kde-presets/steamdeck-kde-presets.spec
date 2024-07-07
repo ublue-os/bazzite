@@ -10,6 +10,7 @@ Source1:        steamdeck-le.svg
 Source2:        bazzite_logo.svgz
 Source3:        metadata_vapor.json
 Source4:        metadata_vgui2.json
+Source5:        plasmarc
 BuildArch:      noarch
 Patch0:         fedora.patch
 Patch1:         nested-desktop-resolution.patch
@@ -47,6 +48,7 @@ cp -rv usr/lib/* %{buildroot}%{_prefix}/lib
 cp -rv etc/* %{buildroot}%{_sysconfdir}
 mv %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck.svg
 cp %{SOURCE1} %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck-le.svg
+cp %{SOURCE5} %{buildroot}%{_datadir}/plasma/desktoptheme/Vapor/plasmarc
 # Remove unneeded files
 rm %{buildroot}%{_sysconfdir}/sddm.conf.d/steamdeck.conf
 rm %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo.svg
