@@ -20,16 +20,6 @@ install-legion-go-theme:
         echo 'Please install Decky Loader & CSS Loader first'
     fi
 
-# Install PS5-to-Xbox glyph theme for hhd & CSS Loader (https://github.com/frazse/PS5-to-Xbox-glyphs)
-install-hhd-xbox-glyph-theme:
-    #!/usr/bin/bash
-    if [ -d "$HOME/homebrew/themes" ]; then
-        rm -rf "$HOME/homebrew/themes/PS5-to-Xbox-glyphs"
-        git clone https://github.com/frazse/PS5-to-Xbox-glyphs.git --single-branch "$HOME/homebrew/themes/PS5-to-Xbox-glyphs"
-    else
-        echo 'Please install Decky Loader & CSS Loader first'
-    fi
-
 # Install Handheld Controller Glyphs theme for hhd & CSS Loader (https://github.com/victor-borges/handheld-controller-glyphs)
 install-hhd-controller-glyph-theme:
     #!/usr/bin/bash

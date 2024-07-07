@@ -158,18 +158,7 @@ setup-decky ACTION="":
       echo "Usage: ujust configure-watchdog <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'install' to select Install Decky"
-      echo "  Use 'simpledeckytdp' to select Get SimpleDeckyTDP"
       exit 0
-    elif [ "$OPTION" == "" ]; then
-      echo "${bold}Setup Decky Loader${normal}"
-      echo "This lets you setup decky and install some decky plugins for alternative handhelds"
-      echo "Tip: CTRL+Click on the plugin name to visit the project page for more info"
-      echo "Decky Loader is $DECKY_STATE"
-      OPTION=$(
-        Choose \
-        "Install Decky" \
-        "Get $(Urllink "https://github.com/aarron-lee/SimpleDeckyTDP" SimpleDeckyTDP)${n}"
-        )
     fi
     if [[ "${OPTION,,}" =~ install ]]; then
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
@@ -179,17 +168,6 @@ setup-decky ACTION="":
       fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
       sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
-    elif [[ "${OPTION,,}" =~ simpledeckytdp ]]; then
-      if [[ -d $HOME/homebrew/plugins ]]; then
-        sudo rm -rf $HOME/homebrew/plugins/SimpleDeckyTDP
-        curl -L $(curl -s https://api.github.com/repos/aarron-lee/SimpleDeckyTDP/releases/latest | grep "browser_download_url" | cut -d '"' -f 4) -o /tmp/SimpleDeckyTDP.tar.gz
-        sudo tar -xzf /tmp/SimpleDeckyTDP.tar.gz -C $HOME/homebrew/plugins
-        rm /tmp/SimpleDeckyTDP.tar.gz
-        sudo sed -i 's/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0/ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=1/g' /etc/default/steam-hardware-control
-        echo 'Installed. Please reboot to apply needed changes.'
-      else
-        echo 'Please install Decky Loader by running "ujust setup-decky install" first.'
-      fi
     fi
 
 # Ptyxis terminal transparency

@@ -1,3 +1,0 @@
-# If this is enabled, ensure you have a Decky Loader plugin installed to set custom limits
-# Without it, you'll be limited to 15W
-ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE=0
