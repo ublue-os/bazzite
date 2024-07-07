@@ -1,25 +1,5 @@
 # vim: set ft=make :
 
-# Install ROG Ally Theme for CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
-install-rog-ally-theme:
-    #!/usr/bin/bash
-    if [ -d "$HOME/homebrew/themes" ]; then
-        rm -rf "$HOME/homebrew/themes/SBP-ROG-Ally"
-        git clone https://github.com/semakusut/SBP-ROG-Ally.git --single-branch "$HOME/homebrew/themes/SBP-ROG-Ally"
-    else
-        echo 'Please install Decky Loader & CSS Loader first'
-    fi
-
-# Install Lenovo Legion Go for CSS Loader (https://github.com/frazse/SBP-Legion-Go-Theme)
-install-legion-go-theme:
-    #!/usr/bin/bash
-    if [ -d "$HOME/homebrew/themes" ]; then
-        rm -rf "$HOME/homebrew/themes/SBP-Legion-Go-Theme"
-        git clone https://github.com/frazse/SBP-Legion-Go-Theme.git --single-branch "$HOME/homebrew/themes/SBP-Legion-Go-Theme"
-    else
-        echo 'Please install Decky Loader & CSS Loader first'
-    fi
-
 # Install Handheld Controller Glyphs theme for hhd & CSS Loader (https://github.com/victor-borges/handheld-controller-glyphs)
 install-hhd-controller-glyph-theme:
     #!/usr/bin/bash

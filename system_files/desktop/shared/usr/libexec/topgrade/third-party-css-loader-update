@@ -11,30 +11,6 @@ if [ -d "$HOME/homebrew/themes/Adwaita-for-Steam/.git" ]; then
   echo "Update complete."
 fi
 
-# ROG Ally Theme
-if [ -d "$HOME/homebrew/themes/SBP-ROG-Ally/.git" ]; then
-  cd "$HOME/homebrew/themes/SBP-ROG-Ally"
-  echo "SBP-ROG-Ally theme found, pulling latest with git."
-  git pull
-  echo "Update complete."
-fi
-
-# Legion GO Theme
-if [ -d "$HOME/homebrew/themes/SBP-Legion-Go-Theme/.git" ]; then
-  cd "$HOME/homebrew/themes/SBP-Legion-Go-Theme"
-  echo "SBP-Legion-Go-Theme theme found, pulling latest with git."
-  git pull
-  echo "Update complete."
-fi
-
-# HHD Theme
-if [ -d "$HOME/homebrew/themes/PS5-to-Xbox-glyphs/.git" ]; then
-  cd "$HOME/homebrew/themes/PS5-to-Xbox-glyphs"
-  echo "PS5 to Xbox Glyphs theme found, pulling latest with git."
-  git pull
-  echo "Update complete."
-fi
-
 # Handheld Controller Glyphs
 if [ -d "$HOME/homebrew/themes/handheld-controller-glyphs/.git" ]; then
   cd "$HOME/homebrew/themes/handheld-controller-glyphs"
