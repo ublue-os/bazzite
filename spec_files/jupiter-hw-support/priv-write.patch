@@ -7,11 +7,12 @@ index 8fcd1d4..4b47d21 100755
  function CommitWrite()
  {
 +    chmod a+w "$WRITE_PATH"
-+    echo "chmod a+w: $WRITE_PATH" | systemd-cat -t p-steamos-priv-write -p warning
++    Log "chmod a+w: $WRITE_PATH"
 +
      if [ -n "$WRITE_VALUE" ]; then
          Log "commit: $WRITE_VALUE -> $WRITE_PATH"
-         printf "%s" "$WRITE_VALUE" > "$WRITE_PATH"
+-        printf "%s" "$WRITE_VALUE" > "$WRITE_PATH"
++        echo "$WRITE_VALUE" > "$WRITE_PATH"
      fi
  
 -    chgrp deck "$WRITE_PATH"
@@ -31,7 +32,7 @@ index 8fcd1d4..4b47d21 100755
 +            CommitWrite
 +        done
 +    else
-+        echo "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - Valve Hardware not detected" | systemd-cat -t p-steamos-priv-write -p warning
++        Log "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - Valve Hardware not detected"
 +    fi
  fi
  
@@ -44,7 +45,7 @@ index 8fcd1d4..4b47d21 100755
 +            CommitWrite
 +        done
 +    else
-+        echo "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - Valve Hardware not detected" | systemd-cat -t p-steamos-priv-write -p warning
++        Log "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - Valve Hardware not detected"
 +    fi
  fi
  
@@ -53,7 +54,7 @@ index 8fcd1d4..4b47d21 100755
 +    if /usr/libexec/hwsupport/valve-hardware; then
 +        CommitWrite
 +    else
-+        echo "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - Valve Hardware not detected" | systemd-cat -t p-steamos-priv-write -p warning
++        Log "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - Valve Hardware not detected"
 +    fi
  fi
  
