@@ -1,6 +1,11 @@
 #!/usr/bin/bash
 # This is a workaround for cards that somehow has their sysfs power1_cap permission set to 666 on boot
 # Which in turn makes steam directly set the TDP to 15W
+if /usr/libexec/hwsupport/valve-hardware; then
+    # Do nothing on real Valve hardware
+    exit 0
+fi
+
 SYSFS_PATH=$(find /sys/class/hwmon/*/ -name "power1_cap")
 
 # Loop through the SYSFS paths that has a "power1_cap"
