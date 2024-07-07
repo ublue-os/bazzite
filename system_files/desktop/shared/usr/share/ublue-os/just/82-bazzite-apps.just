@@ -188,7 +188,7 @@ install-resolve ACTION="":
         echo "${bold}This script requires you to download DaVinci Resolve installer manually from their website and place it in ${HOME} or ${DOWNLOADDIR}${n}"
         echo "${bold}https://www.blackmagicdesign.com/event/davinciresolvedownload${n}"
         # Get sure user reads instructions
-        ugum confirm || exit 0
+        ugum confirm --default "" || exit 0
         # Download davincibox setup script
         SETUPSCRIPT=/tmp/davincibox_setup.sh
         wget -O $SETUPSCRIPT ${SCRIPT_URL}
@@ -217,7 +217,7 @@ install-resolve ACTION="":
         echo "${b}Instalation was successful${n}"
         echo "${dim}TIP: You can always update by running 'ujust install-resolve'${n}"
       elif [[ "${OPTION,,}" =~ (^uninstall[[:space:]]davincibox) ]]; then
-        gum confirm "Confirm davincibox uninstall?" || exit 0
+        ugum confirm "Confirm davincibox uninstall?" || exit 0
         # Remove the existing container
         if podman container exists davincibox >/dev/null 2>&1; then 
           echo "Removing existing davincibox container"
