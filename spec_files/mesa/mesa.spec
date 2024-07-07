@@ -1,3 +1,5 @@
+%global _default_patch_fuzz 2
+
 %ifnarch s390x
 %global with_hardware 1
 %global with_radeonsi 1
