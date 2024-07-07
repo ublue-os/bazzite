@@ -188,7 +188,7 @@ install-resolve ACTION="":
         echo "${bold}This script requires you to download DaVinci Resolve installer manually from their website and place it in ${HOME} or ${DOWNLOADDIR}${n}"
         echo "${bold}https://www.blackmagicdesign.com/event/davinciresolvedownload${n}"
         # Get sure user reads instructions
-        Confirm || exit 1
+        ugum confirm || exit 0
         # Download davincibox setup script
         SETUPSCRIPT=/tmp/davincibox_setup.sh
         wget -O $SETUPSCRIPT ${SCRIPT_URL}
