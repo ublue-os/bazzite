@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=38
+USER_SETUP_VER=39
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -96,7 +96,28 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
 else
   echo 'Running setup for Silverblue'
 
-  if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
+  if /usr/libexec/hwsupport/valve-hardware; then
+    if [[ ! -f "$BAZZITE_CONFIG_DIR/deck-initialized" ]]; then
+      echo 'Setting Deck logo menu'
+      dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
+      dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 2
+      touch "$BAZZITE_CONFIG_DIR/deck-initialized"
+    fi
+  elif [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+    if [[ ! -f "$BAZZITE_CONFIG_DIR/legion-initialized" ]]; then
+      echo 'Setting Legion logo menu'
+      dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
+      dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 5
+      touch "$BAZZITE_CONFIG_DIR/legion-initialized"
+    fi
+  elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
+    if [[ ! -f "$BAZZITE_CONFIG_DIR/ally-initialized" ]]; then
+      echo 'Setting Ally logo menu'
+      dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
+      dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 6
+      touch "$BAZZITE_CONFIG_DIR/ally-initialized"
+    fi
+  elif [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
     if [[ ! -f "$BAZZITE_CONFIG_DIR/framework-initialized" ]]; then
       echo 'Setting Framework logo menu'
       dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
@@ -109,18 +130,6 @@ else
       fi
       touch "$BAZZITE_CONFIG_DIR/framework-initialized"
     fi
-  fi
-
-  if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
-      echo 'Setting Legion logo menu'
-      dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
-      dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 5
-  fi
-
-  if [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
-      echo 'Setting Ally logo menu'
-      dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
-      dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 6
   fi
 
   echo 'Setting up templates'
