@@ -216,6 +216,7 @@ install-resolve ACTION="":
         echo "${b}Instalation was successful${n}"
         echo "${dim}TIP: You can always update by running 'ujust install-resolve'${n}"
       elif [[ "${OPTION,,}" =~ (^uninstall[[:space:]]davincibox) ]]; then
+        gum choose "Confirm davincibox uninstall?" || exit 0
         # Remove the existing container
         if podman container exists davincibox >/dev/null 2>&1; then 
           echo "Removing existing davincibox container"
