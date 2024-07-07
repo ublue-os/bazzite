@@ -166,7 +166,9 @@ install-resolve:
     # Remove the existing container
     if podman container inspect davincibox >/dev/null 2>&1; then 
       echo "Removing existing davincibox container"
-      podman stop --ignore davincibox && podman rm davincibox
+      distrobox enter davincibox -- add-davinci-launcher remove
+      podman stop davincibox
+      podman rm davincibox
     fi
     DOWNLOADDIR=$(xdg-user-dir DOWNLOAD || echo ${HOME})
     echo "${bold}This script requires you to download DaVinci Resolve installer manually from their website and place it in ${HOME} or ${DOWNLOADDIR}${n}"
