@@ -1,5 +1,46 @@
+From 4aa431b174c37b3bc0748ddc9bd2ca9c808881e2 Mon Sep 17 00:00:00 2001
+From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+Date: Fri, 14 Jan 2022 15:58:45 +0100
+Subject: [PATCH 5/8] STEAMOS: radv: min image count override for FH5
+
+Otherwise in combination with the vblank time reservation in
+gamescope the game could get stuck in low power states.
+---
+ src/util/00-radv-defaults.conf | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/util/00-radv-defaults.conf b/src/util/00-radv-defaults.conf
+index 9434dba1e3f..3c3ae562eb9 100644
+--- a/src/util/00-radv-defaults.conf
++++ b/src/util/00-radv-defaults.conf
+@@ -186,5 +186,9 @@ Application bugs worked around in this file:
+         <application name="Rocket League" executable="RocketLeague">
+             <option name="radv_zero_vram" value="true" />
+         </application>
++
++        <application name="Forza Horizon 5" application_name_match="ForzaHorizon5.exe">
++            <option name="vk_x11_override_min_image_count" value="4" />
++        </application>
+     </device>
+ </driconf>
+-- 
+2.42.0
+
+
+From 88327ee8507a323f48e43eeb87cf1f102d04f174 Mon Sep 17 00:00:00 2001
+From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+Date: Mon, 21 Feb 2022 18:43:54 +0100
+Subject: [PATCH 6/8] STEAMOS: Dynamic swapchain override for gamescope limiter
+
+---
+ src/loader/loader_dri3_helper.c | 42 +++++++++++++++++++++++++++++++--
+ src/loader/loader_dri3_helper.h |  1 +
+ src/loader/meson.build          |  2 +-
+ src/vulkan/wsi/wsi_common_x11.c | 38 +++++++++++++++++++++++++++++
+ 4 files changed, 80 insertions(+), 3 deletions(-)
+
 diff --git a/src/loader/loader_dri3_helper.c b/src/loader/loader_dri3_helper.c
-index dc1db4fa8be..38e55dc23ae 100644
+index 32135770e9d..abc79dda97e 100644
 --- a/src/loader/loader_dri3_helper.c
 +++ b/src/loader/loader_dri3_helper.c
 @@ -289,6 +289,30 @@ dri3_update_max_num_back(struct loader_dri3_drawable *draw)
@@ -61,7 +102,7 @@ index dc1db4fa8be..38e55dc23ae 100644
     dri3_update_max_num_back(draw);
  
     /* Create a new drawable */
-@@ -1085,6 +1117,12 @@ loader_dri3_swap_buffers_msc(struct loader_dri3_drawable *draw,
+@@ -1092,6 +1124,12 @@ loader_dri3_swap_buffers_msc(struct loader_dri3_drawable *draw,
     if (draw->type == LOADER_DRI3_DRAWABLE_WINDOW) {
        dri3_fence_reset(draw->conn, back);
  
@@ -75,7 +116,7 @@ index dc1db4fa8be..38e55dc23ae 100644
         * successful MSC and adding in a swap interval for each outstanding swap
         * request. target_msc=divisor=remainder=0 means "Use glXSwapBuffers()
 diff --git a/src/loader/loader_dri3_helper.h b/src/loader/loader_dri3_helper.h
-index cc2362dd599..fe73b3f329c 100644
+index 1fd340bd145..b8f5eaaf190 100644
 --- a/src/loader/loader_dri3_helper.h
 +++ b/src/loader/loader_dri3_helper.h
 @@ -178,6 +178,7 @@ struct loader_dri3_drawable {
@@ -87,7 +128,7 @@ index cc2362dd599..fe73b3f329c 100644
     struct loader_dri3_extensions *ext;
     const struct loader_dri3_vtable *vtable;
 diff --git a/src/loader/meson.build b/src/loader/meson.build
-index 043cc852112..8391ff38936 100644
+index 35f9991ba2f..154cf809a69 100644
 --- a/src/loader/meson.build
 +++ b/src/loader/meson.build
 @@ -29,7 +29,7 @@ if with_platform_x11 and with_dri3
@@ -99,19 +140,6 @@ index 043cc852112..8391ff38936 100644
      ],
      build_by_default : false,
    )
-diff --git a/src/util/00-radv-defaults.conf b/src/util/00-radv-defaults.conf
-index 3fa2d074ff5..e1faad8a731 100644
---- a/src/util/00-radv-defaults.conf
-+++ b/src/util/00-radv-defaults.conf
-@@ -201,6 +201,11 @@ Application bugs worked around in this file:
-         <application name="Rocket League" executable="RocketLeague">
-             <option name="radv_zero_vram" value="true" />
-         </application>
-+
-+        <application name="Forza Horizon 5" application_name_match="ForzaHorizon5.exe">
-+            <option name="vk_x11_override_min_image_count" value="4" />
-+        </application>
-+
-         <application name="Crystal Project" executable="Crystal Project.bin.x86_64">
-             <option name="radv_zero_vram" value="true" />
-         </application>
+-- 
+2.42.0
+
