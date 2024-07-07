@@ -28,21 +28,19 @@ index 8fcd1d4..4b47d21 100755
      exit 0
  }
  
-@@ -65,15 +68,41 @@
+@@ -65,15 +68,35 @@
  fi
  
  if MatchFilenamePattern "$WRITE_PATH" "/sys/class/drm/card*/device/power_dpm_force_performance_level"; then
 -    CommitWrite
 +    if systemctl list-units | grep hhd@; then
 +        echo "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - controlled by HHD" | systemd-cat -t p-steamos-priv-write -p warning
-+    elif /usr/libexec/hwsupport/valve-hardware || [[ "$ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE" = 1 ]]; then
++    elif /usr/libexec/hwsupport/valve-hardware; then
 +        for i in $(ls /sys/class/drm/card*/device/power_dpm_force_performance_level)
 +        do
 +            WRITE_PATH="$i"
 +            CommitWrite
 +        done
-+    else
-+        echo "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - see /etc/default/steam-hardware-control" | systemd-cat -t p-steamos-priv-write -p warning
 +    fi
  fi
  
@@ -50,14 +48,12 @@ index 8fcd1d4..4b47d21 100755
 -    CommitWrite
 +    if systemctl list-units | grep hhd@; then
 +        echo "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - controlled by HHD" | systemd-cat -t p-steamos-priv-write -p warning
-+    elif /usr/libexec/hwsupport/valve-hardware || [[ "$ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE" = 1 ]]; then
++    elif /usr/libexec/hwsupport/valve-hardware; then
 +        for i in $(ls /sys/class/drm/card*/device/pp_od_clk_voltage)
 +        do
 +            WRITE_PATH="$i"
 +            CommitWrite
 +        done
-+    else
-+        echo "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - see /etc/default/steam-hardware-control" | systemd-cat -t p-steamos-priv-write -p warning
 +    fi
  fi
  
@@ -65,10 +61,8 @@ index 8fcd1d4..4b47d21 100755
 -    CommitWrite
 +    if systemctl list-units | grep hhd@; then
 +        echo "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - controlled by HHD" | systemd-cat -t p-steamos-priv-write -p warning
-+    elif /usr/libexec/hwsupport/valve-hardware || [[ "$ENABLE_HARDWARE_CONTROL_ON_NON_DECK_HARDWARE" = 1 ]]; then
++    elif /usr/libexec/hwsupport/valve-hardware; then
 +        CommitWrite
-+    else
-+        echo "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - see /etc/default/steam-hardware-control" | systemd-cat -t p-steamos-priv-write -p warning
 +    fi
  fi
  
