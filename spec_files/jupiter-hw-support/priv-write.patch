@@ -2,7 +2,27 @@ diff --git a/usr/bin/steamos-polkit-helpers/steamos-priv-write b/usr/bin/steamos
 index 8fcd1d4..4b47d21 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-priv-write
 +++ b/usr/bin/steamos-polkit-helpers/steamos-priv-write
-@@ -37,13 +37,14 @@
+@@ -21,15 +21,11 @@
+ {
+     local path="$1"
+     local pattern="$2"
+-    local IFS=
+-    local candidates=($pattern)
+ 
+-    for candidate in "${candidates[@]}"; do
+-        if [[ "$path" == "$candidate" ]]; then
+-            true
+-            return
+-        fi
+-    done
++    if [[ "$1" == $2 ]]; then
++       true;
++       return;
++    fi
+ 
+     false;
+     return;
+@@ -37,13 +33,14 @@
  
  function CommitWrite()
  {
@@ -20,7 +40,7 @@ index 8fcd1d4..4b47d21 100755
      exit 0
  }
  
-@@ -65,15 +66,35 @@
+@@ -65,15 +62,35 @@
  fi
  
  if MatchFilenamePattern "$WRITE_PATH" "/sys/class/drm/card*/device/power_dpm_force_performance_level"; then
