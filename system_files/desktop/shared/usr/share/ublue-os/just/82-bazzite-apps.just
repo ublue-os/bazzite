@@ -199,10 +199,10 @@ install-resolve ACTION="":
         runfile=$(Choose ${possible_installers[@]})
         if [[ ! -z $runfile && -f $runfile ]]; then
           if [[ $runfile =~ .zip$ ]]; then
-            mkdir -p $HOME/.cache/bazzite_davincibox_setup
             dir=$HOME/.cache/bazzite_davincibox_setup
+            mkdir -p $dir && rm -rf $dir/*
             unzip -d "$dir" "$runfile"
-            trap "[[ $dir =~ /tmp/ ]] && rm $dir -rf" EXIT INT
+            trap "[[ $dir =~ /.cache/ ]] && rm $dir -rf" EXIT INT
             RUNFILE=$dir/*.run
           else
             RUNFILE="$runfile"
