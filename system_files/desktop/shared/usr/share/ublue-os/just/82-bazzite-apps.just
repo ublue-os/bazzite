@@ -164,6 +164,8 @@ install-resolve ACTION="":
     set -eo pipefail
     SCRIPT_URL="https://raw.githubusercontent.com/zelikos/davincibox/d089ea16fd674018ec48f06cb9f563ec1e6a1514/setup.sh"
     DOWNLOADDIR=$(xdg-user-dir DOWNLOAD || echo ${HOME})
+    tmpdir=/var/tmp/bazzite_davincibox_setup.tmp
+    mkdir -p $tmpdir
     OPTION={{ ACTION }}
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust install-resolve <option>"
@@ -190,9 +192,8 @@ install-resolve ACTION="":
         # Get sure user reads instructions
         ugum confirm --default "" || exit 0
         # Download davincibox setup script
-        SETUPSCRIPT="$(mktemp -p /var/tmp -d bazzite_davincibox_setup.XXX)/davincibox_setup.sh"
+        SETUPSCRIPT=/tmp/davincibox_setup.sh
         wget -O $SETUPSCRIPT ${SCRIPT_URL}
-        systemd-run --property=Wants=shutdown.target --property=Before=shutdown.target /usr/bin/rm -rf "$(dirname $SETUPSCRIPT)"
         chmod +x $SETUPSCRIPT
         # Modify nvidia detection
         sed -e 's@$(glxinfo -B | grep -i nvidia)@$(lshw -c video 2>/dev/null | grep -qi nvidia)@' \
@@ -203,11 +204,8 @@ install-resolve ACTION="":
         runfile=$(Choose ${possible_installers[@]})
         if [[ ! -z $runfile && -f $runfile ]]; then
           if [[ $runfile =~ .zip$ ]]; then
-            dir=$(mktemp -p /var/tmp/ -d bazzite_davincibox_setup.XXX)
-            unzip -d "$dir" "$runfile"
-            RUNFILE=$(find $dir -executable -name "DaVinci_Resolve_*.run")
-            # Remove directory on boot
-            systemd-run --property=Wants=shutdown.target --property=Before=shutdown.target /usr/bin/rm "$dir"
+            unzip -o -d "$tmpdir" "$runfile"
+            RUNFILE=$(find $tmpdir -executable -name "DaVinci_Resolve_*.run")
           else
             RUNFILE="$runfile"
           fi
@@ -217,9 +215,10 @@ install-resolve ACTION="":
           echo "${red}Please place the file DaVinci_Resolve_*_Linux.run in ${HOME} or ${DOWNLOADDIR}${n}";
           exit 1
         fi
-        echo 
-        echo -e "${b}To finish install, run this command in a terminal:${n}\n$SETUPSCRIPT $RUNFILE"
-        ugum confirm "Want to copy this command to clipboard?" && wl-copy "$SETUPSCRIPT $RUNFILE"
+        cmdline="env -C $tmpdir $SETUPSCRIPT $RUNFILE && rm -rf ${tmpdir}"
+        echo -e "${b}To finish install, run this command in a terminal:${n}\n\n${cmdline}\n\n"
+        wl-copy "${cmdline}"
+        echo "Command was set in clipboard"
       elif [[ "${OPTION,,}" =~ (^uninstall[[:space:]]davincibox) ]]; then
         ugum confirm "Confirm davincibox uninstall?" || exit 0
         # Remove the existing container
