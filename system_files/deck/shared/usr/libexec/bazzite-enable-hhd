@@ -5,5 +5,10 @@ if [ "$1" == "root" ]; then
 	exit 0
 fi
 
+# Enable HHD
 systemctl enable --now hhd@$(systemd-escape $1).service
+# Ensure HHD is never running for the root user
 systemctl disable --now hhd@root.service
+# Disable PPD
+systemctl disable --now power-profiles-daemon.service
+systemctl mask power-profiles-daemon.service
