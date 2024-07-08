@@ -190,9 +190,11 @@ install-resolve ACTION="":
         # Get sure user reads instructions
         ugum confirm --default "" || exit 0
         # Download davincibox setup script
-        SETUPSCRIPT=/tmp/davincibox_setup.sh
+        SETUPSCRIPT="$(mktemp -p /var/tmp -d bazzite_davincibox_setup.XXX)/davincibox_setup.sh"
         wget -O $SETUPSCRIPT ${SCRIPT_URL}
+        systemd-run --property=Wants=shutdown.target --property=Before=shutdown.target /usr/bin/rm -rf "$(dirname $SETUPSCRIPT)"
         chmod +x $SETUPSCRIPT
+        # Modify nvidia detection
         sed -e 's@$(glxinfo -B | grep -i nvidia)@$(lshw -c video 2>/dev/null | grep -qi nvidia)@' \
           -e 's@command -v glxinfo@command -v lshw@' -i ${SETUPSCRIPT}
         # Check if the installer is in HOME or DOWNLOAD
@@ -204,6 +206,7 @@ install-resolve ACTION="":
             dir=$(mktemp -p /var/tmp/ -d bazzite_davincibox_setup.XXX)
             unzip -d "$dir" "$runfile"
             RUNFILE=$(find $dir -executable -name "DaVinci_Resolve_*.run")
+            # Remove directory on boot
             systemd-run --property=Wants=shutdown.target --property=Before=shutdown.target /usr/bin/rm "$dir"
           else
             RUNFILE="$runfile"
@@ -214,9 +217,9 @@ install-resolve ACTION="":
           echo "${red}Please place the file DaVinci_Resolve_*_Linux.run in ${HOME} or ${DOWNLOADDIR}${n}";
           exit 1
         fi
-        echo "${b}Instalation was successful${n}"
-        echo "${dim}TIP: You can always update by running 'ujust install-resolve'${n}"
-        echo "${b}To finish install, run this command in a terminal:${n} '$SETUPSCRIPT $RUNFILE'"
+        echo 
+        echo -e "${b}To finish install, run this command in a terminal:${n}\n$SETUPSCRIPT $RUNFILE"
+        ugum confirm "Want to copy this command to clipboard?" && wl-copy "$SETUPSCRIPT $RUNFILE"
       elif [[ "${OPTION,,}" =~ (^uninstall[[:space:]]davincibox) ]]; then
         ugum confirm "Confirm davincibox uninstall?" || exit 0
         # Remove the existing container
