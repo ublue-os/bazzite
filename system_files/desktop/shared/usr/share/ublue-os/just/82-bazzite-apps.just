@@ -201,8 +201,7 @@ install-resolve ACTION="":
           if [[ $runfile =~ .zip$ ]]; then
             dir=$(mktemp -p /var/tmp/ -d bazzite_davincibox_setup.XXX)
             unzip -d "$dir" "$runfile"
-            RUNFILE=$dir/*.run
-            trap "[[ $dir =~ ^/var/tmp/ ]] && rm $dir -rf" EXIT INT HUP
+            RUNFILE=$(find $dir -executable -name "DaVinci_Resolve_*.run")
           else
             RUNFILE="$runfile"
           fi
@@ -212,9 +211,9 @@ install-resolve ACTION="":
           echo "${red}Please place the file DaVinci_Resolve_*_Linux.run in ${HOME} or ${DOWNLOADDIR}${n}";
           exit 1
         fi
-        $SETUPSCRIPT $RUNFILE
         echo "${b}Instalation was successful${n}"
         echo "${dim}TIP: You can always update by running 'ujust install-resolve'${n}"
+        echo "${b}To finish install, run this command in a terminal:${n} '$SETUPSCRIPT $RUNFILE'"
       elif [[ "${OPTION,,}" =~ (^uninstall[[:space:]]davincibox) ]]; then
         ugum confirm "Confirm davincibox uninstall?" || exit 0
         # Remove the existing container
