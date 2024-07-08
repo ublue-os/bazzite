@@ -69,7 +69,6 @@ cp usr/lib/hwsupport/block-device-event.sh %{buildroot}%{_libexecdir}/hwsupport/
 cp -rv usr/lib/udev %{buildroot}%{_prefix}/lib/udev
 cp -rv usr/bin/* %{buildroot}%{_bindir}
 cp -rv usr/lib/systemd/system/* %{buildroot}%{_unitdir}
-cp %{SOURCE2} %{buildroot}%{_datadir}/plymouth/themes/steamos/bazzite.png
 xcursorgen usr/share/steamos/steamos-cursor-config %{buildroot}%{_datadir}/icons/steam/cursors/default
 # Remove unneeded files
 rm %{buildroot}%{_datadir}/jupiter_bios_updater/h2offt-g
@@ -79,6 +78,8 @@ rm %{buildroot}%{_prefix}/lib/udev/rules.d/80-gpu-reset.rules
 rm -rf %{buildroot}%{_datadir}/jupiter_bios_updater/driver
 rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 rm -rf %{buildroot}%{_datadir}/alsa
+# Add Bazzite PNG
+cp %{SOURCE2} %{buildroot}%{_datadir}/steamos/steamos.png
 
 # Do post-installation
 %post
