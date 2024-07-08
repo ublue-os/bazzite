@@ -4,11 +4,11 @@ STEAMOS_UNKNOWN_NESTED_DESKTOP_WIDTH=1920
 STEAMOS_UNKNOWN_NESTED_DESKTOP_HEIGHT=1080
 
 # Handle nested desktop resolution for known devices.
-case "$(cat /sys/devices/virtual/dmi/id/product_name)" in
+case "$(/usr/libexec/hwsupport/sysid)" in
 	"Jupiter" | "Galileo" | "AYANEO GEEK" | "G1619-05")
 		STEAMOS_NESTED_DESKTOP_WIDTH=1280
 		STEAMOS_NESTED_DESKTOP_HEIGHT=800 ;;
-	"ROG Ally RC71L_RC71L" | "ROG Ally RC71L_Action" | "ROG Ally RC71L" | "G1618-04" | "G1617-01" | "Loki Max")
+	"ROG Ally RC71L" | "ROG Ally X RC72LA" | "G1618-04" | "G1617-01" | "Loki Max")
 		STEAMOS_NESTED_DESKTOP_WIDTH=1920
 		STEAMOS_NESTED_DESKTOP_HEIGHT=1080 ;;
 	"AYANEO 2" | "AYANEO 2S" | "AOKZOE A1 AR07" | "G1619-04" | "AIR Plus")

@@ -117,13 +117,6 @@ if [[ ":ONEXPLAYER F1:" =~ ":$SYS_ID:" ]]; then
   fi
 fi
 
-if /usr/libexec/hwsupport/simpledeckytdp-supported-hardware; then
-  if [[ ! $KARGS =~ "iomem" ]]; then
-    echo "Adding needed kargs for ryzenadj"
-    NEEDED_KARGS+=("--append-if-missing=iomem=relaxed")
-  fi
-fi
-
 if [[ ! $KARGS =~ "disable_ertm" ]]; then
   echo "Adding needed kargs for bluetooth"
   NEEDED_KARGS+=("--append-if-missing=bluetooth.disable_ertm=1")
@@ -217,8 +210,7 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
 fi
 
 # ALLY POWER SAVE FIX
-ALLY_LIST="ROG Ally RC71L_RC71L:ROG Ally RC71L:ROG Ally RC71L_Action"
-if [[ ":$ALLY_LIST:" =~ ":$SYS_ID:"  ]]; then
+if [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:"  ]]; then
   echo 0 | sudo tee /sys/devices/platform/asus-nb-wmi/mcu_powersave
 fi
 

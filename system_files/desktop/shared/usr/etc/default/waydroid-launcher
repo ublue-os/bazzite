@@ -5,12 +5,12 @@ WAYDROID_UNKNOWN_HEIGHT=1080
 WAYDROID_GRALLOC=minigbm_gbm_mesa
 
 # Handle nested desktop resolution for known devices.
-case "$(cat /sys/devices/virtual/dmi/id/product_name)" in
+case "$(/usr/libexec/hwsupport/sysid)" in
 	"Jupiter" | "Galileo" | "AYANEO GEEK" | "G1619-05")
 		WAYDROID_WIDTH=1280
 		WAYDROID_HEIGHT=800
 		WAYDROID_DENSITY=215 ;;
-	"ROG Ally RC71L_RC71L" | "ROG Ally RC71L_Action" | "ROG Ally RC71L" | "G1618-04" | "G1617-01" | "Loki Max" | "ONEXPLAYER F1" | "ONEXPLAYER F1 EVA-01" | "AIR Plus" | "AIR 1S" | "AIR 1S Limited")
+	"ROG Ally RC71L" | "ROG Ally X RC72LA" | "G1618-04" | "G1617-01" | "Loki Max" | "ONEXPLAYER F1" | "ONEXPLAYER F1 EVA-01" | "AIR Plus" | "AIR 1S" | "AIR 1S Limited")
 		WAYDROID_WIDTH=1920
 		WAYDROID_HEIGHT=1080 ;;
 	"AYANEO 2" | "AYANEO 2S" | "AOKZOE A1 AR07" | "AOKZOE A1 Pro" | "G1619-04")
