@@ -204,6 +204,7 @@ install-resolve ACTION="":
             dir=$(mktemp -p /var/tmp/ -d bazzite_davincibox_setup.XXX)
             unzip -d "$dir" "$runfile"
             RUNFILE=$(find $dir -executable -name "DaVinci_Resolve_*.run")
+            systemd-run --property=Wants=shutdown.target --property=Before=shutdown.target /usr/bin/rm "$dir"
           else
             RUNFILE="$runfile"
           fi
