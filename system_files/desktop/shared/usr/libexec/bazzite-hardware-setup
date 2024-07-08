@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=43
+HWS_VER=44
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -92,6 +92,15 @@ elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
   fi
   if [[ ! $KARGS =~ "amdgpu.sg_display" ]]; then
     echo "Adding SG Display for ASUS Ally"
+    NEEDED_KARGS+=("--append-if-missing=amdgpu.sg_display=0")
+  fi
+elif [[ ":ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
+  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
+    echo "Adding GTTSize for ASUS Ally X"
+    NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=12192")
+  fi
+  if [[ ! $KARGS =~ "amdgpu.sg_display" ]]; then
+    echo "Adding SG Display for ASUS Ally X"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.sg_display=0")
   fi
 elif [[ ":G1617-01:" =~ ":$SYS_ID:" && ! $CPU_MODEL =~ 8640U|8840U ]]; then
