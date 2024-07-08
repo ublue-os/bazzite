@@ -48,12 +48,12 @@ index ac7adb6..d46bb14 100755
  
  unidentified ()
 diff --git a/pipewire-confs/systemd/system/pipewire-sysconf.service b/pipewire-confs/systemd/system/pipewire-sysconf.service
-index 1528ccc..361c2ad 100644
+index 449a278..baf3a3c 100644
 --- a/pipewire-confs/systemd/system/pipewire-sysconf.service
 +++ b/pipewire-confs/systemd/system/pipewire-sysconf.service
 @@ -11,7 +11,7 @@
  Description=Hardware Specific Pipewire Configuration
- After=multi-user.target
+ Before=multi-user.target
  Requisite=multi-user.target
 -ConditionPathIsDirectory=/run
 +Requires=pipewire-workaround.service
@@ -120,12 +120,12 @@ index 3f03354..1e43489 100755
  
  unidentified ()
 diff --git a/wireplumber/systemd/system/wireplumber-sysconf.service b/wireplumber/systemd/system/wireplumber-sysconf.service
-index 6ae50a9..cac828f 100644
+index cdf5ed9..81cca6e 100644
 --- a/wireplumber/systemd/system/wireplumber-sysconf.service
 +++ b/wireplumber/systemd/system/wireplumber-sysconf.service
 @@ -11,7 +11,7 @@
  Description=Hardware Specific Wireplumber Configuration
- After=multi-user.target
+ Before=multi-user.target
  Requisite=multi-user.target
 -ConditionPathIsDirectory=/run
 +Requires=wireplumber-workaround.service
