@@ -220,6 +220,7 @@ install-resolve ACTION="":
         wl-copy "${cmdline}"
         echo "Command was set in clipboard"
         echo "Command was copied to clipboard"
+      elif [[ "${OPTION,,}" =~ (^uninstall[[:space:]]davincibox) ]]; then
         ugum confirm "Confirm davincibox uninstall?" || exit 0
         # Remove the existing container
         if podman container exists davincibox >/dev/null 2>&1; then 
