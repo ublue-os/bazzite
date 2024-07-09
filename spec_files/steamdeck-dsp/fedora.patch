@@ -35,7 +35,7 @@ index 90a1e12..43f03e0 100644
                          control = {
                              "VAD Threshold (%)" = 23.0
 diff --git a/pipewire-confs/systemd/system/pipewire-sysconf.service b/pipewire-confs/systemd/system/pipewire-sysconf.service
-index abc1f5d..1528ccc 100644
+index ffbdd97..449a278 100644
 --- a/pipewire-confs/systemd/system/pipewire-sysconf.service
 +++ b/pipewire-confs/systemd/system/pipewire-sysconf.service
 @@ -17,7 +17,7 @@ Before=shutdown.target
@@ -48,7 +48,7 @@ index abc1f5d..1528ccc 100644
  [Install]
  WantedBy=multi-user.target
 diff --git a/scripts/install_plugins.sh b/scripts/install_plugins.sh
-index ad10f23..d43cd81 100755
+index ad10f23..320aa0a 100755
 --- a/scripts/install_plugins.sh
 +++ b/scripts/install_plugins.sh
 @@ -1,4 +1,4 @@
@@ -84,7 +84,7 @@ index 842edb2..3f03354 100755
  set -eu
  
 diff --git a/wireplumber/systemd/system/wireplumber-sysconf.service b/wireplumber/systemd/system/wireplumber-sysconf.service
-index 4ba3ad6..6ae50a9 100644
+index 92b811c..cdf5ed9 100644
 --- a/wireplumber/systemd/system/wireplumber-sysconf.service
 +++ b/wireplumber/systemd/system/wireplumber-sysconf.service
 @@ -17,7 +17,7 @@ Before=shutdown.target
