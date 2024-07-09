@@ -6,6 +6,9 @@ SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 if [[ "$SYS_ID" =~ ROG[[:space:]]Ally[[:space:]]RC71L.+ ]]; then
     # Trunctate ROG Ally SYS_ID
     echo "ROG Ally RC71L"
+elif [[ "$SYS_ID" =~ ROG[[:space:]]Ally[[:space:]]X[[:space:]]RC72LA.+ ]]; then
+    # Trunctate ROG Ally X SYS_ID
+    echo "ROG Ally X RC72LA"
 else
     # Probably a sensible SYS_ID so we echo it
     echo "$SYS_ID"

@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=43
+HWS_VER=44
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -94,6 +94,15 @@ elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
     echo "Adding SG Display for ASUS Ally"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.sg_display=0")
   fi
+elif [[ ":ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
+  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
+    echo "Adding GTTSize for ASUS Ally X"
+    NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=12192")
+  fi
+  if [[ ! $KARGS =~ "amdgpu.sg_display" ]]; then
+    echo "Adding SG Display for ASUS Ally X"
+    NEEDED_KARGS+=("--append-if-missing=amdgpu.sg_display=0")
+  fi
 elif [[ ":G1617-01:" =~ ":$SYS_ID:" && ! $CPU_MODEL =~ 8640U|8840U ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
     echo "Adding panel orientation for GPD Win Mini 2023"
@@ -114,13 +123,6 @@ if [[ ":ONEXPLAYER F1:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
     echo "Adding GTTSize for ONEXPLAYER F1 (32GB RAM)"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=16256")
-  fi
-fi
-
-if /usr/libexec/hwsupport/simpledeckytdp-supported-hardware; then
-  if [[ ! $KARGS =~ "iomem" ]]; then
-    echo "Adding needed kargs for ryzenadj"
-    NEEDED_KARGS+=("--append-if-missing=iomem=relaxed")
   fi
 fi
 
@@ -217,8 +219,7 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
 fi
 
 # ALLY POWER SAVE FIX
-ALLY_LIST="ROG Ally RC71L_RC71L:ROG Ally RC71L:ROG Ally RC71L_Action"
-if [[ ":$ALLY_LIST:" =~ ":$SYS_ID:"  ]]; then
+if [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:"  ]]; then
   echo 0 | sudo tee /sys/devices/platform/asus-nb-wmi/mcu_powersave
 fi
 

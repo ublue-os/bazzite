@@ -122,6 +122,11 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         fontconfig \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libvpx \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true && \
