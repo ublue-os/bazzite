@@ -218,7 +218,6 @@ install-resolve ACTION="":
         fi
         bash <<< "env -C ${tmpdir} $SETUPSCRIPT $RUNFILE"
         echo "davincibox was successfully installed"
-        rm -rf ${tmpdir}
       elif [[ "${OPTION,,}" =~ (^uninstall[[:space:]]davincibox) ]]; then
         ugum confirm "Confirm davincibox uninstall?" || exit 0
         # Remove the existing container
