@@ -196,9 +196,6 @@ install-resolve ACTION="":
         SETUPSCRIPT=/tmp/davincibox_setup.sh
         wget -O $SETUPSCRIPT ${SCRIPT_URL}
         chmod +x $SETUPSCRIPT
-        # Modify nvidia detection
-        sed -e 's@$(glxinfo -B | grep -i nvidia)@$(lshw -c video 2>/dev/null | grep -qi nvidia)@' \
-          -e 's@command -v glxinfo@command -v lshw@' -i ${SETUPSCRIPT}
         # Check if the installer is in HOME or DOWNLOAD
         shopt -s nullglob && possible_installers=({$HOME,$DOWNLOADDIR}/DaVinci_Resolve_{,Studio_}*_Linux.{zip,run}) \
             && shopt -u nullglob
