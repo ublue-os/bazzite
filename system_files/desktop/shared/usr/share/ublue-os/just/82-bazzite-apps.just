@@ -166,6 +166,7 @@ install-resolve ACTION="":
     DOWNLOADDIR=$(xdg-user-dir DOWNLOAD || echo ${HOME})
     tmpdir=/var/tmp/bazzite_davincibox_setup.tmp
     mkdir -p $tmpdir
+    trap "rm -rf ${tmpdir}" INT EXIT HUP
     OPTION={{ ACTION }}
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust install-resolve <option>"
@@ -215,11 +216,9 @@ install-resolve ACTION="":
           echo "${red}Please place the file DaVinci_Resolve_*_Linux.run in ${HOME} or ${DOWNLOADDIR}${n}";
           exit 1
         fi
-        cmdline="env -C $tmpdir $SETUPSCRIPT $RUNFILE && rm -rf ${tmpdir}"
-        echo -e "${b}To finish install, run this command in a terminal:${n}\n\n${cmdline}\n\n"
-        wl-copy "${cmdline}"
-        echo "Command was set in clipboard"
-        echo "Command was copied to clipboard"
+        bash <<< "env -C ${tmpdir} $SETUPSCRIPT $RUNFILE"
+        echo "davincibox was successfully installed"
+        rm -rf ${tmpdir}
       elif [[ "${OPTION,,}" =~ (^uninstall[[:space:]]davincibox) ]]; then
         ugum confirm "Confirm davincibox uninstall?" || exit 0
         # Remove the existing container
