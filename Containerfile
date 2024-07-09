@@ -125,7 +125,7 @@ RUN rpm-ostree override replace \
     rpm-ostree override replace \
     --experimental \
     --from repo=updates \
-        libvpx
+        libvpx \
         || true && \
     rpm-ostree override remove \
         glibc32 \
