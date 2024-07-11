@@ -121,7 +121,7 @@ jobs:
           version: ${{ matrix.major_version }}
           image_tag: ${{ steps.generate-tag.outputs.tag }}
           secure_boot_key_url: 'https://github.com/ublue-os/bazzite/raw/main/secure_boot.der'
-          enrollment_password: 'ublue-os'
+          enrollment_password: 'universalblue'
           iso_name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}.iso
           enable_cache_dnf: "false"
           enable_cache_skopeo: "false"

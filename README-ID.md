@@ -85,7 +85,7 @@ atau perangkat dengan kartu grafis Nvidia:
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:stable
 ```
 
-**Untuk pengguna dengan Secure Boot aktif:** Jalankan `ujust enroll-secure-boot-key` dan masukan password `ublue-os` jika diperintahkan untuk menenroll kunci yang dibutuhkan.
+**Untuk pengguna dengan Secure Boot aktif:** Jalankan `ujust enroll-secure-boot-key` dan masukan password `universalblue` jika diperintahkan untuk menenroll kunci yang dibutuhkan.
 
 ### Steam Deck/Home Theater PCs (HTPCs)
 > [!IMPORTANT]
@@ -196,7 +196,7 @@ Bazzite dimulai sebagai proyek untuk menyelesaikan berbagai masalah yang ada di 
 Walaupun proyek ini juga menggunakan image. anda masih bisa menginstall berbagai macam paket Fedora dari perintah shell. Paket-paket ini akan tetap bertahan setelah pembaruan <sub><sup>(Jadi anda bisa install aplikasi VPN yang anda g bisa install di SteamOS)<sub><sup>.
 Sebagai tambahan, Bazzite sering diupdate beberapa kali dalam satu minggu dengan paket-paket dari upstream Fedora, memberikan anda performa terbaik dan fitur-fitur terbaru di base yang stabil.
 
-Bazzite hadir dengan versi Linux kernel yang terbaru dan SELinux diaktifkan secara bawaan dengan dukungan penuh untuk secure boot <sub><sup>(Jalankan `ujust enroll-secure-boot-key` dan masukan password `ublue-os` jika diperintahkan untuk menroll key dari kita)</sup></sub>
+Bazzite hadir dengan versi Linux kernel yang terbaru dan SELinux diaktifkan secara bawaan dengan dukungan penuh untuk secure boot <sub><sup>(Jalankan `ujust enroll-secure-boot-key` dan masukan password `universalblue` jika diperintahkan untuk menroll key dari kita)</sup></sub>
 dan enkripsi disk membuat ini aman dan sempurna untuk komputasi general. <sup><sub>(Yes, anda bisa ngeprint dari Bazzite!)</sub></sup>.
 
 Baca [FAQ](https://universal-blue.discourse.group/docs?topic=33) untuk tahu apa saja yang membuat Bazzite beda dari Sistem Operasi Linux yang lain.

@@ -235,7 +235,7 @@ Bazzite项目最初的目的是在于解决困扰SteamOS的一系列问题，主
 
 尽管此项目是基于镜像的，你仍然可以直接通过命令行安装任何Fedora软件包。这些软件包在更新后依然会保留<sub><sup>(所以尽管放心的去安装那些你需要花费一个小时以上才能在SteamOS上正常工作的晦涩的VPN软件)</sup></sub>。此外，Bazzite每周都会多次更新来自上游Fedora的软件包，在稳定的基础上为你提供最佳性能和最新特性。
 
-Bazzite带来最新的Linux内核，默认启用的SELinux为安全启动提供了完整的支持<sub><sup>(如果系统提示注册密钥，那么运行`ujust enroll-secure-boot-key`并输入密码`ublue-os`)</sup></sub>和磁盘加密。使此系统成为大众计算机的一个明智的解决方案。<sup><sub>(是的，你可以从Bazzite打印)</sub></sup>
+Bazzite带来最新的Linux内核，默认启用的SELinux为安全启动提供了完整的支持<sub><sup>(如果系统提示注册密钥，那么运行`ujust enroll-secure-boot-key`并输入密码`universalblue`)</sup></sub>和磁盘加密。使此系统成为大众计算机的一个明智的解决方案。<sup><sub>(是的，你可以从Bazzite打印)</sub></sup>
 
 阅读[常见问题解答](https://universal-blue.discourse.group/docs?topic=33)以了解Bazzite不同于其它Linux操作系统的细节。
 
@@ -347,7 +347,7 @@ sudo mokutil --import secure_boot.der
 
 对于已安装Universal Blue镜像的用户，你可以改为运行`ujust enroll-secure-boot-key`。
 
-如果要求输入密码，就使用`ublue-os`。
+如果要求输入密码，就使用`universalblue`。
 
 ### 贡献者指标
 

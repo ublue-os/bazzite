@@ -131,13 +131,13 @@ ${container_mgr} run --rm --privileged  \
     ENABLE_CACHE_DNF="false" \
     ENABLE_CACHE_SKOPEO="false" \
     ENABLE_FLATPAK_DEPENDENCIES="false" \
-    ENROLLMENT_PASSWORD="ublue-os" \
+    ENROLLMENT_PASSWORD="universalblue" \
     EXTRA_BOOT_PARAMS="${extra_boot_params}" \
     FLATPAK_REMOTE_REFS_DIR="${flatpak_dir_shortname}" \
     IMAGE_NAME="${tag}" \
     IMAGE_REPO="localhost" \
     IMAGE_TAG="${latest}-${git_branch}" \
     ISO_NAME="build/${tag}-${git_branch}.iso" \
-    SECURE_BOOT_KEY_URL='https://github.com/ublue-os/akmods/raw/main/certs/public_key.der' \
+    SECURE_BOOT_KEY_URL='https://github.com/ublue-os/bazzite/raw/main/secure_boot.der' \
     VARIANT="${variant}" \
     VERSION="${latest}"
