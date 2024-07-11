@@ -235,6 +235,36 @@ install-resolve ACTION="":
 
 alias install-resolve-studio := install-resolve
 
+install-zed:
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    set -euo pipefail
+    SOURCE_URL="https://zed.dev/api/releases/stable/latest/zed-linux-x86_64.tar.gz"
+
+    is_installed=$([[ -e ~/.local/bin/zed ]]; echo $?)
+    if (( $is_installed == 0 )); then
+      echo "Status: ${green}Installed${n}"
+    else
+      echo "Status: ${red}Not Installed${n}"
+    fi
+    OPTION=$(Choose "Install Zed" "Uninstall Zed")
+    if [ "$OPTION" = "Install Zed" ]; then
+      mkdir -p ~/.local/zed.app
+      wget -q -O - "$SOURCE_URL" \
+      | tar -z -C ~/.local/zed.app/ -x --strip-components=1
+      ln -sf ~/.local/zed.app/bin/zed ~/.local/bin/zed
+      sed -i "s|Icon=zed|Icon=$HOME/.local/zed.app/share/icons/hicolor/512x512/apps/zed.png|g" ~/.local/share/applications/zed.desktop
+      sed -i "s|Exec=zed|Exec=$HOME/.local/zed.app/libexec/zed-editor|g" ~/.local/share/applications/zed.desktop
+      echo "Zed was successfully installed"
+    elif [ "$OPTION" = "Uninstall Zed" ]; then
+      rm ~/.local/bin/zed ~/.local/share/applications/zed.desktop
+      rm -r ~/.local/zed.app/
+      echo "Zed was successfully uninstalled"
+    else
+      echo "Incorrect option"
+      exit 1
+    fi
+
 # Create fedora distrobox if it doesn't exist
 [private]
 distrobox-check-fedora:
