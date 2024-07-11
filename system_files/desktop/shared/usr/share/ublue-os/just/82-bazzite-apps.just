@@ -162,8 +162,11 @@ install-resolve ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     set -eo pipefail
-    SCRIPT_URL="https://raw.githubusercontent.com/zelikos/davincibox/d089ea16fd674018ec48f06cb9f563ec1e6a1514/setup.sh"
+    SCRIPT_URL="https://raw.githubusercontent.com/zelikos/davincibox/b84fa22473d57307be50c07d968302e1cb458e13/setup.sh"
     DOWNLOADDIR=$(xdg-user-dir DOWNLOAD || echo ${HOME})
+    tmpdir=/var/tmp/bazzite_davincibox_setup.tmp
+    mkdir -p $tmpdir
+    trap "rm -rf ${tmpdir}" INT EXIT HUP
     OPTION={{ ACTION }}
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust install-resolve <option>"
@@ -188,7 +191,7 @@ install-resolve ACTION="":
         echo "${bold}This script requires you to download DaVinci Resolve installer manually from their website and place it in ${HOME} or ${DOWNLOADDIR}${n}"
         echo "${bold}https://www.blackmagicdesign.com/event/davinciresolvedownload${n}"
         # Get sure user reads instructions
-        ugum confirm --default "" || exit 0
+        ugum confirm || exit 0
         # Download davincibox setup script
         SETUPSCRIPT=/tmp/davincibox_setup.sh
         wget -O $SETUPSCRIPT ${SCRIPT_URL}
@@ -199,11 +202,8 @@ install-resolve ACTION="":
         runfile=$(Choose ${possible_installers[@]})
         if [[ ! -z $runfile && -f $runfile ]]; then
           if [[ $runfile =~ .zip$ ]]; then
-            dir=$HOME/.cache/bazzite_davincibox_setup
-            mkdir -p $dir && rm -rf $dir/*
-            unzip -d "$dir" "$runfile"
-            trap "[[ $dir =~ /.cache/ ]] && rm $dir -rf" EXIT INT
-            RUNFILE=$dir/*.run
+            unzip -o -d "$tmpdir" "$runfile"
+            RUNFILE=$(find $tmpdir -executable -name "DaVinci_Resolve_*.run")
           else
             RUNFILE="$runfile"
           fi
@@ -213,9 +213,8 @@ install-resolve ACTION="":
           echo "${red}Please place the file DaVinci_Resolve_*_Linux.run in ${HOME} or ${DOWNLOADDIR}${n}";
           exit 1
         fi
-        $SETUPSCRIPT $RUNFILE
-        echo "${b}Instalation was successful${n}"
-        echo "${dim}TIP: You can always update by running 'ujust install-resolve'${n}"
+        bash <<< "env -C ${tmpdir} $SETUPSCRIPT $RUNFILE"
+        echo "davincibox was successfully installed"
       elif [[ "${OPTION,,}" =~ (^uninstall[[:space:]]davincibox) ]]; then
         ugum confirm "Confirm davincibox uninstall?" || exit 0
         # Remove the existing container
