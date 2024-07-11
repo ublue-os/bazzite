@@ -722,7 +722,7 @@ index d9182aa..776e014 100644
 +				if (pending_gesture_y && previous_ty > rounded_ty && !pending_osk && rounded_ty <= g_nOutputWidth - edge_range_y && rounded_ty > g_nOutputHeight - gesture_limits_y) {
 +					wlserver_gesture_flush();
 +					pending_osk = true;
-+					//wlserver_open_steam_osk(1);
++					wlserver_open_steam_osk(1);
 +				}
 +				previous_tx = rounded_tx;
 +				previous_ty = rounded_ty;
