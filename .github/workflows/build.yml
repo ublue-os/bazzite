@@ -257,7 +257,7 @@ jobs:
             --target=${{ matrix.base_name }}
 
       - name: Sign kernel
-        uses: ublue-os/kernel-signer@v0.2.3
+        uses: ublue-os/kernel-signer@v0.2.4
         with:
           image: ${{ steps.build_image.outputs.image }}
           default-tag: ${{ env.DEFAULT_TAG }}
