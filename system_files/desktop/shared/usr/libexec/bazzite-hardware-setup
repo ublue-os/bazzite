@@ -108,6 +108,9 @@ elif [[ ":G1617-01:" =~ ":$SYS_ID:" && ! $CPU_MODEL =~ 8640U|8840U|7640U ]]; the
     echo "Adding panel orientation for GPD Win Mini 2023"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
   fi
+elif [[ ":G1617-01:" =~ ":$SYS_ID:" ]]; then
+  echo "Removing panel orientation for GPD Win Mini 2024 if exists"
+  NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=right_side_up")
 elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
     echo "Adding panel orientation for GPD Win 2"
