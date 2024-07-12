@@ -235,7 +235,7 @@ Bazzite is begonnen als project om verschilende problemen die SteamOS heeft te r
 
 Ondanks dit project ook image-based is kun je al de Fedora packages installeren via de terminal. Deze packages blijven op uw systeem ook na updates. <sub><sup>(Installeer maar die obscure VPN software wat je uren lang hebt geprobeerd op SteamOS.)</sup></sub>. Bazzite is ook meerderen keren per week geüpdate met upstream Fedora packages. Dit geeft Bazzite de beste prestatie en laatste kenmerken - allemaal op een stabiele basis.
 
-Bazzite komt met de laatste Linux kernel en SELinux met volledige mogelijkheid voor Secure Boot <sub><sup>(Gebruik `ujust enroll-secure-boot-key` in de terminal en gebruik wachtwoord `ublue-os` als dit gevraagd wordt om onze sleutels te gebruiken )</sup></sub> en disk encryptie maakt Bazzite een geweldig alternatief voor normaal computer gevruik. <sup><sub>(Ja, je kan printen met Bazzite)</sub></sup>
+Bazzite komt met de laatste Linux kernel en SELinux met volledige mogelijkheid voor Secure Boot <sub><sup>(Gebruik `ujust enroll-secure-boot-key` in de terminal en gebruik wachtwoord `universalblue` als dit gevraagd wordt om onze sleutels te gebruiken )</sup></sub> en disk encryptie maakt Bazzite een geweldig alternatief voor normaal computer gevruik. <sup><sub>(Ja, je kan printen met Bazzite)</sub></sup>
 
 Lees de [FAQ](https://universal-blue.discourse.group/docs?topic=33) om te zien wat Bazzite speciaal maakt vergeleken met anderen Linux distributies.
 
@@ -347,7 +347,7 @@ sudo mokutil --import secure_boot.der
 
 Voor gebruikers die de Universal Blue image al gebruiken kun je `ujust enroll-secure-boot-key` in de terminal voegen.
 
-Als er voor een wachtwoord gevraagd wordt, gebruik `ublue-os`.
+Als er voor een wachtwoord gevraagd wordt, gebruik `universalblue`.
 
 ### Bijdragers Metriek
 

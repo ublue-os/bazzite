@@ -238,7 +238,7 @@ Bazzite inicio como un proyecto para resolver los problemas que plagan SteamOS, 
 
 A pesar que este proyecto también esta basado en imágenes, tienes la capacidad de instalar **cualquier** paquete de Fedora, directamente desde la terminal. Estos paquetes persistirán a través de las actualizaciones  <sub><sup>(Así que descuida, tu instala ese oscuro software de VPN con el que pasaste una hora y múltiples migrañas tratando de hacer funcionar en SteamOS)</sup></sub>. Ademas, Bazzite es actualizado múltiples veces a la semana con paquetes del upstream de Fedora, dándote el mejor rendimiento posible y las últimas características - todo con una base sólida y estable.
 
-Bazzite se entrega con el kernel de Linux mas nuevo y SELinux esta habilitado por defecto con soporte completo de Secure Boot <sub><sup>(Ejecuta el comando `ujust enroll-secure-boot-key` en una terminal e introduce la contraseña  `ublue-os` si es requerido para registrar nuestra llave de seguridad)</sup></sub>, además de soporte para la encriptación completa de tu disco, lo que convierte a Bazzite una opción razonable para la informática general. <sup><sub>(Así es, puedes mandar a imprimir el último reporte financiero de tu empresa con Bazzite)</sub></sup>
+Bazzite se entrega con el kernel de Linux mas nuevo y SELinux esta habilitado por defecto con soporte completo de Secure Boot <sub><sup>(Ejecuta el comando `ujust enroll-secure-boot-key` en una terminal e introduce la contraseña  `universalblue` si es requerido para registrar nuestra llave de seguridad)</sup></sub>, además de soporte para la encriptación completa de tu disco, lo que convierte a Bazzite una opción razonable para la informática general. <sup><sub>(Así es, puedes mandar a imprimir el último reporte financiero de tu empresa con Bazzite)</sub></sup>
 
 Lee nuestras [preguntas frecuentes](https://universal-blue.discourse.group/docs?topic=411) para saber más en lo que hace a Bazzite sobresalir de otras distribuciones de GNU Linux.
 
@@ -356,7 +356,7 @@ sudo mokutil --import secure_boot.der
 ```
 Alternativamente, los usuarios que ya cuenten con una imagen de Universal Blue instalada, pueden ejecutar el siguiente comando en una terminal: `ujust enroll-secure-boot-key`.
 
-Si se te pide una contraseña, introduce `ublue-os`.
+Si se te pide una contraseña, introduce `universalblue`.
 
 ### Métricas de Contribución
 

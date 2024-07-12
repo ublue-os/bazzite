@@ -233,7 +233,7 @@ O Bazzite começou como um projeto pra resolver alguns dos problemas que afligem
 
 Apesar deste projeto também ser baseado em imagens, você pode instalar qualquer pacote Fedora direto do terminal. Estes pacotes vão persistir entre atualizações <sub><sup>(Então vá em frente e instale aquele software desconhecido de VPN que você gastou meia-hora tentando fazer funcionar no SteamOS)</sup></sub>. Inclusive, o Bazzite é atualizado várias vezes por semana com os pacotes dos repositórios Fedora, trazendo a melhor peformance possível e os últimos recursos - tudo numa base estável.
 
-O Bazzite inclui a versão mais recente do kernel Linux e vem com SELinux habilitado por padrão com suporte total a secure boot <sub><sup>(Execute `ujust enroll-secure-boot-key` e insira a senha `ublue-os` se requisitada para adicionar a nossa chave)</sup></sub> e criptografia de disco, fazendo dele uma solução razoável pra computação em geral. <sup><sub>(Sim, você pode usar sua impressora no Bazzite)</sub></sup>
+O Bazzite inclui a versão mais recente do kernel Linux e vem com SELinux habilitado por padrão com suporte total a secure boot <sub><sup>(Execute `ujust enroll-secure-boot-key` e insira a senha `universalblue` se requisitada para adicionar a nossa chave)</sup></sub> e criptografia de disco, fazendo dele uma solução razoável pra computação em geral. <sup><sub>(Sim, você pode usar sua impressora no Bazzite)</sub></sup>
 
 Confira o [FAQ](https://universal-blue.discourse.group/docs?topic=33) para mais detalhes no que faz o Bazzite ser diferente de outros sistemas operacionais Linux.
 
@@ -343,7 +343,7 @@ sudo mokutil --import secure_boot.der
 
 Para usuários que já estão numa imagem Universal Blue, é só rodar `ujust enroll-secure-boot-key`.
 
-Se uma senha for pedida, insira `ublue-os`.
+Se uma senha for pedida, insira `universalblue`.
 
 ### Métricas de Contribuição
 

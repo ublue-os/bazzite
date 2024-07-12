@@ -236,7 +236,7 @@ Bazzite a débuté comme un projet visant à résoudre certains des problèmes q
 
 Bien que ce projet soit également basé sur des images, vous pouvez installer n'importe quel package Fedora directement depuis la ligne de commande. Ces packages persisteront à travers les mises à jour <sub><sup>(Alors n'hésitez pas à installer ce logiciel VPN obscur sur lequel vous avez passé une heure à essayer de le faire fonctionner sous SteamOS)</sup></sub>. De plus, Bazzite est mis à jour plusieurs fois par semaine avec des packages de Fedora, vous offrant ainsi les meilleures performances possibles et les dernières fonctionnalités - le tout sur une base stable.
 
-Bazzite est livré avec le dernier noyau Linux et SELinux activé par défaut, avec prise en charge complète du démarrage sécurisé <sub><sup>(Exécutez `ujust enroll-secure-boot-key` et entrez le mot de passe `ublue-os` si vous êtes invité à enregistrer notre clé)</sup></sub> et du chiffrement des disques, en faisant une solution raisonnable pour l'informatique générale. <sup><sub>(Oui, vous pouvez imprimer depuis Bazzite)</sub></sup>
+Bazzite est livré avec le dernier noyau Linux et SELinux activé par défaut, avec prise en charge complète du démarrage sécurisé <sub><sup>(Exécutez `ujust enroll-secure-boot-key` et entrez le mot de passe `universalblue` si vous êtes invité à enregistrer notre clé)</sup></sub> et du chiffrement des disques, en faisant une solution raisonnable pour l'informatique générale. <sup><sub>(Oui, vous pouvez imprimer depuis Bazzite)</sub></sup>
 
 Consultez la [FAQ](https://universal-blue.discourse.group/docs?topic=33) pour plus de détails sur ce qui distingue Bazzite des autres systèmes d'exploitation Linux.
 
@@ -348,7 +348,7 @@ sudo mokutil --import secure_boot.der
 
 Pour les utilisateurs déjà sur une image Universal Blue, vous pouvez plutôt exécuter `ujust enroll-secure-boot-key`.
 
-Si on vous demande un mot de passe, utilisez `ublue-os`.
+Si on vous demande un mot de passe, utilisez `universalblue`.
 
 ### Métriques des contributeurs
 
