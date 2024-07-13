@@ -612,8 +612,11 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
-    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
-        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/yad-icon-browser.desktop \
+    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
+        sed -i '/^PRETTY_NAME/s/Kinoite/From Fedora Kinoite/' /usr/lib/os-release \
+    ; else \
+        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/yad-icon-browser.desktop && \
+        sed -i '/^PRETTY_NAME/s/Silverblue/From Fedora Silverblue/' /usr/lib/os-release \
     ; fi && \
     sed -i '/^PRETTY_NAME/s/Fedora Linux/Bazzite/' /usr/lib/os-release &&\
     sed -i 's/^NAME=.*/NAME="Bazzite"/' /usr/lib/os-release && \
