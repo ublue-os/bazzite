@@ -624,7 +624,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     sed -i 's|^DOCUMENTATION_URL=.*|DOCUMENTATION_URL="https://docs.bazzite.gg"|' /usr/lib/os-release && \
     sed -i 's|^SUPPORT_URL=.*|SUPPORT_URL="https://discord.bazzite.gg"|' /usr/lib/os-release && \
     sed -i 's|^BUG_REPORT_URL=.*|BUG_REPORT_URL="https://github.com/ublue-os/bazzite/issues/"|' /usr/lib/os-release && \
-    sed -i 's|^CPE_NAME="cpe:/o:fedoraproject:fedora|CPE_NAME="cpe:/o:ublue-os:bazzite|' /usr/lib/os-release && \
+    sed -i 's|^CPE_NAME="cpe:/o:fedoraproject:fedora|CPE_NAME="cpe:/o:universal-blue:bazzite|' /usr/lib/os-release && \
     sed -i 's/^DEFAULT_HOSTNAME=.*/DEFAULT_HOSTNAME="bazzite"/' /usr/lib/os-release && \
     sed -i 's/^ID=.*/ID=bazzite\nID_LIKE="rhel centos fedora"/' /usr/lib/os-release && \
     sed -i 's/^LOGO=.*/LOGO=bazzite-logo-icon/' /usr/lib/os-release && \
