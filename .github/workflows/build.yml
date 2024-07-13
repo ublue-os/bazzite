@@ -92,6 +92,10 @@ jobs:
               fi
           fi
 
+      - name: Define env.SHA_HEAD_SHORT
+        run: |
+          echo "SHA_HEAD_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
       - name: Verify main image
         uses: EyeCantCU/cosign-action/verify@v0.2.2
         with:
@@ -251,6 +255,7 @@ jobs:
             FEDORA_VERSION=${{ matrix.fedora_version }}
             KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
             IMAGE_BRANCH=${{ github.ref_name }}
+            SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
           extra-args: |
