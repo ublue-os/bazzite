@@ -412,9 +412,6 @@ RUN rpm-ostree install \
         libobs_glcapture.i686 \
         mangohud.x86_64 \
         mangohud.i686 && \
-    ln -s wine32 /usr/bin/wine && \
-    ln -s wine32-preloader /usr/bin/wine-preloader && \
-    ln -s wineserver64 /usr/bin/wineserver && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/winetricks.desktop && \
     curl -Lo /tmp/latencyflex.tar.xz $(curl https://api.github.com/repos/ishitatsuyuki/LatencyFleX/releases/latest | jq -r '.assets[] | select(.name| test(".*.tar.xz$")).browser_download_url') && \
     mkdir -p /tmp/latencyflex && \
