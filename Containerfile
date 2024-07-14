@@ -205,6 +205,7 @@ RUN mkdir -p /tmp/linux-firmware-neptune && \
     xz --check=crc32 /tmp/ally-x-firmware/* && \
     mv -vf /tmp/ally-x-firmware/* /usr/lib/firmware/ti/tas2781/ && \
     rm -rf /tmp/ally-x-firmware && \
+    ln -s ti/tas2781/TAS2XXX1EB3.bin.xz /usr/lib/firmware/TAS2XXX1EB3.bin.xz && \
     if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
         curl -Lo /etc/yum.repos.d/_copr_lukenukem-asus-linux.repo https://copr.fedorainfracloud.org/coprs/lukenukem/asus-linux/repo/fedora-$(rpm -E %fedora)/lukenukem-asus-linux-fedora-$(rpm -E %fedora).repo && \
         rpm-ostree install \
