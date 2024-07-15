@@ -200,12 +200,6 @@ RUN mkdir -p /tmp/linux-firmware-neptune && \
     mv -vf /tmp/linux-firmware-galileo/* /usr/lib/firmware/qca/ && \
     rm -rf /tmp/linux-firmware-galileo && \
     rm -rf /usr/share/alsa/ucm2/conf.d/acp5x/Valve-Jupiter-1.conf && \
-    mkdir -p /tmp/ally-x-firmware && \
-    curl -Lo /tmp/ally-x-firmware/TAS2XXX1EB3.bin https://archive.org/download/tas-2-xxx-1-eb-31/TAS2XXX1EB30.bin && \
-    xz --check=crc32 /tmp/ally-x-firmware/* && \
-    mv -vf /tmp/ally-x-firmware/* /usr/lib/firmware/ti/tas2781/ && \
-    rm -rf /tmp/ally-x-firmware && \
-    ln -s ti/tas2781/TAS2XXX1EB3.bin.xz /usr/lib/firmware/TAS2XXX1EB3.bin.xz && \
     if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
         curl -Lo /etc/yum.repos.d/_copr_lukenukem-asus-linux.repo https://copr.fedorainfracloud.org/coprs/lukenukem/asus-linux/repo/fedora-$(rpm -E %fedora)/lukenukem-asus-linux-fedora-$(rpm -E %fedora).repo && \
         rpm-ostree install \
