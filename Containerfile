@@ -322,6 +322,7 @@ RUN rpm-ostree install \
         xwiimote-ng \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
+        wqy-zenhei-fonts \
         lato-fonts \
         fira-code-fonts \
         nerd-fonts \
