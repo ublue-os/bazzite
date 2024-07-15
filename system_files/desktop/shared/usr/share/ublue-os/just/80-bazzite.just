@@ -146,7 +146,7 @@ configure-watchdog ACTION="":
     fi
 
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
-setup-decky ACTION="":
+setup-decky ACTION="install":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     DECKY_STATE="${b}${red}Not Installed${n}"
