@@ -151,10 +151,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 
 Merci de consulter notre [Wiki des consoles portables](https://universal-blue.discourse.group/docs?topic=1038) pour les modifications de paramètres nécessaires et les plugins Decky Loader pour le mode jeu Steam sur votre console portable spécifique.
 
-Si vous utilisez cette image sur une console portable autre que le SteamDeck, vous pouvez contrôler le TDP via le plugin SimpleDeckyTDP de Decky Loader.
-- Installez d'abord Decky Loader avec : `ujust setup-decky`
-- Ensuite, installez SimpleDeckyTDP avec : `ujust setup-decky simpledeckytdp`
-
 **Assurez-vous également de lire la [documentation de hhd](https://github.com/hhd-dev/hhd#after-install), certaines consoles portables nécessitent des modifications/tweaks spécifiques pour fonctionner correctement.**
 
 Nous avons également des commandes `ujust` pour installer divers thèmes [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) qui ne se trouvent pas sur le magasin CSS Loader. Ceux-ci seront automatiquement mis à jour avec Bazzite s'ils sont installés.
