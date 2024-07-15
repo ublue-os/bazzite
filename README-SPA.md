@@ -166,17 +166,6 @@ Si estas usando una computadora Handheld que tiene soporte por parte de [hhd](ht
 
 Tambien incluimos ciertos comandos de `ujust` para instalar varios temas para [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) que no estan disponibles en su propia tienda. Si instalas estos temas, estos tambien serán actualizados automáticamente junto con Bazzite.
 
-```bash
-# Instala el tema de la ROG Ally para CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
-ujust install-rog-ally-theme
-
-# Instala el tema de la Lenovo Legion Go para CSS Loader (https://github.com/frazse/SBP-Legion-Go-Theme)
-ujust install-legion-go-theme
-
-# Instala el tema para pasar los glifos de Playstation a Xbox (PS5-to-Xbox) para hhd y CSS Loader (https://github.com/frazse/PS5-to-Xbox-glyphs)
-ujust install-hhd-xbox-glyph-theme
-```
-
 ### GNOME
 
 Las sub-variantes con el entorno de escritorio GNOME están disponibles tanto para las imágenes para **Computadoras de Escritorio**, como las de **Steam Deck/HTPCs**. Estas imágenes cuentan con las siguientes características adicionales:
