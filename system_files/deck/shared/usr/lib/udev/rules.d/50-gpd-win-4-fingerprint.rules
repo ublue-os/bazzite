@@ -1,0 +1,2 @@
+# Disable FP sensor on the GPD Win 4
+SUBSYSTEM=="usb", ATTR{idVendor}=="2808", ATTR{idProduct}=="9338", ATTR{remove}="1"

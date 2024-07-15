@@ -1,0 +1,2 @@
+# Fixes a bug that causes suspend/resume to be inconsistent on the GPD Win Max 2
+SUBSYSTEM=="usb", ATTR{idVendor}=="2541", ATTR{idProduct}=="9711", ATTR{remove}="1"
