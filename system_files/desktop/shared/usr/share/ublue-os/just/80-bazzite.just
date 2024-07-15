@@ -146,7 +146,7 @@ configure-watchdog ACTION="":
     fi
 
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
-setup-decky ACTION="":
+setup-decky ACTION="install":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     DECKY_STATE="${b}${red}Not Installed${n}"
@@ -155,7 +155,7 @@ setup-decky ACTION="":
     fi
     OPTION={{ ACTION }}
     if [ "$OPTION" == "help" ]; then
-      echo "Usage: ujust configure-watchdog <option>"
+      echo "Usage: ujust setup-decky <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'install' to select Install Decky"
       exit 0
