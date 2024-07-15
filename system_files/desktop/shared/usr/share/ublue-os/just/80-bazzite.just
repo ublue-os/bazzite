@@ -155,7 +155,7 @@ setup-decky ACTION="install":
     fi
     OPTION={{ ACTION }}
     if [ "$OPTION" == "help" ]; then
-      echo "Usage: ujust configure-watchdog <option>"
+      echo "Usage: ujust setup-decky <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'install' to select Install Decky"
       exit 0
