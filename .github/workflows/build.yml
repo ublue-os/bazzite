@@ -97,21 +97,21 @@ jobs:
           echo "SHA_HEAD_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Verify main image
-        uses: EyeCantCU/cosign-action/verify@v0.2.2
+        uses: EyeCantCU/cosign-action/verify@v0.3.0
         with:
           containers: ${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
           pubkey: https://raw.githubusercontent.com/ublue-os/${{ matrix.base_image_flavor }}/main/cosign.pub
           registry: ${{ env.IMAGE_REGISTRY }}
 
       - name: Verify akmods image
-        uses: EyeCantCU/cosign-action/verify@v0.2.2
+        uses: EyeCantCU/cosign-action/verify@v0.3.0
         with:
           containers: akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
           pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
           registry: ${{ env.IMAGE_REGISTRY }}
 
       - name: Verify akmods-nvidia image
-        uses: EyeCantCU/cosign-action/verify@v0.2.2
+        uses: EyeCantCU/cosign-action/verify@v0.3.0
         with:
           containers: akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
           pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
@@ -291,7 +291,7 @@ jobs:
               --disable-content-trust
 
       - name: Sign container image
-        uses: EyeCantCU/cosign-action/sign@v0.2.2
+        uses: EyeCantCU/cosign-action/sign@v0.3.0
         if: github.event_name != 'pull_request'
         with:
           containers: ${{ env.IMAGE_NAME }}
