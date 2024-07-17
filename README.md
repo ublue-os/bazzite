@@ -121,7 +121,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Steam and Lutris preinstalled on the image as layered packages.
 - [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Game mode and on the Desktop if Discord is installed. [View the official documentation here](https://trigg.github.io/Discover/bazzite).
 - Uses ZRAM<sub><sup>(4GB)</sup></sub> with the ZSTD compression algorithm by default with the option to switch back to a 1GB swap file and set a custom size for it if desired.
-- [BORE CPU scheduler](https://github.com/firelzrd/bore-scheduler) for smooth and responsive gameplay.
+- [LAVD](https://crates.io/crates/scx_lavd) and [BORE](https://github.com/firelzrd/bore-scheduler) CPU Schedulers for smooth and responsive gameplay.
 - Kyber I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` process.
 - Applies SteamOS's kernel parameters.
 - Color calibrated display profiles for matte and reflective Steam Deck screens included.
@@ -153,7 +153,7 @@ If you're using this image on a handheld other than the Steam Deck, you can get 
 - First install Decky Loader with: `ujust setup-decky`
 - Then install SimpleDeckyTDP with: `ujust setup-decky simpledeckytdp`
 
-If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Such as the Lenovo Legion Go and the ASUS Ally)</sup></sub>, you can also get the plugin to integrate an option menu for it into game mode with: `ujust setup-decky hhd-decky`
+If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Such as the Lenovo Legion Go and the ASUS ROG Ally/Ally X)</sup></sub>, you can also get the plugin to integrate an option menu for it into game mode with: `ujust setup-decky hhd-decky`
 
 **Be sure to also read the [hhd documentation](https://github.com/hhd-dev/hhd#after-install), some handhelds require specific setting changes/tweaks to function properly.**
 
@@ -309,7 +309,7 @@ Additionally, the following packages are used from other Copr repos:
 | [obs-vkcapture](https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/)                             | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/package/obs-vkcapture/status_image/last_build.png?)                             |
 | [ptyxis](https://gitlab.gnome.org/chergert/ptyxis)                                                            | ![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/ptyxis/status_image/last_build.png?)                                           |
 | [rom-properties](https://copr.fedorainfracloud.org/coprs/kylegospo/rom-properties/)                           | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/rom-properties/package/rom-properties/status_image/last_build.png?)                           |
-| [steamdeck-kmod](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/)                                    | ![Build Status](https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/package/jupiter-kmod/status_image/last_build.png?)                                      |
+| [scx_lavd](https://copr.fedorainfracloud.org/coprs/kylegospo/scx_lavd/)                                       | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/scx_lavd/package/scx_lavd/status_image/last_build.png?)                                      |
 | [wallpaper-engine-kde-plugin](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/) | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/package/wallpaper-engine-kde-plugin/status_image/last_build.png?) |
 | [webapp-manager](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/)                           | ![Build Status](https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/package/webapp-manager/status_image/last_build.png?)                           |
 
