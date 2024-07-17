@@ -1,0 +1,6 @@
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.bazzite.schedulers.pkexec" &&
+         subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+    }
+});
