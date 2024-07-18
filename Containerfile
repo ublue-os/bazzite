@@ -374,7 +374,7 @@ RUN rpm-ostree install \
         libXinerama.i686 \
         libXtst.i686 \
         libXScrnSaver.i686 \
-        https://kojipkgs.fedoraproject.org//packages/NetworkManager/1.46.0/2.fc40/i686/NetworkManager-libnm-1.46.0-2.fc40.i686.rpm \
+        NetworkManager-libnm.i686 \
         nss.i686 \
         pulseaudio-libs.i686 \
         libcurl.i686 \
