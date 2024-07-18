@@ -24,7 +24,6 @@ Open a host terminal and enter the following **commands**:
 - Performance overlay might be reporting inaccurate power consumption. 
 - Adaptive/auto display brightness is currently broken.
    - Manual brightness slider in Steam's UI works without issues.
-- [Experimental sound fix for higher resolution sound quality]( https://github.com/aarron-lee/legion-go-tricks/tree/main/experimental_sound_fix).
 - BIOS and controller firmware **require** Windows to update them.
 - Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode. (See "Desktop Controls" section below)
     - <kbd>**Legion L**</kbd> + <kbd>**X**/**Square**</kbd> (This can be remapped)
