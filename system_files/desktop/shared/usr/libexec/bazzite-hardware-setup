@@ -162,6 +162,8 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
 
     systemctl enable --now jupiter-fan-control.service
     systemctl enable --now vpower.service
+    # Only enabled on Valve Hardware because HHD handles this elsewhere
+    systemctl enable --now scx-lavd.service
   else
     echo "Generic device detected. Performing setup..."
     systemctl disable --now jupiter-fan-control.service

@@ -1,0 +1,15 @@
+[Unit]
+Description=Start scx_lavd scheduler
+ConditionPathIsDirectory=/sys/kernel/sched_ext
+StartLimitIntervalSec=30
+StartLimitBurst=2
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/scx_lavd
+Restart=on-failure
+StandardError=journal
+LogNamespace=sched-ext
+
+[Install]
+WantedBy=graphical.target
