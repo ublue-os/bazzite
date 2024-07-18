@@ -22,6 +22,7 @@ Patch7:         biosupdate.patch
 Patch8:         gnome.patch
 Patch9:         fstrim.patch
 Patch10:        cursor-path.patch
+Patch11:        ntfs.patch
 
 Requires:       python3
 Requires:       python3-evdev
