@@ -47,7 +47,7 @@ screens:
         Hide GRUB Menu:
           description: |
             NOTE: Press the escape key before boot to show the menu
-          default: true
+          default: false
           packages:
           - Hide GRUB: sudo -A ujust configure-grub hide
         Oversteer:
