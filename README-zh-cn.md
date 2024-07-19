@@ -150,27 +150,13 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 
 请参阅我们的[掌上电脑Wiki](https://universal-blue.discourse.group/docs?topic=1038)了解所需要的设置更改以及你的掌机在Steam游戏模式下需要的Decky Loader插件。
 
-如果你在Steam Deck之外的掌机上使用此镜像，你可以通过SimpleDeckyTDP Decky Loader插件获得TDP控制。
-- 首先安装Decky Loader：`ujust setup-decky`
-- 其次安装SimpleDeckyTDP：`ujust setup-decky simpledeckytdp`
-
-如果你使用的是[hhd](https://github.com/hhd-dev/hhd)支持的掌机<sub><sup>(例如联想 Legion Go 和 华硕ASUS Ally)</sup></sub>，你还可以将插件集成到游戏模式的菜单选项中：`ujust setup-decky hhd-decky`
-
 **请务必同时阅读[hhd文档](https://github.com/hhd-dev/hhd#after-install)，一些掌机需要特别的设置更改/调整才能正常运行。**
 
 我们还提供了用于安装各种[CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck)主题的`ujust`命令。这些主题在CSS Loader商店中找不到。这些主题如果被安装，将随着Bazzite一起自动更新。
+
 ```bash
-# 为CSS Loader安装ROG Ally主题(https://github.com/semakusut/SBP-ROG-Ally)
-ujust install-rog-ally-theme
-
-# 为CSS Loader安装Lenovo Legion Go主题(https://github.com/frazse/SBP-Legion-Go-Theme)
-ujust install-legion-go-theme
-
 # 为CSS Loader安装Handheld Controller主题(https://github.com/victor-borges/handheld-controller-glyphs)
 ujust install-hhd-controller-glyph-theme
-
-# 为hhd & CSS Loader安装PS5-to-Xbox glyph主题(https://github.com/frazse/PS5-to-Xbox-glyphs)
-ujust install-hhd-xbox-glyph-theme
 ```
 
 ### GNOME

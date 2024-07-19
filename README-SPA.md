@@ -155,27 +155,9 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 
 #### Computadoras handheld alternativas
 
-Si estas usando esta imagen en otras computadoras Handheld que no son la Steam Deck,  puedes controlar el TDP usando el plugin de Decky Loader llamado SimpleDeckyTDP.
-
-- Primero, instala Decky Loader ejecutando el siguiente comando en una terminal: `ujust setup-decky`
-- Despues, instala SimpleDeckyTDP ejecutando el siguiente comando en una terminal: `ujust setup-decky simpledeckytdp`
-
-Si estas usando una computadora Handheld que tiene soporte por parte de [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Como la Lenovo Legion Go o la ASUS ROG Ally)</sup></sub>, tambien puedes obtener un plugin que integra esta funcionalidad en Game Mode, solo ejecuta el siguiente comando en una terminal: `ujust setup-decky hhd-decky`
-
 **Igualmente, asegurate de tambien leer la [documentación de HHD (en inglés)](https://github.com/hhd-dev/hhd#after-install), algunas computadoras Handheld requieren ciertos ajustes o tweaks especificos para funcionar correctamente.**
 
 Tambien incluimos ciertos comandos de `ujust` para instalar varios temas para [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) que no estan disponibles en su propia tienda. Si instalas estos temas, estos tambien serán actualizados automáticamente junto con Bazzite.
-
-```bash
-# Instala el tema de la ROG Ally para CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
-ujust install-rog-ally-theme
-
-# Instala el tema de la Lenovo Legion Go para CSS Loader (https://github.com/frazse/SBP-Legion-Go-Theme)
-ujust install-legion-go-theme
-
-# Instala el tema para pasar los glifos de Playstation a Xbox (PS5-to-Xbox) para hhd y CSS Loader (https://github.com/frazse/PS5-to-Xbox-glyphs)
-ujust install-hhd-xbox-glyph-theme
-```
 
 ### GNOME
 

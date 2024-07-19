@@ -149,12 +149,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 
 Please refer to our [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) for required setting changes and Decky Loader plugins for Steam Gaming Mode on your specific Handheld.
 
-If you're using this image on a handheld other than the Steam Deck, you can get TDP control via the SimpleDeckyTDP Decky Loader Plugin.
-- First install Decky Loader with: `ujust setup-decky`
-- Then install SimpleDeckyTDP with: `ujust setup-decky simpledeckytdp`
-
-If you're using a handheld supported by [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(Such as the Lenovo Legion Go and the ASUS ROG Ally/Ally X)</sup></sub>, you can also get the plugin to integrate an option menu for it into game mode with: `ujust setup-decky hhd-decky`
-
 **Be sure to also read the [hhd documentation](https://github.com/hhd-dev/hhd#after-install), some handhelds require specific setting changes/tweaks to function properly.**
 
 We also ship `ujust` commands to install various [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) themes that can't be found on the CSS Loader store. These will be automatically updated with Bazzite if installed.

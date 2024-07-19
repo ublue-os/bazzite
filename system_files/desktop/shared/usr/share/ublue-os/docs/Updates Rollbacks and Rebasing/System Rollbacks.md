@@ -5,7 +5,7 @@ title: System Rollbacks
 
 # How do I rollback a system update?
 
-A rollback can to the previous system deployment can be done by **entering this command in a host terminal**: 
+A rollback to the previous system deployment can be done by **entering this command in a host terminal**: 
 ```
 rpm-ostree rollback
 ``` 

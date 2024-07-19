@@ -151,27 +151,13 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 
 Merci de consulter notre [Wiki des consoles portables](https://universal-blue.discourse.group/docs?topic=1038) pour les modifications de paramètres nécessaires et les plugins Decky Loader pour le mode jeu Steam sur votre console portable spécifique.
 
-Si vous utilisez cette image sur une console portable autre que le SteamDeck, vous pouvez contrôler le TDP via le plugin SimpleDeckyTDP de Decky Loader.
-- Installez d'abord Decky Loader avec : `ujust setup-decky`
-- Ensuite, installez SimpleDeckyTDP avec : `ujust setup-decky simpledeckytdp`
-
-Si vous utilisez une console portable prise en charge par [hhd](https://github.com/hhd-dev/hhd) <sub><sup>(comme le Lenovo Legion Go et l'ASUS Ally)</sup></sub>, vous pouvez également obtenir le plugin pour intégrer un menu d'options dans le mode jeu avec : `ujust setup-decky hhd-decky`
-
 **Assurez-vous également de lire la [documentation de hhd](https://github.com/hhd-dev/hhd#after-install), certaines consoles portables nécessitent des modifications/tweaks spécifiques pour fonctionner correctement.**
 
 Nous avons également des commandes `ujust` pour installer divers thèmes [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) qui ne se trouvent pas sur le magasin CSS Loader. Ceux-ci seront automatiquement mis à jour avec Bazzite s'ils sont installés.
+
 ```bash
-# Installer le thème ROG Ally pour CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
-ujust install-rog-ally-theme
-
-# Installer le thème Lenovo Legion Go pour CSS Loader (https://github.com/frazse/SBP-Legion-Go-Theme)
-ujust install-legion-go-theme
-
 # Installer le thème Manette de jeu portable (https://github.com/victor-borges/handheld-controller-glyphs)
 ujust install-hhd-controller-glyph-theme
-
-# Installer le thème glyphes PS5-to-Xbox pour hhd & CSS Loader (https://github.com/frazse/PS5-to-Xbox-glyphs)
-ujust install-hhd-xbox-glyph-theme
 ```
 
 ### GNOME
