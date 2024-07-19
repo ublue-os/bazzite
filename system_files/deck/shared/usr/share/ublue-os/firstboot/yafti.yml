@@ -90,11 +90,6 @@ screens:
           default: true
           packages:
           - Install SteamCMD: ujust install-steamcmd
-        Use EXT4 for SD Cards:
-          description: Disable BTRFS support for SD cards for direct compatibility with SD cards formatted on stock SteamOS (Not recommended).
-          default: false
-          packages:
-          - Switch SteamOS-BTRFS config to EXT4: sudo -A ujust switch-to-ext4
   applications:
     source: yafti.screen.package
     values:
