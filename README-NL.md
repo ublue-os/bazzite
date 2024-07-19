@@ -150,27 +150,13 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 
 Zie onze [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) voor nodige instellingen en Decky Loader plugins voor Steam Gaming Mode op jou Draagbare Computer.
 
-Als je deze image gebruikt op een systeem anders dan de Steam Deck, kan je TDP control krijgen via de SimpleDeckyTDP Decky Loader Plugin.
-- Installeer Decky Loader met: `ujust setup-decky`
-- Daarna, installeer SimpleDeckyTDP met: `ujust setup-decky simpledeckytdp`
-
-Als je een Draagbare Computer gebruikt die  [hhd](https://github.com/hhd-dev/hhd) kan gebruiken <sub><sup>(Zoals de Lenovo Legion Go en de ASUS Ally)</sup></sub>, kan je een plugin krijgen om het optie menu te integreren in Game Mode met: `ujust setup-decky hhd-decky`
-
 **Lees de  [hhd documentatie](https://github.com/hhd-dev/hhd#after-install), somigen Draagbare Computers hebben specifieken tweaks nodig om te werken.**
 
 We hebben ook een `ujust` command om verschilende [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) thema's te installeren, dezen kunnen in de CSS Loader store gevonden worden. De themas worden automatisch geüpdate door Bazzite als die geïntalleerd zijn.
+
 ```bash
-# Installeer ROG Ally Thema voor CSS Loader (https://github.com/semakusut/SBP-ROG-Ally)
-ujust install-rog-ally-theme
-
-# Installeer Lenovo Legion Go Thema voor CSS Loader (https://github.com/frazse/SBP-Legion-Go-Theme)
-ujust install-legion-go-theme
-
 # Installeer Handheld Controller Thema (https://github.com/victor-borges/handheld-controller-glyphs)
 ujust install-hhd-controller-glyph-theme
-
-# Installeer PS5-to-Xbox glyph thema voor hhd & CSS Loader (https://github.com/frazse/PS5-to-Xbox-glyphs)
-ujust install-hhd-xbox-glyph-theme
 ```
 
 ### GNOME
