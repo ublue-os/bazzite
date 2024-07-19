@@ -693,7 +693,6 @@ RUN rpm-ostree override remove \
 RUN rpm-ostree install \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
-    galileo-mura \
     steamdeck-dsp \
     powerbuttond \
     hhd \
