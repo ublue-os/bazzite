@@ -23,6 +23,7 @@ Patch8:         gnome.patch
 Patch9:         fstrim.patch
 Patch10:        cursor-path.patch
 Patch11:        ntfs.patch
+Patch12:        more-time.patch
 
 Requires:       python3
 Requires:       python3-evdev
