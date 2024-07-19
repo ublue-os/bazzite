@@ -50,16 +50,6 @@ screens:
           default: true
           packages:
           - Hide GRUB: sudo -A ujust configure-grub hide
-        Install Game Mode Startup Video:
-          description: Adds a Bazzite themed startup video for Steam's game mode.
-          default: true
-          packages:
-          - Install Video: ujust install-gamemode-video
-        Fix Steam Download Speed:
-          description: Adds a config file that fixes download speed under Steam for Linux.
-          default: true
-          packages:
-          - Fix Download Speed: ujust fix-steam-download-speed
         Oversteer:
           description: Application to control supported steering wheels
           default: false

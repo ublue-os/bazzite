@@ -4,12 +4,32 @@ IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 
 DECK_OPTION=""
-# If Steam has been launched before we can safely launch with -steamdeck
-# to maintain the gamemode update branch
-if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
-  if [ -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]; then
+
+if [ -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]; then
+  # If Steam has been launched before we can safely launch with -steamdeck
+  # to maintain the gamemode update branch
+  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
     DECK_OPTION="-steamdeck"
   fi
+
+  # Apply Steam Download Speed Fix if not already applied
+  if [ ! -f $HOME/.local/share/Steam/steam_dev.cfg ]; then
+    bash -c 'printf "@nClientDownloadEnableHTTP2PlatformLinux 0\n@fDownloadRateImprovementToAddAnotherConnection 1.0\n" > $HOME/.local/share/Steam/steam_dev.cfg'
+  fi
+
+  # Install Bazzite's Steam Game Mode Startup & Suspend Videos
+  mkdir -p $HOME/.local/share/Steam/config/uioverrides/movie
+  if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm ]; then
+    cp /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
+  fi
+
+  if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm ]; then
+    cp /usr/share/ublue-os/bazzite/bazzite-suspend.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
+  fi
+
+  if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm ]; then
+    cp /usr/share/ublue-os/bazzite/bazzite-suspend.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
+  fi  
 fi
 
 switcheroo_state="$(switcherooctl list)"

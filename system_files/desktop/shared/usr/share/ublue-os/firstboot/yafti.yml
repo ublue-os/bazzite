@@ -22,16 +22,6 @@ screens:
           default: true
           packages:
           - Set input group: sudo -A ujust add-user-to-input-group
-        Install Big Picture Mode Startup Video:
-          description: Adds a Bazzite themed startup video for Steam's Big Picture Mode.
-          default: true
-          packages:
-          - Install Video: ujust install-gamemode-video
-        Fix Steam Download Speed:
-          description: Adds a config file that fixes download speed under Steam for Linux.
-          default: true
-          packages:
-          - Fix Download Speed: ujust fix-steam-download-speed
         Sunshine:
           description: A self-hosted game stream host for Moonlight
           default: false
