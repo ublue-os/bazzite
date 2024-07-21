@@ -874,6 +874,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 
 # Cleanup & Finalize
 RUN echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
+    mkdir -p /var/tmp && chmod 1777 /var/tmp && \
     /usr/libexec/containerbuild/image-info && \
     /usr/libexec/containerbuild/build-initramfs && \
     /usr/libexec/containerbuild/cleanup.sh && \
