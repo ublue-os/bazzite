@@ -52,6 +52,24 @@ semodule -X 300 -i my-hl2linux.pp
 
 2. Reboot your device
 
+### If you want to undo this change eventually:
+
+>Disable **or** remove the module.
+
+#### Disable it:
+
+```command
+semodule -X 300 -d my-hl2linux
+```
+
+#### Remove and delete it:
+
+```command
+semodule -X 300 -r my-hl2linux
+```
+
+The `.pp` file should just be in `/root` if you want to remove that.
+
 ## Not Launching
 
 If a 32-bit Source 1 engine game is not opening due to [tmalloc libraries issues](https://github.com/ValveSoftware/csgo-osx-linux/issues/3229), then open a host terminal and **enter**:
