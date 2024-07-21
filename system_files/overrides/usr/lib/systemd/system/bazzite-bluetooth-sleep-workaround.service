@@ -1,6 +1,7 @@
 [Unit]
 Description=Reset bluetooth controller before sleep
 Before=sleep.target
+Wants=sleep.target
 StopWhenUnneeded=yes
 
 [Service]
