@@ -4,7 +4,7 @@
 
 Name:           gamescope-legacy
 Version:        3.14.2
-Release:        %autorelease
+Release:        2.bazzite
 Summary:        Legacy builds of gamescope, a micro-compositor for video games on Wayland
 
 License:        BSD
@@ -14,7 +14,10 @@ Source0:        %{url}/archive/%{version}/gamescope-%{version}.tar.gz
 Source1:        stb.pc
 Source2:        https://github.com/Joshua-Ashton/reshade/archive/%{reshade_commit}/reshade-%{reshade_shortcommit}.tar.gz
 
-Patch01:        0001-cstdint.patch
+Patch0:         0001-cstdint.patch
+
+# https://hhd.dev/
+Patch1:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
