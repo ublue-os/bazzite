@@ -33,6 +33,5 @@ STEAMOS_BTRFS_SDCARD_NTFS_MOUNT_OPTS="rw,noatime,lazytime,uid=1000,gid=1000,big_
 # Defines the SD card format options to pass to mkfs.ntfs (default: "-f -F")
 STEAMOS_BTRFS_SDCARD_NTFS_FORMAT_OPTS="-f -F"
 # Toggle to enable/disable the bind mount for Steam's compatdata/ folder on fat, exfat, ntfs filesystems.
-# Setting it to 0 will make the eject functionality in the Steam client work again but proton games will not start on it.
-# DO NOT ENABLE THE BELOW VARIABLE ON BAZZITE
+# Setting it to 1 will prevent the eject functionality in the Steam client from working but proton games will start.
 STEAMOS_BTRFS_SDCARD_COMPATDATA_BIND_MOUNT="0"
