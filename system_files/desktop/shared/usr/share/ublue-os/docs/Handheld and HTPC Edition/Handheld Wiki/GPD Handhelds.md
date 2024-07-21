@@ -36,27 +36,21 @@ For more information, check out the [GPD Win Tips and Tricks guide](https://gith
 **Status**: Gold
 
 ## Post-Installation Setup
+
 - Complete the Bazzite Portal
 - Login to Steam
 - Reboot device
 - Configure the HHD Overlay by opening it with QAM button
 -  Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode (See "Desktop Controls" section below)
--  Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode. (See "Desktop Controls" section below)
    - <kbd>Xbox</kbd> + <kbd>X</kbd> (This can be remapped)
-    - GPD devices also have a physical switch you can toggle to enable a separate desktop/mouse mode
-- Steam Gaming Mode **Display** settings that are recommended to be changed:
-   - `Use Native Color Temperature` - Enabled
-   - `Enable Unified Frame Limit Management` - Disabled
-- Quick Access Menu Changes
-   - Use the separated FPS limiter for limiting framerate.
+    - GPD devices also have a physical switch you can toggle to enable a separate desktop/mouse mode.
 
 ## Workarounds / Known Issues
 
-- Games can sometimes default to 800p resolution
+- Games can sometimes default to 800p resolution.
     - Manually change the resolution per game in the `Steam Settings > Properties > Game Resolution` to either `Native` or other higher resolutions.
-- Suspend/resume delay (The Win 4 gyro fix can also help odd suspend behavior on the Win Max 2)
-    - Run this [script](https://github.com/aarron-lee/gpd-win-tricks/blob/161eefe9db4aae958805a8038697b12266de3099/wm2-suspend-udev.sh) in a host terminal.
-        - Download it and mark it as executable in the file properties, and right click it to give the option to run in the terminal.
+- Fix controls and gyro after suspend-resume cycles (confirmed to work on both the 7840u and 6800u variants).
+    - Run these [commands](https://github.com/aarron-lee/gpd-win-tricks/blob/df0cb72ee11cfd0ba30c8bcffe0e395b99b713d3/win4-gyro-suspend-fix/README.md) in a host terminal.
 
 ## External Resource
 
