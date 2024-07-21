@@ -147,7 +147,7 @@ else
   echo "No karg changes needed"
 fi
 
-if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
+if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   if /usr/libexec/hwsupport/valve-hardware; then
     if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
       RESOLUTION=$(lshw -json -c display | jq -r .[]."configuration"."resolution")

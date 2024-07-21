@@ -5,7 +5,7 @@ IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 
 DECK_OPTION=""
 
-if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
+if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   if [ ! -d $HOME/.local/share/Steam ]; then
     # Set up steam with the bootstrap before starting it, this allows steam to run for the first time even with no network access
     if [[ -f "/etc/first-boot/bootstraplinux_ubuntu12_32.tar.xz" ]]; then
