@@ -519,6 +519,7 @@ RUN rpm-ostree install \
         gamescope.x86_64 \
         gamescope-libs.i686 \
         gamescope-shaders \
+        gamescope-legacy \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo \
