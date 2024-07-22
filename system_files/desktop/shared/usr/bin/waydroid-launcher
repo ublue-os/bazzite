@@ -17,6 +17,7 @@ fi
 # Check if Waydroid is initialized, send user to the docs
 if grep -qz 'not initialized' <<< $(/usr/bin/waydroid status); then
 	xdg-open "https://universal-blue.discourse.group/docs?topic=32"
+	exit 1
 fi
 
 launch_waydroid() {
