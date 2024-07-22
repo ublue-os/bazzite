@@ -225,6 +225,7 @@ fi
 if [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:"  ]]; then
   echo 0 | sudo tee /sys/devices/platform/asus-nb-wmi/mcu_powersave
 elif [[ ":ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
+  echo 0 | sudo tee /sys/devices/platform/asus-nb-wmi/mcu_powersave
   modprobe -r amd_pmf
   echo "blacklist amd_pmf" | sudo tee /etc/modprobe.d/hhd-blacklist.conf
 fi
