@@ -176,3 +176,7 @@ ptyxis-transparency opacity="0.95":
     else
       printf "Value must be between 0 and 1: %s.\n" "{{ opacity }}"
     fi
+
+# mod for bluefin-style cli bling
+bluefin-cli:
+    @/usr/libexec/ublue-bling.sh
