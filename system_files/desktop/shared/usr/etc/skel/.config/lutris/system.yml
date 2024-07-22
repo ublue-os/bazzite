@@ -1,0 +1,6 @@
+system:
+  disable_runtime: true
+  gamemode: false
+  gamescope: false
+  pulse_latency: true
+  reset_desktop: true

@@ -66,9 +66,9 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 24.1.3
+%global ver 24.1.4
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        101.bazzite.{{{ git_dir_version }}}
+Release:        100.bazzite.{{{ git_dir_version }}}
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
 
@@ -78,14 +78,10 @@ Source0:        https://archive.mesa3d.org/mesa-%{ver}.tar.xz
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
-Patch0:         gnome-shell-glthread-disable.patch
-
-# Performance bump
-# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25576
-Patch4: 25576.patch
+Patch10:        gnome-shell-glthread-disable.patch
 
 # https://gitlab.com/evlaV/mesa/
-Patch5: valve.patch
+Patch20:        valve.patch
 
 BuildRequires:  meson >= 1.3.0
 BuildRequires:  gcc
@@ -393,11 +389,7 @@ Obsoletes:      mesa-vulkan-devel < %{?epoch:%{epoch}:}%{version}-%{release}
 The drivers with support for the Vulkan API.
 
 %prep
-%autosetup -n %{name}-%{ver} -N
-%autopatch -p1 -M 99
-%ifarch s390x
-%autopatch -p1 -m 100
-%endif
+%autosetup -n %{name}-%{ver} -p1
 cp %{SOURCE1} docs/
 
 %build

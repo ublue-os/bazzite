@@ -1,0 +1,21 @@
+From 88ce1e5de62886aa14c74421cde6130e16e70d7d Mon Sep 17 00:00:00 2001
+From: psykose <alice@ayaya.dev>
+Date: Sat, 6 Jul 2024 20:52:50 +0200
+Subject: [PATCH] utils: include limits.h for PATH_MAX
+
+---
+ src/Utils/Process.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/Utils/Process.cpp b/src/Utils/Process.cpp
+index e71786f75..3e748e0d3 100644
+--- a/src/Utils/Process.cpp
++++ b/src/Utils/Process.cpp
+@@ -21,6 +21,7 @@
+ #include <pthread.h>
+ #include <stdlib.h>
+ #include <dirent.h>
++#include <limits.h>
+ #include <unistd.h>
+ #include <sys/types.h>
+ #include <signal.h>

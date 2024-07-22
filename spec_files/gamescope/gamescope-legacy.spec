@@ -1,36 +1,24 @@
 %global libliftoff_minver 0.4.1
-
+%global reshade_commit 4245743a8c41abbe3dc73980c1810fe449359bf1
+%global reshade_shortcommit %(c=%{reshade_commit}; echo ${c:0:7})
 %global _default_patch_fuzz 2
-%global build_timestamp %(date +"%Y%m%d")
-%global gamescope_tag 3.14.24
 
-Name:           gamescope
-Version:        100.%{gamescope_tag}
-Release:        18.bazzite
-Summary:        Micro-compositor for video games on Wayland
+Name:           gamescope-legacy
+Version:        3.14.2
+Release:        2.bazzite
+Summary:        Legacy builds of gamescope, a micro-compositor for video games on Wayland
 
 License:        BSD
 URL:            https://github.com/ValveSoftware/gamescope
-
+Source0:        %{url}/archive/%{version}/gamescope-%{version}.tar.gz
 # Create stb.pc to satisfy dependency('stb')
-Source0:        stb.pc
+Source1:        stb.pc
+Source2:        https://github.com/Joshua-Ashton/reshade/archive/%{reshade_commit}/reshade-%{reshade_shortcommit}.tar.gz
 
 Patch0:         0001-cstdint.patch
-Patch1:         0002-limits.patch
 
-# https://github.com/ChimeraOS/gamescope
-Patch2:         chimeraos.patch
 # https://hhd.dev/
-Patch3:         disable-steam-touch-click-atom.patch
-Patch4:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
-# https://github.com/ValveSoftware/gamescope/pull/1281
-Patch5:         deckhd.patch
-# https://github.com/ValveSoftware/gamescope/issues/1398
-Patch6:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
-# https://github.com/ValveSoftware/gamescope/issues/1369
-Patch7:         revert-299bc34.patch
-# https://github.com/ValveSoftware/gamescope/pull/1231
-Patch8:         1231.patch
+Patch1:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -41,10 +29,7 @@ BuildRequires:  glm-devel
 BuildRequires:  google-benchmark-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  libXcursor-devel
-BuildRequires:  libeis-devel
-BuildRequires:  pixman-devel
 BuildRequires:  pkgconfig(libdisplay-info)
-BuildRequires:  pkgconfig(pixman-1)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xdamage)
 BuildRequires:  pkgconfig(xcomposite)
@@ -63,7 +48,7 @@ BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(libavif)
-BuildRequires:  (pkgconfig(wlroots) >= 0.18.0 with pkgconfig(wlroots) < 0.19.0)
+BuildRequires:  (pkgconfig(wlroots) >= 0.17.0 with pkgconfig(wlroots) < 0.18)
 BuildRequires:  (pkgconfig(libliftoff) >= 0.4.1 with pkgconfig(libliftoff) < 0.5)
 BuildRequires:  pkgconfig(libcap)
 BuildRequires:  pkgconfig(hwdata)
@@ -79,61 +64,50 @@ BuildRequires:  stb_image_resize-devel
 BuildRequires:  stb_image_resize-static
 BuildRequires:  stb_image_write-devel
 BuildRequires:  stb_image_write-static
+BuildRequires:  vkroots-devel
 BuildRequires:  /usr/bin/glslangValidator
-BuildRequires:  libdecor-devel
-BuildRequires:  libXdamage-devel
-BuildRequires:  xorg-x11-server-Xwayland-devel
-BuildRequires:  git
 
 # libliftoff hasn't bumped soname, but API/ABI has changed for 0.2.0 release
 Requires:       libliftoff%{?_isa} >= %{libliftoff_minver}
 Requires:       xorg-x11-server-Xwayland
-Requires:       gamescope-libs = %{version}-%{release}
-Requires:       gamescope-libs(x86-32) = %{version}-%{release}
+
+Requires:       gamescope-libs
+Requires:       gamescope-libs(x86-32)
+
 Recommends:     mesa-dri-drivers
 Recommends:     mesa-vulkan-drivers
 
 %description
-%{name} is the micro-compositor optimized for running video games on Wayland.
-
-%package libs
-Summary:	libs for %{name}
-%description libs
-%summary
+%{name} is the micro-compositor optimized for running video games on Wayland. This is a legacy build primarily intended for use by Polaris GPUs.
 
 %prep
-git clone --depth 1 --branch %{gamescope_tag} %{url}.git
-cd gamescope
-git submodule update --init --recursive
+%autosetup -p1 -a2 -N -n gamescope-%{version}
+# Install stub pkgconfig file
 mkdir -p pkgconfig
-cp %{SOURCE0} pkgconfig/stb.pc
+cp %{SOURCE1} pkgconfig/stb.pc
 
 # Replace spirv-headers include with the system directory
 sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/meson.build
 
+# Push in reshade from sources instead of submodule
+rm -rf src/reshade && mv reshade-%{reshade_commit} src/reshade
+
 %autopatch -p1
 
 %build
-cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
-%meson -Dpipewire=enabled -Dinput_emulation=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dsdl2_backend=enabled
+%meson -Dpipewire=enabled -Denable_gamescope_wsi_layer=false -Denable_openvr_support=false -Dforce_fallback_for=[]
 %meson_build
 
 %install
-cd gamescope
-%meson_install --skip-subprojects
+%meson_install
+# Rename to not conflict with the base package
+mv %{buildroot}%{_bindir}/gamescope %{buildroot}%{_bindir}/gamescope-legacy
 
 %files
-%license gamescope/LICENSE
-%doc gamescope/README.md
-%caps(cap_sys_nice=eip) %{_bindir}/gamescope
-%{_bindir}/gamescopectl
-%{_bindir}/gamescopestream
-%{_bindir}/gamescopereaper
-
-%files libs
-%{_libdir}/libVkLayer_FROG_gamescope_wsi_*.so
-%{_datadir}/vulkan/implicit_layer.d/VkLayer_FROG_gamescope_wsi.*.json
+%license LICENSE
+%doc README.md
+%{_bindir}/gamescope-legacy
 
 %changelog
-{{{ git_dir_changelog }}}
+%autochangelog

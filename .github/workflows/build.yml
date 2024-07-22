@@ -1,32 +1,32 @@
 name: Build Bazzite
 on:
   schedule:
-    - cron: '40 4 * * 2,5' # 4:40 utc tues thurs
+    - cron: "40 4 * * 2,5" # 4:40 utc tues thurs
   pull_request:
     branches:
       - testing
       - unstable
     paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - 'installer/**'
-      - 'repo_content/**'
-      - 'spec_files/**'
-      - 'post_install_files/**'
-      - 'press_kit/**'
-      - '.github/workflows/build_iso.yml'
+      - "**.md"
+      - "**.txt"
+      - "installer/**"
+      - "repo_content/**"
+      - "spec_files/**"
+      - "post_install_files/**"
+      - "press_kit/**"
+      - ".github/workflows/build_iso.yml"
   push:
     branches:
       - testing
       - unstable
     paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - 'repo_content/**'
-      - 'spec_files/**'
-      - 'post_install_files/**'
-      - 'press_kit/**'
-      - '.github/workflows/build_iso.yml'
+      - "**.md"
+      - "**.txt"
+      - "repo_content/**"
+      - "spec_files/**"
+      - "post_install_files/**"
+      - "press_kit/**"
+      - ".github/workflows/build_iso.yml"
   merge_group:
   workflow_dispatch:
 env:
@@ -57,7 +57,7 @@ jobs:
           - fedora_version: 40
             is_latest_version: true
             is_stable_version: true
-            kernel_flavor: fsync  # must match a kernel_flavor from akmods repo
+            kernel_flavor: fsync # must match a kernel_flavor from akmods repo
     steps:
       - name: Define env.IMAGE_FLAVOR
         run: |
@@ -260,6 +260,25 @@ jobs:
           oci: false
           extra-args: |
             --target=${{ matrix.base_name }}
+
+      - name: Check Secureboot
+        shell: bash
+        run: |
+          set -x
+          if [[ ! $(command -v sbverify) || ! $(command -v curl) || ! $(command -v openssl) ]]; then
+            sudo apt update
+            sudo apt install sbsigntool curl openssl
+          fi
+          podman run -d --rm --name ${{env.IMAGE_NAME}}-$(echo "${{ steps.generate-tags.outputs.alias_tags }}" | cut -d " " -f 1) "${{ env.IMAGE_NAME }}":$(echo "${{ steps.generate-tags.outputs.alias_tags }}" | cut -d " " -f 1) sleep 1000
+          podman cp ${{env.IMAGE_NAME}}-$(echo "${{ steps.generate-tags.outputs.alias_tags }}" | cut -d " " -f 1):/usr/lib/modules/${{ env.KERNEL_VERSION }}/vmlinuz .
+          podman rm -f ${{env.IMAGE_NAME}}-$(echo "${{ steps.generate-tags.outputs.alias_tags }}" | cut -d " " -f 1)
+          sbverify --list vmlinuz
+          curl --retry 3 -Lo kernel-sign.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key.der
+          curl --retry 3 -Lo akmods.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key_2.der
+          openssl x509 -in kernel-sign.der -out kernel-sign.crt
+          openssl x509 -in akmods.der -out akmods.crt
+          sbverify --cert kernel-sign.crt vmlinuz || exit 1
+          sbverify --cert akmods.crt vmlinuz || exit 1
 
       # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
       # https://github.com/macbre/push-to-ghcr/issues/12
