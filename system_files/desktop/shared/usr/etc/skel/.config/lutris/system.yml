@@ -5,3 +5,4 @@ system:
   prefer_system_libs: true
   pulse_latency: true
   reset_desktop: true
+  terminal_app: /usr/bin/ptyxis
