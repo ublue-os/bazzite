@@ -1,15 +1,13 @@
 [Unit]
 Description=Reset bluetooth controller before sleep
 Before=sleep.target
-Wants=sleep.target
 StopWhenUnneeded=yes
 
 [Service]
 Type=oneshot
 ExecCondition=/usr/bin/systemctl is-enabled bluetooth.service
 ExecStart=/usr/bin/systemctl restart bluetooth.service
-RemainAfterExit=yes
 TimeoutSec=10s
 
 [Install]
-WantedBy=default.target
+WantedBy=sleep.target
