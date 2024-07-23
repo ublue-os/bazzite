@@ -5,7 +5,7 @@
 
 Name:           gamescope-legacy
 Version:        3.14.2
-Release:        2.bazzite
+Release:        3.bazzite
 Summary:        Legacy builds of gamescope, a micro-compositor for video games on Wayland
 
 License:        BSD
@@ -19,6 +19,9 @@ Patch0:         0001-cstdint.patch
 
 # https://hhd.dev/
 Patch1:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
+
+# ChimeraOS
+Patch2:         legacy-720p.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
