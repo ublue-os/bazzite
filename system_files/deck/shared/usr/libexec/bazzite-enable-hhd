@@ -9,13 +9,6 @@ fi
 systemctl enable --now hhd@$(systemd-escape $1).service
 # Ensure HHD is never running for the root user
 systemctl disable --now hhd@root.service
-
-if /usr/libexec/hwsupport/hhd-tdp-supported-hardware; then
-	# Disable PPD
-	systemctl disable --now power-profiles-daemon.service
-	systemctl mask power-profiles-daemon.service
-else
-	# Restore PPD if previously disabled
-	systemctl unmask power-profiles-daemon.service
-	systemctl enable --now power-profiles-daemon.service
-fi
+# Disable PPD
+systemctl disable --now power-profiles-daemon.service
+systemctl mask power-profiles-daemon.service

@@ -169,12 +169,13 @@ fi
 # Deck Build Setup
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   # HHD Setup
-  echo 'Enabling HHD'
-  pkexec /usr/libexec/bazzite-enable-hhd "$USER"
-  
-  if [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/applications/hhd-ui.desktop" ]; then
-    # Remove an old HHD desktop override done on Steam Decks when HHD did not support them
-    rm "${XDG_DATA_HOME:-$HOME/.local/share}/applications/hhd-ui.desktop"
+  if /usr/libexec/hwsupport/hhd-supported-hardware; then
+    echo 'Enabling HHD'
+    pkexec /usr/libexec/bazzite-enable-hhd "$USER"
+  elif /usr/libexec/hwsupport/valve-hardware; then
+    echo 'Hiding HHD-UI on Deck hardware'
+    cp /usr/share/applications/hhd-ui.desktop "${XDG_DATA_HOME:-$HOME/.local/share}/applications/hhd-ui.desktop"
+    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' "${XDG_DATA_HOME:-$HOME/.local/share}/applications/hhd-ui.desktop"
   fi
 
   # SDGyroDSU Setup
