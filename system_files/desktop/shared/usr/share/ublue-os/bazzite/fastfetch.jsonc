@@ -35,8 +35,9 @@
             "text": "/usr/libexec/bazzite-fetch-image"
         },
         {
-            "type": "os",
-            "key": " 󰣛"
+            "type": "command",
+            "key": " 󰣛",
+            "text": "awk -F= '/PRETTY_NAME/ {gsub(/\"/, \"\", $2); print $2}' /etc/os-release"
         },
         {
             "type": "kernel",
