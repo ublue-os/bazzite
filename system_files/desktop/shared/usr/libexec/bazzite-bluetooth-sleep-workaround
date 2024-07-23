@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+
+devices=$(bluetoothctl devices Connected | awk '{print $2}')
+
+# shellcheck disable=SC2068
+for dev in $devices; do
+    [ -n "$dev" ] &&  bluetoothctl disconnect "$dev"
+done

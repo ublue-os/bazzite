@@ -6,7 +6,7 @@ StopWhenUnneeded=yes
 [Service]
 Type=oneshot
 ExecCondition=/usr/bin/systemctl is-enabled bluetooth.service
-ExecStart=/usr/bin/systemctl restart bluetooth.service
+ExecStart=/usr/libexec/bazzite-bluetooth-sleep-workaround
 TimeoutSec=10s
 
 [Install]
