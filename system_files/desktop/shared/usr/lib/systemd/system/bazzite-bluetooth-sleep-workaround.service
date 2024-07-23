@@ -9,6 +9,7 @@ Type=oneshot
 ExecCondition=/usr/bin/systemctl is-enabled bluetooth.service
 ExecStart=/usr/bin/systemctl restart bluetooth.service
 RemainAfterExit=yes
+TimeoutSec=10s
 
 [Install]
 WantedBy=default.target
