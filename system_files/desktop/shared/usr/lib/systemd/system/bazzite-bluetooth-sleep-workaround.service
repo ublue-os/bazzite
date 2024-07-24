@@ -1,5 +1,5 @@
 [Unit]
-Description=Reset bluetooth controller before sleep
+Description=Disconnect bluetooth controllers before sleep
 Before=sleep.target
 ConditionFileIsExecutable=/usr/libexec/bazzite-bluetooth-sleep-workaround
 RefuseManualStart=yes
