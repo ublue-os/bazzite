@@ -9,7 +9,6 @@ SUPPORT_URL="https://discord.bazzite.gg"
 BUG_SUPPORT_URL="https://github.com/ublue-os/bazzite/issues/"
 LOGO_ICON="bazzite-logo-icon"
 LOGO_COLOR="0;38;2;138;43;226"
-CODE_NAME="Holographic"
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_REF="ostree-image-signed:docker://ghcr.io/$IMAGE_VENDOR/$IMAGE_NAME"
@@ -41,6 +40,15 @@ cat > $IMAGE_INFO <<EOF
   "fedora-version": "$FEDORA_MAJOR_VERSION"
 }
 EOF
+
+CODE_NAME="Base"
+
+case $BASE_IMAGE_NAME in
+  *nvidia*)
+    CODE_NAME="Nvidia";;
+  *deck*|*ally*)
+    CODE_NAME="Deck";;
+esac
 
 # OS Release File
 sed -i "s/VARIANT_ID.*/VARIANT_ID=$IMAGE_NAME/" /usr/lib/os-release
