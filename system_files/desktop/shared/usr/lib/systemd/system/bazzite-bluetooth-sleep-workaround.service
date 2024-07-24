@@ -2,6 +2,7 @@
 Description=Reset bluetooth controller before sleep
 Before=sleep.target
 StopWhenUnneeded=yes
+RefuseManualStart=yes
 
 [Service]
 Type=oneshot
