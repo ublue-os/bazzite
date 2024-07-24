@@ -250,6 +250,14 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         /tmp/akmods-extra-rpms/kmods/*bmi260*.rpm \
         /tmp/akmods-extra-rpms/kmods/*ryzen-smu*.rpm && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+            fwupd \
+            fwupd-efi \
+            fwupd-plugin-flashrom \
+            fwupd-plugin-modem-manager \
+            fwupd-plugin-uefi-capsule-data && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
