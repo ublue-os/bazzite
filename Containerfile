@@ -254,7 +254,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
             fwupd \
-            fwupd-efi \
             fwupd-plugin-flashrom \
             fwupd-plugin-modem-manager \
             fwupd-plugin-uefi-capsule-data && \
