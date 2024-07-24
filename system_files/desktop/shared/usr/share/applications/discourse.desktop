@@ -3,8 +3,7 @@ Type=Application
 NoDisplay=false
 Terminal=false
 Exec=xdg-open https://universal-blue.discourse.group/c/bazzite/
-Icon=/usr/share/ublue-os/bluefin/docs.svg
+Icon=/usr/share/ublue-os/bazzite/docs.svg
 Name=Forums
 Comment=Discourse forums
 Categories=Utility;
-
