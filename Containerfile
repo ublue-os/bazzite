@@ -8,7 +8,6 @@ ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
 ARG JUPITER_KERNEL_VERSION="${JUPITER_KERNEL_VERSION:-jupiter-20240605.1}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
-ARG CODE_NAME="${CODE_NAME:-Holographic}"
 
 FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION} AS akmods
 FROM ghcr.io/ublue-os/akmods-extra:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION} AS akmods-extra
@@ -25,7 +24,6 @@ ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
 ARG JUPITER_KERNEL_VERSION="${JUPITER_KERNEL_VERSION:-jupiter-20240605.1}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
-ARG CODE_NAME="${CODE_NAME:-Holographic}"
 
 COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 
@@ -652,26 +650,6 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
-    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        sed -i '/^PRETTY_NAME/s/Kinoite/From Fedora Kinoite/' /usr/lib/os-release \
-    ; else \
-        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/yad-icon-browser.desktop && \
-        sed -i '/^PRETTY_NAME/s/Silverblue/From Fedora Silverblue/' /usr/lib/os-release \
-    ; fi && \
-    sed -i '/^PRETTY_NAME/s/Fedora Linux/Bazzite/' /usr/lib/os-release &&\
-    sed -i 's/^NAME=.*/NAME="Bazzite"/' /usr/lib/os-release && \
-    sed -i 's|^HOME_URL=.*|HOME_URL="https://bazzite.gg"|' /usr/lib/os-release && \
-    sed -i 's|^DOCUMENTATION_URL=.*|DOCUMENTATION_URL="https://docs.bazzite.gg"|' /usr/lib/os-release && \
-    sed -i 's|^SUPPORT_URL=.*|SUPPORT_URL="https://discord.bazzite.gg"|' /usr/lib/os-release && \
-    sed -i 's|^BUG_REPORT_URL=.*|BUG_REPORT_URL="https://github.com/ublue-os/bazzite/issues/"|' /usr/lib/os-release && \
-    sed -i 's|^CPE_NAME="cpe:/o:fedoraproject:fedora|CPE_NAME="cpe:/o:universal-blue:bazzite|' /usr/lib/os-release && \
-    sed -i 's/^DEFAULT_HOSTNAME=.*/DEFAULT_HOSTNAME="bazzite"/' /usr/lib/os-release && \
-    sed -i 's/^ID=.*/ID=bazzite\nID_LIKE="rhel centos fedora"/' /usr/lib/os-release && \
-    sed -i 's/^LOGO=.*/LOGO=bazzite-logo-icon/' /usr/lib/os-release && \
-    sed -i 's/^ANSI_COLOR=.*/ANSI_COLOR="0;38;2;138;43;226"/' /usr/lib/os-release && \
-    sed -i '/^REDHAT_BUGZILLA_PRODUCT=/d; /^REDHAT_BUGZILLA_PRODUCT_VERSION=/d; /^REDHAT_SUPPORT_PRODUCT=/d; /^REDHAT_SUPPORT_PRODUCT_VERSION=/d' /usr/lib/os-release && \
-    echo "VERSION_CODENAME=\"$CODE_NAME\"" >> /usr/lib/os-release && \
-    echo "BUILD_ID=\"$SHA_HEAD_SHORT\"" >> /usr/lib/os-release && \
     systemctl disable waydroid-container.service && \
     curl -Lo /usr/etc/dxvk-example.conf https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf && \
     curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/KyleGospo/waydroid-scripts/main/waydroid-choose-gpu.sh && \
