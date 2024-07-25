@@ -85,7 +85,7 @@ fi
 if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   echo 'Running setup for Kinoite'
 
-  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
+  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
     echo 'Running setup for Kinoite on Steam Deck'
     if [[ ! -f "$HOME/Desktop/Return.desktop" ]]; then
       echo 'Re-creating return to gamemode shortcut'
@@ -151,7 +151,7 @@ else
     ln -s "/usr/share/doc/mangohud/MangoHud.conf.example" "$TEMPLATES_DIR/MangoHud.conf"
   fi
 
-  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
+  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
 
     echo 'Tweaking GNOME indexer'
@@ -167,7 +167,7 @@ else
 fi
 
 # Deck Build Setup
-if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
+if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   # HHD Setup
   if /usr/libexec/hwsupport/hhd-supported-hardware; then
     echo 'Enabling HHD'

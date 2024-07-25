@@ -1,0 +1,8 @@
+system:
+  disable_runtime: true
+  gamemode: false
+  gamescope: false
+  prefer_system_libs: true
+  pulse_latency: true
+  reset_desktop: true
+  terminal_app: /usr/bin/ptyxis

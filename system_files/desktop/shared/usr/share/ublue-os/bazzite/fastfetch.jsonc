@@ -36,7 +36,8 @@
         },
         {
             "type": "os",
-            "key": " 󰣛"
+            "key": " 󰣛",
+            "format": "{pretty-name}"
         },
         {
             "type": "kernel",

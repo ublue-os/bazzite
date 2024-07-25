@@ -1,0 +1,33 @@
+From 072ebb67cd4a88fd0f5db22a92a46f8316f28a46 Mon Sep 17 00:00:00 2001
+From: Matthew Anderson <ruinairas1992@gmail.com>
+Date: Tue, 25 Jul 2023 18:05:05 -0500
+Subject: [PATCH] Set default to native resolution of display if Steam tries to
+ force 720p/800p
+
+You can select 720p/800p still in game or via Steam's resolution setting
+Steam > Settings > Display > Resolution
+
+This effectively reverts the changes Valve made a year ago forcing us to
+720p.
+---
+ src/steamcompmgr.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 52dd8d1cf..5b0fa6e52 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -5202,6 +5202,13 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 			size_t server_idx = size_t{ xwayland_mode_ctl[ 0 ] };
+ 			int width = xwayland_mode_ctl[ 1 ];
+ 			int height = xwayland_mode_ctl[ 2 ];
++
++			if ( g_nOutputWidth != 1280 && width == 1280 )
++			{
++				width = g_nOutputWidth;
++				height = g_nOutputHeight;
++			}
++
+ 			bool allowSuperRes = !!xwayland_mode_ctl[ 3 ];
+ 
+ 			if ( !allowSuperRes )

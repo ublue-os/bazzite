@@ -24,7 +24,7 @@ setup-waydroid ACTION="":
       OPTION=$(Choose "Initialize Waydroid" "Configure Waydroid" "Select GPU for Waydroid" "Reset Waydroid (also removes waydroid-related files from user folder)")
     fi
     if [[ "${OPTION,,}" =~ ^init ]]; then
-      if [[ ! $IMAGE_NAME =~ "deck" && ! $IMAGE_NAME =~ "ally" && ! $IMAGE_NAME =~ "framegame" ]]; then
+      if [[ ! $IMAGE_NAME =~ "deck" && ! $IMAGE_NAME =~ "ally" ]]; then
         sudo systemctl enable --now waydroid-container
       fi
       sudo waydroid init -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor'

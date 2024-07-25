@@ -147,7 +147,7 @@ else
   echo "No karg changes needed"
 fi
 
-if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegame" ]]; then
+if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   if /usr/libexec/hwsupport/valve-hardware; then
     if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
       RESOLUTION=$(lshw -json -c display | jq -r .[]."configuration"."resolution")
@@ -162,8 +162,6 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" || $IMAGE_NAME =~ "framegam
 
     systemctl enable --now jupiter-fan-control.service
     systemctl enable --now vpower.service
-    # Only enabled on Valve Hardware because HHD handles this elsewhere
-    systemctl enable --now scx-lavd.service
   else
     echo "Generic device detected. Performing setup..."
     systemctl disable --now jupiter-fan-control.service
@@ -227,6 +225,7 @@ fi
 if [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:"  ]]; then
   echo 0 | sudo tee /sys/devices/platform/asus-nb-wmi/mcu_powersave
 elif [[ ":ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
+  echo 0 | sudo tee /sys/devices/platform/asus-nb-wmi/mcu_powersave
   modprobe -r amd_pmf
   echo "blacklist amd_pmf" | sudo tee /etc/modprobe.d/hhd-blacklist.conf
 fi
