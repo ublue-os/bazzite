@@ -133,6 +133,11 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --from repo=updates \
         fontconfig \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        pciutils-libs \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true && \
