@@ -1,6 +1,6 @@
 [Desktop Entry]
 NoDisplay=true
-Name=Ptyxis
+Name=Terminal
 Comment=A container-oriented terminal for GNOME
 Exec=kde-ptyxis
 # Translators: Do NOT translate or transliterate this text (this is an icon file name)!
