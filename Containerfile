@@ -442,6 +442,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/fedora-updates.repo && \
     rpm-ostree install \
         lutris \
+        umu-launcher \
         wine-core.x86_64 \
         wine-core.i686 \
         wine-pulseaudio.x86_64 \

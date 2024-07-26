@@ -1,5 +1,2 @@
 wine:
-  esync: false
-  fsync: true
-  system_winetricks: true
   version: GE-Proton (Latest)
