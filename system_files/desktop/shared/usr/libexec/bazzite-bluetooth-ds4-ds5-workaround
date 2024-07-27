@@ -1,0 +1,170 @@
+#!/bin/bash
+
+# Script Name: bazzite-bluetooth-ds4-ds5-workaround
+# Author: https://github.com/thekk1
+# Version: 1.0
+#
+# Related issues:
+# https://github.com/ublue-os/bazzite/issues/1289
+# https://github.com/ValveSoftware/steam-for-linux/issues/8678
+#
+# Description:
+# This script monitors connected PS4 and PS5 gamepad devices and disconnects
+# the Bluetooth connection if specific button combinations are detected (Home and Triangle buttons).
+# The script handles background processes for each device and maintains a record of process IDs
+# to ensure proper cleanup of processes associated with devices that are no longer present.
+#
+# This script should be removed if there is a native solution under one of the mentioned issues.
+#
+# Usage:
+# ./disconnect_bt_gamepad.sh [-d]
+# -d: Enable debug mode
+
+DEBUG=false
+MONITOR_FILE="/var/tmp/monitored_devices.txt"
+echo "" > $MONITOR_FILE
+
+# Check for the debug flag
+while getopts "d" opt; do
+    case ${opt} in
+        d ) DEBUG=true ;;
+        \? ) echo "Usage: $0 [-d]" ;;
+    esac
+done
+
+# Function to find gamepad devices (PS4 and PS5)
+find_gamepad_devices() {
+    local devices=()
+    local base_path="/sys/class/input"
+
+    for entry in "$base_path"/*; do
+        if [[ $(basename "$entry") == event* ]]; then
+            local device_path="$entry/device"
+            local uevent_path="$device_path/uevent"
+
+            if [[ -f "$uevent_path" ]]; then
+                local devicename
+                devicename=$(grep "NAME" "$uevent_path" | cut -d'=' -f2 | tr -d '"')
+                if [[ "$devicename" == "Wireless Controller" || "$devicename" == "DualSense Wireless Controller" ]]; then
+                    devices+=("$(basename "$entry")")
+                fi
+            fi
+        fi
+    done
+    echo "${devices[@]}"
+}
+
+# Function to get MAC address from uevent file
+get_mac_address_from_uevent() {
+    local device="$1"
+    local uniq_path="/sys/class/input/$device/device/uevent"
+
+    if [[ -f "$uniq_path" ]]; then
+        local mac_address
+        mac_address=$(grep "UNIQ" "$uniq_path" | cut -d'=' -f2 | tr -d '"')
+        echo "$mac_address"
+    else
+        echo ""
+    fi
+}
+
+# Function to monitor the gamepad and disconnect Bluetooth connection
+monitor_gamepad() {
+    local device_path="$1"
+    local bluetooth_mac_address="$2"
+    local process_name="monitor_gamepad_$bluetooth_mac_address"
+
+    $DEBUG && echo "Starting monitoring on device: $device_path"
+
+    # Check if process is already running
+    if pgrep -f "$process_name" > /dev/null; then
+        $DEBUG && echo "Process for $bluetooth_mac_address is already running."
+        return
+    fi
+
+    # Run the monitoring process with a specific process name
+    (cat "$device_path" | xxd -p -c 24 | awk -v mac="$bluetooth_mac_address" -v pname="$process_name" '
+        BEGIN { home_pressed=0; triangle_pressed=0 }
+        {
+            event_part=substr($0,33);
+            if(substr(event_part,1,2)=="01") {
+                code=substr(event_part,5,4);
+                value=substr(event_part,9,2);
+                if((code=="3301" || code=="3c01") && value=="01") {
+                    if(code=="3301") home_pressed=1;
+                    if(code=="3c01") triangle_pressed=1;
+                    if(home_pressed && triangle_pressed) {
+                        system("bluetoothctl disconnect " mac);
+                        home_pressed=0;
+                        triangle_pressed=0;
+                    }
+                }
+            }
+        }' & echo $! > "/var/tmp/$process_name.pid") > /dev/null 2>&1
+
+    $DEBUG && echo "Started monitoring process for $bluetooth_mac_address with process name $process_name."
+}
+
+# Function to clean up processes
+cleanup_processes() {
+    # List of currently monitored MAC addresses
+    local monitored_macs=$(cat "$MONITOR_FILE")
+
+    # Iterate through all monitored MAC addresses
+    while IFS= read -r mac; do
+        process_name="monitor_gamepad_$mac"
+        pid_file="/var/tmp/${process_name}.pid"
+
+        if [[ -f "$pid_file" ]]; then
+            pid=$(cat "$pid_file")
+            if ! ps -p "$pid" > /dev/null; then
+                $DEBUG && echo "Stopping process for $mac as it's no longer running."
+                pkill -f "$process_name"
+                rm -f "$pid_file"
+                # Remove the MAC address from the monitor file
+                sed -i "/$mac/d" "$MONITOR_FILE"
+            fi
+        else
+            $DEBUG && echo "No PID file found for $mac."
+        fi
+    done <<< "$monitored_macs"
+}
+
+# Main loop of the script
+while true; do
+    # Find currently connected gamepad devices
+    gamepad_devices=$(find_gamepad_devices)
+
+    # Get current MAC addresses from the monitor file
+    current_macs=$(cat "$MONITOR_FILE")
+
+    if [[ -z "$gamepad_devices" ]]; then
+        $DEBUG && echo "No PS4 or PS5 controllers found."
+    else
+        $DEBUG && echo "Found devices: $gamepad_devices"
+        # Convert the list of devices into an array
+        IFS=' ' read -r -a devices_array <<< "$gamepad_devices"
+
+        # Loop over the found devices
+        for device in "${devices_array[@]}"; do
+            device_path="/dev/input/$device"
+            mac_address=$(get_mac_address_from_uevent "$device")
+
+            if [[ -n "$mac_address" ]]; then
+                # Check if this device is already being monitored
+                if ! grep -q "$mac_address" "$MONITOR_FILE"; then
+                    echo "$mac_address" >> "$MONITOR_FILE"
+                    $DEBUG && echo "Monitoring device: $device_path"
+                    monitor_gamepad "$device_path" "$mac_address"
+                fi
+            else
+                echo "No MAC address found for $device."
+            fi
+        done
+    fi
+
+    # Clean up processes that are no longer needed
+    cleanup_processes
+
+    sleep 5  # Wait before searching for new devices
+done

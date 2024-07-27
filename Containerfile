@@ -668,6 +668,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl enable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
     systemctl disable joycond.service && \
+    systemctl --global enable bazzite-bluetooth-ds4-ds5-workaround.service && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
