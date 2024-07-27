@@ -17,7 +17,7 @@
 # This script should be removed if there is a native solution under one of the mentioned issues.
 #
 # Usage:
-# ./disconnect_bt_gamepad.sh [-d]
+# ./bazzite-bluetooth-ds4-ds5-workaround [-d]
 # -d: Enable debug mode
 
 DEBUG=false
