@@ -21,7 +21,7 @@
 # -d: Enable debug mode
 
 DEBUG=false
-MONITOR_FILE="/var/tmp/monitored_devices.txt"
+MONITOR_FILE="/tmp/monitored_devices.txt"
 echo "" > $MONITOR_FILE
 
 # Check for the debug flag
