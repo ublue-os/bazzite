@@ -373,9 +373,11 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         cockpit-system \
         cockpit-navigator \
         cockpit-storaged \
+        topgrade \
         ydotool \
-        lsb_release \
         yafti \
+        lsb_release && \
+    rpm-ostree install \
         ublue-update && \
     mkdir -p /usr/etc/xdg/autostart && \
     sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
