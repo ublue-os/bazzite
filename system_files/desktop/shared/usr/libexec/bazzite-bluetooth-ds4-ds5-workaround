@@ -2,7 +2,7 @@
 
 # Script Name: bazzite-bluetooth-ds4-ds5-workaround
 # Author: https://github.com/thekk1
-# Version: 1.2
+# Version: 1.3
 #
 # Related issues:
 # https://github.com/ublue-os/bazzite/issues/1289
@@ -37,17 +37,15 @@ find_gamepad_devices() {
     local devices=()
     local base_path="/sys/class/input"
 
-    for entry in "$base_path"/*; do
-        if [[ $(basename "$entry") == event* ]]; then
-            local device_path="$entry/device"
-            local uevent_path="$device_path/uevent"
+    for entry in "$base_path"/event*; do
+        local device_path="$entry/device"
+        local uevent_path="$device_path/uevent"
 
-            if [[ -f "$uevent_path" ]]; then
-                local devicename
-                devicename=$(grep "NAME" "$uevent_path" | cut -d'=' -f2 | tr -d '"')
-                if [[ "$devicename" == "Wireless Controller" || "$devicename" == "DualSense Wireless Controller" ]]; then
-                    devices+=("$(basename "$entry")")
-                fi
+        if [[ -f "$uevent_path" ]]; then
+            local devicename
+            devicename=$(grep "NAME" "$uevent_path" | cut -d'=' -f2 | tr -d '"')
+            if [[ "$devicename" == "Wireless Controller" || "$devicename" == "DualSense Wireless Controller" ]]; then
+                devices+=("$(basename "$entry")")
             fi
         fi
     done
@@ -87,14 +85,19 @@ monitor_gamepad() {
         BEGIN { home_pressed=0; triangle_pressed=0 }
         {
             event_part=substr($0,33);
-            if(substr(event_part,1,2)=="01") {
+            if(substr(event_part,1,4)=="0100") {
                 code=substr(event_part,5,4);
                 value=substr(event_part,9,2);
-                if((code=="3301" || code=="3c01") && value=="01") {
-                    if(code=="3301") home_pressed=1;
-                    if(code=="3c01") triangle_pressed=1;
-                    if(home_pressed && triangle_pressed) {
-                        system("bluetoothctl disconnect " mac);
+                if(code=="3301" || code=="3c01") {
+                    if(value=="01") {
+                        if(code=="3301") home_pressed=1;
+                        if(code=="3c01") triangle_pressed=1;
+                        if(home_pressed && triangle_pressed) {
+                            system("bluetoothctl disconnect " mac);
+                            home_pressed=0;
+                            triangle_pressed=0;
+                        }
+                    } else {
                         home_pressed=0;
                         triangle_pressed=0;
                     }
