@@ -177,7 +177,7 @@ ptyxis-transparency opacity="0.95":
       printf "Value must be between 0 and 1: %s.\n" "{{ opacity }}"
     fi
 
-# Bazzite CLI mod for bluefin style cli-bing
+# Bazzite CLI mod for bluefin style cli-bing (modfied copy of https://github.com/ublue-os/bluefin/blob/faf7303afa6f8d6e747940c1d1ba63c6d2d43c80/system_files/shared/usr/libexec/ublue-bling.sh#L62)
 bazzite-cli:
     #!/usr/bin/bash
     #shellcheck disable=SC2154
