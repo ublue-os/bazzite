@@ -376,8 +376,9 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         cockpit-navigator \
         cockpit-storaged \
         ydotool \
-        lsb_release \
-        yafti \
+        lsb_release && \
+    pip install --prefix=/usr topgrade && \
+    rpm-ostree install \
         ublue-update && \
     mkdir -p /usr/etc/xdg/autostart && \
     sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
@@ -623,6 +624,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     echo "import \"/usr/share/ublue-os/just/84-bazzite-virt.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/85-bazzite-image.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/90-bazzite-de.just\"" >> /usr/share/ublue-os/justfile && \
+    pip install --prefix=/usr yafti && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
