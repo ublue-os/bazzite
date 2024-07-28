@@ -2,7 +2,7 @@
 
 # Script Name: bazzite-bluetooth-ds4-ds5-workaround
 # Author: https://github.com/thekk1
-# Version: 1.0
+# Version: 1.2
 #
 # Related issues:
 # https://github.com/ublue-os/bazzite/issues/1289
@@ -22,7 +22,7 @@
 
 DEBUG=false
 MONITOR_FILE="/tmp/monitored_devices.txt"
-echo "" > $MONITOR_FILE
+truncate -s 0 $MONITOR_FILE
 
 # Check for the debug flag
 while getopts "d" opt; do
@@ -100,7 +100,7 @@ monitor_gamepad() {
                     }
                 }
             }
-        }' & echo $! > "/var/tmp/$process_name.pid") > /dev/null 2>&1
+        }' & echo $! > "/tmp/$process_name.pid" & disown) > /dev/null 2>&1
 
     $DEBUG && echo "Started monitoring process for $bluetooth_mac_address with process name $process_name."
 }
@@ -113,7 +113,11 @@ cleanup_processes() {
     # Iterate through all monitored MAC addresses
     while IFS= read -r mac; do
         process_name="monitor_gamepad_$mac"
-        pid_file="/var/tmp/${process_name}.pid"
+        pid_file="/tmp/${process_name}.pid"
+
+        if [[ -z "$mac" ]]; then
+            continue
+        fi
 
         if [[ -f "$pid_file" ]]; then
             pid=$(cat "$pid_file")
@@ -158,7 +162,7 @@ while true; do
                     monitor_gamepad "$device_path" "$mac_address"
                 fi
             else
-                echo "No MAC address found for $device."
+                $DEBUG && echo "No MAC address found for $device."
             fi
         done
     fi
