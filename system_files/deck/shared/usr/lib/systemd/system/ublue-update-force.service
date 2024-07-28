@@ -3,6 +3,7 @@ Description=Force Universal Blue Update Oneshot Service
 
 [Service]
 Type=oneshot
+Environment="TOPGRADE_SKIP_BRKC_NOTIFY=true"
 ExecStart=/usr/bin/ublue-update --force
 RemainAfterExit=no
 Nice=19
