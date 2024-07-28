@@ -61,3 +61,6 @@ sed -i "s|^VERSION_CODENAME=.*|VERSION_CODENAME=\"$CODE_NAME\"|" /usr/lib/os-rel
 if [[ -n "${SHA_HEAD_SHORT:-}" ]]; then
   echo "BUILD_ID=\"$SHA_HEAD_SHORT\"" >> /usr/lib/os-release
 fi
+
+# Fix issues caused by ID no longer being fedora
+sed -i "s/^EFIDIR=.*/EFIDIR=\"fedora\"/" /usr/sbin/grub2-switch-to-blscfg

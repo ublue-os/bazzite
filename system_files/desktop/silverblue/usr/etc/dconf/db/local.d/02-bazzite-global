@@ -16,7 +16,7 @@ tap-to-click=true
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
 binding='<Control><Alt>t'
 command='ptyxis --new-window'
-name='Ptyxis'
+name='Terminal'
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
 binding='<Control><Alt>KP_Delete'
