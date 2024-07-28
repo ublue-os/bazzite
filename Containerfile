@@ -373,9 +373,10 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         cockpit-system \
         cockpit-navigator \
         cockpit-storaged \
+        topgrade \
         ydotool \
+        yafti \
         lsb_release && \
-    pip install --prefix=/usr topgrade && \
     rpm-ostree install \
         ublue-update && \
     mkdir -p /usr/etc/xdg/autostart && \

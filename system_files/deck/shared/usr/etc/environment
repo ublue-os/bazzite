@@ -1,3 +1,6 @@
+# Prevent topgrade from pausing automated updates
+TOPGRADE_SKIP_BRKC_NOTIFY=true
+
 # Required for use of OBS-VkCapture in X11 environments
 # Nvidia users must additionally have nvidia-drm.modeset=1 in their kargs
 OBS_USE_EGL=1
