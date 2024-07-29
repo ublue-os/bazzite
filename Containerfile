@@ -293,6 +293,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         pipewire-libs \
         pipewire-pulseaudio \
         pipewire-utils \
+        pipewire-plugin-libcamera \
         bluez \
         bluez-obexd \
         bluez-cups \
