@@ -6,7 +6,7 @@ ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$BASE_IMAGE_FLAVOR}"
 ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
-ARG JUPITER_KERNEL_VERSION="${JUPITER_KERNEL_VERSION:-jupiter-20240605.1}"
+ARG JUPITER_FIRMWARE_VERSION="${JUPITER_FIRMWARE_VERSION:-jupiter-20240605.1}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
 
 FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION} AS akmods
@@ -22,7 +22,7 @@ ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-fsync}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
-ARG JUPITER_KERNEL_VERSION="${JUPITER_KERNEL_VERSION:-jupiter-20240605.1}"
+ARG JUPITER_FIRMWARE_VERSION="${JUPITER_FIRMWARE_VERSION:-jupiter-20240605.1}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
 
 COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
@@ -143,6 +143,13 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --from repo=updates \
         libdrm \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libX11 \
+        libX11-common \
+        libX11-xcb \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true && \
@@ -155,7 +162,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     chmod +x /usr/bin/copr && \
     curl -Lo /etc/yum.repos.d/_copr_kylegospo-bazzite.repo https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-bazzite-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     curl -Lo /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-bazzite-multilib-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 && \
-    curl -Lo /etc/yum.repos.d/_copr_kylegospo-scx_lavd.repo https://copr.fedorainfracloud.org/coprs/kylegospo/scx_lavd/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-scx_lavd-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     curl -Lo /etc/yum.repos.d/_copr_ublue-os-staging.repo https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 && \
     curl -Lo /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-LatencyFleX-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     curl -Lo /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-obs-vkcapture-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 && \
@@ -193,33 +199,33 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         echo "will use kernel from ${KERNEL_FLAVOR} images" \
     ; fi && \
     rpm-ostree install \
-        scx_lavd && \
+        scx-scheds && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
 # Setup firmware
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     mkdir -p /tmp/linux-firmware-neptune && \
-    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/cs35l41-dsp1-spk-cali.bin && \
-    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.wmfw https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/cs35l41-dsp1-spk-cali.wmfw && \
-    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-prot.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/cs35l41-dsp1-spk-prot.bin && \
-    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-prot.wmfw https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/cs35l41-dsp1-spk-prot.wmfw && \
+    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-cali.bin && \
+    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.wmfw https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-cali.wmfw && \
+    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-prot.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-prot.bin && \
+    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-prot.wmfw https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-prot.wmfw && \
     xz --check=crc32 /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-{cali.bin,cali.wmfw,prot.bin,prot.wmfw} && \
     mv -vf /tmp/linux-firmware-neptune/* /usr/lib/firmware/cirrus/ && \
     rm -rf /tmp/linux-firmware-neptune && \
     mkdir -p /tmp/linux-firmware-galileo && \
-    curl https://gitlab.com/evlaV/linux-firmware-neptune/-/archive/"${JUPITER_KERNEL_VERSION}"/linux-firmware-neptune-"${JUPITER_KERNEL_VERSION}".tar.gz?path=ath11k/QCA206X -o /tmp/linux-firmware-galileo/ath11k.tar.gz && \
+    curl https://gitlab.com/evlaV/linux-firmware-neptune/-/archive/"${JUPITER_FIRMWARE_VERSION}"/linux-firmware-neptune-"${JUPITER_FIRMWARE_VERSION}".tar.gz?path=ath11k/QCA206X -o /tmp/linux-firmware-galileo/ath11k.tar.gz && \
     tar --strip-components 1 --no-same-owner --no-same-permissions --no-overwrite-dir -xvf /tmp/linux-firmware-galileo/ath11k.tar.gz -C /tmp/linux-firmware-galileo && \
     xz --check=crc32 /tmp/linux-firmware-galileo/ath11k/QCA206X/hw2.1/* && \
     mv -vf /tmp/linux-firmware-galileo/ath11k/QCA206X /usr/lib/firmware/ath11k/QCA206X && \
     rm -rf /tmp/linux-firmware-galileo/ath11k && \
     rm -rf /tmp/linux-firmware-galileo/ath11k.tar.gz && \
     ln -s QCA206X /usr/lib/firmware/ath11k/QCA2066 && \
-    curl -Lo /tmp/linux-firmware-galileo/hpbtfw21.tlv https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/qca/hpbtfw21.tlv && \
-    curl -Lo /tmp/linux-firmware-galileo/hpnv21.309 https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/qca/hpnv21.309 && \
-    curl -Lo /tmp/linux-firmware-galileo/hpnv21.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/qca/hpnv21.bin && \
-    curl -Lo /tmp/linux-firmware-galileo/hpnv21g.309 https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/qca/hpnv21g.309 && \
-    curl -Lo /tmp/linux-firmware-galileo/hpnv21g.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/qca/hpnv21g.bin && \
+    curl -Lo /tmp/linux-firmware-galileo/hpbtfw21.tlv https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/qca/hpbtfw21.tlv && \
+    curl -Lo /tmp/linux-firmware-galileo/hpnv21.309 https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/qca/hpnv21.309 && \
+    curl -Lo /tmp/linux-firmware-galileo/hpnv21.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/qca/hpnv21.bin && \
+    curl -Lo /tmp/linux-firmware-galileo/hpnv21g.309 https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/qca/hpnv21g.309 && \
+    curl -Lo /tmp/linux-firmware-galileo/hpnv21g.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/qca/hpnv21g.bin && \
     xz --check=crc32 /tmp/linux-firmware-galileo/* && \
     mv -vf /tmp/linux-firmware-galileo/* /usr/lib/firmware/qca/ && \
     rm -rf /tmp/linux-firmware-galileo && \
@@ -266,6 +272,13 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             fwupd-plugin-flashrom \
             fwupd-plugin-modem-manager \
             fwupd-plugin-uefi-capsule-data && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+        libwayland-client \
+        libwayland-server \
+        libwayland-cursor \
+        libwayland-egl && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
@@ -293,6 +306,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         pipewire-libs \
         pipewire-pulseaudio \
         pipewire-utils \
+        pipewire-plugin-libcamera \
         bluez \
         bluez-obexd \
         bluez-cups \
@@ -376,6 +390,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         topgrade \
         ydotool \
         yafti \
+        stress-ng \
         lsb_release && \
     rpm-ostree install \
         ublue-update && \
@@ -588,6 +603,12 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
+# Bash Prexec
+RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    curl -Lo /usr/share/bash-prexec https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh &&\
+    /usr/libexec/containerbuild/cleanup.sh && \
+    ostree container commit
+
 # Cleanup & Finalize
 COPY system_files/overrides /
 RUN rm -f /etc/profile.d/toolbox.sh && \
@@ -627,7 +648,6 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-scx_lavd.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \

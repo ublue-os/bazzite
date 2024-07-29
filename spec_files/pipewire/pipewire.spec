@@ -9,7 +9,7 @@
 %global ms_version   0.4.2
 
 # For rpmdev-bumpspec and releng automation
-%global baserelease 1
+%global baserelease 2
 
 #global snapdate   20210107
 #global gitcommit  b17db2cebc1a5ab2c01851d29c05f79cd2f262bb
@@ -834,6 +834,9 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %endif
 
 %changelog
+* Tue Jun 18 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 1.0.7-2
+- Rebuild for libcamera 0.3
+
 * Fri May 24 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.7-1
 - Update version to 1.0.7
  
