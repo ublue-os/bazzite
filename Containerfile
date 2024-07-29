@@ -588,6 +588,12 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
+# Bash Prexec
+RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    curl -Lo /usr/share/bash-prexec https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh &&\
+    /usr/libexec/containerbuild/cleanup.sh && \
+    ostree container commit
+
 # Cleanup & Finalize
 COPY system_files/overrides /
 RUN rm -f /etc/profile.d/toolbox.sh && \

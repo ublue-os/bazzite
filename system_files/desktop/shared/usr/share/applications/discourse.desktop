@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+NoDisplay=false
+Terminal=false
+Exec=xdg-open https://universal-blue.discourse.group/c/bazzite/
+Icon=/usr/share/ublue-os/bazzite/discourse.svg
+Name=Forums
+Comment=Discourse forums
+Categories=Utility;

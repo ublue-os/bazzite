@@ -1,5 +1,2 @@
-# Prevent topgrade from pausing automated updates
-TOPGRADE_SKIP_BRKC_NOTIFY=true
-
 # VIM is more usable on deck due to control scheme
 EDITOR=/usr/bin/vim
