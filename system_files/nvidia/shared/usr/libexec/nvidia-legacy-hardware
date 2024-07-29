@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+# Returns true if legacy nvidia hardware (older than turing) using die names
+# GK### (Kepler), GM### (Maxwell), GP### (Pascal)
+if lspci -nn | grep -P "(VGA compatible|3D) controller .+G(M|P|K)\d{3}"; then
+    exit 0
+fi
+exit 1
