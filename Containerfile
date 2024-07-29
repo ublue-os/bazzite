@@ -591,7 +591,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 
 # Bash Prexec
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    curl -Lo /usr/share/bash-prexec https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh &&\
+    curl -Lo /usr/share/bash-prexec https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh &&\
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
