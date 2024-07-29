@@ -148,6 +148,7 @@ setup-decky ACTION="install":
       echo "Usage: ujust setup-decky <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'install' to select Install Decky"
+      echo "  Use 'prerelease' to select Install Decky Prerelease"
       exit 0
     fi
     if [[ "${OPTION,,}" =~ install ]]; then
@@ -157,6 +158,15 @@ setup-decky ACTION="install":
         sudo ln -sf "$HOME" /home/deck
       fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
+      sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
+    fi
+    if [[ "${OPTION,,}" =~ prerelease ]]; then
+      export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
+      if [ ! -L "/home/deck" ] && [ ! -e "/home/deck" ]  && [ "$HOME" != "/home/deck" ]; then
+        echo "Making a /home/deck symlink to fix plugins that do not use environment variables."
+        sudo ln -sf "$HOME" /home/deck
+      fi
+      curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_prerelease.sh | sh
       sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
     fi
 
