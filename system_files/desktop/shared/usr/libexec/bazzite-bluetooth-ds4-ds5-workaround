@@ -1,8 +1,9 @@
-#!/bin/bash
+#!/usr/bin/python
 
+"""
 # Script Name: bazzite-bluetooth-ds4-ds5-workaround
 # Author: https://github.com/thekk1
-# Version: 1.5
+# Version: 1.6
 #
 # Related issues:
 # https://github.com/ublue-os/bazzite/issues/1289
@@ -17,169 +18,163 @@
 # This script should be removed if there is a native solution under one of the mentioned issues.
 #
 # Usage:
-# ./bazzite-bluetooth-ds4-ds5-workaround [-d]
-# -d: Enable debug mode
+# ./bazzite-bluetooth-ds4-ds5-workaround <device_mac_address>
 
-DEBUG=false
-MONITOR_FILE="/tmp/monitored_devices.txt"
-truncate -s 0 $MONITOR_FILE
+"""
+# See https://gist.github.com/noohgnas/7c896791d437e51122c59fe9576a1bcf for reference
+from concurrent.futures import thread
+import glob
+import multiprocessing
+import re
+import struct
+import subprocess
+import sys
 
-# Check for the debug flag
-while getopts "d" opt; do
-    case ${opt} in
-        d ) DEBUG=true ;;
-        \? ) echo "Usage: $0 [-d]" ;;
-    esac
-done
+from threading import Thread
+from time import sleep
 
-# Function to find gamepad devices (PS4 and PS5)
-find_gamepad_devices() {
-    local devices=()
-    local base_path="/sys/class/input"
 
-    for entry in "$base_path"/event*; do
-        local device_path="$entry/device"
-        local uevent_path="$device_path/uevent"
+class KeyStatus:
+    def __init__(self) -> None:
+        self.home: bool = False
+        self.triangle: bool = False
+        self.other: set[int] = set()
 
-        if [[ -f "$uevent_path" ]]; then
-            local devicename
-            devicename=$(grep "NAME" "$uevent_path" | cut -d'=' -f2 | tr -d '"')
-            if [[ "$devicename" == "Wireless Controller" || "$devicename" == "DualSense Wireless Controller" ]]; then
-                devices+=("$(basename "$entry")")
-            fi
-        fi
-    done
-    echo "${devices[@]}"
+
+GAMEPAD_KEYS = {
+    "HOME": [
+        316,  # Dualshock
+    ],
+    "TRIANGLE": [
+        307,  # Dualshock
+    ],
 }
 
-# Function to get MAC address from uevent file
-get_mac_address_from_uevent() {
-    local device="$1"
-    local uniq_path="/sys/class/input/$device/device/uevent"
+EV_KEY = 1
 
-    if [[ -f "$uniq_path" ]]; then
-        local mac_address
-        mac_address=$(grep "UNIQ" "$uniq_path" | cut -d'=' -f2 | tr -d '"')
-        echo "$mac_address"
-    else
-        echo ""
-    fi
-}
 
-# Function to monitor the gamepad and disconnect Bluetooth connection
-monitor_gamepad() {
-    local device_path="$1"
-    local bluetooth_mac_address="$2"
-    local process_name="monitor_gamepad_$bluetooth_mac_address"
-
-    $DEBUG && echo "Starting monitoring on device: $device_path"
-
-    # Check if process is already running
-    if pgrep -f "$process_name" > /dev/null; then
-        $DEBUG && echo "Process for $bluetooth_mac_address is already running."
+def trigger_callback(device_mac: str):
+    """Action to realize when HOME + TRIANGLE is held at the same time"""
+    # Get bluetooth adapters
+    p = subprocess.Popen(
+        ["/usr/bin/bluetoothctl", "list"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    p.wait()
+    adapt_strlines = p.stdout
+    if adapt_strlines is None:
+        print("ERROR: No adapters detected")
         return
-    fi
 
-    # Define the command to disconnect all controllers
-    disconnect_cmd="for controller in \$(bluetoothctl list | awk '/Controller/ {print \$2}'); do echo -e \"select \$controller\ndisconnect $bluetooth_mac_address\n\" | bluetoothctl; done"
+    for adap in adapt_strlines:
+        print(f"DEBUG: {adap}")
+        adap = adap.strip().split(" ", maxsplit=2)[1]
+        p2 = subprocess.Popen(
+            ["/usr/bin/bash", "-c", f"""echo -e "select {adap}\ndisconnect {device_mac}" | bluetoothctl """],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            text=True,
+        )
+        p2.wait()
 
-    # Run the monitoring process with a specific process name
-    (cat "$device_path" 2>&1 | xxd -p -c 24 | awk -v mac="$bluetooth_mac_address" -v pname="$process_name" -v cmd="$disconnect_cmd" -v debug="$DEBUG" '
-        BEGIN { home_pressed=0; triangle_pressed=0 }
-        {
-            event_part=substr($0,33);
-            if(substr(event_part,1,4)=="0100") {
-                code=substr(event_part,5,4);
-                value=substr(event_part,9,2);
-                if(code=="3301" || code=="3c01") {
-                    if(value=="01") {
-                        if(code=="3301") home_pressed=1;
-                        if(code=="3c01") triangle_pressed=1;
-                        if(home_pressed && triangle_pressed) {
-                            # Print a message before executing the disconnect command
-                            if (debug == "true") {
-                                print "Disconnect command issued for MAC address: " mac;
-                            }
-                            # Execute the disconnect command only once
-                            system(cmd);
-                            home_pressed=0;
-                            triangle_pressed=0;
-                        }
-                    } else {
-                        home_pressed=0;
-                        triangle_pressed=0;
-                    }
-                }
-            }
-        }' >&1) & echo $! > "/tmp/$process_name.pid" & disown
 
-    $DEBUG && echo "Started monitoring process for $bluetooth_mac_address with process name $process_name."
-}
+def get_event_path(mac: str) -> str | None:
+    """Obtain the /dev/input/eventX path for a bluetooth
+    Returns:
+        str: path address
+    """
+    res: str | None = None
+    mac = mac.lower()
+    proc = subprocess.Popen(
+        [
+            "/usr/bin/udevadm",
+            "trigger",
+            "-c",
+            "add",
+            f"--attr-match=uniq={mac}",
+            "--dry-run",
+            "--verbose",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    proc.wait()
+    if proc.stdout is None:
+        return res
+    paths = proc.stdout.readlines()
+    for path in paths:
+        path = path.strip()
+        with open(f"{path}/name") as f:
+            contents = f.read().strip()
+            if re.match(r"^(?:Dualsense )?Wireless Controller$", contents) is not None:
+                ev_name = glob.glob(f"{path}/event*")[0].rstrip("/").split("/")[-1]
+                res = f"/dev/input/{ev_name}"
+                break
 
-# Function to clean up processes
-cleanup_processes() {
-    # List of currently monitored MAC addresses
-    local monitored_macs=$(cat "$MONITOR_FILE")
+    return res
 
-    # Iterate through all monitored MAC addresses
-    while IFS= read -r mac; do
-        process_name="monitor_gamepad_$mac"
-        pid_file="/tmp/${process_name}.pid"
 
-        if [[ -z "$mac" ]]; then
-            continue
-        fi
+def main(argv: list[str]):
+    if len(argv[1:]) != 1:
+        print("ERROR: Missing argument", file=sys.stderr)
+        exit(1)
 
-        if [[ -f "$pid_file" ]]; then
-            pid=$(cat "$pid_file")
-            if ! ps -p "$pid" > /dev/null; then
-                $DEBUG && echo "Stopping process for $mac as it's no longer running."
-                pkill -f "$process_name"
-                rm -f "$pid_file"
-                # Remove the MAC address from the monitor file
-                sed -i "/$mac/d" "$MONITOR_FILE"
-            fi
-        else
-            $DEBUG && echo "No PID file found for $mac."
-        fi
-    done <<< "$monitored_macs"
-}
+    device_mac = argv[1]
+    if device_mac is None or device_mac == "":
+        print("ERROR: Incorrect device bluetooth mac address", file=sys.stderr)
+        exit(1)
 
-# Main loop of the script
-while true; do
-    # Find currently connected gamepad devices
-    gamepad_devices=$(find_gamepad_devices)
+    global keys_status
+    keys_status = KeyStatus()
 
-    # Get current MAC addresses from the monitor file
-    current_macs=$(cat "$MONITOR_FILE")
+    gamepad_mac = get_event_path(device_mac)
+    if gamepad_mac is None:
+        print("ERROR: Incorrect device bluetooth mac address", file=sys.stderr)
+        exit(1)
 
-    if [[ -z "$gamepad_devices" ]]; then
-        $DEBUG && echo "No PS4 or PS5 controllers found."
-    else
-        $DEBUG && echo "Found devices: $gamepad_devices"
-        # Convert the list of devices into an array
-        IFS=' ' read -r -a devices_array <<< "$gamepad_devices"
+    # long int, long int, unsigned short, unsigned short, unsigned int
+    FORMAT = "llHHI"
+    EVENT_SIZE = struct.calcsize(FORMAT)
 
-        # Loop over the found devices
-        for device in "${devices_array[@]}"; do
-            device_path="/dev/input/$device"
-            mac_address=$(get_mac_address_from_uevent "$device")
+    # open file in binary mode
+    in_file = open(gamepad_mac, "rb")
 
-            if [[ -n "$mac_address" ]]; then
-                # Check if this device is already being monitored
-                if ! grep -q "$mac_address" "$MONITOR_FILE"; then
-                    echo "$mac_address" >> "$MONITOR_FILE"
-                    $DEBUG && echo "Monitoring device: $device_path"
-                    monitor_gamepad "$device_path" "$mac_address"
-                fi
-            else
-                $DEBUG && echo "No MAC address found for $device."
-            fi
-        done
-    fi
+    event = in_file.read(EVENT_SIZE)
 
-    # Clean up processes that are no longer needed
-    cleanup_processes
+    while event:
+        (_tv_sec, _tv_usec, type, code, value) = struct.unpack(FORMAT, event)
 
-    sleep 5  # Wait before searching for new devices
-done
+        if type == EV_KEY:
+            if code in GAMEPAD_KEYS["HOME"]:
+                keys_status.home = value == 1
+            elif code in GAMEPAD_KEYS["TRIANGLE"]:
+                keys_status.triangle = value == 1
+            else:
+                (
+                    keys_status.other.add(code)
+                    if value == 1
+                    else keys_status.other.remove(code)
+                )
+
+            # print(
+            #     f"home: {keys_status.home}, triangle: {keys_status.triangle}, other: {keys_status.other}",
+            # )
+            if (
+                value == 1
+                and keys_status.home
+                and keys_status.triangle
+                and len(keys_status.other) <= 0
+            ):
+                #### Here we manage what happens when the HOME TRIANGLE is pressed
+                print("HOME + TRIANGLE detected")
+                trigger_callback(device_mac)
+        event = in_file.read(EVENT_SIZE)
+
+    in_file.close()
+
+
+if __name__ == "__main__":
+    main(sys.argv)
