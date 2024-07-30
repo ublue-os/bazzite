@@ -6,7 +6,7 @@
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        20.bazzite
+Release:        19.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -30,6 +30,9 @@ Patch5:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
 Patch6:         revert-299bc34.patch
 # https://github.com/ValveSoftware/gamescope/pull/1231
 Patch7:         1231.patch
+
+# Temporary until newer tag than 3.14.24
+Patch8:         upstream.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
