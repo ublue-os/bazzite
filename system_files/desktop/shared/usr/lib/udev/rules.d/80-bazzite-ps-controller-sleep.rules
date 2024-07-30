@@ -1,0 +1,3 @@
+ACTION=="add", \
+ATTRS{name}=="*Wireless Controller", \
+RUN=+"/usr/bin/bash /usr/bin/systemctl start bazzite-bluetooth-ds4-ds5-workaround@$attr{uniq}.service"

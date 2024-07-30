@@ -1,15 +1,12 @@
 [Unit]
 Description=Disconnect DS4 and DS5 controller on shortcut HOME + triangle
 After=bluetooth.target
+Requires=bluetooth.target
 ConditionFileIsExecutable=/usr/libexec/bazzite-bluetooth-ds4-ds5-workaround
 
 [Service]
 User=root
-ExecCondition=/usr/bin/systemctl is-enabled bluetooth.service
-ExecStart=/bin/bash /usr/libexec/bazzite-bluetooth-ds4-ds5-workaround
+Type=simple
+ExecStart=/usr/libexec/bazzite-bluetooth-ds4-ds5-workaround %i
 Restart=on-failure
 RestartSec=5
-TimeoutSec=5s
-
-[Install]
-WantedBy=multi-user.target
