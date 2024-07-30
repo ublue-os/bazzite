@@ -307,7 +307,7 @@ jobs:
             username: ${{ env.REGISTRY_USER }}
             password: ${{ env.REGISTRY_PASSWORD }}
             extra-args: |
-              --disable-content-trust
+              --compression-format=zstd:chunked
 
       - name: Sign container image
         uses: EyeCantCU/cosign-action/sign@v0.3.0
