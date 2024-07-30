@@ -1,8 +1,15 @@
 #!/usr/bin/bash
 
-devices=$(bluetoothctl devices Connected | awk '{print $2}')
+readarray -t adapters < <(bluetoothctl list | awk '/Controller/ {print $2}')
+readarray -t devices < <(bluetoothctl devices Connected | awk '/Device/ {print $2}')
 
 # shellcheck disable=SC2068
-for dev in $devices; do
-    [ -n "$dev" ] &&  bluetoothctl disconnect "$dev"
+for adapter in "${adapters[@]}"; do
+    for dev in "${devices[@]}"; do
+        if [ -n "$dev" ]; then
+            { printf 'select %s\ndisconnect %s\n' "$adapter" "$dev" | bluetoothctl; } ||
+                true # Dont throw error in case we disconnected a controller
+                     # connected to another adapter
+        fi
+    done
 done
