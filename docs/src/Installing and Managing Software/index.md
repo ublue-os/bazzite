@@ -52,5 +52,3 @@ Follow the [Waydroid Setup Guide](Waydroid%20Setup%20Guide.md) to install Androi
 **Documentation Contributors**: [HikariKnight](https://github.com/HikariKnight)
 
 **See also**: [Updates, Rollbacks, & Rebasing](Updates,%20Rollbacks,%20&%20Rebasing.md)
-
-<-- [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
