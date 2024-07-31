@@ -1,7 +1,10 @@
 [book]
-authors = ["Zeglius"]
+authors = ["nicknamenamenick","Zeglius"]
 language = "en"
 multilingual = false
 src = "src"
 title = "Bazzite Documentation"
+use-default-preprocessors = false
+
+[build]
 create-missing = false
