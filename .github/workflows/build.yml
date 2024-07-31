@@ -29,6 +29,12 @@ on:
       - ".github/workflows/build_iso.yml"
   merge_group:
   workflow_dispatch:
+    # TODO: Enable this when the prev tag is enabled in rechunk
+    # inputs:
+    #   fresh-rechunk:
+    #     description: 'Clear rechunk plan'
+    #     type: boolean
+    #     default: false
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
@@ -185,7 +191,7 @@ jobs:
           done
           echo "alias_tags=${alias_tags[*]}" >> $GITHUB_OUTPUT
 
-      - name: Pull main and akmods images
+      - name: Pull main, akmods, rechunk images
         uses: Wandalen/wretry.action@v3.5.0
         with:
           attempt_limit: 3
@@ -193,9 +199,12 @@ jobs:
           command: |
             # pull the base images used for FROM in Containerfile so
             # we can retry on that unfortunately common failure case
-            podman pull ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
-            podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
-            podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+            sudo podman pull ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
+            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+
+            # Add rechunk as well to remove this source of failure
+            sudo podman pull ghcr.io/hhd-dev/rechunk:v0.1.8
 
       - name: Get source versions
         id: labels
@@ -221,45 +230,63 @@ jobs:
             fi
             echo "KERNEL_VERSION=$linux" >> $GITHUB_ENV
 
-      # Build metadata
-      - name: Image Metadata
-        uses: docker/metadata-action@v5
-        id: meta
-        with:
-          images: |
-            ${{ env.IMAGE_NAME }}
-          labels: |
-            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
-            org.opencontainers.image.description=Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
-            org.opencontainers.image.version=${{ env.SOURCE_IMAGE_VERSION }}
-            ostree.linux=${{ env.KERNEL_VERSION }}
-            io.artifacthub.package.readme-url=https://bazzite.gg/
-            io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
-
-      # Build image using Buildah action
+      # Build image using buildah and save it to raw-img
       - name: Build Image
         id: build_image
-        uses: redhat-actions/buildah-build@v2
+        run: |
+          sudo buildah build \
+            --target ${{ matrix.base_name }} \
+            --build-arg IMAGE_NAME=${{ env.IMAGE_NAME }} \
+            --build-arg IMAGE_FLAVOR=${{ env.IMAGE_FLAVOR }} \
+            --build-arg IMAGE_VENDOR=${{ github.repository_owner }} \
+            --build-arg BASE_IMAGE_NAME=${{ matrix.base_image_name }} \
+            --build-arg BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }} \
+            --build-arg FEDORA_VERSION=${{ matrix.fedora_version }} \
+            --build-arg KERNEL_FLAVOR=${{ matrix.kernel_flavor }} \
+            --build-arg IMAGE_BRANCH=${{ github.ref_name }} \
+            --build-arg SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }} \
+            --tag raw-img .
+      
+      - name: Remove auxiliary images
+        # We are tight on space, need at least 2x for OSTree
+        run: |            
+          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
+          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+      
+      # Reprocess raw-img using rechunker which will delete it
+      - name: Run Rechunker
+        id: rechunk
+        uses: hhd-dev/rechunk@v0.1.8
         with:
-          containerfiles: |
-            ./Containerfile
-          image: ${{ env.IMAGE_NAME }}
-          tags: |
-            ${{ steps.generate-tags.outputs.alias_tags }}
-          build-args: |
-            IMAGE_NAME=${{ env.IMAGE_NAME }}
-            IMAGE_FLAVOR=${{ env.IMAGE_FLAVOR }}
-            IMAGE_VENDOR=${{ github.repository_owner }}
-            BASE_IMAGE_NAME=${{ matrix.base_image_name }}
-            BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }}
-            FEDORA_VERSION=${{ matrix.fedora_version }}
-            KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
-            IMAGE_BRANCH=${{ github.ref_name }}
-            SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }}
-          labels: ${{ steps.meta.outputs.labels }}
-          oci: false
-          extra-args: |
-            --target=${{ matrix.base_name }}
+          ref: 'raw-img'
+          # TODO: After the tag marked with unstable/stable is built with rechunk
+          # remove the comment below to enable using the previous manifest
+          # to avoid layer shifts.
+          # prev-ref: ${{ github.event.inputs.fresh-rechunk == 'true' && '' || 'ghcr.io/ublue-os/bazzite:unstable' }}
+          rechunk: 'ghcr.io/hhd-dev/rechunk:v0.1.8'
+          version: '${{ env.SOURCE_IMAGE_VERSION }}'
+          labels: |
+            io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
+            io.artifacthub.package.readme-url=https://bazzite.gg/
+            org.opencontainers.image.created=<timestamp>
+            org.opencontainers.image.description=Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
+            org.opencontainers.image.licenses=Apache-2.0
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=https://github.com/ublue-os/bazzite
+            org.opencontainers.image.title=bazzite
+            org.opencontainers.image.url=https://github.com/ublue-os/bazzite
+
+      # Pull oci-dir image, remove oci dir to make space, and then tag appropriately
+      - name: Load in podman and tag
+        run: |
+          IMAGE=$(podman pull ${{ steps.rechunk.outputs.ref }})
+          sudo rm -rf ${{ steps.rechunk.outputs.output }}
+          for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
+            podman tag $IMAGE ${{ env.IMAGE_NAME }}:$tag
+          done
+          # keep for secureboot check
+          podman tag $IMAGE rechunked-img
 
       - name: Check Secureboot
         shell: bash
@@ -269,9 +296,9 @@ jobs:
             sudo apt update
             sudo apt install sbsigntool curl openssl
           fi
-          podman run -d --rm --name ${{env.IMAGE_NAME}}-$(echo "${{ steps.generate-tags.outputs.alias_tags }}" | cut -d " " -f 1) "${{ env.IMAGE_NAME }}":$(echo "${{ steps.generate-tags.outputs.alias_tags }}" | cut -d " " -f 1) sleep 1000
-          podman cp ${{env.IMAGE_NAME}}-$(echo "${{ steps.generate-tags.outputs.alias_tags }}" | cut -d " " -f 1):/usr/lib/modules/${{ env.KERNEL_VERSION }}/vmlinuz .
-          podman rm -f ${{env.IMAGE_NAME}}-$(echo "${{ steps.generate-tags.outputs.alias_tags }}" | cut -d " " -f 1)
+          TMP=$(podman create rechunked-img bash)
+          podman cp $TMP:/usr/lib/modules/${{ env.KERNEL_VERSION }}/vmlinuz .
+          podman rm $TMP
           sbverify --list vmlinuz
           curl --retry 3 -Lo kernel-sign.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key.der
           curl --retry 3 -Lo akmods.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key_2.der
@@ -301,8 +328,8 @@ jobs:
           attempt_limit: 3
           attempt_delay: 15000
           with: |
-            image: ${{ steps.build_image.outputs.image }}
-            tags: ${{ steps.build_image.outputs.tags }}
+            image: ${{ env.IMAGE_NAME }}
+            tags: ${{ steps.generate-tags.outputs.alias_tags }}
             registry: ${{ steps.registry_case.outputs.lowercase }}
             username: ${{ env.REGISTRY_USER }}
             password: ${{ env.REGISTRY_PASSWORD }}
