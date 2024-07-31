@@ -1,0 +1,7 @@
+[book]
+authors = ["Zeglius"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Bazzite Documentation"
+create-missing = false
