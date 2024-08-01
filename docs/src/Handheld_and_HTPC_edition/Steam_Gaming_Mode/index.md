@@ -1,6 +1,6 @@
 # General Information
 
-> **For Handheld PC users only**: View our [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) for post-installation setup, workarounds, and known issues on handheld hardware.
+> **For Handheld PC users only**: View our [Handheld Wiki](../Handheld_Wiki/index.md) for post-installation setup, workarounds, and known issues on handheld hardware.
 
 ![Steam Gaming Mode UI|690x430](../../img/Steam_Gaming_Mode_UI.jpg)
 
@@ -82,7 +82,7 @@ Select "unhide" to have GRUB appear on boot.
 
 ## Change physical keyboard layout for Steam Gaming Mode
 
-https://universal-blue.discourse.group/docs?topic=816
+See [Change Physical Keyboard Layout for Steam Gaming Mode](../Change_Physical_Keyboard_Layout_for_Steam_Gaming_Mode.md)
 
 ## Why do specific Decky Loader plugins not function on Bazzite?
 

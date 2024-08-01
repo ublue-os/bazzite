@@ -2,13 +2,13 @@
 
 > This list is incomplete and does not indicate that unlisted handhelds do not work with Bazzite currently, but because we lack specific information regarding their post-installation setup, workarounds, and proper support they are unlisted here.
 
-- [Steam Deck](Steam%20Deck.md)
-- [Lenovo Legion Go](Lenovo%20Legion%20Go.md)
-- [ASUS ROG Ally](ASUS%20ROG%20Ally.md)
-- [Ayn Handhelds](Ayn%20Handhelds.md)
-- [GPD Handhelds](GPD%20Handhelds.md)
-- [Ayaneo Handhelds](Ayaneo%20Handhelds.md)
-- [Other Handhelds](Other%20Handhelds.md)
+- [Steam Deck](Steam_Deck.md)
+- [Lenovo Legion Go](Lenovo_Legion_Go.md)
+- [ASUS ROG Ally](ASUS_ROG_Ally.md)
+- [Ayn Handhelds](Ayn_Handhelds.md)
+- [GPD Handhelds](GPD_Handhelds.md)
+- [Ayaneo Handhelds](Ayaneo_Handhelds.md)
+- [Other Handhelds](Other_Handhelds.md)
 
 ## Support Rating
 

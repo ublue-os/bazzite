@@ -121,6 +121,6 @@ This [post](https://universal-blue.discourse.group/t/my-experience-using-bazzite
 
 <hr>
 
-**See also**: [Steam Gaming Mode Overview](../Steam%20Gaming%20Mode/index.md)
+**See also**: [Steam Gaming Mode Overview](../Steam_Gaming_Mode/index.md)
 
 **<-- Back to [Handheld Wiki](index.md)**

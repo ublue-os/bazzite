@@ -1,44 +1,61 @@
-# Lenovo Legion Go [x]
+# ASUS ROG Ally [x]
 
-![legion_go|690x387, 100%](../../img/legion_go.jpg)
+![ally|603x500, 100%](../../img/ally.png)
 
-**Status**: Platinum
+**Status**: Gold
 
 ## Post-Installation Setup
-
-Open a host terminal and enter the following **commands**:
 
 - Complete the Bazzite Portal
 - Login to Steam
 - Reboot device
-- Configure the HHD Overlay by opening it with <kbd>Legion R</kbd>
+- Configure the HHD Overlay by opening it with the QAM button
+- Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode (See "Desktop Controls" section below)
+  - There is **no default keybinding for Steam's on-screen keyboard**(Remap it to <kbd>**X**</kbd> or whatever you prefer)
+- Holding the Armoury Crate button (on the side) allows you to switch to Mouse Mode
 - **Optional**: Adjust RGB with Steam Gaming Mode under `Settings > Controller >  Calibration & Advanced > LED Settings`
 
 ## Workarounds / Known Issues
 
 - Games can sometimes default to 800p resolution.
   - Manually change the resolution per game in the `Steam Settings > Properties > Game Resolution` to either `Native` or other higher resolutions.
-- Performance overlay might be reporting inaccurate power consumption.
-- Adaptive/auto display brightness is currently broken.
-  - Manual brightness slider in Steam's UI works without issues.
-- BIOS and controller firmware **require** Windows to update them.
-- Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode. (See "Desktop Controls" section below)
-  - <kbd>**Legion L**</kbd> + <kbd>**X**/**Square**</kbd> (This can be remapped)
-- Try not to change the resolution in Desktop Mode!
-  - Connecting to an external monitor may also cause issues.
-    - If your screen doesn't display the correct output or looks grainy/noisy, then you will have to **ssh into it and enter this command**:
+- [Status of CPU Boost on Bazzite](https://github.com/aarron-lee/SimpleDeckyTDP/blob/main/README.md#are-there-cpu-boost-controls)
+  - Disable CPU boost to avoid excess power usage and other issues.
+- Changing A/C power sometimes leads to a stuck TDP.
+- LED is on max brightness by default and cannot be changed on any other operating system outside of Windows.
+  - This is tied to the firmware.
+  - This also affects when the ally is charging.
+- The Ally does **not support** button holding.
+  - Steam Input's chords do not work by default.
+    - Swapping the Start/Select button(s) is a workaround.
+- Suspend can break if SMT is disabled
+- Current issues with the Ally's BIOS may cause may cause the Ally to be stuck at 10w TDP, and won't be able to change after suspending.
+  - This does not occur using SimpleDeckyTDP with [Ryzenadj](https://github.com/FlyGoat/RyzenAdj).
+- VRR may limit the FPS to 70.
+  - Fix this by enabling "Force Composite" in Steam Gaming Mode under "Developer" settings.
+    - Developer Mode must be turned on first.
+- Rainbow RGB on the original ROG Ally that can affect Windows even after Bazzite is remove
 
-```command
-mv ~/.config/kwinoutputconfig.json ~/.config/kwinoutputconfig.json.old
-```
+# ASUS ROG Ally X [x]
 
-## BIOS Update Information
+![ROG Ally X|690x255](../../img/ROG_Ally_X.jpg)
 
-<https://universal-blue.discourse.group/docs?topic=3064>
+**Status**: Gold
 
-## External Resource
+## Post-Installation Setup
 
-For more information, check out the [Legion Go Tips and Tricks guide](https://github.com/aarron-lee/legion-go-tricks) which includes useful scripts for this handheld.
+- Complete the Bazzite Portal
+- Login to Steam
+- Reboot device
+- Configure the HHD Overlay by opening it with the QAM button
+- Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode (See "Desktop Controls" section below)
+  - There is **no default keybinding for Steam's on-screen keyboard**(Remap it to <kbd>**X**</kbd> or whatever you prefer)
+- Holding the Armoury Crate button (on the side) allows you to switch to Mouse Mode
+- **Optional**: Adjust RGB with Steam Gaming Mode under `Settings > Controller >  Calibration & Advanced > LED Settings`
+
+## Workarounds / Known Issues
+
+This hardware requires additional testing and reports, but refer to the original ASUS ROG Ally section since the issues may be similar.
 
 <hr>
 
@@ -62,7 +79,7 @@ There are a few options for TDP Controls that work with Bazzite:
 
 Press, hold, or double-tap the Quick Access Menu button.
 
-> **Example**: <kbd>Legion R</kbd> for the Lenovo Legion Go.
+> **Note**: ASUS ROG Ally does not support **holding**!
 
 # Controller Information
 
@@ -96,6 +113,6 @@ Hold down the "**select**" button on your device to force a reboot. This feature
 
 This page is a **wiki**, edit it to add any relevant information you may have regarding the handheld and your experience with Bazzite on it. Make sure to follow proper [documentation guidelines](https://universal-blue.discourse.group/docs?topic=890) and [contributing guidelines](https://universal-blue.discourse.group/docs?topic=81) before adding any edits.
 
-**See also**: [Steam Gaming Mode Overview](../Steam%20Gaming%20Mode/index.md)
+**See also**: [Steam Gaming Mode Overview](../Steam_Gaming_Mode/index.md)
 
-**<-- Back to [Handheld Wiki](./)**
+**<-- Back to [Handheld Wiki](index.md)**

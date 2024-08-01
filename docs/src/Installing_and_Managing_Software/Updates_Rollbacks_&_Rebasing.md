@@ -11,7 +11,7 @@
 
 # Rollbacks
 
-![GRUB Menu|690x402](../img/GRUB%20Menu.png)
+![GRUB Menu|690x402](../img/GRUB_Menu.png)
 
 > Swap back to a previous system update if there are major issues after updating via the GRUB menu or the `rpm-ostree rollback` command.
 

@@ -4,7 +4,9 @@ language = "en"
 multilingual = false
 src = "src"
 title = "Bazzite Documentation"
-use-default-preprocessors = false
 
 [build]
+use-default-preprocessors = false
 create-missing = false
+
+[preprocessor.links]

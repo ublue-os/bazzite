@@ -1,6 +1,6 @@
-# ASUS ROG Ally [x]
+# GPD Win 4 [x]
 
-![ally|603x500, 100%](../../img/ally.png)
+![gpdwin4|690x328, 100%](../../img/gpdwin4.jpg)
 
 **Status**: Gold
 
@@ -9,36 +9,29 @@
 - Complete the Bazzite Portal
 - Login to Steam
 - Reboot device
-- Configure the HHD Overlay by opening it with the QAM button
+- Configure the HHD Overlay by opening it with QAM button
 - Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode (See "Desktop Controls" section below)
-  - There is **no default keybinding for Steam's on-screen keyboard**(Remap it to <kbd>**X**</kbd> or whatever you prefer)
-- Holding the Armoury Crate button (on the side) allows you to switch to Mouse Mode
-- **Optional**: Adjust RGB with Steam Gaming Mode under `Settings > Controller >  Calibration & Advanced > LED Settings`
+  - <kbd>Xbox</kbd> + <kbd>X</kbd> (This can be remapped)
+  - GPD devices also have a physical switch you can toggle to enable a separate desktop/mouse mode.
 
 ## Workarounds / Known Issues
 
 - Games can sometimes default to 800p resolution.
   - Manually change the resolution per game in the `Steam Settings > Properties > Game Resolution` to either `Native` or other higher resolutions.
-- [Status of CPU Boost on Bazzite](https://github.com/aarron-lee/SimpleDeckyTDP/blob/main/README.md#are-there-cpu-boost-controls)
-  - Disable CPU boost to avoid excess power usage and other issues.
-- Changing A/C power sometimes leads to a stuck TDP.
-- LED is on max brightness by default and cannot be changed on any other operating system outside of Windows.
-  - This is tied to the firmware.
-  - This also affects when the ally is charging.
-- The Ally does **not support** button holding.
-  - Steam Input's chords do not work by default.
-    - Swapping the Start/Select button(s) is a workaround.
-- Suspend can break if SMT is disabled
-- Current issues with the Ally's BIOS may cause may cause the Ally to be stuck at 10w TDP, and won't be able to change after suspending.
-  - This does not occur using SimpleDeckyTDP with [Ryzenadj](https://github.com/FlyGoat/RyzenAdj).
-- VRR may limit the FPS to 70.
-  - Fix this by enabling "Force Composite" in Steam Gaming Mode under "Developer" settings.
-    - Developer Mode must be turned on first.
-- Rainbow RGB on the original ROG Ally that can affect Windows even after Bazzite is remove
+- Fix controls and gyro after suspend-resume cycles (confirmed to work on both the 7840u and 6800u variants).
+  - Run these [commands](https://github.com/aarron-lee/gpd-win-tricks/blob/df0cb72ee11cfd0ba30c8bcffe0e395b99b713d3/win4-gyro-suspend-fix/README.md) in a host terminal.
+- Back buttons may need to be manually remapped before they are usable.
+  - Watch this [video guide](https://www.youtube.com/watch?v=lnNfMY9kzjk) for a visual guide.
 
-# ASUS ROG Ally X [x]
+## External Resource
 
-![ROG Ally X|690x255](../../img/ROG_Ally_X.jpg)
+For more information, check out the [GPD Win Tips and Tricks guide](https://github.com/aarron-lee/gpd-win-tricks) which includes useful scripts for this handheld.
+
+<hr>
+
+# GPD Win Max 2 [x]
+
+![placeholder_gpdwinmax2|407x312, 100%](../../img/placeholder_gpdwinmax2.png)
 
 **Status**: Gold
 
@@ -47,15 +40,24 @@
 - Complete the Bazzite Portal
 - Login to Steam
 - Reboot device
-- Configure the HHD Overlay by opening it with the QAM button
+- Configure the HHD Overlay by opening it with QAM button
 - Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode (See "Desktop Controls" section below)
-  - There is **no default keybinding for Steam's on-screen keyboard**(Remap it to <kbd>**X**</kbd> or whatever you prefer)
-- Holding the Armoury Crate button (on the side) allows you to switch to Mouse Mode
-- **Optional**: Adjust RGB with Steam Gaming Mode under `Settings > Controller >  Calibration & Advanced > LED Settings`
+- Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode. (See "Desktop Controls" section below)
+  - <kbd>Xbox</kbd> + <kbd>X</kbd> (This can be remapped)
+  - GPD devices also have a physical switch you can toggle to enable a separate desktop/mouse mode
+- Steam Gaming Mode **Display** settings that are recommended to be changed:
+  - `Use Native Color Temperature` - Enabled
 
 ## Workarounds / Known Issues
 
-This hardware requires additional testing and reports, but refer to the original ASUS ROG Ally section since the issues may be similar.
+- Games can sometimes default to 800p resolution
+  - Manually change the resolution per game in the `Steam Settings > Properties > Game Resolution` to either `Native` or other higher resolutions.
+- gyro is non-functional
+- back buttons may need to be manually remapped before they are usable, see [video guide](https://www.youtube.com/watch?v=lnNfMY9kzjk)
+
+## External Resource
+
+For more information, check out the [GPD Win Tips and Tricks guide](https://github.com/aarron-lee/gpd-win-tricks) which includes useful scripts for this handheld.
 
 <hr>
 
@@ -74,18 +76,17 @@ There are a few options for TDP Controls that work with Bazzite:
 # How do I open the HHD Overlay?
 
 ![Overlay|690x431, 75%](../../img/Overlay.jpg)
-
-![Legion HHD|690x431, 75%](../../img/legion_hhd.jpg)
+![Emulation Mode|690x434, 75%](../../img/Emulation_Mode.jpg)
 
 Press, hold, or double-tap the Quick Access Menu button.
 
-> **Note**: ASUS ROG Ally does not support **holding**!
+> **Note**: GPD devices do not support double-tapping!
 
 # Controller Information
 
 For most handheld hardware, besides the Steam Deck, emulation of a DualSense controller is used for full functionality. Double tap or hold the side menu button to access settings for controller emulation including switching to an Xbox controller with reduced functionality.
 
-If your device has paddles, you will want to use the DualSense Edge controller. It’s disabled by default because some games do not map it correctly.
+If your device has paddles, you will want to use the DualSense Edge controller. It's disabled by default because some games do not map it correctly.
 
 Some games and emulators may need Steam Input **disabled** to work correctly with your controls.
 
@@ -101,18 +102,12 @@ Desktop Mode Controller Layout: It may not exist by default if Steam doesn't set
 
 Make sure to **apply** the desktop controls when you select them.
 
-# Force reboot device to prevent drive corruption if Steam crashes
-
-> **Note**: This is only for the ASUS ROG Ally and Lenovo Legion Go.
-
-Hold down the "**select**" button on your device to force a reboot. This feature can be disabled in the overlay settings.
-
 <hr>
 
 # Contributing
 
 This page is a **wiki**, edit it to add any relevant information you may have regarding the handheld and your experience with Bazzite on it. Make sure to follow proper [documentation guidelines](https://universal-blue.discourse.group/docs?topic=890) and [contributing guidelines](https://universal-blue.discourse.group/docs?topic=81) before adding any edits.
 
-**See also**: [Steam Gaming Mode Overview](../Steam%20Gaming%20Mode/index.md)
+**See also**: [Steam Gaming Mode Overview](../Steam_Gaming_Mode/index.md)
 
 **<-- Back to [Handheld Wiki](index.md)**

@@ -63,4 +63,4 @@ View this [guide](https://universal-blue.discourse.group/docs?topic=970) for for
 
 <hr>
 
-[**<-- Back to Gaming Guide**](README.md)
+[**<-- Back to Gaming Guide**](index.md)

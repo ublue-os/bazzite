@@ -30,7 +30,7 @@ nicknamenamenick | 2024-07-31 15:11:34 UTC | #1
 
 # How do I install Android applications?
 
-Follow the [Waydroid Setup Guide](Waydroid%20Setup%20Guide.md) to install Android applications on Bazzite.
+Follow the [Waydroid Setup Guide](Waydroid_Setup_Guide.md) to install Android applications on Bazzite.
 
 > **Note**: Waydroid is **not supported** on other Universal Blue images like Aurora and Bluefin.
 
@@ -51,4 +51,4 @@ Follow the [Waydroid Setup Guide](Waydroid%20Setup%20Guide.md) to install Androi
 
 **Documentation Contributors**: [HikariKnight](https://github.com/HikariKnight)
 
-**See also**: [Updates, Rollbacks, & Rebasing](Updates,%20Rollbacks,%20&%20Rebasing.md)
+**See also**: [Updates, Rollbacks, & Rebasing](Updates_Rollbacks_&_Rebasing.md)

@@ -13,7 +13,7 @@ Flatpaks can be installed via the software center of the desktop environment you
 - **KDE**: _Discover_ ![Discover|50x50, 50%]
 - **GNOME**: _GNOME Software_ ![GNOME Software|50x50, 50%]
   ![Discover|659x500, 100%](../img/Discover.png)
-  ![GNOME Software Center](../img/GNOME%20Software%20Center.png)
+  ![GNOME Software Center](../img/GNOME_Software_Center.png)
 
 **Alternatively open a host terminal and enter**:
 
