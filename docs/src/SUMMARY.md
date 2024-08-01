@@ -5,11 +5,8 @@
 - [📖 Installation Guide](General/Installation_Guide/index.md)
 - [📝 Desktop Environment Tweaks](General/Desktop_Environment_Tweaks.md)
 - [🤝 Contributing to Bazzite](General/Contributing_to_Bazzite.md)
-
-# 🎲 Gaming
-
-- [Introduction](Gaming/index.md)
-- [Game Launchers](Gaming/Game_Launchers.md)
+- [🎲 Gaming](Gaming/index.md)
+  - [Game Launchers](Gaming/Game_Launchers.md)
 
 # Steam Gaming Mode / Handheld & HTPC Hardware
 
