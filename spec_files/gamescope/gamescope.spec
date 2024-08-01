@@ -60,6 +60,7 @@ BuildRequires:  (pkgconfig(wlroots) >= 0.18.0 with pkgconfig(wlroots) < 0.19.0)
 BuildRequires:  (pkgconfig(libliftoff) >= 0.4.1 with pkgconfig(libliftoff) < 0.5)
 BuildRequires:  pkgconfig(libcap)
 BuildRequires:  pkgconfig(hwdata)
+BuildRequires:  pkgconfig(lcms2)
 BuildRequires:  spirv-headers-devel
 # Enforce the the minimum EVR to contain fixes for all of:
 # CVE-2021-28021 CVE-2021-42715 CVE-2021-42716 CVE-2022-28041 CVE-2023-43898
@@ -76,7 +77,6 @@ BuildRequires:  /usr/bin/glslangValidator
 BuildRequires:  libdecor-devel
 BuildRequires:  libXdamage-devel
 BuildRequires:  xorg-x11-server-Xwayland-devel
-BuildRequires:  lcms-devel
 BuildRequires:  git
 
 # libliftoff hasn't bumped soname, but API/ABI has changed for 0.2.0 release
