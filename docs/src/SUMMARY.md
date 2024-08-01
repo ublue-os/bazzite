@@ -1,3 +1,9 @@
+<div class="hidden">
+
+[Introduction](Introduction.md)
+
+</div>
+
 # General
 
 - [📜 Bazzite's README](Bazzite_README.md)
