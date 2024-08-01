@@ -10,3 +10,7 @@ use-default-preprocessors = false
 create-missing = false
 
 [preprocessor.links]
+
+[output.html]
+git-repository-url="https://github.com/ublue-os/bazzite"
+edit-url-template = "https://github.com/ublue-os/bazzite/edit/main/docs/{path}"
