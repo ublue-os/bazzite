@@ -50,7 +50,7 @@ BuildRequires:  pkgconfig(xres)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-scanner)
-BuildRequires:  pkgconfig(wayland-server)
+BuildRequires:  pkgconfig(wayland-server) >= 1.23.0
 BuildRequires:  pkgconfig(wayland-protocols) >= 1.17
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(sdl2)
@@ -76,6 +76,7 @@ BuildRequires:  /usr/bin/glslangValidator
 BuildRequires:  libdecor-devel
 BuildRequires:  libXdamage-devel
 BuildRequires:  xorg-x11-server-Xwayland-devel
+BuildRequires:  lcms-devel
 BuildRequires:  git
 
 # libliftoff hasn't bumped soname, but API/ABI has changed for 0.2.0 release
