@@ -2,7 +2,7 @@
 
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
-%global gamescope_tag 3.14.24
+%global gamescope_tag 3.14.26
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
@@ -22,14 +22,8 @@ Patch1:         chimeraos.patch
 # https://hhd.dev/
 Patch2:         disable-steam-touch-click-atom.patch
 Patch3:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
-# https://github.com/ValveSoftware/gamescope/pull/1281
-Patch4:         deckhd.patch
 # https://github.com/ValveSoftware/gamescope/issues/1398
-Patch5:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
-# https://github.com/ValveSoftware/gamescope/issues/1369
-Patch6:         revert-299bc34.patch
-# https://github.com/ValveSoftware/gamescope/pull/1231
-Patch7:         1231.patch
+Patch4:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
 
 # Temporary until newer tag than 3.14.24
 Patch8:         upstream.patch

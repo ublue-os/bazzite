@@ -1944,33 +1944,6 @@ index 10c0a75..1bc9008 100644
 2.45.2
 
 
-From 7865b34c5cd61fa5cc5428ace614e4551fabb6ec Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?Joaqu=C3=ADn=20Ignacio=20Aramend=C3=ADa?=
- <samsagax@gmail.com>
-Date: Tue, 9 Jul 2024 18:29:16 -0300
-Subject: [PATCH 20/22] disable explicit sync to avoid graphical artifacts
-
----
- src/Backends/DRMBackend.cpp | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 9df20ae..ff1858b 100644
---- a/src/Backends/DRMBackend.cpp
-+++ b/src/Backends/DRMBackend.cpp
-@@ -68,7 +68,7 @@ gamescope::ConVar<bool> cv_drm_debug_disable_blend_tf( "drm_debug_disable_blend_
- gamescope::ConVar<bool> cv_drm_debug_disable_ctm( "drm_debug_disable_ctm", false, "CTM chicken bit. (Forces CTM off, does not affect other logic)" );
- gamescope::ConVar<bool> cv_drm_debug_disable_color_encoding( "drm_debug_disable_color_encoding", false, "YUV Color Encoding chicken bit. (Forces COLOR_ENCODING to DEFAULT, does not affect other logic)" );
- gamescope::ConVar<bool> cv_drm_debug_disable_color_range( "drm_debug_disable_color_range", false, "YUV Color Range chicken bit. (Forces COLOR_RANGE to DEFAULT, does not affect other logic)" );
--gamescope::ConVar<bool> cv_drm_debug_disable_explicit_sync( "drm_debug_disable_explicit_sync", false, "Force disable explicit sync on the DRM backend." );
-+gamescope::ConVar<bool> cv_drm_debug_disable_explicit_sync( "drm_debug_disable_explicit_sync", true, "Force disable explicit sync on the DRM backend." );
- gamescope::ConVar<bool> cv_drm_debug_disable_in_fence_fd( "drm_debug_disable_in_fence_fd", false, "Force disable IN_FENCE_FD being set to avoid over-synchronization on the DRM backend." );
- 
- // HACK:
--- 
-2.45.2
-
-
 From 1dbcfed76f4b80d8a9f6570819b5af7917c786fc Mon Sep 17 00:00:00 2001
 From: Kyle Gospodnetich <me@kylegospodneti.ch>
 Date: Tue, 2 Jul 2024 14:12:47 -0700
