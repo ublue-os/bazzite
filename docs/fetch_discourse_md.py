@@ -55,10 +55,10 @@ How does this script work:
             - URL used by the CDN to store the image (group 'image_cdn_url')
             - SHA1 used by the markdown (ex.: upload://<SHA1>.jpeg) (group 'sha1')
 
-    5.  Create a `img_url_assocs: list[dict[str,str]]`, `dict` following this schema: `{"<SHA1>": "<image_cdn_url>"}`
+    5.  Create a `img_url_assocs: list[tuple[str,str]]`, `dict` following this schema: `{"<SHA1>": "<image_cdn_url>"}`
         ```python
         @classmethod
-        def get_images_url_assocs_from_page(cls, page: HTMLPage) -> list[dict[str, str]]:
+        def get_images_url_assocs_from_page(cls, page: HTMLPage) -> list[tuple[str, str]]:
             result: list[dict[str, str]] = []
             for match in re.finditer(DiscourseProcessor.Patterns.imgs_urls, page):
                 (sha1, image_cdn_url) = match.group("sha1", "image_cdn_url")
@@ -236,6 +236,11 @@ def main():
             page=DiscourseProcessor.get_markdown_from_raw(batch),
             assocs=image_urls_assocs,
         )
+
+        # Remove comments
+
+        result = DiscourseProcessor.Patterns.post_sep_markdown.split(result, 1)[0].rstrip()
+
         print(result, file=stdout)
 
 
