@@ -358,3 +358,6 @@ bazzite-cli:
 
     # Entrypoint
     main ""
+benchmark:
+    echo 'Running a 1 minute benchmark ...'
+    cd /tmp && stress-ng --matrix 0 -t 1m --times
