@@ -376,6 +376,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         topgrade \
         ydotool \
         yafti \
+	stress-ng \
         lsb_release && \
     rpm-ostree install \
         ublue-update && \
