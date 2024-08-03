@@ -57,16 +57,6 @@ jobs:
 
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
-      - name: Set EXTRA_BOOT_PARAMS
-        id: generate-extra-params
-        shell: bash
-        run: |
-          EXTRA_BOOT_PARAMS=""
-          if [[ "${{ matrix.image_name }}" =~ "deck" ]]; then
-              EXTRA_BOOT_PARAMS="inst.resolution=1280x800"
-          fi
-          echo "extra-boot-params=${EXTRA_BOOT_PARAMS}" >> $GITHUB_OUTPUT
-
       - name: Set Flatpaks Directory Shortname
         id: generate-flatpak-dir-shortname
         shell: bash
