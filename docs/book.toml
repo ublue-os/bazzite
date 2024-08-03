@@ -14,3 +14,6 @@ create-missing = false
 [output.html]
 git-repository-url="https://github.com/ublue-os/bazzite"
 edit-url-template = "https://github.com/ublue-os/bazzite/edit/main/docs/{path}"
+
+[preprocessor.youtube-embed]
+command = "python ./preprocessors/youtube-embed.py"
