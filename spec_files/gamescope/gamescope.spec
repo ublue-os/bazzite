@@ -6,7 +6,7 @@
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        19.bazzite
+Release:        20.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -24,6 +24,10 @@ Patch2:         disable-steam-touch-click-atom.patch
 Patch3:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
 # https://github.com/ValveSoftware/gamescope/issues/1398
 Patch4:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
+# https://github.com/ValveSoftware/gamescope/pull/1444
+Patch5:         1444.patch
+# https://github.com/ValveSoftware/gamescope/commit/e31b8dea137d2cedd4cf71fede560feb2ad3ffc5
+Patch6:         e31b8dea137d2cedd4cf71fede560feb2ad3ffc5.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
