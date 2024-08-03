@@ -6,7 +6,7 @@ ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$BASE_IMAGE_FLAVOR}"
 ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
-ARG JUPITER_KERNEL_VERSION="${JUPITER_KERNEL_VERSION:-jupiter-20240605.1}"
+ARG JUPITER_FIRMWARE_VERSION="${JUPITER_FIRMWARE_VERSION:-jupiter-20240605.1}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
@@ -24,7 +24,7 @@ ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-fsync}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
-ARG JUPITER_KERNEL_VERSION="${JUPITER_KERNEL_VERSION:-jupiter-20240605.1}"
+ARG JUPITER_FIRMWARE_VERSION="${JUPITER_FIRMWARE_VERSION:-jupiter-20240605.1}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
@@ -147,6 +147,13 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --from repo=updates \
         libdrm \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libX11 \
+        libX11-common \
+        libX11-xcb \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true && \
@@ -203,26 +210,26 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 # Setup firmware
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     mkdir -p /tmp/linux-firmware-neptune && \
-    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/cs35l41-dsp1-spk-cali.bin && \
-    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.wmfw https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/cs35l41-dsp1-spk-cali.wmfw && \
-    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-prot.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/cs35l41-dsp1-spk-prot.bin && \
-    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-prot.wmfw https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/cs35l41-dsp1-spk-prot.wmfw && \
+    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-cali.bin && \
+    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.wmfw https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-cali.wmfw && \
+    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-prot.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-prot.bin && \
+    curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-prot.wmfw https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-prot.wmfw && \
     xz --check=crc32 /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-{cali.bin,cali.wmfw,prot.bin,prot.wmfw} && \
     mv -vf /tmp/linux-firmware-neptune/* /usr/lib/firmware/cirrus/ && \
     rm -rf /tmp/linux-firmware-neptune && \
     mkdir -p /tmp/linux-firmware-galileo && \
-    curl https://gitlab.com/evlaV/linux-firmware-neptune/-/archive/"${JUPITER_KERNEL_VERSION}"/linux-firmware-neptune-"${JUPITER_KERNEL_VERSION}".tar.gz?path=ath11k/QCA206X -o /tmp/linux-firmware-galileo/ath11k.tar.gz && \
+    curl https://gitlab.com/evlaV/linux-firmware-neptune/-/archive/"${JUPITER_FIRMWARE_VERSION}"/linux-firmware-neptune-"${JUPITER_FIRMWARE_VERSION}".tar.gz?path=ath11k/QCA206X -o /tmp/linux-firmware-galileo/ath11k.tar.gz && \
     tar --strip-components 1 --no-same-owner --no-same-permissions --no-overwrite-dir -xvf /tmp/linux-firmware-galileo/ath11k.tar.gz -C /tmp/linux-firmware-galileo && \
     xz --check=crc32 /tmp/linux-firmware-galileo/ath11k/QCA206X/hw2.1/* && \
     mv -vf /tmp/linux-firmware-galileo/ath11k/QCA206X /usr/lib/firmware/ath11k/QCA206X && \
     rm -rf /tmp/linux-firmware-galileo/ath11k && \
     rm -rf /tmp/linux-firmware-galileo/ath11k.tar.gz && \
     ln -s QCA206X /usr/lib/firmware/ath11k/QCA2066 && \
-    curl -Lo /tmp/linux-firmware-galileo/hpbtfw21.tlv https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/qca/hpbtfw21.tlv && \
-    curl -Lo /tmp/linux-firmware-galileo/hpnv21.309 https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/qca/hpnv21.309 && \
-    curl -Lo /tmp/linux-firmware-galileo/hpnv21.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/qca/hpnv21.bin && \
-    curl -Lo /tmp/linux-firmware-galileo/hpnv21g.309 https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/qca/hpnv21g.309 && \
-    curl -Lo /tmp/linux-firmware-galileo/hpnv21g.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_KERNEL_VERSION}"/qca/hpnv21g.bin && \
+    curl -Lo /tmp/linux-firmware-galileo/hpbtfw21.tlv https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/qca/hpbtfw21.tlv && \
+    curl -Lo /tmp/linux-firmware-galileo/hpnv21.309 https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/qca/hpnv21.309 && \
+    curl -Lo /tmp/linux-firmware-galileo/hpnv21.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/qca/hpnv21.bin && \
+    curl -Lo /tmp/linux-firmware-galileo/hpnv21g.309 https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/qca/hpnv21g.309 && \
+    curl -Lo /tmp/linux-firmware-galileo/hpnv21g.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/qca/hpnv21g.bin && \
     xz --check=crc32 /tmp/linux-firmware-galileo/* && \
     mv -vf /tmp/linux-firmware-galileo/* /usr/lib/firmware/qca/ && \
     rm -rf /tmp/linux-firmware-galileo && \
@@ -269,6 +276,13 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             fwupd-plugin-flashrom \
             fwupd-plugin-modem-manager \
             fwupd-plugin-uefi-capsule-data && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+        libwayland-client \
+        libwayland-server \
+        libwayland-cursor \
+        libwayland-egl && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
@@ -380,6 +394,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         topgrade \
         ydotool \
         yafti \
+        stress-ng \
         lsb_release && \
     rpm-ostree install \
         ublue-update && \
