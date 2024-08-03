@@ -1,14 +1,27 @@
+__doc__ = """Transcribe youtube URLS into embededs iframes"""
+
 import datetime
-import difflib
 import json
 import os
 import re
 import sys
-from typing import Any, Type
+from typing import Any
 
+
+######################## CONFIGURATION PARAMETERS ########################
+
+YOUUTUBE_EMBED_WIDTH = 600
+YOUUTUBE_EMBED_HEIGHT = YOUUTUBE_EMBED_WIDTH / (16 / 9)
+
+##########################################################################
 
 YOUTUBE_URL_PATTERN = r"(?<!<)https:\/\/(?:www\.youtube\.com\/watch\?v=|youtu\.be\/(?!watch))(?P<id>[a-zA-Z0-9_-]{11})"
-YOUTUBE_EMBED_TEMPLATE = """<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/\\g<id>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>"""
+YOUTUBE_EMBED_TEMPLATE = (
+    f"""<iframe width="{YOUUTUBE_EMBED_WIDTH}" height="{YOUUTUBE_EMBED_HEIGHT}" src="https://www.youtube-nocookie.com/embed/\\g<id>" """
+    + """frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" """
+    + """referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>"""
+)
+YOUTUBE_EMBED_TEMPLATE = f"<center>{YOUTUBE_EMBED_TEMPLATE}</center>"
 
 _DEBUG = os.getenv("DEBUG", "")
 
@@ -35,6 +48,7 @@ if __name__ == "__main__":
     context, book = json.load(sys.stdin)
     book: dict[str, list]
     context: dict
+    debug(f"context: {context}")
 
     sections = book["sections"]
 
