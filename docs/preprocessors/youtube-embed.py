@@ -15,7 +15,7 @@ YOUUTUBE_EMBED_HEIGHT = YOUUTUBE_EMBED_WIDTH / (16 / 9)
 
 ##########################################################################
 
-YOUTUBE_URL_PATTERN = r"(?<!<)https:\/\/(?:www\.youtube\.com\/watch\?v=|youtu\.be\/(?!watch))(?P<id>[a-zA-Z0-9_-]{11})"
+YOUTUBE_URL_PATTERN = r"^(?:\s|\t)*(?<!<)https:\/\/(?:www\.youtube\.com\/watch\?v=|youtu\.be\/(?!watch))(?P<id>[a-zA-Z0-9_-]{11})$"
 YOUTUBE_EMBED_TEMPLATE = (
     f"""<iframe width="{YOUUTUBE_EMBED_WIDTH}" height="{YOUUTUBE_EMBED_HEIGHT}" src="https://www.youtube-nocookie.com/embed/\\g<id>" """
     + """frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" """
