@@ -15,19 +15,20 @@ URL:            https://github.com/ValveSoftware/gamescope
 # Create stb.pc to satisfy dependency('stb')
 Source0:        stb.pc
 
-Patch0:         0001-cstdint.patch
+# https://github.com/ValveSoftware/gamescope
+Patch0:         upstream.patch
+
+Patch1:         0001-cstdint.patch
 
 # https://github.com/ChimeraOS/gamescope
-Patch1:         chimeraos.patch
+Patch2:         chimeraos.patch
 # https://hhd.dev/
-Patch2:         disable-steam-touch-click-atom.patch
-Patch3:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
+Patch3:         disable-steam-touch-click-atom.patch
+Patch4:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
 # https://github.com/ValveSoftware/gamescope/issues/1398
-Patch4:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
+Patch5:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
 # https://github.com/ValveSoftware/gamescope/pull/1444
-Patch5:         1444.patch
-# https://github.com/ValveSoftware/gamescope
-Patch6:         upstream.patch
+Patch6:         1444.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
