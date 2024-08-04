@@ -1,1 +1,1 @@
-ACTION=="add", DRIVERS=="playstation", ATTRS{name}=="*Wireless Controller", TAG+="systemd", ENV{SYSTEMD_WANTS}="bazzite-bluetooth-ds4-ds5-workaround@$attr{uniq}.service"
+ACTION=="add", SUBSYSTEMS=="input", ATTRS{name}=="*Wireless Controller", RUN+="/usr/bin/systemctl start --no-block --runtime bazzite-bluetooth-ds4-ds5-workaround@$attr{uniq}.service"
