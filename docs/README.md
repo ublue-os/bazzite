@@ -62,7 +62,7 @@ Requirements:
 
 ---
 
-Best way to learn is with a real life example. We will transcribe
+Best way to learn is with a real life example. We will transcribe https://universal-blue.discourse.group/docs?topic=2743
 
 ### 1. Basic preparation
 
