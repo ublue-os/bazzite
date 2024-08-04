@@ -26,8 +26,8 @@ Patch3:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
 Patch4:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
 # https://github.com/ValveSoftware/gamescope/pull/1444
 Patch5:         1444.patch
-# https://github.com/ValveSoftware/gamescope/commit/e31b8dea137d2cedd4cf71fede560feb2ad3ffc5
-Patch6:         e31b8dea137d2cedd4cf71fede560feb2ad3ffc5.patch
+# https://github.com/ValveSoftware/gamescope
+Patch6:         upstream.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
