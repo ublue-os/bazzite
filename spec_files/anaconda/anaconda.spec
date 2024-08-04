@@ -1,6 +1,6 @@
 Summary: Graphical system installer
 Name:    anaconda
-Version: 41.27
+Version: 40.22.3
 Release: 100.bazzite
 License: GPL-2.0-or-later
 URL:     http://fedoraproject.org/wiki/Anaconda
@@ -10,9 +10,13 @@ URL:     http://fedoraproject.org/wiki/Anaconda
 # git checkout -b archive-branch anaconda-%%{version}-%%{release}
 # ./autogen.sh
 # make dist
-Source0: https://github.com/rhinstaller/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.bz2
+Source0: https://github.com/rhinstaller/%{name}/releases/download/%{name}-%{version}-1/%{name}-%{version}.tar.bz2
+# https://github.com/rhinstaller/anaconda/pull/5508
+# https://bugzilla.redhat.com/show_bug.cgi?id=2268505
+# Fix bootupd UEFI path to create an EFI boot manager entry
+Patch0: 0001-bootupd-call-bootupctl-with-update-firmware.patch
 
-Patch0: bazzite.patch
+Patch1: bazzite.patch
 
 # Versions of required components (done so we make sure the buildrequires
 # match the requires versions of things).
@@ -86,16 +90,11 @@ Summary: Core of the Anaconda installer
 # core/signal.py is under MIT
 License: GPL-2.0-or-later AND MIT
 Requires: python3-libs
-%if 0%{?rhel} > 10 || 0%{?fedora} > 40
-Requires: python3-crypt-r
-%endif
 Requires: python3-dnf >= %{dnfver}
 Requires: python3-blivet >= %{pythonblivetver}
 Requires: python3-blockdev >= %{libblockdevver}
 Requires: python3-meh >= %{mehver}
-%if 0%{?rhel} < 10 || 0%{?fedora}
 Requires: libreport-anaconda >= %{libreportanacondaver}
-%endif
 Requires: libselinux-python3
 Requires: python3-rpm >= %{rpmver}
 Requires: python3-pyparted >= %{pypartedver}
@@ -119,19 +118,17 @@ Requires: subscription-manager >= %{subscriptionmanagerver}
 # which is apparently great for containers but unhelpful for the rest of us
 Requires: cracklib-dicts
 
-%if 0%{?rhel} < 10 || 0%{?fedora}
 Requires: teamd
-Requires: NetworkManager-team
-%endif
 %ifarch s390 s390x
 Requires: openssh
 %endif
 Requires: NetworkManager >= %{nmver}
 Requires: NetworkManager-libnm >= %{nmver}
+Requires: NetworkManager-team
 Requires: kbd
 Requires: chrony
 Requires: systemd
-%if 0%{?rhel} > 10 || 0%{?fedora}
+%if ! 0%{?rhel}
 Requires: systemd-resolved
 %endif
 Requires: python3-pid
@@ -176,6 +173,7 @@ BuildArchitectures: noarch
 BuildRequires: desktop-file-utils
 # live installation currently implies a graphical installation
 Requires: anaconda-gui = %{version}-%{release}
+Requires: usermode
 Requires: zenity
 Requires: xisxwayland
 Recommends: xhost
@@ -227,8 +225,6 @@ Requires: f2fs-tools
 Requires: xfsprogs
 Requires: dosfstools
 Requires: e2fsprogs
-# External tooling for managing NVMe-FC devices in the installation environment
-Recommends: nvme-cli
 
 %description install-env-deps
 The anaconda-install-env-deps metapackage lists all installation environment
@@ -272,10 +268,6 @@ Requires: rpm-ostree >= %{rpmostreever}
 Requires: ostree
 # used by ostree command for native containers
 Requires: skopeo
-# External tooling for managing NVMe-FC devices in the installation environment
-Requires: nvme-cli
-# Needed for bootc
-Requires: podman
 
 %description install-img-deps
 The anaconda-install-img-deps metapackage lists all boot.iso installation
@@ -343,7 +335,6 @@ Requires: dracut-network
 Requires: dracut-live
 Requires: xz
 Requires: python3-kickstart
-Requires: iputils
 
 %description dracut
 The 'anaconda' dracut module handles installer-specific boot tasks and
@@ -352,6 +343,7 @@ runtime on NFS/HTTP/FTP servers or local disks.
 
 %prep
 %autosetup -p 1
+rm pyanaconda/threading.py
 
 %build
 # use actual build-time release number, not tarball creation time release number
@@ -482,119 +474,25 @@ rm -rf \
 %{_prefix}/libexec/anaconda/dd_*
 
 %changelog
-* Tue Jul 30 2024 Packit <hello@packit.dev> - 41.27-1
-- Remove threading compatibility layer (kkoukiou)
-
-* Tue Jul 23 2024 Packit <hello@packit.dev> - 41.26-1
-- Don't use tmpfs in build if not enough RAM (lifto)
-- Document RHEL 10 specifics for container shell (mkolman)
-- storage: add EFI partition in the windows OS devices if it's detected
-  (kkoukiou)
-- storage: add windows system to GetExistingSystems (kkoukiou)
-- storage: store the partition type name in device attrs for partitions
-  (kkoukiou)
-- Clean up the code by removing the utils directory (rolivier)
-
-* Wed Jul 17 2024 Fedora Release Engineering <releng@fedoraproject.org> - 41.25-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
-
-* Tue Jul 16 2024 Packit <hello@packit.dev> - 41.25-1
-- makeupdates: Bump Python version in site packages path to 3.13 (vtrefny)
-- Apply suggestions from Rodolfo (martin.kolman)
-- Scripts for local boot.iso updates workflow (mkolman)
-- Fix unit_tests/pyanaconda_tests/core/test_threads.py:140:20: E721 (kkoukiou)
-- Fix pyanaconda/modules/network/nm_client.py:576:21: PLR1704 (kkoukiou)
-- Fix pyanaconda/core/users.py:408:21: PLR1704 (kkoukiou)
-
-* Tue Jul 09 2024 Packit <hello@packit.dev> - 41.24-1
-- Update translations from Weblate for master (github-actions)
-- tests: storage: conditionally run btrfs tests if command is not removed
-  (kkoukiou)
-- tests: allow the module specification to contain removed commands (kkoukiou)
-
-* Tue Jul 02 2024 Packit <hello@packit.dev> - 41.23-1
-- Update translations from Weblate for master (github-actions)
-- chore: remove unused atk in BaseWindow.c (freya)
-- Replace deprecated methods to avoid warnings (rolivier)
-- Do not mark ancestors of device with source or stage2 as protected (rvykydal)
-
-* Tue Jun 25 2024 Packit <hello@packit.dev> - 41.22-1
-- Update translations from Weblate for master (github-actions)
-
-* Tue Jun 11 2024 Python Maint <python-maint@redhat.com> - 41.20-2
-- Rebuilt for Python 3.13
-
-* Tue Jun 11 2024 Packit <hello@packit.dev> - 41.20-1
-- Update translations from Weblate for master (github-actions)
-- Fix issues for new pylint check (jkonecny)
-- Use InconsistentParentSectorSize instead of InconsistentPVSectorSize
-  (vtrefny)
-- Do not require libreport on RHEL 10 (mkolman)
-- Update translations from Weblate for master (github-actions)
-- Get kickstart data via DBus (akankovs)
-- Adding a implementation for runtime and ui commands (akankovs)
-- Update tests for kickstart commands (akankovs)
-- Migration of the remaining kickstart commands to the Runtime module
-  (akankovs)
-
-* Fri Jun 07 2024 Python Maint <python-maint@redhat.com> - 41.19-2
-- Rebuilt for Python 3.13
-
-* Tue Jun 04 2024 Packit <hello@packit.dev> - 41.19-1
-- dracut: Remove 'linear' from modules to load (vtrefny)
-- Remove 'linear' from list of expected MD RAID levels (vtrefny)
-
-* Tue May 28 2024 Packit <hello@packit.dev> - 41.18-1
-- Do not imply that Fedora ELN has an EULA (sgallagh)
-- Update translations from Weblate for master (github-actions)
-- Deprecate kickstart modularity module (marusak.matej)
-- Remove Javascript leftovers from Makefile (jkonecny)
-- Revert "Ignore npm packages files for translation" (jkonecny)
-- Update translations from Weblate for master (github-actions)
-- docs: Add guide how to debug/develop GH workflows (jkonecny)
-
-* Tue May 21 2024 Packit <hello@packit.dev> - 41.17-1
-- RHEL moved from Bugzilla to Jira (jstodola)
-- Update translations from Weblate for master (github-actions)
-- docs: Fix link on ci-status page (jkonecny)
-- docs: Fix link on ci status for container updates (jkonecny)
-- gui: Fix displaying of the device label (yueyuankun)
-- Stop pretending liveinst+vnc is supported (#678354) (kkoukiou)
-- Use the standalone crypt_r package on Fedora 41+ (miro)
-- Write a warning rescue selinux (akankovs)
-  Resolves: RHEL-14005
-
-* Tue Apr 30 2024 Katerina Koukiou <kkoukiou@redhat.com> - 41.15-1
-- Update to upstream release 41.15
-
-* Tue Apr 23 2024 Packit <hello@packit.dev> - 41.14-1
-- Revert "infra: Packit fix empty jobs field" (kkoukiou)
-
-* Thu Apr 18 2024 Packit <hello@packit.dev> - 41.13-1
-- Fix signature of the method passed to DNF (jkonecny)
-- Do not include teamd on RHEL (rvykydal)
-- network: guard team devices configuration in kickstart by capabilities
-  (rvykydal)
-
-* Tue Apr 09 2024 Packit <hello@packit.dev> - 41.9-1
-- Update translations from Weblate for master (github-actions)
-
-* Tue Mar 26 2024 Packit <hello@packit.dev> - 41.7-1
-- Update translations from Weblate for master (github-actions)
+* Mon Mar 25 2024 Packit <hello@packit.dev> - 40.22.3-1
 - Disable preexec for vtActivate() (mkolman)
+- Lower permissions for kickstart logs in /tmp (jkonecny)
+- Copy /etc/resolv.conf to system only if there is no systemd-resolved
+  (rvykydal)
+- Revert "Do not copy /etc/resolv.conf to chroot before installation"
+  (rvykydal)
+- Do not use systemd-resolved in installer environment on RHEL (rvykydal)
+- Do not write LVM devices file during image installation (vtrefny)
 
-* Tue Mar 19 2024 Packit <hello@packit.dev> - 41.6-1
-- install-img-deps: Require podman (walters)
-
-* Wed Mar 06 2024 Adam Williamson <awilliam@redhat.com> - 41.2-2
+* Wed Mar 06 2024 Adam Williamson <awilliam@redhat.com> - 40.22.2-2
 - Backport PR #5508 to make bootupd create EFI boot manager entries (#2268505)
 
-* Tue Feb 20 2024 Packit <hello@packit.dev> - 41.2-1
+* Tue Feb 20 2024 Packit <hello@packit.dev> - 40.22.2-1
 - Test for task category and category API (akankovs)
 - Creating categories dbus API for installation phases (akankovs)
 
-* Fri Feb 16 2024 Packit <hello@packit.dev> - 41.1-1
-- bump major version number for Rawhide after F40 branching (mkolman)
+* Thu Feb 15 2024 Packit <hello@packit.dev> - 40.22.1-1
+- Set up the fedora-40 branch (mkolman)
 
 * Tue Feb 06 2024 Adam Williamson <awilliam@redhat.com> - 40.21-2
 - Backport PR #5460 to fix ostree btrfs installs with new util-linux (#2262892)
