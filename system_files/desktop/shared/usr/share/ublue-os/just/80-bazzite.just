@@ -363,3 +363,100 @@ bazzite-cli:
 benchmark:
     echo 'Running a 1 minute benchmark ...'
     cd /tmp && stress-ng --matrix 0 -t 1m --times
+
+# Enable/disable HOME + TRIANGLE controller shutdown option for DualShock/DualSense
+enable-ds45-workaround ACTION="":
+    #!/usr/bin/bash
+
+    set -eo pipefail
+    source /usr/lib/ujust/ujust.sh
+
+    OPTION={{ ACTION }}
+    PLACEHOLDER=/etc/udev/rules.d/80-bazzite-ps-controller-sleep.rules
+    WORKAROUND_NAME="bazzite-bluetooth-ds4-ds5-workaround"
+
+    function is_enabled() {
+      if [[ ! -e $PLACEHOLDER ]]; then
+        return 0
+      fi
+      return 1
+    }
+
+    function enable_workaround() {
+      # Check if the placeholder rule exists and if does, delete it
+      if is_enabled ; then
+        echo "$WORKAROUND_NAME is already enabled"
+        exit 0
+      fi
+      sudo rm -v "$PLACEHOLDER"
+      echo "$WORKAROUND_NAME was enabled"
+    }
+
+    function disable_workaround() {
+      # Set placeholder to disable workaround
+      if ! is_enabled; then
+        echo "$WORKAROUND_NAME is already disabled"
+        return 0
+      fi
+      sudo cp -v /usr/$PLACEHOLDER $PLACEHOLDER || { : | sudo tee $ $PLACEHOLDER; }
+      echo "$WORKAROUND_NAME was disabled"
+    }
+
+    function show_help() {
+      echo "Usage: ujust enable-ds45-workaround <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'enable' to select Enable"
+      echo "  Use 'disable' to select Disable"
+    }
+
+    ## UI
+    case "${OPTION,,}" in
+      "enable")
+        OPTION="enable"
+      ;;
+
+      "disable")
+        OPTION="disable"
+      ;;
+
+      "help")
+        show_help
+      ;;
+
+      "")
+        # We do nothing here, continue
+      ;;
+
+      *)
+        echo "ERROR: Incorrect action"
+        show_help
+        exit 1
+      ;;
+    esac
+    # If no OPTION was passed as arg, select with terminal ui
+    if [[ -z $OPTION ]]; then
+      printf "$State: "
+      if is_enabled; then
+        printf "${green}Enabled${n}\n"
+      else
+        printf "${red}Disabled${n}\n"
+      fi
+      OPTION=$(Choose Enable Disable)
+      OPTION="${OPTION,,}"
+    fi
+    case "${OPTION,,}" in
+      "enable")
+        enable_workaround
+        exit 0
+      ;;
+
+      "disable")
+        disable_workaround
+        exit 0
+      ;;
+
+      "" | *)
+        echo "ERROR: Invalid option"
+        exit 1
+      ;;
+    esac
