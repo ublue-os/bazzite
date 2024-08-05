@@ -1,3 +1,21 @@
+# By Bazzite
+# This workaround allows for DualShock/Dualsense controllers of disconnecting
+# when pressing HOME + TRIANGLE
+#
+# Files composing workaround:
+#
+#   - /usr/lib/udev/rules.d/80-bazzite-ps-controller-sleep.rules
+#     Activates the service with controller MAC as parameter.
+#
+#   - /usr/lib/systemd/system/bazzite-bluetooth-ds4-ds5-workaround@.service
+#     Allows to start binary that handles keycode reading.
+#
+#   - /usr/libexec/bazzite-bluetooth-ds4-ds5-workaround
+#     Reads keycodes and disconnects controllers when HOME + TRIANGLE is read.
+#
+#   - /etc/udev/rules.d/80-bazzite-ps-controller-sleep.rules
+#     Empty file that acts as a deactivator of the workaround
+
 [Unit]
 Description=Disconnect DS4 and DS5 controller on shortcut HOME + triangle
 After=bluetooth.target

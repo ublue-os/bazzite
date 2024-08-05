@@ -1,0 +1,4 @@
+# DO NOT TOUCH ME
+# This file is here in order to disable /usr/lib/udev/rules.d/80-bazzite-ps-controller-sleep.rules
+# Read /usr/lib/systemd/system/bazzite-bluetooth-ds4-ds5-workaround@.service
+# Delete me if you want to enable workaround
