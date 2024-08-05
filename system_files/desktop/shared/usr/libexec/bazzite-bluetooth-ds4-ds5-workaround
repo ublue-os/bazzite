@@ -124,8 +124,8 @@ def main(argv: list[str]):
 
     device_mac = argv[1]
     if device_mac is None or device_mac == "":
-        print("ERROR: Incorrect device bluetooth mac address", file=sys.stderr)
-        exit(1)
+        print("ERROR: Missing device bluetooth mac address", file=sys.stderr)
+        exit(0)
 
     global keys_status
     keys_status = KeyStatus()
@@ -133,7 +133,7 @@ def main(argv: list[str]):
     gamepad_mac = get_event_path(device_mac)
     if gamepad_mac is None:
         print("ERROR: Incorrect device bluetooth mac address", file=sys.stderr)
-        exit(1)
+        exit(69)  # systemd-analyze exit-status UNAVAILABLE
 
     # long int, long int, unsigned short, unsigned short, unsigned int
     FORMAT = "llHHI"
