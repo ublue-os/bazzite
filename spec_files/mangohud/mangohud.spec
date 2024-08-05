@@ -24,11 +24,6 @@
 %bcond_without tests
 %endif
 
-# Disable unpackaged files check for 32-bit builds shipping with conflicting files
-%if %{__isa_bits} != 64
-  %define _unpackaged_files_terminate_build 0
-%endif
-
 Name:           mangohud
 Version:        100.0.7.2
 Release:        %autorelease
@@ -157,19 +152,18 @@ sed -i "s@#!/usr/bin/env python@#!/usr/bin/python3@" \
 %files
 %license LICENSE
 %doc README.md
-%if %{__isa_bits} == 64
 %{_bindir}/%{name}*
 %{_bindir}/mangoapp
 %{_bindir}/mangoplot
 %{_datadir}/icons/hicolor/scalable/*/*.svg
+%{_datadir}/vulkan/implicit_layer.d/*Mango*.json
 %{_docdir}/%{name}/%{appname}.conf.example
 %{_docdir}/%{name}/presets.conf.example
+%{_libdir}/%{name}/
 %{_mandir}/man1/%{name}.1*
 %{_mandir}/man1/mangoapp.1*
 %{_metainfodir}/*.metainfo.xml
-%endif
-%{_datadir}/vulkan/implicit_layer.d/*Mango*.json
-%{_libdir}/%{name}/
+
 
 %changelog
 * Mon Oct 02 2023 Artem Polishchuk <ego.cordatus@gmail.com> - 0.7.0-6
@@ -324,5 +318,4 @@ sed -i "s@#!/usr/bin/env python@#!/usr/bin/python3@" \
 - Thanks for help with packaging to:
   gasinvein <gasinvein@gmail.com>
   Vitaly Zaitsev <vitaly@easycoding.org>
-
 

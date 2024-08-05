@@ -2,11 +2,11 @@
 
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
-%global gamescope_tag 3.14.24
+%global gamescope_tag 3.14.26
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        19.bazzite
+Release:        21.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -15,24 +15,20 @@ URL:            https://github.com/ValveSoftware/gamescope
 # Create stb.pc to satisfy dependency('stb')
 Source0:        stb.pc
 
-Patch0:         0001-cstdint.patch
+# https://github.com/ValveSoftware/gamescope
+Patch0:         upstream.patch
+
+Patch1:         0001-cstdint.patch
 
 # https://github.com/ChimeraOS/gamescope
-Patch1:         chimeraos.patch
+Patch2:         chimeraos.patch
 # https://hhd.dev/
-Patch2:         disable-steam-touch-click-atom.patch
-Patch3:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
-# https://github.com/ValveSoftware/gamescope/pull/1281
-Patch4:         deckhd.patch
+Patch3:         disable-steam-touch-click-atom.patch
+Patch4:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
 # https://github.com/ValveSoftware/gamescope/issues/1398
 Patch5:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
-# https://github.com/ValveSoftware/gamescope/issues/1369
-Patch6:         revert-299bc34.patch
-# https://github.com/ValveSoftware/gamescope/pull/1231
-Patch7:         1231.patch
-
-# Temporary until newer tag than 3.14.24
-Patch8:         upstream.patch
+# https://github.com/ValveSoftware/gamescope/pull/1444
+Patch6:         1444.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -59,7 +55,7 @@ BuildRequires:  pkgconfig(xres)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-scanner)
-BuildRequires:  pkgconfig(wayland-server)
+BuildRequires:  pkgconfig(wayland-server) >= 1.23.0
 BuildRequires:  pkgconfig(wayland-protocols) >= 1.17
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(sdl2)
@@ -69,6 +65,7 @@ BuildRequires:  (pkgconfig(wlroots) >= 0.18.0 with pkgconfig(wlroots) < 0.19.0)
 BuildRequires:  (pkgconfig(libliftoff) >= 0.4.1 with pkgconfig(libliftoff) < 0.5)
 BuildRequires:  pkgconfig(libcap)
 BuildRequires:  pkgconfig(hwdata)
+BuildRequires:  pkgconfig(lcms2)
 BuildRequires:  spirv-headers-devel
 # Enforce the the minimum EVR to contain fixes for all of:
 # CVE-2021-28021 CVE-2021-42715 CVE-2021-42716 CVE-2022-28041 CVE-2023-43898

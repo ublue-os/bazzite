@@ -1,0 +1,31 @@
+From d1424ea9ffa5d51d1cfa004b0861e345c4300902 Mon Sep 17 00:00:00 2001
+From: Adam Williamson <awilliam@redhat.com>
+Date: Wed, 6 Mar 2024 17:26:45 -0800
+Subject: [PATCH] bootupd: call bootupctl with --update-firmware
+
+This is required to write an entry to the EFI boot manager,
+which we ought to do (anaconda does it when installing the
+bootloader itself). Without this, boot of the installed system
+will only work if it's configured to try and boot from the
+hard disk using the fallback path.
+
+Signed-off-by: Adam Williamson <awilliam@redhat.com>
+---
+ .../modules/payloads/payload/rpm_ostree/installation.py       | 1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/pyanaconda/modules/payloads/payload/rpm_ostree/installation.py b/pyanaconda/modules/payloads/payload/rpm_ostree/installation.py
+index 0ac8583b78..f5ea666cf2 100644
+--- a/pyanaconda/modules/payloads/payload/rpm_ostree/installation.py
++++ b/pyanaconda/modules/payloads/payload/rpm_ostree/installation.py
+@@ -520,6 +520,7 @@ class ConfigureBootloader(Task):
+                 "install",
+                 "--auto",
+                 "--write-uuid",
++                "--update-firmware",
+                 "--device",
+                 dev_data.path,
+                 "/",
+-- 
+2.44.0
+
