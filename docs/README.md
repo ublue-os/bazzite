@@ -128,17 +128,17 @@ We can check how our post looks in mdBook, run in the terminal
 mdbook serve --open
 ```
 
-Aaaaand... _Where_?
+Now, more likely you wont find our new added post.
 
 ![](./src/img/doc_guide_where_did_go.jpg)
 
-If you read [the brief explanation](#brief-explanation-in-how-to-work-with-mdbook), you will read about `SUMMARY.md`.
+If you take a look at [the brief explanation](#brief-explanation-in-how-to-work-with-mdbook), you will read about `SUMMARY.md`. Files not listed in there wont be processed by mdBook.
 
 Lets add our file there.
 
 ![](./src/img/doc_guide_add_summary.jpg)
 
-Aaaand... There you are!
+And now our post is ready.
 
 ![](./src/img/doc_guide_there_you_are.jpg)
 
