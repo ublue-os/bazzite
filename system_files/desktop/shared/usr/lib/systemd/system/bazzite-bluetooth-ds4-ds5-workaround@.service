@@ -7,6 +7,7 @@ ConditionFileIsExecutable=/usr/libexec/bazzite-bluetooth-ds4-ds5-workaround
 [Service]
 User=root
 Type=simple
+CPUQuota=25%
 ExecStart=/usr/libexec/bazzite-bluetooth-ds4-ds5-workaround %I
 Restart=on-failure
 RestartSec=5
