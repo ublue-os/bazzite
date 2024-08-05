@@ -1,7 +1,3 @@
----
-author: @Zeglius
----
-
 # Contributing to Bazzite mdBook documentation
 
 ## Introduction
