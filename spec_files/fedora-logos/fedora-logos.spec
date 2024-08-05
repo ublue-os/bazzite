@@ -6,6 +6,9 @@ URL:		https://pagure.io/fedora-logos
 Source0:	https://pagure.io/fedora-logos/archive/%{version}/fedora-logos-%{version}.tar.gz
 Source1:  sidebar-bg.png
 Source2:  sidebar-logo.png
+Source3:  topbar-bg.png
+Source4:  anaconda_header.png
+Source5:  fedora.css
 License:	LicenseRef-Fedora-Logos
 Provides:	redhat-logos = %{version}-%{release}
 Provides:	gnome-logos = %{version}-%{release}
@@ -74,8 +77,6 @@ used as a drop-in replacement for fedora-logos.
 
 %prep
 %autosetup -p1
-cp -f %{SOURCE1} sidebar-bg.png
-cp -f %{SOURCE2} sidebar-logo.png
 
 %build
 
@@ -205,16 +206,21 @@ install -p -m 644 anaconda/syslinux-splash.png %{buildroot}%{_datadir}/anaconda/
 # note the filename change
 install -p -m 644 anaconda/syslinux-vesa-splash.png %{buildroot}%{_datadir}/anaconda/boot/splash.png
 mkdir -p %{buildroot}%{_datadir}/anaconda/pixmaps
-install -p -m 644 anaconda/anaconda_header.png %{buildroot}%{_datadir}/anaconda/pixmaps/
+# install -p -m 644 anaconda/anaconda_header.png %{buildroot}%{_datadir}/anaconda/pixmaps/
+install -p -m 644 %{SOURCE4} %{buildroot}%{_datadir}/anaconda/pixmaps/
 install -p -m 644 anaconda/anaconda_header_classic.png %{buildroot}%{_datadir}/anaconda/pixmaps/
 # This had not been regenerated since Fedora 17. Clearly not used anymore.
 # install -p -m 644 anaconda/progress_first.png %%{buildroot}%%{_datadir}/anaconda/pixmaps/
 # install -p -m 644 anaconda/splash.png %%{buildroot}%%{_datadir}/anaconda/pixmaps/
-install -p -m 644 anaconda/sidebar-logo.png %{buildroot}%{_datadir}/anaconda/pixmaps/
+# install -p -m 644 anaconda/sidebar-logo.png %{buildroot}%{_datadir}/anaconda/pixmaps/
+install -p -m 644 %{SOURCE2} %{buildroot}%{_datadir}/anaconda/pixmaps/
 install -p -m 644 anaconda/sidebar-logo_classic.png %{buildroot}%{_datadir}/anaconda/pixmaps/
-install -p -m 644 anaconda/sidebar-bg.png %{buildroot}%{_datadir}/anaconda/pixmaps/
-install -p -m 644 anaconda/topbar-bg.png %{buildroot}%{_datadir}/anaconda/pixmaps/
-install -p -m 644 anaconda/fedora.css %{buildroot}%{_datadir}/anaconda/pixmaps/
+# install -p -m 644 anaconda/sidebar-bg.png %{buildroot}%{_datadir}/anaconda/pixmaps/
+install -p -m 644 %{SOURCE1} %{buildroot}%{_datadir}/anaconda/pixmaps/
+# install -p -m 644 anaconda/topbar-bg.png %{buildroot}%{_datadir}/anaconda/pixmaps/
+install -p -m 644 %{SOURCE3} %{buildroot}%{_datadir}/anaconda/pixmaps/
+# install -p -m 644 anaconda/fedora.css %{buildroot}%{_datadir}/anaconda/pixmaps/
+install -p -m 644 %{SOURCE5} %{buildroot}%{_datadir}/anaconda/pixmaps/
 
 # Variant Anaconda art
 pushd anaconda
