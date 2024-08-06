@@ -55,15 +55,12 @@ class Utils:
 _DEBUG = os.getenv("DEBUG", "")
 _DEBUG_OUTPUT = Path("./debug.txt")
 
-if _DEBUG in ["1", "yes"]:
-    if _DEBUG_OUTPUT.exists():
-        os.truncate(_DEBUG_OUTPUT, 0)
-
 
 def debug(*obj: object):
     """Dump info into a debug.txt if env var DEBUG=1"""
-    with open(_DEBUG_OUTPUT, "+a") as stdout:
-        print(f"DEBUG[{datetime.date.today()}]:", *obj, file=stdout)
+    if _DEBUG in ["1", "yes"]:
+        with open(_DEBUG_OUTPUT, "+a") as stdout:
+            print(f"DEBUG[{datetime.date.today()}]:", *obj, file=stdout)
 
 
 ###########################################################
