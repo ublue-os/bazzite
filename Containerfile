@@ -391,6 +391,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         ydotool \
         yafti \
         stress-ng \
+        btrfs-assistant \
         lsb_release && \
     rpm-ostree install \
         ublue-update && \
