@@ -6,6 +6,7 @@ import os
 import re
 import sys
 from typing import Any
+from libs.utils import debug
 
 
 ######################## CONFIGURATION PARAMETERS ########################
@@ -22,23 +23,6 @@ YOUTUBE_EMBED_TEMPLATE = (
     + """referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>"""
 )
 YOUTUBE_EMBED_TEMPLATE = f"<center>{YOUTUBE_EMBED_TEMPLATE}</center>"
-
-_DEBUG = os.getenv("DEBUG", "")
-
-
-def debug(*obj) -> Any:
-    return obj
-
-
-if _DEBUG in ["1", "yes"]:
-    _DEBUG_OUTPUT = "./debug.txt"
-    if os.path.exists(_DEBUG_OUTPUT):
-        os.truncate(_DEBUG_OUTPUT, 0)
-
-    def debug(*obj) -> Any:
-        with open(_DEBUG_OUTPUT, "+a") as stdout:
-            print(f"DEBUG[{datetime.date.today()}]:", *obj, file=stdout)
-        return obj
 
 
 if __name__ == "__main__":

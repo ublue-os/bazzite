@@ -5,24 +5,7 @@ import json
 import os
 import sys
 from typing import Any
-
-
-_DEBUG = os.getenv("DEBUG", "")
-
-
-def debug(*obj) -> Any:
-    return obj
-
-
-if _DEBUG in ["1", "yes"]:
-    _DEBUG_OUTPUT = "./debug.txt"
-    if os.path.exists(_DEBUG_OUTPUT):
-        os.truncate(_DEBUG_OUTPUT, 0)
-
-    def debug(*obj) -> Any:
-        with open(_DEBUG_OUTPUT, "+a") as stdout:
-            print(f"DEBUG[{datetime.date.today()}]:", *obj, file=stdout)
-        return obj
+from libs.utils import debug
 
 
 def modify_content(content: str) -> str | None:
