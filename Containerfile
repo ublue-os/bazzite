@@ -685,6 +685,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl enable bazzite-hardware-setup.service && \
     systemctl enable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
+    systemctl enable bazzite-snapper-setup && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \

@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Btrfs Assistant
-Comment=Change system settings
-Exec=sudo -AE btrfs-assistant-bin
-Terminal=false
-Type=Application
-Icon=btrfs-assistant
-Categories=System
-NoDisplay=false
