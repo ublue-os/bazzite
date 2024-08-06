@@ -2,11 +2,12 @@
 
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
+%global toolchain clang
 %global gamescope_tag 3.14.26
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        20.bazzite
+Release:        21.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -15,25 +16,25 @@ URL:            https://github.com/ValveSoftware/gamescope
 # Create stb.pc to satisfy dependency('stb')
 Source0:        stb.pc
 
-Patch0:         0001-cstdint.patch
+# https://github.com/ValveSoftware/gamescope
+Patch0:         upstream.patch
+
+Patch1:         0001-cstdint.patch
 
 # https://github.com/ChimeraOS/gamescope
-Patch1:         chimeraos.patch
+Patch2:         chimeraos.patch
 # https://hhd.dev/
-Patch2:         disable-steam-touch-click-atom.patch
-Patch3:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
+Patch3:         disable-steam-touch-click-atom.patch
+Patch4:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
 # https://github.com/ValveSoftware/gamescope/issues/1398
-Patch4:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
+Patch5:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
 # https://github.com/ValveSoftware/gamescope/pull/1444
-Patch5:         1444.patch
-# https://github.com/ValveSoftware/gamescope/commit/e31b8dea137d2cedd4cf71fede560feb2ad3ffc5
-Patch6:         e31b8dea137d2cedd4cf71fede560feb2ad3ffc5.patch
+Patch6:         1444.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
 BuildRequires:  cmake
-BuildRequires:  gcc
-BuildRequires:  gcc-c++
+BuildRequires:  clang
 BuildRequires:  glm-devel
 BuildRequires:  google-benchmark-devel
 BuildRequires:  libXmu-devel
@@ -114,7 +115,11 @@ sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/m
 %build
 cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
+%if %{__isa_bits} == 64
 %meson -Dpipewire=enabled -Dinput_emulation=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dsdl2_backend=enabled
+%else
+%meson -Denable_gamescope=false -Denable_gamescope_wsi_layer=true
+%endif
 %meson_build
 
 %install
@@ -124,10 +129,12 @@ cd gamescope
 %files
 %license gamescope/LICENSE
 %doc gamescope/README.md
+%if %{__isa_bits} == 64
 %caps(cap_sys_nice=eip) %{_bindir}/gamescope
 %{_bindir}/gamescopectl
 %{_bindir}/gamescopestream
 %{_bindir}/gamescopereaper
+%endif
 
 %files libs
 %{_libdir}/libVkLayer_FROG_gamescope_wsi_*.so
