@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=45
+HWS_VER=47
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -48,6 +48,10 @@ if /usr/libexec/hwsupport/valve-hardware; then
     else
       NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
     fi
+  fi
+
+  if [[ ! $KARGS =~ "amd_pstate" ]]; then
+    NEEDED_KARGS+=("--append-if-missing=amd_pstate=passive")
   fi
 fi
 
@@ -134,6 +138,11 @@ if [[ ! $KARGS =~ "disable_ertm" ]]; then
   NEEDED_KARGS+=("--append-if-missing=bluetooth.disable_ertm=1")
 fi
 
+if [[ ! $KARGS =~ "preempt" ]]; then
+  echo "Adding needed kargs for full preemption"
+  NEEDED_KARGS+=("--append-if-missing=preempt=full")
+fi
+
 if [[ $KARGS =~ "nomodeset" ]]; then
   echo "Removing nomodeset"
   NEEDED_KARGS+=("--delete-if-present=nomodeset")
@@ -158,6 +167,8 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
         echo "Jupiter with 32GB RAM detected, disabling BIOS updates..."
         systemctl disable --now jupiter-biosupdate.service
       fi
+
+      systemctl enable --now scx.service
     fi
 
     systemctl enable --now jupiter-fan-control.service

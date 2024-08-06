@@ -3,11 +3,11 @@
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
 %global toolchain clang
-%global gamescope_tag 3.14.26
+%global gamescope_tag 3.14.27
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        21.bazzite
+Release:        1.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -16,20 +16,15 @@ URL:            https://github.com/ValveSoftware/gamescope
 # Create stb.pc to satisfy dependency('stb')
 Source0:        stb.pc
 
-# https://github.com/ValveSoftware/gamescope
-Patch0:         upstream.patch
-
-Patch1:         0001-cstdint.patch
+Patch0:         0001-cstdint.patch
 
 # https://github.com/ChimeraOS/gamescope
-Patch2:         chimeraos.patch
+Patch1:         chimeraos.patch
 # https://hhd.dev/
-Patch3:         disable-steam-touch-click-atom.patch
-Patch4:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
+Patch2:         disable-steam-touch-click-atom.patch
+Patch3:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
 # https://github.com/ValveSoftware/gamescope/issues/1398
-Patch5:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
-# https://github.com/ValveSoftware/gamescope/pull/1444
-Patch6:         1444.patch
+Patch4:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
