@@ -17,3 +17,8 @@ edit-url-template = "https://github.com/ublue-os/bazzite/edit/main/docs/{path}"
 
 [preprocessor.youtube-embed]
 command = "python ./preprocessors/youtube-embed.py"
+
+[preprocessor.replace-urls]
+command = "python ./preprocessors/replace-urls.py"
+after = ["youtube-embed"]
+"https://universal-blue.discourse.group/docs?topic=561" = "/Introduction.html"
