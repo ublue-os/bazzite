@@ -228,7 +228,7 @@ jobs:
       
       - name: Remove auxiliary images
         # We are tight on space, need at least 2x for OSTree
-        run: |            
+        run: |
           sudo podman image rm ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
           sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
           sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
@@ -236,9 +236,9 @@ jobs:
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
         id: rechunk
-        uses: hhd-dev/rechunk@v0.6.2
+        uses: hhd-dev/rechunk@v0.8.0
         with:
-          rechunk: 'ghcr.io/hhd-dev/rechunk:v0.5.0'
+          rechunk: 'ghcr.io/hhd-dev/rechunk:v0.8.0'
           ref: 'raw-img'
           prev-ref: ${{ github.event.inputs.fresh-rechunk == 'true' && '' || 'ghcr.io/ublue-os/bazzite:unstable' }}
           version: '${{ steps.generate-version.outputs.tag }}'
@@ -252,14 +252,12 @@ jobs:
             org.opencontainers.image.source=https://github.com/ublue-os/bazzite
             org.opencontainers.image.title=bazzite
             org.opencontainers.image.url=https://github.com/ublue-os/bazzite
-
             org.universal-blue.pkg.kernel=<relver:kernel>
             org.universal-blue.pkg.gamescope=<relver:gamescope>
             ${{ matrix.base_image_name == "kinoite" && "org.universal-blue.pkg.kwayland=<version:kwayland>" || "" }}
             ${{ matrix.base_name == "bazzite-deck" && "org.universal-blue.pkg.hhd=<version:hhd>" || "" }}
             ${{ matrix.base_name == "bazzite-deck" && "org.universal-blue.pkg.hhd=<version:adjustor>" || "" }}
             ${{ matrix.base_name == "bazzite-deck" && "org.universal-blue.pkg.hhd=<version:hhd-ui>" || "" }}
-
             org.universal-blue.info=<imginfo>
       
       # Generate tags after rechunker runs and checks the primary tag is not duplicated
