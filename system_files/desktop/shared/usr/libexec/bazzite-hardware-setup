@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=45
+HWS_VER=46
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -132,6 +132,11 @@ fi
 if [[ ! $KARGS =~ "disable_ertm" ]]; then
   echo "Adding needed kargs for bluetooth"
   NEEDED_KARGS+=("--append-if-missing=bluetooth.disable_ertm=1")
+fi
+
+if [[ ! $KARGS =~ "preempt" ]]; then
+  echo "Adding needed kargs for full preemption"
+  NEEDED_KARGS+=("--append-if-missing=preempt=full")
 fi
 
 if [[ $KARGS =~ "nomodeset" ]]; then
