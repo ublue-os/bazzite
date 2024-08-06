@@ -254,11 +254,6 @@ jobs:
             org.opencontainers.image.url=https://github.com/ublue-os/bazzite
             org.universal-blue.pkg.kernel=<relver:kernel>
             org.universal-blue.pkg.gamescope=<relver:gamescope>
-            ${{ matrix.base_image_name == "kinoite" && "org.universal-blue.pkg.kwayland=<version:kwayland>" || "" }}
-            ${{ matrix.base_name == "bazzite-deck" && "org.universal-blue.pkg.hhd=<version:hhd>" || "" }}
-            ${{ matrix.base_name == "bazzite-deck" && "org.universal-blue.pkg.hhd=<version:adjustor>" || "" }}
-            ${{ matrix.base_name == "bazzite-deck" && "org.universal-blue.pkg.hhd=<version:hhd-ui>" || "" }}
-            org.universal-blue.info=<imginfo>
       
       # Generate tags after rechunker runs and checks the primary tag is not duplicated
       # If it is, rechunk will suffix it by .1, .2, etc and put it in steps.rechunk.outputs.version
