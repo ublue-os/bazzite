@@ -21,4 +21,6 @@ command = "python ./preprocessors/youtube-embed.py"
 [preprocessor.replace-urls]
 command = "python ./preprocessors/replace-urls.py"
 after = ["youtube-embed"]
+
+[preprocessor.replace-urls.mappings]
 "https://universal-blue.discourse.group/docs?topic=561" = "/Introduction.html"

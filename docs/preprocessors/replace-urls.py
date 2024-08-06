@@ -41,16 +41,23 @@ if __name__ == "__main__":
     if not config:
         print(json.dumps(book))
         exit(0)
+    elif not isinstance(config, dict):
+        print(json.dumps(book))
+        exit(0)
+
     debug(config)
+
+    config_mappings: dict = config["mappings"]
 
     # Get the url mappings
     url_mappings: list[tuple[str, str]] = [
-        (k, v) for k, v in config.items() if k not in _IGNORE_STRINGS and is_url(k)
+        (k, v)
+        for k, v in config_mappings.items()
+        if k not in _IGNORE_STRINGS and is_url(k)
     ]
     debug(url_mappings)
 
     book_s = json.dumps(book)
-
     for mapp_old, map_new in url_mappings:
         book_s = book_s.replace(mapp_old, map_new)
 
