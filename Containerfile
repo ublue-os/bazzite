@@ -848,7 +848,8 @@ RUN /usr/libexec/containerbuild/image-info && \
     mkdir -p /var/tmp && chmod 1777 /var/tmp && \
     ostree container commit
 
-FROM ghcr.io/ublue-os/akmods-nvidia:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION} AS nvidia-akmods
+# Pin the NVIDIA images to the last build of the 555 driver due to issues with monitor freezing on the newer 560 drivers
+FROM ghcr.io/ublue-os/akmods-nvidia:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION}-20240806 AS nvidia-akmods
 
 FROM bazzite AS bazzite-nvidia
 
