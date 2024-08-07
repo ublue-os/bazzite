@@ -44,14 +44,14 @@ if [[ -f $USER_SETUP_VER_FILE && -f $USER_SETUP_FEDORA_VER_FILE && -f $USER_SETU
 fi
 
 # Enable Flathub
-flatpak remote-add --if-not-exists --user flathub /usr/etc/flatpak/remotes.d/flathub.flatpakrepo
+flatpak remote-add --if-not-exists --user flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
 flatpak remote-modify --user --enable flathub
 
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup "$USER"
 
 # Set up optional Gradience themes
-GRADIENCE_THEME_DIR="/usr/etc/skel/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
+GRADIENCE_THEME_DIR="/etc/skel/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
 GRADIENCE_DIR="$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
 mkdir -p "$GRADIENCE_DIR"
 if [[ ! -f "$GRADIENCE_DIR/vapor.json" ]]; then
@@ -61,7 +61,7 @@ if [[ ! -f "$GRADIENCE_DIR/vgui2.json" ]]; then
   cp "$GRADIENCE_THEME_DIR/vgui2.json" "$GRADIENCE_DIR/vgui2.json"
 fi
 
-PTYXIS_THEME_DIR="/usr/etc/skel/.local/share/org.gnome.Ptyxis/palettes"
+PTYXIS_THEME_DIR="/etc/skel/.local/share/org.gnome.Ptyxis/palettes"
 PTYXIS_DIR="$HOME/.local/share/org.gnome.Ptyxis/palettes"
 mkdir -p "$PTYXIS_DIR"
 if [[ ! -f "$PTYXIS_DIR/vapor.palette" ]]; then
