@@ -365,7 +365,7 @@ benchmark:
     cd /tmp && stress-ng --matrix 0 -t 1m --times
 
 # Enable/disable HOME + TRIANGLE controller shutdown option for DualShock/DualSense
-enable-ds45-workaround ACTION="":
+toggle-ds45-workaround ACTION="":
     #!/usr/bin/bash
 
     set -eo pipefail
