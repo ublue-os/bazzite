@@ -365,7 +365,7 @@ toggle-ds45-workaround ACTION="":
       # Check if the placeholder rule exists and if does, delete it
       if is_enabled ; then
         echo "$WORKAROUND_NAME is already enabled"
-        exit 0
+        return
       fi
       sudo rm -v "$PLACEHOLDER"
       echo "$WORKAROUND_NAME was enabled"
@@ -375,9 +375,9 @@ toggle-ds45-workaround ACTION="":
       # Set placeholder to disable workaround
       if ! is_enabled; then
         echo "$WORKAROUND_NAME is already disabled"
-        return 0
+        return
       fi
-      sudo cp -v /usr/$PLACEHOLDER $PLACEHOLDER || { : | sudo tee $ $PLACEHOLDER; }
+      sudo cp -v /usr/$PLACEHOLDER $PLACEHOLDER || { : | sudo tee $PLACEHOLDER; }
       echo "$WORKAROUND_NAME was disabled"
     }
 
