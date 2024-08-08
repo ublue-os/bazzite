@@ -23,7 +23,7 @@ if [[ -f $VER_FILE && $VER = $VER_RAN ]]; then
 fi
 
 # Ensure Flathub is enabled
-flatpak remote-add --if-not-exists --system flathub /usr/etc/flatpak/remotes.d/flathub.flatpakrepo
+flatpak remote-add --if-not-exists --system flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
 flatpak remote-modify --system --enable flathub
 
 # Flatpak theming support
