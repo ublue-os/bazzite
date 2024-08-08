@@ -107,7 +107,7 @@ jobs:
           curl -Lo ${{ github.workspace }}/bazzite.repo https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-${{ matrix.major_version }}/kylegospo-bazzite-fedora-${{ matrix.major_version }}.repo
 
       - name: Build ISOs
-        uses: jasonn3/build-container-installer@main
+        uses: jasonn3/build-container-installer@v1.2.2
         id: build
         with:
           arch: x86_64
@@ -124,7 +124,7 @@ jobs:
           flatpak_remote_refs_dir: ${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}
           enable_flatpak_dependencies: "false"
           extra_boot_params: ${{ steps.generate-extra-params.outputs.extra-boot-params }}
-          additional_templates: '/github/workspace/installer/lorax_templates/remove_root_password_prompt.tmpl'
+          additional_templates: '/github/workspace/installer/lorax_templates/remove_root_password_prompt.tmpl /github/workspace/installer/lorax_templates/set_default_user.tmpl'
           repos: '/github/workspace/bazzite.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo'
 
       - name: Move ISOs to Upload Directory

@@ -69,9 +69,21 @@ blur=true
 [org/gnome/shell/extensions/blur-my-shell/lockscreen]
 blur=true
 
+[org/gnome/shell/extensions/blur-my-shell/applications]
+opacity=255
+whitelist=['org.gnome.Ptyxis']
+
 [org/gnome/shell/extensions/com/github/hermes83/compiz-windows-effect]
 maximize-effect=true
 resize-effect=true
 
 [org/gnome/shell/extensions/ncom/github/hermes83/compiz-alike-magic-lamp-effect]
 duration=250
+
+[org/gnome/shell/extensions/tilingshell]
+inner-gaps=8
+outer-gaps=8
+enable-blur-snap-assistant=true
+enable-blur-selected-tilepreview=true
+top-edge-maximize=true
+quarter-tiling-threshold=25
