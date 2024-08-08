@@ -351,7 +351,7 @@ toggle-ds45-workaround ACTION="":
     source /usr/lib/ujust/ujust.sh
 
     OPTION={{ ACTION }}
-    PLACEHOLDER=/etc/udev/rules.d/80-bazzite-ps-controller-sleep.rules
+    PLACEHOLDER=/etc/udev/rules.d/80-bazzite-bluetooth-ds4-ds5-workaround.rules
     WORKAROUND_NAME="bazzite-bluetooth-ds4-ds5-workaround"
 
     function is_enabled() {
