@@ -69,6 +69,10 @@ blur=true
 [org/gnome/shell/extensions/blur-my-shell/lockscreen]
 blur=true
 
+[org/gnome/shell/extensions/blur-my-shell/applications]
+opacity=255
+whitelist=['org.gnome.Ptyxis']
+
 [org/gnome/shell/extensions/com/github/hermes83/compiz-windows-effect]
 maximize-effect=true
 resize-effect=true
