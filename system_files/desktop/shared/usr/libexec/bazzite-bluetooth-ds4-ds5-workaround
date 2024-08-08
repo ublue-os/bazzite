@@ -22,16 +22,13 @@
 
 """
 # See https://gist.github.com/noohgnas/7c896791d437e51122c59fe9576a1bcf for reference
-from concurrent.futures import thread
-import glob
-import multiprocessing
-import re
 import struct
 import subprocess
 import sys
+from typing import cast
 
-from threading import Thread
-from time import sleep
+import evdev
+from evdev import InputDevice, InputEvent
 
 
 class KeyStatus:
@@ -80,40 +77,18 @@ def trigger_callback(device_mac: str):
         p2.wait()
 
 
-def get_event_path(mac: str) -> str | None:
+def get_device(mac: str) -> InputDevice | None:
     """Obtain the /dev/input/eventX path for a bluetooth
     Returns:
         str: path address
     """
     res: str | None = None
     mac = mac.lower()
-    proc = subprocess.Popen(
-        [
-            "/usr/bin/udevadm",
-            "trigger",
-            "-c",
-            "add",
-            f"--attr-match=uniq={mac}",
-            "--dry-run",
-            "--verbose",
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
-    proc.wait()
-    if proc.stdout is None:
-        return res
-    paths = proc.stdout.readlines()
-    for path in paths:
-        path = path.strip()
-        with open(f"{path}/name") as f:
-            contents = f.read().strip()
-            if re.match(r"^(?:Dualsense )?Wireless Controller$", contents) is not None:
-                ev_name = glob.glob(f"{path}/event*")[0].rstrip("/").split("/")[-1]
-                res = f"/dev/input/{ev_name}"
-                break
-
+    devices = [evdev.InputDevice(d) for d in evdev.list_devices()]
+    for device in [d for d in devices if d.uniq]:
+        if mac == str(device.uniq).lower():
+            res = device
+            break
     return res
 
 
@@ -123,31 +98,24 @@ def main(argv: list[str]):
         exit(1)
 
     device_mac = argv[1]
-    if device_mac is None or device_mac == "":
+    if not device_mac or device_mac == "":
         print("ERROR: Missing device bluetooth mac address", file=sys.stderr)
         exit(0)
 
     global keys_status
     keys_status = KeyStatus()
 
-    gamepad_mac = get_event_path(device_mac)
-    if gamepad_mac is None:
+    gamepad = get_device(device_mac)
+    if gamepad is None:
         print("ERROR: Incorrect device bluetooth mac address", file=sys.stderr)
         exit(69)  # systemd-analyze exit-status UNAVAILABLE
 
-    # long int, long int, unsigned short, unsigned short, unsigned int
-    FORMAT = "llHHI"
-    EVENT_SIZE = struct.calcsize(FORMAT)
+    for event in gamepad.read_loop():
+        event = cast(InputEvent, event)
 
-    # open file in binary mode
-    in_file = open(gamepad_mac, "rb")
-
-    event = in_file.read(EVENT_SIZE)
-
-    while event:
-        (_tv_sec, _tv_usec, type, code, value) = struct.unpack(FORMAT, event)
-
-        if type == EV_KEY:
+        code = event.code
+        value = event.value
+        if event.type == 1:
             if code in GAMEPAD_KEYS["HOME"]:
                 keys_status.home = value == 1
             elif code in GAMEPAD_KEYS["TRIANGLE"]:
@@ -171,10 +139,10 @@ def main(argv: list[str]):
                 #### Here we manage what happens when the HOME TRIANGLE is pressed
                 print("HOME + TRIANGLE detected")
                 trigger_callback(device_mac)
-        event = in_file.read(EVENT_SIZE)
-
-    in_file.close()
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    try:
+        main(sys.argv)
+    except KeyboardInterrupt as _:
+        pass
