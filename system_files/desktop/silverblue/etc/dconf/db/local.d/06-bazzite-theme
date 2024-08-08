@@ -75,3 +75,10 @@ resize-effect=true
 
 [org/gnome/shell/extensions/ncom/github/hermes83/compiz-alike-magic-lamp-effect]
 duration=250
+
+[org/gnome/shell/extensions/tilingshell]
+inner-gaps=8
+outer-gaps=8
+enable-blur-snap-assistant=true
+enable-blur-selected-tilepreview=true
+quarter-tiling-threshold=25
