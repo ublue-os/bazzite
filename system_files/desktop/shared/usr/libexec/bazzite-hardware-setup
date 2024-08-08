@@ -167,9 +167,9 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
         echo "Jupiter with 32GB RAM detected, disabling BIOS updates..."
         systemctl disable --now jupiter-biosupdate.service
       fi
-
-      systemctl enable --now scx.service
     fi
+
+    systemctl enable --now scx.service
 
     systemctl enable --now jupiter-fan-control.service
     systemctl enable --now vpower.service
