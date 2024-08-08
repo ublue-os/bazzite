@@ -81,4 +81,5 @@ inner-gaps=8
 outer-gaps=8
 enable-blur-snap-assistant=true
 enable-blur-selected-tilepreview=true
+top-edge-maximize=true
 quarter-tiling-threshold=25
