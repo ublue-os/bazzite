@@ -1,0 +1,144 @@
+#!/usr/bin/python
+
+"""
+# Script Name: bazzite-bluetooth-ds4-ds5-workaround
+# Related issues:
+# https://github.com/ublue-os/bazzite/issues/1289
+# https://github.com/ValveSoftware/steam-for-linux/issues/8678
+# 
+# Original version written by https://github.com/thekk1, see https://github.com/ublue-os/bazzite/pull/1416
+#
+# Description:
+# This script monitors connected PS4 and PS5 gamepad devices and disconnects
+# the Bluetooth connection if specific button combinations are detected (Home and Triangle buttons).
+#
+# This script should be removed if there is a native solution under one of the mentioned issues.
+#
+# Usage:
+# ./bazzite-bluetooth-ds4-ds5-workaround <device_mac_address>
+
+"""
+# See https://gist.github.com/noohgnas/7c896791d437e51122c59fe9576a1bcf for reference
+import subprocess
+import sys
+from typing import cast
+
+import evdev
+from evdev import InputDevice, InputEvent
+
+
+class KeyStatus:
+    def __init__(self) -> None:
+        self.home: bool = False
+        self.triangle: bool = False
+        self.other: set[int] = set()
+
+
+GAMEPAD_KEYS = {
+    "HOME": [
+        316,  # Dualshock
+    ],
+    "TRIANGLE": [
+        307,  # Dualshock
+    ],
+}
+
+EV_KEY = 1
+
+
+def trigger_callback(device_mac: str):
+    """Action to realize when HOME + TRIANGLE is held at the same time"""
+    # Get bluetooth adapters
+    p = subprocess.Popen(
+        ["/usr/bin/bluetoothctl", "list"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    p.wait()
+    adapt_strlines = p.stdout
+    if adapt_strlines is None:
+        print("ERROR: No adapters detected")
+        return
+
+    for adap in adapt_strlines:
+        print(f"DEBUG: {adap}")
+        adap = adap.strip().split(" ", maxsplit=2)[1]
+        p2 = subprocess.Popen(
+            ["/usr/bin/bash", "-c", f"""echo -e "select {adap}\ndisconnect {device_mac}" | bluetoothctl """],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            text=True,
+        )
+        p2.wait()
+
+
+def get_device(mac: str) -> InputDevice | None:
+    """Obtain the /dev/input/eventX path for a bluetooth
+    Returns:
+        str: path address
+    """
+    res: str | None = None
+    mac = mac.lower()
+    devices = [evdev.InputDevice(d) for d in evdev.list_devices()]
+    for device in [d for d in devices if d.uniq]:
+        if mac == str(device.uniq).lower():
+            res = device
+            break
+    return res
+
+
+def main(argv: list[str]):
+    if len(argv[1:]) != 1:
+        print("ERROR: Missing argument", file=sys.stderr)
+        exit(1)
+
+    device_mac = argv[1]
+    if not device_mac or device_mac == "":
+        print("ERROR: Missing device bluetooth mac address", file=sys.stderr)
+        exit(0)
+
+    global keys_status
+    keys_status = KeyStatus()
+
+    gamepad = get_device(device_mac)
+    if gamepad is None:
+        print("ERROR: Incorrect device bluetooth mac address", file=sys.stderr)
+        exit(69)  # systemd-analyze exit-status UNAVAILABLE
+
+    for event in gamepad.read_loop():
+        event = cast(InputEvent, event)
+
+        code = event.code
+        value = event.value
+        if event.type == 1:
+            if code in GAMEPAD_KEYS["HOME"]:
+                keys_status.home = value == 1
+            elif code in GAMEPAD_KEYS["TRIANGLE"]:
+                keys_status.triangle = value == 1
+            else:
+                (
+                    keys_status.other.add(code)
+                    if value == 1
+                    else keys_status.other.remove(code)
+                )
+
+            # print(
+            #     f"home: {keys_status.home}, triangle: {keys_status.triangle}, other: {keys_status.other}",
+            # )
+            if (
+                value == 1
+                and keys_status.home
+                and keys_status.triangle
+                and len(keys_status.other) <= 0
+            ):
+                #### Here we manage what happens when the HOME TRIANGLE is pressed
+                print("HOME + TRIANGLE detected")
+                trigger_callback(device_mac)
+
+
+if __name__ == "__main__":
+    try:
+        main(sys.argv)
+    except KeyboardInterrupt as _:
+        pass
