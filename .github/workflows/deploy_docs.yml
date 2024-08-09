@@ -1,13 +1,13 @@
 name: Deploy documentation
 
-on:
-  push:
-    branches:
-      - feat/mdbook-testing-deploy
-    paths:
-      - docs/**
-      - .github/workflows/deploy_docs.yml
-      - /README*.md
+# on:
+#   push:
+#     branches:
+#       - feat/mdbook-testing-deploy
+#     paths:
+#       - docs/**
+#       - .github/workflows/deploy_docs.yml
+#       - /README*.md
   workflow_dispatch:
 
 jobs:
