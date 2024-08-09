@@ -11,6 +11,9 @@ send-events='enabled'
 [org/gnome/desktop/session]
 idle-delay=0
 
+[org/gnome/SessionManager]
+logout-prompt=false
+
 [org/gnome/settings-daemon/plugins/power]
 ambient-enabled=true
 idle-dim=true
