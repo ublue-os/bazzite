@@ -31,6 +31,7 @@ jobs:
         env:
           MDBOOK_output__html__git_repository_url: "${{ github.server_url }}/${{ github.repository }}"
           MDBOOK_output__html__edit_url_template: "${{ github.server_url }}/${{ github.repository }}/edit/${{ github.ref_name }}/docs/{path}"
+          MDBOOK_output__html__site_url: "/bazzite/"
         run: |
           # This assumes your book is in the root of your repository.
           # Just add a `cd` here if you need to change to another directory.
