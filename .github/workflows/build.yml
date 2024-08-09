@@ -14,6 +14,7 @@ on:
       - "spec_files/**"
       - "post_install_files/**"
       - "press_kit/**"
+      - "/docs/**"
       - ".github/workflows/build_iso.yml"
   push:
     branches:
