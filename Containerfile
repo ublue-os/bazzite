@@ -154,6 +154,11 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         libX11-common \
         libX11-xcb \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libv4l \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true && \
