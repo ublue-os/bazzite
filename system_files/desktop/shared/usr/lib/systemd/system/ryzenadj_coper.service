@@ -1,0 +1,14 @@
+[Unit]
+Description=Per-Core CPU Undervolt for Steam Deck
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/default/%p
+ExecStartPre=/usr/bin/sleep 10
+ExecStart=/usr/bin/ryzenadj --set-coper=0x0${CORE0_AMOUNT}
+ExecStart=/usr/bin/ryzenadj --set-coper=0x1${CORE1_AMOUNT}
+ExecStart=/usr/bin/ryzenadj --set-coper=0x2${CORE2_AMOUNT}
+ExecStart=/usr/bin/ryzenadj --set-coper=0x3${CORE3_AMOUNT}
+
+[Install]
+WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target ac.target battery.target
