@@ -5,9 +5,9 @@
 
 [h3]Features[/h3]
 [list]
-[*] [b]ally-x:[/b] The ROG Ally X is now fully supported!
 [*] Add adaptive brightness script for handhelds other than the deck. Default disabled (Thanks [url=https://github.com/corando98]@corando98[/url]) ([url=https://github.com/ublue-os/bazzite/commit/996d161bfb27432e1bd396236c63e932b5d8e981]996d161[/url])
 [*] Add offline documentation (markdown version) ([url=https://github.com/ublue-os/bazzite/issues/1364]#1364[/url]) ([url=https://github.com/ublue-os/bazzite/commit/988928610a37694a5223f7d09499d737af3790c5]9889286[/url])
+[*] Add scx_lavd as an optional scheduler ([url=https://github.com/ublue-os/bazzite/commit/00931b256b8c798abe798265800f2c6498380a26]00931b2[/url])
 [*] [b]ally-x:[/b] Add Texas Instruments Firmware file from Windows driver. ([url=https://github.com/ublue-os/bazzite/commit/ba063deecf4d55498bb15ed3f94cb42322017b7a]ba063de[/url])
 [*] [b]ally:[/b] Add audio improvements from Aru's repo ([url=https://github.com/ublue-os/bazzite/commit/245305def4f3a883b762d1168b9ac13b8dea2972]245305d[/url])
 [*] [b]deck:[/b] Use Deck logo in logo menu by default on Valve hardware ([url=https://github.com/ublue-os/bazzite/commit/df41081f93fb00459c9eac42d84d605cca622b3e]df41081[/url])
