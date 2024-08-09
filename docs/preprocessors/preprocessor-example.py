@@ -1,12 +1,11 @@
 __doc__ = """Example of a mdbook preprocessor"""
 
-import datetime
 import json
-import os
 import sys
-from typing import Any
 from libs.utils import debug
 
+
+# TODO: This needs to be rewritten
 
 def modify_content(content: str) -> str | None:
     ############## MODIFY 'content' HERE ##############

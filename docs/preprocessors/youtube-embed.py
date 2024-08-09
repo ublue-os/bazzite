@@ -1,11 +1,8 @@
 __doc__ = """Transcribe youtube URLS into embededs iframes"""
 
-import datetime
 import json
-import os
 import re
 import sys
-from typing import Any
 from libs.utils import debug
 
 
