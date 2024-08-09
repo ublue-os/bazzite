@@ -1,5 +1,67 @@
 # Changelog
 
+## [3.7.0](https://github.com/ublue-os/bazzite/compare/v3.6.0...v3.7.0) (2024-08-09)
+
+
+### Features
+
+* Add a default Lutris config (Fixes issues with controllers under game mode) ([dceaf18](https://github.com/ublue-os/bazzite/commit/dceaf181beb8cf15a2bca049c642254b970f7cde))
+* Add Discourse forums shortcut ([#1403](https://github.com/ublue-os/bazzite/issues/1403)) ([9b855ea](https://github.com/ublue-os/bazzite/commit/9b855ea499265497af9cfc915d4869687cb7b64b))
+* Add gamescope-legacy binary for older GPUs, such as Polaris. ([b98f222](https://github.com/ublue-os/bazzite/commit/b98f22216c19b7f6e6aa0a9a67a4fb8400de6121))
+* Add Minisforum V3 as an HHD supported device ([379b7e7](https://github.com/ublue-os/bazzite/commit/379b7e76e3036428097660485a8e22d9de08cbc8))
+* Add umu-launcher ([1b1ea4a](https://github.com/ublue-os/bazzite/commit/1b1ea4a4fdcff924fc1d5ada4be4e3f0ef685f05))
+* **bazzite-cli:** add tealdeer as tldr ([#1460](https://github.com/ublue-os/bazzite/issues/1460)) ([1161cbb](https://github.com/ublue-os/bazzite/commit/1161cbb12b06cda05c90898e9f27748e1288f3be))
+* Build gamescope with clang ([ed3f427](https://github.com/ublue-os/bazzite/commit/ed3f4276b712b91f7c58be03218f39916b0d508f))
+* Build scx-scheds with clang ([9848d25](https://github.com/ublue-os/bazzite/commit/9848d254e551367ce31828111621d2738112ab29))
+* **deck:** Enable LAVD on Steam Deck hardware by default ([a956ea2](https://github.com/ublue-os/bazzite/commit/a956ea280743e10624c1743c93ebf791ed0ddc3c))
+* **deck:** Improve default CPU frequency behavior on Galileo & Jupiter ([7cd4ea1](https://github.com/ublue-os/bazzite/commit/7cd4ea1e80aaaafc7c1d21a261aaf37c202c495f))
+* Eliminate Steam Download Speed Fix  Game Mode Startup Video ujust commands, these are now handled by the bazzite-steam wrapper. ([373a73d](https://github.com/ublue-os/bazzite/commit/373a73da8232589cb7cf57d4e0fd5764d67d5142))
+* Enable faster QAM in HHD ([9b345e0](https://github.com/ublue-os/bazzite/commit/9b345e05a81af8b5a5df517758e2aea8fc7dd4ce))
+* Enable HHD on all deck images, previous hardware script now only determines if PPD is used. ([9477fc8](https://github.com/ublue-os/bazzite/commit/9477fc8c7ee21ff2b70d8beeba70223480918719))
+* **gnome:** Add Tiling Shell extension ([f17de6c](https://github.com/ublue-os/bazzite/commit/f17de6c99d70fb09c0c42fc90894e814a5f38791))
+* **just:** add decky prerelease option ([#1425](https://github.com/ublue-os/bazzite/issues/1425)) ([d901c49](https://github.com/ublue-os/bazzite/commit/d901c49e03b204078b75133eb70470ff621ce318))
+* **just:** add ujust to reset steam ([#1411](https://github.com/ublue-os/bazzite/issues/1411)) ([b3a0658](https://github.com/ublue-os/bazzite/commit/b3a06586739938b58d1e1ce2637b1f3e97610e0a))
+* **kde:** add fcitx5-hangul for Korean input ([#1399](https://github.com/ublue-os/bazzite/issues/1399)) ([858f6bf](https://github.com/ublue-os/bazzite/commit/858f6bfc826ae4ff83f92eb2a9432b44a202c6e2))
+* **kde:** Add krdp ([e5feab3](https://github.com/ublue-os/bazzite/commit/e5feab396008b467d60d0161f823a4dbb2247cd5))
+* **kernel:** Enable full preemption by default, reduces latency in certain workloads. ([6fcd085](https://github.com/ublue-os/bazzite/commit/6fcd085db4cf5d2a42440439588e703ce82aea1e))
+* Switch to scx-scheds package for additional sched_ext schedulers ([ccd7b52](https://github.com/ublue-os/bazzite/commit/ccd7b52221e1a0971aeb9ace17fdc262108d8865))
+
+
+### Bug Fixes
+
+* Add fix for docking and a crash for certain inputs to Gamescope ([b2f0b55](https://github.com/ublue-os/bazzite/commit/b2f0b558ba9a8bc2e55374d5957ecdaed4dcdd19))
+* Allow more time for SD card mounting, required by some hardware. ([810b84e](https://github.com/ublue-os/bazzite/commit/810b84e706bd6267085adc224066d8b679f58722))
+* **Ally X:** disable MCU powersave ([#1396](https://github.com/ublue-os/bazzite/issues/1396)) ([bb8d401](https://github.com/ublue-os/bazzite/commit/bb8d401e0e543a0715ca2825929b3f31224dcbf7))
+* **Ally X:** prefer HDMI audio when docked ([#1467](https://github.com/ublue-os/bazzite/issues/1467)) ([398ba21](https://github.com/ublue-os/bazzite/commit/398ba21624ac17e4ef0d6313b73aecaa9168c3ff))
+* **ally:** Fix VRR stutter ([8c6379d](https://github.com/ublue-os/bazzite/commit/8c6379dccf2a98e6b364f152405561cd7c6d85a0))
+* Correct control+1/control+2 input in gamescope (Thanks [@hhd-dev](https://github.com/hhd-dev)) ([6ef9d14](https://github.com/ublue-os/bazzite/commit/6ef9d14a56d33bee0e9cc39631f098c7da8f7a10))
+* Correct EFI path issue with fwupd ([ac457f0](https://github.com/ublue-os/bazzite/commit/ac457f07ee458d589261db05f608bd4089ef8cb4))
+* Correct missing directory error when running grub2-switch-to-blscfg ([e93fa00](https://github.com/ublue-os/bazzite/commit/e93fa00833104a1a558cca21bc05be2f4bcfd65d))
+* **deck:** Correct scx service on Galileo ([a89ba8b](https://github.com/ublue-os/bazzite/commit/a89ba8bccf00b4a24600790910774cd880f96c18))
+* **deck:** Temporarily drop mura package due to framerate pacing issue introduced by it's application ([78c10a2](https://github.com/ublue-os/bazzite/commit/78c10a2ab9a7ede3833ccc42da2201dbc2b8b885))
+* **deck:** Use bootstrap copy of Steam when starting Steam for the first time on the desktop ([0680e56](https://github.com/ublue-os/bazzite/commit/0680e56083475e38d51b60e93c4f1296f89ffd68))
+* Disable pipewire camera handling temporarily ([8c1356c](https://github.com/ublue-os/bazzite/commit/8c1356c322463fd27cc7c3966164f23aa08cf581))
+* Disable Waydroid updater in topgrade ([ee163e5](https://github.com/ublue-os/bazzite/commit/ee163e5737e23f174d54a837fcb2787b98a15a0b))
+* Drop customized lutris wine.yml for now, will restore when installer issues are worked through ([3c09068](https://github.com/ublue-os/bazzite/commit/3c0906892a0d9596fd6958b7f005fcf2266c7dd8))
+* Drop no longer needed OBS_USE_EGL environment variable ([d658a7a](https://github.com/ublue-os/bazzite/commit/d658a7a7c4eb4185e6afbba0afbfff04863371e0))
+* **hhd:** Temporarily drop keyboard patch ([95ef8e6](https://github.com/ublue-os/bazzite/commit/95ef8e62093f8255ab8ebf0423a91a29ebfe6ded))
+* **just:** fix syntax for benchmark ujust ([#1451](https://github.com/ublue-os/bazzite/issues/1451)) ([ecfc56d](https://github.com/ublue-os/bazzite/commit/ecfc56d1fa6b89aa5eb9bbcbe0b8ea2ae7dfab38))
+* **LGO:** reduce input source priority and add description ([#1452](https://github.com/ublue-os/bazzite/issues/1452)) ([371ff84](https://github.com/ublue-os/bazzite/commit/371ff845a17fd5ed55c5ca92bbc5e4663e29645e))
+* **nvidia:** pin Nvidia drivers to v555 due to issues in v560 with monitors freezing ([#1468](https://github.com/ublue-os/bazzite/issues/1468)) ([0c64a62](https://github.com/ublue-os/bazzite/commit/0c64a62aa6571cb903ef9fd7e625cad8fdf7c915))
+* **polaris:** Add 720p patch ([9ba34b0](https://github.com/ublue-os/bazzite/commit/9ba34b0fa0dc488527d3801862bb045d4a354af9))
+* Prevent bluetooth preventing suspension ([#1446](https://github.com/ublue-os/bazzite/issues/1446)) ([9f2550f](https://github.com/ublue-os/bazzite/commit/9f2550f3982664da6c22e2e4cf32da4d937ca5ff))
+* Prevent restoring audio levels on hardware with custom DSPs ([20eb99e](https://github.com/ublue-os/bazzite/commit/20eb99edaaec143e149befb523380a66ba5bd83f))
+* Remove files now handled by steamdeck-dsp ([82f66e8](https://github.com/ublue-os/bazzite/commit/82f66e8da9633acd52bd5ef9529f11f2932bc712))
+* Remove files now handled by steamdeck-dsp ([c8cd944](https://github.com/ublue-os/bazzite/commit/c8cd94494eb0e71e732941d2a0ba2f9fc790372a))
+* Remove pip installed packages and use newly made rpm packages, fixes python errors when layering some packages. ([5ec9e55](https://github.com/ublue-os/bazzite/commit/5ec9e555f8241214333cc28ec697033ae56dc52f))
+* topgrade typo ([#1432](https://github.com/ublue-os/bazzite/issues/1432)) ([6bb47b7](https://github.com/ublue-os/bazzite/commit/6bb47b7ad054884174cc2cd929b86d7b2bdf608c))
+* Use new Steam bootstrap file from Nobara (Thanks @GloriousEggroll) ([dccb5d2](https://github.com/ublue-os/bazzite/commit/dccb5d2d059416fbea02e4fc0cf48a2ac75bcfb2))
+
+
+### Reverts
+
+* chore: Fixed upstream ([#1401](https://github.com/ublue-os/bazzite/issues/1401)) ([cf4aea0](https://github.com/ublue-os/bazzite/commit/cf4aea0e900fea20ecd4bcc4804b9c17cdf9f6fb))
+
 ## [3.6.0](https://github.com/ublue-os/bazzite/compare/v3.5.1...v3.6.0) (2024-07-17)
 
 
