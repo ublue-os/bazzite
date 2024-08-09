@@ -3,7 +3,7 @@ name: Deploy documentation
 # on:
 #   push:
 #     branches:
-#       - feat/mdbook-testing-deploy
+#       - main
 #     paths:
 #       - docs/**
 #       - .github/workflows/deploy_docs.yml
