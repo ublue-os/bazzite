@@ -1,14 +1,19 @@
 name: Deploy documentation
+
 on:
   push:
     branches:
       - feat/mdbook-testing-deploy
+    paths:
+      - docs/**
+      - .github/workflows/deploy_docs.yml
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # To push a branch
+      contents: read # To push a branch
       pages: write  # To push to a GitHub Pages site
       id-token: write # To update the deployment status
     steps:
@@ -23,6 +28,9 @@ jobs:
           curl -sSL $url | tar -xz --directory=./mdbook
           echo `pwd`/mdbook >> $GITHUB_PATH
       - name: Build Book
+        env:
+          MDBOOK_output__html__git_repository_url: "${{ github.server_url }}/${{ github.repository }}"
+          MDBOOK_output__html__edit_url_template: "${{ github.server_url }}/${{ github.repository }}/edit/${{ github.ref_name }}/docs/{path}"
         run: |
           # This assumes your book is in the root of your repository.
           # Just add a `cd` here if you need to change to another directory.
