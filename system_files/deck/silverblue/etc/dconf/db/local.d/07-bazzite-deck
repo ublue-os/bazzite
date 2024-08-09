@@ -11,7 +11,7 @@ send-events='enabled'
 [org/gnome/desktop/session]
 idle-delay=0
 
-[org/gnome/SessionManager]
+[org/gnome/gnome-session]
 logout-prompt=false
 
 [org/gnome/settings-daemon/plugins/power]
