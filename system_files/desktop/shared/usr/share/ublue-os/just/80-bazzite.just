@@ -1,22 +1,5 @@
 # vim: set ft=make :
 
-# Restore the default Terminal
-_restore-original-terminal:
-    #!/usr/bin/bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-    mkdir -p $HOME/.local/share/applications
-    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-        rm -f $HOME/.local/share/applications/org.gnome.Terminal.desktop
-        cp /usr/share/applications/org.gnome.Terminal.desktop $HOME/.local/share/applications/org.gnome.Terminal.desktop
-        sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.gnome.Terminal.desktop
-    else
-        rm -f $HOME/.local/share/applications/org.kde.konsole.desktop
-        cp /usr/share/applications/org.kde.konsole.desktop $HOME/.local/share/applications/org.kde.konsole.desktop
-        sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.kde.konsole.desktop
-        echo "Done. Change your default Terminal in System Settings to complete the swap."
-    fi
-
 # Install System Flatpaks (Support for Rebasing)
 _install-system-flatpaks:
     #!/usr/bin/bash
