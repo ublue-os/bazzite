@@ -29,6 +29,14 @@ on:
       - ".github/workflows/build_iso.yml"
   merge_group:
   workflow_dispatch:
+    inputs:
+      # Run with this periodically to analyze the image again
+      # As package drift will make the plan eventually non-ideal
+      # (existing users will have to redownload most of the image)
+      fresh-rechunk:
+        description: 'Clear rechunk history'
+        type: boolean
+        default: false
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
@@ -55,6 +63,7 @@ jobs:
         fedora_version: [40]
         include:
           - fedora_version: 40
+            bazzite_version: "v3.6"
             is_latest_version: true
             is_stable_version: true
             kernel_flavor: fsync # must match a kernel_flavor from akmods repo
@@ -127,65 +136,7 @@ jobs:
       - name: Maximize build space
         uses: ublue-os/remove-unwanted-software@v7
 
-      - name: Generate tags
-        id: generate-tags
-        shell: bash
-        run: |
-          # Generate a timestamp for creating an image version history
-          TIMESTAMP="$(date +%Y%m%d)"
-          FEDORA_VERSION="${{ matrix.fedora_version }}"
-          COMMIT_TAGS=()
-          BUILD_TAGS=()
-          # Have tags for tracking builds during pull request
-          SHA_SHORT="${GITHUB_SHA::7}"
-          COMMIT_TAGS+=("pr-${{ github.event.pull_request.number }}-${FEDORA_VERSION}")
-          COMMIT_TAGS+=("${SHA_SHORT}-${FEDORA_VERSION}")
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-             [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-              COMMIT_TAGS+=("pr-${{ github.event.pull_request.number }}")
-              COMMIT_TAGS+=("${SHA_SHORT}")
-          fi
-
-          if [[ ${{ github.ref_name }} == "unstable" ]]; then
-             BUILD_TAGS=("${FEDORA_VERSION}-unstable" "${FEDORA_VERSION}-unstable-${TIMESTAMP}")
-             if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-                [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-                 BUILD_TAGS+=("unstable")
-                 echo "DEFAULT_TAG=unstable" >> $GITHUB_ENV
-             fi
-          elif [[ ${{ github.ref_name }} == "testing" ]]; then
-             BUILD_TAGS=("${FEDORA_VERSION}-testing" "${FEDORA_VERSION}-testing-${TIMESTAMP}")
-             if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-                [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-                 BUILD_TAGS+=("testing")
-                 echo "DEFAULT_TAG=testing" >> $GITHUB_ENV
-             fi
-          else
-             BUILD_TAGS=("${FEDORA_VERSION}" "${FEDORA_VERSION}-${TIMESTAMP}")
-             BUILD_TAGS+=("${FEDORA_VERSION}-stable" "${FEDORA_VERSION}-stable-${TIMESTAMP}")
-             if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-                [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-                 BUILD_TAGS+=("latest" "stable")
-                 echo "DEFAULT_TAG=latest" >> $GITHUB_ENV
-             fi
-          fi
-
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-              echo "Generated the following commit tags: "
-              for TAG in "${COMMIT_TAGS[@]}"; do
-                  echo "${TAG}"
-              done
-              alias_tags=("${COMMIT_TAGS[@]}")
-          else
-              alias_tags=("${BUILD_TAGS[@]}")
-          fi
-          echo "Generated the following build tags: "
-          for TAG in "${BUILD_TAGS[@]}"; do
-              echo "${TAG}"
-          done
-          echo "alias_tags=${alias_tags[*]}" >> $GITHUB_OUTPUT
-
-      - name: Pull main and akmods images
+      - name: Pull main, akmods, rechunk images
         uses: Wandalen/wretry.action@v3.5.0
         with:
           attempt_limit: 3
@@ -193,9 +144,12 @@ jobs:
           command: |
             # pull the base images used for FROM in Containerfile so
             # we can retry on that unfortunately common failure case
-            podman pull ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
-            podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
-            podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+            sudo podman pull ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
+            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+
+            # Add rechunk as well to remove this source of failure
+            sudo podman pull ghcr.io/hhd-dev/rechunk:v0.8.3
 
       - name: Get source versions
         id: labels
@@ -220,46 +174,167 @@ jobs:
               exit 1
             fi
             echo "KERNEL_VERSION=$linux" >> $GITHUB_ENV
+      
+      # Generate a primary version key that appears
+      # in KDE, rpm-ostree status, and github.
+      - name: Generate Version
+        id: generate-version
+        shell: bash
+        run: |
+          # Generate the primary version key that will be stored on os-release,
+          # shown on the bootloader, and used for the image tag.
+          UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
+          FEDORA_VERSION="${{ matrix.fedora_version }}"
+          BAZZITE_VERSION="${{ matrix.bazzite_version }}"
+          SHA_SHORT="${GITHUB_SHA::7}"
 
-      # Build metadata
-      - name: Image Metadata
-        uses: docker/metadata-action@v5
-        id: meta
-        with:
-          images: |
-            ${{ env.IMAGE_NAME }}
-          labels: |
-            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
-            org.opencontainers.image.description=Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
-            org.opencontainers.image.version=${{ env.SOURCE_IMAGE_VERSION }}
-            ostree.linux=${{ env.KERNEL_VERSION }}
-            io.artifacthub.package.readme-url=https://bazzite.gg/
-            io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
+          if [ -n "${{ github.event.pull_request.number }}" ]; then
+            VERSION="pr-${FEDORA_VERSION}-${{ github.event.pull_request.number }}"
+            PRETTY_VERSION="PR (${{ github.event.pull_request.number }}, ${UPSTREAM_TAG})"
+          elif [[ ${{ github.ref_name }} == "unstable" ]]; then
+            VERSION="unstable-${SHA_SHORT}"
+            PRETTY_VERSION="Unstable (#${SHA_SHORT}, F${UPSTREAM_TAG})"
+          elif [[ ${{ github.ref_name }} == "testing" ]]; then
+            VERSION="testing-${BAZZITE_VERSION}-${UPSTREAM_TAG}"
+            PRETTY_VERSION="Testing (${BAZZITE_VERSION}, F${UPSTREAM_TAG})"
+          else
+            VERSION="${BAZZITE_VERSION}-${UPSTREAM_TAG}"
+            PRETTY_VERSION="Stable (${BAZZITE_VERSION}, F${UPSTREAM_TAG})"
+          fi
+          echo "tag=${VERSION}" >> $GITHUB_OUTPUT
+          echo "pretty=${PRETTY_VERSION}" >> $GITHUB_OUTPUT
 
-      # Build image using Buildah action
+          echo "Generated the following:"
+          cat $GITHUB_OUTPUT
+
+      # Build image using buildah and save it to raw-img
       - name: Build Image
         id: build_image
-        uses: redhat-actions/buildah-build@v2
+        run: |
+          sudo buildah build \
+            --target ${{ matrix.base_name }} \
+            --build-arg IMAGE_NAME=${{ env.IMAGE_NAME }} \
+            --build-arg IMAGE_FLAVOR=${{ env.IMAGE_FLAVOR }} \
+            --build-arg IMAGE_VENDOR=${{ github.repository_owner }} \
+            --build-arg BASE_IMAGE_NAME=${{ matrix.base_image_name }} \
+            --build-arg BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }} \
+            --build-arg FEDORA_VERSION=${{ matrix.fedora_version }} \
+            --build-arg KERNEL_FLAVOR=${{ matrix.kernel_flavor }} \
+            --build-arg IMAGE_BRANCH=${{ github.ref_name }} \
+            --build-arg SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }} \
+            --build-arg VERSION_TAG=${{ steps.generate-version.outputs.tag }} \
+            --build-arg VERSION_PRETTY="${{ steps.generate-version.outputs.pretty }}" \
+            --tag raw-img .
+      
+      - name: Remove auxiliary images
+        # We are tight on space, need at least 2x for OSTree
+        run: |
+          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
+          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+      
+      # Reprocess raw-img using rechunker which will delete it
+      - name: Run Rechunker
+        id: rechunk
+        uses: hhd-dev/rechunk@v0.8.3
         with:
-          containerfiles: |
-            ./Containerfile
-          image: ${{ env.IMAGE_NAME }}
-          tags: |
-            ${{ steps.generate-tags.outputs.alias_tags }}
-          build-args: |
-            IMAGE_NAME=${{ env.IMAGE_NAME }}
-            IMAGE_FLAVOR=${{ env.IMAGE_FLAVOR }}
-            IMAGE_VENDOR=${{ github.repository_owner }}
-            BASE_IMAGE_NAME=${{ matrix.base_image_name }}
-            BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }}
-            FEDORA_VERSION=${{ matrix.fedora_version }}
-            KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
-            IMAGE_BRANCH=${{ github.ref_name }}
-            SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }}
-          labels: ${{ steps.meta.outputs.labels }}
-          oci: false
-          extra-args: |
-            --target=${{ matrix.base_name }}
+          rechunk: 'ghcr.io/hhd-dev/rechunk:v0.8.3'
+          ref: 'raw-img'
+          prev-ref: ${{ github.event.inputs.fresh-rechunk == 'true' && '' || 'ghcr.io/ublue-os/bazzite:unstable' }}
+          version: '${{ steps.generate-version.outputs.tag }}'
+          labels: |
+            io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
+            io.artifacthub.package.readme-url=https://bazzite.gg/
+            org.opencontainers.image.created=<timestamp>
+            org.opencontainers.image.description=Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
+            org.opencontainers.image.licenses=Apache-2.0
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=https://github.com/ublue-os/bazzite
+            org.opencontainers.image.title=bazzite
+            org.opencontainers.image.url=https://github.com/ublue-os/bazzite
+            org.universal-blue.pkg.kernel=<relver:kernel>
+            org.universal-blue.pkg.gamescope=<relver:gamescope>
+      
+      # Generate tags after rechunker runs and checks the primary tag is not duplicated
+      # If it is, rechunk will suffix it by .1, .2, etc and put it in steps.rechunk.outputs.version
+      - name: Generate tags
+        id: generate-tags
+        shell: bash
+        run: |
+          # Common vars for generating tags
+          VERSION_TAG="${{ steps.rechunk.outputs.version }}"
+          UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
+          FEDORA_VERSION="${{ matrix.fedora_version }}"
+          BAZZITE_VERSION="${{ matrix.bazzite_version }}"
+          SHA_SHORT="${GITHUB_SHA::7}"
+          BUILD_TAGS=( "${VERSION_TAG}" )
+
+          # Use latest var to check if we should tag as latest
+          unset LATEST
+          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
+              [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
+                LATEST="1"
+          fi
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # Track latest ver per PR
+            if [ -n "$LATEST" ]; then
+                BUILD_TAGS+=("pr-${{ github.event.pull_request.number }}")
+            fi
+          elif [[ ${{ github.ref_name }} == "unstable" ]]; then
+            # Per fedora version
+            BUILD_TAGS+=("${FEDORA_VERSION}-unstable")
+            BUILD_TAGS+=("unstable-${FEDORA_VERSION}") # flip ver to be last
+
+            # Per upstream ver
+            BUILD_TAGS+=("unstable-${UPSTREAM_TAG}")
+
+            if [ -n "$LATEST" ]; then
+                BUILD_TAGS+=("unstable")
+            fi
+          elif [[ ${{ github.ref_name }} == "testing" ]]; then
+            # Per fedora version
+            BUILD_TAGS+=("${FEDORA_VERSION}-testing")
+            BUILD_TAGS+=("testing-${FEDORA_VERSION}") # flip ver to be last
+
+            # Per upstream ver
+            BUILD_TAGS+=("testing-${UPSTREAM_TAG}")
+
+            if [ -n "$LATEST" ]; then
+                BUILD_TAGS+=("testing-${BAZZITE_VERSION}")
+                BUILD_TAGS+=("testing")
+            fi
+          else
+            BUILD_TAGS+=("${FEDORA_VERSION}")
+            BUILD_TAGS+=("${UPSTREAM_TAG}")
+            BUILD_TAGS+=("${BAZZITE_VERSION}")
+            BUILD_TAGS+=("stable-${UPSTREAM_TAG}")
+
+            # Per fedora version
+            BUILD_TAGS+=("${FEDORA_VERSION}-stable")
+            BUILD_TAGS+=("stable-${FEDORA_VERSION}") # flip ver to be last
+            
+            if [ -n "$LATEST" ]; then
+              BUILD_TAGS+=("latest" "stable")
+            fi
+          fi
+          
+          echo "Generated the following build tags: "
+          for TAG in "${BUILD_TAGS[@]}"; do
+              echo "${TAG}"
+          done
+          echo "alias_tags=${BUILD_TAGS[*]}" >> $GITHUB_OUTPUT
+
+      # Pull oci-dir image, remove oci dir to make space, and then tag appropriately
+      - name: Load in podman and tag
+        run: |
+          IMAGE=$(podman pull ${{ steps.rechunk.outputs.ref }})
+          sudo rm -rf ${{ steps.rechunk.outputs.output }}
+          for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
+            podman tag $IMAGE ${{ env.IMAGE_NAME }}:$tag
+          done
+          # keep for secureboot check
+          podman tag $IMAGE rechunked-img
 
       - name: Check Secureboot
         shell: bash
@@ -269,9 +344,9 @@ jobs:
             sudo apt update
             sudo apt install sbsigntool curl openssl
           fi
-          podman run -d --rm --name ${{env.IMAGE_NAME}}-$(echo "${{ steps.generate-tags.outputs.alias_tags }}" | cut -d " " -f 1) "${{ env.IMAGE_NAME }}":$(echo "${{ steps.generate-tags.outputs.alias_tags }}" | cut -d " " -f 1) sleep 1000
-          podman cp ${{env.IMAGE_NAME}}-$(echo "${{ steps.generate-tags.outputs.alias_tags }}" | cut -d " " -f 1):/usr/lib/modules/${{ env.KERNEL_VERSION }}/vmlinuz .
-          podman rm -f ${{env.IMAGE_NAME}}-$(echo "${{ steps.generate-tags.outputs.alias_tags }}" | cut -d " " -f 1)
+          TMP=$(podman create rechunked-img bash)
+          podman cp $TMP:/usr/lib/modules/${{ env.KERNEL_VERSION }}/vmlinuz .
+          podman rm $TMP
           sbverify --list vmlinuz
           curl --retry 3 -Lo kernel-sign.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key.der
           curl --retry 3 -Lo akmods.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key_2.der
@@ -301,13 +376,11 @@ jobs:
           attempt_limit: 3
           attempt_delay: 15000
           with: |
-            image: ${{ steps.build_image.outputs.image }}
-            tags: ${{ steps.build_image.outputs.tags }}
+            image: ${{ env.IMAGE_NAME }}
+            tags: ${{ steps.generate-tags.outputs.alias_tags }}
             registry: ${{ steps.registry_case.outputs.lowercase }}
             username: ${{ env.REGISTRY_USER }}
             password: ${{ env.REGISTRY_PASSWORD }}
-            extra-args: |
-              --disable-content-trust
 
       - name: Sign container image
         uses: EyeCantCU/cosign-action/sign@v0.3.0

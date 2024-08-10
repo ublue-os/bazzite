@@ -11,6 +11,9 @@ send-events='enabled'
 [org/gnome/desktop/session]
 idle-delay=0
 
+[org/gnome/gnome-session]
+logout-prompt=false
+
 [org/gnome/settings-daemon/plugins/power]
 ambient-enabled=true
 idle-dim=true
@@ -27,3 +30,7 @@ osd-position=1
 
 [org/gnome/shell/extensions/Logo-menu]
 show-gamemode=true
+
+[org/gnome/shell/extensions/tilingshell]
+snap-assistant-threshold=25
+override-window-menu=false

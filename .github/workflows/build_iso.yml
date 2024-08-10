@@ -57,16 +57,6 @@ jobs:
 
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
-      - name: Set EXTRA_BOOT_PARAMS
-        id: generate-extra-params
-        shell: bash
-        run: |
-          EXTRA_BOOT_PARAMS=""
-          if [[ "${{ matrix.image_name }}" =~ "deck" ]]; then
-              EXTRA_BOOT_PARAMS="inst.resolution=1280x800"
-          fi
-          echo "extra-boot-params=${EXTRA_BOOT_PARAMS}" >> $GITHUB_OUTPUT
-
       - name: Set Flatpaks Directory Shortname
         id: generate-flatpak-dir-shortname
         shell: bash
@@ -110,8 +100,14 @@ jobs:
             ${image} /temp_flatpak_install_dir/script.sh
           docker rmi ${image}
 
+      - name: Setup Bazzite Repo
+        id: setup-bazzite-repo
+        shell: bash
+        run: |
+          curl -Lo ${{ github.workspace }}/bazzite.repo https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-${{ matrix.major_version }}/kylegospo-bazzite-fedora-${{ matrix.major_version }}.repo
+
       - name: Build ISOs
-        uses: jasonn3/build-container-installer@v1.2.1
+        uses: jasonn3/build-container-installer@v1.2.2
         id: build
         with:
           arch: x86_64
@@ -128,7 +124,8 @@ jobs:
           flatpak_remote_refs_dir: ${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}
           enable_flatpak_dependencies: "false"
           extra_boot_params: ${{ steps.generate-extra-params.outputs.extra-boot-params }}
-          additional_templates: '/github/workspace/installer/lorax_templates/remove_root_password_prompt.tmpl'
+          additional_templates: '/github/workspace/installer/lorax_templates/remove_root_password_prompt.tmpl /github/workspace/installer/lorax_templates/set_default_user.tmpl'
+          repos: '/github/workspace/bazzite.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo'
 
       - name: Move ISOs to Upload Directory
         id: upload-directory
