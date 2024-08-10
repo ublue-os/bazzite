@@ -13,10 +13,6 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --or-update ${FLATPAK_LIST}
 
-# Force-enable AMD pstate
-_pstate-force-enable:
-    rpm-ostree kargs --append-if-missing=amd_pstate=active
-
 # Configure grub bootmenu visibility and fix duplicate entries
 configure-grub ACTION="":
     #!/usr/bin/bash
