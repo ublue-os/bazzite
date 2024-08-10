@@ -88,6 +88,7 @@ from collections import namedtuple
 from argparse import ArgumentParser
 import os
 import re
+from string import Template
 from sys import stdout
 
 import requests
@@ -96,12 +97,18 @@ import requests
 _BASE_URL = os.getenv("BASE_URL", "https://universal-blue.discourse.group").rstrip("/")
 
 
-UrlBatch = namedtuple("UrlBatch", ["raw_url", "json_url"])
+UrlBatch = namedtuple("UrlBatch", ["raw_url", "json_url", "source_url"])
 
 
 type HTMLPage = str
 type Markdown = str
 type ImageUrlAssocs = list[tuple[str, str]]
+
+
+def todo(msg: str = "TODO"):
+    """Equivalent to rust `todo!()`"""
+    msg = str.removeprefix(msg, "TODO")
+    raise NotImplementedError(msg)
 
 
 class DiscourseProcessor:
@@ -155,6 +162,7 @@ class DiscourseProcessor:
         res = UrlBatch(
             json_url=f"https://universal-blue.discourse.group/t/{id}.json",
             raw_url=f"https://universal-blue.discourse.group/raw/{id}",
+            source_url=url,
         )
 
         return res
@@ -207,10 +215,35 @@ class DiscourseProcessor:
         result = page
         for assoc in assocs:
             result = result.replace(
-                "upload://" + assoc[0],
+                f"upload://{assoc[0]}",
                 os.path.splitext(assoc[1])[0],
             )
         return result
+
+    @staticmethod
+    def add_metadata_to_markdown(md: Markdown, url_discourse: str) -> Markdown:
+        """Add commented metadata to a markdown page"""
+        meta_tmpl = Template(
+            "\n".join(
+                [
+                    "\n<!-- ANCHOR: METADATA -->",
+                    "<!--",
+                    "url_discourse: ${url_discourse}",
+                    "-->",
+                    "<!-- ANCHOR_END: METADATA -->",
+                ]
+            )
+            .lstrip()
+            .rstrip()
+        )
+
+        md_split = md.splitlines()
+        author_header_pttrn = r"^(?P<username>\w+)\s\|\s(?P<date>(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2}))\s(?P<time>(?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2})\s(?P<zone>\w+))\s\|\s#\d+"
+        if re.match(author_header_pttrn, md_split[0]):
+            md_split[0] = "\n".join(
+                [md_split[0], meta_tmpl.substitute(url_discourse=url_discourse)]
+            )
+        return "\n".join(md_split)
 
 
 def main():
@@ -243,8 +276,10 @@ def main():
         )
 
         # Remove comments
-
         result = DiscourseProcessor.Patterns.post_sep_markdown.split(result, 1)[0].rstrip()
+
+        # Add metadata
+        result = DiscourseProcessor.add_metadata_to_markdown(result, batch.source_url)
 
         print(result, file=stdout)
 
