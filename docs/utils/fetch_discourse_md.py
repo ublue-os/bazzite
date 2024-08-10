@@ -87,6 +87,8 @@ How does this script work:
 from collections import namedtuple
 from argparse import ArgumentParser
 from datetime import datetime, UTC
+import html
+import json
 import os
 import re
 from string import Template
@@ -228,29 +230,27 @@ class DiscourseProcessor:
             "\n".join(
                 [
                     "<!-- ANCHOR: METADATA -->",
-                    "<!--",
-                    'url_discourse: "${url_discourse}"',
-                    'fetched_at: "${fetch_date}"',
-                    "-->",
+                    "<!--$metadata-->",
                     "<!-- ANCHOR_END: METADATA -->",
                 ]
             )
             .lstrip()
             .rstrip()
         )
-
+        metadata = html.escape(
+            json.dumps(
+                dict(
+                    url_discourse=url_discourse,
+                    fetched_at=datetime.now(UTC).__str__(),
+                ),
+            ),
+            quote=False,
+        )
         md_split = md.splitlines()
         author_header_pttrn = r"^(?P<username>\w+)\s\|\s(?P<date>(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2}))\s(?P<time>(?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2})\s(?P<zone>\w+))\s\|\s#\d+"
         if re.match(author_header_pttrn, md_split[0]):
             md_split[0] = "\n".join(
-                [
-                    md_split[0],
-                    "",
-                    meta_tmpl.substitute(
-                        url_discourse=url_discourse,
-                        fetch_date=datetime.now(UTC),
-                    ),
-                ]
+                [md_split[0], "", meta_tmpl.substitute(metadata=metadata)]
             )
         return "\n".join(md_split)
 
