@@ -75,8 +75,8 @@ We will start with getting our utilities ready:
    Get sure we have `fetch_discourse_md.py` in there, we will need it
 
    ```sh
-   $ ls ./fetch_discourse_md.py
-   ./fetch_discourse_md.py
+   $ ls ./utils/fetch_discourse_md.py
+   ./utils/fetch_discourse_md.py
    ```
 
 ### 2. Copy the post
@@ -87,7 +87,7 @@ We will start with getting our utilities ready:
 2. In the terminal, pass the URL to `fetch_discourse_md.py`
 
    ```sh
-   $ ./fetch_discourse_md.py "https://universal-blue.discourse.group/docs?topic=2743" | wl-copy
+   $ ./utils/fetch_discourse_md.py "https://universal-blue.discourse.group/docs?topic=2743" | wl-copy
    ```
 
    Normally, `fetch_discourse_md.py` would dump the resulting markdown doc in the terminal output, with `wl-copy` we store it in our clipboard for now.
