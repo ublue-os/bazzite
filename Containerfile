@@ -542,7 +542,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.kde.konsole.desktop && \
         rm -f /usr/share/kglobalaccel/org.kde.konsole.desktop && \
         systemctl enable kde-sysmonitor-workaround.service \
-    ; else \
+    ; elif grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
@@ -750,7 +750,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             steamdeck-kde-presets-desktop && \
         rpm-ostree install \
             steamdeck-kde-presets \
-    ; else \
+    ; elif grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree install \
             steamdeck-gnome-presets \
             gnome-shell-extension-caribou-blocker \
