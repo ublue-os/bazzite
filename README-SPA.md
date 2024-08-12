@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://bazzite.gg/"><img src=./repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
+  <a href="https://bazzite.gg/"><img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
@@ -7,7 +7,7 @@
 # [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [🇧🇷](https://github.com/ublue-os/bazzite/blob/main/README-BR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/README-NL.md)
 
 <p align="center">
-  <a href="https://bazzite.gg/#image-picker"><img src=./repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
+  <a href="https://bazzite.gg/#image-picker"><img src="/repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
 </p>
 
 ---
@@ -226,19 +226,19 @@ Lee nuestras [preguntas frecuentes](https://universal-blue.discourse.group/docs?
 
 ## Mira como luce Bazzite (Capturas de Pantalla)
 
-![KDE Vapor Theme]./repo_content/desktop1.png?raw=true "KDE Vapor Theme")
+![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 
-![KDE VGUI2 Theme]./repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
+![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
 
-![Steam Game Mode]./repo_content/gamemode.png?raw=true "Steam Game Mode")
+![Steam Game Mode](/repo_content/gamemode.png?raw=true "Steam Game Mode")
 
-![Waydroid]./repo_content/waydroid.png?raw=true "Waydroid")
+![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 
-![Distrobox Terminals]./repo_content/distrobox.png?raw=true "Distrobox Terminals")
+![Distrobox Terminals](/repo_content/distrobox.png?raw=true "Distrobox Terminals")
 
-![GNOME Vapor Theme]./repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
+![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
 
-![GNOME VGUI2 Theme]./repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
+![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
 
 ## Documentación y Boletín informativo/Newsletters (En inglés)
 

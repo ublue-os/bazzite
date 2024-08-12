@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://bazzite.gg/"><img src=./repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
+  <a href="https://bazzite.gg/"><img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
@@ -7,7 +7,7 @@
 # [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [🇨🇳](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [🇧🇷](https://github.com/ublue-os/bazzite/blob/main/README-BR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/README-NL.md)
 
 <p align="center">
-  <a href="https://download.bazzite.gg/"><img src=./repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
+  <a href="https://download.bazzite.gg/"><img src="/repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
 </p>
 
 ---
@@ -227,13 +227,13 @@ Bazzite带来最新的Linux内核，默认启用的SELinux为安全启动提供�
 
 ## 展示
 
-![KDE Vapor Theme]./repo_content/desktop1.png?raw=true "KDE Vapor Theme")
-![KDE VGUI2 Theme]./repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
-![Steam Game Mode]./repo_content/gamemode.png?raw=true "Steam Game Mode")
-![Waydroid]./repo_content/waydroid.png?raw=true "Waydroid")
-![Distrobox Terminals]./repo_content/distrobox.png?raw=true "Distrobox Terminals")
-![GNOME Vapor Theme]./repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
-![GNOME VGUI2 Theme]./repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
+![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
+![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
+![Steam Game Mode](/repo_content/gamemode.png?raw=true "Steam Game Mode")
+![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
+![Distrobox Terminals](/repo_content/distrobox.png?raw=true "Distrobox Terminals")
+![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
+![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
 
 ## 文档 & 时事通讯
 
