@@ -5,7 +5,7 @@
 %endif
 
 Name:    bluez
-Version: 5.76
+Version: 5.77
 Release: 1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: Bluetooth utilities
 License: GPL-2.0-or-later
@@ -196,13 +196,11 @@ install -d -m0755 $RPM_BUILD_ROOT/%{_localstatedir}/lib/bluetooth/mesh
 
 mkdir -p $RPM_BUILD_ROOT/%{_libdir}/bluetooth/
 
-#copy bluetooth config file and setup auto enable
+#copy bluetooth config files
 install -D -p -m0644 src/main.conf ${RPM_BUILD_ROOT}/etc/bluetooth/main.conf
 install -D -p -m0644 mesh/mesh-main.conf ${RPM_BUILD_ROOT}/etc/bluetooth/mesh-main.conf
 install -D -p -m0644 profiles/input/input.conf ${RPM_BUILD_ROOT}/etc/bluetooth/input.conf
 install -D -p -m0644 profiles/network/network.conf ${RPM_BUILD_ROOT}/etc/bluetooth/network.conf
-
-sed -i 's/#\[Policy\]$/\[Policy\]/; s/#AutoEnable=false/AutoEnable=true/' ${RPM_BUILD_ROOT}/%{_sysconfdir}/bluetooth/main.conf
 
 # Install the HCI emulator, useful for testing
 install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
@@ -288,6 +286,8 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_mandir}/man1/hcitool.1.*
 %{_mandir}/man1/rfcomm.1.*
 %{_mandir}/man1/sdptool.1.*
+%{_mandir}/man7/l2cap.7.*
+%{_mandir}/man7/rfcomm.7.* 
 %endif
 
 %files libs
@@ -337,6 +337,12 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_userunitdir}/obex.service
 
 %changelog
+* Tue Jul 09 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.77-1
+- Update to 5.77
+
+* Thu Jul 04 2024 Bastien Nocera <bnocera@redhat.com> - 5.76-2
+- Remove obsolete and ineffective configuration change 
+
 * Mon May 20 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.76-1
 - Update to 5.76
 
