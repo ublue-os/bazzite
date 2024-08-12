@@ -5,12 +5,12 @@ build_messages_pot:
     MDBOOK_OUTPUT='{"xgettext": {}}' \
         mdbook build -d po
 
+# Add a language to translate
 add_translation LANG: build_messages_pot
     msginit -i po/messages.pot -l {{LANG}} -o po/{{LANG}}.po
 
-prep_translation LANG:
-    #!/usr/bin/bash
+# Update a language with a fresh messages.pot
+update_translation LANG: build_messages_pot
     mdbook clean
-    just build_messages_pot
     [[ ! -f po/{{LANG}}.po ]] && just add add_translation {{LANG}}
     msgmerge --update po/{{LANG}}.po po/messages.pot
