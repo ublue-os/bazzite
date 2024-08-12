@@ -25,3 +25,6 @@ ignore = ["Introduction*"]
 
 [preprocessor.replace-urls.mappings]
 "https://universal-blue.discourse.group/docs?topic=561" = "/Introduction.html"
+
+[preprocessor.gettext]
+after = ["links"]

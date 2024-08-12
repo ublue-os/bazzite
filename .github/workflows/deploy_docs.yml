@@ -1,5 +1,8 @@
 name: Deploy documentation
 
+# Check for reference:
+# https://github.com/s1rius/ezlog/blob/20dce11e6d324bb18f57dc7c7c6d4a8bf40064de/.github/workflows/publish_pages.yml
+
 on:
   push:
     branches:
@@ -10,42 +13,66 @@ on:
       - /README*.md
   workflow_dispatch:
 
+permissions:
+  contents: read # To push a branch
+  pages: write # To push to a GitHub Pages site
+  id-token: write # To update the deployment status
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  EXTRA_LANGUAGES:
+  SITE_URL: /bazzite/
+  MDBOOK_output__html__git_repository_url: "${{ github.server_url }}/${{ github.repository }}"
+  MDBOOK_output__html__edit_url_template: "${{ github.server_url }}/${{ github.repository }}/edit/${{ github.ref_name }}/docs/{path}"
+
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read # To push a branch
-      pages: write  # To push to a GitHub Pages site
-      id-token: write # To update the deployment status
+    # environment:
+    #   name: github-pages
+    #   url: ${{ steps.deployment.outputs.page_url }}
+    defaults:
+      run:
+        working-directory: ./docs
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install latest mdbook
-        run: |
-          tag=$(curl 'https://api.github.com/repos/rust-lang/mdbook/releases/latest' | jq -r '.tag_name')
-          url="https://github.com/rust-lang/mdbook/releases/download/${tag}/mdbook-${tag}-x86_64-unknown-linux-gnu.tar.gz"
-          mkdir mdbook
-          curl -sSL $url | tar -xz --directory=./mdbook
-          echo `pwd`/mdbook >> $GITHUB_PATH
-      - name: Build Book
+
+      - name: Install mdbook
+        uses: ./.github/workflows/install-mdbook
+
+      - name: Build book in English
         env:
-          MDBOOK_output__html__git_repository_url: "${{ github.server_url }}/${{ github.repository }}"
-          MDBOOK_output__html__edit_url_template: "${{ github.server_url }}/${{ github.repository }}/edit/${{ github.ref_name }}/docs/{path}"
-          MDBOOK_output__html__site_url: "/bazzite/"
+          MDBOOK_output__html__site_url: ${{ env.SITE_URL }}
         run: |
           # This assumes your book is in the root of your repository.
           # Just add a `cd` here if you need to change to another directory.
-          pushd ./docs
-          mdbook build
-          popd
+          mdbook build -d $GITHUB_WORKSPACE/book
+
+      - name: Build all translations
+        run: |
+          for po_lang in ${{ env.EXTRA_LANGUAGES }}; do
+            echo "::group::Building $po_lang translation"
+            MDBOOK_BOOK__LANGUAGE=$po_lang \
+            MDBOOK_OUTPUT__HTML__SITE_URL=${{ env.SITE_URL }}/$po_lang/ \
+            mdbook build -d $GITHUB_WORKSPACE/book/$po_lang
+            echo "::endgroup::"
+          done
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
-          path: './docs/book'
+          path: ${{ github.workspace }}/book
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
