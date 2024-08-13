@@ -5,12 +5,29 @@ build_messages_pot:
     MDBOOK_OUTPUT='{"xgettext": {}}' \
         mdbook build -d po
 
+# Check that a translation file exists, otherwise exit with 1
+_is_translation LANG:
+    [[ -f po/{{LANG}}.po ]] || { \
+        echo "ERROR: 'po/{{LANG}}.po' does not exist."; \
+        echo "Use 'just add_translation {{LANG}}' to create a new translation file"; \
+        exit 1; }
+
 # Add a language to translate
 add_translation LANG: build_messages_pot
     msginit -i po/messages.pot -l {{LANG}} -o po/{{LANG}}.po
 
 # Update a language with a fresh messages.pot
-update_translation LANG: build_messages_pot
+update_translation LANG: (_is_translation LANG) build_messages_pot
     mdbook clean
-    [[ ! -f po/{{LANG}}.po ]] && just add add_translation {{LANG}}
     msgmerge --update po/{{LANG}}.po po/messages.pot
+
+preview_translation LANG: (_is_translation LANG) build_messages_pot
+    #!/usr/bin/bash
+    set -meo pipefail
+    mdbook build -d book
+    MDBOOK_BOOK__LANGUAGE={{LANG}} mdbook build -d book/{{LANG}}
+    cd book
+    python -m http.server 3000 &
+    sleep 2
+    xdg-open localhost:3000/{{LANG}}
+    fg
