@@ -142,6 +142,84 @@ And now our post is ready.
 
 ![](./src/img/doc_guide_there_you_are.jpg)
 
+## Translate documentation
+
+> ⚠️ WARNING
+>
+> It is better to start translation once [transcription](#transcribe-discourse-docs-to-mdbooks) is settled to keep up.
+
+Translation isnt so straightforward as copying a markdown file and start working.
+
+We rely in [mdbook-i18n-helpers](https://github.com/google/mdbook-i18n-helpers) for translation, which uses [GNU Gettext](https://www.gnu.org/software/gettext/manual/html_node/index.html).
+
+We need some more dependencies in order to do translations:
+
+- `.po` file editor (like [Poedit](https://flathub.org/apps/net.poedit.Poedit))
+- Rust's `cargo` (you can install rust by running
+  `brew install rustup; rustup-init`)
+- `mdbook-i18n-helpers` (after installing rust,
+  `cargo install mdbook-i18n-helpers`)
+
+### 1. Basic preparation
+
+Move to `docs`, then build the `.pot` file
+
+```sh
+cd docs
+just build_messages_pot
+```
+
+This will create `po/messages.pot`, which acts as an index of text fragments
+from all our markdown files.
+
+### 2. (Optional) Add a new language
+
+All translations files are stored in `docs/po/` in the form of `xx.po` files, `xx` referencing the language code following [ISO 639][ISO]. Per example, `es.po` would be an Spanish translation
+file.
+
+To add a new language to the documentation, follows these steps:
+
+1. Get sure you did the [basic preparation](#1-basic-preparation-1)
+2. Then run this, replacing `XX` with the [language code][ISO]:
+
+   ```sh
+   just add_translation XX
+   ```
+
+   In my case, I'm going to create an Spanish translation file:
+
+   ```sh
+   just add_translation es
+   ls po/
+   # es.po  messages.pot
+   ```
+
+### 3. Working with a translation file
+
+![Poedit](./src/img/poedit.jpg)
+
+We will now open that `.po` file with our po editor (in my case is Poedit).
+
+We make some changes, hit <kbd>Ctrl</kbd>+<kbd>S</kbd> to save.
+
+Lets see the changes we had done with a preview. Run this:
+
+```sh
+just preview_translation XX
+```
+
+In my case is `es`
+
+```sh
+just preview_translation es
+```
+
+And there it is!
+
+![](./src/img/translation_example.jpg)
+
 ## Write new documentation
 
 WIP
+
+[ISO]: https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
