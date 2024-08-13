@@ -15,7 +15,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   fi
 
   # Install Bazzite's Steam Game Mode Startup & Suspend Videos
-  mkdir -p $HOME/.local/share/Steam/config/uioverrides/movie
+  mkdir -p $HOME/.local/share/Steam/config/uioverrides/movies
   if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm ]; then
     cp /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
   fi
