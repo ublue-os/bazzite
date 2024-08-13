@@ -27,11 +27,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  runner: ubuntu-latest
+  cache-mdbook-name: cache-mdbook-bins
   EXTRA_LANGUAGES:
   SITE_URL: /bazzite/
   MDBOOK_output__html__git_repository_url: "${{ github.server_url }}/${{ github.repository }}"
   MDBOOK_output__html__edit_url_template: "${{ github.server_url }}/${{ github.repository }}/edit/${{ github.ref_name }}/docs/{path}"
-
 
 jobs:
   deploy:
@@ -47,7 +48,20 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Cache mdbook
+        id: cache-mdbook
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/bin
+          key: ${{ runner.os }}-build-${{ env.cache-mdbook-name }}-${{ hashFiles('.github/workflows/deploy_docs.yml', '.github/workflows/install-mdbook/action.yml') }}
+
+      - name: Add mdbook to PATH
+        if: steps.cache-mdbook.outputs.cache-hit == 'true'
+        run: |
+          echo ~/.cargo/bin:$PATH >> $GITHUB_PATH
+
       - name: Install mdbook
+        if: steps.cache-mdbook.outputs.cache-hit != 'true'
         uses: ./.github/workflows/install-mdbook
 
       - name: Build book in English
@@ -80,3 +94,26 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  clean_cache:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache Cleanup
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -x
+          old_caches=($(gh cache list \
+            --repo ${{ github.repository }} \
+            --key "${{ runner.os }}-build-${{ env.cache-mdbook-name }}-"  \
+            --sort created_at -O asc --json id | jq '.[:-1][].id'))
+          for id in "${old_caches[@]}"; do
+            gh cache delete $id
+          done
