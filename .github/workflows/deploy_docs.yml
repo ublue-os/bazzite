@@ -137,3 +137,9 @@ jobs:
           for id in "${old_caches[@]}"; do
             gh cache delete $id
           done
+      - name: Remove Page Artifacts
+        uses: remagpie/gha-remove-artifact@v1
+        with:
+          only-name: github-pages
+          max-age: 7776000 # 90 days
+          max-count: 50
