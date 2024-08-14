@@ -7,7 +7,7 @@
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        1.bazzite
+Release:        2.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -111,7 +111,7 @@ sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/m
 cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
 %if %{__isa_bits} == 64
-%meson -Dpipewire=enabled -Dinput_emulation=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dsdl2_backend=enabled
+%meson --auto-features=enabled -Dforce_fallback_for=vkroots,wlroots,libliftoff
 %else
 %meson -Denable_gamescope=false -Denable_gamescope_wsi_layer=true
 %endif
