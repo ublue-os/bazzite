@@ -18,3 +18,7 @@ runs:
     - name: Install mdbook-i18n-helpers
       run: cargo install mdbook-i18n-helpers --locked --version 0.3.5
       shell: bash
+
+    - name: Install i18n-report
+      run: cargo install i18n-report --locked --version 0.2.0
+      shell: bash
