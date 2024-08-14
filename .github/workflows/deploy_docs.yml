@@ -15,6 +15,7 @@ on:
       - docs/**/*.po
       - .github/workflows/deploy_docs.yml
       - README*.md
+      - docs/book.toml
   pull_request:
     branches:
       - main
@@ -26,6 +27,7 @@ on:
       - docs/**/*.po
       - .github/workflows/deploy_docs.yml
       - README*.md
+      - docs/book.toml
   workflow_dispatch:
 
 permissions:
