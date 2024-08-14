@@ -696,7 +696,6 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl enable ublue-update.timer && \
     systemctl enable gamescope-workaround.service && \
-    systemctl enable waydroid-workaround.service && \
     systemctl enable incus-workaround.service && \
     systemctl enable bazzite-hardware-setup.service && \
     systemctl enable tailscaled.service && \
