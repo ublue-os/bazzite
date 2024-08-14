@@ -152,13 +152,25 @@ Translation isnt so straightforward as copying a markdown file and start working
 
 We rely in [mdbook-i18n-helpers](https://github.com/google/mdbook-i18n-helpers) for translation, which uses [GNU Gettext](https://www.gnu.org/software/gettext/manual/html_node/index.html).
 
-We need some more dependencies in order to do translations:
+We need some more dependencies in order to do translations, which can be installed with this script:
+
+```sh
+bash docs/utils/install-deps.sh
+```
+
+<details>
+<summary>
+<big>Dependencies list</big><br>
+<sup>Ignore if using install-deps.sh</sup>
+</summary>
 
 - `.po` file editor (like [Poedit](https://flathub.org/apps/net.poedit.Poedit))
 - Rust's `cargo` (you can install rust by running
   `brew install rustup; rustup-init`)
 - `mdbook-i18n-helpers` (after installing rust,
   `cargo install mdbook-i18n-helpers`)
+
+</details>
 
 ### 1. Basic preparation
 

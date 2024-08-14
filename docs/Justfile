@@ -1,6 +1,10 @@
 _default:
     just --list
 
+# Install dependencies required for documentation stuff
+install_dependencies:
+    bash ./utils/install-deps.sh
+
 build_messages_pot:
     MDBOOK_OUTPUT='{"xgettext": {}}' \
         mdbook build -d po
