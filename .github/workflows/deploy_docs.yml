@@ -4,6 +4,8 @@ name: Deploy documentation
 # https://github.com/s1rius/ezlog/blob/20dce11e6d324bb18f57dc7c7c6d4a8bf40064de/.github/workflows/publish_pages.yml
 
 on:
+  schedule:
+    - cron: "40 03 01 */2 *" # Runs at 03:40, on day 01 of the month, every 2 months
   push:
     branches:
       - main
