@@ -119,9 +119,8 @@ class DiscourseProcessor:
     class Patterns:
         post_sep_markdown = re.compile(r"-------------------------")
         imgs_urls = re.compile(
-            r"(?P<tag><img\ssrc=\"(?P<image_cdn_url>https://(?:[a-zA-Z0-9./_-]+))\"\salt=\"(?P<alt>(?:\w+\s?)+)\".*data-base62-sha1=\"(?P<sha1>[a-zA-Z0-9]+)\".*\">)"
+            r"<img\ssrc=\"(?P<image_cdn_url>https://(?:[a-zA-Z0-9./_-]+)).*data-base62-sha1=\"(?P<sha1>[a-zA-Z0-9]+)\".*\">"
         )
-        imgs_urls_biggest_img = r"(?<=srcset=\").*1\.5x,\s(https://.*)\s2x\""
         hashed_images_urls = re.compile(r"upload://[a-zA-Z0-9]{27}\.(?:jpe?g|png|svg)")
 
     @staticmethod
@@ -203,11 +202,7 @@ class DiscourseProcessor:
     def get_images_url_assocs_from_page(cls, page: HTMLPage) -> ImageUrlAssocs:
         result: list[tuple] = []
         for match in re.finditer(DiscourseProcessor.Patterns.imgs_urls, page):
-            (sha1, image_cdn_url, img_tag) = match.group("sha1", "image_cdn_url", "tag")
-            if img_big := re.search(
-                DiscourseProcessor.Patterns.imgs_urls_biggest_img, img_tag
-            ):
-                image_cdn_url = img_big.group(1)
+            (sha1, image_cdn_url) = match.group("sha1", "image_cdn_url")
             result.append((sha1, image_cdn_url))
         return result
 
