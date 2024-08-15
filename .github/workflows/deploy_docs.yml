@@ -67,7 +67,9 @@ jobs:
         id: cache-mdbook
         uses: actions/cache@v3
         with:
-          path: ~/.cargo/bin
+          path: |
+            ~/.cargo/bin
+            ~/.local/share/headless-chrome
           key: ${{ runner.os }}-build-${{ env.cache-mdbook-name }}-${{ hashFiles('.github/workflows/deploy_docs.yml', '.github/workflows/install-mdbook/action.yml') }}
 
       - name: Add mdbook to PATH
@@ -86,6 +88,11 @@ jobs:
           # This assumes your book is in the root of your repository.
           # Just add a `cd` here if you need to change to another directory.
           mdbook build -d $GITHUB_WORKSPACE/book
+          (
+            cd $GITHUB_WORKSPACE/book
+            shopt -s dotglob
+            mv {html,pdf}/* ./
+          )
 
       - name: Build all translations
         run: |
@@ -94,6 +101,11 @@ jobs:
             MDBOOK_BOOK__LANGUAGE=$po_lang \
             MDBOOK_OUTPUT__HTML__SITE_URL=${{ env.SITE_URL }}/$po_lang/ \
             mdbook build -d $GITHUB_WORKSPACE/book/$po_lang
+            (
+              cd $GITHUB_WORKSPACE/book/$po_lang
+              shopt -s dotglob
+              mv {html,pdf}/* ./
+            )
             echo "::endgroup::"
           done
 

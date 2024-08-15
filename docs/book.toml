@@ -1,5 +1,5 @@
 [book]
-authors = ["nicknamenamenick","Zeglius"]
+authors = ["nicknamenamenick", "Zeglius"]
 language = "en"
 multilingual = false
 src = "src"
@@ -12,7 +12,7 @@ create-missing = false
 [preprocessor.links]
 
 [output.html]
-git-repository-url="https://github.com/ublue-os/bazzite"
+git-repository-url = "https://github.com/ublue-os/bazzite"
 edit-url-template = "https://github.com/ublue-os/bazzite/edit/main/docs/{path}"
 
 [preprocessor.youtube-embed]
@@ -28,3 +28,5 @@ ignore = ["Introduction*"]
 
 [preprocessor.gettext]
 after = ["links"]
+
+[output.pdf]
