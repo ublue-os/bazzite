@@ -58,7 +58,7 @@ jobs:
       matrix:
         base_image_flavor: [main]
         base_name: [bazzite, bazzite-deck, bazzite-nvidia]
-        base_image_name: [kinoite, silverblue]
+        base_image_name: [kinoite, silverblue, budgie, cosmic]
         target_image_flavor: [main, asus]
         fedora_version: [40]
         include:
@@ -85,6 +85,12 @@ jobs:
           DESKTOP=""
           if [[ "${{ matrix.base_image_name }}" == "silverblue" ]]; then
               DESKTOP="-gnome"
+          elif [[ "${{ matrix.base_image_name }}" == "budgie" ]]; then
+              DESKTOP="-budgie"
+              echo "SOURCE_IMAGE=onyx-main" >> $GITHUB_ENV
+          elif [[ "${{ matrix.base_image_name }}" == "cosmic" ]]; then
+              DESKTOP="-cosmic"
+              echo "SOURCE_IMAGE=cosmic-silverblue" >> $GITHUB_ENV
           fi
 
           if [[ "${{ matrix.base_name }}" == "bazzite-deck" ]]; then

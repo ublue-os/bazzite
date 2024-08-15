@@ -7,5 +7,9 @@ if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
   SUDO_ASKPASS='/usr/bin/ksshaskpass'
 elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
   SUDO_ASKPASS='/usr/libexec/openssh/gnome-ssh-askpass'
+elif [[ ${BASE_IMAGE_NAME} == 'budgie' ]]; then
+  SUDO_ASKPASS='/usr/libexec/openssh/gnome-ssh-askpass'
+elif [[ ${BASE_IMAGE_NAME} == 'cosmic' ]]; then
+  SUDO_ASKPASS='/usr/libexec/openssh/gnome-ssh-askpass'
 fi
 export SUDO_ASKPASS
