@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=48
+HWS_VER=49
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -51,9 +51,8 @@ if /usr/libexec/hwsupport/valve-hardware; then
   fi
 
   echo "Turning off pstate for power consumption reasons"
-  if [[ $KARGS =~ "amd_pstate" ]]; then
+  if [[ $KARGS =~ "amd_pstate=passive" ]]; then
     NEEDED_KARGS+=("--delete-if-present=amd_pstate=passive")
-    NEEDED_KARGS+=("--delete-if-present=amd_pstate=active")
   fi
 
   if [[ ! $KARGS =~ "amd_pstate" ]]; then
