@@ -20,6 +20,21 @@ _is_translation LANG:
 add_translation LANG: build_messages_pot
     msginit -i po/messages.pot -l {{LANG}} -o po/{{LANG}}.po
 
+# Flatten a directory containing multiple mdbook outputs
+_flatten_outputs OUTPUTS_DIR="./book":
+    #!/usr/bin/bash
+    cd {{ OUTPUTS_DIR }}
+    to_flatten=( \
+        # Add here directories you want to flatten
+        $(ls -d "html" "pdf") \
+    ) || true
+    for dir in "${to_flatten[@]}"; do
+        (
+            shopt -s dotglob
+            mv $dir/* ./
+        )
+    done
+
 # Update a language with a fresh messages.pot
 update_translation LANG: (_is_translation LANG) build_messages_pot
     mdbook clean
@@ -28,10 +43,13 @@ update_translation LANG: (_is_translation LANG) build_messages_pot
 preview_translation LANG: (_is_translation LANG) build_messages_pot
     #!/usr/bin/bash
     set -meo pipefail
-    mdbook build -d book
-    MDBOOK_BOOK__LANGUAGE={{LANG}} mdbook build -d book/{{LANG}}
+    mdbook clean
+    mdbook build -d ./book && just _flatten_outputs
+    MDBOOK_BOOK__LANGUAGE={{LANG}} mdbook build -d book/{{LANG}} && \
+        just _flatten_outputs book/{{LANG}}
     cd book
     python -m http.server 3000 &
     sleep 2
-    xdg-open localhost:3000/{{LANG}}
+    printf '\n\n\n\n'
+    echo "Page ready at 'http://localhost:3000/{{LANG}}'"
     fg
