@@ -92,10 +92,12 @@ import json
 import os
 import re
 from string import Template
-from sys import stdout
+from sys import stdout, stderr
 
 import requests
 
+
+_is_debug: bool = False
 
 _BASE_URL = os.getenv("BASE_URL", "https://universal-blue.discourse.group").rstrip("/")
 
@@ -112,6 +114,13 @@ def todo(msg: str = "TODO"):
     """Equivalent to rust `todo!()`"""
     msg = str.removeprefix(msg, "TODO")
     raise NotImplementedError(msg)
+
+
+def debug(*msg) -> None:
+    """Print to stderr if `_is_debug` is `True`"""
+    global _is_debug
+    if _is_debug:
+        return print("[DEBUG]:", *(o.__str__() for o in msg), file=stderr)
 
 
 class DiscourseProcessor:
@@ -202,6 +211,7 @@ class DiscourseProcessor:
     def get_images_url_assocs_from_page(cls, page: HTMLPage) -> ImageUrlAssocs:
         result: list[tuple] = []
         for match in re.finditer(DiscourseProcessor.Patterns.imgs_urls, page):
+            debug(match.__str__())
             (sha1, image_cdn_url) = match.group("sha1", "image_cdn_url")
             result.append((sha1, image_cdn_url))
         return result
@@ -258,7 +268,18 @@ def main():
         nargs=1,  # Change this to `+` if you wish to process multiple urls
         help="discourse urls to be processed",
     )
+    argparser.add_argument(
+        "-d",
+        "--debug",
+        help="Show additional info in stderr",
+        action="store_true",
+        dest="debug",
+        default=False,
+    )
     args = argparser.parse_args()
+
+    global _is_debug
+    _is_debug = args.debug
 
     urls = args.url
 
