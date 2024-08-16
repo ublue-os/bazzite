@@ -20,13 +20,17 @@ command = "python ./preprocessors/youtube-embed.py"
 
 [preprocessor.replace-urls]
 command = "python ./preprocessors/replace-urls.py"
-after = ["youtube-embed"]
+after = ["youtube-embed", "links"]
 ignore = ["Introduction*"]
 
-[preprocessor.replace-urls.mappings]
-"https://universal-blue.discourse.group/docs?topic=561" = "/Introduction.html"
-
 [preprocessor.gettext]
-after = ["links"]
+after = ["links", "cmdrun"]
+
+[preprocessor.cmdrun]
+before = ["replace-urls"]
 
 [output.pdf]
+
+[preprocessor.replace-urls.mappings]
+# Here we add urls to be overriden
+"https://universal-blue.discourse.group/docs?topic=561" = "/Introduction"

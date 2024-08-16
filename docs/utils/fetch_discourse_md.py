@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 __doc__ = """ Utility to extract pages from Discourse posts in a Markdown format
 
@@ -93,6 +93,7 @@ import os
 import re
 from string import Template
 from sys import stdout, stderr
+import sys
 
 import requests
 
@@ -120,7 +121,9 @@ def debug(*msg) -> None:
     """Print to stderr if `_is_debug` is `True`"""
     global _is_debug
     if _is_debug:
-        return print("[DEBUG]:", *(o.__str__() for o in msg), file=stderr)
+        return print(
+            f"[DEBUG {os.getpid()}]:", *(o.__str__() for o in msg), file=stderr
+        )
 
 
 class DiscourseProcessor:

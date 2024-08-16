@@ -65,6 +65,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install python dependencies
+        run: |
+          pip install --user requests
+
       - name: Cache mdbook
         id: cache-mdbook
         uses: actions/cache@v3
@@ -82,6 +90,17 @@ jobs:
       - name: Install mdbook
         if: steps.cache-mdbook.outputs.cache-hit != 'true'
         uses: ./.github/workflows/install-mdbook
+
+      # Necessary in order to have fetch_discourse_md.py available for mdbook-cmd
+      - name: Add docs/utils to PATH
+        run: |
+          echo $PWD/utils:$PATH >> $GITHUB_PATH
+
+      - name: Test fetch_discourse_md.py
+        run: |
+          echo "::group::Try fetching a post from discourse"
+          fetch_discourse_md.py -d "https://universal-blue.discourse.group/docs?topic=31" 2>&1 >/dev/null
+          echo "::endgroup::"
 
       - name: Build book in English
         env:

@@ -26,3 +26,7 @@ runs:
     - name: Install mdbook-pdf
       run: cargo install mdbook-pdf --locked --version 0.1.10 --features fetch
       shell: bash
+
+    - name: Install mdbook-cmdrun
+      run: cargo install mdbook-cmdrun --locked --version 0.6.0
+      shell: bash
