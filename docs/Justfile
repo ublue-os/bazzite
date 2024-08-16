@@ -1,3 +1,5 @@
+export PATH := justfile_directory() + "/utils:" + env("PATH")
+
 _default:
     just --list
 
@@ -5,9 +7,13 @@ _default:
 install_dependencies:
     bash ./utils/install-deps.sh
 
-build_messages_pot:
+_build_messages_pot:
+    #!/usr/bin/bash
+    DEBUG=1 ./utils/pre-build.py -s src -o src.tmp
+    MDBOOK_BOOK__SRC="src.tmp" \
     MDBOOK_OUTPUT='{"xgettext": {}}' \
         mdbook build -d po
+    rm -r src.tmp
 
 # Check that a translation file exists, otherwise exit with 1
 _is_translation LANG:
@@ -17,7 +23,7 @@ _is_translation LANG:
         exit 1; }
 
 # Add a language to translate
-add_translation LANG: build_messages_pot
+add_translation LANG: _build_messages_pot
     msginit -i po/messages.pot -l {{LANG}} -o po/{{LANG}}.po
 
 # Flatten a directory containing multiple mdbook outputs
@@ -36,8 +42,7 @@ _flatten_outputs OUTPUTS_DIR="./book":
     done
 
 # Update a language with a fresh messages.pot
-update_translation LANG: (_is_translation LANG) build_messages_pot
-    mdbook clean
+update_translation LANG: (_is_translation LANG) _build_messages_pot
     msgmerge --update po/{{LANG}}.po po/messages.pot
 
 # Equivalent to 'mdbook build'
@@ -65,5 +70,5 @@ mdbook_serve LANG="":
     fg
 
 # Same as 'mdbook_serve' but for a specific language
-preview_translation LANG: (_is_translation LANG) build_messages_pot
+preview_translation LANG: (_is_translation LANG)
     just mdbook_serve {{LANG}}
