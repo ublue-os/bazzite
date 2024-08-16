@@ -16,6 +16,7 @@ on:
       - docs/**/*.jpeg
       - docs/**/*.po
       - .github/workflows/deploy_docs.yml
+      - .github/workflows/install-mdbook/action.yml
       - README*.md
       - docs/book.toml
   pull_request:
@@ -28,6 +29,7 @@ on:
       - docs/**/*.jpeg
       - docs/**/*.po
       - .github/workflows/deploy_docs.yml
+      - .github/workflows/install-mdbook/action.yml
       - README*.md
       - docs/book.toml
   workflow_dispatch:
@@ -70,7 +72,7 @@ jobs:
           path: |
             ~/.cargo/bin
             ~/.local/share/headless-chrome
-          key: ${{ runner.os }}-build-${{ env.cache-mdbook-name }}-${{ hashFiles('.github/workflows/deploy_docs.yml', '.github/workflows/install-mdbook/action.yml') }}
+          key: ${{ runner.os }}-build-${{ env.cache-mdbook-name }}-${{ hashFiles('.github/workflows/install-mdbook/action.yml') }}
 
       - name: Add mdbook to PATH
         if: steps.cache-mdbook.outputs.cache-hit == 'true'
