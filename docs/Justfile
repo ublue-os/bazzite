@@ -40,13 +40,19 @@ update_translation LANG: (_is_translation LANG) build_messages_pot
     mdbook clean
     msgmerge --update po/{{LANG}}.po po/messages.pot
 
+mdbook_build LANG="":
+    #!/usr/bin/bash
+    mdbook clean
+    mdbook build -d ./book && just _flatten_outputs
+    if [[ -n "{{LANG}}" ]]; then
+        MDBOOK_BOOK__LANGUAGE={{LANG}} mdbook build -d book/{{LANG}} && \
+            just _flatten_outputs book/{{LANG}}
+    fi
+
 preview_translation LANG: (_is_translation LANG) build_messages_pot
     #!/usr/bin/bash
     set -meo pipefail
-    mdbook clean
-    mdbook build -d ./book && just _flatten_outputs
-    MDBOOK_BOOK__LANGUAGE={{LANG}} mdbook build -d book/{{LANG}} && \
-        just _flatten_outputs book/{{LANG}}
+    just mdbook_build {{LANG}}
     cd book
     python -m http.server 3000 &
     sleep 2
