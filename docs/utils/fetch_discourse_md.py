@@ -87,6 +87,7 @@ How does this script work:
 from collections import namedtuple
 from argparse import ArgumentParser
 from datetime import datetime, UTC
+import fcntl
 import html
 import json
 import os
@@ -124,6 +125,12 @@ def debug(*msg) -> None:
         return print(
             f"[DEBUG {os.getpid()}]:", *(o.__str__() for o in msg), file=stderr
         )
+
+
+def acquire_lock(lock_file_path="/tmp/mylock.lock"):
+    lock_file = open(lock_file_path, "w")
+    fcntl.flock(lock_file, fcntl.LOCK_EX)
+    return lock_file
 
 
 class DiscourseProcessor:
@@ -190,7 +197,10 @@ class DiscourseProcessor:
         Args:
             batch (UrlBatch)
         """
-        json_content = requests.get(batch.json_url).json()
+        json_content = (res := requests.get(batch.json_url)).json()
+        debug(f"{res.url} res.status = {res.status_code}")
+        if res.status_code != 200:
+            raise Exception(res.reason)
 
         # json_content = json.loads(json_content)
         return json_content["post_stream"]["posts"][0]["cooked"]
@@ -313,4 +323,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    lock_file = acquire_lock()
+    try:
+        main()
+    finally:
+        lock_file.close()
