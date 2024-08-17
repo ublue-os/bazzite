@@ -1,17 +1,16 @@
 __doc__ = """Replace urls across the entire book"""
 
+from copy import copy
 import glob
 import json
 from pathlib import Path
 import sys
 
-from typing import List, cast
+from typing import cast
 from urllib.parse import urlparse
 
-from libs.utils import debug as _debug
+from libs.utils import Utils, debug as _debug
 from libs.types import MdBook
-
-PREPROCESSOR_NAME = "replace-urls"
 
 
 def debug(*obj):
@@ -36,7 +35,7 @@ def is_url(url) -> bool:
     return res
 
 
-def main():
+if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == "supports":
             sys.exit(0)
@@ -44,7 +43,7 @@ def main():
 
     book = MdBook(book)
 
-    config = context["config"]["preprocessor"][PREPROCESSOR_NAME]
+    config = Utils.get_config_from_ctx("replace-urls", context)
     if not config:
         print(json.dumps(book._data))
         exit(0)
@@ -52,22 +51,9 @@ def main():
         print(json.dumps(book._data))
         exit(0)
 
-    book_src = cast(str, context["config"]["book"]["src"])
-
-    # Prefix to append to replaced urls if output.html.site-url is set and the replacement starts with `/`
-    site_url_prefix = ""
-    _output_html_site_url = None
-    try:
-        _aux = context["config"]["output"]["html"]["site-url"]
-        _output_html_site_url = _aux
-    except Exception as _:
-        pass
-    site_url_prefix = _output_html_site_url.rstrip("/") if _output_html_site_url else ""
-    del _output_html_site_url
-
     ignore_paths_list_globs = cast(list[str], list(config.get("ignore") or []))
-    ignore_paths: List[str] = list()
-    root_dir = Path(context["root"], book_src)
+    ignore_paths: list[str] = []
+    root_dir = Path(context["root"], context["config"]["book"]["src"])
     for p in ignore_paths_list_globs:
         ignore_paths += glob.glob(p, root_dir=root_dir)
 
@@ -76,20 +62,11 @@ def main():
     config_mappings: dict = config["mappings"]
 
     # Get the url mappings
-    # If replacement starts with `/`, prepend
     url_mappings: list[tuple[str, str]] = [
         (k, v)
         for k, v in config_mappings.items()
         if k not in _IGNORE_STRINGS and is_url(k)
     ]
-    url_mappings = list(
-        map(
-            lambda m: (
-                (m[0], site_url_prefix + m[1]) if cast(str, m[1]).startswith("/") else m
-            ),
-            url_mappings,
-        )
-    )
 
     # Replace the urls
     # book_s = json.dumps(book)
@@ -107,10 +84,7 @@ def main():
             continue
 
         for old_url, new_url in url_mappings:
+            old = copy(section.chapter.content)
             section.chapter.content = section.chapter.content.replace(old_url, new_url)
 
     print(json.dumps(book._data))
-
-
-if __name__ == "__main__":
-    main()
