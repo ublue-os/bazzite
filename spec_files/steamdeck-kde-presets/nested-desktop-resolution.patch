@@ -8,14 +8,16 @@ index b833773..f7ae36f 100755
  
  set -eu
  
-@@ -28,8 +28,9 @@ ln -s $XDG_RUNTIME_DIR/pipewire* $NEW_XDG_RUNTIME_DIR/.
+@@ -28,8 +28,11 @@ ln -s $XDG_RUNTIME_DIR/pipewire* $NEW_XDG_RUNTIME_DIR/.
  ## whilst being launched by plasma-session
  mkdir $NEW_XDG_RUNTIME_DIR/bin
  cat <<EOF > $NEW_XDG_RUNTIME_DIR/bin/kwin_wayland_wrapper
 -#!/bin/sh
 -/usr/bin/kwin_wayland_wrapper --width 1280 --height 800 --no-lockscreen \$@
 +#!/usr/bin/bash
-+source /etc/default/steamos-nested-desktop
++if [ -z "${STEAMOS_NESTED_DESKTOP_WIDTH:-}" ] && [ -z "${STEAMOS_NESTED_DESKTOP_HEIGHT:-}" ]; then
++    source /etc/default/steamos-nested-desktop
++fi
 +/usr/bin/kwin_wayland_wrapper --width ${STEAMOS_NESTED_DESKTOP_WIDTH:-1280} --height ${STEAMOS_NESTED_DESKTOP_HEIGHT:-800} --no-lockscreen \$@
  EOF
  chmod a+x $NEW_XDG_RUNTIME_DIR/bin/kwin_wayland_wrapper
