@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 
 from typing import List, cast
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 from libs.utils import debug as _debug
 from libs.types import MdBook
@@ -55,15 +55,10 @@ def main():
     book_src = cast(str, context["config"]["book"]["src"])
 
     # Prefix to append to replaced urls if output.html.site-url is set and the replacement starts with `/`
-    site_url_prefix = ""
-    _output_html_site_url = None
     try:
-        _aux = context["config"]["output"]["html"]["site-url"]
-        _output_html_site_url = _aux
+        site_url_prefix = cast(str, context["config"]["output"]["html"]["site-url"])
     except Exception as _:
-        pass
-    site_url_prefix = _output_html_site_url.rstrip("/") if _output_html_site_url else ""
-    del _output_html_site_url
+        site_url_prefix = ""
 
     ignore_paths_list_globs = cast(list[str], list(config.get("ignore") or []))
     ignore_paths: List[str] = list()
@@ -82,14 +77,6 @@ def main():
         for k, v in config_mappings.items()
         if k not in _IGNORE_STRINGS and is_url(k)
     ]
-    url_mappings = list(
-        map(
-            lambda m: (
-                (m[0], site_url_prefix + m[1]) if cast(str, m[1]).startswith("/") else m
-            ),
-            url_mappings,
-        )
-    )
 
     # Replace the urls
     # book_s = json.dumps(book)
@@ -107,7 +94,13 @@ def main():
             continue
 
         for old_url, new_url in url_mappings:
-            section.chapter.content = section.chapter.content.replace(old_url, new_url)
+            if new_url.startswith("/"):
+                new_url_aux = urljoin(site_url_prefix, new_url.lstrip("/"))
+            else:
+                new_url_aux = new_url
+            section.chapter.content = section.chapter.content.replace(
+                old_url, new_url_aux
+            )
 
     print(json.dumps(book._data))
 
