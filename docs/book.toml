@@ -14,6 +14,11 @@ create-missing = false
 [output.html]
 git-repository-url = "https://github.com/ublue-os/bazzite"
 edit-url-template = "https://github.com/ublue-os/bazzite/edit/main/docs/{path}"
+default-theme = "ayu"
+preferred-dark-theme = "ayu"
+
+[output.html.fold]
+enable = true
 
 [preprocessor.youtube-embed]
 command = "python ./preprocessors/youtube-embed.py"
