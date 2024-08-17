@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=47
+HWS_VER=49
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -50,8 +50,13 @@ if /usr/libexec/hwsupport/valve-hardware; then
     fi
   fi
 
+  echo "Turning off pstate for power consumption reasons"
+  if [[ $KARGS =~ "amd_pstate=passive" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=amd_pstate=passive")
+  fi
+
   if [[ ! $KARGS =~ "amd_pstate" ]]; then
-    NEEDED_KARGS+=("--append-if-missing=amd_pstate=passive")
+    NEEDED_KARGS+=("--append-if-missing=amd_pstate=disable")
   fi
 fi
 
@@ -169,7 +174,8 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
       fi
     fi
 
-    systemctl enable --now scx.service
+    # Ensure SCX service is disabled for now.
+    systemctl disable --now scx.service
 
     systemctl enable --now jupiter-fan-control.service
     systemctl enable --now vpower.service
