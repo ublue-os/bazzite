@@ -1,7 +1,9 @@
 #!/usr/bin/bash
 
-source /etc/default/waydroid-launcher
-source /etc/default/steamos-nested-desktop
+# Import defaults if WIDTH/HEIGHT is not defined by an external script
+if [ -z "${WAYDROID_WIDTH:-}" ] || [ -z "${WAYDROID_HEIGHT:-}" ]; then
+    source /etc/default/waydroid-launcher
+fi
 
 # Ensure needed props are present
 if ! grep -q "persist.waydroid.udev=true" "/var/lib/waydroid/waydroid_base.prop"; then

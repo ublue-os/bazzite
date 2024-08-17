@@ -2,7 +2,10 @@
 
 set -eux
 
-source /etc/default/waydroid-launcher
+# Import defaults if WIDTH/HEIGHT is not defined by an external script
+if [ -z "${WAYDROID_WIDTH:-}" ] || [ -z "${WAYDROID_HEIGHT:-}" ]; then
+    source /etc/default/waydroid-launcher
+fi
 
 # for backwards compatibility, default to show-full-ui
 if (($# == 0)); then
