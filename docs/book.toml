@@ -16,6 +16,7 @@ git-repository-url = "https://github.com/ublue-os/bazzite"
 edit-url-template = "https://github.com/ublue-os/bazzite/edit/main/docs/{path}"
 default-theme = "ayu"
 preferred-dark-theme = "ayu"
+additional-css = ["custom.css"]
 
 [output.html.fold]
 enable = true
