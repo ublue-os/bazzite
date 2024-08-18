@@ -105,6 +105,7 @@ jobs:
       - name: Build book in English
         env:
           MDBOOK_output__html__site_url: ${{ env.SITE_URL }}
+          DEBUG: "1"
         run: |
           # This assumes your book is in the root of your repository.
           # Just add a `cd` here if you need to change to another directory.
@@ -116,6 +117,8 @@ jobs:
           )
 
       - name: Build all translations
+        env:
+          DEBUG: "1"
         run: |
           for po_lang in ${{ env.EXTRA_LANGUAGES }}; do
             echo "::group::Building $po_lang translation"

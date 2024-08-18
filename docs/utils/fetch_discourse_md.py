@@ -84,8 +84,8 @@ How does this script work:
 """
 
 
-from collections import namedtuple
 from argparse import ArgumentParser
+from copy import copy
 from datetime import datetime, UTC
 import fcntl
 import html
@@ -94,7 +94,8 @@ import os
 import re
 from string import Template
 from sys import stdout, stderr
-import sys
+from time import sleep
+from typing import NamedTuple
 
 import requests
 
@@ -104,7 +105,10 @@ _is_debug: bool = False
 _BASE_URL = os.getenv("BASE_URL", "https://universal-blue.discourse.group").rstrip("/")
 
 
-UrlBatch = namedtuple("UrlBatch", ["raw_url", "json_url", "source_url"])
+class UrlBatch(NamedTuple):
+    raw_url: str
+    json_url: str
+    source_url: str
 
 
 type HTMLPage = str
@@ -123,7 +127,9 @@ def debug(*msg) -> None:
     global _is_debug
     if _is_debug:
         return print(
-            f"[DEBUG {os.getpid()}]:", *(o.__str__() for o in msg), file=stderr
+            f"[DEBUG {__file__}, PID={os.getpid()}]:",
+            *(o.__str__() for o in msg),
+            file=stderr,
         )
 
 
@@ -197,13 +203,30 @@ class DiscourseProcessor:
         Args:
             batch (UrlBatch)
         """
-        json_content = (res := requests.get(batch.json_url)).json()
+        json_content = (res := cls.fetch(batch.json_url)).json()
         debug(f"{res.url} res.status = {res.status_code}")
         if res.status_code != 200:
             raise Exception(res.reason)
 
         # json_content = json.loads(json_content)
         return json_content["post_stream"]["posts"][0]["cooked"]
+
+    @classmethod
+    def fetch(cls, url: str) -> requests.Response:
+        tries = 2
+        retry_pattern = r"Slow down, too many requests from this IP address. Please retry again in (\d+) seconds?\. Error code: ip_10_secs_limit\.$"
+
+        while tries > 0:
+            res = requests.get(url)
+            if re.match(retry_pattern, res.text):
+                debug("Timeout was hit: ", res.text)
+                tries = tries - 1
+                sleep(12)  # Usually is 10 seconds, +2 to be safe
+                continue
+            else:
+                break
+
+        return res
 
     @classmethod
     def get_markdown_from_raw(cls, batch: UrlBatch) -> Markdown:
@@ -292,7 +315,7 @@ def main():
     args = argparser.parse_args()
 
     global _is_debug
-    _is_debug = args.debug
+    _is_debug = os.getenv("DEBUG") == "1" or args.debug
 
     urls = args.url
 
