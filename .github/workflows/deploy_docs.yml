@@ -123,7 +123,7 @@ jobs:
           for po_lang in ${{ env.EXTRA_LANGUAGES }}; do
             echo "::group::Building $po_lang translation"
             MDBOOK_BOOK__LANGUAGE=$po_lang \
-            MDBOOK_OUTPUT__HTML__SITE_URL=${{ env.SITE_URL }}/$po_lang/ \
+            MDBOOK_OUTPUT__HTML__SITE_URL=${{ env.SITE_URL }}$po_lang/ \
             mdbook build -d $GITHUB_WORKSPACE/book/$po_lang
             (
               cd $GITHUB_WORKSPACE/book/$po_lang
