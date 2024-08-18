@@ -14,8 +14,8 @@ create-missing = false
 [output.html]
 git-repository-url = "https://github.com/ublue-os/bazzite"
 edit-url-template = "https://github.com/ublue-os/bazzite/edit/main/docs/{path}"
-default-theme = "ayu"
-preferred-dark-theme = "ayu"
+default-theme = "navy"
+preferred-dark-theme = "navy"
 additional-css = ["custom.css"]
 
 [output.html.fold]
