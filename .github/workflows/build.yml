@@ -241,7 +241,7 @@ jobs:
           if [ "${{ github.event.inputs.fresh-rechunk }}" == "true" ]; then
             IMAGEREF=""
           else
-            IMAGEREF="${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}"
+            IMAGEREF="${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:stable"
           fi
 
           echo "ref=${IMAGEREF}" >> $GITHUB_OUTPUT
