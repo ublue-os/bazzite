@@ -17,7 +17,11 @@ fi
 
 # Install mdbook and other
 echod "Installing mdbook"
-cargo install mdbook mdbook-i18n-helpers
+cargo install --git https://github.com/HollowMan6/mdBook --rev b5ca7bc39ac2e8073dc2fb9d984c0e46c498c167 mdbook --locked
+cargo install mdbook-i18n-helpers --locked --version 0.3.5
+cargo install i18n-report --locked --version 0.2.0
+cargo install mdbook-pdf --locked --version 0.1.10 --features fetch
+cargo install mdbook-cmdrun --locked --version 0.6.0
 
 # Check if we are running Linux or MacOS, and install Poedit
 os=$(uname -s)
