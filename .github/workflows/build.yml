@@ -241,7 +241,7 @@ jobs:
         with:
           rechunk: 'ghcr.io/hhd-dev/rechunk:v0.8.3'
           ref: 'raw-img'
-          prev-ref: ${{ github.event.inputs.fresh-rechunk == 'true' && '' || 'ghcr.io/ublue-os/bazzite:unstable' }}
+          prev-ref: ${{ github.event.inputs.fresh-rechunk == 'true' && '' || "${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:stable" }}
           version: '${{ steps.generate-version.outputs.tag }}'
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
