@@ -56,7 +56,4 @@
 
 - [Auto-Mounting Secondary Drives](Advanced/Auto-Mounting_Secondary_Drives.md)
 - [Reset User Password](Advanced/Reset_User_Password.md)
-- [Using Looking Glass](Advanced/Using_Looking_Glass.md)
-- [Plymouth Theming to Show Details](Advanced/Plymouth_Theming_to_Show_Details.md)
-- [GRUB Theming](Advanced/GRUB_Theming.md)
-- [Modifying initramfs args and dracut](Advanced/Modifying_initramfs_args_and_dracut.md)
+- [Contributing to Bazzite](Advanced/Contributing_to_bazzite.md)
