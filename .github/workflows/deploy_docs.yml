@@ -5,7 +5,7 @@ name: Deploy documentation
 
 on:
   schedule:
-    - cron: "40 03 01 */2 *" # Runs at 03:40, on day 01 of the month, every 2 months
+    - cron: "40 03 */2 * *" # Runs at 03:40, every 2 days
   push:
     branches:
       - main
