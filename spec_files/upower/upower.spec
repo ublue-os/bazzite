@@ -1,6 +1,6 @@
 Summary:        Power Management Service
 Name:           upower
-Version:        1.90.2
+Version:        1.90.4
 Release:        %autorelease.bazzite.{{{ git_dir_version }}}
 License:        GPL-2.0-or-later
 URL:            http://upower.freedesktop.org/
