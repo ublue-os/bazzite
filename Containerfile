@@ -159,6 +159,9 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --from repo=updates \
         libv4l \
         || true && \
+    rpm-ostree install \
+        https://kojipkgs.fedoraproject.org//packages/SDL2/2.30.3/1.fc40/i686/SDL2-2.30.3-1.fc40.i686.rpm \
+        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true && \
