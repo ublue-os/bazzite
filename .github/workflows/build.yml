@@ -234,6 +234,22 @@ jobs:
           sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
           sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
       
+      # Generate the previous image reference used by the Rechunker
+      - name: Generate previous reference
+        id: generate-prev-ref
+        shell: bash
+        run: |
+          if [ "${{ github.event.inputs.fresh-rechunk }}" == "true" ]; then
+            IMAGEREF=""
+          else
+            IMAGEREF="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:stable"
+          fi
+
+          echo "ref=${IMAGEREF}" >> $GITHUB_OUTPUT
+
+          echo "Generated the following:"
+          cat $GITHUB_OUTPUT
+
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
         id: rechunk
@@ -241,7 +257,7 @@ jobs:
         with:
           rechunk: 'ghcr.io/hhd-dev/rechunk:v0.8.3'
           ref: 'raw-img'
-          prev-ref: ${{ github.event.inputs.fresh-rechunk == 'true' && '' || "${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:stable" }}
+          prev-ref: '${{ steps.generate-prev-ref.outputs.ref }}'
           version: '${{ steps.generate-version.outputs.tag }}'
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
