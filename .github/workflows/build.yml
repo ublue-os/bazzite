@@ -64,10 +64,10 @@ jobs:
         fedora_version: [40]
         include:
           - fedora_version: 40
-            bazzite_version: "v3.6"
             is_latest_version: true
             is_stable_version: true
-            kernel_flavor: fsync # must match a kernel_flavor from akmods repo
+            kernel_flavor: fsync-ba # must match a kernel_flavor from akmods repo
+            kernel_version: 6.9.12-205.fsync.fc40.x86_64 # must match a cached version of the above flavor
     steps:
       - name: Define env.IMAGE_FLAVOR
         run: |
@@ -116,14 +116,14 @@ jobs:
       - name: Verify akmods image
         uses: EyeCantCU/cosign-action/verify@v0.3.0
         with:
-          containers: akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+          containers: akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
           pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
           registry: ${{ env.IMAGE_REGISTRY }}
 
       - name: Verify akmods-nvidia image
         uses: EyeCantCU/cosign-action/verify@v0.3.0
         with:
-          containers: akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+          containers: akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
           pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
           registry: ${{ env.IMAGE_REGISTRY }}
 
@@ -146,8 +146,8 @@ jobs:
             # pull the base images used for FROM in Containerfile so
             # we can retry on that unfortunately common failure case
             sudo podman pull ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
-            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
-            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
+            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
 
             # Add rechunk as well to remove this source of failure
             sudo podman pull ghcr.io/hhd-dev/rechunk:v0.8.3
@@ -167,14 +167,6 @@ jobs:
               exit 1
             fi
             echo "SOURCE_IMAGE_VERSION=$ver" >> $GITHUB_ENV
-
-            skopeo inspect docker://${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor }}-${{ matrix.fedora_version }} > akmods.json
-            linux=$(jq -r '.Labels["ostree.linux"]' akmods.json)
-            if [ -z "$linux" ] || [ "null" = "$linux" ]; then
-              echo "inspected image linux version must not be empty or null"
-              exit 1
-            fi
-            echo "KERNEL_VERSION=$linux" >> $GITHUB_ENV
       
       # Generate a primary version key that appears
       # in KDE, rpm-ostree status, and github.
@@ -186,7 +178,6 @@ jobs:
           # shown on the bootloader, and used for the image tag.
           UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
           FEDORA_VERSION="${{ matrix.fedora_version }}"
-          BAZZITE_VERSION="${{ matrix.bazzite_version }}"
           SHA_SHORT="${GITHUB_SHA::7}"
 
           if [ -n "${{ github.event.pull_request.number }}" ]; then
@@ -196,11 +187,11 @@ jobs:
             VERSION="unstable-${SHA_SHORT}"
             PRETTY_VERSION="Unstable (#${SHA_SHORT}, F${UPSTREAM_TAG})"
           elif [[ ${{ github.ref_name }} == "testing" ]]; then
-            VERSION="testing-${BAZZITE_VERSION}-${UPSTREAM_TAG}"
-            PRETTY_VERSION="Testing (${BAZZITE_VERSION}, F${UPSTREAM_TAG})"
+            VERSION="testing-${UPSTREAM_TAG}"
+            PRETTY_VERSION="Testing (F${UPSTREAM_TAG})"
           else
-            VERSION="${BAZZITE_VERSION}-${UPSTREAM_TAG}"
-            PRETTY_VERSION="Stable (${BAZZITE_VERSION}, F${UPSTREAM_TAG})"
+            VERSION="${UPSTREAM_TAG}"
+            PRETTY_VERSION="Stable (F${UPSTREAM_TAG})"
           fi
           echo "tag=${VERSION}" >> $GITHUB_OUTPUT
           echo "pretty=${PRETTY_VERSION}" >> $GITHUB_OUTPUT
@@ -221,6 +212,7 @@ jobs:
             --build-arg BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }} \
             --build-arg FEDORA_VERSION=${{ matrix.fedora_version }} \
             --build-arg KERNEL_FLAVOR=${{ matrix.kernel_flavor }} \
+            --build-arg KERNEL_VERSION=${{ matrix.kernel_version }} \
             --build-arg IMAGE_BRANCH=${{ github.ref_name }} \
             --build-arg SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }} \
             --build-arg VERSION_TAG=${{ steps.generate-version.outputs.tag }} \
@@ -231,28 +223,45 @@ jobs:
         # We are tight on space, need at least 2x for OSTree
         run: |
           sudo podman image rm ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
-          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
-          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
+          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
       
+      # Generate the previous image reference used by the Rechunker
+      - name: Generate previous reference
+        id: generate-prev-ref
+        shell: bash
+        run: |
+          if [ "${{ github.event.inputs.fresh-rechunk }}" == "true" ]; then
+            IMAGEREF=""
+          else
+            IMAGEREF="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:stable"
+          fi
+
+          echo "ref=${IMAGEREF}" >> $GITHUB_OUTPUT
+
+          echo "Generated the following:"
+          cat $GITHUB_OUTPUT
+
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
         id: rechunk
-        uses: hhd-dev/rechunk@v0.8.5
+        uses: hhd-dev/rechunk@v0.8.6
         with:
           rechunk: 'ghcr.io/hhd-dev/rechunk:v0.8.3'
           ref: 'raw-img'
-          prev-ref: ${{ github.event.inputs.fresh-rechunk == 'true' && '' || "${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:stable" }}
+          prev-ref: '${{ steps.generate-prev-ref.outputs.ref }}'
           version: '${{ steps.generate-version.outputs.tag }}'
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
-            io.artifacthub.package.readme-url=https://bazzite.gg/
+            io.artifacthub.package.readme-url=https://docs.bazzite.gg
             org.opencontainers.image.created=<timestamp>
-            org.opencontainers.image.description=Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
+            org.opencontainers.image.description=Bazzite is a custom image built upon Fedora Atomic Desktops that brings the best of Linux gaming to all of your devices - including your favorite handheld.
             org.opencontainers.image.licenses=Apache-2.0
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.source=https://github.com/ublue-os/bazzite
-            org.opencontainers.image.title=bazzite
-            org.opencontainers.image.url=https://github.com/ublue-os/bazzite
+            org.opencontainers.image.title=Bazzite
+            org.opencontainers.image.vendor=Universal Blue
+            org.opencontainers.image.url=https://bazzite.gg
             org.universal-blue.pkg.kernel=<relver:kernel>
             org.universal-blue.pkg.gamescope=<relver:gamescope>
       
@@ -266,7 +275,6 @@ jobs:
           VERSION_TAG="${{ steps.rechunk.outputs.version }}"
           UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
           FEDORA_VERSION="${{ matrix.fedora_version }}"
-          BAZZITE_VERSION="${{ matrix.bazzite_version }}"
           SHA_SHORT="${GITHUB_SHA::7}"
           BUILD_TAGS=( "${VERSION_TAG}" )
 
@@ -302,13 +310,11 @@ jobs:
             BUILD_TAGS+=("testing-${UPSTREAM_TAG}")
 
             if [ -n "$LATEST" ]; then
-                BUILD_TAGS+=("testing-${BAZZITE_VERSION}")
                 BUILD_TAGS+=("testing")
             fi
           else
             BUILD_TAGS+=("${FEDORA_VERSION}")
             BUILD_TAGS+=("${UPSTREAM_TAG}")
-            BUILD_TAGS+=("${BAZZITE_VERSION}")
             BUILD_TAGS+=("stable-${UPSTREAM_TAG}")
 
             # Per fedora version
@@ -346,7 +352,7 @@ jobs:
             sudo apt install sbsigntool curl openssl
           fi
           TMP=$(podman create rechunked-img bash)
-          podman cp $TMP:/usr/lib/modules/${{ env.KERNEL_VERSION }}/vmlinuz .
+          podman cp $TMP:/usr/lib/modules/${{ matrix.kernel_version }}/vmlinuz .
           podman rm $TMP
           sbverify --list vmlinuz
           curl --retry 3 -Lo kernel-sign.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key.der

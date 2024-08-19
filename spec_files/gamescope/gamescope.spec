@@ -3,11 +3,11 @@
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
 %global toolchain clang
-%global gamescope_tag 3.14.29
+%global gamescope_tag 3.15.1
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        2.bazzite
+Release:        1.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -23,8 +23,6 @@ Patch1:         chimeraos.patch
 # https://hhd.dev/
 Patch2:         disable-steam-touch-click-atom.patch
 Patch3:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
-# https://github.com/ValveSoftware/gamescope/issues/1369
-Patch4:         revert-299bc34.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
