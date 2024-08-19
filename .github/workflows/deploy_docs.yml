@@ -34,11 +34,6 @@ on:
       - docs/book.toml
   workflow_dispatch:
 
-permissions:
-  contents: read # To push a branch
-  pages: write # To push to a GitHub Pages site
-  id-token: write # To update the deployment status
-
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -53,6 +48,11 @@ env:
 
 jobs:
   deploy:
+    permissions:
+      contents: read # To push a branch
+      pages: write # To push to a GitHub Pages site
+      id-token: write # To update the deployment status
+
     runs-on: ubuntu-latest
     # environment:
     #   name: github-pages
@@ -67,7 +67,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install python dependencies
         run: |
@@ -150,11 +150,14 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          token: ${{ github.token }}
 
   clean_cache:
     needs: deploy
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       actions: write
     steps:
       - uses: actions/checkout@v4
