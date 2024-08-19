@@ -159,9 +159,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --from repo=updates \
         libv4l \
         || true && \
-    rpm-ostree install \
-        https://kojipkgs.fedoraproject.org//packages/SDL2/2.30.3/1.fc40/i686/SDL2-2.30.3-1.fc40.i686.rpm \
-        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true && \
@@ -441,7 +438,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         libatomic.i686 \
         pipewire-alsa.i686 \
         gobject-introspection \
-        clinfo && \
+        clinfo \
+        https://kojipkgs.fedoraproject.org//packages/SDL2/2.30.3/1.fc40/i686/SDL2-2.30.3-1.fc40.i686.rpm && \
     sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/fedora-updates.repo && \
     rpm-ostree install \
         mesa-vulkan-drivers.i686 \
