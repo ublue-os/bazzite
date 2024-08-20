@@ -1,0 +1,34 @@
+site_name: Bazzite Documentation
+site_author: nicknamenamenick
+site_url: !ENV MKDOCS_SITE_URL
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+  favicon: img/favicon.svg
+  logo: img/logo_BW.svg
+
+docs_dir: src
+site_dir: book
+
+plugins:
+  - search
+  - offline:
+      enabled: !ENV [MKDOCS_OFFLINE, false]
