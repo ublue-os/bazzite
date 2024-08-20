@@ -28,6 +28,9 @@ theme:
 docs_dir: src
 site_dir: book
 
+hooks:
+  - hooks/cmdrun.py
+
 plugins:
   - search
   - offline:
