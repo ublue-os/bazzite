@@ -40,11 +40,9 @@ concurrency:
 
 env:
   runner: ubuntu-latest
-  cache-mdbook-name: cache-mdbook-bins
+  cache-mkdocs-key: cache-mkdocs
   EXTRA_LANGUAGES:
-  SITE_URL: /bazzite/
-  MDBOOK_output__html__git_repository_url: "${{ github.server_url }}/${{ github.repository }}"
-  MDBOOK_output__html__edit_url_template: "${{ github.server_url }}/${{ github.repository }}/edit/${{ github.ref_name }}/docs/{path}"
+  SITE_SUFFIX: /bazzite/
 
 jobs:
   deploy:
@@ -65,31 +63,34 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Prepare env vars
+        run: |
+          _OWNER_NAME=${{ github.repository_owner }}
+          _OWNER_NAME=${_OWNER_NAME,,}
+          _SITE_PREFIX=${{ env.SITE_SUFFIX }}
+          _SITE_PREFIX=${_SITE_PREFIX#/}
+          echo "SITE_URL=https://${_OWNER_NAME}.github.io/$_SITE_PREFIX" >> $GITHUB_ENV
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Install python dependencies
-        run: |
-          pip install --user requests
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
 
-      - name: Cache mdbook
-        id: cache-mdbook
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+
+      - name: Poetry cache
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.cargo/bin
-            ~/.local/share/headless-chrome
-          key: ${{ runner.os }}-build-${{ env.cache-mdbook-name }}-${{ hashFiles('.github/workflows/install-mdbook/action.yml') }}
+          path: ${{ github.workspace }}/docs/.venv
+          key: ${{ runner.os }}-build-${{ env.cache-mkdocs-key }}-${{ hashFiles('./docs/poetry.lock') }}
 
-      - name: Add mdbook to PATH
-        if: steps.cache-mdbook.outputs.cache-hit == 'true'
-        run: |
-          echo ~/.cargo/bin:$PATH >> $GITHUB_PATH
-
-      - name: Install mdbook
-        if: steps.cache-mdbook.outputs.cache-hit != 'true'
-        uses: ./.github/workflows/install-mdbook
+      - name: Poetry install deps
+        run: poetry install
 
       # Necessary in order to have fetch_discourse_md.py available for mdbook-cmd
       - name: Add docs/utils to PATH
@@ -98,46 +99,17 @@ jobs:
 
       - name: Test fetch_discourse_md.py
         run: |
+          source .venv/bin/activate
           echo "::group::Try fetching a post from discourse"
           fetch_discourse_md.py -d "https://universal-blue.discourse.group/docs?topic=31" 2>&1 >/dev/null
           echo "::endgroup::"
 
       - name: Build book in English
         env:
-          MDBOOK_output__html__site_url: ${{ env.SITE_URL }}
-          DEBUG: "1"
+          MKDOCS_SITE_URL: ${{ env.SITE_URL }}
         run: |
-          # This assumes your book is in the root of your repository.
-          # Just add a `cd` here if you need to change to another directory.
-          mdbook build -d $GITHUB_WORKSPACE/book
-          (
-            cd $GITHUB_WORKSPACE/book
-            shopt -s dotglob
-            mv {html,pdf}/* ./
-          )
-
-      - name: Build all translations
-        env:
-          DEBUG: "1"
-        run: |
-          for po_lang in ${{ env.EXTRA_LANGUAGES }}; do
-            echo "::group::Building $po_lang translation"
-            MDBOOK_BOOK__LANGUAGE=$po_lang \
-            MDBOOK_OUTPUT__HTML__SITE_URL=${{ env.SITE_URL }}$po_lang/ \
-            mdbook build -d $GITHUB_WORKSPACE/book/$po_lang
-            (
-              cd $GITHUB_WORKSPACE/book/$po_lang
-              shopt -s dotglob
-              mv {html,pdf}/* ./
-            )
-            echo "::endgroup::"
-          done
-
-      - name: Generate translation progress report
-        if: env.EXTRA_LANGUAGES != ''
-        continue-on-error: true
-        run: |
-          i18n-report report $GITHUB_WORKSPACE/book/i18n_report.html po/*.po
+          source .venv/bin/activate
+          mkdocs build --verbose -d $GITHUB_WORKSPACE/book
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -171,7 +143,7 @@ jobs:
           set -x
           old_caches=($(gh cache list \
             --repo ${{ github.repository }} \
-            --key "${{ runner.os }}-build-${{ env.cache-mdbook-name }}-"  \
+            --key "${{ runner.os }}-build-${{ env.cache-mkdocs-key }}-"  \
             --sort created_at -O asc --json id | jq '.[:-1][].id'))
           for id in "${old_caches[@]}"; do
             gh cache delete $id
