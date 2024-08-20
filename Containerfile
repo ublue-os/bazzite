@@ -536,7 +536,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         cp /usr/share/applications/org.gnome.Ptyxis.desktop /usr/share/kglobalaccel/org.gnome.Ptyxis.desktop && \
         sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.kde.konsole.desktop && \
         rm -f /usr/share/kglobalaccel/org.kde.konsole.desktop && \
-        systemctl enable kde-sysmonitor-workaround.service \
+        setcap 'cap_net_raw+ep' /usr/libexec/ksysguard/ksgrd_network_helper \
     ; else \
         rpm-ostree override replace \
         --experimental \
@@ -689,7 +689,6 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl enable bazzite-flatpak-manager.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl enable ublue-update.timer && \
-    systemctl enable gamescope-workaround.service && \
     systemctl enable incus-workaround.service && \
     systemctl enable bazzite-hardware-setup.service && \
     systemctl enable tailscaled.service && \
