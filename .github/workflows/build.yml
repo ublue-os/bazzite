@@ -63,7 +63,6 @@ jobs:
         fedora_version: [40]
         include:
           - fedora_version: 40
-            bazzite_version: "v3.6"
             is_latest_version: true
             is_stable_version: true
             kernel_flavor: fsync # must match a kernel_flavor from akmods repo
@@ -185,7 +184,6 @@ jobs:
           # shown on the bootloader, and used for the image tag.
           UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
           FEDORA_VERSION="${{ matrix.fedora_version }}"
-          BAZZITE_VERSION="${{ matrix.bazzite_version }}"
           SHA_SHORT="${GITHUB_SHA::7}"
 
           if [ -n "${{ github.event.pull_request.number }}" ]; then
@@ -195,11 +193,11 @@ jobs:
             VERSION="unstable-${SHA_SHORT}"
             PRETTY_VERSION="Unstable (#${SHA_SHORT}, F${UPSTREAM_TAG})"
           elif [[ ${{ github.ref_name }} == "testing" ]]; then
-            VERSION="testing-${BAZZITE_VERSION}-${UPSTREAM_TAG}"
-            PRETTY_VERSION="Testing (${BAZZITE_VERSION}, F${UPSTREAM_TAG})"
+            VERSION="testing-${UPSTREAM_TAG}"
+            PRETTY_VERSION="Testing (F${UPSTREAM_TAG})"
           else
-            VERSION="${BAZZITE_VERSION}-${UPSTREAM_TAG}"
-            PRETTY_VERSION="Stable (${BAZZITE_VERSION}, F${UPSTREAM_TAG})"
+            VERSION="${UPSTREAM_TAG}"
+            PRETTY_VERSION="Stable (F${UPSTREAM_TAG})"
           fi
           echo "tag=${VERSION}" >> $GITHUB_OUTPUT
           echo "pretty=${PRETTY_VERSION}" >> $GITHUB_OUTPUT
@@ -281,7 +279,6 @@ jobs:
           VERSION_TAG="${{ steps.rechunk.outputs.version }}"
           UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
           FEDORA_VERSION="${{ matrix.fedora_version }}"
-          BAZZITE_VERSION="${{ matrix.bazzite_version }}"
           SHA_SHORT="${GITHUB_SHA::7}"
           BUILD_TAGS=( "${VERSION_TAG}" )
 
@@ -317,13 +314,11 @@ jobs:
             BUILD_TAGS+=("testing-${UPSTREAM_TAG}")
 
             if [ -n "$LATEST" ]; then
-                BUILD_TAGS+=("testing-${BAZZITE_VERSION}")
                 BUILD_TAGS+=("testing")
             fi
           else
             BUILD_TAGS+=("${FEDORA_VERSION}")
             BUILD_TAGS+=("${UPSTREAM_TAG}")
-            BUILD_TAGS+=("${BAZZITE_VERSION}")
             BUILD_TAGS+=("stable-${UPSTREAM_TAG}")
 
             # Per fedora version
