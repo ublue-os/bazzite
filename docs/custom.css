@@ -1,8 +1,0 @@
-h1.menu-title::before {
-    content: "";
-    background-image: url("./favicon.svg");
-    padding: 1em;
-    background-position: center center;
-    background-size: 1.5em;
-    background-repeat: no-repeat;
-}

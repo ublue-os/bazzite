@@ -16,9 +16,7 @@ on:
       - docs/**/*.jpeg
       - docs/**/*.po
       - .github/workflows/deploy_docs.yml
-      - .github/workflows/install-mdbook/action.yml
       - README*.md
-      - docs/book.toml
   pull_request:
     branches:
       - main
@@ -29,9 +27,7 @@ on:
       - docs/**/*.jpeg
       - docs/**/*.po
       - .github/workflows/deploy_docs.yml
-      - .github/workflows/install-mdbook/action.yml
       - README*.md
-      - docs/book.toml
   workflow_dispatch:
 
 concurrency:
