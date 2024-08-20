@@ -61,6 +61,7 @@ jobs:
         base_image_name: [kinoite, silverblue]
         target_image_flavor: [main, asus]
         fedora_version: [40]
+        kernel_version: [6.10.4-201.fsync.fc40.x86_64]
         include:
           - fedora_version: 40
             is_latest_version: true
@@ -144,8 +145,8 @@ jobs:
             # pull the base images used for FROM in Containerfile so
             # we can retry on that unfortunately common failure case
             sudo podman pull ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
-            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
-            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-%{{ matrix.kernel_version }}
+            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-%{{ matrix.kernel_version }}
 
             # Add rechunk as well to remove this source of failure
             sudo podman pull ghcr.io/hhd-dev/rechunk:v0.8.3
@@ -165,14 +166,6 @@ jobs:
               exit 1
             fi
             echo "SOURCE_IMAGE_VERSION=$ver" >> $GITHUB_ENV
-
-            skopeo inspect docker://${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor }}-${{ matrix.fedora_version }} > akmods.json
-            linux=$(jq -r '.Labels["ostree.linux"]' akmods.json)
-            if [ -z "$linux" ] || [ "null" = "$linux" ]; then
-              echo "inspected image linux version must not be empty or null"
-              exit 1
-            fi
-            echo "KERNEL_VERSION=$linux" >> $GITHUB_ENV
       
       # Generate a primary version key that appears
       # in KDE, rpm-ostree status, and github.
@@ -218,6 +211,7 @@ jobs:
             --build-arg BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }} \
             --build-arg FEDORA_VERSION=${{ matrix.fedora_version }} \
             --build-arg KERNEL_FLAVOR=${{ matrix.kernel_flavor }} \
+            --build-arg KERNEL_VERSION=${{ matrix.kernel_version }} \
             --build-arg IMAGE_BRANCH=${{ github.ref_name }} \
             --build-arg SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }} \
             --build-arg VERSION_TAG=${{ steps.generate-version.outputs.tag }} \
@@ -228,8 +222,8 @@ jobs:
         # We are tight on space, need at least 2x for OSTree
         run: |
           sudo podman image rm ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
-          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
-          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}
+          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-%{{ matrix.kernel_version }}
+          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-%{{ matrix.kernel_version }}
       
       # Generate the previous image reference used by the Rechunker
       - name: Generate previous reference
@@ -356,7 +350,7 @@ jobs:
             sudo apt install sbsigntool curl openssl
           fi
           TMP=$(podman create rechunked-img bash)
-          podman cp $TMP:/usr/lib/modules/${{ env.KERNEL_VERSION }}/vmlinuz .
+          podman cp $TMP:/usr/lib/modules/${{ matrix.kernel_version }}/vmlinuz .
           podman rm $TMP
           sbverify --list vmlinuz
           curl --retry 3 -Lo kernel-sign.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key.der
