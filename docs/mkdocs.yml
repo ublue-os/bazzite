@@ -32,6 +32,16 @@ hooks:
   - hooks/cmdrun.py
 
 plugins:
+  - i18n:
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: es
+          name: Spanish
+          build: true
+
   - search
   - offline:
       enabled: !ENV [MKDOCS_OFFLINE, false]
