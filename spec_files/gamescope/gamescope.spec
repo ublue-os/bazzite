@@ -3,7 +3,7 @@
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
 %global toolchain clang
-%global gamescope_tag 3.15.0
+%global gamescope_tag 3.15.1
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
