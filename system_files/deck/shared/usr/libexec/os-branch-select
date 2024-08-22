@@ -9,7 +9,7 @@ if [[ $# -eq 1 ]]; then
       if [[ -f /var/ublue-update/branch ]]; then
         branch=$(cat /var/ublue-update/branch)
       else
-        branch=$(cut -d ":" -f4 <<< "$(rpm-ostree status --booted | grep -m 1 $VARIANT_ID)")
+        branch=$(cut -d ":" -f4 <<< "$(rpm-ostree status --booted | grep -m 1 $ID)")
       fi
 
       # Trim and convert to lowercase
