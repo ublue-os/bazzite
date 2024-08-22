@@ -138,6 +138,8 @@ setup-decky ACTION="install":
       fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
       sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
+      sudo sed -i 's~TimeoutStopSec=.*$~TimeoutStopSec=5~g' /etc/systemd/system/plugin_loader.service
+      sudo systemctl daemon-reload
     fi
     if [[ "${OPTION,,}" =~ prerelease ]]; then
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
@@ -147,6 +149,8 @@ setup-decky ACTION="install":
       fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_prerelease.sh | sh
       sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
+      sudo sed -i 's~TimeoutStopSec=.*$~TimeoutStopSec=5~g' /etc/systemd/system/plugin_loader.service
+      sudo systemctl daemon-reload
     fi
 
 # Ptyxis terminal transparency
