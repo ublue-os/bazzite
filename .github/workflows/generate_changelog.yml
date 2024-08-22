@@ -1,5 +1,7 @@
 on:
   push:
+    paths-ignore:
+      - docs/**
     branches:
       - main
 
