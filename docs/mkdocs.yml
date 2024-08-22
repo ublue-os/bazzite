@@ -24,6 +24,8 @@ theme:
 
   favicon: img/favicon.svg
   logo: img/logo_BW.svg
+  features:
+    - navigation.indexes
 
 docs_dir: src
 site_dir: book
