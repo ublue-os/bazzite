@@ -8,7 +8,7 @@
 
 Summary:   Xwayland
 Name:      xorg-x11-server-Xwayland
-%global    xwayland_version 24.1.0
+%global    xwayland_version 24.1.2
 Version:   %{xwayland_version}.bazzite.{{{ git_dir_version }}}
 Release:   1%{?gitdate:.%{gitdate}git%{shortcommit}}%{?dist}
 
@@ -37,7 +37,6 @@ BuildRequires: desktop-file-utils
 
 BuildRequires: pkgconfig(wayland-client) >= 1.21.0
 BuildRequires: pkgconfig(wayland-protocols) >= 1.34
-BuildRequires: pkgconfig(wayland-eglstream-protocols)
 
 BuildRequires: pkgconfig(epoxy) >= 1.5.5
 BuildRequires: pkgconfig(fontenc)
@@ -106,7 +105,7 @@ necessary for developing Wayland compositors using Xwayland.
 
 %build
 %meson \
-	%{?gitdate:-Dxwayland=true -D{xorg,xnest,xvfb,udev}=false} \
+  %{?gitdate:-Dxwayland=true -D{xorg,xnest,xvfb,udev}=false} \
         -Ddefault_font_path=%{default_font_path} \
         -Dbuilder_string="Build ID: %{name} %{version}-%{release}" \
         -Dxkb_output_dir=%{_localstatedir}/lib/xkb \
@@ -139,11 +138,24 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_libdir}/pkgconfig/xwayland.pc
 
 %changelog
+* Wed Aug  7 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.1.2-1
+- xwayland 24.1.2 - (#2303450)
+- Remove unneeded build dependency on wayland-eglstream-protocols
+
+* Sat Jul 20 2024 Fedora Release Engineering <releng@fedoraproject.org> - 24.1.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
+
+* Wed Jul 10 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.1.1-1
+- xwayland 24.1.1
+
+* Wed Jun 26 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.1.0-2
+- Backport fixes from upstream - (#2284116, #2284141)
+
 * Wed May 15 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.1.0-1
 - xwayland 24.1.0
 
 * Thu May 02 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.0.99.902-1
-- xwayland 24.0.99.902 (xwayland 24.1.0 rc2) 
+- xwayland 24.0.99.902 (xwayland 24.1.0 rc2)
 
 * Wed Apr 17 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.0.99.901-1
 - xwayland 24.0.99.901 (xwayland 24.1.0 rc1) - (#2275466)
