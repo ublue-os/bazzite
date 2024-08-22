@@ -32,6 +32,7 @@ hooks:
   - hooks/cmdrun.py
 
 plugins:
+  - privacy
   - i18n:
       languages:
         - locale: en
