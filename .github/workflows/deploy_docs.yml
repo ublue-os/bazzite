@@ -73,26 +73,13 @@ jobs:
           echo $PWD/utils:$PATH >> $GITHUB_PATH
 
       - name: Build book
-        uses: ./github/workflows/build-mkdocs
+        uses: ./.github/workflows/build_mkdocs
         with:
           site_url: ${{ env.SITE_URL }}
           working_dir: ${{ github.workspace }}/docs
           output_dir: ${{ github.workspace }}/book
-          upload_artifact: "true"
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ${{ github.workspace }}/book
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-        with:
-          token: ${{ github.token }}
+          upload_github_page: "true"
+          github_token: ${{ github.token }}
 
   clean_cache:
     needs: deploy
