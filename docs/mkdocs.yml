@@ -4,6 +4,7 @@ site_url: !ENV MKDOCS_SITE_URL
 
 theme:
   name: material
+  custom_dir: theme_overrides
   palette:
     - media: "(prefers-color-scheme)"
       toggle:
