@@ -1,9 +1,3 @@
-<div class="hidden">
-
-[Introduction](Introduction.md)
-
-</div>
-
 # General
 
 - [📜 Bazzite's README](Bazzite_README.md)
@@ -15,9 +9,7 @@
   - [💻️ Installing Bazzite for Framework Laptop 13 (AMD/Intel GPU)](General/Installation_Guide/Installing_Bazzite_Framework_Laptop_13.md)
   - [🎮️ Installing Bazzite for Home Theater PC (HTPC) Setups](General/Installation_Guide/Installing_Bazzite_for_HTPC_Setups.md)\*
   - [🚂 Installing Bazzite on the Steam Deck](General/Installation_Guide/Installing_Bazzite_for_Steam_Deck.md)\*
-  - [📟️ Installing Bazzite on Handheld PCs](General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs.md)\*
-
-    \* _Indicates that Steam Gaming Mode is intended for this device and ships with the ISO._
+  - [📟️ Installing Bazzite on Handheld PCs](General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs.md)\* \* _Indicates that Steam Gaming Mode is intended for this device and ships with the ISO._
 
 - [📝 Desktop Environment Tweaks](General/Desktop_Environment_Tweaks.md)
 - [🤝 Contributing to Bazzite](General/Contributing_to_Bazzite.md)
