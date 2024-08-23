@@ -26,7 +26,7 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="0.734375"
-     inkscape:cx="189.2766"
+     inkscape:cx="189.95745"
      inkscape:cy="328.85106"
      inkscape:window-width="3440"
      inkscape:window-height="1374"
@@ -100,7 +100,7 @@
        x="0"
        y="0"
        width="1"
-       height="1.0189466">
+       height="1.0315776">
       <feFlood
          result="flood"
          in="SourceGraphic"
@@ -125,11 +125,45 @@
          in2="offset"
          id="feComposite3" />
       <feComposite
-         result="comp2"
+         result="fbSourceGraphic"
          operator="over"
          in="SourceGraphic"
          in2="comp1"
          id="feComposite4" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix1" />
+      <feFlood
+         id="feFlood1"
+         result="flood"
+         in="fbSourceGraphic"
+         flood-opacity="0.286275"
+         flood-color="rgb(255,255,255)" />
+      <feGaussianBlur
+         id="feGaussianBlur1"
+         result="blur"
+         in="fbSourceGraphic"
+         stdDeviation="0.000000" />
+      <feOffset
+         id="feOffset1"
+         result="offset"
+         in="blur"
+         dx="0.000000"
+         dy="0.200000" />
+      <feComposite
+         id="feComposite1"
+         result="comp1"
+         operator="out"
+         in="flood"
+         in2="offset" />
+      <feComposite
+         id="feComposite2"
+         result="comp2"
+         operator="atop"
+         in="comp1"
+         in2="fbSourceGraphic" />
     </filter>
   </defs>
   <ellipse
