@@ -1,6 +1,7 @@
 site_name: Bazzite Documentation
 site_author: nicknamenamenick
 site_url: !ENV MKDOCS_SITE_URL
+repo_url: !ENV MKDOCS_REPO_URL
 
 theme:
   name: material

@@ -13,17 +13,19 @@ inputs:
 
   working_dir:
     description: Parent directory that contains mkdocs.yml
-    default: ""
-    required: true
+    default: ${{ github.workspace }}/docs
 
   output_dir:
     description: Where we will output the resulting webpage
-    default: ""
-    required: true
+    default: ${{ github.workspace }}/book
 
   upload_github_page:
     description: Upload github-page
     default: "false"
+
+  repo_url:
+    description: URL of the repo
+    default: ${{ github.server_url }}/${{ github.repository }}
 
 outputs:
   artifact_id:
@@ -57,6 +59,7 @@ runs:
       working-directory: ${{ inputs.working_dir }}
       env:
         MKDOCS_SITE_URL: ${{ inputs.site_url }}
+        MKDOCS_REPO_URL: ${{ inputs.repo_url }}
         _OUTPUT_DIR: ${{ inputs.output_dir }}
       run: |
         source .venv/bin/activate
