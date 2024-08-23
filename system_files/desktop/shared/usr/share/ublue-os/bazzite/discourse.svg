@@ -21,9 +21,9 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="0.99239865"
-     inkscape:cx="216.64681"
-     inkscape:cy="37.787234"
+     inkscape:zoom="1.9847973"
+     inkscape:cx="77.085957"
+     inkscape:cy="185.15745"
      inkscape:window-width="3440"
      inkscape:window-height="1374"
      inkscape:window-x="0"
@@ -34,7 +34,7 @@
      d="M 160,338 H 336 V 72 C 336,55.4315 322.569,42 306,42 H 70 C 53.4315,42 40,55.4315 40,72 v 146 c 0,66.274 53.7258,120 120,120 z"
      fill="url(#paint0_linear_1268_533)"
      id="path1"
-     style="fill:url(#paint0_linear_1268_533)" />
+     style="fill:url(#paint0_linear_1268_533);filter:url(#filter17)" />
   <g
      filter="url(#filter0_b_1268_533)"
      id="g2"
@@ -253,5 +253,43 @@
          stop-color="#252B4B"
          id="stop11" />
     </linearGradient>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter17"
+       x="0"
+       y="0"
+       width="1"
+       height="1.0202703">
+      <feFlood
+         result="flood"
+         in="SourceGraphic"
+         flood-opacity="0.286275"
+         flood-color="rgb(0,0,0)"
+         id="feFlood16" />
+      <feGaussianBlur
+         result="blur"
+         in="SourceGraphic"
+         stdDeviation="0.000000"
+         id="feGaussianBlur16" />
+      <feOffset
+         result="offset"
+         in="blur"
+         dx="0.000000"
+         dy="6.000000"
+         id="feOffset16" />
+      <feComposite
+         result="comp1"
+         operator="in"
+         in="flood"
+         in2="offset"
+         id="feComposite16" />
+      <feComposite
+         result="comp2"
+         operator="over"
+         in="SourceGraphic"
+         in2="comp1"
+         id="feComposite17" />
+    </filter>
   </defs>
 </svg>
