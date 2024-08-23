@@ -2,7 +2,7 @@
 Type=Application
 NoDisplay=false
 Terminal=false
-Exec=xdg-open /usr/share/ublue-os/docs
+Exec=xdg-open /usr/share/ublue-os/docs/bazzite_docs.pdf
 Icon=/usr/share/ublue-os/bazzite/docs.svg
 Name=Documentation
 Comment=View Bazzite Documentation

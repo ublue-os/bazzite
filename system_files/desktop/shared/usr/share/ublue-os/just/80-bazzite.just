@@ -1,22 +1,5 @@
 # vim: set ft=make :
 
-# Restore the default Terminal
-_restore-original-terminal:
-    #!/usr/bin/bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-    mkdir -p $HOME/.local/share/applications
-    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-        rm -f $HOME/.local/share/applications/org.gnome.Terminal.desktop
-        cp /usr/share/applications/org.gnome.Terminal.desktop $HOME/.local/share/applications/org.gnome.Terminal.desktop
-        sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.gnome.Terminal.desktop
-    else
-        rm -f $HOME/.local/share/applications/org.kde.konsole.desktop
-        cp /usr/share/applications/org.kde.konsole.desktop $HOME/.local/share/applications/org.kde.konsole.desktop
-        sed -i '/NoDisplay=true/d' $HOME/.local/share/applications/org.kde.konsole.desktop
-        echo "Done. Change your default Terminal in System Settings to complete the swap."
-    fi
-
 # Install System Flatpaks (Support for Rebasing)
 _install-system-flatpaks:
     #!/usr/bin/bash
@@ -29,10 +12,6 @@ _install-system-flatpaks:
     fi
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --or-update ${FLATPAK_LIST}
-
-# Force-enable AMD pstate
-_pstate-force-enable:
-    rpm-ostree kargs --append-if-missing=amd_pstate=active
 
 # Configure grub bootmenu visibility and fix duplicate entries
 configure-grub ACTION="":
@@ -363,3 +342,55 @@ bazzite-cli:
 benchmark:
     echo 'Running a 1 minute benchmark ...'
     cd /tmp && stress-ng --matrix 0 -t 1m --times
+
+post-gamescope-logs:
+    #!/usr/bin/bash
+    OUTPUT_FILE="/tmp/gathered_info.txt"
+
+    # Clear the output file or create it if it doesn't exist
+    > "$OUTPUT_FILE"
+
+    # Gather information from various sources
+    {
+        echo "GPU info"
+        lshw -C display
+
+        # Add a blank line for readability
+        echo
+
+        filepaths=(
+            "/sys/devices/virtual/dmi/id/bios_date"
+            "/sys/devices/virtual/dmi/id/board_name"
+            "/sys/devices/virtual/dmi/id/board_vendor"
+            "/sys/devices/virtual/dmi/id/product_name"
+            "$HOME/.gamescope-cmd.log"
+            "$HOME/.gamescope-stdout.log"
+        )
+
+        # Iterate over each file path in the array
+        for filepath in "${filepaths[@]}"; do
+            # Print the file path
+            echo "File: $filepath"
+
+            # Check if the file exists before trying to read it
+            if [[ -f "$filepath" ]]; then
+                # Print the file content
+                cat "$filepath"
+            else
+                echo "File not found: $filepath"
+            fi
+
+            # Add a blank line for readability
+            echo
+        done
+
+        echo "----- Contents of $HOME/.config/environment.d/ -----"
+        mkdir -p $HOME/.config/environment.d
+        cat "$HOME/.config/environment.d/"* 2>/dev/null || echo "No files found in $HOME/.config/environment.d/"
+
+    } >> "$OUTPUT_FILE"
+
+    fpaste $OUTPUT_FILE
+
+    # cleanup output file
+    rm -rf $OUTPUT_FILE

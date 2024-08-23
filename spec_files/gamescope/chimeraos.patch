@@ -1,4 +1,4 @@
-From e7a17c36620343d3bd21eba9c571f2551b8b69c0 Mon Sep 17 00:00:00 2001
+From 646446c157d55d8508c734cddfc3025834f7cf50 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 17 May 2024 19:43:49 -0500
 Subject: [PATCH 01/21] Add touch-gestures to open up Steam menus
@@ -10,7 +10,7 @@ Subject: [PATCH 01/21] Add touch-gestures to open up Steam menus
  3 files changed, 34 insertions(+)
 
 diff --git a/src/main.cpp b/src/main.cpp
-index 96484dc..2b5e9b3 100644
+index ca40012..3a1b1ae 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -108,6 +108,8 @@ const struct option *gamescope_options = (struct option[]){
@@ -40,10 +40,10 @@ index 96484dc..2b5e9b3 100644
  					g_nXWaylandCount = atoi( optarg );
  				} else if (strcmp(opt_name, "composite-debug") == 0) {
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index a2e1985..43b9023 100644
+index ccbd512..26b953a 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -77,6 +77,7 @@ using namespace std::literals;
+@@ -81,6 +81,7 @@ using namespace std::literals;
  extern gamescope::ConVar<bool> cv_drm_debug_disable_explicit_sync;
  
  //#define GAMESCOPE_SWAPCHAIN_DEBUG
@@ -51,7 +51,7 @@ index a2e1985..43b9023 100644
  
  struct wlserver_t wlserver = {
  	.touch_down_ids = {}
-@@ -2598,6 +2599,33 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool
+@@ -2526,6 +2527,33 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool
  
  			if ( bAlwaysWarpCursor )
  				wlserver_mousewarp( tx, ty, time, false );
@@ -86,10 +86,10 @@ index a2e1985..43b9023 100644
  		else if ( eMode == gamescope::TouchClickModes::Disabled )
  		{
 diff --git a/src/wlserver.hpp b/src/wlserver.hpp
-index 7a8c155..0859a21 100644
+index 0569472..3304c18 100644
 --- a/src/wlserver.hpp
 +++ b/src/wlserver.hpp
-@@ -306,6 +306,7 @@ void wlserver_x11_surface_info_finish( struct wlserver_x11_surface_info *surf );
+@@ -272,6 +272,7 @@ void wlserver_x11_surface_info_finish( struct wlserver_x11_surface_info *surf );
  void wlserver_set_xwayland_server_mode( size_t idx, int w, int h, int refresh );
  
  extern std::atomic<bool> g_bPendingTouchMovement;
@@ -98,10 +98,10 @@ index 7a8c155..0859a21 100644
  void wlserver_open_steam_menu( bool qam );
  
 -- 
-2.45.2
+2.46.0
 
 
-From c781f3bea1940f76f28f4714ee4d10b9024909cd Mon Sep 17 00:00:00 2001
+From 97c2ed0ea6a5cd43b450e0952db20c08d82bbe60 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 17 May 2024 20:16:20 -0500
 Subject: [PATCH 02/21] Add bypass_steam_resolution to workaround the 720p/800p
@@ -113,7 +113,7 @@ Subject: [PATCH 02/21] Add bypass_steam_resolution to workaround the 720p/800p
  2 files changed, 14 insertions(+)
 
 diff --git a/src/main.cpp b/src/main.cpp
-index 2b5e9b3..4e63245 100644
+index 3a1b1ae..534779d 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -129,6 +129,8 @@ const struct option *gamescope_options = (struct option[]){
@@ -134,10 +134,10 @@ index 2b5e9b3..4e63245 100644
  	"  --xwayland-count               create N xwayland servers\n"
  	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index e4738f9..8fe13fd 100644
+index e997c85..952a5f8 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -354,6 +354,8 @@ bool g_bForceHDR10OutputDebug = false;
+@@ -356,6 +356,8 @@ bool g_bForceHDR10OutputDebug = false;
  gamescope::ConVar<bool> cv_hdr_enabled{ "hdr_enabled", false, "Whether or not HDR is enabled if it is available." };
  bool g_bHDRItmEnable = false;
  int g_nCurrentRefreshRate_CachedValue = 0;
@@ -146,7 +146,7 @@ index e4738f9..8fe13fd 100644
  
  static void
  update_color_mgmt()
-@@ -5364,6 +5366,13 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+@@ -5387,6 +5389,13 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
  			size_t server_idx = size_t{ xwayland_mode_ctl[ 0 ] };
  			int width = xwayland_mode_ctl[ 1 ];
  			int height = xwayland_mode_ctl[ 2 ];
@@ -160,7 +160,7 @@ index e4738f9..8fe13fd 100644
  			bool allowSuperRes = !!xwayland_mode_ctl[ 3 ];
  
  			if ( !allowSuperRes )
-@@ -7210,6 +7219,8 @@ steamcompmgr_main(int argc, char **argv)
+@@ -7370,6 +7379,8 @@ steamcompmgr_main(int argc, char **argv)
  					bForceWindowsFullscreen = true;
  				} else if (strcmp(opt_name, "hdr-enabled") == 0) {
  					cv_hdr_enabled = true;
@@ -170,10 +170,10 @@ index e4738f9..8fe13fd 100644
  					g_bForceHDRSupportDebug = true;
   				} else if (strcmp(opt_name, "hdr-debug-force-output") == 0) {
 -- 
-2.45.2
+2.46.0
 
 
-From 06ea33eeac6023ac32a4e89cfb6a704e4fd28e9b Mon Sep 17 00:00:00 2001
+From 234e3bb0369b7ed45a8e2f3c41f3c1e900be9d34 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Wed, 26 Jul 2023 20:46:29 -0500
 Subject: [PATCH 03/21] Add force external orientation.
@@ -187,7 +187,7 @@ Co-authored-by: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
  4 files changed, 53 insertions(+), 1 deletion(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index ee2cbd3..f2a832d 100644
+index 799fd39..3815b98 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -537,6 +537,7 @@ bool g_bSupportsSyncObjs = false;
@@ -210,7 +210,7 @@ index ee2cbd3..f2a832d 100644
  		{
  			if ( this->GetProperties().panel_orientation )
 diff --git a/src/main.cpp b/src/main.cpp
-index 4e63245..5e39e03 100644
+index 534779d..f9be05e 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -128,6 +128,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -274,7 +274,7 @@ index 4e63245..5e39e03 100644
  						   strcmp(opt_name, "fsr-sharpness") == 0) {
  					g_upscaleFilterSharpness = atoi( optarg );
 diff --git a/src/main.hpp b/src/main.hpp
-index 8cfe629..5492cae 100644
+index 2e6fb83..ebd018a 100644
 --- a/src/main.hpp
 +++ b/src/main.hpp
 @@ -28,6 +28,7 @@ extern bool g_bGrabbed;
@@ -286,10 +286,10 @@ index 8cfe629..5492cae 100644
  enum class GamescopeUpscaleFilter : uint32_t
  {
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 43b9023..f554554 100644
+index 26b953a..837079a 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -2560,6 +2560,29 @@ static void apply_touchscreen_orientation(double *x, double *y )
+@@ -2488,6 +2488,29 @@ static void apply_touchscreen_orientation(double *x, double *y )
  			break;
  	}
  
@@ -320,10 +320,10 @@ index 43b9023..f554554 100644
  	*y = ty;
  }
 -- 
-2.45.2
+2.46.0
 
 
-From 9e0fe1c9b9f82e63fb0255b32c1aefe3048c78e7 Mon Sep 17 00:00:00 2001
+From bc0ddd46fd9db62fbc3fe14e0b1493e35ceb2be8 Mon Sep 17 00:00:00 2001
 From: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
 Date: Tue, 12 Mar 2024 00:07:57 +0100
 Subject: [PATCH 04/21] implement force-panel-type
@@ -335,10 +335,10 @@ Subject: [PATCH 04/21] implement force-panel-type
  3 files changed, 20 insertions(+)
 
 diff --git a/src/backend.h b/src/backend.h
-index 6c86349..920c92f 100644
+index 7d9fb46..08e8268 100644
 --- a/src/backend.h
 +++ b/src/backend.h
-@@ -17,6 +17,7 @@ struct wlr_buffer;
+@@ -18,6 +18,7 @@ struct wlr_buffer;
  struct wlr_dmabuf_attributes;
  
  struct FrameInfo_t;
@@ -346,7 +346,7 @@ index 6c86349..920c92f 100644
  
  namespace gamescope
  {
-@@ -218,6 +219,8 @@ namespace gamescope
+@@ -221,6 +222,8 @@ namespace gamescope
          // Dumb helper we should remove to support multi display someday.
          gamescope::GamescopeScreenType GetScreenType()
          {
@@ -356,7 +356,7 @@ index 6c86349..920c92f 100644
                  return GetCurrentConnector()->GetScreenType();
  
 diff --git a/src/gamescope_shared.h b/src/gamescope_shared.h
-index 863b03f..a11f598 100644
+index 5ce8591..d1b7a6e 100644
 --- a/src/gamescope_shared.h
 +++ b/src/gamescope_shared.h
 @@ -25,6 +25,7 @@ namespace gamescope
@@ -368,7 +368,7 @@ index 863b03f..a11f598 100644
  		GAMESCOPE_SCREEN_TYPE_COUNT
  	};
 diff --git a/src/main.cpp b/src/main.cpp
-index 5e39e03..2ac48ca 100644
+index f9be05e..dc3e9c8 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -129,6 +129,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -416,10 +416,10 @@ index 5e39e03..2ac48ca 100644
  						   strcmp(opt_name, "fsr-sharpness") == 0) {
  					g_upscaleFilterSharpness = atoi( optarg );
 -- 
-2.45.2
+2.46.0
 
 
-From c3da8fe380e2f7c8c7152032d496d89eebd57ff6 Mon Sep 17 00:00:00 2001
+From 2a0c92febded984bc0d610eaedc9e8cc4d4ce51a Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 17 May 2024 21:11:34 -0500
 Subject: [PATCH 05/21] wlserver: Fix an issue that would cause gamescope to
@@ -430,10 +430,10 @@ Subject: [PATCH 05/21] wlserver: Fix an issue that would cause gamescope to
  1 file changed, 23 deletions(-)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index f554554..43b9023 100644
+index 837079a..26b953a 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -2560,29 +2560,6 @@ static void apply_touchscreen_orientation(double *x, double *y )
+@@ -2488,29 +2488,6 @@ static void apply_touchscreen_orientation(double *x, double *y )
  			break;
  	}
  
@@ -464,10 +464,10 @@ index f554554..43b9023 100644
  	*y = ty;
  }
 -- 
-2.45.2
+2.46.0
 
 
-From 7db5dc7e8ed1f1bfdae777c4c7f30928f3d96461 Mon Sep 17 00:00:00 2001
+From 69bae3bffa954251d6a857b1b6928fc4755e40bf Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 17 May 2024 21:56:55 -0500
 Subject: [PATCH 06/21] Add --custom-refresh-rates
@@ -479,7 +479,7 @@ Subject: [PATCH 06/21] Add --custom-refresh-rates
  3 files changed, 36 insertions(+)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index f2a832d..32e8a78 100644
+index 3815b98..e3512a1 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2135,6 +2135,10 @@ namespace gamescope
@@ -494,7 +494,7 @@ index f2a832d..32e8a78 100644
  		{
  			static constexpr uint32_t kPIDGalileoSDC = 0x3003;
 diff --git a/src/main.cpp b/src/main.cpp
-index 2ac48ca..28bcc6f 100644
+index dc3e9c8..18eb399 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -132,6 +132,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -556,7 +556,7 @@ index 2ac48ca..28bcc6f 100644
  						   strcmp(opt_name, "fsr-sharpness") == 0) {
  					g_upscaleFilterSharpness = atoi( optarg );
 diff --git a/src/main.hpp b/src/main.hpp
-index 5492cae..0207a51 100644
+index ebd018a..4e09e3b 100644
 --- a/src/main.hpp
 +++ b/src/main.hpp
 @@ -3,6 +3,7 @@
@@ -576,21 +576,21 @@ index 5492cae..0207a51 100644
  enum class GamescopeUpscaleFilter : uint32_t
  {
 -- 
-2.45.2
+2.46.0
 
 
-From 01eff9f4c19dbaa336faf4faf504b5bd9fde8d1c Mon Sep 17 00:00:00 2001
+From 5125582bc6fdfc651ca5ccb58cb71d956e2c3676 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sat, 18 May 2024 08:44:38 -0500
 Subject: [PATCH 07/21] Add rotation gamescope_control command
 
 ---
  protocol/gamescope-control.xml | 18 ++++++++++++
- src/Backends/DRMBackend.cpp    | 23 +++++++++++++++-
- src/gamescope_shared.h         | 10 +++++++
+ src/Backends/DRMBackend.cpp    | 24 ++++++++++++++--
+ src/gamescope_shared.h         | 18 ++++++++++++
  src/main.cpp                   |  1 +
  src/wlserver.cpp               | 50 ++++++++++++++++++++++++++++++++++
- 5 files changed, 101 insertions(+), 1 deletion(-)
+ 5 files changed, 109 insertions(+), 2 deletions(-)
 
 diff --git a/protocol/gamescope-control.xml b/protocol/gamescope-control.xml
 index 012c48c..eab8a84 100644
@@ -621,7 +621,7 @@ index 012c48c..eab8a84 100644
    </interface>
  </protocol>
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 32e8a78..f952b65 100644
+index e3512a1..f05c2e8 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2028,7 +2028,9 @@ namespace gamescope
@@ -635,10 +635,11 @@ index 32e8a78..f952b65 100644
  		{
  			m_ChosenOrientation = g_DesiredInternalOrientation;
  		}
-@@ -2961,6 +2963,25 @@ bool drm_update_color_mgmt(struct drm_t *drm)
+@@ -2960,8 +2962,26 @@ bool drm_update_color_mgmt(struct drm_t *drm)
  	return true;
  }
  
+-int g_nDynamicRefreshHz = 0;
 +void drm_set_orientation( struct drm_t *drm, bool isRotated)
 +{
 +	int width = g_nOutputWidth;
@@ -649,7 +650,7 @@ index 32e8a78..f952b65 100644
 +		width = height;
 +		height = tmp;
 +	}
-+
+ 
 +	if (!drm->pConnector || !drm->pConnector->GetModeConnector())
 +		return;
 +
@@ -658,17 +659,26 @@ index 32e8a78..f952b65 100644
 +	update_drm_effective_orientations(drm, mode);
 +}
 +
++int g_nDynamicRefreshHz = 0;
  static void drm_unset_mode( struct drm_t *drm )
  {
  	drm->pending.mode_id = 0;
 diff --git a/src/gamescope_shared.h b/src/gamescope_shared.h
-index a11f598..c1f8c79 100644
+index d1b7a6e..cffa576 100644
 --- a/src/gamescope_shared.h
 +++ b/src/gamescope_shared.h
-@@ -65,6 +65,16 @@ enum GamescopePanelOrientation
+@@ -65,6 +65,24 @@ enum GamescopePanelOrientation
  	GAMESCOPE_PANEL_ORIENTATION_AUTO,
  };
  
++struct GamescopeTimelinePoint
++{
++	struct wlr_drm_syncobj_timeline *pTimeline = nullptr;
++	uint64_t ulPoint = 0;
++
++	void Release();
++};
++
 +enum GamescopePanelExternalOrientation
 +{
 +	GAMESCOPE_PANEL_EXTERNAL_ORIENTATION_0,   // normal
@@ -679,11 +689,11 @@ index a11f598..c1f8c79 100644
 +	GAMESCOPE_PANEL_EXTERNAL_ORIENTATION_AUTO,
 +};
 +
- struct GamescopeTimelinePoint
- {
- 	struct wlr_drm_syncobj_timeline *pTimeline = nullptr;
+ // Disable partial composition for now until we get
+ // composite priorities working in libliftoff + also
+ // use the proper libliftoff composite plane system.
 diff --git a/src/main.cpp b/src/main.cpp
-index 28bcc6f..ab16459 100644
+index 18eb399..675020f 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -397,6 +397,7 @@ static gamescope::GamescopeScreenType force_panel_type(const char *str)
@@ -695,10 +705,10 @@ index 28bcc6f..ab16459 100644
  	} else {
  		fprintf( stderr, "gamescope: invalid value for --force-panel-type\n" );
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 43b9023..e6d6a20 100644
+index 26b953a..c37dbc1 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -1119,6 +1119,55 @@ static void gamescope_control_take_screenshot( struct wl_client *client, struct
+@@ -1042,6 +1042,55 @@ static void gamescope_control_take_screenshot( struct wl_client *client, struct
  	} );
  }
  
@@ -754,7 +764,7 @@ index 43b9023..e6d6a20 100644
  static void gamescope_control_handle_destroy( struct wl_client *client, struct wl_resource *resource )
  {
  	wl_resource_destroy( resource );
-@@ -1128,6 +1177,7 @@ static const struct gamescope_control_interface gamescope_control_impl = {
+@@ -1051,6 +1100,7 @@ static const struct gamescope_control_interface gamescope_control_impl = {
  	.destroy = gamescope_control_handle_destroy,
  	.set_app_target_refresh_cycle = gamescope_control_set_app_target_refresh_cycle,
  	.take_screenshot = gamescope_control_take_screenshot,
@@ -763,10 +773,10 @@ index 43b9023..e6d6a20 100644
  
  static uint32_t get_conn_display_info_flags()
 -- 
-2.45.2
+2.46.0
 
 
-From 69dcb30139aae557093515722ddc5d47960a9c06 Mon Sep 17 00:00:00 2001
+From 304c747d5eab4b62fe38225d04529ff53142e832 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sat, 18 May 2024 11:54:50 -0500
 Subject: [PATCH 08/21] Fix an issue that caused force-panel to not work
@@ -791,7 +801,7 @@ index eab8a84..7f5578b 100644
        <entry name="normal" value="1"/>
        <entry name="left" value="2"/>
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index f952b65..d2e1e98 100644
+index f05c2e8..663b1e2 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -318,6 +318,9 @@ namespace gamescope
@@ -805,11 +815,11 @@ index f952b65..d2e1e98 100644
  				 m_pConnector->connector_type == DRM_MODE_CONNECTOR_LVDS ||
  				 m_pConnector->connector_type == DRM_MODE_CONNECTOR_DSI )
 diff --git a/src/gamescope_shared.h b/src/gamescope_shared.h
-index c1f8c79..a11f598 100644
+index cffa576..a11f598 100644
 --- a/src/gamescope_shared.h
 +++ b/src/gamescope_shared.h
-@@ -65,16 +65,6 @@ enum GamescopePanelOrientation
- 	GAMESCOPE_PANEL_ORIENTATION_AUTO,
+@@ -73,16 +73,6 @@ struct GamescopeTimelinePoint
+ 	void Release();
  };
  
 -enum GamescopePanelExternalOrientation
@@ -822,14 +832,14 @@ index c1f8c79..a11f598 100644
 -	GAMESCOPE_PANEL_EXTERNAL_ORIENTATION_AUTO,
 -};
 -
- struct GamescopeTimelinePoint
- {
- 	struct wlr_drm_syncobj_timeline *pTimeline = nullptr;
+ // Disable partial composition for now until we get
+ // composite priorities working in libliftoff + also
+ // use the proper libliftoff composite plane system.
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index e6d6a20..666498e 100644
+index c37dbc1..ff534ad 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -78,6 +78,8 @@ extern gamescope::ConVar<bool> cv_drm_debug_disable_explicit_sync;
+@@ -82,6 +82,8 @@ extern gamescope::ConVar<bool> cv_drm_debug_disable_explicit_sync;
  
  //#define GAMESCOPE_SWAPCHAIN_DEBUG
  gamescope::ConVar<bool> cv_touch_gestures( "enable_touch_gestures", false, "Enable/Disable the usage of touch gestures" );
@@ -838,7 +848,7 @@ index e6d6a20..666498e 100644
  
  struct wlserver_t wlserver = {
  	.touch_down_ids = {}
-@@ -1125,43 +1127,43 @@ static void gamescope_control_rotate_display( struct wl_client *client, struct w
+@@ -1048,43 +1050,43 @@ static void gamescope_control_rotate_display( struct wl_client *client, struct w
  	if (target_type == GAMESCOPE_CONTROL_DISPLAY_TARGET_TYPE_INTERNAL )
  	{
  		switch (orientation) {
@@ -914,7 +924,7 @@ index e6d6a20..666498e 100644
  		}
  	}
  	//drm_set_orientation(&g_DRM, isRotated);
-@@ -2584,34 +2586,61 @@ const std::shared_ptr<wlserver_vk_swapchain_feedback>& wlserver_surface_swapchai
+@@ -2512,34 +2514,61 @@ const std::shared_ptr<wlserver_vk_swapchain_feedback>& wlserver_surface_swapchai
  /* Handle the orientation of the touch inputs */
  static void apply_touchscreen_orientation(double *x, double *y )
  {
@@ -1003,10 +1013,10 @@ index e6d6a20..666498e 100644
  
  void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool bAlwaysWarpCursor )
 -- 
-2.45.2
+2.46.0
 
 
-From 7cd3173fc56f3f3e6bcc3af121fc7eb2a7f65d26 Mon Sep 17 00:00:00 2001
+From 3efb4df00c1e88219a3ff7c47af99b7217d1fe95 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sat, 18 May 2024 13:50:57 -0500
 Subject: [PATCH 09/21] Fix an arithmetic error
@@ -1016,7 +1026,7 @@ Subject: [PATCH 09/21] Fix an arithmetic error
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index d2e1e98..8a739ff 100644
+index 663b1e2..eafb2f9 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2031,9 +2031,9 @@ namespace gamescope
@@ -1033,10 +1043,10 @@ index d2e1e98..8a739ff 100644
  			m_ChosenOrientation = g_DesiredInternalOrientation;
  		}
 -- 
-2.45.2
+2.46.0
 
 
-From 5652820c268a3632653034ef5b6d6a820b07aad4 Mon Sep 17 00:00:00 2001
+From dd53e4d18b122cae5383d77fc3f6e79084d8993f Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sat, 18 May 2024 19:04:48 -0500
 Subject: [PATCH 10/21] Rework the touch gestures to be more smooth
@@ -1046,19 +1056,19 @@ Subject: [PATCH 10/21] Rework the touch gestures to be more smooth
  1 file changed, 69 insertions(+), 20 deletions(-)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 666498e..236f8d7 100644
+index ff534ad..593a074 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -71,6 +71,8 @@
- #include <set>
+@@ -80,6 +80,8 @@ using namespace std::literals;
  
- static LogScope wl_log("wlserver");
+ extern gamescope::ConVar<bool> cv_drm_debug_disable_explicit_sync;
+ 
 +bool pending_gesture = false;
 +bool pending_osk = false;
- 
- using namespace std::literals;
- 
-@@ -439,6 +441,39 @@ void wlserver_open_steam_menu( bool qam )
+ //#define GAMESCOPE_SWAPCHAIN_DEBUG
+ gamescope::ConVar<bool> cv_touch_gestures( "enable_touch_gestures", false, "Enable/Disable the usage of touch gestures" );
+ extern GamescopePanelOrientation g_DesiredInternalOrientation;
+@@ -362,6 +364,39 @@ void wlserver_open_steam_menu( bool qam )
  	XTestFakeKeyEvent(server->get_xdisplay(), XKeysymToKeycode( server->get_xdisplay(), XK_Control_L ), False, CurrentTime);
  }
  
@@ -1098,7 +1108,7 @@ index 666498e..236f8d7 100644
  static void wlserver_handle_pointer_button(struct wl_listener *listener, void *data)
  {
  	struct wlserver_pointer *pointer = wl_container_of( listener, pointer, button );
-@@ -2679,32 +2714,46 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool
+@@ -2607,32 +2642,46 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool
  			if ( bAlwaysWarpCursor )
  				wlserver_mousewarp( tx, ty, time, false );
  
@@ -1166,10 +1176,10 @@ index 666498e..236f8d7 100644
  		else if ( eMode == gamescope::TouchClickModes::Disabled )
  		{
 -- 
-2.45.2
+2.46.0
 
 
-From 0897536808301c73f0c694cc21e923c569e828a7 Mon Sep 17 00:00:00 2001
+From 70d4ea8937e43752e1adb32ebbcdd3d1a0bcf23c Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sun, 19 May 2024 08:55:28 -0500
 Subject: [PATCH 11/21] Fix a typo for --bypass-steam-resolution
@@ -1179,10 +1189,10 @@ Subject: [PATCH 11/21] Fix a typo for --bypass-steam-resolution
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 8fe13fd..c29403d 100644
+index 952a5f8..6fceb1d 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -7219,7 +7219,7 @@ steamcompmgr_main(int argc, char **argv)
+@@ -7379,7 +7379,7 @@ steamcompmgr_main(int argc, char **argv)
  					bForceWindowsFullscreen = true;
  				} else if (strcmp(opt_name, "hdr-enabled") == 0) {
  					cv_hdr_enabled = true;
@@ -1192,10 +1202,10 @@ index 8fe13fd..c29403d 100644
  				} else if (strcmp(opt_name, "hdr-debug-force-support") == 0) {
  					g_bForceHDRSupportDebug = true;
 -- 
-2.45.2
+2.46.0
 
 
-From 044e5d20ddac5b8144e1937a2e0411189090e82a Mon Sep 17 00:00:00 2001
+From be8e56d7f3bf251f75da24aa8a99d2e91aa60812 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sun, 19 May 2024 11:48:52 -0500
 Subject: [PATCH 12/21] Handle gesture cases better to prevent unexpected
@@ -1206,20 +1216,20 @@ Subject: [PATCH 12/21] Handle gesture cases better to prevent unexpected
  1 file changed, 43 insertions(+), 20 deletions(-)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 236f8d7..a900857 100644
+index 593a074..833140a 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -71,7 +71,8 @@
- #include <set>
+@@ -80,7 +80,8 @@ using namespace std::literals;
  
- static LogScope wl_log("wlserver");
+ extern gamescope::ConVar<bool> cv_drm_debug_disable_explicit_sync;
+ 
 -bool pending_gesture = false;
 +bool pending_gesture_x = false;
 +bool pending_gesture_y = false;
  bool pending_osk = false;
- 
- using namespace std::literals;
-@@ -2678,6 +2679,16 @@ static void apply_touchscreen_orientation(double *x, double *y )
+ //#define GAMESCOPE_SWAPCHAIN_DEBUG
+ gamescope::ConVar<bool> cv_touch_gestures( "enable_touch_gestures", false, "Enable/Disable the usage of touch gestures" );
+@@ -2606,6 +2607,16 @@ static void apply_touchscreen_orientation(double *x, double *y )
      *y = ty;
  }
  
@@ -1236,7 +1246,7 @@ index 236f8d7..a900857 100644
  void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool bAlwaysWarpCursor )
  {
  	assert( wlserver_is_lock_held() );
-@@ -2716,43 +2727,55 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool
+@@ -2644,43 +2655,55 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool
  
  			if ( cv_touch_gestures )
  			{
@@ -1312,10 +1322,10 @@ index 236f8d7..a900857 100644
  		}
  		else if ( eMode == gamescope::TouchClickModes::Disabled )
 -- 
-2.45.2
+2.46.0
 
 
-From 9eae1549e5a539dd2612ab5ca9581ce59e8b1f42 Mon Sep 17 00:00:00 2001
+From b31ab55d57f0a8b746d4d0fa7939f6473bcad9a4 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sun, 19 May 2024 18:14:23 -0500
 Subject: [PATCH 13/21] Add references to drm_set_orientation() and g_drm in
@@ -1327,10 +1337,10 @@ Subject: [PATCH 13/21] Add references to drm_set_orientation() and g_drm in
  2 files changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index a900857..ee9f9d0 100644
+index 833140a..eb3936a 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -1202,8 +1202,9 @@ static void gamescope_control_rotate_display( struct wl_client *client, struct w
+@@ -1125,8 +1125,9 @@ static void gamescope_control_rotate_display( struct wl_client *client, struct w
  				wl_log.errorf("Invalid target orientation selected");
  		}
  	}
@@ -1343,10 +1353,10 @@ index a900857..ee9f9d0 100644
  
  static void gamescope_control_handle_destroy( struct wl_client *client, struct wl_resource *resource )
 diff --git a/src/wlserver.hpp b/src/wlserver.hpp
-index 0859a21..31fca64 100644
+index 3304c18..0754ee5 100644
 --- a/src/wlserver.hpp
 +++ b/src/wlserver.hpp
-@@ -309,7 +309,8 @@ extern std::atomic<bool> g_bPendingTouchMovement;
+@@ -275,7 +275,8 @@ extern std::atomic<bool> g_bPendingTouchMovement;
  extern gamescope::ConVar<bool> cv_touch_gestures;
  
  void wlserver_open_steam_menu( bool qam );
@@ -1357,10 +1367,10 @@ index 0859a21..31fca64 100644
  void wlserver_destroy_xwayland_server(gamescope_xwayland_server_t *server);
  
 -- 
-2.45.2
+2.46.0
 
 
-From 027b3a3b5940a8294c383c65e112247e63f2bcd8 Mon Sep 17 00:00:00 2001
+From 8df476a6f7d41157e847ee7c3346c796e674d9fe Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Mon, 20 May 2024 07:02:52 -0500
 Subject: [PATCH 14/21] Fix an issue where forced panel type orientations
@@ -1371,7 +1381,7 @@ Subject: [PATCH 14/21] Fix an issue where forced panel type orientations
  1 file changed, 8 insertions(+), 7 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 8a739ff..0866bb1 100644
+index eafb2f9..1ea1221 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2031,20 +2031,19 @@ namespace gamescope
@@ -1418,10 +1428,10 @@ index 8a739ff..0866bb1 100644
  			}
  		}
 -- 
-2.45.2
+2.46.0
 
 
-From beab0c8c80c3700d73cddd6806f15893969f0b40 Mon Sep 17 00:00:00 2001
+From 5d7781dd8ca41f4d865aa336b4e925beeec9349e Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Mon, 20 May 2024 07:25:29 -0500
 Subject: [PATCH 15/21] add missing curly bracket...
@@ -1431,7 +1441,7 @@ Subject: [PATCH 15/21] add missing curly bracket...
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 0866bb1..cdd600f 100644
+index 1ea1221..8d86df0 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2033,7 +2033,7 @@ namespace gamescope
@@ -1444,10 +1454,10 @@ index 0866bb1..cdd600f 100644
  		} else if (this->GetScreenType() == GAMESCOPE_SCREEN_TYPE_EXTERNAL && g_DesiredExternalOrientation != GAMESCOPE_PANEL_ORIENTATION_AUTO) {
  			drm_log.infof("We are rotating the orientation of an external display");
 -- 
-2.45.2
+2.46.0
 
 
-From dd024170f46671f390091c9b4833d5563dd16251 Mon Sep 17 00:00:00 2001
+From 0282352468bb6b99e75eb1c24cb3ed555886fff5 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Mon, 20 May 2024 10:17:55 -0500
 Subject: [PATCH 16/21] Fix case where real externals were rotated with faked
@@ -1459,7 +1469,7 @@ Subject: [PATCH 16/21] Fix case where real externals were rotated with faked
  2 files changed, 64 insertions(+), 29 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index cdd600f..bc4746b 100644
+index 8d86df0..0008505 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -318,13 +318,20 @@ namespace gamescope
@@ -1503,10 +1513,10 @@ index cdd600f..bc4746b 100644
  			m_ChosenOrientation = g_DesiredExternalOrientation;
  		}
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index ee9f9d0..146088a 100644
+index eb3936a..896ec04 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -2627,29 +2627,57 @@ static void apply_touchscreen_orientation(double *x, double *y )
+@@ -2555,29 +2555,57 @@ static void apply_touchscreen_orientation(double *x, double *y )
      double ty = 0;
  
      // Use internal screen always for orientation purposes.
@@ -1587,10 +1597,10 @@ index ee9f9d0..146088a 100644
      else if (g_ForcedScreenType == gamescope::GAMESCOPE_SCREEN_TYPE_AUTO)
      {
 -- 
-2.45.2
+2.46.0
 
 
-From b77e5214db01ab13c0a01df5a11c2631ff8a1154 Mon Sep 17 00:00:00 2001
+From 276c1220de3542467b6d8e2218dfa1f2ccfc5b79 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Mon, 20 May 2024 16:30:47 -0500
 Subject: [PATCH 17/21] Add verbose panel logs and attempt to address all
@@ -1603,7 +1613,7 @@ Subject: [PATCH 17/21] Add verbose panel logs and attempt to address all
  3 files changed, 39 insertions(+), 21 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index bc4746b..19819d4 100644
+index 0008505..bd5ffec 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -56,6 +56,7 @@ static constexpr bool k_bUseCursorPlane = false;
@@ -1653,10 +1663,10 @@ index bc4746b..19819d4 100644
  			m_ChosenOrientation = g_DesiredInternalOrientation;
  		}
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 146088a..cbaf89a 100644
+index 896ec04..e5bb2e2 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -2631,26 +2631,29 @@ static void apply_touchscreen_orientation(double *x, double *y )
+@@ -2559,26 +2559,29 @@ static void apply_touchscreen_orientation(double *x, double *y )
      {
  		if ( g_ForcedScreenType == gamescope::GAMESCOPE_SCREEN_TYPE_EXTERNAL )
  		{
@@ -1706,10 +1716,10 @@ index 146088a..cbaf89a 100644
  		}
  		else
 diff --git a/src/wlserver.hpp b/src/wlserver.hpp
-index 31fca64..82eb0e5 100644
+index 0754ee5..bdf3b0b 100644
 --- a/src/wlserver.hpp
 +++ b/src/wlserver.hpp
-@@ -311,6 +311,7 @@ extern gamescope::ConVar<bool> cv_touch_gestures;
+@@ -277,6 +277,7 @@ extern gamescope::ConVar<bool> cv_touch_gestures;
  void wlserver_open_steam_menu( bool qam );
  extern void drm_set_orientation( struct drm_t *drm, bool isRotated);
  extern drm_t g_DRM;
@@ -1718,10 +1728,10 @@ index 31fca64..82eb0e5 100644
  void wlserver_destroy_xwayland_server(gamescope_xwayland_server_t *server);
  
 -- 
-2.45.2
+2.46.0
 
 
-From 7508322c78f06e1fe67ccfeb0abb733f4661126b Mon Sep 17 00:00:00 2001
+From 11664b820a9065b597d8655e53ade8dd9a29c4bc Mon Sep 17 00:00:00 2001
 From: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
 Date: Tue, 28 May 2024 21:56:47 +0200
 Subject: [PATCH 18/21] add closing bracket
@@ -1731,7 +1741,7 @@ Subject: [PATCH 18/21] add closing bracket
  1 file changed, 1 insertion(+)
 
 diff --git a/src/main.cpp b/src/main.cpp
-index ab16459..58c77e5 100644
+index 675020f..315b718 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -465,6 +465,7 @@ static enum gamescope::GamescopeBackend parse_backend_name(const char *str)
@@ -1743,10 +1753,10 @@ index ab16459..58c77e5 100644
  std::vector<uint32_t> g_customRefreshRates;
  // eg: 60,60,90,110-120
 -- 
-2.45.2
+2.46.0
 
 
-From d8b9484c8468f4a31556af8903f03cc428982eef Mon Sep 17 00:00:00 2001
+From 1e5c439eb0b1e809a3ec6414e8d0536db22c9601 Mon Sep 17 00:00:00 2001
 From: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
 Date: Wed, 3 Jan 2024 17:03:04 +0100
 Subject: [PATCH 19/21] remove hacky texture
@@ -1757,10 +1767,10 @@ This will use more hardware planes, causing some devices to composite yeilding l
  1 file changed, 17 insertions(+), 45 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index c29403d..cd6e690 100644
+index 6fceb1d..4dbbdaf 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -1610,7 +1610,7 @@ bool MouseCursor::getTexture()
+@@ -1620,7 +1620,7 @@ bool MouseCursor::getTexture()
  				{
  					pixels[i * image->width + j] = image->pixels[i * image->width + j];
  				}
@@ -1769,7 +1779,7 @@ index c29403d..cd6e690 100644
  			std::vector<uint32_t> resizeBuffer( nDesiredWidth * nDesiredHeight );
  			stbir_resize_uint8_srgb( (unsigned char *)pixels.data(),       image->width,  image->height,  0,
  									 (unsigned char *)resizeBuffer.data(), nDesiredWidth, nDesiredHeight, 0,
-@@ -2290,7 +2290,7 @@ paint_all(bool async)
+@@ -2306,7 +2306,7 @@ paint_all(bool async)
  					}
  				}
  			}
@@ -1778,7 +1788,7 @@ index c29403d..cd6e690 100644
  			int nOldLayerCount = frameInfo.layerCount;
  
  			uint32_t flags = 0;
-@@ -2298,7 +2298,7 @@ paint_all(bool async)
+@@ -2314,7 +2314,7 @@ paint_all(bool async)
  				flags |= PaintWindowFlag::BasePlane;
  			paint_window(w, w, &frameInfo, global_focus.cursor, flags);
  			update_touch_scaling( &frameInfo );
@@ -1787,7 +1797,7 @@ index c29403d..cd6e690 100644
  			// paint UI unless it's fully hidden, which it communicates to us through opacity=0
  			// we paint it to extract scaling coefficients above, then remove the layer if one was added
  			if ( w->opacity == TRANSLUCENT && bHasVideoUnderlay && nOldLayerCount < frameInfo.layerCount )
-@@ -2311,7 +2311,7 @@ paint_all(bool async)
+@@ -2327,7 +2327,7 @@ paint_all(bool async)
  				float opacityScale = g_bPendingFade
  					? 0.0f
  					: ((currentTime - fadeOutStartTime) / (float)g_FadeOutDuration);
@@ -1796,7 +1806,7 @@ index c29403d..cd6e690 100644
  				paint_cached_base_layer(g_HeldCommits[HELD_COMMIT_FADE], g_CachedPlanes[HELD_COMMIT_FADE], &frameInfo, 1.0f - opacityScale, false);
  				paint_window(w, w, &frameInfo, global_focus.cursor, PaintWindowFlag::BasePlane | PaintWindowFlag::FadeTarget | PaintWindowFlag::DrawBorders, opacityScale, override);
  			}
-@@ -2385,34 +2385,6 @@ paint_all(bool async)
+@@ -2401,34 +2401,6 @@ paint_all(bool async)
  		if ( overlay == global_focus.inputFocusWindow )
  			update_touch_scaling( &frameInfo );
  	}
@@ -1831,7 +1841,7 @@ index c29403d..cd6e690 100644
  
  	if (notification)
  	{
-@@ -2994,7 +2966,7 @@ win_maybe_a_dropdown( steamcompmgr_win_t *w )
+@@ -3014,7 +2986,7 @@ win_maybe_a_dropdown( steamcompmgr_win_t *w )
  	//
  	// TODO: Come back to me for original Age of Empires HD launcher.
  	// Does that use it? It wants blending!
@@ -1840,7 +1850,7 @@ index c29403d..cd6e690 100644
  	// Only do this if we have CONTROLPARENT right now. Some other apps, such as the
  	// Street Fighter V (310950) Splash Screen also use LAYERED and TOOLWINDOW, and we don't
  	// want that to be overlayed.
-@@ -3009,12 +2981,12 @@ win_maybe_a_dropdown( steamcompmgr_win_t *w )
+@@ -3029,12 +3001,12 @@ win_maybe_a_dropdown( steamcompmgr_win_t *w )
  
  	// Josh:
  	// The logic here is as follows. The window will be treated as a dropdown if:
@@ -1855,7 +1865,7 @@ index c29403d..cd6e690 100644
  	// 		- If the window has transient for, disregard it, as it is trying to redirecting us elsewhere
  	//        ie. a settings menu dialog popup or something.
  	//      - If the window has both skip taskbar and pager, treat it as a dialog.
-@@ -3106,7 +3078,7 @@ static bool is_good_override_candidate( steamcompmgr_win_t *override, steamcompm
+@@ -3126,7 +3098,7 @@ static bool is_good_override_candidate( steamcompmgr_win_t *override, steamcompm
  		return false;
  
  	return override != focus && override->GetGeometry().nX >= 0 && override->GetGeometry().nY >= 0;
@@ -1864,7 +1874,7 @@ index c29403d..cd6e690 100644
  
  static bool
  pick_primary_focus_and_override(focus_t *out, Window focusControlWindow, const std::vector<steamcompmgr_win_t*>& vecPossibleFocusWindows, bool globalFocus, const std::vector<uint32_t>& ctxFocusControlAppIDs)
-@@ -3247,7 +3219,7 @@ found:;
+@@ -3267,7 +3239,7 @@ found:;
  
  	if ( focus )
  	{
@@ -1873,7 +1883,7 @@ index c29403d..cd6e690 100644
  			out->focusWindow = focus;
  		else
  			focus->outdatedInteractiveFocus = true;
-@@ -3290,9 +3262,9 @@ found:;
+@@ -3310,9 +3282,9 @@ found:;
  					override_focus = fake_override;
  					goto found2;
  				}
@@ -1885,7 +1895,7 @@ index c29403d..cd6e690 100644
  		found2:;
  		resolveTransientOverrides( true );
  	}
-@@ -4554,7 +4526,7 @@ finish_destroy_win(xwayland_ctx_t *ctx, Window id, bool gone)
+@@ -4574,7 +4546,7 @@ finish_destroy_win(xwayland_ctx_t *ctx, Window id, bool gone)
  		{
  			if (gone)
  				finish_unmap_win (ctx, w);
@@ -1894,7 +1904,7 @@ index c29403d..cd6e690 100644
  			{
  				std::unique_lock lock( ctx->list_mutex );
  				*prev = w->xwayland().next;
-@@ -4611,7 +4583,7 @@ destroy_win(xwayland_ctx_t *ctx, Window id, bool gone, bool fade)
+@@ -4631,7 +4603,7 @@ destroy_win(xwayland_ctx_t *ctx, Window id, bool gone, bool fade)
  		global_focus.overrideWindow = nullptr;
  	if (x11_win(global_focus.fadeWindow) == id && gone)
  		global_focus.fadeWindow = nullptr;
@@ -1903,7 +1913,7 @@ index c29403d..cd6e690 100644
  	MakeFocusDirty();
  
  	finish_destroy_win(ctx, id, gone);
-@@ -5220,7 +5192,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+@@ -5243,7 +5215,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
  		{
  			get_win_type(ctx, w);
  			MakeFocusDirty();
@@ -1912,7 +1922,7 @@ index c29403d..cd6e690 100644
  	}
  	if (ev->atom == ctx->atoms.sizeHintsAtom)
  	{
-@@ -6130,7 +6102,7 @@ void handle_done_commits_xdg( bool vblank, uint64_t vblank_idx )
+@@ -6153,7 +6125,7 @@ void handle_done_commits_xdg( bool vblank, uint64_t vblank_idx )
  			commits_before_their_time.push_back( entry );
  			continue;
  		}
@@ -1921,7 +1931,7 @@ index c29403d..cd6e690 100644
  		if (!entry.earliestPresentTime)
  		{
  			entry.earliestPresentTime = next_refresh_time;
-@@ -6983,7 +6955,7 @@ void update_mode_atoms(xwayland_ctx_t *root_ctx, bool* needs_flush = nullptr)
+@@ -7143,7 +7115,7 @@ void update_mode_atoms(xwayland_ctx_t *root_ctx, bool* needs_flush = nullptr)
  	}
  	XChangeProperty(root_ctx->dpy, root_ctx->root, root_ctx->atoms.gamescopeDisplayModeListExternal, XA_STRING, 8, PropModeReplace,
  		(unsigned char *)modes, strlen(modes) + 1 );
@@ -1930,7 +1940,7 @@ index c29403d..cd6e690 100644
  	uint32_t one = 1;
  	XChangeProperty(root_ctx->dpy, root_ctx->root, root_ctx->atoms.gamescopeDisplayIsExternal, XA_CARDINAL, 32, PropModeReplace,
  		(unsigned char *)&one, 1 );
-@@ -7748,7 +7720,7 @@ void steamcompmgr_send_frame_done_to_focus_window()
+@@ -7975,7 +7947,7 @@ void steamcompmgr_send_frame_done_to_focus_window()
  	{
  		wlserver_lock();
  		wlserver_send_frame_done( global_focus.focusWindow->xwayland().surface.main_surface , &now );
@@ -1940,10 +1950,10 @@ index c29403d..cd6e690 100644
  }
  
 -- 
-2.45.2
+2.46.0
 
 
-From 7eac5235caa7cb6664f637017879af95cde34ad7 Mon Sep 17 00:00:00 2001
+From 672fd75c5ac7bb1226c418270fa134ad6fe07b30 Mon Sep 17 00:00:00 2001
 From: Kyle Gospodnetich <me@kylegospodneti.ch>
 Date: Tue, 2 Jul 2024 14:12:47 -0700
 Subject: [PATCH 20/21] Only change refresh rates on internal displays
@@ -1953,7 +1963,7 @@ Subject: [PATCH 20/21] Only change refresh rates on internal displays
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 19819d4..476efef 100644
+index bd5ffec..03b9b4c 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2162,7 +2162,7 @@ namespace gamescope
@@ -1966,10 +1976,10 @@ index 19819d4..476efef 100644
  					return;
  		}
 -- 
-2.45.2
+2.46.0
 
 
-From 6db019cb96bde2d961d0408170817354915a51f5 Mon Sep 17 00:00:00 2001
+From 0cada655064b2bb2c0b5540f4c249a3c6a1254ed Mon Sep 17 00:00:00 2001
 From: Kyle Gospodnetich <me@kylegospodneti.ch>
 Date: Tue, 2 Jul 2024 15:14:23 -0700
 Subject: [PATCH 21/21] Also check g_bExternalForced
@@ -1979,7 +1989,7 @@ Subject: [PATCH 21/21] Also check g_bExternalForced
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 476efef..cf2a613 100644
+index 03b9b4c..24e81b1 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2162,9 +2162,9 @@ namespace gamescope
@@ -1996,5 +2006,5 @@ index 476efef..cf2a613 100644
  		if ( bSteamDeckDisplay )
  		{
 -- 
-2.45.2
+2.46.0
 

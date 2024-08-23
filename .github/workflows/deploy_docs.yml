@@ -1,0 +1,184 @@
+name: Deploy documentation
+
+# Check for reference:
+# https://github.com/s1rius/ezlog/blob/20dce11e6d324bb18f57dc7c7c6d4a8bf40064de/.github/workflows/publish_pages.yml
+
+on:
+  schedule:
+    - cron: "40 03 */2 * *" # Runs at 03:40, every 2 days
+  push:
+    branches:
+      - main
+    paths:
+      - docs/**/*.md
+      - docs/**/*.png
+      - docs/**/*.jpg
+      - docs/**/*.jpeg
+      - docs/**/*.po
+      - .github/workflows/deploy_docs.yml
+      - .github/workflows/install-mdbook/action.yml
+      - README*.md
+      - docs/book.toml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - docs/**/*.md
+      - docs/**/*.png
+      - docs/**/*.jpg
+      - docs/**/*.jpeg
+      - docs/**/*.po
+      - .github/workflows/deploy_docs.yml
+      - .github/workflows/install-mdbook/action.yml
+      - README*.md
+      - docs/book.toml
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  runner: ubuntu-latest
+  cache-mdbook-name: cache-mdbook-bins
+  EXTRA_LANGUAGES:
+  SITE_URL: /bazzite/
+  MDBOOK_output__html__git_repository_url: "${{ github.server_url }}/${{ github.repository }}"
+  MDBOOK_output__html__edit_url_template: "${{ github.server_url }}/${{ github.repository }}/edit/${{ github.ref_name }}/docs/{path}"
+
+jobs:
+  deploy:
+    permissions:
+      contents: read # To push a branch
+      pages: write # To push to a GitHub Pages site
+      id-token: write # To update the deployment status
+
+    runs-on: ubuntu-latest
+    # environment:
+    #   name: github-pages
+    #   url: ${{ steps.deployment.outputs.page_url }}
+    defaults:
+      run:
+        working-directory: ./docs
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install python dependencies
+        run: |
+          pip install --user requests
+
+      - name: Cache mdbook
+        id: cache-mdbook
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin
+            ~/.local/share/headless-chrome
+          key: ${{ runner.os }}-build-${{ env.cache-mdbook-name }}-${{ hashFiles('.github/workflows/install-mdbook/action.yml') }}
+
+      - name: Add mdbook to PATH
+        if: steps.cache-mdbook.outputs.cache-hit == 'true'
+        run: |
+          echo ~/.cargo/bin:$PATH >> $GITHUB_PATH
+
+      - name: Install mdbook
+        if: steps.cache-mdbook.outputs.cache-hit != 'true'
+        uses: ./.github/workflows/install-mdbook
+
+      # Necessary in order to have fetch_discourse_md.py available for mdbook-cmd
+      - name: Add docs/utils to PATH
+        run: |
+          echo $PWD/utils:$PATH >> $GITHUB_PATH
+
+      - name: Test fetch_discourse_md.py
+        run: |
+          echo "::group::Try fetching a post from discourse"
+          fetch_discourse_md.py -d "https://universal-blue.discourse.group/docs?topic=31" 2>&1 >/dev/null
+          echo "::endgroup::"
+
+      - name: Build book in English
+        env:
+          MDBOOK_output__html__site_url: ${{ env.SITE_URL }}
+          DEBUG: "1"
+        run: |
+          # This assumes your book is in the root of your repository.
+          # Just add a `cd` here if you need to change to another directory.
+          mdbook build -d $GITHUB_WORKSPACE/book
+          (
+            cd $GITHUB_WORKSPACE/book
+            shopt -s dotglob
+            mv {html,pdf}/* ./
+          )
+
+      - name: Build all translations
+        env:
+          DEBUG: "1"
+        run: |
+          for po_lang in ${{ env.EXTRA_LANGUAGES }}; do
+            echo "::group::Building $po_lang translation"
+            MDBOOK_BOOK__LANGUAGE=$po_lang \
+            MDBOOK_OUTPUT__HTML__SITE_URL=${{ env.SITE_URL }}$po_lang/ \
+            mdbook build -d $GITHUB_WORKSPACE/book/$po_lang
+            (
+              cd $GITHUB_WORKSPACE/book/$po_lang
+              shopt -s dotglob
+              mv {html,pdf}/* ./
+            )
+            echo "::endgroup::"
+          done
+
+      - name: Generate translation progress report
+        if: env.EXTRA_LANGUAGES != ''
+        continue-on-error: true
+        run: |
+          i18n-report report $GITHUB_WORKSPACE/book/i18n_report.html po/*.po
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ github.workspace }}/book
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          token: ${{ github.token }}
+
+  clean_cache:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache Cleanup
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -x
+          old_caches=($(gh cache list \
+            --repo ${{ github.repository }} \
+            --key "${{ runner.os }}-build-${{ env.cache-mdbook-name }}-"  \
+            --sort created_at -O asc --json id | jq '.[:-1][].id'))
+          for id in "${old_caches[@]}"; do
+            gh cache delete $id
+          done
+      - name: Remove Page Artifacts
+        uses: remagpie/gha-remove-artifact@v1
+        with:
+          only-name: github-pages
+          max-age: 7776000 # 90 days
+          max-count: 50
