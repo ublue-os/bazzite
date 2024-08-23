@@ -52,10 +52,6 @@ plugins:
   - search
   - offline:
       enabled: !ENV [MKDOCS_OFFLINE, false]
-  - print-site:
-      enumerate_headings: false
-      exclude:
-        - /index.md
 
 markdown_extensions:
   - attr_list

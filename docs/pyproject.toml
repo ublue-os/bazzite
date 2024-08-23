@@ -12,7 +12,6 @@ mkdocs = "^1.6.0"
 requests = "^2.32.3"
 mkdocs-material = "^9.5.32"
 mkdocs-static-i18n = {extras = ["material"], version = "^1.2.3"}
-mkdocs-print-site-plugin = "^2.5.0"
 
 
 [build-system]
