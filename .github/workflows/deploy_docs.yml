@@ -14,7 +14,6 @@ on:
       - docs/**/*.png
       - docs/**/*.jpg
       - docs/**/*.jpeg
-      - docs/**/*.po
       - .github/workflows/deploy_docs.yml
       - README*.md
   pull_request:
@@ -25,7 +24,6 @@ on:
       - docs/**/*.png
       - docs/**/*.jpg
       - docs/**/*.jpeg
-      - docs/**/*.po
       - .github/workflows/deploy_docs.yml
       - README*.md
   workflow_dispatch:
@@ -37,7 +35,6 @@ concurrency:
 env:
   runner: ubuntu-latest
   cache-mkdocs-key: cache-mkdocs
-  EXTRA_LANGUAGES:
   SITE_SUFFIX: /bazzite/
 
 jobs:
