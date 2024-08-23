@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   width="20.5"
-   height="20.5"
+   width="24"
+   height="24"
    version="1"
    id="svg7"
+   sodipodi:docname="documentation.svg"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <defs
      id="defs1">
     <linearGradient
-       id="linearGradient3">
+       id="linearGradient3"
+       inkscape:collect="always">
       <stop
          style="stop-color:#0047ab;stop-opacity:1;"
          offset="0"
@@ -21,7 +26,8 @@
          id="stop4" />
     </linearGradient>
     <linearGradient
-       id="linearGradient1">
+       id="linearGradient1"
+       inkscape:collect="always">
       <stop
          style="stop-color:#8a2be2;stop-opacity:1;"
          offset="0"
@@ -32,50 +38,69 @@
          id="stop2" />
     </linearGradient>
     <linearGradient
+       inkscape:collect="always"
        xlink:href="#linearGradient1"
        id="linearGradient2"
        x1="22.807846"
        y1="25.008402"
        x2="-39.347679"
        y2="-44.29372"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-1.75,-2)" />
+       gradientUnits="userSpaceOnUse" />
     <linearGradient
+       inkscape:collect="always"
        xlink:href="#linearGradient3"
        id="linearGradient4"
        x1="-7.3583031"
        y1="24.616745"
        x2="34.335659"
        y2="-10.171739"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-1.75,-2)" />
+       gradientUnits="userSpaceOnUse" />
   </defs>
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="24.479167"
+     inkscape:cx="2.2059574"
+     inkscape:cy="13.62383"
+     inkscape:window-width="3440"
+     inkscape:window-height="1374"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg7" />
   <path
      style="opacity:0.2"
-     d="m 3.25,0.5 c -0.554,0 -1,0.446 -1,1 v 18 c 0,0.554 0.446,1 1,1 h 14 c 0.554,0 1,-0.446 1,-1 V 6.5 L 12.75,6 12.25,0.5 Z"
+     d="m 5,2.5 c -0.554,0 -1,0.446 -1,1 v 18 c 0,0.554 0.446,1 1,1 h 14 c 0.554,0 1,-0.446 1,-1 V 8.5 L 14.5,8 14,2.5 Z"
      id="path1" />
   <path
      fill="#c03630"
-     d="m 3.25,0 c -0.554,0 -1,0.446 -1,1 v 18 c 0,0.554 0.446,1 1,1 h 14 c 0.554,0 1,-0.446 1,-1 V 6 L 12.75,5.5 12.25,0 Z"
+     d="m5 2c-0.554 0-1 0.446-1 1v18c0 0.554 0.446 1 1 1h14c0.554 0 1-0.446 1-1v-13l-5.5-0.5-0.5-5.5z"
      id="path2"
      style="fill:url(#linearGradient2);fill-opacity:1" />
   <path
-     fill="#ffffff"
+     fill="#fff"
      style="opacity:0.2"
-     d="m 3.25,0 c -0.554,0 -1,0.446 -1,1 v 0.5 c 0,-0.554 0.446,-1 1,-1 h 9 l 5.5,5.5 h 0.5 l -6,-6 z"
+     d="m5 2c-0.554 0-1 0.446-1 1v0.5c0-0.554 0.446-1 1-1h9l5.5 5.5h0.5l-6-6z"
      id="path3" />
   <path
      style="opacity:0.2"
-     d="m 12.25,0.5 v 5 c 0,0.5523 0.44772,1 1,1 h 5 z"
+     d="m 14,2.5 v 5 c 0,0.5523 0.44772,1 1,1 h 5 z"
      id="path4" />
   <path
      fill="#f36961"
-     d="m 12.25,0 v 5 c 0,0.5523 0.44772,1 1,1 h 5 z"
+     d="m14 2v5c0 0.5523 0.44772 1 1 1h5l-6-6z"
      id="path5"
-     style="opacity:1;fill:url(#linearGradient4);fill-opacity:1" />
+     style="fill:url(#linearGradient4);fill-opacity:1;opacity:1" />
   <g
      id="g1"
-     transform="translate(-1.308194,-2)"
+     transform="translate(0.44180605)"
+     sodipodi:insensitive="true"
      style="opacity:0.9;mix-blend-mode:lighten;image-rendering:auto">
     <path
        fill-rule="evenodd"

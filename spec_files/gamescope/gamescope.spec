@@ -2,12 +2,11 @@
 
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
-%global toolchain clang
 %global gamescope_tag 3.15.1
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        1.bazzite
+Release:        2.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -27,7 +26,8 @@ Patch3:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
 BuildRequires:  cmake
-BuildRequires:  clang
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  glm-devel
 BuildRequires:  google-benchmark-devel
 BuildRequires:  libXmu-devel
@@ -108,11 +108,7 @@ sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/m
 %build
 cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
-%if %{__isa_bits} == 64
 %meson --auto-features=enabled -Dforce_fallback_for=vkroots,wlroots,libliftoff
-%else
-%meson -Denable_gamescope=false -Denable_gamescope_wsi_layer=true
-%endif
 %meson_build
 
 %install
@@ -122,12 +118,10 @@ cd gamescope
 %files
 %license gamescope/LICENSE
 %doc gamescope/README.md
-%if %{__isa_bits} == 64
 %caps(cap_sys_nice=eip) %{_bindir}/gamescope
 %{_bindir}/gamescopectl
 %{_bindir}/gamescopestream
 %{_bindir}/gamescopereaper
-%endif
 
 %files libs
 %{_libdir}/libVkLayer_FROG_gamescope_wsi_*.so

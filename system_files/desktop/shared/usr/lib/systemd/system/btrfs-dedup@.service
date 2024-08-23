@@ -12,5 +12,5 @@ IOSchedulingClass=best-effort
 IOSchedulingPriority=7
 OOMScoreAdjust=1000
 CPUWeight=30
-CPUQuota=300%
+CPUQuota=100%
 IOWeight=30

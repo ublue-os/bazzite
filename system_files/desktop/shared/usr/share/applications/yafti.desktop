@@ -2,6 +2,6 @@
 Type=Application
 Name=Bazzite Portal
 Comment=First-run utility for configuring helpful additions to Bazzite
-Icon=/usr/share/ublue-os/bazzite/logo.svg
+Icon=/usr/share/ublue-os/bazzite/portal.svg
 Categories=Utility;
 Exec=/usr/bin/yafti --force
