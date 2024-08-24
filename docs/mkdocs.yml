@@ -62,6 +62,7 @@ plugins:
       token: !ENV ["GH_TOKEN"]
       repository: !ENV GITHUB_REPOSITORY
       branch: !ENV GITHUB_REF_NAME
+  - social
 
 markdown_extensions:
   - attr_list
