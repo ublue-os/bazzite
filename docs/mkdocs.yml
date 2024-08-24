@@ -40,7 +40,7 @@ hooks:
   - hooks/cmdrun.py
 
 plugins:
-  - privacy 
+  - privacy
   - i18n:
       reconfigure_material: true
       languages:
@@ -53,8 +53,13 @@ plugins:
           build: true
 
   - search
-  - offline:
-      enabled: !ENV [MKDOCS_OFFLINE, false]
+  - git-revision-date-localized:
+      enable_creation_date: !ENV [CI, false]
+  - git-committers:
+      enabled: !ENV [CI, false]
+      token: !ENV ["GH_TOKEN"]
+      repository: !ENV GITHUB_REPOSITORY
+      branch: !ENV GITHUB_REF_NAME
 
 markdown_extensions:
   - attr_list
