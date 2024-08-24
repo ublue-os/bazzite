@@ -1,70 +1,58 @@
-# Contributing to Bazzite mdBook documentation
+# Contributing to Bazzite MkDocs documentation
 
 ## Introduction
 
-This is a guide that will show you:
+This is a guide that will show you how to write, or transcribe documentation from Discourse forums (https://universal-blue.discourse.group/) to MkDocs pages.
 
-- How to write new documentation pages in mdBooks.
-- How to transcribe documentation, from Discourse forums (https://universal-blue.discourse.group/) to mdBook pages.
+## What is MkDocs
 
-## Brief explanation in how to work with mdBook
-
-> _mdBook is a command line tool to create books with Markdown. It is ideal for creating product or API documentation, tutorials, course materials or anything that requires a clean, easily navigable and customizable presentation_
+> _MkDocs is a fast, simple and downright gorgeous static site generator that's geared towards building project documentation. Documentation source files are written in Markdown, and configured with a single YAML configuration file._
 >
-> Source ~ https://rust-lang.github.io/mdBook/
+> Source ~ https://www.mkdocs.org/
 
 **TL;DR**: Its a fancy way tool that allows us to create a documentation website with basic [Markdown](https://commonmark.org/help/).
 
----
+The essential part that cant be missing in a mdBook is the `mkdocs.yml` file.
 
-The essential part that cant be missing in a mdBook is the `SUMMARY.md` file.
+`mkdocs.yml` acts as our main configuration file. One of its main tasks is to configure the **Table of Contents** and to configure translation files.
 
-```md
-<!-- Example of SUMMARY.md contents -->
+## Setup MkDocs tooling
 
-# General
+> ⚠️ WARNING ⚠️
+>
+> This step is **required** in order to setup previews of the resulting MkDocs
 
-- [📜 Bazzite's README](Bazzite_README.md)
-- [❓️ FAQ](General/FAQ.md)
-- [📖 Installation Guide](General/Installation_Guide/index.md)
-- [📝 Desktop Environment Tweaks](General/Desktop_Environment_Tweaks.md)
-- [🤝 Contributing to Bazzite](General/Contributing_to_Bazzite.md)
-- [🎲 Gaming](Gaming/index.md)
-  - [Game Launchers](Gaming/Game_Launchers.md)
+To install our dependencies, run this:
 
-# Steam Gaming Mode / Handheld & HTPC Hardware
-
-- [📺️ Steam Gaming Mode Overview](Handheld_and_HTPC_edition/Steam_Gaming_Mode/index.md)
-  - [Change Physical Keyboard Layout for Steam Gaming Mode](Handheld_and_HTPC_edition/Change_Physical_Keyboard_Layout_for_Steam_Gaming_Mode.md)
+```sh
+bash docs/utils/install-deps.sh
 ```
 
-`SUMMARY.md` acts not only as a nice looking table of contents, but as indexer as well.
+<details>
+<summary>
+<big>Dependencies list</big><br>
+<sup>Ignore if using install-deps.sh</sup>
+</summary>
 
-**If a page is not listed in `SUMMARY.md`, it wont be included in the mdBook**\*
+- [Poetry](https://python-poetry.org/) (can be installed with Homebrew)
+- [Just](https://just.systems/man/en/) (preinstalled in all [Universal Blue](https://universal-blue.org/) images)
 
-<small>\* Just so you are aware </small>
+</details>
 
----
+You will need other tools as well, like:
 
-## Transcribe Discourse docs to mdBooks
+- A markdown compatible code editor (ex.: **Visual Studio Code**)
+- **git** (comes preinstalled in most Linux distributions)
 
-Requirements:
+## Transcribe Discourse docs to MkDocs
 
-- Markdown compatible code editor (ex.: Visual Studio Code)
-- mdBook (can be installed with Homebrew\*)
-- Git
-
-<small>\* If you are using Bazzite or [similar](https://universal-blue.org/), chances are that you already have it installed.</small>
-
----
-
-Best way to learn is with a real life example. We will transcribe https://universal-blue.discourse.group/docs?topic=2743
+Best way to learn is with a real life example. We will transcribe <https://universal-blue.discourse.group/docs?topic=2657>, which at the time of writting is a post called _Managing and Modding Games_.
 
 ### 1. Basic preparation
 
 We will start with getting our utilities ready:
 
-1. A web browser with the Discourse doc page we want to transcribe. We will use <https://universal-blue.discourse.group/docs?topic=2743> for this example.
+1. A web browser with the Discourse doc page we want to transcribe. We will use <https://universal-blue.discourse.group/docs?topic=2657> for this example.
 2. Our code editor.
 3. A terminal open in the `docs` directory
 
@@ -87,7 +75,7 @@ We will start with getting our utilities ready:
 2. In the terminal, pass the URL to `fetch_discourse_md.py`
 
    ```sh
-   $ ./utils/fetch_discourse_md.py "https://universal-blue.discourse.group/docs?topic=2743" | wl-copy
+   $ ./utils/fetch_discourse_md.py "https://universal-blue.discourse.group/docs?topic=2657" | wl-copy
    ```
 
    Normally, `fetch_discourse_md.py` would dump the resulting markdown doc in the terminal output, with `wl-copy` we store it in our clipboard for now.
@@ -109,129 +97,85 @@ We will start with getting our utilities ready:
 
 We are almost done. The problem is `fetch_discourse_md.py` only will give us a dumped version of the Discourse document.
 
-There is posibly URLs that are pointing to other documentation posts in Discourse that we might have already in our mdBook.
+There is posibly URLs that are pointing to other documentation posts in Discourse that we might have already in our MkDocs.
 
 ![](./src/img/doc_guide_discourse_url.jpg)
 
 The url in the image above is pointing to the _Steam Gaming Mode Overview (Handheld/HTPC)_ post.
-At the time of writting this, we have that post avaliable in our mdBook, so we can simply replace that URL with ours
+At the time of writting this, we have that post avaliable in our MkDocs, so we can simply replace that URL with ours
 
 ![](./src/img/doc_guide_rewrite_url.jpg)
 
 In our case, the post is located in `../Handheld_and_HTPC_edition/Steam_Gaming_Mode/index.md`
 
-### 6. Link back in `SUMMARY.md`
+### 6. Add our page to navigation bar
 
-We can check how our post looks in mdBook, run in the terminal
+> [!TIP]
+> You can skip this step if you dont need to show the page in the navigation bar
+
+We can check how our post looks in MkDocs, run in the terminal
 
 ```sh
-mdbook serve --open
+just mkdocs serve
 ```
 
 Now, more likely you wont find our new added post.
 
 ![](./src/img/doc_guide_where_did_go.jpg)
 
-If you take a look at [the brief explanation](#brief-explanation-in-how-to-work-with-mdbook), you will read about `SUMMARY.md`. Files not listed in there wont be processed by mdBook.
+If you take a look at [the brief explanation](#what-is-mkdocs), you will read about `mkdocs.yml`. Files not listed in there wont be added to the navigation bar, though still will be accessible with the search bar.
 
-Lets add our file there.
+Lets add our file there. Look for the `nav` field in there and add the new file as shown:
 
 ![](./src/img/doc_guide_add_summary.jpg)
 
-And now our post is ready.
+And now our post should be visible in the nav bar.
 
-![](./src/img/doc_guide_there_you_are.jpg)
+### 7. (Bonus) Set a proper page name
+
+You can add more explicit page titles (used by the browser tab names) by using YAML metadata.
+
+Adding this at the start of the markdown file would change the tab name to "Hello world":
+
+```yaml
+---
+title: "Hello world"
+---
+```
 
 ## Translate documentation
 
 > ⚠️ WARNING
 >
-> It is better to start translation once [transcription](#transcribe-discourse-docs-to-mdbooks) is settled to keep up.
+> It is better to start translation once [transcription](#transcribe-discourse-docs-to-mkdocs) in a post is settled to keep up.
 
-Translation isnt so straightforward as copying a markdown file and start working.
+Translating documentation is as straightfoward as can be.
+Lets say we want to translate `Homebrew.md` to Spanish. All what you would have to do is make a copy of the file with the name `Homebrew.es.md` and start translating.
 
-We rely in [mdbook-i18n-helpers](https://github.com/google/mdbook-i18n-helpers) for translation, which uses [GNU Gettext](https://www.gnu.org/software/gettext/manual/html_node/index.html).
+Perhaps you cant see your translation with `just mkdocs serve`.
+Chances are we need to configure MkDocs to do so.
 
-We need some more dependencies in order to do translations, which can be installed with this script:
+Open `mkdocs.yml`, look for the field `languages`, should look something like this:
 
-```sh
-bash docs/utils/install-deps.sh
+```yaml
+languages:
+   - locale: en
+      default: true
+      name: English
+      build: true
 ```
 
-<details>
-<summary>
-<big>Dependencies list</big><br>
-<sup>Ignore if using install-deps.sh</sup>
-</summary>
+Add your language, in our case is Spanish:
 
-- `.po` file editor (like [Poedit](https://flathub.org/apps/net.poedit.Poedit))
-- Rust's `cargo` (you can install rust by running
-  `brew install rustup; rustup-init`)
-- `mdbook-i18n-helpers` (after installing rust,
-  `cargo install mdbook-i18n-helpers`)
-
-</details>
-
-### 1. Basic preparation
-
-Move to `docs`, then build the `.pot` file
-
-```sh
-cd docs
-just build_messages_pot
+```yaml
+languages:
+   - locale: en
+      default: true
+      name: English
+      build: true
+   - locale: es
+      name: Spanish
+      build: true
 ```
 
-This will create `po/messages.pot`, which acts as an index of text fragments
-from all our markdown files.
-
-### 2. (Optional) Add a new language
-
-All translations files are stored in `docs/po/` in the form of `xx.po` files, `xx` referencing the language code following [ISO 639][ISO]. Per example, `es.po` would be an Spanish translation
-file.
-
-To add a new language to the documentation, follows these steps:
-
-1. Get sure you did the [basic preparation](#1-basic-preparation-1)
-2. Then run this, replacing `XX` with the [language code][ISO]:
-
-   ```sh
-   just add_translation XX
-   ```
-
-   In my case, I'm going to create an Spanish translation file:
-
-   ```sh
-   just add_translation es
-   ls po/
-   # es.po  messages.pot
-   ```
-
-### 3. Working with a translation file
-
-![Poedit](./src/img/poedit.jpg)
-
-We will now open that `.po` file with our po editor (in my case is Poedit).
-
-We make some changes, hit <kbd>Ctrl</kbd>+<kbd>S</kbd> to save.
-
-Lets see the changes we had done with a preview. Run this:
-
-```sh
-just preview_translation XX
-```
-
-In my case is `es`
-
-```sh
-just preview_translation es
-```
-
-And there it is!
-
-![](./src/img/translation_example.jpg)
-
-## Write new documentation
-
-WIP
-
-[ISO]: https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
+And now MkDocs should show a language selector in the top bar.
