@@ -2,6 +2,7 @@ site_name: Bazzite Documentation
 site_author: nicknamenamenick
 site_url: !ENV MKDOCS_SITE_URL
 repo_url: !ENV MKDOCS_REPO_URL
+repo_name: !ENV GITHUB_REPOSITORY
 
 theme:
   name: material
@@ -26,6 +27,8 @@ theme:
 
   favicon: img/favicon.svg
   logo: img/logo_BW.svg
+  icon:
+    repo: fontawesome/brands/github
   features:
     - navigation.indexes
     - navigation.sections
@@ -37,7 +40,7 @@ hooks:
   - hooks/cmdrun.py
 
 plugins:
-  - privacy
+  - privacy 
   - i18n:
       reconfigure_material: true
       languages:

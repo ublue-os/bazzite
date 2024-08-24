@@ -36,6 +36,7 @@ env:
   runner: ubuntu-latest
   cache-mkdocs-key: cache-mkdocs
   SITE_SUFFIX: /bazzite/
+  REPO_URL: ${{ github.server_url }}/${{ github.repository }}
 
 jobs:
   deploy:
@@ -73,6 +74,7 @@ jobs:
         uses: ./.github/workflows/build_mkdocs
         with:
           site_url: ${{ env.SITE_URL }}
+          repo_url: ${{ env.REPO_URL }}
           working_dir: ${{ github.workspace }}/docs
           output_dir: ${{ github.workspace }}/book
           upload_github_page: "true"
