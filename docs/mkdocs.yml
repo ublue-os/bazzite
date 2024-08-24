@@ -32,6 +32,8 @@ theme:
   features:
     - navigation.indexes
     - navigation.sections
+    - navigation.instant
+    - toc.integrate
 
 docs_dir: src
 site_dir: book
