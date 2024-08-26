@@ -48,7 +48,7 @@
   - [Appimage](Installing_and_Managing_Software/AppImage.md)
   - [rpm-ostree](Installing_and_Managing_Software/rpm-ostree.md)
   - [Tutorials for Installing Other Software](Installing_and_Managing_Software/index.md)
-- [Updates, Rollbacks, & Rebasing](Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing.md)
+- [Updates, Rollbacks, & Rebasing](Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/index.md)
   - [Updating Guide](Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/updating_guide.md)
   - [Rolling Back System Updates](Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rolling_back_system_updates.md)
   - [Rebase Guide](Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rebase_guide.md)
