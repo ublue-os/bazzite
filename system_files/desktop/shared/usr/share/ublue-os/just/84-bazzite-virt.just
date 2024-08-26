@@ -95,9 +95,18 @@ setup-virtualization ACTION="":
             --append-if-missing="vfio_pci.disable_vga=1"
           echo "VFIO will be enabled on next boot, make sure you enable IOMMU, VT-d or AMD-v in your BIOS!"
           echo "Please understand that since this is such a niche use case, support will be very limited!"
-          echo "To add your unused/second GPU device ids to the vfio driver by running"
+          echo ""
+          echo "${b}Systems with multiple GPUs${n}"
+          echo "Bind your unused/second GPU device ids to the vfio driver by running"
           echo 'rpm-ostree kargs --append-if-missing="vfio-pci.ids=xxxx:yyyy,xxxx:yyzz"'
-          echo "NOTE: Your second GPU will not be usable by the host after you do this!"
+          echo "You will require a $(Urllink "https://www.amazon.com/s?k=hdmi+displayport+dummy+plug" "Dummy HDMI/DisplayPort plug (Ghost Adapter)") or hook the GPU"
+          echo "to a separate monitor input in order to turn the GPU on when starting the VM."
+          echo "NOTE: Your second GPU will not be usable by the host after you bind it to the vfio driver!"
+          echo ""
+          echo "${b}Systems with 1 GPU${n}"
+          echo "Once rebooted you can continue setting up whatever scripts and hooks you need"
+          echo "to get Single GPU passthrough working, however ${u}you will be on your own${n}."
+          echo "${b}Do not ask for support for setting up Single GPU Passthrough, we can not help you!${n}"
         fi
       fi
     elif [[ "${OPTION,,}" =~ (^disable[[:space:]]vfio|vfio-off) ]]; then
