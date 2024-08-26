@@ -504,7 +504,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             qt \
             krdp && \
         rpm-ostree override remove \
-            plasma-welcome && \
+            plasma-welcome \
+            konsole && \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
@@ -571,6 +572,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             gnome-classic-session-xsession \
             gnome-tour \
             gnome-extensions-app \
+            gnome-terminal \
             gnome-terminal-nautilus \
             gnome-initial-setup && \
         mkdir -p /tmp/tilingshell && \
