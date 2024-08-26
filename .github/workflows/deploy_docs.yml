@@ -140,7 +140,7 @@ jobs:
           i18n-report report $GITHUB_WORKSPACE/book/i18n_report.html po/*.po
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
