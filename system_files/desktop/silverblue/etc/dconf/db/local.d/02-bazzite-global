@@ -59,6 +59,8 @@ flatpak='off'
 restore-session=false
 restore-window-size=false
 audible-bell=false
+default-columns=uint32 85
+default-rows=uint32 25
 
 [org/gnome/shell/extensions/Logo-menu]
 symbolic-icon=false
