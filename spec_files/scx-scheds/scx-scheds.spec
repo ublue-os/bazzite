@@ -1,11 +1,11 @@
-%define commit 33b6ada98e2a9b417fcd90ddd935a55e53a989fc
+%define commit 83cd26eb9ebca69a155d83e907679fdee11ca039
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global build_timestamp %(date +"%Y%m%d")
 %global rel_build git.%{build_timestamp}.%{shortcommit}%{?dist}
 %define _disable_source_fetch 0
 
 Name:           scx-scheds
-Version:        1.0.1
+Version:        1.0.3
 Release:        %{rel_build}
 Summary:        Sched_ext Schedulers and Tools
 
