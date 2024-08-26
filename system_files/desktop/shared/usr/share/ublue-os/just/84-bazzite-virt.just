@@ -43,7 +43,7 @@ setup-virtualization ACTION="":
     if [[ "${OPTION,,}" =~ (^enable[[:space:]]virtualization|virt-on) ]]; then
         if ! rpm -q virt-manager | grep -P "^virt-manager-" 1>/dev/null; then
           echo "Installing QEMU and virt-manager..."
-          rpm-ostree install -y virt-manager edk2-ovmf qemu
+          rpm-ostree install -y virt-manager edk2-ovmf qemu libvirt
           rpm-ostree kargs \
           --append-if-missing="kvm.ignore_msrs=1" \
           --append-if-missing="kvm.report_ignored_msrs=0"
@@ -61,7 +61,7 @@ setup-virtualization ACTION="":
         sudo systemctl disable --now bazzite-libvirtd-setup.service 2> /dev/null
       fi
       echo "Removing QEMU and virt-manager..."
-      rpm-ostree remove -y virt-manager edk2-ovmf qemu
+      rpm-ostree remove -y virt-manager edk2-ovmf qemu libvirt
       rpm-ostree kargs \
       --delete-if-present="kvm.ignore_msrs=1" \
       --delete-if-present="kvm.report_ignored_msrs=0"
