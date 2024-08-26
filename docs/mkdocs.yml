@@ -32,7 +32,7 @@ theme:
   features:
     - navigation.indexes
     - navigation.sections
-    - navigation.instant
+    # - navigation.instant # Incompatible with mkdocs_static_i18n
     - toc.integrate
 
 docs_dir: src
@@ -44,7 +44,6 @@ hooks:
 plugins:
   - privacy
   - i18n:
-      reconfigure_material: true
       languages:
         - locale: en
           default: true
