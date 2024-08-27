@@ -65,7 +65,6 @@
 
 ##### **_Follow the documentation below at your own risk!_**
 
-- [🤝 Contributing to Bazzite](General/Contributing_to_Bazzite.md)
 - [Auto-Mounting Secondary Drives](Advanced/Auto-Mounting_Secondary_Drives.md)
 - [Reset User Password](Advanced/Reset_User_Password.md)
 - [Contributing to Bazzite](Advanced/Contributing_to_bazzite.md)
