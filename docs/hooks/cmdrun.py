@@ -3,11 +3,34 @@ import os
 from pathlib import Path
 import sys
 from mkdocs.config.defaults import MkDocsConfig
+from mkdocs import plugins
+from mkdocs.structure.pages import Page
+from mkdocs.structure.files import Files
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from copy import copy
 import re
 from fetch_discourse_md import fetch as fetch_md_discourse
+
+
+URL_MAPPINGS = [
+    (  # src/index.md
+        "https://universal-blue.discourse.group/docs?topic=561",
+        "/",
+    ),
+    (  # src/Handheld_and_HTPC_edition/Handheld_Wiki/index.md
+        "https://universal-blue.discourse.group/docs?topic=1038",
+        "/Handheld_and_HTPC_edition/Handheld_Wiki/",
+    ),
+    (  # src/Handheld_and_HTPC_edition/Handheld_Wiki/Steam_Deck.md
+        "https://universal-blue.discourse.group/docs?topic=1849",
+        "/Handheld_and_HTPC_edition/Handheld_Wiki/Steam_Deck/",
+    ),
+    (  # src/Handheld_and_HTPC_edition/Steam_Gaming_Mode/index.md
+        "https://universal-blue.discourse.group/docs?topic=37",
+        "/Handheld_and_HTPC_edition/Steam_Gaming_Mode/",
+    ),
+]
 
 
 CMDRUN_PATTERN = r"<!--\s?cmdrun\s+fetch_discourse_md\.py\s+\"(.*)\"\s*-->"
@@ -56,14 +79,37 @@ def on_config(config: MkDocsConfig):
         pass
 
 
-def on_page_markdown(markdown: str, **kargs):
+@plugins.event_priority(100)
+def _on_page_markdown_fetch_discourse(markdown: str, **kargs):
     markdown_orig = markdown
     result = copy(markdown_orig)
 
     try:
-        # First find all iterations of `<!-- cmdrun whatevercommand -->`
         result = re.sub(CMDRUN_PATTERN, _cmdrun_sub_handler, markdown_orig)
     except Exception as err:
         print("ERROR", err)
 
     return result
+
+
+@plugins.event_priority(99)
+def _on_page_markdown_replace_urls(
+    markdown: str,
+    page: Page,
+    config: MkDocsConfig,
+    files: Files,
+    **kargs,
+):
+    """Replace discourse urls"""
+    res = markdown
+    for src, dst in URL_MAPPINGS:
+        if config.site_url:
+            dst = f"{config.site_url.rstrip("/")}/{dst.lstrip("/")}"
+        res = res.replace(src, dst)
+    return res
+
+
+on_page_markdown = plugins.CombinedEvent(
+    _on_page_markdown_fetch_discourse,
+    _on_page_markdown_replace_urls,
+)
