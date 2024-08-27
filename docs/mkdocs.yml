@@ -61,6 +61,7 @@ plugins:
   - search
   - git-revision-date-localized:
       enable_creation_date: !ENV [CI, false]
+      fallback_to_build_date: true
   - git-committers:
       enabled: !ENV [CI, false]
       token: !ENV ["GH_TOKEN"]
