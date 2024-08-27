@@ -30,6 +30,10 @@ URL_MAPPINGS = [
         "https://universal-blue.discourse.group/docs?topic=37",
         "/Handheld_and_HTPC_edition/Steam_Gaming_Mode/",
     ),
+    (  # src/General/Installation_Guide/dual_boot_setup_guide.md
+        "https://universal-blue.discourse.group/docs?topic=2743",
+        "/General/Installation_Guide/dual_boot_setup_guide/",
+    ),
 ]
 
 
