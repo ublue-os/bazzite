@@ -7,7 +7,6 @@
 # Table of Contents
 
 - [Bazzite's README](Bazzite_README.md)
-- [Bazzite Resources](Bazzite_resources.md)
 - [FAQ](General/FAQ.md)
 - [Installation Guide](General/Installation_Guide/index.md)
 
