@@ -33,7 +33,6 @@
 # Steam Gaming Mode / Handheld & HTPC Hardware
 
 - [Steam Gaming Mode Overview](Handheld_and_HTPC_edition/Steam_Gaming_Mode/index.md)
-  - [Change Physical Keyboard Layout for Steam Gaming Mode](Handheld_and_HTPC_edition/Change_Physical_Keyboard_Layout_for_Steam_Gaming_Mode.md)
 - [Handheld Wiki](Handheld_and_HTPC_edition/Handheld_Wiki/index.md)
   - [Steam Deck](Handheld_and_HTPC_edition/Handheld_Wiki/Steam_Deck.md)
   - [Lenovo Legion Go](Handheld_and_HTPC_edition/Handheld_Wiki/Lenovo_Legion_Go.md)
