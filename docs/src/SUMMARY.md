@@ -30,7 +30,7 @@
 - [Desktop Environment Tweaks](General/Desktop_Environment_Tweaks.md)
 - [Reporting Bugs](General/reporting_bugs.md)
 
-# Steam Gaming Mode / Handheld & HTPC Hardware
+# Handheld & HTPC Hardware
 
 - [Steam Gaming Mode Overview](Handheld_and_HTPC_edition/Steam_Gaming_Mode/index.md)
   - [Change Physical Keyboard Layout for Steam Gaming Mode](Handheld_and_HTPC_edition/Change_Physical_Keyboard_Layout_for_Steam_Gaming_Mode.md)
