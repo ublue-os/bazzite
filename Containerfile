@@ -471,12 +471,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         latencyflex-vulkan-layer \
         vkBasalt.x86_64 \
         vkBasalt.i686 \
-        obs-vkcapture.x86_64 \
-        libobs_vkcapture.x86_64 \
-        libobs_glcapture.x86_64 \
-        obs-vkcapture.i686 \
-        libobs_vkcapture.i686 \
-        libobs_glcapture.i686 \
         mangohud.x86_64 \
         mangohud.i686 && \
     ln -s wine32 /usr/bin/wine && \
