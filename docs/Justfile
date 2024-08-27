@@ -9,6 +9,7 @@ install_dependencies:
     bash ./utils/install-deps.sh
 
 mkdocs +ARGS="":
+    rm -rf {{ MKDOCS_DIR }}/.cache/cmdrun
     poetry run mkdocs {{ ARGS }}
 
 mkdocs_clean:
