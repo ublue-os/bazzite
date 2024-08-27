@@ -31,6 +31,12 @@ CURRENT_FREE_ZRAM=$(sysctl vm.min_free_kbytes | awk '{print $3}')
 KARGS=$(rpm-ostree kargs)
 NEEDED_KARGS=()
 
+# UPDATES
+if [[ -f /var/ublue-update/branch ]]; then
+  echo "Removing previously used branch selection file"
+  rm -f /var/ublue-update/branch
+fi
+
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
 

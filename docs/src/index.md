@@ -1,33 +1,39 @@
+<div class="hidden">
+
+[Introduction](Introduction.md)
+
+</div>
+
 # Table of Contents
 
-- [📜 Bazzite's README](Bazzite_README.md)
-- [📓 Bazzite Resources](Bazzite_resources.md)
-- [❓️ FAQ](General/FAQ.md)
-- [📖 Installation Guide](General/Installation_Guide/index.md)
+- [Bazzite's README](Bazzite_README.md)
+- [Bazzite Resources](Bazzite_resources.md)
+- [FAQ](General/FAQ.md)
+- [Installation Guide](General/Installation_Guide/index.md)
 
-  - [🖥️ Installing Bazzite for Desktop/Laptop Hardware](General/Installation_Guide/Installing_Bazzite_for_Desktop_or_Laptop_Hardware.md)
-  - [⚙️ Installing Bazzite for Framework Laptop 16](General/Installation_Guide/Installing_Bazzite_for_Framework_Laptop_16.md)
-  - [💻️ Installing Bazzite for Framework Laptop 13 (AMD/Intel GPU)](General/Installation_Guide/Installing_Bazzite_Framework_Laptop_13.md)
-  - [🎮️ Installing Bazzite for Home Theater PC (HTPC) Setups](General/Installation_Guide/Installing_Bazzite_for_HTPC_Setups.md)\*
-  - [🚂 Installing Bazzite on the Steam Deck](General/Installation_Guide/Installing_Bazzite_for_Steam_Deck.md)\*
-  - [📟️ Installing Bazzite on Handheld PCs](General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs.md)\*
+  - [Installing Bazzite for Desktop/Laptop Hardware](General/Installation_Guide/Installing_Bazzite_for_Desktop_or_Laptop_Hardware.md)
+  - [Installing Bazzite for Framework Laptop 16](General/Installation_Guide/Installing_Bazzite_for_Framework_Laptop_16.md)
+  - [Installing Bazzite for Framework Laptop 13 (AMD/Intel GPU)](General/Installation_Guide/Installing_Bazzite_Framework_Laptop_13.md)
+  - [Installing Bazzite for Home Theater PC (HTPC) Setups](General/Installation_Guide/Installing_Bazzite_for_HTPC_Setups.md)\*
+  - [Installing Bazzite on the Steam Deck](General/Installation_Guide/Installing_Bazzite_for_Steam_Deck.md)\*
+  - [Installing Bazzite on Handheld PCs](General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs.md)\*
   - [Installation Troubleshoot Guide](General/Installation_Guide/troubleshoot_guide.md)
   - [Secure Boot Instructions](General/Installation_Guide/secure_boot.md)
   - [Dual Boot Preliminary Setup and Post-Setup Guide](General/Installation_Guide/dual_boot_setup_guide.md)
 
     \* _Indicates that Steam Gaming Mode is intended for this device and ships with the ISO._
 
-- [🎲 Gaming](Gaming/index.md)
+- [Gaming](Gaming/index.md)
   - [Game Launchers](Gaming/Game_Launchers.md)
   - [Managing & Modding Games](Gaming/Managing_and_modding_games.md)
   - [Common Gaming Issues](Gaming/Common_gaming_issues.md)
   - [Hardware Compatibility for Gaming](Gaming/Common_gaming_issues.md)
-- [📝 Desktop Environment Tweaks](General/Desktop_Environment_Tweaks.md)
-- [🪲 Reporting Bugs](General/reporting_bugs.md)
+- [Desktop Environment Tweaks](General/Desktop_Environment_Tweaks.md)
+- [Reporting Bugs](General/reporting_bugs.md)
 
 # Steam Gaming Mode / Handheld & HTPC Hardware
 
-- [📺️ Steam Gaming Mode Overview](Handheld_and_HTPC_edition/Steam_Gaming_Mode/index.md)
+- [Steam Gaming Mode Overview](Handheld_and_HTPC_edition/Steam_Gaming_Mode/index.md)
   - [Change Physical Keyboard Layout for Steam Gaming Mode](Handheld_and_HTPC_edition/Change_Physical_Keyboard_Layout_for_Steam_Gaming_Mode.md)
 - [Handheld Wiki](Handheld_and_HTPC_edition/Handheld_Wiki/index.md)
   - [Steam Deck](Handheld_and_HTPC_edition/Handheld_Wiki/Steam_Deck.md)
