@@ -4,7 +4,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to fill out this bug report!
+        Thank you for taking the time to fill out this bug report! The Bazzite team will NEVER ask you to download arbritary files from the internet, help us keep GitHub clean by reporting phishing links.
   - type: textarea
     id: describe-bug
     attributes:
