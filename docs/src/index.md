@@ -1,9 +1,3 @@
-<div class="hidden">
-
-[Introduction](Introduction.md)
-
-</div>
-
 # Table of Contents
 
 - [Bazzite's README](Bazzite_README.md)
