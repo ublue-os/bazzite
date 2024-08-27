@@ -26,7 +26,7 @@
   - [Game Launchers](Gaming/Game_Launchers.md)
   - [Managing & Modding Games](Gaming/Managing_and_modding_games.md)
   - [Common Gaming Issues](Gaming/Common_gaming_issues.md)
-  - [Hardware Compatibility for Gaming](Gaming/Common_gaming_issues.md)
+  - [Hardware Compatibility for Gaming](Gaming/Hardware_compatibility_for_gaming.md)
 - [Desktop Environment Tweaks](General/Desktop_Environment_Tweaks.md)
 - [Reporting Bugs](General/reporting_bugs.md)
 
