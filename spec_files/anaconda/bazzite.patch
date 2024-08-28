@@ -10,7 +10,7 @@ diff -Naur a/pyanaconda/display.py b/pyanaconda/display.py
 +    with open("/sys/devices/virtual/dmi/id/product_name") as f:
 +        dmi = f.read().strip()
 +
-+    if "Jupiter" in dmi or "Galileo" in dmi:
++    if "Jupiter" in dmi or "Galileo" in dmi or "NEXT" in dmi:
 +        runres = "1280x800"
 +
      if runres and gui_mode and not flags.usevnc:
@@ -26,7 +26,7 @@ diff -Naur a/pyanaconda/ui/gui/__init__.py b/pyanaconda/ui/gui/__init__.py
 +        with open("/sys/devices/virtual/dmi/id/product_name") as f:
 +            dmi = f.read().strip()
 +
-+        if "Jupiter" in dmi or "Galileo" in dmi:
++        if "Jupiter" in dmi or "Galileo" in dmi or "NEXT" in dmi:
 +            util.setenv("GDK_SCALE", "1")
 +            return
 +

@@ -26,14 +26,13 @@
   - [Game Launchers](Gaming/Game_Launchers.md)
   - [Managing & Modding Games](Gaming/Managing_and_modding_games.md)
   - [Common Gaming Issues](Gaming/Common_gaming_issues.md)
-  - [Hardware Compatibility for Gaming](Gaming/Common_gaming_issues.md)
+  - [Hardware Compatibility for Gaming](Gaming/Hardware_compatibility_for_gaming.md)
 - [Desktop Environment Tweaks](General/Desktop_Environment_Tweaks.md)
 - [Reporting Bugs](General/reporting_bugs.md)
 
-# Steam Gaming Mode / Handheld & HTPC Hardware
+# Handheld & HTPC Hardware
 
 - [Steam Gaming Mode Overview](Handheld_and_HTPC_edition/Steam_Gaming_Mode/index.md)
-  - [Change Physical Keyboard Layout for Steam Gaming Mode](Handheld_and_HTPC_edition/Change_Physical_Keyboard_Layout_for_Steam_Gaming_Mode.md)
 - [Handheld Wiki](Handheld_and_HTPC_edition/Handheld_Wiki/index.md)
   - [Steam Deck](Handheld_and_HTPC_edition/Handheld_Wiki/Steam_Deck.md)
   - [Lenovo Legion Go](Handheld_and_HTPC_edition/Handheld_Wiki/Lenovo_Legion_Go.md)
@@ -66,4 +65,5 @@
 
 - [Auto-Mounting Secondary Drives](Advanced/Auto-Mounting_Secondary_Drives.md)
 - [Reset User Password](Advanced/Reset_User_Password.md)
+- [Creating A Custom Bazzite Image](Advanced/creating_custom_image.md)
 - [Contributing to Bazzite](Advanced/Contributing_to_bazzite.md)
