@@ -45,6 +45,8 @@ theme:
     - navigation.tabs
     # - navigation.instant # Incompatible with mkdocs_static_i18n
     - toc.integrate
+    - search.suggest
+    - search.highlight
 
 docs_dir: src
 site_dir: book
