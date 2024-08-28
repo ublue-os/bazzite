@@ -14,7 +14,7 @@ The name of the project is `Bazzite`. It is built with [Universal Blue](https://
 
 ## Incorrect Usage
 - `Bazzite OS` - or any addition of "OS" to the name.
-- `Fedora Bluefin` - this implies a formal relationship between Fedora and Bluefin. Check the [mission document](https://universal-blue.org/mission.html) for more information about the relationship between Fedora and Universal Blue
+- `Fedora Bazzite` - this implies a formal relationship between Fedora and Bazzite. Check the [mission document](https://universal-blue.org/mission.html) for more information about the relationship between Fedora and Universal Blue
 - `Universal Bazzite` or `uBlue Bazzite` - "Bazzite is built with Universal Blue" or "Bazzite is a Universal Blue image" is recommended instead.
 - "Immutable Distribution" - Bazzite is an operating system, it is neither immutable nor a distribution, it is a custom image based on Fedora. As an alternative for immutable, the word `Atomic` may be used.
 
