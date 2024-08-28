@@ -505,7 +505,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             krdp && \
         rpm-ostree override remove \
             plasma-welcome \
-            konsole && \
+            konsole \
+            konsole5 && \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \

@@ -2,7 +2,7 @@
 restore-session=false
 restore-window-size=false
 audible-bell=false
-default-columns=uint32 85
+default-columns=uint32 111
 default-rows=uint32 25
 profile-uuids=['2871e8027773ae74d6c87a5f659bbc74']
 default-profile-uuid='2871e8027773ae74d6c87a5f659bbc74'
