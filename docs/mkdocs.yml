@@ -12,6 +12,8 @@ validation:
     anchors: warn
     unrecognized_links: warn
 
+extra_css:
+  - stylesheets/image_sizing.css
 theme:
   name: material
   custom_dir: theme_overrides
