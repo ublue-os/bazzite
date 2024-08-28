@@ -131,11 +131,15 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v4
 
-      - name: Download offline documentation
+      # Prepare offline documentation
+      - run: mkdir -p ${{ github.workspace }}/system_files/desktop/shared/usr/share/ublue-os/docs/html
+      - name: Build offline documentation
+        uses: ./.github/workflows/build_mkdocs
         continue-on-error: true
-        run: |
-          mkdir -p ${{ github.workspace }}/system_files/desktop/shared/usr/share/ublue-os/docs
-          curl -Lo ${{ github.workspace }}/system_files/desktop/shared/usr/share/ublue-os/docs/bazzite_docs.pdf https://ublue-os.github.io/bazzite/output.pdf
+        with:
+          github_token: ${{ github.token }}
+          output_dir: ${{ github.workspace }}/system_files/desktop/shared/usr/share/ublue-os/docs/html
+          upload_github_page: "false"
 
       - name: Check just syntax
         uses: ublue-os/just-action@v1

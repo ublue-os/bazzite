@@ -1,8 +1,7 @@
-<div class="hidden">
-
-[Introduction](Introduction.md)
-
-</div>
+---
+hide:
+  - navigation
+---
 
 # Table of Contents
 
@@ -32,7 +31,7 @@
 
 # Handheld & HTPC Hardware
 
-- [Steam Gaming Mode Overview](Handheld_and_HTPC_edition/Steam_Gaming_Mode/index.md)
+- [Steam Gaming Mode Overview](Handheld_and_HTPC_edition/Steam_Gaming_Mode.md)
 - [Handheld Wiki](Handheld_and_HTPC_edition/Handheld_Wiki/index.md)
   - [Steam Deck](Handheld_and_HTPC_edition/Handheld_Wiki/Steam_Deck.md)
   - [Lenovo Legion Go](Handheld_and_HTPC_edition/Handheld_Wiki/Lenovo_Legion_Go.md)
