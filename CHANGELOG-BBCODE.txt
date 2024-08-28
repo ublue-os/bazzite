@@ -60,7 +60,6 @@
 [*] [b]LGO:[/b] reduce input source priority and add description ([url=https://github.com/ublue-os/bazzite/issues/1452]#1452[/url]) ([url=https://github.com/ublue-os/bazzite/commit/371ff845a17fd5ed55c5ca92bbc5e4663e29645e]371ff84[/url])
 [*] Limit BTRFS deduplication to one core. ([url=https://github.com/ublue-os/bazzite/commit/bd85e7d33001a8783b8b97984ced138819c52784]bd85e7d[/url])
 [*] [b]nvidia:[/b] Add fix for ALVR (Thanks Crunchn) ([url=https://github.com/ublue-os/bazzite/commit/52d6189e7541caa59bfc90f0119acda06232bc6a]52d6189[/url])
-[*] [b]nvidia:[/b] pin Nvidia drivers to v555 due to issues in v560 with monitors freezing ([url=https://github.com/ublue-os/bazzite/issues/1468]#1468[/url]) ([url=https://github.com/ublue-os/bazzite/commit/0c64a62aa6571cb903ef9fd7e625cad8fdf7c915]0c64a62[/url])
 [*] [b]polaris:[/b] Add 720p patch ([url=https://github.com/ublue-os/bazzite/commit/9ba34b0fa0dc488527d3801862bb045d4a354af9]9ba34b0[/url])
 [*] Prevent bluetooth preventing suspension ([url=https://github.com/ublue-os/bazzite/issues/1446]#1446[/url]) ([url=https://github.com/ublue-os/bazzite/commit/9f2550f3982664da6c22e2e4cf32da4d937ca5ff]9f2550f[/url])
 [*] Prevent restoring audio levels on hardware with custom DSPs ([url=https://github.com/ublue-os/bazzite/commit/20eb99edaaec143e149befb523380a66ba5bd83f]20eb99e[/url])
