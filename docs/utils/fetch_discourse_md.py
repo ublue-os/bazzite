@@ -94,7 +94,7 @@ import re
 from string import Template
 from sys import stdout, stderr
 from time import sleep
-from typing import NamedTuple, cast
+from typing import NamedTuple
 
 import requests
 
@@ -230,6 +230,30 @@ def simple_replace_match(match: re.Match) -> str:
     return ""
 
 
+def fetch(url: str) -> str | None:
+
+    batch = DiscourseProcessor.transform_to_url_batch(url)
+
+    md_url = batch.raw_url
+
+    result = DiscourseProcessor.get_markdown_from_url(md_url)
+
+    # Replace images urls
+    result = re.sub(
+        DiscourseProcessor.Patterns.hashed_images_urls,
+        simple_replace_match,
+        result,
+    )
+
+    # Remove comments
+    result = DiscourseProcessor.Patterns.post_sep_markdown.split(result, 1)[0].rstrip()
+
+    # Add metadata
+    result = DiscourseProcessor.add_metadata_to_markdown(result, batch.source_url)
+
+    return result
+
+
 def main():
     argparser = ArgumentParser()
     argparser.add_argument(
@@ -250,20 +274,7 @@ def main():
     global _is_debug
     _is_debug = os.getenv("DEBUG") == "1" or args.debug
 
-    urls = cast(str, DiscourseProcessor.transform_to_url_batch(args.url).raw_url)
-
-    result = DiscourseProcessor.get_markdown_from_url(urls)
-    result = re.sub(
-        DiscourseProcessor.Patterns.hashed_images_urls,
-        simple_replace_match,
-        result,
-    )
-
-    # Remove comments
-    result = DiscourseProcessor.Patterns.post_sep_markdown.split(result, 1)[0].rstrip()
-
-    # Add metadata
-    result = DiscourseProcessor.add_metadata_to_markdown(result, urls)
+    result = fetch(args.url)
 
     print(result, file=stdout)
 
