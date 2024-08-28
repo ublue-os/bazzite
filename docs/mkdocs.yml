@@ -48,7 +48,8 @@ docs_dir: src
 site_dir: book
 
 hooks:
-  - hooks/cmdrun.py
+  - hooks/cmdrun.py # 100-99
+  - hooks/embed_youtube.py # 80
 
 plugins:
   - privacy
