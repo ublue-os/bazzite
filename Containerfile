@@ -504,8 +504,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             qt \
             krdp && \
         rpm-ostree override remove \
-            plasma-welcome \
-            konsole && \
+            plasma-welcome && \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
@@ -537,6 +536,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i 's@Keywords=@Keywords=konsole;console;@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         cp /usr/share/applications/org.gnome.Ptyxis.desktop /usr/share/kglobalaccel/org.gnome.Ptyxis.desktop && \
+        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.kde.konsole.desktop && \
+        rm -f /usr/share/kglobalaccel/org.kde.konsole.desktop && \
         setcap 'cap_net_raw+ep' /usr/libexec/ksysguard/ksgrd_network_helper \
     ; else \
         rpm-ostree override replace \

@@ -30,7 +30,6 @@
 * Prepare mdBook workflow for documentation ([#1441](https://github.com/ublue-os/bazzite/issues/1441)) ([181497b](https://github.com/ublue-os/bazzite/commit/181497bc1741418ad580f5f464f5e6916d22d4f4))
 * **rechunk:** enable previous layer checks to improve successive downloads and version bump ([#1443](https://github.com/ublue-os/bazzite/issues/1443)) ([11b1eba](https://github.com/ublue-os/bazzite/commit/11b1ebaa8336196f12dd6f2bd503def49ff41e7d))
 * **rechunk:** Introduce image rechunking to lower update sizes ([#1439](https://github.com/ublue-os/bazzite/issues/1439)) ([54fad61](https://github.com/ublue-os/bazzite/commit/54fad6162643d3f9d5e4cf04e9118534c82e59c2))
-* Remove Konsole & GNOME Terminal to save space in-image, Ptyxis remains ([#1550](https://github.com/ublue-os/bazzite/issues/1550)) ([ee89f5f](https://github.com/ublue-os/bazzite/commit/ee89f5f76b665d90dc63dd8d7e5445ff35db7c29))
 * standardize versioning across OSTree and os-release ([#1442](https://github.com/ublue-os/bazzite/issues/1442)) ([677891a](https://github.com/ublue-os/bazzite/commit/677891a8bb2c1b0b0d2d3ad1212530cb449547f7))
 * Switch to scx-scheds package for additional sched_ext schedulers ([ccd7b52](https://github.com/ublue-os/bazzite/commit/ccd7b52221e1a0971aeb9ace17fdc262108d8865))
 * **ujust:** add post-gamescope-logs ujust ([#1533](https://github.com/ublue-os/bazzite/issues/1533)) ([0bba7d3](https://github.com/ublue-os/bazzite/commit/0bba7d316b8bd7525bf755dbe3c20ad0e98cfcba))
