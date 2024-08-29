@@ -1,7 +1,12 @@
 @import url(https://fonts.googleapis.com/css?family=DM+Sans);
+@import url(https://fonts.googleapis.com/css?family=MuseoModerno);
 
 body {
   --md-text-font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.md-ellipsis {
+  font-family: "MuseoModerno";
 }
 
 .md-header--shadow,
