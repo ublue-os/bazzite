@@ -23,6 +23,7 @@ body {
 
 .md-header__source {
   padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 .md-source {
