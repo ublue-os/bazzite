@@ -2,7 +2,7 @@ import re
 from mkdocs import plugins
 
 
-YOUTUBE_URL_PATTERN = r"(?<!<)https:\/\/(?:www\.youtube\.com\/watch\?v=|youtu\.be/)(?P<id>[a-zA-Z0-9_-]{11})"
+YOUTUBE_URL_PATTERN = r"(?<!<|\(|\")\bhttps:\/\/(?:www\.youtube\.com\/watch\?v=|youtu\.be/)(?P<id>[a-zA-Z0-9_-]{11})\b"
 
 
 def _generate_embed_from_id(
