@@ -19,6 +19,7 @@ theme:
   name: material
   custom_dir: theme_overrides
   palette:
+    primary: deep purple
     - media: "(prefers-color-scheme)"
       toggle:
         icon: material/brightness-auto
