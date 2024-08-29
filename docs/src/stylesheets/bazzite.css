@@ -32,6 +32,18 @@ body {
   box-shadow: 0px 0px 5px rgba(0,0,0,0.25);
 }
 
+@media screen and (max-width: 59.9844em) {
+  .md-nav__source {
+    padding: 10px .2rem;
+    background: none;
+  }
+
+  .md-header,
+  .md-header--shadow {
+    backdrop-filter: none;
+  }
+}
+
 @media screen {
   [data-md-color-scheme=default] {
     --md-default-bg-color: #f0f0f0;
