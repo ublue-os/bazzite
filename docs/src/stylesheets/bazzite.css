@@ -30,3 +30,13 @@ body {
   background-image: linear-gradient(130deg, #0546AD 0%, #8A2BE2 100%);
   box-shadow: 0px 0px 5px rgba(0,0,0,0.25);
 }
+
+@media screen {
+  [data-md-color-scheme=default] {
+    --md-default-bg-color: #f0f0f0;
+  }
+
+  [data-md-color-scheme=slate] {
+    --md-default-bg-color: #1c1c1c;
+  }
+}
