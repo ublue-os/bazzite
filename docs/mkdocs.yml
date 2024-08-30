@@ -143,7 +143,6 @@ nav:
           - "Bazzite Rollback Helper": "Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/bazzite_rollback_helper.md"
       - "Waydroid Setup Guide": Installing_and_Managing_Software/Waydroid_Setup_Guide.md
   - Advanced:
-      - "Auto-Mounting Secondary Drives": Advanced/Auto-Mounting_Secondary_Drives.md
       - "Reset User Password": Advanced/Reset_User_Password.md
       - "Creating A Custom Bazzite Image": Advanced/creating_custom_image.md
       - "Contributing to Bazzite": General/Contributing_to_Bazzite.md
