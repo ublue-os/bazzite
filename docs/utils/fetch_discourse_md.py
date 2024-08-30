@@ -101,7 +101,7 @@ import requests
 
 _is_debug: bool = False
 
-_BASE_URL = os.getenv("BASE_URL", "https://universal-blue.discourse.group").rstrip("/")
+_BASE_URL = "https://universal-blue.discourse.group"
 
 
 class UrlBatch(NamedTuple):
@@ -145,7 +145,7 @@ class DiscourseProcessor:
         imgs_urls = re.compile(
             r"<img\ssrc=\"(?P<image_cdn_url>https://(?:[a-zA-Z0-9./_-]+)).*data-base62-sha1=\"(?P<sha1>[a-zA-Z0-9]+)\".*\">"
         )
-        hashed_images_urls = re.compile(r"upload://([a-zA-Z0-9]{27})")
+        hashed_images_urls = re.compile(r"upload://([a-zA-Z0-9]+)", flags=re.I | re.M)
 
     @classmethod
     def transform_to_url_batch(cls, url: str) -> UrlBatch:
