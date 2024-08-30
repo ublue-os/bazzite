@@ -58,6 +58,7 @@ site_dir: book
 hooks:
   - hooks/cmdrun.py # 100-99
   - hooks/embed_youtube.py # 80
+  - hooks/md_image_sizing.py
 
 plugins:
   - privacy
