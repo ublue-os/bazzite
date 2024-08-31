@@ -47,6 +47,15 @@ body {
   border: none!important;
 }
 
+.md-typeset blockquote {
+  background-color: #fff;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  padding: 10px;
+}
+
 @media screen and (max-width: 59.9844em) {
   .md-nav__source {
     padding: 10px .2rem;
@@ -56,6 +65,13 @@ body {
   .md-header,
   .md-header--shadow {
     backdrop-filter: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-align: center;
   }
 }
 
@@ -71,6 +87,10 @@ body {
   [data-md-color-scheme=slate] .md-typeset .grid.cards > ol > li,
   [data-md-color-scheme=slate] .md-typeset .grid.cards > ul > li,
   [data-md-color-scheme=slate] .md-typeset .grid > .card {
+    background-color: #00000066;
+  }
+
+  [data-md-color-scheme=slate] .md-typeset blockquote {
     background-color: #00000066;
   }
 }
