@@ -6,7 +6,7 @@ hide:
 
 # Getting started
 
-A quick list of stuff you might be interested in checking out:
+A quick list of topics worth checking out:
 
 <div class="grid cards _bz" markdown>
 
@@ -14,20 +14,20 @@ A quick list of stuff you might be interested in checking out:
 
   ***
 
-  From [desktop/laptops][install_pc_laptop], <br>Framework [13][frame_13]/[16][frame_16], to a multitude of handhelds:
+  From [desktops/laptops][install_pc_laptop], <br>Framework [13][frame_13]/[16][frame_16], to a multitude of handhelds:
 
   - [Steam Deck (and OLED)][install_handheld]
-  - [Asus ROG Ally (X)][install_handheld]
+  - [Asus ROG Ally (and X)][install_handheld]
   - [Lenovo Legion Go][install_handheld]
-  - [Ayaneo][install_handheld]
-  - [GPD][install_handheld]
-  - [Ayn][install_handheld]
+  - [Ayaneo Handhelds][install_handheld]
+  - [GPD Handhelds][install_handheld]
+  - [Ayn Handhelds][install_handheld]
 
 - [:material-download-circle: **Install software**][installing_software]{ style="font-size: 1.1rem" }
 
   ***
 
-  <small>Order reflects the recommendation degree</small>
+  <small>Order reflects the recommendation degree.</small>
 
   1. [Flatpak][flatpak] for graphical apps
      {style="list-style-type: decimal;"}
@@ -48,11 +48,11 @@ A quick list of stuff you might be interested in checking out:
 
   Bazzite comes bundled with :fontawesome-brands-steam: Steam\* and [Lutris](Gaming/Game_Launchers.md#lutris-setup).
 
-  As well, compatible with other tools:
+  Compatible with other tools too:
 
   - [Heroic](https://heroicgameslauncher.com/) for Epic Games, GOG, and Amazon Games integration.
   - [Bottles](https://usebottles.com/) for general-purpose applications or as an alternative to Lutris.
-  - ... And [more][run_win_game].
+  - ...And [more][run_win_game]!
 
   <small>\* In desktop images, you might need to [enable Proton for all Steam games][enable_proton].</small>
 
