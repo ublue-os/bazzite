@@ -13,7 +13,7 @@ CEC_ONSLEEP_STANDBY=${CEC_ONSLEEP_STANDBY:-false}
 # Run specified actions
 if [ "${ACTION}" = "onboot" ] && [ "$CEC_WAKE" = true ]; then
     echo "on $CEC_TVID" | cec-client -s -d 1
-    if [ "CEC_SETSOURCE" = true ]; then
+    if [ "$CEC_SETSOURCE" = true ]; then
             echo "as" | cec-client -s -d 1
     fi
 elif [ "${ACTION}" = "onpoweroff" ] && [ "$CEC_ONPOWEROFF_STANDBY" = true ]; then
