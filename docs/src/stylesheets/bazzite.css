@@ -41,11 +41,6 @@ body {
   padding: 30px;
   box-shadow: none!important;
 }
-.md-typeset .grid.cards > ol > li > hr,
-.md-typeset .grid.cards > ul > li > hr,
-.md-typeset .grid > .card > hr {
-  border: none!important;
-}
 
 .md-typeset blockquote {
   background-color: #fff;
