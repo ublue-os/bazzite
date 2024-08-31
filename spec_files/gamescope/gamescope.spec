@@ -2,7 +2,7 @@
 
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
-%global gamescope_tag 3.15.1
+%global gamescope_tag 3.15.4
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
@@ -94,7 +94,7 @@ Summary:	libs for %{name}
 %summary
 
 %prep
-git clone --depth 1 --branch %{gamescope_tag} %{url}.git
+git clone --depth 1 --branch %{gamescope_tag}-beta-for-steamos-main %{url}.git
 cd gamescope
 git submodule update --init --recursive
 mkdir -p pkgconfig
