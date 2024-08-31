@@ -16,16 +16,6 @@ on:
       - docs/**/*.jpeg
       - .github/workflows/deploy_docs.yml
       - README*.md
-  pull_request:
-    branches:
-      - main
-    paths:
-      - docs/**/*.md
-      - docs/**/*.png
-      - docs/**/*.jpg
-      - docs/**/*.jpeg
-      - .github/workflows/deploy_docs.yml
-      - README*.md
   workflow_dispatch:
 
 concurrency:
