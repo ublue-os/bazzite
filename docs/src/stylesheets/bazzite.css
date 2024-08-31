@@ -32,6 +32,21 @@ body {
   box-shadow: 0px 0px 5px rgba(0,0,0,0.25);
 }
 
+.md-typeset .grid.cards > ol > li,
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border: none;
+  background-color: #fff;
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: none!important;
+}
+.md-typeset .grid.cards > ol > li > hr,
+.md-typeset .grid.cards > ul > li > hr,
+.md-typeset .grid > .card > hr {
+  border: none!important;
+}
+
 @media screen and (max-width: 59.9844em) {
   .md-nav__source {
     padding: 10px .2rem;
