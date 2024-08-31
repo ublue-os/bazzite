@@ -51,6 +51,20 @@ body {
   padding: 10px;
 }
 
+[data-md-component="search"].md-search {
+  --md-accent-fg-color: #a47bea;
+}
+
+header > nav > div.md-search  {
+  & form{
+    border-radius: 99999px;
+  }
+
+  .md-search__output {
+    border-radius: 0 0 20px 20px;
+  }
+}
+
 @media screen and (max-width: 59.9844em) {
   .md-nav__source {
     padding: 10px .2rem;
