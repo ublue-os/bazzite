@@ -82,6 +82,7 @@ plugins:
 
 markdown_extensions:
   - attr_list
+  - md_in_html
   - nl2br
   - mdx_truly_sane_lists
   - toc:
