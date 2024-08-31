@@ -50,7 +50,10 @@ def transcribe(execute=False, files_with_cmdrun: Sequence[Path] = []):
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser(
-        description="Utility to transcribe md files using '<!-- cmdrun' to markdown"
+        description="Utility to transcribe md files using '<!-- cmdrun' to markdown",
+        usage=f"""\
+rg '<!-- cmdrun fetch_discourse_md.py "(.*?)".*' --files-with-matches DIR | xargs {os.path.basename(__file__)} -r
+""",
     )
     argparser.add_argument(
         "-r",
