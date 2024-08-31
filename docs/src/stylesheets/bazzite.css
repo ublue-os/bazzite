@@ -62,11 +62,13 @@ body {
     backdrop-filter: none;
   }
 
-  h1,
-  h2,
-  h3,
-  h4 {
-    text-align: center;
+  [data-md-component="content"].md-content {
+    h1,
+    h2,
+    h3,
+    h4 {
+      text-align: center;
+    }
   }
 }
 
