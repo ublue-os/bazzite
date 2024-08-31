@@ -62,6 +62,6 @@ hide:
 
 ##### **_Follow the documentation below at your own risk!_**
 
-- [Reset User Password](Advanced/Reset_User_Password.md)
+- [Reset Forgotten User Password](Advanced/Reset_User_Password.md)
 - [Creating A Custom Bazzite Image](Advanced/creating_custom_image.md)
 - [Contributing to Bazzite](Advanced/Contributing_to_bazzite.md)
