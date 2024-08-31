@@ -54,7 +54,7 @@ A quick list of topics worth checking out:
   - [Bottles](https://usebottles.com/) for general-purpose applications or as an alternative to Lutris.
   - ...And [more][run_win_game]!
 
-  <small>\* In desktop images, you might need to [enable Proton for all Steam games][enable_proton].</small>
+  <small>\* Desktop images: [Enable Proton for all Steam games][enable_proton].</small>
 
 - [:fontawesome-solid-handshake: **Contribute to the project**][contrib]{ style="font-size: 1.1rem" }
 
