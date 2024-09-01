@@ -39,7 +39,7 @@ def transcribe(execute=False, files_with_cmdrun: Sequence[Path] = []):
         if new_content != contents:
             # Report we got a file replaced
             if m := re.search(CMDRUN_RE, contents):
-                print(f"{md_file}: {m.group(1)}")
+                print(f"{md_file}\t{m.group(1)}")
                 del m
         if execute:
             with open(md_file, "w") as f:
