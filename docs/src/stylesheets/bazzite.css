@@ -3,10 +3,13 @@
 
 body {
   --md-text-font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --md-code-font-family: "Fira Code";
 }
 
-code {
-  font-family: "Fira Code";
+.md-typeset code,
+.md-typeset kbd,
+.md-typeset pre {
+  font-variant-ligatures: normal;
 }
 
 .md-header--shadow,
