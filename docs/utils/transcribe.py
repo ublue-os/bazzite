@@ -64,7 +64,7 @@ rg '<!-- cmdrun fetch_discourse_md.py "(.*?)".*' --files-with-matches DIR | xarg
     argparser.add_argument(
         "file",
         help="Markdown files to transcribe",
-        nargs="*",
+        nargs="+",
         type=Path,
     )
 
