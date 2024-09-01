@@ -162,7 +162,7 @@ install-resolve ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     set -eo pipefail
-    SCRIPT_URL="https://raw.githubusercontent.com/zelikos/davincibox/b84fa22473d57307be50c07d968302e1cb458e13/setup.sh"
+    SCRIPT_URL="https://raw.githubusercontent.com/zelikos/davincibox/3e51fa38ac7512a26d644d0f48d8cf99921d80de/setup.sh"
     DOWNLOADDIR=$(xdg-user-dir DOWNLOAD || echo ${HOME})
     tmpdir=/var/tmp/bazzite_davincibox_setup.tmp
     mkdir -p $tmpdir
