@@ -93,6 +93,14 @@ URL_MAPPINGS = [
         "https://universal-blue.discourse.group/docs?topic=970",
         "/Advanced/Auto-Mounting_Secondary_Drives/",
     ),
+    (  # src/Advanced/kde-automount-guide.md
+        "https://universal-blue.discourse.group/docs?topic=3780",
+        "/Advanced/kde-automount-guide/",
+    ),
+    (  # src/Advanced/gnome-disks-automount-guide.md
+        "https://universal-blue.discourse.group/docs?topic=3781",
+        "/Advanced/gnome-disks-automount-guide/",
+    ),
     # endregion ADVANCED
 ]
 
