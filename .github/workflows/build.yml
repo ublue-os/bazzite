@@ -66,8 +66,8 @@ jobs:
           - fedora_version: 40
             is_latest_version: true
             is_stable_version: true
-            kernel_flavor: fsync-ba # must match a kernel_flavor from akmods repo
-            kernel_version: 6.9.12-205.fsync.fc40.x86_64 # must match a cached version of the above flavor
+            kernel_flavor: fsync # must match a kernel_flavor from kernel-cache repo
+            kernel_version: 6.10.5-201.fsync.fc40.x86_64 # must match a cached version of the above flavor
     steps:
       - name: Define env.IMAGE_FLAVOR
         run: |
