@@ -32,6 +32,30 @@ body {
   box-shadow: 0px 0px 5px rgba(0,0,0,0.25);
 }
 
+.md-typeset .grid.cards > ol > li,
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border: none;
+  background-color: #fff;
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: none!important;
+}
+.md-typeset .grid.cards > ol > li > hr,
+.md-typeset .grid.cards > ul > li > hr,
+.md-typeset .grid > .card > hr {
+  border: none!important;
+}
+
+.md-typeset blockquote {
+  background-color: #fff;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  padding: 10px;
+}
+
 @media screen and (max-width: 59.9844em) {
   .md-nav__source {
     padding: 10px .2rem;
@@ -42,6 +66,13 @@ body {
   .md-header--shadow {
     backdrop-filter: none;
   }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-align: center;
+  }
 }
 
 @media screen {
@@ -51,5 +82,15 @@ body {
 
   [data-md-color-scheme=slate] {
     --md-default-bg-color: #1c1c1c;
+  }
+
+  [data-md-color-scheme=slate] .md-typeset .grid.cards > ol > li,
+  [data-md-color-scheme=slate] .md-typeset .grid.cards > ul > li,
+  [data-md-color-scheme=slate] .md-typeset .grid > .card {
+    background-color: #00000066;
+  }
+
+  [data-md-color-scheme=slate] .md-typeset blockquote {
+    background-color: #00000066;
   }
 }

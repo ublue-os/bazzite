@@ -1,37 +1,27 @@
-import logging
-import os
 import re
+import string
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.structure.pages import Page
 from mkdocs.structure.files import Files
+from mkdocs.plugins import event_priority
 
 
-IMG_TAG_RE = r"\!\[(.*)\]\(.*\)"
-"""Find a `![text](url)`, with `group(1)` being the `text` segment"""
-
-# IMG_SIZE_SUFFIX_RE = r"(?<=\|)\s*(?P<width>\d+)x(?P<height>\d+)\b"
-IMG_SIZE_SUFFIX_RE = r"(?<=\|)\s*(?P<width>\d+)x(?P<height>\d+)(?:,.*?(?P<multi>\d+)%)?"
+IMG_SIZED_RE = (
+    r"\!\[.*?\s*(?P<width>\d+)x(?P<height>\d+)(?:,\s*(?P<multi>\d+)%)?\]\(.*\)"
+)
 """Used to get width, height from `text|WIDTHxHEIGHT`"""
 
 
 def _add_attr_handler(match: re.Match[str]) -> str:
-    in_brackets = match.group(1)
-    if not in_brackets:
-        return match.string
-
-    # Extract size
-    aux = re.search(IMG_SIZE_SUFFIX_RE, in_brackets)
-    if not aux:
-        return match.string
-    width = aux.group("width")
-    height = aux.group("height")
-    if multi := aux.group("multi"):
+    width = match.group("width")
+    height = match.group("height")
+    if multi := match.group("multi"):
         multi = int(multi) / 100
         width = str(int(width) * multi)
         height = str(int(height) * multi)
-    res = "".join(
-        [match.group(), """{ style="width:%spx; height:%spx;" }""" % (width, height)]
-    )
+    res = match.group(0) + string.Template(
+        '{ style="width:${width}px; height:${height}px;" }'
+    ).substitute(width=width, height=height)
     return res
 
 
@@ -43,9 +33,9 @@ def on_config(config: MkDocsConfig):
     is_enabled = "attr_list" in config.markdown_extensions
 
 
+@event_priority(70)
 def on_page_markdown(
     markdown: str, page: Page, config: MkDocsConfig, files: Files, **kargs
 ):
     if is_enabled:
-        return re.sub(IMG_TAG_RE, _add_attr_handler, markdown)
-    return markdown
+        return re.sub(IMG_SIZED_RE, _add_attr_handler, markdown)
