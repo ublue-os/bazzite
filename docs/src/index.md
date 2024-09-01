@@ -14,14 +14,14 @@ A quick list of topics worth checking out:
 
   ***
 
-  From [desktops/laptops][install_pc_laptop], <br>Framework [13][frame_13]/[16][frame_16], to a multitude of handhelds:
+  From [general desktops/laptops][install_pc_laptop], <br>Framework [13][frame_13]/[16][frame_16] laptops, [HTPC setups][htpc], to a multitude of [handhelds][install_handheld]:
 
-  - [Steam Deck (and OLED)][install_handheld]
-  - [Asus ROG Ally (and X)][install_handheld]
-  - [Lenovo Legion Go][install_handheld]
-  - [Ayaneo Handhelds][install_handheld]
-  - [GPD Handhelds][install_handheld]
-  - [Ayn Handhelds][install_handheld]
+  - [Steam Deck (and OLED)][install_steam_deck]
+  - [Asus ROG Ally (and X)][ally]
+  - [Lenovo Legion Go][legion_go]
+  - [Ayn Handhelds][ayn]
+  - [GPD Handhelds][gpd]
+  - [Ayaneo Handhelds][ayaneo]
 
 - [:material-download-circle: **Install software**][installing_software]{ style="font-size: 1.1rem" }
 
@@ -68,7 +68,14 @@ A quick list of topics worth checking out:
 </div>
 
 [install_pc_laptop]: General/Installation_Guide/Installing_Bazzite_for_Desktop_or_Laptop_Hardware.md
-[install_handheld]: General/Installation_Guide/Installing_Bazzite_for_Steam_Deck.md#installation-guide
+[htpc]: General/Installation_Guide/Installing_Bazzite_for_HTPC_Setups.md
+[install_handheld]: General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs.md
+[install_steam_deck]: General/Installation_Guide/Installing_Bazzite_for_Steam_Deck.md
+[ally]: Handheld_and_HTPC_edition/Handheld_Wiki/ASUS_ROG_Ally.md
+[legion_go]: Handheld_and_HTPC_edition/Handheld_Wiki/Lenovo_Legion_Go.md
+[ayn]: Handheld_and_HTPC_edition/Handheld_Wiki/Ayn_Handhelds.md
+[gpd]: Handheld_and_HTPC_edition/Handheld_Wiki/GPD_Handhelds.md
+[ayaneo]: Handheld_and_HTPC_edition/Handheld_Wiki/Ayaneo_Handhelds.md
 [frame_13]: General/Installation_Guide/Installing_Bazzite_Framework_Laptop_13.md
 [frame_16]: General/Installation_Guide/Installing_Bazzite_for_Framework_Laptop_16.md
 [run_win_game]: Installing_and_Managing_Software/index.md#how-do-i-run-windows-applications
