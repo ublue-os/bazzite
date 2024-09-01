@@ -171,7 +171,7 @@ def _on_page_markdown_replace_urls(
     for src, dst in URL_MAPPINGS:
         if config.site_url:
             dst = f"{config.site_url.rstrip("/")}/{dst.lstrip("/")}"
-        res = res.replace(src, dst)
+        res = re.sub(rf"\b{re.escape(src)}\b", dst, res)
     return res
 
 
