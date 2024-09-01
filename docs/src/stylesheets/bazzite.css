@@ -1,7 +1,15 @@
 @import url(https://fonts.googleapis.com/css?family=DM+Sans);
+@import url(https://fonts.googleapis.com/css?family=Fira+Code);
 
 body {
   --md-text-font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --md-code-font-family: "Fira Code";
+}
+
+.md-typeset code,
+.md-typeset kbd,
+.md-typeset pre {
+  font-variant-ligatures: normal;
 }
 
 .md-header--shadow,
@@ -41,11 +49,6 @@ body {
   padding: 30px;
   box-shadow: none!important;
 }
-.md-typeset .grid.cards > ol > li > hr,
-.md-typeset .grid.cards > ul > li > hr,
-.md-typeset .grid > .card > hr {
-  border: none!important;
-}
 
 .md-typeset blockquote {
   background-color: #fff;
@@ -54,6 +57,20 @@ body {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   padding: 10px;
+}
+
+[data-md-component="search"].md-search {
+  --md-accent-fg-color: #a47bea;
+}
+
+header > nav > div.md-search  {
+  & form{
+    border-radius: 99999px;
+  }
+
+  .md-search__output {
+    border-radius: 0 0 20px 20px;
+  }
 }
 
 @media screen and (max-width: 59.9844em) {
@@ -67,11 +84,13 @@ body {
     backdrop-filter: none;
   }
 
-  h1,
-  h2,
-  h3,
-  h4 {
-    text-align: center;
+  [data-md-component="content"].md-content {
+    h1,
+    h2,
+    h3,
+    h4 {
+      text-align: center;
+    }
   }
 }
 

@@ -12,8 +12,6 @@ A quick list of stuff you might be interested in checking out:
 
 - [:material-harddisk: **Installing Bazzite**](General/Installation_Guide/index.md){ style="font-size: 1.1rem" }
 
-  ***
-
   From [desktop/laptops][install_pc_laptop], <br>Framework [13][frame_13]/[16][frame_16], to a multitude of handhelds:
 
   - [Steam Deck (and OLED)][install_handheld]
@@ -24,8 +22,6 @@ A quick list of stuff you might be interested in checking out:
   - [Ayn][install_handheld]
 
 - [:material-download-circle: **Install software**][installing_software]{ style="font-size: 1.1rem" }
-
-  ***
 
   <small>Order reflects the recommendation degree</small>
 
@@ -44,8 +40,6 @@ A quick list of stuff you might be interested in checking out:
 
 - [:fontawesome-brands-windows: **Run Windows games**][run_win_game]{ style="font-size: 1.1rem" }
 
-  ***
-
   Bazzite comes bundled with :fontawesome-brands-steam: Steam\* and [Lutris](Gaming/Game_Launchers.md#lutris-setup).
 
   As well, compatible with other tools:
@@ -57,8 +51,6 @@ A quick list of stuff you might be interested in checking out:
   <small>\* In desktop images, you might need to [enable Proton for all Steam games][enable_proton].</small>
 
 - [:fontawesome-solid-handshake: **Contribute to the project**][contrib]{ style="font-size: 1.1rem" }
-
-  ***
 
   One of the strengths of Bazzite (inherited from [Universal Blue](https://universal-blue.org/)) is how easy is to contribute.
 
