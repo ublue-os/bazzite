@@ -685,8 +685,8 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
     systemctl enable brew-dir-fix.service && \
     systemctl enable brew-setup.service && \
-    systemctl enable brew-upgrade.timer && \
-    systemctl enable brew-update.timer && \
+    systemctl disable brew-upgrade.timer && \
+    systemctl disable brew-update.timer && \
     systemctl enable btrfs-dedup@var-home.timer && \
     systemctl enable displaylink.service && \
     systemctl enable input-remapper.service && \
