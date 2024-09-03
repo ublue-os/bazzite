@@ -49,9 +49,9 @@ A quick list of stuff you might be interested in checking out:
   - [Bottles](https://usebottles.com/) for general-purpose applications or as an alternative to Lutris.
   - ...And [more][run_win_game]!
 
-  <small>\* Desktop images require [enabling Proton for all Steam games][enable_proton].</small>
+  <small>\* Desktop images require [**enabling Proton for all Steam games**][enable_proton].</small>
 
-- [:fontawesome-solid-handshake: **Contribute to the project**][contrib]{ style="font-size: 1.1rem" }
+- [:fontawesome-solid-handshake: **Contribute**][contrib]{ style="font-size: 1.1rem" }
 
   One of the strengths of Bazzite (inherited from [Universal Blue](https://universal-blue.org/)) is how easy is to contribute.
 
@@ -61,7 +61,7 @@ A quick list of stuff you might be interested in checking out:
 </div>
 
 [install_pc_laptop]: General/Installation_Guide/Installing_Bazzite_for_Desktop_or_Laptop_Hardware.md
-[install_handheld]: 
+[install_handheld]: General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs.md
 [deck]: General/Installation_Guide/Installing_Bazzite_for_Steam_Deck.md#installation-guide
 [frame_13]: General/Installation_Guide/Installing_Bazzite_Framework_Laptop_13.md
 [frame_16]: General/Installation_Guide/Installing_Bazzite_for_Framework_Laptop_16.md
@@ -83,3 +83,4 @@ A quick list of stuff you might be interested in checking out:
 [rpm-ostree_caveats]: Installing_and_Managing_Software/rpm-ostree.md#major-caveats-using-rpm-ostree
 [steam_game_mode]: Handheld_and_HTPC_edition/Steam_Gaming_Mode.md#what-is-steam-gaming-mode
 [appimage]: Installing_and_Managing_Software/AppImage.md
+[updateindex]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/index.md
