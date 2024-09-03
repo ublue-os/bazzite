@@ -83,4 +83,3 @@ A quick list of stuff you might be interested in checking out:
 [rpm-ostree_caveats]: Installing_and_Managing_Software/rpm-ostree.md#major-caveats-using-rpm-ostree
 [steam_game_mode]: Handheld_and_HTPC_edition/Steam_Gaming_Mode.md#what-is-steam-gaming-mode
 [appimage]: Installing_and_Managing_Software/AppImage.md
-[updateindex]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/index.md
