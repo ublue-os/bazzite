@@ -22,7 +22,7 @@ A quick list of stuff you might be interested in checking out:
   - [Ayaneo Handhelds][ayaneo]
 
 
-- [:material-download-circle: **Install software**][installing_software]{ style="font-size: 1.1rem" }
+- [:material-download-circle: **Install Software**][installing_software]{ style="font-size: 1.1rem" }
 
   <small>Order reflects the recommendation degree</small>
 
@@ -39,7 +39,7 @@ A quick list of stuff you might be interested in checking out:
 
   You can as well install regular Fedora packages with [`rpm-ostree`][rpm-ostree] but we [advise avoiding it if possible][rpm-ostree_caveats].
 
-- [:fontawesome-brands-windows: **Run Windows games**][run_win_game]{ style="font-size: 1.1rem" }
+- [:fontawesome-brands-windows: **Run Windows Games**][run_win_game]{ style="font-size: 1.1rem" }
 
   Bazzite comes bundled with :fontawesome-brands-steam: Steam\* and [Lutris](Gaming/Game_Launchers.md#lutris-setup).
 
@@ -50,6 +50,16 @@ A quick list of stuff you might be interested in checking out:
   - ...And [more][run_win_game]!
 
   <small>\* Desktop images require [**enabling Proton for all Steam games**][enable_proton].</small>
+
+
+- [:emoji: **Updates, Rollbacks, and Rebasing**][updateindex]{ style="font-size: 1.1rem" }
+
+- [Update][updates]
+- [Rollback][rollbacks]
+- [Rebasing][rebasing]
+- [`bazzite-rollback-helper`][rollback-helper]
+
+- [:emoji: **Android Applications**][contrib]{ style="font-size: 1.1rem" }
 
 - [:fontawesome-solid-handshake: **Contribute**][contrib]{ style="font-size: 1.1rem" }
 
@@ -88,8 +98,4 @@ A quick list of stuff you might be interested in checking out:
 [rollbacks]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rolling_back_system_updates.md
 [rebasing]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rebase_guide.md
 [rollback-helper]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/bazzite_rollback_helper.md
-[gaming-index]: Gaming/index.md
-[game_launchers]: Gaming/Game_Launchers.md
-[modding]: Gaming/Managing_and_modding_games.md
-[gaming_issues]: Gaming/Common_gaming_issues.md
-[hardware_compat]: Gaming/Hardware_compatibility_for_gaming.md
+[waydroid]: Installing_and_Managing_Software/Waydroid_Setup_Guide.md
