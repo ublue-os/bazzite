@@ -23,6 +23,10 @@ url_mappings: dict = {}
 """Dict with mappings for discourse urls to be replaced with mkdocs ones"""
 
 
+def log_info(*args):
+    return print(f"{PLUGIN_NAME}:", *args)
+
+
 def _cache_filename_generator(text: str) -> str:
     """Generate a sha265 encoded cache file path of a piece of text inside the plugin cache dir"""
     cache_file = os.path.join(
@@ -66,7 +70,9 @@ def on_config(config: MkDocsConfig):
         with open(url_overrides_file) as f:
             url_mappings = yaml.load(f.read(), Loader=yaml.SafeLoader)
     except FileNotFoundError:
-        pass
+        log_info(
+            f"'{os.path.relpath(url_overrides_file)}' doesnt exist, using default mapping '{url_mappings}'"
+        )
 
 
 @plugins.event_priority(100)
