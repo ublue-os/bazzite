@@ -1,2 +1,5 @@
 # https://gitlab.gnome.org/GNOME/mutter/-/issues/3037
 MUTTER_DEBUG_KMS_THREAD_TYPE=user
+
+# Disable Brew auto-update
+HOMEBREW_NO_AUTO_UPDATE=1
