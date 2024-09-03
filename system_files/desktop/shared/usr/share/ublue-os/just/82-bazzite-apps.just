@@ -162,7 +162,7 @@ install-resolve ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     set -eo pipefail
-    SCRIPT_URL="https://raw.githubusercontent.com/zelikos/davincibox/b84fa22473d57307be50c07d968302e1cb458e13/setup.sh"
+    SCRIPT_URL="https://raw.githubusercontent.com/zelikos/davincibox/3e51fa38ac7512a26d644d0f48d8cf99921d80de/setup.sh"
     DOWNLOADDIR=$(xdg-user-dir DOWNLOAD || echo ${HOME})
     tmpdir=/var/tmp/bazzite_davincibox_setup.tmp
     mkdir -p $tmpdir
@@ -188,8 +188,10 @@ install-resolve ACTION="":
         "Uninstall davincibox" \
       )
       if [[ "${OPTION,,}" =~ (^install/upgrade[[:space:]]davincibox) ]]; then
-        echo "${bold}This script requires you to download DaVinci Resolve installer manually from their website and place it in ${HOME} or ${DOWNLOADDIR}${n}"
+        echo "${bold}This script requires you to download DaVinci Resolve installer (should be a zip file) manually from their website and place it in ${HOME} or ${DOWNLOADDIR}${n}"
         echo "${bold}https://www.blackmagicdesign.com/event/davinciresolvedownload${n}"
+        echo "You dont extract the zip contents, the script will handle the installation"
+        echo "${lightgrey}TIP: If you want to install manually, check https://github.com/zelikos/davincibox${n}"
         # Get sure user reads instructions
         ugum confirm || exit 0
         # Download davincibox setup script

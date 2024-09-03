@@ -1,7 +1,15 @@
 @import url(https://fonts.googleapis.com/css?family=DM+Sans);
+@import url(https://fonts.googleapis.com/css?family=Fira+Code);
 
 body {
   --md-text-font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --md-code-font-family: "Fira Code";
+}
+
+.md-typeset code,
+.md-typeset kbd,
+.md-typeset pre {
+  font-variant-ligatures: normal;
 }
 
 .md-header--shadow,
@@ -32,6 +40,39 @@ body {
   box-shadow: 0px 0px 5px rgba(0,0,0,0.25);
 }
 
+.md-typeset .grid.cards > ol > li,
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border: none;
+  background-color: #fff;
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: none!important;
+}
+
+.md-typeset blockquote {
+  background-color: #fff;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  padding: 10px;
+}
+
+[data-md-component="search"].md-search {
+  --md-accent-fg-color: #a47bea;
+}
+
+header > nav > div.md-search  {
+  & form{
+    border-radius: 99999px;
+  }
+
+  .md-search__output {
+    border-radius: 0 0 20px 20px;
+  }
+}
+
 @media screen and (max-width: 59.9844em) {
   .md-nav__source {
     padding: 10px .2rem;
@@ -42,6 +83,15 @@ body {
   .md-header--shadow {
     backdrop-filter: none;
   }
+
+  [data-md-component="content"].md-content {
+    h1,
+    h2,
+    h3,
+    h4 {
+      text-align: center;
+    }
+  }
 }
 
 @media screen {
@@ -51,5 +101,15 @@ body {
 
   [data-md-color-scheme=slate] {
     --md-default-bg-color: #1c1c1c;
+  }
+
+  [data-md-color-scheme=slate] .md-typeset .grid.cards > ol > li,
+  [data-md-color-scheme=slate] .md-typeset .grid.cards > ul > li,
+  [data-md-color-scheme=slate] .md-typeset .grid > .card {
+    background-color: #00000066;
+  }
+
+  [data-md-color-scheme=slate] .md-typeset blockquote {
+    background-color: #00000066;
   }
 }

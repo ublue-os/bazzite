@@ -1,67 +1,77 @@
 ---
+title: Home
 hide:
   - navigation
 ---
 
-# Table of Contents
+# Getting started
 
-- [Bazzite's README](Bazzite_README.md)
-- [FAQ](General/FAQ.md)
-- [Installation Guide](General/Installation_Guide/index.md)
+A quick list of stuff you might be interested in checking out:
 
-  - [Installing Bazzite for Desktop/Laptop Hardware](General/Installation_Guide/Installing_Bazzite_for_Desktop_or_Laptop_Hardware.md)
-  - [Installing Bazzite for Framework Laptop 16](General/Installation_Guide/Installing_Bazzite_for_Framework_Laptop_16.md)
-  - [Installing Bazzite for Framework Laptop 13 (AMD/Intel GPU)](General/Installation_Guide/Installing_Bazzite_Framework_Laptop_13.md)
-  - [Installing Bazzite for Home Theater PC (HTPC) Setups](General/Installation_Guide/Installing_Bazzite_for_HTPC_Setups.md)\*
-  - [Installing Bazzite on the Steam Deck](General/Installation_Guide/Installing_Bazzite_for_Steam_Deck.md)\*
-  - [Installing Bazzite on Handheld PCs](General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs.md)\*
-  - [Installation Troubleshoot Guide](General/Installation_Guide/troubleshoot_guide.md)
-  - [Secure Boot Instructions](General/Installation_Guide/secure_boot.md)
-  - [Dual Boot Preliminary Setup and Post-Setup Guide](General/Installation_Guide/dual_boot_setup_guide.md)
+<div class="grid cards _bz" markdown>
 
-    \* _Indicates that Steam Gaming Mode is intended for this device and ships with the ISO._
+- [:material-harddisk: **Installing Bazzite**](General/Installation_Guide/index.md){ style="font-size: 1.1rem" }
 
-- [Gaming](Gaming/index.md)
-  - [Game Launchers](Gaming/Game_Launchers.md)
-  - [Managing & Modding Games](Gaming/Managing_and_modding_games.md)
-  - [Common Gaming Issues](Gaming/Common_gaming_issues.md)
-  - [Hardware Compatibility for Gaming](Gaming/Hardware_compatibility_for_gaming.md)
-- [Desktop Environment Tweaks](General/Desktop_Environment_Tweaks.md)
-- [Reporting Bugs](General/reporting_bugs.md)
+  From [desktop/laptops][install_pc_laptop], <br>Framework [13][frame_13]/[16][frame_16], to a multitude of handhelds:
 
-# Handheld & HTPC Hardware
+  - [Steam Deck (and OLED)][install_handheld]
+  - [Asus ROG Ally (X)][install_handheld]
+  - [Lenovo Legion Go][install_handheld]
+  - [Ayaneo][install_handheld]
+  - [GPD][install_handheld]
+  - [Ayn][install_handheld]
 
-- [Steam Gaming Mode Overview](Handheld_and_HTPC_edition/Steam_Gaming_Mode.md)
-- [Handheld Wiki](Handheld_and_HTPC_edition/Handheld_Wiki/index.md)
-  - [Steam Deck](Handheld_and_HTPC_edition/Handheld_Wiki/Steam_Deck.md)
-  - [Lenovo Legion Go](Handheld_and_HTPC_edition/Handheld_Wiki/Lenovo_Legion_Go.md)
-  - [ASUS ROG Ally](Handheld_and_HTPC_edition/Handheld_Wiki/ASUS_ROG_Ally.md)
-  - [Ayn Handhelds](Handheld_and_HTPC_edition/Handheld_Wiki/Ayn_Handhelds.md)
-  - [GPD Handhelds](Handheld_and_HTPC_edition/Handheld_Wiki/GPD_Handhelds.md)
-  - [Ayaneo Handhelds](Handheld_and_HTPC_edition/Handheld_Wiki/Ayaneo_Handhelds.md)
-  - [Other Handhelds](Handheld_and_HTPC_edition/Handheld_Wiki/Other_Handhelds.md)
+- [:material-download-circle: **Install software**][installing_software]{ style="font-size: 1.1rem" }
 
-# Software
+  <small>Order reflects the recommendation degree</small>
 
-- [Installing and Managing Software](Installing_and_Managing_Software/index.md)
-  - [Flatpak](Installing_and_Managing_Software/Flatpak.md)
-  - [ujust](Installing_and_Managing_Software/ujust.md)
-  - [Homebrew](Installing_and_Managing_Software/Homebrew.md)
-  - [Distrobox](Installing_and_Managing_Software/Distrobox.md)
-  - [Appimage](Installing_and_Managing_Software/AppImage.md)
-  - [rpm-ostree](Installing_and_Managing_Software/rpm-ostree.md)
-  - [Tutorials for Installing Other Software](Installing_and_Managing_Software/index.md)
-- [Updates, Rollbacks, & Rebasing](Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/index.md)
-  - [Updating Guide](Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/updating_guide.md)
-  - [Rolling Back System Updates](Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rolling_back_system_updates.md)
-  - [Rebase Guide](Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rebase_guide.md)
-  - [Bazzite Rollback Helper](Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/bazzite_rollback_helper.md)
-- [Waydroid Setup Guide](Installing_and_Managing_Software/Waydroid_Setup_Guide.md)
+  1. [Flatpak][flatpak] for graphical apps
+     {style="list-style-type: decimal;"}
+  2. [ujust][ujust] to use bazzite tailored installers
+     {style="list-style-type: decimal;"}
+  3. [Homebrew][homebrew] for CLI apps
+     {style="list-style-type: decimal;"}
+  4. [Distrobox][distrobox] for containerized apps
+     {style="list-style-type: decimal;"}
+  5. [Appimage][appimage]
+     {style="list-style-type: decimal;"}
 
-# Advanced
+  You can as well install regular Fedora packages with [`rpm-ostree`][rpm-ostree] but we [advise avoiding it if possible][rpm-ostree_caveats].
 
-##### **_Follow the documentation below at your own risk!_**
+- [:fontawesome-brands-windows: **Run Windows games**][run_win_game]{ style="font-size: 1.1rem" }
 
-- [Reset User Password](Advanced/Reset_User_Password.md)
-- [Creating A Custom Bazzite Image](Advanced/creating_custom_image.md)
-- [Contributing to Bazzite](Advanced/Contributing_to_bazzite.md)
+  Bazzite comes bundled with :fontawesome-brands-steam: Steam\* and [Lutris](Gaming/Game_Launchers.md#lutris-setup).
+
+  As well, compatible with other tools:
+
+  - [Heroic](https://heroicgameslauncher.com/) for Epic Games, GOG, and Amazon Games integration.
+  - [Bottles](https://usebottles.com/) for general-purpose applications or as an alternative to Lutris.
+  - ... And [more][run_win_game].
+
+  <small>\* In desktop images, you might need to [enable Proton for all Steam games][enable_proton].</small>
+
+- [:fontawesome-solid-handshake: **Contribute to the project**][contrib]{ style="font-size: 1.1rem" }
+
+  One of the strengths of Bazzite (inherited from [Universal Blue](https://universal-blue.org/)) is how easy is to contribute.
+
+  - Something seems broken? You might want to [report a bug](General/reporting_bugs.md).
+  - You can help us adding more translations to our READMEs.
+
+</div>
+
+[install_pc_laptop]: General/Installation_Guide/Installing_Bazzite_for_Desktop_or_Laptop_Hardware.md
+[install_handheld]: General/Installation_Guide/Installing_Bazzite_for_Steam_Deck.md#installation-guide
+[frame_13]: General/Installation_Guide/Installing_Bazzite_Framework_Laptop_13.md
+[frame_16]: General/Installation_Guide/Installing_Bazzite_for_Framework_Laptop_16.md
+[run_win_game]: Installing_and_Managing_Software/index.md#how-do-i-run-windows-applications
+[enable_proton]: Gaming/Game_Launchers.md#enabling-proton-for-all-steam-games
+[flatpak]: Installing_and_Managing_Software/Flatpak.md
+[ujust]: Installing_and_Managing_Software/ujust.md
+[rpm-ostree]: Installing_and_Managing_Software/rpm-ostree.md
+[distrobox]: Installing_and_Managing_Software/Distrobox.md
+[installing_software]: Installing_and_Managing_Software/index.md
+[contrib]: General/Contributing_to_Bazzite.md
+[homebrew]: Installing_and_Managing_Software/Homebrew.md
+[rpm-ostree_caveats]: Installing_and_Managing_Software/rpm-ostree.md#major-caveats-using-rpm-ostree
+[steam_game_mode]: Handheld_and_HTPC_edition/Steam_Gaming_Mode.md#what-is-steam-gaming-mode
+[appimage]: Installing_and_Managing_Software/AppImage.md

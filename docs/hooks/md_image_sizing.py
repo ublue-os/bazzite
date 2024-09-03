@@ -20,7 +20,7 @@ def _add_attr_handler(match: re.Match[str]) -> str:
         width = str(int(width) * multi)
         height = str(int(height) * multi)
     res = match.group(0) + string.Template(
-        '{ style="width:${width}px; height:${height}px;" }'
+        '{ style="max-width:${width}px; max-height:${height}px; width: 100%;" }'
     ).substitute(width=width, height=height)
     return res
 
