@@ -19,16 +19,17 @@ Distrobox containers run sub-systems of other popular [Linux distributions](http
 ![i use arch btw|690x229, 75%](https://universal-blue.discourse.group/uploads/short-url/rqzTC1SNKDUvke2aOWaiM27zjWg.png)
 
 **Linux Distribution Examples**:
-| OS | Package Manager | Search for Packages
-| -------- | -------- | --------
-| [Fedora](https://fedoraproject.org/) | [`dnf`](https://docs.fedoraproject.org/en-US/quick-docs/dnf/)   | [Fedora Packages](https://packages.fedoraproject.org/index-static.html) / [COPR Packages](https://copr.fedorainfracloud.org/)
-| [Arch Linux](https://archlinux.org/)| [`pacman`](https://wiki.archlinux.org/title/Pacman) | [Arch Linux Packages](https://archlinux.org/packages/) / [AUR Packages](https://aur.archlinux.org/packages?SB=l&SO=d)
-| [Debian](https://www.debian.org/) / [Ubuntu](https://ubuntu.com/) | [`apt`](https://ubuntu.com/server/docs/package-management)   | [Debian Packages](https://packages.debian.org/stable/) / [Ubuntu Packages](https://packages.ubuntu.com/) ([PPA](https://launchpad.net/ubuntu/+ppas))
-| [openSUSE](https://get.opensuse.org/)|  [`zypper`](https://documentation.suse.com/smart/systems-management/html/concept-zypper/index.html)  | [openSUSE Packages](https://search.opensuse.org/packages/)
-| [Void Linux](https://voidlinux.org/) | [`xbps`](https://docs.voidlinux.org/xbps/index.html)   | [Void Linux Packages](https://voidlinux.org/packages/)
-| [Alpine Linux](https://www.alpinelinux.org/) | [`apk`](https://wiki.alpinelinux.org/wiki/Alpine_Package_Keeper)   | [Alpine Linux Packages](https://pkgs.alpinelinux.org/packages)
 
-# Use Cases
+| OS                                  | Package Manager    | Search for Packages                                                       |
+| ----------------------------------- | ------------------ | ------------------------------------------------------------------------- |
+| [Fedora][fedora]                    | [`dnf`][dnf]       | [Fedora Packages][fedora_pkgs] / [COPR Packages][copr]                    |
+| [Arch Linux][arch]                  | [`pacman`][pacman] | [Arch Linux Packages][arch_pkgs] / [AUR Packages][aur_pkgs]               |
+| [Debian][debian] / [Ubuntu][ubuntu] | [`apt`][apt]       | [Debian Packages][deb_pkgs] / [Ubuntu Packages][ubuntu_pkgs] ([PPA][ppa]) |
+| [openSUSE][osuse]                   | [`zypper`][zypper] | [openSUSE Packages][osuse_pkgs]                                           |
+| [Void Linux][void]                  | [`xbps`][xbps]     | [Void Linux Packages][void_pkgs]                                          |
+| [Alpine Linux][alpine]              | [`apk`][apk]       | [Alpine Linux Packages][alpine_pkgs]                                      |
+
+## Use Cases
 
 Distrobox containers can be used for both **development environments** and **installing applications that are not available in any of the other installation methods** which can be exclusive to specific package managers.
 
