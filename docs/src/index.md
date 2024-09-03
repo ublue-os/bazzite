@@ -12,8 +12,6 @@ A quick list of topics worth checking out:
 
 - [:material-harddisk: **Installing Bazzite**](General/Installation_Guide/index.md){ style="font-size: 1.1rem" }
 
-  ***
-
   From [general desktops/laptops][install_pc_laptop], <br>Framework [13][frame_13]/[16][frame_16] laptops, [HTPC setups][htpc], to a multitude of [handhelds][install_handheld]:
 
   - [Steam Deck (and OLED)][install_steam_deck]
@@ -24,8 +22,6 @@ A quick list of topics worth checking out:
   - [Ayaneo Handhelds][ayaneo]
 
 - [:material-download-circle: **Install software**][installing_software]{ style="font-size: 1.1rem" }
-
-  ***
 
   <small>Order reflects the recommendation degree.</small>
 
