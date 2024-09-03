@@ -84,20 +84,17 @@ How does this script work:
 """
 
 
-from argparse import ArgumentParser
-from datetime import datetime, UTC
-import fcntl
 import html
 import json
 import os
 import re
+from argparse import ArgumentParser
+from datetime import UTC, datetime
 from string import Template
-from sys import stdout, stderr
-from time import sleep
+from sys import stderr, stdout
 from typing import NamedTuple
 
 import requests
-
 
 _is_debug: bool = False
 
@@ -112,7 +109,6 @@ class UrlBatch(NamedTuple):
 
 type HTMLPage = str
 type Markdown = str
-type ImageUrlAssocs = list[tuple[str, str]]
 
 
 def todo(msg: str = "TODO"):
@@ -132,10 +128,7 @@ def debug(*msg) -> None:
         )
 
 
-def acquire_lock(lock_file_path="/tmp/mylock.lock"):
-    lock_file = open(lock_file_path, "w")
-    fcntl.flock(lock_file, fcntl.LOCK_EX)
-    return lock_file
+session = requests.Session()
 
 
 class DiscourseProcessor:
@@ -157,39 +150,19 @@ class DiscourseProcessor:
         res = None
 
         # Get topic id
-        id = re.search(rf"{re.escape(_BASE_URL)}/docs\?topic=(\d+)", url)
+        site_prefix = _BASE_URL.rstrip("/")
+        id = re.search(rf"{re.escape(site_prefix)}/docs\?topic=(\d+)", url)
         if id is None:
             raise Exception("id was not found")
         id = int(id.group(1))
 
         res = UrlBatch(
-            json_url=f"https://universal-blue.discourse.group/t/{id}.json",
-            raw_url=f"https://universal-blue.discourse.group/raw/{id}",
+            json_url=rf"{site_prefix}/t/{id}.json",
+            raw_url=rf"{site_prefix}/raw/{id}",
             source_url=url,
         )
 
         return res
-
-    @classmethod
-    def fetch(cls, url: str) -> requests.Response:
-        tries = 2
-        retry_pattern = r"Slow down, too many requests from this IP address. Please retry again in (\d+) seconds?\. Error code: ip_10_secs_limit\.$"
-
-        while tries > 0:
-            res = requests.get(url)
-            if re.match(retry_pattern, res.text):
-                debug("Timeout was hit: ", res.text)
-                tries = tries - 1
-                sleep(12)  # Usually is 10 seconds, +2 to be safe
-                continue
-            else:
-                break
-
-        return res
-
-    @staticmethod
-    def get_markdown_from_url(url: str):
-        return requests.get(url).text
 
     @staticmethod
     def add_metadata_to_markdown(md: Markdown, url_discourse: str) -> Markdown:
@@ -201,15 +174,13 @@ class DiscourseProcessor:
                     "<!--$metadata-->",
                     "<!-- ANCHOR_END: METADATA -->",
                 ]
-            )
-            .lstrip()
-            .rstrip()
+            ).strip()
         )
         metadata = html.escape(
             json.dumps(
                 dict(
                     url_discourse=url_discourse,
-                    fetched_at=datetime.now(UTC).__str__(),
+                    fetched_at=str(datetime.now(UTC)),
                 ),
             ),
             quote=False,
@@ -236,7 +207,7 @@ def fetch(url: str) -> str | None:
 
     md_url = batch.raw_url
 
-    result = DiscourseProcessor.get_markdown_from_url(md_url)
+    result = session.get(md_url).text
 
     # Replace images urls
     result = re.sub(
@@ -280,8 +251,7 @@ def main():
 
 
 if __name__ == "__main__":
-    lock_file = acquire_lock()
     try:
         main()
-    finally:
-        lock_file.close()
+    except KeyboardInterrupt:
+        pass
