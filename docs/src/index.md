@@ -88,3 +88,8 @@ A quick list of stuff you might be interested in checking out:
 [rollbacks]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rolling_back_system_updates.md
 [rebasing]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rebase_guide.md
 [rollback-helper]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/bazzite_rollback_helper.md
+[gaming-index]: Gaming/index.md
+[game_launchers]: Gaming/Game_Launchers.md
+[modding]: Gaming/Managing_and_modding_games.md
+[gaming_issues]: Gaming/Common_gaming_issues.md
+[hardware_compat]: Gaming/Hardware_compatibility_for_gaming.md
