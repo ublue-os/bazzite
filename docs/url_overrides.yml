@@ -1,3 +1,10 @@
+#########################################################################
+#                                                                       #
+# To deactivate mappings, simply rename this file prefixed with a dot.  #
+# Ex.: .url_overrides.yml                                               #
+#                                                                       #
+#########################################################################
+
 # region GENERAL
 # src/index.md
 "https://universal-blue.discourse.group/docs?topic=561": "/"

@@ -61,8 +61,12 @@ def on_config(config: MkDocsConfig):
     except FileExistsError:
         pass
 
-    with open(os.path.join(mkdocs_config_dir, "url_overrides.yml")) as f:
-        url_mappings = yaml.load(f.read(), Loader=yaml.SafeLoader)
+    try:
+        url_overrides_file = os.path.join(mkdocs_config_dir, "url_overrides.yml")
+        with open(url_overrides_file) as f:
+            url_mappings = yaml.load(f.read(), Loader=yaml.SafeLoader)
+    except FileNotFoundError:
+        pass
 
 
 @plugins.event_priority(100)
