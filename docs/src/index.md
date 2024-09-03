@@ -17,9 +17,9 @@ A quick list of stuff you might be interested in checking out:
   - [Steam Deck (and OLED)][deck]
   - [Asus ROG Ally (X)][ally]
   - [Lenovo Legion Go][legion_go]
-  - [GPD][gpd]
-  - [Ayn][ayn]
-  - [Ayaneo][ayaneo]
+  - [GPD Handhelds][gpd]
+  - [Ayn Handhelds][ayn]
+  - [Ayaneo Handhelds][ayaneo]
 
 
 - [:material-download-circle: **Install software**][installing_software]{ style="font-size: 1.1rem" }
