@@ -1,2 +1,5 @@
 # VIM is more usable on deck due to control scheme
 EDITOR=/usr/bin/vim
+
+# Disable Brew auto-update
+HOMEBREW_NO_AUTO_UPDATE=1

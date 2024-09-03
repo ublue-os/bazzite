@@ -93,6 +93,14 @@ URL_MAPPINGS = [
         "https://universal-blue.discourse.group/docs?topic=970",
         "/Advanced/Auto-Mounting_Secondary_Drives/",
     ),
+    (  # src/Advanced/kde-automount-guide.md
+        "https://universal-blue.discourse.group/docs?topic=3780",
+        "/Advanced/kde-automount-guide/",
+    ),
+    (  # src/Advanced/gnome-disks-automount-guide.md
+        "https://universal-blue.discourse.group/docs?topic=3781",
+        "/Advanced/gnome-disks-automount-guide/",
+    ),
     # endregion ADVANCED
 ]
 
@@ -171,7 +179,7 @@ def _on_page_markdown_replace_urls(
     for src, dst in URL_MAPPINGS:
         if config.site_url:
             dst = f"{config.site_url.rstrip("/")}/{dst.lstrip("/")}"
-        res = res.replace(src, dst)
+        res = re.sub(rf"\b{re.escape(src)}\b", dst, res)
     return res
 
 
