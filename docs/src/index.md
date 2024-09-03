@@ -52,14 +52,16 @@ A quick list of stuff you might be interested in checking out:
   <small>\* Desktop images require [**enabling Proton for all Steam games**][enable_proton].</small>
 
 
-- [:emoji: **Updates, Rollbacks, and Rebasing**][updateindex]{ style="font-size: 1.1rem" }
+- [:fa-solid-circle-arrow-down: **Updates, Rollbacks, and Rebasing**][updateindex]{ style="font-size: 1.1rem" }
 
-- [Update][updates]
-- [Rollback][rollbacks]
-- [Rebasing][rebasing]
+- [Updating Guide][updates]
+- [Rollback System Updates][rollbacks]
+- [Rebasing to Other Images][rebasing]
 - [`bazzite-rollback-helper`][rollback-helper]
 
-- [:emoji: **Android Applications**][contrib]{ style="font-size: 1.1rem" }
+- [:fontawesome-brands-android: **Android Applications**][waydroid]{ style="font-size: 1.1rem" }
+
+Run Android applications in a container using [Waydroid](https://waydro.id/)!
 
 - [:fontawesome-solid-handshake: **Contribute**][contrib]{ style="font-size: 1.1rem" }
 
