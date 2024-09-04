@@ -54,14 +54,14 @@ A quick list of stuff you might be interested in checking out:
 
 - [:fa-solid-circle-arrow-down: **Updates, Rollbacks, and Rebasing**][updateindex]{ style="font-size: 1.1rem" }
 
-- [Updating Guide][updates]
-- [Rollback System Updates][rollbacks]
-- [Rebasing to Other Images][rebasing]
-- [`bazzite-rollback-helper`][rollback-helper]
+  - [Updating Guide][updates]
+  - [Rollback System Updates][rollbacks]
+  - [Rebasing to Other Images][rebasing]
+  - [`bazzite-rollback-helper`][rollback-helper]
 
-- [:fontawesome-brands-android: **Android Applications**][waydroid]{ style="font-size: 1.1rem" }
+- [:fontawesome-brands-android: **Run Android Applications (including games)**][waydroid]{ style="font-size: 1.1rem" }
 
-Run Android applications in a container using [Waydroid](https://waydro.id/)!
+[Waydroid](https://waydro.id/) is shipped on Bazzite out of the box.
 
 - [:fontawesome-solid-handshake: **Contribute**][contrib]{ style="font-size: 1.1rem" }
 
