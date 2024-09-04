@@ -10,10 +10,7 @@ on:
     branches:
       - main
     paths:
-      - docs/**/*.md
-      - docs/**/*.png
-      - docs/**/*.jpg
-      - docs/**/*.jpeg
+      - docs/**
       - .github/workflows/deploy_docs.yml
       - README*.md
   workflow_dispatch:

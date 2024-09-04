@@ -12,14 +12,15 @@ A quick list of stuff you might be interested in checking out:
 
 - [:material-harddisk: **Installing Bazzite**](General/Installation_Guide/index.md){ style="font-size: 1.1rem" }
 
-  From [desktop/laptops][install_pc_laptop], <br>Framework [13][frame_13]/[16][frame_16], to a multitude of handhelds:
+  From [desktop/laptops][install_pc_laptop], <br>Framework [13][frame_13]/[16][frame_16], to a [multitude of handhelds][install_handheld]:
 
-  - [Steam Deck (and OLED)][install_handheld]
-  - [Asus ROG Ally (X)][install_handheld]
-  - [Lenovo Legion Go][install_handheld]
-  - [Ayaneo][install_handheld]
-  - [GPD][install_handheld]
-  - [Ayn][install_handheld]
+  - [Steam Deck (and OLED)][deck]
+  - [Asus ROG Ally (X)][ally]
+  - [Lenovo Legion Go][legion_go]
+  - [GPD Handhelds][gpd]
+  - [Ayn Handhelds][ayn]
+  - [Ayaneo Handhelds][ayaneo]
+
 
 - [:material-download-circle: **Install software**][installing_software]{ style="font-size: 1.1rem" }
 
@@ -42,15 +43,15 @@ A quick list of stuff you might be interested in checking out:
 
   Bazzite comes bundled with :fontawesome-brands-steam: Steam\* and [Lutris](Gaming/Game_Launchers.md#lutris-setup).
 
-  As well, compatible with other tools:
+  Compatible with other tools as well:
 
   - [Heroic](https://heroicgameslauncher.com/) for Epic Games, GOG, and Amazon Games integration.
   - [Bottles](https://usebottles.com/) for general-purpose applications or as an alternative to Lutris.
-  - ... And [more][run_win_game].
+  - ...And [more][run_win_game]!
 
-  <small>\* In desktop images, you might need to [enable Proton for all Steam games][enable_proton].</small>
+  <small>\* Desktop images require [**enabling Proton for all Steam games**][enable_proton].</small>
 
-- [:fontawesome-solid-handshake: **Contribute to the project**][contrib]{ style="font-size: 1.1rem" }
+- [:fontawesome-solid-handshake: **Contribute**][contrib]{ style="font-size: 1.1rem" }
 
   One of the strengths of Bazzite (inherited from [Universal Blue](https://universal-blue.org/)) is how easy is to contribute.
 
@@ -60,9 +61,16 @@ A quick list of stuff you might be interested in checking out:
 </div>
 
 [install_pc_laptop]: General/Installation_Guide/Installing_Bazzite_for_Desktop_or_Laptop_Hardware.md
-[install_handheld]: General/Installation_Guide/Installing_Bazzite_for_Steam_Deck.md#installation-guide
+[install_handheld]: General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs.md
+[deck]: General/Installation_Guide/Installing_Bazzite_for_Steam_Deck.md#installation-guide
 [frame_13]: General/Installation_Guide/Installing_Bazzite_Framework_Laptop_13.md
 [frame_16]: General/Installation_Guide/Installing_Bazzite_for_Framework_Laptop_16.md
+[htpc]: General/Installation_Guide/Installing_Bazzite_for_HTPC_Setups.md
+[ally]: Handheld_and_HTPC_edition/Handheld_Wiki/ASUS_ROG_Ally.md
+[legion_go]: Handheld_and_HTPC_edition/Handheld_Wiki/Lenovo_Legion_Go.md
+[ayn]: Handheld_and_HTPC_edition/Handheld_Wiki/Ayn_Handhelds.md
+[gpd]: Handheld_and_HTPC_edition/Handheld_Wiki/GPD_Handhelds.md
+[ayaneo]: Handheld_and_HTPC_edition/Handheld_Wiki/Ayaneo_Handhelds.md
 [run_win_game]: Installing_and_Managing_Software/index.md#how-do-i-run-windows-applications
 [enable_proton]: Gaming/Game_Launchers.md#enabling-proton-for-all-steam-games
 [flatpak]: Installing_and_Managing_Software/Flatpak.md
