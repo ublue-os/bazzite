@@ -9,6 +9,10 @@
 
 **Status**: Gold
 
+## Installing Bazzite
+
+>Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os.github.io/bazzite/General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs/).
+
 ## Post-Installation Setup
 
 - Complete the Bazzite Portal
