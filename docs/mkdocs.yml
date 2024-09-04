@@ -39,8 +39,8 @@ theme:
         icon: material/brightness-4
         name: Switch to system preference
 
-  favicon: img/favicon.svg
-  logo: img/favicon.svg
+  favicon: static/favicon.svg
+  logo: static/favicon.svg
   icon:
     repo: fontawesome/brands/github
   features:
