@@ -2,7 +2,7 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=2637", "fetched_at": "2024-09-03 16:43:13.297624+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-![System Updates|200x200, 100%](https://universal-blue.discourse.group/uploads/short-url/900Soi9NRhZcHEOCqi0aRGpG9De.png)
+![System Updates|200x200, 100%](../../img/900Soi9NRhZcHEOCqi0aRGpG9De.png)
 
 # How do updates work?
 

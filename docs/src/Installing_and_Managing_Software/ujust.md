@@ -4,13 +4,13 @@
 
 # What is `ujust`?
 
-![Shell Scripts (.sh)|96x96, 100%](https://universal-blue.discourse.group/uploads/short-url/oLQaiumjX8VV6x2WrJFSZIVoDR4.png)
+![Shell Scripts (.sh)|96x96, 100%](../img/oLQaiumjX8VV6x2WrJFSZIVoDR4.png)
 
 Technically `ujust` is **not** a package format, but are convenience commands that automate tasks using scripts which can be utilized to install specific software.  There are also commands for system configuration and maintenance included here, so run `ujust` commands **at your own risk.**
 
 # Using `ujust`
 
-![ujust command list|690x411](https://universal-blue.discourse.group/uploads/short-url/8Rkc2Qe1CYy3MBwS2CA4Uf5rqzq.png)
+![ujust command list|690x411](../img/8Rkc2Qe1CYy3MBwS2CA4Uf5rqzq.png)
 
 Open a host terminal and **enter**:
 
@@ -21,7 +21,7 @@ ujust
 
 >This will output a list of available commands.
 
-![ujust TUI|690x403](https://universal-blue.discourse.group/uploads/short-url/gefs7zU9QThu2eAMDMpodIeNw8l.png)
+![ujust TUI|690x403](../img/gefs7zU9QThu2eAMDMpodIeNw8l.png)
 
 ```
 ujust --choose
