@@ -2,13 +2,13 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=2640", "fetched_at": "2024-09-03 16:43:09.168054+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-## What is Distrobox?
+# What is Distrobox?
 
 ![distrobox|310x113, 50%](https://universal-blue.discourse.group/uploads/short-url/p0qiLk4DY2QMJKPFZ6pNItOlhim.png)
 
 Run other minimal variants of popular Linux distributions in Bazzite inside of a container, and access each distribution's packages without any of their dependencies and libraries affecting the host machine.
 
-**Important Notes**:
+## **Important Notes**:
 
 - Containers are **not** virtual machines.
 - Containers are intended to be **disposable** and may run into issues where they need to be recreated.
@@ -17,7 +17,13 @@ Run other minimal variants of popular Linux distributions in Bazzite inside of a
 
 Distrobox containers run sub-systems of other popular [Linux distributions](https://distrobox.it/compatibility/#containers-distros) with access to their package managers (`apt`, `dnf`, `pacman`, etc.) and their package formats (`.deb`/`.rpm`) and any additional repositories like the [AUR](https://aur.archlinux.org/).
 
+
+### Arch Linux Container Example:
+
+i use arch (in a container) btw:
+
 ![i use arch btw|690x229, 75%](https://universal-blue.discourse.group/uploads/short-url/rqzTC1SNKDUvke2aOWaiM27zjWg.png)
+
 
 **Linux Distribution Examples**:
 
@@ -30,7 +36,7 @@ Distrobox containers run sub-systems of other popular [Linux distributions](http
 | [Void Linux][void]                  | [`xbps`][xbps]     | [Void Linux Packages][void_pkgs]                                          |
 | [Alpine Linux][alpine]              | [`apk`][apk]       | [Alpine Linux Packages][alpine_pkgs]                                      |
 
-## Use Cases
+# Use Cases
 
 Distrobox containers can be used for both **development environments** and **installing applications that are not available in any of the other installation methods** which can be exclusive to specific package managers.
 
@@ -40,7 +46,7 @@ Distrobox containers can be used for both **development environments** and **ins
 
 Distrobox containers can be created and managed graphically with [BoxBuddy](https://github.com/Dvlv/BoxBuddyRS) which is pre-installed.
 
-## Desktop Integration
+# Desktop Integration
 
 Applications with a graphical user interface can integrate with your system with an application shortcut **entering this command inside of the container**:
 
@@ -50,7 +56,7 @@ distrobox-export --app <package>
 
 > [Read Bluefin's documentation on how containers integrate with your system](https://docs.projectbluefin.io/bluefin-dx#pet-containers).
 
-## Manually Create Pre-Configured Distrobox Containers
+# Manually Create Pre-Configured Distrobox Containers
 
 ```command
 ujust distrobox-assemble
@@ -60,7 +66,7 @@ Select the container that you want to use.
 
 > **Advanced users**: Declare your own custom Distrobox containers following the [`distrobox-assemble` documentation](https://distrobox.it/usage/distrobox-assemble/).
 
-### Entering The Container
+## Entering The Container
 
 Swap between different containers in your host with the terminal or alternatively **enter**:
 
@@ -68,7 +74,7 @@ Swap between different containers in your host with the terminal or alternativel
 distrobox enter <container>
 ```
 
-### Removing Distrobox Containers
+## Removing Distrobox Containers
 
 Delete containers graphically with BoxBuddy.
 
@@ -82,11 +88,11 @@ distrobox stop <container_name>
 distrobox rm -f <container_name>
 ```
 
-## Distrobox Video Guide
+# Distrobox Video Guide
 
 https://youtu.be/5m0YfIiypwA
 
-## Project Website
+# Project Website
 
 https://distrobox.it/
 
