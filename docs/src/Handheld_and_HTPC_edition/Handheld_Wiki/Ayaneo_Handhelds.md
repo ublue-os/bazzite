@@ -7,10 +7,9 @@
 
 **Status**: Silver
 
-**You will need this command for functional HHD**:
-```command
-sudo systemctl enable --now hhd@$(whoami)
-```
+## Installation Guide
+>Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os.github.io/bazzite/General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs/)
+
 ## Post-Installation Setup
 
 - Complete the Bazzite Portal
@@ -28,7 +27,14 @@ sudo systemctl enable --now hhd@$(whoami)
   - External audio works over both HDMI and eGPU.
 - **Suspend does not work without a workaround**!
   - see suspend workaround [here](https://universal-blue.discourse.group/t/ayaneo-handheld-compatibility/2417#p-5599-suspend-workaround-5)
-- VRAM size option is missing from BIOS as it's controlled by AYASPACE application under windows. 
+- VRAM size option is missing from BIOS as it's controlled by AYASPACE application under windows.
+
+#
+
+**You will need this command for functional HHD**:
+```
+sudo systemctl enable --now hhd@$(whoami)
+```
 
 ## External Graphics:
 
