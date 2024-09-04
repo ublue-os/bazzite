@@ -3,7 +3,7 @@
 set -oue pipefail
 
 IMAGE_PRETTY_NAME="Bazzite"
-IMAGE_LIKE="rhel centos fedora bluefin aurora nobara ultramarine"
+IMAGE_LIKE="fedora"
 HOME_URL="https://bazzite.gg"
 DOCUMENTATION_URL="https://docs.bazzite.gg"
 SUPPORT_URL="https://discord.bazzite.gg"
