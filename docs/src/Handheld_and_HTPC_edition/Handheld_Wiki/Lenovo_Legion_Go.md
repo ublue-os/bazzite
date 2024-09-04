@@ -8,6 +8,10 @@
 
 **Status**: Platinum
 
+## Installing Bazzite
+
+>Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os.github.io/bazzite/General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs/).
+
 ## Post-Installation Setup
 
 Open a host terminal and enter the following **commands**:
@@ -46,7 +50,7 @@ mv ~/.config/kwinoutputconfig.json ~/.config/kwinoutputconfig.json.old
 
 ## BIOS Update Information
 
-https://universal-blue.discourse.group/docs?topic=3064
+A [thread](https://universal-blue.discourse.group/docs?topic=3064) on our forums goes over in detail on how to update the BIOS without having Windows installed.
 
 ## External Resource
 
