@@ -2,7 +2,7 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=1145", "fetched_at": "2024-09-03 16:43:24.537747+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-![HTPC|609x371](../../img/4antCDMo3oimhjmNyhi6ba0Knw1.png)
+![HTPC|609x371](../../img/HTPC.png)
 
 # Pre-Installation
 
@@ -129,7 +129,7 @@ Read the [Secure Boot Guide](https://universal-blue.discourse.group/docs?topic=2
 >The fine tuning before gaming.
 
 ## GRUB Menu
-![Rollbacks|690x402, 50%](../../img/8mTB5vEYyXVH1dIK51dhxvXait5.png)
+![Rollbacks|690x402, 50%](../../img/GRUB_Menu.png)
 
 The first boot will show a screen showing your current and last deployment. It will automatically boot if nothing.  It is important to note that the GRUB menu can be used to rollback Bazzite deployments if you encounter issues.  
 

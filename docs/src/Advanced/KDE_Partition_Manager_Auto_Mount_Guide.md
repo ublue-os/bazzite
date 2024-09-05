@@ -4,7 +4,7 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=3780", "fetched_at": "2024-09-03 16:43:09.824214+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-![KDE|48x48](../img/36fqQF6jDStXU1NdJBAEbfxlUP0.png)
+![KDE|48x48](../img/KDE.png)
 
 **This is pre-installed on KDE images.**
 

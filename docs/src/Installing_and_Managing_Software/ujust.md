@@ -4,7 +4,7 @@
 
 # What is `ujust`?
 
-![Shell Scripts (.sh)|96x96, 100%](../img/oLQaiumjX8VV6x2WrJFSZIVoDR4.png)
+![Shell Scripts (.sh)|96x96, 100%](../img/Shell_Scripts__sh.png)
 
 Technically `ujust` is **not** a package format, but are convenience commands that automate tasks using scripts which can be utilized to install specific software.  There are also commands for system configuration and maintenance included here, so run `ujust` commands **at your own risk.**
 

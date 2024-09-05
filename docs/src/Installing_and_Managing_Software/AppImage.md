@@ -2,7 +2,7 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=2641", "fetched_at": "2024-09-03 16:43:10.114605+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-![AppImage|100x100, 100%](../img/lehDJcnEbMe0rImBgX8cKvhysfh.png)
+![AppImage|100x100, 100%](../img/AppImage.png)
 
 >**Note**: AppImages may not be supported if rebasing to other Fedora Atomic Desktop images.
 

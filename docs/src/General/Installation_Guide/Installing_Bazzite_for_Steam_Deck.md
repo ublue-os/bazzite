@@ -2,7 +2,7 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=1143", "fetched_at": "2024-09-03 16:43:25.151999+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-![image|690x332](../../img/9sUZgnXwkgu4GEnRb0HLtzoHdSd.jpeg)
+![image|690x332](../../img/image.jpeg)
 
 # Bazzite on the Steam Deck
 
@@ -130,7 +130,7 @@ Access this with the "**Troubleshooting**" section when the ISO is booted.
 >The fine tuning before gaming.
 
 ## GRUB Menu
-![Rollbacks|690x402, 50%](../../img/8mTB5vEYyXVH1dIK51dhxvXait5.png)
+![Rollbacks|690x402, 50%](../../img/GRUB_Menu.png)
 
 The first boot will show a screen showing your current and last deployment. It will automatically boot if nothing.  It is important to note that the GRUB menu can be used to rollback Bazzite deployments if you encounter issues.  
 

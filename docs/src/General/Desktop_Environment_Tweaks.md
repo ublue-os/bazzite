@@ -10,7 +10,7 @@ KDE Plasma is the default Bazzite desktop environment and is highly customizable
 
 Do **not** install themes with the built-in KDE system settings installer since it may not install properly because the filesystem is slightly different than most Linux operating systems.  Install themes manually into your Home directory and follow instructions from the author if necessary.
 
-![Directory|401x207, 75%](../img/8N6JKQAYxVv6dcSCsUmMmKtR1Lm.png)
+![Directory|401x207, 75%](../img/Directory.png)
 
 ## Universal instructions for most custom themes
 

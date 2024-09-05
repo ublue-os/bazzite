@@ -3,7 +3,7 @@
 <!-- ANCHOR_END: METADATA -->
 
 1. Download the Framework Laptop image of [Bazzite](https://bazzite.gg/). Make sure you select Intel or AMD depending on the mainboard in your device:
-![1|690x426](../../img/nIJ6NAxXU1aGcYW7ETvr4waICvQ.jpeg)
+![1|690x426](../../img/1_92c0a65.jpeg)
 
 1. **Create a USB stick** using [Fedora Media Writer](https://docs.fedoraproject.org/en-US/fedora/latest/preparing-boot-media/#_on_windows) ([Windows](https://fedoraproject.org/fmw/FedoraMediaWriter-win32-latest.exe) or [Mac](https://fedoraproject.org/fmw/FedoraMediaWriter-osx-latest.dmg) or [Linux](https://flathub.org/apps/org.fedoraproject.MediaWriter))
 

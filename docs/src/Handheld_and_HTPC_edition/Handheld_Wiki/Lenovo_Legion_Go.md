@@ -4,7 +4,7 @@
 
 # Lenovo Legion Go
 
-![legion_go|690x387, 100%](../../img/wfLcuG8BqvHIlmXukTS77AMSDyJ.jpeg)
+![legion_go|690x387, 100%](../../img/legion_go.jpeg)
 
 **Status**: Platinum
 

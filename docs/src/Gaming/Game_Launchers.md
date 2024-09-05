@@ -14,7 +14,7 @@ Steam can run Windows games on Linux.  It utilizes a wide range of projects and 
 * You can change this by going into the Steam **Settings** > **Compatibility** > Check **Enable Steam Play for all other titles**
 
 
-![Steam Settings|256x267, 75%](../img/nXBb6Smr17lMnyV3TH1ePxvYVuA.png)
+![Steam Settings|256x267, 75%](../img/Steam_Settings.png)
 ![Compatibility|589x499, 75%](../img/IixmUZBAH8wiG0DRssksO0khXF.png)
 
 ## Forcing A Specific Proton / Steam Play Tool Version

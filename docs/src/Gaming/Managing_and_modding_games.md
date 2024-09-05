@@ -12,7 +12,7 @@ Windows games need to run through a **compatibility layer** (like Proton) on Baz
 
 ## Using ProtonUp-Qt/ProtonPlus
 
-![ProtonUp-Qt Interface|690x388](../img/axJP5hL63tKqadGDtjPveDan9YO.png)
+![ProtonUp-Qt Interface|690x388](../img/ProtonUp-Qt_Interface.png)
 
 
 Install and update to the latest [GE-Proton](https://github.com/GloriousEggroll/proton-ge-custom), [Luxtorpeda](https://github.com/luxtorpeda-dev/luxtorpeda), and other useful [SteamPlay tools](https://steamcommunity.com/games/221410/announcements/detail/1696055855739350561). 

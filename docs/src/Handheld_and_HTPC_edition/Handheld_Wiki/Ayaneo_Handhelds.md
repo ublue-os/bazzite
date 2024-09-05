@@ -3,7 +3,7 @@
 <!-- ANCHOR_END: METADATA -->
 
 # Ayaneo Geek 1S
-![photo_5875160389711413569_y|663x500, 100%](../../img/lFyyDLFl78Qm4fSRqiQjgOqjFWL.jpeg)
+![photo_5875160389711413569_y|663x500, 100%](../../img/photo_5875160389711413569_y.jpeg)
 
 **Status**: Silver
 

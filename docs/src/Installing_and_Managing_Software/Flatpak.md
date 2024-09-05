@@ -4,7 +4,7 @@
 
 # What is Flatpak?
 
-![Flatpak|100x100, 100%](../img/v8VIuTILkstytNrPebI3WTobWtS.png)
+![Flatpak|100x100, 100%](../img/Flatpak.png)
 
 Flatpak is a universal containerized package format that tries to sandbox applications through flexible permissions that the application has access to on your system.  
 

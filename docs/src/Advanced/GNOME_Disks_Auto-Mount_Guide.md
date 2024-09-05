@@ -4,7 +4,7 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=3781", "fetched_at": "2024-09-03 16:43:10.816923+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-![GNOME|120x120, 50%](../img/ztouopqxzZnRtAFxN9j3BC8Xj4w.png)
+![GNOME|120x120, 50%](../img/GNOME.png)
 
 **This comes pre-installed on GNOME images.**
 

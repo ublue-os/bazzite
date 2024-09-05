@@ -4,7 +4,7 @@
 
 >Follow this guide **at your own discretion** because you can break your system attempting any of this.
 
-![Edit the command for the latest boot entry|690x351](../img/3DKuxnu44jDcrwx30k2mxFXjLXD.png)
+![Edit the command for the latest boot entry|690x351](../img/Edit_the_command_for_the_latest_boot_entry.png)
 
 Reboot your device and edit the last deployment by presssing <kbd>E</kbd> on your keyboard.
 

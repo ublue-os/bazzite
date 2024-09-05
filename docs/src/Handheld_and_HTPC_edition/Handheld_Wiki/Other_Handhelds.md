@@ -4,7 +4,7 @@
 
 # Other Handhelds
 
-![generic handheld|348x158, 100%](../../img/nHTQWuYmq5eTpxAVwql3IPlJlg5.jpeg)
+![generic handheld|348x158, 100%](../../img/generic_handheld.jpeg)
 
 >Certain handhelds have been confirmed to boot Bazzite, but are plagued by missing driver support for Linux including missing audio drivers.
 

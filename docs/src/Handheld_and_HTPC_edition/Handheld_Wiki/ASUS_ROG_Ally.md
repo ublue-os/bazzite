@@ -4,7 +4,7 @@
 
 # ASUS ROG Ally / ASUS ROG Ally X
 
-![ally|603x500, 100%](../../img/oawrP3Gg6J5DAjfdsIYoWNO2juS.png)
+![ally|603x500, 100%](../../img/ally.png)
 
 **Status**: Gold
 

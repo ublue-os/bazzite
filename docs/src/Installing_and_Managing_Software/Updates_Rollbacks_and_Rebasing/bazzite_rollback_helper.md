@@ -2,7 +2,7 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=2647", "fetched_at": "2024-09-03 16:43:17.164020+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-![Bazzite Rollback Helper Command|636x500](../../img/oMMAp6yNxPPO7XERGtsJ5lPX5Qb.png)
+![Bazzite Rollback Helper Command|636x500](../../img/Bazzite_Rollback_Helper_Command.png)
 
 >**Note**: Read the [rollback](https://universal-blue.discourse.group/docs?topic=2644) and [rebasing](https://universal-blue.discourse.group/docs?topic=2646) guides to understand the terms and what they do.
 

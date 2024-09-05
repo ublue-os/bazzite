@@ -4,7 +4,7 @@
 
 # GPD Win 4
 
-![gpdwin4|690x328, 100%](../../img/8vl2Px0U9256prp9Qra7HJVi0Fx.jpeg)
+![gpdwin4|690x328, 100%](../../img/gpdwin4.jpeg)
 
 
 **Status**: Gold

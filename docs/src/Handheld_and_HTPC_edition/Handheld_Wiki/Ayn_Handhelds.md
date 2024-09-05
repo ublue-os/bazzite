@@ -4,7 +4,7 @@
 
 # Ayn Loki Max
 
-![Loki Max|375x500, 100%](../../img/g9CT0hSyDII5isg9WFvFcXeZvX2.jpeg)
+![Loki Max|375x500, 100%](../../img/Loki_Max.jpeg)
 
 **Status**: Platinum
 

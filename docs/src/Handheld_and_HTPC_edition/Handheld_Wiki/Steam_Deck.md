@@ -4,7 +4,7 @@
 
 # Steam Deck LCD (256GB+)
 
-![Steam Deck LCD|690x348, 100%](../../img/yoqR7VWSnItzhg26VOU9nKTrrlN.jpeg)
+![Steam Deck LCD|690x348, 100%](../../img/Steam_Deck_LCD.jpeg)
 
 **Status**: Platinum
 

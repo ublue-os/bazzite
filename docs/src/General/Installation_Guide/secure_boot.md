@@ -4,7 +4,7 @@
 
 # Secure Boot Information
 
-![Secure Boot|690x378, 50%](../../img/wuBqJVUJhoAp8g5BKW1fYAyR9Vz.jpeg)
+![Secure Boot|690x378, 50%](../../img/Secure_Boot.jpeg)
 
 >**Note**: Skip this section if Secure Boot is not enabled or unsupported with your hardware.
 
