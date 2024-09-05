@@ -67,6 +67,10 @@ Right clicking a game on Lutris gives the option to add it as a non-Steam game (
 
 Games installed from the Microsoft Store do **not** run on desktop Linux unless you use a xCloud client like [Greenlight](https://github.com/unknownskl/greenlight).  Fortnite can also be played via xCloud without a Gamepass subscription using this method.
 
+# Auto-Mounting Game Drives
+
+Read the [Auto-Mounting Secondary Drives Guide](https://ublue-os.github.io/bazzite/Advanced/Auto-Mounting_Secondary_Drives/) for more information.  It is also recommended to do your own research on drive mounting on Linux.
+
 <hr>
 
 [**<-- Back to Gaming Guide**](https://universal-blue.discourse.group/docs?topic=31)
