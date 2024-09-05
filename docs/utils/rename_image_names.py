@@ -29,13 +29,12 @@ _filenamechars_mapping = str.maketrans(
 
 
 def find_matching_name(md_file_path: str | Path, /, pattern: str = IMG_REF_RE):
-    if not shutil.which("grep"):
-        raise MissingSystemDepsError("grep")
-    status_code, pout = subprocess.getstatusoutput(
-        f'grep -P "{pattern}" -- {str(md_file_path)}'
-    )
+    try:
+        pout = Path(md_file_path).read_text()
+    except UnicodeDecodeError:
+        return
     pout = pout.strip()
-    m = re.match(pattern, pout)
+    m = re.search(pattern, pout)
     if not m:
         return None
     label = m.group("label")
