@@ -58,7 +58,7 @@ jobs:
       fail-fast: false
       matrix:
         base_image_flavor: [main]
-        base_name: [bazzite, bazzite-deck, bazzite-nvidia]
+        base_name: [bazzite, bazzite-deck, bazzite-nvidia, bazzite-nvidia-open]
         base_image_name: [kinoite, silverblue]
         target_image_flavor: [main, asus]
         fedora_version: [40]
@@ -71,7 +71,7 @@ jobs:
     steps:
       - name: Define env.IMAGE_FLAVOR
         run: |
-          if [[ "${{ matrix.base_name }}" == "bazzite-nvidia" ]]; then
+          if [[ "${{ matrix.base_name }}" == "bazzite-nvidia" || "${{ matrix.base_name }}" == "bazzite-nvidia-open" ]]; then
               if [[ "${{ matrix.target_image_flavor }}" == "main" ]]; then
                   echo "IMAGE_FLAVOR=nvidia" >> $GITHUB_ENV
               else
@@ -79,6 +79,14 @@ jobs:
               fi
           else
               echo "IMAGE_FLAVOR=${{ matrix.target_image_flavor }}" >> $GITHUB_ENV
+          fi
+
+      - name: Define env.NVIDIA_FLAVOR
+        run: |
+          if [[ "${{ matrix.base_name }}" == "bazzite-nvidia-open" ]]; then
+            echo "NVIDIA_FLAVOR=nvidia-open" >> $GITHUB_ENV
+          else
+            echo "NVIDIA_FLAVOR=nvidia" >> $GITHUB_ENV
           fi
 
       - name: Define env.IMAGE_NAME
@@ -94,6 +102,8 @@ jobs:
               else
                   echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-deck', '${DESKTOP}') }}" >> $GITHUB_ENV
               fi
+          elif [[ "${{ matrix.base_name }}" == "bazzite-nvidia-open" ]]; then
+              echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-nvidia-open', '${DESKTOP}') }}" >> $GITHUB_ENV
           else
               if [[ "${{ env.IMAGE_FLAVOR }}" == "main" ]]; then
                   echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite', '${DESKTOP}') }}" >> $GITHUB_ENV
@@ -123,7 +133,7 @@ jobs:
       - name: Verify akmods-nvidia image
         uses: EyeCantCU/cosign-action/verify@v0.3.0
         with:
-          containers: akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
+          containers: akmods-${{ env.NVIDIA_FLAVOR }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
           pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
           registry: ${{ env.IMAGE_REGISTRY }}
 
@@ -157,7 +167,7 @@ jobs:
             # we can retry on that unfortunately common failure case
             sudo podman pull ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
             sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
-            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
+            sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods-${{ env.NVIDIA_FLAVOR }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
 
             # Add rechunk as well to remove this source of failure
             sudo podman pull ghcr.io/hhd-dev/rechunk:v0.8.3
@@ -217,6 +227,7 @@ jobs:
             --target ${{ matrix.base_name }} \
             --build-arg IMAGE_NAME=${{ env.IMAGE_NAME }} \
             --build-arg IMAGE_FLAVOR=${{ env.IMAGE_FLAVOR }} \
+            --build-arg NVIDIA_FLAVOR=${{ env.NVIDIA_FLAVOR }} \
             --build-arg IMAGE_VENDOR=${{ github.repository_owner }} \
             --build-arg BASE_IMAGE_NAME=${{ matrix.base_image_name }} \
             --build-arg BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }} \
@@ -234,7 +245,7 @@ jobs:
         run: |
           sudo podman image rm ${{ env.IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
           sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
-          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods-nvidia:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
+          sudo podman image rm ${{ env.IMAGE_REGISTRY }}/akmods-${{ env.NVIDIA_FLAVOR }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
       
       # Generate the previous image reference used by the Rechunker
       - name: Generate previous reference
