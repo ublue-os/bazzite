@@ -79,14 +79,12 @@ This **command** Shows layered packages that may be installed from the Bazzite P
 
 ```
 rpm-ostree status
-```` 
+```
 
 # Project Website
 
 https://just.systems/
 
 <hr>
-
-**See also**: https://universal-blue.discourse.group/docs?topic=42
 
 [**<-- Back to Installing and Managing Software on Bazzite**](https://universal-blue.discourse.group/docs?topic=35)
