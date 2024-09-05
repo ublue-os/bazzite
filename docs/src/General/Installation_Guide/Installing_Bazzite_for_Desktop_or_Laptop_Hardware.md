@@ -98,7 +98,7 @@ Current [Fedora Atomic Desktop](https://fedoraproject.org/atomic-desktops/) user
 
 ![Installer](../../img/anaconda_installer.png)
 
-![Automatic drive configuration|690x497, 75%](../../img/iM2Rjo15UNmytZK8askzPdLf4mu.png)
+![Automatic drive configuration|690x497, 75%](../../img/anaconda_drive_configuration.png)
 
 ![User setup example|690x359, 75%](../../img/anaconda_user_setup.png)
 

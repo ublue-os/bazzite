@@ -103,7 +103,7 @@ Read the [Dual Boot Guide](https://universal-blue.discourse.group/docs?topic=274
 
 ![Installer](../../img/anaconda_installer.png)
 
-![Automatic drive configuration|690x497, 75%](../../img/iM2Rjo15UNmytZK8askzPdLf4mu.png)
+![Automatic drive configuration|690x497, 75%](../../img/anaconda_drive_configuration.png)
 
 ![User setup example|690x359, 75%](../../img/anaconda_user_setup.png)
 

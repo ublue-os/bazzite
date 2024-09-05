@@ -110,7 +110,7 @@ Access this with the "**Troubleshooting**" section when the ISO is booted.
 
 <!--![Installer](../../img/zfpz6EXcBqQ6jxho1O9jLLSRUE9.png)-->
 
-![Automatic drive configuration|690x497, 75%](../../img/iM2Rjo15UNmytZK8askzPdLf4mu.png)
+![Automatic drive configuration|690x497, 75%](../../img/anaconda_drive_configuration.png)
 
 ![User setup example|690x359, 75%](../../img/anaconda_user_setup.png)
 
