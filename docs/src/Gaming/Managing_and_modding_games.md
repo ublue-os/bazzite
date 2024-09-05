@@ -12,7 +12,7 @@ Windows games need to run through a **compatibility layer** (like Proton) on Baz
 
 ## Using ProtonUp-Qt/ProtonPlus
 
-![ProtonUp-Qt Interface|690x388](https://universal-blue.discourse.group/uploads/short-url/axJP5hL63tKqadGDtjPveDan9YO.png)
+![ProtonUp-Qt Interface|690x388](../img/ProtonUp-Qt_Interface.png)
 
 
 Install and update to the latest [GE-Proton](https://github.com/GloriousEggroll/proton-ge-custom), [Luxtorpeda](https://github.com/luxtorpeda-dev/luxtorpeda), and other useful [SteamPlay tools](https://steamcommunity.com/games/221410/announcements/detail/1696055855739350561). 
@@ -23,7 +23,7 @@ Install and update to the latest [GE-Proton](https://github.com/GloriousEggroll/
 
 ## Protontricks / Winetricks
 
-![Protontricks|660x500](https://universal-blue.discourse.group/uploads/short-url/dZzL4IXXIlssBn0e8qtP7ikolBO.png)
+![Protontricks|660x500](../img/Protontricks.png)
 
 Some games require [Protontricks](https://github.com/Matoking/protontricks) (pre-installed) or [Winetricks](https://github.com/Winetricks/winetricks) (for non-Steam games, included with Lutris) to function properly.
 
@@ -47,7 +47,7 @@ It's the glue that holds everything together when you run a game through Proton 
 
 Many PC games drop files in Windows folders like "My Documents" or "AppData" and both can be found in your prefix directory.  This prefix directory may be useful for modding your games, backing up your saves, or configuration files.
 
-![AppID|690x482, 75%](https://universal-blue.discourse.group/uploads/short-url/1CPDDhgFLERDqt72yoH39J8Fgds.png)
+![AppID|690x482, 75%](../img/Steam_AppID.png)
 
 For games on Steam, they are located in your `~/.steam/root/steamapps/compatdata/` folder, and then the **AppID number of the game**:
   -  This ID by going into the game's properties on Steam in the games `Properties > Updates > App ID`
@@ -55,7 +55,7 @@ For games on Steam, they are located in your `~/.steam/root/steamapps/compatdata
 
 ## Broken Proton Prefix?
 
-![Delete Proton Prefix|382x341, 75%](https://universal-blue.discourse.group/uploads/short-url/rrMIcHTej5uysXqsYegFA0xyAti.png)
+![Delete Proton Prefix|382x341, 75%](../img/Steam_Delete_Prefix.png)
 
 > **Note**: Save files are located in the prefix, so backup the save file in there before deleting especially if the game does not support cloud saving.
 
@@ -90,7 +90,7 @@ Some mods require a "WINE DLL OVERRIDE" environment variable in the Steam launch
 
 ## Configuration Templates for DXVK, MangoHud, & vkBasalt
 
-![Template|690x334, 50%](https://universal-blue.discourse.group/uploads/short-url/wDOFMQ8U5c7xqOSOEfZNt492RB5.png)
+![Template|690x334, 50%](../img/DXVK_Mango_VkBasalt_templ.png)
 
 Bazzite users can use templates for some of the pre-installed tools which can be accessed by right clicking anywhere in the file manager.
 

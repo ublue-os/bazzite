@@ -2,7 +2,7 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=1146", "fetched_at": "2024-09-03 16:43:27.199924+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-![Desktop|690x448](https://universal-blue.discourse.group/uploads/short-url/AliS5ytuj3Rro4xsxfHMnPiJMsR.jpeg)
+![Desktop|690x448](../../img/Desktop.jpeg)
 
 
 # Pre-Installation
@@ -37,7 +37,7 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 
 ### [KDE Plasma (Default)](https://kde.org/plasma-desktop/)
 
-![KDE Plasma|690x388, 75%](https://universal-blue.discourse.group/uploads/short-url/h7Dqg0SaF3Whee7a9qnlJdtKcss.jpeg)
+![KDE Plasma|690x388, 75%](../../img/KDE_Plasma_DE.jpeg)
 
 - KDE Plasma's default interface has a traditional and familiar layout
 - Highly customizable with tons of settings
@@ -46,7 +46,7 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 
 ### [GNOME (`-gnome` images)](https://www.gnome.org/)
 
-![GNOME|690x359, 75%](https://universal-blue.discourse.group/uploads/short-url/2jxFrUQ5YGMyjpRw65lE37SuxiT.png)
+![GNOME|690x359, 75%](../../img/GNOME_DE.png)
 
 - GNOME's default interface has an elegant and touch-friendly layout
 - Simple and concise
@@ -56,7 +56,7 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 
 ### [Steam Gaming Mode (`-deck` images)](https://universal-blue.discourse.group/docs?topic=37)
 
-![Gaming Mode|690x388, 75%](https://universal-blue.discourse.group/uploads/short-url/7V8e6RsZT46dO4ztlWAlmROhc21.jpeg)
+![Gaming Mode|690x388, 75%](../../img/Gaming_Mode.jpeg)
 
 >**Note**: Your device will automatically boot into the Steam Gaming Mode session at startup, and Desktop Mode can be accessed from the "**power menu**" in Steam Gaming Mode.
 
@@ -96,11 +96,11 @@ Current [Fedora Atomic Desktop](https://fedoraproject.org/atomic-desktops/) user
 
 ## 3. Installer
 
-![Installer](https://universal-blue.discourse.group/uploads/short-url/zfpz6EXcBqQ6jxho1O9jLLSRUE9.png)
+![Installer](../../img/anaconda_installer.png)
 
-![Automatic drive configuration|690x497, 75%](https://universal-blue.discourse.group/uploads/short-url/iM2Rjo15UNmytZK8askzPdLf4mu.png)
+![Automatic drive configuration|690x497, 75%](../../img/anaconda_drive_configuration.png)
 
-![User setup example|690x359, 75%](https://universal-blue.discourse.group/uploads/short-url/ifNfb60naVmevFSrJGt3X3IySsV.png)
+![User setup example|690x359, 75%](../../img/anaconda_user_setup.png)
 
 - Select your language, region, keyboard layout, and time zone.
 - Select the drive that Bazzite is going to be installed on.
@@ -124,7 +124,7 @@ Read the [Secure Boot Guide](https://universal-blue.discourse.group/docs?topic=2
 >The fine tuning before gaming.
 
 ## GRUB Menu
-![Rollbacks|690x402, 50%](https://universal-blue.discourse.group/uploads/short-url/8mTB5vEYyXVH1dIK51dhxvXait5.png)
+![Rollbacks|690x402, 50%](../../img/GRUB_Menu.png)
 
 The first boot will show a screen showing your current and last deployment. It will automatically boot if nothing.  It is important to note that the GRUB menu can be used to rollback Bazzite deployments if you encounter issues.  
 
@@ -132,23 +132,23 @@ Read more about this in the [Updates, Rollback, and Rebasing documentation](http
 
 ## Configuring System Settings for KDE Plasma and GNOME
 
-![Display Settings (KDE Plasma)|690x370, 75%](https://universal-blue.discourse.group/uploads/short-url/xZrErYyRSyJOeQgWQ8Nv93Wh0ab.png)
+![Display Settings (KDE Plasma)|690x370, 75%](../../img/KDE_Display_Settings.png)
 ***KDE Plasma's System Settings application***
 
-![Display Settings (GNOME)|690x344, 75%](https://universal-blue.discourse.group/uploads/short-url/9ZS8XHFENXAZmnmyrLemrhWNDpH.png)
+![Display Settings (GNOME)|690x344, 75%](../../img/GNOME_Display_Settings.png)
 ***GNOME's Settings application***
 
 It is important to configure the system settings on a first boot to personalize your desktop especially if you notice the scaling is incorrect on first-boot.
 
 ## First Boot Setup Utility: Bazzite Portal
 
-![Welcome to Bazzite|618x500, 75%](https://universal-blue.discourse.group/uploads/short-url/yiZQ7tMxzKrsPBKTP2AafdVfWsD.jpeg)
+![Welcome to Bazzite|618x500, 75%](../../img/yafti_welcome.jpeg)
 
 >**Attention**: Make sure you are connected to the internet.
 
 An application will pop up welcoming you to Bazzite when you boot into the desktop for the first time.  This is a utility that allows you to tailor Bazzite to your liking by installing additional software.  
 
-![Bazzite Portal|584x500, 75%](https://universal-blue.discourse.group/uploads/short-url/r4pnS5b2Dwur3c99ojIaims7t09.png)
+![Bazzite Portal|584x500, 75%](../../img/yafti_options.png)
 
 - Click "Next" to begin configuring Bazzite.  
 - Press the toggle switch button next to the item to have the option enabled or disabled for your installation, some are already toggled on by default.  

@@ -12,10 +12,10 @@ https://universal-blue.discourse.group/docs?topic=1470
 
 ## Bazzite Issue Template Walkthrough
 
-![Bug report|690x174](https://universal-blue.discourse.group/uploads/short-url/7Rb5VS0CtHdgMFI0JF72fjnbI2V.png)
+![Bug report|690x174](../img/Bug_report.png)
 
 
-![Template|690x436](https://universal-blue.discourse.group/uploads/short-url/8LtZe7wje4nyTwoE3gzVcFoPveh.png)
+![Template|690x436](../img/Bug_report_template.png)
 
 
 ## Update Bazzite before reporting

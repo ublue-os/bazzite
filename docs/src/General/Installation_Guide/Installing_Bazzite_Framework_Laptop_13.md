@@ -3,7 +3,7 @@
 <!-- ANCHOR_END: METADATA -->
 
 1. Download the Framework Laptop image of [Bazzite](https://bazzite.gg/). Make sure you select Intel or AMD depending on the mainboard in your device:
-![1|690x426](https://universal-blue.discourse.group/uploads/short-url/nIJ6NAxXU1aGcYW7ETvr4waICvQ.jpeg)
+![1|690x426](../../img/Framework_bazzite.jpeg)
 
 1. **Create a USB stick** using [Fedora Media Writer](https://docs.fedoraproject.org/en-US/fedora/latest/preparing-boot-media/#_on_windows) ([Windows](https://fedoraproject.org/fmw/FedoraMediaWriter-win32-latest.exe) or [Mac](https://fedoraproject.org/fmw/FedoraMediaWriter-osx-latest.dmg) or [Linux](https://flathub.org/apps/org.fedoraproject.MediaWriter))
 
@@ -21,28 +21,28 @@
 * If there is an OS already installed on the target drive, you’ll need to follow the guided steps to delete the existing partitions.
 * Click Finish Installation and then reboot into your new Bazzite install!
 
-![boot1|592x444](https://universal-blue.discourse.group/uploads/short-url/6Zt8cOSmHmTUKeAn69u2H6zH8E9)
+![boot1|592x444](../../img/Installing_Framework_1.jpeg)
 
-![2|690x359](https://universal-blue.discourse.group/uploads/short-url/j9Ridw0uEMLSGL2YHK8TBjUfB5A.jpeg)
+![2|690x359](../../img/Installing_Framework_2.jpeg)
 
-![3|690x359](https://universal-blue.discourse.group/uploads/short-url/h1JBbkF6XbEmaTTdqMFS9R1VNCB.png)
+![3|690x359](../../img/Installing_Framework_3.png)
 
-![4|690x359](https://universal-blue.discourse.group/uploads/short-url/oFQYnOgxenGVZGd5lJPwpYZ2j4p.png)
+![4|690x359](../../img/Installing_Framework_4.png)
 
-![5|690x359](https://universal-blue.discourse.group/uploads/short-url/1xoM895gIQwuYEwwg8uXxglYsEm.png)
+![5|690x359](../../img/Installing_Framework_5.png)
 
-![6|690x359](https://universal-blue.discourse.group/uploads/short-url/1u9sjJskEjmp8GplO9Cl96M7Pwj.png)
+![6|690x359](../../img/Installing_Framework_6.png)
 
-![7|690x359](https://universal-blue.discourse.group/uploads/short-url/m5qHTr63ugCSQj5TfKKSeZnPyCJ.png)
+![7|690x359](../../img/Installing_Framework_7.png)
 
-![8|690x359](https://universal-blue.discourse.group/uploads/short-url/2I822woJsbGWMiSJL71gYyLk6ne.png)
+![8|690x359](../../img/Installing_Framework_8.png)
 
-![9|690x432](https://universal-blue.discourse.group/uploads/short-url/r6ysuSWc8ocI4LI97zKld3Zt1A5.jpeg)
+![9|690x432](../../img/Installing_Framework_9.jpeg)
 
-![10|690x432](https://universal-blue.discourse.group/uploads/short-url/5z4yBBB8vpLFVz227WsgJj7w0Px.jpeg)
+![10|690x432](../../img/Installing_Framework_10.jpeg)
 
-![11|690x432](https://universal-blue.discourse.group/uploads/short-url/yET4erFoNd1qwciWLgjBX6pNpDc.jpeg)
+![11|690x432](../../img/Installing_Framework_11.jpeg)
 
-![12|690x432](https://universal-blue.discourse.group/uploads/short-url/AmFHEs5fF7Wbtcgj80rrNR7VVUt.jpeg)
+![12|690x432](../../img/Installing_Framework_12.jpeg)
 
-![13|690x388](https://universal-blue.discourse.group/uploads/short-url/4RQ8F46w68MzupeDSvHkHMTIYsi.jpeg)
+![13|690x388](../../img/Installing_Framework_13.jpeg)
