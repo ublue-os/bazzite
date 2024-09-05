@@ -21,7 +21,6 @@ A quick list of stuff you might be interested in checking out:
   - [Ayn Handhelds][ayn]
   - [Ayaneo Handhelds][ayaneo]
 
-
 - [:material-download-circle: **Install Software**][installing_software]{ style="font-size: 1.1rem" }
 
   <small>Order reflects the recommendation degree</small>
@@ -51,17 +50,16 @@ A quick list of stuff you might be interested in checking out:
 
   <small>\* Desktop images require [**enabling Proton for all Steam games**][enable_proton].</small>
 
-
-- [:fa-solid-circle-arrow-down: **Updates, Rollbacks, and Rebasing**][updateindex]{ style="font-size: 1.1rem" }
+- [:fontawesome-solid-circle-arrow-down: **Updates, Rollbacks, and Rebasing**][updateindex]{ style="font-size: 1.1rem" }
 
   - [Updating Guide][updates]
   - [Rollback System Updates][rollbacks]
   - [Rebasing to Other Images][rebasing]
   - [`bazzite-rollback-helper`][rollback-helper]
 
-- [:fontawesome-brands-android: **Run Android Applications (including games)**][waydroid]{ style="font-size: 1.1rem" }
+- [:fontawesome-brands-android: **Android Applications**][waydroid]{ style="font-size: 1.1rem" }
 
-[Waydroid](https://waydro.id/) is shipped on Bazzite out of the box.
+  Run Android applications in a container using [Waydroid](https://waydro.id/)!
 
 - [:fontawesome-solid-handshake: **Contribute**][contrib]{ style="font-size: 1.1rem" }
 
