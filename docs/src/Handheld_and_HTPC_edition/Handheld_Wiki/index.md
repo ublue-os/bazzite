@@ -13,12 +13,12 @@ title: Handheld Wiki
 
 *Click the name of each hardware to view post-installation setup and known issues/workarounds.*
 
-- [**Steam Deck**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Steam_Deck/) ([Edit](https://universal-blue.discourse.group/t/steam-deck-compatibility-on-bazzite/1849))
-- [**Lenovo Legion Go**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Lenovo_Legion_Go/) ([Edit](https://universal-blue.discourse.group/t/lenovo-legion-go-handheld-compatibility/2413))
-- [**ASUS ROG Ally**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/ASUS_ROG_Ally/) ([Edit](https://universal-blue.discourse.group/t/asus-rog-ally-handheld-compatibility/2414))
-- [**Ayn Handhelds**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Ayn_Handhelds/) ([Edit](https://universal-blue.discourse.group/t/ayn-handheld-compatibility/2416))
-- [**GPD Handhelds**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/GPD_Handhelds/) ([Edit](https://universal-blue.discourse.group/t/gpd-handheld-compatibility/2418))
-- [**Ayaneo Handhelds**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Ayaneo_Handhelds/) ([Edit](https://universal-blue.discourse.group/t/ayaneo-handheld-compatibility/2417))
+- [**Steam Deck**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Steam_Deck/)
+- [**Lenovo Legion Go**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Lenovo_Legion_Go/) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/Lenovo_Legion_Go.md))
+- [**ASUS ROG Ally**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/ASUS_ROG_Ally/) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/ASUS_ROG_Ally.md))
+- [**Ayn Handhelds**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Ayn_Handhelds/) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/Ayn_Handhelds.md))
+- [**GPD Handhelds**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/GPD_Handhelds/) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/GPD_Handhelds.md))
+- [**Ayaneo Handhelds**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Ayaneo_Handhelds/) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/Ayaneo_Handhelds.md))
 - [**Other Handhelds**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Other_Handhelds/)
 
 ## Support Rating
@@ -76,8 +76,8 @@ Check out the [Steam Gaming Mode documentation](https://universal-blue.discourse
 - Nvidia GPUs are **unsupported**.     
 - Proprietary connectors, like the one for the ASUS ROG Ally, will not work.
 
-**Recommended Script**:
-https://github.com/ewagner12/all-ways-egpu
+## **Recommended External Guide & Script**:
+Read this [guide](https://github.com/ewagner12/all-ways-egpu) for eGPU usage on Linux, and use the script at your own risk.
 
 <hr>
 
