@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
 
-import os
 import re
 from argparse import ArgumentParser
 from pathlib import Path, PosixPath
-from time import sleep
 from typing import cast
 
 import requests
