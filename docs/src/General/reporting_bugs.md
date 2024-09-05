@@ -15,7 +15,7 @@ https://universal-blue.discourse.group/docs?topic=1470
 ![Bug report|690x174](../img/Bug_report.png)
 
 
-![Template|690x436](../img/8LtZe7wje4nyTwoE3gzVcFoPveh.png)
+![Template|690x436](../img/Bug_report_template.png)
 
 
 ## Update Bazzite before reporting

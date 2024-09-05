@@ -14,8 +14,8 @@ Steam can run Windows games on Linux.  It utilizes a wide range of projects and 
 * You can change this by going into the Steam **Settings** > **Compatibility** > Check **Enable Steam Play for all other titles**
 
 
-![Steam Settings|256x267, 75%](../img/Steam_Settings.png)
-![Compatibility|589x499, 75%](../img/IixmUZBAH8wiG0DRssksO0khXF.png)
+![Steam Settings|256x267, 75%](../img/Steam_Setup_Settings.png)
+![Compatibility|589x499, 75%](../img/Steam_Setup_Compatibility.png)
 
 ## Forcing A Specific Proton / Steam Play Tool Version
 
@@ -24,8 +24,8 @@ Steam can run Windows games on Linux.  It utilizes a wide range of projects and 
 * Some games run better with a specific version of Proton or forcing the Linux runtime.
     * Run that specific version by going into the game's **Properties** > **Compatibility** > **Force the use of a specific Steam Play compatibility tool**
 
-![Cog Icon > Properties|690x284, 75%](../img/zo1TyrRxr8Fu48ACJg34pWKvF7P.png)
-![Compatibility tab|690x492, 75%](../img/iiTx9285kbPupqLDGX4ak4RIvdm.png)
+![Cog Icon > Properties|690x284, 75%](../img/Steam_Setup_Cog.png)
+![Compatibility tab|690x492, 75%](../img/Steam_Setup_Compat_Tab.png)
 
 # **Non-Steam Games**
 
@@ -35,9 +35,9 @@ Steam can run Windows games on Linux.  It utilizes a wide range of projects and 
   * Other games and launchers are also available in the software center (_Discover_ or _GNOME Software_) like itch.io.
 
 ## Lutris Setup
-![Lutris|617x500, 75%](../img/3s2iqYP1Q1ZeCpMaQapqhG4gR1V.png)
+![Lutris|617x500, 75%](../img/Lutris_Setup.png)
 
-![Example of Lutris installers|623x500, 75%](../img/1WR6qGSLGJ0oRkdwvCFwhCZllq0.png)
+![Example of Lutris installers|623x500, 75%](../img/Lutris_Setup_Installers.png)
 
 Lutris is game management software that doubles as a WINE front-end for Windows games.  Several games and launchers can be installed by searching for the title and using one of the installer scripts for it.
 
@@ -47,19 +47,19 @@ However if your game is not listed or doesn't work with the provided script, the
 
 
 
-![Add Locally Installed Game|632x496, 75%](../img/9NC0GjEllRMgpuaLmB2d5pcihgz.png)
+![Add Locally Installed Game|632x496, 75%](../img/Lutris_Setup_Add_Local_Game.png)
 
 **Example 1**:
 
-![Lutris manually adding games example 1|690x213](../img/mSFhMjx6yr4zsvPdCbUT7dyUYzu.png)
+![Lutris manually adding games example 1|690x213](../img/Lutris_Setup_Add_Local_Game_1.png)
 
 
 **Example 2**:
-![Lutris manually adding games example 2|690x342, 100%](../img/yszYNbYIAwCw4otGldSK6C29Jus.png)
+![Lutris manually adding games example 2|690x342, 100%](../img/Lutris_Setup_Add_Local_Game_2.png)
 
 ### Lutris Shortcuts
 
-![Lutris_Right_Click_Menu|421x447, 75%](../img/qvbF55nS5md6nMp7L5w0V97EBLR.png)
+![Lutris_Right_Click_Menu|421x447, 75%](../img/Lutris_Setup_Shortcut.png)
 
 Right clicking a game on Lutris gives the option to add it as a non-Steam game (useful for Steam Gaming Mode), create a desktop shortcut, or an application menu shortcut.
 

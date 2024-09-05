@@ -14,7 +14,7 @@
 
 ## Error message if key is **not** enrolled properly:
 
-![load the kernel first error|613x63](../../img/qhE6D5VBnwBw6101xaaTtH77t8L.jpeg)
+![load the kernel first error|613x63](../../img/load_the_kernel_first_error.jpeg)
 
 Follow **Method B** below to resolve this and move past the error message if you encounter it.
 

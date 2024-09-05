@@ -10,7 +10,7 @@ Technically `ujust` is **not** a package format, but are convenience commands th
 
 # Using `ujust`
 
-![ujust command list|690x411](../img/8Rkc2Qe1CYy3MBwS2CA4Uf5rqzq.png)
+![ujust command list|690x411](../img/ujust_command_list.png)
 
 Open a host terminal and **enter**:
 
@@ -21,7 +21,7 @@ ujust
 
 >This will output a list of available commands.
 
-![ujust TUI|690x403](../img/gefs7zU9QThu2eAMDMpodIeNw8l.png)
+![ujust TUI|690x403](../img/ujust_TUI.png)
 
 ```
 ujust --choose

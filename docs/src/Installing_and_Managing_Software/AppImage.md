@@ -10,7 +10,7 @@ AppImage is a universal package format that attempts to bundle every dependency 
 
 # Gear Lever
 
-![Gear Lever|500x500](../img/asZMJBiZQVBIWFrOL1fAMpCt0ii.png)
+![Gear Lever|500x500](../img/Gear_Level.png)
 
 Applications installed as an AppImage can integrate with your desktop and be managed with [Gear Lever](https://github.com/mijorus/gearlever) which is pre-installed on Bazzite.
 

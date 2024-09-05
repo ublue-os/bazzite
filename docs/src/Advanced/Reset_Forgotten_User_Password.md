@@ -8,11 +8,11 @@
 
 Reboot your device and edit the last deployment by presssing <kbd>E</kbd> on your keyboard.
 
-![Boot with init=/bin/bash|689x359](../img/6cMudm3PEkBwYakT3FQOlpMtkxF.jpeg)
+![Boot with init=/bin/bash|689x359](../img/Boot_with_init_bin_bash.jpeg)
 
 Boot with `init=/bin/bash` on the kernel command line (e.g. edit GRUB prompt.)
 
-![Reboot|689x359](../img/1gpqkxAiCQqofTEYWIL7XPONGKr.jpeg)
+![Reboot|689x359](../img/Reset_Password_Reboot.jpeg)
 
 Continue boot process with <kbd>Ctrl</kbd>+<kbd>X</kbd>
 
@@ -38,7 +38,7 @@ sync
 /sbin/reboot -ff
 ```
 
-![Commands|690x334](../img/v3mTMw4ZmaiMU2FuIIIt2gKnKuw.png)
+![Commands|690x334](../img/Reset_Password_Commands.png)
 
 Your user password should now be reset.
 

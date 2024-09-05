@@ -7,7 +7,7 @@
 >**Note**: Waydroid does **not** work on Nvidia's proprietary drivers, and requires an AMD or Intel GPU for the best results.
 
 # What is Waydroid?
-![Waydroid](../img/vz5fotnVMOUinREov1LZ14PcAEw.jpeg)
+![Waydroid](../img/Waydroid.jpeg)
 
 [Waydroid](https://waydro.id/) is an Android container that runs on Linux.  Bazzite users can run Android applications using this method.
 
@@ -71,7 +71,7 @@ Selecting `Configure Waydroid` will allow users to install additional Android tw
 
 ### Get Google Device ID to Get Certified (**GApps**)
 
-![Waydroid_DeviceID|690x182](../img/rqHjGVEGHaZIeTqM7IuP1WkzF4i.png)
+![Waydroid_DeviceID|690x182](../img/Waydroid_DeviceID.png)
 
 
 1. Launch Waydroid 

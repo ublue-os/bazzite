@@ -15,14 +15,14 @@ Flatpak is a universal containerized package format that tries to sandbox applic
 
 Flatpaks can be installed via the software center of the desktop environment you chose.
 
-![Discover|50x50, 100%](../img/7eXW7jIZAYeKMUVOCf0daVYKX2n.png) 
+![Discover|50x50, 100%](../img/Discover_icon.png) 
 **KDE**: *Discover*
 
-![GNOME Software|50x50, 100%](../img/i4jmn9qO4tJkCIKbE6iOLCRkPtR.png) 
+![GNOME Software|50x50, 100%](../img/Gnome_Software.png) 
 **GNOME**: *GNOME Software* 
 
-![Discover|659x500, 100%](../img/ktGkdD7dmJEDfOipPNWaGQLSUAE.png)
-![GNOME Software Center](../img/fsykftNe5xGcslvq4pETWwlVIA1.png)
+![Discover|659x500, 100%](../img/Discover.png)
+![GNOME Software Center](../img/Gnome_Software_Center.png)
 
 
 
@@ -49,7 +49,7 @@ Manage Flatpaks with [Flatseal](https://github.com/tchx84/Flatseal) and [Warehou
 
 ## Flatseal
 
-![Flatseal|690x376](../img/q8Lz4vZCAGmTdHoyjax4xousECV.png)
+![Flatseal|690x376](../img/Flatseal.png)
 
 **Flatseal** is for changing [application permissions](https://github.com/tchx84/Flatseal/blob/92e675e5ad2129f2aabf324261570eef442494f6/DOCUMENTATION.md) if necessary.
 
@@ -59,7 +59,7 @@ Sometimes a project's website or [Github repository](https://github.com/flathub/
 
 ## Warehouse
 
-![Warehouse|690x376](../img/mjRkX8RgxfbDwLhe4zyjIoL2Ifr.png)
+![Warehouse|690x376](../img/Warehouse.png)
 
 **Warehouse** is a utility that gives users a graphical interface to downgrade applications, add other Flatpak sources outside of Flathub, and backup application user data.  Its also a helpful tool for installing Flatpaks outside of Flathub, **at your own risk**.
 
