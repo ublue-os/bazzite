@@ -23,7 +23,7 @@
     - [Features from Fedora Linux (Kinoite \& Silverblue)](#features-from-fedora-linux-kinoite--silverblue)
 - [Why](#why)
 - [Showcase](#showcase)
-- [Documentation \& Newsletters](#documentation--newsletters)
+- [Documentation](#documentation)
 - [Custom Packages](#custom-packages)
 - [Verification](#verification)
 - [Secure Boot](#secure-boot)
@@ -233,15 +233,13 @@ Read the [FAQ](https://ublue-os.github.io/bazzite/General/FAQ/) for details on w
 ![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
 ![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
 
-## Documentation & Newsletters
+## Documentation
 
 - [Installing and Managing Applications](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/)
 - [Updates, Rollbacks, and Rebasing](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Updates_Rollbacks_%26_Rebasing/)
 - [Gaming Guide](https://ublue-os.github.io/bazzite/Gaming/)
 
 View [additional documentation](http://docs.bazzite.gg/) surrounding the project.
-
-Check out our [newsletters](https://universal-blue.discourse.group/docs?topic=2252) that get published on a regular basis for updates on the project.
 
 ## Custom Packages
 
@@ -367,8 +365,9 @@ We also ship a config for the popular [pull app](https://github.com/apps/pull) i
 
 ## Join The Community
 
-You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB) and view the [archive](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769) of support threads without an account.
+- You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB)
+  - View the [archive](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769) of support threads without an account.
 
-Discuss and create user guides over at the [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
+- Discuss and create user guides over at the [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
 
-Follow Universal Blue on [Mastodon](https://fosstodon.org/@UniversalBlue).
+- Follow Universal Blue on [Mastodon](https://fosstodon.org/@UniversalBlue).
