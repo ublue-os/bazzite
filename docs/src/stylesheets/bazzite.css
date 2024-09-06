@@ -81,6 +81,14 @@ header > nav > div.md-search  {
   }
 }
 
+/* Navigation toc section tweaks */
+nav.md-nav {
+  /* Slightly bigger section names */
+  .md-nav__item--section>.md-nav__link {
+    font-size: 110%;
+  }
+}
+
 /* Mobile tweaks */
 @media screen and (max-width: 59.9844em) {
   .md-nav__source {
