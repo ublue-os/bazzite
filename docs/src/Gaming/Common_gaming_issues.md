@@ -85,4 +85,4 @@ If this fails to fix it, then try forcing Proton Experimental in the game's prop
 
 **Documentation Contributors**: [M2](https://github.com/m2Giles)
 
-[**<-- Back to Gaming Guide**](https://universal-blue.discourse.group/docs?topic=31)
+[**<-- Back to Gaming Guide**](./index.md)

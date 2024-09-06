@@ -65,6 +65,6 @@ Make sure to **apply** the desktop controls when you select them.
 
 <hr>
 
-**See also**: [Steam Gaming Mode Overview](https://universal-blue.discourse.group/docs?topic=37)
+**See also**: [Steam Gaming Mode Overview](../Steam_Gaming_Mode.md)
 
-**<-- Back to [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038)**
+**<-- Back to [Handheld Wiki](./index.md)**

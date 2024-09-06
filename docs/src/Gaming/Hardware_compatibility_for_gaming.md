@@ -3,7 +3,7 @@
 <!-- ANCHOR_END: METADATA -->
 
 # Compatible Handhelds
-Read the [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) to see what handhelds Bazzite currently supports.
+Read the [Handheld Wiki](../Handheld_and_HTPC_edition/Handheld_Wiki/index.md) to see what handhelds Bazzite currently supports.
 
 # Desktop/HTPC Hardware: Vulkan Compatible GPU
 
@@ -29,7 +29,7 @@ PROTON_USE_WINED3D=1 %command%
 
 >**Warning**:  You will lose all of your data reformatting secondary internal/external drives.
 
-See also: [**Auto-Mounting Secondary Drives**](https://universal-blue.discourse.group/docs?topic=970)
+See also: [**Auto-Mounting Secondary Drives**](../Advanced/Auto-Mounting_Secondary_Drives.md)
 
 ## NTFS
 
@@ -53,4 +53,4 @@ Install the unofficial [WinBtrfs](https://github.com/maharmstone/btrfs) driver o
 
 <hr>
 
-[**<-- Back to Gaming Guide**](https://universal-blue.discourse.group/docs?topic=31)
+[**<-- Back to Gaming Guide**](./index.md)

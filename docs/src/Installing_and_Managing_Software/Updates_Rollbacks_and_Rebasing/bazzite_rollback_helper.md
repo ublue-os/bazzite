@@ -4,7 +4,7 @@
 
 ![Bazzite Rollback Helper Command|636x500](../../img/Bazzite_Rollback_Helper_Command.png)
 
->**Note**: Read the [rollback](https://universal-blue.discourse.group/docs?topic=2644) and [rebasing](https://universal-blue.discourse.group/docs?topic=2646) guides to understand the terms and what they do.
+>**Note**: Read the [rollback](./rolling_back_system_updates.md) and [rebasing](./rebase_guide.md) guides to understand the terms and what they do.
 
 A command-line utility that assists with **rollbacks**, **rebasing**, and **information on your current image**.
 
@@ -29,4 +29,4 @@ https://www.youtube.com/watch?v=XvljabnzgVo
 
 <hr>
 
-[**<-- Back to Updates, Rollback, and Rebasing Guide**](https://universal-blue.discourse.group/docs?topic=36)
+[**<-- Back to Updates, Rollback, and Rebasing Guide**](./index.md)

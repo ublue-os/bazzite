@@ -92,7 +92,7 @@ https://distrobox.it/
 
 <hr>
 
-[**<-- Back to Installing and Managing Software on Bazzite**](https://universal-blue.discourse.group/docs?topic=35)
+[**<-- Back to Installing and Managing Software on Bazzite**](./index.md)
 
 [fedora]: https://fedoraproject.org/
 [dnf]: https://docs.fedoraproject.org/en-US/quick-docs/dnf/

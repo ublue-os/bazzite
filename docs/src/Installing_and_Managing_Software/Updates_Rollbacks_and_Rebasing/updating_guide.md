@@ -21,7 +21,7 @@ Bazzite updates all of the changes made specifically in Bazzite itself, updates 
        - **Reboot** to apply system upgrades.
 - Updates upgrade system packages, containers and installed applications.
 - The progress indicator and changelogs are not accurate currently.
-  - There's more information at the bottom of this [documentation](https://universal-blue.discourse.group/docs?topic=37).
+  - There's more information at the bottom of this [documentation](../../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md).
 
 # How do I update manually on Desktop images?
 
@@ -95,4 +95,4 @@ Read the [upstream documentation](https://universal-blue.discourse.group/docs?to
 
 <hr>
 
-[**<-- Back to Updates, Rollback, and Rebasing Guide**](https://universal-blue.discourse.group/docs?topic=36)
+[**<-- Back to Updates, Rollback, and Rebasing Guide**](./index.md)

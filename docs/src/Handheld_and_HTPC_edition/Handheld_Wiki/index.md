@@ -64,7 +64,7 @@ Install optional [Decky plugins](https://plugins.deckbrew.xyz/) for your handhel
 
 # Bazzite's Steam Gaming Mode Documentation
 
-Check out the [Steam Gaming Mode documentation](https://universal-blue.discourse.group/docs?topic=37) for an in-depth guide on Steam Gaming Mode plus general fixes for common issues.
+Check out the [Steam Gaming Mode documentation](../Steam_Gaming_Mode.md) for an in-depth guide on Steam Gaming Mode plus general fixes for common issues.
 
 # eGPU Support
 

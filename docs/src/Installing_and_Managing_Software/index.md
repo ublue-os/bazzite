@@ -50,6 +50,6 @@ https://www.youtube.com/watch?v=ITuT23YrgPs
 
 **Documentation Contributors**: [HikariKnight](https://github.com/HikariKnight)
 
-**See also**: [Updates, Rollbacks, & Rebasing](https://universal-blue.discourse.group/docs?topic=36)
+**See also**: [Updates, Rollbacks, & Rebasing](../Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/index.md)
 
-<-- [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
+<-- [**View all Bazzite documentation**](../index.md)

@@ -7,14 +7,14 @@
 Updates are automatic on Desktop images and manually done on Handheld/HTPC images, and both Bazzite variants upgrade everything at both a system-level and user-installed applications during the updating process.
 
 >**Full Documentation**:
-https://universal-blue.discourse.group/docs?topic=2637
+[Updating guide](./updating_guide.md)
 
 # Rollbacks
 
 Swap back to a previous system update if there are major issues after updating via the GRUB menu or the `rpm-ostree rollback` command.
 
 >**Full Documentation**:
-https://universal-blue.discourse.group/docs?topic=2644
+[Rollbacks guide](./rolling_back_system_updates.md)
 
 # Rebasing
 
@@ -23,15 +23,15 @@ https://universal-blue.discourse.group/docs?topic=2644
 Rebase to Bazzite builds from the last 90 days, change Bazzite update channels, swap between the Desktop and Handheld/HTPC images, or move completely to a different Fedora Atomic Desktop image.
 
 >**Full Documentation**:
-https://universal-blue.discourse.group/docs?topic=2646
+[Rebase guide](./rebase_guide.md)
 
 ## Rollback Helper
 
 Utility to assist with rolling back and rebasing to older Bazzite images.
 
 >**Full Documentation**:
-https://universal-blue.discourse.group/docs?topic=2647
+[Rollback Helper](./bazzite_rollback_helper.md)
 
 <hr>
 
-← [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
+← [**View all Bazzite documentation**](../../index.md)

@@ -40,4 +40,4 @@ View the [**Troubleshooting Guide**](https://ublue-os.github.io/bazzite/General/
 
 <hr>
 
-<-- [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
+<-- [**View all Bazzite documentation**](../../index.md)

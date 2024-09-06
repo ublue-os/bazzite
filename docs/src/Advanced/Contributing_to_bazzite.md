@@ -44,4 +44,4 @@ Using the unaffiliated [BlueBuild](https://blue-build.org/learn/universal-blue/)
 
 <hr>
 
-<-- [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
+<-- [**View all Bazzite documentation**](../index.md)

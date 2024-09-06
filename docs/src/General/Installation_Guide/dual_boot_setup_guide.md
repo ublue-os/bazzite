@@ -84,7 +84,7 @@ If you need a tutorial video for manual partitioning, watch this [tutorial]( htt
 
 # Dual Boot Post-Configuration Setup
 
->**Note:** [Handheld/HTPC](https://universal-blue.discourse.group/docs?topic=37) images hide GRUB by default, but the <kbd>Esc</kbd> key on a keyboard will unhide the GRUB menu without unhiding it with a `ujust` command.
+>**Note:** [Handheld/HTPC](../../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md) images hide GRUB by default, but the <kbd>Esc</kbd> key on a keyboard will unhide the GRUB menu without unhiding it with a `ujust` command.
 
 ## Regenerate GRUB to show Windows Entry
 

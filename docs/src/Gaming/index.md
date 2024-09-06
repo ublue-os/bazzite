@@ -44,6 +44,6 @@ Linux gaming being a viable competitor to Windows is a relatively new paradigm. 
 
 **Documentation Contributors**: [Kyle Gospodnetich](https://github.com/KyleGospo), [RJ Trujillo](https://github.com/EyeCantCU), [Benjamin Shermin](https://github.com/bsherman), [Nathaniel Warburton](https://github.com/storyaddict), and [Jorge Castro](https://github.com/castrojo)
 
-**See also**: [Steam Deck Gaming Mode Overview](https://universal-blue.discourse.group/docs?topic=37)
+**See also**: [Steam Deck Gaming Mode Overview](../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md)
 
-<-- [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
+<-- [**View all Bazzite documentation**](../index.md)

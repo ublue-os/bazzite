@@ -87,4 +87,4 @@ https://just.systems/
 
 <hr>
 
-[**<-- Back to Installing and Managing Software on Bazzite**](https://universal-blue.discourse.group/docs?topic=35)
+[**<-- Back to Installing and Managing Software on Bazzite**](./index.md)

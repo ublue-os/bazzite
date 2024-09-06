@@ -25,7 +25,7 @@ Steam and other gaming utilities are part of the base operating system. System r
 
 The choice of KDE Plasma and GNOME for the desktop environment with others planned for the future.  [Flathub](https://flathub.org/) is enabled out of the box, so all of the applications that you would find on SteamOS are available on Bazzite. 
  
-## [2. Handheld/HTPC Edition (`-deck` Images)](https://universal-blue.discourse.group/docs?topic=37)
+## [2. Handheld/HTPC Edition (`-deck` Images)](../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md)
 
 Mimics SteamOS with "**Steam Gaming Mode**" and its features fully functional.  This version of Bazzite boots directly into the Steam Gaming Mode session and are intended for handheld PCs and home theater setups.
 
@@ -62,7 +62,7 @@ There is more information about this topic on the [Installation Guide](https://u
 - Desktop users who want an operating system designed for gaming with inspiration from SteamOS that has fairly low maintenance.
 - Steam Deck users who feel limited by SteamOS and also want newer system packages.
 - Home Theater PC setups for a console-like experience.
-- [Handheld PC](https://universal-blue.discourse.group/docs?topic=1038) users who would prefer a SteamOS-like experience.
+- [Handheld PC](../Handheld_and_HTPC_edition/Handheld_Wiki/index.md) users who would prefer a SteamOS-like experience.
 
 # SteamOS is based on Arch Linux, so why use Fedora Linux? 
 
@@ -87,9 +87,9 @@ Since Bazzite is a custom Fedora Atomic Desktop image, it makes use of read-only
 
 ## How is Fedora Atomic Desktop different than Fedora Workstation?
 
-If you're familiar with [Fedora Workstation](https://www.fedoraproject.org/workstation/) and [Fedora's Spins](https://www.fedoraproject.org/spins/), but not the Fedora Atomic Desktops paradigm, the major difference is with stability between system upgrades.  There are read-only root files and an emphasis on installing applications as a Flatpak or inside [containers.](https://distrobox.it/)  Read more about [obtaining software on Bazzite](https://universal-blue.discourse.group/docs?topic=35). 
+If you're familiar with [Fedora Workstation](https://www.fedoraproject.org/workstation/) and [Fedora's Spins](https://www.fedoraproject.org/spins/), but not the Fedora Atomic Desktops paradigm, the major difference is with stability between system upgrades.  There are read-only root files and an emphasis on installing applications as a Flatpak or inside [containers.](https://distrobox.it/)  Read more about [obtaining software on Bazzite](../Installing_and_Managing_Software/index.md). 
 
-Users can rollback to a previous deployment if a system update breaks their workflow, or rebase entirely back to a stock Fedora Atomic image, [Aurora](https://getaurora.dev/), [Bluefin](https://projectbluefin.io/), or a [custom image by the community](https://universal-blue.discourse.group/docs?topic=340).  Do **not** rebase between different desktop environments.  Read more about how [updates, rolling back, and rebasing works on Bazzite](https://universal-blue.discourse.group/docs?topic=36).
+Users can rollback to a previous deployment if a system update breaks their workflow, or rebase entirely back to a stock Fedora Atomic image, [Aurora](https://getaurora.dev/), [Bluefin](https://projectbluefin.io/), or a [custom image by the community](https://universal-blue.discourse.group/docs?topic=340).  Do **not** rebase between different desktop environments.  Read more about how [updates, rolling back, and rebasing works on Bazzite](../Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/index.md).
 
 Here's a helpful [cheat sheet](https://docs.fedoraproject.org/en-US/fedora-silverblue/_attachments/silverblue-cheatsheet.pdf) for using **advanced** commands, but gives a glimpse of what this paradigm is capable of.  There is also a future planned ahead of this technology.  Upcoming additions like [bootc](https://containers.github.io/bootc/) will be a major change when it is ready for production.
 
@@ -151,7 +151,7 @@ Yes and they are updated during a system upgrade when available.
 
 Most hardware changes should **not** require any manual intervention outside of the expectations from that particular hardware which would be OS-agnostic.  
 
-However, if you swap from or to a Nvidia GPU, then [rebasing](https://universal-blue.discourse.group/docs?topic=2646) will be necessary as a manual intervention to get the appropriate graphics drivers.
+However, if you swap from or to a Nvidia GPU, then [rebasing](../Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/rebase_guide.md) will be necessary as a manual intervention to get the appropriate graphics drivers.
 
 # What is the difference between Bluefin, Aurora, and Bazzite?
 
@@ -185,4 +185,4 @@ Do not be alarmed if you see this on our [Github repository](https://github.com/
 
 **See also**: [Upstream Fedora Silverblue FAQ](https://docs.fedoraproject.org/en-US/fedora-silverblue/faq/)
 
-<-- [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
+<-- [**View all Bazzite documentation**](../index.md)

@@ -10,7 +10,7 @@
 
 Rebasing allows users to switch to a different image **without** having to reinstall and lose personal files and application data. 
 
-[**It is recommended to use the Bazzite Rollback Helper utility**](https://universal-blue.discourse.group/docs?topic=2647).
+[**It is recommended to use the Bazzite Rollback Helper utility**](./bazzite_rollback_helper.md).
 
 # Rebase Scenarios
 - Rebase to specific images of older builds within the last 90 days if issues are occurring on the newest build of Bazzite.  
@@ -117,4 +117,4 @@ For the *Jan. 13th 2024* `bazzite-deck` (*Fedora 39*) build.
 
 <hr>
 
-[**<-- Back to Updates, Rollback, and Rebasing Guide**](https://universal-blue.discourse.group/docs?topic=36)
+[**<-- Back to Updates, Rollback, and Rebasing Guide**](./index.md)
