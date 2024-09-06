@@ -236,7 +236,7 @@ Read the [FAQ](https://ublue-os.github.io/bazzite/General/FAQ/) for details on w
 ## Documentation
 
 - [Installing and Managing Applications](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/)
-- [Updates, Rollbacks, and Rebasing](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Updates_Rollbacks_%26_Rebasing/)
+- [Updates, Rollbacks, and Rebasing](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/)
 - [Gaming Guide](https://ublue-os.github.io/bazzite/Gaming/)
 
 View [additional documentation](http://docs.bazzite.gg/) surrounding the project.
