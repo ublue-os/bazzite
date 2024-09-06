@@ -372,4 +372,4 @@ We also ship a config for the popular [pull app](https://github.com/apps/pull) i
 
 - Follow Universal Blue on [Mastodon](https://fosstodon.org/@UniversalBlue).
 
-[**View the full list of Bazzite resources and social presence**](https://universal-blue.discourse.group/t/bazzite-container-native-gaming/8).
+[**View the full list of Bazzite resources and social presence**](https://universal-blue.discourse.group/docs?topic=8).
