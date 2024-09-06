@@ -200,7 +200,7 @@ https://www.youtube.com/watch?v=H4226yq0ZwY
 
 # Issues Installing Bazzite?
 
-View the [Installation Troubleshoot Guide](https://ublue-os.github.io/bazzite/General/Installation_Guide/troubleshoot_guide/).
+View the [Installation Troubleshoot Guide](./troubleshoot_guide.md).
 
 <hr>
 

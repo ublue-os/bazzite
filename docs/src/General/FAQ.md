@@ -37,7 +37,7 @@ Images also includes a Desktop Mode session with the choice of GNOME or KDE Plas
 
 Both types of images also come with the choice of using [KDE Plasma](https://kde.org/plasma-desktop/) or [GNOME](https://www.gnome.org/) for the desktop environment and certain images are made with specific hardware support.
 
-There is more information about this topic on the [Installation Guide](https://ublue-os.github.io/bazzite/General/Installation_Guide/) to help guide users on which image to choose before the installation. 
+There is more information about this topic on the [Installation Guide](../General/Installation_Guide/index.md) to help guide users on which image to choose before the installation. 
 
 
 ## Bazzite Image Chart
@@ -128,7 +128,7 @@ Updates are obtained and downloaded straight from upstream which means there is 
 - [Discover Overlay](https://github.com/trigg/Discover): Discord chat overlay integration for Steam Gaming Mode which has a [special configuration](https://trigg.github.io/Discover/bazzite) for Bazzite where it launches automatically
 - [Handheld Daemon](https://github.com/hhd-dev/hhd): Tool for configuring and managing handheld devices from gyro, LEDs, paddles, and TDP. 
 - [Ptyxis](https://devsuite.app/ptyxis/): Terminal with first-class container support.
-- [`ujust`](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/ujust/): Execute custom commands based on recipes.
+- [`ujust`](../Installing_and_Managing_Software/ujust.md): Execute custom commands based on recipes.
 - [yafti (Bazzite Portal)](https://github.com/ublue-os/yafti/): First-boot utility for installing additional software.
 
 ## Can I use this desktop environment or that standalone window manager?
@@ -171,7 +171,7 @@ hostnamectl hostname <hostname>
 
 # Questions Regarding Java
 
-If its for Minecraft, then install the [Prism Launcher](https://flathub.org/apps/org.prismlauncher.PrismLauncher) for mods that require anything Java related.  If its for development use [Distrobox](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Distrobox/).  You will not be able to change Java on your host.
+If its for Minecraft, then install the [Prism Launcher](https://flathub.org/apps/org.prismlauncher.PrismLauncher) for mods that require anything Java related.  If its for development use [Distrobox](../Installing_and_Managing_Software/Distrobox.md).  You will not be able to change Java on your host.
 
 # Why are builds failing?
 

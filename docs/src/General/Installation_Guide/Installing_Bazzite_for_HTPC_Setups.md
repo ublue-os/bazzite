@@ -184,7 +184,7 @@ After completing all of the above, then your next boot will be in Steam Gaming M
 
 # Issues Installing Bazzite?
 
-View the [Installation Troubleshoot Guide](https://ublue-os.github.io/bazzite/General/Installation_Guide/troubleshoot_guide/).
+View the [Installation Troubleshoot Guide](./troubleshoot_guide.md).
 
 <hr>
 

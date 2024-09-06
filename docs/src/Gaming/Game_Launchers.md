@@ -69,7 +69,7 @@ Games installed from the Microsoft Store do **not** run on desktop Linux unless 
 
 # Auto-Mounting Game Drives
 
-Read the [Auto-Mounting Secondary Drives Guide](https://ublue-os.github.io/bazzite/Advanced/Auto-Mounting_Secondary_Drives/) for more information.  It is also recommended to do your own research on drive mounting on Linux.
+Read the [Auto-Mounting Secondary Drives Guide](../Advanced/Auto-Mounting_Secondary_Drives.md) for more information.  It is also recommended to do your own research on drive mounting on Linux.
 
 <hr>
 

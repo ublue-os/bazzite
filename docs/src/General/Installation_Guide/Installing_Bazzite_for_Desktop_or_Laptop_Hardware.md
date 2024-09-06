@@ -31,7 +31,7 @@
 
 Bazzite comes with the choice of [KDE Plasma](https://kde.org/plasma-desktop/) or [GNOME](https://www.gnome.org/) for the desktop environment.
 
-[Steam Gaming Mode](https://github.com/KyleGospo/gamescope-session) is an option and if you opt to use it, then this installation guide no longer applies and it is recommended to read the [HTPC installation guide](https://ublue-os.github.io/bazzite/General/Installation_Guide/Installing_Bazzite_for_HTPC_Setups/) instead.  
+[Steam Gaming Mode](https://github.com/KyleGospo/gamescope-session) is an option and if you opt to use it, then this installation guide no longer applies and it is recommended to read the [HTPC installation guide](./Installing_Bazzite_for_HTPC_Setups.md) instead.  
 
 More information can be found on our [FAQ](https://faq.bazzite.gg) about the differences between the image variants.
 
@@ -69,7 +69,7 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 
 ## Dual Boot Preliminary Setup + Post-Setup Guide
 
-Read the [Dual Boot Guide](https://universal-blue.discourse.group/docs?topic=2743) **after** reading this guide before proceeding.
+Read the [Dual Boot Guide](./dual_boot_setup_guide.md) **after** reading this guide before proceeding.
 
 
 # Installation Guide
@@ -181,7 +181,7 @@ https://www.youtube.com/watch?v=dXBN9OM7mSE
 
 # Issues Installing Bazzite?
 
-View the [Installation Troubleshoot Guide](https://ublue-os.github.io/bazzite/General/Installation_Guide/troubleshoot_guide/).
+View the [Installation Troubleshoot Guide](./troubleshoot_guide.md).
 
 <hr>
 
