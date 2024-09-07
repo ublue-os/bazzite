@@ -79,9 +79,9 @@ jobs:
         run: |
           if [[ "${{ matrix.base_name }}" == "bazzite-nvidia" ]]; then
               if [[ "${{ matrix.target_image_flavor }}" == "main" ]]; then
-                  echo "IMAGE_FLAVOR=nvidia" >> $GITHUB_ENV
+                  echo "IMAGE_FLAVOR=${{ matrix.target_nvidia_flavor }}" >> $GITHUB_ENV
               else
-                  echo "IMAGE_FLAVOR=${{ format('{0}-{1}', matrix.target_image_flavor, 'nvidia') }}" >> $GITHUB_ENV
+                  echo "IMAGE_FLAVOR=${{ format('{0}-{1}', matrix.target_image_flavor, matrix.target_nvidia_flavor) }}" >> $GITHUB_ENV
               fi
           else
               echo "IMAGE_FLAVOR=${{ matrix.target_image_flavor }}" >> $GITHUB_ENV
@@ -100,8 +100,6 @@ jobs:
               else
                   echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-deck', '${DESKTOP}') }}" >> $GITHUB_ENV
               fi
-          elif [[ "${{ matrix.base_name }}" == "bazzite-nvidia" && "${{ matrix.target_nvidia_flavor }}" == "nvidia-open" ]]; then
-              echo "IMAGE_NAME=${{ format('{0}{1}-nvidia-open', 'bazzite', '${DESKTOP}', env.IMAGE_FLAVOR) }}" >> $GITHUB_ENV
           else
               if [[ "${{ env.IMAGE_FLAVOR }}" == "main" ]]; then
                   echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite', '${DESKTOP}') }}" >> $GITHUB_ENV
