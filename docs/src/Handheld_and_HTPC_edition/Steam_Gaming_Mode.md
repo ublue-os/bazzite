@@ -6,7 +6,7 @@
 
 >**For Handheld PC users only**:  View our [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) for post-installation setup, workarounds, and known issues on handheld hardware.
 
-![Steam Gaming Mode UI|690x430](https://universal-blue.discourse.group/uploads/short-url/wxalr3SjaLxZ6NylOre0WQPASOO.jpeg)
+![Steam Gaming Mode UI|690x430](../img/Steam_Gaming_Mode_UI.jpeg)
 
 > Steam Gaming Mode requires a modern AMD graphics card or an Intel Arc graphics card.  Nvidia is **not** supported.
 

@@ -4,7 +4,7 @@
 
 # What is Homebrew?
 
-![Homebrew|332x500, 15%](https://universal-blue.discourse.group/uploads/short-url/A3TZ48dUdBLvYuIHFhKM2pjc5vx.png)
+![Homebrew|332x500, 15%](../img/Homebrew.png)
 
 
 >**Note**: Any package that requires root privileges will either need a rootful Distrobox container or has to be layered with `rpm-ostree`.

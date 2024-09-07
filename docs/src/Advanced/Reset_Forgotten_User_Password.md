@@ -4,15 +4,15 @@
 
 >Follow this guide **at your own discretion** because you can break your system attempting any of this.
 
-![Edit the command for the latest boot entry|690x351](https://universal-blue.discourse.group/uploads/short-url/3DKuxnu44jDcrwx30k2mxFXjLXD.png)
+![Edit the command for the latest boot entry|690x351](../img/Edit_the_command_for_the_latest_boot_entry.png)
 
 Reboot your device and edit the last deployment by presssing <kbd>E</kbd> on your keyboard.
 
-![Boot with init=/bin/bash|689x359](https://universal-blue.discourse.group/uploads/short-url/6cMudm3PEkBwYakT3FQOlpMtkxF.jpeg)
+![Boot with init=/bin/bash|689x359](../img/Boot_with_init_bin_bash.jpeg)
 
 Boot with `init=/bin/bash` on the kernel command line (e.g. edit GRUB prompt.)
 
-![Reboot|689x359](https://universal-blue.discourse.group/uploads/short-url/1gpqkxAiCQqofTEYWIL7XPONGKr.jpeg)
+![Reboot|689x359](../img/Reset_Password_Reboot.jpeg)
 
 Continue boot process with <kbd>Ctrl</kbd>+<kbd>X</kbd>
 
@@ -38,7 +38,7 @@ sync
 /sbin/reboot -ff
 ```
 
-![Commands|690x334](https://universal-blue.discourse.group/uploads/short-url/v3mTMw4ZmaiMU2FuIIIt2gKnKuw.png)
+![Commands|690x334](../img/Reset_Password_Commands.png)
 
 Your user password should now be reset.
 

@@ -4,7 +4,7 @@
 
 # Secure Boot Information
 
-![Secure Boot|690x378, 50%](https://universal-blue.discourse.group/uploads/short-url/wuBqJVUJhoAp8g5BKW1fYAyR9Vz.jpeg)
+![Secure Boot|690x378, 50%](../../img/Secure_Boot.jpeg)
 
 >**Note**: Skip this section if Secure Boot is not enabled or unsupported with your hardware.
 
@@ -14,7 +14,7 @@
 
 ## Error message if key is **not** enrolled properly:
 
-![load the kernel first error|613x63](https://universal-blue.discourse.group/uploads/short-url/qhE6D5VBnwBw6101xaaTtH77t8L.jpeg)
+![load the kernel first error|613x63](../../img/load_the_kernel_first_error.jpeg)
 
 Follow **Method B** below to resolve this and move past the error message if you encounter it.
 

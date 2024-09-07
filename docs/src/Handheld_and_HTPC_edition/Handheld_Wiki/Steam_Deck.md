@@ -4,7 +4,7 @@
 
 # Steam Deck LCD (256GB+)
 
-![Steam Deck LCD|690x348, 100%](https://universal-blue.discourse.group/uploads/short-url/yoqR7VWSnItzhg26VOU9nKTrrlN.jpeg)
+![Steam Deck LCD|690x348, 100%](../../img/Steam_Deck_LCD.jpeg)
 
 **Status**: Platinum
 
@@ -19,7 +19,7 @@
 
 # Steam Deck OLED
 
-![Steam Deck OLED|667x500, 100%](https://universal-blue.discourse.group/uploads/short-url/q2OQv8BRI01Q7STGRLlNFj6LSEw.jpeg)
+![Steam Deck OLED|667x500, 100%](../../img/Steam_Deck_OLED.jpeg)
 
 **Status**: Gold
 

@@ -4,13 +4,13 @@
 
 # What is `ujust`?
 
-![Shell Scripts (.sh)|96x96, 100%](https://universal-blue.discourse.group/uploads/short-url/oLQaiumjX8VV6x2WrJFSZIVoDR4.png)
+![Shell Scripts (.sh)|96x96, 100%](../img/Shell_Scripts__sh.png)
 
 Technically `ujust` is **not** a package format, but are convenience commands that automate tasks using scripts which can be utilized to install specific software.  There are also commands for system configuration and maintenance included here, so run `ujust` commands **at your own risk.**
 
 # Using `ujust`
 
-![ujust command list|690x411](https://universal-blue.discourse.group/uploads/short-url/8Rkc2Qe1CYy3MBwS2CA4Uf5rqzq.png)
+![ujust command list|690x411](../img/ujust_command_list.png)
 
 Open a host terminal and **enter**:
 
@@ -21,7 +21,7 @@ ujust
 
 >This will output a list of available commands.
 
-![ujust TUI|690x403](https://universal-blue.discourse.group/uploads/short-url/gefs7zU9QThu2eAMDMpodIeNw8l.png)
+![ujust TUI|690x403](../img/ujust_TUI.png)
 
 ```
 ujust --choose
@@ -79,14 +79,12 @@ This **command** Shows layered packages that may be installed from the Bazzite P
 
 ```
 rpm-ostree status
-```` 
+```
 
 # Project Website
 
 https://just.systems/
 
 <hr>
-
-**See also**: https://universal-blue.discourse.group/docs?topic=42
 
 [**<-- Back to Installing and Managing Software on Bazzite**](https://universal-blue.discourse.group/docs?topic=35)

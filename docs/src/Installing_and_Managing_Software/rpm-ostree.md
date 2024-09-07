@@ -2,7 +2,7 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=2642", "fetched_at": "2024-09-03 16:43:05.295995+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-![rpm-ostree|500x500, 30%](https://universal-blue.discourse.group/uploads/short-url/11DT7DinQfjfEfVbXh14ImV6yaL.png)
+![rpm-ostree|500x500, 30%](../img/rpm-ostree.png)
 
 # `rpm-ostree` Overview
 

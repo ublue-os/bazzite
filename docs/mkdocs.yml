@@ -39,8 +39,8 @@ theme:
         icon: material/brightness-4
         name: Switch to system preference
 
-  favicon: img/favicon.svg
-  logo: img/favicon.svg
+  favicon: static/favicon.svg
+  logo: static/favicon.svg
   icon:
     repo: fontawesome/brands/github
   features:
@@ -137,11 +137,11 @@ nav:
           - "Appimage": Installing_and_Managing_Software/AppImage.md
           - "rpm-ostree": Installing_and_Managing_Software/rpm-ostree.md
       - "Updates, Rollbacks, & Rebasing":
-          - "Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/index.md"
-          - "Updating Guide": "Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/updating_guide.md"
-          - "Rolling Back System Updates": "Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rolling_back_system_updates.md"
-          - "Rebase Guide": "Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rebase_guide.md"
-          - "Bazzite Rollback Helper": "Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/bazzite_rollback_helper.md"
+          - "Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/index.md"
+          - "Updating Guide": "Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/updating_guide.md"
+          - "Rolling Back System Updates": "Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/rolling_back_system_updates.md"
+          - "Rebase Guide": "Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/rebase_guide.md"
+          - "Bazzite Rollback Helper": "Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/bazzite_rollback_helper.md"
       - "Waydroid Setup Guide": Installing_and_Managing_Software/Waydroid_Setup_Guide.md
   - Advanced:
       - "Reset Forgotten User Password": Advanced/Reset_Forgotten_User_Password.md

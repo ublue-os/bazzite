@@ -24,16 +24,16 @@
 # endregion INSTALLATION GUIDE
 # endregion GENERAL
 # region SOFTWARE
-# src/Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/index.md
-"https://universal-blue.discourse.group/docs?topic=36": "/Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/"
-# src/Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/updating_guide.md
-"https://universal-blue.discourse.group/docs?topic=2637": "/Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/updating_guide/"
-# src/Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rolling_back_system_updates.md
-"https://universal-blue.discourse.group/docs?topic=2644": "/Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rolling_back_system_updates/"
-# src/Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rebase_guide.md
-"https://universal-blue.discourse.group/docs?topic=2646": "/Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rebase_guide/"
-# src/Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/bazzite_rollback_helper.md
-"https://universal-blue.discourse.group/docs?topic=2647": "/Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/bazzite_rollback_helper/"
+# src/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/index.md
+"https://universal-blue.discourse.group/docs?topic=36": "/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/"
+# src/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/updating_guide.md
+"https://universal-blue.discourse.group/docs?topic=2637": "/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/updating_guide/"
+# src/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/rolling_back_system_updates.md
+"https://universal-blue.discourse.group/docs?topic=2644": "/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/rolling_back_system_updates/"
+# src/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/rebase_guide.md
+"https://universal-blue.discourse.group/docs?topic=2646": "/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/rebase_guide/"
+# src/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/bazzite_rollback_helper.md
+"https://universal-blue.discourse.group/docs?topic=2647": "/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/bazzite_rollback_helper/"
 # endregion SOFTWARE
 # src/Gaming/index.md
 "https://universal-blue.discourse.group/docs?topic=31": "/Gaming/"

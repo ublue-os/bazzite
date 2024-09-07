@@ -4,7 +4,7 @@
 
 # ASUS ROG Ally / ASUS ROG Ally X
 
-![ally|603x500, 100%](https://universal-blue.discourse.group/uploads/short-url/oawrP3Gg6J5DAjfdsIYoWNO2juS.png)
+![ally|603x500, 100%](../../img/ally.png)
 
 **Status**: Gold
 
@@ -55,7 +55,7 @@ ujust install-hhd-controller-glyph-theme
 
 # TDP Controls
 
-![TDP|690x431, 75%](https://universal-blue.discourse.group/uploads/short-url/ngp2BrayDZY50JGSQRDaJadXoke.jpeg)
+![TDP|690x431, 75%](../../img/TDP.jpeg)
 
 There are a few options for TDP Controls that work with Bazzite:
 
@@ -67,9 +67,9 @@ There are a few options for TDP Controls that work with Bazzite:
 
 # How do I open the HHD Overlay?
 
-![Overlay|690x431, 75%](https://universal-blue.discourse.group/uploads/short-url/lmBCzvMHEetrpzRze6RjfSejrZq.jpeg)
+![Overlay|690x431, 75%](../../img/HHD_Overlay.jpeg)
 
-![Legion HHD|690x431, 75%](https://universal-blue.discourse.group/uploads/short-url/hkEd3nSflwOKlbrbs5XKAepdseZ.jpeg)
+![Settings Example|690x431, 75%](../../img/HHD_Settings_Example.jpeg)
 
 
 Press, hold, or double-tap the Quick Access Menu button.
@@ -88,11 +88,11 @@ Some games and emulators may need Steam Input **disabled** to work correctly wit
 
 Desktop Mode Controller Layout:  It may not exist by default if Steam doesn't setup your handheld controller properly.  This can be fixed in Steam's controller settings.
 
-![desktop_controls_step_1|588x500, 75%](https://universal-blue.discourse.group/uploads/short-url/tGD8H8twME3FF862sBVJiwr3zvT.png)
+![desktop_controls_step_1|588x500, 75%](../../img/handheld_desktop_controls_1.png)
 
-![desktop_controls_step_2|690x431, 75%](https://universal-blue.discourse.group/uploads/short-url/q6X1XGTz9cizu5i5oXudSZbQaqg.png)
+![desktop_controls_step_2|690x431, 75%](../../img/handheld_desktop_controls_2.png)
 
-![desktop_controls_step_3|690x431, 75%](https://universal-blue.discourse.group/uploads/short-url/wEaGGVTtdZm3Aln3H3SaXI0rBLt.jpeg)
+![desktop_controls_step_3|690x431, 75%](../../img/handheld_desktop_controls_3.jpeg)
 
 Make sure to **apply** the desktop controls when you select them.
 

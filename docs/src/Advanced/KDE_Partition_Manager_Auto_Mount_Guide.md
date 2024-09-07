@@ -4,14 +4,14 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=3780", "fetched_at": "2024-09-03 16:43:09.824214+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-![KDE|48x48](https://universal-blue.discourse.group/uploads/short-url/36fqQF6jDStXU1NdJBAEbfxlUP0.png)
+![KDE|48x48](../img/KDE_Partition_Manager_icon.png)
 
 **This is pre-installed on KDE images.**
 
 # Instructions
 
-![KDE Partition Manager|690x462, 75%](https://universal-blue.discourse.group/uploads/short-url/o0eqJ0Eg45DagNv4qBb3ev5pohU.png)
-![Do not check the boxes!|690x197](https://universal-blue.discourse.group/uploads/short-url/ouTOEbJCNdYgjmANiiWYSP9IuNM.png)
+![KDE Partition Manager|690x462, 75%](../img/KDE_Partition_Manager.png)
+![Do not check the boxes!|690x197](../img/Do_not_check_the_boxes.png)
 
 1.  Open KDE Partition Manager
 2.  Locate the disk and partition you want to mount
@@ -43,7 +43,7 @@ You can copy+paste these into the "More.." dialog and they will be valid
 
 >**Warning**: If a drive is formatted, then do not remove it from `/etc/fstab`, so the "nofail" option is a must to avoid issues with booting.
 
-![btrfs example|290x317](https://universal-blue.discourse.group/uploads/short-url/iB9gQvWpbMBjaKGagqJaSgtFbNt.png)
+![btrfs example|290x317](../img/btrfs_example.png)
 >**Example: btrfs requires these additional options.**
 
 

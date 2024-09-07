@@ -4,7 +4,7 @@
 
 1. Download the Framework Laptop image of [Bazzite](https://bazzite.gg/). Make sure you select Intel or AMD depending on the mainboard in your device:
 
-![1](https://universal-blue.discourse.group/uploads/short-url/nIJ6NAxXU1aGcYW7ETvr4waICvQ)
+![1](../../img/Framework_bazzite.jpeg)
 
 2. **Create a USB stick** using [Fedora Media Writer](https://docs.fedoraproject.org/en-US/fedora/latest/preparing-boot-media/#_on_windows) ([Windows](https://fedoraproject.org/fmw/FedoraMediaWriter-win32-latest.exe) or [Mac](https://fedoraproject.org/fmw/FedoraMediaWriter-osx-latest.dmg) or [Linux](https://flathub.org/apps/org.fedoraproject.MediaWriter))
 
@@ -21,9 +21,9 @@
   * A new box for Linux Audio Compatibility will appear, arrow to Linux, then press enter. Now press F10 key to reboot.
   * Now we don’t have an OS installed yet. So the reboot won’t get us to a running operating system and we fully expect to see an error to this point. Simply press the power button to shutdown.
 
-![audio1|592x444](https://universal-blue.discourse.group/uploads/short-url/ljcQsFwbZxGitNcmd709Yyc6Ebt)
+![audio1|592x444](../../img/Install_Framework_16_audio_1.jpeg)
 
-![audio2|592x444](https://universal-blue.discourse.group/uploads/short-url/A1kiX4zZ71b24avCpqhGx38sfb9)
+![audio2|592x444](../../img/Install_Framework_16_audio_2.jpeg)
 
 4. **Booting to the Bazzite USB**
 
@@ -34,28 +34,28 @@
 * If there is an OS already installed on the target drive, you’ll need to follow the guided steps to delete the existing partitions.
 * Click Finish Installation and then reboot into your new Bazzite install!
 
-![boot1|592x444](https://universal-blue.discourse.group/uploads/short-url/6Zt8cOSmHmTUKeAn69u2H6zH8E9)
+![boot1|592x444](../../img/Installing_Framework_1.jpeg)
 
-![2](https://universal-blue.discourse.group/uploads/short-url/j9Ridw0uEMLSGL2YHK8TBjUfB5A)
+![2](../../img/Installing_Framework_2.jpeg)
 
-![3](https://universal-blue.discourse.group/uploads/short-url/h1JBbkF6XbEmaTTdqMFS9R1VNCB)
+![3](../../img/Installing_Framework_3.png)
 
-![4](https://universal-blue.discourse.group/uploads/short-url/oFQYnOgxenGVZGd5lJPwpYZ2j4p)
+![4](../../img/Installing_Framework_4.png)
 
-![5](https://universal-blue.discourse.group/uploads/short-url/1xoM895gIQwuYEwwg8uXxglYsEm)
+![5](../../img/Installing_Framework_5.png)
 
-![6](https://universal-blue.discourse.group/uploads/short-url/1u9sjJskEjmp8GplO9Cl96M7Pwj)
+![6](../../img/Installing_Framework_6.png)
 
-![7](https://universal-blue.discourse.group/uploads/short-url/m5qHTr63ugCSQj5TfKKSeZnPyCJ)
+![7](../../img/Installing_Framework_7.png)
 
-![8](https://universal-blue.discourse.group/uploads/short-url/2I822woJsbGWMiSJL71gYyLk6ne)
+![8](../../img/Installing_Framework_8.png)
 
-![9](https://universal-blue.discourse.group/uploads/short-url/r6ysuSWc8ocI4LI97zKld3Zt1A5)
+![9](../../img/Installing_Framework_9.jpeg)
 
-![10](https://universal-blue.discourse.group/uploads/short-url/5z4yBBB8vpLFVz227WsgJj7w0Px)
+![10](../../img/Installing_Framework_10.jpeg)
 
-![11](https://universal-blue.discourse.group/uploads/short-url/yET4erFoNd1qwciWLgjBX6pNpDc)
+![11](../../img/Installing_Framework_11.jpeg)
 
-![12](https://universal-blue.discourse.group/uploads/short-url/AmFHEs5fF7Wbtcgj80rrNR7VVUt)
+![12](../../img/Installing_Framework_12.jpeg)
 
-![13](https://universal-blue.discourse.group/uploads/short-url/4RQ8F46w68MzupeDSvHkHMTIYsi)
+![13](../../img/Installing_Framework_13.jpeg)

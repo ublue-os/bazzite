@@ -4,13 +4,13 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=3781", "fetched_at": "2024-09-03 16:43:10.816923+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-![GNOME|120x120, 50%](https://universal-blue.discourse.group/uploads/short-url/ztouopqxzZnRtAFxN9j3BC8Xj4w.png)
+![GNOME|120x120, 50%](../img/GNOME_Disks_icon.png)
 
 **This comes pre-installed on GNOME images.**
 
 # Instructions
 
-![GNOME_Disks|690x463, 75%](https://universal-blue.discourse.group/uploads/short-url/4CrwEEn6tbC5Puf8yXZzZ6eQzox.png)
+![GNOME_Disks|690x463, 75%](../img/GNOME_Disks.png)
 
 1. Open GNOME Disks (`gnome-disk-utility`)
 2. Locate the disk and partition you want to mount
@@ -36,9 +36,9 @@ Display Name should be added too.  Name it whatever you want it to be identified
 
 >**Warning**: If a drive is formatted, then do not remove it from `/etc/fstab`, so the "nofail" option is a must to avoid issues with booting.
 
-![GNOME_Edit_Mount_Options|690x465, 75%](https://universal-blue.discourse.group/uploads/short-url/tj4Hl30ExTtycAJQjdap2CEpwPh.png)
+![GNOME_Edit_Mount_Options|690x465, 75%](../img/GNOME_Edit_Mount_Options.png)
 
-![GNOME_Mount_Options|549x500, 75%](https://universal-blue.discourse.group/uploads/short-url/gf67Zaz2shxhudxcu1zxKTw5IY7.png)
+![GNOME_Mount_Options|549x500, 75%](../img/GNOME_Mount_Options.png)
 
 ### **BTRFS**: 
 ```command
