@@ -59,14 +59,14 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 - Popular Linux distributions like Ubuntu use GNOME
 
 
-### [Steam Gaming Mode (`-deck` images)](https://universal-blue.discourse.group/docs?topic=37)
+### [Steam Gaming Mode (`-deck` images)][Steam_Gaming_Mode]
 
 ![Gaming Mode|690x388, 75%](../../img/Gaming_Mode.jpeg)
 
 >**Note**: Your device will automatically boot into the Steam Gaming Mode session at startup, and Desktop Mode can be accessed from the "**power menu**" in Steam Gaming Mode.
 
 -  **Requires a [Steam](https://store.steampowered.com/) account**
-- Included in the [Handheld/HTPC images](https://universal-blue.discourse.group/docs?topic=37)
+- Included in the [Handheld/HTPC images][Steam_Gaming_Mode]
 - Interface is designed for handheld and couch gaming
 - Controller friendly
 - Choice of KDE Plasma or GNOME in Desktop Mode
@@ -133,7 +133,7 @@ Read the [Secure Boot Guide](https://universal-blue.discourse.group/docs?topic=2
 
 The first boot will show a screen showing your current and last deployment. It will automatically boot if nothing.  It is important to note that the GRUB menu can be used to rollback Bazzite deployments if you encounter issues.  
 
-Read more about this in the [Updates, Rollback, and Rebasing documentation](https://universal-blue.discourse.group/docs?topic=36).
+Read more about this in the [Updates, Rollback, and Rebasing documentation](../../Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/index.md).
 
 ## Configuring System Settings for KDE Plasma and GNOME
 
@@ -166,7 +166,7 @@ An application will pop up welcoming you to Bazzite when you boot into the deskt
 
 ## Installing additional software
 
-The [Installing and Managing Applications documentation](https://universal-blue.discourse.group/docs?topic=35) is useful to learn how to install additional software on Bazzite outside of the Bazzite Portal.
+The [Installing and Managing Applications documentation](../../Installing_and_Managing_Software/index.md) is useful to learn how to install additional software on Bazzite outside of the Bazzite Portal.
 
 ## Login to Steam &  Reboot Device
 
@@ -178,18 +178,20 @@ Login to Steam  then **reboot** your device when you finish setting up your devi
 
 After completing all of the above, then your next boot will be in Steam Gaming Mode which requires additional setup for Steam. 
 
->[Read further information about Steam Gaming Mode](https://universal-blue.discourse.group/docs?topic=37).
+>[Read further information about Steam Gaming Mode][Steam_Gaming_Mode].
 
 <hr>
 
 # Issues Installing Bazzite?
 
-View the [Installation Troubleshoot Guide](https://ublue-os.github.io/bazzite/General/Installation_Guide/troubleshoot_guide/).
+View the [Installation Troubleshoot Guide](./troubleshoot_guide.md).
 
 <hr>
 
 **Documentation Contributors**: [Kyle Gospodnetich](https://github.com/KyleGospo), [Nathaniel Warburton](https://github.com/storyaddict), [Jorge Castro](https://github.com/castrojo), [Noel Miller](https://github.com/noelmiller), [ChaiQi](https://github.com/atimeofday), [Damian Korcz](https://github.com/damiankorcz), and [Justin Garrison](https://github.com/rothgar)
 
-**See also:** [Upstream Manual Partitioning Guide](https://docs.fedoraproject.org/en-US/fedora-silverblue/installation/#manual-partition) & [Steam Gaming Mode Overview](https://universal-blue.discourse.group/docs?topic=37)
+**See also:** [Upstream Manual Partitioning Guide](https://docs.fedoraproject.org/en-US/fedora-silverblue/installation/#manual-partition) & [Steam Gaming Mode Overview][Steam_Gaming_Mode]
 
-<-- [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
+<-- [**View all Bazzite documentation**](../../index.md)
+
+[Steam_Gaming_Mode]: ../../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md

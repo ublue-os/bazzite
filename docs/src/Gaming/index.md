@@ -9,24 +9,24 @@ title: Gaming
 
 Linux gaming being a viable competitor to Windows is a relatively new paradigm.  Most Windows exclusive games can run on Bazzite using modern hardware.  There are still some rough edges, but gaming on Linux does offer advantages on the appropriate hardware such as better frame-times than on Windows.
 
-# [Game Launchers](https://ublue-os.github.io/bazzite/Gaming/Game_Launchers/)
+# [Game Launchers](Game_Launchers.md)
   - Setting Up Steam
   - Non-Steam Games
     - Available Options
     - Configuring Lutris
     - Gamepass Using Xbox Cloud Gaming
 
-# [Managing & Modding Games](https://ublue-os.github.io/bazzite/Gaming/Managing_and_modding_games/)
+# [Managing & Modding Games](Managing_and_modding_games.md)
   - Compatibility Layers
   - Proton Prefix Information
   - Hidden Files in File Manager
   - Modding Quick-Start
   - Pre-Installed Enhancements
-# [Common Gaming Issues](https://ublue-os.github.io/bazzite/Gaming/Common_gaming_issues/)
+# [Common Gaming Issues](Common_gaming_issues.md)
    - Proton Logs
    - Native Linux Builds vs. Proton
    - Issues with Valve/Source Games 
-#  [Hardware Compatibility for Gaming](https://ublue-os.github.io/bazzite/Gaming/Hardware_compatibility_for_gaming/) 
+#  [Hardware Compatibility for Gaming](Hardware_compatibility_for_gaming.md) 
    - Compatible Handhelds
    - Vulkan Capable GPU for Desktop/HTPC Hardware
    -  Information Regarding Unsupported Filesystems
@@ -44,6 +44,6 @@ Linux gaming being a viable competitor to Windows is a relatively new paradigm. 
 
 **Documentation Contributors**: [Kyle Gospodnetich](https://github.com/KyleGospo), [RJ Trujillo](https://github.com/EyeCantCU), [Benjamin Shermin](https://github.com/bsherman), [Nathaniel Warburton](https://github.com/storyaddict), and [Jorge Castro](https://github.com/castrojo)
 
-**See also**: [Steam Deck Gaming Mode Overview](https://universal-blue.discourse.group/docs?topic=37)
+**See also**: [Steam Deck Gaming Mode Overview](../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md)
 
-<-- [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
+<-- [**View all Bazzite documentation**](../index.md)

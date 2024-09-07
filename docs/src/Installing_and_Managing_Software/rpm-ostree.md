@@ -95,4 +95,4 @@ https://coreos.github.io/rpm-ostree/
 **See also**: https://universal-blue.discourse.group/docs?topic=513
 
 
-[**<-- Back to Installing and Managing Software on Bazzite**](https://universal-blue.discourse.group/docs?topic=35)
+[**<-- Back to Installing and Managing Software on Bazzite**](./index.md)

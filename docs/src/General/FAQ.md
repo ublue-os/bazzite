@@ -25,7 +25,7 @@ Steam and other gaming utilities are part of the base operating system. System r
 
 The choice of KDE Plasma and GNOME for the desktop environment with others planned for the future.  [Flathub](https://flathub.org/) is enabled out of the box, so all of the applications that you would find on SteamOS are available on Bazzite. 
  
-## [2. Handheld/HTPC Edition (`-deck` Images)](https://universal-blue.discourse.group/docs?topic=37)
+## [2. Handheld/HTPC Edition (`-deck` Images)](../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md)
 
 Mimics SteamOS with "**Steam Gaming Mode**" and its features fully functional.  This version of Bazzite boots directly into the Steam Gaming Mode session and are intended for handheld PCs and home theater setups.
 
@@ -37,7 +37,7 @@ Images also includes a Desktop Mode session with the choice of GNOME or KDE Plas
 
 Both types of images also come with the choice of using [KDE Plasma](https://kde.org/plasma-desktop/) or [GNOME](https://www.gnome.org/) for the desktop environment and certain images are made with specific hardware support.
 
-There is more information about this topic on the [Installation Guide](https://ublue-os.github.io/bazzite/General/Installation_Guide/) to help guide users on which image to choose before the installation. 
+There is more information about this topic on the [Installation Guide](../General/Installation_Guide/index.md) to help guide users on which image to choose before the installation. 
 
 
 ## Bazzite Image Chart
@@ -62,7 +62,7 @@ There is more information about this topic on the [Installation Guide](https://u
 - Desktop users who want an operating system designed for gaming with inspiration from SteamOS that has fairly low maintenance.
 - Steam Deck users who feel limited by SteamOS and also want newer system packages.
 - Home Theater PC setups for a console-like experience.
-- [Handheld PC](https://universal-blue.discourse.group/docs?topic=1038) users who would prefer a SteamOS-like experience.
+- [Handheld PC](../Handheld_and_HTPC_edition/Handheld_Wiki/index.md) users who would prefer a SteamOS-like experience.
 
 # SteamOS is based on Arch Linux, so why use Fedora Linux? 
 
@@ -87,9 +87,9 @@ Since Bazzite is a custom Fedora Atomic Desktop image, it makes use of read-only
 
 ## How is Fedora Atomic Desktop different than Fedora Workstation?
 
-If you're familiar with [Fedora Workstation](https://www.fedoraproject.org/workstation/) and [Fedora's Spins](https://www.fedoraproject.org/spins/), but not the Fedora Atomic Desktops paradigm, the major difference is with stability between system upgrades.  There are read-only root files and an emphasis on installing applications as a Flatpak or inside [containers.](https://distrobox.it/)  Read more about [obtaining software on Bazzite](https://universal-blue.discourse.group/docs?topic=35). 
+If you're familiar with [Fedora Workstation](https://www.fedoraproject.org/workstation/) and [Fedora's Spins](https://www.fedoraproject.org/spins/), but not the Fedora Atomic Desktops paradigm, the major difference is with stability between system upgrades.  There are read-only root files and an emphasis on installing applications as a Flatpak or inside [containers.](https://distrobox.it/)  Read more about [obtaining software on Bazzite](../Installing_and_Managing_Software/index.md). 
 
-Users can rollback to a previous deployment if a system update breaks their workflow, or rebase entirely back to a stock Fedora Atomic image, [Aurora](https://getaurora.dev/), [Bluefin](https://projectbluefin.io/), or a [custom image by the community](https://universal-blue.discourse.group/docs?topic=340).  Do **not** rebase between different desktop environments.  Read more about how [updates, rolling back, and rebasing works on Bazzite](https://universal-blue.discourse.group/docs?topic=36).
+Users can rollback to a previous deployment if a system update breaks their workflow, or rebase entirely back to a stock Fedora Atomic image, [Aurora](https://getaurora.dev/), [Bluefin](https://projectbluefin.io/), or a [custom image by the community](https://universal-blue.discourse.group/docs?topic=340).  Do **not** rebase between different desktop environments.  Read more about how [updates, rolling back, and rebasing works on Bazzite](../Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/index.md).
 
 Here's a helpful [cheat sheet](https://docs.fedoraproject.org/en-US/fedora-silverblue/_attachments/silverblue-cheatsheet.pdf) for using **advanced** commands, but gives a glimpse of what this paradigm is capable of.  There is also a future planned ahead of this technology.  Upcoming additions like [bootc](https://containers.github.io/bootc/) will be a major change when it is ready for production.
 
@@ -128,7 +128,7 @@ Updates are obtained and downloaded straight from upstream which means there is 
 - [Discover Overlay](https://github.com/trigg/Discover): Discord chat overlay integration for Steam Gaming Mode which has a [special configuration](https://trigg.github.io/Discover/bazzite) for Bazzite where it launches automatically
 - [Handheld Daemon](https://github.com/hhd-dev/hhd): Tool for configuring and managing handheld devices from gyro, LEDs, paddles, and TDP. 
 - [Ptyxis](https://devsuite.app/ptyxis/): Terminal with first-class container support.
-- [`ujust`](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/ujust/): Execute custom commands based on recipes.
+- [`ujust`](../Installing_and_Managing_Software/ujust.md): Execute custom commands based on recipes.
 - [yafti (Bazzite Portal)](https://github.com/ublue-os/yafti/): First-boot utility for installing additional software.
 
 ## Can I use this desktop environment or that standalone window manager?
@@ -151,7 +151,7 @@ Yes and they are updated during a system upgrade when available.
 
 Most hardware changes should **not** require any manual intervention outside of the expectations from that particular hardware which would be OS-agnostic.  
 
-However, if you swap from or to a Nvidia GPU, then [rebasing](https://universal-blue.discourse.group/docs?topic=2646) will be necessary as a manual intervention to get the appropriate graphics drivers.
+However, if you swap from or to a Nvidia GPU, then [rebasing](../Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/rebase_guide.md) will be necessary as a manual intervention to get the appropriate graphics drivers.
 
 # What is the difference between Bluefin, Aurora, and Bazzite?
 
@@ -171,7 +171,7 @@ hostnamectl hostname <hostname>
 
 # Questions Regarding Java
 
-If its for Minecraft, then install the [Prism Launcher](https://flathub.org/apps/org.prismlauncher.PrismLauncher) for mods that require anything Java related.  If its for development use [Distrobox](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Distrobox/).  You will not be able to change Java on your host.
+If its for Minecraft, then install the [Prism Launcher](https://flathub.org/apps/org.prismlauncher.PrismLauncher) for mods that require anything Java related.  If its for development use [Distrobox](../Installing_and_Managing_Software/Distrobox.md).  You will not be able to change Java on your host.
 
 # Why are builds failing?
 
@@ -185,4 +185,4 @@ Do not be alarmed if you see this on our [Github repository](https://github.com/
 
 **See also**: [Upstream Fedora Silverblue FAQ](https://docs.fedoraproject.org/en-US/fedora-silverblue/faq/)
 
-<-- [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
+<-- [**View all Bazzite documentation**](../index.md)

@@ -3,6 +3,7 @@ site_author: nicknamenamenick
 site_url: !ENV MKDOCS_SITE_URL
 repo_url: !ENV MKDOCS_REPO_URL
 repo_name: !ENV GITHUB_REPOSITORY
+edit_uri_template: edit/main/docs/src/{path}
 site_description: Bazzite is a custom image built upon Fedora Atomic Desktops that brings the best of Linux gaming to all of your devices - including your favorite handheld.
 
 validation:
@@ -51,6 +52,8 @@ theme:
     - toc.integrate
     - search.suggest
     - search.highlight
+    - content.action.edit
+    - content.action.view
 
 docs_dir: src
 site_dir: book

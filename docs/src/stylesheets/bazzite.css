@@ -1,11 +1,13 @@
 @import url(https://fonts.googleapis.com/css?family=DM+Sans);
 @import url(https://fonts.googleapis.com/css?family=Fira+Code);
 
+/* Fonts */
 body {
   --md-text-font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   --md-code-font-family: "Fira Code";
 }
 
+/* Add code ligatures */
 .md-typeset code,
 .md-typeset kbd,
 .md-typeset pre {
@@ -34,12 +36,16 @@ body {
   padding-bottom: 5px;
 }
 
+/* Stylized github button in nav bar */
 .md-source {
   border-radius: 15px;
   background-image: linear-gradient(130deg, #0546AD 0%, #8A2BE2 100%);
   box-shadow: 0px 0px 5px rgba(0,0,0,0.25);
 }
 
+/* Stylized card grids
+See https://squidfunk.github.io/mkdocs-material/reference/grids/#using-card-grids
+*/
 .md-typeset .grid.cards > ol > li,
 .md-typeset .grid.cards > ul > li,
 .md-typeset .grid > .card {
@@ -50,6 +56,7 @@ body {
   box-shadow: none!important;
 }
 
+/* Rounded blockquotes */
 .md-typeset blockquote {
   background-color: #fff;
   border-top-right-radius: 24px;
@@ -63,6 +70,7 @@ body {
   --md-accent-fg-color: #a47bea;
 }
 
+/* Rounded search bar */
 header > nav > div.md-search  {
   & form{
     border-radius: 99999px;
@@ -73,6 +81,15 @@ header > nav > div.md-search  {
   }
 }
 
+/* Navigation toc section tweaks */
+nav.md-nav {
+  /* Slightly bigger section names */
+  .md-nav__item--section>.md-nav__link {
+    font-size: 110%;
+  }
+}
+
+/* Mobile tweaks */
 @media screen and (max-width: 59.9844em) {
   .md-nav__source {
     padding: 10px .2rem;
@@ -94,6 +111,7 @@ header > nav > div.md-search  {
   }
 }
 
+/* Color scheme tweaks */
 @media screen {
   [data-md-color-scheme=default] {
     --md-default-bg-color: #f0f0f0;

@@ -8,7 +8,7 @@ Steam can run Windows games on Linux.  It utilizes a wide range of projects and 
 
 ## Enabling Proton For All Steam Games
 
->**Note**: Skip this section if you're using a [*Handheld/HTPC*](https://universal-blue.discourse.group/docs?topic=37) image.
+>**Note**: Skip this section if you're using a [*Handheld/HTPC*](../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md) image.
 
 * Currently Steam only allows whitelisted games to run by default on the desktop Steam client.
 * You can change this by going into the Steam **Settings** > **Compatibility** > Check **Enable Steam Play for all other titles**
@@ -69,8 +69,8 @@ Games installed from the Microsoft Store do **not** run on desktop Linux unless 
 
 # Auto-Mounting Game Drives
 
-Read the [Auto-Mounting Secondary Drives Guide](https://ublue-os.github.io/bazzite/Advanced/Auto-Mounting_Secondary_Drives/) for more information.  It is also recommended to do your own research on drive mounting on Linux.
+Read the [Auto-Mounting Secondary Drives Guide](../Advanced/Auto-Mounting_Secondary_Drives.md) for more information.  It is also recommended to do your own research on drive mounting on Linux.
 
 <hr>
 
-[**<-- Back to Gaming Guide**](https://universal-blue.discourse.group/docs?topic=31)
+[**<-- Back to Gaming Guide**](./index.md)

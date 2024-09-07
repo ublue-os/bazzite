@@ -13,13 +13,13 @@ title: Handheld Wiki
 
 *Click the name of each hardware to view post-installation setup and known issues/workarounds.*
 
-- [**Steam Deck**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Steam_Deck/)
-- [**Lenovo Legion Go**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Lenovo_Legion_Go/) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/Lenovo_Legion_Go.md))
-- [**ASUS ROG Ally**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/ASUS_ROG_Ally/) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/ASUS_ROG_Ally.md))
-- [**Ayn Handhelds**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Ayn_Handhelds/) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/Ayn_Handhelds.md))
-- [**GPD Handhelds**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/GPD_Handhelds/) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/GPD_Handhelds.md))
-- [**Ayaneo Handhelds**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Ayaneo_Handhelds/) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/Ayaneo_Handhelds.md))
-- [**Other Handhelds**](https://ublue-os.github.io/bazzite/Handheld_and_HTPC_edition/Handheld_Wiki/Other_Handhelds/)
+- [**Steam Deck**](./Steam_Deck.md)
+- [**Lenovo Legion Go**](./Lenovo_Legion_Go.md) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/Lenovo_Legion_Go.md))
+- [**ASUS ROG Ally**](./ASUS_ROG_Ally.md) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/ASUS_ROG_Ally.md))
+- [**Ayn Handhelds**](./Ayn_Handhelds.md) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/Ayn_Handhelds.md))
+- [**GPD Handhelds**](./GPD_Handhelds.md) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/GPD_Handhelds.md))
+- [**Ayaneo Handhelds**](./Ayaneo_Handhelds.md) ([*Edit Wiki*](https://github.com/ublue-os/bazzite/blob/main/docs/src/Handheld_and_HTPC_edition/Handheld_Wiki/Ayaneo_Handhelds.md))
+- [**Other Handhelds**](./Other_Handhelds.md)
 
 ## Support Rating
 
@@ -64,7 +64,7 @@ Install optional [Decky plugins](https://plugins.deckbrew.xyz/) for your handhel
 
 # Bazzite's Steam Gaming Mode Documentation
 
-Check out the [Steam Gaming Mode documentation](https://universal-blue.discourse.group/docs?topic=37) for an in-depth guide on Steam Gaming Mode plus general fixes for common issues.
+Check out the [Steam Gaming Mode documentation](../Steam_Gaming_Mode.md) for an in-depth guide on Steam Gaming Mode plus general fixes for common issues.
 
 # eGPU Support
 

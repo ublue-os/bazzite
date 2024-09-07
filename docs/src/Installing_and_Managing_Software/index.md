@@ -6,12 +6,12 @@
 
 > **Package formats ranked from most recommended for daily usage**:
 > 
-> 1. [Flatpak](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Flatpak/) - Universal package format using a permissions-based model; use for most graphical applications.
-> 2. [`ujust`](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/ujust/) - Custom scripts maintained by Bazzite & Universal Blue contributors that can install applications.
-> 3.  [Homebrew](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Homebrew/) - Install applications intended to run inside of the terminal (CLI/TUI).
-> 4. [Distrobox](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Distrobox/) - Intended for legacy applications that do not support Flatpak and Homebrew, or for use as development boxes.
-> 5. [AppImage](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/AppImage/) - Portable universal package format that relies on specific host libraries at a system-level, usually obtained from a project's website.
-> 6. [`rpm-ostree`](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/rpm-ostree/) - Layer Fedora packages at a system-level (**not recommended, use as a last resort**)
+> 1. [Flatpak](./Flatpak.md) - Universal package format using a permissions-based model; use for most graphical applications.
+> 2. [`ujust`](./ujust.md) - Custom scripts maintained by Bazzite & Universal Blue contributors that can install applications.
+> 3.  [Homebrew](./Homebrew.md) - Install applications intended to run inside of the terminal (CLI/TUI).
+> 4. [Distrobox](./Distrobox.md) - Intended for legacy applications that do not support Flatpak and Homebrew, or for use as development boxes.
+> 5. [AppImage](./AppImage.md) - Portable universal package format that relies on specific host libraries at a system-level, usually obtained from a project's website.
+> 6. [`rpm-ostree`](./rpm-ostree.md) - Layer Fedora packages at a system-level (**not recommended, use as a last resort**)
 
 
 # How do I run Windows applications?
@@ -28,7 +28,7 @@
 # How do I install Android applications?
 
 
-Follow the [Waydroid Setup Guide](https://universal-blue.discourse.group/docs?topic=32) to install Android applications on Bazzite.
+Follow the [Waydroid Setup Guide](./Waydroid_Setup_Guide.md) to install Android applications on Bazzite.
 
 >**Note**: Waydroid is **not supported** on other Universal Blue images like Aurora and Bluefin.
 
@@ -50,6 +50,6 @@ https://www.youtube.com/watch?v=ITuT23YrgPs
 
 **Documentation Contributors**: [HikariKnight](https://github.com/HikariKnight)
 
-**See also**: [Updates, Rollbacks, & Rebasing](https://universal-blue.discourse.group/docs?topic=36)
+**See also**: [Updates, Rollbacks, & Rebasing](../Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/index.md)
 
-<-- [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
+<-- [**View all Bazzite documentation**](../index.md)

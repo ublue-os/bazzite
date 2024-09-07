@@ -84,7 +84,7 @@ Selecting `Configure Waydroid` will allow users to install additional Android tw
 After verification has happened, it will usually take a while before your device is verified.
 
 # Add as a Non-Steam Shortcut
->This is useful for [Bazzite images that use Steam Gaming Mode.](https://universal-blue.discourse.group/docs?topic=37)
+>This is useful for [Bazzite images that use Steam Gaming Mode.](../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md)
 
 Make sure to add `/usr/bin/waydroid-launcher` to Steam as a non-Steam game for Waydroid to work properly in Steam Gaming Mode.
 
@@ -152,4 +152,4 @@ ujust setup-waydroid
 
 **See also**: [Upstream documentation](https://docs.waydro.id/)
 
-<-- [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
+<-- [**View all Bazzite documentation**](../index.md)

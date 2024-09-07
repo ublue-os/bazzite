@@ -123,6 +123,6 @@ Make sure to **apply** the desktop controls when you select them.
 
 This page is a **wiki**, edit it to add any relevant information you may have regarding the handheld and your experience with Bazzite on it.  Make sure to follow proper [documentation guidelines](https://universal-blue.discourse.group/docs?topic=890) and [contributing guidelines](https://universal-blue.discourse.group/docs?topic=81) before adding any edits.
 
-**See also**: [Steam Gaming Mode Overview](https://universal-blue.discourse.group/docs?topic=37)
+**See also**: [Steam Gaming Mode Overview](../Steam_Gaming_Mode.md)
 
-**<-- Back to [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038)**
+**<-- Back to [Handheld Wiki](./index.md)**

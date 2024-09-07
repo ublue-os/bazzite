@@ -1,12 +1,8 @@
 {% extends "base.html" %}
 
-{% block content %}
-    <blockquote style="border-left-color: orange;">
-        <big>⚠️ WARNING ⚠️</big>
-        <p>
-            This new documentation is in development and may have issues.
-            Refer to the <a href="https://universal-blue.discourse.group/docs?topic=561">old Bazzite documentation</a> if you experience major issues.
-        </p>
-    </blockquote>
-    {{ super() }}
+{% block announce %}
+<span class="twemoji">⚠️</span>
+This new documentation is in development and may have issues.
+Refer to the <a href="https://universal-blue.discourse.group/docs?topic=561">old Bazzite documentation</a> if you
+experience major issues.
 {% endblock %}

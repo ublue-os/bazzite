@@ -96,4 +96,4 @@ Bazzite users can use templates for some of the pre-installed tools which can be
 
 <hr>
 
-[**<-- Back to Gaming Guide**](https://universal-blue.discourse.group/docs?topic=31)
+[**<-- Back to Gaming Guide**](./index.md)

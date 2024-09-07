@@ -80,8 +80,8 @@ View the [Bluefin documentation](https://docs.projectbluefin.io/administration#m
 
 >Decky Loader will sometimes have issues with new Steam and Gamescope updates, and may need to be uninstalled temporarily.
 
-Install [Decky Loader](https://decky.xyz/) then install [CSS Loader](https://docs.deckthemes.com/) to customize how Steam Gaming Mode looks.  Be aware that third-party plugins may cause issues.  Read Bazzite's [Steam Gaming Mode documentation](https://universal-blue.discourse.group/docs?topic=37) to resolve common issues if you run into them after using Decky Loader.
+Install [Decky Loader](https://decky.xyz/) then install [CSS Loader](https://docs.deckthemes.com/) to customize how Steam Gaming Mode looks.  Be aware that third-party plugins may cause issues.  Read Bazzite's [Steam Gaming Mode documentation](../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md) to resolve common issues if you run into them after using Decky Loader.
 
 <hr>
 
-[**<-- View all Bazzite documentation**](https://docs.bazzite.gg)
+[**<-- View all Bazzite documentation**](../index.md)

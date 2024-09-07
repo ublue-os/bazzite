@@ -4,7 +4,7 @@
 
 # General Information
 
->**For Handheld PC users only**:  View our [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) for post-installation setup, workarounds, and known issues on handheld hardware.
+>**For Handheld PC users only**:  View our [Handheld Wiki](../Handheld_and_HTPC_edition/Handheld_Wiki/index.md) for post-installation setup, workarounds, and known issues on handheld hardware.
 
 ![Steam Gaming Mode UI|690x430](../img/Steam_Gaming_Mode_UI.jpeg)
 
@@ -79,7 +79,7 @@ ujust configure-grub
 Select "unhide" to have GRUB appear on boot.
 
 
->View the [Rollback Guide](https://universal-blue.discourse.group/docs?topic=2644) for more information.
+>View the [Rollback Guide](../Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/rolling_back_system_updates.md) for more information.
 
 ## How do I open the Quick Access Menu (QAM) with a physical keyboard?
 
@@ -223,6 +223,6 @@ https://help.steampowered.com/en/faqs/view/7DD4-C618-182E-0E49
 
 **Documentation Contributors**: [HikariKnight](https://github.com/HikariKnight)
 
-**See also**: [Gaming Guide](https://universal-blue.discourse.group/docs?topic=31)
+**See also**: [Gaming Guide](../Gaming/index.md)
 
-<-- [**View all Bazzite documentation**](https://universal-blue.discourse.group/docs?topic=561)
+<-- [**View all Bazzite documentation**](../index.md)
