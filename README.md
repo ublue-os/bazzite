@@ -236,7 +236,7 @@ Read the [FAQ](https://ublue-os.github.io/bazzite/General/FAQ/) for details on w
 ## Documentation
 
 - [Installing and Managing Applications](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/)
-- [Updates, Rollbacks, and Rebasing](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Updates_Rollbacks_%26_Rebasing/)
+- [Updates, Rollbacks, and Rebasing](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/)
 - [Gaming Guide](https://ublue-os.github.io/bazzite/Gaming/)
 
 View [additional documentation](http://docs.bazzite.gg/) surrounding the project.
@@ -371,3 +371,5 @@ We also ship a config for the popular [pull app](https://github.com/apps/pull) i
 - Discuss and create user guides over at the [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
 
 - Follow Universal Blue on [Mastodon](https://fosstodon.org/@UniversalBlue).
+
+[**View the full list of Bazzite resources and social presence**](https://universal-blue.discourse.group/docs?topic=8).
