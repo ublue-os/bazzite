@@ -478,6 +478,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         wine-core.i686 \
         wine-pulseaudio.x86_64 \
         wine-pulseaudio.i686 \
+        libFAudio.x86_64 \
+        libFAudio.i686 \
         winetricks \
         protontricks \
         latencyflex-vulkan-layer \
