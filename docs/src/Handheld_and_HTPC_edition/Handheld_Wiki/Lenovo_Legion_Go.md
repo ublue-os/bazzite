@@ -60,6 +60,8 @@ For more information, check out the [Legion Go Tips and Tricks guide](https://gi
 
 # Additional Information
 
+This applies to most handhelds running Bazzite.
+
 ## TDP Controls
 
 ![TDP|690x431, 75%](../../img/TDP.jpeg)
