@@ -7,10 +7,9 @@ Report bugs experienced with Bazzite in our [**issue tracker**](https://github.c
 
 # Before submitting an issue
 
-**Read how to file an issue properly before proceeding**:
-https://universal-blue.discourse.group/docs?topic=1470
+**Read [how to file an issue properly](https://universal-blue.discourse.group/docs?topic=1470) before proceeding!**
 
-## Bazzite Issue Template Walkthrough
+### **Bazzite Issue Template Walkthrough**
 
 ![Bug report|690x174](../img/Bug_report.png)
 
