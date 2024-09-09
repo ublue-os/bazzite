@@ -52,8 +52,8 @@ If you need a tutorial video for manual partitioning, watch this [tutorial]( htt
 1.  Select Installation Destination
 2.  Select `Advanced Custom(Blivet-GUI)` under Storage Configuration.
 3.  Create partitions and devices:
-   
-    ```
+
+```
     Manual Partitioning Scheme:
 
     mount point: /boot/efi  
@@ -76,7 +76,7 @@ If you need a tutorial video for manual partitioning, watch this [tutorial]( htt
 
     mount point: /var/home
     format:      btrfs (subvolume)
-    ```
+```
 
 >**Note about dual booting other Fedora Atomic Desktop images on the **same** drive**: If you want to dual boot another **Fedora libostree image** (like [Bluefin](https://projectbluefin.io/)) installed alongside Bazzite, then you would have to make an additional EFI partition and switch between them through the BIOS boot menu.
 
