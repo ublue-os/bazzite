@@ -420,7 +420,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     chmod +x /usr/bin/installcab && \
     curl -Lo /usr/bin/install-mf-wmv https://github.com/KyleGospo/steam-proton-mf-wmv/blob/master/install-mf-wmv.sh && \
     chmod +x /usr/bin/install-mf-wmv && \
-    curl -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
@@ -595,6 +594,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         curl -s https://api.github.com/repos/domferr/tilingshell/releases/latest | \
             jq -r '.assets | sort_by(.created_at) | .[] | select (.name|test("^tilingshell@.*zip$")) | .browser_download_url' | \
             wget -qi - -O /tmp/tilingshell/tilingshell@ferrarodomenico.com.zip && \
+        curl -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer && \
         unzip /tmp/tilingshell/tilingshell@ferrarodomenico.com.zip -d /usr/share/gnome-shell/extensions/tilingshell@ferrarodomenico.com && \
         rm -rf /tmp/tilingshell && \
         sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.gnome.SystemMonitor.desktop && \
