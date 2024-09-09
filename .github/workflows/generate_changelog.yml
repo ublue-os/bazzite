@@ -35,7 +35,7 @@ jobs:
           markdown_to_bbcodesteam -i "CHANGELOG-SHORT.md" -o "CHANGELOG-BBCODE.txt";
         shell: pwsh
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           commit-message: "chore(main): Update Steam BBCode Changelog"
           branch: steam-changelog
