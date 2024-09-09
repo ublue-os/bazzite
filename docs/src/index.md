@@ -61,6 +61,9 @@ A quick list of stuff you might be interested in checking out:
 
   Run Android applications in a container using [Waydroid](https://waydro.id/)!
 
+  - Launch anything from productivity software to games!
+  - Support for the Google Play Store and [F-Droid](https://f-droid.org/).
+
 - [:fontawesome-solid-handshake: **Contribute**][contrib]{ style="font-size: 1.1rem" }
 
   One of the strengths of Bazzite (inherited from [Universal Blue](https://universal-blue.org/)) is how easy is to contribute.
