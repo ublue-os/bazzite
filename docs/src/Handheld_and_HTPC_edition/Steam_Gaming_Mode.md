@@ -96,8 +96,9 @@ This works on desktop mode including running Nested Gamescope and also works for
 
 ## Why do specific Decky Loader plugins not function on Bazzite?
 
-- Bazzite does not provide the functionality.
-  - [PauseGames](https://github.com/popsUlfr/SDH-PauseGames) requires a swapfile while Bazzite utilizes zram for example.
+Some plugins are built specifically for SteamOS or the Steam Deck, and won’t necessarily work on Bazzite or non-Deck hardware.
+
+For example, the [DeckMTP plugin](https://github.com/dafta/DeckMTP) only works on the Steam Deck, it will not work on alternative hardware.
 
 ## How do I use SteamDeckGyroDSU on hardware that isn't the Steam Deck?
 
