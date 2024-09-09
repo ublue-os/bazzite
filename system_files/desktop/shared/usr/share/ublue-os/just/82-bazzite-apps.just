@@ -188,10 +188,11 @@ install-resolve ACTION="":
         "Uninstall davincibox" \
       )
       if [[ "${OPTION,,}" =~ (^install/upgrade[[:space:]]davincibox) ]]; then
-        echo "${bold}This script requires you to download DaVinci Resolve installer (should be a zip file) manually from their website and place it in ${HOME} or ${DOWNLOADDIR}${n}"
-        echo "${bold}https://www.blackmagicdesign.com/event/davinciresolvedownload${n}"
-        echo "You dont extract the zip contents, the script will handle the installation"
-        echo "${lightgrey}TIP: If you want to install manually, check https://github.com/zelikos/davincibox${n}"
+        echo "This script requires you to download the DaVinci Resolve installer (should be a zip file) manually from their website and place it in ${HOME} or ${DOWNLOADDIR}"
+        echo "https://www.blackmagicdesign.com/event/davinciresolvedownload"
+        echo ""
+        echo -e "${b}\033[3mDo not\033[0m ${b}extract the .zip contents, the script will handle everything${n}"
+        echo "${lightgrey}TIP: For manual installation, see https://github.com/zelikos/davincibox${n}"
         # Get sure user reads instructions
         ugum confirm || exit 0
         # Download davincibox setup script
