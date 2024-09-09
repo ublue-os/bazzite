@@ -72,11 +72,11 @@ The `.pp` file should be in `/root` if you want to remove that.
 
 If a 32-bit Source 1 engine game is not opening due to [tmalloc libraries issues](https://github.com/ValveSoftware/csgo-osx-linux/issues/3229), then open a host terminal and **enter**:
 
-1. Add the following as a **launch option** to the affected game in Steam:
+Add the following as a **launch option** to the affected game in Steam:
 ```command
 LD_PRELOAD=/usr/lib/libtcmalloc_and_profiler.so.4 %command%
 ```
-2. Delete `libtcmalloc_minimal.so.x` in the game's bin folder if present.
+Delete `libtcmalloc_minimal.so.x` in the game's bin folder if present.
 
 If this fails to fix it, then try forcing Proton Experimental in the game's properties.
 
