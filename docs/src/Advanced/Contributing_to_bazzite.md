@@ -43,6 +43,4 @@ Using the unaffiliated [BlueBuild](https://blue-build.org/learn/universal-blue/)
 
 <hr>
 
-<hr>
-
 <-- [**View all Bazzite documentation**](../index.md)
