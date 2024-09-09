@@ -32,7 +32,7 @@ This has also been confirmed to cause issues joining and hosting custom maps in 
 
 **At your own risk**
 
-1. Open a host terminal and **enter these 4 commands**:
+Open a host terminal and **enter these 4 commands**:
 
 ```command
 sudo su
@@ -48,8 +48,7 @@ ausearch -c 'hl2_linux' --raw | audit2allow -M my-hl2linux
 ```command
 semodule -X 300 -i my-hl2linux.pp
 ```
-
-2. Reboot your device
+Reboot your device
 
 ### If you want to undo this change eventually:
 
