@@ -74,6 +74,8 @@ ujust install-hhd-controller-glyph-theme
 - Rotation is wrong in Desktop Mode for KDE images.
 - Mouse input may break in Desktop Mode.
 
+<hr>
+
 # Additional Information
 
 ## TDP Controls
