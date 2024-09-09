@@ -78,6 +78,8 @@ ujust install-hhd-controller-glyph-theme
 
 # Additional Information
 
+This applies to most handhelds running Bazzite.
+
 ## TDP Controls
 
 ![TDP|690x431, 75%](../../img/TDP.jpeg)
