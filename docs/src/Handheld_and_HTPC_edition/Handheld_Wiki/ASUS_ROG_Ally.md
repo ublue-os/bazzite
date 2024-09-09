@@ -55,6 +55,8 @@ ujust install-hhd-controller-glyph-theme
   - No controls outside of Steam.
   - Steam's top and bottom panels missing.
 
+<hr>
+
 # Additional Information
 
 ## TDP Controls
