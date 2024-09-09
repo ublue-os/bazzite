@@ -133,7 +133,7 @@ elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
   fi
 fi
 
-if [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:" =~ ":$SYS_ID:" ]]; then
+if [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
     echo "Adding panel orientation for ONEXPLAYER F1 & ONEXFLY"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")

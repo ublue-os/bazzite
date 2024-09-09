@@ -6,7 +6,7 @@ SYS_ID="$(/usr/libexec/hwsupport/sysid)"
 # Loki Max
 # AYANEO Air Plus
 # Onexfly (8840u)
-if [[ ":83E1:Loki Max:AIR Plus:ONEXPLAYER F1L:" =~ ":$SYS_ID:" ]]; then
+if [[ ":83E1:Loki Max:AIR Plus:ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:" =~ ":$SYS_ID:" ]]; then
 	exit 0
 fi
 
