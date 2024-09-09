@@ -81,6 +81,8 @@ Note: The first restart after this change may take longer than usual.
 
 Check out the [original thread](https://universal-blue.discourse.group/t/ayaneo-geek-1s-2s-linux-bazzite-support-is-already-almost-there-lets-add-them-to-the-officially-supported-devices/1046) for more information and updates on this device.
 
+<hr>
+
 # Additional Information
 
 ## TDP Controls
