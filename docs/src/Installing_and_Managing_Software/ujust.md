@@ -45,8 +45,7 @@ You can search for specific commands by **entering**:
 ujust | grep "<search keyword(s)>"
 ```
 
-```
-*`install-`: Install program, there is no configuration or uninstall commands at this time
+* `install-`: Install program, there is no configuration or uninstall commands at this time
 * `get-`: Install an "extension" like Decky plugins, and if it is an extension then it can use `get-` too
 * `setup-`: Install program, provides uninstall and configuration options for after install
 * `configure-`: Configure something that came by default on the image
@@ -58,7 +57,6 @@ ujust | grep "<search keyword(s)>"
 * `foo`: Replace this with whatever the command is called 
   * These are shortcuts that we have deemed necessary to not have a verb
       * **Examples**: `ujust update` and `ujust enroll-secureboot-key`
-```
 
 # View each `ujust` script's source code
 If you would like to see what each script does for each command then open a host terminal and **enter**:
