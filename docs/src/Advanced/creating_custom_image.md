@@ -4,12 +4,12 @@
 
 # Making your own image
 
-**Containerfile template**: 
-https://github.com/ublue-os/image-template
+Sometimes you don't want to make a whole new image from scratch, you just want to change some things without too much extra work. Sometimes it's nicer to derive from images that more end-user focused like [Bazzite](https://github.com/ublue-os/bazzite), [Bluefin](https://github.com/ublue-os/bluefin), and [Aurora](https://getaurora.dev/).  
+
+**Use the official [template image](https://github.com/ublue-os/image-template) to build off of to make your own custom Bazzite.**
  
-Sometimes you don't want to make a whole new image from scratch, you just want to change some things without too much extra work. Sometimes it's nicer to derive from images that more end-user focused like [Bazzite](https://github.com/ublue-os/bazzite), [Bluefin](https://github.com/ublue-os/bluefin), and [Aurora](https://getaurora.dev/).
  
-## Use Cases
+# Use Cases
  
 - You want to help development by being able to test your contributions prior to submiting to the community.
     - Hardware enablement, experimental features, confirming fixes ahead of merge
