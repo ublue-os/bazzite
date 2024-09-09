@@ -85,6 +85,8 @@ Check out the [original thread](https://universal-blue.discourse.group/t/ayaneo-
 
 # Additional Information
 
+This applies to most handhelds running Bazzite.
+
 ## TDP Controls
 
 ![TDP|690x431, 75%](../../img/TDP.jpeg)
