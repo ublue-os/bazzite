@@ -20,6 +20,8 @@ Distrobox containers run sub-systems of other popular [Linux distributions](http
 ## Arch Linux Distrobox Container Example:
 
 ![i use arch btw|690x229, 75%](../img/i_use_arch_btw.png)
+>i use Arch (in a container) btw.
+
 
 **Linux Distribution Examples**:
 
