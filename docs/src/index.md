@@ -21,8 +21,7 @@ A quick list of stuff you might be interested in checking out:
   - [Ayn Handhelds][ayn]
   - [Ayaneo Handhelds][ayaneo]
 
-
-- [:material-download-circle: **Install software**][installing_software]{ style="font-size: 1.1rem" }
+- [:material-download-circle: **Install Software**][installing_software]{ style="font-size: 1.1rem" }
 
   <small>Order reflects the recommendation degree</small>
 
@@ -39,7 +38,7 @@ A quick list of stuff you might be interested in checking out:
 
   You can as well install regular Fedora packages with [`rpm-ostree`][rpm-ostree] but we [advise avoiding it if possible][rpm-ostree_caveats].
 
-- [:fontawesome-brands-windows: **Run Windows games**][run_win_game]{ style="font-size: 1.1rem" }
+- [:fontawesome-brands-windows: **Run Windows Games**][run_win_game]{ style="font-size: 1.1rem" }
 
   Bazzite comes bundled with :fontawesome-brands-steam: Steam\* and [Lutris](Gaming/Game_Launchers.md#lutris-setup).
 
@@ -50,6 +49,20 @@ A quick list of stuff you might be interested in checking out:
   - ...And [more][run_win_game]!
 
   <small>\* Desktop images require [**enabling Proton for all Steam games**][enable_proton].</small>
+
+- [:fontawesome-solid-circle-arrow-down: **Updates, Rollbacks, and Rebasing**][updateindex]{ style="font-size: 1.1rem" }
+
+  - [Updating Guide][updates]
+  - [Rollback System Updates][rollbacks]
+  - [Rebasing to Other Images][rebasing]
+  - [`bazzite-rollback-helper`][rollback-helper]
+
+- [:fontawesome-brands-android: **Android Applications**][waydroid]{ style="font-size: 1.1rem" }
+
+  Run Android applications in a container using [Waydroid](https://waydro.id/)!
+
+  - Launch anything from productivity software to games!
+  - Support for the Google Play Store and [F-Droid](https://f-droid.org/).
 
 - [:fontawesome-solid-handshake: **Contribute**][contrib]{ style="font-size: 1.1rem" }
 
@@ -62,7 +75,7 @@ A quick list of stuff you might be interested in checking out:
 
 [install_pc_laptop]: General/Installation_Guide/Installing_Bazzite_for_Desktop_or_Laptop_Hardware.md
 [install_handheld]: General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs.md
-[deck]: General/Installation_Guide/Installing_Bazzite_for_Steam_Deck.md#installation-guide
+[deck]: General/Installation_Guide/Installing_Bazzite_for_Steam_Deck.md
 [frame_13]: General/Installation_Guide/Installing_Bazzite_Framework_Laptop_13.md
 [frame_16]: General/Installation_Guide/Installing_Bazzite_for_Framework_Laptop_16.md
 [htpc]: General/Installation_Guide/Installing_Bazzite_for_HTPC_Setups.md
@@ -83,3 +96,9 @@ A quick list of stuff you might be interested in checking out:
 [rpm-ostree_caveats]: Installing_and_Managing_Software/rpm-ostree.md#major-caveats-using-rpm-ostree
 [steam_game_mode]: Handheld_and_HTPC_edition/Steam_Gaming_Mode.md#what-is-steam-gaming-mode
 [appimage]: Installing_and_Managing_Software/AppImage.md
+[updateindex]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/index.md
+[updates]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/updating_guide.md
+[rollbacks]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rolling_back_system_updates.md
+[rebasing]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/rebase_guide.md
+[rollback-helper]: Installing_and_Managing_Software/Updates_Rollbacks_&_Rebasing/bazzite_rollback_helper.md
+[waydroid]: Installing_and_Managing_Software/Waydroid_Setup_Guide.md
