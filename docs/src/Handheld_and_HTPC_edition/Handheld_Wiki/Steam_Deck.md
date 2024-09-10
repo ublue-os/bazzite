@@ -8,6 +8,10 @@
 
 **Status**: Platinum
 
+## Installing Bazzite
+
+Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os.github.io/bazzite/General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs/).
+
 ## Post-Installation Setup
 
 - No additional setup required, but make sure to read the [installation Guide](https://universal-blue.discourse.group/docs?topic=30).
@@ -22,6 +26,10 @@
 ![Steam Deck OLED|667x500, 100%](../../img/Steam_Deck_OLED.jpeg)
 
 **Status**: Gold
+
+## Installing Bazzite
+
+Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os.github.io/bazzite/General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs/).
 
 ## Post-Installation Setup
 
