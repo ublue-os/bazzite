@@ -784,6 +784,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     hhd \
     hhd-ui \
     adjustor \
+    acpica-tools \
     vpower \
     ds-inhibit \
     steam_notif_daemon \
