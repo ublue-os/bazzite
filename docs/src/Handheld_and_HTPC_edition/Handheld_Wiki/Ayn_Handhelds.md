@@ -8,6 +8,10 @@
 
 **Status**: Platinum
 
+## Installing Bazzite
+
+Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os.github.io/bazzite/General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs/).
+
 ## Post-Installation Setup
 
 - Complete the Bazzite Portal
@@ -39,6 +43,10 @@ ujust install-hhd-controller-glyph-theme
 
 **Status**: Silver
 
+## Installing Bazzite
+
+Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os.github.io/bazzite/General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs/).
+
 ## Post-Installation Setup
 
 - Complete the Bazzite Portal
@@ -68,7 +76,11 @@ ujust install-hhd-controller-glyph-theme
 
 <hr>
 
-# TDP Controls
+# Additional Information
+
+This applies to most handhelds running Bazzite.
+
+## TDP Controls
 
 ![TDP|690x431, 75%](../../img/TDP.jpeg)
 
@@ -79,14 +91,14 @@ There are a few options for TDP Controls that work with Bazzite:
 * [SimpleDeckyTDP](https://github.com/aarron-lee/SimpleDeckyTDP) supports TDP, GPU, Power Governor, and among other settings.
   * Also has a [graphical application](https://github.com/aarron-lee/SimpleDeckyTDP-Desktop), but needs to be manually installed.
 
-# How do I open the HHD Overlay?
+## How do I open the HHD Overlay?
 
 ![Overlay|690x431, 75%](../../img/HHD_Overlay.jpeg)
 ![RGB|690x431, 75%](../../img/HHD_RGB.jpeg)
 
 Press, hold, or double-tap the Quick Access Menu button.
 
-# Controller Information
+## Controller Information
 
 For most handheld hardware, besides the Steam Deck, emulation of a DualSense controller is used for full functionality. Double tap or hold the side menu button to access settings for controller emulation including switching to an Xbox controller with reduced functionality.
 
@@ -94,7 +106,7 @@ If your device has paddles, you will want to use the DualSense Edge controller (
 
 Some games and emulators may need Steam Input **disabled** to work correctly with your controls.
 
-## Desktop Controls
+### Desktop Controls
 
 Desktop Mode Controller Layout:  It may not exist by default if Steam doesn't setup your handheld controller properly.  This can be fixed in Steam's controller settings.
 
