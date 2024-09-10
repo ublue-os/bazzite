@@ -1,8 +1,17 @@
 diff --git a/usr/bin/steamos-polkit-helpers/steamos-priv-write b/usr/bin/steamos-polkit-helpers/steamos-priv-write
-index 8fcd1d4..4b47d21 100755
+index d1456c8..6cb906d 100755
 --- a/usr/bin/steamos-polkit-helpers/steamos-priv-write
 +++ b/usr/bin/steamos-polkit-helpers/steamos-priv-write
-@@ -21,15 +21,11 @@
+@@ -3,6 +3,8 @@
+ set -euo pipefail
+ shopt -s nullglob
+ 
++source /etc/default/steam-hardware-control
++
+ if [[ $EUID -ne 0 ]];
+ then
+     exec pkexec --disable-internal-agent "$0" "$@"
+@@ -21,15 +23,11 @@ function MatchFilenamePattern()
  {
      local path="$1"
      local pattern="$2"
@@ -22,7 +31,7 @@ index 8fcd1d4..4b47d21 100755
  
      false;
      return;
-@@ -37,13 +33,14 @@
+@@ -37,13 +35,14 @@ function MatchFilenamePattern()
  
  function CommitWrite()
  {
@@ -40,7 +49,7 @@ index 8fcd1d4..4b47d21 100755
      exit 0
  }
  
-@@ -65,15 +62,35 @@
+@@ -65,15 +64,35 @@ if MatchFilenamePattern "$WRITE_PATH" "/dev/drm_dp_aux0"; then
  fi
  
  if MatchFilenamePattern "$WRITE_PATH" "/sys/class/drm/card*/device/power_dpm_force_performance_level"; then
@@ -71,7 +80,7 @@ index 8fcd1d4..4b47d21 100755
  
  if MatchFilenamePattern "$WRITE_PATH" "/sys/class/hwmon/hwmon*/power*_cap"; then
 -    CommitWrite
-+    if /usr/libexec/hwsupport/valve-hardware; then
++    if /usr/libexec/hwsupport/valve-hardware && [[ "$DISABLE_STEAM_TDP_CONTROL" != 1 ]]; then
 +        CommitWrite
 +    else
 +        Log "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - Valve Hardware not detected"
