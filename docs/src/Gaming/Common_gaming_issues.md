@@ -32,7 +32,7 @@ This has also been confirmed to cause issues joining and hosting custom maps in 
 
 **At your own risk**
 
-1. Open a host terminal and **enter these 4 commands**:
+Open a host terminal and **enter these 4 commands**:
 
 ```command
 sudo su
@@ -48,8 +48,7 @@ ausearch -c 'hl2_linux' --raw | audit2allow -M my-hl2linux
 ```command
 semodule -X 300 -i my-hl2linux.pp
 ```
-
-2. Reboot your device
+Reboot your device
 
 ### If you want to undo this change eventually:
 
@@ -73,11 +72,11 @@ The `.pp` file should be in `/root` if you want to remove that.
 
 If a 32-bit Source 1 engine game is not opening due to [tmalloc libraries issues](https://github.com/ValveSoftware/csgo-osx-linux/issues/3229), then open a host terminal and **enter**:
 
-1. Add the following as a **launch option** to the affected game in Steam:
+Add the following as a **launch option** to the affected game in Steam:
 ```command
 LD_PRELOAD=/usr/lib/libtcmalloc_and_profiler.so.4 %command%
 ```
-2. Delete `libtcmalloc_minimal.so.x` in the game's bin folder if present.
+Delete `libtcmalloc_minimal.so.x` in the game's bin folder if present.
 
 If this fails to fix it, then try forcing Proton Experimental in the game's properties.
 

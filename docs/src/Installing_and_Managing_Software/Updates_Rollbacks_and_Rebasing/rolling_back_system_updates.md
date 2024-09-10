@@ -14,9 +14,9 @@ Rollback can also be done in the GRUB menu (the menu you see before booting into
 
 >If you need to rollback to a different OS image, use the [`bazzite-rollback-helper`](./bazzite_rollback_helper.md) to do so.
 
-## Unhide The GRUB Menu on Handheld/HTPC Images
+## Unhide The GRUB Menu
 
-Handheld/HTPC images may **not** show the GRUB menu at boot by default, and controls may vary with different handheld or HTPC hardware to unhide the menu.
+If you opted to hide the GRUB menu:
 
 Unhide GRUB on Handheld/HTPC images with this **command**:
 
@@ -24,6 +24,8 @@ Unhide GRUB on Handheld/HTPC images with this **command**:
 ujust configure-grub
 ```
 Select the "**unhide**" opiton to have GRUB appear on boot.
+
+>Controls may vary with different handheld or HTPC navigate the menu and an external physical keyboard may be needed.
 
 # How do I save my **current** deployment?
 
@@ -70,7 +72,7 @@ sudo ostree admin pin --unpin <index number>
 
 **Read about the pre-installed Warehouse application to downgrade applications in this doc**:
 
-https://universal-blue.discourse.group/docs?topic=2636
+Read about the pre-installed Warehouse application to downgrade applications in this [documentation](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Flatpak/).
 
 <hr>
 
