@@ -1,0 +1,3 @@
+# If enabled, Steam can no longer interfere with the TDP on deck-hardware
+# Only use this, if your TDP is configured higher than the default 15W  
+DISABLE_STEAM_TDP_CONTROL=0
