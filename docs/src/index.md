@@ -27,7 +27,7 @@ A quick list of stuff you might be interested in checking out:
 
   1. [Flatpak][flatpak] for graphical apps
      {style="list-style-type: decimal;"}
-  2. [ujust][ujust] to use bazzite tailored installers
+  2. [ujust][ujust] to use Bazzite tailored installers
      {style="list-style-type: decimal;"}
   3. [Homebrew][homebrew] for CLI apps
      {style="list-style-type: decimal;"}
@@ -36,7 +36,7 @@ A quick list of stuff you might be interested in checking out:
   5. [Appimage][appimage]
      {style="list-style-type: decimal;"}
 
-  You can as well install regular Fedora packages with [`rpm-ostree`][rpm-ostree] but we [advise avoiding it if possible][rpm-ostree_caveats].
+  Install regular Fedora packages with [`rpm-ostree`][rpm-ostree] but we [advise avoiding it if possible][rpm-ostree_caveats].
 
 - [:fontawesome-brands-windows: **Run Windows Games**][run_win_game]{ style="font-size: 1.1rem" }
 
