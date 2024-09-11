@@ -28,20 +28,21 @@ Open a host terminal and enter the following **commands**:
 - Adjust the scaling of the UI in the Display Settings
 - Set a charge limit in HHD with Handheld Daemon
 - Install Decky + the [CSS Loader plugin](https://deckthemes.com/download/deck) and then in Desktop Mode, open the "Terminal" application and enter:
+
 ```
 ujust install-hhd-controller-glyph-theme
-``` 
+```
 
 ## Workarounds / Known Issues
 
-- Performance overlay might be reporting inaccurate power consumption. 
+- Performance overlay might be reporting inaccurate power consumption.
 - Adaptive/auto display brightness is currently broken.
-   - Manual brightness slider in Steam's UI works without issues.
+  - Manual brightness slider in Steam's UI works without issues.
 - BIOS and controller firmware is **recommended** to update in Windows.
 - Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode. (See "Desktop Controls" section below)
-    - <kbd>**Legion L**</kbd> + <kbd>**X**/**Square**</kbd> (This can be remapped)
-- Try not to change the resolution in Desktop Mode!  
-  - Connecting to an external monitor may also cause issues.  
+  - <kbd>**Legion L**</kbd> + <kbd>**X**/**Square**</kbd> (This can be remapped)
+- Try not to change the resolution in Desktop Mode!
+  - Connecting to an external monitor may also cause issues.
     - If your screen doesn't display the correct output or looks grainy/noisy, then you will have to **ssh into it and enter this command**:
 
 ```command
@@ -68,10 +69,10 @@ This applies to most handhelds running Bazzite.
 
 There are a few options for TDP Controls that work with Bazzite:
 
-* The [HHD-overlay](https://github.com/hhd-dev/hhd/blob/master/readme.md) supports TDP controls.
-  * Also has a desktop app that is pre-installed, look for the Handheld Daemon app in Desktop Mode.
-* [SimpleDeckyTDP](https://github.com/aarron-lee/SimpleDeckyTDP) supports TDP, GPU, Power Governor, and among other settings.
-  * Also has a [graphical application](https://github.com/aarron-lee/SimpleDeckyTDP-Desktop), but needs to be manually installed.
+- The [HHD-overlay](https://github.com/hhd-dev/hhd/blob/master/readme.md) supports TDP controls.
+  - Also has a desktop app that is pre-installed, look for the Handheld Daemon app in Desktop Mode.
+- [SimpleDeckyTDP](https://github.com/aarron-lee/SimpleDeckyTDP) supports TDP, GPU, Power Governor, and among other settings.
+  - Also has a [graphical application](https://github.com/aarron-lee/SimpleDeckyTDP-Desktop), but needs to be manually installed.
 
 ## How do I open the HHD Overlay?
 
@@ -79,10 +80,9 @@ There are a few options for TDP Controls that work with Bazzite:
 
 ![Legion HHD|690x431, 75%](../../img/HHD_Settings_Example.jpeg)
 
-
 Press, hold, or double-tap the Quick Access Menu button.
 
->**Example**: <kbd>Legion R</kbd> for the Lenovo Legion Go.
+> **Example**: <kbd>Legion R</kbd> for the Lenovo Legion Go.
 
 ## Controller Information
 
@@ -94,7 +94,7 @@ Some games and emulators may need Steam Input **disabled** to work correctly wit
 
 ### Desktop Controls
 
-Desktop Mode Controller Layout:  It may not exist by default if Steam doesn't setup your handheld controller properly.  This can be fixed in Steam's controller settings.
+Desktop Mode Controller Layout: It may not exist by default if Steam doesn't setup your handheld controller properly. This can be fixed in Steam's controller settings.
 
 ![desktop_controls_step_1|588x500, 75%](../../img/handheld_desktop_controls_1.png)
 
@@ -106,7 +106,7 @@ Make sure to **apply** the desktop controls when you select them.
 
 ## Force reboot device to prevent drive corruption if Steam crashes
 
->**Note**: This is only for the ASUS ROG Ally and Lenovo Legion Go.
+> **Note**: This is only for the ASUS ROG Ally and Lenovo Legion Go.
 
 Hold down the "**select**" button on your device to force a reboot. This feature can be disabled in the overlay settings.
 
@@ -114,7 +114,7 @@ Hold down the "**select**" button on your device to force a reboot. This feature
 
 # Contributing
 
-This page is a **wiki**, edit it to add any relevant information you may have regarding the handheld and your experience with Bazzite on it.  Make sure to follow proper [documentation guidelines](https://universal-blue.discourse.group/docs?topic=890) and [contributing guidelines](https://universal-blue.discourse.group/docs?topic=81) before adding any edits.
+This page is a **wiki**, edit it to add any relevant information you may have regarding the handheld and your experience with Bazzite on it. Make sure to follow proper [documentation guidelines](https://universal-blue.discourse.group/docs?topic=890) and [contributing guidelines](https://universal-blue.discourse.group/docs?topic=81) before adding any edits.
 
 **See also**: [Steam Gaming Mode Overview](../Steam_Gaming_Mode.md)
 

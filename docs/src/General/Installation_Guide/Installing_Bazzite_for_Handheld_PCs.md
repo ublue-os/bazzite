@@ -6,32 +6,33 @@
 
 # Important Notes on Handheld Hardware
 
->**Note**: Bazzite requires a stable internet connection with no bandwidth cap in place.
+> **Note**: Bazzite requires a stable internet connection with no bandwidth cap in place.
 
->**Attention**: Several handhelds require BitLocker to be unlocked (write down your recovery key too), Windows "Fast Startup" disabled, and **not** putting Windows into Hibernation Mode before installing Bazzite.
+> **Attention**: Several handhelds require BitLocker to be unlocked (write down your recovery key too), Windows "Fast Startup" disabled, and **not** putting Windows into Hibernation Mode before installing Bazzite.
 
-
->[Bazzite's Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) contains information on setting up your handheld after installing Bazzite and workarounds for known issues.
+> [Bazzite's Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) contains information on setting up your handheld after installing Bazzite and workarounds for known issues.
 
 <hr>
 
 # Pre-Installation
 
->Pre-requisites and steps before installing Bazzite.
+> Pre-requisites and steps before installing Bazzite.
 
 ### Installer Requirements
-* A USB flash drive with 10GB free space
-  * **Note**: All data on this drive will be wiped when flashed
-* Software to flash the image:
-  * [Fedora Media Writer](https://www.fedoraproject.org/en/workstation/download/), [Ventoy](https://www.ventoy.net/en/index.html), or [Rufus](https://rufus.ie/en/)
-    * Make sure to properly eject the drive after flashing the ISO to it
-* Optional: Physical keyboard (without one, your username will be `bazzite` and the password will be `bazzite`)
+
+- A USB flash drive with 10GB free space
+  - **Note**: All data on this drive will be wiped when flashed
+- Software to flash the image:
+  - [Fedora Media Writer](https://www.fedoraproject.org/en/workstation/download/), [Ventoy](https://www.ventoy.net/en/index.html), or [Rufus](https://rufus.ie/en/)
+    - Make sure to properly eject the drive after flashing the ISO to it
+- Optional: Physical keyboard (without one, your username will be `bazzite` and the password will be `bazzite`)
 
 ### Steam Gaming Mode Requirements
-* Compatible graphics card
-  * A **modern AMD GPU**
-  * An **Intel Arc GPU** (Other Intel GPU series will not boot Steam Gaming Mode)
-     * Intel Arc handhelds will currently have missing functionality (TDP limit, controls, etc.)
+
+- Compatible graphics card
+  - A **modern AMD GPU**
+  - An **Intel Arc GPU** (Other Intel GPU series will not boot Steam Gaming Mode)
+    - Intel Arc handhelds will currently have missing functionality (TDP limit, controls, etc.)
 
 Handheld users will also benefit from also reading the [Steam Gaming Mode documentation][Steam_Gaming_Mode].
 
@@ -59,12 +60,11 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 - GTK framework
 - Popular Linux distributions like Ubuntu use GNOME
 
-
 ### [Steam Gaming Mode (`-deck` images)][Steam_Gaming_Mode]
 
 ![Gaming Mode|690x388, 75%](../../img/Gaming_Mode.jpeg)
 
->**Note**: Your device will automatically boot into the Steam Gaming Mode session at startup, and Desktop Mode can be accessed from the "**power menu**" in Steam Gaming Mode.
+> **Note**: Your device will automatically boot into the Steam Gaming Mode session at startup, and Desktop Mode can be accessed from the "**power menu**" in Steam Gaming Mode.
 
 - **Requires a [Steam](https://store.steampowered.com/) account**
 - Included in the [Handheld/HTPC images][Steam_Gaming_Mode]
@@ -72,7 +72,6 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 - Controller friendly
 - Choice of KDE Plasma or GNOME in Desktop Mode
 - Extra functionality with [Decky](https://github.com/SteamDeckHomebrew/decky-loader) [plugins](https://plugins.deckbrew.xyz/)
-
 
 ## Dual Boot Preliminary Setup + Post-Setup Guide
 
@@ -82,7 +81,7 @@ Read the [Dual Boot Guide](https://universal-blue.discourse.group/docs?topic=274
 
 # Installation Guide
 
->The part of the guide that requires the most effort.
+> The part of the guide that requires the most effort.
 
 ## 1. Download and Flash Bazzite
 
@@ -92,14 +91,13 @@ Read the [Dual Boot Guide](https://universal-blue.discourse.group/docs?topic=274
 
 ## 2. Boot Installation Medium
 
-You may need to research your handheld on how to boot from removable storage.  It may be similar to the Steam Deck with holding down one of the "volume buttons" and pressing another button, but like for other general hardware, it highly dependent on your hardware.
+You may need to research your handheld on how to boot from removable storage. It may be similar to the Steam Deck with holding down one of the "volume buttons" and pressing another button, but like for other general hardware, it highly dependent on your hardware.
 
 ## 3. Installer Setup
 
-> **NOTE**: If you do not have a usb physical keyboard connected, do **NOT** press “*User Creation*”, since it will remove the default username and password, and you will be unable to type a username or password without a physical keyboard.
+> **NOTE**: If you do not have a usb physical keyboard connected, do **NOT** press “_User Creation_”, since it will remove the default username and password, and you will be unable to type a username or password without a physical keyboard.
 
-> **default user**: `bazzite`
-> **default password**: `bazzite`
+> **default user**: `bazzite` > **default password**: `bazzite`
 
 ![Installer|690x348](../../img/uHKqd8F4nxZryfP8ebBz1DIbNVv.png)
 
@@ -115,7 +113,7 @@ You may need to research your handheld on how to boot from removable storage.  I
   - Delete any partitions that you have remaining on the drive **unless [dual booting on the same drive](https://universal-blue.discourse.group/t/dual-boot-preliminary-setup-and-post-setup-guide/2743#p-6361-b-same-drive-method-3)**.
   - If **[dual booting on the same drive](https://universal-blue.discourse.group/t/dual-boot-preliminary-setup-and-post-setup-guide/2743#p-6361-b-same-drive-method-3)**, it is **strongly recommended** to do manual partitioning and create a separate EFI partition.
     - The separate EFI partition will help prevent Windows Updates from affecting your Bazzite installation later down the line.
-  -  Only use the automatic storage configuration when installing to separate drives
+  - Only use the automatic storage configuration when installing to separate drives
 - Optionally encrypt the drive with a password if desired.
   - **If you lose this password, then it cannot be decrypted**.
 - Setup a user account and begin the installation. (If you do not have a physical, skip this step and begin the installation)
@@ -131,56 +129,56 @@ Read the [Secure Boot Guide](https://universal-blue.discourse.group/docs?topic=2
 
 # Post-Installation
 
->The fine tuning before gaming.
+> The fine tuning before gaming.
 
 ## GRUB Menu
+
 ![Rollbacks|690x402, 50%](../../img/GRUB_Menu.png)
 
-The first boot will show a screen showing your current and last deployment. It will automatically boot if nothing.  It is important to note that the GRUB menu can be used to rollback Bazzite deployments if you encounter issues.  
+The first boot will show a screen showing your current and last deployment. It will automatically boot if nothing. It is important to note that the GRUB menu can be used to rollback Bazzite deployments if you encounter issues.
 
 Read more about this in the [Updates, Rollback, and Rebasing documentation](../../Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/index.md).
 
 ## Configuring System Settings for KDE Plasma and GNOME
 
 ![Display Settings (KDE Plasma)|690x370, 75%](../../img/KDE_Display_Settings.png)
-***KDE Plasma's System Settings application***
+**_KDE Plasma's System Settings application_**
 
 ![Display Settings (GNOME)|690x344, 75%](../../img/GNOME_Display_Settings.png)
-***GNOME's Settings application***
+**_GNOME's Settings application_**
 
-After you have booted into the Desktop for the first-time configuration, then you can should adjust the settings to your liking.  The most important setting that may need to be changed is the scaling setting in "Display(s) [and Monitor]" since it can be incorrect for the screen of your hardware on a fresh installation.  Monitor orientation should also be corrected if it is rotated improperly.
+After you have booted into the Desktop for the first-time configuration, then you can should adjust the settings to your liking. The most important setting that may need to be changed is the scaling setting in "Display(s) [and Monitor]" since it can be incorrect for the screen of your hardware on a fresh installation. Monitor orientation should also be corrected if it is rotated improperly.
 
 ## First Boot Setup Utility: Bazzite Portal
 
 ![Welcome to Bazzite|618x500, 75%](../../img/yafti_welcome.jpeg)
 
->**Attention**: This section requires a stable internet connection.  Make sure you are connected to a network.
+> **Attention**: This section requires a stable internet connection. Make sure you are connected to a network.
 
-An application will pop up welcoming you to Bazzite when you boot into the desktop for the first time.  This is a utility that allows you to tailor Bazzite to your liking by installing additional software.
+An application will pop up welcoming you to Bazzite when you boot into the desktop for the first time. This is a utility that allows you to tailor Bazzite to your liking by installing additional software.
 
 ![Bazzite Portal|584x500, 75%](../../img/yafti_options.png)
 
-- Click "Next" to begin configuring Bazzite.  
-- Press the toggle switch button next to the item to have the option enabled or disabled for your installation, some are already toggled on by default.  
-- If you would like to customize any of the options, then press the arrow next to the toggle switch button if available.  
-- Installing items from the portal **may take a long time**. 
+- Click "Next" to begin configuring Bazzite.
+- Press the toggle switch button next to the item to have the option enabled or disabled for your installation, some are already toggled on by default.
+- If you would like to customize any of the options, then press the arrow next to the toggle switch button if available.
+- Installing items from the portal **may take a long time**.
 
->**Note**: If you only check a few items in a category, then it will only install those selected items.  The switch is only toggled to install **everything** in that category.
+> **Note**: If you only check a few items in a category, then it will only install those selected items. The switch is only toggled to install **everything** in that category.
 
->**Attention**: There is a rare chance you will be asked to setup KDE Wallet or GNOME Keyring and set a password to continue installing items from the Bazzite Portal.
-
+> **Attention**: There is a rare chance you will be asked to setup KDE Wallet or GNOME Keyring and set a password to continue installing items from the Bazzite Portal.
 
 ## Installing additional software
 
 The [Installing and Managing Applications documentation](../../Installing_and_Managing_Software/index.md) is useful to learn how to install additional software on Bazzite outside of the Bazzite Portal.
 
-## Login to Steam &  Reboot Device
+## Login to Steam & Reboot Device
 
 Login to Steam then **reboot** your device when you finish setting up your device during the first-boot process.
 
 ![Steam Gaming Mode Setup|690x442, 50%](../../img/pLvHB1NAMlb3ghsR72q7l9Auj8B.jpeg)
 
-After completing all of the above, then your next boot will be in Steam Gaming Mode which requires additional setup for Steam. 
+After completing all of the above, then your next boot will be in Steam Gaming Mode which requires additional setup for Steam.
 
 ### Post-Setup and Known Issues for Handhelds and Steam Gaming Mode
 

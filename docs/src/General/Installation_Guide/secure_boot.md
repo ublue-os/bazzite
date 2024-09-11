@@ -6,7 +6,7 @@
 
 ![Secure Boot|690x378, 50%](../../img/Secure_Boot.jpeg)
 
->**Note**: Skip this section if Secure Boot is not enabled or unsupported with your hardware.
+> **Note**: Skip this section if Secure Boot is not enabled or unsupported with your hardware.
 
 > **Attention**: Updating your BIOS may re-enable Secure Boot and you may have to follow **"Method B"** after updating it to resolve the black screen on boot complaining about loading the kernel first.
 
@@ -22,7 +22,8 @@ Follow **Method B** below to resolve this and move past the error message if you
 
 A blue screen will appear giving the option to enroll the signed keys after leaving the Bazzite installer.
 
-`Enroll MOK` if you have secure boot enabled.   If prompted to enter a password, then **enter**:
+`Enroll MOK` if you have secure boot enabled. If prompted to enter a password, then **enter**:
+
 ```command
 universalblue
 ```
@@ -31,16 +32,19 @@ Otherwise `Continue boot` if you have Secure Boot disabled or if it is not suppo
 
 # **Method B**) After Installation Method
 
->**ATTENTION**: Disable Secure Boot before doing this, and then re-enable it after enrolling the key.
+> **ATTENTION**: Disable Secure Boot before doing this, and then re-enable it after enrolling the key.
 
-If you have already installed Bazzite then **enter this command in a host terminal**: 
+If you have already installed Bazzite then **enter this command in a host terminal**:
+
 ```
 ujust enroll-secure-boot-key
-``` 
-If prompted to enroll the required key, then **enter the password in the host terminal**: 
+```
+
+If prompted to enroll the required key, then **enter the password in the host terminal**:
+
 ```command
 universalblue
-``` 
+```
 
 You can now turn Secure Boot back on in the BIOS.
 

@@ -18,7 +18,7 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
 - Login to Steam
 - Reboot device
 - Configure the HHD Overlay by opening it with QAM button
--  Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode (See "Desktop Controls" section below)
+- Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode (See "Desktop Controls" section below)
 
 ## Optional Tweaks
 
@@ -26,14 +26,15 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
 - Adjust the scaling of the UI in the Display Settings
 - Set a charge limit in HHD with Handheld Daemon
 - Install Decky + the [CSS Loader plugin](https://deckthemes.com/download/deck) and then in Desktop Mode, open the "Terminal" application and enter:
+
 ```
 ujust install-hhd-controller-glyph-theme
-``` 
+```
 
 ## Workarounds / Known Issues
 
 - Games can sometimes default to 800p resolution.
-  - * Manually change the resolution per game in the `Steam Settings > Properties > Game Resolution` to either "Native" or other higher resolutions.
+  - - Manually change the resolution per game in the `Steam Settings > Properties > Game Resolution` to either "Native" or other higher resolutions.
 - Back buttons are hard mapped to L3 and R3.
   - This is also an issue on Windows.
 
@@ -53,7 +54,7 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
 - Login to Steam
 - Reboot device
 - Configure the HHD Overlay by opening it with QAM button
--  Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode (See "Desktop Controls" section below)
+- Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode (See "Desktop Controls" section below)
 
 ## Optional Tweaks
 
@@ -61,16 +62,18 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
 - Adjust the scaling of the UI in the Display Settings
 - Set a charge limit in HHD with Handheld Daemon
 - Install Decky + the [CSS Loader plugin](https://deckthemes.com/download/deck) and then in Desktop Mode, open the "Terminal" application and enter:
+
 ```
 ujust install-hhd-controller-glyph-theme
-``` 
+```
 
 ## Workarounds / Known Issues
+
 - Games can sometimes default to 800p resolution.
-  - * Manually change the resolution per game in the `Steam Settings > Properties > Game Resolution` to either `Native` or other higher resolutions.
+  - - Manually change the resolution per game in the `Steam Settings > Properties > Game Resolution` to either `Native` or other higher resolutions.
 - Audio driver does not currently work.
   - No internal audio in either Gaming Mode or Desktop Mode.
-     - External audio is reported to have low sound quality.
+    - External audio is reported to have low sound quality.
 - Rotation is wrong in Desktop Mode for KDE images.
 - Mouse input may break in Desktop Mode.
 
@@ -86,10 +89,10 @@ This applies to most handhelds running Bazzite.
 
 There are a few options for TDP Controls that work with Bazzite:
 
-* The [HHD-overlay](https://github.com/hhd-dev/hhd/blob/master/readme.md) supports TDP controls.
-  * Also has a desktop app that is pre-installed, look for the Handheld Daemon app in Desktop Mode.
-* [SimpleDeckyTDP](https://github.com/aarron-lee/SimpleDeckyTDP) supports TDP, GPU, Power Governor, and among other settings.
-  * Also has a [graphical application](https://github.com/aarron-lee/SimpleDeckyTDP-Desktop), but needs to be manually installed.
+- The [HHD-overlay](https://github.com/hhd-dev/hhd/blob/master/readme.md) supports TDP controls.
+  - Also has a desktop app that is pre-installed, look for the Handheld Daemon app in Desktop Mode.
+- [SimpleDeckyTDP](https://github.com/aarron-lee/SimpleDeckyTDP) supports TDP, GPU, Power Governor, and among other settings.
+  - Also has a [graphical application](https://github.com/aarron-lee/SimpleDeckyTDP-Desktop), but needs to be manually installed.
 
 ## How do I open the HHD Overlay?
 
@@ -108,7 +111,7 @@ Some games and emulators may need Steam Input **disabled** to work correctly wit
 
 ### Desktop Controls
 
-Desktop Mode Controller Layout:  It may not exist by default if Steam doesn't setup your handheld controller properly.  This can be fixed in Steam's controller settings.
+Desktop Mode Controller Layout: It may not exist by default if Steam doesn't setup your handheld controller properly. This can be fixed in Steam's controller settings.
 
 ![desktop_controls_step_1|588x500, 75%](../../img/handheld_desktop_controls_1.png)
 
@@ -122,7 +125,7 @@ Make sure to **apply** the desktop controls when you select them.
 
 # Contributing
 
-This page is a **wiki**, edit it to add any relevant information you may have regarding the handheld and your experience with Bazzite on it.  Make sure to follow proper [documentation guidelines](https://universal-blue.discourse.group/docs?topic=890) and [contributing guidelines](https://universal-blue.discourse.group/docs?topic=81) before adding any edits.
+This page is a **wiki**, edit it to add any relevant information you may have regarding the handheld and your experience with Bazzite on it. Make sure to follow proper [documentation guidelines](https://universal-blue.discourse.group/docs?topic=890) and [contributing guidelines](https://universal-blue.discourse.group/docs?topic=81) before adding any edits.
 
 **See also**: [Steam Gaming Mode Overview](../Steam_Gaming_Mode.md)
 
