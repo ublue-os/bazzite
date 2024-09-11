@@ -10,7 +10,7 @@ title: Gaming
 
 Linux gaming being a viable competitor to Windows is a relatively new paradigm. Most Windows exclusive games can run on Bazzite using modern hardware. There are still some rough edges, but gaming on Linux does offer advantages on the appropriate hardware such as better frame-times than on Windows.
 
-# [Game Launchers](Game_Launchers.md)
+## [Game Launchers](Game_Launchers.md)
 
 - Setting Up Steam
 - Non-Steam Games
@@ -18,7 +18,7 @@ Linux gaming being a viable competitor to Windows is a relatively new paradigm. 
   - Configuring Lutris
   - Gamepass Using Xbox Cloud Gaming
 
-# [Managing & Modding Games](Managing_and_modding_games.md)
+## [Managing & Modding Games](Managing_and_modding_games.md)
 
 - Compatibility Layers
 - Proton Prefix Information
@@ -26,19 +26,19 @@ Linux gaming being a viable competitor to Windows is a relatively new paradigm. 
 - Modding Quick-Start
 - Pre-Installed Enhancements
 
-# [Common Gaming Issues](Common_gaming_issues.md)
+## [Common Gaming Issues](Common_gaming_issues.md)
 
 - Proton Logs
 - Native Linux Builds vs. Proton
 - Issues with Valve/Source Games
 
-# [Hardware Compatibility for Gaming](Hardware_compatibility_for_gaming.md)
+## [Hardware Compatibility for Gaming](Hardware_compatibility_for_gaming.md)
 
 - Compatible Handhelds
 - Vulkan Capable GPU for Desktop/HTPC Hardware
 - Information Regarding Unsupported Filesystems
 
-# Useful External Resources
+## Useful External Resources
 
 - [**ProtonDB**](https://www.protondb.com/explore) - User reports for game compatibility on Linux
 - [**Are We Anti-Cheat Yet?**](https://areweanticheatyet.com/) - List of popular games utilizing anti-cheat software and if the game supports Linux

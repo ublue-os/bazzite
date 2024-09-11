@@ -2,7 +2,7 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=2658", "fetched_at": "2024-09-03 16:43:04.885968+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-# Steam Logs
+## Steam Logs
 
 If you encounter issues with a game launching on Steam:
 
@@ -13,15 +13,15 @@ If you encounter issues with a game launching on Steam:
 
 A log file should appear in your Home directory named after the game's application ID number.
 
-# Native Linux Port Versus Windows Version
+## Native Linux Port Versus Windows Version
 
 Some Linux ports may have missing functionality or worse performance than on the Windows version running through Proton. However, there are scenarios where using the native port exclusively is your only option, and may even be desirable.
 
-# Valve/Source Engine Games Problems
+## Valve/Source Engine Games Problems
 
 > **Note**: This only applies to specific games running on the [Source engine](https://www.pcgamingwiki.com/wiki/Engine:Source).
 
-## Audio & Custom Content Bugs
+### Audio & Custom Content Bugs
 
 > **Attention**: Do **not** attempt to follow this workaround until you run into issues with audio or the specific scenario mentioned below regarding _Left 4 Dead 2_.
 
@@ -53,17 +53,17 @@ semodule -X 300 -i my-hl2linux.pp
 
 Reboot your device
 
-### If you want to undo this change eventually:
+#### If you want to undo this change eventually:
 
 > Disable **or** remove the module.
 
-#### Disable it:
+##### Disable it:
 
 ```command
 semodule -X 300 -d my-hl2linux
 ```
 
-#### Remove and delete it:
+##### Remove and delete it:
 
 ```command
 semodule -X 300 -r my-hl2linux
@@ -71,7 +71,7 @@ semodule -X 300 -r my-hl2linux
 
 The `.pp` file should be in `/root` if you want to remove that.
 
-## Source Games Not Launching
+### Source Games Not Launching
 
 If a 32-bit Source 1 engine game is not opening due to [tmalloc libraries issues](https://github.com/ValveSoftware/csgo-osx-linux/issues/3229), then open a host terminal and **enter**:
 
