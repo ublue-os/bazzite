@@ -14,3 +14,7 @@ mkdocs +ARGS="":
 
 mkdocs_clean:
     rm -rf {{ MKDOCS_DIR }}/.cache
+
+# Format all markdown files with prettier
+fmt:
+    prettier --check --write $(find src -type f -name '*.md')
