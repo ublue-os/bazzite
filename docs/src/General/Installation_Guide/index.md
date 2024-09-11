@@ -32,7 +32,7 @@ title: Installation Guide
 
 - [Installing Bazzite on **Handheld PCs**](./Installing_Bazzite_for_Handheld_PCs.md)\*
 
-**Indicates that [**Steam Gaming Mode\*_](../../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md) is intended for this device and ships with the ISO._
+\*_Indicates that [**Steam Gaming Mode**](../../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md) is intended for this device and ships with the ISO._
 
 # Issues Installing Bazzite?
 
