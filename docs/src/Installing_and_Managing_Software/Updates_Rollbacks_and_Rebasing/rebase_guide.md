@@ -1,8 +1,13 @@
+---
+authors:
+  - "@nicknamenamenick"
+---
+
 <!-- ANCHOR: METADATA -->
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=2646", "fetched_at": "2024-09-03 16:43:14.912897+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-![Docker's OCI Icon|200x200, 100%](../../img/Dockers_OCI_Icon.png)]
+![Docker's OCI Icon|200x200, 100%](../../img/Dockers_OCI_Icon.png)
 
 # What is Rebasing?
 

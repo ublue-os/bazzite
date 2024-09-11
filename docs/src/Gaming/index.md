@@ -1,5 +1,7 @@
 ---
 title: Gaming
+authors:
+  - "@nicknamenamenick"
 ---
 
 <!-- ANCHOR: METADATA -->

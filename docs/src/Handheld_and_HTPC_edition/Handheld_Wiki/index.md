@@ -1,5 +1,7 @@
 ---
 title: Handheld Wiki
+authors:
+  - "@nicknamenamenick"
 ---
 
 <!-- ANCHOR: METADATA -->

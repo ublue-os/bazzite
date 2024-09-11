@@ -89,6 +89,13 @@ nav.md-nav {
   }
 }
 
+/* Authors list */
+.authors-list, .authors-list .authors-chip {
+  display: inline-flex; 
+  align-items: center; 
+  gap: 0.3rem;
+}
+
 /* Mobile tweaks */
 @media screen and (max-width: 59.9844em) {
   .md-nav__source {

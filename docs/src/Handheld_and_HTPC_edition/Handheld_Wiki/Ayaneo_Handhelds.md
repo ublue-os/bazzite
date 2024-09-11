@@ -1,3 +1,8 @@
+---
+authors:
+  - "@nicknamenamenick"
+---
+
 <!-- ANCHOR: METADATA -->
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=2417", "fetched_at": "2024-09-03 16:43:20.646543+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
