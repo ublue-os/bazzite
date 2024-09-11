@@ -36,7 +36,7 @@ A quick list of stuff you might be interested in checking out:
   5. [Appimage][appimage]
      {style="list-style-type: decimal;"}
 
-  You can as well install regular Fedora packages with [`rpm-ostree`][rpm-ostree] but we [advise avoiding it if possible][rpm-ostree_caveats].
+  Install regular Fedora packages with [`rpm-ostree`][rpm-ostree] but we [advise avoiding it if possible][rpm-ostree_caveats].
 
 - [:fontawesome-brands-windows: **Run Windows Games**][run_win_game]{ style="font-size: 1.1rem" }
 
