@@ -2,17 +2,17 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=2416", "fetched_at": "2024-09-03 16:43:21.928758+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-# Ayn Loki Max
+## Ayn Loki Max
 
 ![Loki Max|375x500, 100%](../../img/Loki_Max.jpeg)
 
 **Status**: Platinum
 
-## Installing Bazzite
+### Installing Bazzite
 
 Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os.github.io/bazzite/General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs/).
 
-## Post-Installation Setup
+### Post-Installation Setup
 
 - Complete the Bazzite Portal
 - Login to Steam
@@ -20,7 +20,7 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
 - Configure the HHD Overlay by opening it with QAM button
 - Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode (See "Desktop Controls" section below)
 
-## Optional Tweaks
+### Optional Tweaks
 
 - Adjust RGB with Steam Gaming Mode under `Settings > Controller >  Calibration & Advanced > LED Settings` or in Handheld Daemon
 - Adjust the scaling of the UI in the Display Settings
@@ -31,24 +31,24 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
 ujust install-hhd-controller-glyph-theme
 ```
 
-## Workarounds / Known Issues
+### Workarounds / Known Issues
 
 - Games can sometimes default to 800p resolution.
   - - Manually change the resolution per game in the `Steam Settings > Properties > Game Resolution` to either "Native" or other higher resolutions.
 - Back buttons are hard mapped to L3 and R3.
   - This is also an issue on Windows.
 
-# Ayn Loki Mini Pro
+## Ayn Loki Mini Pro
 
 ![loki_mini_pro|666x500, 100%](../../img/loki_mini_pro.jpeg)
 
 **Status**: Silver
 
-## Installing Bazzite
+### Installing Bazzite
 
 Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os.github.io/bazzite/General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs/).
 
-## Post-Installation Setup
+### Post-Installation Setup
 
 - Complete the Bazzite Portal
 - Login to Steam
@@ -56,7 +56,7 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
 - Configure the HHD Overlay by opening it with QAM button
 - Virtual keyboard is Steam's keyboard, but needs to be setup in Steam's settings in Desktop Mode (See "Desktop Controls" section below)
 
-## Optional Tweaks
+### Optional Tweaks
 
 - Adjust RGB with Steam Gaming Mode under `Settings > Controller >  Calibration & Advanced > LED Settings` or in Handheld Daemon
 - Adjust the scaling of the UI in the Display Settings
@@ -67,7 +67,7 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
 ujust install-hhd-controller-glyph-theme
 ```
 
-## Workarounds / Known Issues
+### Workarounds / Known Issues
 
 - Games can sometimes default to 800p resolution.
   - - Manually change the resolution per game in the `Steam Settings > Properties > Game Resolution` to either `Native` or other higher resolutions.
@@ -79,11 +79,11 @@ ujust install-hhd-controller-glyph-theme
 
 <hr>
 
-# Additional Information
+## Additional Information
 
 This applies to most handhelds running Bazzite.
 
-## TDP Controls
+### TDP Controls
 
 ![TDP|690x431, 75%](../../img/TDP.jpeg)
 
@@ -94,14 +94,14 @@ There are a few options for TDP Controls that work with Bazzite:
 - [SimpleDeckyTDP](https://github.com/aarron-lee/SimpleDeckyTDP) supports TDP, GPU, Power Governor, and among other settings.
   - Also has a [graphical application](https://github.com/aarron-lee/SimpleDeckyTDP-Desktop), but needs to be manually installed.
 
-## How do I open the HHD Overlay?
+### How do I open the HHD Overlay?
 
 ![Overlay|690x431, 75%](../../img/HHD_Overlay.jpeg)
 ![RGB|690x431, 75%](../../img/HHD_RGB.jpeg)
 
 Press, hold, or double-tap the Quick Access Menu button.
 
-## Controller Information
+### Controller Information
 
 For most handheld hardware, besides the Steam Deck, emulation of a DualSense controller is used for full functionality. Double tap or hold the side menu button to access settings for controller emulation including switching to an Xbox controller with reduced functionality.
 
@@ -109,7 +109,7 @@ If your device has paddles, you will want to use the DualSense Edge controller (
 
 Some games and emulators may need Steam Input **disabled** to work correctly with your controls.
 
-### Desktop Controls
+#### Desktop Controls
 
 Desktop Mode Controller Layout: It may not exist by default if Steam doesn't setup your handheld controller properly. This can be fixed in Steam's controller settings.
 
@@ -123,7 +123,7 @@ Make sure to **apply** the desktop controls when you select them.
 
 <hr>
 
-# Contributing
+## Contributing
 
 This page is a **wiki**, edit it to add any relevant information you may have regarding the handheld and your experience with Bazzite on it. Make sure to follow proper [documentation guidelines](https://universal-blue.discourse.group/docs?topic=890) and [contributing guidelines](https://universal-blue.discourse.group/docs?topic=81) before adding any edits.
 

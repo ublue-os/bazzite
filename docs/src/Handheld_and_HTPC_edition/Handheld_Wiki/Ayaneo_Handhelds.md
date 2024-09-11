@@ -32,13 +32,13 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
   - see suspend workaround [here](https://universal-blue.discourse.group/t/ayaneo-handheld-compatibility/2417#p-5599-suspend-workaround-5)
 - VRAM size option is missing from BIOS as it's controlled by AYASPACE application under windows.
 
-## Functional HHD\*\*:
+### Functional HHD\*\*:
 
 ```
 sudo systemctl enable --now hhd@$(whoami)
 ```
 
-## External Graphics:
+### External Graphics:
 
 - eGPU Thunderbolt 3/4 over USB4 is supported. USB4 enclosure needs proper testing but there is no reason to suspect it should not work.
   - **AMD**:
@@ -47,7 +47,7 @@ sudo systemctl enable --now hhd@$(whoami)
     - In order to boot with eGPU attached you need to add a kernel parameter, seems to be related to [this kernel issue](https://lore.kernel.org/lkml/20240415163056.GP223006@ziepe.ca/). There are many other issues opened and according to [this](https://gitlab.freedesktop.org/drm/amd/-/issues/3182) it could be potentially fixed in kernel 6.9. As a temporary solution booting with eGPU connected works when launching the command `rpm-ostree kargs --append-if-missing=video=pci=nommconf` or editing the kernel command line with `rpm-ostree kargs --editor`.
   - **NVIDIA**: currently untested and probably doesn't work.
 
-## Suspend workaround
+### Suspend workaround
 
 > Thanks to ChimeraOS for the [original suspend workaround](https://github.com/ChimeraOS/chimeraos/wiki/Community-Guides#enabling-modern-sleep-on-7000-series-amd-hardware), and SteamFork for the [updated writeup](https://wiki.steamfork.org/troubleshooting/#enabling-modern-sleep-on-7000-series-amd-based-devices) of this workaround.
 
@@ -61,7 +61,7 @@ sudo systemctl enable --now hhd@$(whoami)
 >
 > Bazzite takes no responsibility for any harm caused by following these steps. By following this guide you acknowledge that you are solely responsible for the outcome.
 
-## Modern Standby Enablement Methods
+### Modern Standby Enablement Methods
 
 - Enter your bios/firmware settings to see if you already have the options listed in the steps for the [Enabling Modern Standby](https://universal-blue.discourse.group/t/ayaneo-handheld-compatibility/2417#p-5599-enabling-modern-standby-7) section of this guide. If so, skip the rest of this section.
 - If the options are not available, follow the next few steps to create boot media.
@@ -71,7 +71,7 @@ sudo systemctl enable --now hhd@$(whoami)
 - Boot your device and select the USB stick from the boot menu.
 - Navigate to the `Front Page` tab and select `Device Manager`.
 
-### Enabling Modern Standby
+#### Enabling Modern Standby
 
 1. Select `AMD PBS` then `Power Saving Configurations`.
 2. Under `S3/Modern Standby Support` change the entry to `Modern Standby` (or `Modern Standby Enable` on some devices).
@@ -80,17 +80,17 @@ sudo systemctl enable --now hhd@$(whoami)
 
 Note: The first restart after this change may take longer than usual.
 
-## External Resource
+### External Resource
 
 Check out the [original thread](https://universal-blue.discourse.group/t/ayaneo-geek-1s-2s-linux-bazzite-support-is-already-almost-there-lets-add-them-to-the-officially-supported-devices/1046) for more information and updates on this device.
 
 <hr>
 
-# Additional Information
+## Additional Information
 
 This applies to most handhelds running Bazzite.
 
-## TDP Controls
+### TDP Controls
 
 ![TDP|690x431, 75%](../../img/TDP.jpeg)
 
@@ -102,14 +102,14 @@ There are a few options for TDP Controls that work with Bazzite:
   - Also has a [graphical application](https://github.com/aarron-lee/SimpleDeckyTDP-Desktop), but needs to be manually installed.
 - [PowerControl](https://github.com/mengmeet/PowerControl) supports TDP, GPU, and fan controls on select devices.
 
-## How do I open the HHD Overlay?
+### How do I open the HHD Overlay?
 
 ![Overlay|690x431, 75%](../../img/HHD_Overlay.jpeg)
 ![Settings Example|690x432, 75%](../../img/HHD_Settings_Example.jpeg)
 
 Press, hold, or double-tap the Quick Access Menu button.
 
-## Controller Information
+### Controller Information
 
 For most handheld hardware, besides the Steam Deck, emulation of a DualSense controller is used for full functionality. Double tap or hold the side menu button to access settings for controller emulation including switching to an Xbox controller with reduced functionality.
 
@@ -117,7 +117,7 @@ If your device has paddles, you will want to use the DualSense Edge controller. 
 
 Some games and emulators may need Steam Input **disabled** to work correctly with your controls.
 
-### Desktop Controls
+#### Desktop Controls
 
 Desktop Mode Controller Layout: It may not exist by default if Steam doesn't setup your handheld controller properly. This can be fixed in Steam's controller settings.
 
@@ -131,7 +131,7 @@ Make sure to **apply** the desktop controls when you select them.
 
 <hr>
 
-# Contributing
+## Contributing
 
 This page is a **wiki**, edit it to add any relevant information you may have regarding the handheld and your experience with Bazzite on it. Make sure to follow proper [documentation guidelines](https://universal-blue.discourse.group/docs?topic=890) and [contributing guidelines](https://universal-blue.discourse.group/docs?topic=81) before adding any edits.
 

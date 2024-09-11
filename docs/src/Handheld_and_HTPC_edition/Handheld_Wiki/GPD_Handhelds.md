@@ -2,17 +2,17 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=2418", "fetched_at": "2024-09-03 16:43:21.260488+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-# GPD Win 4
+## GPD Win 4
 
 ![gpdwin4|690x328, 100%](../../img/gpdwin4.jpeg)
 
 **Status**: Gold
 
-## Installing Bazzite
+### Installing Bazzite
 
 Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os.github.io/bazzite/General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs/).
 
-## Post-Installation Setup
+### Post-Installation Setup
 
 - Complete the Bazzite Portal
 - Login to Steam
@@ -22,7 +22,7 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
   - <kbd>Xbox</kbd> + <kbd>X</kbd> (This can be remapped)
   - GPD devices also have a physical switch you can toggle to enable a separate desktop/mouse mode.
 
-## Optional Tweaks
+### Optional Tweaks
 
 - Adjust RGB with Steam Gaming Mode in Handheld Daemon
 - Adjust the scaling of the UI in the Display Settings
@@ -33,7 +33,7 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
 ujust install-hhd-controller-glyph-theme
 ```
 
-## Workarounds / Known Issues
+### Workarounds / Known Issues
 
 - Games can sometimes default to 800p resolution.
   - Manually change the resolution per game in the `Steam Settings > Properties > Game Resolution` to either `Native` or other higher resolutions.
@@ -42,23 +42,23 @@ ujust install-hhd-controller-glyph-theme
 - Back buttons may need to be manually remapped before they are usable.
   - Watch this [video guide](https://www.youtube.com/watch?v=lnNfMY9kzjk) for a visual guide.
 
-## External Resource
+### External Resource
 
 For more information, check out the [GPD Win Tips and Tricks guide](https://github.com/aarron-lee/gpd-win-tricks) which includes useful scripts for this handheld.
 
 <hr>
 
-# GPD Win Max 2
+## GPD Win Max 2
 
 ![placeholder_gpdwinmax2|407x312, 100%](../../img/GPD_Win_Max_2.png)
 
 **Status**: Gold
 
-## Installing Bazzite
+### Installing Bazzite
 
 Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os.github.io/bazzite/General/Installation_Guide/Installing_Bazzite_for_Handheld_PCs/).
 
-## Post-Installation Setup
+### Post-Installation Setup
 
 - Complete the Bazzite Portal
 - Login to Steam
@@ -71,7 +71,7 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
 - Steam Gaming Mode **Display** settings that are recommended to be changed:
   - `Use Native Color Temperature` - Enabled
 
-## Optional Tweaks
+### Optional Tweaks
 
 - Adjust RGB with Steam Gaming Mode in Handheld Daemon
 - Adjust the scaling of the UI in the Display Settings
@@ -82,7 +82,7 @@ Read the [**Installing Bazzite on Handheld PCs documentation**](https://ublue-os
 ujust install-hhd-controller-glyph-theme
 ```
 
-## Workarounds / Known Issues
+### Workarounds / Known Issues
 
 - Suspend-resume works on the WM2 6800u model after disabling the fingerprint scanner, but 7840u and newer models have only partially working suspend-resume.
   - Read about the issue [here](https://gitlab.freedesktop.org/drm/amd/-/issues/3154) for details on suspend-resume issues for the newer WM2 devices.
@@ -94,17 +94,17 @@ ujust install-hhd-controller-glyph-theme
 - Back buttons may need to be manually remapped before they are usable,
   - Watch this [video guide](https://www.youtube.com/watch?v=lnNfMY9kzjk) for directions.
 
-## External Resource
+### External Resource
 
 For more information, check out the [GPD Win Tips and Tricks guide](https://github.com/aarron-lee/gpd-win-tricks) which includes useful scripts for this handheld.
 
 <hr>
 
-# Additional Information
+## Additional Information
 
 This applies to most handhelds running Bazzite.
 
-## TDP Controls
+### TDP Controls
 
 ![TDP|690x431, 75%](../../img/TDP.jpeg)
 
@@ -116,7 +116,7 @@ There are a few options for TDP Controls that work with Bazzite:
   - Also has a [graphical application](https://github.com/aarron-lee/SimpleDeckyTDP-Desktop), but needs to be manually installed.
 - [PowerControl](https://github.com/mengmeet/PowerControl) supports TDP, GPU, and fan controls on select devices.
 
-## How do I open the HHD Overlay?
+### How do I open the HHD Overlay?
 
 ![Overlay|690x431, 75%](../../img/HHD_Overlay.jpeg)
 ![Emulation Mode|690x434, 75%](../../img/HHD_Emulation_Mode.jpeg)
@@ -125,7 +125,7 @@ Press, hold, or double-tap the Quick Access Menu button.
 
 > **Note**: GPD devices do not support double-tapping the QAM button!
 
-## Controller Information
+### Controller Information
 
 For most handheld hardware, besides the Steam Deck, emulation of a DualSense controller is used for full functionality. Double tap or hold the side menu button to access settings for controller emulation including switching to an Xbox controller with reduced functionality.
 
@@ -133,7 +133,7 @@ If your device has paddles, you will want to use the DualSense Edge controller. 
 
 Some games and emulators may need Steam Input **disabled** to work correctly with your controls.
 
-### Desktop Controls
+#### Desktop Controls
 
 Desktop Mode Controller Layout: It may not exist by default if Steam doesn't setup your handheld controller properly. This can be fixed in Steam's controller settings.
 
@@ -147,7 +147,7 @@ Make sure to **apply** the desktop controls when you select them.
 
 <hr>
 
-# Contributing
+## Contributing
 
 This page is a **wiki**, edit it to add any relevant information you may have regarding the handheld and your experience with Bazzite on it. Make sure to follow proper [documentation guidelines](https://universal-blue.discourse.group/docs?topic=890) and [contributing guidelines](https://universal-blue.discourse.group/docs?topic=81) before adding any edits.
 

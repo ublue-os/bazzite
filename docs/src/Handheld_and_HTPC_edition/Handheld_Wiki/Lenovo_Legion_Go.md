@@ -59,11 +59,11 @@ For more information, check out the [Legion Go Tips and Tricks guide](https://gi
 
 <hr>
 
-# Additional Information
+## Additional Information
 
 This applies to most handhelds running Bazzite.
 
-## TDP Controls
+### TDP Controls
 
 ![TDP|690x431, 75%](../../img/TDP.jpeg)
 
@@ -74,7 +74,7 @@ There are a few options for TDP Controls that work with Bazzite:
 - [SimpleDeckyTDP](https://github.com/aarron-lee/SimpleDeckyTDP) supports TDP, GPU, Power Governor, and among other settings.
   - Also has a [graphical application](https://github.com/aarron-lee/SimpleDeckyTDP-Desktop), but needs to be manually installed.
 
-## How do I open the HHD Overlay?
+### How do I open the HHD Overlay?
 
 ![Overlay|690x431, 75%](../../img/HHD_Overlay.jpeg)
 
@@ -84,7 +84,7 @@ Press, hold, or double-tap the Quick Access Menu button.
 
 > **Example**: <kbd>Legion R</kbd> for the Lenovo Legion Go.
 
-## Controller Information
+### Controller Information
 
 For most handheld hardware, besides the Steam Deck, emulation of a DualSense controller is used for full functionality. Double tap or hold the side menu button to access settings for controller emulation including switching to an Xbox controller with reduced functionality.
 
@@ -92,7 +92,7 @@ If your device has paddles, you will want to use the DualSense Edge controller. 
 
 Some games and emulators may need Steam Input **disabled** to work correctly with your controls.
 
-### Desktop Controls
+#### Desktop Controls
 
 Desktop Mode Controller Layout: It may not exist by default if Steam doesn't setup your handheld controller properly. This can be fixed in Steam's controller settings.
 
@@ -104,7 +104,7 @@ Desktop Mode Controller Layout: It may not exist by default if Steam doesn't set
 
 Make sure to **apply** the desktop controls when you select them.
 
-## Force reboot device to prevent drive corruption if Steam crashes
+### Force reboot device to prevent drive corruption if Steam crashes
 
 > **Note**: This is only for the ASUS ROG Ally and Lenovo Legion Go.
 
@@ -112,7 +112,7 @@ Hold down the "**select**" button on your device to force a reboot. This feature
 
 <hr>
 
-# Contributing
+## Contributing
 
 This page is a **wiki**, edit it to add any relevant information you may have regarding the handheld and your experience with Bazzite on it. Make sure to follow proper [documentation guidelines](https://universal-blue.discourse.group/docs?topic=890) and [contributing guidelines](https://universal-blue.discourse.group/docs?topic=81) before adding any edits.
 
