@@ -1,8 +1,8 @@
-# GNOME Disks Auto-Mount Guide
-
 <!-- ANCHOR: METADATA -->
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=3781", "fetched_at": "2024-09-03 16:43:10.816923+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
+
+# GNOME Disks Auto-Mount Guide
 
 ![GNOME|120x120, 50%](../img/GNOME_Disks_icon.png)
 
@@ -24,9 +24,9 @@
 10. Select "Take Ownership"
 11. Open the terminal to test the mounts by running the **command**:
 
-```command
-sudo systemctl daemon-reload && sudo mount -a
-```
+    ```command
+    sudo systemctl daemon-reload && sudo mount -a
+    ```
 
 12. **If no errors appeared then it should be safe to reboot.**
 

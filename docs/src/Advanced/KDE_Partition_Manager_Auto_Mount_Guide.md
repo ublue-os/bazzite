@@ -1,8 +1,8 @@
-# KDE Partition Manager Auto-Mount Guide
-
 <!-- ANCHOR: METADATA -->
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=3780", "fetched_at": "2024-09-03 16:43:09.824214+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
+
+# KDE Partition Manager Auto-Mount Guide
 
 ![KDE|48x48](../img/KDE_Partition_Manager_icon.png)
 
@@ -25,9 +25,9 @@
 10. Mount the disk manually in KDE Partition Manager and enter your sudo password
 11. Open the terminal to test the mounts by running the **command**:
 
-```command
-sudo systemctl daemon-reload && sudo mount -a
-```
+    ```command
+    sudo systemctl daemon-reload && sudo mount -a
+    ```
 
 12. **If no errors appeared then it should be safe to reboot.**
 
