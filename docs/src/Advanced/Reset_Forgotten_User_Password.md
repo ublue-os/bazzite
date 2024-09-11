@@ -2,6 +2,8 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=161", "fetched_at": "2024-09-03 16:43:11.636024+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
+>This method is only if you forgot your current user password! Changing your current password should be done through the desktop environment.
+
 >Follow this guide **at your own discretion** because you can break your system attempting any of this.
 
 ![Edit the command for the latest boot entry|690x351](../img/Edit_the_command_for_the_latest_boot_entry.png)

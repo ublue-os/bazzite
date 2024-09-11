@@ -96,8 +96,9 @@ This works on desktop mode including running Nested Gamescope and also works for
 
 ## Why do specific Decky Loader plugins not function on Bazzite?
 
-- Bazzite does not provide the functionality.
-  - [PauseGames](https://github.com/popsUlfr/SDH-PauseGames) requires a swapfile while Bazzite utilizes zram for example.
+Some plugins are built specifically for SteamOS or the Steam Deck, and won’t necessarily work on Bazzite or non-Deck hardware.
+
+For example, the [DeckMTP plugin](https://github.com/dafta/DeckMTP) only works on the Steam Deck, it will not work on alternative hardware.
 
 ## How do I use SteamDeckGyroDSU on hardware that isn't the Steam Deck?
 
@@ -106,9 +107,10 @@ You cannot use SteamDeckGyroDSU outside of the Steam Deck, but you can try disab
 ## How do I disable certain "Steam Deck" features that conflict with my setup?
 
 **Scenarios**:
-- *Example 1*: Keyboard and mouse is not working for this title.
-- *Example 2*: The game's launcher for adjusting video settings or adding mods does not launch.
-- *Example 3*: Certain features/options are not available for Steam Deck.
+
+- Example 1: Keyboard and mouse is not working for this title.
+- Example 2: The game’s launcher for adjusting video settings or adding mods does not launch.
+- Example 3: Certain features/options are not available for Steam Deck.
 
 Open the game's properties on Steam and **enter this launch option**:
 
@@ -217,7 +219,7 @@ Save it and place it in the `Desktop` directory.
 
 >**Note**: Not all of the information will be accurate in regards to Bazzite.
 
-https://help.steampowered.com/en/faqs/view/7DD4-C618-182E-0E49
+Valve wrote a [guide](https://help.steampowered.com/en/faqs/view/7DD4-C618-182E-0E49) for the Steam Deck which may have some relevant information in regards to Bazzite.
 
 <hr>
 

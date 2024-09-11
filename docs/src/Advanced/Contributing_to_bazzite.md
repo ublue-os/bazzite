@@ -6,9 +6,9 @@
 
 # **Preliminary Reading**:
 
-https://universal-blue.discourse.group/docs?topic=51
+ - [**Universal Blue Project Governance**](https://universal-blue.discourse.group/docs?topic=51)
 
-https://universal-blue.discourse.group/docs?topic=81
+- [**Contributing Guide**](https://universal-blue.discourse.group/docs?topic=81)
 
 <hr>
 
@@ -29,10 +29,9 @@ Check out the Bazzite's [issue tracker](https://github.com/ublue-os/bazzite/issu
 
 # Building Your Own Bazzite for Testing
 
-https://universal-blue.discourse.group/docs?topic=43
+>**[Bazzite Template](https://github.com/ublue-os/image-template)**
 
-**Template**:
-https://github.com/ublue-os/image-template
+Read about forking your own Bazzite image [here](https://ublue-os.github.io/bazzite/Advanced/creating_custom_image/).
 
 If you feel comfortable with bash scripting, programming, working with containers, or anything upstream (Fedora, Flatpak, etc.) then feel free to contribute to Bazzite if you have want to add a feature or bug fix.  
 
