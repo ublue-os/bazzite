@@ -27,7 +27,7 @@ A quick list of stuff you might be interested in checking out:
 
   1. [Flatpak][flatpak] for graphical apps
      {style="list-style-type: decimal;"}
-  2. [ujust][ujust] to use bazzite tailored installers
+  2. [ujust][ujust] to use Bazzite tailored installers
      {style="list-style-type: decimal;"}
   3. [Homebrew][homebrew] for CLI apps
      {style="list-style-type: decimal;"}
