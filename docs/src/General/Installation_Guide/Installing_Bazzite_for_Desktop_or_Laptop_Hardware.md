@@ -4,11 +4,11 @@
 
 ![Desktop|690x448](../../img/Desktop.jpeg)
 
-# Pre-Installation
+## Pre-Installation
 
 > Pre-requisites and steps before installing Bazzite.
 
-## Minimum System Requirements
+### Minimum System Requirements
 
 - **Architecture**: x86_64
 - **Firmware**: UEFI (CSM Support should be **disabled** if available)
@@ -19,7 +19,7 @@
 - **Network**: Stable internet connection with no bandwidth caps
 - **Additional Notes**: Certain [drivers](https://github.com/morrownr/8812au-20210820) are **not** compatible with Bazzite.
 
-### Installer Requirements
+#### Installer Requirements
 
 - A USB flash drive with 10GB free space
   - **Note**: All data on this drive will be wiped when flashed
@@ -28,7 +28,7 @@
     - Make sure to properly eject the drive after flashing the ISO to it
 - Physical keyboard
 
-## Desktop Environments
+### Desktop Environments
 
 Bazzite comes with the choice of [KDE Plasma](https://kde.org/plasma-desktop/) or [GNOME](https://www.gnome.org/) for the desktop environment.
 
@@ -36,7 +36,7 @@ Bazzite comes with the choice of [KDE Plasma](https://kde.org/plasma-desktop/) o
 
 More information can be found on our [FAQ](https://faq.bazzite.gg) about the differences between the image variants.
 
-### [KDE Plasma (Default)](https://kde.org/plasma-desktop/)
+#### [KDE Plasma (Default)](https://kde.org/plasma-desktop/)
 
 ![KDE Plasma|690x388, 75%](../../img/KDE_Plasma_DE.jpeg)
 
@@ -45,7 +45,7 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 - Qt framework
 - Popular Linux distributions like SteamOS use KDE Plasma
 
-### [GNOME (`-gnome` images)](https://www.gnome.org/)
+#### [GNOME (`-gnome` images)](https://www.gnome.org/)
 
 ![GNOME|690x359, 75%](../../img/GNOME_DE.png)
 
@@ -54,7 +54,7 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 - GTK framework
 - Popular Linux distributions like Ubuntu use GNOME
 
-### [Steam Gaming Mode (`-deck` images)](../../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md)
+#### [Steam Gaming Mode (`-deck` images)](../../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md)
 
 ![Gaming Mode|690x388, 75%](../../img/Gaming_Mode.jpeg)
 
@@ -67,25 +67,25 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 - Choice of KDE Plasma or GNOME in Desktop Mode
 - Extra functionality with [Decky](https://github.com/SteamDeckHomebrew/decky-loader) [plugins](https://plugins.deckbrew.xyz/)
 
-## Dual Boot Preliminary Setup + Post-Setup Guide
+### Dual Boot Preliminary Setup + Post-Setup Guide
 
 Read the [Dual Boot Guide](./dual_boot_setup_guide.md) **after** reading this guide before proceeding.
 
-# Installation Guide
+## Installation Guide
 
 > The part of the guide that requires the most effort.
 
-## 1. Download and Flash Bazzite
+### 1. Download and Flash Bazzite
 
 - Download [Bazzite](https://download.bazzite.gg) after choosing the correct ISO for your hardware with our Image Picker tool.
 - Flash Bazzite to your bootable medium.
 - Eject drive.
 
-### Current Fedora Atomic Desktop Users
+#### Current Fedora Atomic Desktop Users
 
 Current [Fedora Atomic Desktop](https://fedoraproject.org/atomic-desktops/) users can rebase with the terminal command listed on the website under the "**Existing Fedora Atomic Desktop Users**" section and can skip the next step.
 
-## 2. Boot Bazzite
+### 2. Boot Bazzite
 
 - Connect your bootable medium to your device and boot into it.
 - After connecting the device, boot into the Bazzite installer.
@@ -94,7 +94,7 @@ Current [Fedora Atomic Desktop](https://fedoraproject.org/atomic-desktops/) user
     - Alternatively change the BIOS settings to boot with your bootable device first before your current storage, but this is **not recommended** to keep enabled after installing Bazzite.
 - Verify the media correctly and proceed to the installer.
 
-## 3. Installer
+### 3. Installer
 
 ![Installer](../../img/anaconda_installer.png)
 
@@ -113,17 +113,17 @@ Current [Fedora Atomic Desktop](https://fedoraproject.org/atomic-desktops/) user
 - Begin the installation.
 - Reboot device after it has finished installing.
 
-### Important information for users with Secure Boot **enabled**:
+#### Important information for users with Secure Boot **enabled**:
 
 Read the [Secure Boot Guide](https://universal-blue.discourse.group/docs?topic=2742) for more information.
 
 <hr>
 
-# Post-Installation
+## Post-Installation
 
 > The fine tuning before gaming.
 
-## GRUB Menu
+### GRUB Menu
 
 ![Rollbacks|690x402, 50%](../../img/GRUB_Menu.png)
 
@@ -131,7 +131,7 @@ The first boot will show a screen showing your current and last deployment. It w
 
 Read more about this in the [Updates, Rollback, and Rebasing documentation](../../Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/index.md).
 
-## Configuring System Settings for KDE Plasma and GNOME
+### Configuring System Settings for KDE Plasma and GNOME
 
 ![Display Settings (KDE Plasma)|690x370, 75%](../../img/KDE_Display_Settings.png)
 **_KDE Plasma's System Settings application_**
@@ -141,7 +141,7 @@ Read more about this in the [Updates, Rollback, and Rebasing documentation](../.
 
 It is important to configure the system settings on a first boot to personalize your desktop especially if you notice the scaling is incorrect on first-boot.
 
-## First Boot Setup Utility: Bazzite Portal
+### First Boot Setup Utility: Bazzite Portal
 
 ![Welcome to Bazzite|618x500, 75%](../../img/yafti_welcome.jpeg)
 
@@ -160,11 +160,11 @@ An application will pop up welcoming you to Bazzite when you boot into the deskt
 
 > **Attention**: There is a rare chance you will be asked to setup KDE Wallet or GNOME Keyring and set a password to continue installing items from the Bazzite Portal.
 
-## Installing additional software
+### Installing additional software
 
 The [Installing and Managing Applications documentation](../../Installing_and_Managing_Software/index.md) is useful to learn how to install additional software on Bazzite outside of the Bazzite Portal.
 
-# Ready to Game
+## Ready to Game
 
 **You have now installed Bazzite!**
 
@@ -174,13 +174,13 @@ Check out the additional [documentation](https://docs.bazzite.gg) surrounding th
 
 <hr>
 
-# **Video Tutorial - Dual Boot Setup w/ Secure Boot Enabled**:
+## **Video Tutorial - Dual Boot Setup w/ Secure Boot Enabled**:
 
 https://www.youtube.com/watch?v=dXBN9OM7mSE
 
 <hr>
 
-# Issues Installing Bazzite?
+## Issues Installing Bazzite?
 
 View the [Installation Troubleshoot Guide](./troubleshoot_guide.md).
 

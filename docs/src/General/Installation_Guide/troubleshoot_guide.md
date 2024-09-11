@@ -2,20 +2,20 @@
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=2495", "fetched_at": "2024-09-03 16:43:22.238775+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
-# ISO Workarounds
+## ISO Workarounds
 
 A generic error may appear during installation.
 
 **Workaround Video Tutorial**:
 https://www.youtube.com/watch?v=GRdz08hJByo
 
-# Alternative Installation Methods
+## Alternative Installation Methods
 
 > **Attention**: Both workaround methods may have scaling issues with the installer depending on the hardware especially if it is a handheld PC.
 
 > **Note**: The workarounds below are also useful for **downloading a smaller ISO size**.
 
-### **Option 1**: Rebasing from a Fedora Atomic Desktop Image (Recommended)
+#### **Option 1**: Rebasing from a Fedora Atomic Desktop Image (Recommended)
 
 If you experience issues with installing our ISO or the bootable drive you have is too small for Bazzite, then download the [Fedora Kinoite (**KDE Plasma**)](https://fedoraproject.org/atomic-desktops/kinoite/) or [Fedora Silverblue (**GNOME**)](https://fedoraproject.org/atomic-desktops/silverblue/) depending on which desktop environment preferred.
 
@@ -48,11 +48,11 @@ rpm-ostree rebase ostree-image-signed:docker://ghcr.io/ublue-os/<IMAGE>
 
 Replace `<IMAGE>` with the image you're using which can be found from the "**Existing Fedora Atomic Desktop Users**" section as well.
 
-#### Video Tutorial
+##### Video Tutorial
 
 https://www.youtube.com/watch?v=Vs4cneBW5ck
 
-### **Option 2**: Older & Buggy Net-Installer (Not Recommended)
+#### **Option 2**: Older & Buggy Net-Installer (Not Recommended)
 
 > **Note**: This is intended as a last resort!
 

@@ -4,11 +4,11 @@
 
 ![image|690x332](../../img/image.jpeg)
 
-# Bazzite on the Steam Deck
+## Bazzite on the Steam Deck
 
 > **Attention**: XHCI has to be set as the USB Mode for the Steam Deck for our ISO to boot! If it is set to DRD, please change it in your BIOS settings, and more information can be found [here](https://github.com/ublue-os/bazzite/issues/808#issuecomment-1963141866).
 
-## Status
+### Status
 
 Bazzite functions properly on the Steam Deck LCD (256GB+) and Steam Deck OLED models.
 
@@ -19,11 +19,11 @@ Read the [Handheld Wiki entry for the Steam Deck](https://universal-blue.discour
 
 <hr>
 
-# Pre-Installation
+## Pre-Installation
 
 > Pre-requisites and steps before installing Bazzite.
 
-### Installer Requirements
+#### Installer Requirements
 
 - A USB flash drive with 10GB free space
   - **Note**: All data on this drive will be wiped when flashed
@@ -32,7 +32,7 @@ Read the [Handheld Wiki entry for the Steam Deck](https://universal-blue.discour
     - Make sure to properly eject the drive after flashing the ISO to it
 - Optional: Physical keyboard (without one, your username will be `bazzite` and the password will be `bazzite`)
 
-## Desktop Environments
+### Desktop Environments
 
 All of the images come with the choice of [KDE Plasma](https://kde.org/plasma-desktop/) or [GNOME](https://www.gnome.org/) for their desktop environment.
 
@@ -40,7 +40,7 @@ All of the images come with the choice of [KDE Plasma](https://kde.org/plasma-de
 
 More information can be found on our [FAQ](https://faq.bazzite.gg) about the differences between the image variants.
 
-### [KDE Plasma (Default)](https://kde.org/plasma-desktop/)
+#### [KDE Plasma (Default)](https://kde.org/plasma-desktop/)
 
 ![KDE Plasma|690x388, 75%](../../img/KDE_Plasma_DE.jpeg)
 
@@ -49,7 +49,7 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 - Qt framework
 - Popular Linux distributions like SteamOS use KDE Plasma
 
-### [GNOME (`-gnome` images)](https://www.gnome.org/)
+#### [GNOME (`-gnome` images)](https://www.gnome.org/)
 
 ![GNOME|690x359, 75%](../../img/GNOME_DE.png)
 
@@ -58,7 +58,7 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 - GTK framework
 - Popular Linux distributions like Ubuntu use GNOME
 
-### [Steam Gaming Mode (`-deck` images)][Steam_Gaming_Mode]
+#### [Steam Gaming Mode (`-deck` images)][Steam_Gaming_Mode]
 
 ![Gaming Mode|690x388, 75%](../../img/Gaming_Mode.jpeg)
 
@@ -75,19 +75,19 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 
 <hr>
 
-# Installation Guide
+## Installation Guide
 
 > The part of the guide that requires the most effort.
 
 **IMPORTANT**: XHCI has to be set as the USB Mode for the Steam Deck for our ISO to boot! If it is set to DRD, please change it in your BIOS settings. More information can be found [here](https://github.com/ublue-os/bazzite/issues/808#issuecomment-1963141866).
 
-## 1. Download and Flash Bazzite
+### 1. Download and Flash Bazzite
 
 - Download [Bazzite](https://download.bazzite.gg) after choosing the Steam Deck ISO with our Image Picker tool.
 - Flash Bazzite to your bootable medium.
 - Eject drive.
 
-## 2. Boot Installation Medium
+### 2. Boot Installation Medium
 
 Hold the 'Volume Down' (<kbd>-</kbd>) button and click the Power Button, and when you hear the chime, let go of both buttons, and you'll be booted into the Boot Manager.
 
@@ -97,7 +97,7 @@ When you get to the boot menu, select your bootable device to boot into the Bazz
 
 Access this with the "**Troubleshooting**" section when the ISO is booted.
 
-## 3. Installer
+### 3. Installer
 
 > **NOTE**: If you do not have a usb physical keyboard connected, do **NOT** press "_User Creation_", since it will remove the default username and password, and you will be unable to type a username or password without a physical keyboard.
 
@@ -122,11 +122,11 @@ Access this with the "**Troubleshooting**" section when the ISO is booted.
 - Begin the installation.
 - Reboot device after it has finished installing.
 
-# Post-Installation
+## Post-Installation
 
 > The fine tuning before gaming.
 
-## GRUB Menu
+### GRUB Menu
 
 ![Rollbacks|690x402, 50%](../../img/GRUB_Menu.png)
 
@@ -142,7 +142,7 @@ Read more about this in the [Updates, Rollback, and Rebasing documentation](../.
 
 It is important to configure the system settings on a first boot to personalize your desktop especially if you notice the scaling is incorrect on first-boot.
 
-## First Boot Setup Utility: Bazzite Portal
+### First Boot Setup Utility: Bazzite Portal
 
 ![Welcome to Bazzite|618x500, 75%](../../img/yafti_welcome.jpeg)
 
@@ -161,15 +161,15 @@ An application will pop up welcoming you to Bazzite when you boot into the deskt
 
 > **Attention**: There is a rare chance you will be asked to setup KDE Wallet or GNOME Keyring and set a password to continue installing items from the Bazzite Portal.
 
-## Installing additional software
+### Installing additional software
 
 The [Installing and Managing Applications documentation](../../Installing_and_Managing_Software/index.md) is useful to learn how to install additional software on Bazzite outside of the Bazzite Portal.
 
-## Login to Steam & Reboot Device
+### Login to Steam & Reboot Device
 
 Login to Steam then **reboot** your device when you finish setting up your device during the first-boot process.
 
-### Setting Up Steam Gaming Mode
+#### Setting Up Steam Gaming Mode
 
 ![Gaming Mode Setup|690x442, 50%](../../img/pLvHB1NAMlb3ghsR72q7l9Auj8B.jpeg)
 
@@ -179,7 +179,7 @@ After completing all of the above, then your next boot will be in Steam Gaming M
 
 <hr>
 
-# Issues Installing Bazzite?
+## Issues Installing Bazzite?
 
 View the [Installation Troubleshoot Guide](./troubleshoot_guide.md).
 

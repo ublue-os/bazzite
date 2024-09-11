@@ -4,12 +4,12 @@
 
 > **Note**: Make sure to read the [**Installation Guide**](./index.md) for your device first before proceeding.
 
-# Two Methods: Method _A_ or Method _B_
+## Two Methods: Method _A_ or Method _B_
 
 - **A)** Installing Bazzite on a separate drive (Recommended)
 - **B)** Manual partitioning on the same drive
 
-## **A**) _Separate_ Drive Method
+### **A**) _Separate_ Drive Method
 
 > **Note**: This method is ideal for desktops and HTPCs, and would be inconvenient for handhelds unless planned to keep stationary.
 
@@ -21,7 +21,7 @@ Install Bazzite on a separate internal or external drive.
 
 You can also install Windows to an external drive with Windows-to-Go using [Rufus](https://rufus.ie/en/) to dual boot if you do not have an internal drive available.
 
-## **B**) _Same_ Drive Method
+### **B**) _Same_ Drive Method
 
 > **Note**: This must be done **before installing Bazzite**.
 
@@ -29,11 +29,11 @@ You can also install Windows to an external drive with Windows-to-Go using [Rufu
 
 If you do not have multiple drives or are using a device that will not be stationary, then you will have to manually partition on the same drive.
 
-### Note about dual booting with **Windows** specifically:
+#### Note about dual booting with **Windows** specifically:
 
 Dual booting Bazzite with Windows on the same drive works better with **Windows already installed before Bazzite**.
 
-### Bazzite Partition
+#### Bazzite Partition
 
 Create space for Bazzite with the Disk Management application in Windows.
 
@@ -47,7 +47,7 @@ Then, right-click your Windows partition and select "Shrink Volume" from the dro
 
 It is **strongly recommended for to setup a separate EFI partition**. The separate EFI partition will help prevent Windows Updates from affecting your Bazzite installation later down the line.
 
-# Manual Partitioning to the Same Drive for Dual Boot Setups
+## Manual Partitioning to the Same Drive for Dual Boot Setups
 
 If you need a tutorial video for manual partitioning, watch this [tutorial](https://www.youtube.com/watch?v=EDip92Zq-RE).
 
@@ -84,11 +84,11 @@ If you need a tutorial video for manual partitioning, watch this [tutorial](http
 
 <hr>
 
-# Dual Boot Post-Configuration Setup
+## Dual Boot Post-Configuration Setup
 
 > **Note:** [Handheld/HTPC](../../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md) images hide GRUB by default, but the <kbd>Esc</kbd> key on a keyboard will unhide the GRUB menu without unhiding it with a `ujust` command.
 
-## Regenerate GRUB to show Windows Entry
+### Regenerate GRUB to show Windows Entry
 
 If you do **not** see your Windows boot in the GRUB menu, then open a host terminal and **enter**:
 
@@ -96,7 +96,7 @@ If you do **not** see your Windows boot in the GRUB menu, then open a host termi
 ujust regenerate-grub
 ```
 
-## Bazzite as Primary Boot
+### Bazzite as Primary Boot
 
 If the `OS Boot Manager` has set `Windows Boot Manager` to be the first boot priority, then this may result in booting directly into Windows after the install instead of Bazzite. You may have to fix this in your BIOS settings.
 
