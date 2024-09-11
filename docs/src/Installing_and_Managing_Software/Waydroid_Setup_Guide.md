@@ -1,15 +1,21 @@
+---
+authors:
+  - "@nicknamenamenick"
+---
+
 <!-- ANCHOR: METADATA -->
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=32", "fetched_at": "2024-09-03 16:43:06.740654+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
 
 ![Google Play Store|650x500](../img/Google_Play_Store.jpeg)
 
->**Note**: Waydroid does **not** work on Nvidia's proprietary drivers, and requires an AMD or Intel GPU for the best results.
+> **Note**: Waydroid does **not** work on Nvidia's proprietary drivers, and requires an AMD or Intel GPU for the best results.
 
 # What is Waydroid?
+
 ![Waydroid](../img/Waydroid.jpeg)
 
-[Waydroid](https://waydro.id/) is an Android container that runs on Linux.  Bazzite users can run Android applications using this method.
+[Waydroid](https://waydro.id/) is an Android container that runs on Linux. Bazzite users can run Android applications using this method.
 
 # First Time Setup
 
@@ -21,7 +27,7 @@ ujust setup-waydroid
 
 ## Initialize Waydroid
 
-Waydroid requires users to initialize it for the first time which can be done by selecting: 
+Waydroid requires users to initialize it for the first time which can be done by selecting:
 `Initialize Waydroid`
 
 Make sure this worked by entering this **command**:
@@ -29,6 +35,7 @@ Make sure this worked by entering this **command**:
 ```bash
 /usr/bin/waydroid-launcher
 ```
+
 This will launch Waydroid for the first time.
 
 ## Configure Waydroid
@@ -46,20 +53,21 @@ waydroid session stop
 ### Part 2: Configuration
 
 Open a host terminal and enter this **command**:
+
 ```
 ujust setup-waydroid
 ```
 
 Selecting `Configure Waydroid` will allow users to install additional Android tweaks with the [Waydroid Extras Scripts.](https://github.com/casualsnek/waydroid_script#waydroid-extras-script)
 
-1. Select Android Version (***Android 11* recommended**)
+1. Select Android Version (**_Android 11_ recommended**)
 2. Select items to install
 
 #### Available Waydroid Extras:
 
 - [GApps](https://github.com/opengapps/opengapps/wiki/FAQ) (Default Android applications including the **Google Play Store)** or [microG](https://microg.org/) (Free alternatives to Google applications)
 
-- ARM Translation (*libndk* for **AMD CPUs only** & *libhoudini* for **Intel CPUs only**)
+- ARM Translation (_libndk_ for **AMD CPUs only** & _libhoudini_ for **Intel CPUs only**)
 
 - [Magisk](https://github.com/topjohnwu/Magisk) (Android power user suite)
 
@@ -73,9 +81,8 @@ Selecting `Configure Waydroid` will allow users to install additional Android tw
 
 ![Waydroid_DeviceID|690x182](../img/Waydroid_DeviceID.png)
 
-
-1. Launch Waydroid 
-(**Waydroid must be running**)
+1. Launch Waydroid
+   (**Waydroid must be running**)
 
 2. After selecting your current Android version, select `Get Google Device ID to Get Certified` especially if you plan to use the Google Play Store (**GApps**).
 
@@ -84,7 +91,8 @@ Selecting `Configure Waydroid` will allow users to install additional Android tw
 After verification has happened, it will usually take a while before your device is verified.
 
 # Add as a Non-Steam Shortcut
->This is useful for [Bazzite images that use Steam Gaming Mode.](../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md)
+
+> This is useful for [Bazzite images that use Steam Gaming Mode.](../Handheld_and_HTPC_edition/Steam_Gaming_Mode.md)
 
 Make sure to add `/usr/bin/waydroid-launcher` to Steam as a non-Steam game for Waydroid to work properly in Steam Gaming Mode.
 
@@ -96,9 +104,9 @@ Waydroid has an [issue](https://github.com/waydroid/waydroid/issues/135) where i
 
 Disable this functionality:
 
->Note: **Waydroid must be running**!
+> Note: **Waydroid must be running**!
 
-In a host terminal, **run this command**: 
+In a host terminal, **run this command**:
 
 ```command
 waydroid prop set persist.waydroid.uevent false
@@ -108,7 +116,7 @@ If you ever want to undo this change, run the same steps but set `true` instead 
 
 # Resolution & Density Options
 
->**Note**: This is intended for users who have issues with Waydroid's resolution, scaling, or running Waydroid nested.  This is **optional**.
+> **Note**: This is intended for users who have issues with Waydroid's resolution, scaling, or running Waydroid nested. This is **optional**.
 
 Open a host terminal and enter the following **commands**:
 
@@ -124,7 +132,7 @@ Save the text files when done.
 
 # Waydroid Hybrid Graphics Fix
 
->**Note**: This is only intended for users who have multiple GPUs in their hardware who experience graphical corruptions in Waydroid.
+> **Note**: This is only intended for users who have multiple GPUs in their hardware who experience graphical corruptions in Waydroid.
 
 **Enter in a host terminal**:
 
@@ -138,7 +146,7 @@ Then `Select GPU for Waydroid` which will give the option on what GPU to utilize
 
 # Reset Waydroid
 
->**Warning**: You will lose all of your Waydroid data.
+> **Warning**: You will lose all of your Waydroid data.
 
 If you experience issues or want a fresh Waydroid container, then select `Reset Waydroid` after **entering**:
 

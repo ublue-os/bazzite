@@ -1,3 +1,8 @@
+---
+authors:
+  - "@nicknamenamenick"
+---
+
 <!-- ANCHOR: METADATA -->
 <!--{"url_discourse": "https://universal-blue.discourse.group/docs?topic=2640", "fetched_at": "2024-09-03 16:43:09.168054+00:00"}-->
 <!-- ANCHOR_END: METADATA -->
@@ -20,8 +25,8 @@ Distrobox containers run sub-systems of other popular [Linux distributions](http
 ## Arch Linux Distrobox Container Example:
 
 ![i use arch btw|690x229, 75%](../img/i_use_arch_btw.png)
->i use Arch (in a container) btw.
 
+> i use Arch (in a container) btw.
 
 **Linux Distribution Examples**:
 

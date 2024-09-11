@@ -16,6 +16,9 @@ if ! command -v just >/dev/null; then
     echod "Installing just"
     brew install just
 fi
+if ! command -v just >/dev/null; then
+    brew install prettier
+fi
 
 # Install poetry project
 echod "Setting up poetry project"

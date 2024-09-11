@@ -91,7 +91,7 @@ A quick list of stuff you might be interested in checking out:
 [rpm-ostree]: Installing_and_Managing_Software/rpm-ostree.md
 [distrobox]: Installing_and_Managing_Software/Distrobox.md
 [installing_software]: Installing_and_Managing_Software/index.md
-[contrib]: General/Contributing_to_Bazzite.md
+[contrib]: Advanced/Contributing_to_bazzite.md
 [homebrew]: Installing_and_Managing_Software/Homebrew.md
 [rpm-ostree_caveats]: Installing_and_Managing_Software/rpm-ostree.md#major-caveats-using-rpm-ostree
 [steam_game_mode]: Handheld_and_HTPC_edition/Steam_Gaming_Mode.md#what-is-steam-gaming-mode
