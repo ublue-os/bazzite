@@ -1,4 +1,6 @@
 export PATH := justfile_directory() + "/utils:" + env("PATH")
+export GITHUB_REPOSITORY := "ublue-os/bazzite"
+export MKDOCS_REPO_URL := "https://github.com/" + GITHUB_REPOSITORY
 MKDOCS_DIR := justfile_directory()
 
 _default:
