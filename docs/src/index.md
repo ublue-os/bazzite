@@ -25,15 +25,15 @@ A quick list of stuff you might be interested in checking out:
 
   <small>Order reflects the recommendation degree</small>
 
-  1. [Flatpak][flatpak] for graphical apps
+  1. [Flatpak][flatpak] for graphical apps.
      {style="list-style-type: decimal;"}
-  2. [ujust][ujust] to use Bazzite tailored installers
+  2. [ujust][ujust] to use Bazzite tailored installers.
      {style="list-style-type: decimal;"}
-  3. [Homebrew][homebrew] for CLI apps
+  3. [Homebrew][homebrew] for CLI apps.
      {style="list-style-type: decimal;"}
-  4. [Distrobox][distrobox] for containerized apps
+  4. [Distrobox][distrobox] for containerized apps.
      {style="list-style-type: decimal;"}
-  5. [Appimage][appimage]
+  5. [Appimage][appimage] for portable applications found on the web.
      {style="list-style-type: decimal;"}
 
   Install regular Fedora packages with [`rpm-ostree`][rpm-ostree] but we [advise avoiding it if possible][rpm-ostree_caveats].
