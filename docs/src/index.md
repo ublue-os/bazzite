@@ -69,7 +69,7 @@ A quick list of stuff you might be interested in checking out:
   One of the strengths of Bazzite (inherited from [Universal Blue](https://universal-blue.org/)) is how easy is to contribute.
 
   - Something seems broken? You might want to [report a bug](General/reporting_bugs.md).
-  - You can help us adding more translations to our READMEs.
+  - Contributing to documentation like translating it in other languages.
 
 </div>
 
