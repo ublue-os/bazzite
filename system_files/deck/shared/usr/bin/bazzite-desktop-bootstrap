@@ -66,9 +66,7 @@ if [[ "${XDG_SESSION_TYPE}" = "wayland" ]]; then
       gnome-randr modify eDP --scale 1 \
         || gnome-randr modify eDP-1 --scale 1 \
         || true
-    fi
-
-    if /usr/libexec/hwsupport/needs-200-scale; then
+    elif /usr/libexec/hwsupport/needs-200-scale; then
       gnome-randr modify eDP --scale 2 \
         || gnome-randr modify eDP-1 --scale 2 \
         || true
