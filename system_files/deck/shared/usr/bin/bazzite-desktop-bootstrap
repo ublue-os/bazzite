@@ -54,6 +54,10 @@ if [[ "${XDG_SESSION_TYPE}" = "wayland" ]]; then
         kscreen-doctor output.eDP.scale.1 \
           || kscreen-doctor output.eDP-1.scale.1 \
           || true
+      elif /usr/libexec/hwsupport/needs-150-scale; then
+        kscreen-doctor output.eDP.scale.1.5 \
+          || kscreen-doctor output.eDP-1.scale.1.5 \
+          || true
       elif /usr/libexec/hwsupport/needs-200-scale; then
         kscreen-doctor output.eDP.scale.2 \
           || kscreen-doctor output.eDP-1.scale.2 \
