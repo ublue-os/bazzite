@@ -139,6 +139,8 @@ jobs:
 
       # Prepare offline documentation
       - run: mkdir -p ${{ github.workspace }}/system_files/desktop/shared/usr/share/ublue-os/docs/html
+      - name: Checkout docs repo
+        run: git clone https://github.com/KyleGospo/docs.bazzite.gg.git ${{ github.workspace }}/docs
       - name: Build offline documentation
         uses: ./.github/workflows/build_mkdocs
         continue-on-error: true
