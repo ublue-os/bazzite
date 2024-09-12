@@ -44,12 +44,6 @@ if [[ -z $SENTINEL_CREATED ]]; then
     cat "$SENTINEL_FILE"
   )
 
-  if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-    # clear steam game desktop shortcut clutter
-    DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
-    grep --files-with-matches "Exec=steam steam://rungameid/" ${DATA_HOME}/applications/* | tr '\n' '\0' | xargs -0 -I {} rm {} || true
-  fi
-
   # If we were executed as a session user and then re-execute as root below, we don't want to set root's sentinel too
   export SENTINEL_CREATED=1
 fi
