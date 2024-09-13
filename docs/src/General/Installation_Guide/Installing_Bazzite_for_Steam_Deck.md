@@ -76,7 +76,6 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 - Choice of KDE Plasma or GNOME in Desktop Mode
 - Extra functionality with [Decky](https://github.com/SteamDeckHomebrew/decky-loader) [plugins](https://plugins.deckbrew.xyz/)
 - XHCI has to be set as the USB Mode for the Steam Deck for our ISO to boot! If it is set to DRD, please change it in your BIOS settings. More information can be found [here](https://github.com/ublue-os/bazzite/issues/808#issuecomment-1963141866).
-- **Steam Deck OLED only**: It must be installed with Basic Graphics Mode.
 
 <hr>
 
@@ -97,10 +96,6 @@ More information can be found on our [FAQ](https://faq.bazzite.gg) about the dif
 Hold the 'Volume Down' (<kbd>-</kbd>) button and click the Power Button, and when you hear the chime, let go of both buttons, and you'll be booted into the Boot Manager.
 
 When you get to the boot menu, select your bootable device to boot into the Bazzite installer.
-
-> **Warning**: Steam Deck OLED users must use Basic Graphics Mode in the installer!
-
-Access this with the "**Troubleshooting**" section when the ISO is booted.
 
 ### 3. Installer
 
