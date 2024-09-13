@@ -86,16 +86,15 @@ Bazzite should automatically update when our new builds based on that new major 
 
 **Yes**
 
-1. Open a host terminal and **enter**:
+Open a host terminal and **enter**:
 
 ```command
 sudo nano /etc/ublue-update/ublue-update.toml
 ```
-
-2. Change this line inside of the file:
+Change this line inside of the file:
    `dbus_notify = false` to `dbus_notify = true`
 
-3. Save the file as `/etc/ublue-update/ublue-update.toml`
+Save the file as `/etc/ublue-update/ublue-update.toml`
 
 Notifications for updates are now active.
 
