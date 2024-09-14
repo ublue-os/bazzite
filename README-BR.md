@@ -64,7 +64,7 @@ O Bazzite é feito a partir do [ublue-os/main](https://github.com/ublue-os/main)
 - Usa o [controle de congestionamento TCP BBR da Google](https://github.com/google/bbr) por padrão.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) pré-instalado e habilitado. <sub><sup>(Disponível mas desabilitado por padrão na versão Deck, ative executando `ujust _restore-input-remapper`)</sup></sub>
 - O Bazzite Portal traz um jeito simples de instalar múltiplos aplicativos e ajustes, incluindo a instalação do [LACT](https://github.com/ilya-zlobintsev/LACT).
-- [Waydroid](https://waydro.id/) pré-instalado para rodar aplicativos Android. Confira esse [guia rápido](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Waydroid_Setup_Guide/) para configurá-lo.
+- [Waydroid](https://waydro.id/) pré-instalado para rodar aplicativos Android. Confira esse [guia rápido](https://docs.bazzite.gg/Installing_and_Managing_Software/Waydroid_Setup_Guide/) para configurá-lo.
 - Gerencie aplicativos usando o [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), e [Gear Lever](https://github.com/mijorus/gearlever).
 - Drivers i2c-piix4 e i2c-nct6775 pra [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) para controlar o RGB em certas placas-mãe.
 - Drivers [OpenRazer](https://openrazer.github.io) inclusos, Selecione OpenRazer no Bazzite Portal ou rode `ujust install-openrazer` no terminal para começar a usá-lo.
@@ -81,7 +81,7 @@ Imagem genérica disponível como `bazzite`, própria para computadores desktop.
 - Atualiza automaticamente o sistema, Flatpaks, e todos os containers Distrobox - via [ublue-update](https://github.com/ublue-os/ublue-update) e [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]  
-> **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://ublue-os.github.io/bazzite/General/Installation_Guide/).**
+> **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://docs.bazzite.gg/General/Installation_Guide/).**
 
 Rebaseie de uma instalação existente de Fedora Atômico para esta imagem se você quiser **Drivers de GPU Open Source**:
 (Nota: A solução Open Source Mesa para GPUs NVIDIA, NVK ainda é propensa a erros quando esta orientação é redigida, pra qualquer problema pertinente à NVK [por favor mande um relatório ao projeto Mesa]([url](https://docs.mesa3d.org/bugs.html)), não ao Ublue/Bazzite)
@@ -138,7 +138,7 @@ Imagem feita pra ser utilizada como alternativa ao SteamOS no Steam Deck, e para
 > **Devido a um bug upstream, o Bazzite não pode ser utilizado em Steam Decks com 64GB de armazenamento eMMC no momento. Fazer um upgrade de armazenamento resolve o problema.**
 
 > [!IMPORTANT]  
-> **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://ublue-os.github.io/bazzite/General/Installation_Guide/).**
+> **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://docs.bazzite.gg/General/Installation_Guide/).**
 
 Pra fazer rebase de uma instalação existente de Fedora Atômico para esta imagem:
 
@@ -170,7 +170,7 @@ Imagens com o ambiente desktop GNOME estão disponíveis pra ambas as versões d
 - Atualizações automáticas para o [tema GNOME pro Firefox](https://github.com/rafaelmardojai/firefox-gnome-theme) e o [tema GNOME pro Thunderbird](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(Se instalados)</sub></sup>
 
 > [!IMPORTANT]  
-> **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://ublue-os.github.io/bazzite/General/Installation_Guide/).**
+> **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://docs.bazzite.gg/General/Installation_Guide/).**
 
 Pra fazer rebase de uma instalação existente de Fedora Atômico para esta imagem:
 
@@ -222,7 +222,7 @@ Apesar deste projeto também ser baseado em imagens, você pode instalar qualque
 
 O Bazzite inclui a versão mais recente do kernel Linux e vem com SELinux habilitado por padrão com suporte total a secure boot <sub><sup>(Execute `ujust enroll-secure-boot-key` e insira a senha `universalblue` se requisitada para adicionar a nossa chave)</sup></sub> e criptografia de disco, fazendo dele uma solução razoável pra computação em geral. <sup><sub>(Sim, você pode usar sua impressora no Bazzite)</sub></sup>
 
-Confira o [FAQ](https://ublue-os.github.io/bazzite/General/FAQ/) para mais detalhes no que faz o Bazzite ser diferente de outros sistemas operacionais Linux.
+Confira o [FAQ](https://docs.bazzite.gg/General/FAQ/) para mais detalhes no que faz o Bazzite ser diferente de outros sistemas operacionais Linux.
 
 ## Imagens
 
@@ -236,9 +236,9 @@ Confira o [FAQ](https://ublue-os.github.io/bazzite/General/FAQ/) para mais detal
 
 ## Documentação
 
-- [Instalando e Gerenciando Programas](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/)
-- [Atualizações, Rollbacks, e Rebase](https://ublue-os.github.io/bazzite/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/)
-- [Guia pra Gaming](https://ublue-os.github.io/bazzite/Gaming/)
+- [Instalando e Gerenciando Programas](https://docs.bazzite.gg/Installing_and_Managing_Software/)
+- [Atualizações, Rollbacks, e Rebase](https://docs.bazzite.gg/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/)
+- [Guia pra Gaming](https://docs.bazzite.gg/Gaming/)
 
 Leia [documentação adicional](http://docs.bazzite.gg/) ao redor do projeto.
 
