@@ -79,6 +79,23 @@ disable-sdgyrodsu:
     #!/usr/bin/bash
     sudo systemctl mask --user sdgyrodsu.service
 
+# runs ryzenadj --max-performance on AC power
+enable-ryzenadj-max-performance:
+    #/bin/bash
+    # credit to adolforegosa on discord for the original fix
+    echo 'this fix sets ryzenadj --max-performance whenever AC status changes to battery from plugged-in'
+    echo 'SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="/usr/bin/ryzenadj --max-performance"' | sudo tee "/etc/udev/rules.d/99-ryzenadj-power-source-change.rules" > /dev/null
+
+    sudo udevadm control --reload-rules
+    echo 'installation complete. Reboot to take effect'
+
+# disables ryzenadj --max-performance on AC power
+disable-ryzenadj-max-performance:
+    #/bin/bash
+    sudo rm /etc/udev/rules.d/99-ryzenadj-power-source-change.rules
+    sudo udevadm control --reload-rules
+    echo 'removal complete'
+
 # Re-enable input remapper feature on non-desktop images
 restore-input-remapper:
     systemctl enable --now input-remapper.service && \
