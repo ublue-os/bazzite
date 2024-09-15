@@ -24,17 +24,17 @@ titlebar-font='Noto Sans Medium 11'
 [org/gnome/desktop/background]
 color-shading-type='solid'
 picture-options='zoom'
-picture-uri='file:///usr/share/backgrounds/ublue.png'
-picture-uri-dark='file:///usr/share/backgrounds/ublue.png'
-primary-color='#202646'
-secondary-color='#36438E'
+picture-uri='file:///usr/share/backgrounds/convergence.png'
+picture-uri-dark='file:///usr/share/backgrounds/convergence.png'
+primary-color='#310042'
+secondary-color='#000622'
 
 [org/gnome/desktop/screensaver]
 color-shading-type='solid'
 picture-options='zoom'
-picture-uri='file:///usr/share/backgrounds/ublue.png'
-primary-color='#202646'
-secondary-color='#36438E'
+picture-uri='file:///usr/share/backgrounds/convergence.png'
+primary-color='#310042'
+secondary-color='#000622'
 
 [org/gnome/shell/extensions/just-perfection]
 animation=4
