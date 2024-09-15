@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>Bazzite Convergence</name>
+    <filename>/usr/share/backgrounds/convergence.png</filename>
+    <filename-dark>/usr/share/backgrounds/convergence.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#310042</pcolor>
+    <scolor>#000622</scolor>
+  </wallpaper>
+</wallpapers>
