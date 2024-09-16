@@ -24,15 +24,15 @@ titlebar-font='Noto Sans Medium 11'
 [org/gnome/desktop/background]
 color-shading-type='solid'
 picture-options='zoom'
-picture-uri='file:///usr/share/backgrounds/convergence.png'
-picture-uri-dark='file:///usr/share/backgrounds/convergence.png'
+picture-uri='file:///usr/share/backgrounds/convergence-dynamic.xml'
+picture-uri-dark='file:///usr/share/backgrounds/convergence-dynamic.xml'
 primary-color='#310042'
 secondary-color='#000622'
 
 [org/gnome/desktop/screensaver]
 color-shading-type='solid'
 picture-options='zoom'
-picture-uri='file:///usr/share/backgrounds/convergence.png'
+picture-uri='file:///usr/share/backgrounds/convergence-dynamic.xml'
 primary-color='#310042'
 secondary-color='#000622'
 

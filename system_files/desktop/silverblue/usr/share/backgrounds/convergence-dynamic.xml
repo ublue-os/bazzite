@@ -9,56 +9,56 @@
 	</starttime>
 	<static>
 		<duration>1</duration>
-		<file>/usr/share/backgrounds/convergence.png</file>
+		<file>/usr/share/backgrounds/convergence.jxl</file>
 	</static>
 	<transition type="overlay">
 		<duration>25199</duration>
-		<from>/usr/share/backgrounds/convergence.png</from>
-		<to>/usr/share/backgrounds/convergence/convergence_morn.png</to>
+		<from>/usr/share/backgrounds/convergence.jxl</from>
+		<to>/usr/share/backgrounds/convergence/convergence_morn.jxl</to>
 	</transition>
 	<static>
 		<duration>1</duration>
-		<file>/usr/share/backgrounds/convergence/convergence_morn.png</file>
+		<file>/usr/share/backgrounds/convergence/convergence_morn.jxl</file>
 	</static>
 	<transition type="overlay">
 		<duration>9599.002</duration>
-		<from>/usr/share/backgrounds/convergence/convergence_morn.png</from>
-		<to>/usr/share/backgrounds/convergence/convergence_midmorn.png</to>
+		<from>/usr/share/backgrounds/convergence/convergence_morn.jxl</from>
+		<to>/usr/share/backgrounds/convergence/convergence_midmorn.jxl</to>
 	</transition>
 	<static>
 		<duration>1</duration>
-		<file>/usr/share/backgrounds/convergence/convergence_midmorn.png</file>
+		<file>/usr/share/backgrounds/convergence/convergence_midmorn.jxl</file>
 	</static>
 	<transition type="overlay">
 		<duration>19198.998</duration>
-		<from>/usr/share/backgrounds/convergence/convergence_midmorn.png</from>
-		<to>/usr/share/backgrounds/convergence/convergence_day.png</to>
+		<from>/usr/share/backgrounds/convergence/convergence_midmorn.jxl</from>
+		<to>/usr/share/backgrounds/convergence/convergence_day.jxl</to>
 	</transition>
 	<static>
 		<duration>1</duration>
-		<file>/usr/share/backgrounds/convergence/convergence_day.png</file>
+		<file>/usr/share/backgrounds/convergence/convergence_day.jxl</file>
 	</static>
 	<transition type="overlay">
 		<duration>17998.998</duration>
-		<from>/usr/share/backgrounds/convergence/convergence_day.png</from>
-		<to>/usr/share/backgrounds/convergence/convergence_sunset.png</to>
+		<from>/usr/share/backgrounds/convergence/convergence_day.jxl</from>
+		<to>/usr/share/backgrounds/convergence/convergence_sunset.jxl</to>
 	</transition>
 	<static>
 		<duration>1</duration>
-		<file>/usr/share/backgrounds/convergence/convergence_sunset.png</file>
+		<file>/usr/share/backgrounds/convergence/convergence_sunset.jxl</file>
 	</static>
 	<transition type="overlay">
 		<duration>7199.0034</duration>
-		<from>/usr/share/backgrounds/convergence/convergence_sunset.png</from>
-		<to>/usr/share/backgrounds/convergence/convergence_night.png</to>
+		<from>/usr/share/backgrounds/convergence/convergence_sunset.jxl</from>
+		<to>/usr/share/backgrounds/convergence/convergence_night.jxl</to>
 	</transition>
 	<static>
 		<duration>1</duration>
-		<file>/usr/share/backgrounds/convergence/convergence_night.png</file>
+		<file>/usr/share/backgrounds/convergence/convergence_night.jxl</file>
 	</static>
 	<transition type="overlay">
 		<duration>7199</duration>
-		<from>/usr/share/backgrounds/convergence/convergence_night.png</from>
-		<to>/usr/share/backgrounds/convergence.png</to>
+		<from>/usr/share/backgrounds/convergence/convergence_night.jxl</from>
+		<to>/usr/share/backgrounds/convergence.jxl</to>
 	</transition>
 </background>
