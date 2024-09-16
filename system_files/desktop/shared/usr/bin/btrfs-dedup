@@ -273,7 +273,7 @@ fi
 	fi
 	cmd find "$TARGET"/ -mindepth 1 -maxdepth 1 -mtime +"$DB_MAX_AGE" \( -name "$RMLINT_DB" -or -name "$DUPEREMOVE_DB" \) -delete
 	powerchange || true
-	cmd compsize "$TARGET"/ &
+	# cmd compsize "$TARGET"/ &
 	worker_waiter
 	if ! is_true "$RMLINT_SKIP"; then
 		if ! is_true "$RMLINT_REPLAY_DISABLE" && [[ -f "$TARGET"/"$RMLINT_DB" ]]; then
@@ -298,7 +298,7 @@ fi
 			cmd cp -a 'rmlint.json' "$TARGET"/"$RMLINT_DB"
 		fi
 		cmd rm -f rmlint*
-		cmd compsize "$TARGET"/ &
+		# cmd compsize "$TARGET"/ &
 		worker_waiter
 	fi
 	if ! is_true "$DUPEREMOVE_SKIP"; then
@@ -313,7 +313,7 @@ fi
 		worker_waiter
 		cmd cp -a "$DUPEREMOVE_DB" "$TARGET"/
 		cmd rm -f "$DUPEREMOVE_DB"
-		cmd compsize "$TARGET"/ &
+		# cmd compsize "$TARGET"/ &
 		worker_waiter
 	fi
 ) &
