@@ -309,7 +309,7 @@ fi
 			cmd rm -f "$DUPEREMOVE_DB"
 		fi
 		# shellcheck disable=SC2086
-		cmd duperemove --hashfile="$DUPEREMOVE_DB" --exclude="$TARGET/$RMLINT_DB" --exclude="$TARGET/$DUPEREMOVE_DB" --exclude="$TARGET/@swapfile/swapfile" ${DUPEREMOVE_ARGS} "$TARGET"/ &
+		cmd cpulimit -l 50 nice -19 ionice -c 3 duperemove --cpu-threads=2 --io-threads=2 --hashfile="$DUPEREMOVE_DB" --exclude="$TARGET/$RMLINT_DB" --exclude="$TARGET/$DUPEREMOVE_DB" --exclude="$TARGET/@swapfile/swapfile" ${DUPEREMOVE_ARGS} "$TARGET"/ &
 		worker_waiter
 		cmd cp -a "$DUPEREMOVE_DB" "$TARGET"/
 		cmd rm -f "$DUPEREMOVE_DB"

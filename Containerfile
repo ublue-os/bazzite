@@ -358,6 +358,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         python3-pip \
         libadwaita \
         duperemove \
+        cpulimit \
         sqlite \
         xwininfo \
         xrandr \
