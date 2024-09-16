@@ -51,7 +51,8 @@ if [[ $(echo "${switcheroo_state}" | grep -o 'Device:' | wc -l) -gt 1 ]]; then
 fi
 unset -v switcheroo_state
 
-if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+# Do not preload extest if we are using KDE with libei
+if [ "$XDG_SESSION_TYPE" = "wayland" ] && [ "$XDG_CURRENT_DESKTOP" != "KDE" ]; then
   # https://github.com/Supreeeme/extest
   # Extest is a drop in replacement for the X11 XTEST extension.
   # It creates a virtual device with the uinput kernel module.
