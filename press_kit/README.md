@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="convergence_wallpaper.png?raw=true" alt="Bazzite"/>
+</p>
+
 # Press Kit
 
 Thanks for generating content about about Bazzite and Universal Blue! This document will explain how to use the brand and terminology used by the project.

@@ -358,6 +358,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         python3-pip \
         libadwaita \
         duperemove \
+        cpulimit \
         sqlite \
         xwininfo \
         xrandr \
@@ -587,6 +588,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             gnome-extensions-app \
             gnome-terminal \
             gnome-terminal-nautilus \
+            gnome-system-monitor \
             gnome-initial-setup \
             gnome-shell-extension-background-logo \
             gnome-shell-extension-apps-menu && \
@@ -597,7 +599,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         curl -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer && \
         unzip /tmp/tilingshell/tilingshell@ferrarodomenico.com.zip -d /usr/share/gnome-shell/extensions/tilingshell@ferrarodomenico.com && \
         rm -rf /tmp/tilingshell && \
-        sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/org.gnome.SystemMonitor.desktop && \
         systemctl enable dconf-update.service \
     ; fi && \
     /usr/libexec/containerbuild/cleanup.sh && \
