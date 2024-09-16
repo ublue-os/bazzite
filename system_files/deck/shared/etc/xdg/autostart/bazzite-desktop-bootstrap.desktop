@@ -1,5 +1,5 @@
 [Desktop Entry]
-Exec=/usr/bin/bazzite-plasma-bootstrap
+Exec=/usr/bin/bazzite-desktop-bootstrap
 GenericName[en_US]=Desktop Bootstrap
 GenericName=Desktop Bootstrap
 Icon=system-run

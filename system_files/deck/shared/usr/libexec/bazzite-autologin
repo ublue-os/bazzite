@@ -17,7 +17,7 @@ if [[ -f ${AUTOLOGIN_CONF} ]]; then
 fi
 
 # Configure autologin if Steam has been updated
-if [[ ! -f ${DESKTOP_AUTOLOGIN} && -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]]; then
+if [[ ! -f ${DESKTOP_AUTOLOGIN} ]]; then
   sed -i 's/.*Session=.*/Session=gamescope-session.desktop/g' ${SDDM_CONF}
 elif [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
   sed -i 's/.*Session=.*/Session=plasma.desktop/g' ${SDDM_CONF}

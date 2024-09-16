@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+
+# KDE Specific fractional scaling
+if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+	exit 0
+fi
+
+exit 1
