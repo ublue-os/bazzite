@@ -152,7 +152,7 @@ jobs:
           upload_github_page: "false"
 
       - name: Check just syntax
-        uses: ublue-os/just-action@v1
+        uses: ublue-os/just-action@v2
 
       - name: Maximize build space
         uses: ublue-os/remove-unwanted-software@v7
