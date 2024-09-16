@@ -1,0 +1,64 @@
+<background>
+	<starttime>
+		<year>2022</year>
+		<month>6</month>
+		<day>8</day>
+		<hour>0</hour>
+		<minute>0</minute>
+		<second>0</second>
+	</starttime>
+	<static>
+		<duration>1</duration>
+		<file>/usr/share/backgrounds/convergence.png</file>
+	</static>
+	<transition type="overlay">
+		<duration>25199</duration>
+		<from>/usr/share/backgrounds/convergence.png</from>
+		<to>/usr/share/backgrounds/convergence/convergence_morn.png</to>
+	</transition>
+	<static>
+		<duration>1</duration>
+		<file>/usr/share/backgrounds/convergence/convergence_morn.png</file>
+	</static>
+	<transition type="overlay">
+		<duration>9599.002</duration>
+		<from>/usr/share/backgrounds/convergence/convergence_morn.png</from>
+		<to>/usr/share/backgrounds/convergence/convergence_midmorn.png</to>
+	</transition>
+	<static>
+		<duration>1</duration>
+		<file>/usr/share/backgrounds/convergence/convergence_midmorn.png</file>
+	</static>
+	<transition type="overlay">
+		<duration>19198.998</duration>
+		<from>/usr/share/backgrounds/convergence/convergence_midmorn.png</from>
+		<to>/usr/share/backgrounds/convergence/convergence_day.png</to>
+	</transition>
+	<static>
+		<duration>1</duration>
+		<file>/usr/share/backgrounds/convergence/convergence_day.png</file>
+	</static>
+	<transition type="overlay">
+		<duration>17998.998</duration>
+		<from>/usr/share/backgrounds/convergence/convergence_day.png</from>
+		<to>/usr/share/backgrounds/convergence/convergence_sunset.png</to>
+	</transition>
+	<static>
+		<duration>1</duration>
+		<file>/usr/share/backgrounds/convergence/convergence_sunset.png</file>
+	</static>
+	<transition type="overlay">
+		<duration>7199.0034</duration>
+		<from>/usr/share/backgrounds/convergence/convergence_sunset.png</from>
+		<to>/usr/share/backgrounds/convergence/convergence_night.png</to>
+	</transition>
+	<static>
+		<duration>1</duration>
+		<file>/usr/share/backgrounds/convergence/convergence_night.png</file>
+	</static>
+	<transition type="overlay">
+		<duration>7199</duration>
+		<from>/usr/share/backgrounds/convergence/convergence_night.png</from>
+		<to>/usr/share/backgrounds/convergence.png</to>
+	</transition>
+</background>
