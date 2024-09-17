@@ -1,0 +1,24 @@
+From b26c8c79c9ff7fd0ba63e893171c6d5b164fda82 Mon Sep 17 00:00:00 2001
+From: Kate Hsuan <hpa@redhat.com>
+Date: Wed, 28 Aug 2024 13:29:41 +0800
+Subject: [PATCH 1/9] ci: Add polkit dependency
+
+---
+ .gitlab-ci.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index fbdbd53..1476c85 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -25,6 +25,7 @@ variables:
+     libplist-devel
+     umockdev
+     dbus-x11
++    polkit-devel
+     python3-gobject
+     python3-dbusmock
+     python3-pip
+-- 
+2.46.0
+
