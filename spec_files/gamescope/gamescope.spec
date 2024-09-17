@@ -2,11 +2,11 @@
 
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
-%global gamescope_tag 3.15.5
+%global gamescope_tag 3.15.9
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        2.bazzite
+Release:        1.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
