@@ -5,7 +5,7 @@
 %endif
 
 Name:    bluez
-Version: 5.77
+Version: 5.78
 Release: 1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: Bluetooth utilities
 License: GPL-2.0-or-later
@@ -286,8 +286,6 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_mandir}/man1/hcitool.1.*
 %{_mandir}/man1/rfcomm.1.*
 %{_mandir}/man1/sdptool.1.*
-%{_mandir}/man7/l2cap.7.*
-%{_mandir}/man7/rfcomm.7.* 
 %endif
 
 %files libs
@@ -305,6 +303,8 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_mandir}/man1/l2ping.1.*
 %{_mandir}/man1/rctest.1.*
 %{_mandir}/man5/org.bluez.*.5.*
+%{_mandir}/man7/l2cap.7.*
+%{_mandir}/man7/rfcomm.7.* 
 %{_libdir}/libbluetooth.so
 %{_includedir}/bluetooth
 %{_libdir}/pkgconfig/bluez.pc
@@ -337,6 +337,12 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_userunitdir}/obex.service
 
 %changelog
+* Mon Sep  9 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.78-1
+- Update to 5.78
+
+* Wed Jul 17 2024 Fedora Release Engineering <releng@fedoraproject.org> - 5.77-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
+
 * Tue Jul 09 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.77-1
 - Update to 5.77
 

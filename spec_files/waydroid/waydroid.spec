@@ -1,7 +1,7 @@
 %global forgeurl https://github.com/waydroid/waydroid
 %global selinuxtype targeted
 
-Version:        1.4.2
+Version:        1.4.3
 %global tag %{version}
 
 %forgemeta
@@ -24,10 +24,9 @@ Patch1:         mount-secontext.patch
 # Fedora LXC is compiled without AppArmor support and fails to parse lxc.apparmor.profile config
 Patch2:         no-apparmor.patch 
 
-# https://github.com/waydroid/waydroid/commit/66c8343c4d2ea118601ba5d8ce52fa622cbcd665
-Patch3:         regex.patch
-# https://github.com/waydroid/waydroid/commit/6eea5cf63f4a724e66a2857b8f67ee2bbc82f0bd
-Patch4:         sse3.patch
+# https://github.com/waydroid/waydroid/issues/1550
+# initializer: Refactor setup to better handle preinstalled images
+Patch3:         5000c9703de873e4f477ebcdd3556ad163252115.patch
 
 BuildArch:      noarch
 
@@ -77,6 +76,7 @@ cp %{S:6} SELinux/
 # Remove link for ROM files
 sed -i -e '/"system_channel":/ s/: ".*"/: ""/' tools/config/__init__.py
 sed -i -e '/"vendor_channel":/ s/: ".*"/: ""/' tools/config/__init__.py
+sed -i -e '/options: OTA channel URL/ s/default is Official OTA server/mandatory/' tools/helpers/arguments.py
 # Compile sepolicy
 cd SELinux
 %{__make} NAME=%{selinuxtype} -f /usr/share/selinux/devel/Makefile
@@ -153,6 +153,11 @@ fi
 %{_datadir}/selinux/%{selinuxtype}/%{name}.pp
 
 %changelog
+* Sat Aug 10 2024 Alessandro Astone <alessandro.astone@canonical.com> - 1.4.3-1
++ - new version (rhbz#2303618)
++ - fix python 3.12 error (rhbz#2258411)
++ - make it clearer that OTA channels must be provided to `waydroid init`
+
 * Thu Mar 14 2024 Alessandro Astone <ales.astone@gmail.com> - 1.4.2-3
 - Completely disable apparmor
 
