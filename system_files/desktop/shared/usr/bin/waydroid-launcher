@@ -19,7 +19,7 @@ fi
 
 # Check if Waydroid is initialized, send user to the docs
 if grep -qz 'not initialized' <<< $(/usr/bin/waydroid status); then
-	xdg-open "https://universal-blue.discourse.group/docs?topic=32"
+	xdg-open "https://docs.bazzite.gg/Installing_and_Managing_Software/Waydroid_Setup_Guide/"
 	exit 1
 fi
 
