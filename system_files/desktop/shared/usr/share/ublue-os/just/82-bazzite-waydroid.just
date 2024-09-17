@@ -20,7 +20,7 @@ setup-waydroid ACTION="":
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Waydroid Setup${normal}"
-      echo "Please read the $(Urllink "https://universal-blue.discourse.group/docs?topic=32" "Waydroid setup documentation") before continuing"
+      echo "Please read the $(Urllink "https://docs.bazzite.gg/Installing_and_Managing_Software/Waydroid_Setup_Guide/" "Waydroid setup documentation") before continuing"
       OPTION=$(Choose "Initialize Waydroid" "Configure Waydroid" "Select GPU for Waydroid" "Reset Waydroid (also removes waydroid-related files from user folder)")
     fi
     if [[ "${OPTION,,}" =~ ^init ]]; then
