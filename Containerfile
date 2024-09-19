@@ -154,6 +154,17 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree override replace \
     --experimental \
     --from repo=updates \
+        cpp \
+        libatomic \
+        libgcc \
+        libgfortran \
+        libgomp \
+        libobjc \
+        libstdc++ \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
         libX11 \
         libX11-common \
         libX11-xcb \
