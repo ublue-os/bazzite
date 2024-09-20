@@ -274,7 +274,7 @@ fi
 	cmd find "$TARGET"/ -mindepth 1 -maxdepth 1 -mtime +"$DB_MAX_AGE" \( -name "$RMLINT_DB" -or -name "$DUPEREMOVE_DB" \) -delete
 	powerchange || true
 	# cmd compsize "$TARGET"/ &
-	worker_waiter
+	# worker_waiter
 	if ! is_true "$RMLINT_SKIP"; then
 		if ! is_true "$RMLINT_REPLAY_DISABLE" && [[ -f "$TARGET"/"$RMLINT_DB" ]]; then
 			# shellcheck disable=SC2086
@@ -314,7 +314,7 @@ fi
 		cmd cp -a "$DUPEREMOVE_DB" "$TARGET"/
 		cmd rm -f "$DUPEREMOVE_DB"
 		# cmd compsize "$TARGET"/ &
-		worker_waiter
+		# worker_waiter
 	fi
 ) &
 MAINPID="$!"
