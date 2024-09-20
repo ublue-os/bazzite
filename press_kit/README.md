@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="convergence_wallpaper.png?raw=true" alt="Bazzite"/>
+  <img src="art/Convergence_Wallpaper.png?raw=true" alt="Bazzite"/>
 </p>
 
 # Press Kit
