@@ -1,0 +1,11 @@
+[Unit]
+Description=Runs restorecon on nvidia-modeset at boot
+After=local-fs.target
+ConditionPathExists=/dev/nvidia-modeset
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/nvidia-modeset-restorecon
+
+[Install]
+WantedBy=multi-user.target

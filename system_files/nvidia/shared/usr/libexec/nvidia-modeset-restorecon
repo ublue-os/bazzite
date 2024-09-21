@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+# Wait for the nvidia-modeset device node to exist
+while [ ! -e "/dev/nvidia-modeset" ]; do
+    sleep 1
+done
+
+# Apply the fix and write the output to the journal, viewable with "journalctl -t nvidia-modeset-restorecon"
+semanage fcontext -a -t SIMILAR_TYPE 'nvidia-modeset'
+restorecon -v '/dev/nvidia-modeset' | systemd-cat -t nvidia-modeset-restorecon -p info
