@@ -37,7 +37,7 @@ $container_mgr build -f Containerfile \
     --build-arg="BASE_IMAGE_NAME=${base_image}" \
     --build-arg="BASE_IMAGE_FLAVOR=${flavor}" \
     --build-arg="IMAGE_FLAVOR=${flavor}" \
-    --build-arg="KERNEL_FLAVOR=fsync" \
+    --build-arg="KERNEL_FLAVOR=fsync-ba" \
     --build-arg="SOURCE_IMAGE=${base_image}-${flavor}" \
     --build-arg="FEDORA_MAJOR_VERSION=${latest}" \
     --target="${target}" \
