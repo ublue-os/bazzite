@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=49
+HWS_VER=50
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -259,6 +259,15 @@ fi
 if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
   echo "Removing unneeded apparmor entry from Waydroid LXC"
   sed -i '/lxc\.apparmor\.profile\s*=\s*unconfined/d' "/var/lib/waydroid/lxc/waydroid/config"
+fi
+
+# NVIDIA SELINUX FIX
+# Apparently there are missing selinux labels on some nvidia cards which causes
+# at least sddm to crash a lot when connected to a VRR display?
+# Adding the labels almost removes the crashes apparently
+if [[ $IMAGE_NAME =~ "nvidia" ]]; then
+  echo "Fix nvidia-modeset SELinux labels"
+  systemctl enable --now nvidia-modeset-restorecon.service
 fi
 
 # HOSTNAME FIX
