@@ -65,8 +65,10 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree override replace \
     --experimental \
     --from repo=updates \
+        nss \
         nss-softokn \
         nss-softokn-freebl \
+        nss-sysinit \
         nss-util \
         || true && \
     rpm-ostree override replace \
