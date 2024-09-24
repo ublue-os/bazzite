@@ -383,6 +383,13 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         firefox \
         firefox-langpacks \
         htop && \
+    rpm-ostree override remove \
+        power-profiles-daemon \
+        || true && \
+    rpm-ostree override remove \
+        tlp \
+        tlp-rdw \
+        || true && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
@@ -400,6 +407,12 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         compsize \
         ryzenadj \
         input-remapper \
+        tuned \
+        tuned-ppd \
+        tuned-utils \
+        tuned-gtk \
+        tuned-profiles-atomic \
+        tuned-profiles-cpu-partitioning \
         i2c-tools \
         udica \
         ladspa-caps-plugins \
@@ -452,6 +465,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     sed -i 's/max_cpu_load_percent.*/max_cpu_load_percent = 100.0/' /etc/ublue-update/ublue-update.toml && \
     sed -i 's/max_mem_percent.*/max_mem_percent = 90.0/' /etc/ublue-update/ublue-update.toml && \
     sed -i 's/dbus_notify.*/dbus_notify = false/' /etc/ublue-update/ublue-update.toml && \
+    sed -i 's@Name=tuned-gui@Name=TuneD Manager@g' /usr/share/applications/tuned-gui.desktop && \
     curl -Lo /usr/bin/installcab https://raw.githubusercontent.com/KyleGospo/steam-proton-mf-wmv/master/installcab.py && \
     chmod +x /usr/bin/installcab && \
     curl -Lo /usr/bin/install-mf-wmv https://github.com/KyleGospo/steam-proton-mf-wmv/blob/master/install-mf-wmv.sh && \
@@ -733,6 +747,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
+    systemctl enable tuned.service && \
     systemctl enable brew-dir-fix.service && \
     systemctl enable brew-setup.service && \
     systemctl disable brew-upgrade.timer && \
