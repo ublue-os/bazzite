@@ -862,13 +862,15 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
-# Install Steam Deck patched UPower
+# Install Steam Deck patched UPower, remove Tuned GUI
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         upower \
         upower-libs && \
+    rpm-ostree remove \
+        tuned-gtk && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
