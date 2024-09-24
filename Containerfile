@@ -869,7 +869,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         upower \
         upower-libs && \
-    rpm-ostree remove \
+    rpm-ostree override remove \
         tuned-gtk && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
