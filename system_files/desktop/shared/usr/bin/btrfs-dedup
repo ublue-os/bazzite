@@ -278,20 +278,20 @@ fi
 	if ! is_true "$RMLINT_SKIP"; then
 		if ! is_true "$RMLINT_REPLAY_DISABLE" && [[ -f "$TARGET"/"$RMLINT_DB" ]]; then
 			# shellcheck disable=SC2086
-			cmd rmlint --replay "$TARGET"/"$RMLINT_DB" ${RMLINT_ARGS} "$TARGET"/ &
+			cmd cpulimit -l 50 nice -19 ionice -c 3 rmlint --replay "$TARGET"/"$RMLINT_DB" ${RMLINT_ARGS} "$TARGET"/ &
 			worker_waiter
 			if [[ -f 'rmlint.replay.sh' ]]; then
 				# shellcheck disable=SC2086
-				cmd ./rmlint.replay.sh ${RMLINT_SCRIPT_ARGS} &
+				cmd cpulimit -l 50 nice -19 ionice -c 3 ./rmlint.replay.sh ${RMLINT_SCRIPT_ARGS} &
 				worker_waiter
 			fi
 		fi
 		# shellcheck disable=SC2086
-		cmd rmlint ${RMLINT_ARGS} "$TARGET"/ &
+		cmd cpulimit -l 50 nice -19 ionice -c 3 rmlint ${RMLINT_ARGS} "$TARGET"/ &
 		worker_waiter
 		if [[ -f 'rmlint.sh' ]]; then
 			# shellcheck disable=SC2086
-			cmd ./rmlint.sh ${RMLINT_SCRIPT_ARGS} &
+			cmd cpulimit -l 50 nice -19 ionice -c 3 ./rmlint.sh ${RMLINT_SCRIPT_ARGS} &
 			worker_waiter
 		fi
 		if [[ -f 'rmlint.json' ]]; then
