@@ -86,4 +86,7 @@ EOF
 # display the helptext
 elif [[ "$1" == "-h" || "$1" == "--h" || "$1" == "-help" || "$1" == "--help" || "$1" == "help" || -z "$1" ]]; then
  echo "$helptext"
+else
+ echo "Unsupported Option: $1"
+ echo "run 'bazzite-rollback-helper help' for more details"
 fi
