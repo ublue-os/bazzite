@@ -312,7 +312,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         /tmp/akmods-rpms/kmods/*openrazer*.rpm \
         /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
         /tmp/akmods-rpms/kmods/*wl*.rpm \
-        /tmp/akmods-rpms/kmods/*framework-laptop*.rpm \
         /tmp/akmods-extra-rpms/kmods/*gcadapter_oc*.rpm \
         /tmp/akmods-extra-rpms/kmods/*nct6687*.rpm \
         /tmp/akmods-extra-rpms/kmods/*zenergy*.rpm \
