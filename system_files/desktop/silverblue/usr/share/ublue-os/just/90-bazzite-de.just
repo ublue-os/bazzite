@@ -6,8 +6,9 @@ restore-gnome-de-settings:
 
 # Restore Bazzite customized applications folders
 restore-gnome-folders:
-    dconf load / < /etc/dconf/db/local.d/04-bazzite-folders
-
+    dconf load / < /usr/share/ublue-os/dconfs/desktop-silverblue/zz0-02-bazzite-desktop-silverblue-folders
+    dconf load / < /usr/share/ublue-os/dconfs/desktop-silverblue/01-bazzite-desktop-silverblue-folders
+    
 # Change automatic power profile switching behavior
 configure-auto-power-profile ACTION="help":
     #!/usr/bin/bash
