@@ -2,10 +2,7 @@
 
 # Restore Bazzite customized DE settings
 restore-gnome-de-settings:
-    dconf load / < /etc/dconf/db/local.d/02-bazzite-global
-    dconf load / < /etc/dconf/db/local.d/03-bazzite-dash
-    dconf load / < /etc/dconf/db/local.d/05-bazzite-extensions
-    dconf load / < /etc/dconf/db/local.d/06-bazzite-theme
+    dconf load / < /usr/share/ublue-os/dconfs/desktop-silverblue/
 
 # Restore Bazzite customized applications folders
 restore-gnome-folders:
