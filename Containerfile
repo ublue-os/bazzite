@@ -736,7 +736,16 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
       # Replace sort-directories-first to be compatible with dconf
       sed -i 's/\[org.gtk.Settings.FileChooser\]/\[org\/gtk\/settings\/file-chooser\]/g; s/\[org.gtk.gtk4.Settings.FileChooser\]/\[org\/gtk\/gtk4\/settings\/file-chooser\]/g' "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-00-bazzite-desktop-silverblue-global" && \
       rm "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" && \
-    ; fi && \      
+    ; fi && \
+    # Test Bazzite gschema override for errors. If there are no errors, proceed with compiling Bazzite gschema, which includes setting overrides.
+    mkdir -p /tmp/bazzite-schema-test && \
+    find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" -exec cp {} "/tmp/bazzite-schema-test/" \; && \
+    cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/" && \
+    echo "Running error test for Bazzite Desktop gschema override. Aborting if failed." && \
+    glib-compile-schemas --strict /tmp/bazzite-schema-test && \
+    echo "Compiling gschema to include Bazzite Desktop setting overrides" && \
+    glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
+    rm -r /tmp/bazzite-schema-test && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
@@ -927,6 +936,15 @@ RUN /usr/libexec/containerbuild/image-info && \
       dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/deck-silverblue/zz0-"*"-bazzite-deck-silverblue-"*".gschema.override" && \
       rm "/usr/share/ublue-os/dconfs/deck-silverblue/zz0-"*"-bazzite-deck-silverblue-"*".gschema.override" && \
     ; fi && \
+    # Test Bazzite gschema override for errors. If there are no errors, proceed with compiling Bazzite gschema, which includes setting overrides.
+    mkdir -p /tmp/bazzite-schema-test && \
+    find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" -exec cp {} "/tmp/bazzite-schema-test/" \; && \
+    cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/" && \
+    echo "Running error test for Bazzite Deck gschema override. Aborting if failed." && \
+    glib-compile-schemas --strict /tmp/bazzite-schema-test && \
+    echo "Compiling gschema to include Bazzite Deck setting overrides" && \
+    glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
+    rm -r /tmp/bazzite-schema-test && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \
@@ -1003,6 +1021,15 @@ RUN echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/sh
       dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" && \
       rm "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" && \
     ; fi && \
+    # Test Bazzite gschema override for errors. If there are no errors, proceed with compiling Bazzite gschema, which includes setting overrides.
+    mkdir -p /tmp/bazzite-schema-test && \
+    find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" -exec cp {} "/tmp/bazzite-schema-test/" \; && \
+    cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/" && \
+    echo "Running error test for Bazzite Nvidia gschema override. Aborting if failed." && \
+    glib-compile-schemas --strict /tmp/bazzite-schema-test && \
+    echo "Compiling gschema to include Bazzite Nvidia setting overrides" && \
+    glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
+    rm -r /tmp/bazzite-schema-test && \
     mkdir -p /var/tmp && chmod 1777 /var/tmp && \
     /usr/libexec/containerbuild/image-info && \
     /usr/libexec/containerbuild/build-initramfs && \
