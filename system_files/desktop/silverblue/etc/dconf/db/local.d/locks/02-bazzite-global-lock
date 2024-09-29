@@ -1,4 +1,0 @@
-[org/gnome/software]
-allow-updates=false
-download-updates=false
-download-updates-notify=false

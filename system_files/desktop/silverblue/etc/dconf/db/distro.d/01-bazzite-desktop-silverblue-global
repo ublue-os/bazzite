@@ -1,0 +1,35 @@
+# Relocatable schemas are located here in dconf
+# Some Gnome extensions don't ship gschema XML, so their settings also need to go in dconf
+
+# LogoMenu extension
+[org/gnome/shell/extensions/Logo-menu]
+symbolic-icon=false
+menu-button-icon-image=0
+menu-button-icon-size=20
+hide-icon-shadow=false
+menu-button-terminal='ptyxis --new-window'
+menu-button-system-monitor='flatpak run io.missioncenter.MissionCenter'
+menu-button-extensions-app='com.mattjakeman.ExtensionManager.desktop'
+menu-button-software-center='gnome-software'
+show-activities-button=true
+show-lockscreen=false
+show-power-option=false
+show-gamemode=false
+hide-forcequit=true
+show-boxbuddy=true
+
+# Keybindings
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
+binding='<Control><Alt>t'
+command='ptyxis --new-window'
+name='Terminal'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
+binding='<Control><Alt>KP_Delete'
+command='flatpak run io.missioncenter.MissionCenter'
+name='Mission Center'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2]
+binding='<Control><Shift>Escape'
+command="flatpak run io.missioncenter.MissionCenter"
+name='Mission Center'
