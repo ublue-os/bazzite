@@ -12,6 +12,7 @@ if [[ $(rpm -qa | grep lact) ]]; then
             # This will check if *any* rpm-ostree pin has the newest version, so we don't update needlessly if a user just needs to reboot or is trying an older pin.
             echo "Found upstream version v$LACT_VERSION, updating..."
             ublue-update --wait
+            rpm-ostree kargs --append-if-missing=$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))")
             PACKAGE="lact"
             if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
                 echo 'Installing LACT...'
