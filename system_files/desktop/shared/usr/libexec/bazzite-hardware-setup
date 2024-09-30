@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=49
+HWS_VER=50
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -39,6 +39,13 @@ fi
 
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
+
+if /usr/libexec/hwsupport/valve-hardware || /usr/libexec/hwsupport/hhd-supported-hardware; then
+  echo "Checking for ppfeaturemask karg on hardware that requires it"
+  if [[ ! $KARGS =~ "ppfeaturemask" ]]; then
+    NEEDED_KARGS+=("--append-if-missing="$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))"))
+  fi
+fi
 
 if /usr/libexec/hwsupport/valve-hardware; then
   echo "Checking for needed karg changes (Jupiter/Galileo)"
