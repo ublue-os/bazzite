@@ -6,6 +6,7 @@ install-lact:
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
     ublue-update --wait
+    rpm-ostree kargs --append-if-missing=$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))")
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
         echo 'Installing LACT Libadwaita...'
         wget \
