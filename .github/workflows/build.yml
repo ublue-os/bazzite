@@ -68,7 +68,7 @@ jobs:
             is_latest_version: true
             is_stable_version: true
             kernel_flavor: fsync-ba # must match a kernel_flavor from akmods repo
-            kernel_version: 6.9.12-205.fsync.fc40.x86_64 # must match a cached version of the above flavor
+            kernel_version: 6.9.12-207.fsync.fc40.x86_64 # must match a cached version of the above flavor
         exclude:
           - base_name: bazzite
             target_nvidia_flavor: nvidia

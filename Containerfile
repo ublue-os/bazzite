@@ -3,7 +3,7 @@ ARG BASE_IMAGE_FLAVOR="${BASE_IMAGE_FLAVOR:-main}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 ARG NVIDIA_FLAVOR=${NVIDIA_FLAVOR:-nvidia}""
 ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-fsync-ba}"
-ARG KERNEL_VERSION="${KERNEL_VERSION:-6.9.12-205.fsync.fc40.x86_64}"
+ARG KERNEL_VERSION="${KERNEL_VERSION:-6.9.12-207.fsync.fc40.x86_64}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$BASE_IMAGE_FLAVOR}"
 ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
@@ -24,7 +24,7 @@ ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 ARG NVIDIA_FLAVOR=${NVIDIA_FLAVOR:-nvidia}""
 ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-fsync-ba}"
-ARG KERNEL_VERSION="${KERNEL_VERSION:-6.9.12-205.fsync.fc40.x86_64}"
+ARG KERNEL_VERSION="${KERNEL_VERSION:-6.9.12-207.fsync.fc40.x86_64}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
@@ -382,6 +382,13 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         firefox \
         firefox-langpacks \
         htop && \
+    rpm-ostree override remove \
+        power-profiles-daemon \
+        || true && \
+    rpm-ostree override remove \
+        tlp \
+        tlp-rdw \
+        || true && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
@@ -399,6 +406,12 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         compsize \
         ryzenadj \
         input-remapper \
+        tuned \
+        tuned-ppd \
+        tuned-utils \
+        tuned-gtk \
+        tuned-profiles-atomic \
+        tuned-profiles-cpu-partitioning \
         i2c-tools \
         udica \
         ladspa-caps-plugins \
@@ -451,6 +464,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     sed -i 's/max_cpu_load_percent.*/max_cpu_load_percent = 100.0/' /etc/ublue-update/ublue-update.toml && \
     sed -i 's/max_mem_percent.*/max_mem_percent = 90.0/' /etc/ublue-update/ublue-update.toml && \
     sed -i 's/dbus_notify.*/dbus_notify = false/' /etc/ublue-update/ublue-update.toml && \
+    sed -i 's@Name=tuned-gui@Name=TuneD Manager@g' /usr/share/applications/tuned-gui.desktop && \
     curl -Lo /usr/bin/installcab https://raw.githubusercontent.com/KyleGospo/steam-proton-mf-wmv/master/installcab.py && \
     chmod +x /usr/bin/installcab && \
     curl -Lo /usr/bin/install-mf-wmv https://github.com/KyleGospo/steam-proton-mf-wmv/blob/master/install-mf-wmv.sh && \
@@ -644,7 +658,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         gamescope.x86_64 \
         gamescope-libs.i686 \
         gamescope-shaders \
-        gamescope-legacy \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo \
@@ -732,6 +745,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
+    systemctl enable tuned.service && \
     systemctl enable brew-dir-fix.service && \
     systemctl enable brew-setup.service && \
     systemctl disable brew-upgrade.timer && \
@@ -846,13 +860,15 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
-# Install Steam Deck patched UPower
+# Install Steam Deck patched UPower, remove Tuned GUI
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         upower \
         upower-libs && \
+    rpm-ostree override remove \
+        tuned-gtk && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
@@ -922,7 +938,7 @@ ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-nvidia}"
 ARG NVIDIA_FLAVOR=${NVIDIA_FLAVOR:-nvidia}""
 ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-fsync-ba}"
-ARG KERNEL_VERSION="${KERNEL_VERSION:-6.9.12-205.fsync.fc40.x86_64}"
+ARG KERNEL_VERSION="${KERNEL_VERSION:-6.9.12-207.fsync.fc40.x86_64}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
