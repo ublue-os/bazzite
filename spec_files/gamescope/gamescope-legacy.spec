@@ -18,7 +18,7 @@ Source2:        https://github.com/Joshua-Ashton/reshade/archive/%{reshade_commi
 Patch0:         0001-cstdint.patch
 
 # https://hhd.dev/
-Patch1:         v2-0001-always-send-shift-tab-to-steam-s-wayland-session.patch
+Patch1:         spec_files/gamescope/v2-0001-use-super-1-2-for-steam-overlay.patch
 
 # ChimeraOS
 Patch2:         legacy-720p.patch
