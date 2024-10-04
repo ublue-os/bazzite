@@ -22,7 +22,7 @@ Patch1:         chimeraos.patch
 
 # https://hhd.dev/
 Patch2:         disable-steam-touch-click-atom.patch
-Patch3:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
+Patch3:         v2-0001-always-send-shift-tab-to-steam-s-wayland-session.patch
 
 # https://github.com/ValveSoftware/gamescope/issues/1369
 Patch4:         revert-299bc34.patch
