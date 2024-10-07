@@ -304,7 +304,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
-# Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
+# Add ublue packages
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=akmods,src=/rpms,dst=/tmp/akmods-rpms \
     --mount=type=bind,from=akmods-extra,src=/rpms,dst=/tmp/akmods-extra-rpms \
@@ -332,6 +332,9 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             fwupd-plugin-flashrom \
             fwupd-plugin-modem-manager \
             fwupd-plugin-uefi-capsule-data && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
@@ -365,11 +368,13 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         bluez-cups \
         bluez-libs \
         xorg-x11-server-Xwayland && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
     rpm-ostree install \
         mesa-va-drivers \
         libaacs \
         libbdplus \
         libbluray && \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:sentry:switcheroo-control_discrete \
@@ -503,23 +508,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         libatomic.i686 \
         pipewire-alsa.i686 \
         gobject-introspection \
-        clinfo && \
-    sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/fedora-updates.repo && \
-    rpm-ostree install \
-        mesa-vulkan-drivers.i686 \
-        mesa-va-drivers-freeworld.i686 \
-        mesa-vdpau-drivers-freeworld.i686 && \
-    sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree-steam.repo && \
-    sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree.repo && \
-    sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo && \
-    sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo && \
-    rpm-ostree install \
+        clinfo \
         steam && \
-    sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-steam.repo && \
-    sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree.repo && \
-    sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo && \
-    sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo && \
-    sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/fedora-updates.repo && \
     rpm-ostree install \
         lutris \
         umu-launcher \
@@ -532,6 +522,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         winetricks \
         protontricks \
         latencyflex-vulkan-layer \
+        mesa-vulkan-drivers.i686 \
+        mesa-va-drivers.i686 \
         vkBasalt.x86_64 \
         vkBasalt.i686 \
         obs-vkcapture.x86_64 \
@@ -741,9 +733,6 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_hikariknight-looking-glass-kvmfr.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/tailscale.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/charm.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
     systemctl enable tuned.service && \
