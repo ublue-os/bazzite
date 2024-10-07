@@ -338,6 +338,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 # Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
 # Install patched switcheroo control with proper discrete GPU support
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    rpm-ostree override remove \
+        mesa-va-drivers && \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
@@ -364,6 +366,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         bluez-libs \
         xorg-x11-server-Xwayland && \
     rpm-ostree install \
+        mesa-va-drivers \
         libaacs \
         libbdplus \
         libbluray && \
