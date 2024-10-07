@@ -18,7 +18,7 @@ Source2:        https://github.com/Joshua-Ashton/reshade/archive/%{reshade_commi
 Patch0:         0001-cstdint.patch
 
 # https://hhd.dev/
-Patch1:         v2-0001-use-super-1-2-for-steam-overlay.patch
+Patch1:         v2-0001-steam-overlay-hotkeys.patch
 
 # ChimeraOS
 Patch2:         legacy-720p.patch

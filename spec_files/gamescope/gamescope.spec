@@ -22,7 +22,7 @@ Patch1:         chimeraos.patch
 
 # https://hhd.dev/
 Patch2:         disable-steam-touch-click-atom.patch
-Patch3:         v2-0001-use-super-1-2-for-steam-overlay.patch
+Patch3:         v2-0001-steam-overlay-hotkeys.patch
 
 # https://github.com/ValveSoftware/gamescope/issues/1369
 Patch4:         revert-299bc34.patch
