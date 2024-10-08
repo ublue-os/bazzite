@@ -6,7 +6,7 @@
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        3.bazzite
+Release:        6.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -24,11 +24,8 @@ Patch1:         chimeraos.patch
 Patch2:         disable-steam-touch-click-atom.patch
 Patch3:         v2-0001-steam-overlay-hotkeys.patch
 
-# https://github.com/ValveSoftware/gamescope/issues/1369
-Patch4:         revert-299bc34.patch
-
-# https://github.com/ValveSoftware/gamescope/pull/1231
-Patch5:         1231.patch
+# https://github.com/ValveSoftware/gamescope/pull/740
+Patch4:         740.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -66,6 +63,7 @@ BuildRequires:  (pkgconfig(libliftoff) >= 0.4.1 with pkgconfig(libliftoff) < 0.5
 BuildRequires:  pkgconfig(libcap)
 BuildRequires:  pkgconfig(hwdata)
 BuildRequires:  pkgconfig(lcms2)
+BuildRequires:  pkgconfig(luajit)
 BuildRequires:  spirv-headers-devel
 # Enforce the the minimum EVR to contain fixes for all of:
 # CVE-2021-28021 CVE-2021-42715 CVE-2021-42716 CVE-2022-28041 CVE-2023-43898
@@ -101,7 +99,8 @@ Summary:	libs for %{name}
 %summary
 
 %prep
-git clone --depth 1 --branch %{gamescope_tag} %{url}.git
+# git clone --depth 1 --branch %%{gamescope_tag} %%{url}.git
+git clone --depth 1 --branch master %{url}.git
 cd gamescope
 git submodule update --init --recursive
 mkdir -p pkgconfig
@@ -131,6 +130,7 @@ cd gamescope
 %{_bindir}/gamescopectl
 %{_bindir}/gamescopestream
 %{_bindir}/gamescopereaper
+%{_datadir}/gamescope/*
 
 %files libs
 %{_libdir}/libVkLayer_FROG_gamescope_wsi_*.so
