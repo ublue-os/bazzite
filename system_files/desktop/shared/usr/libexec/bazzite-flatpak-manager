@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SCRIPT VERSION
-VER=23
+VER=24
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -25,6 +25,16 @@ fi
 # Ensure Flathub is enabled
 flatpak remote-add --if-not-exists --system flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
 flatpak remote-modify --system --enable flathub
+
+PROTONTRICKS_SETUP_FILE="/etc/bazzite/protontricks_installed"
+if [[ ! -f "$PROTONTRICKS_SETUP_FILE" ]]; then
+  if ! grep -q "com.github.Matoking.protontricks" <<< $(/usr/bin/flatpak list --app --columns=application); then
+    flatpak install --system --assumeyes com.github.Matoking.protontricks
+    touch "$PROTONTRICKS_SETUP_FILE"
+  else
+    touch "$PROTONTRICKS_SETUP_FILE"
+  fi
+fi
 
 # Flatpak theming support
 flatpak override \
@@ -54,6 +64,13 @@ flatpak override \
 flatpak override \
   --device=dri \
   dev.goats.xivlauncher
+
+# Fix permissions for Protontricks
+flatpak override \
+  --filesystem=~/.local/share/Steam \
+  --filesystem=/var/mnt \
+  --filesystem=/run/media \
+  com.github.Matoking.protontricks
 
 # Params needed for HW accelerated video on Nvidia (Ignoring hybrid systems)
 if [[ $IMAGE_FLAVOR =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C display) | wc -l) -le 1 ] && grep -q "vendor: NVIDIA Corporation" <<< $(lshw -C display); then

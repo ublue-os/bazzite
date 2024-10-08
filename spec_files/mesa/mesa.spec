@@ -68,7 +68,9 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 %global ver 24.1.7
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        100.bazzite.{{{ git_dir_version }}}
+Epoch:          1
+%global orig_release 1%{?dist}
+Release:        100.bazzite.%{orig_release}
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
 
@@ -232,7 +234,7 @@ Provides:       libEGL-devel%{?_isa}
 
 %package dri-drivers
 Summary:        Mesa-based DRI drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{?with_va}
 Recommends:     %{name}-va-drivers%{?_isa}
@@ -244,7 +246,7 @@ Recommends:     %{name}-va-drivers%{?_isa}
 %if 0%{?with_omx}
 %package omx-drivers
 Summary:        Mesa-based OMX drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 
 %description omx-drivers
 %{summary}.
@@ -253,7 +255,7 @@ Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rel
 %if 0%{?with_va}
 %package        va-drivers
 Summary:        Mesa-based VA-API video acceleration drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 Obsoletes:      %{name}-vaapi-drivers < 22.2.0-5
 
 %description va-drivers
@@ -263,7 +265,7 @@ Obsoletes:      %{name}-vaapi-drivers < 22.2.0-5
 %if 0%{?with_vdpau}
 %package        vdpau-drivers
 Summary:        Mesa-based VDPAU drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 
 %description vdpau-drivers
 %{summary}.

@@ -215,7 +215,13 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     curl -Lo /etc/yum.repos.d/_copr_rodoma92-kde-cdemu-manager.repo https://copr.fedorainfracloud.org/coprs/rodoma92/kde-cdemu-manager/repo/fedora-"${FEDORA_MAJOR_VERSION}"/rodoma92-kde-cdemu-manager-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     curl -Lo /etc/yum.repos.d/_copr_rodoma92-rmlint.repo https://copr.fedorainfracloud.org/coprs/rodoma92/rmlint/repo/fedora-"${FEDORA_MAJOR_VERSION}"/rodoma92-rmlint-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     curl -Lo /etc/yum.repos.d/tailscale.repo https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
+    rpm-ostree install \
+        https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+        https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
     sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo && \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    curl -Lo /etc/yum.repos.d/negativo17-fedora-steam.repo https://negativo17.org/repos/fedora-steam.repo && \
+    curl -Lo /etc/yum.repos.d/negativo17-fedora-rar.repo https://negativo17.org/repos/fedora-rar.repo && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
@@ -300,12 +306,11 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
-# Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
+# Add ublue packages
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=akmods,src=/rpms,dst=/tmp/akmods-rpms \
     --mount=type=bind,from=akmods-extra,src=/rpms,dst=/tmp/akmods-extra-rpms \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    curl -Lo /etc/yum.repos.d/negativo17-fedora-multimedia.repo https://negativo17.org/repos/fedora-multimedia.repo && \
     rpm-ostree install \
         /tmp/akmods-rpms/kmods/*kvmfr*.rpm \
         /tmp/akmods-rpms/kmods/*xone*.rpm \
@@ -321,7 +326,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         /tmp/akmods-extra-rpms/kmods/*bmi260*.rpm \
         /tmp/akmods-extra-rpms/kmods/*ryzen-smu*.rpm \
         /tmp/akmods-extra-rpms/kmods/*evdi*.rpm && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
@@ -329,18 +333,16 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             fwupd-plugin-flashrom \
             fwupd-plugin-modem-manager \
             fwupd-plugin-uefi-capsule-data && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-*.repo && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
 # Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
 # Install patched switcheroo control with proper discrete GPU support
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree override remove \
-        mesa-va-drivers-freeworld && \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        mesa-filesystem \
         mesa-libxatracker \
         mesa-libglapi \
         mesa-dri-drivers \
@@ -362,12 +364,12 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         bluez-cups \
         bluez-libs \
         xorg-x11-server-Xwayland && \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/rpmfusion-*.repo && \
     rpm-ostree install \
-        mesa-va-drivers-freeworld \
-        mesa-vdpau-drivers-freeworld.x86_64 \
         libaacs \
         libbdplus \
         libbluray && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-*.repo && \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:sentry:switcheroo-control_discrete \
@@ -428,8 +430,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         yad \
         f3 \
         pulseaudio-utils \
-        unrar \
         lzip \
+        rar \
         libxcrypt-compat \
         mesa-libGLU \
         vulkan-tools \
@@ -502,23 +504,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         pipewire-alsa.i686 \
         gobject-introspection \
         clinfo \
-        https://kojipkgs.fedoraproject.org//packages/SDL2/2.30.3/1.fc40/i686/SDL2-2.30.3-1.fc40.i686.rpm && \
-    sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/fedora-updates.repo && \
-    rpm-ostree install \
-        mesa-vulkan-drivers.i686 \
-        mesa-va-drivers-freeworld.i686 \
-        mesa-vdpau-drivers-freeworld.i686 && \
-    sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree-steam.repo && \
-    sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree.repo && \
-    sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo && \
-    sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo && \
-    rpm-ostree install \
         steam && \
-    sed -i '0,/enabled=1/s//enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-steam.repo && \
-    sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree.repo && \
-    sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo && \
-    sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo && \
-    sed -i '0,/enabled=0/s//enabled=1/' /etc/yum.repos.d/fedora-updates.repo && \
     rpm-ostree install \
         lutris \
         umu-launcher \
@@ -529,12 +515,16 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         libFAudio.x86_64 \
         libFAudio.i686 \
         winetricks \
-        protontricks \
         latencyflex-vulkan-layer \
+        mesa-vulkan-drivers.i686 \
+        mesa-va-drivers.i686 \
         vkBasalt.x86_64 \
         vkBasalt.i686 \
         mangohud.x86_64 \
-        mangohud.i686 && \
+        mangohud.i686 \
+        obs-vkcapture.x86_64 \
+        libobs_vkcapture.x86_64 \
+        libobs_glcapture.x86_64 && \
     ln -s wine32 /usr/bin/wine && \
     ln -s wine32-preloader /usr/bin/wine-preloader && \
     ln -s wineserver64 /usr/bin/wineserver && \
@@ -716,30 +706,6 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     echo "import \"/usr/share/ublue-os/just/84-bazzite-virt.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/85-bazzite-image.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/90-bazzite-de.just\"" >> /usr/share/ublue-os/justfile && \
-    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-      mkdir -p "/usr/share/ublue-os/dconfs/desktop-kinoite/" && \
-      cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-desktop-kinoite-"*".gschema.override" "/usr/share/ublue-os/dconfs/desktop-kinoite/" && \
-      find "/etc/dconf/db/distro.d/" -maxdepth 1 -type f -exec cp {} "/usr/share/ublue-os/dconfs/desktop-kinoite/" \; && \
-      dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/desktop-kinoite/zz0-"*"-bazzite-desktop-kinoite-"*".gschema.override" && \
-      rm "/usr/share/ublue-os/dconfs/desktop-kinoite/zz0-"*"-bazzite-desktop-kinoite-"*".gschema.override" && \
-    ; else \
-      mkdir -p "/usr/share/ublue-os/dconfs/desktop-silverblue/" && \
-      cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/desktop-silverblue/" && \
-      find "/etc/dconf/db/distro.d/" -maxdepth 1 -type f -exec cp {} "/usr/share/ublue-os/dconfs/desktop-silverblue/" \; && \
-      dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" && \
-      # Replace sort-directories-first to be compatible with dconf
-      sed -i 's/\[org.gtk.Settings.FileChooser\]/\[org\/gtk\/settings\/file-chooser\]/g; s/\[org.gtk.gtk4.Settings.FileChooser\]/\[org\/gtk\/gtk4\/settings\/file-chooser\]/g' "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-00-bazzite-desktop-silverblue-global" && \
-      rm "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" && \
-    ; fi && \
-    # Test Bazzite gschema override for errors. If there are no errors, proceed with compiling Bazzite gschema, which includes setting overrides.
-    mkdir -p /tmp/bazzite-schema-test && \
-    find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" -exec cp {} "/tmp/bazzite-schema-test/" \; && \
-    cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/" && \
-    echo "Running error test for Bazzite Desktop gschema override. Aborting if failed." && \
-    glib-compile-schemas --strict /tmp/bazzite-schema-test && \
-    echo "Compiling gschema to include Bazzite Desktop setting overrides" && \
-    glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
-    rm -r /tmp/bazzite-schema-test && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
@@ -758,9 +724,9 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_hikariknight-looking-glass-kvmfr.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/tailscale.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/charm.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree-updates.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-steam.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-rar.repo && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
     systemctl enable tuned.service && \
@@ -769,7 +735,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl disable brew-upgrade.timer && \
     systemctl disable brew-update.timer && \
     systemctl enable btrfs-dedup@var-home.timer && \
-    systemctl enable displaylink.service && \
+    systemctl disable displaylink.service && \
     systemctl enable input-remapper.service && \
     systemctl unmask bazzite-flatpak-manager.service && \
     systemctl enable bazzite-flatpak-manager.service && \
@@ -777,7 +743,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl enable ublue-update.timer && \
     systemctl enable incus-workaround.service && \
     systemctl enable bazzite-hardware-setup.service && \
-    systemctl enable tailscaled.service && \
+    systemctl disable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
@@ -923,22 +889,6 @@ RUN /usr/libexec/containerbuild/image-info && \
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
     ; fi && \
-    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
-      mkdir -p "/usr/share/ublue-os/dconfs/deck-silverblue/" && \
-      cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-deck-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/deck-silverblue/" && \
-      find "/etc/dconf/db/distro.d/" -maxdepth 1 -type f -exec cp {} "/usr/share/ublue-os/dconfs/deck-silverblue/" \; && \
-      dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/deck-silverblue/zz0-"*"-bazzite-deck-silverblue-"*".gschema.override" && \
-      rm "/usr/share/ublue-os/dconfs/deck-silverblue/zz0-"*"-bazzite-deck-silverblue-"*".gschema.override" && \
-    ; fi && \
-    # Test Bazzite gschema override for errors. If there are no errors, proceed with compiling Bazzite gschema, which includes setting overrides.
-    mkdir -p /tmp/bazzite-schema-test && \
-    find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" -exec cp {} "/tmp/bazzite-schema-test/" \; && \
-    cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/" && \
-    echo "Running error test for Bazzite Deck gschema override. Aborting if failed." && \
-    glib-compile-schemas --strict /tmp/bazzite-schema-test && \
-    echo "Compiling gschema to include Bazzite Deck setting overrides" && \
-    glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
-    rm -r /tmp/bazzite-schema-test && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \
@@ -999,6 +949,10 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 # Install NVIDIA driver
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=nvidia-akmods,src=/rpms,dst=/tmp/akmods-rpms \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    rpm-ostree install \
+        mesa-vdpau-drivers.x86_64 \
+        mesa-vdpau-drivers.i686 && \
     curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/hwe/main/nvidia-install.sh && \
     chmod +x /tmp/nvidia-install.sh && \
     IMAGE_NAME="${BASE_IMAGE_NAME}" /tmp/nvidia-install.sh && \
@@ -1009,21 +963,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 
 # Cleanup & Finalize
 RUN echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
-    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
-      mkdir -p "/usr/share/ublue-os/dconfs/nvidia-silverblue/" && \
-      cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/nvidia-silverblue/" && \
-      dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" && \
-      rm "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" && \
-    ; fi && \
-    # Test Bazzite gschema override for errors. If there are no errors, proceed with compiling Bazzite gschema, which includes setting overrides.
-    mkdir -p /tmp/bazzite-schema-test && \
-    find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" -exec cp {} "/tmp/bazzite-schema-test/" \; && \
-    cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/" && \
-    echo "Running error test for Bazzite Nvidia gschema override. Aborting if failed." && \
-    glib-compile-schemas --strict /tmp/bazzite-schema-test && \
-    echo "Compiling gschema to include Bazzite Nvidia setting overrides" && \
-    glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
-    rm -r /tmp/bazzite-schema-test && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     mkdir -p /var/tmp && chmod 1777 /var/tmp && \
     /usr/libexec/containerbuild/image-info && \
     /usr/libexec/containerbuild/build-initramfs && \

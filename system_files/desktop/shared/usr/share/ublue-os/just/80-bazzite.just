@@ -71,6 +71,14 @@ add-user-to-input-group:
     fi
     sudo usermod -a -G input $USER
 
+# Enable support for DisplayLink
+enable-displaylink:
+    systemctl enable --now displaylink.service
+
+# Enable support for Tailscale
+enable-tailscale:
+    systemctl enable --now tailscaled.service
+
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 configure-watchdog ACTION="":
     #!/usr/bin/bash

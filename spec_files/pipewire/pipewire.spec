@@ -1,6 +1,6 @@
 %global majorversion 1
 %global minorversion 0
-%global microversion 7
+%global microversion 8
 
 %global apiversion   0.3
 %global spaversion   0.2
@@ -9,7 +9,7 @@
 %global ms_version   0.4.2
 
 # For rpmdev-bumpspec and releng automation
-%global baserelease 2
+%global baserelease 1
 
 #global snapdate   20210107
 #global gitcommit  b17db2cebc1a5ab2c01851d29c05f79cd2f262bb
@@ -44,8 +44,7 @@
 %bcond_without jackserver_plugin
 %bcond_without libmysofa
 %bcond_without lv2
-#bcond_without roc
-%bcond_with roc
+%bcond_without roc
 %endif
 
 %if 0%{?rhel} || ("%{_arch}" == "s390x")
@@ -424,26 +423,26 @@ cp %{SOURCE1} subprojects/packagefiles/
 
 %build
 %meson \
-    -D docs=enabled -D man=enabled -D gstreamer=enabled -D systemd=enabled	\
-    -D sdl2=disabled 								\
-    -D audiotestsrc=disabled -D videotestsrc=disabled				\
-    -D volume=disabled -D bluez5-codec-aptx=disabled 		  		\
-    -D bluez5-codec-lc3plus=disabled -D bluez5-codec-lc3=enabled		\
+    -D docs=enabled -D man=enabled -D gstreamer=enabled -D systemd=enabled  \
+    -D sdl2=disabled                                \
+    -D audiotestsrc=disabled -D videotestsrc=disabled               \
+    -D volume=disabled -D bluez5-codec-aptx=disabled                \
+    -D bluez5-codec-lc3plus=disabled -D bluez5-codec-lc3=enabled        \
 %ifarch s390x
-    -D bluez5-codec-ldac=disabled						\
+    -D bluez5-codec-ldac=disabled                       \
 %endif
-    -D session-managers=[] 							\
-    -D rtprio-server=60 -D rtprio-client=55 -D rlimits-rtprio=70		\
-    %{!?with_jack:-D pipewire-jack=disabled} 					\
-    %{!?with_jackserver_plugin:-D jack=disabled} 				\
-    %{!?with_libcamera_plugin:-D libcamera=disabled} 				\
-    %{?with_jack:-D jack-devel=true} 						\
-    %{!?with_alsa:-D pipewire-alsa=disabled}					\
-    %{?with_vulkan:-D vulkan=enabled}						\
-    %{!?with_libmysofa:-D libmysofa=disabled}					\
-    %{!?with_lv2:-D lv2=disabled}						\
-    %{!?with_roc:-D roc=disabled}						\
-    %{!?with_ffado:-D libffado=disabled}					\
+    -D session-managers=[]                          \
+    -D rtprio-server=60 -D rtprio-client=55 -D rlimits-rtprio=70        \
+    %{!?with_jack:-D pipewire-jack=disabled}                    \
+    %{!?with_jackserver_plugin:-D jack=disabled}                \
+    %{!?with_libcamera_plugin:-D libcamera=disabled}                \
+    %{?with_jack:-D jack-devel=true}                        \
+    %{!?with_alsa:-D pipewire-alsa=disabled}                    \
+    %{?with_vulkan:-D vulkan=enabled}                       \
+    %{!?with_libmysofa:-D libmysofa=disabled}                   \
+    %{!?with_lv2:-D lv2=disabled}                       \
+    %{!?with_roc:-D roc=disabled}                       \
+    %{!?with_ffado:-D libffado=disabled}                    \
     %{nil}
 %meson_build
 
@@ -834,14 +833,20 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %endif
 
 %changelog
+* Thu Sep 19 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.8-1
+- Update version to 1.0.8
+
 * Tue Jun 18 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 1.0.7-2
 - Rebuild for libcamera 0.3
 
 * Fri May 24 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.7-1
 - Update version to 1.0.7
- 
+
 * Thu May 09 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.6-1
 - Update version to 1.0.6
+
+* Tue Apr 23 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.5-2
+- Enable ROC again
 
 * Mon Apr 15 2024 Wim Taymans <wtaymans@redhat.com> - 1.0.5-1
 - Update version to 1.0.5
