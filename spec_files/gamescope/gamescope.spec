@@ -130,6 +130,7 @@ cd gamescope
 %{_bindir}/gamescopectl
 %{_bindir}/gamescopestream
 %{_bindir}/gamescopereaper
+%{_datadir}/gamescope/*
 
 %files libs
 %{_libdir}/libVkLayer_FROG_gamescope_wsi_*.so

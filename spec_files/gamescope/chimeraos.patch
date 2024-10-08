@@ -1968,7 +1968,7 @@ index ae5c767..1fc35e5 100644
  				}
 -			} else if ( g_customRefreshRates.size() > 0 ) {
 +			} else if ( g_customRefreshRates.size() > 0 && GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL ) {
- 				m_Mutable.ValidDynamicRefreshRates = std::span(g_customRefreshRates);
+ 				m_Mutable.ValidDynamicRefreshRates = g_customRefreshRates;
  				return;
  			}
 -- 
@@ -1994,7 +1994,7 @@ index 1fc35e5..6048a2d 100644
  				}
 -			} else if ( g_customRefreshRates.size() > 0 && GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL ) {
 +			} else if ( g_customRefreshRates.size() > 0 && ( GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL || g_bExternalForced ) ) {
- 				m_Mutable.ValidDynamicRefreshRates = std::span(g_customRefreshRates);
+ 				m_Mutable.ValidDynamicRefreshRates = g_customRefreshRates;
  				return;
  			}
 -- 
