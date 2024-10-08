@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SCRIPT VERSION
-VER=23
+VER=24
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -67,6 +67,7 @@ flatpak override \
 
 # Fix permissions for Protontricks
 flatpak override \
+  --filesystem=~/.local/share/Steam \
   --filesystem=/var/mnt \
   --filesystem=/run/media \
   com.github.Matoking.protontricks
