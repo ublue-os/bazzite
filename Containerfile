@@ -733,7 +733,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl disable brew-upgrade.timer && \
     systemctl disable brew-update.timer && \
     systemctl enable btrfs-dedup@var-home.timer && \
-    systemctl enable displaylink.service && \
+    systemctl disable displaylink.service && \
     systemctl enable input-remapper.service && \
     systemctl unmask bazzite-flatpak-manager.service && \
     systemctl enable bazzite-flatpak-manager.service && \
