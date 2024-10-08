@@ -6,7 +6,7 @@
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        3.bazzite
+Release:        4.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -29,6 +29,12 @@ Patch4:         revert-299bc34.patch
 
 # https://github.com/ValveSoftware/gamescope/pull/1231
 Patch5:         1231.patch
+
+# https://github.com/ValveSoftware/gamescope/commit/b288a82a61005b91dd268b8ea4e8d124d4dd5267
+Patch6:         ally-display.patch
+
+# https://github.com/ValveSoftware/gamescope/pull/740
+Patch7:         740.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
