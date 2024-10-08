@@ -5,7 +5,7 @@
 
 Name:           gamescope-legacy
 Version:        3.14.2
-Release:        3.bazzite
+Release:        4.bazzite
 Summary:        Legacy builds of gamescope, a micro-compositor for video games on Wayland
 
 License:        BSD
