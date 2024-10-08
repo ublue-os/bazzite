@@ -951,6 +951,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 # Install NVIDIA driver
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=nvidia-akmods,src=/rpms,dst=/tmp/akmods-rpms \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/hwe/main/nvidia-install.sh && \
     chmod +x /tmp/nvidia-install.sh && \
     IMAGE_NAME="${BASE_IMAGE_NAME}" /tmp/nvidia-install.sh && \
@@ -961,6 +962,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 
 # Cleanup & Finalize
 RUN echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     mkdir -p /var/tmp && chmod 1777 /var/tmp && \
     /usr/libexec/containerbuild/image-info && \
     /usr/libexec/containerbuild/build-initramfs && \
