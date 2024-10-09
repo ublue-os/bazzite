@@ -1,7 +1,7 @@
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG BASE_IMAGE_FLAVOR="${BASE_IMAGE_FLAVOR:-main}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
-ARG NVIDIA_FLAVOR=${NVIDIA_FLAVOR:-nvidia}""
+ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia}"
 ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-fsync-ba}"
 ARG KERNEL_VERSION="${KERNEL_VERSION:-6.9.12-8.fsync.fc40.x86_64}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
@@ -22,7 +22,7 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
-ARG NVIDIA_FLAVOR=${NVIDIA_FLAVOR:-nvidia}""
+ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia}"
 ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-fsync-ba}"
 ARG KERNEL_VERSION="${KERNEL_VERSION:-6.9.12-208.fsync.fc40.x86_64}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
@@ -412,7 +412,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         tuned-ppd \
         tuned-utils \
         tuned-gtk \
-        tuned-profiles-atomic \
         tuned-profiles-cpu-partitioning \
         i2c-tools \
         udica \
@@ -707,6 +706,28 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     echo "import \"/usr/share/ublue-os/just/84-bazzite-virt.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/85-bazzite-image.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/90-bazzite-de.just\"" >> /usr/share/ublue-os/justfile && \
+    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
+      mkdir -p "/usr/share/ublue-os/dconfs/desktop-kinoite/" && \
+      cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-desktop-kinoite-"*".gschema.override" "/usr/share/ublue-os/dconfs/desktop-kinoite/" && \
+      find "/etc/dconf/db/distro.d/" -maxdepth 1 -type f -exec cp {} "/usr/share/ublue-os/dconfs/desktop-kinoite/" \; && \
+      dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/desktop-kinoite/zz0-"*"-bazzite-desktop-kinoite-"*".gschema.override" && \
+      rm "/usr/share/ublue-os/dconfs/desktop-kinoite/zz0-"*"-bazzite-desktop-kinoite-"*".gschema.override" \
+    ; else \
+      mkdir -p "/usr/share/ublue-os/dconfs/desktop-silverblue/" && \
+      cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/desktop-silverblue/" && \
+      find "/etc/dconf/db/distro.d/" -maxdepth 1 -type f -exec cp {} "/usr/share/ublue-os/dconfs/desktop-silverblue/" \; && \
+      dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" && \
+      sed -i 's/\[org.gtk.Settings.FileChooser\]/\[org\/gtk\/settings\/file-chooser\]/g; s/\[org.gtk.gtk4.Settings.FileChooser\]/\[org\/gtk\/gtk4\/settings\/file-chooser\]/g' "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-00-bazzite-desktop-silverblue-global" && \
+      rm "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" \
+    ; fi && \
+    mkdir -p /tmp/bazzite-schema-test && \
+    find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" -exec cp {} "/tmp/bazzite-schema-test/" \; && \
+    cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/" && \
+    echo "Running error test for Bazzite Desktop gschema override. Aborting if failed." && \
+    glib-compile-schemas --strict /tmp/bazzite-schema-test && \
+    echo "Compiling gschema to include Bazzite Desktop setting overrides" && \
+    glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
+    rm -r /tmp/bazzite-schema-test && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
@@ -757,7 +778,8 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     /usr/libexec/containerbuild/image-info && \
     /usr/libexec/containerbuild/build-initramfs && \
     /usr/libexec/containerbuild/cleanup.sh && \
-    mkdir -p /var/tmp && chmod 1777 /var/tmp && \
+    mkdir -p /var/tmp && \
+    chmod 1777 /var/tmp && \
     ostree container commit
 
 FROM bazzite AS bazzite-deck
@@ -765,7 +787,7 @@ FROM bazzite AS bazzite-deck
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-deck}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
-ARG NVIDIA_FLAVOR=${NVIDIA_FLAVOR:-nvidia}""
+ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia}"
 ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-fsync-ba}"
 ARG KERNEL_VERSION="${KERNEL_VERSION:-6.9.12-206.fsync.fc40.x86_64}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
@@ -890,6 +912,21 @@ RUN /usr/libexec/containerbuild/image-info && \
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
     ; fi && \
+    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
+      mkdir -p "/usr/share/ublue-os/dconfs/deck-silverblue/" && \
+      cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-deck-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/deck-silverblue/" && \
+      find "/etc/dconf/db/distro.d/" -maxdepth 1 -type f -exec cp {} "/usr/share/ublue-os/dconfs/deck-silverblue/" \; && \
+      dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/deck-silverblue/zz0-"*"-bazzite-deck-silverblue-"*".gschema.override" && \
+      rm "/usr/share/ublue-os/dconfs/deck-silverblue/zz0-"*"-bazzite-deck-silverblue-"*".gschema.override" \
+    ; fi && \
+    mkdir -p /tmp/bazzite-schema-test && \
+    find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" -exec cp {} "/tmp/bazzite-schema-test/" \; && \
+    cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/" && \
+    echo "Running error test for Bazzite Deck gschema override. Aborting if failed." && \
+    glib-compile-schemas --strict /tmp/bazzite-schema-test && \
+    echo "Compiling gschema to include Bazzite Deck setting overrides" && \
+    glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
+    rm -r /tmp/bazzite-schema-test && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \
@@ -921,7 +958,7 @@ FROM bazzite AS bazzite-nvidia
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-nvidia}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-nvidia}"
-ARG NVIDIA_FLAVOR=${NVIDIA_FLAVOR:-nvidia}""
+ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia}"
 ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-fsync-ba}"
 ARG KERNEL_VERSION="${KERNEL_VERSION:-6.9.12-208.fsync.fc40.x86_64}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
@@ -965,6 +1002,20 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 # Cleanup & Finalize
 RUN echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
+      mkdir -p "/usr/share/ublue-os/dconfs/nvidia-silverblue/" && \
+      cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/nvidia-silverblue/" && \
+      dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" && \
+      rm "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" \
+    ; fi && \
+    mkdir -p /tmp/bazzite-schema-test && \
+    find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" -exec cp {} "/tmp/bazzite-schema-test/" \; && \
+    cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/" && \
+    echo "Running error test for Bazzite Nvidia gschema override. Aborting if failed." && \
+    glib-compile-schemas --strict /tmp/bazzite-schema-test && \
+    echo "Compiling gschema to include Bazzite Nvidia setting overrides" && \
+    glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
+    rm -r /tmp/bazzite-schema-test && \
     mkdir -p /var/tmp && chmod 1777 /var/tmp && \
     /usr/libexec/containerbuild/image-info && \
     /usr/libexec/containerbuild/build-initramfs && \

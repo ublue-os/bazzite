@@ -77,7 +77,8 @@ fi
 if [[ ! -f "$BAZZITE_CONFIG_DIR/ptyxis-initialized" ]]; then
   echo 'Configuring Ptyxis'
   if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
-    dconf load / < /etc/dconf/db/local.d/02-bazzite-kde
+    dconf load / < /usr/share/ublue-os/dconfs/desktop-kinoite/zz0-00-bazzite-desktop-kinoite-global
+    dconf load / < /usr/share/ublue-os/dconfs/desktop-kinoite/00-bazzite-desktop-kinoite-ptyxis
   fi
   touch "$BAZZITE_CONFIG_DIR/ptyxis-initialized"
 fi

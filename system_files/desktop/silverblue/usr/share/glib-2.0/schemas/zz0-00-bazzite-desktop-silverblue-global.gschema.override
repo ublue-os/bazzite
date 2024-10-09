@@ -1,0 +1,49 @@
+[org.gnome.desktop.wm.keybindings]
+switch-applications=['<Super>Tab']
+switch-applications-backward=['<Shift><Super>Tab']
+switch-windows=['<Alt>Tab']
+switch-windows-backward=['<Shift><Alt>Tab']
+
+[org.gnome.desktop.peripherals.keyboard]
+numlock-state=true
+
+[org.gtk.Settings.FileChooser]
+sort-directories-first=true
+
+[org.gtk.gtk4.Settings.FileChooser]
+sort-directories-first=true
+
+[org.gnome.nautilus.preferences]
+show-create-link=true
+
+[org.gnome.mutter]
+experimental-features=['variable-refresh-rate', 'scale-monitor-framebuffer']
+check-alive-timeout=uint32 20000
+
+[org.gnome.software]
+allow-updates=false
+download-updates=false
+download-updates-notify=false
+
+[com.github.stunkymonkey.nautilus-open-any-terminal]
+terminal='ptyxis'
+keybindings=''
+new-tab=false
+flatpak='off'
+
+[org.gnome.Ptyxis]
+restore-session=false
+restore-window-size=false
+audible-bell=false
+
+[org.gnome.shell.extensions.appindicator]
+legacy-tray-enabled=false
+
+#-------------- REMAINING SCHEMAS IN THIS SETTING SECTION ARE LOCATED IN DCONF --------------#
+# Settings bellow are supported with gschema override, but other settings, which are relocatable schemas, are not. Edit dconfs if you need to modify relocatable schemas.
+
+# LogoMenu extension misses Gschema XML file, so it's in dconf
+
+# Modifying shortcut actions for custom0, custom1, custom2, etc. are recognized as relocatable schemas
+[org.gnome.settings-daemon.plugins.media-keys]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/']

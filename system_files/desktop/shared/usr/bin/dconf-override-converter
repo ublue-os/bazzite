@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+# Function to convert .gschema.override to dconf
+convert_to_dconf() {
+    local output_dir="${!#}"  # Last argument as output directory
+    if [[ ! -d "$output_dir" ]]; then
+        output_dir="$(dirname "${1}")"  # Default to input file's directory
+    fi
+
+    for input_file in "${@}"; do
+        if [[ "${input_file}" != *".gschema.override" ]]; then
+            printf "\e[1;31mERROR: ${input_file} is not a gschema override, so it can't be converted to dconf\e[0m\n" 1>&2
+            continue
+        fi
+        local output_file="${output_dir}/$(basename "${input_file%.gschema.override}")"
+        
+        # Check if output file exists and rename if necessary
+        if [[ -e "${output_file}" ]]; then
+            output_file="${output_file}_$(date +%s)"  # Append timestamp
+        fi
+        
+        while IFS= read -r line; do
+            if [[ "${line}" =~ ^\[ ]]; then
+                line="${line//./\/}"
+            fi
+            echo "$line" >> "$output_file"
+        done < "${input_file}"
+    done
+}
+
+
+# Function to convert dconf to .gschema.override
+convert_to_override() {
+    local output_dir="${!#}"  # Last argument as output directory
+    if [[ ! -d "$output_dir" ]]; then
+        output_dir="$(dirname "${1}")"  # Default to input file's directory
+    fi
+
+    for input_file in "${@}"; do
+        if [[ "${input_file}" == *".gschema.override" ]]; then
+            printf "\e[1;31mERROR: ${input_file} is a gschema override, there is no need to convert it to override again\e[0m\n" 1>&2
+            continue
+        fi
+        local output_file="${output_dir}/$(basename "${input_file%.dconf}.gschema.override")"
+
+        # Check if output file exists and rename if necessary
+        if [[ -e "${output_file}" ]]; then
+            output_file="${output_file}_$(date +%s)"  # Append timestamp
+        fi
+
+        while IFS= read -r line; do
+            if [[ "${line}" =~ ^\[ ]]; then
+                line="${line//\//.}"
+            fi
+            echo "$line" >> "$output_file"
+        done < "${input_file}"
+    done
+}
+
+# Main script logic
+if [[ "${1}" == "to-dconf" ]]; then
+    shift
+    convert_to_dconf "$@"
+elif [[ "${1}" == "to-override" ]]; then
+    shift
+    convert_to_override "$@"
+else
+    echo "Usage: dconf-override-converter {to-dconf|to-override} <input_file1> <input_file2> ... [output_directory]"
+    echo "If not specified:"
+    echo "Output directory: defaults to output directory where input files are located"
+    echo "WARNING: Wildcard is buggy when folders are present there, beware, will see how to fix"
+fi
