@@ -412,7 +412,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         tuned-ppd \
         tuned-utils \
         tuned-gtk \
-        tuned-profiles-atomic \
         tuned-profiles-cpu-partitioning \
         i2c-tools \
         udica \
