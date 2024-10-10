@@ -1,9 +1,10 @@
 gamescope.config.known_displays.lenovo_legiongo_lcd = {
     pretty_name = "Lenovo Legion Go LCD",
     dynamic_refresh_rates = {
-        60, 126, 128, 130, 132,
-        134, 136, 138, 140, 142,
-        144
+        60,
+        125, 126, 127, 128, 129,
+        130, 131, 132, 133, 134, 135, 136, 137, 138, 139,
+        140, 141, 142, 143, 144
     },
     hdr = {
         -- Setup some fallbacks for undocking with HDR, meant
