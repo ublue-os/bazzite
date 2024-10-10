@@ -1,18 +1,13 @@
-local lenovo_legiongo_lcd_colorimetry = {
-    r = { x = 0.6250, y = 0.3398 },
-    g = { x = 0.2802, y = 0.5947 },
-    b = { x = 0.1552, y = 0.0703 },
-    w = { x = 0.2832, y = 0.2978 }
-}
-
 gamescope.config.known_displays.lenovo_legiongo_lcd = {
     pretty_name = "Lenovo Legion Go LCD",
     dynamic_refresh_rates = {
-        60, 125, 126, 127, 128, 129, 130, 131, 132, 133,
-        134, 135, 136, 137, 138, 139, 140, 141, 142, 143,
+        60, 126, 128, 130, 132,
+        134, 136, 138, 140, 142,
         144
     },
     hdr = {
+        -- Setup some fallbacks for undocking with HDR, meant
+        -- for the internal panel. It does not support HDR.
         supported = false,
         force_enabled = false,
         eotf = gamescope.eotf.gamma22,
@@ -20,12 +15,13 @@ gamescope.config.known_displays.lenovo_legiongo_lcd = {
         max_frame_average_luminance = 500,
         min_content_light_level = 0.5
     },
-    colorimetry = lenovo_legiongo_lcd_colorimetry,
+    -- Use the EDID colorimetry for now, but someone should check
+    -- if the EDID colorimetry truly matches what the display is capable of.
     dynamic_modegen = function(base_mode, refresh)
         debug("Generating mode "..refresh.."Hz for Lenovo Legion Go LCD")
         local mode = base_mode
 
-        -- Set resolution to 1600x2560
+        -- These are only tuned for 1600x2560
         gamescope.modegen.set_resolution(mode, 1600, 2560)
 
         -- Horizontal timings: Hfront, Hsync, Hback
@@ -33,18 +29,19 @@ gamescope.config.known_displays.lenovo_legiongo_lcd = {
         -- Vertical timings: Vfront, Vsync, Vback
         gamescope.modegen.set_v_timings(mode, 30, 4, 96)
 
-        -- Calculate pixel clock and refresh rate
         mode.clock = gamescope.modegen.calc_max_clock(mode, refresh)
         mode.vrefresh = gamescope.modegen.calc_vrefresh(mode)
 
         return mode
     end,
     matches = function(display)
-        if display.vendor == "LEN" and display.model == "Go Display" then
-            debug("[lenovo_legiongo_lcd] Matched vendor: "..display.vendor.." model: "..display.model)
+        -- There is only a single panel in use on Lenovo Legion Go devices.
+        if display.vendor == "LEN" and display.model == "Go Display" and display.product == 0x0001 then
+            debug("[lenovo_legiongo_lcd] Matched vendor: "..display.vendor.." model: "..display.model.." product: "..display.product)
             return 5000
         end
         return -1
     end
 }
 debug("Registered Lenovo Legion Go LCD as a known display")
+--debug(inspect(gamescope.config.known_displays.lenovo_legiongo_lcd))
