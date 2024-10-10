@@ -62,7 +62,7 @@ sed -i "/^REDHAT_BUGZILLA_PRODUCT=/d; /^REDHAT_BUGZILLA_PRODUCT_VERSION=/d; /^RE
 sed -i "s|^VERSION_CODENAME=.*|VERSION_CODENAME=\"$CODE_NAME\"|" /usr/lib/os-release
 
 if [[ -n "${SHA_HEAD_SHORT:-}" ]]; then
-  echo "BUILD_ID=\"$SHA_HEAD_SHORT\"" >> /usr/lib/os-release
+  echo "BUILD_ID=\"$SHA_HEAD_SHORT (Built $(date +%m-%d-%Y))\"" >> /usr/lib/os-release
 fi
 
 # FIXME: Pretty name needs to have deck/KDE/GNOME/etc
