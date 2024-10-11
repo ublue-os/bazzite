@@ -260,6 +260,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     curl https://gitlab.com/evlaV/linux-firmware-neptune/-/archive/"${JUPITER_FIRMWARE_VERSION}"/linux-firmware-neptune-"${JUPITER_FIRMWARE_VERSION}".tar.gz?path=ath11k/QCA206X -o /tmp/linux-firmware-galileo/ath11k.tar.gz && \
     tar --strip-components 1 --no-same-owner --no-same-permissions --no-overwrite-dir -xvf /tmp/linux-firmware-galileo/ath11k.tar.gz -C /tmp/linux-firmware-galileo && \
     xz --check=crc32 /tmp/linux-firmware-galileo/ath11k/QCA206X/hw2.1/* && \
+    rm -f /usr/lib/firmware/ath11k/QCA206X/* && \
+    rm -rf /usr/lib/firmware/ath11k/QCA2066 && \
     mv -vf /tmp/linux-firmware-galileo/ath11k/QCA206X /usr/lib/firmware/ath11k/QCA206X && \
     rm -rf /tmp/linux-firmware-galileo/ath11k && \
     rm -rf /tmp/linux-firmware-galileo/ath11k.tar.gz && \
