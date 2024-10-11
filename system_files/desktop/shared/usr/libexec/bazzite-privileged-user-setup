@@ -5,3 +5,6 @@ timedatectl set-ntp true
 
 # Allow Tailscale Control
 tailscale set --operator="$(systemd-escape $1)"
+
+# Enable Steam Web Debug Service
+systemctl enable steam-web-debug-portforward@$(systemd-escape $1).service && \
