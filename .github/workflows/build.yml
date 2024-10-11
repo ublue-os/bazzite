@@ -197,6 +197,9 @@ jobs:
           # Generate the primary version key that will be stored on os-release,
           # shown on the bootloader, and used for the image tag.
           UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
+          # Remove .0 suffix from upstream tag so we can add our own and
+          # the wrong one does not end up in the image.
+          UPSTREAM_TAG="${UPSTREAM_TAG%.*}"
           FEDORA_VERSION="${{ matrix.fedora_version }}"
           SHA_SHORT="${GITHUB_SHA::7}"
 
