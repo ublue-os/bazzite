@@ -1,7 +1,7 @@
 From 342d51127c33b38d95605eecb824089fb85f831e Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 17 May 2024 19:43:49 -0500
-Subject: [PATCH 01/23] Add touch-gestures to open up Steam menus
+Subject: [PATCH 01/22] Add touch-gestures to open up Steam menus
 
 ---
  src/main.cpp     |  5 +++++
@@ -104,7 +104,7 @@ index 0569472..3304c18 100644
 From 438d40cbd225a6a2ca7c66e6ac6be2ef0a238a62 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 17 May 2024 20:16:20 -0500
-Subject: [PATCH 02/23] Add bypass_steam_resolution to workaround the 720p/800p
+Subject: [PATCH 02/22] Add bypass_steam_resolution to workaround the 720p/800p
  restrictions Steam has for games
 
 ---
@@ -176,7 +176,7 @@ index 11a7cad..2e0e297 100644
 From 1f40e410d662cd0041764b738067037e45df2192 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Wed, 26 Jul 2023 20:46:29 -0500
-Subject: [PATCH 03/23] Add force external orientation.
+Subject: [PATCH 03/22] Add force external orientation.
 
 Co-authored-by: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
 ---
@@ -326,7 +326,7 @@ index ceeef24..62876c2 100644
 From 5ecd89b45675fd4f648a454884db2f970e17894f Mon Sep 17 00:00:00 2001
 From: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
 Date: Tue, 12 Mar 2024 00:07:57 +0100
-Subject: [PATCH 04/23] implement force-panel-type
+Subject: [PATCH 04/22] implement force-panel-type
 
 ---
  src/backend.h          |  3 +++
@@ -422,7 +422,7 @@ index 1e0b71e..967d402 100644
 From 9f4fe80258fdb8405a02bf35ea2d849c32c8baa0 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 17 May 2024 21:11:34 -0500
-Subject: [PATCH 05/23] wlserver: Fix an issue that would cause gamescope to
+Subject: [PATCH 05/22] wlserver: Fix an issue that would cause gamescope to
  crash when the touchscreen was used
 
 ---
@@ -470,7 +470,7 @@ index 62876c2..ceeef24 100644
 From 295762788cd549879f700527bdda8a2f1cdab829 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 17 May 2024 21:56:55 -0500
-Subject: [PATCH 06/23] Add --custom-refresh-rates
+Subject: [PATCH 06/22] Add --custom-refresh-rates
 
 ---
  src/Backends/DRMBackend.cpp |  3 +++
@@ -581,7 +581,7 @@ index ebd018a..4e09e3b 100644
 From db836efe685a72571f2df1ad2ce0f00055220206 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sat, 18 May 2024 08:44:38 -0500
-Subject: [PATCH 07/23] Add rotation gamescope_control command
+Subject: [PATCH 07/22] Add rotation gamescope_control command
 
 ---
  protocol/gamescope-control.xml | 18 ++++++++++++
@@ -770,7 +770,7 @@ index ceeef24..e386765 100644
 From 7767e9b4d2aa1408a458077424d12b86a6390dbf Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sat, 18 May 2024 11:54:50 -0500
-Subject: [PATCH 08/23] Fix an issue that caused force-panel to not work
+Subject: [PATCH 08/22] Fix an issue that caused force-panel to not work
 
 ---
  protocol/gamescope-control.xml |   1 -
@@ -988,7 +988,7 @@ index e386765..a3af652 100644
 From a7e3eafdc7fa8976466cac64c6a354f938deca44 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sat, 18 May 2024 13:50:57 -0500
-Subject: [PATCH 09/23] Fix an arithmetic error
+Subject: [PATCH 09/22] Fix an arithmetic error
 
 ---
  src/Backends/DRMBackend.cpp | 6 +++---
@@ -1018,7 +1018,7 @@ index 35ffa73..07f0383 100644
 From 4988c24ed337f2782c9bf14239a4471b474c42b0 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sat, 18 May 2024 19:04:48 -0500
-Subject: [PATCH 10/23] Rework the touch gestures to be more smooth
+Subject: [PATCH 10/22] Rework the touch gestures to be more smooth
 
 ---
  src/wlserver.cpp | 89 +++++++++++++++++++++++++++++++++++++-----------
@@ -1151,7 +1151,7 @@ index a3af652..a240871 100644
 From de33de84f4cc272d1d2532b9cbb870ac69f9f4c9 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sun, 19 May 2024 08:55:28 -0500
-Subject: [PATCH 11/23] Fix a typo for --bypass-steam-resolution
+Subject: [PATCH 11/22] Fix a typo for --bypass-steam-resolution
 
 ---
  src/steamcompmgr.cpp | 2 +-
@@ -1177,7 +1177,7 @@ index 2e0e297..44a086d 100644
 From b674368352abaadb7c447070d5a6ba7c1c342f81 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sun, 19 May 2024 11:48:52 -0500
-Subject: [PATCH 12/23] Handle gesture cases better to prevent unexpected
+Subject: [PATCH 12/22] Handle gesture cases better to prevent unexpected
  behavior
 
 ---
@@ -1297,7 +1297,7 @@ index a240871..3837c84 100644
 From c672cac17d538df286efaee9f29d289a71e13383 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Sun, 19 May 2024 18:14:23 -0500
-Subject: [PATCH 13/23] Add references to drm_set_orientation() and g_drm in
+Subject: [PATCH 13/22] Add references to drm_set_orientation() and g_drm in
  wlserver for rotation gamescope-control
 
 ---
@@ -1342,7 +1342,7 @@ index 3304c18..0754ee5 100644
 From b7b08665aaf344cd9930069e52931335daafaddb Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Mon, 20 May 2024 07:02:52 -0500
-Subject: [PATCH 14/23] Fix an issue where forced panel type orientations
+Subject: [PATCH 14/22] Fix an issue where forced panel type orientations
  weren't being applied
 
 ---
@@ -1403,7 +1403,7 @@ index 07f0383..8200619 100644
 From a98358aafc43480b3373030ef6d39c5342df5394 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Mon, 20 May 2024 07:25:29 -0500
-Subject: [PATCH 15/23] add missing curly bracket...
+Subject: [PATCH 15/22] add missing curly bracket...
 
 ---
  src/Backends/DRMBackend.cpp | 2 +-
@@ -1429,7 +1429,7 @@ index 8200619..10b9b92 100644
 From 28fa8b1b2b61beb37e60149f4eeac2b12eeb5d59 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Mon, 20 May 2024 10:17:55 -0500
-Subject: [PATCH 16/23] Fix case where real externals were rotated with faked
+Subject: [PATCH 16/22] Fix case where real externals were rotated with faked
  external panels
 
 ---
@@ -1572,7 +1572,7 @@ index 13ea8b5..8b9201c 100644
 From 686be5e1e03f708525755f344fabc24b1e81f3fe Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Mon, 20 May 2024 16:30:47 -0500
-Subject: [PATCH 17/23] Add verbose panel logs and attempt to address all
+Subject: [PATCH 17/22] Add verbose panel logs and attempt to address all
  orientation issues
 
 ---
@@ -1703,7 +1703,7 @@ index 0754ee5..bdf3b0b 100644
 From 0ca7930d0463e87733aeeebed7c4585c712b27e5 Mon Sep 17 00:00:00 2001
 From: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
 Date: Tue, 28 May 2024 21:56:47 +0200
-Subject: [PATCH 18/23] add closing bracket
+Subject: [PATCH 18/22] add closing bracket
 
 ---
  src/main.cpp | 1 +
@@ -1728,7 +1728,7 @@ index 36421bb..83fc011 100644
 From 14a226e40efba864cd2b01b258f7cc4e3aedc322 Mon Sep 17 00:00:00 2001
 From: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
 Date: Wed, 3 Jan 2024 17:03:04 +0100
-Subject: [PATCH 19/23] remove hacky texture
+Subject: [PATCH 19/22] remove hacky texture
 
 This will use more hardware planes, causing some devices to composite yeilding lower framerates
 ---
@@ -1922,37 +1922,10 @@ index 44a086d..8b288ab 100644
 2.46.2
 
 
-From e2f4c39992e2fa55f03225019fe244f08f49b287 Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?Joaqu=C3=ADn=20Ignacio=20Aramend=C3=ADa?=
- <samsagax@gmail.com>
-Date: Tue, 9 Jul 2024 18:29:16 -0300
-Subject: [PATCH 20/23] disable explicit sync to avoid graphical artifacts
-
----
- src/Backends/DRMBackend.cpp | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index e1b1d48..ae5c767 100644
---- a/src/Backends/DRMBackend.cpp
-+++ b/src/Backends/DRMBackend.cpp
-@@ -70,7 +70,7 @@ gamescope::ConVar<bool> cv_drm_debug_disable_blend_tf( "drm_debug_disable_blend_
- gamescope::ConVar<bool> cv_drm_debug_disable_ctm( "drm_debug_disable_ctm", false, "CTM chicken bit. (Forces CTM off, does not affect other logic)" );
- gamescope::ConVar<bool> cv_drm_debug_disable_color_encoding( "drm_debug_disable_color_encoding", false, "YUV Color Encoding chicken bit. (Forces COLOR_ENCODING to DEFAULT, does not affect other logic)" );
- gamescope::ConVar<bool> cv_drm_debug_disable_color_range( "drm_debug_disable_color_range", false, "YUV Color Range chicken bit. (Forces COLOR_RANGE to DEFAULT, does not affect other logic)" );
--gamescope::ConVar<bool> cv_drm_debug_disable_explicit_sync( "drm_debug_disable_explicit_sync", false, "Force disable explicit sync on the DRM backend." );
-+gamescope::ConVar<bool> cv_drm_debug_disable_explicit_sync( "drm_debug_disable_explicit_sync", true, "Force disable explicit sync on the DRM backend." );
- gamescope::ConVar<bool> cv_drm_debug_disable_in_fence_fd( "drm_debug_disable_in_fence_fd", false, "Force disable IN_FENCE_FD being set to avoid over-synchronization on the DRM backend." );
- 
- namespace gamescope
--- 
-2.46.2
-
-
 From 9c77c12061530ff1403ed213c60f060791deb863 Mon Sep 17 00:00:00 2001
 From: Kyle Gospodnetich <me@kylegospodneti.ch>
 Date: Tue, 2 Jul 2024 14:12:47 -0700
-Subject: [PATCH 21/23] Only change refresh rates on internal displays
+Subject: [PATCH 20/22] Only change refresh rates on internal displays
 
 ---
  src/Backends/DRMBackend.cpp | 2 +-
@@ -1978,7 +1951,7 @@ index ae5c767..1fc35e5 100644
 From f67acb1e222ac04d08acc4480d071a871f188553 Mon Sep 17 00:00:00 2001
 From: Kyle Gospodnetich <me@kylegospodneti.ch>
 Date: Tue, 2 Jul 2024 15:14:23 -0700
-Subject: [PATCH 22/23] Also check g_bExternalForced
+Subject: [PATCH 21/22] Also check g_bExternalForced
 
 ---
  src/Backends/DRMBackend.cpp | 2 +-
@@ -2004,7 +1977,7 @@ index 1fc35e5..6048a2d 100644
 From 3e9510adf6d246a29fcb0fe5df11bcf1b4299f72 Mon Sep 17 00:00:00 2001
 From: Alesh Slovak <alesh@playtron.one>
 Date: Thu, 26 Sep 2024 07:13:24 -0400
-Subject: [PATCH 23/23] Revert "steamcompmgr: Move outdatedInteractiveFocus to
+Subject: [PATCH 22/22] Revert "steamcompmgr: Move outdatedInteractiveFocus to
  window"
 
 This reverts commit 299bc3410dcfd46da5e3c988354b60ed3a356900.
