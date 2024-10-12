@@ -1,0 +1,631 @@
+From 503b9235a9379dcc625857dbd062dbab386ec112 Mon Sep 17 00:00:00 2001
+From: Matthew Anderson <ruinairas1992@gmail.com>
+Date: Fri, 17 May 2024 21:56:55 -0500
+Subject: [PATCH v1 1/8] feat: add --custom-refresh-rates option (+ fixes)
+
+Commit originally by Matthew, external fixes by Kyle, and new system check
+move by Antheas.
+
+Co-authored-by: Kyle Gospodnetich <me@kylegospodneti.ch>
+Co-authored-by: Antheas Kapenekakis <git@antheas.dev>
+---
+ src/Backends/DRMBackend.cpp |  5 +++++
+ src/main.cpp                | 31 +++++++++++++++++++++++++++++++
+ src/main.hpp                |  2 ++
+ 3 files changed, 38 insertions(+)
+
+diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
+index 3a996af..b0c7670 100644
+--- a/src/Backends/DRMBackend.cpp
++++ b/src/Backends/DRMBackend.cpp
+@@ -2220,6 +2220,11 @@ namespace gamescope
+ 					bHasKnownHDRInfo = true;
+ 				}
+ 			}
++			else if ( g_customRefreshRates.size() > 0 && GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL ) {
++				// Only apply custom refresh rates as a fallback, allowing a graceful transition to the new system.
++				m_Mutable.ValidDynamicRefreshRates = g_customRefreshRates;
++				return;
++			}
+ 		}
+ 
+ 		if ( !bHasKnownColorimetry )
+diff --git a/src/main.cpp b/src/main.cpp
+index c074f82..f1db9cc 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -129,6 +129,7 @@ const struct option *gamescope_options = (struct option[]){
+ 	{ "fade-out-duration", required_argument, nullptr, 0 },
+ 	{ "force-orientation", required_argument, nullptr, 0 },
+ 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
++	{ "custom-refresh-rates", required_argument, nullptr, 0 },
+ 
+ 	{ "disable-color-management", no_argument, nullptr, 0 },
+ 	{ "sdr-gamut-wideness", required_argument, nullptr, 0 },
+@@ -202,6 +203,7 @@ const char usage[] =
+ 	"  --hdr-itm-target-nits          set the target luminace of the inverse tone mapping process.\n"
+ 	"                                 Default: 1000 nits, Max: 10000 nits\n"
+ 	"  --framerate-limit              Set a simple framerate limit. Used as a divisor of the refresh rate, rounds down eg 60 / 59 -> 60fps, 60 / 25 -> 30fps. Default: 0, disabled.\n"
++	"  --custom-refresh-rates         Set custom refresh rates for the output. eg: 60,90,110-120\n"
+ 	"  --mangoapp                     Launch with the mangoapp (mangohud) performance overlay enabled. You should use this instead of using mangohud on the game or gamescope.\n"
+ 	"\n"
+ 	"Nested mode options:\n"
+@@ -425,6 +427,33 @@ static enum gamescope::GamescopeBackend parse_backend_name(const char *str)
+ 	}
+ }
+ 
++std::vector<uint32_t> g_customRefreshRates;
++// eg: 60,60,90,110-120
++static std::vector<uint32_t> parse_custom_refresh_rates( const char *str )
++{
++	std::vector<uint32_t> rates;
++	char *token = strtok( strdup(str), ",");
++	while (token)
++	{
++		char *dash = strchr(token, '-');
++		if (dash)
++		{
++			uint32_t start = atoi(token);
++			uint32_t end = atoi(dash + 1);
++			for (uint32_t i = start; i <= end; i++)
++			{
++				rates.push_back(i);
++			}
++		}
++		else
++		{
++			rates.push_back(atoi(token));
++		}
++		token = strtok(nullptr, ",");
++	}
++	return rates;
++}
++
+ struct sigaction handle_signal_action = {};
+ 
+ void ShutdownGamescope()
+@@ -749,6 +778,8 @@ int main(int argc, char **argv)
+ 					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
+ 				} else if (strcmp(opt_name, "force-orientation") == 0) {
+ 					g_DesiredInternalOrientation = force_orientation( optarg );
++				} else if (strcmp(opt_name, "custom-refresh-rates") == 0) {
++					g_customRefreshRates = parse_custom_refresh_rates( optarg );
+ 				} else if (strcmp(opt_name, "sharpness") == 0 ||
+ 						   strcmp(opt_name, "fsr-sharpness") == 0) {
+ 					g_upscaleFilterSharpness = atoi( optarg );
+diff --git a/src/main.hpp b/src/main.hpp
+index 2e6fb83..390c04a 100644
+--- a/src/main.hpp
++++ b/src/main.hpp
+@@ -3,6 +3,7 @@
+ #include <getopt.h>
+ 
+ #include <atomic>
++#include <vector>
+ 
+ extern const char *gamescope_optstring;
+ extern const struct option *gamescope_options;
+@@ -28,6 +29,7 @@ extern bool g_bGrabbed;
+ 
+ extern float g_mouseSensitivity;
+ extern const char *g_sOutputName;
++extern std::vector<uint32_t> g_customRefreshRates;
+ 
+ enum class GamescopeUpscaleFilter : uint32_t
+ {
+-- 
+2.46.2
+
+
+From 99d77e08b6165a1f48e8870859dd8bb630f7c591 Mon Sep 17 00:00:00 2001
+From: Alesh Slovak <alesh@playtron.one>
+Date: Thu, 26 Sep 2024 07:13:24 -0400
+Subject: [PATCH v1 2/8] fix(vrr): Revert "steamcompmgr: Move
+ outdatedInteractiveFocus to window"
+
+This reverts commit 299bc3410dcfd46da5e3c988354b60ed3a356900.
+---
+ src/steamcompmgr.cpp        | 39 +++++++++++++++++++++++--------------
+ src/steamcompmgr_shared.hpp |  1 -
+ 2 files changed, 24 insertions(+), 16 deletions(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 11a7cad..df7616d 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -3299,7 +3299,7 @@ found:;
+ 		if ( window_has_commits( focus ) ) 
+ 			out->focusWindow = focus;
+ 		else
+-			focus->outdatedInteractiveFocus = true;
++			out->outdatedInteractiveFocus = true;
+ 
+ 		// Always update X's idea of focus, but still dirty
+ 		// the it being outdated so we can resolve that globally later.
+@@ -6044,28 +6044,37 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
+ 			// Window just got a new available commit, determine if that's worth a repaint
+ 
+ 			// If this is an overlay that we're presenting, repaint
+-			if ( w == global_focus.overlayWindow && w->opacity != TRANSLUCENT )
++			if ( gameFocused )
+ 			{
+-				hasRepaintNonBasePlane = true;
+-			}
++				if ( w == global_focus.overlayWindow && w->opacity != TRANSLUCENT )
++				{
++					hasRepaintNonBasePlane = true;
++				}
+ 
+-			if ( w == global_focus.notificationWindow && w->opacity != TRANSLUCENT )
+-			{
+-				hasRepaintNonBasePlane = true;
++				if ( w == global_focus.notificationWindow && w->opacity != TRANSLUCENT )
++				{
++					hasRepaintNonBasePlane = true;
++				}
+ 			}
+-
+-			// If this is an external overlay, repaint
+-			if ( w == global_focus.externalOverlayWindow && w->opacity != TRANSLUCENT )
++			if ( ctx )
+ 			{
+-				hasRepaintNonBasePlane = true;
++				if ( ctx->focus.outdatedInteractiveFocus )
++				{
++					MakeFocusDirty();
++					ctx->focus.outdatedInteractiveFocus = false;
++				}
+ 			}
+-
+-			if ( w->outdatedInteractiveFocus )
++			if ( global_focus.outdatedInteractiveFocus )
+ 			{
+ 				MakeFocusDirty();
+-				w->outdatedInteractiveFocus = false;
+-			}
++				global_focus.outdatedInteractiveFocus = false;
+ 
++				// If this is an external overlay, repaint
++				if ( w == global_focus.externalOverlayWindow && w->opacity != TRANSLUCENT )
++				{
++					hasRepaintNonBasePlane = true;
++				}
++			}
+ 			// If this is the main plane, repaint
+ 			if ( w == global_focus.focusWindow && !w->isSteamStreamingClient )
+ 			{
+diff --git a/src/steamcompmgr_shared.hpp b/src/steamcompmgr_shared.hpp
+index 095694e..e41fad9 100644
+--- a/src/steamcompmgr_shared.hpp
++++ b/src/steamcompmgr_shared.hpp
+@@ -125,7 +125,6 @@ struct steamcompmgr_win_t {
+ 	unsigned int requestedHeight = 0;
+ 	bool is_dialog = false;
+ 	bool maybe_a_dropdown = false;
+-	bool outdatedInteractiveFocus = false;
+ 
+ 	bool hasHwndStyle = false;
+ 	uint32_t hwndStyle = 0;
+-- 
+2.46.2
+
+
+From 6bffd653d8f9e6539008b4be898cca67c1414b37 Mon Sep 17 00:00:00 2001
+From: Renn <8340896+AkazaRenn@users.noreply.github.com>
+Date: Fri, 11 Oct 2024 17:48:26 +0200
+Subject: [PATCH v1 3/8] fix(deck): Use super + 1/2 for Overlay/QAM
+
+Replaces the patch for CTRL + 1/2 for Overlay/QAM with Super + 1/2 and
+allows for CTRL for a smooth transition.
+
+Suggested-by: Antheas Kapenekakis <git@antheas.dev>
+---
+ src/wlserver.cpp | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/src/wlserver.cpp b/src/wlserver.cpp
+index 78a86ee..99df8aa 100644
+--- a/src/wlserver.cpp
++++ b/src/wlserver.cpp
+@@ -290,6 +290,9 @@ static void wlserver_handle_modifiers(struct wl_listener *listener, void *data)
+ 	bump_input_counter();
+ }
+ 
++// false if GS_ENABLE_CTRL_12 exists and is 0, true otherwise
++bool env_gs_enable_ctrl_12 = getenv("GS_ENABLE_CTRL_12") ? (getenv("GS_ENABLE_CTRL_12")[0] != '0') : true;
++
+ static void wlserver_handle_key(struct wl_listener *listener, void *data)
+ {
+ 	struct wlserver_keyboard *keyboard = wl_container_of( listener, keyboard, key );
+@@ -310,7 +313,14 @@ static void wlserver_handle_key(struct wl_listener *listener, void *data)
+ 		keysym == XKB_KEY_XF86AudioLowerVolume ||
+ 		keysym == XKB_KEY_XF86AudioRaiseVolume ||
+ 		keysym == XKB_KEY_XF86PowerOff;
+-	if ( ( event->state == WL_KEYBOARD_KEY_STATE_PRESSED || event->state == WL_KEYBOARD_KEY_STATE_RELEASED ) && forbidden_key )
++
++	// Check for steam overlay key (ctrl/super + 1/2)
++	bool is_steamshortcut =
++		((env_gs_enable_ctrl_12 && (keyboard->wlr->modifiers.depressed & WLR_MODIFIER_CTRL)) ||
++		 (keyboard->wlr->modifiers.depressed & WLR_MODIFIER_LOGO)) &&
++		(keysym == XKB_KEY_1 || keysym == XKB_KEY_2);
++
++	if ( ( event->state == WL_KEYBOARD_KEY_STATE_PRESSED || event->state == WL_KEYBOARD_KEY_STATE_RELEASED ) && (forbidden_key || is_steamshortcut) )
+ 	{
+ 		// Always send volume+/- to root server only, to avoid it reaching the game.
+ 		struct wlr_surface *old_kb_surf = wlserver.kb_focus_surface;
+@@ -319,6 +329,13 @@ static void wlserver_handle_key(struct wl_listener *listener, void *data)
+ 		{
+ 			wlserver_keyboardfocus( new_kb_surf, false );
+ 			wlr_seat_set_keyboard( wlserver.wlr.seat, keyboard->wlr );
++			if (is_steamshortcut)
++			{
++				// send ctrl down modifier to trigger the overlay
++				wlr_keyboard_modifiers ctrl_down_modifier;
++				ctrl_down_modifier.depressed = WLR_MODIFIER_CTRL;
++				wlr_seat_keyboard_notify_modifiers(wlserver.wlr.seat, &ctrl_down_modifier);
++			}
+ 			wlr_seat_keyboard_notify_key( wlserver.wlr.seat, event->time_msec, event->keycode, event->state );
+ 			wlserver_keyboardfocus( old_kb_surf, false );
+ 			return;
+-- 
+2.46.2
+
+
+From 7d6fcc2580d34208e0860762ddbc8560a9b47af8 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Fri, 11 Oct 2024 17:52:48 +0200
+Subject: [PATCH v1 4/8] fix: allow for disabling touch atom click
+
+Causes issues in certain devices (or not anymore?).
+
+Parameter option by Kyle.
+
+Co-authored-by: Kyle Gospodnetich <me@kylegospodneti.ch>
+---
+ src/main.cpp         | 2 ++
+ src/steamcompmgr.cpp | 5 ++++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/main.cpp b/src/main.cpp
+index f1db9cc..d08f0e7 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -128,6 +128,7 @@ const struct option *gamescope_options = (struct option[]){
+ 	{ "disable-xres", no_argument, nullptr, 'x' },
+ 	{ "fade-out-duration", required_argument, nullptr, 0 },
+ 	{ "force-orientation", required_argument, nullptr, 0 },
++	{ "disable-touch-click", no_argument, nullptr, 0 },
+ 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
+ 	{ "custom-refresh-rates", required_argument, nullptr, 0 },
+ 
+@@ -188,6 +189,7 @@ const char usage[] =
+ 	"  -T, --stats-path               write statistics to path\n"
+ 	"  -C, --hide-cursor-delay        hide cursor image after delay\n"
+ 	"  -e, --steam                    enable Steam integration\n"
++	"  --disable-touch-click          disable touchscreen tap acting as a click\n"
+ 	"  --xwayland-count               create N xwayland servers\n"
+ 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
+ 	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index df7616d..4a17499 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -197,6 +197,7 @@ update_runtime_info();
+ gamescope::ConVar<bool> cv_adaptive_sync( "adaptive_sync", false, "Whether or not adaptive sync is enabled if available." );
+ gamescope::ConVar<bool> cv_adaptive_sync_ignore_overlay( "adaptive_sync_ignore_overlay", false, "Whether or not to ignore overlay planes for pushing commits with adaptive sync." );
+ gamescope::ConVar<int> cv_adaptive_sync_overlay_cycles( "adaptive_sync_overlay_cycles", 1, "Number of vblank cycles to ignore overlay repaints before forcing a commit with adaptive sync." );
++gamescope::ConVar<bool> cv_disable_touch_click{ "disable_touch_click", false, "Prevents touchscreen taps acting as clicks" };
+ 
+ uint64_t g_SteamCompMgrLimitedAppRefreshCycle = 16'666'666;
+ uint64_t g_SteamCompMgrAppRefreshCycle = 16'666'666;
+@@ -5185,7 +5186,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 			MakeFocusDirty();
+ 		}
+ 	}
+-	if (ev->atom == ctx->atoms.steamTouchClickModeAtom )
++	if (ev->atom == ctx->atoms.steamTouchClickModeAtom && !cv_disable_touch_click )
+ 	{
+ 		gamescope::cv_touch_click_mode = (gamescope::TouchClickMode) get_prop(ctx, ctx->root, ctx->atoms.steamTouchClickModeAtom, 0u );
+ 	}
+@@ -7476,6 +7477,8 @@ steamcompmgr_main(int argc, char **argv)
+ 					g_reshade_technique_idx = atoi(optarg);
+ 				} else if (strcmp(opt_name, "mura-map") == 0) {
+ 					set_mura_overlay(optarg);
++				} else if (strcmp(opt_name, "disable-touch-click") == 0) {
++					cv_disable_touch_click = true;
+ 				}
+ 				break;
+ 			case '?':
+-- 
+2.46.2
+
+
+From fb371b1a06b1fba53e278bbcdfb491bcaec73099 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Fri, 11 Oct 2024 21:56:54 +0200
+Subject: [PATCH v1 5/8] fix(intel-gpu): allow for (enabling) hacky texture
+
+Disabling hacky texture will use more hardware planes, causing some devices to composite yielding lower fps. Required for intel to work
+---
+ src/main.cpp         | 2 ++
+ src/steamcompmgr.cpp | 5 ++++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/main.cpp b/src/main.cpp
+index d08f0e7..9b4ac91 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -128,6 +128,7 @@ const struct option *gamescope_options = (struct option[]){
+ 	{ "disable-xres", no_argument, nullptr, 'x' },
+ 	{ "fade-out-duration", required_argument, nullptr, 0 },
+ 	{ "force-orientation", required_argument, nullptr, 0 },
++	{ "enable-hacky-texture", no_argument, nullptr, 0 },
+ 	{ "disable-touch-click", no_argument, nullptr, 0 },
+ 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
+ 	{ "custom-refresh-rates", required_argument, nullptr, 0 },
+@@ -189,6 +190,7 @@ const char usage[] =
+ 	"  -T, --stats-path               write statistics to path\n"
+ 	"  -C, --hide-cursor-delay        hide cursor image after delay\n"
+ 	"  -e, --steam                    enable Steam integration\n"
++	"  --enable-hacky-texture         enable hacky texture on hw that support it\n"
+ 	"  --disable-touch-click          disable touchscreen tap acting as a click\n"
+ 	"  --xwayland-count               create N xwayland servers\n"
+ 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 4a17499..da3115f 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -147,6 +147,7 @@ static lut3d_t g_tmpLut3d;
+ extern int g_nDynamicRefreshHz;
+ 
+ bool g_bForceHDRSupportDebug = false;
++bool g_bHackyEnabled = false;
+ extern float g_flInternalDisplayBrightnessNits;
+ extern float g_flHDRItmSdrNits;
+ extern float g_flHDRItmTargetNits;
+@@ -2412,7 +2413,7 @@ paint_all(bool async)
+ 		if ( overlay == global_focus.inputFocusWindow )
+ 			update_touch_scaling( &frameInfo );
+ 	}
+-	else if ( !GetBackend()->UsesVulkanSwapchain() && GetBackend()->IsSessionBased() )
++	else if ( g_bHackyEnabled && !GetBackend()->UsesVulkanSwapchain() && GetBackend()->IsSessionBased() )
+ 	{
+ 		auto tex = vulkan_get_hacky_blank_texture();
+ 		if ( tex != nullptr )
+@@ -7479,6 +7480,8 @@ steamcompmgr_main(int argc, char **argv)
+ 					set_mura_overlay(optarg);
+ 				} else if (strcmp(opt_name, "disable-touch-click") == 0) {
+ 					cv_disable_touch_click = true;
++				} else if (strcmp(opt_name, "enable-hacky-texture") == 0) {
++					g_bHackyEnabled = true;
+ 				}
+ 				break;
+ 			case '?':
+-- 
+2.46.2
+
+
+From 4118463a5fab5b6d19e225507e5206a87711e66e Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Fri, 11 Oct 2024 23:01:13 +0200
+Subject: [PATCH v1 6/8] fix: re-add external orientation options to not break
+ current sessions (incl. applying ext. orientation)
+
+---
+ src/main.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/main.cpp b/src/main.cpp
+index 9b4ac91..1338e94 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -129,6 +129,8 @@ const struct option *gamescope_options = (struct option[]){
+ 	{ "fade-out-duration", required_argument, nullptr, 0 },
+ 	{ "force-orientation", required_argument, nullptr, 0 },
+ 	{ "enable-hacky-texture", no_argument, nullptr, 0 },
++	{ "force-panel-type", required_argument, nullptr, 0 },
++	{ "force-external-orientation", required_argument, nullptr, 0 },
+ 	{ "disable-touch-click", no_argument, nullptr, 0 },
+ 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
+ 	{ "custom-refresh-rates", required_argument, nullptr, 0 },
+@@ -780,7 +782,7 @@ int main(int argc, char **argv)
+ 					gamescope::cv_touch_click_mode = (gamescope::TouchClickMode) atoi( optarg );
+ 				} else if (strcmp(opt_name, "generate-drm-mode") == 0) {
+ 					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
+-				} else if (strcmp(opt_name, "force-orientation") == 0) {
++				} else if (strcmp(opt_name, "force-orientation") == 0 || strcmp(opt_name, "force-external-orientation") == 0) {
+ 					g_DesiredInternalOrientation = force_orientation( optarg );
+ 				} else if (strcmp(opt_name, "custom-refresh-rates") == 0) {
+ 					g_customRefreshRates = parse_custom_refresh_rates( optarg );
+-- 
+2.46.2
+
+
+From c0368c80d256c24f43aa1c0a28695a6ec9c1dbab Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Fri, 11 Oct 2024 23:47:59 +0200
+Subject: [PATCH v1 7/8] feat(vrr): allow for setting refresh rate if the
+ internal display allows
+
+For the Ally, we have a set of VFP that work to set the refresh rate.
+They can also be used for VRR but gamescope does not currently allow for
+it. Therefore, bypass some checks to allow it to work just for this usecase.
+---
+ src/main.cpp         | 2 ++
+ src/steamcompmgr.cpp | 7 +++++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/src/main.cpp b/src/main.cpp
+index 1338e94..6453702 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -132,6 +132,7 @@ const struct option *gamescope_options = (struct option[]){
+ 	{ "force-panel-type", required_argument, nullptr, 0 },
+ 	{ "force-external-orientation", required_argument, nullptr, 0 },
+ 	{ "disable-touch-click", no_argument, nullptr, 0 },
++	{ "enable-vrr-modesetting", no_argument, nullptr, 0 },
+ 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
+ 	{ "custom-refresh-rates", required_argument, nullptr, 0 },
+ 
+@@ -194,6 +195,7 @@ const char usage[] =
+ 	"  -e, --steam                    enable Steam integration\n"
+ 	"  --enable-hacky-texture         enable hacky texture on hw that support it\n"
+ 	"  --disable-touch-click          disable touchscreen tap acting as a click\n"
++	"  --enable-vrr-modesetting       enable setting framerate while VRR is on in the internal display\n"
+ 	"  --xwayland-count               create N xwayland servers\n"
+ 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
+ 	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index da3115f..69fd348 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -148,6 +148,7 @@ extern int g_nDynamicRefreshHz;
+ 
+ bool g_bForceHDRSupportDebug = false;
+ bool g_bHackyEnabled = false;
++bool g_bVRRModesetting = false;
+ extern float g_flInternalDisplayBrightnessNits;
+ extern float g_flHDRItmSdrNits;
+ extern float g_flHDRItmTargetNits;
+@@ -899,7 +900,7 @@ bool g_bChangeDynamicRefreshBasedOnGameOpenRatherThanActive = false;
+ bool steamcompmgr_window_should_limit_fps( steamcompmgr_win_t *w )
+ {
+ 	// VRR + FPS Limit needs another approach.
+-	if ( GetBackend()->IsVRRActive() )
++	if ( GetBackend()->IsVRRActive() && !(g_bVRRModesetting && GetBackend()->GetScreenType() == gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL) )
+ 		return false;
+ 
+ 	return w && !window_is_steam( w ) && !w->isOverlay && !w->isExternalOverlay;
+@@ -923,7 +924,7 @@ steamcompmgr_user_has_any_game_open()
+ 
+ bool steamcompmgr_window_should_refresh_switch( steamcompmgr_win_t *w )
+ {
+-	if ( GetBackend()->IsVRRActive() )
++	if ( GetBackend()->IsVRRActive()  && !(g_bVRRModesetting && GetBackend()->GetScreenType() == gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL))
+ 		return false;
+ 
+ 	if ( g_bChangeDynamicRefreshBasedOnGameOpenRatherThanActive )
+@@ -7480,6 +7481,8 @@ steamcompmgr_main(int argc, char **argv)
+ 					set_mura_overlay(optarg);
+ 				} else if (strcmp(opt_name, "disable-touch-click") == 0) {
+ 					cv_disable_touch_click = true;
++				} else if (strcmp(opt_name, "enable-vrr-modesetting") == 0) {
++					g_bVRRModesetting = true;
+ 				} else if (strcmp(opt_name, "enable-hacky-texture") == 0) {
+ 					g_bHackyEnabled = true;
+ 				}
+-- 
+2.46.2
+
+
+From cfca9d99ab80df9ab3f83ce304345a17f7a52d4c Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Fri, 11 Oct 2024 19:09:05 +0200
+Subject: [PATCH v1 8/8] feat: add external option that now only lies to steam
+
+Previously, there was a force-panel option that allowed for VRR.
+However, this is no longer the case and VRR works fine.
+This option still allows for scaling the display though. So, create a
+variant of the patch that only does that.
+---
+ src/main.cpp         | 16 ++++++++++++++++
+ src/steamcompmgr.cpp |  2 +-
+ src/steamcompmgr.hpp |  1 +
+ src/wlserver.cpp     |  2 +-
+ src/wlserver.hpp     |  1 +
+ 5 files changed, 20 insertions(+), 2 deletions(-)
+
+diff --git a/src/main.cpp b/src/main.cpp
+index 6453702..7ec6020 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -199,6 +199,7 @@ const char usage[] =
+ 	"  --xwayland-count               create N xwayland servers\n"
+ 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
+ 	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
++	"  --force-panel-type             lie to steam that the screen is external\n"
+ 	"  --force-windows-fullscreen     force windows inside of gamescope to be the size of the nested display (fullscreen)\n"
+ 	"  --cursor-scale-height          if specified, sets a base output height to linearly scale the cursor against.\n"
+ 	"  --hdr-enabled                  enable HDR output (needs Gamescope WSI layer enabled for support from clients)\n"
+@@ -373,6 +374,19 @@ static GamescopePanelOrientation force_orientation(const char *str)
+ 	}
+ }
+ 
++bool g_FakeExternal = false;
++static bool force_panel_type_external(const char *str)
++{
++	if (strcmp(str, "internal") == 0) {
++		return false;
++	} else if (strcmp(str, "external") == 0) {
++		return true;
++	} else {
++		fprintf( stderr, "gamescope: invalid value for --force-panel-type\n" );
++		exit(1);
++	}
++}
++
+ static enum GamescopeUpscaleScaler parse_upscaler_scaler(const char *str)
+ {
+ 	if (strcmp(str, "auto") == 0) {
+@@ -786,6 +800,8 @@ int main(int argc, char **argv)
+ 					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
+ 				} else if (strcmp(opt_name, "force-orientation") == 0 || strcmp(opt_name, "force-external-orientation") == 0) {
+ 					g_DesiredInternalOrientation = force_orientation( optarg );
++				} else if (strcmp(opt_name, "force-panel-type") == 0) {
++					g_FakeExternal = force_panel_type_external( optarg );
+ 				} else if (strcmp(opt_name, "custom-refresh-rates") == 0) {
+ 					g_customRefreshRates = parse_custom_refresh_rates( optarg );
+ 				} else if (strcmp(opt_name, "sharpness") == 0 ||
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 69fd348..3dd64f8 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -7192,7 +7192,7 @@ void update_mode_atoms(xwayland_ctx_t *root_ctx, bool* needs_flush = nullptr)
+ 	if (needs_flush)
+ 		*needs_flush = true;
+ 
+-	if ( GetBackend()->GetCurrentConnector() && GetBackend()->GetCurrentConnector()->GetScreenType() == gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL )
++	if ( !g_FakeExternal && GetBackend()->GetCurrentConnector() && GetBackend()->GetCurrentConnector()->GetScreenType() == gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL )
+ 	{
+ 		XDeleteProperty(root_ctx->dpy, root_ctx->root, root_ctx->atoms.gamescopeDisplayModeListExternal);
+ 
+diff --git a/src/steamcompmgr.hpp b/src/steamcompmgr.hpp
+index 9f384c4..30e48e8 100644
+--- a/src/steamcompmgr.hpp
++++ b/src/steamcompmgr.hpp
+@@ -127,6 +127,7 @@ extern float focusedWindowScaleY;
+ extern float focusedWindowOffsetX;
+ extern float focusedWindowOffsetY;
+ 
++extern bool g_FakeExternal;
+ extern bool g_bFSRActive;
+ 
+ extern uint32_t inputCounter;
+diff --git a/src/wlserver.cpp b/src/wlserver.cpp
+index 99df8aa..39010ab 100644
+--- a/src/wlserver.cpp
++++ b/src/wlserver.cpp
+@@ -1078,7 +1078,7 @@ static uint32_t get_conn_display_info_flags()
+ 		return 0;
+ 
+ 	uint32_t flags = 0;
+-	if ( pConn->GetScreenType() == gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL )
++	if ( pConn->GetScreenType() == gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL && !g_FakeExternal )
+ 		flags |= GAMESCOPE_CONTROL_DISPLAY_FLAG_INTERNAL_DISPLAY;
+ 	if ( pConn->SupportsVRR() )
+ 		flags |= GAMESCOPE_CONTROL_DISPLAY_FLAG_SUPPORTS_VRR;
+diff --git a/src/wlserver.hpp b/src/wlserver.hpp
+index 0569472..104f7a2 100644
+--- a/src/wlserver.hpp
++++ b/src/wlserver.hpp
+@@ -190,6 +190,7 @@ struct wlserver_t {
+ };
+ 
+ extern struct wlserver_t wlserver;
++extern bool g_FakeExternal;
+ 
+ std::vector<ResListEntry_t> wlserver_xdg_commit_queue();
+ 
+-- 
+2.46.2
+

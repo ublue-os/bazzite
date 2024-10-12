@@ -18,14 +18,11 @@ Source0:        stb.pc
 Patch0:         0001-cstdint.patch
 
 # https://github.com/ChimeraOS/gamescope
-Patch1:         chimeraos.patch
-
-# https://hhd.dev/
-Patch2:         disable-steam-touch-click-atom.patch
-Patch3:         v2-0001-steam-overlay-hotkeys.patch
+# Cleaned up by + patches from https://hhd.dev/
+Patch1:         chimeraos-cleanup-v1.patch
 
 # https://github.com/ValveSoftware/gamescope/pull/740
-Patch4:         740.patch
+Patch2:         740.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
