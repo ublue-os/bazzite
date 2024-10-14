@@ -61,9 +61,7 @@ sed -i "s/^ANSI_COLOR=.*/ANSI_COLOR=\"$LOGO_COLOR\"/" /usr/lib/os-release
 sed -i "/^REDHAT_BUGZILLA_PRODUCT=/d; /^REDHAT_BUGZILLA_PRODUCT_VERSION=/d; /^REDHAT_SUPPORT_PRODUCT=/d; /^REDHAT_SUPPORT_PRODUCT_VERSION=/d" /usr/lib/os-release
 sed -i "s|^VERSION_CODENAME=.*|VERSION_CODENAME=\"$CODE_NAME\"|" /usr/lib/os-release
 
-if [[ -n "${SHA_HEAD_SHORT:-}" ]]; then
-  echo "BUILD_ID=\"$SHA_HEAD_SHORT (Built $(date +%m-%d-%Y))\"" >> /usr/lib/os-release
-fi
+echo "BUILD_ID=\"$VERSION_PRETTY\"" >> /usr/lib/os-release
 
 # FIXME: Pretty name needs to have deck/KDE/GNOME/etc
 echo "BOOTLOADER_NAME=\"$IMAGE_PRETTY_NAME $VERSION_PRETTY\"" >> /usr/lib/os-release

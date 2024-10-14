@@ -197,6 +197,9 @@ jobs:
           # Generate the primary version key that will be stored on os-release,
           # shown on the bootloader, and used for the image tag.
           UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
+          # Remove .0 suffix from upstream tag so we can add our own and
+          # the wrong one does not end up in the image.
+          UPSTREAM_TAG="${UPSTREAM_TAG%.*}"
           FEDORA_VERSION="${{ matrix.fedora_version }}"
           SHA_SHORT="${GITHUB_SHA::7}"
 
@@ -204,11 +207,11 @@ jobs:
             VERSION="pr-${FEDORA_VERSION}-${{ github.event.pull_request.number }}"
             PRETTY_VERSION="PR (${{ github.event.pull_request.number }}, ${UPSTREAM_TAG})"
           elif [[ ${{ github.ref_name }} == "unstable" ]]; then
-            VERSION="unstable-${SHA_SHORT}"
-            PRETTY_VERSION="Unstable (#${SHA_SHORT}, F${UPSTREAM_TAG})"
+            VERSION="unstable-${UPSTREAM_TAG}"
+            PRETTY_VERSION="Unstable (F${UPSTREAM_TAG}, #${SHA_SHORT})"
           elif [[ ${{ github.ref_name }} == "testing" ]]; then
             VERSION="testing-${UPSTREAM_TAG}"
-            PRETTY_VERSION="Testing (F${UPSTREAM_TAG})"
+            PRETTY_VERSION="Testing (F${UPSTREAM_TAG}, #${SHA_SHORT})"
           else
             VERSION="${UPSTREAM_TAG}"
             PRETTY_VERSION="Stable (F${UPSTREAM_TAG})"
