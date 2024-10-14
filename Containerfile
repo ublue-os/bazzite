@@ -951,11 +951,16 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
 
 # Remove everything that doesn't work well with NVIDIA
+# Install X11 session (Remove me for Fedora 41)
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree override remove \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo && \
+    if [[ "${BASE_IMAGE_NAME}" == "kinoite" && "$FEDORA_MAJOR_VERSION" -eq "40" ]]; then \
+        rpm-ostree install \
+            plasma-workspace-x11 \
+    ; fi && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
