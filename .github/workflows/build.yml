@@ -62,13 +62,13 @@ jobs:
         base_image_name: [kinoite, silverblue]
         target_image_flavor: [main, asus]
         target_nvidia_flavor: [nvidia, nvidia-open]
-        fedora_version: [40]
+        fedora_version: [41]
         include:
-          - fedora_version: 40
+          - fedora_version: 41
             is_latest_version: true
             is_stable_version: true
-            kernel_flavor: fsync # must match a kernel_flavor from akmods repo
-            kernel_version: 6.11.2-201.fsync.fc40.x86_64 # must match a cached version of the above flavor
+            kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
+            kernel_version: 6.11.2-201.bazzite.fc41.x86_64 # must match a cached version of the above flavor
         exclude:
           - base_name: bazzite
             target_nvidia_flavor: nvidia
