@@ -63,8 +63,6 @@ rm %{buildroot}%{_datadir}/pipewire/hardware-profiles/default
 %{_datadir}/alsa/ucm2/conf.d/acp5x/*.conf
 %{_datadir}/alsa/ucm2/conf.d/sof-nau8821-max/*.conf
 %{_datadir}/wireplumber/hardware-profiles/*
-%{_datadir}/wireplumber/main.lua.d/*.lua
-%{_datadir}/wireplumber/scripts/*.lua
 %{_unitdir}/wireplumber-sysconf.service
 %{_datadir}/pipewire/hardware-profiles/*
 %{_unitdir}/pipewire-sysconf.service
