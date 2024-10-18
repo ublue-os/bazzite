@@ -83,9 +83,7 @@ Source1:        pipewire.sysusers
 
 ## valve patches
 # Holo: TODO: Bug reference
-Patch10:         bc435841c141ad38768b6cb1a7ad45e8bb13c7d2.patch
-# Holo: upstream MR 1792
-Patch30:         0001-Bluez5-backend-native-HSP-AG-release-SCO-link-on-AT-.patch
+Patch10:        bc435841c141ad38768b6cb1a7ad45e8bb13c7d2.patch
 
 BuildRequires:  gettext
 BuildRequires:  meson >= 0.59.0
