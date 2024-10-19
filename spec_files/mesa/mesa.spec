@@ -239,7 +239,8 @@ Provides:       libEGL-devel%{?_isa}
 
 %package dri-drivers
 Summary:        Mesa-based DRI drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+# Bazzite: Compatibility with Negativo17
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{?with_va}
 Recommends:     %{name}-va-drivers%{?_isa}
@@ -251,7 +252,8 @@ Recommends:     %{name}-va-drivers%{?_isa}
 %if 0%{?with_va}
 %package        va-drivers
 Summary:        Mesa-based VA-API video acceleration drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+# Bazzite: Compatibility with Negativo17
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 Obsoletes:      %{name}-vaapi-drivers < 22.2.0-5
 
 %description va-drivers
@@ -261,7 +263,8 @@ Obsoletes:      %{name}-vaapi-drivers < 22.2.0-5
 %if 0%{?with_vdpau}
 %package        vdpau-drivers
 Summary:        Mesa-based VDPAU drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+# Bazzite: Compatibility with Negativo17
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 
 %description vdpau-drivers
 %{summary}.
@@ -381,7 +384,8 @@ Requires:       %{name}-libd3d%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release
 %package vulkan-drivers
 Summary:        Mesa Vulkan drivers
 Requires:       vulkan%{_isa}
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+# Bazzite: Compatibility with Negativo17
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 Obsoletes:      mesa-vulkan-devel < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description vulkan-drivers
