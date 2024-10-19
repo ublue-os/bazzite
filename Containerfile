@@ -567,7 +567,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         rpm-ostree override remove \
             gnome-software-rpm-ostree \
             gnome-classic-session \
-            gnome-classic-session-xsession \
             gnome-tour \
             gnome-extensions-app \
             gnome-terminal \
