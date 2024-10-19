@@ -415,7 +415,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         cockpit-storaged \
         topgrade \
         ydotool \
-        yafti \
         stress-ng \
         lsb_release && \
     rpm-ostree install \
