@@ -545,8 +545,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
             gnome-shell && \
         rpm-ostree install \
-            ptyxis \
-            nautilus-open-any-terminal \
             nautilus-gsconnect \
             steamdeck-backgrounds \
             gnome-randr-rust \
@@ -569,8 +567,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             gnome-classic-session \
             gnome-tour \
             gnome-extensions-app \
-            gnome-terminal \
-            gnome-terminal-nautilus \
             gnome-system-monitor \
             gnome-initial-setup \
             gnome-shell-extension-background-logo \
