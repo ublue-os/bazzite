@@ -16,7 +16,7 @@ URL:       http://www.x.org
 %if 0%{?gitdate}
 Source0:   https://gitlab.freedesktop.org/xorg/%{pkgname}/-/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.xz
+Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{xwayland_version}.tar.xz
 %endif
 
 # Nobara
@@ -100,7 +100,7 @@ The development package provides the developmental files which are
 necessary for developing Wayland compositors using Xwayland.
 
 %prep
-%autosetup -S git_am -n %{pkgname}-%{?gitdate:%{commit}}%{!?gitdate:%{version}}
+%autosetup -S git_am -n %{pkgname}-%{?gitdate:%{commit}}%{!?gitdate:%{xwayland_version}}
 
 %build
 %meson \
