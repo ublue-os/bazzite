@@ -505,8 +505,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         rpm-ostree install \
             qt \
             krdp && \
-        rpm-ostree override remove \
-            plasma-welcome && \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
