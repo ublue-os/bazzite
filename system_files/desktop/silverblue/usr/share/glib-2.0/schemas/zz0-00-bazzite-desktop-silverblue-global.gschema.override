@@ -17,7 +17,7 @@ sort-directories-first=true
 show-create-link=true
 
 [org.gnome.mutter]
-experimental-features=['variable-refresh-rate', 'scale-monitor-framebuffer']
+experimental-features=['variable-refresh-rate', 'scale-monitor-framebuffer', 'xwayland-native-scaling']
 check-alive-timeout=uint32 20000
 
 [org.gnome.software]
