@@ -893,6 +893,8 @@ RUN /usr/libexec/containerbuild/image-info && \
     echo "Compiling gschema to include Bazzite Deck setting overrides" && \
     glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
     rm -r /tmp/bazzite-schema-test && \
+    echo "Removing Steam BPM workaround .desktop file" && \
+    { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \
