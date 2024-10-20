@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Steam Big Picture Mode
+Exec=/usr/bin/bazzite-steam-bpm %U
+Icon=steam
+Terminal=false
+Type=Application
+Categories=Network;FileTransfer;Game;

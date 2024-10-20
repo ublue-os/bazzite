@@ -1,0 +1,71 @@
+#!/usr/bin/bash
+# Stop Steam client and it in Big Picture Mode
+#
+# This is a workaround for Big Picture Mode running slugish when switching from
+# desktop mode to BPM from the client. See https://github.com/ublue-os/bazzite/issues/1675
+
+# TODO 20/10/2024: Remove me whenever the issue above gets solved
+
+# Check if we are running from a terminal or from a .desktop shortcut
+if ((SHLVL > 1)); then
+    function echoerr() {
+        echo >&2 "$@"
+    }
+else
+    function echoerr() {
+        zenity --error --icon=bazzite-logo --text="$*"
+    }
+fi
+
+STEAM_BIN=/usr/bin/steam
+BAZZITE_STEAM_BIN="/usr/bin/bazzite-steam"
+# BAZZITE_STEAM_BIN="$(type -P bazzite-steam)"
+STEAM_DIR="${HOME}/.local/share/Steam"
+TIMEOUT_SECS=30
+
+# List of binaries to check with lsof to prove steam is running
+BIN_WATCH=(
+    "${STEAM_BIN}"
+    "${BAZZITE_STEAM_BIN}"
+    "${STEAM_DIR}/steam.sh"
+    "${STEAM_DIR}"/ubuntu*/steam
+)
+
+# Echo pids of steam processes
+function get_steam_pids() {
+    lsof -t -- "${BIN_WATCH[@]}" 2>/dev/null || true
+}
+
+# Return err if steam is not running
+function is_steam_running() {
+    (($(get_steam_pids | wc --lines) > 0))
+    return
+}
+
+function main() {
+    # Check if steam is running
+    if is_steam_running; then
+        # Stop it
+        ${STEAM_BIN} +quit
+
+        # Wait to be fully stopped
+        # shellcheck disable=SC2046
+        if ! waitpid --exited --timeout ${TIMEOUT_SECS} $(get_steam_pids); then
+            # Check if we timed out
+            local err=$?
+            if ((err == 3)); then
+                echoerr "ERROR: Timed out stopping Steam. Stopping script..."
+                exit 1
+
+            else # Something else happened
+                echoerr "ERROR: code=${err}; This is strange..."
+                exit ${err}
+            fi
+        fi
+    fi
+
+    # Start steam in big picture mode
+    ${BAZZITE_STEAM_BIN} steam://open/bigpicture "$@"
+}
+
+main "$@"
