@@ -67,8 +67,8 @@ jobs:
           - fedora_version: 41
             is_latest_version: true
             is_stable_version: true
-            kernel_flavor: main # must match a kernel_flavor from akmods repo
-            kernel_version: 6.11.3-300.fc41.x86_64 # must match a cached version of the above flavor
+            kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
+            kernel_version: 6.11.4-305.bazzite.fc41.x86_64 # must match a cached version of the above flavor
         exclude:
           - base_name: bazzite
             target_nvidia_flavor: nvidia
