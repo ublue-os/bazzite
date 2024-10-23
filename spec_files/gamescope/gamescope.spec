@@ -17,9 +17,9 @@ Source0:        stb.pc
 
 Patch0:         0001-cstdint.patch
 
+# https://hhd.dev/
 # https://github.com/ChimeraOS/gamescope
-# Cleaned up by + patches from https://hhd.dev/
-Patch1:         chimeraos-cleanup-v1.patch
+Patch1:         handheld.patch
 
 # https://github.com/ValveSoftware/gamescope/pull/740
 Patch2:         740.patch
