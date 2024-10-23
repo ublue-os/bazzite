@@ -427,8 +427,15 @@ jobs:
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"
 
+  generate_release:
+    name: Generate Release
+    needs: [push-ghcr]
+    if: github.event_name != 'pull_request'
+    secrets: inherit
+    uses: ./.github/workflows/generate_release.yml
+
   build_iso:
-    name: build iso
+    name: Build ISO
     needs: [push-ghcr]
     if: github.ref_name == 'testing'
     # Eventually would be nice for building images in PRs

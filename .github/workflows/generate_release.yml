@@ -1,0 +1,28 @@
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+name: Generate Release
+jobs:
+  generate-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout last 500 commits (for <commits> to work)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 500
+      - name: Generate Release Text
+        run: |
+          python3 ./github/workflows/changelog.py testing ./output.env ./changelog.md --workdir .
+          cat ./output.env > $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ env.TITLE }}
+          tag: ${{ env.TAG }}
+          body_path: ./changelog.md
+          # make_latest: ${{ target == 'stable' }}
+          # prerelease: ${{ target != 'testing' }}
