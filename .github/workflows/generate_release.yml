@@ -2,9 +2,7 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: 'The target branch to write a release for (e.g., testing)'
-        required: true
-        default: 'testing'
+        description: 'Write a release for e.g., testing. Defaults to branch name.'
 
 permissions:
   contents: write
