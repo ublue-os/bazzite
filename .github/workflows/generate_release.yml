@@ -25,8 +25,8 @@ jobs:
         run: |
           python3 ./.github/workflows/changelog.py "${{ env.TARGET }}" ./output.env ./changelog.md --workdir .
           source ./output.env
-          echo "TITLE=${{ TITLE }}" >> $GITHUB_ENV
-          echo "TAG=${{ TAG }}" >> $GITHUB_ENV
+          echo "TITLE=${TITLE}" >> $GITHUB_ENV
+          echo "TAG=${TAG}" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
