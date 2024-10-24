@@ -19,7 +19,7 @@ jobs:
 
       - name: Get target
         run: |
-          "TARGET=${{ github.event.inputs.target || github.ref }}" > $GITHUB_ENV
+          echo "TARGET=${{ github.event.inputs.target || github.ref }}" > $GITHUB_ENV
       
       - name: Generate Release Text
         run: |
