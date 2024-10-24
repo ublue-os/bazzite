@@ -2,9 +2,10 @@ on:
   workflow_call:
   workflow_dispatch:
     inputs:
+      handwritten:
+        description: 'Small changelog about changes in this build:'
       target:
         description: 'Release Branch (e.g., testing). Defaults to branch name.'
-
 permissions:
   contents: write
 
@@ -28,7 +29,7 @@ jobs:
         run: |
           python3 ./.github/workflows/changelog.py \
             "${{ steps.get-target.outputs.target }}" \
-            ./output.env ./changelog.md --workdir .
+            ./output.env ./changelog.md --workdir . --handwritten "${{ github.event.inputs.handwritten }}"
           source ./output.env
           echo "title=${TITLE}" >> $GITHUB_OUTPUT
           echo "tag=${TAG}" >> $GITHUB_OUTPUT

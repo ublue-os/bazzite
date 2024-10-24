@@ -57,6 +57,8 @@ From previous `{target}` version `{prev}` there have been the following changes.
 
 {changes}
 """
+HANDWRITTEN_PLACEHOLDER = """\
+This is an automatically generated changelog for release `{curr}`."""
 
 BLACKLIST_VERSIONS = [
     "kernel",
@@ -335,9 +337,10 @@ def generate_changelog(
     changelog = CHANGELOG_FORMAT
 
     changelog = (
-        changelog.replace("{handwritten}\n", handwritten + "\n" if handwritten else "")
+        changelog.replace("{handwritten}", handwritten if handwritten else HANDWRITTEN_PLACEHOLDER)
         .replace("{target}", target)
         .replace("{prev}", prev)
+        .replace("{curr}", curr)
     )
 
     for pkg, v in versions.items():
