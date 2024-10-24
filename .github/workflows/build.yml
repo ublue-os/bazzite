@@ -31,6 +31,8 @@ on:
   merge_group:
   workflow_dispatch:
     inputs:
+      handwritten:
+        description: 'Small changelog:'
       # Run with this periodically to analyze the image again
       # As package drift will make the plan eventually non-ideal
       # (existing users will have to redownload most of the image)
@@ -427,8 +429,15 @@ jobs:
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"
 
+  generate_release:
+    name: Generate Release
+    needs: [push-ghcr]
+    if: github.event_name != 'pull_request'
+    secrets: inherit
+    uses: ./.github/workflows/generate_release.yml
+
   build_iso:
-    name: build iso
+    name: Build ISO
     needs: [push-ghcr]
     if: github.ref_name == 'testing'
     # Eventually would be nice for building images in PRs
