@@ -32,7 +32,7 @@ on:
   workflow_dispatch:
     inputs:
       handwritten:
-        description: 'Small changelog about changes in this build:'
+        description: 'Small changelog:'
       # Run with this periodically to analyze the image again
       # As package drift will make the plan eventually non-ideal
       # (existing users will have to redownload most of the image)
