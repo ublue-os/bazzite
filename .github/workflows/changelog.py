@@ -394,7 +394,7 @@ def main():
     )
 
     print(f"Changelog:\n# {title}\n{changelog}")
-    print(f"Output:\nTITLE={title}\nTAG={curr}")
+    print(f"\nOutput:\nTITLE=\"{title}\"\nTAG={curr}")
 
     with open(args.changelog, "w") as f:
         f.write(changelog)
