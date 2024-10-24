@@ -1,5 +1,10 @@
 on:
   workflow_dispatch:
+    inputs:
+      target:
+        description: 'The target branch to write a release for (e.g., testing)'
+        required: true
+        default: 'testing'
 
 permissions:
   contents: write
@@ -13,9 +18,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 500
+
+      - name: Get target
+        run: |
+          "TARGET=${{ github.event.inputs.target || github.ref }}" > $GITHUB_ENV
+      
       - name: Generate Release Text
         run: |
-          python3 ./github/workflows/changelog.py testing ./output.env ./changelog.md --workdir .
+          python3 ./github/workflows/changelog.py "${{ env.TARGET }}" ./output.env ./changelog.md --workdir .
           cat ./output.env > $GITHUB_ENV
 
       - name: Create Release
@@ -24,5 +34,5 @@ jobs:
           name: ${{ env.TITLE }}
           tag: ${{ env.TAG }}
           body_path: ./changelog.md
-          # make_latest: ${{ target == 'stable' }}
-          # prerelease: ${{ target != 'testing' }}
+          make_latest: ${{ env.TARGET == 'stable' }}
+          prerelease: ${{ env.TARGET != 'stable' }}
