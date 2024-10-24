@@ -36,7 +36,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ steps.generate-release.outputs.title }}
-          tag: ${{ steps.generate-release.outputs.tag }}
+          tag_name: ${{ steps.generate-release.outputs.tag }}
           body_path: ./changelog.md
           make_latest: ${{ steps.get-target.outputs.target == 'stable' }}
           prerelease: ${{ steps.get-target.outputs.target != 'stable' }}
