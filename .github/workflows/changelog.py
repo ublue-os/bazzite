@@ -324,8 +324,8 @@ def generate_changelog(
         # Remove .0 from curr
         curr = re.sub(r"\.\d{1,2}$", "", curr)
         # Remove target- from curr
-        curr = re.sub(rf"^[a-z]+-", "", curr)
-        pretty = target.capitalize() + " (F" + curr
+        curr_pretty = re.sub(rf"^[a-z]+-", "", curr)
+        pretty = target.capitalize() + " (F" + curr_pretty
         if finish and target != "stable":
             pretty += ", #" + finish[:7]
         pretty += ")"
