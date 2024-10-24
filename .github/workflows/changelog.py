@@ -44,7 +44,7 @@ CHANGELOG_FORMAT = """\
 
 From previous `{target}` version `{prev}` there have been the following changes. **One package per new version shown.**
 
-Visit [bazzite.gg](https://bazzite.gg) to download Bazzite today.
+Visit [bazzite.gg](https://bazzite.gg) for more information and to download Bazzite.
 
 ### Major packages
 | Name | Version |
