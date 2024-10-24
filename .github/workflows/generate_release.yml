@@ -18,21 +18,25 @@ jobs:
           fetch-depth: 500
 
       - name: Get target
+        id: get-target
         run: |
-          echo "TARGET=${{ github.event.inputs.target || github.ref }}" > $GITHUB_ENV
+          echo "target=${{ github.event.inputs.target || github.ref }}" > $GITHUB_OUTPUT
       
       - name: Generate Release Text
+        id: generate-release
         run: |
-          python3 ./.github/workflows/changelog.py "${{ env.TARGET }}" ./output.env ./changelog.md --workdir .
+          python3 ./.github/workflows/changelog.py \
+            "${{ steps.get-target.outputs.target }}" \
+            ./output.env ./changelog.md --workdir .
           source ./output.env
-          echo "TITLE=${TITLE}" >> $GITHUB_ENV
-          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "title=${TITLE}" >> $GITHUB_OUTPUT
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ env.TITLE }}
-          tag: ${{ env.TAG }}
+          name: ${{ steps.generate-release.outputs.title }}
+          tag: ${{ steps.generate-release.outputs.tag }}
           body_path: ./changelog.md
-          make_latest: ${{ env.TARGET == 'stable' }}
-          prerelease: ${{ env.TARGET != 'stable' }}
+          make_latest: ${{ steps.get-target.outputs.target == 'stable' }}
+          prerelease: ${{ steps.get-target.outputs.target != 'stable' }}
