@@ -1,0 +1,44 @@
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      handwritten:
+        description: 'Small changelog about changes in this build:'
+      target:
+        description: 'Release Branch (e.g., testing). Defaults to branch name.'
+permissions:
+  contents: write
+
+name: Generate Release
+jobs:
+  generate-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout last 500 commits (for <commits> to work)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 500
+
+      - name: Get target
+        id: get-target
+        run: |
+          echo "target=${{ github.event.inputs.target || github.ref }}" > $GITHUB_OUTPUT
+      
+      - name: Generate Release Text
+        id: generate-release
+        run: |
+          python3 ./.github/workflows/changelog.py \
+            "${{ steps.get-target.outputs.target }}" \
+            ./output.env ./changelog.md --workdir . --handwritten "${{ github.event.inputs.handwritten }}"
+          source ./output.env
+          echo "title=${TITLE}" >> $GITHUB_OUTPUT
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.generate-release.outputs.title }}
+          tag_name: ${{ steps.generate-release.outputs.tag }}
+          body_path: ./changelog.md
+          make_latest: ${{ steps.get-target.outputs.target == 'stable' }}
+          prerelease: ${{ steps.get-target.outputs.target != 'stable' }}
