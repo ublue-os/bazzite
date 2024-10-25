@@ -1,6 +1,6 @@
 %global majorversion 1
 %global minorversion 2
-%global microversion 5
+%global microversion 6
 
 %global apiversion   0.3
 %global spaversion   0.2
@@ -445,27 +445,27 @@ cp %{SOURCE1} subprojects/packagefiles/
 
 %build
 %meson \
-    -D docs=enabled -D man=enabled -D gstreamer=enabled -D systemd=enabled  \
-    -D sdl2=disabled                                \
-    -D audiotestsrc=disabled -D videotestsrc=disabled               \
-    -D volume=disabled -D bluez5-codec-aptx=disabled                \
-    -D bluez5-codec-lc3plus=disabled -D bluez5-codec-lc3=enabled        \
+    -D docs=enabled -D man=enabled -D gstreamer=enabled -D systemd=enabled	\
+    -D sdl2=disabled 								\
+    -D audiotestsrc=disabled -D videotestsrc=disabled				\
+    -D volume=disabled -D bluez5-codec-aptx=disabled 		  		\
+    -D bluez5-codec-lc3plus=disabled -D bluez5-codec-lc3=enabled		\
 %ifarch s390x
-    -D bluez5-codec-ldac=disabled                       \
+    -D bluez5-codec-ldac=disabled						\
 %endif
-    -D session-managers=[]                          \
-    -D rtprio-server=60 -D rtprio-client=55 -D rlimits-rtprio=70        \
-    -D snap=disabled                                \
-    %{!?with_jack:-D pipewire-jack=disabled}                    \
-    %{!?with_jackserver_plugin:-D jack=disabled}                \
-    %{!?with_libcamera_plugin:-D libcamera=disabled}                \
-    %{?with_jack:-D jack-devel=true}                        \
-    %{!?with_alsa:-D pipewire-alsa=disabled}                    \
-    %{?with_vulkan:-D vulkan=enabled}                       \
-    %{!?with_libmysofa:-D libmysofa=disabled}                   \
-    %{!?with_lv2:-D lv2=disabled}                       \
-    %{!?with_roc:-D roc=disabled}                       \
-    %{!?with_ffado:-D libffado=disabled}                    \
+    -D session-managers=[] 							\
+    -D rtprio-server=60 -D rtprio-client=55 -D rlimits-rtprio=70		\
+    -D snap=disabled								\
+    %{!?with_jack:-D pipewire-jack=disabled} 					\
+    %{!?with_jackserver_plugin:-D jack=disabled} 				\
+    %{!?with_libcamera_plugin:-D libcamera=disabled} 				\
+    %{?with_jack:-D jack-devel=true} 						\
+    %{!?with_alsa:-D pipewire-alsa=disabled}					\
+    %{?with_vulkan:-D vulkan=enabled}						\
+    %{!?with_libmysofa:-D libmysofa=disabled}					\
+    %{!?with_lv2:-D lv2=disabled}						\
+    %{!?with_roc:-D roc=disabled}						\
+    %{!?with_ffado:-D libffado=disabled}					\
     %{nil}
 %meson_build
 
@@ -508,20 +508,20 @@ rm %{buildroot}%{_datadir}/pipewire/pipewire-pulse.conf
 install -d -m 0755 %{buildroot}%{_datadir}/pipewire/pipewire-pulse.conf.d/
 
 ln -s ../pipewire-pulse.conf.avail/20-upmix.conf \
-        %{buildroot}%{_datadir}/pipewire/pipewire-pulse.conf.d/20-upmix.conf
+		%{buildroot}%{_datadir}/pipewire/pipewire-pulse.conf.d/20-upmix.conf
 %endif
 
 # rates config
 ln -s ../pipewire.conf.avail/10-rates.conf \
-        %{buildroot}%{_datadir}/pipewire/pipewire.conf.d/10-rates.conf
+		%{buildroot}%{_datadir}/pipewire/pipewire.conf.d/10-rates.conf
 
 # upmix config
 ln -s ../pipewire.conf.avail/20-upmix.conf \
-        %{buildroot}%{_datadir}/pipewire/pipewire.conf.d/20-upmix.conf
+		%{buildroot}%{_datadir}/pipewire/pipewire.conf.d/20-upmix.conf
 ln -s ../client.conf.avail/20-upmix.conf \
-        %{buildroot}%{_datadir}/pipewire/client.conf.d/20-upmix.conf
+		%{buildroot}%{_datadir}/pipewire/client.conf.d/20-upmix.conf
 ln -s ../client-rt.conf.avail/20-upmix.conf \
-        %{buildroot}%{_datadir}/pipewire/client-rt.conf.d/20-upmix.conf
+		%{buildroot}%{_datadir}/pipewire/client-rt.conf.d/20-upmix.conf
 
 
 %find_lang %{name}
@@ -645,7 +645,7 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %dir %{_datadir}/pipewire/client-rt.conf.d/
 %{_datadir}/pipewire/client-rt.conf.avail/20-upmix.conf
 %{_mandir}/man5/pipewire-client.conf.5.gz
-%{_mandir}/man7/pipewire-devices.7.gz
+%{_mandir}/man7/pipewire-props.7.gz
 %{_mandir}/man7/libpipewire-module-access.7.gz
 %{_mandir}/man7/libpipewire-module-adapter.7.gz
 %{_mandir}/man7/libpipewire-module-avb.7.gz
@@ -892,6 +892,9 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %endif
 
 %changelog
+* Wed Oct 23 2024 Wim Taymans <wtaymans@redhat.com> - 1.2.6-1
+- Update version to 1.2.6
+
 * Fri Sep 27 2024 Wim Taymans <wtaymans@redhat.com> - 1.2.5-1
 - Update version to 1.2.5
 - Add config packages
