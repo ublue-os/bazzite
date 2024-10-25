@@ -241,27 +241,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 # Setup firmware
 # Downgrade firmware to address galileo waking while asleep
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-        amd-gpu-firmware \
-        amd-ucode-firmware \
-        atheros-firmware \
-        brcmfmac-firmware \
-        cirrus-audio-firmware \
-        intel-audio-firmware \
-        intel-gpu-firmware \
-        iwlegacy-firmware \
-        iwlwifi-dvm-firmware \
-        iwlwifi-mvm-firmware \
-        libertas-firmware \
-        linux-firmware \
-        linux-firmware-whence \
-        mt7xxx-firmware \
-        nvidia-gpu-firmware \
-        nxpwireless-firmware \
-        realtek-firmware \
-        tiwilink-firmware && \
     mkdir -p /tmp/linux-firmware-neptune && \
     curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-cali.bin && \
     curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.wmfw https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-cali.wmfw && \
