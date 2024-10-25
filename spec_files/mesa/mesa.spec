@@ -69,7 +69,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 24.2.3
+%global ver 24.2.4
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Epoch:          1
 %global orig_release 1%{?dist}
@@ -84,9 +84,6 @@ Source0:        https://archive.mesa3d.org/mesa-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
-
-# Backport of https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/31321 for LLVM 19 compat.
-Patch11:        0001-gallium-Don-t-pass-avx512er-and-avx512pf-features-on.patch 
 
 # https://gitlab.com/evlaV/mesa/
 Patch20:        valve.patch
