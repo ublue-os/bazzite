@@ -277,6 +277,7 @@ jobs:
           ref: 'raw-img'
           prev-ref: '${{ steps.generate-prev-ref.outputs.ref }}'
           version: '${{ steps.generate-version.outputs.tag }}'
+          skip_compression: 1
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
             io.artifacthub.package.readme-url=https://docs.bazzite.gg
@@ -321,9 +322,6 @@ jobs:
             BUILD_TAGS+=("${FEDORA_VERSION}-unstable")
             BUILD_TAGS+=("unstable-${FEDORA_VERSION}") # flip ver to be last
 
-            # Per upstream ver
-            BUILD_TAGS+=("unstable-${UPSTREAM_TAG}")
-
             if [ -n "$LATEST" ]; then
                 BUILD_TAGS+=("unstable")
             fi
@@ -332,16 +330,12 @@ jobs:
             BUILD_TAGS+=("${FEDORA_VERSION}-testing")
             BUILD_TAGS+=("testing-${FEDORA_VERSION}") # flip ver to be last
 
-            # Per upstream ver
-            BUILD_TAGS+=("testing-${UPSTREAM_TAG}")
-
             if [ -n "$LATEST" ]; then
                 BUILD_TAGS+=("testing")
             fi
           else
             BUILD_TAGS+=("${FEDORA_VERSION}")
-            BUILD_TAGS+=("${UPSTREAM_TAG}")
-            BUILD_TAGS+=("stable-${UPSTREAM_TAG}")
+            BUILD_TAGS+=("stable-${VERSION_TAG}")
 
             # Per fedora version
             BUILD_TAGS+=("${FEDORA_VERSION}-stable")
