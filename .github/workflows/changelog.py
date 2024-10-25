@@ -383,15 +383,19 @@ def main():
     parser.add_argument("--handwritten", help="Handwritten changelog")
     args = parser.parse_args()
 
-    manifests = get_manifests(args.target)
-    prev, curr = get_tags(args.target, manifests)
+    # Remove refs/tags, refs/heads, refs/remotes e.g.
+    # Tags cannot include / anyway.
+    target = args.target.split('/')[-1]
+
+    manifests = get_manifests(target)
+    prev, curr = get_tags(target, manifests)
     print(f"Previous tag: {prev}")
     print(f" Current tag: {curr}")
 
     prev_manifests = get_manifests(prev)
     title, changelog = generate_changelog(
         args.handwritten,
-        args.target,
+        target,
         args.pretty,
         args.workdir,
         prev_manifests,
