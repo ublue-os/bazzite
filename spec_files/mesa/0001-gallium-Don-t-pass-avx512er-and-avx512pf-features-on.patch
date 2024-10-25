@@ -1,0 +1,35 @@
+From f117df06090622f7e1aad2cac818aaef6325f4d3 Mon Sep 17 00:00:00 2001
+From: Nikita Popov <npopov@redhat.com>
+Date: Mon, 23 Sep 2024 15:42:32 +0200
+Subject: [PATCH] gallium: Don't pass avx512er and avx512pf features on LLVM 19
+
+These target features have been remove in LLVM 19, and cause
+warnings like the following to be printed:
+
+    '-avx512er' is not a recognized feature for this target (ignoring feature)
+    '-avx512pf' is not a recognized feature for this target (ignoring feature)
+
+Do not pass these target features on LLVM 19 and newer.
+
+Fixes #11870.
+---
+ src/gallium/auxiliary/gallivm/lp_bld_misc.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp b/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
+index e5f4dfc829f..7975fcf1ac9 100644
+--- a/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
++++ b/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
+@@ -370,8 +370,10 @@ lp_build_fill_mattrs(std::vector<std::string> &MAttrs)
+    /* All avx512 have avx512f */
+    MAttrs.push_back(util_get_cpu_caps()->has_avx512f ? "+avx512f"  : "-avx512f");
+    MAttrs.push_back(util_get_cpu_caps()->has_avx512cd ? "+avx512cd"  : "-avx512cd");
++#if LLVM_VERSION_MAJOR < 19
+    MAttrs.push_back(util_get_cpu_caps()->has_avx512er ? "+avx512er"  : "-avx512er");
+    MAttrs.push_back(util_get_cpu_caps()->has_avx512pf ? "+avx512pf"  : "-avx512pf");
++#endif
+    MAttrs.push_back(util_get_cpu_caps()->has_avx512bw ? "+avx512bw"  : "-avx512bw");
+    MAttrs.push_back(util_get_cpu_caps()->has_avx512dq ? "+avx512dq"  : "-avx512dq");
+    MAttrs.push_back(util_get_cpu_caps()->has_avx512vl ? "+avx512vl"  : "-avx512vl");
+-- 
+2.46.0
