@@ -52,6 +52,23 @@ function list_images() {
   skopeo list-tags docker://ghcr.io/ublue-os/bazzite | jq -r "$regex"
 }
 
+##  Show currently active Bazzite image
+function current() {
+  local tmp_file
+  local current_image
+  local version
+  tmp_file=$(mktemp)
+
+  # shellcheck disable=SC2064
+  trap "rm $tmp_file" RETURN
+  rpm-ostree status -b --json > "$tmp_file"
+
+  current_image=$(jq -r '.deployments[]["container-image-reference"]' < "$tmp_file")
+  version=$(jq -r '.deployments[].version' < "$tmp_file")
+
+  echo -e "Current image: '$current_image'\nVersion: '$version'"
+}
+
 if [[ "$1" == "list" ]]; then
   list_images "${@:2}"
   exit
@@ -61,10 +78,8 @@ elif [[ "$1" == "rollback" ]]; then
   echo "Reboot for changes to take effect"
 
 elif [[ "$1" == "current" ]]; then
-  # current image
-  rpm-ostree status | grep ●
-  # current version
-  rpm-ostree status | grep -A 5 "●" | tail -n +2
+  current "${@:2}"
+  exit
 
 elif [[ "$1" == "rebase" ]]; then
   base_image=ostree-image-signed:docker://ghcr.io/ublue-os
