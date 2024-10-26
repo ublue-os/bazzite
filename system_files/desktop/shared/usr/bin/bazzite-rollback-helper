@@ -88,8 +88,12 @@ function current() {
   echo -e "Current image: '$current_image'\nVersion: '$version'"
 }
 
-##  Rolls back to previously installed Bazzite image. alias for "rpm-ostree rollback"
 function rollback() {
+  local _help="Rolls back to previously installed Bazzite image. alias for \"rpm-ostree rollback\""
+  if [[ $* =~ --help ]]; then
+    echo "$_help" && return
+  fi
+
   rpm-ostree rollback && \
     echo >&2 "Reboot for changes to take effect"
 }
