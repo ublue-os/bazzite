@@ -295,6 +295,10 @@ def get_commits(prev_manifests, manifests, workdir: str):
             if not commit:
                 continue
             hash, short, subject = commit.split(" ", 2)
+
+            if subject.lower().startswith("merge"):
+                continue
+
             out += (
                 COMMIT_FORMAT.replace("{short}", short)
                 .replace("{subject}", subject)
