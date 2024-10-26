@@ -57,8 +57,22 @@ function list_images() {
   skopeo list-tags docker://ghcr.io/ublue-os/bazzite | jq -r "$regex"
 }
 
-##  Show currently active Bazzite image
 function current() {
+  local _help="\
+##  Show currently active Bazzite image
+##
+##  INPUTS:
+##    -v | --verbose    Show the output of 'rpm-ostree status -vb'\
+"
+  if [[ $* =~ --help ]]; then
+    echo "$_help" && return
+  fi
+
+  while (( $# > 0 )); do case $1 in
+    -v|--verbose) rpm-ostree status -vb; return ;;
+    *) echo >&2 "$_help"; return 1 ;;
+  esac done
+
   local tmp_file
   local current_image
   local version
