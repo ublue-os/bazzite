@@ -22,7 +22,9 @@ jobs:
       - name: Get target
         id: get-target
         run: |
-          echo "target=${{ github.event.inputs.target || github.ref }}" > $GITHUB_OUTPUT
+          TARGET="${{ github.event.inputs.target || github.ref }}"
+          TARGET="${TARGET##*/}"
+          echo "target=$TARGET" >> $GITHUB_OUTPUT
       
       - name: Generate Release Text
         id: generate-release
