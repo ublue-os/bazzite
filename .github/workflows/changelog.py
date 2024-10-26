@@ -46,6 +46,14 @@ From previous `{target}` version `{prev}` there have been the following changes.
 
 Visit [bazzite.gg](https://bazzite.gg) for more information and to download Bazzite.
 
+For current users, type the following to rebase to this version:
+```bash
+# For this branch (if latest):
+bazzite-rollback-helper rebase {target}
+# For this specific image:
+bazzite-rollback-helper rebase {curr}
+```
+
 ### Major packages
 | Name | Version |
 | --- | --- |
