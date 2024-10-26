@@ -421,6 +421,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         ydotool \
         yafti \
         stress-ng \
+        btrfs-assistant \
         lsb_release && \
     rpm-ostree install \
         ublue-update && \
@@ -430,6 +431,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     sed -i 's/max_cpu_load_percent.*/max_cpu_load_percent = 100.0/' /etc/ublue-update/ublue-update.toml && \
     sed -i 's/max_mem_percent.*/max_mem_percent = 90.0/' /etc/ublue-update/ublue-update.toml && \
     sed -i 's/dbus_notify.*/dbus_notify = false/' /etc/ublue-update/ublue-update.toml && \
+    sed -i 's/ --xdg-runtime=\\"${XDG_RUNTIME_DIR}\\"//g' /usr/bin/btrfs-assistant-launcher && \
     curl -Lo /usr/bin/installcab https://raw.githubusercontent.com/KyleGospo/steam-proton-mf-wmv/master/installcab.py && \
     chmod +x /usr/bin/installcab && \
     curl -Lo /usr/bin/install-mf-wmv https://github.com/KyleGospo/steam-proton-mf-wmv/blob/master/install-mf-wmv.sh && \
@@ -720,6 +722,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl enable bazzite-hardware-setup.service && \
     systemctl disable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
+    systemctl enable bazzite-snapper-setup && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
