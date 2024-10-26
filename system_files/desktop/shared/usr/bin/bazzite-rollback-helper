@@ -38,12 +38,17 @@ EOF
 )
 
 
+function list_images() {
+  local _help="\
 ##  List images with a specified tag
 ##
 ##  INPUTS:
-##    $1    Branch we want to get tags from.
-##          Fallbacks to $DEFAULT_BRANCH
-function list_images() {
+##    \$1: branch   Branch we want to get tags from.
+##                 Fallbacks to \"$DEFAULT_BRANCH\"
+"
+  if [[ $* =~ --help ]]; then
+    echo "$_help" && return
+  fi
   local branch=${1:-$DEFAULT_BRANCH}
   local regex='.Tags[]'
   regex="$regex"\ ' | select(test("^PLACEHOLDER|^PLACEHOLDER-(?:\\d+\\.\\d+|\\d+)"))'
