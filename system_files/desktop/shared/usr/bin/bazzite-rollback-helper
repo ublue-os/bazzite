@@ -98,6 +98,58 @@ function rollback() {
     echo >&2 "Reboot for changes to take effect"
 }
 
+function rebase() {
+  local _help="\
+##  Rebase/rollback to specified Bazzite image, Default is $DEFAULT_IMAGE:$DEFAULT_BRANCH
+##
+##  INPUTS:
+##    \$1: branch   Branch we want to rebase. Format must be 
+##                 one of the following:
+##
+##                 Fallbacks to \"$DEFAULT_BRANCH\"\
+"
+  if [[ $* =~ --help ]]; then
+  local _help
+    echo "$_help" && return
+  fi
+
+  # shellcheck disable=SC2155
+  local _current_img_ref=$(rpm-ostree status -b --json | jq -r '.deployments[]["container-image-reference"]')
+
+  # Fetch our image reference prefix (ex.: ostree-image-signed:docker://ghcr.io/ublue-os)
+  # from rpm-ostree
+  local base_img_pfx
+  base_img_pfx=$_current_img_ref
+  base_img_pfx=${base_img_pfx///${DEFAULT_IMAGE}*/}
+
+  # TODO: Handle all possible patterns for rebase inputs
+  local img_ref # Final image ref string to rebase
+  local usr_inpt="$1"
+  case "$usr_inpt" in
+  *:*)
+    # IMG_NAME:TAG
+    echo >&2 "Format detected: IMG_NAME:TAG"
+    img_ref="$base_img_pfx"/"$usr_inpt"
+  ;;
+  "") echo >&2 "$_help"; return ;;
+  *)
+    # TAG
+    echo >&2 "Format detected: TAG"
+    img_ref="$base_img_pfx"/"$DEFAULT_IMAGE":"$usr_inpt"
+  ;;
+  esac
+
+  # Ask for confirmation. If is okay, rebase.
+  local question="\
+Rebasing to $img_ref. Continue? [y/N]: "
+  read -rp "$question" yn
+  case $yn in
+    # Finally, rebase
+    [yY]) rpm-ostree rebase "$img_ref" ;;
+    *) echo >&2 "Canceling..."; return ;;
+  esac
+}
+
 if [[ "$1" == "list" ]]; then
   list_images "${@:2}"
   exit
@@ -111,30 +163,8 @@ elif [[ "$1" == "current" ]]; then
   exit
 
 elif [[ "$1" == "rebase" ]]; then
-  base_image=ostree-image-signed:docker://ghcr.io/ublue-os
-  rebase_target=$DEFAULT_IMAGE:$DEFAULT_BRANCH
-
-  if [ -z "$2" ]; then
-    rebase_target=$DEFAULT_IMAGE:$DEFAULT_BRANCH
-  else
-    if [ "$image" == "$branch" ]; then
-      # only branch was provided as an arg, use default image
-      rebase_target=$DEFAULT_IMAGE:$branch
-    else
-      rebase_target=$image:$branch
-    fi
-  fi
-  full_image_path=$base_image/$rebase_target
-
-question=$(cat <<EOF
-Rebasing to $full_image_path. Continue? [y/N]:
-EOF
-)
-  read -p "$question" yn
-  case $yn in
-      [Yy]) echo "rebasing to $rebase_target" && rpm-ostree rebase $full_image_path &&  echo "Reboot for changes to take effect";;
-      *) echo "Unknown option, exiting.";;
-  esac
+  rebase "${@:2}"
+  exit
 
 # display the helptext
 elif [[ "$1" == "-h" || "$1" == "--h" || "$1" == "-help" || "$1" == "--help" || "$1" == "help" || -z "$1" ]]; then
