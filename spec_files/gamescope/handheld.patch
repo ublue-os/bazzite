@@ -826,9 +826,9 @@ index 7dacfe7..f4446f0 100644
  	int nTargetFPS = g_nSteamCompMgrTargetFPS;
 -	if ( g_nSteamCompMgrTargetFPS && bShouldLimitFPS && nRefreshHz > nTargetFPS )
 +
-+	if ( nRefreshHz > 60 && g_refreshHalve )
++	if ( nRefreshHz > 90 && g_refreshHalve )
 +	{
-+		// Refresh halve above 60Hz if steamui is active
++		// Refresh halve above 90Hz if steamui is active
 +		if ( vblank_idx % 2 != 0 )
 +			return false;
 +	}
