@@ -1,7 +1,7 @@
-From 503b9235a9379dcc625857dbd062dbab386ec112 Mon Sep 17 00:00:00 2001
+From e0e74b9862ca591302a01ef89994e3eaf8d1245e Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 17 May 2024 21:56:55 -0500
-Subject: [PATCH v1 1/8] feat: add --custom-refresh-rates option (+ fixes)
+Subject: [PATCH v2 01/12] feat: add --custom-refresh-rates option (+ fixes)
 
 Commit originally by Matthew, external fixes by Kyle, and new system check
 move by Antheas.
@@ -15,10 +15,10 @@ Co-authored-by: Antheas Kapenekakis <git@antheas.dev>
  3 files changed, 38 insertions(+)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 3a996af..b0c7670 100644
+index 0b121e8..75c3258 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -2220,6 +2220,11 @@ namespace gamescope
+@@ -2243,6 +2243,11 @@ namespace gamescope
  					bHasKnownHDRInfo = true;
  				}
  			}
@@ -31,7 +31,7 @@ index 3a996af..b0c7670 100644
  
  		if ( !bHasKnownColorimetry )
 diff --git a/src/main.cpp b/src/main.cpp
-index c074f82..f1db9cc 100644
+index 9dff5c4..8381889 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -129,6 +129,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -84,7 +84,7 @@ index c074f82..f1db9cc 100644
  struct sigaction handle_signal_action = {};
  
  void ShutdownGamescope()
-@@ -749,6 +778,8 @@ int main(int argc, char **argv)
+@@ -746,6 +775,8 @@ int main(int argc, char **argv)
  					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
  				} else if (strcmp(opt_name, "force-orientation") == 0) {
  					g_DesiredInternalOrientation = force_orientation( optarg );
@@ -114,13 +114,13 @@ index 2e6fb83..390c04a 100644
  enum class GamescopeUpscaleFilter : uint32_t
  {
 -- 
-2.46.2
+2.47.0
 
 
-From 99d77e08b6165a1f48e8870859dd8bb630f7c591 Mon Sep 17 00:00:00 2001
+From 304c0c2297bc2f24be9edff4088fdfae418adaf0 Mon Sep 17 00:00:00 2001
 From: Alesh Slovak <alesh@playtron.one>
 Date: Thu, 26 Sep 2024 07:13:24 -0400
-Subject: [PATCH v1 2/8] fix(vrr): Revert "steamcompmgr: Move
+Subject: [PATCH v2 02/12] fix(vrr): Revert "steamcompmgr: Move
  outdatedInteractiveFocus to window"
 
 This reverts commit 299bc3410dcfd46da5e3c988354b60ed3a356900.
@@ -207,13 +207,13 @@ index 095694e..e41fad9 100644
  	bool hasHwndStyle = false;
  	uint32_t hwndStyle = 0;
 -- 
-2.46.2
+2.47.0
 
 
-From 6bffd653d8f9e6539008b4be898cca67c1414b37 Mon Sep 17 00:00:00 2001
+From 2a9e687172b569681eea53fb8f4848b0a758e680 Mon Sep 17 00:00:00 2001
 From: Renn <8340896+AkazaRenn@users.noreply.github.com>
 Date: Fri, 11 Oct 2024 17:48:26 +0200
-Subject: [PATCH v1 3/8] fix(deck): Use super + 1/2 for Overlay/QAM
+Subject: [PATCH v2 03/12] fix(deck): Use super + 1/2 for Overlay/QAM
 
 Replaces the patch for CTRL + 1/2 for Overlay/QAM with Super + 1/2 and
 allows for CTRL for a smooth transition.
@@ -268,13 +268,13 @@ index 78a86ee..99df8aa 100644
  			wlserver_keyboardfocus( old_kb_surf, false );
  			return;
 -- 
-2.46.2
+2.47.0
 
 
-From 7d6fcc2580d34208e0860762ddbc8560a9b47af8 Mon Sep 17 00:00:00 2001
+From dde7f34921a70953fca2020dc22f89c544bdaf65 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 11 Oct 2024 17:52:48 +0200
-Subject: [PATCH v1 4/8] fix: allow for disabling touch atom click
+Subject: [PATCH v2 04/12] fix: allow for disabling touch atom click
 
 Causes issues in certain devices (or not anymore?).
 
@@ -287,7 +287,7 @@ Co-authored-by: Kyle Gospodnetich <me@kylegospodneti.ch>
  2 files changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/src/main.cpp b/src/main.cpp
-index f1db9cc..d08f0e7 100644
+index 8381889..a76b51b 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -128,6 +128,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -337,13 +337,13 @@ index df7616d..4a17499 100644
  				break;
  			case '?':
 -- 
-2.46.2
+2.47.0
 
 
-From fb371b1a06b1fba53e278bbcdfb491bcaec73099 Mon Sep 17 00:00:00 2001
+From 033b1b8ce87267e9e1b75a889d5ba3d8c47ed4fe Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 11 Oct 2024 21:56:54 +0200
-Subject: [PATCH v1 5/8] fix(intel-gpu): allow for (enabling) hacky texture
+Subject: [PATCH v2 05/12] fix(intel-gpu): allow for (enabling) hacky texture
 
 Disabling hacky texture will use more hardware planes, causing some devices to composite yielding lower fps. Required for intel to work
 ---
@@ -352,7 +352,7 @@ Disabling hacky texture will use more hardware planes, causing some devices to c
  2 files changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/src/main.cpp b/src/main.cpp
-index d08f0e7..9b4ac91 100644
+index a76b51b..84e05a9 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -128,6 +128,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -402,21 +402,21 @@ index 4a17499..da3115f 100644
  				break;
  			case '?':
 -- 
-2.46.2
+2.47.0
 
 
-From 4118463a5fab5b6d19e225507e5206a87711e66e Mon Sep 17 00:00:00 2001
+From 8e64da6cabcd2a6fc9d9fad12cb95ff203985d1b Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 11 Oct 2024 23:01:13 +0200
-Subject: [PATCH v1 6/8] fix: re-add external orientation options to not break
- current sessions (incl. applying ext. orientation)
+Subject: [PATCH v2 06/12] fix: re-add external orientation options to not
+ break current sessions (incl. applying ext. orientation)
 
 ---
  src/main.cpp | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/main.cpp b/src/main.cpp
-index 9b4ac91..1338e94 100644
+index 84e05a9..2398535 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -129,6 +129,8 @@ const struct option *gamescope_options = (struct option[]){
@@ -428,7 +428,7 @@ index 9b4ac91..1338e94 100644
  	{ "disable-touch-click", no_argument, nullptr, 0 },
  	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
  	{ "custom-refresh-rates", required_argument, nullptr, 0 },
-@@ -780,7 +782,7 @@ int main(int argc, char **argv)
+@@ -777,7 +779,7 @@ int main(int argc, char **argv)
  					gamescope::cv_touch_click_mode = (gamescope::TouchClickMode) atoi( optarg );
  				} else if (strcmp(opt_name, "generate-drm-mode") == 0) {
  					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
@@ -438,13 +438,46 @@ index 9b4ac91..1338e94 100644
  				} else if (strcmp(opt_name, "custom-refresh-rates") == 0) {
  					g_customRefreshRates = parse_custom_refresh_rates( optarg );
 -- 
-2.46.2
+2.47.0
 
 
-From c0368c80d256c24f43aa1c0a28695a6ec9c1dbab Mon Sep 17 00:00:00 2001
+From 14d19b8d86c485fe57e1489de905c908c67fd77e Mon Sep 17 00:00:00 2001
+From: honjow <honjow311@gmail.com>
+Date: Wed, 16 Oct 2024 00:23:58 +0800
+Subject: [PATCH v2 07/12] fix(external): fix crash when using external
+ touchscreens
+
+---
+ src/wlserver.cpp | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/src/wlserver.cpp b/src/wlserver.cpp
+index 99df8aa..5e8f516 100644
+--- a/src/wlserver.cpp
++++ b/src/wlserver.cpp
+@@ -2492,8 +2492,12 @@ static void apply_touchscreen_orientation(double *x, double *y )
+ 	double tx = 0;
+ 	double ty = 0;
+ 
+-	// Use internal screen always for orientation purposes.
+-	switch ( GetBackend()->GetConnector( gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL )->GetCurrentOrientation() )
++	auto orientation = GAMESCOPE_PANEL_ORIENTATION_AUTO;
++	if ( GetBackend() && GetBackend()->GetCurrentConnector(  ) )
++	{
++		orientation = GetBackend()->GetCurrentConnector()->GetCurrentOrientation();
++	}
++	switch ( orientation )
+ 	{
+ 		default:
+ 		case GAMESCOPE_PANEL_ORIENTATION_AUTO:
+-- 
+2.47.0
+
+
+From 9e4ee4341a7480a0af883cc47d3c6e6ee91de74a Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 11 Oct 2024 23:47:59 +0200
-Subject: [PATCH v1 7/8] feat(vrr): allow for setting refresh rate if the
+Subject: [PATCH v2 08/12] feat(vrr): allow for setting refresh rate if the
  internal display allows
 
 For the Ally, we have a set of VFP that work to set the refresh rate.
@@ -456,7 +489,7 @@ it. Therefore, bypass some checks to allow it to work just for this usecase.
  2 files changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/src/main.cpp b/src/main.cpp
-index 1338e94..6453702 100644
+index 2398535..0621c65 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -132,6 +132,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -515,13 +548,14 @@ index da3115f..69fd348 100644
  					g_bHackyEnabled = true;
  				}
 -- 
-2.46.2
+2.47.0
 
 
-From cfca9d99ab80df9ab3f83ce304345a17f7a52d4c Mon Sep 17 00:00:00 2001
+From dc2d5db6f62ac4c5a160d200be346100d923b1c3 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 11 Oct 2024 19:09:05 +0200
-Subject: [PATCH v1 8/8] feat: add external option that now only lies to steam
+Subject: [PATCH v2 09/12] feat: add external option that now only lies to
+ steam
 
 Previously, there was a force-panel option that allowed for VRR.
 However, this is no longer the case and VRR works fine.
@@ -536,7 +570,7 @@ variant of the patch that only does that.
  5 files changed, 20 insertions(+), 2 deletions(-)
 
 diff --git a/src/main.cpp b/src/main.cpp
-index 6453702..7ec6020 100644
+index 0621c65..056e1c1 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -199,6 +199,7 @@ const char usage[] =
@@ -567,7 +601,7 @@ index 6453702..7ec6020 100644
  static enum GamescopeUpscaleScaler parse_upscaler_scaler(const char *str)
  {
  	if (strcmp(str, "auto") == 0) {
-@@ -786,6 +800,8 @@ int main(int argc, char **argv)
+@@ -783,6 +797,8 @@ int main(int argc, char **argv)
  					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
  				} else if (strcmp(opt_name, "force-orientation") == 0 || strcmp(opt_name, "force-external-orientation") == 0) {
  					g_DesiredInternalOrientation = force_orientation( optarg );
@@ -602,7 +636,7 @@ index 9f384c4..30e48e8 100644
  
  extern uint32_t inputCounter;
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 99df8aa..39010ab 100644
+index 5e8f516..1eeaa25 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
 @@ -1078,7 +1078,7 @@ static uint32_t get_conn_display_info_flags()
@@ -627,5 +661,216 @@ index 0569472..104f7a2 100644
  std::vector<ResListEntry_t> wlserver_xdg_commit_queue();
  
 -- 
-2.46.2
+2.47.0
+
+
+From b8e8677a811bbebe5f0f743ac22da7a83436d443 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Mon, 14 Oct 2024 22:42:20 +0200
+Subject: [PATCH v2 10/12] fix(display-config): always fill in mutable refresh
+ rates
+
+Assume the user is not lying to us when they fill in dynamic_refresh_rates
+and that gamescope will work with e.g., CVT, so accept it even if no
+custom modeline generation has been provided.
+---
+ src/Backends/DRMBackend.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
+index 75c3258..f014be9 100644
+--- a/src/Backends/DRMBackend.cpp
++++ b/src/Backends/DRMBackend.cpp
+@@ -2161,7 +2161,9 @@ namespace gamescope
+ 				sol::optional<sol::table> otDynamicRefreshRates = tTable["dynamic_refresh_rates"];
+ 				sol::optional<sol::function> ofnDynamicModegen = tTable["dynamic_modegen"];
+ 
+-				if ( otDynamicRefreshRates && ofnDynamicModegen )
++				if ( otDynamicRefreshRates && !ofnDynamicModegen )
++					m_Mutable.ValidDynamicRefreshRates = TableToVector<uint32_t>( *otDynamicRefreshRates );
++				else if ( otDynamicRefreshRates && ofnDynamicModegen )
+ 				{
+ 					m_Mutable.ValidDynamicRefreshRates = TableToVector<uint32_t>( *otDynamicRefreshRates );
+ 
+-- 
+2.47.0
+
+
+From 2d96bb5b3fc75690d60249a8e8ea29f3c667ef55 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Fri, 25 Oct 2024 21:22:10 +0200
+Subject: [PATCH v2 11/12] fix(vrr): allow frame limiter to work with VRR
+ enabled
+
+Down to 48hz, modeset the correct framerate. Below 48hz,
+disable VRR and use the classic frame limiter.
+---
+ src/steamcompmgr.cpp | 30 ++++++++++++++++++++++++++++--
+ 1 file changed, 28 insertions(+), 2 deletions(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 3dd64f8..7dacfe7 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -165,6 +165,7 @@ uint32_t g_reshade_technique_idx = 0;
+ 
+ bool g_bSteamIsActiveWindow = false;
+ bool g_bForceInternal = false;
++bool g_bVRRRequested = false;
+ 
+ static std::vector< steamcompmgr_win_t* > GetGlobalPossibleFocusWindows();
+ static bool
+@@ -827,6 +828,28 @@ static void _update_app_target_refresh_cycle()
+ 	{
+ 		auto rates = GetBackend()->GetCurrentConnector()->GetValidDynamicRefreshRates();
+ 
++		if (g_bVRRModesetting) {
++			if (g_bVRRRequested) {
++				// If modeset VRR, go upwards to match the refresh rate 1-1. Refresh
++				// doubling would hurt us here by breaking the frame limiter.
++				for ( auto rate = rates.begin(); rate != rates.end(); rate++ )
++				{
++					if ((int)*rate == target_fps)
++					{
++						g_nDynamicRefreshRate[ type ] = *rate;
++						// Enable VRR as we have the correct refresh rate
++						cv_adaptive_sync = true;
++						return;
++					}
++				}
++				// Otherwise, disable VRR as we can't match the refresh rate 1-1
++				// (e.g., below 48hz).
++				cv_adaptive_sync = false;
++			} else {
++				cv_adaptive_sync = false;
++			}
++		}
++
+ 		// Find highest mode to do refresh doubling with.
+ 		for ( auto rate = rates.rbegin(); rate != rates.rend(); rate++ )
+ 		{
+@@ -5522,8 +5545,11 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 	}
+ 	if ( ev->atom == ctx->atoms.gamescopeVRREnabled )
+ 	{
+-		bool enabled = !!get_prop( ctx, ctx->root, ctx->atoms.gamescopeVRREnabled, 0 );
+-		cv_adaptive_sync = enabled;
++		g_bVRRRequested = !!get_prop( ctx, ctx->root, ctx->atoms.gamescopeVRREnabled, 0 );
++		// Try to match refresh rate and have that set the cv_adaptive_sync only if it can
++		if (g_bVRRModesetting) update_app_target_refresh_cycle();
++		// otherwise, fall back to original behavior
++		else cv_adaptive_sync = g_bVRRRequested;
+ 	}
+ 	if ( ev->atom == ctx->atoms.gamescopeDisplayForceInternal )
+ 	{
+-- 
+2.47.0
+
+
+From 61ea8edafedd5c8cce320bf6415e6151555ce594 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Wed, 23 Oct 2024 23:33:53 +0200
+Subject: [PATCH v2 12/12] fix(battery): run at half hz while at steamUI and
+ disable VRR
+
+---
+ src/steamcompmgr.cpp | 34 +++++++++++++++++++++++++---------
+ 1 file changed, 25 insertions(+), 9 deletions(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 7dacfe7..f4446f0 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -149,6 +149,7 @@ extern int g_nDynamicRefreshHz;
+ bool g_bForceHDRSupportDebug = false;
+ bool g_bHackyEnabled = false;
+ bool g_bVRRModesetting = false;
++bool g_refreshHalve = false;
+ extern float g_flInternalDisplayBrightnessNits;
+ extern float g_flHDRItmSdrNits;
+ extern float g_flHDRItmTargetNits;
+@@ -166,6 +167,7 @@ uint32_t g_reshade_technique_idx = 0;
+ bool g_bSteamIsActiveWindow = false;
+ bool g_bForceInternal = false;
+ bool g_bVRRRequested = false;
++bool g_bVRRCanEnable = false;
+ 
+ static std::vector< steamcompmgr_win_t* > GetGlobalPossibleFocusWindows();
+ static bool
+@@ -838,15 +840,15 @@ static void _update_app_target_refresh_cycle()
+ 					{
+ 						g_nDynamicRefreshRate[ type ] = *rate;
+ 						// Enable VRR as we have the correct refresh rate
+-						cv_adaptive_sync = true;
++						g_bVRRCanEnable = true;
+ 						return;
+ 					}
+ 				}
+ 				// Otherwise, disable VRR as we can't match the refresh rate 1-1
+ 				// (e.g., below 48hz).
+-				cv_adaptive_sync = false;
++				g_bVRRCanEnable = false;
+ 			} else {
+-				cv_adaptive_sync = false;
++				g_bVRRCanEnable = false;
+ 			}
+ 		}
+ 
+@@ -5105,19 +5107,24 @@ static bool steamcompmgr_should_vblank_window( bool bShouldLimitFPS, uint64_t vb
+ 	if ( GetBackend()->IsVRRActive() )
+ 		return true;
+ 
+-	bool bSendCallback = true;
+-
+ 	int nRefreshHz = gamescope::ConvertmHzToHz( g_nNestedRefresh ? g_nNestedRefresh : g_nOutputRefresh );
+ 	int nTargetFPS = g_nSteamCompMgrTargetFPS;
+-	if ( g_nSteamCompMgrTargetFPS && bShouldLimitFPS && nRefreshHz > nTargetFPS )
++
++	if ( nRefreshHz > 90 && g_refreshHalve )
++	{
++		// Refresh halve above 90Hz if steamui is active
++		if ( vblank_idx % 2 != 0 )
++			return false;
++	}
++	else if ( g_nSteamCompMgrTargetFPS && bShouldLimitFPS && nRefreshHz > nTargetFPS )
+ 	{
+ 		int nVblankDivisor = nRefreshHz / nTargetFPS;
+ 
+ 		if ( vblank_idx % nVblankDivisor != 0 )
+-			bSendCallback = false;
++			return false;
+ 	}
+ 
+-	return bSendCallback;
++	return true;
+ }
+ 
+ static bool steamcompmgr_should_vblank_window( steamcompmgr_win_t *w, uint64_t vblank_idx )
+@@ -5549,7 +5556,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 		// Try to match refresh rate and have that set the cv_adaptive_sync only if it can
+ 		if (g_bVRRModesetting) update_app_target_refresh_cycle();
+ 		// otherwise, fall back to original behavior
+-		else cv_adaptive_sync = g_bVRRRequested;
++		else g_bVRRCanEnable = g_bVRRRequested;
+ 	}
+ 	if ( ev->atom == ctx->atoms.gamescopeDisplayForceInternal )
+ 	{
+@@ -7628,6 +7635,15 @@ steamcompmgr_main(int argc, char **argv)
+ 		// as a question.
+ 		const bool bIsVBlankFromTimer = vblank;
+ 
++		if ( window_is_steam( global_focus.focusWindow ) ) {
++			// Halve refresh rate and disable vrr on SteamUI
++			cv_adaptive_sync = false;
++			g_refreshHalve = true;
++		} else {
++			cv_adaptive_sync = g_bVRRCanEnable;
++			g_refreshHalve = false;
++		}
++
+ 		// We can always vblank if VRR.
+ 		const bool bVRR = GetBackend()->IsVRRActive();
+ 		if ( bVRR )
+-- 
+2.47.0
 

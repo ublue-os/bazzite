@@ -31,6 +31,8 @@ on:
   merge_group:
   workflow_dispatch:
     inputs:
+      handwritten:
+        description: 'Small changelog:'
       # Run with this periodically to analyze the image again
       # As package drift will make the plan eventually non-ideal
       # (existing users will have to redownload most of the image)
@@ -62,13 +64,13 @@ jobs:
         base_image_name: [kinoite, silverblue]
         target_image_flavor: [main, asus]
         target_nvidia_flavor: [nvidia, nvidia-open]
-        fedora_version: [40]
+        fedora_version: [41]
         include:
-          - fedora_version: 40
+          - fedora_version: 41
             is_latest_version: true
             is_stable_version: true
-            kernel_flavor: fsync-ba # must match a kernel_flavor from akmods repo
-            kernel_version: 6.9.12-210.fsync.fc40.x86_64 # must match a cached version of the above flavor
+            kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
+            kernel_version: 6.11.5-303.bazzite.fc41.x86_64 # must match a cached version of the above flavor
         exclude:
           - base_name: bazzite
             target_nvidia_flavor: nvidia
@@ -275,6 +277,7 @@ jobs:
           ref: 'raw-img'
           prev-ref: '${{ steps.generate-prev-ref.outputs.ref }}'
           version: '${{ steps.generate-version.outputs.tag }}'
+          skip_compression: 1
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
             io.artifacthub.package.readme-url=https://docs.bazzite.gg
@@ -319,9 +322,6 @@ jobs:
             BUILD_TAGS+=("${FEDORA_VERSION}-unstable")
             BUILD_TAGS+=("unstable-${FEDORA_VERSION}") # flip ver to be last
 
-            # Per upstream ver
-            BUILD_TAGS+=("unstable-${UPSTREAM_TAG}")
-
             if [ -n "$LATEST" ]; then
                 BUILD_TAGS+=("unstable")
             fi
@@ -330,16 +330,12 @@ jobs:
             BUILD_TAGS+=("${FEDORA_VERSION}-testing")
             BUILD_TAGS+=("testing-${FEDORA_VERSION}") # flip ver to be last
 
-            # Per upstream ver
-            BUILD_TAGS+=("testing-${UPSTREAM_TAG}")
-
             if [ -n "$LATEST" ]; then
                 BUILD_TAGS+=("testing")
             fi
           else
             BUILD_TAGS+=("${FEDORA_VERSION}")
-            BUILD_TAGS+=("${UPSTREAM_TAG}")
-            BUILD_TAGS+=("stable-${UPSTREAM_TAG}")
+            BUILD_TAGS+=("stable-${VERSION_TAG}")
 
             # Per fedora version
             BUILD_TAGS+=("${FEDORA_VERSION}-stable")
@@ -427,8 +423,15 @@ jobs:
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"
 
+  generate_release:
+    name: Generate Release
+    needs: [push-ghcr]
+    if: github.event_name != 'pull_request'
+    secrets: inherit
+    uses: ./.github/workflows/generate_release.yml
+
   build_iso:
-    name: build iso
+    name: Build ISO
     needs: [push-ghcr]
     if: github.ref_name == 'testing'
     # Eventually would be nice for building images in PRs

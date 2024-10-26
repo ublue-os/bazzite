@@ -11,11 +11,12 @@
 %global with_r300 1
 %global with_r600 1
 %global with_nine 1
-%global with_nvk %{with vulkan_hw}
-%global with_omx 1
+%if 0%{?with_vulkan_hw}
+%global with_nvk %{with_vulkan_hw}
+%endif
 %global with_opencl 1
 %endif
-%global base_vulkan ,amd
+%global base_vulkan %{?with_vulkan_hw:,amd}%{!?with_vulkan_hw:%{nil}}
 %endif
 
 %ifnarch %{ix86}
@@ -30,25 +31,27 @@
 %global with_iris   1
 %global with_xa     1
 %global with_intel_clc 1
-%global intel_platform_vulkan ,intel,intel_hasvk
+%global intel_platform_vulkan %{?with_vulkan_hw:,intel,intel_hasvk}%{!?with_vulkan_hw:%{nil}}
 %endif
 %ifarch x86_64
+%if !0%{?with_vulkan_hw}
 %global with_intel_vk_rt 1
+%endif
 %endif
 
 %ifarch aarch64 x86_64 %{ix86}
+%global with_kmsro     1
 %if !0%{?rhel}
 %global with_lima      1
 %global with_vc4       1
-%endif
 %global with_etnaviv   1
-%global with_freedreno 1
-%global with_kmsro     1
-%global with_panfrost  1
 %global with_tegra     1
+%endif
+%global with_freedreno 1
+%global with_panfrost  1
 %global with_v3d       1
 %global with_xa        1
-%global extra_platform_vulkan ,broadcom,freedreno,panfrost,imagination-experimental
+%global extra_platform_vulkan %{?with_vulkan_hw:,broadcom,freedreno,panfrost,imagination-experimental}%{!?with_vulkan_hw:%{nil}}
 %endif
 
 %if !0%{?rhel}
@@ -66,7 +69,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 24.1.7
+%global ver 24.2.4
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Epoch:          1
 %global orig_release 1%{?dist}
@@ -95,7 +98,7 @@ BuildRequires:  kernel-headers
 # We only check for the minimum version of pkgconfig(libdrm) needed so that the
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
-BuildRequires:  pkgconfig(libdrm) >= 2.4.119
+BuildRequires:  pkgconfig(libdrm) >= 2.4.122
 %if 0%{?with_libunwind}
 BuildRequires:  pkgconfig(libunwind)
 %endif
@@ -137,9 +140,6 @@ BuildRequires:  pkgconfig(vdpau) >= 1.1
 %if 0%{?with_va}
 BuildRequires:  pkgconfig(libva) >= 0.38.0
 %endif
-%if 0%{?with_omx}
-BuildRequires:  pkgconfig(libomxil-bellagio)
-%endif
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
 BuildRequires:  llvm-devel >= 7.0.0
@@ -175,6 +175,7 @@ BuildRequires:  python3-mako
 BuildRequires:  python3-ply
 %endif
 BuildRequires:  python3-pycparser
+BuildRequires:  python3-pyyaml
 BuildRequires:  vulkan-headers
 BuildRequires:  glslang
 %if 0%{?with_vulkan_hw}
@@ -187,6 +188,7 @@ BuildRequires:  pkgconfig(vulkan)
 %package filesystem
 Summary:        Mesa driver filesystem
 Provides:       mesa-dri-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      mesa-omx-drivers < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description filesystem
 %{summary}.
@@ -234,6 +236,7 @@ Provides:       libEGL-devel%{?_isa}
 
 %package dri-drivers
 Summary:        Mesa-based DRI drivers
+# Bazzite: Compatibility with Negativo17
 Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{?with_va}
@@ -243,18 +246,10 @@ Recommends:     %{name}-va-drivers%{?_isa}
 %description dri-drivers
 %{summary}.
 
-%if 0%{?with_omx}
-%package omx-drivers
-Summary:        Mesa-based OMX drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
-
-%description omx-drivers
-%{summary}.
-%endif
-
 %if 0%{?with_va}
 %package        va-drivers
 Summary:        Mesa-based VA-API video acceleration drivers
+# Bazzite: Compatibility with Negativo17
 Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 Obsoletes:      %{name}-vaapi-drivers < 22.2.0-5
 
@@ -265,6 +260,7 @@ Obsoletes:      %{name}-vaapi-drivers < 22.2.0-5
 %if 0%{?with_vdpau}
 %package        vdpau-drivers
 Summary:        Mesa-based VDPAU drivers
+# Bazzite: Compatibility with Negativo17
 Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 
 %description vdpau-drivers
@@ -385,6 +381,8 @@ Requires:       %{name}-libd3d%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release
 %package vulkan-drivers
 Summary:        Mesa Vulkan drivers
 Requires:       vulkan%{_isa}
+# Bazzite: Compatibility with Negativo17
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 Obsoletes:      mesa-vulkan-devel < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description vulkan-drivers
@@ -421,12 +419,11 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
   -Ddri3=enabled \
   -Dosmesa=true \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,nouveau%{?with_r300:,r300}%{?with_crocus:,crocus}%{?with_i915:,i915}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
+  -Dgallium-drivers=swrast,virgl,nouveau%{?with_r300:,r300}%{?with_crocus:,crocus}%{?with_i915:,i915}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
   -Dgallium-vdpau=%{?with_vdpau:enabled}%{!?with_vdpau:disabled} \
-  -Dgallium-omx=%{?with_omx:bellagio}%{!?with_omx:disabled} \
   -Dgallium-va=%{?with_va:enabled}%{!?with_va:disabled} \
   -Dgallium-xa=%{?with_xa:enabled}%{!?with_xa:disabled} \
   -Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
@@ -493,16 +490,13 @@ popd
 %files filesystem
 %doc docs/Mesa-MLAA-License-Clarification-Email.txt
 %dir %{_libdir}/dri
-%if 0%{?with_hardware}
-%if 0%{?with_vdpau}
-%dir %{_libdir}/vdpau
-%endif
-%endif
+%dir %{_datadir}/drirc.d
 
 %files libGL
 %{_libdir}/libGLX_mesa.so.0*
 %{_libdir}/libGLX_system.so.0*
 %files libGL-devel
+%dir %{_includedir}/GL
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_libdir}/pkgconfig/dri.pc
@@ -582,9 +576,10 @@ popd
 %endif
 
 %files dri-drivers
-%dir %{_datadir}/drirc.d
 %{_datadir}/drirc.d/00-mesa-defaults.conf
+%{_libdir}/libgallium-*.so
 %{_libdir}/dri/kms_swrast_dri.so
+%{_libdir}/dri/libdril_dri.so
 %{_libdir}/dri/swrast_dri.so
 %{_libdir}/dri/virtio_gpu_dri.so
 
@@ -672,15 +667,11 @@ popd
 %{_libdir}/dri/sti_dri.so
 %{_libdir}/dri/sun4i-drm_dri.so
 %{_libdir}/dri/udl_dri.so
+%{_libdir}/dri/vkms_dri.so
 %{_libdir}/dri/zynqmp-dpsub_dri.so
 %endif
 %if 0%{?with_vulkan_hw}
 %{_libdir}/dri/zink_dri.so
-%endif
-
-%if 0%{?with_omx}
-%files omx-drivers
-%{_libdir}/bellagio/libomx_mesa.so
 %endif
 
 %if 0%{?with_va}
@@ -697,6 +688,7 @@ popd
 
 %if 0%{?with_vdpau}
 %files vdpau-drivers
+%dir %{_libdir}/vdpau
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
 %if 0%{?with_r600}
 %{_libdir}/vdpau/libvdpau_r600.so.1*

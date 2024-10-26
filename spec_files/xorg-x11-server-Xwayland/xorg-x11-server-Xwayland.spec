@@ -8,7 +8,7 @@
 
 Summary:   Xwayland
 Name:      xorg-x11-server-Xwayland
-%global    xwayland_version 24.1.2
+%global    xwayland_version 24.1.3
 Version:   %{xwayland_version}.bazzite.{{{ git_dir_version }}}
 Release:   1%{?gitdate:.%{gitdate}git%{shortcommit}}%{?dist}
 
@@ -19,6 +19,7 @@ Source0:   https://gitlab.freedesktop.org/xorg/%{pkgname}/-/archive/%{commit}/%{
 Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{xwayland_version}.tar.xz
 %endif
 
+# Nobara
 Patch0:    xwayland-pointer-warp-fix.patch
 
 License:   MIT
@@ -54,8 +55,6 @@ BuildRequires: pkgconfig(xi)
 BuildRequires: pkgconfig(xinerama)
 BuildRequires: pkgconfig(xkbfile)
 BuildRequires: pkgconfig(xmu)
-BuildRequires: pkgconfig(xorg-macros) >= 1.17
-BuildRequires: pkgconfig(xpm)
 BuildRequires: pkgconfig(xrender)
 BuildRequires: pkgconfig(xres)
 BuildRequires: pkgconfig(xshmfence) >= 1.1
@@ -138,6 +137,12 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_libdir}/pkgconfig/xwayland.pc
 
 %changelog
+* Wed Oct  2 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.1.3-1
+- xwayland 24.1.3 - (#2313799)
+
+* Wed Sep  4 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.1.2-2
+- Remove unneeded build dependencies on xorg-x11-util-macros and libXpm
+
 * Wed Aug  7 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.1.2-1
 - xwayland 24.1.2 - (#2303450)
 - Remove unneeded build dependency on wayland-eglstream-protocols
