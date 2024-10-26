@@ -42,17 +42,9 @@ CHANGELOG_TITLE = "{tag}: {pretty}"
 CHANGELOG_FORMAT = """\
 {handwritten}
 
-From previous `{target}` version `{prev}` there have been the following changes. **One package per new version shown.**
-
 Visit [bazzite.gg](https://bazzite.gg) for more information and to download Bazzite.
 
-For current users, type the following to rebase to this version:
-```bash
-# For this branch (if latest):
-bazzite-rollback-helper rebase {target}
-# For this specific image:
-bazzite-rollback-helper rebase {curr}
-```
+From previous `{target}` version `{prev}` there have been the following changes. **One package per new version shown.**
 
 ### Major packages
 | Name | Version |
@@ -66,6 +58,15 @@ bazzite-rollback-helper rebase {curr}
 | **[HHD](https://github.com/hhd-dev/hhd)** | {pkgrel:hhd} |
 
 {changes}
+
+### How to update
+For current users, type the following to rebase to this version:
+```bash
+# For this branch (if latest):
+bazzite-rollback-helper rebase {target}
+# For this specific image:
+bazzite-rollback-helper rebase {curr}
+```
 """
 HANDWRITTEN_PLACEHOLDER = """\
 This is an automatically generated changelog for release `{curr}`."""
