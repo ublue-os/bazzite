@@ -90,10 +90,18 @@ enable-ryzenadj-max-performance:
     echo 'installation complete. Reboot to take effect'
 
 # toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled
-toggle-password-feedback:
+toggle-password-feedback ACTION="":
     #!/usr/bin/bash
     PWFEEDBACK_FILE="/etc/sudoers.d/enable-pwfeedback"
-    if sudo test -f $PWFEEDBACK_FILE; then
+    OPTION={{ ACTION }}
+
+    if [ "$OPTION" = "on" ]; then
+      echo 'Defaults pwfeedback' | sudo tee $PWFEEDBACK_FILE
+      echo "enabled, restart terminal to see changes"
+    elif [ "$OPTION" = "off" ]; then
+      sudo rm -f $PWFEEDBACK_FILE
+      echo "disabled pwfeedback. restart your terminal to see changes"
+    elif sudo test -f $PWFEEDBACK_FILE; then
       sudo rm -f $PWFEEDBACK_FILE
       echo "disabled pwfeedback. restart your terminal to see changes"
     else
