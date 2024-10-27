@@ -275,7 +275,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     curl -Lo /tmp/aw87559/aw87xxx_acf.bin https://github.com/orangepi-xunlong/firmware/raw/refs/heads/master/aw87xxx_acf.bin && \
     xz --check=crc32 /tmp/aw87559/aw87xxx_acf.bin && \
     mv -vf /tmp/aw87559/aw87xxx_acf.bin.xz /usr/lib/firmware/aw87559/aw87xxx_acf.bin.xz && \
-    ln -s /usr/lib/firmware/aw87559/aw87xxx_acf.bin.xz /usr/lib/firmware/aw87xxx_acf.bin.xz && \
+    ln -s aw87559/aw87xxx_acf.bin.xz /usr/lib/firmware/aw87xxx_acf.bin.xz && \
     rm -rf /tmp/aw87559 && \
     if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
         curl -Lo /etc/yum.repos.d/_copr_lukenukem-asus-linux.repo https://copr.fedorainfracloud.org/coprs/lukenukem/asus-linux/repo/fedora-$(rpm -E %fedora)/lukenukem-asus-linux-fedora-$(rpm -E %fedora).repo && \
@@ -388,6 +388,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         udica \
         ladspa-caps-plugins \
         ladspa-noise-suppression-for-voice \
+        pipewire-module-filter-chain-sofa \
         python3-icoextract \
         tailscale \
         webapp-manager \
