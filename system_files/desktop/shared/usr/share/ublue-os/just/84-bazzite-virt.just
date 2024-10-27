@@ -148,7 +148,7 @@ setup-virtualization ACTION="":
       fi
       echo "$(Urllink "https://looking-glass.io/docs/rc/ivshmem_kvmfr/#libvirt" "This module") along with $(Urllink "https://looking-glass.io" "Looking Glass") is very experimental and not recommended for production use!"
       echo "The ublue team packages the kvmfr module only because it has to be supplied with the system image while using an atomic desktop."
-      echo "If you do plan to use Looking Glass, please $(Urllink "https://universal-blue.discourse.group/docs?topic=956" "follow the guide here") on how to compile it for your system."
+      echo "If you do plan to use Looking Glass, please $(Urllink "https://docs.bazzite.gg/Advanced/looking-glass/" "follow the guide here") on how to compile it for your system."
       echo "To use the kvmfr module after enabling it, just add and edit the xml for libvirt from the documentation in the first link."
       echo "Since we package the kvmfr module please open kvmfr related issues you have on Bazzite"
       echo "in the $(Urllink "https://discord.bazzite.gg/" "Bazzite Discord") or the $(Urllink "https://github.com/ublue-os/bazzite/issues" "Bazzite Github issue tracker")."
