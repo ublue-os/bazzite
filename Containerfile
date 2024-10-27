@@ -242,7 +242,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     ostree container commit
 
 # Setup firmware
-# Downgrade firmware to address galileo waking while asleep
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     mkdir -p /tmp/linux-firmware-neptune && \
     curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-cali.bin && \
