@@ -40,11 +40,11 @@ EOF
 
 function list_images() {
   local _help="\
-##  List images with a specified tag
-##
-##  INPUTS:
-##    \$1: branch   Branch we want to get tags from.
-##                 Fallbacks to \"$DEFAULT_BRANCH\"
+List images with a specified tag
+
+INPUTS:
+  \$1: branch   Branch we want to get tags from.
+                Fallbacks to \"$DEFAULT_BRANCH\"
 "
   if [[ $* =~ --help ]]; then
     echo "$_help" && return
@@ -59,10 +59,10 @@ function list_images() {
 
 function current() {
   local _help="\
-##  Show currently active Bazzite image
-##
-##  INPUTS:
-##    -v | --verbose    Show the output of 'rpm-ostree status -vb'\
+Show currently active Bazzite image
+
+INPUTS:
+  -v | --verbose    Show the output of 'rpm-ostree status -vb'\
 "
   if [[ $* =~ --help ]]; then
     echo "$_help" && return
@@ -100,13 +100,13 @@ function rollback() {
 
 function rebase() {
   local _help="\
-##  Rebase/rollback to specified Bazzite image, Default is $DEFAULT_IMAGE:$DEFAULT_BRANCH
-##
-##  INPUTS:
-##    \$1: branch   Branch we want to rebase. Format must be 
-##                 one of the following:
-##
-##                 Fallbacks to \"$DEFAULT_BRANCH\"\
+Rebase/rollback to specified Bazzite image, Default is $DEFAULT_IMAGE:$DEFAULT_BRANCH
+
+INPUTS:
+  \$1: branch   Branch we want to rebase. Format must be 
+                one of the following:
+
+                Fallbacks to \"$DEFAULT_BRANCH\"\
 "
   if [[ $* =~ --help ]]; then
   local _help
