@@ -105,7 +105,8 @@ Rebase/rollback to specified Bazzite image, Default is $DEFAULT_IMAGE:$DEFAULT_B
 INPUTS:
   \$1: branch   Branch we want to rebase. Format must be 
                 one of the following:
-
+                  - NAME:TAG (ex.: 'bazzite:stable-40')
+                  - TAG (ex.: 'testing')
                 Fallbacks to \"$DEFAULT_BRANCH\"\
 "
   if [[ $* =~ --help ]]; then
