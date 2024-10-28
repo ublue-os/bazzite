@@ -84,6 +84,7 @@ Rebase/rollback to specified Bazzite image, Default is $DEFAULT_IMAGE:$DEFAULT_B
 INPUTS:
   \$1: branch   Branch we want to rebase. Format must be 
                 one of the following:
+                  - ostree-image (ex.: 'ostree-image-signed:docker://ghcr.io/ublue-os/bazzite:stable')
                   - NAME:TAG (ex.: 'bazzite:stable-40')
                   - TAG (ex.: 'testing')
                 Fallbacks to \"$DEFAULT_BRANCH\"\
@@ -102,16 +103,19 @@ INPUTS:
   base_img_pfx=$_current_img_ref
   base_img_pfx=${base_img_pfx///${DEFAULT_IMAGE}*/}
 
-  # TODO: Handle all possible patterns for rebase inputs
   local img_ref # Final image ref string to rebase
   local usr_inpt="$1"
   case "$usr_inpt" in
+  "") echo >&2 "$_help"; return ;;
+  ostree-image-*)
+    echo >&2 "Format detected"
+    img_ref=$usr_inpt
+  ;;
   *:*)
     # IMG_NAME:TAG
     echo >&2 "Format detected: IMG_NAME:TAG"
     img_ref="$base_img_pfx"/"$usr_inpt"
   ;;
-  "") echo >&2 "$_help"; return ;;
   *)
     # TAG
     echo >&2 "Format detected: TAG"
