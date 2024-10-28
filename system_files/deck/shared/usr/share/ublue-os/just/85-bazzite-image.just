@@ -122,6 +122,21 @@ restore-input-remapper:
     cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
     sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
 
+# Install firmware files needed for ayaneo and orangepi speakers
+install-speaker-firmare:
+    #!/bin/bash
+    BASE_DIR="https://raw.githubusercontent.com/hhd-dev/hwinfo/master/firmware/"
+    INSTALL_DIR="/usr/local/firmware"
+    if [ ! -d "$INSTALL_DIR" ]; then
+      sudo mkdir -p $INSTALL_DIR
+    fi
+    sudo wget -O $INSTALL_DIR/aw87xxx_acf_air1s.bin    $BASE_DIR/awinic/aw87xxx_acf_air1s.bin
+    sudo wget -O $INSTALL_DIR/aw87xxx_acf_airplus.bin  $BASE_DIR/awinic/aw87xxx_acf_airplus.bin
+    sudo wget -O $INSTALL_DIR/aw87xxx_acf_flip.bin     $BASE_DIR/awinic/aw87xxx_acf_flip.bin
+    sudo wget -O $INSTALL_DIR/aw87xxx_acf_kun.bin      $BASE_DIR/awinic/aw87xxx_acf_kun.bin
+    sudo wget -O $INSTALL_DIR/aw87xxx_acf_minipro.bin  $BASE_DIR/awinic/aw87xxx_acf_minipro.bin
+    sudo wget -O $INSTALL_DIR/aw87xxx_acf_orangepi.bin $BASE_DIR/awinic/aw87xxx_acf_orangepi.bin
+
 # Install hhd main branch locally until reboot, helpful for hhd testing and debugging. (rename to install-hhd-dev if we unhide)
 _hhd-dev:
     #!/usr/bin/bash
