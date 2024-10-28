@@ -12,4 +12,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Comment filter
-      uses: DecimalTurn/Comment-Filter@9683f002007cc8739893f27123f6d3d857ea7808 #v0.1.4
+      uses: DecimalTurn/Comment-Filter@f0aa7694eca5172825c4b5a502dc110b5fe8603a #v0.2.1
