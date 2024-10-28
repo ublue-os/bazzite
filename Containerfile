@@ -270,13 +270,11 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     mv -vf /tmp/linux-firmware-galileo/* /usr/lib/firmware/qca/ && \
     rm -rf /tmp/linux-firmware-galileo && \
     rm -rf /usr/share/alsa/ucm2/conf.d/acp5x/Valve-Jupiter-1.conf && \
-    mkdir -p /tmp/aw87559 && \
-    mkdir -p /usr/lib/firmware/aw87559 && \
-    curl -Lo /tmp/aw87559/aw87xxx_acf.bin https://github.com/orangepi-xunlong/firmware/raw/refs/heads/master/aw87xxx_acf.bin && \
-    xz --check=crc32 /tmp/aw87559/aw87xxx_acf.bin && \
-    mv -vf /tmp/aw87559/aw87xxx_acf.bin.xz /usr/lib/firmware/aw87559/aw87xxx_acf.bin.xz && \
-    ln -s aw87559/aw87xxx_acf.bin.xz /usr/lib/firmware/aw87xxx_acf.bin.xz && \
-    rm -rf /tmp/aw87559 && \
+    ln -s /usr/local/lib/firmware/aw87xxx_acf.bin /usr/lib/firmware/aw87xxx_acf.bin && \
+    ln -s /usr/local/lib/firmware/aw87xxx_acf_air1s.bin /usr/lib/firmware/aw87xxx_acf_air1s.bin && \
+    ln -s /usr/local/lib/firmware/aw87xxx_acf_kun.bin /usr/lib/firmware/aw87xxx_acf_kun.bin && \
+    ln -s /usr/local/lib/firmware/aw87xxx_acf_minipro.bin /usr/lib/firmware/aw87xxx_acf_minipro.bin && \
+    ln -s /usr/local/lib/firmware/aw87xxx_acf_orangepi.bin /usr/lib/firmware/aw87xxx_acf_orangepi.bin && \
     if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
         curl -Lo /etc/yum.repos.d/_copr_lukenukem-asus-linux.repo https://copr.fedorainfracloud.org/coprs/lukenukem/asus-linux/repo/fedora-$(rpm -E %fedora)/lukenukem-asus-linux-fedora-$(rpm -E %fedora).repo && \
         rpm-ostree install \
