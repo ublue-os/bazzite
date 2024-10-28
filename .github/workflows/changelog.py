@@ -42,8 +42,6 @@ CHANGELOG_TITLE = "{tag}: {pretty}"
 CHANGELOG_FORMAT = """\
 {handwritten}
 
-Visit [bazzite.gg](https://bazzite.gg) for more information and to download Bazzite.
-
 From previous `{target}` version `{prev}` there have been the following changes. **One package per new version shown.**
 
 ### Major packages
