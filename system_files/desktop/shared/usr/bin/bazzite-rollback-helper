@@ -59,33 +59,12 @@ INPUTS:
 
 function current() {
   local _help="\
-Show currently active Bazzite image
-
-INPUTS:
-  -v | --verbose    Show the output of 'rpm-ostree status -vb'\
-"
+Show currently active Bazzite image"
   if [[ $* =~ --help ]]; then
     echo "$_help" && return
   fi
 
-  while (( $# > 0 )); do case $1 in
-    -v|--verbose) rpm-ostree status -vb; return ;;
-    *) echo >&2 "$_help"; return 1 ;;
-  esac done
-
-  local tmp_file
-  local current_image
-  local version
-  tmp_file=$(mktemp)
-
-  # shellcheck disable=SC2064
-  trap "rm $tmp_file" RETURN
-  rpm-ostree status -b --json > "$tmp_file"
-
-  current_image=$(jq -r '.deployments[]["container-image-reference"]' < "$tmp_file")
-  version=$(jq -r '.deployments[].version' < "$tmp_file")
-
-  echo -e "Current image: '$current_image'\nVersion: '$version'"
+  rpm-ostree status -vb
 }
 
 function rollback() {
