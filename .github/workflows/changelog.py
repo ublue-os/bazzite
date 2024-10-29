@@ -57,7 +57,7 @@ From previous `{target}` version `{prev}` there have been the following changes.
 
 {changes}
 
-### How to update
+### How to rebase
 For current users, type the following to rebase to this version:
 ```bash
 # For this branch (if latest):
