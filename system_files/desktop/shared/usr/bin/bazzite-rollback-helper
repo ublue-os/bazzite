@@ -94,6 +94,18 @@ INPUTS:
     echo "$_help" && return
   fi
 
+  # Skip asking for confirmation by passing the '-y' flag
+  local CONFIRM_YES
+  CONFIRM_YES=$(
+    while (( $# )); do
+      case "$1" in
+        -y|--yes) echo 1; return ;;
+      esac
+      shift
+    done
+    echo 0
+  )
+
   # Fetch our image reference prefix (ex.: ostree-image-signed:docker://ghcr.io/ublue-os)
   # from rpm-ostree
   local base_img_pfx
@@ -124,7 +136,11 @@ INPUTS:
   # Ask for confirmation. If is okay, rebase.
   local question="\
 Rebasing to $img_ref. Continue? [y/N]: "
-  read -rp "$question" yn
+  local yn
+  if [[ $CONFIRM_YES -ne 1 ]]; then
+    read -rp "$question" yn
+  else yn=y
+  fi
   case $yn in
     # Finally, rebase
     [yY]) rpm-ostree rebase "$img_ref" || return 1 ;;
