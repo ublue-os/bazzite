@@ -1,5 +1,12 @@
 # Changelog
 
+## [41.20241029.2](https://github.com/ublue-os/bazzite/compare/41.20241029.1...v41.20241029.2) (2024-10-29)
+
+
+### Bug Fixes
+
+* **changelogs:** change main to stable ([#1806](https://github.com/ublue-os/bazzite/issues/1806)) ([ba42e0e](https://github.com/ublue-os/bazzite/commit/ba42e0eef46b8908a366ef12becc7a206acec52d))
+
 ## 3.7.0 (2024-08-28)
 
 
