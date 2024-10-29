@@ -118,17 +118,17 @@ INPUTS:
   "") echo >&2 "$_help"; return ;;
   ostree-image-*)
     # ostree-image
-    echo >&2 "Format detected"
+    # echo >&2 "Format detected"
     img_ref=$usr_inpt
   ;;
   *:*)
     # IMG_NAME:TAG
-    echo >&2 "Format detected: IMG_NAME:TAG"
+    # echo >&2 "Format detected: IMG_NAME:TAG"
     img_ref="$base_img_pfx"/"$usr_inpt"
   ;;
   *)
     # TAG
-    echo >&2 "Format detected: TAG"
+    # echo >&2 "Format detected: TAG"
     img_ref="$base_img_pfx"/"$DEFAULT_IMAGE":"$usr_inpt"
   ;;
   esac
