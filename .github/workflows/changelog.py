@@ -398,6 +398,9 @@ def main():
     # Tags cannot include / anyway.
     target = args.target.split('/')[-1]
 
+    if target == "main":
+        target = "stable"
+
     manifests = get_manifests(target)
     prev, curr = get_tags(target, manifests)
     print(f"Previous tag: {prev}")
