@@ -145,7 +145,7 @@ Rebasing to $img_ref. Continue? [Y/n]: "
   case $yn in
     # Finally, rebase
     [yY]) rpm-ostree rebase "$img_ref" || return 1 ;;
-    *) echo >&2 "Canceling..."; return 1 ;;
+    *) echo >&2 "Stopping rebase..."; return 1 ;;
   esac
 }
 
