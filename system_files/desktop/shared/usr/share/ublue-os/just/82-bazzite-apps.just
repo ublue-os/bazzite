@@ -5,19 +5,21 @@ install-lact:
     #!/usr/bin/bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    # MAJOR_VER=$(rpm -E %fedora) # FIXME: Uncomment whenever lact is available for Fedora 41
+    MAJOR_VER=40
     ublue-update --wait
     rpm-ostree kargs --append-if-missing=$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))")
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
         echo 'Installing LACT Libadwaita...'
         wget \
           $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
-          jq -r ".assets[] | select(.name | test(\"lact-libadwaita.*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
+          jq -r ".assets[] | select(.name | test(\"lact-libadwaita.*fedora-${MAJOR_VER}\")) | .browser_download_url") \
           -O /tmp/lact.rpm
     else
         echo 'Installing LACT...'
         wget \
           $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
-          jq -r ".assets[] | select(.name | test(\"lact-[0-9].*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
+          jq -r ".assets[] | select(.name | test(\"lact-[0-9].*fedora-${MAJOR_VER}\")) | .browser_download_url") \
           -O /tmp/lact.rpm
     fi
     rpm-ostree install --apply-live -y /tmp/lact.rpm
