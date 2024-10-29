@@ -135,10 +135,11 @@ INPUTS:
 
   # Ask for confirmation. If is okay, rebase.
   local question="\
-Rebasing to $img_ref. Continue? [y/N]: "
+Rebasing to $img_ref. Continue? [Y/n]: "
   local yn
   if [[ $CONFIRM_YES -ne 1 ]]; then
     read -rp "$question" yn
+    yn=${yn:=y} # Default to yes
   else yn=y
   fi
   case $yn in
