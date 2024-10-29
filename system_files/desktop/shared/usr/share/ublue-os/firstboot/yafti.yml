@@ -38,11 +38,6 @@ screens:
           default: false
           packages:
           - Install scrcpy: ujust install-scrcpy
-        DaVinci Resolve:
-            description: Install/update DaVinci Resolve, a closed-source video editing utility
-            default: false
-            packages:
-            - Install/Update DaVinci Resolve: sudo -A ujust install-resolve
   amd-additions:
     source: yafti.screen.package
     values:
@@ -75,16 +70,6 @@ screens:
           default: true
           packages:
           - Set input group: sudo -A ujust add-user-to-input-group
-        Visible Password Aestriks:
-            description: Toggles pwfeedback on.
-            default: true
-            packages:
-            - Install bazzite-cli: ujust bazzite-cli
-        bazzite-cli:
-            description: Bazzite CLI mod for Bluefin style CLI bling.
-            default: false
-            packages:
-            - Install bazzite-cli: ujust bazzite-cli
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware
           default: false
