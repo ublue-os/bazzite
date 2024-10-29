@@ -24,6 +24,9 @@ jobs:
         run: |
           TARGET="${{ github.event.inputs.target || github.ref }}"
           TARGET="${TARGET##*/}"
+          if [ "$TARGET" = "main" ]; then
+            TARGET="stable"
+          fi
           echo "target=$TARGET" >> $GITHUB_OUTPUT
       
       - name: Generate Release Text
