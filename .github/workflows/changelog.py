@@ -57,7 +57,7 @@ From previous `{target}` version `{prev}` there have been the following changes.
 
 {changes}
 
-### How to update
+### How to rebase
 For current users, type the following to rebase to this version:
 ```bash
 # For this branch (if latest):
@@ -397,6 +397,9 @@ def main():
     # Remove refs/tags, refs/heads, refs/remotes e.g.
     # Tags cannot include / anyway.
     target = args.target.split('/')[-1]
+
+    if target == "main":
+        target = "stable"
 
     manifests = get_manifests(target)
     prev, curr = get_tags(target, manifests)

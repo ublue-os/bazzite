@@ -35,7 +35,7 @@ jobs:
           - bazzite-gnome-asus-nvidia
           - bazzite-asus-nvidia-open
           - bazzite-gnome-asus-nvidia-open
-        major_version: [41]
+        major_version: [40]
     steps:
 
       - name: Free Disk Space (Ubuntu)
@@ -111,7 +111,7 @@ jobs:
           curl -Lo ${{ github.workspace }}/bazzite.repo https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-${{ matrix.major_version }}/kylegospo-bazzite-fedora-${{ matrix.major_version }}.repo
 
       - name: Build ISOs
-        uses: jasonn3/build-container-installer@f41
+        uses: jasonn3/build-container-installer@v1.2.2
         id: build
         with:
           arch: x86_64
