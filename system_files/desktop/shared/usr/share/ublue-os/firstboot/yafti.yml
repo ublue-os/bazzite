@@ -70,6 +70,11 @@ screens:
           default: true
           packages:
           - Set input group: sudo -A ujust add-user-to-input-group
+        Visible Password Aestriks:
+            description: Toggles pwfeedback on.
+            default: true
+            packages:
+            - Enable pwfeedback: sudo -A ujust toggle-password-feedback on
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware
           default: false
