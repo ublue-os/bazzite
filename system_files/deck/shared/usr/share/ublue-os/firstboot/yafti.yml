@@ -61,16 +61,16 @@ screens:
           default: true
           packages:
           - Enable Updates: sudo -A ujust enable-deck-bios-firmware-updates
-        Hide GRUB Menu:
-          description: Hide GRUB at boot.
-          default: false
-          packages:
-          - Hide GRUB: sudo -A ujust configure-grub hide
         Visible Password Aestriks:
             description: Toggles pwfeedback on.
             default: true
             packages:
             - Enable pwfeedback: sudo -A ujust toggle-password-feedback on
+        Hide GRUB Menu:
+          description: Hide GRUB at boot.
+          default: false
+          packages:
+          - Hide GRUB: sudo -A ujust configure-grub hide
         Oversteer:
           description: Application to control supported steering wheels
           default: false
