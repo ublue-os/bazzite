@@ -11,6 +11,7 @@ URL:            https://github.com/ublue-os/bazzite
 
 Source:         https://gitlab.com/evlaV/%{packagename}/-/archive/%{packagever}/%{packagename}-%{packagever}.tar.gz
 Source2:        bazzite.png
+Source3:        https://github.com/apmorton/pyhidapi/raw/396ae60212fe08ff1d12879e9a049fb126e966c3/hid/__init__.py
 Patch0:         fedora.patch
 Patch1:         selinux.patch
 Patch2:         btrfs-automount.patch
@@ -82,6 +83,8 @@ rm -rf %{buildroot}%{_unitdir}/multi-user.target.wants
 rm -rf %{buildroot}%{_datadir}/alsa
 # Add Bazzite PNG
 cp %{SOURCE2} %{buildroot}%{_datadir}/steamos/steamos.png
+# Add fix for controller FW updater
+cp %{SOURCE3} %{buildroot}%{_datadir}/jupiter_controller_fw_updater/hid.py
 
 # Do post-installation
 %post
