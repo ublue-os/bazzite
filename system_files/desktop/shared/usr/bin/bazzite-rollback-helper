@@ -94,6 +94,18 @@ INPUTS:
     echo "$_help" && return
   fi
 
+  # Skip asking for confirmation by passing the '-y' flag
+  local CONFIRM_YES
+  CONFIRM_YES=$(
+    while (( $# )); do
+      case "$1" in
+        -y|--yes) echo 1; return ;;
+      esac
+      shift
+    done
+    echo 0
+  )
+
   # Fetch our image reference prefix (ex.: ostree-image-signed:docker://ghcr.io/ublue-os)
   # from rpm-ostree
   local base_img_pfx
@@ -106,29 +118,34 @@ INPUTS:
   "") echo >&2 "$_help"; return ;;
   ostree-image-*)
     # ostree-image
-    echo >&2 "Format detected"
+    # echo >&2 "Format detected"
     img_ref=$usr_inpt
   ;;
   *:*)
     # IMG_NAME:TAG
-    echo >&2 "Format detected: IMG_NAME:TAG"
+    # echo >&2 "Format detected: IMG_NAME:TAG"
     img_ref="$base_img_pfx"/"$usr_inpt"
   ;;
   *)
     # TAG
-    echo >&2 "Format detected: TAG"
+    # echo >&2 "Format detected: TAG"
     img_ref="$base_img_pfx"/"$DEFAULT_IMAGE":"$usr_inpt"
   ;;
   esac
 
   # Ask for confirmation. If is okay, rebase.
   local question="\
-Rebasing to $img_ref. Continue? [y/N]: "
-  read -rp "$question" yn
+Rebasing to $img_ref. Continue? [Y/n]: "
+  local yn
+  if [[ $CONFIRM_YES -ne 1 ]]; then
+    read -rp "$question" yn
+    yn=${yn:=y} # Default to yes
+  else yn=y
+  fi
   case $yn in
     # Finally, rebase
-    [yY]) rpm-ostree rebase "$img_ref" ;;
-    *) echo >&2 "Canceling..."; return ;;
+    [yY]) rpm-ostree rebase "$img_ref" || return 1 ;;
+    *) echo >&2 "Stopping rebase..."; return 1 ;;
   esac
 }
 
