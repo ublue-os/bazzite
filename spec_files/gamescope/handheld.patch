@@ -767,37 +767,78 @@ index 3dd64f8..7dacfe7 100644
 2.47.0
 
 
-From 61ea8edafedd5c8cce320bf6415e6151555ce594 Mon Sep 17 00:00:00 2001
+From c90aff28dae5c92170f47b2dc29c01770ff0dd42 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
-Date: Wed, 23 Oct 2024 23:33:53 +0200
+Date: Wed, 30 Oct 2024 00:39:03 +0100
 Subject: [PATCH v2 12/12] fix(battery): run at half hz while at steamUI and
- disable VRR
+ disable VRR V2 + param
 
 ---
- src/steamcompmgr.cpp | 34 +++++++++++++++++++++++++---------
- 1 file changed, 25 insertions(+), 9 deletions(-)
+ src/main.cpp         |  2 ++
+ src/steamcompmgr.cpp | 45 +++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 36 insertions(+), 11 deletions(-)
 
+diff --git a/src/main.cpp b/src/main.cpp
+index 056e1c1..e6a634b 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -132,6 +132,7 @@ const struct option *gamescope_options = (struct option[]){
+ 	{ "force-panel-type", required_argument, nullptr, 0 },
+ 	{ "force-external-orientation", required_argument, nullptr, 0 },
+ 	{ "disable-touch-click", no_argument, nullptr, 0 },
++	{ "disable-steamui-framelimit", no_argument, nullptr, 0 },
+ 	{ "enable-vrr-modesetting", no_argument, nullptr, 0 },
+ 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
+ 	{ "custom-refresh-rates", required_argument, nullptr, 0 },
+@@ -195,6 +196,7 @@ const char usage[] =
+ 	"  -e, --steam                    enable Steam integration\n"
+ 	"  --enable-hacky-texture         enable hacky texture on hw that support it\n"
+ 	"  --disable-touch-click          disable touchscreen tap acting as a click\n"
++	"  --disable-steamui-framelimit   By default, for displays above 100Hz, framerate is halved in SteamUI. Disable that.\n"
+ 	"  --enable-vrr-modesetting       enable setting framerate while VRR is on in the internal display\n"
+ 	"  --xwayland-count               create N xwayland servers\n"
+ 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 7dacfe7..f4446f0 100644
+index 7dacfe7..70698ac 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -149,6 +149,7 @@ extern int g_nDynamicRefreshHz;
- bool g_bForceHDRSupportDebug = false;
- bool g_bHackyEnabled = false;
- bool g_bVRRModesetting = false;
-+bool g_refreshHalve = false;
- extern float g_flInternalDisplayBrightnessNits;
- extern float g_flHDRItmSdrNits;
- extern float g_flHDRItmTargetNits;
-@@ -166,6 +167,7 @@ uint32_t g_reshade_technique_idx = 0;
+@@ -166,6 +166,9 @@ uint32_t g_reshade_technique_idx = 0;
  bool g_bSteamIsActiveWindow = false;
  bool g_bForceInternal = false;
  bool g_bVRRRequested = false;
 +bool g_bVRRCanEnable = false;
++bool b_bForceFrameLimit = false;
++bool g_bRefreshHalveEnable = true;
  
  static std::vector< steamcompmgr_win_t* > GetGlobalPossibleFocusWindows();
  static bool
-@@ -838,15 +840,15 @@ static void _update_app_target_refresh_cycle()
+@@ -793,6 +796,7 @@ uint64_t g_uCurrentBasePlaneCommitID = 0;
+ bool g_bCurrentBasePlaneIsFifo = false;
+ 
+ static int g_nSteamCompMgrTargetFPS = 0;
++static int g_nSteamCompMgrTargetFPSreq = 0;
+ static uint64_t g_uDynamicRefreshEqualityTime = 0;
+ static int g_nDynamicRefreshRate[gamescope::GAMESCOPE_SCREEN_TYPE_COUNT] = { 0, 0 };
+ // Delay to stop modes flickering back and forth.
+@@ -812,7 +816,7 @@ static void _update_app_target_refresh_cycle()
+ 	int target_fps = g_nCombinedAppRefreshCycleOverride[type];
+ 
+ 	g_nDynamicRefreshRate[ type ] = 0;
+-	g_nSteamCompMgrTargetFPS = 0;
++	g_nSteamCompMgrTargetFPSreq = 0;
+ 
+ 	if ( !target_fps )
+ 	{
+@@ -821,7 +825,7 @@ static void _update_app_target_refresh_cycle()
+ 
+ 	if ( g_nCombinedAppRefreshCycleChangeFPS[ type ] )
+ 	{
+-		g_nSteamCompMgrTargetFPS = target_fps;
++		g_nSteamCompMgrTargetFPSreq = target_fps;
+ 	}
+ 
+ 	if ( g_nCombinedAppRefreshCycleChangeRefresh[ type ] )
+@@ -838,15 +842,15 @@ static void _update_app_target_refresh_cycle()
  					{
  						g_nDynamicRefreshRate[ type ] = *rate;
  						// Enable VRR as we have the correct refresh rate
@@ -816,37 +857,46 @@ index 7dacfe7..f4446f0 100644
  			}
  		}
  
-@@ -5105,19 +5107,24 @@ static bool steamcompmgr_should_vblank_window( bool bShouldLimitFPS, uint64_t vb
- 	if ( GetBackend()->IsVRRActive() )
- 		return true;
+@@ -864,9 +868,9 @@ static void _update_app_target_refresh_cycle()
  
--	bool bSendCallback = true;
--
+ static void update_app_target_refresh_cycle()
+ {
+-	int nPrevFPSLimit = g_nSteamCompMgrTargetFPS;
++	int nPrevFPSLimit = g_nSteamCompMgrTargetFPSreq;
+ 	_update_app_target_refresh_cycle();
+-	if ( !!g_nSteamCompMgrTargetFPS != !!nPrevFPSLimit )
++	if ( !!g_nSteamCompMgrTargetFPSreq != !!nPrevFPSLimit )
+ 		update_runtime_info();
+ }
+ 
+@@ -5052,7 +5056,7 @@ update_runtime_info()
+ 	if ( g_nRuntimeInfoFd < 0 )
+ 		return;
+ 
+-	uint32_t limiter_enabled = g_nSteamCompMgrTargetFPS != 0 ? 1 : 0;
++	uint32_t limiter_enabled = g_nSteamCompMgrTargetFPSreq != 0 ? 1 : 0;
+ 	pwrite( g_nRuntimeInfoFd, &limiter_enabled, sizeof( limiter_enabled ), 0 );
+ }
+ 
+@@ -5109,7 +5113,7 @@ static bool steamcompmgr_should_vblank_window( bool bShouldLimitFPS, uint64_t vb
+ 
  	int nRefreshHz = gamescope::ConvertmHzToHz( g_nNestedRefresh ? g_nNestedRefresh : g_nOutputRefresh );
  	int nTargetFPS = g_nSteamCompMgrTargetFPS;
 -	if ( g_nSteamCompMgrTargetFPS && bShouldLimitFPS && nRefreshHz > nTargetFPS )
-+
-+	if ( nRefreshHz > 90 && g_refreshHalve )
-+	{
-+		// Refresh halve above 90Hz if steamui is active
-+		if ( vblank_idx % 2 != 0 )
-+			return false;
-+	}
-+	else if ( g_nSteamCompMgrTargetFPS && bShouldLimitFPS && nRefreshHz > nTargetFPS )
++	if ( g_nSteamCompMgrTargetFPS && (bShouldLimitFPS || b_bForceFrameLimit) && nRefreshHz > nTargetFPS )
  	{
  		int nVblankDivisor = nRefreshHz / nTargetFPS;
  
- 		if ( vblank_idx % nVblankDivisor != 0 )
--			bSendCallback = false;
-+			return false;
+@@ -5485,7 +5489,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
  	}
- 
--	return bSendCallback;
-+	return true;
- }
- 
- static bool steamcompmgr_should_vblank_window( steamcompmgr_win_t *w, uint64_t vblank_idx )
-@@ -5549,7 +5556,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 	if ( ev->atom == ctx->atoms.gamescopeFPSLimit )
+ 	{
+-		g_nSteamCompMgrTargetFPS = get_prop( ctx, ctx->root, ctx->atoms.gamescopeFPSLimit, 0 );
++		g_nSteamCompMgrTargetFPSreq = get_prop( ctx, ctx->root, ctx->atoms.gamescopeFPSLimit, 0 );
+ 		update_runtime_info();
+ 	}
+ 	for (int i = 0; i < gamescope::GAMESCOPE_SCREEN_TYPE_COUNT; i++)
+@@ -5549,7 +5553,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
  		// Try to match refresh rate and have that set the cv_adaptive_sync only if it can
  		if (g_bVRRModesetting) update_app_target_refresh_cycle();
  		// otherwise, fall back to original behavior
@@ -855,17 +905,34 @@ index 7dacfe7..f4446f0 100644
  	}
  	if ( ev->atom == ctx->atoms.gamescopeDisplayForceInternal )
  	{
-@@ -7628,6 +7635,15 @@ steamcompmgr_main(int argc, char **argv)
+@@ -7507,6 +7511,8 @@ steamcompmgr_main(int argc, char **argv)
+ 					set_mura_overlay(optarg);
+ 				} else if (strcmp(opt_name, "disable-touch-click") == 0) {
+ 					cv_disable_touch_click = true;
++				} else if (strcmp(opt_name, "disable-steamui-framelimit") == 0) {
++					g_bRefreshHalveEnable = false;
+ 				} else if (strcmp(opt_name, "enable-vrr-modesetting") == 0) {
+ 					g_bVRRModesetting = true;
+ 				} else if (strcmp(opt_name, "enable-hacky-texture") == 0) {
+@@ -7628,6 +7634,23 @@ steamcompmgr_main(int argc, char **argv)
  		// as a question.
  		const bool bIsVBlankFromTimer = vblank;
  
 +		if ( window_is_steam( global_focus.focusWindow ) ) {
 +			// Halve refresh rate and disable vrr on SteamUI
 +			cv_adaptive_sync = false;
-+			g_refreshHalve = true;
++			int nRealRefreshHz = gamescope::ConvertmHzToHz( g_nNestedRefresh ? g_nNestedRefresh : g_nOutputRefresh );
++			if (g_bRefreshHalveEnable && nRealRefreshHz > 100 && g_nSteamCompMgrTargetFPSreq > 34) {
++				g_nSteamCompMgrTargetFPS = nRealRefreshHz / 2;
++				b_bForceFrameLimit = true;
++			} else {
++				g_nSteamCompMgrTargetFPS = g_nSteamCompMgrTargetFPSreq;
++				b_bForceFrameLimit = false;
++			}
 +		} else {
 +			cv_adaptive_sync = g_bVRRCanEnable;
-+			g_refreshHalve = false;
++			g_nSteamCompMgrTargetFPS = g_nSteamCompMgrTargetFPSreq;
++			b_bForceFrameLimit = false;
 +		}
 +
  		// We can always vblank if VRR.
