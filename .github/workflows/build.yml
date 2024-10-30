@@ -83,7 +83,7 @@ jobs:
         with:
           attempt_limit: 3
           attempt_delay: 15000
-          commands: |
+          command: |
             echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Define env.IMAGE_FLAVOR
