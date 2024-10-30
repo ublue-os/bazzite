@@ -7,7 +7,7 @@ index ac7adb6..d46bb14 100755
  {
      local -r prpath="$1"
 -    local -r runconf=/run/pipewire
-+    local -r confdir=/usr/share/pipewire
++    local -r confdir=/usr/local/share/pipewire
      local confd
      local cffile
  
@@ -69,7 +69,7 @@ index 3f03354..1e43489 100755
  {
      local -r prpath="$1"
 -    local -r runconf=/run/wireplumber
-+    local -r confdir=/usr/share/wireplumber
++    local -r confdir=/usr/local/share/wireplumber
      local confd
      local cffile
  
