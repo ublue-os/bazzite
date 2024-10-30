@@ -7,7 +7,7 @@ index ac7adb6..d46bb14 100755
  {
      local -r prpath="$1"
 -    local -r runconf=/run/pipewire
-+    local -r confdir=/usr/local/share/.pipewire
++    local -r confdir=/usr/share/pipewire
      local confd
      local cffile
  
@@ -26,7 +26,7 @@ index ac7adb6..d46bb14 100755
              for cffile in "$prpath"/"$confd"/*.conf
              do
 -                [ -f "$cffile" ] && cp -av "$cffile" $runconf/"$confd"
-+                [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd" || true
++                [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd"
              done
          fi
      done
@@ -51,12 +51,13 @@ diff --git a/pipewire-confs/systemd/system/pipewire-sysconf.service b/pipewire-c
 index 449a278..baf3a3c 100644
 --- a/pipewire-confs/systemd/system/pipewire-sysconf.service
 +++ b/pipewire-confs/systemd/system/pipewire-sysconf.service
-@@ -11,7 +11,7 @@
+@@ -11,7 +11,8 @@
  Description=Hardware Specific Pipewire Configuration
  Before=multi-user.target
  Requisite=multi-user.target
 -ConditionPathIsDirectory=/run
 +Requires=pipewire-workaround.service
++After=pipewire-workaround.service
  Before=shutdown.target
  
  [Service]
@@ -69,7 +70,7 @@ index 3f03354..1e43489 100755
  {
      local -r prpath="$1"
 -    local -r runconf=/run/wireplumber
-+    local -r confdir=/usr/local/share/.wireplumber
++    local -r confdir=/usr/share/wireplumber
      local confd
      local cffile
  
@@ -89,14 +90,14 @@ index 3f03354..1e43489 100755
                      for cffile in "$prpath"/"$confd"/*.lua
                      do
 -                        [ -f "$cffile" ] && cp -av "$cffile" $runconf/"$confd"
-+                        [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd" || true
++                        [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd"
                      done
                      ;;
                  *.conf.d)
                      for cffile in "$prpath"/"$confd"/*.conf
                      do
 -                        [ -f "$cffile" ] && cp -av "$cffile" $runconf/"$confd"
-+                        [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd" || true
++                        [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd"
                      done
                      ;;
              esac
@@ -123,12 +124,13 @@ diff --git a/wireplumber/systemd/system/wireplumber-sysconf.service b/wireplumbe
 index cdf5ed9..81cca6e 100644
 --- a/wireplumber/systemd/system/wireplumber-sysconf.service
 +++ b/wireplumber/systemd/system/wireplumber-sysconf.service
-@@ -11,7 +11,7 @@
+@@ -11,7 +11,8 @@
  Description=Hardware Specific Wireplumber Configuration
  Before=multi-user.target
  Requisite=multi-user.target
 -ConditionPathIsDirectory=/run
 +Requires=wireplumber-workaround.service
++After=wireplumber-workaround.service
  Before=shutdown.target
  
  [Service]
