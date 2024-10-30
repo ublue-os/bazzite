@@ -392,6 +392,8 @@ jobs:
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
               sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag
             done
+            # Keep one tag for signing
+            echo "sign_tag=$tag" >> $GITHUB_OUTPUT
 
       - name: Sign container image
         uses: EyeCantCU/cosign-action/sign@v0.3.0
@@ -400,7 +402,7 @@ jobs:
           containers: ${{ env.IMAGE_NAME }}
           registry-token: ${{ secrets.GITHUB_TOKEN }}
           signing-secret: ${{ secrets.SIGNING_SECRET }}
-          tags: ${{ steps.push.outputs.outputs && fromJSON(steps.push.outputs.outputs).digest }}
+          tags: ${{ steps.push.outputs.sign_tag }}
 
       - name: Echo outputs
         if: github.event_name != 'pull_request'
