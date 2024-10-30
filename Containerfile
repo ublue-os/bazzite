@@ -588,7 +588,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             ibus-mozc \
             openssh-askpass && \
         rpm-ostree override remove \
-            gnome-software-rpm-ostree \
             gnome-classic-session \
             gnome-tour \
             gnome-extensions-app \
