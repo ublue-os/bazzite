@@ -279,7 +279,7 @@ jobs:
           TMP=$(sudo podman create raw-img bash)
           sudo podman cp $TMP:/usr/lib/modules/${{ matrix.kernel_version }}/vmlinuz .
           sudo podman rm $TMP
-          sudo chmod 666 vmlinux # might not be needed
+          sudo chmod 666 vmlinuz # might not be needed
           sbverify --list vmlinuz
           curl --retry 3 -Lo kernel-sign.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key.der
           curl --retry 3 -Lo akmods.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key_2.der
@@ -291,9 +291,9 @@ jobs:
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
         id: rechunk
-        uses: hhd-dev/rechunk@v0.8.6
+        uses: hhd-dev/rechunk@v1.0.1
         with:
-          rechunk: 'ghcr.io/hhd-dev/rechunk:v0.8.3'
+          rechunk: 'ghcr.io/hhd-dev/rechunk:v1.0.1'
           ref: 'raw-img'
           prev-ref: '${{ steps.generate-prev-ref.outputs.ref }}'
           version: '${{ steps.generate-version.outputs.tag }}'
