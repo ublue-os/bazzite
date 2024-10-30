@@ -77,6 +77,15 @@ jobs:
           - base_name: bazzite-deck
             target_nvidia_flavor: nvidia
     steps:
+      - name: Login to GHCR (fail fast)
+        uses: Wandalen/wretry.action@v3.5.0
+        if: github.event_name != 'pull_request'
+        with:
+          attempt_limit: 3
+          attempt_delay: 15000
+          commands: |
+            echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
+
       - name: Define env.IMAGE_FLAVOR
         run: |
           if [[ "${{ matrix.base_name }}" == "bazzite-nvidia" ]]; then
@@ -268,6 +277,25 @@ jobs:
           echo "Generated the following:"
           cat $GITHUB_OUTPUT
 
+      - name: Check Secureboot
+        shell: bash
+        run: |
+          set -x
+          if [[ ! $(command -v sbverify) || ! $(command -v curl) || ! $(command -v openssl) ]]; then
+            sudo apt update
+            sudo apt install sbsigntool curl openssl
+          fi
+          TMP=$(podman create raw-img bash)
+          podman cp $TMP:/usr/lib/modules/${{ matrix.kernel_version }}/vmlinuz .
+          podman rm $TMP
+          sbverify --list vmlinuz
+          curl --retry 3 -Lo kernel-sign.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key.der
+          curl --retry 3 -Lo akmods.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key_2.der
+          openssl x509 -in kernel-sign.der -out kernel-sign.crt
+          openssl x509 -in akmods.der -out akmods.crt
+          sbverify --cert kernel-sign.crt vmlinuz || exit 1
+          sbverify --cert akmods.crt vmlinuz || exit 1
+
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
         id: rechunk
@@ -277,7 +305,6 @@ jobs:
           ref: 'raw-img'
           prev-ref: '${{ steps.generate-prev-ref.outputs.ref }}'
           version: '${{ steps.generate-version.outputs.tag }}'
-          skip_compression: 1
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
             io.artifacthub.package.readme-url=https://docs.bazzite.gg
@@ -352,36 +379,6 @@ jobs:
           done
           echo "alias_tags=${BUILD_TAGS[*]}" >> $GITHUB_OUTPUT
 
-      # Pull oci-dir image, remove oci dir to make space, and then tag appropriately
-      - name: Load in podman and tag
-        run: |
-          IMAGE=$(podman pull ${{ steps.rechunk.outputs.ref }})
-          sudo rm -rf ${{ steps.rechunk.outputs.output }}
-          for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
-            podman tag $IMAGE ${{ env.IMAGE_NAME }}:$tag
-          done
-          # keep for secureboot check
-          podman tag $IMAGE rechunked-img
-
-      - name: Check Secureboot
-        shell: bash
-        run: |
-          set -x
-          if [[ ! $(command -v sbverify) || ! $(command -v curl) || ! $(command -v openssl) ]]; then
-            sudo apt update
-            sudo apt install sbsigntool curl openssl
-          fi
-          TMP=$(podman create rechunked-img bash)
-          podman cp $TMP:/usr/lib/modules/${{ matrix.kernel_version }}/vmlinuz .
-          podman rm $TMP
-          sbverify --list vmlinuz
-          curl --retry 3 -Lo kernel-sign.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key.der
-          curl --retry 3 -Lo akmods.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key_2.der
-          openssl x509 -in kernel-sign.der -out kernel-sign.crt
-          openssl x509 -in akmods.der -out akmods.crt
-          sbverify --cert kernel-sign.crt vmlinuz || exit 1
-          sbverify --cert akmods.crt vmlinuz || exit 1
-
       # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
       # https://github.com/macbre/push-to-ghcr/issues/12
       - name: Lowercase Registry
@@ -395,21 +392,13 @@ jobs:
         uses: Wandalen/wretry.action@v3.5.0
         id: push
         if: github.event_name != 'pull_request'
-        env:
-          REGISTRY_USER: ${{ github.actor }}
-          REGISTRY_PASSWORD: ${{ github.token }}
         with:
-          action: redhat-actions/push-to-registry@v2
           attempt_limit: 3
           attempt_delay: 15000
-          with: |
-            image: ${{ env.IMAGE_NAME }}
-            tags: ${{ steps.generate-tags.outputs.alias_tags }}
-            registry: ${{ steps.registry_case.outputs.lowercase }}
-            username: ${{ env.REGISTRY_USER }}
-            password: ${{ env.REGISTRY_PASSWORD }}
-            extra-args: |
-              --compression-format=zstd:chunked
+          commands: |
+            for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
+              sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag
+            done
 
       - name: Sign container image
         uses: EyeCantCU/cosign-action/sign@v0.3.0
