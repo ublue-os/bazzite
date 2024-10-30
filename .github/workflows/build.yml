@@ -172,7 +172,7 @@ jobs:
             sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods-${{ matrix.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
 
             # Add rechunk as well to remove this source of failure
-            sudo podman pull ghcr.io/hhd-dev/rechunk:v0.8.3
+            sudo podman pull ghcr.io/hhd-dev/rechunk:v1.0.1
 
       - name: Get source versions
         id: labels
@@ -387,11 +387,19 @@ jobs:
         with:
           attempt_limit: 3
           attempt_delay: 15000
-          commands: |
+          command: |
             echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
               sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag
             done
+
+      - name: Get Image Digest
+        id: digest
+        run: |
+          # Get digest for signing
+          DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
+          echo "Digest is: $DIGEST"
+          echo "digest=${DIGEST}" >> $GITHUB_OUTPUT
 
       - name: Sign container image
         uses: EyeCantCU/cosign-action/sign@v0.3.0
@@ -400,12 +408,7 @@ jobs:
           containers: ${{ env.IMAGE_NAME }}
           registry-token: ${{ secrets.GITHUB_TOKEN }}
           signing-secret: ${{ secrets.SIGNING_SECRET }}
-          tags: ${{ steps.push.outputs.outputs && fromJSON(steps.push.outputs.outputs).digest }}
-
-      - name: Echo outputs
-        if: github.event_name != 'pull_request'
-        run: |
-          echo "${{ toJSON(steps.push.outputs) }}"
+          tags: ${{ steps.digest.outputs.digest }}
 
   generate_release:
     name: Generate Release
