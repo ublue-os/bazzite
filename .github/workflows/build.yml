@@ -77,15 +77,6 @@ jobs:
           - base_name: bazzite-deck
             target_nvidia_flavor: nvidia
     steps:
-      - name: Login to GHCR (fail fast)
-        uses: Wandalen/wretry.action@v3.5.0
-        if: github.event_name != 'pull_request'
-        with:
-          attempt_limit: 3
-          attempt_delay: 15000
-          command: |
-            echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
-
       - name: Define env.IMAGE_FLAVOR
         run: |
           if [[ "${{ matrix.base_name }}" == "bazzite-nvidia" ]]; then
@@ -396,6 +387,7 @@ jobs:
           attempt_limit: 3
           attempt_delay: 15000
           commands: |
+            echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
               sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag
             done
