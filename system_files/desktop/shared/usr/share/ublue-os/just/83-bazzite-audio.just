@@ -114,6 +114,9 @@ setup-virtual-surround ACTION="":
     if [[ "${OPTION,,}" =~ ^enable ]]; then
       echo "Downloading a sample HRTF .sofa from the Sofacoustics database..."
       wget -O ~/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa https://sofacoustics.org/data/database_sofa_0.6/mit/mit_kemar_normal_pinna.sofa
+      if [ -f ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf ]; then
+        mv ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf ~/.config/pipewire/virtual-surround-71.conf.bak
+      fi
       bash -c 'cat << SPATIALIZER > ~/.config/pipewire/pipewire.conf.d/spatializer-7.1.conf
     # Headphone surround sink
     #
@@ -282,6 +285,9 @@ setup-virtual-surround ACTION="":
       echo "${bold}2.${normal} Once you find an HRTF that suits you, you may download it from https://sofacoustics.org/data/database_sofa_0.6/;"
       echo "${bold}3.${normal} Then, open ~/.config/pipewire/pipewire.conf.d/spatializer-7.1.conf with a text editor, and replace the paths to the sample file with the path to yours."
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
+      if [ -f ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf ]; then
+        rm ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf
+      fi
       rm ~/.config/pipewire/pipewire.conf.d/spatializer-7.1.conf
       rm ~/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa
       echo "Surround configuration file and sample .sofa removed, please reboot or restart PipeWire for changes to take effect."
