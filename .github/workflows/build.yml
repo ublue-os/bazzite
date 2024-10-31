@@ -404,11 +404,6 @@ jobs:
           signing-secret: ${{ secrets.SIGNING_SECRET }}
           tags: ${{ steps.push.outputs.sign_tag }}
 
-      - name: Echo outputs
-        if: github.event_name != 'pull_request'
-        run: |
-          echo "${{ toJSON(steps.push.outputs) }}"
-
   generate_release:
     name: Generate Release
     needs: [push-ghcr]
