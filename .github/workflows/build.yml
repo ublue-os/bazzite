@@ -389,6 +389,7 @@ jobs:
           attempt_delay: 15000
           command: |
             echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+            sudo chmod 666 -R ${{ steps.rechunk.outputs.ref }}
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
               skopeo copy ${{ steps.rechunk.outputs.ref }} docker://${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag
             done
