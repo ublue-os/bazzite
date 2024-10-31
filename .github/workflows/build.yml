@@ -391,9 +391,9 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
               sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag
+              # Keep one tag for signing
+              echo "sign_tag=$tag" >> $GITHUB_OUTPUT
             done
-            # Keep one tag for signing
-            echo "sign_tag=$tag" >> $GITHUB_OUTPUT
 
       - name: Sign container image
         uses: EyeCantCU/cosign-action/sign@v0.3.0
@@ -403,11 +403,6 @@ jobs:
           registry-token: ${{ secrets.GITHUB_TOKEN }}
           signing-secret: ${{ secrets.SIGNING_SECRET }}
           tags: ${{ steps.push.outputs.sign_tag }}
-
-      - name: Echo outputs
-        if: github.event_name != 'pull_request'
-        run: |
-          echo "${{ toJSON(steps.push.outputs) }}"
 
   generate_release:
     name: Generate Release
