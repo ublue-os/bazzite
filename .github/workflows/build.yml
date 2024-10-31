@@ -388,10 +388,9 @@ jobs:
           attempt_limit: 3
           attempt_delay: 15000
           command: |
-            echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
-            sudo chmod 666 -R ${{ steps.rechunk.outputs.location }}
+            echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
-              skopeo copy ${{ steps.rechunk.outputs.ref }} docker://${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag
+              sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag
             done
 
       - name: Sign container image
