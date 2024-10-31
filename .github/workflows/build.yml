@@ -172,7 +172,7 @@ jobs:
             sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods-${{ matrix.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
 
             # Add rechunk as well to remove this source of failure
-            sudo podman pull ghcr.io/hhd-dev/rechunk:v0.8.3
+            sudo podman pull ghcr.io/hhd-dev/rechunk:v1.0.1
 
       - name: Get source versions
         id: labels
@@ -391,8 +391,6 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
               sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag
-              # Keep one tag for signing
-              echo "sign_tag=$tag" >> $GITHUB_OUTPUT
             done
 
       - name: Sign container image
@@ -402,7 +400,7 @@ jobs:
           containers: ${{ env.IMAGE_NAME }}
           registry-token: ${{ secrets.GITHUB_TOKEN }}
           signing-secret: ${{ secrets.SIGNING_SECRET }}
-          tags: ${{ steps.push.outputs.sign_tag }}
+          tags: ${{ steps.rechunk.outputs.version }}
 
   generate_release:
     name: Generate Release
