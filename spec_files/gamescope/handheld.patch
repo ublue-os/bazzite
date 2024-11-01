@@ -1,7 +1,7 @@
-From e0e74b9862ca591302a01ef89994e3eaf8d1245e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 17 May 2024 21:56:55 -0500
-Subject: [PATCH v2 01/12] feat: add --custom-refresh-rates option (+ fixes)
+Subject: feat: add --custom-refresh-rates option (+ fixes)
 
 Commit originally by Matthew, external fixes by Kyle, and new system check
 move by Antheas.
@@ -117,11 +117,11 @@ index 2e6fb83..390c04a 100644
 2.47.0
 
 
-From 304c0c2297bc2f24be9edff4088fdfae418adaf0 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alesh Slovak <alesh@playtron.one>
 Date: Thu, 26 Sep 2024 07:13:24 -0400
-Subject: [PATCH v2 02/12] fix(vrr): Revert "steamcompmgr: Move
- outdatedInteractiveFocus to window"
+Subject: fix(vrr): Revert "steamcompmgr: Move outdatedInteractiveFocus to
+ window"
 
 This reverts commit 299bc3410dcfd46da5e3c988354b60ed3a356900.
 ---
@@ -210,10 +210,10 @@ index 095694e..e41fad9 100644
 2.47.0
 
 
-From 2a9e687172b569681eea53fb8f4848b0a758e680 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Renn <8340896+AkazaRenn@users.noreply.github.com>
 Date: Fri, 11 Oct 2024 17:48:26 +0200
-Subject: [PATCH v2 03/12] fix(deck): Use super + 1/2 for Overlay/QAM
+Subject: fix(deck): Use super + 1/2 for Overlay/QAM
 
 Replaces the patch for CTRL + 1/2 for Overlay/QAM with Super + 1/2 and
 allows for CTRL for a smooth transition.
@@ -271,10 +271,10 @@ index 78a86ee..99df8aa 100644
 2.47.0
 
 
-From dde7f34921a70953fca2020dc22f89c544bdaf65 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 11 Oct 2024 17:52:48 +0200
-Subject: [PATCH v2 04/12] fix: allow for disabling touch atom click
+Subject: fix: allow for disabling touch atom click
 
 Causes issues in certain devices (or not anymore?).
 
@@ -340,10 +340,10 @@ index df7616d..4a17499 100644
 2.47.0
 
 
-From 033b1b8ce87267e9e1b75a889d5ba3d8c47ed4fe Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 11 Oct 2024 21:56:54 +0200
-Subject: [PATCH v2 05/12] fix(intel-gpu): allow for (enabling) hacky texture
+Subject: fix(intel-gpu): allow for (enabling) hacky texture
 
 Disabling hacky texture will use more hardware planes, causing some devices to composite yielding lower fps. Required for intel to work
 ---
@@ -405,11 +405,11 @@ index 4a17499..da3115f 100644
 2.47.0
 
 
-From 8e64da6cabcd2a6fc9d9fad12cb95ff203985d1b Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 11 Oct 2024 23:01:13 +0200
-Subject: [PATCH v2 06/12] fix: re-add external orientation options to not
- break current sessions (incl. applying ext. orientation)
+Subject: fix: re-add external orientation options to not break current
+ sessions (incl. applying ext. orientation)
 
 ---
  src/main.cpp | 4 +++-
@@ -441,11 +441,10 @@ index 84e05a9..2398535 100644
 2.47.0
 
 
-From 14d19b8d86c485fe57e1489de905c908c67fd77e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: honjow <honjow311@gmail.com>
 Date: Wed, 16 Oct 2024 00:23:58 +0800
-Subject: [PATCH v2 07/12] fix(external): fix crash when using external
- touchscreens
+Subject: fix(external): fix crash when using external touchscreens
 
 ---
  src/wlserver.cpp | 8 ++++++--
@@ -474,11 +473,11 @@ index 99df8aa..5e8f516 100644
 2.47.0
 
 
-From 9e4ee4341a7480a0af883cc47d3c6e6ee91de74a Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 11 Oct 2024 23:47:59 +0200
-Subject: [PATCH v2 08/12] feat(vrr): allow for setting refresh rate if the
- internal display allows
+Subject: feat(vrr): allow for setting refresh rate if the internal display
+ allows
 
 For the Ally, we have a set of VFP that work to set the refresh rate.
 They can also be used for VRR but gamescope does not currently allow for
@@ -551,11 +550,10 @@ index da3115f..69fd348 100644
 2.47.0
 
 
-From dc2d5db6f62ac4c5a160d200be346100d923b1c3 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 11 Oct 2024 19:09:05 +0200
-Subject: [PATCH v2 09/12] feat: add external option that now only lies to
- steam
+Subject: feat: add external option that now only lies to steam
 
 Previously, there was a force-panel option that allowed for VRR.
 However, this is no longer the case and VRR works fine.
@@ -664,11 +662,10 @@ index 0569472..104f7a2 100644
 2.47.0
 
 
-From b8e8677a811bbebe5f0f743ac22da7a83436d443 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Mon, 14 Oct 2024 22:42:20 +0200
-Subject: [PATCH v2 10/12] fix(display-config): always fill in mutable refresh
- rates
+Subject: fix(display-config): always fill in mutable refresh rates
 
 Assume the user is not lying to us when they fill in dynamic_refresh_rates
 and that gamescope will work with e.g., CVT, so accept it even if no
@@ -696,11 +693,10 @@ index 75c3258..f014be9 100644
 2.47.0
 
 
-From 2d96bb5b3fc75690d60249a8e8ea29f3c667ef55 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 25 Oct 2024 21:22:10 +0200
-Subject: [PATCH v2 11/12] fix(vrr): allow frame limiter to work with VRR
- enabled
+Subject: fix(vrr): allow frame limiter to work with VRR enabled
 
 Down to 48hz, modeset the correct framerate. Below 48hz,
 disable VRR and use the classic frame limiter.
@@ -767,11 +763,11 @@ index 3dd64f8..7dacfe7 100644
 2.47.0
 
 
-From c90aff28dae5c92170f47b2dc29c01770ff0dd42 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Wed, 30 Oct 2024 00:39:03 +0100
-Subject: [PATCH v2 12/12] fix(battery): run at half hz while at steamUI and
- disable VRR V2 + param
+Subject: fix(battery): run at half hz while at steamUI and disable VRR V2 +
+ param
 
 ---
  src/main.cpp         |  2 ++
@@ -938,6 +934,57 @@ index 7dacfe7..70698ac 100644
  		// We can always vblank if VRR.
  		const bool bVRR = GetBackend()->IsVRRActive();
  		if ( bVRR )
+-- 
+2.47.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Fri, 1 Nov 2024 17:27:54 +0100
+Subject: feat(battery): add atom for controlling frame halving
+
+---
+ src/steamcompmgr.cpp | 6 ++++++
+ src/xwayland_ctx.hpp | 2 ++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 70698ac..97a254f 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -5919,6 +5919,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 			MakeFocusDirty();
+ 		}
+ 	}
++	if ( ev->atom == ctx->atoms.gamescopeFrameHalveAtom )
++	{
++		g_bRefreshHalveEnable = !!get_prop( ctx, ctx->root, ctx->atoms.gamescopeFrameHalveAtom, 0 );
++	}
+ }
+ 
+ static int
+@@ -7089,6 +7093,8 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
+ 	ctx->atoms.primarySelection = XInternAtom(ctx->dpy, "PRIMARY", false);
+ 	ctx->atoms.targets = XInternAtom(ctx->dpy, "TARGETS", false);
+ 
++	ctx->atoms.gamescopeFrameHalveAtom = XInternAtom( ctx->dpy, "GAMESCOPE_STEAMUI_HALFHZ", false );;
++
+ 	ctx->root_width = DisplayWidth(ctx->dpy, ctx->scr);
+ 	ctx->root_height = DisplayHeight(ctx->dpy, ctx->scr);
+ 
+diff --git a/src/xwayland_ctx.hpp b/src/xwayland_ctx.hpp
+index df2af70..e4eec9f 100644
+--- a/src/xwayland_ctx.hpp
++++ b/src/xwayland_ctx.hpp
+@@ -246,6 +246,8 @@ struct xwayland_ctx_t final : public gamescope::IWaitable
+ 		Atom clipboard;
+ 		Atom primarySelection;
+ 		Atom targets;
++
++		Atom gamescopeFrameHalveAtom;
+ 	} atoms;
+ 
+ 	bool HasQueuedEvents();
 -- 
 2.47.0
 
