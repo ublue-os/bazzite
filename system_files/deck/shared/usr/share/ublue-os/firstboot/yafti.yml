@@ -44,6 +44,11 @@ screens:
           default: false
           packages:
           - Install scrcpy: ujust install-scrcpy
+        DaVinci Resolve:
+            description: Install/update DaVinci Resolve, a closed-source video editing utility
+            default: false
+            packages:
+            - Install/Update DaVinci Resolve: sudo -A ujust install-resolve
   configure-bazzite:
     source: yafti.screen.package
     values:
@@ -61,16 +66,21 @@ screens:
           default: true
           packages:
           - Enable Updates: sudo -A ujust enable-deck-bios-firmware-updates
+        Hide GRUB Menu:
+          description: |
+          default: false
+          packages:
+          - Hide GRUB: sudo -A ujust configure-grub hide
         Visible Password Aestriks:
             description: Toggles pwfeedback on.
             default: true
             packages:
-            - Enable pwfeedback: sudo -A ujust toggle-password-feedback on
-        Hide GRUB Menu:
-          description: Hide GRUB at boot.
-          default: false
-          packages:
-          - Hide GRUB: sudo -A ujust configure-grub hide
+            - Install bazzite-cli: ujust bazzite-cli
+        bazzite-cli:
+            description: Bazzite CLI mod for Bluefin style CLI bling.
+            default: false
+            packages:
+            - Install bazzite-cli: ujust bazzite-cli
         Oversteer:
           description: Application to control supported steering wheels
           default: false
