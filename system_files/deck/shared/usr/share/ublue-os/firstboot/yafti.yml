@@ -67,7 +67,7 @@ screens:
           packages:
           - Enable Updates: sudo -A ujust enable-deck-bios-firmware-updates
         Hide GRUB Menu:
-          description: |
+          description: Hide the GRUB menu at boot
           default: false
           packages:
           - Hide GRUB: sudo -A ujust configure-grub hide
@@ -75,17 +75,7 @@ screens:
             description: Toggles pwfeedback on.
             default: true
             packages:
-            - Install bazzite-cli: ujust bazzite-cli
-        bazzite-cli:
-            description: Bazzite CLI mod for Bluefin style CLI bling.
-            default: false
-            packages:
-            - Install bazzite-cli: ujust bazzite-cli
-        Oversteer:
-          description: Application to control supported steering wheels
-          default: false
-          packages:
-          - Install Oversteer: ujust install-oversteer
+            - Install pwfeedback: sudo -A ujust toggle-password-feedback enable
         OpenRazer:
           description: Enables additional capabilities for Razer Hardware
           default: false
