@@ -90,11 +90,6 @@ screens:
           default: false
           packages:
           - Install OpenTabletDriver: ujust install-opentabletdriver
-        Oversteer:
-          description: Application to control supported steering wheels
-          default: false
-          packages:
-          - Install Oversteer: ujust install-oversteer
         CoolerControl:
             description: A GUI for viewing all your system's sensors and for creating custom fan and pump profiles
             default: false
