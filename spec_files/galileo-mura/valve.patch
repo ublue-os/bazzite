@@ -18,3 +18,19 @@
  
  echo "[galileo-mura] Success! All good. Using mura at: $mura_path"
  
+@@ -82,6 +82,14 @@
+ 
+ # Check for multi-monitor setup with different refresh rates
+ if xrandr | grep -q " connected "; then
++    primary_monitor=$(xrandr | grep " connected primary" | awk '{print $1}')
++    if [ -z "$primary_monitor" ]; then
++        primary_monitor=$(xrandr | grep " connected" | head -n 1 | awk '{print $1}')
++    fi
++    for monitor in $(xrandr | grep " connected" | awk '{print $1}'); do
++        if [ "$monitor" != "$primary_monitor" ]; then
++            if [ "$(xrandr --verbose | grep -A 10 "^$monitor" | grep "VGA" | awk '{print $2}')" != "$(xrandr --verbose | grep -A 10 "^$primary_monitor" | grep "VGA" | awk '{print $2}')" ]; then
++                xrandr --output "$monitor" --scale 1x1
++            fi
++        fi
++    done
+ fi

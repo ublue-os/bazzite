@@ -33,3 +33,17 @@ diff -Naur a/pyanaconda/ui/gui/__init__.py b/pyanaconda/ui/gui/__init__.py
          monitor_geometry = primary_monitor.get_geometry()
          monitor_scale = primary_monitor.get_scale_factor()
          monitor_width_mm = primary_monitor.get_width_mm()
+@@ -583,6 +590,13 @@
+         monitor_height_mm = primary_monitor.get_height_mm()
+         monitor_aspect_ratio = monitor_width_mm / monitor_height_mm
+ 
++        # Check for multi-monitor setup with different refresh rates
++        if len(Gdk.Display.get_default().get_monitors()) > 1:
++            for monitor in Gdk.Display.get_default().get_monitors():
++                if monitor.get_refresh_rate() != primary_monitor.get_refresh_rate():
++                    util.setenv("GDK_SCALE", "1")
++                    return
++
+         # Calculate the DPI of the primary monitor
+         dpi = monitor_geometry.width / (monitor_width_mm / 25.4)
+ 

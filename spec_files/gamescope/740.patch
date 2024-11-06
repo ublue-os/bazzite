@@ -506,6 +506,7 @@ index 000000000..4904433b5
 +    // The parameter pos of this function is used to iterate over the output image (e.g. 960x540)
 +    // The position of the processed pixel should be taken from the rendered image (e.g. 1920x1080)
 +    // 10x10 in the output, corresponds to 20x20 in the original image
++    // 10x10 in the output, corresponds to 20x20 in the original image
 +    AF2 positionPixel=AF2(pos)*scaleFactor;
 +
 +    // Normalize the image space to be between [0,1]
@@ -905,7 +906,7 @@ index de25ddeab..b7f5985b9 100644
  			case 'F':
 -				g_wantedUpscaleFilter = parse_upscaler_filter(optarg);
 -				break;
--			case 'D':
+ 			case 'D':
 -				g_wantedDownscaleFilter = parse_downscaler_filter(optarg);
 +				parse_filter(optarg);
  				break;
