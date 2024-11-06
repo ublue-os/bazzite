@@ -1,0 +1,62 @@
+name: Promote Edge builds to Stable
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}-promote
+  cancel-in-progress: true
+
+jobs:
+  promote:
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        image_name:
+          - bazzite
+          - bazzite-nvidia
+          - bazzite-nvidia-open
+          - bazzite-gnome
+          - bazzite-gnome-nvidia
+          - bazzite-gnome-nvidia-open
+          - bazzite-deck
+          - bazzite-deck-gnome
+          - bazzite-ally
+          - bazzite-ally-gnome
+          - bazzite-asus
+          - bazzite-gnome-asus
+          - bazzite-asus-nvidia
+          - bazzite-gnome-asus-nvidia
+          - bazzite-asus-nvidia-open
+          - bazzite-gnome-asus-nvidia-open
+        major_version: [40]
+    steps:
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
+      # https://github.com/macbre/push-to-ghcr/issues/12
+      - name: Lowercase Registry
+        id: registry_case
+        uses: ASzc/change-string-case-action@v6
+        with:
+          string: ${{ env.IMAGE_REGISTRY }}
+
+      - name: Push Edge to Stable
+        uses: Wandalen/wretry.action@v3.5.0
+        id: push
+        env:
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ github.token }}
+        with:
+          attempt_limit: 3
+          attempt_delay: 15000
+          commands: |
+            sudo skopeo copy \
+              ${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:edge \
+              ${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:stable
