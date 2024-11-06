@@ -1,2 +1,2 @@
 #!/bin/bash
-exec dnf copr "$@"
+exec dnf5 copr "$@"
