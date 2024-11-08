@@ -493,6 +493,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         libFAudio.x86_64 \
         libFAudio.i686 \
         winetricks \
+        protontricks \
         latencyflex-vulkan-layer \
         mesa-vulkan-drivers.i686 \
         mesa-va-drivers.i686 \
