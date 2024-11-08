@@ -197,7 +197,7 @@ Obsoletes:      mesa-omx-drivers < %{?epoch:%{epoch}:}%{version}-%{release}
 Summary:        Mesa libGL runtime libraries
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-glx%{?_isa} >= 1:1.3.2
-Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 
 %description libGL
 %{summary}.
@@ -218,7 +218,7 @@ Summary:        Mesa libEGL runtime libraries
 Requires:       libglvnd-egl%{?_isa} >= 1:1.3.2
 Requires:       %{name}-libgbm%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 
 %description libEGL
 %{summary}.
@@ -287,11 +287,11 @@ Requires:       %{name}-libOSMesa%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rele
 Summary:        Mesa gbm runtime library
 Provides:       libgbm
 Provides:       libgbm%{?_isa}
-Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release}
 # If mesa-dri-drivers are installed, they must match in version. This is here to prevent using
 # older mesa-dri-drivers together with a newer mesa-libgbm and its dependants.
 # See https://bugzilla.redhat.com/show_bug.cgi?id=2193135 .
-Requires:       (%{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release} if %{name}-dri-drivers%{?_isa})
+Requires:       (%{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release} if %{name}-dri-drivers%{?_isa})
 
 %description libgbm
 %{summary}.
@@ -331,7 +331,7 @@ Provides:       libglapi%{?_isa}
 # If mesa-dri-drivers are installed, they must match in version. This is here to prevent using
 # older mesa-dri-drivers together with a newer mesa-libglapi or its dependants.
 # See https://bugzilla.redhat.com/show_bug.cgi?id=2193135 .
-Requires:       (%{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release} if %{name}-dri-drivers%{?_isa})
+Requires:       (%{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release} if %{name}-dri-drivers%{?_isa})
 
 %description libglapi
 %{summary}.
