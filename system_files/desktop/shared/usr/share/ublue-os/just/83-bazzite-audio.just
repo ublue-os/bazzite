@@ -94,12 +94,12 @@ setup-virtual-channels ACTION="":
       echo "Virtual audio channels config removed, the channels will be removed next time you login."
     fi
 
-# Setup a simple Virtual Surround 7.1 sink using the ASH Control Room 1 convolver file (you can change this yourself after setup)
+# Setup a virtual 7.1 surround sink for headphones using the PipeWire Spatializer module
 setup-virtual-surround ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     mkdir -p ~/.config/pipewire/pipewire.conf.d
-    mkdir -p ~/.config/pipewire/hrir_hesuvi
+    mkdir -p ~/.config/pipewire/hrtf-sofa
     OPTION={{ ACTION }}
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust setup-virtual-surround <option>"
@@ -112,115 +112,185 @@ setup-virtual-surround ACTION="":
       OPTION=$(Choose "Enable Virtual Surround" "Disable Virtual Surround")
     fi
     if [[ "${OPTION,,}" =~ ^enable ]]; then
-      echo "Downloading HeSuVi convolver profile Control Room 1 from https://github.com/ShanonPearce/ASH-Listening-Set"
-      wget -O ~/.config/pipewire/hrir_hesuvi/Control_Room_1.wav https://github.com/ShanonPearce/ASH-Listening-Set/raw/main/HeSuVi/hrir/_Control_Room_1.wav
-      bash -c 'cat << HESUVI > ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf
+      echo "Downloading a sample HRTF .sofa from the Sofacoustics database..."
+      wget -O ~/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa https://sofacoustics.org/data/database_sofa_0.6/mit/mit_kemar_normal_pinna.sofa
+      if [ -f ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf ]; then
+        mv ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf ~/.config/pipewire/virtual-surround-71.conf.bak
+      fi
+      bash -c 'cat << SPATIALIZER > ~/.config/pipewire/pipewire.conf.d/spatializer-7.1.conf
+    # Headphone surround sink
+    #
+    # Adjust the paths to the sofa file to match your system.
+    # Preferably, use absolute paths.
+    #
     context.modules = [
-       { name = libpipewire-module-filter-chain
-           flags = [ nofail ]
-           args = {
-               node.description = "Virtual Surround 7.1"
-               media.name       = "Virtual Surround 7.1"
-               filter.graph = {
-                   nodes = [
-                       # Duplicate inputs
-                       { type = builtin label = copy name = copyFL  }
-                       { type = builtin label = copy name = copyFR  }
-                       { type = builtin label = copy name = copyFC  }
-                       { type = builtin label = copy name = copyRL  }
-                       { type = builtin label = copy name = copyRR  }
-                       { type = builtin label = copy name = copySL  }
-                       { type = builtin label = copy name = copySR  }
-                       { type = builtin label = copy name = copyLFE }
+        { name = libpipewire-module-filter-chain
+            flags = [ nofail ]
+            args = {
+                node.description = "Spatial Sink"
+                media.name       = "Spatial Sink"
+                filter.graph = {
+                    nodes = [
+                        {
+                            type = sofa
+                            label = spatializer
+                            name = spFL
+                            config = {
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                            }
+                            control = {
+                                "Azimuth"    = 30.0
+                                "Elevation"  = 0.0
+                                "Radius"     = 3.0
+                            }
+                        }
+                        {
+                            type = sofa
+                            label = spatializer
+                            name = spFR
+                            config = {
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                            }
+                            control = {
+                                "Azimuth"    = 330.0
+                                "Elevation"  = 0.0
+                                "Radius"     = 3.0
+                            }
+                        }
+                        {
+                            type = sofa
+                            label = spatializer
+                            name = spFC
+                            config = {
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                            }
+                            control = {
+                                "Azimuth"    = 0.0
+                                "Elevation"  = 0.0
+                                "Radius"     = 3.0
+                            }
+                        }
+                        {
+                            type = sofa
+                            label = spatializer
+                            name = spRL
+                            config = {
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                            }
+                            control = {
+                                "Azimuth"    = 150.0
+                                "Elevation"  = 0.0
+                                "Radius"     = 3.0
+                            }
+                        }
+                        {
+                            type = sofa
+                            label = spatializer
+                            name = spRR
+                            config = {
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                            }
+                            control = {
+                                "Azimuth"    = 210.0
+                                "Elevation"  = 0.0
+                                "Radius"     = 3.0
+                            }
+                        }
+                        {
+                            type = sofa
+                            label = spatializer
+                            name = spSL
+                            config = {
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                            }
+                            control = {
+                                "Azimuth"    = 90.0
+                                "Elevation"  = 0.0
+                                "Radius"     = 3.0
+                            }
+                        }
+                        {
+                            type = sofa
+                            label = spatializer
+                            name = spSR
+                            config = {
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                            }
+                            control = {
+                                "Azimuth"    = 270.0
+                                "Elevation"  = 0.0
+                                "Radius"     = 3.0
+                            }
+                        }
+                        {
+                            type = sofa
+                            label = spatializer
+                            name = spLFE
+                            config = {
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                            }
+                            control = {
+                                "Azimuth"    = 0.0
+                                "Elevation"  = -60.0
+                                "Radius"     = 3.0
+                            }
+                        }
 
-                       # Apply hrir - HeSuVi 14-channel WAV (not the *-.wav variants) (note: */44/* in HeSuVi are the same, but resampled to 44100)
-                       # The file paths HAS to be absolute paths
-                       { type = builtin label = convolver name = convFL_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  0 } }
-                       { type = builtin label = convolver name = convFL_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  1 } }
-                       { type = builtin label = convolver name = convSL_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  2 } }
-                       { type = builtin label = convolver name = convSL_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  3 } }
-                       { type = builtin label = convolver name = convRL_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  4 } }
-                       { type = builtin label = convolver name = convRL_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  5 } }
-                       { type = builtin label = convolver name = convFC_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  6 } }
-                       { type = builtin label = convolver name = convFR_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  7 } }
-                       { type = builtin label = convolver name = convFR_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  8 } }
-                       { type = builtin label = convolver name = convSR_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  9 } }
-                       { type = builtin label = convolver name = convSR_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel = 10 } }
-                       { type = builtin label = convolver name = convRR_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel = 11 } }
-                       { type = builtin label = convolver name = convRR_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel = 12 } }
-                       { type = builtin label = convolver name = convFC_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel = 13 } }
-
-                       # Treat LFE as FC
-                       { type = builtin label = convolver name = convLFE_L config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel =  6 } }
-                       { type = builtin label = convolver name = convLFE_R config = { filename = "$HOME/.config/pipewire/hrir_hesuvi/Control_Room_1.wav" channel = 13 } }
-
-                       # Stereo output
-                       { type = builtin label = mixer name = mixL }
-                       { type = builtin label = mixer name = mixR }
-                   ]
-                   links = [
-                       # Input
-                       { output = "copyFL:Out"  input="convFL_L:In"  }
-                       { output = "copyFL:Out"  input="convFL_R:In"  }
-                       { output = "copySL:Out"  input="convSL_L:In"  }
-                       { output = "copySL:Out"  input="convSL_R:In"  }
-                       { output = "copyRL:Out"  input="convRL_L:In"  }
-                       { output = "copyRL:Out"  input="convRL_R:In"  }
-                       { output = "copyFC:Out"  input="convFC_L:In"  }
-                       { output = "copyFR:Out"  input="convFR_R:In"  }
-                       { output = "copyFR:Out"  input="convFR_L:In"  }
-                       { output = "copySR:Out"  input="convSR_R:In"  }
-                       { output = "copySR:Out"  input="convSR_L:In"  }
-                       { output = "copyRR:Out"  input="convRR_R:In"  }
-                       { output = "copyRR:Out"  input="convRR_L:In"  }
-                       { output = "copyFC:Out"  input="convFC_R:In"  }
-                       { output = "copyLFE:Out" input="convLFE_L:In" }
-                       { output = "copyLFE:Out" input="convLFE_R:In" }
-
-                       # Output
-                       { output = "convFL_L:Out"  input="mixL:In 1" }
-                       { output = "convFL_R:Out"  input="mixR:In 1" }
-                       { output = "convSL_L:Out"  input="mixL:In 2" }
-                       { output = "convSL_R:Out"  input="mixR:In 2" }
-                       { output = "convRL_L:Out"  input="mixL:In 3" }
-                       { output = "convRL_R:Out"  input="mixR:In 3" }
-                       { output = "convFC_L:Out"  input="mixL:In 4" }
-                       { output = "convFC_R:Out"  input="mixR:In 4" }
-                       { output = "convFR_R:Out"  input="mixR:In 5" }
-                       { output = "convFR_L:Out"  input="mixL:In 5" }
-                       { output = "convSR_R:Out"  input="mixR:In 6" }
-                       { output = "convSR_L:Out"  input="mixL:In 6" }
-                       { output = "convRR_R:Out"  input="mixR:In 7" }
-                       { output = "convRR_L:Out"  input="mixL:In 7" }
-                       { output = "convLFE_R:Out" input="mixR:In 8" }
-                       { output = "convLFE_L:Out" input="mixL:In 8" }
-                   ]
-                   inputs  = [ "copyFL:In" "copyFR:In" "copyFC:In" "copyLFE:In" "copyRL:In" "copyRR:In", "copySL:In", "copySR:In" ]
-                   outputs = [ "mixL:Out" "mixR:Out" ]
-               }
-               capture.props = {
-                   node.name      = "effect_input.virtual-surround-7.1-hesuvi"
-                   media.class    = Audio/Sink
-                   audio.channels = 8
-                   audio.position = [ FL FR FC LFE RL RR SL SR ]
-               }
-               playback.props = {
-                   node.name      = "effect_output.virtual-surround-7.1-hesuvi"
-                   node.passive   = true
-                   audio.channels = 2
-                   audio.position = [ FL FR ]
-               }
-           }
-       }
+                        { type = builtin label = mixer name = mixL }
+                        { type = builtin label = mixer name = mixR }
+                    ]
+                    links = [
+                        # output
+                        { output = "spFL:Out L"  input="mixL:In 1" }
+                        { output = "spFL:Out R"  input="mixR:In 1" }
+                        { output = "spFR:Out L"  input="mixL:In 2" }
+                        { output = "spFR:Out R"  input="mixR:In 2" }
+                        { output = "spFC:Out L"  input="mixL:In 3" }
+                        { output = "spFC:Out R"  input="mixR:In 3" }
+                        { output = "spRL:Out L"  input="mixL:In 4" }
+                        { output = "spRL:Out R"  input="mixR:In 4" }
+                        { output = "spRR:Out L"  input="mixL:In 5" }
+                        { output = "spRR:Out R"  input="mixR:In 5" }
+                        { output = "spSL:Out L"  input="mixL:In 6" }
+                        { output = "spSL:Out R"  input="mixR:In 6" }
+                        { output = "spSR:Out L"  input="mixL:In 7" }
+                        { output = "spSR:Out R"  input="mixR:In 7" }
+                        { output = "spLFE:Out L" input="mixL:In 8" }
+                        { output = "spLFE:Out R" input="mixR:In 8" }
+                    ]
+                    inputs  = [ "spFL:In" "spFR:In" "spFC:In" "spLFE:In" "spRL:In" "spRR:In", "spSL:In", "spSR:In" ]
+                    outputs = [ "mixL:Out" "mixR:Out" ]
+                }
+                capture.props = {
+                    node.name      = "effect_input.spatializer"
+                    media.class    = Audio/Sink
+                    audio.channels = 8
+                    audio.position = [ FL FR FC LFE RL RR SL SR ]
+                }
+                playback.props = {
+                    node.name      = "effect_output.spatializer"
+                    node.passive   = true
+                    audio.channels = 2
+                    audio.position = [ SL SR ]
+                }
+            }
+        }
     ]
-    HESUVI'
-      echo "Virtual Surround 7.1 has now been set up with a basic convolver file, either restart pipewire or reboot for it to take effect."
-      echo "Then select the Virtual Surround 7.1 audio output as your default audio output."
-      echo "If you want something like DTS, Atmos or OpenAL, you will have to acquire those convolver wav files yourself and edit ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf to point to the one you want to use."
+    SPATIALIZER'
+      echo ""
+      echo "Virtual surround has now been set up with a sample HRTF file; either restart PipeWire or reboot for it to take effect. If not using EasyEffects, you'll need to select Spatial Sink as your default audio output for it to work."
+      echo ""
+      echo "${bold}IMPORTANT:${normal}"
+      echo "${bold}1.${normal} See https://youtu.be/VCXQp7swp5k for a demonstration of various HRTFs to find one that best matches your anatomy. Do note that correcting your headphones' response curve beforehand with something like https://autoeq.app/ is also recommended;"
+      echo "${bold}2.${normal} Once you find an HRTF that suits you, you may download it from https://sofacoustics.org/data/database_sofa_0.6/;"
+      echo "${bold}3.${normal} Then, open ~/.config/pipewire/pipewire.conf.d/spatializer-7.1.conf with a text editor, and replace the paths to the sample file with the path to yours."
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
-      rm ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf
-      rm ~/.config/pipewire/hrir_hesuvi/Control_Room_1.wav
-      echo "Virtual Surround 7.1 removed, please reboot or restart pipewire for it to take effect." 
+      if [ -f ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf ]; then
+        rm ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf
+      fi
+      rm ~/.config/pipewire/pipewire.conf.d/spatializer-7.1.conf
+      rm ~/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa
+      echo "Surround configuration file and sample .sofa removed, please reboot or restart PipeWire for changes to take effect."
     fi
 
 # Restart pipewire
