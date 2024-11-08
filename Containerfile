@@ -337,7 +337,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         mesa-libEGL \
         mesa-vulkan-drivers \
         mesa-libGL \
-        mesa-libGLU \
         pipewire \
         pipewire-alsa \
         pipewire-gstreamer \
