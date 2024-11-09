@@ -328,6 +328,7 @@ Provides:       libxatracker-devel%{?_isa}
 Summary:        Mesa shared glapi
 Provides:       libglapi
 Provides:       libglapi%{?_isa}
+Provides:       libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{orig_release} if %{name}-dri-drivers%{?_isa})
 # If mesa-dri-drivers are installed, they must match in version. This is here to prevent using
 # older mesa-dri-drivers together with a newer mesa-libglapi or its dependants.
 # See https://bugzilla.redhat.com/show_bug.cgi?id=2193135 .
