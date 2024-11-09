@@ -10,7 +10,7 @@ diff -Naur a/pyanaconda/display.py b/pyanaconda/display.py
 +                        dmi = f.read().strip()
 +
 +                    if "Jupiter" in dmi or "Galileo" in dmi or "NEXT" in dmi:
-+                    options.runres = "1280x800"
++                        options.runres = "1280x800"
 +
                      set_resolution(options.runres)
                      observer.disconnect()
