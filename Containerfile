@@ -333,6 +333,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         mesa-libxatracker \
         mesa-libglapi \
+        mesa-dri-drivers \
         mesa-libgbm \
         mesa-libEGL \
         mesa-vulkan-drivers \
