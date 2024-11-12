@@ -342,7 +342,7 @@ jobs:
             BUILD_TAGS+=("stable-${FEDORA_VERSION}") # flip ver to be last
             
             if [ -n "$LATEST" ]; then
-              BUILD_TAGS+=("latest" "edge")
+              BUILD_TAGS+=("latest" "stable")
             fi
           fi
           
