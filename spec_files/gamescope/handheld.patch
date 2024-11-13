@@ -770,32 +770,11 @@ Subject: fix(battery): run at half hz while at steamUI and disable VRR V2 +
  param
 
 ---
- src/main.cpp         |  2 ++
- src/steamcompmgr.cpp | 45 +++++++++++++++++++++++++++++++++-----------
- 2 files changed, 36 insertions(+), 11 deletions(-)
+ src/steamcompmgr.cpp | 43 ++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 32 insertions(+), 11 deletions(-)
 
-diff --git a/src/main.cpp b/src/main.cpp
-index 056e1c1..e6a634b 100644
---- a/src/main.cpp
-+++ b/src/main.cpp
-@@ -132,6 +132,7 @@ const struct option *gamescope_options = (struct option[]){
- 	{ "force-panel-type", required_argument, nullptr, 0 },
- 	{ "force-external-orientation", required_argument, nullptr, 0 },
- 	{ "disable-touch-click", no_argument, nullptr, 0 },
-+	{ "disable-steamui-framelimit", no_argument, nullptr, 0 },
- 	{ "enable-vrr-modesetting", no_argument, nullptr, 0 },
- 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
- 	{ "custom-refresh-rates", required_argument, nullptr, 0 },
-@@ -195,6 +196,7 @@ const char usage[] =
- 	"  -e, --steam                    enable Steam integration\n"
- 	"  --enable-hacky-texture         enable hacky texture on hw that support it\n"
- 	"  --disable-touch-click          disable touchscreen tap acting as a click\n"
-+	"  --disable-steamui-framelimit   By default, for displays above 100Hz, framerate is halved in SteamUI. Disable that.\n"
- 	"  --enable-vrr-modesetting       enable setting framerate while VRR is on in the internal display\n"
- 	"  --xwayland-count               create N xwayland servers\n"
- 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 7dacfe7..70698ac 100644
+index 7dacfe7..4098c44 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -166,6 +166,9 @@ uint32_t g_reshade_technique_idx = 0;
@@ -804,7 +783,7 @@ index 7dacfe7..70698ac 100644
  bool g_bVRRRequested = false;
 +bool g_bVRRCanEnable = false;
 +bool b_bForceFrameLimit = false;
-+bool g_bRefreshHalveEnable = true;
++bool g_bRefreshHalveEnable = false;
  
  static std::vector< steamcompmgr_win_t* > GetGlobalPossibleFocusWindows();
  static bool
@@ -901,24 +880,15 @@ index 7dacfe7..70698ac 100644
  	}
  	if ( ev->atom == ctx->atoms.gamescopeDisplayForceInternal )
  	{
-@@ -7507,6 +7511,8 @@ steamcompmgr_main(int argc, char **argv)
- 					set_mura_overlay(optarg);
- 				} else if (strcmp(opt_name, "disable-touch-click") == 0) {
- 					cv_disable_touch_click = true;
-+				} else if (strcmp(opt_name, "disable-steamui-framelimit") == 0) {
-+					g_bRefreshHalveEnable = false;
- 				} else if (strcmp(opt_name, "enable-vrr-modesetting") == 0) {
- 					g_bVRRModesetting = true;
- 				} else if (strcmp(opt_name, "enable-hacky-texture") == 0) {
-@@ -7628,6 +7634,23 @@ steamcompmgr_main(int argc, char **argv)
+@@ -7628,6 +7632,23 @@ steamcompmgr_main(int argc, char **argv)
  		// as a question.
  		const bool bIsVBlankFromTimer = vblank;
  
-+		if ( window_is_steam( global_focus.focusWindow ) ) {
++		if ( g_bRefreshHalveEnable && window_is_steam( global_focus.focusWindow ) ) {
 +			// Halve refresh rate and disable vrr on SteamUI
 +			cv_adaptive_sync = false;
 +			int nRealRefreshHz = gamescope::ConvertmHzToHz( g_nNestedRefresh ? g_nNestedRefresh : g_nOutputRefresh );
-+			if (g_bRefreshHalveEnable && nRealRefreshHz > 100 && g_nSteamCompMgrTargetFPSreq > 34) {
++			if (nRealRefreshHz > 100 && g_nSteamCompMgrTargetFPSreq > 34) {
 +				g_nSteamCompMgrTargetFPS = nRealRefreshHz / 2;
 +				b_bForceFrameLimit = true;
 +			} else {
@@ -949,7 +919,7 @@ Subject: feat(battery): add atom for controlling frame halving
  2 files changed, 8 insertions(+)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 70698ac..97a254f 100644
+index 4098c44..6c8ce74 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -5919,6 +5919,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
@@ -982,6 +952,152 @@ index df2af70..e4eec9f 100644
  		Atom targets;
 +
 +		Atom gamescopeFrameHalveAtom;
+ 	} atoms;
+ 
+ 	bool HasQueuedEvents();
+-- 
+2.47.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Wed, 13 Nov 2024 17:22:05 +0100
+Subject: feat: add DPMS support through an Atom
+
+---
+ src/Backends/DRMBackend.cpp | 16 +++++++++++++---
+ src/rendervulkan.hpp        |  2 ++
+ src/steamcompmgr.cpp        | 11 ++++++++++-
+ src/xwayland_ctx.hpp        |  1 +
+ 4 files changed, 26 insertions(+), 4 deletions(-)
+
+diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
+index f014be9..6bb0b88 100644
+--- a/src/Backends/DRMBackend.cpp
++++ b/src/Backends/DRMBackend.cpp
+@@ -2669,6 +2669,9 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+ 			drm->needs_modeset = true;
+ 	}
+ 
++	if (drm->pCRTC && drm->pCRTC->GetProperties().ACTIVE->GetCurrentValue() != !frameInfo->dpms)
++		drm->needs_modeset = true;
++
+ 	drm_colorspace uColorimetry = DRM_MODE_COLORIMETRY_DEFAULT;
+ 
+ 	const bool bWantsHDR10 = g_bOutputHDREnabled && frameInfo->outputEncodingEOTF == EOTF_PQ;
+@@ -2724,7 +2727,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+ 	uint32_t flags = DRM_MODE_ATOMIC_NONBLOCK;
+ 
+ 	// We do internal refcounting with these events
+-	if ( drm->pCRTC != nullptr )
++	if ( !frameInfo->dpms && drm->pCRTC != nullptr)
+ 		flags |= DRM_MODE_PAGE_FLIP_EVENT;
+ 
+ 	if ( async || g_bForceAsyncFlips )
+@@ -2797,7 +2800,13 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+ 
+ 		if ( drm->pCRTC )
+ 		{
+-			drm->pCRTC->GetProperties().ACTIVE->SetPendingValue( drm->req, 1u, true );
++			if ( frameInfo->dpms ) {
++				// We can't disable a CRTC if it's already disabled
++				if (drm->pCRTC->GetProperties().ACTIVE->GetCurrentValue() != 0)
++					drm->pCRTC->GetProperties().ACTIVE->SetPendingValue(drm->req, 0, true);
++			}
++			else
++				drm->pCRTC->GetProperties().ACTIVE->SetPendingValue( drm->req, 1u, true );
+ 			drm->pCRTC->GetProperties().MODE_ID->SetPendingValue( drm->req, drm->pending.mode_id ? drm->pending.mode_id->GetBlobValue() : 0lu, true );
+ 
+ 			if ( drm->pCRTC->GetProperties().VRR_ENABLED )
+@@ -2828,7 +2837,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+ 	drm->flags = flags;
+ 
+ 	int ret;
+-	if ( drm->pCRTC == nullptr ) {
++	if (frameInfo->dpms || drm->pCRTC == nullptr ) {
+ 		ret = 0;
+ 	} else if ( drm->bUseLiftoff ) {
+ 		ret = drm_prepare_liftoff( drm, frameInfo, needs_modeset );
+@@ -3391,6 +3400,7 @@ namespace gamescope
+ 
+ 			FrameInfo_t presentCompFrameInfo = {};
+ 			presentCompFrameInfo.allowVRR = pFrameInfo->allowVRR;
++			presentCompFrameInfo.dpms = pFrameInfo->dpms;
+ 			presentCompFrameInfo.outputEncodingEOTF = pFrameInfo->outputEncodingEOTF;
+ 
+ 			if ( bNeedsFullComposite )
+diff --git a/src/rendervulkan.hpp b/src/rendervulkan.hpp
+index b537170..ccabd88 100644
+--- a/src/rendervulkan.hpp
++++ b/src/rendervulkan.hpp
+@@ -281,6 +281,8 @@ struct FrameInfo_t
+ 	bool applyOutputColorMgmt; // drm only
+ 	EOTF outputEncodingEOTF;
+ 
++	bool dpms;
++
+ 	int layerCount;
+ 	struct Layer_t
+ 	{
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 6c8ce74..7589e3a 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -169,6 +169,7 @@ bool g_bVRRRequested = false;
+ bool g_bVRRCanEnable = false;
+ bool b_bForceFrameLimit = false;
+ bool g_bRefreshHalveEnable = false;
++bool g_bDPMS = false;
+ 
+ static std::vector< steamcompmgr_win_t* > GetGlobalPossibleFocusWindows();
+ static bool
+@@ -2322,6 +2323,7 @@ paint_all(bool async)
+ 	frameInfo.outputEncodingEOTF = g_ColorMgmt.pending.outputEncodingEOTF;
+ 	frameInfo.allowVRR = cv_adaptive_sync;
+ 	frameInfo.bFadingOut = fadingOut;
++	frameInfo.dpms = g_bDPMS;
+ 
+ 	// If the window we'd paint as the base layer is the streaming client,
+ 	// find the video underlay and put it up first in the scenegraph
+@@ -5923,6 +5925,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 	{
+ 		g_bRefreshHalveEnable = !!get_prop( ctx, ctx->root, ctx->atoms.gamescopeFrameHalveAtom, 0 );
+ 	}
++	if (ev->atom == ctx->atoms.gamescopeDPMS)
++	{
++		g_bDPMS = !!get_prop(ctx, ctx->root, ctx->atoms.gamescopeDPMS, 0);
++	}
+ }
+ 
+ static int
+@@ -7094,6 +7100,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
+ 	ctx->atoms.targets = XInternAtom(ctx->dpy, "TARGETS", false);
+ 
+ 	ctx->atoms.gamescopeFrameHalveAtom = XInternAtom( ctx->dpy, "GAMESCOPE_STEAMUI_HALFHZ", false );;
++	ctx->atoms.gamescopeDPMS = XInternAtom(ctx->dpy, "GAMESCOPE_DPMS", false);
+ 
+ 	ctx->root_width = DisplayWidth(ctx->dpy, ctx->scr);
+ 	ctx->root_height = DisplayHeight(ctx->dpy, ctx->scr);
+@@ -8001,7 +8008,9 @@ steamcompmgr_main(int argc, char **argv)
+ 		else
+ 			eFlipType = FlipType::Normal;
+ 
+-		bool bShouldPaint = false;
++		// force repaint if DPMS to avoid it not triggering
++		// if steam stops blanking before suspend
++		bool bShouldPaint = g_bDPMS;
+ 
+ 		if ( GetBackend()->IsVisible() )
+ 		{
+diff --git a/src/xwayland_ctx.hpp b/src/xwayland_ctx.hpp
+index e4eec9f..2347cbb 100644
+--- a/src/xwayland_ctx.hpp
++++ b/src/xwayland_ctx.hpp
+@@ -248,6 +248,7 @@ struct xwayland_ctx_t final : public gamescope::IWaitable
+ 		Atom targets;
+ 
+ 		Atom gamescopeFrameHalveAtom;
++		Atom gamescopeDPMS;
  	} atoms;
  
  	bool HasQueuedEvents();
