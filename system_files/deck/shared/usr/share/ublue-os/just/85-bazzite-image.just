@@ -123,7 +123,7 @@ restore-input-remapper:
     sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
 
 # Install firmware files needed for ayaneo and orangepi speakers
-install-speaker-firmare:
+install-speaker-firmware:
     #!/bin/bash
     BASE_DIR="https://raw.githubusercontent.com/hhd-dev/hwinfo/master/firmware/"
     INSTALL_DIR="/usr/local/firmware"
