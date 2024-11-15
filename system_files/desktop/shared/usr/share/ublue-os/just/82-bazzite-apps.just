@@ -3,27 +3,12 @@
 # Install LACT for overclocking & undervolting AMD GPUs
 install-lact:
     #!/usr/bin/bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-    ublue-update --wait
-    rpm-ostree kargs --append-if-missing=$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))")
-    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-        echo 'Installing LACT Libadwaita...'
-        wget \
-          $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
-          jq -r ".assets[] | select(.name | test(\"lact-libadwaita.*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
-          -O /tmp/lact.rpm
-    else
-        echo 'Installing LACT...'
-        wget \
-          $(curl -s https://api.github.com/repos/ilya-zlobintsev/LACT/releases/latest | \
-          jq -r ".assets[] | select(.name | test(\"lact-[0-9].*fedora-$(rpm -E %fedora)\")) | .browser_download_url") \
-          -O /tmp/lact.rpm
-    fi
-    rpm-ostree install --apply-live -y /tmp/lact.rpm
-    sudo systemctl enable --now lactd
-    rm /tmp/lact.rpm
-    echo 'Complete.'
+		if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+			rpm-ostree install lact-libadwaita
+		else 
+			rpm-ostree install lact
+		fi
+		sudo systemctl enable --now lactd
 
 # Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
 install-coolercontrol:
