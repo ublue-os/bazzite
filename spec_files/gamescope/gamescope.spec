@@ -6,7 +6,7 @@
 
 Name:           gamescope
 Version:        100.%{gamescope_tag}
-Release:        12.bazzite
+Release:        13.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
@@ -99,6 +99,7 @@ Summary:	libs for %{name}
 # git clone --depth 1 --branch %%{gamescope_tag} %%{url}.git
 git clone --depth 1 --branch master %{url}.git
 cd gamescope
+git checkout 7dd1bcd9102a17e039970ccd9a324a9fe8365d6d
 git submodule update --init --recursive
 mkdir -p pkgconfig
 cp %{SOURCE0} pkgconfig/stb.pc
