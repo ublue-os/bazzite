@@ -326,9 +326,24 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
-# Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
+# Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland#
 # Install patched switcheroo control with proper discrete GPU support
+# Tempporary fix for GPU Encoding
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    rpm-ostree install \
+        mesa-dri-drivers.i686 && \
+    mkdir -p /tmp/mesa-fix64/dri && \
+    cp /usr/lib64/libgallium-*.so /tmp/mesa-fix64/ && \
+    cp /usr/lib64/dri/kms_swrast_dri.so /tmp/mesa-fix64/dri/ && \
+    cp /usr/lib64/dri/libdril_dri.so /tmp/mesa-fix64/dri/ && \
+    cp /usr/lib64/dri/swrast_dri.so /tmp/mesa-fix64/dri/ && \
+    cp /usr/lib64/dri/virtio_gpu_dri.so /tmp/mesa-fix64/dri/ && \
+    mkdir -p /tmp/mesa-fix32/dri && \
+    cp /usr/lib/libgallium-*.so /tmp/mesa-fix32/ && \
+    cp /usr/lib/dri/kms_swrast_dri.so /tmp/mesa-fix32/dri/ && \
+    cp /usr/lib/dri/libdril_dri.so /tmp/mesa-fix32/dri/ && \
+    cp /usr/lib/dri/swrast_dri.so /tmp/mesa-fix32/dri/ && \
+    cp /usr/lib/dri/virtio_gpu_dri.so /tmp/mesa-fix32/dri/ && \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
@@ -353,6 +368,10 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         bluez-cups \
         bluez-libs \
         xorg-x11-server-Xwayland && \
+    rsync -a /tmp/mesa-fix64/ /usr/lib64/ && \
+    rsync -a /tmp/mesa-fix32/ /usr/lib/ && \
+    rm -rf /tmp/mesa-fix64 && \
+    rm -rf /tmp/mesa-fix32 && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/rpmfusion-*.repo && \
     rpm-ostree install \
         libaacs \
