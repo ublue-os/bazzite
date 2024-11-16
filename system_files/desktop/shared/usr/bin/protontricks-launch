@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+/usr/bin/flatpak run --command=protontricks-launch com.github.Matoking.protontricks "$@"
