@@ -131,17 +131,24 @@ def get_manifests(target: str):
 def get_tags(target: str, manifests: dict[str, Any]):
     tags = set()
 
+    # Select random manifest to get reference tags from
+    first = next(iter(manifests.values()))
+    for tag in first["RepoTags"]:
+        # Tags ending with .0 should not exist
+        if tag.endswith(".0"):
+            continue
+        if target != "stable":
+            if re.match(OTHER_START_PATTERN(target), tag):
+                tags.add(tag)
+        else:
+            if re.match(STABLE_START_PATTERN, tag):
+                tags.add(tag)
+
+    # Remove tags not present in all images
     for manifest in manifests.values():
-        for tag in manifest["RepoTags"]:
-            # Tags ending with .0 should not exist
-            if tag.endswith(".0"):
-                continue
-            if target != "stable":
-                if re.match(OTHER_START_PATTERN(target), tag):
-                    tags.add(tag)
-            else:
-                if re.match(STABLE_START_PATTERN, tag):
-                    tags.add(tag)
+        for tag in list(tags):
+            if tag not in manifest["RepoTags"]:
+                tags.remove(tag)
 
     tags = list(sorted(tags))
     assert len(tags) > 2, "No current and previous tags found"
