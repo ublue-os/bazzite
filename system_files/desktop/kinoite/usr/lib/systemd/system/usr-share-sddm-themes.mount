@@ -1,0 +1,15 @@
+# Workaround to allow KDE Discover to install sddm themes
+
+[Unit]
+Description=KDE writable sddm workaround
+RequiresMountsFor=/usr/share/sddm/themes
+PartOf=bazzite-kde-themes-workaround.target
+
+[Mount]
+Type=overlay
+What=overlay
+Where=/usr/share/sddm/themes
+Options=lowerdir=/usr/share/sddm/themes,upperdir=/var/sddm_themes/themes,workdir=/var/sddm_themes/themes.work
+
+[Install]
+WantedBy=multi-user.target

@@ -737,6 +737,7 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl enable ublue-update.timer && \
     systemctl enable incus-workaround.service && \
     systemctl enable bazzite-hardware-setup.service && \
+    systemctl enable usr-share-sddm-themes.mount && \
     systemctl disable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
     systemctl enable bazzite-snapper-setup && \
