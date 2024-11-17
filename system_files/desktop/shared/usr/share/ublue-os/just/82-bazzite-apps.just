@@ -3,6 +3,7 @@
 # Install LACT for overclocking & undervolting AMD GPUs
 install-lact:
     #!/usr/bin/bash
+		rpm-ostree kargs --append-if-missing=$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))")
 		if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
 			rpm-ostree install lact-libadwaita
 		else 
