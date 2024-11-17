@@ -5,9 +5,9 @@ install-lact:
     #!/usr/bin/bash
 		rpm-ostree kargs --append-if-missing=$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))")
 		if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-			rpm-ostree install lact-libadwaita
+			rpm-ostree install --apply-live -y lact-libadwaita
 		else
-			rpm-ostree install lact
+			rpm-ostree install --apply-live -y lact
 		fi
 		sudo systemctl enable --now lactd
 
