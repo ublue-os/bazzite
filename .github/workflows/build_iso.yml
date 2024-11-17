@@ -35,7 +35,7 @@ jobs:
           - bazzite-gnome-asus-nvidia
           - bazzite-asus-nvidia-open
           - bazzite-gnome-asus-nvidia-open
-        major_version: [40]
+        major_version: [41]
     steps:
 
       - name: Free Disk Space (Ubuntu)

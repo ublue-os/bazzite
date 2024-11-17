@@ -26,7 +26,7 @@ index ac7adb6..d46bb14 100755
              for cffile in "$prpath"/"$confd"/*.conf
              do
 -                [ -f "$cffile" ] && cp -av "$cffile" $runconf/"$confd"
-+                [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd"
++                [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd" || true
              done
          fi
      done
@@ -90,14 +90,14 @@ index 3f03354..1e43489 100755
                      for cffile in "$prpath"/"$confd"/*.lua
                      do
 -                        [ -f "$cffile" ] && cp -av "$cffile" $runconf/"$confd"
-+                        [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd"
++                        [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd" || true
                      done
                      ;;
                  *.conf.d)
                      for cffile in "$prpath"/"$confd"/*.conf
                      do
 -                        [ -f "$cffile" ] && cp -av "$cffile" $runconf/"$confd"
-+                        [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd"
++                        [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd" || true
                      done
                      ;;
              esac

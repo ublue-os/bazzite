@@ -1,15 +1,2 @@
 #!/bin/bash
-
-# Wrapper for 'dnf5 copr'
-# Includes Workaround to append the chroot "fedora-RELEASE-ARCH"
-function dnf5_wrapper() {
-  precmd="/usr/bin/dnf5 copr"
-  if [[ $* =~ copr\s+enable && $# -eq 2 ]]; then
-    exec $precmd enable "$2" "${3:-fedora-"$(lsb_release -sr)"-"$(uname -m)"}"
-  else
-    exec $precmd "$@"
-  fi
-  return
-}
-
-dnf5_wrapper "$@"
+exec dnf5 copr "$@"

@@ -79,25 +79,6 @@ enable-displaylink:
 enable-tailscale:
     systemctl enable --now tailscaled.service
 
-# toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled
-toggle-password-feedback ACTION="":
-    #!/usr/bin/bash
-    PWFEEDBACK_FILE="/etc/sudoers.d/enable-pwfeedback"
-    OPTION={{ ACTION }}
-    if [ "$OPTION" = "on" ]; then
-      echo 'Defaults pwfeedback' | sudo tee $PWFEEDBACK_FILE
-      echo "enabled, restart terminal to see changes"
-    elif [ "$OPTION" = "off" ]; then
-      sudo rm -f $PWFEEDBACK_FILE
-      echo "disabled pwfeedback. restart your terminal to see changes"
-    elif sudo test -f $PWFEEDBACK_FILE; then
-      sudo rm -f $PWFEEDBACK_FILE
-      echo "disabled pwfeedback. restart your terminal to see changes"
-    else
-      echo 'Defaults pwfeedback' | sudo tee $PWFEEDBACK_FILE
-      echo "enabled, restart terminal to see changes"
-    fi
-
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 configure-watchdog ACTION="":
     #!/usr/bin/bash
@@ -369,6 +350,26 @@ bazzite-cli:
 benchmark:
     echo 'Running a 1 minute benchmark ...'
     cd /tmp && stress-ng --matrix 0 -t 1m --times
+
+# toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled
+toggle-password-feedback ACTION="":
+    #!/usr/bin/bash
+    PWFEEDBACK_FILE="/etc/sudoers.d/enable-pwfeedback"
+    OPTION={{ ACTION }}
+
+    if [ "$OPTION" = "on" ]; then
+      echo 'Defaults pwfeedback' | sudo tee $PWFEEDBACK_FILE
+      echo "enabled, restart terminal to see changes"
+    elif [ "$OPTION" = "off" ]; then
+      sudo rm -f $PWFEEDBACK_FILE
+      echo "disabled pwfeedback. restart your terminal to see changes"
+    elif sudo test -f $PWFEEDBACK_FILE; then
+      sudo rm -f $PWFEEDBACK_FILE
+      echo "disabled pwfeedback. restart your terminal to see changes"
+    else
+      echo 'Defaults pwfeedback' | sudo tee $PWFEEDBACK_FILE
+      echo "enabled, restart terminal to see changes"
+    fi
 
 post-gamescope-logs:
     #!/usr/bin/bash

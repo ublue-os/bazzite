@@ -4,4 +4,5 @@ Packages installed in Distrobox can be exported to appear like any other applica
 *This isn't a distro*, this is a custom image built on  Fedora Atomic Desktop technology~[View our mission](https://ublue.it/mission/)
 **Support the app store!**~[Donate to  Flatpak](https://opencollective.com/flatpak)
 **Support indie game preservation and OSS developers!**~[Join Hit Save!'s Patreon](https://patreon.com/hitsave)
+**Protect your video games!**~[Visit Stop Killing Games](https://www.stopkillinggames.com/)
 **H.264 hardware acceleration is supported out of the box.** No tweaks necessary!
