@@ -52,7 +52,6 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Includes Valve's KDE themes from SteamOS.
 - Features optional Valve-inspired GTK3/4 themes matching Vapor and VGUI2 from SteamOS. Install [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience) to make use of them.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
-- Uses [TuneD](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/getting-started-with-tuned_monitoring-and-managing-system-status-and-performance) in place of PPD, with full integration into GNOME, KDE, and Game mode. This is an incredibly powerful tool that RedHat offers [entire classes on](https://www.redhat.com/en/services/training/rh442-red-hat-enterprise-performance-tuning).
 - [Patched Switcheroo-Control](https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/) fixing default-broken iGPU/dGPU switching.
 - Support for [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Only on KDE)</sup></sub>
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) included.
