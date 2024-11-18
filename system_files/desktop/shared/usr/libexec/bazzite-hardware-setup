@@ -189,9 +189,6 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
       fi
     fi
 
-    # Ensure SCX service is disabled for now.
-    systemctl disable --now scx.service
-
     systemctl enable --now jupiter-fan-control.service
     systemctl enable --now vpower.service
   else
