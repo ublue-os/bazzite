@@ -3,13 +3,13 @@
 # Install LACT for overclocking & undervolting AMD GPUs
 install-lact:
     #!/usr/bin/bash
-		rpm-ostree kargs --append-if-missing=$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))")
-		if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-			rpm-ostree install --apply-live -y lact-libadwaita
-		else
-			rpm-ostree install --apply-live -y lact
-		fi
-		sudo systemctl enable --now lactd
+    rpm-ostree kargs --append-if-missing=$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))")
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+        rpm-ostree install --apply-live -y lact-libadwaita
+    else
+        rpm-ostree install --apply-live -y lact
+    fi
+    sudo systemctl enable --now lactd
 
 # Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
 install-coolercontrol:
