@@ -51,9 +51,9 @@ screens:
       package_manager: yafti.plugin.flatpak
       groups:
         Add input group to current user:
-            description: Adds the input group to your current user. Required by certain controller drivers.
-            default: true
-            packages:
+          description: Adds the input group to your current user. Required by certain controller drivers.
+          default: true
+          packages:
           - Set input group: sudo -A ujust add-user-to-input-group
         BIOS &amp; Firmware Updates:
           description: Enables BIOS &amp; Firmware updates for Steam Deck hardware
@@ -61,10 +61,10 @@ screens:
           packages:
           - Enable Updates: sudo -A ujust enable-deck-bios-firmware-updates
         Visible Password Aestriks:
-            description: Toggles pwfeedback on.
-            default: true
-            packages:
-            - Toggle password feedback: sudo -A ujust toggle-password-feedback enable
+          description: Toggles pwfeedback on.
+          default: true
+          packages:
+          - Toggle password feedback: sudo -A ujust toggle-password-feedback enable
         Hide GRUB Menu:
           description: Hide the GRUB menu on boot
           default: false
