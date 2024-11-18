@@ -38,16 +38,11 @@ screens:
           default: false
           packages:
           - Install scrcpy: ujust install-scrcpy
-  amd-additions:
-    source: yafti.screen.package
-    values:
-      title: AMD Additions
-      condition:
-        run: grep -qv 'nvidia' <<< $(jq -r '."image-flavor"' < /usr/share/ublue-os/image-info.json)
-      show_terminal: true
-      package_manager: yafti.plugin.run
-      packages:
-        - LACT (GPU Overclocking): ujust install-lact
+        lact:
+          description: LACT provides GPU overclocking for AMD & Nvidia GPUs
+          default: false
+          packages:
+          - Install LACT: ujust install-lact
   nvidia-additions:
     source: yafti.screen.package
     values:
