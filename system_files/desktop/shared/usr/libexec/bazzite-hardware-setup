@@ -263,6 +263,12 @@ if (( $(hostname | wc -m) > 20 )); then
   hostnamectl set-hostname bazzite
 fi
 
+# PPD FIX
+# Correct broken config files on some systems
+if -f "/etc/tuned/ppd.conf" && ! grep "\[battery\]" "/etc/tuned/ppd.conf"; then
+  cp -f "/usr/etc/tuned/ppd.conf" "/etc/tuned/ppd.conf"
+fi
+
 # Set default target to graphical, fixes rebase from base image
 if grep -qv "graphical.target" <<< "$(systemctl get-default)"; then
   systemctl set-default graphical.target
