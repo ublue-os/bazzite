@@ -266,6 +266,7 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_datadir}/dbus-1/system.d/bluetooth.conf
 %{_datadir}/dbus-1/system-services/org.bluez.service
 %{_unitdir}/bluetooth.service
+%{_userunitdir}/mpris-proxy.service
 %{_datadir}/zsh/site-functions/_bluetoothctl
 
 %if %{with deprecated}
@@ -303,8 +304,9 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_mandir}/man1/l2ping.1.*
 %{_mandir}/man1/rctest.1.*
 %{_mandir}/man5/org.bluez.*.5.*
+%{_mandir}/man7/hci.7.*
 %{_mandir}/man7/l2cap.7.*
-%{_mandir}/man7/rfcomm.7.* 
+%{_mandir}/man7/rfcomm.7.*
 %{_libdir}/libbluetooth.so
 %{_includedir}/bluetooth
 %{_libdir}/pkgconfig/bluez.pc
@@ -337,6 +339,9 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_userunitdir}/obex.service
 
 %changelog
+* Sat Nov 02 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.79-1
+- Update to 5.79
+
 * Mon Sep  9 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.78-1
 - Update to 5.78
 
@@ -347,7 +352,7 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 - Update to 5.77
 
 * Thu Jul 04 2024 Bastien Nocera <bnocera@redhat.com> - 5.76-2
-- Remove obsolete and ineffective configuration change 
+- Remove obsolete and ineffective configuration change
 
 * Mon May 20 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.76-1
 - Update to 5.76
