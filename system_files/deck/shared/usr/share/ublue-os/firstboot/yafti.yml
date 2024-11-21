@@ -48,7 +48,7 @@ screens:
     values:
       title: Application Installation
       show_terminal: true
-      package_manager: yafti.plugin.flatpak
+      package_manager: yafti.plugin.run
       groups:
         Add input group to current user:
           description: Adds the input group to your current user. Required by certain controller drivers.
