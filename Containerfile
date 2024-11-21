@@ -37,125 +37,79 @@ COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 
 # Update packages that commonly cause build issues
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         vulkan-loader \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         alsa-lib \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         gnutls \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         glib2 \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         nspr \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         nss \
         nss-softokn \
         nss-softokn-freebl \
         nss-sysinit \
         nss-util \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         atk \
         at-spi2-atk \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         libaom \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         gstreamer1 \
         gstreamer1-plugins-base \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         libdecor \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         libtirpc \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         libuuid \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         libblkid \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         libmount \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         cups-libs \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         libinput \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         libopenmpt \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         llvm-libs \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         zlib-ng-compat \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         fontconfig \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         pciutils-libs \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         libdrm \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         cpp \
         libatomic \
         libgcc \
@@ -164,35 +118,27 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         libobjc \
         libstdc++ \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         libX11 \
         libX11-common \
         libX11-xcb \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         libv4l \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=updates \
+    dnf5 -y upgrade --repo updates \
         elfutils-libelf \
         elfutils-libs \
         || true && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        rpm-ostree override replace \
-        --experimental \
-        --from repo=updates \
+        dnf5 -y upgrade --repo updates \
             qt6-qtbase \
             qt6-qtbase-common \
             qt6-qtbase-mysql \
             qt6-qtbase-gui \
             || true \
     ; fi && \
-    rpm-ostree override remove \
+    dnf5 -y remove \
         glibc32 \
         || true && \
     /usr/libexec/containerbuild/cleanup.sh && \
@@ -200,27 +146,27 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    curl -Lo /etc/yum.repos.d/_copr_kylegospo-bazzite.repo https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-bazzite-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-bazzite-multilib-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 && \
-    curl -Lo /etc/yum.repos.d/_copr_ublue-os-staging.repo https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 && \
-    curl -Lo /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-LatencyFleX-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-obs-vkcapture-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 && \
-    curl -Lo /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo https://copr.fedorainfracloud.org/coprs/kylegospo/wallpaper-engine-kde-plugin/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-wallpaper-engine-kde-plugin-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_ycollet-audinux.repo https://copr.fedorainfracloud.org/coprs/ycollet/audinux/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ycollet-audinux-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_kylegospo-rom-properties.repo https://copr.fedorainfracloud.org/coprs/kylegospo/rom-properties/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-rom-properties-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_kylegospo-webapp-manager.repo https://copr.fedorainfracloud.org/coprs/kylegospo/webapp-manager/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-webapp-manager-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_hhd-dev-hhd.repo https://copr.fedorainfracloud.org/coprs/hhd-dev/hhd/repo/fedora-"${FEDORA_MAJOR_VERSION}"/hhd-dev-hhd-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_che-nerd-fonts.repo https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-"${FEDORA_MAJOR_VERSION}"/che-nerd-fonts-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_sentry-switcheroo-control_discrete.repo https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/repo/fedora-"${FEDORA_MAJOR_VERSION}"/sentry-switcheroo-control_discrete-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_hikariknight-looking-glass-kvmfr.repo https://copr.fedorainfracloud.org/coprs/hikariknight/looking-glass-kvmfr/repo/fedora-"${FEDORA_MAJOR_VERSION}"/hikariknight-looking-glass-kvmfr-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_mavit-discover-overlay.repo https://copr.fedorainfracloud.org/coprs/mavit/discover-overlay/repo/fedora-"${FEDORA_MAJOR_VERSION}"/mavit-discover-overlay-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_matte-schwartz-sunshine.repo https://copr.fedorainfracloud.org/coprs/matte-schwartz/sunshine/repo/fedora-"${FEDORA_MAJOR_VERSION}"/matte-schwartz-sunshine-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_rok-cdemu.repo https://copr.fedorainfracloud.org/coprs/rok/cdemu/repo/fedora-"${FEDORA_MAJOR_VERSION}"/rok-cdemu-fedora-"${FEDORA_MAJOR_VERSION}".rep && \
-    curl -Lo /etc/yum.repos.d/_copr_rodoma92-kde-cdemu-manager.repo https://copr.fedorainfracloud.org/coprs/rodoma92/kde-cdemu-manager/repo/fedora-"${FEDORA_MAJOR_VERSION}"/rodoma92-kde-cdemu-manager-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_rodoma92-rmlint.repo https://copr.fedorainfracloud.org/coprs/rodoma92/rmlint/repo/fedora-"${FEDORA_MAJOR_VERSION}"/rodoma92-rmlint-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    curl -Lo /etc/yum.repos.d/_copr_ilyaz-lact.repo https://copr.fedorainfracloud.org/coprs/ilyaz/LACT/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ilyaz-LACT-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    dnf5 -y copr enable kylegospo/bazzite && \
+    dnf5 -y copr enable kylegospo/bazzite-multilib && \
+    dnf5 -y copr enable ublue-os/staging && \
+    dnf5 -y copr enable kylegospo/LatencyFleX && \
+    dnf5 -y copr enable kylegospo/obs-vkcapture && \
+    dnf5 -y copr enable kylegospo/wallpaper-engine-kde-plugin && \
+    dnf5 -y copr enable ycollet/audinux && \
+    dnf5 -y copr enable kylegospo/rom-properties && \
+    dnf5 -y copr enable kylegospo/webapp-manager && \
+    dnf5 -y copr enable hhd-dev/hhd && \
+    dnf5 -y copr enable che/nerd-fonts && \
+    dnf5 -y copr enable sentry/switcheroo-control_discrete && \
+    dnf5 -y copr enable hikariknight/looking-glass-kvmfr && \
+    dnf5 -y copr enable mavit/discover-overlay && \
+    dnf5 -y copr enable matte-schwartz/sunshine && \
+    dnf5 -y copr enable rok/cdemu && \
+    dnf5 -y copr enable rodoma92/kde-cdemu-manager && \
+    dnf5 -y copr enable rodoma92/rmlint && \
+    dnf5 -y copr enable ilyaz/LACT && \
     curl -Lo /etc/yum.repos.d/tailscale.repo https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
-    rpm-ostree install \
+    dnf5 -y install \
         https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
         https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
     sed -i 's@gpgcheck=1@gpgcheck=0@g' /etc/yum.repos.d/tailscale.repo && \
@@ -241,7 +187,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         /tmp/kernel-rpms/kernel-core-*.rpm \
         /tmp/kernel-rpms/kernel-modules-*.rpm \
         /tmp/kernel-rpms/kernel-uki-virt-*.rpm && \
-    rpm-ostree install \
+    dnf5 -y install \
         scx-scheds && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
@@ -283,8 +229,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     ln -s /usr/local/firmware/aw87xxx_acf_airplus.bin /usr/lib/firmware/aw87xxx_acf_airplus.bin && \
     ln -s /usr/local/firmware/aw87xxx_acf_flip.bin /usr/lib/firmware/aw87xxx_acf_flip.bin && \
     if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
-        curl -Lo /etc/yum.repos.d/_copr_lukenukem-asus-linux.repo https://copr.fedorainfracloud.org/coprs/lukenukem/asus-linux/repo/fedora-$(rpm -E %fedora)/lukenukem-asus-linux-fedora-$(rpm -E %fedora).repo && \
-        rpm-ostree install \
+        dnf5 -y copr enable lukenukem/asus-linux && \
+        dnf5 -y install \
             asusctl \
             asusctl-rog-gui && \
         git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
@@ -299,7 +245,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=akmods,src=/rpms,dst=/tmp/akmods-rpms \
     --mount=type=bind,from=akmods-extra,src=/rpms,dst=/tmp/akmods-extra-rpms \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    rpm-ostree install \
+    dnf5 -y install \
         /tmp/akmods-rpms/kmods/*kvmfr*.rpm \
         /tmp/akmods-rpms/kmods/*xone*.rpm \
         /tmp/akmods-rpms/kmods/*openrazer*.rpm \
@@ -315,9 +261,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         /tmp/akmods-extra-rpms/kmods/*bmi260*.rpm \
         /tmp/akmods-extra-rpms/kmods/*ryzen-smu*.rpm \
         /tmp/akmods-extra-rpms/kmods/*evdi*.rpm && \
-    rpm-ostree override replace \
-        --experimental \
-        --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+    dnf5 -y upgrade --repo copr:copr.fedorainfracloud.org:ublue-os:staging \
             fwupd \
             fwupd-plugin-flashrom \
             fwupd-plugin-modem-manager \
@@ -330,7 +274,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 # Install patched switcheroo control with proper discrete GPU support
 # Tempporary fix for GPU Encoding
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree install \
+    dnf5 -y install \
         mesa-dri-drivers.i686 && \
     mkdir -p /tmp/mesa-fix64/dri && \
     cp /usr/lib64/libgallium-*.so /tmp/mesa-fix64/ && \
@@ -344,9 +288,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     cp /usr/lib/dri/libdril_dri.so /tmp/mesa-fix32/dri/ && \
     cp /usr/lib/dri/swrast_dri.so /tmp/mesa-fix32/dri/ && \
     cp /usr/lib/dri/virtio_gpu_dri.so /tmp/mesa-fix32/dri/ && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    dnf5 -y upgrade --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         mesa-libxatracker \
         mesa-libglapi \
         mesa-dri-drivers \
@@ -373,21 +315,19 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rm -rf /tmp/mesa-fix64 && \
     rm -rf /tmp/mesa-fix32 && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/rpmfusion-*.repo && \
-    rpm-ostree install \
+    dnf5 -y install \
         libaacs \
         libbdplus \
         libbluray && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-*.repo && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:sentry:switcheroo-control_discrete \
+    dnf5 -y upgrade --repo copr:copr.fedorainfracloud.org:sentry:switcheroo-control_discrete \
         switcheroo-control && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
 # Remove unneeded packages
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree override remove \
+    dnf5 -y remove \
         ublue-os-update-services \
         firefox \
         firefox-langpacks \
@@ -397,7 +337,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree install \
+    dnf5 -y install \
         discover-overlay \
         python3-pip \
         libadwaita \
@@ -456,7 +396,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         stress-ng \
         btrfs-assistant \
         lsb_release && \
-    rpm-ostree install \
+    dnf5 -y install \
         ublue-update && \
     mkdir -p /etc/xdg/autostart && \
     sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
@@ -474,7 +414,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 
 # Install Steam & Lutris, plus supporting packages
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree install \
+    dnf5 -y install \
         jupiter-sd-mounting-btrfs \
         at-spi2-core.i686 \
         atk.i686 \
@@ -503,7 +443,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         gobject-introspection \
         clinfo \
         steam && \
-    rpm-ostree install \
+    dnf5 -y install \
         lutris \
         umu-launcher \
         wine-core.x86_64 \
@@ -542,15 +482,13 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 # Configure KDE & GNOME
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        rpm-ostree install \
+        dnf5 -y install \
             qt \
             krdp && \
-        rpm-ostree override remove \
+        dnf5 -y remove \
             plasma-welcome \
             plasma-welcome-fedora && \
-        rpm-ostree override replace \
-        --experimental \
-        --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+        dnf5 -y upgrade --repo copr:copr.fedorainfracloud.org:ublue-os:staging \
             kf6-kio-doc \
             kf6-kio-widgets-libs \
             kf6-kio-core-libs \
@@ -558,7 +496,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             kf6-kio-file-widgets \
             kf6-kio-core \
             kf6-kio-gui && \
-        rpm-ostree install \
+        dnf5 -y install \
             steamdeck-kde-presets-desktop \
             wallpaper-engine-kde-plugin \
             kdeconnectd \
@@ -583,13 +521,11 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         rm -f /usr/share/kglobalaccel/org.kde.konsole.desktop && \
         setcap 'cap_net_raw+ep' /usr/libexec/ksysguard/ksgrd_network_helper \
     ; else \
-        rpm-ostree override replace \
-        --experimental \
-        --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+        dnf5 -y upgrade --repo copr:copr.fedorainfracloud.org:ublue-os:staging \
             mutter \
             mutter-common \
             gnome-shell && \
-        rpm-ostree install \
+        dnf5 -y install \
             nautilus-gsconnect \
             steamdeck-backgrounds \
             gnome-randr-rust \
@@ -607,7 +543,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             rom-properties-gtk3 \
             ibus-mozc \
             openssh-askpass && \
-        rpm-ostree override remove \
+        dnf5 -y remove \
             gnome-classic-session \
             gnome-tour \
             gnome-extensions-app \
@@ -629,7 +565,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 
 # Install Gamescope, ROCM, and Waydroid on non-Nvidia images
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree install \
+    dnf5 -y install \
         gamescope.x86_64 \
         gamescope-libs.i686 \
         gamescope-shaders \
@@ -723,25 +659,24 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     rm -r /tmp/bazzite-schema-test && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-rom-properties.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-webapp-manager.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_hhd-dev-hhd.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_che-nerd-fonts.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_sentry-switcheroo-control_discrete.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_mavit-discover-overlay.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_hikariknight-looking-glass-kvmfr.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/tailscale.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/charm.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-steam.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-rar.repo && \
+    dnf5 -y copr disable kylegospo/bazzite && \
+    dnf5 -y copr disable kylegospo/bazzite-multilib && \
+    dnf5 -y copr disable ublue-os/staging && \
+    dnf5 -y copr disable kylegospo/LatencyFleX && \
+    dnf5 -y copr disable kylegospo/obs-vkcapture && \
+    dnf5 -y copr disable kylegospo/wallpaper-engine-kde-plugin && \
+    dnf5 -y copr disable ycollet/audinux && \
+    dnf5 -y copr disable kylegospo/rom-properties && \
+    dnf5 -y copr disable kylegospo/webapp-manager && \
+    dnf5 -y copr disable hhd-dev/hhd && \
+    dnf5 -y copr disable che/nerd-fonts && \
+    dnf5 -y copr disable sentry/switcheroo-control_discrete && \
+    dnf5 -y copr disable hikariknight/looking-glass-kvmfr && \
     sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
@@ -794,27 +729,27 @@ COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
 
 # Setup Copr repos
 RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_hhd-dev-hhd.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
+    dnf5 -y copr enable kylegospo/bazzite && \
+    dnf5 -y copr enable kylegospo/bazzite-multilib && \
+    dnf5 -y copr enable kylegospo/LatencyFleX && \
+    dnf5 -y copr enable kylegospo/obs-vkcapture && \
+    dnf5 -y copr enable kylegospo/wallpaper-engine-kde-plugin && \
+    dnf5 -y copr enable ycollet/audinux && \
+    dnf5 -y copr enable hhd-dev/hhd && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
 # Configure KDE & GNOME
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree override remove \
+    dnf5 -y remove \
         jupiter-sd-mounting-btrfs && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        rpm-ostree override remove \
+        dnf5 -y remove \
             steamdeck-kde-presets-desktop && \
-        rpm-ostree install \
+        dnf5 -y install \
             steamdeck-kde-presets \
     ; else \
-        rpm-ostree install \
+        dnf5 -y install \
             steamdeck-gnome-presets \
             gnome-shell-extension-caribou-blocker \
             sddm \
@@ -826,7 +761,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 # Dock updater - done manually due to proprietary parts preventing it from being on Copr
 # Neptune firmware - done manually due to "TBD" license on needed audio firmware
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree install \
+    dnf5 -y install \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     steamdeck-dsp \
@@ -863,9 +798,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 
 # Install Steam Deck patched UPower, remove Tuned GUI
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+    dnf5 -y upgrade --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         upower \
         upower-libs && \
     /usr/libexec/containerbuild/cleanup.sh && \
@@ -876,7 +809,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     mkdir -p /usr/share/gamescope-session-plus/ && \
     curl -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz && \
-    rpm-ostree install \
+    dnf5 -y install \
         gamescope-session-plus \
         gamescope-session-steam && \
     /usr/libexec/containerbuild/cleanup.sh && \
@@ -893,13 +826,13 @@ RUN /usr/libexec/containerbuild/image-info && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/input-remapper-gtk.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_hhd-dev-hhd.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
+    dnf5 -y copr disable kylegospo/bazzite && \
+    dnf5 -y copr disable kylegospo/bazzite-multilib && \
+    dnf5 -y copr disable kylegospo/LatencyFleX && \
+    dnf5 -y copr disable kylegospo/obs-vkcapture && \
+    dnf5 -y copr disable kylegospo/wallpaper-engine-kde-plugin && \
+    dnf5 -y copr disable ycollet/audinux && \
+    dnf5 -y copr disable hhd-dev/hhd && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
@@ -968,12 +901,12 @@ COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
 # Remove everything that doesn't work well with NVIDIA
 # Install X11 session (Remove me for Fedora 41)
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree override remove \
+    dnf5 -y remove \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo && \
     if [[ "${BASE_IMAGE_NAME}" == "kinoite" && "$FEDORA_MAJOR_VERSION" -eq "40" ]]; then \
-        rpm-ostree install \
+        dnf5 -y install \
             plasma-workspace-x11 \
     ; fi && \
     /usr/libexec/containerbuild/cleanup.sh && \
@@ -983,7 +916,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=nvidia-akmods,src=/rpms,dst=/tmp/akmods-rpms \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-    rpm-ostree install \
+    dnf5 -y install \
         mesa-vdpau-drivers.x86_64 \
         mesa-vdpau-drivers.i686 && \
     curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/hwe/main/nvidia-install.sh && \
