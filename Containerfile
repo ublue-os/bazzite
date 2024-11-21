@@ -179,7 +179,9 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     cp /usr/lib/dri/libdril_dri.so /tmp/mesa-fix32/dri/ && \
     cp /usr/lib/dri/swrast_dri.so /tmp/mesa-fix32/dri/ && \
     cp /usr/lib/dri/virtio_gpu_dri.so /tmp/mesa-fix32/dri/ && \
-    dnf5 -y upgrade --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
         mesa-libxatracker \
         mesa-libglapi \
         mesa-dri-drivers \
