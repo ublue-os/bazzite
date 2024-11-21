@@ -146,25 +146,25 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    dnf5 -y -q copr enable kylegospo/bazzite && \
-    dnf5 -y -q copr enable kylegospo/bazzite-multilib && \
-    dnf5 -y -q copr enable ublue-os/staging && \
-    dnf5 -y -q copr enable kylegospo/LatencyFleX && \
-    dnf5 -y -q copr enable kylegospo/obs-vkcapture && \
-    dnf5 -y -q copr enable kylegospo/wallpaper-engine-kde-plugin && \
-    dnf5 -y -q copr enable ycollet/audinux && \
-    dnf5 -y -q copr enable kylegospo/rom-properties && \
-    dnf5 -y -q copr enable kylegospo/webapp-manager && \
-    dnf5 -y -q copr enable hhd-dev/hhd && \
-    dnf5 -y -q copr enable che/nerd-fonts && \
-    dnf5 -y -q copr enable sentry/switcheroo-control_discrete && \
-    dnf5 -y -q copr enable hikariknight/looking-glass-kvmfr && \
-    dnf5 -y -q copr enable mavit/discover-overlay && \
-    dnf5 -y -q copr enable matte-schwartz/sunshine && \
-    dnf5 -y -q copr enable rok/cdemu && \
-    dnf5 -y -q copr enable rodoma92/kde-cdemu-manager && \
-    dnf5 -y -q copr enable rodoma92/rmlint && \
-    dnf5 -y -q copr enable ilyaz/LACT && \
+    dnf5 -y copr enable kylegospo/bazzite && \
+    dnf5 -y copr enable kylegospo/bazzite-multilib && \
+    dnf5 -y copr enable ublue-os/staging && \
+    dnf5 -y copr enable kylegospo/LatencyFleX && \
+    dnf5 -y copr enable kylegospo/obs-vkcapture && \
+    dnf5 -y copr enable kylegospo/wallpaper-engine-kde-plugin && \
+    dnf5 -y copr enable ycollet/audinux && \
+    dnf5 -y copr enable kylegospo/rom-properties && \
+    dnf5 -y copr enable kylegospo/webapp-manager && \
+    dnf5 -y copr enable hhd-dev/hhd && \
+    dnf5 -y copr enable che/nerd-fonts && \
+    dnf5 -y copr enable sentry/switcheroo-control_discrete && \
+    dnf5 -y copr enable hikariknight/looking-glass-kvmfr && \
+    dnf5 -y copr enable mavit/discover-overlay && \
+    dnf5 -y copr enable matte-schwartz/sunshine && \
+    dnf5 -y copr enable rok/cdemu && \
+    dnf5 -y copr enable rodoma92/kde-cdemu-manager && \
+    dnf5 -y copr enable rodoma92/rmlint && \
+    dnf5 -y copr enable ilyaz/LACT && \
     curl -Lo /etc/yum.repos.d/tailscale.repo https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
     dnf5 -y install \
         https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
@@ -229,7 +229,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     ln -s /usr/local/firmware/aw87xxx_acf_airplus.bin /usr/lib/firmware/aw87xxx_acf_airplus.bin && \
     ln -s /usr/local/firmware/aw87xxx_acf_flip.bin /usr/lib/firmware/aw87xxx_acf_flip.bin && \
     if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
-        dnf5 -y -q copr enable lukenukem/asus-linux && \
+        dnf5 -y copr enable lukenukem/asus-linux && \
         dnf5 -y install \
             asusctl \
             asusctl-rog-gui && \
@@ -664,19 +664,19 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-steam.repo && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-rar.repo && \
-    dnf5 -y -q copr disable kylegospo/bazzite && \
-    dnf5 -y -q copr disable kylegospo/bazzite-multilib && \
-    dnf5 -y -q copr disable ublue-os/staging && \
-    dnf5 -y -q copr disable kylegospo/LatencyFleX && \
-    dnf5 -y -q copr disable kylegospo/obs-vkcapture && \
-    dnf5 -y -q copr disable kylegospo/wallpaper-engine-kde-plugin && \
-    dnf5 -y -q copr disable ycollet/audinux && \
-    dnf5 -y -q copr disable kylegospo/rom-properties && \
-    dnf5 -y -q copr disable kylegospo/webapp-manager && \
-    dnf5 -y -q copr disable hhd-dev/hhd && \
-    dnf5 -y -q copr disable che/nerd-fonts && \
-    dnf5 -y -q copr disable sentry/switcheroo-control_discrete && \
-    dnf5 -y -q copr disable hikariknight/looking-glass-kvmfr && \
+    dnf5 -y copr disable kylegospo/bazzite && \
+    dnf5 -y copr disable kylegospo/bazzite-multilib && \
+    dnf5 -y copr disable ublue-os/staging && \
+    dnf5 -y copr disable kylegospo/LatencyFleX && \
+    dnf5 -y copr disable kylegospo/obs-vkcapture && \
+    dnf5 -y copr disable kylegospo/wallpaper-engine-kde-plugin && \
+    dnf5 -y copr disable ycollet/audinux && \
+    dnf5 -y copr disable kylegospo/rom-properties && \
+    dnf5 -y copr disable kylegospo/webapp-manager && \
+    dnf5 -y copr disable hhd-dev/hhd && \
+    dnf5 -y copr disable che/nerd-fonts && \
+    dnf5 -y copr disable sentry/switcheroo-control_discrete && \
+    dnf5 -y copr disable hikariknight/looking-glass-kvmfr && \
     sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
@@ -729,13 +729,13 @@ COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
 
 # Setup Copr repos
 RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    dnf5 -y -q copr enable kylegospo/bazzite && \
-    dnf5 -y -q copr enable kylegospo/bazzite-multilib && \
-    dnf5 -y -q copr enable kylegospo/LatencyFleX && \
-    dnf5 -y -q copr enable kylegospo/obs-vkcapture && \
-    dnf5 -y -q copr enable kylegospo/wallpaper-engine-kde-plugin && \
-    dnf5 -y -q copr enable ycollet/audinux && \
-    dnf5 -y -q copr enable hhd-dev/hhd && \
+    dnf5 -y copr enable kylegospo/bazzite && \
+    dnf5 -y copr enable kylegospo/bazzite-multilib && \
+    dnf5 -y copr enable kylegospo/LatencyFleX && \
+    dnf5 -y copr enable kylegospo/obs-vkcapture && \
+    dnf5 -y copr enable kylegospo/wallpaper-engine-kde-plugin && \
+    dnf5 -y copr enable ycollet/audinux && \
+    dnf5 -y copr enable hhd-dev/hhd && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
@@ -826,13 +826,13 @@ RUN /usr/libexec/containerbuild/image-info && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/input-remapper-gtk.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    dnf5 -y -q copr disable kylegospo/bazzite && \
-    dnf5 -y -q copr disable kylegospo/bazzite-multilib && \
-    dnf5 -y -q copr disable kylegospo/LatencyFleX && \
-    dnf5 -y -q copr disable kylegospo/obs-vkcapture && \
-    dnf5 -y -q copr disable kylegospo/wallpaper-engine-kde-plugin && \
-    dnf5 -y -q copr disable ycollet/audinux && \
-    dnf5 -y -q copr disable hhd-dev/hhd && \
+    dnf5 -y copr disable kylegospo/bazzite && \
+    dnf5 -y copr disable kylegospo/bazzite-multilib && \
+    dnf5 -y copr disable kylegospo/LatencyFleX && \
+    dnf5 -y copr disable kylegospo/obs-vkcapture && \
+    dnf5 -y copr disable kylegospo/wallpaper-engine-kde-plugin && \
+    dnf5 -y copr disable ycollet/audinux && \
+    dnf5 -y copr disable hhd-dev/hhd && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
