@@ -2,6 +2,7 @@
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
+SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
 DECK_OPTION=""
 
@@ -14,18 +15,27 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
     fi
   fi
 
+  # Check for Galileo model
+  if [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
+    VIDEO_STARTUP="/usr/share/ublue-os/bazzite/bazzite-oled.webm"
+    VIDEO_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend-oled.webm"
+  else
+    VIDEO_STARTUP="/usr/share/ublue-os/bazzite/bazzite.webm"
+    VIDEO_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend.webm"
+  fi
+
   # Install Bazzite's Steam Game Mode Startup & Suspend Videos
   mkdir -p $HOME/.local/share/Steam/config/uioverrides/movies
   if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm ]; then
-    cp /usr/share/ublue-os/bazzite/bazzite.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
+    cp $VIDEO_STARTUP $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
   fi
 
   if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm ]; then
-    cp /usr/share/ublue-os/bazzite/bazzite-suspend.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
+    cp $VIDEO_SUSPEND $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
   fi
 
   if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm ]; then
-    cp /usr/share/ublue-os/bazzite/bazzite-suspend.webm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
+    cp $VIDEO_SUSPEND $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
   fi
 
   # Required to maintain the Steam update branch between desktop & Steam Game Mode
