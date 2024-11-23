@@ -1,4 +1,54 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Fri, 22 Nov 2024 01:37:48 +0100
+Subject: [NA] add dev script
+
+---
+ subprojects/edid-decode |  1 +
+ sync.sh                 | 21 +++++++++++++++++++++
+ 2 files changed, 22 insertions(+)
+ create mode 160000 subprojects/edid-decode
+ create mode 100755 sync.sh
+
+diff --git a/subprojects/edid-decode b/subprojects/edid-decode
+new file mode 160000
+index 0000000..c6b859d
+--- /dev/null
++++ b/subprojects/edid-decode
+@@ -0,0 +1 @@
++Subproject commit c6b859d7f0251e2433fb81bd3f67bd2011c2036c
+diff --git a/sync.sh b/sync.sh
+new file mode 100755
+index 0000000..878bf6c
+--- /dev/null
++++ b/sync.sh
+@@ -0,0 +1,21 @@
++if [ -z "$1" ]; then
++    echo "Usage: $0 <host>"
++    exit 1
++fi
++
++HOST=$1
++RSYNC="rsync -rv --exclude .git --exclude venv --exclude __pycache__'"
++USER=${USER:-bazzite}
++
++set -e
++
++meson build/ -Dforce_fallback_for=stb,libdisplay-info,libliftoff,wlroots,vkroots
++ninja -C build/
++scp build/src/gamescope ${HOST}:gamescope
++
++ssh $HOST /bin/bash << EOF
++    sudo rpm-ostree usroverlay --hotfix
++    sudo mv ~/gamescope /usr/bin/gamescope
++    bazzite-session-select gamescope
++    # sudo reboot
++EOF
+-- 
+2.47.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Matthew Anderson <ruinairas1992@gmail.com>
 Date: Fri, 17 May 2024 21:56:55 -0500
 Subject: feat: add --custom-refresh-rates option (+ fixes)
@@ -967,9 +1017,9 @@ Subject: feat: add DPMS support through an Atom
 ---
  src/Backends/DRMBackend.cpp | 16 +++++++++++++---
  src/rendervulkan.hpp        |  2 ++
- src/steamcompmgr.cpp        | 18 +++++++++++++++---
+ src/steamcompmgr.cpp        | 15 ++++++++++++---
  src/xwayland_ctx.hpp        |  1 +
- 4 files changed, 31 insertions(+), 6 deletions(-)
+ 4 files changed, 28 insertions(+), 6 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
 index f014be9..6bb0b88 100644
@@ -1040,18 +1090,19 @@ index b537170..ccabd88 100644
  	struct Layer_t
  	{
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 6c8ce74..77c9f28 100644
+index 6c8ce74..dfee904 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -169,6 +169,7 @@ bool g_bVRRRequested = false;
+@@ -169,6 +169,8 @@ bool g_bVRRRequested = false;
  bool g_bVRRCanEnable = false;
  bool b_bForceFrameLimit = false;
  bool g_bRefreshHalveEnable = false;
 +bool g_bDPMS = false;
++bool g_bDPMS_set = false;
  
  static std::vector< steamcompmgr_win_t* > GetGlobalPossibleFocusWindows();
  static bool
-@@ -2271,7 +2272,7 @@ bool ShouldDrawCursor()
+@@ -2271,7 +2273,7 @@ bool ShouldDrawCursor()
  }
  
  static void
@@ -1060,7 +1111,7 @@ index 6c8ce74..77c9f28 100644
  {
  	gamescope_xwayland_server_t *root_server = wlserver_get_xwayland_server(0);
  	xwayland_ctx_t *root_ctx = root_server->ctx.get();
-@@ -2322,6 +2323,7 @@ paint_all(bool async)
+@@ -2322,6 +2324,7 @@ paint_all(bool async)
  	frameInfo.outputEncodingEOTF = g_ColorMgmt.pending.outputEncodingEOTF;
  	frameInfo.allowVRR = cv_adaptive_sync;
  	frameInfo.bFadingOut = fadingOut;
@@ -1068,19 +1119,7 @@ index 6c8ce74..77c9f28 100644
  
  	// If the window we'd paint as the base layer is the streaming client,
  	// find the video underlay and put it up first in the scenegraph
-@@ -2494,6 +2496,11 @@ paint_all(bool async)
- 
- 	if ( !bValidContents || !GetBackend()->IsVisible() )
- 	{
-+		// If dpms, we do not need to display a frame.
-+		// Force the display to refresh.
-+		if ( dpms ) {
-+			GetBackend()->Present( &frameInfo, async );
-+		}
- 		return;
- 	}
- 
-@@ -5923,6 +5930,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+@@ -5923,6 +5926,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
  	{
  		g_bRefreshHalveEnable = !!get_prop( ctx, ctx->root, ctx->atoms.gamescopeFrameHalveAtom, 0 );
  	}
@@ -1091,7 +1130,7 @@ index 6c8ce74..77c9f28 100644
  }
  
  static int
-@@ -7094,6 +7105,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
+@@ -7094,6 +7101,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
  	ctx->atoms.targets = XInternAtom(ctx->dpy, "TARGETS", false);
  
  	ctx->atoms.gamescopeFrameHalveAtom = XInternAtom( ctx->dpy, "GAMESCOPE_STEAMUI_HALFHZ", false );;
@@ -1099,14 +1138,15 @@ index 6c8ce74..77c9f28 100644
  
  	ctx->root_width = DisplayWidth(ctx->dpy, ctx->scr);
  	ctx->root_height = DisplayHeight(ctx->dpy, ctx->scr);
-@@ -8061,9 +8073,9 @@ steamcompmgr_main(int argc, char **argv)
+@@ -8061,9 +8069,10 @@ steamcompmgr_main(int argc, char **argv)
  			bShouldPaint = false;
  		}
  
 -		if ( bShouldPaint )
-+		if ( bShouldPaint || (g_bDPMS && vblank) )
++		if (bShouldPaint || (g_bDPMS != g_bDPMS_set && vblank))
  		{
 -			paint_all( eFlipType == FlipType::Async );
++			g_bDPMS_set = g_bDPMS;
 +			paint_all( eFlipType == FlipType::Async, g_bDPMS );
  
  			hasRepaint = false;
