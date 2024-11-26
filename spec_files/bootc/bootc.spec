@@ -18,7 +18,7 @@ URL:            https://github.com/containers/bootc
 Source0:        %{url}/releases/download/v%{version}/bootc-%{version}.tar.zstd
 Source1:        %{url}/releases/download/v%{version}/bootc-%{version}-vendor.tar.zstd
 
-https://github.com/containers/bootc/pull/921
+# https://github.com/containers/bootc/pull/921
 Patch0:         921.patch
 
 # https://fedoraproject.org/wiki/Changes/EncourageI686LeafRemoval
