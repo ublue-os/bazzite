@@ -182,6 +182,14 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         elfutils-libelf \
         elfutils-libs \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        glibc \
+        glibc-common \
+        glibc-all-langpacks \
+        glibc-gconv-extra \
+        || true && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override replace \
         --experimental \
