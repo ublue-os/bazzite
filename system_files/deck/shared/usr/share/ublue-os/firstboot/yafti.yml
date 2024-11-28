@@ -102,7 +102,7 @@ screens:
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       links:
       - "Install More Applications":
-          run: /usr/bin/plasma-discover
+          run: /usr/bin/plasma-discover || /usr/bin/gnome-software
       - "Documentation":
           run: /usr/bin/xdg-open https://docs.bazzite.gg
       - "Forums":
