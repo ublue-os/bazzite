@@ -281,7 +281,7 @@ if [ $(snapper --no-headers --csvout -c root get-config --columns key,value | gr
   echo "DELETING SNAPPER SNAPSHOTS CREATED BY A PREVIOUS UPDATE"
   echo "THIS IS FOR /var/home. IF YOU INTENDED THIS CHANGE, "
   echo "RECREATE YOUR CONFIG AND MAKE SURE TIMELINE_LIMIT_YEARLY=\"10\""
-  echo "IS SET DIFFERENTLY OR DO NOT NAME THE CONFIG ROOT."
+  echo "IS SET TO SOMETHING DIFFERENT."
   SNAPSHOTS=$(snapper --no-headers --csvout --config root list --columns number,description | grep timeline | awk -F, '{print $1}')
   if [ -n "$SNAPSHOTS" ]; then
     snapper -c root delete $SNAPSHOTS
