@@ -276,7 +276,8 @@ fi
 
 # Cleanup btrfs oopsie
 # default config has a 10 year limit, which is rediculous
-if [ $(snapper --no-headers --csvout -c root get-config --columns key,value | grep "TIMELINE_LIMIT_YEARLY,10" ) ] &&
+if [ -f /etc/snapper/configs/root ] &&
+  [ $(snapper --no-headers --csvout -c root get-config --columns key,value | grep "TIMELINE_LIMIT_YEARLY,10" ) ] &&
   [ $(snapper --no-headers --csvout -c root get-config --columns key,value | grep "SUBVOLUME,/var/home" ) ]; then
   echo "DELETING SNAPPER SNAPSHOTS CREATED BY A PREVIOUS UPDATE"
   echo "THIS IS FOR /var/home. IF YOU INTENDED THIS CHANGE, "
