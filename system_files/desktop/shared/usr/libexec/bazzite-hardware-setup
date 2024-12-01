@@ -279,6 +279,7 @@ fi
 
 # Cleanup btrfs oopsie
 # default config has a 10 year limit, which is rediculous
+# FIXME: This fix was added in 12/2024, remove it in a few months
 if [ ! -f /etc/bazzite/fixups/snapper_cleanup ] &&
   [ -f /etc/snapper/configs/root ] &&
   [ $(snapper --no-headers --csvout -c root get-config --columns key,value | grep "TIMELINE_LIMIT_YEARLY,10" ) ] &&
