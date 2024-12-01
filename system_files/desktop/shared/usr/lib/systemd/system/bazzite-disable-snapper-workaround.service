@@ -1,0 +1,12 @@
+# FIXME: Remove me whenever snapper doesnt enable automatic snapshots on config creation
+
+[Unit]
+Description=Disable snapper for skewed configs
+ConditionPathIsSymbolicLink=/etc/systemd/system/timers.target.wants/snapper-timeline.timer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash -c "systemctl disable --now snapper-timeline.timer; systemctl disable %n"
+
+[Install]
+WantedBy=multi-user.target
