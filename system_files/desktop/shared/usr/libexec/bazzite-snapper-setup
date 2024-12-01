@@ -1,4 +1,0 @@
-#!/bin/bash
-if ! snapper get-config >/dev/null 2>&1; then
-    snapper create-config /var/home
-fi

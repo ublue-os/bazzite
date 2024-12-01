@@ -274,6 +274,21 @@ if grep -qv "graphical.target" <<< "$(systemctl get-default)"; then
   systemctl set-default graphical.target
 fi
 
+# Cleanup btrfs oopsie
+# default config has a 10 year limit, which is rediculous
+if [ $(snapper --no-headers --csvout -c root get-config --columns key,value | grep "TIMELINE_LIMIT_YEARLY,10" ) ] &&
+  [ $(snapper --no-headers --csvout -c root get-config --columns key,value | grep "SUBVOLUME,/var/home" ) ]; then
+  echo "DELETING SNAPPER SNAPSHOTS CREATED BY A PREVIOUS UPDATE"
+  echo "THIS IS FOR /var/home. IF YOU INTENDED THIS CHANGE, "
+  echo "RECREATE YOUR CONFIG AND MAKE SURE TIMELINE_LIMIT_YEARLY=\"10\""
+  echo "IS SET DIFFERENTLY OR DO NOT NAME THE CONFIG ROOT."
+  SNAPSHOTS=$(snapper --no-headers --csvout --config root list --columns number,description | grep timeline | awk -F, '{print $1}')
+  if [ -n "$SNAPSHOTS" ]; then
+    snapper -c root delete $SNAPSHOTS
+  fi
+  snapper -c root delete-config
+fi
+
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
 echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
