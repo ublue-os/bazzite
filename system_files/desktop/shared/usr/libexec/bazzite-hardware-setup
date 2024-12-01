@@ -293,9 +293,8 @@ if [ ! -f /etc/bazzite/fixups/snapper_cleanup ] &&
     snapper -c root delete $SNAPSHOTS
   fi
   snapper -c root delete-config
-
-  touch /etc/bazzite/fixups/snapper_cleanup
 fi
+touch /etc/bazzite/fixups/snapper_cleanup
 
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
