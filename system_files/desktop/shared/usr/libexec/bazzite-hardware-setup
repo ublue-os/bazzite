@@ -31,6 +31,9 @@ CURRENT_FREE_ZRAM=$(sysctl vm.min_free_kbytes | awk '{print $3}')
 KARGS=$(rpm-ostree kargs)
 NEEDED_KARGS=()
 
+# Add directory for fixups
+mkdir -p /etc/bazzite/fixups
+
 # UPDATES
 if [[ -f /var/ublue-update/branch ]]; then
   echo "Removing previously used branch selection file"
@@ -276,7 +279,8 @@ fi
 
 # Cleanup btrfs oopsie
 # default config has a 10 year limit, which is rediculous
-if [ -f /etc/snapper/configs/root ] &&
+if [ ! -f /etc/bazzite/fixups/snapper_cleanup ] &&
+  [ -f /etc/snapper/configs/root ] &&
   [ $(snapper --no-headers --csvout -c root get-config --columns key,value | grep "TIMELINE_LIMIT_YEARLY,10" ) ] &&
   [ $(snapper --no-headers --csvout -c root get-config --columns key,value | grep "SUBVOLUME,/var/home" ) ]; then
   echo "DELETING SNAPPER SNAPSHOTS CREATED BY A PREVIOUS UPDATE"
@@ -288,6 +292,8 @@ if [ -f /etc/snapper/configs/root ] &&
     snapper -c root delete $SNAPSHOTS
   fi
   snapper -c root delete-config
+
+  touch /etc/bazzite/fixups/snapper_cleanup
 fi
 
 mkdir -p /etc/bazzite
