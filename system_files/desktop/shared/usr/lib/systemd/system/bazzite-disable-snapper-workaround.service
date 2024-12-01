@@ -6,7 +6,7 @@ ConditionPathIsSymbolicLink=/etc/systemd/system/timers.target.wants/snapper-time
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -c "systemctl disable --now snapper-timeline.timer; systemctl enable --now snapper-cleanup.timer; systemctl disable %n"
+ExecStart=/usr/bin/bash -c "systemctl disable --now snapper-timeline.timer; systemctl enable --now snapper-cleanup.timer; snapper set-config TIMELINE_LIMIT_YEARLY=0; snapper set-config TIMELINE_LIMIT_MONTHLY=0; systemctl disable %n"
 
 [Install]
 WantedBy=multi-user.target
