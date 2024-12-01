@@ -1,4 +1,6 @@
 #!/bin/bash
 if ! snapper get-config >/dev/null 2>&1; then
     snapper create-config /var/home
+    systemctl disable snapper-timeline.timer
+    systemctl disable snapper-boot.timer
 fi
