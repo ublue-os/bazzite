@@ -4,8 +4,10 @@
 
 [Unit]
 Description=KDE writable sddm workaround
-RequiresMountsFor=/usr/share/sddm/themes /var/sddm_themes
-ConditionPathExists=/var/sddm_themes/themes /var/sddm_themes/themes.work
+RequiresMountsFor=/usr /var
+ConditionPathExists=/usr/share/sddm
+ConditionPathExists=/var/sddm_themes/themes
+ConditionPathExists=/var/sddm_themes/themes.work
 PartOf=bazzite-kde-themes-workaround.target
 
 [Mount]
