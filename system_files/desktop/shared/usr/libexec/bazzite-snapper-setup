@@ -25,6 +25,10 @@ if ! snapper get-config >/dev/null 2>&1; then
 
     # Set the snapper config settings
     set_snapper_defaults
+
+    # Disable the timeline and boot timers
+    systemctl disable --now snapper-timeline.timer
+    systemctl disable --now snapper-boot.timer
 fi
 
 # Check for invalid config and fix it and remove incorrect snapshots
