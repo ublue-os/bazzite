@@ -1,5 +1,10 @@
 # vim: set ft=make :
 
+# Enable BTRFS deduplication
+enable-deduplication:
+    systemctl enable btrfs-dedup@var-home.timer
+    systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer
+
 # Install Handheld Controller Glyphs theme for hhd & CSS Loader (https://github.com/victor-borges/handheld-controller-glyphs)
 install-hhd-controller-glyph-theme:
     #!/usr/bin/bash

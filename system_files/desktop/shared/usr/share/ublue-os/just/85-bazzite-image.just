@@ -1,2 +1,5 @@
 # vim: set ft=make :
-# Placeholder if empty
+
+# Enable BTRFS deduplication
+enable-deduplication:
+    systemctl enable btrfs-dedup@var-home.timer
