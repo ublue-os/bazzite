@@ -1,6 +1,6 @@
 %global majorversion 1
 %global minorversion 2
-%global microversion 6
+%global microversion 7
 
 %global apiversion   0.3
 %global spaversion   0.2
@@ -892,6 +892,9 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %endif
 
 %changelog
+* Tue Nov 26 2024 Wim Taymans <wtaymans@redhat.com> - 1.2.7-1
+- Update version to 1.2.7 
+
 * Wed Oct 23 2024 Wim Taymans <wtaymans@redhat.com> - 1.2.6-1
 - Update version to 1.2.6
 
