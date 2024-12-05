@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-THEME=$(gsettings get org.gnome.desktop.interface accent-color || echo "'slate'")
+THEME=$(gsettings get org.gnome.desktop.interface accent-color || echo "'purple'")
 THEME=${THEME//\'/}
 
-FASTFETCH_COLOR_SET="38;2;53;132;228"
 case $THEME in
   "blue")
     FASTFETCH_COLOR_SET="38;2;53;132;228"
@@ -31,6 +30,10 @@ case $THEME in
     ;;
   "yellow")
     FASTFETCH_COLOR_SET="38;2;200;136;0"
+    ;;
+  *)
+    # Purple!
+    FASTFETCH_COLOR_SET="38;2;139;62;165"
     ;;
 esac
 
