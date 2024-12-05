@@ -14,6 +14,8 @@ helptext=$(cat << EOF
 
 This tool aims to help with rollbacks and rebases
 
+NOTE: Rebasing to different desktop environments usually breaks things and is unsupported
+
 Usage: bazzite-rollback-helper [OPTION] [ARGUMENT]
 
 Options:
