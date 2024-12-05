@@ -265,7 +265,7 @@ fi
 
 # PPD FIX
 # Correct broken config files on some systems
-if -f "/etc/tuned/ppd.conf" && ! grep "\[battery\]" "/etc/tuned/ppd.conf"; then
+if [[ -f "/etc/tuned/ppd.conf" ]] && ! grep "\[battery\]" "/etc/tuned/ppd.conf"; then
   cp -f "/usr/etc/tuned/ppd.conf" "/etc/tuned/ppd.conf"
 fi
 
