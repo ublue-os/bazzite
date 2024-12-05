@@ -26,5 +26,16 @@ if [[ -f "$TIP_FILE" ]]; then
 	THEME=$(gsettings get org.gnome.desktop.interface accent-color || echo "'purple'")
 	THEME=${THEME//\'/}
 
-	sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" -e "s/%IMAGE_BRANCH%/$IMAGE_BRANCH_ESCAPED/g" -e "s/%TIP%/$TIP_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | tr '~' '\n' | /usr/bin/glow -s /usr/share/ublue-os/motd/themes/$THEME.json -w 78 -
+	COLOR_SCHEME=$(gsettings get org.gnome.desktop.interface color-scheme || echo "'prefer-dark'")
+	COLOR_SCHEME=${COLOR_SCHEME//\'/}
+	case $COLOR_SCHEME in
+		"default")
+			COLOR_SCHEME="light"
+			;;
+		*)
+			COLOR_SCHEME="dark"
+			;;
+	esac
+
+	sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" -e "s/%IMAGE_BRANCH%/$IMAGE_BRANCH_ESCAPED/g" -e "s/%TIP%/$TIP_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | tr '~' '\n' | /usr/bin/glow -s /usr/share/ublue-os/motd/themes/$COLOR_SCHEME/$THEME.json -w 78 -
 fi
