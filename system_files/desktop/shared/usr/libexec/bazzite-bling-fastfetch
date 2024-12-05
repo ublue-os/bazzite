@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+THEME=$(gsettings get org.gnome.desktop.interface accent-color || echo "'slate'")
+THEME=${THEME//\'/}
+
+FASTFETCH_COLOR_SET="38;2;53;132;228"
+case $THEME in
+  "blue")
+    FASTFETCH_COLOR_SET="38;2;53;132;228"
+    ;;
+  "green")
+    FASTFETCH_COLOR_SET="38;2;58;148;74"
+    ;;
+  "orange")
+    FASTFETCH_COLOR_SET="38;2;237;91;0"
+    ;;
+  "pink")
+    FASTFETCH_COLOR_SET="38;2;213;97;153"
+    ;;
+  "purple")
+    FASTFETCH_COLOR_SET="38;2;139;62;165"
+    ;;
+  "red")
+    FASTFETCH_COLOR_SET="38;2;230;45;66"
+    ;;
+  "slate")
+    FASTFETCH_COLOR_SET="38;2;111;131;150"
+    ;;
+  "teal")
+    FASTFETCH_COLOR_SET="38;2;33;144;164"
+    ;;
+  "yellow")
+    FASTFETCH_COLOR_SET="38;2;200;136;0"
+    ;;
+esac
+
+echo $FASTFETCH_COLOR_SET
+exit 0
