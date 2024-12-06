@@ -49,11 +49,13 @@ fi
 # Disable snapper-timeline timer if it has been enabled with no changes to the config
 if [ $(systemctl is-enabled snapper-timeline.timer) == "enabled" ] && [ $(sudo snapper --no-headers --csvout get-config | grep -P 'TIMELINE_LIMIT_(DAILY|HOURLY|MONTHLY|WEEKLY|QUARTERLY|YEARLY),0' | wc -l) == "6" ]; then
     systemctl disable --now snapper-timeline.timer
+    systemctl enable --now snapper-cleanup.timer
     snapper cleanup timeline
 fi
 
 # Disable snapper-boot timer if it has been enabled with no changes to the config
 if [ $(systemctl is-enabled snapper-boot.timer) == "enabled" ] && [ $(sudo snapper --no-headers --csvout get-config | grep 'NUMBER_LIMIT,0' | wc -l) == "1" ]; then
     systemctl disable --now snapper-boot.timer
+    systemctl enable --now snapper-cleanup.timer
     snapper cleanup number
 fi
