@@ -73,7 +73,7 @@ Summary:        Mesa graphics libraries
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Epoch:          1
 %global orig_release 1%{?dist}
-Release:        100.bazzite.%{orig_release}
+Release:        101.bazzite.%{orig_release}
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
 
@@ -87,6 +87,9 @@ Patch10:        gnome-shell-glthread-disable.patch
 
 # https://gitlab.com/evlaV/mesa/
 Patch20:        valve.patch
+
+# TEMPORARY: Patches for Indiana Jones and the Great Circle
+Patch30:        indiana.patch
 
 BuildRequires:  meson >= 1.3.0
 BuildRequires:  gcc
