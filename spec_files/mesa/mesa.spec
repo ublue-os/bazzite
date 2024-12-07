@@ -89,7 +89,7 @@ Patch10:        gnome-shell-glthread-disable.patch
 Patch20:        valve.patch
 
 # TEMPORARY: Patches for Indiana Jones and the Great Circle
-Patch20:        indiana.patch
+Patch30:        indiana.patch
 
 BuildRequires:  meson >= 1.3.0
 BuildRequires:  gcc
