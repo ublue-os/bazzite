@@ -174,6 +174,30 @@ ptyxis-transparency opacity="0.95":
       printf "Value must be between 0 and 1: %s.\n" "{{ opacity }}"
     fi
 
+# Configure snapshotting for /var/home
+configure-snapshots ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    OPTION={{ ACTION }}
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust configure-snapshots <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'enable' enable snapshotting of /var/home"
+      echo "  Use 'disable' disable snapshotting of /var/home"
+      echo "  Use 'wipe' disable snapshotting and remove all automatic snapshots of /var/home"
+      exit 0
+    elif [ "$OPTION" == "" ]; then
+      echo "${bold}Snapper setup and configuration${normal}"
+      OPTION=$(Choose "Enable Snapper" "Disable Snapper" "Wipe Snapper config and automatic snapshots")
+    fi
+    if [[ "${OPTION,,}" =~ ^enable ]]; then
+      /usr/libexec/bazzite-snapper-config enable
+    elif [[ "${OPTION,,}" =~ ^disable ]]; then
+      /usr/libexec/bazzite-snapper-config disable
+    elif [[ "${OPTION,,}" =~ ^wipe ]]; then
+      /usr/libexec/bazzite-snapper-config wipe
+    fi
+
 # Bazzite CLI mod for bluefin style cli-bing (modfied copy of https://github.com/ublue-os/bluefin/blob/faf7303afa6f8d6e747940c1d1ba63c6d2d43c80/system_files/shared/usr/libexec/ublue-bling.sh#L62)
 bazzite-cli:
     #!/usr/bin/bash
@@ -356,7 +380,6 @@ toggle-password-feedback ACTION="":
     #!/usr/bin/bash
     PWFEEDBACK_FILE="/etc/sudoers.d/enable-pwfeedback"
     OPTION={{ ACTION }}
-
     if [ "$OPTION" = "on" ]; then
       echo 'Defaults pwfeedback' | sudo tee $PWFEEDBACK_FILE
       echo "enabled, restart terminal to see changes"

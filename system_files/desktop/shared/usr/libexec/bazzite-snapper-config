@@ -1,0 +1,61 @@
+#!/bin/bash
+set_snapper_defaults () {
+    # Set the config to 0 retention, has to be changed by user
+    sudo snapper set-config "TIMELINE_MIN_AGE=1800"
+    sudo snapper set-config "TIMELINE_LIMIT_DAILY=0"
+    sudo snapper set-config "TIMELINE_LIMIT_HOURLY=0"
+    sudo snapper set-config "TIMELINE_LIMIT_MONTHLY=0"
+    sudo snapper set-config "TIMELINE_LIMIT_WEEKLY=0"
+    sudo snapper set-config "TIMELINE_LIMIT_QUARTERLY=0"
+    sudo snapper set-config "TIMELINE_LIMIT_YEARLY=0"
+
+    # Set manual/boot retention to 0
+    sudo snapper set-config "NUMBER_MIN_AGE=1800"
+    sudo snapper set-config "NUMBER_LIMIT=0"
+    sudo snapper set-config "NUMBER_LIMIT_IMPORTANT=0"
+
+    # Enable cleanup
+    sudo systemctl enable --now snapper-cleanup.timer
+}
+
+cleanup_snapper () {
+    sudo snapper cleanup number
+    sudo snapper cleanup timeline 
+}
+
+disable_snapper () {
+    # Make a config for /var/home as /home will not work
+    sudo snapper -c root delete-config 
+
+    # Disable the timeline and boot timers
+    sudo systemctl disable --now snapper-timeline.timer
+    sudo systemctl disable --now snapper-boot.timer 
+}
+
+if [ -z "$1" ] || [ "$1" == "enable" ]; then
+    # Create an empty config for the home subvolume if a root config does not exist
+    if ! sudo snapper get-config >/dev/null 2>&1; then
+        # Make a config for /var/home as /home will not work
+        sudo snapper create-config /var/home
+
+        # Set the snapper config settings
+        set_snapper_defaults
+
+        # Disable the timeline and boot timers
+        sudo systemctl disable --now snapper-timeline.timer
+        sudo systemctl disable --now snapper-boot.timer
+
+        # Launch btrfs assistant so people can change the settings
+        zenity --info --text="Please change retention settings to what you want in the Snapper Settings tab in btrfs-assistant. Deleted data that still exist in a snapshot will still use disk space!"
+        btrfs-assistant-launcher &
+    fi
+elif [ "$1" == "clean" ]; then
+    cleanup_snapper
+elif [ "$1" == "wipe" ]; then
+    set_snapper_defaults
+    cleanup_snapper
+    disable_snapper
+    sudo systemctl disable --now snapper-cleanup.timer
+else
+    disable_snapper
+fi
