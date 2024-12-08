@@ -23,5 +23,9 @@ if [[ -f "$TIP_FILE" ]]; then
 
 	TIP_ESCAPED=$(escape "$TIP")
 
-	sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" -e "s/%IMAGE_BRANCH%/$IMAGE_BRANCH_ESCAPED/g" -e "s/%TIP%/$TIP_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | tr '~' '\n' | /usr/bin/glow -s auto -w 78 -
+	THEME=$(gsettings get org.gnome.desktop.interface accent-color || echo "'purple'")
+	THEME=${THEME//\'/}
+	THEME=${MOTD_FORCE_THEME:-$THEME}
+
+	sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" -e "s/%IMAGE_BRANCH%/$IMAGE_BRANCH_ESCAPED/g" -e "s/%TIP%/$TIP_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | tr '~' '\n' | /usr/bin/glow -s /usr/share/ublue-os/motd/themes/$COLOR_SCHEME/$THEME.json -w 78 -
 fi
