@@ -12,7 +12,7 @@
   },
   "heading": {
     "block_suffix": "\n",
-    "color": "220",
+    "color": "208",
     "bold": true
   },
   "h1": {
@@ -43,10 +43,11 @@
     "italic": true
   },
   "strong": {
+    "color": "208",
     "bold": true
   },
   "hr": {
-    "color": "220",
+    "color": "208",
     "format": "\n──────\n"
   },
   "item": {
@@ -60,7 +61,7 @@
     "unticked": "[ ] "
   },
   "link": {
-    "color": "178",
+    "color": "130",
     "underline": true
   },
   "link_text": {
@@ -75,8 +76,8 @@
   "code": {
     "prefix": " ",
     "suffix": " ",
-    "color": "220",
-    "background_color": "254"
+    "color": "208",
+    "bold": true
   },
   "code_block": {},
   "table": {},

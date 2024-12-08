@@ -43,6 +43,7 @@
     "italic": true
   },
   "strong": {
+    "color": "203",
     "bold": true
   },
   "hr": {
@@ -76,7 +77,7 @@
     "prefix": " ",
     "suffix": " ",
     "color": "203",
-    "background_color": "254"
+    "bold": true,
   },
   "code_block": {},
   "table": {},
