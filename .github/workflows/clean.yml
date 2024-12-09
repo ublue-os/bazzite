@@ -14,7 +14,7 @@ jobs:
       packages: write
     steps:
       - name: Delete Images Older Than 90 Days
-        uses: dataaxiom/ghcr-cleanup-action@v1.0.13
+        uses: dataaxiom/ghcr-cleanup-action@v1.0.14
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           packages: bazzite,bazzite-ally-budgie,bazzite-asus-nvidia,bazzite-asus-nvidia-open,bazzite-budgie,bazzite-budgie-asus,bazzite-budgie-asus-nvidia,bazzite-budgie-nvidia,bazzite-budgie-surface,bazzite-budgie-surface-nvidia,bazzite-deck,bazzite-deck-budgie,bazzite-deck-gnome,bazzite-deck-gnome-nokmods,bazzite-deck-gnome-nvidia,bazzite-deck-nokmods,bazzite-deck-nvidia,bazzite-framegame-budgie,bazzite-gnome,bazzite-gnome-asus-nvidia,bazzite-gnome-asus-nvidia-open,bazzite-gnome-nokmods,bazzite-gnome-nvidia,bazzite-gnome-nvidia-open,bazzite-nokmods,bazzite-nvidia,bazzite-nvidia-open
