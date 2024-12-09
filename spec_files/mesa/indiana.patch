@@ -1,0 +1,96 @@
+From 5f36d879f820797b5ee06186c87a2f294f706d36 Mon Sep 17 00:00:00 2001
+From: Atapi <34801996+Sterophonick@users.noreply.github.com>
+Date: Sat, 7 Dec 2024 11:43:01 -0700
+Subject: [PATCH] backport indiana jones tweaks
+
+---
+ src/amd/vulkan/radv_image.c    | 4 ++++
+ src/amd/vulkan/radv_instance.c | 3 +++
+ src/amd/vulkan/radv_instance.h | 1 +
+ src/util/00-radv-defaults.conf | 6 ++++++
+ src/util/driconf.h             | 4 ++++
+ 5 files changed, 18 insertions(+)
+
+diff --git a/src/amd/vulkan/radv_image.c b/src/amd/vulkan/radv_image.c
+index eeefe236d97..2b3a59e1c6b 100644
+--- a/src/amd/vulkan/radv_image.c
++++ b/src/amd/vulkan/radv_image.c
+@@ -297,6 +297,10 @@ radv_use_dcc_for_image_early(struct radv_device *device, struct radv_image *imag
+          return false;
+    }
+ 
++   /* Force disable DCC for stores to workaround game bugs. */
++   if (instance->drirc.disable_dcc_stores && (pCreateInfo->usage & VK_IMAGE_USAGE_STORAGE_BIT))
++      return false;
++
+    /* DCC MSAA can't work on GFX10.3 and earlier without FMASK. */
+    if (pCreateInfo->samples > 1 && pdev->info.gfx_level < GFX11 && (instance->debug_flags & RADV_DEBUG_NO_FMASK))
+       return false;
+diff --git a/src/amd/vulkan/radv_instance.c b/src/amd/vulkan/radv_instance.c
+index 9eba490397b..b5333a4f58b 100644
+--- a/src/amd/vulkan/radv_instance.c
++++ b/src/amd/vulkan/radv_instance.c
+@@ -145,6 +145,7 @@ static const driOptionDescription radv_dri_options[] = {
+       DRI_CONF_RADV_SPLIT_FMA(false)
+       DRI_CONF_RADV_DISABLE_TC_COMPAT_HTILE_GENERAL(false)
+       DRI_CONF_RADV_DISABLE_DCC(false)
++      DRI_CONF_RADV_DISABLE_DCC_STORES(false)
+       DRI_CONF_RADV_DISABLE_ANISO_SINGLE_LEVEL(false)
+       DRI_CONF_RADV_DISABLE_TRUNC_COORD(false)
+       DRI_CONF_RADV_DISABLE_SINKING_LOAD_INPUT_FS(false)
+@@ -258,6 +259,8 @@ radv_init_dri_options(struct radv_instance *instance)
+ 
+    instance->drirc.vk_require_etc2 = driQueryOptionb(&instance->drirc.options, "vk_require_etc2");
+    instance->drirc.vk_require_astc = driQueryOptionb(&instance->drirc.options, "vk_require_astc");
++
++   instance->drirc.disable_dcc_stores = driQueryOptionb(&instance->drirc.options, "radv_disable_dcc_stores");
+ }
+ 
+ static const struct vk_instance_extension_table radv_instance_extensions_supported = {
+diff --git a/src/amd/vulkan/radv_instance.h b/src/amd/vulkan/radv_instance.h
+index e87a5301c60..98441116c52 100644
+--- a/src/amd/vulkan/radv_instance.h
++++ b/src/amd/vulkan/radv_instance.h
+@@ -68,6 +68,7 @@ struct radv_instance {
+       bool report_llvm9_version_string;
+       bool vk_require_etc2;
+       bool vk_require_astc;
++      bool disable_dcc_stores;
+       char *app_layer;
+       uint8_t override_graphics_shader_version;
+       uint8_t override_compute_shader_version;
+diff --git a/src/util/00-radv-defaults.conf b/src/util/00-radv-defaults.conf
+index 555fc3c79af..a502aa79621 100644
+--- a/src/util/00-radv-defaults.conf
++++ b/src/util/00-radv-defaults.conf
+@@ -110,6 +110,12 @@ Application bugs worked around in this file:
+             <option name="radv_legacy_sparse_binding" value="true" />
+         </application>
+ 
++        <application name="Indiana Jones: The Great Circle" application_name_match="TheGreatCircle">
++            <option name="radv_zero_vram" value="true" />
++            <option name="radv_legacy_sparse_binding" value="true" />
++            <option name="radv_disable_dcc_stores" value="true" />
++        </application>
++
+         <application name="DOOM (2016)" application_name_match="DOOM$">
+             <option name="radv_disable_dcc" value="true" />
+         </application>
+diff --git a/src/util/driconf.h b/src/util/driconf.h
+index a2c18e211c9..2878fae35cd 100644
+--- a/src/util/driconf.h
++++ b/src/util/driconf.h
+@@ -657,6 +657,10 @@
+    DRI_CONF_OPT_B(radv_disable_dcc, def, \
+                   "Disable DCC for color images")
+ 
++#define DRI_CONF_RADV_DISABLE_DCC_STORES(def) \
++   DRI_CONF_OPT_B(radv_disable_dcc_stores, def, \
++                  "Disable DCC for color storage images")
++
+ #define DRI_CONF_RADV_DISABLE_ANISO_SINGLE_LEVEL(def) \
+   DRI_CONF_OPT_B(radv_disable_aniso_single_level, def, \
+                  "Disable anisotropic filtering for single level images")
+-- 
+2.47.1
+
