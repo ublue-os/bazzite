@@ -1,5 +1,4 @@
 #!/usr/bin/bash
-set -e
 
 if [ -x hhd.steamos ]; then
   hhd.steamos steamos-select-branch --fallback $@
@@ -9,6 +8,8 @@ if [ -x hhd.steamos ]; then
     exit $ret
   fi
 fi
+
+set -e
 
 source /etc/os-release
 
