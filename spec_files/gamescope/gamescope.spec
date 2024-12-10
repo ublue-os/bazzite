@@ -100,7 +100,7 @@ Summary:	libs for %{name}
 
 %prep
 # git clone --depth 1 --branch %%{gamescope_tag} %%{url}.git
-git clone --depth 1 --branch master %{url}.git
+git clone %{url}.git
 cd gamescope
 git checkout %{gamescope_commit} 
 git submodule update --init --recursive
