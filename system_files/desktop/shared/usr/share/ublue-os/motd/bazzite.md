@@ -9,7 +9,7 @@
 | `fastfetch` | View system information |
 
 %TIP%
-- [ Report an issue](https://github.com/ublue-os/bazzite/issues)
-- [󰈙 Documentation](http://docs.bazzite.gg/)
-- [󰙯 Discord](https://discord.bazzite.gg/)
-- [󰫑 Mastodon](https://fosstodon.org/@UniversalBlue)
+- **** [Report an issue](https://github.com/ublue-os/bazzite/issues)
+- **󰈙** [Documentation](http://docs.bazzite.gg/)
+- **󰙯** [Discord](https://discord.bazzite.gg/)
+- **󰫑** [Mastodon](https://fosstodon.org/@UniversalBlue)
