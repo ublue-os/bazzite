@@ -7,14 +7,6 @@
 # steamos-update --enable-duplicate-detection       -- should perform an update
 # steamos-update                                    -- should perform an update
 
-if [ -x hhd.steamos ]; then
-  hhd.steamos steamos-update --fallback $@
-  ret=$?
-  # If ret is not 20, exit with the return code, otherwise continue
-  if [ $ret -ne 20 ]; then
-    exit $ret
-  fi
-fi
 
 while [[ $# -gt 0 ]]; do
   case $1 in
