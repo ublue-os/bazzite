@@ -410,6 +410,7 @@ jobs:
           registry-token: ${{ secrets.GITHUB_TOKEN }}
           signing-secret: ${{ secrets.SIGNING_SECRET }}
           tags: ${{ steps.digest.outputs.digest }}
+          registry: ${{ env.PUSH_IMAGE_REGISTRY }}
 
   generate_release:
     name: Generate Release
