@@ -76,12 +76,19 @@ jobs:
 
           echo "flatpak-dir-shortname=${FLATPAK_DIR_SHORTNAME}" >> $GITHUB_OUTPUT
 
+      # Docker requires lowercase registry references
+      - name: Lowercase Registry
+        id: registry_case
+        uses: ASzc/change-string-case-action@v6
+        with:
+          string: ${{ env.IMAGE_REGISTRY }}
+
       - name: Determine Flatpak Dependencies
         id: flatpak_dependencies
         shell: bash
         run: |
           set -ex
-          image="${{ env.IMAGE_REGISTRY }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}"
+          image="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}"
           # Make temp space
           TEMP_FLATPAK_INSTALL_DIR=$(mktemp -d -p ${{ github.workspace }} flatpak.XXX)
           # Get list of refs from directory
