@@ -126,7 +126,7 @@ jobs:
         with:
           arch: x86_64
           image_name: ${{ matrix.image_name }}
-          image_repo: ${{ env.IMAGE_REGISTRY }}
+          image_repo: ${{ steps.registry_case.outputs.lowercase }}
           variant: 'Kinoite'
           version: ${{ matrix.major_version }}
           image_tag: ${{ steps.generate-tag.outputs.tag }}
