@@ -149,13 +149,11 @@ configure-override-videos ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
-
     if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo ]; then
         VIDEO_STATE="${b}Enabled${n}"
     else
         VIDEO_STATE="${b}Disabled${n}"
     fi
-
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust configure-override-videos <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
@@ -167,7 +165,6 @@ configure-override-videos ACTION="":
       echo "Videos are: $VIDEO_STATE"
       OPTION=$(Choose "Enable Videos" "Disable Videos")
     fi
-
     if [[ "$OPTION" =~ ^enable ]]; then
       rm $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo
     elif [[ "$OPTION" =~ ^disable ]]; then
