@@ -144,6 +144,36 @@ install-speaker-firmware ACTION="":
     fi
     rm /tmp/bazzite-speaker.sh
 
+# Configure video overrides for Steam
+configure-override-videos ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    OPTION={{ ACTION }}
+    if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo ]; then
+        VIDEO_STATE="${b}Enabled${n}"
+    else
+        VIDEO_STATE="${b}Disabled${n}"
+    fi
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust configure-override-videos <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'enable' to enable override videos."
+      echo "  Use 'disable' to disable and remove override videos."
+      exit 0
+    elif [ "$OPTION" == "" ]; then
+      echo "${bold}Override video configuration${normal}"
+      echo "Videos are: $VIDEO_STATE"
+      OPTION=$(Choose "Enable Videos" "Disable Videos")
+    fi
+    if [[ "$OPTION" =~ ^enable ]]; then
+      rm $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo
+    elif [[ "$OPTION" =~ ^disable ]]; then
+      touch $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo
+      rm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
+      rm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
+      rm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
+    fi
+
 # Install hhd main branch locally until reboot, helpful for hhd testing and debugging. (rename to install-hhd-dev if we unhide)
 _hhd-dev:
     #!/usr/bin/bash
