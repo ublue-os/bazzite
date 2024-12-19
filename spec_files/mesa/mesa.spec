@@ -69,7 +69,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 24.2.7
+%global ver 24.2.8
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Epoch:          1
 %global orig_release 1%{?dist}
@@ -87,9 +87,6 @@ Patch10:        gnome-shell-glthread-disable.patch
 
 # https://gitlab.com/evlaV/mesa/
 Patch20:        valve.patch
-
-# TEMPORARY: Patches for Indiana Jones and the Great Circle
-Patch30:        indiana.patch
 
 BuildRequires:  meson >= 1.3.0
 BuildRequires:  gcc
