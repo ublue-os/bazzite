@@ -26,16 +26,25 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
 
   # Install Bazzite's Steam Game Mode Startup & Suspend Videos
   mkdir -p $HOME/.local/share/Steam/config/uioverrides/movies
-  if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm ]; then
-    cp $VIDEO_STARTUP $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
-  fi
 
-  if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm ]; then
-    cp $VIDEO_SUSPEND $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
-  fi
+  if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo ]; then
 
-  if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm ]; then
-    cp $VIDEO_SUSPEND $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
+    LOCATION_STARTUP=$HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
+    LOCATION_SUSPEND=$HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
+    LOCATION_THROBBER=$HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
+
+    if ! cmp --silent $VIDEO_STARTUP $LOCATION_STARTUP; then
+      cp $VIDEO_STARTUP $LOCATION_STARTUP
+    fi
+
+    if ! cmp --silent $VIDEO_SUSPEND $LOCATION_SUSPEND; then
+      cp $VIDEO_SUSPEND $LOCATION_SUSPEND
+    fi
+
+    if ! cmp --silent $VIDEO_SUSPEND $LOCATION_THROBBER; then
+      cp $VIDEO_SUSPEND $LOCATION_THROBBER
+    fi
+
   fi
 
   # Required to maintain the Steam update branch between desktop & Steam Game Mode
