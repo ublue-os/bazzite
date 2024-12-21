@@ -2,7 +2,7 @@
 set -eo pipefail
 if [[ -z ${project_root} ]]; then
     project_root=$(git rev-parse --show-toplevel)
-fi 
+fi
 if [[ -z ${git_branch} ]]; then
     git_branch=$(git branch --show-current)
 fi
@@ -37,7 +37,7 @@ $container_mgr build -f Containerfile \
     --build-arg="BASE_IMAGE_NAME=${base_image}" \
     --build-arg="BASE_IMAGE_FLAVOR=${flavor}" \
     --build-arg="IMAGE_FLAVOR=${flavor}" \
-    --build-arg="KERNEL_FLAVOR=fsync-ba" \
+    --build-arg="KERNEL_FLAVOR=bazzite" \
     --build-arg="SOURCE_IMAGE=${base_image}-${flavor}" \
     --build-arg="FEDORA_MAJOR_VERSION=${latest}" \
     --target="${target}" \
