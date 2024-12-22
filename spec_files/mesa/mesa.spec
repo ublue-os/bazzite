@@ -88,6 +88,11 @@ Patch10:        gnome-shell-glthread-disable.patch
 # https://gitlab.com/evlaV/mesa/
 Patch20:        valve.patch
 
+# Temporary: Patches for Indiana Jones and the Great Cicle
+# (Attempt 2, thx mr. pitoiset for moar fixes)
+# Remove this once we get Mesa 24.3.x in upstream fedora
+Patch30:        indiana-2.patch
+
 BuildRequires:  meson >= 1.3.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
