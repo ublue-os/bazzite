@@ -17,11 +17,6 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
-        Sunshine:
-          description: A self-hosted game stream host for Moonlight
-          default: false
-          packages:
-          - Enable Sunshine: ujust setup-sunshine enable
         EmuDeck:
           description: A utility for installing and configuring emulators.
           default: false
