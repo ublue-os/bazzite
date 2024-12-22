@@ -28,6 +28,7 @@ setup-waydroid ACTION="":
         sudo systemctl enable --now waydroid-container
       fi
       sudo waydroid init -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor'
+      sudo restorecon -R /var/lib/waydroid
       echo "Waydroid has been initialized, please run waydroid once before you Configure Waydroid"
     elif [[ "${OPTION,,}" =~ ^configure ]]; then
       git clone https://github.com/ublue-os/waydroid_script.git --depth 1 /tmp/waydroid_script
