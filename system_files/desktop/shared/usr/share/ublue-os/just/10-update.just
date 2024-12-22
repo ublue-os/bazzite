@@ -41,3 +41,7 @@ alias changelog := changelogs
 # Show the changelog
 changelogs:
     /usr/bin/glow https://raw.githubusercontent.com/ublue-os/bazzite/main/CHANGELOG-SHORT.md --pager
+
+# Rebase assistant
+rebase-helper:
+    @/usr/bin/ublue-rebase-helper

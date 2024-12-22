@@ -1,0 +1,109 @@
+#!/usr/bin/bash
+
+#shellcheck disable=1091
+source /usr/lib/ujust/ujust.sh
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
+CURRENT_IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
+CURRENT_TAG=$(jq -r '."version"' < $IMAGE_INFO)
+CHANNELS=(stable testing)
+BASE_IMAGE_PATH="ghcr.io/ublue-os"
+
+function rebase_channel(){
+    clear
+    echo "Which channel would you like to rebase to?"
+    echo "* stable - weekly builds"
+    echo "* testing - for enthusiasts"
+    target_tag=$(Choose cancel "${CHANNELS[@]}")
+    if [[ "$target_tag" == "cancel" ]]; then
+        exit 0
+    fi
+    rebase_target="$BASE_IMAGE_PATH/$IMAGE_NAME:$target_tag"
+}
+
+function rebase_date() {
+    clear
+    base_image="ghcr.io/ublue-os/${IMAGE_NAME}"
+    echo "Warning: This will pin you to a specific version, do not forget to rebase back to a channel to resume receiving updates."
+    valid_tags=( $(list_tags | sed 's/\"//g' | sed 's/,//g'))
+    echo "Select image"
+    target_tag=$(Choose cancel "${valid_tags[@]}")
+    if [[ "$target_tag" == "cancel" ]]; then
+        exit 0
+    fi
+    rebase_target="$BASE_IMAGE_PATH/$IMAGE_NAME:$target_tag"
+}
+
+function rebase_image() {
+    clear
+    echo "Choose which image to rebase to"
+    if [[ "$IMAGE_NAME" == *"gnome"* ]]; then
+        POSSIBLE_IMAGES=(\
+            bazzite-gnome \
+            bazzite-deck-gnome \
+            bazzite-gnome-nvidia \
+            bazzite-gnome-nvidia-open\
+        )
+    else
+        POSSIBLE_IMAGES=(\
+            bazzite \
+            bazzite-deck \
+            bazzite-nvidia \
+            bazzite-nvidia-open \
+        )
+    fi
+    
+    available_images=()
+    for image in "${POSSIBLE_IMAGES[@]}"; do
+    if [[ "$image" != "$IMAGE_NAME" ]]; then
+        available_images+=("$image")
+    fi
+    done
+    
+    new_image_name=$(Choose cancel "${available_images[@]}")
+    if [[ "$new_image_name" == "cancel" ]]; then
+        exit 0
+    fi
+
+    rebase_target="$BASE_IMAGE_PATH/$new_image_name:$CURRENT_TAG"
+}
+
+function list_tags(){
+    skopeo list-tags docker://$BASE_IMAGE_PATH/$IMAGE_NAME | grep -E --color=never -- "\"$CURRENT_IMAGE_BRANCH-[0-9]{2}\.(.+)\"" | sort -rV | head -n 30
+}
+
+function perform_rebase(){
+    clear
+    echo "Rebase Target is ${rebase_target}"
+    echo "Confirm Rebase"
+    if [[ $(Confirm) -ne "0" ]]; then
+        exit 0
+    fi
+
+    if /usr/bin/grep "^LockLayering=true" /etc/rpm-ostreed.conf &> /dev/null; then
+        pkexec bootc switch --enforce-container-sigpolicy "${rebase_target}"
+        exit 0
+    fi
+    rpm-ostree rebase ostree-image-signed:docker://"${rebase_target}"
+    exit 0
+}
+
+clear
+echo "Choose your rebase action."
+echo "channel - Switch between stable, test and unstable update channel"
+echo "date - Rebase to a specific dated version"
+echo "image - Switch to a new image entirely"
+
+option=$(Choose cancel channel date image)
+
+if [[ "$option" == "channel" ]]; then
+    rebase_channel
+elif [[ "$option" == "date" ]]; then
+    rebase_date
+elif [[ "$option" == "image" ]]; then
+    rebase_image
+else
+    exit 0
+fi
+
+perform_rebase
