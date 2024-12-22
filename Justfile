@@ -1,6 +1,6 @@
 export project_root := `git rev-parse --show-toplevel`
 export git_branch := ` git branch --show-current`
-export latest := "40"
+export latest := "41"
 export default_image := "kinoite"
 export default_target := "bazzite"
 
