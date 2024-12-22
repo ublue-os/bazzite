@@ -1,0 +1,171 @@
+From 4bf41595d70d77ec037bcf620b2cf9f3502c44ff Mon Sep 17 00:00:00 2001
+From: Atapi <34801996+Sterophonick@users.noreply.github.com>
+Date: Sat, 21 Dec 2024 22:13:39 -0700
+Subject: [PATCH] indiana jones 2: electric boogaloo
+
+---
+ src/amd/vulkan/radv_image.c           | 4 ++++
+ src/amd/vulkan/radv_instance.c        | 7 +++++++
+ src/amd/vulkan/radv_instance.h        | 2 ++
+ src/amd/vulkan/radv_physical_device.c | 1 +
+ src/amd/vulkan/radv_physical_device.h | 1 +
+ src/amd/vulkan/radv_shader.c          | 1 +
+ src/compiler/spirv/nir_spirv.h        | 5 +++++
+ src/util/00-radv-defaults.conf        | 8 ++++++++
+ src/util/driconf.h                    | 9 +++++++++
+ 9 files changed, 38 insertions(+)
+
+diff --git a/src/amd/vulkan/radv_image.c b/src/amd/vulkan/radv_image.c
+index 95afcef377d..047bd4e0d27 100644
+--- a/src/amd/vulkan/radv_image.c
++++ b/src/amd/vulkan/radv_image.c
+@@ -301,6 +301,10 @@ radv_use_dcc_for_image_early(struct radv_device *device, struct radv_image *imag
+    if (instance->drirc.disable_dcc_mips && pCreateInfo->mipLevels > 1)
+       return false;
+ 
++   /* Force disable DCC for stores to workaround game bugs. */
++   if (instance->drirc.disable_dcc_stores && (pCreateInfo->usage & VK_IMAGE_USAGE_STORAGE_BIT))
++      return false;
++
+    /* DCC MSAA can't work on GFX10.3 and earlier without FMASK. */
+    if (pCreateInfo->samples > 1 && pdev->info.gfx_level < GFX11 && (instance->debug_flags & RADV_DEBUG_NO_FMASK))
+       return false;
+diff --git a/src/amd/vulkan/radv_instance.c b/src/amd/vulkan/radv_instance.c
+index 2c64eda7cd8..2f034f18d6c 100644
+--- a/src/amd/vulkan/radv_instance.c
++++ b/src/amd/vulkan/radv_instance.c
+@@ -146,6 +146,7 @@ static const driOptionDescription radv_dri_options[] = {
+       DRI_CONF_RADV_DISABLE_TC_COMPAT_HTILE_GENERAL(false)
+       DRI_CONF_RADV_DISABLE_DCC(false)
+       DRI_CONF_RADV_DISABLE_DCC_MIPS(false)
++      DRI_CONF_RADV_DISABLE_DCC_STORES(false)
+       DRI_CONF_RADV_DISABLE_ANISO_SINGLE_LEVEL(false)
+       DRI_CONF_RADV_DISABLE_TRUNC_COORD(false)
+       DRI_CONF_RADV_DISABLE_SINKING_LOAD_INPUT_FS(false)
+@@ -163,6 +164,7 @@ static const driOptionDescription radv_dri_options[] = {
+       DRI_CONF_RADV_OVERRIDE_COMPUTE_SHADER_VERSION(0)
+       DRI_CONF_RADV_OVERRIDE_RAY_TRACING_SHADER_VERSION(0)
+       DRI_CONF_RADV_SSBO_NON_UNIFORM(false)
++      DRI_CONF_RADV_LOWER_TERMINATE_TO_DISCARD(false)
+       DRI_CONF_RADV_APP_LAYER()
+    DRI_CONF_SECTION_END
+ };
+@@ -261,6 +263,11 @@ radv_init_dri_options(struct radv_instance *instance)
+    instance->drirc.vk_require_astc = driQueryOptionb(&instance->drirc.options, "vk_require_astc");
+ 
+    instance->drirc.disable_dcc_mips = driQueryOptionb(&instance->drirc.options, "radv_disable_dcc_mips");
++
++   instance->drirc.disable_dcc_stores = driQueryOptionb(&instance->drirc.options, "radv_disable_dcc_stores");
++
++   instance->drirc.lower_terminate_to_discard =
++      driQueryOptionb(&instance->drirc.options, "radv_lower_terminate_to_discard");
+ }
+ 
+ static const struct vk_instance_extension_table radv_instance_extensions_supported = {
+diff --git a/src/amd/vulkan/radv_instance.h b/src/amd/vulkan/radv_instance.h
+index d53d67c0b24..9e7b90d12b1 100644
+--- a/src/amd/vulkan/radv_instance.h
++++ b/src/amd/vulkan/radv_instance.h
+@@ -69,6 +69,8 @@ struct radv_instance {
+       bool vk_require_etc2;
+       bool vk_require_astc;
+       bool disable_dcc_mips;
++      bool disable_dcc_stores;
++      bool lower_terminate_to_discard;
+       char *app_layer;
+       uint8_t override_graphics_shader_version;
+       uint8_t override_compute_shader_version;
+diff --git a/src/amd/vulkan/radv_physical_device.c b/src/amd/vulkan/radv_physical_device.c
+index ae77285a19c..fb05d114599 100644
+--- a/src/amd/vulkan/radv_physical_device.c
++++ b/src/amd/vulkan/radv_physical_device.c
+@@ -174,6 +174,7 @@ radv_physical_device_init_cache_key(struct radv_physical_device *pdev)
+    key->split_fma = !!(instance->debug_flags & RADV_DEBUG_SPLIT_FMA);
+    key->ssbo_non_uniform = instance->drirc.ssbo_non_uniform;
+    key->tex_non_uniform = instance->drirc.tex_non_uniform;
++   key->lower_terminate_to_discard = instance->drirc.lower_terminate_to_discard;
+    key->use_llvm = pdev->use_llvm;
+    key->use_ngg = pdev->use_ngg;
+    key->use_ngg_culling = pdev->use_ngg_culling;
+diff --git a/src/amd/vulkan/radv_physical_device.h b/src/amd/vulkan/radv_physical_device.h
+index 469ecc3e3d0..7addcc71822 100644
+--- a/src/amd/vulkan/radv_physical_device.h
++++ b/src/amd/vulkan/radv_physical_device.h
+@@ -64,6 +64,7 @@ struct radv_physical_device_cache_key {
+    uint32_t split_fma : 1;
+    uint32_t ssbo_non_uniform : 1;
+    uint32_t tex_non_uniform : 1;
++   uint32_t lower_terminate_to_discard : 1;
+    uint32_t use_llvm : 1;
+    uint32_t use_ngg : 1;
+    uint32_t use_ngg_culling : 1;
+diff --git a/src/amd/vulkan/radv_shader.c b/src/amd/vulkan/radv_shader.c
+index 17a1bce2590..a6711b7ab21 100644
+--- a/src/amd/vulkan/radv_shader.c
++++ b/src/amd/vulkan/radv_shader.c
+@@ -360,6 +360,7 @@ radv_shader_spirv_to_nir(struct radv_device *device, const struct radv_shader_st
+             },
+          .force_tex_non_uniform = pdev->cache_key.tex_non_uniform,
+          .force_ssbo_non_uniform = pdev->cache_key.ssbo_non_uniform,
++         .lower_terminate_to_discard = pdev->cache_key.lower_terminate_to_discard,
+       };
+       nir = spirv_to_nir(spirv, stage->spirv.size / 4, spec_entries, num_spec_entries, stage->stage, stage->entrypoint,
+                          &spirv_options, &pdev->nir_options[stage->stage]);
+diff --git a/src/compiler/spirv/nir_spirv.h b/src/compiler/spirv/nir_spirv.h
+index 348a6b82c9e..d955321f53c 100644
+--- a/src/compiler/spirv/nir_spirv.h
++++ b/src/compiler/spirv/nir_spirv.h
+@@ -130,6 +130,11 @@ struct spirv_to_nir_options {
+    /* Force SSBO accesses to be non-uniform. */
+    bool force_ssbo_non_uniform;
+ 
++   /* Whether OpTerminateInvocation should be lowered to OpKill to workaround
++    * game bugs.
++    */
++   bool lower_terminate_to_discard;
++
+    /* In Debug Builds, instead of emitting an OS break on failure, just return NULL from
+     * spirv_to_nir().  This is useful for the unit tests that want to report a test failed
+     * but continue executing other tests.
+diff --git a/src/util/00-radv-defaults.conf b/src/util/00-radv-defaults.conf
+index 84e4d59348b..ca39a19e095 100644
+--- a/src/util/00-radv-defaults.conf
++++ b/src/util/00-radv-defaults.conf
+@@ -110,6 +110,14 @@ Application bugs worked around in this file:
+             <option name="radv_legacy_sparse_binding" value="true" />
+         </application>
+ 
++        <application name="Indiana Jones: The Great Circle" application_name_match="TheGreatCircle">
++            <option name="radv_zero_vram" value="true" />
++            <option name="radv_legacy_sparse_binding" value="true" />
++            <option name="radv_disable_dcc_stores" value="true" />
++            <option name="radv_invariant_geom" value="true" />
++            <option name="radv_lower_terminate_to_discard" value="true" />
++        </application>
++
+         <application name="DOOM (2016)" application_name_match="DOOM$">
+             <option name="radv_disable_dcc" value="true" />
+         </application>
+diff --git a/src/util/driconf.h b/src/util/driconf.h
+index ea325d69ea4..8352211f64e 100644
+--- a/src/util/driconf.h
++++ b/src/util/driconf.h
+@@ -661,6 +661,15 @@
+    DRI_CONF_OPT_B(radv_disable_dcc_mips, def, \
+                   "Disable DCC for color images with mips")
+ 
++#define DRI_CONF_RADV_DISABLE_DCC_STORES(def) \
++   DRI_CONF_OPT_B(radv_disable_dcc_stores, def, \
++                  "Disable DCC for color storage images")
++
++#define DRI_CONF_RADV_LOWER_TERMINATE_TO_DISCARD(def) \
++   DRI_CONF_OPT_B(radv_lower_terminate_to_discard, def, \
++                  "Lower terminate to discard (which is implicitly demote)")
++
++
+ #define DRI_CONF_RADV_DISABLE_ANISO_SINGLE_LEVEL(def) \
+   DRI_CONF_OPT_B(radv_disable_aniso_single_level, def, \
+                  "Disable anisotropic filtering for single level images")
+-- 
+2.47.1
+
