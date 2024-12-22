@@ -1,4 +1,11 @@
 #!/usr/bin/bash
+
+# Exit immediately if this is a Midnight Commander (mc) subshell.
+# Fixes issue #2003.
+if [[ -n "$MC_SID" ]]; then
+	exit 0
+fi
+
 escape() {
 	sed 's/[&/\]/\\&/g' <<< "$1"
 }
