@@ -464,6 +464,9 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         yafti \
         stress-ng \
         btrfs-assistant \
+        edk2-ovmf \
+        qemu \
+        libvirt \
         lsb_release && \
     rpm-ostree install \
         ublue-update && \
