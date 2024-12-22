@@ -27,11 +27,6 @@ screens:
           default: false
           packages:
           - Retrieve EmuDeck: ujust get-emudeck
-        Sunshine:
-          description: A self-hosted game stream host for Moonlight
-          default: false
-          packages:
-          - Enable Sunshine: ujust setup-sunshine enable
         Resilio Sync:
           description: A file synchronization utility powered by BitTorrent
           default: false
