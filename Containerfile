@@ -254,7 +254,9 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-        bootc && \
+        bootc \
+        rpm-ostree \
+        rpm-ostree-libs && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
