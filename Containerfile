@@ -251,6 +251,10 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         /tmp/kernel-rpms/kernel-uki-virt-*.rpm && \
     rpm-ostree install \
         scx-scheds && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+        bootc && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
