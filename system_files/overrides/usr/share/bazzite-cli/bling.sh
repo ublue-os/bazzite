@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
 
+# Check if bling has already been sourced so that we dont break atuin. https://github.com/atuinsh/atuin/issues/380#issuecomment-1594014644
+[ "${BLING_SOURCED:-0}" -eq 1 ] && return 
+BLING_SOURCED=1
+
 # ls aliases
 if [ "$(command -v eza)" ]; then
     alias ll='eza -l --icons=auto --group-directories-first'
