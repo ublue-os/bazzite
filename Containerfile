@@ -770,7 +770,6 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl disable brew-update.timer && \
     systemctl disable displaylink.service && \
     systemctl enable input-remapper.service && \
-    systemctl unmask bazzite-flatpak-manager.service && \
     systemctl enable bazzite-flatpak-manager.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
     systemctl enable ublue-update.timer && \
