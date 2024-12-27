@@ -413,7 +413,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree install \
         discover-overlay \
-        Sunshine \
+        sunshine-fix \
         python3-pip \
         libadwaita \
         duperemove \
