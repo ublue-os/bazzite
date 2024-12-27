@@ -491,6 +491,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     ostree container commit
 
 # Install Steam & Lutris, plus supporting packages
+# Downgrade ibus to fix an issue with the Steam keyboard
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree install \
         jupiter-sd-mounting-btrfs \
@@ -521,6 +522,16 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         gobject-introspection \
         clinfo \
         steam && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+        ibus \
+        ibus-gtk2 \
+        ibus-gtk3 \
+        ibus-gtk4 \
+        ibus-libs \
+        ibus-panel \
+        ibus-setup && \
     rpm-ostree install \
         lutris \
         umu-launcher \
