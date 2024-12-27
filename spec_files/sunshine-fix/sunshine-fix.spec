@@ -20,7 +20,7 @@ Corrects a name change issue between original unofficial sunshine builds and the
 
 %install
 mkdir -p %{buildroot}%{_defaultlicensedir}/%{name}
-cp %{SOURCE0} %{buildroot}%{_defaultlicensedir}/%{name}/LICENSE
+install -D -m 0644 %{SOURCE0} %{buildroot}%{_defaultlicensedir}/%{name}/LICENSE
 
 %files
 %license LICENSE
