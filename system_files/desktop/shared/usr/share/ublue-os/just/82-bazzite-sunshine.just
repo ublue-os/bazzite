@@ -22,9 +22,7 @@ setup-sunshine ACTION="":
       OPTION=$(Choose "Enable" "Disable")
     fi
     if [[ "${OPTION,,}" =~ ^enable ]]; then
-      systemctl enable sunshine-workaround.service
       systemctl enable --user --now sunshine.service
     elif [[ "${OPTION,,}" =~ ^(remove|uninstall|disable) ]]; then
-      systemctl disable sunshine-workaround.service
       systemctl disable --user --now sunshine.service 
     fi
