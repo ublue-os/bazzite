@@ -29,8 +29,7 @@ setup-virtualization ACTION="":
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Virtualization Setup${normal}"
-      echo "NOTE: Enabling Virtualization will layer virt-manager and qemu"
-      echo "      this will slow down system updates by a lot."
+      echo "NOTE: Enabling Virtualization will install the virt-manager flatpak and set kernel args"
       OPTION=$(Choose \
         "Enable Virtualization" \
         "Disable Virtualization" \
@@ -42,7 +41,7 @@ setup-virtualization ACTION="":
     fi
     if [[ "${OPTION,,}" =~ (^enable[[:space:]]virtualization|virt-on) ]]; then
         if ! rpm -q virt-manager | grep -P "^virt-manager-" 1>/dev/null; then
-          echo "Installing QEMU and virt-manager..."
+          echo "Installing virt-manager..."
           flatpak install flathub org.virt_manager.virt-manager
           rpm-ostree kargs \
           --append-if-missing="kvm.ignore_msrs=1" \
@@ -60,8 +59,8 @@ setup-virtualization ACTION="":
         echo "${red}Disabling${n} bazzite-libvirtd-setup"
         sudo systemctl disable --now bazzite-libvirtd-setup.service 2> /dev/null
       fi
-      echo "Removing QEMU and virt-manager..."
-      rpm-ostree remove -y virt-manager edk2-ovmf qemu libvirt
+      echo "Removing virt-manager..."
+      flatpak uninstall org.virt_manager.virt-manager
       rpm-ostree kargs \
       --delete-if-present="kvm.ignore_msrs=1" \
       --delete-if-present="kvm.report_ignored_msrs=0"
