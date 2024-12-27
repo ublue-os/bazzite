@@ -502,7 +502,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         ibus-gtk4 \
         ibus-libs \
         ibus-panel \
-        ibus-setup && \
+        ibus-setup \
+        ibus-xinit && \
     rpm-ostree install \
         jupiter-sd-mounting-btrfs \
         at-spi2-core.i686 \
