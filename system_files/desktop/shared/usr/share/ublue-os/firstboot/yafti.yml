@@ -51,7 +51,7 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       packages:
-        - Supergfxctl (Hybrid GPU Switching): ujust enable-supergfxctl
+        - Supergfxctl (Laptop Hybrid GPU Switching): ujust enable-supergfxctl
   configure-bazzite:
     source: yafti.screen.package
     values:
