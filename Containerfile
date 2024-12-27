@@ -524,7 +524,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         steam && \
     rpm-ostree override replace \
     --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         ibus \
         ibus-gtk2 \
         ibus-gtk3 \
