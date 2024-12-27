@@ -59,7 +59,7 @@ screens:
           default: true
           packages:
           - Enable Updates: sudo -A ujust enable-deck-bios-firmware-updates
-        Visible Password Aestriks:
+        Visible Password Asterisks:
           description: Toggles pwfeedback on.
           default: true
           packages:

@@ -64,7 +64,7 @@ screens:
           default: true
           packages:
           - Set input group: sudo -A ujust add-user-to-input-group
-        Visible Password Aestriks:
+        Visible Password Asterisks:
             description: Toggles pwfeedback on.
             default: true
             packages:
