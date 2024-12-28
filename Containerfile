@@ -391,7 +391,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree install \
         libaacs \
         libbdplus \
-        libbluray && \
+        libbluray \
+        libbluray-utils && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-*.repo && \
     rpm-ostree override replace \
     --experimental \
