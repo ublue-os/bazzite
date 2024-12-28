@@ -76,7 +76,6 @@ setup-virtualization ACTION="":
       CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
       VENDOR_KARG="unset"
       if [[ ${VIRT_TEST} == *kvm.report_ignored_msrs* ]]; then
-        echo 'add_drivers+=" vfio vfio_iommu_type1 vfio-pci "' | sudo tee /etc/dracut.conf.d/vfio.conf
         rpm-ostree initramfs --enable
         if [[ ${CPU_VENDOR} == "AuthenticAMD" ]]; then
           VENDOR_KARG="amd_iommu=on"
