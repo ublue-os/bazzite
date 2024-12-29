@@ -100,7 +100,7 @@ setup-virtualization ACTION="":
           echo 'rpm-ostree kargs --append-if-missing="vfio_pci.ids=xxxx:yyyy,xxxx:yyzz"'
           echo "You will require a $(Urllink "https://www.amazon.com/s?k=hdmi+displayport+dummy+plug" "Dummy HDMI/DisplayPort plug (Ghost Adapter)") or hook the GPU"
           echo "to a separate monitor input in order to turn the GPU on when starting the VM."
-          echo "NOTE: Your second GPU cannot share the same ids as your main gpu and will not be usable by the host after you bind it to the vfio driver!"
+          echo "NOTE: Your second GPU should be as different as possible from your main GPU and will not be usable by the host after you bind it to the vfio driver!"
           echo ""
           echo "${b}Systems with 1 GPU${n}"
           echo "Once rebooted you can continue setting up whatever scripts and hooks you need"
