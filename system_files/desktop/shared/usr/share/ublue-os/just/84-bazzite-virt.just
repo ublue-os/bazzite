@@ -135,7 +135,7 @@ setup-virtualization ACTION="":
         fi
         echo "Removing deprecated dracut modules"
         sudo rm /etc/dracut.conf.d/vfio.conf
-        sudo rn /etc/modprobe.d/kvmfr.conf
+        sudo rm /etc/modprobe.d/kvmfr.conf
         rpm-ostree kargs \
         --delete-if-present="iommu=pt" \
         --delete-if-present="iommu=on" \
