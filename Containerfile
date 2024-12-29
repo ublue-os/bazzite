@@ -489,6 +489,12 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     chmod +x /usr/bin/installcab && \
     curl -Lo /usr/bin/install-mf-wmv https://github.com/KyleGospo/steam-proton-mf-wmv/blob/master/install-mf-wmv.sh && \
     chmod +x /usr/bin/install-mf-wmv && \
+    curl -Lo /tmp/ls-iommu.tar.gz $(curl https://api.github.com/repos/HikariKnight/ls-iommu/releases/latest | jq -r '.assets[] | select(.name| test(".*x86_64.tar.gz$")).browser_download_url') && \
+    mkdir -p /tmp/ls-iommu && \
+    tar --no-same-owner --no-same-permissions --no-overwrite-dir -xvzf /tmp/ls-iommu.tar.gz -C /tmp/ls-iommu && \
+    rm -f /tmp/ls-iommu.tar.gz && \
+    cp -r /tmp/ls-iommu/ls-iommu /usr/bin/ && \
+    rm -rf /tmp/ls-iommu && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
