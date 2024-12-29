@@ -17,6 +17,7 @@ _install-system-flatpaks:
 configure-grub ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
+    sudo touch /etc/default/grub
     GRUB_STATE="$(grep -P "^GRUB_TIMEOUT_STYLE=hidden" /etc/default/grub)"
     OPTION={{ ACTION }}
     if [ "$GRUB_STATE" == "GRUB_TIMEOUT_STYLE=hidden" ]; then
@@ -37,6 +38,7 @@ configure-grub ACTION="":
       OPTION=$(Choose "Hide Grub" "Unhide Grub" "Fix double ostree entry")
     fi
     if [[ "${OPTION,,}" =~ ^hide ]]; then
+      grep -q '^GRUB_TIMEOUT=' /etc/default/grub || echo 'GRUB_TIMEOUT=0' | sudo tee -a /etc/default/grub 1>/dev/null
       sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
       echo 'GRUB_TIMEOUT_STYLE=hidden' | sudo tee -a /etc/default/grub 1>/dev/null
       echo 'GRUB_HIDDEN_TIMEOUT=1' | sudo tee -a /etc/default/grub 1>/dev/null
