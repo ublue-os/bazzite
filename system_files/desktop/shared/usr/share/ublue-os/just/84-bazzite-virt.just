@@ -89,7 +89,7 @@ setup-virtualization ACTION="":
           rpm-ostree kargs \
             --append-if-missing="${VENDOR_KARG}" \
             --append-if-missing="iommu=pt" \
-            --append-if-missing="rd.driver.pre=vfio_pci" \
+            --append-if-missing="rd.driver.pre=vfio-pci" \
             --append-if-missing="vfio_pci.disable_vga=1"
           echo "VFIO will be enabled on next boot, make sure you enable IOMMU, VT-d or AMD-v in your BIOS!"
           echo "Please understand that since this is such a niche use case, support will be very limited!"
@@ -97,7 +97,7 @@ setup-virtualization ACTION="":
           echo ""
           echo "${b}Systems with multiple GPUs${n}"
           echo "Bind your unused/second GPU device ids to the vfio driver by running"
-          echo 'rpm-ostree kargs --append-if-missing="vfio-pci.ids=xxxx:yyyy,xxxx:yyzz"'
+          echo 'rpm-ostree kargs --append-if-missing="vfio_pci.ids=xxxx:yyyy,xxxx:yyzz"'
           echo "You will require a $(Urllink "https://www.amazon.com/s?k=hdmi+displayport+dummy+plug" "Dummy HDMI/DisplayPort plug (Ghost Adapter)") or hook the GPU"
           echo "to a separate monitor input in order to turn the GPU on when starting the VM."
           echo "NOTE: Your second GPU cannot share the same ids as your main gpu and will not be usable by the host after you bind it to the vfio driver!"
@@ -141,7 +141,7 @@ setup-virtualization ACTION="":
         --delete-if-present="iommu=on" \
         --delete-if-present="amd_iommu=on" \
         --delete-if-present="intel_iommu=on" \
-        --delete-if-present="rd.driver.pre=vfio_pci" \
+        --delete-if-present="rd.driver.pre=vfio-pci" \
         --delete-if-present="vfio_pci.disable_vga=1" \
         --delete-if-present="vfio_pci.disable_vga=0" \
         $VFIO_IDS_KARG \
