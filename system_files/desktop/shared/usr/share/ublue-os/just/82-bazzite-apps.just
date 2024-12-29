@@ -5,21 +5,17 @@ install-lact:
     #!/usr/bin/bash
     rpm-ostree kargs --append-if-missing=$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))")
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-        rpm-ostree install --apply-live -y lact-libadwaita
+        rpm-ostree install -y lact-libadwaita
     else
-        rpm-ostree install --apply-live -y lact
+        rpm-ostree install -y lact
     fi
-    sudo systemctl enable --now lactd
 
 # Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
 install-coolercontrol:
     #!/usr/bin/bash
     ublue-update --wait
     sudo wget https://copr.fedorainfracloud.org/coprs/codifryed/CoolerControl/repo/fedora-$(rpm -E %fedora)/codifryed-CoolerControl-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_codifryed-CoolerControl.repo
-    rpm-ostree install --apply-live -y liquidctl coolercontrol
-    systemctl enable coolercontrold.service
-    mkdir -p $HOME/.config/autostart
-    cp /usr/share/applications/org.coolercontrol.CoolerControl.desktop $HOME/.config/autostart/org.coolercontrol.CoolerControl.desktop
+    rpm-ostree install -y liquidctl coolercontrol
     echo 'Complete.'
 
 alias get-steamcmd := install-steamcmd
