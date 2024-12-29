@@ -93,6 +93,7 @@ setup-virtualization ACTION="":
             --append-if-missing="vfio_pci.disable_vga=1"
           echo "VFIO will be enabled on next boot, make sure you enable IOMMU, VT-d or AMD-v in your BIOS!"
           echo "Please understand that since this is such a niche use case, support will be very limited!"
+          echo 'Use the command "ls-iommu -grk" to get iommu information about your GPUs, use the "--help" flag for more options'
           echo ""
           echo "${b}Systems with multiple GPUs${n}"
           echo "Bind your unused/second GPU device ids to the vfio driver by running"
@@ -125,9 +126,16 @@ setup-virtualization ACTION="":
           echo "$VFIO_IDS"
           VFIO_IDS_KARG="--delete-if-present=\"$VFIO_IDS\""
         fi
-        echo "Removing dracut modules"
+        KVMFR_VAL="$(rpm-ostree kargs | sed -E 's/.+(kvmfr.static_size_mb=.+\s)/\1/' | awk '{ print $1 }' | grep kvmfr.static_size_mb)"
+        KVMFR_KARG=""
+        if [ -n "$KVMFR_VAL" ]; then
+          echo "Found KVMFR static_size_mb in kargs, adding the below line to removal list"
+          echo "$KVMFR_VAL"
+          KVMFR_KARG="--delete-if-present=\"$KVMFR_VAL\""
+        fi
+        echo "Removing deprecated dracut modules"
         sudo rm /etc/dracut.conf.d/vfio.conf
-        rpm-ostree initramfs --enable
+        sudo rn /etc/modprobe.d/kvmfr.conf
         rpm-ostree kargs \
         --delete-if-present="iommu=pt" \
         --delete-if-present="iommu=on" \
@@ -136,7 +144,8 @@ setup-virtualization ACTION="":
         --delete-if-present="rd.driver.pre=vfio_pci" \
         --delete-if-present="vfio_pci.disable_vga=1" \
         --delete-if-present="vfio_pci.disable_vga=0" \
-        $VFIO_IDS_KARG
+        $VFIO_IDS_KARG \
+        $KVMFR_KARG
       fi
     elif [[ "${OPTION,,}" =~ kvmfr ]]; then
       # Check if we are running on a Steam Deck
@@ -157,12 +166,14 @@ setup-virtualization ACTION="":
       fi
       echo ""
       echo "Setting up kvmfr module so it loads next boot"
-      sudo bash -c 'cat << KVMFR_DRACUT > /etc/dracut.conf.d/kvmfr.conf
-    install_items+=" /etc/modprobe.d/kvmfr.conf "
-    KVMFR_DRACUT'
       sudo bash -c "cat << KVMFR_MODPROBE > /etc/modprobe.d/kvmfr.conf
-    options kvmfr static_size_mb=128
+    # This is a dummy file and changing it does nothing
+    # If you want to change the kvmfr static_size_mb
+    # Run "rpm-ostree kargs --replace=kvmfr.static_size_mb=oldvalue=newvalue"
+    # Default value set by us is 128 which is enough for 4k SDR
+    # Find the current value by running "rpm-ostree kargs"
     KVMFR_MODPROBE"
+      rpm-ostree kargs --append-if-missing="kvmfr.static_size_mb=128"
       echo "Adding udev rule for /dev/kvmfr0"
       sudo bash -c 'cat << KVMFR_UDEV > /etc/udev/rules.d/99-kvmfr.rules
     SUBSYSTEM=="kvmfr", OWNER="'$USER'", GROUP="qemu", MODE="0660"
@@ -221,14 +232,11 @@ setup-virtualization ACTION="":
       echo "Most ghost display adapters max out at 4k, hence the default value of 128mb."
       echo ""
       echo "If you need to change it to a different value"
-      echo "you can do that in /etc/modprobe.d/kvmfr.conf"
+      echo "you can do that by running \"rpm-ostree kargs --replace=kvmfr.static_size_mb=128=newvalue\""
+      echo "You can check the current kernel arguments with \"rpm-ostree kargs\""
       echo "$(Urllink "https://looking-glass.io/docs/rc/ivshmem_kvmfr/#libvirt" "Please read official documentation for kvmfr for how to use it")"
-      echo ""
-      echo "Press OK to start the process of regenerating your initramfs, this will take a long time"
-      echo "and there is no good way to track progress for it, if anything is wrong it will error out."
-      echo "${b}NOTE: You can start using kvmfr right now without rebooting, but you will need to regenerate initramfs for it to auto load next boot.${n}"
+      echo "${b}NOTE: You can start using kvmfr right now without rebooting if you already rebooted after enabling VFIO.${n}"
       CONFIRM=$(Choose OK)
-      rpm-ostree initramfs --enable
     elif [[ "${OPTION,,}" =~ group ]]; then
       if ! grep -q "^libvirt" /etc/group; then
         grep '^libvirt' /usr/lib/group | sudo tee -a /etc/group > /dev/null
