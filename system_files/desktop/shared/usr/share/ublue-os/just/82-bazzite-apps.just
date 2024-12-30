@@ -3,12 +3,14 @@
 # Install LACT for overclocking & undervolting AMD GPUs
 install-lact:
     #!/usr/bin/bash
+    ublue-update --wait
     rpm-ostree kargs --append-if-missing=$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))")
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
         rpm-ostree install -y lact-libadwaita
     else
         rpm-ostree install -y lact
     fi
+    echo 'Complete, please reboot to apply changes.'
 
 # Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
 install-coolercontrol:
@@ -16,7 +18,7 @@ install-coolercontrol:
     ublue-update --wait
     sudo wget https://copr.fedorainfracloud.org/coprs/codifryed/CoolerControl/repo/fedora-$(rpm -E %fedora)/codifryed-CoolerControl-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_codifryed-CoolerControl.repo
     rpm-ostree install -y liquidctl coolercontrol
-    echo 'Complete.'
+    echo 'Complete, please reboot to apply changes.'
 
 alias get-steamcmd := install-steamcmd
 
