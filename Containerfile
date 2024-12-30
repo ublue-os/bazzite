@@ -436,6 +436,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         tailscale \
         webapp-manager \
         btop \
+        duf \
         fish \
         lshw \
         xdotool \
