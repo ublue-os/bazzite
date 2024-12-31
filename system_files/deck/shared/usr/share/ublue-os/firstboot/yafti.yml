@@ -63,7 +63,7 @@ screens:
           description: Toggles pwfeedback on.
           default: true
           packages:
-          - Toggle password feedback: sudo -A ujust toggle-password-feedback enable
+          - Toggle password feedback: sudo -A ujust toggle-password-feedback on
         Hide GRUB Menu:
           description: Hide the GRUB menu on boot
           default: false
