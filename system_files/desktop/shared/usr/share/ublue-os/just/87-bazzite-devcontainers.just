@@ -21,6 +21,8 @@ install-docker-ce:
     rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 
     # Enable the service
     systemctl enable docker
+    # Enable the socket
+    systemctl enable docker.socket
     echo 'Complete, please reboot to apply changes.'
 
 add-user-to-docker-group:
