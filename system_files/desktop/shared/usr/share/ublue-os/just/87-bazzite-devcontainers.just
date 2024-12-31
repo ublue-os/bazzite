@@ -11,7 +11,6 @@ install-visual-studio-code:
     rpm-ostree install -y code
     echo 'Complete, please reboot to apply changes.'
 
-
 install-docker-ce:
     #!/usr/bin/bash
     # check for updates
@@ -25,6 +24,7 @@ install-docker-ce:
     echo 'Complete, please reboot to apply changes.'
 
 add-user-to-docker-group:
+    #!/usr/bin/bash
     if ! grep -q "^docker:" /etc/group; then
       grep '^docker:' /usr/lib/group | sudo tee -a /etc/group > /dev/null
     fi
