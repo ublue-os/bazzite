@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+sudo waydroid container restart
