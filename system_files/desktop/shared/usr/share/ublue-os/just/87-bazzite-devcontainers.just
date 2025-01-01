@@ -16,7 +16,7 @@ install-docker-ce:
     # check for updates
     ublue-update --wait
     # add yum repo
-    echo -e "[docker-ce-stable]\nname=Docker CE Stable - $basearch\nbaseurl=https://download.docker.com/linux/fedora/$releasever/$basearch/stable\nenabled=1\ngpgcheck=1\ngpgkey=https://download.docker.com/linux/fedora/gpg" | sudo tee /etc/yum.repos.d/docker-ce.repo > /dev/null
+    echo -e "[docker-ce-stable]\nname=Docker CE Stable - \$basearch\nbaseurl=https://download.docker.com/linux/fedora/\$releasever/\$basearch/stable\nenabled=1\ngpgcheck=1\ngpgkey=https://download.docker.com/linux/fedora/gpg" | sudo tee /etc/yum.repos.d/docker-ce.repo > /dev/null
     # install the layer
     rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 
     # Enable the service
