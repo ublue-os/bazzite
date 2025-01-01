@@ -1,5 +1,5 @@
-Name:           sunshine-fix
-Version:        2024.911.215655
+Name:           sunshine
+Version:        2025.101.215655
 Release:        100%{?dist}
 Summary:        Corrects a name change issue between original unofficial sunshine builds and the new official ones
 License:    	GPLv2
@@ -10,7 +10,7 @@ Source0:        LICENSE
 
 Requires:       Sunshine
 Provides:       sunshine = %{version}
-Obsoletes:      sunshine <= %{version}
+Obsoletes:      sunshine < %{version}
 
 %description
 Corrects a name change issue between original unofficial sunshine builds and the new official ones
