@@ -142,6 +142,18 @@ install-opentabletdriver:
     systemctl enable --user --now arch-opentabletdriver.service && \
     distrobox enter -n arch -- bash -c 'distrobox-export --app otd-gui'
 
+# Install Docker, a platform designed to help developers build, share, and run container applications
+install-docker:
+    #!/usr/bin/bash
+    sudo mkdir -p /var/lib/docker
+    echo 'Creating Docker group.'
+    sudo groupadd --gid 252 docker
+    echo 'Setting up Docker Distrobox Container.'
+    distrobox assemble create --replace --file /etc/distrobox/docker.ini --name docker
+    echo 'Installing docker-cli for the host.'
+    brew install docker
+    echo 'Complete.'
+
 # Create fedora distrobox if it doesn't exist
 [private]
 distrobox-check-fedora:
