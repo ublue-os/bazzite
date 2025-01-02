@@ -38,6 +38,8 @@ jobs:
           - bazzite-gnome-asus-nvidia
           - bazzite-asus-nvidia-open
           - bazzite-gnome-asus-nvidia-open
+          - bazzite-deck-nvidia
+          - bazzite-deck-nvidia-gnome
         major_version: [41]
     steps:
 
