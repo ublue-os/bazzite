@@ -173,7 +173,7 @@ jobs:
         run: rm -r ${{ github.workspace }}/docs && git clone https://github.com/KyleGospo/docs.bazzite.gg.git ${{ github.workspace }}/docs
         continue-on-error: true
       - name: Build offline documentation
-        uses: KyleGospo/docs.bazzite.gg/.github/workflows/build_mkdocs@main
+        uses: ./.github/workflows/build_mkdocs
         continue-on-error: true
         with:
           github_token: ${{ github.token }}
