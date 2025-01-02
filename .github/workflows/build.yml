@@ -418,12 +418,3 @@ jobs:
     if: github.event_name != 'pull_request'
     secrets: inherit
     uses: ./.github/workflows/generate_release.yml
-
-  build_iso:
-    name: Build ISO
-    needs: [push-ghcr]
-    if: github.ref_name == 'testing'
-    # Eventually would be nice for building images in PRs
-    #if: ${{ endsWith(github.event.pull_request.title, '[ISO]') }}
-    uses: ./.github/workflows/build_iso.yml
-    secrets: inherit
