@@ -83,6 +83,8 @@ jobs:
             target_image_flavor: asus
           - base_name: bazzite-deck-nvidia
             target_image_flavor: surface
+          - base_name: bazzite-deck
+            target_image_flavor: surface
           - target_image_flavor: surface
             target_nvidia_flavor: nvidia
     steps:
