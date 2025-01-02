@@ -8,7 +8,7 @@
 
 Name:           gamescope
 #Version:        100.%{gamescope_tag}
-Version:        101.%{short_commit}
+Version:        102.%{short_commit}
 Release:        1.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
@@ -26,6 +26,9 @@ Patch1:         handheld.patch
 
 # https://github.com/ValveSoftware/gamescope/pull/740
 Patch2:         740.patch
+
+# https://github.com/ValveSoftware/gamescope/pull/1671
+Patch3:         1671.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
