@@ -40,8 +40,6 @@ jobs:
           - bazzite-gnome-asus-nvidia-open
           - bazzite-surface
           - bazzite-gnome-surface
-          - bazzite-surface-nvidia
-          - bazzite-gnome-surface-nvidia
           - bazzite-surface-nvidia-open
           - bazzite-gnome-surface-nvidia-open
           - bazzite-deck-nvidia
