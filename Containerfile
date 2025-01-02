@@ -313,6 +313,12 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
         cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
         rm -rf /tmp/asus-firmware \
+    ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
+        curl -Lo /etc/yum.repos.d/linux-surface.repo https://pkg.surfacelinux.com/fedora/linux-surface.repo \
+        rpm-ostree install \
+            libwacom-surface \
+            iptsd && \
+        sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/linux-surface.repo \
     ; fi && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
