@@ -893,7 +893,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree install \
     greenboot \
-    greenboot-default-health-checks \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     steamdeck-dsp \
