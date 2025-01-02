@@ -11,7 +11,7 @@ REGISTRY = "docker://ghcr.io/ublue-os/"
 IMAGE_MATRIX = {
     "base": ["desktop", "deck", "nvidia-closed", "nvidia-open"],
     "de": ["kde", "gnome"],
-    "image_flavor": ["main", "asus"],
+    "image_flavor": ["main", "asus", "surface"],
 }
 
 RETRIES = 3
@@ -33,6 +33,7 @@ OTHER_NAMES = {
     "gnome": "### Gnome Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
     "nvidia": "### Nvidia Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
     "asus": "### Asus Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
+    "surface": "### Surface Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
 }
 
 COMMITS_FORMAT = "### Commits\n| Hash | Subject |\n| --- | --- |{commits}\n\n"
@@ -203,6 +204,8 @@ def get_package_groups(prev: dict[str, Any], manifests: dict[str, Any]):
                 continue
 
             if t == "asus" and image_flavor != "asus":
+                continue
+            if t == "surface" and image_flavor != "surface":
                 continue
             if t == "nvidia" and "nvidia" not in base:
                 continue
