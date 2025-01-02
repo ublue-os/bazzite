@@ -315,9 +315,13 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         rm -rf /tmp/asus-firmware \
     ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
         curl -Lo /etc/yum.repos.d/linux-surface.repo https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
+        rpm-ostree override remove \
+            libwacom \
+            libwacom-data \
+            --install libwacom-surface \
+            --install libwacom-surface-data && \
         rpm-ostree install \
             iptsd \
-            libwacom-surface \
             libcamera \
             libcamera-tools \
             libcamera-gstreamer \
