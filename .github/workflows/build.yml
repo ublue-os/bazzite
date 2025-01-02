@@ -63,7 +63,7 @@ jobs:
         base_image_flavor: [main]
         base_name: [bazzite, bazzite-deck, bazzite-nvidia, bazzite-deck-nvidia]
         base_image_name: [kinoite, silverblue]
-        target_image_flavor: [main, asus]
+        target_image_flavor: [main, asus, surface]
         target_nvidia_flavor: [nvidia, nvidia-open]
         fedora_version: [41]
         include:
@@ -81,6 +81,8 @@ jobs:
             target_nvidia_flavor: nvidia
           - base_name: bazzite-deck-nvidia
             target_image_flavor: asus
+          - base_name: bazzite-deck-nvidia
+            target_image_flavor: surface
     steps:
       - name: Define env.CONTAINER_TARGET
         run: |
