@@ -340,6 +340,28 @@ if [ ! -f /etc/bazzite/fixups/snapper_cleanup ] &&
 fi
 touch /etc/bazzite/fixups/snapper_cleanup
 
+if [ ! -f /etc/bazzite/fixups/grub_fixup ]; then
+  # Grub settings
+  # Grub hidden timeout should be 2 if it does not exist
+  # So that when grub is hidden it exits quicker
+  if [ -z $(grep "GRUB_HIDDEN_TIMEOUT=" /etc/default/grub) ]; then
+    echo "Setting GRUB_HIDDEN_TIMEOUT=2"
+    echo "GRUB_HIDDEN_TIMEOUT=2" >> /etc/default/grub
+  fi
+
+  # Autohide grub menu if boot is successful
+  # menu_auto_hide=2 hides grub menu if previous boot is successful
+  # menu_auto_hide=1 same, except not if Windows/Other OS is installed
+  # Deck images cant use grub menu and often dual boot, so hide it always
+  # For desktop images, hide it only if no other OS is installed
+  if [[ $IMAGE_NAME =~ "deck" ]]; then
+    grub2-editenv - set menu_auto_hide=2
+  else
+    grub2-editenv - set menu_auto_hide=1
+  fi
+fi
+touch /etc/bazzite/fixups/grub_fixup
+
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
 echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
