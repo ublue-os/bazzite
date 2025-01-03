@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=52
+HWS_VER=53
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -339,6 +339,50 @@ if [ ! -f /etc/bazzite/fixups/snapper_cleanup ] &&
   snapper -c root delete-config
 fi
 touch /etc/bazzite/fixups/snapper_cleanup
+
+# Hide grub if its not hidden
+if [ ! -f /etc/bazzite/fixups/hide_grub ] &&
+  [ -f /etc/default/grub ] &&
+  [ ! -z $(grep "GRUB_TIMEOUT=5" /etc/default/grub) ]; then
+  echo "HIDING GRUB MENU"
+  # backup grub config
+  cp -f /etc/default/grub /etc/default/grub.bak
+
+  # set timeout style to hidden
+  if [ -z $(grep "GRUB_TIMEOUT_STYLE=" /etc/default/grub) ]; then
+    echo "GRUB_TIMEOUT_STYLE=hidden" >> /etc/default/grub
+  else
+    sed -i 's/GRUB_TIMEOUT_STYLE=.*/GRUB_TIMEOUT_STYLE=hidden/' /etc/default/grub
+  fi
+  # Grub hidden timeout should be 2
+  if [ -z $(grep "GRUB_HIDDEN_TIMEOUT=" /etc/default/grub) ]; then
+    echo "GRUB_HIDDEN_TIMEOUT=2" >> /etc/default/grub
+  else
+    sed -i 's/GRUB_HIDDEN_TIMEOUT=[0-9]*/GRUB_HIDDEN_TIMEOUT=2/' /etc/default/grub
+  fi
+  # Grub timeout should be zero (last as its dangerous)
+  if [ -z $(grep "GRUB_TIMEOUT=" /etc/default/grub) ]; then
+    echo "GRUB_TIMEOUT=0" >> /etc/default/grub
+  else
+    sed -i 's/GRUB_TIMEOUT=[0-9]*/GRUB_TIMEOUT=0/' /etc/default/grub
+  fi
+  # Set blscfg to true
+  if [ -z $(grep "GRUB_ENABLE_BLSCFG=" /etc/default/grub) ]; then
+    echo "GRUB_ENABLE_BLSCFG=true" >> /etc/default/grub
+  else
+    sed -i 's/GRUB_ENABLE_BLSCFG=.*/GRUB_ENABLE_BLSCFG=true/' /etc/default/grub
+  fi
+
+  # Update grub
+  if [ -d /sys/firmware/efi ]; then
+    echo "Updating EFI grub config"
+    grub2-mkconfig -o /etc/grub2-efi.cfg
+  else
+    echo "Updating BIOS grub config"
+    grub2-mkconfig -o /etc/grub2.cfg
+  fi
+fi
+touch /etc/bazzite/fixups/hide_grub
 
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
