@@ -438,6 +438,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree install \
+        greenboot \
         discover-overlay \
         sunshine \
         python3-pip \
@@ -827,6 +828,15 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
     systemctl --global disable sunshine.service && \
     systemctl disable waydroid-container.service && \
+    systemctl enable greenboot-task-runner \
+        greenboot-healthcheck \
+        greenboot-status \
+        greenboot-loading-message \
+        greenboot-grub2-set-counter \
+        greenboot-grub2-set-success \
+        greenboot-rpm-ostree-grub2-check-fallback \
+        redboot-auto-reboot \
+        redboot-task-runner && \
     curl -Lo /etc/dxvk-example.conf https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf && \
     curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/KyleGospo/waydroid-scripts/main/waydroid-choose-gpu.sh && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
@@ -892,7 +902,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 # Neptune firmware - done manually due to "TBD" license on needed audio firmware
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree install \
-    greenboot \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     steamdeck-dsp \
@@ -1008,15 +1017,6 @@ RUN /usr/libexec/containerbuild/image-info && \
     systemctl disable jupiter-biosupdate.service && \
     systemctl disable jupiter-controller-update.service && \
     systemctl disable batterylimit.service && \
-    systemctl enable greenboot-task-runner \
-        greenboot-healthcheck \
-        greenboot-status \
-        greenboot-loading-message \
-        greenboot-grub2-set-counter \
-        greenboot-grub2-set-success \
-        greenboot-rpm-ostree-grub2-check-fallback \
-        redboot-auto-reboot \
-        redboot-task-runner && \
     /usr/libexec/containerbuild/cleanup.sh && \
     mkdir -p /var/tmp && chmod 1777 /var/tmp && \
     ostree container commit
