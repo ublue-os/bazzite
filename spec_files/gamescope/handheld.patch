@@ -171,7 +171,7 @@ This reverts commit 299bc3410dcfd46da5e3c988354b60ed3a356900.
  2 files changed, 24 insertions(+), 16 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 18be94d..cd7e8ac 100644
+index 11a7cad..df7616d 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -3299,7 +3299,7 @@ found:;
@@ -183,7 +183,7 @@ index 18be94d..cd7e8ac 100644
  
  		// Always update X's idea of focus, but still dirty
  		// the it being outdated so we can resolve that globally later.
-@@ -6050,28 +6050,37 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
+@@ -6044,28 +6044,37 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
  			// Window just got a new available commit, determine if that's worth a repaint
  
  			// If this is an overlay that we're presenting, repaint
@@ -348,7 +348,7 @@ index 8381889..a76b51b 100644
  	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
  	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index cd7e8ac..3f3d499 100644
+index df7616d..4a17499 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -197,6 +197,7 @@ update_runtime_info();
@@ -368,7 +368,7 @@ index cd7e8ac..3f3d499 100644
  	{
  		gamescope::cv_touch_click_mode = (gamescope::TouchClickMode) get_prop(ctx, ctx->root, ctx->atoms.steamTouchClickModeAtom, 0u );
  	}
-@@ -7482,6 +7483,8 @@ steamcompmgr_main(int argc, char **argv)
+@@ -7476,6 +7477,8 @@ steamcompmgr_main(int argc, char **argv)
  					g_reshade_technique_idx = atoi(optarg);
  				} else if (strcmp(opt_name, "mura-map") == 0) {
  					set_mura_overlay(optarg);
@@ -413,7 +413,7 @@ index a76b51b..84e05a9 100644
  	"  --xwayland-count               create N xwayland servers\n"
  	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 3f3d499..5345b55 100644
+index 4a17499..da3115f 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -147,6 +147,7 @@ static lut3d_t g_tmpLut3d;
@@ -433,7 +433,7 @@ index 3f3d499..5345b55 100644
  	{
  		auto tex = vulkan_get_hacky_blank_texture();
  		if ( tex != nullptr )
-@@ -7485,6 +7486,8 @@ steamcompmgr_main(int argc, char **argv)
+@@ -7479,6 +7480,8 @@ steamcompmgr_main(int argc, char **argv)
  					set_mura_overlay(optarg);
  				} else if (strcmp(opt_name, "disable-touch-click") == 0) {
  					cv_disable_touch_click = true;
@@ -549,7 +549,7 @@ index 2398535..0621c65 100644
  	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
  	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 5345b55..6544cf0 100644
+index da3115f..69fd348 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -148,6 +148,7 @@ extern int g_nDynamicRefreshHz;
@@ -578,7 +578,7 @@ index 5345b55..6544cf0 100644
  		return false;
  
  	if ( g_bChangeDynamicRefreshBasedOnGameOpenRatherThanActive )
-@@ -7486,6 +7487,8 @@ steamcompmgr_main(int argc, char **argv)
+@@ -7480,6 +7481,8 @@ steamcompmgr_main(int argc, char **argv)
  					set_mura_overlay(optarg);
  				} else if (strcmp(opt_name, "disable-touch-click") == 0) {
  					cv_disable_touch_click = true;
@@ -650,10 +650,10 @@ index 0621c65..056e1c1 100644
  					g_customRefreshRates = parse_custom_refresh_rates( optarg );
  				} else if (strcmp(opt_name, "sharpness") == 0 ||
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 6544cf0..d541f70 100644
+index 69fd348..3dd64f8 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -7198,7 +7198,7 @@ void update_mode_atoms(xwayland_ctx_t *root_ctx, bool* needs_flush = nullptr)
+@@ -7192,7 +7192,7 @@ void update_mode_atoms(xwayland_ctx_t *root_ctx, bool* needs_flush = nullptr)
  	if (needs_flush)
  		*needs_flush = true;
  
@@ -746,7 +746,7 @@ disable VRR and use the classic frame limiter.
  1 file changed, 28 insertions(+), 2 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index d541f70..8e5ad6a 100644
+index 3dd64f8..7dacfe7 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -165,6 +165,7 @@ uint32_t g_reshade_technique_idx = 0;
@@ -815,7 +815,7 @@ Subject: fix(battery): run at half hz while at steamUI and disable VRR V2 +
  1 file changed, 32 insertions(+), 11 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 8e5ad6a..bc238e4 100644
+index 7dacfe7..4098c44 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -166,6 +166,9 @@ uint32_t g_reshade_technique_idx = 0;
@@ -921,7 +921,7 @@ index 8e5ad6a..bc238e4 100644
  	}
  	if ( ev->atom == ctx->atoms.gamescopeDisplayForceInternal )
  	{
-@@ -7634,6 +7638,23 @@ steamcompmgr_main(int argc, char **argv)
+@@ -7628,6 +7632,23 @@ steamcompmgr_main(int argc, char **argv)
  		// as a question.
  		const bool bIsVBlankFromTimer = vblank;
  
@@ -960,7 +960,7 @@ Subject: feat(battery): add atom for controlling frame halving
  2 files changed, 8 insertions(+)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index bc238e4..d968de5 100644
+index 4098c44..6c8ce74 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -5919,6 +5919,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
@@ -974,7 +974,7 @@ index bc238e4..d968de5 100644
  }
  
  static int
-@@ -7095,6 +7099,8 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
+@@ -7089,6 +7093,8 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
  	ctx->atoms.primarySelection = XInternAtom(ctx->dpy, "PRIMARY", false);
  	ctx->atoms.targets = XInternAtom(ctx->dpy, "TARGETS", false);
  
@@ -1068,7 +1068,7 @@ index f014be9..6bb0b88 100644
  
  			if ( bNeedsFullComposite )
 diff --git a/src/rendervulkan.hpp b/src/rendervulkan.hpp
-index d8a24e9..00f5ece 100644
+index b537170..ccabd88 100644
 --- a/src/rendervulkan.hpp
 +++ b/src/rendervulkan.hpp
 @@ -281,6 +281,8 @@ struct FrameInfo_t
@@ -1081,7 +1081,7 @@ index d8a24e9..00f5ece 100644
  	struct Layer_t
  	{
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index d968de5..86773db 100644
+index 6c8ce74..dfee904 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -169,6 +169,8 @@ bool g_bVRRRequested = false;
@@ -1121,7 +1121,7 @@ index d968de5..86773db 100644
  }
  
  static int
-@@ -7100,6 +7107,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
+@@ -7094,6 +7101,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
  	ctx->atoms.targets = XInternAtom(ctx->dpy, "TARGETS", false);
  
  	ctx->atoms.gamescopeFrameHalveAtom = XInternAtom( ctx->dpy, "GAMESCOPE_STEAMUI_HALFHZ", false );;
@@ -1129,7 +1129,7 @@ index d968de5..86773db 100644
  
  	ctx->root_width = DisplayWidth(ctx->dpy, ctx->scr);
  	ctx->root_height = DisplayHeight(ctx->dpy, ctx->scr);
-@@ -8067,9 +8075,10 @@ steamcompmgr_main(int argc, char **argv)
+@@ -8061,9 +8069,10 @@ steamcompmgr_main(int argc, char **argv)
  			bShouldPaint = false;
  		}
  
@@ -1544,7 +1544,7 @@ index 54d7608..10d6c78 100644
  
  	if ( pPipewireTexture != nullptr )
 diff --git a/src/rendervulkan.hpp b/src/rendervulkan.hpp
-index 00f5ece..8cffcbe 100644
+index ccabd88..51a62bc 100644
 --- a/src/rendervulkan.hpp
 +++ b/src/rendervulkan.hpp
 @@ -393,7 +393,7 @@ gamescope::OwningRc<CVulkanTexture> vulkan_create_texture_from_dmabuf( struct wl
@@ -1556,7 +1556,7 @@ index 00f5ece..8cffcbe 100644
  void vulkan_wait( uint64_t ulSeqNo, bool bReset );
  gamescope::Rc<CVulkanTexture> vulkan_get_last_output_image( bool partial, bool defer );
  gamescope::Rc<CVulkanTexture> vulkan_acquire_screenshot_texture(uint32_t width, uint32_t height, bool exportable, uint32_t drmFormat, EStreamColorspace colorspace = k_EStreamColorspace_Unknown);
-@@ -530,6 +530,9 @@ struct VulkanOutput_t
+@@ -522,6 +522,9 @@ struct VulkanOutput_t
  	// NIS
  	gamescope::OwningRc<CVulkanTexture> nisScalerImage;
  	gamescope::OwningRc<CVulkanTexture> nisUsmImage;
@@ -1566,7 +1566,7 @@ index 00f5ece..8cffcbe 100644
  };
  
  
-@@ -542,6 +545,7 @@ enum ShaderType {
+@@ -534,6 +537,7 @@ enum ShaderType {
  	SHADER_TYPE_RCAS,
  	SHADER_TYPE_NIS,
  	SHADER_TYPE_RGB_TO_NV12,
@@ -1654,77 +1654,9 @@ index 1eeaa25..5aa986a 100644
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: brainantifreeze <you@example.com>
-Date: Thu, 19 Dec 2024 09:16:15 +0000
-Subject: fix(nvidia): allow disabling Vulkan extension for nvidia to work
-
-This adds a workaround for #1592 which removes the
-VkPhysicalDevicePresentWaitFeaturesKHR extension in
-the layer if the environment variable
-GAMESCOPE_WSI_HIDE_PRESENT_WAIT_EXT is set.
-
-This resolves the current freezing issue on nVidia
-in dx12 (without having to set
-VKD3D_DISABLE_EXTENSIONS), dx11 (without having
-to patch DXVK not to use the extension) and in
-native vulkan games.
----
- layer/VkLayer_FROG_gamescope_wsi.cpp | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
-
-diff --git a/layer/VkLayer_FROG_gamescope_wsi.cpp b/layer/VkLayer_FROG_gamescope_wsi.cpp
-index 718a260..f33da7f 100644
---- a/layer/VkLayer_FROG_gamescope_wsi.cpp
-+++ b/layer/VkLayer_FROG_gamescope_wsi.cpp
-@@ -183,6 +183,16 @@ namespace GamescopeWSILayer {
-     return s_ensureMinImageCount;
-   }
- 
-+  static bool getHidePresentWait() {
-+    static bool s_hidePresentWait = []() -> bool {
-+      if (auto hide = parseEnv<bool>("GAMESCOPE_WSI_HIDE_PRESENT_WAIT_EXT")) {
-+        return *hide;
-+      }
-+      return false;
-+    }();
-+    return s_hidePresentWait;
-+  }
-+
-   // Taken from Mesa, licensed under MIT.
-   //
-   // No real reason to rewrite this code,
-@@ -588,7 +598,11 @@ namespace GamescopeWSILayer {
-       createInfo.ppEnabledExtensionNames = enabledExts.data();
- 
-       setenv("vk_xwayland_wait_ready", "false", 0);
--      setenv("vk_khr_present_wait", "true", 0);
-+      if (getHidePresentWait()) {
-+        setenv("vk_khr_present_wait", "false", 0);
-+      } else {
-+        setenv("vk_khr_present_wait", "true", 0);
-+      }
- 
-       VkResult result = pfnCreateInstanceProc(&createInfo, pAllocator, pInstance);
-       if (result != VK_SUCCESS)
-@@ -893,6 +907,10 @@ namespace GamescopeWSILayer {
-       const vkroots::VkInstanceDispatch* pDispatch,
-             VkPhysicalDevice             physicalDevice,
-             VkPhysicalDeviceFeatures2*   pFeatures) {
-+      if (getHidePresentWait()) {
-+        fprintf(stderr, "[Gamescope WSI] Removing VkPhysicalDevicePresentWaitFeaturesKHR because GAMESCOPE_WSI_HIDE_PRESENT_WAIT_EXT is set\n");
-+        vkroots::RemoveFromChain<VkPhysicalDevicePresentWaitFeaturesKHR>(pFeatures);
-+      }
-       pDispatch->GetPhysicalDeviceFeatures2(physicalDevice, pFeatures);
-     }
- 
--- 
-2.47.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: "Ruan E. Formigoni" <ruanformigoni@gmail.com>
 Date: Thu, 2 Jan 2025 17:07:36 +0100
-Subject: feat: implemented bicubic downscaling
+Subject: feat: implement bicubic downscaling
 
 From https://github.com/ValveSoftware/gamescope/pull/740
 ---
@@ -1800,10 +1732,10 @@ index 6d50f8d..c24b864 100644
  								g_wantedUpscaleFilter = (g_wantedUpscaleFilter == GamescopeUpscaleFilter::FSR) ?
  									GamescopeUpscaleFilter::LINEAR : GamescopeUpscaleFilter::FSR;
 diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
-index f90c096..9f136dd 100644
+index 3226400..7ae273f 100644
 --- a/src/Backends/WaylandBackend.cpp
 +++ b/src/Backends/WaylandBackend.cpp
-@@ -1624,6 +1624,7 @@ namespace gamescope
+@@ -1614,6 +1614,7 @@ namespace gamescope
              bNeedsFullComposite |= cv_composite_force;
              bNeedsFullComposite |= pFrameInfo->useFSRLayer0;
              bNeedsFullComposite |= pFrameInfo->useNISLayer0;
@@ -2059,7 +1991,7 @@ index 10d6c78..8b31c1e 100644
  		uint32_t inputX = frameInfo->layers[0].tex->width();
  		uint32_t inputY = frameInfo->layers[0].tex->height();
 diff --git a/src/rendervulkan.hpp b/src/rendervulkan.hpp
-index 8cffcbe..91e2af7 100644
+index 51a62bc..eeb304c 100644
 --- a/src/rendervulkan.hpp
 +++ b/src/rendervulkan.hpp
 @@ -270,6 +270,7 @@ struct FrameInfo_t
@@ -2070,7 +2002,7 @@ index 8cffcbe..91e2af7 100644
  	bool bFadingOut;
  	BlurMode blurLayer0;
  	int blurRadius;
-@@ -544,6 +545,7 @@ enum ShaderType {
+@@ -536,6 +537,7 @@ enum ShaderType {
  	SHADER_TYPE_EASU,
  	SHADER_TYPE_RCAS,
  	SHADER_TYPE_NIS,
@@ -2324,7 +2256,7 @@ index f2b8527..64cc1c9 100644
  
  const int EOTF_Gamma22 = 0;
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 86773db..f88576f 100644
+index dfee904..c2111d2 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -906,6 +906,7 @@ gamescope::ConCommand cc_debug_set_fps_limit( "debug_set_fps_limit", "Set refres
@@ -2369,7 +2301,7 @@ index 86773db..f88576f 100644
  		}
  		hasRepaint = true;
  	}
-@@ -7023,6 +7033,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
+@@ -7017,6 +7027,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
  	ctx->atoms.gamescopeLowLatency = XInternAtom( ctx->dpy, "GAMESCOPE_LOW_LATENCY", false );
  
  	ctx->atoms.gamescopeFSRFeedback = XInternAtom( ctx->dpy, "GAMESCOPE_FSR_FEEDBACK", false );
@@ -2377,7 +2309,7 @@ index 86773db..f88576f 100644
  
  	ctx->atoms.gamescopeBlurMode = XInternAtom( ctx->dpy, "GAMESCOPE_BLUR_MODE", false );
  	ctx->atoms.gamescopeBlurRadius = XInternAtom( ctx->dpy, "GAMESCOPE_BLUR_RADIUS", false );
-@@ -7281,6 +7292,7 @@ extern int g_nPreferredOutputWidth;
+@@ -7275,6 +7286,7 @@ extern int g_nPreferredOutputWidth;
  extern int g_nPreferredOutputHeight;
  
  static bool g_bWasFSRActive = false;
@@ -2385,7 +2317,7 @@ index 86773db..f88576f 100644
  
  bool g_bAppWantsHDRCached = false;
  
-@@ -7695,6 +7707,16 @@ steamcompmgr_main(int argc, char **argv)
+@@ -7689,6 +7701,16 @@ steamcompmgr_main(int argc, char **argv)
  			flush_root = true;
  		}
  
@@ -2402,7 +2334,7 @@ index 86773db..f88576f 100644
  		if (global_focus.IsDirty())
  			determine_and_apply_focus();
  
-@@ -7931,6 +7953,7 @@ steamcompmgr_main(int argc, char **argv)
+@@ -7925,6 +7947,7 @@ steamcompmgr_main(int argc, char **argv)
  			g_bSteamIsActiveWindow = false;
  			g_upscaleScaler = g_wantedUpscaleScaler;
  			g_upscaleFilter = g_wantedUpscaleFilter;
@@ -2434,6 +2366,74 @@ index 2347cbb..bc38c98 100644
  
  		Atom gamescopeBlurMode;
  		Atom gamescopeBlurRadius;
+-- 
+2.47.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: brainantifreeze <you@example.com>
+Date: Thu, 19 Dec 2024 09:16:15 +0000
+Subject: fix(nvidia): allow disabling Vulkan extension for nvidia to work
+
+This adds a workaround for #1592 which removes the
+VkPhysicalDevicePresentWaitFeaturesKHR extension in
+the layer if the environment variable
+GAMESCOPE_WSI_HIDE_PRESENT_WAIT_EXT is set.
+
+This resolves the current freezing issue on nVidia
+in dx12 (without having to set
+VKD3D_DISABLE_EXTENSIONS), dx11 (without having
+to patch DXVK not to use the extension) and in
+native vulkan games.
+---
+ layer/VkLayer_FROG_gamescope_wsi.cpp | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/layer/VkLayer_FROG_gamescope_wsi.cpp b/layer/VkLayer_FROG_gamescope_wsi.cpp
+index c817880..407dae8 100644
+--- a/layer/VkLayer_FROG_gamescope_wsi.cpp
++++ b/layer/VkLayer_FROG_gamescope_wsi.cpp
+@@ -496,7 +496,11 @@ namespace GamescopeWSILayer {
+       createInfo.ppEnabledExtensionNames = enabledExts.data();
+ 
+       setenv("vk_xwayland_wait_ready", "false", 0);
+-      setenv("vk_khr_present_wait", "true", 0);
++      if (getHidePresentWait()) {
++        setenv("vk_khr_present_wait", "false", 0);
++      } else {
++        setenv("vk_khr_present_wait", "true", 0);
++      }
+ 
+       VkResult result = pfnCreateInstanceProc(&createInfo, pAllocator, pInstance);
+       if (result != VK_SUCCESS)
+@@ -801,6 +805,10 @@ namespace GamescopeWSILayer {
+       const vkroots::VkInstanceDispatch* pDispatch,
+             VkPhysicalDevice             physicalDevice,
+             VkPhysicalDeviceFeatures2*   pFeatures) {
++      if (getHidePresentWait()) {
++        fprintf(stderr, "[Gamescope WSI] Removing VkPhysicalDevicePresentWaitFeaturesKHR because GAMESCOPE_WSI_HIDE_PRESENT_WAIT_EXT is set\n");
++        vkroots::RemoveFromChain<VkPhysicalDevicePresentWaitFeaturesKHR>(pFeatures);
++      }
+       pDispatch->GetPhysicalDeviceFeatures2(physicalDevice, pFeatures);
+     }
+ 
+@@ -1015,6 +1023,16 @@ namespace GamescopeWSILayer {
+       return value;
+     }
+ 
++    static bool getHidePresentWait() {
++      static bool s_hidePresentWait = []() -> bool {
++        if (auto hide = parseEnv<uint32_t>("GAMESCOPE_WSI_HIDE_PRESENT_WAIT_EXT")) {
++          return *hide == 1;
++        }
++        return false;
++      }();
++      return s_hidePresentWait;
++    }
++
+     static uint32_t getMinImageCount() {
+       static uint32_t s_minImageCount = []() -> uint32_t {
+         if (auto minCount = parseEnv<uint32_t>("GAMESCOPE_WSI_MIN_IMAGE_COUNT")) {
 -- 
 2.47.1
 
