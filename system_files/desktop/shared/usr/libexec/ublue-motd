@@ -37,7 +37,7 @@ if [[ -f "$TIP_FILE" ]]; then
 	GREENBOOT=''
 	if [[ -f /run/motd.d/boot-status ]]; then
 		if grep -q "GREEN" /run/motd.d/boot-status && grep -q "SUCCESS" /run/motd.d/boot-status; then
-			GREENBOOT='Boot Status: 󰄳'
+			GREENBOOT='Boot Status: Healthy 󰄳'
 		else
 			GREENBOOT=$(cat /run/motd.d/boot-status)
 		fi
