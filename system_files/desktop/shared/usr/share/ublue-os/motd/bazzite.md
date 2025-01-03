@@ -1,5 +1,6 @@
 # Welcome to Bazzite 󰊴
 󱋩 `%IMAGE_NAME%:%IMAGE_BRANCH%`
+󰟀 `%GREENBOOT%`
 
 |  Command | Description |
 | ------- | ----------- |
