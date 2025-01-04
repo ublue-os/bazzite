@@ -347,6 +347,14 @@ if [ ! -f /etc/bazzite/fixups/grub_fixup ]; then
     sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=3/' /etc/default/grub
   fi
 
+  # set timeout style to menu to show grub during countdown
+  # (unless GRUB_TIMEOUT=0)
+  if [ -z $(grep "GRUB_TIMEOUT_STYLE=" /etc/default/grub) ]; then
+    echo "GRUB_TIMEOUT_STYLE=menu" >> /etc/default/grub
+  else
+    sed -i 's/GRUB_TIMEOUT_STYLE=.*/GRUB_TIMEOUT_STYLE=menu/' /etc/default/grub
+  fi
+
   # Autohide grub menu if boot is successful
   # menu_auto_hide=2 hides grub menu if previous boot is successful
   # menu_auto_hide=1 same, except not if Windows/Other OS is installed
