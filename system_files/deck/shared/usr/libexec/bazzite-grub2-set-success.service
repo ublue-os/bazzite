@@ -1,0 +1,10 @@
+# In the future this can do more complex checks to ensure the update is
+# successful. For now, just assume the user will hold the button or
+# something within 5 minutes if an update fails.
+
+[Unit]
+Description=Mark update as successful
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/grub2-set-bootflag - unset boot_counter

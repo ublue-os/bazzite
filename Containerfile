@@ -1000,6 +1000,7 @@ RUN /usr/libexec/containerbuild/image-info && \
     systemctl enable cec-onsleep.service && \
     systemctl enable bazzite-tdpfix.service && \
     systemctl enable bazzite-grub2-set-counter.service && \
+    systemctl enable bazzite-grub2-set-success.timer && \
     systemctl --global disable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \
     systemctl disable ublue-update.timer && \
