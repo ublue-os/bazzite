@@ -8,7 +8,7 @@
 
 Name:           gamescope
 #Version:        100.%{gamescope_tag}
-Version:        104.%{short_commit}
+Version:        105.%{short_commit}
 Release:        1.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
@@ -113,8 +113,7 @@ sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/m
 cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
 %meson \
-    --auto-features=enabled \
-    -Dforce_fallback_for=vkroots,wlroots,libliftoff
+    -Dforce_fallback_for=stb,libdisplay-info,libliftoff,wlroots,vkroots
 %meson_build
 
 %install
