@@ -11,7 +11,7 @@
 
 set -eo pipefail
 
-maxbootcount=3
+maxbootcount=2
 
 if ! /usr/bin/grub2-editenv - set boot_counter="$maxbootcount"; then
     exit 1
