@@ -365,6 +365,15 @@ if [ ! -f /etc/bazzite/fixups/grub_fixup ]; then
   else
     grub2-editenv - set menu_auto_hide=1
   fi
+
+  # Update grub
+  if [ -d /sys/firmware/efi ]; then
+    echo "Updating EFI grub config"
+    grub2-mkconfig -o /etc/grub2-efi.cfg
+  else
+    echo "Updating BIOS grub config"
+    grub2-mkconfig -o /etc/grub2.cfg
+  fi
 fi
 touch /etc/bazzite/fixups/grub_fixup
 
