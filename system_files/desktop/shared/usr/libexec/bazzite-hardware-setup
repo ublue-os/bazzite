@@ -342,11 +342,9 @@ touch /etc/bazzite/fixups/snapper_cleanup
 
 if [ ! -f /etc/bazzite/fixups/grub_fixup ]; then
   # Grub settings
-  # Grub hidden timeout should be 2 if it does not exist
-  # So that when grub is hidden it exits quicker
-  if [ -z $(grep "GRUB_HIDDEN_TIMEOUT=" /etc/default/grub) ]; then
-    echo "Setting GRUB_HIDDEN_TIMEOUT=2"
-    echo "GRUB_HIDDEN_TIMEOUT=2" >> /etc/default/grub
+  # Lower grub timeout to 3 seconds if it is 5 seconds
+  if [ -n $(grep "GRUB_TIMEOUT=5" /etc/default/grub) ]; then
+    sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=3/' /etc/default/grub
   fi
 
   # Autohide grub menu if boot is successful
