@@ -438,7 +438,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree install \
-        greenboot \
         discover-overlay \
         sunshine \
         python3-pip \
@@ -828,15 +827,6 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
     systemctl --global disable sunshine.service && \
     systemctl disable waydroid-container.service && \
-    systemctl enable greenboot-task-runner \
-        greenboot-healthcheck \
-        greenboot-status \
-        greenboot-loading-message \
-        greenboot-grub2-set-counter \
-        greenboot-grub2-set-success \
-        greenboot-rpm-ostree-grub2-check-fallback \
-        redboot-auto-reboot \
-        redboot-task-runner && \
     curl -Lo /etc/dxvk-example.conf https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf && \
     curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/KyleGospo/waydroid-scripts/main/waydroid-choose-gpu.sh && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
@@ -1009,7 +999,11 @@ RUN /usr/libexec/containerbuild/image-info && \
     systemctl enable cec-onpoweroff.service && \
     systemctl enable cec-onsleep.service && \
     systemctl enable bazzite-tdpfix.service && \
+    systemctl enable bazzite-grub-boot-success.timer && \
+    systemctl enable bazzite-grub-boot-success.service && \
     systemctl --global disable sdgyrodsu.service && \
+    systemctl --global disable grub-boot-success.timer && \
+    systemctl disable grub-boot-indeterminate.service && \
     systemctl disable input-remapper.service && \
     systemctl disable ublue-update.timer && \
     systemctl disable jupiter-fan-control.service && \

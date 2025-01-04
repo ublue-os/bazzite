@@ -1,0 +1,8 @@
+[Unit]
+Description=Mark update as successful after the system has been alive for 3 minutes.
+
+[Timer]
+OnStartupSec=3min
+
+[Install]
+WantedBy=timers.target

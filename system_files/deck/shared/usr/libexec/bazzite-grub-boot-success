@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -eo pipefail
+
+maxbootcount=2
+
+if ! /usr/bin/grub2-editenv - set boot_success=1; then
+    exit 1
+fi
+
+if ! /usr/bin/grub2-editenv - set boot_indeterminate=0; then
+    exit 1
+fi
+
+if  [ ! -f /usr/bin/bootc ] ||
+    [ "$(sudo /usr/bin/bootc status --json | jq ".status.rollback")" == "null" ]; then
+    if ! /usr/bin/grub2-editenv - unset boot_counter; then
+        exit 1
+    fi
+    echo "Marking boot as succeeded, setting boot_success=1 and unsetting boot_counter (missing rollback)"
+else
+    if ! /usr/bin/grub2-editenv - set boot_counter="$maxbootcount"; then
+        exit 1
+    fi
+    echo "Marking boot as succeeded, setting boot_counter=$maxbootcount and boot_success=1"
+fi
