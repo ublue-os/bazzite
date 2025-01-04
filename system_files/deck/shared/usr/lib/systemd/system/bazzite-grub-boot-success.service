@@ -4,7 +4,12 @@
 
 [Unit]
 Description=Mark boot as successful and reset counter
+DefaultDependencies=no
+Before=shutdown.target
 
 [Service]
 Type=oneshot
 ExecStart=/usr/libexec/bazzite-grub-boot-success
+
+[Install]
+WantedBy=hibernate.target hybrid-sleep.target suspend-then-hibernate.target halt.target reboot.target shutdown.target
