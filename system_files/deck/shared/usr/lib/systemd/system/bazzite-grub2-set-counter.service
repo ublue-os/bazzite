@@ -1,0 +1,23 @@
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  This file is derived from greenboot.
+#
+#  greenboot is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+
+[Unit]
+Description=Set grub2 boot counter in preparation of upgrade
+DefaultDependencies=no
+Before=ostree-finalize-staged.service
+RequiresMountsFor=/boot
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/libexec/greenboot/bazzite-grub2-set-counter
+PrivateMounts=yes
+
+[Install]
+RequiredBy=ostree-finalize-staged.service

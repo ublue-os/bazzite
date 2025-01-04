@@ -1,0 +1,10 @@
+[Unit]
+Description=Mark update as successful after the user session has run 5 minutes. At 2 min, grub-boot-success also sets boot_success=1.
+ConditionUser=!@system
+ConditionVirtualization=!container
+
+[Timer]
+OnActiveSec=2min
+
+[Install]
+WantedBy=timers.target
