@@ -13,7 +13,7 @@ if ! /usr/bin/grub2-editenv - set boot_indeterminate=0; then
 fi
 
 if  [ ! -f /usr/bin/bootc ] ||
-    [ $(sudo /usr/bin/bootc status --json | jq ".status.rollback") == "null" ]; then
+    [ "$(sudo /usr/bin/bootc status --json | jq ".status.rollback")" == "null" ]; then
     if ! /usr/bin/grub2-editenv - unset boot_counter; then
         exit 1
     fi
