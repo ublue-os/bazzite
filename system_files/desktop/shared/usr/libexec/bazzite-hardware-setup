@@ -342,9 +342,16 @@ touch /etc/bazzite/fixups/snapper_cleanup
 
 if [ ! -f /etc/bazzite/fixups/grub_fixup ]; then
   # Grub settings
-  # Lower grub timeout to 3 seconds if it is 5 seconds
-  if [ -n $(grep "GRUB_TIMEOUT=5" /etc/default/grub) ]; then
-    sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=3/' /etc/default/grub
+  # Set grub timeout to 3 seconds
+  if [ -z $(grep "GRUB_TIMEOUT=" /etc/default/grub) ]; then
+    echo "GRUB_TIMEOUT=3" >> /etc/default/grub
+  else
+    sed -i 's/GRUB_TIMEOUT=[0-9]*/GRUB_TIMEOUT=3/' /etc/default/grub
+  fi
+
+  # Nuke hidden timeout as it will cause issues if GRUB_TIMEOUT exists
+  if [ -n $(grep "GRUB_HIDDEN_TIMEOUT=" /etc/default/grub) ]; then
+    sed -i 's/GRUB_HIDDEN_TIMEOUT=[0-9]*//' /etc/default/grub
   fi
 
   # set timeout style to menu to show grub during countdown
