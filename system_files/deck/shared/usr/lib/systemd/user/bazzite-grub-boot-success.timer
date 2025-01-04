@@ -1,0 +1,10 @@
+[Unit]
+Description=Mark update as successful after the user session has run 3 minutes.
+ConditionUser=!@system
+ConditionVirtualization=!container
+
+[Timer]
+OnActiveSec=3min
+
+[Install]
+WantedBy=timers.target

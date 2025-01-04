@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -eo pipefail
+
+maxbootcount=2
+
+if ! /usr/bin/grub2-editenv - set boot_success=1; then
+    exit 1
+fi
+
+if ! /usr/bin/grub2-editenv - set boot_counter="$maxbootcount"; then
+    exit 1
+fi
+
+echo "Assuming boot succeeded, setting boot_counter=$maxbootcount and boot_success=1"

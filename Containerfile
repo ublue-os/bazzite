@@ -999,7 +999,10 @@ RUN /usr/libexec/containerbuild/image-info && \
     systemctl enable cec-onpoweroff.service && \
     systemctl enable cec-onsleep.service && \
     systemctl enable bazzite-tdpfix.service && \
+    systemctl --global enable bazzite-grub-boot-success.timer && \
     systemctl --global disable sdgyrodsu.service && \
+    systemctl --global disable grub-boot-success.timer && \
+    systemctl disable grub-boot-indeterminate.service && \
     systemctl disable input-remapper.service && \
     systemctl disable ublue-update.timer && \
     systemctl disable jupiter-fan-control.service && \
