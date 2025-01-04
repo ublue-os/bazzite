@@ -15,13 +15,18 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
     fi
   fi
 
+  DECK_STARTUP="/usr/share/ublue-os/bazzite/bazzite.webm"
+  DECK_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend.webm"
+  OLED_STARTUP="/usr/share/ublue-os/bazzite/bazzite-oled.webm"
+  OLED_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend-oled.webm"
+
   # Check for Galileo model
   if [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
-    VIDEO_STARTUP="/usr/share/ublue-os/bazzite/bazzite-oled.webm"
-    VIDEO_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend-oled.webm"
+    VIDEO_STARTUP=$OLED_STARTUP
+    VIDEO_SUSPEND=$OLED_SUSPEND
   else
-    VIDEO_STARTUP="/usr/share/ublue-os/bazzite/bazzite.webm"
-    VIDEO_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend.webm"
+    VIDEO_STARTUP=$DECK_STARTUP
+    VIDEO_SUSPEND=$DECK_SUSPEND
   fi
 
   # Install Bazzite's Steam Game Mode Startup & Suspend Videos
@@ -30,11 +35,36 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo ]; then
 
     LOCATION_STARTUP=$HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
-    LOCATION_SUSPEND=$HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
-    LOCATION_THROBBER=$HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
-
+    LOCATION_STARTUP_DECK=$HOME/.local/share/Steam/steamui/movies/deck_startup.webm
+    LOCATION_STARTUP_OLED=$HOME/.local/share/Steam/steamui/movies/oled_startup.webm
+    
     if ! cmp --silent $VIDEO_STARTUP $LOCATION_STARTUP; then
       cp $VIDEO_STARTUP $LOCATION_STARTUP
+    fi
+
+    if ! cmp --silent $DECK_STARTUP $LOCATION_STARTUP_DECK; then
+      cp $DECK_STARTUP $LOCATION_STARTUP_DECK
+    fi
+
+    if ! cmp --silent $OLED_STARTUP $LOCATION_STARTUP_OLED; then
+      cp $OLED_STARTUP $LOCATION_STARTUP_OLED
+    fi
+    
+    LOCATION_SUSPEND_OLD=$HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
+    LOCATION_THROBBER_OLD=$HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
+    LOCATION_SUSPEND=$HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend.webm
+    LOCATION_THROBBER=$HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
+    LOCATION_SUSPEND_DECK=$HOME/.local/share/Steam/steamui/movies/deck-suspend-animation-from-throbber.webm
+    LOCATION_THROBBER_DECK=$HOME/.local/share/Steam/steamui/movies/deck-suspend-animation.webm
+    LOCATION_SUSPEND_OLED=$HOME/.local/share/Steam/steamui/movies/oled-suspend-animation-from-throbber.webm
+    LOCATION_THROBBER_OLED=$HOME/.local/share/Steam/steamui/movies/oled-suspend-animation.webm
+
+    if ! cmp --silent $VIDEO_SUSPEND $LOCATION_SUSPEND_OLD; then
+      cp $VIDEO_SUSPEND $LOCATION_SUSPEND_OLD
+    fi
+
+    if ! cmp --silent $VIDEO_SUSPEND $LOCATION_THROBBER_OLD; then
+      cp $VIDEO_SUSPEND $LOCATION_THROBBER_OLD
     fi
 
     if ! cmp --silent $VIDEO_SUSPEND $LOCATION_SUSPEND; then
@@ -45,6 +75,21 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
       cp $VIDEO_SUSPEND $LOCATION_THROBBER
     fi
 
+    if ! cmp --silent $DECK_SUSPEND $LOCATION_SUSPEND_DECK; then
+      cp $DECK_SUSPEND $LOCATION_SUSPEND_DECK
+    fi
+
+    if ! cmp --silent $DECK_SUSPEND $LOCATION_THROBBER_DECK; then
+      cp $DECK_SUSPEND $LOCATION_THROBBER_DECK
+    fi
+
+    if ! cmp --silent $OLED_SUSPEND $LOCATION_SUSPEND_OLED; then
+      cp $OLED_SUSPEND $LOCATION_SUSPEND_OLED
+    fi
+
+    if ! cmp --silent $OLED_SUSPEND $LOCATION_THROBBER_OLED; then
+      cp $OLED_SUSPEND $LOCATION_THROBBER_OLED
+    fi
   fi
 
   # Required to maintain the Steam update branch between desktop & Steam Game Mode
