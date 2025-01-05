@@ -16,7 +16,6 @@ _install-system-flatpaks:
 # Configure grub bootmenu visibility and fix duplicate entries
 configure-grub ACTION="":
     #!/usr/bin/bash
-    
     echo "Editing grub is no longer recommended and this script has been removed"
     echo
     echo "Reason:"
@@ -27,7 +26,6 @@ configure-grub ACTION="":
     echo
     echo "You can edit /etc/default/grub to change settings manually, then:"
     echo "grub2-mkconfig -o /etc/grub2-efi.cfg"
-    
 
 # Add user to "input" group required by certain controller drivers
 add-user-to-input-group:
