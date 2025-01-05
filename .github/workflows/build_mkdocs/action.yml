@@ -40,7 +40,7 @@ runs:
         python-version: "3.12"
 
     - name: Install Poetry
-      uses: abatilo/actions-poetry@v2
+      uses: abatilo/actions-poetry@v4
 
     - name: Configure Poetry
       working-directory: ${{ inputs.working_dir }}
@@ -75,7 +75,7 @@ runs:
 
     - name: Setup Pages
       if: ${{ inputs.upload_github_page == 'true' }}
-      uses: actions/configure-pages@v4
+      uses: actions/configure-pages@v5
       with:
         token: ${{ inputs.github_token }}
 
