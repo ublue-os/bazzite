@@ -75,7 +75,7 @@ runs:
 
     - name: Setup Pages
       if: ${{ inputs.upload_github_page == 'true' }}
-      uses: actions/configure-pages@v4
+      uses: actions/configure-pages@v5
       with:
         token: ${{ inputs.github_token }}
 
