@@ -654,8 +654,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         rpm-ostree override replace \
         --experimental \
         --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
-            mutter \
-            mutter-common \
             gnome-shell && \
         rpm-ostree install \
             nautilus-gsconnect \
