@@ -37,7 +37,8 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
     LOCATION_STARTUP=$HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
     LOCATION_SUSPEND=$HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend.webm
     LOCATION_SUSPEND_OLD=$HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
-    LOCATION_THROBBER=$HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
+    LOCATION_THROBBER=$HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend_from_throbber.webm
+    LOCATION_THROBBER_OLD=$HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
 
     if ! cmp --silent $VIDEO_STARTUP $LOCATION_STARTUP; then
       cp $VIDEO_STARTUP $LOCATION_STARTUP
@@ -53,6 +54,10 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
 
     if ! cmp --silent $VIDEO_SUSPEND $LOCATION_THROBBER; then
       cp $VIDEO_SUSPEND $LOCATION_THROBBER
+    fi
+    
+    if ! cmp --silent $VIDEO_SUSPEND $LOCATION_THROBBER_OLD; then
+      cp $VIDEO_SUSPEND $LOCATION_THROBBER_OLD
     fi
 
   fi
