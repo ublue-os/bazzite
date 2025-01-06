@@ -51,6 +51,15 @@ setup-virtualization ACTION="":
             sudo mkdir /var/lib/swtpm-localca
           fi
           sudo chown tss /var/lib/swtpm-localca
+          if sudo test ! -f "/etc/libvirt/hooks/qemu"; then
+            echo "Adding libvirt qemu hooks"
+            sudo grep -A1 -B1 "# Add" /etc/libvirt/hooks/qemu | sed 's/^# //g'
+            sudo wget 'https://raw.githubusercontent.com/PassthroughPOST/VFIO-Tools/master/libvirt_hooks/qemu' -O /etc/libvirt/hooks/qemu
+            sudo chmod +x /etc/libvirt/hooks/qemu
+            if sudo test ! -d "/etc/libvirt/hooks/qemu/qemu.d"; then
+              sudo mkdir /etc/libvirt/hooks/qemu/qemu.d
+            fi
+          fi
           sudo systemctl enable bazzite-libvirtd-setup.service \
             && echo "libvirtd will be enabled at next reboot"
           echo 'Please reboot to apply changes'
