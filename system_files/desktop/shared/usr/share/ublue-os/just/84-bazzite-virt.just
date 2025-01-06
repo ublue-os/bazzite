@@ -46,6 +46,20 @@ setup-virtualization ACTION="":
           rpm-ostree kargs \
           --append-if-missing="kvm.ignore_msrs=1" \
           --append-if-missing="kvm.report_ignored_msrs=0"
+          echo "Making sure swtpm will work"
+          if [ ! -d "/var/lib/swtpm-localca" ]; then
+            sudo mkdir /var/lib/swtpm-localca
+          fi
+          sudo chown tss /var/lib/swtpm-localca
+          if sudo test ! -f "/etc/libvirt/hooks/qemu"; then
+            echo "Adding libvirt qemu hooks"
+            sudo grep -A1 -B1 "# Add" /etc/libvirt/hooks/qemu | sed 's/^# //g'
+            sudo wget 'https://raw.githubusercontent.com/PassthroughPOST/VFIO-Tools/master/libvirt_hooks/qemu' -O /etc/libvirt/hooks/qemu
+            sudo chmod +x /etc/libvirt/hooks/qemu
+            if sudo test ! -d "/etc/libvirt/hooks/qemu/qemu.d"; then
+              sudo mkdir /etc/libvirt/hooks/qemu/qemu.d
+            fi
+          fi
           sudo systemctl enable bazzite-libvirtd-setup.service \
             && echo "libvirtd will be enabled at next reboot"
           echo 'Please reboot to apply changes'
@@ -166,6 +180,10 @@ setup-virtualization ACTION="":
       fi
       echo ""
       echo "Setting up kvmfr module so it loads next boot"
+      if [ -f "/etc/modprobe.d/kvmfr.conf" ]; then
+        echo "Re-creating dummy kvmfr modprobe file"
+        sudo rm /etc/modprobe.d/kvmfr.conf
+      fi
       sudo bash -c "cat << KVMFR_MODPROBE > /etc/modprobe.d/kvmfr.conf
     # This is a dummy file and changing it does nothing
     # If you want to change the kvmfr static_size_mb
@@ -174,6 +192,10 @@ setup-virtualization ACTION="":
     # Find the current value by running "rpm-ostree kargs"
     KVMFR_MODPROBE"
       rpm-ostree kargs --append-if-missing="kvmfr.static_size_mb=128"
+      if [ -f "/etc/udev/rules.d/99-kvmfr.rules" ]; then
+        echo "Re-creating kvmfr udev rules"
+        sudo rm /etc/udev/rules.d/99-kvmfr.rules
+      fi
       echo "Adding udev rule for /dev/kvmfr0"
       sudo bash -c 'cat << KVMFR_UDEV > /etc/udev/rules.d/99-kvmfr.rules
     SUBSYSTEM=="kvmfr", OWNER="'$USER'", GROUP="qemu", MODE="0660"
