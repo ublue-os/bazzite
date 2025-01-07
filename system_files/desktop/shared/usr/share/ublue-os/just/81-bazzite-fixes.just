@@ -48,3 +48,45 @@ fix-reset-steam:
     sleep 1
     bazzite-steam &
     exit 0
+
+# Toggle Bluetooth headset profile mode. If enabled, mic will be disabled on the bluetooth device, preventing the switch to headphone profile, which has poor audio quality. Disable to restore mic functionality.
+toggle-bt-mic:
+    #!/usr/bin/bash
+    CONFIG_FILE="/etc/wireplumber/wireplumber.conf.d/51-mitigate-annoying-profile-switch.conf"
+
+    # Check current status
+    if [ -f "$CONFIG_FILE" ]; then
+        echo "Headset profile mitigation is currently ${green}${b}enabled${n}."
+        echo "Do you want to ${red}${b}disable${n} it? (yes/no)"
+        read CHOICE
+        if [[ "${CHOICE,,}" == "yes" ]]; then
+            echo "Disabling mitigation..."
+            rm -f "$CONFIG_FILE"
+            systemctl --user restart wireplumber
+            echo "Mitigation has been ${red}${b}disabled${n}. Headset profile switching is now allowed."
+        else
+            echo "No changes were made."
+        fi
+    else
+        echo "Headset profile mitigation is currently ${red}${b}disabled${n}."
+        echo "Do you want to ${green}${b}enable${n} it? (yes/no)"
+        read CHOICE
+        if [[ "${CHOICE,,}" == "yes" ]]; then
+            echo "Enabling mitigation..."
+            mkdir -p "$(dirname "$CONFIG_FILE")"
+            cat <<EOL > "$CONFIG_FILE"
+
+wireplumber.settings = {
+  bluetooth.autoswitch-to-headset-profile = false
+}
+
+monitor.bluez.properties = {
+  bluez5.roles = [ a2dp_sink a2dp_source ]
+}
+EOL
+            systemctl --user restart wireplumber
+            echo "Mitigation has been ${green}${b}enabled${n}. Headset profile switching is now disabled."
+        else
+            echo "No changes were made."
+        fi
+    fi
