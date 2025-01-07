@@ -42,7 +42,7 @@
 
 O Bazzite é feito a partir do [ublue-os/main](https://github.com/ublue-os/main) e do [ublue-os/nvidia](https://github.com/ublue-os/nvidia) utilizando tecnologia [Fedora](https://fedoraproject.org/), o que significa que suporte expandido a hardware e drivers estão inclusos. Suplementarmente, o Bazzite traz os seguintes recursos:
 
-- Usa o [kernel fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) para suportar mais hardware e HDR, dentre outros vários patches.
+- Usa o [kernel bazzite](https://github.com/hhd-dev/kernel-bazzite) para possibilitar HDR e expandir o suporte a hardware, dentre outros vários patches - baseado no [kernel fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
 - HDR disponível no Game mode.
 - NVK disponível em versões não-Nvidia.
 - Suporte completo à decodificação de hardware em codecs H264.
@@ -51,8 +51,7 @@ O Bazzite é feito a partir do [ublue-os/main](https://github.com/ublue-os/main)
 - Suporte completo a [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Inclui os temas do SteamOS para KDE da Valve.
 - Inclui temas GTK3/4 semelhantes ao Vapor e VGUI2 do SteamOS. Instale o [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience) para usá-los.
-- [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), e [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) instalados e disponíveis por padrão
-- Utiliza o [TuneD](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/getting-started-with-tuned_monitoring-and-managing-system-status-and-performance) no lugar do PPD, integrado totalmente com o GNOME, KDE, e o Game mode. Esta é uma ferramenta incrivelmente poderosa que RedHat chega a [oferecer aulas sobre](https://www.redhat.com/en/services/training/rh442-red-hat-enterprise-performance-tuning).
+- [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), e [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) instalados e disponíveis por padrão.
 - [Switcheroo-Control com patches](https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/) que consertam a troca entre iGPU/dGPU em casos em que é quebrada por padrão.
 - Suporte a [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Só no KDE)</sup></sub>
 - [Extensão do shell ROM Properties Page](https://github.com/GerbilSoft/rom-properties) inclusa.
