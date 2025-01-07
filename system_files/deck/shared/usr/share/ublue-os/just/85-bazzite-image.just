@@ -174,6 +174,19 @@ configure-override-videos ACTION="":
       rm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
     fi
 
+# Restores the stock virtual keyboard under KDE & GNOME
+restore-virtual-keyboard:
+    #!/usr/bin/bash
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+      gnome-extensions disable block-caribou-36@lxylxy123456.ercli.dev
+    else
+      if [[ ! -f ~/.local/share/applications/com.github.maliit.keyboard.desktop ]]
+      mkdir -p ~/.local/share/applications/
+      cp /usr/share/ublue-os/backup/com.github.maliit.keyboard.desktop ~/.local/share/applications/com.github.maliit.keyboard.desktop
+    fi
+
 # Install hhd main branch locally until reboot, helpful for hhd testing and debugging. (rename to install-hhd-dev if we unhide)
 _hhd-dev:
     #!/usr/bin/bash
