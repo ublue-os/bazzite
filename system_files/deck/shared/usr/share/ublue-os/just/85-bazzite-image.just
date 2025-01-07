@@ -182,9 +182,10 @@ restore-virtual-keyboard:
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
       gnome-extensions disable block-caribou-36@lxylxy123456.ercli.dev
     else
-      if [[ ! -f ~/.local/share/applications/com.github.maliit.keyboard.desktop ]]
-      mkdir -p ~/.local/share/applications/
-      cp /usr/share/ublue-os/backup/com.github.maliit.keyboard.desktop ~/.local/share/applications/com.github.maliit.keyboard.desktop
+      if [[ ! -f ~/.local/share/applications/com.github.maliit.keyboard.desktop ]]; then
+        mkdir -p ~/.local/share/applications/
+        cp /usr/share/ublue-os/backup/com.github.maliit.keyboard.desktop ~/.local/share/applications/com.github.maliit.keyboard.desktop
+      fi
     fi
 
 # Install hhd main branch locally until reboot, helpful for hhd testing and debugging. (rename to install-hhd-dev if we unhide)
