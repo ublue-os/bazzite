@@ -53,9 +53,9 @@ setup-virtualization ACTION="":
           sudo chown tss /var/lib/swtpm-localca
           if sudo test ! -f "/etc/libvirt/hooks/qemu"; then
             echo "Adding libvirt qemu hooks"
-            sudo grep -A1 -B1 "# Add" /etc/libvirt/hooks/qemu | sed 's/^# //g'
             sudo wget 'https://raw.githubusercontent.com/PassthroughPOST/VFIO-Tools/master/libvirt_hooks/qemu' -O /etc/libvirt/hooks/qemu
             sudo chmod +x /etc/libvirt/hooks/qemu
+            sudo grep -A1 -B1 "# Add" /etc/libvirt/hooks/qemu | sed 's/^# //g'
             if sudo test ! -d "/etc/libvirt/hooks/qemu/qemu.d"; then
               sudo mkdir /etc/libvirt/hooks/qemu/qemu.d
             fi
