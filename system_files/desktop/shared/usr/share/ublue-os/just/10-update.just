@@ -40,4 +40,4 @@ alias changelog := changelogs
 
 # Show the changelog
 changelogs:
-    /usr/bin/glow https://raw.githubusercontent.com/ublue-os/bazzite/main/CHANGELOG-SHORT.md --pager
+    curl -s https://api.github.com/repos/ublue-os/bazzite/releases/latest | jq -r '.body'
