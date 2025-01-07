@@ -38,6 +38,10 @@ toggle-updates ACTION="prompt":
 
 alias changelog := changelogs
 
-# Show the changelog
+# Show the stable changelog
 changelogs:
     curl -s https://api.github.com/repos/ublue-os/bazzite/releases/latest | jq -r '.body'
+
+# Show the testing (pre-release) changelog
+changelogs-testing:
+    curl -s https://api.github.com/repos/ublue-os/bazzite/releases | jq -r 'map(select(.prerelease)) | .[0].body'
