@@ -71,7 +71,7 @@ jobs:
             is_latest_version: true
             is_stable_version: true
             kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
-            kernel_version: 6.12.8-201.bazzite.fc41.x86_64 # must match a cached version of the above flavor
+            kernel_version: 6.12.8-207.bazzite.fc41.x86_64 # must match a cached version of the above flavor
         exclude:
           - base_name: bazzite
             target_nvidia_flavor: nvidia
@@ -201,7 +201,7 @@ jobs:
             sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/akmods-${{ matrix.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
 
             # Add rechunk as well to remove this source of failure
-            sudo podman pull ghcr.io/hhd-dev/rechunk:v1.0.1
+            sudo podman pull ghcr.io/hhd-dev/rechunk:v1.1.1
 
       - name: Get source versions
         id: labels
@@ -323,7 +323,7 @@ jobs:
         id: rechunk
         uses: hhd-dev/rechunk@v1.1.1
         with:
-          rechunk: 'ghcr.io/hhd-dev/rechunk:v1.0.1'
+          rechunk: 'ghcr.io/hhd-dev/rechunk:v1.1.1'
           ref: 'raw-img'
           prev-ref: '${{ steps.generate-prev-ref.outputs.ref }}'
           version: '${{ steps.generate-version.outputs.tag }}'
