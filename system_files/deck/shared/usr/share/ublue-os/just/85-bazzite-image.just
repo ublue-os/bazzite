@@ -230,4 +230,3 @@ restore-gamemode-shortcut:
     chmod +x "$SHORTCUT_FILE"
     echo "Shortcut restored successfully at $SHORTCUT_FILE."
     echo "Note: The first time you use the shortcut, it may ask you to trust it. Please accept."
-    
