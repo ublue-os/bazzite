@@ -15,111 +15,111 @@ _install-system-flatpaks:
 
 # Configure grub bootmenu visibility. pass action 'help' for more info.
 configure-grub ACTION="":
-  #!/usr/bin/bash
-  source /usr/lib/ujust/ujust.sh
-  # Function to display usage/help with some color
-  print_help() {
-    echo -e "Usage: ujust configure-grub <option>"
-    echo
-    echo -e "Where <option> can be:"
-    echo -e "  ${bold}${cyan}hide${normal} = GRUB is hidden after a successful boot, even for dual-boot setups."
-    echo -e "  ${bold}${yellow}unhide${normal} = GRUB is hidden after a successful boot, but it will show if dual-booting."
-    echo -e "  ${bold}${green}show${normal} = GRUB always shows on boot."
-    echo
-    echo "If <option> is omitted, you will be prompted to choose interactively."
-  }
-  # Function to get the current GRUB menu_auto_hide setting and explain it
-  get_current_setting() {
-    local CURRENT_SETTING
-    CURRENT_SETTING=$(sudo grub2-editenv - list | grep menu_auto_hide | cut -d= -f2)
-    if [ -z "$CURRENT_SETTING" ]; then
-      echo "Current GRUB menu_auto_hide setting: ${bold}${red}Not Set (default to 0)${normal}"
-      echo "Explanation:"
-      echo "  - ${bold}0${normal}: GRUB always shows on boot."
-      return 0
-    else
-      case "$CURRENT_SETTING" in
-        0)
-          echo "Current GRUB menu_auto_hide setting: ${bold}${green}0 (Always Show)${normal}"
-          echo "Explanation:"
-          echo "  - ${bold}0${normal}: GRUB always shows on boot."
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    # Function to display usage/help with some color
+    print_help() {
+      echo -e "Usage: ujust configure-grub <option>"
+      echo
+      echo -e "Where <option> can be:"
+      echo -e "  ${bold}${cyan}hide${normal} = GRUB is hidden after a successful boot, even for dual-boot setups."
+      echo -e "  ${bold}${yellow}unhide${normal} = GRUB is hidden after a successful boot, but it will show if dual-booting."
+      echo -e "  ${bold}${green}show${normal} = GRUB always shows on boot."
+      echo
+      echo "If <option> is omitted, you will be prompted to choose interactively."
+    }
+    # Function to get the current GRUB menu_auto_hide setting and explain it
+    get_current_setting() {
+      local CURRENT_SETTING
+      CURRENT_SETTING=$(sudo grub2-editenv - list | grep menu_auto_hide | cut -d= -f2)
+      if [ -z "$CURRENT_SETTING" ]; then
+        echo "Current GRUB menu_auto_hide setting: ${bold}${red}Not Set (default to 0)${normal}"
+        echo "Explanation:"
+        echo "  - ${bold}0${normal}: GRUB always shows on boot."
+        return 0
+      else
+        case "$CURRENT_SETTING" in
+          0)
+            echo "Current GRUB menu_auto_hide setting: ${bold}${green}0 (Always Show)${normal}"
+            echo "Explanation:"
+            echo "  - ${bold}0${normal}: GRUB always shows on boot."
+            ;;
+          1)
+            echo "Current GRUB menu_auto_hide setting: ${bold}${yellow}1 (Hide After Successful Boot)${normal}"
+            echo "Explanation:"
+            echo "  - ${bold}1${normal}: GRUB is hidden after a successful boot, but it will show if dual-booting."
+            ;;
+          2)
+            echo "Current GRUB menu_auto_hide setting: ${bold}${cyan}2 (Always Hide)${normal}"
+            echo "Explanation:"
+            echo "  - ${bold}2${normal}: GRUB is hidden after a successful boot, even for dual-boot setups."
+            ;;
+          *)
+            echo "Current GRUB menu_auto_hide setting: ${bold}${red}Unknown${normal}"
+            echo "Explanation:"
+            echo "  - This setting is unrecognized. Reset it to 0, 1, or 2."
+            ;;
+        esac
+      fi
+    }
+    # Interactive menu for choosing the new behavior
+    interactive_menu() {
+      local options=(
+        "Always Hide Grub (menu_auto_hide=2)"
+        "Hide After Successful Boot (menu_auto_hide=1)"
+        "Always Show Grub (menu_auto_hide=0)"
+        "Exit without changes"
+      )
+      local choice
+      choice=$(ugum choose "${options[@]}")
+      echo "$choice"
+    }
+    # Function to apply the selected setting
+    apply_setting() {
+      local selected_option="$1"
+      # Support the interactive strings as well as short commands
+      case "$(echo "$selected_option" | tr '[:upper:]' '[:lower:]')" in
+        *"(menu_auto_hide=2)"*|hide)
+          sudo grub2-editenv - set menu_auto_hide=2
+          echo "GRUB menu is now set to ${bold}${cyan}Always Hide${normal}."
           ;;
-        1)
-          echo "Current GRUB menu_auto_hide setting: ${bold}${yellow}1 (Hide After Successful Boot)${normal}"
-          echo "Explanation:"
-          echo "  - ${bold}1${normal}: GRUB is hidden after a successful boot, but it will show if dual-booting."
+        *"(menu_auto_hide=1)"*|unhide)
+          sudo grub2-editenv - set menu_auto_hide=1
+          echo "GRUB menu is now set to ${bold}${yellow}Hide After Successful Boot${normal}."
           ;;
-        2)
-          echo "Current GRUB menu_auto_hide setting: ${bold}${cyan}2 (Always Hide)${normal}"
-          echo "Explanation:"
-          echo "  - ${bold}2${normal}: GRUB is hidden after a successful boot, even for dual-boot setups."
+        *"(menu_auto_hide=0)"*|show)
+          sudo grub2-editenv - set menu_auto_hide=0
+          echo "GRUB menu is now set to ${bold}${green}Always Show${normal}."
+          ;;
+        *"exit without changes"*|exit)
+          echo "${bold}No changes were made. Exiting...${normal}"
+          ;;
+        help)
+          print_help
           ;;
         *)
-          echo "Current GRUB menu_auto_hide setting: ${bold}${red}Unknown${normal}"
-          echo "Explanation:"
-          echo "  - This setting is unrecognized. Reset it to 0, 1, or 2."
+          echo "${bold}${red}Invalid option selected. No changes were made.${normal}"
           ;;
       esac
+    }
+    OPTION="{{ ACTION }}"   # from “configure-grub ACTION=...”
+    if [ "$OPTION" == "help" ]; then
+      print_help
+      exit 0
     fi
-  }
-  # Interactive menu for choosing the new behavior
-  interactive_menu() {
-    local options=(
-      "Always Hide Grub (menu_auto_hide=2)"
-      "Hide After Successful Boot (menu_auto_hide=1)"
-      "Always Show Grub (menu_auto_hide=0)"
-      "Exit without changes"
-    )
-    local choice
-    choice=$(ugum choose "${options[@]}")
-    echo "$choice"
-  }
-  # Function to apply the selected setting
-  apply_setting() {
-    local selected_option="$1"
-    # Support the interactive strings as well as short commands
-    case "$(echo "$selected_option" | tr '[:upper:]' '[:lower:]')" in
-      *"(menu_auto_hide=2)"*|hide)
-        sudo grub2-editenv - set menu_auto_hide=2
-        echo "GRUB menu is now set to ${bold}${cyan}Always Hide${normal}."
-        ;;
-      *"(menu_auto_hide=1)"*|unhide)
-        sudo grub2-editenv - set menu_auto_hide=1
-        echo "GRUB menu is now set to ${bold}${yellow}Hide After Successful Boot${normal}."
-        ;;
-      *"(menu_auto_hide=0)"*|show)
-        sudo grub2-editenv - set menu_auto_hide=0
-        echo "GRUB menu is now set to ${bold}${green}Always Show${normal}."
-        ;;
-      *"exit without changes"*|exit)
-        echo "${bold}No changes were made. Exiting...${normal}"
-        ;;
-      help)
-        print_help
-        ;;
-      *)
-        echo "${bold}${red}Invalid option selected. No changes were made.${normal}"
-        ;;
-    esac
-  }
-  OPTION="{{ ACTION }}"   # from “configure-grub ACTION=...”
-  if [ "$OPTION" == "help" ]; then
-    print_help
-    exit 0
-  fi
-  get_current_setting
-  echo
-  # If no ACTION was passed, go interactive
-  if [ -z "$OPTION" ]; then
-    NEW_SETTING=$(interactive_menu)
-    if [ -n "$NEW_SETTING" ]; then
-      apply_setting "$NEW_SETTING"
+    get_current_setting
+    echo
+    # If no ACTION was passed, go interactive
+    if [ -z "$OPTION" ]; then
+      NEW_SETTING=$(interactive_menu)
+      if [ -n "$NEW_SETTING" ]; then
+        apply_setting "$NEW_SETTING"
+      else
+        echo "${bold}No changes were made.${normal}"
+      fi
     else
-      echo "${bold}No changes were made.${normal}"
+      apply_setting "$OPTION"
     fi
-  else
-    apply_setting "$OPTION"
-  fi
 
 # Add user to "input" group required by certain controller drivers
 add-user-to-input-group:
