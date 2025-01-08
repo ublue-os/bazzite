@@ -13,10 +13,21 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --or-update ${FLATPAK_LIST}
 
-# Configure GRUB boot menu visibility
-configure-grub:
+# Configure grub bootmenu visibility. pass action 'help' for more info.
+configure-grub ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
+    # Function to display usage/help with some color
+    print_help() {
+      echo -e "Usage: ujust configure-grub <option>"
+      echo
+      echo -e "Where <option> can be:"
+      echo -e "  ${bold}${cyan}hide${normal}      = GRUB is hidden after a successful boot, even for dual-boot setups."
+      echo -e "  ${bold}${yellow}unhide${normal}    = GRUB is hidden after a successful boot, but it will show if dual-booting."
+      echo -e "  ${bold}${green}show${normal}      = GRUB always shows on boot."
+      echo
+      echo "If <option> is omitted, you will be prompted to choose interactively."
+    }
     # Function to get the current GRUB menu_auto_hide setting and explain it
     get_current_setting() {
         local CURRENT_SETTING
@@ -51,52 +62,60 @@ configure-grub:
             esac
         fi
     }
-    # Function to display an interactive menu using ugum
+    # Interactive menu for choosing the new behavior
     interactive_menu() {
         echo "Choose a new GRUB menu auto-hide behavior:"
         local options=(
-            "Hide Grub (menu_auto_hide=2)"
-            "Unhide Grub (menu_auto_hide=1)"
+            "Always Hide Grub (menu_auto_hide=2)"
+            "Hide After Successful Boot (menu_auto_hide=1)"
             "Always Show Grub (menu_auto_hide=0)"
         )
-        # Prompt the user to select an option
         local choice
         choice=$(ugum choose "${options[@]}")
-        echo "DEBUG: Selected choice is '$choice'"  # Debugging
         echo "$choice"
     }
     # Function to apply the selected setting
     apply_setting() {
         local selected_option="$1"
-        selected_option=$(echo "$selected_option" | xargs)  # Normalize input
-        case "$selected_option" in
-            *"(menu_auto_hide=2)"*)
+        # Support the interactive strings as well as short commands
+        case "$(echo "$selected_option" | tr '[:upper:]' '[:lower:]')" in
+            *"(menu_auto_hide=2)"*|hide)
                 sudo grub2-editenv - set menu_auto_hide=2
                 echo "GRUB menu is now set to ${bold}${cyan}Always Hide${normal}."
                 ;;
-            *"(menu_auto_hide=1)"*)
+            *"(menu_auto_hide=1)"*|unhide)
                 sudo grub2-editenv - set menu_auto_hide=1
                 echo "GRUB menu is now set to ${bold}${yellow}Hide After Successful Boot${normal}."
                 ;;
-            *"(menu_auto_hide=0)"*)
+            *"(menu_auto_hide=0)"*|show)
                 sudo grub2-editenv - set menu_auto_hide=0
                 echo "GRUB menu is now set to ${bold}${green}Always Show${normal}."
+                ;;
+            help)
+                print_help
                 ;;
             *)
                 echo "${bold}${red}Invalid option selected. No changes were made.${normal}"
                 ;;
         esac
     }
-    # Main logic
-    echo "Configuring GRUB Menu Behavior..."
+    OPTION="{{ ACTION }}"   # from “configure-grub ACTION=...”
+    if [ "$OPTION" == "help" ]; then
+      print_help
+      exit 0
+    fi
     get_current_setting
     echo
-    echo "Select a new behavior for the GRUB menu:"
-    NEW_SETTING=$(interactive_menu)
-    if [ -n "$NEW_SETTING" ]; then
-        apply_setting "$NEW_SETTING"
+    # If no ACTION was passed, go interactive
+    if [ -z "$OPTION" ]; then
+        NEW_SETTING=$(interactive_menu)
+        if [ -n "$NEW_SETTING" ]; then
+            apply_setting "$NEW_SETTING"
+        else
+            echo "${bold}No changes were made.${normal}"
+        fi
     else
-        echo "${bold}No changes were made.${normal}"
+        apply_setting "$OPTION"
     fi
 
 # Add user to "input" group required by certain controller drivers
