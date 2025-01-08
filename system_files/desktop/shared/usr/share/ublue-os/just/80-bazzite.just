@@ -17,12 +17,10 @@ install-system-flatpaks:
 configure-grub:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-
     # Function to get the current GRUB menu_auto_hide setting and explain it
     get_current_setting() {
         local CURRENT_SETTING
         CURRENT_SETTING=$(sudo grub2-editenv - list | grep menu_auto_hide | cut -d= -f2)
-
         if [ -z "$CURRENT_SETTING" ]; then
             echo "Current GRUB menu_auto_hide setting: ${bold}${red}Not Set (default to 0)${normal}"
             echo "Explanation:"
@@ -53,7 +51,6 @@ configure-grub:
             esac
         fi
     }
-
     # Function to display an interactive menu using ugum
     interactive_menu() {
         echo "Choose a new GRUB menu auto-hide behavior:"
@@ -62,19 +59,16 @@ configure-grub:
             "Unhide Grub (menu_auto_hide=1)"
             "Always Show Grub (menu_auto_hide=0)"
         )
-
         # Prompt the user to select an option
         local choice
         choice=$(ugum choose "${options[@]}")
         echo "DEBUG: Selected choice is '$choice'"  # Debugging
         echo "$choice"
     }
-
     # Function to apply the selected setting
     apply_setting() {
         local selected_option="$1"
         selected_option=$(echo "$selected_option" | xargs)  # Normalize input
-
         case "$selected_option" in
             *"(menu_auto_hide=2)"*)
                 sudo grub2-editenv - set menu_auto_hide=2
@@ -93,14 +87,12 @@ configure-grub:
                 ;;
         esac
     }
-
     # Main logic
     echo "Configuring GRUB Menu Behavior..."
     get_current_setting
     echo
     echo "Select a new behavior for the GRUB menu:"
     NEW_SETTING=$(interactive_menu)
-
     if [ -n "$NEW_SETTING" ]; then
         apply_setting "$NEW_SETTING"
     else
