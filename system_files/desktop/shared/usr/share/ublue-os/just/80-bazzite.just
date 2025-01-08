@@ -1,7 +1,7 @@
 # vim: set ft=make :
 
 # Install System Flatpaks (Support for Rebasing)
-_install-system-flatpaks:
+install-system-flatpaks:
     #!/usr/bin/bash
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
     BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
@@ -13,19 +13,99 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --or-update ${FLATPAK_LIST}
 
-# Configure grub bootmenu visibility and fix duplicate entries
-configure-grub ACTION="":
+# Configure GRUB boot menu visibility
+configure-grub:
     #!/usr/bin/bash
-    echo "Editing grub is no longer recommended and this script has been removed"
+    source /usr/lib/ujust/ujust.sh
+
+    # Function to get the current GRUB menu_auto_hide setting and explain it
+    get_current_setting() {
+        local CURRENT_SETTING
+        CURRENT_SETTING=$(sudo grub2-editenv - list | grep menu_auto_hide | cut -d= -f2)
+
+        if [ -z "$CURRENT_SETTING" ]; then
+            echo "Current GRUB menu_auto_hide setting: ${bold}${red}Not Set (default to 0)${normal}"
+            echo "Explanation:"
+            echo "  - ${bold}0${normal}: GRUB always shows on boot."
+            return 0
+        else
+            case "$CURRENT_SETTING" in
+                0)
+                    echo "Current GRUB menu_auto_hide setting: ${bold}${green}0 (Always Show)${normal}"
+                    echo "Explanation:"
+                    echo "  - ${bold}0${normal}: GRUB always shows on boot."
+                    ;;
+                1)
+                    echo "Current GRUB menu_auto_hide setting: ${bold}${yellow}1 (Hide After Successful Boot)${normal}"
+                    echo "Explanation:"
+                    echo "  - ${bold}1${normal}: GRUB is hidden after a successful boot, but it will show if dual-booting."
+                    ;;
+                2)
+                    echo "Current GRUB menu_auto_hide setting: ${bold}${cyan}2 (Always Hide)${normal}"
+                    echo "Explanation:"
+                    echo "  - ${bold}2${normal}: GRUB is hidden after a successful boot, even for dual-boot setups."
+                    ;;
+                *)
+                    echo "Current GRUB menu_auto_hide setting: ${bold}${red}Unknown${normal}"
+                    echo "Explanation:"
+                    echo "  - This setting is unrecognized. Reset it to 0, 1, or 2."
+                    ;;
+            esac
+        fi
+    }
+
+    # Function to display an interactive menu using ugum
+    interactive_menu() {
+        echo "Choose a new GRUB menu auto-hide behavior:"
+        local options=(
+            "Hide Grub (menu_auto_hide=2)"
+            "Unhide Grub (menu_auto_hide=1)"
+            "Always Show Grub (menu_auto_hide=0)"
+        )
+
+        # Prompt the user to select an option
+        local choice
+        choice=$(ugum choose "${options[@]}")
+        echo "DEBUG: Selected choice is '$choice'"  # Debugging
+        echo "$choice"
+    }
+
+    # Function to apply the selected setting
+    apply_setting() {
+        local selected_option="$1"
+        selected_option=$(echo "$selected_option" | xargs)  # Normalize input
+
+        case "$selected_option" in
+            *"(menu_auto_hide=2)"*)
+                sudo grub2-editenv - set menu_auto_hide=2
+                echo "GRUB menu is now set to ${bold}${cyan}Always Hide${normal}."
+                ;;
+            *"(menu_auto_hide=1)"*)
+                sudo grub2-editenv - set menu_auto_hide=1
+                echo "GRUB menu is now set to ${bold}${yellow}Hide After Successful Boot${normal}."
+                ;;
+            *"(menu_auto_hide=0)"*)
+                sudo grub2-editenv - set menu_auto_hide=0
+                echo "GRUB menu is now set to ${bold}${green}Always Show${normal}."
+                ;;
+            *)
+                echo "${bold}${red}Invalid option selected. No changes were made.${normal}"
+                ;;
+        esac
+    }
+
+    # Main logic
+    echo "Configuring GRUB Menu Behavior..."
+    get_current_setting
     echo
-    echo "Reason:"
-    echo "Grub is auto-hidden now on successful boots and reappears only if you"
-    echo "shutdown too early. You can still access it by holding shift. Deck"
-    echo "images will also automatically rollback after 2 failed boots, so grub"
-    echo "will need to be visible for you to see that."
-    echo
-    echo "You can edit /etc/default/grub to change settings manually, then:"
-    echo "grub2-mkconfig -o /etc/grub2-efi.cfg"
+    echo "Select a new behavior for the GRUB menu:"
+    NEW_SETTING=$(interactive_menu)
+
+    if [ -n "$NEW_SETTING" ]; then
+        apply_setting "$NEW_SETTING"
+    else
+        echo "${bold}No changes were made.${normal}"
+    fi
 
 # Add user to "input" group required by certain controller drivers
 add-user-to-input-group:
