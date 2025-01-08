@@ -212,15 +212,15 @@ restore-gamemode-shortcut:
     SKEL_FILE="/etc/skel/Desktop/Return.desktop"
     # Check if the shortcut already exists
     if [ -f "$SHORTCUT_FILE" ]; then
-        echo "The shortcut 'Return to Gaming Mode' already exists at $SHORTCUT_FILE."
-        echo "No changes were made."
-        exit 0
+      echo "The shortcut 'Return to Gaming Mode' already exists at $SHORTCUT_FILE."
+      echo "No changes were made."
+      exit 0
     fi
     # Check if the original file exists in skel
     if [ ! -f "$SKEL_FILE" ]; then
-        echo "Error: The original file does not exist at $SKEL_FILE."
-        echo "Unable to restore the shortcut."
-        exit 1
+      echo "Error: The original file does not exist at $SKEL_FILE."
+      echo "Unable to restore the shortcut."
+      exit 1
     fi
     # Copy the file from skel to the desktop
     echo "Restoring the 'Return to Gaming Mode' shortcut from $SKEL_FILE..."
