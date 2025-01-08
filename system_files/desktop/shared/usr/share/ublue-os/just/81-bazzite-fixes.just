@@ -53,32 +53,31 @@ fix-reset-steam:
 restore-gamemode-shortcut:
     #!/usr/bin/bash
 
-    # Define the Desktop file path
+    # Define paths
     SHORTCUT_FILE="$HOME/Desktop/Return.desktop"
+    SKEL_FILE="/etc/skel/Desktop/Return.desktop"
 
-    # Check if the file already exists
+    # Check if the shortcut already exists
     if [ -f "$SHORTCUT_FILE" ]; then
         echo "The shortcut 'Return to Gaming Mode' already exists at $SHORTCUT_FILE."
         echo "No changes were made."
         exit 0
     fi
 
-    # Create the Desktop file with the appropriate content
-    echo "Creating the 'Return to Gaming Mode' shortcut on the Desktop..."
-    mkdir -p "$HOME/Desktop"  # Ensure the Desktop directory exists
+    # Check if the original file exists in skel
+    if [ ! -f "$SKEL_FILE" ]; then
+        echo "Error: The original file does not exist at $SKEL_FILE."
+        echo "Unable to restore the shortcut."
+        exit 1
+    fi
 
-    # Write the content to the file using echo commands
-    echo '#!/usr/bin/env xdg-open' > "$SHORTCUT_FILE"
-    echo '[Desktop Entry]' >> "$SHORTCUT_FILE"
-    echo 'Name=Return to Gaming Mode' >> "$SHORTCUT_FILE"
-    echo 'Exec=systemctl start return-to-gamemode.service' >> "$SHORTCUT_FILE"
-    echo 'Icon=steamdeck-gaming-return' >> "$SHORTCUT_FILE"
-    echo 'Terminal=false' >> "$SHORTCUT_FILE"
-    echo 'Type=Application' >> "$SHORTCUT_FILE"
-    echo 'StartupNotify=false' >> "$SHORTCUT_FILE"
+    # Copy the file from skel to the desktop
+    echo "Restoring the 'Return to Gaming Mode' shortcut from $SKEL_FILE..."
+    mkdir -p "$HOME/Desktop"  # Ensure the Desktop directory exists
+    cp "$SKEL_FILE" "$SHORTCUT_FILE"
 
     # Ensure the file is executable
     chmod +x "$SHORTCUT_FILE"
 
-    echo "Shortcut created successfully at $SHORTCUT_FILE."
-    echo "Note: The first time you use the shortcut, it may ask you to trust it. Please confirm."
+    echo "Shortcut restored successfully at $SHORTCUT_FILE."
+    echo "Note: The first time you use the shortcut, it may ask you to trust it. Please accept."
