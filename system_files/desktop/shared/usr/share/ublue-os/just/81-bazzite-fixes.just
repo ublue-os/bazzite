@@ -48,3 +48,4 @@ fix-reset-steam:
     sleep 1
     bazzite-steam &
     exit 0
+    
