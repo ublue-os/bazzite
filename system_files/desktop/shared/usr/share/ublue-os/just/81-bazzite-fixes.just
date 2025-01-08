@@ -87,4 +87,3 @@ toggle-bt-mic:
     else
       echo "No changes were made."
     fi
-    
