@@ -48,3 +48,37 @@ fix-reset-steam:
     sleep 1
     bazzite-steam &
     exit 0
+
+# Restore the "Return to Gaming Mode" shortcut on the Desktop
+restore-gamemode-shortcut:
+    #!/usr/bin/bash
+
+    # Define the Desktop file path
+    SHORTCUT_FILE="$HOME/Desktop/Return.desktop"
+
+    # Check if the file already exists
+    if [ -f "$SHORTCUT_FILE" ]; then
+        echo "The shortcut 'Return to Gaming Mode' already exists at $SHORTCUT_FILE."
+        echo "No changes were made."
+        exit 0
+    fi
+
+    # Create the Desktop file with the appropriate content
+    echo "Creating the 'Return to Gaming Mode' shortcut on the Desktop..."
+    mkdir -p "$HOME/Desktop"  # Ensure the Desktop directory exists
+
+    # Write the content to the file using echo commands
+    echo '#!/usr/bin/env xdg-open' > "$SHORTCUT_FILE"
+    echo '[Desktop Entry]' >> "$SHORTCUT_FILE"
+    echo 'Name=Return to Gaming Mode' >> "$SHORTCUT_FILE"
+    echo 'Exec=systemctl start return-to-gamemode.service' >> "$SHORTCUT_FILE"
+    echo 'Icon=steamdeck-gaming-return' >> "$SHORTCUT_FILE"
+    echo 'Terminal=false' >> "$SHORTCUT_FILE"
+    echo 'Type=Application' >> "$SHORTCUT_FILE"
+    echo 'StartupNotify=false' >> "$SHORTCUT_FILE"
+
+    # Ensure the file is executable
+    chmod +x "$SHORTCUT_FILE"
+
+    echo "Shortcut created successfully at $SHORTCUT_FILE."
+    echo "Note: The first time you use the shortcut, it may ask you to trust it. Please confirm."
