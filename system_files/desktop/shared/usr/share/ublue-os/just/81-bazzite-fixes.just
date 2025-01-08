@@ -53,18 +53,15 @@ fix-reset-steam:
 toggle-bt-mic:
     #!/usr/bin/bash
     CONFIG_FILE="/etc/wireplumber/wireplumber.conf.d/51-mitigate-annoying-profile-switch.conf"
-
     # Check current status
     CURRENT_STATE="Disabled"
     if [ -f "$CONFIG_FILE" ]; then
         CURRENT_STATE="Enabled"
     fi
-
     # Prompt user for action
     echo "Bluetooth headset profile mitigation is currently: ${bold}${CURRENT_STATE}${normal}"
     echo "Enable or Disable Bluetooth headset profile mitigation?"
     OPTION=$(ugum choose Enable Disable)
-
     if [[ "${OPTION,,}" == "enable" ]]; then
         echo "You chose to enable mitigation. This will disable headset mic functionality."
         echo "Requesting root privileges..."
