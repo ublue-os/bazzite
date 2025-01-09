@@ -2,7 +2,7 @@
 
 SYS_ID="$(/usr/libexec/hwsupport/sysid)"
 
-if /usr/libexec/hwsupport/valve-hardware || [[ ":83E1:ROG Ally RC71L:ROG Ally X RC72LA:G1618-04:G1617-01:G1619-05:AIR Plus:AIR 1S:AIR 1S Limited:AIR:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:AOKZOE A1 Pro:G1619-04:Win600:Loki Max:Loki Zero:Loki MiniPro:V3:ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:" =~ ":$SYS_ID:" ]]; then
+if /usr/libexec/hwsupport/valve-hardware || [[ ":ROG Ally RC71L:ROG Ally X RC72LA:G1618-04:G1617-01:G1619-05:AIR Plus:AIR 1S:AIR 1S Limited:AIR:AYANEO GEEK:AYANEO 2:AYANEO 2S:AOKZOE A1 AR07:AOKZOE A1 Pro:G1619-04:Win600:Loki Max:Loki Zero:Loki MiniPro:V3:ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:" =~ ":$SYS_ID:" ]]; then
 	exit 0
 fi
 
