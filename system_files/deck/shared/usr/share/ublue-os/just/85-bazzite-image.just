@@ -203,3 +203,30 @@ _toggle-autologin:
     else
       sudo touch $DESKTOP_AUTOLOGIN
     fi
+
+# Restore the "Return to Gaming Mode" shortcut on the Desktop
+restore-gamemode-shortcut:
+    #!/usr/bin/bash
+    # Define paths
+    SHORTCUT_FILE="$HOME/Desktop/Return.desktop"
+    SKEL_FILE="/etc/skel/Desktop/Return.desktop"
+    # Check if the shortcut already exists
+    if [ -f "$SHORTCUT_FILE" ]; then
+      echo "The shortcut 'Return to Gaming Mode' already exists at $SHORTCUT_FILE."
+      echo "No changes were made."
+      exit 0
+    fi
+    # Check if the original file exists in skel
+    if [ ! -f "$SKEL_FILE" ]; then
+      echo "Error: The original file does not exist at $SKEL_FILE."
+      echo "Unable to restore the shortcut."
+      exit 1
+    fi
+    # Copy the file from skel to the desktop
+    echo "Restoring the 'Return to Gaming Mode' shortcut from $SKEL_FILE..."
+    mkdir -p "$HOME/Desktop"  # Ensure the Desktop directory exists
+    cp "$SKEL_FILE" "$SHORTCUT_FILE"
+    # Ensure the file is executable
+    chmod +x "$SHORTCUT_FILE"
+    echo "Shortcut restored successfully at $SHORTCUT_FILE."
+    echo "Note: The first time you use the shortcut, it may ask you to trust it. Please accept."
