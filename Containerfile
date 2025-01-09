@@ -502,6 +502,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         yafti \
         stress-ng \
         btrfs-assistant \
+        podman-compose \
         edk2-ovmf \
         qemu \
         libvirt \

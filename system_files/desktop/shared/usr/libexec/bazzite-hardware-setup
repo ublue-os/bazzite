@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=52
+HWS_VER=53
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -256,27 +256,10 @@ fi
 # SURFACE FIXES
 if [[ ":Microsoft:" =~ ":$VEN_ID:" ]]; then
   if ! [[ -f "/etc/modules-load.d/surface.conf" ]]; then
-    sed 's/^ *//' > "/etc/modules-load.d/surface.conf" << EOF
-      # Add modules necessary for Disk Encryption via keyboard
-      surface_aggregator
-      surface_aggregator_registry
-      surface_aggregator_hub
-      surface_hid_core
-      8250_dw
-
-      # Surface Laptop 3/Surface Book 3 and later
-      surface_hid
-      surface_kbd
-
-EOF
     if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
-      printf "# Support GPIO pins on AMD Surfaces\npinctrl_amd\n" >> "/etc/modules-load.d/surface.conf"
+      printf "# Support GPIO pins on AMD Surfaces\npinctrl_amd\n" > "/etc/modules-load.d/surface.conf"
     elif [[ "GenuineIntel" == "$CPU_VENDOR" ]]; then
-      sed 's/^ *//' >> "/etc/modules-load.d/surface.conf" << EOF
-        # Support LPSS on Intel Surfaces
-        intel_lpss
-        intel_lpss_pci
-
+      sed 's/^ *//' > "/etc/modules-load.d/surface.conf" << EOF
         # Support GPIO pins on Intel Surfaces
         # Surface Book 2
         pinctrl_sunrisepoint
@@ -292,8 +275,25 @@ EOF
 
         # For Surface Pro 10/Surface Laptop 6
         pinctrl_meteorlake
+
+        # Support LPSS on Intel Surfaces
+        intel_lpss
+        intel_lpss_pci
+
 EOF
     fi
+    sed 's/^ *//' >> "/etc/modules-load.d/surface.conf" << EOF
+      # Add modules necessary for Disk Encryption via keyboard
+      surface_aggregator
+      surface_aggregator_registry
+      surface_aggregator_hub
+      surface_hid_core
+      8250_dw
+
+      # Surface Laptop 3/Surface Book 3 and later
+      surface_hid
+      surface_kbd
+EOF
   fi
 fi
 
