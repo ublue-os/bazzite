@@ -225,6 +225,10 @@ setup-virtualization ACTION="":
       if [ ! -d "$HOME/.config/selinux_te/pp" ]; then
         mkdir -p "$HOME/.config/selinux_te/pp"
       fi
+      if [ -f "$HOME/.config/selinux_te/kvmfr.te" ]; then
+        echo "Re-creating kvmfr selinux type enforcement rules"
+        rm $HOME/.config/selinux_te/kvmfr.te
+      fi
       bash -c "cat << KVMFR_SELINUX > $HOME/.config/selinux_te/kvmfr.te
     module kvmfr 1.0;
 
@@ -236,6 +240,9 @@ setup-virtualization ACTION="":
 
     #============= svirt_t ==============
     allow svirt_t device_t:chr_file { open read write map };
+
+    #============= virtqemud_t ==============
+    allow virtqemud_t device_t:chr_file { read write };
     KVMFR_SELINUX"
       echo "This is the type enforcement we wrote for SELinux and you can find it in $HOME/.config/selinux_te/kvmfr.te"
       echo "#======= start of kvmfr.te ======="
