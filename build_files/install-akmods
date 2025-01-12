@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+set -oue pipefail
+
 dnf5 -y install \
     /tmp/akmods-rpms/kmods/*kvmfr*.rpm \
     /tmp/akmods-rpms/kmods/*xone*.rpm \
