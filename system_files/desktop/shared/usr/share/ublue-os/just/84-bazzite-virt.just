@@ -51,6 +51,8 @@ setup-virtualization ACTION="":
             sudo mkdir /var/lib/swtpm-localca
           fi
           sudo chown tss /var/lib/swtpm-localca
+          echo "Giving qemu access to read ISO files from $HOME"
+          sudo setfacl -m u:qemu:rx $HOME
           if sudo test ! -f "/etc/libvirt/hooks/qemu"; then
             echo "Adding libvirt qemu hooks"
             sudo wget 'https://raw.githubusercontent.com/PassthroughPOST/VFIO-Tools/master/libvirt_hooks/qemu' -O /etc/libvirt/hooks/qemu
