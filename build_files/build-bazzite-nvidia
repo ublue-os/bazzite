@@ -1,0 +1,77 @@
+#!/usr/bin/bash
+#
+#     %%%%%%====%%%%%%%%%%            
+#   %%%%%%%%    %%%%%%%%%%%%%%        
+#  %%%%%%%%%    %%%%%%%%%%%%%%%%      
+#  %%%%%%%%%    %%%%%%%%%%%%%%%###    
+#  %%%%%%%%%    %%%%%%%%%%%%%######   
+#  ==                  =======######  
+#  ==                  =========##### 
+#  %%%%%%%%%    %%%%%%%####======#####
+#  %%%%%%%%%    %%%%%#######=====#####
+#  %%%%%%%%%    %%%#########=====#####
+#  %%%%%%%%%    %%##########=====#####
+#  %%%%%%%%%====###########=====######
+#   %%%%%%%%====#########======###### 
+#    %%%%%%%=====#####========######  
+#     %%%%###===============#######   
+#      %#######==========#########    
+#        #######################      
+#          ###################        
+#              ###########            
+#
+# Welcome to Bazzite! If you're looking to
+# build your own, we highly recommend you
+# use our custom image template. Forking
+# the main repo provides more control, but
+# is often unnecessary.
+#
+# https://github.com/ublue-os/image-template
+
+set -ouex pipefail
+
+################
+# NVIDIA BUILDS
+################
+
+# Fetch NVIDIA driver
+rsync -av /ctx/system_files/nvidia/shared/ /ctx/system_files/nvidia/${BASE_IMAGE_NAME}/ /
+
+# Remove everything that doesn't work well with NVIDIA
+dnf5 -y remove \
+    rocm-hip \
+    rocm-opencl \
+    rocm-clinfo
+
+# Install NVIDIA driver
+sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+dnf5 -y install \
+--repo terra-extras \
+    mesa-vdpau-drivers.x86_64 \
+    mesa-vdpau-drivers.i686 && \
+curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/hwe/main/nvidia-install.sh && \
+chmod +x /tmp/nvidia-install.sh && \
+IMAGE_NAME="${BASE_IMAGE_NAME}" /tmp/nvidia-install.sh && \
+rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
+ln -s libnvidia-ml.so.1 /usr/lib64/libnvidia-ml.so
+
+# Cleanup & Finalize
+echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
+sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
+  mkdir -p "/usr/share/ublue-os/dconfs/nvidia-silverblue/" && \
+  cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/nvidia-silverblue/" && \
+  dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" && \
+  rm "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" \
+; fi && \
+mkdir -p /tmp/bazzite-schema-test && \
+find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" -exec cp {} "/tmp/bazzite-schema-test/" \; && \
+cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/" && \
+glib-compile-schemas --strict /tmp/bazzite-schema-test && \
+glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
+rm -r /tmp/bazzite-schema-test && \
+/ctx/build_files/image-info && \
+/ctx/build_files/build-initramfs
+
+/ctx/build_files/cleanup
+/ctx/build_files/finalize
