@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-set -oue pipefail
+set -ouex pipefail
 
 if [[ "${KERNEL_FLAVOR}" == "surface" ]]; then
     KERNEL_SUFFIX="surface"

@@ -443,32 +443,36 @@ sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-steam.repo &
 sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-rar.repo && \
 sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
 mkdir -p /etc/flatpak/remotes.d && \
-curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
-systemctl enable brew-dir-fix.service && \
-systemctl enable brew-setup.service && \
-systemctl disable brew-upgrade.timer && \
-systemctl disable brew-update.timer && \
-systemctl disable displaylink.service && \
-systemctl enable input-remapper.service && \
-systemctl enable bazzite-flatpak-manager.service && \
-systemctl disable rpm-ostreed-automatic.timer && \
-systemctl enable ublue-update.timer && \
-systemctl enable incus-workaround.service && \
-systemctl enable bazzite-hardware-setup.service && \
-systemctl disable tailscaled.service && \
-systemctl enable dev-hugepages1G.mount && \
-systemctl --global enable bazzite-user-setup.service && \
-systemctl --global enable podman.socket && \
-systemctl --global enable systemd-tmpfiles-setup.service && \
-systemctl --global disable sunshine.service && \
-systemctl disable waydroid-container.service && \
-curl -Lo /etc/dxvk-example.conf https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf && \
-curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/KyleGospo/waydroid-scripts/main/waydroid-choose-gpu.sh && \
-chmod +x /usr/bin/waydroid-choose-gpu && \
-curl -Lo /usr/lib/sysctl.d/99-bore-scheduler.conf https://github.com/CachyOS/CachyOS-Settings/raw/master/usr/lib/sysctl.d/99-bore-scheduler.conf && \
-curl -Lo /etc/distrobox/docker.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/distrobox.ini && \
-curl -Lo /etc/distrobox/incus.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/incus.ini && \
-/ctx/build_files/image-info && \
+curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo
+
+systemctl enable brew-dir-fix.service
+systemctl enable brew-setup.service
+systemctl disable brew-upgrade.timer
+systemctl disable brew-update.timer
+systemctl disable displaylink.service
+systemctl enable input-remapper.service
+systemctl enable bazzite-flatpak-manager.service
+systemctl disable rpm-ostreed-automatic.timer
+systemctl enable ublue-update.timer
+systemctl enable incus-workaround.service
+systemctl enable bazzite-hardware-setup.service
+systemctl disable tailscaled.service
+systemctl enable dev-hugepages1G.mount
+systemctl --global enable bazzite-user-setup.service
+systemctl --global enable podman.socket
+systemctl --global enable systemd-tmpfiles-setup.service
+systemctl --global disable sunshine.service
+systemctl disable waydroid-container.service
+
+curl -Lo /etc/dxvk-example.conf https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf
+curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/KyleGospo/waydroid-scripts/main/waydroid-choose-gpu.sh
+chmod +x /usr/bin/waydroid-choose-gpu
+curl -Lo /usr/lib/sysctl.d/99-bore-scheduler.conf https://github.com/CachyOS/CachyOS-Settings/raw/master/usr/lib/sysctl.d/99-bore-scheduler.conf
+curl -Lo /etc/distrobox/docker.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/distrobox.ini
+curl -Lo /etc/distrobox/incus.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/incus.ini
+
+/ctx/build_files/image-info
+export KERNEL_FLAVOR="${KERNEL_FLAVOR}"
 /ctx/build_files/build-initramfs
 
 /ctx/build_files/cleanup
