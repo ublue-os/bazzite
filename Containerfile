@@ -106,6 +106,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     curl -Lo /etc/yum.repos.d/negativo17-fedora-steam.repo https://negativo17.org/repos/fedora-steam.repo && \
     curl -Lo /etc/yum.repos.d/negativo17-fedora-rar.repo https://negativo17.org/repos/fedora-rar.repo && \
+    for repo in /etc/yum.repos.d/*bazzite*; do sed -i 's@gpgcheck=1@gpgcheck=1\npriority=1@g' $repo; done && \
     /ctx/cleanup
 
 # Install kernel
@@ -279,8 +280,15 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         qemu \
         libvirt \
         lsb_release \
-        ublue-update && \
+        ublue-update \
+        rocm-hip \
+        rocm-opencl \
+        rocm-clinfo \
+        waydroid \
+        cage \
+        wlr-randr && \
     mkdir -p /etc/xdg/autostart && \
+    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
     sed -i 's/min_battery_percent.*/min_battery_percent = 20.0/' /etc/ublue-update/ublue-update.toml && \
     sed -i 's/max_cpu_load_percent.*/max_cpu_load_percent = 100.0/' /etc/ublue-update/ublue-update.toml && \
@@ -308,6 +316,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         ibus ibus && \
     dnf5 -y install \
+        gamescope.x86_64 \
+        gamescope-libs.i686 \
+        gamescope-shaders \
         jupiter-sd-mounting-btrfs \
         steam \
         lutris \
@@ -416,24 +427,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         unzip /tmp/tilingshell/tilingshell@ferrarodomenico.com.zip -d /usr/share/gnome-shell/extensions/tilingshell@ferrarodomenico.com && \
         systemctl enable dconf-update.service \
     ; fi && \
-    /ctx/cleanup
-
-# Install Gamescope, ROCM, and Waydroid on non-Nvidia images
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y install \
-        gamescope.x86_64 \
-        gamescope-libs.i686 \
-        gamescope-shaders \
-        rocm-hip \
-        rocm-opencl \
-        rocm-clinfo \
-        waydroid \
-        cage \
-        wlr-randr && \
-    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     /ctx/cleanup
 
 # Homebrew & Bash Prexec
@@ -681,6 +674,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     mkdir -p /usr/share/gamescope-session-plus/ && \
     curl -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz && \
     dnf5 -y install \
+    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         gamescope-session-plus \
         gamescope-session-steam && \
     /ctx/cleanup
