@@ -245,6 +245,9 @@ dnf5 -y swap \
 --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
     ibus ibus
 dnf5 -y install \
+    gamescope.x86_64 \
+    gamescope-libs.i686 \
+    gamescope-shaders \
     jupiter-sd-mounting-btrfs \
     steam \
     lutris \
@@ -352,13 +355,6 @@ else
     rm -rf /tmp/tilingshell
     systemctl enable dconf-update.service
 fi
-
-# Install Gamescope, ROCM, and Waydroid on non-Nvidia images
-dnf5 -y install \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    gamescope.x86_64 \
-    gamescope-libs.i686 \
-    gamescope-shaders
 
 # Homebrew & Bash Prexec
 touch /.dockerenv
