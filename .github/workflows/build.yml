@@ -20,6 +20,7 @@ on:
     branches:
       - testing
       - unstable
+      - separate-scripts
     paths-ignore:
       - "**.md"
       - "**.txt"
