@@ -107,6 +107,7 @@ dnf5 -y swap \
 mkdir -p /usr/share/gamescope-session-plus/
 curl -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz
 dnf5 -y install \
+    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
     gamescope-session-plus \
     gamescope-session-steam
 
