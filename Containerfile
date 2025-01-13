@@ -113,9 +113,12 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=kernel,src=/tmp/rpms,dst=/tmp/kernel-rpms \
+    --mount=type=bind,from=akmods,src=/rpms,dst=/tmp/akmods-rpms \
+    --mount=type=bind,from=akmods-extra,src=/rpms,dst=/tmp/akmods-extra-rpms \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/install-kernel && \
+    /ctx/install-kernel-akmods && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-*.repo && \
     dnf5 -y install \
         scx-scheds && \
     dnf5 -y swap \
@@ -156,28 +159,19 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/install-firmware && \
     /ctx/cleanup
 
-# Add ublue packages
+# Install patched fwupd
+# Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
+# Install patched switcheroo control with proper discrete GPU support
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/cache/rpm-ostree \
-    --mount=type=bind,from=akmods,src=/rpms,dst=/tmp/akmods-rpms \
-    --mount=type=bind,from=akmods-extra,src=/rpms,dst=/tmp/akmods-extra-rpms \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y copr enable ublue-os/akmods && \
-    /ctx/install-akmods && \
     dnf5 -y swap \
     --repo copr:copr.fedorainfracloud.org:ublue-os:staging \
         fwupd fwupd && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-*.repo && \
-    /ctx/cleanup
-
-# Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland#
-# Install patched switcheroo control with proper discrete GPU support
-# Tempporary fix for GPU Encoding
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
+    dnf5 -y swap \
+    --repo terra-extras \
+        switcheroo-control switcheroo-control && \
     dnf5 -y swap \
     --repo terra-extras \
         mesa-filesystem mesa-filesystem && \
@@ -508,7 +502,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
     rm -r /tmp/bazzite-schema-test && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
-    dnf5 copr disable -y ublue-os/akmods && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     dnf5 copr disable -y kylegospo/bazzite && \
     dnf5 copr disable -y kylegospo/bazzite-multilib && \
     dnf5 copr disable -y ublue-os/staging && \
@@ -585,7 +579,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y copr enable ublue-os/akmods && \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     dnf5 -y copr enable kylegospo/bazzite && \
     dnf5 -y copr enable kylegospo/bazzite-multilib && \
     dnf5 -y copr enable kylegospo/LatencyFleX && \
@@ -695,7 +689,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     ; fi && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/input-remapper-gtk.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
-    dnf5 copr disable -y ublue-os/akmods && \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     dnf5 copr disable -y kylegospo/bazzite && \
     dnf5 copr disable -y kylegospo/bazzite-multilib && \
     dnf5 copr disable -y kylegospo/LatencyFleX && \
