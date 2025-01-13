@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-set -oue pipefail
+set -eoux pipefail
 
 IMAGE_PRETTY_NAME="Bazzite"
 IMAGE_LIKE="fedora"

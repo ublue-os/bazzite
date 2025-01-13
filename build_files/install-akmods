@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-set -oue pipefail
+set -eoux pipefail
 
 dnf5 -y install \
     /tmp/akmods-rpms/kmods/*kvmfr*.rpm \
