@@ -26,12 +26,12 @@ toggle-ssh:
       SSH_STATUS="Enabled"
     fi
     # Display current status
-    echo -e "\n${bold}Hostname:${NORMAL} $HOSTNAME"
-    echo -e "${bold}IP Address:${NORMAL} $IP_ADDRESS"
+    echo -e "\n${bold}Hostname:${normal} $HOSTNAME"
+    echo -e "${bold}IP Address:${normal} $IP_ADDRESS"
     if [ "$SSH_STATUS" == "Enabled" ]; then
-      echo -e "${bold}SSH Availability on Boot:${NORMAL} ${green}$SSH_STATUS${NORMAL}\n"
+      echo -e "${bold}SSH Availability on Boot:${normal} ${green}$SSH_STATUS${normal}\n"
     else
-      echo -e "${bold}SSH Availability on Boot:${NORMAL} ${yellow}$SSH_STATUS${NORMAL}\n"
+      echo -e "${bold}SSH Availability on Boot:${normal} ${yellow}$SSH_STATUS${normal}\n"
     fi
     # Prompt user for action
     echo "Choose an option:"
@@ -41,15 +41,15 @@ toggle-ssh:
         echo "Enabling SSH on boot..."
         sudo systemctl enable sshd
         sudo systemctl start sshd
-        echo -e "SSH is now ${green}Enabled${NORMAL}. You can SSH using:"
-        echo -e "${bold}${USER}@${IP_ADDRESS}${NORMAL}"
+        echo -e "SSH is now ${green}Enabled${normal}. You can SSH using:"
+        echo -e "${bold}${USER}@${IP_ADDRESS}${normal}"
         echo " "
         ;;
       "Disable SSH")
         echo "Disabling SSH on boot..."
         sudo systemctl disable sshd
         sudo systemctl stop sshd
-        echo -e "SSH is now ${yellow}Disabled${NORMAL}."
+        echo -e "SSH is now ${yellow}Disabled${normal}."
         echo " "
         ;;
       "Exit without saving")
