@@ -17,11 +17,6 @@ _install-system-flatpaks:
 toggle-ssh:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    # Define color codes
-    GREEN="\033[1;32m"
-    YELLOW="\033[1;33m"
-    NORMAL="\033[0m"
-    BOLD="\033[1m"
     # Get hostname and IP address
     HOSTNAME=$(hostname)
     IP_ADDRESS=$(hostname -I | awk '{print $1}') # First IP address
@@ -34,9 +29,9 @@ toggle-ssh:
     echo -e "\n${BOLD}Hostname:${NORMAL} $HOSTNAME"
     echo -e "${BOLD}IP Address:${NORMAL} $IP_ADDRESS"
     if [ "$SSH_STATUS" == "Enabled" ]; then
-      echo -e "${BOLD}SSH Availability on Boot:${NORMAL} ${GREEN}$SSH_STATUS${NORMAL}\n"
+      echo -e "${BOLD}SSH Availability on Boot:${NORMAL} ${green}$SSH_STATUS${NORMAL}\n"
     else
-      echo -e "${BOLD}SSH Availability on Boot:${NORMAL} ${YELLOW}$SSH_STATUS${NORMAL}\n"
+      echo -e "${BOLD}SSH Availability on Boot:${NORMAL} ${yellow}$SSH_STATUS${NORMAL}\n"
     fi
     # Prompt user for action
     echo "Choose an option:"
@@ -46,7 +41,7 @@ toggle-ssh:
         echo "Enabling SSH on boot..."
         sudo systemctl enable sshd
         sudo systemctl start sshd
-        echo -e "SSH is now ${GREEN}Enabled${NORMAL}. You can SSH using:"
+        echo -e "SSH is now ${green}Enabled${NORMAL}. You can SSH using:"
         echo -e "${BOLD}${USER}@${IP_ADDRESS}${NORMAL}"
         echo " "
         ;;
@@ -54,7 +49,7 @@ toggle-ssh:
         echo "Disabling SSH on boot..."
         sudo systemctl disable sshd
         sudo systemctl stop sshd
-        echo -e "SSH is now ${YELLOW}Disabled${NORMAL}."
+        echo -e "SSH is now ${yellow}Disabled${NORMAL}."
         echo " "
         ;;
       "Exit without saving")
