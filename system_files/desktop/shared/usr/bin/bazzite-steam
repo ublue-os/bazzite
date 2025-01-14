@@ -19,6 +19,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   DECK_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend.webm"
   OLED_STARTUP="/usr/share/ublue-os/bazzite/bazzite-oled.webm"
   OLED_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend-oled.webm"
+  SKIP_VIDEOS=false
 
   # Check for Galileo model
   if [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
@@ -32,7 +33,17 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   # Install Bazzite's Steam Game Mode Startup & Suspend Videos
   mkdir -p $HOME/.local/share/Steam/config/uioverrides/movies
 
-  if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo ]; then
+  # Check for the no video flag
+  if [ -f $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo ]; then
+    SKIP_VIDEOS=true
+  fi
+
+  # Check for the Animation Changer plugin, if it exists then they probably don't want us.
+  if [ -f $HOME/homebrew/plugins/SDH-AnimationChanger/main.py ]; then
+    SKIP_VIDEOS=true
+  fi
+
+  if ! $SKIP_VIDEOS; then
 
     LOCATION_STARTUP=$HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
     LOCATION_SUSPEND=$HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend.webm
@@ -47,7 +58,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
     if ! cmp --silent $VIDEO_SUSPEND $LOCATION_SUSPEND; then
       cp $VIDEO_SUSPEND $LOCATION_SUSPEND
     fi
-    
+
     if ! cmp --silent $VIDEO_SUSPEND $LOCATION_SUSPEND_OLD; then
       cp $VIDEO_SUSPEND $LOCATION_SUSPEND_OLD
     fi
@@ -55,7 +66,7 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
     if ! cmp --silent $VIDEO_SUSPEND $LOCATION_THROBBER; then
       cp $VIDEO_SUSPEND $LOCATION_THROBBER
     fi
-    
+
     if ! cmp --silent $VIDEO_SUSPEND $LOCATION_THROBBER_OLD; then
       cp $VIDEO_SUSPEND $LOCATION_THROBBER_OLD
     fi
