@@ -26,12 +26,12 @@ toggle-ssh:
       SSH_STATUS="Enabled"
     fi
     # Display current status
-    echo -e "\n${BOLD}Hostname:${NORMAL} $HOSTNAME"
-    echo -e "${BOLD}IP Address:${NORMAL} $IP_ADDRESS"
+    echo -e "\n${bold}Hostname:${NORMAL} $HOSTNAME"
+    echo -e "${bold}IP Address:${NORMAL} $IP_ADDRESS"
     if [ "$SSH_STATUS" == "Enabled" ]; then
-      echo -e "${BOLD}SSH Availability on Boot:${NORMAL} ${green}$SSH_STATUS${NORMAL}\n"
+      echo -e "${bold}SSH Availability on Boot:${NORMAL} ${green}$SSH_STATUS${NORMAL}\n"
     else
-      echo -e "${BOLD}SSH Availability on Boot:${NORMAL} ${yellow}$SSH_STATUS${NORMAL}\n"
+      echo -e "${bold}SSH Availability on Boot:${NORMAL} ${yellow}$SSH_STATUS${NORMAL}\n"
     fi
     # Prompt user for action
     echo "Choose an option:"
@@ -42,7 +42,7 @@ toggle-ssh:
         sudo systemctl enable sshd
         sudo systemctl start sshd
         echo -e "SSH is now ${green}Enabled${NORMAL}. You can SSH using:"
-        echo -e "${BOLD}${USER}@${IP_ADDRESS}${NORMAL}"
+        echo -e "${bold}${USER}@${IP_ADDRESS}${NORMAL}"
         echo " "
         ;;
       "Disable SSH")
