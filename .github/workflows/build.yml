@@ -201,7 +201,7 @@ jobs:
             sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/akmods-${{ matrix.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
 
             # Add rechunk as well to remove this source of failure
-            sudo podman pull ghcr.io/hhd-dev/rechunk:v1.1.1
+            sudo podman pull ghcr.io/hhd-dev/rechunk:v1.1.2
 
       - name: Get source versions
         id: labels
@@ -321,9 +321,9 @@ jobs:
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
         id: rechunk
-        uses: hhd-dev/rechunk@v1.1.1
+        uses: hhd-dev/rechunk@v1.1.2
         with:
-          rechunk: 'ghcr.io/hhd-dev/rechunk:v1.1.1'
+          rechunk: 'ghcr.io/hhd-dev/rechunk:v1.1.2'
           ref: 'raw-img'
           prev-ref: '${{ steps.generate-prev-ref.outputs.ref }}'
           version: '${{ steps.generate-version.outputs.tag }}'
