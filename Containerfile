@@ -311,6 +311,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         ibus ibus && \
     dnf5 -y install \
         gamescope.x86_64 \
+        gamescope-libs.x86_64 \
         gamescope-libs.i686 \
         gamescope-shaders \
         jupiter-sd-mounting-btrfs \
