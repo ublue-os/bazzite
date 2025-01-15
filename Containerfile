@@ -110,7 +110,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     for repo in /etc/yum.repos.d/*terra*; do sed -i 's@enabled=1@enabled=1\npriority=2@g' $repo; done && \
     for repo in /etc/yum.repos.d/*negativo*; do sed -i 's@enabled=1@enabled=1\nexclude=mesa-*\npriority=3@g' $repo; done && \
     for repo in /etc/yum.repos.d/*rpmfusion*; do sed -i 's@enabled=1@enabled=1\nexclude=mesa-*\npriority=4@g' $repo; done && \
-    for repo in /etc/yum.repos.d/*fedora*; do sed -i 's@enabled=1@enabled=1\nexclude=mesa-* kernel*@g' $repo; done && \
+    for repo in /etc/yum.repos.d/*fedora*; do sed -i 's@enabled=1@enabled=1\nexclude=mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*@g' $repo; done && \
     /ctx/cleanup
 
 # Install kernel
