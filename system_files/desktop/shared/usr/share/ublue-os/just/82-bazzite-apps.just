@@ -156,7 +156,7 @@ install-opentabletdriver:
     mkdir -p $HOME/.config/OpenTabletDriver && \
     flatpak override --user --filesystem=xdg-config/OpenTabletDriver net.opentabletdriver.OpenTabletDriver && \
     mkdir -p $HOME/.config/systemd/user && \
-    curl -s https://raw.githubusercontent.com/flathub/net.opentabletdriver.OpenTabletDriver/refs/heads/master/scripts/opentabletdriver.service > ~/.config/systemd/user/opentabletdriver.service  && \
+    curl -s https://raw.githubusercontent.com/flathub/net.opentabletdriver.OpenTabletDriver/refs/heads/master/scripts/opentabletdriver.service > $HOME/.config/systemd/user/opentabletdriver.service  && \
     systemctl --user daemon-reload && \
     systemctl enable --user --now opentabletdriver.service
 
