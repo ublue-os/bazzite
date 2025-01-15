@@ -619,6 +619,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y install \
         jupiter-fan-control \
         jupiter-hw-support-btrfs \
+        galileo-mura \
         steamdeck-dsp \
         powerbuttond \
         hhd \
