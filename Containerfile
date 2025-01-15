@@ -107,6 +107,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     curl -Lo /etc/yum.repos.d/negativo17-fedora-steam.repo https://negativo17.org/repos/fedora-steam.repo && \
     curl -Lo /etc/yum.repos.d/negativo17-fedora-rar.repo https://negativo17.org/repos/fedora-rar.repo && \
     for repo in /etc/yum.repos.d/*bazzite*; do sed -i 's@gpgcheck=1@gpgcheck=1\npriority=1@g' $repo; done && \
+    for repo in /etc/yum.repos.d/*terra*; do sed -i 's@gpgcheck=1@gpgcheck=1\npriority=2@g' $repo; done && \
+    for repo in /etc/yum.repos.d/*negativo*; do sed -i 's@gpgcheck=1@gpgcheck=1\npriority=3@g' $repo; done && \
+    for repo in /etc/yum.repos.d/*rpmfusion*; do sed -i 's@gpgcheck=1@gpgcheck=1\npriority=4@g' $repo; done && \
     /ctx/cleanup
 
 # Install kernel
