@@ -91,7 +91,7 @@ toggle-bt-mic:
 toggle-i915-sleep-fix:
     #!/usr/bin/bash
     # Explain the purpose of the script
-    echo -e "# This script manages the i915.enable_dc kernel parameter, which controls a power-saving feature for Intel graphics"
+    echo -e "This script manages the i915.enable_dc kernel parameter, which controls a power-saving feature for Intel graphics"
     echo -e "Enabling this setting can reduce power consumption, but may cause issues like random reboots or failed suspend on certain devices"
     echo -e "Disabling it ensures stability at the cost of slightly higher power usage"
     # Get the current i915.enable_dc setting
