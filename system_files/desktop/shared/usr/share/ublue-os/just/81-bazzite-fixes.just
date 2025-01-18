@@ -87,3 +87,44 @@ toggle-bt-mic:
     else
       echo "No changes were made."
     fi
+
+# enable or disable wake-on-lan functionality
+toggle-wol:
+    #!/usr/bin/bash
+    INTERFACE=$(ip link show | awk '/state UP/ {print $2}' | tr -d ':' | grep -E '^(en|eth)')
+    if [[ -z "$INTERFACE" ]]; then
+      echo -e "${bold}No active Ethernet interface found.${normal}"
+      echo "Please ensure your Ethernet connection is enabled or connected."
+      echo "Exiting without making any changes."
+      exit 0
+    fi
+    CONFIG_FILE="/etc/udev/rules.d/81-wol.rules"
+    WOL_STATUS=$(sudo ethtool $INTERFACE | grep "Wake-on" | awk '{print $2}')
+    CURRENT_STATE="Disabled"
+    if [[ "$WOL_STATUS" == "g" ]]; then
+      CURRENT_STATE="Enabled"
+    fi
+    echo "Wake-on-LAN is currently: ${bold}${CURRENT_STATE}${normal}"
+    echo "Enable or Disable Wake-on-LAN, or Exit without saving?"
+    OPTION=$(ugum choose Enable Disable Exit)
+    if [[ "${OPTION,,}" == "enable" ]]; then
+        echo "You chose to enable Wake-on-LAN."
+        echo "Requesting root privileges..."
+        sudo ethtool -s $INTERFACE wol g
+        if ! grep -q "$INTERFACE" "$CONFIG_FILE" 2>/dev/null; then
+          echo "Creating udev rule to make this setting persistent..."
+          echo "ACTION==\"add\", SUBSYSTEM==\"net\", NAME==\"$INTERFACE\", RUN+=\"/usr/bin/ethtool -s \$name wol g\"" | sudo tee "$CONFIG_FILE" > /dev/null
+        fi
+        echo "Wake-on-LAN has been ${green}${bold}enabled${normal}."
+    elif [[ "${OPTION,,}" == "disable" ]]; then
+        echo "You chose to disable Wake-on-LAN."
+        echo "Requesting root privileges..."
+        sudo ethtool -s $INTERFACE wol d
+        if [[ -f "$CONFIG_FILE" ]]; then
+          echo "Removing udev rule to disable persistence..."
+          sudo rm -f "$CONFIG_FILE"
+        fi
+        echo "Wake-on-LAN has been ${red}${bold}disabled${normal}."
+    else
+        echo "No changes were made."
+    fi
