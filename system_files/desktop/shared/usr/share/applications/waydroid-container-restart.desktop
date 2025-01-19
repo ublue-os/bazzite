@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Force Restart Waydroid
+Exec=pkexec /usr/libexec/waydroid-container-restart
+Categories=X-WayDroid-App;
+X-Purism-FormFactor=Workstation;Mobile;
+Icon=waydroid
+NoDisplay=false
