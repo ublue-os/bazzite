@@ -8,7 +8,7 @@
 
 Name:           gamescope
 #Version:        100.%{gamescope_tag}
-Version:        104.%{short_commit}
+Version:        106.%{short_commit}
 Release:        1.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
@@ -114,7 +114,7 @@ cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
 %meson \
     --auto-features=enabled \
-    -Dforce_fallback_for=vkroots,wlroots,libliftoff
+    -Dforce_fallback_for=vkroots,wlroots,libliftoff,libdisplay-info
 %meson_build
 
 %install
