@@ -32,13 +32,32 @@ install-steamcmd:
 
 # Install OpenRazer for Razer gaming hardware
 install-openrazer:
-    sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo && \
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    OPENRAZER_CONFIGURATOR_APP="None of openrazer frontend apps"
+    sudo curl -Lo /etc/yum.repos.d/hardware:razer.repo https://openrazer.github.io/hardware:razer.repo && \
     ublue-update --wait && \
-    rpm-ostree install -y openrazer-meta razergenie && \
-    if ! grep -q "plugdev" /etc/group; then \
+    rpm-ostree install -y openrazer-daemon && \
+        if ! grep -q "plugdev" /etc/group; then \
       sudo bash -c 'grep "plugdev" /lib/group >> /etc/group' \
     ; fi && \
     sudo usermod -a -G plugdev $USER && \
+    echo "${bold}Select OpenRazer Frontend Apps${normal}"
+    OPTION=$(Choose "Razer Genie" "Polychromatic" "None")
+    if [[ "${OPTION,,}" =~ ^razer[[:space:]]genie ]]; then
+        echo "Installing Razer Genie..."
+        flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+        flatpak --system install -y flathub xyz.z3ntu.razergenie
+        OPENRAZER_CONFIGURATOR_APP="Razer Genie"
+    elif [[ "${OPTION,,}" =~ ^polychromatic ]]; then
+        echo "Installing Polychromatic..."
+        flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+        flatpak --system install -y flathub app.polychromatic.controller
+        OPENRAZER_CONFIGURATOR_APP="Polychromatic"
+    else
+        echo "Not Selecting GUI Frontend"
+    fi
+    echo "$OPENRAZER_CONFIGURATOR_APP is installed"
     echo "Please reboot to apply needed changes."
 
 # Install EmuDeck (https://www.emudeck.com/)
@@ -136,7 +155,8 @@ install-opentabletdriver:
     flatpak --system install -y flathub net.opentabletdriver.OpenTabletDriver && \
     mkdir -p $HOME/.config/OpenTabletDriver && \
     flatpak override --user --filesystem=xdg-config/OpenTabletDriver net.opentabletdriver.OpenTabletDriver && \
-    curl -s https://raw.githubusercontent.com/flathub/net.opentabletdriver.OpenTabletDriver/refs/heads/master/scripts/opentabletdriver.service > ~/.config/systemd/user/opentabletdriver.service  && \
+    mkdir -p $HOME/.config/systemd/user && \
+    curl -s https://raw.githubusercontent.com/flathub/net.opentabletdriver.OpenTabletDriver/refs/heads/master/scripts/opentabletdriver.service > $HOME/.config/systemd/user/opentabletdriver.service  && \
     systemctl --user daemon-reload && \
     systemctl enable --user --now opentabletdriver.service
 
