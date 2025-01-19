@@ -4,6 +4,10 @@
 setup-virtualization ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
+    if [[ $(id -u) -eq 0 ]]; then
+      echo "Please do not run this command as root"
+      exit 1
+    fi
     # Check if we are running on a Steam Deck
     if /usr/libexec/hwsupport/valve-hardware; then
       echo "${red}${b}WARNING${n}: Virtualization is not properly supported on Steam Deck by Valve"
