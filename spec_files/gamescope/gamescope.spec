@@ -113,7 +113,7 @@ sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/m
 cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
 %meson \
-    -Dforce_fallback_for=libdisplay-info,libliftoff,wlroots,vkroots
+    -Dforce_fallback_for=stb,libdisplay-info,libliftoff,wlroots,vkroots
 %meson_build
 
 %install
