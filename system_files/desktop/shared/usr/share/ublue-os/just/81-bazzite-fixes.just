@@ -87,3 +87,83 @@ toggle-bt-mic:
     else
       echo "No changes were made."
     fi
+
+toggle-i915-sleep-fix:
+    #!/usr/bin/bash
+    # Explain the purpose of the script
+    echo -e "This script manages the i915.enable_dc kernel parameter, which controls a power-saving feature for Intel graphics"
+    echo -e "Enabling this setting can reduce power consumption, but may cause issues like random reboots or failed suspend on certain devices"
+    echo -e "Disabling it ensures stability at the cost of slightly higher power usage"
+    # Get the current i915.enable_dc setting
+    get_current_status() {
+      local karg_status
+      karg_status=$(cat /proc/cmdline | grep -o 'i915.enable_dc=[-0-9]' | cut -d= -f2)
+      if [[ -z "$karg_status" ]]; then
+        echo "Not Set"
+      else
+        echo "$karg_status"
+      fi
+    }
+    # Toggle i915.enable_dc kernel parameter
+    update_karg() {
+      local new_value=$1
+      if [[ $new_value -ge 0 && $new_value -le 4 ]]; then
+        echo -e "\nYou are setting power-saving mode (i915.enable_dc=$new_value).\n"
+        if [[ $new_value -eq 0 ]]; then
+          echo -e "This disables power-saving mode and prioritizes stability.\n"
+        elif [[ $new_value -eq 1 ]]; then
+          echo -e "This enables basic power-saving mode but may cause minor stability issues.\n"
+        elif [[ $new_value -ge 2 ]]; then
+          echo -e "This enables higher levels of power-saving mode, which may impact stability further.\n"
+        fi
+      elif [[ $new_value -eq -1 ]]; then
+        echo -e "\nYou are setting power-saving mode to auto (i915.enable_dc=-1).\n"
+      else
+        echo -e "\nInvalid value for i915.enable_dc. Please choose a valid value.\n"
+        return
+      fi
+      sudo rpm-ostree kargs --replace "i915.enable_dc=$new_value"
+      echo -e "Kernel parameter updated. Reboot required to apply changes."
+    }
+    # Display current status
+    current_status=$(get_current_status)
+    echo -e "\nCurrent i915.enable_dc setting: $current_status\n"
+    # Prompt user for action
+    CHOICE=$(ugum choose "Set to Auto (i915.enable_dc=-1)" "Disable Power Saving (i915.enable_dc=0)" "Set to Level 1 (i915.enable_dc=1)" "Set to Level 2 (i915.enable_dc=2)" "Set to Level 3 (i915.enable_dc=3)" "Set to Level 4 (i915.enable_dc=4)" "Unset Parameter" "Exit without changes")
+    case "$CHOICE" in
+      "Set to Auto (i915.enable_dc=-1)")
+        echo "Setting power-saving mode to auto (i915.enable_dc=-1)..."
+        update_karg -1
+        ;;
+      "Disable Power Saving (i915.enable_dc=0)")
+        echo "Disabling power-saving mode (i915.enable_dc=0)..."
+        update_karg 0
+        ;;
+      "Set to Level 1 (i915.enable_dc=1)")
+        echo "Setting power-saving mode to level 1 (i915.enable_dc=1)..."
+        update_karg 1
+        ;;
+      "Set to Level 2 (i915.enable_dc=2)")
+        echo "Setting power-saving mode to level 2 (i915.enable_dc=2)..."
+        update_karg 2
+        ;;
+      "Set to Level 3 (i915.enable_dc=3)")
+        echo "Setting power-saving mode to level 3 (i915.enable_dc=3)..."
+        update_karg 3
+        ;;
+      "Set to Level 4 (i915.enable_dc=4)")
+        echo "Setting power-saving mode to level 4 (i915.enable_dc=4)..."
+        update_karg 4
+        ;;
+      "Unset Parameter")
+        echo "Unsetting i915.enable_dc..."
+        sudo rpm-ostree kargs --delete "i915.enable_dc=[-0-9]"
+        echo -e "Kernel parameter unset. Reboot required to apply changes."
+        ;;
+      "Exit without changes")
+        echo "No changes made."
+        ;;
+      *)
+        echo "Invalid choice. Exiting without changes."
+        ;;
+    esac

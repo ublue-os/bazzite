@@ -1,6 +1,6 @@
 polkit.addRule(function(action, subject) {
-    if (action.id == "org.bazzite.hhd.pkexec" &&
-         subject.isInGroup("wheel")) {
+    if ((action.id == "org.bazzite.enable.hhd.pkexec" || action.id == "org.bazzite.hhd.steamos.pkexec") &&
+         subject.isInGroup("wheel")) { 
         return polkit.Result.YES;
     }
 });

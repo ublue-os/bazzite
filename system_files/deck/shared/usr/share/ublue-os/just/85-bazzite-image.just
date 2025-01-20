@@ -172,6 +172,8 @@ configure-override-videos ACTION="":
       rm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
       rm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
       rm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
+      rm $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend.webm
+      rm $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend_from_throbber.webm
     fi
 
 # Restores the stock virtual keyboard under KDE & GNOME

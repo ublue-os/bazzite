@@ -202,6 +202,11 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --from repo=updates \
         SDL2 \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        openldap \
+        || true && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override replace \
         --experimental \
@@ -314,10 +319,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         curl -Lo /etc/yum.repos.d/_copr_lukenukem-asus-linux.repo https://copr.fedorainfracloud.org/coprs/lukenukem/asus-linux/repo/fedora-$(rpm -E %fedora)/lukenukem-asus-linux-fedora-$(rpm -E %fedora).repo && \
         rpm-ostree install \
             asusctl \
-            asusctl-rog-gui && \
-        git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
-        cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
-        rm -rf /tmp/asus-firmware \
+            asusctl-rog-gui \
     ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
         curl -Lo /etc/yum.repos.d/linux-surface.repo https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
         rpm-ostree override remove \
@@ -900,6 +902,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree install \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
+    galileo-mura \
     steamdeck-dsp \
     powerbuttond \
     hhd \

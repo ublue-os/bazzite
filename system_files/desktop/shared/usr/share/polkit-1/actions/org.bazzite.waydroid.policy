@@ -28,6 +28,17 @@
     <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/waydroid-container-stop</annotate>
   </action>
 
+  <action id="org.bazzite.policykit.waydroid.container.restart">
+    <description>Restart Waydroid Container</description>
+    <icon_name>package-x-generic</icon_name>
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/libexec/waydroid-container-restart</annotate>
+  </action>
+
   <action id="org.bazzite.policykit.waydroid.fix.controllers">
     <description>Fix Controllers in Waydroid</description>
     <icon_name>package-x-generic</icon_name>
