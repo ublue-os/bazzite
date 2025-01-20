@@ -7,5 +7,5 @@ index 8a52bc5..081de18 100644
 -Autolock=false
 -LockOnResume=false
 +[Greeter][Wallpaper][org.kde.image][General]
-+Image=/usr/share/wallpapers/Steam Deck Logo Default.jpg
-+PreviewImage=/usr/share/wallpapers/Steam Deck Logo Default.jpg
++Image=/usr/share/wallpapers/convergence.png
++PreviewImage=/usr/share/wallpapers/convergence.png
