@@ -1,0 +1,15 @@
+--- a/usr/bin/jupiter-check-support
++++ b/usr/bin/jupiter-check-support
+@@ -2,6 +2,12 @@
+ 
+ set -e
+ 
++SYS_ID="$(/usr/libexec/hwsupport/sysid)"
++if [[ ! ":Galileo:Jupiter:" =~ ":$SYS_ID:" ]]; then
++    echo "Supported: yes"
++    exit 0
++fi
++
+ product_serial="$(cat /sys/devices/virtual/dmi/id/product_serial)"
+ 
+ # Cutoff time for supported prototypes
