@@ -171,7 +171,7 @@ jobs:
       # Prepare offline documentation
       - id: download_offline_docs
         continue-on-error: true
-        env: 
+        env:
           docs_repo: KyleGospo/docs.bazzite.gg
         run: |
           DOCS_DIR="${{ github.workspace }}/system_files/desktop/shared/usr/share/ublue-os/docs/html"
