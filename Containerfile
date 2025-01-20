@@ -202,6 +202,11 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --from repo=updates \
         SDL2 \
         || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        openldap \
+        || true && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         rpm-ostree override replace \
         --experimental \
