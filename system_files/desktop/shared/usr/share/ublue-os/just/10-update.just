@@ -47,5 +47,5 @@ changelogs:
 # Show the testing (pre-release) changelog
 changelogs-testing:
     #!/usr/bin/bash
-    CCONTENT=$(curl -s https://api.github.com/repos/ublue-os/bazzite/releases | jq -r 'map(select(.prerelease)) | .[0].body')
+    CONTENT=$(curl -s https://api.github.com/repos/ublue-os/bazzite/releases | jq -r 'map(select(.prerelease)) | .[0].body')
        echo "$CONTENT" | glow -
