@@ -1,5 +1,5 @@
 Name:           sunshine
-Version:        2025.101.215655
+Version:        2025.118.151840
 Release:        100%{?dist}
 Summary:        Corrects a name change issue between original unofficial sunshine builds and the new official ones
 License:    	GPLv2
