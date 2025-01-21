@@ -25,6 +25,7 @@ Patch9:         fstrim.patch
 Patch10:        cursor-path.patch
 Patch11:        ntfs.patch
 Patch12:        more-time.patch
+Patch13:        supported-hw.patch
 
 Requires:       python3
 Requires:       python3-evdev

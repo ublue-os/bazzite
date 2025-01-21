@@ -452,6 +452,50 @@ toggle-password-feedback ACTION="":
       echo "enabled, restart terminal to see changes"
     fi
 
+# Install Bazzite Buddy plugin to easily access changelogs in game mode!
+get-decky-bazzite-buddy:
+    #!/bin/bash
+    PLUGIN_URL="https://github.com/xXJSONDeruloXx/bazzite-buddy/releases/download/stable/bazzite-buddy.zip"
+    PLUGIN_NAME="bazzite-buddy"
+    PLUGIN_DIR="$HOME/homebrew/plugins"
+    if [ ! -d "$PLUGIN_DIR" ]; then
+      echo "Creating plugins directory with sudo..."
+      sudo mkdir -p "$PLUGIN_DIR"
+    fi
+    # Change to the plugin directory
+    cd "$PLUGIN_DIR" || { echo "Failed to navigate to plugins directory"; exit 1; }
+    # Remove any existing plugin folder
+    if [ -d "$PLUGIN_NAME" ]; then
+      echo "Removing existing $PLUGIN_NAME directory with sudo..."
+      sudo rm -rf "$PLUGIN_NAME"
+    fi
+    # Download the zip file
+    echo "Downloading $PLUGIN_NAME from $PLUGIN_URL..."
+    sudo curl -L -o "${PLUGIN_NAME}.zip" "$PLUGIN_URL"
+    if [ $? -ne 0 ]; then
+      echo "Download failed!"
+      exit 1
+    fi
+    echo "Extracting $PLUGIN_NAME..."
+    sudo unzip -o "${PLUGIN_NAME}.zip" -d .
+    if [ $? -ne 0 ]; then
+      echo "Extraction failed!"
+      exit 1
+    fi
+    # Move the extracted files to the correct location if nested
+    if [ -d "./${PLUGIN_NAME}/${PLUGIN_NAME}" ]; then
+      echo "Fixing folder structure..."
+      sudo mv ./${PLUGIN_NAME}/${PLUGIN_NAME}/* ./${PLUGIN_NAME}/
+      sudo rm -rf ./${PLUGIN_NAME}/${PLUGIN_NAME}
+    fi
+    # Clean up the downloaded ZIP file
+    echo "Cleaning up..."
+    sudo rm -f "${PLUGIN_NAME}.zip"
+    # Confirm installation
+    echo "$PLUGIN_NAME has been installed successfully to $PLUGIN_DIR!"
+    # Prompt user to restart Decky Loader
+    echo "Please restart Decky Loader to activate the plugin."
+
 post-gamescope-logs:
     #!/usr/bin/bash
     OUTPUT_FILE="/tmp/gathered_info.txt"

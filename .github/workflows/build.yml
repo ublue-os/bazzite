@@ -71,7 +71,7 @@ jobs:
             is_latest_version: true
             is_stable_version: true
             kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
-            kernel_version: 6.12.8-201.bazzite.fc41.x86_64 # must match a cached version of the above flavor
+            kernel_version: 6.12.9-203.bazzite.fc41.x86_64 # must match a cached version of the above flavor
         exclude:
           - base_name: bazzite
             target_nvidia_flavor: nvidia
@@ -169,18 +169,17 @@ jobs:
         uses: actions/checkout@v4
 
       # Prepare offline documentation
-      - run: mkdir -p ${{ github.workspace }}/system_files/desktop/shared/usr/share/ublue-os/docs/html
+      - id: download_offline_docs
         continue-on-error: true
-      - name: Checkout docs repo
-        run: rm -r ${{ github.workspace }}/docs && git clone https://github.com/KyleGospo/docs.bazzite.gg.git ${{ github.workspace }}/docs
-        continue-on-error: true
-      - name: Build offline documentation
-        uses: KyleGospo/docs.bazzite.gg@main
-        continue-on-error: true
-        with:
-          github_token: ${{ github.token }}
-          output_dir: ${{ github.workspace }}/system_files/desktop/shared/usr/share/ublue-os/docs/html
-          upload_github_page: "false"
+        env:
+          docs_repo: KyleGospo/docs.bazzite.gg
+        run: |
+          DOCS_DIR="${{ github.workspace }}/system_files/desktop/shared/usr/share/ublue-os/docs/html"
+          mkdir -p $DOCS_DIR
+          cd $(mktemp -d)
+          gh run download --repo=$docs_repo -n github-pages
+          tar -xC "$DOCS_DIR" -f artifact.tar
+          rm $PWD
 
       - name: Check just syntax
         uses: ublue-os/just-action@v2
