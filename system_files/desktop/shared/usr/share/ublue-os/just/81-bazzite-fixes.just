@@ -99,34 +99,51 @@ toggle-wol:
       exit 0
     fi
     CONFIG_FILE="/etc/udev/rules.d/81-wol.rules"
+    SERVICE_FILE="/etc/systemd/system/force-wol.service"
     WOL_STATUS=$(sudo ethtool $INTERFACE | grep "Wake-on" | awk '{print $2}')
     CURRENT_STATE="Disabled"
     if [[ "$WOL_STATUS" == "g" ]]; then
       CURRENT_STATE="Enabled"
     fi
     echo "Wake-on-LAN is currently: ${bold}${CURRENT_STATE}${normal}"
-    echo "Enable or Disable Wake-on-LAN, or Exit without saving?"
-    OPTION=$(ugum choose Enable Disable Exit)
+    echo "Enable, Disable Wake-on-LAN, Create Service, or Exit without saving?"
+    OPTION=$(ugum choose Enable Disable Create-Service Exit)
     if [[ "${OPTION,,}" == "enable" ]]; then
-        echo "You chose to enable Wake-on-LAN."
-        echo "Requesting root privileges..."
-        sudo ethtool -s $INTERFACE wol g
-        if ! grep -q "$INTERFACE" "$CONFIG_FILE" 2>/dev/null; then
-          echo "Creating udev rule to make this setting persistent..."
-          echo "ACTION==\"add\", SUBSYSTEM==\"net\", NAME==\"$INTERFACE\", RUN+=\"/usr/bin/ethtool -s \$name wol g\"" | sudo tee "$CONFIG_FILE" > /dev/null
-        fi
-        echo "Wake-on-LAN has been ${green}${bold}enabled${normal}."
+      echo "You chose to enable Wake-on-LAN."
+      echo "Requesting root privileges..."
+      sudo ethtool -s $INTERFACE wol g
+      if ! grep -q "$INTERFACE" "$CONFIG_FILE" 2>/dev/null; then
+        echo "Creating udev rule to make this setting persistent..."
+        echo "ACTION==\"add\", SUBSYSTEM==\"net\", NAME==\"$INTERFACE\", RUN+=\"/usr/bin/ethtool -s \$name wol g\"" | sudo tee "$CONFIG_FILE" > /dev/null
+      fi
+      echo "Wake-on-LAN has been ${green}${bold}enabled${normal}."
     elif [[ "${OPTION,,}" == "disable" ]]; then
-        echo "You chose to disable Wake-on-LAN."
-        echo "Requesting root privileges..."
-        sudo ethtool -s $INTERFACE wol d
-        if [[ -f "$CONFIG_FILE" ]]; then
-          echo "Removing udev rule to disable persistence..."
-          sudo rm -f "$CONFIG_FILE"
-        fi
-        echo "Wake-on-LAN has been ${red}${bold}disabled${normal}."
+      echo "You chose to disable Wake-on-LAN."
+      echo "Requesting root privileges..."
+      sudo ethtool -s $INTERFACE wol d
+      if [[ -f "$CONFIG_FILE" ]]; then
+        echo "Removing udev rule to disable persistence..."
+        sudo rm -f "$CONFIG_FILE"
+      fi
+      echo "Wake-on-LAN has been ${red}${bold}disabled${normal}."
+    elif [[ "${OPTION,,}" == "create-service" ]]; then
+      echo "You chose to create a systemd service for enabling WOL at boot."
+      echo "Requesting root privileges..."
+      sudo bash -c "cat > $SERVICE_FILE" <<EOF
+    [Unit]
+    Description=Force Enable Wake-on-LAN
+    After=network-online.target
+    [Service]
+    Type=oneshot
+    ExecStart=/sbin/ethtool -s $INTERFACE wol g
+    [Install]
+    WantedBy=network-online.target
+    EOF
+      sudo systemctl daemon-reload
+      sudo systemctl enable force-wol.service
+      echo "Systemd service created and enabled at boot: ${green}${bold}force-wol.service${normal}"
     else
-        echo "No changes were made."
+      echo "No changes were made."
     fi
 
 toggle-i915-sleep-fix:
