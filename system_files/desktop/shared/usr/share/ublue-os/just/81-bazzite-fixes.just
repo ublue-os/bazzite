@@ -126,7 +126,7 @@ toggle-wol:
         sudo rm -f "$CONFIG_FILE"
       fi
       echo "Wake-on-LAN has been ${red}${bold}disabled${normal}."
-    elif [[ "${OPTION,,}" == "Make WOL service (only use this if WOL keeps turning back off after a few boots)" ]]; then
+    elif [[ "${OPTION,,}" == "Create-Service" ]]; then
       echo "You chose to create a systemd service for enabling WOL at boot."
       echo "Requesting root privileges..."
       sudo bash -c "cat > $SERVICE_FILE" <<EOF
