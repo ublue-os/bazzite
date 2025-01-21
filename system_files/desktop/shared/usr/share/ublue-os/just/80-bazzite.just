@@ -503,8 +503,8 @@ get-logs:
     # Get logs for this boot
     this_boot_logs=$(journalctl -b | fpaste 2>/dev/null)
     echo -e "${bold}Logs This Boot:${normal} $this_boot_logs"
-    echo ""
+    echo " "
     # Get logs for last boot
     last_boot_logs=$(journalctl -b -1 | fpaste 2>/dev/null)
     echo -e "${bold}Logs Last Boot:${normal} $last_boot_logs"
-    echo ""
+    echo " "
