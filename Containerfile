@@ -705,6 +705,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo \
+        rocm-smi \
         waydroid \
         cage \
         wlr-randr && \
