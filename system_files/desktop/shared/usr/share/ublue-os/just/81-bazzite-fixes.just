@@ -88,7 +88,6 @@ toggle-bt-mic:
       echo "No changes were made."
     fi
 
-
 # enable or disable wake-on-lan functionality
 toggle-wol:
     #!/usr/bin/bash
