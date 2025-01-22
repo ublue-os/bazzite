@@ -107,6 +107,7 @@ toggle-wol:
     fi
     echo "Wake-on-LAN is currently: ${bold}${CURRENT_STATE}${normal}"
     echo "Enable, Disable Wake-on-LAN, Create Service, or Exit without saving?"
+    echo "Note: Create service if Enabling is not persistent."
     OPTION=$(ugum choose Enable Disable Create-Service Exit)
     if [[ "${OPTION,,}" == "enable" ]]; then
       echo "You chose to enable Wake-on-LAN."
