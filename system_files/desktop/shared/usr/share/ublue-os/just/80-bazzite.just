@@ -500,6 +500,7 @@ get-decky-bazzite-buddy:
 get-logs:
     #!/bin/bash
     set -euo pipefail
+    source /usr/lib/ujust/ujust.sh
     # Get logs for this boot
     this_boot_logs=$(journalctl -b | fpaste 2>/dev/null)
     echo -e "${bold}Logs This Boot:${normal} $this_boot_logs"
