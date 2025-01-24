@@ -65,11 +65,11 @@
 %bcond_with valgrind
 %endif
 
-%global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}%{?with_nvk:,nouveau}
+%global vulkan_drivers swrast,virtio%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}%{?with_nvk:,nouveau}
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 24.2.8
+%global ver 24.3.4
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Epoch:          1
 %global orig_release 1%{?dist}
@@ -85,13 +85,11 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=2333711
+Patch11:        0001-egl-never-select-swrast-for-vmwgfx.patch
+
 # https://gitlab.com/evlaV/mesa/
 Patch20:        valve.patch
-
-# Temporary: Patches for Indiana Jones and the Great Cicle
-# (Attempt 2, thx mr. pitoiset for moar fixes)
-# Remove this once we get Mesa 24.3.x in upstream fedora
-Patch30:        indiana-2.patch
 
 BuildRequires:  meson >= 1.3.0
 BuildRequires:  gcc
@@ -421,7 +419,6 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
 
 %meson \
   -Dplatforms=x11,wayland \
-  -Ddri3=enabled \
   -Dosmesa=true \
 %if 0%{?with_hardware}
   -Dgallium-drivers=swrast,virgl,nouveau%{?with_r300:,r300}%{?with_crocus:,crocus}%{?with_i915:,i915}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
@@ -583,6 +580,7 @@ popd
 %files dri-drivers
 %{_datadir}/drirc.d/00-mesa-defaults.conf
 %{_libdir}/libgallium-*.so
+%{_libdir}/gbm/dri_gbm.so
 %{_libdir}/dri/kms_swrast_dri.so
 %{_libdir}/dri/libdril_dri.so
 %{_libdir}/dri/swrast_dri.so
@@ -707,6 +705,8 @@ popd
 %files vulkan-drivers
 %{_libdir}/libvulkan_lvp.so
 %{_datadir}/vulkan/icd.d/lvp_icd.*.json
+%{_libdir}/libvulkan_virtio.so
+%{_datadir}/vulkan/icd.d/virtio_icd.*.json
 %{_libdir}/libVkLayer_MESA_device_select.so
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
 %if 0%{?with_vulkan_hw}
