@@ -1,0 +1,24 @@
+name: Update Submodules
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 0 * * 0"  # Weekly update on Sunday
+
+jobs:
+  update-submodules:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Update submodules
+        run: |
+          git submodule update --recursive --remote
+          git status
