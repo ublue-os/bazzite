@@ -11,7 +11,7 @@ _install-system-flatpaks:
         FLATPAKS="kde_flatpaks/flatpaks"
     fi
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
-    flatpak --system -y install --or-update ${FLATPAK_LIST}
+    flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
 # Configure grub bootmenu visibility. pass action 'help' for more info.
 configure-grub ACTION="":
