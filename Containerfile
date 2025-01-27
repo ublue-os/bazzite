@@ -109,11 +109,11 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
         https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-    dnf5 -y config-manager addrepo --overwrite --id=negativo17-fedora-steam --from-repofile=https://negativo17.org/repos/fedora-steam.repo --set=exclude="mesa-*" --set=priority=3 && \
-    dnf5 -y config-manager addrepo --overwrite --id=negativo17-fedora-rar --from-repofile=https://negativo17.org/repos/fedora-rar.repo --set=exclude="mesa-*" --set=priority=3 && \
+    dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-steam.repo && \
+    dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-rar.repo && \
     dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
     dnf5 -y config-manager setopt "*terra*".priority=2 && \
-    dnf5 -y config-manager setopt "*negativo*".priority=3 "*negativo*".exclude="mesa-*" && \
+    dnf5 -y config-manager setopt $(printf '%s.priority=3 %s.exclude="mesa-*" ' $(build_files/dnf5-search "*negativo*")) && \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=4 "*rpmfusion*".exclude="mesa-*" && \
     dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
     /ctx/cleanup
@@ -149,7 +149,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
         dnf5 copr disable -y lukenukem/asus-linux \
     ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
-        dnf5 -y config-manager addrepo --id=linux-surface --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
+        dnf5 -y config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
         dnf5 -y swap \
             --allowerasing \
             libwacom-data libwacom-surface-data && \
