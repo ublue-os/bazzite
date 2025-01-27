@@ -130,12 +130,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
     dnf5 -y install \
         scx-scheds && \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-        rpm-ostree rpm-ostree && \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-        bootc bootc && \
+    for toswap in rpm-ostree bootc; do \
+        dnf5 -y swap --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite $toswap; \
+    done && unset -v toswap && \
     /ctx/cleanup
 
 # Setup firmware & hardware packages
