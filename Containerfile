@@ -172,26 +172,16 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:ublue-os:staging \
-        fwupd fwupd && \
-    dnf5 -y swap \
-    --repo terra-extras \
-        switcheroo-control switcheroo-control && \
-    dnf5 -y swap \
-    --repo terra-extras \
-        mesa-filesystem mesa-filesystem && \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        pipewire pipewire && \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        bluez bluez && \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        xorg-x11-server-Xwayland xorg-x11-server-Xwayland && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/rpmfusion-*.repo && \
-    dnf5 -y install \
+    declare -A toswap=( \
+        ["copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland" \
+        ["terra-extras"]="switcheroo-control mesa-filesystem" \
+        ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
+    ) && \
+    for repo in "${!toswap[@]}"; do \
+        for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
+    done && unset -v toswap repo package && \
+    dnf5 -y config-manager setopt "*rpmfusion*".enabled=1 && \
+    dnf5 -y install --enable-repo="*rpmfusion*" \
         libaacs \
         libbdplus \
         libbluray \
