@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=53
+HWS_VER=54
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -42,6 +42,13 @@ fi
 
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
+
+# Composefs hasn't been enabled upstream yet
+# See: https://github.com/ublue-os/main/issues/712
+if [[ ! $KARGS =~ "composefs" ]]; then
+  echo "Disabling composefs"
+  NEEDED_KARGS+=("--append-if-missing=ostree.prepare-root.composefs=0")
+fi
 
 if /usr/libexec/hwsupport/valve-hardware || /usr/libexec/hwsupport/hhd-supported-hardware; then
   echo "Checking for ppfeaturemask karg on hardware that requires it"
