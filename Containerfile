@@ -113,7 +113,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-rar.repo && \
     dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
     dnf5 -y config-manager setopt "*terra*".priority=2 && \
-    dnf5 -y config-manager setopt $(printf '%s.priority=3 %s.exclude="mesa-*" ' $(build_files/dnf5-search "*negativo*")) && \
+    dnf5 -y config-manager setopt $(printf '%s.priority=3 %s.exclude="mesa-*" ' $(/ctx/dnf5-search "*negativo*")) && \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=4 "*rpmfusion*".exclude="mesa-*" && \
     dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
     /ctx/cleanup
