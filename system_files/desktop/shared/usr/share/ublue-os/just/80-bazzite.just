@@ -13,6 +13,53 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
+# Toggle SSH availability on boot
+toggle-ssh:
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    # Get hostname and IP address
+    HOSTNAME=$(hostname)
+    IP_ADDRESS=$(hostname -I | awk '{print $1}') # First IP address
+    # Get current SSH status
+    SSH_STATUS="Disabled"
+    if systemctl is-enabled sshd | grep -q enabled; then
+      SSH_STATUS="Enabled"
+    fi
+    # Display current status
+    echo -e "\n${bold}Hostname:${normal} $HOSTNAME"
+    echo -e "${bold}IP Address:${normal} $IP_ADDRESS"
+    if [ "$SSH_STATUS" == "Enabled" ]; then
+      echo -e "${bold}SSH Availability on Boot:${normal} ${green}$SSH_STATUS${normal}\n"
+    else
+      echo -e "${bold}SSH Availability on Boot:${normal} ${yellow}$SSH_STATUS${normal}\n"
+    fi
+    # Prompt user for action
+    echo "Choose an option:"
+    CHOICE=$(ugum choose "Enable SSH" "Disable SSH" "Exit without saving")
+    case "$CHOICE" in
+      "Enable SSH")
+        echo "Enabling SSH on boot..."
+        sudo systemctl enable sshd
+        sudo systemctl start sshd
+        echo -e "SSH is now ${green}Enabled${normal}. You can SSH using:"
+        echo -e "${bold}${USER}@${IP_ADDRESS}${normal}"
+        echo " "
+        ;;
+      "Disable SSH")
+        echo "Disabling SSH on boot..."
+        sudo systemctl disable sshd
+        sudo systemctl stop sshd
+        echo -e "SSH is now ${yellow}Disabled${normal}."
+        echo " "
+        ;;
+      "Exit without saving")
+        echo "No changes made."
+        ;;
+      *)
+        echo "Invalid choice. Exiting without changes."
+        ;;
+    esac
+
 # Configure grub bootmenu visibility. pass action 'help' for more info.
 configure-grub ACTION="":
     #!/usr/bin/bash
