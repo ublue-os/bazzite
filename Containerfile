@@ -80,24 +80,29 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/unwrap && \
     dnf5 -y install dnf5-plugins && \
-    dnf5 -y copr enable kylegospo/bazzite && \
-    dnf5 -y copr enable kylegospo/bazzite-multilib && \
-    dnf5 -y copr enable ublue-os/staging && \
-    dnf5 -y copr enable kylegospo/LatencyFleX && \
-    dnf5 -y copr enable kylegospo/obs-vkcapture && \
-    dnf5 -y copr enable kylegospo/wallpaper-engine-kde-plugin && \
-    dnf5 -y copr enable ycollet/audinux && \
-    dnf5 -y copr enable kylegospo/rom-properties && \
-    dnf5 -y copr enable kylegospo/webapp-manager && \
-    dnf5 -y copr enable hhd-dev/hhd && \
-    dnf5 -y copr enable che/nerd-fonts && \
-    dnf5 -y copr enable hikariknight/looking-glass-kvmfr && \
-    dnf5 -y copr enable mavit/discover-overlay && \
-    dnf5 -y copr enable lizardbyte/beta && \
-    dnf5 -y copr enable rok/cdemu && \
-    dnf5 -y copr enable rodoma92/kde-cdemu-manager && \
-    dnf5 -y copr enable rodoma92/rmlint && \
-    dnf5 -y copr enable ilyaz/LACT && \
+    for copr in \
+        kylegospo/bazzite \
+        kylegospo/bazzite-multilib \
+        ublue-os/staging \
+        kylegospo/LatencyFleX \
+        kylegospo/obs-vkcapture \
+        kylegospo/wallpaper-engine-kde-plugin \
+        ycollet/audinux \
+        kylegospo/rom-properties \
+        kylegospo/webapp-manager \
+        hhd-dev/hhd \
+        che/nerd-fonts \
+        hikariknight/looking-glass-kvmfr \
+        mavit/discover-overlay \
+        lizardbyte/beta \
+        rok/cdemu \
+        rodoma92/kde-cdemu-manager \
+        rodoma92/rmlint \
+        ilyaz/LACT; \
+    do \
+        dnf5 -y copr enable $copr; \
+        dnf5 config-manager setopt copr:copr.fedorainfracloud.org:${copr////:}.priority=98 ;\
+    done && unset -v copr && \
     dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release{,-extras} && \
     curl -Lo /etc/yum.repos.d/tailscale.repo https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
     dnf5 -y install \
