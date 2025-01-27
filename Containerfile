@@ -101,21 +101,21 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         ilyaz/LACT; \
     do \
         dnf5 -y copr enable $copr; \
-        dnf5 config-manager setopt copr:copr.fedorainfracloud.org:${copr////:}.priority=98 ;\
+        dnf5 -y config-manager setopt copr:copr.fedorainfracloud.org:${copr////:}.priority=98 ;\
     done && unset -v copr && \
     dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release{,-extras} && \
-    curl -Lo /etc/yum.repos.d/tailscale.repo https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
+    dnf5 -y config-manager addrepo --overwrite --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
     dnf5 -y install \
         https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
         https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-    curl -Lo /etc/yum.repos.d/negativo17-fedora-steam.repo https://negativo17.org/repos/fedora-steam.repo && \
-    curl -Lo /etc/yum.repos.d/negativo17-fedora-rar.repo https://negativo17.org/repos/fedora-rar.repo && \
-    for repo in /etc/yum.repos.d/*bazzite*; do sed -i 's@enabled=1@enabled=1\npriority=1@g' $repo; done && \
-    for repo in /etc/yum.repos.d/*terra*; do sed -i 's@enabled=1@enabled=1\npriority=2@g' $repo; done && \
-    for repo in /etc/yum.repos.d/*negativo*; do sed -i 's@enabled=1@enabled=1\nexclude=mesa-*\npriority=3@g' $repo; done && \
-    for repo in /etc/yum.repos.d/*rpmfusion*; do sed -i 's@enabled=1@enabled=1\nexclude=mesa-*\npriority=4@g' $repo; done && \
-    for repo in /etc/yum.repos.d/*fedora*; do sed -i 's@enabled=1@enabled=1\nexclude=mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*@g' $repo; done && \
+    dnf5 -y config-manager addrepo --overwrite --id=negativo17-fedora-steam --from-repofile=https://negativo17.org/repos/fedora-steam.repo --set=exclude="mesa-*" --set=priority=3 && \
+    dnf5 -y config-manager addrepo --overwrite --id=negativo17-fedora-rar --from-repofile=https://negativo17.org/repos/fedora-rar.repo --set=exclude="mesa-*" --set=priority=3 && \
+    dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
+    dnf5 -y config-manager setopt "*terra*".priority=2 && \
+    dnf5 -y config-manager setopt "*negativo*".priority=3 "*negativo*".exclude="mesa-*" && \
+    dnf5 -y config-manager setopt "*rpmfusion*".priority=4 "*rpmfusion*".exclude="mesa-*" && \
+    dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
     /ctx/cleanup
 
 # Install kernel
@@ -127,7 +127,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/install-kernel-akmods && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-*.repo && \
+    dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
     dnf5 -y install \
         scx-scheds && \
     dnf5 -y swap \
@@ -199,7 +199,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         libbdplus \
         libbluray \
         libbluray-utils && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-*.repo && \
+    dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
     /ctx/cleanup
 
 # Remove unneeded packages
