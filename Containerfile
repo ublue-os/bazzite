@@ -149,7 +149,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
         dnf5 copr disable -y lukenukem/asus-linux \
     ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
-        curl -Lo /etc/yum.repos.d/linux-surface.repo https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
+        dnf5 -y config-manager addrepo --id=linux-surface --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
         dnf5 -y swap \
             --allowerasing \
             libwacom-data libwacom-surface-data && \
@@ -160,7 +160,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
             libcamera-gstreamer \
             libcamera-ipa \
             pipewire-plugin-libcamera && \
-        sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/linux-surface.repo \
+        dnf5 -y config-manager setopt "linux-surface".enabled=0 \
     ; fi && \
     /ctx/install-firmware && \
     /ctx/cleanup
