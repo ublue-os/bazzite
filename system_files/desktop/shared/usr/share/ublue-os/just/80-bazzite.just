@@ -496,54 +496,16 @@ get-decky-bazzite-buddy:
     # Prompt user to restart Decky Loader
     echo "Please restart Decky Loader to activate the plugin."
 
-post-gamescope-logs:
-    #!/usr/bin/bash
-    OUTPUT_FILE="/tmp/gathered_info.txt"
-
-    # Clear the output file or create it if it doesn't exist
-    > "$OUTPUT_FILE"
-
-    # Gather information from various sources
-    {
-        echo "GPU info"
-        lshw -C display
-
-        # Add a blank line for readability
-        echo
-
-        filepaths=(
-            "/sys/devices/virtual/dmi/id/bios_date"
-            "/sys/devices/virtual/dmi/id/board_name"
-            "/sys/devices/virtual/dmi/id/board_vendor"
-            "/sys/devices/virtual/dmi/id/product_name"
-            "$HOME/.gamescope-cmd.log"
-            "$HOME/.gamescope-stdout.log"
-        )
-
-        # Iterate over each file path in the array
-        for filepath in "${filepaths[@]}"; do
-            # Print the file path
-            echo "File: $filepath"
-
-            # Check if the file exists before trying to read it
-            if [[ -f "$filepath" ]]; then
-                # Print the file content
-                cat "$filepath"
-            else
-                echo "File not found: $filepath"
-            fi
-
-            # Add a blank line for readability
-            echo
-        done
-
-        echo "----- Contents of $HOME/.config/environment.d/ -----"
-        mkdir -p $HOME/.config/environment.d
-        cat "$HOME/.config/environment.d/"* 2>/dev/null || echo "No files found in $HOME/.config/environment.d/"
-
-    } >> "$OUTPUT_FILE"
-
-    fpaste $OUTPUT_FILE
-
-    # cleanup output file
-    rm -rf $OUTPUT_FILE
+# get logs for this boot and last boot, cleanly output in terminal as pastebin links, to simplify troubleshooting and issue reporting.
+get-logs:
+    #!/bin/bash
+    set -euo pipefail
+    source /usr/lib/ujust/ujust.sh
+    # Get logs for this boot
+    this_boot_logs=$(journalctl -b | fpaste 2>/dev/null)
+    echo -e "${bold}Logs This Boot:${normal} $this_boot_logs"
+    echo " "
+    # Get logs for last boot
+    last_boot_logs=$(journalctl -b -1 | fpaste 2>/dev/null)
+    echo -e "${bold}Logs Last Boot:${normal} $last_boot_logs"
+    echo " "
