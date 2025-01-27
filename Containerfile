@@ -498,20 +498,24 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     rm -r /tmp/bazzite-schema-test && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    dnf5 copr disable -y kylegospo/bazzite && \
-    dnf5 copr disable -y kylegospo/bazzite-multilib && \
-    dnf5 copr disable -y ublue-os/staging && \
-    dnf5 copr disable -y kylegospo/LatencyFleX && \
-    dnf5 copr disable -y kylegospo/obs-vkcapture && \
-    dnf5 copr disable -y kylegospo/wallpaper-engine-kde-plugin && \
-    dnf5 copr disable -y ycollet/audinux && \
-    dnf5 copr disable -y kylegospo/rom-properties && \
-    dnf5 copr disable -y kylegospo/webapp-manager && \
-    dnf5 copr disable -y hhd-dev/hhd && \
-    dnf5 copr disable -y che/nerd-fonts && \
-    dnf5 copr disable -y mavit/discover-overlay && \
-    dnf5 copr disable -y lizardbyte/beta && \
-    dnf5 copr disable -y hikariknight/looking-glass-kvmfr && \
+    for copr in \
+        kylegospo/bazzite \
+        kylegospo/bazzite-multilib \
+        ublue-os/staging \
+        kylegospo/LatencyFleX \
+        kylegospo/obs-vkcapture \
+        kylegospo/wallpaper-engine-kde-plugin \
+        ycollet/audinux \
+        kylegospo/rom-properties \
+        kylegospo/webapp-manager \
+        hhd-dev/hhd \
+        che/nerd-fonts \
+        mavit/discover-overlay \
+        lizardbyte/beta \
+        hikariknight/looking-glass-kvmfr; \
+    do \
+        dnf5 -y copr disable $copr; \
+    done && unset -v copr && \
     dnf5 config-manager setopt "*tailscale*".enabled=0 && \
     dnf5 config-manager setopt "*charm*".enabled=0 && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
@@ -685,13 +689,17 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/input-remapper-gtk.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    dnf5 copr disable -y kylegospo/bazzite && \
-    dnf5 copr disable -y kylegospo/bazzite-multilib && \
-    dnf5 copr disable -y kylegospo/LatencyFleX && \
-    dnf5 copr disable -y kylegospo/obs-vkcapture && \
-    dnf5 copr disable -y kylegospo/wallpaper-engine-kde-plugin && \
-    dnf5 copr disable -y hhd-dev/hhd && \
-    dnf5 copr disable -y ycollet/audinux && \
+    for copr in \
+        kylegospo/bazzite \
+        kylegospo/bazzite-multilib \
+        kylegospo/LatencyFleX \
+        kylegospo/obs-vkcapture \
+        kylegospo/wallpaper-engine-kde-plugin \
+        hhd-dev/hhd \
+        ycollet/audinux; \
+    do \
+        dnf5 -y copr disable -y $copr;
+    done && unset -v copr && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
