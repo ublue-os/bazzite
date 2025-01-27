@@ -80,37 +80,42 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/unwrap && \
     dnf5 -y install dnf5-plugins && \
-    dnf5 -y copr enable kylegospo/bazzite && \
-    dnf5 -y copr enable kylegospo/bazzite-multilib && \
-    dnf5 -y copr enable ublue-os/staging && \
-    dnf5 -y copr enable kylegospo/LatencyFleX && \
-    dnf5 -y copr enable kylegospo/obs-vkcapture && \
-    dnf5 -y copr enable kylegospo/wallpaper-engine-kde-plugin && \
-    dnf5 -y copr enable ycollet/audinux && \
-    dnf5 -y copr enable kylegospo/rom-properties && \
-    dnf5 -y copr enable kylegospo/webapp-manager && \
-    dnf5 -y copr enable hhd-dev/hhd && \
-    dnf5 -y copr enable che/nerd-fonts && \
-    dnf5 -y copr enable hikariknight/looking-glass-kvmfr && \
-    dnf5 -y copr enable mavit/discover-overlay && \
-    dnf5 -y copr enable lizardbyte/beta && \
-    dnf5 -y copr enable rok/cdemu && \
-    dnf5 -y copr enable rodoma92/kde-cdemu-manager && \
-    dnf5 -y copr enable rodoma92/rmlint && \
-    dnf5 -y copr enable ilyaz/LACT && \
+    for copr in \
+        kylegospo/bazzite \
+        kylegospo/bazzite-multilib \
+        ublue-os/staging \
+        kylegospo/LatencyFleX \
+        kylegospo/obs-vkcapture \
+        kylegospo/wallpaper-engine-kde-plugin \
+        ycollet/audinux \
+        kylegospo/rom-properties \
+        kylegospo/webapp-manager \
+        hhd-dev/hhd \
+        che/nerd-fonts \
+        hikariknight/looking-glass-kvmfr \
+        mavit/discover-overlay \
+        lizardbyte/beta \
+        rok/cdemu \
+        rodoma92/kde-cdemu-manager \
+        rodoma92/rmlint \
+        ilyaz/LACT; \
+    do \
+        dnf5 -y copr enable $copr; \
+        dnf5 -y config-manager setopt copr:copr.fedorainfracloud.org:${copr////:}.priority=98 ;\
+    done && unset -v copr && \
     dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release{,-extras} && \
-    curl -Lo /etc/yum.repos.d/tailscale.repo https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
+    dnf5 -y config-manager addrepo --overwrite --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
     dnf5 -y install \
         https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
         https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-    curl -Lo /etc/yum.repos.d/negativo17-fedora-steam.repo https://negativo17.org/repos/fedora-steam.repo && \
-    curl -Lo /etc/yum.repos.d/negativo17-fedora-rar.repo https://negativo17.org/repos/fedora-rar.repo && \
-    for repo in /etc/yum.repos.d/*bazzite*; do sed -i 's@enabled=1@enabled=1\npriority=1@g' $repo; done && \
-    for repo in /etc/yum.repos.d/*terra*; do sed -i 's@enabled=1@enabled=1\npriority=2@g' $repo; done && \
-    for repo in /etc/yum.repos.d/*negativo*; do sed -i 's@enabled=1@enabled=1\nexclude=mesa-*\npriority=3@g' $repo; done && \
-    for repo in /etc/yum.repos.d/*rpmfusion*; do sed -i 's@enabled=1@enabled=1\nexclude=mesa-*\npriority=4@g' $repo; done && \
-    for repo in /etc/yum.repos.d/*fedora*; do sed -i 's@enabled=1@enabled=1\nexclude=mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*@g' $repo; done && \
+    dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-steam.repo && \
+    dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-rar.repo && \
+    dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
+    dnf5 -y config-manager setopt "*terra*".priority=2 && \
+    dnf5 -y config-manager setopt $(printf '%s.priority=3 %s.exclude="mesa-*" ' $(build_files/dnf5-search "*negativo*")) && \
+    dnf5 -y config-manager setopt "*rpmfusion*".priority=4 "*rpmfusion*".exclude="mesa-*" && \
+    dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
     /ctx/cleanup
 
 # Install kernel
@@ -122,15 +127,12 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/install-kernel-akmods && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-*.repo && \
+    dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
     dnf5 -y install \
         scx-scheds && \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-        rpm-ostree rpm-ostree && \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-        bootc bootc && \
+    for toswap in rpm-ostree bootc; do \
+        dnf5 -y swap --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite $toswap; \
+    done && unset -v toswap && \
     /ctx/cleanup
 
 # Setup firmware & hardware packages
@@ -147,7 +149,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
         dnf5 copr disable -y lukenukem/asus-linux \
     ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
-        curl -Lo /etc/yum.repos.d/linux-surface.repo https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
+        dnf5 -y config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
         dnf5 -y swap \
             --allowerasing \
             libwacom-data libwacom-surface-data && \
@@ -158,7 +160,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
             libcamera-gstreamer \
             libcamera-ipa \
             pipewire-plugin-libcamera && \
-        sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/linux-surface.repo \
+        dnf5 -y config-manager setopt "linux-surface".enabled=0 \
     ; fi && \
     /ctx/install-firmware && \
     /ctx/cleanup
@@ -170,31 +172,19 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:ublue-os:staging \
-        fwupd fwupd && \
-    dnf5 -y swap \
-    --repo terra-extras \
-        switcheroo-control switcheroo-control && \
-    dnf5 -y swap \
-    --repo terra-extras \
-        mesa-filesystem mesa-filesystem && \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        pipewire pipewire && \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        bluez bluez && \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        xorg-x11-server-Xwayland xorg-x11-server-Xwayland && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/rpmfusion-*.repo && \
-    dnf5 -y install \
+    declare -A toswap=( \
+        ["copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland" \
+        ["terra-extras"]="switcheroo-control mesa-filesystem" \
+        ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
+    ) && \
+    for repo in "${!toswap[@]}"; do \
+        for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
+    done && unset -v toswap repo package && \
+    dnf5 -y install --enable-repo="*rpmfusion*" \
         libaacs \
         libbdplus \
         libbluray \
         libbluray-utils && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-*.repo && \
     /ctx/cleanup
 
 # Remove unneeded packages
@@ -508,25 +498,28 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     rm -r /tmp/bazzite-schema-test && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    dnf5 copr disable -y kylegospo/bazzite && \
-    dnf5 copr disable -y kylegospo/bazzite-multilib && \
-    dnf5 copr disable -y ublue-os/staging && \
-    dnf5 copr disable -y kylegospo/LatencyFleX && \
-    dnf5 copr disable -y kylegospo/obs-vkcapture && \
-    dnf5 copr disable -y kylegospo/wallpaper-engine-kde-plugin && \
-    dnf5 copr disable -y ycollet/audinux && \
-    dnf5 copr disable -y kylegospo/rom-properties && \
-    dnf5 copr disable -y kylegospo/webapp-manager && \
-    dnf5 copr disable -y hhd-dev/hhd && \
-    dnf5 copr disable -y che/nerd-fonts && \
-    dnf5 copr disable -y mavit/discover-overlay && \
-    dnf5 copr disable -y lizardbyte/beta && \
-    dnf5 copr disable -y hikariknight/looking-glass-kvmfr && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/tailscale.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/charm.repo && \
+    for copr in \
+        kylegospo/bazzite \
+        kylegospo/bazzite-multilib \
+        ublue-os/staging \
+        kylegospo/LatencyFleX \
+        kylegospo/obs-vkcapture \
+        kylegospo/wallpaper-engine-kde-plugin \
+        ycollet/audinux \
+        kylegospo/rom-properties \
+        kylegospo/webapp-manager \
+        hhd-dev/hhd \
+        che/nerd-fonts \
+        mavit/discover-overlay \
+        lizardbyte/beta \
+        hikariknight/looking-glass-kvmfr; \
+    do \
+        dnf5 -y copr disable $copr; \
+    done && unset -v copr && \
+    dnf5 config-manager setopt "*tailscale*".enabled=0 && \
+    dnf5 config-manager setopt "*charm*".enabled=0 && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-steam.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-rar.repo && \
+    dnf5 -y config-manager setopt "*negativo*".enabled=0 && \
     sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
@@ -696,13 +689,17 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/input-remapper-gtk.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    dnf5 copr disable -y kylegospo/bazzite && \
-    dnf5 copr disable -y kylegospo/bazzite-multilib && \
-    dnf5 copr disable -y kylegospo/LatencyFleX && \
-    dnf5 copr disable -y kylegospo/obs-vkcapture && \
-    dnf5 copr disable -y kylegospo/wallpaper-engine-kde-plugin && \
-    dnf5 copr disable -y hhd-dev/hhd && \
-    dnf5 copr disable -y ycollet/audinux && \
+    for copr in \
+        kylegospo/bazzite \
+        kylegospo/bazzite-multilib \
+        kylegospo/LatencyFleX \
+        kylegospo/obs-vkcapture \
+        kylegospo/wallpaper-engine-kde-plugin \
+        hhd-dev/hhd \
+        ycollet/audinux; \
+    do \
+        dnf5 -y copr disable -y $copr;
+    done && unset -v copr && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
