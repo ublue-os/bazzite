@@ -512,11 +512,10 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 copr disable -y mavit/discover-overlay && \
     dnf5 copr disable -y lizardbyte/beta && \
     dnf5 copr disable -y hikariknight/looking-glass-kvmfr && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/tailscale.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/charm.repo && \
+    dnf5 config-manager setopt "*tailscale*".enabled=0 && \
+    dnf5 config-manager setopt "*charm*".enabled=0 && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-steam.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-rar.repo && \
+    dnf5 -y config-manager setopt "*negativo*".enabled=0 && \
     sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
