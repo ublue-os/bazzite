@@ -178,7 +178,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
     for repo in "${!toswap[@]}"; do \
-        for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
+        for package in "${toswap[@]}"; do dnf5 -y swap --repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
     dnf5 -y install --enable-repo="*rpmfusion*" \
         libaacs \
