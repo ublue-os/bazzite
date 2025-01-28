@@ -113,7 +113,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-rar.repo && \
     dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
     dnf5 -y config-manager setopt "*terra*".priority=2 && \
-    dnf5 -y config-manager setopt $(printf '%s.priority=3 %s.exclude="mesa-*" ' $(/ctx/dnf5-search "*negativo*")) && \
+    eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=3 exclude='mesa-*')" && \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=4 "*rpmfusion*".exclude="mesa-*" && \
     dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
     /ctx/cleanup
@@ -519,7 +519,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 config-manager setopt "*tailscale*".enabled=0 && \
     dnf5 config-manager setopt "*charm*".enabled=0 && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-    dnf5 -y config-manager setopt "*negativo*".enabled=0 && \
+    eval "$(/ctx/dnf5-setopt setopt '*negativo17*' enabled=0)" && \
     sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
