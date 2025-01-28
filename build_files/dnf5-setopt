@@ -1,0 +1,72 @@
+#!/usr/bin/bash
+set -euo pipefail
+
+die() {
+    local frame=0
+    while caller $frame >&2; do
+        ((++frame))
+    done
+    echo >&2 "${*:-Something went wrong}"
+    echo >&1 ":"
+    exit 0
+}
+trap 'die' ERR
+
+_usage() {
+    local -i status=${1:-0}
+    printf >&2 'Usage: eval "%s <setopt|unsetopt> <repo_name|repo_id> <option>=<value>)"\n' "$(basename "$0")"
+    return $status
+}
+
+while getopts "h" opt; do
+    case $opt in
+    h)
+        _usage 0
+        exit
+        ;;
+    *) ;;
+    esac
+done
+
+cmd="dnf5 config-manager"
+action=$1
+shift
+
+case $action in
+setopt | unsetopt) cmd+=" $action" ;;
+*)
+    die "ERROR: Only setopt|unsetopt are allowed as first param"
+    ;;
+esac
+
+_repos_raw="$(
+    cd "$(dirname "$0")"
+    # shellcheck disable=SC2086
+    ./dnf5-search ${1//,/ }
+)"
+if [[ -z $_repos_raw ]]; then
+    die "No repo found matching '$1'"
+fi
+shift
+
+repos=()
+mapfile -t repos <<<"$_repos_raw"
+
+options=()
+while (($#)); do
+    [[ -n ${_v:=${1##.}} ]] && options+=("$_v")
+    shift
+done
+unset -v _v
+
+if [[ ${#options[@]} -eq 0 ]]; then
+    die "No options were providied"
+fi
+
+for repo in "${repos[@]}"; do
+    for opt in "${options[@]}"; do
+        cmd+=" $repo.$opt"
+    done
+done
+
+echo "$cmd"
