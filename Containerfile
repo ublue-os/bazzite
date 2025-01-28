@@ -131,7 +131,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y install \
         scx-scheds && \
     for toswap in rpm-ostree bootc; do \
-        dnf5 -y swap --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite $toswap; \
+        dnf5 -y swap --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite $toswap $toswap; \
     done && unset -v toswap && \
     /ctx/cleanup
 
