@@ -1,13 +1,61 @@
 # vim: set ft=make :
 
-# set up DLSS-Enabler upscaling and framegen mod. Allows FSR3 upscaling and framegen via DLSS equivalents in supported games
+# Set up DLSS-Enabler Upscaling and Framegen mod. This mod replaces DLSS upscaling and frame generation with FSR3 equivalents in supported games.
 get-framegen ACTION="prompt":
   #!/usr/bin/bash
   source /usr/lib/ujust/ujust.sh
 
+  FG_FILES=(
+    "amd_fidelityfx_dx12.dll" "dlssg_to_fsr3_amd_is_better.dll" "libxess.dll"
+    "amd_fidelityfx_vk.dll" "dlssg_to_fsr3.ini"
+    "d3dcompiler_47.dll" "dxgi.dll" "nvapi64.dll"
+    "DisableNvidiaSignatureChecks.reg" "dxvk.conf" "_nvngx.dll"
+    "dlss-enabler.dll" "fakenvapi.ini" "nvngx.ini"
+    "dlss-enabler-upscaler.dll" "fgmod" "nvngx-wrapper.dll"
+    "dlssg_to_fsr3_amd_is_better-3.0.dll" "fgmod-uninstaller.sh" "RestoreNvidiaSignatureChecks.reg"
+    )
+
+    function check_fgmod_installed() {
+    FG_DIR="$HOME/fgmod"
+    if [[ -d "$FG_DIR" ]]; then
+        for file in "${FG_FILES[@]}"; do
+        # Check if each required file exists in the directory
+        if [[ ! -f "$FG_DIR/$file" ]]; then
+            echo "${yellow}${bold}FGmod is partially installed. Missing file: ${file}${normal}"
+            return
+        fi
+        done
+        echo "${green}${bold}FGmod is installed and ready to use.${normal}"
+    else
+        echo "${red}${bold}FGmod is not installed.${normal}"
+    fi
+    }
+
+  function check_decky_installed() {
+    PLUGIN_DIR="$HOME/homebrew/plugins/Decky-Framegen"
+    if [[ -d "$PLUGIN_DIR" ]]; then
+      echo "${green}${bold}Decky Framegen plugin is installed.${normal}"
+    else
+      echo "${red}${bold}Decky Framegen plugin is not installed.${normal}"
+    fi
+  }
+
   OPTION={{ ACTION }}
 
   if [ "$OPTION" == "prompt" ]; then
+    echo ""
+    echo "Current Status:"
+    echo ""
+    check_fgmod_installed
+    echo ""
+    check_decky_installed
+    echo ""
+    echo "FGmod enables the replacement of DLSS Upscaling and Framegen with FSR3 equivalents."
+    echo "You can directly install or remove FGmod files, or install the Decky Framegen plugin for managing everything conveniently in Game Mode."
+    echo ""
+    echo "To patch a Steam game after installation, use the launch option: '~/fgmod/fgmod %COMMAND%'"
+    echo "To revert changes to the game's files, use: '~/fgmod/fgmod-uninstaller.sh %COMMAND%'"
+    echo ""
     echo "What would you like to do with FGmod?"
     OPTION=$(ugum choose "Install Decky Framegen plugin" "Install FGmod" "Uninstall FGmod" "Exit without changes")
   elif [ "$OPTION" == "help" ]; then
@@ -26,12 +74,11 @@ get-framegen ACTION="prompt":
     chmod +x prepare.sh
     ./prepare.sh
     echo "FGmod installed successfully!"
-    echo "Add launch option '~/fgmod/fgmod %COMMAND%' to the game you want to patch"
+    echo "To patch a game, add the launch option '~/fgmod/fgmod %COMMAND%' in its settings."
 
   elif [ "${OPTION,,}" == "install decky framegen plugin" ]; then
     echo "Installing Decky Framegen plugin..."
 
-    # Get the latest release URL dynamically
     API_URL="https://api.github.com/repos/xXJSONDeruloXx/Decky-Framegen/releases/latest"
     PLUGIN_URL=$(curl -s "$API_URL" | grep "browser_download_url" | grep ".zip" | cut -d '"' -f 4)
 
