@@ -54,8 +54,10 @@ get-framegen ACTION="prompt":
         echo ""
         check_decky_installed
         echo ""
-        echo "FGmod enables the replacement of DLSS Upscaling and Framegen with FSR3 equivalents."
-        echo "You can directly install or remove FGmod files, or install the Decky Framegen plugin for managing everything conveniently in Game Mode."
+        echo "${bold}FGmod${normal} enables the replacement of DLSS Upscaling and Framegen with FSR3 equivalents."
+        echo ""
+        echo "Below you can install or remove ${bold}FGmod${normal} files,"
+        echo "or install the ${bold}Decky Framegen${normal} plugin for managing everything conveniently in Game Mode."
         echo ""
         echo "To patch a Steam game after installation, use the launch option: '~/fgmod/fgmod %COMMAND%'"
         echo "To revert changes to the game's files, use: '~/fgmod/fgmod-uninstaller.sh %COMMAND%'"
