@@ -63,6 +63,7 @@ get-framegen ACTION="prompt":
         echo "To revert changes to the game's files, use: '~/fgmod/fgmod-uninstaller.sh %COMMAND%'"
         echo ""
         echo "What would you like to do with FGmod?"
+        echo ""
         OPTION=$(ugum choose "Install Decky Framegen plugin" "Install FGmod" "Uninstall FGmod" "Exit without changes")
     elif [ "$OPTION" == "help" ]; then
         echo "Usage: just get-framegen <option>"
