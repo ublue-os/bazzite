@@ -50,6 +50,7 @@ get-framegen ACTION="prompt":
     if [ "$OPTION" == "prompt" ]; then
         echo ""
         echo "Current Status:"
+        echo ""
         check_fgmod_installed
         echo ""
         check_decky_installed
