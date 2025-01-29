@@ -9,7 +9,7 @@ get-framegen ACTION="prompt":
 
   if [ "$OPTION" == "prompt" ]; then
     echo "What would you like to do with FGmod?"
-    OPTION=$(ugum choose "Install FGmod" "Install Decky Framegen plugin" "Uninstall FGmod" "Exit without changes")
+    OPTION=$(ugum choose "Install Decky Framegen plugin" "Install FGmod" "Uninstall FGmod" "Exit without changes")
   elif [ "$OPTION" == "help" ]; then
     echo "Usage: ujust get-framegen <option>"
     echo "  <option>: Specify an action - 'install', 'install-decky-plugin', or 'uninstall'"
