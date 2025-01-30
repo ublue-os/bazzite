@@ -638,6 +638,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             fcitx5-mozc \
             fcitx5-chinese-addons \
             fcitx5-hangul \
+            kcm-fcitx5 \
             ptyxis && \
         git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 --branch main /tmp/wallpaper-engine-kde-plugin && \
         kpackagetool6 --type=Plasma/Wallpaper --global --install /tmp/wallpaper-engine-kde-plugin/plugin && \
