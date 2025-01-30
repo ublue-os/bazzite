@@ -149,7 +149,8 @@ configure-override-videos ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
-    if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo ]; then
+    NO_VIDEO="$HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo"
+    if [ ! -f $NO_VIDEO ]; then
         VIDEO_STATE="${b}Enabled${n}"
     else
         VIDEO_STATE="${b}Disabled${n}"
@@ -165,15 +166,17 @@ configure-override-videos ACTION="":
       echo "Videos are: $VIDEO_STATE"
       OPTION=$(Choose "Enable Videos" "Disable Videos")
     fi
-    if [[ "$OPTION" =~ ^enable ]]; then
-      rm $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo
-    elif [[ "$OPTION" =~ ^disable ]]; then
-      touch $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo
-      rm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
-      rm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
-      rm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
-      rm $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend.webm
-      rm $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend_from_throbber.webm
+    if [[ "${OPTION,,}" =~ ^enable ]]; then
+      echo "Removing $NO_VIDEO"
+      rm -f $NO_VIDEO
+    elif [[ "${OPTION,,}" =~ ^disable ]]; then
+      echo "Adding $NO_VIDEO"
+      touch $NO_VIDEO
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend_from_throbber.webm
     fi
 
 # Restores the stock virtual keyboard under KDE & GNOME
