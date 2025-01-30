@@ -22,6 +22,11 @@ screens:
           default: false
           packages:
           - Retrieve Decky: sudo -A ujust setup-decky install
+        Decky Framegen:
+          description: A Decky plugin that swaps DLSS for FSR 3 Upscaling and Framegen
+          default: false
+          packages:
+          - Retrieve Decky Framegen: sudo -A ujust get-framegen install-decky-plugin 
         EmuDeck:
           description: A utility for installing and configuring emulators on the Steam Deck
           default: false
