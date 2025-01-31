@@ -145,8 +145,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         dnf5 -y install \
             asusctl \
             asusctl-rog-gui && \
-        git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
-        cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
         dnf5 copr disable -y lukenukem/asus-linux \
     ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
         dnf5 -y config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
