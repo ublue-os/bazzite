@@ -1,3 +1,7 @@
+%define packagename steamdeck-kde-presets
+%define packagever 0.23
+%global _default_patch_fuzz 2
+
 Name:           steamdeck-kde-presets
 Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
@@ -5,7 +9,7 @@ Summary:        KDE Presets from Valve's SteamOS 3.0
 License:        GPLv2
 URL:            https://github.com/ublue-os/bazzite
 
-Source0:        https://gitlab.com/evlaV/%{name}/-/archive/master/%{name}-master.tar.gz
+Source0:        https://gitlab.com/evlaV/%{packagename}/-/archive/%{packagever}/%{packagename}-%{packagever}.tar.gz
 Source1:        steamdeck-le.svg
 Source2:        bazzite_logo.svgz
 Source3:        metadata_vapor.json
@@ -33,7 +37,7 @@ KDE Presets from Valve's SteamOS 3.0
 %define debug_package %{nil}
 
 %prep
-%autosetup -p1 -n %{name}-master
+%autosetup -p1 -n %{packagename}-%{packagever}
 
 %build
 
