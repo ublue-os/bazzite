@@ -209,7 +209,7 @@ configure-watchdog ACTION="":
       echo "Watchdog is $WATCHDOG_STATE"
       OPTION=$(Choose "Enable Watchdog" "Disable Watchdog")
     fi
-    if [[ "$OPTION" =~ ^enable ]]; then
+    if [[ "${OPTION,,}" =~ ^enable ]]; then
       WATCHDOG_KARGS="--delete-if-present=nowatchdog"
       if [[ "$CPU_MODEL" =~ "Intel" ]]; then
         WATCHDOG_KARGS="$WATCHDOG_KARGS --delete-if-present=modprobe.blacklist=iTCO_wdt"
@@ -217,7 +217,7 @@ configure-watchdog ACTION="":
         WATCHDOG_KARGS="$WATCHDOG_KARGS --delete-if-present=modprobe.blacklist=sp5100_tco"
       fi
       rpm-ostree kargs $WATCHDOG_KARGS
-    elif [[ "$OPTION" =~ ^disable ]]; then
+    elif [[ "${OPTION,,}" =~ ^disable ]]; then
       WATCHDOG_KARGS="--append-if-missing=nowatchdog"
       if [[ "$CPU_MODEL" =~ "Intel" ]]; then
         WATCHDOG_KARGS="$WATCHDOG_KARGS --append-if-missing=modprobe.blacklist=iTCO_wdt"
