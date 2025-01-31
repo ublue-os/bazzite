@@ -3,7 +3,6 @@
 # Restore Bazzite customized DE settings
 restore-gnome-de-settings:
     #!/bin/bash
-    set -e
     shopt -s nullglob
     for file in /usr/share/ublue-os/dconfs/desktop-silverblue/*; do
       echo "Loading dconf settings from: $file"
