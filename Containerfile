@@ -698,7 +698,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         hhd-dev/hhd \
         ycollet/audinux; \
     do \
-        dnf5 -y copr disable -y $copr;
+        dnf5 -y copr disable -y $copr; \
     done && unset -v copr && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl disable gdm.service && \
