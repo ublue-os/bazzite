@@ -5,4 +5,4 @@ shopt -s extglob
 
 rm -rf /tmp/* || true
 rm -rf /var/!(cache)
-rm -rf /var/cache/!(rpm-ostree)
+rm -rf /var/cache/!(libdnf5)
