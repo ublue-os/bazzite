@@ -57,7 +57,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y copr enable kylegospo/bazzite && \
     dnf5 -y copr enable kylegospo/bazzite-multilib && \
     dnf5 -y copr enable ublue-os/staging && \
-    dnf5 -y copr enable kylegospo/LatencyFlex && \
+    dnf5 -y copr enable kylegospo/LatencyFleX && \
     dnf5 -y copr enable kylegospo/obs-vkcapture && \
     dnf5 -y copr enable kylegospo/wallpaper-engine-kde-plugin && \
     dnf5 -y copr enable ycollet/audinux && \
