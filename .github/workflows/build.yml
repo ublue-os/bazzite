@@ -187,7 +187,7 @@ jobs:
         uses: ublue-os/just-action@v2
 
       - name: Maximize build space
-        uses: ublue-os/remove-unwanted-software@v7
+        uses: ublue-os/remove-unwanted-software@v8
 
       - name: Pull main, akmods, rechunk images
         uses: Wandalen/wretry.action@v3.8.0
