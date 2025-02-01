@@ -17,3 +17,19 @@ _setup-example:
     echo $app_name successfully created!
     # Add our script file to Steam as non-Steam game
     steamos-add-to-steam $(pwd)/$app_name.sh
+
+# add xbox cloud gaming to steam as a non-Steam game
+setup-gamepass:
+    #!/bin/bash
+    # Global variables for script
+    default_path=~/Documents
+    # Default path
+    cd $default_path || exit
+    # Create the script file
+    echo -e '#!/bin/bash
+    /usr/bin/flatpak run --branch=stable --arch=x86_64 --command=firefox org.mozilla.firefox --kiosk 'https://www.xbox.com/play'' > "Xbox.sh"
+    # Make script runnable
+    chmod +x ./$app_name.sh
+    echo $app_name successfully created!
+    # Add our script file to Steam as non-Steam game
+    steamos-add-to-steam $(pwd)/Xbox.sh
