@@ -675,7 +675,8 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
             gnome-shell-extension-caffeine \
             rom-properties-gtk3 \
             ibus-mozc \
-            openssh-askpass && \
+            openssh-askpass \
+            firewall-config && \
         rpm-ostree override remove \
             gnome-classic-session \
             gnome-tour \
