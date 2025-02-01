@@ -72,7 +72,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y copr enable rok/cdemu && \
     dnf5 -y copr enable rodoma92/kde-cdemu-manager && \
     dnf5 -y copr enable rodoma92/rmlint && \
-    dnf5 -y copr enable ilyaz/lazct && \
+    dnf5 -y copr enable ilyaz/lact && \
     dnf5 config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
     dnf5 config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-steam.repo && \
     dnf5 config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-rar.repo && \
