@@ -406,7 +406,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-    ibus ibus \
+    ibus ibus && \
     dnf5 install -y \
     jupiter-sd-mounting-btrfs \
     at-spi2-core.i686 \
@@ -494,7 +494,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     ptyxis && \
     dnf5 remove -y \
     plasma-welcome \
-    plasma-welcome-fedora \
+    plasma-welcome-fedora && \
     dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
     kf6-kio-core kf6-kio-core \
