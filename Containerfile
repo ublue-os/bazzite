@@ -563,7 +563,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     chmod +x /tmp/brew-install && \
     /tmp/brew-install && \
     tar --zstd -cvf /usr/share/homebrew.tar.zst /home/linuxbrew/.linuxbrew && \
-    curl -Lo /usr/share/bash-prexec https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh &&\
+    curl -Lo /usr/share/bash-prexec https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
@@ -631,16 +631,30 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
     rm -r /tmp/bazzite-schema-test && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
-    coprs=() && \
-    mapfile -t coprs <<<"$(find /etc/yum.repos.d/_copr*.repo)" && \
-    for copr in "${coprs[@]}"; do \
-    sed -i 's@enabled=1@enabled=0@g' "$copr" \
-    ; done && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/tailscale.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/charm.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-steam.repo && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-rar.repo && \
+    for copr in \
+        kylegospo/bazzite \
+        kylegospo/bazzite-multilib \
+        ublue-os/staging \
+        kylegospo/LatencyFleX \
+        kylegospo/obs-vkcapture \
+        kylegospo/wallpaper-engine-kde-plugin \
+        ycollet/audinux \
+        kylegospo/rom-properties \
+        kylegospo/webapp-manager \
+        hhd-dev/hhd \
+        che/nerd-fonts \
+        mavit/discover-overlay \
+        lizardbyte/beta \
+        hikariknight/looking-glass-kvmfr; \
+    do \
+        dnf5 -y copr disable $copr; \
+    done && \
+    dnf5 config-manager setopt \
+    tailscale-stable.enabled=0 \
+    charm.enabled=0 \
+    fedora-multimedia.enabled=0 \
+    fedora-steam.enabled=0 \
+    fedora-steam.rar=0 && \
     sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
@@ -795,11 +809,24 @@ RUN /usr/libexec/containerbuild/image-info && \
     ; fi && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/input-remapper-gtk.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
-    coprs=() && \
-    mapfile -t coprs <<<"$(find /etc/yum.repos.d/_copr*.repo)" && \
-    for copr in "${coprs[@]}"; do \
-    sed -i 's@enabled=1@enabled=0@g' "$copr" \
-    ; done && \
+    for copr in \
+        kylegospo/bazzite \
+        kylegospo/bazzite-multilib \
+        ublue-os/staging \
+        kylegospo/LatencyFleX \
+        kylegospo/obs-vkcapture \
+        kylegospo/wallpaper-engine-kde-plugin \
+        ycollet/audinux \
+        kylegospo/rom-properties \
+        kylegospo/webapp-manager \
+        hhd-dev/hhd \
+        che/nerd-fonts \
+        mavit/discover-overlay \
+        lizardbyte/beta \
+        hikariknight/looking-glass-kvmfr; \
+    do \
+        dnf5 -y copr disable $copr; \
+    done && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
