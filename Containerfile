@@ -100,6 +100,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
     rpm-ostree rpm-ostree && \
+    dnf5 swap -y \
+    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+    bootc bootc && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
@@ -146,6 +149,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 install -y \
     asusctl \
     asusctl-rog-gui \
+    dnf5 -y copr disable lukenukem/asus-linux && \
     ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
     dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
     dnf5 swap -y \
@@ -210,29 +214,18 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     cp /usr/lib/dri/libdril_dri.so /tmp/mesa-fix32/dri/ && \
     cp /usr/lib/dri/swrast_dri.so /tmp/mesa-fix32/dri/ && \
     cp /usr/lib/dri/virtio_gpu_dri.so /tmp/mesa-fix32/dri/ && \
-    dnf5 install -y \
+    dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-libxatracker \
-    mesa-libglapi \
-    mesa-dri-drivers \
-    mesa-libgbm \
-    mesa-libEGL \
-    mesa-vulkan-drivers \
-    mesa-libGL \
-    pipewire \
-    pipewire-alsa \
-    pipewire-gstreamer \
-    pipewire-jack-audio-connection-kit \
-    pipewire-jack-audio-connection-kit-libs \
-    pipewire-libs \
-    pipewire-pulseaudio \
-    pipewire-utils \
-    pipewire-plugin-libcamera \
-    bluez \
-    bluez-obexd \
-    bluez-cups \
-    bluez-libs \
-    xorg-x11-server-Xwayland && \
+    bluez bluez && \
+    dnf5 swap -y \
+    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    pipewire pipewire && \
+    dnf5 swap -y \
+    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    mesa-filesystem mesa-filesystem && \
+    dnf5 swap -y \
+    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    xorg-x11-server-Xwayland xorg-x11-server-Xwayland && \
     rsync -a /tmp/mesa-fix64/ /usr/lib64/ && \
     rsync -a /tmp/mesa-fix32/ /usr/lib/ && \
     rm -rf /tmp/mesa-fix64 && \
