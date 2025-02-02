@@ -222,7 +222,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     pipewire pipewire && \
     dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-filesystem mesa-filesystem && \
+    mesa mesa && \
     dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
     xorg-x11-server-Xwayland xorg-x11-server-Xwayland && \
