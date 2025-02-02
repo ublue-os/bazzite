@@ -148,12 +148,14 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y copr enable lukenukem/asus-linux && \
     dnf5 install -y \
     asusctl \
-    asusctl-rog-gui \
+    asusctl-rog-gui && \
     dnf5 -y copr disable lukenukem/asus-linux \
     ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
     dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
     dnf5 swap -y \
     libwacom-data libwacom-surface-data && \
+    dnf5 swap -y \
+    libwacom libwacom-surface && \
     dnf5 install -y \
     iptsd \
     libcamera \
