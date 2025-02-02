@@ -555,7 +555,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
 
 # Homebrew
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=tmpfs,dst=/tmp
+    --mount=type=tmpfs,dst=/tmp \
     touch /.dockerenv && \
     mkdir -p /var/home && \
     mkdir -p /var/roothome && \
