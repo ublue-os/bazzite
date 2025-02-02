@@ -153,8 +153,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
     dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
     dnf5 swap -y \
-    libwacom libwacom-surface && \
-    dnf5 swap -y \
     libwacom-data libwacom-surface-data && \
     dnf5 install -y \
     iptsd \
