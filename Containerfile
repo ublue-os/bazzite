@@ -374,7 +374,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     rocm-smi \
     waydroid \
     cage \
-    wlr-randr && \
+    wlr-randr \
     libvirt \
     lsb_release && \
     dnf5 install -y \
