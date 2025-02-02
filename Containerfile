@@ -149,7 +149,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 install -y \
     asusctl \
     asusctl-rog-gui \
-    dnf5 -y copr disable lukenukem/asus-linux && \
+    dnf5 -y copr disable lukenukem/asus-linux \
     ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
     dnf5 config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
     dnf5 swap -y \
