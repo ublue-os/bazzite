@@ -650,11 +650,12 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
         dnf5 -y copr disable $copr; \
     done && \
     dnf5 config-manager setopt \
-    tailscale-stable.enabled=0 \
-    charm.enabled=0 \
-    fedora-multimedia.enabled=0 \
-    fedora-steam.enabled=0 \
-    fedora-steam.rar=0 && \
+        copr:copr.fedorainfracloud.org:ublue-os:akmods.enabled=0 \
+        tailscale-stable.enabled=0 \
+        charm.enabled=0 \
+        fedora-multimedia.enabled=0 \
+        fedora-steam.enabled=0 \
+        fedora-rar.enabled=0 && \
     sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
