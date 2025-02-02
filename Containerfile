@@ -497,7 +497,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     plasma-welcome-fedora && \
     dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
-    kf6-kio-core kf6-kio-core \
+    kf6-kio-core kf6-kio-core && \
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 --branch main /tmp/wallpaper-engine-kde-plugin && \
     kpackagetool6 --type=Plasma/Wallpaper --global --install /tmp/wallpaper-engine-kde-plugin/plugin && \
     rm -rf /tmp/wallpaper-engine-kde-plugin && \
