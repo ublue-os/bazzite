@@ -110,9 +110,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     ilyaz/LACT \
     ; do \
     dnf5 -y copr enable $copr; \
-    dnf -y config-manager setopt copr:copr.fedorainfracloud.org:${cloud////:}.priority=98 ;\
+    dnf5 -y config-manager setopt copr:copr.fedorainfracloud.org:${copr////:}.priority=98 ;\
     done && \
-    dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyrlabs.com/terra$releasever' terra-release{,-extras} && \
+    dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release{,-extras} && \
     dnf5 config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
     dnf5 config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-steam.repo && \
     dnf5 config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-rar.repo && \
@@ -121,12 +121,12 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
     dnf5 config-manager setopt \
     tailscale-stable.gpgcheck=0 \
-    fedora-multimedia.enabled=1 fedora-multimedia.priority=3 fedora-multimedia.exclude="mesa-*" \
+    fedora-multimedia.enabled=1 fedora-multimedia.priority=3 \
     fedora-rar.priority=3 \
     fedora-steam.priority=3 \
     "*bazzite*".priority=1 \
     "*terra*".priority=2 \
-    "*rpmfusion*".priority=4 "*rpmfusion*".exclude="mesa-*" && \
+    "*rpmfusion*".priority=4 "*rpmfusion*".exclude="mesa-*" \
     "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
