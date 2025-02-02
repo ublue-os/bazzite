@@ -1,3 +1,32 @@
+#
+#     %%%%%%====%%%%%%%%%%
+#   %%%%%%%%    %%%%%%%%%%%%%%
+#  %%%%%%%%%    %%%%%%%%%%%%%%%%
+#  %%%%%%%%%    %%%%%%%%%%%%%%%###
+#  %%%%%%%%%    %%%%%%%%%%%%%######
+#  ==                  =======######
+#  ==                  =========#####
+#  %%%%%%%%%    %%%%%%%####======#####
+#  %%%%%%%%%    %%%%%#######=====#####
+#  %%%%%%%%%    %%%#########=====#####
+#  %%%%%%%%%    %%##########=====#####
+#  %%%%%%%%%====###########=====######
+#   %%%%%%%%====#########======######
+#    %%%%%%%=====#####========######
+#     %%%%###===============#######
+#      %#######==========#########
+#        #######################
+#          ###################
+#              ###########
+#
+# Welcome to Bazzite! If you're looking to
+# build your own, we highly recommend you
+# use our custom image template. Forking
+# the main repo provides more control, but
+# is often unnecessary.
+#
+# https://github.com/ublue-os/image-template
+
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG BASE_IMAGE_FLAVOR="${BASE_IMAGE_FLAVOR:-main}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
@@ -17,6 +46,10 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 FROM ghcr.io/ublue-os/${KERNEL_FLAVOR}-kernel:${FEDORA_MAJOR_VERSION}-${KERNEL_VERSION} AS kernel
 FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION}-${KERNEL_VERSION} AS akmods
 FROM ghcr.io/ublue-os/akmods-extra:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION}-${KERNEL_VERSION} AS akmods-extra
+
+################
+# DESKTOP BUILDS
+################
 
 FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bazzite
 
@@ -54,38 +87,54 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    dnf5 -y copr enable kylegospo/bazzite && \
-    dnf5 -y copr enable kylegospo/bazzite-multilib && \
-    dnf5 -y copr enable ublue-os/staging && \
-    dnf5 -y copr enable kylegospo/LatencyFleX && \
-    dnf5 -y copr enable kylegospo/obs-vkcapture && \
-    dnf5 -y copr enable kylegospo/wallpaper-engine-kde-plugin && \
-    dnf5 -y copr enable ycollet/audinux && \
-    dnf5 -y copr enable kylegospo/rom-properties && \
-    dnf5 -y copr enable kylegospo/webapp-manager && \
-    dnf5 -y copr enable hhd-dev/hhd && \
-    dnf5 -y copr enable che/nerd-fonts && \
-    dnf5 -y copr enable sentry/switcheroo-control_discrete && \
-    dnf5 -y copr enable hikariknight/looking-glass-kvmfr && \
-    dnf5 -y copr enable mavit/discover-overlay && \
-    dnf5 -y copr enable lizardbyte/beta && \
-    dnf5 -y copr enable rok/cdemu && \
-    dnf5 -y copr enable rodoma92/kde-cdemu-manager && \
-    dnf5 -y copr enable rodoma92/rmlint && \
-    dnf5 -y copr enable ilyaz/LACT && \
+    --mount=type=tmpfs,dst=/tmp \
+    for copr in \
+    kylegospo/bazzite \
+    kylegospo/bazzite-multilib \
+    ublue-os/staging \
+    kylegospo/LatencyFleX \
+    kylegospo/obs-vkcapture \
+    kylegospo/wallpaper-engine-kde-plugin \
+    ycollet/audinux \
+    kylegospo/rom-properties \
+    kylegospo/webapp-manager \
+    hhd-dev/hhd \
+    che/nerd-fonts \
+    sentry/switcheroo-control_discrete \
+    hikariknight/looking-glass-kvmfr \
+    mavit/discover-overlay \
+    lizardbyte/beta \
+    rok/cdemu \
+    rodoma92/kde-cdemu-manager \
+    rodoma92/rmlint \
+    ilyaz/LACT \
+    ; do \
+    dnf5 -y copr enable $copr; \
+    dnf -y config-manager setopt copr:copr.fedorainfracloud.org:${cloud////:}.priority=98 ;\
+    done && \
+    dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyrlabs.com/terra$releasever' terra-release{,-extras} && \
     dnf5 config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
     dnf5 config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-steam.repo && \
     dnf5 config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-rar.repo && \
-    dnf5 config-manager setopt tailscale-stable.gpgcheck=0 fedora-multimedia.enabled=1 && \
     dnf5 install -y \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
+    dnf5 config-manager setopt \
+    tailscale-stable.gpgcheck=0 \
+    fedora-multimedia.enabled=1 fedora-multimedia.priority=3 fedora-multimedia.exclude="mesa-*" \
+    fedora-rar.priority=3 \
+    fedora-steam.priority=3 \
+    "*bazzite*".priority=1 \
+    "*terra*".priority=2 \
+    "*rpmfusion*".priority=4 "*rpmfusion*".exclude="mesa-*" && \
+    "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
 # Install kernel
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=bind,from=kernel,src=/tmp/rpms,dst=/tmp/kernel-rpms \
+    --mount=type=tmpfs,dst=/tmp \
     echo "Will install ${KERNEL_FLAVOR} kernel" && \
     for pkg in kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra; do \
     rpm --erase $pkg --nodeps \
@@ -108,6 +157,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
 
 # Setup firmware
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
+    --mount=type=tmpfs,dst=/tmp \
     mkdir -p /tmp/linux-firmware-neptune && \
     curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.bin https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-cali.bin && \
     curl -Lo /tmp/linux-firmware-neptune/cs35l41-dsp1-spk-cali.wmfw https://gitlab.com/evlaV/linux-firmware-neptune/-/raw/"${JUPITER_FIRMWARE_VERSION}"/cs35l41-dsp1-spk-cali.wmfw && \
@@ -172,6 +222,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=bind,from=akmods,src=/rpms,dst=/tmp/akmods-rpms \
     --mount=type=bind,from=akmods-extra,src=/rpms,dst=/tmp/akmods-extra-rpms \
+    --mount=type=tmpfs,dst=/tmp \
     dnf5 config-manager setopt copr:copr.fedorainfracloud.org:ublue-os:akmods.enabled=1 && \
     dnf5 install -y \
     /tmp/akmods-rpms/kmods/*kvmfr*.rpm \
@@ -222,39 +273,19 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     pipewire pipewire && \
     dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-dri-drivers mesa-dri-drivers && \
-    dnf5 swap -y \
-    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-libEGL mesa-libEGL && \
-    dnf5 swap -y \
-    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-libGL mesa-libGL && \
-    dnf5 swap -y \
-    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-vulkan-drivers mesa-vulkan-drivers && \
-    dnf5 swap -y \
-    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-libgbm mesa-libgbm && \
-    dnf5 swap -y \
-    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-libglapi mesa-libglapi && \
-    dnf5 swap -y \
-    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa-libxatracker mesa-libxatracker && \
-    dnf5 swap -y \
-    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
     xorg-x11-server-Xwayland xorg-x11-server-Xwayland && \
+    dnf swap -y \
+    --repo=terra-extras \
+    mesa-filesystem mesa-filesystem && \
     rsync -a /tmp/mesa-fix64/ /usr/lib64/ && \
     rsync -a /tmp/mesa-fix32/ /usr/lib/ && \
     rm -rf /tmp/mesa-fix64 && \
     rm -rf /tmp/mesa-fix32 && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/rpmfusion-*.repo && \
-    dnf5 install -y \
+    dnf5 install -y --enable-repo="*rpmfusion*" \
     libaacs \
     libbdplus \
     libbluray \
     libbluray-utils && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-*.repo && \
     dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:sentry:switcheroo-control_discrete \
     switcheroo-control switcheroo-control && \
@@ -273,6 +304,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
 
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
+    --mount=type=tmpfs,dst=/tmp \
     dnf5 install -y \
     discover-overlay \
     sunshine \
@@ -336,10 +368,18 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     podman-compose \
     edk2-ovmf \
     qemu \
+    rocm-hip \
+    rocm-opencl \
+    rocm-clinfo \
+    rocm-smi \
+    waydroid \
+    cage \
+    wlr-randr && \
     libvirt \
     lsb_release && \
     dnf5 install -y \
     ublue-update && \
+    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     mkdir -p /etc/xdg/autostart && \
     sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
     sed -i 's/min_battery_percent.*/min_battery_percent = 20.0/' /etc/ublue-update/ublue-update.toml && \
@@ -363,6 +403,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
 # Install Steam & Lutris, plus supporting packages
 # Downgrade ibus to fix an issue with the Steam keyboard
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
+    --mount=type=tmpfs,dst=/tmp \
     dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
     ibus ibus \
@@ -394,8 +435,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     pipewire-alsa.i686 \
     gobject-introspection \
     clinfo \
-    steam && \
-    dnf5 install -y \
+    steam \
     lutris \
     umu-launcher \
     wine-core.x86_64 \
@@ -412,6 +452,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     vkBasalt.i686 \
     mangohud.x86_64 \
     mangohud.i686 \
+    gamescope.x86_64 \
+    gamescope-libs.i686 \
+    gamescope-shaders \
     libobs_vkcapture.x86_64 \
     libobs_glcapture.x86_64 \
     libobs_vkcapture.i686 \
@@ -433,17 +476,11 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
 
 # Configure KDE & GNOME
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
+    --mount=type=tmpfs,dst=/tmp \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     dnf5 install -y \
     qt \
-    krdp && \
-    dnf5 remove -y \
-    plasma-welcome \
-    plasma-welcome-fedora && \
-    dnf5 swap -y \
-    --repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
-    kf6-kio-core kf6-kio-core \
-    dnf5 install -y \
+    krdp \
     steamdeck-kde-presets-desktop \
     wallpaper-engine-kde-plugin \
     kdeconnectd \
@@ -455,6 +492,12 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     fcitx5-hangul \
     kcm-fcitx5 \
     ptyxis && \
+    dnf5 remove -y \
+    plasma-welcome \
+    plasma-welcome-fedora \
+    dnf5 swap -y \
+    --repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+    kf6-kio-core kf6-kio-core \
     git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 --branch main /tmp/wallpaper-engine-kde-plugin && \
     kpackagetool6 --type=Plasma/Wallpaper --global --install /tmp/wallpaper-engine-kde-plugin/plugin && \
     rm -rf /tmp/wallpaper-engine-kde-plugin && \
@@ -510,25 +553,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
-# Install Gamescope, ROCM, and Waydroid on non-Nvidia images
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    dnf5 install -y \
-        gamescope.x86_64 \
-        gamescope-libs.i686 \
-        gamescope-shaders \
-        rocm-hip \
-        rocm-opencl \
-        rocm-clinfo \
-        rocm-smi \
-        waydroid \
-        cage \
-        wlr-randr && \
-    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
-    /usr/libexec/containerbuild/cleanup.sh && \
-    ostree container commit
-
 # Homebrew
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
+    --mount=type=tmpfs,dst=/tmp
     touch /.dockerenv && \
     mkdir -p /var/home && \
     mkdir -p /var/roothome && \
@@ -536,11 +563,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     chmod +x /tmp/brew-install && \
     /tmp/brew-install && \
     tar --zstd -cvf /usr/share/homebrew.tar.zst /home/linuxbrew/.linuxbrew && \
-    /usr/libexec/containerbuild/cleanup.sh && \
-    ostree container commit
-
-# Bash Prexec
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     curl -Lo /usr/share/bash-prexec https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh &&\
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
@@ -653,6 +675,10 @@ RUN rm -f /etc/profile.d/toolbox.sh && \
     chmod 1777 /var/tmp && \
     ostree container commit
 
+################
+# DECK BUILDS
+################
+
 FROM bazzite AS bazzite-deck
 
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-deck}"
@@ -671,19 +697,18 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
 
 # Setup Copr repos
-RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_kylegospo-wallpaper-engine-kde-plugin.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_hhd-dev-hhd.repo && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo && \
-    /usr/libexec/containerbuild/cleanup.sh && \
-    ostree container commit
-
-# Configure KDE & GNOME
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
+RUN for copr in \
+    ublue-os/akmods
+    kylegospo/bazzite \
+    kylegospo/bazzite-multilib \
+    kylegospo/latencyflex \
+    kylegospo/obs-vkcapture \
+    kylegospo/wallpaper-engine-kde-plugin \
+    hhd-dev/hhd \
+    ycollet/audinux \
+    ; do \
+    dnf5 -y copr enable $copr \
+    ; done && \
     dnf5 remove -y \
         jupiter-sd-mounting-btrfs && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
@@ -702,6 +727,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
 # Dock updater - done manually due to proprietary parts preventing it from being on Copr
 # Neptune firmware - done manually due to "TBD" license on needed audio firmware
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
+    --mount=type=tmpfs,dst=/tmp \
     dnf5 install -y \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
@@ -822,6 +848,10 @@ RUN /usr/libexec/containerbuild/image-info && \
     /usr/libexec/containerbuild/cleanup.sh && \
     mkdir -p /var/tmp && chmod 1777 /var/tmp && \
     ostree container commit
+
+################
+# NVIDIA BUILDS
+################
 
 FROM ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION}-${KERNEL_VERSION} AS nvidia-akmods
 
