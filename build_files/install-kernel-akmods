@@ -5,7 +5,10 @@ set -eoux pipefail
 echo "::group::Executing install-kernel-akmods"
 trap 'echo "::endgroup::"' EXIT
 
-dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra
+packages="kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra"
+
+# shellcheck disable=SC2086
+dnf5 -y remove --no-autoremove ${packages}
 
 dnf5 -y install \
     /tmp/kernel-rpms/kernel-[0-9]*.rpm \
@@ -13,8 +16,13 @@ dnf5 -y install \
     /tmp/kernel-rpms/kernel-modules-*.rpm \
     /tmp/kernel-rpms/kernel-uki-virt-*.rpm
 
+dnf5 config-manager setopt \
+  {fedora,updates}.exclude="${packages// /,}" \
+  updates.exclude="kernel-devel,kernel-devel-matched"
+
 shopt -s nullglob
 dnf5 -y install \
+    --setopt={fedora,updates}.exclude="${packages// /,},kernel-devel,kernel-devel-matched" \
     /tmp/akmods-rpms/kmods/*kvmfr*.rpm \
     /tmp/akmods-rpms/kmods/*xone*.rpm \
     /tmp/akmods-rpms/kmods/*openrazer*.rpm \
