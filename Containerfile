@@ -222,7 +222,25 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     pipewire pipewire && \
     dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-    mesa mesa && \
+    mesa-dri-drivers mesa-dri-drivers && \
+    dnf5 swap -y \
+    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    mesa-libEGL mesa-libEGL && \
+    dnf5 swap -y \
+    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    mesa-libGL mesa-libGL && \
+    dnf5 swap -y \
+    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    mesa-vulkan-drivers mesa-vulkan-drivers && \
+    dnf5 swap -y \
+    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    mesa-libgbm mesa-libgbm && \
+    dnf5 swap -y \
+    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    mesa-libglapi mesa-libglapi && \
+    dnf5 swap -y \
+    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+    mesa-libxatracker mesa-libxatracker && \
     dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
     xorg-x11-server-Xwayland xorg-x11-server-Xwayland && \
