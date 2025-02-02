@@ -99,9 +99,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     scx-scheds && \
     dnf5 swap -y \
     --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
-    bootc bootc && \
-    dnf5 swap -y \
-    --repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite \
     rpm-ostree rpm-ostree && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
