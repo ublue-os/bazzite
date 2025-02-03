@@ -398,7 +398,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
             gnome-shell-extension-caffeine \
             rom-properties-gtk3 \
             ibus-mozc \
-            openssh-askpass && \
+            openssh-askpass \
+            firewall-config && \
         dnf5 -y remove \
             gnome-classic-session \
             gnome-tour \
