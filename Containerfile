@@ -112,7 +112,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-steam.repo && \
     dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-rar.repo && \
     dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
-    dnf5 -y config-manager setopt "*terra*".priority=2 && \
+    dnf5 -y config-manager setopt "*terra*".priority=2 "*terra*".exclude='nerd-fonts' && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=3 exclude='mesa-*')" && \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=4 "*rpmfusion*".exclude="mesa-*" && \
     dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
@@ -205,6 +205,11 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install \
+        twitter-twemoji-fonts \
+        google-noto-sans-cjk-fonts \
+        lato-fonts \
+        fira-code-fonts \
+        nerd-fonts \
         discover-overlay \
         sunshine \
         python3-pip \
@@ -270,14 +275,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         waydroid \
         cage \
         wlr-randr && \
-    dnf5 -y config-manager setopt "*terra*".enabled=0 && \
-    dnf5 -y install \
-        twitter-twemoji-fonts \
-        google-noto-sans-cjk-fonts \
-        lato-fonts \
-        fira-code-fonts \
-        nerd-fonts && \
-    dnf5 -y config-manager setopt "*terra*".enabled=1 && \
     mkdir -p /etc/xdg/autostart && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
