@@ -32,11 +32,6 @@ screens:
           default: false
           packages:
           - Install Resilio Sync: ujust install-resilio-sync
-        scrcpy:
-          description: scrcpy provides display and control of Android devices connected on USB (or over TCP/IP)
-          default: false
-          packages:
-          - Install scrcpy: ujust install-scrcpy
         lact:
           description: LACT provides GPU overclocking for AMD & Nvidia GPUs
           default: false

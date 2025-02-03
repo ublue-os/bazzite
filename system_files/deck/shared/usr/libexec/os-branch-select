@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 if [ -x /usr/bin/hhd.steamos ]; then
-  /usr/bin/hhd.steamos steamos-select-branch --fallback $@
+  /usr/bin/pkexec /usr/bin/hhd.steamos steamos-select-branch --fallback $@
   ret=$?
   # If ret is not 20, exit with the return code, otherwise continue
   if [ $ret -ne 20 ]; then

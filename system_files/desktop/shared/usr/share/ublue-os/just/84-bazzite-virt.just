@@ -4,6 +4,10 @@
 setup-virtualization ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
+    if [[ $(id -u) -eq 0 ]]; then
+      echo "Please do not run this command as root"
+      exit 1
+    fi
     # Check if we are running on a Steam Deck
     if /usr/libexec/hwsupport/valve-hardware; then
       echo "${red}${b}WARNING${n}: Virtualization is not properly supported on Steam Deck by Valve"
@@ -51,6 +55,8 @@ setup-virtualization ACTION="":
             sudo mkdir /var/lib/swtpm-localca
           fi
           sudo chown tss /var/lib/swtpm-localca
+          echo "Giving qemu access to read ISO files from $HOME"
+          sudo setfacl -m u:qemu:rx $HOME
           if sudo test ! -f "/etc/libvirt/hooks/qemu"; then
             echo "Adding libvirt qemu hooks"
             sudo wget 'https://raw.githubusercontent.com/PassthroughPOST/VFIO-Tools/master/libvirt_hooks/qemu' -O /etc/libvirt/hooks/qemu
@@ -225,6 +231,10 @@ setup-virtualization ACTION="":
       if [ ! -d "$HOME/.config/selinux_te/pp" ]; then
         mkdir -p "$HOME/.config/selinux_te/pp"
       fi
+      if [ -f "$HOME/.config/selinux_te/kvmfr.te" ]; then
+        echo "Re-creating kvmfr selinux type enforcement rules"
+        rm $HOME/.config/selinux_te/kvmfr.te
+      fi
       bash -c "cat << KVMFR_SELINUX > $HOME/.config/selinux_te/kvmfr.te
     module kvmfr 1.0;
 
@@ -236,6 +246,9 @@ setup-virtualization ACTION="":
 
     #============= svirt_t ==============
     allow svirt_t device_t:chr_file { open read write map };
+
+    #============= virtqemud_t ==============
+    allow virtqemud_t device_t:chr_file { read write };
     KVMFR_SELINUX"
       echo "This is the type enforcement we wrote for SELinux and you can find it in $HOME/.config/selinux_te/kvmfr.te"
       echo "#======= start of kvmfr.te ======="

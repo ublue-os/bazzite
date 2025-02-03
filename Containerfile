@@ -1,23 +1,23 @@
 #
-#     %%%%%%====%%%%%%%%%%            
-#   %%%%%%%%    %%%%%%%%%%%%%%        
-#  %%%%%%%%%    %%%%%%%%%%%%%%%%      
-#  %%%%%%%%%    %%%%%%%%%%%%%%%###    
-#  %%%%%%%%%    %%%%%%%%%%%%%######   
-#  ==                  =======######  
-#  ==                  =========##### 
+#     %%%%%%====%%%%%%%%%%
+#   %%%%%%%%    %%%%%%%%%%%%%%
+#  %%%%%%%%%    %%%%%%%%%%%%%%%%
+#  %%%%%%%%%    %%%%%%%%%%%%%%%###
+#  %%%%%%%%%    %%%%%%%%%%%%%######
+#  ==                  =======######
+#  ==                  =========#####
 #  %%%%%%%%%    %%%%%%%####======#####
 #  %%%%%%%%%    %%%%%#######=====#####
 #  %%%%%%%%%    %%%#########=====#####
 #  %%%%%%%%%    %%##########=====#####
 #  %%%%%%%%%====###########=====######
-#   %%%%%%%%====#########======###### 
-#    %%%%%%%=====#####========######  
-#     %%%%###===============#######   
-#      %#######==========#########    
-#        #######################      
-#          ###################        
-#              ###########            
+#   %%%%%%%%====#########======######
+#    %%%%%%%=====#####========######
+#     %%%%###===============#######
+#      %#######==========#########
+#        #######################
+#          ###################
+#              ###########
 #
 # Welcome to Bazzite! If you're looking to
 # build your own, we highly recommend you
@@ -135,7 +135,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     done && unset -v toswap && \
     /ctx/cleanup
 
-# Setup firmware & hardware packages
+# Setup firmware
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
@@ -145,8 +145,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         dnf5 -y install \
             asusctl \
             asusctl-rog-gui && \
-        git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
-        cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
         dnf5 copr disable -y lukenukem/asus-linux \
     ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
         dnf5 -y config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
@@ -359,6 +357,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
             fcitx5-mozc \
             fcitx5-chinese-addons \
             fcitx5-hangul \
+            kcm-fcitx5 \
             ptyxis && \
         dnf5 -y remove \
             plasma-welcome \
@@ -474,6 +473,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     echo "import \"/usr/share/ublue-os/just/84-bazzite-virt.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/85-bazzite-image.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/86-bazzite-windows.just\"" >> /usr/share/ublue-os/justfile && \
+    echo "import \"/usr/share/ublue-os/just/87-bazzite-framegen.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/90-bazzite-de.just\"" >> /usr/share/ublue-os/justfile && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
       systemctl enable usr-share-sddm-themes.mount && \
@@ -546,7 +546,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     chmod +x /usr/bin/waydroid-choose-gpu && \
     curl -Lo /usr/lib/sysctl.d/99-bore-scheduler.conf https://github.com/CachyOS/CachyOS-Settings/raw/master/usr/lib/sysctl.d/99-bore-scheduler.conf && \
     curl -Lo /etc/distrobox/docker.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/distrobox.ini && \
-    curl -Lo /etc/distrobox/incus.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/incus.ini && \
+    curl -Lo /etc/distrobox/incus.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/incus/distrobox.ini && \
     /ctx/image-info && \
     /ctx/build-initramfs && \
     /ctx/finalize
@@ -698,7 +698,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         hhd-dev/hhd \
         ycollet/audinux; \
     do \
-        dnf5 -y copr disable -y $copr;
+        dnf5 -y copr disable -y $copr; \
     done && unset -v copr && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl disable gdm.service && \
@@ -785,15 +785,18 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=bind,from=nvidia-akmods,src=/rpms,dst=/tmp/akmods-rpms \
     --mount=type=tmpfs,dst=/tmp \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    dnf5 -y copr enable ublue-os/staging && \
+    dnf5 config-manager setopt fedora-multimedia.enabled=1 && \
     dnf5 -y install \
         mesa-vdpau-drivers.x86_64 \
         mesa-vdpau-drivers.i686 && \
-    curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/hwe/main/nvidia-install.sh && \
+    dnf5 config-manager setopt fedora-multimedia.enabled=0 && \
+    curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/hwe/b3a3dbddf4af81cfbfa7526c1918c9b9f014f86b/nvidia-install.sh && \
     chmod +x /tmp/nvidia-install.sh && \
     IMAGE_NAME="${BASE_IMAGE_NAME}" /tmp/nvidia-install.sh && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
     ln -s libnvidia-ml.so.1 /usr/lib64/libnvidia-ml.so && \
+    dnf5 -y copr disable ublue-os/staging && \
     /ctx/cleanup
 
 # Cleanup & Finalize
@@ -802,7 +805,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
       mkdir -p "/usr/share/ublue-os/dconfs/nvidia-silverblue/" && \
       cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/nvidia-silverblue/" && \

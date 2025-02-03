@@ -143,9 +143,9 @@ elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
   fi
 fi
 
-if [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:" =~ ":$SYS_ID:" ]]; then
+if [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
-    echo "Adding panel orientation for ONEXPLAYER F1 & ONEXFLY"
+    echo "Adding panel orientation for ONEXPLAYER F1, ONEXFLY, & X1 Pro"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")
   fi
   if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
