@@ -178,13 +178,11 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
-    dnf5 config-manager setopt fedora-multimedia.enabled=0 && \
-    dnf5 -y install --enable-repo="*rpmfusion*" \
+    dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
         libaacs \
         libbdplus \
         libbluray \
         libbluray-utils && \
-    dnf5 config-manager setopt fedora-multimedia.enabled=1 && \
     /ctx/cleanup
 
 # Remove unneeded packages
