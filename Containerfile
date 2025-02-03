@@ -243,11 +243,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         glibc.i686 \
         extest.i686 \
         xwiimote-ng \
-        twitter-twemoji-fonts \
-        google-noto-sans-cjk-fonts \
-        lato-fonts \
-        fira-code-fonts \
-        nerd-fonts \
         fastfetch \
         glow \
         gum \
@@ -275,6 +270,14 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         waydroid \
         cage \
         wlr-randr && \
+    dnf5 -y config-manager setopt "*terra*".enabled=0 && \
+    dnf5 -y install \
+        twitter-twemoji-fonts \
+        google-noto-sans-cjk-fonts \
+        lato-fonts \
+        fira-code-fonts \
+        nerd-fonts && \
+    dnf5 -y config-manager setopt "*terra*".enabled=1 && \
     mkdir -p /etc/xdg/autostart && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
