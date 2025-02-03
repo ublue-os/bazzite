@@ -267,6 +267,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         libvirt \
         lsb_release \
         ublue-update \
+        uupd \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo \
@@ -532,7 +533,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     systemctl enable input-remapper.service && \
     systemctl enable bazzite-flatpak-manager.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
-    systemctl enable ublue-update.timer && \
+    systemctl disable ublue-update.timer && \
+    systemctl enable uupd.timer && \
     systemctl enable incus-workaround.service && \
     systemctl enable bazzite-hardware-setup.service && \
     systemctl disable tailscaled.service && \
@@ -737,7 +739,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     systemctl --global disable grub-boot-success.timer && \
     systemctl disable grub-boot-indeterminate.service && \
     systemctl disable input-remapper.service && \
-    systemctl disable ublue-update.timer && \
+    systemctl disable uupd.timer && \
     systemctl disable jupiter-fan-control.service && \
     systemctl disable vpower.service && \
     systemctl disable jupiter-biosupdate.service && \
