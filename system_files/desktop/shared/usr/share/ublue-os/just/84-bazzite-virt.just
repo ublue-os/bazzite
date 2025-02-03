@@ -30,6 +30,8 @@ setup-virtualization ACTION="":
       echo "  Use 'vfio-on' to select Enable VFIO drivers"
       echo "  Use 'vfio-off' to select Disable VFIO drivers"
       echo "  Use 'kvmfr' to select Autocreate Looking-Glass shm"
+      echo "  Use 'usbhp-on' to select Enable SPICE USB hot plugging"
+      echo "  Use 'usbhp-off' to select Disable SPICE USB hot plugging"
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Virtualization Setup${normal}"
@@ -41,6 +43,8 @@ setup-virtualization ACTION="":
         "Enable VFIO drivers" \
         "Disable VFIO drivers" \
         "Enable kvmfr module" \
+        "Enable USB hot plugging" \
+        "Disable USB hot plugging" \
       )
     fi
     if [[ "${OPTION,,}" =~ (^enable[[:space:]]virtualization|virt-on) ]]; then
@@ -272,6 +276,13 @@ setup-virtualization ACTION="":
       echo "$(Urllink "https://looking-glass.io/docs/rc/ivshmem_kvmfr/#libvirt" "Please read official documentation for kvmfr for how to use it")"
       echo "${b}NOTE: You can start using kvmfr right now without rebooting if you already rebooted after enabling VFIO.${n}"
       CONFIRM=$(Choose OK)
+    elif [[ "${OPTION,,}" =~ (^enable[[:space:]]usb|usbhp-on) ]]; then
+      echo "Adding udev rule for USB devices"
+      sudo bash -c 'cat << USBHP_UDEV > /etc/udev/rules.d/72-usbhp.rules
+    ACTION=="add" SUBSYSTEM=="usb", TAG+="uaccess"
+    USBHP_UDEV'
+    elif [[ "${OPTION,,}" =~ (^disable[[:space:]]usb|usbhp-off) ]]; then
+      sudo bash -c 'rm /etc/udev/rules.d/72-usbhp.rules'
     elif [[ "${OPTION,,}" =~ group ]]; then
       if ! grep -q "^libvirt" /etc/group; then
         grep '^libvirt' /usr/lib/group | sudo tee -a /etc/group > /dev/null
