@@ -175,7 +175,6 @@ remove-opentabletdriver:
     flatpak --system remove -y flathub net.opentabletdriver.OpenTabletDriver && \ 
     systemctl disable --user --now opentabletdriver.service
 
-
 # Install Docker, a platform designed to help developers build, share, and run container applications
 install-docker:
     #!/usr/bin/bash
