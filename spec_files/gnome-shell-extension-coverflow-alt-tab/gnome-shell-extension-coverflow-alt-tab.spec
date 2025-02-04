@@ -12,6 +12,8 @@ Source0:     https://github.com/dsheeler/CoverflowAltTab/archive/refs/tags/v%{ve
 BuildArch:   noarch
 
 BuildRequires: glib2
+BuildRequires: make
+BuildRequires: gnome-shell
 
 Requires:    gnome-shell >= 3.12
 %description
@@ -21,14 +23,12 @@ Coverflow like Alt-Tab replacement for Gnome-Shell
 %autosetup -n CoverflowAltTab-%{version}
 
 %build
-# Nothing to build
+%set_build_flags
+%make_build
 
 %install
-rm -rf assets
-rm README.md
 mkdir -p %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}
-cp -r * %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/
-glib-compile-schemas %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/schemas/
+unzip build/%{uuid}.shell-extension.zip -d %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}
 
 %files
 %license COPYING
