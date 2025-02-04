@@ -129,8 +129,10 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/install-kernel-akmods && \
     dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
+    dnf5 -y copr enable bieszczaders/kernel-cachyos-addons && \
     dnf5 -y install \
         scx-scheds && \
+    dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
     for toswap in rpm-ostree bootc; do \
         dnf5 -y swap --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite $toswap $toswap; \
     done && unset -v toswap && \
