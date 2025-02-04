@@ -308,8 +308,10 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         gamescope-libs.i686 \
         gamescope-shaders \
         jupiter-sd-mounting-btrfs \
-        steam \
         umu-launcher \
+        dbus-x11 \
+        xdg-user-dirs \
+        gobject-introspection \
         libFAudio.x86_64 \
         libFAudio.i686 \
         latencyflex-vulkan-layer \
@@ -322,6 +324,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         libobs_vkcapture.i686 \
         libobs_glcapture.i686 && \
     dnf5 -y --setopt=install_weak_deps=False install \
+        steam \
         lutris && \
     /ctx/cleanup
 
