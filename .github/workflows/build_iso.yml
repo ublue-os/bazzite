@@ -138,7 +138,7 @@ jobs:
           image_tag: ${{ steps.generate-tag.outputs.tag }}
           secure_boot_key_url: '${{ github.server_url }}/${{ github.repository }}/raw/main/secure_boot.der'
           enrollment_password: 'universalblue'
-          iso_name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}.iso
+          iso_name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-amd64.iso
           enable_cache_dnf: "false"
           enable_cache_skopeo: "false"
           flatpak_remote_refs_dir: ${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}
