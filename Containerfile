@@ -112,10 +112,10 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-steam.repo && \
     dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-rar.repo && \
     dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
-    dnf5 -y config-manager setopt "*terra*".priority=2 "*terra*".exclude="nerd-fonts topgrade gamescope*" && \
+    dnf5 -y config-manager setopt "*terra*".priority=2 "*terra*".exclude="nerd-fonts topgrade" && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=3 exclude='mesa-* *xone*')" && \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=4 "*rpmfusion*".exclude="mesa-*" && \
-    dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-* gamescope*" && \
+    dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
     /ctx/cleanup
 
 # Install kernel
