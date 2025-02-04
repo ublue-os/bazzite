@@ -59,6 +59,7 @@ unblur-in-overview=true
 style-components=3
 
 [org.gnome.shell.extensions.blur-my-shell.appfolder]
+blur=false
 style-dialogs=0
 
 [org.gnome.shell.extensions.blur-my-shell.applications]
@@ -69,6 +70,12 @@ blur=true
 
 [org.gnome.shell.extensions.blur-my-shell.lockscreen]
 blur=true
+
+[org.gnome.shell.extensions.blur-my-shell.coverflow-alt-tab]
+blur=true
+
+[org.gnome.shell.extensions.blur-my-shell.dash-to-dock]
+blur=false
 
 [org.gnome.shell.extensions.blur-my-shell.applications]
 opacity=255
