@@ -386,6 +386,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
             nautilus-gsconnect \
             steamdeck-backgrounds \
             gnome-randr-rust \
+            gnome-shell-extension-appindicator \
             gnome-shell-extension-user-theme \
             gnome-shell-extension-gsconnect \
             gnome-shell-extension-compiz-windows-effect \
