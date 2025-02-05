@@ -29,6 +29,7 @@ Coverflow like Alt-Tab replacement for Gnome-Shell
 %install
 mkdir -p %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}
 unzip build/%{uuid}.shell-extension.zip -d %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}
+glib-compile-schemas %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/schemas/
 
 %files
 %license COPYING
