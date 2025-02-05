@@ -330,6 +330,14 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
         lutris && \
+    curl -Lo /tmp/latencyflex.tar.xz $(curl https://api.github.com/repos/ishitatsuyuki/LatencyFleX/releases/latest | jq -r '.assets[] | select(.name| test(".*.tar.xz$")).browser_download_url') && \
+    mkdir -p /tmp/latencyflex && \
+    tar --no-same-owner --no-same-permissions --no-overwrite-dir --strip-components 1 -xvf /tmp/latencyflex.tar.xz -C /tmp/latencyflex && \
+    rm -f /tmp/latencyflex.tar.xz && \
+    mkdir -p /usr/lib64/latencyflex && \
+    cp -r /tmp/latencyflex/wine/usr/lib/wine/* /usr/lib64/latencyflex/ && \
+    curl -Lo /usr/bin/latencyflex https://raw.githubusercontent.com/KyleGospo/LatencyFleX-Installer/main/install.sh && \
+    chmod +x /usr/bin/latencyflex && \
     /ctx/cleanup
 
 # Configure KDE & GNOME
