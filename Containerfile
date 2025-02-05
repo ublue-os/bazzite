@@ -339,6 +339,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     cp -r /tmp/latencyflex/wine/usr/lib/wine/* /usr/lib64/latencyflex/ && \
     curl -Lo /usr/bin/latencyflex https://raw.githubusercontent.com/KyleGospo/LatencyFleX-Installer/main/install.sh && \
     chmod +x /usr/bin/latencyflex && \
+    curl -Lo /usr/bin/winetricks https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks && \
+    chmod +x /usr/bin/winetricks && \
     /ctx/cleanup
 
 # Configure KDE & GNOME
