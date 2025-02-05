@@ -356,7 +356,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
             kdeconnectd \
             kdeplasma-addons \
             rom-properties-kf6 \
-            joystickwake \
             fcitx5-mozc \
             fcitx5-chinese-addons \
             fcitx5-hangul \
