@@ -261,6 +261,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         ydotool \
         yafti \
         stress-ng \
+        snapper \
         btrfs-assistant \
         podman-compose \
         edk2-ovmf \
