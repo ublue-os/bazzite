@@ -224,7 +224,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         compsize \
         ryzenadj \
         input-remapper \
-        tuned-profiles-cpu-partitioning \
         i2c-tools \
         udica \
         ladspa-caps-plugins \
@@ -247,7 +246,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         rar \
         libxcrypt-compat \
         vulkan-tools \
-        glibc.i686 \
         extest.i686 \
         xwiimote-ng \
         fastfetch \
@@ -271,12 +269,13 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         libvirt \
         lsb_release \
         ublue-update \
-        rocm-hip \
-        rocm-opencl \
-        rocm-clinfo \
         waydroid \
         cage \
         wlr-randr && \
+    dnf5 -y --setopt=install_weak_deps=False install \
+        rocm-hip \
+        rocm-opencl \
+        rocm-clinfo && \
     mkdir -p /etc/xdg/autostart && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
