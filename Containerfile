@@ -611,8 +611,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/cleanup
 
 # Install new packages
-# Dock updater - done manually due to proprietary parts preventing it from being on Copr
-# Neptune firmware - done manually due to "TBD" license on needed audio firmware
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
