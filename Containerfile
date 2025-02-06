@@ -458,6 +458,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     sed -i 's/#UserspaceHID.*/UserspaceHID=true/' /etc/bluetooth/input.conf && \
     sed -i "s/^SCX_SCHEDULER=.*/SCX_SCHEDULER=scx_lavd/" /etc/default/scx && \
     rm -f /usr/share/vulkan/icd.d/lvp_icd.*.json && \
+    rm -f /usr/lib/systemd/system/service.d/50-keep-warm.conf && \
     mkdir -p "/etc/profile.d/" && \
     ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
     "/etc/profile.d/ublue-firstboot.sh" && \
@@ -613,8 +614,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/cleanup
 
 # Install new packages
-# Dock updater - done manually due to proprietary parts preventing it from being on Copr
-# Neptune firmware - done manually due to "TBD" license on needed audio firmware
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
