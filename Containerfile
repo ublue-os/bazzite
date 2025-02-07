@@ -276,7 +276,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y --setopt=install_weak_deps=False install \
         rocm-hip \
         rocm-opencl \
-        rocm-clinfo && \
+        rocm-clinfo \
+        rocm-smi && \
     mkdir -p /etc/xdg/autostart && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
@@ -780,7 +781,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y remove \
         rocm-hip \
         rocm-opencl \
-        rocm-clinfo && \
+        rocm-clinfo \
+        rocm-smi && \
     /ctx/cleanup
 
 # Install NVIDIA driver

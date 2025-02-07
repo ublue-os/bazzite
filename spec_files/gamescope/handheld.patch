@@ -1161,12 +1161,12 @@ index e4eec9f..2347cbb 100644
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Joshua Tam <297250+joshuatam@users.noreply.github.com>
 Date: Fri, 6 Dec 2024 16:51:02 +0800
-Subject: feat: add rotation shader for rotating output
+Subject: feat(intel): add rotation shader for rotating output
 
 ---
- src/Backends/DRMBackend.cpp  |  37 +++++++++-
- src/main.cpp                 |   6 ++
- src/main.hpp                 |   1 +
+ src/Backends/DRMBackend.cpp  |  35 +++++++++-
+ src/main.cpp                 |   7 ++
+ src/main.hpp                 |   2 +
  src/meson.build              |   1 +
  src/rendervulkan.cpp         | 126 ++++++++++++++++++++++++++++++-----
  src/rendervulkan.hpp         |   6 +-
@@ -1176,55 +1176,46 @@ Subject: feat: add rotation shader for rotating output
  create mode 100644 src/shaders/cs_rotation.comp
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 6bb0b88..2fbc090 100644
+index 6bb0b88..3c44839 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -56,6 +56,8 @@
- 
- static constexpr bool k_bUseCursorPlane = false;
- 
-+bool l_bEnableRotationShader = false;
-+
- extern int g_nPreferredOutputWidth;
- extern int g_nPreferredOutputHeight;
- 
-@@ -1528,6 +1530,10 @@ static void update_drm_effective_orientations( struct drm_t *drm, const drmModeM
+@@ -1528,6 +1528,10 @@ static void update_drm_effective_orientations( struct drm_t *drm, const drmModeM
  		if ( pDRMInternalConnector != drm->pConnector )
  			pInternalMode = find_mode( pDRMInternalConnector->GetModeConnector(), 0, 0, 0 );
  
 +		if ( g_bUseRotationShader ) {
-+			l_bEnableRotationShader = true;
++			g_bEnableDRMRotationShader = true;
 +		}
 +
  		pDRMInternalConnector->UpdateEffectiveOrientation( pInternalMode );
  	}
  
-@@ -1539,6 +1545,10 @@ static void update_drm_effective_orientations( struct drm_t *drm, const drmModeM
+@@ -1539,6 +1543,10 @@ static void update_drm_effective_orientations( struct drm_t *drm, const drmModeM
  		if ( pDRMExternalConnector != drm->pConnector )
  			pExternalMode = find_mode( pDRMExternalConnector->GetModeConnector(), 0, 0, 0 );
  
 +		if ( g_bUseRotationShader ) {
-+			l_bEnableRotationShader = false;
++			g_bEnableDRMRotationShader = false;
 +		}
 +
  		pDRMExternalConnector->UpdateEffectiveOrientation( pExternalMode );
  	}
  }
-@@ -1752,7 +1762,7 @@ LiftoffStateCacheEntry FrameInfoToLiftoffStateCacheEntry( struct drm_t *drm, con
+@@ -1752,7 +1760,7 @@ LiftoffStateCacheEntry FrameInfoToLiftoffStateCacheEntry( struct drm_t *drm, con
  		uint64_t crtcW = srcWidth / frameInfo->layers[ i ].scale.x;
  		uint64_t crtcH = srcHeight / frameInfo->layers[ i ].scale.y;
  
 -		if (g_bRotated)
-+		if (g_bRotated && !l_bEnableRotationShader)
++		if (g_bRotated && !g_bEnableDRMRotationShader)
  		{
  			int64_t imageH = frameInfo->layers[ i ].tex->contentHeight() / frameInfo->layers[ i ].scale.y;
  
-@@ -2045,6 +2055,17 @@ namespace gamescope
+@@ -2045,6 +2053,17 @@ namespace gamescope
  
  	void CDRMConnector::UpdateEffectiveOrientation( const drmModeModeInfo *pMode )
  	{
-+        if (l_bEnableRotationShader)
-+        {
++		if (g_bEnableDRMRotationShader)
++		{
 +			drm_log.infof("Using rotation shader");
 +			if (g_DesiredInternalOrientation == GAMESCOPE_PANEL_ORIENTATION_270) {
 +				m_ChosenOrientation = GAMESCOPE_PANEL_ORIENTATION_180;
@@ -1237,12 +1228,12 @@ index 6bb0b88..2fbc090 100644
  		if ( this->GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL && g_DesiredInternalOrientation != GAMESCOPE_PANEL_ORIENTATION_AUTO )
  		{
  			m_ChosenOrientation = g_DesiredInternalOrientation;
-@@ -3035,6 +3056,13 @@ bool drm_set_mode( struct drm_t *drm, const drmModeModeInfo *mode )
+@@ -3035,6 +3054,13 @@ bool drm_set_mode( struct drm_t *drm, const drmModeModeInfo *mode )
  		g_bRotated = false;
  		g_nOutputWidth = mode->hdisplay;
  		g_nOutputHeight = mode->vdisplay;
 +
-+		if (l_bEnableRotationShader) {
++		if (g_bEnableDRMRotationShader) {
 +			g_bRotated = true;
 +			g_nOutputWidth = mode->vdisplay;
 +			g_nOutputHeight = mode->hdisplay;
@@ -1251,11 +1242,11 @@ index 6bb0b88..2fbc090 100644
  		break;
  	case GAMESCOPE_PANEL_ORIENTATION_90:
  	case GAMESCOPE_PANEL_ORIENTATION_270:
-@@ -3294,6 +3322,11 @@ namespace gamescope
+@@ -3294,6 +3320,11 @@ namespace gamescope
  
  			bNeedsFullComposite |= !!(g_uCompositeDebug & CompositeDebugFlag::Heatmap);
  
-+			if (l_bEnableRotationShader)
++			if (g_bEnableDRMRotationShader)
 +			{
 +				bNeedsFullComposite = true;
 +			}
@@ -1263,17 +1254,17 @@ index 6bb0b88..2fbc090 100644
  			bool bDoComposite = true;
  			if ( !bNeedsFullComposite && !bWantsPartialComposite )
  			{
-@@ -3384,7 +3417,7 @@ namespace gamescope
+@@ -3384,7 +3415,7 @@ namespace gamescope
  			if ( bDefer && !!( g_uCompositeDebug & CompositeDebugFlag::Markers ) )
  				g_uCompositeDebug |= CompositeDebugFlag::Markers_Partial;
  
 -			std::optional oCompositeResult = vulkan_composite( &compositeFrameInfo, nullptr, !bNeedsFullComposite );
-+			std::optional oCompositeResult = vulkan_composite( &compositeFrameInfo, nullptr, !bNeedsFullComposite, nullptr, true, nullptr, l_bEnableRotationShader );
++			std::optional oCompositeResult = vulkan_composite( &compositeFrameInfo, nullptr, !bNeedsFullComposite, nullptr, true, nullptr, g_bEnableDRMRotationShader );
  
  			m_bWasCompositing = true;
  
 diff --git a/src/main.cpp b/src/main.cpp
-index 056e1c1..f61c88f 100644
+index 056e1c1..b175974 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -127,6 +127,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -1292,16 +1283,17 @@ index 056e1c1..f61c88f 100644
  	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
  	"  --force-panel-type             lie to steam that the screen is external\n"
  	"  --force-windows-fullscreen     force windows inside of gamescope to be the size of the nested display (fullscreen)\n"
-@@ -357,6 +359,8 @@ static gamescope::GamescopeModeGeneration parse_gamescope_mode_generation( const
+@@ -357,6 +359,9 @@ static gamescope::GamescopeModeGeneration parse_gamescope_mode_generation( const
  	}
  }
  
 +bool g_bUseRotationShader = false;
++bool g_bEnableDRMRotationShader = false;
 +
  GamescopePanelOrientation g_DesiredInternalOrientation = GAMESCOPE_PANEL_ORIENTATION_AUTO;
  static GamescopePanelOrientation force_orientation(const char *str)
  {
-@@ -797,6 +801,8 @@ int main(int argc, char **argv)
+@@ -797,6 +802,8 @@ int main(int argc, char **argv)
  					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
  				} else if (strcmp(opt_name, "force-orientation") == 0 || strcmp(opt_name, "force-external-orientation") == 0) {
  					g_DesiredInternalOrientation = force_orientation( optarg );
@@ -1311,14 +1303,15 @@ index 056e1c1..f61c88f 100644
  					g_FakeExternal = force_panel_type_external( optarg );
  				} else if (strcmp(opt_name, "custom-refresh-rates") == 0) {
 diff --git a/src/main.hpp b/src/main.hpp
-index 390c04a..2464afa 100644
+index 390c04a..e7b857d 100644
 --- a/src/main.hpp
 +++ b/src/main.hpp
-@@ -22,6 +22,7 @@ extern bool g_bForceRelativeMouse;
+@@ -22,6 +22,8 @@ extern bool g_bForceRelativeMouse;
  extern int g_nOutputRefresh; // mHz
  extern bool g_bOutputHDREnabled;
  extern bool g_bForceInternal;
 +extern bool g_bUseRotationShader;
++extern bool g_bEnableDRMRotationShader;
  
  extern bool g_bFullscreen;
  
@@ -1335,7 +1328,7 @@ index 74fc033..d4ff3ea 100644
  
  spirv_shaders = glsl_generator.process(shader_src)
 diff --git a/src/rendervulkan.cpp b/src/rendervulkan.cpp
-index 54d7608..10d6c78 100644
+index 54d7608..fae6be9 100644
 --- a/src/rendervulkan.cpp
 +++ b/src/rendervulkan.cpp
 @@ -48,6 +48,7 @@
@@ -1369,7 +1362,7 @@ index 54d7608..10d6c78 100644
 +	uint32_t l_nOutputWidth = g_nOutputWidth;
 +	uint32_t l_nOutputHeight = g_nOutputHeight;
 +
-+	if (g_bUseRotationShader) {
++	if (g_bEnableDRMRotationShader) {
 +		l_nOutputWidth = g_nOutputHeight;
 +		l_nOutputHeight = g_nOutputWidth;
 +	}
@@ -1663,14 +1656,14 @@ index 0000000..1a47fd5
 +    imageStore(dst, rotatedCoord, outputValue);
 +}
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 1eeaa25..5aa986a 100644
+index 1eeaa25..fbb2e0b 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
 @@ -2519,6 +2519,11 @@ static void apply_touchscreen_orientation(double *x, double *y )
  			break;
  	}
  
-+	if (g_bUseRotationShader) {
++	if (g_bEnableDRMRotationShader) {
 +		tx = 1.0 - *y;
 +		ty = *x;
 +	}
@@ -1722,10 +1715,10 @@ index 97dea45..fefb2a0 100644
  * `-S stretch`: use stretch scaling, the game will fill the window. (e.g. 4:3 to 16:9)
  * `-b`: create a border-less window.
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 2fbc090..8bde9e9 100644
+index 3c44839..e9074f5 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -3301,6 +3301,7 @@ namespace gamescope
+@@ -3299,6 +3299,7 @@ namespace gamescope
  			bNeedsFullComposite |= bWasFirstFrame;
  			bNeedsFullComposite |= pFrameInfo->useFSRLayer0;
  			bNeedsFullComposite |= pFrameInfo->useNISLayer0;
@@ -1773,7 +1766,7 @@ index 3226400..7ae273f 100644
              bNeedsFullComposite |= bNeedsCompositeFromFilter;
              bNeedsFullComposite |= g_bColorSliderInUse;
 diff --git a/src/main.cpp b/src/main.cpp
-index f61c88f..06a3bca 100644
+index b175974..874f1dc 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -7,6 +7,7 @@
@@ -1799,7 +1792,7 @@ index f61c88f..06a3bca 100644
  
  gamescope::GamescopeModeGeneration g_eGamescopeModeGeneration = gamescope::GAMESCOPE_MODE_GENERATE_CVT;
  
-@@ -427,6 +431,54 @@ static enum GamescopeUpscaleFilter parse_upscaler_filter(const char *str)
+@@ -428,6 +432,54 @@ static enum GamescopeUpscaleFilter parse_upscaler_filter(const char *str)
  	}
  }
  
@@ -1854,7 +1847,7 @@ index f61c88f..06a3bca 100644
  static enum gamescope::GamescopeBackend parse_backend_name(const char *str)
  {
  	if (strcmp(str, "auto") == 0) {
-@@ -756,7 +808,7 @@ int main(int argc, char **argv)
+@@ -757,7 +809,7 @@ int main(int argc, char **argv)
  				g_wantedUpscaleScaler = parse_upscaler_scaler(optarg);
  				break;
  			case 'F':
@@ -1864,10 +1857,10 @@ index f61c88f..06a3bca 100644
  			case 'b':
  				g_bBorderlessOutputWindow = true;
 diff --git a/src/main.hpp b/src/main.hpp
-index 2464afa..040d04c 100644
+index e7b857d..7212d5f 100644
 --- a/src/main.hpp
 +++ b/src/main.hpp
-@@ -43,6 +43,18 @@ enum class GamescopeUpscaleFilter : uint32_t
+@@ -44,6 +44,18 @@ enum class GamescopeUpscaleFilter : uint32_t
      FROM_VIEW = 0xF, // internal
  };
  
@@ -1886,7 +1879,7 @@ index 2464afa..040d04c 100644
  static constexpr bool DoesHardwareSupportUpscaleFilter( GamescopeUpscaleFilter eFilter )
  {
      // Could do nearest someday... AMDGPU DC supports custom tap placement to an extent.
-@@ -60,10 +72,13 @@ enum class GamescopeUpscaleScaler : uint32_t
+@@ -61,10 +73,13 @@ enum class GamescopeUpscaleScaler : uint32_t
  };
  
  extern GamescopeUpscaleFilter g_upscaleFilter;
@@ -1913,7 +1906,7 @@ index d4ff3ea..341bace 100644
    'shaders/cs_nis.comp',
    'shaders/cs_nis_fp16.comp',
 diff --git a/src/rendervulkan.cpp b/src/rendervulkan.cpp
-index 10d6c78..8b31c1e 100644
+index fae6be9..3fab21b 100644
 --- a/src/rendervulkan.cpp
 +++ b/src/rendervulkan.cpp
 @@ -44,6 +44,7 @@
