@@ -243,6 +243,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         f3 \
         pulseaudio-utils \
         lzip \
+        p7zip \
         rar \
         libxcrypt-compat \
         vulkan-tools \
