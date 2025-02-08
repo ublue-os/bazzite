@@ -222,6 +222,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         xrandr \
         compsize \
         ryzenadj \
+        ddcutil \
         input-remapper \
         i2c-tools \
         udica \
