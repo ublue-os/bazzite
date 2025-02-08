@@ -421,6 +421,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         curl -Lo /tmp/gnome-hdr/hdr-enableelrant.team.v2.shell-extension.zip https://extensions.gnome.org/extension-data/hdr-enableelrant.team.v2.shell-extension.zip && \
         unzip /tmp/gnome-hdr/hdr-enableelrant.team.v2.shell-extension.zip -d /usr/share/gnome-shell/extensions/hdr-enable@elrant.team && \
         chmod -R 644 /usr/share/gnome-shell/extensions/hdr-enable@elrant.team && \
+        chmod 755 /usr/share/gnome-shell/extensions/hdr-enable@elrant.team && \
         curl -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer && \
         systemctl enable dconf-update.service \
     ; fi && \
