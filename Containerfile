@@ -443,11 +443,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=tmpfs,dst=/tmp \
     if ! hash git; then dnf5 -yq --setopt=install_weak_deps=0 git; done && \
     cd $(mktemp -d) && \
-    curl -fsSLo - https://github.com/Zeglius/media-automount-generator/archive/refs/tags/v0.2.1.tar.gz | \
+    curl -fsSLo - https://github.com/Zeglius/media-automount-generator/archive/refs/tags/v0.2.2.tar.gz | \
         tar -xz --strip-components=1 && \
     ./install.sh && \
-    echo >>/usr/lib/media-automount.d/btrfs.conf \
-        "FSOPTIONS=noatime,lazytime,commit=120,discard=async,compress-force=zstd:1,space_cache=v2" && \
     /ctx/cleanup
 
 # Cleanup & Finalize
