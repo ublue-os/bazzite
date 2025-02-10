@@ -1,12 +1,11 @@
 Name:           ds-inhibit
 Version:        {{{ git_dir_version }}}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        DualShock 4/DualSense mouse inhibitor
 License:        BSD-2-Clause
 URL:            https://github.com/ublue-os/bazzite
 
 Source0:         https://gitlab.com/evlaV/%{name}/-/archive/main/%{name}-main.tar.gz
-Source1:        10-modprobe-ds.conf
 BuildArch:      noarch
 
 Patch0:         fedora.patch
@@ -35,7 +34,6 @@ mkdir -p %{buildroot}%{_unitdir}/
 mkdir -p %{buildroot}%{_sysconfdir}/modules-load.d
 cp -v ds_inhibit.py %{buildroot}%{_bindir}/ds-inhibit
 cp -v systemd.service %{buildroot}%{_unitdir}/ds-inhibit.service
-cp %{SOURCE1} %{buildroot}%{_sysconfdir}/modules-load.d
 
 # Do post-installation
 %post
