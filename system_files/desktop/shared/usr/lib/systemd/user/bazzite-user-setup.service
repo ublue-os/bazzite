@@ -1,5 +1,6 @@
 [Unit]
 Description=Configure Bazzite for current user
+ConditionUser=!@system
 
 [Service]
 Type=simple
