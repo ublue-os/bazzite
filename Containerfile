@@ -822,3 +822,40 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/image-info && \
     /ctx/build-initramfs && \
     /ctx/finalize
+
+FROM bazzite as bazzite-dx
+# TODO: Probably these args below need some default values
+ARG IMAGE_NAME="${IMAGE_NAME}-dx"
+ARG IMAGE_VENDOR
+ARG IMAGE_FLAVOR
+ARG NVIDIA_FLAVOR
+ARG NVIDIA_BASE
+ARG KERNEL_FLAVOR
+ARG KERNEL_VERSION
+ARG IMAGE_BRANCH
+ARG BASE_IMAGE_NAME
+ARG FEDORA_MAJOR_VERSION
+ARG VERSION_TAG
+ARG VERSION_PRETTY
+
+# Install Docker and vscode
+RUN --mount=type=cache,dst=/var/cache/libdnf5 \
+    --mount=type=cache,dst=/var/cache/rpm-ostree \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    : "Docker" && \
+    dnf5 config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo && \
+    dnf5 install -y --setopt=install_weak_deps=0 \
+        docker-ce \
+        docker-ce-cli \
+        containerd.io \
+        docker-buildx-plugin \
+        docker-compose-plugin && \
+    dnf5 config-manager setopt docker-ce-stable.enabled=0 && \
+    : "vscode" && \
+    echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | \
+        tee /etc/yum.repos.d/vscode.repo >/dev/null && \
+    dnf5 install -y --setopt=install_weak_deps=0 code && \
+    dnf5 config-manager setopt code.enabled=0 && \
+    /ctx/image-info && \
+    /ctx/cleanup
