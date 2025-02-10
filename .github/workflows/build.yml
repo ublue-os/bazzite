@@ -135,6 +135,8 @@ jobs:
           else
               IMAGE_NAME="bazzite${DESKTOP:+-$DESKTOP}${IMAGE_FLAVOR:+-$IMAGE_FLAVOR}"
           fi
+          dx="${{ matrix.developer_flavor }}"
+          IMAGE_NAME="$IMAGE_NAME${dx:+-dx}"
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
       - name: Define env.NVIDIA_BASE
