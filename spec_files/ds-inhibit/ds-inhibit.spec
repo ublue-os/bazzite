@@ -53,7 +53,6 @@ cp -v systemd.service %{buildroot}%{_unitdir}/ds-inhibit.service
 %license LICENSE
 %{_bindir}/ds-inhibit
 %{_unitdir}/ds-inhibit.service
-%{_sysconfdir}/modules-load.d/10-modprobe-ds.conf
 
 # Finally, changes from the latest release of your application are generated from
 # your project's Git history. It will be empty until you make first annotated Git tag.
