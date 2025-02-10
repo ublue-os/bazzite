@@ -66,6 +66,7 @@ jobs:
         target_image_flavor: [main, asus, surface]
         target_nvidia_flavor: [nvidia, nvidia-open]
         fedora_version: [41]
+        developer_flavor: ["", de]
         include:
           - fedora_version: 41
             is_latest_version: true
@@ -90,11 +91,19 @@ jobs:
     steps:
       - name: Define env.CONTAINER_TARGET
         run: |
+          CONTAINER_TARGET=""
           if [[ "${{ matrix.base_name }}" == "bazzite-deck-nvidia" ]]; then
-              echo "CONTAINER_TARGET=bazzite-nvidia" >> $GITHUB_ENV
+              CONTAINER_TARGET="bazzite-nvidia"
           else
-              echo "CONTAINER_TARGET=${{ matrix.base_name }}" >> $GITHUB_ENV
+              CONTAINER_TARGET="${{ matrix.base_name }}"
           fi
+          
+          # Is a Developer eXperience image? Is not if value is empty
+          if [[ -n "${{ matrix.developer_flavor }}" ]]; then
+            CONTAINER_TARGET="${CONTAINER_TARGET}-dx"
+          fi
+          
+          echo "CONTAINER_TARGET=${CONTAINER_TARGET}" >> $GITHUB_ENV
 
       - name: Define env.IMAGE_FLAVOR
         run: |
