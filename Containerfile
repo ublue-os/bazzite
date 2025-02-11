@@ -225,6 +225,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         ddcutil \
         input-remapper \
         i2c-tools \
+        lm_sensors \
         udica \
         ladspa-caps-plugins \
         ladspa-noise-suppression-for-voice \
