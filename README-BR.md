@@ -38,11 +38,11 @@
 
 [Entre no nosso site](https://bazzite.gg/) para ler uma explicação do Bazzite mais amigável a iniciantes. Este README é uma explicação aprofundada.
 
-[Bazzite](https://bazzite.gg/) é uma imagem OCI que serve como sistema operacional alternativo para o [Steam Deck](https://www.steamdeck.com/), e um parecido com o SteamOS e pronto pra jogar para computadores desktop e PCs centros de mídia.
+[Bazzite](https://bazzite.gg/) é uma imagem [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) customizada feita utilizando tecnologias [cloud native](https://universal-blue.org/#cloud-native) trazendo o melhor de gaming no Linux para **todos os seus dispositivos - inclusive o seu portátil favorito**.
 
-O Bazzite é feito a partir do [ublue-os/main](https://github.com/ublue-os/main) e do [ublue-os/nvidia](https://github.com/ublue-os/nvidia) utilizando tecnologia [Fedora](https://fedoraproject.org/), o que significa que suporte expandido a hardware e drivers estão inclusos. Suplementarmente, o Bazzite traz os seguintes recursos:
+O Bazzite é feito a partir do [ublue-os/main](https://github.com/ublue-os/main) e do [ublue-os/nvidia](https://github.com/ublue-os/nvidia) utilizando tecnologia [Fedora](https://fedoraproject.org/), e portanto um suporte estendido a hardware e drivers já estão inclusos. Adicionalmente, o Bazzite traz os seguintes recursos:
 
-- Usa o [kernel bazzite](https://github.com/hhd-dev/kernel-bazzite) para possibilitar HDR e expandir o suporte a hardware, dentre outros vários patches - baseado no [kernel fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
+- Usa o [kernel-bazzite](https://github.com/hhd-dev/kernel-bazzite) para habilitar o HDR e um suporte estendido a hardware, entre outros vários patches - baseado no [kernel-fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
 - HDR disponível no Game mode.
 - NVK disponível em versões não-Nvidia.
 - Suporte completo à decodificação de hardware em codecs H264.
