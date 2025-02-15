@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+echo -e "If you are reading this you have made a mistake and need to \e]8;;https://docs.bazzite.gg/General/Installation_Guide/\aread our documentation\e]8;;\a\n\e]8;;https://docs.bazzite.gg/General/Installation_Guide/\ahttps://docs.bazzite.gg/General/Installation_Guide/\e]8;;\a\n"
+exit 1
