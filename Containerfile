@@ -842,6 +842,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     glib-compile-schemas --strict /tmp/bazzite-schema-test && \
     glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
     rm -r /tmp/bazzite-schema-test && \
+    systemctl disable supergfxd.service && \
     /ctx/image-info && \
     /ctx/build-initramfs && \
     /ctx/finalize
