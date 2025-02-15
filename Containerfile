@@ -554,6 +554,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     systemctl enable bazzite-hardware-setup.service && \
     systemctl disable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
+    systemctl --global enable bazzite-bluetooth-ds4-ds5-workaround.service && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
