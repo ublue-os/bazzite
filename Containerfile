@@ -97,7 +97,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         rok/cdemu \
         rodoma92/kde-cdemu-manager \
         rodoma92/rmlint \
-        ilyaz/LACT; \
+        ilyaz/LACT \
+        tulilirockz/fw-fanctrl; \
     do \
         dnf5 -y copr enable $copr; \
         dnf5 -y config-manager setopt copr:copr.fedorainfracloud.org:${copr////:}.priority=98 ;\
@@ -226,6 +227,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         input-remapper \
         i2c-tools \
         lm_sensors \
+        fw-ectool \
+        fw-fanctrl \
         udica \
         ladspa-caps-plugins \
         ladspa-noise-suppression-for-voice \
