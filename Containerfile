@@ -332,6 +332,12 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         libobs_glcapture.x86_64 \
         libobs_vkcapture.i686 \
         libobs_glcapture.i686 && \
+        hyprland \
+        hypridle \
+        hyprcursor \
+        hyprlock \
+        rofi-wayland \
+        dmenu-wayland \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
         lutris && \
