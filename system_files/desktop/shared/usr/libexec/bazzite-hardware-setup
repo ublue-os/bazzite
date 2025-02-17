@@ -257,10 +257,6 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
       fi
     fi
   fi
-  if [[ $SYS_ID == "Laptop"* ]]; then
-    echo "Enabling Framework Fan Control"
-    systemctl enable fw-fanctrl.service
-  fi
 fi
 
 # SURFACE FIXES
