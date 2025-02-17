@@ -256,10 +256,10 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
         echo "ACTION==\"add\", SUBSYSTEM==\"serio\", DRIVERS==\"atkbd\", ATTR{power/wakeup}=\"disabled\"" > /etc/udev/rules.d/20-suspend-fixes.rules
       fi
     fi
-    if [[ $SYS_ID == "Laptop"* ]]; then
-      echo "Enabling Framework Fan Control"
-      systemctl enable --now fw-fanctrl.service
-    fi
+  fi
+  if [[ $SYS_ID == "Laptop"* ]]; then
+    echo "Enabling Framework Fan Control"
+    systemctl enable --now fw-fanctrl.service
   fi
 fi
 
