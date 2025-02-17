@@ -84,7 +84,7 @@ if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
 fi
 
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
-  if [[ "$SYS_ID" == "Laptop 16"* ]]; then
+  if [[ "$SYS_ID" == "Laptop 16 ("* ]]; then
     if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
       echo "Framework 16 Laptop detected, fixing display artifacts"
       NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
@@ -256,7 +256,7 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
         echo "ACTION==\"add\", SUBSYSTEM==\"serio\", DRIVERS==\"atkbd\", ATTR{power/wakeup}=\"disabled\"" > /etc/udev/rules.d/20-suspend-fixes.rules
       fi
     fi
-    if [[ $SYS_ID == "Laptop ("* || $SYS_ID == "Laptop 16 ("* ]]; then
+    if [[ $SYS_ID == "Laptop"* ]]; then
       echo "Enabling Framework Fan Control"
       systemctl enable --now fw-fanctrl.service
     fi
