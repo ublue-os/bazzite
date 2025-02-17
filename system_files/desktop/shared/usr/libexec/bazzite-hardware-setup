@@ -259,7 +259,7 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
   fi
   if [[ $SYS_ID == "Laptop"* ]]; then
     echo "Enabling Framework Fan Control"
-    systemctl enable --now fw-fanctrl.service
+    systemctl enable fw-fanctrl.service
   fi
 fi
 
