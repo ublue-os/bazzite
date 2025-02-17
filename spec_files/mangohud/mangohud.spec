@@ -40,7 +40,10 @@ Source5:        https://github.com/epezent/implot/archive/v%{implot_ver}/implot-
 Source6:        https://wrapdb.mesonbuild.com/v%{implot_wrap_ver}/implot_%{implot_ver}-1/get_patch#/implot-%{implot_ver}-%{implot_wrap_ver}-wrap.zip
 Source20:       README.Fedora.md
 
+# https://github.com/flightlessmango/MangoHud/commit/85bd029f2f292e2a7089caff6c78d79a102da96d
 Patch0:         dont_crash_gpu_uninit.patch
+# https://github.com/flightlessmango/MangoHud/pull/1581
+Patch1:         1581.patch
 
 BuildRequires:  vulkan-headers
 BuildRequires:  appstream
