@@ -23,7 +23,7 @@
 
 Name:           mangohud
 Version:        0.8.0
-Release:        %autorelease
+Release:        2
 Summary:        Vulkan and OpenGL overlay for monitoring FPS, temperatures, CPU/GPU load
 
 License:        MIT
@@ -39,6 +39,8 @@ Source4:        https://wrapdb.mesonbuild.com/v%{vulkan_headers_wrap_ver}/projec
 Source5:        https://github.com/epezent/implot/archive/v%{implot_ver}/implot-%{implot_ver}.tar.gz
 Source6:        https://wrapdb.mesonbuild.com/v%{implot_wrap_ver}/implot_%{implot_ver}-1/get_patch#/implot-%{implot_ver}-%{implot_wrap_ver}-wrap.zip
 Source20:       README.Fedora.md
+
+Patch0:         dont_crash_gpu_uninit.patch
 
 BuildRequires:  vulkan-headers
 BuildRequires:  appstream
