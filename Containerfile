@@ -89,6 +89,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         ycollet/audinux \
         kylegospo/rom-properties \
         kylegospo/webapp-manager \
+        kylegospo/vk_hdr_layer \
         hhd-dev/hhd \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
@@ -331,7 +332,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         libobs_vkcapture.x86_64 \
         libobs_glcapture.x86_64 \
         libobs_vkcapture.i686 \
-        libobs_glcapture.i686 && \
+        libobs_glcapture.i686 \
+        vk_hdr_layer.x86_64 \
+        vk_hdr_layer.i686 && \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
         lutris && \
