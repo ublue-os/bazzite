@@ -115,6 +115,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
     dnf5 -y config-manager setopt "*akmods*".priority=2 && \
     dnf5 -y config-manager setopt "*terra*".priority=3 "*terra*".exclude="nerd-fonts topgrade" && \
+    dnf5 -y config-manager setopt "terra-mesa".enabled=true && \
+    dnf5 -y config-manager setopt "terra-nvidia".enabled=false && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=4 exclude='mesa-* *xone*')" && \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=5 "*rpmfusion*".exclude="mesa-*" && \
     dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
@@ -156,6 +158,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         dnf5 -y swap \
             --allowerasing \
             libwacom-data libwacom-surface-data && \
+        dnf5 versionlock add \
+            libwacom-surface-data && \
         dnf5 -y install \
             iptsd \
             libcamera \
@@ -177,12 +181,41 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=tmpfs,dst=/tmp \
     declare -A toswap=( \
         ["copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland" \
-        ["terra-extras"]="switcheroo-control mesa-filesystem" \
+        ["terra-extras"]="switcheroo-control" \
+        ["terra-mesa"]="mesa-filesystem" \
         ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
+    dnf5 versionlock add \
+        pipewire \
+        pipewire-alsa \
+        pipewire-gstreamer \
+        pipewire-jack-audio-connection-kit \
+        pipewire-jack-audio-connection-kit-libs \
+        pipewire-libs \
+        pipewire-plugin-libcamera \
+        pipewire-pulseaudio \
+        pipewire-utils \
+        bluez \
+        bluez-cups \
+        bluez-libs \
+        bluez-obexd \
+        xorg-x11-server-Xwayland \
+        switcheroo-control \
+        mesa-dri-drivers \
+        mesa-filesystem \
+        mesa-libEGL \
+        mesa-libGL \
+        mesa-libgbm \
+        mesa-libglapi \
+        mesa-va-drivers \
+        mesa-vulkan-drivers \
+        fwupd \
+        fwupd-plugin-flashrom \
+        fwupd-plugin-modem-manager \
+        fwupd-plugin-uefi-capsule-data && \
     dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
         libaacs \
         libbdplus \
@@ -312,6 +345,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y swap \
     --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         ibus ibus && \
+    dnf5 versionlock add \
+        ibus && \
     dnf5 -y install \
         gamescope.x86_64 \
         gamescope-libs.x86_64 \
@@ -374,6 +409,14 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         dnf5 -y swap \
         --repo terra-extras \
             kf6-kio-core kf6-kio-core && \
+        dnf5 versionlock add \
+            kf6-kio-core \
+            kf6-kio-core-libs \
+            kf6-kio-doc \
+            kf6-kio-file-widgets \
+            kf6-kio-gui \
+            kf6-kio-widgets \
+            kf6-kio-widgets-libs && \
         dnf5 -y remove \
             plasma-welcome \
             plasma-welcome-fedora \
@@ -392,6 +435,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         dnf5 -y swap \
         --repo terra-extras \
             gnome-shell gnome-shell && \
+        dnf5 versionlock add \
+            gnome-shell && \
         dnf5 -y install \
             nautilus-gsconnect \
             steamdeck-backgrounds \
@@ -676,6 +721,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y swap \
     --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         upower upower && \
+    dnf5 versionlock add \
+        upower \
+        upower-libs && \
     /ctx/cleanup
 
 # Install Gamescope Session & Supporting changes
