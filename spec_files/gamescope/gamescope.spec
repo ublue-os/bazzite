@@ -8,7 +8,7 @@
 
 Name:           gamescope
 #Version:        100.%{gamescope_tag}
-Version:        107.%{short_commit}
+Version:        108.%{short_commit}
 Release:        1.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
@@ -19,9 +19,6 @@ URL:            https://github.com/ValveSoftware/gamescope
 Source0:        stb.pc
 
 Patch0:         0001-cstdint.patch
-
-# https://hhd.dev/
-# https://github.com/ChimeraOS/gamescope
 Patch1:         handheld.patch
 
 BuildRequires:  meson >= 0.54.0
