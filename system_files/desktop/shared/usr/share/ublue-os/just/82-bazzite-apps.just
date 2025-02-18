@@ -178,14 +178,28 @@ remove-opentabletdriver:
 # Install Docker, a platform designed to help developers build, share, and run container applications
 install-docker:
     #!/usr/bin/bash
-    sudo mkdir -p /var/lib/docker
-    echo 'Creating Docker group.'
-    sudo groupadd --gid 252 docker
-    echo 'Setting up Docker Distrobox Container.'
-    distrobox assemble create --replace --file /etc/distrobox/docker.ini --name docker
-    echo 'Installing docker-cli for the host.'
-    brew install docker
-    echo 'Complete.'
+    set -eo pipefail
+    [[ ${DEBUG:-} -eq 1 ]] && set -x
+    [[ $(id -u) -eq 0 ]] && {
+        echo >&2 "Dont run this as root"
+        exit 1
+    }
+    mkdir -p ~/.local/bin
+    brew install docker docker-buildx docker-compose
+    [[ -e ~/.local/bin/docker ]] && {
+      gum confirm "There is a file in ~/.local/bin/docker. Do you wish to override it?" || exit 0
+    }
+    ln -sf $(which docker) ~/.local/bin/docker
+    # Enable podman sockets
+    systemctl --user enable --now podman.socket
+    sudo systemctl enable --now podman.socket
+    # Add podman sockets to docker contexts
+    docker context use $(
+      docker context create podman --docker "host=unix://$(podman system info  --format '{{{{.Host.RemoteSocket.Path}}')"
+    )
+    sudo docker context use $(
+      sudo docker context create podman-rootful --docker "host=unix://$(sudo podman system info  --format '{{{{.Host.RemoteSocket.Path}}')"
+    )
 
 # Create fedora distrobox if it doesn't exist
 [private]
