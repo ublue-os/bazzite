@@ -201,7 +201,6 @@ install-docker:
       sudo docker context create podman-rootful --docker "host=unix://$(sudo podman system info  --format '{{{{.Host.RemoteSocket.Path}}')"
     )
 
-
 # Create fedora distrobox if it doesn't exist
 [private]
 distrobox-check-fedora:
