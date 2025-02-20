@@ -44,7 +44,6 @@ get-webapp service="":
             "Netflix" \
             "Amazon Luna" \
             "Disney Plus" \
-            "Crunchyroll" \
             "Amazon Prime Video" \
             "Apple TV" \
             "Curiosity Stream" \
@@ -53,7 +52,6 @@ get-webapp service="":
             "Hulu" \
             "Paramount Plus" \
             "Peacock" \
-            "Plex" \
             "Sling TV" \
             "Spotify" \
             "Vimeo" \
@@ -79,7 +77,6 @@ get-webapp service="":
         "Netflix") create_script "netflix" "netflix" ;;
         "Amazon Luna") create_script "amazon-luna" "amazonLuna" ;;
         "Disney Plus") create_script "disney-plus" "disneyPlus" ;;
-        "Crunchyroll") create_script "crunchyroll" "crunchyroll" ;;
         "Amazon Prime Video") create_script "prime-video" "amazonPrimeVideo" ;;
         "Apple TV") create_script "apple-tv" "appleTv" ;;
         "Curiosity Stream") create_script "curiosity-stream" "curiosityStream" ;;
@@ -88,7 +85,6 @@ get-webapp service="":
         "Hulu") create_script "hulu" "hulu" ;;
         "Paramount Plus") create_script "paramount-plus" "paramountPlus" ;;
         "Peacock") create_script "peacock" "peacock" ;;
-        "Plex") create_script "plex" "plex" ;;
         "Sling TV") create_script "sling-tv" "slingTV" ;;
         "Spotify") create_script "spotify" "spotify" ;;
         "Vimeo") create_script "vimeo" "vimeo" ;;
