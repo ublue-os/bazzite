@@ -89,6 +89,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         ycollet/audinux \
         kylegospo/rom-properties \
         kylegospo/webapp-manager \
+        kylegospo/vk_hdr_layer \
         hhd-dev/hhd \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
@@ -114,6 +115,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
     dnf5 -y config-manager setopt "*akmods*".priority=2 && \
     dnf5 -y config-manager setopt "*terra*".priority=3 "*terra*".exclude="nerd-fonts topgrade" && \
+    dnf5 -y config-manager setopt "terra-mesa".enabled=true && \
+    dnf5 -y config-manager setopt "terra-nvidia".enabled=false && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=4 exclude='mesa-* *xone*')" && \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=5 "*rpmfusion*".exclude="mesa-*" && \
     dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
@@ -155,6 +158,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         dnf5 -y swap \
             --allowerasing \
             libwacom-data libwacom-surface-data && \
+        dnf5 versionlock add \
+            libwacom-surface-data && \
         dnf5 -y install \
             iptsd \
             libcamera \
@@ -176,12 +181,41 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=tmpfs,dst=/tmp \
     declare -A toswap=( \
         ["copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland" \
-        ["terra-extras"]="switcheroo-control mesa-filesystem" \
+        ["terra-extras"]="switcheroo-control" \
+        ["terra-mesa"]="mesa-filesystem" \
         ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
+    dnf5 versionlock add \
+        pipewire \
+        pipewire-alsa \
+        pipewire-gstreamer \
+        pipewire-jack-audio-connection-kit \
+        pipewire-jack-audio-connection-kit-libs \
+        pipewire-libs \
+        pipewire-plugin-libcamera \
+        pipewire-pulseaudio \
+        pipewire-utils \
+        bluez \
+        bluez-cups \
+        bluez-libs \
+        bluez-obexd \
+        xorg-x11-server-Xwayland \
+        switcheroo-control \
+        mesa-dri-drivers \
+        mesa-filesystem \
+        mesa-libEGL \
+        mesa-libGL \
+        mesa-libgbm \
+        mesa-libglapi \
+        mesa-va-drivers \
+        mesa-vulkan-drivers \
+        fwupd \
+        fwupd-plugin-flashrom \
+        fwupd-plugin-modem-manager \
+        fwupd-plugin-uefi-capsule-data && \
     dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
         libaacs \
         libbdplus \
@@ -312,6 +346,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y swap \
     --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         ibus ibus && \
+    dnf5 versionlock add \
+        ibus && \
     dnf5 -y install \
         gamescope.x86_64 \
         gamescope-libs.x86_64 \
@@ -332,7 +368,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         libobs_vkcapture.x86_64 \
         libobs_glcapture.x86_64 \
         libobs_vkcapture.i686 \
-        libobs_glcapture.i686 && \
+        libobs_glcapture.i686 \
+        vk_hdr_layer.x86_64 \
+        vk_hdr_layer.i686 && \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
         lutris && \
@@ -372,6 +410,14 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         dnf5 -y swap \
         --repo terra-extras \
             kf6-kio-core kf6-kio-core && \
+        dnf5 versionlock add \
+            kf6-kio-core \
+            kf6-kio-core-libs \
+            kf6-kio-doc \
+            kf6-kio-file-widgets \
+            kf6-kio-gui \
+            kf6-kio-widgets \
+            kf6-kio-widgets-libs && \
         dnf5 -y remove \
             plasma-welcome \
             plasma-welcome-fedora \
@@ -390,6 +436,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         dnf5 -y swap \
         --repo terra-extras \
             gnome-shell gnome-shell && \
+        dnf5 versionlock add \
+            gnome-shell && \
         dnf5 -y install \
             nautilus-gsconnect \
             steamdeck-backgrounds \
@@ -480,6 +528,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/btop.desktop && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/yad-icon-browser.desktop && \
     sed -i 's/#UserspaceHID.*/UserspaceHID=true/' /etc/bluetooth/input.conf && \
+    sed -i "s/^SCX_SCHEDULER=.*/SCX_SCHEDULER=scx_bpfland/" /etc/default/scx && \
     rm -f /usr/share/vulkan/icd.d/lvp_icd.*.json && \
     rm -f /usr/lib/systemd/system/service.d/50-keep-warm.conf && \
     mkdir -p "/etc/profile.d/" && \
@@ -502,6 +551,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     echo "import \"/usr/share/ublue-os/just/85-bazzite-image.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/86-bazzite-windows.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/87-bazzite-framegen.just\"" >> /usr/share/ublue-os/justfile && \
+    echo "import \"/usr/share/ublue-os/just/88-bazzite-webapps.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/90-bazzite-de.just\"" >> /usr/share/ublue-os/justfile && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
       systemctl enable usr-share-sddm-themes.mount && \
@@ -549,6 +599,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' enabled=0)" && \
     sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
+    sed -i 's|#default.clock.allowed-rates = \[ 48000 \]|default.clock.allowed-rates = [ 44100 48000 ]|' /usr/share/pipewire/pipewire.conf && \
+    sed -i 's|^ExecStart=.*|ExecStart=/usr/libexec/rtkit-daemon --no-canary|' /usr/lib/systemd/system/rtkit-daemon.service && \
+    ln -s /usr/bin/true /usr/bin/pulseaudio && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
     systemctl enable brew-dir-fix.service && \
@@ -686,6 +739,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     dnf5 -y swap \
     --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
         upower upower && \
+    dnf5 versionlock add \
+        upower \
+        upower-libs && \
     /ctx/cleanup
 
 # Install Gamescope Session & Supporting changes
@@ -718,6 +774,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     ; fi && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/input-remapper-gtk.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
+    sed -i "s/^SCX_SCHEDULER=.*/SCX_SCHEDULER=scx_lavd/" /etc/default/scx && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     for copr in \
         kylegospo/bazzite \
