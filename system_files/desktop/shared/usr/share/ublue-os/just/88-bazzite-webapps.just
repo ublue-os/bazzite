@@ -1,60 +1,95 @@
 # vim: set ft=make :
 
-# add xbox cloud gaming to steam as a non-Steam game
-setup-gamepass:
-    #!/bin/bash
-    default_path=~/Documents
-    cd $default_path || exit
-    echo -e '#!/bin/bash
-    /usr/bin/flatpak run --branch=stable --arch=x86_64 --command=firefox org.mozilla.firefox --kiosk 'https://www.xbox.com/play'' > "Xbox.sh"
-    chmod +x ./$app_name.sh
-    steamos-add-to-steam $(pwd)/Xbox.sh
-    echo Xbox successfully created!
-
 get-webapp:
     #!/usr/bin/bash
     # Load ugum for interactive menu
     source /usr/lib/ujust/ujust.sh
-    # Set default path for saving scripts
-    default_path=~/Documents
-    mkdir -p "$default_path"
-    cd "$default_path" || exit
+    # Function to install StreamingServiceLauncher
+    install_launcher() {
+        echo "Installing StreamingServiceLauncher..."
+        # Create necessary directories
+        mkdir -p "$HOME/.local/bin"
+        mkdir -p "$HOME/Applications"
+        # Clean up any old versions
+        rm -f "$HOME/.local/bin/StreamingServiceLauncher.AppImage"
+        rm -f "$HOME/Applications/StreamingServiceLauncher.AppImage"
+        rm -f "$HOME/.local/bin/streaming-service-launcher"
+        # Download latest release
+        RELEASE_URL="https://api.github.com/repos/aarron-lee/StreamingServiceLauncher/releases/latest"
+        wget -q $(curl -s $RELEASE_URL | jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
+            -O "$HOME/Applications/StreamingServiceLauncher.AppImage"
+        # Create launcher script
+        echo "#!/bin/bash" > "$HOME/.local/bin/streaming-service-launcher"
+        echo "\"$HOME/Applications/StreamingServiceLauncher.AppImage\" --appname=\$1 --no-sandbox" >> "$HOME/.local/bin/streaming-service-launcher"
+        # Make executables
+        chmod +x "$HOME/Applications/StreamingServiceLauncher.AppImage"
+        chmod +x "$HOME/.local/bin/streaming-service-launcher"
+        if [ ! -f "$HOME/Applications/StreamingServiceLauncher.AppImage" ]; then
+            echo "Installation failed"
+            exit 1
+        fi
+        echo "Installation completed successfully"
+    }
+    # Check for StreamingServiceLauncher and install if needed
+    [ ! -f "$HOME/Applications/StreamingServiceLauncher.AppImage" ] && install_launcher
+    # Create scripts directory
+    mkdir -p "$HOME/Applications/streaming_scripts"
     # Display menu
-    echo -e "\n${bold}Select a web app to add to Steam:${normal}"
-    CHOICE=$(ugum choose "Xbox Cloud Gaming" "YouTube" "Amazon Luna" "Netflix" "Exit")
-    # Function to create webapp script and add to Steam
-    create_webapp() {
-        app_name="$1"
-        app_url="$2"
-        script_path="$default_path/$app_name.sh"
-        # Create the script
-        echo -e "#!/bin/bash\n/usr/bin/flatpak run --branch=stable --arch=x86_64 --command=firefox org.mozilla.firefox --kiosk '$app_url'" > "$script_path"
-        # Make script executable
+    echo -e "\n${bold}Select a streaming service to add to Steam:${normal}"
+    CHOICE=$(ugum choose \
+        "YouTube" \
+        "Netflix" \
+        "Amazon Luna" \
+        "Disney Plus" \
+        "Crunchyroll" \
+        "Amazon Prime Video" \
+        "Apple TV" \
+        "Curiosity Stream" \
+        "GeForce Now" \
+        "HBO Max" \
+        "Hulu" \
+        "Paramount Plus" \
+        "Peacock" \
+        "Plex" \
+        "Sling TV" \
+        "Spotify" \
+        "Vimeo" \
+        "Xbox Cloud Gaming" \
+        "YouTube Music" \
+        "YouTube TV" \
+        "Exit")
+    # Exit early if user chose to exit
+    [ "$CHOICE" = "Exit" ] && { echo "Exiting..."; exit 0; }
+    # Create webapp script and add to Steam
+    create_script() {
+        local script_path="$HOME/Applications/streaming_scripts/$1.sh"
+        echo "#!/bin/bash" > "$script_path"
+        echo "\"$HOME/.local/bin/streaming-service-launcher\" \"$2\"" >> "$script_path"
         chmod +x "$script_path"
-        # Add to Steam
         steamos-add-to-steam "$script_path"
-        echo -e "${bold}${app_name}${normal} successfully added to Steam! 🚀"
+        echo "Added $1 to Steam successfully!"
     }
     # Process user choice
     case "$CHOICE" in
-        "Xbox Cloud Gaming")
-            create_webapp "Xbox" "https://www.xbox.com/play"
-            ;;
-        "YouTube")
-            create_webapp "YouTube" "https://www.youtube.com"
-            ;;
-        "Amazon Luna")
-            create_webapp "Amazon_Luna" "https://www.amazon.com/luna"
-            ;;
-        "Netflix")
-            create_webapp "Netflix" "https://www.netflix.com"
-            ;;
-        "Exit")
-            echo -e "${bold}Exiting...${normal}"
-            exit 0
-            ;;
-        *)
-            echo -e "${red}Invalid choice. Exiting.${normal}"
-            exit 1
-            ;;
+        "YouTube") create_script "youtube" "youtube" ;;
+        "Netflix") create_script "netflix" "netflix" ;;
+        "Amazon Luna") create_script "amazon-luna" "amazonLuna" ;;
+        "Disney Plus") create_script "disney-plus" "disneyPlus" ;;
+        "Crunchyroll") create_script "crunchyroll" "crunchyroll" ;;
+        "Amazon Prime Video") create_script "prime-video" "amazonPrimeVideo" ;;
+        "Apple TV") create_script "apple-tv" "appleTv" ;;
+        "Curiosity Stream") create_script "curiosity-stream" "curiosityStream" ;;
+        "GeForce Now") create_script "geforce-now" "geForceNow" ;;
+        "HBO Max") create_script "hbo-max" "hboMax" ;;
+        "Hulu") create_script "hulu" "hulu" ;;
+        "Paramount Plus") create_script "paramount-plus" "paramountPlus" ;;
+        "Peacock") create_script "peacock" "peacock" ;;
+        "Plex") create_script "plex" "plex" ;;
+        "Sling TV") create_script "sling-tv" "slingTV" ;;
+        "Spotify") create_script "spotify" "spotify" ;;
+        "Vimeo") create_script "vimeo" "vimeo" ;;
+        "Xbox Cloud Gaming") create_script "xbox-cloud" "xboxGamePassStreaming" ;;
+        "YouTube Music") create_script "youtube-music" "youtubeMusic" ;;
+        "YouTube TV") create_script "youtube-tv" "youTubeTV" ;;
+        *) echo "Invalid choice" ; exit 1 ;;
     esac
