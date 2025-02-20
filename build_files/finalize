@@ -4,11 +4,9 @@ set -eoux pipefail
 
 dnf5 clean all
 rm -rf /tmp/* || true
-mv /var/lib/alternatives /staged-alternatives
 find /var/* -maxdepth 0 -type d \! -name cache -exec rm -fr {} \;
 find /var/cache/* -maxdepth 0 -type d \! -name libdnf5 \! -name rpm-ostree -exec rm -fr {} \;
 mkdir -p /var/lib
-mv /staged-alternatives /var/lib/alternatives
 mkdir -p /var/tmp
 chmod -R 1777 /var/tmp
 
