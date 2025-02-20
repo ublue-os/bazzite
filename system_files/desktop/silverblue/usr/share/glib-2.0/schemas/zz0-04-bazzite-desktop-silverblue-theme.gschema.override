@@ -91,7 +91,11 @@ duration=250
 [org.gnome.shell.extensions.tilingshell]
 inner-gaps=8
 outer-gaps=8
-enable-blur-snap-assistant=true
+enable-blur-snap-assistant=false
 enable-blur-selected-tilepreview=true
 top-edge-maximize=true
 quarter-tiling-threshold=25
+enable-tiling-system-windows-suggestions=true
+enable-screen-edges-windows-suggestions=true
+show-indicator=false
+enable-snap-assist=false
