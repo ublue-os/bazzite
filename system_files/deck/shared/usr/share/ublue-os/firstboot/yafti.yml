@@ -42,6 +42,28 @@ screens:
           default: false
           packages:
           - Install Resilio Sync: ujust install-resilio-sync
+        Media Apps:
+          description: Streaming services that can be added to Steam
+          default: false
+          packages:
+          - YouTube: ujust get-webapp "YouTube"
+          - Netflix: ujust get-webapp "Netflix"
+          - Amazon Luna: ujust get-webapp "Amazon Luna"
+          - Disney Plus: ujust get-webapp "Disney Plus"
+          - Amazon Prime Video: ujust get-webapp "Amazon Prime Video"
+          - Apple TV: ujust get-webapp "Apple TV"
+          - Curiosity Stream: ujust get-webapp "Curiosity Stream"
+          - GeForce Now: ujust get-webapp "GeForce Now"
+          - HBO Max: ujust get-webapp "HBO Max"
+          - Hulu: ujust get-webapp "Hulu"
+          - Paramount Plus: ujust get-webapp "Paramount Plus"
+          - Peacock: ujust get-webapp "Peacock"
+          - Sling TV: ujust get-webapp "Sling TV"
+          - Spotify: ujust get-webapp "Spotify"
+          - Vimeo: ujust get-webapp "Vimeo"
+          - Xbox Cloud Gaming: ujust get-webapp "Xbox Cloud Gaming"
+          - YouTube Music: ujust get-webapp "YouTube Music"
+          - YouTube TV: ujust get-webapp "YouTube TV"
   configure-bazzite:
     source: yafti.screen.package
     values:
