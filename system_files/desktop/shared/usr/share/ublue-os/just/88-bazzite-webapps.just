@@ -1,5 +1,6 @@
 # vim: set ft=make :
 
+# Add various streaming service as electron webapps to Steam
 get-webapp service="":
     #!/usr/bin/bash
     # Load ugum for interactive menu
@@ -35,8 +36,8 @@ get-webapp service="":
     # Create scripts directory
     mkdir -p "$HOME/Applications/streaming_scripts"
     # Display menu
-    if [ -n "{{service}}" ]; then
-        CHOICE="{{service}}"
+    if [ -n "{{ service }}" ]; then
+        CHOICE="{{ service }}"
     else
         echo -e "\n${bold}Select a streaming service to add to Steam:${normal}"
         CHOICE=$(ugum choose \
