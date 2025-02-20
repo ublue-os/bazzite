@@ -1,6 +1,6 @@
 # vim: set ft=make :
 
-# Add various streaming service as electron webapps to Steam
+# Add various streaming services as Electron web apps to Steam
 get-webapp service="":
     #!/usr/bin/bash
     # Load ugum for interactive menu
