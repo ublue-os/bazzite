@@ -1,6 +1,6 @@
 # vim: set ft=make :
 
-get-webapp:
+get-webapp service="":
     #!/usr/bin/bash
     # Load ugum for interactive menu
     source /usr/lib/ujust/ujust.sh
@@ -35,29 +35,33 @@ get-webapp:
     # Create scripts directory
     mkdir -p "$HOME/Applications/streaming_scripts"
     # Display menu
-    echo -e "\n${bold}Select a streaming service to add to Steam:${normal}"
-    CHOICE=$(ugum choose \
-        "YouTube" \
-        "Netflix" \
-        "Amazon Luna" \
-        "Disney Plus" \
-        "Crunchyroll" \
-        "Amazon Prime Video" \
-        "Apple TV" \
-        "Curiosity Stream" \
-        "GeForce Now" \
-        "HBO Max" \
-        "Hulu" \
-        "Paramount Plus" \
-        "Peacock" \
-        "Plex" \
-        "Sling TV" \
-        "Spotify" \
-        "Vimeo" \
-        "Xbox Cloud Gaming" \
-        "YouTube Music" \
-        "YouTube TV" \
-        "Exit")
+    if [ -n "{{service}}" ]; then
+        CHOICE="{{service}}"
+    else
+        echo -e "\n${bold}Select a streaming service to add to Steam:${normal}"
+        CHOICE=$(ugum choose \
+            "YouTube" \
+            "Netflix" \
+            "Amazon Luna" \
+            "Disney Plus" \
+            "Crunchyroll" \
+            "Amazon Prime Video" \
+            "Apple TV" \
+            "Curiosity Stream" \
+            "GeForce Now" \
+            "HBO Max" \
+            "Hulu" \
+            "Paramount Plus" \
+            "Peacock" \
+            "Plex" \
+            "Sling TV" \
+            "Spotify" \
+            "Vimeo" \
+            "Xbox Cloud Gaming" \
+            "YouTube Music" \
+            "YouTube TV" \
+            "Exit")
+    fi
     # Exit early if user chose to exit
     [ "$CHOICE" = "Exit" ] && { echo "Exiting..."; exit 0; }
     # Create webapp script and add to Steam
