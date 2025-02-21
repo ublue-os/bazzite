@@ -107,7 +107,7 @@ Imagem feita pra ser utilizada como alternativa ao SteamOS no Steam Deck, e para
 - Inicializa diretamente no Game mode, assim como o SteamOS.
 - **`duperemove` automático reduz bastante o tamanho da compatdata.**
 - **A última versão do Mesa cria caches de shader menores e não requer seu uso pra prevenir travamentos.**
-- **Inicia mesmo se o disco estiver  cheio.**
+- **Inicia mesmo se o disco estiver cheio.**
 - **Suporte a todos os idiomas suportados pelo Fedora.**
 - **Usa o desktop em Wayland com [suporte a Steam Input](https://github.com/Supreeeme/extest).**
 - Inclui o [HHD](https://github.com/hhd-dev/hhd) para suporte expandido de entrada pra portáteis que não são da Valve.
