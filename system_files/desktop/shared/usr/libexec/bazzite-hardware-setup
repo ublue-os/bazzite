@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=54
+HWS_VER=55
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -159,6 +159,13 @@ if [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:" =~ 
       echo "Adding GTTSize for ONEXPLAYER (32GB RAM)"
       NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=16256")
     fi
+  fi
+fi
+
+if [[ ":ROG Flow Z13 GZ302EA_GZ302EA_03156148D:" =~ "$:SYS_ID:" ]]; then
+  if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
+    echo "ROG Flow Z13 2025, fixing display artifacts"
+    NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
   fi
 fi
 
