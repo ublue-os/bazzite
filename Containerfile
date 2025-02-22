@@ -316,6 +316,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         rocm-opencl \
         rocm-clinfo \
         rocm-smi && \
+    dnf5 -y install \
+        $(curl https://api.github.com/repos/KyleGospo/cicpoffs/releases/latest | jq -r '.assets[] | select(.name| test(".*rpm$")).browser_download_url') && \
     mkdir -p /etc/xdg/autostart && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
