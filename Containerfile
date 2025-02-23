@@ -82,6 +82,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         kylegospo/bazzite \
         kylegospo/bazzite-multilib \
         ublue-os/staging \
+        ublue-os/packages \
         kylegospo/LatencyFleX \
         kylegospo/obs-vkcapture \
         kylegospo/wallpaper-engine-kde-plugin \
