@@ -66,6 +66,7 @@ jobs:
         target_image_flavor: [main, asus, surface]
         target_nvidia_flavor: [nvidia, nvidia-open]
         fedora_version: [41]
+        developer_flavor: ["", de]
         include:
           - fedora_version: 41
             is_latest_version: true
@@ -90,11 +91,19 @@ jobs:
     steps:
       - name: Define env.CONTAINER_TARGET
         run: |
+          CONTAINER_TARGET=""
           if [[ "${{ matrix.base_name }}" == "bazzite-deck-nvidia" ]]; then
-              echo "CONTAINER_TARGET=bazzite-nvidia" >> $GITHUB_ENV
+              CONTAINER_TARGET="bazzite-nvidia"
           else
-              echo "CONTAINER_TARGET=${{ matrix.base_name }}" >> $GITHUB_ENV
+              CONTAINER_TARGET="${{ matrix.base_name }}"
           fi
+          
+          # Is a Developer eXperience image? Is not if value is empty
+          if [[ -n "${{ matrix.developer_flavor }}" ]]; then
+            CONTAINER_TARGET="${CONTAINER_TARGET}-dx"
+          fi
+          
+          echo "CONTAINER_TARGET=${CONTAINER_TARGET}" >> $GITHUB_ENV
 
       - name: Define env.IMAGE_FLAVOR
         run: |
@@ -112,24 +121,23 @@ jobs:
         run: |
           DESKTOP=""
           if [[ "${{ matrix.base_image_name }}" == "silverblue" ]]; then
-              DESKTOP="-gnome"
+              DESKTOP="gnome"
           fi
 
           if [[ "${{ matrix.base_name }}" == "bazzite-deck" ]]; then
               if [[ "${{ matrix.target_image_flavor }}" == "asus" ]]; then
-                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-ally', '${DESKTOP}') }}" >> $GITHUB_ENV
+                  IMAGE_NAME="bazzite-ally${DESKTOP:+-$DESKTOP}"
               else
-                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-deck', '${DESKTOP}') }}" >> $GITHUB_ENV
+                  IMAGE_NAME="bazzite-deck${DESKTOP:+-$DESKTOP}"
               fi
           elif [[ "${{ matrix.base_name }}" == "bazzite-deck-nvidia" ]]; then
-              echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-deck-nvidia', '${DESKTOP}') }}" >> $GITHUB_ENV
+              IMAGE_NAME="bazzite-deck-nvidia${DESKTOP:+-$DESKTOP}"
           else
-              if [[ "${{ env.IMAGE_FLAVOR }}" == "main" ]]; then
-                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite', '${DESKTOP}') }}" >> $GITHUB_ENV
-              else
-                  echo "IMAGE_NAME=${{ format('{0}{1}-{2}', 'bazzite', '${DESKTOP}', env.IMAGE_FLAVOR) }}" >> $GITHUB_ENV
-              fi
+              IMAGE_NAME="bazzite${DESKTOP:+-$DESKTOP}${IMAGE_FLAVOR:+-$IMAGE_FLAVOR}"
           fi
+          dx="${{ matrix.developer_flavor }}"
+          IMAGE_NAME="$IMAGE_NAME${dx:+-dx}"
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
       - name: Define env.NVIDIA_BASE
         run: |
