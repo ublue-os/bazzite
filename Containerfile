@@ -441,6 +441,11 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
             gnome-shell && \
         dnf5 -y swap \
         --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+            gsettings-desktop-schemas gsettings-desktop-schemas && \
+        dnf5 versionlock add \
+            gsettings-desktop-schemas && \
+        dnf5 -y swap \
+        --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
             mutter mutter && \
         dnf5 versionlock add \
             mutter && \
