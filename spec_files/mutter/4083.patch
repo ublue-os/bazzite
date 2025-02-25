@@ -1,0 +1,41 @@
+From 60098ed2c7a578202e34b9b19540b0b3da120368 Mon Sep 17 00:00:00 2001
+From: Daniel van Vugt <daniel.van.vugt@canonical.com>
+Date: Tue, 15 Oct 2024 17:43:28 +0800
+Subject: [PATCH] seat-impl: Initialize the impl reverse pointer slightly
+ earlier
+
+While it is eventually initialized in `meta_seat_native_constructed`,
+that's now too late since 5fc60eac9d. Because the input thread is
+started inside `meta_seat_impl_new`, which calls `init_libinput`, which
+now creates virtual devices expecting `MetaSeatNative.impl` is already
+populated.
+
+Since we're midway through the initialization at this point, all pointers
+are known so just add a redundant assignment slightly earlier to ensure
+`meta_seat_native_create_virtual_device` doesn't lead to a segfault when
+it uses the `MetaSeatNative.impl` field.
+
+Fixes: 5fc60eac9d ("seat-impl: Keep track of virtual input devices too")
+Closes: https://gitlab.gnome.org/GNOME/mutter/-/issues/3708
+Related: https://bugs.launchpad.net/bugs/2081728
+---
+ src/backends/native/meta-seat-impl.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/backends/native/meta-seat-impl.c b/src/backends/native/meta-seat-impl.c
+index c1e46a0502f..5baf2fb177d 100644
+--- a/src/backends/native/meta-seat-impl.c
++++ b/src/backends/native/meta-seat-impl.c
+@@ -3002,6 +3002,9 @@ meta_seat_impl_initable_init (GInitable     *initable,
+ {
+   MetaSeatImpl *seat_impl = META_SEAT_IMPL (initable);
+ 
++  g_assert (seat_impl->seat_native);
++  seat_impl->seat_native->impl = seat_impl;
++
+   seat_impl->input_context = g_main_context_new ();
+   seat_impl->main_context = g_main_context_ref_thread_default ();
+   g_assert (seat_impl->main_context == g_main_context_default ());
+-- 
+GitLab
+
