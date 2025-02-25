@@ -85,9 +85,9 @@ fi
 
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
   if [[ "$SYS_ID" == "Laptop 16 ("* ]]; then
-    if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
-      echo "Framework 16 Laptop detected, fixing display artifacts"
-      NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
+    if [[ $KARGS =~ "amdgpu.dcdebugmask" ]]; then
+      echo "Framework 16 Laptop detected, removing kernel argument for display artifacts. No longer needed on 6.13"
+      NEEDED_KARGS+=("--delete-if-present==amdgpu.dcdebugmask=0x410")
     fi
   fi
   if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
