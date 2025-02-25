@@ -37,7 +37,7 @@ Patch:         0001-gschema-Enable-fractional-scaling-experimental-featu.patch
 Patch:         4083.patch
 
 # https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4296
-Patch:         4296.patch
+#Patch:         4296.patch
 
 BuildRequires: pkgconfig(gobject-introspection-1.0) >= 1.41.0
 BuildRequires: pkgconfig(sm)
