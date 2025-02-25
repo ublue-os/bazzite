@@ -1,0 +1,111 @@
+From 4243df4b38a695f6152e2065d72af243dff21de2 Mon Sep 17 00:00:00 2001
+From: Dallas Strouse <dastrouses@gmail.com>
+Date: Thu, 20 Feb 2025 21:09:50 -0600
+Subject: [PATCH] schemas: Custom acceleration profile
+
+Adds a custom acceleration profile, with step and speeds keys.
+
+See the keys themselves for more information, or libinput documentation:
+https://wayland.freedesktop.org/libinput/doc/latest/pointer-acceleration.html#the-custom-acceleration-profile
+---
+ headers/gdesktop-enums.h                      |  3 +-
+ ...g.gnome.desktop.peripherals.gschema.xml.in | 48 +++++++++++++++++--
+ 2 files changed, 46 insertions(+), 5 deletions(-)
+
+diff --git a/headers/gdesktop-enums.h b/headers/gdesktop-enums.h
+index fa5cbfa..5b95a71 100644
+--- a/headers/gdesktop-enums.h
++++ b/headers/gdesktop-enums.h
+@@ -220,7 +220,8 @@ typedef enum
+ {
+   G_DESKTOP_POINTER_ACCEL_PROFILE_DEFAULT,
+   G_DESKTOP_POINTER_ACCEL_PROFILE_FLAT,
+-  G_DESKTOP_POINTER_ACCEL_PROFILE_ADAPTIVE
++  G_DESKTOP_POINTER_ACCEL_PROFILE_ADAPTIVE,
++  G_DESKTOP_POINTER_ACCEL_PROFILE_CUSTOM
+ } GDesktopPointerAccelProfile;
+ 
+ typedef enum
+diff --git a/schemas/org.gnome.desktop.peripherals.gschema.xml.in b/schemas/org.gnome.desktop.peripherals.gschema.xml.in
+index f9f892c..d98e20b 100644
+--- a/schemas/org.gnome.desktop.peripherals.gschema.xml.in
++++ b/schemas/org.gnome.desktop.peripherals.gschema.xml.in
+@@ -58,7 +58,17 @@
+     <key name="accel-profile" enum="org.gnome.desktop.GDesktopPointerAccelProfile">
+       <default>'default'</default>
+       <summary>Acceleration profile</summary>
+-      <description>Acceleration profile used for connected touchpads. The acceleration profile can be set to either default (“default”) which uses the default acceleration profile for each device, flat (“flat”), which accelerates by a device specific constant factor derived from the configured pointer speed, or adaptive (“adaptive”) which adapts the acceleration depending on the mouse movement. If a touchpad doesn’t support the configured profile, “default” will be used.</description>
++      <description>Acceleration profile used for connected touchpads. The acceleration profile can be set to either default (“default”) which uses the default acceleration profile for each device, flat (“flat”), which accelerates by a device specific constant factor derived from the configured pointer speed, adaptive (“adaptive”) which adapts the acceleration depending on the mouse movement, or custom ("custom") which will use a custom acceleration profile. If a touchpad doesn’t support the configured profile, “default” will be used.</description>
++    </key>
++    <key name="custom-accel-profile-step" type="d">
++      <default>1</default>
++      <summary>Step increment to use for the custom acceleration profile.</summary>
++      <description>Starting from 0, for each entry in custom-accel-profile-speeds, the speed in software will be set for that step in physical device units. A lower step means higher accuracy in the curve, but also that acceleration will pick up more quickly when used with small speed increments.</description>
++    </key>
++    <key name="custom-accel-profile-speeds" type="ad">
++      <default>[0.0, 1.0]</default>
++      <summary>Speeds to use for each step of the system.</summary>
++      <description>The first element in this array will be the speed for the cursor in software, linearly incrementing to the next speed, which corresponds to the next step in physical device units, repeating until the final element, at which point the graph continues on the line between the last two points.</description>
+     </key>
+     <key name="speed" type="d">
+       <default>0</default>
+@@ -129,7 +139,17 @@
+     <key name="accel-profile" enum="org.gnome.desktop.GDesktopPointerAccelProfile">
+       <default>'default'</default>
+       <summary>Acceleration profile</summary>
+-      <description>Acceleration profile used for connected mice. The acceleration profile can be set to either default (“default”) which uses the default acceleration profile for each device, flat (“flat”), which accelerates by a device specific constant factor derived from the configured pointer speed, or adaptive (“adaptive”) which adapts the acceleration depending on the mouse movement. If a mouse doesn’t support the configured profile, “default” will be used.</description>
++      <description>Acceleration profile used for connected mice. The acceleration profile can be set to either default (“default”) which uses the default acceleration profile for each device, flat (“flat”), which accelerates by a device specific constant factor derived from the configured pointer speed, adaptive (“adaptive”) which adapts the acceleration depending on the mouse movement, or custom ("custom") which will use a custom acceleration profile. If a mouse doesn’t support the configured profile, “default” will be used.</description>
++    </key>
++    <key name="custom-accel-profile-step" type="d">
++      <default>1</default>
++      <summary>Step increment to use for the custom acceleration profile.</summary>
++      <description>Starting from 0, for each entry in custom-accel-profile-speeds, the speed in software will be set for that step in physical device units. A lower step means higher accuracy in the curve, but also that acceleration will pick up more quickly when used with small speed increments.</description>
++    </key>
++    <key name="custom-accel-profile-speeds" type="ad">
++      <default>[0.0, 1.0]</default>
++      <summary>Speeds to use for each step of the system.</summary>
++      <description>The first element in this array will be the speed for the cursor in software, linearly incrementing to the next speed, which corresponds to the next step in physical device units, repeating until the final element, at which point the graph continues on the line between the last two points.</description>
+     </key>
+     <key name="middle-click-emulation" type="b">
+       <default>false</default>
+@@ -259,7 +279,17 @@
+     <key name="accel-profile" enum="org.gnome.desktop.GDesktopPointerAccelProfile">
+       <default>'default'</default>
+       <summary>Acceleration profile</summary>
+-      <description>Acceleration profile used for the trackball. The acceleration profile can be set to either default (“default”) which uses the default acceleration profile, flat (“flat”), which accelerates by a device specific constant factor derived from the configured speed, or adaptive (“adaptive”) which adapts the acceleration depending on the movement. If the trackball doesn’t support the configured profile, “default” will be used.</description>
++      <description>Acceleration profile used for the trackball. The acceleration profile can be set to either default (“default”) which uses the default acceleration profile, flat (“flat”), which accelerates by a device specific constant factor derived from the configured speed, adaptive (“adaptive”) which adapts the acceleration depending on the movement, or custom ("custom") which will use a custom acceleration profile. If the trackball doesn’t support the configured profile, “default” will be used.</description>
++    </key>
++    <key name="custom-accel-profile-step" type="d">
++      <default>1</default>
++      <summary>Step increment to use for the custom acceleration profile.</summary>
++      <description>Starting from 0, for each entry in custom-accel-profile-speeds, the speed in software will be set for that step in physical device units. A lower step means higher accuracy in the curve, but also that acceleration will pick up more quickly when used with small speed increments.</description>
++    </key>
++    <key name="custom-accel-profile-speeds" type="ad">
++      <default>[0.0, 1.0]</default>
++      <summary>Speeds to use for each step of the system.</summary>
++      <description>The first element in this array will be the speed for the cursor in software, linearly incrementing to the next speed, which corresponds to the next step in physical device units, repeating until the final element, at which point the graph continues on the line between the last two points.</description>
+     </key>
+     <key name="middle-click-emulation" type="b">
+       <default>false</default>
+@@ -277,7 +307,17 @@
+     <key name="accel-profile" enum="org.gnome.desktop.GDesktopPointerAccelProfile">
+       <default>'default'</default>
+       <summary>Acceleration profile</summary>
+-      <description>Acceleration profile used for the pointing stick. The acceleration profile can be set to either default (“default”) which uses the default acceleration profile, flat (“flat”), which accelerates by a device specific constant factor derived from the configured speed, or adaptive (“adaptive”) which adapts the acceleration depending on the movement. If the pointing stick doesn’t support the configured profile, “default” will be used.</description>
++      <description>Acceleration profile used for the pointing stick. The acceleration profile can be set to either default (“default”) which uses the default acceleration profile, flat (“flat”), which accelerates by a device specific constant factor derived from the configured speed, adaptive (“adaptive”) which adapts the acceleration depending on the movement, or custom ("custom") which will use a custom acceleration profile. If the pointing stick doesn’t support the configured profile, “default” will be used.</description>
++    </key>
++    <key name="custom-accel-profile-step" type="d">
++      <default>1</default>
++      <summary>Step increment to use for the custom acceleration profile.</summary>
++      <description>Starting from 0, for each entry in custom-accel-profile-speeds, the speed in software will be set for that step in physical device units. A lower step means higher accuracy in the curve, but also that acceleration will pick up more quickly when used with small speed increments.</description>
++    </key>
++    <key name="custom-accel-profile-speeds" type="ad">
++      <default>[0.0, 1.0]</default>
++      <summary>Speeds to use for each step of the system.</summary>
++      <description>The first element in this array will be the speed for the cursor in software, linearly incrementing to the next speed, which corresponds to the next step in physical device units, repeating until the final element, at which point the graph continues on the line between the last two points.</description>
+     </key>
+     <key name="scroll-method" enum="org.gnome.desktop.GDesktopPointingStickScrollMethod">
+       <default>'default'</default>
+-- 
+GitLab
+
