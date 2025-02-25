@@ -439,6 +439,11 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
             gnome-shell gnome-shell && \
         dnf5 versionlock add \
             gnome-shell && \
+        dnf5 -y swap \
+        --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+            mutter mutter && \
+        dnf5 versionlock add \
+            mutter && \
         dnf5 -y install \
             nautilus-gsconnect \
             steamdeck-backgrounds \
