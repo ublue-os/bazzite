@@ -33,9 +33,6 @@ Patch:         0001-place-Always-center-initial-setup-fedora-welcome.patch
 # https://pagure.io/fedora-workstation/issue/357
 Patch:         0001-gschema-Enable-fractional-scaling-experimental-featu.patch
 
-# https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1441
-Patch:         1441.patch
-
 # https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4083
 Patch:         4083.patch
 
