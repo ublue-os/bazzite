@@ -16,6 +16,7 @@ Requires:       boost
 BuildRequires:  make
 BuildRequires:  faust
 BuildRequires:  faust-tools
+BuildRequires:  faust-devel
 BuildRequires:  boost-devel
 BuildRequires:  lv2-devel
 BuildRequires:  g++
