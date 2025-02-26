@@ -91,6 +91,7 @@ toggle-bt-mic:
 # enable or disable wake-on-lan functionality
 toggle-wol:
     #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
     INTERFACE=$(ip link show | awk '/state UP/ {print $2}' | tr -d ':' | grep -E '^(en|eth)')
     if [[ -z "$INTERFACE" ]]; then
       echo -e "${bold}No active Ethernet interface found.${normal}"
@@ -100,7 +101,7 @@ toggle-wol:
     fi
     CONFIG_FILE="/etc/udev/rules.d/81-wol.rules"
     SERVICE_FILE="/etc/systemd/system/force-wol.service"
-    WOL_STATUS=$(sudo ethtool $INTERFACE | grep "Wake-on" | awk '{print $2}')
+    WOL_STATUS=$(sudo ethtool $INTERFACE | grep -P "^\s+Wake-on" | awk '{print $2}')
     CURRENT_STATE="Disabled"
     if [[ "$WOL_STATUS" == "g" ]]; then
       CURRENT_STATE="Enabled"
@@ -127,10 +128,10 @@ toggle-wol:
         sudo rm -f "$CONFIG_FILE"
       fi
       echo "Wake-on-LAN has been ${red}${bold}disabled${normal}."
-    elif [[ "${OPTION,,}" == "Create-Service" ]]; then
+    elif [[ "${OPTION,,}" == "create-service" ]]; then
       echo "You chose to create a systemd service for enabling WOL at boot."
       echo "Requesting root privileges..."
-      sudo bash -c "cat > $SERVICE_FILE" <<EOF
+      sudo bash -c "cat > $SERVICE_FILE <<EOF
     [Unit]
     Description=Force Enable Wake-on-LAN
     After=network-online.target
@@ -139,9 +140,9 @@ toggle-wol:
     ExecStart=/sbin/ethtool -s $INTERFACE wol g
     [Install]
     WantedBy=network-online.target
-    EOF
+    EOF"
       sudo systemctl daemon-reload
-      sudo systemctl enable force-wol.service
+      sudo systemctl enable --now force-wol.service
       echo "Systemd service created and enabled at boot: ${green}${bold}force-wol.service${normal}"
     else
       echo "No changes were made."
