@@ -101,7 +101,7 @@ toggle-wol:
     fi
     CONFIG_FILE="/etc/udev/rules.d/81-wol.rules"
     SERVICE_FILE="/etc/systemd/system/force-wol.service"
-    WOL_STATUS=$(sudo ethtool $INTERFACE | grep "Wake-on" | awk '{print $2}')
+    WOL_STATUS=$(sudo ethtool $INTERFACE | grep -P "^\s+Wake-on" | awk '{print $2}')
     CURRENT_STATE="Disabled"
     if [[ "$WOL_STATUS" == "g" ]]; then
       CURRENT_STATE="Enabled"
