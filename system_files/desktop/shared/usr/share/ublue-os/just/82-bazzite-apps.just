@@ -195,6 +195,10 @@ install-docker:
       gum confirm "There is a file in ~/.local/bin/docker. Do you wish to override it?" || exit 0
     }
     ln -sf $(which docker) ~/.local/bin/docker
+    [[ -e /usr/local/bin/docker ]] && {
+      gum confirm "There is a file in /usr/local/bin/docker. Do you wish to override it?" || exit 0
+    }
+    sudo ln -sf $(which docker) /usr/local/bin/docker
     # Enable podman sockets
     systemctl --user enable --now podman.socket
     sudo systemctl enable --now podman.socket
