@@ -203,12 +203,10 @@ install-docker:
     systemctl --user enable --now podman.socket
     sudo systemctl enable --now podman.socket
     # Add podman sockets to docker contexts
-    docker context use $(
-      docker context create podman --docker "host=unix://$(podman system info  --format '{{{{.Host.RemoteSocket.Path}}')"
-    )
-    sudo docker context use $(
-      sudo docker context create podman-rootful --docker "host=unix://$(sudo podman system info  --format '{{{{.Host.RemoteSocket.Path}}')"
-    )
+    ctx=$(docker context create podman --docker "host=unix://$(podman system info  --format '{{{{.Host.RemoteSocket.Path}}')") && \
+      docker context use $ctx && unset -v ctx || true
+    ctx=$(sudo docker context create podman-rootful --docker "host=unix://$(sudo podman system info  --format '{{{{.Host.RemoteSocket.Path}}')") && \
+      sudo docker context use $ctx && unset -v ctx
 
 # Create fedora distrobox if it doesn't exist
 [private]
