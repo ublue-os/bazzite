@@ -1,3 +1,3 @@
 #!/usr/bin/bash
-echo -e "ERROR: If you are reading this you have made a mistake and need to \e]8;;https://docs.bazzite.gg/Installing_and_Managing_Software/\aread our documentation\e]8;;\a\n\e]8;;https://docs.bazzite.gg/Installing_and_Managing_Software/\ahttps://docs.bazzite.gg/Installing_and_Managing_Software/\e]8;;\a\n"
+echo -e "ERROR: Fedora Atomic images utilize rpm-ostree instead (and is discouraged to use).\nPlease, \e]8;;https://docs.bazzite.gg/Installing_and_Managing_Software/\aread our documentation\e]8;;\a\n\e]8;;https://docs.bazzite.gg/Installing_and_Managing_Software/\ahttps://docs.bazzite.gg/Installing_and_Managing_Software/\e]8;;\a\n"
 exit 1
