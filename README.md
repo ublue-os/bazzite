@@ -50,7 +50,6 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [xone](https://github.com/medusalix/xone) driver for Xbox controllers.
 - Full support for [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Includes Valve's KDE themes from SteamOS.
-- Features optional Valve-inspired GTK3/4 themes matching Vapor and VGUI2 from SteamOS. Install [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience) to make use of them.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
 - [Patched Switcheroo-Control](https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/) fixing default-broken iGPU/dGPU switching.
 - Support for [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Only on KDE)</sup></sub>
