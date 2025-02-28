@@ -206,7 +206,7 @@ install-docker:
     ctx=$(docker context create podman --docker "host=unix://$(podman system info  --format '{{{{.Host.RemoteSocket.Path}}')") && \
       docker context use $ctx && unset -v ctx || true
     ctx=$(sudo docker context create podman-rootful --docker "host=unix://$(sudo podman system info  --format '{{{{.Host.RemoteSocket.Path}}')") && \
-      sudo docker context use $ctx && unset -v ctx
+      sudo docker context use $ctx && unset -v ctx || true
 
 # Create fedora distrobox if it doesn't exist
 [private]
