@@ -185,7 +185,12 @@ install-docker:
         exit 1
     }
     mkdir -p ~/.local/bin
-    brew install docker docker-buildx docker-compose
+    brew install docker
+    # Handle plugins installation separately to handle file config collision
+    brew install docker-buildx docker-compose || {
+      brew link --overwrite docker-buildx docker-compose
+    }
+
     [[ -e ~/.local/bin/docker ]] && {
       gum confirm "There is a file in ~/.local/bin/docker. Do you wish to override it?" || exit 0
     }
