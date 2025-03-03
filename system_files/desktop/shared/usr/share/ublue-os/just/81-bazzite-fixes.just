@@ -137,7 +137,7 @@ toggle-wol:
     After=network-online.target
     [Service]
     Type=oneshot
-    ExecStart=/sbin/ethtool -s $INTERFACE wol g
+    ExecStart=/usr/bin/bash -c 'INTERFACE=\$(ip link show | awk \"/state UP/ {print \$2}\" | tr -d \':\' | grep -E \'^(en|eth)\'); /sbin/ethtool -s \$INTERFACE wol g'
     [Install]
     WantedBy=network-online.target
     EOF"
