@@ -513,7 +513,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     cd $(mktemp -d) && \
-    curl -fsSLo - https://github.com/Zeglius/media-automount-generator/archive/refs/tags/v0.2.3.tar.gz | \
+    curl -fsSLo - https://github.com/Zeglius/media-automount-generator/archive/refs/tags/v0.2.6.tar.gz | \
         tar -xz --strip-components=1 && \
     ./install.sh && \
     cd / && \
