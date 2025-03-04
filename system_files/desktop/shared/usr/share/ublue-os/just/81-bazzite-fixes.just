@@ -107,9 +107,9 @@ toggle-wol:
       CURRENT_STATE="Enabled"
     fi
     echo "Wake-on-LAN is currently: ${bold}${CURRENT_STATE}${normal}"
-    echo "Enable, Disable Wake-on-LAN, Create Service, or Exit without saving?"
-    echo "Note: Create service if Enabling is not persistent."
-    OPTION=$(ugum choose Enable Disable Create-Service Exit)
+    echo "Enable, Disable Wake-on-LAN, Enable-At-Boot, or Exit without saving?"
+    echo "Note: Enable-At-Boot will make WOL persist across reboots"
+    OPTION=$(ugum choose Enable Disable Enable-At-Boot Exit)
     if [[ "${OPTION,,}" == "enable" ]]; then
       echo "You chose to enable Wake-on-LAN."
       echo "Requesting root privileges..."
@@ -132,7 +132,7 @@ toggle-wol:
         echo "Force-WOL service has been disabled."
       fi
       echo "Wake-on-LAN has been ${red}${bold}disabled${normal}."
-    elif [[ "${OPTION,,}" == "create-service" ]]; then
+    elif [[ "${OPTION,,}" == "enable-at-boot" ]]; then
       echo "You chose to enable wake on LAN at boot."
       echo "Requesting root privileges..."
       if [ -f "/etc/systemd/system/force-wol.service" ]; then
