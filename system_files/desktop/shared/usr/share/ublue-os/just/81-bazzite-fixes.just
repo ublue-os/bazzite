@@ -107,9 +107,9 @@ toggle-wol:
       CURRENT_STATE="Enabled"
     fi
     echo "Wake-on-LAN is currently: ${bold}${CURRENT_STATE}${normal}"
-    echo "Enable, Disable Wake-on-LAN, Enable-At-Boot, or Exit without saving?"
-    echo "Note: Enable-At-Boot will make WOL persist across reboots"
-    OPTION=$(ugum choose Enable Disable Enable-At-Boot Exit)
+    echo "Enable, Disable Wake-on-LAN, Force-Enable, or Exit without saving?"
+    echo "Note: Force-Enable will make WOL persist across reboots"
+    OPTION=$(ugum choose Enable Disable Force-Enable Exit)
     if [[ "${OPTION,,}" == "enable" ]]; then
       echo "You chose to enable Wake-on-LAN."
       echo "Requesting root privileges..."
@@ -132,8 +132,8 @@ toggle-wol:
         echo "Force-WOL service has been disabled."
       fi
       echo "Wake-on-LAN has been ${red}${bold}disabled${normal}."
-    elif [[ "${OPTION,,}" == "enable-at-boot" ]]; then
-      echo "You chose to enable wake on LAN at boot."
+    elif [[ "${OPTION,,}" == "force-enable" ]]; then
+      echo "You chose to force-enable wake on LAN."
       echo "Requesting root privileges..."
       if [ -f "/etc/systemd/system/force-wol.service" ]; then
         echo "Removing deprecated service file"
@@ -141,7 +141,7 @@ toggle-wol:
       fi
       sudo systemctl daemon-reload
       sudo systemctl enable --now force-wol.service
-      echo "Wake on LAN enabled at boot: ${green}${bold}force-wol.service${normal}"
+      echo "Wake on LAN force-enabled: ${green}${bold}force-wol.service${normal}"
     else
       echo "No changes were made."
     fi
