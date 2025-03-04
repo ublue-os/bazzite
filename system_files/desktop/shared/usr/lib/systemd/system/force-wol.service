@@ -1,0 +1,10 @@
+[Unit]
+Description=Force Enable Wake-on-LAN
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/force-wol
+
+[Install]
+WantedBy=network-online.target
