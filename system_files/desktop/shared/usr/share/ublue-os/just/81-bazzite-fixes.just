@@ -127,23 +127,17 @@ toggle-wol:
         echo "Removing udev rule to disable persistence..."
         sudo rm -f "$CONFIG_FILE"
       fi
+      if systemctl is-enabled force-wol.service &>/dev/null; then
+        sudo systemctl disable force-wol.service
+        echo "Force-WOL service has been disabled."
+      fi
       echo "Wake-on-LAN has been ${red}${bold}disabled${normal}."
     elif [[ "${OPTION,,}" == "create-service" ]]; then
-      echo "You chose to create a systemd service for enabling WOL at boot."
+      echo "You chose to enable wake on LAN at boot."
       echo "Requesting root privileges..."
-      sudo bash -c "cat > $SERVICE_FILE <<EOF
-    [Unit]
-    Description=Force Enable Wake-on-LAN
-    After=network-online.target
-    [Service]
-    Type=oneshot
-    ExecStart=/usr/bin/bash -c 'INTERFACE=\$(ip link show | awk \"/state UP/ {print \$2}\" | tr -d \':\' | grep -E \'^(en|eth)\'); /sbin/ethtool -s \$INTERFACE wol g'
-    [Install]
-    WantedBy=network-online.target
-    EOF"
       sudo systemctl daemon-reload
       sudo systemctl enable --now force-wol.service
-      echo "Systemd service created and enabled at boot: ${green}${bold}force-wol.service${normal}"
+      echo "Wake on LAN enabled at boot: ${green}${bold}force-wol.service${normal}"
     else
       echo "No changes were made."
     fi
