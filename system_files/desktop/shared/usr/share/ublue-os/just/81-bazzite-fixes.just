@@ -135,6 +135,10 @@ toggle-wol:
     elif [[ "${OPTION,,}" == "create-service" ]]; then
       echo "You chose to enable wake on LAN at boot."
       echo "Requesting root privileges..."
+      if [ -f "/etc/systemd/system/force-wol.service" ]; then
+        echo "Removing deprecated service file"
+        sudo rm "/etc/systemd/system/force-wol.service"
+      fi
       sudo systemctl daemon-reload
       sudo systemctl enable --now force-wol.service
       echo "Wake on LAN enabled at boot: ${green}${bold}force-wol.service${normal}"
