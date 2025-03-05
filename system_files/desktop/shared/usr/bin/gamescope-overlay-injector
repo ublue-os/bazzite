@@ -20,11 +20,11 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-# If the user has supplied ANY args to gamescope, do not load the GOI config file
-if [ -z "$gamescope_opts" ]; then
-  # Load the GOI config file if it exists then apply the default args
-  if [ -f "$GOI_CONFFILE" ]; then
-    source $GOI_CONFFILE
+# Load the GOI config file if it exists then apply the default args
+if [ -f "$GOI_CONFFILE" ]; then
+  source $GOI_CONFFILE
+  # If the user has supplied ANY args to gamescope, do not load the GOI_DEFAULT_ARGS
+  if [ -z "$gamescope_opts" ]; then
     gamescope_opts=$GOI_DEFAULT_ARGS
   fi
 fi
