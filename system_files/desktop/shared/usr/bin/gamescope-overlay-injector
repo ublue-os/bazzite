@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Special thanks to @coolavery for the initial script for this
+# https://github.com/ValveSoftware/gamescope/issues/835#issuecomment-2496383830
+gsout="/tmp/overlay-injector.gamescope.out"
+gamescope_opts=""
+command=""
+LD_PRELOAD_REAL=$LD_PRELOAD
+GOI_CONFFILE="$HOME/.config/gamescope-overlay-injector/goi.conf"
+
+# Split the args at -- into gamescope_opts and command
+while [[ $# -gt 0 ]]; do
+  if [ "$1" == "--" ]; then
+    shift
+    # Add LD_PRELOAD from gamescope to %command% then exit loop
+    command="env LD_PRELOAD=\"$LD_PRELOAD_REAL\" $*"
+    break
+  fi
+  # Add arg to gamescope_opts and go to next loop
+  gamescope_opts+=" $1"
+  shift
+done
+
+# If the user has supplied ANY args to gamescope, do not load the GOI config file
+if [ -z "$gamescope_opts" ]; then
+  # Load the GOI config file if it exists then apply the default args
+  if [ -f "$GOI_CONFFILE" ]; then
+    source $GOI_CONFFILE
+    gamescope_opts=$GOI_DEFAULT_ARGS
+  fi
+fi
+
+# Unset LD_PRELOAD for gamescope (as it breaks the overlay) then start gamescope
+env -u LD_PRELOAD
+env gamescope $gamescope_opts &>"$gsout" &
+gs_pid=$!
+
+# Check the output file to locate the Xwayland display that gamescope launches
+while read -r line; do
+  display=$(echo "$line" | sed -nE 's/^.*Starting Xwayland on :([0-9]+).*$/\1/p')
+  if [ -n "$display" ]; then
+    break
+  fi
+done < <(tail -f "$gsout")
+# Cleanup the file as we do not need it anymore
+rm $gsout
+
+# Launch %command% on the gamescope xwayland display until it finishes
+DISPLAY=":$display" eval "$command"
+
+# Kill gamescope when done
+kill "$gs_pid"
