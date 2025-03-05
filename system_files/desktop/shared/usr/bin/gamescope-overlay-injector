@@ -36,6 +36,8 @@ gs_pid=$!
 
 # Check the output file to locate the Xwayland display that gamescope launches
 while read -r line; do
+  # Print the output line
+  echo "$line"
   display=$(echo "$line" | sed -nE 's/^.*Starting Xwayland on :([0-9]+).*$/\1/p')
   if [ -n "$display" ]; then
     break
