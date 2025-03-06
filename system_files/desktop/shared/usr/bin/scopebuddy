@@ -13,9 +13,9 @@ command=""
 LD_PRELOAD_REAL=$LD_PRELOAD
 
 # Configure SCB config
-SCB_CONFFILE=${SCB_CONFFILE:-"scb.conf"}
+SCB_CONF=${SCB_CONF:-"scb.conf"}
 SCB_CONFIGDIR="$HOME/.config/scopebuddy"
-SCB_CONFIG="$SCB_CONFIGDIR/$SCB_CONFFILE"
+SCB_CONFIGFILE="$SCB_CONFIGDIR/$SCB_CONF"
 
 # Set default gamescope binary
 GAMESCOPE_BIN=${GAMESCOPE_BIN:-gamescope}
@@ -39,8 +39,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Load the GOI config file if it exists then apply the default args
-if [ -f "$SCB_CONFIG" ]; then
-    source $SCB_CONFIG
+if [ -f "$SCB_CONFIGFILE" ]; then
+    source $SCB_CONFIGFILE
     # If the user has supplied ANY args to gamescope, do not load the GOI_DEFAULT_ARGS
     if [ -z "$gamescope_opts" ]; then
         gamescope_opts=$SCB_DEFAULT_ARGS
@@ -50,7 +50,7 @@ else
     if [ ! -d "$SCB_CONFIGDIR" ]; then
         mkdir "$SCB_CONFIGDIR"
     fi
-    cat << 'EOF' > "$SCB_CONFIG"
+    cat << 'EOF' > "$SCB_CONFIGFILE"
 # This is the config file that let's you assign defaults for gamescope when using the scopebuddy script
 # lines starting with # are ignored
 # 
