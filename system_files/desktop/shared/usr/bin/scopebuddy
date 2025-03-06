@@ -25,7 +25,12 @@ while [[ $# -gt 0 ]]; do
     if [ "${1:-}" == "--" ]; then
         shift
         # Add LD_PRELOAD from gamescope to %command% then exit loop
-        command="env LD_PRELOAD=\"$LD_PRELOAD_REAL\" $*"
+        command="env LD_PRELOAD=\"$LD_PRELOAD_REAL\""
+        # Add remaining args as individually double quoted args (should stop double quoting being a requirement)
+        while [[ $# -gt 0 ]]; do
+            command+=" \"$1\""
+            shift
+        done
         break
     fi
     # Add arg to gamescope_opts and go to next loop
