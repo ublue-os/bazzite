@@ -11,8 +11,11 @@ gsout="/tmp/scopebuddy.out"
 gamescope_opts=""
 command=""
 LD_PRELOAD_REAL=$LD_PRELOAD
+
+# Configure SCB config
+SCB_CONFFILE=${SCB_CONFFILE:-"scb.conf"}
 SCB_CONFIGDIR="$HOME/.config/scopebuddy"
-SCB_CONFFILE="$SCB_CONFIGDIR/scb.conf"
+SCB_CONFIG="$SCB_CONFIGDIR/$SCB_CONFFILE"
 
 # Set default gamescope binary
 GAMESCOPE_BIN=${GAMESCOPE_BIN:-gamescope}
@@ -31,16 +34,18 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Load the GOI config file if it exists then apply the default args
-if [ -f "$SCB_CONFFILE" ]; then
-    source $SCB_CONFFILE
+if [ -f "$SCB_CONFIG" ]; then
+    source $SCB_CONFIG
     # If the user has supplied ANY args to gamescope, do not load the GOI_DEFAULT_ARGS
     if [ -z "$gamescope_opts" ]; then
         gamescope_opts=$SCB_DEFAULT_ARGS
     fi
 else
     # Make the default config file
-    mkdir "$SCB_CONFIGDIR"
-    cat << 'EOF' > "$SCB_CONFFILE"
+    if [ ! -d "$SCB_CONFIGDIR" ]; then
+        mkdir "$SCB_CONFIGDIR"
+    fi
+    cat << 'EOF' > "$SCB_CONFIG"
 # This is the config file that let's you assign defaults for gamescope when using the scopebuddy script
 # lines starting with # are ignored
 # 
@@ -60,6 +65,7 @@ trap 'rm -vf $gsout' EXIT
 
 # Unset LD_PRELOAD for gamescope (as it breaks the overlay) then start gamescope
 # shellcheck disable=SC2086
+echo "Launching: env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts"
 env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts > >(tee -ia "$gsout" >&2) 2>&1 &
 gs_pid=$!
 
