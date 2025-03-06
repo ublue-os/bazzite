@@ -14,6 +14,9 @@ LD_PRELOAD_REAL=$LD_PRELOAD
 SCB_CONFIGDIR="$HOME/.config/scopebuddy"
 SCB_CONFFILE="$SCB_CONFIGDIR/scb.conf"
 
+# Set default gamescope binary
+GAMESCOPE_BIN=${GAMESCOPE_BIN:-gamescope}
+
 # Split the args at -- into gamescope_opts and command
 while [[ $# -gt 0 ]]; do
     if [ "${1:-}" == "--" ]; then
@@ -56,7 +59,7 @@ trap 'rm -vf $gsout' EXIT
 
 # Unset LD_PRELOAD for gamescope (as it breaks the overlay) then start gamescope
 # shellcheck disable=SC2086
-env -u LD_PRELOAD gamescope $gamescope_opts > >(tee -ia "$gsout" >&2) 2>&1 &
+env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts > >(tee -ia "$gsout" >&2) 2>&1 &
 gs_pid=$!
 
 # Check the output file to locate the Xwayland display that gamescope launches
