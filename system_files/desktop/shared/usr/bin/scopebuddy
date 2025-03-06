@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 # Special thanks to @coolavery for the initial script for this
 # https://github.com/ValveSoftware/gamescope/issues/835#issuecomment-2496383830
+#
+# Purpose of this script:
+# * Allow launching gamescope with a default set of environment variables and gamescope args set by the user
+#   "~/.config/scopebuddy/scb.conf" will be created with examples after first run
+# * Serve as a temporary workaround for fixing the steam overlay when using nested gamescope on desktop steam until fixed upstream
 set -eo pipefail
-gsout="/tmp/overlay-injector.gamescope.out"
+gsout="/tmp/scopebuddy.out"
 gamescope_opts=""
 command=""
 LD_PRELOAD_REAL=$LD_PRELOAD
-GOI_CONFFILE="$HOME/.config/gamescope-overlay-injector/goi.conf"
+SCB_CONFIGDIR="$HOME/.config/scopebuddy"
+SCB_CONFFILE="$SCB_CONFIGDIR/scb.conf"
 
 # Split the args at -- into gamescope_opts and command
 while [[ $# -gt 0 ]]; do
@@ -22,12 +28,26 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Load the GOI config file if it exists then apply the default args
-if [ -f "$GOI_CONFFILE" ]; then
-    source $GOI_CONFFILE
+if [ -f "$SCB_CONFFILE" ]; then
+    source $SCB_CONFFILE
     # If the user has supplied ANY args to gamescope, do not load the GOI_DEFAULT_ARGS
     if [ -z "$gamescope_opts" ]; then
-        gamescope_opts=$GOI_DEFAULT_ARGS
+        gamescope_opts=$SCB_DEFAULT_ARGS
     fi
+else
+    # Make the default config file
+    mkdir "$SCB_CONFIGDIR"
+    cat << 'EOF' > "$SCB_CONFFILE"
+# This is the config file that let's you assign defaults for gamescope
+# lines starting with # are ignored
+# 
+# Example for always exporting a specific environment variable for gamescope
+#export XKB_DEFAULT_LAYOUT=no
+#
+# Example for providing default gamescope arguments through scopebuddy if no arguments are given to the scopebuddy script
+# To not use this default set of arguments, just launch goi with any gamescope option like "-r 60" and this variable will be ignored
+#$SCB_DEFAULT_ARGS="--mangoapp -f -w 2560 -h 1440 -W 2560 -H 1440 -r 180 --force-grab-cursor --hdr-enabled -e"
+EOF
 fi
 
 # Create named pipe (fifo) to read from gamescope stderr
