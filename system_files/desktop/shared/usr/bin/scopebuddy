@@ -55,7 +55,7 @@ else
 #
 # Example for providing default gamescope arguments through scopebuddy if no arguments are given to the scopebuddy script, this does not need to be exported.
 # To not use this default set of arguments, just launch scb with any gamescope option like "-r 60" before the '-- "%command%"' and this variable will be ignored
-#$SCB_DEFAULT_ARGS="--mangoapp -f -w 2560 -h 1440 -W 2560 -H 1440 -r 180 --force-grab-cursor --hdr-enabled -e"
+#SCB_DEFAULT_ARGS="--mangoapp -f -w 2560 -h 1440 -W 2560 -H 1440 -r 180 --force-grab-cursor --hdr-enabled -e"
 EOF
 fi
 
