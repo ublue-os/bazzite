@@ -41,14 +41,15 @@ else
     # Make the default config file
     mkdir "$SCB_CONFIGDIR"
     cat << 'EOF' > "$SCB_CONFFILE"
-# This is the config file that let's you assign defaults for gamescope
+# This is the config file that let's you assign defaults for gamescope when using the scopebuddy script
 # lines starting with # are ignored
 # 
-# Example for always exporting a specific environment variable for gamescope
+# Example for always exporting specific environment variables for gamescope
 #export XKB_DEFAULT_LAYOUT=no
+#export MANGOHUD_CONFIG=read_cfg,preset=2
 #
-# Example for providing default gamescope arguments through scopebuddy if no arguments are given to the scopebuddy script
-# To not use this default set of arguments, just launch goi with any gamescope option like "-r 60" and this variable will be ignored
+# Example for providing default gamescope arguments through scopebuddy if no arguments are given to the scopebuddy script, this does not need to be exported.
+# To not use this default set of arguments, just launch scb with any gamescope option like "-r 60" before the '-- "%command%"' and this variable will be ignored
 #$SCB_DEFAULT_ARGS="--mangoapp -f -w 2560 -h 1440 -W 2560 -H 1440 -r 180 --force-grab-cursor --hdr-enabled -e"
 EOF
 fi
