@@ -81,9 +81,9 @@ if [ -f "$SCB_CONFIGFILE" ]; then
         source "$SCB_CONFIGDIR/AppID/${STEAM_APPID}.conf"
     fi
 
-    # If the user has supplied ANY args to gamescope, do not load the SCB_DEFAULT_ARGS
+    # If the user has supplied ANY args to gamescope, do not load the SCB_GAMESCOPE_ARGS
     if [ -z "$gamescope_opts" ]; then
-        gamescope_opts=$SCB_DEFAULT_ARGS
+        gamescope_opts=$SCB_GAMESCOPE_ARGS
     fi
 else
     # Make the default config file
@@ -102,7 +102,7 @@ else
 #
 # Example for providing default gamescope arguments through scopebuddy if no arguments are given to the scopebuddy script, this does not need to be exported.
 # To not use this default set of arguments, just launch scb with SCB_NOSCOPE=1 or just add any gamescope argument before the '-- %command%' then this variable will be ignored
-#SCB_DEFAULT_ARGS="--mangoapp -f -w 2560 -h 1440 -W 2560 -H 1440 -r 180 --force-grab-cursor --hdr-enabled -e"
+#SCB_GAMESCOPE_ARGS="--mangoapp -f -w 2560 -h 1440 -W 2560 -H 1440 -r 180 --force-grab-cursor --hdr-enabled -e"
 #
 ###
 ## FOR ADVANCED USE INSIDE AN APPID CONFIG
