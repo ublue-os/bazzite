@@ -147,7 +147,26 @@ jobs:
           additional_templates: '/github/workspace/installer/lorax_templates/remove_root_password_prompt.tmpl /github/workspace/installer/lorax_templates/set_default_user.tmpl'
           repos: '/github/workspace/bazzite.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo'
 
-      - name: Move ISOs to Upload Directory
+      - name: Generate a .torrent file
+        id: create-torrent
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mktorrent
+          TORRENT_DIR=${{ github.workspace }}/torrent
+          mkdir ${TORRENT_DIR}
+          container_uri=docker://${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}
+          installer_version=$(skopeo inspect $container_uri | jq -r '.Labels["org.opencontainers.image.version"]')
+          cd ${TORRENT_DIR} && mktorrent \
+            --announce="udp://fosstorrents.com:6969/announce" \
+            --announce="http://fosstorrents.com:6969/announce" \
+            --comment="Installer for "${{ steps.build.outputs.iso_name }}" version "$installer_version \
+            --piece-length=20 \
+            --web-seed=https://download.bazzite.gg/${{ steps.build.outputs.iso_name }} \
+            ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}
+          echo "torrent-dir=${TORRENT_DIR}" >> $GITHUB_OUTPUT
+
+      - name: Move ISO, checksum and torrent to Upload Directory
         id: upload-directory
         shell: bash
         run: |
@@ -155,9 +174,10 @@ jobs:
           mkdir ${ISO_UPLOAD_DIR}
           mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }} ${ISO_UPLOAD_DIR}
           mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM ${ISO_UPLOAD_DIR}
+          mv ${{ steps.create-torrent.outputs.torrent-dir }}/${{ steps.build.outputs.iso_name }}.torrent ${ISO_UPLOAD_DIR}
           echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
 
-      - name: Upload ISOs and Checksum to Job Artifacts
+      - name: Upload ISO, checksum and torrent to Job Artifacts
         if: github.ref_name == 'testing'
         #if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
@@ -169,7 +189,7 @@ jobs:
           compression-level: 0
           overwrite: true
 
-      - name: Upload ISOs and Checksum to R2
+      - name: Upload ISO, checksum and torrent to R2
         if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
         shell: bash
         env:
