@@ -24,13 +24,17 @@ GAMESCOPE_BIN=${GAMESCOPE_BIN:-gamescope}
 while [[ $# -gt 0 ]]; do
     if [ "${1:-}" == "--" ]; then
         shift
-        # Add LD_PRELOAD from gamescope to %command% then exit loop
+        # Add LD_PRELOAD from gamescope to %command%
         command="env LD_PRELOAD=\"$LD_PRELOAD_REAL\""
         # Add remaining args as individually double quoted args (should stop double quoting being a requirement)
         while [[ $# -gt 0 ]]; do
+            # command variable has to be formated like this otherwise the %command% will not launch
+            # shellcheck disable=SC2089
             command+=" \"$1\""
             shift
         done
+        
+        # Exit loop when done
         break
     fi
     # Add arg to gamescope_opts and go to next loop
@@ -39,17 +43,19 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Get the STEAM_APPID from %command%
-STEAM_APPID=$(echo $command | perl -pe 's/.+"AppId=(\d+)"\s.+/\1/')
+STEAM_APPID=$(echo "$command" | perl -pe 's/.+"AppId=(\d+)"\s.+/\1/')
 
 # Load the GOI config file if it exists then apply the default args
 if [ -f "$SCB_CONFIGFILE" ]; then
     # If a config exists for this games STEAM_APPID and SCB_CONF is set to scb.conf (default)
     if [ -f "$SCB_CONFIGDIR/AppID/${STEAM_APPID}.conf" ] && [ "$SCB_CONF" == "scb.conf" ]; then
         # Source the STEAM_APPID specific config
-        source $SCB_CONFIGDIR/AppID/${STEAM_APPID}.conf
+        # shellcheck disable=SC1090
+        source "$SCB_CONFIGDIR/AppID/${STEAM_APPID}.conf"
     else
         # Source the config from SCB_CONF
-        source $SCB_CONFIGFILE
+        # shellcheck disable=SC1090
+        source "$SCB_CONFIGFILE"
     fi
     # If the user has supplied ANY args to gamescope, do not load the GOI_DEFAULT_ARGS
     if [ -z "$gamescope_opts" ]; then
@@ -83,6 +89,7 @@ trap 'rm -vf $gsout' EXIT
 # Unset LD_PRELOAD for gamescope (as it breaks the overlay) then start gamescope
 # shellcheck disable=SC2086
 echo "Launching: env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts"
+# shellcheck disable=SC2086
 env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts > >(tee -ia "$gsout" >&2) 2>&1 &
 gs_pid=$!
 
