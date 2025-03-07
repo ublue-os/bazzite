@@ -264,26 +264,33 @@ jobs:
           echo "Generated the following:"
           cat $GITHUB_OUTPUT
 
+      # Generate a file with all the build-args passed to buildah
+      - name: Prepare build args file
+        run: |
+          cat <<'EOF' >>build_args.txt
+          IMAGE_NAME=${{ env.IMAGE_NAME }}
+          IMAGE_FLAVOR=${{ env.IMAGE_FLAVOR }}
+          NVIDIA_FLAVOR=${{ matrix.target_nvidia_flavor }}
+          NVIDIA_BASE=${{ env.NVIDIA_BASE }}
+          IMAGE_VENDOR=${{ github.repository_owner }}
+          BASE_IMAGE_NAME=${{ matrix.base_image_name }}
+          BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }}
+          FEDORA_VERSION=${{ matrix.fedora_version }}
+          KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
+          KERNEL_VERSION=${{ matrix.kernel_version }}
+          IMAGE_BRANCH=${{ github.ref_name }}
+          SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }}
+          VERSION_TAG=${{ steps.generate-version.outputs.tag }}
+          VERSION_PRETTY="${{ steps.generate-version.outputs.pretty }}"
+          EOF
+
       # Build image using buildah and save it to raw-img
       - name: Build Image
         id: build_image
         run: |
           sudo buildah build \
             --target ${{ env.CONTAINER_TARGET }} \
-            --build-arg IMAGE_NAME=${{ env.IMAGE_NAME }} \
-            --build-arg IMAGE_FLAVOR=${{ env.IMAGE_FLAVOR }} \
-            --build-arg NVIDIA_FLAVOR=${{ matrix.target_nvidia_flavor }} \
-            --build-arg NVIDIA_BASE=${{ env.NVIDIA_BASE }} \
-            --build-arg IMAGE_VENDOR=${{ github.repository_owner }} \
-            --build-arg BASE_IMAGE_NAME=${{ matrix.base_image_name }} \
-            --build-arg BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }} \
-            --build-arg FEDORA_VERSION=${{ matrix.fedora_version }} \
-            --build-arg KERNEL_FLAVOR=${{ matrix.kernel_flavor }} \
-            --build-arg KERNEL_VERSION=${{ matrix.kernel_version }} \
-            --build-arg IMAGE_BRANCH=${{ github.ref_name }} \
-            --build-arg SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }} \
-            --build-arg VERSION_TAG=${{ steps.generate-version.outputs.tag }} \
-            --build-arg VERSION_PRETTY="${{ steps.generate-version.outputs.pretty }}" \
+            --build-arg-file build_args.txt \
             --tag raw-img .
       
       - name: Remove auxiliary images
