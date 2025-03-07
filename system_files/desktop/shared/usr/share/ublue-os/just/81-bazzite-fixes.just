@@ -107,9 +107,9 @@ toggle-wol:
       CURRENT_STATE="Enabled"
     fi
     echo "Wake-on-LAN is currently: ${bold}${CURRENT_STATE}${normal}"
-    echo "Enable, Disable Wake-on-LAN, Create Service, or Exit without saving?"
-    echo "Note: Create service if Enabling is not persistent."
-    OPTION=$(ugum choose Enable Disable Create-Service Exit)
+    echo "Enable, Disable Wake-on-LAN, Force-Enable, or Exit without saving?"
+    echo "Note: Force-Enable will make WOL persist across reboots"
+    OPTION=$(ugum choose Enable Disable Force-Enable Exit)
     if [[ "${OPTION,,}" == "enable" ]]; then
       echo "You chose to enable Wake-on-LAN."
       echo "Requesting root privileges..."
@@ -127,23 +127,21 @@ toggle-wol:
         echo "Removing udev rule to disable persistence..."
         sudo rm -f "$CONFIG_FILE"
       fi
+      if systemctl is-enabled force-wol.service &>/dev/null; then
+        sudo systemctl disable force-wol.service
+        echo "Force-WOL service has been disabled."
+      fi
       echo "Wake-on-LAN has been ${red}${bold}disabled${normal}."
-    elif [[ "${OPTION,,}" == "create-service" ]]; then
-      echo "You chose to create a systemd service for enabling WOL at boot."
+    elif [[ "${OPTION,,}" == "force-enable" ]]; then
+      echo "You chose to force-enable wake on LAN."
       echo "Requesting root privileges..."
-      sudo bash -c "cat > $SERVICE_FILE <<EOF
-    [Unit]
-    Description=Force Enable Wake-on-LAN
-    After=network-online.target
-    [Service]
-    Type=oneshot
-    ExecStart=/sbin/ethtool -s $INTERFACE wol g
-    [Install]
-    WantedBy=network-online.target
-    EOF"
+      if [ -f "/etc/systemd/system/force-wol.service" ]; then
+        echo "Removing deprecated service file"
+        sudo rm "/etc/systemd/system/force-wol.service"
+      fi
       sudo systemctl daemon-reload
       sudo systemctl enable --now force-wol.service
-      echo "Systemd service created and enabled at boot: ${green}${bold}force-wol.service${normal}"
+      echo "Wake on LAN force-enabled: ${green}${bold}force-wol.service${normal}"
     else
       echo "No changes were made."
     fi
