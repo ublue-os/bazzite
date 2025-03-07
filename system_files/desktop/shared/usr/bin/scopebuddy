@@ -98,7 +98,7 @@ else
 # 
 # Example for always exporting specific environment variables for gamescope
 #export XKB_DEFAULT_LAYOUT=no
-#export MANGOHUD_CONFIG=read_cfg,preset=2
+#export MANGOHUD_CONFIG=preset=2
 #
 # Example for providing default gamescope arguments through scopebuddy if no arguments are given to the scopebuddy script, this does not need to be exported.
 # To not use this default set of arguments, just launch scb with SCB_NOSCOPE=1 or just add any gamescope argument before the '-- %command%' then this variable will be ignored
