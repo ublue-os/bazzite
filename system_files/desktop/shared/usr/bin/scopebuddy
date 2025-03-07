@@ -45,7 +45,7 @@ done
 # Get the STEAM_APPID from %command%
 STEAM_APPID=$(echo "$command" | perl -pe 's/.+"AppId=(\d+)"\s.+/\1/')
 
-# Load the GOI config file if it exists then apply the default args
+# Load the SCB config file if it exists then apply the default args
 if [ -f "$SCB_CONFIGFILE" ]; then
     # If a config exists for this games STEAM_APPID and SCB_CONF is set to scb.conf (default)
     if [ -f "$SCB_CONFIGDIR/AppID/${STEAM_APPID}.conf" ] && [ "$SCB_CONF" == "scb.conf" ]; then
@@ -57,7 +57,7 @@ if [ -f "$SCB_CONFIGFILE" ]; then
         # shellcheck disable=SC1090
         source "$SCB_CONFIGFILE"
     fi
-    # If the user has supplied ANY args to gamescope, do not load the GOI_DEFAULT_ARGS
+    # If the user has supplied ANY args to gamescope, do not load the SCB_DEFAULT_ARGS
     if [ -z "$gamescope_opts" ]; then
         gamescope_opts=$SCB_DEFAULT_ARGS
     fi
