@@ -10,7 +10,6 @@ set -eo pipefail
 gsout="/tmp/scopebuddy.out"
 gamescope_opts=""
 command=""
-LD_PRELOAD_REAL=$LD_PRELOAD
 
 # Set SCB to use gamescope by default
 SCB_NOSCOPE=${SCB_NOSCOPE:-0}
@@ -22,10 +21,25 @@ GAMESCOPE_BIN=${GAMESCOPE_BIN:-gamescope}
 SCB_CONF=${SCB_CONF:-"scb.conf"}
 SCB_CONFIGDIR="$HOME/.config/scopebuddy"
 
+# By default we will never be in gamemode
+SCB_GAMEMODE=0
+
 # If SCB_NOSCOPE is set to 1 and we are not using a custom SCB_CONF
 if [ "$SCB_NOSCOPE" -eq 1 ] && [ "$SCB_CONF" == "scb.conf" ]; then
     # Use noscope.conf for default values
     SCB_CONF="noscope.conf"
+fi
+
+# If steam is potentially running inside gamescope
+# shellcheck disable=SC2009
+if ps ax | grep -P "steam.sh -.+ -steampal" | grep -v grep || pgrep -f "gamescope-session" ; then
+    # If steam is potentially running in gamemode
+    # Force SCB_NOSCOPE to 1
+    SCB_NOSCOPE=1
+    # Set SCB_GAMEMODE to 1
+    SCB_GAMEMODE=1
+    # Use gamemode.conf for default values
+    SCB_CONF="gamemode.conf"
 fi
 
 # Finalize SCB_CONFIGFILE
@@ -35,8 +49,6 @@ SCB_CONFIGFILE="$SCB_CONFIGDIR/$SCB_CONF"
 while [[ $# -gt 0 ]]; do
     if [ "${1:-}" == "--" ]; then
         shift
-        # Add LD_PRELOAD from gamescope to %command%
-        command="env LD_PRELOAD=\"$LD_PRELOAD_REAL\""
         # Add remaining args as individually double quoted args (should stop double quoting being a requirement)
         while [[ $# -gt 0 ]]; do
             # command variable has to be formated like this otherwise the %command% will not launch
@@ -75,8 +87,8 @@ if [ -f "$SCB_CONFIGFILE" ]; then
     fi
 else
     # Make the default config file
-    if [ ! -d "$SCB_CONFIGDIR" ]; then
-        mkdir "$SCB_CONFIGDIR"
+    if [ ! -d "$SCB_CONFIGDIR/AppID" ]; then
+        mkdir -p "$SCB_CONFIGDIR/AppID"
     fi
     cat << 'EOF' > "$SCB_CONFIGFILE"
 # This is the config file that let's you assign defaults for gamescope when using the scopebuddy script
@@ -91,14 +103,28 @@ else
 # Example for providing default gamescope arguments through scopebuddy if no arguments are given to the scopebuddy script, this does not need to be exported.
 # To not use this default set of arguments, just launch scb with SCB_NOSCOPE=1 or just add any gamescope argument before the '-- %command%' then this variable will be ignored
 #SCB_DEFAULT_ARGS="--mangoapp -f -w 2560 -h 1440 -W 2560 -H 1440 -r 180 --force-grab-cursor --hdr-enabled -e"
+#
+# This whole file is treated as a bash script by scopebuddy, this means you can use bash to do simple tasks before the game runs
+# or you can check which mode scopebuddy is running in and apply settings accordingly, below are some handy variables for scripting.
+# $SCB_NOSCOPE will be set to 1 if we are running in no gamescope mode
+# $SCB_GAMEMODE will be set to 1 if we are running inside steam gamemode (which means SCB_NOSCOPE will also be set to 1 due to nested gamescope not working in gamemode)
+# $command will contain everything steam expanded %command% into
 EOF
 fi
 
 # If SCB_NOSCOPE is set to 1
 if [ "$SCB_NOSCOPE" -eq 1 ]; then
+    # If we are potentially in gamemode
+    if [ "$SCB_GAMEMODE" -eq 1 ]; then
+        # Force MANGOHUD=0
+        export MANGOHUD=0
+    fi
     # Launch %command% without gamescope
     eval "$command"
 else
+    # Transfer LD_PRELOAD before we unset it
+    LD_PRELOAD_REAL=$LD_PRELOAD
+
     # Create named pipe (fifo) to read from gamescope stderr
     rm -f $gsout && mkfifo $gsout
     trap 'rm -vf $gsout' EXIT
@@ -118,8 +144,8 @@ else
         fi
     done <"$gsout"
 
-    # Launch %command% on the gamescope xwayland display until it finishes
-    (DISPLAY=":$display" eval "$command")
+    # Add back LD_PRELOAD and launch %command% on the gamescope xwayland display until it finishes
+    (DISPLAY=":$display" eval "env LD_PRELOAD=\"$LD_PRELOAD_REAL\" $command")
 
     # Kill gamescope when done
     kill "$gs_pid"
