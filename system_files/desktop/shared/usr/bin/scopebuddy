@@ -12,16 +12,24 @@ gamescope_opts=""
 command=""
 LD_PRELOAD_REAL=$LD_PRELOAD
 
-# Configure SCB config
-SCB_CONF=${SCB_CONF:-"scb.conf"}
-SCB_CONFIGDIR="$HOME/.config/scopebuddy"
-SCB_CONFIGFILE="$SCB_CONFIGDIR/$SCB_CONF"
+# Set SCB to use gamescope by default
+SCB_NOSCOPE=${SCB_NOSCOPE:-0}
 
 # Set default gamescope binary
 GAMESCOPE_BIN=${GAMESCOPE_BIN:-gamescope}
 
-# Set SCB to use gamescope by default
-SCB_NOSCOPE=${SCB_NOSCOPE:-0}
+# Configure SCB config
+SCB_CONF=${SCB_CONF:-"scb.conf"}
+SCB_CONFIGDIR="$HOME/.config/scopebuddy"
+
+# If SCB_NOSCOPE is set to 1 and we are not using a custom SCB_CONF
+if [ "$SCB_NOSCOPE" -eq 1 ] && [ "$SCB_CONF" == "scb.conf" ]; then
+    # Use noscope.conf for default values
+    SCB_CONF="noscope.conf"
+fi
+
+# Finalize SCB_CONFIGFILE
+SCB_CONFIGFILE="$SCB_CONFIGDIR/$SCB_CONF"
 
 # Split the args at -- into gamescope_opts and command
 while [[ $# -gt 0 ]]; do
@@ -50,16 +58,17 @@ STEAM_APPID=$(echo "$command" | perl -pe 's/.+"AppId=(\d+)"\s.+/\1/')
 
 # Load the SCB config file if it exists then apply the default args
 if [ -f "$SCB_CONFIGFILE" ]; then
+    # Source the config from SCB_CONF
+    # shellcheck disable=SC1090
+    source "$SCB_CONFIGFILE"
+
     # If a config exists for this games STEAM_APPID and SCB_CONF is set to scb.conf (default)
-    if [ -f "$SCB_CONFIGDIR/AppID/${STEAM_APPID}.conf" ] && [ "$SCB_CONF" == "scb.conf" ]; then
-        # Source the STEAM_APPID specific config
+    if [ -f "$SCB_CONFIGDIR/AppID/${STEAM_APPID}.conf" ]; then
+        # Source the STEAM_APPID specific config, overriding any similar values set by SCB_CONF
         # shellcheck disable=SC1090
         source "$SCB_CONFIGDIR/AppID/${STEAM_APPID}.conf"
-    else
-        # Source the config from SCB_CONF
-        # shellcheck disable=SC1090
-        source "$SCB_CONFIGFILE"
     fi
+
     # If the user has supplied ANY args to gamescope, do not load the SCB_DEFAULT_ARGS
     if [ -z "$gamescope_opts" ]; then
         gamescope_opts=$SCB_DEFAULT_ARGS
@@ -72,20 +81,22 @@ else
     cat << 'EOF' > "$SCB_CONFIGFILE"
 # This is the config file that let's you assign defaults for gamescope when using the scopebuddy script
 # lines starting with # are ignored
-# Conf files matching the games Steam AppID stored in ~/.conf/scopebuddy/AppID/ will be used instead of
-# ~/.config/scopebuddy/scb.conf if you do not define a custom conf file with the SCB_CONF=someotherfile.conf env var in the launch options.
+# Conf files matching the games Steam AppID stored in ~/.conf/scopebuddy/AppID/ will be sourced after
+# ~/.config/scopebuddy/scb.conf or whichever file you specify with SCB_CONF=someotherfile.conf env var in the launch options.
 # 
 # Example for always exporting specific environment variables for gamescope
 #export XKB_DEFAULT_LAYOUT=no
 #export MANGOHUD_CONFIG=read_cfg,preset=2
 #
 # Example for providing default gamescope arguments through scopebuddy if no arguments are given to the scopebuddy script, this does not need to be exported.
-# To not use this default set of arguments, just launch scb with any gamescope option like "-r 60" before the '-- %command%' and this variable will be ignored
+# To not use this default set of arguments, just launch scb with SCB_NOSCOPE=1 or just add any gamescope argument before the '-- %command%' then this variable will be ignored
 #SCB_DEFAULT_ARGS="--mangoapp -f -w 2560 -h 1440 -W 2560 -H 1440 -r 180 --force-grab-cursor --hdr-enabled -e"
 EOF
 fi
 
+# If SCB_NOSCOPE is set to 1
 if [ "$SCB_NOSCOPE" -eq 1 ]; then
+    # Launch %command% without gamescope
     eval "$command"
 else
     # Create named pipe (fifo) to read from gamescope stderr
