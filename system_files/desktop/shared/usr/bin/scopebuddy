@@ -38,9 +38,19 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
+# Get the STEAM_APPID from %command%
+STEAM_APPID=$(echo $command | perl -pe 's/.+"AppId=(\d+)"\s.+/\1/')
+
 # Load the GOI config file if it exists then apply the default args
 if [ -f "$SCB_CONFIGFILE" ]; then
-    source $SCB_CONFIGFILE
+    # If a config exists for this games STEAM_APPID and SCB_CONF is set to scb.conf (default)
+    if [ -f "$SCB_CONFIGDIR/AppID/${STEAM_APPID}.conf" ] && [ "$SCB_CONF" == "scb.conf" ]; then
+        # Source the STEAM_APPID specific config
+        source $SCB_CONFIGDIR/AppID/${STEAM_APPID}.conf
+    else
+        # Source the config from SCB_CONF
+        source $SCB_CONFIGFILE
+    fi
     # If the user has supplied ANY args to gamescope, do not load the GOI_DEFAULT_ARGS
     if [ -z "$gamescope_opts" ]; then
         gamescope_opts=$SCB_DEFAULT_ARGS
@@ -53,6 +63,8 @@ else
     cat << 'EOF' > "$SCB_CONFIGFILE"
 # This is the config file that let's you assign defaults for gamescope when using the scopebuddy script
 # lines starting with # are ignored
+# Conf files matching the games Steam AppID stored in ~/.conf/scopebuddy/AppID/ will be used instead of
+# ~/.config/scopebuddy/scb.conf if you do not define a custom conf file with the SCB_CONF=someotherfile.conf env var in the launch options.
 # 
 # Example for always exporting specific environment variables for gamescope
 #export XKB_DEFAULT_LAYOUT=no
