@@ -128,28 +128,7 @@ else
     # Transfer LD_PRELOAD before we unset it
     LD_PRELOAD_REAL=$LD_PRELOAD
 
-    # Create named pipe (fifo) to read from gamescope stderr
-    rm -f $gsout && mkfifo $gsout
-    trap 'rm -vf $gsout' EXIT
-
-    # Unset LD_PRELOAD for gamescope (as it breaks the overlay) then start gamescope
-    # shellcheck disable=SC2086
-    echo "Launching: env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts"
-    # shellcheck disable=SC2086
-    env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts > >(tee -ia "$gsout" >&2) 2>&1 &
-    gs_pid=$!
-
-    # Check the output file to locate the Xwayland display that gamescope launches
-    while read -r line; do
-        display=$(sed -nE 's/^.*Starting Xwayland on :([0-9]+).*$/\1/p' <<<"$line")
-        if [ -n "$display" ]; then
-            break
-        fi
-    done <"$gsout"
-
-    # Add back LD_PRELOAD and launch %command% on the gamescope xwayland display until it finishes
-    (DISPLAY=":$display" eval "env LD_PRELOAD=\"$LD_PRELOAD_REAL\" $command")
-
-    # Kill gamescope when done
-    kill "$gs_pid"
+    # Unset LD_PRELOAD for gamescope (as it breaks the overlay) then start gamescope with LD_PRELOAD set for %command% instead
+    echo "Launching: env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts -- env LD_PRELOAD=$LD_PRELOAD_REAL $command"
+    eval "env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts -- env LD_PRELOAD=$LD_PRELOAD_REAL $command"
 fi
