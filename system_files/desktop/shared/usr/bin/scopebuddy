@@ -20,6 +20,9 @@ SCB_CONFIGFILE="$SCB_CONFIGDIR/$SCB_CONF"
 # Set default gamescope binary
 GAMESCOPE_BIN=${GAMESCOPE_BIN:-gamescope}
 
+# Set SCB to use gamescope by default
+SCB_NOSCOPE=${SCB_NOSCOPE:-0}
+
 # Split the args at -- into gamescope_opts and command
 while [[ $# -gt 0 ]]; do
     if [ "${1:-}" == "--" ]; then
@@ -82,27 +85,31 @@ else
 EOF
 fi
 
-# Create named pipe (fifo) to read from gamescope stderr
-rm -f $gsout && mkfifo $gsout
-trap 'rm -vf $gsout' EXIT
+if [ "$SCB_NOSCOPE" -eq 1 ]; then
+    eval "$command"
+else
+    # Create named pipe (fifo) to read from gamescope stderr
+    rm -f $gsout && mkfifo $gsout
+    trap 'rm -vf $gsout' EXIT
 
-# Unset LD_PRELOAD for gamescope (as it breaks the overlay) then start gamescope
-# shellcheck disable=SC2086
-echo "Launching: env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts"
-# shellcheck disable=SC2086
-env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts > >(tee -ia "$gsout" >&2) 2>&1 &
-gs_pid=$!
+    # Unset LD_PRELOAD for gamescope (as it breaks the overlay) then start gamescope
+    # shellcheck disable=SC2086
+    echo "Launching: env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts"
+    # shellcheck disable=SC2086
+    env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts > >(tee -ia "$gsout" >&2) 2>&1 &
+    gs_pid=$!
 
-# Check the output file to locate the Xwayland display that gamescope launches
-while read -r line; do
-    display=$(sed -nE 's/^.*Starting Xwayland on :([0-9]+).*$/\1/p' <<<"$line")
-    if [ -n "$display" ]; then
-        break
-    fi
-done <"$gsout"
+    # Check the output file to locate the Xwayland display that gamescope launches
+    while read -r line; do
+        display=$(sed -nE 's/^.*Starting Xwayland on :([0-9]+).*$/\1/p' <<<"$line")
+        if [ -n "$display" ]; then
+            break
+        fi
+    done <"$gsout"
 
-# Launch %command% on the gamescope xwayland display until it finishes
-(DISPLAY=":$display" eval "$command")
+    # Launch %command% on the gamescope xwayland display until it finishes
+    (DISPLAY=":$display" eval "$command")
 
-# Kill gamescope when done
-kill "$gs_pid"
+    # Kill gamescope when done
+    kill "$gs_pid"
+fi
