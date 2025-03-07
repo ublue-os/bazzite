@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+# Special thanks to @coolavery for the initial script for this
+# https://github.com/ValveSoftware/gamescope/issues/835#issuecomment-2496383830
+#
+# Purpose of this script:
+# * Allow launching gamescope with a default set of environment variables and gamescope args set by the user
+#   "~/.config/scopebuddy/scb.conf" will be created with examples after first run
+# * Serve as a temporary workaround for fixing the steam overlay when using nested gamescope on desktop steam until fixed upstream
+set -eo pipefail
+gsout="/tmp/scopebuddy.out"
+gamescope_opts=""
+command=""
+
+# Set SCB to use gamescope by default
+SCB_NOSCOPE=${SCB_NOSCOPE:-0}
+
+# Set default gamescope binary
+GAMESCOPE_BIN=${GAMESCOPE_BIN:-gamescope}
+
+# Configure SCB config
+SCB_CONF=${SCB_CONF:-"scb.conf"}
+SCB_CONFIGDIR="$HOME/.config/scopebuddy"
+
+# By default we will never be in gamemode
+SCB_GAMEMODE=0
+
+# If SCB_NOSCOPE is set to 1 and we are not using a custom SCB_CONF
+if [ "$SCB_NOSCOPE" -eq 1 ] && [ "$SCB_CONF" == "scb.conf" ]; then
+    # Use noscope.conf for default values
+    SCB_CONF="noscope.conf"
+fi
+
+# If steam is potentially running inside gamescope
+# shellcheck disable=SC2009
+if ps ax | grep -P "steam.sh -.+ -steampal" | grep -v grep || pgrep -f "gamescope-session" ; then
+    # If steam is potentially running in gamemode
+    # Force SCB_NOSCOPE to 1
+    SCB_NOSCOPE=1
+    # Set SCB_GAMEMODE to 1
+    SCB_GAMEMODE=1
+    # Use gamemode.conf for default values
+    SCB_CONF="gamemode.conf"
+fi
+
+# Finalize SCB_CONFIGFILE
+SCB_CONFIGFILE="$SCB_CONFIGDIR/$SCB_CONF"
+
+# Split the args at -- into gamescope_opts and command
+while [[ $# -gt 0 ]]; do
+    if [ "${1:-}" == "--" ]; then
+        shift
+        # Add remaining args as individually double quoted args (should stop double quoting being a requirement)
+        while [[ $# -gt 0 ]]; do
+            # command variable has to be formated like this otherwise the %command% will not launch
+            # shellcheck disable=SC2089
+            command+=" \"$1\""
+            shift
+        done
+        
+        # Exit loop when done
+        break
+    fi
+    # Add arg to gamescope_opts and go to next loop
+    gamescope_opts+=" $1"
+    shift
+done
+
+# Get the STEAM_APPID from %command%
+STEAM_APPID=$(echo "$command" | perl -pe 's/.+"AppId=(\d+)"\s.+/\1/')
+
+# Load the SCB config file if it exists then apply the default args
+if [ -f "$SCB_CONFIGFILE" ]; then
+    # Source the config from SCB_CONF
+    # shellcheck disable=SC1090
+    source "$SCB_CONFIGFILE"
+
+    # If a config exists for this games STEAM_APPID and SCB_CONF is set to scb.conf (default)
+    if [ -f "$SCB_CONFIGDIR/AppID/${STEAM_APPID}.conf" ]; then
+        # Source the STEAM_APPID specific config, overriding any similar values set by SCB_CONF
+        # shellcheck disable=SC1090
+        source "$SCB_CONFIGDIR/AppID/${STEAM_APPID}.conf"
+    fi
+
+    # If the user has supplied ANY args to gamescope, do not load the SCB_DEFAULT_ARGS
+    if [ -z "$gamescope_opts" ]; then
+        gamescope_opts=$SCB_DEFAULT_ARGS
+    fi
+else
+    # Make the default config file
+    if [ ! -d "$SCB_CONFIGDIR/AppID" ]; then
+        mkdir -p "$SCB_CONFIGDIR/AppID"
+    fi
+    cat << 'EOF' > "$SCB_CONFIGFILE"
+# This is the config file that let's you assign defaults for gamescope when using the scopebuddy script
+# lines starting with # are ignored
+# Conf files matching the games Steam AppID stored in ~/.conf/scopebuddy/AppID/ will be sourced after
+# ~/.config/scopebuddy/scb.conf or whichever file you specify with SCB_CONF=someotherfile.conf env var in the launch options.
+# 
+# Example for always exporting specific environment variables for gamescope
+#export XKB_DEFAULT_LAYOUT=no
+#export MANGOHUD_CONFIG=read_cfg,preset=2
+#
+# Example for providing default gamescope arguments through scopebuddy if no arguments are given to the scopebuddy script, this does not need to be exported.
+# To not use this default set of arguments, just launch scb with SCB_NOSCOPE=1 or just add any gamescope argument before the '-- %command%' then this variable will be ignored
+#SCB_DEFAULT_ARGS="--mangoapp -f -w 2560 -h 1440 -W 2560 -H 1440 -r 180 --force-grab-cursor --hdr-enabled -e"
+#
+###
+## FOR ADVANCED USE INSIDE AN APPID CONFIG
+###
+# The config files are treated as a bash script by scopebuddy, this means you can use bash to do simple tasks before the game runs
+# or you can check which mode scopebuddy is running in and apply settings accordingly, below are some handy variables for scripting.
+# $SCB_NOSCOPE will be set to 1 if we are running in no gamescope mode
+# $SCB_GAMEMODE will be set to 1 if we are running inside steam gamemode (which means SCB_NOSCOPE will also be set to 1 due to nested gamescope not working in gamemode)
+# $command will contain everything steam expanded %command% into
+EOF
+fi
+
+# If SCB_NOSCOPE is set to 1
+if [ "$SCB_NOSCOPE" -eq 1 ]; then
+    # If we are potentially in gamemode
+    if [ "$SCB_GAMEMODE" -eq 1 ]; then
+        # Force MANGOHUD=0
+        export MANGOHUD=0
+    fi
+    # Launch %command% without gamescope
+    eval "$command"
+else
+    # Transfer LD_PRELOAD before we unset it
+    LD_PRELOAD_REAL=$LD_PRELOAD
+
+    # Unset LD_PRELOAD for gamescope (as it breaks the overlay) then start gamescope with LD_PRELOAD set for %command% instead
+    echo "Launching: env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts -- env LD_PRELOAD=$LD_PRELOAD_REAL $command"
+    eval "env -u LD_PRELOAD $GAMESCOPE_BIN $gamescope_opts -- env LD_PRELOAD=$LD_PRELOAD_REAL $command"
+fi
