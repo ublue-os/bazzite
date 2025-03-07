@@ -162,7 +162,7 @@ if [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:" =~ 
   fi
 fi
 
-if [[ ":ROG Flow Z13 GZ302EA_GZ302EA_03156148D:" =~ "$:SYS_ID:" ]]; then
+if [[ ":ROG Flow Z13 GZ302EA_GZ302EA_03156148D:ROG Flow Z13 GZ302EA_GZ302EA:" =~ "$:SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
     echo "ROG Flow Z13 2025, fixing display artifacts"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
