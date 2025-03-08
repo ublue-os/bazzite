@@ -281,7 +281,7 @@ jobs:
           IMAGE_BRANCH=${{ github.ref_name }}
           SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }}
           VERSION_TAG=${{ steps.generate-version.outputs.tag }}
-          VERSION_PRETTY="${{ steps.generate-version.outputs.pretty }}"
+          VERSION_PRETTY=${{ steps.generate-version.outputs.pretty }}
           EOF
 
       # Build image using buildah and save it to raw-img
