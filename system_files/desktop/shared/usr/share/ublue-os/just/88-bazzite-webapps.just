@@ -48,9 +48,11 @@ get-webapp service="":
             "Amazon Prime Video" \
             "Apple TV" \
             "Curiosity Stream" \
+            "Crunchyroll" \
             "GeForce Now" \
             "HBO Max" \
             "Hulu" \
+            "Plex HTPC" \
             "Paramount Plus" \
             "Peacock" \
             "Sling TV" \
@@ -72,6 +74,32 @@ get-webapp service="":
         steamos-add-to-steam "$script_path"
         echo "Added $1 to Steam successfully!"
     }
+
+    install_crunchyroll() {
+        if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
+            wget \
+                $(curl -s https://api.github.com/repos/aarron-lee/crunchyroll-linux/releases/latest | \
+                jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
+                -O $HOME/Downloads/Crunchyroll.AppImage
+            chmod +x $HOME/Downloads/Crunchyroll.AppImage
+            flatpak run it.mijorus.gearlever $HOME/Downloads/Crunchyroll.AppImage
+        else
+            wget \
+                $(curl -s https://api.github.com/repos/aarron-lee/crunchyroll-linux/releases/latest | \
+                jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
+                -O $HOME/Desktop/Crunchyroll.AppImage
+            chmod +x $HOME/Desktop/Crunchyroll.AppImage
+        fi
+    }
+
+    install_plex_htpc(){
+        if grep -q 'tv.plex.PlexHTPC' <<< $(flatpak list); then
+            echo "Plex HTPC is already installed"
+        else
+            flatpak install --system -y tv.plex.PlexHTPC
+        fi
+    }
+
     # Process user choice
     case "$CHOICE" in
         "YouTube") create_script "youtube" "youtube" ;;
@@ -81,9 +109,11 @@ get-webapp service="":
         "Amazon Prime Video") create_script "prime-video" "amazonPrimeVideo" ;;
         "Apple TV") create_script "apple-tv" "appleTv" ;;
         "Curiosity Stream") create_script "curiosity-stream" "curiosityStream" ;;
+        "Crunchyroll") install_crunchyroll ;;
         "GeForce Now") create_script "geforce-now" "geForceNow" ;;
         "HBO Max") create_script "hbo-max" "hboMax" ;;
         "Hulu") create_script "hulu" "hulu" ;;
+        "Plex HTPC") install_plex_htpc ;;
         "Paramount Plus") create_script "paramount-plus" "paramountPlus" ;;
         "Peacock") create_script "peacock" "peacock" ;;
         "Sling TV") create_script "sling-tv" "slingTV" ;;
