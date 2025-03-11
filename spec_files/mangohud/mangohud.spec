@@ -10,7 +10,7 @@
 
 %global appname MangoHud
 %global forgeurl https://github.com/flightlessmango/MangoHud
-%global commit f77864d5ee59a82c33220267bf47fe0b82eafdad
+%global commit fea4292519a3085881d567a18ad3e1fee37078d8
 %forgemeta
 %global imgui_ver 1.89.9
 %global imgui_wrap_ver 2
@@ -23,7 +23,7 @@
 
 Name:           mangohud
 Version:        0.8.1
-Release:        4
+Release:        %autorelease
 Summary:        Vulkan and OpenGL overlay for monitoring FPS, temperatures, CPU/GPU load
 
 License:        MIT
