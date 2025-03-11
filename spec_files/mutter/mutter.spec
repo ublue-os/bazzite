@@ -34,10 +34,10 @@ Patch:         0001-place-Always-center-initial-setup-fedora-welcome.patch
 Patch:         0001-gschema-Enable-fractional-scaling-experimental-featu.patch
 
 # https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4083
-Patch:         4083.patch
+Patch:         https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4083.patch
 
 # https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4296
-Patch:         4296.patch
+Patch:         https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4296.patch
 
 BuildRequires: pkgconfig(gobject-introspection-1.0) >= 1.41.0
 BuildRequires: pkgconfig(sm)
