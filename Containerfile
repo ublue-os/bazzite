@@ -209,7 +209,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         mesa-libEGL \
         mesa-libGL \
         mesa-libgbm \
-        mesa-libglapi \
         mesa-va-drivers \
         mesa-vulkan-drivers \
         fwupd \
