@@ -255,6 +255,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         duperemove \
         cpulimit \
         sqlite \
+        hplip \
         xwininfo \
         xrandr \
         compsize \
