@@ -194,13 +194,13 @@ setup-virtualization ACTION="":
         echo "Re-creating dummy kvmfr modprobe file"
         sudo rm /etc/modprobe.d/kvmfr.conf
       fi
-      sudo bash -c "cat << KVMFR_MODPROBE > /etc/modprobe.d/kvmfr.conf
+      sudo bash -c 'cat << KVMFR_MODPROBE > /etc/modprobe.d/kvmfr.conf
     # This is a dummy file and changing it does nothing
     # If you want to change the kvmfr static_size_mb
     # Run "rpm-ostree kargs --replace=kvmfr.static_size_mb=oldvalue=newvalue"
     # Default value set by us is 128 which is enough for 4k SDR
     # Find the current value by running "rpm-ostree kargs"
-    KVMFR_MODPROBE"
+    KVMFR_MODPROBE'
       rpm-ostree kargs --append-if-missing="kvmfr.static_size_mb=128"
       if [ -f "/etc/udev/rules.d/99-kvmfr.rules" ]; then
         echo "Re-creating kvmfr udev rules"
