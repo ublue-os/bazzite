@@ -229,148 +229,148 @@ toggle-i915-sleep-fix:
 
 # Configure a controller button to wake the system from suspend
 setup-controller-wake:
-	#!/usr/bin/bash
-	source /usr/lib/ujust/ujust.sh
+  #!/usr/bin/bash
+  source /usr/lib/ujust/ujust.sh
   
-	echo "Detecting USB input devices..."
-	sleep 1
+  echo "Detecting USB input devices..."
+  sleep 1
 
-	# List all USB devices
-	echo "Available USB devices:"
-	lsusb | nl -w2 -s
-	
-	echo -e "\nEnter the number of your controller from the list above, or 'auto' to detect automatically: "
-	read -r selection
+  # List all USB devices
+  echo "Available USB devices:"
+  lsusb | nl -w2 -s
+  
+  echo -e "\nEnter the number of your controller from the list above, or 'auto' to detect automatically: "
+  read -r selection
 
-	if [ "$selection" = "auto" ]; then
-		echo "Auto-detection mode: Press a button on your controller..."
-		sleep 2
-		
-		# Try to detect the controller
-		detected_device=""
-		for dev in /dev/input/event*; do
-			(sudo timeout 0.5 evtest "$dev" 2>&1 | grep -q "Event:.*EV_KEY") && detected_device="$dev" && break
-		done
+  if [ "$selection" = "auto" ]; then
+    echo "Auto-detection mode: Press a button on your controller..."
+    sleep 2
+    
+    # Try to detect the controller
+    detected_device=""
+    for dev in /dev/input/event*; do
+      (sudo timeout 0.5 evtest "$dev" 2>&1 | grep -q "Event:.*EV_KEY") && detected_device="$dev" && break
+    done
 
-		if [ -z "$detected_device" ]; then
-			echo "No controller detected. Exiting."
-			exit 1
-		fi
-		
-		echo "Detected input device: $detected_device"
-		# Find USB info for this input device
-		device_path=$(readlink -f "/sys/class/input/$(basename "$detected_device")/device")
-		
-		# Find the USB bus and device
-		usb_path=$(find "$device_path" -maxdepth 4 -name "idVendor" -exec dirname {} \; | head -n 1)
-		if [ -z "$usb_path" ]; then
-			echo "Could not determine USB path for device. Trying alternative approach..."
-			# Try using dmesg to find device
-			sudo dmesg | grep -i controller
-			echo "Look for your controller in the above output and note the USB identifier (like 1-1.2)"
-			echo "Enter the USB identifier for your controller (e.g., 1-1.2): "
-			read -r usb_id
-			usb_path="/sys/bus/usb/devices/$usb_id"
-		fi
-	else
-		# User selected a device from lsusb output
-		usb_info=$(lsusb | sed -n "${selection}p")
-		if [ -z "$usb_info" ]; then
-			echo "Invalid selection. Exiting."
-			exit 1
-		fi
-		
-		# Extract bus and device numbers
-		bus=$(echo "$usb_info" | awk '{print $2}')
-		device=$(echo "$usb_info" | awk '{print $4}' | sed 's/://')
-		
-		# Convert to path format
-		vendor_id=$(echo "$usb_info" | grep -o "ID [0-9a-f]*:[0-9a-f]*" | awk '{print $2}' | cut -d: -f1)
-		product_id=$(echo "$usb_info" | grep -o "ID [0-9a-f]*:[0-9a-f]*" | awk '{print $2}' | cut -d: -f2)
-		
-		# Find the USB path
-		usb_path=$(find /sys/bus/usb/devices -name "idVendor" -exec cat {} \; -exec dirname {} \; 2>/dev/null | grep -i "$vendor_id" | head -n 1)
-	fi
+    if [ -z "$detected_device" ]; then
+      echo "No controller detected. Exiting."
+      exit 1
+    fi
+    
+    echo "Detected input device: $detected_device"
+    # Find USB info for this input device
+    device_path=$(readlink -f "/sys/class/input/$(basename "$detected_device")/device")
+    
+    # Find the USB bus and device
+    usb_path=$(find "$device_path" -maxdepth 4 -name "idVendor" -exec dirname {} \; | head -n 1)
+    if [ -z "$usb_path" ]; then
+      echo "Could not determine USB path for device. Trying alternative approach..."
+      # Try using dmesg to find device
+      sudo dmesg | grep -i controller
+      echo "Look for your controller in the above output and note the USB identifier (like 1-1.2)"
+      echo "Enter the USB identifier for your controller (e.g., 1-1.2): "
+      read -r usb_id
+      usb_path="/sys/bus/usb/devices/$usb_id"
+    fi
+  else
+    # User selected a device from lsusb output
+    usb_info=$(lsusb | sed -n "${selection}p")
+    if [ -z "$usb_info" ]; then
+      echo "Invalid selection. Exiting."
+      exit 1
+    fi
+    
+    # Extract bus and device numbers
+    bus=$(echo "$usb_info" | awk '{print $2}')
+    device=$(echo "$usb_info" | awk '{print $4}' | sed 's/://')
+    
+    # Convert to path format
+    vendor_id=$(echo "$usb_info" | grep -o "ID [0-9a-f]*:[0-9a-f]*" | awk '{print $2}' | cut -d: -f1)
+    product_id=$(echo "$usb_info" | grep -o "ID [0-9a-f]*:[0-9a-f]*" | awk '{print $2}' | cut -d: -f2)
+    
+    # Find the USB path
+    usb_path=$(find /sys/bus/usb/devices -name "idVendor" -exec cat {} \; -exec dirname {} \; 2>/dev/null | grep -i "$vendor_id" | head -n 1)
+  fi
 
-	echo "USB device path: $usb_path"
-	
-	# Get device information
-	device_name=$(cat "$usb_path/product" 2>/dev/null || echo "Unknown device")
-	vendor_id=$(cat "$usb_path/idVendor" 2>/dev/null)
-	product_id=$(cat "$usb_path/idProduct" 2>/dev/null)
-	
-	echo -e "Device: $device_name"
-	echo -e "Vendor ID: $vendor_id"
-	echo -e "Product ID: $product_id"
-	
-	# Find all parent devices that need wakeup enabled
-	parent_devices=()
-	current_path="$usb_path"
-	
-	while [[ "$current_path" != "/" && "$current_path" != "" ]]; do
-		if [[ -f "$current_path/power/wakeup" ]]; then
-			parent_devices+=("$current_path")
-		fi
-		
-		# Move up one directory to the parent
-		current_path=$(dirname "$current_path")
-		
-		# Stop if we reach the usb bus level
-		if [[ "$current_path" == "/sys/bus/usb" ]]; then
-			break
-		fi
-	done
-	
-	echo -e "\nFound ${#parent_devices[@]} devices in the chain that support wakeup:"
-	for i in "${!parent_devices[@]}"; do
-		echo "$(($i+1)): ${parent_devices[$i]}"
-	done
-	
-	# Create udev rules file
-	rule_path="/etc/udev/rules.d/99-controller-wakeup.rules"
-	
-	echo -e "\nCreating udev rules to enable wakeup on all relevant devices..."
-	
-	# Start with a clean file
-	sudo sh -c "echo '# Automatically generated controller wakeup rules' > $rule_path"
-	
-	# Add a rule for main device
-	if [ -n "$vendor_id" ] && [ -n "$product_id" ]; then
-		echo "ACTION==\"add|change\", SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"$vendor_id\", ATTRS{idProduct}==\"$product_id\", RUN+=\"/bin/sh -c 'for d in /sys/bus/usb/devices/*/idVendor; do if [ \\\"\$(cat \\\$d)\\\" = \\\"$vendor_id\\\" ]; then p=\\\$(dirname \\\$d); if [ -f \\\$p/power/wakeup ]; then echo enabled > \\\$p/power/wakeup; fi; fi; done'\"" | sudo tee -a "$rule_path" > /dev/null
-	fi
-	
-	# Add rules for parent devices
-	for path in "${parent_devices[@]}"; do
-		device_name=$(basename "$path")
-		echo "ACTION==\"add|change\", SUBSYSTEM==\"usb\", KERNELS==\"$device_name\", RUN+=\"/bin/sh -c 'echo enabled > $path/power/wakeup'\"" | sudo tee -a "$rule_path" > /dev/null
-	done
-	
-	# Add rule for top-level USB controller if needed
-	usb_controller=$(echo "$usb_path" | grep -o "^/sys/bus/usb/devices/usb[0-9]*")
-	if [ -n "$usb_controller" ] && [ -f "$usb_controller/power/wakeup" ]; then
-		usb_num=$(basename "$usb_controller")
-		echo "ACTION==\"add|change\", SUBSYSTEM==\"usb\", KERNELS==\"$usb_num\", RUN+=\"/bin/sh -c 'echo enabled > $usb_controller/power/wakeup'\"" | sudo tee -a "$rule_path" > /dev/null
-	fi
+  echo "USB device path: $usb_path"
+  
+  # Get device information
+  device_name=$(cat "$usb_path/product" 2>/dev/null || echo "Unknown device")
+  vendor_id=$(cat "$usb_path/idVendor" 2>/dev/null)
+  product_id=$(cat "$usb_path/idProduct" 2>/dev/null)
+  
+  echo -e "Device: $device_name"
+  echo -e "Vendor ID: $vendor_id"
+  echo -e "Product ID: $product_id"
+  
+  # Find all parent devices that need wakeup enabled
+  parent_devices=()
+  current_path="$usb_path"
+  
+  while [[ "$current_path" != "/" && "$current_path" != "" ]]; do
+    if [[ -f "$current_path/power/wakeup" ]]; then
+      parent_devices+=("$current_path")
+    fi
+    
+    # Move up one directory to the parent
+    current_path=$(dirname "$current_path")
+    
+    # Stop if we reach the usb bus level
+    if [[ "$current_path" == "/sys/bus/usb" ]]; then
+      break
+    fi
+  done
+  
+  echo -e "\nFound ${#parent_devices[@]} devices in the chain that support wakeup:"
+  for i in "${!parent_devices[@]}"; do
+    echo "$(($i+1)): ${parent_devices[$i]}"
+  done
+  
+  # Create udev rules file
+  rule_path="/etc/udev/rules.d/99-controller-wakeup.rules"
+  
+  echo -e "\nCreating udev rules to enable wakeup on all relevant devices..."
+  
+  # Start with a clean file
+  sudo sh -c "echo '# Automatically generated controller wakeup rules' > $rule_path"
+  
+  # Add a rule for main device
+  if [ -n "$vendor_id" ] && [ -n "$product_id" ]; then
+    echo "ACTION==\"add|change\", SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"$vendor_id\", ATTRS{idProduct}==\"$product_id\", RUN+=\"/bin/sh -c 'for d in /sys/bus/usb/devices/*/idVendor; do if [ \\\"\$(cat \\\$d)\\\" = \\\"$vendor_id\\\" ]; then p=\\\$(dirname \\\$d); if [ -f \\\$p/power/wakeup ]; then echo enabled > \\\$p/power/wakeup; fi; fi; done'\"" | sudo tee -a "$rule_path" > /dev/null
+  fi
+  
+  # Add rules for parent devices
+  for path in "${parent_devices[@]}"; do
+    device_name=$(basename "$path")
+    echo "ACTION==\"add|change\", SUBSYSTEM==\"usb\", KERNELS==\"$device_name\", RUN+=\"/bin/sh -c 'echo enabled > $path/power/wakeup'\"" | sudo tee -a "$rule_path" > /dev/null
+  done
+  
+  # Add rule for top-level USB controller if needed
+  usb_controller=$(echo "$usb_path" | grep -o "^/sys/bus/usb/devices/usb[0-9]*")
+  if [ -n "$usb_controller" ] && [ -f "$usb_controller/power/wakeup" ]; then
+    usb_num=$(basename "$usb_controller")
+    echo "ACTION==\"add|change\", SUBSYSTEM==\"usb\", KERNELS==\"$usb_num\", RUN+=\"/bin/sh -c 'echo enabled > $usb_controller/power/wakeup'\"" | sudo tee -a "$rule_path" > /dev/null
+  fi
 
-	# Apply rules now
-	echo -e "\nApplying rules and enabling wakeup..."
-	sudo udevadm control --reload-rules
-	sudo udevadm trigger
-	
-	# Enable wakeup manually for immediate effect
-	for path in "${parent_devices[@]}"; do
-		if [ -f "$path/power/wakeup" ]; then
-			echo "enabled" | sudo tee "$path/power/wakeup" > /dev/null
-			echo "Enabled wakeup on $(basename "$path")"
-		fi
-	done
-	
-	# Enable wakeup for the top-level controller if it exists
-	if [ -n "$usb_controller" ] && [ -f "$usb_controller/power/wakeup" ]; then
-		echo "enabled" | sudo tee "$usb_controller/power/wakeup" > /dev/null
-		echo "Enabled wakeup on $(basename "$usb_controller")"
-	fi
-	
-	echo -e "\nSetup complete! Your controller should now be able to wake the system from sleep."
-	echo -e "You can test by suspending the system with: ${bold}sudo systemctl suspend${normal}"
-	echo -e "Then use your controller to wake the system."
+  # Apply rules now
+  echo -e "\nApplying rules and enabling wakeup..."
+  sudo udevadm control --reload-rules
+  sudo udevadm trigger
+  
+  # Enable wakeup manually for immediate effect
+  for path in "${parent_devices[@]}"; do
+    if [ -f "$path/power/wakeup" ]; then
+      echo "enabled" | sudo tee "$path/power/wakeup" > /dev/null
+      echo "Enabled wakeup on $(basename "$path")"
+    fi
+  done
+  
+  # Enable wakeup for the top-level controller if it exists
+  if [ -n "$usb_controller" ] && [ -f "$usb_controller/power/wakeup" ]; then
+    echo "enabled" | sudo tee "$usb_controller/power/wakeup" > /dev/null
+    echo "Enabled wakeup on $(basename "$usb_controller")"
+  fi
+  
+  echo -e "\nSetup complete! Your controller should now be able to wake the system from sleep."
+  echo -e "You can test by suspending the system with: ${bold}sudo systemctl suspend${normal}"
+  echo -e "Then use your controller to wake the system."
