@@ -232,71 +232,53 @@ wakeup-controller:
     source /usr/lib/ujust/ujust.sh
     echo "Detecting input devices..."
     sleep 1
-
     # List all input devices clearly
     echo "Available input devices:"
     devices=($(grep -E "Handlers|Name=" /proc/bus/input/devices | grep -B1 "Handlers" | sed -E "s/^N: Name=//g" | sed -E "s/^H: Handlers=//g" | awk "{print \$0}" | nl -w2 -s") )
-
     for d in "${devices[@]}"; do
       echo "$d"
     done
-
     # Ask user to select manually or use auto-detect
     echo "Enter the number of your controller from the list (or type 'auto' to detect by pressing a button): "
     read -r selection
-
     if [ "$selection" = "auto" ]; then
       echo "Auto-detection mode: Press a button on your controller..."
       sleep 2
-
       # Monitor button presses and detect active device
       detected_device=$(for dev in /dev/input/event*; do
           sudo evtest "$dev" 2>&1 | awk -v dev="$dev" "/Event:.*EV_KEY/ {print dev; exit}" &
       done | head -n 1)
-
       if [ -z "$detected_device" ]; then
           echo "No button press detected. Exiting."
           exit 1
       fi
-
       echo "Detected controller: $detected_device"
       controller_event="$detected_device"
     else
       controller_device=$(echo "${devices[$((selection-1))]}" | awk "{print \$2}")
       controller_event="/dev/input/$controller_device"
     fi
-
     echo "Selected controller: $controller_event"
-
     echo "Press the button you want to use for wakeup..."
     sleep 2
-
     # Capture button code
     button_code=$(sudo evtest "$controller_event" 2>&1 | awk "/Event:.*EV_KEY/ {print \$NF; exit}")
-
     if [ -z "$button_code" ]; then
       echo "No button press detected. Exiting."
       exit 1
     fi
-
     echo "Detected button code: $button_code"
-
     # Get USB device ID
     device_path=$(ls -l /sys/class/input/$(basename "$controller_event")/device | awk "{print \$NF}")
     usb_device=$(echo "$device_path" | awk -F "/" "{print \$(NF-2)}")
-
     echo "USB Device ID: $usb_device"
-
     # Enable wakeup for the device
     echo "enabled" | sudo tee "/sys/bus/usb/devices/$usb_device/power/wakeup"
-
     # Generate udev rule
     rule_path="/etc/udev/rules.d/99-controller-wakeup.rules"
     echo "ACTION==\"add\", SUBSYSTEM==\"input\", ATTRS{idVendor}==\"$(lsusb | grep -i "$usb_device" | awk "{print \$6}" | cut -d: -f1)\", ATTRS{idProduct}==\"$(lsusb | grep -i "$usb_device" | awk "{print \$6}" | cut -d: -f2)\", RUN+=\"/bin/sh -c 'echo enabled > /sys/bus/usb/devices/$usb_device/power/wakeup'\"" | sudo tee "$rule_path"
-
     # Reload udev rules
     sudo udevadm control --reload-rules && sudo udevadm trigger
-
     echo -e "Setup complete. You can test by suspending the system with:"
     echo -e "  ${bold}sudo systemctl suspend${normal}"
     echo -e "Then wake the system using your selected button."
