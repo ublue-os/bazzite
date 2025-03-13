@@ -71,7 +71,7 @@ jobs:
             is_latest_version: true
             is_stable_version: true
             kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
-            kernel_version: 6.13.5-103.bazzite.fc41.x86_64 # must match a cached version of the above flavor
+            kernel_version: 6.13.6-103.bazzite.fc41.x86_64 # must match a cached version of the above flavor
         exclude:
           - base_name: bazzite-deck-nvidia
           - base_name: bazzite
