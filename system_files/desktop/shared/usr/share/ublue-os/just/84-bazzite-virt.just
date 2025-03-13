@@ -250,9 +250,6 @@ setup-virtualization ACTION="":
 
     #============= svirt_t ==============
     allow svirt_t device_t:chr_file { open read write map };
-
-    #============= virtqemud_t ==============
-    allow virtqemud_t device_t:chr_file { read write };
     KVMFR_SELINUX"
       echo "This is the type enforcement we wrote for SELinux and you can find it in $HOME/.config/selinux_te/kvmfr.te"
       echo "#======= start of kvmfr.te ======="
