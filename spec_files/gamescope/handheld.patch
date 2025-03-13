@@ -50,23 +50,22 @@ move by Antheas.
 Co-authored-by: Kyle Gospodnetich <me@kylegospodneti.ch>
 Co-authored-by: Antheas Kapenekakis <git@antheas.dev>
 ---
- src/Backends/DRMBackend.cpp |  5 +++++
+ src/Backends/DRMBackend.cpp |  4 ++++
  src/main.cpp                | 31 +++++++++++++++++++++++++++++++
  src/main.hpp                |  2 ++
- 3 files changed, 38 insertions(+)
+ 3 files changed, 37 insertions(+)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 0b121e8..75c3258 100644
+index 0b121e8..840e245 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -2243,6 +2243,11 @@ namespace gamescope
+@@ -2243,6 +2243,10 @@ namespace gamescope
  					bHasKnownHDRInfo = true;
  				}
  			}
 +			else if ( g_customRefreshRates.size() > 0 && GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL ) {
 +				// Only apply custom refresh rates as a fallback, allowing a graceful transition to the new system.
 +				m_Mutable.ValidDynamicRefreshRates = g_customRefreshRates;
-+				return;
 +			}
  		}
  
@@ -718,7 +717,7 @@ custom modeline generation has been provided.
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 75c3258..f014be9 100644
+index 840e245..36ef32e 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2161,7 +2161,9 @@ namespace gamescope
@@ -1015,10 +1014,10 @@ Subject: feat: add DPMS support through an Atom
  4 files changed, 28 insertions(+), 6 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index f014be9..6bb0b88 100644
+index 36ef32e..0999e0b 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -2669,6 +2669,9 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+@@ -2668,6 +2668,9 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
  			drm->needs_modeset = true;
  	}
  
@@ -1028,7 +1027,7 @@ index f014be9..6bb0b88 100644
  	drm_colorspace uColorimetry = DRM_MODE_COLORIMETRY_DEFAULT;
  
  	const bool bWantsHDR10 = g_bOutputHDREnabled && frameInfo->outputEncodingEOTF == EOTF_PQ;
-@@ -2724,7 +2727,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+@@ -2723,7 +2726,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
  	uint32_t flags = DRM_MODE_ATOMIC_NONBLOCK;
  
  	// We do internal refcounting with these events
@@ -1037,7 +1036,7 @@ index f014be9..6bb0b88 100644
  		flags |= DRM_MODE_PAGE_FLIP_EVENT;
  
  	if ( async || g_bForceAsyncFlips )
-@@ -2797,7 +2800,13 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+@@ -2796,7 +2799,13 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
  
  		if ( drm->pCRTC )
  		{
@@ -1052,7 +1051,7 @@ index f014be9..6bb0b88 100644
  			drm->pCRTC->GetProperties().MODE_ID->SetPendingValue( drm->req, drm->pending.mode_id ? drm->pending.mode_id->GetBlobValue() : 0lu, true );
  
  			if ( drm->pCRTC->GetProperties().VRR_ENABLED )
-@@ -2828,7 +2837,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+@@ -2827,7 +2836,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
  	drm->flags = flags;
  
  	int ret;
@@ -1061,7 +1060,7 @@ index f014be9..6bb0b88 100644
  		ret = 0;
  	} else if ( drm->bUseLiftoff ) {
  		ret = drm_prepare_liftoff( drm, frameInfo, needs_modeset );
-@@ -3391,6 +3400,7 @@ namespace gamescope
+@@ -3390,6 +3399,7 @@ namespace gamescope
  
  			FrameInfo_t presentCompFrameInfo = {};
  			presentCompFrameInfo.allowVRR = pFrameInfo->allowVRR;
@@ -1178,7 +1177,7 @@ Subject: feat(intel): add rotation shader for rotating output
  create mode 100644 src/shaders/cs_rotation.comp
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 6bb0b88..3c44839 100644
+index 0999e0b..020add2 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -1528,6 +1528,10 @@ static void update_drm_effective_orientations( struct drm_t *drm, const drmModeM
@@ -1230,7 +1229,7 @@ index 6bb0b88..3c44839 100644
  		if ( this->GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL && g_DesiredInternalOrientation != GAMESCOPE_PANEL_ORIENTATION_AUTO )
  		{
  			m_ChosenOrientation = g_DesiredInternalOrientation;
-@@ -3035,6 +3054,13 @@ bool drm_set_mode( struct drm_t *drm, const drmModeModeInfo *mode )
+@@ -3034,6 +3053,13 @@ bool drm_set_mode( struct drm_t *drm, const drmModeModeInfo *mode )
  		g_bRotated = false;
  		g_nOutputWidth = mode->hdisplay;
  		g_nOutputHeight = mode->vdisplay;
@@ -1244,7 +1243,7 @@ index 6bb0b88..3c44839 100644
  		break;
  	case GAMESCOPE_PANEL_ORIENTATION_90:
  	case GAMESCOPE_PANEL_ORIENTATION_270:
-@@ -3294,6 +3320,11 @@ namespace gamescope
+@@ -3293,6 +3319,11 @@ namespace gamescope
  
  			bNeedsFullComposite |= !!(g_uCompositeDebug & CompositeDebugFlag::Heatmap);
  
@@ -1256,7 +1255,7 @@ index 6bb0b88..3c44839 100644
  			bool bDoComposite = true;
  			if ( !bNeedsFullComposite && !bWantsPartialComposite )
  			{
-@@ -3384,7 +3415,7 @@ namespace gamescope
+@@ -3383,7 +3414,7 @@ namespace gamescope
  			if ( bDefer && !!( g_uCompositeDebug & CompositeDebugFlag::Markers ) )
  				g_uCompositeDebug |= CompositeDebugFlag::Markers_Partial;
  
@@ -1717,10 +1716,10 @@ index 97dea45..fefb2a0 100644
  * `-S stretch`: use stretch scaling, the game will fill the window. (e.g. 4:3 to 16:9)
  * `-b`: create a border-less window.
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 3c44839..e9074f5 100644
+index 020add2..d393479 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -3299,6 +3299,7 @@ namespace gamescope
+@@ -3298,6 +3298,7 @@ namespace gamescope
  			bNeedsFullComposite |= bWasFirstFrame;
  			bNeedsFullComposite |= pFrameInfo->useFSRLayer0;
  			bNeedsFullComposite |= pFrameInfo->useNISLayer0;
@@ -2673,6 +2672,84 @@ index 0000000..c6b859d
 +++ b/subprojects/edid-decode
 @@ -0,0 +1 @@
 +Subproject commit c6b859d7f0251e2433fb81bd3f67bd2011c2036c
+-- 
+2.48.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Thu, 13 Mar 2025 19:04:51 +0100
+Subject: fix(hdr): remove PQ from internal panels and allow disabling for
+ externals
+
+New steam update forces HDR mode. The cursed patching gamescope does is
+not supported for all displays, especially internal ones. So disable by
+default on internal panels and allow disabling on externals.
+---
+ src/Backends/DRMBackend.cpp | 2 +-
+ src/main.cpp                | 1 +
+ src/steamcompmgr.cpp        | 3 +++
+ src/steamcompmgr.hpp        | 1 +
+ 4 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
+index d393479..0468ecc 100644
+--- a/src/Backends/DRMBackend.cpp
++++ b/src/Backends/DRMBackend.cpp
+@@ -2333,7 +2333,7 @@ namespace gamescope
+ 				}
+ 			}
+ 
+-			if ( pColorimetry && pColorimetry->bt2020_rgb &&
++			if ( g_bHDRPqEnable && GetScreenType() != GAMESCOPE_SCREEN_TYPE_INTERNAL && pColorimetry && pColorimetry->bt2020_rgb &&
+ 				 pHDRStaticMetadata && pHDRStaticMetadata->eotfs && pHDRStaticMetadata->eotfs->pq )
+ 			{
+ 				m_Mutable.HDR.bExposeHDRSupport = true;
+diff --git a/src/main.cpp b/src/main.cpp
+index 1d29b8e..6cf3531 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -209,6 +209,7 @@ const char usage[] =
+ 	"                                 If this is not set, and there is a HDR client, it will be tonemapped SDR.\n"
+ 	"  --sdr-gamut-wideness           Set the 'wideness' of the gamut for SDR comment. 0 - 1.\n"
+ 	"  --hdr-sdr-content-nits         set the luminance of SDR content in nits. Default: 400 nits.\n"
++	"  --hdr-pq-disable               disable HDR metadata detection for PQ EOTFs. IE disable HDR for external panels but not ones added through config. \n"
+ 	"  --hdr-itm-enabled              enable SDR->HDR inverse tone mapping. only works for SDR input.\n"
+ 	"  --hdr-itm-sdr-nits             set the luminance of SDR content in nits used as the input for the inverse tone mapping process.\n"
+ 	"                                 Default: 100 nits, Max: 1000 nits\n"
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 1cd5a28..99f4970 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -366,6 +366,7 @@ bool g_bVRRInUse_CachedValue = false;
+ bool g_bSupportsHDR_CachedValue = false;
+ bool g_bForceHDR10OutputDebug = false;
+ gamescope::ConVar<bool> cv_hdr_enabled{ "hdr_enabled", false, "Whether or not HDR is enabled if it is available." };
++bool g_bHDRPqEnable = true;
+ bool g_bHDRItmEnable = false;
+ int g_nCurrentRefreshRate_CachedValue = 0;
+ 
+@@ -7517,6 +7518,8 @@ steamcompmgr_main(int argc, char **argv)
+ 					g_bForceHDRSupportDebug = true;
+  				} else if (strcmp(opt_name, "hdr-debug-force-output") == 0) {
+ 					g_bForceHDR10OutputDebug = true;
++				} else if (strcmp(opt_name, "hdr-pq-disabled") == 0 || strcmp(opt_name, "hdr-pq-disable") == 0) {
++					g_bHDRPqEnable = false;
+ 				} else if (strcmp(opt_name, "hdr-itm-enabled") == 0 || strcmp(opt_name, "hdr-itm-enable") == 0) {
+ 					g_bHDRItmEnable = true;
+ 				} else if (strcmp(opt_name, "sdr-gamut-wideness") == 0) {
+diff --git a/src/steamcompmgr.hpp b/src/steamcompmgr.hpp
+index 5679a0c..e3987bb 100644
+--- a/src/steamcompmgr.hpp
++++ b/src/steamcompmgr.hpp
+@@ -38,6 +38,7 @@ static const uint32_t g_zposOverlay = 3;
+ static const uint32_t g_zposCursor = 4;
+ static const uint32_t g_zposMuraCorrection = 5;
+ 
++extern bool g_bHDRPqEnable;
+ extern bool g_bHDRItmEnable;
+ extern bool g_bForceHDRSupportDebug;
+ 
 -- 
 2.48.1
 
