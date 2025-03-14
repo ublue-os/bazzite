@@ -8,7 +8,7 @@ Summary:     Compiz wobbly windows effect for GNOME Shell
 Group:       User Interface/Desktops
 License:     GPLv2
 URL:         https://github.com/hermes83/compiz-windows-effect
-Source0:     https://github.com/KyleGospo/compiz-windows-effect/archive/refs/heads/master.tar.gz
+Source0:     https://github.com/bazzite-org/compiz-windows-effect/archive/refs/heads/master.tar.gz
 BuildArch:   noarch
 
 BuildRequires: glib2
