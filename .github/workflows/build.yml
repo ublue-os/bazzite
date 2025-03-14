@@ -174,7 +174,7 @@ jobs:
         id: download_offline_docs
         continue-on-error: true
         env:
-          docs_repo: KyleGospo/docs.bazzite.gg
+          docs_repo: bazzite-org/docs.bazzite.gg
           GH_TOKEN: ${{ github.token }}
         run: |
           DOCS_DIR="${{ github.workspace }}/system_files/desktop/shared/usr/share/ublue-os/docs/html"

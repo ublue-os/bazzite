@@ -125,7 +125,7 @@ install-adwaita-for-steam:
 
 # Install Oversteer for Logitech steering wheels
 install-oversteer: distrobox-check-fedora
-    distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y kylegospo/oversteer && \
+    distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y bazzite-org/oversteer && \
       sudo dnf install -y oversteer && \
       distrobox-export --app oversteer'
 
