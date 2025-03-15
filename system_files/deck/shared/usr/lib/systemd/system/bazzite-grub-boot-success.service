@@ -1,0 +1,15 @@
+# In the future this can do more complex checks to ensure the update is
+# successful. For now, just assume the user will hold the button or
+# something within 5 minutes if boot fails.
+
+[Unit]
+Description=Mark boot as successful and reset counter
+DefaultDependencies=no
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/bazzite-grub-boot-success
+
+[Install]
+WantedBy=hibernate.target hybrid-sleep.target suspend-then-hibernate.target halt.target reboot.target shutdown.target

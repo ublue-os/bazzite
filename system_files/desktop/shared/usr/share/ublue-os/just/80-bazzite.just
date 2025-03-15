@@ -11,58 +11,161 @@ _install-system-flatpaks:
         FLATPAKS="kde_flatpaks/flatpaks"
     fi
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
-    flatpak --system -y install --or-update ${FLATPAK_LIST}
+    flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
-# Configure grub bootmenu visibility and fix duplicate entries
+# Toggle SSH availability on boot
+toggle-ssh:
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    # Get hostname and IP address
+    HOSTNAME=$(hostname)
+    IP_ADDRESS=$(hostname -I | awk '{print $1}') # First IP address
+    # Get current SSH status
+    SSH_STATUS="Disabled"
+    if systemctl is-enabled sshd | grep -q enabled; then
+      SSH_STATUS="Enabled"
+    fi
+    # Display current status
+    echo -e "\n${bold}Hostname:${normal} $HOSTNAME"
+    echo -e "${bold}IP Address:${normal} $IP_ADDRESS"
+    if [ "$SSH_STATUS" == "Enabled" ]; then
+      echo -e "${bold}SSH Availability on Boot:${normal} ${green}$SSH_STATUS${normal}\n"
+    else
+      echo -e "${bold}SSH Availability on Boot:${normal} ${yellow}$SSH_STATUS${normal}\n"
+    fi
+    # Prompt user for action
+    echo "Choose an option:"
+    CHOICE=$(ugum choose "Enable SSH" "Disable SSH" "Exit without saving")
+    case "$CHOICE" in
+      "Enable SSH")
+        echo "Enabling SSH on boot..."
+        sudo systemctl enable sshd
+        sudo systemctl start sshd
+        echo -e "SSH is now ${green}Enabled${normal}. You can SSH using:"
+        echo -e "${bold}${USER}@${IP_ADDRESS}${normal}"
+        echo " "
+        ;;
+      "Disable SSH")
+        echo "Disabling SSH on boot..."
+        sudo systemctl disable sshd
+        sudo systemctl stop sshd
+        echo -e "SSH is now ${yellow}Disabled${normal}."
+        echo " "
+        ;;
+      "Exit without saving")
+        echo "No changes made."
+        ;;
+      *)
+        echo "Invalid choice. Exiting without changes."
+        ;;
+    esac
+
+# Configure grub bootmenu visibility. pass action 'help' for more info.
 configure-grub ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    sudo touch /etc/default/grub
-    GRUB_STATE="$(grep -P "^GRUB_TIMEOUT_STYLE=hidden" /etc/default/grub)"
-    OPTION={{ ACTION }}
-    if [ "$GRUB_STATE" == "GRUB_TIMEOUT_STYLE=hidden" ]; then
-        GRUB_STATE="${b}Hidden${n}"
-    else
-        GRUB_STATE="${b}Not Hidden${n}"
-    fi
+    # Function to display usage/help with some color
+    print_help() {
+      echo -e "Usage: ujust configure-grub <option>"
+      echo
+      echo -e "Where <option> can be:"
+      echo -e "  ${bold}${cyan}hide${normal} = GRUB is hidden after a successful boot, even for dual-boot setups."
+      echo -e "  ${bold}${yellow}unhide${normal} = GRUB is hidden after a successful boot, but it will show if dual-booting."
+      echo -e "  ${bold}${green}show${normal} = GRUB always shows on boot."
+      echo
+      echo "If <option> is omitted, you will be prompted to choose interactively."
+    }
+    # Function to get the current GRUB menu_auto_hide setting and explain it
+    get_current_setting() {
+      local CURRENT_SETTING
+      CURRENT_SETTING=$(sudo grub2-editenv - list | grep menu_auto_hide | cut -d= -f2)
+      if [ -z "$CURRENT_SETTING" ]; then
+        echo "Current GRUB menu_auto_hide setting: ${bold}${red}Not Set (default to 0)${normal}"
+        echo "Explanation:"
+        echo "  - ${bold}0${normal}: GRUB always shows on boot."
+        return 0
+      else
+        case "$CURRENT_SETTING" in
+          0)
+            echo "Current GRUB menu_auto_hide setting: ${bold}${green}0 (Always Show)${normal}"
+            echo "Explanation:"
+            echo "  - ${bold}0${normal}: GRUB always shows on boot."
+            ;;
+          1)
+            echo "Current GRUB menu_auto_hide setting: ${bold}${yellow}1 (Hide After Successful Boot)${normal}"
+            echo "Explanation:"
+            echo "  - ${bold}1${normal}: GRUB is hidden after a successful boot, but it will show if dual-booting."
+            ;;
+          2)
+            echo "Current GRUB menu_auto_hide setting: ${bold}${cyan}2 (Always Hide)${normal}"
+            echo "Explanation:"
+            echo "  - ${bold}2${normal}: GRUB is hidden after a successful boot, even for dual-boot setups."
+            ;;
+          *)
+            echo "Current GRUB menu_auto_hide setting: ${bold}${red}Unknown${normal}"
+            echo "Explanation:"
+            echo "  - This setting is unrecognized. Reset it to 0, 1, or 2."
+            ;;
+        esac
+      fi
+    }
+    # Interactive menu for choosing the new behavior
+    interactive_menu() {
+      local options=(
+        "Always Hide Grub (menu_auto_hide=2)"
+        "Hide After Successful Boot (menu_auto_hide=1)"
+        "Always Show Grub (menu_auto_hide=0)"
+        "Exit without changes"
+      )
+      local choice
+      choice=$(ugum choose "${options[@]}")
+      echo "$choice"
+    }
+    # Function to apply the selected setting
+    apply_setting() {
+      local selected_option="$1"
+      # Support the interactive strings as well as short commands
+      case "$(echo "$selected_option" | tr '[:upper:]' '[:lower:]')" in
+        *"(menu_auto_hide=2)"*|hide)
+          sudo grub2-editenv - set menu_auto_hide=2
+          echo "GRUB menu is now set to ${bold}${cyan}Always Hide${normal}."
+          ;;
+        *"(menu_auto_hide=1)"*|unhide)
+          sudo grub2-editenv - set menu_auto_hide=1
+          echo "GRUB menu is now set to ${bold}${yellow}Hide After Successful Boot${normal}."
+          ;;
+        *"(menu_auto_hide=0)"*|show)
+          sudo grub2-editenv - set menu_auto_hide=0
+          echo "GRUB menu is now set to ${bold}${green}Always Show${normal}."
+          ;;
+        *"exit without changes"*|exit)
+          echo "${bold}No changes were made. Exiting...${normal}"
+          ;;
+        help)
+          print_help
+          ;;
+        *)
+          echo "${bold}${red}Invalid option selected. No changes were made.${normal}"
+          ;;
+      esac
+    }
+    OPTION="{{ ACTION }}"   # from “configure-grub ACTION=...”
     if [ "$OPTION" == "help" ]; then
-      echo "Usage: ujust configure-grub <option>"
-      echo "  <option>: Specify the quick option to skip the prompt"
-      echo "  Use 'hide' to select Hide Grub"
-      echo "  Use 'unhide' to select Unhide Grub"
-      echo "  Use 'fix' to select Fix double ostree entry"
+      print_help
       exit 0
-    elif [ "$OPTION" == "" ]; then
-      echo "${bold}Grub menu configuration${normal}"
-      echo "Grub menu is set to: $GRUB_STATE"
-      OPTION=$(Choose "Hide Grub" "Unhide Grub" "Fix double ostree entry")
     fi
-    if [[ "${OPTION,,}" =~ ^hide ]]; then
-      grep -q '^GRUB_TIMEOUT=' /etc/default/grub || echo 'GRUB_TIMEOUT=0' | sudo tee -a /etc/default/grub 1>/dev/null
-      sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
-      echo 'GRUB_TIMEOUT_STYLE=hidden' | sudo tee -a /etc/default/grub 1>/dev/null
-      echo 'GRUB_HIDDEN_TIMEOUT=1' | sudo tee -a /etc/default/grub 1>/dev/null
-      if [ -d /sys/firmware/efi ]; then
-        sudo grub2-mkconfig -o /etc/grub2-efi.cfg
+    get_current_setting
+    echo
+    # If no ACTION was passed, go interactive
+    if [ -z "$OPTION" ]; then
+      NEW_SETTING=$(interactive_menu)
+      if [ -n "$NEW_SETTING" ]; then
+        apply_setting "$NEW_SETTING"
       else
-        sudo grub2-mkconfig -o /etc/grub2.cfg
+        echo "${bold}No changes were made.${normal}"
       fi
-    elif [[ "${OPTION,,}" =~ ^unhide ]]; then
-      sudo sed -i '/GRUB_HIDDEN_TIMEOUT=1/d' /etc/default/grub
-      sudo sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub
-      sudo sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=5/g' /etc/default/grub
-      if [ -d /sys/firmware/efi ]; then
-        sudo grub2-mkconfig -o /etc/grub2-efi.cfg
-      else
-        sudo grub2-mkconfig -o /etc/grub2.cfg
-      fi
-    elif [[ "${OPTION,,}" =~ ^fix ]]; then
-      sudo grub2-switch-to-blscfg
-      if [ -d /sys/firmware/efi ]; then
-        sudo grub2-mkconfig -o /etc/grub2-efi.cfg
-      else
-        sudo grub2-mkconfig -o /etc/grub2.cfg
-      fi
+    else
+      apply_setting "$OPTION"
     fi
 
 # Add user to "input" group required by certain controller drivers
@@ -80,6 +183,10 @@ enable-displaylink:
 # Enable support for Tailscale
 enable-tailscale:
     systemctl enable --now tailscaled.service
+
+# Enable Framework Fan Control
+enable-framework-fan-control:
+    systemctl enable --now fw-fanctrl.service
 
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 configure-watchdog ACTION="":
@@ -106,7 +213,7 @@ configure-watchdog ACTION="":
       echo "Watchdog is $WATCHDOG_STATE"
       OPTION=$(Choose "Enable Watchdog" "Disable Watchdog")
     fi
-    if [[ "$OPTION" =~ ^enable ]]; then
+    if [[ "${OPTION,,}" =~ ^enable ]]; then
       WATCHDOG_KARGS="--delete-if-present=nowatchdog"
       if [[ "$CPU_MODEL" =~ "Intel" ]]; then
         WATCHDOG_KARGS="$WATCHDOG_KARGS --delete-if-present=modprobe.blacklist=iTCO_wdt"
@@ -114,7 +221,7 @@ configure-watchdog ACTION="":
         WATCHDOG_KARGS="$WATCHDOG_KARGS --delete-if-present=modprobe.blacklist=sp5100_tco"
       fi
       rpm-ostree kargs $WATCHDOG_KARGS
-    elif [[ "$OPTION" =~ ^disable ]]; then
+    elif [[ "${OPTION,,}" =~ ^disable ]]; then
       WATCHDOG_KARGS="--append-if-missing=nowatchdog"
       if [[ "$CPU_MODEL" =~ "Intel" ]]; then
         WATCHDOG_KARGS="$WATCHDOG_KARGS --append-if-missing=modprobe.blacklist=iTCO_wdt"
@@ -226,7 +333,7 @@ bazzite-cli:
     # Brew Bundle Install
     function brew-bundle(){
     echo 'Installing bling from Homebrew 🍻🍻🍻'
-    brew bundle --file /usr/share/ublue-os/homebrew/bazzite-cli.Brewfile --no-lock
+    brew bundle --file /usr/share/ublue-os/homebrew/bazzite-cli.Brewfile
     }
 
     # Check if bling is already sourced
@@ -396,54 +503,60 @@ toggle-password-feedback ACTION="":
       echo "enabled, restart terminal to see changes"
     fi
 
-post-gamescope-logs:
-    #!/usr/bin/bash
-    OUTPUT_FILE="/tmp/gathered_info.txt"
+# Install Bazzite Buddy plugin to easily access changelogs in game mode!
+get-decky-bazzite-buddy:
+    #!/bin/bash
+    PLUGIN_URL="https://github.com/xXJSONDeruloXx/bazzite-buddy/releases/download/stable/bazzite-buddy.zip"
+    PLUGIN_NAME="bazzite-buddy"
+    PLUGIN_DIR="$HOME/homebrew/plugins"
+    if [ ! -d "$PLUGIN_DIR" ]; then
+      echo "Creating plugins directory with sudo..."
+      sudo mkdir -p "$PLUGIN_DIR"
+    fi
+    # Change to the plugin directory
+    cd "$PLUGIN_DIR" || { echo "Failed to navigate to plugins directory"; exit 1; }
+    # Remove any existing plugin folder
+    if [ -d "$PLUGIN_NAME" ]; then
+      echo "Removing existing $PLUGIN_NAME directory with sudo..."
+      sudo rm -rf "$PLUGIN_NAME"
+    fi
+    # Download the zip file
+    echo "Downloading $PLUGIN_NAME from $PLUGIN_URL..."
+    sudo curl -L -o "${PLUGIN_NAME}.zip" "$PLUGIN_URL"
+    if [ $? -ne 0 ]; then
+      echo "Download failed!"
+      exit 1
+    fi
+    echo "Extracting $PLUGIN_NAME..."
+    sudo unzip -o "${PLUGIN_NAME}.zip" -d .
+    if [ $? -ne 0 ]; then
+      echo "Extraction failed!"
+      exit 1
+    fi
+    # Move the extracted files to the correct location if nested
+    if [ -d "./${PLUGIN_NAME}/${PLUGIN_NAME}" ]; then
+      echo "Fixing folder structure..."
+      sudo mv ./${PLUGIN_NAME}/${PLUGIN_NAME}/* ./${PLUGIN_NAME}/
+      sudo rm -rf ./${PLUGIN_NAME}/${PLUGIN_NAME}
+    fi
+    # Clean up the downloaded ZIP file
+    echo "Cleaning up..."
+    sudo rm -f "${PLUGIN_NAME}.zip"
+    # Confirm installation
+    echo "$PLUGIN_NAME has been installed successfully to $PLUGIN_DIR!"
+    # Prompt user to restart Decky Loader
+    echo "Please restart Decky Loader to activate the plugin."
 
-    # Clear the output file or create it if it doesn't exist
-    > "$OUTPUT_FILE"
-
-    # Gather information from various sources
-    {
-        echo "GPU info"
-        lshw -C display
-
-        # Add a blank line for readability
-        echo
-
-        filepaths=(
-            "/sys/devices/virtual/dmi/id/bios_date"
-            "/sys/devices/virtual/dmi/id/board_name"
-            "/sys/devices/virtual/dmi/id/board_vendor"
-            "/sys/devices/virtual/dmi/id/product_name"
-            "$HOME/.gamescope-cmd.log"
-            "$HOME/.gamescope-stdout.log"
-        )
-
-        # Iterate over each file path in the array
-        for filepath in "${filepaths[@]}"; do
-            # Print the file path
-            echo "File: $filepath"
-
-            # Check if the file exists before trying to read it
-            if [[ -f "$filepath" ]]; then
-                # Print the file content
-                cat "$filepath"
-            else
-                echo "File not found: $filepath"
-            fi
-
-            # Add a blank line for readability
-            echo
-        done
-
-        echo "----- Contents of $HOME/.config/environment.d/ -----"
-        mkdir -p $HOME/.config/environment.d
-        cat "$HOME/.config/environment.d/"* 2>/dev/null || echo "No files found in $HOME/.config/environment.d/"
-
-    } >> "$OUTPUT_FILE"
-
-    fpaste $OUTPUT_FILE
-
-    # cleanup output file
-    rm -rf $OUTPUT_FILE
+# get logs for this boot and last boot, cleanly output in terminal as pastebin links, to simplify troubleshooting and issue reporting.
+get-logs:
+    #!/bin/bash
+    set -euo pipefail
+    source /usr/lib/ujust/ujust.sh
+    # Get logs for this boot
+    this_boot_logs=$(journalctl -b | fpaste 2>/dev/null)
+    echo -e "${bold}Logs This Boot:${normal} $this_boot_logs"
+    echo " "
+    # Get logs for last boot
+    last_boot_logs=$(journalctl -b -1 | fpaste 2>/dev/null)
+    echo -e "${bold}Logs Last Boot:${normal} $last_boot_logs"
+    echo " "

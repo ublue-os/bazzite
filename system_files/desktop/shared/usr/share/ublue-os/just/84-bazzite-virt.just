@@ -4,6 +4,10 @@
 setup-virtualization ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
+    if [[ $(id -u) -eq 0 ]]; then
+      echo "Please do not run this command as root"
+      exit 1
+    fi
     # Check if we are running on a Steam Deck
     if /usr/libexec/hwsupport/valve-hardware; then
       echo "${red}${b}WARNING${n}: Virtualization is not properly supported on Steam Deck by Valve"
@@ -26,6 +30,8 @@ setup-virtualization ACTION="":
       echo "  Use 'vfio-on' to select Enable VFIO drivers"
       echo "  Use 'vfio-off' to select Disable VFIO drivers"
       echo "  Use 'kvmfr' to select Autocreate Looking-Glass shm"
+      echo "  Use 'usbhp-on' to select Enable SPICE USB hot plugging"
+      echo "  Use 'usbhp-off' to select Disable SPICE USB hot plugging"
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Virtualization Setup${normal}"
@@ -37,6 +43,8 @@ setup-virtualization ACTION="":
         "Enable VFIO drivers" \
         "Disable VFIO drivers" \
         "Enable kvmfr module" \
+        "Enable USB hot plugging" \
+        "Disable USB hot plugging" \
       )
     fi
     if [[ "${OPTION,,}" =~ (^enable[[:space:]]virtualization|virt-on) ]]; then
@@ -46,6 +54,22 @@ setup-virtualization ACTION="":
           rpm-ostree kargs \
           --append-if-missing="kvm.ignore_msrs=1" \
           --append-if-missing="kvm.report_ignored_msrs=0"
+          echo "Making sure swtpm will work"
+          if [ ! -d "/var/lib/swtpm-localca" ]; then
+            sudo mkdir /var/lib/swtpm-localca
+          fi
+          sudo chown tss /var/lib/swtpm-localca
+          echo "Giving qemu access to read ISO files from $HOME"
+          sudo setfacl -m u:qemu:rx $HOME
+          if sudo test ! -f "/etc/libvirt/hooks/qemu"; then
+            echo "Adding libvirt qemu hooks"
+            sudo wget 'https://raw.githubusercontent.com/PassthroughPOST/VFIO-Tools/master/libvirt_hooks/qemu' -O /etc/libvirt/hooks/qemu
+            sudo chmod +x /etc/libvirt/hooks/qemu
+            sudo grep -A1 -B1 "# Add" /etc/libvirt/hooks/qemu | sed 's/^# //g'
+            if sudo test ! -d "/etc/libvirt/hooks/qemu.d"; then
+              sudo mkdir /etc/libvirt/hooks/qemu.d
+            fi
+          fi
           sudo systemctl enable bazzite-libvirtd-setup.service \
             && echo "libvirtd will be enabled at next reboot"
           echo 'Please reboot to apply changes'
@@ -166,14 +190,22 @@ setup-virtualization ACTION="":
       fi
       echo ""
       echo "Setting up kvmfr module so it loads next boot"
-      sudo bash -c "cat << KVMFR_MODPROBE > /etc/modprobe.d/kvmfr.conf
+      if [ -f "/etc/modprobe.d/kvmfr.conf" ]; then
+        echo "Re-creating dummy kvmfr modprobe file"
+        sudo rm /etc/modprobe.d/kvmfr.conf
+      fi
+      sudo bash -c 'cat << KVMFR_MODPROBE > /etc/modprobe.d/kvmfr.conf
     # This is a dummy file and changing it does nothing
     # If you want to change the kvmfr static_size_mb
     # Run "rpm-ostree kargs --replace=kvmfr.static_size_mb=oldvalue=newvalue"
     # Default value set by us is 128 which is enough for 4k SDR
     # Find the current value by running "rpm-ostree kargs"
-    KVMFR_MODPROBE"
+    KVMFR_MODPROBE'
       rpm-ostree kargs --append-if-missing="kvmfr.static_size_mb=128"
+      if [ -f "/etc/udev/rules.d/99-kvmfr.rules" ]; then
+        echo "Re-creating kvmfr udev rules"
+        sudo rm /etc/udev/rules.d/99-kvmfr.rules
+      fi
       echo "Adding udev rule for /dev/kvmfr0"
       sudo bash -c 'cat << KVMFR_UDEV > /etc/udev/rules.d/99-kvmfr.rules
     SUBSYSTEM=="kvmfr", OWNER="'$USER'", GROUP="qemu", MODE="0660"
@@ -202,6 +234,10 @@ setup-virtualization ACTION="":
       fi
       if [ ! -d "$HOME/.config/selinux_te/pp" ]; then
         mkdir -p "$HOME/.config/selinux_te/pp"
+      fi
+      if [ -f "$HOME/.config/selinux_te/kvmfr.te" ]; then
+        echo "Re-creating kvmfr selinux type enforcement rules"
+        rm $HOME/.config/selinux_te/kvmfr.te
       fi
       bash -c "cat << KVMFR_SELINUX > $HOME/.config/selinux_te/kvmfr.te
     module kvmfr 1.0;
@@ -237,6 +273,13 @@ setup-virtualization ACTION="":
       echo "$(Urllink "https://looking-glass.io/docs/rc/ivshmem_kvmfr/#libvirt" "Please read official documentation for kvmfr for how to use it")"
       echo "${b}NOTE: You can start using kvmfr right now without rebooting if you already rebooted after enabling VFIO.${n}"
       CONFIRM=$(Choose OK)
+    elif [[ "${OPTION,,}" =~ (^enable[[:space:]]usb|usbhp-on) ]]; then
+      echo "Adding udev rule for USB devices"
+      sudo bash -c 'cat << USBHP_UDEV > /etc/udev/rules.d/72-usbhp.rules
+    ACTION=="add" SUBSYSTEM=="usb", TAG+="uaccess"
+    USBHP_UDEV'
+    elif [[ "${OPTION,,}" =~ (^disable[[:space:]]usb|usbhp-off) ]]; then
+      sudo bash -c 'rm /etc/udev/rules.d/72-usbhp.rules'
     elif [[ "${OPTION,,}" =~ group ]]; then
       if ! grep -q "^libvirt" /etc/group; then
         grep '^libvirt' /usr/lib/group | sudo tee -a /etc/group > /dev/null

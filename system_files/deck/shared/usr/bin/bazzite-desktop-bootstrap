@@ -10,6 +10,7 @@ IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
 if [[ "${XDG_SESSION_TYPE}" = "wayland" ]]; then
+  mkdir -p "$HOME/.config/bazzite/fixups" 2>/dev/null
   if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
     if /usr/libexec/hwsupport/needs-left-rotation || /usr/libexec/hwsupport/needs-right-rotation; then
       # Try to wait for kscreen to be ready.  This was mostly a hack to try to make the below bug not happen, but I'm afraid
@@ -50,18 +51,21 @@ if [[ "${XDG_SESSION_TYPE}" = "wayland" ]]; then
       fi
 
       # Then try to fix the scaling
-      if /usr/libexec/hwsupport/needs-100-scale; then
-        kscreen-doctor output.eDP.scale.1 \
-          || kscreen-doctor output.eDP-1.scale.1 \
-          || true
-      elif /usr/libexec/hwsupport/needs-150-scale; then
-        kscreen-doctor output.eDP.scale.1.5 \
-          || kscreen-doctor output.eDP-1.scale.1.5 \
-          || true
-      elif /usr/libexec/hwsupport/needs-200-scale; then
-        kscreen-doctor output.eDP.scale.2 \
-          || kscreen-doctor output.eDP-1.scale.2 \
-          || true
+      if [ ! -f "$HOME/.config/bazzite/fixups/scaling_fixup" ]; then
+        if /usr/libexec/hwsupport/needs-100-scale; then
+          kscreen-doctor output.eDP.scale.1 \
+            || kscreen-doctor output.eDP-1.scale.1 \
+            || true
+        elif /usr/libexec/hwsupport/needs-150-scale; then
+          kscreen-doctor output.eDP.scale.1.5 \
+            || kscreen-doctor output.eDP-1.scale.1.5 \
+            || true
+        elif /usr/libexec/hwsupport/needs-200-scale; then
+          kscreen-doctor output.eDP.scale.2 \
+            || kscreen-doctor output.eDP-1.scale.2 \
+            || true
+        fi
+        touch "$HOME/.config/bazzite/fixups/scaling_fixup"
       fi
     fi
 
@@ -77,14 +81,17 @@ if [[ "${XDG_SESSION_TYPE}" = "wayland" ]]; then
     fi
   elif [[ $BASE_IMAGE_NAME =~ "silverblue" ]]; then
     # Set scale on GNOME desktops, rotation tends to work without issue.
-    if /usr/libexec/hwsupport/needs-100-scale; then
-      gnome-randr modify eDP --scale 1 \
-        || gnome-randr modify eDP-1 --scale 1 \
-        || true
-    elif /usr/libexec/hwsupport/needs-200-scale; then
-      gnome-randr modify eDP --scale 2 \
-        || gnome-randr modify eDP-1 --scale 2 \
-        || true
+    if [ ! -f "$HOME/.config/bazzite/fixups/scaling_fixup" ]; then
+      if /usr/libexec/hwsupport/needs-100-scale; then
+        gnome-randr modify eDP --scale 1 \
+          || gnome-randr modify eDP-1 --scale 1 \
+          || true
+      elif /usr/libexec/hwsupport/needs-200-scale; then
+        gnome-randr modify eDP --scale 2 \
+          || gnome-randr modify eDP-1 --scale 2 \
+          || true
+      fi
+      touch "$HOME/.config/bazzite/fixups/scaling_fixup"
     fi
   fi
 fi

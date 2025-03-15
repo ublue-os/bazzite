@@ -149,7 +149,8 @@ configure-override-videos ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
-    if [ ! -f $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo ]; then
+    NO_VIDEO="$HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo"
+    if [ ! -f $NO_VIDEO ]; then
         VIDEO_STATE="${b}Enabled${n}"
     else
         VIDEO_STATE="${b}Disabled${n}"
@@ -165,13 +166,31 @@ configure-override-videos ACTION="":
       echo "Videos are: $VIDEO_STATE"
       OPTION=$(Choose "Enable Videos" "Disable Videos")
     fi
-    if [[ "$OPTION" =~ ^enable ]]; then
-      rm $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo
-    elif [[ "$OPTION" =~ ^disable ]]; then
-      touch $HOME/.local/share/Steam/config/uioverrides/movies/bazzite_novideo
-      rm $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
-      rm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
-      rm $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
+    if [[ "${OPTION,,}" =~ ^enable ]]; then
+      echo "Removing $NO_VIDEO"
+      rm -f $NO_VIDEO
+    elif [[ "${OPTION,,}" =~ ^disable ]]; then
+      echo "Adding $NO_VIDEO"
+      touch $NO_VIDEO
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend_from_throbber.webm
+    fi
+
+# Restores the stock virtual keyboard under KDE & GNOME
+restore-virtual-keyboard:
+    #!/usr/bin/bash
+    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
+      gnome-extensions disable block-caribou-36@lxylxy123456.ercli.dev
+    else
+      if [[ ! -f ~/.local/share/applications/com.github.maliit.keyboard.desktop ]]; then
+        mkdir -p ~/.local/share/applications/
+        cp /usr/share/ublue-os/backup/com.github.maliit.keyboard.desktop ~/.local/share/applications/com.github.maliit.keyboard.desktop
+      fi
     fi
 
 # Install hhd main branch locally until reboot, helpful for hhd testing and debugging. (rename to install-hhd-dev if we unhide)
@@ -189,3 +208,30 @@ _toggle-autologin:
     else
       sudo touch $DESKTOP_AUTOLOGIN
     fi
+
+# Restore the "Return to Gaming Mode" shortcut on the Desktop
+restore-gamemode-shortcut:
+    #!/usr/bin/bash
+    # Define paths
+    SHORTCUT_FILE="$HOME/Desktop/Return.desktop"
+    SKEL_FILE="/etc/skel/Desktop/Return.desktop"
+    # Check if the shortcut already exists
+    if [ -f "$SHORTCUT_FILE" ]; then
+      echo "The shortcut 'Return to Gaming Mode' already exists at $SHORTCUT_FILE."
+      echo "No changes were made."
+      exit 0
+    fi
+    # Check if the original file exists in skel
+    if [ ! -f "$SKEL_FILE" ]; then
+      echo "Error: The original file does not exist at $SKEL_FILE."
+      echo "Unable to restore the shortcut."
+      exit 1
+    fi
+    # Copy the file from skel to the desktop
+    echo "Restoring the 'Return to Gaming Mode' shortcut from $SKEL_FILE..."
+    mkdir -p "$HOME/Desktop"  # Ensure the Desktop directory exists
+    cp "$SKEL_FILE" "$SHORTCUT_FILE"
+    # Ensure the file is executable
+    chmod +x "$SHORTCUT_FILE"
+    echo "Shortcut restored successfully at $SHORTCUT_FILE."
+    echo "Note: The first time you use the shortcut, it may ask you to trust it. Please accept."

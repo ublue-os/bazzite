@@ -13,3 +13,4 @@
 - **󰈙** [Documentation](http://docs.bazzite.gg/)
 - **󰙯** [Discord](https://discord.bazzite.gg/)
 - **󰫑** [Mastodon](https://fosstodon.org/@UniversalBlue)
+- **** [Bluesky](https://bsky.app/profile/bazzite.gg)

@@ -59,6 +59,7 @@ unblur-in-overview=true
 style-components=3
 
 [org.gnome.shell.extensions.blur-my-shell.appfolder]
+blur=false
 style-dialogs=0
 
 [org.gnome.shell.extensions.blur-my-shell.applications]
@@ -69,6 +70,12 @@ blur=true
 
 [org.gnome.shell.extensions.blur-my-shell.lockscreen]
 blur=true
+
+[org.gnome.shell.extensions.blur-my-shell.coverflow-alt-tab]
+blur=true
+
+[org.gnome.shell.extensions.blur-my-shell.dash-to-dock]
+blur=false
 
 [org.gnome.shell.extensions.blur-my-shell.applications]
 opacity=255
@@ -84,7 +91,11 @@ duration=250
 [org.gnome.shell.extensions.tilingshell]
 inner-gaps=8
 outer-gaps=8
-enable-blur-snap-assistant=true
+enable-blur-snap-assistant=false
 enable-blur-selected-tilepreview=true
 top-edge-maximize=true
 quarter-tiling-threshold=25
+enable-tiling-system-windows-suggestions=true
+enable-screen-edges-windows-suggestions=true
+show-indicator=false
+enable-snap-assist=false

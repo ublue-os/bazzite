@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=51
+HWS_VER=55
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -84,6 +84,12 @@ if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
 fi
 
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
+  if [[ "$SYS_ID" == "Laptop 16 ("* ]]; then
+    if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
+      echo "Framework 16 Laptop detected, fixing display artifacts"
+      NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
+    fi
+  fi
   if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
     if [[ ! $KARGS =~ "iomem" ]]; then
       echo "AMD Framework Laptop detected, adding needed kargs for ryzenadj"
@@ -143,9 +149,9 @@ elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
   fi
 fi
 
-if [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:" =~ ":$SYS_ID:" ]]; then
+if [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
-    echo "Adding panel orientation for ONEXPLAYER F1 & ONEXFLY"
+    echo "Adding panel orientation for ONEXPLAYER F1, ONEXFLY, & X1 Pro"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")
   fi
   if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
@@ -153,6 +159,13 @@ if [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:" =~ ":$SYS_ID:" ]]; t
       echo "Adding GTTSize for ONEXPLAYER (32GB RAM)"
       NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=16256")
     fi
+  fi
+fi
+
+if [[ ":ROG Flow Z13 GZ302EA:" =~ "$:SYS_ID:" ]]; then
+  if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
+    echo "ROG Flow Z13 2025, fixing display artifacts"
+    NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
   fi
 fi
 
@@ -253,6 +266,50 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
   fi
 fi
 
+# SURFACE FIXES
+if [[ ":Microsoft:" =~ ":$VEN_ID:" ]]; then
+  if ! [[ -f "/etc/modules-load.d/surface.conf" ]]; then
+    if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
+      printf "# Support GPIO pins on AMD Surfaces\npinctrl_amd\n" > "/etc/modules-load.d/surface.conf"
+    elif [[ "GenuineIntel" == "$CPU_VENDOR" ]]; then
+      sed 's/^ *//' > "/etc/modules-load.d/surface.conf" << EOF
+        # Support GPIO pins on Intel Surfaces
+        # Surface Book 2
+        pinctrl_sunrisepoint
+
+        # For Surface Laptop 3/Surface Book 3
+        pinctrl_icelake
+
+        # For Surface Laptop 4/Surface Laptop Studio
+        pinctrl_tigerlake
+
+        # For Surface Pro 9/Surface Laptop 5
+        pinctrl_alderlake
+
+        # For Surface Pro 10/Surface Laptop 6
+        pinctrl_meteorlake
+
+        # Support LPSS on Intel Surfaces
+        intel_lpss
+        intel_lpss_pci
+
+EOF
+    fi
+    sed 's/^ *//' >> "/etc/modules-load.d/surface.conf" << EOF
+      # Add modules necessary for Disk Encryption via keyboard
+      surface_aggregator
+      surface_aggregator_registry
+      surface_aggregator_hub
+      surface_hid_core
+      8250_dw
+
+      # Surface Laptop 3/Surface Book 3 and later
+      surface_hid
+      surface_kbd
+EOF
+  fi
+fi
+
 # WAYDROID FIX
 if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
   echo "Removing unneeded apparmor entry from Waydroid LXC"
@@ -295,6 +352,50 @@ if [ ! -f /etc/bazzite/fixups/snapper_cleanup ] &&
   snapper -c root delete-config
 fi
 touch /etc/bazzite/fixups/snapper_cleanup
+
+if [ ! -f /etc/bazzite/fixups/grub_fixup ]; then
+  # Grub settings
+  # Set grub timeout to 3 seconds
+  if [ -z $(grep "GRUB_TIMEOUT=" /etc/default/grub) ]; then
+    echo "GRUB_TIMEOUT=3" >> /etc/default/grub
+  else
+    sed -i 's/GRUB_TIMEOUT=[0-9]*/GRUB_TIMEOUT=3/' /etc/default/grub
+  fi
+
+  # Nuke hidden timeout as it will cause issues if GRUB_TIMEOUT exists
+  if [ -n $(grep "GRUB_HIDDEN_TIMEOUT=" /etc/default/grub) ]; then
+    sed -i 's/GRUB_HIDDEN_TIMEOUT=[0-9]*//' /etc/default/grub
+  fi
+
+  # set timeout style to menu to show grub during countdown
+  # (unless GRUB_TIMEOUT=0)
+  if [ -z $(grep "GRUB_TIMEOUT_STYLE=" /etc/default/grub) ]; then
+    echo "GRUB_TIMEOUT_STYLE=menu" >> /etc/default/grub
+  else
+    sed -i 's/GRUB_TIMEOUT_STYLE=.*/GRUB_TIMEOUT_STYLE=menu/' /etc/default/grub
+  fi
+
+  # Autohide grub menu if boot is successful
+  # menu_auto_hide=2 hides grub menu if previous boot is successful
+  # menu_auto_hide=1 same, except not if Windows/Other OS is installed
+  # Deck images cant use grub menu and often dual boot, so hide it always
+  # For desktop images, hide it only if no other OS is installed
+  if [[ $IMAGE_NAME =~ "deck" ]]; then
+    grub2-editenv - set menu_auto_hide=2
+  else
+    grub2-editenv - set menu_auto_hide=1
+  fi
+
+  # Update grub
+  if [ -d /sys/firmware/efi ]; then
+    echo "Updating EFI grub config"
+    grub2-mkconfig -o /etc/grub2-efi.cfg
+  else
+    echo "Updating BIOS grub config"
+    grub2-mkconfig -o /etc/grub2.cfg
+  fi
+fi
+touch /etc/bazzite/fixups/grub_fixup
 
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE

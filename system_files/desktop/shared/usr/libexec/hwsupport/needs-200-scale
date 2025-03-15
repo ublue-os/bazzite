@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+SYS_ID="$(/usr/libexec/hwsupport/sysid)"
+
 if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
 	exit 0
 fi

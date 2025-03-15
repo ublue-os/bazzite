@@ -4,7 +4,7 @@ if status --is-interactive
     if [ -d /home/linuxbrew/.linuxbrew ]
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         if [ -w /home/linuxbrew/.linuxbrew ]
-            if  [ ! -L (brew --prefix)/share/fish/vendor_completions.d/brew ]
+            if  [ ! -L (brew --prefix)/share/fish/vendor_completions.d/brew.fish ]
                 brew completions link > /dev/null
             end
         end

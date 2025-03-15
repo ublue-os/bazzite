@@ -9,6 +9,9 @@ if [[ "$SYS_ID" =~ ROG[[:space:]]Ally[[:space:]]RC71L.+ ]]; then
 elif [[ "$SYS_ID" =~ ROG[[:space:]]Ally[[:space:]]X[[:space:]]RC72LA.+ ]]; then
     # Trunctate ROG Ally X SYS_ID
     echo "ROG Ally X RC72LA"
+elif [[ "$SYS_ID" =~ ROG[[:space:]]Flow[[:space:]]Z13[[:space:]]GZ302EA.+ ]]; then
+    # Trunctate ROG Flow Z13 2025 SYS_ID
+    echo "ROG Flow Z13 GZ302EA"
 else
     # Probably a sensible SYS_ID so we echo it
     echo "$SYS_ID"

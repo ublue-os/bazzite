@@ -32,13 +32,32 @@ install-steamcmd:
 
 # Install OpenRazer for Razer gaming hardware
 install-openrazer:
-    sudo wget https://download.opensuse.org/repositories/hardware:/razer/Fedora_$(rpm -E %fedora)/hardware:razer.repo -O /etc/yum.repos.d/hardware:razer.repo && \
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    OPENRAZER_CONFIGURATOR_APP="None of openrazer frontend apps"
+    sudo curl -Lo /etc/yum.repos.d/hardware:razer.repo https://openrazer.github.io/hardware:razer.repo && \
     ublue-update --wait && \
-    rpm-ostree install -y openrazer-meta razergenie && \
-    if ! grep -q "plugdev" /etc/group; then \
+    rpm-ostree install -y openrazer-daemon && \
+        if ! grep -q "plugdev" /etc/group; then \
       sudo bash -c 'grep "plugdev" /lib/group >> /etc/group' \
     ; fi && \
     sudo usermod -a -G plugdev $USER && \
+    echo "${bold}Select OpenRazer Frontend Apps${normal}"
+    OPTION=$(Choose "Razer Genie" "Polychromatic" "None")
+    if [[ "${OPTION,,}" =~ ^razer[[:space:]]genie ]]; then
+        echo "Installing Razer Genie..."
+        flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+        flatpak --system install -y flathub xyz.z3ntu.razergenie
+        OPENRAZER_CONFIGURATOR_APP="Razer Genie"
+    elif [[ "${OPTION,,}" =~ ^polychromatic ]]; then
+        echo "Installing Polychromatic..."
+        flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+        flatpak --system install -y flathub app.polychromatic.controller
+        OPENRAZER_CONFIGURATOR_APP="Polychromatic"
+    else
+        echo "Not Selecting GUI Frontend"
+    fi
+    echo "$OPENRAZER_CONFIGURATOR_APP is installed"
     echo "Please reboot to apply needed changes."
 
 # Install EmuDeck (https://www.emudeck.com/)
@@ -106,7 +125,7 @@ install-adwaita-for-steam:
 
 # Install Oversteer for Logitech steering wheels
 install-oversteer: distrobox-check-fedora
-    distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y kylegospo/oversteer && \
+    distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y bazzite-org/oversteer && \
       sudo dnf install -y oversteer && \
       distrobox-export --app oversteer'
 
@@ -131,16 +150,63 @@ install-scrcpy: distrobox-check-fedora
 install-opentabletdriver:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    if grep -qvz "arch" <<< $(distrobox list); then \
-      Assemble noconfirmcreate "" "arch"; \
-    fi && \
-    distrobox enter -n arch -- bash -c 'paru -Syu --noconfirm && paru -S opentabletdriver --noconfirm' && \
-    mkdir -p ~/.config/systemd/user/ && \
-    rm -f ~/.config/systemd/user/arch-opentabletdriver.service && \
-    wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/OpenTabletDriver/opentabletdriver.service -O ~/.config/systemd/user/arch-opentabletdriver.service && \
+    echo "Installing OpenTabletDriver..."
+    curl -s https://api.github.com/repos/OpenTabletDriver/OpenTabletDriver/releases/latest \
+    | jq -r '.assets | sort_by(.created_at) | .[] | select (.name|test("opentabletdriver.*tar.gz$")) | .browser_download_url' \
+    | wget -qi - -O /tmp/OpenTabletDriver/opentabletdriver.tar.gz && \
+    tar --strip-components=1 -xvzf /tmp/OpenTabletDriver/opentabletdriver.tar.gz -C /tmp/OpenTabletDriver && \
+    sudo cp /tmp/OpenTabletDriver/etc/udev/rules.d/70-opentabletdriver.rules /etc/udev/rules.d/71-opentabletdriver.rules && \
+    rm -rf /tmp/OpenTabletDriver && \
+    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && \
+    flatpak --system install -y flathub net.opentabletdriver.OpenTabletDriver && \
+    mkdir -p $HOME/.config/OpenTabletDriver && \
+    flatpak override --user --filesystem=xdg-config/OpenTabletDriver net.opentabletdriver.OpenTabletDriver && \
+    mkdir -p $HOME/.config/systemd/user && \
+    curl -s https://raw.githubusercontent.com/flathub/net.opentabletdriver.OpenTabletDriver/refs/heads/master/scripts/opentabletdriver.service > $HOME/.config/systemd/user/opentabletdriver.service  && \
     systemctl --user daemon-reload && \
-    systemctl enable --user --now arch-opentabletdriver.service && \
-    distrobox enter -n arch -- bash -c 'distrobox-export --app otd-gui'
+    systemctl enable --user --now opentabletdriver.service
+
+# Remove OpenTabletDriver
+remove-opentabletdriver:
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    echo "Uninstalling OpenTabletDriver..."
+    sudo -A rm /etc/udev/rules.d/71-opentabletdriver.rules && \
+    flatpak --system remove -y flathub net.opentabletdriver.OpenTabletDriver && \ 
+    systemctl disable --user --now opentabletdriver.service
+
+# Install Docker, a platform designed to help developers build, share, and run container applications
+install-docker:
+    #!/usr/bin/bash
+    set -eo pipefail
+    [[ ${DEBUG:-} -eq 1 ]] && set -x
+    [[ $(id -u) -eq 0 ]] && {
+        echo >&2 "Dont run this as root"
+        exit 1
+    }
+    mkdir -p ~/.local/bin
+    brew install docker
+    # Handle plugins installation separately to handle file config collision
+    brew install docker-buildx docker-compose || {
+      brew link --overwrite docker-buildx docker-compose
+    }
+
+    [[ -e ~/.local/bin/docker ]] && {
+      gum confirm "There is a file in ~/.local/bin/docker. Do you wish to override it?" || exit 0
+    }
+    ln -sf $(which docker) ~/.local/bin/docker
+    [[ -e /usr/local/bin/docker ]] && {
+      gum confirm "There is a file in /usr/local/bin/docker. Do you wish to override it?" || exit 0
+    }
+    sudo ln -sf $(which docker) /usr/local/bin/docker
+    # Enable podman sockets
+    systemctl --user enable --now podman.socket
+    sudo systemctl enable --now podman.socket
+    # Add podman sockets to docker contexts
+    ctx=$(docker context create podman --docker "host=unix://$(podman system info  --format '{{{{.Host.RemoteSocket.Path}}')") && \
+      docker context use $ctx && unset -v ctx || true
+    ctx=$(sudo docker context create podman-rootful --docker "host=unix://$(sudo podman system info  --format '{{{{.Host.RemoteSocket.Path}}')") && \
+      sudo docker context use $ctx && unset -v ctx || true
 
 # Create fedora distrobox if it doesn't exist
 [private]

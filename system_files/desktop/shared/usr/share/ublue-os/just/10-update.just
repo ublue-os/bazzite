@@ -38,6 +38,14 @@ toggle-updates ACTION="prompt":
 
 alias changelog := changelogs
 
-# Show the changelog
+# Show the stable changelog
 changelogs:
-    /usr/bin/glow https://raw.githubusercontent.com/ublue-os/bazzite/main/CHANGELOG-SHORT.md --pager
+    #!/usr/bin/bash
+    CONTENT=$(curl -s https://api.github.com/repos/ublue-os/bazzite/releases/latest | jq -r '.body')
+      echo "$CONTENT" | glow -
+
+# Show the testing (pre-release) changelog
+changelogs-testing:
+    #!/usr/bin/bash
+    CONTENT=$(curl -s https://api.github.com/repos/ublue-os/bazzite/releases | jq -r 'map(select(.prerelease)) | .[0].body')
+       echo "$CONTENT" | glow -
