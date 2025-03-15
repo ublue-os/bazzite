@@ -175,6 +175,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/install-firmware && \
     /ctx/cleanup
 
+
 # Install patched fwupd
 # Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
 # Install patched switcheroo control with proper discrete GPU support
@@ -188,6 +189,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         ["terra-mesa"]="mesa-filesystem" \
         ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
+    dnf5 -y downgrade dnf5 && \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
