@@ -78,6 +78,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install dnf5-plugins && \
+    dnf5 -y downgrade dnf5 && \
     for copr in \
         bazzite-org/bazzite \
         bazzite-org/bazzite-multilib \
@@ -189,7 +190,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         ["terra-mesa"]="mesa-filesystem" \
         ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
-    dnf5 -y downgrade dnf5 && \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
