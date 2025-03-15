@@ -48,10 +48,10 @@ jobs:
     steps:
 
       - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@v1.3.1
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Set Image Tag
         id: generate-tag
@@ -85,7 +85,7 @@ jobs:
       # Docker requires lowercase registry references
       - name: Lowercase Registry
         id: registry_case
-        uses: ASzc/change-string-case-action@v6
+        uses: ASzc/change-string-case-action@d0603cd0a7dd490be678164909f65c7737470a7f # v6
         with:
           string: ${{ env.IMAGE_REGISTRY }}
 
@@ -127,7 +127,7 @@ jobs:
           curl -Lo ${{ github.workspace }}/bazzite.repo https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/repo/fedora-${{ matrix.major_version }}/bazzite-org-bazzite-fedora-${{ matrix.major_version }}.repo
 
       - name: Build ISOs
-        uses: jasonn3/build-container-installer@v1.2.4
+        uses: jasonn3/build-container-installer@f09a756b7a1205f121d8508f1171759328b95d2c # v1.2.4
         id: build
         with:
           arch: x86_64
@@ -160,7 +160,7 @@ jobs:
       - name: Upload ISOs and Checksum to Job Artifacts
         if: github.ref_name == 'testing'
         #if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
           path: ${{ steps.upload-directory.outputs.iso-upload-dir }}

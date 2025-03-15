@@ -145,21 +145,21 @@ jobs:
           echo "SHA_HEAD_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Verify main image
-        uses: EyeCantCU/cosign-action/verify@v0.3.0
+        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
         with:
           containers: ${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
           pubkey: https://raw.githubusercontent.com/ublue-os/${{ matrix.base_image_flavor }}/main/cosign.pub
           registry: ${{ env.PULL_IMAGE_REGISTRY }}
 
       - name: Verify akmods image
-        uses: EyeCantCU/cosign-action/verify@v0.3.0
+        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
         with:
           containers: akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
           pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
           registry: ${{ env.PULL_IMAGE_REGISTRY }}
 
       - name: Verify akmods-nvidia image
-        uses: EyeCantCU/cosign-action/verify@v0.3.0
+        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
         with:
           containers: akmods-${{ matrix.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
           pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
@@ -167,7 +167,7 @@ jobs:
 
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       # Prepare offline documentation
       - name: Download offline docs
@@ -185,10 +185,10 @@ jobs:
           rm $PWD
 
       - name: Check just syntax
-        uses: ublue-os/just-action@v2
+        uses: ublue-os/just-action@bda593098a84a84973b002b4377709166a68be52 # v2
 
       - name: Maximize build space
-        uses: AdityaGarg8/remove-unwanted-software@v4.1
+        uses: AdityaGarg8/remove-unwanted-software@8831c82abf29b34eb2caac48d5f999ecfc0d8eef # v4.1
         with:
           remove-dotnet: true
           remove-android: true
@@ -200,7 +200,7 @@ jobs:
           remove-swapfile: true
 
       - name: Pull main, akmods, rechunk images
-        uses: Wandalen/wretry.action@v3.8.0
+        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
         with:
           attempt_limit: 3
           attempt_delay: 15000
@@ -216,7 +216,7 @@ jobs:
 
       - name: Get source versions
         id: labels
-        uses: Wandalen/wretry.action@v3.8.0
+        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
         with:
           attempt_limit: 3
           attempt_delay: 15000
@@ -339,7 +339,7 @@ jobs:
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
         id: rechunk
-        uses: hhd-dev/rechunk@v1.2.1
+        uses: hhd-dev/rechunk@c945e9ec8ad4466f888e41ab7f4d5ba2f74a8ee4 # v1.2.1
         with:
           rechunk: 'ghcr.io/hhd-dev/rechunk:v1.2.1'
           ref: 'raw-img'
@@ -423,13 +423,13 @@ jobs:
       # https://github.com/macbre/push-to-ghcr/issues/12
       - name: Lowercase Registry
         id: registry_case
-        uses: ASzc/change-string-case-action@v6
+        uses: ASzc/change-string-case-action@d0603cd0a7dd490be678164909f65c7737470a7f # v6
         with:
           string: ${{ env.PUSH_IMAGE_REGISTRY }}
 
       # Push the image to GHCR (Image Registry)
       - name: Push To GHCR
-        uses: Wandalen/wretry.action@v3.8.0
+        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
         id: push
         if: github.event_name != 'pull_request'
         with:
@@ -450,7 +450,7 @@ jobs:
           echo "digest=${DIGEST}" >> $GITHUB_OUTPUT
 
       - name: Sign container image
-        uses: EyeCantCU/cosign-action/sign@v0.3.0
+        uses: EyeCantCU/cosign-action/sign@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
         if: github.event_name != 'pull_request'
         with:
           containers: ${{ env.IMAGE_NAME }}
