@@ -78,6 +78,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install dnf5-plugins && \
+    dnf5 -y downgrade dnf5 && \
     for copr in \
         bazzite-org/bazzite \
         bazzite-org/bazzite-multilib \
@@ -174,6 +175,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     ; fi && \
     /ctx/install-firmware && \
     /ctx/cleanup
+
 
 # Install patched fwupd
 # Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
