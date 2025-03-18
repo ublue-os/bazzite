@@ -419,15 +419,15 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
             ptyxis && \
         dnf5 -y swap \
         --repo terra-extras \
-            kf6-kio-core kf6-kio-core && \
+            kf6-kio-core kf6-kio.switcheroo-core && \
         dnf5 versionlock add \
-            kf6-kio-core \
-            kf6-kio-core-libs \
-            kf6-kio-doc \
-            kf6-kio-file-widgets \
-            kf6-kio-gui \
-            kf6-kio-widgets \
-            kf6-kio-widgets-libs && \
+            kf6-kio.switcheroo-core \
+            kf6-kio.switcheroo-core-libs \
+            kf6-kio.switcheroo-doc \
+            kf6-kio.switcheroo-file-widgets \
+            kf6-kio.switcheroo-gui \
+            kf6-kio.switcheroo-widgets \
+            kf6-kio.switcheroo-widgets-libs && \
         dnf5 -y remove \
             plasma-welcome \
             plasma-welcome-fedora \
