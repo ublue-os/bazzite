@@ -418,8 +418,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
             kcm-fcitx5 \
             ptyxis && \
         dnf5 -y swap \
-        --repo terra-extras \
-            kf6-kio-core kf6-kio-core && \
+        --repo=terra-extras \
+            kf6-kio kf6-kio.switcheroo-$(rpm -qi kf6-kcoreaddons | awk '/^Version/ {print $3}') \
         dnf5 versionlock add \
             kf6-kio-core \
             kf6-kio-core-libs \
