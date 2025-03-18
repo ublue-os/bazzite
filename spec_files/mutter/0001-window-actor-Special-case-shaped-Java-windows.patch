@@ -1,0 +1,70 @@
+From 6550fe190edfe15068bea510e5dde21329929025 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Florian=20M=C3=BCllner?= <fmuellner@gnome.org>
+Date: Fri, 12 May 2017 13:40:31 +0200
+Subject: [PATCH] window-actor: Special-case shaped Java windows
+
+OpenJDK wrongly assumes that shaping a window implies no shadows.
+They got lucky until commit b975676c changed the fallback case,
+but now their compliance tests are broken. Make them happy again
+by special-casing shaped Java windows.
+---
+ src/compositor/meta-window-actor-x11.c | 8 ++++++++
+ src/x11/window-x11-private.h           | 2 ++
+ src/x11/window-x11.c                   | 9 +++++++++
+ 3 files changed, 19 insertions(+)
+
+diff --git a/src/compositor/meta-window-actor-x11.c b/src/compositor/meta-window-actor-x11.c
+index 2781df09cc..962ce569b9 100644
+--- a/src/compositor/meta-window-actor-x11.c
++++ b/src/compositor/meta-window-actor-x11.c
+@@ -430,6 +430,14 @@ has_shadow (MetaWindowActorX11 *actor_x11)
+    */
+   if (priv->has_custom_frame_extents)
+     return FALSE;
++ 
++  /*
++   * OpenJDK wrongly assumes that shaping a window implies no compositor
++   * shadows; make its compliance tests happy to give it what it wants ...
++   */
++  if (g_strcmp0 (window->res_name, "sun-awt-X11-XWindowPeer") == 0 &&
++      meta_window_x11_is_shaped (window))
++    return FALSE;
+ 
+   /*
+    * Generate shadows for all other windows.
+diff --git a/src/x11/window-x11-private.h b/src/x11/window-x11-private.h
+index ccc3182e1e..b88c1af914 100644
+--- a/src/x11/window-x11-private.h
++++ b/src/x11/window-x11-private.h
+@@ -128,6 +128,8 @@ gboolean meta_window_x11_has_pointer (MetaWindow *window);
+ gboolean meta_window_x11_same_application (MetaWindow *window,
+                                            MetaWindow *other_window);
+ 
++gboolean meta_window_x11_is_shaped (MetaWindow *window);
++
+ void meta_window_x11_shutdown_group (MetaWindow *window);
+ 
+ META_EXPORT
+diff --git a/src/x11/window-x11.c b/src/x11/window-x11.c
+index adf5075a9b..4c0273f0d5 100644
+--- a/src/x11/window-x11.c
++++ b/src/x11/window-x11.c
+@@ -2597,6 +2597,15 @@ meta_window_x11_update_shape_region (MetaWindow *window)
+   meta_window_set_shape_region (window, region);
+ }
+ 
++gboolean
++meta_window_x11_is_shaped (MetaWindow *window)
++{
++  MetaWindowX11 *window_x11 = META_WINDOW_X11 (window);
++  MetaWindowX11Private *priv = meta_window_x11_get_instance_private (window_x11);
++
++  return priv->shape_region != NULL;
++}
++
+ /* Generally meta_window_x11_same_application() is a better idea
+  * of "sameness", since it handles the case where multiple apps
+  * want to look like the same app or the same app wants to look
+-- 
+2.45.2
+

@@ -1,0 +1,14 @@
+- hosts: localhost
+  roles:
+    - role: ibus-desktop-testing-role
+      installed_test_name: ibus
+      tags:
+      - classic
+      - gating
+      required_packages:
+      - ibus-tests
+      # ibus-compose test needs locales
+      - glibc-langpack-el
+      - glibc-langpack-fi
+      - glibc-langpack-pt
+

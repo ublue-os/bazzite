@@ -1,0 +1,35 @@
+From fdc71a08f059d2466e39968652c3df71cc582b3e Mon Sep 17 00:00:00 2001
+From: GloriousEggroll <gloriouseggroll@gmail.com>
+Date: Sun, 21 May 2023 03:34:46 -0600
+Subject: [PATCH] xwayland pointer warp fix
+
+---
+ hw/xwayland/xwayland-input.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/hw/xwayland/xwayland-input.c b/hw/xwayland/xwayland-input.c
+index 34dd3c8..f7fa737 100644
+--- a/hw/xwayland/xwayland-input.c
++++ b/hw/xwayland/xwayland-input.c
+@@ -3202,9 +3202,6 @@ xwl_seat_emulate_pointer_warp(struct xwl_seat *xwl_seat,
+     if (!xwl_seat_can_emulate_pointer_warp(xwl_seat))
+         return;
+ 
+-    if (xwl_seat->x_cursor != NULL)
+-        return;
+-
+     if (!xwl_seat->pointer_warp_emulator)
+         xwl_seat_create_pointer_warp_emulator(xwl_seat);
+ 
+@@ -3215,6 +3212,8 @@ xwl_seat_emulate_pointer_warp(struct xwl_seat *xwl_seat,
+                                    xwl_window,
+                                    sprite,
+                                    x, y);
++    if (xwl_seat->x_cursor != NULL)
++        xwl_seat_destroy_pointer_warp_emulator(xwl_seat);
+ }
+ 
+ static Bool
+-- 
+2.40.1
+

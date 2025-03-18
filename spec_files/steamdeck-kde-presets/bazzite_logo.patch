@@ -1,0 +1,24 @@
+diff -Naur a/usr/share/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/Splash.qml b/usr/share/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/Splash.qml
+--- a/usr/share/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/Splash.qml
++++ b/usr/share/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/Splash.qml
+@@ -42,7 +42,7 @@
+ 
+             anchors.centerIn: parent
+ 
+-            source: "images/deck_logo.svgz"
++            source: "images/bazzite_logo.svgz"
+ 
+             sourceSize.width: 128
+             sourceSize.height: 128
+diff -Naur a/usr/share/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/Splash.qml b/usr/share/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/Splash.qml
+--- a/usr/share/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/Splash.qml
++++ b/usr/share/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/Splash.qml
+@@ -42,7 +42,7 @@
+ 
+             anchors.centerIn: parent
+ 
+-            source: "images/deck_logo.svgz"
++            source: "images/bazzite_logo.svgz"
+ 
+             sourceSize.width: 128
+             sourceSize.height: 128

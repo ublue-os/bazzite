@@ -1,0 +1,11 @@
+--- vpower-main/vpower.service
++++ vpower-main/vpower.service
+@@ -2,7 +2,7 @@
+ Description=vpower daemon
+ 
+ [Service]
+-ExecStart=/usr/lib/vpower
++ExecStart=/usr/libexec/vpower
+ Restart=on-failure
+ RestartSec=1
+ 

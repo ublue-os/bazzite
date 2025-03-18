@@ -1,0 +1,44 @@
+diff --git a/usr/lib/systemd/system/jupiter-fan-control.service b/usr/lib/systemd/system/jupiter-fan-control.service
+index e3e9e34..cff45a7 100644
+--- a/usr/lib/systemd/system/jupiter-fan-control.service
++++ b/usr/lib/systemd/system/jupiter-fan-control.service
+@@ -4,8 +4,8 @@ Description=Jupiter fan control
+ [Service]
+ Type=simple
+ 
+-ExecStart=/usr/share/jupiter-fan-control/fancontrol.py --run
+-ExecStopPost=/usr/share/jupiter-fan-control/fancontrol.py --stop
++ExecStart=/usr/libexec/jupiter-fan-control/fancontrol.py --run
++ExecStopPost=/usr/libexec/jupiter-fan-control/fancontrol.py --stop
+ 
+ # disable buffering so STDOUT and STDERR show up immediately in logs
+ Environment=PYTHONUNBUFFERED=1
+diff --git a/usr/share/jupiter-fan-control/PID.py b/usr/share/jupiter-fan-control/PID.py
+index d52123e..c5786ff 100644
+--- a/usr/share/jupiter-fan-control/PID.py
++++ b/usr/share/jupiter-fan-control/PID.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ #
+ # This file is part of IvPID.
+ # Copyright (C) 2015 Ivmech Mechatronics Ltd. <bilgi@ivmech.com>
+@@ -64,7 +64,7 @@ class PID:
+         """Calculates PID value for given reference feedback
+ 
+         .. math::
+-            u(t) = K_p e(t) + K_i \int_{0}^{t} e(t)dt + K_d {de}/{dt}
++            u(t) = K_p e(t) + K_i \\int_{0}^{t} e(t)dt + K_d {de}/{dt}
+ 
+         .. figure:: images/pid_1.png
+            :align:   center
+diff --git a/usr/share/jupiter-fan-control/fancontrol.py b/usr/share/jupiter-fan-control/fancontrol.py
+index 5829d5e..c797954 100755
+--- a/usr/share/jupiter-fan-control/fancontrol.py
++++ b/usr/share/jupiter-fan-control/fancontrol.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python -u
++#!/usr/bin/python3 -u
+ """jupiter-fan-controller"""
+ import signal
+ import os

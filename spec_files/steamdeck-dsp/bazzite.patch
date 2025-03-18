@@ -1,0 +1,136 @@
+diff --git a/pipewire-confs/hardware-profiles/pipewire-hwconfig b/pipewire-confs/hardware-profiles/pipewire-hwconfig
+index ac7adb6..d46bb14 100755
+--- a/pipewire-confs/hardware-profiles/pipewire-hwconfig
++++ b/pipewire-confs/hardware-profiles/pipewire-hwconfig
+@@ -51,40 +51,24 @@ dmi_info ()
+ install_hwprofile ()
+ {
+     local -r prpath="$1"
+-    local -r runconf=/run/pipewire
++    local -r confdir=/usr/share/pipewire
+     local confd
+     local cffile
+ 
+-    echo "Installing pipewire hardware profile from '$prpath' in $runconf"
+-
+-    rm -rf $runconf
++    echo "Installing pipewire hardware profile from '$prpath' in $confdir"
+ 
+     for confd in "${confdirs[@]}"
+     do
+         if [ -d "$prpath"/"$confd" ]
+         then
+-            mkdir -p $runconf/"$confd"
++            mkdir -p $confdir/"$confd"
+ 
+             for cffile in "$prpath"/"$confd"/*.conf
+             do
+-                [ -f "$cffile" ] && cp -av "$cffile" $runconf/"$confd"
++                [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd" || true
+             done
+         fi
+     done
+-
+-    cat - <<EOF > $runconf/README
+-This configuration was:
+-
+- - installed in $runconf
+- - by $0
+- - from $prpath
+-
+-It will be regenerated every time the system restarts.
+-
+-To alter it permanently either:
+- - edit $prpath
+- - override in \$XDG_CONFIG_HOME/pipewire/
+-EOF
+ }
+ 
+ unidentified ()
+diff --git a/pipewire-confs/systemd/system/pipewire-sysconf.service b/pipewire-confs/systemd/system/pipewire-sysconf.service
+index 449a278..baf3a3c 100644
+--- a/pipewire-confs/systemd/system/pipewire-sysconf.service
++++ b/pipewire-confs/systemd/system/pipewire-sysconf.service
+@@ -11,7 +11,8 @@
+ Description=Hardware Specific Pipewire Configuration
+ Before=multi-user.target
+ Requisite=multi-user.target
+-ConditionPathIsDirectory=/run
++Requires=pipewire-workaround.service
++After=pipewire-workaround.service
+ Before=shutdown.target
+ 
+ [Service]
+diff --git a/wireplumber/hardware-profiles/wireplumber-hwconfig b/wireplumber/hardware-profiles/wireplumber-hwconfig
+index 3f03354..1e43489 100755
+--- a/wireplumber/hardware-profiles/wireplumber-hwconfig
++++ b/wireplumber/hardware-profiles/wireplumber-hwconfig
+@@ -46,49 +46,33 @@ dmi_info ()
+ install_hwprofile ()
+ {
+     local -r prpath="$1"
+-    local -r runconf=/run/wireplumber
++    local -r confdir=/usr/share/wireplumber
+     local confd
+     local cffile
+ 
+-    echo "Installing wireplumber hardware profile from '$prpath' in $runconf"
+-
+-    rm -rf $runconf
++    echo "Installing wireplumber hardware profile from '$prpath' in $confdir"
+ 
+     for confd in "${confdirs[@]}"
+     do
+         if [ -d "$prpath"/"$confd" ]
+         then
+-            mkdir -p $runconf/"$confd"
++            mkdir -p $confdir/"$confd"
+             case $confd in
+                 *.lua.d)
+                     for cffile in "$prpath"/"$confd"/*.lua
+                     do
+-                        [ -f "$cffile" ] && cp -av "$cffile" $runconf/"$confd"
++                        [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd" || true
+                     done
+                     ;;
+                 *.conf.d)
+                     for cffile in "$prpath"/"$confd"/*.conf
+                     do
+-                        [ -f "$cffile" ] && cp -av "$cffile" $runconf/"$confd"
++                        [ -f "$cffile" ] && /usr/bin/cp -avf "$cffile" $confdir/"$confd" || true
+                     done
+                     ;;
+             esac
+         fi
+     done
+-
+-    cat - <<EOF > $runconf/README
+-This configuration was:
+-
+- - installed in $runconf
+- - by $0
+- - from $prpath
+-
+-It will be regenerated every time the system restarts.
+-
+-To alter it permanently either:
+- - edit $prpath
+- - override in \$XDG_CONFIG_DIR/wireplumber/
+-EOF
+ }
+ 
+ unidentified ()
+diff --git a/wireplumber/systemd/system/wireplumber-sysconf.service b/wireplumber/systemd/system/wireplumber-sysconf.service
+index cdf5ed9..81cca6e 100644
+--- a/wireplumber/systemd/system/wireplumber-sysconf.service
++++ b/wireplumber/systemd/system/wireplumber-sysconf.service
+@@ -11,7 +11,8 @@
+ Description=Hardware Specific Wireplumber Configuration
+ Before=multi-user.target
+ Requisite=multi-user.target
+-ConditionPathIsDirectory=/run
++Requires=wireplumber-workaround.service
++After=wireplumber-workaround.service
+ Before=shutdown.target
+ 
+ [Service]

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>Steam Deck Logo 7</name>
+    <filename>/usr/share/backgrounds/steamdeck/Steam Deck Logo 7.jpg</filename>
+    <filename-dark>/usr/share/backgrounds/steamdeck/Steam Deck Logo 7.jpg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#060405</pcolor>
+    <scolor>#28182B</scolor>
+  </wallpaper>
+</wallpapers>

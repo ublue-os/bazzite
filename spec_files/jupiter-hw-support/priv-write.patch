@@ -1,0 +1,90 @@
+diff --git a/usr/bin/steamos-polkit-helpers/steamos-priv-write b/usr/bin/steamos-polkit-helpers/steamos-priv-write
+index d1456c8..6cb906d 100755
+--- a/usr/bin/steamos-polkit-helpers/steamos-priv-write
++++ b/usr/bin/steamos-polkit-helpers/steamos-priv-write
+@@ -3,6 +3,8 @@
+ set -euo pipefail
+ shopt -s nullglob
+ 
++source /etc/default/steam-hardware-control
++
+ if [[ $EUID -ne 0 ]];
+ then
+     exec pkexec --disable-internal-agent "$0" "$@"
+@@ -21,15 +23,11 @@ function MatchFilenamePattern()
+ {
+     local path="$1"
+     local pattern="$2"
+-    local IFS=
+-    local candidates=($pattern)
+ 
+-    for candidate in "${candidates[@]}"; do
+-        if [[ "$path" == "$candidate" ]]; then
+-            true
+-            return
+-        fi
+-    done
++    if [[ "$1" == $2 ]]; then
++       true;
++       return;
++    fi
+ 
+     false;
+     return;
+@@ -37,13 +35,14 @@ function MatchFilenamePattern()
+ 
+ function CommitWrite()
+ {
++    chmod a+w "$WRITE_PATH"
++    Log "chmod a+w: $WRITE_PATH"
++
+     if [ -n "$WRITE_VALUE" ]; then
+         Log "commit: $WRITE_VALUE -> $WRITE_PATH"
+-        printf "%s" "$WRITE_VALUE" > "$WRITE_PATH"
++        echo "$WRITE_VALUE" > "$WRITE_PATH"
+     fi
+ 
+-    chgrp deck "$WRITE_PATH"
+-    chmod g+w "$WRITE_PATH"
+     exit 0
+ }
+ 
+@@ -65,15 +64,35 @@ if MatchFilenamePattern "$WRITE_PATH" "/dev/drm_dp_aux0"; then
+ fi
+ 
+ if MatchFilenamePattern "$WRITE_PATH" "/sys/class/drm/card*/device/power_dpm_force_performance_level"; then
+-    CommitWrite
++    if /usr/libexec/hwsupport/valve-hardware; then
++        for i in $(ls /sys/class/drm/card*/device/power_dpm_force_performance_level)
++        do
++            WRITE_PATH="$i"
++            CommitWrite
++        done
++    else
++        Log "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - Valve Hardware not detected"
++    fi
+ fi
+ 
+ if MatchFilenamePattern "$WRITE_PATH" "/sys/class/drm/card*/device/pp_od_clk_voltage"; then
+-    CommitWrite
++    if /usr/libexec/hwsupport/valve-hardware; then
++        for i in $(ls /sys/class/drm/card*/device/pp_od_clk_voltage)
++        do
++            WRITE_PATH="$i"
++            CommitWrite
++        done
++    else
++        Log "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - Valve Hardware not detected"
++    fi
+ fi
+ 
+ if MatchFilenamePattern "$WRITE_PATH" "/sys/class/hwmon/hwmon*/power*_cap"; then
+-    CommitWrite
++    if /usr/libexec/hwsupport/valve-hardware && [[ "$DISABLE_STEAM_TDP_CONTROL" != 1 ]]; then
++        CommitWrite
++    else
++        Log "commit: Skipped $WRITE_VALUE -> $WRITE_PATH - Valve Hardware not detected"
++    fi
+ fi
+ 
+ if MatchFilenamePattern "$WRITE_PATH" "/sys/devices/platform/*/*/*/iio:device*/in_illuminance_integration_time"; then

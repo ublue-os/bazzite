@@ -1,0 +1,20 @@
+diff --git a/usr/share/plasma/look-and-feel/com.valve.vapor.desktop/contents/plasmoidsetupscripts/org.kde.plasma.folder.js b/usr/share/plasma/look-and-feel/com.valve.vapor.desktop/contents/plasmoidsetupscripts/org.kde.plasma.folder.js
+index f1dbc88..15432ed 100644
+--- a/usr/share/plasma/look-and-feel/com.valve.vapor.desktop/contents/plasmoidsetupscripts/org.kde.plasma.folder.js
++++ b/usr/share/plasma/look-and-feel/com.valve.vapor.desktop/contents/plasmoidsetupscripts/org.kde.plasma.folder.js
+@@ -1,4 +1,4 @@
+ applet.wallpaperPlugin = 'org.kde.image'
+ applet.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"]
+-applet.writeConfig("Image", "/usr/share/wallpapers/Steam Deck Logo Default.jpg")
++applet.writeConfig("Image", "/usr/share/wallpapers/convergence.png")
+ applet.reloadConfig()
+diff --git a/usr/share/plasma/look-and-feel/com.valve.vgui.desktop/contents/plasmoidsetupscripts/org.kde.plasma.folder.js b/usr/share/plasma/look-and-feel/com.valve.vgui.desktop/contents/plasmoidsetupscripts/org.kde.plasma.folder.js
+index f1dbc88..15432ed 100644
+--- a/usr/share/plasma/look-and-feel/com.valve.vgui.desktop/contents/plasmoidsetupscripts/org.kde.plasma.folder.js
++++ b/usr/share/plasma/look-and-feel/com.valve.vgui.desktop/contents/plasmoidsetupscripts/org.kde.plasma.folder.js
+@@ -1,4 +1,4 @@
+ applet.wallpaperPlugin = 'org.kde.image'
+ applet.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"]
+-applet.writeConfig("Image", "/usr/share/wallpapers/Steam Deck Logo Default.jpg")
++applet.writeConfig("Image", "/usr/share/wallpapers/convergence.png")
+ applet.reloadConfig()
