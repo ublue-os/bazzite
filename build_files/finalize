@@ -10,3 +10,4 @@ mkdir -p /var/tmp
 chmod -R 1777 /var/tmp
 
 ostree container commit
+bootc container lint
