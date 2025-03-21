@@ -666,6 +666,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/finalize && \
     /ctx/image-info
 
+RUN bootc container lint
+
 ################
 # DECK BUILDS
 ################
@@ -867,6 +869,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/finalize && \
     /ctx/image-info
 
+RUN bootc container lint
+
 FROM ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION}-${KERNEL_VERSION} AS nvidia-akmods
 
 ################
@@ -946,3 +950,5 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/build-initramfs && \
     /ctx/finalize && \
     /ctx/image-info
+
+RUN bootc container lint
