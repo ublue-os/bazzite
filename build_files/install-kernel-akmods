@@ -11,20 +11,18 @@ dnf5 -y install \
     /tmp/kernel-rpms/kernel-[0-9]*.rpm \
     /tmp/kernel-rpms/kernel-core-*.rpm \
     /tmp/kernel-rpms/kernel-modules-*.rpm \
-    /tmp/kernel-rpms/kernel-uki-virt-*.rpm \
     /tmp/kernel-rpms/kernel-devel-*.rpm
 
 dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-modules kernel-modules-core kernel-modules-extra kernel-uki-virt
 
-shopt -s nullglob
 dnf5 -y install \
     /tmp/akmods-rpms/kmods/*kvmfr*.rpm \
     /tmp/akmods-rpms/kmods/*xone*.rpm \
     /tmp/akmods-rpms/kmods/*openrazer*.rpm \
     /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
     /tmp/akmods-rpms/kmods/*wl*.rpm \
-    /tmp/akmods-rpms/kmods/*nct6687*.rpm \
     /tmp/akmods-rpms/kmods/*framework-laptop*.rpm \
+    /tmp/akmods-extra-rpms/kmods/*nct6687*.rpm \
     /tmp/akmods-extra-rpms/kmods/*gcadapter_oc*.rpm \
     /tmp/akmods-extra-rpms/kmods/*zenergy*.rpm \
     /tmp/akmods-extra-rpms/kmods/*vhba*.rpm \

@@ -36,7 +36,7 @@ index 0000000..878bf6c
 +    # sudo reboot
 +EOF
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -50,23 +50,22 @@ move by Antheas.
 Co-authored-by: Kyle Gospodnetich <me@kylegospodneti.ch>
 Co-authored-by: Antheas Kapenekakis <git@antheas.dev>
 ---
- src/Backends/DRMBackend.cpp |  5 +++++
+ src/Backends/DRMBackend.cpp |  4 ++++
  src/main.cpp                | 31 +++++++++++++++++++++++++++++++
  src/main.hpp                |  2 ++
- 3 files changed, 38 insertions(+)
+ 3 files changed, 37 insertions(+)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 0b121e8..75c3258 100644
+index 0b121e8..840e245 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -2243,6 +2243,11 @@ namespace gamescope
+@@ -2243,6 +2243,10 @@ namespace gamescope
  					bHasKnownHDRInfo = true;
  				}
  			}
 +			else if ( g_customRefreshRates.size() > 0 && GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL ) {
 +				// Only apply custom refresh rates as a fallback, allowing a graceful transition to the new system.
 +				m_Mutable.ValidDynamicRefreshRates = g_customRefreshRates;
-+				return;
 +			}
  		}
  
@@ -155,7 +154,7 @@ index 2e6fb83..390c04a 100644
  enum class GamescopeUpscaleFilter : uint32_t
  {
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -248,7 +247,7 @@ index 095694e..e41fad9 100644
  	bool hasHwndStyle = false;
  	uint32_t hwndStyle = 0;
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -309,7 +308,7 @@ index 78a86ee..99df8aa 100644
  			wlserver_keyboardfocus( old_kb_surf, false );
  			return;
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -378,7 +377,7 @@ index df7616d..4a17499 100644
  				break;
  			case '?':
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -445,7 +444,7 @@ index 4a17499..d91d0fe 100644
  				break;
  			case '?':
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -481,7 +480,7 @@ index ecfbf0a..70ca4f8 100644
  				} else if (strcmp(opt_name, "custom-refresh-rates") == 0) {
  					g_customRefreshRates = parse_custom_refresh_rates( optarg );
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -513,7 +512,7 @@ index 99df8aa..5e8f516 100644
  		default:
  		case GAMESCOPE_PANEL_ORIENTATION_AUTO:
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -590,7 +589,7 @@ index d91d0fe..e59caaa 100644
  					g_bHackyEnabled = false;
  				}
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -702,7 +701,7 @@ index 0569472..104f7a2 100644
  std::vector<ResListEntry_t> wlserver_xdg_commit_queue();
  
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -718,7 +717,7 @@ custom modeline generation has been provided.
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 75c3258..f014be9 100644
+index 840e245..36ef32e 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2161,7 +2161,9 @@ namespace gamescope
@@ -733,7 +732,7 @@ index 75c3258..f014be9 100644
  					m_Mutable.ValidDynamicRefreshRates = TableToVector<uint32_t>( *otDynamicRefreshRates );
  
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -803,7 +802,7 @@ index 193cdee..04e42b6 100644
  	if ( ev->atom == ctx->atoms.gamescopeDisplayForceInternal )
  	{
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -948,7 +947,7 @@ index 04e42b6..8f45314 100644
  		const bool bVRR = GetBackend()->IsVRRActive();
  		if ( bVRR )
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -999,7 +998,7 @@ index df2af70..e4eec9f 100644
  
  	bool HasQueuedEvents();
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1015,10 +1014,10 @@ Subject: feat: add DPMS support through an Atom
  4 files changed, 28 insertions(+), 6 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index f014be9..6bb0b88 100644
+index 36ef32e..0999e0b 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -2669,6 +2669,9 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+@@ -2668,6 +2668,9 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
  			drm->needs_modeset = true;
  	}
  
@@ -1028,7 +1027,7 @@ index f014be9..6bb0b88 100644
  	drm_colorspace uColorimetry = DRM_MODE_COLORIMETRY_DEFAULT;
  
  	const bool bWantsHDR10 = g_bOutputHDREnabled && frameInfo->outputEncodingEOTF == EOTF_PQ;
-@@ -2724,7 +2727,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+@@ -2723,7 +2726,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
  	uint32_t flags = DRM_MODE_ATOMIC_NONBLOCK;
  
  	// We do internal refcounting with these events
@@ -1037,7 +1036,7 @@ index f014be9..6bb0b88 100644
  		flags |= DRM_MODE_PAGE_FLIP_EVENT;
  
  	if ( async || g_bForceAsyncFlips )
-@@ -2797,7 +2800,13 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+@@ -2796,7 +2799,13 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
  
  		if ( drm->pCRTC )
  		{
@@ -1052,7 +1051,7 @@ index f014be9..6bb0b88 100644
  			drm->pCRTC->GetProperties().MODE_ID->SetPendingValue( drm->req, drm->pending.mode_id ? drm->pending.mode_id->GetBlobValue() : 0lu, true );
  
  			if ( drm->pCRTC->GetProperties().VRR_ENABLED )
-@@ -2828,7 +2837,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+@@ -2827,7 +2836,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
  	drm->flags = flags;
  
  	int ret;
@@ -1061,7 +1060,7 @@ index f014be9..6bb0b88 100644
  		ret = 0;
  	} else if ( drm->bUseLiftoff ) {
  		ret = drm_prepare_liftoff( drm, frameInfo, needs_modeset );
-@@ -3391,6 +3400,7 @@ namespace gamescope
+@@ -3390,6 +3399,7 @@ namespace gamescope
  
  			FrameInfo_t presentCompFrameInfo = {};
  			presentCompFrameInfo.allowVRR = pFrameInfo->allowVRR;
@@ -1157,7 +1156,7 @@ index e4eec9f..2347cbb 100644
  
  	bool HasQueuedEvents();
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1178,7 +1177,7 @@ Subject: feat(intel): add rotation shader for rotating output
  create mode 100644 src/shaders/cs_rotation.comp
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 6bb0b88..3c44839 100644
+index 0999e0b..020add2 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -1528,6 +1528,10 @@ static void update_drm_effective_orientations( struct drm_t *drm, const drmModeM
@@ -1230,7 +1229,7 @@ index 6bb0b88..3c44839 100644
  		if ( this->GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL && g_DesiredInternalOrientation != GAMESCOPE_PANEL_ORIENTATION_AUTO )
  		{
  			m_ChosenOrientation = g_DesiredInternalOrientation;
-@@ -3035,6 +3054,13 @@ bool drm_set_mode( struct drm_t *drm, const drmModeModeInfo *mode )
+@@ -3034,6 +3053,13 @@ bool drm_set_mode( struct drm_t *drm, const drmModeModeInfo *mode )
  		g_bRotated = false;
  		g_nOutputWidth = mode->hdisplay;
  		g_nOutputHeight = mode->vdisplay;
@@ -1244,7 +1243,7 @@ index 6bb0b88..3c44839 100644
  		break;
  	case GAMESCOPE_PANEL_ORIENTATION_90:
  	case GAMESCOPE_PANEL_ORIENTATION_270:
-@@ -3294,6 +3320,11 @@ namespace gamescope
+@@ -3293,6 +3319,11 @@ namespace gamescope
  
  			bNeedsFullComposite |= !!(g_uCompositeDebug & CompositeDebugFlag::Heatmap);
  
@@ -1256,7 +1255,7 @@ index 6bb0b88..3c44839 100644
  			bool bDoComposite = true;
  			if ( !bNeedsFullComposite && !bWantsPartialComposite )
  			{
-@@ -3384,7 +3415,7 @@ namespace gamescope
+@@ -3383,7 +3414,7 @@ namespace gamescope
  			if ( bDefer && !!( g_uCompositeDebug & CompositeDebugFlag::Markers ) )
  				g_uCompositeDebug |= CompositeDebugFlag::Markers_Partial;
  
@@ -1674,7 +1673,7 @@ index 1eeaa25..fbb2e0b 100644
  	*y = ty;
  }
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1717,10 +1716,10 @@ index 97dea45..fefb2a0 100644
  * `-S stretch`: use stretch scaling, the game will fill the window. (e.g. 4:3 to 16:9)
  * `-b`: create a border-less window.
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 3c44839..e9074f5 100644
+index 020add2..d393479 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -3299,6 +3299,7 @@ namespace gamescope
+@@ -3298,6 +3298,7 @@ namespace gamescope
  			bNeedsFullComposite |= bWasFirstFrame;
  			bNeedsFullComposite |= pFrameInfo->useFSRLayer0;
  			bNeedsFullComposite |= pFrameInfo->useNISLayer0;
@@ -2391,7 +2390,7 @@ index 2347cbb..bc38c98 100644
  		Atom gamescopeBlurMode;
  		Atom gamescopeBlurRadius;
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2459,7 +2458,7 @@ index c817880..407dae8 100644
        static uint32_t s_minImageCount = []() -> uint32_t {
          if (auto minCount = parseEnv<uint32_t>("GAMESCOPE_WSI_MIN_IMAGE_COUNT")) {
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2496,7 +2495,7 @@ index 7ae273f..0a3657f 100644
          {
              xdg_log.errorf( "Failed to map keymap fd." );
 -- 
-2.48.0
+2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2587,5 +2586,170 @@ index 0000000..5d27391
 +debug("Registered Lenovo Legion Go S LCD as a known display")
 \ No newline at end of file
 -- 
-2.48.0
+2.48.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Sun, 23 Feb 2025 02:16:55 +0100
+Subject: feat(asus): add asus z13
+
+---
+ .../00-gamescope/displays/asus.z13.lcd.lua    | 57 +++++++++++++++++++
+ subprojects/edid-decode                       |  1 +
+ 2 files changed, 58 insertions(+)
+ create mode 100644 scripts/00-gamescope/displays/asus.z13.lcd.lua
+ create mode 160000 subprojects/edid-decode
+
+diff --git a/scripts/00-gamescope/displays/asus.z13.lcd.lua b/scripts/00-gamescope/displays/asus.z13.lcd.lua
+new file mode 100644
+index 0000000..891f1ea
+--- /dev/null
++++ b/scripts/00-gamescope/displays/asus.z13.lcd.lua
+@@ -0,0 +1,57 @@
++gamescope.config.known_displays.asusz13_lcd = {
++    pretty_name = "Asus Z13 LCD",
++    dynamic_refresh_rates = {
++        48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 
++        65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 
++        82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 
++        99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 
++        113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 
++        127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 
++        141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 
++        155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 
++        169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180
++    },
++    
++    -- Detailed Timing Descriptors:
++    -- DTD 1:  1920x1200  120.002 Hz   8:5   151.683 kHz 315.500 MHz (172 mm x 107 mm)
++    --   Modeline "1920x1200_120.00" 315.500  1920 1968 2000 2080  1200 1254 1260 1264  -HSync -VSync
++    -- DTD 2:  1920x1200   60.001 Hz   8:5    75.841 kHz 157.750 MHz (172 mm x 107 mm)
++    --   Modeline "1920x1200_60.00" 157.750  1920 1968 2000 2080  1200 1254 1260 1264  -HSync -VSync
++    dynamic_modegen = function(base_mode, refresh)
++        debug("Generating mode "..refresh.."Hz with fixed pixel clock")
++        local vfps = {
++            4886, 4751, 4620, 4495, 4375, 4259, 4147, 4040, 3936, 3836, 3739, 3646, 
++            3556, 3468, 3384, 3302, 3223, 3146, 3072, 2999, 2929, 2861, 2795, 2731, 
++            2668, 2608, 2548, 2491, 2435, 2380, 2327, 2275, 2225, 2175, 2127, 2080, 
++            2035, 1990, 1946, 1903, 1862, 1821, 1781, 1742, 1704, 1667, 1630, 1594, 
++            1559, 1525, 1491, 1458, 1426, 1395, 1364, 1333, 1303, 1274, 1245, 1217, 
++            1190, 1162, 1136, 1110, 1084, 1059, 1034, 1010, 986, 962, 939, 916, 894,
++            872, 850, 829, 808, 787, 767, 747, 727, 708, 689, 670, 652, 634, 616, 
++            598, 581, 563, 547, 530, 513, 497, 481, 466, 450, 435, 420, 405, 390, 
++            376, 361, 347, 333, 320, 306, 293, 279, 266, 254, 241, 228, 216, 204, 
++            192, 180, 168, 156, 145, 133, 122, 111, 100, 89, 78, 68, 57, 47, 36, 
++            26, 16, 6
++        }
++        local vfp = vfps[zero_index(refresh - 48)]
++        if vfp == nil then
++            warn("Couldn't do refresh "..refresh.." on ROG Ally")
++            return base_mode
++        end
++
++        local mode = base_mode
++
++        gamescope.modegen.adjust_front_porch(mode, vfp)
++        mode.vrefresh = gamescope.modegen.calc_vrefresh(mode)
++
++        --debug(inspect(mode))
++        return mode
++    end,
++    matches = function(display)
++        if display.vendor == "TMA" and display.model == "TL134ADXP03" then
++            debug("[z13] Matched vendor: "..display.vendor.." model: "..display.model.." product:"..display.product)
++            return 5000
++        end
++        return -1
++    end
++}
++debug("Registered Lenovo Legion Go S LCD as a known display")
+\ No newline at end of file
+diff --git a/subprojects/edid-decode b/subprojects/edid-decode
+new file mode 160000
+index 0000000..c6b859d
+--- /dev/null
++++ b/subprojects/edid-decode
+@@ -0,0 +1 @@
++Subproject commit c6b859d7f0251e2433fb81bd3f67bd2011c2036c
+-- 
+2.48.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Thu, 13 Mar 2025 19:04:51 +0100
+Subject: fix(hdr): remove PQ from internal panels and allow disabling for
+ externals
+
+New steam update forces HDR mode. The cursed patching gamescope does is
+not supported for all displays, especially internal ones. So disable by
+default on internal panels and allow disabling on externals.
+---
+ src/Backends/DRMBackend.cpp | 2 +-
+ src/main.cpp                | 1 +
+ src/steamcompmgr.cpp        | 3 +++
+ src/steamcompmgr.hpp        | 1 +
+ 4 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
+index d393479..0468ecc 100644
+--- a/src/Backends/DRMBackend.cpp
++++ b/src/Backends/DRMBackend.cpp
+@@ -2333,7 +2333,7 @@ namespace gamescope
+ 				}
+ 			}
+ 
+-			if ( pColorimetry && pColorimetry->bt2020_rgb &&
++			if ( g_bHDRPqEnable && GetScreenType() != GAMESCOPE_SCREEN_TYPE_INTERNAL && pColorimetry && pColorimetry->bt2020_rgb &&
+ 				 pHDRStaticMetadata && pHDRStaticMetadata->eotfs && pHDRStaticMetadata->eotfs->pq )
+ 			{
+ 				m_Mutable.HDR.bExposeHDRSupport = true;
+diff --git a/src/main.cpp b/src/main.cpp
+index 1d29b8e..6cf3531 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -209,6 +209,7 @@ const char usage[] =
+ 	"                                 If this is not set, and there is a HDR client, it will be tonemapped SDR.\n"
+ 	"  --sdr-gamut-wideness           Set the 'wideness' of the gamut for SDR comment. 0 - 1.\n"
+ 	"  --hdr-sdr-content-nits         set the luminance of SDR content in nits. Default: 400 nits.\n"
++	"  --hdr-pq-disable               disable HDR metadata detection for PQ EOTFs. IE disable HDR for external panels but not ones added through config. \n"
+ 	"  --hdr-itm-enabled              enable SDR->HDR inverse tone mapping. only works for SDR input.\n"
+ 	"  --hdr-itm-sdr-nits             set the luminance of SDR content in nits used as the input for the inverse tone mapping process.\n"
+ 	"                                 Default: 100 nits, Max: 1000 nits\n"
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 1cd5a28..99f4970 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -366,6 +366,7 @@ bool g_bVRRInUse_CachedValue = false;
+ bool g_bSupportsHDR_CachedValue = false;
+ bool g_bForceHDR10OutputDebug = false;
+ gamescope::ConVar<bool> cv_hdr_enabled{ "hdr_enabled", false, "Whether or not HDR is enabled if it is available." };
++bool g_bHDRPqEnable = true;
+ bool g_bHDRItmEnable = false;
+ int g_nCurrentRefreshRate_CachedValue = 0;
+ 
+@@ -7517,6 +7518,8 @@ steamcompmgr_main(int argc, char **argv)
+ 					g_bForceHDRSupportDebug = true;
+  				} else if (strcmp(opt_name, "hdr-debug-force-output") == 0) {
+ 					g_bForceHDR10OutputDebug = true;
++				} else if (strcmp(opt_name, "hdr-pq-disabled") == 0 || strcmp(opt_name, "hdr-pq-disable") == 0) {
++					g_bHDRPqEnable = false;
+ 				} else if (strcmp(opt_name, "hdr-itm-enabled") == 0 || strcmp(opt_name, "hdr-itm-enable") == 0) {
+ 					g_bHDRItmEnable = true;
+ 				} else if (strcmp(opt_name, "sdr-gamut-wideness") == 0) {
+diff --git a/src/steamcompmgr.hpp b/src/steamcompmgr.hpp
+index 5679a0c..e3987bb 100644
+--- a/src/steamcompmgr.hpp
++++ b/src/steamcompmgr.hpp
+@@ -38,6 +38,7 @@ static const uint32_t g_zposOverlay = 3;
+ static const uint32_t g_zposCursor = 4;
+ static const uint32_t g_zposMuraCorrection = 5;
+ 
++extern bool g_bHDRPqEnable;
+ extern bool g_bHDRItmEnable;
+ extern bool g_bForceHDRSupportDebug;
+ 
+-- 
+2.48.1
 

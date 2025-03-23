@@ -8,7 +8,7 @@ Summary:     Compiz alike magic lamp effect for GNOME Shell
 Group:       User Interface/Desktops
 License:     GPLv2
 URL:         https://github.com/hermes83/compiz-alike-magic-lamp-effect
-Source0:     https://github.com/KyleGospo/compiz-alike-magic-lamp-effect/archive/refs/heads/master.tar.gz
+Source0:     https://github.com/bazzite-org/compiz-alike-magic-lamp-effect/archive/refs/heads/master.tar.gz
 BuildArch:   noarch
 
 BuildRequires: glib2

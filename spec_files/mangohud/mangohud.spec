@@ -10,7 +10,7 @@
 
 %global appname MangoHud
 %global forgeurl https://github.com/flightlessmango/MangoHud
-%global commit f77864d5ee59a82c33220267bf47fe0b82eafdad
+%global commit fea4292519a3085881d567a18ad3e1fee37078d8
 %forgemeta
 %global imgui_ver 1.89.9
 %global imgui_wrap_ver 2
@@ -22,8 +22,8 @@
 %global tarball_version %%(echo %{version} | tr '~' '-')
 
 Name:           mangohud
-Version:        0.8.0
-Release:        4
+Version:        0.8.1
+Release:        %autorelease
 Summary:        Vulkan and OpenGL overlay for monitoring FPS, temperatures, CPU/GPU load
 
 License:        MIT
@@ -39,17 +39,6 @@ Source4:        https://wrapdb.mesonbuild.com/v%{vulkan_headers_wrap_ver}/projec
 Source5:        https://github.com/epezent/implot/archive/v%{implot_ver}/implot-%{implot_ver}.tar.gz
 Source6:        https://wrapdb.mesonbuild.com/v%{implot_wrap_ver}/implot_%{implot_ver}-1/get_patch#/implot-%{implot_ver}-%{implot_wrap_ver}-wrap.zip
 Source20:       README.Fedora.md
-
-# https://github.com/flightlessmango/MangoHud/commit/85bd029f2f292e2a7089caff6c78d79a102da96d
-Patch0:         85bd029f2f292e2a7089caff6c78d79a102da96d.patch
-# https://github.com/flightlessmango/MangoHud/pull/1581
-Patch1:         1581.patch
-# https://github.com/flightlessmango/MangoHud/commit/6dcd1b5c4bbd9fa1ff56337bff6d307568afc4d5
-Patch2:         6dcd1b5c4bbd9fa1ff56337bff6d307568afc4d5.patch
-# https://github.com/flightlessmango/MangoHud/commit/f60145c288610145b172af4f0dff49697337abc4
-Patch3:         f60145c288610145b172af4f0dff49697337abc4.patch
-# https://github.com/flightlessmango/MangoHud/commit/5b7bd93f0493e88637ff4a6ef1140a13ded05cc8
-Patch4:         5b7bd93f0493e88637ff4a6ef1140a13ded05cc8.patch
 
 BuildRequires:  vulkan-headers
 BuildRequires:  appstream

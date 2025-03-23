@@ -38,3 +38,12 @@ ln -s /usr/local/firmware/aw87xxx_acf_minipro.bin /usr/lib/firmware/aw87xxx_acf_
 ln -s /usr/local/firmware/aw87xxx_acf_orangepi.bin /usr/lib/firmware/aw87xxx_acf_orangepi.bin
 ln -s /usr/local/firmware/aw87xxx_acf_airplus.bin /usr/lib/firmware/aw87xxx_acf_airplus.bin
 ln -s /usr/local/firmware/aw87xxx_acf_flip.bin /usr/lib/firmware/aw87xxx_acf_flip.bin
+mkdir -p /tmp/rog-flow
+curl -Lo /tmp/rog-flow/cs35l41-dsp1-spk-cali-10431fb3-l0.bin https://github.com/hhd-dev/hwinfo/raw/refs/heads/master/firmware/cirrus/cs35l41-dsp1-spk-cali-10431fb3-l0.bin
+curl -Lo /tmp/rog-flow/cs35l41-dsp1-spk-cali-10431fb3-r0.bin https://github.com/hhd-dev/hwinfo/raw/refs/heads/master/firmware/cirrus/cs35l41-dsp1-spk-cali-10431fb3-r0.bin
+curl -Lo /tmp/rog-flow/cs35l41-dsp1-spk-prot-10431fb3-l0.bin https://github.com/hhd-dev/hwinfo/raw/refs/heads/master/firmware/cirrus/cs35l41-dsp1-spk-prot-10431fb3-l0.bin
+curl -Lo /tmp/rog-flow/cs35l41-dsp1-spk-prot-10431fb3-r0.bin https://github.com/hhd-dev/hwinfo/raw/refs/heads/master/firmware/cirrus/cs35l41-dsp1-spk-prot-10431fb3-r0.bin
+curl -Lo /tmp/rog-flow/cs35l41-dsp1-spk-prot-10431fb3.wmfw https://github.com/hhd-dev/hwinfo/raw/refs/heads/master/firmware/cirrus/cs35l41-dsp1-spk-prot-10431fb3.wmfw
+xz --check=crc32 /tmp/rog-flow/*
+mv -vf /tmp/rog-flow/* /usr/lib/firmware/cirrus/
+rm -rf /tmp/rog-flow

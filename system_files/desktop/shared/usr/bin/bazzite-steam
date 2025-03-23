@@ -82,24 +82,8 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   fi
 
 elif [ -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]; then
-  # Make sure Steam has been successfully started at least once. This is needed for desktop images that don't use a bootstrap archive
-
-  # Apply Steam Download Speed Fix if not already applied
-  if [ ! -f $HOME/.local/share/Steam/steam_dev.cfg ]; then
-    bash -c 'printf "@nClientDownloadEnableHTTP2PlatformLinux 0\n@fDownloadRateImprovementToAddAnotherConnection 1.0\n" > $HOME/.local/share/Steam/steam_dev.cfg'
-  fi
+  :
 fi
-
-switcheroo_state="$(switcherooctl list)"
-DGPU_OPTION=""
-# If we're running this on a dGPU in a multi-gpu AMD/Intel system, apply a workaround for the blank Steam window bug
-if [[ $(echo "${switcheroo_state}" | grep -o 'Device:' | wc -l) -gt 1 ]]; then
-  # TODO: Check if -system-composer is needed with nvidia >=555 driver
-  if ! grep -Pq 'Name:\s+NVIDIA' <<< "$switcheroo_state"; then
-    DGPU_OPTION="-system-composer"
-  fi
-fi
-unset -v switcheroo_state
 
 if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
   # https://github.com/Supreeeme/extest
@@ -110,5 +94,5 @@ if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
   # Also supports Steam Input as a whole.
   env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam "$DECK_OPTION" "$DGPU_OPTION" "$@"
 else
-  /usr/bin/steam "$DECK_OPTION" "$DGPU_OPTION" "$@"
+  /usr/bin/steam "$DECK_OPTION" "$@"
 fi

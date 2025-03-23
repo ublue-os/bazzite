@@ -73,23 +73,23 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 
 # Setup Copr repos
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/unwrap && \
     dnf5 -y install dnf5-plugins && \
     for copr in \
-        kylegospo/bazzite \
-        kylegospo/bazzite-multilib \
+        bazzite-org/bazzite \
+        bazzite-org/bazzite-multilib \
         ublue-os/staging \
-        kylegospo/LatencyFleX \
-        kylegospo/obs-vkcapture \
-        kylegospo/wallpaper-engine-kde-plugin \
+        ublue-os/packages \
+        bazzite-org/LatencyFleX \
+        bazzite-org/obs-vkcapture \
+        bazzite-org/wallpaper-engine-kde-plugin \
         ycollet/audinux \
-        kylegospo/rom-properties \
-        kylegospo/webapp-manager \
-        kylegospo/vk_hdr_layer \
+        bazzite-org/rom-properties \
+        bazzite-org/webapp-manager \
+        bazzite-org/vk_hdr_layer \
         hhd-dev/hhd \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
@@ -124,27 +124,30 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/cleanup
 
 # Install kernel
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=akmods,src=/kernel-rpms,dst=/tmp/kernel-rpms \
     --mount=type=bind,from=akmods,src=/rpms,dst=/tmp/akmods-rpms \
     --mount=type=bind,from=akmods-extra,src=/rpms,dst=/tmp/akmods-extra-rpms \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/install-kernel-akmods && \
+    for toswap in linux-firmware netronome-firmware libertas-firmware atheros-firmware realtek-firmware tiwilink-firmware cirrus-audio-firmware linux-firmware-whence iwlwifi-dvm-firmware iwlwifi-mvm-firmware amd-ucode-firmware qcom-firmware mt7xxx-firmware liquidio-firmware nxpwireless-firmware intel-vsc-firmware nvidia-gpu-firmware intel-audio-firmware amd-gpu-firmware iwlegacy-firmware intel-gpu-firmware mlxsw_spectrum-firmware qed-firmware mrvlprestera-firmware brcmfmac-firmware dvb-firmware; do \
+        dnf5 -y swap --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite $toswap $toswap; \
+    done && unset -v toswap && \
     dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
     dnf5 -y copr enable bieszczaders/kernel-cachyos-addons && \
     dnf5 -y install \
         scx-scheds && \
     dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
     for toswap in rpm-ostree bootc; do \
-        dnf5 -y swap --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite $toswap $toswap; \
+        dnf5 -y swap --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite $toswap $toswap; \
     done && unset -v toswap && \
     /ctx/cleanup
 
 # Setup firmware
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
@@ -175,12 +178,12 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
 # Install patched fwupd
 # Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
 # Install patched switcheroo control with proper discrete GPU support
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     declare -A toswap=( \
-        ["copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland" \
+        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland" \
         ["terra-extras"]="switcheroo-control" \
         ["terra-mesa"]="mesa-filesystem" \
         ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
@@ -209,7 +212,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         mesa-libEGL \
         mesa-libGL \
         mesa-libgbm \
-        mesa-libglapi \
         mesa-va-drivers \
         mesa-vulkan-drivers \
         fwupd \
@@ -224,8 +226,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/cleanup
 
 # Remove unneeded packages
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y remove \
@@ -236,8 +238,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/cleanup
 
 # Install new packages
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install \
@@ -318,6 +320,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         rocm-opencl \
         rocm-clinfo \
         rocm-smi && \
+    dnf5 -y install \
+        $(curl https://api.github.com/repos/bazzite-org/cicpoffs/releases/latest | jq -r '.assets[] | select(.name| test(".*rpm$")).browser_download_url') && \
     mkdir -p /etc/xdg/autostart && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     sed -i '1s/^/[include]\npaths = ["\/etc\/ublue-os\/topgrade.toml"]\n\n/' /usr/share/ublue-update/topgrade-user.toml && \
@@ -326,25 +330,30 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     sed -i 's/max_mem_percent.*/max_mem_percent = 90.0/' /etc/ublue-update/ublue-update.toml && \
     sed -i 's/dbus_notify.*/dbus_notify = false/' /etc/ublue-update/ublue-update.toml && \
     sed -i 's/ --xdg-runtime=\\"${XDG_RUNTIME_DIR}\\"//g' /usr/bin/btrfs-assistant-launcher && \
-    curl -Lo /usr/bin/installcab https://raw.githubusercontent.com/KyleGospo/steam-proton-mf-wmv/master/installcab.py && \
+    curl -Lo /usr/bin/installcab https://raw.githubusercontent.com/bazzite-org/steam-proton-mf-wmv/master/installcab.py && \
     chmod +x /usr/bin/installcab && \
-    curl -Lo /usr/bin/install-mf-wmv https://github.com/KyleGospo/steam-proton-mf-wmv/blob/master/install-mf-wmv.sh && \
+    curl -Lo /usr/bin/install-mf-wmv https://github.com/bazzite-org/steam-proton-mf-wmv/blob/master/install-mf-wmv.sh && \
     chmod +x /usr/bin/install-mf-wmv && \
     curl -Lo /tmp/ls-iommu.tar.gz $(curl https://api.github.com/repos/HikariKnight/ls-iommu/releases/latest | jq -r '.assets[] | select(.name| test(".*x86_64.tar.gz$")).browser_download_url') && \
     mkdir -p /tmp/ls-iommu && \
     tar --no-same-owner --no-same-permissions --no-overwrite-dir -xvzf /tmp/ls-iommu.tar.gz -C /tmp/ls-iommu && \
     rm -f /tmp/ls-iommu.tar.gz && \
     cp -r /tmp/ls-iommu/ls-iommu /usr/bin/ && \
+    curl -Lo /tmp/scopebuddy.tar.gz https://github.com/HikariKnight/ScopeBuddy/archive/refs/tags/$(curl https://api.github.com/repos/HikariKnight/scopebuddy/releases/latest | jq -r '.tag_name').tar.gz && \
+    mkdir -p /tmp/scopebuddy && \
+    tar --no-same-owner --no-same-permissions --no-overwrite-dir -xvzf /tmp/scopebuddy.tar.gz -C /tmp/scopebuddy && \
+    rm -f /tmp/scopebuddy.tar.gz && \
+    cp -r /tmp/scopebuddy/ScopeBuddy-*/bin/* /usr/bin/ && \
     /ctx/cleanup
 
 # Install Steam & Lutris, plus supporting packages
 # Downgrade ibus to fix an issue with the Steam keyboard
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+    --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite \
         ibus ibus && \
     dnf5 versionlock add \
         ibus && \
@@ -382,15 +391,15 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     rm -f /tmp/latencyflex.tar.xz && \
     mkdir -p /usr/lib64/latencyflex && \
     cp -r /tmp/latencyflex/wine/usr/lib/wine/* /usr/lib64/latencyflex/ && \
-    curl -Lo /usr/bin/latencyflex https://raw.githubusercontent.com/KyleGospo/LatencyFleX-Installer/main/install.sh && \
+    curl -Lo /usr/bin/latencyflex https://raw.githubusercontent.com/bazzite-org/LatencyFleX-Installer/main/install.sh && \
     chmod +x /usr/bin/latencyflex && \
     curl -Lo /usr/bin/winetricks https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks && \
     chmod +x /usr/bin/winetricks && \
     /ctx/cleanup
 
 # Configure KDE & GNOME
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
@@ -408,8 +417,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
             kcm-fcitx5 \
             ptyxis && \
         dnf5 -y swap \
-        --repo terra-extras \
-            kf6-kio-core kf6-kio-core && \
+        --repo=terra-extras \
+            kf6-kio kf6-kio.switcheroo-$(rpm -qi kf6-kcoreaddons | awk '/^Version/ {print $3}') && \
         dnf5 versionlock add \
             kf6-kio-core \
             kf6-kio-core-libs \
@@ -430,6 +439,7 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
         sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i 's@Keywords=@Keywords=konsole;console;@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
+        sed -i 's/^Exec=plasma-discover/& --backends flatpak-backend/' /usr/share/applications/org.kde.discover.desktop && \
         cp /usr/share/applications/org.gnome.Ptyxis.desktop /usr/share/kglobalaccel/org.gnome.Ptyxis.desktop && \
         setcap 'cap_net_raw+ep' /usr/libexec/ksysguard/ksgrd_network_helper \
     ; else \
@@ -438,6 +448,16 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
             gnome-shell gnome-shell && \
         dnf5 versionlock add \
             gnome-shell && \
+        dnf5 -y swap \
+        --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite-multilib \
+            gsettings-desktop-schemas gsettings-desktop-schemas && \
+        dnf5 versionlock add \
+            gsettings-desktop-schemas && \
+        dnf5 -y swap \
+        --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite-multilib \
+            mutter mutter && \
+        dnf5 versionlock add \
+            mutter && \
         dnf5 -y install \
             nautilus-gsconnect \
             steamdeck-backgrounds \
@@ -482,8 +502,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/cleanup
 
 # Homebrew & Bash Prexec
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     touch /.dockerenv && \
@@ -496,22 +516,19 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     curl -Lo /usr/share/bash-prexec https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh &&\
     /ctx/cleanup
 
-# media-automount-generator, mount non-removable device partitions automatically under /media/media-automount/
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+# ublue-os-media-automount-udev, mount non-removable device partitions automatically under /media/media-automount/
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    cd $(mktemp -d) && \
-    curl -fsSLo - https://github.com/Zeglius/media-automount-generator/archive/refs/tags/v0.2.2.tar.gz | \
-        tar -xz --strip-components=1 && \
-    ./install.sh && \
-    cd / && \
+    dnf5 install -y --enable-repo=copr:copr.fedorainfracloud.org:ublue-os:packages \
+        install ublue-os-media-automount-udev && \
     /ctx/cleanup
 
 # Cleanup & Finalize
 COPY system_files/overrides /
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     rm -f /etc/profile.d/toolbox.sh && \
@@ -577,15 +594,15 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     for copr in \
-        kylegospo/bazzite \
-        kylegospo/bazzite-multilib \
+        bazzite-org/bazzite \
+        bazzite-org/bazzite-multilib \
         ublue-os/staging \
-        kylegospo/LatencyFleX \
-        kylegospo/obs-vkcapture \
-        kylegospo/wallpaper-engine-kde-plugin \
+        bazzite-org/LatencyFleX \
+        bazzite-org/obs-vkcapture \
+        bazzite-org/wallpaper-engine-kde-plugin \
         ycollet/audinux \
-        kylegospo/rom-properties \
-        kylegospo/webapp-manager \
+        bazzite-org/rom-properties \
+        bazzite-org/webapp-manager \
         hhd-dev/hhd \
         che/nerd-fonts \
         mavit/discover-overlay \
@@ -601,6 +618,9 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
     sed -i 's|#default.clock.allowed-rates = \[ 48000 \]|default.clock.allowed-rates = [ 44100 48000 ]|' /usr/share/pipewire/pipewire.conf && \
     sed -i 's|^ExecStart=.*|ExecStart=/usr/libexec/rtkit-daemon --no-canary|' /usr/lib/systemd/system/rtkit-daemon.service && \
+    sed -i 's/balanced=balanced$/balanced=balanced-bazzite/' /etc/tuned/ppd.conf && \
+    sed -i 's/performance=throughput-performance$/performance=throughput-performance-bazzite/' /etc/tuned/ppd.conf && \
+    sed -i 's/balanced=balanced-battery$/balanced=balanced-battery-bazzite/' /etc/tuned/ppd.conf && \
     ln -s /usr/bin/true /usr/bin/pulseaudio && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
@@ -626,15 +646,16 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     systemctl --global enable systemd-tmpfiles-setup.service && \
     systemctl --global disable sunshine.service && \
     systemctl disable waydroid-container.service && \
+    systemctl disable force-wol.service && \
     curl -Lo /etc/dxvk-example.conf https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf && \
-    curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/KyleGospo/waydroid-scripts/main/waydroid-choose-gpu.sh && \
+    curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/bazzite-org/waydroid-scripts/main/waydroid-choose-gpu.sh && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
     curl -Lo /usr/lib/sysctl.d/99-bore-scheduler.conf https://github.com/CachyOS/CachyOS-Settings/raw/master/usr/lib/sysctl.d/99-bore-scheduler.conf && \
     curl -Lo /etc/distrobox/docker.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/distrobox.ini && \
     curl -Lo /etc/distrobox/incus.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/incus/distrobox.ini && \
-    /ctx/image-info && \
     /ctx/build-initramfs && \
-    /ctx/finalize
+    /ctx/finalize && \
+    /ctx/image-info
 
 ################
 # DECK BUILDS
@@ -658,23 +679,23 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
 
 # Setup Copr repos
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    dnf5 -y copr enable kylegospo/bazzite && \
-    dnf5 -y copr enable kylegospo/bazzite-multilib && \
-    dnf5 -y copr enable kylegospo/LatencyFleX && \
-    dnf5 -y copr enable kylegospo/obs-vkcapture && \
-    dnf5 -y copr enable kylegospo/wallpaper-engine-kde-plugin && \
+    dnf5 -y copr enable bazzite-org/bazzite && \
+    dnf5 -y copr enable bazzite-org/bazzite-multilib && \
+    dnf5 -y copr enable bazzite-org/LatencyFleX && \
+    dnf5 -y copr enable bazzite-org/obs-vkcapture && \
+    dnf5 -y copr enable bazzite-org/wallpaper-engine-kde-plugin && \
     dnf5 -y copr enable hhd-dev/hhd && \
     dnf5 -y copr enable ycollet/audinux && \
     /ctx/cleanup
 
 # Configure KDE & GNOME
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y remove \
@@ -693,8 +714,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/cleanup
 
 # Install new packages
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install \
@@ -732,12 +753,12 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/cleanup
 
 # Install Steam Deck patched UPower, remove Tuned GUI
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+    --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite \
         upower upower && \
     dnf5 versionlock add \
         upower \
@@ -746,24 +767,23 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
 
 # Install Gamescope Session & Supporting changes
 # Add bootstrap_steam.tar.gz used by gamescope-session (Thanks GE & Nobara Project!)
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     mkdir -p /usr/share/gamescope-session-plus/ && \
     curl -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz && \
     dnf5 -y install \
-    --repo copr:copr.fedorainfracloud.org:kylegospo:bazzite \
+    --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite \
         gamescope-session-plus \
         gamescope-session-steam && \
     /ctx/cleanup
 
 # Cleanup & Finalize
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/image-info && \
     mkdir -p "/etc/xdg/autostart" && \
     mv "/etc/skel/.config/autostart/steam.desktop" "/etc/xdg/autostart/steam.desktop" && \
     sed -i 's@Exec=waydroid first-launch@Exec=/usr/bin/waydroid-launcher first-launch\nX-Steam-Library-Capsule=/usr/share/applications/Waydroid/capsule.png\nX-Steam-Library-Hero=/usr/share/applications/Waydroid/hero.png\nX-Steam-Library-Logo=/usr/share/applications/Waydroid/logo.png\nX-Steam-Library-StoreCapsule=/usr/share/applications/Waydroid/store-logo.png\nX-Steam-Controller-Template=Desktop@g' /usr/share/applications/Waydroid.desktop && \
@@ -777,11 +797,11 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     sed -i "s/^SCX_SCHEDULER=.*/SCX_SCHEDULER=scx_lavd/" /etc/default/scx && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     for copr in \
-        kylegospo/bazzite \
-        kylegospo/bazzite-multilib \
-        kylegospo/LatencyFleX \
-        kylegospo/obs-vkcapture \
-        kylegospo/wallpaper-engine-kde-plugin \
+        bazzite-org/bazzite \
+        bazzite-org/bazzite-multilib \
+        bazzite-org/LatencyFleX \
+        bazzite-org/obs-vkcapture \
+        bazzite-org/wallpaper-engine-kde-plugin \
         hhd-dev/hhd \
         ycollet/audinux; \
     do \
@@ -829,7 +849,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     systemctl disable jupiter-biosupdate.service && \
     systemctl disable jupiter-controller-update.service && \
     systemctl disable batterylimit.service && \
-    /ctx/finalize
+    /ctx/finalize && \
+    /ctx/image-info
 
 FROM ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${KERNEL_FLAVOR}-${FEDORA_MAJOR_VERSION}-${KERNEL_VERSION} AS nvidia-akmods
 
@@ -856,8 +877,8 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
 
 # Remove everything that doesn't work well with NVIDIA
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y remove \
@@ -868,8 +889,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/cleanup
 
 # Install NVIDIA driver
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=bind,from=nvidia-akmods,src=/rpms,dst=/tmp/akmods-rpms \
     --mount=type=tmpfs,dst=/tmp \
@@ -886,8 +907,8 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     /ctx/cleanup
 
 # Cleanup & Finalize
-RUN --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/cache/rpm-ostree \
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
@@ -904,6 +925,6 @@ RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
     rm -r /tmp/bazzite-schema-test && \
     systemctl disable supergfxd.service && \
-    /ctx/image-info && \
     /ctx/build-initramfs && \
-    /ctx/finalize
+    /ctx/finalize && \
+    /ctx/image-info
