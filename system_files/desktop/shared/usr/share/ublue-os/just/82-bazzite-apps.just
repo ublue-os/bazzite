@@ -16,7 +16,6 @@ install-lact:
 install-coolercontrol:
     #!/usr/bin/bash
     ublue-update --wait
-    sudo wget https://copr.fedorainfracloud.org/coprs/codifryed/CoolerControl/repo/fedora-$(rpm -E %fedora)/codifryed-CoolerControl-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_codifryed-CoolerControl.repo
     rpm-ostree install -y liquidctl coolercontrol
     echo 'Complete, please reboot to apply changes.'
 
