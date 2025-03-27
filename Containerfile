@@ -300,6 +300,7 @@ RUN --mount=type=cache,dst=/var/cache \
         cockpit-navigator \
         cockpit-storaged \
         topgrade \
+        ckb-next \
         ydotool \
         yafti \
         stress-ng \
