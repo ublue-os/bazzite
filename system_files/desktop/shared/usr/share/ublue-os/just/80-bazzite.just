@@ -176,6 +176,19 @@ add-user-to-input-group:
     fi
     sudo usermod -a -G input $USER
 
+# Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
+enable-automounting:
+    #!/usr/bin/bash
+    set -eo pipefail
+    rule=/etc/udev/rules.d/99-media-automount.rules
+    if [[ "$(readlink $rule || :)" == /dev/null || "$(wc -l <$rule)" -eq 0 ]]; then
+        sudo rm -f $rule
+    fi
+
+# Disables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
+disable-automounting:
+    sudo ln -sf /dev/null /etc/udev/rules.d/99-media-automount.rules
+
 # Enable support for DisplayLink
 enable-displaylink:
     systemctl enable --now displaylink.service
