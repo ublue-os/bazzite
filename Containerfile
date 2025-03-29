@@ -522,8 +522,6 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 install -y --enable-repo=copr:copr.fedorainfracloud.org:ublue-os:packages \
         install ublue-os-media-automount-udev && \
-        : "Disables automount by default" && \
-        ln -sf /dev/null /etc/udev/rules.d/99-media-automount.rules && \
     /ctx/cleanup
 
 # Cleanup & Finalize
