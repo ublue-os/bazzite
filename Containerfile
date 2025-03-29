@@ -521,7 +521,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 install -y --enable-repo=copr:copr.fedorainfracloud.org:ublue-os:packages \
-        install ublue-os-media-automount-udev && \
+        ublue-os-media-automount-udev && \
     /ctx/cleanup
 
 # Cleanup & Finalize

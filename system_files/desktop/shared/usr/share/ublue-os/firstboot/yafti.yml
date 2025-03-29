@@ -54,6 +54,11 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
+        Disable partition automounting:
+          description: Disable automounting of labeled BTRFS/EXT4 partitions under /run/media/system
+          default: false
+          packages:
+            - Disable automounting: sudo -A ujust disable-automounting
         Add input group to current user:
           description: Adds the input group to your current user. Required by certain controller drivers.
           default: true
