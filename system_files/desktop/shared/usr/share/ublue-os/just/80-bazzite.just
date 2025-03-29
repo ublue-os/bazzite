@@ -181,7 +181,7 @@ enable-automounting:
     #!/usr/bin/bash
     set -eo pipefail
     rule=/etc/udev/rules.d/99-media-automount.rules
-    if [[ "$(readlink $rule || :)" == /dev/null || "$(wc -l <$rule)" -eq 0 ]]; then
+    if [[ "$(readlink $rule || :)" == /dev/null ]]; then
         sudo rm -f $rule
     fi
 
