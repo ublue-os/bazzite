@@ -1,3 +1,24 @@
+echo SkynetSSL - Evolve2Linux - SkyFiles AI Readiness Creator Edition
+app/org.torproject.torbrowser-launcher/x86_64/stable
+app/com.brave.Browser/x86_64/stable
+app/org.onlyoffice.desktopeditors/x86_64/stable
+app/org.openshot.OpenShot/x86_64/stable
+app/com.blackmagic.Resolve/x86_64/stable
+app/org.ardour.Ardour/x86_64/stable
+app/org.librepcb.LibrePCB/x86_64/stable
+app/org.librecad.librecad/x86_64/stable
+app/org.mixxx.Mixxx/x86_64/stable
+app/io.podman_desktop.PodmanDesktop/x86_64/stable
+app/org.gnome.Boxes/x86_64/stable
+app/org.fedoraproject.Firewalld/x86_64/stable
+app/org.fedoraproject.firewall-config/x86_64/stable
+app/com.brave.Browser/x86_64/stable
+app/org.gnome.World.Secrets/x86_64/stable
+app/org.gtk.Gtk3theme.Adwaita/x86_64/stable
+app/ca.desrt.dconf-editor/x86_64/stable
+app/org.cockpit_project.CockpitClient/x86_64/stable
+app/org.wireshark.Wireshark/x86_64/stable
+app/org.zaproxy.ZAP/x86_64/stable
 app/org.mozilla.firefox/x86_64/stable
 app/com.mattjakeman.ExtensionManager/x86_64/stable
 app/com.github.Matoking.protontricks/x86_64/stable
