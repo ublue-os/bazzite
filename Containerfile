@@ -300,6 +300,7 @@ RUN --mount=type=cache,dst=/var/cache \
         cockpit-navigator \
         cockpit-storaged \
         topgrade \
+        ckb-next \
         ydotool \
         yafti \
         stress-ng \
@@ -522,7 +523,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 install -y --enable-repo=copr:copr.fedorainfracloud.org:ublue-os:packages \
-        install ublue-os-media-automount-udev && \
+        ublue-os-media-automount-udev && \
     /ctx/cleanup
 
 # Cleanup & Finalize
@@ -731,7 +732,6 @@ RUN --mount=type=cache,dst=/var/cache \
         adjustor \
         acpica-tools \
         vpower \
-        ds-inhibit \
         steam_notif_daemon \
         sdgyrodsu \
         ibus-pinyin \
@@ -778,7 +778,8 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y install \
     --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite \
         gamescope-session-plus \
-        gamescope-session-steam && \
+        gamescope-session-steam \
+        steamos-manager && \
     /ctx/cleanup
 
 # Cleanup & Finalize
@@ -834,7 +835,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable wireplumber-sysconf.service && \
     systemctl enable pipewire-workaround.service && \
     systemctl enable pipewire-sysconf.service && \
-    systemctl enable ds-inhibit.service && \
     systemctl enable cec-onboot.service && \
     systemctl enable cec-onpoweroff.service && \
     systemctl enable cec-onsleep.service && \
@@ -843,6 +843,8 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable bazzite-grub-boot-success.service && \
     systemctl --global disable sdgyrodsu.service && \
     systemctl --global disable grub-boot-success.timer && \
+    systemctl enable steamos-manager.service && \
+    systemctl --global enable steamos-manager.service && \
     systemctl disable grub-boot-indeterminate.service && \
     systemctl disable input-remapper.service && \
     systemctl disable uupd.timer && \

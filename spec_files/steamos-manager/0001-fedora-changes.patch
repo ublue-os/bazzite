@@ -1,0 +1,63 @@
+From 3ab12754b56569032efb92c1d46f57dc7ecf02fa Mon Sep 17 00:00:00 2001
+From: Matthew Schwartz <mattschwartz@gwu.edu>
+Date: Fri, 9 Aug 2024 14:49:05 -0700
+Subject: [PATCH] fedora changes
+
+---
+ data/system/com.steampowered.SteamOSManager1.service | 2 +-
+ data/system/steamos-manager.service                  | 2 +-
+ data/user/com.steampowered.SteamOSManager1.service   | 2 +-
+ data/user/steamos-manager.service                    | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/data/system/com.steampowered.SteamOSManager1.service b/data/system/com.steampowered.SteamOSManager1.service
+index 792ea8d..38b6abb 100644
+--- a/data/system/com.steampowered.SteamOSManager1.service
++++ b/data/system/com.steampowered.SteamOSManager1.service
+@@ -1,5 +1,5 @@
+ [D-BUS Service]
+ Name=com.steampowered.SteamOSManager1
+-Exec=/usr/lib/steamos-manager -r
++Exec=/usr/lib64/steamos-manager -r
+ User=root
+ SystemdService=steamos-manager.service
+diff --git a/data/system/steamos-manager.service b/data/system/steamos-manager.service
+index 1e21630..badb767 100644
+--- a/data/system/steamos-manager.service
++++ b/data/system/steamos-manager.service
+@@ -7,7 +7,7 @@ After=steamos-log-submitter.service
+ Type=dbus
+ BusName=com.steampowered.SteamOSManager1
+ Environment=RUST_LOG='INFO'
+-ExecStart=/usr/lib/steamos-manager -r
++ExecStart=/usr/lib64/steamos-manager -r
+ Restart=on-failure
+ RestartSec=1
+ 
+diff --git a/data/user/com.steampowered.SteamOSManager1.service b/data/user/com.steampowered.SteamOSManager1.service
+index fccfb36..d944bc6 100644
+--- a/data/user/com.steampowered.SteamOSManager1.service
++++ b/data/user/com.steampowered.SteamOSManager1.service
+@@ -1,6 +1,6 @@
+ [D-BUS Service]
+ Name=com.steampowered.SteamOSManager1
+-Exec=/usr/lib/steamos-manager
++Exec=/usr/lib64/steamos-manager
+ User=root
+ SystemdService=steamos-manager.service
+ 
+diff --git a/data/user/steamos-manager.service b/data/user/steamos-manager.service
+index c147e40..def5a66 100644
+--- a/data/user/steamos-manager.service
++++ b/data/user/steamos-manager.service
+@@ -6,6 +6,6 @@ After=gamescope.service
+ Type=dbus
+ BusName=com.steampowered.SteamOSManager1
+ Environment=RUST_LOG='INFO'
+-ExecStart=/usr/lib/steamos-manager
++ExecStart=/usr/lib64/steamos-manager
+ Restart=on-failure
+ RestartSec=1
+-- 
+2.45.2
+

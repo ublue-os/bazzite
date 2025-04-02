@@ -1,0 +1,10 @@
+--- a/data/user/steamos-manager.service
++++ b/data/user/steamos-manager.service
+@@ -1,6 +1,6 @@
+ [Unit]
+ Description=SteamOS Manager Daemon
+-After=gamescope.service
++After=gamescope-session.target
+ 
+ [Service]
+ Type=dbus
