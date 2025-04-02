@@ -843,8 +843,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable bazzite-grub-boot-success.service && \
     systemctl --global disable sdgyrodsu.service && \
     systemctl --global disable grub-boot-success.timer && \
-    systemctl enable steamos-manager.service && \
-    systemctl --global enable steamos-manager.service && \
     systemctl disable grub-boot-indeterminate.service && \
     systemctl disable input-remapper.service && \
     systemctl disable uupd.timer && \
