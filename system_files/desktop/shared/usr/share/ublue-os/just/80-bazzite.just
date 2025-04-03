@@ -596,7 +596,7 @@ get-decky-bazzite-buddy:
     fi
 
 # Toggle whether Steam launches with the -steamdeck flag, which causes Big Picture / Game Mode to emulate Steam Deck behavior. Disabling this can prevent games from forcing Steam Deck-specific assets, such as lower-resolution textures.
-toggle-steamdeck-mode:
+toggle-steamdeck-alias:
     #!/usr/bin/bash
     # Toggles whether Steam presents the system as a Steam Deck via -steamdeck
     override_flag="$HOME/.config/bazzite/disable_steamdeck_flag"

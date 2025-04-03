@@ -75,7 +75,6 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
 
   # File toggle to override default Steam Deck flag behavior
   DECK_OVERRIDE_FLAG="$HOME/.config/bazzite/disable_steamdeck_flag"
-  mkdir -p "$(dirname "$DECK_OVERRIDE_FLAG")"
 
   # Required to maintain the Steam update branch between desktop & Steam Game Mode
   if [[ ! -f "$DECK_OVERRIDE_FLAG" ]]; then
