@@ -729,6 +729,7 @@ RUN --mount=type=cache,dst=/var/cache \
         adjustor \
         acpica-tools \
         vpower \
+        ds-inhibit \
         steam_notif_daemon \
         sdgyrodsu \
         ibus-pinyin \
@@ -775,8 +776,7 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y install \
     --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite \
         gamescope-session-plus \
-        gamescope-session-steam \
-        steamos-manager && \
+        gamescope-session-steam && \
     /ctx/cleanup
 
 # Cleanup & Finalize
@@ -832,6 +832,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable wireplumber-sysconf.service && \
     systemctl enable pipewire-workaround.service && \
     systemctl enable pipewire-sysconf.service && \
+    systemctl enable ds-inhibit.service && \
     systemctl enable cec-onboot.service && \
     systemctl enable cec-onpoweroff.service && \
     systemctl enable cec-onsleep.service && \
