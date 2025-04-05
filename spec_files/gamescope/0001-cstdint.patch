@@ -1,0 +1,37 @@
+From 5529e8ac8f3232ec6233e33286834548e1d8018d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Franti=C5=A1ek=20Zatloukal?= <fzatlouk@redhat.com>
+Date: Sun, 8 Oct 2023 22:10:33 +0200
+Subject: [PATCH] <cstdint>
+
+---
+ src/reshade/source/effect_parser_stmt.cpp | 1 +
+ src/reshade/source/effect_token.hpp       | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/src/reshade/source/effect_parser_stmt.cpp b/src/reshade/source/effect_parser_stmt.cpp
+index 7829729..f126be2 100644
+--- a/src/reshade/source/effect_parser_stmt.cpp
++++ b/src/reshade/source/effect_parser_stmt.cpp
+@@ -9,6 +9,7 @@
+ #include <cctype> // std::toupper
+ #include <cassert>
+ #include <functional>
++#include <limits>
+ #include <string_view>
+ 
+ struct on_scope_exit
+diff --git a/src/reshade/source/effect_token.hpp b/src/reshade/source/effect_token.hpp
+index 072d439..e4bb633 100644
+--- a/src/reshade/source/effect_token.hpp
++++ b/src/reshade/source/effect_token.hpp
+@@ -5,6 +5,7 @@
+ 
+ #pragma once
+ 
++#include <cstdint>
+ #include <string>
+ #include <vector>
+ 
+-- 
+2.41.0
+

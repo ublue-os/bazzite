@@ -1,0 +1,3 @@
+# Work around the misdetection of some SanDisk microSD cards
+
+ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/bin/systemd-run --no-block --collect /usr/lib/hwsupport/sdcard-rescan.sh %k"

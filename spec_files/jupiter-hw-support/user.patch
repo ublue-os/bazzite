@@ -1,0 +1,38 @@
+diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
+index e5ba74b..a9408dd 100755
+--- a/usr/lib/hwsupport/steamos-automount.sh
++++ b/usr/lib/hwsupport/steamos-automount.sh
+@@ -25,8 +25,8 @@ if [[ "${FLOCKER:-}" != "$0" ]] ; then exec env FLOCKER="$0" flock -e -w 20 "$0"
+ ACTION=$1
+ DEVBASE=$2
+ DEVICE="/dev/${DEVBASE}"
+-DECK_UID=$(id -u deck)
+-DECK_GID=$(id -g deck)
++DECK_UID=1000
++DECK_GID=1000
+ 
+ send_steam_url()
+ {
+@@ -139,11 +139,12 @@ do_mount()
+     fi
+ 
+     # Ask udisks to auto-mount. This needs a version of udisks that supports the 'as-user' option.
++    USER=$(id -nu 1000)
+     mount_point=$(make_dbus_udisks_call call 'data[0]' s         \
+                                  "block_devices/${DEVBASE}"      \
+                                  Filesystem Mount                \
+                                  'a{sv}' 4                       \
+-                                 as-user s deck                  \
++                                 as-user s ${USER}               \
+                                  auth.no_user_interaction b true \
+                                  fstype s "$FSTYPE"              \
+                                  options s "$OPTS")
+@@ -184,7 +185,7 @@ do_mount()
+     elif [[ "${STEAMOS_BTRFS_SDCARD_COMPATDATA_BIND_MOUNT:-0}" == "1" ]] && \
+         [[ "${ID_FS_TYPE}" == "vfat" || "${ID_FS_TYPE}" == "exfat" || "${ID_FS_TYPE}" == "ntfs" ]]; then
+         # bind mount compatdata folder from internal disk
+-        DECK_HOME="$(getent passwd deck | cut -d: -f6)"
++        DECK_HOME="/var/home/${USER}"
+         mkdir -p "${mount_point}"/steamapps/compatdata
+         chown "${DECK_UID}:${DECK_GID}" "${mount_point}"/steamapps{,/compatdata}
+         mkdir -p "${DECK_HOME}"/.local/share/Steam/steamapps/compatdata

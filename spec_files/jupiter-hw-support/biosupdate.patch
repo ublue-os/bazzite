@@ -1,0 +1,19 @@
+diff --git a/usr/bin/jupiter-biosupdate b/usr/bin/jupiter-biosupdate
+index a8d6059..7dfac37 100755
+--- a/usr/bin/jupiter-biosupdate
++++ b/usr/bin/jupiter-biosupdate
+@@ -187,6 +187,14 @@ fi
+ # Die early if inhibited
+ [[ ! -f $BIOS_INHIBIT_FILE ]] || die "Bios updates inhibited, no action ($BIOS_INHIBIT_FILE)"
+ 
++if ! /usr/libexec/hwsupport/valve-hardware; then
++  finish 0 no "No Valve Hardware detected"
++fi
++
++if ! systemctl is-enabled jupiter-biosupdate.service; then
++  finish 0 no "Bios updates inhibited, no action (Service disabled)"
++fi
++
+ # Print action
+ modestring="Performing"
+ [[ -z $checkmode ]] || modestring="Checking for"

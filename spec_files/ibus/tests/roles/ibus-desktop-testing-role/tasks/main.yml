@@ -1,0 +1,214 @@
+---
+- name: Check if Fedora desktop
+  register: fedora_desktop
+  stat:
+      path: "/etc/fedora-release"
+
+- name: Build and install GNOME installed-tests testing harness
+  block:
+    - name: Installing common GNOME desktop components
+      package:
+          name:
+            # IBus CI sets
+            - xorg-x11-server-Xvfb
+            - ibus
+            - ibus-desktop-testing
+            - dbus-x11
+            # https://pagure.io/fedora-comps/blob/main/f/comps-f38.xml.in
+            # dnf group info GNOME
+            # mandatory
+            - dconf
+            - gdm
+            - gnome-connections
+            - gnome-control-center
+            - gnome-initial-setup
+            - gnome-session-wayland-session
+            - gnome-session-xsession
+            - gnome-settings-daemon
+            - gnome-shell
+            - gnome-software
+            - gnome-terminal
+            - gnome-text-editor
+            - nautilus
+            - polkit
+            # default
+            - adobe-source-code-pro-fonts
+            - at-spi2-atk
+            - at-spi2-core
+            - avahi
+            - baobab
+            # Sometimes version mismatch with gnome-shell in rawhide
+            #- chrome-gnome-shell
+            - evince
+            - fprintd-pam
+            - glib-networking
+            - gnome-bluetooth
+            - gnome-calculator
+            - gnome-characters
+            - gnome-classic-session
+            - gnome-clocks
+            - gnome-color-manager
+            - gnome-disk-utility
+            - gnome-font-viewer
+            - gnome-logs
+            - gnome-remote-desktop
+            - gnome-system-monitor
+            - gnome-terminal-nautilus
+            - gnome-user-docs
+            - gvfs-fuse
+            - gvfs-goa
+            - gvfs-gphoto2
+            - gvfs-mtp
+            - gvfs-smb
+            - libcanberra-gtk3
+            - libproxy-duktape
+            - librsvg2
+            - libsane-hpaio
+            - mesa-dri-drivers
+            - mesa-libEGL
+            - ModemManager
+            - NetworkManager-adsl
+            - NetworkManager-ppp
+            - NetworkManager-wwan
+            - orca
+            - PackageKit-command-not-found
+            - PackageKit-gtk3-module
+            - sane-backends-drivers-scanners
+            - systemd-oomd-defaults
+            - tracker
+            - tracker-miners
+            - xdg-desktop-portal
+            - xdg-desktop-portal-gnome
+            - xdg-desktop-portal-gtk
+            - xdg-user-dirs-gtk
+    - name: Installing Fedora specific GNOME desktop components
+      when: fedora_desktop.stat.exists == true
+      package:
+          name:
+            - gnome-screenshot
+            - gnome-boxes
+            - yelp
+            - cheese
+            - eog
+            - evince-djvu
+            - gnome-backgrounds
+            - gnome-contacts
+            - gnome-maps
+            - gnome-photos
+            - gnome-themes-extra
+            - gnome-user-share
+            - gnome-weather
+            - gvfs-afc
+            - gvfs-afp
+            - gvfs-archive
+            - NetworkManager-openconnect-gnome
+            - NetworkManager-openvpn-gnome
+            - NetworkManager-pptp-gnome
+            - NetworkManager-ssh-gnome
+            - NetworkManager-vpnc-gnome
+            - rygel
+            - simple-scan
+            - sushi
+            - totem
+    - name: Installing GNOME installed-tests testing harness
+      when: fedora_desktop.stat.exists == true
+      package:
+          name:
+            - gnome-desktop-testing
+    - name: Installing build environment
+      when: fedora_desktop.stat.exists == false
+      package:
+          name:
+            - autoconf
+            - automake
+            - make
+            - gcc
+            - git
+            - libtool
+
+    - name: Fetching GNOME installed-tests testing harness source from remote repository
+      when: fedora_desktop.stat.exists == false
+      git:
+          repo: 'https://gitlab.gnome.org/GNOME/gnome-desktop-testing.git'
+          dest: gnome-desktop-testing
+          force: yes
+
+    - name: Checkout v2021.1 tag in GNOME installed-tests testing harness
+      when: fedora_desktop.stat.exists == false
+      command: git checkout -b v2021.1 refs/tags/v2021.1
+      args:
+          chdir: gnome-desktop-testing
+
+    - name: Configure GNOME installed-tests testing harness build
+      when: fedora_desktop.stat.exists == false
+      command: ./autogen.sh --prefix=/usr --sysconfdir=/etc --localstatedir=/var
+      args:
+          chdir: gnome-desktop-testing
+
+    - name: Build GNOME installed-tests testing harness
+      when: fedora_desktop.stat.exists == false
+      command: make
+      args:
+          chdir: gnome-desktop-testing
+
+    - name: Install GNOME installed-tests testing harness
+      when: fedora_desktop.stat.exists == false
+      command: make install
+      args:
+          chdir: gnome-desktop-testing
+
+- name: Start IBus installed-tests testing harness
+  environment:
+    ANSIBLE: 1
+    TMPDIR: '{{ remote_artifacts }}'
+    G_MESSAGES_DEBUG: 'all'
+    LANG: 'C.UTF-8'
+  block:
+  - name: Execute IBus tests
+    shell: |
+      set -e
+      # Delete LC_CTYPE=C.UTF-8
+      export -n LC_CTYPE
+      status="FAIL: frame"
+      ibus-desktop-testing-runner \
+          --no-graphics \
+          --runner=gnome \
+          --tests='{{ installed_test_name }}' \
+          --output='{{ remote_artifacts }}/{{ installed_test_name }}.log' \
+          --result='{{ remote_artifacts }}/test.log' \
+          null
+      if [ $? -eq 0 ]; then
+          status="PASS: frame"
+      fi
+      if [ -f /var/tmp/ibus-ci-autostart.log ] ; then
+          echo "#### /var/tmp/ibus-ci-autostart.log"
+          cat /var/tmp/ibus-ci-autostart.log
+          rm /var/tmp/ibus-ci-autostart.log
+          echo "#"
+      fi
+      echo "${status}" >> {{ remote_artifacts }}/test.log
+      echo "#### {{ remote_artifacts }}/{{ installed_test_name }}.log"
+      if [ -f {{ remote_artifacts }}/{{ installed_test_name }}.log ] ; then
+          cat {{ remote_artifacts }}/{{ installed_test_name }}.log
+      fi
+      echo "#"
+      echo "#### {{ remote_artifacts }}/test.log"
+      if [ -f {{ remote_artifacts }}/test.log ] ; then
+          cat {{ remote_artifacts }}/test.log
+      fi
+      echo "#"
+
+  - name: Check the results
+    script: check-results.sh "{{ remote_artifacts }}/test.log" "0"
+    register: test_fails
+    failed_when: '"ERROR" in test_fails.stdout'
+
+  - name: Set role result
+    set_fact:
+      role_result: "{{ test_fails.stdout }}"
+      role_result_failed: "{{ (test_fails.stdout|d|length > 0) or (test_fails.stderr|d|length > 0) }}"
+      role_result_msg: "{{ test_fails.stdout|d('tests failed.') }}"
+
+  - include_role:
+      name: str-common-final
+

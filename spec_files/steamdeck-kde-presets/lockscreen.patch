@@ -1,0 +1,11 @@
+diff --git a/etc/xdg/kscreenlockerrc b/etc/xdg/kscreenlockerrc
+index 8a52bc5..081de18 100644
+--- a/etc/xdg/kscreenlockerrc
++++ b/etc/xdg/kscreenlockerrc
+@@ -1,3 +1,3 @@
+-[Daemon]
+-Autolock=false
+-LockOnResume=false
++[Greeter][Wallpaper][org.kde.image][General]
++Image=/usr/share/wallpapers/convergence.png
++PreviewImage=/usr/share/wallpapers/convergence.png

@@ -1,0 +1,29 @@
+diff --git a/usr/lib/hwsupport/trim-devices.sh b/usr/lib/hwsupport/trim-devices.sh
+index 84897df..bd203ab 100755
+--- a/usr/lib/hwsupport/trim-devices.sh
++++ b/usr/lib/hwsupport/trim-devices.sh
+@@ -78,12 +78,23 @@ function is_known_bad_device()
+     return;
+ }
+ 
++# If fstrim has been disabled by the end-user, do nothing
++if ! systemctl is-enabled fstrim.timer; then
++    echo "fstrim.timer disabled, exiting trim-devices.sh"
++    exit
++fi
++
++# If the upstream fstrim service is currently running, do nothing
++if systemctl is-active fstrim.service; then
++    echo "fstrim.service is currently active, exiting trim-devices.sh"
++    exit
++fi
++
+ # In some cases it is unsafe to trim an sdcard. When we detect this case
+ # lets just trim the partitions on the internal drive which we know are
+ # safe to trim/discard
+ if is_known_bad_device; then
+     _fstrim /var
+-    _fstrim /home
+     exit
+ fi
+ 

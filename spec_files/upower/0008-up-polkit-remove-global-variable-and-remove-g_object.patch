@@ -1,0 +1,41 @@
+From 7db90b28d842744f135114b3e90e6bded4ac6fbb Mon Sep 17 00:00:00 2001
+From: Kate Hsuan <hpa@redhat.com>
+Date: Mon, 2 Sep 2024 14:03:56 +0800
+Subject: [PATCH 8/9] up-polkit: remove global variable and remove
+ g_object_add_weak_pointer()
+
+Since UpPolkit is only created in the daemon, so the global variable and
+g_object_add_weak_pointer() can be removed.
+---
+ src/up-polkit.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
+
+diff --git a/src/up-polkit.c b/src/up-polkit.c
+index e0ba246..fadfc30 100644
+--- a/src/up-polkit.c
++++ b/src/up-polkit.c
+@@ -45,7 +45,6 @@ struct UpPolkitPrivate
+ 
+ G_DEFINE_TYPE_WITH_CODE (UpPolkit, up_polkit, G_TYPE_OBJECT,
+                          G_ADD_PRIVATE (UpPolkit))
+-static gpointer up_polkit_object = NULL;
+ 
+ #ifdef HAVE_POLKIT
+ /**
+@@ -190,12 +189,6 @@ up_polkit_init (UpPolkit *polkit)
+ UpPolkit *
+ up_polkit_new (void)
+ {
+-	if (up_polkit_object != NULL) {
+-		g_object_ref (up_polkit_object);
+-	} else {
+-		up_polkit_object = g_object_new (UP_TYPE_POLKIT, NULL);
+-		g_object_add_weak_pointer (up_polkit_object, &up_polkit_object);
+-	}
+-	return UP_POLKIT (up_polkit_object);
++	return UP_POLKIT (g_object_new (UP_TYPE_POLKIT, NULL));
+ }
+ 
+-- 
+2.46.0
+

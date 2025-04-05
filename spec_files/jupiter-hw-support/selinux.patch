@@ -1,0 +1,154 @@
+diff --git a/usr/bin/steamos-polkit-helpers/jupiter-amp-control b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
+index 69dafad..c32f970 100755
+--- a/usr/bin/steamos-polkit-helpers/jupiter-amp-control
++++ b/usr/bin/steamos-polkit-helpers/jupiter-amp-control
+@@ -7,4 +7,4 @@ then
+     exec pkexec --disable-internal-agent "$0" "$@"
+ fi
+ 
+-exec /usr/lib/hwsupport/jupiter-amp-control "$@"
++exec /usr/libexec/hwsupport/jupiter-amp-control "$@"
+diff --git a/usr/bin/steamos-polkit-helpers/jupiter-dock-updater b/usr/bin/steamos-polkit-helpers/jupiter-dock-updater
+index ef206ba..04ba88a 100755
+--- a/usr/bin/steamos-polkit-helpers/jupiter-dock-updater
++++ b/usr/bin/steamos-polkit-helpers/jupiter-dock-updater
+@@ -7,4 +7,4 @@ then
+     exec pkexec --disable-internal-agent "$0" "$@"
+ fi
+ 
+-exec /usr/lib/jupiter-dock-updater/jupiter-dock-updater.sh "$@"
++exec /usr/libexec/jupiter-dock-updater/jupiter-dock-updater.sh "$@"
+diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-device b/usr/bin/steamos-polkit-helpers/steamos-format-device
+index a133624..63fe3bc 100755
+--- a/usr/bin/steamos-polkit-helpers/steamos-format-device
++++ b/usr/bin/steamos-polkit-helpers/steamos-format-device
+@@ -8,4 +8,4 @@ then
+     exec pkexec --disable-internal-agent "$0" --owner "$UID":"$gid" "$@"
+ fi
+ 
+-exec /usr/lib/hwsupport/format-device.sh "$@"
++exec /usr/libexec/hwsupport/format-device.sh "$@"
+diff --git a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard b/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
+index e43e952..1898244 100755
+--- a/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
++++ b/usr/bin/steamos-polkit-helpers/steamos-format-sdcard
+@@ -8,4 +8,4 @@ then
+     exec pkexec --disable-internal-agent "$0" --owner "$UID":"$gid" "$@"
+ fi
+ 
+-exec /usr/lib/hwsupport/format-sdcard.sh "$@"
++exec /usr/libexec/hwsupport/format-sdcard.sh "$@"
+diff --git a/usr/bin/steamos-polkit-helpers/steamos-trim-devices b/usr/bin/steamos-polkit-helpers/steamos-trim-devices
+index 296d5d6..c8a31ef 100755
+--- a/usr/bin/steamos-polkit-helpers/steamos-trim-devices
++++ b/usr/bin/steamos-polkit-helpers/steamos-trim-devices
+@@ -7,4 +7,4 @@ then
+     exec pkexec --disable-internal-agent "$0" "$@"
+ fi
+ 
+-exec /usr/lib/hwsupport/trim-devices.sh "$@"
++exec /usr/libexec/hwsupport/trim-devices.sh "$@"
+diff --git a/usr/lib/hwsupport/block-device-event.sh b/usr/lib/hwsupport/block-device-event.sh
+index 6ff1eb4..132d94c 100755
+--- a/usr/lib/hwsupport/block-device-event.sh
++++ b/usr/lib/hwsupport/block-device-event.sh
+@@ -2,7 +2,7 @@
+ 
+ set -euo pipefail
+ 
+-. /usr/lib/hwsupport/common-functions
++. /usr/libexec/hwsupport/common-functions
+ 
+ usage()
+ {
+@@ -45,12 +45,12 @@ do_add()
+         exit 0
+     fi
+ 
+-    /usr/lib/hwsupport/steamos-automount.sh add "${DEVBASE}"
++    /usr/libexec/hwsupport/steamos-automount.sh add "${DEVBASE}"
+ }
+ 
+ do_remove()
+ {
+-    /usr/lib/hwsupport/steamos-automount.sh remove "${DEVBASE}"
++    /usr/libexec/hwsupport/steamos-automount.sh remove "${DEVBASE}"
+ }
+ 
+ case "${ACTION}" in
+diff --git a/usr/lib/hwsupport/format-device.sh b/usr/lib/hwsupport/format-device.sh
+index 315c588..3a4098d 100755
+--- a/usr/lib/hwsupport/format-device.sh
++++ b/usr/lib/hwsupport/format-device.sh
+@@ -2,7 +2,7 @@
+ 
+ set -e
+ 
+-. /usr/lib/hwsupport/common-functions
++. /usr/libexec/hwsupport/common-functions
+ 
+ # If the script is not run from a tty then send a copy of stdout and
+ # stderr to the journal. In this case stderr is also redirected to stdout.
+@@ -72,7 +72,7 @@ if ! create_lock_file "$STORAGE_PARTBASE"; then
+     exit 53
+ fi
+ 
+-/usr/lib/hwsupport/steamos-automount.sh remove "${STORAGE_PARTBASE}"
++/usr/libexec/hwsupport/steamos-automount.sh remove "${STORAGE_PARTBASE}"
+ 
+ # If any partitions on the device are mounted, unmount them before continuing
+ # to prevent problems later
+@@ -138,7 +138,7 @@ sync
+ udevadm settle
+ 
+ # Mount the device
+-if ! /usr/lib/hwsupport/steamos-automount.sh add "$STORAGE_PARTBASE"; then
++if ! /usr/libexec/hwsupport/steamos-automount.sh add "$STORAGE_PARTBASE"; then
+     echo "Failed to mount ${STORAGE_PARTBASE}"
+     exit 5
+ fi
+diff --git a/usr/lib/hwsupport/format-sdcard.sh b/usr/lib/hwsupport/format-sdcard.sh
+index 99ed89a..d608ff3 100755
+--- a/usr/lib/hwsupport/format-sdcard.sh
++++ b/usr/lib/hwsupport/format-sdcard.sh
+@@ -1,3 +1,3 @@
+ #!/usr/bin/bash
+ 
+-exec /usr/lib/hwsupport/format-device.sh --device /dev/mmcblk0 "$@"
++exec /usr/libexec/hwsupport/format-device.sh --device /dev/mmcblk0 "$@"
+diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
+index 60bbc93..67c6ec1 100755
+--- a/usr/lib/hwsupport/steamos-automount.sh
++++ b/usr/lib/hwsupport/steamos-automount.sh
+@@ -2,7 +2,7 @@
+ 
+ set -euo pipefail
+ 
+-. /usr/lib/hwsupport/common-functions
++. /usr/libexec/hwsupport/common-functions
+ 
+ # Originally from https://serverfault.com/a/767079
+ 
+diff --git a/usr/lib/udev/rules.d/99-sdcard-rescan.rules b/usr/lib/udev/rules.d/99-sdcard-rescan.rules
+index f184d9e..da1ecf0 100644
+--- a/usr/lib/udev/rules.d/99-sdcard-rescan.rules
++++ b/usr/lib/udev/rules.d/99-sdcard-rescan.rules
+@@ -1,3 +1,3 @@
+ # Work around the misdetection of some SanDisk microSD cards
+ 
+-ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/sdcard-rescan.sh %k"
++ACTION=="add", SUBSYSTEM=="mmc", ENV{MMC_NAME}=="SD032", RUN+="/usr/bin/systemd-run --no-block --collect /usr/libexec/hwsupport/sdcard-rescan.sh %k"
+diff --git a/usr/lib/udev/rules.d/99-steamos-automount.rules b/usr/lib/udev/rules.d/99-steamos-automount.rules
+index 18b5149..fb69a18 100644
+--- a/usr/lib/udev/rules.d/99-steamos-automount.rules
++++ b/usr/lib/udev/rules.d/99-steamos-automount.rules
+@@ -5,7 +5,7 @@ KERNEL!="mmcblk*|sd*",          GOTO="steamos_automount_end"
+ ENV{ID_FS_USAGE}!="filesystem", GOTO="steamos_automount_end"
+ 
+ # The service expects to be asynchronous and shouldn't block udev rules
+-ACTION=="add",    RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh add %k"
+-ACTION=="remove", RUN+="/usr/bin/systemd-run --no-block --collect /usr/lib/hwsupport/block-device-event.sh remove %k"
++ACTION=="add",    RUN+="/usr/bin/systemd-run --no-block --collect /usr/libexec/hwsupport/block-device-event.sh add %k"
++ACTION=="remove", RUN+="/usr/bin/systemd-run --no-block --collect /usr/libexec/hwsupport/block-device-event.sh remove %k"
+ 
+ LABEL="steamos_automount_end"

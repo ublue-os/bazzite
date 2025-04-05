@@ -1,0 +1,142 @@
+From 0712f68003bc58cef57577eb6340485268af345b Mon Sep 17 00:00:00 2001
+From: Jo Bates <jo@valvesoftware.com>
+Date: Thu, 10 Feb 2022 16:19:24 -0800
+Subject: [PATCH 1/2] Allow negative percents to make certain states impossible
+
+---
+ etc/UPower.conf |  2 +-
+ src/up-config.c | 14 ++++++++++++++
+ src/up-config.h |  2 ++
+ src/up-daemon.c | 21 +++++++++++----------
+ 4 files changed, 28 insertions(+), 11 deletions(-)
+
+diff --git a/etc/UPower.conf b/etc/UPower.conf
+index bae5d2e..13d4d82 100644
+--- a/etc/UPower.conf
++++ b/etc/UPower.conf
+@@ -64,7 +64,7 @@ UsePercentageForPolicy=true
+ # PercentageAction=2
+ PercentageLow=20
+ PercentageCritical=5
+-PercentageAction=2
++PercentageAction=-1
+ 
+ # When UsePercentageForPolicy is false, the time remaining in seconds at
+ # which UPower will consider the battery low, critical, or take action for
+diff --git a/src/up-config.c b/src/up-config.c
+index f842ede..291dfec 100644
+--- a/src/up-config.c
++++ b/src/up-config.c
+@@ -52,6 +52,20 @@ up_config_get_boolean (UpConfig *config, const gchar *key)
+ 				       "UPower", key, NULL);
+ }
+ 
++/**
++ * up_config_get_int:
++ **/
++guint
++up_config_get_int (UpConfig *config, const gchar *key)
++{
++	int val;
++
++	val = g_key_file_get_integer (config->priv->keyfile,
++				      "UPower", key, NULL);
++
++	return val;
++}
++
+ /**
+  * up_config_get_uint:
+  **/
+diff --git a/src/up-config.h b/src/up-config.h
+index bfe80eb..7fe39e1 100644
+--- a/src/up-config.h
++++ b/src/up-config.h
+@@ -50,6 +50,8 @@ GType		 up_config_get_type		(void);
+ UpConfig	*up_config_new			(void);
+ gboolean	 up_config_get_boolean		(UpConfig	*config,
+ 						 const gchar	*key);
++gint		 up_config_get_int		(UpConfig	*config,
++						 const gchar	*key);
+ guint		 up_config_get_uint		(UpConfig	*config,
+ 						 const gchar	*key);
+ gchar		*up_config_get_string           (UpConfig	*config,
+diff --git a/src/up-daemon.c b/src/up-daemon.c
+index 82c8b48..9702553 100644
+--- a/src/up-daemon.c
++++ b/src/up-daemon.c
+@@ -61,9 +61,9 @@ struct UpDaemonPrivate
+ 
+ 	/* WarningLevel configuration */
+ 	gboolean		 use_percentage_for_policy;
+-	guint			 low_percentage;
+-	guint			 critical_percentage;
+-	guint			 action_percentage;
++	gint			 low_percentage;
++	gint			 critical_percentage;
++	gint			 action_percentage;
+ 	guint			 low_time;
+ 	guint			 critical_time;
+ 	guint			 action_time;
+@@ -1016,24 +1016,25 @@ up_daemon_device_removed_cb (UpBackend *backend, UpDevice *device, UpDaemon *dae
+ 	up_daemon_update_warning_level (daemon);
+ }
+ 
+-#define LOAD_OR_DEFAULT(val, str, def) val = (load_default ? def : up_config_get_uint (daemon->priv->config, str))
++#define INT_OR_DEFAULT(val, str, def) val = (load_default ? def : up_config_get_int (daemon->priv->config, str))
++#define UINT_OR_DEFAULT(val, str, def) val = (load_default ? def : up_config_get_uint (daemon->priv->config, str))
+ 
+ static void
+ load_percentage_policy (UpDaemon    *daemon,
+ 			gboolean     load_default)
+ {
+-	LOAD_OR_DEFAULT (daemon->priv->low_percentage, "PercentageLow", 20);
+-	LOAD_OR_DEFAULT (daemon->priv->critical_percentage, "PercentageCritical", 5);
+-	LOAD_OR_DEFAULT (daemon->priv->action_percentage, "PercentageAction", 2);
++	INT_OR_DEFAULT (daemon->priv->low_percentage, "PercentageLow", 20);
++	INT_OR_DEFAULT (daemon->priv->critical_percentage, "PercentageCritical", 5);
++	INT_OR_DEFAULT (daemon->priv->action_percentage, "PercentageAction", 2);
+ }
+ 
+ static void
+ load_time_policy (UpDaemon    *daemon,
+ 		  gboolean     load_default)
+ {
+-	LOAD_OR_DEFAULT (daemon->priv->low_time, "TimeLow", 1200);
+-	LOAD_OR_DEFAULT (daemon->priv->critical_time, "TimeCritical", 300);
+-	LOAD_OR_DEFAULT (daemon->priv->action_time, "TimeAction", 120);
++	UINT_OR_DEFAULT (daemon->priv->low_time, "TimeLow", 1200);
++	UINT_OR_DEFAULT (daemon->priv->critical_time, "TimeCritical", 300);
++	UINT_OR_DEFAULT (daemon->priv->action_time, "TimeAction", 120);
+ }
+ 
+ #define IS_DESCENDING(x, y, z) (x > y && y > z)
+-- 
+2.42.0
+
+
+From cba1566ebaef8c8dc7736431dece81d553723f36 Mon Sep 17 00:00:00 2001
+From: Jo Bates <jo@valvesoftware.com>
+Date: Thu, 10 Feb 2022 16:28:47 -0800
+Subject: [PATCH 2/2] Fix return type
+
+---
+ src/up-config.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/up-config.c b/src/up-config.c
+index 291dfec..bab50d7 100644
+--- a/src/up-config.c
++++ b/src/up-config.c
+@@ -55,7 +55,7 @@ up_config_get_boolean (UpConfig *config, const gchar *key)
+ /**
+  * up_config_get_int:
+  **/
+-guint
++gint
+ up_config_get_int (UpConfig *config, const gchar *key)
+ {
+ 	int val;
+-- 
+2.42.0
+
