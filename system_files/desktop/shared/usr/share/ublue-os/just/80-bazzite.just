@@ -201,6 +201,10 @@ enable-tailscale:
 enable-framework-fan-control:
     systemctl enable --now fw-fanctrl.service
 
+# Enable support for Corsair peripherals
+enable-ckb-next:
+    systemctl enable --now ckb-next-daemon.service
+
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 configure-watchdog ACTION="":
     #!/usr/bin/bash
