@@ -1,8 +1,12 @@
 --- a/etc/xdg/kdeglobals
 +++ b/etc/xdg/kdeglobals
-@@ -12,6 +12,9 @@
+@@ -11,7 +11,13 @@
+ kcm_sddm.desktop=false
  kcm_plymouth.desktop=false
  
++[KScreen]
++XwaylandClientsScale=false
++
  [General]
 +TerminalApplication=kde-ptyxis
 +TerminalService=org.gnome.Ptyxis.desktop
