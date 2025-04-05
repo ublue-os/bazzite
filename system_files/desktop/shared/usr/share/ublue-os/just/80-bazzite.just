@@ -595,6 +595,39 @@ get-decky-bazzite-buddy:
       echo "Plugin folder could not be found as expected."
     fi
 
+# Toggle whether Steam launches with the -steamdeck flag, which causes Big Picture / Game Mode to emulate Steam Deck behavior. Disabling this can prevent games from forcing Steam Deck-specific assets, such as lower-resolution textures.
+toggle-steamdeck-alias:
+    #!/usr/bin/bash
+    # Toggles whether Steam presents the system as a Steam Deck via -steamdeck
+    override_flag="$HOME/.config/bazzite/disable_steamdeck_flag"
+    mkdir -p "$(dirname "$override_flag")"
+    current_status="Enabled"
+    if [[ -f "$override_flag" ]]; then
+      current_status="Disabled"
+    fi
+    echo -e "\nCurrent Steam Deck presentation mode: $current_status\n"
+    CHOICE=$(ugum choose "Present as Steam Deck (Enable -steamdeck)" "Do Not Present as Steam Deck (Disable -steamdeck)" "Exit without changes")
+    case "$CHOICE" in
+      "Present as Steam Deck (Enable -steamdeck)")
+        if [[ -f "$override_flag" ]]; then
+          rm -f "$override_flag"
+          echo -e "\nSteam Deck presentation ENABLED. (-steamdeck will be passed to Steam)\n"
+        else
+          echo -e "\nAlready enabled.\n"
+        fi
+        ;;
+      "Do Not Present as Steam Deck (Disable -steamdeck)")
+        touch "$override_flag"
+        echo -e "\nSteam Deck presentation DISABLED. (-steamdeck will NOT be passed to Steam)\n"
+        ;;
+      "Exit without changes")
+        echo "No changes made."
+        ;;
+      *)
+        echo "Invalid choice. Exiting."
+        ;;
+    esac
+
 # get logs for this boot and last boot, cleanly output in terminal as pastebin links, to simplify troubleshooting and issue reporting.
 get-logs:
     #!/bin/bash

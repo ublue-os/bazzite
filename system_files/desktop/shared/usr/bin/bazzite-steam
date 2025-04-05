@@ -73,8 +73,15 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
 
   fi
 
+  # File toggle to override default Steam Deck flag behavior
+  DECK_OVERRIDE_FLAG="$HOME/.config/bazzite/disable_steamdeck_flag"
+
   # Required to maintain the Steam update branch between desktop & Steam Game Mode
-  DECK_OPTION="-steamdeck"
+  if [[ ! -f "$DECK_OVERRIDE_FLAG" ]]; then
+    DECK_OPTION="-steamdeck"
+  else
+    DECK_OPTION=""
+  fi
 
   # HHD Support
   if ! /usr/libexec/hwsupport/valve-hardware; then
