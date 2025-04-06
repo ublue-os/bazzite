@@ -21,7 +21,7 @@ screens:
           description: A plugin loader for the Steam Deck
           default: false
           packages:
-          - Retrieve Decky: sudo -A ujust setup-decky install
+          - Retrieve Decky: ujust setup-decky install
         Decky Framegen:
           description: A Decky plugin that swaps DLSS for FSR 3 Upscaling and Framegen
           default: false
