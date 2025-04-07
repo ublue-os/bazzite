@@ -4,7 +4,7 @@
 
 # Press Kit
 
-Thanks for generating content about about Bazzite and Universal Blue! This document will explain how to use the brand and terminology used by the project.
+Thanks for generating content about Bazzite and Universal Blue! This document will explain how to use the brand and terminology used by the project.
 
 - [Bazzite](https://bazzite.gg/)
 - [Universal Blue](https://universal-blue.org/)
