@@ -605,7 +605,6 @@ toggle-steamdeck-alias:
     mkdir -p "$(dirname "$override_flag")"
     mkdir -p "$session_dir"
     cat > "$session_file" <<'EOF'
-    # Respect Bazzite's disable_steamdeck_flag for game mode
     DECK_OVERRIDE_FLAG="$HOME/.config/bazzite/disable_steamdeck_flag"
     if [[ ! -f "$DECK_OVERRIDE_FLAG" ]]; then
       export CLIENTCMD="steam -gamepadui -steamos3 -steampal -steamdeck"
