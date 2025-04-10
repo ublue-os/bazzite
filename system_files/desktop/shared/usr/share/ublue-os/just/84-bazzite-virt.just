@@ -59,6 +59,8 @@ setup-virtualization ACTION="":
             sudo mkdir /var/lib/swtpm-localca
           fi
           sudo chown tss /var/lib/swtpm-localca
+          sudo restorecon -rv /var/lib/libvirt
+          sudo restorecon -rv /var/log/libvirt
           echo "Giving qemu access to read ISO files from $HOME"
           sudo setfacl -m u:qemu:rx $HOME
           if sudo test ! -f "/etc/libvirt/hooks/qemu"; then
