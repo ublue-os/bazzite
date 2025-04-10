@@ -268,20 +268,23 @@ setup-decky ACTION="install":
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
       if [ ! -L "/home/deck" ] && [ ! -e "/home/deck" ]  && [ "$HOME" != "/home/deck" ]; then
         echo "Making a /home/deck symlink to fix plugins that do not use environment variables."
-        sudo ln -sf "$HOME" /home/deck
+        sudo -A ln -sf "$HOME" /home/deck
+      fi
+      if [[ -d ~/homebrew ]]; then
+        sudo -A chown -R --reference ~/ ~/homebrew
       fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh |
         sed 's|sudo|sudo -A |g' | sh
-      sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
+      sudo -A chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
     fi
     if [[ "${OPTION,,}" =~ prerelease ]]; then
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
       if [ ! -L "/home/deck" ] && [ ! -e "/home/deck" ]  && [ "$HOME" != "/home/deck" ]; then
         echo "Making a /home/deck symlink to fix plugins that do not use environment variables."
-        sudo ln -sf "$HOME" /home/deck
+        sudo -A ln -sf "$HOME" /home/deck
       fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_prerelease.sh | sh
-      sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
+      sudo -A chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
     fi
 
 # Ptyxis terminal transparency
