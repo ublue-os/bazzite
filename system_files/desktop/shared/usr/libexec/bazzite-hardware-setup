@@ -112,9 +112,9 @@ if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
     echo "Adding GTTSize for Lenovo Legion Go"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
   fi
-  if [[ ! $KARGS =~ "amdgpu.sg_display" ]]; then
-    echo "Adding SG Display for Lenovo Legion Go"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.sg_display=0")
+  if [[ $KARGS =~ "amdgpu.sg_display" ]]; then
+    echo "Removing SG Display for Lenovo Legion Go"
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.sg_display=0")
   fi
 elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
