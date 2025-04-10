@@ -270,6 +270,9 @@ setup-decky ACTION="install":
         echo "Making a /home/deck symlink to fix plugins that do not use environment variables."
         sudo ln -sf "$HOME" /home/deck
       fi
+      if [[ -d ~/homebrew ]]; then
+        sudo -A chown -R --reference ~/ ~/homebrew
+      fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh |
         sed 's|sudo|sudo -A |g' | sh
       sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
