@@ -600,18 +600,33 @@ toggle-steamdeck-alias:
     #!/usr/bin/bash
     # Toggles whether Steam presents the system as a Steam Deck via -steamdeck
     override_flag="$HOME/.config/bazzite/disable_steamdeck_flag"
+    session_dir="$HOME/.config/gamescope-session-plus/sessions.d"
+    session_file="$session_dir/steam"
     mkdir -p "$(dirname "$override_flag")"
+    mkdir -p "$session_dir"
+    cat > "$session_file" <<'EOF'
+    DECK_OVERRIDE_FLAG="$HOME/.config/bazzite/disable_steamdeck_flag"
+    if [[ ! -f "$DECK_OVERRIDE_FLAG" ]]; then
+      export CLIENTCMD="steam -gamepadui -steamos3 -steampal -steamdeck"
+    else
+      export CLIENTCMD="steam -gamepadui -steamos3 -steampal"
+    fi
+    EOF
     current_status="Enabled"
     if [[ -f "$override_flag" ]]; then
       current_status="Disabled"
     fi
     echo -e "\nCurrent Steam Deck presentation mode: $current_status\n"
-    CHOICE=$(ugum choose "Present as Steam Deck (Enable -steamdeck)" "Do Not Present as Steam Deck (Disable -steamdeck)" "Exit without changes")
+    CHOICE=$(ugum choose \
+      "Present as Steam Deck (Enable -steamdeck)" \
+      "Do Not Present as Steam Deck (Disable -steamdeck)" \
+      "Exit without changes")
     case "$CHOICE" in
       "Present as Steam Deck (Enable -steamdeck)")
         if [[ -f "$override_flag" ]]; then
           rm -f "$override_flag"
           echo -e "\nSteam Deck presentation ENABLED. (-steamdeck will be passed to Steam)\n"
+          echo "Reboot your system for the change to take effect."
         else
           echo -e "\nAlready enabled.\n"
         fi
@@ -619,6 +634,7 @@ toggle-steamdeck-alias:
       "Do Not Present as Steam Deck (Disable -steamdeck)")
         touch "$override_flag"
         echo -e "\nSteam Deck presentation DISABLED. (-steamdeck will NOT be passed to Steam)\n"
+        echo "Reboot your system for the change to take effect."
         ;;
       "Exit without changes")
         echo "No changes made."
