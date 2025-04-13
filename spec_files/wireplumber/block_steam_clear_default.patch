@@ -1,0 +1,49 @@
+diff --git a/src/tools/wpctl.c b/src/tools/wpctl.c
+index 9f507ec..27305f9 100644
+--- a/src/tools/wpctl.c
++++ b/src/tools/wpctl.c
+@@ -1326,6 +1326,44 @@ clear_default_run (WpCtl * self)
+ {
+   g_autoptr (WpPlugin) def_nodes_api = NULL;
+   gboolean res = FALSE;
++  g_autoptr (GError) error = NULL;
++  pid_t ppid, grandparent_pid;
++  char grandparent_name[1024];
++
++  /* Get grandparent process name */
++  ppid = getppid();
++  if (ppid > 0) {
++    /* Get parent's PPID (which is our grandparent) */
++    char parent_status[256];
++    snprintf(parent_status, sizeof(parent_status), "/proc/%d/status", ppid);
++    FILE *fp = fopen(parent_status, "r");
++    if (fp) {
++      char line[256];
++      while (fgets(line, sizeof(line), fp)) {
++        if (sscanf(line, "PPid: %d", &grandparent_pid) == 1) {
++          break;
++        }
++      }
++      fclose(fp);
++    }
++
++    /* Check if grandparent is Steam */
++    if (grandparent_pid > 0) {
++      snprintf(grandparent_name, sizeof(grandparent_name), "/proc/%d/comm", grandparent_pid);
++      fp = fopen(grandparent_name, "r");
++      if (fp) {
++        if (fgets(grandparent_name, sizeof(grandparent_name), fp)) {
++          grandparent_name[strcspn(grandparent_name, "\n")] = 0;
++          if (strcmp(grandparent_name, "steam") == 0) {
++            fprintf(stderr, "Command 'wpctl clear-default' is disabled when run from Steam\n");
++            self->exit_code = 1;
++            goto out;
++          }
++        }
++        fclose(fp);
++      }
++    }
++  }
+ 
+   def_nodes_api = wp_plugin_find (self->core, "default-nodes-api");
+   if (!def_nodes_api) {
