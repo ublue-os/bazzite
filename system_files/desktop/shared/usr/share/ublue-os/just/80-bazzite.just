@@ -247,6 +247,10 @@ configure-watchdog ACTION="":
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
 setup-decky ACTION="install":
     #!/usr/bin/bash
+    if [[ $(id -u) -eq 0 ]]; then
+        echo >&2 "ERROR: Do not run this with sudo"
+        exit 1
+    fi
     source /usr/lib/ujust/ujust.sh
     DECKY_STATE="${b}${red}Not Installed${n}"
     if [[ -d $HOME/homebrew/plugins ]]; then
@@ -264,19 +268,23 @@ setup-decky ACTION="install":
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
       if [ ! -L "/home/deck" ] && [ ! -e "/home/deck" ]  && [ "$HOME" != "/home/deck" ]; then
         echo "Making a /home/deck symlink to fix plugins that do not use environment variables."
-        sudo ln -sf "$HOME" /home/deck
+        sudo -A ln -sf "$HOME" /home/deck
       fi
-      curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
-      sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
+      if [[ -d ~/homebrew ]]; then
+        sudo -A chown -R --reference ~/ ~/homebrew
+      fi
+      curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh |
+        sed 's|sudo|sudo -A |g' | sh
+      sudo -A chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
     fi
     if [[ "${OPTION,,}" =~ prerelease ]]; then
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
       if [ ! -L "/home/deck" ] && [ ! -e "/home/deck" ]  && [ "$HOME" != "/home/deck" ]; then
         echo "Making a /home/deck symlink to fix plugins that do not use environment variables."
-        sudo ln -sf "$HOME" /home/deck
+        sudo -A ln -sf "$HOME" /home/deck
       fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_prerelease.sh | sh
-      sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
+      sudo -A chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
     fi
 
 # Ptyxis terminal transparency
