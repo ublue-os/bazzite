@@ -179,6 +179,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     declare -A toswap=( \
+        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite"]="wireplumber" \
         ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland" \
         ["terra-extras"]="switcheroo-control" \
         ["terra-mesa"]="mesa-filesystem" \
@@ -197,6 +198,8 @@ RUN --mount=type=cache,dst=/var/cache \
         pipewire-plugin-libcamera \
         pipewire-pulseaudio \
         pipewire-utils \
+        wireplumber \
+        wireplumber-libs \
         bluez \
         bluez-cups \
         bluez-libs \
