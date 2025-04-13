@@ -4,7 +4,7 @@
 
 # Press Kit
 
-Thanks for generating content about about Bazzite and Universal Blue! This document will explain how to use the brand and terminology used by the project.
+Thanks for generating content about Bazzite and Universal Blue! This document will explain how to use the brand and terminology used by the project.
 
 - [Bazzite](https://bazzite.gg/)
 - [Universal Blue](https://universal-blue.org/)
@@ -43,10 +43,7 @@ All Universal Blue images share governance structures and are modelled after clo
 
 # Contacts
 
-- [View newsletter](https://universal-blue.discourse.group/tag/bazzite-buzz)
-- [Join our Discord server](https://discord.gg/QhwnC5PnqF)
-
-Feel free to [email us](mailto:press@bazzite.gg) with any questions.
+Feel free to [email us](mailto:press@bazzite.gg) with any questions or get in touch with any of our [social platforms](https://docs.bazzite.gg/Resources/).
 
 # Fonts
 Our logo uses the following fonts:
