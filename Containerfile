@@ -77,6 +77,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
+    mkdir -p /var/roothome && \
     dnf5 -y install dnf5-plugins && \
     for copr in \
         bazzite-org/bazzite \
