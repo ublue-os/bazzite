@@ -261,7 +261,6 @@ RUN --mount=type=cache,dst=/var/cache \
         input-remapper \
         i2c-tools \
         lm_sensors \
-        fw-ectool \
         udica \
         ladspa-caps-plugins \
         ladspa-noise-suppression-for-voice \
