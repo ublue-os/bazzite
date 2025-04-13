@@ -101,6 +101,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ilyaz/LACT \
         tulilirockz/fw-fanctrl; \
     do \
+        echo "Enabling copr: $copr"; \
         dnf5 -y copr enable $copr; \
         dnf5 -y config-manager setopt copr:copr.fedorainfracloud.org:${copr////:}.priority=98 ;\
     done && unset -v copr && \
