@@ -519,9 +519,24 @@ toggle-password-feedback ACTION="":
 # Install Bazzite Buddy plugin to easily access changelogs in game mode!
 get-decky-bazzite-buddy:
     #!/bin/bash
-    PLUGIN_URL="https://github.com/xXJSONDeruloXx/bazzite-buddy/releases/download/stable/bazzite-buddy.zip"
+    REPO_OWNER="xXJSONDeruloXx"
+    REPO_NAME="bazzite-buddy"
     PLUGIN_NAME="bazzite-buddy"
     PLUGIN_DIR="$HOME/homebrew/plugins"
+    # Get the latest release information
+    echo "Fetching latest release information..."
+    RELEASE_INFO=$(curl -s "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest")
+    # Extract the download URL for the zip file
+    DOWNLOAD_URLS=$(echo "$RELEASE_INFO" | grep -o '"browser_download_url": "[^"]*\.zip"' | cut -d'"' -f4)
+    # Check if any zip files were found
+    if [ -z "$DOWNLOAD_URLS" ]; then
+      echo "No zip files found in the latest release. Falling back to stable URL..."
+      PLUGIN_URL="https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/stable/bazzite-buddy.zip"
+    else
+      # Pick the first zip file (usually there's only one)
+      PLUGIN_URL=$(echo "$DOWNLOAD_URLS" | head -n 1)
+      echo "Found latest release: $PLUGIN_URL"
+    fi
     if [ ! -d "$PLUGIN_DIR" ]; then
       echo "Creating plugins directory with sudo..."
       sudo mkdir -p "$PLUGIN_DIR"
@@ -534,31 +549,100 @@ get-decky-bazzite-buddy:
       sudo rm -rf "$PLUGIN_NAME"
     fi
     # Download the zip file
-    echo "Downloading $PLUGIN_NAME from $PLUGIN_URL..."
-    sudo curl -L -o "${PLUGIN_NAME}.zip" "$PLUGIN_URL"
+    echo "Downloading plugin from $PLUGIN_URL..."
+    TEMP_ZIP="temp_plugin.zip"
+    sudo curl -L -o "$TEMP_ZIP" "$PLUGIN_URL"
     if [ $? -ne 0 ]; then
       echo "Download failed!"
       exit 1
     fi
-    echo "Extracting $PLUGIN_NAME..."
-    sudo unzip -o "${PLUGIN_NAME}.zip" -d .
+    echo "Extracting plugin..."
+    sudo unzip -o "$TEMP_ZIP" -d .
     if [ $? -ne 0 ]; then
       echo "Extraction failed!"
       exit 1
     fi
-    # Move the extracted files to the correct location if nested
+    # Handle different extracted folder names
+    # Look for any extracted folders that might contain the plugin
+    EXTRACTED_FOLDERS=$(find . -maxdepth 1 -type d -name "bazzite*" -o -name "Bazzite*" | grep -v "^\./$")
+    # If we found a folder but it's not the expected name
+    if [ -n "$EXTRACTED_FOLDERS" ] && [ ! -d "./$PLUGIN_NAME" ]; then
+      FOUND_FOLDER=$(echo "$EXTRACTED_FOLDERS" | head -n 1)
+      echo "Found plugin folder with different name: $FOUND_FOLDER"
+      echo "Renaming to $PLUGIN_NAME..."
+      sudo mv "$FOUND_FOLDER" "./$PLUGIN_NAME"
+    fi
+    # Handle nested folders structure if needed
     if [ -d "./${PLUGIN_NAME}/${PLUGIN_NAME}" ]; then
-      echo "Fixing folder structure..."
+      echo "Fixing nested folder structure..."
       sudo mv ./${PLUGIN_NAME}/${PLUGIN_NAME}/* ./${PLUGIN_NAME}/
       sudo rm -rf ./${PLUGIN_NAME}/${PLUGIN_NAME}
     fi
+    # Check if we have a plugin with capital letters
+    if [ ! -d "./$PLUGIN_NAME" ] && [ -d "./Bazzite.Buddy" ]; then
+      echo "Found Bazzite.Buddy folder, renaming to $PLUGIN_NAME..."
+      sudo mv "./Bazzite.Buddy" "./$PLUGIN_NAME"
+    fi
     # Clean up the downloaded ZIP file
     echo "Cleaning up..."
-    sudo rm -f "${PLUGIN_NAME}.zip"
+    sudo rm -f "$TEMP_ZIP"
     # Confirm installation
-    echo "$PLUGIN_NAME has been installed successfully to $PLUGIN_DIR!"
-    # Prompt user to restart Decky Loader
-    echo "Please restart Decky Loader to activate the plugin."
+    if [ -d "./$PLUGIN_NAME" ]; then
+      echo "$PLUGIN_NAME has been installed successfully to $PLUGIN_DIR!"
+      echo "Please restart Decky Loader to activate the plugin."
+    else
+      echo "Installation may have failed. Please check if the plugin is installed correctly."
+      echo "Plugin folder could not be found as expected."
+    fi
+
+# Toggle whether Steam launches with the -steamdeck flag, which causes Big Picture / Game Mode to emulate Steam Deck behavior. Disabling this can prevent games from forcing Steam Deck-specific assets, such as lower-resolution textures.
+toggle-steamdeck-alias:
+    #!/usr/bin/bash
+    # Toggles whether Steam presents the system as a Steam Deck via -steamdeck
+    override_flag="$HOME/.config/bazzite/disable_steamdeck_flag"
+    session_dir="$HOME/.config/gamescope-session-plus/sessions.d"
+    session_file="$session_dir/steam"
+    mkdir -p "$(dirname "$override_flag")"
+    mkdir -p "$session_dir"
+    cat > "$session_file" <<'EOF'
+    DECK_OVERRIDE_FLAG="$HOME/.config/bazzite/disable_steamdeck_flag"
+    if [[ ! -f "$DECK_OVERRIDE_FLAG" ]]; then
+      export CLIENTCMD="steam -gamepadui -steamos3 -steampal -steamdeck"
+    else
+      export CLIENTCMD="steam -gamepadui -steamos3 -steampal"
+    fi
+    EOF
+    current_status="Enabled"
+    if [[ -f "$override_flag" ]]; then
+      current_status="Disabled"
+    fi
+    echo -e "\nCurrent Steam Deck presentation mode: $current_status\n"
+    CHOICE=$(ugum choose \
+      "Present as Steam Deck (Enable -steamdeck)" \
+      "Do Not Present as Steam Deck (Disable -steamdeck)" \
+      "Exit without changes")
+    case "$CHOICE" in
+      "Present as Steam Deck (Enable -steamdeck)")
+        if [[ -f "$override_flag" ]]; then
+          rm -f "$override_flag"
+          echo -e "\nSteam Deck presentation ENABLED. (-steamdeck will be passed to Steam)\n"
+          echo "Reboot your system for the change to take effect."
+        else
+          echo -e "\nAlready enabled.\n"
+        fi
+        ;;
+      "Do Not Present as Steam Deck (Disable -steamdeck)")
+        touch "$override_flag"
+        echo -e "\nSteam Deck presentation DISABLED. (-steamdeck will NOT be passed to Steam)\n"
+        echo "Reboot your system for the change to take effect."
+        ;;
+      "Exit without changes")
+        echo "No changes made."
+        ;;
+      *)
+        echo "Invalid choice. Exiting."
+        ;;
+    esac
 
 # get logs for this boot and last boot, cleanly output in terminal as pastebin links, to simplify troubleshooting and issue reporting.
 get-logs:
