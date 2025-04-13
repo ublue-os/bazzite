@@ -630,7 +630,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable brew-setup.service && \
     systemctl disable brew-upgrade.timer && \
     systemctl disable brew-update.timer && \
-    systemctl disable displaylink.service && \
     systemctl disable fw-fanctrl.service && \
     systemctl disable scx.service && \
     systemctl disable scx_loader.service && \
