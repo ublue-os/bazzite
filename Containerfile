@@ -99,8 +99,7 @@ RUN --mount=type=cache,dst=/var/cache \
         rok/cdemu \
         rodoma92/kde-cdemu-manager \
         rodoma92/rmlint \
-        ilyaz/LACT \
-        tulilirockz/fw-fanctrl; \
+        ilyaz/LACT; \
     do \
         echo "Enabling copr: $copr"; \
         dnf5 -y copr enable $copr; \
@@ -263,7 +262,6 @@ RUN --mount=type=cache,dst=/var/cache \
         i2c-tools \
         lm_sensors \
         fw-ectool \
-        fw-fanctrl \
         udica \
         ladspa-caps-plugins \
         ladspa-noise-suppression-for-voice \
@@ -627,7 +625,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable brew-setup.service && \
     systemctl disable brew-upgrade.timer && \
     systemctl disable brew-update.timer && \
-    systemctl disable fw-fanctrl.service && \
     systemctl disable scx.service && \
     systemctl disable scx_loader.service && \
     systemctl enable input-remapper.service && \
