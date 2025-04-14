@@ -456,7 +456,6 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-gsconnect \
             gnome-shell-extension-compiz-windows-effect \
             gnome-shell-extension-compiz-alike-magic-lamp-effect \
-            gnome-shell-extension-coverflow-alt-tab \
             gnome-shell-extension-just-perfection \
             gnome-shell-extension-blur-my-shell \
             gnome-shell-extension-hanabi \
