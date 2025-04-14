@@ -1,0 +1,36 @@
+From 05519a979db0ee64a30663eba4e9ad0e68e6897b Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Sat, 8 Mar 2025 11:52:08 +0100
+Subject: [PATCH] rename back to --json-fd
+
+Signed-off-by: Antheas Kapenekakis <git@antheas.dev>
+---
+ lib/src/cli.rs | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/lib/src/cli.rs b/lib/src/cli.rs
+index bfac767bb..0a823871c 100644
+--- a/lib/src/cli.rs
++++ b/lib/src/cli.rs
+@@ -38,8 +38,10 @@ pub(crate) struct ProgressOptions {
+     ///
+     /// Interactive progress will be written to this file descriptor as "JSON lines"
+     /// format, where each value is separated by a newline.
+-    #[clap(long, hide = true)]
+-    pub(crate) progress_fd: Option<RawProgressFd>,
++    /// 
++    /// The format is experimental and may be removed after a small deprecation period.
++    #[clap(long)]
++    pub(crate) json_fd: Option<RawProgressFd>,
+ }
+ 
+ impl TryFrom<ProgressOptions> for ProgressWriter {
+@@ -47,7 +49,7 @@ impl TryFrom<ProgressOptions> for ProgressWriter {
+ 
+     fn try_from(value: ProgressOptions) -> Result<Self> {
+         let r = value
+-            .progress_fd
++            .json_fd
+             .map(TryInto::try_into)
+             .transpose()?
+             .unwrap_or_default();
