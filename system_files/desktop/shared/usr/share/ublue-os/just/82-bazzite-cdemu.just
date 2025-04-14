@@ -31,6 +31,7 @@ setup-cdemu ACTION="":
         echo "${red} CDEmu has already been installed!"
         exit 0
       fi
+      ublue-update --wait
       if [[ "$GUI_EDITION" == "kinoite" ]]; then
             # Install packages for KDE 6
             rpm-ostree install --apply-live -y cdemu-daemon cdemu-client kde-cdemu-manager-kf6
@@ -46,6 +47,7 @@ setup-cdemu ACTION="":
         echo "${red} CDEmu has already been removed!"
         exit 0
       fi
+      ublue-update --wait
       if [[ "$GUI_EDITION" == "kinoite" ]]; then
         # Remove packages for KDE 6
         GUI_STATE="$(rpm -qa kde-cdemu-manager-kf6)"

@@ -3,6 +3,7 @@
 # Install LACT for overclocking & undervolting AMD GPUs
 install-lact:
     #!/usr/bin/bash
+    ublue-update --wait
     rpm-ostree kargs --append-if-missing=$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))")
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
         rpm-ostree install -y lact-libadwaita
@@ -34,6 +35,7 @@ install-openrazer:
     source /usr/lib/ujust/ujust.sh
     OPENRAZER_CONFIGURATOR_APP="None of openrazer frontend apps"
     sudo curl -Lo /etc/yum.repos.d/hardware:razer.repo https://openrazer.github.io/hardware:razer.repo && \
+    ublue-update --wait && \
     rpm-ostree install -y openrazer-daemon && \
         if ! grep -q "plugdev" /etc/group; then \
       sudo bash -c 'grep "plugdev" /lib/group >> /etc/group' \
