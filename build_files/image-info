@@ -20,12 +20,12 @@ if [[ $IMAGE_BRANCH_NORMALIZED == "main" ]]; then
   IMAGE_BRANCH_NORMALIZED="stable"
 fi
 
-case "$FEDORA_MAJOR_VERSION" in
-  39|40)
+case "$FEDORA_VERSION" in
+  39|40|41)
     IMAGE_TAG="stable"
     ;;
   *)
-    IMAGE_TAG="$FEDORA_MAJOR_VERSION"
+    IMAGE_TAG="$FEDORA_VERSION"
     ;;
 esac
 
@@ -39,7 +39,7 @@ cat > $IMAGE_INFO <<EOF
   "image-tag": "$IMAGE_TAG",
   "image-branch": "$IMAGE_BRANCH_NORMALIZED",
   "base-image-name": "$BASE_IMAGE_NAME",
-  "fedora-version": "$FEDORA_MAJOR_VERSION",
+  "fedora-version": "$FEDORA_VERSION",
   "version": "$VERSION_TAG",
   "version-pretty": "$VERSION_PRETTY"
 }
@@ -47,7 +47,7 @@ EOF
 
 # OS Release File
 sed -i "s/^VARIANT_ID=.*/VARIANT_ID=$IMAGE_NAME/" /usr/lib/os-release
-sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"Bazzite $FEDORA_MAJOR_VERSION (FROM Fedora ${BASE_IMAGE_NAME^})\"/" /usr/lib/os-release
+sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"Bazzite $FEDORA_VERSION (FROM Fedora ${BASE_IMAGE_NAME^})\"/" /usr/lib/os-release
 sed -i "s/^NAME=.*/NAME=\"$IMAGE_PRETTY_NAME\"/" /usr/lib/os-release
 sed -i "s|^HOME_URL=.*|HOME_URL=\"$HOME_URL\"|" /usr/lib/os-release
 sed -i "s|^DOCUMENTATION_URL=.*|DOCUMENTATION_URL=\"$DOCUMENTATION_URL\"|" /usr/lib/os-release
