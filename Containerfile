@@ -442,7 +442,7 @@ RUN --mount=type=cache,dst=/var/cache \
     ; else \
         dnf5 -y swap \
         --repo terra-extras \
-            gnome-shell gnome-shell && \
+            gnome-shell gnome-shell.switcheroo-$(rpm -qi gnome-shell | awk '/^Version/ {print $3}') && \
         dnf5 versionlock add \
             gnome-shell && \
         dnf5 -y install \
