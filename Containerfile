@@ -413,6 +413,17 @@ RUN --mount=type=cache,dst=/var/cache \
             fcitx5-hangul \
             kcm-fcitx5 \
             ptyxis && \
+        dnf5 -y swap \
+        --repo=terra-extras \
+            kf6-kio kf6-kio.switcheroo-$(rpm -qi kf6-kcoreaddons | awk '/^Version/ {print $3}') && \
+        dnf5 versionlock add \
+            kf6-kio-core \
+            kf6-kio-core-libs \
+            kf6-kio-doc \
+            kf6-kio-file-widgets \
+            kf6-kio-gui \
+            kf6-kio-widgets \
+            kf6-kio-widgets-libs && \
         dnf5 -y remove \
             plasma-welcome \
             plasma-welcome-fedora \
@@ -429,6 +440,11 @@ RUN --mount=type=cache,dst=/var/cache \
         cp /usr/share/applications/org.gnome.Ptyxis.desktop /usr/share/kglobalaccel/org.gnome.Ptyxis.desktop && \
         setcap 'cap_net_raw+ep' /usr/libexec/ksysguard/ksgrd_network_helper \
     ; else \
+        dnf5 -y swap \
+        --repo terra-extras \
+            gnome-shell gnome-shell && \
+        dnf5 versionlock add \
+            gnome-shell && \
         dnf5 -y install \
             nautilus-gsconnect \
             steamdeck-backgrounds \
