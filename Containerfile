@@ -481,11 +481,6 @@ RUN --mount=type=cache,dst=/var/cache \
             jq -r '.assets | sort_by(.created_at) | .[] | select (.name|test("^tilingshell@.*zip$")) | .browser_download_url' | \
             wget -qi - -O /tmp/tilingshell/tilingshell@ferrarodomenico.com.zip && \
         unzip /tmp/tilingshell/tilingshell@ferrarodomenico.com.zip -d /usr/share/gnome-shell/extensions/tilingshell@ferrarodomenico.com && \
-        mkdir -p /tmp/gnome-hdr && \
-        curl -Lo /tmp/gnome-hdr/hdr-enableelrant.team.v2.shell-extension.zip https://extensions.gnome.org/extension-data/hdr-enableelrant.team.v2.shell-extension.zip && \
-        unzip /tmp/gnome-hdr/hdr-enableelrant.team.v2.shell-extension.zip -d /usr/share/gnome-shell/extensions/hdr-enable@elrant.team && \
-        chmod -R 644 /usr/share/gnome-shell/extensions/hdr-enable@elrant.team && \
-        chmod 755 /usr/share/gnome-shell/extensions/hdr-enable@elrant.team && \
         curl -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer && \
         systemctl enable dconf-update.service \
     ; fi && \
