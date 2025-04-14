@@ -1,18 +1,18 @@
-%global glib_version 2.75.1
+%global glib_version 2.81.1
 %global gtk3_version 3.19.8
 %global gtk4_version 4.0.0
 %global gsettings_desktop_schemas_version 47~beta
-%global libinput_version 1.19.0
-%global pipewire_version 0.3.33
+%global libinput_version 1.26.0
+%global pipewire_version 1.2.0
 %global lcms2_version 2.6
 %global colord_version 1.4.5
-%global libei_version 1.0.901
-%global mutter_api_version 15
+%global libei_version 1.3.901
+%global mutter_api_version 16
 
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 Name:          mutter
-Version:       47.5
+Version:       48.1
 Release:       %autorelease.bazzite
 Summary:       Window and compositing manager based on Clutter
 
@@ -20,21 +20,16 @@ Summary:       Window and compositing manager based on Clutter
 License:       GPL-2.0-or-later
 URL:           https://www.gnome.org
 Source0:       https://download.gnome.org/sources/%{name}/47/%{name}-%{tarball_version}.tar.xz
-
-# Work-around for OpenJDK's compliance test
-Patch:         0001-window-actor-Special-case-shaped-Java-windows.patch
+Source1:       org.gnome.mutter.fedora.gschema.override
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1936991
 Patch:         mutter-42.alpha-disable-tegra.patch
 
-# https://pagure.io/fedora-workstation/issue/79
-Patch:         0001-place-Always-center-initial-setup-fedora-welcome.patch
-
-# https://pagure.io/fedora-workstation/issue/357
-Patch:         0001-gschema-Enable-fractional-scaling-experimental-featu.patch
-
-# https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4083
-Patch:         https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4083.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=2239128
+# https://gitlab.gnome.org/GNOME/mutter/-/issues/3068
+# not upstreamed because for upstream we'd really want to find a way
+# to fix *both* problems
+Patch:         0001-Revert-x11-Use-input-region-from-frame-window-for-de.patch
 
 # https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4296
 Patch:         https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4296.patch
@@ -68,10 +63,11 @@ BuildRequires: pkgconfig(libpipewire-0.3) >= %{pipewire_version}
 BuildRequires: pkgconfig(sysprof-capture-4)
 BuildRequires: sysprof-devel
 BuildRequires: pkgconfig(libsystemd)
-BuildRequires: xorg-x11-server-Xvfb
 BuildRequires: pkgconfig(xkeyboard-config)
 BuildRequires: desktop-file-utils
 BuildRequires: cvt
+BuildRequires: python3-argcomplete
+BuildRequires: python3-docutils
 # Bootstrap requirements
 BuildRequires: gettext-devel git-core
 BuildRequires: pkgconfig(libcanberra)
@@ -83,7 +79,6 @@ BuildRequires: pkgconfig(gnome-desktop-4)
 BuildRequires: pkgconfig(gudev-1.0)
 BuildRequires: pkgconfig(libdrm)
 BuildRequires: pkgconfig(libstartup-notification-1.0)
-BuildRequires: pkgconfig(wayland-eglstream)
 BuildRequires: pkgconfig(wayland-protocols)
 BuildRequires: pkgconfig(wayland-server)
 BuildRequires: pkgconfig(lcms2) >= %{lcms2_version}
@@ -104,6 +99,7 @@ Requires: libinput%{?_isa} >= %{libinput_version}
 Requires: pipewire%{_isa} >= %{pipewire_version}
 Requires: startup-notification
 Requires: dbus
+Requires: python3-argcomplete
 
 # Need common
 Requires: %{name}-common = %{version}-%{release}
@@ -167,11 +163,12 @@ the functionality of the installed %{name} package.
 %autosetup -S git -n %{name}-%{tarball_version}
 
 %build
-%meson -Degl_device=true -Dwayland_eglstream=true
+%meson -Degl_device=true
 %meson_build
 
 %install
 %meson_install
+install -p %{SOURCE1} %{buildroot}%{_datadir}/glib-2.0/schemas
 
 %find_lang %{name}
 
@@ -184,9 +181,13 @@ the functionality of the installed %{name} package.
 %{_libexecdir}/mutter-restart-helper
 %{_libexecdir}/mutter-x11-frames
 %{_mandir}/man1/mutter.1*
+%{_bindir}/gdctl
+%{_mandir}/man1/gdctl.1*
+%{_sysconfdir}/bash_completion.d/gdctl
 
 %files common
 %{_datadir}/GConf/gsettings/mutter-schemas.convert
+%{_datadir}/glib-2.0/schemas/org.gnome.mutter.fedora.gschema.override
 %{_datadir}/glib-2.0/schemas/org.gnome.mutter.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gnome.mutter.wayland.gschema.xml
 %{_datadir}/gnome-control-center/keybindings/50-mutter-*.xml
