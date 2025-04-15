@@ -52,11 +52,6 @@ screens:
           default: false
           packages:
           - Install Oversteer: ujust install-oversteer
-        OpenRazer:
-          description: Enables additional capabilities for Razer Hardware
-          default: false
-          packages:
-          - Install OpenRazer: ujust install-openrazer
         OpenRGB:
           description: Open source RGB lighting control that doesn't depend on manufacturer software
           default: false
@@ -72,11 +67,6 @@ screens:
           default: false
           packages:
           - Install Resilio Sync: ujust install-resilio-sync
-        LACT:
-          description: Tool for overclocking & undervolting AMD GPUs
-          default: false
-          packages:
-          - Install LACT: ujust install-lact
   media-apps:
     source: yafti.screen.package
     values:
