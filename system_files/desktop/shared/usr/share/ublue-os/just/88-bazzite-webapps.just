@@ -53,6 +53,7 @@ get-webapp service="":
             "HBO Max" \
             "Hulu" \
             "Plex HTPC" \
+            "Jellyfin Media Player" \
             "Paramount Plus" \
             "Peacock" \
             "Sling TV" \
@@ -99,7 +100,14 @@ get-webapp service="":
             flatpak install --system -y tv.plex.PlexHTPC
         fi
     }
-
+    
+    install_jellyfin_media_player() {
+        if grep -q 'com.github.iwalton3.jellyfin-media-player' <<< $(flatpak list); then
+            echo "Jellyfin Media Player is already installed"
+        else
+            flatpak install --system -y com.github.iwalton3.jellyfin-media-player
+        fi
+    }
     # Process user choice
     case "$CHOICE" in
         "YouTube") create_script "youtube" "youtube" ;;
@@ -114,6 +122,7 @@ get-webapp service="":
         "HBO Max") create_script "hbo-max" "hboMax" ;;
         "Hulu") create_script "hulu" "hulu" ;;
         "Plex HTPC") install_plex_htpc ;;
+        "Jellyfin Media Player") install_jellyfin_media_player ;;
         "Paramount Plus") create_script "paramount-plus" "paramountPlus" ;;
         "Peacock") create_script "peacock" "peacock" ;;
         "Sling TV") create_script "sling-tv" "slingTV" ;;
