@@ -7,8 +7,6 @@ update:
     #!/usr/bin/bash
     /usr/bin/topgrade --config /usr/share/ublue-os/topgrade.toml --keep
 
-alias auto-update := toggle-updates
-
 alias changelog := changelogs
 
 # Show the stable changelog
