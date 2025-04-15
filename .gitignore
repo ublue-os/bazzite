@@ -18,7 +18,6 @@
 *.qcow2
 *.vmdk
 *.vdi
-*.gitignore
 
 # Project-specific
 /just_scripts/output/
