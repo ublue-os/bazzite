@@ -262,6 +262,8 @@ RUN --mount=type=cache,dst=/var/cache \
         input-remapper \
         i2c-tools \
         lm_sensors \
+        fw-ectool \
+        fw-fanctrl \
         udica \
         ladspa-caps-plugins \
         ladspa-noise-suppression-for-voice \
@@ -412,7 +414,7 @@ RUN --mount=type=cache,dst=/var/cache \
             ptyxis && \
         dnf5 -y swap \
         --repo=terra-extras \
-            kf6-kio kf6-kio.switcheroo-$(rpm -qi kf6-kcoreaddons | awk '/^Version/ {print $3}') && \
+            kf6-kio kf6-kio && \
         dnf5 versionlock add \
             kf6-kio-core \
             kf6-kio-core-libs \
@@ -439,7 +441,7 @@ RUN --mount=type=cache,dst=/var/cache \
     ; else \
         dnf5 -y swap \
         --repo terra-extras \
-            gnome-shell gnome-shell.switcheroo-$(rpm -qi gnome-shell | awk '/^Version/ {print $3}') && \
+            gnome-shell gnome-shell && \
         dnf5 versionlock add \
             gnome-shell && \
         dnf5 -y install \
@@ -591,6 +593,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable brew-setup.service && \
     systemctl disable brew-upgrade.timer && \
     systemctl disable brew-update.timer && \
+    systemctl disable fw-fanctrl.service && \
     systemctl disable scx.service && \
     systemctl disable scx_loader.service && \
     systemctl enable input-remapper.service && \
