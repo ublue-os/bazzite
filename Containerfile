@@ -262,6 +262,8 @@ RUN --mount=type=cache,dst=/var/cache \
         input-remapper \
         i2c-tools \
         lm_sensors \
+        fw-ectool \
+        fw-fanctrl \
         udica \
         ladspa-caps-plugins \
         ladspa-noise-suppression-for-voice \
@@ -606,6 +608,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable brew-setup.service && \
     systemctl disable brew-upgrade.timer && \
     systemctl disable brew-update.timer && \
+    systemctl disable fw-fanctrl.service && \
     systemctl disable scx.service && \
     systemctl disable scx_loader.service && \
     systemctl enable input-remapper.service && \
