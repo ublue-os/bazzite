@@ -412,7 +412,7 @@ RUN --mount=type=cache,dst=/var/cache \
             ptyxis && \
         dnf5 -y swap \
         --repo=terra-extras \
-            kf6-kio kf6-kio.switcheroo-$(rpm -qi kf6-kcoreaddons | awk '/^Version/ {print $3}') && \
+            kf6-kio kf6-kio && \
         dnf5 versionlock add \
             kf6-kio-core \
             kf6-kio-core-libs \
@@ -439,7 +439,7 @@ RUN --mount=type=cache,dst=/var/cache \
     ; else \
         dnf5 -y swap \
         --repo terra-extras \
-            gnome-shell gnome-shell.switcheroo-$(rpm -qi gnome-shell | awk '/^Version/ {print $3}') && \
+            gnome-shell gnome-shell && \
         dnf5 versionlock add \
             gnome-shell && \
         dnf5 -y install \
