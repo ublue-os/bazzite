@@ -106,7 +106,6 @@ toggle-wol ACTION="":
     if [[ "$WOL_STATUS" == "g" ]]; then
       CURRENT_STATE="Enabled"
     fi
-    
     OPTION="{{ ACTION }}"
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust toggle-wol <option>"
@@ -121,7 +120,6 @@ toggle-wol ACTION="":
       echo "Note: Force-Enable will make WOL persist across reboots"
       OPTION=$(ugum choose Enable Disable Force-Enable Exit)
     fi
-    
     if [[ "${OPTION,,}" == "enable" ]]; then
       echo "You chose to enable Wake-on-LAN."
       echo "Requesting root privileges..."
