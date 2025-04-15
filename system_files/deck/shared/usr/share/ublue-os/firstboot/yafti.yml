@@ -19,19 +19,19 @@ screens:
       groups:
         Decky Loader:
           description: A plugin loader for the Steam Deck
-          default: true
+          default: false
           packages:
           - Retrieve Decky: ujust setup-decky install
-        Decky Framegen:
-          description: A Decky plugin that swaps DLSS for FSR 3 Upscaling and Framegen
-          default: true
-          packages:
-          - Retrieve Decky Framegen: ujust get-framegen install-decky-plugin 
         Decky Bazzite Buddy:
           description: A Decky plugin that lets you see Bazzite changelogs in Game Mode.
-          default: true
+          default: false
           packages:
           - Retrieve Decky Bazzite Buddy: ujust get-decky-bazzite-buddy
+        Decky Framegen Plus:
+          description: A Decky plugin that swaps DLSS for FSR and adds framegen to non-framegen games
+          default: false
+          packages:
+          - Retrieve Decky Framegen: ujust get-framegen install-decky-plugin 
         EmuDeck:
           description: A utility for installing and configuring emulators on the Steam Deck
           default: false
@@ -74,16 +74,36 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
+        Xbox Cloud Gaming:
+          description: Cloud gaming service
+          default: false
+          packages:
+          - Install Xbox Cloud Gaming: ujust get-webapp "Xbox Cloud Gaming"
+        GeForce Now:
+          description: Cloud gaming service
+          default: false
+          packages:
+          - Install GeForce Now: ujust get-webapp "GeForce Now"
         YouTube:
           description: Video sharing platform
           default: false
           packages:
           - Install YouTube: ujust get-webapp "YouTube"
+        Spotify:
+          description: Music streaming service
+          default: false
+          packages:
+          - Install Spotify: ujust get-webapp "Spotify"
         Netflix:
           description: Subscription streaming service
           default: false
           packages:
           - Install Netflix: ujust get-webapp "Netflix"
+        Plex HTPC:
+          description: Media server client
+          default: false
+          packages:
+          - Install Plex HTPC: ujust get-webapp "Plex HTPC"
         Amazon Luna:
           description: Cloud gaming service
           default: false
@@ -114,11 +134,6 @@ screens:
           default: false
           packages:
           - Install Crunchyroll: ujust get-webapp "Crunchyroll"
-        GeForce Now:
-          description: Cloud gaming service
-          default: false
-          packages:
-          - Install GeForce Now: ujust get-webapp "GeForce Now"
         HBO Max:
           description: Subscription streaming service
           default: false
@@ -129,11 +144,6 @@ screens:
           default: false
           packages:
           - Install Hulu: ujust get-webapp "Hulu"
-        Plex HTPC:
-          description: Media server client
-          default: false
-          packages:
-          - Install Plex HTPC: ujust get-webapp "Plex HTPC"
         Paramount Plus:
           description: Subscription streaming service
           default: false
@@ -149,21 +159,11 @@ screens:
           default: false
           packages:
           - Install Sling TV: ujust get-webapp "Sling TV"
-        Spotify:
-          description: Music streaming service
-          default: false
-          packages:
-          - Install Spotify: ujust get-webapp "Spotify"
         Vimeo:
           description: Video sharing platform
           default: false
           packages:
           - Install Vimeo: ujust get-webapp "Vimeo"
-        Xbox Cloud Gaming:
-          description: Cloud gaming service
-          default: false
-          packages:
-          - Install Xbox Cloud Gaming: ujust get-webapp "Xbox Cloud Gaming"
         YouTube Music:
           description: Music streaming service
           default: false
@@ -181,16 +181,6 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
-        Boot to Windows from Steam:
-          description: Adds a script in Steam to boot Windows which is useful for dual-boot setups
-          default: false
-          packages:
-          - Setup Windows boot script: ujust setup-boot-windows-steam
-        Automounting:
-          description: Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
-          default: false
-          packages:
-          - Enable Automounting: ujust enable-automounting
         Add input group to current user:
           description: Adds the input group to your current user. Required by certain controller drivers.
           default: true
@@ -211,6 +201,16 @@ screens:
           default: true
           packages:
           - Hide GRUB: sudo -A ujust configure-grub hide
+        Boot to Windows from Steam:
+          description: Adds a script in Steam to boot Windows which is useful for dual-boot setups
+          default: false
+          packages:
+          - Setup Windows boot script: ujust setup-boot-windows-steam
+        Automounting:
+          description: Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
+          default: false
+          packages:
+          - Enable Automounting: ujust enable-automounting
         Wake-on-LAN:
           description: Enable Wake-on-LAN functionality to power on your device remotely
           default: false
