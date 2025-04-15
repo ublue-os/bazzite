@@ -14,7 +14,7 @@ _install-system-flatpaks:
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
 # Toggle SSH availability on boot
-toggle-ssh:
+toggle-ssh ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     # Get hostname and IP address
@@ -25,19 +25,28 @@ toggle-ssh:
     if systemctl is-enabled sshd | grep -q enabled; then
       SSH_STATUS="Enabled"
     fi
-    # Display current status
-    echo -e "\n${bold}Hostname:${normal} $HOSTNAME"
-    echo -e "${bold}IP Address:${normal} $IP_ADDRESS"
-    if [ "$SSH_STATUS" == "Enabled" ]; then
-      echo -e "${bold}SSH Availability on Boot:${normal} ${green}$SSH_STATUS${normal}\n"
-    else
-      echo -e "${bold}SSH Availability on Boot:${normal} ${yellow}$SSH_STATUS${normal}\n"
+    OPTION="{{ ACTION }}"
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust toggle-ssh <option>"
+      echo "  <option>: Specify the option to skip the interactive prompt"
+      echo "  Use 'enable' to enable SSH on boot"
+      echo "  Use 'disable' to disable SSH on boot"
+      exit 0
+    elif [ "$OPTION" == "" ]; then
+      # Display current status
+      echo -e "\n${bold}Hostname:${normal} $HOSTNAME"
+      echo -e "${bold}IP Address:${normal} $IP_ADDRESS"
+      if [ "$SSH_STATUS" == "Enabled" ]; then
+        echo -e "${bold}SSH Availability on Boot:${normal} ${green}$SSH_STATUS${normal}\n"
+      else
+        echo -e "${bold}SSH Availability on Boot:${normal} ${yellow}$SSH_STATUS${normal}\n"
+      fi
+      # Prompt user for action
+      echo "Choose an option:"
+      OPTION=$(ugum choose "Enable SSH" "Disable SSH" "Exit without saving")
     fi
-    # Prompt user for action
-    echo "Choose an option:"
-    CHOICE=$(ugum choose "Enable SSH" "Disable SSH" "Exit without saving")
-    case "$CHOICE" in
-      "Enable SSH")
+    case "$OPTION" in
+      "Enable SSH"|enable)
         echo "Enabling SSH on boot..."
         sudo systemctl enable sshd
         sudo systemctl start sshd
@@ -45,18 +54,15 @@ toggle-ssh:
         echo -e "${bold}${USER}@${IP_ADDRESS}${normal}"
         echo " "
         ;;
-      "Disable SSH")
+      "Disable SSH"|disable)
         echo "Disabling SSH on boot..."
         sudo systemctl disable sshd
         sudo systemctl stop sshd
         echo -e "SSH is now ${yellow}Disabled${normal}."
         echo " "
         ;;
-      "Exit without saving")
+      "Exit without saving"|*)
         echo "No changes made."
-        ;;
-      *)
-        echo "Invalid choice. Exiting without changes."
         ;;
     esac
 

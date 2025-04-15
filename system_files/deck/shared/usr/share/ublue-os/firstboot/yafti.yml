@@ -19,14 +19,19 @@ screens:
       groups:
         Decky Loader:
           description: A plugin loader for the Steam Deck
-          default: false
+          default: true
           packages:
           - Retrieve Decky: ujust setup-decky install
         Decky Framegen:
           description: A Decky plugin that swaps DLSS for FSR 3 Upscaling and Framegen
-          default: false
+          default: true
           packages:
           - Retrieve Decky Framegen: ujust get-framegen install-decky-plugin 
+        Decky Bazzite Buddy:
+          description: A Decky plugin that lets you see Bazzite changelogs in Game Mode.
+          default: true
+          packages:
+          - Retrieve Decky Bazzite Buddy: ujust get-decky-bazzite-buddy
         EmuDeck:
           description: A utility for installing and configuring emulators on the Steam Deck
           default: false
@@ -37,35 +42,148 @@ screens:
           default: false
           packages:
           - Enable Sunshine: ujust setup-sunshine enable
+        Waydroid:
+          description: Android app compatibility layer for Linux
+          default: false
+          packages:
+          - Initialize Waydroid: ujust setup-waydroid init
+        Oversteer:
+          description: Application to control supported steering wheels
+          default: false
+          packages:
+          - Install Oversteer: ujust install-oversteer
+        OpenRazer:
+          description: Enables additional capabilities for Razer Hardware
+          default: false
+          packages:
+          - Install OpenRazer: ujust install-openrazer
+        OpenRGB:
+          description: Open source RGB lighting control that doesn't depend on manufacturer software
+          default: false
+          packages:
+          - Install OpenRGB: ujust install-openrgb
+        Wootility:
+          description: A configurator for Wooting keyboards
+          default: false
+          packages:
+          - Retrieve Wootility: ujust install-wootility
         Resilio Sync:
           description: A file synchronization utility powered by BitTorrent
           default: false
           packages:
           - Install Resilio Sync: ujust install-resilio-sync
-        Media Apps:
-          description: Streaming services that can be added to Steam
+        LACT:
+          description: Tool for overclocking & undervolting AMD GPUs
           default: false
           packages:
-          - YouTube: ujust get-webapp "YouTube"
-          - Netflix: ujust get-webapp "Netflix"
-          - Amazon Luna: ujust get-webapp "Amazon Luna"
-          - Disney Plus: ujust get-webapp "Disney Plus"
-          - Amazon Prime Video: ujust get-webapp "Amazon Prime Video"
-          - Apple TV: ujust get-webapp "Apple TV"
-          - Curiosity Stream: ujust get-webapp "Curiosity Stream"
-          - Crunchyroll: ujust get-webapp "Crunchyroll"
-          - GeForce Now: ujust get-webapp "GeForce Now"
-          - HBO Max: ujust get-webapp "HBO Max"
-          - Hulu: ujust get-webapp "Hulu"
-          - Plex HTPC: ujust get-webapp "Plex HTPC"
-          - Paramount Plus: ujust get-webapp "Paramount Plus"
-          - Peacock: ujust get-webapp "Peacock"
-          - Sling TV: ujust get-webapp "Sling TV"
-          - Spotify: ujust get-webapp "Spotify"
-          - Vimeo: ujust get-webapp "Vimeo"
-          - Xbox Cloud Gaming: ujust get-webapp "Xbox Cloud Gaming"
-          - YouTube Music: ujust get-webapp "YouTube Music"
-          - YouTube TV: ujust get-webapp "YouTube TV"
+          - Install LACT: ujust install-lact
+  media-apps:
+    source: yafti.screen.package
+    values:
+      title: Media Applications
+      show_terminal: true
+      package_manager: yafti.plugin.run
+      groups:
+        YouTube:
+          description: Video sharing platform
+          default: false
+          packages:
+          - Install YouTube: ujust get-webapp "YouTube"
+        Netflix:
+          description: Subscription streaming service
+          default: false
+          packages:
+          - Install Netflix: ujust get-webapp "Netflix"
+        Amazon Luna:
+          description: Cloud gaming service
+          default: false
+          packages:
+          - Install Amazon Luna: ujust get-webapp "Amazon Luna"
+        Disney Plus:
+          description: Subscription streaming service
+          default: false
+          packages:
+          - Install Disney Plus: ujust get-webapp "Disney Plus"
+        Amazon Prime Video:
+          description: Subscription streaming service
+          default: false
+          packages:
+          - Install Amazon Prime Video: ujust get-webapp "Amazon Prime Video"
+        Apple TV:
+          description: Subscription streaming service
+          default: false
+          packages:
+          - Install Apple TV: ujust get-webapp "Apple TV"
+        Curiosity Stream:
+          description: Documentary streaming service
+          default: false
+          packages:
+          - Install Curiosity Stream: ujust get-webapp "Curiosity Stream"
+        Crunchyroll:
+          description: Anime streaming service
+          default: false
+          packages:
+          - Install Crunchyroll: ujust get-webapp "Crunchyroll"
+        GeForce Now:
+          description: Cloud gaming service
+          default: false
+          packages:
+          - Install GeForce Now: ujust get-webapp "GeForce Now"
+        HBO Max:
+          description: Subscription streaming service
+          default: false
+          packages:
+          - Install HBO Max: ujust get-webapp "HBO Max"
+        Hulu:
+          description: Subscription streaming service
+          default: false
+          packages:
+          - Install Hulu: ujust get-webapp "Hulu"
+        Plex HTPC:
+          description: Media server client
+          default: false
+          packages:
+          - Install Plex HTPC: ujust get-webapp "Plex HTPC"
+        Paramount Plus:
+          description: Subscription streaming service
+          default: false
+          packages:
+          - Install Paramount Plus: ujust get-webapp "Paramount Plus"
+        Peacock:
+          description: Subscription streaming service
+          default: false
+          packages:
+          - Install Peacock: ujust get-webapp "Peacock"
+        Sling TV:
+          description: Live TV streaming service
+          default: false
+          packages:
+          - Install Sling TV: ujust get-webapp "Sling TV"
+        Spotify:
+          description: Music streaming service
+          default: false
+          packages:
+          - Install Spotify: ujust get-webapp "Spotify"
+        Vimeo:
+          description: Video sharing platform
+          default: false
+          packages:
+          - Install Vimeo: ujust get-webapp "Vimeo"
+        Xbox Cloud Gaming:
+          description: Cloud gaming service
+          default: false
+          packages:
+          - Install Xbox Cloud Gaming: ujust get-webapp "Xbox Cloud Gaming"
+        YouTube Music:
+          description: Music streaming service
+          default: false
+          packages:
+          - Install YouTube Music: ujust get-webapp "YouTube Music"
+        YouTube TV:
+          description: Live TV streaming service
+          default: false
+          packages:
+          - Install YouTube TV: ujust get-webapp "YouTube TV"
   configure-bazzite:
     source: yafti.screen.package
     values:
@@ -73,6 +191,16 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
+        Boot to Windows from Steam:
+          description: Adds a script in Steam to boot Windows which is useful for dual-boot setups
+          default: false
+          packages:
+          - Setup Windows boot script: ujust setup-boot-windows-steam
+        Automounting:
+          description: Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
+          default: false
+          packages:
+          - Enable Automounting: ujust enable-automounting
         Add input group to current user:
           description: Adds the input group to your current user. Required by certain controller drivers.
           default: true
@@ -90,34 +218,24 @@ screens:
           - Toggle password feedback: sudo -A ujust toggle-password-feedback on
         Hide GRUB Menu:
           description: Hide the GRUB menu on boot
-          default: false
+          default: true
           packages:
           - Hide GRUB: sudo -A ujust configure-grub hide
-        Oversteer:
-          description: Application to control supported steering wheels
-          default: false
-          packages:
-          - Install Oversteer: ujust install-oversteer
-        OpenRazer:
-          description: Enables additional capabilities for Razer Hardware
-          default: false
-          packages:
-          - Install OpenRazer: ujust install-openrazer
-        OpenRGB:
-          description: Open source RGB lighting control that doesn't depend on manufacturer software
-          default: false
-          packages:
-          - Install OpenRGB: ujust install-openrgb
         OpenTabletDriver:
           description: Open source, cross-platform, user-mode tablet driver
           default: false
           packages:
           - Install OpenTabletDriver: ujust install-opentabletdriver
-        Wootility:
-          description: A configurator for Wooting keyboards
+        SSH Service:
+          description: Enable or disable SSH remote access service on boot
           default: false
           packages:
-          - Retrieve Wootility: ujust install-wootility
+          - Enable SSH: ujust toggle-ssh enable
+        SteamCMD:
+          description: Command-line version of the Steam client for dedicated servers and game downloads
+          default: false
+          packages:
+          - Install SteamCMD: ujust install-steamcmd
   final-screen:
     source: yafti.screen.title
     values:
