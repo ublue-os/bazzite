@@ -104,6 +104,11 @@ screens:
           default: false
           packages:
           - Install Plex HTPC: ujust get-webapp "Plex HTPC"
+        JellyFin:
+          description: Media server client
+          default: false
+          packages:
+          - Install JellyFin: ujust get-webapp "Jellyfin Media Player"
         Amazon Luna:
           description: Cloud gaming service
           default: false

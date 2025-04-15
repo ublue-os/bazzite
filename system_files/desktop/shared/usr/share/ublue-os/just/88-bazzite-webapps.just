@@ -75,7 +75,6 @@ get-webapp service="":
         steamos-add-to-steam "$script_path"
         echo "Added $1 to Steam successfully!"
     }
-
     install_crunchyroll() {
         if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
             wget \
@@ -92,7 +91,6 @@ get-webapp service="":
             chmod +x $HOME/Desktop/Crunchyroll.AppImage
         fi
     }
-
     install_plex_htpc(){
         if grep -q 'tv.plex.PlexHTPC' <<< $(flatpak list); then
             echo "Plex HTPC is already installed"
@@ -100,7 +98,6 @@ get-webapp service="":
             flatpak install --system -y tv.plex.PlexHTPC
         fi
     }
-    
     install_jellyfin_media_player() {
         if grep -q 'com.github.iwalton3.jellyfin-media-player' <<< $(flatpak list); then
             echo "Jellyfin Media Player is already installed"
