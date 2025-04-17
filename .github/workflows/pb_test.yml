@@ -162,7 +162,7 @@ jobs:
           BASE_IMAGE_NAME=${{ env.base_image_name }}
           BASE_IMAGE_FLAVOR=${{ env.base_image_flavor }}
           FEDORA_VERSION=${{ env.fedora_version }}
-          KERNEL_FLAVOR==${{ env.kernel_flavor }}
+          KERNEL_FLAVOR=${{ env.kernel_flavor }}
           KERNEL_VERSION=${{ env.kernel_version }}
           IMAGE_BRANCH=${{ github.ref_name }}
           SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }}
