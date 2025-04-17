@@ -1,31 +1,3 @@
-#
-#     %%%%%%====%%%%%%%%%%
-#   %%%%%%%%    %%%%%%%%%%%%%%
-#  %%%%%%%%%    %%%%%%%%%%%%%%%%
-#  %%%%%%%%%    %%%%%%%%%%%%%%%###
-#  %%%%%%%%%    %%%%%%%%%%%%%######
-#  ==                  =======######
-#  ==                  =========#####
-#  %%%%%%%%%    %%%%%%%####======#####
-#  %%%%%%%%%    %%%%%#######=====#####
-#  %%%%%%%%%    %%%#########=====#####
-#  %%%%%%%%%    %%##########=====#####
-#  %%%%%%%%%====###########=====######
-#   %%%%%%%%====#########======######
-#    %%%%%%%=====#####========######
-#     %%%%###===============#######
-#      %#######==========#########
-#        #######################
-#          ###################
-#              ###########
-#
-# Welcome to Bazzite! If you're looking to
-# build your own, we highly recommend you
-# use our custom image template. Forking
-# the main repo provides more control, but
-# is often unnecessary.
-#
-# https://github.com/ublue-os/image-template
 
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG BASE_IMAGE_FLAVOR="${BASE_IMAGE_FLAVOR:-main}"
@@ -639,9 +611,9 @@ RUN bootc container lint
 # DECK BUILDS
 ################
 
-FROM bazzite AS bazzite-deck
+FROM bazzite AS basegrymax
 
-ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-deck}"
+ARG IMAGE_NAME="${IMAGE_NAME:-basegrymax}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia}"
