@@ -31,8 +31,6 @@ Patch:         mutter-42.alpha-disable-tegra.patch
 # to fix *both* problems
 Patch:         0001-Revert-x11-Use-input-region-from-frame-window-for-de.patch
 
-Patch:         0001-gschema-Enable-fractional-scaling-experimental-featu.patch
-
 # https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4296
 # Patch:         https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4296.patch
 
