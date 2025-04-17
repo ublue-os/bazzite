@@ -6,6 +6,15 @@ env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
   IMAGE_NAME: basegrymax
 
+  base_image_flavor: main
+  base_name: bazzite-deck
+  base_image_name: kinoite
+  target_image_flavor: main
+  target_nvidia_flavor: nvidia
+  fedora_version: 42
+  kernel_flavor: bazzite
+  kernel_version: 6.13.9-103.bazzite.fc42.x86_64
+
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
     cancel-in-progress: true
@@ -26,15 +35,37 @@ jobs:
 
       - name: Define env.IMAGE_FLAVOR
         run: |
-            echo "IMAGE_FLAVOR=main" >> $GITHUB_ENV
+            echo "IMAGE_FLAVOR=${{ env.base_image_flavor }}" >> $GITHUB_ENV
 
       - name: Define env.NVIDIA_BASE
         run: |
-            echo "NVIDIA_BASE=bazzite-deck" >> $GITHUB_ENV
+            echo "NVIDIA_BASE=${{ env.base_name }}" >> $GITHUB_ENV
 
       - name: Define env.SHA_HEAD_SHORT
         run: |
           echo "SHA_HEAD_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Verify main image
+        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
+        with:
+          containers: ${{ env.base_image_name }}-${{ env.base_image_flavor }}:${{ env.fedora_version }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/${{ env.base_image_flavor }}/main/cosign.pub
+          registry: ${{ env.IMAGE_REGISTRY }}
+
+      - name: Verify akmods image
+        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
+        with:
+          containers: akmods:${{ env.kernel_flavor}}-${{ env.fedora_version }}-${{ env.kernel_version }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
+          registry: ${{ env.IMAGE_REGISTRY }}
+
+      - name: Verify akmods-nvidia image
+        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
+        with:
+          containers: akmods-${{ env.target_nvidia_flavor }}:${{ env.kernel_flavor}}-${{ env.fedora_version }}-${{ env.kernel_version }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
+          registry: ${{ env.IMAGE_REGISTRY }}
+
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -54,20 +85,85 @@ jobs:
           remove-cached-tools: true
           remove-swapfile: true
 
+      - name: Pull main, akmods, rechunk images
+        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+        with:
+            attempt_limit: 3
+            attempt_delay: 15000
+            command: |
+                # pull the base images used for FROM in Containerfile so
+                # we can retry on that unfortunately common failure case
+                sudo podman pull ${{ env.IMAGE_REGISTRY }}/${{ env.base_image_name }}-${{ env.base_image_flavor }}:${{ env.fedora_version }}
+                sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ env.kernel_flavor}}-${{ env.fedora_version }}-${{ env.kernel_version }}
+                sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods-${{ env.target_nvidia_flavor }}:${{ env.kernel_flavor}}-${{ env.fedora_version }}-${{ env.kernel_version }}
+
+                # Add rechunk as well to remove this source of failure
+                sudo podman pull ghcr.io/hhd-dev/rechunk:v1.2.1
+
+      - name: Get source versions
+        id: labels
+        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+        with:
+            attempt_limit: 3
+            attempt_delay: 15000
+            command: |
+                set -eo pipefail
+                skopeo inspect docker://${{ env.IMAGE_REGISTRY }}/${{ env.base_image_name }}-${{ env.base_image_flavor }}:${{ env.fedora_version }} > source.json
+                ver=$(jq -r '.Labels["org.opencontainers.image.version"]' source.json)
+                if [ -z "$ver" ] || [ "null" = "$ver" ]; then
+                    echo "inspected image version must not be empty or null"
+                    exit 1
+                fi
+                echo "SOURCE_IMAGE_VERSION=$ver" >> $GITHUB_ENV
+
+      # Generate a primary version key that appears
+      # in KDE, rpm-ostree status, and github.
+      - name: Generate Version
+        id: generate-version
+        shell: bash
+        run: |
+            # Generate the primary version key that will be stored on os-release,
+            # shown on the bootloader, and used for the image tag.
+            UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
+            # Remove .0 suffix from upstream tag so we can add our own and
+            # the wrong one does not end up in the image.
+            UPSTREAM_TAG="${UPSTREAM_TAG%.*}"
+            FEDORA_VERSION="${{ env.fedora_version }}"
+            SHA_SHORT="${GITHUB_SHA::7}"
+
+            if [ -n "${{ github.event.pull_request.number }}" ]; then
+                VERSION="pr-${FEDORA_VERSION}-${{ github.event.pull_request.number }}"
+                PRETTY_VERSION="PR (${{ github.event.pull_request.number }}, ${UPSTREAM_TAG})"
+            elif [[ ${{ github.ref_name }} == "unstable" ]]; then
+                VERSION="unstable-${UPSTREAM_TAG}"
+                PRETTY_VERSION="Unstable (F${UPSTREAM_TAG}, #${SHA_SHORT})"
+            elif [[ ${{ github.ref_name }} == "testing" ]]; then
+                VERSION="testing-${UPSTREAM_TAG}"
+                PRETTY_VERSION="Testing (F${UPSTREAM_TAG}, #${SHA_SHORT})"
+            else
+                VERSION="${UPSTREAM_TAG}"
+                PRETTY_VERSION="Stable (F${UPSTREAM_TAG})"
+            fi
+            echo "tag=${VERSION}" >> $GITHUB_OUTPUT
+            echo "pretty=${PRETTY_VERSION}" >> $GITHUB_OUTPUT
+
+            echo "Generated the following:"
+            cat $GITHUB_OUTPUT
+
       # Generate a file with all the build-args passed to buildah
       - name: Prepare build args file
         run: |
           cat <<'EOF' >>build_args.txt
           IMAGE_NAME=${{ env.IMAGE_NAME }}
           IMAGE_FLAVOR=${{ env.IMAGE_FLAVOR }}
-          NVIDIA_FLAVOR=nvidia
+          NVIDIA_FLAVOR=${{ env.target_nvidia_flavor }}
           NVIDIA_BASE=${{ env.NVIDIA_BASE }}
           IMAGE_VENDOR=${{ github.repository_owner }}
-          BASE_IMAGE_NAME=kinoite
-          BASE_IMAGE_FLAVOR=main
-          FEDORA_VERSION=42
-          KERNEL_FLAVOR=bazzite
-          KERNEL_VERSION=6.13.9-103.bazzite.fc42.x86_64
+          BASE_IMAGE_NAME=${{ env.base_image_name }}
+          BASE_IMAGE_FLAVOR=${{ env.base_image_flavor }}
+          FEDORA_VERSION=${{ env.fedora_version }}
+          KERNEL_FLAVOR==${{ env.kernel_flavor }}
+          KERNEL_VERSION=${{ env.kernel_version }}
           IMAGE_BRANCH=${{ github.ref_name }}
           SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }}
           VERSION_TAG=${{ steps.generate-version.outputs.tag }}
@@ -94,7 +190,7 @@ jobs:
           version: '${{ steps.generate-version.outputs.tag }}'
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
-            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/bazzite/refs/heads/main/README.md
+            io.artifacthub.package.readme-url=https://shzj.cc/
             org.opencontainers.image.created=<timestamp>
             org.opencontainers.image.description=Bazzite is a custom image built upon Fedora Atomic Desktops that brings the best of Linux gaming to all of your devices - including your favorite handheld.
             org.opencontainers.image.licenses=Apache-2.0
