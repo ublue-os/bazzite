@@ -279,7 +279,7 @@ jobs:
             registry-token: ${{ secrets.GITHUB_TOKEN }}
             signing-secret: ${{ secrets.SIGNING_SECRET }}
             tags: ${{ steps.digest.outputs.digest }}
-            registry: ${{ env.IMAGE_REGISTRY }}
+            registry: ghcr.io/ublue-os
 
       - name: Echo outputs
         if: github.event_name != 'pull_request'
