@@ -72,9 +72,9 @@ jobs:
             command: |
                 # pull the base images used for FROM in Containerfile so
                 # we can retry on that unfortunately common failure case
-                sudo podman pull ${{ env.IMAGE_REGISTRY }}/${{ env.base_image_name }}-${{ env.base_image_flavor }}:${{ env.fedora_version }}
-                sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods:${{ env.kernel_flavor}}-${{ env.fedora_version }}-${{ env.kernel_version }}
-                sudo podman pull ${{ env.IMAGE_REGISTRY }}/akmods-${{ env.target_nvidia_flavor }}:${{ env.kernel_flavor}}-${{ env.fedora_version }}-${{ env.kernel_version }}
+                sudo podman pull ghcr.io/ublue-os/${{ env.base_image_name }}-${{ env.base_image_flavor }}:${{ env.fedora_version }}
+                sudo podman pull ghcr.io/ublue-os/akmods:${{ env.kernel_flavor}}-${{ env.fedora_version }}-${{ env.kernel_version }}
+                sudo podman pull ghcr.io/ublue-os/akmods-${{ env.target_nvidia_flavor }}:${{ env.kernel_flavor}}-${{ env.fedora_version }}-${{ env.kernel_version }}
 
                 # Add rechunk as well to remove this source of failure
                 sudo podman pull ghcr.io/hhd-dev/rechunk:v1.2.1
