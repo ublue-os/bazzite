@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=uBlue First Boot Setup
-Comment=Sets up the uBlue desktop on first boot.
-GenericName=Launcher
-Categories=Utility;System;
-Exec=/usr/share/ublue-os/firstboot/launcher/autostart.sh
-Icon=application-x-executable
-Terminal=false
-Type=Application
