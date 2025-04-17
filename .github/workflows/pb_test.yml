@@ -45,6 +45,27 @@ jobs:
         run: |
           echo "SHA_HEAD_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
+      - name: Verify main image
+        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
+        with:
+          containers: ${{ env.base_image_name }}-${{ env.base_image_flavor }}:${{ env.fedora_version }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/${{ env.base_image_flavor }}/main/cosign.pub
+          registry: ghcr.io/ublue-os
+
+      - name: Verify akmods image
+        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
+        with:
+          containers: akmods:${{ env.kernel_flavor}}-${{ env.fedora_version }}-${{ env.kernel_version }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
+          registry: ghcr.io/ublue-os
+
+      - name: Verify akmods-nvidia image
+        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
+        with:
+          containers: akmods-${{ env.target_nvidia_flavor }}:${{ env.kernel_flavor}}-${{ env.fedora_version }}-${{ env.kernel_version }}
+          pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
+          registry: ghcr.io/ublue-os
+
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -87,7 +108,7 @@ jobs:
             attempt_delay: 15000
             command: |
                 set -eo pipefail
-                skopeo inspect docker://${{ env.IMAGE_REGISTRY }}/${{ env.base_image_name }}-${{ env.base_image_flavor }}:${{ env.fedora_version }} > source.json
+                skopeo inspect docker://ghcr.io/ublue-os/${{ env.base_image_name }}-${{ env.base_image_flavor }}:${{ env.fedora_version }} > source.json
                 ver=$(jq -r '.Labels["org.opencontainers.image.version"]' source.json)
                 if [ -z "$ver" ] || [ "null" = "$ver" ]; then
                     echo "inspected image version must not be empty or null"
