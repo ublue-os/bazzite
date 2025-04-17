@@ -20,7 +20,7 @@ index 6751a8d7a..d3a993c19 100644
      <key name="experimental-features"
          flags='org.gnome.mutter.MetaExperimentalFeature'>
 -      <default>[]</default>
-+      <default>["scale-monitor-framebuffer", "xwayland-native-scaling"]</default>
++      <default>["variable-refresh-rate", scale-monitor-framebuffer", "xwayland-native-scaling"]</default>
        <summary>Enable experimental features</summary>
        <description>
          To enable experimental features, add the feature keyword to the list.
