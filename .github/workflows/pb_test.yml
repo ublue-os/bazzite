@@ -182,7 +182,7 @@ jobs:
             containers: ${{ env.IMAGE_NAME }}
             registry-token: ${{ secrets.GITHUB_TOKEN }}
             signing-secret: ${{ secrets.SIGNING_SECRET }}
-            tags: ${{ steps.push.outputs.outputs && fromJSON(steps.push.outputs.outputs).digest }}
+            tags: ${{ steps.digest.outputs.digest }}
             registry: ${{ env.IMAGE_REGISTRY }}
 
       - name: Echo outputs
