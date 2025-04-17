@@ -271,15 +271,15 @@ jobs:
             echo "Digest is: $DIGEST"
             echo "digest=${DIGEST}" >> $GITHUB_OUTPUT
 
-      - name: Sign container image
-        uses: EyeCantCU/cosign-action/sign@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
-        if: github.event_name != 'pull_request'
-        with:
-            containers: ${{ env.IMAGE_NAME }}
-            registry-token: ${{ secrets.GITHUB_TOKEN }}
-            signing-secret: ${{ secrets.SIGNING_SECRET }}
-            tags: ${{ steps.digest.outputs.digest }}
-            registry: ghcr.io/ublue-os
+#      - name: Sign container image
+#        uses: EyeCantCU/cosign-action/sign@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
+#        if: github.event_name != 'pull_request'
+#        with:
+#            containers: ${{ env.IMAGE_NAME }}
+#            registry-token: ${{ secrets.GITHUB_TOKEN }}
+#            signing-secret: ${{ secrets.SIGNING_SECRET }}
+#            tags: ${{ steps.digest.outputs.digest }}
+#            registry: ${{ env.IMAGE_REGISTRY }}
 
       - name: Echo outputs
         if: github.event_name != 'pull_request'
