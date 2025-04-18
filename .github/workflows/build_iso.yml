@@ -22,7 +22,6 @@ jobs:
       fail-fast: false
       matrix:
         image_name:
-          - bazzite
           - bazzite-deck
         major_version: [41]
     steps:
