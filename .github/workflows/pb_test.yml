@@ -4,7 +4,7 @@ on:
 
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-  IMAGE_NAME: basegrymax
+  IMAGE_NAME: bazzite-deck
 
   base_image_flavor: main
   base_name: bazzite-deck
@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Define env.CONTAINER_TARGET
         run: |
-            echo "CONTAINER_TARGET=basegrymax" >> $GITHUB_ENV
+            echo "CONTAINER_TARGET=bazzite-deck" >> $GITHUB_ENV
 
       - name: Define env.IMAGE_FLAVOR
         run: |

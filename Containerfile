@@ -611,9 +611,9 @@ RUN bootc container lint
 # DECK BUILDS
 ################
 
-FROM bazzite AS basegrymax
+FROM bazzite AS bazzite-deck
 
-ARG IMAGE_NAME="${IMAGE_NAME:-basegrymax}"
+ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-deck}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia}"
