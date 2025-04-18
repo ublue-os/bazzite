@@ -634,9 +634,9 @@ RUN --mount=type=cache,dst=/var/cache \
     curl -Lo /usr/lib/sysctl.d/99-bore-scheduler.conf https://github.com/CachyOS/CachyOS-Settings/raw/master/usr/lib/sysctl.d/99-bore-scheduler.conf && \
     curl -Lo /etc/distrobox/docker.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/distrobox.ini && \
     curl -Lo /etc/distrobox/incus.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/incus/distrobox.ini && \
+    /ctx/image-info && \
     /ctx/build-initramfs && \
-    /ctx/finalize && \
-    /ctx/image-info
+    /ctx/finalize
 
 RUN bootc container lint
 
@@ -838,8 +838,9 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl disable jupiter-biosupdate.service && \
     systemctl disable jupiter-controller-update.service && \
     systemctl disable batterylimit.service && \
-    /ctx/finalize && \
-    /ctx/image-info
+    /ctx/image-info && \
+    /ctx/build-initramfs && \
+    /ctx/finalize
 
 RUN bootc container lint
 
@@ -916,8 +917,8 @@ RUN --mount=type=cache,dst=/var/cache \
     glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
     rm -r /tmp/bazzite-schema-test && \
     systemctl disable supergfxd.service && \
+    /ctx/image-info && \
     /ctx/build-initramfs && \
-    /ctx/finalize && \
-    /ctx/image-info
+    /ctx/finalize
 
 RUN bootc container lint
