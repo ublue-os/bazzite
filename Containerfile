@@ -474,8 +474,7 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-system-monitor \
             gnome-initial-setup \
             gnome-shell-extension-background-logo \
-            gnome-shell-extension-apps-menu \
-            malcontent-control && \
+            gnome-shell-extension-apps-menu && \
         mkdir -p /tmp/tilingshell && \
         curl -s https://api.github.com/repos/domferr/tilingshell/releases/latest | \
             jq -r '.assets | sort_by(.created_at) | .[] | select (.name|test("^tilingshell@.*zip$")) | .browser_download_url' | \
@@ -692,7 +691,9 @@ RUN --mount=type=cache,dst=/var/cache \
         dnf5 -y install \
             steamdeck-gnome-presets \
             gnome-shell-extension-caribou-blocker \
-            sddm \
+            sddm && \
+        dnf5 -y remove \
+            malcontent-control && \
     ; fi && \
     /ctx/cleanup
 
