@@ -714,6 +714,7 @@ RUN --mount=type=cache,dst=/var/cache \
         acpica-tools \
         vpower \
         ublue-update \
+        glorpfetch \
         ds-inhibit \
         steam_notif_daemon \
         sdgyrodsu \
