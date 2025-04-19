@@ -299,6 +299,7 @@ RUN --mount=type=cache,dst=/var/cache \
         cockpit-navigator \
         cockpit-storaged \
         topgrade \
+        ckb-next \
         ydotool \
         stress-ng \
         snapper \
@@ -627,6 +628,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global disable sunshine.service && \
     systemctl disable waydroid-container.service && \
     systemctl disable force-wol.service && \
+    systemctl disable ckb-next-daemon.service && \
     curl -Lo /etc/dxvk-example.conf https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf && \
     curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/bazzite-org/waydroid-scripts/main/waydroid-choose-gpu.sh && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
