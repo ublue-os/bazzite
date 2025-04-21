@@ -85,12 +85,10 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/staging \
         ublue-os/packages \
         bazzite-org/LatencyFleX \
-        bazzite-org/obs-vkcapture \
         bazzite-org/wallpaper-engine-kde-plugin \
         ycollet/audinux \
         bazzite-org/rom-properties \
         bazzite-org/webapp-manager \
-        bazzite-org/vk_hdr_layer \
         hhd-dev/hhd \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
@@ -578,7 +576,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/bazzite-multilib \
         ublue-os/staging \
         bazzite-org/LatencyFleX \
-        bazzite-org/obs-vkcapture \
         bazzite-org/wallpaper-engine-kde-plugin \
         ycollet/audinux \
         bazzite-org/rom-properties \
@@ -666,7 +663,6 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable bazzite-org/bazzite && \
     dnf5 -y copr enable bazzite-org/bazzite-multilib && \
     dnf5 -y copr enable bazzite-org/LatencyFleX && \
-    dnf5 -y copr enable bazzite-org/obs-vkcapture && \
     dnf5 -y copr enable bazzite-org/wallpaper-engine-kde-plugin && \
     dnf5 -y copr enable hhd-dev/hhd && \
     dnf5 -y copr enable ycollet/audinux && \
@@ -781,7 +777,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/bazzite \
         bazzite-org/bazzite-multilib \
         bazzite-org/LatencyFleX \
-        bazzite-org/obs-vkcapture \
         bazzite-org/wallpaper-engine-kde-plugin \
         hhd-dev/hhd \
         ycollet/audinux; \
