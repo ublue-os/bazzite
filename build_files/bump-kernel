@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+
+# Check if the argument is passed
+if [ -z "$1" ]; then
+    echo "Please provide the kernel version as an argument"
+    exit 1
+fi
+
+KFILE=.github/workflows/build.yml
+sed -i -E \
+    "s/kernel_version: .+\.bazzite\.fc/kernel_version: $1\.bazzite\.fc/g" \
+    $KFILE
+
+git add $KFILE
+git commit -m "chore(kernel): bump kernel version to $1"
+
