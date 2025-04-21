@@ -247,6 +247,10 @@ configure-watchdog ACTION="":
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
 setup-decky ACTION="install":
     #!/usr/bin/bash
+    if [[ $(id -u) -eq 0 ]]; then
+        echo >&2 "ERROR: Do not run this with sudo"
+        exit 1
+    fi
     source /usr/lib/ujust/ujust.sh
     DECKY_STATE="${b}${red}Not Installed${n}"
     if [[ -d $HOME/homebrew/plugins ]]; then
@@ -264,19 +268,23 @@ setup-decky ACTION="install":
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
       if [ ! -L "/home/deck" ] && [ ! -e "/home/deck" ]  && [ "$HOME" != "/home/deck" ]; then
         echo "Making a /home/deck symlink to fix plugins that do not use environment variables."
-        sudo ln -sf "$HOME" /home/deck
+        sudo -A ln -sf "$HOME" /home/deck
       fi
-      curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh | sh
-      sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
+      if [[ -d ~/homebrew ]]; then
+        sudo -A chown -R --reference ~/ ~/homebrew
+      fi
+      curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh |
+        sed 's|sudo|sudo -A |g' | sh
+      sudo -A chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
     fi
     if [[ "${OPTION,,}" =~ prerelease ]]; then
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
       if [ ! -L "/home/deck" ] && [ ! -e "/home/deck" ]  && [ "$HOME" != "/home/deck" ]; then
         echo "Making a /home/deck symlink to fix plugins that do not use environment variables."
-        sudo ln -sf "$HOME" /home/deck
+        sudo -A ln -sf "$HOME" /home/deck
       fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_prerelease.sh | sh
-      sudo chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
+      sudo -A chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
     fi
 
 # Ptyxis terminal transparency
@@ -594,6 +602,55 @@ get-decky-bazzite-buddy:
       echo "Installation may have failed. Please check if the plugin is installed correctly."
       echo "Plugin folder could not be found as expected."
     fi
+
+# Toggle whether Steam launches with the -steamdeck flag, which causes Big Picture / Game Mode to emulate Steam Deck behavior. Disabling this can prevent games from forcing Steam Deck-specific assets, such as lower-resolution textures.
+toggle-steamdeck-alias:
+    #!/usr/bin/bash
+    # Toggles whether Steam presents the system as a Steam Deck via -steamdeck
+    override_flag="$HOME/.config/bazzite/disable_steamdeck_flag"
+    session_dir="$HOME/.config/gamescope-session-plus/sessions.d"
+    session_file="$session_dir/steam"
+    mkdir -p "$(dirname "$override_flag")"
+    mkdir -p "$session_dir"
+    cat > "$session_file" <<'EOF'
+    DECK_OVERRIDE_FLAG="$HOME/.config/bazzite/disable_steamdeck_flag"
+    if [[ ! -f "$DECK_OVERRIDE_FLAG" ]]; then
+      export CLIENTCMD="steam -gamepadui -steamos3 -steampal -steamdeck"
+    else
+      export CLIENTCMD="steam -gamepadui -steamos3 -steampal"
+    fi
+    EOF
+    current_status="Enabled"
+    if [[ -f "$override_flag" ]]; then
+      current_status="Disabled"
+    fi
+    echo -e "\nCurrent Steam Deck presentation mode: $current_status\n"
+    CHOICE=$(ugum choose \
+      "Present as Steam Deck (Enable -steamdeck)" \
+      "Do Not Present as Steam Deck (Disable -steamdeck)" \
+      "Exit without changes")
+    case "$CHOICE" in
+      "Present as Steam Deck (Enable -steamdeck)")
+        if [[ -f "$override_flag" ]]; then
+          rm -f "$override_flag"
+          echo -e "\nSteam Deck presentation ENABLED. (-steamdeck will be passed to Steam)\n"
+          echo "Reboot your system for the change to take effect."
+        else
+          echo -e "\nAlready enabled.\n"
+        fi
+        ;;
+      "Do Not Present as Steam Deck (Disable -steamdeck)")
+        touch "$override_flag"
+        echo -e "\nSteam Deck presentation DISABLED. (-steamdeck will NOT be passed to Steam)\n"
+        echo "Reboot your system for the change to take effect."
+        ;;
+      "Exit without changes")
+        echo "No changes made."
+        ;;
+      *)
+        echo "Invalid choice. Exiting."
+        ;;
+    esac
 
 # get logs for this boot and last boot, cleanly output in terminal as pastebin links, to simplify troubleshooting and issue reporting.
 get-logs:

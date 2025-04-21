@@ -3,14 +3,14 @@
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 Name:           gsettings-desktop-schemas
-Version:        47.1
+Version:        48.0
 Release:        %autorelease.bazzite
 Summary:        A collection of GSettings schemas
 
 License:        LGPL-2.1-or-later
 # no homepage exists for this component
 URL:            https://gitlab.gnome.org/GNOME/gsettings-desktop-schemas
-Source0:        https://download.gnome.org/sources/%{name}/47/%{name}-%{tarball_version}.tar.xz
+Source0:        https://download.gnome.org/sources/%{name}/48/%{name}-%{tarball_version}.tar.xz
 Source1:        org.gnome.desktop.interface.rhel.gschema.override
 
 Patch:          https://gitlab.gnome.org/GNOME/gsettings-desktop-schemas/-/merge_requests/99.patch
@@ -27,8 +27,8 @@ Requires: glib2 >= 2.31.0
 Recommends: font(redhattextvf)
 Recommends: font(redhatmonovf)
 %else
-Recommends: font(cantarell)
-Recommends: font(sourcecodepro)
+Recommends: font(adwaitasans)
+Recommends: font(adwaitamono)
 %endif
 
 %description

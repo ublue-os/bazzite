@@ -39,7 +39,7 @@ $container_mgr build -f Containerfile \
     --build-arg="IMAGE_FLAVOR=${flavor}" \
     --build-arg="KERNEL_FLAVOR=bazzite" \
     --build-arg="SOURCE_IMAGE=${base_image}-${flavor}" \
-    --build-arg="FEDORA_MAJOR_VERSION=${latest}" \
+    --build-arg="FEDORA_VERSION=${latest}" \
     --target="${target}" \
     --tag localhost/"${tag}:${latest}-${git_branch}" \
     "${project_root}"
