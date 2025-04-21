@@ -85,12 +85,10 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/staging \
         ublue-os/packages \
         bazzite-org/LatencyFleX \
-        bazzite-org/obs-vkcapture \
         bazzite-org/wallpaper-engine-kde-plugin \
         ycollet/audinux \
         bazzite-org/rom-properties \
         bazzite-org/webapp-manager \
-        bazzite-org/vk_hdr_layer \
         hhd-dev/hhd \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
@@ -371,12 +369,12 @@ RUN --mount=type=cache,dst=/var/cache \
         vkBasalt.i686 \
         mangohud.x86_64 \
         mangohud.i686 \
-        libobs_vkcapture.x86_64 \
+        obs-studio-plugin-vkcapture.x86_64 \
         libobs_glcapture.x86_64 \
-        libobs_vkcapture.i686 \
+        obs-studio-plugin-vkcapture.i686 \
         libobs_glcapture.i686 \
-        vk_hdr_layer.x86_64 \
-        vk_hdr_layer.i686 && \
+        VK_hdr_layer.x86_64 \
+        VK_hdr_layer.i686 && \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
         lutris && \
@@ -578,7 +576,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/bazzite-multilib \
         ublue-os/staging \
         bazzite-org/LatencyFleX \
-        bazzite-org/obs-vkcapture \
         bazzite-org/wallpaper-engine-kde-plugin \
         ycollet/audinux \
         bazzite-org/rom-properties \
@@ -666,7 +663,6 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable bazzite-org/bazzite && \
     dnf5 -y copr enable bazzite-org/bazzite-multilib && \
     dnf5 -y copr enable bazzite-org/LatencyFleX && \
-    dnf5 -y copr enable bazzite-org/obs-vkcapture && \
     dnf5 -y copr enable bazzite-org/wallpaper-engine-kde-plugin && \
     dnf5 -y copr enable hhd-dev/hhd && \
     dnf5 -y copr enable ycollet/audinux && \
@@ -781,7 +777,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/bazzite \
         bazzite-org/bazzite-multilib \
         bazzite-org/LatencyFleX \
-        bazzite-org/obs-vkcapture \
         bazzite-org/wallpaper-engine-kde-plugin \
         hhd-dev/hhd \
         ycollet/audinux; \
