@@ -370,11 +370,8 @@ RUN --mount=type=cache,dst=/var/cache \
         mangohud.x86_64 \
         mangohud.i686 \
         obs-studio-plugin-vkcapture.x86_64 \
-        libobs_glcapture.x86_64 \
         obs-studio-plugin-vkcapture.i686 \
-        libobs_glcapture.i686 \
-        VK_hdr_layer.x86_64 \
-        VK_hdr_layer.i686 && \
+        VK_hdr_layer && \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
         lutris && \
