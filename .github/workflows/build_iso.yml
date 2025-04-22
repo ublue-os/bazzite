@@ -143,6 +143,6 @@ jobs:
           name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
           path: ${{ steps.upload-directory.outputs.iso-upload-dir }}
           if-no-files-found: error
-          retention-days: 5
+          retention-days: 10
           compression-level: 0
           overwrite: true
