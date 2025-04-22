@@ -37,7 +37,7 @@ jobs:
           echo "NAME=$name" >> $GITHUB_OUTPUT
 
       - name: Setup Cosign
-        uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcb52f4837da5e9b6a # v3.8.1
+        uses: sigstore/cosign-installer@3454372f43399081ed03b604cb2d021dabca52bb # v3.8.2
 
       - name: Sign Image
         env:
