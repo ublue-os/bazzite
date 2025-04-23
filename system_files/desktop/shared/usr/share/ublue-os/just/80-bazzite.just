@@ -665,3 +665,29 @@ get-logs:
     last_boot_logs=$(journalctl -b -1 | fpaste 2>/dev/null)
     echo -e "${bold}Logs Last Boot:${normal} $last_boot_logs"
     echo " "
+
+# glorp
+glorp:
+    #!/usr/bin/bash
+    set -euo pipefail
+    source /usr/lib/ujust/ujust.sh
+        echo -e "\e[38;5;120m
+              ::.        oO'             
+              .kk;        .O                   
+              xd         '0                   
+              Ok.     .  cK.                  
+            'oOk00KK0XX0xOKO;                 
+          .cd00kkOOOOOO000000XXOc.             
+        .,x0OkxxxxxxxkkOOOOOO00KKXOc      
+      l0K0OkxxddxxxddxkkOOOOOO000KXXKo         
+      okxxxxddxxxxkdodxxkOOOOOOO00KK0k.        
+      ;xddddodddoccclodxxkO0OOxooOKKKl         
+      odoooooddo:,,.;lddxkOkx;,;d0KKx.        
+      lollllooddxxxdllllodxkkkkkkkO0K:        
+      :lcclllllooooolc:::codxkkkkkk0Kl.       
+      ,ccccccllllllccc:;;;:ldxkkkkOKK:        
+      .;ccc:ccccllcc:::;;,;:loxkkkOK0c        
+        .cccccccccccc::;;;;;:coxkkOKXXx'       
+        ,c:::::::::::cccccccloodxkO0KXKo.      
+        .c::::::::;;;;;;;::::clodxkO0KXXXl      
+    \e[0m"
