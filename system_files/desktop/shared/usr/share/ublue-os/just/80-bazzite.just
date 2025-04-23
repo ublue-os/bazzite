@@ -60,9 +60,22 @@ toggle-ssh:
         ;;
     esac
 
+# Regenerate GRUB config, useful in dual-boot scenarios where a second operating system isn't listed
+regenerate-grub:
+    #!/usr/bin/bash
+    source /usr/libexec/bazzite-boot-remount
+    remount_boot_rw
+    if [ -d /sys/firmware/efi ]; then
+      sudo grub2-mkconfig -o /etc/grub2-efi.cfg
+    else
+      sudo grub2-mkconfig -o /etc/grub2.cfg
+    fi
+    remount_boot_ro
+
 # Configure grub bootmenu visibility. pass action 'help' for more info.
 configure-grub ACTION="":
     #!/usr/bin/bash
+    source /usr/libexec/bazzite-boot-remount
     source /usr/lib/ujust/ujust.sh
     # Function to display usage/help with some color
     print_help() {
@@ -124,6 +137,7 @@ configure-grub ACTION="":
     # Function to apply the selected setting
     apply_setting() {
       local selected_option="$1"
+      remount_boot_rw
       # Support the interactive strings as well as short commands
       case "$(echo "$selected_option" | tr '[:upper:]' '[:lower:]')" in
         *"(menu_auto_hide=2)"*|hide)
@@ -148,6 +162,7 @@ configure-grub ACTION="":
           echo "${bold}${red}Invalid option selected. No changes were made.${normal}"
           ;;
       esac
+      remount_boot_ro
     }
     OPTION="{{ ACTION }}"   # from “configure-grub ACTION=...”
     if [ "$OPTION" == "help" ]; then
