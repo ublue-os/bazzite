@@ -527,6 +527,7 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/yad-icon-browser.desktop && \
     sed -i 's/#UserspaceHID.*/UserspaceHID=true/' /etc/bluetooth/input.conf && \
     sed -i "s/^SCX_SCHEDULER=.*/SCX_SCHEDULER=scx_bpfland/" /etc/default/scx && \
+    sed -i "s|grub_probe\} --target=device /\`|grub_probe} --target=device /sysroot\`|g" /usr/bin/grub2-mkconfig && \
     rm -f /usr/share/vulkan/icd.d/lvp_icd.*.json && \
     rm -f /usr/lib/systemd/system/service.d/50-keep-warm.conf && \
     mkdir -p "/etc/profile.d/" && \
