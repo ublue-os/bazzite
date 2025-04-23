@@ -10,7 +10,7 @@ Subject: [NA] add dev script
 
 diff --git a/sync.sh b/sync.sh
 new file mode 100755
-index 0000000..878bf6c
+index 0000000..8dd5815
 --- /dev/null
 +++ b/sync.sh
 @@ -0,0 +1,21 @@
@@ -25,7 +25,7 @@ index 0000000..878bf6c
 +
 +set -e
 +
-+meson build/ -Dforce_fallback_for=stb,libdisplay-info,libliftoff,wlroots,vkroots
++meson build/ -Dforce_fallback_for=stb,libdisplay-info,libliftoff,wlroots,vkroots -Denable_openvr_support=false
 +ninja -C build/
 +scp build/src/gamescope ${HOST}:gamescope
 +
@@ -1350,10 +1350,8 @@ Subject: feat(display): add asus z13
 
 ---
  .../00-gamescope/displays/asus.z13.lcd.lua    | 57 +++++++++++++++++++
- subprojects/edid-decode                       |  1 +
- 2 files changed, 58 insertions(+)
+ 1 file changed, 57 insertions(+)
  create mode 100644 scripts/00-gamescope/displays/asus.z13.lcd.lua
- create mode 160000 subprojects/edid-decode
 
 diff --git a/scripts/00-gamescope/displays/asus.z13.lcd.lua b/scripts/00-gamescope/displays/asus.z13.lcd.lua
 new file mode 100644
@@ -1419,13 +1417,6 @@ index 0000000..891f1ea
 +}
 +debug("Registered Lenovo Legion Go S LCD as a known display")
 \ No newline at end of file
-diff --git a/subprojects/edid-decode b/subprojects/edid-decode
-new file mode 160000
-index 0000000..c6b859d
---- /dev/null
-+++ b/subprojects/edid-decode
-@@ -0,0 +1 @@
-+Subproject commit c6b859d7f0251e2433fb81bd3f67bd2011c2036c
 -- 
 2.49.0
 
@@ -1659,6 +1650,87 @@ index c0a42b2..f92829a 100644
  			.hdr_metadata_blob = nullptr,
  		});
  	}
+-- 
+2.49.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Wed, 23 Apr 2025 22:51:54 +0200
+Subject: feat(display): consider vporch to avoid timing issues
+
+---
+ src/Backends/DRMBackend.cpp | 8 ++++++++
+ src/main.cpp                | 1 +
+ src/main.hpp                | 1 +
+ src/vblankmanager.cpp       | 4 +---
+ 4 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
+index deda783..4827df6 100644
+--- a/src/Backends/DRMBackend.cpp
++++ b/src/Backends/DRMBackend.cpp
+@@ -205,6 +205,11 @@ namespace gamescope
+ 		return nRefresh;
+ 	}
+ 
++	static int32_t GetVblankNs(const drmModeModeInfo *mode)
++	{
++		return (mode->vsync_start - mode->vdisplay) * 1'000'000'000ll / mode->vrefresh / mode->vtotal;
++	}
++
+ 	template <typename T>
+ 	using CAutoDeletePtr = std::unique_ptr<T, void(*)(T*)>;
+ 
+@@ -3123,6 +3128,9 @@ bool drm_set_mode( struct drm_t *drm, const drmModeModeInfo *mode )
+ 	g_nOutputRefresh = gamescope::GetModeRefresh( mode );
+ 	g_nDynamicRefreshHz = 0;
+ 
++	g_nsVsync = gamescope::GetVblankNs( mode );
++	drm_log.infof("Vblank ns: %lu", g_nsVsync);
++
+ 	update_drm_effective_orientations(drm, mode);
+ 
+ 	switch ( drm->pConnector->GetCurrentOrientation() )
+diff --git a/src/main.cpp b/src/main.cpp
+index 02d3117..0a81f67 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -292,6 +292,7 @@ int g_nNestedDisplayIndex = 0;
+ uint32_t g_nOutputWidth = 0;
+ uint32_t g_nOutputHeight = 0;
+ int g_nOutputRefresh = 0;
++long g_nsVsync = 0;
+ bool g_bOutputHDREnabled = false;
+ 
+ bool g_bFullscreen = false;
+diff --git a/src/main.hpp b/src/main.hpp
+index e7b857d..e6f8ff1 100644
+--- a/src/main.hpp
++++ b/src/main.hpp
+@@ -20,6 +20,7 @@ extern uint32_t g_nOutputWidth;
+ extern uint32_t g_nOutputHeight;
+ extern bool g_bForceRelativeMouse;
+ extern int g_nOutputRefresh; // mHz
++extern long g_nsVsync;       // ns
+ extern bool g_bOutputHDREnabled;
+ extern bool g_bForceInternal;
+ extern bool g_bUseRotationShader;
+diff --git a/src/vblankmanager.cpp b/src/vblankmanager.cpp
+index f036d00..4c3974c 100644
+--- a/src/vblankmanager.cpp
++++ b/src/vblankmanager.cpp
+@@ -113,9 +113,7 @@ namespace gamescope
+ 			// to not account for vertical front porch when dealing with the vblank
+ 			// drm_commit is going to target?
+ 			// Need to re-test that.
+-			const uint64_t ulRedZone = eScreenType == GAMESCOPE_SCREEN_TYPE_INTERNAL
+-				? m_ulVBlankDrawBufferRedZone
+-				: std::min<uint64_t>( m_ulVBlankDrawBufferRedZone, ( m_ulVBlankDrawBufferRedZone * 60'000 * nRefreshRate ) / 60'000 );
++			const uint64_t ulRedZone = m_ulVBlankDrawBufferRedZone + g_nsVsync;
+ 
+ 			const uint64_t ulDecayAlpha = m_ulVBlankRateOfDecayPercentage; // eg. 980 = 98%
+ 
 -- 
 2.49.0
 
