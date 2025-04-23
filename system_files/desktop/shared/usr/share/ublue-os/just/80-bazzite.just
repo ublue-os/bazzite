@@ -105,12 +105,12 @@ configure-grub ACTION="":
             echo "  - ${bold}0${normal}: GRUB always shows on boot."
             ;;
           1)
-            echo "Current GRUB menu_auto_hide setting: ${bold}${yellow}1 (Hide After Successful Boot)${normal}"
+            echo "Current GRUB menu_auto_hide setting: ${bold}${yellow}1 (Hide After Successful Boot, except when Dual Booting)${normal}"
             echo "Explanation:"
             echo "  - ${bold}1${normal}: GRUB is hidden after a successful boot, but it will show if dual-booting."
             ;;
           2)
-            echo "Current GRUB menu_auto_hide setting: ${bold}${cyan}2 (Always Hide)${normal}"
+            echo "Current GRUB menu_auto_hide setting: ${bold}${cyan}2 (Hide After Successful Boot)${normal}"
             echo "Explanation:"
             echo "  - ${bold}2${normal}: GRUB is hidden after a successful boot, even for dual-boot setups."
             ;;
@@ -125,8 +125,8 @@ configure-grub ACTION="":
     # Interactive menu for choosing the new behavior
     interactive_menu() {
       local options=(
-        "Always Hide Grub (menu_auto_hide=2)"
-        "Hide After Successful Boot (menu_auto_hide=1)"
+        "Hide After Successful Boot (menu_auto_hide=2)"
+        "Same except when Dual Booting (menu_auto_hide=1)"
         "Always Show Grub (menu_auto_hide=0)"
         "Exit without changes"
       )
@@ -142,11 +142,11 @@ configure-grub ACTION="":
       case "$(echo "$selected_option" | tr '[:upper:]' '[:lower:]')" in
         *"(menu_auto_hide=2)"*|hide)
           sudo grub2-editenv - set menu_auto_hide=2
-          echo "GRUB menu is now set to ${bold}${cyan}Always Hide${normal}."
+          echo "GRUB menu is now set to ${bold}${cyan}Hide After Successful Boot${normal}."
           ;;
         *"(menu_auto_hide=1)"*|unhide)
           sudo grub2-editenv - set menu_auto_hide=1
-          echo "GRUB menu is now set to ${bold}${yellow}Hide After Successful Boot${normal}."
+          echo "GRUB menu is now set to ${bold}${yellow}Hide After Successful Boot except when Dual Booting${normal}."
           ;;
         *"(menu_auto_hide=0)"*|show)
           sudo grub2-editenv - set menu_auto_hide=0
