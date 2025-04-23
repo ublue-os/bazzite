@@ -44,7 +44,7 @@ jobs:
           - bazzite-gnome-surface-nvidia-open
           - bazzite-deck-nvidia
           - bazzite-deck-nvidia-gnome
-        major_version: [41]
+        major_version: [42]
     steps:
 
       - name: Free Disk Space (Ubuntu)
