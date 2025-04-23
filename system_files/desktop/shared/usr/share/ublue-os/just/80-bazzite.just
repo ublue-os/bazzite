@@ -669,8 +669,6 @@ get-logs:
 # glorp
 glorp:
     #!/usr/bin/bash
-    set -euo pipefail
-    source /usr/lib/ujust/ujust.sh
         echo -e "\e[38;5;120m
               ::.        oO'             
               .kk;        .O                   
