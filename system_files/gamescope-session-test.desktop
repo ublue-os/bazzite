@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=pb_test
+Comment=usr share wayland-sessions gamescope-session-test.desktop
+Exec=gamescope-session-plus pb_test
+Type=Application
+DesktopNames=gamescope

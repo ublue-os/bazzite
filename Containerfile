@@ -730,6 +730,9 @@ RUN --mount=type=cache,dst=/var/cache \
         gamescope-session-steam && \
     /ctx/cleanup
 
+COPY system_files/pb_test /usr/share/gamescope-session-plus/sessions.d/ \
+COPY system_files/gamescope-session-test.desktop /usr/share/wayland-sessions/
+
 # Cleanup & Finalize
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
