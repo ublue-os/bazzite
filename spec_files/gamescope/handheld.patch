@@ -10,7 +10,7 @@ Subject: [NA] add dev script
 
 diff --git a/sync.sh b/sync.sh
 new file mode 100755
-index 0000000..878bf6c
+index 0000000..8dd5815
 --- /dev/null
 +++ b/sync.sh
 @@ -0,0 +1,21 @@
@@ -25,7 +25,7 @@ index 0000000..878bf6c
 +
 +set -e
 +
-+meson build/ -Dforce_fallback_for=stb,libdisplay-info,libliftoff,wlroots,vkroots
++meson build/ -Dforce_fallback_for=stb,libdisplay-info,libliftoff,wlroots,vkroots -Denable_openvr_support=false
 +ninja -C build/
 +scp build/src/gamescope ${HOST}:gamescope
 +
@@ -36,7 +36,7 @@ index 0000000..878bf6c
 +    # sudo reboot
 +EOF
 -- 
-2.48.1
+2.49.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -50,31 +50,32 @@ move by Antheas.
 Co-authored-by: Kyle Gospodnetich <me@kylegospodneti.ch>
 Co-authored-by: Antheas Kapenekakis <git@antheas.dev>
 ---
- src/Backends/DRMBackend.cpp |  4 ++++
+ src/Backends/DRMBackend.cpp |  4 +++-
  src/main.cpp                | 31 +++++++++++++++++++++++++++++++
  src/main.hpp                |  2 ++
- 3 files changed, 37 insertions(+)
+ 3 files changed, 36 insertions(+), 1 deletion(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 0b121e8..840e245 100644
+index 4ac2ef7..b62366c 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -2243,6 +2243,10 @@ namespace gamescope
- 					bHasKnownHDRInfo = true;
- 				}
+@@ -2296,8 +2296,10 @@ namespace gamescope
  			}
-+			else if ( g_customRefreshRates.size() > 0 && GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL ) {
-+				// Only apply custom refresh rates as a fallback, allowing a graceful transition to the new system.
-+				m_Mutable.ValidDynamicRefreshRates = g_customRefreshRates;
-+			}
- 		}
+ 			else
+ 			{
++				if ( g_customRefreshRates.size() > 0 && GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL )
++					m_Mutable.ValidDynamicRefreshRates = g_customRefreshRates;
+ 				// Unknown display, see if there are any other refresh rates in the EDID we can get.
+-				if ( GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL || cv_drm_allow_dynamic_modes_for_external_display )
++				else if ( GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL || cv_drm_allow_dynamic_modes_for_external_display )
+ 				{
+ 					const drmModeModeInfo *pPreferredMode = find_mode( m_pConnector.get(), 0, 0, 0 );
  
- 		if ( !bHasKnownColorimetry )
 diff --git a/src/main.cpp b/src/main.cpp
-index 9dff5c4..8381889 100644
+index 7934be4..9259cac 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
-@@ -129,6 +129,7 @@ const struct option *gamescope_options = (struct option[]){
+@@ -133,6 +133,7 @@ const struct option *gamescope_options = (struct option[]){
  	{ "fade-out-duration", required_argument, nullptr, 0 },
  	{ "force-orientation", required_argument, nullptr, 0 },
  	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
@@ -82,15 +83,15 @@ index 9dff5c4..8381889 100644
  
  	{ "disable-color-management", no_argument, nullptr, 0 },
  	{ "sdr-gamut-wideness", required_argument, nullptr, 0 },
-@@ -202,6 +203,7 @@ const char usage[] =
+@@ -207,6 +208,7 @@ const char usage[] =
  	"  --hdr-itm-target-nits          set the target luminace of the inverse tone mapping process.\n"
  	"                                 Default: 1000 nits, Max: 10000 nits\n"
  	"  --framerate-limit              Set a simple framerate limit. Used as a divisor of the refresh rate, rounds down eg 60 / 59 -> 60fps, 60 / 25 -> 30fps. Default: 0, disabled.\n"
 +	"  --custom-refresh-rates         Set custom refresh rates for the output. eg: 60,90,110-120\n"
  	"  --mangoapp                     Launch with the mangoapp (mangohud) performance overlay enabled. You should use this instead of using mangohud on the game or gamescope.\n"
+ 	"  --adaptive-sync                Enable adaptive sync if available (variable rate refresh)\n"
  	"\n"
- 	"Nested mode options:\n"
-@@ -425,6 +427,33 @@ static enum gamescope::GamescopeBackend parse_backend_name(const char *str)
+@@ -432,6 +434,33 @@ static enum gamescope::GamescopeBackend parse_backend_name(const char *str)
  	}
  }
  
@@ -124,7 +125,7 @@ index 9dff5c4..8381889 100644
  struct sigaction handle_signal_action = {};
  
  void ShutdownGamescope()
-@@ -746,6 +775,8 @@ int main(int argc, char **argv)
+@@ -755,6 +784,8 @@ int main(int argc, char **argv)
  					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
  				} else if (strcmp(opt_name, "force-orientation") == 0) {
  					g_DesiredInternalOrientation = force_orientation( optarg );
@@ -154,100 +155,7 @@ index 2e6fb83..390c04a 100644
  enum class GamescopeUpscaleFilter : uint32_t
  {
 -- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Alesh Slovak <alesh@playtron.one>
-Date: Thu, 26 Sep 2024 07:13:24 -0400
-Subject: fix(vrr): Revert "steamcompmgr: Move outdatedInteractiveFocus to
- window"
-
-This reverts commit 299bc3410dcfd46da5e3c988354b60ed3a356900.
----
- src/steamcompmgr.cpp        | 39 +++++++++++++++++++++++--------------
- src/steamcompmgr_shared.hpp |  1 -
- 2 files changed, 24 insertions(+), 16 deletions(-)
-
-diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 11a7cad..df7616d 100644
---- a/src/steamcompmgr.cpp
-+++ b/src/steamcompmgr.cpp
-@@ -3299,7 +3299,7 @@ found:;
- 		if ( window_has_commits( focus ) ) 
- 			out->focusWindow = focus;
- 		else
--			focus->outdatedInteractiveFocus = true;
-+			out->outdatedInteractiveFocus = true;
- 
- 		// Always update X's idea of focus, but still dirty
- 		// the it being outdated so we can resolve that globally later.
-@@ -6044,28 +6044,37 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
- 			// Window just got a new available commit, determine if that's worth a repaint
- 
- 			// If this is an overlay that we're presenting, repaint
--			if ( w == global_focus.overlayWindow && w->opacity != TRANSLUCENT )
-+			if ( gameFocused )
- 			{
--				hasRepaintNonBasePlane = true;
--			}
-+				if ( w == global_focus.overlayWindow && w->opacity != TRANSLUCENT )
-+				{
-+					hasRepaintNonBasePlane = true;
-+				}
- 
--			if ( w == global_focus.notificationWindow && w->opacity != TRANSLUCENT )
--			{
--				hasRepaintNonBasePlane = true;
-+				if ( w == global_focus.notificationWindow && w->opacity != TRANSLUCENT )
-+				{
-+					hasRepaintNonBasePlane = true;
-+				}
- 			}
--
--			// If this is an external overlay, repaint
--			if ( w == global_focus.externalOverlayWindow && w->opacity != TRANSLUCENT )
-+			if ( ctx )
- 			{
--				hasRepaintNonBasePlane = true;
-+				if ( ctx->focus.outdatedInteractiveFocus )
-+				{
-+					MakeFocusDirty();
-+					ctx->focus.outdatedInteractiveFocus = false;
-+				}
- 			}
--
--			if ( w->outdatedInteractiveFocus )
-+			if ( global_focus.outdatedInteractiveFocus )
- 			{
- 				MakeFocusDirty();
--				w->outdatedInteractiveFocus = false;
--			}
-+				global_focus.outdatedInteractiveFocus = false;
- 
-+				// If this is an external overlay, repaint
-+				if ( w == global_focus.externalOverlayWindow && w->opacity != TRANSLUCENT )
-+				{
-+					hasRepaintNonBasePlane = true;
-+				}
-+			}
- 			// If this is the main plane, repaint
- 			if ( w == global_focus.focusWindow && !w->isSteamStreamingClient )
- 			{
-diff --git a/src/steamcompmgr_shared.hpp b/src/steamcompmgr_shared.hpp
-index 095694e..e41fad9 100644
---- a/src/steamcompmgr_shared.hpp
-+++ b/src/steamcompmgr_shared.hpp
-@@ -125,7 +125,6 @@ struct steamcompmgr_win_t {
- 	unsigned int requestedHeight = 0;
- 	bool is_dialog = false;
- 	bool maybe_a_dropdown = false;
--	bool outdatedInteractiveFocus = false;
- 
- 	bool hasHwndStyle = false;
- 	uint32_t hwndStyle = 0;
--- 
-2.48.1
+2.49.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -264,7 +172,7 @@ Suggested-by: Antheas Kapenekakis <git@antheas.dev>
  1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 78a86ee..99df8aa 100644
+index be348cf..b8b3ae2 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
 @@ -290,6 +290,9 @@ static void wlserver_handle_modifiers(struct wl_listener *listener, void *data)
@@ -308,179 +216,7 @@ index 78a86ee..99df8aa 100644
  			wlserver_keyboardfocus( old_kb_surf, false );
  			return;
 -- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <git@antheas.dev>
-Date: Fri, 11 Oct 2024 17:52:48 +0200
-Subject: fix: allow for disabling touch atom click
-
-Causes issues in certain devices (or not anymore?).
-
-Parameter option by Kyle.
-
-Co-authored-by: Kyle Gospodnetich <me@kylegospodneti.ch>
----
- src/main.cpp         | 2 ++
- src/steamcompmgr.cpp | 5 ++++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/src/main.cpp b/src/main.cpp
-index 8381889..a76b51b 100644
---- a/src/main.cpp
-+++ b/src/main.cpp
-@@ -128,6 +128,7 @@ const struct option *gamescope_options = (struct option[]){
- 	{ "disable-xres", no_argument, nullptr, 'x' },
- 	{ "fade-out-duration", required_argument, nullptr, 0 },
- 	{ "force-orientation", required_argument, nullptr, 0 },
-+	{ "disable-touch-click", no_argument, nullptr, 0 },
- 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
- 	{ "custom-refresh-rates", required_argument, nullptr, 0 },
- 
-@@ -188,6 +189,7 @@ const char usage[] =
- 	"  -T, --stats-path               write statistics to path\n"
- 	"  -C, --hide-cursor-delay        hide cursor image after delay\n"
- 	"  -e, --steam                    enable Steam integration\n"
-+	"  --disable-touch-click          disable touchscreen tap acting as a click\n"
- 	"  --xwayland-count               create N xwayland servers\n"
- 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
- 	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
-diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index df7616d..4a17499 100644
---- a/src/steamcompmgr.cpp
-+++ b/src/steamcompmgr.cpp
-@@ -197,6 +197,7 @@ update_runtime_info();
- gamescope::ConVar<bool> cv_adaptive_sync( "adaptive_sync", false, "Whether or not adaptive sync is enabled if available." );
- gamescope::ConVar<bool> cv_adaptive_sync_ignore_overlay( "adaptive_sync_ignore_overlay", false, "Whether or not to ignore overlay planes for pushing commits with adaptive sync." );
- gamescope::ConVar<int> cv_adaptive_sync_overlay_cycles( "adaptive_sync_overlay_cycles", 1, "Number of vblank cycles to ignore overlay repaints before forcing a commit with adaptive sync." );
-+gamescope::ConVar<bool> cv_disable_touch_click{ "disable_touch_click", false, "Prevents touchscreen taps acting as clicks" };
- 
- uint64_t g_SteamCompMgrLimitedAppRefreshCycle = 16'666'666;
- uint64_t g_SteamCompMgrAppRefreshCycle = 16'666'666;
-@@ -5185,7 +5186,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
- 			MakeFocusDirty();
- 		}
- 	}
--	if (ev->atom == ctx->atoms.steamTouchClickModeAtom )
-+	if (ev->atom == ctx->atoms.steamTouchClickModeAtom && !cv_disable_touch_click )
- 	{
- 		gamescope::cv_touch_click_mode = (gamescope::TouchClickMode) get_prop(ctx, ctx->root, ctx->atoms.steamTouchClickModeAtom, 0u );
- 	}
-@@ -7476,6 +7477,8 @@ steamcompmgr_main(int argc, char **argv)
- 					g_reshade_technique_idx = atoi(optarg);
- 				} else if (strcmp(opt_name, "mura-map") == 0) {
- 					set_mura_overlay(optarg);
-+				} else if (strcmp(opt_name, "disable-touch-click") == 0) {
-+					cv_disable_touch_click = true;
- 				}
- 				break;
- 			case '?':
--- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <git@antheas.dev>
-Date: Fri, 11 Oct 2024 21:56:54 +0200
-Subject: fix(intel-gpu): allow for disabling hacky texture
-
-Disabling hacky texture will use more hardware planes, causing some
-devices to composite yielding lower fps. Used to be required for intel
-to work. Allow disabling it.
----
- src/main.cpp         | 2 ++
- src/steamcompmgr.cpp | 5 ++++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/src/main.cpp b/src/main.cpp
-index a76b51b..ecfbf0a 100644
---- a/src/main.cpp
-+++ b/src/main.cpp
-@@ -128,6 +128,7 @@ const struct option *gamescope_options = (struct option[]){
- 	{ "disable-xres", no_argument, nullptr, 'x' },
- 	{ "fade-out-duration", required_argument, nullptr, 0 },
- 	{ "force-orientation", required_argument, nullptr, 0 },
-+	{ "disable-hacky-texture", no_argument, nullptr, 0 },
- 	{ "disable-touch-click", no_argument, nullptr, 0 },
- 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
- 	{ "custom-refresh-rates", required_argument, nullptr, 0 },
-@@ -189,6 +190,7 @@ const char usage[] =
- 	"  -T, --stats-path               write statistics to path\n"
- 	"  -C, --hide-cursor-delay        hide cursor image after delay\n"
- 	"  -e, --steam                    enable Steam integration\n"
-+	"  --disable-hacky-texture         enable hacky texture on hw that support it\n"
- 	"  --disable-touch-click          disable touchscreen tap acting as a click\n"
- 	"  --xwayland-count               create N xwayland servers\n"
- 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
-diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 4a17499..d91d0fe 100644
---- a/src/steamcompmgr.cpp
-+++ b/src/steamcompmgr.cpp
-@@ -147,6 +147,7 @@ static lut3d_t g_tmpLut3d;
- extern int g_nDynamicRefreshHz;
- 
- bool g_bForceHDRSupportDebug = false;
-+bool g_bHackyEnabled = true;
- extern float g_flInternalDisplayBrightnessNits;
- extern float g_flHDRItmSdrNits;
- extern float g_flHDRItmTargetNits;
-@@ -2412,7 +2413,7 @@ paint_all(bool async)
- 		if ( overlay == global_focus.inputFocusWindow )
- 			update_touch_scaling( &frameInfo );
- 	}
--	else if ( !GetBackend()->UsesVulkanSwapchain() && GetBackend()->IsSessionBased() )
-+	else if ( g_bHackyEnabled && !GetBackend()->UsesVulkanSwapchain() && GetBackend()->IsSessionBased() )
- 	{
- 		auto tex = vulkan_get_hacky_blank_texture();
- 		if ( tex != nullptr )
-@@ -7479,6 +7480,8 @@ steamcompmgr_main(int argc, char **argv)
- 					set_mura_overlay(optarg);
- 				} else if (strcmp(opt_name, "disable-touch-click") == 0) {
- 					cv_disable_touch_click = true;
-+				} else if (strcmp(opt_name, "disable-hacky-texture") == 0) {
-+					g_bHackyEnabled = false;
- 				}
- 				break;
- 			case '?':
--- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <git@antheas.dev>
-Date: Fri, 11 Oct 2024 23:01:13 +0200
-Subject: fix: re-add external orientation options to not break current
- sessions (incl. applying ext. orientation)
-
----
- src/main.cpp | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/src/main.cpp b/src/main.cpp
-index ecfbf0a..70ca4f8 100644
---- a/src/main.cpp
-+++ b/src/main.cpp
-@@ -129,6 +129,8 @@ const struct option *gamescope_options = (struct option[]){
- 	{ "fade-out-duration", required_argument, nullptr, 0 },
- 	{ "force-orientation", required_argument, nullptr, 0 },
- 	{ "disable-hacky-texture", no_argument, nullptr, 0 },
-+	{ "force-panel-type", required_argument, nullptr, 0 },
-+	{ "force-external-orientation", required_argument, nullptr, 0 },
- 	{ "disable-touch-click", no_argument, nullptr, 0 },
- 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
- 	{ "custom-refresh-rates", required_argument, nullptr, 0 },
-@@ -777,7 +779,7 @@ int main(int argc, char **argv)
- 					gamescope::cv_touch_click_mode = (gamescope::TouchClickMode) atoi( optarg );
- 				} else if (strcmp(opt_name, "generate-drm-mode") == 0) {
- 					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
--				} else if (strcmp(opt_name, "force-orientation") == 0) {
-+				} else if (strcmp(opt_name, "force-orientation") == 0 || strcmp(opt_name, "force-external-orientation") == 0) {
- 					g_DesiredInternalOrientation = force_orientation( optarg );
- 				} else if (strcmp(opt_name, "custom-refresh-rates") == 0) {
- 					g_customRefreshRates = parse_custom_refresh_rates( optarg );
--- 
-2.48.1
+2.49.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -493,10 +229,10 @@ Subject: fix(external): fix crash when using external touchscreens
  1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 99df8aa..5e8f516 100644
+index b8b3ae2..ab09389 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -2492,8 +2492,12 @@ static void apply_touchscreen_orientation(double *x, double *y )
+@@ -2523,8 +2523,12 @@ static void apply_touchscreen_orientation(double *x, double *y )
  	double tx = 0;
  	double ty = 0;
  
@@ -512,196 +248,7 @@ index 99df8aa..5e8f516 100644
  		default:
  		case GAMESCOPE_PANEL_ORIENTATION_AUTO:
 -- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <git@antheas.dev>
-Date: Fri, 11 Oct 2024 23:47:59 +0200
-Subject: feat(vrr): allow for setting refresh rate if the internal display
- allows
-
-For the Ally, we have a set of VFP that work to set the refresh rate.
-They can also be used for VRR but gamescope does not currently allow for
-it. Therefore, bypass some checks to allow it to work just for this usecase.
----
- src/main.cpp         | 2 ++
- src/steamcompmgr.cpp | 7 +++++--
- 2 files changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/src/main.cpp b/src/main.cpp
-index 70ca4f8..9be0db5 100644
---- a/src/main.cpp
-+++ b/src/main.cpp
-@@ -132,6 +132,7 @@ const struct option *gamescope_options = (struct option[]){
- 	{ "force-panel-type", required_argument, nullptr, 0 },
- 	{ "force-external-orientation", required_argument, nullptr, 0 },
- 	{ "disable-touch-click", no_argument, nullptr, 0 },
-+	{ "enable-vrr-modesetting", no_argument, nullptr, 0 },
- 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
- 	{ "custom-refresh-rates", required_argument, nullptr, 0 },
- 
-@@ -194,6 +195,7 @@ const char usage[] =
- 	"  -e, --steam                    enable Steam integration\n"
- 	"  --disable-hacky-texture         enable hacky texture on hw that support it\n"
- 	"  --disable-touch-click          disable touchscreen tap acting as a click\n"
-+	"  --enable-vrr-modesetting       enable setting framerate while VRR is on in the internal display\n"
- 	"  --xwayland-count               create N xwayland servers\n"
- 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
- 	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
-diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index d91d0fe..e59caaa 100644
---- a/src/steamcompmgr.cpp
-+++ b/src/steamcompmgr.cpp
-@@ -148,6 +148,7 @@ extern int g_nDynamicRefreshHz;
- 
- bool g_bForceHDRSupportDebug = false;
- bool g_bHackyEnabled = true;
-+bool g_bVRRModesetting = false;
- extern float g_flInternalDisplayBrightnessNits;
- extern float g_flHDRItmSdrNits;
- extern float g_flHDRItmTargetNits;
-@@ -899,7 +900,7 @@ bool g_bChangeDynamicRefreshBasedOnGameOpenRatherThanActive = false;
- bool steamcompmgr_window_should_limit_fps( steamcompmgr_win_t *w )
- {
- 	// VRR + FPS Limit needs another approach.
--	if ( GetBackend()->IsVRRActive() )
-+	if ( GetBackend()->IsVRRActive() && !(g_bVRRModesetting && GetBackend()->GetScreenType() == gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL) )
- 		return false;
- 
- 	return w && !window_is_steam( w ) && !w->isOverlay && !w->isExternalOverlay;
-@@ -923,7 +924,7 @@ steamcompmgr_user_has_any_game_open()
- 
- bool steamcompmgr_window_should_refresh_switch( steamcompmgr_win_t *w )
- {
--	if ( GetBackend()->IsVRRActive() )
-+	if ( GetBackend()->IsVRRActive()  && !(g_bVRRModesetting && GetBackend()->GetScreenType() == gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL))
- 		return false;
- 
- 	if ( g_bChangeDynamicRefreshBasedOnGameOpenRatherThanActive )
-@@ -7480,6 +7481,8 @@ steamcompmgr_main(int argc, char **argv)
- 					set_mura_overlay(optarg);
- 				} else if (strcmp(opt_name, "disable-touch-click") == 0) {
- 					cv_disable_touch_click = true;
-+				} else if (strcmp(opt_name, "enable-vrr-modesetting") == 0) {
-+					g_bVRRModesetting = true;
- 				} else if (strcmp(opt_name, "disable-hacky-texture") == 0) {
- 					g_bHackyEnabled = false;
- 				}
--- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <git@antheas.dev>
-Date: Fri, 11 Oct 2024 19:09:05 +0200
-Subject: feat: add external option that now only lies to steam
-
-Previously, there was a force-panel option that allowed for VRR.
-However, this is no longer the case and VRR works fine.
-This option still allows for scaling the display though. So, create a
-variant of the patch that only does that.
----
- src/main.cpp         | 16 ++++++++++++++++
- src/steamcompmgr.cpp |  2 +-
- src/steamcompmgr.hpp |  1 +
- src/wlserver.cpp     |  2 +-
- src/wlserver.hpp     |  1 +
- 5 files changed, 20 insertions(+), 2 deletions(-)
-
-diff --git a/src/main.cpp b/src/main.cpp
-index 9be0db5..85f7f7f 100644
---- a/src/main.cpp
-+++ b/src/main.cpp
-@@ -199,6 +199,7 @@ const char usage[] =
- 	"  --xwayland-count               create N xwayland servers\n"
- 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
- 	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
-+	"  --force-panel-type             lie to steam that the screen is external\n"
- 	"  --force-windows-fullscreen     force windows inside of gamescope to be the size of the nested display (fullscreen)\n"
- 	"  --cursor-scale-height          if specified, sets a base output height to linearly scale the cursor against.\n"
- 	"  --hdr-enabled                  enable HDR output (needs Gamescope WSI layer enabled for support from clients)\n"
-@@ -373,6 +374,19 @@ static GamescopePanelOrientation force_orientation(const char *str)
- 	}
- }
- 
-+bool g_FakeExternal = false;
-+static bool force_panel_type_external(const char *str)
-+{
-+	if (strcmp(str, "internal") == 0) {
-+		return false;
-+	} else if (strcmp(str, "external") == 0) {
-+		return true;
-+	} else {
-+		fprintf( stderr, "gamescope: invalid value for --force-panel-type\n" );
-+		exit(1);
-+	}
-+}
-+
- static enum GamescopeUpscaleScaler parse_upscaler_scaler(const char *str)
- {
- 	if (strcmp(str, "auto") == 0) {
-@@ -783,6 +797,8 @@ int main(int argc, char **argv)
- 					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
- 				} else if (strcmp(opt_name, "force-orientation") == 0 || strcmp(opt_name, "force-external-orientation") == 0) {
- 					g_DesiredInternalOrientation = force_orientation( optarg );
-+				} else if (strcmp(opt_name, "force-panel-type") == 0) {
-+					g_FakeExternal = force_panel_type_external( optarg );
- 				} else if (strcmp(opt_name, "custom-refresh-rates") == 0) {
- 					g_customRefreshRates = parse_custom_refresh_rates( optarg );
- 				} else if (strcmp(opt_name, "sharpness") == 0 ||
-diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index e59caaa..193cdee 100644
---- a/src/steamcompmgr.cpp
-+++ b/src/steamcompmgr.cpp
-@@ -7192,7 +7192,7 @@ void update_mode_atoms(xwayland_ctx_t *root_ctx, bool* needs_flush = nullptr)
- 	if (needs_flush)
- 		*needs_flush = true;
- 
--	if ( GetBackend()->GetCurrentConnector() && GetBackend()->GetCurrentConnector()->GetScreenType() == gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL )
-+	if ( !g_FakeExternal && GetBackend()->GetCurrentConnector() && GetBackend()->GetCurrentConnector()->GetScreenType() == gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL )
- 	{
- 		XDeleteProperty(root_ctx->dpy, root_ctx->root, root_ctx->atoms.gamescopeDisplayModeListExternal);
- 
-diff --git a/src/steamcompmgr.hpp b/src/steamcompmgr.hpp
-index 9f384c4..30e48e8 100644
---- a/src/steamcompmgr.hpp
-+++ b/src/steamcompmgr.hpp
-@@ -127,6 +127,7 @@ extern float focusedWindowScaleY;
- extern float focusedWindowOffsetX;
- extern float focusedWindowOffsetY;
- 
-+extern bool g_FakeExternal;
- extern bool g_bFSRActive;
- 
- extern uint32_t inputCounter;
-diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 5e8f516..1eeaa25 100644
---- a/src/wlserver.cpp
-+++ b/src/wlserver.cpp
-@@ -1078,7 +1078,7 @@ static uint32_t get_conn_display_info_flags()
- 		return 0;
- 
- 	uint32_t flags = 0;
--	if ( pConn->GetScreenType() == gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL )
-+	if ( pConn->GetScreenType() == gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL && !g_FakeExternal )
- 		flags |= GAMESCOPE_CONTROL_DISPLAY_FLAG_INTERNAL_DISPLAY;
- 	if ( pConn->SupportsVRR() )
- 		flags |= GAMESCOPE_CONTROL_DISPLAY_FLAG_SUPPORTS_VRR;
-diff --git a/src/wlserver.hpp b/src/wlserver.hpp
-index 0569472..104f7a2 100644
---- a/src/wlserver.hpp
-+++ b/src/wlserver.hpp
-@@ -190,6 +190,7 @@ struct wlserver_t {
- };
- 
- extern struct wlserver_t wlserver;
-+extern bool g_FakeExternal;
- 
- std::vector<ResListEntry_t> wlserver_xdg_commit_queue();
- 
--- 
-2.48.1
+2.49.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -717,10 +264,10 @@ custom modeline generation has been provided.
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 840e245..36ef32e 100644
+index b62366c..ebdc307 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -2161,7 +2161,9 @@ namespace gamescope
+@@ -2212,7 +2212,9 @@ namespace gamescope
  				sol::optional<sol::table> otDynamicRefreshRates = tTable["dynamic_refresh_rates"];
  				sol::optional<sol::function> ofnDynamicModegen = tTable["dynamic_modegen"];
  
@@ -732,104 +279,33 @@ index 840e245..36ef32e 100644
  					m_Mutable.ValidDynamicRefreshRates = TableToVector<uint32_t>( *otDynamicRefreshRates );
  
 -- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <git@antheas.dev>
-Date: Fri, 25 Oct 2024 21:22:10 +0200
-Subject: fix(vrr): allow frame limiter to work with VRR enabled
-
-Down to 48hz, modeset the correct framerate. Below 48hz,
-disable VRR and use the classic frame limiter.
----
- src/steamcompmgr.cpp | 30 ++++++++++++++++++++++++++++--
- 1 file changed, 28 insertions(+), 2 deletions(-)
-
-diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 193cdee..04e42b6 100644
---- a/src/steamcompmgr.cpp
-+++ b/src/steamcompmgr.cpp
-@@ -165,6 +165,7 @@ uint32_t g_reshade_technique_idx = 0;
- 
- bool g_bSteamIsActiveWindow = false;
- bool g_bForceInternal = false;
-+bool g_bVRRRequested = false;
- 
- static std::vector< steamcompmgr_win_t* > GetGlobalPossibleFocusWindows();
- static bool
-@@ -827,6 +828,28 @@ static void _update_app_target_refresh_cycle()
- 	{
- 		auto rates = GetBackend()->GetCurrentConnector()->GetValidDynamicRefreshRates();
- 
-+		if (g_bVRRModesetting) {
-+			if (g_bVRRRequested) {
-+				// If modeset VRR, go upwards to match the refresh rate 1-1. Refresh
-+				// doubling would hurt us here by breaking the frame limiter.
-+				for ( auto rate = rates.begin(); rate != rates.end(); rate++ )
-+				{
-+					if ((int)*rate == target_fps)
-+					{
-+						g_nDynamicRefreshRate[ type ] = *rate;
-+						// Enable VRR as we have the correct refresh rate
-+						cv_adaptive_sync = true;
-+						return;
-+					}
-+				}
-+				// Otherwise, disable VRR as we can't match the refresh rate 1-1
-+				// (e.g., below 48hz).
-+				cv_adaptive_sync = false;
-+			} else {
-+				cv_adaptive_sync = false;
-+			}
-+		}
-+
- 		// Find highest mode to do refresh doubling with.
- 		for ( auto rate = rates.rbegin(); rate != rates.rend(); rate++ )
- 		{
-@@ -5522,8 +5545,11 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
- 	}
- 	if ( ev->atom == ctx->atoms.gamescopeVRREnabled )
- 	{
--		bool enabled = !!get_prop( ctx, ctx->root, ctx->atoms.gamescopeVRREnabled, 0 );
--		cv_adaptive_sync = enabled;
-+		g_bVRRRequested = !!get_prop( ctx, ctx->root, ctx->atoms.gamescopeVRREnabled, 0 );
-+		// Try to match refresh rate and have that set the cv_adaptive_sync only if it can
-+		if (g_bVRRModesetting) update_app_target_refresh_cycle();
-+		// otherwise, fall back to original behavior
-+		else cv_adaptive_sync = g_bVRRRequested;
- 	}
- 	if ( ev->atom == ctx->atoms.gamescopeDisplayForceInternal )
- 	{
--- 
-2.48.1
+2.49.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Wed, 30 Oct 2024 00:39:03 +0100
-Subject: fix(battery): run at half hz while at steamUI and disable VRR V2 +
- param
+Subject: fix(battery): run at half hz while at steamUI with atom
 
 ---
- src/steamcompmgr.cpp | 43 ++++++++++++++++++++++++++++++++-----------
- 1 file changed, 32 insertions(+), 11 deletions(-)
+ src/steamcompmgr.cpp | 40 ++++++++++++++++++++++++++++++++--------
+ src/xwayland_ctx.hpp |  2 ++
+ 2 files changed, 34 insertions(+), 8 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 04e42b6..8f45314 100644
+index af2464c..9773b34 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -166,6 +166,9 @@ uint32_t g_reshade_technique_idx = 0;
+@@ -165,6 +165,8 @@ uint32_t g_reshade_technique_idx = 0;
+ 
  bool g_bSteamIsActiveWindow = false;
  bool g_bForceInternal = false;
- bool g_bVRRRequested = false;
-+bool g_bVRRCanEnable = false;
 +bool b_bForceFrameLimit = false;
 +bool g_bRefreshHalveEnable = false;
  
- static std::vector< steamcompmgr_win_t* > GetGlobalPossibleFocusWindows();
- static bool
-@@ -793,6 +796,7 @@ uint64_t g_uCurrentBasePlaneCommitID = 0;
+ namespace gamescope
+ {
+@@ -837,6 +839,7 @@ uint64_t g_uCurrentBasePlaneCommitID = 0;
  bool g_bCurrentBasePlaneIsFifo = false;
  
  static int g_nSteamCompMgrTargetFPS = 0;
@@ -837,7 +313,7 @@ index 04e42b6..8f45314 100644
  static uint64_t g_uDynamicRefreshEqualityTime = 0;
  static int g_nDynamicRefreshRate[gamescope::GAMESCOPE_SCREEN_TYPE_COUNT] = { 0, 0 };
  // Delay to stop modes flickering back and forth.
-@@ -812,7 +816,7 @@ static void _update_app_target_refresh_cycle()
+@@ -856,7 +859,7 @@ static void _update_app_target_refresh_cycle()
  	int target_fps = g_nCombinedAppRefreshCycleOverride[type];
  
  	g_nDynamicRefreshRate[ type ] = 0;
@@ -846,7 +322,7 @@ index 04e42b6..8f45314 100644
  
  	if ( !target_fps )
  	{
-@@ -821,7 +825,7 @@ static void _update_app_target_refresh_cycle()
+@@ -865,7 +868,7 @@ static void _update_app_target_refresh_cycle()
  
  	if ( g_nCombinedAppRefreshCycleChangeFPS[ type ] )
  	{
@@ -855,26 +331,7 @@ index 04e42b6..8f45314 100644
  	}
  
  	if ( g_nCombinedAppRefreshCycleChangeRefresh[ type ] )
-@@ -838,15 +842,15 @@ static void _update_app_target_refresh_cycle()
- 					{
- 						g_nDynamicRefreshRate[ type ] = *rate;
- 						// Enable VRR as we have the correct refresh rate
--						cv_adaptive_sync = true;
-+						g_bVRRCanEnable = true;
- 						return;
- 					}
- 				}
- 				// Otherwise, disable VRR as we can't match the refresh rate 1-1
- 				// (e.g., below 48hz).
--				cv_adaptive_sync = false;
-+				g_bVRRCanEnable = false;
- 			} else {
--				cv_adaptive_sync = false;
-+				g_bVRRCanEnable = false;
- 			}
- 		}
- 
-@@ -864,9 +868,9 @@ static void _update_app_target_refresh_cycle()
+@@ -886,9 +889,9 @@ static void _update_app_target_refresh_cycle()
  
  static void update_app_target_refresh_cycle()
  {
@@ -886,7 +343,7 @@ index 04e42b6..8f45314 100644
  		update_runtime_info();
  }
  
-@@ -5052,7 +5056,7 @@ update_runtime_info()
+@@ -5163,7 +5166,7 @@ update_runtime_info()
  	if ( g_nRuntimeInfoFd < 0 )
  		return;
  
@@ -895,16 +352,25 @@ index 04e42b6..8f45314 100644
  	pwrite( g_nRuntimeInfoFd, &limiter_enabled, sizeof( limiter_enabled ), 0 );
  }
  
-@@ -5109,7 +5113,7 @@ static bool steamcompmgr_should_vblank_window( bool bShouldLimitFPS, uint64_t vb
- 
- 	int nRefreshHz = gamescope::ConvertmHzToHz( g_nNestedRefresh ? g_nNestedRefresh : g_nOutputRefresh );
- 	int nTargetFPS = g_nSteamCompMgrTargetFPS;
--	if ( g_nSteamCompMgrTargetFPS && bShouldLimitFPS && nRefreshHz > nTargetFPS )
-+	if ( g_nSteamCompMgrTargetFPS && (bShouldLimitFPS || b_bForceFrameLimit) && nRefreshHz > nTargetFPS )
+@@ -5226,7 +5229,7 @@ static bool steamcompmgr_should_vblank_window( bool bShouldLimitFPS, uint64_t vb
  	{
- 		int nVblankDivisor = nRefreshHz / nTargetFPS;
+ 		bool bCloseEnough = std::abs( g_nSteamCompMgrTargetFPS - nRefreshHz ) < 2;
  
-@@ -5485,7 +5489,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+-		if ( g_nSteamCompMgrTargetFPS && bShouldLimitFPS && w && !bCloseEnough )
++		if ( g_nSteamCompMgrTargetFPS && (bShouldLimitFPS || b_bForceFrameLimit)  && w && !bCloseEnough )
+ 		{
+ 			uint64_t schedule = w->last_commit_first_latch_time + g_SteamCompMgrLimitedAppRefreshCycle;
+ 
+@@ -5244,7 +5247,7 @@ static bool steamcompmgr_should_vblank_window( bool bShouldLimitFPS, uint64_t vb
+ 	}
+ 	else
+ 	{
+-		if ( g_nSteamCompMgrTargetFPS && bShouldLimitFPS && nRefreshHz > nTargetFPS )
++		if ( g_nSteamCompMgrTargetFPS && (bShouldLimitFPS || b_bForceFrameLimit)  && nRefreshHz > nTargetFPS )
+ 		{
+ 			int nVblankDivisor = nRefreshHz / nTargetFPS;
+ 
+@@ -5643,7 +5646,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
  	}
  	if ( ev->atom == ctx->atoms.gamescopeFPSLimit )
  	{
@@ -913,58 +379,7 @@ index 04e42b6..8f45314 100644
  		update_runtime_info();
  	}
  	for (int i = 0; i < gamescope::GAMESCOPE_SCREEN_TYPE_COUNT; i++)
-@@ -5549,7 +5553,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
- 		// Try to match refresh rate and have that set the cv_adaptive_sync only if it can
- 		if (g_bVRRModesetting) update_app_target_refresh_cycle();
- 		// otherwise, fall back to original behavior
--		else cv_adaptive_sync = g_bVRRRequested;
-+		else g_bVRRCanEnable = g_bVRRRequested;
- 	}
- 	if ( ev->atom == ctx->atoms.gamescopeDisplayForceInternal )
- 	{
-@@ -7628,6 +7632,23 @@ steamcompmgr_main(int argc, char **argv)
- 		// as a question.
- 		const bool bIsVBlankFromTimer = vblank;
- 
-+		if ( g_bRefreshHalveEnable && window_is_steam( global_focus.focusWindow ) ) {
-+			// Halve refresh rate and disable vrr on SteamUI
-+			cv_adaptive_sync = false;
-+			int nRealRefreshHz = gamescope::ConvertmHzToHz( g_nNestedRefresh ? g_nNestedRefresh : g_nOutputRefresh );
-+			if (nRealRefreshHz > 100 && g_nSteamCompMgrTargetFPSreq > 34) {
-+				g_nSteamCompMgrTargetFPS = nRealRefreshHz / 2;
-+				b_bForceFrameLimit = true;
-+			} else {
-+				g_nSteamCompMgrTargetFPS = g_nSteamCompMgrTargetFPSreq;
-+				b_bForceFrameLimit = false;
-+			}
-+		} else {
-+			cv_adaptive_sync = g_bVRRCanEnable;
-+			g_nSteamCompMgrTargetFPS = g_nSteamCompMgrTargetFPSreq;
-+			b_bForceFrameLimit = false;
-+		}
-+
- 		// We can always vblank if VRR.
- 		const bool bVRR = GetBackend()->IsVRRActive();
- 		if ( bVRR )
--- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <git@antheas.dev>
-Date: Fri, 1 Nov 2024 17:27:54 +0100
-Subject: feat(battery): add atom for controlling frame halving
-
----
- src/steamcompmgr.cpp | 6 ++++++
- src/xwayland_ctx.hpp | 2 ++
- 2 files changed, 8 insertions(+)
-
-diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 8f45314..a45863b 100644
---- a/src/steamcompmgr.cpp
-+++ b/src/steamcompmgr.cpp
-@@ -5919,6 +5919,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+@@ -6074,6 +6077,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
  			MakeFocusDirty();
  		}
  	}
@@ -975,7 +390,7 @@ index 8f45314..a45863b 100644
  }
  
  static int
-@@ -7089,6 +7093,8 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
+@@ -7273,6 +7280,8 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
  	ctx->atoms.primarySelection = XInternAtom(ctx->dpy, "PRIMARY", false);
  	ctx->atoms.targets = XInternAtom(ctx->dpy, "TARGETS", false);
  
@@ -984,6 +399,28 @@ index 8f45314..a45863b 100644
  	ctx->root_width = DisplayWidth(ctx->dpy, ctx->scr);
  	ctx->root_height = DisplayHeight(ctx->dpy, ctx->scr);
  
+@@ -7837,6 +7846,21 @@ steamcompmgr_main(int argc, char **argv)
+ 		// as a question.
+ 		const bool bIsVBlankFromTimer = vblank;
+ 
++		if ( g_bRefreshHalveEnable && GetCurrentFocus() && window_is_steam( GetCurrentFocus()->focusWindow ) ) {
++			// Halve refresh rate and disable vrr on SteamUI
++			int nRealRefreshHz = gamescope::ConvertmHzToHz( g_nNestedRefresh ? g_nNestedRefresh : g_nOutputRefresh );
++			if (nRealRefreshHz > 100 && g_nSteamCompMgrTargetFPSreq > 34) {
++				g_nSteamCompMgrTargetFPS = nRealRefreshHz / 2;
++				b_bForceFrameLimit = true;
++			} else {
++				g_nSteamCompMgrTargetFPS = g_nSteamCompMgrTargetFPSreq;
++				b_bForceFrameLimit = false;
++			}
++		} else {
++			g_nSteamCompMgrTargetFPS = g_nSteamCompMgrTargetFPSreq;
++			b_bForceFrameLimit = false;
++		}
++
+ 		// We can always vblank if VRR.
+ 		const bool bVRR = GetBackend()->GetCurrentConnector() && GetBackend()->GetCurrentConnector()->IsVRRActive();
+ 		if ( bVRR )
 diff --git a/src/xwayland_ctx.hpp b/src/xwayland_ctx.hpp
 index df2af70..e4eec9f 100644
 --- a/src/xwayland_ctx.hpp
@@ -998,7 +435,7 @@ index df2af70..e4eec9f 100644
  
  	bool HasQueuedEvents();
 -- 
-2.48.1
+2.49.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1014,10 +451,10 @@ Subject: feat: add DPMS support through an Atom
  4 files changed, 28 insertions(+), 6 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 36ef32e..0999e0b 100644
+index ebdc307..1fbcc0b 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -2668,6 +2668,9 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+@@ -2748,6 +2748,9 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
  			drm->needs_modeset = true;
  	}
  
@@ -1027,7 +464,7 @@ index 36ef32e..0999e0b 100644
  	drm_colorspace uColorimetry = DRM_MODE_COLORIMETRY_DEFAULT;
  
  	const bool bWantsHDR10 = g_bOutputHDREnabled && frameInfo->outputEncodingEOTF == EOTF_PQ;
-@@ -2723,7 +2726,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+@@ -2803,7 +2806,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
  	uint32_t flags = DRM_MODE_ATOMIC_NONBLOCK;
  
  	// We do internal refcounting with these events
@@ -1036,7 +473,7 @@ index 36ef32e..0999e0b 100644
  		flags |= DRM_MODE_PAGE_FLIP_EVENT;
  
  	if ( async || g_bForceAsyncFlips )
-@@ -2796,7 +2799,13 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+@@ -2876,7 +2879,13 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
  
  		if ( drm->pCRTC )
  		{
@@ -1051,7 +488,7 @@ index 36ef32e..0999e0b 100644
  			drm->pCRTC->GetProperties().MODE_ID->SetPendingValue( drm->req, drm->pending.mode_id ? drm->pending.mode_id->GetBlobValue() : 0lu, true );
  
  			if ( drm->pCRTC->GetProperties().VRR_ENABLED )
-@@ -2827,7 +2836,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
+@@ -2907,7 +2916,7 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
  	drm->flags = flags;
  
  	int ret;
@@ -1060,7 +497,7 @@ index 36ef32e..0999e0b 100644
  		ret = 0;
  	} else if ( drm->bUseLiftoff ) {
  		ret = drm_prepare_liftoff( drm, frameInfo, needs_modeset );
-@@ -3390,6 +3399,7 @@ namespace gamescope
+@@ -3475,6 +3484,7 @@ namespace gamescope
  
  			FrameInfo_t presentCompFrameInfo = {};
  			presentCompFrameInfo.allowVRR = pFrameInfo->allowVRR;
@@ -1069,7 +506,7 @@ index 36ef32e..0999e0b 100644
  
  			if ( bNeedsFullComposite )
 diff --git a/src/rendervulkan.hpp b/src/rendervulkan.hpp
-index b537170..ccabd88 100644
+index a3a11a7..0f8cba8 100644
 --- a/src/rendervulkan.hpp
 +++ b/src/rendervulkan.hpp
 @@ -281,6 +281,8 @@ struct FrameInfo_t
@@ -1082,28 +519,28 @@ index b537170..ccabd88 100644
  	struct Layer_t
  	{
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index a45863b..6a1e101 100644
+index 9773b34..b99f202 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -169,6 +169,8 @@ bool g_bVRRRequested = false;
- bool g_bVRRCanEnable = false;
+@@ -167,6 +167,8 @@ bool g_bSteamIsActiveWindow = false;
+ bool g_bForceInternal = false;
  bool b_bForceFrameLimit = false;
  bool g_bRefreshHalveEnable = false;
 +bool g_bDPMS = false;
 +bool g_bDPMS_set = false;
  
- static std::vector< steamcompmgr_win_t* > GetGlobalPossibleFocusWindows();
- static bool
-@@ -2271,7 +2273,7 @@ bool ShouldDrawCursor()
+ namespace gamescope
+ {
+@@ -2292,7 +2294,7 @@ bool ShouldDrawCursor()
  }
  
  static void
--paint_all(bool async)
-+paint_all(bool async, bool dpms)
+-paint_all( global_focus_t *pFocus, bool async )
++paint_all( global_focus_t *pFocus, bool async, bool dpms )
  {
- 	gamescope_xwayland_server_t *root_server = wlserver_get_xwayland_server(0);
- 	xwayland_ctx_t *root_ctx = root_server->ctx.get();
-@@ -2322,6 +2324,7 @@ paint_all(bool async)
+ 	if ( !pFocus )
+ 		return;
+@@ -2350,6 +2352,7 @@ paint_all( global_focus_t *pFocus, bool async )
  	frameInfo.outputEncodingEOTF = g_ColorMgmt.pending.outputEncodingEOTF;
  	frameInfo.allowVRR = cv_adaptive_sync;
  	frameInfo.bFadingOut = fadingOut;
@@ -1111,7 +548,7 @@ index a45863b..6a1e101 100644
  
  	// If the window we'd paint as the base layer is the streaming client,
  	// find the video underlay and put it up first in the scenegraph
-@@ -5923,6 +5926,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+@@ -6081,6 +6084,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
  	{
  		g_bRefreshHalveEnable = !!get_prop( ctx, ctx->root, ctx->atoms.gamescopeFrameHalveAtom, 0 );
  	}
@@ -1122,7 +559,7 @@ index a45863b..6a1e101 100644
  }
  
  static int
-@@ -7094,6 +7101,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
+@@ -7281,6 +7288,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
  	ctx->atoms.targets = XInternAtom(ctx->dpy, "TARGETS", false);
  
  	ctx->atoms.gamescopeFrameHalveAtom = XInternAtom( ctx->dpy, "GAMESCOPE_STEAMUI_HALFHZ", false );;
@@ -1130,19 +567,19 @@ index a45863b..6a1e101 100644
  
  	ctx->root_width = DisplayWidth(ctx->dpy, ctx->scr);
  	ctx->root_height = DisplayHeight(ctx->dpy, ctx->scr);
-@@ -8061,9 +8069,10 @@ steamcompmgr_main(int argc, char **argv)
- 			bShouldPaint = false;
- 		}
+@@ -8377,9 +8385,10 @@ steamcompmgr_main(int argc, char **argv)
+ 				bShouldPaint = false;
+ 			}
  
--		if ( bShouldPaint )
-+		if (bShouldPaint || (g_bDPMS != g_bDPMS_set && vblank))
- 		{
--			paint_all( eFlipType == FlipType::Async );
-+			g_bDPMS_set = g_bDPMS;
-+			paint_all( eFlipType == FlipType::Async, g_bDPMS );
+-			if ( bShouldPaint )
++			if ( bShouldPaint  || (g_bDPMS != g_bDPMS_set && vblank) )
+ 			{
+-				paint_all( pPaintFocus, eFlipType == FlipType::Async );
++				g_bDPMS_set = g_bDPMS;
++				paint_all( pPaintFocus, eFlipType == FlipType::Async, g_bDPMS );
  
- 			hasRepaint = false;
- 			hasRepaintNonBasePlane = false;
+ 				bPainted = true;
+ 			}
 diff --git a/src/xwayland_ctx.hpp b/src/xwayland_ctx.hpp
 index e4eec9f..2347cbb 100644
 --- a/src/xwayland_ctx.hpp
@@ -1156,7 +593,7 @@ index e4eec9f..2347cbb 100644
  
  	bool HasQueuedEvents();
 -- 
-2.48.1
+2.49.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1177,10 +614,10 @@ Subject: feat(intel): add rotation shader for rotating output
  create mode 100644 src/shaders/cs_rotation.comp
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 0999e0b..020add2 100644
+index 1fbcc0b..2e4d1ff 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -1528,6 +1528,10 @@ static void update_drm_effective_orientations( struct drm_t *drm, const drmModeM
+@@ -1567,6 +1567,10 @@ static void update_drm_effective_orientations( struct drm_t *drm, const drmModeM
  		if ( pDRMInternalConnector != drm->pConnector )
  			pInternalMode = find_mode( pDRMInternalConnector->GetModeConnector(), 0, 0, 0 );
  
@@ -1191,7 +628,7 @@ index 0999e0b..020add2 100644
  		pDRMInternalConnector->UpdateEffectiveOrientation( pInternalMode );
  	}
  
-@@ -1539,6 +1543,10 @@ static void update_drm_effective_orientations( struct drm_t *drm, const drmModeM
+@@ -1578,6 +1582,10 @@ static void update_drm_effective_orientations( struct drm_t *drm, const drmModeM
  		if ( pDRMExternalConnector != drm->pConnector )
  			pExternalMode = find_mode( pDRMExternalConnector->GetModeConnector(), 0, 0, 0 );
  
@@ -1202,7 +639,7 @@ index 0999e0b..020add2 100644
  		pDRMExternalConnector->UpdateEffectiveOrientation( pExternalMode );
  	}
  }
-@@ -1752,7 +1760,7 @@ LiftoffStateCacheEntry FrameInfoToLiftoffStateCacheEntry( struct drm_t *drm, con
+@@ -1791,7 +1799,7 @@ LiftoffStateCacheEntry FrameInfoToLiftoffStateCacheEntry( struct drm_t *drm, con
  		uint64_t crtcW = srcWidth / frameInfo->layers[ i ].scale.x;
  		uint64_t crtcH = srcHeight / frameInfo->layers[ i ].scale.y;
  
@@ -1211,7 +648,7 @@ index 0999e0b..020add2 100644
  		{
  			int64_t imageH = frameInfo->layers[ i ].tex->contentHeight() / frameInfo->layers[ i ].scale.y;
  
-@@ -2045,6 +2053,17 @@ namespace gamescope
+@@ -2090,6 +2098,17 @@ namespace gamescope
  
  	void CDRMConnector::UpdateEffectiveOrientation( const drmModeModeInfo *pMode )
  	{
@@ -1229,7 +666,7 @@ index 0999e0b..020add2 100644
  		if ( this->GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL && g_DesiredInternalOrientation != GAMESCOPE_PANEL_ORIENTATION_AUTO )
  		{
  			m_ChosenOrientation = g_DesiredInternalOrientation;
-@@ -3034,6 +3053,13 @@ bool drm_set_mode( struct drm_t *drm, const drmModeModeInfo *mode )
+@@ -3114,6 +3133,13 @@ bool drm_set_mode( struct drm_t *drm, const drmModeModeInfo *mode )
  		g_bRotated = false;
  		g_nOutputWidth = mode->hdisplay;
  		g_nOutputHeight = mode->vdisplay;
@@ -1243,7 +680,7 @@ index 0999e0b..020add2 100644
  		break;
  	case GAMESCOPE_PANEL_ORIENTATION_90:
  	case GAMESCOPE_PANEL_ORIENTATION_270:
-@@ -3293,6 +3319,11 @@ namespace gamescope
+@@ -3378,6 +3404,11 @@ namespace gamescope
  
  			bNeedsFullComposite |= !!(g_uCompositeDebug & CompositeDebugFlag::Heatmap);
  
@@ -1255,7 +692,7 @@ index 0999e0b..020add2 100644
  			bool bDoComposite = true;
  			if ( !bNeedsFullComposite && !bWantsPartialComposite )
  			{
-@@ -3383,7 +3414,7 @@ namespace gamescope
+@@ -3468,7 +3499,7 @@ namespace gamescope
  			if ( bDefer && !!( g_uCompositeDebug & CompositeDebugFlag::Markers ) )
  				g_uCompositeDebug |= CompositeDebugFlag::Markers_Partial;
  
@@ -1265,26 +702,26 @@ index 0999e0b..020add2 100644
  			m_bWasCompositing = true;
  
 diff --git a/src/main.cpp b/src/main.cpp
-index 85f7f7f..90971e2 100644
+index 9259cac..b9a99ec 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
-@@ -127,6 +127,7 @@ const struct option *gamescope_options = (struct option[]){
+@@ -131,6 +131,7 @@ const struct option *gamescope_options = (struct option[]){
  	{ "composite-debug", no_argument, nullptr, 0 },
  	{ "disable-xres", no_argument, nullptr, 'x' },
  	{ "fade-out-duration", required_argument, nullptr, 0 },
 +	{ "use-rotation-shader", required_argument, nullptr, 0 },
  	{ "force-orientation", required_argument, nullptr, 0 },
- 	{ "disable-hacky-texture", no_argument, nullptr, 0 },
- 	{ "force-panel-type", required_argument, nullptr, 0 },
-@@ -198,6 +199,7 @@ const char usage[] =
- 	"  --enable-vrr-modesetting       enable setting framerate while VRR is on in the internal display\n"
+ 	{ "force-windows-fullscreen", no_argument, nullptr, 0 },
+ 	{ "custom-refresh-rates", required_argument, nullptr, 0 },
+@@ -194,6 +195,7 @@ const char usage[] =
+ 	"  -e, --steam                    enable Steam integration\n"
  	"  --xwayland-count               create N xwayland servers\n"
  	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
 +	"  --use-rotation-shader		  use rotation shader for rotating the screen\n"
  	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
- 	"  --force-panel-type             lie to steam that the screen is external\n"
  	"  --force-windows-fullscreen     force windows inside of gamescope to be the size of the nested display (fullscreen)\n"
-@@ -357,6 +359,9 @@ static gamescope::GamescopeModeGeneration parse_gamescope_mode_generation( const
+ 	"  --cursor-scale-height          if specified, sets a base output height to linearly scale the cursor against.\n"
+@@ -355,6 +357,9 @@ static gamescope::GamescopeModeGeneration parse_gamescope_mode_generation( const
  	}
  }
  
@@ -1294,15 +731,15 @@ index 85f7f7f..90971e2 100644
  GamescopePanelOrientation g_DesiredInternalOrientation = GAMESCOPE_PANEL_ORIENTATION_AUTO;
  static GamescopePanelOrientation force_orientation(const char *str)
  {
-@@ -797,6 +802,8 @@ int main(int argc, char **argv)
+@@ -784,6 +789,8 @@ int main(int argc, char **argv)
  					g_eGamescopeModeGeneration = parse_gamescope_mode_generation( optarg );
- 				} else if (strcmp(opt_name, "force-orientation") == 0 || strcmp(opt_name, "force-external-orientation") == 0) {
+ 				} else if (strcmp(opt_name, "force-orientation") == 0) {
  					g_DesiredInternalOrientation = force_orientation( optarg );
 +                } else if (strcmp(opt_name, "use-rotation-shader") == 0) {
 +					g_bUseRotationShader = true;
- 				} else if (strcmp(opt_name, "force-panel-type") == 0) {
- 					g_FakeExternal = force_panel_type_external( optarg );
  				} else if (strcmp(opt_name, "custom-refresh-rates") == 0) {
+ 					g_customRefreshRates = parse_custom_refresh_rates( optarg );
+ 				} else if (strcmp(opt_name, "sharpness") == 0 ||
 diff --git a/src/main.hpp b/src/main.hpp
 index 390c04a..e7b857d 100644
 --- a/src/main.hpp
@@ -1317,7 +754,7 @@ index 390c04a..e7b857d 100644
  extern bool g_bFullscreen;
  
 diff --git a/src/meson.build b/src/meson.build
-index 74fc033..d4ff3ea 100644
+index 63897dd..22697ca 100644
 --- a/src/meson.build
 +++ b/src/meson.build
 @@ -70,6 +70,7 @@ shader_src = [
@@ -1329,7 +766,7 @@ index 74fc033..d4ff3ea 100644
  
  spirv_shaders = glsl_generator.process(shader_src)
 diff --git a/src/rendervulkan.cpp b/src/rendervulkan.cpp
-index 54d7608..fae6be9 100644
+index 7efcc0d..4751b6c 100644
 --- a/src/rendervulkan.cpp
 +++ b/src/rendervulkan.cpp
 @@ -48,6 +48,7 @@
@@ -1448,16 +885,16 @@ index 54d7608..fae6be9 100644
  
  static bool init_nis_data()
  {
-@@ -3856,7 +3889,7 @@ std::optional<uint64_t> vulkan_screenshot( const struct FrameInfo_t *frameInfo,
- extern std::string g_reshade_effect;
- extern uint32_t g_reshade_technique_idx;
+@@ -3858,7 +3891,7 @@ extern uint32_t g_reshade_technique_idx;
+ 
+ ReshadeEffectPipeline *g_pLastReshadeEffect = nullptr;
  
 -std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamescope::Rc<CVulkanTexture> pPipewireTexture, bool partial, gamescope::Rc<CVulkanTexture> pOutputOverride, bool increment, std::unique_ptr<CVulkanCmdBuffer> pInCommandBuffer )
 +std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamescope::Rc<CVulkanTexture> pPipewireTexture, bool partial, gamescope::Rc<CVulkanTexture> pOutputOverride, bool increment, std::unique_ptr<CVulkanCmdBuffer> pInCommandBuffer, bool applyRotation )
  {
  	EOTF outputTF = frameInfo->outputEncodingEOTF;
  	if (!frameInfo->applyOutputColorMgmt)
-@@ -3928,7 +3961,15 @@ std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamesco
+@@ -3933,7 +3966,15 @@ std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamesco
  		cmdBuffer->setTextureSrgb(0, true);
  		cmdBuffer->setSamplerUnnormalized(0, false);
  		cmdBuffer->setSamplerNearest(0, false);
@@ -1474,7 +911,7 @@ index 54d7608..fae6be9 100644
  		cmdBuffer->uploadConstants<RcasPushData_t>(frameInfo, g_upscaleFilterSharpness / 10.0f);
  
  		cmdBuffer->dispatch(div_roundup(currentOutputWidth, pixelsPerGroup), div_roundup(currentOutputHeight, pixelsPerGroup));
-@@ -3971,7 +4012,15 @@ std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamesco
+@@ -3976,7 +4017,15 @@ std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamesco
  
  		cmdBuffer->bindPipeline( g_device.pipeline(SHADER_TYPE_BLIT, nisFrameInfo.layerCount, nisFrameInfo.ycbcrMask(), 0u, nisFrameInfo.colorspaceMask(), outputTF ));
  		bind_all_layers(cmdBuffer.get(), &nisFrameInfo);
@@ -1491,7 +928,7 @@ index 54d7608..fae6be9 100644
  		cmdBuffer->uploadConstants<BlitPushData_t>(&nisFrameInfo);
  
  		int pixelsPerGroup = 8;
-@@ -4009,7 +4058,15 @@ std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamesco
+@@ -4014,7 +4063,15 @@ std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamesco
  		type = frameInfo->blurLayer0 == BLUR_MODE_COND ? SHADER_TYPE_BLUR_COND : SHADER_TYPE_BLUR;
  		cmdBuffer->bindPipeline(g_device.pipeline(type, frameInfo->layerCount, frameInfo->ycbcrMask(), blur_layer_count, frameInfo->colorspaceMask(), outputTF ));
  		bind_all_layers(cmdBuffer.get(), frameInfo);
@@ -1508,7 +945,7 @@ index 54d7608..fae6be9 100644
  		cmdBuffer->bindTexture(VKR_BLUR_EXTRA_SLOT, g_output.tmpOutput);
  		cmdBuffer->setTextureSrgb(VKR_BLUR_EXTRA_SLOT, !useSrgbView); // Inverted because it chooses whether to view as linear (sRGB view) or sRGB (raw view). It's horrible. I need to change it.
  		cmdBuffer->setSamplerUnnormalized(VKR_BLUR_EXTRA_SLOT, true);
-@@ -4019,14 +4076,51 @@ std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamesco
+@@ -4024,14 +4081,51 @@ std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamesco
  	}
  	else
  	{
@@ -1567,10 +1004,10 @@ index 54d7608..fae6be9 100644
  
  	if ( pPipewireTexture != nullptr )
 diff --git a/src/rendervulkan.hpp b/src/rendervulkan.hpp
-index ccabd88..51a62bc 100644
+index 0f8cba8..911ca7e 100644
 --- a/src/rendervulkan.hpp
 +++ b/src/rendervulkan.hpp
-@@ -393,7 +393,7 @@ gamescope::OwningRc<CVulkanTexture> vulkan_create_texture_from_dmabuf( struct wl
+@@ -396,7 +396,7 @@ gamescope::OwningRc<CVulkanTexture> vulkan_create_texture_from_dmabuf( struct wl
  gamescope::OwningRc<CVulkanTexture> vulkan_create_texture_from_bits( uint32_t width, uint32_t height, uint32_t contentWidth, uint32_t contentHeight, uint32_t drmFormat, CVulkanTexture::createFlags texCreateFlags, void *bits );
  gamescope::OwningRc<CVulkanTexture> vulkan_create_texture_from_wlr_buffer( struct wlr_buffer *buf, gamescope::OwningRc<gamescope::IBackendFb> pBackendFb );
  
@@ -1579,7 +1016,7 @@ index ccabd88..51a62bc 100644
  void vulkan_wait( uint64_t ulSeqNo, bool bReset );
  gamescope::Rc<CVulkanTexture> vulkan_get_last_output_image( bool partial, bool defer );
  gamescope::Rc<CVulkanTexture> vulkan_acquire_screenshot_texture(uint32_t width, uint32_t height, bool exportable, uint32_t drmFormat, EStreamColorspace colorspace = k_EStreamColorspace_Unknown);
-@@ -522,6 +522,9 @@ struct VulkanOutput_t
+@@ -533,6 +533,9 @@ struct VulkanOutput_t
  	// NIS
  	gamescope::OwningRc<CVulkanTexture> nisScalerImage;
  	gamescope::OwningRc<CVulkanTexture> nisUsmImage;
@@ -1589,7 +1026,7 @@ index ccabd88..51a62bc 100644
  };
  
  
-@@ -534,6 +537,7 @@ enum ShaderType {
+@@ -545,6 +548,7 @@ enum ShaderType {
  	SHADER_TYPE_RCAS,
  	SHADER_TYPE_NIS,
  	SHADER_TYPE_RGB_TO_NV12,
@@ -1657,10 +1094,10 @@ index 0000000..1a47fd5
 +    imageStore(dst, rotatedCoord, outputValue);
 +}
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 1eeaa25..fbb2e0b 100644
+index ab09389..c0a42b2 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -2519,6 +2519,11 @@ static void apply_touchscreen_orientation(double *x, double *y )
+@@ -2550,6 +2550,11 @@ static void apply_touchscreen_orientation(double *x, double *y )
  			break;
  	}
  
@@ -1673,750 +1110,121 @@ index 1eeaa25..fbb2e0b 100644
  	*y = ty;
  }
 -- 
-2.48.1
+2.49.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: "Ruan E. Formigoni" <ruanformigoni@gmail.com>
-Date: Thu, 2 Jan 2025 17:07:36 +0100
-Subject: feat: implement bicubic downscaling
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Thu, 13 Mar 2025 19:04:51 +0100
+Subject: fix(hdr): remove PQ from internal panels and allow disabling for
+ externals
 
-From https://github.com/ValveSoftware/gamescope/pull/740
+New steam update forces HDR mode. The cursed patching gamescope does is
+not supported for all displays, especially internal ones. So disable by
+default on internal panels and allow disabling on externals.
 ---
- README.md                       |   1 +
- src/Backends/DRMBackend.cpp     |   1 +
- src/Backends/OpenVRBackend.cpp  |   1 +
- src/Backends/SDLBackend.cpp     |   4 +
- src/Backends/WaylandBackend.cpp |   1 +
- src/main.cpp                    |  54 +++++++++-
- src/main.hpp                    |  15 +++
- src/meson.build                 |   1 +
- src/rendervulkan.cpp            |  61 ++++++++++-
- src/rendervulkan.hpp            |   2 +
- src/shaders/bicubic.h           |  44 ++++++++
- src/shaders/cs_bicubic.comp     | 177 ++++++++++++++++++++++++++++++++
- src/shaders/descriptor_set.h    |   1 +
- src/steamcompmgr.cpp            |  23 +++++
- src/steamcompmgr.hpp            |   1 +
- src/xwayland_ctx.hpp            |   1 +
- 16 files changed, 386 insertions(+), 2 deletions(-)
- create mode 100644 src/shaders/bicubic.h
- create mode 100644 src/shaders/cs_bicubic.comp
+ src/Backends/DRMBackend.cpp | 2 +-
+ src/main.cpp                | 1 +
+ src/steamcompmgr.cpp        | 3 +++
+ src/steamcompmgr.hpp        | 1 +
+ 4 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/README.md b/README.md
-index 97dea45..fefb2a0 100644
---- a/README.md
-+++ b/README.md
-@@ -66,6 +66,7 @@ See `gamescope --help` for a full list of options.
- * `-o`: set a frame-rate limit for the game when unfocused. Specified in frames per second. Defaults to unlimited.
- * `-F fsr`: use AMD FidelityFX™ Super Resolution 1.0 for upscaling
- * `-F nis`: use NVIDIA Image Scaling v1.0.3 for upscaling
-+* `-F bicubic`: use a bicubic filter for downscaling
- * `-S integer`: use integer scaling.
- * `-S stretch`: use stretch scaling, the game will fill the window. (e.g. 4:3 to 16:9)
- * `-b`: create a border-less window.
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 020add2..d393479 100644
+index 2e4d1ff..deda783 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
-@@ -3298,6 +3298,7 @@ namespace gamescope
- 			bNeedsFullComposite |= bWasFirstFrame;
- 			bNeedsFullComposite |= pFrameInfo->useFSRLayer0;
- 			bNeedsFullComposite |= pFrameInfo->useNISLayer0;
-+			bNeedsFullComposite |= pFrameInfo->useBICUBICLayer0;
- 			bNeedsFullComposite |= pFrameInfo->blurLayer0;
- 			bNeedsFullComposite |= bNeedsCompositeFromFilter;
- 			bNeedsFullComposite |= !k_bUseCursorPlane && bDrewCursor;
-diff --git a/src/Backends/OpenVRBackend.cpp b/src/Backends/OpenVRBackend.cpp
-index c39caa5..96a3d01 100644
---- a/src/Backends/OpenVRBackend.cpp
-+++ b/src/Backends/OpenVRBackend.cpp
-@@ -554,6 +554,7 @@ namespace gamescope
-             bNeedsFullComposite |= cv_composite_force;
-             bNeedsFullComposite |= pFrameInfo->useFSRLayer0;
-             bNeedsFullComposite |= pFrameInfo->useNISLayer0;
-+            bNeedsFullComposite |= pFrameInfo->useBICUBICLayer0;
-             bNeedsFullComposite |= pFrameInfo->blurLayer0;
-             bNeedsFullComposite |= bNeedsCompositeFromFilter;
-             bNeedsFullComposite |= g_bColorSliderInUse;
-diff --git a/src/Backends/SDLBackend.cpp b/src/Backends/SDLBackend.cpp
-index 6d50f8d..c24b864 100644
---- a/src/Backends/SDLBackend.cpp
-+++ b/src/Backends/SDLBackend.cpp
-@@ -719,6 +719,10 @@ namespace gamescope
- 							case KEY_B:
- 								g_wantedUpscaleFilter = GamescopeUpscaleFilter::LINEAR;
- 								break;
-+							case KEY_K:
-+								g_wantedDownscaleFilter = (g_wantedDownscaleFilter == GamescopeDownscaleFilter::BICUBIC) ?
-+								GamescopeDownscaleFilter::LINEAR : GamescopeDownscaleFilter::BICUBIC;
-+								break;
- 							case KEY_U:
- 								g_wantedUpscaleFilter = (g_wantedUpscaleFilter == GamescopeUpscaleFilter::FSR) ?
- 									GamescopeUpscaleFilter::LINEAR : GamescopeUpscaleFilter::FSR;
-diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
-index 3226400..7ae273f 100644
---- a/src/Backends/WaylandBackend.cpp
-+++ b/src/Backends/WaylandBackend.cpp
-@@ -1614,6 +1614,7 @@ namespace gamescope
-             bNeedsFullComposite |= cv_composite_force;
-             bNeedsFullComposite |= pFrameInfo->useFSRLayer0;
-             bNeedsFullComposite |= pFrameInfo->useNISLayer0;
-+            bNeedsFullComposite |= pFrameInfo->useBICUBICLayer0;
-             bNeedsFullComposite |= pFrameInfo->blurLayer0;
-             bNeedsFullComposite |= bNeedsCompositeFromFilter;
-             bNeedsFullComposite |= g_bColorSliderInUse;
+@@ -2410,7 +2410,7 @@ namespace gamescope
+ 				}
+ 			}
+ 
+-			if ( pColorimetry && pColorimetry->bt2020_rgb &&
++			if ( g_bHDRPqEnable && GetScreenType() != GAMESCOPE_SCREEN_TYPE_INTERNAL && pColorimetry && pColorimetry->bt2020_rgb &&
+ 				 pHDRStaticMetadata && pHDRStaticMetadata->eotfs && pHDRStaticMetadata->eotfs->pq )
+ 			{
+ 				m_Mutable.HDR.bExposeHDRSupport = true;
 diff --git a/src/main.cpp b/src/main.cpp
-index 90971e2..1d29b8e 100644
+index b9a99ec..02d3117 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
-@@ -7,6 +7,7 @@
- #include <mutex>
- #include <vector>
- #include <cstring>
-+#include <sstream>
- #include <string>
- #if defined(__linux__)
- #include <sys/capability.h>
-@@ -303,11 +304,14 @@ bool g_bGrabbed = false;
- float g_mouseSensitivity = 1.0;
- 
- GamescopeUpscaleFilter g_upscaleFilter = GamescopeUpscaleFilter::LINEAR;
-+GamescopeDownscaleFilter g_downscaleFilter = GamescopeDownscaleFilter::LINEAR;
- GamescopeUpscaleScaler g_upscaleScaler = GamescopeUpscaleScaler::AUTO;
- 
- GamescopeUpscaleFilter g_wantedUpscaleFilter = GamescopeUpscaleFilter::LINEAR;
-+GamescopeDownscaleFilter g_wantedDownscaleFilter = GamescopeDownscaleFilter::LINEAR;
- GamescopeUpscaleScaler g_wantedUpscaleScaler = GamescopeUpscaleScaler::AUTO;
- int g_upscaleFilterSharpness = 2;
-+GamescopeBicubicParams g_bicubicParams;
- 
- gamescope::GamescopeModeGeneration g_eGamescopeModeGeneration = gamescope::GAMESCOPE_MODE_GENERATE_CVT;
- 
-@@ -428,6 +432,54 @@ static enum GamescopeUpscaleFilter parse_upscaler_filter(const char *str)
- 	}
- }
- 
-+static enum GamescopeDownscaleFilter parse_downscaler_filter(const char *str)
-+{
-+	std::string_view arg{str};
-+
-+	// If the string is just 'bicubic' use default values
-+	if ( arg == "bicubic" ) {
-+		return GamescopeDownscaleFilter::BICUBIC;
-+	}
-+
-+	// Arguments start after ':'
-+	if ( auto search = arg.find(':'); search == std::string::npos ) {
-+		fprintf( stderr, "gamescope: invalid argument for --filter=bicubic:float,float\n" );
-+		exit(1);
-+	} else {
-+		arg = std::string_view(arg.data() + search + 1);
-+	}
-+
-+	// Push arguments to stream
-+	std::stringstream ss;
-+	ss << arg;
-+
-+	// Validate arguments from stream
-+	double b, c;
-+	char comma;
-+	if ((ss >> b >> comma >> c) && (comma == ',')) {
-+		// clamp values
-+		b = std::clamp(b, 0.0, 1.0);
-+		c = std::clamp(c, 0.0, 1.0);
-+		// Ovewrite default global parameters
-+		g_bicubicParams.b = b;
-+		g_bicubicParams.c = c;
-+		// Set downscaler filters
-+		return GamescopeDownscaleFilter::BICUBIC;
-+	}
-+
-+	fprintf( stderr, "gamescope: invalid value for --filter\n" );
-+	exit(1);
-+}
-+
-+static void parse_filter(const char *str)
-+{
-+	if (std::string_view{str}.starts_with("bicubic")) {
-+		g_wantedDownscaleFilter = parse_downscaler_filter(str);
-+	} else {
-+		g_wantedUpscaleFilter = parse_upscaler_filter(str);
-+	}
-+}
-+
- static enum gamescope::GamescopeBackend parse_backend_name(const char *str)
- {
- 	if (strcmp(str, "auto") == 0) {
-@@ -757,7 +809,7 @@ int main(int argc, char **argv)
- 				g_wantedUpscaleScaler = parse_upscaler_scaler(optarg);
- 				break;
- 			case 'F':
--				g_wantedUpscaleFilter = parse_upscaler_filter(optarg);
-+				parse_filter(optarg);
- 				break;
- 			case 'b':
- 				g_bBorderlessOutputWindow = true;
-diff --git a/src/main.hpp b/src/main.hpp
-index e7b857d..7212d5f 100644
---- a/src/main.hpp
-+++ b/src/main.hpp
-@@ -44,6 +44,18 @@ enum class GamescopeUpscaleFilter : uint32_t
-     FROM_VIEW = 0xF, // internal
- };
- 
-+enum class GamescopeDownscaleFilter : uint32_t
-+{
-+    LINEAR = 0,
-+    BICUBIC,
-+};
-+
-+struct GamescopeBicubicParams
-+{
-+	float b = 0.3f;
-+	float c = 0.3f;
-+};
-+
- static constexpr bool DoesHardwareSupportUpscaleFilter( GamescopeUpscaleFilter eFilter )
- {
-     // Could do nearest someday... AMDGPU DC supports custom tap placement to an extent.
-@@ -61,10 +73,13 @@ enum class GamescopeUpscaleScaler : uint32_t
- };
- 
- extern GamescopeUpscaleFilter g_upscaleFilter;
-+extern GamescopeDownscaleFilter g_downscaleFilter;
- extern GamescopeUpscaleScaler g_upscaleScaler;
- extern GamescopeUpscaleFilter g_wantedUpscaleFilter;
-+extern GamescopeDownscaleFilter g_wantedDownscaleFilter;
- extern GamescopeUpscaleScaler g_wantedUpscaleScaler;
- extern int g_upscaleFilterSharpness;
-+extern GamescopeBicubicParams g_bicubicParams;
- 
- extern bool g_bBorderlessOutputWindow;
- 
-diff --git a/src/meson.build b/src/meson.build
-index d4ff3ea..341bace 100644
---- a/src/meson.build
-+++ b/src/meson.build
-@@ -66,6 +66,7 @@ shader_src = [
-   'shaders/cs_composite_rcas.comp',
-   'shaders/cs_easu.comp',
-   'shaders/cs_easu_fp16.comp',
-+  'shaders/cs_bicubic.comp',
-   'shaders/cs_gaussian_blur_horizontal.comp',
-   'shaders/cs_nis.comp',
-   'shaders/cs_nis_fp16.comp',
-diff --git a/src/rendervulkan.cpp b/src/rendervulkan.cpp
-index fae6be9..3fab21b 100644
---- a/src/rendervulkan.cpp
-+++ b/src/rendervulkan.cpp
-@@ -44,6 +44,7 @@
- #include "cs_composite_rcas.h"
- #include "cs_easu.h"
- #include "cs_easu_fp16.h"
-+#include "cs_bicubic.h"
- #include "cs_gaussian_blur_horizontal.h"
- #include "cs_nis.h"
- #include "cs_nis_fp16.h"
-@@ -53,6 +54,7 @@
- #define A_CPU
- #include "shaders/ffx_a.h"
- #include "shaders/ffx_fsr1.h"
-+#include "shaders/bicubic.h"
- 
- #include "reshade_effect_manager.hpp"
- 
-@@ -888,6 +890,7 @@ bool CVulkanDevice::createShaders()
- 	SHADER(BLUR_COND, cs_composite_blur_cond);
- 	SHADER(BLUR_FIRST_PASS, cs_gaussian_blur_horizontal);
- 	SHADER(RCAS, cs_composite_rcas);
-+	SHADER(BICUBIC, cs_bicubic);
- 	if (m_bSupportsFp16)
- 	{
- 		SHADER(EASU, cs_easu_fp16);
-@@ -1128,6 +1131,7 @@ void CVulkanDevice::compileAllPipelines()
- 	SHADER(BLUR_FIRST_PASS, 1, 2, 1);
- 	SHADER(RCAS, k_nMaxLayers, k_nMaxYcbcrMask_ToPreCompile, 1);
- 	SHADER(EASU, 1, 1, 1);
-+	SHADER(BICUBIC, 1, 1, 1);
- 	SHADER(NIS, 1, 1, 1);
- 	SHADER(RGB_TO_NV12, 1, 1, 1);
- 	SHADER(ROTATION, k_nMaxLayers, k_nMaxYcbcrMask_ToPreCompile, k_nMaxBlurLayers);
-@@ -3724,6 +3728,17 @@ struct EasuPushData_t
- 	}
- };
- 
-+struct BicubicPushData_t
-+{
-+	uvec4_t Const0;
-+	uvec4_t Const1;
-+
-+	BicubicPushData_t(float B, float C, uint32_t inputX, uint32_t inputY, uint32_t tempX, uint32_t tempY, uint32_t winX, uint32_t winY)
-+	{
-+		BicubicCon(&Const0.x, &Const1.x, B*10, C*10, inputX, inputY, tempX, tempY, winX, winY);
-+	}
-+};
-+
- struct RcasPushData_t
- {
- 	uvec2_t u_layer0Offset;
-@@ -3933,7 +3948,51 @@ std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamesco
- 	for (uint32_t i = 0; i < EOTF_Count; i++)
- 		cmdBuffer->bindColorMgmtLuts(i, frameInfo->shaperLut[i], frameInfo->lut3D[i]);
- 
--	if ( frameInfo->useFSRLayer0 )
-+	if ( frameInfo->useBICUBICLayer0 )
-+	{
-+		uint32_t inputX = frameInfo->layers[0].tex->width();
-+		uint32_t inputY = frameInfo->layers[0].tex->height();
-+
-+		uint32_t tempX = frameInfo->layers[0].integerWidth();
-+		uint32_t tempY = frameInfo->layers[0].integerHeight();
-+
-+		update_tmp_images(tempX, tempY);
-+
-+		cmdBuffer->bindPipeline( g_device.pipeline(SHADER_TYPE_BICUBIC, frameInfo->layerCount, frameInfo->ycbcrMask()));
-+		cmdBuffer->bindTarget(g_output.tmpOutput);
-+		cmdBuffer->bindTexture(0, frameInfo->layers[0].tex);
-+		cmdBuffer->setTextureSrgb(0, true);
-+		cmdBuffer->setSamplerUnnormalized(0, false);
-+		cmdBuffer->setSamplerNearest(0, false);
-+		cmdBuffer->uploadConstants<BicubicPushData_t>(g_bicubicParams.b
-+				, g_bicubicParams.c
-+				, inputX
-+				, inputY
-+				, tempX
-+				, tempY
-+				, currentOutputWidth
-+				, currentOutputHeight
-+		);
-+
-+		int pixelsPerGroup = 16;
-+
-+		cmdBuffer->dispatch(div_roundup(tempX, pixelsPerGroup), div_roundup(tempY, pixelsPerGroup));
-+
-+		struct FrameInfo_t bicFrameInfo = *frameInfo;
-+		bicFrameInfo.layers[0].tex = g_output.tmpOutput;
-+		bicFrameInfo.layers[0].scale.x = 1.0f;
-+		bicFrameInfo.layers[0].scale.y = 1.0f;
-+
-+		cmdBuffer->bindPipeline( g_device.pipeline(SHADER_TYPE_BLIT, bicFrameInfo.layerCount, bicFrameInfo.ycbcrMask()));
-+		bind_all_layers(cmdBuffer.get(), &bicFrameInfo);
-+		cmdBuffer->bindTarget(compositeImage);
-+		cmdBuffer->uploadConstants<BlitPushData_t>(&bicFrameInfo);
-+
-+		pixelsPerGroup = 8;
-+
-+		cmdBuffer->dispatch(div_roundup(currentOutputWidth, pixelsPerGroup), div_roundup(currentOutputHeight, pixelsPerGroup));
-+	}
-+	else if ( frameInfo->useFSRLayer0 )
- 	{
- 		uint32_t inputX = frameInfo->layers[0].tex->width();
- 		uint32_t inputY = frameInfo->layers[0].tex->height();
-diff --git a/src/rendervulkan.hpp b/src/rendervulkan.hpp
-index 51a62bc..eeb304c 100644
---- a/src/rendervulkan.hpp
-+++ b/src/rendervulkan.hpp
-@@ -270,6 +270,7 @@ struct FrameInfo_t
- {
- 	bool useFSRLayer0;
- 	bool useNISLayer0;
-+	bool useBICUBICLayer0;
- 	bool bFadingOut;
- 	BlurMode blurLayer0;
- 	int blurRadius;
-@@ -536,6 +537,7 @@ enum ShaderType {
- 	SHADER_TYPE_EASU,
- 	SHADER_TYPE_RCAS,
- 	SHADER_TYPE_NIS,
-+	SHADER_TYPE_BICUBIC,
- 	SHADER_TYPE_RGB_TO_NV12,
- 	SHADER_TYPE_ROTATION,
- 
-diff --git a/src/shaders/bicubic.h b/src/shaders/bicubic.h
-new file mode 100644
-index 0000000..8117e87
---- /dev/null
-+++ b/src/shaders/bicubic.h
-@@ -0,0 +1,44 @@
-+//_____________________________________________________________/\_______________________________________________________________
-+//==============================================================================================================================
-+//
-+//
-+//                    BICUBIC IMAGE SCALING
-+//
-+//
-+//------------------------------------------------------------------------------------------------------------------------------
-+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-+//_____________________________________________________________/\_______________________________________________________________
-+//==============================================================================================================================
-+//                                                      CONSTANT SETUP
-+//==============================================================================================================================
-+// Call to setup required constant values (works on CPU or GPU).
-+A_STATIC void BicubicCon(
-+outAU4 con0,
-+outAU4 con1,
-+// Configurable parameters
-+AU1 B,
-+AU1 C,
-+// This the rendered image resolution
-+AF1 inputRenderedSizeX,
-+AF1 inputRenderedSizeY,
-+// This is the resolution of the resource containing the input image (useful for dynamic resolution)
-+AF1 inputCurrentSizeX,
-+AF1 inputCurrentSizeY,
-+// This is the window width / height
-+AF1 outputTargetSizeX,
-+AF1 outputTargetSizeY)
-+{
-+ // Input/Output size information
-+ con0[0]=AU1_AF1(inputRenderedSizeX);
-+ con0[1]=AU1_AF1(inputRenderedSizeY);
-+ con0[2]=AU1_AF1(inputCurrentSizeX);
-+ con0[3]=AU1_AF1(inputCurrentSizeY);
-+
-+ // Viewport pixel position to normalized image space.
-+ con1[0]=AU1_AF1(outputTargetSizeX);
-+ con1[1]=AU1_AF1(outputTargetSizeY);
-+ con1[2]=B;
-+ con1[3]=C;
-+}
-diff --git a/src/shaders/cs_bicubic.comp b/src/shaders/cs_bicubic.comp
-new file mode 100644
-index 0000000..2b6dfb8
---- /dev/null
-+++ b/src/shaders/cs_bicubic.comp
-@@ -0,0 +1,177 @@
-+// References
-+// https://www.codeproject.com/Articles/236394/Bi-Cubic-and-Bi-Linear-Interpolation-with-GLSL
-+// https://stackoverflow.com/questions/13501081/efficient-bicubic-filtering-code-in-glsl
-+// https://web.archive.org/web/20180927181721/http://www.java-gaming.org/index.php?topic=35123.0
-+// https://gist.github.com/TheRealMJP/c83b8c0f46b63f3a88a5986f4fa982b1
-+
-+#version 460
-+
-+#extension GL_GOOGLE_include_directive : require
-+#extension GL_EXT_shader_explicit_arithmetic_types_float16 : require
-+#extension GL_EXT_scalar_block_layout : require
-+
-+#include "descriptor_set.h"
-+
-+layout(
-+  local_size_x = 64,
-+  local_size_y = 1,
-+  local_size_z = 1) in;
-+
-+// Push constant is a mechanism in modern OpenGL that allows passing small amounts of frequently
-+// updated data to the shader without needing to bind a buffer
-+layout(binding = 0, scalar)
-+uniform layers_t {
-+    uvec4 c0, c1;
-+};
-+
-+#define A_GPU 1
-+#define A_GLSL 1
-+#define A_HALF 1
-+#include "ffx_a.h"
-+#include "bicubic.h"
-+
-+// The Mitchell–Netravali filters or BC-splines
-+// https://en.wikipedia.org/wiki/Mitchell%E2%80%93Netravali_filters
-+// Conditionals are slow in GPU code, so to represent 0 <= f < 1 and 1 <= f < 2
-+// the P(d) form shown in the wikipedia page is used
-+vec4 mitchellNetravaliWeights(float f, float B, float C) 
-+{
-+    float w0 = ((12.0 - 9.0 * B - 6.0 * C) * pow(f, 3.0)) +
-+               ((-18.0 + 12.0 * B + 6.0 * C) * pow(f, 2.0)) +
-+               (6.0 - 2.0 * B);
-+
-+    float w1 = ((-B - 6.0 * C) * pow(f - 1.0, 3.0)) +
-+               ((6.0 * B + 30.0 * C) * pow(f - 1.0, 2.0)) +
-+               ((-12.0 * B - 48.0 * C) * (f - 1.0)) +
-+               (8.0 * B + 24.0 * C);
-+
-+    float w2 = ((12.0 - 9.0 * B - 6.0 * C) * pow(1.0 - f, 3.0)) +
-+               ((-18.0 + 12.0 * B + 6.0 * C) * pow(1.0 - f, 2.0)) +
-+               (6.0 - 2.0 * B);
-+
-+    float w3 = ((-B - 6.0 * C) * pow(2.0 - f, 3.0)) +
-+               ((6.0 * B + 30.0 * C) * pow(2.0 - f, 2.0)) +
-+               ((-12.0 * B - 48.0 * C) * (2.0 - f)) +
-+               (8.0 * B + 24.0 * C);
-+
-+    return vec4(w0, w1, w2, w3);
-+}
-+
-+// https://stackoverflow.com/questions/13501081/efficient-bicubic-filtering-code-in-glsl
-+// https://web.archive.org/web/20180927181721/http://www.java-gaming.org/index.php?topic=35123.0
-+// This is an efficient method to implement bicubic filtering, it takes
-+// advantage of the fact that the bilinear approach gives the weighted average
-+// of a 2x2 area.
-+vec4 textureBicubic(sampler2D splr, vec2 texCoords)
-+{
-+    vec2 texSize = textureSize(splr, 0);
-+    vec2 invTexSize = 1.0 / texSize;
-+
-+    // Converts normalized coordinates into pixel-space coordinate
-+    // Example: If texCoords is (0.5, 0.5), and the texture size is (1920, 1080), the result will be
-+    // (960, 540)—the center of the texture in pixel space.
-+    // Subtracting 0.5 ensures that you're sampling from the center of the texel rather than its corner
-+    // Example: Assume we have a 3x3 texture and texCoords = (0.5, 0.5):
-+    //  [0,0][1,0][2,0]
-+    //  [0,1][1,1][2,1]
-+    //  [0,2][1,2][2,2]
-+    //  texCoords * texSize - 0.5 maps to (1.5, 1.5), which is between (1,1) and (2,2), then
-+    //  subtracts 0.5 to move it to (1.0, 1.0)—the center of the texel
-+    texCoords = texCoords * texSize - 0.5;
-+
-+    // Get B and C that were pushed from the user input (or default values)
-+    float B = c1[2] / 10.0f;
-+    float C = c1[3] / 10.0f;
-+
-+    // Get the fractional part of the coordinates
-+    // They are used in Mitchell Netravali's strategy to calculate the interpolation weights,
-+    // i.e., how much influence the neighboring vertices have on the final pixel value
-+    vec2 fxy = fract(texCoords);
-+    texCoords -= fxy;
-+
-+    // Calculate bicubic weights
-+    // These weights represent how much influence each neighboring texel in the 4x4 grid will have
-+    // on the final interpolated pixel value
-+    vec4 xweights = mitchellNetravaliWeights(fxy.x, B, C);
-+    vec4 yweights = mitchellNetravaliWeights(fxy.y, B, C);
-+
-+    // Modify the current texture coordinates to have an offset in texels for each coordinate
-+    // E.g. texCoords + vec(-1.0, 0.0) is a texel to the left
-+    //      texCoords + vec(1.0, 0.0) is a texel to the right
-+    //      texCoords + vec(0.0, 1.0) is a texel downwards
-+    //      texCoords + vec(0.0, -1.0) is a texel upwards
-+    vec4 offsetTexels = texCoords.xxyy;
-+    offsetTexels += vec2 (-1.0, +1.0).xyxy;
-+    // Normalize weights to range between (0,1)
-+    // vec4 sumWeights = vec4(xweights.xz + xweights.yw, yweights.xz + yweights.yw);
-+    // vec4 normalizedWeights = vec4 (xweights.yw, yweights.yw) / sumWeights;
-+    vec4 sumWeights = vec4(xweights.x + xweights.y, xweights.z + xweights.w, yweights.x + yweights.y, yweights.z + yweights.w);
-+    vec4 normalizedWeights = vec4 (xweights.y, xweights.w, yweights.y, yweights.w) / sumWeights;
-+    // Use the weights to influence the sampling position inside each texel
-+    // Each texel has a size from (0,1)
-+    vec4 offsetSampler = offsetTexels + normalizedWeights;
-+    // Go back to normalized space
-+    offsetSampler *= invTexSize.xxyy;
-+    // Perform the sampling
-+    vec4 sample0 = texture(splr, offsetSampler.xz);
-+    vec4 sample1 = texture(splr, offsetSampler.yz);
-+    vec4 sample2 = texture(splr, offsetSampler.xw);
-+    vec4 sample3 = texture(splr, offsetSampler.yw);
-+
-+    // Now we perform linear interpolation in the selected points
-+    // The mix(a, b, t) function in GLSL performs linear interpolation between a and b based on the
-+    // parameter t, t is between 0 and 1
-+    // https://registry.khronos.org/OpenGL-Refpages/gl4/html/mix.xhtml
-+
-+    // Here we want to normalize sx and sy to between 0 and 1 (t value)
-+    float sx = sumWeights.x / (sumWeights.x + sumWeights.y);
-+    float sy = sumWeights.z / (sumWeights.z + sumWeights.w);
-+
-+    return mix(
-+       mix(sample3, sample2, sx), mix(sample1, sample0, sx)
-+    , sy);
-+}
-+
-+void bicPass(uvec2 pos)
-+{
-+    // Retrieve pushed values
-+    AF2 inputRenderedSize = AF2_AU2(c0.xy);
-+    AF2 inputCurrentSize = AF2_AU2(c0.zw);
-+    AF2 outputTargetSize = AF2_AU2(c1.xy);
-+
-+    // ARcpF1(x) == 1.0 / x
-+    // scaleFactor is the division between the rendered image and the size it should have at the end
-+    // E.g.: Rendered 1920x1080, window size is 960x540, then scaleFactor is 2x2
-+    AF2 scaleFactor = inputRenderedSize * vec2(ARcpF1(inputCurrentSize.x), ARcpF1(inputCurrentSize.y));
-+
-+    // The parameter pos of this function is used to iterate over the output image (e.g. 960x540)
-+    // The position of the processed pixel should be taken from the rendered image (e.g. 1920x1080)
-+    // 10x10 in the output, corresponds to 20x20 in the original image
-+    AF2 positionPixel=AF2(pos)*scaleFactor;
-+
-+    // Normalize the image space to be between [0,1]
-+    positionPixel=positionPixel*vec2(ARcpF1(inputRenderedSize.x),ARcpF1(inputRenderedSize.y));
-+
-+    // Apply the bicubic algorithm in the normalized pixel position
-+    vec4 bicPass = textureBicubic(s_samplers[0], positionPixel);
-+
-+    imageStore(dst, ivec2(pos), bicPass);
-+}
-+
-+
-+void main()
-+{
-+    // AMD recommends to use this swizzle and to process 4 pixel per invocation
-+    // for better cache utilisation
-+    uvec2 pos = ARmp8x8(gl_LocalInvocationID.x) + uvec2(gl_WorkGroupID.x << 4u, gl_WorkGroupID.y << 4u);
-+
-+    bicPass(pos);
-+    pos.x += 8u;
-+    bicPass(pos);
-+    pos.y += 8u;
-+    bicPass(pos);
-+    pos.x -= 8u;
-+    bicPass(pos);
-+}
-+
-+/* vim: set expandtab ft=cpp fdm=marker ts=4 sw=4 tw=100 et :*/
-diff --git a/src/shaders/descriptor_set.h b/src/shaders/descriptor_set.h
-index f2b8527..64cc1c9 100644
---- a/src/shaders/descriptor_set.h
-+++ b/src/shaders/descriptor_set.h
-@@ -21,6 +21,7 @@ const int filter_nearest = 1;
- const int filter_fsr = 2;
- const int filter_nis = 3;
- const int filter_pixel = 4;
-+const int filter_bicubic = 5;
- const int filter_from_view = 255;
- 
- const int EOTF_Gamma22 = 0;
+@@ -204,6 +204,7 @@ const char usage[] =
+ 	"                                 If this is not set, and there is a HDR client, it will be tonemapped SDR.\n"
+ 	"  --sdr-gamut-wideness           Set the 'wideness' of the gamut for SDR comment. 0 - 1.\n"
+ 	"  --hdr-sdr-content-nits         set the luminance of SDR content in nits. Default: 400 nits.\n"
++	"  --hdr-pq-disable               disable HDR metadata detection for PQ EOTFs. IE disable HDR for external panels but not ones added through config. \n"
+ 	"  --hdr-itm-enabled              enable SDR->HDR inverse tone mapping. only works for SDR input.\n"
+ 	"  --hdr-itm-sdr-nits             set the luminance of SDR content in nits used as the input for the inverse tone mapping process.\n"
+ 	"                                 Default: 100 nits, Max: 1000 nits\n"
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 6a1e101..1cd5a28 100644
+index b99f202..c0f671b 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -906,6 +906,7 @@ gamescope::ConCommand cc_debug_set_fps_limit( "debug_set_fps_limit", "Set refres
- static int g_nRuntimeInfoFd = -1;
+@@ -375,6 +375,7 @@ bool g_bVRRInUse_CachedValue = false;
+ bool g_bSupportsHDR_CachedValue = false;
+ bool g_bForceHDR10OutputDebug = false;
+ gamescope::ConVar<bool> cv_hdr_enabled{ "hdr_enabled", false, "Whether or not HDR is enabled if it is available." };
++bool g_bHDRPqEnable = true;
+ bool g_bHDRItmEnable = false;
+ int g_nCurrentRefreshRate_CachedValue = 0;
  
- bool g_bFSRActive = false;
-+bool g_bBicubicActive = false;
- 
- BlurMode g_BlurMode = BLUR_MODE_OFF;
- BlurMode g_BlurModeOld = BLUR_MODE_OFF;
-@@ -2389,6 +2390,10 @@ paint_all(bool async, bool dpms)
- 				paint_window(w, w, &frameInfo, global_focus.cursor, PaintWindowFlag::BasePlane | PaintWindowFlag::DrawBorders, 1.0f, override);
- 
- 				bool needsScaling = frameInfo.layers[0].scale.x < 0.999f && frameInfo.layers[0].scale.y < 0.999f;
-+				// Temporarily allow upscaling as well
-+				// bool needsDownScaling = frameInfo.layers[0].scale.x > 1.001f && frameInfo.layers[0].scale.y > 1.001f;
-+				bool needsDownScaling = true;
-+				frameInfo.useBICUBICLayer0 = g_downscaleFilter == GamescopeDownscaleFilter::BICUBIC && needsDownScaling;
- 				frameInfo.useFSRLayer0 = g_upscaleFilter == GamescopeUpscaleFilter::FSR && needsScaling;
- 				frameInfo.useNISLayer0 = g_upscaleFilter == GamescopeUpscaleFilter::NIS && needsScaling;
- 			}
-@@ -2521,10 +2526,12 @@ paint_all(bool async, bool dpms)
- 		}
- 
- 		frameInfo.useFSRLayer0 = false;
-+		frameInfo.useBICUBICLayer0 = false;
- 		frameInfo.useNISLayer0 = false;
- 	}
- 
- 	g_bFSRActive = frameInfo.useFSRLayer0;
-+	g_bBicubicActive = frameInfo.useBICUBICLayer0;
- 
- 	g_bFirstFrame = false;
- 
-@@ -5445,6 +5452,9 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
- 			g_wantedUpscaleScaler = GamescopeUpscaleScaler::AUTO;
- 			g_wantedUpscaleFilter = GamescopeUpscaleFilter::NIS;
- 			break;
-+		case 5:
-+			g_wantedDownscaleFilter = GamescopeDownscaleFilter::BICUBIC;
-+			break;
- 		}
- 		hasRepaint = true;
- 	}
-@@ -7017,6 +7027,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
- 	ctx->atoms.gamescopeLowLatency = XInternAtom( ctx->dpy, "GAMESCOPE_LOW_LATENCY", false );
- 
- 	ctx->atoms.gamescopeFSRFeedback = XInternAtom( ctx->dpy, "GAMESCOPE_FSR_FEEDBACK", false );
-+	ctx->atoms.gamescopeBicubicFeedback = XInternAtom( ctx->dpy, "GAMESCOPE_BICUBIC_FEEDBACK", false );
- 
- 	ctx->atoms.gamescopeBlurMode = XInternAtom( ctx->dpy, "GAMESCOPE_BLUR_MODE", false );
- 	ctx->atoms.gamescopeBlurRadius = XInternAtom( ctx->dpy, "GAMESCOPE_BLUR_RADIUS", false );
-@@ -7275,6 +7286,7 @@ extern int g_nPreferredOutputWidth;
- extern int g_nPreferredOutputHeight;
- 
- static bool g_bWasFSRActive = false;
-+static bool g_bWasBicubicActive = false;
- 
- bool g_bAppWantsHDRCached = false;
- 
-@@ -7689,6 +7701,16 @@ steamcompmgr_main(int argc, char **argv)
- 			flush_root = true;
- 		}
- 
-+		if ( g_bBicubicActive != g_bWasBicubicActive )
-+		{
-+			uint32_t active = g_bBicubicActive ? 1 : 0;
-+			XChangeProperty( root_ctx->dpy, root_ctx->root, root_ctx->atoms.gamescopeBicubicFeedback, XA_CARDINAL, 32, PropModeReplace,
-+					(unsigned char *)&active, 1 );
-+
-+			g_bWasBicubicActive = g_bBicubicActive;
-+			flush_root = true;
-+		}
-+
- 		if (global_focus.IsDirty())
- 			determine_and_apply_focus();
- 
-@@ -7925,6 +7947,7 @@ steamcompmgr_main(int argc, char **argv)
- 			g_bSteamIsActiveWindow = false;
- 			g_upscaleScaler = g_wantedUpscaleScaler;
- 			g_upscaleFilter = g_wantedUpscaleFilter;
-+			g_downscaleFilter = g_wantedDownscaleFilter;
- 		}
- 
- 		// If we're in the middle of a fade, then keep us
+@@ -7700,6 +7701,8 @@ steamcompmgr_main(int argc, char **argv)
+ 					g_bForceHDRSupportDebug = true;
+  				} else if (strcmp(opt_name, "hdr-debug-force-output") == 0) {
+ 					g_bForceHDR10OutputDebug = true;
++				} else if (strcmp(opt_name, "hdr-pq-disabled") == 0 || strcmp(opt_name, "hdr-pq-disable") == 0) {
++					g_bHDRPqEnable = false;
+ 				} else if (strcmp(opt_name, "hdr-itm-enabled") == 0 || strcmp(opt_name, "hdr-itm-enable") == 0) {
+ 					g_bHDRItmEnable = true;
+ 				} else if (strcmp(opt_name, "sdr-gamut-wideness") == 0) {
 diff --git a/src/steamcompmgr.hpp b/src/steamcompmgr.hpp
-index 30e48e8..5679a0c 100644
+index 98e9272..b85ab9a 100644
 --- a/src/steamcompmgr.hpp
 +++ b/src/steamcompmgr.hpp
-@@ -129,6 +129,7 @@ extern float focusedWindowOffsetY;
+@@ -38,6 +38,7 @@ static const uint32_t g_zposOverlay = 3;
+ static const uint32_t g_zposCursor = 4;
+ static const uint32_t g_zposMuraCorrection = 5;
  
- extern bool g_FakeExternal;
- extern bool g_bFSRActive;
-+extern bool g_bBicubicActive;
++extern bool g_bHDRPqEnable;
+ extern bool g_bHDRItmEnable;
+ extern bool g_bForceHDRSupportDebug;
  
- extern uint32_t inputCounter;
- extern uint64_t g_lastWinSeq;
-diff --git a/src/xwayland_ctx.hpp b/src/xwayland_ctx.hpp
-index 2347cbb..bc38c98 100644
---- a/src/xwayland_ctx.hpp
-+++ b/src/xwayland_ctx.hpp
-@@ -164,6 +164,7 @@ struct xwayland_ctx_t final : public gamescope::IWaitable
- 		Atom gamescopeLowLatency;
- 
- 		Atom gamescopeFSRFeedback;
-+		Atom gamescopeBicubicFeedback;
- 
- 		Atom gamescopeBlurMode;
- 		Atom gamescopeBlurRadius;
 -- 
-2.48.1
+2.49.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: brainantifreeze <you@example.com>
 Date: Thu, 19 Dec 2024 09:16:15 +0000
-Subject: fix(nvidia): allow disabling Vulkan extension for nvidia to work
+Subject: feat(nvidia): fix crash with current driver
 
-This adds a workaround for #1592 which removes the
-VkPhysicalDevicePresentWaitFeaturesKHR extension in
-the layer if the environment variable
-GAMESCOPE_WSI_HIDE_PRESENT_WAIT_EXT is set.
+add layer env var to hide present wait ext
 
-This resolves the current freezing issue on nVidia
-in dx12 (without having to set
-VKD3D_DISABLE_EXTENSIONS), dx11 (without having
-to patch DXVK not to use the extension) and in
-native vulkan games.
+see: https://github.com/ValveSoftware/gamescope/pull/1671
 ---
  layer/VkLayer_FROG_gamescope_wsi.cpp | 20 +++++++++++++++++++-
  1 file changed, 19 insertions(+), 1 deletion(-)
 
 diff --git a/layer/VkLayer_FROG_gamescope_wsi.cpp b/layer/VkLayer_FROG_gamescope_wsi.cpp
-index c817880..407dae8 100644
+index 296cf6c..b1b9009 100644
 --- a/layer/VkLayer_FROG_gamescope_wsi.cpp
 +++ b/layer/VkLayer_FROG_gamescope_wsi.cpp
-@@ -496,7 +496,11 @@ namespace GamescopeWSILayer {
+@@ -183,6 +183,16 @@ namespace GamescopeWSILayer {
+     return s_ensureMinImageCount;
+   }
+ 
++  static bool getHidePresentWait() {
++    static bool s_hidePresentWait = []() -> bool {
++      if (auto hide = parseEnv<bool>("GAMESCOPE_WSI_HIDE_PRESENT_WAIT_EXT")) {
++        return *hide;
++      }
++      return false;
++    }();
++    return s_hidePresentWait;
++  }
++
+   // Taken from Mesa, licensed under MIT.
+   //
+   // No real reason to rewrite this code,
+@@ -589,7 +599,11 @@ namespace GamescopeWSILayer {
        createInfo.ppEnabledExtensionNames = enabledExts.data();
  
        setenv("vk_xwayland_wait_ready", "false", 0);
@@ -2429,7 +1237,7 @@ index c817880..407dae8 100644
  
        VkResult result = pfnCreateInstanceProc(&createInfo, pAllocator, pInstance);
        if (result != VK_SUCCESS)
-@@ -801,6 +805,10 @@ namespace GamescopeWSILayer {
+@@ -899,6 +913,10 @@ namespace GamescopeWSILayer {
        const vkroots::VkInstanceDispatch* pDispatch,
              VkPhysicalDevice             physicalDevice,
              VkPhysicalDeviceFeatures2*   pFeatures) {
@@ -2440,68 +1248,14 @@ index c817880..407dae8 100644
        pDispatch->GetPhysicalDeviceFeatures2(physicalDevice, pFeatures);
      }
  
-@@ -1015,6 +1023,16 @@ namespace GamescopeWSILayer {
-       return value;
-     }
- 
-+    static bool getHidePresentWait() {
-+      static bool s_hidePresentWait = []() -> bool {
-+        if (auto hide = parseEnv<uint32_t>("GAMESCOPE_WSI_HIDE_PRESENT_WAIT_EXT")) {
-+          return *hide == 1;
-+        }
-+        return false;
-+      }();
-+      return s_hidePresentWait;
-+    }
-+
-     static uint32_t getMinImageCount() {
-       static uint32_t s_minImageCount = []() -> uint32_t {
-         if (auto minCount = parseEnv<uint32_t>("GAMESCOPE_WSI_MIN_IMAGE_COUNT")) {
 -- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Matthew Schwartz <matthew.schwartz@linux.dev>
-Date: Sat, 14 Dec 2024 20:54:57 -0800
-Subject: WaylandBackend: Fix hotkeys failing to bind on Wayland desktops
-
-Per Wayland protocol specsheet regarding keymapping:
-"From version 7 onwards, the fd must be mapped with MAP_PRIVATE by the
-recipient, as MAP_SHARED may fail."
-
-This matches up exactly with what we're seeing with this error:
-[gamescope] [Error] xdg_backend: Failed to map keymap fd.
-
-Changing MAP_SHARED to MAP_PRIVATE per the spec addresses this error.
-
-Fixes: #1658
-(hopefully) fixes: #1637
----
- src/Backends/WaylandBackend.cpp | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
-index 7ae273f..0a3657f 100644
---- a/src/Backends/WaylandBackend.cpp
-+++ b/src/Backends/WaylandBackend.cpp
-@@ -2709,7 +2709,7 @@ namespace gamescope
-         defer( close( nFd ) );
-         assert( uFormat == WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1 );
- 
--        char *pMap = (char *)mmap( nullptr, uSize, PROT_READ, MAP_SHARED, nFd, 0 );
-+        char *pMap = (char *)mmap( nullptr, uSize, PROT_READ, MAP_PRIVATE, nFd, 0 );
-         if ( !pMap || pMap == MAP_FAILED )
-         {
-             xdg_log.errorf( "Failed to map keymap fd." );
--- 
-2.48.1
+2.49.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Sun, 19 Jan 2025 17:52:28 +0100
-Subject: feat: add legion go s display (works only with VRR on)
+Subject: feat(display): add legion go s display (works only with VRR on)
 
 ---
  .../displays/lenovo.legiongos.lcd.lua         | 70 +++++++++++++++++++
@@ -2586,20 +1340,18 @@ index 0000000..5d27391
 +debug("Registered Lenovo Legion Go S LCD as a known display")
 \ No newline at end of file
 -- 
-2.48.1
+2.49.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Sun, 23 Feb 2025 02:16:55 +0100
-Subject: feat(asus): add asus z13
+Subject: feat(display): add asus z13
 
 ---
  .../00-gamescope/displays/asus.z13.lcd.lua    | 57 +++++++++++++++++++
- subprojects/edid-decode                       |  1 +
- 2 files changed, 58 insertions(+)
+ 1 file changed, 57 insertions(+)
  create mode 100644 scripts/00-gamescope/displays/asus.z13.lcd.lua
- create mode 160000 subprojects/edid-decode
 
 diff --git a/scripts/00-gamescope/displays/asus.z13.lcd.lua b/scripts/00-gamescope/displays/asus.z13.lcd.lua
 new file mode 100644
@@ -2665,91 +1417,320 @@ index 0000000..891f1ea
 +}
 +debug("Registered Lenovo Legion Go S LCD as a known display")
 \ No newline at end of file
-diff --git a/subprojects/edid-decode b/subprojects/edid-decode
-new file mode 160000
-index 0000000..c6b859d
---- /dev/null
-+++ b/subprojects/edid-decode
-@@ -0,0 +1 @@
-+Subproject commit c6b859d7f0251e2433fb81bd3f67bd2011c2036c
 -- 
-2.48.1
+2.49.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Matthew Schwartz <matthew.schwartz@linux.dev>
+Date: Tue, 1 Apr 2025 23:03:56 -0700
+Subject: feat(display): fixup Ally config to support BOE panels
+
+---
+ .../displays/asus.rogally.lcd.lua             | 24 +++++++++++++++----
+ 1 file changed, 19 insertions(+), 5 deletions(-)
+
+diff --git a/scripts/00-gamescope/displays/asus.rogally.lcd.lua b/scripts/00-gamescope/displays/asus.rogally.lcd.lua
+index 11ba7cc..d233d85 100644
+--- a/scripts/00-gamescope/displays/asus.rogally.lcd.lua
++++ b/scripts/00-gamescope/displays/asus.rogally.lcd.lua
+@@ -62,12 +62,26 @@ gamescope.config.known_displays.rogally_lcd = {
+         --debug(inspect(mode))
+         return mode
+     end,
+-    -- There is only a single panel model in use across both
+-    -- ROG Ally + ROG Ally X.
+     matches = function(display)
+-        if display.vendor == "TMX" and display.model == "TL070FVXS01-0" and display.product == 0x0002 then
+-            debug("[rogally_lcd] Matched vendor: "..display.vendor.." model: "..display.model.." product:"..display.product)
+-            return 5000
++        -- There are two panels used across the ROG Ally and ROG Ally X
++        -- with the same timings, but the model names are in different
++        -- parts of the EDID.
++        local lcd_types = {
++            { vendor = "TMX", model = "TL070FVXS01-0", product = 0x0002 },
++            { vendor = "BOE", data_string = "TS070FHM-LU0", product = 0x0C33 },
++        }
++
++        for index, value in ipairs(lcd_types) do
++            -- We only match if the vendor and product match exactly, plus either model or data_string
++            if value.vendor == display.vendor and value.product == display.product then
++                if (value.model and value.model == display.model)
++                   or (value.data_string and value.data_string == display.data_string) then
++                    debug("[rogally_lcd] Matched vendor: "..value.vendor.." model: "..
++                          (value.model or value.data_string).." product: "..
++                          string.format("0x%04X", value.product))
++                    return 5000
++                end
++            end
+         end
+         return -1
+     end
+-- 
+2.49.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
-Date: Thu, 13 Mar 2025 19:04:51 +0100
-Subject: fix(hdr): remove PQ from internal panels and allow disabling for
- externals
+Date: Mon, 7 Apr 2025 20:44:28 +0200
+Subject: Revert "mangoapp: plumb engineName"
 
-New steam update forces HDR mode. The cursed patching gamescope does is
-not supported for all displays, especially internal ones. So disable by
-default on internal panels and allow disabling on externals.
+This reverts commit 6a4d150dacb46ca74e22fc83e1c259cb2c3128c2.
 ---
- src/Backends/DRMBackend.cpp | 2 +-
- src/main.cpp                | 1 +
- src/steamcompmgr.cpp        | 3 +++
- src/steamcompmgr.hpp        | 1 +
- 4 files changed, 6 insertions(+), 1 deletion(-)
+ layer/VkLayer_FROG_gamescope_wsi.cpp    | 9 +--------
+ protocol/gamescope-swapchain.xml        | 1 -
+ src/WaylandServer/WaylandServerLegacy.h | 1 -
+ src/mangoapp.cpp                        | 6 ------
+ src/steamcompmgr.cpp                    | 6 ------
+ src/steamcompmgr.hpp                    | 1 -
+ src/steamcompmgr_shared.hpp             | 2 --
+ src/wlserver.cpp                        | 4 +---
+ 8 files changed, 2 insertions(+), 28 deletions(-)
 
-diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index d393479..0468ecc 100644
---- a/src/Backends/DRMBackend.cpp
-+++ b/src/Backends/DRMBackend.cpp
-@@ -2333,7 +2333,7 @@ namespace gamescope
- 				}
- 			}
+diff --git a/layer/VkLayer_FROG_gamescope_wsi.cpp b/layer/VkLayer_FROG_gamescope_wsi.cpp
+index b1b9009..495bbc0 100644
+--- a/layer/VkLayer_FROG_gamescope_wsi.cpp
++++ b/layer/VkLayer_FROG_gamescope_wsi.cpp
+@@ -404,7 +404,6 @@ namespace GamescopeWSILayer {
+   struct GamescopeInstanceData {
+     wl_display* display;
+     uint32_t appId = 0;
+-    std::string engineName;
+     GamescopeLayerClient::Flags flags = 0;
+   };
+   VKROOTS_DEFINE_SYNCHRONIZED_MAP_TYPE(GamescopeInstance, VkInstance);
+@@ -631,14 +630,9 @@ namespace GamescopeWSILayer {
+       {
+         uint32_t appId = clientAppId();
  
--			if ( pColorimetry && pColorimetry->bt2020_rgb &&
-+			if ( g_bHDRPqEnable && GetScreenType() != GAMESCOPE_SCREEN_TYPE_INTERNAL && pColorimetry && pColorimetry->bt2020_rgb &&
- 				 pHDRStaticMetadata && pHDRStaticMetadata->eotfs && pHDRStaticMetadata->eotfs->pq )
- 			{
- 				m_Mutable.HDR.bExposeHDRSupport = true;
-diff --git a/src/main.cpp b/src/main.cpp
-index 1d29b8e..6cf3531 100644
---- a/src/main.cpp
-+++ b/src/main.cpp
-@@ -209,6 +209,7 @@ const char usage[] =
- 	"                                 If this is not set, and there is a HDR client, it will be tonemapped SDR.\n"
- 	"  --sdr-gamut-wideness           Set the 'wideness' of the gamut for SDR comment. 0 - 1.\n"
- 	"  --hdr-sdr-content-nits         set the luminance of SDR content in nits. Default: 400 nits.\n"
-+	"  --hdr-pq-disable               disable HDR metadata detection for PQ EOTFs. IE disable HDR for external panels but not ones added through config. \n"
- 	"  --hdr-itm-enabled              enable SDR->HDR inverse tone mapping. only works for SDR input.\n"
- 	"  --hdr-itm-sdr-nits             set the luminance of SDR content in nits used as the input for the inverse tone mapping process.\n"
- 	"                                 Default: 100 nits, Max: 1000 nits\n"
+-        std::string engineName;
+-        if (pCreateInfo->pApplicationInfo && pCreateInfo->pApplicationInfo->pEngineName)
+-          engineName = pCreateInfo->pApplicationInfo->pEngineName;
+-
+         auto state = GamescopeInstance::create(*pInstance, GamescopeInstanceData {
+           .display = display,
+           .appId   = appId,
+-          .engineName = engineName,
+           .flags   = defaultLayerClientFlags(pCreateInfo->pApplicationInfo, appId),
+         });
+ 
+@@ -1275,8 +1269,7 @@ namespace GamescopeWSILayer {
+         uint32_t(pCreateInfo->imageColorSpace),
+         uint32_t(pCreateInfo->compositeAlpha),
+         uint32_t(pCreateInfo->preTransform),
+-        uint32_t(pCreateInfo->clipped),
+-        gamescopeInstance->engineName.c_str());
++        uint32_t(pCreateInfo->clipped));
+ 
+       return VK_SUCCESS;
+     }
+diff --git a/protocol/gamescope-swapchain.xml b/protocol/gamescope-swapchain.xml
+index 58ac846..91be3fc 100644
+--- a/protocol/gamescope-swapchain.xml
++++ b/protocol/gamescope-swapchain.xml
+@@ -89,7 +89,6 @@
+       <arg name="vk_composite_alpha" type="uint" summary="VkCompositeAlphaFlagBitsKHR of swapchain"/>
+       <arg name="vk_pre_transform" type="uint" summary="VkSurfaceTransformFlagBitsKHR of swapchain"/>
+       <arg name="vk_clipped" type="uint" summary="clipped (VkBool32) of swapchain"/>
+-      <arg name="vk_engine_name" type="string" summary="Engine name"/>
+     </request>
+ 
+     <request name="set_present_mode">
+diff --git a/src/WaylandServer/WaylandServerLegacy.h b/src/WaylandServer/WaylandServerLegacy.h
+index 63ee2ca..0facb7d 100644
+--- a/src/WaylandServer/WaylandServerLegacy.h
++++ b/src/WaylandServer/WaylandServerLegacy.h
+@@ -29,7 +29,6 @@ struct wlserver_vk_swapchain_feedback
+ 	VkCompositeAlphaFlagBitsKHR vk_composite_alpha;
+ 	VkSurfaceTransformFlagBitsKHR vk_pre_transform;
+ 	VkBool32 vk_clipped;
+-	std::shared_ptr<std::string> vk_engine_name;
+ 
+ 	std::shared_ptr<gamescope::BackendBlob> hdr_metadata_blob;
+ };
+diff --git a/src/mangoapp.cpp b/src/mangoapp.cpp
+index d8e1ce7..91e01bc 100644
+--- a/src/mangoapp.cpp
++++ b/src/mangoapp.cpp
+@@ -31,7 +31,6 @@ struct mangoapp_msg_v1 {
+     uint16_t displayRefresh;
+     bool bAppWantsHDR : 1;
+     bool bSteamFocused : 1;
+-    char engineName[40];
+     
+     // WARNING: Always ADD fields, never remove or repurpose fields
+ } __attribute__((packed)) mangoapp_msg_v1;
+@@ -61,11 +60,6 @@ void mangoapp_update( uint64_t visible_frametime, uint64_t app_frametime_ns, uin
+     mangoapp_msg_v1.displayRefresh = (uint16_t) gamescope::ConvertmHzToHz( g_nOutputRefresh );
+     mangoapp_msg_v1.bAppWantsHDR = g_bAppWantsHDRCached;
+     mangoapp_msg_v1.bSteamFocused = g_focusedBaseAppId == 769;
+-    memset(mangoapp_msg_v1.engineName, 0, sizeof(mangoapp_msg_v1.engineName));
+-    if (focusWindow_engine)
+-        focusWindow_engine->copy(mangoapp_msg_v1.engineName, sizeof(mangoapp_msg_v1.engineName) / sizeof(char));
+-    else
+-        std::string("gamescope").copy(mangoapp_msg_v1.engineName, sizeof(mangoapp_msg_v1.engineName) / sizeof(char));
+     msgsnd(msgid, &mangoapp_msg_v1, sizeof(mangoapp_msg_v1) - sizeof(mangoapp_msg_v1.hdr.msg_type), IPC_NOWAIT);
+ }
+ 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 1cd5a28..99f4970 100644
+index c0f671b..72cbe47 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -366,6 +366,7 @@ bool g_bVRRInUse_CachedValue = false;
- bool g_bSupportsHDR_CachedValue = false;
- bool g_bForceHDR10OutputDebug = false;
- gamescope::ConVar<bool> cv_hdr_enabled{ "hdr_enabled", false, "Whether or not HDR is enabled if it is available." };
-+bool g_bHDRPqEnable = true;
- bool g_bHDRItmEnable = false;
- int g_nCurrentRefreshRate_CachedValue = 0;
+@@ -936,7 +936,6 @@ int g_BlurRadius = 5;
+ unsigned int g_BlurFadeStartTime = 0;
  
-@@ -7517,6 +7518,8 @@ steamcompmgr_main(int argc, char **argv)
- 					g_bForceHDRSupportDebug = true;
-  				} else if (strcmp(opt_name, "hdr-debug-force-output") == 0) {
- 					g_bForceHDR10OutputDebug = true;
-+				} else if (strcmp(opt_name, "hdr-pq-disabled") == 0 || strcmp(opt_name, "hdr-pq-disable") == 0) {
-+					g_bHDRPqEnable = false;
- 				} else if (strcmp(opt_name, "hdr-itm-enabled") == 0 || strcmp(opt_name, "hdr-itm-enable") == 0) {
- 					g_bHDRItmEnable = true;
- 				} else if (strcmp(opt_name, "sdr-gamut-wideness") == 0) {
+ pid_t focusWindow_pid;
+-std::shared_ptr<std::string> focusWindow_engine = nullptr;
+ 
+ focus_t g_steamcompmgr_xdg_focus;
+ std::vector<std::shared_ptr<steamcompmgr_win_t>> g_steamcompmgr_xdg_wins;
+@@ -6244,9 +6243,6 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
+ 	uint32_t j;
+ 	for ( j = 0; j < w->commit_queue.size(); j++ )
+ 	{
+-		if (w->commit_queue[ j ]->feedback.has_value())
+-			w->engineName = w->commit_queue[ j ]->feedback->vk_engine_name;
+-
+ 		if ( w->commit_queue[ j ]->commitID == commitID )
+ 		{
+ 			gpuvis_trace_printf( "commit %lu done", w->commit_queue[ j ]->commitID );
+@@ -6284,8 +6280,6 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
+ 					if ( !cv_paint_debug_pause_base_plane )
+ 						g_HeldCommits[ HELD_COMMIT_BASE ] = w->commit_queue[ j ];
+ 					hasRepaint = true;
+-
+-					focusWindow_engine = w->engineName;
+ 				}
+ 
+ 				if ( w == pFocus->overrideWindow )
 diff --git a/src/steamcompmgr.hpp b/src/steamcompmgr.hpp
-index 5679a0c..e3987bb 100644
+index b85ab9a..71d540c 100644
 --- a/src/steamcompmgr.hpp
 +++ b/src/steamcompmgr.hpp
-@@ -38,6 +38,7 @@ static const uint32_t g_zposOverlay = 3;
- static const uint32_t g_zposCursor = 4;
- static const uint32_t g_zposMuraCorrection = 5;
+@@ -145,7 +145,6 @@ struct wlserver_x11_surface_info *lookup_x11_surface_info_from_xid( gamescope_xw
  
-+extern bool g_bHDRPqEnable;
- extern bool g_bHDRItmEnable;
- extern bool g_bForceHDRSupportDebug;
+ extern gamescope::VBlankTime g_SteamCompMgrVBlankTime;
+ extern pid_t focusWindow_pid;
+-extern std::shared_ptr<std::string> focusWindow_engine;
+ 
+ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_server);
+ void gamescope_set_selection(std::string contents, GamescopeSelection eSelection);
+diff --git a/src/steamcompmgr_shared.hpp b/src/steamcompmgr_shared.hpp
+index 3b23c3b..3f71590 100644
+--- a/src/steamcompmgr_shared.hpp
++++ b/src/steamcompmgr_shared.hpp
+@@ -148,8 +148,6 @@ struct steamcompmgr_win_t {
+ 	bool unlockedForFrameCallback = false;
+ 	bool receivedDoneCommit = false;
+ 
+-	std::shared_ptr<std::string> engineName;
+-
+ 	std::vector< gamescope::Rc<commit_t> > commit_queue;
+ 	std::shared_ptr<std::vector< uint32_t >> icon;
+ 
+diff --git a/src/wlserver.cpp b/src/wlserver.cpp
+index c0a42b2..f92829a 100644
+--- a/src/wlserver.cpp
++++ b/src/wlserver.cpp
+@@ -857,8 +857,7 @@ static void gamescope_swapchain_swapchain_feedback( struct wl_client *client, st
+ 	uint32_t vk_colorspace,
+ 	uint32_t vk_composite_alpha,
+ 	uint32_t vk_pre_transform,
+-	uint32_t vk_clipped,
+-	const char *vk_engine_name)
++	uint32_t vk_clipped)
+ {
+ 	wlserver_wl_surface_info *wl_info = (wlserver_wl_surface_info *)wl_resource_get_user_data( resource );
+ 	if ( wl_info )
+@@ -870,7 +869,6 @@ static void gamescope_swapchain_swapchain_feedback( struct wl_client *client, st
+ 			.vk_composite_alpha = VkCompositeAlphaFlagBitsKHR(vk_composite_alpha),
+ 			.vk_pre_transform = VkSurfaceTransformFlagBitsKHR(vk_pre_transform),
+ 			.vk_clipped = VkBool32(vk_clipped),
+-			.vk_engine_name = std::make_shared<std::string>(vk_engine_name),
+ 			.hdr_metadata_blob = nullptr,
+ 		});
+ 	}
+-- 
+2.49.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Wed, 23 Apr 2025 22:51:54 +0200
+Subject: feat(display): consider vporch to avoid timing issues
+
+---
+ src/Backends/DRMBackend.cpp | 8 ++++++++
+ src/main.cpp                | 1 +
+ src/main.hpp                | 1 +
+ src/vblankmanager.cpp       | 4 +---
+ 4 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
+index deda783..4827df6 100644
+--- a/src/Backends/DRMBackend.cpp
++++ b/src/Backends/DRMBackend.cpp
+@@ -205,6 +205,11 @@ namespace gamescope
+ 		return nRefresh;
+ 	}
+ 
++	static int32_t GetVblankNs(const drmModeModeInfo *mode)
++	{
++		return (mode->vsync_start - mode->vdisplay) * 1'000'000'000ll / mode->vrefresh / mode->vtotal;
++	}
++
+ 	template <typename T>
+ 	using CAutoDeletePtr = std::unique_ptr<T, void(*)(T*)>;
+ 
+@@ -3123,6 +3128,9 @@ bool drm_set_mode( struct drm_t *drm, const drmModeModeInfo *mode )
+ 	g_nOutputRefresh = gamescope::GetModeRefresh( mode );
+ 	g_nDynamicRefreshHz = 0;
+ 
++	g_nsVsync = gamescope::GetVblankNs( mode );
++	drm_log.infof("Vblank ns: %lu", g_nsVsync);
++
+ 	update_drm_effective_orientations(drm, mode);
+ 
+ 	switch ( drm->pConnector->GetCurrentOrientation() )
+diff --git a/src/main.cpp b/src/main.cpp
+index 02d3117..0a81f67 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -292,6 +292,7 @@ int g_nNestedDisplayIndex = 0;
+ uint32_t g_nOutputWidth = 0;
+ uint32_t g_nOutputHeight = 0;
+ int g_nOutputRefresh = 0;
++long g_nsVsync = 0;
+ bool g_bOutputHDREnabled = false;
+ 
+ bool g_bFullscreen = false;
+diff --git a/src/main.hpp b/src/main.hpp
+index e7b857d..e6f8ff1 100644
+--- a/src/main.hpp
++++ b/src/main.hpp
+@@ -20,6 +20,7 @@ extern uint32_t g_nOutputWidth;
+ extern uint32_t g_nOutputHeight;
+ extern bool g_bForceRelativeMouse;
+ extern int g_nOutputRefresh; // mHz
++extern long g_nsVsync;       // ns
+ extern bool g_bOutputHDREnabled;
+ extern bool g_bForceInternal;
+ extern bool g_bUseRotationShader;
+diff --git a/src/vblankmanager.cpp b/src/vblankmanager.cpp
+index f036d00..4c3974c 100644
+--- a/src/vblankmanager.cpp
++++ b/src/vblankmanager.cpp
+@@ -113,9 +113,7 @@ namespace gamescope
+ 			// to not account for vertical front porch when dealing with the vblank
+ 			// drm_commit is going to target?
+ 			// Need to re-test that.
+-			const uint64_t ulRedZone = eScreenType == GAMESCOPE_SCREEN_TYPE_INTERNAL
+-				? m_ulVBlankDrawBufferRedZone
+-				: std::min<uint64_t>( m_ulVBlankDrawBufferRedZone, ( m_ulVBlankDrawBufferRedZone * 60'000 * nRefreshRate ) / 60'000 );
++			const uint64_t ulRedZone = m_ulVBlankDrawBufferRedZone + g_nsVsync;
+ 
+ 			const uint64_t ulDecayAlpha = m_ulVBlankRateOfDecayPercentage; // eg. 980 = 98%
  
 -- 
-2.48.1
+2.49.0
 

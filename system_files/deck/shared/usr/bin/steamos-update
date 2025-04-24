@@ -32,8 +32,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-
-if command -v ublue-update > /dev/null; then
+if command -v uupd > /dev/null; then
   if [ -n "${CHECK}" ]; then
     if [ -f '/tmp/upgrade-installed' ]; then
       exit 7 # Upgrade already installed
@@ -42,8 +41,8 @@ if command -v ublue-update > /dev/null; then
       wget -q --spider https://github.com
       if [ $? -eq 0 ]; then
         # Check system state
-        ublue-update --check --updatecheck
-        if [ $? -eq 0 ]; then
+        uupd update-check
+        if [ $? -ne 0 ]; then
           exit 0 # Upgrade available
         else
           exit 7 # Checks failed
@@ -73,8 +72,8 @@ if command -v ublue-update > /dev/null; then
           cp "${HOME}"/.steamos-update.log "${HOME}"/.steamos-update.log.old
       fi
 
-      # Pull exit code from ublue-update
-      systemctl start ublue-update-force > "${HOME}"/.steamos-update.log 2>&1
+      # Pull exit code from uupd
+      systemctl start uupd.service > "${HOME}"/.steamos-update.log 2>&1
       echo $? > /tmp/upgrade-check
     }
     upgrade | fake_progress
@@ -88,5 +87,5 @@ if command -v ublue-update > /dev/null; then
     fi
   fi
 else
-  exit 7 # ublue-update not installed
+  exit 7 # uupd not installed
 fi
