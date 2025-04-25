@@ -1,14 +1,6 @@
 #!/usr/bin/bash
 # use our branding for steam
 
-if [ ! -d $HOME/.local/share/Steam ]; then
-# Set up steam with the bootstrap before starting it, this allows steam to run for the first time even with no network access
-if [[ -f "/usr/share/gamescope-session-plus/bootstrap_steam.tar.gz" ]]; then
-    mkdir -p ~/.local/share
-    tar xf /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz -C ~/.local/share
-fi
-fi
-
 DECK_STARTUP="/usr/share/ublue-os/bazzite/bazzite.webm"
 DECK_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend.webm"
 OLED_STARTUP="/usr/share/ublue-os/bazzite/bazzite-oled.webm"
