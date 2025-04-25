@@ -16,7 +16,7 @@ show-lockscreen=false
 show-power-option=false
 show-gamemode=false
 hide-forcequit=true
-show-boxbuddy=true
+show-distroshelf=true
 
 # Keybindings
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
