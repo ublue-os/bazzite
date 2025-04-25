@@ -182,7 +182,6 @@ jobs:
           cd $(mktemp -d)
           gh run download --repo=$docs_repo -n github-pages
           tar -xC "$DOCS_DIR" -f artifact.tar
-          rm $PWD
 
       - name: Check just syntax
         uses: ublue-os/just-action@bda593098a84a84973b002b4377709166a68be52 # v2
