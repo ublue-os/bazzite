@@ -43,11 +43,8 @@ if ! $SKIP_VIDEOS; then
         "deck-suspend-animation-from-throbber.webm"
         "oled-suspend-animation-from-throbber.webm"
         "steam_os_suspend_from_throbber.webm"
-        "deck-suspend-animation-from-throbber.webm"
         "deck-suspend-animation.webm"
-        "oled-suspend-animation-from-throbber.webm"
         "oled-suspend-animation.webm"
-        "steam_os_suspend_from_throbber.webm"
         "steam_os_suspend.webm"
     )
 
