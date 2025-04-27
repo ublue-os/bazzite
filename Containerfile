@@ -95,10 +95,7 @@ RUN --mount=type=cache,dst=/var/cache \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
         mavit/discover-overlay \
-        lizardbyte/beta \
-        rok/cdemu \
-        rodoma92/kde-cdemu-manager \
-        rodoma92/rmlint; \
+        lizardbyte/beta; \
     do \
         echo "Enabling copr: $copr"; \
         dnf5 -y copr enable $copr; \
@@ -595,9 +592,6 @@ RUN --mount=type=cache,dst=/var/cache \
         che/nerd-fonts \
         mavit/discover-overlay \
         lizardbyte/beta \
-        rodoma92/kde-cdemu-manager \
-        rodoma92/rmlint \
-        rok/cdemu \
         hikariknight/looking-glass-kvmfr; \
     do \
         dnf5 -y copr disable $copr; \
