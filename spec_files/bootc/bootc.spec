@@ -13,7 +13,7 @@
 
 Name:           bootc
 Version:        1.1.7
-Release:        100.bazzite
+Release:        101.bazzite
 Summary:        Bootable container system
 
 # Apache-2.0
@@ -29,9 +29,7 @@ URL:            https://github.com/containers/bootc
 Source0:        %{url}/releases/download/v%{version}/bootc-%{version}.tar.zstd
 Source1:        %{url}/releases/download/v%{version}/bootc-%{version}-vendor.tar.zstd
 
-Patch0: 0001-store-Really-remove-empty-etc-resolv.conf-and-etc-ho.patch
-
-Patch1: unhide.patch
+Patch0: unhide.patch
 
 # https://fedoraproject.org/wiki/Changes/EncourageI686LeafRemoval
 ExcludeArch:    %{ix86}
