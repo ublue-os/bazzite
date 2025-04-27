@@ -98,8 +98,7 @@ RUN --mount=type=cache,dst=/var/cache \
         lizardbyte/beta \
         rok/cdemu \
         rodoma92/kde-cdemu-manager \
-        rodoma92/rmlint \
-        ilyaz/LACT; \
+        rodoma92/rmlint; \
     do \
         echo "Enabling copr: $copr"; \
         dnf5 -y copr enable $copr; \
@@ -570,13 +569,24 @@ RUN --mount=type=cache,dst=/var/cache \
     glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
     rm -r /tmp/bazzite-schema-test && \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    for copr in \
+    for repo in \
+        fedora-cisco-openh264 \
+        fedora-steam \
+        fedora-rar \
+        terra \
+        terra-extras \
+        negativo17-fedora-multimedia \
+        _copr_ublue-os-akmods; \
+    do \
+        sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/$repo.repo; \
+    done && for copr in \
         bazzite-org/bazzite \
         bazzite-org/bazzite-multilib \
         ublue-os/staging \
+        ublue-os/packages \
         bazzite-org/LatencyFleX \
         bazzite-org/obs-vkcapture \
+        bazzite-org/vk_hdr_layer \
         bazzite-org/wallpaper-engine-kde-plugin \
         ycollet/audinux \
         bazzite-org/rom-properties \
@@ -585,13 +595,15 @@ RUN --mount=type=cache,dst=/var/cache \
         che/nerd-fonts \
         mavit/discover-overlay \
         lizardbyte/beta \
+        rodoma92/kde-cdemu-manager \
+        rodoma92/rmlint \
+        rok/cdemu \
         hikariknight/looking-glass-kvmfr; \
     do \
         dnf5 -y copr disable $copr; \
     done && unset -v copr && \
     dnf5 config-manager setopt "*tailscale*".enabled=0 && \
     dnf5 config-manager setopt "*charm*".enabled=0 && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' enabled=0)" && \
     sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
     sed -i 's|#default.clock.allowed-rates = \[ 48000 \]|default.clock.allowed-rates = [ 44100 48000 ]|' /usr/share/pipewire/pipewire.conf && \
