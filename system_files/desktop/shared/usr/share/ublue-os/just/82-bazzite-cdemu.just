@@ -32,6 +32,7 @@ setup-cdemu ACTION="":
         exit 0
       fi
       sudo dnf5 -y copr enable rodoma92/kde-cdemu-manager
+      sudo dnf5 -y copr enable rok/cdemu
       if [[ "$GUI_EDITION" == "kinoite" ]]; then
             # Install packages for KDE 6
             sudo rpm-ostree install --apply-live -y cdemu-daemon cdemu-client kde-cdemu-manager-kf6
@@ -67,6 +68,7 @@ setup-cdemu ACTION="":
         fi
       fi
       sudo dnf5 -y copr disable rodoma92/kde-cdemu-manager
+      sudo dnf5 -y copr disable rok/cdemu
       echo "CDEmu has been uninstalled."
     elif [[ "${OPTION,,}" =~ helper ]]; then
       if [[ "$GUI_EDITION" == "kinoite" ]]; then
