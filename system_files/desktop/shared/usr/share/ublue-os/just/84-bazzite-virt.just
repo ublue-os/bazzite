@@ -203,7 +203,7 @@ setup-virtualization ACTION="":
     # Default value set by us is 128 which is enough for 4k SDR
     # Find the current value by running "rpm-ostree kargs"
     KVMFR_MODPROBE'
-      rpm-ostree kargs --append-if-missing="kvmfr.static_size_mb=128"
+      rpm-ostree kargs --append-if-missing="kvmfr.static_size_mb=128" --append-if-missing="split_lock_detect=off"
       if [ -f "/etc/udev/rules.d/99-kvmfr.rules" ]; then
         echo "Re-creating kvmfr udev rules"
         sudo rm /etc/udev/rules.d/99-kvmfr.rules
