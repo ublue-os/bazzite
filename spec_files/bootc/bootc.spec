@@ -12,7 +12,7 @@
 %endif
 
 Name:           bootc
-Version:        1.1.6
+Version:        1.1.7
 Release:        100.bazzite
 Summary:        Bootable container system
 
@@ -31,8 +31,7 @@ Source1:        %{url}/releases/download/v%{version}/bootc-%{version}-vendor.tar
 
 Patch0: 0001-store-Really-remove-empty-etc-resolv.conf-and-etc-ho.patch
 
-# https://github.com/antheas/bootc/commit/05519a979db0ee64a30663eba4e9ad0e68e6897b
-Patch1: 05519a979db0ee64a30663eba4e9ad0e68e6897b.patch
+Patch1: unhide.patch
 
 # https://fedoraproject.org/wiki/Changes/EncourageI686LeafRemoval
 ExcludeArch:    %{ix86}
