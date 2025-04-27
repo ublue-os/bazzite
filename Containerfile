@@ -95,6 +95,7 @@ RUN --mount=type=cache,dst=/var/cache \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
         mavit/discover-overlay \
+        rok/cdemu \
         lizardbyte/beta; \
     do \
         echo "Enabling copr: $copr"; \
@@ -592,6 +593,7 @@ RUN --mount=type=cache,dst=/var/cache \
         che/nerd-fonts \
         mavit/discover-overlay \
         lizardbyte/beta \
+        rok/cdemu \
         hikariknight/looking-glass-kvmfr; \
     do \
         dnf5 -y copr disable $copr; \
