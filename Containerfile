@@ -601,6 +601,8 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 config-manager setopt "*tailscale*".enabled=0 && \
     dnf5 config-manager setopt "*charm*".enabled=0 && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' enabled=0)" && \
+    : "Ignore unavailabe repos" && \
+    dnf5 config-manager setopt skip_if_unavailable=1 && \
     sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
     sed -i 's|#default.clock.allowed-rates = \[ 48000 \]|default.clock.allowed-rates = [ 44100 48000 ]|' /usr/share/pipewire/pipewire.conf && \
     sed -i 's|^ExecStart=.*|ExecStart=/usr/libexec/rtkit-daemon --no-canary|' /usr/lib/systemd/system/rtkit-daemon.service && \
@@ -798,6 +800,8 @@ RUN --mount=type=cache,dst=/var/cache \
     do \
         dnf5 -y copr disable -y $copr; \
     done && unset -v copr && \
+    : "Ignore unavailabe repos" && \
+    dnf5 config-manager setopt skip_if_unavailable=1 && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
