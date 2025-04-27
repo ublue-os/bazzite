@@ -667,6 +667,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
+    dnf5 -y copr enable ublue-os/staging && \
+    dnf5 -y copr enable ublue-os/packages && \
     dnf5 -y copr enable bazzite-org/bazzite && \
     dnf5 -y copr enable bazzite-org/bazzite-multilib && \
     dnf5 -y copr enable bazzite-org/LatencyFleX && \
@@ -782,6 +784,8 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i "s/^SCX_SCHEDULER=.*/SCX_SCHEDULER=scx_lavd/" /etc/default/scx && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     for copr in \
+        ublue-os/staging \
+        ublue-os/packages \
         bazzite-org/bazzite \
         bazzite-org/bazzite-multilib \
         bazzite-org/LatencyFleX \
