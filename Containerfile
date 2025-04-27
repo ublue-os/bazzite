@@ -874,8 +874,7 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
 
 # Unset skip_if_unavailable option if was set beforehand
-RUN dnf5 config-manager unsetopt skip_if_unavailable && \
-    /ctx/cleanup
+RUN dnf5 config-manager unsetopt skip_if_unavailable
 
 # Remove everything that doesn't work well with NVIDIA
 RUN --mount=type=cache,dst=/var/cache \
