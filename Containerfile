@@ -640,7 +640,8 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/build-initramfs && \
     /ctx/finalize
 
-RUN bootc container lint
+RUN dnf5 config-manager setopt skip_if_unavailable=1 && \
+    bootc container lint
 
 ################
 # DECK BUILDS
@@ -678,6 +679,7 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable bazzite-org/wallpaper-engine-kde-plugin && \
     dnf5 -y copr enable hhd-dev/hhd && \
     dnf5 -y copr enable ycollet/audinux && \
+    dnf5 config-manager unsetopt skip_if_unavailable && \
     /ctx/cleanup
 
 # Configure KDE & GNOME
@@ -844,7 +846,8 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/build-initramfs && \
     /ctx/finalize
 
-RUN bootc container lint
+RUN dnf5 config-manager setopt skip_if_unavailable=1 && \
+    bootc container lint
 
 FROM ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS nvidia-akmods
 
@@ -869,6 +872,10 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
 # Fetch NVIDIA driver
 COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
+
+# Unset skip_if_unavailable option if was set beforehand
+RUN dnf5 config-manager unsetopt skip_if_unavailable && \
+    /ctx/cleanup
 
 # Remove everything that doesn't work well with NVIDIA
 RUN --mount=type=cache,dst=/var/cache \
@@ -923,4 +930,5 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/build-initramfs && \
     /ctx/finalize
 
-RUN bootc container lint
+RUN dnf5 config-manager setopt skip_if_unavailable=1 && \
+    bootc container lint
