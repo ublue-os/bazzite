@@ -10,8 +10,7 @@ install-lact:
 # Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
 install-coolercontrol:
     #!/usr/bin/bash
-    sudo sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/terra.repo
-    sudo sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/terra-extras.repo
+    sudo dnf copr enable codifryed/CoolerControl
     sudo rpm-ostree install -y liquidctl coolercontrol
     echo 'Complete, please reboot to apply changes.'
 
