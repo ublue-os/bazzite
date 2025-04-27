@@ -10,7 +10,9 @@ install-lact:
 # Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
 install-coolercontrol:
     #!/usr/bin/bash
-    rpm-ostree install -y liquidctl coolercontrol
+    sudo sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/terra.repo
+    sudo sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/terra-extras.repo
+    sudo rpm-ostree install -y liquidctl coolercontrol
     echo 'Complete, please reboot to apply changes.'
 
 alias get-steamcmd := install-steamcmd
@@ -29,7 +31,7 @@ install-openrazer:
     source /usr/lib/ujust/ujust.sh
     OPENRAZER_CONFIGURATOR_APP="None of openrazer frontend apps"
     sudo curl -Lo /etc/yum.repos.d/hardware:razer.repo https://openrazer.github.io/hardware:razer.repo && \
-    rpm-ostree install -y openrazer-daemon && \
+    sudo rpm-ostree install -y openrazer-daemon && \
         if ! grep -q "plugdev" /etc/group; then \
       sudo bash -c 'grep "plugdev" /lib/group >> /etc/group' \
     ; fi && \

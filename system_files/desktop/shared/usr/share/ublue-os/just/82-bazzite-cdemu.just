@@ -31,12 +31,13 @@ setup-cdemu ACTION="":
         echo "${red} CDEmu has already been installed!"
         exit 0
       fi
+      sudo dnf5 -y copr enable rodoma92/kde-cdemu-manager
       if [[ "$GUI_EDITION" == "kinoite" ]]; then
             # Install packages for KDE 6
-            rpm-ostree install --apply-live -y cdemu-daemon cdemu-client kde-cdemu-manager-kf6
+            sudo rpm-ostree install --apply-live -y cdemu-daemon cdemu-client kde-cdemu-manager-kf6
       else
             # Install packages for GNOME
-            rpm-ostree install --apply-live -y cdemu-daemon cdemu-client gcdemu
+            sudo rpm-ostree install --apply-live -y cdemu-daemon cdemu-client gcdemu
       fi
       # Kickstart the service manually on first install, it doesn't seem to be doing that by default.
       systemctl start --user cdemu-daemon.service
@@ -51,20 +52,21 @@ setup-cdemu ACTION="":
         GUI_STATE="$(rpm -qa kde-cdemu-manager-kf6)"
         #GUI already removed
         if [[GUI_STATE == ""]]; then
-          rpm-ostree remove -y cdemu-daemon cdemu-client
+          sudo rpm-ostree remove -y cdemu-daemon cdemu-client
         else
-          rpm-ostree remove -y cdemu-daemon cdemu-client kde-cdemu-manager-kf6
+          sudo rpm-ostree remove -y cdemu-daemon cdemu-client kde-cdemu-manager-kf6
         fi
       else
         # Remove packages for GNOME
         GUI_STATE="$(rpm -qa gcdemu)"
         #GUI already removed
         if [["${GUI_STATE,,}" == ""]]; then
-          rpm-ostree remove -y cdemu-daemon cdemu-client
+          sudo rpm-ostree remove -y cdemu-daemon cdemu-client
         else
-          rpm-ostree remove -y cdemu-daemon cdemu-client gcdemu
+          sudo rpm-ostree remove -y cdemu-daemon cdemu-client gcdemu
         fi
       fi
+      sudo dnf5 -y copr disable rodoma92/kde-cdemu-manager
       echo "CDEmu has been uninstalled."
     elif [[ "${OPTION,,}" =~ helper ]]; then
       if [[ "$GUI_EDITION" == "kinoite" ]]; then
@@ -72,7 +74,7 @@ setup-cdemu ACTION="":
         if [["$GUI_STATE" == ""]]; then
           echo "GUI has already been removed or the package is not yet installed!"
         else
-          rpm-ostree remove -y kde-cdemu-manager-kf6
+          sudo rpm-ostree remove -y kde-cdemu-manager-kf6
           echo "GUI has been removed, you can still mount images using the CLI with the cdemu command."
         fi
       else
@@ -80,7 +82,7 @@ setup-cdemu ACTION="":
         if [["$GUI_STATE" == ""]]; then
           echo "GUI has already been removed or the package is not yet installed!"
         else
-          rpm-ostree remove -y gcdemu
+          sudo rpm-ostree remove -y gcdemu
           echo "GUI has been removed, you can still mount images using the CLI with the cdemu command."
         fi
       fi
