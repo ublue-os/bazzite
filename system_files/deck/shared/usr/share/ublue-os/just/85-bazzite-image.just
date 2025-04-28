@@ -172,11 +172,16 @@ configure-override-videos ACTION="":
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
       echo "Adding $NO_VIDEO"
       touch $NO_VIDEO
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/bigpicture_startup.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_startup.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend_from_throbber.webm
       rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck_startup.webm
       rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation.webm
       rm -f $HOME/.local/share/Steam/config/uioverrides/movies/deck-suspend-animation-from-throbber.webm
-      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend.webm
-      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/steam_os_suspend_from_throbber.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/oled_startup.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/oled-suspend-animation.webm
+      rm -f $HOME/.local/share/Steam/config/uioverrides/movies/oled-suspend-animation-from-throbber.webm
     fi
 
 # Restores the stock virtual keyboard under KDE & GNOME
