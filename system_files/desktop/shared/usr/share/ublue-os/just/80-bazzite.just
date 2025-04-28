@@ -189,7 +189,6 @@ configure-grub ACTION="":
       apply_setting "$OPTION"
     fi
 
-
 # Add user to "input" group required by certain controller drivers
 add-user-to-input-group:
     #!/usr/bin/bash
