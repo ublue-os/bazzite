@@ -168,39 +168,6 @@ remove-opentabletdriver:
     flatpak --system remove -y flathub net.opentabletdriver.OpenTabletDriver && \ 
     systemctl disable --user --now opentabletdriver.service
 
-# Install Docker, a platform designed to help developers build, share, and run container applications
-install-docker:
-    #!/usr/bin/bash
-    set -eo pipefail
-    [[ ${DEBUG:-} -eq 1 ]] && set -x
-    [[ $(id -u) -eq 0 ]] && {
-        echo >&2 "Dont run this as root"
-        exit 1
-    }
-    mkdir -p ~/.local/bin
-    brew install docker
-    # Handle plugins installation separately to handle file config collision
-    brew install docker-buildx docker-compose || {
-      brew link --overwrite docker-buildx docker-compose
-    }
-
-    [[ -e ~/.local/bin/docker ]] && {
-      gum confirm "There is a file in ~/.local/bin/docker. Do you wish to override it?" || exit 0
-    }
-    ln -sf $(which docker) ~/.local/bin/docker
-    [[ -e /usr/local/bin/docker ]] && {
-      gum confirm "There is a file in /usr/local/bin/docker. Do you wish to override it?" || exit 0
-    }
-    sudo ln -sf $(which docker) /usr/local/bin/docker
-    # Enable podman sockets
-    systemctl --user enable --now podman.socket
-    sudo systemctl enable --now podman.socket
-    # Add podman sockets to docker contexts
-    ctx=$(docker context create podman --docker "host=unix://$(podman system info  --format '{{{{.Host.RemoteSocket.Path}}')") && \
-      docker context use $ctx && unset -v ctx || true
-    ctx=$(sudo docker context create podman-rootful --docker "host=unix://$(sudo podman system info  --format '{{{{.Host.RemoteSocket.Path}}')") && \
-      sudo docker context use $ctx && unset -v ctx || true
-
 # Create fedora distrobox if it doesn't exist
 [private]
 distrobox-check-fedora:
