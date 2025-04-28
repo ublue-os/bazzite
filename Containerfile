@@ -720,7 +720,6 @@ RUN --mount=type=cache,dst=/var/cache \
         adjustor \
         acpica-tools \
         vpower \
-        glorpfetch \
         ds-inhibit \
         steam_notif_daemon \
         sdgyrodsu \
