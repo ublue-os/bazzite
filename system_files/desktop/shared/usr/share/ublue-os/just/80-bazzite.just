@@ -14,7 +14,7 @@ _install-system-flatpaks:
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
 # Toggle SSH availability on boot
-toggle-ssh:
+toggle-ssh ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     # Get hostname and IP address
@@ -25,19 +25,28 @@ toggle-ssh:
     if systemctl is-enabled sshd | grep -q enabled; then
       SSH_STATUS="Enabled"
     fi
-    # Display current status
-    echo -e "\n${bold}Hostname:${normal} $HOSTNAME"
-    echo -e "${bold}IP Address:${normal} $IP_ADDRESS"
-    if [ "$SSH_STATUS" == "Enabled" ]; then
-      echo -e "${bold}SSH Availability on Boot:${normal} ${green}$SSH_STATUS${normal}\n"
-    else
-      echo -e "${bold}SSH Availability on Boot:${normal} ${yellow}$SSH_STATUS${normal}\n"
+    OPTION="{{ ACTION }}"
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust toggle-ssh <option>"
+      echo "  <option>: Specify the option to skip the interactive prompt"
+      echo "  Use 'enable' to enable SSH on boot"
+      echo "  Use 'disable' to disable SSH on boot"
+      exit 0
+    elif [ "$OPTION" == "" ]; then
+      # Display current status
+      echo -e "\n${bold}Hostname:${normal} $HOSTNAME"
+      echo -e "${bold}IP Address:${normal} $IP_ADDRESS"
+      if [ "$SSH_STATUS" == "Enabled" ]; then
+        echo -e "${bold}SSH Availability on Boot:${normal} ${green}$SSH_STATUS${normal}\n"
+      else
+        echo -e "${bold}SSH Availability on Boot:${normal} ${yellow}$SSH_STATUS${normal}\n"
+      fi
+      # Prompt user for action
+      echo "Choose an option:"
+      OPTION=$(ugum choose "Enable SSH" "Disable SSH" "Exit without saving")
     fi
-    # Prompt user for action
-    echo "Choose an option:"
-    CHOICE=$(ugum choose "Enable SSH" "Disable SSH" "Exit without saving")
-    case "$CHOICE" in
-      "Enable SSH")
+    case "$OPTION" in
+      "Enable SSH"|enable)
         echo "Enabling SSH on boot..."
         sudo systemctl enable sshd
         sudo systemctl start sshd
@@ -45,37 +54,21 @@ toggle-ssh:
         echo -e "${bold}${USER}@${IP_ADDRESS}${normal}"
         echo " "
         ;;
-      "Disable SSH")
+      "Disable SSH"|disable)
         echo "Disabling SSH on boot..."
         sudo systemctl disable sshd
         sudo systemctl stop sshd
         echo -e "SSH is now ${yellow}Disabled${normal}."
         echo " "
         ;;
-      "Exit without saving")
+      "Exit without saving"|*)
         echo "No changes made."
         ;;
-      *)
-        echo "Invalid choice. Exiting without changes."
-        ;;
     esac
-
-# Regenerate GRUB config, useful in dual-boot scenarios where a second operating system isn't listed
-regenerate-grub:
-    #!/usr/bin/bash
-    source /usr/libexec/bazzite-boot-remount
-    remount_boot_rw
-    if [ -d /sys/firmware/efi ]; then
-      sudo grub2-mkconfig -o /etc/grub2-efi.cfg
-    else
-      sudo grub2-mkconfig -o /etc/grub2.cfg
-    fi
-    remount_boot_ro
 
 # Configure grub bootmenu visibility. pass action 'help' for more info.
 configure-grub ACTION="":
     #!/usr/bin/bash
-    source /usr/libexec/bazzite-boot-remount
     source /usr/lib/ujust/ujust.sh
     # Function to display usage/help with some color
     print_help() {
@@ -105,12 +98,12 @@ configure-grub ACTION="":
             echo "  - ${bold}0${normal}: GRUB always shows on boot."
             ;;
           1)
-            echo "Current GRUB menu_auto_hide setting: ${bold}${yellow}1 (Hide After Successful Boot, except when Dual Booting)${normal}"
+            echo "Current GRUB menu_auto_hide setting: ${bold}${yellow}1 (Hide After Successful Boot)${normal}"
             echo "Explanation:"
             echo "  - ${bold}1${normal}: GRUB is hidden after a successful boot, but it will show if dual-booting."
             ;;
           2)
-            echo "Current GRUB menu_auto_hide setting: ${bold}${cyan}2 (Hide After Successful Boot)${normal}"
+            echo "Current GRUB menu_auto_hide setting: ${bold}${cyan}2 (Always Hide)${normal}"
             echo "Explanation:"
             echo "  - ${bold}2${normal}: GRUB is hidden after a successful boot, even for dual-boot setups."
             ;;
@@ -125,8 +118,8 @@ configure-grub ACTION="":
     # Interactive menu for choosing the new behavior
     interactive_menu() {
       local options=(
-        "Hide After Successful Boot (menu_auto_hide=2)"
-        "Same except when Dual Booting (menu_auto_hide=1)"
+        "Always Hide Grub (menu_auto_hide=2)"
+        "Hide After Successful Boot (menu_auto_hide=1)"
         "Always Show Grub (menu_auto_hide=0)"
         "Exit without changes"
       )
@@ -137,16 +130,15 @@ configure-grub ACTION="":
     # Function to apply the selected setting
     apply_setting() {
       local selected_option="$1"
-      remount_boot_rw
       # Support the interactive strings as well as short commands
       case "$(echo "$selected_option" | tr '[:upper:]' '[:lower:]')" in
         *"(menu_auto_hide=2)"*|hide)
           sudo grub2-editenv - set menu_auto_hide=2
-          echo "GRUB menu is now set to ${bold}${cyan}Hide After Successful Boot${normal}."
+          echo "GRUB menu is now set to ${bold}${cyan}Always Hide${normal}."
           ;;
         *"(menu_auto_hide=1)"*|unhide)
           sudo grub2-editenv - set menu_auto_hide=1
-          echo "GRUB menu is now set to ${bold}${yellow}Hide After Successful Boot except when Dual Booting${normal}."
+          echo "GRUB menu is now set to ${bold}${yellow}Hide After Successful Boot${normal}."
           ;;
         *"(menu_auto_hide=0)"*|show)
           sudo grub2-editenv - set menu_auto_hide=0
@@ -162,7 +154,6 @@ configure-grub ACTION="":
           echo "${bold}${red}Invalid option selected. No changes were made.${normal}"
           ;;
       esac
-      remount_boot_ro
     }
     OPTION="{{ ACTION }}"   # from “configure-grub ACTION=...”
     if [ "$OPTION" == "help" ]; then
