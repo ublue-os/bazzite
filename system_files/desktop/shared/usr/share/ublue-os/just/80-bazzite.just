@@ -66,6 +66,18 @@ toggle-ssh ACTION="":
         ;;
     esac
 
+# Regenerate GRUB config, useful in dual-boot scenarios where a second operating system isn't listed
+regenerate-grub:
+    #!/usr/bin/bash
+    source /usr/libexec/bazzite-boot-remount
+    remount_boot_rw
+    if [ -d /sys/firmware/efi ]; then
+      sudo grub2-mkconfig -o /etc/grub2-efi.cfg
+    else
+      sudo grub2-mkconfig -o /etc/grub2.cfg
+    fi
+    remount_boot_ro
+
 # Configure grub bootmenu visibility. pass action 'help' for more info.
 configure-grub ACTION="":
     #!/usr/bin/bash
