@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+if ! flatpak list --system --columns=application | grep -q '^io\.github\.flattool\.Warehouse$'; then
+    flatpak install --system -y io.github.flattool.Warehouse
+fi
+
+/usr/bin/flatpak run io.github.flattool.Warehouse "$@"

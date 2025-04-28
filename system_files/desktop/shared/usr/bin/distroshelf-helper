@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+
+if ! flatpak list --system --columns=application | grep -q '^com\.ranfdev\.DistroShelf$'; then
+    flatpak install --system -y com.ranfdev.DistroShelf
+    if [ ! -f "$HOME/.var/app/com.ranfdev.DistroShelf/config/glib-2.0/settings/keyfile" ]; then
+        mkdir -p "$HOME/.var/app/com.ranfdev.DistroShelf/config/glib-2.0/settings"
+        echo -e "[com/ranfdev/DistroShelf]\nselected-terminal='ptyxis'" > "$HOME/.var/app/com.ranfdev.DistroShelf/config/glib-2.0/settings/keyfile"
+    fi
+fi
+
+/usr/bin/flatpak run com.ranfdev.DistroShelf "$@"
