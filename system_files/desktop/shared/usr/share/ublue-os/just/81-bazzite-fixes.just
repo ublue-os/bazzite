@@ -190,7 +190,7 @@ toggle-i915-sleep-fix:
         echo -e "\nInvalid value for i915.enable_dc. Please choose a valid value.\n"
         return
       fi
-      sudo rpm-ostree kargs --replace "i915.enable_dc=$new_value"
+      rpm-ostree kargs --replace "i915.enable_dc=$new_value"
       echo -e "Kernel parameter updated. Reboot required to apply changes."
     }
     # Display current status
@@ -225,7 +225,7 @@ toggle-i915-sleep-fix:
         ;;
       "Unset Parameter")
         echo "Unsetting i915.enable_dc..."
-        sudo rpm-ostree kargs --delete "i915.enable_dc=[-0-9]"
+        rpm-ostree kargs --delete "i915.enable_dc=[-0-9]"
         echo -e "Kernel parameter unset. Reboot required to apply changes."
         ;;
       "Exit without changes")
