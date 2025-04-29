@@ -872,14 +872,12 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 # Fetch NVIDIA driver
 COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
 
-# Unset skip_if_unavailable option if was set beforehand
-RUN dnf5 config-manager unsetopt skip_if_unavailable
-
-# Remove everything that doesn't work well with NVIDIA
+# Remove everything that doesn't work well with NVIDIA, unset skip_if_unavailable option if was set beforehand
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
+    dnf5 config-manager unsetopt skip_if_unavailable && \
     dnf5 -y remove \
         rocm-hip \
         rocm-opencl \
