@@ -1,0 +1,7 @@
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.policykit.exec" &&
+        subject.isInGroup("wheel") &&
+        action.lookup("program") == "/usr/bin/efibootmgr") {
+        return polkit.Result.YES;
+    }
+});
