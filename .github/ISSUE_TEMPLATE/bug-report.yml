@@ -20,7 +20,6 @@ body:
       label: What did you expect to happen?
       description: A clear and concise description of what you expected to happen.
       placeholder: What were you expecting to happen?
-      value: "I expected 2 + 2 to equal 4, but instead 2 + 2 equaled 6!"
     validations:
       required: true
   - type: textarea
@@ -29,11 +28,15 @@ body:
       label: Output of `rpm-ostree status`
       description: Please run `rpm-ostree status` and paste the output here.
       render: shell
+    validations:
+      required: true
   - type: textarea
     id: hardware
     attributes:
       label: Hardware
       description: Please provide further information about your hardware. If reporting a bug on a handheld device, please provide the output of the following - `cat /sys/devices/virtual/dmi/id/product_name`
+    validations:
+      required: true
   - type: textarea
     id: extra-context
     attributes:
