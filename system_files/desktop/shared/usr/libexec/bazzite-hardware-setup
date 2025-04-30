@@ -34,12 +34,6 @@ NEEDED_KARGS=()
 # Add directory for fixups
 mkdir -p /etc/bazzite/fixups
 
-# UPDATES
-if [[ -f /var/ublue-update/branch ]]; then
-  echo "Removing previously used branch selection file"
-  rm -f /var/ublue-update/branch
-fi
-
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
 
