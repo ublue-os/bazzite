@@ -527,9 +527,6 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i "s|grub_probe\} --target=device /\`|grub_probe} --target=device /sysroot\`|g" /usr/bin/grub2-mkconfig && \
     rm -f /usr/share/vulkan/icd.d/lvp_icd.*.json && \
     rm -f /usr/lib/systemd/system/service.d/50-keep-warm.conf && \
-    mkdir -p "/etc/profile.d/" && \
-    ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
-    "/etc/profile.d/ublue-firstboot.sh" && \
     mkdir -p "/etc/xdg/autostart" && \
     cp "/usr/share/applications/discover_overlay.desktop" "/etc/xdg/autostart/discover_overlay.desktop" && \
     sed -i 's@Exec=discover-overlay@Exec=/usr/bin/bazzite-discover-overlay@g' /etc/xdg/autostart/discover_overlay.desktop && \
