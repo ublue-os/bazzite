@@ -571,6 +571,8 @@ RUN --mount=type=cache,dst=/var/cache \
         fedora-cisco-openh264 \
         fedora-steam \
         fedora-rar \
+        terra \
+        terra-extras \
         negativo17-fedora-multimedia \
         _copr_ublue-os-akmods; \
     do \
