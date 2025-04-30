@@ -26,7 +26,7 @@ GNOME extension that adds a menu allowing to reboot into any existing UEFI boot 
 
 %install
 mkdir -p %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}
-cp -r * %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/%
+cp -r * %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/
 glib-compile-schemas %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/schemas/
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 cp -p %{SOURCE1} %{buildroot}%{_licensedir}/%{name}
