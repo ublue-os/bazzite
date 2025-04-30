@@ -461,6 +461,7 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-bazzite-menu \
             gnome-shell-extension-hotedge \
             gnome-shell-extension-caffeine \
+            gnome-shell-extension-restart-to \
             rom-properties-gtk3 \
             ibus-mozc \
             openssh-askpass \
