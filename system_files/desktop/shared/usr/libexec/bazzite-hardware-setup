@@ -399,6 +399,22 @@ if [ ! -f /etc/bazzite/fixups/coolercontrol_fixup ]; then
   touch /etc/bazzite/fixups/coolercontrol_fixup
 fi
 
+# Fix users who've layered LACT in the past.
+if [ ! -f /etc/bazzite/fixups/lact_fixup ]; then
+  if rpm-ostree status --booted | grep -q "cdemu-daemon"; then
+      dnf5 copr enable ilyaz/LACT
+  fi
+  touch /etc/bazzite/fixups/lact_fixup
+fi
+
+# Fix users who've layered CDEmu in the past.
+if [ ! -f /etc/bazzite/fixups/cdemu_fixup ]; then
+  if rpm-ostree status --booted | grep -q "cdemu-daemon"; then
+      dnf5 copr enable rok/cdemu
+  fi
+  touch /etc/bazzite/fixups/cdemu_fixup
+fi
+
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
 echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
