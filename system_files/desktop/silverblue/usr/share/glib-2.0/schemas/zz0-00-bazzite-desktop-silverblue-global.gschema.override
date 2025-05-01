@@ -25,12 +25,6 @@ allow-updates=false
 download-updates=false
 download-updates-notify=false
 
-[com.github.stunkymonkey.nautilus-open-any-terminal]
-terminal='ptyxis'
-keybindings=''
-new-tab=false
-flatpak='off'
-
 [org.gnome.Ptyxis]
 restore-session=false
 restore-window-size=false

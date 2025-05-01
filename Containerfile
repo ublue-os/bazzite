@@ -462,6 +462,8 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-hotedge \
             gnome-shell-extension-caffeine \
             gnome-shell-extension-restart-to \
+            gnome-shell-extension-burn-my-windows \
+            gnome-shell-extension-desktop-cube \
             rom-properties-gtk3 \
             ibus-mozc \
             openssh-askpass \

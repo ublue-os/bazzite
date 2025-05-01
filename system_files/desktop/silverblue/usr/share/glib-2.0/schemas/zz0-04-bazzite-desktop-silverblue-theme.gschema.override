@@ -38,7 +38,6 @@ primary-color='#310042'
 secondary-color='#000622'
 
 [org.gnome.shell.extensions.just-perfection]
-animation=4
 theme=true
 window-demands-attention-focus=true
 switcher-popup-delay=true
@@ -99,3 +98,11 @@ enable-tiling-system-windows-suggestions=true
 enable-screen-edges-windows-suggestions=true
 show-indicator=false
 enable-snap-assist=false
+
+[org/gnome/shell/extensions/desktop-cube]
+last-first-gap=false
+enable-desktop-edge-switch=false
+enable-panel-dragging=true
+enable-desktop-dragging=true
+enable-overview-edge-switch=false
+enable-overview-dragging=false
