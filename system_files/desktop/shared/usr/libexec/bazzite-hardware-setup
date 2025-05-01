@@ -401,7 +401,7 @@ fi
 
 # Fix users who've layered LACT in the past.
 if [ ! -f /etc/bazzite/fixups/lact_fixup ]; then
-  if rpm-ostree status --booted | grep -q "cdemu-daemon"; then
+  if rpm-ostree status --booted | grep -q "lact"; then
       dnf5 copr enable ilyaz/LACT
   fi
   touch /etc/bazzite/fixups/lact_fixup
