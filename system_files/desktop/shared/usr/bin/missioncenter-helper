@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+if ! flatpak list --system --columns=application | grep -q '^io\.missioncenter\.MissionCenter$'; then
+    flatpak install --system -y io.missioncenter.MissionCenter
+fi
+
+/usr/bin/flatpak run io.missioncenter.MissionCenter "$@"
