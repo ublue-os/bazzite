@@ -70,7 +70,7 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 Varian umum yang tersedia sebagai `bazzite`, cocok untuk komputer desktop.
 - Pembaruan otomatis untuk Sistem Operasi,Flatpak,Nix package <sup><sub>(dengan Fleek)</sub></sup>, dan semua kontainer Distrobox.
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **ISO bisa diunduh dari halaman rilis kami [disini](https://github.com/ublue-os/bazzite/releases), dan berbagai macam panduan instalasi dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=30).**
 
 Jika anda telah menggunakan image dari Universal Blue anda dapat mengikuti [instruksi ini](https://universal-blue.org/images/#image-list). Untuk berganti image dari image upstream Fedora Silverblue/Kinoite ostree anda dapat mengikuti perintah ini:
@@ -122,10 +122,10 @@ Varian `bazzite-deck` ini didesain untuk digunakan sebagai alternatif untuk Stea
 - Service yang spesifik ke Steam Deck dapat dimatikan dengan menjalankan `ujust disable-deck-services` di terminal, berguna untuk menjalankan image ini di konsol Handheld lain dan HTPC.
 - Informasi tambahan dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=37) dibagian Bazzite Steam Deck Images.
 
-> [!WARNING]   
+> [!WARNING]
 > **Dikarenakan ada bug/kutu dari upstream,Bazzite tidak bisa digunakan pada perangkat SteamDeck yang memiliki penyimpanan 64GB eMMC. meningkatkan penyimpanan menyelesaikan masalah ini.**
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **ISO bisa diunduh dari halaman rilis kami [disini](https://github.com/ublue-os/bazzite/releases), dan berbagai macam panduan instalasi dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=30).**
 
 Jika anda telah menggunakan image dari Universal Blue anda dapat mengikuti [instruksi ini](https://universal-blue.org/images/#image-list). Untuk berganti image dari image upstream Fedora Silverblue/Kinoite ostree anda dapat mengikuti perintah ini:
@@ -146,7 +146,7 @@ Varian desktop GNOME tersedia dalam versi desktop dan deck.varian ini memiliki b
 - Pra-install ekstensi opsional, seperti [ekstensi untuk pengalaman pengguna yang lebih baik](https://www.youtube.com/watch?v=nbCg9_YgKgM).
 - Pembaruan otomatis untuk [Firefox GNOME theme](https://github.com/rafaelmardojai/firefox-gnome-theme) dan [Thunderbird GNOME theme](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(jika terinstall)</sub></sup>
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **ISO bisa diunduh dari halaman rilis kami [disini](https://github.com/ublue-os/bazzite/releases), dan berbagai macam panduan instalasi dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=30).**
 
 Untuk rebase dari sistem ostree yang ada ke varian **desktop**:
@@ -161,7 +161,7 @@ Untuk rebase dari sistem ostree yang ada ke varian **desktop dengan driver Nvidi
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
 ```
 
-> [!WARNING]  
+> [!WARNING]
 > **Dikarenakan ada bug/kutu dari upstream,Bazzite tidak bisa digunakan pada perangkat SteamDeck yang memiliki penyimpanan 64GB eMMC saat ini.**
 
 
