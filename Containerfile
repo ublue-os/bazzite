@@ -312,6 +312,7 @@ RUN --mount=type=cache,dst=/var/cache \
         waydroid \
         cage \
         wlr-randr && \
+    sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
     setcap 'cap_sys_admin+p' /usr/bin/sunshine-v* && \
     dnf5 -y --setopt=install_weak_deps=False install \
         rocm-hip \
