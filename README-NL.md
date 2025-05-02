@@ -81,7 +81,7 @@ Gangbare variant beschikbaar als `bazzite`, voor desktop computers.
 
 - Automatische updates voor Flatpaks en alle Distrobox containers - aangedreven door [ublue-update](https://github.com/ublue-os/ublue-update) en [topgrade](https://github.com/topgrade-rs/topgrade).
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases) en een installatiegids kan [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
 
 Rebase van een bestaande upstream Fedora Atomic naar deze image als je **Open Source GPU Drivers** wilt:
@@ -100,7 +100,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 **Voor gebruikers die Secure Boot aan hebben:** Volg onze [secure boot documentatie](#secure-boot) voor de rebasing.
 
 ### Steam Deck/Home Theater PCs (HTPCs)
-> [!IMPORTANT]  
+> [!IMPORTANT]
 Apparaten die NIET de Steam Deck zijn kunnen nogsteeds de  `bazzite-deck` images gebruiken maar moeten een moderne AMD GPU hebben. Intel Arc GPUs werken ook.
 
 Varianten voor gebruik als alternatief voor SteamOS op de Steam Deck en voor console-achtige ervaring op HTPCs beschikbaar als `bazzite-deck`:
@@ -134,10 +134,10 @@ Varianten voor gebruik als alternatief voor SteamOS op de Steam Deck en voor con
 - Steam Deck hardware-specifieken services kunnen uit gezet worden met `ujust disable-bios-updates` en `ujust disable-firmware-updates` in de terminal. Dezen staan al uit op non-Deck hardware en op Decks met DeckHD schermen of 32GB RAM mods.
 - Meer informatie kan [hier](https://universal-blue.discourse.group/docs?topic=37) gevonden worden voor de Bazzite Steam Deck images.
 
-> [!WARNING]  
+> [!WARNING]
 > **Door een upstream probleem kan Bazzite niet gebruikt worden op Steam Decks met 64GB eMMC opslag. De opslag vervangen helpt met dit probleem.**
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases) en installatie instructies kunnen [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
 
 Rebase van een bestaande upstream Fedora Atomic naar deze image:
@@ -170,7 +170,7 @@ GNOME desktop environment is beschikbaar in alle desktop and deck varianten. Dez
 - Meerderen beschikbaaren extensies geïnstalleerd zoals [belangrijken gebruikers ervaring fixes](https://www.youtube.com/watch?v=nbCg9_YgKgM).
 - Automatische updates voor [Firefox GNOME thema](https://github.com/rafaelmardojai/firefox-gnome-theme) en [Thunderbird GNOME thema](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(Als deze geïnstalleerd zijn)</sub></sup>
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases) en een installatiegids kan [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
 
 Rebase van een bestaande upstream Fedora Atomic naar deze image:
@@ -185,7 +185,7 @@ Bestaande rebase ostree systeem naar een Desktop Environment met de **Proprietar
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
 ```
 
-> [!WARNING]  
+> [!WARNING]
 > **Door een upstream probleem kan Bazzite niet gebruikt worden op Steam Decks met 64GB eMMC opslag.**
 
 Om een bestaande ostree systeem te rebasen naar de **Steam Deck/HTPC** release:
@@ -320,7 +320,7 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## Secure Boot
 
-> [!WARNING]  
+> [!WARNING]
 > **Steam Deck Gebruikers: De Steam Deck komt niet met Secure Boot aan en komt zonder sleutels ingeschakeld. Zet dit niet aan behalven als je ABSOLUUT weet wat je doet.**
 
 Secure boot is beschikbaar met onze eigen sleutel. De pub sleutel kan [hier](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der) gevonden worden.

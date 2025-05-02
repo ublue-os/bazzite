@@ -325,7 +325,7 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## Arranque Seguro (Secure Boot)
 
-> [!WARNING]  
+> [!WARNING]
 > **Usuarios de la Steam Deck: La Steam Deck no viene con Arranque Seguro habilitado y no viene con ninguna llave registrada por defecto. No habilites esto a menos que estes seguro de lo que estes haciendo.**
 
 El Arranque Seguro (Secure Boot) tiene soporte gracias a nuestra llave digital personalizada. La llave pública puede encontrarse en la raíz de [este](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der) repositorio.
