@@ -81,7 +81,7 @@ De nombreuses variantes communes sont disponibles sous le nom `bazzite`, adapté
 
 - Mises à jour automatiques pour le système d'exploitation, les Flatpaks et tous les conteneurs Distrobox - propulsées par [ublue-update](https://github.com/ublue-os/ublue-update) et [topgrade](https://github.com/topgrade-rs/topgrade).
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **Les ISOs peuvent être téléchargées depuis notre [page de versions](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile peut être trouvé [ici](https://universal-blue.discourse.group/docs?topic=30).**
 
 Rebase d'un Fedora Atomic existante de cette image est disponible ici avec des **pilotes GPU Open Source** :
@@ -101,7 +101,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 
 ### Steam Deck/Home Theater PCs (HTPCs)
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 Les appareils qui NE sont PAS des SteamDeck peuvent toujours utiliser les images `bazzite-deck`, mais doivent utiliser un GPU AMD moderne. Les GPU Intel Arc ont également été confirmés comme fonctionnels.
 
 Variante conçue pour être utilisée comme alternative à SteamOS sur le SteamDeck, et pour une expérience de console sur les HTPCs, disponible sous le nom `bazzite-deck` :
@@ -135,10 +135,10 @@ Variante conçue pour être utilisée comme alternative à SteamOS sur le SteamD
 - Les services spécifiques au matériel du SteamDeck peuvent être désactivés en exécutant `ujust disable-bios-updates` et `ujust disable-firmware-updates` dans le terminal. Ils sont automatiquement désactivés sur le matériel non-Deck, et sur les Decks avec des écrans DeckHD ou des mods de 32 Go de RAM.
 - Plus d'informations peuvent être trouvées [ici](https://universal-blue.discourse.group/docs?topic=37) sur les images Bazzite pour SteamDeck.
 
-> [!WARNING]  
+> [!WARNING]
 > **En raison d'un bug amont, Bazzite ne peut pas être utilisé sur les SteamDecks avec 64 Go de stockage eMMC pour le moment. La mise à niveau du stockage résout le problème.**
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **Les ISOs peuvent être téléchargées depuis notre [page de versions](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile peut être trouvé [ici](https://universal-blue.discourse.group/docs?topic=30).**
 
 Rebase d'un Fedora Atomic existante avec cette image :
@@ -171,7 +171,7 @@ Les versions avec l'environnement de bureau GNOME sont disponibles en versions d
 - Nombreuses extensions optionnelles préinstallées, y compris des correctifs importants pour l'expérience utilisateur, voir [ici](https://www.youtube.com/watch?v=nbCg9_YgKgM).
 - Mises à jour automatiques pour le thème GNOME de [Firefox](https://github.com/rafaelmardojai/firefox-gnome-theme) et le thème GNOME de [Thunderbird](https://github.com/rafaelmardojai/thunderbird-gnome-theme), s'ils sont installés.
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **Les ISO peuvent être téléchargées depuis notre [page de releases](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile est disponible [ici](https://universal-blue.discourse.group/docs?topic=30).**
 
 Pour rebaser un système ostree existant vers cette image :
@@ -186,7 +186,7 @@ Pour rebaser un système ostree existant vers une version avec l'environnement d
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
 ```
 
-> [!WARNING]  
+> [!WARNING]
 > **En raison d'un bug en amont, Bazzite ne peut pas être utilisé sur les Steam Decks avec un stockage eMMC de 64 Go pour le moment.**
 
 Pour rebaser un système ostree existant vers la version **Steam Deck/HTPC** :
@@ -321,7 +321,7 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## Secure Boot
 
-> [!WARNING]  
+> [!WARNING]
 > **Utilisateurs de Steam Deck : Le Steam Deck ne vient pas avec le secure boot activé et n'inclut pas de clés inscrites par défaut. Ne l'activez pas à moins de savoir parfaitement ce que vous faites.**
 
 Le secure boot est pris en charge avec notre clé personnalisée. La clé publique peut être trouvée à la racine de ce dépôt [ici](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der).

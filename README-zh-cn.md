@@ -82,7 +82,7 @@ Bazzite是使用[Fedora](https://fedoraproject.org/)技术基于[ublue-os/main](
 
 - 操作系统，Flatpaks，和所有Distrobox容器的自动更新 - 由[ublue-update](https://github.com/ublue-os/ublue-update) 和 [topgrade](https://github.com/topgrade-rs/topgrade)提供支持。
 
-> [!重要]  
+> [!重要]
 > **ISOs可以从我们的[发布页面](https://github.com/ublue-os/bazzite/releases)下载，也可以[在此处](https://universal-blue.discourse.group/docs?topic=30)找到有用的安装指南。**
 
 从已安装的上游Fedora Atomic桌面变基（rebase）到此镜像：
@@ -100,7 +100,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 **对于设置了安全启动的用户：** 请遵循我们的[安全启动文档](#安全启动)进行变基（rebase）。
 
 ### Steam Deck/家庭影院PC(HTPCs)
-> [!重要]  
+> [!重要]
 非Steam Deck设备同样可以使用`bazzite-deck`镜像, 但该设备必须使用现代的AMD GPU。Intel Arc GPU也已经被确认可以正常工作。
 
 `bazzite-deck`变体被设计用在Steam Deck上作为SteamOS的替代系统，并在HTPCs上提供类似控制台的操作体验，此变体可用作：
@@ -134,10 +134,10 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - Steam Deck硬件特定的服务可以通过在终端中运行`ujust disable-bios-updates` 和 `ujust disable-firmware-updates` 以禁用。这些服务在非Deck硬件、改装了DeckHD显示屏或改装了32GB内存的Deck上自动禁用。
 - 更多关于Bazzite Steam Deck镜像的信息可以在[此处](https://universal-blue.discourse.group/docs?topic=37)找到。
 
-> [!警告]  
+> [!警告]
 > **由于上游错误，Bazzite目前无法在具有64GB eMMC存储空间的Steam Deck上使用。升级存储空间可以解决此问题。**
 
-> [!重要]  
+> [!重要]
 > **镜像文件可以从我们的[发布页面](https://github.com/ublue-os/bazzite/releases)下载，也可以在[此处](https://universal-blue.discourse.group/docs?topic=30)找到有用的安装指南。**
 
 从已安装的上游Fedora Atomic桌面变基（rebase）到此镜像：
@@ -170,7 +170,7 @@ ujust install-hhd-controller-glyph-theme
 - 预装了许多可选的扩展，包括[重要的用户体验修复](https://www.youtube.com/watch?v=nbCg9_YgKgM)。
 - 自动更新[Firefox GNOME主题](https://github.com/rafaelmardojai/firefox-gnome-theme) 和 [Thunderbird GNOME 主题](https://github.com/rafaelmardojai/thunderbird-gnome-theme)。 <sup><sub>(如果已安装)</sub></sup>
 
-> [!重要]  
+> [!重要]
 > **镜像文件可以从我们的[发布页面](https://github.com/ublue-os/bazzite/releases)下载，也可以[在此处](https://universal-blue.discourse.group/docs?topic=30)找到有用的安装指南。**
 
 从已安装的上游Fedora Atomic桌面变基（rebase）到此镜像：
@@ -185,7 +185,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:stab
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
 ```
 
-> [!警告]  
+> [!警告]
 > **由于上游错误，Bazzite目前无法在具有64GB eMMC存储空间的Steam Deck上使用。**
 
 将现有的ostree系统变基（rebase）到**Steam Deck/HTPC**版本：
@@ -320,7 +320,7 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## 安全启动
 
-> [!警告]  
+> [!警告]
 > **Steam Deck用户：Steam Deck并未启用安全启动功能，并且默认情况下也未提供任何注册的密钥。不要启用此功能，除非你确切的知道自己在做什么。**
 
 我们的自定义密钥支持安全启动。公钥可以在[此存储库](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der)的根目录中找到。

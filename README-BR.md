@@ -80,7 +80,7 @@ Imagem genérica disponível como `bazzite`, própria para computadores desktop.
 
 - Atualiza automaticamente o sistema, Flatpaks, e todos os containers Distrobox - via [ublue-update](https://github.com/ublue-os/ublue-update) e [topgrade](https://github.com/topgrade-rs/topgrade).
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://docs.bazzite.gg/General/Installation_Guide/).**
 
 Rebaseie de uma instalação existente de Fedora Atômico para esta imagem se você quiser **Drivers de GPU Open Source**:
@@ -99,7 +99,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 **Usuários com o Secure Boot ativado:** Sigam nossa [documentação para secure boot](#secure-boot) antes do rebase.
 
 ### Steam Deck/PCs Centros de Mídia (HTPCs)
-> [!IMPORTANT]  
+> [!IMPORTANT]
 Dispositivos que NÃO SÃO o Steam Deck também podem usar as imagens `bazzite-deck`, mas precisam ter uma GPU recente da AMD. GPUs Arc da Intel também foram confirmadas como funcionando.
 
 Imagem feita pra ser utilizada como alternativa ao SteamOS no Steam Deck, e para uma experiência semelhante a consoles em HTPCs, disponível como `bazzite-deck`:
@@ -134,10 +134,10 @@ Imagem feita pra ser utilizada como alternativa ao SteamOS no Steam Deck, e para
 - Serviços específicos para o hardware do Steam Deck podem ser desabilitados rodando `ujust disable-bios-updates` e `ujust disable-firmware-updates` no terminal. Eles são desabilitados automaticamente em hardware que não seja o Deck, e em Decks com telas DeckHD ou mods de 32GB de RAM.
 - Mais informações sobre as imagens Bazzite Steam Deck podem ser encontradas [aqui](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/).
 
-> [!WARNING]  
+> [!WARNING]
 > **Devido a um bug upstream, o Bazzite não pode ser utilizado em Steam Decks com 64GB de armazenamento eMMC no momento. Fazer um upgrade de armazenamento resolve o problema.**
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://docs.bazzite.gg/General/Installation_Guide/).**
 
 Pra fazer rebase de uma instalação existente de Fedora Atômico para esta imagem:
@@ -169,7 +169,7 @@ Imagens com o ambiente desktop GNOME estão disponíveis pra ambas as versões d
 - Várias extensões opcionais pré-instaladas, incluindo [correções importantes para a experiência de usuário](https://www.youtube.com/watch?v=nbCg9_YgKgM).
 - Atualizações automáticas para o [tema GNOME pro Firefox](https://github.com/rafaelmardojai/firefox-gnome-theme) e o [tema GNOME pro Thunderbird](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(Se instalados)</sub></sup>
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://docs.bazzite.gg/General/Installation_Guide/).**
 
 Pra fazer rebase de uma instalação existente de Fedora Atômico para esta imagem:
@@ -184,7 +184,7 @@ Pra fazer rebase de um sistema ostree existente para uma versão com Ambiente De
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
 ```
 
-> [!WARNING]  
+> [!WARNING]
 > **Devido a um bug upstream, o Bazzite não pode ser utilizado em Steam Decks com 64GB de armazenamento eMMC no momento.**
 
 Pra fazer rebase de um sistema ostree existente para a versão **Steam Deck/HTPC**:
@@ -313,7 +313,7 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 
 ## Secure Boot
 
-> [!WARNING]  
+> [!WARNING]
 > **Usuários do Steam Deck: O Steam Deck não habilita o secure boot e não vem com quaisquer chaves inclusas por padrão. Não ative se não tiver certeza absoluta de que sabe o que está fazendo.**
 
 Secure boot é suportado com a nossa chave própria. A chave pública se encontra [aqui](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der) na raiz deste repositório. Se você quiser adicionar a nossa chave antes da instalação ou rebase, baixe a chave e execute o seguinte:
