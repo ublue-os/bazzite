@@ -138,7 +138,7 @@ Variante conçue pour être utilisée comme alternative à SteamOS sur le SteamD
 > [!WARNING]  
 > **En raison d'un bug amont, Bazzite ne peut pas être utilisé sur les SteamDecks avec 64 Go de stockage eMMC pour le moment. La mise à niveau du stockage résout le problème.**
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > **Les ISOs peuvent être téléchargées depuis notre [page de versions](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile peut être trouvé [ici](https://universal-blue.discourse.group/docs?topic=30).**
 
 Rebase d'un Fedora Atomic existante avec cette image :
@@ -267,7 +267,6 @@ Les paquets portés de SteamOS et ChimeraOS, entre autres utilisés par Bazzite,
 | [gnome-shell-extension-compiz-windows-effect](https://github.com/hermes83/compiz-windows-effect)    | ![Build Status](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/gnome-shell-extension-compiz-windows-effect/status_image/last_build.png?) |
 | [gnome-shell-extension-hanabi](https://github.com/jeffshee/gnome-ext-hanabi)                        | ![Build Status](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/gnome-shell-extension-hanabi/status_image/last_build.png?)                |
 | [gnome-shell-extension-hotedge](https://github.com/jdoda/hotedge)                                   | ![Build Status](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/gnome-shell-extension-hotedge/status_image/last_build.png?)               |
-| [joystickwake](https://github.com/foresto/joystickwake)                                             | ![Build Status](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/joystickwake/status_image/last_build.png?)                                |
 | jupiter-fan-control                                                                                 | ![Build Status](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/jupiter-fan-control/status_image/last_build.png?)                         |
 | jupiter-hw-support-[btrfs](https://gitlab.com/popsulfr/steamos-btrfs)                               | ![Build Status](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/jupiter-hw-support-btrfs/status_image/last_build.png?)                    |
 | jupiter-sd-mounting-[btrfs](https://gitlab.com/popsulfr/steamos-btrfs)                              | ![Build Status](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/jupiter-hw-support-btrfs/status_image/last_build.png?)                    |
