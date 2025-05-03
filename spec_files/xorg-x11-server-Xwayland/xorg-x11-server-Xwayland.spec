@@ -8,7 +8,7 @@
 
 Summary:   Xwayland
 Name:      xorg-x11-server-Xwayland
-%global    xwayland_version 24.1.3
+%global    xwayland_version 24.1.6
 Version:   %{xwayland_version}.bazzite.{{{ git_dir_version }}}
 Release:   1%{?gitdate:.%{gitdate}git%{shortcommit}}%{?dist}
 
@@ -21,6 +21,10 @@ Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{xwayland_versio
 
 # Nobara
 Patch0:    xwayland-pointer-warp-fix.patch
+
+# SteamOS
+Patch1:    0001-Revert-xwayland-Restrict-allow-commit-to-the-window-.patch
+Patch2:    0002-Revert-xwayland-present-Check-allow_commits-in-xwl_p.patch
 
 License:   MIT
 
@@ -137,6 +141,24 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_libdir}/pkgconfig/xwayland.pc
 
 %changelog
+* Wed Feb 26 2025 Olivier Fourdan <ofourdan@redhat.com> - 24.1.6-1
+- xwayland 24.1.6 (#2343992)
+- CVE fix for: CVE-2025-26594, CVE-2025-26595, CVE-2025-26596, CVE-2025-26597,
+               CVE-2025-26598, CVE-2025-26599, CVE-2025-26600, CVE-2025-26601
+
+* Tue Feb 11 2025 Olivier Fourdan <ofourdan@redhat.com> - 24.1.5-2
+- Fix a regression with keyboard modifiers due to a bug in gamescope
+
+* Wed Feb  5 2025 Olivier Fourdan <ofourdan@redhat.com> - 24.1.5-1
+- xwayland 24.1.5
+
+* Sun Jan 19 2025 Fedora Release Engineering <releng@fedoraproject.org> - 24.1.4-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
+
+* Tue Oct 29 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.1.4-1
+- xwayland 24.1.4 - (#2316081)
+  CVE fix for: CVE-2024-9632
+
 * Wed Oct  2 2024 Olivier Fourdan <ofourdan@redhat.com> - 24.1.3-1
 - xwayland 24.1.3 - (#2313799)
 

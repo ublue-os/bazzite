@@ -1,0 +1,56 @@
+From e0db022baf32bccef32389cb1d4ed5f6167e6b02 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vivek=20Das=C2=A0Mohapatra?= <vivek@collabora.com>
+Date: Wed, 16 Apr 2025 15:14:34 +0100
+Subject: [PATCH] Revert "xwayland: Restrict allow commit to the window
+ manager"
+
+Steamwebhelper seems to need access to this (previously unrestricted)
+functionality, otherwise we get a short black screen interval instead
+of a seamless boot display.
+
+This reverts commit 2cc869626a5728d8bd80241322546f98df96094d.
+---
+ hw/xwayland/xwayland-screen.c | 21 ---------------------
+ 1 file changed, 21 deletions(-)
+
+diff --git a/hw/xwayland/xwayland-screen.c b/hw/xwayland/xwayland-screen.c
+index 822e55bf3..b5d800c95 100644
+--- a/hw/xwayland/xwayland-screen.c
++++ b/hw/xwayland/xwayland-screen.c
+@@ -181,33 +181,12 @@ xwl_property_callback(CallbackListPtr *pcbl, void *closure,
+         xwl_window_update_property(xwl_window, rec);
+ }
+ 
+-#define readOnlyPropertyAccessMask (DixReadAccess |\
+-                                    DixGetAttrAccess |\
+-                                    DixListPropAccess |\
+-                                    DixGetPropAccess)
+-
+ static void
+ xwl_access_property_callback(CallbackListPtr *pcbl, void *closure,
+                              void *calldata)
+ {
+-    XacePropertyAccessRec *rec = calldata;
+-    PropertyPtr prop = *rec->ppProp;
+-    ClientPtr client = rec->client;
+-    Mask access_mode = rec->access_mode;
+-    ScreenPtr pScreen = closure;
+-    struct xwl_screen *xwl_screen = xwl_screen_get(pScreen);
+-
+-    if (prop->propertyName == xwl_screen->allow_commits_prop) {
+-        /* Only the WM and the Xserver itself */
+-        if (client != serverClient &&
+-            client->index != xwl_screen->wm_client_id &&
+-            (access_mode & ~readOnlyPropertyAccessMask) != 0)
+-            rec->status = BadAccess;
+-    }
+ }
+ 
+-#undef readOnlyPropertyAccessMask
+-
+ static void
+ xwl_root_window_finalized_callback(CallbackListPtr *pcbl,
+                                    void *closure,
+-- 
+2.47.1
+
