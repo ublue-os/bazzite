@@ -1,0 +1,604 @@
+From 1242cff5c463dda899575ee17cb5f86b62960f14 Mon Sep 17 00:00:00 2001
+From: Dallas Strouse <dastrouses@gmail.com>
+Date: Mon, 31 Mar 2025 08:16:47 -0500
+Subject: [PATCH 1/2] input-settings/native: Handle custom accel profile
+
+---
+ src/backends/meta-input-settings-dummy.c      | 12 ++-
+ src/backends/meta-input-settings-private.h    | 23 ++++--
+ src/backends/meta-input-settings.c            | 81 ++++++++++++++++---
+ .../native/meta-input-settings-native.c       | 70 +++++++++++++---
+ 4 files changed, 156 insertions(+), 30 deletions(-)
+
+diff --git a/src/backends/meta-input-settings-dummy.c b/src/backends/meta-input-settings-dummy.c
+index 2abac056984..7259c144e47 100644
+--- a/src/backends/meta-input-settings-dummy.c
++++ b/src/backends/meta-input-settings-dummy.c
+@@ -165,21 +165,24 @@ meta_input_settings_dummy_set_tablet_area (MetaInputSettings  *settings,
+ static void
+ meta_input_settings_dummy_set_mouse_accel_profile (MetaInputSettings           *settings,
+                                                    ClutterInputDevice          *device,
+-                                                   GDesktopPointerAccelProfile  profile)
++                                                   GDesktopPointerAccelProfile  profile,
++                                                   MetaCustomAccelConfig       *accel_config)
+ {
+ }
+ 
+ static void
+ meta_input_settings_dummy_set_touchpad_accel_profile (MetaInputSettings           *settings,
+                                                       ClutterInputDevice          *device,
+-                                                      GDesktopPointerAccelProfile  profile)
++                                                      GDesktopPointerAccelProfile  profile,
++                                                      MetaCustomAccelConfig       *accel_config)
+ {
+ }
+ 
+ static void
+ meta_input_settings_dummy_set_trackball_accel_profile (MetaInputSettings           *settings,
+                                                        ClutterInputDevice          *device,
+-                                                       GDesktopPointerAccelProfile  profile)
++                                                       GDesktopPointerAccelProfile  profile,
++                                                       MetaCustomAccelConfig       *accel_config)
+ {
+ }
+ 
+@@ -235,7 +238,8 @@ meta_input_settings_dummy_set_pointing_stick_scroll_method (MetaInputSettings
+ static void
+ meta_input_settings_dummy_set_pointing_stick_accel_profile (MetaInputSettings           *settings,
+                                                             ClutterInputDevice          *device,
+-                                                            GDesktopPointerAccelProfile  profile)
++                                                            GDesktopPointerAccelProfile  profile,
++                                                            MetaCustomAccelConfig       *accel_config)
+ {
+ }
+ 
+diff --git a/src/backends/meta-input-settings-private.h b/src/backends/meta-input-settings-private.h
+index bb1e4bbb4d1..a027f2c5180 100644
+--- a/src/backends/meta-input-settings-private.h
++++ b/src/backends/meta-input-settings-private.h
+@@ -53,6 +53,13 @@ typedef struct _MetaKbdA11ySettings
+   int mousekeys_accel_time;
+ } MetaKbdA11ySettings;
+ 
++typedef struct _MetaCustomAccelConfig
++{
++  double        step;
++  const double *points;
++  size_t        points_len;
++} MetaCustomAccelConfig;
++
+ struct _MetaInputSettingsClass
+ {
+   GObjectClass parent_class;
+@@ -120,18 +127,22 @@ struct _MetaInputSettingsClass
+                                       gdouble                 padding_top,
+                                       gdouble                 padding_bottom);
+ 
+-  void (* set_mouse_accel_profile) (MetaInputSettings          *settings,
+-                                    ClutterInputDevice         *device,
+-                                    GDesktopPointerAccelProfile profile);
++  void (* set_mouse_accel_profile) (MetaInputSettings           *settings,
++                                    ClutterInputDevice          *device,
++                                    GDesktopPointerAccelProfile  profile,
++                                    MetaCustomAccelConfig       *accel_config);
+   void (* set_touchpad_accel_profile) (MetaInputSettings           *settings,
+                                        ClutterInputDevice          *device,
+-                                       GDesktopPointerAccelProfile  profile);
++                                       GDesktopPointerAccelProfile  profile,
++                                       MetaCustomAccelConfig       *accel_config);
+   void (* set_trackball_accel_profile) (MetaInputSettings          *settings,
+                                         ClutterInputDevice         *device,
+-                                        GDesktopPointerAccelProfile profile);
++                                        GDesktopPointerAccelProfile profile,
++                                        MetaCustomAccelConfig      *accel_config);
+   void (* set_pointing_stick_accel_profile) (MetaInputSettings           *settings,
+                                              ClutterInputDevice          *device,
+-                                             GDesktopPointerAccelProfile  profile);
++                                             GDesktopPointerAccelProfile  profile,
++                                             MetaCustomAccelConfig       *accel_config);
+   void (* set_pointing_stick_scroll_method) (MetaInputSettings                 *settings,
+                                              ClutterInputDevice                *device,
+                                              GDesktopPointingStickScrollMethod  profile);
+diff --git a/src/backends/meta-input-settings.c b/src/backends/meta-input-settings.c
+index dd03e66b9b1..87d1d3b2d4d 100644
+--- a/src/backends/meta-input-settings.c
++++ b/src/backends/meta-input-settings.c
+@@ -377,10 +377,11 @@ update_mouse_left_handed (MetaInputSettings  *input_settings,
+ }
+ 
+ static void
+-do_update_pointer_accel_profile (MetaInputSettings          *input_settings,
+-                                 GSettings                  *settings,
+-                                 ClutterInputDevice         *device,
+-                                 GDesktopPointerAccelProfile profile)
++do_update_pointer_accel_profile (MetaInputSettings           *input_settings,
++                                 GSettings                   *settings,
++                                 ClutterInputDevice          *device,
++                                 GDesktopPointerAccelProfile  profile,
++                                 MetaCustomAccelConfig       *pointer_accel_config)
+ {
+   MetaInputSettingsPrivate *priv =
+     meta_input_settings_get_instance_private (input_settings);
+@@ -390,19 +391,23 @@ do_update_pointer_accel_profile (MetaInputSettings          *input_settings,
+   if (settings == priv->mouse_settings)
+     input_settings_class->set_mouse_accel_profile (input_settings,
+                                                    device,
+-                                                   profile);
++                                                   profile,
++                                                   pointer_accel_config);
+   else if (settings == priv->touchpad_settings)
+     input_settings_class->set_touchpad_accel_profile (input_settings,
+                                                       device,
+-                                                      profile);
++                                                      profile,
++                                                      pointer_accel_config);
+   else if (settings == priv->trackball_settings)
+     input_settings_class->set_trackball_accel_profile (input_settings,
+                                                        device,
+-                                                       profile);
++                                                       profile,
++                                                       pointer_accel_config);
+   else if (settings == priv->pointing_stick_settings)
+     input_settings_class->set_pointing_stick_accel_profile (input_settings,
+                                                             device,
+-                                                            profile);
++                                                            profile,
++                                                            pointer_accel_config);
+ }
+ 
+ static void
+@@ -411,13 +416,61 @@ update_pointer_accel_profile (MetaInputSettings  *input_settings,
+                               ClutterInputDevice *device)
+ {
+   GDesktopPointerAccelProfile profile;
++  MetaCustomAccelConfig pointer_accel_config;
++
++  static gdouble default_points[2] = { 0.0, 1.0 };
++  MetaCustomAccelConfig fallback_accel_config = {
++    .step = 1.0,
++    .points = default_points,
++    .points_len = G_N_ELEMENTS (default_points)
++ };
++  gboolean is_using_fallback = FALSE;
++
++  /* GVariant types for getting the underlying values from */
++  g_autoptr (GVariant) custom_accel_config_variant = NULL;
++  g_autoptr (GVariant) custom_accel_config_pointer_step = NULL;
++  g_autoptr (GVariant) custom_accel_config_pointer_speeds = NULL;
+ 
+   profile = g_settings_get_enum (settings, "accel-profile");
+ 
++  custom_accel_config_variant = g_settings_get_value (settings, "custom-accel-config");
++  custom_accel_config_pointer_step = g_variant_lookup_value (custom_accel_config_variant, "pointer-step", G_VARIANT_TYPE_DOUBLE);
++  custom_accel_config_pointer_speeds = g_variant_lookup_value (custom_accel_config_variant, "pointer-speeds", G_VARIANT_TYPE ("ad"));
++
++  if (!custom_accel_config_pointer_step || !custom_accel_config_pointer_speeds)
++    {
++      g_warning ("Couldn't find entries for either pointer-step of type d, or pointer-speeds of type ad. You'll get a step of 1.0, and speeds of [0.0, 1.0].");
++      is_using_fallback = TRUE;
++    }
++
++  if (!is_using_fallback && !(g_variant_get_double (custom_accel_config_pointer_step) > 0))
++    {
++      g_warning ("Invalid step set for custom pointer acceleration, the step needs to be higher than 0. You'll get a step of 1.0, and speeds of [0.0, 1.0] instead.");
++      is_using_fallback = TRUE;
++    }
++
++  if (!is_using_fallback && g_variant_n_children (custom_accel_config_pointer_speeds) < 2 )
++    {
++      g_warning ("Insufficient points for custom pointer acceleration, a minimum of 2 is required. You'll get a step of 1.0, and speeds of [0.0, 1.0] instead.");
++      is_using_fallback = TRUE;
++    }
++
++  if (is_using_fallback)
++    pointer_accel_config = fallback_accel_config;
++  else
++    {
++      pointer_accel_config.step = g_variant_get_double (custom_accel_config_pointer_step);
++      pointer_accel_config.points = g_variant_get_fixed_array (custom_accel_config_pointer_speeds,
++                                                               &pointer_accel_config.points_len,
++                                                               sizeof(gdouble));
++    }
++
++
++
+   if (device)
+     {
+       do_update_pointer_accel_profile (input_settings, settings,
+-                                       device, profile);
++                                       device, profile, &pointer_accel_config);
+     }
+   else
+     {
+@@ -434,7 +487,7 @@ update_pointer_accel_profile (MetaInputSettings  *input_settings,
+             continue;
+ 
+           do_update_pointer_accel_profile (input_settings, settings,
+-                                           device, profile);
++                                           device, profile, &pointer_accel_config);
+         }
+     }
+ }
+@@ -1203,6 +1256,8 @@ meta_input_settings_changed_cb (GSettings  *settings,
+         update_device_natural_scroll (input_settings, NULL);
+       else if (strcmp (key, "accel-profile") == 0)
+         update_pointer_accel_profile (input_settings, settings, NULL);
++      else if (strcmp (key, "custom-accel-config") == 0)
++        update_pointer_accel_profile (input_settings, settings, NULL);
+       else if (strcmp (key, "middle-click-emulation") == 0)
+         update_middle_click_emulation (input_settings, settings, NULL);
+     }
+@@ -1216,6 +1271,8 @@ meta_input_settings_changed_cb (GSettings  *settings,
+         update_device_natural_scroll (input_settings, NULL);
+       else if (strcmp (key, "accel-profile") == 0)
+         update_pointer_accel_profile (input_settings, settings, NULL);
++      else if (strcmp (key, "custom-pointer-accel-config") == 0)
++        update_pointer_accel_profile (input_settings, settings, NULL);
+       else if (strcmp (key, "tap-to-click") == 0)
+         update_touchpad_tap_enabled (input_settings, NULL);
+       else if (strcmp (key, "tap-button-map") == 0)
+@@ -1244,6 +1301,8 @@ meta_input_settings_changed_cb (GSettings  *settings,
+         update_trackball_scroll_button (input_settings, NULL);
+       else if (strcmp (key, "accel-profile") == 0)
+         update_pointer_accel_profile (input_settings, settings, NULL);
++      else if (strcmp (key, "custom-pointer-accel-config") == 0)
++        update_pointer_accel_profile (input_settings, settings, NULL);
+       else if (strcmp (key, "middle-click-emulation") == 0)
+         update_middle_click_emulation (input_settings, settings, NULL);
+     }
+@@ -1253,6 +1312,8 @@ meta_input_settings_changed_cb (GSettings  *settings,
+         update_device_speed (input_settings, NULL);
+       else if (strcmp (key, "accel-profile") == 0)
+         update_pointer_accel_profile (input_settings, settings, NULL);
++      else if (strcmp (key, "custom-pointer-accel-config") == 0)
++        update_pointer_accel_profile (input_settings, settings, NULL);
+       else if (strcmp (key, "scroll-method") == 0)
+         update_pointing_stick_scroll_method (input_settings, settings, NULL);
+     }
+diff --git a/src/backends/native/meta-input-settings-native.c b/src/backends/native/meta-input-settings-native.c
+index 91d31712918..4dea7c94767 100644
+--- a/src/backends/native/meta-input-settings-native.c
++++ b/src/backends/native/meta-input-settings-native.c
+@@ -28,6 +28,9 @@
+ #include "backends/native/meta-input-thread.h"
+ #include "backends/native/meta-input-settings-native.h"
+ 
++typedef struct libinput_config_accel MetaLibinputConfigAccel;
++G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaLibinputConfigAccel, libinput_config_accel_destroy)
++
+ struct _MetaInputSettingsNative
+ {
+   MetaInputSettings parent_instance;
+@@ -483,8 +486,9 @@ meta_input_settings_native_set_keyboard_repeat (MetaInputSettings *settings,
+ }
+ 
+ static void
+-set_device_accel_profile (ClutterInputDevice         *device,
+-                          GDesktopPointerAccelProfile profile)
++set_device_accel_profile (ClutterInputDevice          *device,
++                          GDesktopPointerAccelProfile  profile,
++                          MetaCustomAccelConfig       *accel_config)
+ {
+   struct libinput_device *libinput_device;
+   enum libinput_config_accel_profile libinput_profile;
+@@ -500,12 +504,16 @@ set_device_accel_profile (ClutterInputDevice         *device,
+     case G_DESKTOP_POINTER_ACCEL_PROFILE_ADAPTIVE:
+       libinput_profile = LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE;
+       break;
++    case G_DESKTOP_POINTER_ACCEL_PROFILE_CUSTOM:
++      libinput_profile = LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM;
++      break;
+     default:
+       g_warn_if_reached ();
+       G_GNUC_FALLTHROUGH;
+     case G_DESKTOP_POINTER_ACCEL_PROFILE_DEFAULT:
+       libinput_profile =
+         libinput_device_config_accel_get_default_profile (libinput_device);
++      break;
+     }
+ 
+   profiles = libinput_device_config_accel_get_profiles (libinput_device);
+@@ -515,6 +523,44 @@ set_device_accel_profile (ClutterInputDevice         *device,
+         libinput_device_config_accel_get_default_profile (libinput_device);
+     }
+ 
++  if (libinput_profile == LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM)
++    {
++      g_autoptr (MetaLibinputConfigAccel) libinput_accel_config = NULL;
++      enum libinput_config_status status_code;
++
++      libinput_accel_config = libinput_config_accel_create (libinput_profile);
++      status_code =
++        libinput_config_accel_set_points (libinput_accel_config,
++                                          /* We don't set custom curves for
++                                           * scroll, only pointer motion */
++                                          LIBINPUT_ACCEL_TYPE_MOTION,
++                                          accel_config->step,
++                                          accel_config->points_len,
++                                          /* libinput doesn't modify the data
++                                           * passed to it, so the cast here is
++                                           * safe. */
++                                          (double *)accel_config->points);
++
++      if (status_code != LIBINPUT_CONFIG_STATUS_SUCCESS)
++        {
++          g_warning ("Custom pointer acceleration configuration failed with a step of %f and %" G_GSIZE_FORMAT " points, falling back to default profile.",
++                     accel_config->step, accel_config->points_len);
++          g_warning ("Make sure your step is more than 0, and that you have more than two points.");
++          libinput_profile =
++            libinput_device_config_accel_get_default_profile (libinput_device);
++        }
++       else
++         {
++           status_code = libinput_device_config_accel_apply (libinput_device, libinput_accel_config);
++           if (status_code != LIBINPUT_CONFIG_STATUS_SUCCESS)
++             {
++               g_warning ("Failed to apply custom pointer acceleration configuration, falling back to default profile");
++               libinput_profile =
++                 libinput_device_config_accel_get_default_profile (libinput_device);
++             }
++         }
++    }
++
+   libinput_device_config_accel_set_profile (libinput_device,
+                                             libinput_profile);
+ }
+@@ -522,7 +568,8 @@ set_device_accel_profile (ClutterInputDevice         *device,
+ static void
+ meta_input_settings_native_set_mouse_accel_profile (MetaInputSettings          *settings,
+                                                     ClutterInputDevice         *device,
+-                                                    GDesktopPointerAccelProfile profile)
++                                                    GDesktopPointerAccelProfile profile,
++                                                    MetaCustomAccelConfig      *accel_config)
+ {
+   ClutterInputCapabilities caps = clutter_input_device_get_capabilities (device);
+ 
+@@ -534,46 +581,49 @@ meta_input_settings_native_set_mouse_accel_profile (MetaInputSettings          *
+         CLUTTER_INPUT_CAPABILITY_TRACKPOINT)) != 0)
+     return;
+ 
+-  set_device_accel_profile (device, profile);
++  set_device_accel_profile (device, profile, accel_config);
+ }
+ 
+ static void
+ meta_input_settings_native_set_touchpad_accel_profile (MetaInputSettings           *settings,
+                                                        ClutterInputDevice          *device,
+-                                                       GDesktopPointerAccelProfile  profile)
++                                                       GDesktopPointerAccelProfile  profile,
++                                                       MetaCustomAccelConfig       *accel_config)
+ {
+   ClutterInputCapabilities caps = clutter_input_device_get_capabilities (device);
+ 
+   if ((caps & CLUTTER_INPUT_CAPABILITY_TOUCHPAD) == 0)
+     return;
+ 
+-  set_device_accel_profile (device, profile);
++  set_device_accel_profile (device, profile, accel_config);
+ }
+ 
+ static void
+ meta_input_settings_native_set_trackball_accel_profile (MetaInputSettings          *settings,
+                                                         ClutterInputDevice         *device,
+-                                                        GDesktopPointerAccelProfile profile)
++                                                        GDesktopPointerAccelProfile profile,
++                                                        MetaCustomAccelConfig      *accel_config)
+ {
+   ClutterInputCapabilities caps = clutter_input_device_get_capabilities (device);
+ 
+   if ((caps & CLUTTER_INPUT_CAPABILITY_TRACKBALL) == 0)
+     return;
+ 
+-  set_device_accel_profile (device, profile);
++  set_device_accel_profile (device, profile, accel_config);
+ }
+ 
+ static void
+ meta_input_settings_native_set_pointing_stick_accel_profile (MetaInputSettings           *settings,
+                                                              ClutterInputDevice          *device,
+-                                                             GDesktopPointerAccelProfile  profile)
++                                                             GDesktopPointerAccelProfile  profile,
++                                                             MetaCustomAccelConfig       *accel_config)
+ {
+   ClutterInputCapabilities caps = clutter_input_device_get_capabilities (device);
+ 
+   if ((caps & CLUTTER_INPUT_CAPABILITY_TRACKPOINT) == 0)
+     return;
+ 
+-  set_device_accel_profile (device, profile);
++  set_device_accel_profile (device, profile, accel_config);
+ }
+ 
+ static void
+-- 
+GitLab
+
+
+From b7e7ec339a525085f4dc336afd5cce50eb422dc4 Mon Sep 17 00:00:00 2001
+From: Dallas Strouse <dastrouses@gmail.com>
+Date: Mon, 31 Mar 2025 08:16:48 -0500
+Subject: [PATCH 2/2] input-settings/x11: Handle custom accel profile
+
+---
+ src/backends/x11/meta-input-settings-x11.c | 99 ++++++++++++++++------
+ 1 file changed, 71 insertions(+), 28 deletions(-)
+
+diff --git a/src/backends/x11/meta-input-settings-x11.c b/src/backends/x11/meta-input-settings-x11.c
+index 2807a93c73f..28dd6c2d927 100644
+--- a/src/backends/x11/meta-input-settings-x11.c
++++ b/src/backends/x11/meta-input-settings-x11.c
+@@ -513,53 +513,93 @@ meta_input_settings_x11_set_keyboard_repeat (MetaInputSettings *settings,
+ static void
+ set_device_accel_profile (MetaInputSettings           *settings,
+                           ClutterInputDevice          *device,
+-                          GDesktopPointerAccelProfile  profile)
+-{
+-  guchar *defaults, *available;
+-  guchar values[2] = { 0 }; /* adaptive, flat */
+-
+-  defaults = get_property (device, "libinput Accel Profile Enabled Default",
+-                           XA_INTEGER, 8, 2);
+-  if (!defaults)
++                          GDesktopPointerAccelProfile  profile,
++                          MetaCustomAccelConfig       *accel_config)
++{
++  enum
++  {
++    PROFILE_ADAPTIVE = 0,
++    PROFILE_FLAT,
++    PROFILE_CUSTOM,
++    N_PROFILES
++  };
++
++  uint8_t *default_profile, *available_profiles;
++  uint8_t set_profile[N_PROFILES] = {}; /* adaptive, flat, custom - only one can be set at a time. */
++
++  default_profile = get_property (device, "libinput Accel Profile Enabled Default",
++                                  XA_INTEGER, 8, N_PROFILES);
++  if (!default_profile)
+     return;
+ 
+-  available = get_property (device, "libinput Accel Profiles Available",
+-                           XA_INTEGER, 8, 2);
+-  if (!available)
++  available_profiles = get_property (device, "libinput Accel Profiles Available",
++                                     XA_INTEGER, 8, N_PROFILES);
++  if (!available_profiles)
+     goto err_available;
+ 
+   switch (profile)
+     {
+     case G_DESKTOP_POINTER_ACCEL_PROFILE_FLAT:
+-      values[0] = 0;
+-      values[1] = 1;
++      set_profile[PROFILE_FLAT] = 1;
+       break;
+     case G_DESKTOP_POINTER_ACCEL_PROFILE_ADAPTIVE:
+-      values[0] = 1;
+-      values[1] = 0;
++      set_profile[PROFILE_ADAPTIVE] = 1;
++      break;
++    case G_DESKTOP_POINTER_ACCEL_PROFILE_CUSTOM:
++      set_profile[PROFILE_CUSTOM] = 1;
+       break;
+     default:
+       g_warn_if_reached ();
+       G_GNUC_FALLTHROUGH;
+     case G_DESKTOP_POINTER_ACCEL_PROFILE_DEFAULT:
+-      values[0] = defaults[0];
+-      values[1] = defaults[1];
++      memcpy (&set_profile, default_profile, sizeof(set_profile));
+       break;
+     }
+ 
++  for (size_t i = 0; i < N_PROFILES; i++)
++    /* If the set profile isn't in the list of what's
++     * available, we're going to fall back to the default profile. */
++    if (set_profile[i] == 1 && available_profiles[i] == 0)
++      {
++        memcpy (&set_profile, default_profile, sizeof(set_profile));
++        break;
++      }
++
++  if (set_profile[PROFILE_CUSTOM])
++    {
++      MetaBackend *backend = get_backend (settings);
++      Display *xdisplay = meta_backend_x11_get_xdisplay (META_BACKEND_X11 (backend));
++      Atom xfloat_type = XInternAtom (xdisplay, "FLOAT", False);
++
++      float local_points[64] = { 0 };
++      /* libinput has a max NPOINTS of 64 */
++      size_t nlocal_points = MIN(accel_config->points_len, 64);
++      float local_step = (float) (accel_config->step);
++
++      /* We have doubles, the X11 property requires floats */
++      for (size_t i = 0; i < nlocal_points; i++)
++        local_points[i] = (float) accel_config->points[i];
++
++      change_property (settings, device, "libinput Accel Custom Motion Step",
++                       xfloat_type, 32, &local_step, 1);
++      change_property (settings, device, "libinput Accel Custom Motion Points",
++                       xfloat_type, 32, local_points, nlocal_points);
++  }
++
+   change_property (settings, device, "libinput Accel Profile Enabled",
+-                   XA_INTEGER, 8, &values, 2);
++                   XA_INTEGER, 8, &set_profile, N_PROFILES);
+ 
+-  meta_XFree (available);
++  meta_XFree (available_profiles);
+ 
+ err_available:
+-  meta_XFree (defaults);
++  meta_XFree (default_profile);
+ }
+ 
+ static void
+ meta_input_settings_x11_set_mouse_accel_profile (MetaInputSettings          *settings,
+                                                  ClutterInputDevice         *device,
+-                                                 GDesktopPointerAccelProfile profile)
++                                                 GDesktopPointerAccelProfile profile,
++                                                 MetaCustomAccelConfig      *accel_config)
+ {
+   ClutterInputCapabilities caps = clutter_input_device_get_capabilities (device);
+ 
+@@ -571,46 +611,49 @@ meta_input_settings_x11_set_mouse_accel_profile (MetaInputSettings          *set
+         CLUTTER_INPUT_CAPABILITY_TRACKPOINT)) != 0)
+     return;
+ 
+-  set_device_accel_profile (settings, device, profile);
++  set_device_accel_profile (settings, device, profile, accel_config);
+ }
+ 
+ static void
+ meta_input_settings_x11_set_touchpad_accel_profile (MetaInputSettings          *settings,
+                                                     ClutterInputDevice         *device,
+-                                                    GDesktopPointerAccelProfile profile)
++                                                    GDesktopPointerAccelProfile profile,
++                                                    MetaCustomAccelConfig      *accel_config)
+ {
+   ClutterInputCapabilities caps = clutter_input_device_get_capabilities (device);
+ 
+   if ((caps & CLUTTER_INPUT_CAPABILITY_TOUCHPAD) == 0)
+     return;
+ 
+-  set_device_accel_profile (settings, device, profile);
++  set_device_accel_profile (settings, device, profile, accel_config);
+ }
+ 
+ static void
+ meta_input_settings_x11_set_trackball_accel_profile (MetaInputSettings          *settings,
+                                                      ClutterInputDevice         *device,
+-                                                     GDesktopPointerAccelProfile profile)
++                                                     GDesktopPointerAccelProfile profile,
++                                                     MetaCustomAccelConfig      *accel_config)
+ {
+   ClutterInputCapabilities caps = clutter_input_device_get_capabilities (device);
+ 
+   if ((caps & CLUTTER_INPUT_CAPABILITY_TRACKBALL) == 0)
+     return;
+ 
+-  set_device_accel_profile (settings, device, profile);
++  set_device_accel_profile (settings, device, profile, accel_config);
+ }
+ 
+ static void
+ meta_input_settings_x11_set_pointing_stick_accel_profile (MetaInputSettings           *settings,
+                                                           ClutterInputDevice          *device,
+-                                                          GDesktopPointerAccelProfile  profile)
++                                                          GDesktopPointerAccelProfile  profile,
++                                                          MetaCustomAccelConfig       *accel_config)
+ {
+   ClutterInputCapabilities caps = clutter_input_device_get_capabilities (device);
+ 
+   if ((caps & CLUTTER_INPUT_CAPABILITY_TRACKPOINT) == 0)
+     return;
+ 
+-  set_device_accel_profile (settings, device, profile);
++  set_device_accel_profile (settings, device, profile, accel_config);
+ }
+ 
+ static void
+-- 
+GitLab
+

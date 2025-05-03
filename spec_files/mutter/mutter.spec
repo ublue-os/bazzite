@@ -32,7 +32,7 @@ Patch:         mutter-42.alpha-disable-tegra.patch
 Patch:         0001-Revert-x11-Use-input-region-from-frame-window-for-de.patch
 
 # https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4296
-# Patch:         https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4296.patch
+Patch:         4296.patch
 
 BuildRequires: pkgconfig(gobject-introspection-1.0) >= 1.41.0
 BuildRequires: pkgconfig(sm)
