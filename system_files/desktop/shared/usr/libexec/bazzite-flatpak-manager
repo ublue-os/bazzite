@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SCRIPT VERSION
-VER=24
+VER=25
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -56,8 +56,8 @@ flatpak override \
 
 # Allow MangoHUD config for Flatpaks
 flatpak override \
-  --filesystem=xdg-config/MangoHud:ro \
-  --filesystem=xdg-config/vkBasalt:ro
+  --filesystem=xdg-config/MangoHud:create \
+  --filesystem=xdg-config/vkBasalt:create
 
 # Fix permissions for XIV Launcher
 flatpak override \
