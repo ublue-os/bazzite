@@ -1,0 +1,33 @@
+From 7379c02245892b1f89e0c43f6cef2824f4a78bf8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vivek=20Das=C2=A0Mohapatra?= <vivek@collabora.com>
+Date: Tue, 22 Apr 2025 17:41:24 +0100
+Subject: [PATCH] Revert "xwayland/present: Check allow_commits in
+ xwl_present_flip"
+
+steamwebhelper currently sets _XWAYLAND_ALLOW_COMMITS to (uint32_t)0
+
+This is interpreted as FALSE when xwayland is checking whether commits
+are allowed: This was not checked prior to this commit and needs to be
+reverted to allow steamwebhelper to invoke xwl_present_flip.
+
+This reverts commit 7c25024879824cc96dc930e1af9e4c203eea740f.
+---
+ hw/xwayland/xwayland-present.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/hw/xwayland/xwayland-present.c b/hw/xwayland/xwayland-present.c
+index 7b9a4ac32..d29411d2c 100644
+--- a/hw/xwayland/xwayland-present.c
++++ b/hw/xwayland/xwayland-present.c
+@@ -870,7 +870,7 @@ xwl_present_flip(present_vblank_ptr vblank, RegionPtr damage)
+     struct xwl_present_event    *event = xwl_present_event_from_vblank(vblank);
+     Bool                        implicit_sync = TRUE;
+ 
+-    if (!xwl_window || !xwl_window->allow_commits)
++    if (!xwl_window)
+         return FALSE;
+ 
+     buffer = xwl_pixmap_get_wl_buffer(pixmap);
+-- 
+2.47.1
+
