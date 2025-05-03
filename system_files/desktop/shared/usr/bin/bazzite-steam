@@ -2,7 +2,6 @@
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
-SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 
 DECK_OPTION=""
 

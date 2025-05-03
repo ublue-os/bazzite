@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 # use our branding for steam
 
+SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
 SKIP_VIDEOS=false
 
 # Check for the no video flag
