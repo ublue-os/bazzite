@@ -1575,191 +1575,6 @@ index 6263478..32f776c 100644
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Olivier Tilloy <otilloy@igalia.com>
-Date: Tue, 28 Jan 2025 13:45:46 +0100
-Subject: wlserver: Create a keyboard group to keep all externally connected
- keyboards in sync
-
-This ensures that all externally connected keyboards share a common layout and state.
-If a lock modifier (such as Caps Lock or Num Lock) is enabled or disabled on one keyboard,
-the state will be propagated to all of them.
-If a keyboard is disconnected and then reconnected, the layout and state are preserved.
-
-This behaviour is consistent with KWin, which is used in desktop mode.
-
-Fixes: ValveSoftware/steam-for-linux#11529
----
- src/wlserver.cpp | 76 ++++++++++++++++++++++++++----------------------
- src/wlserver.hpp | 12 ++++----
- 2 files changed, 47 insertions(+), 41 deletions(-)
-
-diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 4ce9511..c003807 100644
---- a/src/wlserver.cpp
-+++ b/src/wlserver.cpp
-@@ -32,6 +32,7 @@
- #include <wlr/render/wlr_renderer.h>
- #include <wlr/types/wlr_compositor.h>
- #include <wlr/types/wlr_keyboard.h>
-+#include <wlr/types/wlr_keyboard_group.h>
- #include <wlr/types/wlr_pointer.h>
- #include <wlr/types/wlr_seat.h>
- #include <wlr/types/wlr_touch.h>
-@@ -282,21 +283,21 @@ static void bump_input_counter()
- 
- static void wlserver_handle_modifiers(struct wl_listener *listener, void *data)
- {
--	struct wlserver_keyboard *keyboard = wl_container_of( listener, keyboard, modifiers );
-+	struct wlr_keyboard *keyboard = &wlserver.keyboard_group->keyboard;
- 
--	wlr_seat_set_keyboard( wlserver.wlr.seat, keyboard->wlr );
--	wlr_seat_keyboard_notify_modifiers( wlserver.wlr.seat, &keyboard->wlr->modifiers );
-+	wlr_seat_set_keyboard( wlserver.wlr.seat, keyboard );
-+	wlr_seat_keyboard_notify_modifiers( wlserver.wlr.seat, &keyboard->modifiers );
- 
- 	bump_input_counter();
- }
- 
- static void wlserver_handle_key(struct wl_listener *listener, void *data)
- {
--	struct wlserver_keyboard *keyboard = wl_container_of( listener, keyboard, key );
-+	struct wlr_keyboard *keyboard = &wlserver.keyboard_group->keyboard;
- 	struct wlr_keyboard_key_event *event = (struct wlr_keyboard_key_event *) data;
- 
- 	xkb_keycode_t keycode = event->keycode + 8;
--	xkb_keysym_t keysym = xkb_state_key_get_one_sym(keyboard->wlr->xkb_state, keycode);
-+	xkb_keysym_t keysym = xkb_state_key_get_one_sym(keyboard->xkb_state, keycode);
- 
- #if HAVE_SESSION
- 	if (wlserver.wlr.session && event->state == WL_KEYBOARD_KEY_STATE_PRESSED && keysym >= XKB_KEY_XF86Switch_VT_1 && keysym <= XKB_KEY_XF86Switch_VT_12) {
-@@ -318,14 +319,14 @@ static void wlserver_handle_key(struct wl_listener *listener, void *data)
- 		if ( new_kb_surf )
- 		{
- 			wlserver_keyboardfocus( new_kb_surf, false );
--			wlr_seat_set_keyboard( wlserver.wlr.seat, keyboard->wlr );
-+			wlr_seat_set_keyboard( wlserver.wlr.seat, keyboard );
- 			wlr_seat_keyboard_notify_key( wlserver.wlr.seat, event->time_msec, event->keycode, event->state );
- 			wlserver_keyboardfocus( old_kb_surf, false );
- 			return;
- 		}
- 	}
- 
--	wlr_seat_set_keyboard( wlserver.wlr.seat, keyboard->wlr );
-+	wlr_seat_set_keyboard( wlserver.wlr.seat, keyboard );
- 	wlr_seat_keyboard_notify_key( wlserver.wlr.seat, event->time_msec, event->keycode, event->state );
- 
- 	bump_input_counter();
-@@ -434,32 +435,21 @@ static void wlserver_new_input(struct wl_listener *listener, void *data)
- 	{
- 		case WLR_INPUT_DEVICE_KEYBOARD:
- 		{
--			struct wlserver_keyboard *keyboard = (struct wlserver_keyboard *) calloc( 1, sizeof( struct wlserver_keyboard ) );
--
--			keyboard->wlr = (struct wlr_keyboard *)device;
--
--			struct xkb_rule_names rules = { 0 };
--			struct xkb_context *context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
--			rules.rules = getenv("XKB_DEFAULT_RULES");
--			rules.model = getenv("XKB_DEFAULT_MODEL");
--			rules.layout = getenv("XKB_DEFAULT_LAYOUT");
--			rules.variant = getenv("XKB_DEFAULT_VARIANT");
--			rules.options = getenv("XKB_DEFAULT_OPTIONS");
--			struct xkb_keymap *keymap = xkb_keymap_new_from_names(context, &rules,
--															   XKB_KEYMAP_COMPILE_NO_FLAGS);
--
--			wlr_keyboard_set_keymap(keyboard->wlr, keymap);
--			xkb_keymap_unref(keymap);
--			xkb_context_unref(context);
--			wlr_keyboard_set_repeat_info(keyboard->wlr, 25, 600);
--
--			keyboard->wlr->data = keyboard;
--
--			keyboard->modifiers.notify = wlserver_handle_modifiers;
--			wl_signal_add( &keyboard->wlr->events.modifiers, &keyboard->modifiers );
--
--			keyboard->key.notify = wlserver_handle_key;
--			wl_signal_add( &keyboard->wlr->events.key, &keyboard->key );
-+			struct wlr_keyboard *keyboard = wlr_keyboard_from_input_device(device);
-+			wlr_keyboard_set_keymap(keyboard, wlserver.keyboard_group->keyboard.keymap);
-+			if (!wlr_keyboard_group_add_keyboard(wlserver.keyboard_group, keyboard)) {
-+				wl_log.errorf("failed to add physical keyboard %s", device->name);
-+				break;
-+			}
-+			// Sync the state of the modifiers and the state of the LEDs
-+			struct wlr_keyboard_modifiers mods = wlserver.keyboard_group->keyboard.modifiers;
-+			if (mods.depressed != keyboard->modifiers.depressed ||
-+				mods.latched != keyboard->modifiers.latched ||
-+				mods.locked != keyboard->modifiers.locked ||
-+				mods.group != keyboard->modifiers.group) {
-+				wlr_keyboard_notify_modifiers(keyboard,
-+					mods.depressed, mods.latched, mods.locked, mods.group);
-+			}
- 		}
- 		break;
- 		case WLR_INPUT_DEVICE_POINTER:
-@@ -1733,9 +1723,27 @@ bool wlserver_init( void ) {
- 	// We need to wait for the backend to be started before adding the device
- 	struct wlr_keyboard *kbd = (struct wlr_keyboard *) calloc(1, sizeof(*kbd));
- 	wlr_keyboard_init(kbd, nullptr, "virtual");
--
- 	wlserver.wlr.virtual_keyboard_device = kbd;
- 
-+	// Create a keyboard group to keep all externally connected keyboards
-+	// in sync (one single layout and a shared state)
-+	struct xkb_context *context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
-+	struct xkb_rule_names rules = { 0 };
-+	rules.rules = getenv("XKB_DEFAULT_RULES");
-+	rules.model = getenv("XKB_DEFAULT_MODEL");
-+	rules.layout = getenv("XKB_DEFAULT_LAYOUT");
-+	rules.variant = getenv("XKB_DEFAULT_VARIANT");
-+	rules.options = getenv("XKB_DEFAULT_OPTIONS");
-+	struct xkb_keymap *keymap = xkb_keymap_new_from_names(context, &rules, XKB_KEYMAP_COMPILE_NO_FLAGS);
-+	wlserver.keyboard_group = wlr_keyboard_group_create();
-+	struct wlr_keyboard *keyboard = &wlserver.keyboard_group->keyboard;
-+	wlr_keyboard_set_repeat_info(keyboard, 25, 600);
-+	wlr_keyboard_set_keymap(keyboard, keymap);
-+	wlserver.keyboard_group_modifiers.notify = wlserver_handle_modifiers;
-+	wl_signal_add(&keyboard->events.modifiers, &wlserver.keyboard_group_modifiers);
-+	wlserver.keyboard_group_key.notify = wlserver_handle_key;
-+	wl_signal_add(&keyboard->events.key, &wlserver.keyboard_group_key);
-+
- 	wlserver.wlr.renderer = vulkan_renderer_create();
- 
- 	wlr_renderer_init_wl_display(wlserver.wlr.renderer, wlserver.display);
-diff --git a/src/wlserver.hpp b/src/wlserver.hpp
-index 0569472..bba6d5a 100644
---- a/src/wlserver.hpp
-+++ b/src/wlserver.hpp
-@@ -187,19 +187,17 @@ struct wlserver_t {
- 	std::vector<wl_resource*> gamescope_controls;
- 
- 	std::atomic<bool> bWaylandServerRunning = { false };
-+
-+    // Share one single keymap and state between all connected physical keyboards
-+    struct wlr_keyboard_group *keyboard_group;
-+    struct wl_listener keyboard_group_modifiers;
-+    struct wl_listener keyboard_group_key;
- };
- 
- extern struct wlserver_t wlserver;
- 
- std::vector<ResListEntry_t> wlserver_xdg_commit_queue();
- 
--struct wlserver_keyboard {
--	struct wlr_keyboard *wlr;
--	
--	struct wl_listener modifiers;
--	struct wl_listener key;
--};
--
- struct wlserver_pointer {
- 	struct wlr_pointer *wlr;
- 	
--- 
-2.49.0
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Attila Fidan <dev@print0.net>
 Date: Wed, 29 Jan 2025 07:51:13 +0000
 Subject: WaylandBackend: Don't assert on non-xkb-v1 keymaps
@@ -2427,7 +2242,7 @@ index f35f7ef..842768c 100644
 +
 +executable('gamescope_hotkey_example', ['Apps/gamescope_hotkey_example.cpp'], gamescope_core_src, gamescope_version, protocols_client_src, dependencies: [dep_wayland, xkbcommon], install: false )
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index c003807..ef632ba 100644
+index 4ce9511..ffaf7af 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
 @@ -20,6 +20,7 @@
@@ -2438,7 +2253,7 @@ index c003807..ef632ba 100644
  
  #include "wlr_begin.hpp"
  #include <wlr/backend.h>
-@@ -109,6 +110,7 @@ static void wlserver_update_cursor_constraint();
+@@ -108,6 +109,7 @@ static void wlserver_update_cursor_constraint();
  static void handle_pointer_constraint(struct wl_listener *listener, void *data);
  static void wlserver_constrain_cursor( struct wlr_pointer_constraint_v1 *pNewConstraint );
  struct wlr_surface *wlserver_surface_to_main_surface( struct wlr_surface *pSurface );
@@ -2446,7 +2261,7 @@ index c003807..ef632ba 100644
  
  std::vector<ResListEntry_t>& gamescope_xwayland_server_t::retrieve_commits()
  {
-@@ -307,6 +309,9 @@ static void wlserver_handle_key(struct wl_listener *listener, void *data)
+@@ -306,6 +308,9 @@ static void wlserver_handle_key(struct wl_listener *listener, void *data)
  	}
  #endif
  
@@ -2456,16 +2271,16 @@ index c003807..ef632ba 100644
  	bool forbidden_key =
  		keysym == XKB_KEY_XF86AudioLowerVolume ||
  		keysym == XKB_KEY_XF86AudioRaiseVolume ||
-@@ -325,6 +330,8 @@ static void wlserver_handle_key(struct wl_listener *listener, void *data)
+@@ -324,6 +329,8 @@ static void wlserver_handle_key(struct wl_listener *listener, void *data)
  			return;
  		}
  	}
 +	
-+	wlserver_process_hotkeys( keyboard, event->state == WL_KEYBOARD_KEY_STATE_PRESSED, event->time_msec );
++	wlserver_process_hotkeys( keyboard->wlr, event->state == WL_KEYBOARD_KEY_STATE_PRESSED, event->time_msec );
  
- 	wlr_seat_set_keyboard( wlserver.wlr.seat, keyboard );
+ 	wlr_seat_set_keyboard( wlserver.wlr.seat, keyboard->wlr );
  	wlr_seat_keyboard_notify_key( wlserver.wlr.seat, event->time_msec, event->keycode, event->state );
-@@ -1756,6 +1763,8 @@ bool wlserver_init( void ) {
+@@ -1748,6 +1755,8 @@ bool wlserver_init( void ) {
  
  	create_reshade();
  
@@ -2474,7 +2289,7 @@ index c003807..ef632ba 100644
  	create_gamescope_xwayland();
  
  	create_gamescope_swapchain_factory_v2();
-@@ -2046,12 +2055,57 @@ void wlserver_keyboardfocus( struct wlr_surface *surface, bool bConstrain )
+@@ -2038,12 +2047,57 @@ void wlserver_keyboardfocus( struct wlr_surface *surface, bool bConstrain )
  	}
  }
  
@@ -2566,10 +2381,10 @@ when moving to another VT from gamescope's.
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index ef632ba..4eb81ad 100644
+index ffaf7af..bb87703 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -1337,8 +1337,7 @@ bool wlsession_active()
+@@ -1347,8 +1347,7 @@ bool wlsession_active()
  
  static void handle_session_active( struct wl_listener *listener, void *data )
  {
@@ -2757,10 +2572,10 @@ Suggested-by: Antheas Kapenekakis <git@antheas.dev>
  1 file changed, 20 insertions(+), 1 deletion(-)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 4eb81ad..795d8ea 100644
+index bb87703..999c7c1 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -293,6 +293,9 @@ static void wlserver_handle_modifiers(struct wl_listener *listener, void *data)
+@@ -292,6 +292,9 @@ static void wlserver_handle_modifiers(struct wl_listener *listener, void *data)
  	bump_input_counter();
  }
  
@@ -2769,8 +2584,8 @@ index 4eb81ad..795d8ea 100644
 +
  static void wlserver_handle_key(struct wl_listener *listener, void *data)
  {
- 	struct wlr_keyboard *keyboard = &wlserver.keyboard_group->keyboard;
-@@ -316,7 +319,14 @@ static void wlserver_handle_key(struct wl_listener *listener, void *data)
+ 	struct wlserver_keyboard *keyboard = wl_container_of( listener, keyboard, key );
+@@ -315,7 +318,14 @@ static void wlserver_handle_key(struct wl_listener *listener, void *data)
  		keysym == XKB_KEY_XF86AudioLowerVolume ||
  		keysym == XKB_KEY_XF86AudioRaiseVolume ||
  		keysym == XKB_KEY_XF86PowerOff;
@@ -2778,18 +2593,18 @@ index 4eb81ad..795d8ea 100644
 +
 +	// Check for steam overlay key (ctrl/super + 1/2)
 +	bool is_steamshortcut =
-+		((env_gs_enable_ctrl_12 && (keyboard->modifiers.depressed & WLR_MODIFIER_CTRL)) ||
-+		 (keyboard->modifiers.depressed & WLR_MODIFIER_LOGO)) &&
++		((env_gs_enable_ctrl_12 && (keyboard->wlr->modifiers.depressed & WLR_MODIFIER_CTRL)) ||
++		 (keyboard->wlr->modifiers.depressed & WLR_MODIFIER_LOGO)) &&
 +		(keysym == XKB_KEY_1 || keysym == XKB_KEY_2);
 +
 +	if ( ( event->state == WL_KEYBOARD_KEY_STATE_PRESSED || event->state == WL_KEYBOARD_KEY_STATE_RELEASED ) && (forbidden_key || is_steamshortcut) )
  	{
  		// Always send volume+/- to root server only, to avoid it reaching the game.
  		struct wlr_surface *old_kb_surf = wlserver.kb_focus_surface;
-@@ -325,6 +335,15 @@ static void wlserver_handle_key(struct wl_listener *listener, void *data)
+@@ -324,6 +334,15 @@ static void wlserver_handle_key(struct wl_listener *listener, void *data)
  		{
  			wlserver_keyboardfocus( new_kb_surf, false );
- 			wlr_seat_set_keyboard( wlserver.wlr.seat, keyboard );
+ 			wlr_seat_set_keyboard( wlserver.wlr.seat, keyboard->wlr );
 +
 +			if (is_steamshortcut)
 +			{
@@ -2816,10 +2631,10 @@ Subject: fix(external): fix crash when using external touchscreens
  1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 795d8ea..0c8a140 100644
+index 999c7c1..3056af2 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -2556,8 +2556,12 @@ static void apply_touchscreen_orientation(double *x, double *y )
+@@ -2548,8 +2548,12 @@ static void apply_touchscreen_orientation(double *x, double *y )
  	double tx = 0;
  	double ty = 0;
  
@@ -3681,10 +3496,10 @@ index 0000000..1a47fd5
 +    imageStore(dst, rotatedCoord, outputValue);
 +}
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 0c8a140..b0a45da 100644
+index 3056af2..6375ded 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
-@@ -2583,6 +2583,11 @@ static void apply_touchscreen_orientation(double *x, double *y )
+@@ -2575,6 +2575,11 @@ static void apply_touchscreen_orientation(double *x, double *y )
  			break;
  	}
  
