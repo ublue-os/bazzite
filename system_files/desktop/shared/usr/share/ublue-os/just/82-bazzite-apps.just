@@ -55,6 +55,8 @@ install-openrazer:
     echo "$OPENRAZER_CONFIGURATOR_APP is installed"
     echo "Please reboot to apply needed changes."
 
+alias get-emudeck := install-emudeck
+
 # Install EmuDeck (https://www.emudeck.com/)
 install-emudeck:
     #!/usr/bin/bash

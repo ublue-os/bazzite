@@ -15,20 +15,6 @@ install-hhd-controller-glyph-theme:
         echo 'Please install Decky Loader & CSS Loader first'
     fi
 
-# Install EmuDeck (https://www.emudeck.com/)
-get-emudeck:
-    #!/usr/bin/bash
-    IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-    BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-    echo 'Retrieving EmuDeck...'
-    if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      wget https://www.emudeck.com/EmuDeck.desktop -O ~/.local/share/applications/EmuDeck.desktop
-      echo 'EmuDeck installer added to your application grid.'
-    else
-      wget https://www.emudeck.com/EmuDeck.desktop -O ~/Desktop/EmuDeck.desktop
-      echo 'EmuDeck installer added to your desktop.'
-    fi
-
 # Use EXT4 for SD Cards, allows use of SteamOS formatted SD cards
 switch-to-ext4:
     sudo sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs
