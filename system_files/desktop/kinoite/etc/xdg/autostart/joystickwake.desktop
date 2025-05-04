@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Joystick Wake
-Comment=Joystick-aware screen waker
-Icon=input-gaming
-NoDisplay=true
-Exec=/usr/bin/bazzite-joystickwake
-Terminal=false
