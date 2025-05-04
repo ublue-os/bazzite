@@ -3,12 +3,12 @@
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
 #global gamescope_tag 3.15.11
-%global gamescope_commit dc840e78c464116e0c45ef877182209157bcd7f8 
+%global gamescope_commit f873ec7868fe84d2850e91148bcbd6d6b19a7443 
 %define short_commit %(echo %{gamescope_commit} | cut -c1-8)
 
 Name:           gamescope
 #Version:        100.%{gamescope_tag}
-Version:        113.%{short_commit}
+Version:        114.%{short_commit}
 Release:        1.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
