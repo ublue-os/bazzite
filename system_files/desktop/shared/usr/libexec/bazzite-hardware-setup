@@ -402,7 +402,7 @@ fi
 # Fix users who've layered LACT in the past.
 if [ ! -f /etc/bazzite/fixups/lact_fixup ]; then
   if rpm-ostree status --booted | grep -q "lact"; then
-      dnf5 copr enable ilyaz/LACT
+      dnf5 -y copr enable ilyaz/LACT
   fi
   touch /etc/bazzite/fixups/lact_fixup
 fi
@@ -410,7 +410,7 @@ fi
 # Fix users who've layered CDEmu in the past.
 if [ ! -f /etc/bazzite/fixups/cdemu_fixup ]; then
   if rpm-ostree status --booted | grep -q "cdemu-daemon"; then
-      dnf5 copr enable rok/cdemu
+      dnf5 -y copr enable rok/cdemu
   fi
   touch /etc/bazzite/fixups/cdemu_fixup
 fi
