@@ -15,18 +15,11 @@ on:
   workflow_dispatch:
     inputs:
       image_ref:
-        description: |-
-          Image reference to retag.
-          Example:
-            ghcr.io/<owner>/<repo>/<image>:<tag>
-            # Or
-            ghcr.io/<owner>/<repo>/<image>@sha256:<digest>
+        description: "Image reference to retag. Example: ghcr.io/<owner>/<repo>/<image>:<tag> or ghcr.io/<owner>/<repo>/<image>@sha256:<digest>"
         required: true
 
       final_tags:
-        description: |-
-          List of tags to retag the image to. Separated by spaces.
-          Example: <tag1> <tag2>
+        description: "List of tags to retag the image to. Separated by spaces. Example: <tag1> <tag2>"
         required: true
         default: "latest stable"
 
