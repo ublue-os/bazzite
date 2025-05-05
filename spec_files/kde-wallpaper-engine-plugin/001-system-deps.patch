@@ -1,0 +1,48 @@
+--- a/src/backend_scene/third_party/CMakeLists.txt	2024-09-18 17:15:25.958809842 -0400
++++ b/src/backend_scene/third_party/CMakeLists.txt	2024-09-18 22:45:10.351808367 -0400
+@@ -1,23 +1,36 @@
+ set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+ 
++# glad
+ add_subdirectory(glad)
+ 
+-add_library (eigen INTERFACE)
+-add_library (Eigen3::Eigen ALIAS eigen)
++# Eigen3
++add_library(eigen INTERFACE)
++add_library(Eigen3::Eigen ALIAS eigen)
+ target_include_directories(eigen INTERFACE Eigen)
+ 
++# nlohmann
+ add_subdirectory(nlohmann EXCLUDE_FROM_ALL)
+ 
++# SPIRV-Reflect
+ set(SPIRV_REFLECT_STATIC_LIB ON)
+ set(SPIRV_REFLECT_EXECUTABLE OFF)
+ set(SPIRV_REFLECT_BUILD_TESTS OFF)
+ set(SPIRV_REFLECT_EXAMPLES OFF)
+ add_subdirectory(SPIRV-Reflect EXCLUDE_FROM_ALL)
+ 
+-set(SKIP_GLSLANG_INSTALL ON)
+-set(ENABLE_GLSLANG_BINARIES OFF)
+-set(ENABLE_SPVREMAPPER OFF)
+-set(ENABLE_GLSLANG_JS OFF)
+-set(ENABLE_HLSL OFF)
+-set(ENABLE_OPT OFF)
+-add_subdirectory(glslang EXCLUDE_FROM_ALL)
++# Attempt to find glslang
++find_package(glslang CONFIG QUIET)
++if (glslang_FOUND)
++    # Use the glslang::glslang target provided by the system
++    message(STATUS "Using system-installed glslang")
++else()
++    message(STATUS "Using local glslang")
++    set(SKIP_GLSLANG_INSTALL ON)
++    set(ENABLE_GLSLANG_BINARIES OFF)
++    set(ENABLE_SPVREMAPPER OFF)
++    set(ENABLE_GLSLANG_JS OFF)
++    set(ENABLE_HLSL OFF)
++    set(ENABLE_OPT OFF)
++    set(BUILD_SHARED_LIBS OFF)
++    add_subdirectory(glslang EXCLUDE_FROM_ALL)
++endif()
