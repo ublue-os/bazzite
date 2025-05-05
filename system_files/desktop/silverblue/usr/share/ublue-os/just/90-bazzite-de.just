@@ -2,9 +2,12 @@
 
 # Restore Bazzite customized DE settings
 restore-gnome-de-settings:
+    #!/usr/bin/bash
     for file in /usr/share/ublue-os/dconfs/desktop-silverblue/*; do
-    dconf load / < "${file}"
+      echo "Loading dconf settings from: ${file}"
+      dconf load -f / < "${file}"
     done
+    echo You may need to log out and log in again for the changes to take effect.
 
 # Restore Bazzite customized applications folders
 restore-gnome-folders:
