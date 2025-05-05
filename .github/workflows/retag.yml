@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+# WARNING: This workflow is meant for emergency use only.
+# Under NO CIRCUMSTANCES should this workflow be automatically triggered.
+name: Retag image
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  packages: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_ref:
+        description: |-
+          Image reference to retag.
+          Example:
+            ghcr.io/<owner>/<repo>/<image>:<tag>
+            # Or
+            ghcr.io/<owner>/<repo>/<image>@sha256:<digest>
+        required: true
+
+      final_tags:
+        description: |-
+          List of tags to retag the image to. Separated by spaces.
+          Example: <tag1> <tag2>
+        required: true
+        default: "latest stable"
+
+jobs:
+  retag-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Safeguard wait
+        env:
+          SLEEP_TIME: "30"
+        run: |
+          echo "Triggered safeguard."
+          echo "You have $SLEEP_TIME seconds to cancel the workflow if you want to cancel retagging."
+          sleep $SLEEP_TIME
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Retag image
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: .github/workflows/retag.sh ${{ inputs.image_ref }} ${{ inputs.final_tags }}
