@@ -86,7 +86,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/packages \
         bazzite-org/LatencyFleX \
         bazzite-org/obs-vkcapture \
-        bazzite-org/wallpaper-engine-kde-plugin \
         ycollet/audinux \
         bazzite-org/rom-properties \
         bazzite-org/webapp-manager \
@@ -427,8 +426,6 @@ RUN --mount=type=cache,dst=/var/cache \
             plasma-browser-integration \
             kcharselect \
             konsole && \
-        git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git --depth 1 --branch main /tmp/wallpaper-engine-kde-plugin && \
-        kpackagetool6 --type=Plasma/Wallpaper --global --install /tmp/wallpaper-engine-kde-plugin/plugin && \
         sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:net.lutris.Lutris.desktop,applications:org.gnome.Ptyxis.desktop,applications:org.kde.discover.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
         sed -i '/<entry name="favorites" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,steam.desktop,net.lutris.Lutris.desktop,systemsettings.desktop,org.kde.dolphin.desktop,org.kde.kate.desktop,org.gnome.Ptyxis.desktop,org.kde.discover.desktop,system-update.desktop<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.kickoff/contents/config/main.xml && \
         sed -i 's@\[Desktop Action new-window\]@\[Desktop Action new-window\]\nX-KDE-Shortcuts=Ctrl+Alt+T@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
@@ -590,7 +587,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/LatencyFleX \
         bazzite-org/obs-vkcapture \
         bazzite-org/vk_hdr_layer \
-        bazzite-org/wallpaper-engine-kde-plugin \
         ycollet/audinux \
         bazzite-org/rom-properties \
         bazzite-org/webapp-manager \
@@ -681,7 +677,6 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable bazzite-org/bazzite-multilib && \
     dnf5 -y copr enable bazzite-org/LatencyFleX && \
     dnf5 -y copr enable bazzite-org/obs-vkcapture && \
-    dnf5 -y copr enable bazzite-org/wallpaper-engine-kde-plugin && \
     dnf5 -y copr enable hhd-dev/hhd && \
     dnf5 -y copr enable ycollet/audinux && \
     dnf5 config-manager unsetopt skip_if_unavailable && \
@@ -798,7 +793,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/bazzite-multilib \
         bazzite-org/LatencyFleX \
         bazzite-org/obs-vkcapture \
-        bazzite-org/wallpaper-engine-kde-plugin \
         hhd-dev/hhd \
         ycollet/audinux; \
     do \
