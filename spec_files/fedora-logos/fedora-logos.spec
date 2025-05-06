@@ -1,24 +1,24 @@
-Name:		fedora-logos
-Summary:	Fedora-related icons and pictures
-Version:	38.1.0
-Release:	100%{?dist}.bazzite
-URL:		https://pagure.io/fedora-logos
-Source0:	https://pagure.io/fedora-logos/archive/%{version}/fedora-logos-%{version}.tar.gz
+Name:   fedora-logos
+Summary:  Fedora-related icons and pictures
+Version:  42.0.1
+Release:  100%{?dist}.bazzite
+URL:    https://pagure.io/fedora-logos
+Source0:  https://pagure.io/fedora-logos/archive/%{version}/fedora-logos-%{version}.tar.gz
 Source1:  sidebar-bg.png
 Source2:  sidebar-logo.png
 Source3:  topbar-bg.png
 Source4:  anaconda_header.png
 Source5:  fedora.css
-License:	LicenseRef-Fedora-Logos
-Provides:	redhat-logos = %{version}-%{release}
-Provides:	gnome-logos = %{version}-%{release}
-Provides:	system-logos = %{version}-%{release}
-BuildArch:	noarch
-BuildRequires:	hardlink
+License:  LicenseRef-Fedora-Logos
+Provides: redhat-logos = %{version}-%{release}
+Provides: gnome-logos = %{version}-%{release}
+Provides: system-logos = %{version}-%{release}
+BuildArch:  noarch
+BuildRequires:  hardlink
 
 %if ! 0%{?eln}
 # For _kde4_* macros:
-BuildRequires:	kde4-macros(api)
+BuildRequires:  kde4-macros(api)
 %endif
 
 %description
@@ -36,11 +36,11 @@ See the included COPYING file for full information on copying and
 redistribution of this package and its contents.
 
 %package httpd
-Summary:	Fedora-related icons and pictures used by httpd
-Provides:	system-logos-httpd = %{version}-%{release}
-BuildArch:	noarch
-Recommends:	julietaula-montserrat-fonts
-Provides:	system-logos(httpd-logo-ng)
+Summary:  Fedora-related icons and pictures used by httpd
+Provides: system-logos-httpd = %{version}-%{release}
+BuildArch:  noarch
+Recommends: julietaula-montserrat-fonts
+Provides: system-logos(httpd-logo-ng)
 
 %description httpd
 The fedora-logos-httpd package contains image files which incorporate the
@@ -57,8 +57,8 @@ See the included COPYING file for full information on copying and
 redistribution of this package and its contents.
 
 %package classic
-Summary:	Classic versions of the Fedora icons and pictures
-BuildArch:	noarch
+Summary:  Classic versions of the Fedora icons and pictures
+BuildArch:  noarch
 
 %description classic
 The fedora-logos-classic package contains image files which incorporate the
@@ -404,6 +404,17 @@ hardlink -vv %{buildroot}/usr
 
 
 %changelog
+* Thu Mar 20 2025 Kevin Fenzi <kevin@scrye.com> - 42.0.1-1
+- Update to 42.0.0.
+- Adds wsl logo
+- fix NGINX trademark attribution
+
+* Thu Jan 16 2025 Fedora Release Engineering <releng@fedoraproject.org> - 38.1.0-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
+
+* Wed Jul 17 2024 Fedora Release Engineering <releng@fedoraproject.org> - 38.1.0-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
+
 * Mon Jan 29 2024 Tom Callaway <spot@fedoraproject.org> - 38.1.0-5
 - fix BR to reflect new macro provides for kde4 macros
 
