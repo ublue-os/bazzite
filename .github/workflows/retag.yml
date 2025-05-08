@@ -14,17 +14,13 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      image_ref:
-        description: "Image reference to retag. Example: ghcr.io/<owner>/<repo>/<image>:<tag> or ghcr.io/<owner>/<repo>/<image>@sha256:<digest>"
+      old_tag:
+        description: "Old tag from which images will be retagged to latest"
         required: true
-
-      final_tags:
-        description: "List of tags to retag the image to. Separated by spaces. Example: <tag1> <tag2>"
-        required: true
-        default: "latest stable"
+        type: string
 
 jobs:
-  retag-image:
+  safeguard-timer:
     runs-on: ubuntu-latest
     steps:
       - name: Safeguard wait
@@ -35,11 +31,30 @@ jobs:
           echo "You have $SLEEP_TIME seconds to cancel the workflow if you want to cancel retagging."
           sleep $SLEEP_TIME
 
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Retag image
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
-        run: .github/workflows/retag.sh ${{ inputs.image_ref }} ${{ inputs.final_tags }}
+  retag-images:
+    runs-on: ubuntu-latest
+    needs: [safeguard-timer]
+    steps:
+      - uses: Zeglius/ghcr-oci-retagger@72699b478c52cd39103fd4af8b53aaf303b99d6b
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          PREFIX: ghcr.io/${{ github.repository_owner }}/
+          # TODO: Remove dummy DST_PREFIX whenever we ensure this works.
+          DST_PREFIX: ttl.sh/${{ github.repository_owner }}-
+          TAG_MAPPINGS: |-
+            bazzite:${{ inputs.old_tag }}                           => bazzite:latest
+            bazzite-asus-nvidia:${{ inputs.old_tag }}               => bazzite-asus-nvidia:latest
+            bazzite-asus-nvidia-open:${{ inputs.old_tag }}          => bazzite-asus-nvidia-open:latest
+            bazzite-deck:${{ inputs.old_tag }}                      => bazzite-deck:latest
+            bazzite-deck-gnome:${{ inputs.old_tag }}                => bazzite-deck-gnome:latest
+            bazzite-deck-nvidia:${{ inputs.old_tag }}               => bazzite-deck-nvidia:latest
+            bazzite-deck-nvidia-gnome:${{ inputs.old_tag }}         => bazzite-deck-nvidia-gnome:latest
+            bazzite-gnome:${{ inputs.old_tag }}                     => bazzite-gnome:latest
+            bazzite-gnome-asus-nvidia:${{ inputs.old_tag }}         => bazzite-gnome-asus-nvidia:latest
+            bazzite-gnome-asus-nvidia-open:${{ inputs.old_tag }}    => bazzite-gnome-asus-nvidia-open:latest
+            bazzite-gnome-nvidia:${{ inputs.old_tag }}              => bazzite-gnome-nvidia:latest
+            bazzite-gnome-nvidia-open:${{ inputs.old_tag }}         => bazzite-gnome-nvidia-open:latest
+            bazzite-gnome-surface-nvidia-open:${{ inputs.old_tag }} => bazzite-gnome-surface-nvidia-open:latest
+            bazzite-nvidia:${{ inputs.old_tag }}                    => bazzite-nvidia:latest
+            bazzite-nvidia-open:${{ inputs.old_tag }}               => bazzite-nvidia-open:latest
+            bazzite-surface-nvidia-open:${{ inputs.old_tag }}       => bazzite-surface-nvidia-open:latest
