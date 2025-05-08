@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SCRIPT VERSION
-VER=25
+VER=26
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -70,6 +70,15 @@ flatpak override \
   --filesystem=/var/mnt \
   --filesystem=/run/media \
   com.github.Matoking.protontricks
+
+# Allow smartphone's passkey for chrome browsers
+for app in \
+    com.brave.Browser \
+    com.google.Chrome \
+    io.github.ungoogled_software.ungoogled_chromium
+do
+    flatpak override --system-talk-name=org.bluez $app
+done && unset -v app
 
 # Params needed for HW accelerated video on Nvidia (Ignoring hybrid systems)
 if [[ $IMAGE_FLAVOR =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C display) | wc -l) -le 1 ] && grep -q "vendor: NVIDIA Corporation" <<< $(lshw -C display); then
