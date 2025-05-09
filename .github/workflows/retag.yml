@@ -38,8 +38,9 @@ jobs:
     needs: [safeguard-timer]
     steps:
       - uses: Zeglius/ghcr-oci-retagger@72699b478c52cd39103fd4af8b53aaf303b99d6b
-        with:
+        env:
           ver: "42"
+        with:
           GITHUB_TOKEN: ${{ github.token }}
           PREFIX: ghcr.io/${{ github.repository_owner }}/
           # TODO: Remove dummy DST_PREFIX whenever we ensure this works.
