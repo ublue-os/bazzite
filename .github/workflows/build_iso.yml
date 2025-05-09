@@ -12,8 +12,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  get-version:
+    uses: .github/workflows/get_fedora_version.yml
+
   build-iso:
     runs-on: ubuntu-latest
+    needs: get-version
     permissions:
       contents: read
       packages: write
@@ -44,7 +48,7 @@ jobs:
           - bazzite-gnome-surface-nvidia-open
           - bazzite-deck-nvidia
           - bazzite-deck-nvidia-gnome
-        major_version: [42]
+        major_version: ["${{ needs.get-version.outputs.version }}"]
     steps:
 
       - name: Free Disk Space (Ubuntu)

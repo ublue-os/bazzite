@@ -49,9 +49,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  get-version:
+    uses: .github/workflows/get_fedora_version.yml
+
   push-ghcr:
     name: Make
     runs-on: ubuntu-24.04
+    needs: get-version
     continue-on-error: false
     permissions:
       contents: read
@@ -65,9 +69,9 @@ jobs:
         base_image_name: [kinoite, silverblue]
         target_image_flavor: [main, asus, surface]
         target_nvidia_flavor: [nvidia, nvidia-open]
-        fedora_version: [42]
+        fedora_version: ["${{ needs.get-version.outputs.version }}"]
         include:
-          - fedora_version: 42
+          - fedora_version: "${{ needs.get-version.outputs.version }}"
             is_latest_version: true
             is_stable_version: true
             kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
