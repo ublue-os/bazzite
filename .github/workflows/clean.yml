@@ -17,7 +17,7 @@ jobs:
         uses: dataaxiom/ghcr-cleanup-action@cd0cdb900b5dbf3a6f2cc869f0dbb0b8211f50c4 # v1.0.16
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          packages: bazzite,bazzite-ally-budgie,bazzite-asus-nvidia,bazzite-asus-nvidia-open,bazzite-budgie,bazzite-budgie-asus,bazzite-budgie-asus-nvidia,bazzite-budgie-nvidia,bazzite-budgie-surface,bazzite-budgie-surface-nvidia,bazzite-deck,bazzite-deck-budgie,bazzite-deck-gnome,bazzite-deck-gnome-nokmods,bazzite-deck-gnome-nvidia,bazzite-deck-nokmods,bazzite-deck-nvidia,bazzite-framegame-budgie,bazzite-gnome,bazzite-gnome-asus-nvidia,bazzite-gnome-asus-nvidia-open,bazzite-gnome-nokmods,bazzite-gnome-nvidia,bazzite-gnome-nvidia-open,bazzite-nokmods,bazzite-nvidia,bazzite-nvidia-open
+          packages: bazzite,bazzite-ally-budgie,bazzite-asus-nvidia,bazzite-asus-nvidia-open,bazzite-budgie,bazzite-budgie-asus,bazzite-budgie-asus-nvidia,bazzite-budgie-nvidia,bazzite-budgie-surface,bazzite-budgie-surface-nvidia,bazzite-deck,bazzite-deck-budgie,bazzite-deck-gnome,bazzite-deck-gnome-nvidia,bazzite-deck-nvidia,bazzite-framegame-budgie,bazzite-gnome,bazzite-gnome-asus-nvidia,bazzite-gnome-asus-nvidia-open,bazzite-gnome-nvidia,bazzite-gnome-nvidia-open,bazzite-nvidia,bazzite-nvidia-open
           older-than: 90 days
           delete-orphaned-images: true
           keep-n-tagged: 7
