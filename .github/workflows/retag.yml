@@ -22,6 +22,7 @@ on:
 jobs:
   safeguard-timer:
     runs-on: ubuntu-latest
+    if: inputs.old_tag != ''
     steps:
       - name: Safeguard wait
         env:
@@ -33,6 +34,7 @@ jobs:
 
   retag-images:
     runs-on: ubuntu-latest
+    if: inputs.old_tag != ''
     needs: [safeguard-timer]
     steps:
       - uses: Zeglius/ghcr-oci-retagger@72699b478c52cd39103fd4af8b53aaf303b99d6b
