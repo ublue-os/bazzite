@@ -37,7 +37,7 @@ jobs:
     if: inputs.old_tag != ''
     needs: [safeguard-timer]
     steps:
-      - uses: Zeglius/ghcr-oci-retagger@72699b478c52cd39103fd4af8b53aaf303b99d6b
+      - uses: Zeglius/ghcr-oci-retagger@1e08f1dac27d25efe1377d9a35f133731bf3d986
         env:
           ver: "42"
         with:
