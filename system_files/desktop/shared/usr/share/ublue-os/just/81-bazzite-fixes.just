@@ -49,6 +49,13 @@ fix-reset-steam:
     bazzite-steam &
     exit 0
 
+# Fix issues related with 'public/steambootstraper_english.txt'. WARNING: It will probably delete your games installed
+fix-nuke-steam CONFIRM="":
+    [[ "{{ CONFIRM }}" == @(y|yes|1) ]] || gum "WARNING: It will probably delete your games installed. Continue?"
+    echo "Login into steam, close it and then launch steam again from the apps shortcut."
+    gum spin --title="Starting in 15s. Press Ctrl+c to cancel" sleep 15
+    __GL_CONSTANT_FRAME_RATE_HINT=3 steam -reset
+
 # Toggle Bluetooth headset profile mode. If enabled, mic will be disabled on the Bluetooth device preventing the switch to headset profile, which has poor audio quality. Disable to restore mic functionality.
 toggle-bt-mic:
     #!/usr/bin/bash
