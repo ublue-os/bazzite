@@ -89,7 +89,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ycollet/audinux \
         bazzite-org/rom-properties \
         bazzite-org/webapp-manager \
-        bazzite-org/vk_hdr_layer \
         hhd-dev/hhd \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
@@ -371,8 +370,8 @@ RUN --mount=type=cache,dst=/var/cache \
         libobs_glcapture.x86_64 \
         libobs_vkcapture.i686 \
         libobs_glcapture.i686 \
-        vk_hdr_layer.x86_64 \
-        vk_hdr_layer.i686 && \
+        VK_hdr_layer.x86_64 \
+        VK_hdr_layer.i686 && \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
         lutris && \
@@ -586,7 +585,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/packages \
         bazzite-org/LatencyFleX \
         bazzite-org/obs-vkcapture \
-        bazzite-org/vk_hdr_layer \
         ycollet/audinux \
         bazzite-org/rom-properties \
         bazzite-org/webapp-manager \
