@@ -43,8 +43,6 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ github.token }}
           PREFIX: ghcr.io/${{ github.repository_owner }}/
-          # TODO: Remove dummy DST_PREFIX whenever we ensure this works.
-          DST_PREFIX: ttl.sh/${{ github.repository_owner }}-
           TAG_MAPPINGS: |-
             bazzite:${{ inputs.old_tag }}                           => bazzite:latest,stable,${{ env.ver }}
             bazzite-deck:${{ inputs.old_tag }}                      => bazzite-deck:latest,stable,${{ env.ver }}
