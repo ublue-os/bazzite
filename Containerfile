@@ -370,7 +370,7 @@ RUN --mount=type=cache,dst=/var/cache \
         libobs_glcapture.x86_64 \
         libobs_vkcapture.i686 \
         libobs_glcapture.i686 \
-        VK_hdr_layer \
+        VK_hdr_layer && \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
         lutris && \
