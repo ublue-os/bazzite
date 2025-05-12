@@ -1,7 +1,8 @@
 Summary: Graphical system installer
 Name:    anaconda
-Version: 41.35
+Version: 42.27.12
 Release: 100.bazzite
+ExcludeArch: %{ix86}
 License: GPL-2.0-or-later
 URL:     http://fedoraproject.org/wiki/Anaconda
 
@@ -28,7 +29,7 @@ Patch0:  bazzite.patch
 %define dasbusver 1.3
 %define dbusver 1.2.3
 %define dnfver 3.6.0
-%define dracutver 034-7
+%define dracutver 102-3
 %define fcoeutilsver 1.0.12-3.20100323git
 %define gettextver 0.19.8
 %define gtk3ver 3.22.17
@@ -37,17 +38,17 @@ Patch0:  bazzite.patch
 %define libarchivever 3.0.4
 %define libblockdevver 2.1
 %define libreportanacondaver 2.0.21-1
-%define libxklavierver 5.4
 %define mehver 0.23-1
 %define nmver 1.0
-%define pykickstartver 3.58-1
+%define pykickstartver 3.61-1
 %define pypartedver 2.5-2
-%define pythonblivetver 1:3.9.0-1
+%define pythonblivetver 1:3.12.0-1
 %define rpmver 4.15.0
 %define simplelinever 1.9.0-1
-%define subscriptionmanagerver 1.26
+%define subscriptionmanagerver 1.29.31
 %define utillinuxver 2.15.1
 %define rpmostreever 2023.2
+%define s390utilscorever 2.31.0
 
 BuildRequires: libtool
 BuildRequires: gettext-devel >= %{gettextver}
@@ -59,11 +60,10 @@ BuildRequires: gobject-introspection-devel
 %if %{with glade}
 BuildRequires: glade-devel
 %endif
-BuildRequires: libxklavier-devel >= %{libxklavierver}
 BuildRequires: make
 BuildRequires: pango-devel
 BuildRequires: python3-devel
-BuildRequires: systemd
+BuildRequires: systemd-rpm-macros
 # rpm and libarchive are needed for driver disk handling
 BuildRequires: rpm-devel >= %{rpmver}
 BuildRequires: libarchive-devel >= %{libarchivever}
@@ -82,6 +82,9 @@ Requires: anaconda-tui = %{version}-%{release}
 The anaconda package is a metapackage for the Anaconda installer.
 
 %package core
+# Since the binaries in anaconda-core are shell or Python scripts,
+# there's no need to generate a debuginfo package
+%define debug_package %{nil}
 Summary: Core of the Anaconda installer
 # core/signal.py is under MIT
 License: GPL-2.0-or-later AND MIT
@@ -96,7 +99,8 @@ Requires: python3-meh >= %{mehver}
 %if 0%{?rhel} < 10 || 0%{?fedora}
 Requires: libreport-anaconda >= %{libreportanacondaver}
 %endif
-Requires: libselinux-python3
+Requires: python3-iso639
+Requires: python3-libselinux
 Requires: python3-rpm >= %{rpmver}
 Requires: python3-pyparted >= %{pypartedver}
 Requires: python3-requests
@@ -110,6 +114,7 @@ Requires: python3-pwquality
 Requires: python3-systemd
 Requires: python3-productmd
 Requires: python3-dasbus >= %{dasbusver}
+Requires: python3-xkbregistry
 Requires: flatpak-libs
 %if %{defined rhel} && %{undefined centos}
 Requires: subscription-manager >= %{subscriptionmanagerver}
@@ -125,22 +130,24 @@ Requires: NetworkManager-team
 %endif
 %ifarch s390 s390x
 Requires: openssh
+Requires: s390utils-core >= %{s390utilscorever}
+Requires: dracut-network >= %{dracutver}
 %endif
 Requires: NetworkManager >= %{nmver}
 Requires: NetworkManager-libnm >= %{nmver}
 Requires: kbd
 Requires: chrony
 Requires: systemd
-%if 0%{?rhel} > 10 || 0%{?fedora}
+%if ! 0%{?rhel}
 Requires: systemd-resolved
 %endif
 Requires: python3-pid
 
 # Required by the systemd service anaconda-fips.
 Requires: crypto-policies
-Requires: /usr/bin/update-crypto-policies
+Requires: crypto-policies-scripts
 
-# required because of the rescue mode and VNC question
+# required because of the rescue mode and RDP question
 Requires: anaconda-tui = %{version}-%{release}
 
 # Make sure we get the en locale one way or another
@@ -161,7 +168,6 @@ Obsoletes: anaconda-images <= 10
 Provides: anaconda-images = %{version}-%{release}
 Obsoletes: anaconda-runtime < %{version}-%{release}
 Provides: anaconda-runtime = %{version}-%{release}
-Obsoletes: booty <= 0.107-1
 
 %description core
 The anaconda-core package contains the program which was used to install your
@@ -177,8 +183,12 @@ BuildRequires: desktop-file-utils
 # live installation currently implies a graphical installation
 Requires: anaconda-gui = %{version}-%{release}
 Requires: zenity
-Requires: xisxwayland
 Recommends: xhost
+# FIXME: This is currently needed by the locale1-x11-sync script.
+# It makes little sense for Anaconda to pull in two Python DBus libraries,
+# so we should either split the script to a separate or change it to also
+# use dasbus like the rest of Anaconda.
+Requires: python3-dbus-next
 
 %description live
 The anaconda-live package contains scripts, data and dependencies required
@@ -190,17 +200,18 @@ for live installations.
 Summary: Installation environment specific dependencies
 Requires: udisks2-iscsi
 Requires: libblockdev-plugins-all >= %{libblockdevver}
+Requires: libblockdev-tools
 %if ! 0%{?rhel}
 Requires: libblockdev-lvm-dbus
 %endif
 # active directory/freeipa join support
 Requires: realmd
 Requires: isomd5sum >= %{isomd5sumver}
-%ifarch %{ix86} x86_64
+%ifarch x86_64
 Recommends: fcoe-utils >= %{fcoeutilsver}
 %endif
 # likely HFS+ resize support
-%ifarch %{ix86} x86_64
+%ifarch x86_64
 %if ! 0%{?rhel}
 Requires: hfsplus-tools
 %endif
@@ -242,7 +253,7 @@ Summary: Installation image specific dependencies
 # Pull in most stuff with the -env- metapackage
 Requires: anaconda-install-env-deps = %{version}-%{release}
 # Require storage things that are only recommended in -env-
-%ifarch %{ix86} x86_64
+%ifarch x86_64
 Requires: fcoe-utils >= %{fcoeutilsver}
 %endif
 # only WeakRequires elsewhere and not guaranteed to be present
@@ -257,16 +268,19 @@ Requires: zram-generator
 # needed for proper driver disk support - if RPMs must be installed, a repo is needed
 Requires: createrepo_c
 # Display stuff moved from lorax templates
-Requires: xorg-x11-drivers
-Requires: xorg-x11-server-Xorg
-Requires: xrandr
-Requires: xrdb
-Requires: dbus-x11
 Requires: gsettings-desktop-schemas
 Requires: nm-connection-editor
 Requires: librsvg2
 Requires: gnome-kiosk
+Requires: gnome-remote-desktop
+# needed to generate RDP certs at runtime
+Requires: openssl
+# needed by GNOME kiosk but not declared a as explicit dep,
+# instead expected to be declared like this according to the
+# maintainers
+Requires: mesa-dri-drivers
 Requires: brltty
+Requires: python3-pam
 # dependencies for rpm-ostree payload module
 Requires: rpm-ostree >= %{rpmostreever}
 Requires: ostree
@@ -286,13 +300,9 @@ ensure all Anaconda capabilities are supported in the resulting image.
 Summary: Graphical user interface for the Anaconda installer
 Requires: anaconda-core = %{version}-%{release}
 Requires: anaconda-widgets = %{version}-%{release}
-Requires: python3-iso639
 Requires: python3-meh-gui >= %{mehver}
-Requires: python3-xkbregistry
 Requires: adwaita-icon-theme
 Requires: tecla
-Requires: tigervnc-server-minimal
-Requires: libxklavier >= %{libxklavierver}
 Requires: nm-connection-editor
 %ifnarch s390 s390x
 Requires: NetworkManager-wifi
@@ -304,6 +314,8 @@ Requires: system-logos
 
 # Needed to compile the gsettings files
 BuildRequires: gsettings-desktop-schemas
+# Needed for gdbus-codegen
+BuildRequires: glib2-devel
 
 %description gui
 This package contains graphical user interface for the Anaconda installer.
@@ -377,6 +389,8 @@ rm -rf \
   %{buildroot}/%{_sysconfdir}/xdg/autostart/liveinst-setup.desktop \
   %{buildroot}/%{_bindir}/liveinst \
   %{buildroot}/%{_libexecdir}/liveinst-setup.sh \
+  %{buildroot}/%{_libexecdir}/locale1-x11-sync \
+  %{buildroot}/%{_userunitdir}/locale1-x11-sync.service \
   %{buildroot}/%{_datadir}/anaconda/gnome \
   %{buildroot}/%{_datadir}/anaconda/gnome/fedora-welcome \
   %{buildroot}/%{_datadir}/anaconda/gnome/org.fedoraproject.welcome-screen.desktop \
@@ -410,6 +424,7 @@ rm -rf \
 %{_sbindir}/anaconda
 %{_sbindir}/handle-sshpw
 %{_datadir}/anaconda
+%config(noreplace) %{_sysconfdir}/pam.d/anaconda
 %{_prefix}/libexec/anaconda
 %exclude %{_datadir}/anaconda/gnome
 %exclude %{_datadir}/anaconda/pixmaps
@@ -424,23 +439,28 @@ rm -rf \
 %exclude %{python3_sitearch}/pyanaconda/ui/gui/*
 %exclude %{python3_sitearch}/pyanaconda/ui/tui/*
 %{_bindir}/anaconda-cleanup
+# Installer configuration files aren’t updated post-installation,
+# so the noreplace flag doesn't offer a practical benefit in this context.
+# It is added to silence the rpmlint conffile-without-noreplace-flag warning.
 %dir %{_sysconfdir}/%{name}
-%config %{_sysconfdir}/%{name}/*
+%config(noreplace) %{_sysconfdir}/%{name}/*
 %dir %{_sysconfdir}/%{name}/conf.d
-%config %{_sysconfdir}/%{name}/conf.d/*
+%config(noreplace) %{_sysconfdir}/%{name}/conf.d/*
 %dir %{_sysconfdir}/%{name}/profile.d
-%config %{_sysconfdir}/%{name}/profile.d/*
+%config(noreplace) %{_sysconfdir}/%{name}/profile.d/*
 
 %if %{with live}
 # do not provide the live subpackage on RHEL
 
 %files live
+%{_userunitdir}/locale1-x11-sync.service
 %{_bindir}/liveinst
 %{_datadir}/polkit-1/actions/*
 %{_libexecdir}/liveinst-setup.sh
+%{_libexecdir}/locale1-x11-sync
 %{_datadir}/applications/*.desktop
 %{_datadir}/anaconda/gnome
-%{_sysconfdir}/xdg/autostart/*.desktop
+%config(noreplace) %{_sysconfdir}/xdg/autostart/*.desktop
 
 %endif
 
@@ -482,14 +502,317 @@ rm -rf \
 %{_prefix}/libexec/anaconda/dd_*
 
 %changelog
-* Thu Oct 17 2024 Packit <hello@packit.dev> - 41.35-1
-- Fix checking whether a disk can be cleared during autopart (vtrefny)
+* Tue Apr 08 2025 Packit <hello@packit.dev> - 42.27.12-1
+- storage: Fix EFI partition detection for other OSes (Windows, MacOS)
+  (rvykydal)
+- Fix race condition when reading localed layouts (jkonecny)
 
-* Thu Sep 26 2024 Packit <hello@packit.dev> - 41.34-1
+* Tue Apr 01 2025 Packit <hello@packit.dev> - 42.27.11-1
+- pyanaconda: storage: when checking the md device validity check also parent
+  (k.koukiou)
+
+* Fri Mar 28 2025 Packit <hello@packit.dev> - 42.27.10-1
+- storage: remove EFI and BIOS boot partition requirements for MBR disks
+  (k.koukiou)
+- Add release notes for /boot on RAID1 only (jkonecny)
+- Limit support for only RAID1 on /boot (jkonecny)
+
+* Wed Mar 26 2025 Packit <hello@packit.dev> - 42.27.9-1
+- pyanaconda: add support for Mac OS detection (k.koukiou)
+
+* Tue Mar 25 2025 Packit <hello@packit.dev> - 42.27.8-1
+- Fix condition to run locale1-sync script (jkonecny)
+- Update doc after disabling keyboard shortcuts (jkonecny)
+- Add release note for disabling keyboard shortcuts (jkonecny)
+- Disable keyboard shortcuts for layouts switching (jkonecny)
+
+* Mon Mar 24 2025 Packit <hello@packit.dev> - 42.27.7-1
+- Start/stop locale-sync systemd unit in liveinst (jkonecny)
+- Fix WantedBy in locale1-x11-sync service (jkonecny)
+- platform: set PLATFORM_RAID_METADATA and PLATFORM_RAID_LEVEL for x86 (k.koukiou)
+- pyanaconda: storage: when checking the md device validity check also parent (k.koukiou)
+
+* Thu Mar 20 2025 Packit <hello@packit.dev> - 42.27.5-1
+- Support redirects in apply-updates (jkonecny)
+- Bump required version of Blivet to 3.12 (vtrefny)
+- Disable LVM auto-activation during installation (vtrefny)
+- Fix tui error after rd question (adamkankovsky)
+- Update FSF address (adamkankovsky)
+- gui: replace emblem icons removed from adwaita package (rvykydal)
+
+* Fri Mar 14 2025 Packit <hello@packit.dev> - 42.27.4-1
+- pyanaconda: storage: fix getting of usable devices (k.koukiou)
+
+* Wed Mar 05 2025 Packit <hello@packit.dev> - 42.27.3-1
+- Fix bad formatting for `format` function (jkonecny)
+- Add the locale1-x11-sync script to the anaconda-live subpackage (#2346855)
+  (mkolman)
+
+* Tue Feb 18 2025 Packit <hello@packit.dev> - 42.27.1-1
+- localization: discard space when sorting keyboards according to langtable
+  entries (k.koukiou)
+- pyanaconda: localization: sort keyboard list in a sane manner (k.koukiou)
+- dracut: depend on net-lib not ifcfg (awilliam)
+- localization: fix parsing of locales whose name are multiple words
+  (k.koukiou)
+- Add test for GetLocaleKeyboardLayouts (adamkankovsky)
+- Creating a dbus interface to get local keyboard layouts (adamkankovsky)
+- Set up the fedora-42 branch (rvykydal)
+
+* Tue Jan 28 2025 Packit <hello@packit.dev> - 42.24-1
+- network: pass NM global dns configuration to the installed system (rvykydal)
+- Improve sections structure in tests/README (jkonecny)
+- Fix the `Note` section in tests/README (jkonecny)
+- Move shell testing to a separated directory (jkonecny)
+- Make minor improvements in test/README (jkonecny)
+- Improve security considerations in tests/README (jkonecny)
+- Remove outdated information from tests/README (jkonecny)
+- data: profiles: enable language screen for Web UI on Workstation (k.koukiou)
+- network: pass global dns initrd option to the installed system (rvykydal)
+- Enable dynamic bash commands disable for tests (jkonecny)
+- Add test for config_get dracut function (jkonecny)
+- Fix trailing `/` when downloading stage2 image (jkonecny)
+- Fix whitespace chars broke Dracut config parsing (jkonecny)
+- Disable keyboard shortcut switching on gnome-kiosk (jkonecny)
+- Improve name of compositor layout selection method (jkonecny)
+- Split LocaledWrapper code for compositor (jkonecny)
+- security: do not crash initramfs ks parsing on failing certificate (rvykydal)
+- docs: update release note for certificates import (rvykydal)
+- rpmostree: Use `--merge` for kargs (walters)
+
+* Thu Jan 16 2025 Packit <hello@packit.dev> - 42.23-1
+- Add release notes for certificates import (rvykydal)
+- docs: add release note for the `hidden-webui-pages` configuration option
+  (k.koukiou)
+- data: profile: extend workstation profile to hide pages for Web UI
+  (k.koukiou)
+- security: add a service to transfer certificates from initramfs (rvykydal)
+- Revert "build: Install systemd-resolved in ELN aka RHEL-11" (rvykydal)
+- Handle invalid UTF-8 characters in efibootmgr output (k.koukiou)
+- Don't log a bogus warning when kickstart specifies a disk label (awilliam)
+- Fix displaying attributes on advanced storage spoke (#2332568) (vtrefny)
+- Reapply "fix missing WWID values for multipath devices in advanced storage
+  UI" (vtrefny)
+- security: import certificates in initramfs (rvykydal)
+- security: install certificates in pre-install phase only for dnf payload
+  (rvykydal)
+- security: raise exception if certificate destination is unknown (rvykydal)
+- security: log a warning when dumping certificate over an existing file
+  (rvykydal)
+- security: pre-install certificates before payload installation (rvykydal)
+- security: add API to install certificates early before payload (rvykydal)
+- security: install certificates on target system (rvykydal)
+- security: Add API for installation on target system (rvykydal)
+- security: import certificates early after Anaconda start (rvykydal)
+- security: add API to import certificates to Anaconda environment (rvykydal)
+- security: add API: Certificate getter (rvykydal)
+- kickstart: extend section specification for list of section data (rvykydal)
+- security: implement the support to install certificates to Anaconda
+  (k.koukiou)
+- Add documentation for keyboard layout control (jkonecny)
+
+* Thu Jan 16 2025 Fedora Release Engineering <releng@fedoraproject.org> - 42.21-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
+
+* Fri Dec 20 2024 Packit <hello@packit.dev> - 42.21-1
+- translations: bump dependency to l10n repo because of branch switch
+  (k.koukiou)
+- pyanaconda: module_manager: fix ciclic import (k.koukiou)
+- pyanaconda: bootloader: fix ImportError (k.koukiou)
+- ruff: enable isort rules and autofix all isort warnings (k.koukiou)
+- Fix useless-return pylint rule (k.koukiou)
+- Fix use-dict-literal pylint rule (k.koukiou)
+- Fix use-list-literal pylint rule (k.koukiou)
+- Fix useless-object-inheritance pylint rule (k.koukiou)
+- Fix stop-iteration-return pylint rule (k.koukiou)
+- Fix consider-using-in pylint rule (k.koukiou)
+- Fix consider-using-from-import pylint rule (k.koukiou)
+- Fix comparison-with-itself pylint rule (k.koukiou)
+- Fix super-with-arguments pylint rule (k.koukiou)
+- Fix use-a-generator pylint rule (k.koukiou)
+- Fix simplifiable-if-expression and simplifiable-if-statement pylint rules
+  (k.koukiou)
+
+* Tue Dec 17 2024 Packit <hello@packit.dev> - 42.20-1
+- Subscription code updates - adjust unit tests (mkolman)
+- Subscription code updates - GTK GUI (mkolman)
+- Subscription code updates - backend (mkolman)
+- Bump minimal subscription manager versions (mkolman)
+- network: improve logging of writing configuration (rvykydal)
+
+* Tue Dec 03 2024 Packit <hello@packit.dev> - 42.18-1
+- efi: Update __all__ dictionary (abologna)
+- docs: fix test container update doc (rvykydal)
+
+* Fri Nov 29 2024 Adam Williamson <awilliam@redhat.com> - 42.16-3
+- Replace #6029 with #6030 (better fix) (#2329379)
+
+* Thu Nov 28 2024 Adam Williamson <awilliam@redhat.com> - 42.16-2
+- Backport PR #6029 to revert rsync check that breaks KDE install (#2329379)
+
+* Tue Nov 26 2024 Packit <hello@packit.dev> - 42.16-1
+- util: correct errors and suppress stderr for common cases (riehecky)
+- payload: utilize `du` command for finding the required disk size in live OS
+  (k.koukiou)
+- Fix typo in anaconda hints (jstodola)
+- doc: Fix bullet list in Wayland migration rel note (jkonecny)
+- doc: Add dropped kernel options to Wayland relnote (jkonecny)
+- payload: raise exception on non zero exit code from rsync (k.koukiou)
+
+* Tue Nov 19 2024 Packit <hello@packit.dev> - 42.15-1
+- doc: RDP boot option is not supported in live (jkonecny)
+- Fix RDP var contains string instead of bool (jkonecny)
+- Remove stray comma from widgets/configure.ac (vtrefny)
+- Explicitly place biosboot partition only on stage1 disk (vtrefny)
+- network: add warning for kickstart network configuration when running from
+  nfs (rvykydal)
+- liveinst: Allow running as a Wayland-native application (neal)
+
+* Tue Nov 12 2024 Packit <hello@packit.dev> - 42.14-1
+- Update to version 42.14
+
+* Fri Nov 08 2024 Packit <hello@packit.dev> - 42.13-1
+- Test for kickstart scripts (akankovs)
+- Migrate the %%pre-install, %%post, %%onerror and %%traceback scripts
+  (akankovs)
+- Suppress warning from systemd user session (jkonecny)
+- Use log levels when getting logs from GLib (jkonecny)
+- Remove GLib logging condition for HW logging (jkonecny)
+- Move GLib imports to pyanaconda.core.glib (jkonecny)
+- Redirect only GLib loggers to Journal (mkolman)
+- docs: Collect release notes for F41 (k.koukiou)
+- pyanaconda: storage: workaround for Virtio Block Device being displayed as
+  0x1af4 (k.koukiou)
+
+* Fri Oct 25 2024 Packit <hello@packit.dev> - 42.12-1
+- Revert "Update lorax build for pkexec command" (k.koukiou)
+- Update lorax build for pkexec command (adamkankovsky)
+- webui: Handle XAUTHORITY and XDG_RUNTIME_DIR (rstrode)
+- unit_test: extend existing device tree checks with isleaf attribute
+  (adamkankovsky)
+- Introduce isleaf to deviceData (adamkankovsky)
+- network: handle autoconnections policy for rhel upstream (rvykydal)
+
+* Wed Oct 23 2024 Packit <hello@packit.dev> - 42.11-1
+- Fix permission errors from liveinst exit (jkonecny)
+- Remove redundant line in DNF payload (mkolman)
+- Fix vconsole layout doesn't work for ostree (jkonecny)
+- Fix checking whether a disk can be cleared during autopart (vtrefny)
+- Update spec config files list (ppolawsk)
+- Update makefile clean file list with RPMs (ppolawsk)
+
+* Tue Oct 22 2024 Packit <hello@packit.dev> - 42.10-1
+- Fix crash on continue after a missing package non-critical error (mkolman)
+
+* Wed Oct 16 2024 Packit <hello@packit.dev> - 42.9-1
+- Log stderr to journal only on supported platforms (jkonecny)
+- logging: fix the length limit of packages info dbg message (rvykydal)
+
+* Tue Oct 15 2024 Gwyn Ciesla <gwync@protonmail.com> - 42.8-2
+- brltty rebuild
+
+* Tue Oct 15 2024 Packit <hello@packit.dev> - 42.8-1
+- Fix journal redirect on systems without journal (jkonecny)
+- unit_tests: drop DASDDevice.opts like in related blivet change (maier)
+- network: use consolidated s390 device configuration (#1802482,#1937049)
+  (maier)
+- write persistent config of any (dasd,zfcp,znet) s390 devices to sysroot
+  (#1802482,#1937049) (maier)
+- DASDDiscoverTask: use consolidated device configuration with zdev
+  (#1802482,#1937049) (maier)
+
+* Thu Oct 10 2024 Packit <hello@packit.dev> - 42.7-1
+- Add GRD test coverage (jkonecny)
+- Improve docs in gnome_remote_desktop source (jkonecny)
+- Check return values from GRD calls (jkonecny)
+- Create a shortcut method for GRD failure (jkonecny)
+- Obtain hostname for RDP asynchronously (jkonecny)
+- Print connect info after starting GRD server (jkonecny)
+- Fix starting anaconda on z/VM and LPAR s390x (jstodola)
+- Create GRDServer class only when required (jkonecny)
+- Disable fedora-cisco repository in our containers (jkonecny)
+- Fix typo in the GRD source file name (jkonecny)
+- Do not change compositor options when not defined (jkonecny)
+- Add release-notes for Wayland migration (jkonecny)
+- Set --rdp in liveinst unsupported (jkonecny)
+- Remove Wayland detection logic from code (jkonecny)
+- Do not create GRDServer on Live ISO (jkonecny)
+- Remove dead spice_vd_agent code (jkonecny)
+- Switch keyboard management to Localed (jkonecny)
+- Add localed signal support to LocaledWrapper (jkonecny)
+- Add missing support to localed for compositor (jkonecny)
+- Redirect output of various GNOME related tools to Journal (mkolman)
+- Remove leftover debugging message (mkolman)
+- Redirect Anaconda main process stderr to Journal (mkolman)
+- Cleanup remaining Xorg and VNC references and dead code (mkolman)
+- Handle inst.rdp in Dracut (mkolman)
+- Adjust to freerdp and GNOME package changes (mkolman)
+- Replace VNC support with GNOME remote desktop (mkolman)
+- Add RDP boot options & deprecate VNC boot options (mkolman)
+- Introduce GNOME remote desktop support (mkolman)
+- Rename usevnc flag & similar variables (mkolman)
+- Drop xrdb (jexposit)
+- Drop xrandr (jexposit)
+- Add unit tests for GkKeyboardManager and its API in localization module
+  (rvykydal)
+- Drop the X.Org server dependency (jexposit)
+- Drop libxklavier (jexposit)
+- Use GNOME Kiosk's API in LayoutIndicator (jexposit)
+- Setup gdbus-codegen (jexposit)
+- Use GNOME Kiosk's API in XklWrapper (jexposit)
+- Add GNOME Kiosk keyboard manager class (jexposit)
+- home reuse: add unit tests (rvykydal)
+- home reuse: define static and class methods (rvykydal)
+- home reuse: reuse mount options of reused mountpoins (rvykydal)
+- home reuse: check autopartitioning scheme against reused mountpoints
+  (rvykydal)
+- home reuse: require removing of bootloader partition explicitly (rvykydal)
+- home reuse: remove bootloader partitions implicitly (rvykydal)
+- home reuse: update existing OSs when applying partitioning (rvykydal)
+- home reuse: add support for /home reuse to automatic partitioning (rvykydal)
+
+* Tue Oct 08 2024 Packit <hello@packit.dev> - 42.6-1
+- Update to version 42.6
+
+* Tue Oct 01 2024 Packit <hello@packit.dev> - 42.5-1
+- docs: Adjust CONTRIBUTING document to mention automatic linter checks
+  (k.koukiou)
+- docs: rule is covered by pylint (k.koukiou)
+- docs: rule is covered by pylint (k.koukiou)
+- Update tests for patition device data (adamkankovsky)
+- build: remove the Obsoletes line from the spec file for booty (k.koukiou)
+- build: fix: anaconda-core-debuginfo.x86_64: E: no-binary (k.koukiou)
+- build: fix: anaconda-core.x86_64: E: explicit-lib-dependency libselinux-
+  python3 (k.koukiou)
+- Take partition label from blivet (akankovs)
+- Update test for comunicate (akankovs)
+- webui: Saving webui-desktop log to anaconda.log (akankovs)
+
+* Tue Sep 24 2024 Packit <hello@packit.dev> - 42.4-1
+- pyanaconda: fix incorrect access to --repo argument (k.koukiou)
+- util: log PID also when a created process terminates (k.koukiou)
+- Add release notes about dropping i686 builds (jkonecny)
+- Remove support for i686 builds (jkonecny)
+- Remove deprecated `method` boot option (k.koukiou)
+- configure: only append -fanalyzer when building with gcc (zhoujiacheng)
+- Fix check for biosboot partition in GRUB2.check (vtrefny)
+
+* Tue Sep 17 2024 Packit <hello@packit.dev> - 42.3-1
 - Fix scheduling actions in reclaim space dialog (#2311936) (vtrefny)
 
-* Mon Sep 23 2024 Packit <hello@packit.dev> - 41.33-1
-- New version - 41.33 (k.koukiou)
+* Tue Sep 10 2024 Packit <hello@packit.dev> - 42.2-1
+- security: call /usr/libexec/fips-setup-helper (asosedkin)
+
+* Thu Sep 05 2024 Adam Williamson <awilliam@redhat.com> - 42.1-2
+- Rebuild to get a combined update with anaconda-webui
+
+* Mon Sep 02 2024 Packit <hello@packit.dev> - 42.1-1
+- Ignore all storage errors when trying to activate swaps (vtrefny)
+- build: stop pulling systemd as build dependency (kkoukiou)
+- webui: Move webui-desktop in libexec to our subdirectory (akankovs)
+
+* Tue Aug 27 2024 Packit <hello@packit.dev> - 41.32-1
+- Update to version 41.32
 
 * Thu Aug 22 2024 Packit <hello@packit.dev> - 41.31-1
 - docs: update release note about modularity deprecation (kkoukiou)
