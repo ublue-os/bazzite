@@ -1,7 +1,7 @@
 Summary: Graphical system installer
 Name:    anaconda
 Version: 41.35
-Release: 100.bazzite
+Release: 101.bazzite
 License: GPL-2.0-or-later
 URL:     http://fedoraproject.org/wiki/Anaconda
 
