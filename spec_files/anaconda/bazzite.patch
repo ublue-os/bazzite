@@ -1,28 +1,28 @@
 diff -Naur a/pyanaconda/display.py b/pyanaconda/display.py
 --- a/pyanaconda/display.py
 +++ b/pyanaconda/display.py
-@@ -237,6 +237,14 @@
+@@ -263,6 +263,13 @@
      :param str runres: a resolution specification string
-     :param gui_mode: an Anaconda display mode
      """
+     try:
++        # Get product name
++        with open("/sys/devices/virtual/dmi/id/product_name") as f:
++            dmi = f.read().strip()
 +
-+    # Get product name
-+    with open("/sys/devices/virtual/dmi/id/product_name") as f:
-+        dmi = f.read().strip()
++        if "Jupiter" in dmi or "Galileo" in dmi or "NEXT" in dmi:
++            runres = "1280x800"
 +
-+    if "Jupiter" in dmi or "Galileo" in dmi or "NEXT" in dmi:
-+        runres = "1280x800"
-+
-     if runres and gui_mode and not flags.usevnc:
-         set_x_resolution(runres)
- 
+         log.info("Setting the screen resolution to: %s.", runres)
+         mutter_display = MutterDisplay()
+         mutter_display.set_resolution(runres)
+
 diff -Naur a/pyanaconda/ui/gui/__init__.py b/pyanaconda/ui/gui/__init__.py
 --- a/pyanaconda/ui/gui/__init__.py
 +++ b/pyanaconda/ui/gui/__init__.py
-@@ -576,6 +576,13 @@
+@@ -584,6 +584,13 @@
          if not primary_monitor:
              return
- 
+
 +        with open("/sys/devices/virtual/dmi/id/product_name") as f:
 +            dmi = f.read().strip()
 +
