@@ -1,0 +1,62 @@
+#!/usr/bin/bash
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
+
+DECK_OPTION=""
+
+# Nvidia crash fix
+export __GL_CONSTANT_FRAME_RATE_HINT=3
+
+if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
+  if [ ! -d $HOME/.local/share/Steam ]; then
+    # Set up steam with the bootstrap before starting it, this allows steam to run for the first time even with no network access
+    if [[ -f "/usr/share/gamescope-session-plus/bootstrap_steam.tar.gz" ]]; then
+        mkdir -p ~/.local/share
+        tar xf /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz -C ~/.local/share
+    fi
+  fi
+
+  # Apply our branding for Steam
+  if [[ -f /usr/bin/bazzite-steam-brand ]]; then
+    /usr/bin/bazzite-steam-brand
+  fi
+
+  # File toggle to override default Steam Deck flag behavior
+  DECK_OVERRIDE_FLAG="$HOME/.config/bazzite/disable_steamdeck_flag"
+
+  # Required to maintain the Steam update branch between desktop & Steam Game Mode
+  if [[ ! -f "$DECK_OVERRIDE_FLAG" ]]; then
+    DECK_OPTION="-steamdeck"
+  else
+    DECK_OPTION=""
+  fi
+
+  # HHD Support
+  if ! /usr/libexec/hwsupport/valve-hardware; then
+      export SDL_GAMECONTROLLERCONFIG="060000000d0f00009601000000000000,Steam Controller (HHD),a:b0,b:b1,x:b2,y:b3,back:b6,guide:b8,start:b7,leftstick:b9,rightstick:b10,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,leftx:a0,lefty:a1,rightx:a3,righty:a4,lefttrigger:a2,righttrigger:a5,paddle1:b13,paddle2:b12,paddle3:b15,paddle4:b14,misc2:b11,misc3:b16,misc4:b17,crc:ea35,"
+  fi
+fi
+
+switcheroo_state="$(switcherooctl list)"
+DGPU_OPTION=""
+# If we're running this on a dGPU in a multi-gpu AMD/Intel system, apply a workaround for the blank Steam window bug
+if [[ $(echo "${switcheroo_state}" | grep -o 'Device:' | wc -l) -gt 1 ]]; then
+  # TODO: Check if -system-composer is needed with nvidia >=555 driver
+  if ! grep -Pq 'Name:\s+NVIDIA' <<< "$switcheroo_state"; then
+    DGPU_OPTION="-system-composer"
+  fi
+fi
+unset -v switcheroo_state
+
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+  # https://github.com/Supreeeme/extest
+  # Extest is a drop in replacement for the X11 XTEST extension.
+  # It creates a virtual device with the uinput kernel module.
+  # It's been primarily developed for allowing the desktop functionality
+  # on the Steam Controller to work while Steam is open on Wayland.
+  # Also supports Steam Input as a whole.
+  env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam "$DECK_OPTION" "$DGPU_OPTION" "$@"
+else
+  /usr/bin/steam "$DECK_OPTION" "$DGPU_OPTION" "$@"
+fi
