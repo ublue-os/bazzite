@@ -1,7 +1,50 @@
-diff -Naur a/pyanaconda/display.py b/pyanaconda/display.py
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Mon, 12 May 2025 23:08:02 +0200
+Subject: feat: allow for custom version branding
+
+---
+ pyanaconda/core/product.py | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/pyanaconda/core/product.py b/pyanaconda/core/product.py
+index 329b8595c7..b93332055c 100644
+--- a/pyanaconda/core/product.py
++++ b/pyanaconda/core/product.py
+@@ -93,6 +93,14 @@ def get_product_values():
+     product_name = config.get("Main", "Product")
+     product_version = trim_product_version_for_ui(config.get("Main", "Version"))
+ 
++    try:
++        with open("/etc/bazzite-version", "r") as f:
++            bazzite_version = f.read().strip()
++            if bazzite_version:
++                product_version = bazzite_version
++    except Exception:
++        product_version = "42"
++
+     # for use in device names, eg: "fedora", "rhel"
+     product_short_name = shorten_product_name(product_name)
+ 
+-- 
+2.49.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Mon, 12 May 2025 23:10:36 +0200
+Subject: fix: fix scaling on 800p devices
+
+---
+ pyanaconda/display.py         | 8 ++++++++
+ pyanaconda/ui/gui/__init__.py | 7 +++++++
+ 2 files changed, 15 insertions(+)
+
+diff --git a/pyanaconda/display.py b/pyanaconda/display.py
+index c527b66b57..feb96bfe02 100644
 --- a/pyanaconda/display.py
 +++ b/pyanaconda/display.py
-@@ -237,6 +237,14 @@
+@@ -250,6 +250,14 @@ def do_extra_x11_actions(runres, gui_mode):
      :param str runres: a resolution specification string
      :param gui_mode: an Anaconda display mode
      """
@@ -16,10 +59,11 @@ diff -Naur a/pyanaconda/display.py b/pyanaconda/display.py
      if runres and gui_mode and not flags.usevnc:
          set_x_resolution(runres)
  
-diff -Naur a/pyanaconda/ui/gui/__init__.py b/pyanaconda/ui/gui/__init__.py
+diff --git a/pyanaconda/ui/gui/__init__.py b/pyanaconda/ui/gui/__init__.py
+index dfa8e3462d..d47dec86cb 100644
 --- a/pyanaconda/ui/gui/__init__.py
 +++ b/pyanaconda/ui/gui/__init__.py
-@@ -576,6 +576,13 @@
+@@ -576,6 +576,13 @@ class GraphicalUserInterface(UserInterface):
          if not primary_monitor:
              return
  
@@ -33,3 +77,6 @@ diff -Naur a/pyanaconda/ui/gui/__init__.py b/pyanaconda/ui/gui/__init__.py
          monitor_geometry = primary_monitor.get_geometry()
          monitor_scale = primary_monitor.get_scale_factor()
          monitor_width_mm = primary_monitor.get_width_mm()
+-- 
+2.49.0
+
