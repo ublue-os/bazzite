@@ -435,10 +435,16 @@ jobs:
           attempt_limit: 3
           attempt_delay: 15000
           command: |
+            log_sum() { echo "$1" >> $GITHUB_STEP_SUMMARY; }
+            log_sum '# Push to GHCR result'
+            log_sum '```'
             echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
-              sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag
+              dest_image="${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag"
+              sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image && 
+                log_sum "$dest_image"
             done
+            log_sum '```'
 
       - name: Get Image Digest
         id: digest
