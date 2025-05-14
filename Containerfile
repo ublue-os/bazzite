@@ -393,7 +393,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    curl -sL https://github.com/xXJSONDeruloXx/yafti-go/releases/download/latest/yafti-go-bundle.tar.gz -o /tmp/yafti-go-bundle.tar.gz && \
+    curl -sL $(curl -s https://api.github.com/repos/xXJSONDeruloXx/yafti-go/releases/latest | jq -r '.assets[] | select(.name == "yafti-go-bundle.tar.gz").browser_download_url') -o /tmp/yafti-go-bundle.tar.gz && \
     file /tmp/yafti-go-bundle.tar.gz && \
     mkdir -p /tmp/yafti-go && \
     tar -xzf /tmp/yafti-go-bundle.tar.gz -C /tmp/yafti-go && \
