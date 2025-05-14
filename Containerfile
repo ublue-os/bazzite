@@ -393,14 +393,11 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    curl -sL $(curl -s https://api.github.com/repos/xXJSONDeruloXx/yafti-go/releases/latest | jq -r '.assets[] | select(.name == "yafti-go-bundle.tar.gz").browser_download_url') -o /tmp/yafti-go-bundle.tar.gz && \
-    file /tmp/yafti-go-bundle.tar.gz && \
-    mkdir -p /tmp/yafti-go && \
-    tar -xzf /tmp/yafti-go-bundle.tar.gz -C /tmp/yafti-go && \
-    cd /tmp/yafti-go && \
-    ./install.sh && \
+    curl -sL $(curl -s https://api.github.com/repos/xXJSONDeruloXx/yafti-go/releases/latest | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url') -o /usr/bin/yafti-go && \
+    chmod +x /usr/bin/yafti-go && \
+    mkdir -p /etc/systemd/system && \
+    echo -e "[Unit]\nDescription=Yafti-Go First Boot Setup\nAfter=network-online.target\nWants=network-online.target\n\n[Service]\nType=simple\nExecStart=/usr/bin/yafti-go\nRestart=on-failure\n\n[Install]\nWantedBy=multi-user.target" > /etc/systemd/system/yafti-go.service && \
     systemctl enable yafti-go.service && \
-    rm -rf /tmp/yafti-go* && \
     /ctx/cleanup
 
 # Configure KDE & GNOME
