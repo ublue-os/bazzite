@@ -393,11 +393,14 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    curl -sL https://github.com/xXJSONDeruloXx/yafti-go/releases/download/latest/yafti-go-bundle.tar.gz | \
-    tar -xz && \
+    curl -sL https://github.com/xXJSONDeruloXx/yafti-go/releases/download/latest/yafti-go-bundle.tar.gz -o /tmp/yafti-go-bundle.tar.gz && \
+    file /tmp/yafti-go-bundle.tar.gz && \
+    mkdir -p /tmp/yafti-go && \
+    tar -xzf /tmp/yafti-go-bundle.tar.gz -C /tmp/yafti-go && \
+    cd /tmp/yafti-go && \
     ./install.sh && \
     systemctl enable yafti-go.service && \
-    rm -rf yafti-go* && \
+    rm -rf /tmp/yafti-go* && \
     /ctx/cleanup
 
 # Configure KDE & GNOME
