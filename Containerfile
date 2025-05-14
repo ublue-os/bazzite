@@ -388,6 +388,18 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/bin/winetricks && \
     /ctx/cleanup
 
+# Install yafti-go
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    curl -sL https://github.com/xXJSONDeruloXx/yafti-go/releases/download/latest/yafti-go-bundle.tar.gz | \
+    tar -xz && \
+    ./install.sh && \
+    systemctl enable yafti-go.service && \
+    rm -rf yafti-go* && \
+    /ctx/cleanup
+
 # Configure KDE & GNOME
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \

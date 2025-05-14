@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Yafti-Go Setup
+GenericName=First Boot Setup
+Comment=First Boot Setup Wizard
+Exec=/usr/bin/yafti-go
+Icon=system-software-install
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+X-KDE-autostart-phase=2

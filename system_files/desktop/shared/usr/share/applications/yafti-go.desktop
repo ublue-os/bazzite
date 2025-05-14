@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Bazzite Portal
+GenericName=Bazzite Setup Portal
+Comment=Bazzite Configuration and First Boot Setup
+Exec=env YAFTI_EXEC_WRAPPER="flatpak run org.mozilla.firefox --kiosk --new-instance %u" yafti-go
+Icon=system-software-install
+Terminal=false
+Categories=System;Settings;
+StartupNotify=true
