@@ -3,7 +3,7 @@ Type=Application
 Name=Bazzite Portal Setup
 GenericName=Bazzite Setup Portal
 Comment=Bazzite Configuration and First Boot Setup
-Exec=env YAFTI_EXEC_WRAPPER="flatpak run org.mozilla.firefox --kiosk --new-instance %u" yafti-go
+Exec=/usr/libexec/bazzite-yafti-launcher
 Icon=system-software-install
 Terminal=false
 NoDisplay=true

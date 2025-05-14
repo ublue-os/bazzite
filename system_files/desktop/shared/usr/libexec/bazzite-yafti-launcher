@@ -1,0 +1,5 @@
+#!/bin/bash
+~/.local/bin/yafti-go &
+YAFTI_PID=$!
+flatpak run org.mozilla.firefox http://localhost:3169
+kill $YAFTI_PID
