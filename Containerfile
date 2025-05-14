@@ -938,3 +938,6 @@ RUN --mount=type=cache,dst=/var/cache \
 
 RUN dnf5 config-manager setopt skip_if_unavailable=1 && \
     bootc container lint
+
+# Make yafti launcher script executable
+RUN chmod +x /usr/libexec/bazzite-yafti-launcher

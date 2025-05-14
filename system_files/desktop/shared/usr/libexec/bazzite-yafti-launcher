@@ -4,8 +4,8 @@
 ~/.local/bin/yafti-go &
 YAFTI_PID=$!
 
-# Launch Chromium in app mode with custom window size
-flatpak run org.chromium.Chromium --app=http://localhost:3169 --window-size=1280,800
+# Launch Chromium in app mode with custom window size and password manager disabled
+flatpak run org.chromium.Chromium --app=http://localhost:3169 --window-size=1280,800 --password-store=basic
 
 # Kill yafti-go when Chromium window is closed
 kill $YAFTI_PID
