@@ -3832,32 +3832,6 @@ index 2fd0ec4..ceb7829 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
-Date: Sun, 4 May 2025 22:36:26 +0200
-Subject: fix: read valid refresh rates for externals
-
----
- src/Backends/DRMBackend.cpp | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index bcfc56d..8e91794 100644
---- a/src/Backends/DRMBackend.cpp
-+++ b/src/Backends/DRMBackend.cpp
-@@ -2282,7 +2282,7 @@ namespace gamescope
- 				if ( g_customRefreshRates.size() > 0 && GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL )
- 					m_Mutable.ValidDynamicRefreshRates = g_customRefreshRates;
- 				// Unknown display, see if there are any other refresh rates in the EDID we can get.
--				else if ( GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL )
-+				else
- 				{
- 					const drmModeModeInfo *pPreferredMode = find_mode( m_pConnector.get(), 0, 0, 0 );
- 
--- 
-2.49.0
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <git@antheas.dev>
 Date: Sun, 4 May 2025 22:45:14 +0200
 Subject: Revert "Force wrap file usage for stb and glm dependencies"
 
