@@ -396,7 +396,6 @@ RUN --mount=type=cache,dst=/var/cache \
     curl -sL "$(curl -s https://api.github.com/repos/xXJSONDeruloXx/yafti-go/releases/latest | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -o /bin/yafti-go && \
     chmod +x /bin/yafti-go && \
     chmod +x /usr/libexec/bazzite-yafti-launcher && \
-    dnf5 -y install surf && \
     /ctx/cleanup
 
 # Configure KDE & GNOME

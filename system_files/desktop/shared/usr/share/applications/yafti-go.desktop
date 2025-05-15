@@ -2,7 +2,7 @@
 Type=Application
 Name=Bazzite Portal Setup
 GenericName=Bazzite Setup Portal
-Comment=Bazzite Configuration and First Boot Setup
+Comment=Launch Bazzite Portal for system setup and configuration
 Exec=/usr/libexec/bazzite-yafti-launcher
 Icon=system-software-install
 Terminal=false
