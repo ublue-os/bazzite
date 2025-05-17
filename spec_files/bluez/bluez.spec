@@ -5,22 +5,24 @@
 %endif
 
 Name:    bluez
-Version: 5.79
-Release: 1%{?dist}.bazzite.{{{ git_dir_version }}}
+Version: 5.81
+Release: 2%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: Bluetooth utilities
 License: GPL-2.0-or-later
 URL:     http://www.bluez.org/
 
 Source0: https://www.kernel.org/pub/linux/bluetooth/%{name}-%{version}.tar.xz
 
+Patch1:  bluez-5.81-fixes.patch
+
 # Valve
-Patch0: 0001-valve-bluetooth-config.patch
-Patch1: 0002-valve-bluetooth-phy.patch
-Patch2: 0014-shared-gatt-Add-env-variable-to-prefer-indication-ov.patch
-Patch3: 0018-disable-unreliable-vcp-tests.patch
-Patch4: 0019-plugins-Add-new-plugin-to-manage-wake-policy.patch
-Patch5: 0020-plugins-wake-policy-Only-allow-Peripherals-to-wake-u.patch
-Patch6: 0021-valve-bluetooth-ll-privacy.patch
+Patch10: 0001-valve-bluetooth-config.patch
+Patch11: 0002-valve-bluetooth-phy.patch
+Patch12: 0014-shared-gatt-Add-env-variable-to-prefer-indication-ov.patch
+Patch13: 0018-disable-unreliable-vcp-tests.patch
+Patch14: 0019-plugins-Add-new-plugin-to-manage-wake-policy.patch
+Patch15: 0020-plugins-wake-policy-Only-allow-Peripherals-to-wake-u.patch
+Patch16: 0021-valve-bluetooth-ll-privacy.patch
 
 BuildRequires: dbus-devel >= 1.6
 BuildRequires: glib2-devel
@@ -307,6 +309,7 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_mandir}/man7/hci.7.*
 %{_mandir}/man7/l2cap.7.*
 %{_mandir}/man7/rfcomm.7.*
+%{_mandir}/man7/sco.7.*
 %{_libdir}/libbluetooth.so
 %{_includedir}/bluetooth
 %{_libdir}/pkgconfig/bluez.pc
@@ -336,9 +339,25 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_libexecdir}/bluetooth/obexd
 %{_datadir}/dbus-1/services/org.bluez.obex.service
 /usr/lib/systemd/user/dbus-org.bluez.obex.service
+%{_datadir}/dbus-1/system.d/obex.conf
 %{_userunitdir}/obex.service
 
 %changelog
+* Wed Apr 02 2025 Peter Robinson <pbrobinson@fedoraproject.org> - 5.81-2
+- Upstream patches to fix broken 5.81
+
+* Tue Apr 01 2025 Peter Robinson <pbrobinson@fedoraproject.org> - 5.81-1
+- Update to 5.81
+
+* Mon Mar 17 2025 Peter Robinson <pbrobinson@fedoraproject.org> - 5.80-1
+- Update to 5.80
+
+* Thu Mar 06 2025 Peter Robinson <pbrobinson@fedoraproject.org> - 5.79-3
+- Fixes for gcc-15
+
+* Thu Jan 16 2025 Fedora Release Engineering <releng@fedoraproject.org> - 5.79-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
+
 * Sat Nov 02 2024 Peter Robinson <pbrobinson@fedoraproject.org> - 5.79-1
 - Update to 5.79
 
