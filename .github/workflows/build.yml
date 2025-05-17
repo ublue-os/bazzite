@@ -240,7 +240,7 @@ jobs:
           UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
           # Remove .0 suffix from upstream tag so we can add our own and
           # the wrong one does not end up in the image.
-          UPSTREAM_TAG="${UPSTREAM_TAG%.*}"
+          UPSTREAM_TAG="${UPSTREAM_TAG%\.[0-9]}" 
           FEDORA_VERSION="${{ matrix.fedora_version }}"
           SHA_SHORT="${GITHUB_SHA::7}"
 
