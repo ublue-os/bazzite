@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Bazzite Portal Setup
+GenericName=Bazzite Setup Portal
+Comment=Launch Bazzite Portal for system setup and configuration
+Exec=/usr/libexec/bazzite-yafti-launcher
+Icon=/usr/share/ublue-os/bazzite/update.svg
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+X-KDE-autostart-phase=2
