@@ -30,7 +30,7 @@ diff --git a/Makefile.plugins b/Makefile.plugins
 index 4aa2c9c92..fbd4e4155 100644
 --- a/Makefile.plugins
 +++ b/Makefile.plugins
-@@ -11,6 +11,10 @@ builtin_sources += plugins/autopair.c
+@@ -8,6 +8,10 @@
  builtin_modules += policy
  builtin_sources += plugins/policy.c
  
@@ -38,9 +38,9 @@ index 4aa2c9c92..fbd4e4155 100644
 +builtin_sources += plugins/wake-policy.c
 +EXTRA_DIST += plugins/wake-policy.conf
 +
- if ADMIN
- builtin_modules += admin
- builtin_sources += plugins/admin.c
+ builtin_sources += profiles/audio/media.h profiles/audio/media.c \
+ 			profiles/audio/transport.h profiles/audio/transport.c \
+ 			profiles/audio/player.h profiles/audio/player.c
 diff --git a/plugins/wake-policy.c b/plugins/wake-policy.c
 new file mode 100644
 index 000000000..34e77c615
