@@ -3864,3 +3864,31 @@ index 0a0e958..8a3a723 100644
 -- 
 2.49.0
 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Sat, 17 May 2025 03:06:20 +0200
+Subject: fix: prevent external overlays from pulling focus
+
+---
+ src/steamcompmgr.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index a789509..400d4a4 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -6115,8 +6115,8 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
+ 				hasRepaintNonBasePlane = true;
+ 			}
+ 
+-			// If this is an external overlay, repaint
+-			if ( w == global_focus.externalOverlayWindow && w->opacity != TRANSLUCENT )
++			// External overlays, e.g., mangohud, should not be able to repaint when VRR is on
++			if ( !GetBackend()->IsVRRActive() && w == global_focus.externalOverlayWindow && w->opacity != TRANSLUCENT )
+ 			{
+ 				hasRepaintNonBasePlane = true;
+ 			}
+-- 
+2.49.0
+
