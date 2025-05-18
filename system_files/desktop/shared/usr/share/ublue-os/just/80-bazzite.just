@@ -203,12 +203,21 @@ enable-automounting:
     set -eo pipefail
     rule=/etc/udev/rules.d/99-media-automount.rules
     if [[ "$(readlink $rule || :)" == /dev/null ]]; then
-        sudo rm -f $rule
+        sudo -A rm -f $rule
+    fi
+    if systemctl status --no-pager ublue-os-media-automount.service >/dev/null 2>&1; then
+        sudo -A systemctl enable --now ublue-os-media-automount.service
     fi
 
 # Disables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
 disable-automounting:
-    sudo ln -sf /dev/null /etc/udev/rules.d/99-media-automount.rules
+    #!/usr/bin/bash
+    set -eo pipefail
+    rule=/etc/udev/rules.d/99-media-automount.rules
+    sudo ln -sf /dev/null $rule
+    if systemctl status --no-pager ublue-os-media-automount.service >/dev/null 2>&1; then
+        sudo -A systemctl disable ublue-os-media-automount.service
+    fi
 
 # Enable support for DisplayLink
 enable-displaylink:
