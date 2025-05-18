@@ -388,6 +388,16 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/bin/winetricks && \
     /ctx/cleanup
 
+# Install yafti-go
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    curl -sL "$(curl -s https://api.github.com/repos/Zeglius/yafti-go/releases/latest | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -o /bin/yafti-go && \
+    chmod +x /bin/yafti-go && \
+    chmod +x /usr/libexec/bazzite-yafti-launcher && \
+    /ctx/cleanup
+
 # Configure KDE & GNOME
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
@@ -926,3 +936,6 @@ RUN --mount=type=cache,dst=/var/cache \
 
 RUN dnf5 config-manager setopt skip_if_unavailable=1 && \
     bootc container lint
+
+# Make yafti launcher script executable
+RUN chmod +x /usr/libexec/bazzite-yafti-launcher
