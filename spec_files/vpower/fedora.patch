@@ -1,7 +1,7 @@
 --- vpower-main/vpower.service
 +++ vpower-main/vpower.service
-@@ -2,7 +2,7 @@
- Description=vpower daemon
+@@ -3,7 +3,7 @@
+ ConditionPathExistsGlob=/sys/class/power_supply/BAT[0-9]
  
  [Service]
 -ExecStart=/usr/lib/vpower
