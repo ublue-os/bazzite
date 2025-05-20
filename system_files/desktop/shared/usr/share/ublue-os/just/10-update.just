@@ -11,8 +11,6 @@ update:
 
     /usr/bin/topgrade --config /usr/share/ublue-os/topgrade.toml --keep
 
-alias auto-update := toggle-updates
-
 # Turn automatic updates on or off
 _toggle-updates ACTION="prompt":
     #!/usr/bin/bash
