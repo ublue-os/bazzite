@@ -5,7 +5,7 @@ setup-cdemu ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     CDEMU_STATE="$(rpm -qa cdemu-daemon)"
-    GUI_EDITION="$(cat /etc/os-release | grep VARIANT_ID | sed 's/^.*=//')"
+    GUI_EDITION="$(cat /etc/os-release | grep -w VARIANT | sed 's/^.*=//; s/"//g')"
     OPTION={{ ACTION }}
     if [ "$CDEMU_STATE" == "" ]; then
         CDEMU_STATE="${red}${b}Not Installed${n}"
@@ -33,7 +33,7 @@ setup-cdemu ACTION="":
       fi
       sudo dnf5 -y copr enable rodoma92/kde-cdemu-manager
       sudo dnf5 -y copr enable rok/cdemu
-      if [[ "$GUI_EDITION" == "kinoite" ]]; then
+      if [[ "$GUI_EDITION" == "Kinoite" ]]; then
             # Install packages for KDE 6
             rpm-ostree install --apply-live -y cdemu-daemon cdemu-client kde-cdemu-manager-kf6
       else
@@ -48,7 +48,7 @@ setup-cdemu ACTION="":
         echo "${red} CDEmu has already been removed!"
         exit 0
       fi
-      if [[ "$GUI_EDITION" == "kinoite" ]]; then
+      if [[ "$GUI_EDITION" == "Kinoite" ]]; then
         # Remove packages for KDE 6
         GUI_STATE="$(rpm -qa kde-cdemu-manager-kf6)"
         #GUI already removed
@@ -71,7 +71,7 @@ setup-cdemu ACTION="":
       sudo dnf5 -y copr disable rok/cdemu
       echo "CDEmu has been uninstalled."
     elif [[ "${OPTION,,}" =~ helper ]]; then
-      if [[ "$GUI_EDITION" == "kinoite" ]]; then
+      if [[ "$GUI_EDITION" == "Kinoite" ]]; then
         GUI_STATE="$(rpm -qa kde-cdemu-manager-kf6)"
         if [["$GUI_STATE" == ""]]; then
           echo "GUI has already been removed or the package is not yet installed!"
