@@ -1,0 +1,25 @@
+From 7b698387f967d5bf274d859211683b459e7cbd15 Mon Sep 17 00:00:00 2001
+From: H3o66 <chris.h3o66@gmail.com>
+Date: Mon, 17 Feb 2025 19:45:10 +0100
+Subject: [PATCH] fix: with envdev ver 1.9.0 InputDevice.fn is dropped
+
+---
+ lutris/util/joypad.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lutris/util/joypad.py b/lutris/util/joypad.py
+index 2076b9d89..631d04674 100644
+--- a/lutris/util/joypad.py
++++ b/lutris/util/joypad.py
+@@ -32,7 +32,7 @@ def get_devices():
+ 
+ def get_joypads():
+     """Return a list of tuples with the device and the joypad name"""
+-    return [(dev.fn, dev.name) for dev in get_devices()]
++    return [(dev.path, dev.name) for dev in get_devices()]
+ 
+ 
+ def read_button(device):
+-- 
+2.48.1
+
