@@ -292,7 +292,12 @@ setup-decky ACTION="install":
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'install' to select Install Decky"
       echo "  Use 'prerelease' to select Install Decky Prerelease"
+      echo "  Use 'uninstall' to uninstall Decky Loader"
       exit 0
+    elif [ "$OPTION" == "" ]; then
+      echo "${bold}Decky Loader setup and configuration${normal}"
+      echo "Decky is $DECKY_STATE"
+      OPTION=$(Choose "Install Decky" "Install Decky Prerelease" "Uninstall Decky" "Exit")
     fi
     if [[ "${OPTION,,}" =~ install ]]; then
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
@@ -315,6 +320,11 @@ setup-decky ACTION="install":
       fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_prerelease.sh | sh
       sudo -A chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
+    fi
+    if [[ "${OPTION,,}" =~ uninstall ]]; then
+      echo "Uninstalling Decky Loader..."
+      curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/uninstall.sh | sh
+      echo "Decky Loader has been uninstalled."
     fi
 
 # Ptyxis terminal transparency

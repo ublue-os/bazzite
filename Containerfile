@@ -389,6 +389,16 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/bin/winetricks && \
     /ctx/cleanup
 
+# Install yafti-go
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    curl -sL "$(curl -s https://api.github.com/repos/Zeglius/yafti-go/releases/latest | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -o /bin/yafti-go && \
+    chmod +x /bin/yafti-go && \
+    chmod +x /usr/libexec/bazzite-yafti-launcher && \
+    /ctx/cleanup
+
 # Configure KDE & GNOME
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
@@ -897,7 +907,7 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y install \
         mesa-vdpau-drivers.x86_64 \
         mesa-vdpau-drivers.i686 && \
-    curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/main/2b59e2115bc3d90946b314914923f43d38063f89/build_files/nvidia-install.sh && \
+    curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/main/525e900bf8b3327e3738574a54089acb963a4d3e/build_files/nvidia-install.sh && \
     chmod +x /tmp/nvidia-install.sh && \
     IMAGE_NAME="${BASE_IMAGE_NAME}" /tmp/nvidia-install.sh && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
@@ -931,3 +941,6 @@ RUN --mount=type=cache,dst=/var/cache \
 
 RUN dnf5 config-manager setopt skip_if_unavailable=1 && \
     bootc container lint
+
+# Make yafti launcher script executable
+RUN chmod +x /usr/libexec/bazzite-yafti-launcher

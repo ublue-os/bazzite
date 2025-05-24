@@ -1,0 +1,216 @@
+title: Bazzite Portal
+screens:
+  - title: "Setting up Bazzite"
+    description: "Core system components and utilities"
+    actions:
+      - id: "decky-loader"
+        title: "Decky Loader"
+        description: "A plugin loader for the Steam Deck"
+        default: false
+        script: "ujust setup-decky install"
+      - id: "decky-bazzite-buddy"
+        title: "Decky Bazzite Buddy"
+        description: "A Decky plugin that lets you see Bazzite changelogs in Game Mode."
+        default: false
+        script: "ujust get-decky-bazzite-buddy"
+      - id: "decky-framegen-plus"
+        title: "Decky Framegen Plus"
+        description: "A Decky plugin that swaps DLSS for FSR and adds framegen to non-framegen games"
+        default: false
+        script: "ujust get-framegen install-decky-plugin"
+      - id: "emudeck"
+        title: "EmuDeck"
+        description: "A utility for installing and configuring emulators on the Steam Deck"
+        default: false
+        script: "ujust get-emudeck"
+      - id: "sunshine"
+        title: "Sunshine"
+        description: "A self-hosted game stream host for Moonlight"
+        default: false
+        script: "ujust setup-sunshine enable"
+      - id: "waydroid"
+        title: "Waydroid"
+        description: "Android app compatibility layer for Linux"
+        default: false
+        script: "ujust setup-waydroid init"
+      - id: "oversteer"
+        title: "Oversteer"
+        description: "Application to control supported steering wheels"
+        default: false
+        script: "ujust install-oversteer"
+      - id: "openrgb"
+        title: "OpenRGB"
+        description: "Open source RGB lighting control that doesn't depend on manufacturer software"
+        default: false
+        script: "ujust install-openrgb"
+      - id: "wootility"
+        title: "Wootility"
+        description: "A configurator for Wooting keyboards"
+        default: false
+        script: "ujust install-wootility"
+      - id: "resilio-sync"
+        title: "Resilio Sync"
+        description: "A file synchronization utility powered by BitTorrent"
+        default: false
+        script: "ujust install-resilio-sync"
+  - title: "Media Applications"
+    description: "Entertainment and streaming services"
+    actions:
+      - id: "xbox-cloud-gaming"
+        title: "Xbox Cloud Gaming"
+        description: "Cloud gaming service"
+        default: false
+        script: "ujust get-webapp \"Xbox Cloud Gaming\""
+      - id: "geforce-now"
+        title: "GeForce Now"
+        description: "Cloud gaming service"
+        default: false
+        script: "ujust get-webapp \"GeForce Now\""
+      - id: "youtube"
+        title: "YouTube"
+        description: "Video sharing platform"
+        default: false
+        script: "ujust get-webapp \"YouTube\""
+      - id: "spotify"
+        title: "Spotify"
+        description: "Music streaming service"
+        default: false
+        script: "ujust get-webapp \"Spotify\""
+      - id: "netflix"
+        title: "Netflix"
+        description: "Subscription streaming service"
+        default: false
+        script: "ujust get-webapp \"Netflix\""
+      - id: "plex-htpc"
+        title: "Plex HTPC"
+        description: "Media server client"
+        default: false
+        script: "ujust get-webapp \"Plex HTPC\""
+      - id: "jellyfin"
+        title: "JellyFin"
+        description: "Media server client"
+        default: false
+        script: "ujust get-webapp \"Jellyfin Media Player\""
+      - id: "amazon-luna"
+        title: "Amazon Luna"
+        description: "Cloud gaming service"
+        default: false
+        script: "ujust get-webapp \"Amazon Luna\""
+      - id: "disney-plus"
+        title: "Disney Plus"
+        description: "Subscription streaming service"
+        default: false
+        script: "ujust get-webapp \"Disney Plus\""
+      - id: "amazon-prime-video"
+        title: "Amazon Prime Video"
+        description: "Subscription streaming service"
+        default: false
+        script: "ujust get-webapp \"Amazon Prime Video\""
+      - id: "apple-tv"
+        title: "Apple TV"
+        description: "Subscription streaming service"
+        default: false
+        script: "ujust get-webapp \"Apple TV\""
+      - id: "curiosity-stream"
+        title: "Curiosity Stream"
+        description: "Documentary streaming service"
+        default: false
+        script: "ujust get-webapp \"Curiosity Stream\""
+      - id: "crunchyroll"
+        title: "Crunchyroll"
+        description: "Anime streaming service"
+        default: false
+        script: "ujust get-webapp \"Crunchyroll\""
+      - id: "hbo-max"
+        title: "HBO Max"
+        description: "Subscription streaming service"
+        default: false
+        script: "ujust get-webapp \"HBO Max\""
+      - id: "hulu"
+        title: "Hulu"
+        description: "Subscription streaming service"
+        default: false
+        script: "ujust get-webapp \"Hulu\""
+      - id: "paramount-plus"
+        title: "Paramount Plus"
+        description: "Subscription streaming service"
+        default: false
+        script: "ujust get-webapp \"Paramount Plus\""
+      - id: "peacock"
+        title: "Peacock"
+        description: "Subscription streaming service"
+        default: false
+        script: "ujust get-webapp \"Peacock\""
+      - id: "sling-tv"
+        title: "Sling TV"
+        description: "Live TV streaming service"
+        default: false
+        script: "ujust get-webapp \"Sling TV\""
+      - id: "vimeo"
+        title: "Vimeo"
+        description: "Video sharing platform"
+        default: false
+        script: "ujust get-webapp \"Vimeo\""
+      - id: "youtube-music"
+        title: "YouTube Music"
+        description: "Music streaming service"
+        default: false
+        script: "ujust get-webapp \"YouTube Music\""
+      - id: "youtube-tv"
+        title: "YouTube TV"
+        description: "Live TV streaming service"
+        default: false
+        script: "ujust get-webapp \"YouTube TV\""
+  - title: "Customizations and Tweaks"
+    description: "System configurations and enhancements"
+    actions:
+      - id: "add-input-group"
+        title: "Add input group to current user"
+        description: "Adds the input group to your current user. Required by certain controller drivers."
+        default: true
+        script: "sudo -A ujust add-user-to-input-group"
+      - id: "bios-firmware-updates"
+        title: "BIOS & Firmware Updates"
+        description: "Enables BIOS & Firmware updates for Steam Deck hardware"
+        default: true
+        script: "sudo -A ujust enable-deck-bios-firmware-updates"
+      - id: "password-asterisks"
+        title: "Visible Password Asterisks"
+        description: "Toggles pwfeedback on."
+        default: true
+        script: "sudo -A ujust toggle-password-feedback on"
+      - id: "hide-grub"
+        title: "Hide GRUB Menu"
+        description: "Hide the GRUB menu on boot"
+        default: true
+        script: "sudo -A ujust configure-grub hide"
+      - id: "boot-to-windows"
+        title: "Boot to Windows from Steam"
+        description: "Adds a script in Steam to boot Windows which is useful for dual-boot setups"
+        default: false
+        script: "ujust setup-boot-windows-steam"
+      - id: "automounting"
+        title: "Automounting"
+        description: "Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system"
+        default: false
+        script: "ujust enable-automounting"
+      - id: "wake-on-lan"
+        title: "Wake-on-LAN"
+        description: "Enable Wake-on-LAN functionality to power on your device remotely"
+        default: false
+        script: "ujust toggle-wol enable"
+      - id: "opentabletdriver"
+        title: "OpenTabletDriver"
+        description: "Open source, cross-platform, user-mode tablet driver"
+        default: false
+        script: "ujust install-opentabletdriver"
+      - id: "ssh-service"
+        title: "SSH Service"
+        description: "Enable SSH remote access service on boot"
+        default: false
+        script: "ujust toggle-ssh enable"
+      - id: "steamcmd"
+        title: "SteamCMD"
+        description: "Command-line version of the Steam client for dedicated servers and game downloads"
+        default: false
+        script: "ujust install-steamcmd"
