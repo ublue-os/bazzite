@@ -41,8 +41,7 @@ if command -v uupd > /dev/null; then
       wget -q --spider https://github.com
       if [ $? -eq 0 ]; then
         # Check system state
-        uupd update-check
-        if [ $? -ne 0 ]; then
+        if uupd update-check | grep -q "Update Available"; then
           exit 0 # Upgrade available
         else
           exit 7 # Checks failed
