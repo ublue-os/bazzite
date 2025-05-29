@@ -230,6 +230,7 @@ RUN --mount=type=cache,dst=/var/cache \
         firefox \
         firefox-langpacks \
         htop && \
+    	dnf5 -y swap kde-partitionmanager gnome-disk-utility && \
     /ctx/cleanup
 
 # Install new packages
