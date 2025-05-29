@@ -1,7 +1,7 @@
 # vim: set ft=make :
 
-# Add various streaming services as Electron web apps to Steam
-get-webapp service="":
+# Add various video and game streaming services to Steam
+get-media-app service="":
     #!/usr/bin/bash
     # Load ugum for interactive menu
     source /usr/lib/ujust/ujust.sh
