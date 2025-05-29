@@ -199,6 +199,11 @@ screens:
         description: "Enable Wake-on-LAN functionality to power on your device remotely"
         default: false
         script: "ujust toggle-wol enable"
+      - id: "steam-icons"
+        title: "Clean Steam Shortcuts"
+        description: "Automatically removes Steam shortcuts from the desktop on boot, useful for keeping the desktop clean when installing games via game mode."
+        default: false
+        script: "ujust steam-icons enable"
       - id: "opentabletdriver"
         title: "OpenTabletDriver"
         description: "Open source, cross-platform, user-mode tablet driver"
