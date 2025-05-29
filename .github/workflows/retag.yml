@@ -59,6 +59,3 @@ jobs:
             bazzite-asus-nvidia:${{ inputs.old_tag }}               => bazzite-asus-nvidia:latest,stable,${{ env.ver }}
             bazzite-gnome-asus-nvidia-open:${{ inputs.old_tag }}    => bazzite-gnome-asus-nvidia-open:latest,stable,${{ env.ver }}
             bazzite-gnome-asus-nvidia:${{ inputs.old_tag }}         => bazzite-gnome-asus-nvidia:latest,stable,${{ env.ver }}
-
-            bazzite-gnome-surface-nvidia-open:${{ inputs.old_tag }} => bazzite-gnome-surface-nvidia-open:latest,stable,${{ env.ver }}
-            bazzite-surface-nvidia-open:${{ inputs.old_tag }}       => bazzite-surface-nvidia-open:latest,stable,${{ env.ver }}
