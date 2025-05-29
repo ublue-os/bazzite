@@ -1,7 +1,7 @@
 # vim: set ft=make :
 
-# Add various streaming services as Electron web apps to Steam
-get-webapp service="":
+# Add various video and game streaming services to Steam
+get-media-app service="":
     #!/usr/bin/bash
     # Load ugum for interactive menu
     source /usr/lib/ujust/ujust.sh
@@ -92,17 +92,92 @@ get-webapp service="":
         fi
     }
     install_plex_htpc(){
+        local installed=false
         if grep -q 'tv.plex.PlexHTPC' <<< $(flatpak list); then
             echo "Plex HTPC is already installed"
+            installed=true
         else
-            flatpak install --system -y tv.plex.PlexHTPC
+            echo "Installing Plex HTPC..."
+            if flatpak install --user -y tv.plex.PlexHTPC; then
+                echo "Plex HTPC installed successfully"
+                installed=true
+            else
+                echo "Failed to install Plex HTPC. Please try installing manually with:"
+                echo "flatpak install --user tv.plex.PlexHTPC"
+            fi
+        fi
+        # Only proceed with Steam integration if installation was successful
+        if [ "$installed" = true ]; then
+            # Create launcher script for Steam
+            local script_path="$HOME/Applications/streaming_scripts/plex-htpc.sh"
+            echo "#!/bin/bash" > "$script_path"
+            echo "flatpak run tv.plex.PlexHTPC" >> "$script_path"
+            chmod +x "$script_path"
+            # Add to Steam
+            steamos-add-to-steam "$script_path"
+            echo "Added Plex HTPC to Steam successfully!"
+        else
+            echo "Skipping Steam integration due to installation failure."
         fi
     }
     install_jellyfin_media_player() {
+        local installed=false
         if grep -q 'com.github.iwalton3.jellyfin-media-player' <<< $(flatpak list); then
             echo "Jellyfin Media Player is already installed"
+            installed=true
         else
-            flatpak install --system -y com.github.iwalton3.jellyfin-media-player
+            echo "Installing Jellyfin Media Player..."
+            if flatpak install --user -y com.github.iwalton3.jellyfin-media-player; then
+                echo "Jellyfin Media Player installed successfully"
+                installed=true
+            else
+                echo "Failed to install Jellyfin Media Player. Please try installing manually with:"
+                echo "flatpak install --user com.github.iwalton3.jellyfin-media-player"
+            fi
+        fi
+        # Only proceed with Steam integration if installation was successful
+        if [ "$installed" = true ]; then
+            # Create launcher script for Steam
+            local script_path="$HOME/Applications/streaming_scripts/jellyfin-media-player.sh"
+            echo "#!/bin/bash" > "$script_path"
+            echo "flatpak run com.github.iwalton3.jellyfin-media-player" >> "$script_path"
+            chmod +x "$script_path"
+            # Add to Steam
+            steamos-add-to-steam "$script_path"
+            echo "Added Jellyfin Media Player to Steam successfully!"
+        else
+            echo "Skipping Steam integration due to installation failure."
+        fi
+    }
+    install_geforce_now() {
+        local installed=false
+        if grep -q 'com.nvidia.geforcenow' <<< $(flatpak list); then
+            echo "GeForce NOW is already installed"
+            installed=true
+        else
+            echo "Installing GeForce NOW..."
+            # Add the NVIDIA GeForce NOW Flatpak repository if not already added
+            flatpak remote-add --user --if-not-exists GeForceNOW https://international.download.nvidia.com/GFNLinux/flatpak/geforcenow.flatpakrepo
+            if flatpak install -y --user GeForceNOW com.nvidia.geforcenow; then
+                echo "GeForce NOW installed successfully"
+                installed=true
+            else
+                echo "Failed to install GeForce NOW. Please try installing manually with:"
+                echo "flatpak install --user GeForceNOW com.nvidia.geforcenow"
+            fi
+        fi
+        # Only proceed with Steam integration if installation was successful
+        if [ "$installed" = true ]; then
+            # Create launcher script for Steam
+            local script_path="$HOME/Applications/streaming_scripts/geforce-now.sh"
+            echo "#!/bin/bash" > "$script_path"
+            echo "flatpak run com.nvidia.geforcenow" >> "$script_path"
+            chmod +x "$script_path"
+            # Add to Steam
+            steamos-add-to-steam "$script_path"
+            echo "Added GeForce NOW to Steam successfully!"
+        else
+            echo "Skipping Steam integration due to installation failure."
         fi
     }
     # Process user choice
@@ -115,7 +190,7 @@ get-webapp service="":
         "Apple TV") create_script "apple-tv" "appleTv" ;;
         "Curiosity Stream") create_script "curiosity-stream" "curiosityStream" ;;
         "Crunchyroll") install_crunchyroll ;;
-        "GeForce Now") create_script "geforce-now" "geForceNow" ;;
+        "GeForce Now") install_geforce_now ;;
         "HBO Max") create_script "hbo-max" "hboMax" ;;
         "Hulu") create_script "hulu" "hulu" ;;
         "Plex HTPC") install_plex_htpc ;;
