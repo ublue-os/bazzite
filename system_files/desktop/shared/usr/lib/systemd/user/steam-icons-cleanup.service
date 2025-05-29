@@ -1,0 +1,12 @@
+[Unit]
+Description=Steam Game Shortcuts Auto-Cleanup
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/just steam-icons remove
+RemainAfterExit=no
+
+[Install]
+WantedBy=graphical-session.target

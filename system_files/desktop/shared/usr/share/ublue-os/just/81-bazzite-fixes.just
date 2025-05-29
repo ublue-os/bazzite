@@ -235,3 +235,105 @@ toggle-i915-sleep-fix:
         echo "Invalid choice. Exiting without changes."
         ;;
     esac
+
+# Manage Steam game shortcuts on the Desktop. Usage: just steam-icons [command] (list, remove, enable, disable)
+steam-icons ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    DESKTOP_DIR="$HOME/Desktop"
+    SERVICE_NAME="steam-icons-cleanup.service"
+    OPTION={{ ACTION }}
+    # Function to count and list Steam shortcuts
+    list_shortcuts() {
+      STEAM_SHORTCUTS=()
+      while IFS= read -r shortcut; do
+      if grep -q "Comment=Play this game on Steam" "$shortcut" 2>/dev/null; then
+        STEAM_SHORTCUTS+=("$shortcut")
+      fi
+      done < <(find "$DESKTOP_DIR" -name "*.desktop" -type f 2>/dev/null)
+      SHORTCUT_COUNT=${#STEAM_SHORTCUTS[@]}
+      if [[ $SHORTCUT_COUNT -eq 0 ]]; then
+      echo "No Steam game shortcuts found on the Desktop."
+      return 0
+      fi
+      echo -e "${b}Found $SHORTCUT_COUNT Steam game shortcuts on your Desktop:${n}"
+      for shortcut in "${STEAM_SHORTCUTS[@]}"; do
+      GAME_NAME=$(grep "^Name=" "$shortcut" | sed 's/^Name=//')
+      echo "- $GAME_NAME"
+      done
+      echo ""
+      return $SHORTCUT_COUNT
+    }
+    # Function to remove all shortcuts
+    remove_all_shortcuts() {
+      STEAM_SHORTCUTS=()
+      while IFS= read -r shortcut; do
+      if grep -q "Comment=Play this game on Steam" "$shortcut" 2>/dev/null; then
+        STEAM_SHORTCUTS+=("$shortcut")
+      fi
+      done < <(find "$DESKTOP_DIR" -name "*.desktop" -type f 2>/dev/null)
+      SHORTCUT_COUNT=${#STEAM_SHORTCUTS[@]}
+      if [[ $SHORTCUT_COUNT -eq 0 ]]; then
+      echo "No Steam game shortcuts found on the Desktop."
+      return
+      fi
+      for shortcut in "${STEAM_SHORTCUTS[@]}"; do
+      GAME_NAME=$(grep "^Name=" "$shortcut" | sed 's/^Name=//')
+      rm -f "$shortcut"
+      done
+      echo -e "${green}${b}Successfully removed $SHORTCUT_COUNT Steam game shortcuts.${n}"
+    }
+    # Check if auto-cleanup service is enabled
+    SERVICE_STATUS="disabled"
+    if systemctl --user is-enabled "$SERVICE_NAME" &>/dev/null; then
+      SERVICE_STATUS="enabled"
+    fi
+    # Process direct command arguments
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: just steam-icons [command]"
+      echo "Commands:"
+      echo "  list     - List all Steam shortcuts on Desktop"
+      echo "  remove   - Remove all Steam shortcuts"
+      echo "  enable   - Enable automatic cleanup on login"
+      echo "  disable  - Disable automatic cleanup"
+      echo "  help     - Show this help message"
+      exit 0
+    elif [ "$OPTION" == "list" ]; then
+      list_shortcuts
+      exit 0
+    elif [ "$OPTION" == "remove" ]; then
+      remove_all_shortcuts
+      exit 0
+    elif [ "$OPTION" == "enable" ]; then
+      systemctl --user enable --now "$SERVICE_NAME"
+      echo -e "${green}${b}Auto-cleanup enabled.${n} Steam game shortcuts will be automatically removed at login."
+      exit 0
+    elif [ "$OPTION" == "disable" ]; then
+      systemctl --user disable --now "$SERVICE_NAME" 2>/dev/null || true
+      echo -e "${red}${b}Auto-cleanup disabled.${n} Steam game shortcuts will no longer be automatically removed."
+      exit 0
+    fi
+    # If no arguments provided or not matched, show interactive menu
+    echo -e "Auto-cleanup service status: ${b}${SERVICE_STATUS}${n}\n"
+    list_shortcuts
+    # Ask the user what they want to do
+    OPTION=$(ugum choose "Remove All Shortcuts Now" "Enable Auto-Cleanup" "Disable Auto-Cleanup" "Exit")
+    case "$OPTION" in
+      "Remove All Shortcuts Now")
+      remove_all_shortcuts
+      ;;
+      "Enable Auto-Cleanup")
+      systemctl --user enable --now "$SERVICE_NAME"
+      echo -e "\n${green}${b}Auto-cleanup enabled.${n} Steam game shortcuts will be automatically removed at login."
+      ;;
+      "Disable Auto-Cleanup")
+      systemctl --user disable --now "$SERVICE_NAME" 2>/dev/null || true
+      echo -e "\n${red}${b}Auto-cleanup disabled.${n} Steam game shortcuts will no longer be automatically removed."
+      ;;
+      "Exit")
+      echo "No changes were made."
+      ;;
+      *)
+      echo "Invalid choice. Exiting without changes."
+      ;;
+    esac
