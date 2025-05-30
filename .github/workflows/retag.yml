@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+# WARNING: This workflow is meant for emergency use only.
+# Under NO CIRCUMSTANCES should this workflow be automatically triggered.
+name: Retag image
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  packages: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      old_tag:
+        description: "Old tag from which images will be retagged to latest"
+        required: true
+        type: string
+
+jobs:
+  safeguard-timer:
+    runs-on: ubuntu-latest
+    if: inputs.old_tag != ''
+    steps:
+      - name: Safeguard wait
+        env:
+          SLEEP_TIME: "30"
+        run: |
+          echo "Triggered safeguard."
+          echo "You have $SLEEP_TIME seconds to cancel the workflow if you want to cancel retagging."
+          sleep $SLEEP_TIME
+
+  retag-images:
+    runs-on: ubuntu-latest
+    if: inputs.old_tag != ''
+    needs: [safeguard-timer]
+    steps:
+      - uses: Zeglius/ghcr-oci-retagger@1e08f1dac27d25efe1377d9a35f133731bf3d986
+        env:
+          ver: "42"
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          PREFIX: ghcr.io/${{ github.repository_owner }}/
+          TAG_MAPPINGS: |-
+            bazzite:${{ inputs.old_tag }}                           => bazzite:latest,stable,${{ env.ver }}
+            bazzite-deck:${{ inputs.old_tag }}                      => bazzite-deck:latest,stable,${{ env.ver }}
+            bazzite-deck-gnome:${{ inputs.old_tag }}                => bazzite-deck-gnome:latest,stable,${{ env.ver }}
+            bazzite-deck-nvidia:${{ inputs.old_tag }}               => bazzite-deck-nvidia:latest,stable,${{ env.ver }}
+            bazzite-deck-nvidia-gnome:${{ inputs.old_tag }}         => bazzite-deck-nvidia-gnome:latest,stable,${{ env.ver }}
+            bazzite-gnome:${{ inputs.old_tag }}                     => bazzite-gnome:latest,stable,${{ env.ver }}
+            bazzite-gnome-nvidia:${{ inputs.old_tag }}              => bazzite-gnome-nvidia:latest,stable,${{ env.ver }}
+            bazzite-gnome-nvidia-open:${{ inputs.old_tag }}         => bazzite-gnome-nvidia-open:latest,stable,${{ env.ver }}
+            bazzite-nvidia:${{ inputs.old_tag }}                    => bazzite-nvidia:latest,stable,${{ env.ver }}
+            bazzite-nvidia-open:${{ inputs.old_tag }}               => bazzite-nvidia-open:latest,stable,${{ env.ver }}
+
+            bazzite-asus-nvidia-open:${{ inputs.old_tag }}          => bazzite-asus-nvidia-open:latest,stable,${{ env.ver }}
+            bazzite-asus-nvidia:${{ inputs.old_tag }}               => bazzite-asus-nvidia:latest,stable,${{ env.ver }}
+            bazzite-gnome-asus-nvidia-open:${{ inputs.old_tag }}    => bazzite-gnome-asus-nvidia-open:latest,stable,${{ env.ver }}
+            bazzite-gnome-asus-nvidia:${{ inputs.old_tag }}         => bazzite-gnome-asus-nvidia:latest,stable,${{ env.ver }}
