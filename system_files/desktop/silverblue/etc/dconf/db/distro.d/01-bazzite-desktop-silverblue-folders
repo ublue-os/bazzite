@@ -2,7 +2,7 @@
 # Some Gnome extensions don't ship gschema XML, so their settings also need to go in dconf
 
 [org/gnome/desktop/app-folders/folders/GamingUtilities]
-apps=['com.github.Matoking.protontricks.desktop', 'discover_overlay_configure.desktop', 'com.vysp3r.ProtonPlus.desktop', 'io.github.benjamimgois.goverlay.desktop', 'com.gerbilsoft.rom-properties.rp-config.desktop', 'input-remapper-gtk.desktop', 'steamos-nested-desktop.desktop', 'hhd-ui.desktop', 'sunshine.desktop']
+apps=['com.github.Matoking.protontricks.desktop', 'discover_overlay_configure.desktop', 'com.vysp3r.ProtonPlus.desktop', 'io.github.benjamimgois.goverlay.desktop', 'com.gerbilsoft.rom-properties.rp-config.desktop', 'input-remapper-gtk.desktop', 'steamos-nested-desktop.desktop', 'hhd-ui.desktop', 'sunshine.desktop', 'io.github.radiolamp.mangojuice.desktop']
 name='Gaming Utilities'
 translate=false
 
