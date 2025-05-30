@@ -149,37 +149,38 @@ get-media-app service="":
             echo "Skipping Steam integration due to installation failure."
         fi
     }
-    install_geforce_now() {
-        local installed=false
-        if grep -q 'com.nvidia.geforcenow' <<< $(flatpak list); then
-            echo "GeForce NOW is already installed"
-            installed=true
-        else
-            echo "Installing GeForce NOW..."
-            # Add the NVIDIA GeForce NOW Flatpak repository if not already added
-            flatpak remote-add --user --if-not-exists GeForceNOW https://international.download.nvidia.com/GFNLinux/flatpak/geforcenow.flatpakrepo
-            if flatpak install -y --user GeForceNOW com.nvidia.geforcenow; then
-                echo "GeForce NOW installed successfully"
-                installed=true
-            else
-                echo "Failed to install GeForce NOW. Please try installing manually with:"
-                echo "flatpak install --user GeForceNOW com.nvidia.geforcenow"
-            fi
-        fi
-        # Only proceed with Steam integration if installation was successful
-        if [ "$installed" = true ]; then
-            # Create launcher script for Steam
-            local script_path="$HOME/Applications/streaming_scripts/geforce-now.sh"
-            echo "#!/bin/bash" > "$script_path"
-            echo "flatpak run com.nvidia.geforcenow" >> "$script_path"
-            chmod +x "$script_path"
-            # Add to Steam
-            steamos-add-to-steam "$script_path"
-            echo "Added GeForce NOW to Steam successfully!"
-        else
-            echo "Skipping Steam integration due to installation failure."
-        fi
-    }
+    # Commenting out for now as GeForce NOW native app is borked on non steam deck devices, even those running SteamOS.
+    # install_geforce_now() {
+    #     local installed=false
+    #     if grep -q 'com.nvidia.geforcenow' <<< $(flatpak list); then
+    #         echo "GeForce NOW is already installed"
+    #         installed=true
+    #     else
+    #         echo "Installing GeForce NOW..."
+    #         # Add the NVIDIA GeForce NOW Flatpak repository if not already added
+    #         flatpak remote-add --user --if-not-exists GeForceNOW https://international.download.nvidia.com/GFNLinux/flatpak/geforcenow.flatpakrepo
+    #         if flatpak install -y --user GeForceNOW com.nvidia.geforcenow; then
+    #             echo "GeForce NOW installed successfully"
+    #             installed=true
+    #         else
+    #             echo "Failed to install GeForce NOW. Please try installing manually with:"
+    #             echo "flatpak install --user GeForceNOW com.nvidia.geforcenow"
+    #         fi
+    #     fi
+    #     # Only proceed with Steam integration if installation was successful
+    #     if [ "$installed" = true ]; then
+    #         # Create launcher script for Steam
+    #         local script_path="$HOME/Applications/streaming_scripts/geforce-now.sh"
+    #         echo "#!/bin/bash" > "$script_path"
+    #         echo "flatpak run com.nvidia.geforcenow" >> "$script_path"
+    #         chmod +x "$script_path"
+    #         # Add to Steam
+    #         steamos-add-to-steam "$script_path"
+    #         echo "Added GeForce NOW to Steam successfully!"
+    #     else
+    #         echo "Skipping Steam integration due to installation failure."
+    #     fi
+    # }
     # Process user choice
     case "$CHOICE" in
         "YouTube") create_script "youtube" "youtube" ;;
@@ -190,7 +191,7 @@ get-media-app service="":
         "Apple TV") create_script "apple-tv" "appleTv" ;;
         "Curiosity Stream") create_script "curiosity-stream" "curiosityStream" ;;
         "Crunchyroll") install_crunchyroll ;;
-        "GeForce Now") install_geforce_now ;;
+        "GeForce Now") create_script "geforce-now" "geForceNow" ;;
         "HBO Max") create_script "hbo-max" "hboMax" ;;
         "Hulu") create_script "hulu" "hulu" ;;
         "Plex HTPC") install_plex_htpc ;;
