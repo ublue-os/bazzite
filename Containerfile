@@ -454,6 +454,7 @@ RUN --mount=type=cache,dst=/var/cache \
         dnf5 -y swap \
         --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite-multilib \
             mutter mutter && \
+        : "DELETEME: fix mutter breaking flatpaks" && dnf5 -y swap mutter mutter-0:48.1-1.fc42 && \
         dnf5 versionlock add \
             mutter && \
         dnf5 -y install \
