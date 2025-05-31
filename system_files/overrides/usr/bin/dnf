@@ -6,4 +6,4 @@ if systemd-detect-virt -cq || { [[ -e /run/.containerenv || -e /.dockerenv ]]; }
 fi
 
 echo -e "ERROR: Fedora Atomic images utilize rpm-ostree instead (and is discouraged to use).\nPlease, \e]8;;https://docs.bazzite.gg/Installing_and_Managing_Software/\aread our documentation\e]8;;\a\n\e]8;;https://docs.bazzite.gg/Installing_and_Managing_Software/\ahttps://docs.bazzite.gg/Installing_and_Managing_Software/\e]8;;\a\n"
-exit 0
+${SUDO_USER:+sudo -u $SUDO_USER dbus-launch} bash -lc 'xdg-open "https://docs.bazzite.gg/Installing_and_Managing_Software"'
