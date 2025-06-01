@@ -7,7 +7,7 @@
 # [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [🇨🇳](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [🇧🇷](https://github.com/ublue-os/bazzite/blob/main/README-BR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/README-NL.md) [🇷🇺](https://github.com/ublue-os/bazzite/blob/main/README-RU.md) [🇩🇪](https://github.com/ublue-os/bazzite/blob/main/README-DE.md)
 
 <p align="center">
-  <a href="https://download.bazzite.gg/"><img src="/repo_content/download.png?raw=true" alt="Bazzite herunterladen"/></a>
+    <a href="https://download.bazzite.gg/"><img src="/repo_content/download.png?raw=true" alt="Bazzite herunterladen"/></a>
 </p>
 
 ---
@@ -125,12 +125,12 @@ Diese Variante wurde für die Nutzung als Alternative zu SteamOS auf dem Steam D
 - Wendest SteamOS' Kernel-Parameter an.
 - Farbkalibrierte Anzeigeprofile für matte und spiegelnde Steam Deck-Bildschirme enthalten.
 - Standardmäßig deaktivierte Power-User-Funktionen, einschließlich:
-  -   Dienst für risikoarmes Undervolting des Steam Deck sowie von AMD Framework Laptops über [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) und [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), siehe `ryzenadj.service` und `/etc/default/ryzenadj`.
-  -   Dienst zur Begrenzung des maximalen Ladezustands des Akkus, siehe `batterylimit.service` und `/etc/default/batterylimit`. <sup><sub>(Funktioniert auch, wenn das Gerät ausgeschaltet ist)</sub></sup>
-  -   Integrierte Unterstützung für Display-Übertaktung. Füge zum Beispiel `CUSTOM_REFRESH_RATES=30-68` zu `/etc/environment` hinzu. Minimale und maximale Bildwiederholraten unterscheiden sich je nach Handheld!
-  -   32GB RAM-Mod für dein Steam Deck? Genieße die doppelte maximale VRAM-Menge, automatisch angewendet. <sup><sub>(Kannst du uns deine Lötkenntnisse mitteilen?)</sub></sup>
--   Steam Deck-Hardware-spezifische Dienste können durch Ausführen von `ujust disable-bios-updates` und `ujust disable-firmware-updates` im Terminal deaktiviert werden. Diese werden auf Nicht-Deck-Hardware und auf Decks mit DeckHD-Displays oder 32GB RAM-Mods automatisch deaktiviert.
--   Weitere Informationen zu den Bazzite Steam Deck Images findest du [hier](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/).
+  - Dienst für risikoarmes Undervolting des Steam Deck sowie von AMD Framework Laptops über [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) und [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), siehe `ryzenadj.service` und `/etc/default/ryzenadj`.
+  - Dienst zur Begrenzung des maximalen Ladezustands des Akkus, siehe `batterylimit.service` und `/etc/default/batterylimit`. <sup><sub>(Funktioniert auch, wenn das Gerät ausgeschaltet ist)</sub></sup>
+  - Integrierte Unterstützung für Display-Übertaktung. Füge zum Beispiel `CUSTOM_REFRESH_RATES=30-68` zu `/etc/environment` hinzu. Minimale und maximale Bildwiederholraten unterscheiden sich je nach Handheld!
+  - 32GB RAM-Mod für dein Steam Deck? Genieße die doppelte maximale VRAM-Menge, automatisch angewendet. <sup><sub>(Kannst du uns deine Lötkenntnisse mitteilen?)</sub></sup>
+- Steam Deck-Hardware-spezifische Dienste können durch Ausführen von `ujust disable-bios-updates` und `ujust disable-firmware-updates` im Terminal deaktiviert werden. Diese werden auf Nicht-Deck-Hardware und auf Decks mit DeckHD-Displays oder 32GB RAM-Mods automatisch deaktiviert.
+- Weitere Informationen zu den Bazzite Steam Deck Images findest du [hier](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/).
 
 > [!IMPORTANT]
 > **ISOs können von unserer [Website](https://download.bazzite.gg) heruntergeladen werden, und eine hilfreiche Installationsanleitung findest du [hier](https://docs.bazzite.gg/General/Installation_Guide/) (Englisch).**
@@ -188,7 +188,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 **Für Benutzer mit aktiviertem Secure Boot:** Beachte unsere [Secure-Boot-Dokumentation](#secure-boot) (Englisch) vor dem Rebase.
 
-### Funktionen vom Upstream
+### Funktionen von Upstream
 
 #### Universal Blue
 
