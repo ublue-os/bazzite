@@ -391,7 +391,7 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/bin/winetricks && \
     /ctx/cleanup
 
-# Install yafti-go
+# Install yafti-go & ujust-picker from GitHub releases
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
@@ -399,6 +399,8 @@ RUN --mount=type=cache,dst=/var/cache \
     curl -sL "$(curl -s https://api.github.com/repos/Zeglius/yafti-go/releases/latest | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -o /bin/yafti-go && \
     chmod +x /bin/yafti-go && \
     chmod +x /usr/libexec/bazzite-yafti-launcher && \
+    curl -sL "$(curl -s https://api.github.com/repos/xXJSONDeruloXx/bazzite-ujust-picker/releases/latest | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')" -o /usr/bin/ujust-picker && \
+    chmod +x /usr/bin/ujust-picker && \
     /ctx/cleanup
 
 # Configure KDE & GNOME

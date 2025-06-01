@@ -21,7 +21,7 @@ pick:
             exec "$DEST"
         else
             echo "❌ GitHub unreachable and no local binary found. Falling back to list view."
-            just --list
+            just --choose
             exit 0
         fi
     fi
