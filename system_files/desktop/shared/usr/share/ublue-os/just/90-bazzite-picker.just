@@ -54,8 +54,3 @@ pick:
     echo "🚀 Running picker..."
     clear
     exec "$DEST"
-
-# Override the default behavior to use the picker
-_default:
-    #!/usr/bin/bash
-    just pick
