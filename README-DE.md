@@ -13,8 +13,9 @@
 ---
 
 # Inhaltsverzeichnis
+
 - [🇺🇸 🇪🇸 🇮🇩 🇨🇳 🇫🇷 🇧🇷 🇳🇱 🇷🇺 🇩🇪](#------)
-- [Inhaltsverzeichnis](#table-of-contents)
+- [Inhaltsverzeichnis](#inhaltsverzeichnis)
   - [Über \& Funktionen](#über--funktionen)
     - [Desktop](#desktop)
     - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
@@ -98,6 +99,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 **Für Benutzer mit aktiviertem Secure Boot:** Beachte unsere [secure boot documentation](#secure-boot) vor dem Rebase.
 
 ### Steam Deck/Home Theater PCs (HTPCs)
+
 Diese Variante wurde für die Nutzung als Alternative zu SteamOS auf dem Steam Deck und für ein Konsolen-ähnliches Erlebnis auf HTPCs entwickelt, verfügbar als `bazzite-deck`:
 
 - Bootet direkt in den Spielmodus, passend zum Verhalten von SteamOS.
@@ -119,14 +121,14 @@ Diese Variante wurde für die Nutzung als Alternative zu SteamOS auf dem Steam D
 - [Discover Overlay](https://github.com/trigg/Discover) für Discord ist vorinstalliert und startet automatisch sowohl im Spielmodus als auch auf dem Desktop, wenn Discord installiert ist. [Die offizielle Dokumentation findest du hier](https://trigg.github.io/Discover/bazzite).
 - Verwendet standardmäßig ZRAM<sub><sup>(4GB)</sup></sub> mit dem ZSTD-Komprimierungsalgorithmus, mit der Option, zu einer 1GB Swap-Datei zurückzukehren und eine benutzerdefinierte Größe dafür festzulegen, falls gewünscht.
 - [LAVD](https://crates.io/crates/scx_lavd) und [BORE](https://github.com/firelzrd/bore-scheduler) CPU-Scheduler für flüssiges und reaktionsschnelles Gameplay.
--   Kyber I/O-Scheduler, um I/O-Engpässe bei der Installation von Spielen oder während des `duperemove`-Hintergrundprozesses zu verhindern.
--   Wendest SteamOS' Kernel-Parameter an.
--   Farbkalibrierte Anzeigeprofile für matte und spiegelnde Steam Deck-Bildschirme enthalten.
--   Standardmäßig deaktivierte Power-User-Funktionen, einschließlich:
-    -   Dienst für risikoarmes Undervolting des Steam Deck sowie von AMD Framework Laptops über [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) und [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), siehe `ryzenadj.service` und `/etc/default/ryzenadj`.
-    -   Dienst zur Begrenzung des maximalen Ladezustands des Akkus, siehe `batterylimit.service` und `/etc/default/batterylimit`. <sup><sub>(Funktioniert auch, wenn das Gerät ausgeschaltet ist)</sub></sup>
-    -   Integrierte Unterstützung für Display-Übertaktung. Füge zum Beispiel `CUSTOM_REFRESH_RATES=30-68` zu `/etc/environment` hinzu. Minimale und maximale Bildwiederholraten unterscheiden sich je nach Handheld!
-    -   32GB RAM-Mod für dein Steam Deck? Genieße die doppelte maximale VRAM-Menge, automatisch angewendet. <sup><sub>(Kannst du uns deine Lötkenntnisse mitteilen?)</sub></sup>
+- Kyber I/O-Scheduler, um I/O-Engpässe bei der Installation von Spielen oder während des `duperemove`-Hintergrundprozesses zu verhindern.
+- Wendest SteamOS' Kernel-Parameter an.
+- Farbkalibrierte Anzeigeprofile für matte und spiegelnde Steam Deck-Bildschirme enthalten.
+- Standardmäßig deaktivierte Power-User-Funktionen, einschließlich:
+  -   Dienst für risikoarmes Undervolting des Steam Deck sowie von AMD Framework Laptops über [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) und [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), siehe `ryzenadj.service` und `/etc/default/ryzenadj`.
+  -   Dienst zur Begrenzung des maximalen Ladezustands des Akkus, siehe `batterylimit.service` und `/etc/default/batterylimit`. <sup><sub>(Funktioniert auch, wenn das Gerät ausgeschaltet ist)</sub></sup>
+  -   Integrierte Unterstützung für Display-Übertaktung. Füge zum Beispiel `CUSTOM_REFRESH_RATES=30-68` zu `/etc/environment` hinzu. Minimale und maximale Bildwiederholraten unterscheiden sich je nach Handheld!
+  -   32GB RAM-Mod für dein Steam Deck? Genieße die doppelte maximale VRAM-Menge, automatisch angewendet. <sup><sub>(Kannst du uns deine Lötkenntnisse mitteilen?)</sub></sup>
 -   Steam Deck-Hardware-spezifische Dienste können durch Ausführen von `ujust disable-bios-updates` und `ujust disable-firmware-updates` im Terminal deaktiviert werden. Diese werden auf Nicht-Deck-Hardware und auf Decks mit DeckHD-Displays oder 32GB RAM-Mods automatisch deaktiviert.
 -   Weitere Informationen zu den Bazzite Steam Deck Images findest du [hier](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/).
 
@@ -156,12 +158,12 @@ ujust install-hhd-controller-glyph-theme
 
 Builds mit der GNOME-Desktop-Umgebung sind sowohl in Desktop- als auch in Deck-Varianten verfügbar. Diese Builds bieten folgende zusätzliche Funktionen:
 
--   [Unterstützung für variable Bildwiederholfrequenz und fraktionelle Skalierung unter Wayland aktiviert](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
--   Benutzerdefiniertes Menü in der oberen Leiste zur Rückkehr zum Spielmodus, zum Starten von Steam und zum Öffnen einer Reihe nützlicher Dienstprogramme.
--   [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) vorinstalliert und einsatzbereit.
--   [Hanabi Extension](https://github.com/jeffshee/gnome-ext-hanabi) enthalten, um ähnliche Funktionen wie Wallpaper Engine in KDE zu bieten.
--   Zahlreiche optionale Erweiterungen vorinstalliert, einschließlich [wichtiger Korrekturen für die Benutzererfahrung](https://www.youtube.com/watch?v=nbCg9_YgKgM).
--   Automatische Updates für das [Firefox GNOME Theme](https://github.com/rafaelmardojai/firefox-gnome-theme) und das [Thunderbird GNOME Theme](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sub><sup>(Falls installiert)</sup></sub>
+- [Unterstützung für variable Bildwiederholfrequenz und fraktionelle Skalierung unter Wayland aktiviert](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
+- Benutzerdefiniertes Menü in der oberen Leiste zur Rückkehr zum Spielmodus, zum Starten von Steam und zum Öffnen einer Reihe nützlicher Dienstprogramme.
+- [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) vorinstalliert und einsatzbereit.
+- [Hanabi Extension](https://github.com/jeffshee/gnome-ext-hanabi) enthalten, um ähnliche Funktionen wie Wallpaper Engine in KDE zu bieten.
+- Zahlreiche optionale Erweiterungen vorinstalliert, einschließlich [wichtiger Korrekturen für die Benutzererfahrung](https://www.youtube.com/watch?v=nbCg9_YgKgM).
+- Automatische Updates für das [Firefox GNOME Theme](https://github.com/rafaelmardojai/firefox-gnome-theme) und das [Thunderbird GNOME Theme](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sub><sup>(Falls installiert)</sup></sub>
 
 > [!IMPORTANT]
 > **ISOs können von unserer [Website](https://download.bazzite.gg) heruntergeladen werden, und eine hilfreiche Installationsanleitung findest du [hier](https://docs.bazzite.gg/General/Installation_Guide/) (Englisch).**
@@ -190,20 +192,20 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 #### Universal Blue
 
--   Proprietäre Nvidia-Treiber vorinstalliert. <sub><sup>(Nur für Nvidia-Images)</sup></sub>
--   Flathub ist standardmäßig aktiviert.
--   [`ujust`](https://github.com/casey/just)-Befehle für mehr Komfort.
--   Multimedia-Codecs direkt nach der Installation verfügbar.
--   Rolle Bazzite von jedem Build der letzten 90 Tage zurück.
+- Proprietäre Nvidia-Treiber vorinstalliert. <sub><sup>(Nur für Nvidia-Images)</sup></sub>
+- Flathub ist standardmäßig aktiviert.
+- [`ujust`](https://github.com/casey/just)-Befehle für mehr Komfort.
+- Multimedia-Codecs direkt nach der Installation verfügbar.
+- Rolle Bazzite von jedem Build der letzten 90 Tage zurück.
 
 #### Funktionen von Fedora Linux (Kinoite & Silverblue)
 
--   Eine absolut solide und stabile Basis.
--   Systempakete bleiben relativ aktuell.
--   Kann Fedora-Pakete dem Image hinzufügen, ohne sie bei Updates zu verlieren.
--   Sicherheitsorientiert mit [SELinux](https://github.com/SELinuxProject/selinux) vorinstalliert und direkt nach der Installation konfiguriert.
--   Die Möglichkeit, bei Bedarf auf verschiedene Fedora Atomic Images zu rebasen, ohne Benutzerdaten zu verlieren.
--   Druckunterstützung dank vorinstalliertem [CUPS](https://www.cups.org/).
+- Eine absolut solide und stabile Basis.
+- Systempakete bleiben relativ aktuell.
+- Kann Fedora-Pakete dem Image hinzufügen, ohne sie bei Updates zu verlieren.
+- Sicherheitsorientiert mit [SELinux](https://github.com/SELinuxProject/selinux) vorinstalliert und direkt nach der Installation konfiguriert.
+- Die Möglichkeit, bei Bedarf auf verschiedene Fedora Atomic Images zu rebasen, ohne Benutzerdaten zu verlieren.
+- Druckunterstützung dank vorinstalliertem [CUPS](https://www.cups.org/).
 
 ## Warum
 
