@@ -219,10 +219,6 @@ disable-automounting:
         sudo -A systemctl disable ublue-os-media-automount.service
     fi
 
-# Enable support for DisplayLink
-enable-displaylink:
-    systemctl enable --now displaylink.service
-
 # Enable support for Tailscale
 enable-tailscale:
     systemctl enable --now tailscaled.service
