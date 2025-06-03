@@ -156,6 +156,7 @@ toggle-wol ACTION="":
       echo "No changes were made."
     fi
 
+# enable or disable a fix for 7th and 8th generation Intel chips not being able to sleep
 toggle-i915-sleep-fix:
     #!/usr/bin/bash
     # Explain the purpose of the script
