@@ -98,12 +98,12 @@ get-media-app service="":
             installed=true
         else
             echo "Installing Plex HTPC..."
-            if flatpak install --user -y tv.plex.PlexHTPC; then
+            if flatpak install --system -y tv.plex.PlexHTPC; then
                 echo "Plex HTPC installed successfully"
                 installed=true
             else
                 echo "Failed to install Plex HTPC. Please try installing manually with:"
-                echo "flatpak install --user tv.plex.PlexHTPC"
+                echo "flatpak install --system tv.plex.PlexHTPC"
             fi
         fi
         # Only proceed with Steam integration if installation was successful
@@ -127,12 +127,12 @@ get-media-app service="":
             installed=true
         else
             echo "Installing Jellyfin Media Player..."
-            if flatpak install --user -y com.github.iwalton3.jellyfin-media-player; then
+            if flatpak install --system -y com.github.iwalton3.jellyfin-media-player; then
                 echo "Jellyfin Media Player installed successfully"
                 installed=true
             else
                 echo "Failed to install Jellyfin Media Player. Please try installing manually with:"
-                echo "flatpak install --user com.github.iwalton3.jellyfin-media-player"
+                echo "flatpak install --system com.github.iwalton3.jellyfin-media-player"
             fi
         fi
         # Only proceed with Steam integration if installation was successful
@@ -158,13 +158,13 @@ get-media-app service="":
     #     else
     #         echo "Installing GeForce NOW..."
     #         # Add the NVIDIA GeForce NOW Flatpak repository if not already added
-    #         flatpak remote-add --user --if-not-exists GeForceNOW https://international.download.nvidia.com/GFNLinux/flatpak/geforcenow.flatpakrepo
-    #         if flatpak install -y --user GeForceNOW com.nvidia.geforcenow; then
+    #         flatpak remote-add --system --if-not-exists GeForceNOW https://international.download.nvidia.com/GFNLinux/flatpak/geforcenow.flatpakrepo
+    #         if flatpak install -y --system GeForceNOW com.nvidia.geforcenow; then
     #             echo "GeForce NOW installed successfully"
     #             installed=true
     #         else
     #             echo "Failed to install GeForce NOW. Please try installing manually with:"
-    #             echo "flatpak install --user GeForceNOW com.nvidia.geforcenow"
+    #             echo "flatpak install --system GeForceNOW com.nvidia.geforcenow"
     #         fi
     #     fi
     #     # Only proceed with Steam integration if installation was successful
