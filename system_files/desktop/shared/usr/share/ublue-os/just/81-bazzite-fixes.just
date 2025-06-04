@@ -338,3 +338,63 @@ steam-icons ACTION="":
       echo "Invalid choice. Exiting without changes."
       ;;
     esac
+
+# Toggle mute-on-boot systemd user service (auto-installs if missing)
+toggle-mute-on-boot:
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+
+    SERVICE_NAME="mute-audio.service"
+    SERVICE_PATH="$HOME/.config/systemd/user/$SERVICE_NAME"
+    SCRIPT_PATH="$HOME/.local/bin/mute-audio.sh"
+
+    mkdir -p "$HOME/.config/systemd/user"
+    mkdir -p "$HOME/.local/bin"
+
+    # Create the mute script if it doesn't exist
+    if [ ! -f "$SCRIPT_PATH" ]; then
+      echo "Creating mute-audio.sh..."
+      cp /usr/local/bin/mute-audio.sh "$SCRIPT_PATH"
+      chmod +x "$SCRIPT_PATH"
+    fi
+
+    # Create the systemd service if it doesn't exist
+    if [ ! -f "$SERVICE_PATH" ]; then
+      echo "Creating mute-audio.service..."
+      cp /usr/share/systemd/user/mute-audio.service "$SERVICE_PATH"
+      # Update the ExecStart path to point to the user's local copy
+      sed -i "s|/usr/local/bin/mute-audio.sh|$SCRIPT_PATH|" "$SERVICE_PATH"
+    fi
+
+    # Reload systemd in case new unit was written
+    systemctl --user daemon-reexec
+    systemctl --user daemon-reload
+
+    # Check current status
+    STATUS="Disabled"
+    if systemctl --user is-enabled "$SERVICE_NAME" &>/dev/null; then
+      STATUS="Enabled"
+    fi
+
+    echo "Mute on boot is currently: ${bold}${STATUS}${normal}"
+    echo "Would you like to enable or disable mute on boot?"
+    CHOICE=$(ugum choose Enable Disable Exit)
+
+    case "${CHOICE,,}" in
+      enable)
+        echo "Enabling mute on boot..."
+        systemctl --user enable --now "$SERVICE_NAME"
+        echo -e "${green}${bold}Mute on boot has been enabled.${normal}"
+        ;;
+      disable)
+        echo "Disabling mute on boot..."
+        systemctl --user disable --now "$SERVICE_NAME"
+        echo -e "${red}${bold}Mute on boot has been disabled.${normal}"
+        ;;
+      exit)
+        echo "No changes were made."
+        ;;
+      *)
+        echo "Invalid choice. Exiting."
+        ;;
+    esac
