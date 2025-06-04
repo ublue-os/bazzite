@@ -93,7 +93,7 @@ get-media-app service="":
         # Only proceed with Steam integration if installation was successful
         if [ "$installed" = true ]; then
             # Create launcher script for Steam
-            local script_path="$HOME/Applications/streaming_scripts/vacuumtube.sh"
+            local script_path="$HOME/Applications/streaming_scripts/Youtube.sh"
             echo "#!/bin/bash" > "$script_path"
             echo "flatpak run rocks.shy.VacuumTube" >> "$script_path"
             chmod +x "$script_path"
