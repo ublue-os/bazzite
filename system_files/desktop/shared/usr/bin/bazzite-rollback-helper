@@ -514,7 +514,7 @@ custom_provider_menu() {
       echo "Examples:"
       echo "  - ${bold}bazzite:stable${normal}"
       echo "  - ${bold}bazzite-deck:testing${normal}"
-      echo "  - ${bold}bazzite-gnome:40-stable-20240722${normal}"
+      echo "  - ${bold}bazzite-deck:40-stable-20240722${normal}"
       echo
       echo "Enter image:tag (or press Enter to cancel):"
       read -r image_tag
