@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Source ujust library for colors and gum functionality
+source /usr/lib/ujust/ujust.sh
+
 image="$(echo "$2" | cut -d ':' -f1)"
 branch="$(echo "$2" | cut -d ':' -f2)"
 
@@ -151,6 +154,97 @@ Rebasing to $img_ref. Continue? [Y/n]: "
   esac
 }
 
+# Function to show current system status
+show_current_status() {
+  echo "${bold}Current System Status:${normal}"
+  echo
+  local current_deployment=$(rpm-ostree status --json | jq -r '.deployments[] | select(.booted == true) | .["container-image-reference"]')
+  if [ -n "$current_deployment" ]; then
+    echo "  ${bold}Active Image:${normal} ${green}$current_deployment${normal}"
+  fi
+  
+  local pending_deployment=$(rpm-ostree status --json | jq -r '.deployments[] | select(.booted != true) | .["container-image-reference"]' | head -1)
+  if [ -n "$pending_deployment" ] && [ "$pending_deployment" != "null" ]; then
+    echo "  ${bold}Pending Image:${normal} ${yellow}$pending_deployment${normal} ${yellow}(will boot next)${normal}"
+  fi
+  echo
+}
+
+# Interactive menu function
+interactive_menu() {
+  # Show help text and current status
+  echo "$helptext"
+  show_current_status
+  
+  echo "${bold}Choose an action:${normal}"
+  local OPTION=$(Choose "List Images" "Show Current Image" "Rollback" "Rebase" "Exit")
+  
+  case "$OPTION" in
+    "List Images")
+      echo
+      echo "Enter branch to list (or press Enter for '$DEFAULT_BRANCH'):"
+      read -r branch_input
+      branch_input=${branch_input:-$DEFAULT_BRANCH}
+      list_images "$branch_input"
+      echo
+      echo "Press Enter to continue..."
+      read -r
+      interactive_menu
+      ;;
+    "Show Current Image")
+      echo
+      current
+      echo
+      echo "Press Enter to continue..."
+      read -r
+      interactive_menu
+      ;;
+    "Rollback")
+      echo
+      echo "Are you sure you want to rollback to the previous image? ${yellow}(y/N)${normal}"
+      read -r confirm
+      if [[ "${confirm,,}" =~ ^y ]]; then
+        rollback
+      else
+        echo "Rollback cancelled."
+      fi
+      echo
+      echo "Press Enter to continue..."
+      read -r
+      interactive_menu
+      ;;
+    "Rebase")
+      echo
+      echo "Enter the image/tag to rebase to:"
+      echo "Examples:"
+      echo "  - ${bold}stable${normal} (rebase to stable branch)"
+      echo "  - ${bold}testing${normal} (rebase to testing branch)"
+      echo "  - ${bold}bazzite-deck:stable${normal} (specific image and tag)"
+      echo "  - ${bold}40-stable-20240722${normal} (specific tag)"
+      echo
+      echo "Enter rebase target (or press Enter to cancel):"
+      read -r rebase_input
+      if [ -n "$rebase_input" ]; then
+        rebase "$rebase_input" -y
+      else
+        echo "Rebase cancelled."
+      fi
+      echo
+      echo "Press Enter to continue..."
+      read -r
+      interactive_menu
+      ;;
+    "Exit")
+      echo "Exiting..."
+      exit 0
+      ;;
+    *)
+      echo "Invalid option selected."
+      interactive_menu
+      ;;
+  esac
+}
+
 if [[ "$1" == "list" ]]; then
   list_images "${@:2}"
   exit
@@ -167,9 +261,9 @@ elif [[ "$1" == "rebase" ]]; then
   rebase "${@:2}"
   exit
 
-# display the helptext
+# display the helptext and start interactive mode
 elif [[ "$1" == "-h" || "$1" == "--h" || "$1" == "-help" || "$1" == "--help" || "$1" == "help" || -z "$1" ]]; then
- echo "$helptext"
+ interactive_menu
 else
  echo "Unsupported Option: $1"
  echo "run 'bazzite-rollback-helper help' for more details"
