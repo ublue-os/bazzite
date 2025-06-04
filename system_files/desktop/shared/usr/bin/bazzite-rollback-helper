@@ -49,17 +49,134 @@ List images with a specified tag
 
 INPUTS:
   \$1: branch   Branch we want to get tags from.
+                Use 'all' to show all available tags.
                 Fallbacks to \"$DEFAULT_BRANCH\"
 "
   if [[ $* =~ --help ]]; then
     echo "$_help" && return
   fi
   local branch=${1:-$DEFAULT_BRANCH}
-  local regex='.Tags[]'
-  regex="$regex"\ ' | select(test("^PLACEHOLDER|^PLACEHOLDER-(?:\\d+\\.\\d+|\\d+)"))'
-  regex=${regex//PLACEHOLDER/$branch}
-  echo -e >&2 "Listing images for $branch\nThis can take a bit of time..."
-  skopeo list-tags docker://ghcr.io/ublue-os/bazzite | jq -r "$regex"
+  
+  if [[ "$branch" == "all" ]]; then
+    echo -e >&2 "Listing all available images\nThis can take a bit of time..."
+    skopeo list-tags docker://ghcr.io/ublue-os/bazzite | jq -r '.Tags[]' | sort
+  else
+    local regex='.Tags[]'
+    regex="$regex"\ ' | select(test("^PLACEHOLDER|^PLACEHOLDER-(?:\\d+\\.\\d+|\\d+)"))'
+    regex=${regex//PLACEHOLDER/$branch}
+    echo -e >&2 "Listing images for $branch\nThis can take a bit of time..."
+    skopeo list-tags docker://ghcr.io/ublue-os/bazzite | jq -r "$regex"
+  fi
+}
+
+# Function to get available Bazzite image variants
+get_bazzite_variants() {
+  local provider=${1:-ublue-os}
+  
+  # Official Bazzite image variants based on README.md
+  local variants=(
+    "bazzite"
+    "bazzite-deck"
+    "bazzite-nvidia" 
+    "bazzite-deck-nvidia"
+    "bazzite-dx"
+    "bazzite-gdx"
+  )
+  
+  echo -e >&2 "Checking available variants from $provider..."
+  
+  # Verify which variants actually exist by checking if they have tags
+  for variant in "${variants[@]}"; do
+    if skopeo list-tags "docker://ghcr.io/$provider/$variant" >/dev/null 2>&1; then
+      echo "$variant"
+    fi
+  done
+}
+
+# Function for interactive image selection
+interactive_image_selection() {
+  local provider=${1:-ublue-os}
+  
+  # Clear screen for clean interface
+  clear
+  
+  echo
+  echo "${bold}Available Bazzite Images from ${green}$provider${normal}:"
+  echo
+  
+  # Get available image variants
+  local image_variants=$(get_bazzite_variants "$provider")
+  
+  if [ -z "$image_variants" ]; then
+    echo "${red}No Bazzite variants found for provider: $provider${normal}"
+    echo "This provider may not host Bazzite images."
+    return 1
+  fi
+  
+  # Convert to array for gum choose
+  local options=()
+  while IFS= read -r line; do
+    if [[ -n "$line" ]]; then
+      options+=("$line")
+    fi
+  done <<< "$image_variants"
+  
+  # Add special options
+  options+=("Back to Main Menu")
+  
+  echo "Choose an image to see available versions:"
+  local OPTION=$(Choose "${options[@]}")
+  
+  case "$OPTION" in
+    "Back to Main Menu")
+      if [[ "$provider" == "ublue-os" ]]; then
+        interactive_menu
+      else
+        custom_provider_menu "$provider"
+      fi
+      ;;
+    *)
+      if [[ -n "$OPTION" ]]; then
+        echo
+        echo "${bold}Available versions for ${green}$OPTION${normal}:"
+        echo
+        echo "Choose how to list versions:"
+        local list_option=$(Choose "List Stable Versions" "List Testing Versions" "List All Versions" "Back to Image List")
+        
+        case "$list_option" in
+          "List Stable Versions")
+            clear
+            echo "${bold}Stable versions for ${green}$OPTION${normal}:"
+            echo
+            local regex='.Tags[] | select(test("^stable"))'
+            skopeo list-tags "docker://ghcr.io/$provider/$OPTION" | jq -r "$regex" | sort
+            ;;
+          "List Testing Versions")  
+            clear
+            echo "${bold}Testing versions for ${green}$OPTION${normal}:"
+            echo
+            local regex='.Tags[] | select(test("^testing"))'
+            skopeo list-tags "docker://ghcr.io/$provider/$OPTION" | jq -r "$regex" | sort
+            ;;
+          "List All Versions")
+            clear
+            echo "${bold}All versions for ${green}$OPTION${normal}:"
+            echo
+            skopeo list-tags "docker://ghcr.io/$provider/$OPTION" | jq -r '.Tags[]' | sort
+            ;;
+          "Back to Image List")
+            interactive_image_selection "$provider"
+            return
+            ;;
+        esac
+        
+        echo
+        echo "Press Enter to continue..."
+        read -r
+        interactive_image_selection "$provider"
+      fi
+      ;;
+  esac
 }
 
 function current() {
@@ -174,6 +291,9 @@ show_current_status() {
 custom_provider_menu() {
   local provider="$1"
   
+  # Clear screen for clean interface
+  clear
+  
   echo
   echo "${bold}Custom Provider: ${green}$provider${normal}"
   echo
@@ -182,16 +302,7 @@ custom_provider_menu() {
   
   case "$OPTION" in
     "List Available Images")
-      echo
-      echo "Enter branch to list (or press Enter for '$DEFAULT_BRANCH'):"
-      read -r branch_input
-      branch_input=${branch_input:-$DEFAULT_BRANCH}
-      echo -e >&2 "Listing images for $branch_input from $provider\nThis can take a bit of time..."
-      skopeo list-tags "docker://ghcr.io/$provider/bazzite" | jq -r ".Tags[] | select(test(\"^$branch_input|^$branch_input-(?:\\\\d+\\\\.\\\\d+|\\\\d+)\"))"
-      echo
-      echo "Press Enter to continue..."
-      read -r
-      custom_provider_menu "$provider"
+      interactive_image_selection "$provider"
       ;;
     "Rebase to Specific Image")
       echo
@@ -243,6 +354,9 @@ custom_provider_menu() {
 
 # Interactive menu function
 interactive_menu() {
+  # Clear screen for clean interface
+  clear
+  
   # Show help text and current status
   echo "$helptext"
   show_current_status
@@ -252,17 +366,11 @@ interactive_menu() {
   
   case "$OPTION" in
     "List Images")
-      echo
-      echo "Enter branch to list (or press Enter for '$DEFAULT_BRANCH'):"
-      read -r branch_input
-      branch_input=${branch_input:-$DEFAULT_BRANCH}
-      list_images "$branch_input"
-      echo
-      echo "Press Enter to continue..."
-      read -r
-      interactive_menu
+      interactive_image_selection "ublue-os"
       ;;
     "Show Current Image")
+      clear
+      echo "${bold}Current System Information:${normal}"
       echo
       current
       echo
@@ -271,6 +379,8 @@ interactive_menu() {
       interactive_menu
       ;;
     "Rollback")
+      clear
+      echo "${bold}Rollback to Previous Image${normal}"
       echo
       echo "Are you sure you want to rollback to the previous image? ${yellow}(y/N)${normal}"
       read -r confirm
@@ -285,6 +395,8 @@ interactive_menu() {
       interactive_menu
       ;;
     "Rebase")
+      clear
+      echo "${bold}Rebase to Different Image${normal}"
       echo
       echo "Enter the image/tag to rebase to:"
       echo "Examples:"
@@ -306,6 +418,8 @@ interactive_menu() {
       interactive_menu
       ;;
     "Custom Image Provider")
+      clear
+      echo "${bold}Custom Image Provider${normal}"
       echo
       echo "Enter the custom provider/organization name:"
       echo "  - Default: ${bold}ublue-os${normal}"
