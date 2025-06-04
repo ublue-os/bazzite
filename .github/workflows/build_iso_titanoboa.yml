@@ -131,7 +131,7 @@ jobs:
         id: build
         with:
           image-ref: ${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}
-          iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-amd64.iso
+          iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-webui-amd64.iso
           flatpaks-list: ${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}/flatpaks
           hook-post-rootfs: ${{ github.workspace }}/installer/titanoboa_hook_postrootfs.sh
 
