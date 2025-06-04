@@ -271,7 +271,206 @@ Rebasing to $img_ref. Continue? [Y/n]: "
   esac
 }
 
-# Function to show current system status
+# Function for guided rebase selection
+guided_rebase_selection() {
+  local provider=${1:-ublue-os}
+  local from_custom=${2:-false}
+  
+  clear
+  echo "${bold}Select Image for Rebase - Provider: ${green}$provider${normal}"
+  echo
+  
+  # Get available image variants
+  local image_variants=$(get_bazzite_variants "$provider")
+  
+  if [ -z "$image_variants" ]; then
+    echo "${red}No Bazzite variants found for provider: $provider${normal}"
+    echo "This provider may not host Bazzite images."
+    echo
+    echo "Press Enter to continue..."
+    read -r
+    if [[ "$from_custom" == "true" ]]; then
+      custom_provider_menu "$provider"
+    else
+      interactive_menu
+    fi
+    return 1
+  fi
+  
+  # Convert to array for gum choose
+  local options=()
+  while IFS= read -r line; do
+    if [[ -n "$line" ]]; then
+      options+=("$line")
+    fi
+  done <<< "$image_variants"
+  
+  # Add back option
+  options+=("Back to Previous Menu")
+  
+  echo "Choose an image variant:"
+  local OPTION=$(Choose "${options[@]}")
+  
+  case "$OPTION" in
+    "Back to Previous Menu")
+      if [[ "$from_custom" == "true" ]]; then
+        custom_provider_menu "$provider"
+      else
+        interactive_menu
+      fi
+      ;;
+    *)
+      if [[ -n "$OPTION" ]]; then
+        guided_version_selection "$provider" "$OPTION" "$from_custom"
+      fi
+      ;;
+  esac
+}
+
+# Function for guided version selection
+guided_version_selection() {
+  local provider="$1"
+  local image_name="$2"
+  local from_custom="$3"
+  
+  clear
+  echo "${bold}Select Version for ${green}$image_name${normal} - Provider: ${green}$provider${normal}"
+  echo
+  
+  echo "Choose version type:"
+  local version_type=$(Choose "Stable Versions" "Testing Versions" "All Versions" "Back to Image Selection")
+  
+  case "$version_type" in
+    "Back to Image Selection")
+      guided_rebase_selection "$provider" "$from_custom"
+      ;;
+    "Stable Versions")
+      show_version_menu "$provider" "$image_name" "stable" "$from_custom"
+      ;;
+    "Testing Versions")
+      show_version_menu "$provider" "$image_name" "testing" "$from_custom"
+      ;;
+    "All Versions")
+      show_version_menu "$provider" "$image_name" "all" "$from_custom"
+      ;;
+  esac
+}
+
+# Function to show version menu and handle selection
+show_version_menu() {
+  local provider="$1"
+  local image_name="$2"
+  local version_type="$3"
+  local from_custom="$4"
+  
+  clear
+  echo "${bold}${version_type^} versions for ${green}$image_name${normal}:"
+  echo
+  
+  # Get versions based on type
+  local versions=()
+  case "$version_type" in
+    "stable")
+      local regex='.Tags[] | select(test("^stable"))'
+      ;;
+    "testing")
+      local regex='.Tags[] | select(test("^testing"))'
+      ;;
+    "all")
+      local regex='.Tags[]'
+      ;;
+  esac
+  
+  # Get the versions and convert to array
+  local version_list=$(skopeo list-tags "docker://ghcr.io/$provider/$image_name" | jq -r "$regex" | sort)
+  
+  if [ -z "$version_list" ]; then
+    echo "${red}No $version_type versions found for $image_name${normal}"
+    echo
+    echo "Press Enter to continue..."
+    read -r
+    guided_version_selection "$provider" "$image_name" "$from_custom"
+    return
+  fi
+  
+  local options=()
+  while IFS= read -r line; do
+    if [[ -n "$line" ]]; then
+      options+=("$line")
+    fi
+  done <<< "$version_list"
+  
+  # Add navigation options
+  options+=("Back to Version Type Selection")
+  
+  echo "Choose a version to rebase to:"
+  local OPTION=$(Choose "${options[@]}")
+  
+  case "$OPTION" in
+    "Back to Version Type Selection")
+      guided_version_selection "$provider" "$image_name" "$from_custom"
+      ;;
+    *)
+      if [[ -n "$OPTION" ]]; then
+        # Perform the rebase
+        perform_rebase "$provider" "$image_name" "$OPTION" "$from_custom"
+      fi
+      ;;
+  esac
+}
+
+# Function to perform the actual rebase
+perform_rebase() {
+  local provider="$1"
+  local image_name="$2"
+  local version="$3"
+  local from_custom="$4"
+  
+  clear
+  echo "${bold}Confirm Rebase${normal}"
+  echo
+  
+  # Get current image prefix but replace the provider if needed
+  local current_prefix=$(rpm-ostree status -b --json | jq -r '.deployments[]["container-image-reference"]')
+  local signing_scheme
+  if [[ "$current_prefix" == *"ostree-image-signed"* ]]; then
+    signing_scheme="ostree-image-signed:docker://ghcr.io"
+  else
+    signing_scheme="ostree-unverified-registry:docker://ghcr.io"
+  fi
+  
+  local target_ref="$signing_scheme/$provider/$image_name:$version"
+  
+  echo "Rebasing to: ${bold}$target_ref${normal}"
+  echo
+  echo "Are you sure? ${yellow}(y/N)${normal}"
+  read -r confirm
+  
+  if [[ "${confirm,,}" =~ ^y ]]; then
+    echo
+    echo "Performing rebase..."
+    if rpm-ostree rebase "$target_ref"; then
+      echo
+      echo "${green}Rebase successful!${normal}"
+      echo "Reboot for changes to take effect."
+    else
+      echo
+      echo "${red}Failed to rebase.${normal} The image may not exist or be accessible."
+    fi
+  else
+    echo "Rebase cancelled."
+  fi
+  
+  echo
+  echo "Press Enter to continue..."
+  read -r
+  
+  if [[ "$from_custom" == "true" ]]; then
+    custom_provider_menu "$provider"
+  else
+    interactive_menu
+  fi
+}
 show_current_status() {
   echo "${bold}Current System Status:${normal}"
   echo
@@ -298,13 +497,18 @@ custom_provider_menu() {
   echo "${bold}Custom Provider: ${green}$provider${normal}"
   echo
   echo "${bold}Choose an action:${normal}"
-  local OPTION=$(Choose "List Available Images" "Rebase to Specific Image" "Back to Main Menu")
+  local OPTION=$(Choose "List Available Images" "Select from List for Rebase" "Manual Rebase Entry" "Back to Main Menu")
   
   case "$OPTION" in
     "List Available Images")
       interactive_image_selection "$provider"
       ;;
-    "Rebase to Specific Image")
+    "Select from List for Rebase")
+      guided_rebase_selection "$provider" "true"
+      ;;
+    "Manual Rebase Entry")
+      clear
+      echo "${bold}Manual Rebase Entry - Provider: ${green}$provider${normal}"
       echo
       echo "Enter the image:tag to rebase to:"
       echo "Examples:"
@@ -398,24 +602,40 @@ interactive_menu() {
       clear
       echo "${bold}Rebase to Different Image${normal}"
       echo
-      echo "Enter the image/tag to rebase to:"
-      echo "Examples:"
-      echo "  - ${bold}stable${normal} (rebase to stable branch)"
-      echo "  - ${bold}testing${normal} (rebase to testing branch)"
-      echo "  - ${bold}bazzite-deck:stable${normal} (specific image and tag)"
-      echo "  - ${bold}40-stable-20240722${normal} (specific tag)"
-      echo
-      echo "Enter rebase target (or press Enter to cancel):"
-      read -r rebase_input
-      if [ -n "$rebase_input" ]; then
-        rebase "$rebase_input" -y
-      else
-        echo "Rebase cancelled."
-      fi
-      echo
-      echo "Press Enter to continue..."
-      read -r
-      interactive_menu
+      echo "Choose rebase method:"
+      local rebase_method=$(Choose "Select from List" "Manual Entry" "Back to Main Menu")
+      
+      case "$rebase_method" in
+        "Select from List")
+          guided_rebase_selection "ublue-os" "false"
+          ;;
+        "Manual Entry")
+          clear
+          echo "${bold}Manual Rebase Entry${normal}"
+          echo
+          echo "Enter the image/tag to rebase to:"
+          echo "Examples:"
+          echo "  - ${bold}stable${normal} (rebase to stable branch)"
+          echo "  - ${bold}testing${normal} (rebase to testing branch)"
+          echo "  - ${bold}bazzite-deck:stable${normal} (specific image and tag)"
+          echo "  - ${bold}40-stable-20240722${normal} (specific tag)"
+          echo
+          echo "Enter rebase target (or press Enter to cancel):"
+          read -r rebase_input
+          if [ -n "$rebase_input" ]; then
+            rebase "$rebase_input" -y
+          else
+            echo "Rebase cancelled."
+          fi
+          echo
+          echo "Press Enter to continue..."
+          read -r
+          interactive_menu
+          ;;
+        "Back to Main Menu")
+          interactive_menu
+          ;;
+      esac
       ;;
     "Custom Image Provider")
       clear
