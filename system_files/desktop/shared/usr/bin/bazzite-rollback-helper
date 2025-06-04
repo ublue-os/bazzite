@@ -170,6 +170,77 @@ show_current_status() {
   echo
 }
 
+# Function to handle custom provider rebase
+custom_provider_menu() {
+  local provider="$1"
+  
+  echo
+  echo "${bold}Custom Provider: ${green}$provider${normal}"
+  echo
+  echo "${bold}Choose an action:${normal}"
+  local OPTION=$(Choose "List Available Images" "Rebase to Specific Image" "Back to Main Menu")
+  
+  case "$OPTION" in
+    "List Available Images")
+      echo
+      echo "Enter branch to list (or press Enter for '$DEFAULT_BRANCH'):"
+      read -r branch_input
+      branch_input=${branch_input:-$DEFAULT_BRANCH}
+      echo -e >&2 "Listing images for $branch_input from $provider\nThis can take a bit of time..."
+      skopeo list-tags "docker://ghcr.io/$provider/bazzite" | jq -r ".Tags[] | select(test(\"^$branch_input|^$branch_input-(?:\\\\d+\\\\.\\\\d+|\\\\d+)\"))"
+      echo
+      echo "Press Enter to continue..."
+      read -r
+      custom_provider_menu "$provider"
+      ;;
+    "Rebase to Specific Image")
+      echo
+      echo "Enter the image:tag to rebase to:"
+      echo "Examples:"
+      echo "  - ${bold}bazzite:stable${normal}"
+      echo "  - ${bold}bazzite-deck:testing${normal}"
+      echo "  - ${bold}bazzite-gnome:40-stable-20240722${normal}"
+      echo
+      echo "Enter image:tag (or press Enter to cancel):"
+      read -r image_tag
+      if [ -n "$image_tag" ]; then
+        # Get current image prefix but replace the provider
+        local current_prefix=$(rpm-ostree status -b --json | jq -r '.deployments[]["container-image-reference"]')
+        local signing_scheme
+        if [[ "$current_prefix" == *"ostree-image-signed"* ]]; then
+          signing_scheme="ostree-image-signed:docker://ghcr.io"
+        else
+          signing_scheme="ostree-unverified-registry:docker://ghcr.io"
+        fi
+        
+        local custom_ref="$signing_scheme/$provider/$image_tag"
+        echo
+        echo "Rebasing to: ${bold}$custom_ref${normal}"
+        echo "Are you sure? ${yellow}(y/N)${normal}"
+        read -r confirm
+        if [[ "${confirm,,}" =~ ^y ]]; then
+          rpm-ostree rebase "$custom_ref" || echo "Failed to rebase. The image may not exist or be accessible."
+        else
+          echo "Rebase cancelled."
+        fi
+      else
+        echo "Rebase cancelled."
+      fi
+      echo
+      echo "Press Enter to continue..."
+      read -r
+      custom_provider_menu "$provider"
+      ;;
+    "Back to Main Menu")
+      interactive_menu
+      ;;
+    *)
+      echo "Invalid option selected."
+      custom_provider_menu "$provider"
+      ;;
+  esac
+}
+
 # Interactive menu function
 interactive_menu() {
   # Show help text and current status
@@ -177,7 +248,7 @@ interactive_menu() {
   show_current_status
   
   echo "${bold}Choose an action:${normal}"
-  local OPTION=$(Choose "List Images" "Show Current Image" "Rollback" "Rebase" "Exit")
+  local OPTION=$(Choose "List Images" "Show Current Image" "Rollback" "Rebase" "Custom Image Provider" "Exit")
   
   case "$OPTION" in
     "List Images")
@@ -233,6 +304,22 @@ interactive_menu() {
       echo "Press Enter to continue..."
       read -r
       interactive_menu
+      ;;
+    "Custom Image Provider")
+      echo
+      echo "Enter the custom provider/organization name:"
+      echo "  - Default: ${bold}ublue-os${normal}"
+      echo "  - Examples: ${bold}my-org${normal}, ${bold}custom-builder${normal}, ${bold}fork-maintainer${normal}"
+      echo
+      echo "Enter provider name (or press Enter for 'ublue-os'):"
+      read -r provider_input
+      provider_input=${provider_input:-ublue-os}
+      # Convert to lowercase for ghcr.io compatibility
+      provider_input=$(echo "$provider_input" | tr '[:upper:]' '[:lower:]')
+      
+      echo
+      echo "Using provider: ${bold}$provider_input${normal}"
+      custom_provider_menu "$provider_input"
       ;;
     "Exit")
       echo "Exiting..."
