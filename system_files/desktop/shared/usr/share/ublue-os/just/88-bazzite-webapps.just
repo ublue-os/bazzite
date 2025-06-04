@@ -68,7 +68,7 @@ get-media-app service="":
     [ "$CHOICE" = "Exit" ] && { echo "Exiting..."; exit 0; }
     # Create webapp script and add to Steam
     create_script() {
-        local script_path="$HOME/Applications/streaming_scripts/$1.sh"
+        local script_path="$HOME/Applications/streaming_scripts/$1"
         echo "#!/bin/bash" > "$script_path"
         echo "\"$HOME/.local/bin/streaming-service-launcher\" \"$2\"" >> "$script_path"
         chmod +x "$script_path"
@@ -93,7 +93,7 @@ get-media-app service="":
         # Only proceed with Steam integration if installation was successful
         if [ "$installed" = true ]; then
             # Create launcher script for Steam
-            local script_path="$HOME/Applications/streaming_scripts/Youtube.sh"
+            local script_path="$HOME/Applications/streaming_scripts/Youtube"
             echo "#!/bin/bash" > "$script_path"
             echo "flatpak run rocks.shy.VacuumTube" >> "$script_path"
             chmod +x "$script_path"
@@ -138,7 +138,7 @@ get-media-app service="":
         # Only proceed with Steam integration if installation was successful
         if [ "$installed" = true ]; then
             # Create launcher script for Steam
-            local script_path="$HOME/Applications/streaming_scripts/plex-htpc.sh"
+            local script_path="$HOME/Applications/streaming_scripts/plex-htpc"
             echo "#!/bin/bash" > "$script_path"
             echo "flatpak run tv.plex.PlexHTPC" >> "$script_path"
             chmod +x "$script_path"
@@ -167,7 +167,7 @@ get-media-app service="":
         # Only proceed with Steam integration if installation was successful
         if [ "$installed" = true ]; then
             # Create launcher script for Steam
-            local script_path="$HOME/Applications/streaming_scripts/jellyfin-media-player.sh"
+            local script_path="$HOME/Applications/streaming_scripts/jellyfin-media-player"
             echo "#!/bin/bash" > "$script_path"
             echo "flatpak run com.github.iwalton3.jellyfin-media-player" >> "$script_path"
             chmod +x "$script_path"
