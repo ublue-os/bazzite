@@ -68,12 +68,41 @@ get-media-app service="":
     [ "$CHOICE" = "Exit" ] && { echo "Exiting..."; exit 0; }
     # Create webapp script and add to Steam
     create_script() {
-        local script_path="$HOME/Applications/streaming_scripts/$1.sh"
+        local script_path="$HOME/Applications/streaming_scripts/$1"
         echo "#!/bin/bash" > "$script_path"
         echo "\"$HOME/.local/bin/streaming-service-launcher\" \"$2\"" >> "$script_path"
         chmod +x "$script_path"
         steamos-add-to-steam "$script_path"
         echo "Added $1 to Steam successfully!"
+    }
+    install_vacuumtube() {
+        local installed=false
+        if grep -q 'rocks.shy.VacuumTube' <<< $(flatpak list); then
+            echo "VacuumTube is already installed"
+            installed=true
+        else
+            echo "Installing VacuumTube..."
+            if flatpak install --user -y flathub rocks.shy.VacuumTube; then
+                echo "VacuumTube installed successfully"
+                installed=true
+            else
+                echo "Failed to install VacuumTube. Please try installing manually with:"
+                echo "flatpak install --user flathub rocks.shy.VacuumTube"
+            fi
+        fi
+        # Only proceed with Steam integration if installation was successful
+        if [ "$installed" = true ]; then
+            # Create launcher script for Steam
+            local script_path="$HOME/Applications/streaming_scripts/Youtube"
+            echo "#!/bin/bash" > "$script_path"
+            echo "flatpak run rocks.shy.VacuumTube" >> "$script_path"
+            chmod +x "$script_path"
+            # Add to Steam
+            steamos-add-to-steam "$script_path"
+            echo "Added VacuumTube to Steam successfully!"
+        else
+            echo "Skipping Steam integration due to installation failure."
+        fi
     }
     install_crunchyroll() {
         if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
@@ -109,7 +138,7 @@ get-media-app service="":
         # Only proceed with Steam integration if installation was successful
         if [ "$installed" = true ]; then
             # Create launcher script for Steam
-            local script_path="$HOME/Applications/streaming_scripts/plex-htpc.sh"
+            local script_path="$HOME/Applications/streaming_scripts/plex-htpc"
             echo "#!/bin/bash" > "$script_path"
             echo "flatpak run tv.plex.PlexHTPC" >> "$script_path"
             chmod +x "$script_path"
@@ -138,7 +167,7 @@ get-media-app service="":
         # Only proceed with Steam integration if installation was successful
         if [ "$installed" = true ]; then
             # Create launcher script for Steam
-            local script_path="$HOME/Applications/streaming_scripts/jellyfin-media-player.sh"
+            local script_path="$HOME/Applications/streaming_scripts/jellyfin-media-player"
             echo "#!/bin/bash" > "$script_path"
             echo "flatpak run com.github.iwalton3.jellyfin-media-player" >> "$script_path"
             chmod +x "$script_path"
@@ -183,7 +212,7 @@ get-media-app service="":
     # }
     # Process user choice
     case "$CHOICE" in
-        "YouTube") create_script "youtube" "youtube" ;;
+        "YouTube") install_vacuumtube ;;
         "Netflix") create_script "netflix" "netflix" ;;
         "Amazon Luna") create_script "amazon-luna" "amazonLuna" ;;
         "Disney Plus") create_script "disney-plus" "disneyPlus" ;;
