@@ -241,6 +241,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install \
+        iwd \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
         lato-fonts \
