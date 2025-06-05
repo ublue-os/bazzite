@@ -232,7 +232,6 @@ RUN --mount=type=cache,dst=/var/cache \
         firefox \
         firefox-langpacks \
         htop && \
-    	dnf5 -y swap kde-partitionmanager gnome-disk-utility && \
     /ctx/cleanup
 
 # Install new packages
@@ -425,6 +424,7 @@ RUN --mount=type=cache,dst=/var/cache \
             fcitx5-chinese-addons \
             fcitx5-hangul \
             kcm-fcitx5 \
+            gnome-disk-utility \
             ptyxis && \
         dnf5 -y swap \
         --repo=terra-extras \
@@ -442,6 +442,7 @@ RUN --mount=type=cache,dst=/var/cache \
             plasma-welcome-fedora \
             plasma-browser-integration \
             kcharselect \
+            kde-partitionmanager \
             discover \
             konsole && \
         sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:net.lutris.Lutris.desktop,applications:org.gnome.Ptyxis.desktop,applications:io.github.kolunmi.bazaar,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
