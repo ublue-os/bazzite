@@ -1,0 +1,124 @@
+css: |
+  .bazzite-section banner {
+     margin: 10px;
+     border-radius: 10px;
+  }
+  .bazzite-section banner-text {
+     text-shadow: 0px 0px 10px #000, 0px 0px 15px rgba(0,0,0,0.75);
+  }
+  .bazzite-section title {
+     color: #ffffff;
+  }
+  .bazzite-section subtitle {
+     color: var(--accent-color);
+  }
+  .bazzite-dark-text banner-text {
+    text-shadow: 0px 0px 10px #fff;
+  }
+  .bazzite-dark-text title {
+    color: #000000;
+  }
+  .bazzite-dark-text subtitle {
+     color: #252525;
+  }
+sections:
+  - title: "Gaming"
+    subtitle: "Now this will run on my 486?"
+    rows: 4
+    banner: file:///usr/share/ublue-os/bazaar/gaming.png
+    banner-fit: cover
+    classes:
+      - bazzite-section
+    appids:
+      - com.heroicgameslauncher.hgl
+      - io.itch.itch
+      - com.discordapp.Discord
+      - com.teamspeak.TeamSpeak
+      - info.mumble.Mumble
+      - org.prismlauncher.PrismLauncher
+      - io.mrarm.mcpelauncher
+      - org.openmw.OpenMW
+      - org.libretro.RetroArch
+      - org.pegasus_frontend.Pegasus
+      - info.cemu.Cemu
+      - org.DolphinEmu.dolphin-emu
+      - net.kuribo64.melonDS
+      - com.snes9x.Snes9x
+      - io.mgba.mGBA
+      - org.ppsspp.PPSSPP
+      - org.duckstation.DuckStation
+      - net.pcsx2.PCSX2
+      - net.rpcs3.RPCS3
+      - app.xemu.xemu
+      - org.mamedev.MAME
+      - io.github.stella_emu.Stella
+      - org.scummvm.ScummVM
+      - io.github.dosbox-staging
+      - com.github.k4zmu2a.spacecadetpinball
+      - sh.ppy.osu
+      - org.srb2.SRB2
+      - org.srb2.SRB2Kart
+      - org.supertuxproject.SuperTux
+      - net.supertuxkart.SuperTuxKart
+  - title: "Streaming"
+    subtitle: "Sprunked it."
+    rows: 1
+    banner: file:///usr/share/ublue-os/bazaar/streaming.png
+    banner-fit: cover
+    classes:
+      - bazzite-section
+    appids:
+      - com.obsproject.Studio
+      - com.feaneron.Boatswain
+      - com.moonlight_stream.Moonlight
+      - com.valvesoftware.SteamLink
+      - com.parsecgaming.parsec
+  - title: "Music & Media"
+    subtitle: "Let me break it down for you."
+    rows: 1
+    banner: file:///usr/share/ublue-os/bazaar/music.png
+    banner-fit: cover
+    classes:
+      - bazzite-section
+    appids:
+      - com.spotify.Client
+      - org.strawberrymusicplayer.strawberry
+      - com.mastermindzh.tidal-hifi
+      - org.videolan.VLC
+  - title: "Office & Productivity"
+    subtitle: "May the paperclip fellow have mercy."
+    rows: 2
+    banner: file:///usr/share/ublue-os/bazaar/office.png
+    banner-fit: cover
+    classes:
+      - bazzite-section
+      - bazzite-dark-text
+    appids:
+      - org.mozilla.Thunderbird
+      - org.libreoffice.LibreOffice
+      - org.gimp.GIMP
+      - org.kde.krita
+      - org.inkscape.Inkscape
+      - org.blender.Blender
+      - org.audacityteam.Audacity
+      - org.ardour.Ardour
+      - md.obsidian.Obsidian
+      - org.standardnotes.standardnotes
+      - com.slack.Slack
+      - com.github.IsmaelMartinez.teams_for_linux
+      - org.ardour.Ardour
+  - title: "Utilities"
+    subtitle: "The things you didn't know you needed."
+    rows: 1
+    banner: file:///usr/share/ublue-os/bazaar/utilities.png
+    banner-fit: cover
+    classes:
+      - bazzite-section
+    appids:
+      - org.fedoraproject.MediaWriter
+      - org.raspberrypi.rpi-imager
+      - cc.arduino.IDE2
+      - org.keepassxc.KeePassXC
+      - com.bitwarden.desktop
+      - org.qbittorrent.qBittorrent
+      - com.github.zocker_160.SyncThingy
