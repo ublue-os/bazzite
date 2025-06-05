@@ -3,7 +3,7 @@
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
 #global gamescope_tag 3.15.11
-%global gamescope_commit f873ec7868fe84d2850e91148bcbd6d6b19a7443 
+%global gamescope_commit 918b61d41175d1c168832a35d2b897ec948bd075 
 %define short_commit %(echo %{gamescope_commit} | cut -c1-8)
 
 Name:           gamescope
