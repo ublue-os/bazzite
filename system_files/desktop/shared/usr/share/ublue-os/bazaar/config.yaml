@@ -32,13 +32,14 @@ sections:
     appids:
       - com.heroicgameslauncher.hgl
       - io.itch.itch
-      - com.discordapp.Discord
-      - com.teamspeak.TeamSpeak
-      - info.mumble.Mumble
       - org.prismlauncher.PrismLauncher
       - io.mrarm.mcpelauncher
+      - org.vinegarhq.Sober
+      - org.zdoom.GZDoom
       - org.openmw.OpenMW
+      - dev.goats.xivlauncher
       - org.libretro.RetroArch
+      - page.kramo.Cartridges
       - org.pegasus_frontend.Pegasus
       - info.cemu.Cemu
       - org.DolphinEmu.dolphin-emu
@@ -56,11 +57,13 @@ sections:
       - io.github.dosbox-staging
       - com.github.k4zmu2a.spacecadetpinball
       - sh.ppy.osu
+      - com.etlegacy.ETLegacy
+      - com.realm667.Wolfenstein_Blade_of_Agony
       - org.srb2.SRB2
       - org.srb2.SRB2Kart
       - org.supertuxproject.SuperTux
       - net.supertuxkart.SuperTuxKart
-  - title: "Streaming"
+  - title: "Streaming & Chat"
     subtitle: "Sprunked it."
     rows: 1
     banner: file:///usr/share/ublue-os/bazaar/streaming.png
@@ -68,6 +71,9 @@ sections:
     classes:
       - bazzite-section
     appids:
+      - com.discordapp.Discord
+      - com.teamspeak.TeamSpeak
+      - info.mumble.Mumble
       - com.obsproject.Studio
       - com.feaneron.Boatswain
       - com.moonlight_stream.Moonlight
@@ -81,6 +87,8 @@ sections:
     classes:
       - bazzite-section
     appids:
+      - io.bassi.Amberol
+      - org.videolan.VLC
       - com.spotify.Client
       - org.strawberrymusicplayer.strawberry
       - com.mastermindzh.tidal-hifi
@@ -100,6 +108,7 @@ sections:
       - org.kde.krita
       - org.inkscape.Inkscape
       - org.blender.Blender
+      - io.github.nokse22.Exhibit
       - org.audacityteam.Audacity
       - org.ardour.Ardour
       - md.obsidian.Obsidian
@@ -115,10 +124,15 @@ sections:
     classes:
       - bazzite-section
     appids:
-      - org.fedoraproject.MediaWriter
-      - org.raspberrypi.rpi-imager
-      - cc.arduino.IDE2
+      - app.drey.Warp
+      - org.deskflow.deskflow
+      - io.github.lawstorant.boxflat
+      - io.github.radiolamp.mangojuice
+      - io.missioncenter.MissionCenter
       - org.keepassxc.KeePassXC
       - com.bitwarden.desktop
       - org.qbittorrent.qBittorrent
       - com.github.zocker_160.SyncThingy
+      - org.fedoraproject.MediaWriter
+      - org.raspberrypi.rpi-imager
+      - cc.arduino.IDE2
