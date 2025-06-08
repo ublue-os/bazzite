@@ -63,6 +63,7 @@ sections:
       - org.zdoom.GZDoom
       - org.openmw.OpenMW
       - dev.goats.xivlauncher
+      - net.retrodeck.retrodeck
       - org.libretro.RetroArch
       - page.kramo.Cartridges
       - org.pegasus_frontend.Pegasus
