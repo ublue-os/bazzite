@@ -61,9 +61,9 @@ esac
 rm -rf /root/packages
 
 # Variables
-imageref="$(podman images --format '{{ index .Names 0 }}' 'bazzite*')"
+imageref="$(podman images --format '{{ index .Names 0 }}\n' 'bazzite*' | head -1)"
 imageref="${imageref##*://}"
-imagetag="$(podman images --format '{{ .Tag }}' "$imageref")"
+imagetag="$(podman images --format '{{ .Tag }}\n' "$imageref" | head -1)"
 sbkey='https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
 
 # Secureboot Key Fetch
