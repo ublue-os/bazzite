@@ -11,8 +11,8 @@ css: |
   }
   .bazzite-section banner-text-bg {
      background-color: var(--accent-color);
-     filter: blur(50px) brightness(0.4);
-     opacity: 0.6;
+     filter: blur(50px) brightness(0.3);
+     opacity: 0.75;
      border-radius: 30px;
      background-color: var(--accent-color);
   }
@@ -92,7 +92,7 @@ sections:
       - net.supertuxkart.SuperTuxKart
       - io.github.limo_app.limo
   - title: "Streaming & Chat"
-    subtitle: "Sprunked it."
+    subtitle: "Sprunk'd it."
     rows: 2
     banner: file:///usr/share/ublue-os/bazaar/streaming.png
     banner-fit: cover
