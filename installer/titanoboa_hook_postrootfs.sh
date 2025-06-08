@@ -2,71 +2,53 @@
 
 set -eo pipefail
 
-### BAZZITE SPECIFIC TWEAKS ###
+source /etc/os-release
 
-# Disable services
-(
-    set +e
-    for s in \
-        rpm-ostree-countme.service \
-        tailscaled.service \
-        bootloader-update.service \
-        brew-upgrade.timer \
-        brew-update.timer \
-        brew-setup.service \
-        rpm-ostreed-automatic.timer \
-        uupd.timer \
-        ublue-system-setup.service \
-        ublue-guest-user.service \
-        check-sb-key.service; do
-        systemctl disable $s
-    done
+# Install Anaconda webui
+dnf install -y anaconda-live libblockdev-{btrfs,lvm,dm}
+mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
+dnf install -y anaconda-webui
 
-    for s in \
-        ublue-flatpak-manager.service \
-        podman-auto-update.timer \
-        ublue-user-setup.service; do
-        systemctl --global disable $s
-    done
-)
+# Bazzite anaconda profile
+: ${VARIANT_ID:?}
+cat /etc/anaconda/profile.d/"${VARIANT_ID}".conf <<EOF
+# Anaconda configuration file for bazzite
 
-# Dont start Steam at login
-rm -vf /etc/skel/.config/autostart/steam*.desktop
+[Profile]
+# Define the profile.
+profile_id = ${VARIANT_ID}
 
-###############################
+[Profile Detection]
+# Match os-release values
+os_id = ${VARIANT_ID}
 
-# We need to make our own Profiles. This makes anaconda think we are a Kinoite Install
-. /etc/os-release
-if [[ "$ID_LIKE" =~ rhel ]]; then
-    echo 'VARIANT_ID="kinoite"' >>/usr/lib/os-release
-else
-    sed -i "s/^VARIANT_ID=.*/VARIANT_ID=kinoite/" /usr/lib/os-release
-fi
-sed -i "s/^ID=.*/ID=fedora/" /usr/lib/os-release
+[Network]
+default_on_boot = FIRST_WIRED_WITH_LINK
 
-# Install Anaconda, Webui if >= F42
-if [[ "$ID_LIKE" =~ rhel ]]; then
-    dnf install -y anaconda-liveinst
-    HIDE_SPOKE="1"
-else
-    dnf install -y anaconda-live libblockdev-{btrfs,lvm,dm}
-    if [[ "$(rpm -E %fedora)" -ge 42 ]]; then
-        # Needed for Anaconda Web UI
-        mkdir -p /var/lib/rpm-state
-        dnf install -y anaconda-webui
-    else
-        HIDE_SPOKE="1"
-    fi
-fi
+[Bootloader]
+efi_dir = fedora
+menu_auto_hide = True
 
-if [[ "${HIDE_SPOKE:-}" ]]; then
-    # Hide Root Spoke
-    cat <<EOF >>/etc/anaconda/conf.d/anaconda.conf
+[Storage]
+default_scheme = BTRFS
+btrfs_compression = zstd:1
+default_partitioning =
+    /     (min 1 GiB, max 70 GiB)
+    /home (min 500 MiB, free 50 GiB)
+    /var  (btrfs)
+
 [User Interface]
+custom_stylesheet = /usr/share/anaconda/pixmaps/fedora.css
 hidden_spokes =
+    NetworkSpoke
     PasswordSpoke
+hidden_webui_pages =
+    root-password
+    network
+
+[Localization]
+use_geolocation = False
 EOF
-fi
 
 # Get Artwork
 git clone https://github.com/ublue-os/packages.git /root/packages
@@ -155,3 +137,36 @@ cat <<EOF >>/etc/anaconda/conf.d/anaconda.conf
 [Payload]
 flatpak_remote = flathub https://dl.flathub.org/repo/
 EOF
+
+### Livecds runtime tweaks ###
+
+# Disable services
+(
+    set +e
+    for s in \
+        rpm-ostree-countme.service \
+        tailscaled.service \
+        bootloader-update.service \
+        brew-upgrade.timer \
+        brew-update.timer \
+        brew-setup.service \
+        rpm-ostreed-automatic.timer \
+        uupd.timer \
+        ublue-system-setup.service \
+        ublue-guest-user.service \
+        check-sb-key.service; do
+        systemctl disable $s
+    done
+
+    for s in \
+        ublue-flatpak-manager.service \
+        podman-auto-update.timer \
+        ublue-user-setup.service; do
+        systemctl --global disable $s
+    done
+)
+
+# Dont start Steam at login
+rm -vf /etc/skel/.config/autostart/steam*.desktop
+
+###############################
