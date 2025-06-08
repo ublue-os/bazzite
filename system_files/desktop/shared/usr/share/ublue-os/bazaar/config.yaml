@@ -88,15 +88,17 @@ sections:
       - io.github.dosbox-staging
       - com.github.k4zmu2a.spacecadetpinball
       - sh.ppy.osu
+      - com.pokemmo.PokeMMO
       - com.etlegacy.ETLegacy
       - com.realm667.Wolfenstein_Blade_of_Agony
       - org.srb2.SRB2
       - org.srb2.SRB2Kart
       - org.supertuxproject.SuperTux
       - net.supertuxkart.SuperTuxKart
+      - io.github.limo_app.limo
   - title: "Streaming & Chat"
     subtitle: "Sprunked it."
-    rows: 1
+    rows: 2
     banner: file:///usr/share/ublue-os/bazaar/streaming.png
     banner-fit: cover
     banner-text-halign: center
@@ -114,7 +116,7 @@ sections:
       - com.parsecgaming.parsec
   - title: "Music & Media"
     subtitle: "Let me break it down for you."
-    rows: 1
+    rows: 2
     banner: file:///usr/share/ublue-os/bazaar/music.png
     banner-fit: cover
     banner-text-halign: center
@@ -123,11 +125,16 @@ sections:
       - bazzite-section
     appids:
       - io.bassi.Amberol
-      - org.videolan.VLC
+      - com.github.neithern.g4music
+      - org.atheme.audacious
       - com.spotify.Client
-      - org.strawberrymusicplayer.strawberry
       - com.mastermindzh.tidal-hifi
       - org.videolan.VLC
+      - com.github.iwalton3.jellyfin-media-player
+      - tv.plex.PlexDesktop
+      - com.plexamp.Plexamp
+      - org.strawberrymusicplayer.strawberry
+      - camp.nook.nookdesktop
   - title: "Office & Productivity"
     subtitle: "May the paperclip fellow have mercy."
     rows: 2
@@ -155,7 +162,7 @@ sections:
       - org.ardour.Ardour
   - title: "Utilities"
     subtitle: "The things you didn't know you needed."
-    rows: 1
+    rows: 2
     banner: file:///usr/share/ublue-os/bazaar/utilities.png
     banner-fit: cover
     banner-text-halign: center
