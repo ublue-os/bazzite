@@ -11,7 +11,8 @@ css: |
   }
   .bazzite-section banner-text-bg {
      background-color: var(--accent-color);
-     filter: blur(100px);
+     filter: blur(50px) brightness(0.4);
+     opacity: 0.6;
      border-radius: 30px;
      background-color: var(--accent-color);
   }
@@ -21,34 +22,26 @@ css: |
   }
   .bazzite-section title {
      color: #ffffff;
-     border-bottom: 4px solid white;
+  }
+  .bazzite-section subtitle {
+    color: var(--accent-color);
+    filter: brightness(1.25);
+    font-weight: 400;
   }
   .bazzite-section entry {
-     background: linear-gradient(to right, alpha(var(--accent-color), 0.2), alpha(var(--accent-bg-color), 0.1)),
-                 cross-fade(0% -gtk-icontheme("folder-download-symbolic"), image(transparent)) center right / 30% 50% no-repeat;
+     background: linear-gradient(to right, alpha(var(--accent-color), 0.2), alpha(var(--accent-bg-color), 0.1));
      transition-property: background;
      transition-duration: 0.25s;
   }
   .bazzite-section entry:hover {
-     background: linear-gradient(to right, alpha(var(--accent-bg-color), 0.5), alpha(var(--accent-color), 0.7)),
-                 cross-fade(25% -gtk-icontheme("folder-download-symbolic"), image(transparent)) center right / 30% 85% no-repeat;
+     background: linear-gradient(to right, alpha(var(--accent-bg-color), 0.5), alpha(var(--accent-color), 0.7));
      transition-property: background;
      transition-duration: 0.75s;
   }
   .bazzite-section entry:active {
-     background: linear-gradient(to right, alpha(var(--accent-bg-color), 0.5), alpha(var(--accent-color), 0.7)),
-                 cross-fade(25% -gtk-icontheme("folder-download-symbolic"), image(transparent)) center right / 30% 95% no-repeat;
+     background: linear-gradient(to right, alpha(var(--accent-bg-color), 0.5), alpha(var(--accent-color), 0.7));
      transition-property: background;
      transition-duration: 0.15s;
-  }
-  .bazzite-dark-text banner-text {
-    text-shadow: 0px 0px 10px #fff;
-  }
-  .bazzite-dark-text title {
-    color: #000000;
-  }
-  .bazzite-dark-text subtitle {
-     color: #252525;
   }
 sections:
   - title: "Gaming"
@@ -56,8 +49,9 @@ sections:
     rows: 4
     banner: file:///usr/share/ublue-os/bazaar/gaming.png
     banner-fit: cover
-    banner-text-halign: center
-    banner-text-valign: center
+    banner-text-halign: start
+    banner-text-valign: start
+    banner-height: 500
     classes:
       - bazzite-section
     appids:
@@ -101,14 +95,20 @@ sections:
     rows: 2
     banner: file:///usr/share/ublue-os/bazaar/streaming.png
     banner-fit: cover
-    banner-text-halign: center
-    banner-text-valign: center
+    banner-text-halign: end
+    banner-text-valign: start
+    banner-height: 500
     classes:
       - bazzite-section
     appids:
       - com.discordapp.Discord
+      - dev.vencord.Vesktop
+      - im.pidgin.Pidgin
       - com.teamspeak.TeamSpeak
       - info.mumble.Mumble
+      - im.riot.Riot
+      - org.squidowl.halloy
+      - org.gnome.Fractal
       - com.obsproject.Studio
       - com.feaneron.Boatswain
       - com.moonlight_stream.Moonlight
@@ -119,8 +119,9 @@ sections:
     rows: 2
     banner: file:///usr/share/ublue-os/bazaar/music.png
     banner-fit: cover
-    banner-text-halign: center
-    banner-text-valign: center
+    banner-text-halign: start
+    banner-text-valign: end
+    banner-height: 500
     classes:
       - bazzite-section
     appids:
@@ -140,11 +141,11 @@ sections:
     rows: 2
     banner: file:///usr/share/ublue-os/bazaar/office.png
     banner-fit: cover
-    banner-text-halign: center
-    banner-text-valign: center
+    banner-text-halign: end
+    banner-text-valign: start
+    banner-height: 500
     classes:
       - bazzite-section
-      - bazzite-dark-text
     appids:
       - org.mozilla.Thunderbird
       - org.libreoffice.LibreOffice
@@ -161,12 +162,13 @@ sections:
       - com.github.IsmaelMartinez.teams_for_linux
       - org.ardour.Ardour
   - title: "Utilities"
-    subtitle: "The things you didn't know you needed."
+    subtitle: "Stuff you didn't need until now."
     rows: 2
     banner: file:///usr/share/ublue-os/bazaar/utilities.png
     banner-fit: cover
-    banner-text-halign: center
-    banner-text-valign: center
+    banner-text-halign: start
+    banner-text-valign: start
+    banner-height: 500
     classes:
       - bazzite-section
     appids:
