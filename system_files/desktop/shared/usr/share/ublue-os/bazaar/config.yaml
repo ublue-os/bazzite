@@ -175,6 +175,7 @@ sections:
     appids:
       - app.drey.Warp
       - org.deskflow.deskflow
+      - io.github.berarma.Oversteer
       - io.github.lawstorant.boxflat
       - io.github.radiolamp.mangojuice
       - io.missioncenter.MissionCenter
