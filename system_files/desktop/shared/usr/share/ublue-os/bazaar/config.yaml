@@ -45,7 +45,7 @@ css: |
   }
 sections:
   - title: "Gaming"
-    subtitle: "Now this will run on my 486?"
+    subtitle: "Protocol 3: Protect the Pilot"
     rows: 4
     banner: file:///usr/share/ublue-os/bazaar/gaming.png
     banner-fit: cover
