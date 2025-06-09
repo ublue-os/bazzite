@@ -61,11 +61,6 @@ jobs:
               TAG="testing"
           fi
 
-          # Would like to implement in the future. This will allow us to support image tags from a PR.
-          #if [[ github.event.number ]]; then
-          #  TAG="pr-${{ github.event.number }}-${{ matrix.major_version }}"
-          #fi
-
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
       - name: Set Flatpaks Directory Shortname
@@ -126,11 +121,19 @@ jobs:
       #   run: |
       #     curl -Lo ${{ github.workspace }}/bazzite.repo https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/repo/fedora-${{ matrix.major_version }}/bazzite-org-bazzite-fedora-${{ matrix.major_version }}.repo
 
+      - name: Obtain non-deck image ref
+        id: get-nondeck-ref
+        run: |
+          ref="${{ matrix.image_name }}"
+          ref="${ref/-deck/}"
+          echo "ref=${ref}" >> $GITHUB_OUTPUT
+
       - name: Build ISOs
         uses: ublue-os/titanoboa@main
         id: build
         with:
-          image-ref: ${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}
+          image-ref: ${{ steps.registry_case.outputs.lowercase }}/${{ steps.get-nondeck-ref.outputs.ref }}:${{ steps.generate-tag.outputs.tag }}
+          container-image: ${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}
           # TODO (@Zeglius): Remove "webui" prefix once this becomes the main ISO
           iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-webui-amd64.iso
           flatpaks-list: ${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}/flatpaks
