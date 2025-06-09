@@ -102,6 +102,11 @@ sections:
     classes:
       - bazzite-section
     appids:
+      - com.obsproject.Studio
+      - com.feaneron.Boatswain
+      - com.moonlight_stream.Moonlight
+      - com.valvesoftware.SteamLink
+      - com.parsecgaming.parsec
       - com.discordapp.Discord
       - dev.vencord.Vesktop
       - im.pidgin.Pidgin
@@ -110,11 +115,6 @@ sections:
       - im.riot.Riot
       - org.squidowl.halloy
       - org.gnome.Fractal
-      - com.obsproject.Studio
-      - com.feaneron.Boatswain
-      - com.moonlight_stream.Moonlight
-      - com.valvesoftware.SteamLink
-      - com.parsecgaming.parsec
   - title: "Music & Media"
     subtitle: "Let me break it down for you."
     rows: 2
