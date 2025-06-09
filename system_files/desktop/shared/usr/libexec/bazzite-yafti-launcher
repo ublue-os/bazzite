@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Start yafti-go in background
-~/.local/bin/yafti-go &
+/usr/bin/yafti-go &
 
 # Launch browser using xdg-open, which will use the system's default browser
 xdg-open http://localhost:3169
