@@ -82,39 +82,6 @@ jobs:
         with:
           string: ${{ env.IMAGE_REGISTRY }}
 
-      - name: Determine Flatpak Dependencies
-        id: flatpak_dependencies
-        shell: bash
-        run: |
-          set -ex
-          image="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}"
-          # Make temp space
-          TEMP_FLATPAK_INSTALL_DIR=$(mktemp -d -p ${{ github.workspace }} flatpak.XXX)
-          # Get list of refs from directory
-          FLATPAK_REFS_DIR=${{ github.workspace }}/${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}
-          FLATPAK_REFS_DIR_LIST=$(cat ${FLATPAK_REFS_DIR}/* | tr '\n' ' ' )
-
-          # Generate install script
-          cat << EOF > ${TEMP_FLATPAK_INSTALL_DIR}/script.sh
-          cat /temp_flatpak_install_dir/script.sh
-          mkdir -p /flatpak/flatpak /flatpak/triggers
-          mkdir /var/tmp || true
-          chmod -R 1777 /var/tmp
-          flatpak config --system --set languages "*"
-          flatpak remote-add --system flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak install --system -y ${FLATPAK_REFS_DIR_LIST}
-          ostree refs --repo=\${FLATPAK_SYSTEM_DIR}/repo | grep '^deploy/' | grep -v 'org\.freedesktop\.Platform\.openh264' | sed 's/^deploy\///g' > /output/flatpaks_with_deps
-          EOF
-
-          docker run --rm --privileged \
-            --entrypoint bash \
-            -e FLATPAK_SYSTEM_DIR=/flatpak/flatpak \
-            -e FLATPAK_TRIGGERSDIR=/flatpak/triggers \
-            --volume ${FLATPAK_REFS_DIR}:/output \
-            --volume ${TEMP_FLATPAK_INSTALL_DIR}:/temp_flatpak_install_dir \
-            ${image} /temp_flatpak_install_dir/script.sh
-          docker rmi ${image}
-
       # - name: Setup Bazzite Repo
       #   id: setup-bazzite-repo
       #   shell: bash
