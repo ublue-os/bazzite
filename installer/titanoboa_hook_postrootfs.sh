@@ -9,13 +9,6 @@ dnf install -y anaconda-live libblockdev-{btrfs,lvm,dm}
 mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 dnf install -y anaconda-webui
 
-# Swap anaconda webui with copr one
-dnf -y copr enable @rhinstaller/Anaconda-webui
-dnf5 -y swap \
-    --repo=copr:copr.fedorainfracloud.org:group_rhinstaller:Anaconda-webui \
-    anaconda-webui anaconda-webui &&
-    dnf5 -y clean all
-
 # Bazzite anaconda profile
 : ${VARIANT_ID:?}
 cat /etc/anaconda/profile.d/"${VARIANT_ID}".conf <<EOF
