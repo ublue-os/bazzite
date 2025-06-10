@@ -67,6 +67,7 @@ sections:
       - org.libretro.RetroArch
       - page.kramo.Cartridges
       - org.pegasus_frontend.Pegasus
+      - com.github._0negal.Viper
       - info.cemu.Cemu
       - org.DolphinEmu.dolphin-emu
       - net.kuribo64.melonDS
