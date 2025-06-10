@@ -51,6 +51,7 @@ sections:
     banner-fit: cover
     banner-text-halign: start
     banner-text-valign: start
+    banner-text-label-xalign: 0.0
     banner-height: 400
     classes:
       - bazzite-section
@@ -99,6 +100,7 @@ sections:
     banner-fit: cover
     banner-text-halign: end
     banner-text-valign: start
+    banner-text-label-xalign: 1.0
     banner-height: 400
     classes:
       - bazzite-section
@@ -123,6 +125,7 @@ sections:
     banner-fit: cover
     banner-text-halign: start
     banner-text-valign: center
+    banner-text-label-xalign: 0.0
     banner-height: 400
     classes:
       - bazzite-section
@@ -145,6 +148,7 @@ sections:
     banner-fit: cover
     banner-text-halign: end
     banner-text-valign: start
+    banner-text-label-xalign: 1.0
     banner-height: 400
     classes:
       - bazzite-section
@@ -170,6 +174,7 @@ sections:
     banner-fit: cover
     banner-text-halign: start
     banner-text-valign: start
+    banner-text-label-xalign: 0.0
     banner-height: 400
     classes:
       - bazzite-section
