@@ -94,7 +94,7 @@ sections:
       - io.github.limo_app.limo
   - title: "Streaming & Chat"
     subtitle: "Sprunk'd it."
-    rows: 2
+    rows: 3
     banner: file:///usr/share/ublue-os/bazaar/streaming.png
     banner-fit: cover
     banner-text-halign: end
