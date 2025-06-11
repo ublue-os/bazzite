@@ -1,0 +1,20 @@
+# ublue.yml for Surface Pro + Bazzite GNOME
+image-name: bazzite-surface
+description: "Bazzite GNOME with linux-surface kernel for Microsoft Surface Pro"
+base-image: ghcr.io/ublue-os/bazzite:gnome
+
+kernel:
+  packages:
+    - kernel-surface
+    - iptsd
+  repository:
+    rpm-ostree:
+      - https://packages.microsoft.com/yumrepos/surface/
+
+post-install:
+  - systemctl enable iptsd.service
+  - echo "linux-surface kernel enabled"
+
+customizations:
+  hostname: surface-bazzite
+  welcome: true
