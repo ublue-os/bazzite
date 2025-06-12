@@ -237,12 +237,14 @@ else
 fi
 
 # IWD Setup
-if ! nmcli connection show | grep -q wifi; then
-  echo "No preconfigured wifi networks detected, enabling IWD."
-  if ! [[ -f "/etc/NetworkManager/conf.d/iwd.conf" ]]; then
-    mkdir -p "/etc/NetworkManager/conf.d/"
-    printf "[device]\nwifi.backend=iwd" >> "/etc/NetworkManager/conf.d/iwd.conf"
-    echo "IWD Enabled"
+if [[ $IMAGE_NAME =~ "deck" ]]; then
+  if ! nmcli connection show | grep -q wifi; then
+    echo "No preconfigured wifi networks detected, enabling IWD."
+    if ! [[ -f "/etc/NetworkManager/conf.d/iwd.conf" ]]; then
+      mkdir -p "/etc/NetworkManager/conf.d/"
+      printf "[device]\nwifi.backend=iwd" >> "/etc/NetworkManager/conf.d/iwd.conf"
+      echo "IWD Enabled"
+    fi
   fi
 fi
 
