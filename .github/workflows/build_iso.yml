@@ -127,7 +127,7 @@ jobs:
           curl -Lo ${{ github.workspace }}/bazzite.repo https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/repo/fedora-${{ matrix.major_version }}/bazzite-org-bazzite-fedora-${{ matrix.major_version }}.repo
 
       - name: Build ISOs
-        uses: jasonn3/build-container-installer@f09a756b7a1205f121d8508f1171759328b95d2c # v1.2.4
+        uses: jasonn3/build-container-installer@d77e9563739921c2f93de778d4fbad854f52d389 # v1.3.0
         id: build
         with:
           arch: x86_64
