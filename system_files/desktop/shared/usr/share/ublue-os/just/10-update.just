@@ -9,7 +9,7 @@ update:
     # Source brew if we are not in an interactive session
     [[ $- != *i* ]] && source <(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
-    sudo -A /usr/bin/uupd --disable-module-distrobox || rpm-ostree update
+    pkexec /usr/bin/uupd
 
 # Turn automatic updates on or off
 _toggle-updates ACTION="prompt":
