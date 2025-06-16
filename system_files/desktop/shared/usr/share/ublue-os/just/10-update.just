@@ -9,7 +9,7 @@ update:
     # Source brew if we are not in an interactive session
     [[ $- != *i* ]] && source <(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
-    /usr/bin/topgrade --config /usr/share/ublue-os/topgrade.toml --keep
+    sudo -A /usr/bin/uupd --disable-module-distrobox
 
 # Turn automatic updates on or off
 _toggle-updates ACTION="prompt":
