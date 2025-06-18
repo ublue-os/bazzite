@@ -82,12 +82,12 @@ get-media-app service="":
             installed=true
         else
             echo "Installing VacuumTube..."
-            if flatpak install --user -y flathub rocks.shy.VacuumTube; then
+            if flatpak install --system -y flathub rocks.shy.VacuumTube; then
                 echo "VacuumTube installed successfully"
                 installed=true
             else
                 echo "Failed to install VacuumTube. Please try installing manually with:"
-                echo "flatpak install --user flathub rocks.shy.VacuumTube"
+                echo "flatpak install --system flathub rocks.shy.VacuumTube"
             fi
         fi
         # Only proceed with Steam integration if installation was successful

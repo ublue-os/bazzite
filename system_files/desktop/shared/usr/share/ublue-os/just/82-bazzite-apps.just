@@ -60,20 +60,18 @@ alias get-emudeck := install-emudeck
 # Install EmuDeck (https://www.emudeck.com/)
 install-emudeck:
     #!/usr/bin/bash
-    if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
-      wget \
-        $(curl -s https://api.github.com/repos/EmuDeck/emudeck-electron/releases/latest | \
-        jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
-        -O $HOME/Downloads/EmuDeck.AppImage
-      chmod +x $HOME/Downloads/EmuDeck.AppImage
-      flatpak run it.mijorus.gearlever $HOME/Downloads/EmuDeck.AppImage
-    else
-      wget \
-        $(curl -s https://api.github.com/repos/EmuDeck/emudeck-electron/releases/latest | \
-        jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
-        -O $HOME/Desktop/EmuDeck.AppImage
-      chmod +x $HOME/Desktop/EmuDeck.AppImage
+    set -eo pipefail
+    remote_appimage_url="$(
+        curl -s https://api.github.com/repos/EmuDeck/emudeck-electron/releases/latest | \
+        jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url"
+    )"
+    download_dest="$(xdg-user-dir DOWNLOAD)/EmuDeck.AppImage"
+    if ! grep -q 'it.mijorus.gearlever' < <(flatpak list --columns application); then
+        flatpak install --system -y flathub it.mijorus.gearlever
     fi
+    wget "$remote_appimage_url" -O "$download_dest"
+    chmod +x "$download_dest"
+    flatpak run it.mijorus.gearlever "$download_dest"
 
 # Install OpenRGB (https://openrgb.org/)
 install-openrgb:
@@ -169,7 +167,7 @@ remove-opentabletdriver:
     source /usr/lib/ujust/ujust.sh
     echo "Uninstalling OpenTabletDriver..."
     sudo -A rm /etc/udev/rules.d/71-opentabletdriver.rules && \
-    flatpak --system remove -y flathub net.opentabletdriver.OpenTabletDriver && \ 
+    flatpak --system remove -y flathub net.opentabletdriver.OpenTabletDriver && \
     systemctl disable --user --now opentabletdriver.service
 
 # Create fedora distrobox if it doesn't exist
