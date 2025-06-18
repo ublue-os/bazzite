@@ -82,6 +82,7 @@ sections:
       - io.github.stella_emu.Stella
       - org.scummvm.ScummVM
       - io.github.dosbox-staging
+      - com.supermodel3.Supermodel
       - com.github.k4zmu2a.spacecadetpinball
       - sh.ppy.osu
       - com.pokemmo.PokeMMO
