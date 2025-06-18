@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=58
+HWS_VER=59
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -234,6 +234,18 @@ if ((MINIMUM_FREE_ZRAM > CURRENT_FREE_ZRAM)); then
     echo "Found needed minimum-free ZRAM changes, applying the following: ${MINIMUM_FREE_ZRAM}"
 else
   echo "No minimum-free ZRAM changes needed"
+fi
+
+# IWD Setup
+if [[ $IMAGE_NAME =~ "deck" ]]; then
+  if ! nmcli connection show | grep -q wifi; then
+    echo "No preconfigured wifi networks detected, enabling IWD."
+    if ! [[ -f "/etc/NetworkManager/conf.d/iwd.conf" ]]; then
+      mkdir -p "/etc/NetworkManager/conf.d/"
+      printf "[device]\nwifi.backend=iwd" >> "/etc/NetworkManager/conf.d/iwd.conf"
+      echo "IWD Enabled"
+    fi
+  fi
 fi
 
 # FRAMEWORK AMD FIXES
