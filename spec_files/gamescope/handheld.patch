@@ -2399,6 +2399,179 @@ index ffaf7af..bb87703 100644
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Autumn Ashton <misyl@froggi.es>
+Date: Sat, 1 Mar 2025 22:35:56 +0000
+Subject: steamcompmgr: Fix icon/title being spam set
+
+Overlays should not get an appid, that's just for focus id logic.
+---
+ src/steamcompmgr.cpp        | 23 ++++++++++++++++++++---
+ src/steamcompmgr_shared.hpp |  6 ++++++
+ 2 files changed, 26 insertions(+), 3 deletions(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index e40f957..f718832 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -3961,8 +3961,10 @@ determine_and_apply_focus()
+ 		if ( global_focus.focusWindow )
+ 		{
+ 			GetBackend()->GetNestedHints()->SetVisible( true );
+-			GetBackend()->GetNestedHints()->SetTitle( global_focus.focusWindow->title );
+-			GetBackend()->GetNestedHints()->SetIcon( global_focus.focusWindow->icon );
++			if ( global_focus.focusWindow != previous_focus.focusWindow ) {
++				GetBackend()->GetNestedHints()->SetTitle( global_focus.focusWindow->title );
++				GetBackend()->GetNestedHints()->SetIcon( global_focus.focusWindow->icon );
++			}
+ 		}
+ 		else
+ 		{
+@@ -4200,9 +4202,15 @@ map_win(xwayland_ctx_t* ctx, Window id, unsigned long sequence)
+ 	{
+ 		w->appID = w->xwayland().id;
+ 	}
++	
+ 	w->isOverlay = get_prop(ctx, w->xwayland().id, ctx->atoms.overlayAtom, 0);
+ 	w->isExternalOverlay = get_prop(ctx, w->xwayland().id, ctx->atoms.externalOverlayAtom, 0);
+ 
++	// misyl: Disable appID for overlay types, as parts of the code don't expect that focus-wise.
++	// Fixes mangoapp usage when nested, and not in SteamOS.
++	if ( w->IsAnyOverlay() )
++		w->appID = 0;
++
+ 	get_size_hints(ctx, w);
+ 
+ 	get_net_wm_state(ctx, w);
+@@ -4462,6 +4470,9 @@ add_win(xwayland_ctx_t *ctx, Window id, Window prev, unsigned long sequence)
+ 		new_win->appID = id;
+ 	}
+ 
++	if ( new_win->IsAnyOverlay() )
++		new_win->appID = 0;
++
+ 	Window transientFor = None;
+ 	if ( XGetTransientForHint( ctx->dpy, id, &transientFor ) )
+ 	{
+@@ -4693,7 +4704,7 @@ damage_win(xwayland_ctx_t *ctx, XDamageNotifyEvent *de)
+ 	if (!w)
+ 		return;
+ 
+-	if ((w->isOverlay || w->isExternalOverlay) && !w->opacity)
++	if (w->IsAnyOverlay() && !w->opacity)
+ 		return;
+ 
+ 	// First damage event we get, compute focus; we only want to focus damaged
+@@ -5295,6 +5306,8 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 				xwm_log.errorf( "appid clash was %u now %u", w->appID, appID );
+ 			}
+ 			w->appID = appID;
++			if ( w->IsAnyOverlay() )
++				w->appID = 0;
+ 
+ 			MakeFocusDirty();
+ 		}
+@@ -5305,6 +5318,8 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 		if (w)
+ 		{
+ 			w->isOverlay = get_prop(ctx, w->xwayland().id, ctx->atoms.overlayAtom, 0);
++			if ( w->IsAnyOverlay() )
++				w->appID = 0;
+ 			MakeFocusDirty();
+ 		}
+ 	}
+@@ -5314,6 +5329,8 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 		if (w)
+ 		{
+ 			w->isExternalOverlay = get_prop(ctx, w->xwayland().id, ctx->atoms.externalOverlayAtom, 0);
++			if ( w->IsAnyOverlay() )
++				w->appID = 0;
+ 			MakeFocusDirty();
+ 		}
+ 	}
+diff --git a/src/steamcompmgr_shared.hpp b/src/steamcompmgr_shared.hpp
+index f300eb9..989d09d 100644
+--- a/src/steamcompmgr_shared.hpp
++++ b/src/steamcompmgr_shared.hpp
+@@ -116,6 +116,12 @@ struct steamcompmgr_win_t {
+ 	uint32_t appID = 0;
+ 	bool isOverlay = false;
+ 	bool isExternalOverlay = false;
++
++	bool IsAnyOverlay() const
++	{
++		return isOverlay || isExternalOverlay;
++	}
++
+ 	bool isFullscreen = false;
+ 	bool isSysTrayIcon = false;
+ 	bool sizeHintsSpecified = false;
+-- 
+2.49.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Autumn Ashton <misyl@froggi.es>
+Date: Sun, 2 Mar 2025 00:36:38 +0000
+Subject: steamcompmgr: Fix Steam sidebars with recent icon fix
+
+---
+ src/steamcompmgr.cpp | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index f718832..e46c34b 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -4208,7 +4208,7 @@ map_win(xwayland_ctx_t* ctx, Window id, unsigned long sequence)
+ 
+ 	// misyl: Disable appID for overlay types, as parts of the code don't expect that focus-wise.
+ 	// Fixes mangoapp usage when nested, and not in SteamOS.
+-	if ( w->IsAnyOverlay() )
++	if ( w->isExternalOverlay )
+ 		w->appID = 0;
+ 
+ 	get_size_hints(ctx, w);
+@@ -4470,7 +4470,7 @@ add_win(xwayland_ctx_t *ctx, Window id, Window prev, unsigned long sequence)
+ 		new_win->appID = id;
+ 	}
+ 
+-	if ( new_win->IsAnyOverlay() )
++	if ( new_win->isExternalOverlay )
+ 		new_win->appID = 0;
+ 
+ 	Window transientFor = None;
+@@ -5306,7 +5306,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 				xwm_log.errorf( "appid clash was %u now %u", w->appID, appID );
+ 			}
+ 			w->appID = appID;
+-			if ( w->IsAnyOverlay() )
++			if ( w->isExternalOverlay )
+ 				w->appID = 0;
+ 
+ 			MakeFocusDirty();
+@@ -5318,7 +5318,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 		if (w)
+ 		{
+ 			w->isOverlay = get_prop(ctx, w->xwayland().id, ctx->atoms.overlayAtom, 0);
+-			if ( w->IsAnyOverlay() )
++			if ( w->isExternalOverlay )
+ 				w->appID = 0;
+ 			MakeFocusDirty();
+ 		}
+@@ -5329,7 +5329,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 		if (w)
+ 		{
+ 			w->isExternalOverlay = get_prop(ctx, w->xwayland().id, ctx->atoms.externalOverlayAtom, 0);
+-			if ( w->IsAnyOverlay() )
++			if ( w->isExternalOverlay )
+ 				w->appID = 0;
+ 			MakeFocusDirty();
+ 		}
+-- 
+2.49.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 22 Nov 2024 01:37:48 +0100
 Subject: [NA] add dev script
@@ -2703,7 +2876,7 @@ Subject: fix(battery): run at half hz while at steamUI with atom
  2 files changed, 34 insertions(+), 8 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index e40f957..9830224 100644
+index e46c34b..cbaf44b 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -165,6 +165,8 @@ uint32_t g_reshade_technique_idx = 0;
@@ -2753,7 +2926,7 @@ index e40f957..9830224 100644
  		update_runtime_info();
  }
  
-@@ -5041,7 +5044,7 @@ update_runtime_info()
+@@ -5052,7 +5055,7 @@ update_runtime_info()
  	if ( g_nRuntimeInfoFd < 0 )
  		return;
  
@@ -2762,7 +2935,7 @@ index e40f957..9830224 100644
  	pwrite( g_nRuntimeInfoFd, &limiter_enabled, sizeof( limiter_enabled ), 0 );
  }
  
-@@ -5104,7 +5107,7 @@ static bool steamcompmgr_should_vblank_window( bool bShouldLimitFPS, uint64_t vb
+@@ -5115,7 +5118,7 @@ static bool steamcompmgr_should_vblank_window( bool bShouldLimitFPS, uint64_t vb
  	{
  		bool bCloseEnough = std::abs( g_nSteamCompMgrTargetFPS - nRefreshHz ) < 2;
  
@@ -2771,7 +2944,7 @@ index e40f957..9830224 100644
  		{
  			uint64_t schedule = w->last_commit_first_latch_time + g_SteamCompMgrLimitedAppRefreshCycle;
  
-@@ -5122,7 +5125,7 @@ static bool steamcompmgr_should_vblank_window( bool bShouldLimitFPS, uint64_t vb
+@@ -5133,7 +5136,7 @@ static bool steamcompmgr_should_vblank_window( bool bShouldLimitFPS, uint64_t vb
  	}
  	else
  	{
@@ -2780,7 +2953,7 @@ index e40f957..9830224 100644
  		{
  			int nVblankDivisor = nRefreshHz / nTargetFPS;
  
-@@ -5499,7 +5502,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+@@ -5516,7 +5519,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
  	}
  	if ( ev->atom == ctx->atoms.gamescopeFPSLimit )
  	{
@@ -2789,7 +2962,7 @@ index e40f957..9830224 100644
  		update_runtime_info();
  	}
  	for (int i = 0; i < gamescope::GAMESCOPE_SCREEN_TYPE_COUNT; i++)
-@@ -5926,6 +5929,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+@@ -5943,6 +5946,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
  			MakeFocusDirty();
  		}
  	}
@@ -2800,7 +2973,7 @@ index e40f957..9830224 100644
  }
  
  static int
-@@ -7107,6 +7114,8 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
+@@ -7124,6 +7131,8 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
  	ctx->atoms.primarySelection = XInternAtom(ctx->dpy, "PRIMARY", false);
  	ctx->atoms.targets = XInternAtom(ctx->dpy, "TARGETS", false);
  
@@ -2809,7 +2982,7 @@ index e40f957..9830224 100644
  	ctx->root_width = DisplayWidth(ctx->dpy, ctx->scr);
  	ctx->root_height = DisplayHeight(ctx->dpy, ctx->scr);
  
-@@ -7650,6 +7659,21 @@ steamcompmgr_main(int argc, char **argv)
+@@ -7667,6 +7676,21 @@ steamcompmgr_main(int argc, char **argv)
  		// as a question.
  		const bool bIsVBlankFromTimer = vblank;
  
@@ -2929,7 +3102,7 @@ index a3a11a7..0f8cba8 100644
  	struct Layer_t
  	{
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 9830224..9f5558e 100644
+index cbaf44b..b625b1f 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -167,6 +167,8 @@ bool g_bSteamIsActiveWindow = false;
@@ -2958,7 +3131,7 @@ index 9830224..9f5558e 100644
  
  	// If the window we'd paint as the base layer is the streaming client,
  	// find the video underlay and put it up first in the scenegraph
-@@ -5933,6 +5936,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+@@ -5950,6 +5953,10 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
  	{
  		g_bRefreshHalveEnable = !!get_prop( ctx, ctx->root, ctx->atoms.gamescopeFrameHalveAtom, 0 );
  	}
@@ -2969,7 +3142,7 @@ index 9830224..9f5558e 100644
  }
  
  static int
-@@ -7115,6 +7122,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
+@@ -7132,6 +7139,7 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
  	ctx->atoms.targets = XInternAtom(ctx->dpy, "TARGETS", false);
  
  	ctx->atoms.gamescopeFrameHalveAtom = XInternAtom( ctx->dpy, "GAMESCOPE_STEAMUI_HALFHZ", false );;
@@ -2977,7 +3150,7 @@ index 9830224..9f5558e 100644
  
  	ctx->root_width = DisplayWidth(ctx->dpy, ctx->scr);
  	ctx->root_height = DisplayHeight(ctx->dpy, ctx->scr);
-@@ -8110,9 +8118,10 @@ steamcompmgr_main(int argc, char **argv)
+@@ -8127,9 +8135,10 @@ steamcompmgr_main(int argc, char **argv)
  			bShouldPaint = true;
  		}
  
@@ -3565,7 +3738,7 @@ index c96b8f0..5823005 100644
  	"  --hdr-itm-sdr-nits             set the luminance of SDR content in nits used as the input for the inverse tone mapping process.\n"
  	"                                 Default: 100 nits, Max: 1000 nits\n"
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 9f5558e..a789509 100644
+index b625b1f..d4c4c54 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -363,6 +363,7 @@ bool g_bVRRInUse_CachedValue = false;
@@ -3576,7 +3749,7 @@ index 9f5558e..a789509 100644
  bool g_bHDRItmEnable = false;
  int g_nCurrentRefreshRate_CachedValue = 0;
  
-@@ -7531,6 +7532,8 @@ steamcompmgr_main(int argc, char **argv)
+@@ -7548,6 +7549,8 @@ steamcompmgr_main(int argc, char **argv)
  					g_bForceHDRSupportDebug = true;
   				} else if (strcmp(opt_name, "hdr-debug-force-output") == 0) {
  					g_bForceHDR10OutputDebug = true;
@@ -3875,10 +4048,10 @@ Subject: fix: prevent external overlays from pulling focus
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index a789509..400d4a4 100644
+index d4c4c54..83fa748 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -6115,8 +6115,8 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
+@@ -6132,8 +6132,8 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
  				hasRepaintNonBasePlane = true;
  			}
  

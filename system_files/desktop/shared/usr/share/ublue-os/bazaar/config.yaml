@@ -1,0 +1,197 @@
+css: |
+  .bazzite-section banner {
+     margin-top: 30px;
+     margin-left: 30px;
+     margin-right: 30px;
+     border-radius: 10px;
+  }
+  .bazzite-section banner-text-overlay {
+     margin: 30px;
+     padding: 20px;
+  }
+  .bazzite-section banner-text {
+     padding: 50px;
+     color: #ffffff
+  }
+  .bazzite-section title {
+     color: #ffffff;
+  }
+  .bazzite-section subtitle {
+    color: #ffffff;
+    font-weight: 400;
+  }
+  .bazzite-section {
+    margin: 15px;
+    border-radius: 25px;
+  }
+  .gaming-section {
+    background: linear-gradient(45deg, #171a49, #52136c);
+  }
+  .streaming-section {
+    background: linear-gradient(135deg, #3550ec, #252b4b);
+  }
+  .music-section {
+    background: linear-gradient(45deg, #196d28, #3a944a);
+  }
+  .office-section {
+    background: linear-gradient(135deg, #6f8396, #4d5c69);
+  }
+  .utilities-section {
+    background: linear-gradient(45deg, #ed5b00, #a6480d);
+  }
+sections:
+  - title: "Gaming"
+    subtitle: "Protocol 3: Protect the Pilot"
+    rows: 4
+    banner: file:///usr/share/ublue-os/bazaar/gaming.png
+    banner-fit: contain
+    banner-text-halign: start
+    banner-text-valign: center
+    banner-text-label-xalign: 0.0
+    banner-height: 400
+    classes:
+      - bazzite-section
+      - gaming-section
+    appids:
+      - com.heroicgameslauncher.hgl
+      - io.itch.itch
+      - org.prismlauncher.PrismLauncher
+      - io.mrarm.mcpelauncher
+      - org.vinegarhq.Sober
+      - org.zdoom.GZDoom
+      - org.openmw.OpenMW
+      - dev.goats.xivlauncher
+      - net.retrodeck.retrodeck
+      - org.libretro.RetroArch
+      - page.kramo.Cartridges
+      - org.pegasus_frontend.Pegasus
+      - com.github._0negal.Viper
+      - info.cemu.Cemu
+      - org.DolphinEmu.dolphin-emu
+      - net.kuribo64.melonDS
+      - com.snes9x.Snes9x
+      - io.mgba.mGBA
+      - org.ppsspp.PPSSPP
+      - org.duckstation.DuckStation
+      - net.pcsx2.PCSX2
+      - net.rpcs3.RPCS3
+      - app.xemu.xemu
+      - org.mamedev.MAME
+      - io.github.stella_emu.Stella
+      - org.scummvm.ScummVM
+      - io.github.dosbox-staging
+      - com.supermodel3.Supermodel
+      - com.github.k4zmu2a.spacecadetpinball
+      - sh.ppy.osu
+      - com.pokemmo.PokeMMO
+      - com.etlegacy.ETLegacy
+      - com.realm667.Wolfenstein_Blade_of_Agony
+      - org.srb2.SRB2
+      - org.srb2.SRB2Kart
+      - org.supertuxproject.SuperTux
+      - net.supertuxkart.SuperTuxKart
+      - io.github.limo_app.limo
+  - title: "Streaming & Chat"
+    subtitle: "Sprunk'd it."
+    rows: 3
+    banner: file:///usr/share/ublue-os/bazaar/streaming.png
+    banner-fit: contain
+    banner-text-halign: end
+    banner-text-valign: center
+    banner-text-label-xalign: 1.0
+    banner-height: 400
+    classes:
+      - bazzite-section
+      - streaming-section
+    appids:
+      - com.obsproject.Studio
+      - com.feaneron.Boatswain
+      - com.moonlight_stream.Moonlight
+      - com.valvesoftware.SteamLink
+      - com.parsecgaming.parsec
+      - com.discordapp.Discord
+      - dev.vencord.Vesktop
+      - im.pidgin.Pidgin
+      - com.teamspeak.TeamSpeak
+      - info.mumble.Mumble
+      - im.riot.Riot
+      - org.squidowl.halloy
+      - org.gnome.Fractal
+  - title: "Music & Media"
+    subtitle: "Let me break it down for you."
+    rows: 2
+    banner: file:///usr/share/ublue-os/bazaar/music.png
+    banner-fit: contain
+    banner-text-halign: start
+    banner-text-valign: center
+    banner-text-label-xalign: 0.0
+    banner-height: 400
+    classes:
+      - bazzite-section
+      - music-section
+    appids:
+      - io.bassi.Amberol
+      - com.github.neithern.g4music
+      - org.atheme.audacious
+      - com.spotify.Client
+      - com.mastermindzh.tidal-hifi
+      - org.videolan.VLC
+      - com.github.iwalton3.jellyfin-media-player
+      - tv.plex.PlexDesktop
+      - com.plexamp.Plexamp
+      - org.strawberrymusicplayer.strawberry
+      - camp.nook.nookdesktop
+  - title: "Office & Productivity"
+    subtitle: "May the paperclip fellow have mercy."
+    rows: 2
+    banner: file:///usr/share/ublue-os/bazaar/office.png
+    banner-fit: contain
+    banner-text-halign: end
+    banner-text-valign: center
+    banner-text-label-xalign: 1.0
+    banner-height: 400
+    classes:
+      - bazzite-section
+      - office-section
+    appids:
+      - org.mozilla.Thunderbird
+      - org.libreoffice.LibreOffice
+      - org.gimp.GIMP
+      - org.kde.krita
+      - org.inkscape.Inkscape
+      - org.blender.Blender
+      - io.github.nokse22.Exhibit
+      - de.leopoldluley.Clapgrep
+      - org.audacityteam.Audacity
+      - org.ardour.Ardour
+      - md.obsidian.Obsidian
+      - org.standardnotes.standardnotes
+      - com.slack.Slack
+      - com.github.IsmaelMartinez.teams_for_linux
+      - org.ardour.Ardour
+  - title: "Utilities"
+    subtitle: "Stuff you didn't need until now."
+    rows: 2
+    banner: file:///usr/share/ublue-os/bazaar/utilities.png
+    banner-fit: contain
+    banner-text-halign: start
+    banner-text-valign: center
+    banner-text-label-xalign: 0.0
+    banner-height: 400
+    classes:
+      - bazzite-section
+      - utilities-section
+    appids:
+      - app.drey.Warp
+      - org.deskflow.deskflow
+      - io.github.berarma.Oversteer
+      - io.github.lawstorant.boxflat
+      - io.github.radiolamp.mangojuice
+      - io.missioncenter.MissionCenter
+      - org.keepassxc.KeePassXC
+      - com.bitwarden.desktop
+      - org.qbittorrent.qBittorrent
+      - com.github.zocker_160.SyncThingy
+      - org.fedoraproject.MediaWriter
+      - org.raspberrypi.rpi-imager
+      - cc.arduino.IDE2
