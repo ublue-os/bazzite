@@ -160,6 +160,7 @@ sections:
       - org.inkscape.Inkscape
       - org.blender.Blender
       - io.github.nokse22.Exhibit
+      - de.leopoldluley.Clapgrep
       - org.audacityteam.Audacity
       - org.ardour.Ardour
       - md.obsidian.Obsidian

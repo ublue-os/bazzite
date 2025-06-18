@@ -22,8 +22,6 @@ app/org.gnome.Weather/x86_64/stable
 app/org.gnome.baobab/x86_64/stable
 app/org.gnome.clocks/x86_64/stable
 app/org.gnome.font-viewer/x86_64/stable
-app/io.github.nokse22.Exhibit/x86_64/stable
-app/de.leopoldluley.Clapgrep/x86_64/stable
 app/io.github.radiolamp.mangojuice/x86_64/stable
 app/org.altlinux.Tuner/x86_64/stable
 runtime/org.freedesktop.Platform.VulkanLayer.MangoHud/x86_64/23.08
