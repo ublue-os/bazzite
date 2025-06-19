@@ -173,7 +173,7 @@ toggle-iwd:
       fi
     }
     remove_saved_networks() {
-      nmcli -t -f NAME connection show | while read -r line; do nmcli connection delete "$line"; done
+      nmcli -t -f NAME connection show | while read -r line; do sudo nmcli connection delete "$line"; done
     }
     enable_iwd() {
       sudo mkdir -p "/etc/NetworkManager/conf.d/"
