@@ -46,7 +46,7 @@ sections:
     banner: file:///usr/share/ublue-os/bazaar/gaming.png
     banner-fit: contain
     banner-text-halign: start
-    banner-text-valign: start
+    banner-text-valign: center
     banner-text-label-xalign: 0.0
     banner-height: 400
     classes:
@@ -97,7 +97,7 @@ sections:
     banner: file:///usr/share/ublue-os/bazaar/streaming.png
     banner-fit: contain
     banner-text-halign: end
-    banner-text-valign: start
+    banner-text-valign: center
     banner-text-label-xalign: 1.0
     banner-height: 400
     classes:
@@ -147,7 +147,7 @@ sections:
     banner: file:///usr/share/ublue-os/bazaar/office.png
     banner-fit: contain
     banner-text-halign: end
-    banner-text-valign: start
+    banner-text-valign: center
     banner-text-label-xalign: 1.0
     banner-height: 400
     classes:
@@ -175,7 +175,7 @@ sections:
     banner: file:///usr/share/ublue-os/bazaar/utilities.png
     banner-fit: contain
     banner-text-halign: start
-    banner-text-valign: start
+    banner-text-valign: center
     banner-text-label-xalign: 0.0
     banner-height: 400
     classes:
