@@ -439,6 +439,7 @@ RUN --mount=type=cache,dst=/var/cache \
         dnf5 -y remove \
             plasma-welcome \
             plasma-welcome-fedora \
+            plasma-discover-kns \
             plasma-browser-integration \
             kcharselect \
             kde-partitionmanager \
