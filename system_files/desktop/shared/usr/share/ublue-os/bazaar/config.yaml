@@ -9,51 +9,49 @@ css: |
      margin: 30px;
      padding: 20px;
   }
-  .bazzite-section banner-text-bg {
-     background-color: var(--accent-color);
-     filter: blur(50px) brightness(0.3);
-     opacity: 0.75;
-     border-radius: 30px;
-  }
   .bazzite-section banner-text {
      padding: 50px;
-     color: lighter(var(--accent-color));
+     color: #ffffff
   }
   .bazzite-section title {
      color: #ffffff;
   }
   .bazzite-section subtitle {
-    color: var(--accent-color);
-    filter: brightness(1.25);
+    color: #ffffff;
     font-weight: 400;
   }
-  .bazzite-section entry {
-     background: linear-gradient(to right, alpha(var(--accent-color), 0.2), alpha(var(--accent-bg-color), 0.1));
-     transition-property: background;
-     transition-duration: 0.25s;
+  .bazzite-section {
+    margin: 15px;
+    border-radius: 25px;
   }
-  .bazzite-section entry:hover {
-     background: linear-gradient(to right, alpha(var(--accent-bg-color), 0.5), alpha(var(--accent-color), 0.7));
-     transition-property: background;
-     transition-duration: 0.75s;
+  .gaming-section {
+    background: linear-gradient(45deg, #171a49, #52136c);
   }
-  .bazzite-section entry:active {
-     background: linear-gradient(to right, alpha(var(--accent-bg-color), 0.5), alpha(var(--accent-color), 0.7));
-     transition-property: background;
-     transition-duration: 0.15s;
+  .streaming-section {
+    background: linear-gradient(135deg, #3550ec, #252b4b);
+  }
+  .music-section {
+    background: linear-gradient(45deg, #196d28, #3a944a);
+  }
+  .office-section {
+    background: linear-gradient(135deg, #6f8396, #4d5c69);
+  }
+  .utilities-section {
+    background: linear-gradient(45deg, #ed5b00, #a6480d);
   }
 sections:
   - title: "Gaming"
     subtitle: "Protocol 3: Protect the Pilot"
     rows: 4
     banner: file:///usr/share/ublue-os/bazaar/gaming.png
-    banner-fit: cover
+    banner-fit: contain
     banner-text-halign: start
-    banner-text-valign: start
+    banner-text-valign: center
     banner-text-label-xalign: 0.0
     banner-height: 400
     classes:
       - bazzite-section
+      - gaming-section
     appids:
       - com.heroicgameslauncher.hgl
       - io.itch.itch
@@ -82,6 +80,7 @@ sections:
       - io.github.stella_emu.Stella
       - org.scummvm.ScummVM
       - io.github.dosbox-staging
+      - com.supermodel3.Supermodel
       - com.github.k4zmu2a.spacecadetpinball
       - sh.ppy.osu
       - com.pokemmo.PokeMMO
@@ -96,13 +95,14 @@ sections:
     subtitle: "Sprunk'd it."
     rows: 3
     banner: file:///usr/share/ublue-os/bazaar/streaming.png
-    banner-fit: cover
+    banner-fit: contain
     banner-text-halign: end
-    banner-text-valign: start
+    banner-text-valign: center
     banner-text-label-xalign: 1.0
     banner-height: 400
     classes:
       - bazzite-section
+      - streaming-section
     appids:
       - com.obsproject.Studio
       - com.feaneron.Boatswain
@@ -121,13 +121,14 @@ sections:
     subtitle: "Let me break it down for you."
     rows: 2
     banner: file:///usr/share/ublue-os/bazaar/music.png
-    banner-fit: cover
+    banner-fit: contain
     banner-text-halign: start
     banner-text-valign: center
     banner-text-label-xalign: 0.0
     banner-height: 400
     classes:
       - bazzite-section
+      - music-section
     appids:
       - io.bassi.Amberol
       - com.github.neithern.g4music
@@ -144,13 +145,14 @@ sections:
     subtitle: "May the paperclip fellow have mercy."
     rows: 2
     banner: file:///usr/share/ublue-os/bazaar/office.png
-    banner-fit: cover
+    banner-fit: contain
     banner-text-halign: end
-    banner-text-valign: start
+    banner-text-valign: center
     banner-text-label-xalign: 1.0
     banner-height: 400
     classes:
       - bazzite-section
+      - office-section
     appids:
       - org.mozilla.Thunderbird
       - org.libreoffice.LibreOffice
@@ -159,6 +161,7 @@ sections:
       - org.inkscape.Inkscape
       - org.blender.Blender
       - io.github.nokse22.Exhibit
+      - de.leopoldluley.Clapgrep
       - org.audacityteam.Audacity
       - org.ardour.Ardour
       - md.obsidian.Obsidian
@@ -170,13 +173,14 @@ sections:
     subtitle: "Stuff you didn't need until now."
     rows: 2
     banner: file:///usr/share/ublue-os/bazaar/utilities.png
-    banner-fit: cover
+    banner-fit: contain
     banner-text-halign: start
-    banner-text-valign: start
+    banner-text-valign: center
     banner-text-label-xalign: 0.0
     banner-height: 400
     classes:
       - bazzite-section
+      - utilities-section
     appids:
       - app.drey.Warp
       - org.deskflow.deskflow
