@@ -397,7 +397,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    curl -sL "$(curl -s https://api.github.com/repos/Zeglius/yafti-go/releases/latest | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -o /bin/yafti-go && \
+    curl -sL "$(curl -s https://api.github.com/repos/bazzite-org/yafti-go/releases/latest | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -o /bin/yafti-go && \
     chmod +x /bin/yafti-go && \
     chmod +x /usr/libexec/bazzite-yafti-launcher && \
     curl -sL "$(curl -s https://api.github.com/repos/xXJSONDeruloXx/bazzite-ujust-picker/releases/latest | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')" -o /usr/bin/ujust-picker && \
@@ -438,6 +438,7 @@ RUN --mount=type=cache,dst=/var/cache \
         dnf5 -y remove \
             plasma-welcome \
             plasma-welcome-fedora \
+            plasma-discover-kns \
             plasma-browser-integration \
             kcharselect \
             kde-partitionmanager \
@@ -448,7 +449,6 @@ RUN --mount=type=cache,dst=/var/cache \
         sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i 's@Keywords=@Keywords=konsole;console;@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
-        sed -i 's/^Exec=plasma-discover/& --backends flatpak-backend/' /usr/share/applications/org.kde.discover.desktop && \
         cp /usr/share/applications/org.gnome.Ptyxis.desktop /usr/share/kglobalaccel/org.gnome.Ptyxis.desktop && \
         setcap 'cap_net_raw+ep' /usr/libexec/ksysguard/ksgrd_network_helper \
     ; else \

@@ -71,7 +71,7 @@ jobs:
             is_latest_version: true
             is_stable_version: true
             kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
-            kernel_version: 6.14.6-107.bazzite.fc42.x86_64 # must match a cached version of the above flavor
+            kernel_version: 6.14.6-109.bazzite.fc42.x86_64 # must match a cached version of the above flavor
         exclude:
           - target_image_flavor: surface
           - base_name: bazzite
