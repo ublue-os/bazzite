@@ -440,7 +440,6 @@ RUN --mount=type=cache,dst=/var/cache \
             plasma-welcome \
             plasma-welcome-fedora \
             plasma-discover-kns \
-            plasma-browser-integration \
             kcharselect \
             kde-partitionmanager \
             discover \
