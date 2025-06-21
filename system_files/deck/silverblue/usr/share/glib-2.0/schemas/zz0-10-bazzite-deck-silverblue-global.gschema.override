@@ -2,7 +2,6 @@
 
 [org.gnome.desktop.interface]
 toolkit-accessibility=false
-font-antialiasing='rgba'
 
 [org.gnome.desktop.peripherals.mouse]
 accel-profile='flat'
