@@ -55,6 +55,7 @@ sections:
     appids:
       - com.heroicgameslauncher.hgl
       - io.itch.itch
+      - io.github.Faugus.faugus-launcher
       - org.prismlauncher.PrismLauncher
       - io.mrarm.mcpelauncher
       - org.vinegarhq.Sober
@@ -84,6 +85,7 @@ sections:
       - com.github.k4zmu2a.spacecadetpinball
       - sh.ppy.osu
       - com.pokemmo.PokeMMO
+      - com.github.Alcaro.Flips
       - com.etlegacy.ETLegacy
       - com.realm667.Wolfenstein_Blade_of_Agony
       - org.srb2.SRB2
@@ -182,8 +184,13 @@ sections:
       - bazzite-section
       - utilities-section
     appids:
+      - io.github.thetumultuousunicornofdarkness.cpu-x
       - app.drey.Warp
       - org.deskflow.deskflow
+      - io.github.pwr_solaar.solaar
+      - it.mijorus.gearlever
+      - io.github.flattool.Ignition
+      - io.github.fastrizwaan.WineZGUI
       - io.github.berarma.Oversteer
       - io.github.lawstorant.boxflat
       - io.github.radiolamp.mangojuice
