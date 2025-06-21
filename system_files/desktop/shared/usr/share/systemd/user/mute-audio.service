@@ -1,0 +1,11 @@
+[Unit]
+Description=Mute audio after PipeWire is ready
+After=pipewire.service
+Requires=pipewire.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/mute-audio.sh
+
+[Install]
+WantedBy=default.target
