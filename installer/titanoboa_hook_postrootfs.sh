@@ -7,7 +7,8 @@ source /etc/os-release
 # Install Anaconda webui
 dnf install -y anaconda-live libblockdev-{btrfs,lvm,dm}
 mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
-dnf install -y anaconda-webui
+# TODO: Enable Anaconda Web UI whenever locale switching in kde lands
+# dnf install -y anaconda-webui
 
 # Bazzite anaconda profile
 : ${VARIANT_ID:?}
