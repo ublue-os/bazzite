@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ $UID -eq 0 ]]; then
+  echo "This script must not run as root" >&2
+  exit 1
+fi
+
 # Source ujust library for colors and gum functionality
 source /usr/lib/ujust/ujust.sh
 
@@ -9,6 +14,15 @@ branch="$(echo "$2" | cut -d ':' -f2)"
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 DEFAULT_IMAGE=$(jq -r '."image-name"' < $IMAGE_INFO)
 DEFAULT_BRANCH=stable
+
+# Cache skopeo output if possible
+# shellcheck disable=SC1090
+[[ $- != *i* ]] && source <(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+if command -v >/dev/null 2>&1 bkt; then
+    skopeo() { bkt --ttl=30m --stale=5m -- command skopeo "$@"; }
+else
+    nohup brew install bkt > /dev/null 2>&1 &
+fi
 
 
 helptext=$(cat << EOF
