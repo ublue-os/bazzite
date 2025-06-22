@@ -13,11 +13,12 @@ screens:
         description: "A Decky plugin that lets you see Bazzite changelogs in Game Mode."
         default: false
         script: "ujust get-decky-bazzite-buddy"
-      - id: "decky-framegen-plus"
-        title: "Decky Framegen Plus"
-        description: "A Decky plugin that swaps DLSS for FSR and adds framegen to non-framegen games"
-        default: false
-        script: "ujust get-framegen install-decky-plugin"
+      # TODO: unhide whenever fixed
+      # - id: "decky-framegen-plus"
+      #   title: "Decky Framegen Plus"
+      #   description: "A Decky plugin that swaps DLSS for FSR and adds framegen to non-framegen games"
+      #   default: false
+      #   script: "ujust get-framegen install-decky-plugin"
       - id: "emudeck"
         title: "EmuDeck"
         description: "A utility for installing and configuring emulators on the Steam Deck"
