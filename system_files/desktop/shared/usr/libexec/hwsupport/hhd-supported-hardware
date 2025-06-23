@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 # Returns true for hardware that is supported by HHD
 VEN_ID="$(cat /sys/devices/virtual/dmi/id/sys_vendor)"
-if [[ ":ONE-NETBOOK:GPD:AYANEO:" =~ ":$VEN_ID:" ]]; then
+if [[ ":ONE-NETBOOK:GPD:AYANEO:AOKZOE:" =~ ":$VEN_ID:" ]]; then
 	exit 0
 fi
 
