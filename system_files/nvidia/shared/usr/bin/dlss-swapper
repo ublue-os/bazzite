@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 
+# Licensed under the GNU General Public License v3.0
 # Script from CachyOS
 # This forces Nvidia DLSS to use the latest preset for SR, RR and framegen + updates the dlss dlls via ngx
 
