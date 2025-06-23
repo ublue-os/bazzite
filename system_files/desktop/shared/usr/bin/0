@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+# Disable Steam Deck mode presentation
+# Replaces: STEAMOS_DECK=0 %command%
+# Usage: 0 %command%
+
+export SteamDeck=0
+
+# applied variables, now execute the rest of the command
+exec "$@"
