@@ -68,6 +68,7 @@ sections:
       - com.github._0negal.Viper
       - info.cemu.Cemu
       - org.DolphinEmu.dolphin-emu
+      - io.github.shiiion.primehack
       - net.kuribo64.melonDS
       - com.snes9x.Snes9x
       - io.mgba.mGBA
@@ -180,6 +181,8 @@ sections:
       - utilities-section
     appids:
       - io.github.thetumultuousunicornofdarkness.cpu-x
+      - io.github.arunsivaramanneo.GPUViewer
+      - dev.deedles.Trayscale
       - app.drey.Warp
       - com.rustdesk.RustDesk
       - org.deskflow.deskflow
