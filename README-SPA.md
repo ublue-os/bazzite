@@ -96,7 +96,7 @@ Si estas actualmente usando una imagen de Universal Blue, por favor [sigue estas
 Si deseas cambiar la base (rebase) de una imagen upstream existente de un sistema ostree de Fedora Silverblue/Kinoite a la imagen **para computadoras de escritorio usando una GPU AMD o Intel**, ejecuta el siguiente comando en una terminal:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable # TODO: Fedora-specific - remove or replace
 ```
 
 Si deseas realizar un rebase a la imagen **para computadoras de escritorio con una GPU NVIDIA**, ejecuta el siguiente comando en una terminal:

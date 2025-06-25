@@ -81,7 +81,7 @@ Varian umum yang tersedia sebagai `bazzite`, cocok untuk komputer desktop.
 Jika anda telah menggunakan image dari Universal Blue anda dapat mengikuti [instruksi ini](https://universal-blue.org/images/#image-list). Untuk berganti image dari image upstream Fedora Silverblue/Kinoite ostree anda dapat mengikuti perintah ini:
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable # TODO: Fedora-specific - remove or replace
 ```
 
 atau perangkat dengan kartu grafis Nvidia:

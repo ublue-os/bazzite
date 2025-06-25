@@ -87,7 +87,7 @@ Bazzite основан на [ublue-os/main](https://github.com/ublue-os/main) и
 (Примечание: NVK, открытый драйвер Mesa для GPU NVIDIA, пока нестабилен. Проблемы с NVK следует [сообщать в Mesa](https://docs.mesa3d.org/bugs.html), а не в Ublue/Bazzite.)
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable # TODO: Fedora-specific - remove or replace
 ```
 или для устройств с видеокартами Nvidia, которым нужны проприетарные драйвера Nvidia
 ```bash

@@ -721,7 +721,7 @@ dconf update || :
 * Sat Sep 30 2023 Takao Fujiwara <tfujiwar@redhat.com> - 1.5.29~rc1-4
 - Enhance #2237486 Implement preedit color in Plasma Wayland
 - Part-of #2240490 Eacute with CapsLock in Plasma Wayland only
-- Revert dnf5 to dnf in autogen
+- Revert dnf5 to dnf in autogen # TODO: Fedora-specific - remove or replace
 - Test fix #2239633 g_list_remove() in ibus-portal SIGSEGV
 
 * Thu Sep 07 2023 Takao Fujiwara <tfujiwar@redhat.com> - 1.5.29~rc1-3

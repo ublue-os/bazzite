@@ -88,7 +88,7 @@ Rebaseie de uma instalação existente de Fedora Atômico para esta imagem se vo
 (Nota: A solução Open Source Mesa para GPUs NVIDIA, NVK ainda é propensa a erros quando esta orientação é redigida, pra qualquer problema pertinente à NVK [por favor mande um relatório ao projeto Mesa]([url](https://docs.mesa3d.org/bugs.html)), não ao Ublue/Bazzite)
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable # TODO: Fedora-specific - remove or replace
 ```
 
 ou para dispositivos com GPUs Nvidia caso os **Drivers Proprietários da NVIDIA** convirem:
