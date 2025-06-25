@@ -1,6 +1,6 @@
 {
-  "name": "xanados",
-  "version": "1.0.0",
+  "name": "xanadOS",
+  "version": "0.1.0",
   "description": "Xanados ESLint, Prettier, and Markdownlint",
   "scripts": {
     "lint:js": "eslint src/",
