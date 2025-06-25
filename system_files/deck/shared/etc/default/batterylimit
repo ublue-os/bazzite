@@ -1,2 +1,0 @@
-# Maximum amount the battery will charge to, including when the device is off.
-MAX_BATTERY_CHARGE_LEVEL=90

@@ -1,4 +1,0 @@
-[Unit]
-Description=On AC power
-DefaultDependencies=no
-StopWhenUnneeded=yes
