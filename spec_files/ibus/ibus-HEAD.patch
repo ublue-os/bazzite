@@ -1296,7 +1296,7 @@ index 34da9679..5cd38779 100644
 From 871c8312aa4bd6b785d7d9c779a1f9f51b709802 Mon Sep 17 00:00:00 2001
 From: fujiwarat <takao.fujiwara1@gmail.com>
 Date: Sat, 1 Jun 2024 21:27:38 +0900
-Subject: [PATCH 5/6] Fix Flatpak build for dnf and pyoverridesdir
+Subject: [PATCH 5/6] Fix Flatpak build for dnf and pyoverridesdir # TODO: Fedora-specific - remove or replace
 
 `dnf` is not available during Flatpak builds with `flatpak-builder` and
 the steps are omitted in autogen.sh to check FLATPAK_ID environment

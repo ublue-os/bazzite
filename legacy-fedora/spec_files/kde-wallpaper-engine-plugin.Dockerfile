@@ -1,6 +1,6 @@
-FROM fedora:42
+FROM fedora:42 # TODO: Fedora-specific - remove or replace
 
-RUN dnf install -y \
+RUN dnf install -y \ # TODO: Fedora-specific - remove or replace
     vulkan-loader-devel \
     plasma-workspace-devel \
     libplasma-devel \
@@ -31,6 +31,6 @@ RUN dnf install -y \
     qt6-qtwebchannel-devel \
     qt6-qtwebsockets-devel \
     vulkan-loader-devel \
-    && dnf clean all
+    && dnf clean all # TODO: Fedora-specific - remove or replace
 
 WORKDIR /workspace

@@ -89,7 +89,7 @@ Rebase van een bestaande upstream Fedora Atomic naar deze image als je **Open So
 (Let op: Mesa's Open Source optie voor NVIDIA GPU's, NVK is nog steeds gevoelig voor fouten op het moment van schrijven, voor problemen met NVK [dien een rapport in bij Mesa].([url](https://docs.mesa3d.org/bugs.html)), niet Ublue/Bazzite)
 
 ```bash
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable # TODO: Fedora-specific - remove or replace
 ```
 
 of voor apparaten met Nvidia GPUs die de **NVIDIA Proprietary Drivers** willen gebruiken:

@@ -20,7 +20,7 @@ Summary:       Window and compositing manager based on Clutter
 License:       GPL-2.0-or-later
 URL:           https://www.gnome.org
 Source0:       https://download.gnome.org/sources/%{name}/48/%{name}-%{tarball_version}.tar.xz
-Source1:       org.gnome.mutter.fedora.gschema.override
+Source1:       org.gnome.mutter.fedora.gschema.override # TODO: Fedora-specific - remove or replace
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1936991
 Patch:         mutter-42.alpha-disable-tegra.patch
@@ -115,7 +115,7 @@ Provides: bundled(clutter) = 1.26.0
 
 Conflicts: mutter < 45~beta.1-2
 
-# Make sure dnf updates gnome-shell together with this package; otherwise we
+# Make sure dnf updates gnome-shell together with this package; otherwise we # TODO: Fedora-specific - remove or replace
 # might end up with broken gnome-shell installations due to mutter ABI changes.
 Conflicts: gnome-shell < 45~rc
 
@@ -187,7 +187,7 @@ install -p %{SOURCE1} %{buildroot}%{_datadir}/glib-2.0/schemas
 
 %files common
 %{_datadir}/GConf/gsettings/mutter-schemas.convert
-%{_datadir}/glib-2.0/schemas/org.gnome.mutter.fedora.gschema.override
+%{_datadir}/glib-2.0/schemas/org.gnome.mutter.fedora.gschema.override # TODO: Fedora-specific - remove or replace
 %{_datadir}/glib-2.0/schemas/org.gnome.mutter.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gnome.mutter.wayland.gschema.xml
 %{_datadir}/gnome-control-center/keybindings/50-mutter-*.xml

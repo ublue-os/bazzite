@@ -267,8 +267,8 @@ Requires: nm-connection-editor
 Requires: librsvg2
 Requires: gnome-kiosk
 Requires: brltty
-# dependencies for rpm-ostree payload module
-Requires: rpm-ostree >= %{rpmostreever}
+# dependencies for rpm-ostree payload module # TODO: Fedora-specific - remove or replace
+Requires: rpm-ostree >= %{rpmostreever} # TODO: Fedora-specific - remove or replace
 Requires: ostree
 # used by ostree command for native containers
 Requires: skopeo
