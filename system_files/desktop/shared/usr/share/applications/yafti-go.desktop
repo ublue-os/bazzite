@@ -6,3 +6,4 @@ Comment=Launch Bazzite Portal for system setup and configuration
 Exec=/usr/libexec/bazzite-yafti-launcher
 Icon=/usr/share/ublue-os/bazzite/portal.svg
 Terminal=false
+Categories=Utility;
