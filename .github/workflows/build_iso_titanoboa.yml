@@ -88,6 +88,8 @@ jobs:
       #   run: |
       #     curl -Lo ${{ github.workspace }}/bazzite.repo https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/repo/fedora-${{ matrix.major_version }}/bazzite-org-bazzite-fedora-${{ matrix.major_version }}.repo
 
+      # We need this as we use the desktop image as the runtime for
+      # the livecds.
       - name: Obtain non-deck image ref
         id: get-nondeck-ref
         run: |
