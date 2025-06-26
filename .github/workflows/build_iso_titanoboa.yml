@@ -7,6 +7,7 @@ on:
 
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  ENABLE_UPLOAD: false # TODO: remove this whenever isos are stable
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}-iso
@@ -123,7 +124,8 @@ jobs:
           overwrite: true
 
       - name: Upload ISOs and Checksum to R2
-        if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
+        # TODO: remove env.ENABLE_UPLOAD check whenever isos are stable
+        if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main' && env.ENABLE_UPLOAD == 'true'
         shell: bash
         env:
           RCLONE_CONFIG_R2_TYPE: s3
