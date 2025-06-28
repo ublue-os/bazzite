@@ -15,7 +15,7 @@ on:
       - "post_install_files/**"
       - "press_kit/**"
       - "docs/**"
-      - ".github/workflows/build_iso.yml"
+      - ".github/workflows/build_iso*.yml"
   push:
     branches:
       - testing
@@ -27,7 +27,7 @@ on:
       - "spec_files/**"
       - "post_install_files/**"
       - "press_kit/**"
-      - ".github/workflows/build_iso.yml"
+      - ".github/workflows/build_iso*.yml"
   merge_group:
   workflow_dispatch:
     inputs:
