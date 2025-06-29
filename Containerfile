@@ -423,6 +423,7 @@ RUN --mount=type=cache,dst=/var/cache \
             fcitx5-hangul \
             kcm-fcitx5 \
             gnome-disk-utility \
+            krunner-bazaar \
             ptyxis && \
         dnf5 -y swap \
         --repo=terra-extras \
@@ -439,7 +440,6 @@ RUN --mount=type=cache,dst=/var/cache \
             plasma-welcome \
             plasma-welcome-fedora \
             plasma-discover-kns \
-            plasma-browser-integration \
             kcharselect \
             kde-partitionmanager \
             konsole && \
@@ -490,7 +490,6 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-extensions-app \
             gnome-system-monitor \
             gnome-initial-setup \
-            gnome-browser-connector \
             gnome-shell-extension-background-logo \
             gnome-shell-extension-apps-menu && \
         mkdir -p /tmp/tilingshell && \
