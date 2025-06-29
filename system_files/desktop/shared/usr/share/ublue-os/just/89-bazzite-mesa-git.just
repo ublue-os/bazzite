@@ -1,7 +1,7 @@
 # vim: set ft=make :
 
 # Build Mesa from Git source using podman for testing cutting-edge graphics features
-build-mesa-git ACTION="":
+_mesa-git ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
@@ -31,7 +31,7 @@ build-mesa-git ACTION="":
         echo ""
     else
         echo -e "${red}${bold}Mesa Git installation not found${normal}"
-        echo "Run 'ujust build-mesa-git' to build from source."
+        echo "Run 'ujust _mesa-git build' to build from source."
         echo ""
     fi
     echo -e "${bold}${blue}═══════════════════════════════════════════════════════════════${normal}"
