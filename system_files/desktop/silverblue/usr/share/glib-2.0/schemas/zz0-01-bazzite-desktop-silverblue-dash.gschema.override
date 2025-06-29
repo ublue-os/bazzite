@@ -1,2 +1,2 @@
 [org.gnome.shell] 
-favorite-apps=['org.mozilla.firefox.desktop', 'steam.desktop', 'net.lutris.Lutris.desktop', 'org.gnome.Software.desktop', 'org.gnome.Ptyxis.desktop', 'org.gnome.Nautilus.desktop']
+favorite-apps=['org.mozilla.firefox.desktop', 'steam.desktop', 'net.lutris.Lutris.desktop', 'io.github.kolunmi.bazaar.desktop', 'org.gnome.Ptyxis.desktop', 'org.gnome.Nautilus.desktop']
