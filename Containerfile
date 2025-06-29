@@ -565,6 +565,7 @@ RUN --mount=type=cache,dst=/var/cache \
     echo "import \"/usr/share/ublue-os/just/86-bazzite-windows.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/87-bazzite-framegen.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/88-bazzite-webapps.just\"" >> /usr/share/ublue-os/justfile && \
+    echo "import \"/usr/share/ublue-os/just/89-bazzite-mesa-git.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/90-bazzite-picker.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/90-bazzite-de.just\"" >> /usr/share/ublue-os/justfile && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
