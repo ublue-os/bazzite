@@ -424,6 +424,7 @@ RUN --mount=type=cache,dst=/var/cache \
             fcitx5-hangul \
             kcm-fcitx5 \
             gnome-disk-utility \
+            krunner-bazaar \
             ptyxis && \
         dnf5 -y swap \
         --repo=terra-extras \
