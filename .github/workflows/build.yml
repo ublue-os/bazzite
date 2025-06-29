@@ -15,7 +15,7 @@ on:
       - "post_install_files/**"
       - "press_kit/**"
       - "docs/**"
-      - ".github/workflows/build_iso.yml"
+      - ".github/workflows/build_iso*.yml"
   push:
     branches:
       - testing
@@ -27,7 +27,7 @@ on:
       - "spec_files/**"
       - "post_install_files/**"
       - "press_kit/**"
-      - ".github/workflows/build_iso.yml"
+      - ".github/workflows/build_iso*.yml"
   merge_group:
   workflow_dispatch:
     inputs:
@@ -71,7 +71,7 @@ jobs:
             is_latest_version: true
             is_stable_version: true
             kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
-            kernel_version: 6.14.6-109.bazzite.fc42.x86_64 # must match a cached version of the above flavor
+            kernel_version: 6.14.6-111.bazzite.fc42.x86_64 # must match a cached version of the above flavor
         exclude:
           - target_image_flavor: surface
           - base_name: bazzite
@@ -89,6 +89,11 @@ jobs:
           - target_image_flavor: surface
             target_nvidia_flavor: nvidia
     steps:
+      - name: Mount BTRFS for podman storage
+        uses: ublue-os/container-storage-action@main
+        with:
+          target-dir: /var/lib/containers
+
       - name: Define env.CONTAINER_TARGET
         run: |
           if [[ "${{ matrix.base_name }}" == "bazzite-deck-nvidia" ]]; then
@@ -185,18 +190,6 @@ jobs:
 
       - name: Check just syntax
         uses: ublue-os/just-action@bda593098a84a84973b002b4377709166a68be52 # v2
-
-      - name: Maximize build space
-        uses: AdityaGarg8/remove-unwanted-software@8831c82abf29b34eb2caac48d5f999ecfc0d8eef # v4.1
-        with:
-          remove-dotnet: true
-          remove-android: true
-          remove-haskell: true
-          remove-codeql: true
-          remove-docker-images: true
-          remove-large-packages: true
-          remove-cached-tools: true
-          remove-swapfile: true
 
       - name: Pull main, akmods, rechunk images
         uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0

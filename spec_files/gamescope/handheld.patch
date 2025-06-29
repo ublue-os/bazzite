@@ -36,7 +36,7 @@ index a8f44d1..0a1f2b2 100644
  	gamescope::Rc<CVulkanTexture> pRGBTexture = s_pPipewireBuffer->texture->isYcbcr()
  		? vulkan_acquire_screenshot_texture( g_nOutputWidth, g_nOutputHeight, false, DRM_FORMAT_XRGB2101010 )
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -62,7 +62,7 @@ index 8a6bbe8..2411d4e 100644
  
      uint32_t CBaseBackendFb::IncRef()
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -124,7 +124,7 @@ index 718a260..5bd1408 100644
  
        gamescope_swapchain_swapchain_feedback(
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -178,7 +178,7 @@ index 9dff5c4..cd251af 100644
  #if HAVE_OPENVR
  	"VR mode options:\n"
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -252,7 +252,7 @@ index 0a1f2b2..2544acf 100644
  		xwm_log.debugf("Unhandled WM_CHANGE_STATE to %ld for window 0x%lx", state, w->xwayland().id);
  	}
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -289,7 +289,7 @@ index d8a24e9..a3a11a7 100644
  		return result;
  	}
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -350,7 +350,7 @@ index 2544acf..7371a39 100644
  	{
  		vulkan_wait( *oPipewireSequence, true );
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -589,7 +589,7 @@ index 095694e..f300eb9 100644
  	uint32_t hwndStyle = 0;
  	bool hasHwndStyleEx = false;
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -628,7 +628,7 @@ index a104ee9..142371b 100644
          }
  
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -708,7 +708,7 @@ index 0000000..2360cfe
 +debug("Registered Lenovo Legion Go LCD as a known display")
 +--debug(inspect(gamescope.config.known_displays.lenovo_legiongo_lcd))
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -823,7 +823,7 @@ index 0000000..5f5eec8
 +debug("Registered GPD Win 4 as a known display")
 +--debug(inspect(gamescope.config.known_displays.gpd_win4_lcd))
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -895,7 +895,7 @@ index 0b121e8..3718585 100644
  
  		if ( !bHasKnownColorimetry )
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -921,7 +921,7 @@ index 78a86ee..4ce9511 100644
  			}
  
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1020,7 +1020,7 @@ index 6eebb66..7c856a7 100644
      };
  
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1051,7 +1051,7 @@ index d91cc45..d0a069e 100644
  	}
  
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1086,7 +1086,7 @@ index 00a1cb4..cc07a59 100644
      openvr_proj = cmake.subproject('openvr', options : openvr_var)
      openvr_dep = openvr_proj.dependency('openvr_api')
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1147,7 +1147,7 @@ index 08af8bc..da43d03 100644
  
      ////////////////
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1210,7 +1210,7 @@ index 7efcc0d..b8412b8 100644
  		if ( flags.bExportable == true || pDMA != nullptr )
  		{
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1246,7 +1246,7 @@ index da43d03..22f8ee5 100644
  
  #define WAYLAND_NULL() []<typename... Args> ( void *pData, Args... args ) { }
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1337,7 +1337,7 @@ index 11ba7cc..40b5188 100644
 +debug("Registered ASUS ROG Ally / ROG Ally X LCD as a known display")
  --debug(inspect(gamescope.config.known_displays.rogally_lcd))
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1392,7 +1392,7 @@ index ceb1f80..2d3cd47 100644
          {
              RunFolder( SCRIPT_DIR, true );
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1420,7 +1420,7 @@ index d0a069e..e40f957 100644
  	}
  
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1459,7 +1459,7 @@ index 74fc033..f35f7ef 100644
    'wlroots',
    version: ['>= 0.18.0', '< 0.19.0'],
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1544,7 +1544,7 @@ index 0000000..6263478
 +debug("Registered Lenovo Legion Go S LCD as a known display")
 +--debug(inspect(gamescope.config.known_displays.legiongos_lcd))
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1571,7 +1571,7 @@ index 6263478..32f776c 100644
  
          for index,value in ipairs(lcd_types) do
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1604,7 +1604,7 @@ index 22f8ee5..3207a6b 100644
          char *pMap = (char *)mmap( nullptr, uSize, PROT_READ, MAP_PRIVATE, nFd, 0 );
          if ( !pMap || pMap == MAP_FAILED )
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1741,7 +1741,7 @@ index cd251af..58bede8 100644
  					g_bLaunchMangoapp = true;
  				}
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2350,7 +2350,7 @@ index 4ce9511..ffaf7af 100644
  
  	bump_input_counter();
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2395,7 +2395,7 @@ index ffaf7af..bb87703 100644
  }
  #endif
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2506,7 +2506,7 @@ index f300eb9..989d09d 100644
  	bool isSysTrayIcon = false;
  	bool sizeHintsSpecified = false;
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2568,7 +2568,7 @@ index f718832..e46c34b 100644
  			MakeFocusDirty();
  		}
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2609,7 +2609,7 @@ index 0000000..8dd5815
 +    # sudo reboot
 +EOF
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2728,7 +2728,7 @@ index 2e6fb83..390c04a 100644
  enum class GamescopeUpscaleFilter : uint32_t
  {
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2799,7 +2799,7 @@ index bb87703..8b58050 100644
  		}
  	}
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2831,7 +2831,7 @@ index 8b58050..0b99c49 100644
  		default:
  		case GAMESCOPE_PANEL_ORIENTATION_AUTO:
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2862,7 +2862,7 @@ index ffce5d7..c4f358f 100644
  					m_Mutable.ValidDynamicRefreshRates = TableToVector<uint32_t>( *otDynamicRefreshRates );
  
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -3018,7 +3018,7 @@ index df2af70..e4eec9f 100644
  
  	bool HasQueuedEvents();
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -3176,7 +3176,7 @@ index e4eec9f..2347cbb 100644
  
  	bool HasQueuedEvents();
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -3693,7 +3693,7 @@ index 0b99c49..d3ae7be 100644
  	*y = ty;
  }
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -3771,7 +3771,7 @@ index 9f384c4..0df01c0 100644
  extern bool g_bForceHDRSupportDebug;
  
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -3832,7 +3832,7 @@ index 5bd1408..495bbc0 100644
      }
  
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -3910,7 +3910,7 @@ index 0000000..891f1ea
 +debug("Registered Lenovo Legion Go S LCD as a known display")
 \ No newline at end of file
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -4000,7 +4000,7 @@ index 2fd0ec4..ceb7829 100644
  			const uint64_t ulDecayAlpha = m_ulVBlankRateOfDecayPercentage; // eg. 980 = 98%
  
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -4035,7 +4035,7 @@ index 0a0e958..8a3a723 100644
    'wlroots',
    version: ['>= 0.18.0', '< 0.19.0'],
 -- 
-2.49.0
+2.50.0
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -4063,5 +4063,116 @@ index d4c4c54..83fa748 100644
  				hasRepaintNonBasePlane = true;
  			}
 -- 
-2.49.0
+2.50.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Sun, 22 Jun 2025 15:18:19 +0200
+Subject: feat: add Legion Go S display with all framerates
+
+---
+ .../displays/lenovo.legiongos.lcd.lua         | 71 +++++++++++--------
+ 1 file changed, 42 insertions(+), 29 deletions(-)
+
+diff --git a/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua b/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua
+index 32f776c..057850f 100644
+--- a/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua
++++ b/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua
+@@ -1,44 +1,58 @@
+-local legiongos_lcd_refresh_rates = {
+-    52, 53, 54, 56, 57, 58, 59,
+-    60, 61, 62, 63, 64, 65, 67, 68, 69,
+-    70,
+-    102, 103, 104, 105, 106, 107, 108, 109,
+-    111, 112, 113, 114, 115, 116, 117, 118, 119,
+-    120
+-}
+-
+ gamescope.config.known_displays.legiongos_lcd = {
+     pretty_name = "Lenovo Legion Go S LCD",
+     hdr = {
+-        -- The Legion Go S panel does not support HDR.
++        -- Setup some fallbacks for undocking with HDR, meant
++        -- for the internal panel. It does not support HDR.
+         supported = false,
+         force_enabled = false,
+-            eotf = gamescope.eotf.gamma22,
+-            max_content_light_level = 500,
+-            max_frame_average_luminance = 500,
+-            min_content_light_level = 0.5
++        eotf = gamescope.eotf.gamma22,
++        max_content_light_level = 500,
++        max_frame_average_luminance = 500,
++        min_content_light_level = 0.5
+     },
+-    -- 60Hz has a different pixel clock than 120Hz in the EDID with VRR disabled,
+-    -- and the panel is not responsive to tuning VFPs. To cover the non-VRR
+-    -- limiter, an LCD Deck-style dynamic modegen method works best.
+-    dynamic_refresh_rates = legiongos_lcd_refresh_rates,
++    
++    dynamic_refresh_rates = {
++        48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
++        58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
++        68, 69, 70, 71, 72, 73, 74, 75, 76, 77,
++        78, 79, 80, 81, 82, 83, 84, 85, 86, 87,
++        88, 89, 90, 91, 92, 93, 94, 95, 96, 97,
++        98, 99, 100, 101, 102, 103, 104, 105, 106, 107,
++        108, 109, 110, 111, 112, 113, 114, 115, 116, 117,
++        118, 119, 120
++    },
++    
++    -- Detailed Timing Descriptors:
++    -- DTD 1:  1920x1200  120.002 Hz   8:5   151.683 kHz 315.500 MHz (172 mm x 107 mm)
++    --   Modeline "1920x1200_120.00" 315.500  1920 1968 2000 2080  1200 1254 1260 1264  -HSync -VSync
++    -- DTD 2:  1920x1200   60.001 Hz   8:5    75.841 kHz 157.750 MHz (172 mm x 107 mm)
++    --   Modeline "1920x1200_60.00" 157.750  1920 1968 2000 2080  1200 1254 1260 1264  -HSync -VSync
+     dynamic_modegen = function(base_mode, refresh)
+-        debug("Generating mode "..refresh.."Hz for Lenovo Legion Go S LCD")
+-        local mode = base_mode
++        debug("Generating mode "..refresh.."Hz with fixed pixel clock")
++        local vfps = {
++            1950, 1885, 1824, 1764, 1707, 1652, 1599, 1548, 1499, 1451, 1405,
++            1361, 1318, 1277, 1237, 1198, 1160, 1124, 1088, 1054, 1021, 988,
++            957, 927, 897, 868, 840, 813, 786, 760, 735, 710, 686, 663, 640,
++            618, 596, 575, 554, 534, 514, 495, 476, 457, 439, 421, 404, 387,
++            370, 354, 338, 322, 307, 292, 277, 263, 249, 235, 221, 208, 195,
++            182, 169, 157, 145, 133, 121, 109, 98, 87, 76, 65, 54
++        }
++        local vfp = vfps[zero_index(refresh - 48)]
++        if vfp == nil then
++            warn("Couldn't do refresh "..refresh.." on ROG Ally")
++            return base_mode
++        end
+ 
+-        -- These are only tuned for 1920x1200.
+-        gamescope.modegen.set_resolution(mode, 1920, 1200)
++        local mode = base_mode
+ 
+-        -- hfp, hsync, hbp
+-        gamescope.modegen.set_h_timings(mode, 48, 36, 80)
+-        -- vfp, vsync, vbp
+-        gamescope.modegen.set_v_timings(mode, 54, 6, 4)
+-        mode.clock = gamescope.modegen.calc_max_clock(mode, refresh)
++        gamescope.modegen.adjust_front_porch(mode, vfp)
+         mode.vrefresh = gamescope.modegen.calc_vrefresh(mode)
+ 
+         --debug(inspect(mode))
+         return mode
+     end,
++
++    
+     matches = function(display)
+         local lcd_types = {
+             { vendor = "CSW", model = "PN8007QB1-1", product = 0x0800 },
+@@ -56,5 +70,4 @@ gamescope.config.known_displays.legiongos_lcd = {
+         return -1
+     end
+ }
+-debug("Registered Lenovo Legion Go S LCD as a known display")
+---debug(inspect(gamescope.config.known_displays.legiongos_lcd))
++debug("Registered Lenovo Legion Go S LCD as a known display")
+\ No newline at end of file
+-- 
+2.50.0
 

@@ -563,81 +563,129 @@ toggle-password-feedback ACTION="":
 # Install Bazzite Buddy plugin to easily access changelogs in game mode
 get-decky-bazzite-buddy:
     #!/bin/bash
+    set -euo pipefail
     REPO_OWNER="xXJSONDeruloXx"
     REPO_NAME="bazzite-buddy"
     PLUGIN_NAME="bazzite-buddy"
     PLUGIN_DIR="$HOME/homebrew/plugins"
-    # Get the latest release information
+
+    # Check if Decky is installed
+    if [ ! -d "$HOME/homebrew" ]; then
+      echo "Error: Decky Loader is not installed. Please run 'ujust setup-decky' first."
+      exit 1
+    fi
+
+    # Get the latest release information with timeout
     echo "Fetching latest release information..."
-    RELEASE_INFO=$(curl -s "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest")
+    RELEASE_INFO=$(timeout 30 curl -s "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest" || echo "")
+
     # Extract the download URL for the zip file
-    DOWNLOAD_URLS=$(echo "$RELEASE_INFO" | grep -o '"browser_download_url": "[^"]*\.zip"' | cut -d'"' -f4)
+    if [ -n "$RELEASE_INFO" ]; then
+      DOWNLOAD_URLS=$(echo "$RELEASE_INFO" | jq -r '.assets[].browser_download_url | select (endswith(".zip"))')
+    else
+      DOWNLOAD_URLS=""
+    fi
+
     # Check if any zip files were found
     if [ -z "$DOWNLOAD_URLS" ]; then
-      echo "No zip files found in the latest release. Falling back to stable URL..."
+      echo "No zip files found in the latest release or API timeout. Falling back to stable URL..."
       PLUGIN_URL="https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/stable/bazzite-buddy.zip"
     else
       # Pick the first zip file (usually there's only one)
       PLUGIN_URL=$(echo "$DOWNLOAD_URLS" | head -n 1)
       echo "Found latest release: $PLUGIN_URL"
     fi
+
+    # Ensure plugins directory exists and has correct permissions
     if [ ! -d "$PLUGIN_DIR" ]; then
-      echo "Creating plugins directory with sudo..."
-      sudo mkdir -p "$PLUGIN_DIR"
+      echo "Creating plugins directory..."
+      mkdir -p "$PLUGIN_DIR"
     fi
-    # Change to the plugin directory
-    cd "$PLUGIN_DIR" || { echo "Failed to navigate to plugins directory"; exit 1; }
+
+    # Fix permissions on plugins directory if needed
+    if [ ! -w "$PLUGIN_DIR" ]; then
+      echo "Fixing permissions on plugins directory..."
+      chmod u+w "$PLUGIN_DIR"
+    fi
+
+    # Work in a temporary directory to avoid permission issues
+    TEMP_DIR=$(mktemp -d)
+    cd "$TEMP_DIR" || { echo "Failed to create temp directory"; exit 1; }
+
     # Remove any existing plugin folder
-    if [ -d "$PLUGIN_NAME" ]; then
-      echo "Removing existing $PLUGIN_NAME directory with sudo..."
-      sudo rm -rf "$PLUGIN_NAME"
+    if [ -d "$PLUGIN_DIR/$PLUGIN_NAME" ]; then
+      echo "Removing existing $PLUGIN_NAME directory..."
+      rm -rf "$PLUGIN_DIR/$PLUGIN_NAME"
     fi
+
     # Download the zip file
     echo "Downloading plugin from $PLUGIN_URL..."
-    TEMP_ZIP="temp_plugin.zip"
-    sudo curl -L -o "$TEMP_ZIP" "$PLUGIN_URL"
+    TEMP_ZIP="plugin.zip"
+    timeout 60 curl -L -o "$TEMP_ZIP" "$PLUGIN_URL"
     if [ $? -ne 0 ]; then
-      echo "Download failed!"
+      echo "Download failed or timed out!"
+      cd - > /dev/null
+      rm -rf "$TEMP_DIR"
       exit 1
     fi
+
     echo "Extracting plugin..."
-    sudo unzip -o "$TEMP_ZIP" -d .
+    unzip -o "$TEMP_ZIP" -d .
     if [ $? -ne 0 ]; then
       echo "Extraction failed!"
+      cd - > /dev/null
+      rm -rf "$TEMP_DIR"
       exit 1
     fi
+
     # Handle different extracted folder names
     # Look for any extracted folders that might contain the plugin
-    EXTRACTED_FOLDERS=$(find . -maxdepth 1 -type d -name "bazzite*" -o -name "Bazzite*" | grep -v "^\./$")
+    EXTRACTED_FOLDERS=$(find . -maxdepth 1 -type d -name "bazzite*" -o -name "Bazzite*" | grep -v "^\./$" || echo "")
+
     # If we found a folder but it's not the expected name
     if [ -n "$EXTRACTED_FOLDERS" ] && [ ! -d "./$PLUGIN_NAME" ]; then
       FOUND_FOLDER=$(echo "$EXTRACTED_FOLDERS" | head -n 1)
       echo "Found plugin folder with different name: $FOUND_FOLDER"
       echo "Renaming to $PLUGIN_NAME..."
-      sudo mv "$FOUND_FOLDER" "./$PLUGIN_NAME"
+      mv "$FOUND_FOLDER" "./$PLUGIN_NAME"
     fi
+
     # Handle nested folders structure if needed
     if [ -d "./${PLUGIN_NAME}/${PLUGIN_NAME}" ]; then
       echo "Fixing nested folder structure..."
-      sudo mv ./${PLUGIN_NAME}/${PLUGIN_NAME}/* ./${PLUGIN_NAME}/
-      sudo rm -rf ./${PLUGIN_NAME}/${PLUGIN_NAME}
+      mv "./${PLUGIN_NAME}/${PLUGIN_NAME}"/* "./${PLUGIN_NAME}/"
+      rm -rf "./${PLUGIN_NAME}/${PLUGIN_NAME}"
     fi
+
     # Check if we have a plugin with capital letters
     if [ ! -d "./$PLUGIN_NAME" ] && [ -d "./Bazzite.Buddy" ]; then
       echo "Found Bazzite.Buddy folder, renaming to $PLUGIN_NAME..."
-      sudo mv "./Bazzite.Buddy" "./$PLUGIN_NAME"
+      mv "./Bazzite.Buddy" "./$PLUGIN_NAME"
     fi
-    # Clean up the downloaded ZIP file
-    echo "Cleaning up..."
-    sudo rm -f "$TEMP_ZIP"
-    # Confirm installation
+
+    # Move plugin to final location
     if [ -d "./$PLUGIN_NAME" ]; then
+      echo "Installing plugin to $PLUGIN_DIR..."
+      mv "./$PLUGIN_NAME" "$PLUGIN_DIR/"
+
+      # Fix permissions on plugin files and make scripts executable
+      echo "Setting correct permissions..."
+      chmod -R u+w "$PLUGIN_DIR/$PLUGIN_NAME"
+      find "$PLUGIN_DIR/$PLUGIN_NAME" -name "*.sh" -exec chmod +x {} \;
+      find "$PLUGIN_DIR/$PLUGIN_NAME" -name "*.py" -exec chmod +x {} \;
+
       echo "$PLUGIN_NAME has been installed successfully to $PLUGIN_DIR!"
       echo "Please restart Decky Loader to activate the plugin."
     else
-      echo "Installation may have failed. Please check if the plugin is installed correctly."
-      echo "Plugin folder could not be found as expected."
+      echo "Installation failed. Plugin folder could not be found as expected."
+      cd - > /dev/null
+      rm -rf "$TEMP_DIR"
+      exit 1
     fi
+
+    # Clean up
+    cd - > /dev/null
+    rm -rf "$TEMP_DIR"
 
 # Toggle whether Steam launches with the -steamdeck flag, which causes Big Picture / Game Mode to emulate Steam Deck behavior. Disabling this can prevent games from forcing Steam Deck-specific assets, such as lower-resolution textures.
 _toggle-steamdeck-alias:

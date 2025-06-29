@@ -17,6 +17,7 @@ show-power-option=false
 show-gamemode=false
 hide-forcequit=true
 show-distroshelf=true
+hide-warehouse=true
 
 # Keybindings
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]

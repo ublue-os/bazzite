@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+
+# Prevents the game from seeing your hardware as a Steam Deck
+# This is useful if you are using gamescope session, but want to make the game
+# think you are on a desktop to avoid issues with certain games
+# like hidden settings or locked fps.
+
+export SteamDeck=0
+
+# applied variables, now execute the rest of the command
+exec "$@"

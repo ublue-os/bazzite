@@ -48,13 +48,13 @@ sections:
     banner-text-halign: start
     banner-text-valign: center
     banner-text-label-xalign: 0.0
-    banner-height: 400
     classes:
       - bazzite-section
       - gaming-section
     appids:
       - com.heroicgameslauncher.hgl
       - io.itch.itch
+      - io.github.Faugus.faugus-launcher
       - org.prismlauncher.PrismLauncher
       - io.mrarm.mcpelauncher
       - org.vinegarhq.Sober
@@ -68,6 +68,7 @@ sections:
       - com.github._0negal.Viper
       - info.cemu.Cemu
       - org.DolphinEmu.dolphin-emu
+      - io.github.shiiion.primehack
       - net.kuribo64.melonDS
       - com.snes9x.Snes9x
       - io.mgba.mGBA
@@ -84,6 +85,7 @@ sections:
       - com.github.k4zmu2a.spacecadetpinball
       - sh.ppy.osu
       - com.pokemmo.PokeMMO
+      - com.github.Alcaro.Flips
       - com.etlegacy.ETLegacy
       - com.realm667.Wolfenstein_Blade_of_Agony
       - org.srb2.SRB2
@@ -99,7 +101,6 @@ sections:
     banner-text-halign: end
     banner-text-valign: center
     banner-text-label-xalign: 1.0
-    banner-height: 400
     classes:
       - bazzite-section
       - streaming-section
@@ -125,7 +126,6 @@ sections:
     banner-text-halign: start
     banner-text-valign: center
     banner-text-label-xalign: 0.0
-    banner-height: 400
     classes:
       - bazzite-section
       - music-section
@@ -149,7 +149,6 @@ sections:
     banner-text-halign: end
     banner-text-valign: center
     banner-text-label-xalign: 1.0
-    banner-height: 400
     classes:
       - bazzite-section
       - office-section
@@ -177,13 +176,20 @@ sections:
     banner-text-halign: start
     banner-text-valign: center
     banner-text-label-xalign: 0.0
-    banner-height: 400
     classes:
       - bazzite-section
       - utilities-section
     appids:
+      - io.github.thetumultuousunicornofdarkness.cpu-x
+      - io.github.arunsivaramanneo.GPUViewer
+      - dev.deedles.Trayscale
       - app.drey.Warp
+      - com.rustdesk.RustDesk
       - org.deskflow.deskflow
+      - io.github.pwr_solaar.solaar
+      - it.mijorus.gearlever
+      - io.github.flattool.Ignition
+      - io.github.fastrizwaan.WineZGUI
       - io.github.berarma.Oversteer
       - io.github.lawstorant.boxflat
       - io.github.radiolamp.mangojuice
@@ -195,3 +201,4 @@ sections:
       - org.fedoraproject.MediaWriter
       - org.raspberrypi.rpi-imager
       - cc.arduino.IDE2
+      - org.gnome.GHex

@@ -69,9 +69,11 @@ install-emudeck:
     if ! grep -q 'it.mijorus.gearlever' < <(flatpak list --columns application); then
         flatpak install --system -y flathub it.mijorus.gearlever
     fi
-    wget "$remote_appimage_url" -O "$download_dest"
+    wget -nv "$remote_appimage_url" -O "$download_dest"
     chmod +x "$download_dest"
-    flatpak run it.mijorus.gearlever "$download_dest"
+    echo "Click {{ BOLD }}Unlock{{ NORMAL }} then {{ BLUE + BOLD }}Move to the app menu{{ NORMAL }} to finish installation."
+    sleep 3
+    LC_ALL=C flatpak run it.mijorus.gearlever "$download_dest"
 
 # Install OpenRGB (https://openrgb.org/)
 install-openrgb:

@@ -78,45 +78,105 @@ get-framegen ACTION="prompt":
         echo "To patch a game, add the launch option '~/fgmod/fgmod %COMMAND%' in its settings."
     elif [ "${OPTION,,}" == "install-decky-plugin" ] || [ "${OPTION,,}" == "install decky framegen plugin" ]; then
         echo "Installing Decky Framegen plugin..."
+
+        # Check if Decky is installed
+        if [ ! -d "$HOME/homebrew" ]; then
+            echo "Error: Decky Loader is not installed. Please run 'ujust setup-decky' first."
+            exit 1
+        fi
+
         API_URL="https://api.github.com/repos/xXJSONDeruloXx/Decky-Framegen/releases/latest"
-        PLUGIN_URL=$(curl -s "$API_URL" | grep "browser_download_url" | grep ".zip" | cut -d '"' -f 4)
+        PLUGIN_URL=$(timeout 30 curl -s "$API_URL" | grep "browser_download_url" | grep ".zip" | cut -d '"' -f 4 || echo "")
 
         if [ -z "$PLUGIN_URL" ]; then
-            echo "Failed to fetch the latest Decky Framegen release. Exiting..."
+            echo "Failed to fetch the latest Decky Framegen release or API timeout. Exiting..."
             exit 1
         fi
+
         PLUGIN_NAME="Decky-Framegen"
         PLUGIN_DIR="$HOME/homebrew/plugins"
+
+        # Ensure plugins directory exists and has correct permissions
         if [ ! -d "$PLUGIN_DIR" ]; then
-            echo "Creating plugins directory with sudo..."
-            sudo mkdir -p "$PLUGIN_DIR"
+            echo "Creating plugins directory..."
+            mkdir -p "$PLUGIN_DIR"
         fi
-        cd "$PLUGIN_DIR" || { echo "Failed to navigate to plugins directory"; exit 1; }
-        if [ -d "$PLUGIN_NAME" ]; then
-            echo "Removing existing $PLUGIN_NAME directory with sudo..."
-            sudo rm -rf "$PLUGIN_NAME"
+
+        # Fix permissions on plugins directory if needed
+        if [ ! -w "$PLUGIN_DIR" ]; then
+            echo "Fixing permissions on plugins directory..."
+            chmod u+w "$PLUGIN_DIR"
         fi
+
+        # Work in a temporary directory to avoid permission issues
+        TEMP_DIR=$(mktemp -d)
+        cd "$TEMP_DIR" || { echo "Failed to create temp directory"; exit 1; }
+
+        # Remove any existing plugin folder
+        if [ -d "$PLUGIN_DIR/$PLUGIN_NAME" ]; then
+            echo "Removing existing $PLUGIN_NAME directory..."
+            rm -rf "$PLUGIN_DIR/$PLUGIN_NAME"
+        fi
+
         echo "Downloading $PLUGIN_NAME from $PLUGIN_URL..."
-        sudo curl -L -o "${PLUGIN_NAME}.zip" "$PLUGIN_URL"
+        timeout 60 curl -L -o "${PLUGIN_NAME}.zip" "$PLUGIN_URL"
         if [ $? -ne 0 ]; then
-            echo "Download failed!"
+            echo "Download failed or timed out!"
+            cd - > /dev/null
+            rm -rf "$TEMP_DIR"
             exit 1
         fi
+
         echo "Extracting $PLUGIN_NAME..."
-        sudo unzip -o "${PLUGIN_NAME}.zip" -d .
+        unzip -o "${PLUGIN_NAME}.zip" -d .
         if [ $? -ne 0 ]; then
             echo "Extraction failed!"
+            cd - > /dev/null
+            rm -rf "$TEMP_DIR"
             exit 1
         fi
+
+        # Handle nested folder structure if needed
         if [ -d "./${PLUGIN_NAME}/${PLUGIN_NAME}" ]; then
             echo "Fixing folder structure..."
-            sudo mv ./${PLUGIN_NAME}/${PLUGIN_NAME}/* ./${PLUGIN_NAME}/
-            sudo rm -rf ./${PLUGIN_NAME}/${PLUGIN_NAME}
+            mv "./${PLUGIN_NAME}/${PLUGIN_NAME}"/* "./${PLUGIN_NAME}/"
+            rm -rf "./${PLUGIN_NAME}/${PLUGIN_NAME}"
         fi
-        echo "Cleaning up..."
-        sudo rm -f "${PLUGIN_NAME}.zip"
-        echo "$PLUGIN_NAME has been installed successfully to $PLUGIN_DIR!"
-        echo "Please restart Decky Loader to activate the plugin."
+
+        # Handle different extracted folder names (e.g., Decky-Framegen-Plus)
+        EXTRACTED_FOLDERS=$(find . -maxdepth 1 -type d -name "Decky-Framegen*" | grep -v "^\./$" || echo "")
+
+        # If we found a folder but it's not the expected name
+        if [ -n "$EXTRACTED_FOLDERS" ] && [ ! -d "./$PLUGIN_NAME" ]; then
+            FOUND_FOLDER=$(echo "$EXTRACTED_FOLDERS" | head -n 1)
+            echo "Found plugin folder with different name: $FOUND_FOLDER"
+            echo "Renaming to $PLUGIN_NAME..."
+            mv "$FOUND_FOLDER" "./$PLUGIN_NAME"
+        fi
+
+        # Move plugin to final location
+        if [ -d "./$PLUGIN_NAME" ]; then
+            echo "Installing plugin to $PLUGIN_DIR..."
+            mv "./$PLUGIN_NAME" "$PLUGIN_DIR/"
+
+            # Fix permissions on plugin files and make scripts executable
+            echo "Setting correct permissions..."
+            chmod -R u+w "$PLUGIN_DIR/$PLUGIN_NAME"
+            find "$PLUGIN_DIR/$PLUGIN_NAME" -name "*.sh" -exec chmod +x {} \;
+            find "$PLUGIN_DIR/$PLUGIN_NAME" -name "*.py" -exec chmod +x {} \;
+
+            echo "$PLUGIN_NAME has been installed successfully to $PLUGIN_DIR!"
+            echo "Please restart Decky Loader to activate the plugin."
+        else
+            echo "Installation failed. Plugin folder could not be found as expected."
+            cd - > /dev/null
+            rm -rf "$TEMP_DIR"
+            exit 1
+        fi
+
+        # Clean up
+        cd - > /dev/null
+        rm -rf "$TEMP_DIR"
     elif [ "${OPTION,,}" == "uninstall" ] || [ "${OPTION,,}" == "uninstall fgmod" ]; then
         echo "Uninstalling FGmod..."
         if [[ -d "$HOME/fgmod" ]]; then
