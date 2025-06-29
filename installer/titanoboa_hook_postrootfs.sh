@@ -12,7 +12,7 @@ mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 
 # Bazzite anaconda profile
 : ${VARIANT_ID:?}
-cat /etc/anaconda/profile.d/"${VARIANT_ID}".conf <<EOF
+cat >/etc/anaconda/profile.d/"${VARIANT_ID}".conf <<EOF
 # Anaconda configuration file for bazzite
 
 [Profile]
