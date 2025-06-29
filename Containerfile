@@ -391,7 +391,6 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/bin/latencyflex && \
     curl -Lo /usr/bin/winetricks https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks && \
     chmod +x /usr/bin/winetricks && \
-    chmod +x /usr/bin/sd0 && \
     /ctx/cleanup
 
 # Install yafti-go & ujust-picker from GitHub releases
