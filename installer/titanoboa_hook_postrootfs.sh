@@ -256,7 +256,8 @@ if [[ $DRY_RUN -ne 1 ]]; then
     info "Script was executed with ${DRY_RUN@A}, skipping bootloader restoration..."
 else
     if [[ -f $MNT/boot/bootupd-state.json ]]; then
-        rm -vf $MNT/boot/bootupd-state.json
+        rm -vf $MNT/boot/bootupd-state.json &&
+            info "Removed existing bootupd-state.json"
     fi
     run0 --user="$PKEXEC_UID" -- \
         ptyxis --title="$_APP_NAME - Restoring bootloader" -- \
@@ -265,7 +266,9 @@ else
         --auto \
         --write-uuid \
         --update-firmware \
-        --device \"$DISK_PATH\" \"$MNT\""
+        --device \"$DISK_PATH\" \"$MNT\"" &&
+        info "Bootloader restored successfully." &&
+        yad --text "Bootloader restored successfully." --button="OK:0"
 fi
 
 SCRIPTEOF
