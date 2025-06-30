@@ -109,9 +109,11 @@ jobs:
         shell: bash
         run: |
           ISO_UPLOAD_DIR=${{ github.workspace }}/upload
-          mkdir ${ISO_UPLOAD_DIR}
-          mv ${{ steps.build.outputs.iso-dest }} ${ISO_UPLOAD_DIR}
-          sha256sum ${{ steps.build.outputs.iso-dest }} > ${ISO_UPLOAD_DIR}/$(basename ${{ steps.build.outputs.iso-dest }})-CHECKSUM
+          DEST=${ISO_UPLOAD_DIR}/$(basename ${{ steps.build.outputs.iso-dest }})
+
+          mkdir -p ${ISO_UPLOAD_DIR}
+          mv ${{ steps.build.outputs.iso-dest }} ${DEST}
+          sha256sum ${DEST} > ${DEST}-CHECKSUM
           echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
 
       - name: Upload ISOs and Checksum to Job Artifacts
