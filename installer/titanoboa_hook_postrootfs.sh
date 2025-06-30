@@ -12,16 +12,16 @@ mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 
 # Bazzite anaconda profile
 : ${VARIANT_ID:?}
-cat >/etc/anaconda/profile.d/"${VARIANT_ID}".conf <<EOF
+cat >/etc/anaconda/profile.d/bazzite.conf <<EOF
 # Anaconda configuration file for bazzite
 
 [Profile]
 # Define the profile.
-profile_id = ${VARIANT_ID}
+profile_id = bazzite
 
 [Profile Detection]
 # Match os-release values
-os_id = ${VARIANT_ID}
+os_id = bazzite
 
 [Network]
 default_on_boot = FIRST_WIRED_WITH_LINK
@@ -50,6 +50,8 @@ hidden_webui_pages =
 [Localization]
 use_geolocation = False
 EOF
+
+echo "Bazzite release $VERSION_ID ($VERSION_CODENAME)" >/etc/system-release
 
 # Get Artwork
 git clone https://github.com/ublue-os/packages.git /root/packages
