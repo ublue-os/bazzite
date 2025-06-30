@@ -255,6 +255,9 @@ mount "$efi_dev" "$MNT"/boot/efi || die "Failed to mount EFI partition"
 if [[ $DRY_RUN -ne 1 ]]; then
     info "Script was executed with ${DRY_RUN@A}, skipping bootloader restoration..."
 else
+    if [[ -f $MNT/boot/bootupd-state.json ]]; then
+        rm -vf $MNT/boot/bootupd-state.json
+    fi
     run0 --user="$PKEXEC_UID" -- \
         ptyxis --title="$_APP_NAME - Restoring bootloader" -- \
         pkexec bash -c "bootupctl backend install \
