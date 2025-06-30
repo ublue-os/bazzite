@@ -12,7 +12,7 @@ mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 
 # Bazzite anaconda profile
 : ${VARIANT_ID:?}
-cat >/etc/anaconda/profile.d/bazzite.conf <<EOF
+cat >/etc/anaconda/profile.d/bazzite.conf <<'EOF'
 # Anaconda configuration file for bazzite
 
 [Profile]
@@ -46,6 +46,12 @@ hidden_spokes =
 hidden_webui_pages =
     root-password
     network
+
+[User]
+default_username = bazzite
+# Hashed 'bazzite' generated with 'openssl passwd -6 bazzite'
+default_password = $6$.wrMwDf6WjzAn7rM$t/TmOiZT2C9mSu2wKsWevSfCKOTq47K2IqHlsofyVIQU3.xKXrvNMTwXr2cnL8NfZ7f8enECTCw2hpN2EICra0
+is_admin = True
 
 [Localization]
 use_geolocation = False
