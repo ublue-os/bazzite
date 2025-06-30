@@ -171,4 +171,8 @@ EOF
 # Dont start Steam at login
 rm -vf /etc/skel/.config/autostart/steam*.desktop
 
+# Add bootloader restoring script
+cp "$(dirname "$0")"/bootloader_restore.sh /usr/bin/bootloader_restore.sh
+chmod +x /usr/bin/bootloader_restore.sh
+
 ###############################
