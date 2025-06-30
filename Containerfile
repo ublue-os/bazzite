@@ -392,6 +392,7 @@ RUN --mount=type=cache,dst=/var/cache \
     curl -Lo /usr/bin/winetricks https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks && \
     chmod +x /usr/bin/winetricks && \
     chmod +x /usr/bin/sd0 && \
+    chmod +x /usr/bin/mesa-git && \
     /ctx/cleanup
 
 # Install yafti-go & ujust-picker from GitHub releases
