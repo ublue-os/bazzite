@@ -11,18 +11,8 @@ mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 # dnf install -qy anaconda-webui
 
 # Bazzite anaconda profile
-: ${VARIANT_ID:?}
-cat >/etc/anaconda/profile.d/"${VARIANT_ID}".conf <<EOF
+cat >/etc/anaconda/anaconda.conf <<EOF
 # Anaconda configuration file for bazzite
-
-[Profile]
-# Define the profile.
-profile_id = ${VARIANT_ID}
-
-[Profile Detection]
-# Match os-release values
-os_id = ${VARIANT_ID}
-
 [Network]
 default_on_boot = FIRST_WIRED_WITH_LINK
 
