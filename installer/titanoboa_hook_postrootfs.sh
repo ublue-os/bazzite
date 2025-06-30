@@ -5,10 +5,10 @@ set -exo pipefail
 source /etc/os-release
 
 # Install Anaconda webui
-dnf install -y anaconda-live libblockdev-{btrfs,lvm,dm}
+dnf install -qy anaconda-live libblockdev-{btrfs,lvm,dm}
 mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 # TODO: Enable Anaconda Web UI whenever locale switching in kde lands
-# dnf install -y anaconda-webui
+# dnf install -qy anaconda-webui
 
 # Bazzite anaconda profile
 : ${VARIANT_ID:?}
