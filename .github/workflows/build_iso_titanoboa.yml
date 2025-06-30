@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-name: Build ISOs
+name: Build Live ISOs
 
 on:
   workflow_dispatch:
@@ -67,7 +67,7 @@ jobs:
             FLATPAK_DIR_SHORTNAME="installer/gnome_flatpaks"
           fi
 
-          echo "flatpak-dir-shortname=${FLATPAK_DIR_SHORTNAME}" >> $GITHUB_OUTPUT
+          echo "flatpak-dir-shortname=$(realpath ${FLATPAK_DIR_SHORTNAME})" >> $GITHUB_OUTPUT
 
       # Docker requires lowercase registry references
       - name: Lowercase Registry

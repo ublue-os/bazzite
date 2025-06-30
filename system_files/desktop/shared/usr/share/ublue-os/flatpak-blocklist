@@ -1,2 +1,3 @@
 deny com.valvesoftware.Steam/*
 deny net.lutris.Lutris/*
+deny app.devsuite.Ptyxis/*
