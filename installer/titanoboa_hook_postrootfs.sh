@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+set -exo pipefail
 
 source /etc/os-release
 
