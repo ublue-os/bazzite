@@ -102,6 +102,7 @@ jobs:
           # TODO (@Zeglius): Remove "liveiso" prefix once this becomes the main ISO
           iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-liveiso-amd64.iso
           flatpaks-list: ${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}/flatpaks
+          hook-pre-initramfs: ${{ github.workspace }}/installer/titanoboa_hook_preinitramfs.sh
           hook-post-rootfs: ${{ github.workspace }}/installer/titanoboa_hook_postrootfs.sh
 
       - name: Move ISOs to Upload Directory
