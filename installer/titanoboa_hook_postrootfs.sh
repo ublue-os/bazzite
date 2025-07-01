@@ -296,4 +296,10 @@ if [[ $imageref == *-deck* ]]; then
     :
 fi
 
+# Tweak the fedora-welcome app (gnome only) with our own text/icons
+if [[ $desktop_env == gnome ]]; then
+    sed -i 's| Fedora| Bazzite|' /usr/share/anaconda/gnome/fedora-welcome || :
+    ln -sf fedora-logo-sprite.png /usr/share/pixmaps/fedora-logo-icon.png
+fi
+
 ###############################
