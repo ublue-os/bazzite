@@ -274,4 +274,25 @@ fi
 SCRIPTEOF
 chmod +x /usr/bin/bootloader_restore.sh
 
+# Enable on-screen keyboard
+if [[ $imageref == *-deck* ]]; then
+
+    # Determine desktop environment. Must match one of /usr/libexec/livesys/sessions.d/livesys-{desktop_env}
+    # See https://github.com/ublue-os/titanoboa/blob/6c2e8ba58c7534b502081fe24363d2a60e7edca9/Justfile#L199-L213
+    desktop_env=""
+    _session_file="$(find /usr/share/wayland-sessions/ /usr/share/xsessions \
+        -maxdepth 1 -type f -not -name '*gamescope*.desktop' -and -name '*.desktop' -printf '%P' -quit)"
+    case $_session_file in
+    budgie*) desktop_env=budgie ;;
+    cosmic*) desktop_env=cosmic ;;
+    gnome*) desktop_env=gnome ;;
+    plasma*) desktop_env=kde ;;
+    sway*) desktop_env=sway ;;
+    xfce*) desktop_env=xfce ;;
+    esac
+
+    # Enable keyboard here
+
+fi
+
 ###############################
