@@ -115,35 +115,8 @@ _mesa-git ACTION="":
         exit 1
     fi
     
-    # Move only the actual mesa directories/files, excluding any zip files or nested mesa-git directories
-    for item in "$EXTRACTED_DIR"/*; do
-        if [ -f "$item" ] && [[ "$item" != *.zip ]] && [[ "$(basename "$item")" != "mesa-git" ]]; then
-            cp "$item" "$MESA_INSTALL_DIR/"
-        elif [ -d "$item" ] && [[ "$(basename "$item")" != "mesa-git" ]]; then
-            cp -r "$item" "$MESA_INSTALL_DIR/"
-        fi
-    done
-    
-    # Clean up any accidentally copied zip files or nested mesa-git directories
-    rm -f "$MESA_INSTALL_DIR"/*.zip
-    rm -f "$MESA_INSTALL_DIR/mesa-git"
-    rm -rf "$MESA_INSTALL_DIR/mesa-git"
-    
-    # Fix Vulkan ICD JSON file paths - mesa-maker builds use /mesa-install hardcoded paths
-    if [ -f "$MESA_INSTALL_DIR/share/vulkan/icd.d/radeon_icd.x86_64.json" ]; then
-        echo -e "${blue}Patching Vulkan ICD paths...${normal}"
-        # Replace hardcoded /mesa-install paths with the actual installation directory
-        sed -i "s|/mesa-install|$MESA_INSTALL_DIR|g" "$MESA_INSTALL_DIR/share/vulkan/icd.d/radeon_icd.x86_64.json"
-        
-        # Verify the fix worked
-        if grep -q "$MESA_INSTALL_DIR" "$MESA_INSTALL_DIR/share/vulkan/icd.d/radeon_icd.x86_64.json"; then
-            echo -e "${green}✓ Vulkan ICD paths updated successfully${normal}"
-        else
-            echo -e "${yellow}⚠ Warning: Could not verify Vulkan ICD path update${normal}"
-        fi
-    else
-        echo -e "${yellow}⚠ Warning: Vulkan ICD file not found - Vulkan may not work${normal}"
-    fi
+    # Move contents to installation directory
+    cp -r "$EXTRACTED_DIR"/* "$MESA_INSTALL_DIR/"
     
     echo -e "\n${bold}${green}Mesa Git installation completed!${normal}\n"
     echo -e "${blue}═══════════════════════════════════════════════════════════════${normal}"
