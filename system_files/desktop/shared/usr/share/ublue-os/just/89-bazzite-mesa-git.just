@@ -1,12 +1,13 @@
 # vim: set ft=make :
 
-# Build Mesa from Git source using podman for testing cutting-edge graphics features
+# Download and install latest Mesa Git build from mesa-maker releases for testing cutting-edge graphics features
 _mesa-git ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
     MESA_INSTALL_DIR="$HOME/mesa-git"
-    CTR_ID_FILE="$(realpath ./id.txt)"
+    MESA_MAKER_REPO="https://api.github.com/repos/xXJSONDeruloXx/mesa-maker/releases/latest"
+    TEMP_DIR=$(mktemp -d)
 
     if [[ $UID -eq 0 ]]; then
         echo -e "\n${red}${bold}This script should not be run as root.${normal}\n"
@@ -19,6 +20,9 @@ _mesa-git ACTION="":
     if [ -d "$MESA_INSTALL_DIR" ]; then
         echo -e "${green}${bold}Mesa Git installation found!${normal}"
         echo -e "${blue}Location:${normal}   $MESA_INSTALL_DIR"
+        if [ -f "$MESA_INSTALL_DIR/build-info.txt" ]; then
+            echo -e "${blue}Version:${normal}    $(cat "$MESA_INSTALL_DIR/build-info.txt" | head -1)"
+        fi
         echo ""
         echo -e "${yellow}To use with Steam:${normal}"
         echo -e "  Set your game's launch options to:"
@@ -29,23 +33,23 @@ _mesa-git ACTION="":
         echo ""
     else
         echo -e "${red}${bold}Mesa Git installation not found${normal}"
-        echo "Run 'ujust _mesa-git build' to build from source."
+        echo "Run 'ujust _mesa-git download' to get the latest release."
         echo ""
     fi
     echo -e "${bold}${blue}═══════════════════════════════════════════════════════════════${normal}"
     echo ""
-    echo -e "${bold}Mesa Git Builder${normal}"
+    echo -e "${bold}Mesa Git Installer${normal}"
     echo -e "${blue}Choose an action:${normal}"
-    echo -e "  ${bold}Build Mesa (from Git)${normal}     - Build Mesa from the latest git source."
-    echo -e "  ${bold}Rebuild Mesa (force)${normal}      - Force a clean rebuild, even if already installed."
-    echo -e "  ${bold}Cleanup Mesa build${normal}        - Remove Mesa Git installation and clean up containers."
+    echo -e "  ${bold}Download Mesa (latest)${normal}    - Download Mesa from the latest mesa-maker release."
+    echo -e "  ${bold}Reinstall Mesa (force)${normal}    - Force a clean reinstall, even if already installed."
+    echo -e "  ${bold}Cleanup Mesa install${normal}      - Remove Mesa Git installation."
     echo -e "  ${bold}Exit${normal}                      - Exit this menu."
     echo ""
-    OPTION=$(ugum choose "Build Mesa (from Git)" "Rebuild Mesa (force)" "Cleanup Mesa build" "Exit")
+    OPTION=$(ugum choose "Download Mesa (latest)" "Reinstall Mesa (force)" "Cleanup Mesa install" "Exit")
     case "$OPTION" in
-        "Build Mesa (from Git)") OPTION="build" ;;
-        "Rebuild Mesa (force)") OPTION="rebuild" ;;
-        "Cleanup Mesa build") OPTION="cleanup" ;;
+        "Download Mesa (latest)") OPTION="download" ;;
+        "Reinstall Mesa (force)") OPTION="reinstall" ;;
+        "Cleanup Mesa install") OPTION="cleanup" ;;
         "Exit"|*) exit 0 ;;
     esac
 
@@ -55,61 +59,71 @@ _mesa-git ACTION="":
             echo "Removing Mesa installation at $MESA_INSTALL_DIR..."
             rm -rf "$MESA_INSTALL_DIR"
         fi
-        podman container prune -f 2>/dev/null || true
         echo -e "${green}Mesa Git cleanup completed${normal}"
         exit 0
     fi
 
-    if [ "$OPTION" = "rebuild" ]; then
-        echo -e "${yellow}Forcing rebuild of Mesa Git...${normal}"
+    if [ "$OPTION" = "reinstall" ]; then
+        echo -e "${yellow}Forcing reinstall of Mesa Git...${normal}"
         rm -rf "$MESA_INSTALL_DIR"
-    elif [ "$OPTION" = "build" ]; then
+    elif [ "$OPTION" = "download" ]; then
         if [ -d "$MESA_INSTALL_DIR" ]; then
             echo -e "${yellow}${bold}Mesa Git installation already exists at $MESA_INSTALL_DIR${normal}"
-            echo "Use the picker to rebuild or clean up."
+            echo "Use the picker to reinstall or clean up."
             exit 0
         fi
     fi
 
-    cat <<'CONTAINERFILEEOF' | podman --transient-store build \
-        --build-arg MESA_INSTALL_DIR="$MESA_INSTALL_DIR" \
-        --iidfile "$CTR_ID_FILE" -f -
-    ARG MESA_INSTALL_DIR=${MESA_INSTALL_DIR}
+    # Cleanup temp directory on exit
+    trap "rm -rf '$TEMP_DIR'" EXIT
 
-    FROM fedora:rawhide as builder
-    ARG MESA_INSTALL_DIR
-
-    RUN dnf -y update && \
-        dnf -y install gcc gcc-c++ make automake autoconf libtool \
-            meson ninja-build git wget python3-pyyaml \
-            bison flex glslang cmake libglvnd-core-devel \
-            libdrm-devel libX11-devel libXext-devel libXfixes-devel \
-            libXrandr-devel libXxf86vm-devel libxcb-devel libxshmfence-devel \
-            libva-devel libvdpau-devel wayland-devel wayland-protocols-devel \
-            vulkan-headers vulkan-loader-devel expat-devel zlib-devel \
-            elfutils-libelf-devel libunwind-devel python3-mako python3-ply llvm-devel clang-devel
-
-    WORKDIR /work
-    RUN git clone https://gitlab.freedesktop.org/mesa/mesa.git mesa
-    WORKDIR /work/mesa
-    RUN meson setup build64 --libdir lib64 --prefix "${MESA_INSTALL_DIR}" \
-        -Dgallium-drivers=radeonsi,softpipe,llvmpipe,zink \
-        -Dvulkan-drivers=amd \
-        -Dbuildtype=release || { echo "Meson setup failed. This may be a Mesa git issue."; exit 2; }
-    RUN ninja -C build64 install || { echo "Mesa build failed. This may be a Mesa git issue."; exit 2; }
-    FROM scratch
-    ARG MESA_INSTALL_DIR
-    COPY --from=builder ${MESA_INSTALL_DIR} ${MESA_INSTALL_DIR}
-    CONTAINERFILEEOF
-
-    podman create --name mesa-git-tmp $(cat "$CTR_ID_FILE")
-    podman cp mesa-git-tmp:$MESA_INSTALL_DIR $MESA_INSTALL_DIR
-    podman rm mesa-git-tmp
-    podman rmi $(cat "$CTR_ID_FILE")
-    rm "$CTR_ID_FILE"
-    echo -e "\n${bold}${green}Mesa Git build completed!${normal}\n"
+    echo -e "${blue}Fetching latest Mesa release information...${normal}"
+    
+    # Get download URL for mesa-git.zip from latest release
+    DOWNLOAD_URL=$(curl -s "$MESA_MAKER_REPO" | grep -o '"browser_download_url": *"[^"]*mesa-git\.zip"' | grep -o 'https://[^"]*')
+    
+    if [ -z "$DOWNLOAD_URL" ]; then
+        echo -e "${red}${bold}Error: Could not find mesa-git.zip in latest release${normal}"
+        echo "Please check https://github.com/xXJSONDeruloXx/mesa-maker/releases"
+        exit 1
+    fi
+    
+    echo -e "${blue}Downloading Mesa Git from: ${normal}$DOWNLOAD_URL"
+    
+    # Download the zip file
+    if ! curl -L -o "$TEMP_DIR/mesa-git.zip" "$DOWNLOAD_URL"; then
+        echo -e "${red}${bold}Error: Failed to download Mesa Git archive${normal}"
+        exit 1
+    fi
+    
+    echo -e "${blue}Extracting Mesa Git to $MESA_INSTALL_DIR...${normal}"
+    
+    # Create the installation directory
+    mkdir -p "$MESA_INSTALL_DIR"
+    
+    # Extract the zip file
+    if ! unzip -q "$TEMP_DIR/mesa-git.zip" -d "$TEMP_DIR"; then
+        echo -e "${red}${bold}Error: Failed to extract Mesa Git archive${normal}"
+        exit 1
+    fi
+    
+    # Find the extracted directory (should contain the mesa files)
+    EXTRACTED_DIR=$(find "$TEMP_DIR" -name "lib64" -type d | head -1 | xargs dirname)
+    
+    if [ -z "$EXTRACTED_DIR" ]; then
+        echo -e "${red}${bold}Error: Could not find lib64 directory in extracted archive${normal}"
+        exit 1
+    fi
+    
+    # Move contents to installation directory
+    cp -r "$EXTRACTED_DIR"/* "$MESA_INSTALL_DIR/"
+    
+    echo -e "\n${bold}${green}Mesa Git installation completed!${normal}\n"
     echo -e "${blue}═══════════════════════════════════════════════════════════════${normal}"
     echo -e "${bold}${blue}Installation Location:${normal} ${bold}$MESA_INSTALL_DIR${normal}"
+    if [ -f "$MESA_INSTALL_DIR/build-info.txt" ]; then
+        echo -e "${bold}${blue}Version:${normal} ${bold}$(cat "$MESA_INSTALL_DIR/build-info.txt" | head -1)${normal}"
+    fi
     echo -e "${yellow}${bold}Usage Examples:${normal}"
     echo -e "  ${bold}# Test OpenGL:${normal}"
     echo -e "  ${green}mesa-git glxinfo | grep 'OpenGL version'${normal}"
