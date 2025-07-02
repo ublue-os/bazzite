@@ -307,7 +307,11 @@ esac
 # Enable on-screen keyboard
 if [[ $imageref == *-deck* ]]; then
     # Enable keyboard here
-    :
+    if [[ $desktop_env == gnome ]]; then
+        mkdir -p ~liveuser/
+        echo >>~liveuser/.profile \
+            "gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true || :"
+    fi
 fi
 
 # Tweak the fedora-welcome app (gnome only) with our own text/icons
