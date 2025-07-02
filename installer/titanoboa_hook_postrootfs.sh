@@ -91,7 +91,7 @@ bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registr
 EOF
 
 # Enroll Secureboot Key
-cat <<EOF >>/usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
+cat <<'EOF' >>/usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 %post --erroronfail --nochroot
 set -oue pipefail
 
@@ -103,19 +103,22 @@ if [[ ! -d "/sys/firmware/efi" ]]; then
 	exit 0
 fi
 
-if [[ ! -f "\$SECUREBOOT_KEY" ]]; then
-	echo "Secure boot key not provided: \$SECUREBOOT_KEY"
+if [[ ! -f "$SECUREBOOT_KEY" ]]; then
+	echo "Secure boot key not provided: $SECUREBOOT_KEY"
 	exit 0
 fi
 
-SYS_ID="\$(cat /sys/devices/virtual/dmi/id/product_name)"
-if [[ ":Jupiter:Galileo:" =~ ":\$SYS_ID:" ]]; then
+SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+if [[ ":Jupiter:Galileo:" =~ ":$SYS_ID:" ]]; then
 	echo "Steam Deck hardware detected. Skipping key enrollment."
 	exit 0
 fi
 
-mokutil --timeout -1 || :
-echo -e "\$ENROLLMENT_PASSWORD\n\$ENROLLMENT_PASSWORD" | mokutil --import "\$SECUREBOOT_KEY" || :
+mokutil --timeout -1
+if ! { echo -e "${ENROLLMENT_PASSWORD}\n${ENROLLMENT_PASSWORD}" | mokutil --import "$SECUREBOOT_KEY"; }; then
+    err_code=$?
+    echo "Error enrolling Secure Boot Key. Error code='${err_code}'"
+    exit 1
 %end
 EOF
 
