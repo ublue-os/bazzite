@@ -71,8 +71,8 @@ imagetag="$(podman images --format '{{ .Tag }}\n' "$imageref" | head -1)"
 sbkey='https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
 
 # Secureboot Key Fetch
-mkdir -p /run/install/repo
-curl -Lo /run/install/repo/sb_pubkey.der "$sbkey"
+mkdir -p /usr/share/ublue-os
+curl -Lo /usr/share/ublue-os/sb_pubkey.der "$sbkey"
 
 # Default Kickstart
 cat <<EOF >>/usr/share/anaconda/interactive-defaults.ks
@@ -91,31 +91,31 @@ bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registr
 EOF
 
 # Enroll Secureboot Key
-cat <<EOF >>/usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
+cat <<'EOF' >>/usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 %post --erroronfail --nochroot
 set -oue pipefail
 
 readonly ENROLLMENT_PASSWORD="universalblue"
-readonly SECUREBOOT_KEY="/run/install/repo/sb_pubkey.der"
+readonly SECUREBOOT_KEY="/usr/share/ublue-os/sb_pubkey.der"
 
 if [[ ! -d "/sys/firmware/efi" ]]; then
 	echo "EFI mode not detected. Skipping key enrollment."
 	exit 0
 fi
 
-if [[ ! -f "\$SECUREBOOT_KEY" ]]; then
-	echo "Secure boot key not provided: \$SECUREBOOT_KEY"
+if [[ ! -f "$SECUREBOOT_KEY" ]]; then
+	echo "Secure boot key not provided: $SECUREBOOT_KEY"
 	exit 0
 fi
 
-SYS_ID="\$(cat /sys/devices/virtual/dmi/id/product_name)"
-if [[ ":Jupiter:Galileo:" =~ ":\$SYS_ID:" ]]; then
+SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
+if [[ ":Jupiter:Galileo:" =~ ":$SYS_ID:" ]]; then
 	echo "Steam Deck hardware detected. Skipping key enrollment."
 	exit 0
 fi
 
 mokutil --timeout -1 || :
-echo -e "\$ENROLLMENT_PASSWORD\n\$ENROLLMENT_PASSWORD" | mokutil --import "\$SECUREBOOT_KEY" || :
+echo -e "$ENROLLMENT_PASSWORD\n$ENROLLMENT_PASSWORD" | mokutil --import "$SECUREBOOT_KEY" || :
 %end
 EOF
 
