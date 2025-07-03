@@ -123,9 +123,11 @@ mokutil --timeout -1 || :
 echo -e "$ENROLLMENT_PASSWORD\n$ENROLLMENT_PASSWORD" | mokutil --import "$SECUREBOOT_KEY" || :
 
 # Prompt the user to review secure boot documentation
-rm -f "$SECUREBOOT_DOC_URL_QR" || :
-qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL" || :
-run0 --user=liveuser yad --on-top --button=Ok:0 --image="$SECUREBOOT_DOC_URL_QR" --text="<b>Secure Boot Key added:</b>\nPlease check the documentation to finish enrolling the key\n$SECUREBOOT_DOC_URL" || :
+if LC_ALL=C mokutil -t "$SECUREBOOT_KEY" | grep -q "is already in the enrollment request"; then
+    rm -f "$SECUREBOOT_DOC_URL_QR" || :
+    qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL" || :
+    run0 --user=liveuser yad --on-top --button=Ok:0 --image="$SECUREBOOT_DOC_URL_QR" --text="<b>Secure Boot Key added:</b>\nPlease check the documentation to finish enrolling the key\n$SECUREBOOT_DOC_URL" || :
+fi
 %end
 EOF
 
