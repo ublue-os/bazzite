@@ -10,6 +10,9 @@ mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 # TODO: Enable Anaconda Web UI whenever locale switching in kde lands
 # dnf install -qy anaconda-webui
 
+# Utilities for displaying a dialog prompting users to review secure boot documentation
+dnf install -qy --setopt=install_weak_deps=0 qrencode yad
+
 # Bazzite anaconda profile
 : ${VARIANT_ID:?}
 cat >/etc/anaconda/profile.d/bazzite.conf <<EOF
@@ -97,6 +100,8 @@ set -oue pipefail
 
 readonly ENROLLMENT_PASSWORD="universalblue"
 readonly SECUREBOOT_KEY="/usr/share/ublue-os/sb_pubkey.der"
+readonly SECUREBOOT_DOC_URL="https://docs.bazzite.gg/General/Installation_Guide/secure_boot/"
+readonly SECUREBOOT_DOC_URL_QR="/tmp/secure_boot_qr.png"
 
 if [[ ! -d "/sys/firmware/efi" ]]; then
 	echo "EFI mode not detected. Skipping key enrollment."
@@ -116,6 +121,11 @@ fi
 
 mokutil --timeout -1 || :
 echo -e "$ENROLLMENT_PASSWORD\n$ENROLLMENT_PASSWORD" | mokutil --import "$SECUREBOOT_KEY" || :
+
+# Prompt the user to review secure boot documentation
+rm -f "$SECUREBOOT_DOC_URL_QR" || :
+qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL" || :
+run0 --user=liveuser yad --on-top --button=Ok:0 --image="$SECUREBOOT_DOC_URL_QR" --text="<b>Secure Boot Key added:</b>\nPlease check the documentation to finish enrolling the key\n$SECUREBOOT_DOC_URL" || :
 %end
 EOF
 
@@ -319,4 +329,5 @@ if [[ $desktop_env == gnome ]]; then
     cp -f /usr/share/pixmaps/{fedora-logo-sprite,fedora-logo-icon}.png || :
 fi
 
+# Download qrrs to generate
 ###############################
