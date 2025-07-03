@@ -78,46 +78,46 @@ _mesa-git ACTION="":
     trap "rm -rf '$TEMP_DIR'" EXIT
 
     echo -e "${blue}Fetching latest Mesa release information...${normal}"
-    
+
     # Get download URL for mesa-git.zip from latest release
     DOWNLOAD_URL=$(curl -s "$MESA_MAKER_REPO" | grep -o '"browser_download_url": *"[^"]*mesa-git\.zip"' | grep -o 'https://[^"]*')
-    
+
     if [ -z "$DOWNLOAD_URL" ]; then
         echo -e "${red}${bold}Error: Could not find mesa-git.zip in latest release${normal}"
         echo "Please check https://github.com/xXJSONDeruloXx/mesa-maker/releases"
         exit 1
     fi
-    
+
     echo -e "${blue}Downloading Mesa Git from: ${normal}$DOWNLOAD_URL"
-    
+
     # Download the zip file
     if ! curl -L -o "$TEMP_DIR/mesa-git.zip" "$DOWNLOAD_URL"; then
         echo -e "${red}${bold}Error: Failed to download Mesa Git archive${normal}"
         exit 1
     fi
-    
+
     echo -e "${blue}Extracting Mesa Git to $MESA_INSTALL_DIR...${normal}"
-    
+
     # Create the installation directory
     mkdir -p "$MESA_INSTALL_DIR"
-    
+
     # Extract the zip file
     if ! unzip -q "$TEMP_DIR/mesa-git.zip" -d "$TEMP_DIR"; then
         echo -e "${red}${bold}Error: Failed to extract Mesa Git archive${normal}"
         exit 1
     fi
-    
+
     # Find the extracted directory (should contain the mesa files)
     EXTRACTED_DIR=$(find "$TEMP_DIR" -name "lib64" -type d | head -1 | xargs dirname)
-    
+
     if [ -z "$EXTRACTED_DIR" ]; then
         echo -e "${red}${bold}Error: Could not find lib64 directory in extracted archive${normal}"
         exit 1
     fi
-    
+
     # Move contents to installation directory
     cp -r "$EXTRACTED_DIR"/* "$MESA_INSTALL_DIR/"
-    
+
     echo -e "\n${bold}${green}Mesa Git installation completed!${normal}\n"
     echo -e "${blue}═══════════════════════════════════════════════════════════════${normal}"
     echo -e "${bold}${blue}Installation Location:${normal} ${bold}$MESA_INSTALL_DIR${normal}"
