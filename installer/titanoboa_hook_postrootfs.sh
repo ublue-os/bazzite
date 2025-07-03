@@ -331,5 +331,4 @@ if [[ $desktop_env == gnome ]]; then
     cp -f /usr/share/pixmaps/{fedora-logo-sprite,fedora-logo-icon}.png || :
 fi
 
-# Download qrrs to generate
 ###############################
