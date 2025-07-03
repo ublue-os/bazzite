@@ -72,6 +72,9 @@ imageref="${imageref##*://}"
 imageref="${imageref%%:*}"
 imagetag="$(podman images --format '{{ .Tag }}\n' "$imageref" | head -1)"
 sbkey='https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
+SECUREBOOT_KEY="/usr/share/ublue-os/sb_pubkey.der"
+SECUREBOOT_DOC_URL="https://docs.bazzite.gg/sb"
+SECUREBOOT_DOC_URL_QR="/usr/share/ublue-os/secure_boot_qr.png"
 
 # Secureboot Key Fetch
 mkdir -p /usr/share/ublue-os
@@ -84,6 +87,7 @@ ostreecontainer --url=$imageref:$imagetag --transport=containers-storage --no-si
 %include /usr/share/anaconda/post-scripts/disable-fedora-flatpak.ks
 %include /usr/share/anaconda/post-scripts/install-flatpaks.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
+%include /usr/share/anaconda/post-scripts/secureboot-docs.ks
 EOF
 
 # Signed Images
@@ -94,42 +98,46 @@ bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registr
 EOF
 
 # Enroll Secureboot Key
-cat <<'EOF' >>/usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
+cat <<EOF >>/usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 %post --erroronfail --nochroot
 set -oue pipefail
 
 readonly ENROLLMENT_PASSWORD="universalblue"
-readonly SECUREBOOT_KEY="/usr/share/ublue-os/sb_pubkey.der"
-readonly SECUREBOOT_DOC_URL="https://docs.bazzite.gg/General/Installation_Guide/secure_boot/"
-readonly SECUREBOOT_DOC_URL_QR="/tmp/secure_boot_qr.png"
+readonly SECUREBOOT_KEY="$SECUREBOOT_KEY"
 
 if [[ ! -d "/sys/firmware/efi" ]]; then
 	echo "EFI mode not detected. Skipping key enrollment."
 	exit 0
 fi
 
-if [[ ! -f "$SECUREBOOT_KEY" ]]; then
-	echo "Secure boot key not provided: $SECUREBOOT_KEY"
+if [[ ! -f "\$SECUREBOOT_KEY" ]]; then
+	echo "Secure boot key not provided: \$SECUREBOOT_KEY"
 	exit 0
 fi
 
-SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
-if [[ ":Jupiter:Galileo:" =~ ":$SYS_ID:" ]]; then
+SYS_ID="\$(cat /sys/devices/virtual/dmi/id/product_name)"
+if [[ ":Jupiter:Galileo:" =~ ":\$SYS_ID:" ]]; then
 	echo "Steam Deck hardware detected. Skipping key enrollment."
 	exit 0
 fi
 
 mokutil --timeout -1 || :
-echo -e "$ENROLLMENT_PASSWORD\n$ENROLLMENT_PASSWORD" | mokutil --import "$SECUREBOOT_KEY" || :
-
-# Prompt the user to review secure boot documentation
-if LC_ALL=C mokutil -t "$SECUREBOOT_KEY" | grep -q "is already in the enrollment request"; then
-    rm -f "$SECUREBOOT_DOC_URL_QR" || :
-    qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL" || :
-    run0 --user=liveuser yad --on-top --button=Ok:0 --image="$SECUREBOOT_DOC_URL_QR" --text="<b>Secure Boot Key added:</b>\nPlease check the documentation to finish enrolling the key\n$SECUREBOOT_DOC_URL" || :
-fi
+echo -e "\$ENROLLMENT_PASSWORD\n\$ENROLLMENT_PASSWORD" | mokutil --import "\$SECUREBOOT_KEY" || :
 %end
 EOF
+
+cat <<EOF >>/usr/share/anaconda/post-scripts/secureboot-docs.ks
+%post
+SECUREBOOT_KEY="$SECUREBOOT_KEY"
+SECUREBOOT_DOC_URL="$SECUREBOOT_DOC_URL"
+SECUREBOOT_DOC_URL_QR="$SECUREBOOT_DOC_URL_QR"
+
+LC_ALL=C mokutil -t "\$SECUREBOOT_KEY" | grep -q "is already in the enrollment request" && \
+    yad --on-top --button=Ok:0 --image="\$SECUREBOOT_DOC_URL_QR" --text="<b>Secure Boot Key added:</b>\nPlease check the documentation to finish enrolling the key\n\$SECUREBOOT_DOC_URL"
+%end
+EOF
+
+qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL"
 
 # Install Flatpaks
 cat <<'EOF' >>/usr/share/anaconda/post-scripts/install-flatpaks.ks
