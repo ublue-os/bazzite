@@ -308,9 +308,8 @@ esac
 if [[ $imageref == *-deck* ]]; then
     # Enable keyboard here
     if [[ $desktop_env == gnome ]]; then
-        mkdir -p ~liveuser/
-        echo >>~liveuser/.profile \
-            "gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true || :"
+        echo >>/etc/skel/.bash_profile \
+            "gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true >/dev/null 2>&1 || :"
     fi
 fi
 
