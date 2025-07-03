@@ -180,6 +180,8 @@ sections:
       - bazzite-section
       - utilities-section
     appids:
+      - io.github.radiolamp.mangojuice
+      - io.github.rfrench3.scopebuddy-gui
       - io.github.thetumultuousunicornofdarkness.cpu-x
       - io.github.arunsivaramanneo.GPUViewer
       - dev.deedles.Trayscale
@@ -192,8 +194,6 @@ sections:
       - io.github.fastrizwaan.WineZGUI
       - io.github.berarma.Oversteer
       - io.github.lawstorant.boxflat
-      - io.github.radiolamp.mangojuice
-      - io.missioncenter.MissionCenter
       - org.keepassxc.KeePassXC
       - com.bitwarden.desktop
       - org.qbittorrent.qBittorrent
