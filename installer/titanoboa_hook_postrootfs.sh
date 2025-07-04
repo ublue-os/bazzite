@@ -82,6 +82,16 @@ curl -Lo /usr/share/ublue-os/sb_pubkey.der "$sbkey"
 
 # Default Kickstart
 cat <<EOF >>/usr/share/anaconda/interactive-defaults.ks
+# Relabel the boot partition for the
+%pre-install --erroronfail --log=/tmp/repartitioning.log
+set -x
+xboot_dev=\$(findmnt -o SOURCE --nofsroot --noheadings -f --target /mnt/sysroot/boot)
+if [[ -z \$xboot_dev ]]; then
+  echo "ERROR: xboot_dev not found"
+  exit 1
+fi
+e2label "\$xboot_dev" "bazzite_xboot"
+%end
 ostreecontainer --url=$imageref:$imagetag --transport=containers-storage --no-signature-verification
 %include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
 %include /usr/share/anaconda/post-scripts/disable-fedora-flatpak.ks
