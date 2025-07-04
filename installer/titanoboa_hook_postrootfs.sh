@@ -269,12 +269,21 @@ efi_dev=$(systemd-repart --json=short "$DISK_PATH" 2>/dev/null |
     jq -r '.[] | select(.type == "esp").node')
 [[ -n ${efi_dev} ]] || { die_gui "EFI partition not found"; }
 xboot_dev=$(
-    systemd-repart --json=short "$DISK_PATH" 2>/dev/null |
-        jq -r '. as $a | [range(0;length) | select($a[.].type == "esp")][0] as $idx | $a[$idx+1].node'
-)
-[[ -n ${xboot_dev} ]] || { die_gui "XBOOT partition not found"; }
+    lsblk -J -p -f -o NAME,LABEL,SIZE,FSTYPE "$DISK_PATH" 2>/dev/null |
+        jq -r '.blockdevices[0].children[] | select(.fstype == "ext4") | "\(.name)\n\(.label // "")\n\(.size)"' |
+        yad --list --no-buttons \
+            --text="Double-click the XBOOT partition:" --width=500 --height=300 \
+            --column="Device" \
+            --column="Label" \
+            --column="Size" \
+            --print-column=1
+) || {
+    info "User cancelled during XBOOT partition selection"
+    exit 0
+}
+[[ -n "${xboot_dev}" ]] || die_gui "You must select an XBOOT partition."
 
-yad --text="This will restore the boot in the device $DISK_PATH, Proceed?" || {
+yad --text="This will restore the boot in the device $DISK_PATH, using $xboot_dev as the XBOOT partition. Proceed?" || {
     info "User cancelled during restoration confirmation"
     exit 0
 }
