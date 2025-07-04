@@ -239,7 +239,6 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install \
-        libinput-utils \
         bazaar \
         iwd \
         twitter-twemoji-fonts \
@@ -259,6 +258,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ryzenadj \
         ddcutil \
         input-remapper \
+        libinput-utils \
         i2c-tools \
         lm_sensors \
         fw-ectool \
