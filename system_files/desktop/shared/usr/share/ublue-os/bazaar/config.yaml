@@ -182,6 +182,7 @@ sections:
     appids:
       - io.github.radiolamp.mangojuice
       - io.github.rfrench3.scopebuddy-gui
+      - io.github.trigg.discover_overlay
       - io.github.thetumultuousunicornofdarkness.cpu-x
       - io.github.arunsivaramanneo.GPUViewer
       - dev.deedles.Trayscale
