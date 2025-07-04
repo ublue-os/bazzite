@@ -349,6 +349,7 @@ if [[ $imageref == *-deck* ]]; then
     if [[ $desktop_env == gnome ]]; then
         echo >>/etc/skel/.bash_profile \
             "gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true >/dev/null 2>&1 || :"
+        rm -rf /usr/share/gnome-shell/extensions/block-caribou-36@lxylxy123456.ercli.dev
     elif [[ $desktop_env == kde ]]; then
         mv /usr/share/ublue-os/backup/com.github.maliit.keyboard.desktop \
             /usr/share/applications/com.github.maliit.keyboard.desktop || :
