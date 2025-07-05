@@ -32,10 +32,6 @@ jobs:
           - bazzite-gnome-nvidia-open
           - bazzite-deck
           - bazzite-deck-gnome
-          - bazzite-surface
-          - bazzite-gnome-surface
-          - bazzite-surface-nvidia-open
-          - bazzite-gnome-surface-nvidia-open
           - bazzite-deck-nvidia
           # - bazzite-deck-nvidia-gnome
     steps:
