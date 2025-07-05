@@ -327,6 +327,18 @@ StartupNotify=true
 Terminal=false
 EOF
 
+### Nvidia specific tweaks ###
+
+# Warn the user about non functional Nvidia drivers
+if [[ $imageref == *-nvidia* ]]; then
+    cat <<'EOF' >>/etc/skel/.bash_profile
+{ yad --title="Warning" --text="$(</dev/stdin)" || true; } <<'WARNINGEOF'
+Nvidia drivers might not be functional on live isos.
+Please do not use them in benchmarks.
+WARNINGEOF
+EOF
+fi
+
 ### Desktop-enviroment specific tweaks ###
 
 # Determine desktop environment. Must match one of /usr/libexec/livesys/sessions.d/livesys-{desktop_env}
