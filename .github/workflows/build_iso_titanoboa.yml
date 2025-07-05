@@ -94,7 +94,7 @@ jobs:
           echo "ref=${ref}" >> $GITHUB_OUTPUT
 
       - name: Build ISOs
-        uses: Zeglius/titanoboa@feat/pre-initramfs-hook
+        uses: ublue-os/titanoboa@main
         id: build
         with:
           image-ref: ${{ steps.registry_case.outputs.lowercase }}/${{ steps.get-nondeck-ref.outputs.ref }}:${{ steps.generate-tag.outputs.tag }}
