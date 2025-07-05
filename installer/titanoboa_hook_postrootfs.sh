@@ -246,7 +246,7 @@ if [[ $PKEXEC_UID -eq 0 ]]; then
 fi
 
 _APP_NAME="Bazzite Bootloader Restoring Tool"
-DRY_RUN=${DRY_RUN:-1}
+DRY_RUN=${DRY_RUN:-0}
 MNT=/tmp/mnt
 trap 'umount --recursive $MNT/boot 2>/dev/null' EXIT
 
@@ -292,8 +292,9 @@ yad --text="This will restore the boot in the device $DISK_PATH, using $xboot_de
 mount --mkdir "$xboot_dev" "$MNT"/boot || die "Failed to mount XBOOT partition"
 mount "$efi_dev" "$MNT"/boot/efi || die "Failed to mount EFI partition"
 
-if [[ $DRY_RUN -ne 1 ]]; then
+if [[ $DRY_RUN -eq 1 ]]; then
     info "Script was executed with ${DRY_RUN@A}, skipping bootloader restoration..."
+    yad --text="Script was executed with ${DRY_RUN@A}, skipping bootloader restoration...." --button="OK:0"
 else
     if [[ -f $MNT/boot/bootupd-state.json ]]; then
         rm -vf $MNT/boot/bootupd-state.json &&
