@@ -82,6 +82,11 @@ curl -Lo /usr/share/ublue-os/sb_pubkey.der "$sbkey"
 
 # Default Kickstart
 cat <<EOF >>/usr/share/anaconda/interactive-defaults.ks
+# Remove the efi dir, must match efi_dir from the profile config
+%pre-install --erroronfail
+rm -rf /mnt/sysroot/boot/efi/EFI/fedora
+%end
+
 # Relabel the boot partition for the
 %pre-install --erroronfail --log=/tmp/repartitioning.log
 set -x
