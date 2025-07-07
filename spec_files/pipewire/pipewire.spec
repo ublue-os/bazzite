@@ -1,6 +1,6 @@
 %global majorversion 1
 %global minorversion 4
-%global microversion 1
+%global microversion 3
 
 %global apiversion   0.3
 %global spaversion   0.2
@@ -9,7 +9,7 @@
 %global ms_version   0.4.2
 
 # For rpmdev-bumpspec and releng automation
-%global baserelease 1
+%global baserelease 2
 
 #global snapdate   20210107
 #global gitcommit  b17db2cebc1a5ab2c01851d29c05f79cd2f262bb
@@ -234,10 +234,6 @@ Summary:        PipeWire JACK implementation
 License:        MIT
 Recommends:     %{name}%{?_isa} = %{version}-%{release}
 Requires:       %{name}-jack-audio-connection-kit-libs%{?_isa} = %{version}-%{release}
-# We don't conflict with JACK, we just override the JACK libjack.so
-# and JACK can only be used as a backend with module-jack-tunnel.
-#Conflicts:      jack-audio-connection-kit
-#Conflicts:      jack-audio-connection-kit-dbus
 # Replaces libjack subpackage
 %if ! (0%{?fedora} && 0%{?fedora} < 34)
 # Ensure this is provided by default to route all audio
@@ -433,6 +429,14 @@ Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 %description config-upmix
 This package contains the configuration files to support upmixing.
 
+%package config-raop
+Summary:        PipeWire configuration enabling the raop module
+License:        MIT
+Recommends:     %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+
+%description config-raop
+This package contains the configuration file to enable the RAOP module.
 
 %prep
 %autosetup -p1 %{?snapdate:-n %{name}-%{gitcommit}}
@@ -520,6 +524,9 @@ ln -s ../pipewire.conf.avail/20-upmix.conf \
 ln -s ../client.conf.avail/20-upmix.conf \
         %{buildroot}%{_datadir}/pipewire/client.conf.d/20-upmix.conf
 
+# raop config
+ln -s ../pipewire.conf.avail/50-raop.conf \
+        %{buildroot}%{_datadir}/pipewire/pipewire.conf.d/50-raop.conf
 
 %find_lang %{name}
 
@@ -562,6 +569,7 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %{_datadir}/pipewire/pipewire.conf
 %{_datadir}/pipewire/pipewire.conf.avail/10-rates.conf
 %{_datadir}/pipewire/pipewire.conf.avail/20-upmix.conf
+%{_datadir}/pipewire/pipewire.conf.avail/50-raop.conf
 %{_datadir}/pipewire/minimal.conf
 %{_datadir}/pipewire/filter-chain.conf
 %{_datadir}/pipewire/filter-chain/*.conf
@@ -892,21 +900,47 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %{_datadir}/pipewire/pipewire-pulse.conf.d/20-upmix.conf
 %endif
 
+%files config-raop
+%{_datadir}/pipewire/pipewire.conf.d/50-raop.conf
+
 %changelog
+* Thu May 22 2025 Christian Glombek <lorbus@fedoraproject.org> - 1.4.3-2
+- Add config-raop package with config enabling module-raop
+
+* Thu May 22 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.3-1
+- Update version to 1.4.3
+
+* Fri Apr 24 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.2-2
+- Rebuild for libcamera
+
+* Mon Apr 14 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.2-1
+- Update version to 1.4.2
+
 * Fri Mar 14 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.1-1
 - Update version to 1.4.1
 - Remove the Conflicts: with JACK, we can install both but if the
   pipewire version is installed, all goes to pipewire.
 
-* Fri Mar 07 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.0-1
+* Fri Mar 07 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.0-3
+- Always require jack-audio-connection-kit from jack-audio-connection-kit-libs
+  because the ld.so.conf is needed to build dependent packages
+  Resolves: rhbz#2345985
+
+* Fri Mar 07 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.0-2
+- Move the libjack.so ld.so.conf file to -libs.
+  Resolves: rhbz#2345985
+
+* Thu Mar 06 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.0-1
 - Update version to 1.4.0
 
-* Fri Mar 07 2025 Wim Taymans <wtaymans@redhat.com> - 1.2.7-5
-- Recommend jack-audio-connection-kit from jack-audio-connection-kit-libs
-  because the ld.so.conf is wanted to build dependent packages.
+* Mon Feb 24 2025 Wim Taymans <wtaymans@redhat.com> - 1.3.83-1
+- Update version to 1.3.83
 
-* Thu Feb 06 2025 Wim Taymans <wtaymans@redhat.com> - 1.2.7-4
-- Add some libcamera patches
+* Tue Feb 11 2025 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 1.3.82-2
+- Drop call to %sysusers_create_compat
+
+* Thu Feb 06 2025 Wim Taymans <wtaymans@redhat.com> - 1.3.82-1
+- Update version to 1.3.82
 
 * Sat Jan 18 2025 Fedora Release Engineering <releng@fedoraproject.org> - 1.2.7-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild

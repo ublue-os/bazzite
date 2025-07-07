@@ -64,7 +64,6 @@ sections:
       - net.retrodeck.retrodeck
       - org.libretro.RetroArch
       - page.kramo.Cartridges
-      - org.pegasus_frontend.Pegasus
       - com.github._0negal.Viper
       - info.cemu.Cemu
       - org.DolphinEmu.dolphin-emu
@@ -85,14 +84,12 @@ sections:
       - com.github.k4zmu2a.spacecadetpinball
       - sh.ppy.osu
       - com.pokemmo.PokeMMO
-      - com.github.Alcaro.Flips
       - com.etlegacy.ETLegacy
       - com.realm667.Wolfenstein_Blade_of_Agony
       - org.srb2.SRB2
       - org.srb2.SRB2Kart
       - org.supertuxproject.SuperTux
       - net.supertuxkart.SuperTuxKart
-      - io.github.limo_app.limo
   - title: "Streaming & Chat"
     subtitle: "Sprunk'd it."
     rows: 3
@@ -180,6 +177,11 @@ sections:
       - bazzite-section
       - utilities-section
     appids:
+      - io.github.limo_app.limo
+      - io.github.radiolamp.mangojuice
+      - io.github.rfrench3.scopebuddy-gui
+      - io.github.trigg.discover_overlay
+      - com.github.Alcaro.Flips
       - io.github.thetumultuousunicornofdarkness.cpu-x
       - io.github.arunsivaramanneo.GPUViewer
       - dev.deedles.Trayscale
@@ -192,8 +194,6 @@ sections:
       - io.github.fastrizwaan.WineZGUI
       - io.github.berarma.Oversteer
       - io.github.lawstorant.boxflat
-      - io.github.radiolamp.mangojuice
-      - io.missioncenter.MissionCenter
       - org.keepassxc.KeePassXC
       - com.bitwarden.desktop
       - org.qbittorrent.qBittorrent
