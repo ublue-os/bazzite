@@ -140,9 +140,7 @@ elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
     echo "Adding panel orientation for GPD Win 2"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
   fi
-fi
-
-if [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:" =~ ":$SYS_ID:" ]]; then
+elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
     echo "Adding panel orientation for ONEXPLAYER F1, ONEXFLY, & X1 Pro"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")
@@ -152,6 +150,14 @@ if [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:" =~ 
       echo "Adding GTTSize for ONEXPLAYER (32GB RAM)"
       NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=16256")
     fi
+  fi
+fi
+
+# Slide reboots randomly, acpi=strict seems to fix it
+if [[ ":SLIDE:" =~ ":$SYS_ID:" ]]; then
+  if [[ ! $KARGS =~ "acpi=strict" ]]; then
+    echo "Adding acpi=strict for Slide to avoid random reboots"
+    NEEDED_KARGS+=("--append-if-missing=acpi=strict")
   fi
 fi
 

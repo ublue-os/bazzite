@@ -1,0 +1,35 @@
+#!/bin/bash
+# Mesa Git Runner Script
+
+# Get the directory of this script or use a default install location
+MESA_DIR="/home/$USER/mesa-git"
+
+# Export Mesa-specific environment variables
+export LD_LIBRARY_PATH="$MESA_DIR/lib64:$LD_LIBRARY_PATH"
+export LIBGL_DRIVERS_PATH="$MESA_DIR/lib64/dri"
+export VK_ICD_FILENAMES="$MESA_DIR/share/vulkan/icd.d/radeon_icd.x86_64.json"
+export LIBVA_DRIVERS_PATH="$MESA_DIR/lib64/dri"
+export VDPAU_DRIVER_PATH="$MESA_DIR/lib64/vdpau"
+
+# Show info if no arguments passed
+if [ $# -eq 0 ]; then
+    echo "Mesa Git Runner Script"
+    echo "Usage: $0 <command> [arguments...]"
+    echo ""
+    echo "Environment variables set:"
+    echo "  LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+    echo "  LIBGL_DRIVERS_PATH=$LIBGL_DRIVERS_PATH"
+    echo "  VK_ICD_FILENAMES=$VK_ICD_FILENAMES"
+    echo "  LIBVA_DRIVERS_PATH=$LIBVA_DRIVERS_PATH"
+    echo "  VDPAU_DRIVER_PATH=$VDPAU_DRIVER_PATH"
+    echo ""
+    echo "Examples:"
+    echo "  $0 glxinfo"
+    echo "  $0 vulkaninfo"
+    echo "  $0 your-application"
+    echo "  $0 %command%    # For Steam launch option"
+    exit 0
+fi
+
+# Run the provided command
+exec "$@"

@@ -6,11 +6,10 @@ app/org.kde.haruna/x86_64/stable
 app/org.kde.filelight/x86_64/stable
 app/io.github.fastrizwaan.WineZGUI/x86_64/stable
 app/com.ranfdev.DistroShelf/x86_64/stable
-app/it.mijorus.gearlever/x86_64/stable
 app/com.github.tchx84.Flatseal/x86_64/stable
 app/com.github.Matoking.protontricks/x86_64/stable
 app/io.github.flattool.Warehouse/x86_64/stable
-app/net.davidotek.pupgui2/x86_64/stable
+app/com.vysp3r.ProtonPlus/x86_64/stable
 app/io.github.radiolamp.mangojuice/x86_64/stable
 runtime/org.freedesktop.Platform.VulkanLayer.MangoHud/x86_64/23.08
 runtime/org.freedesktop.Platform.VulkanLayer.vkBasalt/x86_64/23.08
