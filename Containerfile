@@ -93,7 +93,7 @@ RUN --mount=type=cache,dst=/var/cache \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
         rok/cdemu \
-        lizardbyte/beta; \
+        lizardbyte/stable; \
     do \
         echo "Enabling copr: $copr"; \
         dnf5 -y copr enable $copr; \
@@ -607,7 +607,7 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/webapp-manager \
         hhd-dev/hhd \
         che/nerd-fonts \
-        lizardbyte/beta \
+        lizardbyte/stable \
         rok/cdemu \
         hikariknight/looking-glass-kvmfr; \
     do \
