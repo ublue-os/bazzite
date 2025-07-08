@@ -164,7 +164,6 @@ sections:
       - org.standardnotes.standardnotes
       - com.slack.Slack
       - com.github.IsmaelMartinez.teams_for_linux
-      - org.ardour.Ardour
   - title: "Utilities"
     subtitle: "Stuff you didn't need until now."
     rows: 2
