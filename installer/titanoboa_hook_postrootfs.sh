@@ -213,6 +213,9 @@ cat >/usr/bin/bootloader_restore.sh <<'SCRIPTEOF'
 #!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /usr/bin/bash
 
 set -o pipefail
+if [[ $DEBUG -eq 1 ]]; then
+    set -x
+fi
 exec > >(tee -a /tmp/bootloader_restore.log) 2>&1
 echo >&2 "### START LOG $(date -u) ###"
 
