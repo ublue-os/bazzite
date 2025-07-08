@@ -11,7 +11,7 @@ css: |
   }
   .bazzite-section banner-text {
      padding: 50px;
-     color: #ffffff
+     color: #ffffff;
   }
   .bazzite-section title {
      color: #ffffff;
