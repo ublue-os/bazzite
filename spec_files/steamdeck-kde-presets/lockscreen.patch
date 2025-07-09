@@ -7,5 +7,5 @@ index 8a52bc5..081de18 100644
 -Autolock=false
 -LockOnResume=false
 +[Greeter][Wallpaper][org.kde.image][General]
-+Image=/usr/share/wallpapers/convergence.png
-+PreviewImage=/usr/share/wallpapers/convergence.png
++Image=/usr/share/wallpapers/convergence.jxl
++PreviewImage=/usr/share/wallpapers/convergence.jxl
