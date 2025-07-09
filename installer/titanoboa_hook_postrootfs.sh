@@ -148,7 +148,7 @@ SECUREBOOT_DOC_URL="$SECUREBOOT_DOC_URL"
 SECUREBOOT_DOC_URL_QR="$SECUREBOOT_DOC_URL_QR"
 
 LC_ALL=C mokutil -t "\$SECUREBOOT_KEY" | grep -q "is already in the enrollment request" && \
-    yad --timeout=-1 --on-top --button=Ok:0 --image="\$SECUREBOOT_DOC_URL_QR" --text="<b>Secure Boot Key added:</b>\nPlease check the documentation to finish enrolling the key\n\$SECUREBOOT_DOC_URL"
+    yad --timeout=0 --on-top --button=Ok:0 --image="\$SECUREBOOT_DOC_URL_QR" --text="<b>Secure Boot Key added:</b>\nPlease check the documentation to finish enrolling the key\n\$SECUREBOOT_DOC_URL"
 %end
 EOF
 
@@ -225,7 +225,7 @@ yad() {
     command run0 --user="$PKEXEC_UID" -- command yad \
         --title="$_APP_NAME" \
         --separator=$'\n' \
-        --timeout=-1 \
+        --timeout=0 \
         "$@"
 }
 
