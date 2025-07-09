@@ -142,7 +142,7 @@ echo -e "\$ENROLLMENT_PASSWORD\n\$ENROLLMENT_PASSWORD" | mokutil --import "\$SEC
 EOF
 
 cat <<EOF >>/usr/share/anaconda/post-scripts/secureboot-docs.ks
-%post
+%post --nochroot
 SECUREBOOT_KEY="$SECUREBOOT_KEY"
 SECUREBOOT_DOC_URL="$SECUREBOOT_DOC_URL"
 SECUREBOOT_DOC_URL_QR="$SECUREBOOT_DOC_URL_QR"
