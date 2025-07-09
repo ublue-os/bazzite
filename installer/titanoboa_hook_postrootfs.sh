@@ -191,8 +191,9 @@ EOF
         brew-setup.service \
         rpm-ostreed-automatic.timer \
         uupd.timer \
-        ublue-system-setup.service \
         ublue-guest-user.service \
+        ublue-os-media-automount.service \
+        ublue-system-setup.service \
         check-sb-key.service; do
         systemctl disable $s
     done
