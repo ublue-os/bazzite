@@ -717,7 +717,10 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-caribou-blocker \
             sddm && \
         dnf5 -y remove \
-            malcontent-control \
+            malcontent-control && \
+        ln -sf /usr/share/wallpapers/convergence.png /usr/share/backgrounds/default.jxl && \
+        ln -sf /usr/share/wallpapers/convergence.png /usr/share/backgrounds/default-dark.jxl && \
+        rm -f /usr/share/backgrounds/default.xml \
     ; fi && \
     /ctx/cleanup
 
