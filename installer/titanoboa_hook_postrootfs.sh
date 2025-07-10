@@ -82,6 +82,19 @@ curl -Lo /usr/share/ublue-os/sb_pubkey.der "$sbkey"
 
 # Default Kickstart
 cat <<EOF >>/usr/share/anaconda/interactive-defaults.ks
+
+# Check if there is a bitlocker partition and ask the user to disable it
+%pre --erroronfail --log=/tmp/detect_bitlocker.log
+DOCS_QR=/tmp/detect_bitlocker_qr.png
+IS_BITLOCKER=\$(lsblk -o FSTYPE --json | jq '.blockdevices | map(select(.fstype == "BitLocker")) | . != []')
+if [[ \$IS_BITLOCKER =~ true ]]; then
+    qrencode -o \$DOCS_QR "https://www.wikihow.com/Turn-Off-BitLocker"
+    run0 --user=liveuser yad --timeout=0 --image=\$DOCS_QR \
+        --text="<b>Windows Bitlocker partition detected</b>\nPlease, disable it in Windows or delete it in GNOME Disks\nor disconnect its storage drive." || :
+    exit 1
+fi
+%end
+
 # Remove the efi dir, must match efi_dir from the profile config
 %pre-install --erroronfail
 rm -rf /mnt/sysroot/boot/efi/EFI/fedora
