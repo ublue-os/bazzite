@@ -49,8 +49,6 @@ jobs:
 
           if [[ "${{ github.ref_name }}" == "testing" ]]; then
               TAG="testing"
-          else # DELETEME: This is for testing purposes
-              TAG="testing"
           fi
 
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -114,7 +112,7 @@ jobs:
           echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
 
       - name: Upload ISOs and Checksum to Job Artifacts
-        # if: github.ref_name == 'testing'
+        if: github.ref_name == 'testing'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
