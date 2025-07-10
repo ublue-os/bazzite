@@ -7,7 +7,6 @@ on:
 
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-  ENABLE_UPLOAD: false # TODO: remove this whenever isos are stable
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}-iso
@@ -32,12 +31,8 @@ jobs:
           - bazzite-gnome-nvidia-open
           - bazzite-deck
           - bazzite-deck-gnome
-          - bazzite-surface
-          - bazzite-gnome-surface
-          - bazzite-surface-nvidia-open
-          - bazzite-gnome-surface-nvidia-open
           - bazzite-deck-nvidia
-          - bazzite-deck-nvidia-gnome
+          # - bazzite-deck-nvidia-gnome
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
@@ -97,9 +92,10 @@ jobs:
         with:
           image-ref: ${{ steps.registry_case.outputs.lowercase }}/${{ steps.get-nondeck-ref.outputs.ref }}:${{ steps.generate-tag.outputs.tag }}
           container-image: ${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}
-          # TODO (@Zeglius): Remove "webui" prefix once this becomes the main ISO
-          iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-webui-amd64.iso
+          # TODO (@Zeglius): Remove "liveiso" prefix once this becomes the main ISO
+          iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-liveiso-amd64.iso
           flatpaks-list: ${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}/flatpaks
+          hook-pre-initramfs: ${{ github.workspace }}/installer/titanoboa_hook_preinitramfs.sh
           hook-post-rootfs: ${{ github.workspace }}/installer/titanoboa_hook_postrootfs.sh
 
       - name: Move ISOs to Upload Directory
@@ -107,9 +103,11 @@ jobs:
         shell: bash
         run: |
           ISO_UPLOAD_DIR=${{ github.workspace }}/upload
-          mkdir ${ISO_UPLOAD_DIR}
-          mv ${{ steps.build.outputs.iso-dest }} ${ISO_UPLOAD_DIR}
-          sha256sum ${{ steps.build.outputs.iso-dest }} > ${ISO_UPLOAD_DIR}/$(basename ${{ steps.build.outputs.iso-dest }})-CHECKSUM
+          DEST=${ISO_UPLOAD_DIR}/$(basename ${{ steps.build.outputs.iso-dest }})
+
+          mkdir -p ${ISO_UPLOAD_DIR}
+          mv ${{ steps.build.outputs.iso-dest }} ${DEST}
+          sha256sum ${DEST} > ${DEST}-CHECKSUM
           echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
 
       - name: Upload ISOs and Checksum to Job Artifacts
@@ -124,8 +122,7 @@ jobs:
           overwrite: true
 
       - name: Upload ISOs and Checksum to R2
-        # TODO: remove env.ENABLE_UPLOAD check whenever isos are stable
-        if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main' && env.ENABLE_UPLOAD == 'true'
+        if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
         shell: bash
         env:
           RCLONE_CONFIG_R2_TYPE: s3
