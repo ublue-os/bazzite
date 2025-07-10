@@ -340,7 +340,7 @@ cat >/usr/share/applications/bazzite_bootloader_restoring_tool.desktop <<'EOF'
 [Desktop Entry]
 Type=Application
 Icon=tools-wizard-symbolic
-Name=Bazzite Bootloader Restoring Tool
+Name=Bazzite Bootloader Restoring Tool BETA
 Comment=Restore the bootloader of an installation if has been overriden by Windows
 Keywords=bootloader;fix;grub;windows
 Categories=System;Utility
