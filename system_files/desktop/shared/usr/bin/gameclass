@@ -22,7 +22,7 @@ fi
 if [[ -z "$COMMAND" ]]; then
 	shift $((OPTIND -1))
         COMMAND=''
-        # Quote all arguments that contain whitespace
+        # Quote all arguments which contain whitespace
         for i in "$@"; do
             [[ $i =~ ( ) ]] && i=${i@Q}
             COMMAND="$COMMAND $i"
