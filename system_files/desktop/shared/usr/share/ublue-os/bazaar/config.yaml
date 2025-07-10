@@ -181,6 +181,7 @@ sections:
       - io.github.rfrench3.scopebuddy-gui
       - io.github.trigg.discover_overlay
       - com.github.Alcaro.Flips
+      - io.github.ilya_zlobintsev.LACT
       - io.github.thetumultuousunicornofdarkness.cpu-x
       - io.github.arunsivaramanneo.GPUViewer
       - dev.deedles.Trayscale
