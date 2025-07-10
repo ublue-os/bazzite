@@ -2,7 +2,7 @@ Name:           sunshine
 Version:        2025.101.215655
 Release:        100%{?dist}
 Summary:        Corrects a name change issue between original unofficial sunshine builds and the new official ones
-License:    	GPLv2
+License:        GPLv3
 URL:            https://github.com/ublue-os/bazzite
 BuildArch:      noarch
 
