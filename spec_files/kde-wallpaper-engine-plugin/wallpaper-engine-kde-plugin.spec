@@ -49,7 +49,7 @@ Requires:      qt6-qtwebsockets-devel
 %{name} is a wallpaper plugin integrating wallpaper engine into the KDE wallpaper settings.
 
 %prep
-git clone --single-branch --branch main https://github.com/catsout/wallpaper-engine-kde-plugin %{_builddir}/%{name}-%{version}
+git clone --single-branch --branch main https://github.com/bazzite-org/wallpaper-engine-kde-plugin %{_builddir}/%{name}-%{version}
 
 cd %{_builddir}/%{name}-%{version}
 git checkout %{commit}
