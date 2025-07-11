@@ -33,11 +33,9 @@ COMMAND=$(printf %s "$COMMAND")
 function get_exe_window {
 	local windowlist ; windowlist=$( wmctrl -l -p )
 	local windowcount ; windowcount=$( echo "$windowlist" | wc -l )
-	local n ; n=1
 
-	while [[ "$n" -le "$windowcount" ]]; do
+	for (( n = 1 ; n <= windowcount ; n++ )); do
 		local window ; window=$( echo "$windowlist" | sed -n "$n"p )
-		((n++))
 
 		local wid ; wid=$( echo "$window" | awk '{ print $1 }' )
 		local pid ; pid=$( echo "$window" | awk '{ print $3 }' )
