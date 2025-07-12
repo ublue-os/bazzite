@@ -93,7 +93,7 @@ jobs:
           image-ref: ${{ steps.registry_case.outputs.lowercase }}/${{ steps.get-nondeck-ref.outputs.ref }}:${{ steps.generate-tag.outputs.tag }}
           container-image: ${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}
           # TODO (@Zeglius): Remove "liveiso" prefix once this becomes the main ISO
-          iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-liveiso-amd64.iso
+          iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-live.iso
           flatpaks-list: ${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}/flatpaks
           hook-pre-initramfs: ${{ github.workspace }}/installer/titanoboa_hook_preinitramfs.sh
           hook-post-rootfs: ${{ github.workspace }}/installer/titanoboa_hook_postrootfs.sh
