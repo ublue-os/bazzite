@@ -401,4 +401,17 @@ if [[ $desktop_env == gnome ]]; then
     cp -f /usr/share/pixmaps/{fedora-logo-sprite,fedora-logo-icon}.png || :
 fi
 
+# Let only browser/installer in the task-bar/dock
+if [[ $desktop_env == kde ]]; then
+    sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:anaconda.desktop,preferred:\/\/filemanager<\/default>/' \
+        /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml
+elif [[ $desktop_env == gnome ]]; then
+    cat >/usr/share/glib-2.0/schemas/zz2-org.gnome.shell.gschema.override <<EOF
+[org.gnome.shell]
+welcome-dialog-last-shown-version='4294967295'
+favorite-apps = ['anaconda.desktop', 'org.mozilla.firefox.desktop', 'org.gnome.Nautilus.desktop']
+EOF
+    glib-compile-schemas /usr/share/glib-2.0/schemas
+fi
+
 ###############################
