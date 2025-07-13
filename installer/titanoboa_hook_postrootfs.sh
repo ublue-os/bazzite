@@ -414,4 +414,23 @@ EOF
     glib-compile-schemas /usr/share/glib-2.0/schemas
 fi
 
+# Add support for controllers
+_tmp=$(mktemp -d)
+(
+    set -eo pipefail
+    git clone https://github.com/hhd-dev/jkbd "$_tmp"
+    cd "$_tmp"
+    python -m venv .venv
+    #shellcheck disable=1091
+    source .venv/bin/activate
+    pip install build installer setuptools wheel
+    python -m build --wheel --no-isolation
+    python -m installer --prefix=/usr --destdir=/ dist/*.whl
+    mkdir -p /usr/lib/systemd/system/
+    install -m644 usr/lib/systemd/system/jkbd.service /usr/lib/systemd/system/jkbd.service
+    systemctl enable jkbd.service
+) || :
+rm -rf "$_tmp"
+unset -v _tmp
+
 ###############################
