@@ -380,7 +380,7 @@ esac
 rm -vf /etc/skel/.config/autostart/steam*.desktop
 
 # Remove packages that shouldnt be used in a live session
-dnf -yq remove steam || :
+dnf -yq remove steam lutris || :
 
 # Enable on-screen keyboard
 if [[ $imageref == *-deck* ]]; then
