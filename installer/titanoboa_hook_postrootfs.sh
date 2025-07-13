@@ -219,9 +219,6 @@ EOF
     done
 )
 
-# Dont start Steam at login
-rm -vf /etc/skel/.config/autostart/steam*.desktop
-
 # Add bootloader restoring script
 cat >/usr/bin/bootloader_restore.sh <<'SCRIPTEOF'
 #!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /usr/bin/bash
@@ -378,6 +375,12 @@ plasma*) desktop_env=kde ;;
 sway*) desktop_env=sway ;;
 xfce*) desktop_env=xfce ;;
 esac
+
+# Dont start Steam at login
+rm -vf /etc/skel/.config/autostart/steam*.desktop
+
+# Remove packages that shouldnt be used in a live session
+dnf -yq remove steam || :
 
 # Enable on-screen keyboard
 if [[ $imageref == *-deck* ]]; then
