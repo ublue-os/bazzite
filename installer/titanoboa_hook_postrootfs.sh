@@ -426,6 +426,7 @@ _tmp=$(mktemp -d)
     pip install build installer setuptools wheel
     python -m build --wheel --no-isolation
     python -m installer --prefix=/usr --destdir=/ dist/*.whl
+    sed -i '1s|.*|#!/usr/bin/python|' /usr/bin/jkbd
     mkdir -p /usr/lib/systemd/system/
     install -m644 usr/lib/systemd/system/jkbd.service /usr/lib/systemd/system/jkbd.service
     systemctl enable jkbd.service
