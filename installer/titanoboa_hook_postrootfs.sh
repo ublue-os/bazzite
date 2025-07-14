@@ -418,6 +418,7 @@ fi
 _tmp=$(mktemp -d)
 (
     set -eo pipefail
+    dnf -yq install python-evdev python-rich
     git clone https://github.com/hhd-dev/jkbd "$_tmp"
     cd "$_tmp"
     python -m venv .venv
