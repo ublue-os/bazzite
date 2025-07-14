@@ -425,17 +425,6 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-disk-utility \
             krunner-bazaar \
             ptyxis && \
-        dnf5 -y swap \
-        --repo=terra-extras \
-            kf6-kio kf6-kio && \
-        dnf5 versionlock add \
-            kf6-kio-core \
-            kf6-kio-core-libs \
-            kf6-kio-doc \
-            kf6-kio-file-widgets \
-            kf6-kio-gui \
-            kf6-kio-widgets \
-            kf6-kio-widgets-libs && \
         dnf5 -y remove \
             plasma-welcome \
             plasma-welcome-fedora \
