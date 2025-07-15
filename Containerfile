@@ -342,6 +342,11 @@ RUN --mount=type=cache,dst=/var/cache \
     cp -r /tmp/scopebuddy/ScopeBuddy-*/bin/* /usr/bin/ && \
     /ctx/cleanup
 
+# Install OpenRGB (test)
+dnf5 -y install \
+        https://openrgb.org/releases/release_0.9/openrgb_0.9_x86_64_f36_b5f46e3.rpm && \
+    /ctx/cleanup
+
 # Install Steam & Lutris, plus supporting packages
 # Downgrade ibus to fix an issue with the Steam keyboard
 RUN --mount=type=cache,dst=/var/cache \
