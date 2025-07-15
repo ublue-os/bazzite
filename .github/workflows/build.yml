@@ -79,6 +79,7 @@ jobs:
           - base_name: bazzite-deck
           - base_name: bazzite-deck-nvidia
           - base_image_name: silverblue
+          - target_nvidia_flavor: nvidia
           
           #- base_name: bazzite
           #  target_nvidia_flavor: nvidia
