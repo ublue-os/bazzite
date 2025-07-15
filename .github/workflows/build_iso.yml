@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         image_name:
-          - bazzite
+          #- bazzite
           - bazzite-nvidia
           - bazzite-nvidia-open
           #- bazzite-gnome
