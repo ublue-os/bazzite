@@ -219,9 +219,6 @@ EOF
     done
 )
 
-# Dont start Steam at login
-rm -vf /etc/skel/.config/autostart/steam*.desktop
-
 # Add bootloader restoring script
 cat >/usr/bin/bootloader_restore.sh <<'SCRIPTEOF'
 #!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /usr/bin/bash
@@ -379,6 +376,12 @@ sway*) desktop_env=sway ;;
 xfce*) desktop_env=xfce ;;
 esac
 
+# Dont start Steam at login
+rm -vf /etc/skel/.config/autostart/steam*.desktop
+
+# Remove packages that shouldnt be used in a live session
+dnf -yq remove steam lutris || :
+
 # Enable on-screen keyboard
 if [[ $imageref == *-deck* ]]; then
     # Enable keyboard here
@@ -397,5 +400,39 @@ if [[ $desktop_env == gnome ]]; then
     sed -i 's| Fedora| Bazzite|' /usr/share/anaconda/gnome/fedora-welcome || :
     cp -f /usr/share/pixmaps/{fedora-logo-sprite,fedora-logo-icon}.png || :
 fi
+
+# Let only browser/installer in the task-bar/dock
+if [[ $desktop_env == kde ]]; then
+    sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:liveinst.desktop,preferred:\/\/filemanager<\/default>/' \
+        /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml
+elif [[ $desktop_env == gnome ]]; then
+    cat >/usr/share/glib-2.0/schemas/zz2-org.gnome.shell.gschema.override <<EOF
+[org.gnome.shell]
+welcome-dialog-last-shown-version='4294967295'
+favorite-apps = ['liveinst.desktop', 'org.mozilla.firefox.desktop', 'org.gnome.Nautilus.desktop']
+EOF
+    glib-compile-schemas /usr/share/glib-2.0/schemas
+fi
+
+# Add support for controllers
+_tmp=$(mktemp -d)
+(
+    set -eo pipefail
+    dnf -yq install python-evdev python-rich
+    git clone https://github.com/hhd-dev/jkbd "$_tmp"
+    cd "$_tmp"
+    python -m venv .venv
+    #shellcheck disable=1091
+    source .venv/bin/activate
+    pip install build installer setuptools wheel
+    python -m build --wheel --no-isolation
+    python -m installer --prefix=/usr --destdir=/ dist/*.whl
+    sed -i '1s|.*|#!/usr/bin/python|' /usr/bin/jkbd
+    mkdir -p /usr/lib/systemd/system/
+    install -m644 usr/lib/systemd/system/jkbd.service /usr/lib/systemd/system/jkbd.service
+    systemctl enable jkbd.service
+) || :
+rm -rf "$_tmp"
+unset -v _tmp
 
 ###############################
