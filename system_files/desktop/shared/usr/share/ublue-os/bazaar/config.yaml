@@ -59,6 +59,7 @@ sections:
       - io.mrarm.mcpelauncher
       - org.vinegarhq.Sober
       - org.zdoom.GZDoom
+      - org.zdoom.Raze
       - org.openmw.OpenMW
       - dev.goats.xivlauncher
       - net.retrodeck.retrodeck
