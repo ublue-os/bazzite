@@ -18,3 +18,4 @@ org.vim.Vim
 io.github.zyedidia.micro
 com.helix_editor.Helix
 app.devsuite.Ptyxis
+dev.lizardbyte.app.Sunshine
