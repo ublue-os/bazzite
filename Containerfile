@@ -246,7 +246,7 @@ RUN --mount=type=cache,dst=/var/cache \
         lato-fonts \
         fira-code-fonts \
         nerd-fonts \
-        sunshine \
+        #sunshine \ #removed
         python3-pip \
         libadwaita \
         duperemove \
@@ -312,7 +312,8 @@ RUN --mount=type=cache,dst=/var/cache \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo \
-        waydroid \
+        #waydroid \ #removed
+        openrgb \ #added
         cage \
         wlr-randr && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
@@ -341,11 +342,6 @@ RUN --mount=type=cache,dst=/var/cache \
     tar --no-same-owner --no-same-permissions --no-overwrite-dir -xvzf /tmp/scopebuddy.tar.gz -C /tmp/scopebuddy && \
     rm -f /tmp/scopebuddy.tar.gz && \
     cp -r /tmp/scopebuddy/ScopeBuddy-*/bin/* /usr/bin/ && \
-    /ctx/cleanup
-
-# Install OpenRGB (test)
-dnf5 -y install \
-        https://openrgb.org/releases/release_0.9/openrgb_0.9_x86_64_f36_b5f46e3.rpm && \
     /ctx/cleanup
 
 # Install Steam & Lutris, plus supporting packages
