@@ -11,7 +11,6 @@ REGISTRY = "docker://ghcr.io/ublue-os/"
 IMAGE_MATRIX = {
     "base": ["desktop", "deck", "nvidia-closed", "nvidia-open"],
     "de": ["kde", "gnome"],
-    "image_flavor": ["main", "asus", "surface"],
 }
 
 RETRIES = 3
@@ -32,8 +31,8 @@ OTHER_NAMES = {
     "kde": "### KDE Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
     "gnome": "### Gnome Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
     "nvidia": "### Nvidia Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
-    "asus": "### Asus Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
-    "surface": "### Surface Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
+    # "asus": "### Asus Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
+    # "surface": "### Surface Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
 }
 
 COMMITS_FORMAT = "### Commits\n| Hash | Subject |\n| --- | --- |{commits}\n\n"
@@ -81,32 +80,26 @@ BLACKLIST_VERSIONS = [
 
 
 def get_images():
-    for base, de, image_flavor in product(*IMAGE_MATRIX.values()):
+    for base, de in product(*IMAGE_MATRIX.values()):
         img = "bazzite"
         if base == "deck":
-            if image_flavor == "asus":
-                img += "-ally"
-            else:
-                img += "-deck"
+            img += "-deck"
 
         if de == "gnome":
             img += "-gnome"
-
-        if base != "deck" and image_flavor == "asus":
-            img += "-asus"
 
         if base == "nvidia-closed":
             img += "-nvidia"
         elif base == "nvidia-open":
             img += "-nvidia-open"
 
-        yield img, base, de, image_flavor
+        yield img, base, de
 
 
 def get_manifests(target: str):
     out = {}
     imgs = list(get_images())
-    for j, (img, _, _, _) in enumerate(imgs):
+    for j, (img, _, _) in enumerate(imgs):
         output = None
         print(f"Getting {img}:{target} manifest ({j+1}/{len(imgs)}).")
         for i in range(RETRIES):
@@ -182,7 +175,7 @@ def get_package_groups(prev: dict[str, Any], manifests: dict[str, Any]):
 
     # Find common packages
     first = True
-    for img, base, de, image_flavor in get_images():
+    for img, base, de in get_images():
         if img not in pkg:
             continue
 
@@ -199,14 +192,10 @@ def get_package_groups(prev: dict[str, Any], manifests: dict[str, Any]):
     # Find other packages
     for t, other in others.items():
         first = True
-        for img, base, de, image_flavor in get_images():
+        for img, base, de in get_images():
             if img not in pkg:
                 continue
 
-            if t == "asus" and image_flavor != "asus":
-                continue
-            if t == "surface" and image_flavor != "surface":
-                continue
             if t == "nvidia" and "nvidia" not in base:
                 continue
             if t == "kde" and de != "kde":
