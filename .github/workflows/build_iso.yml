@@ -23,7 +23,7 @@ jobs:
       matrix:
         image_name:
           #- bazzite
-          - bazzite-nvidia
+          #- bazzite-nvidia
           - bazzite-nvidia-open
           #- bazzite-gnome
           #- bazzite-gnome-nvidia
