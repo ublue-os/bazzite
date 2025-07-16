@@ -313,10 +313,12 @@ RUN --mount=type=cache,dst=/var/cache \
         rocm-opencl \
         rocm-clinfo \
         #waydroid \ #removed
-    #start added        
+        cage \
+        wlr-randr
+#start added        
         openrgb \
     #opengamepadui deps
-        gcc-libs \
+        #gcc-libs \
         #glibc \
         #libevdev \
         #libX11 \
@@ -324,13 +326,11 @@ RUN --mount=type=cache,dst=/var/cache \
         #libXdmcp \
         #libXext \
         #libXres \
-        #ryzenadj \
         #mangoapp \
         #nmcli \
         #firejail \
     #end opengamepadui deps
-        cage \
-        wlr-randr && \
+        && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
     #setcap 'cap_sys_admin+p' /usr/bin/sunshine-v* && \
     dnf5 -y --setopt=install_weak_deps=False install \
