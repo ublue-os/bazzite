@@ -260,7 +260,14 @@ get-lsfg ACTION="prompt":
             exit 1
         fi
 
-        PLUGIN_URL="https://github.com/xXJSONDeruloXx/decky-lossless-scaling-vk/releases/download/v0.3.1/Lossless.Scaling.zip"
+        API_URL="https://api.github.com/repos/xXJSONDeruloXx/decky-lossless-scaling-vk/releases/latest"
+        PLUGIN_URL=$(timeout 30 curl -s "$API_URL" | grep "browser_download_url" | grep ".zip" | cut -d '"' -f 4 || echo "")
+
+        if [ -z "$PLUGIN_URL" ]; then
+            echo "Failed to fetch the latest Decky Lossless Scaling release or API timeout. Exiting..."
+            exit 1
+        fi
+
         PLUGIN_NAME="Lossless-Scaling"
         PLUGIN_DIR="$HOME/homebrew/plugins"
 
