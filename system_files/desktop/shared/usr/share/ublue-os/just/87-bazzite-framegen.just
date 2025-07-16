@@ -202,7 +202,7 @@ get-framegen ACTION="prompt":
 get-lsfg ACTION="prompt":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    
+
     function check_lsfg_installed() {
         INSTALL_PATH="$HOME/.local"
         if [[ -f "$INSTALL_PATH/lib/liblsfg-vk.so" ]] && [[ -f "$INSTALL_PATH/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
@@ -211,7 +211,7 @@ get-lsfg ACTION="prompt":
             echo "${red}${bold}lsfg-vk is not installed.${normal}"
         fi
     }
-    
+
     function check_decky_lsfg_installed() {
         PLUGIN_DIR="$HOME/homebrew/plugins/Lossless Scaling"
         if [[ -d "$PLUGIN_DIR" ]]; then
@@ -220,7 +220,7 @@ get-lsfg ACTION="prompt":
             echo "${red}${bold}Decky Lossless Scaling plugin is not installed.${normal}"
         fi
     }
-    
+
     OPTION={{ ACTION }}
     if [ "$OPTION" == "prompt" ]; then
         echo ""
@@ -245,7 +245,7 @@ get-lsfg ACTION="prompt":
         echo "  Use 'uninstall' to remove lsfg-vk."
         exit 0
     fi
-    
+
     if [ "${OPTION,,}" == "install" ] || [ "${OPTION,,}" == "install lsfg-vk directly" ]; then
         echo "Installing lsfg-vk directly..."
         curl -sSf https://pancake.gay/lsfg-vk.sh | sh
@@ -355,31 +355,31 @@ get-lsfg ACTION="prompt":
         rm -rf "$TEMP_DIR"
     elif [ "${OPTION,,}" == "uninstall" ] || [ "${OPTION,,}" == "uninstall lsfg-vk" ]; then
         echo "Uninstalling lsfg-vk..."
-        
+
         # Remove lsfg-vk layer files
         INSTALL_PATH="$HOME/.local"
         if [[ -f "$INSTALL_PATH/lib/liblsfg-vk.so" ]]; then
             rm -v "$INSTALL_PATH/lib/liblsfg-vk.so"
             echo "Removed lsfg-vk library"
         fi
-        
+
         if [[ -f "$INSTALL_PATH/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
             rm -v "$INSTALL_PATH/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
             echo "Removed lsfg-vk Vulkan layer"
         fi
-        
+
         # Remove lsfg-vk binary if it exists (legacy cleanup)
         if [[ -f "$HOME/.local/bin/lsfg-vk" ]]; then
             rm "$HOME/.local/bin/lsfg-vk"
             echo "Removed lsfg-vk binary from ~/.local/bin/"
         fi
-        
+
         # Remove any other potential locations (legacy cleanup)
         if [[ -f "/usr/local/bin/lsfg-vk" ]]; then
             sudo rm "/usr/local/bin/lsfg-vk"
             echo "Removed lsfg-vk binary from /usr/local/bin/"
         fi
-        
+
         echo "lsfg-vk uninstalled successfully!"
     elif [ "${OPTION,,}" == "exit" ] || [ "${OPTION,,}" == "exit without changes" ]; then
         echo "No changes made. Exiting..."
