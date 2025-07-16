@@ -382,6 +382,17 @@ rm -vf /etc/skel/.config/autostart/steam*.desktop
 # Remove packages that shouldnt be used in a live session
 dnf -yq remove steam lutris || :
 
+# Warn about limited capabilities of live sessions
+cat >>/etc/skel/.bash_profile <<'EOF'
+yad --timeout=20 \
+    --no-escape \
+    --no-buttons \
+    --on-top \
+    --timeout-indicator=bottom \
+    --text="<b>Live ISO sessions have limited capabilities compared to full installations</b>.\nPlease do not use it as a benchmark" \
+    || :
+EOF
+
 # Enable on-screen keyboard
 if [[ $imageref == *-deck* ]]; then
     # Enable keyboard here
