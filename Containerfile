@@ -319,15 +319,13 @@ RUN --mount=type=cache,dst=/var/cache \
         gcc-libs \
         glibc \
         libevdev \
-        libx11 \
-        libxau \
-        libxcb \
-        libxdmcp \
-        libxext \
-        libxres \
+        libX11 \
+        libXau \
+        libXdmcp \
+        libXext \
+        libXres \
         ryzenadj \
         mangoapp \
-        wireplumber \
         nmcli \
         firejail \
     #end opengamepadui deps
