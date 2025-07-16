@@ -314,23 +314,7 @@ RUN --mount=type=cache,dst=/var/cache \
         rocm-clinfo \
         #waydroid \ #removed
         cage \
-        wlr-randr
-#start added        
-        openrgb \
-    #opengamepadui deps
-        #gcc-libs \
-        #glibc \
-        #libevdev \
-        #libX11 \
-        #libXau \
-        #libXdmcp \
-        #libXext \
-        #libXres \
-        #mangoapp \
-        #nmcli \
-        #firejail \
-    #end opengamepadui deps
-        && \
+        wlr-randr && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
     #setcap 'cap_sys_admin+p' /usr/bin/sunshine-v* && \
     dnf5 -y --setopt=install_weak_deps=False install \
@@ -358,6 +342,24 @@ RUN --mount=type=cache,dst=/var/cache \
     rm -f /tmp/scopebuddy.tar.gz && \
     cp -r /tmp/scopebuddy/ScopeBuddy-*/bin/* /usr/bin/ && \
     /ctx/cleanup
+
+#start added        
+    dnf5 -y install \        
+        openrgb && \
+    /ctx/cleanup
+        #opengamepadui deps
+        #gcc-libs \
+        #glibc \
+        #libevdev \
+        #libX11 \
+        #libXau \
+        #libXdmcp \
+        #libXext \
+        #libXres \
+        #mangoapp \
+        #nmcli \
+        #firejail \
+        #end opengamepadui deps
 
 # Install Steam & Lutris, plus supporting packages
 # Downgrade ibus to fix an issue with the Steam keyboard
