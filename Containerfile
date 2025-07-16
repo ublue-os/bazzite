@@ -317,17 +317,17 @@ RUN --mount=type=cache,dst=/var/cache \
         openrgb \
     #opengamepadui deps
         gcc-libs \
-        glibc \
-        libevdev \
-        libX11 \
-        libXau \
-        libXdmcp \
-        libXext \
-        libXres \
-        ryzenadj \
-        mangoapp \
-        nmcli \
-        firejail \
+        #glibc \
+        #libevdev \
+        #libX11 \
+        #libXau \
+        #libXdmcp \
+        #libXext \
+        #libXres \
+        #ryzenadj \
+        #mangoapp \
+        #nmcli \
+        #firejail \
     #end opengamepadui deps
         cage \
         wlr-randr && \
