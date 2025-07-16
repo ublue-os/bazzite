@@ -313,7 +313,24 @@ RUN --mount=type=cache,dst=/var/cache \
         rocm-opencl \
         rocm-clinfo \
         #waydroid \ #removed
+    #start added        
         openrgb \
+    #opengamepadui deps
+        gcc-libs \
+        glibc \
+        libevdev \
+        libx11 \
+        libxau \
+        libxcb \
+        libxdmcp \
+        libxext \
+        libxres \
+        ryzenadj \
+        mangoapp \
+        wireplumber \
+        nmcli \
+        firejail \
+    #end opengamepadui deps
         cage \
         wlr-randr && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
