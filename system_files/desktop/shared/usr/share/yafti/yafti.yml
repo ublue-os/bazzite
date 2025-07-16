@@ -18,6 +18,11 @@ screens:
         description: "A Decky plugin that swaps DLSS for FSR and adds framegen to non-framegen games"
         default: false
         script: "ujust get-framegen install-decky-plugin"
+      - id: "decky-lossless-scaling"
+        title: "Decky Lossless Scaling"
+        description: "A Decky plugin for lossless scaling compatibility in Linux"
+        default: false
+        script: "ujust get-lsfg install-decky-plugin"
       - id: "emudeck"
         title: "EmuDeck"
         description: "A utility for installing and configuring emulators on the Steam Deck"
