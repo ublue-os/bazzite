@@ -81,6 +81,7 @@ sections:
       - io.github.stella_emu.Stella
       - org.scummvm.ScummVM
       - io.github.dosbox-staging
+      - rs.ruffle.Ruffle
       - com.supermodel3.Supermodel
       - com.github.k4zmu2a.spacecadetpinball
       - sh.ppy.osu
@@ -137,6 +138,7 @@ sections:
       - com.github.iwalton3.jellyfin-media-player
       - tv.plex.PlexDesktop
       - com.plexamp.Plexamp
+      - rocks.shy.VacuumTube
       - org.strawberrymusicplayer.strawberry
       - camp.nook.nookdesktop
   - title: "Office & Productivity"
