@@ -138,6 +138,7 @@ sections:
       - com.github.iwalton3.jellyfin-media-player
       - tv.plex.PlexDesktop
       - com.plexamp.Plexamp
+      - rocks.shy.VacuumTube
       - org.strawberrymusicplayer.strawberry
       - camp.nook.nookdesktop
   - title: "Office & Productivity"
