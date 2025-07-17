@@ -239,7 +239,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install \
-        $(curl https://api.github.com/repos/bazzite-org/cicpoffs/releases/latest | jq -r '.assets[] | select(.name| test(".*rpm$")).browser_download_url') && \
+        https://github.com/bazzite-org/cicpoffs/releases/download/master/cicpoffs.rpm && \
     dnf5 -y install \
         bazaar \
         libdex-0.9.1 \
