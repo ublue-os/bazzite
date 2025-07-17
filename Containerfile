@@ -353,8 +353,8 @@ RUN --mount=type=cache,dst=/var/cache \
         #opengamepadui deps
         #gcc-libs \ #unavailable
         glibc \
-        libevdev && \
-        #libX11 \
+        libevdev \
+        libX11 && \
         #libXau \
         #libXdmcp \
         #libXext \
