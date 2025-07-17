@@ -351,8 +351,7 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y install \        
         openrgb \
         #opengamepadui deps
-        libXres && \
-        #mangoapp \
+        mangoapp && \
         #nmcli \
         #firejail && \
         #end opengamepadui deps
