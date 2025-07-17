@@ -1,11 +1,11 @@
 #!/bin/bash
 
 if (( $# == 0 )); then
-	echo -e "No arguments provided.\n\nUsage: env GAMECLASS='<executable>=<window class>' gameclass [COMMAND]..."
+	echo -e "No arguments provided.\n\nUsage: env GAMECLASS='<executable>=<window class>' gameclass \033[1m[COMMAND]\033[0m..."
 	exit 1
 else
 	if [[ -z ${GAMECLASS} ]]; then
-		echo -e "No environment variable set.\n\nUsage: env GAMECLASS='<executable>=<window class>' gameclass [COMMAND]..."
+		echo -e "No environment variable set.\n\nUsage: env \033[1mGAMECLASS='<executable>=<window class>'\033[0m gameclass [COMMAND]..."
 		exit 1
 	fi
 fi
@@ -14,7 +14,7 @@ EXE="$( echo "$GAMECLASS" | awk 'BEGIN { FS = "=" } ; { print $1 }' )"
 WM_CLASS="$( echo "$GAMECLASS" | awk 'BEGIN { FS = "=" } ; { print $2 }' )"
 
 if [[ -z "$EXE" ]] || [[ -z "$WM_CLASS" ]]; then
-	echo -e "Incorrect environment variable formatting.\n\nUsage: env GAMECLASS='<executable>=<window class>' gameclass [COMMAND]..."
+	echo -e "Incorrect environment variable formatting.\n\nUsage: env GAMECLASS='\033[1m<executable>=<window class>\033[0m' gameclass [COMMAND]..."
 	exit 1
 fi
 
