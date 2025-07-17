@@ -350,7 +350,6 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \    
     dnf5 -y install \        
         openrgb \
-    /ctx/cleanup
         #opengamepadui deps
         gcc-libs && \
         #glibc \
@@ -362,7 +361,8 @@ RUN --mount=type=cache,dst=/var/cache \
         #libXres \
         #mangoapp \
         #nmcli \
-        #firejail \
+        #firejail && \
+    /ctx/cleanup
         #end opengamepadui deps
 
 # Install Steam & Lutris, plus supporting packages
