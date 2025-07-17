@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+# Nvidia crash fix
+export GSK_RENDERER=opengl
+
+/usr/bin/bazaar-hotfix "$@"
