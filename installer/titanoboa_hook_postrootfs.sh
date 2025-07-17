@@ -110,12 +110,26 @@ if [[ -z \$xboot_dev ]]; then
 fi
 e2label "\$xboot_dev" "bazzite_xboot"
 %end
+
+# Open a dialog with the installation logs
+%onerror
+run0 --user=liveuser yad \
+    --timeout=0 \
+    --text-info \
+    --no-buttons \
+    --width=600 \
+    --height=400 \
+    --text="An error occurred during installation. Please report this issue to the developers." \
+    < /tmp/anaconda.log
+%end
+
 ostreecontainer --url=$imageref:$imagetag --transport=containers-storage --no-signature-verification
 %include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
 %include /usr/share/anaconda/post-scripts/disable-fedora-flatpak.ks
 %include /usr/share/anaconda/post-scripts/install-flatpaks.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 %include /usr/share/anaconda/post-scripts/secureboot-docs.ks
+
 EOF
 
 # Signed Images
