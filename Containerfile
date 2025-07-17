@@ -768,12 +768,15 @@ RUN --mount=type=cache,dst=/var/cache \
 
 # Install Gamescope Session & Supporting changes
 # Add bootstrap_steam.tar.gz used by gamescope-session (Thanks GE & Nobara Project!)
+# Add sdl gamecontrollerdb used by handheld daemon for externals
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     mkdir -p /usr/share/gamescope-session-plus/ && \
     curl -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz && \
+    mkdir -p /usr/share/sdl/ && \
+    curl -Lo /usr/share/sdl/gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt && \
     dnf5 -y install \
     --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite \
         gamescope-session-plus \

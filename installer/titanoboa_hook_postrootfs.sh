@@ -393,6 +393,14 @@ yad --timeout=20 \
     || :
 EOF
 
+(
+    wallpaper_url=https://github.com/ublue-os/bazzite/blob/main/press_kit/art/Convergence_Wallpaper_DX.jxl
+    wallpaper_file=/usr/share/wallpapers/${wallpaper_file##*/}
+    wget -nv -O "$wallpaper_file" "$wallpaper_url"
+    rm -f /usr/share/backgrounds/default.xml
+    ln -sf "$wallpaper_file" /usr/share/backgrounds/default.jxl
+)
+
 # Enable on-screen keyboard
 if [[ $imageref == *-deck* ]]; then
     # Enable keyboard here
