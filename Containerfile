@@ -351,8 +351,8 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y install \        
         openrgb \
         #opengamepadui deps
-        mangoapp && \
-        #nmcli \
+        mangoapp \
+        nmcli && \
         #firejail && \
         #end opengamepadui deps
     /ctx/cleanup
