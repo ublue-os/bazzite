@@ -351,12 +351,7 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y install \        
         openrgb \
         #opengamepadui deps
-        #gcc-libs \ #unavailable
-        glibc \
-        libevdev \
-        libX11 \
-        libXau && \
-        #libXdmcp \
+        libXdmcp && \
         #libXext \
         #libXres \
         #mangoapp \
