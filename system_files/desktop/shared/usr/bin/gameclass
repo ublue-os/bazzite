@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ -z $( echo "$@" ) ]]; then
+if [[ $# -eq 0 ]]; then
 	echo -e "No arguments provided.\n\nUsage: env GAMECLASS='<executable>=<window class>' gameclass [COMMAND]..."
 	exit 1
 else
