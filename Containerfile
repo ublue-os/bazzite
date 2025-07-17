@@ -351,8 +351,8 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y install \        
         openrgb \
         #opengamepadui deps
-        gcc-libs && \
-        #glibc \
+        #gcc-libs \ #unavailable
+        glibc && \
         #libevdev \
         #libX11 \
         #libXau \
@@ -362,8 +362,8 @@ RUN --mount=type=cache,dst=/var/cache \
         #mangoapp \
         #nmcli \
         #firejail && \
-    /ctx/cleanup
         #end opengamepadui deps
+    /ctx/cleanup
 
 # Install Steam & Lutris, plus supporting packages
 # Downgrade ibus to fix an issue with the Steam keyboard
