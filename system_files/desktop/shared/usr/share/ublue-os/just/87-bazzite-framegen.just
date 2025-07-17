@@ -197,3 +197,201 @@ get-framegen ACTION="prompt":
         echo "Invalid option. Exiting..."
         exit 1
     fi
+
+# Set up Lossless Scaling vulkan layer and decky plugin. This mod enables lossless scaling compatibility in linux. Be sure to also install Lossless Scaling from Steam to internal storage.
+get-lsfg ACTION="prompt":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+
+    function check_lsfg_installed() {
+        INSTALL_PATH="$HOME/.local"
+        if [[ -f "$INSTALL_PATH/lib/liblsfg-vk.so" ]] && [[ -f "$INSTALL_PATH/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
+            echo "${green}${bold}lsfg-vk is installed and ready to use.${normal}"
+        else
+            echo "${red}${bold}lsfg-vk is not installed.${normal}"
+        fi
+    }
+
+    function check_decky_lsfg_installed() {
+        PLUGIN_DIR="$HOME/homebrew/plugins/Lossless Scaling"
+        if [[ -d "$PLUGIN_DIR" ]]; then
+            echo "${green}${bold}Decky Lossless Scaling plugin is installed.${normal}"
+        else
+            echo "${red}${bold}Decky Lossless Scaling plugin is not installed.${normal}"
+        fi
+    }
+
+    OPTION={{ ACTION }}
+    if [ "$OPTION" == "prompt" ]; then
+        echo ""
+        echo "Current Status:"
+        check_lsfg_installed
+        echo ""
+        check_decky_lsfg_installed
+        echo ""
+        echo "${bold}lsfg-vk${normal} enables lossless scaling functionality for supported games."
+        echo ""
+        echo "Below you can install or remove ${bold}lsfg-vk${normal} directly,"
+        echo "or install the ${bold}Decky Lossless Scaling${normal} plugin for managing everything conveniently in Game Mode."
+        echo ""
+        echo "What would you like to do with lsfg-vk?"
+        echo ""
+        OPTION=$(ugum choose "Install Decky Lossless Scaling plugin" "Install lsfg-vk directly" "Uninstall lsfg-vk" "Exit without changes")
+    elif [ "$OPTION" == "help" ]; then
+        echo "Usage: just get-lsfg <option>"
+        echo "  <option>: Specify an action - 'install', 'install-decky-plugin', or 'uninstall'"
+        echo "  Use 'install' to install lsfg-vk directly."
+        echo "  Use 'install-decky-plugin' to install the Decky Lossless Scaling plugin."
+        echo "  Use 'uninstall' to remove lsfg-vk."
+        exit 0
+    fi
+
+    if [ "${OPTION,,}" == "install" ] || [ "${OPTION,,}" == "install lsfg-vk directly" ]; then
+        echo "Installing lsfg-vk directly..."
+        curl -sSf https://pancake.gay/lsfg-vk.sh | sh
+        echo "lsfg-vk installed successfully!"
+        echo "The lsfg-vk binary should now be available in your PATH."
+    elif [ "${OPTION,,}" == "install-decky-plugin" ] || [ "${OPTION,,}" == "install decky lossless scaling plugin" ]; then
+        echo "Installing Decky Lossless Scaling plugin..."
+
+        # Check if Decky is installed
+        if [ ! -d "$HOME/homebrew" ]; then
+            echo "Error: Decky Loader is not installed. Please run 'ujust setup-decky' first."
+            exit 1
+        fi
+
+        API_URL="https://api.github.com/repos/xXJSONDeruloXx/decky-lossless-scaling-vk/releases/latest"
+        PLUGIN_URL=$(timeout 30 curl -s "$API_URL" | grep "browser_download_url" | grep ".zip" | cut -d '"' -f 4 || echo "")
+
+        if [ -z "$PLUGIN_URL" ]; then
+            echo "Failed to fetch the latest Decky Lossless Scaling release or API timeout. Exiting..."
+            exit 1
+        fi
+
+        PLUGIN_NAME="Lossless-Scaling"
+        PLUGIN_DIR="$HOME/homebrew/plugins"
+
+        # Ensure plugins directory exists and has correct permissions
+        if [ ! -d "$PLUGIN_DIR" ]; then
+            echo "Creating plugins directory..."
+            mkdir -p "$PLUGIN_DIR"
+        fi
+
+        # Fix permissions on plugins directory if needed
+        if [ ! -w "$PLUGIN_DIR" ]; then
+            echo "Fixing permissions on plugins directory..."
+            chmod u+w "$PLUGIN_DIR"
+        fi
+
+        # Work in a temporary directory to avoid permission issues
+        TEMP_DIR=$(mktemp -d)
+        cd "$TEMP_DIR" || { echo "Failed to create temp directory"; exit 1; }
+
+        # Remove any existing plugin folder
+        if [ -d "$PLUGIN_DIR/$PLUGIN_NAME" ]; then
+            echo "Removing existing $PLUGIN_NAME directory..."
+            chmod -R u+w "$PLUGIN_DIR/$PLUGIN_NAME" 2>/dev/null || true
+            rm -rf "$PLUGIN_DIR/$PLUGIN_NAME"
+        fi
+
+        # Also remove the expected final name in case it exists with different permissions
+        if [ -d "$PLUGIN_DIR/Lossless Scaling" ]; then
+            echo "Removing existing Lossless Scaling directory..."
+            chmod -R u+w "$PLUGIN_DIR/Lossless Scaling" 2>/dev/null || true
+            rm -rf "$PLUGIN_DIR/Lossless Scaling"
+        fi
+
+        echo "Downloading $PLUGIN_NAME from $PLUGIN_URL..."
+        timeout 60 curl -L -o "Lossless.Scaling.zip" "$PLUGIN_URL"
+        if [ $? -ne 0 ]; then
+            echo "Download failed or timed out!"
+            cd - > /dev/null
+            rm -rf "$TEMP_DIR"
+            exit 1
+        fi
+
+        echo "Extracting $PLUGIN_NAME..."
+        unzip -o "Lossless.Scaling.zip" -d .
+        if [ $? -ne 0 ]; then
+            echo "Extraction failed!"
+            cd - > /dev/null
+            rm -rf "$TEMP_DIR"
+            exit 1
+        fi
+
+        # Handle nested folder structure if needed
+        if [ -d "./${PLUGIN_NAME}/${PLUGIN_NAME}" ]; then
+            echo "Fixing folder structure..."
+            mv "./${PLUGIN_NAME}/${PLUGIN_NAME}"/* "./${PLUGIN_NAME}/"
+            rm -rf "./${PLUGIN_NAME}/${PLUGIN_NAME}"
+        fi
+
+        # Handle different extracted folder names (e.g., Lossless-Scaling-*)
+        EXTRACTED_FOLDERS=$(find . -maxdepth 1 -type d -name "Lossless*" | grep -v "^\./$" || echo "")
+
+        # If we found a folder but it's not the expected name
+        if [ -n "$EXTRACTED_FOLDERS" ] && [ ! -d "./$PLUGIN_NAME" ]; then
+            FOUND_FOLDER=$(echo "$EXTRACTED_FOLDERS" | head -n 1)
+            echo "Found plugin folder with different name: $FOUND_FOLDER"
+            echo "Renaming to $PLUGIN_NAME..."
+            mv "$FOUND_FOLDER" "./$PLUGIN_NAME"
+        fi
+
+        # Move plugin to final location
+        if [ -d "./$PLUGIN_NAME" ]; then
+            echo "Installing plugin to $PLUGIN_DIR..."
+            mv "./$PLUGIN_NAME" "$PLUGIN_DIR/Lossless Scaling"
+
+            # Fix permissions on plugin files and make scripts executable
+            echo "Setting correct permissions..."
+            chmod -R u+w "$PLUGIN_DIR/Lossless Scaling"
+            find "$PLUGIN_DIR/Lossless Scaling" -name "*.sh" -exec chmod +x {} \;
+            find "$PLUGIN_DIR/Lossless Scaling" -name "*.py" -exec chmod +x {} \;
+
+            echo "Lossless Scaling plugin has been installed successfully to $PLUGIN_DIR!"
+            echo "Please restart Decky Loader to activate the plugin."
+        else
+            echo "Installation failed. Plugin folder could not be found as expected."
+            cd - > /dev/null
+            rm -rf "$TEMP_DIR"
+            exit 1
+        fi
+
+        # Clean up
+        cd - > /dev/null
+        rm -rf "$TEMP_DIR"
+    elif [ "${OPTION,,}" == "uninstall" ] || [ "${OPTION,,}" == "uninstall lsfg-vk" ]; then
+        echo "Uninstalling lsfg-vk..."
+
+        # Remove lsfg-vk layer files
+        INSTALL_PATH="$HOME/.local"
+        if [[ -f "$INSTALL_PATH/lib/liblsfg-vk.so" ]]; then
+            rm -v "$INSTALL_PATH/lib/liblsfg-vk.so"
+            echo "Removed lsfg-vk library"
+        fi
+
+        if [[ -f "$INSTALL_PATH/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
+            rm -v "$INSTALL_PATH/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
+            echo "Removed lsfg-vk Vulkan layer"
+        fi
+
+        # Remove lsfg-vk binary if it exists (legacy cleanup)
+        if [[ -f "$HOME/.local/bin/lsfg-vk" ]]; then
+            rm "$HOME/.local/bin/lsfg-vk"
+            echo "Removed lsfg-vk binary from ~/.local/bin/"
+        fi
+
+        # Remove any other potential locations (legacy cleanup)
+        if [[ -f "/usr/local/bin/lsfg-vk" ]]; then
+            sudo rm "/usr/local/bin/lsfg-vk"
+            echo "Removed lsfg-vk binary from /usr/local/bin/"
+        fi
+
+        echo "lsfg-vk uninstalled successfully!"
+    elif [ "${OPTION,,}" == "exit" ] || [ "${OPTION,,}" == "exit without changes" ]; then
+        echo "No changes made. Exiting..."
+        exit 0
+    else
+        echo "Invalid option. Exiting..."
+        exit 1
+    fi
