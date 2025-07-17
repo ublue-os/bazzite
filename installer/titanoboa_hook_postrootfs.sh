@@ -190,12 +190,6 @@ cat <<EOF >>/etc/anaconda/conf.d/anaconda.conf
 flatpak_remote = flathub https://dl.flathub.org/repo/
 EOF
 
-# Hide grub by default
-grub2-editenv - set menu_auto_hide=2
-
-# Set timeout to 5 seconds
-sed -i 's|GRUB_TIMEOUT=[0-9]*$|GRUB_TIMEOUT=5|' /etc/default/grub
-
 ### Livecds runtime tweaks ###
 
 # Disable services

@@ -18,3 +18,9 @@ kernel_pkgs=(
 dnf -y versionlock delete "${kernel_pkgs[@]}"
 rpm --erase -v --nodeps "${kernel_pkgs[@]}"
 dnf -yq install "${kernel_pkgs[@]}"
+
+# Hide grub by default
+grub2-editenv - set menu_auto_hide=2
+
+# Set timeout to 5 seconds
+sed -i 's|GRUB_TIMEOUT=[0-9]*$|GRUB_TIMEOUT=5|' /etc/default/grub
