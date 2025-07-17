@@ -918,7 +918,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    sed -i 's|^Exec=|Exec=env GSK_RENDERER=opengl |' /usr/share/applications/io.github.kolunmi.Bazaar.desktop && \
+    mv /usr/bin/bazaar /usr/bin/bazaar-hotfix && \
+    mv /usr/bin/bazaar-nvidia /usr/bin/bazaar && \
     echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
       mkdir -p "/usr/share/ublue-os/dconfs/nvidia-silverblue/" && \
