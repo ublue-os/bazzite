@@ -354,8 +354,8 @@ RUN --mount=type=cache,dst=/var/cache \
         #gcc-libs \ #unavailable
         glibc \
         libevdev \
-        libX11 && \
-        #libXau \
+        libX11 \
+        libXau && \
         #libXdmcp \
         #libXext \
         #libXres \
