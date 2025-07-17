@@ -207,6 +207,42 @@ toggle-iwd:
         ;;
     esac
 
+# enable or disable a workaround for Intel Wifi7(802.11be) AX1775*/AX1790*/BE20*/BE401/BE1750* 2x2
+toggle-ax1775-sleep-fix:
+    #!/usr/bin/bash
+    # Explain the purpose of the script
+    echo -e "This script works around an issue for Intel Wifi7 AX1775*/AX1790*/BE20*/BE401/BE1750*"
+    echo -e "where they fail to start-up after sleep, causing them to stay in D3cold state until reboot."
+    echo -e "Enabling it will shut down the Wi-Fi module before sleep, and restart it after sleep."
+    echo -e "Disabling it will bring back the old functionality (for when it gets fixed)"
+    # Toggle on the service to shut down / restart the Wi-Fi device
+    enable_fix() {
+      systemctl enable wifi-disable.service
+      systemctl enable wifi-enable.service
+      echo -e "Enabled fix, toggle again to disable"
+    }
+    # Toggle off the service to shut down / restart the Wi-Fi device
+    disable_fix() {
+      systemctl disable wifi-disable.service
+      systemctl disable wifi-enable.service
+      echo -e "Disabled fix, toggle again to enable"
+    }
+    # Check if the file is symlinked (Enabled or Disabled)
+    EXISTS="$(systemctl is-enabled "wifi-enable.service")"
+    echo "\nCurrent service status: $EXISTS\n"
+    # Enables or disables depending on the status
+    case "$EXISTS" in
+      "enabled")
+        enable_fix
+        ;;
+      "disabled")
+        disable_fix
+        ;;
+      "not-found")
+        echo -e "Failed to find wifi-enabled.service..."
+        ;;
+    esac   
+
 # enable or disable a fix for 7th and 8th generation Intel chips not being able to sleep
 toggle-i915-sleep-fix:
     #!/usr/bin/bash
