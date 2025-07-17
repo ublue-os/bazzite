@@ -18,3 +18,6 @@ kernel_pkgs=(
 dnf -y versionlock delete "${kernel_pkgs[@]}"
 rpm --erase -v --nodeps "${kernel_pkgs[@]}"
 dnf -yq install "${kernel_pkgs[@]}"
+
+# Hide grub by default
+grub2-editenv - set menu_auto_hide=2
