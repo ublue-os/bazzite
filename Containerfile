@@ -352,8 +352,8 @@ RUN --mount=type=cache,dst=/var/cache \
         openrgb \
         #opengamepadui deps
         #gcc-libs \ #unavailable
-        glibc && \
-        #libevdev \
+        glibc \
+        libevdev && \
         #libX11 \
         #libXau \
         #libXdmcp \
