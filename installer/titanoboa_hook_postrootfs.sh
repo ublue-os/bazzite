@@ -204,15 +204,16 @@ cat <<EOF >>/etc/anaconda/conf.d/anaconda.conf
 flatpak_remote = flathub https://dl.flathub.org/repo/
 EOF
 
-# Hide grub by default and set timeout to 5 seconds
-mkdir -p /boot/grub2
-cat >>/boot/grub2/grub.cfg <<'EOF'
+# TODO (@Zeglius): Hide grub by default and set timeout to 5 seconds
+# # Hide grub by default and set timeout to 5 seconds
+# mkdir -p /boot/grub2
+# cat >>/boot/grub2/grub.cfg <<'EOF'
 
-# Setup for liveisos
-set menu_auto_hide=2
-set timeout_style=hidden
-set timeout=5
-EOF
+# # Setup for liveisos
+# set menu_auto_hide=2
+# set timeout_style=hidden
+# set timeout=5
+# EOF
 
 ### Livecds runtime tweaks ###
 
