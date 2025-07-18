@@ -352,8 +352,7 @@ RUN --mount=type=cache,dst=/var/cache \
         openrgb \
         #opengamepadui deps
         mangoapp \
-        nmcli && \
-        #firejail && \
+        firejail && \
         #end opengamepadui deps
     /ctx/cleanup
 
