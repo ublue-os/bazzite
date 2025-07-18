@@ -27,6 +27,7 @@ setup-waydroid ACTION="":
       if [[ ! $IMAGE_NAME =~ "deck" && ! $IMAGE_NAME =~ "ally" ]]; then
         sudo systemctl enable --now waydroid-container
       fi
+      echo "This might take a bit, please be patient"
       sudo waydroid init -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor'
       sudo restorecon -R /var/lib/waydroid
       cp /usr/share/applications/waydroid-container-restart.desktop ~/.local/share/applications
