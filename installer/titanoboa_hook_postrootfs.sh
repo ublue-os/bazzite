@@ -460,6 +460,15 @@ EOF
     glib-compile-schemas /usr/share/glib-2.0/schemas
 fi
 
+# Disable kde wallet
+if [[ $desktop_env == kde ]]; then
+    mkdir -p /etc/skel/.config
+    cat >/etc/skel/.config/kwalletrc <<'EOF'
+[Wallet]
+Enabled=false
+EOF
+fi
+
 # Add support for controllers
 _tmp=$(mktemp -d)
 (
