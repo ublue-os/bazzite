@@ -303,7 +303,7 @@ setup-realtime:
       rpm-ostree install realtime-setup --apply-live
       sudo systemctl enable realtime-entsk
       sudo systemctl enable realtime-setup
-      if ! grep -q realtime /etc/group; then
+      if ! [[ $( cat /etc/group ) =~ "realtime" ]]; then
         grep -E '^realtime:' /usr/lib/group | sudo tee -a /etc/group
       fi
       sudo usermod -aG realtime "$USER"
