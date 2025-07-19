@@ -1,0 +1,80 @@
+#!/bin/bash
+
+if (( $# == 0 )); then
+	echo -e "No arguments provided.\n\nUsage: env GAMECLASS='<executable>=<window class>' gameclass \033[1m[COMMAND]\033[0m..."
+	exit 1
+else
+	if [[ -z ${GAMECLASS} ]]; then
+		echo -e "No environment variable set.\n\nUsage: env \033[1mGAMECLASS='<executable>=<window class>'\033[0m gameclass [COMMAND]..."
+		exit 1
+	fi
+fi
+
+EXE="$( echo "$GAMECLASS" | awk 'BEGIN { FS = "=" } ; { print $1 }' )"
+WM_CLASS="$( echo "$GAMECLASS" | awk 'BEGIN { FS = "=" } ; { print $2 }' )"
+
+if [[ -z "$EXE" ]] || [[ -z "$WM_CLASS" ]]; then
+	echo -e "Incorrect environment variable formatting.\n\nUsage: env GAMECLASS='\033[1m<executable>=<window class>\033[0m' gameclass [COMMAND]..."
+	exit 1
+fi
+
+# Adapted from — https://github.com/tactikauan/thcrap-steam-proton-wrapper/blob/3adb608f7aa58323f441aedbe40a3b5096fe9d23/thcrap_proton
+if [[ -z "$COMMAND" ]]; then
+	shift $((OPTIND -1))
+        COMMAND=''
+        # Quote all arguments which contain whitespace
+        for i in "$@"; do
+            [[ $i =~ ( ) ]] && i=${i@Q}
+            COMMAND="$COMMAND $i"
+        done
+fi
+COMMAND=$(printf %s "$COMMAND")
+
+function get_exe_window {
+	local windowlist ; windowlist=$( wmctrl -l -p )
+	local windowcount ; windowcount=$( echo "$windowlist" | wc -l )
+
+	for (( n = 1 ; n <= windowcount ; n++ )); do
+		local window ; window=$( echo "$windowlist" | sed -n "$n"p )
+
+		local wid ; wid=$( echo "$window" | awk '{ print $1 }' )
+		local pid ; pid=$( echo "$window" | awk '{ print $3 }' )
+
+		local cmd ; cmd=$( cat /proc/"$pid"/cmdline | tr -d '\0' )
+		unset -v WID
+		if [[ "$cmd" =~ $EXE ]]; then
+			WID="$wid"
+		fi
+	done
+}
+
+function set_class {
+	if [[ -z $WID ]]; then
+		:
+	else
+		if [[ $( xdotool getwindowclassname "$WID" ) = $WM_CLASS ]]; then
+			:
+		else
+			xdotool set_window --class "$WM_CLASS" "$WID"
+			echo "Set WM_CLASS."
+		fi
+	fi
+}
+
+function window_watcher {
+	while sleep 1; do
+		get_exe_window
+		set_class
+	done
+}
+
+set -m
+
+window_watcher &
+GAMECLASS_PID="$!"
+
+# Let it rip.
+sh -c "$COMMAND"
+
+# Let it die.
+kill -- -$GAMECLASS_PID
