@@ -242,6 +242,7 @@ RUN --mount=type=cache,dst=/var/cache \
         https://github.com/bazzite-org/cicpoffs/releases/download/master/cicpoffs.rpm && \
     dnf5 -y install \
         bazaar \
+        libdex-0.9.1 \
         iwd \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
