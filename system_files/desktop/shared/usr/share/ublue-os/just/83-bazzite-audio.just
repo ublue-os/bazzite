@@ -303,6 +303,8 @@ setup-realtime:
       rpm-ostree install realtime-setup --apply-live
       sudo systemctl enable realtime-entsk
       sudo systemctl enable realtime-setup
+	  echo "dev.hpet.max-user-freq = 3072" | sudo tee /etc/sysctl.d/65-set-hpet.conf
+	  echo "w! /sys/class/rtc/rtc0/max_user_freq - - - - 3072" | sudo tee /etc/tmpfiles.d/clockrate.conf
       if ! [[ $( cat /etc/group ) =~ "realtime" ]]; then
         grep -E '^realtime:' /usr/lib/group | sudo tee -a /etc/group
       fi
