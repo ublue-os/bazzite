@@ -1,9 +1,0 @@
-#!/usr/bin/bash
-
-set -e
-SYS_ID="$(/usr/libexec/hwsupport/sysid)"
-
-if [[ ":Jupiter:" =~ ":$SYS_ID:" || ":Galileo:" =~ ":$SYS_ID:" ]]; then
-  # Rotate the builtin screen every time so it's the right way around.
-  xrandr --output "eDP" --rotate "right"
-fi
