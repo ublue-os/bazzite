@@ -421,7 +421,7 @@ yad --timeout=30 \
 EOF
 
 (
-    wallpaper_url=https://github.com/ublue-os/bazzite/blob/main/press_kit/art/Convergence_Wallpaper_DX.jxl
+    wallpaper_url=https://github.com/ublue-os/bazzite/raw/refs/heads/main/press_kit/art/Convergence_Wallpaper_DX.jxl
     wallpaper_file=/usr/share/wallpapers/${wallpaper_url##*/}
     wget -nv -O "$wallpaper_file" "$wallpaper_url"
     rm -f /usr/share/backgrounds/default.xml
