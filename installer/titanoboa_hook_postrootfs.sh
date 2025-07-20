@@ -373,19 +373,28 @@ StartupNotify=true
 Terminal=false
 EOF
 
-### Nvidia specific tweaks ###
+### Desktop-enviroment specific tweaks ###
+
+# Setup script to show dialog popups at login
+echo '#!/usr/bin/bash' >/usr/bin/on_gui_login.sh
+chmod +x /usr/bin/on_gui_login.sh
+mkdir -p /etc/skel/.config/autostart
+cat >/etc/skel/.config/autostart/on_gui_login.desktop <<'EOF'
+[Desktop Entry]
+Exec=/usr/bin/on_gui_login.sh
+Icon=application-x-shellscript
+Type=Application
+EOF
 
 # Warn the user about non functional Nvidia drivers
 if [[ $imageref == *-nvidia* ]]; then
-    cat <<'EOF' >>/etc/skel/.bash_profile
+    cat >>/usr/bin/on_gui_login.sh <<'EOF'
 { yad --title="Warning" --text="$(</dev/stdin)" || true; } <<'WARNINGEOF'
 Nvidia drivers might not be functional on live isos.
 Please do not use them in benchmarks.
 WARNINGEOF
 EOF
 fi
-
-### Desktop-enviroment specific tweaks ###
 
 # Determine desktop environment. Must match one of /usr/libexec/livesys/sessions.d/livesys-{desktop_env}
 # See https://github.com/ublue-os/titanoboa/blob/6c2e8ba58c7534b502081fe24363d2a60e7edca9/Justfile#L199-L213
@@ -408,7 +417,7 @@ rm -vf /etc/skel/.config/autostart/steam*.desktop
 dnf -yq remove steam lutris || :
 
 # Warn about limited capabilities of live sessions
-cat >>/etc/skel/.bash_profile <<'EOF'
+cat >>/usr/bin/on_gui_login.sh <<'EOF'
 yad --timeout=30 \
     --no-escape \
     --no-buttons \
