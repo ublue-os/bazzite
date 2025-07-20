@@ -1,5 +1,29 @@
 # vim: set ft=make :
 
+# Install an appimage file from a local file or URL
+_install_appimage_file $APPIMAGE_SRC $filename="":
+    #!/usr/bin/bash
+    set -eo pipefail
+    DOWNLOAD_DIR="{{ cache_directory() }}/ujust/appimages"
+    mkdir -p "$DOWNLOAD_DIR"
+    trap "rm -rf $DOWNLOAD_DIR" EXIT
+
+    appimage_file="$DOWNLOAD_DIR/${filename:-${APPIMAGE_SRC##*/}}"
+
+    if ! grep -q 'it.mijorus.gearlever' < <(flatpak list --columns application); then
+        flatpak install --system -y flathub it.mijorus.gearlever <&-
+    fi
+    if [[ $APPIMAGE_SRC =~ ^https?:// ]]; then
+        echo "Downloading $APPIMAGE_SRC to $appimage_file"
+        wget -nv "$APPIMAGE_SRC" -O "$appimage_file" && echo "Download complete"
+    else
+        cp "$APPIMAGE_SRC" "$appimage_file"
+    fi
+    chmod +x "$appimage_file"
+    echo "Click {{ BOLD }}Unlock{{ NORMAL }} then {{ BLUE + BOLD }}Move to the app menu{{ NORMAL }} and close window to finish installation."
+    sleep 3
+    LC_ALL=C flatpak run it.mijorus.gearlever "$appimage_file" <&-
+
 # Install LACT to control your AMD, Nvidia or Intel GPU on a Linux system.
 install-lact:
     #!/usr/bin/bash
@@ -65,29 +89,10 @@ install-emudeck:
         curl -s https://api.github.com/repos/EmuDeck/emudeck-electron/releases/latest | \
         jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url"
     )"
-    download_dest="$(xdg-user-dir DOWNLOAD)/EmuDeck.AppImage"
-    if ! grep -q 'it.mijorus.gearlever' < <(flatpak list --columns application); then
-        flatpak install --system -y flathub it.mijorus.gearlever <&-
-    fi
-    wget -nv "$remote_appimage_url" -O "$download_dest"
-    chmod +x "$download_dest"
-    echo "Click {{ BOLD }}Unlock{{ NORMAL }} then {{ BLUE + BOLD }}Move to the app menu{{ NORMAL }} to finish installation."
-    sleep 3
-    nohup >/dev/null LC_ALL=C flatpak run it.mijorus.gearlever "$download_dest" &
+    just _install_appimage_file "$remote_appimage_url"
 
 # Install OpenRGB (https://openrgb.org/)
-install-openrgb:
-    #!/usr/bin/bash
-    if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
-      wget https://openrgb.org/releases/release_0.9/OpenRGB_0.9_x86_64_b5f46e3.AppImage \
-        -O $HOME/Downloads/OpenRGB.AppImage
-      chmod +x $HOME/Downloads/OpenRGB.AppImage
-      flatpak run it.mijorus.gearlever $HOME/Downloads/OpenRGB.AppImage
-    else
-      wget https://openrgb.org/releases/release_0.9/OpenRGB_0.9_x86_64_b5f46e3.AppImage \
-        -O $HOME/Desktop/OpenRGB.AppImage
-      chmod +x $HOME/Desktop/OpenRGB.AppImage
-    fi
+install-openrgb: (_install_appimage_file "https://openrgb.org/releases/release_0.9/OpenRGB_0.9_x86_64_b5f46e3.AppImage")
 
 # Install Boxtron, a Steam Play compatibility tool to run DOS games using native Linux DOSBox
 install-boxtron: distrobox-check-fedora
@@ -100,15 +105,7 @@ install-boxtron: distrobox-check-fedora
 alias get-wootility := install-wootility
 
 # Install Wootility for configuring Wooting Keyboards
-install-wootility:
-    #!/usr/bin/bash
-    if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
-      wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Downloads/wootility.AppImage
-      flatpak run it.mijorus.gearlever $HOME/Downloads/wootility.AppImage
-    else
-      wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Desktop/wootility.AppImage
-      chmod +x $HOME/Desktop/wootility.AppImage
-    fi
+install-wootility: (_install_appimage_file "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" "wootility.Appimage")
 
 # Install Adwaita-for-Steam theme for CSS Loader (https://github.com/tkashkin/Adwaita-for-Steam)
 install-adwaita-for-steam:
