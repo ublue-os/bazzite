@@ -422,10 +422,11 @@ EOF
 
 (
     wallpaper_url=https://github.com/ublue-os/bazzite/blob/main/press_kit/art/Convergence_Wallpaper_DX.jxl
-    wallpaper_file=/usr/share/wallpapers/${wallpaper_file##*/}
+    wallpaper_file=/usr/share/wallpapers/${wallpaper_url##*/}
     wget -nv -O "$wallpaper_file" "$wallpaper_url"
     rm -f /usr/share/backgrounds/default.xml
     ln -sf "$wallpaper_file" /usr/share/backgrounds/default.jxl
+    ln -sf "$wallpaper_file" /usr/share/backgrounds/default-dark.jxl
 )
 
 # Enable on-screen keyboard
