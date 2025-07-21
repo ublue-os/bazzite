@@ -105,7 +105,7 @@ install-boxtron: distrobox-check-fedora
 alias get-wootility := install-wootility
 
 # Install Wootility for configuring Wooting Keyboards
-install-wootility: (_install_appimage_file "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" "wootility.Appimage")
+install-wootility: (_install_appimage_file "https://api.wooting.io/public/wootility/download?os=linux" "wootility.Appimage")
 
 # Install Adwaita-for-Steam theme for CSS Loader (https://github.com/tkashkin/Adwaita-for-Steam)
 install-adwaita-for-steam:
