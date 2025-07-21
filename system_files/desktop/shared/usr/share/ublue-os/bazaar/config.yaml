@@ -108,6 +108,7 @@ sections:
       - com.feaneron.Boatswain
       - com.moonlight_stream.Moonlight
       - com.valvesoftware.SteamLink
+      - io.github.astralvixen.geforce-infinity
       - com.parsecgaming.parsec
       - com.discordapp.Discord
       - dev.vencord.Vesktop
