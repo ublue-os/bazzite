@@ -500,4 +500,7 @@ _tmp=$(mktemp -d)
 rm -rf "$_tmp"
 unset -v _tmp
 
+# Install Gparted
+dnf -yq install gparted
+
 ###############################
