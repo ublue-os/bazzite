@@ -57,6 +57,7 @@ sections:
       - io.github.Faugus.faugus-launcher
       - org.prismlauncher.PrismLauncher
       - io.mrarm.mcpelauncher
+      - at.vintagestory.VintageStory
       - org.vinegarhq.Sober
       - org.zdoom.GZDoom
       - org.zdoom.Raze
@@ -83,6 +84,8 @@ sections:
       - io.github.dosbox-staging
       - rs.ruffle.Ruffle
       - com.supermodel3.Supermodel
+      - net.hhoney.rota
+      - io.github.doukutsu_rs.doukutsu-rs
       - com.github.k4zmu2a.spacecadetpinball
       - sh.ppy.osu
       - com.pokemmo.PokeMMO
