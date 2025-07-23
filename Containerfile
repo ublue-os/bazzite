@@ -118,6 +118,17 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y config-manager setopt "*staging*".exclude="scx-scheds kf6-* mesa* mutter* rpm-ostree* systemd* gnome-shell gnome-settings-daemon gnome-control-center gnome-software libadwaita tuned*" && \
     /ctx/cleanup
 
+# Oxidize
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    dnf5 -y install sudo-rs && \
+    ln -sf /usr/bin/su-rs /usr/bin/su && \
+    ln -sf /usr/bin/sudo-rs /usr/bin/sudo && \
+    ln -sf /usr/bin/visudo-rs /usr/bin/visudo && \
+    /ctx/cleanup
+
 # Install kernel
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
