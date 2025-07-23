@@ -110,12 +110,26 @@ if [[ -z \$xboot_dev ]]; then
 fi
 e2label "\$xboot_dev" "bazzite_xboot"
 %end
+
+# Open a dialog with the installation logs
+%onerror
+run0 --user=liveuser yad \
+    --timeout=0 \
+    --text-info \
+    --no-buttons \
+    --width=600 \
+    --height=400 \
+    --text="An error occurred during installation. Please report this issue to the developers." \
+    < /tmp/anaconda.log
+%end
+
 ostreecontainer --url=$imageref:$imagetag --transport=containers-storage --no-signature-verification
 %include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
 %include /usr/share/anaconda/post-scripts/disable-fedora-flatpak.ks
 %include /usr/share/anaconda/post-scripts/install-flatpaks.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 %include /usr/share/anaconda/post-scripts/secureboot-docs.ks
+
 EOF
 
 # Signed Images
@@ -189,6 +203,17 @@ cat <<EOF >>/etc/anaconda/conf.d/anaconda.conf
 [Payload]
 flatpak_remote = flathub https://dl.flathub.org/repo/
 EOF
+
+# TODO (@Zeglius): Hide grub by default and set timeout to 5 seconds
+# # Hide grub by default and set timeout to 5 seconds
+# mkdir -p /boot/grub2
+# cat >>/boot/grub2/grub.cfg <<'EOF'
+
+# # Setup for liveisos
+# set menu_auto_hide=2
+# set timeout_style=hidden
+# set timeout=5
+# EOF
 
 ### Livecds runtime tweaks ###
 
@@ -348,19 +373,28 @@ StartupNotify=true
 Terminal=false
 EOF
 
-### Nvidia specific tweaks ###
+### Desktop-enviroment specific tweaks ###
+
+# Setup script to show dialog popups at login
+echo '#!/usr/bin/bash' >/usr/bin/on_gui_login.sh
+chmod +x /usr/bin/on_gui_login.sh
+mkdir -p /etc/skel/.config/autostart
+cat >/etc/skel/.config/autostart/on_gui_login.desktop <<'EOF'
+[Desktop Entry]
+Exec=/usr/bin/on_gui_login.sh
+Icon=application-x-shellscript
+Type=Application
+EOF
 
 # Warn the user about non functional Nvidia drivers
 if [[ $imageref == *-nvidia* ]]; then
-    cat <<'EOF' >>/etc/skel/.bash_profile
+    cat >>/usr/bin/on_gui_login.sh <<'EOF'
 { yad --title="Warning" --text="$(</dev/stdin)" || true; } <<'WARNINGEOF'
 Nvidia drivers might not be functional on live isos.
 Please do not use them in benchmarks.
 WARNINGEOF
 EOF
 fi
-
-### Desktop-enviroment specific tweaks ###
 
 # Determine desktop environment. Must match one of /usr/libexec/livesys/sessions.d/livesys-{desktop_env}
 # See https://github.com/ublue-os/titanoboa/blob/6c2e8ba58c7534b502081fe24363d2a60e7edca9/Justfile#L199-L213
@@ -383,7 +417,7 @@ rm -vf /etc/skel/.config/autostart/steam*.desktop
 dnf -yq remove steam lutris || :
 
 # Warn about limited capabilities of live sessions
-cat >>/etc/skel/.bash_profile <<'EOF'
+cat >>/usr/bin/on_gui_login.sh <<'EOF'
 yad --timeout=30 \
     --no-escape \
     --no-buttons \
@@ -396,11 +430,12 @@ yad --timeout=30 \
 EOF
 
 (
-    wallpaper_url=https://github.com/ublue-os/bazzite/blob/main/press_kit/art/Convergence_Wallpaper_DX.jxl
-    wallpaper_file=/usr/share/wallpapers/${wallpaper_file##*/}
+    wallpaper_url=https://github.com/ublue-os/bazzite/raw/refs/heads/main/press_kit/art/Convergence_Wallpaper_DX.jxl
+    wallpaper_file=/usr/share/wallpapers/convergence.jxl
     wget -nv -O "$wallpaper_file" "$wallpaper_url"
+    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence.jxl || :
+    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_morn.jxl || :
     rm -f /usr/share/backgrounds/default.xml
-    ln -sf "$wallpaper_file" /usr/share/backgrounds/default.jxl
 )
 
 # Enable on-screen keyboard
@@ -435,6 +470,15 @@ EOF
     glib-compile-schemas /usr/share/glib-2.0/schemas
 fi
 
+# Disable kde wallet
+if [[ $desktop_env == kde ]]; then
+    mkdir -p /etc/skel/.config
+    cat >/etc/skel/.config/kwalletrc <<'EOF'
+[Wallet]
+Enabled=false
+EOF
+fi
+
 # Add support for controllers
 _tmp=$(mktemp -d)
 (
@@ -455,5 +499,8 @@ _tmp=$(mktemp -d)
 ) || :
 rm -rf "$_tmp"
 unset -v _tmp
+
+# Install Gparted
+dnf -yq install gparted
 
 ###############################
