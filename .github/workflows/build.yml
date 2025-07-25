@@ -279,10 +279,13 @@ jobs:
       # Build image using buildah and save it to raw-img
       - name: Build Image
         id: build_image
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sudo buildah build \
+          sudo -E buildah build \
             --target ${{ env.CONTAINER_TARGET }} \
             --build-arg-file build_args.txt \
+            --secret "id=GITHUB_TOKEN,env=GITHUB_TOKEN" \
             --tag raw-img .
       
       - name: Remove auxiliary images
