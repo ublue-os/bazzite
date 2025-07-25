@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Icon=input-gaming-symbolic
+Name=Gamescope
+NoDisplay=true
+StartupWMClass=gamescope

@@ -71,7 +71,7 @@ jobs:
             is_latest_version: true
             is_stable_version: true
             kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
-            kernel_version: 6.15.6-105.bazzite.fc42.x86_64 # must match a cached version of the above flavor
+            kernel_version: 6.15.6-112.bazzite.fc42.x86_64 # must match a cached version of the above flavor
         exclude:
           - target_image_flavor: surface
           - base_name: bazzite
@@ -279,10 +279,13 @@ jobs:
       # Build image using buildah and save it to raw-img
       - name: Build Image
         id: build_image
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sudo buildah build \
+          sudo -E buildah build \
             --target ${{ env.CONTAINER_TARGET }} \
             --build-arg-file build_args.txt \
+            --secret "id=GITHUB_TOKEN,env=GITHUB_TOKEN" \
             --tag raw-img .
       
       - name: Remove auxiliary images

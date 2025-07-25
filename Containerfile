@@ -140,7 +140,6 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y swap atheros-firmware atheros-firmware-20250311-1$(rpm -E %{dist}) && \
     if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
         dnf5 -y copr enable lukenukem/asus-linux && \
         dnf5 -y install \
@@ -238,8 +237,9 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
+    --mount=type=secret,id=GITHUB_TOKEN \
     dnf5 -y install \
-        https://github.com/bazzite-org/cicpoffs/releases/download/master/cicpoffs.rpm && \
+        $(/ctx/ghcurl https://api.github.com/repos/bazzite-org/cicpoffs/releases/latest | jq -r '.assets[] | select(.name| test(".*rpm$")).browser_download_url') && \
     dnf5 -y install \
         bazaar \
         libdex-0.9.1 \
@@ -289,7 +289,6 @@ RUN --mount=type=cache,dst=/var/cache \
         rar \
         libxcrypt-compat \
         vulkan-tools \
-        extest.i686 \
         xwiimote-ng \
         fastfetch \
         glow \
@@ -318,7 +317,9 @@ RUN --mount=type=cache,dst=/var/cache \
         waydroid \
         cage \
         wlr-randr && \
-    curl -Lo /tmp/ls-iommu.tar.gz $(curl https://api.github.com/repos/HikariKnight/ls-iommu/releases/latest | jq -r '.assets[] | select(.name| test(".*x86_64.tar.gz$")).browser_download_url') && \
+    mkdir -p /usr/lib/extest/ && \
+    /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/bazzite-org/extest/releases/latest | jq -r '.assets[] | select(.name| test(".*so$")).browser_download_url')" --retry 3 -Lo /usr/lib/extest/libextest.so && \
+    /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/HikariKnight/ls-iommu/releases/latest | jq -r '.assets[] | select(.name| test(".*x86_64.tar.gz$")).browser_download_url')" --retry 3 -Lo /tmp/ls-iommu.tar.gz && \
     mkdir -p /tmp/ls-iommu && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
     setcap 'cap_sys_admin+p' /usr/bin/sunshine-v* && \
@@ -330,14 +331,14 @@ RUN --mount=type=cache,dst=/var/cache \
     mkdir -p /etc/xdg/autostart && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     sed -i 's/ --xdg-runtime=\\"${XDG_RUNTIME_DIR}\\"//g' /usr/bin/btrfs-assistant-launcher && \
-    curl -Lo /usr/bin/installcab https://raw.githubusercontent.com/bazzite-org/steam-proton-mf-wmv/master/installcab.py && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/bazzite-org/steam-proton-mf-wmv/master/installcab.py" --retry 3 -Lo /usr/bin/installcab && \
     chmod +x /usr/bin/installcab && \
-    curl -Lo /usr/bin/install-mf-wmv https://raw.githubusercontent.com/bazzite-org/steam-proton-mf-wmv/refs/heads/master/install-mf-wmv.sh && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/bazzite-org/steam-proton-mf-wmv/refs/heads/master/install-mf-wmv.sh" --retry 3 -Lo /usr/bin/install-mf-wmv && \
     chmod +x /usr/bin/install-mf-wmv && \
     tar --no-same-owner --no-same-permissions --no-overwrite-dir -xvzf /tmp/ls-iommu.tar.gz -C /tmp/ls-iommu && \
     rm -f /tmp/ls-iommu.tar.gz && \
     cp -r /tmp/ls-iommu/ls-iommu /usr/bin/ && \
-    curl -Lo /tmp/scopebuddy.tar.gz https://github.com/HikariKnight/ScopeBuddy/archive/refs/tags/$(curl https://api.github.com/repos/HikariKnight/scopebuddy/releases/latest | jq -r '.tag_name').tar.gz && \
+    /ctx/ghcurl "https://github.com/HikariKnight/ScopeBuddy/archive/refs/tags/$(/ctx/ghcurl https://api.github.com/repos/HikariKnight/scopebuddy/releases/latest | jq -r '.tag_name').tar.gz" --retry 3 -Lo /tmp/scopebuddy.tar.gz && \
     mkdir -p /tmp/scopebuddy && \
     tar --no-same-owner --no-same-permissions --no-overwrite-dir -xvzf /tmp/scopebuddy.tar.gz -C /tmp/scopebuddy && \
     rm -f /tmp/scopebuddy.tar.gz && \
@@ -350,6 +351,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
+    --mount=type=secret,id=GITHUB_TOKEN \
     dnf5 -y swap \
     --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite \
         ibus ibus && \
@@ -382,15 +384,15 @@ RUN --mount=type=cache,dst=/var/cache \
         lutris && \
     dnf5 -y remove \
         gamemode && \
-    curl -Lo /tmp/latencyflex.tar.xz $(curl https://api.github.com/repos/ishitatsuyuki/LatencyFleX/releases/latest | jq -r '.assets[] | select(.name| test(".*.tar.xz$")).browser_download_url') && \
+    /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/ishitatsuyuki/LatencyFleX/releases/latest | jq -r '.assets[] | select(.name| test(".*.tar.xz$")).browser_download_url')" --retry 3 -Lo /tmp/latencyflex.tar.xz && \
     mkdir -p /tmp/latencyflex && \
     tar --no-same-owner --no-same-permissions --no-overwrite-dir --strip-components 1 -xvf /tmp/latencyflex.tar.xz -C /tmp/latencyflex && \
     rm -f /tmp/latencyflex.tar.xz && \
     mkdir -p /usr/lib64/latencyflex && \
     cp -r /tmp/latencyflex/wine/usr/lib/wine/* /usr/lib64/latencyflex/ && \
-    curl -Lo /usr/bin/latencyflex https://raw.githubusercontent.com/bazzite-org/LatencyFleX-Installer/main/install.sh && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/bazzite-org/LatencyFleX-Installer/main/install.sh" --retry 3 -Lo /usr/bin/latencyflex && \
     chmod +x /usr/bin/latencyflex && \
-    curl -Lo /usr/bin/winetricks https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" --retry 3 -Lo /usr/bin/winetricks && \
     chmod +x /usr/bin/winetricks && \
     /ctx/cleanup
 
@@ -399,10 +401,11 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    curl -sL "$(curl -s https://api.github.com/repos/bazzite-org/yafti-go/releases/latest | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -o /bin/yafti-go && \
+    --mount=type=secret,id=GITHUB_TOKEN \
+    /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/bazzite-org/yafti-go/releases/latest" -s | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -sL -o /bin/yafti-go && \
     chmod +x /bin/yafti-go && \
     chmod +x /usr/libexec/bazzite-yafti-launcher && \
-    curl -sL "$(curl -s https://api.github.com/repos/xXJSONDeruloXx/bazzite-ujust-picker/releases/latest | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')" -o /usr/bin/ujust-picker && \
+    /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/xXJSONDeruloXx/bazzite-ujust-picker/releases/latest" -s | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')" -sL -o /usr/bin/ujust-picker && \
     chmod +x /usr/bin/ujust-picker && \
     /ctx/cleanup
 
@@ -411,6 +414,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
+    --mount=type=secret,id=GITHUB_TOKEN \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y install \
             qt \
@@ -490,11 +494,11 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-background-logo \
             gnome-shell-extension-apps-menu && \
         mkdir -p /tmp/tilingshell && \
-        curl -s https://api.github.com/repos/domferr/tilingshell/releases/latest | \
+        /ctx/ghcurl "https://api.github.com/repos/domferr/tilingshell/releases/latest" | \
             jq -r '.assets | sort_by(.created_at) | .[] | select (.name|test("^tilingshell@.*zip$")) | .browser_download_url' | \
             wget -qi - -O /tmp/tilingshell/tilingshell@ferrarodomenico.com.zip && \
         unzip /tmp/tilingshell/tilingshell@ferrarodomenico.com.zip -d /usr/share/gnome-shell/extensions/tilingshell@ferrarodomenico.com && \
-        curl -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer && \
+        /ctx/ghcurl "https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer" --retry 3 -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
         systemctl enable dconf-update.service \
     ; fi && \
     /ctx/cleanup
@@ -505,8 +509,9 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
+    --mount=type=secret,id=GITHUB_TOKEN \
     dnf5 install -y ublue-brew && \
-    curl -Lo /usr/share/bash-prexec https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh" --retry 3 -Lo /usr/share/bash-prexec && \
     /ctx/cleanup
 
 # ublue-os-media-automount-udev, mount non-removable device partitions automatically under /media/media-automount/
@@ -525,6 +530,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
+    --mount=type=secret,id=GITHUB_TOKEN \
     rm -f /etc/profile.d/toolbox.sh && \
     mkdir -p /var/tmp && chmod 1777 /var/tmp && \
     cp --no-dereference --preserve=links /usr/lib/libdrm.so.2 /usr/lib/libdrm.so && \
@@ -619,7 +625,7 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i 's/balanced=balanced-battery$/balanced=balanced-battery-bazzite/' /etc/tuned/ppd.conf && \
     ln -s /usr/bin/true /usr/bin/pulseaudio && \
     mkdir -p /etc/flatpak/remotes.d && \
-    curl -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
+    curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
     systemctl enable brew-setup.service && \
     systemctl disable brew-upgrade.timer && \
     systemctl disable brew-update.timer && \
@@ -641,12 +647,12 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global disable sunshine.service && \
     systemctl disable waydroid-container.service && \
     systemctl disable force-wol.service && \
-    curl -Lo /etc/dxvk-example.conf https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf && \
-    curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/bazzite-org/waydroid-scripts/main/waydroid-choose-gpu.sh && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf" --retry 3 -Lo /etc/dxvk-example.conf && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/bazzite-org/waydroid-scripts/main/waydroid-choose-gpu.sh" --retry 3 -Lo /usr/bin/waydroid-choose-gpu && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
-    curl -Lo /usr/lib/sysctl.d/99-bore-scheduler.conf https://github.com/CachyOS/CachyOS-Settings/raw/master/usr/lib/sysctl.d/99-bore-scheduler.conf && \
-    curl -Lo /etc/distrobox/docker.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/distrobox.ini && \
-    curl -Lo /etc/distrobox/incus.ini https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/incus/distrobox.ini && \
+    /ctx/ghcurl "https://github.com/CachyOS/CachyOS-Settings/raw/master/usr/lib/sysctl.d/99-bore-scheduler.conf" --retry 3 -Lo /usr/lib/sysctl.d/99-bore-scheduler.conf && \
+    /ctx/ghcurl "https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/distrobox.ini" --retry 3 -Lo /etc/distrobox/docker.ini && \
+    /ctx/ghcurl "https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/incus/distrobox.ini" --retry 3 -Lo /etc/distrobox/incus.ini && \
     /ctx/image-info && \
     /ctx/build-initramfs && \
     /ctx/finalize
@@ -774,10 +780,11 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
+    --mount=type=secret,id=GITHUB_TOKEN \
     mkdir -p /usr/share/gamescope-session-plus/ && \
-    curl -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz && \
+    curl --retry 3 -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz && \
     mkdir -p /usr/share/sdl/ && \
-    curl -Lo /usr/share/sdl/gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt" --retry 3 -Lo /usr/share/sdl/gamecontrollerdb.txt && \
     dnf5 -y install \
     --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite \
         gamescope-session-plus \
@@ -903,12 +910,13 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=bind,from=nvidia-akmods,src=/rpms,dst=/tmp/akmods-rpms \
     --mount=type=tmpfs,dst=/tmp \
+    --mount=type=secret,id=GITHUB_TOKEN \
     dnf5 config-manager setopt "terra-mesa".enabled=1 && \
     dnf5 -y copr enable ublue-os/staging && \
     dnf5 -y install \
         mesa-vdpau-drivers.x86_64 \
         mesa-vdpau-drivers.i686 && \
-    curl -Lo /tmp/nvidia-install.sh https://raw.githubusercontent.com/ublue-os/main/refs/heads/main/build_files/nvidia-install.sh && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/main/refs/heads/main/build_files/nvidia-install.sh" --retry 3 -Lo /tmp/nvidia-install.sh && \
     chmod +x /tmp/nvidia-install.sh && \
     IMAGE_NAME="${BASE_IMAGE_NAME}" /tmp/nvidia-install.sh && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
