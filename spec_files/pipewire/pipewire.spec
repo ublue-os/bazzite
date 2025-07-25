@@ -1,6 +1,6 @@
 %global majorversion 1
 %global minorversion 4
-%global microversion 3
+%global microversion 7
 
 %global apiversion   0.3
 %global spaversion   0.2
@@ -9,7 +9,7 @@
 %global ms_version   0.4.2
 
 # For rpmdev-bumpspec and releng automation
-%global baserelease 2
+%global baserelease 1
 
 #global snapdate   20210107
 #global gitcommit  b17db2cebc1a5ab2c01851d29c05f79cd2f262bb
@@ -904,13 +904,25 @@ systemctl --no-reload preset --global pipewire.socket >/dev/null 2>&1 || :
 %{_datadir}/pipewire/pipewire.conf.d/50-raop.conf
 
 %changelog
+* Wed Jul 23 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.7-1
+- Update version to 1.4.7
+
+* Fri Jun 27 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.6-1
+- Update version to 1.4.6
+
+* Wed Jun 04 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.5-1
+- Update version to 1.4.5
+
+* Thu May 29 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.4-1
+- Update version to 1.4.4
+
 * Thu May 22 2025 Christian Glombek <lorbus@fedoraproject.org> - 1.4.3-2
 - Add config-raop package with config enabling module-raop
 
 * Thu May 22 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.3-1
 - Update version to 1.4.3
 
-* Fri Apr 24 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.2-2
+* Thu Apr 24 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.2-2
 - Rebuild for libcamera
 
 * Mon Apr 14 2025 Wim Taymans <wtaymans@redhat.com> - 1.4.2-1
