@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SCRIPT VERSION
-VER=27
+VER=28
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -25,6 +25,10 @@ fi
 # Ensure Flathub is enabled
 flatpak remote-add --if-not-exists --system flathub /etc/flatpak/remotes.d/flathub.flatpakrepo
 flatpak remote-modify --system --enable flathub
+
+# Disable fedora flatpak remote
+flatpak remote-modify --disable fedora || :
+flatpak remote-modify --disable fedora-testing || :
 
 # Filter out references from Flathub remote
 if [[ -f /usr/share/ublue-os/flatpak-blocklist ]]; then
