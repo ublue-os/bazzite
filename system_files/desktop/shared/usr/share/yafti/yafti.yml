@@ -169,11 +169,6 @@ screens:
         description: "Adds the input group to your current user. Required by certain controller drivers."
         default: true
         script: "sudo -A ujust add-user-to-input-group"
-      - id: "bios-firmware-updates"
-        title: "BIOS & Firmware Updates"
-        description: "Enables BIOS & Firmware updates for Steam Deck hardware"
-        default: false
-        script: "sudo -A ujust enable-deck-bios-firmware-updates"
       - id: "password-asterisks"
         title: "Visible Password Asterisks"
         description: "Toggles pwfeedback on."
