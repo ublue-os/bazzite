@@ -117,12 +117,6 @@ install-adwaita-for-steam:
         echo 'Please install Decky Loader by running "ujust setup-decky install" first, then install CSS Loader from the Decky Plugin Store.'
     fi
 
-# Install Oversteer for Logitech steering wheels
-install-oversteer: distrobox-check-fedora
-    distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y bazzite-org/oversteer && \
-      sudo dnf install -y oversteer && \
-      distrobox-export --app oversteer'
-
 # Install Resilio Sync, a file synchronization utility powered by BitTorrent
 install-resilio-sync: distrobox-check-fedora
     distrobox-enter -n fedora -- bash -c 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc' && \

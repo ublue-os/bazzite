@@ -38,11 +38,6 @@ screens:
         description: "Android app compatibility layer for Linux"
         default: false
         script: "ujust setup-waydroid init"
-      - id: "oversteer"
-        title: "Oversteer"
-        description: "Application to control supported steering wheels"
-        default: false
-        script: "ujust install-oversteer"
       - id: "openrgb"
         title: "OpenRGB"
         description: "Open source RGB lighting control that doesn't depend on manufacturer software"
@@ -174,15 +169,10 @@ screens:
         description: "Adds the input group to your current user. Required by certain controller drivers."
         default: true
         script: "sudo -A ujust add-user-to-input-group"
-      - id: "bios-firmware-updates"
-        title: "BIOS & Firmware Updates"
-        description: "Enables BIOS & Firmware updates for Steam Deck hardware"
-        default: true
-        script: "sudo -A ujust enable-deck-bios-firmware-updates"
       - id: "password-asterisks"
         title: "Visible Password Asterisks"
         description: "Toggles pwfeedback on."
-        default: true
+        default: false
         script: "sudo -A ujust toggle-password-feedback on"
       - id: "hide-grub"
         title: "Hide GRUB Menu"
