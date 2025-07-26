@@ -10,4 +10,9 @@ if [[ ":ROG Ally RC71L:ROG Ally X RC72LA:83E1:83L3:83N6:83Q2:83Q3:AOKZOE A1 AR07
 	exit 0
 fi
 
+BOARD_NAME="$(cat /sys/devices/virtual/dmi/id/board_name)"
+if [[ ":MS-1T8K:MS-1T42:MS-1T52:" =~ ":$BOARD_NAME:" ]]; then
+	exit 0
+fi
+
 exit 1
