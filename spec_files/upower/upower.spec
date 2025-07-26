@@ -1,7 +1,9 @@
+%global _default_patch_fuzz 2
+
 Summary:        Power Management Service
 Name:           upower
 Version:        1.90.9
-Release:        %autorelease.bazzite.{{{ git_dir_version }}}
+Release:        1000.bazzite.{{{ git_dir_version }}}
 License:        GPL-2.0-or-later
 URL:            http://upower.freedesktop.org/
 Source0:        https://gitlab.freedesktop.org/upower/%{name}/-/archive/v%{version}/%{name}-v%{version}.tar.bz2
@@ -56,6 +58,13 @@ BuildArch: noarch
 %description devel-docs
 Developer documentation for for libupower-glib.
 
+%package tests
+Summary: Test files for Upower
+Requires: %{name}%{?_isa} = %{version}-%{release}
+
+%description tests
+Test files for Upower
+
 %prep
 %autosetup -n %{name}-v%{version} -p1 -S git
 
@@ -70,6 +79,9 @@ Developer documentation for for libupower-glib.
 
 %install
 %meson_install
+
+mkdir -p $RPM_BUILD_ROOT%{_libexecdir}/installed-tests
+mv $RPM_BUILD_ROOT%{_libexecdir}/upower $RPM_BUILD_ROOT%{_libexecdir}/installed-tests
 
 %find_lang upower
 
@@ -95,15 +107,14 @@ Developer documentation for for libupower-glib.
 %dir %{_sysconfdir}/UPower
 %config %{_sysconfdir}/UPower/UPower.conf
 %{_bindir}/*
-%{_libexecdir}/*
+%{_libexecdir}/upowerd
 %{_mandir}/man1/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
 %{_datadir}/dbus-1/system-services/*.service
 %{_unitdir}/*.service
-%{_datadir}/installed-tests/upower/upower-integration.test
 %{_datadir}/polkit-1/actions/org.freedesktop.upower.policy
-%{_datadir}/zsh
+%{_datadir}/zsh/*
 
 %files libs
 %license COPYING
@@ -123,6 +134,10 @@ Developer documentation for for libupower-glib.
 %dir %{_datadir}/gtk-doc
 %dir %{_datadir}/gtk-doc/html/UPower
 %{_datadir}/gtk-doc/html/UPower/*
+
+%files tests
+%{_libexecdir}/installed-tests/upower
+%{_datadir}/installed-tests/upower/upower-integration.test
 
 %changelog
 %autochangelog
