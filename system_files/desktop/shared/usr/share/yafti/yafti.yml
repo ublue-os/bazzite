@@ -189,6 +189,16 @@ screens:
         description: "Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system"
         default: false
         script: "ujust enable-automounting"
+      - id: "disable-steamos-automounting"
+        title: "Disable SteamOS Automounting"
+        description: "Disable SteamOS automount, this fixes ntfs partitions getting mounted"
+        default: false
+        script: "ujust disable-steamos-automount"
+      - id: "enable-steamos-automounting"
+        title: "Enable SteamOS Automounting"
+        description: "Enable SteamOS automount"
+        default: false
+        script: "ujust enable-steamos-automount"
       - id: "wake-on-lan"
         title: "Wake-on-LAN"
         description: "Enable Wake-on-LAN functionality to power on your device remotely"
