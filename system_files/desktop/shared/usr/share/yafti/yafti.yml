@@ -38,11 +38,6 @@ screens:
         description: "Android app compatibility layer for Linux"
         default: false
         script: "ujust setup-waydroid init"
-      - id: "oversteer"
-        title: "Oversteer"
-        description: "Application to control supported steering wheels"
-        default: false
-        script: "ujust install-oversteer"
       - id: "openrgb"
         title: "OpenRGB"
         description: "Open source RGB lighting control that doesn't depend on manufacturer software"
