@@ -93,6 +93,7 @@ sections:
       - com.realm667.Wolfenstein_Blade_of_Agony
       - org.srb2.SRB2
       - org.srb2.SRB2Kart
+      - org.kartkrew.RingRacers
       - org.supertuxproject.SuperTux
       - net.supertuxkart.SuperTuxKart
   - title: "Streaming & Chat"
