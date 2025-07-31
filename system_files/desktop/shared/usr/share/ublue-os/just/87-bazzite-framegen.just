@@ -283,16 +283,21 @@ get-lsfg ACTION="prompt":
             exit 1
         fi
 
-        # Find the extracted directory
-        EXTRACTED_DIR=$(find . -maxdepth 1 -type d -name "lsfg-vk*" | head -n 1)
-        if [ -z "$EXTRACTED_DIR" ]; then
-            echo "Could not find extracted lsfg-vk directory!"
-            cd - > /dev/null
-            rm -rf "$TEMP_DIR"
-            exit 1
+        # Check if files were extracted directly to current directory
+        if [ -f "./lib/liblsfg-vk.so" ] && [ -f "./share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]; then
+            echo "Files extracted directly to current directory"
+            EXTRACTED_DIR="."
+        else
+            # Find the extracted directory
+            EXTRACTED_DIR=$(find . -maxdepth 1 -type d -name "lsfg-vk*" | head -n 1)
+            if [ -z "$EXTRACTED_DIR" ]; then
+                echo "Could not find extracted lsfg-vk directory!"
+                cd - > /dev/null
+                rm -rf "$TEMP_DIR"
+                exit 1
+            fi
+            echo "Found extracted directory: $EXTRACTED_DIR"
         fi
-
-        echo "Found extracted directory: $EXTRACTED_DIR"
 
         # Remove legacy files if they exist
         echo "Removing legacy lsfg-vk files if they exist..."
