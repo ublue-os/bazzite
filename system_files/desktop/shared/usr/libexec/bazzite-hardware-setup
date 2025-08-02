@@ -218,6 +218,11 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   systemctl enable --now ds-inhibit.service
 fi
 
+# Enable workaround for buggy wifi sleep interaction on first gen Ayaneo Air and OneXPlayer devices
+if [[ ":AIR Pro:AIR:ONE XPLAYER" =~ ":$SYS_ID:" ]]; then
+  systemctl enable --now kmod-sleep-workaround@mt7921e.service
+fi
+
 # FSTAB CONFIGURATION
 if [[ ! -e /etc/ublue-os/.fstab_adjusted.flag && $(grep "compress=zstd" /etc/fstab) ]]; then
     echo "Applying fstab param adjustments"
