@@ -315,7 +315,8 @@ get-lsfg ACTION="prompt":
         echo "Installing lsfg-vk to /usr/local..."
         if [ -d "$EXTRACTED_DIR/bin" ]; then
             sudo cp -r "$EXTRACTED_DIR/bin"/* /usr/local/bin/
-            echo "Installed binaries to /usr/local/bin/"
+            sudo chmod +x /usr/local/bin/lsfg-vk-ui
+            echo "Installed binaries to /usr/local/bin/ and made executable"
         fi
 
         if [ -d "$EXTRACTED_DIR/lib" ]; then
@@ -328,6 +329,14 @@ get-lsfg ACTION="prompt":
             sudo mkdir -p /usr/local/share
             sudo cp -r "$EXTRACTED_DIR/share"/* /usr/local/share/
             echo "Installed shared files to /usr/local/share/"
+        fi
+
+        # Fix the Vulkan layer JSON to use the correct library path
+        VULKAN_LAYER_FILE="/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
+        if [ -f "$VULKAN_LAYER_FILE" ]; then
+            echo "Updating Vulkan layer library path..."
+            sudo sed -i 's|"library_path": "liblsfg-vk.so"|"library_path": "../../../lib/liblsfg-vk.so"|' "$VULKAN_LAYER_FILE"
+            echo "Updated Vulkan layer library path to use absolute reference"
         fi
 
         # Copy desktop file to user's desktop if it exists
