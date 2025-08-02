@@ -42,7 +42,7 @@ install-coolercontrol:
 
 # Install JetBrains Toolbox | https://www.jetbrains.com/toolbox-app/
 install-jetbrains-toolbox:
-    #!/usr/bin/env bash
+     #!/usr/bin/env bash
     pushd "$(mktemp -d)"
     echo "Get latest JetBrains Toolbox version"
     # Get the json with latest releases
@@ -55,8 +55,10 @@ install-jetbrains-toolbox:
     curl -sSfL -O "${DOWNLOAD_LINK}"
     curl -sSfL "${CHECKSUM_LINK}" | sha256sum -c
     tar zxf jetbrains-toolbox-"${BUILD_VERSION}".tar.gz
+    mkdir -p $HOME/.local/share/JetBrains/ToolboxApp/
+    mv jetbrains-toolbox-"${BUILD_VERSION}"/* $HOME/.local/share/JetBrains/ToolboxApp/
     echo "Launching JetBrains Toolbox"
-    ./jetbrains-toolbox-"${BUILD_VERSION}"/jetbrains-toolbox
+    $HOME/.local/share/JetBrains/ToolboxApp/bin/jetbrains-toolbox &
 
 alias get-steamcmd := install-steamcmd
 
