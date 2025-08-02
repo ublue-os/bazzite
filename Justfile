@@ -14,7 +14,7 @@ _container_mgr:
     @{{ project_root }}/just_scripts/container_mgr.sh
 
 _tag image:
-    @echo {{image}}-build
+    @echo {{ image }}-build
 
 # Check Just Syntax
 just-check:
@@ -37,23 +37,23 @@ just-fix:
 
 # Build image
 build target="" image="":
-    @{{ project_root }}/just_scripts/build-image.sh {{target}} {{image}} 
+    @{{ project_root }}/just_scripts/build-image.sh {{ target }} {{ image }} 
 
 # Build ISO
 build-iso-release target="" image="":
-    @{{ project_root }}/just_scripts/build-iso.sh {{target}} {{image}} 
+    @{{ project_root }}/just_scripts/build-iso.sh {{ target }} {{ image }} 
 
 # Build ISO using ISO Builder Git Head
 build-iso-git target="" image="":
-    @{{ project_root }}/just_scripts/build-iso-installer-main.sh {{target}} {{image}}
+    @{{ project_root }}/just_scripts/build-iso-installer-main.sh {{ target }} {{ image }}
 
 # Run ISO
 run-iso target="" image="":
-    @{{ project_root }}/just_scripts/run-iso.sh {{target}} {{image}}
+    @{{ project_root }}/just_scripts/run-iso.sh {{ target }} {{ image }}
 
 # Run Container
 run-container target="" image="":
-    @{{ project_root }}/just_scripts/run-image.sh {{target}} {{image}}
+    @{{ project_root }}/just_scripts/run-image.sh {{ target }} {{ image }}
 
 # List Images
 list-images:
