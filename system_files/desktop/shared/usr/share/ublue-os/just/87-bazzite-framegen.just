@@ -302,12 +302,12 @@ get-lsfg ACTION="prompt":
         # Remove legacy files if they exist
         echo "Removing legacy lsfg-vk files if they exist..."
         if [[ -f "$HOME/.local/lib/liblsfg-vk.so" ]]; then
-            rm -v "$HOME/.local/lib/liblsfg-vk.so"
+            rm -fv "$HOME/.local/lib/liblsfg-vk.so"
             echo "Removed legacy lsfg-vk library"
         fi
 
         if [[ -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
-            rm -v "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
+            rm -fv "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
             echo "Removed legacy lsfg-vk Vulkan layer"
         fi
 
@@ -468,50 +468,50 @@ get-lsfg ACTION="prompt":
 
         # Remove new installation files from /usr/local
         if [[ -f "/usr/local/lib/liblsfg-vk.so" ]]; then
-            sudo rm -v "/usr/local/lib/liblsfg-vk.so"
+            sudo rm -fv "/usr/local/lib/liblsfg-vk.so"
             echo "Removed lsfg-vk library from /usr/local"
         fi
 
         if [[ -f "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
-            sudo rm -v "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
+            sudo rm -fv "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
             echo "Removed lsfg-vk Vulkan layer from /usr/local"
         fi
 
         if [[ -f "/usr/local/bin/lsfg-vk-ui" ]]; then
-            sudo rm -v "/usr/local/bin/lsfg-vk-ui"
+            sudo rm -fv "/usr/local/bin/lsfg-vk-ui"
             echo "Removed lsfg-vk UI binary from /usr/local"
         fi
 
         if [[ -f "/usr/local/share/applications/lsfg-vk-ui.desktop" ]]; then
-            sudo rm -v "/usr/local/share/applications/lsfg-vk-ui.desktop"
+            sudo rm -fv "/usr/local/share/applications/lsfg-vk-ui.desktop"
             echo "Removed lsfg-vk desktop file from /usr/local"
         fi
 
         if [[ -f "/usr/local/share/icons/hicolor/256x256/apps/gay.pancake.lsfg-vk-ui.png" ]]; then
-            sudo rm -v "/usr/local/share/icons/hicolor/256x256/apps/gay.pancake.lsfg-vk-ui.png"
+            sudo rm -fv "/usr/local/share/icons/hicolor/256x256/apps/gay.pancake.lsfg-vk-ui.png"
             echo "Removed lsfg-vk icon from /usr/local"
         fi
 
         # Remove legacy installation files from ~/.local
         if [[ -f "$HOME/.local/lib/liblsfg-vk.so" ]]; then
-            rm -v "$HOME/.local/lib/liblsfg-vk.so"
+            rm -fv "$HOME/.local/lib/liblsfg-vk.so"
             echo "Removed legacy lsfg-vk library from ~/.local"
         fi
 
         if [[ -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
-            rm -v "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
+            rm -fv "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
             echo "Removed legacy lsfg-vk Vulkan layer from ~/.local"
         fi
 
         # Remove desktop file from user's desktop
         if [[ -f "$HOME/Desktop/lsfg-vk-ui.desktop" ]]; then
-            rm -v "$HOME/Desktop/lsfg-vk-ui.desktop"
+            rm -fv "$HOME/Desktop/lsfg-vk-ui.desktop"
             echo "Removed lsfg-vk desktop file from ~/Desktop"
         fi
 
         # Remove lsfg-vk binary if it exists (legacy cleanup)
         if [[ -f "$HOME/.local/bin/lsfg-vk" ]]; then
-            rm "$HOME/.local/bin/lsfg-vk"
+            rm -f "$HOME/.local/bin/lsfg-vk"
             echo "Removed legacy lsfg-vk binary from ~/.local/bin/"
         fi
 
