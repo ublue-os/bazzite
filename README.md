@@ -118,7 +118,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Update break something? Easily roll back to the previous version of Bazzite thanks to `rpm-ostree`'s rollback functionality. You can even select previous images at boot.
 - Steam and Lutris preinstalled on the image as layered packages.
 - [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Game mode and on the Desktop if Discord is installed. [View the official documentation here](https://trigg.github.io/Discover/bazzite).
-- Uses ZRAM<sub><sup>(4GB)</sup></sub> with the ZSTD compression algorithm by default with the option to switch back to a 1GB swap file and set a custom size for it if desired.
+- Uses ZRAM<sub><sup>(4GB)</sup></sub> with the LZ4 compression algorithm by default.
 - [LAVD](https://crates.io/crates/scx_lavd) and [BORE](https://github.com/firelzrd/bore-scheduler) CPU Schedulers for smooth and responsive gameplay.
 - Kyber I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` process.
 - Applies SteamOS's kernel parameters.

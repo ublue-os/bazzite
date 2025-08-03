@@ -120,7 +120,7 @@ Diese Variante wurde für die Nutzung als Alternative zu SteamOS auf dem Steam D
 - Update hat etwas kaputt gemacht? Rolle dank der Rollback-Funktion von `rpm-ostree` einfach zur vorherigen Bazzite-Version zurück. Du kannst sogar frühere Images beim Booten auswählen.
 - Steam und Lutris sind als Layered Packages auf dem Image vorinstalliert.
 - [Discover Overlay](https://github.com/trigg/Discover) für Discord ist vorinstalliert und startet automatisch sowohl im Spielmodus als auch auf dem Desktop, wenn Discord installiert ist. [Die offizielle Dokumentation findest du hier](https://trigg.github.io/Discover/bazzite).
-- Verwendet standardmäßig ZRAM<sub><sup>(4GB)</sup></sub> mit dem ZSTD-Komprimierungsalgorithmus, mit der Option, zu einer 1GB Swap-Datei zurückzukehren und eine benutzerdefinierte Größe dafür festzulegen, falls gewünscht.
+- Verwendet standardmäßig ZRAM<sub><sup>(4GB)</sup></sub> mit dem LZ4-Komprimierungsalgorithmus.
 - [LAVD](https://crates.io/crates/scx_lavd) und [BORE](https://github.com/firelzrd/bore-scheduler) CPU-Scheduler für flüssiges und reaktionsschnelles Gameplay.
 - Kyber I/O-Scheduler, um I/O-Engpässe bei der Installation von Spielen oder während des `duperemove`-Hintergrundprozesses zu verhindern.
 - Wendest SteamOS' Kernel-Parameter an.

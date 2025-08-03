@@ -118,7 +118,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - Возможность отката к предыдущей версии Bazzite благодаря функции `rpm-ostree`. Можно выбрать предыдущий образ при загрузке.
 - Steam и Lutris предустановлены.
 - [Discover Overlay](https://github.com/trigg/Discover) для Discord предустановлен и автоматически запускается в игровом режиме и на рабочем столе. [Документация](https://trigg.github.io/Discover/bazzite).
-- ZRAM <sub><sup>(4GB)</sup></sub> с алгоритмом сжатия ZSTD по умолчанию. Можно переключиться на файл подкачки 1GB.
+- ZRAM <sub><sup>(4GB)</sup></sub> с алгоритмом сжатия LZ4 по умолчанию.
 - [LAVD](https://crates.io/crates/scx_lavd) и [BORE](https://github.com/firelzrd/bore-scheduler) для плавного геймплея.
 - Планировщик ввода-вывода Kyber для предотвращения проблем при установке игр.
 - Параметры ядра SteamOS.
