@@ -33,7 +33,8 @@ setup-waydroid ACTION="":
       cp /usr/share/applications/waydroid-container-restart.desktop ~/.local/share/applications
       echo "Waydroid has been initialized, please run waydroid once before you Configure Waydroid"
     elif [[ "${OPTION,,}" =~ ^configure ]]; then
-      git clone https://github.com/ublue-os/waydroid_script.git --depth 1 /tmp/waydroid_script
+      git clone https://github.com/casualsnek/waydroid_script.git /tmp/waydroid_script
+      cd /tmp/waydroid_script && git checkout 3e344b360f64f4a417c4f5e9a3b1aae3da9fdfb9
       python -m venv /tmp/waydroid_script/venv
       source /tmp/waydroid_script/venv/bin/activate
       sudo pip install -r /tmp/waydroid_script/requirements.txt

@@ -17,5 +17,16 @@
       "matchDepTypes": ["container"],
       "matchFileNames": [".github/workflows/**.yaml", ".github/workflows/**.yml"],
     },
+    {
+      "description": "Track waydroid_script upstream commits",
+      "matchFileNames": ["**/82-bazzite-waydroid.just"],
+      "customType": "regex",
+      "matchStrings": [
+        "git checkout (?<currentValue>[a-f0-9]{7,40})"
+      ],
+      "datasourceTemplate": "github-commits",
+      "depNameTemplate": "casualsnek/waydroid_script",
+      "extractVersionTemplate": "^(?<version>.*)$"
+    }
   ]
 }
