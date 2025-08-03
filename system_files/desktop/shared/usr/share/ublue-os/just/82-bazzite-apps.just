@@ -42,7 +42,7 @@ install-coolercontrol:
 
 # Install JetBrains Toolbox | https://www.jetbrains.com/toolbox-app/
 install-jetbrains-toolbox:
-     #!/usr/bin/env bash
+    #!/usr/bin/env bash
     pushd "$(mktemp -d)"
     echo "Get latest JetBrains Toolbox version"
     # Get the json with latest releases
