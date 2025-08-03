@@ -131,7 +131,7 @@ Esta variante esta diseñada para usarse como una alternativa de SteamOS en la S
 - ¿Algo se rompió o dejo de funcionar después de actualizar?, ¡descuida!, puedes fácilmente retroceder a una versión previa de Bazzite, gracias a la función de reversión (rollback) de `rpm-ostree`. Inclusive puedes seleccionar imágenes previas del sistema directamente desde el menú que aparece al arrancar tu dispositivo.
 - Steam y Lutris vienen pre-instalados en la imagen como paquetes en capas (layered).
 - La utilidad [Discover Overlay](https://github.com/trigg/Discover) para Discord viene pre-instalada y es lanzada automáticamente tanto en Gamemode como en el escritorio, si Discord esta instalado. [Puedes ver la documentación oficial aquí (en inglés)](https://trigg.github.io/Discover/bazzite).
-- Se incluye ZRAM<sub><sup>(4GB)</sup></sub>, un avanzado sistema de swap ubicado directamente en la memoria RAM, con el algoritmo de compresión de datos ZSTD por defecto, con la opción de cambiar de vuelta a un simple archivo swap de 1GB, y si deseas, puedes cambiarlo a un tamaño personalizado.
+- Se incluye ZRAM<sub><sup>(4GB)</sup></sub>, un avanzado sistema de swap ubicado directamente en la memoria RAM, con el algoritmo de compresión de datos LZ4 por defecto.
 - Se incluye el planificador (scheduler) Kyber I/O para prevenir la inanición (starvation) de E/S al instalar juegos o cuando el proceso `duperemove` corre en el fondo.
 - Se aplican los parámetros del kernel de SteamOS.
 - Se incluyen perfiles de color calibrados para los diferentes tipos de pantalla de la Steam Deck, mate o glossy.

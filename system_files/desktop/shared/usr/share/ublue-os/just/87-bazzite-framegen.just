@@ -85,6 +85,12 @@ get-framegen ACTION="prompt":
             exit 1
         fi
 
+        # Fix ownership of homebrew plugins directory if it exists but is owned by root
+        if [ -d "$HOME/homebrew/plugins" ] && [ ! -w "$HOME/homebrew/plugins" ]; then
+            echo "Fixing ownership of plugins directory..."
+            sudo chown -R $(whoami):$(whoami) "$HOME/homebrew/plugins"
+        fi
+
         API_URL="https://api.github.com/repos/xXJSONDeruloXx/Decky-Framegen/releases/latest"
         PLUGIN_URL=$(timeout 30 curl -s "$API_URL" | grep "browser_download_url" | grep ".zip" | cut -d '"' -f 4 || echo "")
 
@@ -143,8 +149,8 @@ get-framegen ACTION="prompt":
             rm -rf "./${PLUGIN_NAME}/${PLUGIN_NAME}"
         fi
 
-        # Handle different extracted folder names (e.g., Decky-Framegen-Plus)
-        EXTRACTED_FOLDERS=$(find . -maxdepth 1 -type d -name "Decky-Framegen*" | grep -v "^\./$" || echo "")
+        # Handle different extracted folder names (e.g., "Decky Framegen", "Decky-Framegen-Plus", etc.)
+        EXTRACTED_FOLDERS=$(find . -maxdepth 1 -type d \( -name "Decky*Framegen*" -o -name "Decky*framegen*" \) | grep -v "^\./$" || echo "")
 
         # If we found a folder but it's not the expected name
         if [ -n "$EXTRACTED_FOLDERS" ] && [ ! -d "./$PLUGIN_NAME" ]; then
@@ -363,6 +369,12 @@ get-lsfg ACTION="prompt":
             exit 1
         fi
 
+        # Fix ownership of homebrew plugins directory if it exists but is owned by root
+        if [ -d "$HOME/homebrew/plugins" ] && [ ! -w "$HOME/homebrew/plugins" ]; then
+            echo "Fixing ownership of plugins directory..."
+            sudo chown -R $(whoami):$(whoami) "$HOME/homebrew/plugins"
+        fi
+
         API_URL="https://api.github.com/repos/xXJSONDeruloXx/decky-lossless-scaling-vk/releases/latest"
         PLUGIN_URL=$(timeout 30 curl -s "$API_URL" | grep "browser_download_url" | grep ".zip" | cut -d '"' -f 4 || echo "")
 
@@ -429,8 +441,8 @@ get-lsfg ACTION="prompt":
             rm -rf "./${PLUGIN_NAME}/${PLUGIN_NAME}"
         fi
 
-        # Handle different extracted folder names (e.g., Lossless-Scaling-*)
-        EXTRACTED_FOLDERS=$(find . -maxdepth 1 -type d -name "Lossless*" | grep -v "^\./$" || echo "")
+        # Handle different extracted folder names (e.g., "Lossless Scaling", "Lossless-Scaling-*", etc.)
+        EXTRACTED_FOLDERS=$(find . -maxdepth 1 -type d \( -name "Lossless*Scaling*" -o -name "lossless*scaling*" \) | grep -v "^\./$" || echo "")
 
         # If we found a folder but it's not the expected name
         if [ -n "$EXTRACTED_FOLDERS" ] && [ ! -d "./$PLUGIN_NAME" ]; then

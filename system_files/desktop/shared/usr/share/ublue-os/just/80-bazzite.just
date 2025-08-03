@@ -575,6 +575,12 @@ get-decky-bazzite-buddy:
       exit 1
     fi
 
+    # Fix ownership of homebrew plugins directory if it exists but is owned by root
+    if [ -d "$HOME/homebrew/plugins" ] && [ ! -w "$HOME/homebrew/plugins" ]; then
+      echo "Fixing ownership of plugins directory..."
+      sudo chown -R $(whoami):$(whoami) "$HOME/homebrew/plugins"
+    fi
+
     # Get the latest release information with timeout
     echo "Fetching latest release information..."
     RELEASE_INFO=$(timeout 30 curl -s "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest" || echo "")
