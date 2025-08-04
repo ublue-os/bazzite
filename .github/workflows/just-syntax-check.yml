@@ -1,0 +1,14 @@
+name: Just Syntax Check
+
+on: [pull_request]
+
+jobs:
+  just-syntax-check:
+    name: Check Just Syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check just syntax
+        uses: ublue-os/just-action@bda593098a84a84973b002b4377709166a68be52 # v2
