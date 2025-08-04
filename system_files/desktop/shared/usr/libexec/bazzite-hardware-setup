@@ -140,9 +140,9 @@ elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
     echo "Adding panel orientation for GPD Win 2"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
   fi
-elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:" =~ ":$SYS_ID:" ]]; then
+elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
-    echo "Adding panel orientation for ONEXPLAYER F1, ONEXFLY, & X1 Pro"
+    echo "Adding panel orientation for ONEXPLAYER F1, ONEXFLY, X1 Pro, Loki Max, & Zeenix Pro"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")
   fi
   if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then

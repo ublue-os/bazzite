@@ -8,7 +8,7 @@ case "$(/usr/libexec/hwsupport/sysid)" in
 	"Jupiter" | "Galileo" | "AYANEO GEEK" | "G1619-05")
 		STEAMOS_NESTED_DESKTOP_WIDTH=1280
 		STEAMOS_NESTED_DESKTOP_HEIGHT=800 ;;
-	"ROG Ally RC71L" | "ROG Ally X RC72LA" | "G1618-04" | "G1617-01" | "Loki Max")
+	"ROG Ally RC71L" | "ROG Ally X RC72LA" | "G1618-04" | "G1617-01" | "Loki Max" | "Zeenix Pro")
 		STEAMOS_NESTED_DESKTOP_WIDTH=1920
 		STEAMOS_NESTED_DESKTOP_HEIGHT=1080 ;;
 	"AYANEO 2" | "AYANEO 2S" | "AOKZOE A1 AR07" | "G1619-04" | "AIR Plus")

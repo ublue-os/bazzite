@@ -10,7 +10,7 @@ case "$(/usr/libexec/hwsupport/sysid)" in
 		WAYDROID_WIDTH=1280
 		WAYDROID_HEIGHT=800
 		WAYDROID_DENSITY=215 ;;
-	"ROG Ally RC71L" | "ROG Ally X RC72LA" | "G1618-04" | "G1617-01" | "Loki Max" | "ONEXPLAYER F1" | "ONEXPLAYER F1 EVA-01" | "AIR Plus" | "AIR 1S" | "AIR 1S Limited")
+	"ROG Ally RC71L" | "ROG Ally X RC72LA" | "G1618-04" | "G1617-01" | "Loki Max" | "Zeenix Pro" | "ONEXPLAYER F1" | "ONEXPLAYER F1 EVA-01" | "AIR Plus" | "AIR 1S" | "AIR 1S Limited")
 		WAYDROID_WIDTH=1920
 		WAYDROID_HEIGHT=1080 ;;
 	"AYANEO 2" | "AYANEO 2S" | "AOKZOE A1 AR07" | "AOKZOE A1 Pro" | "G1619-04")
