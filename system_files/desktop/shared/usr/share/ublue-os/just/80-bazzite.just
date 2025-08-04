@@ -227,6 +227,10 @@ enable-tailscale:
 enable-framework-fan-control:
     systemctl enable --now fw-fanctrl.service
 
+# Enable support for DisplayLink
+enable-displaylink:
+    systemctl enable --now displaylink.service
+
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 configure-watchdog ACTION="":
     #!/usr/bin/bash
