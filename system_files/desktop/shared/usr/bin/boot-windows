@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Look up the boot number for Windows in the EFI records
-boot_number=$(echo $(efibootmgr) | grep -Po "(?<=Boot)\S{4}(?=( |\* )Windows)")
+boot_number=$(echo $(efibootmgr) | grep -Po "(?<=Boot)\S{4}(?=( |\* )Windows)" | head -n1)
 
 # Check that Windows EFI entry was found
 if [ -z "$boot_number" ]; then
