@@ -309,23 +309,6 @@ EOF
   fi
 fi
 
-# GIGABYTE MOTHERBOARD SLEEP/WAKEUP FIX
-# Fix for Gigabyte motherboards where GPP0 ACPI wakeup source causes sleep/wake issues
-# The original fix was discovered by DAK404 and can be found at:
-# https://github.com/DAK404/OpenSUSE-Setup-Scripts/blob/main/Scriptlets/Fixes-and-Tweaks/Fix-GigabyteDesktopSleepFix.sh#L14
-BOARD_VENDOR="$(cat /sys/devices/virtual/dmi/id/board_vendor 2>/dev/null || echo "")"
-if [[ ! -f /etc/bazzite/fixups/gigabyte_sleep_fix ]] && [[ "$BOARD_VENDOR" =~ [Gg]igabyte ]]; then
-  echo "Gigabyte motherboard detected, checking for GPP0 sleep/wakeup issue"
-  if [[ -f /proc/acpi/wakeup ]] && grep -q "GPP0.*enabled" /proc/acpi/wakeup 2>/dev/null; then
-    echo "GPP0 wakeup source is enabled, applying Gigabyte sleep fix"
-    systemctl enable gigabyte-sleep-fix.service
-    echo "Gigabyte sleep/wakeup fix will be applied on next boot"
-  else
-    echo "GPP0 wakeup source not found or already disabled, no fix needed"
-  fi
-  touch /etc/bazzite/fixups/gigabyte_sleep_fix
-fi
-
 # WAYDROID FIX
 if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
   echo "Removing unneeded apparmor entry from Waydroid LXC"
