@@ -81,7 +81,7 @@ get-framegen ACTION="prompt":
 
         # Check if Decky is installed
         if [ ! -d "$HOME/homebrew" ]; then
-            echo "Error: Decky Loader is not installed. Please run 'ujust setup-decky' first."
+            echo "Error: Decky Loader is not installed. Please run 'ujust setup-decky install' first."
             exit 1
         fi
 
@@ -365,7 +365,7 @@ get-lsfg ACTION="prompt":
 
         # Check if Decky is installed
         if [ ! -d "$HOME/homebrew" ]; then
-            echo "Error: Decky Loader is not installed. Please run 'ujust setup-decky' first."
+            echo "Error: Decky Loader is not installed. Please run 'ujust setup-decky install' first."
             exit 1
         fi
 
