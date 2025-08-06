@@ -271,7 +271,7 @@ configure-watchdog ACTION="":
     fi
 
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
-setup-decky ACTION="install":
+setup-decky ACTION="":
     #!/usr/bin/bash
     if [[ $(id -u) -eq 0 ]]; then
         echo >&2 "ERROR: Do not run this with sudo"
@@ -279,23 +279,10 @@ setup-decky ACTION="install":
     fi
     source /usr/lib/ujust/ujust.sh
     DECKY_STATE="${b}${red}Not Installed${n}"
-    if [[ -d $HOME/homebrew/plugins ]]; then
+    if [[ -f /etc/systemd/system/multi-user.target.wants/plugin_loader.service ]]; then
       DECKY_STATE="${b}${green}Installed${n}"
     fi
-    OPTION={{ ACTION }}
-    if [ "$OPTION" == "help" ]; then
-      echo "Usage: ujust setup-decky <option>"
-      echo "  <option>: Specify the quick option to skip the prompt"
-      echo "  Use 'install' to select Install Decky"
-      echo "  Use 'prerelease' to select Install Decky Prerelease"
-      echo "  Use 'uninstall' to uninstall Decky Loader"
-      exit 0
-    elif [ "$OPTION" == "" ]; then
-      echo "${bold}Decky Loader setup and configuration${normal}"
-      echo "Decky is $DECKY_STATE"
-      OPTION=$(Choose "Install Decky" "Install Decky Prerelease" "Uninstall Decky" "Exit")
-    fi
-    if [[ "${OPTION,,}" =~ install ]]; then
+    install_release() {
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
       if [ ! -L "/home/deck" ] && [ ! -e "/home/deck" ]  && [ "$HOME" != "/home/deck" ]; then
         echo "Making a /home/deck symlink to fix plugins that do not use environment variables."
@@ -307,8 +294,8 @@ setup-decky ACTION="install":
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh |
         sed 's|sudo|sudo -A |g' | sh
       sudo -A chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
-    fi
-    if [[ "${OPTION,,}" =~ prerelease ]]; then
+    }
+    install_prerelease() {
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
       if [ ! -L "/home/deck" ] && [ ! -e "/home/deck" ]  && [ "$HOME" != "/home/deck" ]; then
         echo "Making a /home/deck symlink to fix plugins that do not use environment variables."
@@ -316,11 +303,50 @@ setup-decky ACTION="install":
       fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_prerelease.sh | sh
       sudo -A chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
-    fi
-    if [[ "${OPTION,,}" =~ uninstall ]]; then
+    }
+    uninstall() {
       echo "Uninstalling Decky Loader..."
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/uninstall.sh | sh
       echo "Decky Loader has been uninstalled."
+    }
+    OPTION={{ ACTION }}
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust setup-decky <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'install' to select Install Decky"
+      echo "  Use 'prerelease' to select Install Decky Prerelease"
+      echo "  Use 'uninstall' to uninstall Decky Loader"
+      exit 0
+    elif [ "$OPTION" == "" ]; then
+      echo "${bold}Decky Loader setup and configuration${normal}"
+      echo "Decky is $DECKY_STATE"
+      OPTION=$(ugum choose "Install Decky" "Install Decky Prerelease" "Uninstall Decky" "Exit")
+      case "$OPTION" in
+        "Install Decky")
+        install_release
+        ;;
+        "Install Decky Prerelease")
+        install_prerelease
+        ;;
+        "Uninstall Decky")
+        uninstall
+        ;;
+        "Exit")
+        echo "No changes were made."
+        ;;
+        *)
+        echo "No changes were made."
+        ;;
+      esac
+    elif [[ "$OPTION" == "install" ]]; then
+      install_release
+      exit 0
+    elif [[ "$OPTION" == "prerelease" ]]; then
+      install_prerelease
+      exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+      uninstall
+      exit 0
     fi
 
 # Ptyxis terminal transparency
@@ -571,7 +597,7 @@ get-decky-bazzite-buddy:
 
     # Check if Decky is installed
     if [ ! -d "$HOME/homebrew" ]; then
-      echo "Error: Decky Loader is not installed. Please run 'ujust setup-decky' first."
+      echo "Error: Decky Loader is not installed. Please run 'ujust setup-decky install' first."
       exit 1
     fi
 
