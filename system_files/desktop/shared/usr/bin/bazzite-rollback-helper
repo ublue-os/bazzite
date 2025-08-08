@@ -163,12 +163,12 @@ rebase_to() {
   case "$target" in
     ostree-*) ;; # Already full ref
     *:*) 
-      local prefix=$(rpm-ostree status -b --json | jq -r '.deployments[]["container-image-reference"]' | sed "s|${DEFAULT_IMAGE}.*||")
-      full_ref="$prefix/$target"
+      local scheme=$(signing_scheme)
+      full_ref="$scheme/ublue-os/$target"
       ;;
     *)
-      local prefix=$(rpm-ostree status -b --json | jq -r '.deployments[]["container-image-reference"]' | sed "s|${DEFAULT_IMAGE}.*||")
-      full_ref="$prefix/$DEFAULT_IMAGE:$target"
+      local scheme=$(signing_scheme)
+      full_ref="$scheme/ublue-os/$DEFAULT_IMAGE:$target"
       ;;
   esac
   
