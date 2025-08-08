@@ -10,7 +10,7 @@ This reverts commit 611a47683f8304ae7a128347a2237df345482fcd.
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index a8f44d1..0a1f2b2 100644
+index a8f44d1ef2da..0a1f2b263b21 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -1974,7 +1974,7 @@ paint_window_commit( const gamescope::Rc<commit_t> &lastCommit, steamcompmgr_win
@@ -36,7 +36,7 @@ index a8f44d1..0a1f2b2 100644
  	gamescope::Rc<CVulkanTexture> pRGBTexture = s_pPipewireBuffer->texture->isYcbcr()
  		? vulkan_acquire_screenshot_texture( g_nOutputWidth, g_nOutputHeight, false, DRM_FORMAT_XRGB2101010 )
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -49,7 +49,7 @@ Subject: backend: Hack
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/backend.cpp b/src/backend.cpp
-index 8a6bbe8..2411d4e 100644
+index 8a6bbe8ed944..2411d4ebdc48 100644
 --- a/src/backend.cpp
 +++ b/src/backend.cpp
 @@ -56,7 +56,7 @@ namespace gamescope
@@ -62,7 +62,7 @@ index 8a6bbe8..2411d4e 100644
  
      uint32_t CBaseBackendFb::IncRef()
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -90,7 +90,7 @@ Closes:  #1736
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/layer/VkLayer_FROG_gamescope_wsi.cpp b/layer/VkLayer_FROG_gamescope_wsi.cpp
-index 718a260..5bd1408 100644
+index 718a2604f318..5bd1408bf780 100644
 --- a/layer/VkLayer_FROG_gamescope_wsi.cpp
 +++ b/layer/VkLayer_FROG_gamescope_wsi.cpp
 @@ -1076,9 +1076,9 @@ namespace GamescopeWSILayer {
@@ -124,7 +124,7 @@ index 718a260..5bd1408 100644
  
        gamescope_swapchain_swapchain_feedback(
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -137,7 +137,7 @@ Subject: main: cleanup args
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/main.cpp b/src/main.cpp
-index 9dff5c4..cd251af 100644
+index 9dff5c4d8560..cd251af559e1 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -70,6 +70,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -178,7 +178,7 @@ index 9dff5c4..cd251af 100644
  #if HAVE_OPENVR
  	"VR mode options:\n"
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -192,7 +192,7 @@ This is mandated by the ICCCM specification and Wine now depends on it.
  1 file changed, 13 insertions(+), 8 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 0a1f2b2..2544acf 100644
+index 0a1f2b263b21..2544acfb0501 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -3378,6 +3378,14 @@ found:;
@@ -252,7 +252,7 @@ index 0a1f2b2..2544acf 100644
  		xwm_log.debugf("Unhandled WM_CHANGE_STATE to %ld for window 0x%lx", state, w->xwayland().id);
  	}
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -266,7 +266,7 @@ Our linear emulation doesn't fully support unnormalized right now.
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/src/rendervulkan.hpp b/src/rendervulkan.hpp
-index d8a24e9..a3a11a7 100644
+index d8a24e93795a..a3a11a7ba96f 100644
 --- a/src/rendervulkan.hpp
 +++ b/src/rendervulkan.hpp
 @@ -325,6 +325,9 @@ struct FrameInfo_t
@@ -289,7 +289,7 @@ index d8a24e9..a3a11a7 100644
  		return result;
  	}
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -303,7 +303,7 @@ Subject: steamcompmgr: Fix pipewire stream being incorrect size on external
  1 file changed, 15 insertions(+), 3 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 2544acf..7371a39 100644
+index 2544acfb0501..7371a3905b56 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -2199,6 +2199,17 @@ static void paint_pipewire()
@@ -350,7 +350,7 @@ index 2544acf..7371a39 100644
  	{
  		vulkan_wait( *oPipewireSequence, true );
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -364,7 +364,7 @@ Subject: steamcompmgr: VRR frame limiting
  2 files changed, 91 insertions(+), 27 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 7371a39..d91cc45 100644
+index 7371a3905b56..d91cc45b5be5 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -898,10 +898,6 @@ bool g_bChangeDynamicRefreshBasedOnGameOpenRatherThanActive = false;
@@ -576,7 +576,7 @@ index 7371a39..d91cc45 100644
  
  		// Handle presentation-time stuff
 diff --git a/src/steamcompmgr_shared.hpp b/src/steamcompmgr_shared.hpp
-index 095694e..f300eb9 100644
+index 095694e4937a..f300eb94d954 100644
 --- a/src/steamcompmgr_shared.hpp
 +++ b/src/steamcompmgr_shared.hpp
 @@ -127,6 +127,8 @@ struct steamcompmgr_win_t {
@@ -589,7 +589,7 @@ index 095694e..f300eb9 100644
  	uint32_t hwndStyle = 0;
  	bool hasHwndStyleEx = false;
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -603,7 +603,7 @@ Subject: scripts: Derive script path from meson prefix
  2 files changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/meson.build b/meson.build
-index c4924c7..00a1cb4 100644
+index c4924c7afb44..00a1cb42bde4 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -68,6 +68,7 @@ endif
@@ -615,7 +615,7 @@ index c4924c7..00a1cb4 100644
  )
  
 diff --git a/src/Script/Script.cpp b/src/Script/Script.cpp
-index a104ee9..142371b 100644
+index a104ee993bc9..142371b33e0f 100644
 --- a/src/Script/Script.cpp
 +++ b/src/Script/Script.cpp
 @@ -130,7 +130,7 @@ namespace gamescope
@@ -628,7 +628,7 @@ index a104ee9..142371b 100644
          }
  
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -658,7 +658,7 @@ Signed-off-by: Matthew Schwartz <matthew.schwartz@linux.dev>
 
 diff --git a/scripts/00-gamescope/displays/lenovo.legiongo.lcd.lua b/scripts/00-gamescope/displays/lenovo.legiongo.lcd.lua
 new file mode 100644
-index 0000000..2360cfe
+index 000000000000..2360cfe35cb2
 --- /dev/null
 +++ b/scripts/00-gamescope/displays/lenovo.legiongo.lcd.lua
 @@ -0,0 +1,45 @@
@@ -708,7 +708,7 @@ index 0000000..2360cfe
 +debug("Registered Lenovo Legion Go LCD as a known display")
 +--debug(inspect(gamescope.config.known_displays.lenovo_legiongo_lcd))
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -758,7 +758,7 @@ and had no observed issues:
 
 diff --git a/scripts/00-gamescope/displays/gpd.win4.lcd.lua b/scripts/00-gamescope/displays/gpd.win4.lcd.lua
 new file mode 100644
-index 0000000..5f5eec8
+index 000000000000..5f5eec898c3b
 --- /dev/null
 +++ b/scripts/00-gamescope/displays/gpd.win4.lcd.lua
 @@ -0,0 +1,60 @@
@@ -823,7 +823,7 @@ index 0000000..5f5eec8
 +debug("Registered GPD Win 4 as a known display")
 +--debug(inspect(gamescope.config.known_displays.gpd_win4_lcd))
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -838,7 +838,7 @@ Should supercede https://github.com/ValveSoftware/gamescope/pull/1627 and allow 
  1 file changed, 30 insertions(+), 2 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 0b121e8..3718585 100644
+index 0b121e84167a..37185856b7ec 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2142,6 +2142,8 @@ namespace gamescope
@@ -895,7 +895,7 @@ index 0b121e8..3718585 100644
  
  		if ( !bHasKnownColorimetry )
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -909,7 +909,7 @@ Subject: wlserver: wlserver_run(): ensure waylock is released when
  1 file changed, 1 insertion(+)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 78a86ee..4ce9511 100644
+index 78a86ee0e2e2..4ce9511352d0 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
 @@ -1956,6 +1956,7 @@ void wlserver_run(void)
@@ -921,7 +921,7 @@ index 78a86ee..4ce9511 100644
  			}
  
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -936,7 +936,7 @@ Subject: DRMBackend: Expose data string from EDID to matches function
  3 files changed, 13 insertions(+), 4 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 3718585..06ebbe7 100644
+index 37185856b7ec..06ebbe7255d4 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -287,6 +287,7 @@ namespace gamescope
@@ -986,7 +986,7 @@ index 3718585..06ebbe7 100644
  			{
  				sol::table tTable = oKnownDisplay->second;
 diff --git a/src/Script/Script.cpp b/src/Script/Script.cpp
-index 142371b..ceb1f80 100644
+index 142371b33e0f..ceb1f80e3a77 100644
 --- a/src/Script/Script.cpp
 +++ b/src/Script/Script.cpp
 @@ -247,7 +247,7 @@ namespace gamescope
@@ -1007,7 +1007,7 @@ index 142371b..ceb1f80 100644
          for ( auto iter : KnownDisplays )
          {
 diff --git a/src/Script/Script.h b/src/Script/Script.h
-index 6eebb66..7c856a7 100644
+index 6eebb66a9f36..7c856a75e512 100644
 --- a/src/Script/Script.h
 +++ b/src/Script/Script.h
 @@ -30,7 +30,7 @@ namespace gamescope
@@ -1020,7 +1020,7 @@ index 6eebb66..7c856a7 100644
      };
  
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1036,7 +1036,7 @@ Probably magnification should be ignore when painting for pipewire?
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index d91cc45..d0a069e 100644
+index d91cc45b5be5..d0a069e69c60 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -1972,8 +1972,8 @@ paint_window_commit( const gamescope::Rc<commit_t> &lastCommit, steamcompmgr_win
@@ -1051,7 +1051,7 @@ index d91cc45..d0a069e 100644
  	}
  
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1070,7 +1070,7 @@ Closes: #1785
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/meson.build b/meson.build
-index 00a1cb4..cc07a59 100644
+index 00a1cb42bde4..cc07a59ca99a 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -55,7 +55,10 @@ if get_option('enable_openvr_support')
@@ -1086,7 +1086,7 @@ index 00a1cb4..cc07a59 100644
      openvr_proj = cmake.subproject('openvr', options : openvr_var)
      openvr_dep = openvr_proj.dependency('openvr_api')
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1099,7 +1099,7 @@ Subject: WaylandBackend: Fix initial scale for Wayland surfaces
  1 file changed, 22 insertions(+), 4 deletions(-)
 
 diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
-index 08af8bc..da43d03 100644
+index 08af8bca1b99..da43d03987a8 100644
 --- a/src/Backends/WaylandBackend.cpp
 +++ b/src/Backends/WaylandBackend.cpp
 @@ -272,6 +272,7 @@ namespace gamescope
@@ -1147,7 +1147,7 @@ index 08af8bc..da43d03 100644
  
      ////////////////
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1170,7 +1170,7 @@ Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
  1 file changed, 15 insertions(+)
 
 diff --git a/src/rendervulkan.cpp b/src/rendervulkan.cpp
-index 7efcc0d..b8412b8 100644
+index 7efcc0dbd8a9..b8412b8fdf2f 100644
 --- a/src/rendervulkan.cpp
 +++ b/src/rendervulkan.cpp
 @@ -163,6 +163,7 @@ Target *pNextFind(const Base *base, VkStructureType sType)
@@ -1210,7 +1210,7 @@ index 7efcc0d..b8412b8 100644
  		if ( flags.bExportable == true || pDMA != nullptr )
  		{
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1231,7 +1231,7 @@ needs refactoring anyway.
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
-index da43d03..22f8ee5 100644
+index da43d03987a8..22f8ee5c8fac 100644
 --- a/src/Backends/WaylandBackend.cpp
 +++ b/src/Backends/WaylandBackend.cpp
 @@ -75,7 +75,9 @@ static inline uint32_t WaylandScaleToLogical( uint32_t pValue, uint32_t pFactor
@@ -1246,7 +1246,7 @@ index da43d03..22f8ee5 100644
  
  #define WAYLAND_NULL() []<typename... Args> ( void *pData, Args... args ) { }
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1261,7 +1261,7 @@ and TMX panel models.
  1 file changed, 23 insertions(+), 12 deletions(-)
 
 diff --git a/scripts/00-gamescope/displays/asus.rogally.lcd.lua b/scripts/00-gamescope/displays/asus.rogally.lcd.lua
-index 11ba7cc..40b5188 100644
+index 11ba7cc30f9b..40b5188b5c73 100644
 --- a/scripts/00-gamescope/displays/asus.rogally.lcd.lua
 +++ b/scripts/00-gamescope/displays/asus.rogally.lcd.lua
 @@ -10,7 +10,7 @@ local rogally_lcd_refresh_rates = {
@@ -1337,7 +1337,7 @@ index 11ba7cc..40b5188 100644
 +debug("Registered ASUS ROG Ally / ROG Ally X LCD as a known display")
  --debug(inspect(gamescope.config.known_displays.rogally_lcd))
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1355,7 +1355,7 @@ It's also added to the meson devenv which allows developers to test changes by r
  2 files changed, 14 insertions(+)
 
 diff --git a/meson.build b/meson.build
-index cc07a59..562ee15 100644
+index cc07a59ca99a..562ee1585a6b 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -102,3 +102,7 @@ endif
@@ -1367,7 +1367,7 @@ index cc07a59..562ee15 100644
 +devenv.set('GAMESCOPE_SCRIPT_PATH', join_paths(meson.current_source_dir(), 'scripts'))
 +meson.add_devenv(devenv)
 diff --git a/src/Script/Script.cpp b/src/Script/Script.cpp
-index ceb1f80..2d3cd47 100644
+index ceb1f80e3a77..2d3cd47bb8ec 100644
 --- a/src/Script/Script.cpp
 +++ b/src/Script/Script.cpp
 @@ -124,10 +124,20 @@ namespace gamescope
@@ -1392,7 +1392,7 @@ index ceb1f80..2d3cd47 100644
          {
              RunFolder( SCRIPT_DIR, true );
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1406,7 +1406,7 @@ Subject: steamcompmgr: Set receivedDoneCommit even if the commit is not for
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index d0a069e..e40f957 100644
+index d0a069e69c60..e40f95715746 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -6469,8 +6469,7 @@ void update_wayland_res(CommitDoneList_t *doneCommits, steamcompmgr_win_t *w, Re
@@ -1420,7 +1420,7 @@ index d0a069e..e40f957 100644
  	}
  
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1438,7 +1438,7 @@ due to unpredictable system dependency versions.
  1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/src/meson.build b/src/meson.build
-index 74fc033..f35f7ef 100644
+index 74fc0334d47e..f35f7ef0cb94 100644
 --- a/src/meson.build
 +++ b/src/meson.build
 @@ -19,11 +19,14 @@ xkbcommon = dependency('xkbcommon')
@@ -1459,7 +1459,7 @@ index 74fc033..f35f7ef 100644
    'wlroots',
    version: ['>= 0.18.0', '< 0.19.0'],
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1480,7 +1480,7 @@ on my Z2 Go model with a CSW panel.
 
 diff --git a/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua b/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua
 new file mode 100644
-index 0000000..6263478
+index 000000000000..6263478c0517
 --- /dev/null
 +++ b/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua
 @@ -0,0 +1,59 @@
@@ -1544,7 +1544,7 @@ index 0000000..6263478
 +debug("Registered Lenovo Legion Go S LCD as a known display")
 +--debug(inspect(gamescope.config.known_displays.legiongos_lcd))
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1559,7 +1559,7 @@ identical model names.
  1 file changed, 1 insertion(+)
 
 diff --git a/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua b/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua
-index 6263478..32f776c 100644
+index 6263478c0517..32f776c17f3d 100644
 --- a/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua
 +++ b/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua
 @@ -43,6 +43,7 @@ gamescope.config.known_displays.legiongos_lcd = {
@@ -1571,7 +1571,7 @@ index 6263478..32f776c 100644
  
          for index,value in ipairs(lcd_types) do
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1590,7 +1590,7 @@ same.
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
-index 22f8ee5..3207a6b 100644
+index 22f8ee5c8fac..3207a6b9f7d4 100644
 --- a/src/Backends/WaylandBackend.cpp
 +++ b/src/Backends/WaylandBackend.cpp
 @@ -2748,7 +2748,8 @@ namespace gamescope
@@ -1604,7 +1604,7 @@ index 22f8ee5..3207a6b 100644
          char *pMap = (char *)mmap( nullptr, uSize, PROT_READ, MAP_PRIVATE, nFd, 0 );
          if ( !pMap || pMap == MAP_FAILED )
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1617,7 +1617,7 @@ Subject: main: Give error message on invalid integer or float argument
  1 file changed, 41 insertions(+), 13 deletions(-)
 
 diff --git a/src/main.cpp b/src/main.cpp
-index cd251af..58bede8 100644
+index cd251af559e1..58bede8582fd 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -425,6 +425,34 @@ static enum gamescope::GamescopeBackend parse_backend_name(const char *str)
@@ -1741,7 +1741,7 @@ index cd251af..58bede8 100644
  					g_bLaunchMangoapp = true;
  				}
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1764,7 +1764,7 @@ Subject: protocol: Add gamescope-action-binding protocol
 
 diff --git a/protocol/gamescope-action-binding.xml b/protocol/gamescope-action-binding.xml
 new file mode 100644
-index 0000000..2164cb8
+index 000000000000..2164cb87ad84
 --- /dev/null
 +++ b/protocol/gamescope-action-binding.xml
 @@ -0,0 +1,85 @@
@@ -1854,7 +1854,7 @@ index 0000000..2164cb8
 +
 +</protocol>
 diff --git a/protocol/meson.build b/protocol/meson.build
-index dbce92e..9f75f18 100644
+index dbce92edce52..9f75f188af52 100644
 --- a/protocol/meson.build
 +++ b/protocol/meson.build
 @@ -36,6 +36,7 @@ protocols = [
@@ -1867,7 +1867,7 @@ index dbce92e..9f75f18 100644
  	'wlr-layer-shell-unstable-v1.xml',
 diff --git a/src/Apps/gamescope_hotkey_example.cpp b/src/Apps/gamescope_hotkey_example.cpp
 new file mode 100644
-index 0000000..ffd88bd
+index 000000000000..ffd88bdfa2c8
 --- /dev/null
 +++ b/src/Apps/gamescope_hotkey_example.cpp
 @@ -0,0 +1,179 @@
@@ -2052,7 +2052,7 @@ index 0000000..ffd88bd
 +}
 diff --git a/src/WaylandServer/GamescopeActionBinding.h b/src/WaylandServer/GamescopeActionBinding.h
 new file mode 100644
-index 0000000..81aab05
+index 000000000000..81aab05dcd22
 --- /dev/null
 +++ b/src/WaylandServer/GamescopeActionBinding.h
 @@ -0,0 +1,163 @@
@@ -2220,7 +2220,7 @@ index 0000000..81aab05
 +
 +}
 diff --git a/src/WaylandServer/WaylandDecls.h b/src/WaylandServer/WaylandDecls.h
-index e8fd934..e43623a 100644
+index e8fd9343192b..e43623aa6a74 100644
 --- a/src/WaylandServer/WaylandDecls.h
 +++ b/src/WaylandServer/WaylandDecls.h
 @@ -15,4 +15,7 @@ namespace gamescope::WaylandServer
@@ -2232,7 +2232,7 @@ index e8fd934..e43623a 100644
 +
  }
 diff --git a/src/meson.build b/src/meson.build
-index f35f7ef..842768c 100644
+index f35f7ef0cb94..842768ce7ce4 100644
 --- a/src/meson.build
 +++ b/src/meson.build
 @@ -222,3 +222,5 @@ executable('gamescope_color_microbench', ['color_bench.cpp', 'color_helpers.cpp'
@@ -2242,7 +2242,7 @@ index f35f7ef..842768c 100644
 +
 +executable('gamescope_hotkey_example', ['Apps/gamescope_hotkey_example.cpp'], gamescope_core_src, gamescope_version, protocols_client_src, dependencies: [dep_wayland, xkbcommon], install: false )
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 4ce9511..ffaf7af 100644
+index 4ce9511352d0..ffaf7aff7343 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
 @@ -20,6 +20,7 @@
@@ -2350,7 +2350,7 @@ index 4ce9511..ffaf7af 100644
  
  	bump_input_counter();
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2381,7 +2381,7 @@ when moving to another VT from gamescope's.
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index ffaf7af..bb87703 100644
+index ffaf7aff7343..bb87703162be 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
 @@ -1347,8 +1347,7 @@ bool wlsession_active()
@@ -2395,7 +2395,7 @@ index ffaf7af..bb87703 100644
  }
  #endif
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2410,7 +2410,7 @@ Overlays should not get an appid, that's just for focus id logic.
  2 files changed, 26 insertions(+), 3 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index e40f957..f718832 100644
+index e40f95715746..f718832ea5c2 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -3961,8 +3961,10 @@ determine_and_apply_focus()
@@ -2489,7 +2489,7 @@ index e40f957..f718832 100644
  		}
  	}
 diff --git a/src/steamcompmgr_shared.hpp b/src/steamcompmgr_shared.hpp
-index f300eb9..989d09d 100644
+index f300eb94d954..989d09d50c4a 100644
 --- a/src/steamcompmgr_shared.hpp
 +++ b/src/steamcompmgr_shared.hpp
 @@ -116,6 +116,12 @@ struct steamcompmgr_win_t {
@@ -2506,7 +2506,7 @@ index f300eb9..989d09d 100644
  	bool isSysTrayIcon = false;
  	bool sizeHintsSpecified = false;
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2519,7 +2519,7 @@ Subject: steamcompmgr: Fix Steam sidebars with recent icon fix
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index f718832..e46c34b 100644
+index f718832ea5c2..e46c34bbfbc0 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -4208,7 +4208,7 @@ map_win(xwayland_ctx_t* ctx, Window id, unsigned long sequence)
@@ -2568,7 +2568,7 @@ index f718832..e46c34b 100644
  			MakeFocusDirty();
  		}
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2583,7 +2583,7 @@ Subject: [NA] add dev script
 
 diff --git a/sync.sh b/sync.sh
 new file mode 100755
-index 0000000..8dd5815
+index 000000000000..8dd5815d4aeb
 --- /dev/null
 +++ b/sync.sh
 @@ -0,0 +1,21 @@
@@ -2609,7 +2609,7 @@ index 0000000..8dd5815
 +    # sudo reboot
 +EOF
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2629,7 +2629,7 @@ Co-authored-by: Antheas Kapenekakis <git@antheas.dev>
  3 files changed, 36 insertions(+), 1 deletion(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 06ebbe7..ffce5d7 100644
+index 06ebbe7255d4..ffce5d7d8448 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2253,8 +2253,10 @@ namespace gamescope
@@ -2645,7 +2645,7 @@ index 06ebbe7..ffce5d7 100644
  					const drmModeModeInfo *pPreferredMode = find_mode( m_pConnector.get(), 0, 0, 0 );
  
 diff --git a/src/main.cpp b/src/main.cpp
-index 58bede8..1443f49 100644
+index 58bede8582fd..1443f49b51e9 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -129,6 +129,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -2708,7 +2708,7 @@ index 58bede8..1443f49 100644
  						   strcmp(opt_name, "fsr-sharpness") == 0) {
  					g_upscaleFilterSharpness = parse_integer( optarg, opt_name );
 diff --git a/src/main.hpp b/src/main.hpp
-index 2e6fb83..390c04a 100644
+index 2e6fb833af12..390c04a63ecd 100644
 --- a/src/main.hpp
 +++ b/src/main.hpp
 @@ -3,6 +3,7 @@
@@ -2728,7 +2728,7 @@ index 2e6fb83..390c04a 100644
  enum class GamescopeUpscaleFilter : uint32_t
  {
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2745,7 +2745,7 @@ Suggested-by: Antheas Kapenekakis <git@antheas.dev>
  1 file changed, 25 insertions(+), 2 deletions(-)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index bb87703..8b58050 100644
+index bb87703162be..8b58050fd6d7 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
 @@ -292,6 +292,9 @@ static void wlserver_handle_modifiers(struct wl_listener *listener, void *data)
@@ -2799,7 +2799,7 @@ index bb87703..8b58050 100644
  		}
  	}
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2812,7 +2812,7 @@ Subject: fix(external): fix crash when using external touchscreens
  1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 8b58050..0b99c49 100644
+index 8b58050fd6d7..0b99c498e55d 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
 @@ -2552,8 +2552,12 @@ static void apply_touchscreen_orientation(double *x, double *y )
@@ -2831,7 +2831,7 @@ index 8b58050..0b99c49 100644
  		default:
  		case GAMESCOPE_PANEL_ORIENTATION_AUTO:
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2847,7 +2847,7 @@ custom modeline generation has been provided.
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index ffce5d7..c4f358f 100644
+index ffce5d7d8448..c4f358fbc933 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2169,7 +2169,9 @@ namespace gamescope
@@ -2862,7 +2862,7 @@ index ffce5d7..c4f358f 100644
  					m_Mutable.ValidDynamicRefreshRates = TableToVector<uint32_t>( *otDynamicRefreshRates );
  
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -2876,7 +2876,7 @@ Subject: fix(battery): run at half hz while at steamUI with atom
  2 files changed, 34 insertions(+), 8 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index e46c34b..cbaf44b 100644
+index e46c34bbfbc0..cbaf44bfd9b8 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -165,6 +165,8 @@ uint32_t g_reshade_technique_idx = 0;
@@ -3005,7 +3005,7 @@ index e46c34b..cbaf44b 100644
  		const bool bVRR = GetBackend()->IsVRRActive();
  		if ( bVRR )
 diff --git a/src/xwayland_ctx.hpp b/src/xwayland_ctx.hpp
-index df2af70..e4eec9f 100644
+index df2af70d19ae..e4eec9fa0c48 100644
 --- a/src/xwayland_ctx.hpp
 +++ b/src/xwayland_ctx.hpp
 @@ -246,6 +246,8 @@ struct xwayland_ctx_t final : public gamescope::IWaitable
@@ -3018,7 +3018,7 @@ index df2af70..e4eec9f 100644
  
  	bool HasQueuedEvents();
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -3034,7 +3034,7 @@ Subject: feat: add DPMS support through an Atom
  4 files changed, 28 insertions(+), 6 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index c4f358f..856b03f 100644
+index c4f358fbc933..856b03fc3747 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2702,6 +2702,9 @@ int drm_prepare( struct drm_t *drm, bool async, const struct FrameInfo_t *frameI
@@ -3089,7 +3089,7 @@ index c4f358f..856b03f 100644
  
  			if ( bNeedsFullComposite )
 diff --git a/src/rendervulkan.hpp b/src/rendervulkan.hpp
-index a3a11a7..0f8cba8 100644
+index a3a11a7ba96f..0f8cba8516c0 100644
 --- a/src/rendervulkan.hpp
 +++ b/src/rendervulkan.hpp
 @@ -281,6 +281,8 @@ struct FrameInfo_t
@@ -3102,7 +3102,7 @@ index a3a11a7..0f8cba8 100644
  	struct Layer_t
  	{
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index cbaf44b..b625b1f 100644
+index cbaf44bfd9b8..b625b1f13d29 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -167,6 +167,8 @@ bool g_bSteamIsActiveWindow = false;
@@ -3164,7 +3164,7 @@ index cbaf44b..b625b1f 100644
  			hasRepaint = false;
  			hasRepaintNonBasePlane = false;
 diff --git a/src/xwayland_ctx.hpp b/src/xwayland_ctx.hpp
-index e4eec9f..2347cbb 100644
+index e4eec9fa0c48..2347cbb3340c 100644
 --- a/src/xwayland_ctx.hpp
 +++ b/src/xwayland_ctx.hpp
 @@ -248,6 +248,7 @@ struct xwayland_ctx_t final : public gamescope::IWaitable
@@ -3176,7 +3176,7 @@ index e4eec9f..2347cbb 100644
  
  	bool HasQueuedEvents();
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -3197,7 +3197,7 @@ Subject: feat(intel): add rotation shader for rotating output
  create mode 100644 src/shaders/cs_rotation.comp
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 856b03f..e1547f4 100644
+index 856b03fc3747..e1547f4a1a9b 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -1530,6 +1530,10 @@ static void update_drm_effective_orientations( struct drm_t *drm, const drmModeM
@@ -3285,7 +3285,7 @@ index 856b03f..e1547f4 100644
  			m_bWasCompositing = true;
  
 diff --git a/src/main.cpp b/src/main.cpp
-index 1443f49..c96b8f0 100644
+index 1443f49b51e9..c96b8f0ac39e 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -127,6 +127,7 @@ const struct option *gamescope_options = (struct option[]){
@@ -3324,7 +3324,7 @@ index 1443f49..c96b8f0 100644
  					g_customRefreshRates = parse_custom_refresh_rates( optarg );
  				} else if (strcmp(opt_name, "sharpness") == 0 ||
 diff --git a/src/main.hpp b/src/main.hpp
-index 390c04a..e7b857d 100644
+index 390c04a63ecd..e7b857d44b0d 100644
 --- a/src/main.hpp
 +++ b/src/main.hpp
 @@ -22,6 +22,8 @@ extern bool g_bForceRelativeMouse;
@@ -3337,7 +3337,7 @@ index 390c04a..e7b857d 100644
  extern bool g_bFullscreen;
  
 diff --git a/src/meson.build b/src/meson.build
-index 842768c..0a0e958 100644
+index 842768ce7ce4..0a0e958ba313 100644
 --- a/src/meson.build
 +++ b/src/meson.build
 @@ -73,6 +73,7 @@ shader_src = [
@@ -3349,7 +3349,7 @@ index 842768c..0a0e958 100644
  
  spirv_shaders = glsl_generator.process(shader_src)
 diff --git a/src/rendervulkan.cpp b/src/rendervulkan.cpp
-index b8412b8..d833d00 100644
+index b8412b8fdf2f..d833d0093830 100644
 --- a/src/rendervulkan.cpp
 +++ b/src/rendervulkan.cpp
 @@ -48,6 +48,7 @@
@@ -3587,7 +3587,7 @@ index b8412b8..d833d00 100644
  
  	if ( pPipewireTexture != nullptr )
 diff --git a/src/rendervulkan.hpp b/src/rendervulkan.hpp
-index 0f8cba8..911ca7e 100644
+index 0f8cba8516c0..911ca7ea208c 100644
 --- a/src/rendervulkan.hpp
 +++ b/src/rendervulkan.hpp
 @@ -396,7 +396,7 @@ gamescope::OwningRc<CVulkanTexture> vulkan_create_texture_from_dmabuf( struct wl
@@ -3619,7 +3619,7 @@ index 0f8cba8..911ca7e 100644
  };
 diff --git a/src/shaders/cs_rotation.comp b/src/shaders/cs_rotation.comp
 new file mode 100644
-index 0000000..1a47fd5
+index 000000000000..1a47fd505748
 --- /dev/null
 +++ b/src/shaders/cs_rotation.comp
 @@ -0,0 +1,53 @@
@@ -3677,7 +3677,7 @@ index 0000000..1a47fd5
 +    imageStore(dst, rotatedCoord, outputValue);
 +}
 diff --git a/src/wlserver.cpp b/src/wlserver.cpp
-index 0b99c49..d3ae7be 100644
+index 0b99c498e55d..d3ae7beb7b1f 100644
 --- a/src/wlserver.cpp
 +++ b/src/wlserver.cpp
 @@ -2579,6 +2579,11 @@ static void apply_touchscreen_orientation(double *x, double *y )
@@ -3693,7 +3693,7 @@ index 0b99c49..d3ae7be 100644
  	*y = ty;
  }
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -3713,7 +3713,7 @@ default on internal panels and allow disabling on externals.
  4 files changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index e1547f4..d710732 100644
+index e1547f4a1a9b..d7107325ad59 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2367,7 +2367,7 @@ namespace gamescope
@@ -3726,7 +3726,7 @@ index e1547f4..d710732 100644
  			{
  				m_Mutable.HDR.bExposeHDRSupport = true;
 diff --git a/src/main.cpp b/src/main.cpp
-index c96b8f0..5823005 100644
+index c96b8f0ac39e..58230054ce53 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -199,6 +199,7 @@ const char usage[] =
@@ -3738,7 +3738,7 @@ index c96b8f0..5823005 100644
  	"  --hdr-itm-sdr-nits             set the luminance of SDR content in nits used as the input for the inverse tone mapping process.\n"
  	"                                 Default: 100 nits, Max: 1000 nits\n"
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index b625b1f..d4c4c54 100644
+index b625b1f13d29..d4c4c5422618 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -363,6 +363,7 @@ bool g_bVRRInUse_CachedValue = false;
@@ -3759,7 +3759,7 @@ index b625b1f..d4c4c54 100644
  					g_bHDRItmEnable = true;
  				} else if (strcmp(opt_name, "sdr-gamut-wideness") == 0) {
 diff --git a/src/steamcompmgr.hpp b/src/steamcompmgr.hpp
-index 9f384c4..0df01c0 100644
+index 9f384c461ca4..0df01c0ed0e3 100644
 --- a/src/steamcompmgr.hpp
 +++ b/src/steamcompmgr.hpp
 @@ -38,6 +38,7 @@ static const uint32_t g_zposOverlay = 3;
@@ -3771,7 +3771,7 @@ index 9f384c4..0df01c0 100644
  extern bool g_bForceHDRSupportDebug;
  
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -3787,7 +3787,7 @@ see: https://github.com/ValveSoftware/gamescope/pull/1671
  1 file changed, 19 insertions(+), 1 deletion(-)
 
 diff --git a/layer/VkLayer_FROG_gamescope_wsi.cpp b/layer/VkLayer_FROG_gamescope_wsi.cpp
-index 5bd1408..495bbc0 100644
+index 5bd1408bf780..495bbc070ff8 100644
 --- a/layer/VkLayer_FROG_gamescope_wsi.cpp
 +++ b/layer/VkLayer_FROG_gamescope_wsi.cpp
 @@ -183,6 +183,16 @@ namespace GamescopeWSILayer {
@@ -3832,7 +3832,7 @@ index 5bd1408..495bbc0 100644
      }
  
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -3847,7 +3847,7 @@ Subject: feat(display): add asus z13
 
 diff --git a/scripts/00-gamescope/displays/asus.z13.lcd.lua b/scripts/00-gamescope/displays/asus.z13.lcd.lua
 new file mode 100644
-index 0000000..891f1ea
+index 000000000000..891f1ea9ca6f
 --- /dev/null
 +++ b/scripts/00-gamescope/displays/asus.z13.lcd.lua
 @@ -0,0 +1,57 @@
@@ -3910,7 +3910,7 @@ index 0000000..891f1ea
 +debug("Registered Lenovo Legion Go S LCD as a known display")
 \ No newline at end of file
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -3926,7 +3926,7 @@ Subject: feat(display): consider vporch to avoid timing issues
  4 files changed, 11 insertions(+), 5 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index d710732..bcfc56d 100644
+index d7107325ad59..bcfc56dcbe20 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -114,6 +114,11 @@ namespace gamescope
@@ -3952,7 +3952,7 @@ index d710732..bcfc56d 100644
  
  	switch ( drm->pConnector->GetCurrentOrientation() )
 diff --git a/src/main.cpp b/src/main.cpp
-index 5823005..b11e67c 100644
+index 58230054ce53..b11e67c0c9b7 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -285,6 +285,7 @@ int g_nNestedDisplayIndex = 0;
@@ -3964,7 +3964,7 @@ index 5823005..b11e67c 100644
  
  bool g_bFullscreen = false;
 diff --git a/src/main.hpp b/src/main.hpp
-index e7b857d..e6f8ff1 100644
+index e7b857d44b0d..e6f8ff133689 100644
 --- a/src/main.hpp
 +++ b/src/main.hpp
 @@ -20,6 +20,7 @@ extern uint32_t g_nOutputWidth;
@@ -3976,7 +3976,7 @@ index e7b857d..e6f8ff1 100644
  extern bool g_bForceInternal;
  extern bool g_bUseRotationShader;
 diff --git a/src/vblankmanager.cpp b/src/vblankmanager.cpp
-index 2fd0ec4..ceb7829 100644
+index 2fd0ec45ef81..ceb7829127c3 100644
 --- a/src/vblankmanager.cpp
 +++ b/src/vblankmanager.cpp
 @@ -95,8 +95,6 @@ namespace gamescope
@@ -4000,7 +4000,7 @@ index 2fd0ec4..ceb7829 100644
  			const uint64_t ulDecayAlpha = m_ulVBlankRateOfDecayPercentage; // eg. 980 = 98%
  
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -4014,7 +4014,7 @@ This reverts commit b01717437797ee97a6a9810ddfc69153b3861df1.
  1 file changed, 2 insertions(+), 5 deletions(-)
 
 diff --git a/src/meson.build b/src/meson.build
-index 0a0e958..8a3a723 100644
+index 0a0e958ba313..8a3a7237c787 100644
 --- a/src/meson.build
 +++ b/src/meson.build
 @@ -19,14 +19,11 @@ xkbcommon = dependency('xkbcommon')
@@ -4035,7 +4035,7 @@ index 0a0e958..8a3a723 100644
    'wlroots',
    version: ['>= 0.18.0', '< 0.19.0'],
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -4048,7 +4048,7 @@ Subject: fix: prevent external overlays from pulling focus
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index d4c4c54..83fa748 100644
+index d4c4c5422618..83fa7485a403 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -6132,8 +6132,8 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
@@ -4063,7 +4063,7 @@ index d4c4c54..83fa748 100644
  				hasRepaintNonBasePlane = true;
  			}
 -- 
-2.50.0
+2.50.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -4076,7 +4076,7 @@ Subject: feat: add Legion Go S display with all framerates
  1 file changed, 42 insertions(+), 29 deletions(-)
 
 diff --git a/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua b/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua
-index 32f776c..057850f 100644
+index 32f776c17f3d..057850f374f8 100644
 --- a/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua
 +++ b/scripts/00-gamescope/displays/lenovo.legiongos.lcd.lua
 @@ -1,44 +1,58 @@
@@ -4174,5 +4174,157 @@ index 32f776c..057850f 100644
 +debug("Registered Lenovo Legion Go S LCD as a known display")
 \ No newline at end of file
 -- 
-2.50.0
+2.50.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Sun, 29 Jun 2025 13:16:59 +0200
+Subject: update misyltoad urls
+
+---
+ .gitmodules | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/.gitmodules b/.gitmodules
+index ec7d4e430ee8..17ba783f809b 100644
+--- a/.gitmodules
++++ b/.gitmodules
+@@ -1,12 +1,12 @@
+ [submodule "subprojects/wlroots"]
+ 	path = subprojects/wlroots
+-	url = https://github.com/Joshua-Ashton/wlroots.git
++	url = https://github.com/misyltoad/wlroots.git
+ [submodule "subprojects/libliftoff"]
+ 	path = subprojects/libliftoff
+ 	url = https://gitlab.freedesktop.org/emersion/libliftoff.git
+ [submodule "subprojects/vkroots"]
+ 	path = subprojects/vkroots
+-	url = https://github.com/Joshua-Ashton/vkroots
++	url = https://github.com/misyltoad/vkroots
+ [submodule "subprojects/libdisplay-info"]
+ 	path = subprojects/libdisplay-info
+ 	url = https://gitlab.freedesktop.org/emersion/libdisplay-info
+@@ -15,7 +15,7 @@
+ 	url = https://github.com/ValveSoftware/openvr.git
+ [submodule "src/reshade"]
+ 	path = src/reshade
+-	url = https://github.com/Joshua-Ashton/reshade
++	url = https://github.com/misyltoad/reshade
+ [submodule "thirdparty/SPIRV-Headers"]
+ 	path = thirdparty/SPIRV-Headers
+ 	url = https://github.com/KhronosGroup/SPIRV-Headers/
+-- 
+2.50.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Sun, 29 Jun 2025 13:17:14 +0200
+Subject: switch to bazzite fork for wlroots
+
+---
+ .gitmodules | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/.gitmodules b/.gitmodules
+index 17ba783f809b..2ae6cd101faf 100644
+--- a/.gitmodules
++++ b/.gitmodules
+@@ -1,6 +1,6 @@
+ [submodule "subprojects/wlroots"]
+ 	path = subprojects/wlroots
+-	url = https://github.com/misyltoad/wlroots.git
++	url = https://github.com/bazzite-org/wlroots.git
+ [submodule "subprojects/libliftoff"]
+ 	path = subprojects/libliftoff
+ 	url = https://gitlab.freedesktop.org/emersion/libliftoff.git
+-- 
+2.50.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Matthew Schwartz <matthew.schwartz@linux.dev>
+Date: Sun, 22 Jun 2025 10:39:19 -0700
+Subject: steamcompmgr: track FSR state with preemptive upscaling
+
+g_bFSRActive was only being applied to the first frame of preemptive
+upscaling, which meant that the FSR badge would quickly flicker from on
+to off when preemptive upscaling was active.
+
+To account for this, track the state of preemptive upscaling and use
+it to activate g_bFSRActive when applicable.
+---
+ src/steamcompmgr.cpp | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 83fa7485a403..8fcc18d6225d 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -2509,6 +2509,9 @@ paint_all( bool async, bool dpms )
+ 	}
+ 
+ 	g_bFSRActive = frameInfo.useFSRLayer0;
++	if ( const auto& heldCommit = g_HeldCommits[HELD_COMMIT_BASE]; heldCommit && heldCommit->upscaledTexture ) {
++		g_bFSRActive = ( heldCommit->upscaledTexture->eFilter == GamescopeUpscaleFilter::FSR );
++	}
+ 
+ 	g_bFirstFrame = false;
+ 
+-- 
+2.50.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Georg Lehmann <dadschoorse@gmail.com>
+Date: Mon, 7 Aug 2023 18:54:01 +0200
+Subject: rendervulkan: account for ycbcr descriptor count when creating
+ descriptor pool
+
+---
+ src/rendervulkan.cpp | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/src/rendervulkan.cpp b/src/rendervulkan.cpp
+index d833d0093830..ac5c16dab035 100644
+--- a/src/rendervulkan.cpp
++++ b/src/rendervulkan.cpp
+@@ -847,6 +847,25 @@ bool CVulkanDevice::createPools()
+ 		return false;
+ 	}
+ 
++	VkPhysicalDeviceImageFormatInfo2 imageFormatInfo = {
++		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2,
++		.format = VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,
++		.type = VK_IMAGE_TYPE_2D,
++		.tiling = VK_IMAGE_TILING_OPTIMAL,
++		.usage = VK_IMAGE_USAGE_SAMPLED_BIT,
++	};
++
++	VkSamplerYcbcrConversionImageFormatProperties ycbcrProps = {
++		.sType = VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_IMAGE_FORMAT_PROPERTIES,
++	};
++
++	VkImageFormatProperties2 imageFormatProps = {
++		.sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2,
++		.pNext = &ycbcrProps,
++	};
++
++	res = vk.GetPhysicalDeviceImageFormatProperties2( physDev(), &imageFormatInfo, &imageFormatProps );
++
+ 	VkDescriptorPoolSize poolSizes[3] {
+ 		{
+ 			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+@@ -858,7 +877,7 @@ bool CVulkanDevice::createPools()
+ 		},
+ 		{
+ 			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+-			uint32_t(m_descriptorSets.size()) * ((2 * VKR_SAMPLER_SLOTS) + (2 * VKR_LUT3D_COUNT)),
++			uint32_t(m_descriptorSets.size()) * (((ycbcrProps.combinedImageSamplerDescriptorCount + 1) * VKR_SAMPLER_SLOTS) + (2 * VKR_LUT3D_COUNT)),
+ 		},
+ 	};
+ 	
+-- 
+2.50.1
 
