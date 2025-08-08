@@ -5,7 +5,6 @@ if [[ $UID -eq 0 ]]; then
   exit 1
 fi
 
-# Source ujust library for colors and gum functionality
 source /usr/lib/ujust/ujust.sh
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -17,7 +16,6 @@ if command -v bkt >/dev/null 2>&1; then
     skopeo() { bkt --ttl=30m --stale=5m -- command skopeo "$@"; }
 fi
 
-# Help text
 helptext="====== Bazzite Rollback Helper Util ======
 
 This tool helps with rollbacks and rebases. Warns when switching between KDE and GNOME variants.
@@ -37,7 +35,6 @@ Examples:
 
 For help: https://discord.bazzite.gg"
 
-# Available Bazzite variants
 VARIANTS=(
   "bazzite"
   "bazzite-deck"
@@ -155,13 +152,12 @@ rebase_to() {
     *) img_name="$DEFAULT_IMAGE" ;;
   esac
   
-  # Check DE compatibility
   warn_if_de_mismatch "$img_name" || return 1
   
   # Build full ostree ref if needed
   local full_ref="$target"
   case "$target" in
-    ostree-*) ;; # Already full ref
+    ostree-*) ;;
     *:*) 
       local scheme=$(signing_scheme)
       full_ref="$scheme/ublue-os/$target"
@@ -256,7 +252,6 @@ rebase() {
   local target="$1"
   local skip_confirm=false
   
-  # Handle -y flag
   if [[ "$2" == "-y" || "$2" == "--yes" ]]; then
     skip_confirm=true
   fi
@@ -270,7 +265,6 @@ rebase() {
   rebase_to "$target" "$skip_confirm"
 }
 
-# Interactive menu
 interactive_menu() {
   while true; do
     clear
@@ -356,7 +350,6 @@ interactive_menu() {
   done
 }
 
-# Main logic
 case "$1" in
   "list") list_images "$2" ;;
   "rollback") rollback ;;
