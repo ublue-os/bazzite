@@ -31,7 +31,8 @@ helptext=$(cat << EOF
 
 This tool aims to help with rollbacks and rebases
 
-NOTE: Rebasing to different desktop environments usually breaks things and is unsupported
+NOTE: Rebasing to different desktop environments usually breaks things and is unsupported.
+      The tool will warn you when switching between KDE and GNOME variants.
 
 Usage: bazzite-rollback-helper [OPTION] [ARGUMENT]
 
@@ -83,18 +84,179 @@ INPUTS:
   fi
 }
 
+# Function to detect current desktop environment
+detect_current_de() {
+  # Check for GNOME
+  if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"* ]] || [[ "$DESKTOP_SESSION" == *"gnome"* ]] || command -v gnome-shell >/dev/null 2>&1; then
+    echo "gnome"
+    return
+  fi
+  
+  # Check for KDE/Plasma
+  if [[ "$XDG_CURRENT_DESKTOP" == *"KDE"* ]] || [[ "$DESKTOP_SESSION" == *"plasma"* ]] || command -v plasmashell >/dev/null 2>&1; then
+    echo "kde"
+    return
+  fi
+  
+  # Default/unknown (assume KDE for Bazzite default)
+  echo "kde"
+}
+
+# Function to check if an image name indicates GNOME
+is_gnome_image() {
+  local image_name="$1"
+  [[ "$image_name" == *"gnome"* ]]
+}
+
+# Function to check if an image name indicates KDE (no explicit "kde" but absence of gnome)
+is_kde_image() {
+  local image_name="$1"
+  [[ "$image_name" != *"gnome"* ]]
+}
+
+# Function to show desktop environment warning
+show_de_warning() {
+  local current_de="$1"
+  local target_image="$2"
+  local target_de=""
+  
+  if is_gnome_image "$target_image"; then
+    target_de="GNOME"
+  else
+    target_de="KDE/Plasma"
+  fi
+  
+  local show_warning=false
+  local warning_msg=""
+  
+  case "$current_de" in
+    "gnome")
+      if ! is_gnome_image "$target_image"; then
+        show_warning=true
+        warning_msg="You are currently running GNOME but switching to a $target_de image ($target_image)."
+      fi
+      ;;
+    "kde")
+      if ! is_kde_image "$target_image"; then
+        show_warning=true
+        warning_msg="You are currently running KDE/Plasma but switching to a $target_de image ($target_image)."
+      fi
+      ;;
+  esac
+  
+  if [[ "$show_warning" == true ]]; then
+    echo
+    echo "${red}${bold}⚠️  DESKTOP ENVIRONMENT WARNING ⚠️${normal}"
+    echo "${yellow}$warning_msg${normal}"
+    echo "${yellow}Switching between different desktop environments may cause issues and is generally unsupported.${normal}"
+    echo "${yellow}Consider backing up your data before proceeding.${normal}"
+    echo
+    echo "Do you want to continue anyway? ${yellow}(y/N)${normal}"
+    read -r de_confirm
+    if [[ ! "${de_confirm,,}" =~ ^y ]]; then
+      echo "Rebase cancelled due to desktop environment mismatch."
+      return 1
+    fi
+  fi
+  
+  return 0
+}
+
+# Function to detect current desktop environment
+detect_current_de() {
+  # Check for GNOME
+  if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"* ]] || [[ "$DESKTOP_SESSION" == *"gnome"* ]] || command -v gnome-shell >/dev/null 2>&1; then
+    echo "gnome"
+    return
+  fi
+  
+  # Check for KDE/Plasma
+  if [[ "$XDG_CURRENT_DESKTOP" == *"KDE"* ]] || [[ "$DESKTOP_SESSION" == *"plasma"* ]] || command -v plasmashell >/dev/null 2>&1; then
+    echo "kde"
+    return
+  fi
+  
+  # Default/unknown (assume KDE for Bazzite default)
+  echo "kde"
+}
+
+# Function to check if an image name indicates GNOME
+is_gnome_image() {
+  local image_name="$1"
+  [[ "$image_name" == *"gnome"* ]]
+}
+
+# Function to check if an image name indicates KDE (no explicit "kde" but absence of gnome)
+is_kde_image() {
+  local image_name="$1"
+  [[ "$image_name" != *"gnome"* ]]
+}
+
+# Function to show desktop environment warning
+show_de_warning() {
+  local current_de="$1"
+  local target_image="$2"
+  local target_de=""
+  
+  if is_gnome_image "$target_image"; then
+    target_de="GNOME"
+  else
+    target_de="KDE/Plasma"
+  fi
+  
+  local show_warning=false
+  local warning_msg=""
+  
+  case "$current_de" in
+    "gnome")
+      if ! is_gnome_image "$target_image"; then
+        show_warning=true
+        warning_msg="You are currently running GNOME but switching to a $target_de image ($target_image)."
+      fi
+      ;;
+    "kde")
+      if ! is_kde_image "$target_image"; then
+        show_warning=true
+        warning_msg="You are currently running KDE/Plasma but switching to a $target_de image ($target_image)."
+      fi
+      ;;
+  esac
+  
+  if [[ "$show_warning" == true ]]; then
+    echo
+    echo "${red}${bold}⚠️  DESKTOP ENVIRONMENT WARNING ⚠️${normal}"
+    echo "${yellow}$warning_msg${normal}"
+    echo "${yellow}Switching between different desktop environments may cause issues and is generally unsupported.${normal}"
+    echo "${yellow}Consider backing up your data before proceeding.${normal}"
+    echo
+    echo "Do you want to continue anyway? ${yellow}(y/N)${normal}"
+    read -r de_confirm
+    if [[ ! "${de_confirm,,}" =~ ^y ]]; then
+      echo "Rebase cancelled due to desktop environment mismatch."
+      return 1
+    fi
+  fi
+  
+  return 0
+}
+
 # Function to get available Bazzite image variants
 get_bazzite_variants() {
   local provider=${1:-ublue-os}
   
-  # Official Bazzite image variants based on README.md
+  # Official Bazzite image variants based on README.md and GitHub workflows
   local variants=(
     "bazzite"
     "bazzite-deck"
     "bazzite-nvidia" 
     "bazzite-deck-nvidia"
+    "bazzite-gnome"
+    "bazzite-gnome-nvidia"
+    "bazzite-deck-gnome"
     "bazzite-dx"
-    "bazzite-gdx"
+    "bazzite-dx-gnome"
+    "bazzite-dx-nvidia"
+    "bazzite-dx-nvidia-gnome"
   )
   
   echo -e >&2 "Checking available variants from $provider..."
@@ -274,6 +436,20 @@ INPUTS:
 Rebasing to $img_ref. Continue? [Y/n]: "
   local yn
   if [[ $CONFIRM_YES -ne 1 ]]; then
+    # Extract image name from img_ref for DE checking
+    local image_name_for_check
+    if [[ "$img_ref" == *"/"* ]]; then
+      image_name_for_check=$(echo "$img_ref" | sed 's/.*\/\([^:]*\).*/\1/')
+    else
+      image_name_for_check="$DEFAULT_IMAGE"
+    fi
+    
+    # Check for desktop environment compatibility and show warning if needed
+    local current_de=$(detect_current_de)
+    if ! show_de_warning "$current_de" "$image_name_for_check"; then
+      return 1
+    fi
+    
     read -rp "$question" yn
     yn=${yn:=y} # Default to yes
   else yn=y
@@ -456,6 +632,21 @@ perform_rebase() {
   local target_ref="$signing_scheme/$provider/$image_name:$version"
   
   echo "Rebasing to: ${bold}$target_ref${normal}"
+  
+  # Check for desktop environment compatibility and show warning if needed
+  local current_de=$(detect_current_de)
+  if ! show_de_warning "$current_de" "$image_name"; then
+    echo
+    echo "Press Enter to continue..."
+    read -r
+    if [[ "$from_custom" == "true" ]]; then
+      custom_provider_menu "$provider"
+    else
+      interactive_menu
+    fi
+    return
+  fi
+  
   echo
   echo "Are you sure? ${yellow}(y/N)${normal}"
   read -r confirm
@@ -545,6 +736,19 @@ custom_provider_menu() {
         local custom_ref="$signing_scheme/$provider/$image_tag"
         echo
         echo "Rebasing to: ${bold}$custom_ref${normal}"
+        
+        # Extract image name for DE checking
+        local image_name_for_check=$(echo "$image_tag" | cut -d':' -f1)
+        local current_de=$(detect_current_de)
+        
+        if ! show_de_warning "$current_de" "$image_name_for_check"; then
+          echo
+          echo "Press Enter to continue..."
+          read -r
+          custom_provider_menu "$provider"
+          return
+        fi
+        
         echo "Are you sure? ${yellow}(y/N)${normal}"
         read -r confirm
         if [[ "${confirm,,}" =~ ^y ]]; then
@@ -637,7 +841,22 @@ interactive_menu() {
           echo "Enter rebase target (or press Enter to cancel):"
           read -r rebase_input
           if [ -n "$rebase_input" ]; then
-            rebase "$rebase_input" -y
+            # Extract image name for DE checking if it's in NAME:TAG format
+            local image_name_for_check
+            if [[ "$rebase_input" == *":"* ]]; then
+              image_name_for_check=$(echo "$rebase_input" | cut -d':' -f1)
+            else
+              # For TAG-only format, use the default image
+              image_name_for_check="$DEFAULT_IMAGE"
+            fi
+            
+            # Check for desktop environment compatibility and show warning if needed
+            local current_de=$(detect_current_de)
+            if show_de_warning "$current_de" "$image_name_for_check"; then
+              rebase "$rebase_input" -y
+            else
+              echo "Rebase cancelled due to desktop environment mismatch."
+            fi
           else
             echo "Rebase cancelled."
           fi
