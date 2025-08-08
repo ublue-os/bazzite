@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=59
+HWS_VER=60
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -140,9 +140,9 @@ elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
     echo "Adding panel orientation for GPD Win 2"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
   fi
-elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:" =~ ":$SYS_ID:" ]]; then
+elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "video" ]]; then
-    echo "Adding panel orientation for ONEXPLAYER F1, ONEXFLY, & X1 Pro"
+    echo "Adding panel orientation for ONEXPLAYER F1, ONEXFLY, X1 Pro, Loki Max, & Zeenix Pro"
     NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")
   fi
   if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
@@ -395,30 +395,6 @@ if [ ! -f /etc/bazzite/fixups/grub_fixup ]; then
   fi
 fi
 touch /etc/bazzite/fixups/grub_fixup
-
-# Fix users who've layered CoolerControl in the past.
-if [ ! -f /etc/bazzite/fixups/coolercontrol_fixup ]; then
-  if rpm-ostree status --booted | grep -q "coolercontrol"; then
-      sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/terra.repo
-  fi
-  touch /etc/bazzite/fixups/coolercontrol_fixup
-fi
-
-# Fix users who've layered LACT in the past.
-if [ ! -f /etc/bazzite/fixups/lact_fixup ]; then
-  if rpm-ostree status --booted | grep -q "lact"; then
-      dnf5 -y copr enable ilyaz/LACT
-  fi
-  touch /etc/bazzite/fixups/lact_fixup
-fi
-
-# Fix users who've layered CDEmu in the past.
-if [ ! -f /etc/bazzite/fixups/cdemu_fixup ]; then
-  if rpm-ostree status --booted | grep -q "cdemu-daemon"; then
-      dnf5 -y copr enable rok/cdemu
-  fi
-  touch /etc/bazzite/fixups/cdemu_fixup
-fi
 
 # Fix missing hostname file breaking distrobox
 if [ ! -f /etc/hostname ]; then
