@@ -184,6 +184,7 @@ sections:
       - bazzite-section
       - utilities-section
     appids:
+      - io.github.ilya_zlobintsev.LACT
       - io.github.limo_app.limo
       - io.github.radiolamp.mangojuice
       - io.github.rfrench3.scopebuddy-gui

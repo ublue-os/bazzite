@@ -24,13 +24,6 @@ _install_appimage_file $APPIMAGE_SRC $filename="":
     sleep 3
     LC_ALL=C flatpak run it.mijorus.gearlever "$appimage_file" <&-
 
-# Install LACT to control your AMD, Nvidia or Intel GPU on a Linux system.
-install-lact:
-    #!/usr/bin/bash
-    rpm-ostree kargs --append-if-missing=$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))")
-    flatpak --system install -y flathub io.github.ilya_zlobintsev.LACT
-    echo 'Complete, please reboot to apply changes.'
-
 # Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
 install-coolercontrol:
     #!/usr/bin/bash
