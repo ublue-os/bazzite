@@ -288,9 +288,6 @@ setup-decky ACTION="":
         echo "Making a /home/deck symlink to fix plugins that do not use environment variables."
         sudo -A ln -sf "$HOME" /home/deck
       fi
-      if [[ -d ~/homebrew ]]; then
-        sudo -A chown -R --reference ~/ ~/homebrew
-      fi
       curl -L https://github.com/SteamDeckHomebrew/decky-installer/releases/latest/download/install_release.sh |
         sed 's|sudo|sudo -A |g' | sh
       sudo -A chcon -R -t bin_t $HOME/homebrew/services/PluginLoader
@@ -601,12 +598,6 @@ get-decky-bazzite-buddy:
       exit 1
     fi
 
-    # Fix ownership of homebrew plugins directory if it exists but is owned by root
-    if [ -d "$HOME/homebrew/plugins" ] && [ ! -w "$HOME/homebrew/plugins" ]; then
-      echo "Fixing ownership of plugins directory..."
-      sudo chown -R $(whoami):$(whoami) "$HOME/homebrew/plugins"
-    fi
-
     # Get the latest release information with timeout
     echo "Fetching latest release information..."
     RELEASE_INFO=$(timeout 30 curl -s "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest" || echo "")
@@ -631,13 +622,7 @@ get-decky-bazzite-buddy:
     # Ensure plugins directory exists and has correct permissions
     if [ ! -d "$PLUGIN_DIR" ]; then
       echo "Creating plugins directory..."
-      mkdir -p "$PLUGIN_DIR"
-    fi
-
-    # Fix permissions on plugins directory if needed
-    if [ ! -w "$PLUGIN_DIR" ]; then
-      echo "Fixing permissions on plugins directory..."
-      chmod u+w "$PLUGIN_DIR"
+      sudo mkdir -p "$PLUGIN_DIR"
     fi
 
     # Work in a temporary directory to avoid permission issues
@@ -647,7 +632,7 @@ get-decky-bazzite-buddy:
     # Remove any existing plugin folder
     if [ -d "$PLUGIN_DIR/$PLUGIN_NAME" ]; then
       echo "Removing existing $PLUGIN_NAME directory..."
-      rm -rf "$PLUGIN_DIR/$PLUGIN_NAME"
+      sudo rm -rf "$PLUGIN_DIR/$PLUGIN_NAME"
     fi
 
     # Download the zip file
@@ -698,13 +683,12 @@ get-decky-bazzite-buddy:
     # Move plugin to final location
     if [ -d "./$PLUGIN_NAME" ]; then
       echo "Installing plugin to $PLUGIN_DIR..."
-      mv "./$PLUGIN_NAME" "$PLUGIN_DIR/"
+      sudo mv "./$PLUGIN_NAME" "$PLUGIN_DIR/"
 
       # Fix permissions on plugin files and make scripts executable
       echo "Setting correct permissions..."
-      chmod -R u+w "$PLUGIN_DIR/$PLUGIN_NAME"
-      find "$PLUGIN_DIR/$PLUGIN_NAME" -name "*.sh" -exec chmod +x {} \;
-      find "$PLUGIN_DIR/$PLUGIN_NAME" -name "*.py" -exec chmod +x {} \;
+      sudo find "$PLUGIN_DIR/$PLUGIN_NAME" -name "*.sh" -exec chmod +x {} \;
+      sudo find "$PLUGIN_DIR/$PLUGIN_NAME" -name "*.py" -exec chmod +x {} \;
 
       echo "$PLUGIN_NAME has been installed successfully to $PLUGIN_DIR!"
       echo "Please restart Decky Loader to activate the plugin."

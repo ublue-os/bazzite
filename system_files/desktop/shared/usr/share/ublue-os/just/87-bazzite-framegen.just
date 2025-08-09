@@ -85,12 +85,6 @@ get-framegen ACTION="prompt":
             exit 1
         fi
 
-        # Fix ownership of homebrew plugins directory if it exists but is owned by root
-        if [ -d "$HOME/homebrew/plugins" ] && [ ! -w "$HOME/homebrew/plugins" ]; then
-            echo "Fixing ownership of plugins directory..."
-            sudo chown -R $(whoami):$(whoami) "$HOME/homebrew/plugins"
-        fi
-
         API_URL="https://api.github.com/repos/xXJSONDeruloXx/Decky-Framegen/releases/latest"
         PLUGIN_URL=$(timeout 30 curl -s "$API_URL" | grep "browser_download_url" | grep ".zip" | cut -d '"' -f 4 || echo "")
 
@@ -105,13 +99,7 @@ get-framegen ACTION="prompt":
         # Ensure plugins directory exists and has correct permissions
         if [ ! -d "$PLUGIN_DIR" ]; then
             echo "Creating plugins directory..."
-            mkdir -p "$PLUGIN_DIR"
-        fi
-
-        # Fix permissions on plugins directory if needed
-        if [ ! -w "$PLUGIN_DIR" ]; then
-            echo "Fixing permissions on plugins directory..."
-            chmod u+w "$PLUGIN_DIR"
+            sudo mkdir -p "$PLUGIN_DIR"
         fi
 
         # Work in a temporary directory to avoid permission issues
@@ -121,7 +109,7 @@ get-framegen ACTION="prompt":
         # Remove any existing plugin folder
         if [ -d "$PLUGIN_DIR/$PLUGIN_NAME" ]; then
             echo "Removing existing $PLUGIN_NAME directory..."
-            rm -rf "$PLUGIN_DIR/$PLUGIN_NAME"
+            sudo rm -rf "$PLUGIN_DIR/$PLUGIN_NAME"
         fi
 
         echo "Downloading $PLUGIN_NAME from $PLUGIN_URL..."
@@ -163,13 +151,12 @@ get-framegen ACTION="prompt":
         # Move plugin to final location
         if [ -d "./$PLUGIN_NAME" ]; then
             echo "Installing plugin to $PLUGIN_DIR..."
-            mv "./$PLUGIN_NAME" "$PLUGIN_DIR/"
+            sudo mv "./$PLUGIN_NAME" "$PLUGIN_DIR/"
 
             # Fix permissions on plugin files and make scripts executable
             echo "Setting correct permissions..."
-            chmod -R u+w "$PLUGIN_DIR/$PLUGIN_NAME"
-            find "$PLUGIN_DIR/$PLUGIN_NAME" -name "*.sh" -exec chmod +x {} \;
-            find "$PLUGIN_DIR/$PLUGIN_NAME" -name "*.py" -exec chmod +x {} \;
+            sudo find "$PLUGIN_DIR/$PLUGIN_NAME" -name "*.sh" -exec chmod +x {} \;
+            sudo find "$PLUGIN_DIR/$PLUGIN_NAME" -name "*.py" -exec chmod +x {} \;
 
             echo "$PLUGIN_NAME has been installed successfully to $PLUGIN_DIR!"
             echo "Please restart Decky Loader to activate the plugin."
@@ -369,12 +356,6 @@ get-lsfg ACTION="prompt":
             exit 1
         fi
 
-        # Fix ownership of homebrew plugins directory if it exists but is owned by root
-        if [ -d "$HOME/homebrew/plugins" ] && [ ! -w "$HOME/homebrew/plugins" ]; then
-            echo "Fixing ownership of plugins directory..."
-            sudo chown -R $(whoami):$(whoami) "$HOME/homebrew/plugins"
-        fi
-
         API_URL="https://api.github.com/repos/xXJSONDeruloXx/decky-lossless-scaling-vk/releases/latest"
         PLUGIN_URL=$(timeout 30 curl -s "$API_URL" | grep "browser_download_url" | grep ".zip" | cut -d '"' -f 4 || echo "")
 
@@ -389,13 +370,7 @@ get-lsfg ACTION="prompt":
         # Ensure plugins directory exists and has correct permissions
         if [ ! -d "$PLUGIN_DIR" ]; then
             echo "Creating plugins directory..."
-            mkdir -p "$PLUGIN_DIR"
-        fi
-
-        # Fix permissions on plugins directory if needed
-        if [ ! -w "$PLUGIN_DIR" ]; then
-            echo "Fixing permissions on plugins directory..."
-            chmod u+w "$PLUGIN_DIR"
+            sudo mkdir -p "$PLUGIN_DIR"
         fi
 
         # Work in a temporary directory to avoid permission issues
@@ -405,15 +380,13 @@ get-lsfg ACTION="prompt":
         # Remove any existing plugin folder
         if [ -d "$PLUGIN_DIR/$PLUGIN_NAME" ]; then
             echo "Removing existing $PLUGIN_NAME directory..."
-            chmod -R u+w "$PLUGIN_DIR/$PLUGIN_NAME" 2>/dev/null || true
-            rm -rf "$PLUGIN_DIR/$PLUGIN_NAME"
+            sudo rm -rf "$PLUGIN_DIR/$PLUGIN_NAME"
         fi
 
         # Also remove the expected final name in case it exists with different permissions
         if [ -d "$PLUGIN_DIR/Lossless Scaling" ]; then
             echo "Removing existing Lossless Scaling directory..."
-            chmod -R u+w "$PLUGIN_DIR/Lossless Scaling" 2>/dev/null || true
-            rm -rf "$PLUGIN_DIR/Lossless Scaling"
+            sudo rm -rf "$PLUGIN_DIR/Lossless Scaling"
         fi
 
         echo "Downloading $PLUGIN_NAME from $PLUGIN_URL..."
@@ -455,13 +428,12 @@ get-lsfg ACTION="prompt":
         # Move plugin to final location
         if [ -d "./$PLUGIN_NAME" ]; then
             echo "Installing plugin to $PLUGIN_DIR..."
-            mv "./$PLUGIN_NAME" "$PLUGIN_DIR/Lossless Scaling"
+            sudo mv "./$PLUGIN_NAME" "$PLUGIN_DIR/Lossless Scaling"
 
             # Fix permissions on plugin files and make scripts executable
             echo "Setting correct permissions..."
-            chmod -R u+w "$PLUGIN_DIR/Lossless Scaling"
-            find "$PLUGIN_DIR/Lossless Scaling" -name "*.sh" -exec chmod +x {} \;
-            find "$PLUGIN_DIR/Lossless Scaling" -name "*.py" -exec chmod +x {} \;
+            sudo find "$PLUGIN_DIR/Lossless Scaling" -name "*.sh" -exec chmod +x {} \;
+            sudo find "$PLUGIN_DIR/Lossless Scaling" -name "*.py" -exec chmod +x {} \;
 
             echo "Lossless Scaling plugin has been installed successfully to $PLUGIN_DIR!"
             echo "Please restart Decky Loader to activate the plugin."
