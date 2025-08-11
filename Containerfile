@@ -242,7 +242,6 @@ RUN --mount=type=cache,dst=/var/cache \
         $(/ctx/ghcurl https://api.github.com/repos/bazzite-org/cicpoffs/releases/latest | jq -r '.assets[] | select(.name| test(".*rpm$")).browser_download_url') && \
     dnf5 -y install \
         bazaar \
-        libdex-0.9.1 \
         iwd \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
