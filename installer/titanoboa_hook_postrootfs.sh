@@ -479,6 +479,12 @@ Enabled=false
 EOF
 fi
 
+# DELETEME: Enable anaconda webui only for gnome
+if [[ $desktop_env == gnome ]]; then
+    dnf install -qy anaconda-webui
+    dnf -yq clean all
+fi
+
 # Add support for controllers
 _tmp=$(mktemp -d)
 (
