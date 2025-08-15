@@ -13,6 +13,9 @@ mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 # Utilities for displaying a dialog prompting users to review secure boot documentation
 dnf install -qy --setopt=install_weak_deps=0 qrencode yad
 
+# Better support for EFI partition handling during installation
+dnf install -qy dosfstools
+
 # Bazzite anaconda profile
 : ${VARIANT_ID:?}
 cat >/etc/anaconda/profile.d/bazzite.conf <<EOF
