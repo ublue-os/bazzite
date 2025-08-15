@@ -389,11 +389,3 @@ steam-icons ACTION="":
       echo "Invalid choice. Exiting without changes."
       ;;
     esac
-
-# Disable SteamOS automount, this fixes ntfs partitions getting mounted.
-disable-steamos-automount:
-    pkexec ln -sf /dev/null /etc/udev/rules.d/99-steamos-automount.rules
-
-# Enable SteamOS automount.
-enable-steamos-automount:
-    pkexec rm -f /etc/udev/rules.d/99-steamos-automount.rules
