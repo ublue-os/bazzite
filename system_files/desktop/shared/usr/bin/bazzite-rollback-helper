@@ -80,7 +80,7 @@ target_de() {
 
 signing_scheme() {
   local current=$(rpm-ostree status -b --json | jq -r '.deployments[]["container-image-reference"]')
-  [[ "$current" == *"ostree-image-signed"* ]] && echo "ostree-image-signed:ghcr.io" || echo "ostree-unverified-registry:ghcr.io"
+  [[ "$current" == *"ostree-image-signed"* ]] && echo "ostree-image-signed:docker://ghcr.io" || echo "ostree-unverified-registry:ghcr.io"
 }
 
 warn_if_de_mismatch() {
