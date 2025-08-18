@@ -27,6 +27,14 @@ _install_appimage_file $APPIMAGE_SRC $filename="":
 # Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
 install-coolercontrol:
     #!/usr/bin/bash
+    set -eo pipefail
+
+    cat <<'EOF'
+    {{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}CoolerControl{{ NORMAL }}.
+    {{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"
+    {{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}
+    EOF
+
     echo 'Enabling Terra Repository.'
     sudo sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/terra.repo
     echo 'Installing Cooler Control'
