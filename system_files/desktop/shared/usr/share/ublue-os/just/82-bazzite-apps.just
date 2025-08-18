@@ -181,6 +181,12 @@ install-zerotier:
     #!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /usr/bin/bash
     set -eo pipefail
 
+    cat <<'EOF'
+    {{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}ZeroTier One{{ NORMAL }}.
+    {{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"
+    {{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}
+    EOF
+
     tee >/dev/null /etc/yum.repos.d/zerotier.repo <<'EOF'
     [zerotier]
     name=ZeroTier, Inc. RPM Release Repository
