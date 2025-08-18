@@ -176,6 +176,24 @@ remove-opentabletdriver:
     flatpak --system remove -y flathub net.opentabletdriver.OpenTabletDriver && \
     systemctl disable --user --now opentabletdriver.service
 
+# Install ZeroTier
+install-zerotier:
+    #!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /usr/bin/bash
+    set -eo pipefail
+
+    tee >/dev/null /etc/yum.repos.d/zerotier.repo <<'EOF'
+    [zerotier]
+    name=ZeroTier, Inc. RPM Release Repository
+    baseurl=https://repo.zerotier.com/yum/$basearch/
+    enabled=1
+    gpgcheck=1
+    gpgkey=https://download.zerotier.com/contact@zerotier.com.gpg
+    EOF
+
+    rpm-ostree install --idempotent --apply-live zerotier-one
+    systemctl enable --now zerotier-one.service
+    echo -e "\n{{ BOLD }}Reboot to apply the changes{{ NORMAL }}"
+
 # Create fedora distrobox if it doesn't exist
 [private]
 distrobox-check-fedora:
