@@ -197,7 +197,7 @@ install-zerotier:
     EOF
 
     rpm-ostree install --idempotent --apply-live zerotier-one
-    systemctl enable --now zerotier-one.service
+    systemctl enable zerotier-one.service
     echo -e "\n{{ BOLD }}Reboot to apply the changes{{ NORMAL }}"
 
 # Create fedora distrobox if it doesn't exist
