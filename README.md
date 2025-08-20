@@ -13,7 +13,7 @@
 ---
 
 # Table of Contents
-- [🇺🇸 🇪🇸 🇮🇩 🇨🇳 🇫🇷 🇧🇷 🇳🇱 🇷🇺 🇩🇪](#------)
+- [🇺🇸 🇪🇸 🇮🇩 🇨🇳 🇫🇷 🇧🇷 🇳🇱 🇷🇺 🇩🇪](#--------)
 - [Table of Contents](#table-of-contents)
   - [About \& Features](#about--features)
     - [Desktop](#desktop)
@@ -276,7 +276,7 @@ If asked for a password, use `universalblue`.
 
 Bazzite is a community effort and wouldn't exist without everyone's support. Below are some of the people who've helped us along the way:
 
-- [rei.svg](https://github.com/reisvg) - For creating our logo and overall branding.
+- [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - For creating our logo and overall branding.
 - [SuperRiderTH](https://github.com/SuperRiderTH) - For creating our Steam game mode startup video.
 - [evlaV](https://gitlab.com/evlaV) - For making Valve's code available and for being [this person](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.
