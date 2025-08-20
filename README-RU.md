@@ -286,7 +286,7 @@ ujust enroll-secure-boot-key
 
 Bazzite — результат работы сообщества. Благодарим:
 
-- [rei.svg](https://github.com/reisvg) — за логотип и брендинг.
+- [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) — за логотип и брендинг.
 - [SuperRiderTH](https://github.com/SuperRiderTH) — за видео загрузки игрового режима.
 - [evlaV](https://gitlab.com/evlaV) — за код Valve и поддержку.
 - [ChimeraOS](https://chimeraos.org/) — за gamescope-session.

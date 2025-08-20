@@ -252,7 +252,7 @@ sudo mokutil --import secure_boot.der
 ## Ucapan Terimakasih
 Bazzite merupakan upaya dari komunitas dan tidak akan pernah ada tanpa dukungan dari semua orang. berikut ini merupakan orang-orang yang telah membantu kami:
 
-- [rei.svg](https://github.com/reisvg) - Yang membuat logo dan branding.
+- [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - Yang membuat logo dan branding.
 - [evlaV](https://gitlab.com/evlaV) - Untuk membuat kode dari Valve tersedia dan menjadi [orang ini](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - Untuk gamescope-sesion dan mendukung kami diperjalanan ini.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - Untuk mendukung kami dengan menyelesaikan masalah teknis kami dan membuat project yang mirip. Serius bro coba cek proyek mereka. Mereka pakai Nix!.

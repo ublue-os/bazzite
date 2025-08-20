@@ -285,7 +285,7 @@ Se uma senha for pedida, insira `universalblue`.
 
 O Bazzite é um esforço comunitário e não existiria sem o apoio de todos. Listados abaixo estão algumas das pessoas que nos ajudaram pelo caminho:
 
-- [rei.svg](https://github.com/reisvg) - Por criar nossa logo e branding no geral.
+- [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - Por criar nossa logo e branding no geral.
 - [SuperRiderTH](https://github.com/SuperRiderTH) - Por criar o nosso vídeo de inicialização pro Steam game mode.
 - [evlaV](https://gitlab.com/evlaV) - Por disponibilizar o código da Valve e por ser [essa pessoa](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - Pelo gamescope-session e pela valiosa ajuda ao longo do caminho.
