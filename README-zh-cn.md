@@ -288,7 +288,7 @@ sudo mokutil --import secure_boot.der
 
 Bazzite是社区努力的结果，离不开每个人的支持。以下是那些一路帮助过我们的人：
 
-- [rei.svg](https://github.com/reisvg) - 创作了我们的徽标和整体品牌。
+- [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - 创作了我们的徽标和整体品牌。
 - [SuperRiderTH](https://github.com/SuperRiderTH) - 创作了我们Steam游戏模式的启动视频。
 - [evlaV](https://gitlab.com/evlaV) - 使Valve的代码可用并成为[this person](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.

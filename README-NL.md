@@ -289,7 +289,7 @@ Als er voor een wachtwoord gevraagd wordt, gebruik `universalblue`.
 
 Bazzite is een gemeenschapsinspanning en bestaat niet zonder hen. Zie hieronder mensen die ons hulp hebben verleend since het begin:
 
-- [rei.svg](https://github.com/reisvg) - Voor het creëren van ons logo en branding.
+- [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - Voor het creëren van ons logo en branding.
 - [SuperRiderTH](https://github.com/SuperRiderTH) - Voor het creëren van de Steam Game Mode start video.
 - [evlaV](https://gitlab.com/evlaV) - Om Valve's code beschikbaar te maken en om [dit persoon](https://xkcd.com/2347/) te zijn.
 - [ChimeraOS](https://chimeraos.org/) - Voor gamescope-sessies en voor belangrijk hulp.
