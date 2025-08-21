@@ -52,9 +52,9 @@ VARIANTS=(
 # Utility functions
 confirm() { 
   local msg="$1"
-  echo -n "$msg ${yellow}(y/N)${normal} "
+  echo -n "$msg ${yellow}(Y/n)${normal} "
   read -r reply
-  [[ "${reply,,}" =~ ^y ]]
+  [[ -z "$reply" || "${reply,,}" =~ ^y ]]
 }
 
 press_any_key() {
