@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if [[ $UID -eq 0 ]]; then
-  echo "This script must not run as root" >&2
-  exit 1
-fi
-
 source /usr/lib/ujust/ujust.sh
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
