@@ -1,7 +1,6 @@
 [Unit]
 Description=Manage system flatpaks
-Wants=network-online.target
-After=network-online.target bazzite-hardware-setup.service
+After=bazzite-hardware-setup.service
 
 [Service]
 Type=oneshot
