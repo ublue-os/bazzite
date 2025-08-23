@@ -6,7 +6,6 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 ExecStart=/bin/sh -c '/usr/bin/flatpak update -y --system --noninteractive $(flatpak list --system --runtime --columns=ref)'
-TimeoutSec=900
 Nice=10
 
 [Install]
