@@ -223,6 +223,7 @@ EOF
     for s in \
         rpm-ostree-countme.service \
         tailscaled.service \
+        bazzite-hardware-setup.service \
         bootloader-update.service \
         brew-upgrade.timer \
         brew-update.timer \
