@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=60
+HWS_VER=61
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -182,10 +182,11 @@ if [[ ! $KARGS =~ "disable_ertm" ]]; then
   NEEDED_KARGS+=("--append-if-missing=bluetooth.disable_ertm=1")
 fi
 
-if [[ ! $KARGS =~ "preempt" ]]; then
-  echo "Adding needed kargs for full preemption"
-  NEEDED_KARGS+=("--append-if-missing=preempt=full")
+if [[ ! -f /etc/bazzite/fixups/preempt_cleanup && $KARGS =~ "preempt" ]]; then
+  echo "Removing full preemption (once)"
+  NEEDED_KARGS+=("--delete-if-present=preempt=full")
 fi
+touch /etc/bazzite/fixups/preempt_cleanup
 
 if [[ $KARGS =~ "nomodeset" ]]; then
   echo "Removing nomodeset"
