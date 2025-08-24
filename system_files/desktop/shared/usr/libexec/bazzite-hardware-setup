@@ -401,8 +401,9 @@ if [ ! -f /etc/bazzite/fixups/grub_fixup ]; then
 fi
 touch /etc/bazzite/fixups/grub_fixup
 
-if [ ! -f /etc/bazzite/fixups/grub_blank && -z $(grep "GRUB_TERMINAL_OUTPUT=" /etc/default/grub) ]; then
-  echo 'GRUB_TERMINAL_OUTPUT="console"' >> /etc/default/grub
+if [ ! -f /etc/bazzite/fixups/grub_blank ] &&
+    [ -z $(grep "GRUB_TERMINAL_OUTPUT=" /etc/default/grub) ]; then
+  echo '\nGRUB_TERMINAL_OUTPUT="console"' >> /etc/default/grub
 
   # Update grub
   if [ -d /sys/firmware/efi ]; then
