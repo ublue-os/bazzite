@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=61
+HWS_VER=62
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -400,6 +400,20 @@ if [ ! -f /etc/bazzite/fixups/grub_fixup ]; then
   fi
 fi
 touch /etc/bazzite/fixups/grub_fixup
+
+if [ ! -f /etc/bazzite/fixups/grub_blank && -z $(grep "GRUB_TERMINAL_OUTPUT=" /etc/default/grub) ]; then
+  echo 'GRUB_TERMINAL_OUTPUT="console"' >> /etc/default/grub
+
+  # Update grub
+  if [ -d /sys/firmware/efi ]; then
+    echo "Updating EFI grub config"
+    grub2-mkconfig -o /etc/grub2-efi.cfg
+  else
+    echo "Updating BIOS grub config"
+    grub2-mkconfig -o /etc/grub2.cfg
+  fi
+fi
+touch /etc/bazzite/fixups/grub_blank
 
 # Fix missing hostname file breaking distrobox
 if [ ! -f /etc/hostname ]; then
