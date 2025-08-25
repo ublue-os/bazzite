@@ -12,7 +12,7 @@
 %endif
 
 Name:           bootc
-Version:        1.7.0
+Version:        1.7.1
 Release:        100.bazzite
 Summary:        Bootable container system
 
