@@ -132,8 +132,26 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y install \
         scx-scheds && \
     dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
-    dnf5 -y swap --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite bootc bootc && \
-    dnf5 -y swap --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite plymouth plymouth && \
+    declare -A toswap=( \
+        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite"]="ostree bootc rpm-ostree rpm-ostree-libs plymouth" \
+    ) && \
+    for repo in "${!toswap[@]}"; do \
+        for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
+    done && unset -v toswap repo package && \
+    dnf5 versionlock add \
+        ostree \
+        ostree-libs \
+        bootc \
+        rpm-ostree \
+        rpm-ostree-libs \
+        plymouth \
+        plymouth-scripts \
+        plymouth-core-libs \
+        plymouth-graphics-libs \
+        plymouth-plugin-label \
+        plymouth-plugin-two-step \
+        plymouth-plugin-theme-spinner \
+        plymouth-system-theme && \
     /ctx/cleanup
 
 # Setup firmware
