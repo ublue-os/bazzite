@@ -173,7 +173,6 @@ Sun Jun 22 2025 Alessandro Astone <alessandro.astone@canonical.com> - 1.5.3
     - You can now specify the preferred DRM render node in /var/lib/waydroid.cfg as:
     - drm_device = /dev/dri/renderD128
 
-
 * Sun Mar 30 2025 Alessandro Astone <alessandro.astone@canonical.com> - 1.5.0
 + - Add vulkan support for Intel Haswell GPUs
 + - Do not expose the DRM card node to the container
