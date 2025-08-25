@@ -1,0 +1,127 @@
+From c352bc290112a0f8f8dbe2b0119353b8117155b4 Mon Sep 17 00:00:00 2001
+From: Colin Walters <walters@verbum.org>
+Date: Tue, 22 Jul 2025 17:38:41 -0400
+Subject: [PATCH 1/2] soft-reboot: Also handle /boot
+
+Closes: https://github.com/ostreedev/ostree/issues/3486
+
+Signed-off-by: Colin Walters <walters@verbum.org>
+---
+ src/libostree/ostree-soft-reboot.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/libostree/ostree-soft-reboot.c b/src/libostree/ostree-soft-reboot.c
+index a94ab41f..809b7991 100644
+--- a/src/libostree/ostree-soft-reboot.c
++++ b/src/libostree/ostree-soft-reboot.c
+@@ -72,6 +72,9 @@ _ostree_prepare_soft_reboot (GError **error)
+   if (!using_composefs)
+     return glnx_throw (error, "failed to mount with composefs");
+ 
++  if (!otcore_mount_boot (sysroot_path, OTCORE_RUN_NEXTROOT, error))
++    return FALSE;
++
+   if (!otcore_mount_etc (config, &metadata_builder, OTCORE_RUN_NEXTROOT, error))
+     return FALSE;
+ 
+-- 
+2.50.1
+
+
+From 8380c3501ccd74bfd03f047022f8eaa0d236e983 Mon Sep 17 00:00:00 2001
+From: Colin Walters <walters@verbum.org>
+Date: Tue, 22 Jul 2025 16:41:49 -0400
+Subject: [PATCH 2/2] switchroot: Refactor /boot mounting into helper function
+
+So it can be shared with soft reboots.
+
+Signed-off-by: Colin Walters <walters@verbum.org>
+---
+ src/libotcore/otcore-prepare-root.c  | 29 ++++++++++++++++++++++++++++
+ src/libotcore/otcore.h               |  1 +
+ src/switchroot/ostree-prepare-root.c | 17 ++--------------
+ 3 files changed, 32 insertions(+), 15 deletions(-)
+
+diff --git a/src/libotcore/otcore-prepare-root.c b/src/libotcore/otcore-prepare-root.c
+index fba05270..c8bbf6bf 100644
+--- a/src/libotcore/otcore-prepare-root.c
++++ b/src/libotcore/otcore-prepare-root.c
+@@ -383,6 +383,35 @@ composefs_error_message (int errsv)
+ 
+ #endif
+ 
++/**
++ * otcore_mount_boot:
++ *
++ * Mount /boot as a bind mount for a deployment if it's on the same partition
++ * as the physical root.
++ */
++gboolean
++otcore_mount_boot (const char *physical_root, const char *deployment, GError **error)
++{
++  g_autofree char *boot_loader = g_build_filename (physical_root, "boot/loader", NULL);
++  struct stat stbuf;
++
++  /* If /boot is on the same partition, use a bind mount to make it visible
++   * at /boot inside the deployment.
++   */
++  if (!(lstat (boot_loader, &stbuf) == 0 && S_ISLNK (stbuf.st_mode)))
++    return TRUE;
++
++  g_autofree char *target_boot = g_build_filename (deployment, "boot", NULL);
++  if (!(lstat (target_boot, &stbuf) == 0 && S_ISDIR (stbuf.st_mode)))
++    return TRUE;
++
++  g_autofree char *src_boot = g_build_filename (physical_root, "boot", NULL);
++  if (mount (src_boot, target_boot, NULL, MS_BIND | MS_SILENT, NULL) < 0)
++    return glnx_throw (error, "failed to bind mount /boot");
++
++  return TRUE;
++}
++
+ /**
+  * otcore_mount_etc:
+  *
+diff --git a/src/libotcore/otcore.h b/src/libotcore/otcore.h
+index 0c7329d3..212eafe8 100644
+--- a/src/libotcore/otcore.h
++++ b/src/libotcore/otcore.h
+@@ -99,6 +99,7 @@ RootConfig *otcore_load_rootfs_config (const char *cmdline, GKeyFile *config, gb
+ gboolean otcore_mount_rootfs (RootConfig *rootfs_config, GVariantBuilder *metadata_builder,
+                               const char *root_mountpoint, const char *deploy_path,
+                               const char *mount_target, bool *out_using_composefs, GError **error);
++gboolean otcore_mount_boot (const char *physical_root, const char *deploy_path, GError **error);
+ 
+ gboolean otcore_mount_etc (GKeyFile *config, GVariantBuilder *metadata_builder,
+                            const char *mount_target, GError **error);
+diff --git a/src/switchroot/ostree-prepare-root.c b/src/switchroot/ostree-prepare-root.c
+index c7df55d0..7743eff0 100644
+--- a/src/switchroot/ostree-prepare-root.c
++++ b/src/switchroot/ostree-prepare-root.c
+@@ -280,21 +280,8 @@ main (int argc, char *argv[])
+   g_variant_builder_add (&metadata_builder, "{sv}", OTCORE_RUN_BOOTED_KEY_SYSROOT_RO,
+                          g_variant_new_boolean (sysroot_readonly));
+ 
+-  /* Prepare /boot.
+-   * If /boot is on the same partition, use a bind mount to make it visible
+-   * at /boot inside the deployment. */
+-  if (snprintf (srcpath, sizeof (srcpath), "%s/boot/loader", root_mountpoint) < 0)
+-    err (EXIT_FAILURE, "failed to assemble /boot/loader path");
+-  if (lstat (srcpath, &stbuf) == 0 && S_ISLNK (stbuf.st_mode))
+-    {
+-      if (lstat ("boot", &stbuf) == 0 && S_ISDIR (stbuf.st_mode))
+-        {
+-          if (snprintf (srcpath, sizeof (srcpath), "%s/boot", root_mountpoint) < 0)
+-            err (EXIT_FAILURE, "failed to assemble /boot path");
+-          if (mount (srcpath, TMP_SYSROOT "/boot", NULL, MS_BIND | MS_SILENT, NULL) < 0)
+-            err (EXIT_FAILURE, "failed to bind mount %s to boot", srcpath);
+-        }
+-    }
++  if (!otcore_mount_boot (root_mountpoint, TMP_SYSROOT, &error))
++    errx (EXIT_FAILURE, "%s", error->message);
+ 
+   /* Prepare /etc.
+    * No action required if sysroot is writable. Otherwise, a bind-mount for
+-- 
+2.50.1
+
