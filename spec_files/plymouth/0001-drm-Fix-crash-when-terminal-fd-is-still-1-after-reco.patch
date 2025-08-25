@@ -1,0 +1,96 @@
+From 21ea1e9742d7627038725231f3ff4cb313762449 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hansg@kernel.org>
+Date: Tue, 1 Jul 2025 14:37:03 +0200
+Subject: [PATCH] drm: Fix crash when terminal fd is still -1 after reconnect
+
+The drm plugin code installs a fd disconnect handler for the terminal fd
+which simply calls open_input_source () again.
+
+This assumes that the ply-terminal code's disconnect handler has run first
+(which it should) and that ply_terminal_reopen_device () has successfully
+re-opened the terminal. This last condition is not always true, resulting
+in open_input_source () calling ply_event_loop_watch_fd () with a -1 fd
+triggerig an assert in ply_event_loop_watch_fd ():
+
+5  0x00007f62d39a1c6f in __assert_fail (assertion=<optimized out>, file=<optimized out>, line=<optimized out>, function=<optimized out>) at assert.c:127
+6  0x00007f62d3bc22c7 in ply_event_loop_watch_fd (loop=<optimized out>, fd=-1, status=status@entry=PLY_EVENT_LOOP_FD_STATUS_HAS_DATA,
+    status_met_handler=status_met_handler@entry=0x7f62d3790870 <on_terminal_key_event>,
+    disconnected_handler=disconnected_handler@entry=0x7f62d3790c70 <on_input_source_disconnected>, user_data=user_data@entry=0x5647f7dd9fb8)
+    at ../src/libply/ply-event-loop.c:732
+7  0x00007f62d3790bf6 in open_input_source (backend=0x5647f7dd9f90, input_source=0x5647f7dd9fb8) at ../src/plugins/renderers/drm/plugin.c:1930
+8  0x00007f62d3bcbd53 in ply_event_loop_handle_disconnect_for_source (loop=<optimized out>, source=0x5647f7dd69f0) at ../src/libply/ply-event-loop.c:1065
+9  ply_event_loop_disconnect_source (loop=<optimized out>, source=0x5647f7dd69f0) at ../src/libply/ply-event-loop.c:1157
+10 ply_event_loop_process_pending_events (loop=0x5647f7dd13e0) at ../src/libply/ply-event-loop.c:1277
+11 0x00007f62d3bcc068 in ply_event_loop_run (loop=0x5647f7dd13e0) at ../src/libply/ply-event-loop.c:1311
+12 0x00005647c99bba48 in main (argc=<optimized out>, argv=<optimized out>) at ../src/main.c:2572
+
+Fix this by checking that the fd >= 0 before calling
+ply_event_loop_watch_fd ().
+
+The above backtrace is from the drm plugin, but the same problem exists
+in the frame-buffer plugin. So this fix is applied to both.
+
+Link: https://bugzilla.redhat.com/show_bug.cgi?id=2370979
+Signed-off-by: Hans de Goede <hansg@kernel.org>
+---
+ src/plugins/renderers/drm/plugin.c          | 10 ++++------
+ src/plugins/renderers/frame-buffer/plugin.c | 10 ++++------
+ 2 files changed, 8 insertions(+), 12 deletions(-)
+
+diff --git a/src/plugins/renderers/drm/plugin.c b/src/plugins/renderers/drm/plugin.c
+index 88c5770b..f1b05573 100644
+--- a/src/plugins/renderers/drm/plugin.c
++++ b/src/plugins/renderers/drm/plugin.c
+@@ -1918,18 +1918,16 @@ static bool
+ open_input_source (ply_renderer_backend_t      *backend,
+                    ply_renderer_input_source_t *input_source)
+ {
+-        int terminal_fd;
+-
+         assert (backend != NULL);
+         assert (has_input_source (backend, input_source));
+ 
+         if (!backend->input_source_is_open)
+                 watch_input_devices (backend);
+ 
+-        if (backend->terminal != NULL) {
+-                terminal_fd = ply_terminal_get_fd (backend->terminal);
+-
+-                input_source->terminal_input_watch = ply_event_loop_watch_fd (backend->loop, terminal_fd, PLY_EVENT_LOOP_FD_STATUS_HAS_DATA,
++        if (backend->terminal != NULL && ply_terminal_get_fd (backend->terminal) >= 0) {
++                input_source->terminal_input_watch = ply_event_loop_watch_fd (backend->loop,
++                                                                              ply_terminal_get_fd (backend->terminal),
++                                                                              PLY_EVENT_LOOP_FD_STATUS_HAS_DATA,
+                                                                               (ply_event_handler_t) on_terminal_key_event,
+                                                                               (ply_event_handler_t)
+                                                                               on_input_source_disconnected, input_source);
+diff --git a/src/plugins/renderers/frame-buffer/plugin.c b/src/plugins/renderers/frame-buffer/plugin.c
+index 4518a80c..ea787f29 100644
+--- a/src/plugins/renderers/frame-buffer/plugin.c
++++ b/src/plugins/renderers/frame-buffer/plugin.c
+@@ -754,18 +754,16 @@ static bool
+ open_input_source (ply_renderer_backend_t      *backend,
+                    ply_renderer_input_source_t *input_source)
+ {
+-        int terminal_fd;
+-
+         assert (backend != NULL);
+         assert (has_input_source (backend, input_source));
+ 
+         if (!backend->input_source_is_open)
+                 watch_input_devices (backend);
+ 
+-        if (backend->terminal != NULL) {
+-                terminal_fd = ply_terminal_get_fd (backend->terminal);
+-
+-                input_source->terminal_input_watch = ply_event_loop_watch_fd (backend->loop, terminal_fd, PLY_EVENT_LOOP_FD_STATUS_HAS_DATA,
++        if (backend->terminal != NULL && ply_terminal_get_fd (backend->terminal) >= 0) {
++                input_source->terminal_input_watch = ply_event_loop_watch_fd (backend->loop,
++                                                                              ply_terminal_get_fd (backend->terminal),
++                                                                              PLY_EVENT_LOOP_FD_STATUS_HAS_DATA,
+                                                                               (ply_event_handler_t) on_terminal_key_event,
+                                                                               (ply_event_handler_t)
+                                                                               on_input_source_disconnected, input_source);
+-- 
+2.49.0
+

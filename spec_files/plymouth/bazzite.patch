@@ -1,0 +1,42 @@
+diff --git a/src/plugins/splash/two-step/plugin.c b/src/plugins/splash/two-step/plugin.c
+index 802400a4..2c45821f 100644
+--- a/src/plugins/splash/two-step/plugin.c
++++ b/src/plugins/splash/two-step/plugin.c
+@@ -501,14 +501,21 @@ view_set_bgrt_background (view_t *view)
+                         return;
+                 }
+ 
+-                /* Set panel properties to their post-rotations values */
+-                if (panel_rotation == PLY_PIXEL_BUFFER_ROTATE_CLOCKWISE ||
+-                    panel_rotation == PLY_PIXEL_BUFFER_ROTATE_COUNTER_CLOCKWISE) {
++                /*
++                 * Set panel properties to their post-rotations values. Check
++                 * that the picture is not upright vertically when in portrait,
++                 * i.e., horizontally normally. This avoids buggy firmware that
++                 * prerotates the picture and then sets bgrt_rotation.
++                 */
++                if ((panel_rotation == PLY_PIXEL_BUFFER_ROTATE_CLOCKWISE ||
++                     panel_rotation == PLY_PIXEL_BUFFER_ROTATE_COUNTER_CLOCKWISE) &&
++                    (panel_height - view->plugin->background_bgrt_raw_height) / 2 != sysfs_y_offset)
++                {
+                         int temp = panel_width;
+                         panel_width = panel_height;
+                         panel_height = temp;
++                        panel_rotation = PLY_PIXEL_BUFFER_ROTATE_UPRIGHT;
+                 }
+-                panel_rotation = PLY_PIXEL_BUFFER_ROTATE_UPRIGHT;
+         }
+ 
+         if (have_panel_props) {
+@@ -588,6 +595,11 @@ view_set_bgrt_background (view_t *view)
+                 y_offset = sysfs_y_offset;
+         }
+ 
++        if (x_offset < 0)
++                x_offset = 0;
++        if (y_offset < 0)
++                y_offset = 0;
++
+         ply_trace ("using %dx%d bgrt image centered at %dx%d for %dx%d screen",
+                    width, height, x_offset, y_offset, screen_width, screen_height);
+ 

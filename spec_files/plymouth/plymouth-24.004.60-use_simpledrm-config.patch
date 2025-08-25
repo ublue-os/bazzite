@@ -1,0 +1,870 @@
+From 5784c0e2c6b3de03f20101e0825c8c99d7a5858e Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Mon, 17 Feb 2025 16:05:54 +0100
+Subject: [PATCH 1/7] ply-keyfile: Change ply_key_file_get_long () into
+ ply_key_file_get_ulong ()
+
+Change ply_key_file_get_long () into ply_key_file_get_ulong () and add
+error checking.
+
+All callers of ply_key_file_get_long () expect a positive / unsigned number.
+Rename it to ply_key_file_get_ulong ().
+
+Also add error checkig for non valid numbers and return the default value
+for these instead of 0.
+
+Note this also fixes the return value of ply_key_file_get_long () being
+a double (this is now changed to an unsigned long).
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ src/libply/ply-key-file.c                 | 21 ++++++++----
+ src/libply/ply-key-file.h                 |  8 ++---
+ src/plugins/splash/fade-throbber/plugin.c |  6 ++--
+ src/plugins/splash/space-flares/plugin.c  |  6 ++--
+ src/plugins/splash/two-step/plugin.c      | 42 +++++++++++------------
+ 5 files changed, 46 insertions(+), 37 deletions(-)
+
+diff --git a/src/libply/ply-key-file.c b/src/libply/ply-key-file.c
+index 28a4885c..c296865a 100644
+--- a/src/libply/ply-key-file.c
++++ b/src/libply/ply-key-file.c
+@@ -406,18 +406,27 @@ ply_key_file_get_double (ply_key_file_t *key_file,
+         return ply_strtod (raw_value);
+ }
+ 
+-double
+-ply_key_file_get_long (ply_key_file_t *key_file,
+-                       const char     *group,
+-                       const char     *key,
+-                       long            default_value)
++unsigned long
++ply_key_file_get_ulong (ply_key_file_t *key_file,
++                        const char     *group,
++                        const char     *key,
++                        unsigned long   default_value)
+ {
+         char *raw_value = ply_key_file_get_raw_value (key_file, group, key);
++        char *endptr = NULL;
++        unsigned long u;
+ 
+         if (!raw_value)
+                 return default_value;
+ 
+-        return strtol (raw_value, NULL, 0);
++        u = strtoul (raw_value, &endptr, 0);
++        if (*endptr != '\0') {
++                ply_trace ("group '%s' key '%s' val '%s' is not a valid unsigned number",
++                           group, key, raw_value);
++                return default_value;
++        }
++
++        return u;
+ }
+ 
+ static void
+diff --git a/src/libply/ply-key-file.h b/src/libply/ply-key-file.h
+index e240363c..487fd137 100644
+--- a/src/libply/ply-key-file.h
++++ b/src/libply/ply-key-file.h
+@@ -55,10 +55,10 @@ double ply_key_file_get_double (ply_key_file_t *key_file,
+                                 const char     *group_name,
+                                 const char     *key,
+                                 double          default_value);
+-double ply_key_file_get_long (ply_key_file_t *key_file,
+-                              const char     *group,
+-                              const char     *key,
+-                              long            default_value);
++unsigned long ply_key_file_get_ulong (ply_key_file_t *key_file,
++                                      const char     *group,
++                                      const char     *key,
++                                      unsigned long   default_value);
+ void ply_key_file_foreach_entry (ply_key_file_t             *key_file,
+                                  ply_key_file_foreach_func_t func,
+                                  void                       *user_data);
+diff --git a/src/plugins/splash/fade-throbber/plugin.c b/src/plugins/splash/fade-throbber/plugin.c
+index 44729a07..29d09593 100644
+--- a/src/plugins/splash/fade-throbber/plugin.c
++++ b/src/plugins/splash/fade-throbber/plugin.c
+@@ -254,9 +254,9 @@ create_plugin (ply_key_file_t *key_file)
+                 plugin->monospace_font = strdup ("monospace 10");
+ 
+         plugin->console_text_color =
+-                ply_key_file_get_long (key_file, "two-step",
+-                                       "ConsoleLogTextColor",
+-                                       PLY_CONSOLE_VIEWER_LOG_TEXT_COLOR);
++                ply_key_file_get_ulong (key_file, "fade-throbber",
++                                        "ConsoleLogTextColor",
++                                        PLY_CONSOLE_VIEWER_LOG_TEXT_COLOR);
+ 
+         plugin->image_dir = image_dir;
+ 
+diff --git a/src/plugins/splash/space-flares/plugin.c b/src/plugins/splash/space-flares/plugin.c
+index 9b200633..058de8e7 100644
+--- a/src/plugins/splash/space-flares/plugin.c
++++ b/src/plugins/splash/space-flares/plugin.c
+@@ -633,9 +633,9 @@ create_plugin (ply_key_file_t *key_file)
+                 plugin->monospace_font = strdup ("monospace 10");
+ 
+         plugin->console_text_color =
+-                ply_key_file_get_long (key_file, "two-step",
+-                                       "ConsoleLogTextColor",
+-                                       PLY_CONSOLE_VIEWER_LOG_TEXT_COLOR);
++                ply_key_file_get_ulong (key_file, "space-flares",
++                                        "ConsoleLogTextColor",
++                                        PLY_CONSOLE_VIEWER_LOG_TEXT_COLOR);
+ 
+         plugin->state = PLY_BOOT_SPLASH_DISPLAY_NORMAL;
+         plugin->progress = 0;
+diff --git a/src/plugins/splash/two-step/plugin.c b/src/plugins/splash/two-step/plugin.c
+index 802400a4..4896a7a5 100644
+--- a/src/plugins/splash/two-step/plugin.c
++++ b/src/plugins/splash/two-step/plugin.c
+@@ -1285,39 +1285,39 @@ create_plugin (ply_key_file_t *key_file)
+ 
+ 
+         plugin->console_text_color =
+-                ply_key_file_get_long (key_file, "two-step",
+-                                       "ConsoleLogTextColor",
+-                                       PLY_CONSOLE_VIEWER_LOG_TEXT_COLOR);
++                ply_key_file_get_ulong (key_file, "two-step",
++                                        "ConsoleLogTextColor",
++                                        PLY_CONSOLE_VIEWER_LOG_TEXT_COLOR);
+ 
+         plugin->transition_duration =
+                 ply_key_file_get_double (key_file, "two-step",
+                                          "TransitionDuration", 0.0);
+ 
+         plugin->background_start_color =
+-                ply_key_file_get_long (key_file, "two-step",
+-                                       "BackgroundStartColor",
+-                                       PLYMOUTH_BACKGROUND_START_COLOR);
++                ply_key_file_get_ulong (key_file, "two-step",
++                                        "BackgroundStartColor",
++                                        PLYMOUTH_BACKGROUND_START_COLOR);
+         plugin->background_end_color =
+-                ply_key_file_get_long (key_file, "two-step",
+-                                       "BackgroundEndColor",
+-                                       PLYMOUTH_BACKGROUND_END_COLOR);
++                ply_key_file_get_ulong (key_file, "two-step",
++                                        "BackgroundEndColor",
++                                        PLYMOUTH_BACKGROUND_END_COLOR);
+ 
+         plugin->progress_bar_bg_color =
+-                ply_key_file_get_long (key_file, "two-step",
+-                                       "ProgressBarBackgroundColor",
+-                                       0xffffff /* white */);
++                ply_key_file_get_ulong (key_file, "two-step",
++                                        "ProgressBarBackgroundColor",
++                                        0xffffff /* white */);
+         plugin->progress_bar_fg_color =
+-                ply_key_file_get_long (key_file, "two-step",
+-                                       "ProgressBarForegroundColor",
+-                                       0x000000 /* black */);
++                ply_key_file_get_ulong (key_file, "two-step",
++                                        "ProgressBarForegroundColor",
++                                        0x000000 /* black */);
+         plugin->progress_bar_width =
+-                ply_key_file_get_long (key_file, "two-step",
+-                                       "ProgressBarWidth",
+-                                       PROGRESS_BAR_WIDTH);
++                ply_key_file_get_ulong (key_file, "two-step",
++                                        "ProgressBarWidth",
++                                        PROGRESS_BAR_WIDTH);
+         plugin->progress_bar_height =
+-                ply_key_file_get_long (key_file, "two-step",
+-                                       "ProgressBarHeight",
+-                                       PROGRESS_BAR_HEIGHT);
++                ply_key_file_get_ulong (key_file, "two-step",
++                                        "ProgressBarHeight",
++                                        PROGRESS_BAR_HEIGHT);
+ 
+         load_mode_settings (plugin, key_file, "boot-up", PLY_BOOT_SPLASH_MODE_BOOT_UP);
+         load_mode_settings (plugin, key_file, "shutdown", PLY_BOOT_SPLASH_MODE_SHUTDOWN);
+-- 
+2.48.1
+
+From 0aa6607e213538f755b606e1d2d47ef428c4f475 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 4 Mar 2025 12:50:53 +0100
+Subject: [PATCH 2/7] ply-utils: Add ply_kernel_command_line_get_ulong ()
+ helper
+
+Add a ply_kernel_command_line_get_ulong () helper mirroring
+ply_key_file_get_ulong ().
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ src/libply/ply-utils.c | 21 +++++++++++++++++++++
+ src/libply/ply-utils.h |  2 ++
+ 2 files changed, 23 insertions(+)
+
+diff --git a/src/libply/ply-utils.c b/src/libply/ply-utils.c
+index 538f6725..f71568b3 100644
+--- a/src/libply/ply-utils.c
++++ b/src/libply/ply-utils.c
+@@ -1247,6 +1247,27 @@ ply_kernel_command_line_get_key_value (const char *key)
+         return strndup (value, strcspn (value, " \n"));
+ }
+ 
++unsigned long
++ply_kernel_command_line_get_ulong (const char *key, unsigned long default_value)
++{
++        const char *raw_value;
++        char *endptr = NULL;
++        unsigned long u;
++
++        raw_value = ply_kernel_command_line_get_string_after_prefix (key);
++        if (raw_value == NULL || raw_value[0] == '\0')
++                return default_value;
++
++        u = strtoul (raw_value, &endptr, 0);
++        if (!isspace ((int) *endptr) && *endptr != '\0') {
++                ply_trace ("'%s' argument '%s' is not a valid unsigned number",
++                           key, raw_value);
++                return default_value;
++        }
++
++        return u;
++}
++
+ void
+ ply_kernel_command_line_override (const char *command_line)
+ {
+diff --git a/src/libply/ply-utils.h b/src/libply/ply-utils.h
+index 86d66384..e0074d82 100644
+--- a/src/libply/ply-utils.h
++++ b/src/libply/ply-utils.h
+@@ -175,6 +175,8 @@ const char *ply_kernel_command_line_get_string_after_prefix (const char *prefix)
+ bool ply_kernel_command_line_has_argument (const char *argument);
+ void ply_kernel_command_line_override (const char *command_line);
+ char *ply_kernel_command_line_get_key_value (const char *key);
++unsigned long ply_kernel_command_line_get_ulong (const char *key,
++                                                 unsigned long default_value);
+ 
+ double ply_strtod (const char *str);
+ 
+-- 
+2.48.1
+
+From fd744373d44e3733ea66f632a665de21e5bd3bed Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Mon, 17 Feb 2025 16:15:50 +0100
+Subject: [PATCH 3/7] main: Do not override device_scale from lower-priorities
+ config files
+
+main () calls functions to get the theme and other config settings from
+the commandline / config files in order of *descending* priority:
+
+1. find_override_splash ()             /* Parses commandline */
+2. find_system_default_splash ()       /* /etc/plymouth/plymouthd.conf */
+3. find_distribution_default_splash () /* /usr/share/plymouth/plymouthd.defaults */
+
+To avoid the later parsed config files *with lower priorities* overriding
+earlier settings the code initializes the config variables to NAN and only
+sets them if they are still set to NAN.
+
+Except for the device_scale handling, where load_settings () always calls
+ply_set_device_scale () overriding earlier values, the commandline
+handling for "plymouth.force-scale=..." is done separately later so that
+the commandline does take priority over the config files, but since
+/usr/share/plymouth/plymouthd.defaults is parsed last any DeviceScale
+setting there will override /etc/plymouth/plymouthd.conf settings.
+
+Fix this by following the pattern used by start_time/splash_delay/
+device_timeout, add a device_scale variable initialized to -1 and
+only override that variable if it is at -1.
+
+This also allows removing find_force_scale () moving the commandline
+parsing to find_override_splash () together with the other commandline
+handling.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ src/main.c | 26 ++++++++------------------
+ 1 file changed, 8 insertions(+), 18 deletions(-)
+
+diff --git a/src/main.c b/src/main.c
+index 81e34c54..dc853f2c 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -101,6 +101,7 @@ typedef struct
+         double                  start_time;
+         double                  splash_delay;
+         double                  device_timeout;
++        int                     device_scale;
+ 
+         uint32_t                no_boot_log : 1;
+         uint32_t                showing_details : 1;
+@@ -307,7 +308,6 @@ load_settings (state_t    *state,
+ {
+         ply_key_file_t *key_file = NULL;
+         bool settings_loaded = false;
+-        char *scale_string = NULL;
+         char *splash_string = NULL;
+ 
+         ply_trace ("Trying to load %s", path);
+@@ -336,12 +336,8 @@ load_settings (state_t    *state,
+                 ply_trace ("Device timeout is set to %lf", state->device_timeout);
+         }
+ 
+-        scale_string = ply_key_file_get_value (key_file, "Daemon", "DeviceScale");
+-
+-        if (scale_string != NULL) {
+-                ply_set_device_scale (strtoul (scale_string, NULL, 0));
+-                free (scale_string);
+-        }
++        if (state->device_scale == -1)
++                state->device_scale = ply_key_file_get_ulong (key_file, "Daemon", "DeviceScale", -1);
+ 
+         settings_loaded = true;
+ out:
+@@ -401,17 +397,9 @@ find_override_splash (state_t *state)
+                 if (delay_string != NULL)
+                         state->splash_delay = ply_strtod (delay_string);
+         }
+-}
+ 
+-static void
+-find_force_scale (state_t *state)
+-{
+-        const char *scale_string;
+-
+-        scale_string = ply_kernel_command_line_get_string_after_prefix ("plymouth.force-scale=");
+-
+-        if (scale_string != NULL)
+-                ply_set_device_scale (strtoul (scale_string, NULL, 0));
++        if (state->device_scale == -1)
++                state->device_scale = ply_kernel_command_line_get_ulong ("plymouth.force-scale=", -1);
+ }
+ 
+ static void
+@@ -2513,6 +2501,7 @@ main (int    argc,
+         state.progress = ply_progress_new ();
+         state.splash_delay = NAN;
+         state.device_timeout = NAN;
++        state.device_scale = -1;
+ 
+         ply_progress_load_cache (state.progress,
+                                  get_cache_file_for_mode (state.mode));
+@@ -2553,7 +2542,8 @@ main (int    argc,
+                 state.splash_delay = NAN;
+         }
+ 
+-        find_force_scale (&state);
++        if (state.device_scale != -1)
++                ply_set_device_scale (state.device_scale);
+ 
+         load_devices (&state, device_manager_flags);
+ 
+-- 
+2.48.1
+
+From 022108fa0529aef6be05264b86efd60c6cceadb7 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Mon, 17 Feb 2025 15:47:11 +0100
+Subject: [PATCH 4/7] Make simpledrm selection configurable from config file
+
+Move the handling of the "plymouth.use-simpledrm" commandline argument from
+ply-device-manager to main.c, and allow specifying its default value in
+the "[Daemon]" section of the config-file using a new UseSimpledrm keyword.
+
+Extend the "plymouth.use-simpledrm" handling to also accept a value e.g.
+"plymouth.use-simpledrm=0" to allow overriding a "UseSimpledrm=1" in
+the configfile.
+
+And pass the use-simpledrm value to ply_device_manager_new () through a new
+PLY_DEVICE_MANAGER_FLAGS_USE_SIMPLEDRM flag.
+
+This also moves the kernel commandline handling to src/main.c grouping
+it together with most of the other commandline handling.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ src/libply-splash-core/ply-device-manager.c | 22 +++++----------------
+ src/libply-splash-core/ply-device-manager.h |  3 ++-
+ src/main.c                                  | 18 +++++++++++++++++
+ 3 files changed, 25 insertions(+), 18 deletions(-)
+
+diff --git a/src/libply-splash-core/ply-device-manager.c b/src/libply-splash-core/ply-device-manager.c
+index 1f41e1b2..cd97d30a 100644
+--- a/src/libply-splash-core/ply-device-manager.c
++++ b/src/libply-splash-core/ply-device-manager.c
+@@ -346,7 +346,8 @@ syspath_is_simpledrm (const char *syspath)
+ }
+ 
+ static bool
+-verify_drm_device (struct udev_device *device)
++verify_drm_device (ply_device_manager_t *manager,
++                   struct udev_device   *device)
+ {
+         /*
+          * Simple-framebuffer devices driven by simpledrm lack information
+@@ -359,21 +360,7 @@ verify_drm_device (struct udev_device *device)
+         if (!syspath_is_simpledrm (udev_device_get_syspath (device)))
+                 return true; /* Not a SimpleDRM device */
+ 
+-        /*
+-         * With nomodeset, no native drivers will load, so SimpleDRM devices
+-         * should be used immediately.
+-         */
+-        if (ply_kernel_command_line_has_argument ("nomodeset"))
+-                return true;
+-
+-        /*
+-         * Some firmwares leave the panel black at boot. Allow enabling SimpleDRM
+-         * use from the cmdline to show something to the user ASAP.
+-         */
+-        if (ply_kernel_command_line_has_argument ("plymouth.use-simpledrm"))
+-                return true;
+-
+-        return false;
++        return manager->flags & PLY_DEVICE_MANAGER_FLAGS_USE_SIMPLEDRM;
+ }
+ 
+ static bool
+@@ -399,7 +386,8 @@ create_devices_for_udev_device (ply_device_manager_t *manager,
+                 ply_trace ("device subsystem is %s", subsystem);
+ 
+                 if (strcmp (subsystem, SUBSYSTEM_DRM) == 0) {
+-                        if (!manager->device_timeout_elapsed && !verify_drm_device (device)) {
++                        if (!manager->device_timeout_elapsed &&
++                            !verify_drm_device (manager, device)) {
+                                 ply_trace ("ignoring since we only handle SimpleDRM devices after timeout");
+                                 return false;
+                         }
+diff --git a/src/libply-splash-core/ply-device-manager.h b/src/libply-splash-core/ply-device-manager.h
+index 820ecc39..dea30917 100644
+--- a/src/libply-splash-core/ply-device-manager.h
++++ b/src/libply-splash-core/ply-device-manager.h
+@@ -33,7 +33,8 @@ typedef enum
+         PLY_DEVICE_MANAGER_FLAGS_IGNORE_SERIAL_CONSOLES = 1 << 0,
+         PLY_DEVICE_MANAGER_FLAGS_IGNORE_UDEV            = 1 << 1,
+         PLY_DEVICE_MANAGER_FLAGS_SKIP_RENDERERS         = 1 << 2,
+-        PLY_DEVICE_MANAGER_FLAGS_FORCE_FRAME_BUFFER     = 1 << 3
++        PLY_DEVICE_MANAGER_FLAGS_FORCE_FRAME_BUFFER     = 1 << 3,
++        PLY_DEVICE_MANAGER_FLAGS_USE_SIMPLEDRM          = 1 << 4,
+ } ply_device_manager_flags_t;
+ 
+ typedef struct _ply_device_manager ply_device_manager_t;
+diff --git a/src/main.c b/src/main.c
+index dc853f2c..4e5b4ca2 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -102,6 +102,7 @@ typedef struct
+         double                  splash_delay;
+         double                  device_timeout;
+         int                     device_scale;
++        int                     use_simpledrm;
+ 
+         uint32_t                no_boot_log : 1;
+         uint32_t                showing_details : 1;
+@@ -339,6 +340,9 @@ load_settings (state_t    *state,
+         if (state->device_scale == -1)
+                 state->device_scale = ply_key_file_get_ulong (key_file, "Daemon", "DeviceScale", -1);
+ 
++        if (state->use_simpledrm == -1)
++                state->use_simpledrm = ply_key_file_get_ulong (key_file, "Daemon", "UseSimpledrm", -1);
++
+         settings_loaded = true;
+ out:
+         free (splash_string);
+@@ -400,6 +404,16 @@ find_override_splash (state_t *state)
+ 
+         if (state->device_scale == -1)
+                 state->device_scale = ply_kernel_command_line_get_ulong ("plymouth.force-scale=", -1);
++
++        if (state->use_simpledrm == -1)
++                state->use_simpledrm = ply_kernel_command_line_get_ulong ("plymouth.use-simpledrm=", -1);
++
++        if (state->use_simpledrm == -1) {
++                if (ply_kernel_command_line_has_argument ("plymouth.use-simpledrm"))
++                        state->use_simpledrm = 1;
++                else if (ply_kernel_command_line_has_argument ("nomodeset"))
++                        state->use_simpledrm = 1;
++        }
+ }
+ 
+ static void
+@@ -2502,6 +2516,7 @@ main (int    argc,
+         state.splash_delay = NAN;
+         state.device_timeout = NAN;
+         state.device_scale = -1;
++        state.use_simpledrm = -1;
+ 
+         ply_progress_load_cache (state.progress,
+                                  get_cache_file_for_mode (state.mode));
+@@ -2545,6 +2560,9 @@ main (int    argc,
+         if (state.device_scale != -1)
+                 ply_set_device_scale (state.device_scale);
+ 
++        if (state.use_simpledrm >= 1)
++                device_manager_flags |= PLY_DEVICE_MANAGER_FLAGS_USE_SIMPLEDRM;
++
+         load_devices (&state, device_manager_flags);
+ 
+         ply_trace ("entering event loop");
+-- 
+2.48.1
+
+From 2215e66c41dd9f0294927fa26af297b878817bae Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 4 Mar 2025 15:22:45 +0100
+Subject: [PATCH 5/7] libply-splash-core: Add a force argument to
+ ply_renderer_open ()
+
+Sometimes a renderer plugin may want to refuse to open a device
+because it has suboptimal settings, like e.g. an EFI framebuffer
+based simpledrm when the EFI firmware has set the resolution to
+800x600 instead of the native panel resolution.
+
+In such a case it might be better to wait for another better
+/dev/dri/card# device to show up.
+
+This skipping of devices by renderer plugins needs to be configurable
+in case the timeout hits, or the user wishes to override things.
+
+Add a force argument to ply_renderer_open () to allow overriding
+this behavior. User can force using simpledrm by passing
+plymouth.use-simpledrm=2 on the kernel commandline or by setting
+UseSimpledrm=2 in the config-file.
+
+This flag is passed to the renderer plugin's query_device () method
+as that is the best place for the renderer plugin to determine
+a device's usability.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ src/libply-splash-core/ply-device-manager.c  |  5 ++++-
+ src/libply-splash-core/ply-device-manager.h  |  1 +
+ src/libply-splash-core/ply-renderer-plugin.h |  3 ++-
+ src/libply-splash-core/ply-renderer.c        | 15 +++++++++------
+ src/libply-splash-core/ply-renderer.h        |  3 ++-
+ src/main.c                                   |  5 ++++-
+ src/plugins/renderers/drm/plugin.c           |  3 ++-
+ src/plugins/renderers/frame-buffer/plugin.c  |  3 ++-
+ src/plugins/renderers/x11/plugin.c           |  3 ++-
+ 9 files changed, 28 insertions(+), 13 deletions(-)
+
+diff --git a/src/libply-splash-core/ply-device-manager.c b/src/libply-splash-core/ply-device-manager.c
+index 79c44283..fd54d3a9 100644
+--- a/src/libply-splash-core/ply-device-manager.c
++++ b/src/libply-splash-core/ply-device-manager.c
+@@ -1120,9 +1120,12 @@ create_devices_for_terminal_and_renderer_type (ply_device_manager_t *manager,
+ 
+         if (renderer_type != PLY_RENDERER_TYPE_NONE) {
+                 ply_renderer_t *old_renderer = NULL;
++                bool force = manager->device_timeout_elapsed ||
++                             (manager->flags & PLY_DEVICE_MANAGER_FLAGS_FORCE_OPEN);
++
+                 renderer = ply_renderer_new (renderer_type, device_path, terminal);
+ 
+-                if (renderer != NULL && !ply_renderer_open (renderer)) {
++                if (renderer != NULL && !ply_renderer_open (renderer, force)) {
+                         ply_trace ("could not open renderer for %s", device_path);
+                         ply_renderer_free (renderer);
+                         renderer = NULL;
+diff --git a/src/libply-splash-core/ply-device-manager.h b/src/libply-splash-core/ply-device-manager.h
+index dea30917..fb5e1cf7 100644
+--- a/src/libply-splash-core/ply-device-manager.h
++++ b/src/libply-splash-core/ply-device-manager.h
+@@ -35,6 +35,7 @@ typedef enum
+         PLY_DEVICE_MANAGER_FLAGS_SKIP_RENDERERS         = 1 << 2,
+         PLY_DEVICE_MANAGER_FLAGS_FORCE_FRAME_BUFFER     = 1 << 3,
+         PLY_DEVICE_MANAGER_FLAGS_USE_SIMPLEDRM          = 1 << 4,
++        PLY_DEVICE_MANAGER_FLAGS_FORCE_OPEN             = 1 << 5,
+ } ply_device_manager_flags_t;
+ 
+ typedef struct _ply_device_manager ply_device_manager_t;
+diff --git a/src/libply-splash-core/ply-renderer-plugin.h b/src/libply-splash-core/ply-renderer-plugin.h
+index 483ad27c..d9f31de9 100644
+--- a/src/libply-splash-core/ply-renderer-plugin.h
++++ b/src/libply-splash-core/ply-renderer-plugin.h
+@@ -43,7 +43,8 @@ typedef struct
+         void (*destroy_backend)(ply_renderer_backend_t *backend);
+         bool (*open_device)(ply_renderer_backend_t *backend);
+         void (*close_device)(ply_renderer_backend_t *backend);
+-        bool (*query_device)(ply_renderer_backend_t *backend);
++        bool (*query_device)(ply_renderer_backend_t *backend,
++                             bool                    force);
+         bool (*handle_change_event)(ply_renderer_backend_t *backend);
+         bool (*map_to_device)(ply_renderer_backend_t *backend);
+         void (*unmap_from_device)(ply_renderer_backend_t *backend);
+diff --git a/src/libply-splash-core/ply-renderer.c b/src/libply-splash-core/ply-renderer.c
+index 61c59ccc..2c555f46 100644
+--- a/src/libply-splash-core/ply-renderer.c
++++ b/src/libply-splash-core/ply-renderer.c
+@@ -199,12 +199,13 @@ ply_renderer_close_device (ply_renderer_t *renderer)
+ }
+ 
+ static bool
+-ply_renderer_query_device (ply_renderer_t *renderer)
++ply_renderer_query_device (ply_renderer_t *renderer,
++                           bool            force)
+ {
+         assert (renderer != NULL);
+         assert (renderer->plugin_interface != NULL);
+ 
+-        return renderer->plugin_interface->query_device (renderer->backend);
++        return renderer->plugin_interface->query_device (renderer->backend, force);
+ }
+ 
+ static bool
+@@ -236,7 +237,8 @@ ply_renderer_unmap_from_device (ply_renderer_t *renderer)
+ 
+ static bool
+ ply_renderer_open_plugin (ply_renderer_t *renderer,
+-                          const char     *plugin_path)
++                          const char     *plugin_path,
++                          bool            force)
+ {
+         ply_trace ("trying to open renderer plugin %s", plugin_path);
+ 
+@@ -250,7 +252,7 @@ ply_renderer_open_plugin (ply_renderer_t *renderer,
+                 return false;
+         }
+ 
+-        if (!ply_renderer_query_device (renderer)) {
++        if (!ply_renderer_query_device (renderer, force)) {
+                 ply_trace ("could not query rendering device for plugin %s",
+                            plugin_path);
+                 ply_renderer_close_device (renderer);
+@@ -263,7 +265,8 @@ ply_renderer_open_plugin (ply_renderer_t *renderer,
+ }
+ 
+ bool
+-ply_renderer_open (ply_renderer_t *renderer)
++ply_renderer_open (ply_renderer_t *renderer,
++                   bool            force)
+ {
+         int i;
+ 
+@@ -284,7 +287,7 @@ ply_renderer_open (ply_renderer_t *renderer)
+         for (i = 0; known_plugins[i].type != PLY_RENDERER_TYPE_NONE; i++) {
+                 if (renderer->type == known_plugins[i].type ||
+                     renderer->type == PLY_RENDERER_TYPE_AUTO) {
+-                        if (ply_renderer_open_plugin (renderer, known_plugins[i].path)) {
++                        if (ply_renderer_open_plugin (renderer, known_plugins[i].path, force)) {
+                                 renderer->is_active = true;
+                                 goto out;
+                         }
+diff --git a/src/libply-splash-core/ply-renderer.h b/src/libply-splash-core/ply-renderer.h
+index cfd4f2dd..5ba18118 100644
+--- a/src/libply-splash-core/ply-renderer.h
++++ b/src/libply-splash-core/ply-renderer.h
+@@ -55,7 +55,8 @@ ply_renderer_t *ply_renderer_new (ply_renderer_type_t renderer_type,
+                                   const char         *device_name,
+                                   ply_terminal_t     *terminal);
+ void ply_renderer_free (ply_renderer_t *renderer);
+-bool ply_renderer_open (ply_renderer_t *renderer);
++bool ply_renderer_open (ply_renderer_t *renderer,
++                        bool            force);
+ void ply_renderer_close (ply_renderer_t *renderer);
+ /* Returns true when the heads have changed as a result of the change event */
+ bool ply_renderer_handle_change_event (ply_renderer_t *renderer);
+diff --git a/src/main.c b/src/main.c
+index 56d366eb..d9ba7340 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -412,7 +412,7 @@ find_override_splash (state_t *state)
+                 if (ply_kernel_command_line_has_argument ("plymouth.use-simpledrm"))
+                         state->use_simpledrm = 1;
+                 else if (ply_kernel_command_line_has_argument ("nomodeset"))
+-                        state->use_simpledrm = 1;
++                        state->use_simpledrm = 2;
+         }
+ }
+ 
+@@ -2582,6 +2582,9 @@ main (int    argc,
+         if (state.use_simpledrm >= 1)
+                 device_manager_flags |= PLY_DEVICE_MANAGER_FLAGS_USE_SIMPLEDRM;
+ 
++        if (state.use_simpledrm >= 2)
++                device_manager_flags |= PLY_DEVICE_MANAGER_FLAGS_FORCE_OPEN;
++
+         load_devices (&state, device_manager_flags);
+ 
+         ply_trace ("entering event loop");
+diff --git a/src/plugins/renderers/drm/plugin.c b/src/plugins/renderers/drm/plugin.c
+index e09c7b3e..2fddaee4 100644
+--- a/src/plugins/renderers/drm/plugin.c
++++ b/src/plugins/renderers/drm/plugin.c
+@@ -1563,7 +1563,8 @@ has_32bpp_support (ply_renderer_backend_t *backend)
+ }
+ 
+ static bool
+-query_device (ply_renderer_backend_t *backend)
++query_device (ply_renderer_backend_t *backend,
++              bool                    force)
+ {
+         bool ret = true;
+ 
+diff --git a/src/plugins/renderers/frame-buffer/plugin.c b/src/plugins/renderers/frame-buffer/plugin.c
+index 8f341d07..7d74bdc2 100644
+--- a/src/plugins/renderers/frame-buffer/plugin.c
++++ b/src/plugins/renderers/frame-buffer/plugin.c
+@@ -420,7 +420,8 @@ static const char *get_visual_name (int visual)
+ }
+ 
+ static bool
+-query_device (ply_renderer_backend_t *backend)
++query_device (ply_renderer_backend_t *backend,
++              bool                    force)
+ {
+         struct fb_var_screeninfo variable_screen_info;
+         struct fb_fix_screeninfo fixed_screen_info;
+diff --git a/src/plugins/renderers/x11/plugin.c b/src/plugins/renderers/x11/plugin.c
+index a673a40d..87aa7a93 100644
+--- a/src/plugins/renderers/x11/plugin.c
++++ b/src/plugins/renderers/x11/plugin.c
+@@ -284,7 +284,8 @@ create_fullscreen_single_head_setup (ply_renderer_backend_t *backend)
+ }
+ 
+ static bool
+-query_device (ply_renderer_backend_t *backend)
++query_device (ply_renderer_backend_t *backend,
++              bool                    force)
+ {
+         assert (backend != NULL);
+ 
+-- 
+2.48.1
+
+From 83926cec4cede0349e4b02db76adb6c927176e94 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 4 Mar 2025 18:26:01 +0100
+Subject: [PATCH 6/7] drm: Reject 800x600 and 1024x768 simpledrm drm devices
+
+Sometimes the EFI firmware initializes the framebuffer at a very low
+resolution rather then at the panel's native resolution.
+
+In this case it is better to wait for the native GPU driver to load
+rather then rendering a not-so-pretty splash at this very low resolution.
+
+Reject these low resolutions for simpledrm devices except when
+query_device () is called with force=true.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ src/plugins/renderers/drm/plugin.c | 34 ++++++++++++++++++++++++++++--
+ 1 file changed, 32 insertions(+), 2 deletions(-)
+
+diff --git a/src/plugins/renderers/drm/plugin.c b/src/plugins/renderers/drm/plugin.c
+index 36853e77..5f487fdc 100644
+--- a/src/plugins/renderers/drm/plugin.c
++++ b/src/plugins/renderers/drm/plugin.c
+@@ -1391,12 +1391,37 @@ check_if_output_has_changed (ply_renderer_backend_t *backend,
+         return true;
+ }
+ 
++/* Sometimes the EFI firmware sets up the framebuffer at 800x600 or 1024x768
++ * instead of the native panel resolution. In this case it is better to wait
++ * for the native driver to load, so we return false from query_device ().
++ */
++static bool
++check_simpledrm_resolution (ply_renderer_backend_t *backend,
++                            ply_output_t           *output)
++{
++        if (!backend->simpledrm)
++                return true;
++
++        if (!output->connected)
++                return true;
++
++        if ((output->mode.hdisplay == 800 && output->mode.vdisplay == 600) ||
++            (output->mode.hdisplay == 1024 && output->mode.vdisplay == 768)) {
++                ply_trace ("Skipping simpledrm device with mode %dx%d",
++                           output->mode.hdisplay, output->mode.vdisplay);
++                return false;
++        }
++
++        return true;
++}
++
+ /* Update our outputs array to match the hardware state and
+  * create and/or remove heads as necessary.
+  * Returns true if any heads were modified.
+  */
+ static bool
+ create_heads_for_active_connectors (ply_renderer_backend_t *backend,
++                                    bool                    force,
+                                     bool                    change)
+ {
+         int i, j, number_of_setup_outputs, outputs_len;
+@@ -1420,6 +1445,11 @@ create_heads_for_active_connectors (ply_renderer_backend_t *backend,
+         for (i = 0; i < outputs_len; i++) {
+                 get_output_info (backend, backend->resources->connectors[i], &outputs[i]);
+ 
++                if (!force && !check_simpledrm_resolution (backend, &outputs[i])) {
++                        free (outputs);
++                        return false;
++                }
++
+                 if (check_if_output_has_changed (backend, &outputs[i]))
+                         changed = true;
+ 
+@@ -1577,7 +1607,7 @@ query_device (ply_renderer_backend_t *backend, bool force)
+                 return false;
+         }
+ 
+-        if (!create_heads_for_active_connectors (backend, false)) {
++        if (!create_heads_for_active_connectors (backend, force, false)) {
+                 ply_trace ("Could not initialize heads");
+                 ret = false;
+         } else if (!has_32bpp_support (backend)) {
+@@ -1602,7 +1632,7 @@ handle_change_event (ply_renderer_backend_t *backend)
+                 return false;
+         }
+ 
+-        ret = create_heads_for_active_connectors (backend, true);
++        ret = create_heads_for_active_connectors (backend, true, true);
+ 
+         drmModeFreeResources (backend->resources);
+         backend->resources = NULL;
+-- 
+2.48.1
+
+From 21e6f602e1917f469bc316b6b60aceba22d38834 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Thu, 6 Mar 2025 17:25:12 +0100
+Subject: [PATCH 7/7] ply-device-manager: Update verify_drm_device () comment
+
+The comment about why SimpleDRM devices should be skipped is no longer
+accurate, the kernel does provide rotation info now; and plymouth now
+has heuristics to guess the device-scale.
+
+If SimpleDRM devices should be used or not now mostly is a user
+preference.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ src/libply-splash-core/ply-device-manager.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
+
+diff --git a/src/libply-splash-core/ply-device-manager.c b/src/libply-splash-core/ply-device-manager.c
+index 8befdb16..dbb6d861 100644
+--- a/src/libply-splash-core/ply-device-manager.c
++++ b/src/libply-splash-core/ply-device-manager.c
+@@ -345,18 +345,11 @@ syspath_is_simpledrm (const char *syspath)
+         return ply_string_has_suffix (syspath, "simple-framebuffer.0/drm/card0");
+ }
+ 
++/* Only use SimpleDRM devices if requested to do so */
+ static bool
+ verify_drm_device (ply_device_manager_t *manager,
+                    struct udev_device   *device)
+ {
+-        /*
+-         * Simple-framebuffer devices driven by simpledrm lack information
+-         * like panel-rotation info and physical size, causing the splash
+-         * to briefly render on its side / without HiDPI scaling, switching
+-         * to the correct rendering when the native driver loads.
+-         * To avoid this treat simpledrm devices as fbdev devices and only
+-         * use them after the timeout.
+-         */
+         if (!syspath_is_simpledrm (udev_device_get_syspath (device)))
+                 return true; /* Not a SimpleDRM device */
+ 
+-- 
+2.48.1
+

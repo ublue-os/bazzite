@@ -1,0 +1,58 @@
+From 289c8187e3f8e6c2796725bdf4c594d2ea7d0000 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hansg@kernel.org>
+Date: Thu, 3 Jul 2025 12:23:57 +0200
+Subject: [PATCH 1/2] two-step: Remove ':' at the end of (passphrase) prompt
+ below text entry field
+
+When asked for e.g. a disk unlock passphrase, plymouth will be passed
+a prompt like: "Please enter passphrase for disk $DISK:" the ':' in
+the end makes sense when asking for this a text console, but this makes
+less sense in the two-step disk unlock screen where the text is below
+the passphrase entry field.
+
+Strip any ':' char at the prompt's end on two-step's disk unlock screen.
+
+Closes #294
+
+Link: https://bugzilla.redhat.com/show_bug.cgi?id=2356893
+Signed-off-by: Hans de Goede <hansg@kernel.org>
+---
+ src/plugins/splash/two-step/plugin.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/src/plugins/splash/two-step/plugin.c b/src/plugins/splash/two-step/plugin.c
+index 65789bed..01868173 100644
+--- a/src/plugins/splash/two-step/plugin.c
++++ b/src/plugins/splash/two-step/plugin.c
+@@ -998,8 +998,8 @@ view_show_prompt (view_t     *view,
+         unsigned long screen_width, screen_height, entry_width, entry_height;
+         unsigned long keyboard_indicator_width, keyboard_indicator_height;
+         bool show_keyboard_indicators = false;
++        int x, y, prompt_len;
+         long dialog_bottom;
+-        int x, y;
+ 
+         assert (view != NULL);
+ 
+@@ -1053,7 +1053,17 @@ view_show_prompt (view_t     *view,
+ 
+         dialog_bottom = view->dialog_area.y + view->dialog_area.height;
+ 
+-        if (prompt != NULL) {
++        if (prompt != NULL && prompt[0]) {
++                char buf[128];
++
++                /* Strip ':' at end of prompt since we show it below the text-entry */
++                prompt_len = strlen (prompt);
++                if (prompt[prompt_len - 1] == ':' && prompt_len < sizeof(buf)) {
++                        strcpy (buf, prompt);
++                        buf[prompt_len - 1] = 0;
++                        prompt = buf;
++                }
++
+                 ply_label_set_text (view->label, prompt);
+ 
+                 /* We center the prompt in the middle and use 80% of the horizontal space */
+-- 
+2.49.0
+

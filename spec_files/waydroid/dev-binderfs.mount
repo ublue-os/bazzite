@@ -1,7 +1,0 @@
-[Unit]
-Description=Mount binderfs partition
-
-[Mount]
-What=binder
-Where=/dev/binderfs
-Type=binder

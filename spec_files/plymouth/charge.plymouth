@@ -1,0 +1,13 @@
+[Plymouth Theme]
+Name=Charge
+Description=A theme that features the shadowy hull of a Fedora logo charge up and and finally burst into into full form.
+ModuleName=two-step
+
+[two-step]
+ImageDir=/usr/share/plymouth/themes/charge
+HorizontalAlignment=.5
+VerticalAlignment=.5
+Transition=none
+TransitionDuration=0.0
+BackgroundStartColor=0x202020
+BackgroundEndColor=0x202020

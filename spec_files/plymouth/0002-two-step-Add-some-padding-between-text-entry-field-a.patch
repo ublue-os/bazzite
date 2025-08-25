@@ -1,0 +1,36 @@
+From 05ab2139d29b46e7ca29d1c49d816c26b677dac9 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hansg@kernel.org>
+Date: Thu, 3 Jul 2025 12:28:41 +0200
+Subject: [PATCH 2/2] two-step: Add some padding between text-entry field and
+ prompt
+
+Two-step's disk unlock screen shows the prompt text directly below
+the text entry field without any padding which looks bad.
+
+Add 5 pixels padding to make things look better.
+
+Closes #294
+
+Link: https://bugzilla.redhat.com/show_bug.cgi?id=2356893
+Signed-off-by: Hans de Goede <hansg@kernel.org>
+---
+ src/plugins/splash/two-step/plugin.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/plugins/splash/two-step/plugin.c b/src/plugins/splash/two-step/plugin.c
+index 01868173..d53e008e 100644
+--- a/src/plugins/splash/two-step/plugin.c
++++ b/src/plugins/splash/two-step/plugin.c
+@@ -1071,6 +1071,9 @@ view_show_prompt (view_t     *view,
+                 ply_label_set_alignment (view->label, PLY_LABEL_ALIGN_CENTER);
+                 ply_label_set_width (view->label, label_width);
+ 
++                /* Add 5 pixels padding between text-entry field and prompt */
++                dialog_bottom += 5;
++
+                 x = (screen_width - label_width) / 2;
+                 y = dialog_bottom;
+ 
+-- 
+2.49.0
+

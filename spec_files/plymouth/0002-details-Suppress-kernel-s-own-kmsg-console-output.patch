@@ -1,0 +1,38 @@
+From 6d7b3c3342e80f94410165c72bb2d907624e3fff Mon Sep 17 00:00:00 2001
+From: Adrian Vovk <adrianvovk@gmail.com>
+Date: Fri, 9 May 2025 15:17:48 -0400
+Subject: [PATCH 2/3] details: Suppress kernel's own kmsg console output
+
+Plymouth forwards /dev/console and /dev/kmsg to all consoles (and to the
+graphical splash). With the details plugin, we would do this without
+suppressing the kernel's own output first. This would lead to duplicate
+log entries
+---
+ src/plugins/splash/details/plugin.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/plugins/splash/details/plugin.c b/src/plugins/splash/details/plugin.c
+index 9e150b5c..c7674fc0 100644
+--- a/src/plugins/splash/details/plugin.c
++++ b/src/plugins/splash/details/plugin.c
+@@ -308,6 +308,8 @@ show_splash_screen (ply_boot_splash_plugin_t *plugin,
+                                        detach_from_event_loop,
+                                        plugin);
+ 
++        ply_show_new_kernel_messages (false);
++
+         if (boot_buffer) {
+                 plugin->boot_buffer = boot_buffer;
+ 
+@@ -350,6 +352,8 @@ hide_splash_screen (ply_boot_splash_plugin_t *plugin,
+                                                detach_from_event_loop,
+                                                plugin);
+         detach_from_event_loop (plugin);
++
++        ply_show_new_kernel_messages (true);
+ }
+ 
+ static void
+-- 
+2.49.0
+

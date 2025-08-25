@@ -1,0 +1,108 @@
+From 709f21e80199ee51badff2d9b5dc6bae8af2a1a1 Mon Sep 17 00:00:00 2001
+From: n3rdopolis <bluescreen_avenger@verizon.net>
+Date: Wed, 31 Jan 2024 08:38:38 -0500
+Subject: [PATCH] renderers: Do not assume all keyboards have LEDs
+
+This is an attempt to fix #245
+---
+ src/plugins/renderers/drm/plugin.c          | 22 +++++++++++++++++++--
+ src/plugins/renderers/frame-buffer/plugin.c | 22 +++++++++++++++++++--
+ 2 files changed, 40 insertions(+), 4 deletions(-)
+
+diff --git a/src/plugins/renderers/drm/plugin.c b/src/plugins/renderers/drm/plugin.c
+index 54cfe874..2fbb6b85 100644
+--- a/src/plugins/renderers/drm/plugin.c
++++ b/src/plugins/renderers/drm/plugin.c
+@@ -1972,6 +1972,17 @@ get_panel_properties (ply_renderer_backend_t      *backend,
+         return true;
+ }
+ 
++static ply_input_device_t *
++get_any_input_device (ply_renderer_backend_t *backend)
++{
++        ply_list_node_t *node = ply_list_get_first_node (backend->input_source.input_devices);
++
++        if (node != NULL)
++                return ply_list_node_get_data (node);
++
++        return NULL;
++}
++
+ static ply_input_device_t *
+ get_any_input_device_with_leds (ply_renderer_backend_t *backend)
+ {
+@@ -1994,6 +2005,9 @@ get_capslock_state (ply_renderer_backend_t *backend)
+ {
+         if (using_input_device (&backend->input_source)) {
+                 ply_input_device_t *dev = get_any_input_device_with_leds (backend);
++                if (!dev)
++                        return false;
++
+                 return ply_input_device_get_capslock_state (dev);
+         }
+         if (!backend->terminal)
+@@ -2006,8 +2020,12 @@ static const char *
+ get_keymap (ply_renderer_backend_t *backend)
+ {
+         if (using_input_device (&backend->input_source)) {
+-                ply_input_device_t *dev = get_any_input_device_with_leds (backend);
+-                const char *keymap = ply_input_device_get_keymap (dev);
++                const char *keymap;
++                ply_input_device_t *dev = get_any_input_device (backend);
++                if (!dev)
++                        return NULL;
++
++                keymap = ply_input_device_get_keymap (dev);
+                 if (keymap != NULL) {
+                         return keymap;
+                 }
+diff --git a/src/plugins/renderers/frame-buffer/plugin.c b/src/plugins/renderers/frame-buffer/plugin.c
+index e57d0437..3d56116e 100644
+--- a/src/plugins/renderers/frame-buffer/plugin.c
++++ b/src/plugins/renderers/frame-buffer/plugin.c
+@@ -821,6 +821,17 @@ close_input_source (ply_renderer_backend_t      *backend,
+         backend->input_source_is_open = false;
+ }
+ 
++static ply_input_device_t *
++get_any_input_device (ply_renderer_backend_t *backend)
++{
++        ply_list_node_t *node = ply_list_get_first_node (backend->input_source.input_devices);
++
++        if (node != NULL)
++                return ply_list_node_get_data (node);
++
++        return NULL;
++}
++
+ static ply_input_device_t *
+ get_any_input_device_with_leds (ply_renderer_backend_t *backend)
+ {
+@@ -843,6 +854,9 @@ get_capslock_state (ply_renderer_backend_t *backend)
+ {
+         if (using_input_device (&backend->input_source)) {
+                 ply_input_device_t *dev = get_any_input_device_with_leds (backend);
++                if (!dev)
++                        return false;
++
+                 return ply_input_device_get_capslock_state (dev);
+         }
+         if (!backend->terminal)
+@@ -855,8 +869,12 @@ static const char *
+ get_keymap (ply_renderer_backend_t *backend)
+ {
+         if (using_input_device (&backend->input_source)) {
+-                ply_input_device_t *dev = get_any_input_device_with_leds (backend);
+-                const char *keymap = ply_input_device_get_keymap (dev);
++                const char *keymap;
++                ply_input_device_t *dev = get_any_input_device (backend);
++                if (!dev)
++                        return NULL;
++
++                keymap = ply_input_device_get_keymap (dev);
+                 if (keymap != NULL) {
+                         return keymap;
+                 }
+-- 
+2.46.1
+

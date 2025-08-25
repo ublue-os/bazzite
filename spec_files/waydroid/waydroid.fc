@@ -1,5 +1,0 @@
-/usr/lib/waydroid/waydroid.py                       gen_context(system_u:object_r:waydroid_exec_t,s0)
-/usr/lib/waydroid/data/scripts/waydroid-net\.sh     gen_context(system_u:object_r:waydroid_net_exec_t,s0)
-/var/lib/waydroid(.*)?                              gen_context(system_u:object_r:waydroid_data_t,s0)
-/var/run/waydroid-(?!lxc).*                         gen_context(system_u:object_r:waydroid_var_run_t,s0)
-/run/waydroid-(?!lxc).*                             gen_context(system_u:object_r:waydroid_var_run_t,s0)

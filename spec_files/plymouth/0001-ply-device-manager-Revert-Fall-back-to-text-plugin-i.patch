@@ -1,0 +1,52 @@
+From 4a8c0a4231d35ac060f41b582596684cfba7c9ae Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 7 May 2024 12:42:10 +0200
+Subject: [PATCH] ply-device-manager: Revert "Fall back to text plugin if no
+ renderers installed"
+
+The drm renderer may fail to open /dev/dri/card# with -ENOENT when trying
+to open/probe a simpledrm registered drm device and the open races with
+that drm device being removed to be replaced by a new drm device registered
+by the native GPU driver (e.g. i915 / amdgpu).
+
+Switching to text mode immediately when this race gets hit is undesirable,
+as it causes text mode on systems where plymouth would run in graphics
+mode before. Remove the immediate switch to text mode on -ENOENT.
+Delaying the switch to textmode until the timeout as before.
+
+This reverts commit 03842d5201e4486fe62635c7b470eb94696f985d.
+
+Closes: https://bugzilla.redhat.com/show_bug.cgi?id=2270030
+---
+ src/libply-splash-core/ply-device-manager.c | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/src/libply-splash-core/ply-device-manager.c b/src/libply-splash-core/ply-device-manager.c
+index 59e579dd..d75ac6c5 100644
+--- a/src/libply-splash-core/ply-device-manager.c
++++ b/src/libply-splash-core/ply-device-manager.c
+@@ -52,7 +52,6 @@
+ static void create_devices_from_udev (ply_device_manager_t *manager);
+ #endif
+ 
+-static void create_non_graphical_devices (ply_device_manager_t *manager);
+ static bool create_devices_for_terminal_and_renderer_type (ply_device_manager_t *manager,
+                                                            const char           *device_path,
+                                                            ply_terminal_t       *terminal,
+@@ -1102,13 +1101,6 @@ create_devices_for_terminal_and_renderer_type (ply_device_manager_t *manager,
+                 renderer = ply_renderer_new (renderer_type, device_path, terminal);
+ 
+                 if (renderer != NULL && !ply_renderer_open (renderer)) {
+-                        if (errno == ENOENT) {
+-                                ply_trace ("No renderer plugins installed, creating non-graphical devices");
+-                                ply_renderer_free (renderer);
+-                                create_non_graphical_devices (manager);
+-                                manager->device_timeout_elapsed = true;
+-                                return false;
+-                        }
+                         ply_trace ("could not open renderer for %s", device_path);
+                         ply_renderer_free (renderer);
+                         renderer = NULL;
+-- 
+2.44.0
+

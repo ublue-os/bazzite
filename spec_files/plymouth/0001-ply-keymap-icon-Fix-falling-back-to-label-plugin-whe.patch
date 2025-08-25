@@ -1,0 +1,36 @@
+From f17285bbaa912cbe469b6d9578230f99e4a00a93 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hansg@kernel.org>
+Date: Thu, 3 Jul 2025 13:05:13 +0200
+Subject: [PATCH 1/2] ply-keymap-icon: Fix falling back to label-plugin when
+ there is no pre-rendered text
+
+In order for the fallback path (keymap_icon->has_prerendered_text == false)
+to work properly keymap_icon->keymap_name must be set when no pre-rendered
+text is found.
+
+Tested by temporarily removing the "us" entry from ply-keymap-metadata.h.
+
+Signed-off-by: Hans de Goede <hansg@kernel.org>
+---
+ src/libply-splash-graphics/ply-keymap-icon.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/libply-splash-graphics/ply-keymap-icon.c b/src/libply-splash-graphics/ply-keymap-icon.c
+index 26aabfdf..41cb3b72 100644
+--- a/src/libply-splash-graphics/ply-keymap-icon.c
++++ b/src/libply-splash-graphics/ply-keymap-icon.c
+@@ -114,8 +114,10 @@ ply_keymap_icon_fill_keymap_info (ply_keymap_icon_t *keymap_icon)
+                 }
+         }
+ 
+-        if (keymap_icon->keymap_offset == -1)
++        if (keymap_icon->keymap_offset == -1) {
+                 ply_trace ("Warning: no pre-rendered text for '%s' keymap", keymap_without_variant);
++                keymap_icon->keymap_name = strdup (keymap_without_variant);
++        }
+ 
+         free (keymap_without_variant);
+ }
+-- 
+2.49.0
+

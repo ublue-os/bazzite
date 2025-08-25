@@ -1,0 +1,58 @@
+From e6f09b05707be8aec488d757c5abe56cb3060a75 Mon Sep 17 00:00:00 2001
+From: Adam Williamson <awilliam@redhat.com>
+Date: Sat, 16 Mar 2024 17:22:57 -0700
+Subject: [PATCH] Revert "src: Hide console text when splash is requested"
+
+This reverts commit 48881ba2ef3d25fd27fd150d4d5957d4df9868e0.
+It breaks display entirely on minimal installs.
+---
+ src/libply-splash-core/ply-terminal.c |  2 --
+ src/main.c                            | 12 ++++--------
+ 2 files changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/src/libply-splash-core/ply-terminal.c b/src/libply-splash-core/ply-terminal.c
+index 1a9ec353..2036e507 100644
+--- a/src/libply-splash-core/ply-terminal.c
++++ b/src/libply-splash-core/ply-terminal.c
+@@ -357,8 +357,6 @@ ply_terminal_write (ply_terminal_t *terminal,
+         assert (terminal != NULL);
+         assert (format != NULL);
+ 
+-        ply_terminal_set_mode (terminal, PLY_TERMINAL_MODE_TEXT);
+-
+         string = NULL;
+         va_start (args, format);
+         size = vasprintf (&string, format, args);
+diff --git a/src/main.c b/src/main.c
+index 33fe51e0..81e34c54 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -1000,14 +1000,6 @@ on_show_splash (state_t *state)
+         if (!state->is_attached && state->should_be_attached && has_displays)
+                 attach_to_running_session (state);
+ 
+-        if (state->local_console_terminal != NULL)
+-                ply_terminal_set_mode (state->local_console_terminal, PLY_TERMINAL_MODE_GRAPHICS);
+-
+-#ifdef PLY_ENABLE_SYSTEMD_INTEGRATION
+-        if (state->is_attached)
+-                tell_systemd_to_print_details (state);
+-#endif
+-
+         if (has_displays) {
+                 ply_trace ("at least one display already available, so loading splash");
+                 show_splash (state);
+@@ -1438,6 +1430,10 @@ on_quit (state_t       *state,
+         state->quit_trigger = quit_trigger;
+         state->should_retain_splash = retain_splash;
+ 
++#ifdef PLY_ENABLE_SYSTEMD_INTEGRATION
++        tell_systemd_to_stop_printing_details (state);
++#endif
++
+         ply_trace ("closing log");
+         if (state->session != NULL)
+                 ply_terminal_session_close_log (state->session);
+-- 
+2.44.0
+

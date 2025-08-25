@@ -1,3 +1,0 @@
-# waydroid
-
-The waydroid package

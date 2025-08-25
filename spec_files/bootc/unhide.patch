@@ -8,10 +8,10 @@ Signed-off-by: Antheas Kapenekakis <git@antheas.dev>
  lib/src/cli.rs | 9 ++++++---
  1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/lib/src/cli.rs b/lib/src/cli.rs
+diff --git a/crates/lib/src/cli.rs b/crates/lib/src/cli.rs
 index cc3fa808..15ecdc46 100644
---- a/lib/src/cli.rs
-+++ b/lib/src/cli.rs
+--- a/crates/lib/src/cli.rs
++++ b/crates/lib/src/cli.rs
 @@ -39,16 +39,19 @@ pub(crate) struct ProgressOptions {
      ///
      /// Interactive progress will be written to this file descriptor as "JSON lines"

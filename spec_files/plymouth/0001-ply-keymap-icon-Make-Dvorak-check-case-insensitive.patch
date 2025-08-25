@@ -1,0 +1,60 @@
+From f443234585290cfa278e9811988359f6afa0761d Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Mon, 10 Feb 2025 11:47:57 +0100
+Subject: [PATCH] ply-keymap-icon: Make Dvorak check case-insensitive
+
+When using evdev support the XKB keymap name (with variant) for Dvorak
+users will be e.g. "US (Dvorak)". The Dvorak layouts are not described
+in /usr/share/X11/xkb/rules/evdev.xml, so these are not added to
+ply-keymap-metadata.h / keymap-render.png .
+
+For the console-keymap case dvorak is handled specially in:
+
+keymap-render.py:normalize_keymaps()
+ply-keymap-icon.c:ply_keymap_normalize_keymap()
+
+mapping all keymap-names with a lowercase dvorak in there to "dvorak",
+change this special handling to be case-insensitive so that it also works
+for the xkb-keymap case.
+
+Note the keymap-render.py change really is a no-op since keymap-render.py
+only calls normalize_keymaps() on console-keymaps which are always
+lower-case. normalize_keymaps() should still be updated though to keep
+the 2 functions in sync.
+
+Link: https://bugzilla.redhat.com/show_bug.cgi?id=2341810
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ scripts/keymap-render.py                     | 2 +-
+ src/libply-splash-graphics/ply-keymap-icon.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/keymap-render.py b/scripts/keymap-render.py
+index 2dc86575..20564f13 100755
+--- a/scripts/keymap-render.py
++++ b/scripts/keymap-render.py
+@@ -26,7 +26,7 @@ def get_keymaps():
+                 # on machines returning "us" for both is not useful.
+                 # Presumably users using dvorak now which variant they use
+                 # so we just describe all dvorak layouts as "dvorak".
+-                if "dvorak" in keymap:
++                if "dvorak" in keymap.lower():
+                         return "dvorak"
+ 
+                 # mac / sun keymaps are prefixes with mac / sun / sun[4-6]t
+diff --git a/src/libply-splash-graphics/ply-keymap-icon.c b/src/libply-splash-graphics/ply-keymap-icon.c
+index b3dfabfb..26aabfdf 100644
+--- a/src/libply-splash-graphics/ply-keymap-icon.c
++++ b/src/libply-splash-graphics/ply-keymap-icon.c
+@@ -61,7 +61,7 @@ ply_keymap_normalize_keymap (const char *keymap_with_variant)
+         int i, length;
+ 
+         /* Special case for dvorak layouts */
+-        if (strstr (keymap_with_variant, "dvorak"))
++        if (strcasestr (keymap_with_variant, "dvorak"))
+                 return strdup ("dvorak");
+ 
+         /* Check for and skip sun / mac prefixes */
+-- 
+2.48.1
+

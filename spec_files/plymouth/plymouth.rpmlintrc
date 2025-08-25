@@ -1,0 +1,16 @@
+addFilter("incorrect-fsf-address")
+addFilter("no-manual-page-for-binary")
+addFilter("no-documentation")
+# Spinfinity has a symlink to /usr/share/pixmaps/system-logo-white.png
+addFilter("dangling-symlink")
+# Suppress the error from the ghosted /var/lib/plymouth/boot-duration file
+addFilter("non-readable")
+# Upstream (and RHEL) has named the logrotate file after the logfilename
+# rather then after the package-name
+addFilter("incoherent-logrotate-file")
+# No provides, the throbgress plugin has been removed upstream
+addFilter("obsolete-not-provided plymouth-plugin-throbgress")
+# Some files are shared between themes
+addFilter("files-duplicate")
+# Some of our packages have no binaries, this is fine
+addFilter("no-binary")

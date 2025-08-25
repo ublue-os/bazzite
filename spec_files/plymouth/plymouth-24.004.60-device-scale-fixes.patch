@@ -1,0 +1,294 @@
+From acf97c73670b80a65329aaa35e40438d86fca3c6 Mon Sep 17 00:00:00 2001
+From: Daniel van Vugt <daniel.van.vugt@canonical.com>
+Date: Tue, 27 Feb 2024 14:47:59 +0800
+Subject: [PATCH] ply-utils: Match mutter's default device scale choice
+
+Until now, laptops with a DPI between 192 and 202 would be given a
+default scale of 2 by Plymouth, and 1 by Mutter for the login screen.
+That made the visual transition a bit ugly so let's match Mutter's
+default scale selection. This means the threshold for laptops is now
+1.5 x 135 = 202 DPI instead of 192 DPI. And for desktop monitors it's
+now 1.5 x 110 = 165 DPI instead of 192 DPI.
+
+Closes: https://bugs.launchpad.net/bugs/2054769
+---
+ src/libply/ply-utils.c | 40 ++++++++++++++++++++++------------------
+ 1 file changed, 22 insertions(+), 18 deletions(-)
+
+diff --git a/src/libply/ply-utils.c b/src/libply/ply-utils.c
+index 463f61c9..ad816f14 100644
+--- a/src/libply/ply-utils.c
++++ b/src/libply/ply-utils.c
+@@ -29,6 +29,7 @@
+ #include <fcntl.h>
+ #include <limits.h>
+ #include <locale.h>
++#include <math.h>
+ #include <poll.h>
+ #include <stddef.h>
+ #include <stdio.h>
+@@ -1001,8 +1002,6 @@ ply_set_device_scale (int device_scale)
+         ply_trace ("Device scale is set to %d", device_scale);
+ }
+ 
+-/* The minimum resolution at which we turn on a device-scale of 2 */
+-#define HIDPI_LIMIT 192
+ #define HIDPI_MIN_HEIGHT 1200
+ #define HIDPI_MIN_WIDTH 2560 /* For heuristic / guessed device-scale */
+ 
+@@ -1019,8 +1018,8 @@ get_device_scale (uint32_t width,
+                   uint32_t height_mm,
+                   bool     guess)
+ {
+-        int device_scale;
+-        double dpi_x, dpi_y;
++        int device_scale, target_dpi;
++        float diag_inches, diag_pixels, physical_dpi, perfect_scale;
+         const char *force_device_scale;
+ 
+         device_scale = 1;
+@@ -1031,11 +1030,10 @@ get_device_scale (uint32_t width,
+         if (overridden_device_scale != 0)
+                 return overridden_device_scale;
+ 
+-        if (height < HIDPI_MIN_HEIGHT)
+-                return 1;
+-
+-        if (guess)
+-                return (width >= HIDPI_MIN_WIDTH) ? 2 : 1;
++        if (guess) {
++                return (width >= HIDPI_MIN_WIDTH &&
++                        height >= HIDPI_MIN_HEIGHT) ? 2 : 1;
++        }
+ 
+         /* Somebody encoded the aspect ratio (16/9 or 16/10)
+          * instead of the physical size */
+@@ -1045,15 +1043,21 @@ get_device_scale (uint32_t width,
+             (width_mm == 16 && height_mm == 10))
+                 return 1;
+ 
+-        if (width_mm > 0 && height_mm > 0) {
+-                dpi_x = (double) width / (width_mm / 25.4);
+-                dpi_y = (double) height / (height_mm / 25.4);
+-                /* We don't completely trust these values so both
+-                 * must be high, and never pick higher ratio than
+-                 * 2 automatically */
+-                if (dpi_x > HIDPI_LIMIT && dpi_y > HIDPI_LIMIT)
+-                        device_scale = 2;
+-        }
++        if (width_mm == 0 || height_mm == 0)
++                return 1;
++
++        diag_inches = sqrtf (width_mm * width_mm + height_mm * height_mm) /
++                      25.4f;
++        diag_pixels = sqrtf (width * width + height * height);
++        physical_dpi = diag_pixels / diag_inches;
++
++        /* These constants are copied from Mutter's meta-monitor.c in order
++         * to match the default scale choice of the login screen.
++         */
++        target_dpi = (diag_inches >= 20.f) ? 110 : 135;
++
++        perfect_scale = physical_dpi / target_dpi;
++        device_scale = (perfect_scale > 1.5f) ? 2 : 1;
+ 
+         return device_scale;
+ }
+-- 
+2.48.1
+
+From 3b8e918479f47a845d4f88d281f7dfe412195628 Mon Sep 17 00:00:00 2001
+From: Daniel van Vugt <daniel.van.vugt@canonical.com>
+Date: Tue, 5 Mar 2024 17:51:11 +0800
+Subject: [PATCH] ply-utils: Only choose scale 2 when the perfect scale would
+ be >= 1.75
+
+This is the intended design documented in:
+https://gitlab.gnome.org/GNOME/mutter/-/commit/d03dce43786d
+
+And discussed in:
+https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/3616
+---
+ src/libply/ply-utils.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/libply/ply-utils.c b/src/libply/ply-utils.c
+index ad816f14..44a93099 100644
+--- a/src/libply/ply-utils.c
++++ b/src/libply/ply-utils.c
+@@ -1057,7 +1057,7 @@ get_device_scale (uint32_t width,
+         target_dpi = (diag_inches >= 20.f) ? 110 : 135;
+ 
+         perfect_scale = physical_dpi / target_dpi;
+-        device_scale = (perfect_scale > 1.5f) ? 2 : 1;
++        device_scale = (perfect_scale >= 1.75f) ? 2 : 1;
+ 
+         return device_scale;
+ }
+-- 
+2.48.1
+
+From 53fcd2ec1385bc1791dd6605329fac4f798015b7 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Thu, 6 Mar 2025 17:38:33 +0100
+Subject: [PATCH 1/3] ply-utils: Swap width <-> height for portrait screens
+ when guessing device-scale
+
+Swap width <-> height for portrait screens when guessing device-scale,
+this fixes the heuristics not working for portrait screens.
+
+Also move the heuristics to a new get_device_scale_guess () helper, because
+it has become a bit larger now.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ src/libply/ply-utils.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/src/libply/ply-utils.c b/src/libply/ply-utils.c
+index 12fe59bf..82a4494b 100644
+--- a/src/libply/ply-utils.c
++++ b/src/libply/ply-utils.c
+@@ -1029,6 +1029,20 @@ ply_set_device_scale (int device_scale)
+  */
+ static bool guess_device_scale;
+ 
++static int
++get_device_scale_guess (uint32_t width, uint32_t height)
++{
++        /* Swap width <-> height for portrait screens */
++        if (height > width) {
++                uint32_t tmp = width;
++                width = height;
++                height = tmp;
++        }
++
++        return (width >= HIDPI_MIN_WIDTH &&
++                height >= HIDPI_MIN_HEIGHT) ? 2 : 1;
++}
++
+ static int
+ get_device_scale (uint32_t width,
+                   uint32_t height,
+@@ -1048,10 +1062,8 @@ get_device_scale (uint32_t width,
+         if (overridden_device_scale != 0)
+                 return overridden_device_scale;
+ 
+-        if (guess) {
+-                return (width >= HIDPI_MIN_WIDTH &&
+-                        height >= HIDPI_MIN_HEIGHT) ? 2 : 1;
+-        }
++        if (guess)
++                return get_device_scale_guess (width, height);
+ 
+         /* Somebody encoded the aspect ratio (16/9 or 16/10)
+          * instead of the physical size */
+-- 
+2.48.1
+
+From d83c3c486c9242afca4c8f5b2e9a89867cc412ef Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Thu, 6 Mar 2025 17:46:34 +0100
+Subject: [PATCH 2/3] ply-utils: Use lower threshold for hiDPI scaling on 3:2
+ screens
+
+3:2 screens are only used in mobile form factors, add a special case for
+this with a lower threshold to enable 2x hiDPI scaling.
+
+Also remove the HIDPI_MIN_* defines these were only used in one place
+and adding a second set for the 3:2 screens just makes things harder
+to read.
+
+Instead write the actual width/height thresholds directly in the code
+of the new get_device_scale_guess () helper.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ src/libply/ply-utils.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/src/libply/ply-utils.c b/src/libply/ply-utils.c
+index 82a4494b..3cdebfe7 100644
+--- a/src/libply/ply-utils.c
++++ b/src/libply/ply-utils.c
+@@ -1020,9 +1020,6 @@ ply_set_device_scale (int device_scale)
+         ply_trace ("Device scale is set to %d", device_scale);
+ }
+ 
+-#define HIDPI_MIN_HEIGHT 1200
+-#define HIDPI_MIN_WIDTH 2560 /* For heuristic / guessed device-scale */
+-
+ /*
+  * If we have guessed the scale once, keep guessing to avoid
+  * changing the scale on simpledrm -> native driver switch.
+@@ -1032,6 +1029,8 @@ static bool guess_device_scale;
+ static int
+ get_device_scale_guess (uint32_t width, uint32_t height)
+ {
++        double aspect;
++
+         /* Swap width <-> height for portrait screens */
+         if (height > width) {
+                 uint32_t tmp = width;
+@@ -1039,8 +1038,17 @@ get_device_scale_guess (uint32_t width, uint32_t height)
+                 height = tmp;
+         }
+ 
+-        return (width >= HIDPI_MIN_WIDTH &&
+-                height >= HIDPI_MIN_HEIGHT) ? 2 : 1;
++        /*
++         * Special case for 3:2 screens which are only used in mobile form
++         * factors, with a lower threshold to enable 2x hiDPI scaling.
++         */
++        aspect = (double) width / height;
++        if (aspect == 1.5)
++                return (width >= 1800 &&
++                        height >= 1200) ? 2 : 1;
++
++        return (width >= 2560 &&
++                height >= 1200) ? 2 : 1;
+ }
+ 
+ static int
+-- 
+2.48.1
+
+From 77f50820168190c1e1fd18198fddeb112b7a623e Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Thu, 6 Mar 2025 17:53:43 +0100
+Subject: [PATCH 3/3] ply-utils: Increase threshold for guessed hiDPI scaling
+ to >= 2880x1620
+
+1440 is only 33% more then FHD, so using 2x there is a bit too much and
+leads to the spinner being much too large on e.g 27" monitors.
+
+And on e.g. Dell ultrawide 34" 3440x1440 which are only 110 DPI this effect
+is even worse.
+
+Change the threshold to >= 2880x1620 to avoid using 2x scaling on 1440p
+monitors. 2880x1620 is ~240DPI when used in a 14" laptop at which point
+using 2x scaling is really necessary.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ src/libply/ply-utils.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/libply/ply-utils.c b/src/libply/ply-utils.c
+index 3cdebfe7..24652e32 100644
+--- a/src/libply/ply-utils.c
++++ b/src/libply/ply-utils.c
+@@ -1047,8 +1047,8 @@ get_device_scale_guess (uint32_t width, uint32_t height)
+                 return (width >= 1800 &&
+                         height >= 1200) ? 2 : 1;
+ 
+-        return (width >= 2560 &&
+-                height >= 1200) ? 2 : 1;
++        return (width >= 2880 &&
++                height >= 1620) ? 2 : 1;
+ }
+ 
+ static int
+-- 
+2.48.1
+
