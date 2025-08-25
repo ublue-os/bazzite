@@ -12,8 +12,8 @@
 %endif
 
 Name:           bootc
-Version:        1.1.7
-Release:        101.bazzite
+Version:        1.6.0
+Release:        100.bazzite
 Summary:        Bootable container system
 
 # Apache-2.0
@@ -25,11 +25,11 @@ Summary:        Bootable container system
 # MIT OR Apache-2.0
 # Unlicense OR MIT
 License:        Apache-2.0 AND BSD-3-Clause AND MIT AND (Apache-2.0 OR BSL-1.0) AND (Apache-2.0 OR MIT) AND (Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT) AND (Unlicense OR MIT)
-URL:            https://github.com/containers/bootc
+URL:            https://github.com/bootc-dev/bootc
 Source0:        %{url}/releases/download/v%{version}/bootc-%{version}.tar.zstd
 Source1:        %{url}/releases/download/v%{version}/bootc-%{version}-vendor.tar.zstd
 
-Patch0: unhide.patch
+Patch0:         unhide.patch
 
 # https://fedoraproject.org/wiki/Changes/EncourageI686LeafRemoval
 ExcludeArch:    %{ix86}
@@ -49,10 +49,13 @@ BuildRequires: skopeo ostree
 
 # Backing storage tooling https://github.com/containers/composefs/issues/125
 Requires: composefs
-# For OS updates
+# Keep this list in sync with workspace.metadata.binary-dependencies until we sync
+# it automatically
 Requires: ostree
 Requires: skopeo
 Requires: podman
+Requires: util-linux-core
+Requires: /usr/bin/chcon
 # For bootloader updates
 Recommends: bootupd
 
@@ -123,13 +126,17 @@ cat >%{?buildroot}/%{system_reinstall_bootc_install_podman_path} <<EOF
 exec dnf -y install podman
 EOF
 chmod +x %{?buildroot}/%{system_reinstall_bootc_install_podman_path}
+# generate doc file list excluding directories; workaround for
+# https://github.com/coreos/rpm-ostree/issues/5420
+touch %{?buildroot}/%{_docdir}/bootc/baseimage/base/sysroot/.keepdir
+find %{?buildroot}/%{_docdir} ! -type d -printf '%{_docdir}/%%P\n' > bootcdoclist.txt
 
 %if %{with check}
 %check
 %cargo_test
 %endif
 
-%files
+%files -f bootcdoclist.txt
 %license LICENSE-MIT
 %license LICENSE-APACHE
 %license LICENSE.dependencies
@@ -142,7 +149,6 @@ chmod +x %{?buildroot}/%{system_reinstall_bootc_install_podman_path}
 %{_prefix}/libexec/libostree/ext/*
 %endif
 %{_unitdir}/*
-%{_docdir}/bootc/*
 %{_mandir}/man*/bootc*
 
 %files -n system-reinstall-bootc
