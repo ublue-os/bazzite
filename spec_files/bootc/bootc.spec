@@ -12,8 +12,8 @@
 %endif
 
 Name:           bootc
-Version:        1.7.0
-Release:        101.bazzite
+Version:        1.7.1
+Release:        100.bazzite
 Summary:        Bootable container system
 
 # Apache-2.0
@@ -30,9 +30,6 @@ Source0:        %{url}/releases/download/v%{version}/bootc-%{version}.tar.zstd
 Source1:        %{url}/releases/download/v%{version}/bootc-%{version}-vendor.tar.zstd
 
 Patch0:         unhide.patch
-
-# https://github.com/bootc-dev/bootc/pull/1547
-Patch1:         1547.patch
 
 # https://fedoraproject.org/wiki/Changes/EncourageI686LeafRemoval
 ExcludeArch:    %{ix86}
