@@ -1,0 +1,30 @@
+From d20b1be527817c21500c3daa4dfdd0e9c7c731b8 Mon Sep 17 00:00:00 2001
+From: Daniel van Vugt <daniel.van.vugt@canonical.com>
+Date: Thu, 27 Mar 2025 17:19:44 +0800
+Subject: [PATCH] drm: Check for NULL terminal in watch_input_device
+
+It's allowed to be NULL and the rest of the source file checks for NULL.
+Seems the check was just forgotten here.
+
+Closes: https://gitlab.freedesktop.org/plymouth/plymouth/-/issues/288
+---
+ src/plugins/renderers/drm/plugin.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/plugins/renderers/drm/plugin.c b/src/plugins/renderers/drm/plugin.c
+index 0249dbfa..88c5770b 100644
+--- a/src/plugins/renderers/drm/plugin.c
++++ b/src/plugins/renderers/drm/plugin.c
+@@ -1897,7 +1897,8 @@ watch_input_device (ply_renderer_backend_t *backend,
+                                           (ply_input_device_leds_changed_handler_t) on_input_leds_changed,
+                                           &backend->input_source);
+ 
+-        ply_terminal_set_disabled_input (backend->terminal);
++        if (backend->terminal != NULL)
++                ply_terminal_set_disabled_input (backend->terminal);
+ }
+ 
+ static void
+-- 
+2.49.0
+

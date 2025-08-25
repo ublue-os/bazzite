@@ -1,0 +1,37 @@
+From 10ac8d2dc927b112ce6aeb06bc73d9c46550954c Mon Sep 17 00:00:00 2001
+From: n3rdopolis <bluescreen_avenger@verizon.net>
+Date: Tue, 6 Feb 2024 18:52:25 -0500
+Subject: [PATCH] ply-boot-splash: Set unbuffered input when creating a text
+ display
+
+---
+ src/libply-splash-core/ply-boot-splash.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/libply-splash-core/ply-boot-splash.c b/src/libply-splash-core/ply-boot-splash.c
+index 12fb6c10..217f455e 100644
+--- a/src/libply-splash-core/ply-boot-splash.c
++++ b/src/libply-splash-core/ply-boot-splash.c
+@@ -173,6 +173,7 @@ ply_boot_splash_add_text_display (ply_boot_splash_t  *splash,
+                                   ply_text_display_t *display)
+ {
+         int number_of_columns, number_of_rows;
++        ply_terminal_t *terminal;
+ 
+         if (splash->plugin_interface->add_text_display == NULL)
+                 return;
+@@ -183,6 +184,11 @@ ply_boot_splash_add_text_display (ply_boot_splash_t  *splash,
+         ply_trace ("adding %dx%d text display", number_of_columns, number_of_rows);
+ 
+         splash->plugin_interface->add_text_display (splash->plugin, display);
++
++        terminal = ply_text_display_get_terminal (display);
++        if (terminal)
++                ply_terminal_set_unbuffered_input (terminal);
++
+         ply_list_append_data (splash->text_displays, display);
+ }
+ 
+-- 
+2.44.0
+

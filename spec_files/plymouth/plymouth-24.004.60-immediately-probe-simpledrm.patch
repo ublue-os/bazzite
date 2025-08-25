@@ -1,0 +1,526 @@
+From 64379c1100a0177f52e130601d44a7ffe0fdedf1 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 4 Jun 2024 21:09:00 +0200
+Subject: [PATCH 1/9] ply-utils: Add ply_string_has_suffix () helper function
+
+Add a ply_string_has_suffix () helper function to match the existing
+ply_string_has_prefix () helper function.
+---
+ src/libply/ply-utils.c | 18 ++++++++++++++++++
+ src/libply/ply-utils.h |  2 ++
+ 2 files changed, 20 insertions(+)
+
+diff --git a/src/libply/ply-utils.c b/src/libply/ply-utils.c
+index 0e317b67..d6d127f1 100644
+--- a/src/libply/ply-utils.c
++++ b/src/libply/ply-utils.c
+@@ -473,6 +473,24 @@ ply_string_has_prefix (const char *str,
+         return strncmp (str, prefix, strlen (prefix)) == 0;
+ }
+ 
++bool
++ply_string_has_suffix (const char *str,
++                       const char *suffix)
++{
++        size_t str_len, suffix_len;
++
++        if (str == NULL || suffix == NULL)
++                return false;
++
++        str_len = strlen (str);
++        suffix_len = strlen (suffix);
++
++        if (suffix_len > str_len)
++                return false;
++
++        return strcmp (str + (str_len - suffix_len), suffix) == 0;
++}
++
+ double
+ ply_get_timestamp (void)
+ {
+diff --git a/src/libply/ply-utils.h b/src/libply/ply-utils.h
+index 7cbbb2f4..86d66384 100644
+--- a/src/libply/ply-utils.h
++++ b/src/libply/ply-utils.h
+@@ -109,6 +109,8 @@ char **ply_copy_string_array (const char *const *array);
+ void ply_free_string_array (char **array);
+ bool ply_string_has_prefix (const char *str,
+                             const char *prefix);
++bool ply_string_has_suffix (const char *str,
++                            const char *suffix);
+ double ply_get_timestamp (void);
+ 
+ void ply_save_errno (void);
+-- 
+2.45.1
+
+From 1c3ff0338c80a831b2f0ea63a57e20c9013ddb52 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 4 Jun 2024 21:16:31 +0200
+Subject: [PATCH 2/9] ply-device-manager: Add syspath_is_simpledrm () helper
+
+Add a helper to determine if a udev syspath is a simpledrm device.
+This is a preparation patch to for making simpledrm devices their
+own renderer-type.
+---
+ src/libply-splash-core/ply-device-manager.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/src/libply-splash-core/ply-device-manager.c b/src/libply-splash-core/ply-device-manager.c
+index d75ac6c5..4c48f606 100644
+--- a/src/libply-splash-core/ply-device-manager.c
++++ b/src/libply-splash-core/ply-device-manager.c
+@@ -339,11 +339,15 @@ remove_input_device_from_renderers (ply_device_manager_t *manager,
+         ply_hashtable_foreach (manager->renderers, (ply_hashtable_foreach_func_t *) on_each_input_device_remove_from_renderer, input_device);
+ }
+ 
++static bool
++syspath_is_simpledrm (const char *syspath)
++{
++        return ply_string_has_suffix (syspath, "simple-framebuffer.0/drm/card0");
++}
++
+ static bool
+ verify_drm_device (struct udev_device *device)
+ {
+-        const char *id_path;
+-
+         /*
+          * Simple-framebuffer devices driven by simpledrm lack information
+          * like panel-rotation info and physical size, causing the splash
+@@ -352,8 +356,7 @@ verify_drm_device (struct udev_device *device)
+          * To avoid this treat simpledrm devices as fbdev devices and only
+          * use them after the timeout.
+          */
+-        id_path = udev_device_get_property_value (device, "ID_PATH");
+-        if (!ply_string_has_prefix (id_path, "platform-simple-framebuffer"))
++        if (!syspath_is_simpledrm (udev_device_get_syspath (device)))
+                 return true; /* Not a SimpleDRM device */
+ 
+         /*
+-- 
+2.45.1
+
+From 19d49a42fcc3cf9d3ee62a572eec24e8b73f9799 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 4 Jun 2024 21:24:22 +0200
+Subject: [PATCH 3/9] ply-renderer: Add new PLY_RENDERER_TYPE_SIMPLEDRM
+ renderer-type
+
+Add a new PLY_RENDERER_TYPE_SIMPLEDRM renderer-type to help differentiate
+the simpledrm case from the regular drm device case.
+
+simpledrm devices require some special handling in the device-manager,
+this is a preparation patch for improving the simpledrm handling
+in ply-device-manager.
+---
+ src/libply-splash-core/ply-device-manager.c | 11 ++++++++---
+ src/libply-splash-core/ply-renderer.c       |  1 +
+ src/libply-splash-core/ply-renderer.h       |  1 +
+ 3 files changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/src/libply-splash-core/ply-device-manager.c b/src/libply-splash-core/ply-device-manager.c
+index 4c48f606..256b38d0 100644
+--- a/src/libply-splash-core/ply-device-manager.c
++++ b/src/libply-splash-core/ply-device-manager.c
+@@ -380,7 +380,7 @@ static bool
+ create_devices_for_udev_device (ply_device_manager_t *manager,
+                                 struct udev_device   *device)
+ {
+-        const char *device_path, *device_sysname;
++        const char *device_path, *device_sysname, *device_syspath;
+         bool created = false;
+         bool force_fb = false;
+ 
+@@ -389,6 +389,7 @@ create_devices_for_udev_device (ply_device_manager_t *manager,
+ 
+         device_path = udev_device_get_devnode (device);
+         device_sysname = udev_device_get_sysname (device);
++        device_syspath = udev_device_get_syspath (device);
+ 
+         if (device_path != NULL) {
+                 const char *subsystem;
+@@ -403,7 +404,10 @@ create_devices_for_udev_device (ply_device_manager_t *manager,
+                                 return false;
+                         }
+                         ply_trace ("found DRM device %s", device_path);
+-                        renderer_type = PLY_RENDERER_TYPE_DRM;
++                        if (syspath_is_simpledrm (device_syspath))
++                                renderer_type = PLY_RENDERER_TYPE_SIMPLEDRM;
++                        else
++                                renderer_type = PLY_RENDERER_TYPE_DRM;
+                 } else if (strcmp (subsystem, SUBSYSTEM_FRAME_BUFFER) == 0) {
+                         ply_trace ("found frame buffer device %s", device_path);
+                         if (!fb_device_has_drm_device (manager, device))
+@@ -446,7 +450,8 @@ create_devices_for_udev_device (ply_device_manager_t *manager,
+                                                                                  terminal,
+                                                                                  renderer_type);
+                         if (created) {
+-                                if (renderer_type == PLY_RENDERER_TYPE_DRM)
++                                if (renderer_type == PLY_RENDERER_TYPE_DRM ||
++                                    renderer_type == PLY_RENDERER_TYPE_SIMPLEDRM)
+                                         manager->found_drm_device = 1;
+                                 if (renderer_type == PLY_RENDERER_TYPE_FRAME_BUFFER)
+                                         manager->found_fb_device = 1;
+diff --git a/src/libply-splash-core/ply-renderer.c b/src/libply-splash-core/ply-renderer.c
+index 40a2c813..6a7aff96 100644
+--- a/src/libply-splash-core/ply-renderer.c
++++ b/src/libply-splash-core/ply-renderer.c
+@@ -269,6 +269,7 @@ ply_renderer_open (ply_renderer_t *renderer)
+         {
+                 { PLY_RENDERER_TYPE_X11,          PLYMOUTH_PLUGIN_PATH "renderers/x11.so"          },
+                 { PLY_RENDERER_TYPE_DRM,          PLYMOUTH_PLUGIN_PATH "renderers/drm.so"          },
++                { PLY_RENDERER_TYPE_SIMPLEDRM,    PLYMOUTH_PLUGIN_PATH "renderers/drm.so"          },
+                 { PLY_RENDERER_TYPE_FRAME_BUFFER, PLYMOUTH_PLUGIN_PATH "renderers/frame-buffer.so" },
+                 { PLY_RENDERER_TYPE_NONE,         NULL                                             }
+         };
+diff --git a/src/libply-splash-core/ply-renderer.h b/src/libply-splash-core/ply-renderer.h
+index 5fbf819d..34ff5886 100644
+--- a/src/libply-splash-core/ply-renderer.h
++++ b/src/libply-splash-core/ply-renderer.h
+@@ -41,6 +41,7 @@ typedef enum
+         PLY_RENDERER_TYPE_NONE = -1,
+         PLY_RENDERER_TYPE_AUTO,
+         PLY_RENDERER_TYPE_DRM,
++        PLY_RENDERER_TYPE_SIMPLEDRM,
+         PLY_RENDERER_TYPE_FRAME_BUFFER,
+         PLY_RENDERER_TYPE_X11
+ } ply_renderer_type_t;
+-- 
+2.45.1
+
+From 188a4393b11fdb25f1fcc7e1ca763d62374b3d70 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 4 Jun 2024 22:05:20 +0200
+Subject: [PATCH 4/9] ply-renderer: Add ply_renderer_get_type ()
+
+Add a ply_renderer_get_type () helper function to get the type of
+a renderer.
+---
+ src/libply-splash-core/ply-renderer.c | 6 ++++++
+ src/libply-splash-core/ply-renderer.h | 1 +
+ 2 files changed, 7 insertions(+)
+
+diff --git a/src/libply-splash-core/ply-renderer.c b/src/libply-splash-core/ply-renderer.c
+index 6a7aff96..61c59ccc 100644
+--- a/src/libply-splash-core/ply-renderer.c
++++ b/src/libply-splash-core/ply-renderer.c
+@@ -102,6 +102,12 @@ ply_renderer_get_device_name (ply_renderer_t *renderer)
+         return renderer->device_name;
+ }
+ 
++ply_renderer_type_t
++ply_renderer_get_type (ply_renderer_t *renderer)
++{
++        return renderer->type;
++}
++
+ static bool
+ ply_renderer_load_plugin (ply_renderer_t *renderer,
+                           const char     *module_path)
+diff --git a/src/libply-splash-core/ply-renderer.h b/src/libply-splash-core/ply-renderer.h
+index 34ff5886..cfd4f2dd 100644
+--- a/src/libply-splash-core/ply-renderer.h
++++ b/src/libply-splash-core/ply-renderer.h
+@@ -63,6 +63,7 @@ void ply_renderer_activate (ply_renderer_t *renderer);
+ void ply_renderer_deactivate (ply_renderer_t *renderer);
+ bool ply_renderer_is_active (ply_renderer_t *renderer);
+ const char *ply_renderer_get_device_name (ply_renderer_t *renderer);
++ply_renderer_type_t ply_renderer_get_type (ply_renderer_t *renderer);
+ ply_list_t *ply_renderer_get_heads (ply_renderer_t *renderer);
+ ply_pixel_buffer_t *ply_renderer_get_buffer_for_head (ply_renderer_t      *renderer,
+                                                       ply_renderer_head_t *head);
+-- 
+2.45.1
+
+From 9096b304f6bec090ed53aa280f234c2b4fd18828 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Wed, 5 Jun 2024 21:31:55 +0200
+Subject: [PATCH 5/9] ply-device-manager: Skip /dev/dri/render nodes
+
+DRM render nodes do not support KMS and trying to probe them just
+slows things down, so skip them.
+---
+ src/libply-splash-core/ply-device-manager.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/libply-splash-core/ply-device-manager.c b/src/libply-splash-core/ply-device-manager.c
+index 256b38d0..51990b7c 100644
+--- a/src/libply-splash-core/ply-device-manager.c
++++ b/src/libply-splash-core/ply-device-manager.c
+@@ -403,6 +403,10 @@ create_devices_for_udev_device (ply_device_manager_t *manager,
+                                 ply_trace ("ignoring since we only handle SimpleDRM devices after timeout");
+                                 return false;
+                         }
++                        if (ply_string_has_prefix (device_path, "/dev/dri/render")) {
++                                ply_trace ("ignoring since it is a render node");
++                                return false;
++                        }
+                         ply_trace ("found DRM device %s", device_path);
+                         if (syspath_is_simpledrm (device_syspath))
+                                 renderer_type = PLY_RENDERER_TYPE_SIMPLEDRM;
+-- 
+2.45.1
+
+From eb5abda0c2fbcd88892f2fbd346a1ac2413cc8ad Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Wed, 5 Jun 2024 21:38:43 +0200
+Subject: [PATCH 6/9] ply-device-manager: Move local_console_terminal handling
+ for DRM/FB renderers
+
+create_devices_for_terminal_and_renderer_type () only ever gets called with
+a NULL terminal parameter when create_devices_for_udev_device () is calling
+it to create a DRM or FB renderer.
+
+Move the use of local_console_terminal as terminal for the first DRM / FB
+renderer created from create_devices_for_udev_device () to
+create_devices_for_terminal_and_renderer_type () with an extra !terminal
+check.
+
+This is a preparation patch for fixing an issue where the local_console
+is managed by a simpledrm renderer and the remove event for that gets
+processed after the add event of the normal drm device which leaves
+the local_console unmanaged breaking legacy input support.
+---
+ src/libply-splash-core/ply-device-manager.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
+
+diff --git a/src/libply-splash-core/ply-device-manager.c b/src/libply-splash-core/ply-device-manager.c
+index 51990b7c..65504e93 100644
+--- a/src/libply-splash-core/ply-device-manager.c
++++ b/src/libply-splash-core/ply-device-manager.c
+@@ -441,17 +441,9 @@ create_devices_for_udev_device (ply_device_manager_t *manager,
+                 }
+ 
+                 if (renderer_type != PLY_RENDERER_TYPE_NONE) {
+-                        ply_terminal_t *terminal = NULL;
+-
+-                        if (!manager->local_console_managed &&
+-                            manager->local_console_terminal != NULL &&
+-                            ply_terminal_is_vt (manager->local_console_terminal)) {
+-                                terminal = manager->local_console_terminal;
+-                        }
+-
+                         created = create_devices_for_terminal_and_renderer_type (manager,
+                                                                                  device_path,
+-                                                                                 terminal,
++                                                                                 NULL,
+                                                                                  renderer_type);
+                         if (created) {
+                                 if (renderer_type == PLY_RENDERER_TYPE_DRM ||
+@@ -1105,6 +1097,11 @@ create_devices_for_terminal_and_renderer_type (ply_device_manager_t *manager,
+                 return true;
+         }
+ 
++        if (!terminal && !manager->local_console_managed &&
++            manager->local_console_terminal != NULL &&
++            ply_terminal_is_vt (manager->local_console_terminal))
++                terminal = manager->local_console_terminal;
++
+         ply_trace ("creating devices for %s (renderer type: %u) (terminal: %s)",
+                    device_path ? : "", renderer_type, terminal ? ply_terminal_get_name (terminal) : "none");
+ 
+-- 
+2.45.1
+
+From 8c0d5965030aae11249cbe1e42decc0654005c39 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Wed, 5 Jun 2024 21:52:19 +0200
+Subject: [PATCH 7/9] ply-device-manager: Remove simpledrm renderers before
+ adding normal drm renderers
+
+udev remove events for simpledrm udev devices may arrive after the udev add
+event for a normal drm udev device which is replacing the simpledrm device.
+
+When the local_console is managed by a simpledrm renderer and the remove
+event for the simpledrm renderer is received after the add event of
+the normal drm device, the local_console is left unmanaged breaking legacy
+input support.
+
+When this scenario gets hit it breaks entering disk unlock passwords.
+
+Add code to remove simpledrm renderers before adding normal drm renderers
+to avoid this.
+---
+ src/libply-splash-core/ply-device-manager.c | 24 +++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/src/libply-splash-core/ply-device-manager.c b/src/libply-splash-core/ply-device-manager.c
+index 65504e93..1c9560d7 100644
+--- a/src/libply-splash-core/ply-device-manager.c
++++ b/src/libply-splash-core/ply-device-manager.c
+@@ -1080,6 +1080,18 @@ create_text_displays_for_terminal (ply_device_manager_t *manager,
+                 manager->text_display_added_handler (manager->event_handler_data, display);
+ }
+ 
++static void
++free_simpledrm_renderer (char                 *device_path,
++                         ply_renderer_t       *renderer,
++                         ply_device_manager_t *manager)
++{
++        if (ply_renderer_get_type (renderer) != PLY_RENDERER_TYPE_SIMPLEDRM)
++                return;
++
++        ply_trace ("removing simpledrm renderer %s", device_path);
++        free_devices_from_device_path (manager, device_path, true);
++}
++
+ static bool
+ create_devices_for_terminal_and_renderer_type (ply_device_manager_t *manager,
+                                                const char           *device_path,
+@@ -1097,6 +1109,18 @@ create_devices_for_terminal_and_renderer_type (ply_device_manager_t *manager,
+                 return true;
+         }
+ 
++        /*
++         * simpledrm udev remove events may arrive after normal drm device add
++         * events, leaving the local_console unmanaged breaking legacy input.
++         * Remove simpledrm renderers before adding drm renderers to avoid this.
++         */
++        if (renderer_type == PLY_RENDERER_TYPE_DRM) {
++                ply_hashtable_foreach (manager->renderers,
++                                       (ply_hashtable_foreach_func_t *)
++                                       free_simpledrm_renderer,
++                                       manager);
++        }
++
+         if (!terminal && !manager->local_console_managed &&
+             manager->local_console_terminal != NULL &&
+             ply_terminal_is_vt (manager->local_console_terminal))
+-- 
+2.45.1
+
+From 2f8b64ea4c6cefca6569ab94dc37d436a3fbf048 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 4 Jun 2024 23:07:19 +0200
+Subject: [PATCH 8/9] ply-device-manager: Create renderer for simpledrm devices
+ right away
+
+Often when plymouth starts and enumerates udev devices which are already
+present at start (coldplug detection), udev is still initializing all
+the devices and it reports 0 for udev_device_get_is_initialized ().
+
+It may take a long time for the state of the simpledrm udev device
+to change to initialized and for a udev add event to be send.
+
+Especially when the amdgpu kernel module is involved which is very
+large for a kernel module and can take op to 7 seconds to load.
+
+In this case it is even possible for plymouth's default DeviceTimeout
+of 8 seconds to trigger before the simpledrm device is considered
+initialized. See for example these lines extracted from the plymouth-debug
+log attached to: https://bugzilla.redhat.com/show_bug.cgi?id=2183743
+
+  00:00:02.909 ../src/libply-splash-core/ply-device-manager.c:498:create_devi: found device /sys/devices/pci0000:00/0000:00:01.0/simple-framebuffer.0/drm/card0
+  00:00:02.910 ../src/libply-splash-core/ply-device-manager.c:513:create_devi: it's not initialized
+  00:00:10.917 ../src/libply-splash-core/ply-device-manager.c:1237:create_dev: Timeout elapsed, looking for devices from udev
+  00:00:10.918 ../src/libply-splash-core/ply-device-manager.c:498:create_devi: found device /sys/devices/pci0000:00/0000:00:01.0/simple-framebuffer.0/drm/card0
+  00:00:10.918 ../src/libply-splash-core/ply-device-manager.c:513:create_devi: it's not initialized
+
+This leads to plymouth falling back to the text splash even when
+plymouth.use-simpledrm is passed on the kernel commandline.
+
+Add a special case for simpledrm devices and add these during coldboot
+even if they are not initialized yet.
+---
+ src/libply-splash-core/ply-device-manager.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/src/libply-splash-core/ply-device-manager.c b/src/libply-splash-core/ply-device-manager.c
+index 1c9560d7..90a60661 100644
+--- a/src/libply-splash-core/ply-device-manager.c
++++ b/src/libply-splash-core/ply-device-manager.c
+@@ -490,6 +490,7 @@ create_devices_for_subsystem (ply_device_manager_t *manager,
+         udev_list_entry_foreach (entry, udev_enumerate_get_list_entry (matches)){
+                 struct udev_device *device = NULL;
+                 const char *path, *node;
++                int initialized;
+ 
+                 path = udev_list_entry_get_name (entry);
+ 
+@@ -502,10 +503,11 @@ create_devices_for_subsystem (ply_device_manager_t *manager,
+ 
+                 device = udev_device_new_from_syspath (manager->udev_context, path);
+ 
+-                /* if device isn't fully initialized, we'll get an add event later
+-                 */
+-                if (udev_device_get_is_initialized (device)) {
+-                        ply_trace ("device is initialized");
++                /* If device isn't fully initialized, we'll get an add event later */
++                initialized = udev_device_get_is_initialized (device);
++                /* Simpledrm can be handled uninitialized and this shows the splash sooner */
++                if (initialized || syspath_is_simpledrm (path)) {
++                        ply_trace ("device is initialized %d", initialized);
+ 
+                         node = udev_device_get_devnode (device);
+                         if (node != NULL) {
+-- 
+2.45.1
+
+From 12fdedb4efb0b7e04c74f43917a180a20e54ea24 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Wed, 5 Jun 2024 22:07:32 +0200
+Subject: [PATCH 9/9] ply-device-manager: Make create_devices_for_subsystem ()
+ return void
+
+Make create_devices_for_subsystem () return void. Its callers do not care
+about the return value and currently the return value is not always correct
+since if a device is found, found may later become false again if
+a subsequent create_devices_for_udev_device () call fails.
+---
+ src/libply-splash-core/ply-device-manager.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/src/libply-splash-core/ply-device-manager.c b/src/libply-splash-core/ply-device-manager.c
+index 90a60661..1f41e1b2 100644
+--- a/src/libply-splash-core/ply-device-manager.c
++++ b/src/libply-splash-core/ply-device-manager.c
+@@ -458,23 +458,22 @@ create_devices_for_udev_device (ply_device_manager_t *manager,
+         return created;
+ }
+ 
+-static bool
++static void
+ create_devices_for_subsystem (ply_device_manager_t *manager,
+                               const char           *subsystem)
+ {
+         struct udev_enumerate *matches;
+         struct udev_list_entry *entry;
+-        bool found_device = false;
+ 
+         if (strcmp (subsystem, SUBSYSTEM_INPUT) == 0) {
+                 if (ply_kernel_command_line_has_argument ("plymouth.use-legacy-input")) {
+                         ply_trace ("Not creating devices for subsystem " SUBSYSTEM_INPUT " because plymouth.use-legacy-input on command line");
+-                        return false;
++                        return;
+                 }
+ 
+                 if (manager->xkb_keymap == NULL) {
+                         ply_trace ("Not creating devices for subsystem " SUBSYSTEM_INPUT " because there is no configure XKB layout");
+-                        return false;
++                        return;
+                 }
+         }
+ 
+@@ -512,7 +511,7 @@ create_devices_for_subsystem (ply_device_manager_t *manager,
+                         node = udev_device_get_devnode (device);
+                         if (node != NULL) {
+                                 ply_trace ("found node %s", node);
+-                                found_device = create_devices_for_udev_device (manager, device);
++                                create_devices_for_udev_device (manager, device);
+                         }
+                 } else {
+                         ply_trace ("it's not initialized");
+@@ -522,8 +521,6 @@ create_devices_for_subsystem (ply_device_manager_t *manager,
+         }
+ 
+         udev_enumerate_unref (matches);
+-
+-        return found_device;
+ }
+ 
+ static void
+-- 
+2.45.1
+

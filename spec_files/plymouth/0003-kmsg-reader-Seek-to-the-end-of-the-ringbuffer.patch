@@ -1,0 +1,31 @@
+From a53065d0ce0b28a214b9088afc9d4d769c030d3b Mon Sep 17 00:00:00 2001
+From: Adrian Vovk <adrianvovk@gmail.com>
+Date: Fri, 9 May 2025 15:35:38 -0400
+Subject: [PATCH 3/3] kmsg-reader: Seek to the end of the ringbuffer
+
+Otherwise, whenever plymouth starts we'd replay all previous kmsg
+entries, even if they've already been logged to the console. This leads
+to duplicated log entires, and makes it hard to debug things.
+
+With /dev/console, we only log what we capture while Plymouth is
+running. Let's do the same with /dev/kmsg
+---
+ src/libply-splash-core/ply-kmsg-reader.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/libply-splash-core/ply-kmsg-reader.c b/src/libply-splash-core/ply-kmsg-reader.c
+index 439da415..9e9de214 100644
+--- a/src/libply-splash-core/ply-kmsg-reader.c
++++ b/src/libply-splash-core/ply-kmsg-reader.c
+@@ -204,6 +204,8 @@ ply_kmsg_reader_start (ply_kmsg_reader_t *kmsg_reader)
+         if (kmsg_reader->kmsg_fd < 0)
+                 return;
+ 
++        lseek (kmsg_reader->kmsg_fd, 0, SEEK_END);
++
+         kmsg_reader->fd_watch = ply_event_loop_watch_fd (ply_event_loop_get_default (), kmsg_reader->kmsg_fd, PLY_EVENT_LOOP_FD_STATUS_HAS_DATA,
+                                                          (ply_event_handler_t) handle_kmsg_message,
+                                                          NULL,
+-- 
+2.49.0
+

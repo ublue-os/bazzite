@@ -1,0 +1,139 @@
+From 2446472f9ac9246f2ee25a92e8ebb17c54b923bd Mon Sep 17 00:00:00 2001
+From: Adrian Vovk <adrianvovk@gmail.com>
+Date: Fri, 9 May 2025 14:44:24 -0400
+Subject: [PATCH 1/3] utils: Don't lose log level when silencing kmsg
+
+Once we disable kmsg logging to the console, the kernel will set the
+console log level to the minimum log level (i.e. only logging kernel
+panics). However the unintended side effect is that our own kmsg-reader
+will start filtering out all kernel log messages, since we also respect
+the kernel's console log level.
+
+This change make it so that we keep using the original console log level
+whenever we disable the kernel's output. This lets us keep forwarding
+the kernel's kmsg output
+---
+ src/libply/ply-utils.c | 79 +++++++++++++++++++++++++-----------------
+ 1 file changed, 47 insertions(+), 32 deletions(-)
+
+diff --git a/src/libply/ply-utils.c b/src/libply/ply-utils.c
+index 6fa64975..782fadd8 100644
+--- a/src/libply/ply-utils.c
++++ b/src/libply/ply-utils.c
+@@ -89,6 +89,10 @@ static int overridden_device_scale = 0;
+ static char kernel_command_line[PLY_MAX_COMMAND_LINE_SIZE];
+ static bool kernel_command_line_is_set;
+ 
++static int cached_current_log_level = 0;
++static int cached_default_log_level = 0;
++static double log_level_update_time = 0.0;
++
+ bool
+ ply_open_unidirectional_pipe (int *sender_fd,
+                               int *receiver_fd)
+@@ -673,20 +677,6 @@ ply_create_file_link (const char *source,
+         return true;
+ }
+ 
+-void
+-ply_show_new_kernel_messages (bool should_show)
+-{
+-        int type;
+-
+-        if (should_show)
+-                type = PLY_ENABLE_CONSOLE_PRINTK;
+-        else
+-                type = PLY_DISABLE_CONSOLE_PRINTK;
+-
+-        if (klogctl (type, NULL, 0) < 0)
+-                ply_trace ("could not toggle printk visibility: %m");
+-}
+-
+ ply_daemon_handle_t *
+ ply_create_daemon (void)
+ {
+@@ -1118,26 +1108,14 @@ int ply_guess_device_scale (uint32_t width,
+         return get_device_scale (width, height, 0, 0, true);
+ }
+ 
+-void
+-ply_get_kmsg_log_levels (int *current_log_level,
+-                         int *default_log_level)
++static void
++ply_get_kmsg_log_levels_uncached (int *current_log_level,
++                                  int *default_log_level)
+ {
+-        static double last_update_time = 0;
+-        static int cached_current_log_level = 0;
+-        static int cached_default_log_level = 0;
+         char log_levels[4096] = "";
+-        double current_time;
+         char *field, *fields;
+         int fd;
+ 
+-        current_time = ply_get_timestamp ();
+-
+-        if ((current_time - last_update_time) < 1.0) {
+-                *current_log_level = cached_current_log_level;
+-                *default_log_level = cached_default_log_level;
+-                return;
+-        }
+-
+         ply_trace ("opening /proc/sys/kernel/printk");
+         fd = open ("/proc/sys/kernel/printk", O_RDONLY);
+ 
+@@ -1171,11 +1149,48 @@ ply_get_kmsg_log_levels (int *current_log_level,
+         }
+ 
+         *default_log_level = atoi (field);
++}
+ 
+-        cached_current_log_level = *current_log_level;
+-        cached_default_log_level = *default_log_level;
++void
++ply_get_kmsg_log_levels (int *current_log_level,
++                         int *default_log_level)
++{
++        double current_time;
++        bool no_cache;
++        bool cache_expired;
+ 
+-        last_update_time = current_time;
++        no_cache = cached_current_log_level == 0 || cached_default_log_level == 0;
++        current_time = ply_get_timestamp ();
++        cache_expired = log_level_update_time > 0.0 && (current_time - log_level_update_time) >= 1.0;
++
++        if (no_cache || cache_expired) {
++                ply_get_kmsg_log_levels_uncached (&cached_current_log_level, &cached_default_log_level);
++                log_level_update_time = current_time;
++        }
++
++        *current_log_level = cached_current_log_level;
++        *default_log_level = cached_default_log_level;
++}
++
++void
++ply_show_new_kernel_messages (bool should_show)
++{
++        int type;
++
++        if (should_show) {
++                type = PLY_ENABLE_CONSOLE_PRINTK;
++
++                cached_current_log_level = cached_default_log_level = 0;
++                log_level_update_time = 0.0;
++        } else {
++                type = PLY_DISABLE_CONSOLE_PRINTK;
++
++                ply_get_kmsg_log_levels_uncached (&cached_current_log_level, &cached_default_log_level);
++                log_level_update_time = -1.0; /* Disable expiration */
++        }
++
++        if (klogctl (type, NULL, 0) < 0)
++                ply_trace ("could not toggle printk visibility: %m");
+ }
+ 
+ static const char *
+-- 
+2.49.0
+

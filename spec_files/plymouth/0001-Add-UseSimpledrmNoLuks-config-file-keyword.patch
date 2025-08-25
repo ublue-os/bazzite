@@ -1,0 +1,64 @@
+From ad4813c9729b27fd2d43252d570b37ed49f8fd28 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hansg@kernel.org>
+Date: Tue, 1 Jul 2025 20:41:24 +0200
+Subject: [PATCH] Add UseSimpledrmNoLuks config file keyword
+
+Add a UseSimpledrmNoLuks config file keyword this enables simpledrm use,
+like the existing "UseSimpledrm" config file keyword. Except when using
+LUKS. Showing the LUKS unlock screen using simpledrm has 2 problems:
+
+1. If the GPU drivers are built into the initrd then typically the
+   unlock screen will briefly show and then the screen goes black
+
+2. The i915 driver uses the firmware framebuffer as fallback when
+   userspace has not installed a fb to scan out from. This happens
+   e.g. on logout between the user-session and the display-manager.
+   Drawing the unlock screen on the simpledrm fb results in it briefly
+   showing when logging out, which looks quite ugly.
+
+This allows distributions to chose to only enable simpledrm when
+LUKS is not used.
+
+Link: https://bugzilla.redhat.com/show_bug.cgi?id=2359283
+Signed-off-by: Hans de Goede <hansg@kernel.org>
+---
+ src/main.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/src/main.c b/src/main.c
+index d9ba7340..320fa965 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -343,6 +343,29 @@ load_settings (state_t    *state,
+         if (state->use_simpledrm == -1)
+                 state->use_simpledrm = ply_key_file_get_ulong (key_file, "Daemon", "UseSimpledrm", -1);
+ 
++        /*
++         * Check the special UseSimpledrmNoLuks config file keyword this enables
++         * simpledrm use except when using LUKS. Showing the LUKS unlock screen
++         * using simpledrm has 2 problems:
++         * 1. If the GPU drivers are built into the initrd then typically the
++         *    unlock screen will briefly show and then the screen goes black
++         *    while the native GPU driver loads leading to a jarring experience.
++         * 2. The i915 driver uses the firmware framebuffer as fallback when
++         *    userspace has not installed a fb to scan out from. This happens
++         *    e.g. on logout between the user-session and the display-manager.
++         *    Drawing the unlock screen on the simpledrm fb results in it briefly
++         *    showing when logging out, which looks quite ugly. Also see:
++         *    https://bugzilla.redhat.com/show_bug.cgi?id=2359283
++         */
++        if (state->use_simpledrm == -1) {
++                state->use_simpledrm = ply_key_file_get_ulong (key_file, "Daemon", "UseSimpledrmNoLuks", -1);
++                if (state->use_simpledrm != -1 &&
++                    ply_kernel_command_line_get_string_after_prefix ("rd.luks.uuid=")) {
++                        ply_trace ("Ignoring UseSimpledrmNoLuks because of LUKS use");
++                        state->use_simpledrm = -1;
++                }
++        }
++
+         settings_loaded = true;
+ out:
+         free (splash_string);
+-- 
+2.49.0
+

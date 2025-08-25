@@ -1,0 +1,201 @@
+From c31399689bf176243696edd68928d1c5cd1cc0a0 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hansg@kernel.org>
+Date: Wed, 2 Jul 2025 09:31:21 +0200
+Subject: [PATCH] Fix keymap and capslock icon on displays on second GPU
+
+The keymap and capslock code in src/plugins/renderers/drm/plugin.c relies
+on the terminal passed to backend_create() to get the keymap and current
+capslock state (when not using evdev input because of e.g. no XKBLAYOUT
+in /etc/vconsole.conf which is the default in at least Fedora).
+
+When 2 GPUs which both have displays attached are used only the first
+one gets passed the local_console_terminal as terminal (it is considered
+the terminal owner and e.g. listens for keypresses). This leads to keymap
+and capslock icons not being shown on displays attached to the second GPU.
+
+To fix this add a second ply_terminal_t argument to backend_create() called
+local_console_terminal, which will pass the local_console_terminal to both
+drm plugin instances. And modify the drm plugin capslock and keymap code to
+use this instead of the normal terminal argument which will be NULL on
+the second GPU.
+
+Signed-off-by: Hans de Goede <hansg@kernel.org>
+---
+ src/libply-splash-core/ply-device-manager.c  |  3 ++-
+ src/libply-splash-core/ply-renderer-plugin.h |  3 ++-
+ src/libply-splash-core/ply-renderer.c        |  8 ++++++--
+ src/libply-splash-core/ply-renderer.h        |  3 ++-
+ src/plugins/renderers/drm/plugin.c           | 13 ++++++++-----
+ src/plugins/renderers/frame-buffer/plugin.c  |  3 ++-
+ src/plugins/renderers/x11/plugin.c           |  3 ++-
+ 7 files changed, 24 insertions(+), 12 deletions(-)
+
+diff --git a/src/libply-splash-core/ply-device-manager.c b/src/libply-splash-core/ply-device-manager.c
+index 7406d5f5..da53f3ae 100644
+--- a/src/libply-splash-core/ply-device-manager.c
++++ b/src/libply-splash-core/ply-device-manager.c
+@@ -1116,7 +1116,8 @@ create_devices_for_terminal_and_renderer_type (ply_device_manager_t *manager,
+                 bool force = manager->device_timeout_elapsed ||
+                              (manager->flags & PLY_DEVICE_MANAGER_FLAGS_FORCE_OPEN);
+ 
+-                renderer = ply_renderer_new (renderer_type, device_path, terminal);
++                renderer = ply_renderer_new (renderer_type, device_path,
++                                             terminal, manager->local_console_terminal);
+ 
+                 if (renderer != NULL && !ply_renderer_open (renderer, force)) {
+                         ply_trace ("could not open renderer for %s", device_path);
+diff --git a/src/libply-splash-core/ply-renderer-plugin.h b/src/libply-splash-core/ply-renderer-plugin.h
+index d9f31de9..7d18f119 100644
+--- a/src/libply-splash-core/ply-renderer-plugin.h
++++ b/src/libply-splash-core/ply-renderer-plugin.h
+@@ -39,7 +39,8 @@ typedef struct _ply_renderer_backend ply_renderer_backend_t;
+ typedef struct
+ {
+         ply_renderer_backend_t * (*create_backend)(const char     *device_name,
+-                                                   ply_terminal_t *terminal);
++                                                   ply_terminal_t *terminal,
++                                                   ply_terminal_t *local_console_terminal);
+         void (*destroy_backend)(ply_renderer_backend_t *backend);
+         bool (*open_device)(ply_renderer_backend_t *backend);
+         void (*close_device)(ply_renderer_backend_t *backend);
+diff --git a/src/libply-splash-core/ply-renderer.c b/src/libply-splash-core/ply-renderer.c
+index 2c555f46..21df22f9 100644
+--- a/src/libply-splash-core/ply-renderer.c
++++ b/src/libply-splash-core/ply-renderer.c
+@@ -51,6 +51,7 @@ struct _ply_renderer
+         ply_renderer_type_t                    type;
+         char                                  *device_name;
+         ply_terminal_t                        *terminal;
++        ply_terminal_t                        *local_console_terminal;
+ 
+         uint32_t                               input_source_is_open : 1;
+         uint32_t                               is_mapped : 1;
+@@ -65,7 +66,8 @@ static void ply_renderer_unload_plugin (ply_renderer_t *renderer);
+ ply_renderer_t *
+ ply_renderer_new (ply_renderer_type_t renderer_type,
+                   const char         *device_name,
+-                  ply_terminal_t     *terminal)
++                  ply_terminal_t     *terminal,
++                  ply_terminal_t     *local_console_terminal)
+ {
+         ply_renderer_t *renderer;
+ 
+@@ -77,6 +79,7 @@ ply_renderer_new (ply_renderer_type_t renderer_type,
+                 renderer->device_name = strdup (device_name);
+ 
+         renderer->terminal = terminal;
++        renderer->local_console_terminal = local_console_terminal;
+ 
+         return renderer;
+ }
+@@ -148,7 +151,8 @@ ply_renderer_load_plugin (ply_renderer_t *renderer,
+         }
+ 
+         renderer->backend = renderer->plugin_interface->create_backend (renderer->device_name,
+-                                                                        renderer->terminal);
++                                                                        renderer->terminal,
++                                                                        renderer->local_console_terminal);
+ 
+         if (renderer->backend == NULL) {
+                 ply_save_errno ();
+diff --git a/src/libply-splash-core/ply-renderer.h b/src/libply-splash-core/ply-renderer.h
+index 5ba18118..7c3406e2 100644
+--- a/src/libply-splash-core/ply-renderer.h
++++ b/src/libply-splash-core/ply-renderer.h
+@@ -53,7 +53,8 @@ typedef void (*ply_renderer_input_source_handler_t) (void
+ #ifndef PLY_HIDE_FUNCTION_DECLARATIONS
+ ply_renderer_t *ply_renderer_new (ply_renderer_type_t renderer_type,
+                                   const char         *device_name,
+-                                  ply_terminal_t     *terminal);
++                                  ply_terminal_t     *terminal,
++                                  ply_terminal_t     *local_console_terminal);
+ void ply_renderer_free (ply_renderer_t *renderer);
+ bool ply_renderer_open (ply_renderer_t *renderer,
+                         bool            force);
+diff --git a/src/plugins/renderers/drm/plugin.c b/src/plugins/renderers/drm/plugin.c
+index f1b05573..6f8f20f6 100644
+--- a/src/plugins/renderers/drm/plugin.c
++++ b/src/plugins/renderers/drm/plugin.c
+@@ -138,6 +138,7 @@ struct _ply_renderer_backend
+ {
+         ply_event_loop_t           *loop;
+         ply_terminal_t             *terminal;
++        ply_terminal_t             *local_console_terminal;
+ 
+         int                         device_fd;
+         bool                        simpledrm;
+@@ -880,7 +881,8 @@ free_heads (ply_renderer_backend_t *backend)
+ 
+ static ply_renderer_backend_t *
+ create_backend (const char     *device_name,
+-                ply_terminal_t *terminal)
++                ply_terminal_t *terminal,
++                ply_terminal_t *local_console_terminal)
+ {
+         ply_renderer_backend_t *backend;
+ 
+@@ -900,6 +902,7 @@ create_backend (const char     *device_name,
+         backend->input_source.key_buffer = ply_buffer_new ();
+         backend->input_source.input_devices = ply_list_new ();
+         backend->terminal = terminal;
++        backend->local_console_terminal = local_console_terminal;
+         backend->requires_explicit_flushing = true;
+         backend->output_buffers = ply_hashtable_new (ply_hashtable_direct_hash,
+                                                      ply_hashtable_direct_compare);
+@@ -2023,10 +2026,10 @@ get_capslock_state (ply_renderer_backend_t *backend)
+ 
+                 return ply_input_device_get_capslock_state (dev);
+         }
+-        if (!backend->terminal)
++        if (!backend->local_console_terminal)
+                 return false;
+ 
+-        return ply_terminal_get_capslock_state (backend->terminal);
++        return ply_terminal_get_capslock_state (backend->local_console_terminal);
+ }
+ 
+ static const char *
+@@ -2043,10 +2046,10 @@ get_keymap (ply_renderer_backend_t *backend)
+                         return keymap;
+                 }
+         }
+-        if (!backend->terminal)
++        if (!backend->local_console_terminal)
+                 return NULL;
+ 
+-        return ply_terminal_get_keymap (backend->terminal);
++        return ply_terminal_get_keymap (backend->local_console_terminal);
+ }
+ 
+ static void
+diff --git a/src/plugins/renderers/frame-buffer/plugin.c b/src/plugins/renderers/frame-buffer/plugin.c
+index 4518a80c..f8463cd5 100644
+--- a/src/plugins/renderers/frame-buffer/plugin.c
++++ b/src/plugins/renderers/frame-buffer/plugin.c
+@@ -243,7 +243,8 @@ flush_area_to_xrgb32_device (ply_renderer_backend_t *backend,
+ 
+ static ply_renderer_backend_t *
+ create_backend (const char     *device_name,
+-                ply_terminal_t *terminal)
++                ply_terminal_t *terminal,
++                ply_terminal_t *local_console_terminal)
+ {
+         ply_renderer_backend_t *backend;
+ 
+diff --git a/src/plugins/renderers/x11/plugin.c b/src/plugins/renderers/x11/plugin.c
+index 87aa7a93..24c1859e 100644
+--- a/src/plugins/renderers/x11/plugin.c
++++ b/src/plugins/renderers/x11/plugin.c
+@@ -115,7 +115,8 @@ static gboolean on_key_event (GtkWidget   *widget,
+ 
+ static ply_renderer_backend_t *
+ create_backend (const char     *device_name,
+-                ply_terminal_t *terminal)
++                ply_terminal_t *terminal,
++                ply_terminal_t *local_console_terminal)
+ {
+         ply_renderer_backend_t *backend;
+ 
+-- 
+2.49.0
+
