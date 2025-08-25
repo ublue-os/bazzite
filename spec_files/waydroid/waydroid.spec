@@ -1,7 +1,7 @@
 %global forgeurl https://github.com/waydroid/waydroid
 %global selinuxtype targeted
 
-Version:        1.4.3
+Version:        1.5.4
 %global tag %{version}
 
 %forgemeta
@@ -153,6 +153,32 @@ fi
 %{_datadir}/selinux/%{selinuxtype}/%{name}.pp
 
 %changelog
+Tue Jun 24 2025 Alessandro Astone <alessandro.astone@canonical.com> - 1.5.4
+- Fixup `waydroid shell` regression
+
+Sun Jun 22 2025 Alessandro Astone <alessandro.astone@canonical.com> - 1.5.3
+- Remove unused python imports
+- Fix missing environment variables in waydroid shell
+- Declare OpenGL ES 3.2 support in system properties
+
+* Sat May 31 2025 Alessandro Astone <alessandro.astone@canonical.com> - 1.5.2
++ - Separately identify arm64_only CPUs without AArch32 support
++ - Fix AppStream data for `appstream-generator`
+
+* Sun Mar 30 2025 Alessandro Astone <alessandro.astone@canonical.com> - 1.5.1
++ - Do not warn about missing pyclip anymore, as clipboard sync is now implemented natively
++ - Experimental support for DMA Heaps
++ - Improve compatibility with Multi-GPU setups:
+    - Fix Mesa failing to load
+    - You can now specify the preferred DRM render node in /var/lib/waydroid.cfg as:
+    - drm_device = /dev/dri/renderD128
+
+
+* Sun Mar 30 2025 Alessandro Astone <alessandro.astone@canonical.com> - 1.5.0
++ - Add vulkan support for Intel Haswell GPUs
++ - Do not expose the DRM card node to the container
++ - Initial support for future Android 13 images
+
 * Sat Aug 10 2024 Alessandro Astone <alessandro.astone@canonical.com> - 1.4.3-1
 + - new version (rhbz#2303618)
 + - fix python 3.12 error (rhbz#2258411)
