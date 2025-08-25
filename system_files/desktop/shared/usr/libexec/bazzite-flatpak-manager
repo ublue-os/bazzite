@@ -118,9 +118,6 @@ mkdir -p /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stab
 rm -f /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stable/defaults/pref/*bazzite*.js
 /usr/bin/cp -rf /usr/share/ublue-os/firefox-config/* /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stable/defaults/pref/
 
-# Update Flatpaks
-flatpak --system update -y
-
 mkdir -p /etc/bazzite
 echo $VER > $VER_FILE
 echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE

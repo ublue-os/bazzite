@@ -27,6 +27,14 @@ _install_appimage_file $APPIMAGE_SRC $filename="":
 # Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
 install-coolercontrol:
     #!/usr/bin/bash
+    set -eo pipefail
+
+    cat <<'EOF'
+    {{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}CoolerControl{{ NORMAL }}.
+    {{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"
+    {{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}
+    EOF
+
     echo 'Enabling Terra Repository.'
     sudo sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/terra.repo
     echo 'Installing Cooler Control'
@@ -57,11 +65,20 @@ alias get-steamcmd := install-steamcmd
 
 # Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD)
 install-steamcmd:
+    #!/usr/bin/bash
+    if [[ $UID -eq 0 ]]; then
+        echo >&2 "This ujust should not be run as root."
+        exit 1
+    fi
     echo 'Installing SteamCMD...'
     wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O /tmp/steamcmd.tar.gz
     mkdir -p ~/.steam
     tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
     rm /tmp/steamcmd.tar.gz
+    if [[ -f ~/.steam/steamcmd.sh ]]; then
+        mkdir -p ~/.local/bin
+        ln -s ~/.steam/steamcmd.sh ~/.local/bin/steamcmd
+    fi
 
 # Install OpenRazer for Razer gaming hardware
 install-openrazer:

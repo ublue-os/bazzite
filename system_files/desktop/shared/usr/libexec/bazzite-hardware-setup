@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=60
+HWS_VER=62
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -20,6 +20,15 @@ KNOWN_IMAGE_FLAVOR_FILE="/etc/bazzite/image_flavor"
 KNOWN_IMAGE_FLAVOR=$(cat $KNOWN_IMAGE_FLAVOR_FILE)
 KNOWN_FEDORA_VERSION_FILE="/etc/bazzite/fedora_version"
 KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
+
+if [[ "$KNOWN_IMAGE_NAME" == "$IMAGE_NAME" && \
+    "$KNOWN_IMAGE_BRANCH" == "$IMAGE_BRANCH" && \
+    "$KNOWN_IMAGE_FLAVOR" == "$IMAGE_FLAVOR" && \
+    "$KNOWN_FEDORA_VERSION" == "$FEDORA_VERSION" && \
+    "$HWS_VER_RAN" == "$HWS_VER" ]]; then
+  echo "Hardware setup already ran for version $HWS_VER_RAN, skipping"
+  exit 0
+fi
 
 # GLOBAL
 SYS_ID="$(/usr/libexec/hwsupport/sysid)"
@@ -96,61 +105,56 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
   fi
 fi
 
+#
+# GTT SIZE
+#
 if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "video" ]]; then
-    echo "Adding panel orientation for Lenovo Legion Go"
-    NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")
-  fi
   if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
     echo "Adding GTTSize for Lenovo Legion Go"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
-  fi
-  if [[ ! $KARGS =~ "amdgpu.sg_display" ]]; then
-    echo "Adding SG Display for Lenovo Legion Go"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.sg_display=0")
   fi
 elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
     echo "Adding GTTSize for ASUS Ally"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
   fi
-  if [[ ! $KARGS =~ "amdgpu.sg_display" ]]; then
-    echo "Adding SG Display for ASUS Ally"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.sg_display=0")
-  fi
 elif [[ ":ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
     echo "Adding GTTSize for ASUS Ally X"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=12192")
   fi
-  if [[ ! $KARGS =~ "amdgpu.sg_display" ]]; then
-    echo "Adding SG Display for ASUS Ally X"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.sg_display=0")
-  fi
-elif [[ ":G1617-01:" =~ ":$SYS_ID:" && ! $CPU_MODEL =~ 8640U|8840U|7640U ]]; then
-  if [[ ! $KARGS =~ "video" ]]; then
-    echo "Adding panel orientation for GPD Win Mini 2023"
-    NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
-  fi
-elif [[ ":G1617-01:" =~ ":$SYS_ID:" ]]; then
-  echo "Removing panel orientation for GPD Win Mini 2024 if exists"
-  NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=right_side_up")
-elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "video" ]]; then
-    echo "Adding panel orientation for GPD Win 2"
-    NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=right_side_up")
-  fi
 elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "video" ]]; then
-    echo "Adding panel orientation for ONEXPLAYER F1, ONEXFLY, X1 Pro, Loki Max, & Zeenix Pro"
-    NEEDED_KARGS+=("--append-if-missing=video=eDP-1:panel_orientation=left_side_up")
-  fi
   if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
     if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
       echo "Adding GTTSize for ONEXPLAYER (32GB RAM)"
       NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=16256")
     fi
   fi
+fi
+
+# Remove sg_display
+if [[ ":83E1:ROG Ally RC71L:ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
+  if [[ ! -f /etc/bazzite/fixups/sg_display && $KARGS =~ "amdgpu.sg_display" ]]; then
+    echo "Removing sd_display=0 (it is not needed anymore)"
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.sg_display=0")
+  fi
+  touch /etc/bazzite/fixups/sg_display
+fi
+
+if [[ ! -f /etc/bazzite/fixups/orientation_old ]]; then
+  echo "Removing panel orientation for device in kernel if exists"
+  if [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=left_side_up")
+  elif [[ ":G1617-01:" =~ ":$SYS_ID:" && ! $CPU_MODEL =~ 8640U|8840U|7640U ]]; then
+    NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=right_side_up")
+  elif [[ ":G1617-01:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=right_side_up")
+  elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=right_side_up")
+  elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=left_side_up")
+  fi
+  touch /etc/bazzite/fixups/orientation_old
 fi
 
 # Slide reboots randomly, acpi=strict seems to fix it
@@ -173,10 +177,11 @@ if [[ ! $KARGS =~ "disable_ertm" ]]; then
   NEEDED_KARGS+=("--append-if-missing=bluetooth.disable_ertm=1")
 fi
 
-if [[ ! $KARGS =~ "preempt" ]]; then
-  echo "Adding needed kargs for full preemption"
-  NEEDED_KARGS+=("--append-if-missing=preempt=full")
+if [[ ! -f /etc/bazzite/fixups/preempt_cleanup && $KARGS =~ "preempt" ]]; then
+  echo "Removing full preemption (once)"
+  NEEDED_KARGS+=("--delete-if-present=preempt=full")
 fi
+touch /etc/bazzite/fixups/preempt_cleanup
 
 if [[ $KARGS =~ "nomodeset" ]]; then
   echo "Removing nomodeset"
@@ -395,6 +400,21 @@ if [ ! -f /etc/bazzite/fixups/grub_fixup ]; then
   fi
 fi
 touch /etc/bazzite/fixups/grub_fixup
+
+if [ ! -f /etc/bazzite/fixups/grub_blank ] &&
+    [ -z $(grep "GRUB_TERMINAL_OUTPUT=" /etc/default/grub) ]; then
+  echo 'GRUB_TERMINAL_OUTPUT="console"' >> /etc/default/grub
+
+  # Update grub
+  if [ -d /sys/firmware/efi ]; then
+    echo "Updating EFI grub config"
+    grub2-mkconfig -o /etc/grub2-efi.cfg
+  else
+    echo "Updating BIOS grub config"
+    grub2-mkconfig -o /etc/grub2.cfg
+  fi
+fi
+touch /etc/bazzite/fixups/grub_blank
 
 # Fix missing hostname file breaking distrobox
 if [ ! -f /etc/hostname ]; then

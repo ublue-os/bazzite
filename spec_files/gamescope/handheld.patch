@@ -2871,12 +2871,12 @@ Date: Wed, 30 Oct 2024 00:39:03 +0100
 Subject: fix(battery): run at half hz while at steamUI with atom
 
 ---
- src/steamcompmgr.cpp | 40 ++++++++++++++++++++++++++++++++--------
+ src/steamcompmgr.cpp | 44 ++++++++++++++++++++++++++++++++++----------
  src/xwayland_ctx.hpp |  2 ++
- 2 files changed, 34 insertions(+), 8 deletions(-)
+ 2 files changed, 36 insertions(+), 10 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index e46c34bbfbc0..cbaf44bfd9b8 100644
+index e46c34bbfbc0..3b3a106b13e9 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -165,6 +165,8 @@ uint32_t g_reshade_technique_idx = 0;
@@ -2973,6 +2973,15 @@ index e46c34bbfbc0..cbaf44bfd9b8 100644
  }
  
  static int
+@@ -6300,7 +6307,7 @@ void handle_presented_for_window( steamcompmgr_win_t* w )
+ 
+ 	uint64_t next_refresh_time = g_SteamCompMgrVBlankTime.schedule.ulTargetVBlank;
+ 
+-	uint64_t refresh_cycle = g_nSteamCompMgrTargetFPS && steamcompmgr_window_should_limit_fps( w )
++	uint64_t refresh_cycle = g_nSteamCompMgrTargetFPS && (steamcompmgr_window_should_limit_fps( w ) || b_bForceFrameLimit)
+ 		? g_SteamCompMgrLimitedAppRefreshCycle
+ 		: g_SteamCompMgrAppRefreshCycle;
+ 
 @@ -7124,6 +7131,8 @@ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_
  	ctx->atoms.primarySelection = XInternAtom(ctx->dpy, "PRIMARY", false);
  	ctx->atoms.targets = XInternAtom(ctx->dpy, "TARGETS", false);
@@ -2982,14 +2991,23 @@ index e46c34bbfbc0..cbaf44bfd9b8 100644
  	ctx->root_width = DisplayWidth(ctx->dpy, ctx->scr);
  	ctx->root_height = DisplayHeight(ctx->dpy, ctx->scr);
  
+@@ -7542,7 +7551,7 @@ steamcompmgr_main(int argc, char **argv)
+ 				} else if (strcmp(opt_name, "hdr-itm-target-nits") == 0) {
+ 					g_flHDRItmTargetNits = atof(optarg);
+ 				} else if (strcmp(opt_name, "framerate-limit") == 0) {
+-					g_nSteamCompMgrTargetFPS = atoi(optarg);
++					g_nSteamCompMgrTargetFPSreq = atoi(optarg);
+ 				} else if (strcmp(opt_name, "reshade-effect") == 0) {
+ 					g_reshade_effect = optarg;
+ 				} else if (strcmp(opt_name, "reshade-technique-idx") == 0) {
 @@ -7667,6 +7676,21 @@ steamcompmgr_main(int argc, char **argv)
  		// as a question.
  		const bool bIsVBlankFromTimer = vblank;
  
 +		if ( g_bRefreshHalveEnable && window_is_steam( global_focus.focusWindow ) ) {
-+			// Halve refresh rate and disable vrr on SteamUI
++			// Halve refresh rate on SteamUI
 +			int nRealRefreshHz = gamescope::ConvertmHzToHz( g_nNestedRefresh ? g_nNestedRefresh : g_nOutputRefresh );
-+			if (nRealRefreshHz > 100 && g_nSteamCompMgrTargetFPSreq > 34) {
++			if (nRealRefreshHz > 100 && (g_nSteamCompMgrTargetFPSreq > 50 || !g_nSteamCompMgrTargetFPSreq)) {
 +				g_nSteamCompMgrTargetFPS = nRealRefreshHz / 2;
 +				b_bForceFrameLimit = true;
 +			} else {
@@ -3102,7 +3120,7 @@ index a3a11a7ba96f..0f8cba8516c0 100644
  	struct Layer_t
  	{
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index cbaf44bfd9b8..b625b1f13d29 100644
+index 3b3a106b13e9..fcdc9ac1559f 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -167,6 +167,8 @@ bool g_bSteamIsActiveWindow = false;
@@ -3738,7 +3756,7 @@ index c96b8f0ac39e..58230054ce53 100644
  	"  --hdr-itm-sdr-nits             set the luminance of SDR content in nits used as the input for the inverse tone mapping process.\n"
  	"                                 Default: 100 nits, Max: 1000 nits\n"
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index b625b1f13d29..d4c4c5422618 100644
+index fcdc9ac1559f..86df7eaf681f 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -363,6 +363,7 @@ bool g_bVRRInUse_CachedValue = false;
@@ -4048,7 +4066,7 @@ Subject: fix: prevent external overlays from pulling focus
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index d4c4c5422618..83fa7485a403 100644
+index 86df7eaf681f..be69ce4b391f 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -6132,8 +6132,8 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
@@ -4259,7 +4277,7 @@ it to activate g_bFSRActive when applicable.
  1 file changed, 3 insertions(+)
 
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 83fa7485a403..8fcc18d6225d 100644
+index be69ce4b391f..f867335557f9 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
 @@ -2509,6 +2509,9 @@ paint_all( bool async, bool dpms )
@@ -4325,6 +4343,96 @@ index d833d0093830..ac5c16dab035 100644
  		},
  	};
  	
+-- 
+2.50.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Wed, 20 Aug 2025 22:07:52 +0200
+Subject: feat: add Ayaneo 3 display
+
+---
+ .../displays/ayaneo.ayaneo3.oled.lua          | 69 +++++++++++++++++++
+ 1 file changed, 69 insertions(+)
+ create mode 100644 scripts/00-gamescope/displays/ayaneo.ayaneo3.oled.lua
+
+diff --git a/scripts/00-gamescope/displays/ayaneo.ayaneo3.oled.lua b/scripts/00-gamescope/displays/ayaneo.ayaneo3.oled.lua
+new file mode 100644
+index 000000000000..9f6f725560b6
+--- /dev/null
++++ b/scripts/00-gamescope/displays/ayaneo.ayaneo3.oled.lua
+@@ -0,0 +1,69 @@
++local panel_id = "aya_fhd_oled"
++local panel_name = "AYA FHD OLED Panel"
++
++local panel_models = {
++  { vendor = "AYA", model = "AYAOLED_FHD" },
++}
++
++local panel_refresh_rates = { 60, 90, 120, 144 }
++
++local panel_hdr = {
++   supported = true,
++   force_enabled = true,
++   eotf = gamescope.eotf.ST2084,
++   max_content_light_level = 993.486,
++   max_frame_average_luminance = 400,
++   min_content_light_level = 0.007
++}
++
++
++gamescope.config.known_displays[panel_id] = {
++  pretty_name = panel_name,
++
++  -- These tables are optional
++  colorimetry = (panel_colorimetry ~= nil) and panel_colorimetry,
++  dynamic_refresh_rates = (panel_refresh_rates ~= nil) and panel_refresh_rates,
++  hdr = (panel_hdr ~= nil) and panel_hdr,
++
++  dynamic_modegen = function(base_mode, refresh)
++    local mode = base_mode
++    debug("["..panel_id.."] Switching mode to "..mode.hdisplay.."x"..mode.vdisplay.."@"..refresh.."Hz")
++
++    -- Override blanking intervals if defined
++    if panel_resolutions ~= nil then
++      for i, res in ipairs(panel_resolutions) do
++        if res.width == mode.hdisplay and res.height == mode.vdisplay then
++
++          if res.hfp ~= nil and res.hsync ~= nil and res.hbp ~= nil then
++            gamescope.modegen.set_h_timings(mode, set_res.hfp, set_res.hsync, set_res.hbp)
++            debug("["..panel_id.."] Overriding horizontal blanking interval")
++          end
++
++          if res.vfp ~= nil and res.vsync ~= nil and res.vbp ~= nil then
++            gamescope.modegen.set_v_timings(mode, set_res.vfp, set_res.vsync, set_res.vbp)
++            debug("["..panel_id.."] Overriding vertical blanking interval")
++          end
++
++          -- No need to iterate anymore
++          break
++        end
++      end
++    end
++
++    mode.clock = gamescope.modegen.calc_max_clock(mode, refresh)
++    mode.vrefresh = gamescope.modegen.calc_vrefresh(mode)
++
++    return mode
++  end,
++
++  matches = function(display)
++    for i, panel in ipairs(panel_models) do
++      if panel.vendor == display.vendor and panel.model == display.model then
++        debug("["..panel_id.."] Matched vendor: "..display.vendor.." model: "..display.model)
++        return 4000
++      end
++    end
++
++    return -1
++  end
++}
+\ No newline at end of file
 -- 
 2.50.1
 

@@ -1,0 +1,12 @@
+[Unit]
+Description=Update Flatpak runtimes on boot in case the NVIDIA drivers on the host have been updated
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c '/usr/bin/flatpak update -y --system --noninteractive $(flatpak list --system --runtime --columns=ref)'
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

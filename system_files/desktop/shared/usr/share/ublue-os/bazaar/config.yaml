@@ -91,6 +91,7 @@ sections:
       - com.pokemmo.PokeMMO
       - com.etlegacy.ETLegacy
       - com.realm667.Wolfenstein_Blade_of_Agony
+      - net.stabyourself.nottetris2
       - org.srb2.SRB2
       - org.srb2.SRB2Kart
       - org.kartkrew.RingRacers
