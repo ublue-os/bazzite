@@ -6,7 +6,7 @@ Version:        1.5.4
 
 %forgemeta
 Name:           waydroid
-Release:        100%{?dist}.bazzite
+Release:        3%{?dist}
 Summary:        Container-based approach to boot a full Android system on GNU/Linux
 License:        GPL-3.0-only
 URL:            %{forgeurl}
@@ -22,11 +22,7 @@ Patch0:         setup-firewalld.patch
 Patch1:         mount-secontext.patch
 
 # Fedora LXC is compiled without AppArmor support and fails to parse lxc.apparmor.profile config
-Patch2:         no-apparmor.patch 
-
-# https://github.com/waydroid/waydroid/issues/1550
-# initializer: Refactor setup to better handle preinstalled images
-Patch3:         5000c9703de873e4f477ebcdd3556ad163252115.patch
+Patch2:         no-apparmor.patch
 
 BuildArch:      noarch
 
@@ -40,7 +36,7 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 
 Requires:       python3dist(gbinder-python) >= 1.1.0
-Requires:       python3dist(dbus-python) 
+Requires:       python3dist(dbus-python)
 Requires:       python3-gobject
 Requires:       lxc
 Requires:       gtk3
@@ -153,38 +149,43 @@ fi
 %{_datadir}/selinux/%{selinuxtype}/%{name}.pp
 
 %changelog
-Tue Jun 24 2025 Alessandro Astone <alessandro.astone@canonical.com> - 1.5.4
-+ - Fixup `waydroid shell` regression
+* Fri Aug 15 2025 Python Maint <python-maint@redhat.com> - 1.5.4-3
+- Rebuilt for Python 3.14.0rc2 bytecode
 
-Sun Jun 22 2025 Alessandro Astone <alessandro.astone@canonical.com> - 1.5.3
-+ - Remove unused python imports
-+ - Fix missing environment variables in waydroid shell
-+ - Declare OpenGL ES 3.2 support in system properties
+* Fri Jul 25 2025 Fedora Release Engineering <releng@fedoraproject.org> - 1.5.4-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_43_Mass_Rebuild
 
-* Sat May 31 2025 Alessandro Astone <alessandro.astone@canonical.com> - 1.5.2
-+ - Separately identify arm64_only CPUs without AArch32 support
-+ - Fix AppStream data for `appstream-generator`
+* Sat Jul 05 2025 Alessandro Astone <ales.astone@gmail.com> - 1.5.4-1
+- new version
 
-* Sun Mar 30 2025 Alessandro Astone <alessandro.astone@canonical.com> - 1.5.1
-+ - Do not warn about missing pyclip anymore, as clipboard sync is now implemented natively
-+ - Experimental support for DMA Heaps
-+ - Improve compatibility with Multi-GPU setups:
-  + - Fix Mesa failing to load
-  + - You can now specify the preferred DRM render node in /var/lib/waydroid.cfg as:
-  + - drm_device = /dev/dri/renderD128
+* Tue Apr 01 2025 Alessandro Astone <ales.astone@gmail.com> - 1.5.1-2
+- Add SELinux policy for /dev/dma_heap
 
-* Sun Mar 30 2025 Alessandro Astone <alessandro.astone@canonical.com> - 1.5.0
-+ - Add vulkan support for Intel Haswell GPUs
-+ - Do not expose the DRM card node to the container
-+ - Initial support for future Android 13 images
+* Wed Mar 26 2025 Alessandro Astone <ales.astone@gmail.com> - 1.5.1-1
+- new version
+
+* Wed Mar 12 2025 Alessandro Astone <ales.astone@gmail.com> - 1.5.0-1
+- new version
+
+* Sun Jan 19 2025 Fedora Release Engineering <releng@fedoraproject.org> - 1.4.3-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
+
+* Wed Sep 04 2024 Alessandro Astone <ales.astone@gmail.com> - 1.4.3-2
+- Backport patch to fix initializing with preinstalled images
 
 * Sat Aug 10 2024 Alessandro Astone <alessandro.astone@canonical.com> - 1.4.3-1
-+ - new version (rhbz#2303618)
-+ - fix python 3.12 error (rhbz#2258411)
-+ - make it clearer that OTA channels must be provided to `waydroid init`
+- new version (rhbz#2303618)
+- fix python 3.12 error (rhbz#2258411)
+- make it clearer that OTA channels must be provided to `waydroid init`
+
+* Sat Jul 20 2024 Fedora Release Engineering <releng@fedoraproject.org> - 1.4.2-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
 
 * Thu Mar 14 2024 Alessandro Astone <ales.astone@gmail.com> - 1.4.2-3
 - Completely disable apparmor
+
+* Sat Jan 27 2024 Fedora Release Engineering <releng@fedoraproject.org> - 1.4.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
 
 * Tue Oct 31 2023 Alessandro Astone <ales.astone@gmail.com> - 1.4.2-1
 - Update to 1.4.2
