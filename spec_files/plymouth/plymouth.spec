@@ -5,7 +5,7 @@ Release: 100.bazzite
 License: GPL-2.0-or-later
 URL: http://www.freedesktop.org/wiki/Software/Plymouth
 
-Source0: https://gitlab.freedesktop.org/plymouth/plymouth/-/archive/%{version}/%{name}-%{version}.tar.bz2
+Source0: %{name}-%{version}.tar.bz2
 # Spinner update from: https://gitlab.freedesktop.org/plymouth/plymouth/-/commit/1a01883fa2659bfb5e7417e1d5bd8d287a2cac36
 # Drop this on next rebase to latest upstream
 Source1: spinner-update.tar.gz
