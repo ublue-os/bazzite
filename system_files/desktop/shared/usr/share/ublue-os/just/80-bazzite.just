@@ -619,8 +619,8 @@ toggle-password-feedback ACTION="":
 get-decky-bazzite-buddy:
     #!/bin/bash
     set -euo pipefail
-    REPO_OWNER="xXJSONDeruloXx"
-    REPO_NAME="bazzite-buddy"
+    REPO_OWNER="bazzite-org"
+    REPO_NAME="decky-bazzite-buddy"
     PLUGIN_NAME="bazzite-buddy"
     PLUGIN_DIR="$HOME/homebrew/plugins"
 
