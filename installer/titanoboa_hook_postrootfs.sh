@@ -57,11 +57,11 @@ EOF
 echo "Bazzite release $VERSION_ID ($VERSION_CODENAME)" >/etc/system-release
 
 # Get Artwork
-git clone https://github.com/ublue-os/packages.git /root/packages
+git clone --depth 1 --quiet https://github.com/ublue-os/bazzite.git /root/packages
 case "${PRETTY_NAME,,}" in
 "bazzite"*)
     mkdir -p /usr/share/anaconda/pixmaps/silverblue
-    cp -r /root/packages/bazzite/fedora-logos/* /usr/share/anaconda/pixmaps/
+    cp -r /root/packages/installer/branding/* /usr/share/anaconda/pixmaps/
     ;;
 esac
 rm -rf /root/packages
