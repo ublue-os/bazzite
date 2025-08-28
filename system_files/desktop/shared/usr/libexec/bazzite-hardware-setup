@@ -185,20 +185,6 @@ if [[ $KARGS =~ "nomodeset" ]]; then
   NEEDED_KARGS+=("--delete-if-present=nomodeset")
 fi
 
-if [[ -n "$NEEDED_KARGS" ]]; then
-  echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
-  plymouth display-message --text="Preparing System - Please wait, this may take a while" || true
-  rpm-ostree kargs ${NEEDED_KARGS[*]} || exit 1
-  echo "Rebooting to apply karg changes"
-  SHOULD_REBOOT=true
-else
-  echo "No karg changes needed"
-fi
-# Applied / did not need to apply
-touch /etc/bazzite/fixups/sg_display2
-touch /etc/bazzite/fixups/preempt_cleanup2
-touch /etc/bazzite/fixups/orientation_old2
-
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   if /usr/libexec/hwsupport/valve-hardware; then
     if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
@@ -430,6 +416,20 @@ echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
 echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE
 echo $FEDORA_VERSION > $KNOWN_FEDORA_VERSION_FILE
 echo $IMAGE_BRANCH > $KNOWN_IMAGE_BRANCH_FILE
+
+if [[ -n "$NEEDED_KARGS" ]]; then
+  echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
+  plymouth display-message --text="Preparing System - Please wait, this may take a while" || true
+  rpm-ostree kargs ${NEEDED_KARGS[*]} || exit 1
+  echo "Rebooting to apply karg changes"
+  SHOULD_REBOOT=true
+else
+  echo "No karg changes needed"
+fi
+# Applied / did not need to apply
+touch /etc/bazzite/fixups/sg_display2
+touch /etc/bazzite/fixups/preempt_cleanup2
+touch /etc/bazzite/fixups/orientation_old2
 
 if [[ "$SHOULD_REBOOT" == true ]]; then
   echo "Rebooting to apply karg changes"
