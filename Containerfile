@@ -520,9 +520,9 @@ RUN --mount=type=cache,dst=/var/cache \
             jq -r '.assets | sort_by(.created_at) | .[] | select (.name|test("^tilingshell@.*zip$")) | .browser_download_url' | \
             wget -qi - -O /tmp/tilingshell/tilingshell@ferrarodomenico.com.zip && \
         unzip /tmp/tilingshell/tilingshell@ferrarodomenico.com.zip -d /usr/share/gnome-shell/extensions/tilingshell@ferrarodomenico.com && \
-        /ctx/ghcurl "https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer" --retry 3 -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
         systemctl enable dconf-update.service \
     ; fi && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer" --retry 3 -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
     /ctx/cleanup
 
 # ublue-os packages
