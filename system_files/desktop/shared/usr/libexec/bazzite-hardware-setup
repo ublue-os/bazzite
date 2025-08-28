@@ -39,6 +39,7 @@ MINIMUM_FREE_ZRAM=$(awk '/MemTotal/ {printf "%.0f", $2 * 0.01}' /proc/meminfo)
 CURRENT_FREE_ZRAM=$(sysctl vm.min_free_kbytes | awk '{print $3}')
 KARGS=$(rpm-ostree kargs)
 NEEDED_KARGS=()
+NEEDED_KARGS_COMMANDS=()
 
 # Add directory for fixups
 mkdir -p /etc/bazzite/fixups
@@ -138,7 +139,7 @@ if [[ ":83E1:ROG Ally RC71L:ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
     echo "Removing sd_display=0 (it is not needed anymore)"
     NEEDED_KARGS+=("--delete-if-present=amdgpu.sg_display=0")
   fi
-  touch /etc/bazzite/fixups/sg_display
+  NEEDED_KARGS_COMMANDS+=("touch /etc/bazzite/fixups/sg_display")
 fi
 
 if [[ ! -f /etc/bazzite/fixups/orientation_old ]]; then
@@ -154,7 +155,7 @@ if [[ ! -f /etc/bazzite/fixups/orientation_old ]]; then
   elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
     NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=left_side_up")
   fi
-  touch /etc/bazzite/fixups/orientation_old
+  NEEDED_KARGS_COMMANDS+=("touch /etc/bazzite/fixups/orientation_old")
 fi
 
 # Slide reboots randomly, acpi=strict seems to fix it
@@ -181,7 +182,7 @@ if [[ ! -f /etc/bazzite/fixups/preempt_cleanup && $KARGS =~ "preempt" ]]; then
   echo "Removing full preemption (once)"
   NEEDED_KARGS+=("--delete-if-present=preempt=full")
 fi
-touch /etc/bazzite/fixups/preempt_cleanup
+NEEDED_KARGS_COMMANDS+=("touch /etc/bazzite/fixups/preempt_cleanup")
 
 if [[ $KARGS =~ "nomodeset" ]]; then
   echo "Removing nomodeset"
@@ -191,7 +192,13 @@ fi
 if [[ -n "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
   plymouth display-message --text="Preparing System - Please wait, this may take a while" || true
-  rpm-ostree kargs ${NEEDED_KARGS[*]} --reboot || exit 1
+
+  rpm-ostree kargs ${NEEDED_KARGS[*]} || exit 1
+  for command in "${NEEDED_KARGS_COMMANDS[@]}"; do
+    eval "$command"
+  done
+  echo "Rebooting system"
+  systemctl reboot
 else
   echo "No karg changes needed"
 fi
