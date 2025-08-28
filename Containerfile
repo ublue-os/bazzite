@@ -451,6 +451,7 @@ RUN --mount=type=cache,dst=/var/cache \
             fcitx5-hangul \
             kcm-fcitx5 \
             gnome-disk-utility \
+            kio-extras \
             krunner-bazaar \
             ptyxis && \
         dnf5 -y remove \
