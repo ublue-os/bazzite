@@ -421,7 +421,6 @@ if [[ -n "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
   plymouth display-message --text="Preparing System - Please wait, this may take a while" || true
   rpm-ostree kargs ${NEEDED_KARGS[*]} || exit 1
-  echo "Rebooting to apply karg changes"
   SHOULD_REBOOT=true
 else
   echo "No karg changes needed"
