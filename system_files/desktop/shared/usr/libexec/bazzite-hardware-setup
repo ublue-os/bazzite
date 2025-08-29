@@ -410,13 +410,6 @@ if [ ! -f /etc/hostname ]; then
   touch /etc/hostname
 fi
 
-mkdir -p /etc/bazzite
-echo $HWS_VER > $HWS_VER_FILE
-echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
-echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE
-echo $FEDORA_VERSION > $KNOWN_FEDORA_VERSION_FILE
-echo $IMAGE_BRANCH > $KNOWN_IMAGE_BRANCH_FILE
-
 if [[ -n "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
   plymouth display-message --text="Preparing System - Please wait, this may take a while" || true
@@ -429,6 +422,13 @@ fi
 touch /etc/bazzite/fixups/sg_display2
 touch /etc/bazzite/fixups/preempt_cleanup2
 touch /etc/bazzite/fixups/orientation_old2
+
+mkdir -p /etc/bazzite
+echo $HWS_VER > $HWS_VER_FILE
+echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
+echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE
+echo $FEDORA_VERSION > $KNOWN_FEDORA_VERSION_FILE
+echo $IMAGE_BRANCH > $KNOWN_IMAGE_BRANCH_FILE
 
 if [[ "$SHOULD_REBOOT" == true ]]; then
   echo "Rebooting to apply karg changes"
