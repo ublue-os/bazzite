@@ -8,7 +8,7 @@
 
 Name:           gamescope
 #Version:        100.%{gamescope_tag}
-Version:        128.%{short_commit}
+Version:        129.%{short_commit}
 Release:        1.bazzite
 Summary:        Micro-compositor for video games on Wayland
 

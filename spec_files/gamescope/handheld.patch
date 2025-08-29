@@ -1524,7 +1524,7 @@ index 000000000000..9f6f725560b6
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
-Date: Wed, 13 Nov 2024 17:22:05 +0100
+Date: Fri, 29 Aug 2025 16:45:39 +0200
 Subject: feat: add DPMS support through an Atom
 
 ---
@@ -1532,9 +1532,7 @@ Subject: feat: add DPMS support through an Atom
  src/rendervulkan.hpp        |  2 ++
  src/steamcompmgr.cpp        | 18 +++++++++++++++---
  src/xwayland_ctx.hpp        |  1 +
- subprojects/openvr          |  2 +-
- subprojects/wlroots         |  2 +-
- 6 files changed, 34 insertions(+), 6 deletions(-)
+ 4 files changed, 32 insertions(+), 4 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
 index b481b7dc8e3a..7a9a9365913d 100644
@@ -1674,20 +1672,6 @@ index e4eec9fa0c48..2347cbb3340c 100644
  	} atoms;
  
  	bool HasQueuedEvents();
-diff --git a/subprojects/openvr b/subprojects/openvr
-index ff87f683f41f..ebd425331229 160000
---- a/subprojects/openvr
-+++ b/subprojects/openvr
-@@ -1 +1 @@
--Subproject commit ff87f683f41fe26cc9353dd9d9d7028357fd8e1a
-+Subproject commit ebd425331229365dc3ec42d1bb8b2cc3c2332f81
-diff --git a/subprojects/wlroots b/subprojects/wlroots
-index 54e844748029..4bc5333a2cbb 160000
---- a/subprojects/wlroots
-+++ b/subprojects/wlroots
-@@ -1 +1 @@
--Subproject commit 54e844748029d4874e14d0c086d50092c04c8899
-+Subproject commit 4bc5333a2cbba0b0b88559f281dbde04b849e6ef
 -- 
 2.51.0
 
