@@ -1295,34 +1295,6 @@ index f036d000a8e2..e388374c98ba 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
-Date: Sun, 4 May 2025 22:45:14 +0200
-Subject: Revert "Force wrap file usage for stb and glm dependencies"
-
-This reverts commit b01717437797ee97a6a9810ddfc69153b3861df1.
----
- src/meson.build | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/src/meson.build b/src/meson.build
-index 36c073ec214e..1d416dcf640e 100644
---- a/src/meson.build
-+++ b/src/meson.build
-@@ -21,7 +21,9 @@ xkbcommon = dependency('xkbcommon')
- thread_dep = dependency('threads')
- cap_dep = dependency('libcap', required: get_option('rt_cap'))
- epoll_dep = dependency('epoll-shim', required: false)
-+glm_dep = dependency('glm')
- sdl2_dep = dependency('SDL2', required: get_option('sdl2_backend'))
-+stb_dep = dependency('stb')
- avif_dep = dependency('libavif', version: '>=1.0.0', required: get_option('avif_screenshots'))
- 
- wlroots_dep = dependency(
--- 
-2.51.0
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <git@antheas.dev>
 Date: Sun, 22 Jun 2025 15:18:19 +0200
 Subject: feat: add Legion Go S display with all framerates
 
@@ -1807,6 +1779,36 @@ index 30edf8f52deb..36ac61ee7233 100644
              m_fnPollFunc();
          }
      private:
+-- 
+2.51.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Fri, 29 Aug 2025 17:17:06 +0200
+Subject: chore: use system glm, stb
+
+---
+ meson.build | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 5e5bd4cdc7c4..802e4a052bcd 100644
+--- a/meson.build
++++ b/meson.build
+@@ -50,10 +50,8 @@ dep_x11 = dependency('x11')
+ dep_wayland = dependency('wayland-client')
+ vulkan_dep = dependency('vulkan')
+ 
+-glm_proj = subproject('glm')
+-glm_dep = glm_proj.get_variable('glm_dep')
+-stb_proj = subproject('stb')
+-stb_dep = stb_proj.get_variable('stb_dep')
++glm_dep = dependency('glm')
++stb_dep = dependency('stb')
+ 
+ if get_option('enable_openvr_support')
+   openvr_dep = dependency('openvr', version: '>= 2.7', required : false)
 -- 
 2.51.0
 
