@@ -1812,3 +1812,187 @@ index 5e5bd4cdc7c4..802e4a052bcd 100644
 -- 
 2.51.0
 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Fri, 29 Aug 2025 19:04:17 +0200
+Subject: Revert "mangoapp: plumb engineName"
+
+This reverts commit b9f20436d1bdf7bd8212541817b254e1b4c8eb1e.
+---
+ layer/VkLayer_FROG_gamescope_wsi.cpp    | 9 +--------
+ protocol/gamescope-swapchain.xml        | 1 -
+ src/WaylandServer/WaylandServerLegacy.h | 1 -
+ src/mangoapp.cpp                        | 6 ------
+ src/steamcompmgr.cpp                    | 6 ------
+ src/steamcompmgr.hpp                    | 1 -
+ src/steamcompmgr_shared.hpp             | 2 --
+ src/wlserver.cpp                        | 4 +---
+ 8 files changed, 2 insertions(+), 28 deletions(-)
+
+diff --git a/layer/VkLayer_FROG_gamescope_wsi.cpp b/layer/VkLayer_FROG_gamescope_wsi.cpp
+index 263cbc37bd88..d1835a4c7487 100644
+--- a/layer/VkLayer_FROG_gamescope_wsi.cpp
++++ b/layer/VkLayer_FROG_gamescope_wsi.cpp
+@@ -404,7 +404,6 @@ namespace GamescopeWSILayer {
+   struct GamescopeInstanceData {
+     wl_display* display;
+     uint32_t appId = 0;
+-    std::string engineName;
+     GamescopeLayerClient::Flags flags = 0;
+   };
+   VKROOTS_DEFINE_SYNCHRONIZED_MAP_TYPE(GamescopeInstance, VkInstance);
+@@ -631,14 +630,9 @@ namespace GamescopeWSILayer {
+       {
+         uint32_t appId = clientAppId();
+ 
+-        std::string engineName;
+-        if (pCreateInfo->pApplicationInfo && pCreateInfo->pApplicationInfo->pEngineName)
+-          engineName = pCreateInfo->pApplicationInfo->pEngineName;
+-
+         auto state = GamescopeInstance::create(*pInstance, GamescopeInstanceData {
+           .display = display,
+           .appId   = appId,
+-          .engineName = engineName,
+           .flags   = defaultLayerClientFlags(pCreateInfo->pApplicationInfo, appId),
+         });
+ 
+@@ -1275,8 +1269,7 @@ namespace GamescopeWSILayer {
+         uint32_t(pCreateInfo->imageColorSpace),
+         uint32_t(pCreateInfo->compositeAlpha),
+         uint32_t(pCreateInfo->preTransform),
+-        uint32_t(pCreateInfo->clipped),
+-        gamescopeInstance->engineName.c_str());
++        uint32_t(pCreateInfo->clipped));
+ 
+       return VK_SUCCESS;
+     }
+diff --git a/protocol/gamescope-swapchain.xml b/protocol/gamescope-swapchain.xml
+index 58ac8463b752..91be3fc02d67 100644
+--- a/protocol/gamescope-swapchain.xml
++++ b/protocol/gamescope-swapchain.xml
+@@ -89,7 +89,6 @@
+       <arg name="vk_composite_alpha" type="uint" summary="VkCompositeAlphaFlagBitsKHR of swapchain"/>
+       <arg name="vk_pre_transform" type="uint" summary="VkSurfaceTransformFlagBitsKHR of swapchain"/>
+       <arg name="vk_clipped" type="uint" summary="clipped (VkBool32) of swapchain"/>
+-      <arg name="vk_engine_name" type="string" summary="Engine name"/>
+     </request>
+ 
+     <request name="set_present_mode">
+diff --git a/src/WaylandServer/WaylandServerLegacy.h b/src/WaylandServer/WaylandServerLegacy.h
+index 63ee2ca17e8c..0facb7dc8b1e 100644
+--- a/src/WaylandServer/WaylandServerLegacy.h
++++ b/src/WaylandServer/WaylandServerLegacy.h
+@@ -29,7 +29,6 @@ struct wlserver_vk_swapchain_feedback
+ 	VkCompositeAlphaFlagBitsKHR vk_composite_alpha;
+ 	VkSurfaceTransformFlagBitsKHR vk_pre_transform;
+ 	VkBool32 vk_clipped;
+-	std::shared_ptr<std::string> vk_engine_name;
+ 
+ 	std::shared_ptr<gamescope::BackendBlob> hdr_metadata_blob;
+ };
+diff --git a/src/mangoapp.cpp b/src/mangoapp.cpp
+index d8e1ce7edafe..91e01bc275c6 100644
+--- a/src/mangoapp.cpp
++++ b/src/mangoapp.cpp
+@@ -31,7 +31,6 @@ struct mangoapp_msg_v1 {
+     uint16_t displayRefresh;
+     bool bAppWantsHDR : 1;
+     bool bSteamFocused : 1;
+-    char engineName[40];
+     
+     // WARNING: Always ADD fields, never remove or repurpose fields
+ } __attribute__((packed)) mangoapp_msg_v1;
+@@ -61,11 +60,6 @@ void mangoapp_update( uint64_t visible_frametime, uint64_t app_frametime_ns, uin
+     mangoapp_msg_v1.displayRefresh = (uint16_t) gamescope::ConvertmHzToHz( g_nOutputRefresh );
+     mangoapp_msg_v1.bAppWantsHDR = g_bAppWantsHDRCached;
+     mangoapp_msg_v1.bSteamFocused = g_focusedBaseAppId == 769;
+-    memset(mangoapp_msg_v1.engineName, 0, sizeof(mangoapp_msg_v1.engineName));
+-    if (focusWindow_engine)
+-        focusWindow_engine->copy(mangoapp_msg_v1.engineName, sizeof(mangoapp_msg_v1.engineName) / sizeof(char));
+-    else
+-        std::string("gamescope").copy(mangoapp_msg_v1.engineName, sizeof(mangoapp_msg_v1.engineName) / sizeof(char));
+     msgsnd(msgid, &mangoapp_msg_v1, sizeof(mangoapp_msg_v1) - sizeof(mangoapp_msg_v1.hdr.msg_type), IPC_NOWAIT);
+ }
+ 
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 839de1f32c31..68872e3b7c3e 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -1027,7 +1027,6 @@ int g_BlurRadius = 5;
+ unsigned int g_BlurFadeStartTime = 0;
+ 
+ pid_t focusWindow_pid;
+-std::shared_ptr<std::string> focusWindow_engine = nullptr;
+ 
+ focus_t g_steamcompmgr_xdg_focus;
+ std::vector<std::shared_ptr<steamcompmgr_win_t>> g_steamcompmgr_xdg_wins;
+@@ -6397,9 +6396,6 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
+ 	uint32_t j;
+ 	for ( j = 0; j < w->commit_queue.size(); j++ )
+ 	{
+-		if (w->commit_queue[ j ]->feedback.has_value())
+-			w->engineName = w->commit_queue[ j ]->feedback->vk_engine_name;
+-
+ 		if ( w->commit_queue[ j ]->commitID == commitID )
+ 		{
+ 			gpuvis_trace_printf( "commit %lu done", w->commit_queue[ j ]->commitID );
+@@ -6444,8 +6440,6 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
+ 					if ( !cv_paint_debug_pause_base_plane )
+ 						g_HeldCommits[ HELD_COMMIT_BASE ] = w->commit_queue[ j ];
+ 					hasRepaint = true;
+-
+-					focusWindow_engine = w->engineName;
+ 				}
+ 
+ 				if ( w == pFocus->overrideWindow )
+diff --git a/src/steamcompmgr.hpp b/src/steamcompmgr.hpp
+index b85ab9a15232..71d540cb7eff 100644
+--- a/src/steamcompmgr.hpp
++++ b/src/steamcompmgr.hpp
+@@ -145,7 +145,6 @@ struct wlserver_x11_surface_info *lookup_x11_surface_info_from_xid( gamescope_xw
+ 
+ extern gamescope::VBlankTime g_SteamCompMgrVBlankTime;
+ extern pid_t focusWindow_pid;
+-extern std::shared_ptr<std::string> focusWindow_engine;
+ 
+ void init_xwayland_ctx(uint32_t serverId, gamescope_xwayland_server_t *xwayland_server);
+ void gamescope_set_selection(std::string contents, GamescopeSelection eSelection);
+diff --git a/src/steamcompmgr_shared.hpp b/src/steamcompmgr_shared.hpp
+index 5a2198d97bed..4027013148b2 100644
+--- a/src/steamcompmgr_shared.hpp
++++ b/src/steamcompmgr_shared.hpp
+@@ -149,8 +149,6 @@ struct steamcompmgr_win_t {
+ 	bool unlockedForFrameCallback = false;
+ 	bool receivedDoneCommit = false;
+ 
+-	std::shared_ptr<std::string> engineName;
+-
+ 	std::vector< gamescope::Rc<commit_t> > commit_queue;
+ 	std::shared_ptr<std::vector< uint32_t >> icon;
+ 
+diff --git a/src/wlserver.cpp b/src/wlserver.cpp
+index a694b5245a97..42c6bc0c2430 100644
+--- a/src/wlserver.cpp
++++ b/src/wlserver.cpp
+@@ -862,8 +862,7 @@ static void gamescope_swapchain_swapchain_feedback( struct wl_client *client, st
+ 	uint32_t vk_colorspace,
+ 	uint32_t vk_composite_alpha,
+ 	uint32_t vk_pre_transform,
+-	uint32_t vk_clipped,
+-	const char *vk_engine_name)
++	uint32_t vk_clipped)
+ {
+ 	wlserver_wl_surface_info *wl_info = (wlserver_wl_surface_info *)wl_resource_get_user_data( resource );
+ 	if ( wl_info )
+@@ -875,7 +874,6 @@ static void gamescope_swapchain_swapchain_feedback( struct wl_client *client, st
+ 			.vk_composite_alpha = VkCompositeAlphaFlagBitsKHR(vk_composite_alpha),
+ 			.vk_pre_transform = VkSurfaceTransformFlagBitsKHR(vk_pre_transform),
+ 			.vk_clipped = VkBool32(vk_clipped),
+-			.vk_engine_name = std::make_shared<std::string>(vk_engine_name),
+ 			.hdr_metadata_blob = nullptr,
+ 		});
+ 	}
+-- 
+2.51.0
+
