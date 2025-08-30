@@ -1,0 +1,14 @@
+# Fix for Gigabyte motherboard sleep/wakeup issues
+# Based on NixOS implementation: https://github.com/NixOS/nixos-hardware/blob/master/gigabyte/b550/b550-fix-suspend.nix
+# 
+# Work around an issue causing the system to unsuspend immediately after suspend
+# and/or hang after suspend on Gigabyte motherboards.
+#
+# Most suggestions elsewhere are to disable GPP0 and/or GPP8 using /proc/acpi/wakeup, but that is
+# inconvenient because it toggles. This does essentially the same thing using udev, which can set
+# the wakeup attribute to a specific value.
+#
+# See https://www.reddit.com/r/gigabyte/comments/p5ewjn/comment/ksbm0mb/
+
+# Disable wakeup for AMD PCIe GPP devices that commonly cause sleep issues on Gigabyte motherboards
+ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x1022", ATTR{device}=="0x1483", ATTR{power/wakeup}="disabled"
