@@ -1,0 +1,10 @@
+[Unit]
+Description=Disable AX1775 Wi-Fi on Sleep
+Before=systemd-suspend.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/modprobe -rv iwlmvm iwlmld iwlwifi
+
+[Install]
+WantedBy=system-suspend.service
