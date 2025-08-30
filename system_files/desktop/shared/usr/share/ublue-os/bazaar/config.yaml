@@ -166,6 +166,7 @@ sections:
       - org.inkscape.Inkscape
       - org.blender.Blender
       - io.github.nokse22.Exhibit
+      - io.github.jliljebl.Flowblade
       - de.leopoldluley.Clapgrep
       - org.audacityteam.Audacity
       - org.ardour.Ardour
