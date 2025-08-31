@@ -364,8 +364,8 @@ get-lsfg ACTION="prompt":
             exit 1
         fi
 
-        # Robust fetch of latest release asset with fallbacks and debug
-        API_URL="https://api.github.com/repos/xXJSONDeruloXx/decky-lsfg-vk/releases/latest"
+        # Robust fetch of most recent release asset (including pre-releases) with fallbacks and debug
+        API_URL="https://api.github.com/repos/xXJSONDeruloXx/decky-lsfg-vk/releases"
         DIRECT_ASSET_URL="https://github.com/xXJSONDeruloXx/decky-lsfg-vk/releases/latest/download/decky-lsfg-vk.zip"
         TMP_API_JSON=$(mktemp)
         AUTH_HEADER=""
@@ -379,10 +379,10 @@ get-lsfg ACTION="prompt":
         fi
         PLUGIN_URL=""
         if command -v jq >/dev/null 2>&1 && [ "$HTTP_STATUS" = "200" ]; then
-            PLUGIN_URL=$(jq -r '.assets[]?.browser_download_url | select(test("decky-lsfg-vk.*\\.zip$"))' "$TMP_API_JSON" | head -n1)
+            PLUGIN_URL=$(jq -r '.[0].assets[]?.browser_download_url | select(test("decky-lsfg-vk.*\\.zip$"))' "$TMP_API_JSON" | head -n1)
         fi
         if [ -z "$PLUGIN_URL" ] && [ "$HTTP_STATUS" = "200" ]; then
-            # Fallback without jq: parse JSON line containing browser_download_url safely (avoid regex newlines)
+            # Fallback without jq: parse JSON to get first release's assets
             PLUGIN_URL=$(awk -F '"' '/browser_download_url/ && /decky-lsfg-vk/ && /zip/ {for(i=1;i<=NF;i++){if($i ~ /^https:.*decky-lsfg-vk.*zip$/){print $i; exit}}}' "$TMP_API_JSON" | head -n1)
         fi
         rm -f "$TMP_API_JSON"
