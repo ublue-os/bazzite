@@ -27,5 +27,3 @@ org.freedesktop.Platform.VulkanLayer.OBSVkCapture//23.08
 com.obsproject.Studio.Plugin.OBSVkCapture
 com.obsproject.Studio.Plugin.Gstreamer
 com.obsproject.Studio.Plugin.GStreamerVaapi
-org.gtk.Gtk3theme.adw-gtk3
-org.gtk.Gtk3theme.adw-gtk3-dark
