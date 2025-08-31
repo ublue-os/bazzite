@@ -26,5 +26,3 @@ runtime/org.freedesktop.Platform.VulkanLayer.OBSVkCapture/x86_64/23.08
 runtime/com.obsproject.Studio.Plugin.OBSVkCapture/x86_64/stable
 runtime/com.obsproject.Studio.Plugin.Gstreamer/x86_64/stable
 runtime/com.obsproject.Studio.Plugin.GStreamerVaapi/x86_64/stable
-runtime/org.gtk.Gtk3theme.adw-gtk3/x86_64/3.22
-runtime/org.gtk.Gtk3theme.adw-gtk3-dark/x86_64/3.22

@@ -6,7 +6,7 @@ button-layout='appmenu:minimize,maximize,close'
 
 [org.gnome.desktop.interface]
 color-scheme='prefer-dark'
-gtk-theme='adw-gtk3-dark'
+gtk-theme='Adwaita-dark'
 enable-hot-corners=false
 document-font-name='Noto Sans 11'
 font-name='Noto Sans 11'
