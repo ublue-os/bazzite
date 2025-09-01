@@ -1971,3 +1971,81 @@ index 83da1bfe231b..c1a714569bf2 100644
 -- 
 2.51.0
 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Colin Kinloch <colin.kinloch@collabora.com>
+Date: Fri, 1 Aug 2025 16:06:23 +0100
+Subject: WaylandBackend: Check features before using color management
+
+This stops compositors lacking required features, transfer functions or
+primaries from triggering protocol errors on start.
+---
+ src/Backends/WaylandBackend.cpp | 32 ++++++++++++++++++--------------
+ 1 file changed, 18 insertions(+), 14 deletions(-)
+
+diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
+index 664ed0eac070..1171980ba61d 100644
+--- a/src/Backends/WaylandBackend.cpp
++++ b/src/Backends/WaylandBackend.cpp
+@@ -1990,13 +1990,14 @@ namespace gamescope
+                     return false;
+                 if ( !Algorithm::Contains( m_WPColorManagerFeatures.eFeatures, WP_COLOR_MANAGER_V1_FEATURE_SET_LUMINANCES ) )
+                     return false;
++                if ( !Algorithm::Contains( m_WPColorManagerFeatures.eFeatures, WP_COLOR_MANAGER_V1_FEATURE_WINDOWS_SCRGB ) )
++                    return false;
+ 
+                 // Transfer Functions
+                 if ( !Algorithm::Contains( m_WPColorManagerFeatures.eTransferFunctions, WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_SRGB ) )
+                     return false;
+                 if ( !Algorithm::Contains( m_WPColorManagerFeatures.eTransferFunctions, WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_ST2084_PQ ) )
+                     return false;
+-                // TODO: Need scRGB
+ 
+                 // Primaries
+                 if ( !Algorithm::Contains( m_WPColorManagerFeatures.ePrimaries, WP_COLOR_MANAGER_V1_PRIMARIES_SRGB ) )
+@@ -2006,6 +2007,22 @@ namespace gamescope
+ 
+                 return true;
+             }();
++
++            if ( m_WPColorManagerFeatures.bSupportsGamescopeColorManagement )
++            {
++                // HDR10.
++                {
++                    wp_image_description_creator_params_v1 *pParams = wp_color_manager_v1_create_parametric_creator( m_pWPColorManager );
++                    wp_image_description_creator_params_v1_set_primaries_named( pParams, WP_COLOR_MANAGER_V1_PRIMARIES_BT2020 );
++                    wp_image_description_creator_params_v1_set_tf_named( pParams, WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_ST2084_PQ );
++                    m_pWPImageDescriptions[ GAMESCOPE_APP_TEXTURE_COLORSPACE_HDR10_PQ ] = wp_image_description_creator_params_v1_create( pParams );
++                }
++
++                // scRGB
++                {
++                    m_pWPImageDescriptions[ GAMESCOPE_APP_TEXTURE_COLORSPACE_SCRGB ] = wp_color_manager_v1_create_windows_scrgb( m_pWPColorManager );
++                }
++            }
+         }
+ 
+         m_pLibDecor = libdecor_new( m_pDisplay, &s_LibDecorInterface );
+@@ -2476,19 +2493,6 @@ namespace gamescope
+         {
+             m_pWPColorManager = (wp_color_manager_v1 *)wl_registry_bind( pRegistry, uName, &wp_color_manager_v1_interface, 1u );
+             wp_color_manager_v1_add_listener( m_pWPColorManager, &s_WPColorManagerListener, this );
+-
+-            // HDR10.
+-            {
+-                wp_image_description_creator_params_v1 *pParams = wp_color_manager_v1_create_parametric_creator( m_pWPColorManager );
+-                wp_image_description_creator_params_v1_set_primaries_named( pParams, WP_COLOR_MANAGER_V1_PRIMARIES_BT2020 );
+-                wp_image_description_creator_params_v1_set_tf_named( pParams, WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_ST2084_PQ );
+-                m_pWPImageDescriptions[ GAMESCOPE_APP_TEXTURE_COLORSPACE_HDR10_PQ ] = wp_image_description_creator_params_v1_create( pParams );
+-            }
+-
+-            // scRGB
+-            {
+-                m_pWPImageDescriptions[ GAMESCOPE_APP_TEXTURE_COLORSPACE_SCRGB ] = wp_color_manager_v1_create_windows_scrgb( m_pWPColorManager );
+-            }
+         }
+         else if ( !strcmp( pInterface, zwp_pointer_constraints_v1_interface.name ) )
+         {
+-- 
+2.51.0
+

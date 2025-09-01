@@ -973,7 +973,6 @@ RUN --mount=type=cache,dst=/var/cache \
     glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
     rm -r /tmp/bazzite-schema-test && \
     systemctl disable supergfxd.service && \
-    systemctl enable flatpak-runtime-update.service && \
     /ctx/image-info && \
     /ctx/build-initramfs && \
     /ctx/finalize
