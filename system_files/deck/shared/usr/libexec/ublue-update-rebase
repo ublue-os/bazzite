@@ -2,4 +2,4 @@
 set -e
 
 sudo mkdir -p /var/ublue-update/
-echo "$1" | sudo tee -a /var/ublue-update/branch > /dev/null
+echo "$1" | sudo tee /var/ublue-update/branch > /dev/null
