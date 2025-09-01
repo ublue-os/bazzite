@@ -328,7 +328,7 @@ if grep -qv "graphical.target" <<< "$(systemctl get-default)"; then
 fi
 
 # Cleanup btrfs oopsie
-# default config has a 10 year limit, which is rediculous
+# default config has a 10 year limit, which is ridiculous
 # FIXME: This fix was added in 12/2024, remove it in a few months
 if [ ! -f /etc/bazzite/fixups/snapper_cleanup ] &&
   [ -f /etc/snapper/configs/root ] &&
