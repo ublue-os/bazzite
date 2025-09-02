@@ -2,8 +2,17 @@
 
 # Redirect to dnf5 if we are running inside a container
 if systemd-detect-virt -cq || { [[ -e /run/.containerenv || -e /.dockerenv ]]; }; then
-    exec dnf5 "$@"
+    exec /usr/bin/dnf5 "$@"
 fi
 
-echo -e "ERROR: Fedora Atomic images utilize rpm-ostree instead (and is discouraged to use).\nPlease, \e]8;;https://docs.bazzite.gg/Installing_and_Managing_Software/\aread our documentation\e]8;;\a\n\e]8;;https://docs.bazzite.gg/Installing_and_Managing_Software/\ahttps://docs.bazzite.gg/Installing_and_Managing_Software/\e]8;;\a\n"
-${SUDO_USER:+sudo -u $SUDO_USER dbus-launch} bash -lc 'xdg-open "https://docs.bazzite.gg/Installing_and_Managing_Software"'
+# Show the error if we attempt to use the install/uninstall commands
+for arg in "$@"; do
+    if [[ $arg == "install" || $arg == "in" || $arg == "remove" || $arg == "rm" ]]; then
+        echo -e "ERROR: Fedora Atomic images utilize rpm-ostree instead (and is discouraged to use).\nPlease, \e]8;;https://docs.bazzite.gg/Installing_and_Managing_Software/\aread our documentation\e]8;;\a\n\e]8;;https://docs.bazzite.gg/Installing_and_Managing_Software/\ahttps://docs.bazzite.gg/Installing_and_Managing_Software/\e]8;;\a\n" >&2
+        ${SUDO_USER:+sudo -u $SUDO_USER dbus-launch} bash -lc 'xdg-open "https://docs.bazzite.gg/Installing_and_Managing_Software"'
+        exit 1
+    fi
+done
+
+# Fallback to dnf5
+exec /usr/bin/dnf5 "$@"
