@@ -6,7 +6,7 @@ if [[ ":ONE-NETBOOK:GPD:AYANEO:AOKZOE:TECTOY:" =~ ":$VEN_ID:" ]]; then
 fi
 
 SYS_ID="$(/usr/libexec/hwsupport/sysid)"
-if [[ ":ROG Ally RC71L:ROG Ally X RC72LA:83E1:83L3:83N6:83Q2:83Q3:AOKZOE A1 AR07:AOKZOE A1 Pro:Win600:Loki Max:Zeenix Pro:Loki Zero:Loki MiniPro:V3:ONE XPLAYER:ROG Flow Z13 GZ302EA:ZOTAC GAMING ZONE:Claw A1M:Claw 7 AI+ A2VM:Claw 8 AI+ A2VM:" =~ ":$SYS_ID:" ]]; then
+if [[ ":ROG Ally RC71L:ROG Ally X RC72LA:83E1:83L3:83N6:83Q2:83Q3:83N1:83N0:AOKZOE A1 AR07:AOKZOE A1 Pro:Win600:Loki Max:Zeenix Pro:Loki Zero:Loki MiniPro:V3:ONE XPLAYER:ROG Flow Z13 GZ302EA:ZOTAC GAMING ZONE:Claw A1M:Claw 7 AI+ A2VM:Claw 8 AI+ A2VM:" =~ ":$SYS_ID:" ]]; then
 	exit 0
 fi
 
