@@ -945,10 +945,6 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /tmp/nvidia-install.sh && \
     IMAGE_NAME="${BASE_IMAGE_NAME}" /tmp/nvidia-install.sh && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
-    : "DELETEME: Quick workaround for typo in /usr/share/vulkan/icd.d/nvidia_icd.*.json" && \
-    : "          See: https://forums.developer.nvidia.com/t/580-release-feedback-discussion/341205/174" && \
-    sed -i 's/1.4.312/1.4.321/' /usr/share/vulkan/icd.d/nvidia_icd.i686.json /usr/share/vulkan/icd.d/nvidia_icd.x86_64.json && \
-    : && \
     ln -s libnvidia-ml.so.1 /usr/lib64/libnvidia-ml.so && \
     dnf5 config-manager setopt "terra-mesa".enabled=0 && \
     dnf5 -y copr disable ublue-os/staging && \
