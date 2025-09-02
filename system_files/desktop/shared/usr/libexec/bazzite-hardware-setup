@@ -212,20 +212,6 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   systemctl enable --now ds-inhibit.service
 fi
 
-# FSTAB CONFIGURATION
-if [[ ! -e /etc/ublue-os/.fstab_adjusted.flag && $(grep "compress=zstd" /etc/fstab) ]]; then
-    echo "Applying fstab param adjustments"
-    if grep -q '64GB' <<< "$(lsblk -o MODEL)"; then
-        echo "64GB eMMC detected"
-        sed -i 's/compress=zstd:1/noatime,lazytime,discard=sync,compress-force=zstd:3,space_cache=v2/g' /etc/fstab
-    else
-        sed -i 's/compress=zstd:1/noatime,lazytime,commit=120,discard=async,compress-force=zstd:1,space_cache=v2/g' /etc/fstab
-    fi
-    touch /etc/ublue-os/.fstab_adjusted.flag
-else
-    echo "No fstab param adjustments needed"
-fi
-
 # ZRAM MINIMUM-FREE CONFIGURATION
 echo "Current minimum-free ZRAM value: $CURRENT_FREE_ZRAM"
 
@@ -328,7 +314,7 @@ if grep -qv "graphical.target" <<< "$(systemctl get-default)"; then
 fi
 
 # Cleanup btrfs oopsie
-# default config has a 10 year limit, which is rediculous
+# default config has a 10 year limit, which is ridiculous
 # FIXME: This fix was added in 12/2024, remove it in a few months
 if [ ! -f /etc/bazzite/fixups/snapper_cleanup ] &&
   [ -f /etc/snapper/configs/root ] &&
