@@ -1,6 +1,7 @@
 # vim: set ft=make :
 
 # Setup and configure Sunshine Game Streaming host
+[group("gaming")]
 setup-sunshine ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh

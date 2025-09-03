@@ -1,6 +1,7 @@
 # vim: set ft=make :
 
 # Add virtual audio channels/sinks named Game, Voice, Browser and Music which you can split audio to using qpwgraph, helvum, carla or other pipewire patchbays for use in OBS and other use cases
+[group("audio")]
 setup-virtual-channels ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
@@ -95,6 +96,7 @@ setup-virtual-channels ACTION="":
     fi
 
 # Setup a virtual 7.1 surround sink for headphones using the PipeWire Spatializer module
+[group("audio")]
 setup-virtual-surround ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
@@ -294,6 +296,7 @@ setup-virtual-surround ACTION="":
     fi
 
 # Restart pipewire
+[group("audio")]
 restart-pipewire:
     echo "Restarting pipewire..."
     systemctl --user restart pipewire.service

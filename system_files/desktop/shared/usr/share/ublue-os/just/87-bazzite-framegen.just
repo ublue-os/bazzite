@@ -1,6 +1,7 @@
 # vim: set ft=make :
 
 # Set up DLSS-Enabler Upscaling and Framegen mod. This mod replaces DLSS upscaling and frame generation with FSR3 equivalents in supported games.
+[group("gaming")]
 get-framegen ACTION="prompt":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh

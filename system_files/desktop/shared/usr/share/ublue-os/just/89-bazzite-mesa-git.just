@@ -1,6 +1,7 @@
 # vim: set ft=make :
 
 # Download and install latest Mesa Git build from mesa-maker releases for testing cutting-edge graphics features
+[group("system")]
 _mesa-git ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh

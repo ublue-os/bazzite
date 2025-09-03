@@ -1,6 +1,7 @@
 # vim: set ft=make :
 
 # Setup and configure CDEmu Daemon and Client plus GUI Apps
+[group("apps")]
 setup-cdemu ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
