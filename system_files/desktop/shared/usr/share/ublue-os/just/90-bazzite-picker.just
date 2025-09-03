@@ -1,6 +1,7 @@
 # vim: set ft=make :
 
 # Interactive picker for ujust recipes
+[group("utilities")]
 pick:
     #!/usr/bin/env bash
     set -euo pipefail

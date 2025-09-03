@@ -25,6 +25,7 @@ _install_appimage_file $APPIMAGE_SRC $filename="":
     LC_ALL=C flatpak run it.mijorus.gearlever "$appimage_file" <&-
 
 # Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
+[group("apps")]
 install-coolercontrol:
     #!/usr/bin/bash
     set -eo pipefail
@@ -42,6 +43,7 @@ install-coolercontrol:
     echo 'Complete, please reboot to apply changes.'
 
 # Install JetBrains Toolbox | https://www.jetbrains.com/toolbox-app/
+[group("apps")]
 install-jetbrains-toolbox:
     #!/usr/bin/env bash
     pushd "$(mktemp -d)"
@@ -64,6 +66,7 @@ install-jetbrains-toolbox:
 alias get-steamcmd := install-steamcmd
 
 # Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD)
+[group("gaming")]
 install-steamcmd:
     #!/usr/bin/bash
     if [[ $UID -eq 0 ]]; then
@@ -81,6 +84,7 @@ install-steamcmd:
     fi
 
 # Install OpenRazer for Razer gaming hardware
+[group("hardware")]
 install-openrazer:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
@@ -112,6 +116,7 @@ install-openrazer:
 alias get-emudeck := install-emudeck
 
 # Install EmuDeck (https://www.emudeck.com/)
+[group("gaming")]
 install-emudeck:
     #!/usr/bin/bash
     set -eo pipefail
@@ -122,9 +127,13 @@ install-emudeck:
     just _install_appimage_file "$remote_appimage_url"
 
 # Install OpenRGB (https://openrgb.org/)
-install-openrgb: (_install_appimage_file "https://openrgb.org/releases/release_0.9/OpenRGB_0.9_x86_64_b5f46e3.AppImage")
+[group("hardware")]
+install-openrgb:
+    #!/usr/bin/bash
+    (_install_appimage_file "https://openrgb.org/releases/release_0.9/OpenRGB_0.9_x86_64_b5f46e3.AppImage")
 
 # Install Boxtron, a Steam Play compatibility tool to run DOS games using native Linux DOSBox
+[group("gaming")]
 install-boxtron: distrobox-check-fedora
     distrobox enter -n fedora -- bash -c '\
       sudo dnf install dosbox-staging inotify-tools timidity++ fluid-soundfont-gm -y && \
@@ -135,9 +144,11 @@ install-boxtron: distrobox-check-fedora
 alias get-wootility := install-wootility
 
 # Install Wootility for configuring Wooting Keyboards
+[group("hardware")]
 install-wootility: (_install_appimage_file "https://api.wooting.io/public/wootility/download?os=linux" "wootility.Appimage")
 
 # Install Adwaita-for-Steam theme for CSS Loader (https://github.com/tkashkin/Adwaita-for-Steam)
+[group("gaming")]
 install-adwaita-for-steam:
     #!/usr/bin/bash
     if [ -d "$HOME/homebrew/themes" ]; then
@@ -159,12 +170,14 @@ install-resilio-sync: distrobox-check-fedora
     systemctl enable --user --now fedora-resilio-sync.service
 
 # Install scrcpy, a utility that mirrors Android devices (video and audio) connected via USB or over TCP/IP
+[group("apps")]
 install-scrcpy: distrobox-check-fedora
     distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y zeno/scrcpy && \
       sudo dnf install -y scrcpy && \
       distrobox-export --app scrcpy'
 
 # Install OpenTabletDriver, an open source, cross-platform, user-mode tablet driver
+[group("hardware")]
 install-opentabletdriver:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
@@ -185,6 +198,7 @@ install-opentabletdriver:
     systemctl enable --user --now opentabletdriver.service
 
 # Remove OpenTabletDriver
+[group("hardware")]
 remove-opentabletdriver:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh

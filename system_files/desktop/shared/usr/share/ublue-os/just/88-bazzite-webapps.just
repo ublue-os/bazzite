@@ -1,6 +1,7 @@
 # vim: set ft=make :
 
 # Add various video and game streaming services to Steam
+[group("gaming")]
 get-media-app service="":
     #!/usr/bin/bash
     # Load ugum for interactive menu
