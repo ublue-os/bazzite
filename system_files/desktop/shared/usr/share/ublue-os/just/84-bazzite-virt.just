@@ -1,6 +1,7 @@
 # vim: set ft=make :
 
 # Setup and configure virtualization and vfio
+[group("virtualization")]
 setup-virtualization ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh

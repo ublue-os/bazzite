@@ -3,6 +3,7 @@
 alias configure-waydroid := setup-waydroid
 
 # Launch Waydroid configuration helper
+[group("apps")]
 setup-waydroid ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh

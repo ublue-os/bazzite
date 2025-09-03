@@ -14,6 +14,7 @@ _install-system-flatpaks:
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
 # Toggle SSH availability on boot
+[group("network")]
 toggle-ssh ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
@@ -67,6 +68,7 @@ toggle-ssh ACTION="":
     esac
 
 # Regenerate GRUB config, useful in dual-boot scenarios where a second operating system isn't listed
+[group("system")]
 regenerate-grub:
     #!/usr/bin/bash
     source /usr/libexec/bazzite-boot-remount
@@ -79,6 +81,7 @@ regenerate-grub:
     remount_boot_ro
 
 # Configure grub bootmenu visibility. pass action 'help' for more info.
+[group("system")]
 configure-grub ACTION="":
     #!/usr/bin/bash
     source /usr/libexec/bazzite-boot-remount
@@ -190,6 +193,7 @@ configure-grub ACTION="":
     fi
 
 # Add user to "input" group required by certain controller drivers
+[group("hardware")]
 add-user-to-input-group:
     #!/usr/bin/bash
     if ! grep -q "input" /etc/group; then
@@ -252,14 +256,17 @@ enable-automount-all:
     @pkexec --keep-cwd ujust enable-framework-automount enable-automounting enable-steamos-automount
 
 # Enable support for Tailscale
+[group("network")]
 enable-tailscale:
     systemctl enable --now tailscaled.service
 
 # Enable Framework Fan Control
+[group("hardware")]
 enable-framework-fan-control:
     systemctl enable --now fw-fanctrl.service
 
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
+[group("system")]
 configure-watchdog ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
@@ -303,6 +310,7 @@ configure-watchdog ACTION="":
     fi
 
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
+[group("gaming")]
 setup-decky ACTION="":
     #!/usr/bin/bash
     if [[ $(id -u) -eq 0 ]]; then
@@ -379,6 +387,7 @@ setup-decky ACTION="":
     fi
 
 # Ptyxis terminal transparency
+[group("utilities")]
 ptyxis-transparency opacity="0.95":
     #!/usr/bin/bash
     set -euxo pipefail
@@ -396,6 +405,7 @@ ptyxis-transparency opacity="0.95":
     fi
 
 # Configure snapshotting for /var/home
+[group("system")]
 configure-snapshots ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
@@ -420,6 +430,7 @@ configure-snapshots ACTION="":
     fi
 
 # Enable a Bluefin-style CLI experience
+[group("development")]
 bazzite-cli:
     #!/usr/bin/bash
     #shellcheck disable=SC2154
@@ -592,11 +603,13 @@ bazzite-cli:
     main ""
 
 # Run a one minute system benchmark
+[group("utilities")]
 benchmark:
     echo 'Running a 1 minute benchmark ...'
     cd /tmp && stress-ng --matrix 0 -t 1m --times
 
 # toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled
+[group("development")]
 toggle-password-feedback ACTION="":
     #!/usr/bin/bash
     PWFEEDBACK_FILE="/etc/sudoers.d/enable-pwfeedback"
@@ -616,6 +629,7 @@ toggle-password-feedback ACTION="":
     fi
 
 # Install Bazzite Buddy plugin to easily access changelogs in game mode
+[group("gaming")]
 get-decky-bazzite-buddy:
     #!/bin/bash
     set -euo pipefail
@@ -736,6 +750,7 @@ get-decky-bazzite-buddy:
     rm -rf "$TEMP_DIR"
 
 # Toggle whether Steam launches with the -steamdeck flag, which causes Big Picture / Game Mode to emulate Steam Deck behavior. Disabling this can prevent games from forcing Steam Deck-specific assets, such as lower-resolution textures.
+[group("gaming")]
 _toggle-steamdeck-alias:
     #!/usr/bin/bash
     # Toggles whether Steam presents the system as a Steam Deck via -steamdeck
@@ -785,6 +800,7 @@ _toggle-steamdeck-alias:
     esac
 
 # get logs for this boot and last boot, cleanly output in terminal as pastebin links, to simplify troubleshooting and issue reporting.
+[group("utilities")]
 get-logs:
     #!/bin/bash
     set -euo pipefail

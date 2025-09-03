@@ -3,6 +3,7 @@
 alias patch-gmod := fix-gmod
 
 # Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModCEFCodecFix)
+[group("gaming")]
 fix-gmod:
     #!/usr/bin/bash
     mkdir -p /tmp/patch-gmod
@@ -15,6 +16,7 @@ fix-gmod:
     rm -rf /tmp/patch-gmod
 
 # Kills all processes related to wine and proton. This forces it to restart next time you launch the game (you might still have to press STOP in steam to kill the game binary)
+[group("gaming")]
 fix-proton-hang:
     #!/usr/bin/bash
     PROTONCORE=(pv-bwrap pressure-vessel reaper explorer.exe rpcss.exe plugplay.exe services.exe svchost.exe winedevice.exe winedevice.exe wineserver)
@@ -23,6 +25,7 @@ fix-proton-hang:
     done
 
 # Reset the Steam folder back to a fresh state
+[group("gaming")]
 fix-reset-steam:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
@@ -50,6 +53,7 @@ fix-reset-steam:
     exit 0
 
 # Toggle Bluetooth headset profile mode. If enabled, mic will be disabled on the Bluetooth device preventing the switch to headset profile, which has poor audio quality. Disable to restore mic functionality.
+[group("audio")]
 toggle-bt-mic:
     #!/usr/bin/bash
     CONFIG_FILE="/etc/wireplumber/wireplumber.conf.d/51-mitigate-annoying-profile-switch.conf"
@@ -157,6 +161,7 @@ toggle-wol ACTION="":
     fi
 
 # enable or disable IWD as a replacement for wpa_supplicant
+[group("network")]
 toggle-iwd:
     #!/usr/bin/bash
     # Explain the purpose of the script
@@ -208,6 +213,7 @@ toggle-iwd:
     esac
 
 # enable or disable a fix for 7th and 8th generation Intel chips not being able to sleep
+[group("hardware")]
 toggle-i915-sleep-fix:
     #!/usr/bin/bash
     # Explain the purpose of the script
