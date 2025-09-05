@@ -161,6 +161,7 @@ sections:
     appids:
       - org.mozilla.Thunderbird
       - org.libreoffice.LibreOffice
+      - org.onlyoffice.desktopeditors
       - org.gimp.GIMP
       - org.kde.krita
       - org.inkscape.Inkscape
