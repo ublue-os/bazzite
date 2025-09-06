@@ -3,7 +3,7 @@
 . /usr/lib/tuned/functions
 
 start() {
-    [ "$(/usr/bin/systemctl is-enabled scx_loader.service)" = "enabled" ] && scxctl switch -m auto
+    [ "$(/usr/bin/systemctl is-enabled scx_loader.service)" = "enabled" ] && /usr/bin/scxctl switch -m auto
     return 0
 }
 

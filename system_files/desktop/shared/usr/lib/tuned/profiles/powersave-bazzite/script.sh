@@ -4,7 +4,7 @@
 
 start() {
     [ "$USB_AUTOSUSPEND" = 1 ] && enable_usb_autosuspend
-    [ "$(/usr/bin/systemctl is-enabled scx_loader.service)" = "enabled" ] && scxctl switch -m powersave
+    [ "$(/usr/bin/systemctl is-enabled scx_loader.service)" = "enabled" ] && /usr/bin/scxctl switch -m powersave
     enable_wifi_powersave
     return 0
 }
