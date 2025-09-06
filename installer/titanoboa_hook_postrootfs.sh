@@ -13,6 +13,16 @@ mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 # Utilities for displaying a dialog prompting users to review secure boot documentation
 dnf install -qy --setopt=install_weak_deps=0 qrencode yad
 
+# Variables
+imageref="$(podman images --format '{{ index .Names 0 }}\n' 'bazzite*' | head -1)"
+imageref="${imageref##*://}"
+imageref="${imageref%%:*}"
+imagetag="$(podman images --format '{{ .Tag }}\n' "$imageref" | head -1)"
+sbkey='https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
+SECUREBOOT_KEY="/usr/share/ublue-os/sb_pubkey.der"
+SECUREBOOT_DOC_URL="https://docs.bazzite.gg/sb"
+SECUREBOOT_DOC_URL_QR="/usr/share/ublue-os/secure_boot_qr.png"
+
 # Bazzite anaconda profile
 : ${VARIANT_ID:?}
 cat >/etc/anaconda/profile.d/bazzite.conf <<EOF
@@ -46,6 +56,7 @@ custom_stylesheet = /usr/share/anaconda/pixmaps/fedora.css
 hidden_spokes =
     NetworkSpoke
     PasswordSpoke
+
 hidden_webui_pages =
     root-password
     network
@@ -65,16 +76,6 @@ case "${PRETTY_NAME,,}" in
     ;;
 esac
 rm -rf /root/packages
-
-# Variables
-imageref="$(podman images --format '{{ index .Names 0 }}\n' 'bazzite*' | head -1)"
-imageref="${imageref##*://}"
-imageref="${imageref%%:*}"
-imagetag="$(podman images --format '{{ .Tag }}\n' "$imageref" | head -1)"
-sbkey='https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
-SECUREBOOT_KEY="/usr/share/ublue-os/sb_pubkey.der"
-SECUREBOOT_DOC_URL="https://docs.bazzite.gg/sb"
-SECUREBOOT_DOC_URL_QR="/usr/share/ublue-os/secure_boot_qr.png"
 
 # Secureboot Key Fetch
 mkdir -p /usr/share/ublue-os
@@ -122,6 +123,15 @@ run0 --user=liveuser yad \
     --text="An error occurred during installation. Please report this issue to the developers." \
     < /tmp/anaconda.log
 %end
+
+$(
+    if [[ $imageref == *-deck* ]]; then
+        cat <<EOCAT
+# Set default user
+user --name=bazzite --password=bazzite --plaintext --groups=wheel
+EOCAT
+    fi
+)
 
 ostreecontainer --url=$imageref:$imagetag --transport=containers-storage --no-signature-verification
 %include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
