@@ -212,6 +212,11 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   systemctl enable --now ds-inhibit.service
 fi
 
+# Enable workaround for buggy wifi sleep interaction on first gen Ayaneo Air devices
+if [[ ":AIR Pro:AIR:" =~ ":$SYS_ID:" ]]; then
+  systemctl enable --now kmod-sleep-workaround@mt7921e.service
+fi
+
 # ZRAM MINIMUM-FREE CONFIGURATION
 echo "Current minimum-free ZRAM value: $CURRENT_FREE_ZRAM"
 
