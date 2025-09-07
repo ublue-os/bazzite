@@ -940,6 +940,8 @@ RUN --mount=type=cache,dst=/var/cache \
         mesa-vdpau-drivers.x86_64 \
         mesa-vdpau-drivers.i686 && \
     dnf5 -y install \
+        egl-wayland.x86_64 \
+        egl-wayland.i686 \
         egl-wayland2.x86_64 \
         egl-wayland2.i686 && \
     /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/main/refs/heads/main/build_files/nvidia-install.sh" --retry 3 -Lo /tmp/nvidia-install.sh && \
