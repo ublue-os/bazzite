@@ -1,8 +1,16 @@
 #!/usr/bin/bash
 # Shim to handle KDE only supporting -e
 # https://bugs.kde.org/show_bug.cgi?id=459616
-args=("${@//-e/--}")
- 
+# We replace all standalone occurrences, but ignore others, e.g. in 'distrobox-enter'
+args=()
+for arg in ${@}; do
+        if [[ "$arg" == -e ]]; then
+                args+=("--")
+        else
+                args+=("$arg")
+        fi
+done
+
 # Dolphin integration requires --new-window to function properly
 if [[ ! "${args[@]}" =~ "--" && ! "${args[@]}" =~ "-h" && ! "${args[@]}" =~ "-x" ]]; then
         /usr/bin/ptyxis --new-window "${args[@]}"
