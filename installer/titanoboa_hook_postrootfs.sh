@@ -199,7 +199,7 @@ EOF
 # Disable Fedora Flatpak Repo
 cat <<EOF >>/usr/share/anaconda/post-scripts/disable-fedora-flatpak.ks
 %post --erroronfail --log=/tmp/anacoda_custom_logs/disable-fedora-flatpak.log
-systemctl disable flatpak-add-fedora-repos.service
+systemctl disable flatpak-add-fedora-repos.service || :
 %end
 EOF
 
