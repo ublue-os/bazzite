@@ -1,7 +1,10 @@
 # Bazzite Operating System
-Bazzite is a containerized Linux gaming distribution built on Fedora Atomic Desktops using cloud native technology. It provides optimized gaming experiences for desktop computers, Steam Deck, and other handheld devices with features like HDR support, expanded hardware compatibility, and gaming-focused optimizations.
+Bazzite is a containerized Linux gaming distribution built on Fedora Atomic Desktops using cloud native
+technology. It provides optimized gaming experiences for desktop computers, Steam Deck, and other handheld
+devices with features like HDR support, expanded hardware compatibility, and gaming-focused optimizations.
 
-Always reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.
+Always reference these instructions first and fallback to search or bash commands only when you encounter
+unexpected information that does not match the info here.
 
 ## Working Effectively
 
@@ -22,18 +25,20 @@ Always reference these instructions first and fallback to search or bash command
 
 ### Validation Commands (NEVER CANCEL - Complete Quickly)
 - `just --list` -- Lists all available commands (< 1 second)
-- `just just-check` -- Validates Just syntax across all files (< 30 seconds). EXPECTED: Shows warnings about unknown attributes but succeeds overall
+- `just just-check` -- Validates Just syntax across all files (< 30 seconds). EXPECTED: Shows warnings
+  about unknown attributes but succeeds overall
 - `just list-images` -- Shows local container images (< 5 seconds)
 - `just clean-images` -- Cleanup local images (< 30 seconds)
 
 ### Build Commands (WARNING: REQUIRE CI ENVIRONMENT)
-**CRITICAL**: Full builds CANNOT be completed in local development environment due to missing akmods kernel images. These commands will fail outside CI:
+**CRITICAL**: Full builds CANNOT be completed in local development environment due to missing akmods
+kernel images. These commands will fail outside CI:
 - `just build <target>` -- Builds container images. FAILS: Requires ghcr.io/ublue-os/akmods:bazzite-* images
 - `just build-iso <target>` -- Builds ISO images. FAILS: Depends on successful container builds
 - `just run-container <target>` -- Runs built containers. FAILS: Depends on successful builds
 
 ### Branch Name Constraints
-**CRITICAL**: Git branch names cannot contain "/" characters as they break Docker container tags. 
+**CRITICAL**: Git branch names cannot contain "/" characters as they break Docker container tags.
 - ✅ GOOD: "testing", "feature-name", "fix-123", "fix-3185"
 - ❌ BAD: "feature/name", "fix/123", "copilot/fix-3185"
 - If using bad branch name, create new branch: `git checkout -b fix-3185`
@@ -50,7 +55,7 @@ Always reference these instructions first and fallback to search or bash command
 - **Local Development**: Focus on configuration files, scripts, and system files that don't require full builds
 - **CI Validation**: Full builds and tests run automatically in GitHub Actions (60+ minutes, NEVER CANCEL)
 - **Manual Testing**: Image testing occurs in CI environment with specialized infrastructure
-- **Development Testing Scenarios**: 
+- **Development Testing Scenarios**:
   - Edit configuration files in `system_files/`
   - Modify Just scripts and validate with `just just-check`
   - Test repository setup on fresh clones
@@ -99,7 +104,7 @@ run-iso target="" image=""         # Run ISO (CI only)
    - `sudo apt update && sudo apt install -y just` (Ubuntu/Debian)
 2. **Branch**: Create appropriately named branch (no "/" characters)
    - ✅ `git checkout -b fix-issue-name`
-   - ❌ Avoid: `git checkout -b feature/name` 
+   - ❌ Avoid: `git checkout -b feature/name`
 3. **Edit**: Modify configuration files, system files, or build scripts
    - Focus on files in `system_files/`, `just_scripts/`, `.github/workflows/`
 4. **Validate**: Run `just just-check` to verify syntax (< 30 seconds)
@@ -142,7 +147,8 @@ The built images include numerous `ujust` commands for user configuration:
 **Note**: These commands are only available in built and running Bazzite systems, not during development.
 
 ## Common Commands Output
-The following are outputs from frequently run commands. Reference them instead of viewing, searching, or running bash commands to save time.
+The following are outputs from frequently run commands. Reference them instead of viewing, searching,
+or running bash commands to save time.
 
 ### Repository Root Structure
 ```bash
@@ -194,3 +200,4 @@ $ find system_files -name "*.just" | wc -l
 $ just _container_mgr
 docker
 ```
+
