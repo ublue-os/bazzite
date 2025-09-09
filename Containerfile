@@ -319,6 +319,7 @@ RUN --mount=type=cache,dst=/var/cache \
         cockpit-system \
         cockpit-navigator \
         cockpit-storaged \
+        freeipa-client \
         topgrade \
         ydotool \
         stress-ng \
