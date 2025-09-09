@@ -813,15 +813,3 @@ get-logs:
     last_boot_logs=$(journalctl -b -1 | fpaste 2>/dev/null)
     echo -e "${bold}Logs Last Boot:${normal} $last_boot_logs"
     echo " "
-
-# Setup GPD Win Mini audio equalizer
-[group("audio")]
-setup-win-mini-eq:
-    #!/bin/bash
-    set -euo pipefail
-    source /usr/lib/ujust/ujust.sh
-    echo -e "${bold}Setting up GPD Win Mini audio equalizer...${normal}"
-    mkdir -p $HOME/.config/pipewire/pipewire.conf.d/
-    curl -L "https://github.com/aarron-lee/gpd-win-tricks/raw/main/win_mini_equalizer/sink-eq10.conf" -o $HOME/.config/pipewire/pipewire.conf.d/sink-eq10.conf
-    systemctl --user restart wireplumber pipewire pipewire-pulse
-    echo -e "${green}Go back to game mode, go to settings -> audio, make sure the output is pointing to “GPD win mini EQ”${normal}"
