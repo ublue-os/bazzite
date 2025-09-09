@@ -921,6 +921,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     dnf5 -y remove \
+        nvidia-gpu-firmware \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo \
