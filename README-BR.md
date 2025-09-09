@@ -28,8 +28,8 @@
   - [Documentação](#documentação)
   - [Verificação](#verificação)
   - [Secure Boot](#secure-boot)
-    - [Métricas de Contribuição](#métricas-de-contribuição)
-      - [Histórico de Estrelas](#histórico-de-estrelas)
+  - [Métricas de Contribuição](#métricas-de-contribuição)
+  - [Histórico de Estrelas](#histórico-de-estrelas)
   - [Agradecimentos Especiais](#agradecimentos-especiais)
   - [Faça Sua Própria](#faça-sua-própria)
   - [Junte-se à Comunidade](#junte-se-à-comunidade)
@@ -267,11 +267,11 @@ Para usuários que já estão numa imagem Universal Blue, é só rodar `ujust en
 
 Se uma senha for pedida, insira `universalblue`.
 
-### Métricas de Contribuição
+## Métricas de Contribuição
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
-#### Histórico de Estrelas
+## Histórico de Estrelas
 
 <a href="https://star-history.com/#ublue-os/bazzite&Date">
   <picture>

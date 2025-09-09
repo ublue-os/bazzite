@@ -28,7 +28,7 @@
   - [Dokumentasi \& Buletin](#dokumentasi--buletin)
   - [Verifikasi](#verifikasi)
   - [Secure Boot](#secure-boot)
-    - [Metrik Kontribusi](#metrik-kontribusi)
+  - [Metrik Kontribusi](#metrik-kontribusi)
   - [Ucapan Terimakasih](#ucapan-terimakasih)
   - [Membuat Image Anda Sendiri](#membuat-image-anda-sendiri)
   - [Bergabung Dengan Komunitas](#bergabung-dengan-komunitas)
@@ -245,7 +245,7 @@ sudo mokutil --timeout -1
 sudo mokutil --import secure_boot.der
 ```
 
-### Metrik Kontribusi
+## Metrik Kontribusi
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
