@@ -412,6 +412,11 @@ WARNINGEOF
 EOF
 fi
 
+# Include nvidia-gpu-firmware package.
+if [[ $imageref == *-nvidia* ]]; then
+    dnf install -yq nvidia-gpu-firmware
+fi
+
 # Determine desktop environment. Must match one of /usr/libexec/livesys/sessions.d/livesys-{desktop_env}
 # See https://github.com/ublue-os/titanoboa/blob/6c2e8ba58c7534b502081fe24363d2a60e7edca9/Justfile#L199-L213
 desktop_env=""
