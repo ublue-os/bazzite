@@ -27,8 +27,8 @@ jobs:
           # - bazzite-nvidia
           # - bazzite-nvidia-open
           - bazzite-gnome
-          # - bazzite-gnome-nvidia
-          # - bazzite-gnome-nvidia-open
+          - bazzite-gnome-nvidia
+          - bazzite-gnome-nvidia-open
           - bazzite-deck
           - bazzite-deck-gnome
           # - bazzite-deck-nvidia
