@@ -57,7 +57,7 @@ Bazzite is gebouwd van [ublue-os/main](https://github.com/ublue-os/main) en [ubl
 - Ondersteuning van [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Alleen met KDE)</sup></sub>
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) inbegrepen.
 - Volledige ondersteuning van [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
-- [Distrobox](https://github.com/89luca89/distrobox) voorgeïnstalleerd met automatische updates voor aangemaakte containers.
+- [Distrobox](https://github.com/89luca89/distrobox) voorgeïnstalleerd.
 - [Ptyxis Terminal](https://gitlab.gnome.org/chergert/ptyxis) in gebruik voor al de varianten. Deze terminal is specifiek ge-designed voor de container workflow die je gebruikt in Bazzite. Als je terug wilt naar de standaard terminal, gebruik `ujust _restore-original-terminal`
 - Automatische `duperemove` service voor het verminderen van de schijfruimte die wordt gebruikt door de inhoud van de wine-voorvoegsel.
 - Ondersteuning voor HDMI CEC via [libCEC](https://libcec.pulse-eight.com/).
@@ -80,7 +80,7 @@ Bazzite is gebouwd van [ublue-os/main](https://github.com/ublue-os/main) en [ubl
 
 Gangbare variant beschikbaar als `bazzite`, voor desktop computers.
 
-- Automatische updates voor Flatpaks en alle Distrobox containers - aangedreven door [ublue-update](https://github.com/ublue-os/ublue-update) en [topgrade](https://github.com/topgrade-rs/topgrade).
+- Automatische updates voor OS, Flatpaks en meer - aangedreven door [ublue-update](https://github.com/ublue-os/ublue-update) en [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
 > **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases) en een installatiegids kan [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
@@ -118,7 +118,7 @@ Varianten voor gebruik als alternatief voor SteamOS op de Steam Deck en voor con
 - Komt met patches voor [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) voor een volledige BTRFS beschikbaarheid voor SD kaarten.
 - Komt met [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU).
 - Optie om [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/) en [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) te instaleren, met velen anderen opties.
-- Aangepaste update systeem die het mogelijk maken om het bestuuringsysteem, Flatpaks en Distrobox images direct te updaten via de Game mode UI. Medemogelijk gemaat door [ublue-update](https://github.com/ublue-os/ublue-update) en [topgrade](https://github.com/topgrade-rs/topgrade).
+- Aangepaste update systeem die het mogelijk maken om het bestuuringsysteem, Flatpaks en meer direct te updaten via de Game mode UI. Medemogelijk gemaat door [ublue-update](https://github.com/ublue-os/ublue-update) en [topgrade](https://github.com/topgrade-rs/topgrade).
 - Makkelijk om Windows te Dual-Booten dankzij Fedora die GRUB intact laat.
 - Gaat een update fout? Ga gemakelijk terug naar een ouderen versie van Bazzite met `rpm-ostree`'s rollback functionaliteit. Je kan zelfs ouderen images selecteren tijdens het starten.
 - Steam en Lutris geïnstaleerd in de image.
