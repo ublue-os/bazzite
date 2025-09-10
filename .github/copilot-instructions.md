@@ -86,7 +86,6 @@ kernel images. These commands will fail outside CI:
 **Bazzite Organization Dependencies:**
 Many core Bazzite components are maintained in separate repositories at <https://github.com/bazzite-org>:
 
-
 - **mesa** - Custom Mesa graphics drivers with gaming optimizations
 - **gamescope-session-steam** - Gamescope session management for Steam
 - **kernel-bazzite** - Custom kernel with gaming and handheld optimizations  
