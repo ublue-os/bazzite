@@ -1,4 +1,5 @@
 # Bazzite Operating System
+
 Bazzite is a containerized Linux gaming distribution built on Fedora Atomic Desktops using cloud native
 technology. It provides optimized gaming experiences for desktop computers, Steam Deck, and other handheld
 devices with features like HDR support, expanded hardware compatibility, and gaming-focused optimizations.
@@ -9,21 +10,25 @@ unexpected information that does not match the info here.
 ## Working Effectively
 
 ### Prerequisites and Setup
+
 - Install required tools:
   - `sudo apt update && sudo apt install -y just` (on Ubuntu/Debian)
   - Docker or Podman for container builds
   - Git for repository management
+
 - Bootstrap the repository:
   - `git clone https://github.com/ublue-os/bazzite.git`
   - `cd bazzite`
 
 ### Build System Overview
+
 - **Primary build tool**: `just` (command runner similar to make)
 - **Container builds**: Uses Docker/Podman with `Containerfile` (equivalent to Dockerfile)
 - **Build infrastructure**: Requires specific akmods kernel images only available in CI environment
 - **Build targets**: `bazzite` (desktop), `bazzite-deck` (Steam Deck), `bazzite-nvidia` (NVIDIA variants)
 
 ### Validation Commands (NEVER CANCEL - Complete Quickly)
+
 - `just --list` -- Lists all available commands (< 1 second)
 - `just just-check` -- Validates Just syntax across all files (< 30 seconds). EXPECTED: Shows warnings
   about unknown attributes but succeeds overall
@@ -31,19 +36,24 @@ unexpected information that does not match the info here.
 - `just clean-images` -- Cleanup local images (< 30 seconds)
 
 ### Build Commands (WARNING: REQUIRE CI ENVIRONMENT)
+
 **CRITICAL**: Full builds CANNOT be completed in local development environment due to missing akmods
 kernel images. These commands will fail outside CI:
+
 - `just build <target>` -- Builds container images. FAILS: Requires ghcr.io/ublue-os/akmods:bazzite-* images
 - `just build-iso <target>` -- Builds ISO images. FAILS: Depends on successful container builds
 - `just run-container <target>` -- Runs built containers. FAILS: Depends on successful builds
 
 ### Branch Name Constraints
+
 **CRITICAL**: Git branch names cannot contain "/" characters as they break Docker container tags.
+
 - ✅ GOOD: "testing", "feature-name", "fix-123", "fix-3185"
 - ❌ BAD: "feature/name", "fix/123", "copilot/fix-3185"
 - If using bad branch name, create new branch: `git checkout -b fix-3185`
 
 ### CI Build Information (From .github/workflows/build.yml)
+
 - **Build Environment**: Ubuntu 24.04 with specialized container storage
 - **Build Matrix**: Multiple combinations of base images, targets, and flavors
 - **Kernel Versions**: Specific bazzite kernel versions (e.g., 6.16.4-107.bazzite.fc42.x86_64)
@@ -51,6 +61,7 @@ kernel images. These commands will fail outside CI:
 - **Build Dependencies**: Base images, akmods images, kernel images from ublue-os registry
 
 ## Validation
+
 - **Syntax Validation**: Always run `just just-check` before submitting changes (30 seconds, NEVER CANCEL)
 - **Local Development**: Focus on configuration files, scripts, and system files that don't require full builds
 - **CI Validation**: Full builds and tests run automatically in GitHub Actions (60+ minutes, NEVER CANCEL)
@@ -64,6 +75,7 @@ kernel images. These commands will fail outside CI:
 ## Common Tasks
 
 ### Repository Structure
+
 ```
 .
 ├── Justfile                    # Main build automation
@@ -80,12 +92,14 @@ kernel images. These commands will fail outside CI:
 ```
 
 ### Key Development Files
+
 - **Build Configuration**: `Justfile`, `Containerfile`, `just_scripts/*.sh`
 - **System Configuration**: Files in `system_files/` for different variants
 - **CI/CD**: `.github/workflows/build.yml` for container builds, `build_iso.yml` for ISO builds
 - **Package Specs**: `spec_files/` contains RPM specifications for custom packages
 
 ### Available Just Commands (from `just --list`)
+
 ```
 build target="" image=""           # Build image (CI only)
 build-iso-git target="" image=""   # Build ISO using ISO Builder Git Head (CI only)
@@ -99,20 +113,27 @@ run-iso target="" image=""         # Run ISO (CI only)
 ```
 
 ### Development Workflow
+
 1. **Setup**: Clone repository and install `just`
    - `git clone https://github.com/ublue-os/bazzite.git && cd bazzite`
    - `sudo apt update && sudo apt install -y just` (Ubuntu/Debian)
+
 2. **Branch**: Create appropriately named branch (no "/" characters)
    - ✅ `git checkout -b fix-issue-name`
    - ❌ Avoid: `git checkout -b feature/name`
+
 3. **Edit**: Modify configuration files, system files, or build scripts
    - Focus on files in `system_files/`, `just_scripts/`, `.github/workflows/`
+
 4. **Validate**: Run `just just-check` to verify syntax (< 30 seconds)
    - EXPECTED: May show warnings about "Unknown attribute `group`" but should succeed
+
 5. **Test**: CI automatically builds and tests on push/PR (60+ minutes, NEVER CANCEL)
+
 6. **Review**: Use PR process for code review and validation
 
 ### CI Build Timing (From Workflow Analysis)
+
 - **NEVER CANCEL**: CI builds can take 60+ minutes for full matrix
 - **Image Build**: Individual image builds typically 30-45 minutes
 - **ISO Build**: ISO generation can take 45-60 minutes
@@ -121,24 +142,29 @@ run-iso target="" image=""         # Run ISO (CI only)
 - **Container Registry**: Push operations: 10-20 minutes
 
 ### Common Issues and Solutions
+
 - **Build Failures**: Usually related to missing base images or network issues in CI
 - **Syntax Errors**: Run `just just-check` to identify Just syntax problems
 - **Branch Name Issues**: Ensure branch names are Docker tag compatible (no special characters)
 - **Local Testing**: Most development can be done by editing configuration files without full builds
 
 ### Build Variants and Images
+
 - **Desktop Variants**: `bazzite` (KDE), `bazzite-gnome` (GNOME)
 - **Deck Variants**: `bazzite-deck` (KDE), `bazzite-deck-gnome` (GNOME)
 - **NVIDIA Variants**: Add `-nvidia` suffix for proprietary driver versions
 - **Specialized**: `bazzite-ally` (ASUS), surface editions available
 
 ### File Categories by Build Impact
+
 - **Safe to Edit Locally**: System configuration files, Just scripts, documentation
 - **Requires CI Testing**: Containerfile changes, kernel configurations, package additions
 - **High Impact**: Base image changes, kernel version updates, major package modifications
 
 ### ujust Commands (Available in Built Images)
+
 The built images include numerous `ujust` commands for user configuration:
+
 - Gaming: `ujust install-resolve`, `ujust install-openrazer`
 - System: `ujust enable-rmlint`, `ujust setup-virtualization`
 - Hardware: `ujust disable-bios-updates`, `ujust setup-sunshine`
@@ -147,10 +173,12 @@ The built images include numerous `ujust` commands for user configuration:
 **Note**: These commands are only available in built and running Bazzite systems, not during development.
 
 ## Common Commands Output
+
 The following are outputs from frequently run commands. Reference them instead of viewing, searching,
 or running bash commands to save time.
 
 ### Repository Root Structure
+
 ```bash
 $ ls -la
 total 648
@@ -173,6 +201,7 @@ drwxrwxr-x  4 runner runner   4096 system_files
 ```
 
 ### System Files Structure
+
 ```bash
 $ find system_files -type d -maxdepth 2
 system_files
@@ -190,12 +219,14 @@ system_files/overrides
 ```
 
 ### Just Files Count
+
 ```bash
 $ find system_files -name "*.just" | wc -l
 21
 ```
 
-### Container Manager Detection
+### Container Manager Detection (See <attachments> above for file contents. You may not need to search or read the file again.)
+
 ```bash
 $ just _container_mgr
 docker
