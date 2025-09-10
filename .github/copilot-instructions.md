@@ -48,8 +48,18 @@ kernel images. These commands will fail outside CI:
 
 **CRITICAL**: Git branch names cannot contain "/" characters as they break Docker container tags.
 
-- ✅ GOOD: "testing", "feature-name", "fix-123", "fix-3185"
-- ❌ BAD: "feature/name", "fix/123", "copilot/fix-3185"
+**Proper Branch Naming Convention:**
+
+- `feat-<description>` - New features (e.g., `feat-hdr-support`, `feat-mesa-update`)
+- `fix-<issue-number>` - Bug fixes (e.g., `fix-3185`, `fix-audio-crackling`)
+- `docs-<description>` - Documentation updates (e.g., `docs-install-guide`)
+- `refactor-<component>` - Code refactoring (e.g., `refactor-just-scripts`)
+- `test-<description>` - Testing improvements (e.g., `test-ci-validation`)
+
+**Examples:**
+
+- ✅ GOOD: `feat-gamescope-hdr`, `fix-3185`, `docs-copilot-instructions`, `refactor-containerfile`
+- ❌ BAD: `feature/name`, `fix/123`, `copilot/fix-3185`, `feat_underscore_name`
 - If using bad branch name, create new branch: `git checkout -b fix-3185`
 
 ### CI Build Information (From .github/workflows/build.yml)
@@ -60,9 +70,40 @@ kernel images. These commands will fail outside CI:
 - **Build Steps**: Image pulls, buildah builds, rechunking, signing, pushing to GHCR
 - **Build Dependencies**: Base images, akmods images, kernel images from ublue-os registry
 
+### Code Quality Standards
+
+**Codacy Formatting Requirements:**
+- **Line Length**: Maximum 120 characters per line
+- **List Spacing**: Blank lines required between different list groups
+- **Header Spacing**: Blank line required after section headers before content
+- **File Termination**: Files must end with a newline character
+- **No Trailing Whitespace**: Remove spaces at end of lines
+- Run validation: Files are automatically checked in CI for compliance
+
+### Core Component Repositories
+
+**Bazzite Organization Dependencies:**
+Many core Bazzite components are maintained in separate repositories at https://github.com/bazzite-org:
+
+- **mesa** - Custom Mesa graphics drivers with gaming optimizations
+- **gamescope-session-steam** - Gamescope session management for Steam
+- **kernel-bazzite** - Custom kernel with gaming and handheld optimizations  
+- **jupiter-hw-support** - Steam Deck hardware support packages
+- **steamdeck-dsp** - Audio processing for Steam Deck
+- **powerbuttond** - Power button daemon for handhelds
+
+**When to Reference:**
+
+- Graphics/Mesa issues: Check `bazzite-org/mesa` for driver-specific changes
+- Kernel problems: Review `bazzite-org/kernel-bazzite` for patches and configs
+- Steam Deck issues: Look at `bazzite-org/jupiter-hw-support` and related repos
+- Audio problems: Check `bazzite-org/steamdeck-dsp` for audio configurations
+- Session management: Review `bazzite-org/gamescope-session-steam` for session handling
+
 ## Validation
 
 - **Syntax Validation**: Always run `just just-check` before submitting changes (30 seconds, NEVER CANCEL)
+- **Code Quality**: Follow Codacy formatting requirements (see Code Quality Standards above)
 - **Local Development**: Focus on configuration files, scripts, and system files that don't require full builds
 - **CI Validation**: Full builds and tests run automatically in GitHub Actions (60+ minutes, NEVER CANCEL)
 - **Manual Testing**: Image testing occurs in CI environment with specialized infrastructure
@@ -225,7 +266,7 @@ $ find system_files -name "*.just" | wc -l
 21
 ```
 
-### Container Manager Detection (See <attachments> above for file contents. You may not need to search or read the file again.)
+### Container Manager Detection
 
 ```bash
 $ just _container_mgr
