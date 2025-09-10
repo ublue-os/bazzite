@@ -1,0 +1,11 @@
+[Unit]
+Description=Update Bluefin Wallpaper of the Month
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/ublue-bluefin-plasma-wallpaper %i
+RemainAfterExit=true
+
+[Install]
+WantedBy=default.target
