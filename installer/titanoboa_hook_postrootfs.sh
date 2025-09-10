@@ -84,8 +84,13 @@ curl -Lo /usr/share/ublue-os/sb_pubkey.der "$sbkey"
 # Default Kickstart
 cat <<EOF >>/usr/share/anaconda/interactive-defaults.ks
 
+# Create log directory
+%pre
+mkdir -p /tmp/anacoda_custom_logs
+%end
+
 # Check if there is a bitlocker partition and ask the user to disable it
-%pre --erroronfail --log=/tmp/detect_bitlocker.log
+%pre --erroronfail --log=/tmp/anacoda_custom_logs/detect_bitlocker.log
 DOCS_QR=/tmp/detect_bitlocker_qr.png
 IS_BITLOCKER=\$(lsblk -o FSTYPE --json | jq '.blockdevices | map(select(.fstype == "BitLocker")) | . != []')
 if [[ \$IS_BITLOCKER =~ true ]]; then
@@ -102,7 +107,7 @@ rm -rf /mnt/sysroot/boot/efi/EFI/fedora
 %end
 
 # Relabel the boot partition for the
-%pre-install --erroronfail --log=/tmp/repartitioning.log
+%pre-install --erroronfail --log=/tmp/anacoda_custom_logs/repartitioning.log
 set -x
 xboot_dev=\$(findmnt -o SOURCE --nofsroot --noheadings -f --target /mnt/sysroot/boot)
 if [[ -z \$xboot_dev ]]; then
@@ -144,14 +149,14 @@ EOF
 
 # Signed Images
 cat <<EOF >>/usr/share/anaconda/post-scripts/install-configure-upgrade.ks
-%post --erroronfail
+%post --erroronfail --log=/tmp/anacoda_custom_logs/bootc-switch.log
 bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registry $imageref:$imagetag
 %end
 EOF
 
 # Enroll Secureboot Key
 cat <<EOF >>/usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
-%post --erroronfail --nochroot
+%post --erroronfail --nochroot --log=/tmp/anacoda_custom_logs/secureboot-enroll-key.log
 set -oue pipefail
 
 readonly ENROLLMENT_PASSWORD="universalblue"
@@ -179,7 +184,7 @@ echo -e "\$ENROLLMENT_PASSWORD\n\$ENROLLMENT_PASSWORD" | mokutil --import "\$SEC
 EOF
 
 cat <<EOF >>/usr/share/anaconda/post-scripts/secureboot-docs.ks
-%post --nochroot
+%post --nochroot --log=/tmp/anacoda_custom_logs/secureboot-docs.log
 SECUREBOOT_KEY="$SECUREBOOT_KEY"
 SECUREBOOT_DOC_URL="$SECUREBOOT_DOC_URL"
 SECUREBOOT_DOC_URL_QR="$SECUREBOOT_DOC_URL_QR"
@@ -193,7 +198,7 @@ qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL"
 
 # Install Flatpaks
 cat <<'EOF' >>/usr/share/anaconda/post-scripts/install-flatpaks.ks
-%post --erroronfail --nochroot
+%post --erroronfail --nochroot --log=/tmp/anacoda_custom_logs/install-flatpaks.log
 deployment="$(ostree rev-parse --repo=/mnt/sysimage/ostree/repo ostree/0/1/0)"
 target="/mnt/sysimage/ostree/deploy/default/deploy/$deployment.0/var/lib/"
 mkdir -p "$target"
@@ -203,8 +208,8 @@ EOF
 
 # Disable Fedora Flatpak Repo
 cat <<EOF >>/usr/share/anaconda/post-scripts/disable-fedora-flatpak.ks
-%post --erroronfail
-systemctl disable flatpak-add-fedora-repos.service
+%post --erroronfail --log=/tmp/anacoda_custom_logs/disable-fedora-flatpak.log
+systemctl disable flatpak-add-fedora-repos.service || :
 %end
 EOF
 
