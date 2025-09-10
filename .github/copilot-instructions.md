@@ -73,6 +73,7 @@ kernel images. These commands will fail outside CI:
 ### Code Quality Standards
 
 **Codacy Formatting Requirements:**
+
 - **Line Length**: Maximum 120 characters per line
 - **List Spacing**: Blank lines required between different list groups
 - **Header Spacing**: Blank line required after section headers before content
@@ -83,7 +84,8 @@ kernel images. These commands will fail outside CI:
 ### Core Component Repositories
 
 **Bazzite Organization Dependencies:**
-Many core Bazzite components are maintained in separate repositories at https://github.com/bazzite-org:
+Many core Bazzite components are maintained in separate repositories at <https://github.com/bazzite-org>:
+
 
 - **mesa** - Custom Mesa graphics drivers with gaming optimizations
 - **gamescope-session-steam** - Gamescope session management for Steam
