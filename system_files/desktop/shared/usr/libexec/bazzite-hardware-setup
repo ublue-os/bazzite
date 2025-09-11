@@ -68,14 +68,6 @@ if /usr/libexec/hwsupport/valve-hardware; then
       NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
     fi
   fi
-
-  if [[ $KARGS =~ "amd_pstate=disable" ]]; then
-    NEEDED_KARGS+=("--delete-if-present=amd_pstate=disable")
-  fi
-
-  if [[ ! $KARGS =~ "amd_pstate=passive" ]]; then
-    NEEDED_KARGS+=("--append-if-missing=amd_pstate=passive")
-  fi
 fi
 
 if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
