@@ -1,0 +1,222 @@
+#!/bin/bash
+
+# Bazzite Auto-Pause Daemon
+# Handles automatic pausing of Steam games on suspend/resume
+
+set -euo pipefail
+
+RUNTIME_DIR="$XDG_RUNTIME_DIR/bazzite-auto-pause"
+PAUSE_STATE_FILE="$RUNTIME_DIR/pause_states"
+LOG_FILE="$RUNTIME_DIR/daemon.log"
+
+mkdir -p "$RUNTIME_DIR"
+
+log() {
+    local level="$1"
+    shift
+    local message="$*"
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "[$timestamp] [$level] $message" >> "$LOG_FILE"
+}
+
+get_all_children() {
+    local parent_pid="$1"
+    local children=$(ps --no-headers -o pid --ppid "$parent_pid" 2>/dev/null || true)
+    
+    echo "$children"
+    for child in $children; do
+        if [[ -n "$child" ]] && [[ "$child" != "$parent_pid" ]]; then
+            get_all_children "$child"
+        fi
+    done
+}
+
+appid_from_pid() {
+    local pid="$1"
+    local cmdline=$(cat "/proc/$pid/cmdline" 2>/dev/null | tr '\0' ' ' || true)
+    if [[ "$cmdline" =~ AppId=([0-9]+) ]]; then
+        echo "${BASH_REMATCH[1]}"
+    fi
+}
+
+is_paused() {
+    local pid="$1"
+    [[ -z "$pid" ]] && return 1
+    
+    local state=$(cat "/proc/$pid/stat" 2>/dev/null | awk '{print $3}' || true)
+    [[ "$state" == "T" ]]
+}
+
+pause_process() {
+    local pid="$1"
+    [[ -z "$pid" ]] && return 1
+    
+    log "INFO" "Attempting to pause process $pid"
+    
+    if ! kill -0 "$pid" 2>/dev/null; then
+        log "WARN" "Process $pid does not exist"
+        return 1
+    fi
+    
+    local all_pids="$pid $(get_all_children "$pid")"
+    
+    for p in $all_pids; do
+        if [[ -n "$p" ]] && kill -0 "$p" 2>/dev/null; then
+            if ! is_paused "$p"; then
+                kill -STOP "$p" 2>/dev/null || true
+            fi
+        fi
+    done
+    
+    if is_paused "$pid"; then
+        log "INFO" "Successfully paused process $pid"
+        return 0
+    else
+        log "WARN" "Failed to pause process $pid"
+        return 1
+    fi
+}
+
+resume_process() {
+    local pid="$1"
+    [[ -z "$pid" ]] && return 1
+    
+    log "INFO" "Attempting to resume process $pid"
+    
+    if ! kill -0 "$pid" 2>/dev/null; then
+        log "WARN" "Process $pid does not exist"
+        return 1
+    fi
+    
+    local all_pids="$pid $(get_all_children "$pid")"
+    
+    for p in $all_pids; do
+        if [[ -n "$p" ]] && kill -0 "$p" 2>/dev/null; then
+            if is_paused "$p"; then
+                kill -CONT "$p" 2>/dev/null || true
+            fi
+        fi
+    done
+    
+    if ! is_paused "$pid"; then
+        log "INFO" "Successfully resumed process $pid"
+        return 0
+    else
+        log "WARN" "Failed to resume process $pid"
+        return 1
+    fi
+}
+
+get_running_games() {
+    pgrep -f "AppId=[0-9]+" | while read pid; do
+        local appid=$(appid_from_pid "$pid")
+        if [[ -n "$appid" ]]; then
+            echo "$appid:$pid"
+        fi
+    done
+}
+
+save_pause_states() {
+    log "INFO" "Saving current pause states before suspend"
+    
+    > "$PAUSE_STATE_FILE"
+    
+    get_running_games | while IFS=: read appid pid; do
+        if [[ -n "$appid" ]] && [[ -n "$pid" ]]; then
+            local was_paused=false
+            if is_paused "$pid"; then
+                was_paused=true
+            fi
+            echo "$appid:$pid:$was_paused" >> "$PAUSE_STATE_FILE"
+            log "INFO" "Saved state for AppID $appid (PID $pid): was_paused=$was_paused"
+        fi
+    done
+}
+
+restore_pause_states() {
+    log "INFO" "Restoring pause states after resume"
+    
+    if [[ ! -f "$PAUSE_STATE_FILE" ]]; then
+        log "WARN" "No pause state file found"
+        return
+    fi
+    
+    while IFS=: read appid pid was_paused; do
+        if [[ -n "$appid" ]] && [[ -n "$pid" ]] && [[ -n "$was_paused" ]]; then
+            if kill -0 "$pid" 2>/dev/null; then
+                if [[ "$was_paused" == "false" ]]; then
+                    log "INFO" "Resuming AppID $appid (PID $pid) - was not paused before suspend"
+                    resume_process "$pid"
+                else
+                    log "INFO" "Leaving AppID $appid (PID $pid) paused - was already paused before suspend"
+                fi
+            else
+                log "INFO" "Process $pid for AppID $appid no longer exists"
+            fi
+        fi
+    done < "$PAUSE_STATE_FILE"
+    
+    rm -f "$PAUSE_STATE_FILE"
+}
+
+handle_suspend() {
+    log "INFO" "System suspend detected - pausing all running Steam games"
+    
+    save_pause_states
+    
+    get_running_games | while IFS=: read appid pid; do
+        if [[ -n "$appid" ]] && [[ -n "$pid" ]]; then
+            if ! is_paused "$pid"; then
+                log "INFO" "Pausing AppID $appid (PID $pid) for suspend"
+                pause_process "$pid"
+            else
+                log "INFO" "AppID $appid (PID $pid) already paused"
+            fi
+        fi
+    done
+}
+
+handle_resume() {
+    log "INFO" "System resume detected - restoring game states"
+    restore_pause_states
+}
+
+monitor_suspend_resume() {
+    log "INFO" "Starting suspend/resume monitoring"
+    
+    gdbus monitor --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 | while read -r line; do
+        if [[ "$line" =~ PrepareForSleep.*true ]]; then
+            handle_suspend
+        elif [[ "$line" =~ PrepareForSleep.*false ]]; then
+            handle_resume
+        fi
+    done &
+    
+    echo $! > "$RUNTIME_DIR/suspend_monitor.pid"
+}
+
+cleanup() {
+    log "INFO" "Daemon shutting down"
+    
+    if [[ -f "$RUNTIME_DIR/suspend_monitor.pid" ]]; then
+        local pid=$(cat "$RUNTIME_DIR/suspend_monitor.pid")
+        kill "$pid" 2>/dev/null || true
+        rm -f "$RUNTIME_DIR/suspend_monitor.pid"
+    fi
+    
+    exit 0
+}
+
+trap cleanup SIGTERM SIGINT
+
+main() {
+    log "INFO" "Starting Bazzite Auto-Pause Daemon for suspend/resume functionality"
+    
+    monitor_suspend_resume
+    
+    while true; do
+        sleep 60
+    done
+}
+
+main "$@"
