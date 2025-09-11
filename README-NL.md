@@ -28,8 +28,8 @@
   - [Documentatie \& Nieuwsbrief](#documentatie--nieuwsbrief)
   - [Verificatie](#verificatie)
   - [Secure Boot](#secure-boot)
-    - [Bijdragers Metriek](#bijdragers-metriek)
-      - [Ster Geschiedenis](#ster-geschiedenis)
+  - [Bijdragers Metriek](#bijdragers-metriek)
+  - [Ster Geschiedenis](#ster-geschiedenis)
   - [Speciale Dank](#speciale-dank)
   - [Zelf Bouwen](#zelf-bouwen)
   - [Lid worden](#lid-worden)
@@ -271,11 +271,11 @@ Voor gebruikers die de Universal Blue image al gebruiken kun je `ujust enroll-se
 
 Als er voor een wachtwoord gevraagd wordt, gebruik `universalblue`.
 
-### Bijdragers Metriek
+## Bijdragers Metriek
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
-#### Ster Geschiedenis
+## Ster Geschiedenis
 
 <a href="https://star-history.com/#ublue-os/bazzite&Date">
   <picture>

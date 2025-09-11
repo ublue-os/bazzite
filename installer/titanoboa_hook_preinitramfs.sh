@@ -18,3 +18,12 @@ kernel_pkgs=(
 dnf -y versionlock delete "${kernel_pkgs[@]}"
 rpm --erase -v --nodeps "${kernel_pkgs[@]}"
 dnf -yq install "${kernel_pkgs[@]}"
+
+imageref="$(podman images --format '{{ index .Names 0 }}\n' 'bazzite*' | head -1)"
+imageref="${imageref##*://}"
+imageref="${imageref%%:*}"
+
+# Include nvidia-gpu-firmware package.
+if [[ $imageref == *-nvidia* ]]; then
+    dnf install -yq nvidia-gpu-firmware
+fi
