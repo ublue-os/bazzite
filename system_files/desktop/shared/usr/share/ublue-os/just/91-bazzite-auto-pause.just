@@ -5,11 +5,9 @@
 setup-auto-pause ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    
     is_enabled() {
         systemctl --user is-enabled bazzite-auto-pause.service &>/dev/null
     }
-    
     get_status() {
         if is_enabled; then
             echo -e "${bold}Auto-pause on suspend/resume:${normal} ${green}Enabled${normal}"
@@ -17,7 +15,6 @@ setup-auto-pause ACTION="":
             echo -e "${bold}Auto-pause on suspend/resume:${normal} ${yellow}Disabled${normal}"
         fi
     }
-    
     OPTION="{{ ACTION }}"
     if [ "$OPTION" == "" ]; then
         echo -e "${bold}Bazzite Auto-Pause Configuration${normal}"
@@ -31,7 +28,6 @@ setup-auto-pause ACTION="":
             OPTION=$(ugum choose "Enable auto-pause" "Exit")
         fi
     fi
-    
     case "$OPTION" in
         "Enable auto-pause"|enable)
             echo "Enabling auto-pause on suspend/resume..."
