@@ -24,6 +24,5 @@ imageref="${imageref##*://}"
 imageref="${imageref%%:*}"
 
 # Include nvidia-gpu-firmware package.
-if [[ $imageref == *-nvidia* ]]; then
-    dnf install -yq nvidia-gpu-firmware
-fi
+dnf install -yq nvidia-gpu-firmware || :
+dnf clean all -yq
