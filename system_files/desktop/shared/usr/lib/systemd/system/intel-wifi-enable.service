@@ -1,0 +1,14 @@
+[Unit]
+Description=Re-enable AX1775 Wi-Fi after Sleep
+After=systemd-suspend.service
+After=systemd-hibernate.service
+After=systemd-suspend-then-hibernate.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/modprobe -a iwlwifi iwlmld iwlmvm
+
+[Install]
+WantedBy=systemd-suspend.service
+WantedBy=systemd-hibernate.service
+WantedBy=systemd-suspend-then-hibernate.service

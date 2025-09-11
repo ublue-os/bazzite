@@ -2,6 +2,42 @@
 
 alias patch-gmod := fix-gmod
 
+# enable or disable a workaround for Intel Wifi7(802.11be) AX1775*/AX1790*/BE20*/BE401/BE1750* 2x2
+fix-ax1775-sleep:
+    #!/usr/bin/bash
+    # Explain the purpose of the script
+    echo -e "This script works around an issue for Intel Wifi-7 AX1775*/AX1790*/BE20*/BE401/BE1750*"
+    echo -e "where they fail to start-up after sleep, causing them to stay in D3cold state until reboot.\n"
+    echo -e "Enabling it will shut down the Wi-Fi module before sleep, and restart it after sleep."
+    echo -e "Disabling it will bring back the old functionality (for when it gets fixed)"
+    # Toggle on the service to shut down / restart the Wi-Fi device
+    enable_fix() {
+        systemctl enable intel-wifi-disable.service
+        systemctl enable intel-wifi-enable.service
+        echo -e "\nEnabled fix, toggle again to disable"
+    }
+    # Toggle off the service to shut down / restart the Wi-Fi device
+    disable_fix() {
+        systemctl disable intel-wifi-disable.service
+        systemctl disable intel-wifi-enable.service
+        echo -e "\nDisabled fix, toggle again to enable"
+    }
+    # Check if the file is symlinked (Enabled or Disabled)
+    EXISTS="$(systemctl is-enabled "intel-wifi-enable.service")"
+    echo -e "\nCurrent service status: ${EXISTS^}\n"
+    # Enables or disables depending on the status
+    case "$EXISTS" in
+        "enabled")
+        disable_fix
+        ;;
+        "disabled")
+        enable_fix
+        ;;
+        "not-found")
+        echo -e "Failed to find intel-wifi-enable.service..."
+        ;;
+    esac
+
 # Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModCEFCodecFix)
 [group("gaming")]
 fix-gmod:
