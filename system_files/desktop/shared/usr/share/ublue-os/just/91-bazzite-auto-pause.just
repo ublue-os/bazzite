@@ -7,21 +7,12 @@ setup-auto-pause ACTION="":
     source /usr/lib/ujust/ujust.sh
     
     is_enabled() {
-        if systemctl --user is-enabled bazzite-auto-pause.service &>/dev/null; then
-            return 0
-        else
-            return 1
-        fi
+        systemctl --user is-enabled bazzite-auto-pause.service &>/dev/null
     }
     
     get_status() {
         if is_enabled; then
             echo -e "${bold}Auto-pause on suspend/resume:${normal} ${green}Enabled${normal}"
-            if systemctl --user is-active bazzite-auto-pause.service &>/dev/null; then
-                echo -e "${bold}Service status:${normal} ${green}Running${normal}"
-            else
-                echo -e "${bold}Service status:${normal} ${yellow}Stopped${normal}"
-            fi
         else
             echo -e "${bold}Auto-pause on suspend/resume:${normal} ${yellow}Disabled${normal}"
         fi
