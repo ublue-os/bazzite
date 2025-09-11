@@ -28,8 +28,8 @@
   - [Documentation](#documentation)
   - [Verification](#verification)
   - [Secure Boot](#secure-boot)
-    - [Contributor Metrics](#contributor-metrics)
-      - [Star History](#star-history)
+  - [Contributor Metrics](#contributor-metrics)
+  - [Star History](#star-history)
   - [Special Thanks](#special-thanks)
   - [Build Your Own](#build-your-own)
   - [Join The Community](#join-the-community)
@@ -258,11 +258,11 @@ For users already on a Universal Blue image, you may instead run `ujust enroll-s
 
 If asked for a password, use `universalblue`.
 
-### Contributor Metrics
+## Contributor Metrics
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
-#### Star History
+## Star History
 
 <a href="https://star-history.com/#ublue-os/bazzite&Date">
   <picture>

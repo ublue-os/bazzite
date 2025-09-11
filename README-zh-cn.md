@@ -28,8 +28,8 @@
   - [文档 \& 时事通讯](#文档--时事通讯)
   - [验证](#验证)
   - [安全启动](#安全启动)
-    - [贡献者指标](#贡献者指标)
-      - [Star History](#star-history)
+  - [贡献者指标](#贡献者指标)
+  - [Star History](#star-history)
   - [特别鸣谢](#特别鸣谢)
   - [构建自己的版本](#构建自己的版本)
   - [加入社区](#加入社区)
@@ -270,11 +270,11 @@ sudo mokutil --import secure_boot.der
 
 如果要求输入密码，就使用`universalblue`。
 
-### 贡献者指标
+## 贡献者指标
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
-#### Star History
+## Star History
 
 <a href="https://star-history.com/#ublue-os/bazzite&Date">
   <picture>

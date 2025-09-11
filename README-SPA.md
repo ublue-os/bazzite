@@ -31,8 +31,8 @@ Usa nuestro [seleccionador de imágenes](https://bazzite.gg/#image-picker) para 
   - [Documentación y Boletín informativo/Newsletters (En inglés)](#documentación-y-boletín-informativonewsletters-en-inglés)
   - [Verificación](#verificación)
   - [Arranque Seguro (Secure Boot)](#arranque-seguro-secure-boot)
-    - [Métricas de Contribución](#métricas-de-contribución)
-      - [Historial de Estrellas](#historial-de-estrellas)
+  - [Métricas de Contribución](#métricas-de-contribución)
+  - [Historial de Estrellas](#historial-de-estrellas)
   - [Gracias Especiales](#gracias-especiales)
   - [Hazlo tu Mismo](#hazlo-tu-mismo)
   - [Únete a la Comunidad](#únete-a-la-comunidad)
@@ -280,11 +280,11 @@ Alternativamente, los usuarios que ya cuenten con una imagen de Universal Blue i
 
 Si se te pide una contraseña, introduce `universalblue`.
 
-### Métricas de Contribución
+## Métricas de Contribución
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
-#### Historial de Estrellas
+## Historial de Estrellas
 
 <a href="https://star-history.com/#ublue-os/bazzite&Date">
   <picture>

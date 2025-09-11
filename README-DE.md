@@ -29,8 +29,8 @@
   - [Dokumentation](#dokumentation)
   - [Verifizierung](#verifizierung)
   - [Secure Boot](#secure-boot)
-    - [Mitwirkenden-Statistiken](#mitwirkenden-statistiken)
-      - [Star-Verlauf](#star-verlauf)
+  - [Mitwirkenden-Statistiken](#mitwirkenden-statistiken)
+  - [Star-Verlauf](#star-verlauf)
   - [Besonderer Dank](#besonderer-dank)
   - [Eigene Version erstellen](#eigene-version-erstellen)
   - [Trete der Community bei](#trete-der-community-bei)
@@ -261,11 +261,11 @@ Für Benutzer, die bereits ein Universal Blue Image verwenden, kannst du stattde
 
 Falls nach einem Passwort gefragt wird, verwende `universalblue`.
 
-### Mitwirkenden-Statistiken
+## Mitwirkenden-Statistiken
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
-#### Star-Verlauf
+## Star-Verlauf
 
 <a href="https://star-history.com/#ublue-os/bazzite&Date">
   <picture>
