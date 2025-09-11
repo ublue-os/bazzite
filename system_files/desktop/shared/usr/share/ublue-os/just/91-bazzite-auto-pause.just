@@ -26,9 +26,9 @@ setup-auto-pause ACTION="":
         echo
         echo "Choose an option:"
         if is_enabled; then
-            OPTION=$(ugum choose "Disable auto-pause" "Show status" "Exit")
+            OPTION=$(ugum choose "Disable auto-pause" "Exit")
         else
-            OPTION=$(ugum choose "Enable auto-pause" "Show status" "Exit")
+            OPTION=$(ugum choose "Enable auto-pause" "Exit")
         fi
     fi
     
@@ -43,9 +43,6 @@ setup-auto-pause ACTION="":
             echo "Disabling auto-pause on suspend/resume..."
             systemctl --user disable --now bazzite-auto-pause.service 2>/dev/null || true
             echo -e "${yellow}Auto-pause service disabled${normal}"
-            ;;
-        "Show status"|status)
-            get_status
             ;;
         "Exit"|*)
             echo "No changes made."
