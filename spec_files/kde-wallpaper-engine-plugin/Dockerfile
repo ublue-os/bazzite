@@ -1,4 +1,4 @@
-FROM fedora:42
+FROM fedora:44@sha256:e610aabae07cf173f3fab7acfeb194cf348ec7af0cc299a79a279afec9a3b4b7
 
 RUN dnf install -y \
     vulkan-loader-devel \
