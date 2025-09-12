@@ -61,7 +61,7 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - Soporte para [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Solo en KDE)</sup></sub>
 - Incluida una [extensión de la shell para mostrar las propiedades de ROMs](https://github.com/GerbilSoft/rom-properties) (usados para la emulación de consolas) en el navegador de archivos.
 - Soporte completo para [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
-- [Distrobox](https://github.com/89luca89/distrobox) pre-instalado con actualizaciones automáticas para los contenedores creados.
+- [Distrobox](https://github.com/89luca89/distrobox) pre-instalado.
 - Se usa por defecto la [terminal Ptyxis](https://gitlab.gnome.org/chergert/ptyxis) en todas las imágenes. Esta terminal esta especificamente diseñada para el flujo de trabajo basado en contenedores que usamos en Bazzite. Si deseas regresar a como estaba antes, simplemente ejecuta el siguiente comando en una terminal: `ujust _restore-original-terminal`
 - Servicio automatizado `duperemove` incluido para reducir el espacio de disco utilizados por los contenidos de los prefijos de WINE.
 - Soporte de HDMI CEC (para poder controlar todos los dispositivos conectados por HDMI) usando [libCEC](https://libcec.pulse-eight.com/).
@@ -86,7 +86,7 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 
 Esta variante común/genérica esta disponible como `bazzite`, la cual es adecuada para computadoras de escritorio, esta variante incluye la siguiente característica:
 
-- Actualizaciones automáticas para el sistema operativo, Flatpaks, paquetes Nix <sup><sub>(Usando Fleek)</sub></sup>, y todos los contenedores Distrobox.
+- Actualizaciones automáticas para el sistema operativo, Flatpaks y más.
 
 > \[!IMPORTANT\]\
 > **Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).**
@@ -126,7 +126,7 @@ Esta variante esta diseñada para usarse como una alternativa de SteamOS en la S
 - Incluye los parches de [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) por defecto, los cuales proveen soporte completo del sistema de archivos BTRFS para tarjetas SD.
 - Se incluye una copia portada de [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), habilitada por defecto.
 - Opción para instalar [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), y [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), ademas de un sin fin de paquetes útiles al momento de instalar el sistema.
-- Un sistema personalizado de actualizaciones que permite que tanto el sistema operativo, los Flatpaks, los paquetes Nix <sup><sub>(Usando Fleek)</sub></sup>, y las imagenes de Distrobox sean actualizables directamente desde la interfaz de Gamemode gracias al poder de [ublue-update](https://github.com/ublue-os/ublue-update) y [topgrade](https://github.com/topgrade-rs/topgrade).
+- Un sistema personalizado de actualizaciones que permite que tanto el sistema operativo, los Flatpaks, y más sean actualizables directamente desde la interfaz de Gamemode gracias al poder de [ublue-update](https://github.com/ublue-os/ublue-update) y [topgrade](https://github.com/topgrade-rs/topgrade).
 - Soporte incluido para el arranque dual (dual-boot) con Windows, gracias a que se deja intacta la instalación de GRUB por defecto de Fedora.
 - ¿Algo se rompió o dejo de funcionar después de actualizar?, ¡descuida!, puedes fácilmente retroceder a una versión previa de Bazzite, gracias a la función de reversión (rollback) de `rpm-ostree`. Inclusive puedes seleccionar imágenes previas del sistema directamente desde el menú que aparece al arrancar tu dispositivo.
 - Steam y Lutris vienen pre-instalados en la imagen como paquetes en capas (layered).

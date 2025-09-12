@@ -57,7 +57,7 @@ Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/m
 - Support pour [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Seulement sur KDE)</sup></sub>
 - [Extension de shell ROM Properties Page](https://github.com/GerbilSoft/rom-properties) incluse par défaut.
 - Support complet pour [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
-- [Distrobox](https://github.com/89luca89/distrobox) préinstallé avec mises à jour automatiques pour les conteneurs créés.
+- [Distrobox](https://github.com/89luca89/distrobox) préinstallé.
 - [Ptyxis Terminal](https://gitlab.gnome.org/chergert/ptyxis) est utilisé par défaut dans toutes les images. Ce terminal est spécialement conçu pour le workflow des conteneurs dans Bazzite. Pour revenir au terminal d'origine, exécutez `ujust _restore-original-terminal`.
 - Service automatisé `duperemove` pour réduire l'espace disque utilisé par les contenus du préfixe wine.
 - Support pour HDMI CEC via [libCEC](https://libcec.pulse-eight.com/).
@@ -80,7 +80,7 @@ Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/m
 
 De nombreuses variantes communes sont disponibles sous le nom `bazzite`, adaptée aux ordinateurs de bureau.
 
-- Mises à jour automatiques pour le système d'exploitation, les Flatpaks et tous les conteneurs Distrobox - propulsées par [ublue-update](https://github.com/ublue-os/ublue-update) et [topgrade](https://github.com/topgrade-rs/topgrade).
+- Mises à jour automatiques pour le système d'exploitation, les Flatpaks et plus - propulsées par [ublue-update](https://github.com/ublue-os/ublue-update) et [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
 > **Les ISOs peuvent être téléchargées depuis notre [page de versions](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile peut être trouvé [ici](https://universal-blue.discourse.group/docs?topic=30).**

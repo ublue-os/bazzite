@@ -56,7 +56,7 @@ Bazzite основан на [ublue-os/main](https://github.com/ublue-os/main) и
 - Поддержка [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Только для KDE)</sup></sub>
 - Расширение [ROM Properties Page](https://github.com/GerbilSoft/rom-properties) включено.
 - Полная поддержка [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
-- [Distrobox](https://github.com/89luca89/distrobox) предустановлен с автоматическим обновлением контейнеров.
+- [Distrobox](https://github.com/89luca89/distrobox) предустановлен.
 - Упрощенная установка Davinci Resolve с [davincibox](https://github.com/zelikos/davincibox) (`ujust install-resolve`).
 - [Ptyxis Terminal](https://gitlab.gnome.org/chergert/ptyxis) используется по умолчанию. Этот терминал разработан для работы с контейнерами. KDE Konsole и GNOME Console можно установить как Flatpak.
 - Автоматическая служба `duperemove` для уменьшения места, занимаемого wine-префиксами.
@@ -78,7 +78,7 @@ Bazzite основан на [ublue-os/main](https://github.com/ublue-os/main) и
 
 Основная версия `bazzite` подходит для настольных компьютеров.
 
-- Автоматические обновления ОС, Flatpak и контейнеров Distrobox — благодаря [ublue-update](https://github.com/ublue-os/ublue-update) и [topgrade](https://github.com/topgrade-rs/topgrade).
+- Автоматические обновления ОС, Flatpak и другое — благодаря [ublue-update](https://github.com/ublue-os/ublue-update) и [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
 > **ISO-образы можно скачать с нашего [сайта](https://download.bazzite.gg), а руководство по установке доступно [здесь](https://docs.bazzite.gg/General/Installation_Guide/).**
@@ -113,7 +113,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - Патчи [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) для полной поддержки BTRFS на SD-картах.
 - Включен порт [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU).
 - Опция установки [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/) и [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) при установке.
-- Обновления ОС, Flatpak и контейнеров Distrobox доступны прямо из игрового режима благодаря [ublue-update](https://github.com/ublue-os/ublue-update) и [topgrade](https://github.com/topgrade-rs/topgrade).
+- Обновления ОС, Flatpak и другое доступны прямо из игрового режима благодаря [ublue-update](https://github.com/ublue-os/ublue-update) и [topgrade](https://github.com/topgrade-rs/topgrade).
 - Поддержка двойной загрузки с Windows благодаря GRUB от Fedora.
 - Возможность отката к предыдущей версии Bazzite благодаря функции `rpm-ostree`. Можно выбрать предыдущий образ при загрузке.
 - Steam и Lutris предустановлены.
