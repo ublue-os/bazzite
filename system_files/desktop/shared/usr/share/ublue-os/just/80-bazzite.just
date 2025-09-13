@@ -805,6 +805,11 @@ get-logs:
     #!/bin/bash
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh
+    # Get system status information
+    echo -e "${bold}System Information:${normal}"
+    echo " "
+    rpm-ostree status
+    echo " "
     # Get logs for this boot
     this_boot_logs=$(journalctl -b | fpaste 2>/dev/null)
     echo -e "${bold}Logs This Boot:${normal} $this_boot_logs"
@@ -813,3 +818,13 @@ get-logs:
     last_boot_logs=$(journalctl -b -1 | fpaste 2>/dev/null)
     echo -e "${bold}Logs Last Boot:${normal} $last_boot_logs"
     echo " "
+    # Concatenate all outputs and copy to clipboard
+    {
+      echo "System Information:"
+      rpm-ostree status
+      echo
+      echo "Logs This Boot: $this_boot_logs"
+      echo
+      echo "Logs Last Boot: $last_boot_logs"
+    } | wl-copy
+    echo -e "${green}All output has been copied to your clipboard.${normal}"

@@ -22,9 +22,6 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
     /usr/bin/bazzite-steam-brand
   fi
 
-  # Set helpful clipboard content for launch options on handheld devices
-  echo -n " %command%" | wl-copy 2>/dev/null || true
-
   # File toggle to override default Steam Deck flag behavior
   DECK_OVERRIDE_FLAG="$HOME/.config/bazzite/disable_steamdeck_flag"
 

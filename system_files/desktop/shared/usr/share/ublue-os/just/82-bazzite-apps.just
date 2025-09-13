@@ -193,7 +193,8 @@ install-opentabletdriver:
     mkdir -p $HOME/.config/systemd/user && \
     curl -s https://raw.githubusercontent.com/flathub/net.opentabletdriver.OpenTabletDriver/refs/heads/master/scripts/opentabletdriver.service > $HOME/.config/systemd/user/opentabletdriver.service  && \
     systemctl --user daemon-reload && \
-    systemctl enable --user --now opentabletdriver.service
+    systemctl enable --user --now opentabletdriver.service && \
+    rpm-ostree kargs --append-if-missing=modprobe.blacklist=hid_uclogic --append-if-missing=modprobe.blacklist=wacom
 
 # Remove OpenTabletDriver
 [group("hardware")]
@@ -203,7 +204,8 @@ remove-opentabletdriver:
     echo "Uninstalling OpenTabletDriver..."
     sudo -A rm /etc/udev/rules.d/71-opentabletdriver.rules && \
     flatpak --system remove -y flathub net.opentabletdriver.OpenTabletDriver && \
-    systemctl disable --user --now opentabletdriver.service
+    systemctl disable --user --now opentabletdriver.service && \
+    rpm-ostree kargs --delete-if-present=modprobe.blacklist=hid_uclogic --delete-if-present=modprobe.blacklist=wacom
 
 # Create fedora distrobox if it doesn't exist
 [private]
