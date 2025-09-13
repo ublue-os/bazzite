@@ -1,0 +1,12 @@
+[Unit]
+Description=Bazzite Auto-Pause Service
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/bazzite-auto-pause/auto-pause-daemon
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
