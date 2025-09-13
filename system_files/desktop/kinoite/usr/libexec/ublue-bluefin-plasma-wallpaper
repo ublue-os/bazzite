@@ -1,0 +1,14 @@
+#!/bin/bash
+set -oux pipefail
+
+HEMI="${1:-north}"
+if [[ "$HEMI" != "north" && "$HEMI" != "south" ]]; then
+    echo "Error: Invalid hemisphere '$HEMI'. Must be 'north' or 'south'."
+    exit 1
+fi
+
+mkdir -p ~/.local/share/wallpapers/Bluefin
+cd ~/.local/share/wallpapers/Bluefin
+
+curl -Lo ${HEMI}.md5 https://github.com/grandpares/plasma-bluefin-wallpaper/releases/latest/download/${HEMI}.md5
+md5sum --status -c ${HEMI}.md5 || curl -Lo ${HEMI}.avif https://github.com/grandpares/plasma-bluefin-wallpaper/releases/latest/download/${HEMI}.avif
