@@ -159,6 +159,12 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
+    declare -A toswap=( \
+        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite"]="amd-gpu-firmware amd-ucode-firmware atheros-firmware brcmfmac-firmware intel-audio-firmware intel-gpu-firmware iwlegacy-firmware iwlwifi-dvm-firmware iwlwifi-mvm-firmware libertas-firmware linux-firmware linux-firmware-whence mt7xxx-firmware nvidia-gpu-firmware nxpwireless-firmware realtek-firmware tiwilink-firmware" \
+    ) && \
+    for repo in "${!toswap[@]}"; do \
+        for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
+    done && unset -v toswap repo package && \
     if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
         dnf5 -y copr enable lukenukem/asus-linux && \
         dnf5 -y install \
