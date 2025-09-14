@@ -479,11 +479,6 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell gnome-shell && \
         dnf5 versionlock add \
             gnome-shell && \
-        dnf5 -y swap \
-        --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite-multilib \
-            mutter mutter && \
-        dnf5 versionlock add \
-            mutter && \
         dnf5 -y install \
             nautilus-gsconnect \
             steamdeck-backgrounds \
