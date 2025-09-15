@@ -36,7 +36,7 @@ OTHER_NAMES = {
 }
 
 COMMITS_FORMAT = "### Commits\n| Hash | Subject | Author |\n| --- | --- | --- |{commits}\n\n"
-COMMIT_FORMAT = "\n| **[{short}](https://github.com/ublue-os/bazzite/commit/{hash})** | {subject} | @{author} |"
+COMMIT_FORMAT = "\n| **[{short}](https://github.com/ublue-os/bazzite/commit/{hash})** | {subject} | {author} |"
 
 CHANGELOG_TITLE = "{tag}: {pretty}"
 CHANGELOG_FORMAT = """\
@@ -281,7 +281,7 @@ def get_commits(prev_manifests, manifests, workdir: str):
                 "-C",
                 workdir,
                 "log",
-                "--pretty=format:%H %h %s %an",
+                "--pretty=format:%H|%h|%an|%s",
                 f"{start}..{finish}",
             ],
             check=True,
@@ -292,10 +292,10 @@ def get_commits(prev_manifests, manifests, workdir: str):
         for commit in commits.split("\n"):
             if not commit:
                 continue
-            parts = commit.split(" ", 3)
+            parts = commit.split("|")
             if len(parts) < 4:
                 continue
-            commit_hash, short, subject, author = parts
+            commit_hash, short, author, subject = parts
 
             if subject.lower().startswith("merge"):
                 continue
