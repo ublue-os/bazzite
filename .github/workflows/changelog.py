@@ -295,7 +295,7 @@ def get_commits(prev_manifests, manifests, workdir: str):
             parts = commit.split(" ", 3)
             if len(parts) < 4:
                 continue
-            hash, short, subject, author = parts
+            commit_hash, short, subject, author = parts
 
             if subject.lower().startswith("merge"):
                 continue
@@ -303,7 +303,7 @@ def get_commits(prev_manifests, manifests, workdir: str):
             out += (
                 COMMIT_FORMAT.replace("{short}", short)
                 .replace("{subject}", subject)
-                .replace("{hash}", hash)
+                .replace("{hash}", commit_hash)
                 .replace("{author}", author)
             )
 
