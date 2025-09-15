@@ -392,7 +392,11 @@ fi
 # FIXME: This fix was added in 09/2025, remove it when vrr and fractional scaling are no longer experimental
 if [[ ! -f /etc/bazzite/fixups/gnome_fixup && $IMAGE_NAME =~ "gnome" ]]; then
   echo "Enabling VRR and fractional scaling"
-  gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate', scale-monitor-framebuffer', 'xwayland-native-scaling']"
+  if [[ $IMAGE_NAME =~ "nvidia" ]]; then
+    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate', scale-monitor-framebuffer', 'xwayland-native-scaling', 'kms-modifiers']"
+  else
+    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate', scale-monitor-framebuffer', 'xwayland-native-scaling']"
+  fi
 fi
 touch /etc/bazzite/fixups/gnome_fixup
 
