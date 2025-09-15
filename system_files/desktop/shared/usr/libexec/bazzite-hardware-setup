@@ -390,7 +390,7 @@ fi
 
 # Fix Gnome experimental-features when we switched to fedora mutter
 # FIXME: This fix was added in 09/2025, remove it when vrr and fractional scaling are no longer experimental
-if [[ ! -f /etc/bazzite/fixups/gnome_fixup && $IMAGE_FLAVOR =~ "gnome" ]]; then
+if [[ ! -f /etc/bazzite/fixups/gnome_fixup && $IMAGE_NAME =~ "gnome" ]]; then
   echo "Enabling VRR and fractional scaling"
   gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate', scale-monitor-framebuffer', 'xwayland-native-scaling']"
 fi
