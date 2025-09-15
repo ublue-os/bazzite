@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=62
+HWS_VER=63
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -387,6 +387,18 @@ touch /etc/bazzite/fixups/grub_blank
 if [ ! -f /etc/hostname ]; then
   touch /etc/hostname
 fi
+
+# Fix Gnome experimental-features when we switched to fedora mutter
+# FIXME: This fix was added in 09/2025, remove it when vrr and fractional scaling are no longer experimental
+if [[ ! -f /etc/bazzite/fixups/gnome_fixup && $IMAGE_NAME =~ "gnome" ]]; then
+  echo "Enabling VRR and fractional scaling"
+  if [[ $IMAGE_NAME =~ "nvidia" ]]; then
+    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate', scale-monitor-framebuffer', 'xwayland-native-scaling', 'kms-modifiers']"
+  else
+    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate', scale-monitor-framebuffer', 'xwayland-native-scaling']"
+  fi
+fi
+touch /etc/bazzite/fixups/gnome_fixup
 
 if [[ -n "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
