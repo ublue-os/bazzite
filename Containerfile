@@ -443,6 +443,7 @@ RUN --mount=type=cache,dst=/var/cache \
             krdp \
             steamdeck-kde-presets-desktop \
             wallpaper-engine-kde-plugin \
+            plasma-wallpapers-dynamic \
             kdeconnectd \
             kdeplasma-addons \
             rom-properties-kf6 \
