@@ -12,17 +12,17 @@ screens:
         title: "Decky Bazzite Buddy"
         description: "A Decky plugin that lets you see Bazzite changelogs in Game Mode."
         default: false
-        script: "ujust get-decky-bazzite-buddy"
-      - id: "decky-framegen-plus"
-        title: "Decky Framegen Plus"
-        description: "A Decky plugin that swaps DLSS for FSR and adds framegen to non-framegen games"
+        script: "ujust install-decky-plugins bazzite-buddy"
+      - id: "decky-framegen"
+        title: "Decky Framegen"
+        description: "A Decky plugin that sets up OptiScaler for any Steam game."
         default: false
-        script: "ujust get-framegen install-decky-plugin"
+        script: "ujust install-decky-plugins decky-framegen"
       - id: "decky-lossless-scaling"
         title: "Decky Lossless Scaling"
         description: "A Decky plugin for lossless scaling compatibility in Linux"
         default: false
-        script: "ujust get-lsfg install-decky-plugin"
+        script: "ujust install-decky-plugins decky-lsfg-vk"
       - id: "emudeck"
         title: "EmuDeck"
         description: "A utility for installing and configuring emulators on the Steam Deck"
