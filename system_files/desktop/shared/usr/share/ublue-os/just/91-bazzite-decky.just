@@ -85,20 +85,22 @@ install-decky-plugins ACTION="":
     source /usr/lib/ujust/ujust.sh
 
     # Plugin configuration - add new plugins here
+    # Format: "owner|repo|plugin_name|filename"
+    # filename must be the exact filename from the GitHub release
     declare -A PLUGINS
-    PLUGINS["bazzite-buddy"]="bazzite-org|decky-bazzite-buddy|bazzite-buddy|Access Bazzite changelogs in game mode"
-    PLUGINS["decky-framegen"]="xXJSONDeruloXx|Decky-Framegen|Decky-Framegen|Easily install OptiScaler into any Steam game."
-    PLUGINS["decky-lsfg-vk"]="xXJSONDeruloXx|decky-lsfg-vk|decky-lsfg-vk|Use Lossless Scaling easily from Game Mode."
+    PLUGINS["bazzite-buddy"]="bazzite-org|decky-bazzite-buddy|Bazzite Buddy|Bazzite.Buddy.zip"
+    PLUGINS["decky-framegen"]="xXJSONDeruloXx|Decky-Framegen|Decky-Framegen|Decky-Framegen.zip"
+    PLUGINS["decky-lsfg-vk"]="xXJSONDeruloXx|decky-lsfg-vk|decky-lsfg-vk|decky-lsfg-vk.zip"
 
     # Core plugin installation function
     install_plugin() {
         local repo_owner="$1"
         local repo_name="$2" 
         local plugin_name="$3"
-        local description="$4"
+        local filename="$4"
         local plugin_dir="$HOME/homebrew/plugins"
 
-        echo "Installing $plugin_name: $description"
+        echo "Installing $plugin_name..."
 
         # Check if Decky is installed
         if [ ! -d "$HOME/homebrew" ]; then
@@ -111,20 +113,20 @@ install-decky-plugins ACTION="":
         local release_info
         release_info=$(timeout 30 curl -s "https://api.github.com/repos/$repo_owner/$repo_name/releases/latest" || echo "")
 
-        # Extract the download URL for the zip file
-        local download_urls=""
+        # Check if the specified filename exists in the release
+        local download_url=""
         if [ -n "$release_info" ]; then
-            download_urls=$(echo "$release_info" | jq -r '.assets[].browser_download_url | select(endswith(".zip"))' 2>/dev/null || echo "")
+            download_url=$(echo "$release_info" | jq -r --arg filename "$filename" '.assets[] | select(.name == $filename) | .browser_download_url' 2>/dev/null || echo "")
         fi
 
         # Determine plugin URL
         local plugin_url
-        if [ -z "$download_urls" ]; then
-            echo "No zip files found in the latest release or API timeout. Using fallback URL..."
-            plugin_url="https://github.com/$repo_owner/$repo_name/releases/latest/download/$plugin_name.zip"
+        if [ -z "$download_url" ]; then
+            echo "Specified file '$filename' not found in latest release or API timeout. Using direct URL..."
+            plugin_url="https://github.com/$repo_owner/$repo_name/releases/latest/download/$filename"
         else
-            plugin_url=$(echo "$download_urls" | head -n 1)
-            echo "Found latest release: $plugin_url"
+            plugin_url="$download_url"
+            echo "Found specified file in release: $plugin_url"
         fi
 
         # Ensure plugins directory exists
@@ -206,16 +208,6 @@ install-decky-plugins ACTION="":
 
     # Main function
     OPTION="{{ ACTION }}"
-    if [ "$OPTION" == "help" ]; then
-        echo "Usage: ujust install-decky-plugins [plugin-name]"
-        echo "  [plugin-name]: Install a specific plugin directly"
-        echo "  Available plugins:"
-        for plugin in "${!PLUGINS[@]}"; do
-            IFS='|' read -r owner repo name desc <<< "${PLUGINS[$plugin]}"
-            echo "    $plugin: $desc"
-        done
-        exit 0
-    fi
 
     # Check if Decky is installed first
     if [ ! -d "$HOME/homebrew" ]; then
@@ -228,8 +220,8 @@ install-decky-plugins ACTION="":
         found=false
         for plugin in "${!PLUGINS[@]}"; do
             if [[ "${plugin,,}" == "${OPTION,,}" ]]; then
-                IFS='|' read -r owner repo name desc <<< "${PLUGINS[$plugin]}"
-                if install_plugin "$owner" "$repo" "$name" "$desc"; then
+                IFS='|' read -r owner repo name filename <<< "${PLUGINS[$plugin]}"
+                if install_plugin "$owner" "$repo" "$name" "$filename"; then
                     echo "Please restart Decky Loader to activate the plugin."
                 else
                     echo "Failed to install $plugin"
@@ -240,7 +232,7 @@ install-decky-plugins ACTION="":
             fi
         done
         if [ "$found" = false ]; then
-            echo "Plugin '$OPTION' not found. Use 'ujust install-decky-plugins help' to see available plugins."
+            echo "Plugin '$OPTION' not found."
             exit 1
         fi
         exit 0
@@ -254,7 +246,6 @@ install-decky-plugins ACTION="":
     # Create menu options
     menu_options=()
     for plugin in "${!PLUGINS[@]}"; do
-        IFS='|' read -r owner repo name desc <<< "${PLUGINS[$plugin]}"
         menu_options+=("$plugin")
     done
     menu_options+=("Exit")
@@ -271,8 +262,8 @@ install-decky-plugins ACTION="":
     fi
 
     # Install selected plugin
-    IFS='|' read -r owner repo name desc <<< "${PLUGINS[$CHOICE]}"
-    if install_plugin "$owner" "$repo" "$name" "$desc"; then
+    IFS='|' read -r owner repo name filename <<< "${PLUGINS[$CHOICE]}"
+    if install_plugin "$owner" "$repo" "$name" "$filename"; then
         echo "Please restart Decky Loader to activate the plugin."
     else
         echo "Failed to install $CHOICE"
