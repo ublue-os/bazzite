@@ -88,6 +88,7 @@ install-decky-plugins ACTION="":
     declare -A PLUGINS
     PLUGINS["bazzite-buddy"]="bazzite-org|decky-bazzite-buddy|bazzite-buddy|Access Bazzite changelogs in game mode"
     PLUGINS["decky-framegen"]="xXJSONDeruloXx|Decky-Framegen|Decky-Framegen|Easily install OptiScaler into any Steam game."
+    PLUGINS["decky-lsfg-vk"]="xXJSONDeruloXx|decky-lsfg-vk|decky-lsfg-vk|Use Lossless Scaling easily from Game Mode."
 
     # Core plugin installation function
     install_plugin() {
