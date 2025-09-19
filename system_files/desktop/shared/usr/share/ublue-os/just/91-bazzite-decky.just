@@ -91,9 +91,6 @@ install-decky-plugins ACTION="":
     PLUGINS["bazzite-buddy"]="bazzite-org|decky-bazzite-buddy|Bazzite Buddy|Bazzite.Buddy.zip"
     PLUGINS["decky-framegen"]="xXJSONDeruloXx|Decky-Framegen|Decky-Framegen|Decky-Framegen.zip"
     PLUGINS["decky-lsfg-vk"]="xXJSONDeruloXx|decky-lsfg-vk|decky-lsfg-vk|decky-lsfg-vk.zip"
-    PLUGINS["simple-decky-tdp"]="aarron-lee|SimpleDeckyTDP|SimpleDeckyTDP|SimpleDeckyTDP.zip"
-    PLUGINS["legion-go-remapper"]="aarron-lee|LegionGoRemapper|LegionGoRemapper|LegionGoRemapper.tar.gz"
-    PLUGINS["gpd-control"]="aarron-lee|GPDControl|GPDControl|GPDControl.tar.gz"
 
     # Core plugin installation function
     install_plugin() {
