@@ -91,6 +91,8 @@ install-decky-plugins ACTION="":
     PLUGINS["bazzite-buddy"]="bazzite-org|decky-bazzite-buddy|Bazzite Buddy|Bazzite.Buddy.zip"
     PLUGINS["decky-framegen"]="xXJSONDeruloXx|Decky-Framegen|Decky-Framegen|Decky-Framegen.zip"
     PLUGINS["decky-lsfg-vk"]="xXJSONDeruloXx|decky-lsfg-vk|decky-lsfg-vk|decky-lsfg-vk.zip"
+    PLUGINS["simple-decky-tdp"]="aarron-lee|SimpleDeckyTDP|SimpleDeckyTDP|SimpleDeckyTDP.zip"
+    PLUGINS["legion-go-remapper"]="aarron-lee|LegionGoRemapper|LegionGoRemapper|LegionGoRemapper.tar.gz"
 
     # Core plugin installation function
     install_plugin() {
@@ -146,20 +148,34 @@ install-decky-plugins ACTION="":
             sudo rm -rf "$plugin_dir/$plugin_name"
         fi
 
-        # Download the zip file
+        # Download the plugin file
         echo "Downloading $plugin_name from $plugin_url..."
-        local temp_zip="plugin.zip"
-        if ! timeout 60 curl -L -o "$temp_zip" "$plugin_url"; then
+        local temp_file="plugin_file"
+        if ! timeout 60 curl -L -o "$temp_file" "$plugin_url"; then
             echo "Download failed or timed out!"
             cd - > /dev/null
             rm -rf "$temp_dir"
             return 1
         fi
 
-        # Extract plugin
+        # Extract plugin based on file type
         echo "Extracting $plugin_name..."
-        if ! unzip -o "$temp_zip" -d .; then
-            echo "Extraction failed!"
+        if [[ "$plugin_url" == *.tar.gz ]]; then
+            if ! tar -xzf "$temp_file"; then
+                echo "Extraction failed!"
+                cd - > /dev/null
+                rm -rf "$temp_dir"
+                return 1
+            fi
+        elif [[ "$plugin_url" == *.zip ]]; then
+            if ! unzip -o "$temp_file" -d .; then
+                echo "Extraction failed!"
+                cd - > /dev/null
+                rm -rf "$temp_dir"
+                return 1
+            fi
+        else
+            echo "Unsupported file type. Only .zip and .tar.gz are supported."
             cd - > /dev/null
             rm -rf "$temp_dir"
             return 1
