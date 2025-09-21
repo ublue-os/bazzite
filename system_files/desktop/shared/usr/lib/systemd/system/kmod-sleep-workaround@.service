@@ -1,0 +1,13 @@
+[Unit]
+Description=Unloads/reloads %i kernel module before/after sleep for devices where it cause sleep/wake issues
+Before=sleep.target
+StopWhenUnneeded=yes
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=-/usr/bin/rmmod %i
+ExecStop=-/usr/bin/modprobe %i
+
+[Install]
+WantedBy=sleep.target

@@ -25,8 +25,8 @@ body:
   - type: textarea
     id: version
     attributes:
-      label: Output of `rpm-ostree status`
-      description: Please run `rpm-ostree status` and paste the output here.
+      label: Output of `ujust get-logs`
+      description: Please run `ujust get-logs` and paste the output here.
       render: shell
     validations:
       required: true
