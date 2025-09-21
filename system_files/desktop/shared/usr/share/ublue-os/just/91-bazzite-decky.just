@@ -283,3 +283,11 @@ install-decky-plugins ACTION="":
         echo "Failed to install $CHOICE"
         exit 1
     fi
+
+get-decky-bazzite-buddy:
+    #!/usr/bin/bash
+    ujust install-decky-plugins bazzite-buddy
+
+get-framegen:
+    #!/usr/bin/bash
+    ujust install-decky-plugins decky-framegen

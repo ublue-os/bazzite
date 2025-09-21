@@ -29,7 +29,7 @@ get-lsfg ACTION="prompt":
         echo ""
         echo "What would you like to do with lsfg-vk?"
         echo ""
-        OPTION=$(ugum choose "Install lsfg-vk directly" "Uninstall lsfg-vk" "Exit without changes")
+        OPTION=$(ugum choose "Install lsfg-vk directly" "Install Decky Plugin" "Uninstall lsfg-vk" "Exit without changes")
     elif [ "$OPTION" == "help" ]; then
         echo "Usage: just get-lsfg <option>"
         echo "  <option>: Specify an action - 'install' or 'uninstall'"
@@ -143,6 +143,9 @@ get-lsfg ACTION="prompt":
 
         echo "lsfg-vk installed successfully!"
         echo "The lsfg-vk UI should now be available in your applications menu and on your desktop."
+    elif [ "${OPTION,,}" == "install decky plugin" ] || [ "${OPTION,,}" == "install-decky-plugin" ]; then
+        echo "Installing Decky LSFG plugin..."
+        ujust install-decky-plugins decky-lsfg-vk
     elif [ "${OPTION,,}" == "uninstall" ] || [ "${OPTION,,}" == "uninstall lsfg-vk" ]; then
         echo "Uninstalling lsfg-vk..."
 
