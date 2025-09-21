@@ -36,11 +36,27 @@ install-coolercontrol:
     {{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}
     EOF
 
-    echo 'Enabling Terra Repository.'
-    sudo sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/terra.repo
-    echo 'Installing Cooler Control'
-    rpm-ostree install -y liquidctl coolercontrol
-    echo 'Complete, please reboot to apply changes.'
+    layered() {
+        local pkg="$1"
+        rpm-ostree status --json | jq -e ".deployments[] | select(.booted == true) | .packages | index(\"$pkg\")" > /dev/null
+    }
+    packages=()
+    for pkg in liquidctl coolercontrol; do
+        if layered "$pkg"; then
+            echo "$pkg is already layered, skipping."
+        else
+            packages+=("$pkg")
+        fi
+    done
+    if [ ${#packages[@]} -gt 0 ]; then
+        echo 'Enabling Terra Repository.'
+        sudo sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/terra.repo
+        echo "Installing: ${packages[*]}"
+        rpm-ostree install -y "${packages[@]}"
+        echo 'Complete, please reboot to apply changes.'
+    else
+        echo "No changes were made."
+    fi
 
 # Install JetBrains Toolbox | https://www.jetbrains.com/toolbox-app/
 [group("apps")]
