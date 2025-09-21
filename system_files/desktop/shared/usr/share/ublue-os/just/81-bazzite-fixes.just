@@ -295,6 +295,31 @@ toggle-i915-sleep-fix:
         ;;
     esac
 
+# Toggle GPP0 wakeup fix to prevent unwanted system wake-ups, primarily affects Gigabyte motherboards.
+[group("hardware")]
+_toggle-gpp0-wakeup-fix:
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    if systemctl is-enabled disable-gpp0-wakeup.service &>/dev/null; then
+      echo "Current status: ${green}${bold}enabled${normal}"
+      CHOICE=$(ugum choose "Disable GPP0 wakeup fix" "Exit without changes")
+      if [[ "$CHOICE" == "Disable GPP0 wakeup fix" ]]; then
+        sudo systemctl disable --now disable-gpp0-wakeup.service
+        echo "GPP0 wakeup fix ${red}${bold}disabled${normal}."
+      else
+        echo "No changes made."
+      fi
+    else
+      echo "Current status: ${red}${bold}disabled${normal}"
+      CHOICE=$(ugum choose "Enable GPP0 wakeup fix" "Exit without changes")
+      if [[ "$CHOICE" == "Enable GPP0 wakeup fix" ]]; then
+        sudo systemctl enable --now disable-gpp0-wakeup.service
+        echo "GPP0 wakeup fix ${green}${bold}enabled${normal}."
+      else
+        echo "No changes made."
+      fi
+    fi
+
 # Manage Steam game shortcuts on the Desktop. Usage: just steam-icons [command] (list, remove, enable, disable)
 steam-icons ACTION="":
     #!/usr/bin/bash
