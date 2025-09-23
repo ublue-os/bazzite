@@ -248,7 +248,7 @@ Zie onze [nieuwsbrief](https://universal-blue.discourse.group/docs?topic=2252) d
 
 ## Verificatie
 
-De images worden getekend door sigstore's [cosign](https://docs.sigstore.dev/cosign/overview/). U kunt de tekening verifieren om `cosign.pub` te downloaden en het volgende in de terminal te voegen:
+De images worden getekend door sigstore's [cosign](https://docs.sigstore.dev/cosign/signing/overview/). U kunt de tekening verifieren om `cosign.pub` te downloaden en het volgende in de terminal te voegen:
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -303,7 +303,7 @@ Bazzite is een gemeenschapsinspanning en bestaat niet zonder hen. Zie hieronder 
 
 Bazzite word in z'n geheel in Github gemaakt en je eigen versie maken is even makkelijk als deze repo forken, een prive sleutel toe te voegen en GithubActions in te schakelen.
 
-[Zie hier](https://docs.github.com/en/actions/security-guides/encrypted-secrets) om geheimen te behouden op GitHub. Je moet  [nieuwe sleutels genereren](https://docs.sigstore.dev/cosign/overview/) met cosign. De publieke sleutel kan in jou repo gezet worden. <sub><sup>(Jou gebruikers hebben het nodig om de signatures te checken)</sup></sub> en je kan je prive sleutel in `Settings -> Secrets -> Actions` toevoegen met de naam  `SIGNING_SECRET`.
+[Zie hier](https://docs.github.com/en/actions/security-guides/encrypted-secrets) om geheimen te behouden op GitHub. Je moet  [nieuwe sleutels genereren](https://docs.sigstore.dev/cosign/signing/overview/) met cosign. De publieke sleutel kan in jou repo gezet worden. <sub><sup>(Jou gebruikers hebben het nodig om de signatures te checken)</sup></sub> en je kan je prive sleutel in `Settings -> Secrets -> Actions` toevoegen met de naam  `SIGNING_SECRET`.
 
 We hebben ook een populaire config voor de [pull app](https://github.com/apps/pull) als je jou fork up-to-date wilt houden met upstream.Zet deze app aan in jou repo on Bazzite updates te gebruiken zodra die uitkomen terwijl je zelf ook dingen kan veranderen.
 

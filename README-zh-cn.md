@@ -247,7 +247,7 @@ Bazzite带来最新的Linux内核，默认启用的SELinux为安全启动提供�
 
 ## 验证
 
-这些镜像使用sigstore的[cosign](https://docs.sigstore.dev/cosign/overview/)。你可以通过此存储库下载 `cosign.pub`密钥，并运行以下命令来验证签名：
+这些镜像使用sigstore的[cosign](https://docs.sigstore.dev/cosign/signing/overview/)。你可以通过此存储库下载 `cosign.pub`密钥，并运行以下命令来验证签名：
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -302,7 +302,7 @@ Bazzite是社区努力的结果，离不开每个人的支持。以下是那些�
 
 Bazzite完全在GitHub上构建，创建你自己的版本只需要fork此仓库，添加私钥，然后启用GitHub actions。
 
-熟悉github[加密机制](https://docs.github.com/en/actions/security-guides/encrypted-secrets)。你需要[生成带有cosign的新密钥对](https://docs.sigstore.dev/cosign/overview/)。公钥可以放置在你的公有仓库中<sub><sup>(你的用户需要用它来检查签名)</sup></sub>，你可以用`SIGNING_SECRET`作为名字把私钥粘贴到`Settings -> Secrets -> Actions`。
+熟悉github[加密机制](https://docs.github.com/en/actions/security-guides/encrypted-secrets)。你需要[生成带有cosign的新密钥对](https://docs.sigstore.dev/cosign/signing/overview/)。公钥可以放置在你的公有仓库中<sub><sup>(你的用户需要用它来检查签名)</sup></sub>，你可以用`SIGNING_SECRET`作为名字把私钥粘贴到`Settings -> Secrets -> Actions`。
 
 如果你想使你的fork与上游保持同步，我们同样提供了一个流行的[pull app](https://github.com/apps/pull)的设置。在你的仓库上启用此应用程序以追踪Bazzite的更新，同时进行你自己的修改。
 

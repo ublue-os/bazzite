@@ -242,7 +242,7 @@ Bazzite использует новейшее ядро Linux, SELinux и под�
 
 ## Проверка подлинности
 
-Образы подписаны с помощью [cosign](https://docs.sigstore.dev/cosign/overview/). Для проверки скачайте ключ `cosign.pub` и выполните:
+Образы подписаны с помощью [cosign](https://docs.sigstore.dev/cosign/signing/overview/). Для проверки скачайте ключ `cosign.pub` и выполните:
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -300,7 +300,7 @@ Bazzite — результат работы сообщества. Благода
 
 Bazzite собирается в GitHub. Создать свою версию легко: форкните репозиторий, добавьте ключ и включите GitHub Actions.
 
-[Ознакомьтесь](https://docs.github.com/en/actions/security-guides/encrypted-secrets) с секретами в GitHub. Вам понадобится [ключ cosign](https://docs.sigstore.dev/cosign/overview/). Добавьте приватный ключ в `Settings -> Secrets -> Actions` как `SIGNING_SECRET`.
+[Ознакомьтесь](https://docs.github.com/en/actions/security-guides/encrypted-secrets) с секретами в GitHub. Вам понадобится [ключ cosign](https://docs.sigstore.dev/cosign/signing/overview/). Добавьте приватный ключ в `Settings -> Secrets -> Actions` как `SIGNING_SECRET`.
 
 Для синхронизации с upstream используйте [pull app](https://github.com/apps/pull).
 
