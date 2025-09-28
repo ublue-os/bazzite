@@ -94,6 +94,7 @@ fi
 # GTT SIZE cleanup
 #
 if [ ! -f /etc/bazzite/fixups/gttsize ]; then
+  echo "Removing gttsize for device in kernel if exists (default is 50%)"
   if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
     NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=8128")
   elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
@@ -103,6 +104,7 @@ if [ ! -f /etc/bazzite/fixups/gttsize ]; then
   elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
     NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=16256")
   fi
+  touch /etc/bazzite/fixups/gttsize
 fi
 
 # Remove sg_display
