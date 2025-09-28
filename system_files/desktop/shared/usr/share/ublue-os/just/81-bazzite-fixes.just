@@ -297,7 +297,7 @@ toggle-i915-sleep-fix:
 
 # Toggle GPP0 wakeup fix to prevent unwanted system wake-ups, primarily affects Gigabyte motherboards.
 [group("hardware")]
-_toggle-gigabyte-wake-fix:
+toggle-gigabyte-wake-fix:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     SERVICE_FILE="/etc/systemd/system/biosWakeupWorkaround.service"
