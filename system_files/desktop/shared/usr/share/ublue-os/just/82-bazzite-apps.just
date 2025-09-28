@@ -235,7 +235,7 @@ distrobox-check-fedora:
 
 # Setup Bazzite development tools
 [group("dev")]
-setup-bazzite-de:
+setup-bazzite-dx:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     echo "Installing Bazzite development tools..."
