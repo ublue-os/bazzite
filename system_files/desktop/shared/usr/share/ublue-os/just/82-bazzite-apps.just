@@ -232,3 +232,11 @@ distrobox-check-fedora:
       echo "Setting up Fedora distrobox"
       Assemble noconfirmcreate "" "fedora"
     fi
+
+# Setup Bazzite development tools
+[group("dev")]
+setup-bazzite-de:
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    echo "Installing Bazzite development tools..."
+    brew install --cask visual-studio-code
