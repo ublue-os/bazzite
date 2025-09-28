@@ -104,7 +104,6 @@ if [ ! -f /etc/bazzite/fixups/gttsize ]; then
   elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
     NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=16256")
   fi
-  touch /etc/bazzite/fixups/gttsize
 fi
 
 # Remove sg_display
@@ -406,6 +405,7 @@ fi
 touch /etc/bazzite/fixups/sg_display2
 touch /etc/bazzite/fixups/preempt_cleanup2
 touch /etc/bazzite/fixups/orientation_old2
+touch /etc/bazzite/fixups/gttsize
 
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
