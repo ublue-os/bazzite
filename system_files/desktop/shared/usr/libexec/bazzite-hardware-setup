@@ -52,15 +52,6 @@ if /usr/libexec/hwsupport/valve-hardware; then
   if [[ ! $KARGS =~ "amd_iommu" ]]; then
     NEEDED_KARGS+=("--append-if-missing=amd_iommu=off")
   fi
-
-  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
-    if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
-      echo "32GB RAM Steam Deck detected"
-      NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=16256")
-    else
-      NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
-    fi
-  fi
 fi
 
 if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
@@ -103,6 +94,9 @@ if [ ! -f /etc/bazzite/fixups/gttsize ]; then
     NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=12192")
   elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
     NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=16256")
+  elif /usr/libexec/hwsupport/valve-hardware; then
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=16256")
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=8128")
   fi
 fi
 
