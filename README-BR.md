@@ -245,7 +245,7 @@ Leia [documentação adicional](http://docs.bazzite.gg/) ao redor do projeto.
 
 ## Verificação
 
-As imagens são assinadas com o [cosign](https://docs.sigstore.dev/cosign/overview/) da sigstore. Você pode verificar essa assinatura baixando a chave `cosign.pub` deste repositório ao rodar o seguinte comando:
+As imagens são assinadas com o [cosign](https://docs.sigstore.dev/cosign/signing/overview/) da sigstore. Você pode verificar essa assinatura baixando a chave `cosign.pub` deste repositório ao rodar o seguinte comando:
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -299,7 +299,7 @@ O Bazzite é um esforço comunitário e não existiria sem o apoio de todos. Lis
 
 O Bazzite é construído inteiramente no GitHub e criar sua própria versão customizada é tão simples quanto fazer um fork deste repositório, adicionar uma chave privada pra assinatura, e habilitar as GitHub actions.
 
-[Se familiarize](https://docs.github.com/en/actions/security-guides/encrypted-secrets) com o uso de segredos no github. Você vai precisar [gerar um novo par de chaves](https://docs.sigstore.dev/cosign/overview/) com o cosign. A chave pública pode ficar no seu repositório público <sub><sup>(Seus usuários precisam dela pra verificar a assinatura)</sup></sub>, e você pode colar a chave privada em `Settings -> Secrets -> Actions` com o nome `SIGNING_SECRET`.
+[Se familiarize](https://docs.github.com/en/actions/security-guides/encrypted-secrets) com o uso de segredos no github. Você vai precisar [gerar um novo par de chaves](https://docs.sigstore.dev/cosign/signing/overview/) com o cosign. A chave pública pode ficar no seu repositório público <sub><sup>(Seus usuários precisam dela pra verificar a assinatura)</sup></sub>, e você pode colar a chave privada em `Settings -> Secrets -> Actions` com o nome `SIGNING_SECRET`.
 
 Nós também incluímos uma configuração pro app popular [pull](https://github.com/apps/pull) se você quiser manter seu fork sincronizado com o upstream. Habilite esse app no seu repositório pra ficar a par das mudanças no Bazzite enquando mantém suas próprias modificações.
 
