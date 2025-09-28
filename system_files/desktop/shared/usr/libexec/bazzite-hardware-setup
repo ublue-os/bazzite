@@ -46,11 +46,10 @@ mkdir -p /etc/bazzite/fixups
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
 
-if /usr/libexec/hwsupport/valve-hardware || /usr/libexec/hwsupport/hhd-supported-hardware; then
-  echo "Checking for ppfeaturemask karg on hardware that requires it"
-  if [[ ! $KARGS =~ "ppfeaturemask" ]]; then
-    NEEDED_KARGS+=("--append-if-missing="$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))"))
-  fi
+# TODO: remove this hardcode through a kernel patch
+echo "Checking for ppfeaturemask karg on hardware that requires it"
+if [[ ! $KARGS =~ "ppfeaturemask" ]]; then
+  NEEDED_KARGS+=("--append-if-missing="$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))"))
 fi
 
 if /usr/libexec/hwsupport/valve-hardware; then
@@ -399,6 +398,17 @@ if [[ ! -f /etc/bazzite/fixups/gnome_fixup && $IMAGE_NAME =~ "gnome" ]]; then
   fi
 fi
 touch /etc/bazzite/fixups/gnome_fixup
+
+# Remove old hhd@ enables
+# Check if we've already removed old hhd@ service enablements
+if [ ! -f /etc/bazzite/fixups/hhd_service_cleanup ]; then
+  echo "Cleaning up old hhd@ service enables"
+  for service in $(systemctl list-units --type=service --all 'hhd@*.service' --no-legend | awk '{print $1}'); do
+    echo "Disabling $service"
+    systemctl disable --now "$service" || true
+  done
+  touch /etc/bazzite/fixups/hhd_service_cleanup
+fi
 
 if [[ -n "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
