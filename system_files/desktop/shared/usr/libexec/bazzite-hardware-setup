@@ -91,29 +91,17 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
 fi
 
 #
-# GTT SIZE
+# GTT SIZE cleanup
 #
-if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
-    echo "Adding GTTSize for Lenovo Legion Go"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
-  fi
-elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
-    echo "Adding GTTSize for ASUS Ally"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
-  fi
-elif [[ ":ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
-    echo "Adding GTTSize for ASUS Ally X"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=12192")
-  fi
-elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
-  if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
-    if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
-      echo "Adding GTTSize for ONEXPLAYER (32GB RAM)"
-      NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=16256")
-    fi
+if [ ! -f /etc/bazzite/fixups/gttsize ]; then
+  if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=8128")
+  elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=8128")
+  elif [[ ":ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=12192")
+  elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=16256")
   fi
 fi
 
