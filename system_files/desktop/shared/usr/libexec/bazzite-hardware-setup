@@ -46,12 +46,6 @@ mkdir -p /etc/bazzite/fixups
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
 
-# TODO: remove this hardcode through a kernel patch
-echo "Checking for ppfeaturemask karg on hardware that requires it"
-if [[ ! $KARGS =~ "ppfeaturemask" ]]; then
-  NEEDED_KARGS+=("--append-if-missing="$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))"))
-fi
-
 if /usr/libexec/hwsupport/valve-hardware; then
   echo "Checking for needed karg changes (Jupiter/Galileo)"
 
