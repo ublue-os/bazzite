@@ -6,7 +6,7 @@ pick:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    REPO="xXJSONDeruloXx/bazzite-ujust-picker"
+    REPO="bazzite-org/bazzite-ujust-picker"
     DEST="$HOME/.local/bin/ujust-picker"
 
     # Ensure local bin directory exists

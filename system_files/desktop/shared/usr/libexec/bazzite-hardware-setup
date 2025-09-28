@@ -7,7 +7,7 @@ IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=62
+HWS_VER=63
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -46,11 +46,10 @@ mkdir -p /etc/bazzite/fixups
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
 
-if /usr/libexec/hwsupport/valve-hardware || /usr/libexec/hwsupport/hhd-supported-hardware; then
-  echo "Checking for ppfeaturemask karg on hardware that requires it"
-  if [[ ! $KARGS =~ "ppfeaturemask" ]]; then
-    NEEDED_KARGS+=("--append-if-missing="$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))"))
-  fi
+# TODO: remove this hardcode through a kernel patch
+echo "Checking for ppfeaturemask karg on hardware that requires it"
+if [[ ! $KARGS =~ "ppfeaturemask" ]]; then
+  NEEDED_KARGS+=("--append-if-missing="$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))"))
 fi
 
 if /usr/libexec/hwsupport/valve-hardware; then
@@ -67,14 +66,6 @@ if /usr/libexec/hwsupport/valve-hardware; then
     else
       NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
     fi
-  fi
-
-  if [[ $KARGS =~ "amd_pstate=disable" ]]; then
-    NEEDED_KARGS+=("--delete-if-present=amd_pstate=disable")
-  fi
-
-  if [[ ! $KARGS =~ "amd_pstate=passive" ]]; then
-    NEEDED_KARGS+=("--append-if-missing=amd_pstate=passive")
   fi
 fi
 
@@ -394,6 +385,29 @@ touch /etc/bazzite/fixups/grub_blank
 # Fix missing hostname file breaking distrobox
 if [ ! -f /etc/hostname ]; then
   touch /etc/hostname
+fi
+
+# Fix Gnome experimental-features when we switched to fedora mutter
+# FIXME: This fix was added in 09/2025, remove it when vrr and fractional scaling are no longer experimental
+if [[ ! -f /etc/bazzite/fixups/gnome_fixup && $IMAGE_NAME =~ "gnome" ]]; then
+  echo "Enabling VRR and fractional scaling"
+  if [[ $IMAGE_NAME =~ "nvidia" ]]; then
+    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate', scale-monitor-framebuffer', 'xwayland-native-scaling', 'kms-modifiers']"
+  else
+    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate', scale-monitor-framebuffer', 'xwayland-native-scaling']"
+  fi
+fi
+touch /etc/bazzite/fixups/gnome_fixup
+
+# Remove old hhd@ enables
+# Check if we've already removed old hhd@ service enablements
+if [ ! -f /etc/bazzite/fixups/hhd_service_cleanup ]; then
+  echo "Cleaning up old hhd@ service enables"
+  for service in $(systemctl list-units --type=service --all 'hhd@*.service' --no-legend | awk '{print $1}'); do
+    echo "Disabling $service"
+    systemctl disable --now "$service" || true
+  done
+  touch /etc/bazzite/fixups/hhd_service_cleanup
 fi
 
 if [[ -n "$NEEDED_KARGS" ]]; then

@@ -193,16 +193,6 @@ fi
 
 # Deck Build Setup
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
-  # HHD Setup
-  if /usr/libexec/hwsupport/hhd-supported-hardware; then
-    echo 'Enabling HHD'
-    pkexec /usr/libexec/bazzite-enable-hhd "$USER"
-  elif /usr/libexec/hwsupport/valve-hardware; then
-    echo 'Hiding HHD-UI on Deck hardware'
-    cp /usr/share/applications/hhd-ui.desktop "${XDG_DATA_HOME:-$HOME/.local/share}/applications/hhd-ui.desktop"
-    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' "${XDG_DATA_HOME:-$HOME/.local/share}/applications/hhd-ui.desktop"
-  fi
-
   # SDGyroDSU Setup
   if /usr/libexec/hwsupport/valve-hardware; then
     systemctl --user enable --now sdgyrodsu.service

@@ -28,8 +28,8 @@
   - [Packages personnalisés](#packages-personnalisés)
   - [Vérification](#vérification)
   - [Secure Boot](#secure-boot)
-    - [Métriques des contributeurs](#métriques-des-contributeurs)
-      - [Historique des étoiles](#historique-des-étoiles)
+  - [Métriques des contributeurs](#métriques-des-contributeurs)
+  - [Historique des étoiles](#historique-des-étoiles)
   - [Remerciements spéciaux](#remerciements-spéciaux)
   - [Construisez le vôtre](#construisez-le-vôtre)
   - [Rejoignez la communauté](#rejoignez-la-communauté)
@@ -57,7 +57,7 @@ Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/m
 - Support pour [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Seulement sur KDE)</sup></sub>
 - [Extension de shell ROM Properties Page](https://github.com/GerbilSoft/rom-properties) incluse par défaut.
 - Support complet pour [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
-- [Distrobox](https://github.com/89luca89/distrobox) préinstallé avec mises à jour automatiques pour les conteneurs créés.
+- [Distrobox](https://github.com/89luca89/distrobox) préinstallé.
 - [Ptyxis Terminal](https://gitlab.gnome.org/chergert/ptyxis) est utilisé par défaut dans toutes les images. Ce terminal est spécialement conçu pour le workflow des conteneurs dans Bazzite. Pour revenir au terminal d'origine, exécutez `ujust _restore-original-terminal`.
 - Service automatisé `duperemove` pour réduire l'espace disque utilisé par les contenus du préfixe wine.
 - Support pour HDMI CEC via [libCEC](https://libcec.pulse-eight.com/).
@@ -80,7 +80,7 @@ Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/m
 
 De nombreuses variantes communes sont disponibles sous le nom `bazzite`, adaptée aux ordinateurs de bureau.
 
-- Mises à jour automatiques pour le système d'exploitation, les Flatpaks et tous les conteneurs Distrobox - propulsées par [ublue-update](https://github.com/ublue-os/ublue-update) et [topgrade](https://github.com/topgrade-rs/topgrade).
+- Mises à jour automatiques pour le système d'exploitation, les Flatpaks et plus - propulsées par [ublue-update](https://github.com/ublue-os/ublue-update) et [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
 > **Les ISOs peuvent être téléchargées depuis notre [page de versions](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile peut être trouvé [ici](https://universal-blue.discourse.group/docs?topic=30).**
@@ -253,7 +253,7 @@ Les paquets portés de SteamOS et ChimeraOS, entre autres utilisés par Bazzite,
 
 ## Vérification
 
-Ces images sont signées avec [cosign](https://docs.sigstore.dev/cosign/overview/) de sigstore. Vous pouvez vérifier la signature en téléchargeant la clé `cosign.pub` depuis ce dépôt et en exécutant la commande suivante :
+Ces images sont signées avec [cosign](https://docs.sigstore.dev/cosign/signing/overview/) de sigstore. Vous pouvez vérifier la signature en téléchargeant la clé `cosign.pub` depuis ce dépôt et en exécutant la commande suivante :
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -276,11 +276,11 @@ Pour les utilisateurs déjà sur une image Universal Blue, vous pouvez plutôt e
 
 Si on vous demande un mot de passe, utilisez `universalblue`.
 
-### Métriques des contributeurs
+## Métriques des contributeurs
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Image d'analyse Repobeats")
 
-#### Historique des étoiles
+## Historique des étoiles
 
 <a href="https://star-history.com/#ublue-os/bazzite&Date">
   <picture>
@@ -308,7 +308,7 @@ Bazzite est un effort communautaire et ne serait pas possible sans le soutien de
 
 Bazzite est entièrement construit sur GitHub et créer votre propre version personnalisée est aussi simple que de forker ce dépôt, ajouter une clé de signature privée et activer les actions GitHub.
 
-[Familiarisez-vous](https://docs.github.com/en/actions/security-guides/encrypted-secrets) sur la gestion des secrets dans GitHub. Vous devrez [générer une nouvelle paire de clés](https://docs.sigstore.dev/cosign/overview/) avec cosign. La clé publique peut être dans votre repo public <sub><sup>(Vos utilisateurs en ont besoin pour vérifier les signatures)</sup></sub>, et vous pouvez coller la clé privée dans `Paramètres -> Secrets -> Actions` avec le nom `SIGNING_SECRET`.
+[Familiarisez-vous](https://docs.github.com/en/actions/security-guides/encrypted-secrets) sur la gestion des secrets dans GitHub. Vous devrez [générer une nouvelle paire de clés](https://docs.sigstore.dev/cosign/signing/overview/) avec cosign. La clé publique peut être dans votre repo public <sub><sup>(Vos utilisateurs en ont besoin pour vérifier les signatures)</sup></sub>, et vous pouvez coller la clé privée dans `Paramètres -> Secrets -> Actions` avec le nom `SIGNING_SECRET`.
 
 Nous expédions également une configuration pour l'application populaire [pull app](https://github.com/apps/pull) si vous souhaitez synchroniser votre fork avec l'original. Activez cette application sur votre repo pour suivre les modifications de Bazzite tout en apportant vos propres modifications.
 

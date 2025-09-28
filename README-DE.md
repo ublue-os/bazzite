@@ -29,8 +29,8 @@
   - [Dokumentation](#dokumentation)
   - [Verifizierung](#verifizierung)
   - [Secure Boot](#secure-boot)
-    - [Mitwirkenden-Statistiken](#mitwirkenden-statistiken)
-      - [Star-Verlauf](#star-verlauf)
+  - [Mitwirkenden-Statistiken](#mitwirkenden-statistiken)
+  - [Star-Verlauf](#star-verlauf)
   - [Besonderer Dank](#besonderer-dank)
   - [Eigene Version erstellen](#eigene-version-erstellen)
   - [Trete der Community bei](#trete-der-community-bei)
@@ -58,7 +58,7 @@ Bazzite basiert auf [ublue-os/main](https://github.com/ublue-os/main) und [ublue
 - Unterstützung für [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Nur auf KDE)</sup></sub>
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) enthalten.
 - Volle Unterstützung für [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
-- [Distrobox](https://github.com/89luca89/distrobox) vorinstalliert mit automatischen Updates für erstellte Container.
+- [Distrobox](https://github.com/89luca89/distrobox) vorinstalliert.
 - Vereinfachte Davinci Resolve-Installation mit [davincibox](https://github.com/zelikos/davincibox) (`ujust install-resolve`)
 - [Ptyxis Terminal](https://gitlab.gnome.org/chergert/ptyxis) wird standardmäßig in allen Images verwendet. Dieses Terminal wurde speziell für den Container-Workflow entwickelt, den du in Bazzite nutzen wirst. KDE Konsole und GNOME Console können bei Bedarf als Flatpaks installiert werden.
 - Automatischer `duperemove`-Dienst zur Reduzierung des von Wine-Prefix-Inhalten belegten Speicherplatzes.
@@ -79,7 +79,7 @@ Bazzite basiert auf [ublue-os/main](https://github.com/ublue-os/main) und [ublue
 
 Standardvariante, verfügbar als `bazzite`, geeignet für Desktop-Computer.
 
-- Automatische Updates für das OS, Flatpaks und alle Distrobox-Container – angetrieben von [ublue-update](https://github.com/ublue-os/ublue-update) und [topgrade](https://github.com/topgrade-rs/topgrade).
+- Automatische Updates für das OS, Flatpaks und mehr – angetrieben von [ublue-update](https://github.com/ublue-os/ublue-update) und [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
 > **ISOs können von unserer [Website](https://download.bazzite.gg) heruntergeladen werden, und eine hilfreiche Installationsanleitung findest du [hier](https://docs.bazzite.gg/General/Installation_Guide/) (Englisch).**
@@ -115,7 +115,7 @@ Diese Variante wurde für die Nutzung als Alternative zu SteamOS auf dem Steam D
 - Kommt standardmäßig mit Patches von [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) für volle BTRFS-Unterstützung der SD-Karte.
 - Liefert eine portierte Kopie von [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU) mit, die standardmäßig aktiviert ist.
 - Option zur Installation von [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/) und [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), neben zahlreichen anderen nützlichen Paketen während der Installation.
-- Ein benutzerdefiniertes Update-System ermöglicht es, das OS, Flatpaks und Distrobox-Images direkt über die Game-Mode-UI zu aktualisieren, angetrieben von [ublue-update](https://github.com/ublue-os/ublue-update) und [topgrade](https://github.com/topgrade-rs/topgrade).
+- Ein benutzerdefiniertes Update-System ermöglicht es, das OS, Flatpaks und mehr direkt über die Game-Mode-UI zu aktualisieren, angetrieben von [ublue-update](https://github.com/ublue-os/ublue-update) und [topgrade](https://github.com/topgrade-rs/topgrade).
 - Integrierte Unterstützung für Windows-Dual-Boot dank der intakten Fedora-Installation von GRUB.
 - Update hat etwas kaputt gemacht? Rolle dank der Rollback-Funktion von `rpm-ostree` einfach zur vorherigen Bazzite-Version zurück. Du kannst sogar frühere Images beim Booten auswählen.
 - Steam und Lutris sind als Layered Packages auf dem Image vorinstalliert.
@@ -238,7 +238,7 @@ Sieh dir [weitere Dokumentation](http://docs.bazzite.gg/) zum Projekt an.
 
 ## Verifizierung
 
-Diese Images sind mit Sigstores [Cosign](https://docs.sigstore.dev/cosign/overview/) signiert. Du kannst die Signatur überprüfen, indem du den `cosign.pub`-Schlüssel aus diesem Repo herunterlädst und den folgenden Befehl ausführst:
+Diese Images sind mit Sigstores [Cosign](https://docs.sigstore.dev/cosign/signing/overview/) signiert. Du kannst die Signatur überprüfen, indem du den `cosign.pub`-Schlüssel aus diesem Repo herunterlädst und den folgenden Befehl ausführst:
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -261,11 +261,11 @@ Für Benutzer, die bereits ein Universal Blue Image verwenden, kannst du stattde
 
 Falls nach einem Passwort gefragt wird, verwende `universalblue`.
 
-### Mitwirkenden-Statistiken
+## Mitwirkenden-Statistiken
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
-#### Star-Verlauf
+## Star-Verlauf
 
 <a href="https://star-history.com/#ublue-os/bazzite&Date">
   <picture>
@@ -293,7 +293,7 @@ Bazzite ist eine Gemeinschaftsleistung und würde ohne die Unterstützung aller 
 
 Bazzite wird vollständig auf GitHub entwickelt, und das Erstellen einer eigenen, angepassten Version ist so einfach wie das Forken dieses Repositories, das Hinzufügen eines privaten Signierungsschlüssels und das Aktivieren von GitHub Actions.
 
-[Mach dich vertraut](https://docs.github.com/en/actions/security-guides/encrypted-secrets) damit, wie du Geheimnisse auf GitHub sicher aufbewahrst. Du musst mit Cosign [ein neues Schlüsselpaar generieren](https://docs.sigstore.dev/cosign/overview/). Der öffentliche Schlüssel kann in deinem öffentlichen Repo liegen <sub><sup>(Deine Benutzer benötigen ihn zur Überprüfung der Signaturen)</sup></sub>, und du kannst den privaten Schlüssel in `Settings -> Secrets -> Actions` mit dem Namen `SIGNING_SECRET` einfügen.
+[Mach dich vertraut](https://docs.github.com/en/actions/security-guides/encrypted-secrets) damit, wie du Geheimnisse auf GitHub sicher aufbewahrst. Du musst mit Cosign [ein neues Schlüsselpaar generieren](https://docs.sigstore.dev/cosign/signing/overview/). Der öffentliche Schlüssel kann in deinem öffentlichen Repo liegen <sub><sup>(Deine Benutzer benötigen ihn zur Überprüfung der Signaturen)</sup></sub>, und du kannst den privaten Schlüssel in `Settings -> Secrets -> Actions` mit dem Namen `SIGNING_SECRET` einfügen.
 
 Wir liefern auch eine Konfiguration für die beliebte [Pull-App](https://github.com/apps/pull) mit, falls du deinen Fork mit dem Upstream synchron halten möchtest. Aktiviere diese App in deinem Repo, um Bazzite-Änderungen nachzuverfolgen und gleichzeitig deine eigenen Modifikationen vorzunehmen.
 

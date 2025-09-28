@@ -68,17 +68,6 @@ if [[ "${XDG_SESSION_TYPE}" = "wayland" ]]; then
         touch "$HOME/.config/bazzite/fixups/scaling_fixup"
       fi
     fi
-
-    # TEMP workaround for a bug causing the screen to not come back on input on handhelds
-    # if it was turned off from idling, this just disables the display idle in kde until
-    # we can figure out what causes the bug, as it does not happen on laptops/desktops.
-    # If this is valve hardware or a handheld that hhd supports (easiest way to just cover all handhelds)
-    # do not turn off the screen when idle (sleep still works normal)
-    if /usr/libexec/hwsupport/valve-hardware; then
-      perl -pi -e 's/TurnOffDisplayIdleTimeoutSec=\d{1,4}/TurnOffDisplayIdleTimeoutSec=-1\nTurnOffDisplayWhenIdle=false/g' ~/.config/powerdevilrc
-    elif /usr/libexec/hwsupport/hhd-supported-hardware; then
-      perl -pi -e 's/TurnOffDisplayIdleTimeoutSec=\d{1,4}/TurnOffDisplayIdleTimeoutSec=-1\nTurnOffDisplayWhenIdle=false/g' ~/.config/powerdevilrc
-    fi
   elif [[ $BASE_IMAGE_NAME =~ "silverblue" ]]; then
     # Set scale on GNOME desktops, rotation tends to work without issue.
     if [ ! -f "$HOME/.config/bazzite/fixups/scaling_fixup" ]; then

@@ -28,8 +28,8 @@
   - [文档 \& 时事通讯](#文档--时事通讯)
   - [验证](#验证)
   - [安全启动](#安全启动)
-    - [贡献者指标](#贡献者指标)
-      - [Star History](#star-history)
+  - [贡献者指标](#贡献者指标)
+  - [Star History](#star-history)
   - [特别鸣谢](#特别鸣谢)
   - [构建自己的版本](#构建自己的版本)
   - [加入社区](#加入社区)
@@ -57,7 +57,7 @@ Bazzite是使用[Fedora](https://fedoraproject.org/)技术基于[ublue-os/main](
 - 支持 [Wallpaper Engine](https://www.wallpaperengine.io/en)。 <sub><sup>(仅限KDE)</sup></sub>
 - 包含[ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) 。
 - 完全支持 [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
-- 预装[Distrobox](https://github.com/89luca89/distrobox) 并添加了已创建容器的自动更新。
+- 预装[Distrobox](https://github.com/89luca89/distrobox) 。
 - [Ptyxis](https://gitlab.gnome.org/chergert/ptyxis) 用作所有镜像的默认终端。此终端专为你将在Bazzite中使用的容器工作流设计。如果你想切换回原始终端，请运行 `ujust _restore-original-terminal` 。
 - `duperemove`服务进程用于减少wine前缀内容所占用的磁盘空间。
 - 通过[libCEC](https://libcec.pulse-eight.com/)支持HDMI CEC。
@@ -80,7 +80,7 @@ Bazzite是使用[Fedora](https://fedoraproject.org/)技术基于[ublue-os/main](
 
 `bazzite`适用于台式计算机的通用变体。
 
-- 操作系统，Flatpaks，和所有Distrobox容器的自动更新 - 由[ublue-update](https://github.com/ublue-os/ublue-update) 和 [topgrade](https://github.com/topgrade-rs/topgrade)提供支持。
+- 操作系统，Flatpaks，等的自动更新 - 由[ublue-update](https://github.com/ublue-os/ublue-update) 和 [topgrade](https://github.com/topgrade-rs/topgrade)提供支持。
 
 > [!重要]
 > **ISOs可以从我们的[发布页面](https://github.com/ublue-os/bazzite/releases)下载，也可以[在此处](https://universal-blue.discourse.group/docs?topic=30)找到有用的安装指南。**
@@ -117,7 +117,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - 自带[SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs)补丁以默认对SD card提供完整的BTRFS支持。
 - 附带[SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU)的移植副本，默认启用。
 - 可选则安装[Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader)，[EmuDeck](https://www.emudeck.com/)，[RetroDECK](https://retrodeck.net/)，和[ProtonUp-Qt](https://davidotek.github.io/protonup-qt/)，以及其他许多有用的软件包。
-- 自定义更新系统允许从由[ublue-update](https://github.com/ublue-os/ublue-update) 和 [topgrade](https://github.com/topgrade-rs/topgrade)提供支持的游戏模式直接更新操作系统、Flatpaks、和Distrobox镜像。
+- 自定义更新系统允许从由[ublue-update](https://github.com/ublue-os/ublue-update) 和 [topgrade](https://github.com/topgrade-rs/topgrade)提供支持的游戏模式直接更新操作系统、Flatpaks、等。
 - 内置对Windows双系统的支持，这要归功于Fedora的安装保持了GRUB的完整性。
 - 更新破坏了一些东西？借助于`rpm-ostree`的回滚功能，你可以轻松回滚到先前版本的Bazzite。你甚至可以在启动时选定先前版本的镜像。
 - Steam and Lutris作为分层包预装在镜像上。
@@ -247,7 +247,7 @@ Bazzite带来最新的Linux内核，默认启用的SELinux为安全启动提供�
 
 ## 验证
 
-这些镜像使用sigstore的[cosign](https://docs.sigstore.dev/cosign/overview/)。你可以通过此存储库下载 `cosign.pub`密钥，并运行以下命令来验证签名：
+这些镜像使用sigstore的[cosign](https://docs.sigstore.dev/cosign/signing/overview/)。你可以通过此存储库下载 `cosign.pub`密钥，并运行以下命令来验证签名：
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -270,11 +270,11 @@ sudo mokutil --import secure_boot.der
 
 如果要求输入密码，就使用`universalblue`。
 
-### 贡献者指标
+## 贡献者指标
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
-#### Star History
+## Star History
 
 <a href="https://star-history.com/#ublue-os/bazzite&Date">
   <picture>
@@ -302,7 +302,7 @@ Bazzite是社区努力的结果，离不开每个人的支持。以下是那些�
 
 Bazzite完全在GitHub上构建，创建你自己的版本只需要fork此仓库，添加私钥，然后启用GitHub actions。
 
-熟悉github[加密机制](https://docs.github.com/en/actions/security-guides/encrypted-secrets)。你需要[生成带有cosign的新密钥对](https://docs.sigstore.dev/cosign/overview/)。公钥可以放置在你的公有仓库中<sub><sup>(你的用户需要用它来检查签名)</sup></sub>，你可以用`SIGNING_SECRET`作为名字把私钥粘贴到`Settings -> Secrets -> Actions`。
+熟悉github[加密机制](https://docs.github.com/en/actions/security-guides/encrypted-secrets)。你需要[生成带有cosign的新密钥对](https://docs.sigstore.dev/cosign/signing/overview/)。公钥可以放置在你的公有仓库中<sub><sup>(你的用户需要用它来检查签名)</sup></sub>，你可以用`SIGNING_SECRET`作为名字把私钥粘贴到`Settings -> Secrets -> Actions`。
 
 如果你想使你的fork与上游保持同步，我们同样提供了一个流行的[pull app](https://github.com/apps/pull)的设置。在你的仓库上启用此应用程序以追踪Bazzite的更新，同时进行你自己的修改。
 

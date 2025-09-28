@@ -1606,10 +1606,13 @@ handhelds. So use gamma 22 instead. This allows us to skip creating
 configs and read the HDR metadata from the displays.
 ---
  src/Backends/DRMBackend.cpp | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ src/backend.h               | 1 +
+ src/main.cpp                | 3 +++
+ src/steamcompmgr.cpp        | 4 ++++
+ 4 files changed, 15 insertions(+), 1 deletion(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 3c4e5907b2a9..83da1bfe231b 100644
+index 3c4e5907b2a9..86bb0eb92f22 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -2465,7 +2465,13 @@ namespace gamescope
@@ -1617,7 +1620,7 @@ index 3c4e5907b2a9..83da1bfe231b 100644
  			{
  				m_Mutable.HDR.bExposeHDRSupport = true;
 -				m_Mutable.HDR.eOutputEncodingEOTF = EOTF_PQ;
-+				if (GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL)
++				if (disableInternalPq && GetScreenType() == GAMESCOPE_SCREEN_TYPE_INTERNAL)
 +					// Current handheld internal displays have issues
 +					// with PQ, e.g., Ayaneo 3, Steam Deck etc.
 +					// Use Gamma 2.2 as the safest option for now.
@@ -1627,6 +1630,68 @@ index 3c4e5907b2a9..83da1bfe231b 100644
  				m_Mutable.HDR.uMaxContentLightLevel =
  					pHDRStaticMetadata->desired_content_max_luminance
  					? nits_to_u16( pHDRStaticMetadata->desired_content_max_luminance )
+diff --git a/src/backend.h b/src/backend.h
+index 862257ff6fd5..0212125f3833 100644
+--- a/src/backend.h
++++ b/src/backend.h
+@@ -23,6 +23,7 @@ struct wlr_dmabuf_attributes;
+ struct FrameInfo_t;
+ 
+ extern bool steamMode;
++extern bool disableInternalPq;
+ 
+ namespace gamescope
+ {
+diff --git a/src/main.cpp b/src/main.cpp
+index 0d88e3a2cded..cc44ec88b85e 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -141,6 +141,7 @@ const struct option *gamescope_options = (struct option[]){
+ 	{ "hdr-enabled", no_argument, nullptr, 0 },
+ 	{ "hdr-sdr-content-nits", required_argument, nullptr, 0 },
+ 	{ "hdr-itm-enabled", no_argument, nullptr, 0 },
++	{ "hdr-pq-internal-enable", no_argument, nullptr, 0 },
+ 	{ "hdr-itm-sdr-nits", required_argument, nullptr, 0 },
+ 	{ "hdr-itm-target-nits", required_argument, nullptr, 0 },
+ 	{ "hdr-debug-force-support", no_argument, nullptr, 0 },
+@@ -205,6 +206,7 @@ const char usage[] =
+ 	"  --sdr-gamut-wideness           Set the 'wideness' of the gamut for SDR comment. 0 - 1.\n"
+ 	"  --hdr-sdr-content-nits         set the luminance of SDR content in nits. Default: 400 nits.\n"
+ 	"  --hdr-itm-enabled              enable SDR->HDR inverse tone mapping. only works for SDR input.\n"
++	"  --hdr-pq-internal-enable       enable PQ transform even on internal displays (e.g. Legion Go 2)\n"
+ 	"  --hdr-itm-sdr-nits             set the luminance of SDR content in nits used as the input for the inverse tone mapping process.\n"
+ 	"                                 Default: 100 nits, Max: 1000 nits\n"
+ 	"  --hdr-itm-target-nits          set the target luminace of the inverse tone mapping process.\n"
+@@ -615,6 +617,7 @@ static bool IsInDebugSession()
+ #endif
+ 
+ bool steamMode = false;
++bool disableInternalPq = true;
+ bool g_bLaunchMangoapp = false;
+ 
+ static void UpdateCompatEnvVars()
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index f25f810f9387..99816c3bbb38 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -152,6 +152,8 @@ gamescope_color_mgmt_luts g_ScreenshotColorMgmtLutsHDR[ EOTF_Count ];
+ static lut1d_t g_tmpLut1d;
+ static lut3d_t g_tmpLut3d;
+ 
++extern bool disableInternalPq;
++
+ extern int g_nDynamicRefreshHz;
+ 
+ bool g_bForceHDRSupportDebug = false;
+@@ -7891,6 +7893,8 @@ steamcompmgr_main(int argc, char **argv)
+ 					g_bForceHDR10OutputDebug = true;
+ 				} else if (strcmp(opt_name, "hdr-itm-enabled") == 0 || strcmp(opt_name, "hdr-itm-enable") == 0) {
+ 					g_bHDRItmEnable = true;
++				} else if (strcmp(opt_name, "hdr-pq-internal-enable") == 0) {
++					disableInternalPq = false;
+ 				} else if (strcmp(opt_name, "sdr-gamut-wideness") == 0) {
+ 					g_ColorMgmt.pending.sdrGamutWideness = atof(optarg);
+ 				} else if (strcmp(opt_name, "hdr-sdr-content-nits") == 0) {
 -- 
 2.51.0
 
@@ -1764,10 +1829,10 @@ index d8e1ce7edafe..91e01bc275c6 100644
  }
  
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index f25f810f9387..d5a6a4af51df 100644
+index 99816c3bbb38..b1853e08749f 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -1026,7 +1026,6 @@ int g_BlurRadius = 5;
+@@ -1028,7 +1028,6 @@ int g_BlurRadius = 5;
  unsigned int g_BlurFadeStartTime = 0;
  
  pid_t focusWindow_pid;
@@ -1775,7 +1840,7 @@ index f25f810f9387..d5a6a4af51df 100644
  
  focus_t g_steamcompmgr_xdg_focus;
  std::vector<std::shared_ptr<steamcompmgr_win_t>> g_steamcompmgr_xdg_wins;
-@@ -6396,9 +6395,6 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
+@@ -6398,9 +6397,6 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
  	uint32_t j;
  	for ( j = 0; j < w->commit_queue.size(); j++ )
  	{
@@ -1785,7 +1850,7 @@ index f25f810f9387..d5a6a4af51df 100644
  		if ( w->commit_queue[ j ]->commitID == commitID )
  		{
  			gpuvis_trace_printf( "commit %lu done", w->commit_queue[ j ]->commitID );
-@@ -6443,8 +6439,6 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
+@@ -6445,8 +6441,6 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
  					if ( !cv_paint_debug_pause_base_plane )
  						g_HeldCommits[ HELD_COMMIT_BASE ] = w->commit_queue[ j ];
  					hasRepaint = true;
@@ -1862,7 +1927,7 @@ there are no edge cases where only subproperties are supported.
  1 file changed, 32 insertions(+), 8 deletions(-)
 
 diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
-index 83da1bfe231b..c1a714569bf2 100644
+index 86bb0eb92f22..460d48385e19 100644
 --- a/src/Backends/DRMBackend.cpp
 +++ b/src/Backends/DRMBackend.cpp
 @@ -559,6 +559,7 @@ extern std::string g_reshade_effect;
