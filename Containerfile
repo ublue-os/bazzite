@@ -344,7 +344,7 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/HikariKnight/ls-iommu/releases/latest | jq -r '.assets[] | select(.name| test(".*x86_64.tar.gz$")).browser_download_url')" --retry 3 -Lo /tmp/ls-iommu.tar.gz && \
     mkdir -p /tmp/ls-iommu && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
-    setcap 'cap_sys_admin+p' /usr/bin/sunshine-v* && \
+    setcap 'cap_sys_admin+p' $(readlink -f /usr/bin/sunshine) && \
     dnf5 -y --setopt=install_weak_deps=False install \
         rocm-hip \
         rocm-opencl \
@@ -582,6 +582,7 @@ RUN --mount=type=cache,dst=/var/cache \
     echo "import \"/usr/share/ublue-os/just/89-bazzite-mesa-git.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/90-bazzite-picker.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/90-bazzite-de.just\"" >> /usr/share/ublue-os/justfile && \
+    echo "import \"/usr/share/ublue-os/just/91-bazzite-decky.just\"" >> /usr/share/ublue-os/justfile && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
       systemctl enable usr-share-sddm-themes.mount && \
       mkdir -p "/usr/share/ublue-os/dconfs/desktop-kinoite/" && \
@@ -850,6 +851,7 @@ RUN --mount=type=cache,dst=/var/cache \
     glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
     rm -r /tmp/bazzite-schema-test && \
     { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
+    systemctl enable hhd.service && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \

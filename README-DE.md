@@ -238,7 +238,7 @@ Sieh dir [weitere Dokumentation](http://docs.bazzite.gg/) zum Projekt an.
 
 ## Verifizierung
 
-Diese Images sind mit Sigstores [Cosign](https://docs.sigstore.dev/cosign/overview/) signiert. Du kannst die Signatur überprüfen, indem du den `cosign.pub`-Schlüssel aus diesem Repo herunterlädst und den folgenden Befehl ausführst:
+Diese Images sind mit Sigstores [Cosign](https://docs.sigstore.dev/cosign/signing/overview/) signiert. Du kannst die Signatur überprüfen, indem du den `cosign.pub`-Schlüssel aus diesem Repo herunterlädst und den folgenden Befehl ausführst:
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -293,7 +293,7 @@ Bazzite ist eine Gemeinschaftsleistung und würde ohne die Unterstützung aller 
 
 Bazzite wird vollständig auf GitHub entwickelt, und das Erstellen einer eigenen, angepassten Version ist so einfach wie das Forken dieses Repositories, das Hinzufügen eines privaten Signierungsschlüssels und das Aktivieren von GitHub Actions.
 
-[Mach dich vertraut](https://docs.github.com/en/actions/security-guides/encrypted-secrets) damit, wie du Geheimnisse auf GitHub sicher aufbewahrst. Du musst mit Cosign [ein neues Schlüsselpaar generieren](https://docs.sigstore.dev/cosign/overview/). Der öffentliche Schlüssel kann in deinem öffentlichen Repo liegen <sub><sup>(Deine Benutzer benötigen ihn zur Überprüfung der Signaturen)</sup></sub>, und du kannst den privaten Schlüssel in `Settings -> Secrets -> Actions` mit dem Namen `SIGNING_SECRET` einfügen.
+[Mach dich vertraut](https://docs.github.com/en/actions/security-guides/encrypted-secrets) damit, wie du Geheimnisse auf GitHub sicher aufbewahrst. Du musst mit Cosign [ein neues Schlüsselpaar generieren](https://docs.sigstore.dev/cosign/signing/overview/). Der öffentliche Schlüssel kann in deinem öffentlichen Repo liegen <sub><sup>(Deine Benutzer benötigen ihn zur Überprüfung der Signaturen)</sup></sub>, und du kannst den privaten Schlüssel in `Settings -> Secrets -> Actions` mit dem Namen `SIGNING_SECRET` einfügen.
 
 Wir liefern auch eine Konfiguration für die beliebte [Pull-App](https://github.com/apps/pull) mit, falls du deinen Fork mit dem Upstream synchron halten möchtest. Aktiviere diese App in deinem Repo, um Bazzite-Änderungen nachzuverfolgen und gleichzeitig deine eigenen Modifikationen vorzunehmen.
 

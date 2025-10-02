@@ -46,27 +46,11 @@ mkdir -p /etc/bazzite/fixups
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
 
-if /usr/libexec/hwsupport/valve-hardware || /usr/libexec/hwsupport/hhd-supported-hardware; then
-  echo "Checking for ppfeaturemask karg on hardware that requires it"
-  if [[ ! $KARGS =~ "ppfeaturemask" ]]; then
-    NEEDED_KARGS+=("--append-if-missing="$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))"))
-  fi
-fi
-
 if /usr/libexec/hwsupport/valve-hardware; then
   echo "Checking for needed karg changes (Jupiter/Galileo)"
 
   if [[ ! $KARGS =~ "amd_iommu" ]]; then
     NEEDED_KARGS+=("--append-if-missing=amd_iommu=off")
-  fi
-
-  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
-    if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
-      echo "32GB RAM Steam Deck detected"
-      NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=16256")
-    else
-      NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
-    fi
   fi
 fi
 
@@ -98,29 +82,21 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
 fi
 
 #
-# GTT SIZE
+# GTT SIZE cleanup
 #
-if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
-    echo "Adding GTTSize for Lenovo Legion Go"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
-  fi
-elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
-    echo "Adding GTTSize for ASUS Ally"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=8128")
-  fi
-elif [[ ":ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
-    echo "Adding GTTSize for ASUS Ally X"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=12192")
-  fi
-elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
-  if [[ "$(awk '/MemTotal/{print $(NF-1)}' /proc/meminfo)" == "31664740" ]]; then
-    if [[ ! $KARGS =~ "amdgpu.gttsize" ]]; then
-      echo "Adding GTTSize for ONEXPLAYER (32GB RAM)"
-      NEEDED_KARGS+=("--append-if-missing=amdgpu.gttsize=16256")
-    fi
+if [ ! -f /etc/bazzite/fixups/gttsize ]; then
+  echo "Removing gttsize for device in kernel if exists (default is 50%)"
+  if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=8128")
+  elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=8128")
+  elif [[ ":ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=12192")
+  elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=16256")
+  elif /usr/libexec/hwsupport/valve-hardware; then
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=16256")
+    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=8128")
   fi
 fi
 
@@ -400,6 +376,17 @@ if [[ ! -f /etc/bazzite/fixups/gnome_fixup && $IMAGE_NAME =~ "gnome" ]]; then
 fi
 touch /etc/bazzite/fixups/gnome_fixup
 
+# Remove old hhd@ enables
+# Check if we've already removed old hhd@ service enablements
+if [ ! -f /etc/bazzite/fixups/hhd_service_cleanup ]; then
+  echo "Cleaning up old hhd@ service enables"
+  for service in $(systemctl list-units --type=service --all 'hhd@*.service' --no-legend | awk '{print $1}'); do
+    echo "Disabling $service"
+    systemctl disable --now "$service" || true
+  done
+  touch /etc/bazzite/fixups/hhd_service_cleanup
+fi
+
 if [[ -n "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
   plymouth display-message --text="Preparing System - Please wait, this may take a while" || true
@@ -412,6 +399,7 @@ fi
 touch /etc/bazzite/fixups/sg_display2
 touch /etc/bazzite/fixups/preempt_cleanup2
 touch /etc/bazzite/fixups/orientation_old2
+touch /etc/bazzite/fixups/gttsize
 
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE

@@ -295,6 +295,47 @@ toggle-i915-sleep-fix:
         ;;
     esac
 
+# Toggle GPP0 wakeup fix to prevent unwanted system wake-ups, primarily affects Gigabyte motherboards.
+[group("hardware")]
+_toggle-gigabyte-wake-fix:
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    SERVICE_FILE="/etc/systemd/system/biosWakeupWorkaround.service"
+
+    if systemctl is-enabled biosWakeupWorkaround.service &>/dev/null; then
+      echo "Current status: ${green}${bold}enabled${normal}"
+      CHOICE=$(ugum choose "Disable GPP0 wakeup fix" "Exit without changes")
+      if [[ "$CHOICE" == "Disable GPP0 wakeup fix" ]]; then
+        sudo systemctl disable --now biosWakeupWorkaround.service
+        sudo rm -f "$SERVICE_FILE"
+        sudo systemctl daemon-reload
+        echo "GPP0 wakeup fix ${red}${bold}disabled${normal} and service file removed."
+      else
+        echo "No changes made."
+      fi
+    else
+      echo "Current status: ${red}${bold}disabled${normal}"
+      CHOICE=$(ugum choose "Enable GPP0 wakeup fix" "Exit without changes")
+      if [[ "$CHOICE" == "Enable GPP0 wakeup fix" ]]; then
+        {
+          echo "[Unit]"
+          echo "Description=Workaround for Gigabyte BIOS sleep/wakeup bug"
+          echo ""
+          echo "[Service]"
+          echo "Type=oneshot"
+          echo 'ExecStart=/bin/sh -c '"'"'if grep GPP0 /proc/acpi/wakeup | grep -q enabled; then echo GPP0 > /proc/acpi/wakeup; fi'"'"
+          echo ""
+          echo "[Install]"
+          echo "WantedBy=multi-user.target"
+        } | sudo tee "$SERVICE_FILE" > /dev/null
+        sudo systemctl daemon-reload
+        sudo systemctl enable --now biosWakeupWorkaround.service
+        echo "GPP0 wakeup fix ${green}${bold}enabled${normal}."
+      else
+        echo "No changes made."
+      fi
+    fi
+
 # Manage Steam game shortcuts on the Desktop. Usage: just steam-icons [command] (list, remove, enable, disable)
 steam-icons ACTION="":
     #!/usr/bin/bash

@@ -9,7 +9,7 @@ RMLINT_ARGS="${RMLINT_ARGS:-"--hidden --types=duplicates --config=sh:handler=clo
 RMLINT_SCRIPT_ARGS="${RMLINT_SCRIPT_ARGS:-"-d -r -k"}"
 DUPEREMOVE_ARGS="${DUPEREMOVE_ARGS:-"-r -d -h -q --skip-zeroes"}"
 TIMEOUT="${TIMEOUT:-"4h"}"
-DB_MAX_AGE="${DB_MAX_AGE:-14}"
+DB_MAX_AGE="${DB_MAX_AGE:-180}"
 POWERCHANGE_DISABLE="${POWERCHANGE_DISABLE:-0}"
 RMLINT_REPLAY_DISABLE="${RMLINT_REPLAY_DISABLE:-1}"
 RMLINT_SKIP="${RMLINT_SKIP:-0}"
@@ -106,7 +106,7 @@ get_current_thread_pool() {
 }
 
 ONCE=0
-# shellcheck disable=SC2317
+# shellcheck disable=SC2329
 quit() {
 	local exit_code="$?"
 	if [[ "$ONCE" == 1 ]]; then
@@ -169,7 +169,7 @@ echo "$WATCHERPID" > "$PIDFILE"
 	set -euo pipefail
 	TIMEOUTREACHED=0
 	SLEEPPID=''
-	# shellcheck disable=SC2317
+	# shellcheck disable=SC2329
 	timeout_quit() {
 		if [[ -n "$SLEEPPID" ]]; then
 			kill "$SLEEPPID" || true
@@ -210,7 +210,7 @@ fi
 	OLDTP="$(get_current_thread_pool)"
 
 	ONCE=0
-	# shellcheck disable=SC2317
+	# shellcheck disable=SC2329
 	worker_quit() {
 		local exit_code="$?"
 		if [[ "$ONCE" == 1 ]]; then

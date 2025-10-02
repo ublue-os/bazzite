@@ -253,7 +253,7 @@ Les paquets portés de SteamOS et ChimeraOS, entre autres utilisés par Bazzite,
 
 ## Vérification
 
-Ces images sont signées avec [cosign](https://docs.sigstore.dev/cosign/overview/) de sigstore. Vous pouvez vérifier la signature en téléchargeant la clé `cosign.pub` depuis ce dépôt et en exécutant la commande suivante :
+Ces images sont signées avec [cosign](https://docs.sigstore.dev/cosign/signing/overview/) de sigstore. Vous pouvez vérifier la signature en téléchargeant la clé `cosign.pub` depuis ce dépôt et en exécutant la commande suivante :
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -308,7 +308,7 @@ Bazzite est un effort communautaire et ne serait pas possible sans le soutien de
 
 Bazzite est entièrement construit sur GitHub et créer votre propre version personnalisée est aussi simple que de forker ce dépôt, ajouter une clé de signature privée et activer les actions GitHub.
 
-[Familiarisez-vous](https://docs.github.com/en/actions/security-guides/encrypted-secrets) sur la gestion des secrets dans GitHub. Vous devrez [générer une nouvelle paire de clés](https://docs.sigstore.dev/cosign/overview/) avec cosign. La clé publique peut être dans votre repo public <sub><sup>(Vos utilisateurs en ont besoin pour vérifier les signatures)</sup></sub>, et vous pouvez coller la clé privée dans `Paramètres -> Secrets -> Actions` avec le nom `SIGNING_SECRET`.
+[Familiarisez-vous](https://docs.github.com/en/actions/security-guides/encrypted-secrets) sur la gestion des secrets dans GitHub. Vous devrez [générer une nouvelle paire de clés](https://docs.sigstore.dev/cosign/signing/overview/) avec cosign. La clé publique peut être dans votre repo public <sub><sup>(Vos utilisateurs en ont besoin pour vérifier les signatures)</sup></sub>, et vous pouvez coller la clé privée dans `Paramètres -> Secrets -> Actions` avec le nom `SIGNING_SECRET`.
 
 Nous expédions également une configuration pour l'application populaire [pull app](https://github.com/apps/pull) si vous souhaitez synchroniser votre fork avec l'original. Activez cette application sur votre repo pour suivre les modifications de Bazzite tout en apportant vos propres modifications.
 

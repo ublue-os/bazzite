@@ -257,7 +257,7 @@ Checa nuestros [boletines informativos (disponibles en español](https://univers
 
 ## Verificación
 
-Estas imágenes son firmadas digitalmente con [cosign](https://docs.sigstore.dev/cosign/overview/) de Sigstore. Para verificar la firma digital manualmente, primero tienes que descargar la llave `cosign.pub` directamente de este repositorio, y después, ejecuta el siguiente comando en una terminal:
+Estas imágenes son firmadas digitalmente con [cosign](https://docs.sigstore.dev/cosign/signing/overview/) de Sigstore. Para verificar la firma digital manualmente, primero tienes que descargar la llave `cosign.pub` directamente de este repositorio, y después, ejecuta el siguiente comando en una terminal:
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -312,7 +312,7 @@ Bazzite es producto de esfuerzo comunitario, y no existiría sin la contribució
 
 Bazzite esta construido enteramente en GitHub, y crear tu propia versión personalizada es muy fácil, tan solo crea un fork de este repositorio, añade tu propia llave digital privada, y habilita las acciones de GitHub.
 
-[Familiarízate](https://docs.github.com/en/actions/security-guides/encrypted-secrets) en como mantener secretos en GitHub. Necesitaras [generar tus nuevas pares de claves](https://docs.sigstore.dev/cosign/overview/) con cosign. La llave digital pública puede ubicarse en tu repositorio público <sub><sup>(Tus usuarios van a necesitar verificar las firmas digitales.)</sup></sub>, y puedes pegar tu llave digital privada en `Settings -> Secrets -> Actions` con el nombre `SIGNING_SECRET`.
+[Familiarízate](https://docs.github.com/en/actions/security-guides/encrypted-secrets) en como mantener secretos en GitHub. Necesitaras [generar tus nuevas pares de claves](https://docs.sigstore.dev/cosign/signing/overview/) con cosign. La llave digital pública puede ubicarse en tu repositorio público <sub><sup>(Tus usuarios van a necesitar verificar las firmas digitales.)</sup></sub>, y puedes pegar tu llave digital privada en `Settings -> Secrets -> Actions` con el nombre `SIGNING_SECRET`.
 
 También incluimos una configuración para la popular app de GitHub [Pull](https://github.com/apps/pull), por si gustas mantener tu fork en sincronía con el upstream. Habilita esta aplicación en tu repositorio para realizar un seguimiento de los cambios en Bazzite, mientras al mismo tiempo, haces tus propias modificaciones.
 

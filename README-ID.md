@@ -229,7 +229,7 @@ Cek [buletin](https://universal-blue.discourse.group/tag/bazzite-buzz) kami yang
 
 ## Verifikasi
 
-Image berikut ini telah disigned oleh sigstore's [cosign](https://docs.sigstore.dev/cosign/overview/). Anda bisa menverifikasi signature dengan mengunduh key `cosign.pub` dari repo ini dan menjalankan perintah ini:
+Image berikut ini telah disigned oleh sigstore's [cosign](https://docs.sigstore.dev/cosign/signing/overview/). Anda bisa menverifikasi signature dengan mengunduh key `cosign.pub` dari repo ini dan menjalankan perintah ini:
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
@@ -266,7 +266,7 @@ Bazzite merupakan upaya dari komunitas dan tidak akan pernah ada tanpa dukungan 
 Bazzite dibuat secara penuh di Github dan membuat versi anda sendiri sangat mudah, anda hanya perlu menfork repositori ini, menambahkan private sigining key, dan mengaktifkan Github actions.
 
 
-[Membiasakan anda sendiri dengan](https://docs.github.com/en/actions/security-guides/encrypted-secrets) untuk menyimpan secret di Github. Anda perlu membuat [keypair baru](https://docs.sigstore.dev/cosign/overview/) dengan cosign. Public key bisa anda teruh di repo publik anda. <sub><sup>(Pengguna anda perlu ini untuk mencek signature)</sup></sub>, dan anda bisa mempaste Secret key di  `Settings -> Secrets -> Actions` dengan nama `SIGNING_SECRET`.
+[Membiasakan anda sendiri dengan](https://docs.github.com/en/actions/security-guides/encrypted-secrets) untuk menyimpan secret di Github. Anda perlu membuat [keypair baru](https://docs.sigstore.dev/cosign/signing/overview/) dengan cosign. Public key bisa anda teruh di repo publik anda. <sub><sup>(Pengguna anda perlu ini untuk mencek signature)</sup></sub>, dan anda bisa mempaste Secret key di  `Settings -> Secrets -> Actions` dengan nama `SIGNING_SECRET`.
 
 Kami juga membawakan konfigurasi untuk [pull app](https://github.com/apps/pull) jika anda ingin fork anda selalu up to date dengan upstream. Aktifkan ini di repo anda untuk melacak perubahan dari Bazzite ketika anda membuat modifikasi anda sendiri.
 
