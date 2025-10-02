@@ -63,13 +63,13 @@ jobs:
         base_image_name: [kinoite, silverblue]
         target_image_flavor: [main, asus, surface]
         target_nvidia_flavor: [nvidia, nvidia-open]
-        fedora_version: [42]
+        fedora_version: [43]
         include:
-          - fedora_version: 42
+          - fedora_version: 43
             is_latest_version: true
             is_stable_version: true
             kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
-            kernel_version: 6.16.4-116.bazzite.fc42.x86_64 # must match a cached version of the above flavor
+            kernel_version: 6.16.4-116.bazzite.fc43.x86_64 # must match a cached version of the above flavor
         exclude:
           - target_image_flavor: surface
           - base_name: bazzite

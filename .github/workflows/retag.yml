@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: Zeglius/ghcr-oci-retagger@1e08f1dac27d25efe1377d9a35f133731bf3d986
         env:
-          ver: "42"
+          ver: "43"
         with:
           GITHUB_TOKEN: ${{ github.token }}
           PREFIX: ghcr.io/${{ github.repository_owner }}/
