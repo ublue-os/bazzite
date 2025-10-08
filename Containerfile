@@ -137,10 +137,10 @@ RUN --mount=type=cache,dst=/var/cache \
     ) && \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
+    done && unset -v toswap repo package && \
     firmware="linux-firmware-whence qcom-wwan-firmware linux-firmware amd-gpu-firmware amd-ucode-firmware atheros-firmware brcmfmac-firmware cirrus-audio-firmware intel-audio-firmware intel-gpu-firmware intel-vsc-firmware iwlegacy-firmware iwlwifi-dvm-firmware iwlwifi-mvm-firmware libertas-firmware mt7xxx-firmware nvidia-gpu-firmware nxpwireless-firmware realtek-firmware tiwilink-firmware" \
     dnf5 -y remove --no-autoremove $firmware && \
     dnf5 -y install --repo="copr:copr.fedorainfracloud.org:bazzite-org:bazzite" $firmware && \
-    done && unset -v toswap repo package && \
     dnf5 versionlock add \
         ostree \
         ostree-libs \
