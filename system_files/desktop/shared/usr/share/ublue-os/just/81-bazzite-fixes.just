@@ -5,15 +5,15 @@ alias patch-gmod := fix-gmod
 # Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModPatchTool)
 [group("gaming")]
 fix-gmod:
-    #!/usr/bin/bash
-    mkdir -p /tmp/patch-gmod
-    wget \
-      $(curl -s https://api.github.com/repos/solsticegamestudios/GModPatchTool/releases/latest | \
-      jq -r ".assets[] | select(.name | test(\"GModPatchTool-Linux.zip\")) | .browser_download_url") \
-      -P /tmp/patch-gmod
-    cd /tmp/patch-gmod && unzip -q GModPatchTool-Linux.zip
-    chmod +x /tmp/patch-gmod/GModPatchTool
-    /tmp/patch-gmod/GModPatchTool
+    #!/usr/bin/bash 
+    mkdir -p /tmp/patch-gmod 
+    wget \ 
+      $(curl -s https://api.github.com/repos/solsticegamestudios/GModPatchTool/releases/latest | \ 
+      jq -r ".assets[] | select(.name | test(\"GModPatchTool-Linux.zip\")) | .browser_download_url") \ 
+      -P /tmp/patch-gmod 
+    cd /tmp/patch-gmod && unzip -q GModPatchTool-Linux.zip 
+    chmod +x /tmp/patch-gmod/gmodpatchtool 
+    /tmp/patch-gmod/gmodpatchtool 
     rm -rf /tmp/patch-gmod
 
 # Kills all processes related to wine and proton. This forces it to restart next time you launch the game (you might still have to press STOP in steam to kill the game binary)
