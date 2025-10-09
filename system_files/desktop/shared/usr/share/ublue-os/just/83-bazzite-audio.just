@@ -95,7 +95,7 @@ setup-virtual-channels ACTION="":
       echo "Virtual audio channels config removed, the channels will be removed next time you login."
     fi
 
-# Setup a virtual 7.1 surround sink for headphones using the PipeWire Spatializer module
+# Setup a virtual 7.1 surround sink for headphones using the PipeWire spatializer module
 [group("audio")]
 setup-virtual-surround ACTION="":
     #!/usr/bin/bash
@@ -273,18 +273,18 @@ setup-virtual-surround ACTION="":
                     node.name      = "effect_output.spatializer"
                     node.passive   = true
                     audio.channels = 2
-                    audio.position = [ SL SR ]
+                    audio.position = [ FL FR ]
                 }
             }
         }
     ]
     SPATIALIZER'
       echo ""
-      echo "Virtual surround has now been set up with a sample HRTF file; either restart PipeWire or reboot for it to take effect. If not using EasyEffects, you'll need to select Spatial Sink as your default audio output for it to work."
+      echo "Virtual surround has now been set up with a placeholder HRTF file; either restart PipeWire - ${bold}TIP:${normal} ujust restart-pipewire - or reboot for changes to take effect. Select 'Spatial Sink' as the default audio device to enable surround sound virtualization. "${bold}This setup is incompatible with EasyEffects or JamesDSP;${normal} make sure neither of those is running."
       echo ""
       echo "${bold}IMPORTANT:${normal}"
-      echo "${bold}1.${normal} See https://youtu.be/VCXQp7swp5k for a demonstration of various HRTFs to find one that best matches your anatomy. Do note that correcting your headphones' response curve beforehand with something like https://autoeq.app/ is also recommended;"
-      echo "${bold}2.${normal} Once you find an HRTF that suits you, you may download it from https://sofacoustics.org/data/database_sofa_0.6/;"
+      echo "${bold}1.${normal} Watch https://youtu.be/VCXQp7swp5k for a demonstration of various HRTFs to find one that best matches your anatomy."
+      echo "${bold}2.${normal} Once you find an HRTF that seems to suit you, you may download it from https://sofacoustics.org/data/database_sofa_0.6/ - likely from inside the ${bold}listen/${normal} directory;"
       echo "${bold}3.${normal} Then, open ~/.config/pipewire/pipewire.conf.d/spatializer-7.1.conf with a text editor, and replace the paths to the sample file with the path to yours."
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
       if [ -f ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf ]; then

@@ -25,8 +25,8 @@ body:
   - type: textarea
     id: version
     attributes:
-      label: Output of `ujust get-logs`
-      description: Please run `ujust get-logs` and paste the output here.
+      label: Session Logs
+      description: Generate a bug report from HHD or `journalctl -b | fpaste` and paste the link here.
       render: shell
     validations:
       required: true
@@ -34,7 +34,7 @@ body:
     id: hardware
     attributes:
       label: Hardware
-      description: Please provide further information about your hardware. If reporting a bug on a handheld device, please provide the output of the following - `cat /sys/devices/virtual/dmi/id/product_name`
+      description: What is the model of your hardware? (e.g. Steam Deck, Aya Neo, etc.)
     validations:
       required: true
   - type: textarea
