@@ -420,10 +420,12 @@ jobs:
               dest_image="${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag"
               sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
 
-              cosign sign -y --key ${{ secrets.SIGNING_SECRET }} --registry-token ${{ secrets.GITHUB_TOKEN }} $dest_image
+              cosign sign -y --key env://SIGNING_SECRET --registry-token ${{ secrets.GITHUB_TOKEN }} $dest_image
               log_sum "$dest_image (signed)"
             done
             log_sum '```'
+        env:
+          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
 
       - name: Get Image Digest
         id: digest
