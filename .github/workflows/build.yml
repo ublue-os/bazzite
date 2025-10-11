@@ -406,19 +406,23 @@ jobs:
       # Push the image to GHCR (Image Registry)
       - name: Push To GHCR and Sign
         run: |
+          # Sign first to ensure any pushed image is signed
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
+          dest_image="${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@$DIGEST"
+          sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
+          cosign sign -y --key env://SIGNING_SECRET ${dest_image}
+
           log_sum() { echo "$1" >> $GITHUB_STEP_SUMMARY; }
           log_sum '# Push to GHCR result'
           log_sum '```'
           echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
             dest_image="${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag"
             sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
             log_sum "$dest_image"
           done
           log_sum '```'
-          DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
-          cosign sign -y --key env://SIGNING_SECRET "${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@$DIGEST"
         env:
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
 
