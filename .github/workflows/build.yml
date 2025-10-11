@@ -147,27 +147,6 @@ jobs:
         run: |
           echo "SHA_HEAD_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
-      - name: Verify main image
-        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
-        with:
-          containers: ${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
-          pubkey: https://raw.githubusercontent.com/ublue-os/${{ matrix.base_image_flavor }}/main/cosign.pub
-          registry: ${{ env.PULL_IMAGE_REGISTRY }}
-
-      - name: Verify akmods image
-        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
-        with:
-          containers: akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
-          pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
-          registry: ${{ env.PULL_IMAGE_REGISTRY }}
-
-      - name: Verify akmods-nvidia image
-        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
-        with:
-          containers: akmods-${{ matrix.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
-          pubkey: https://raw.githubusercontent.com/ublue-os/akmods/main/cosign.pub
-          registry: ${{ env.PULL_IMAGE_REGISTRY }}
-
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
@@ -200,9 +179,6 @@ jobs:
             sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
             sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
             sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/akmods-${{ matrix.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
-
-            # Add rechunk as well to remove this source of failure
-            sudo podman pull ghcr.io/hhd-dev/rechunk:v1.2.2
 
       - name: Get source versions
         id: labels
@@ -340,9 +316,9 @@ jobs:
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
         id: rechunk
-        uses: hhd-dev/rechunk@ded27feba22df48134eece2c66ba0fca1289ff40 # v1.2.3
+        uses: hhd-dev/rechunk@5fbe1d3a639615d2548d83bc888360de6267b1a2 # v1.2.4
         with:
-          rechunk: 'ghcr.io/hhd-dev/rechunk:v1.2.3'
+          rechunk: 'ghcr.io/hhd-dev/rechunk:v1.2.4'
           ref: 'raw-img'
           prev-ref: '${{ steps.generate-prev-ref.outputs.ref }}'
           version: '${{ steps.generate-version.outputs.tag }}'
@@ -420,11 +396,13 @@ jobs:
           done
           echo "alias_tags=${BUILD_TAGS[*]}" >> $GITHUB_OUTPUT
 
-      # Push the image to GHCR (Image Registry)
-      - name: Push To GHCR
-        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
-        id: push
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 # v3.10.0
         if: github.event_name != 'pull_request'
+
+      # Push the image to GHCR (Image Registry)
+      - name: Push To GHCR and Sign
+        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
         with:
           attempt_limit: 3
           attempt_delay: 15000
@@ -433,30 +411,17 @@ jobs:
             log_sum '# Push to GHCR result'
             log_sum '```'
             echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
               dest_image="${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag"
-              sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image && 
-                log_sum "$dest_image"
+              sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
+              log_sum "$dest_image"
             done
             log_sum '```'
-
-      - name: Get Image Digest
-        id: digest
-        run: |
-          # Get digest for signing
-          DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
-          echo "Digest is: $DIGEST"
-          echo "digest=${DIGEST}" >> $GITHUB_OUTPUT
-
-      - name: Sign container image
-        uses: EyeCantCU/cosign-action/sign@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
-        if: github.event_name != 'pull_request'
-        with:
-          containers: ${{ env.IMAGE_NAME }}
-          registry-token: ${{ secrets.GITHUB_TOKEN }}
-          signing-secret: ${{ secrets.SIGNING_SECRET }}
-          tags: ${{ steps.digest.outputs.digest }}
-          registry: ${{ env.PUSH_IMAGE_REGISTRY }}
+            DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
+            cosign sign -y --key env://SIGNING_SECRET "${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@$DIGEST"
+        env:
+          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
 
   generate_release:
     name: Generate Release
