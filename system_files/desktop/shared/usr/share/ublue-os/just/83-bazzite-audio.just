@@ -280,7 +280,7 @@ setup-virtual-surround ACTION="":
     ]
     SPATIALIZER'
       echo ""
-      echo "Virtual surround has now been set up with a placeholder HRTF file; either restart PipeWire - ${bold}TIP:${normal} ujust restart-pipewire - or reboot for changes to take effect. Select 'Spatial Sink' as the default audio device to enable surround sound virtualization. "${bold}This setup is incompatible with EasyEffects or JamesDSP;${normal} make sure neither of those is running."
+      echo "Virtual surround has now been set up with a placeholder HRTF file; either restart PipeWire - ${bold}TIP:${normal} ujust restart-pipewire - or reboot for changes to take effect. Select 'Spatial Sink' as the default audio device to enable surround sound virtualization. ${bold}This setup is incompatible with EasyEffects or JamesDSP;${normal} make sure neither of those is running."
       echo ""
       echo "${bold}IMPORTANT:${normal}"
       echo "${bold}1.${normal} Watch https://youtu.be/VCXQp7swp5k for a demonstration of various HRTFs to find one that best matches your anatomy."
