@@ -69,7 +69,6 @@ jobs:
           - bazzite-gnome-nvidia
           - bazzite-nvidia-open
           - gazzite-gnome-nvidia-open
-        fedora_version: [43]
         include:
           - fedora_version: 43
             is_latest_version: true
