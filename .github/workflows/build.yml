@@ -287,15 +287,13 @@ jobs:
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/bazzite/refs/heads/main/README.md
             org.opencontainers.image.created=<timestamp>
-            org.opencontainers.image.description=Bazzite is a custom image built upon Fedora Atomic Desktops that brings the best of Linux gaming to all of your devices - including your favorite handheld.
+            org.opencontainers.image.description=Bazzite is a custom image that brings the best of Linux gaming to all of your devices - including your favorite handheld.
             org.opencontainers.image.licenses=Apache-2.0
             org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.source=https://github.com/ublue-os/bazzite
+            org.opencontainers.image.source=https://bazzite.gg
             org.opencontainers.image.title=Bazzite
             org.opencontainers.image.vendor=Universal Blue
             org.opencontainers.image.url=https://bazzite.gg
-            org.universal-blue.pkg.kernel=<relver:kernel>
-            org.universal-blue.pkg.gamescope=<relver:gamescope>
       
       # Generate tags after rechunker runs and checks the primary tag is not duplicated
       # If it is, rechunk will suffix it by .1, .2, etc and put it in steps.rechunk.outputs.version
