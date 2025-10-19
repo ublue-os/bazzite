@@ -68,7 +68,7 @@ jobs:
           - bazzite-nvidia
           - bazzite-gnome-nvidia
           - bazzite-nvidia-open
-          - gazzite-gnome-nvidia-open
+          - bazzite-gnome-nvidia-open
         include:
           - fedora_version: 43
             kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
