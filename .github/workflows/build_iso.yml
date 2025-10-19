@@ -45,8 +45,8 @@ jobs:
           - bazzite-deck-nvidia
           - bazzite-deck-nvidia-gnome
         major_version: [41]
-    steps:
 
+    steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
@@ -125,6 +125,13 @@ jobs:
         shell: bash
         run: |
           curl -Lo ${{ github.workspace }}/bazzite.repo https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/repo/fedora-${{ matrix.major_version }}/bazzite-org-bazzite-fedora-${{ matrix.major_version }}.repo
+
+      - name: Generate Extra Boot Parameters
+        id: generate-extra-params
+        shell: bash
+        run: |
+          EXTRA_PARAMS=""
+          echo "extra-boot-params=${EXTRA_PARAMS}" >> $GITHUB_OUTPUT
 
       - name: Build ISOs
         uses: jasonn3/build-container-installer@f09a756b7a1205f121d8508f1171759328b95d2c # v1.2.4
