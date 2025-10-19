@@ -58,11 +58,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        base_image_flavor: [main]
-        base_name: [bazzite, bazzite-deck, bazzite-nvidia, bazzite-deck-nvidia]
-        base_image_name: [kinoite, silverblue]
-        target_image_flavor: [main, asus, surface]
-        target_nvidia_flavor: [nvidia, nvidia-open]
+        image:
+          - bazzite
+          - bazzite-gnome
+          - bazzite-deck
+          - bazzite-deck-gnome
+          - bazzite-deck-nvidia
+          - bazzite-deck-nvidia-gnome
+          - bazzite-nvidia
+          - bazzite-gnome-nvidia
+          - bazzite-nvidia-open
+          - gazzite-gnome-nvidia-open
         fedora_version: [43]
         include:
           - fedora_version: 43
@@ -70,82 +76,43 @@ jobs:
             is_stable_version: true
             kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
             kernel_version: 6.16.4-116.bazzite.fc43.x86_64 # must match a cached version of the above flavor
-        exclude:
-          - target_image_flavor: surface
-          - base_name: bazzite
-            target_nvidia_flavor: nvidia
-          - base_name: bazzite-deck
-            target_nvidia_flavor: nvidia
-          - base_name: bazzite-deck-nvidia
-            target_nvidia_flavor: nvidia
-          - base_name: bazzite-deck-nvidia
-            target_image_flavor: asus
-          - base_name: bazzite-deck-nvidia
-            target_image_flavor: surface
-          - base_name: bazzite-deck
-            target_image_flavor: surface
-          - target_image_flavor: surface
-            target_nvidia_flavor: nvidia
+            base_image_flavor: main
     steps:
       - name: Mount BTRFS for podman storage
         uses: ublue-os/container-storage-action@main
         with:
           target-dir: /var/lib/containers
-
-      - name: Define env.CONTAINER_TARGET
+      
+      - name: Define env variables
         run: |
-          if [[ "${{ matrix.base_name }}" == "bazzite-deck-nvidia" ]]; then
-              echo "CONTAINER_TARGET=bazzite-nvidia" >> $GITHUB_ENV
+          IMAGE="${{ matrix.image }}"
+          if [[ "$IMAGE" == "*gnome*" ]]; then
+            echo "base_image_name=silverblue" >> "$GITHUB_ENV"
           else
-              echo "CONTAINER_TARGET=${{ matrix.base_name }}" >> $GITHUB_ENV
+            echo "base_image_name=kinoite" >> "$GITHUB_ENV"
           fi
-
-      - name: Define env.IMAGE_FLAVOR
-        run: |
-          if [[ "${{ matrix.base_name }}" =~ "nvidia" ]]; then
-              if [[ "${{ matrix.target_image_flavor }}" == "main" ]]; then
-                  echo "IMAGE_FLAVOR=${{ matrix.target_nvidia_flavor }}" >> $GITHUB_ENV
-              else
-                  echo "IMAGE_FLAVOR=${{ format('{0}-{1}', matrix.target_image_flavor, matrix.target_nvidia_flavor) }}" >> $GITHUB_ENV
-              fi
+          # Define Container Target
+          CONTAINER_TARGET="$IMAGE"
+          CONTAINER_TARGET="${CONTAINER_TARGET/-open/}"
+          CONTAINER_TARGET="${CONTAINER_TARGET/-gnome/}"
+          if [[ "$CONTAINER_TARGET" == "bazzite-deck-nvidia" ]]; then
+            echo "container_target=bazzite-nvidia" >> "$GITHUB_ENV"
           else
-              echo "IMAGE_FLAVOR=${{ matrix.target_image_flavor }}" >> $GITHUB_ENV
+            echo "container_target=$CONTAINER_TARGET" >> "$GITHUB_ENV"
           fi
-
-      - name: Define env.IMAGE_NAME
-        run: |
-          DESKTOP=""
-          if [[ "${{ matrix.base_image_name }}" == "silverblue" ]]; then
-              DESKTOP="-gnome"
-          fi
-
-          if [[ "${{ matrix.base_name }}" == "bazzite-deck" ]]; then
-              if [[ "${{ matrix.target_image_flavor }}" == "asus" ]]; then
-                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-ally', '${DESKTOP}') }}" >> $GITHUB_ENV
-              else
-                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-deck', '${DESKTOP}') }}" >> $GITHUB_ENV
-              fi
-          elif [[ "${{ matrix.base_name }}" == "bazzite-deck-nvidia" ]]; then
-              echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-deck-nvidia', '${DESKTOP}') }}" >> $GITHUB_ENV
+          # Define Nvidia base
+          if [[ "$IMAGE" == "bazzite-deck*" ]]; then
+            echo "nvidia_base=bazzite-deck" >> "$GITHUB_ENV"
           else
-              if [[ "${{ env.IMAGE_FLAVOR }}" == "main" ]]; then
-                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite', '${DESKTOP}') }}" >> $GITHUB_ENV
-              else
-                  echo "IMAGE_NAME=${{ format('{0}{1}-{2}', 'bazzite', '${DESKTOP}', env.IMAGE_FLAVOR) }}" >> $GITHUB_ENV
-              fi
+            echo "nvidia_base=bazzite" >> "$GITHUB_ENV"
           fi
-
-      - name: Define env.NVIDIA_BASE
-        run: |
-          if [[ "${{ matrix.base_name }}" == "bazzite-deck-nvidia" ]]; then
-              echo "NVIDIA_BASE=bazzite-deck" >> $GITHUB_ENV
+          echo "sha_head_short=${GITHUB_SHA::7}" >> $GITHUB_ENV
+          # Define Nvidia Flavor
+          if [[ "$IMAGE" == "*nvidia-open" ]]; then
+            echo "target_nvidia_flavor=nvidia-open" >> "$GITHUB_ENV"
           else
-              echo "NVIDIA_BASE=bazzite" >> $GITHUB_ENV
+            echo "target_nvidia_flavor=nvidia" >> "$GITHUB_ENV"
           fi
-
-      - name: Define env.SHA_HEAD_SHORT
-        run: |
-          echo "SHA_HEAD_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
@@ -176,9 +143,9 @@ jobs:
           command: |
             # pull the base images used for FROM in Containerfile so
             # we can retry on that unfortunately common failure case
-            sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
+            sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/${{ env.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
             sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
-            sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/akmods-${{ matrix.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
+            sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/akmods-${{ env.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
 
       - name: Get source versions
         id: labels
@@ -188,13 +155,13 @@ jobs:
           attempt_delay: 15000
           command: |
             set -eo pipefail
-            skopeo inspect docker://${{ env.PULL_IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }} > source.json
+            skopeo inspect docker://${{ env.PULL_IMAGE_REGISTRY }}/${{ env.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }} > source.json
             ver=$(jq -r '.Labels["org.opencontainers.image.version"]' source.json)
             if [ -z "$ver" ] || [ "null" = "$ver" ]; then
               echo "inspected image version must not be empty or null"
               exit 1
             fi
-            echo "SOURCE_IMAGE_VERSION=$ver" >> $GITHUB_ENV
+            echo "source_image_version=$ver" >> $GITHUB_ENV
       
       # Generate a primary version key that appears
       # in KDE, rpm-ostree status, and github.
@@ -204,7 +171,7 @@ jobs:
         run: |
           # Generate the primary version key that will be stored on os-release,
           # shown on the bootloader, and used for the image tag.
-          UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
+          UPSTREAM_TAG="${{ env.source_image_version }}"
           # Remove .0 suffix from upstream tag so we can add our own and
           # the wrong one does not end up in the image.
           UPSTREAM_TAG="${UPSTREAM_TAG%\.[0-9]}" 
@@ -234,18 +201,15 @@ jobs:
       - name: Prepare build args file
         run: |
           cat <<'EOF' >>build_args.txt
-          IMAGE_NAME=${{ env.IMAGE_NAME }}
-          IMAGE_FLAVOR=${{ env.IMAGE_FLAVOR }}
-          NVIDIA_FLAVOR=${{ matrix.target_nvidia_flavor }}
-          NVIDIA_BASE=${{ env.NVIDIA_BASE }}
+          IMAGE_NAME=${{ matrix.image }}
+          NVIDIA_FLAVOR=${{ env.target_nvidia_flavor }}
+          NVIDIA_BASE=${{ env.nvidia_base }}
           IMAGE_VENDOR=${{ github.repository_owner }}
-          BASE_IMAGE_NAME=${{ matrix.base_image_name }}
-          BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }}
+          BASE_IMAGE_NAME=${{ env.base_image_name }}
           FEDORA_VERSION=${{ matrix.fedora_version }}
           KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
           KERNEL_VERSION=${{ matrix.kernel_version }}
-          IMAGE_BRANCH=${{ github.ref_name }}
-          SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }}
+          SHA_HEAD_SHORT=${{ env.sha_head_short }}
           VERSION_TAG=${{ steps.generate-version.outputs.tag }}
           VERSION_PRETTY=${{ steps.generate-version.outputs.pretty }}
           EOF
@@ -257,7 +221,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           sudo -E buildah build \
-            --target ${{ env.CONTAINER_TARGET }} \
+            --target ${{ env.container_target }} \
             --build-arg-file build_args.txt \
             --secret "id=GITHUB_TOKEN,env=GITHUB_TOKEN" \
             --tag raw-img .
@@ -265,9 +229,9 @@ jobs:
       - name: Remove auxiliary images
         # We are tight on space, need at least 2x for OSTree
         run: |
-          sudo podman image rm ${{ env.PULL_IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
+          sudo podman image rm ${{ env.PULL_IMAGE_REGISTRY }}/${{ env.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
           sudo podman image rm ${{ env.PULL_IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
-          sudo podman image rm ${{ env.PULL_IMAGE_REGISTRY }}/akmods-${{ matrix.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
+          sudo podman image rm ${{ env.PULL_IMAGE_REGISTRY }}/akmods-${{ env.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
 
       # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
       # https://github.com/macbre/push-to-ghcr/issues/12
@@ -285,7 +249,7 @@ jobs:
           if [ "${{ github.event.inputs.fresh-rechunk }}" == "true" ]; then
             IMAGEREF=""
           else
-            IMAGEREF="${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:stable"
+            IMAGEREF="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image }}:stable"
           fi
 
           echo "ref=${IMAGEREF}" >> $GITHUB_OUTPUT
@@ -344,7 +308,7 @@ jobs:
         run: |
           # Common vars for generating tags
           VERSION_TAG="${{ steps.rechunk.outputs.version }}"
-          UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
+          UPSTREAM_TAG="${{ env.source_image_version }}"
           FEDORA_VERSION="${{ matrix.fedora_version }}"
           SHA_SHORT="${GITHUB_SHA::7}"
           BUILD_TAGS=( "${VERSION_TAG}" )
@@ -413,14 +377,14 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
-              dest_image="${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag"
+              dest_image="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image }}:$tag"
               sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
               log_sum "$dest_image"
             done
             log_sum '```'
             DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
             cosign sign -y --key env://SIGNING_SECRET --new-bundle-format=false \
-              "${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@$DIGEST"
+              "${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image }}@$DIGEST"
         env:
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
 
