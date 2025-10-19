@@ -71,8 +71,6 @@ jobs:
           - gazzite-gnome-nvidia-open
         include:
           - fedora_version: 43
-            is_latest_version: true
-            is_stable_version: true
             kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
             kernel_version: 6.16.4-116.bazzite.fc43.x86_64 # must match a cached version of the above flavor
             base_image_flavor: main
@@ -307,50 +305,13 @@ jobs:
         run: |
           # Common vars for generating tags
           VERSION_TAG="${{ steps.rechunk.outputs.version }}"
-          UPSTREAM_TAG="${{ env.source_image_version }}"
-          FEDORA_VERSION="${{ matrix.fedora_version }}"
-          SHA_SHORT="${GITHUB_SHA::7}"
-          BUILD_TAGS=( "${VERSION_TAG}" )
 
-          # Use latest var to check if we should tag as latest
-          unset LATEST
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-              [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-                LATEST="1"
-          fi
-
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            # Track latest ver per PR
-            if [ -n "$LATEST" ]; then
-                BUILD_TAGS+=("pr-${{ github.event.pull_request.number }}")
-            fi
-          elif [[ ${{ github.ref_name }} == "unstable" ]]; then
-            # Per fedora version
-            BUILD_TAGS+=("${FEDORA_VERSION}-unstable")
-            BUILD_TAGS+=("unstable-${FEDORA_VERSION}") # flip ver to be last
-
-            if [ -n "$LATEST" ]; then
-                BUILD_TAGS+=("unstable")
-            fi
+          if [[ ${{ github.ref_name }} == "unstable" ]]; then
+            BUILD_TAGS=("unstable")
           elif [[ ${{ github.ref_name }} == "testing" ]]; then
-            # Per fedora version
-            BUILD_TAGS+=("${FEDORA_VERSION}-testing")
-            BUILD_TAGS+=("testing-${FEDORA_VERSION}") # flip ver to be last
-
-            if [ -n "$LATEST" ]; then
-                BUILD_TAGS+=("testing")
-            fi
+            BUILD_TAGS=("testing")
           else
-            BUILD_TAGS+=("${FEDORA_VERSION}")
-            BUILD_TAGS+=("stable-${VERSION_TAG}")
-
-            # Per fedora version
-            BUILD_TAGS+=("${FEDORA_VERSION}-stable")
-            BUILD_TAGS+=("stable-${FEDORA_VERSION}") # flip ver to be last
-            
-            if [ -n "$LATEST" ]; then
-              BUILD_TAGS+=("latest" "stable")
-            fi
+            BUILD_TAGS=("stable-${VERSION_TAG}" "latest" "stable")
           fi
           
           echo "Generated the following build tags: "
@@ -375,15 +336,22 @@ jobs:
             log_sum '```'
             echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Push unique image id and sign, this way once evergreen tag is published
+            # It will always be signed
+            dest_image="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image }}:${{ steps.rechunk.outputs.version }}"
+            sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
+            log_sum "$dest_image"
+            DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
+            cosign sign -y --key env://SIGNING_SECRET --new-bundle-format=false \
+              "${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image }}@$DIGEST"
+
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
               dest_image="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image }}:$tag"
               sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
               log_sum "$dest_image"
             done
             log_sum '```'
-            DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
-            cosign sign -y --key env://SIGNING_SECRET --new-bundle-format=false \
-              "${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image }}@$DIGEST"
         env:
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
 
