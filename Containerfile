@@ -92,8 +92,7 @@ RUN --mount=type=cache,dst=/var/cache \
         hhd-dev/hhd \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
-        rok/cdemu \
-        lizardbyte/stable; \
+        rok/cdemu; \
     do \
         echo "Enabling copr: $copr"; \
         dnf5 -y copr enable $copr; \
@@ -268,7 +267,6 @@ RUN --mount=type=cache,dst=/var/cache \
         lato-fonts \
         fira-code-fonts \
         nerd-fonts \
-        sunshine \
         python3-pip \
         libadwaita \
         duperemove \
@@ -344,7 +342,6 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/HikariKnight/ls-iommu/releases/latest | jq -r '.assets[] | select(.name| test(".*x86_64.tar.gz$")).browser_download_url')" --retry 3 -Lo /tmp/ls-iommu.tar.gz && \
     mkdir -p /tmp/ls-iommu && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
-    setcap 'cap_sys_admin+p' $(readlink -f /usr/bin/sunshine) && \
     dnf5 -y --setopt=install_weak_deps=False install \
         rocm-hip \
         rocm-opencl \
@@ -626,7 +623,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/webapp-manager \
         hhd-dev/hhd \
         che/nerd-fonts \
-        lizardbyte/stable \
         rok/cdemu \
         hikariknight/looking-glass-kvmfr; \
     do \
@@ -663,7 +659,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
-    systemctl --global disable sunshine.service && \
     systemctl disable waydroid-container.service && \
     systemctl disable force-wol.service && \
     /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf" --retry 3 -Lo /etc/dxvk-example.conf && \
