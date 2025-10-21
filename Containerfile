@@ -280,7 +280,7 @@ RUN --mount=type=cache,dst=/var/cache \
         cockpit-podman \
         cockpit-selinux \
         cockpit-system \
-        cockpit-navigator \
+        cockpit-files \
         cockpit-storaged \
         topgrade \
         ydotool \
