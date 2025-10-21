@@ -80,7 +80,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/obs-vkcapture \
         ycollet/audinux \
         bazzite-org/rom-properties \
-        bazzite-org/webapp-manager \
         hhd-dev/hhd \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
@@ -258,7 +257,6 @@ RUN --mount=type=cache,dst=/var/cache \
         pipewire-module-filter-chain-sofa \
         python3-icoextract \
         tailscale \
-        webapp-manager \
         btop \
         duf \
         fish \
@@ -589,7 +587,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/obs-vkcapture \
         ycollet/audinux \
         bazzite-org/rom-properties \
-        bazzite-org/webapp-manager \
         hhd-dev/hhd \
         che/nerd-fonts \
         rok/cdemu \
