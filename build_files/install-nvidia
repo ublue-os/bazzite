@@ -2,6 +2,8 @@
 
 set -ouex pipefail
 
+FRELEASE=$(rpm -E %fedora)
+
 # Check if any rpmfusion repos exist before trying to disable them
 if dnf5 repolist --all | grep -q rpmfusion; then
     dnf5 config-manager setopt "rpmfusion*".enabled=0

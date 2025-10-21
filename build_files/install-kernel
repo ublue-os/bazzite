@@ -59,7 +59,7 @@ pkgs=(
 if [[ "$IMAGE_NAME" == *"nvidia-open" || "$IMAGE_NAME" == *"-deck-nvidia"* ]]; then
     echo "Using NVIDIA Open Kernel"
     pkgs+=("kernel-nvidia")
-elif [[ "$IMAGE_NAME" == "*nvidia*" ]]; then
+elif [[ "$IMAGE_NAME" == *"nvidia"* ]]; then
     echo "Using NVIDIA Closed Kernel with Legacy driver"
     pkgs+=("kernel-nvidia-closed-lts")
 fi
