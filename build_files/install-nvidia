@@ -1,0 +1,95 @@
+#!/bin/bash
+
+set -ouex pipefail
+
+# Check if any rpmfusion repos exist before trying to disable them
+if dnf5 repolist --all | grep -q rpmfusion; then
+    dnf5 config-manager setopt "rpmfusion*".enabled=0
+fi
+
+# Always try to disable cisco repo (or add similar check)
+dnf5 config-manager setopt fedora-cisco-openh264.enabled=0
+
+## nvidia install packages
+curl -L https://negativo17.org/repos/fedora-nvidia.repo \
+    -o /etc/yum.repos.d/negativo17-fedora-nvidia.repo
+
+curl -L https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo \
+    -o /etc/yum.repos.d/nvidia-container-toolkit.repo
+
+# Install MULTILIB packages from terra
+MULTILIB=(
+    mesa-dri-drivers.i686
+    mesa-filesystem.i686
+    mesa-libEGL.i686
+    mesa-libGL.i686
+    mesa-libgbm.i686
+    mesa-va-drivers.i686
+    mesa-vulkan-drivers.i686
+)
+dnf5 install -y "${MULTILIB[@]}"
+
+# enable repos provided by ublue-os-nvidia-addons
+dnf5 config-manager setopt fedora-nvidia.enabled=1 nvidia-container-toolkit.enabled=1
+
+# Enable staging for supergfxctl if repo file exists
+if [[ -f /etc/yum.repos.d/_copr_ublue-os-staging.repo ]]; then
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo
+else
+    # Otherwise, retrieve the repo file for staging
+    curl -Lo /etc/yum.repos.d/_copr_ublue-os-staging.repo https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FRELEASE}"/ublue-os-staging-fedora-"${FRELEASE}".repo
+fi
+
+if [[ "${IMAGE_NAME}" == "kinoite" ]]; then
+    VARIANT_PKGS="supergfxctl-plasmoid supergfxctl"
+elif [[ "${IMAGE_NAME}" == "silverblue" ]]; then
+    VARIANT_PKGS="gnome-shell-extension-supergfxctl-gex supergfxctl"
+else
+    VARIANT_PKGS=""
+fi
+
+dnf5 install -y \
+    libnvidia-fbc \
+    libnvidia-ml.i686 \
+    libva-nvidia-driver \
+    nvidia-driver \
+    nvidia-driver-cuda \
+    nvidia-driver-cuda-libs.i686 \
+    nvidia-driver-libs.i686 \
+    nvidia-settings \
+    ${VARIANT_PKGS}
+
+# nvidia-container-toolkit is not built with required crypto digests for RPM
+# 6+, introduced in Fedora 43
+if [[ "${FRELEASE}" -ne 43 ]]; then
+    dnf5 install -y nvidia-container-toolkit
+fi
+
+# Ensure the version of the Nvidia module matches the driver
+KMOD_VERSION="$(rpm -q --queryformat '%{VERSION}' kmod-nvidia)"
+DRIVER_VERSION="$(rpm -q --queryformat '%{VERSION}' nvidia-driver)"
+if [ "$KMOD_VERSION" != "$DRIVER_VERSION" ]; then
+    echo "Error: kmod-nvidia version ($KMOD_VERSION) does not match nvidia-driver version ($DRIVER_VERSION)"
+    exit 1
+fi
+
+## nvidia post-install steps
+# disable repos provided by ublue-os-nvidia-addons
+dnf5 config-manager setopt fedora-nvidia.enabled=0 nvidia-container-toolkit.enabled=0
+
+# Disable staging
+sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo
+
+# ensure kernel.conf matches NVIDIA_FLAVOR (which must be nvidia or nvidia-open)
+# kmod-nvidia-common defaults to 'nvidia-open' but this will match our akmod image
+sed -i "s/^MODULE_VARIANT=.*/MODULE_VARIANT=$KERNEL_MODULE_TYPE/" /etc/nvidia/kernel.conf
+
+systemctl enable ublue-nvctk-cdi.service
+semodule --verbose --install /usr/share/selinux/packages/nvidia-container.pp
+
+# Universal Blue specific Initramfs fixes
+cp /etc/modprobe.d/nvidia-modeset.conf /usr/lib/modprobe.d/nvidia-modeset.conf
+# we must force driver load to fix black screen on boot for nvidia desktops
+sed -i 's@omit_drivers@force_drivers@g' /usr/lib/dracut/dracut.conf.d/99-nvidia.conf
+# as we need forced load, also mustpre-load intel/amd iGPU else chromium web browsers fail to use hardware acceleration
+sed -i 's@ nvidia @ i915 amdgpu nvidia @g' /usr/lib/dracut/dracut.conf.d/99-nvidia.conf
