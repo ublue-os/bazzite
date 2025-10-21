@@ -24,7 +24,6 @@ unexpected information that does not match the info here.
 
 - **Primary build tool**: `just` (command runner similar to make)
 - **Container builds**: Uses Docker/Podman with `Containerfile` (equivalent to Dockerfile)
-- **Build infrastructure**: Requires specific akmods kernel images only available in CI environment
 - **Build targets**: `bazzite` (desktop), `bazzite-deck` (Steam Deck), `bazzite-nvidia` (NVIDIA variants)
 
 ### Validation Commands (NEVER CANCEL - Complete Quickly)
@@ -37,10 +36,7 @@ unexpected information that does not match the info here.
 
 ### Build Commands (WARNING: REQUIRE CI ENVIRONMENT)
 
-**CRITICAL**: Full builds CANNOT be completed in local development environment due to missing akmods
-kernel images. These commands will fail outside CI:
-
-- `just build <target>` -- Builds container images. FAILS: Requires ghcr.io/ublue-os/akmods:bazzite-* images
+- `just build <target>` -- Builds container images.
 - `just build-iso <target>` -- Builds ISO images. FAILS: Depends on successful container builds
 - `just run-container <target>` -- Runs built containers. FAILS: Depends on successful builds
 
@@ -68,7 +64,7 @@ kernel images. These commands will fail outside CI:
 - **Build Matrix**: Multiple combinations of base images, targets, and flavors
 - **Kernel Versions**: Specific bazzite kernel versions (e.g., 6.16.4-107.bazzite.fc42.x86_64)
 - **Build Steps**: Image pulls, buildah builds, rechunking, signing, pushing to GHCR
-- **Build Dependencies**: Base images, akmods images, kernel images from ublue-os registry
+- **Build Dependencies**: Base images from ublue-os registry
 
 ### Code Quality Standards
 
