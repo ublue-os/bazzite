@@ -3,7 +3,6 @@
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
-IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
@@ -16,14 +15,11 @@ KNOWN_IMAGE_NAME_FILE="/etc/bazzite/image_name"
 KNOWN_IMAGE_NAME=$(cat $KNOWN_IMAGE_NAME_FILE)
 KNOWN_IMAGE_BRANCH_FILE="/etc/bazzite/image_branch"
 KNOWN_IMAGE_BRANCH=$(cat $KNOWN_IMAGE_BRANCH_FILE)
-KNOWN_IMAGE_FLAVOR_FILE="/etc/bazzite/image_flavor"
-KNOWN_IMAGE_FLAVOR=$(cat $KNOWN_IMAGE_FLAVOR_FILE)
 KNOWN_FEDORA_VERSION_FILE="/etc/bazzite/fedora_version"
 KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
 
 if [[ "$KNOWN_IMAGE_NAME" == "$IMAGE_NAME" && \
     "$KNOWN_IMAGE_BRANCH" == "$IMAGE_BRANCH" && \
-    "$KNOWN_IMAGE_FLAVOR" == "$IMAGE_FLAVOR" && \
     "$KNOWN_FEDORA_VERSION" == "$FEDORA_VERSION" && \
     "$HWS_VER_RAN" == "$HWS_VER" ]]; then
   echo "Hardware setup already ran for version $HWS_VER_RAN, skipping"
@@ -404,7 +400,6 @@ touch /etc/bazzite/fixups/gttsize
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
 echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
-echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE
 echo $FEDORA_VERSION > $KNOWN_FEDORA_VERSION_FILE
 echo $IMAGE_BRANCH > $KNOWN_IMAGE_BRANCH_FILE
 

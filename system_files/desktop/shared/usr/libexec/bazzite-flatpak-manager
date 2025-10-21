@@ -5,17 +5,17 @@ VER=29
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
+IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
 # IMAGE IDENTIFIERS
-KNOWN_IMAGE_FLAVOR_FILE="/etc/bazzite/flatpak_manager_image_flavor"
-KNOWN_IMAGE_FLAVOR=$(cat $KNOWN_IMAGE_FLAVOR_FILE)
+KNOWN_IMAGE_NAME_FILE="/etc/bazzite/flatpak_manager_image_name"
+KNOWN_IMAGE_NAME=$(cat $KNOWN_IMAGE_NAME_FILE)
 
 # Run script if updated
 if [[ -f $VER_FILE && $VER = $VER_RAN ]]; then
-  if [[ -f $KNOWN_IMAGE_FLAVOR_FILE ]]; then
-    if [[ $IMAGE_FLAVOR = $KNOWN_IMAGE_FLAVOR ]]; then
+  if [[ -f $KNOWN_IMAGE_NAME_FILE ]]; then
+    if [[ $IMAGE_NAME = $KNOWN_IMAGE_NAME ]]; then
       echo "Flatpak manager v$VER has already ran. Exiting..."
       exit 0
     fi
@@ -90,7 +90,7 @@ do
 done && unset -v app
 
 # Params needed for HW accelerated video on Nvidia (Ignoring hybrid systems)
-if [[ $IMAGE_FLAVOR =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C display) | wc -l) -le 1 ] && grep -q "vendor: NVIDIA Corporation" <<< $(lshw -C display); then
+if [[ $IMAGE_NAME =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C display) | wc -l) -le 1 ] && grep -q "vendor: NVIDIA Corporation" <<< $(lshw -C display); then
   flatpak override \
     --system \
     --filesystem=host-os \
@@ -120,4 +120,4 @@ rm -f /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stable/
 
 mkdir -p /etc/bazzite
 echo $VER > $VER_FILE
-echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE
+echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE

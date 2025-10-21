@@ -186,9 +186,10 @@ jobs:
         run: |
           cat <<'EOF' >>build_args.txt
           IMAGE_NAME=${{ matrix.image }}
+          IMAGE_VENDOR=${{ github.repository_owner }}
+          IMAGE_BRANCH=${{ github.ref_name }}
           NVIDIA_FLAVOR=${{ env.target_nvidia_flavor }}
           NVIDIA_BASE=${{ env.nvidia_base }}
-          IMAGE_VENDOR=${{ github.repository_owner }}
           BASE_IMAGE_NAME=${{ env.base_image_name }}
           FEDORA_VERSION=${{ matrix.fedora_version }}
           KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
