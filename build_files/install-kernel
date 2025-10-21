@@ -15,7 +15,7 @@ printf '%s\n' '#!/bin/sh' 'exit 0' > 50-dracut.install
 chmod +x  05-rpmostree.install 50-dracut.install
 popd
 
-dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra kernel-tools kernel-tools-libs kernel-uki-virt
+dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra kernel-tools kernel-tools-libs
 
 mkdir -p /tmp/kernel-rpms
 
@@ -47,10 +47,13 @@ pkgs=(
 )
 
 for pkg in $pkgs; do
+    ofn=/tmp/kernel-rpms/"$pkg".rpm
     url=https://github.com/bazzite-org/kernel-bazzite/releases/download/"$build_tag"/"$pkg"-"$kernel_version".rpm
     echo "Downloading $url"
-    "${CURL[@]}" -L $url -o /tmp/kernel-rpms/"$pkg".rpm
+    "${CURL[@]}" -L $url -o "$ofn"
     [[ -s "/tmp/kernel-rpms/$pkg.rpm" ]] || { echo "Empty download for $pkg"; exit 1; }
+    gh attestation verify -R bazzite-org/kernel-bazzite "$ofn" \
+        --deny-self-hosted-runners --source-ref "refs/tags/$build_tag"
 done
 
 dnf5 -y install \
