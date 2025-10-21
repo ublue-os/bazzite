@@ -64,7 +64,7 @@ elif [[ "$IMAGE_NAME" == "*nvidia*" ]]; then
     pkgs+=("kernel-nvidia-closed-lts")
 fi
 
-for pkg in $pkgs; do
+for pkg in ${pkgs{@}}; do
     ofn=/tmp/kernel-rpms/"$pkg".rpm
     url=https://github.com/bazzite-org/kernel-bazzite/releases/download/"$build_tag"/"$pkg"-"$kernel_version".rpm
     echo "Downloading $url"
