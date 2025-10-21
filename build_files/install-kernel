@@ -60,8 +60,9 @@ for pkg in $pkgs; do
     echo "Downloading $url"
     "${CURL[@]}" -L $url -o "$ofn"
     [[ -s "/tmp/kernel-rpms/$pkg.rpm" ]] || { echo "Empty download for $pkg"; exit 1; }
-    gh attestation verify -R bazzite-org/kernel-bazzite "$ofn" \
-        --deny-self-hosted-runners --source-ref "refs/tags/$build_tag"
+    # Github api not available in image - fix me
+    # gh attestation verify -R bazzite-org/kernel-bazzite "$ofn" \
+    #     --deny-self-hosted-runners --source-ref "refs/tags/$build_tag"
 done
 
 dnf5 -y install \
