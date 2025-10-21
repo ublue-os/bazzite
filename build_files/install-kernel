@@ -21,7 +21,7 @@ mkdir -p /tmp/kernel-rpms
 
 CURL=("curl" "--retry" "3" "--retry-delay" "2" "--retry-max-time" "60" "-s")
 
-if [[ -n "$KERNEL_VERSION" && "$KERNELVERSION" != "latest" ]]; then
+if [[ -n "$KERNEL_VERSION" && "$KERNEL_VERSION" != "latest" ]]; then
     latest="$("${CURL[@]}" "https://api.github.com/repos/bazzite-org/kernel-bazzite/releases/tags/$KERNEL_VERSION" )"
 else
     latest="$("${CURL[@]}" "https://api.github.com/repos/bazzite-org/kernel-bazzite/releases/latest")"
