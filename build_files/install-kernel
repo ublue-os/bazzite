@@ -48,11 +48,11 @@ pkgs=(
     kernel-modules
     kernel-modules-core
     kernel-modules-extra
+    kernel-modules-akmods
     kernel-devel
     kernel-devel-matched
     kernel-tools
     kernel-tools-libs
-    kernel-akmods
     kernel-common
 )
 
