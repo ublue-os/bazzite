@@ -265,14 +265,12 @@ jobs:
           TMP=$(sudo podman create raw-img bash)
           sudo podman cp $TMP:/usr/lib/modules/${{ matrix.kernel_version }}/vmlinuz .
           sudo podman rm $TMP
-          sudo chmod 666 vmlinuz # might not be needed
+          sudo chmod 666 vmlinuz
           sbverify --list vmlinuz
-          curl --retry 3 -Lo kernel-sign.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key.der
-          curl --retry 3 -Lo akmods.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key_2.der
-          openssl x509 -in kernel-sign.der -out kernel-sign.crt
-          openssl x509 -in akmods.der -out akmods.crt
-          sbverify --cert kernel-sign.crt vmlinuz || exit 1
-          sbverify --cert akmods.crt vmlinuz || exit 1
+          for key in ./build_files/ubmok101.cer ./build_files/ubmok102.cer; do
+            openssl x509 -in $key -out ${key%.cer}.crt
+            sbverify --cert ${key%.cer}.crt vmlinuz || exit 1
+          done
 
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
