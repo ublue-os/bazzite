@@ -104,7 +104,7 @@ jobs:
           fi
           echo "sha_head_short=${GITHUB_SHA::7}" >> $GITHUB_ENV
           # Define Nvidia Flavor
-          if [[ "$IMAGE" == "*nvidia-open" || "$IMAGE" =="*-deck-nvidia*" ]]; then
+          if [[ "$IMAGE" == "*nvidia-open" || "$IMAGE" == "*-deck-nvidia*" ]]; then
             echo "target_nvidia_flavor=nvidia-open" >> "$GITHUB_ENV"
           else
             echo "target_nvidia_flavor=nvidia" >> "$GITHUB_ENV"
