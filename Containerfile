@@ -74,7 +74,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/LatencyFleX \
         bazzite-org/obs-vkcapture \
         ycollet/audinux \
-        bazzite-org/rom-properties \
         hhd-dev/hhd \
         che/nerd-fonts \
         hikariknight/looking-glass-kvmfr \
@@ -390,7 +389,6 @@ RUN --mount=type=cache,dst=/var/cache \
             wallpaper-engine-kde-plugin \
             kdeconnectd \
             kdeplasma-addons \
-            rom-properties-kf6 \
             fcitx5-mozc \
             fcitx5-chinese-addons \
             fcitx5-hangul \
@@ -443,7 +441,6 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-restart-to \
             gnome-shell-extension-burn-my-windows \
             gnome-shell-extension-desktop-cube \
-            rom-properties-gtk3 \
             ibus-mozc \
             openssh-askpass \
             firewall-config && \
@@ -566,7 +563,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/LatencyFleX \
         bazzite-org/obs-vkcapture \
         ycollet/audinux \
-        bazzite-org/rom-properties \
         hhd-dev/hhd \
         che/nerd-fonts \
         rok/cdemu \
