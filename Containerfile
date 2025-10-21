@@ -38,9 +38,6 @@ ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
-FROM scratch AS ctx
-COPY build_files /
-
 ################
 # DESKTOP BUILDS
 ################
@@ -61,11 +58,11 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
 COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 
+COPY ./build_files/cleanup ./build_files/install-kernel ./build_files/ghcurl /ctx/
+
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     mkdir -p /var/roothome && \
     dnf5 -y install dnf5-plugins && \
     for copr in \
@@ -106,8 +103,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Install kernel
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     /ctx/install-kernel && \
     dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
     dnf5 -y copr enable bieszczaders/kernel-cachyos-addons && \
@@ -136,11 +131,11 @@ RUN --mount=type=cache,dst=/var/cache \
         plymouth-system-theme && \
     /ctx/cleanup
 
+COPY ./build_files/install-firmware /ctx/
+
 # Setup firmware
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     /ctx/install-firmware && \
     /ctx/cleanup
 
@@ -149,8 +144,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Install patched switcheroo control with proper discrete GPU support
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     declare -A toswap=( \
         ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite"]="wireplumber" \
         ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland" \
@@ -201,8 +194,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Remove unneeded packages
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     dnf5 -y remove \
         ublue-os-update-services \
         firefox \
@@ -214,8 +205,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     dnf5 -y install \
         $(/ctx/ghcurl https://api.github.com/repos/bazzite-org/cicpoffs/releases/latest | jq -r '.assets[] | select(.name| test(".*rpm$")).browser_download_url') && \
@@ -325,8 +314,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Downgrade ibus to fix an issue with the Steam keyboard
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     dnf5 versionlock add \
         ibus && \
@@ -367,8 +354,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Install yafti-go & ujust-picker from GitHub releases
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/bazzite-org/yafti-go/releases/latest" -s | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -sL -o /bin/yafti-go && \
     chmod +x /bin/yafti-go && \
@@ -380,8 +365,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Configure KDE & GNOME
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y install \
@@ -469,8 +452,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Homebrew & Bash Prexec
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     dnf5 install -y ublue-brew && \
     /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh" --retry 3 -Lo /usr/share/bash-prexec && \
@@ -479,8 +460,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # ublue-os-media-automount-udev, mount non-removable device partitions automatically under /media/media-automount/
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     dnf5 install -y --enable-repo=copr:copr.fedorainfracloud.org:ublue-os:packages \
         ublue-os-media-automount-udev && \
     { systemctl enable ublue-os-media-automount.service || true; } && \
@@ -488,10 +467,10 @@ RUN --mount=type=cache,dst=/var/cache \
 
 # Cleanup & Finalize
 COPY system_files/overrides /
+COPY ./build_files/finalize ./build_files/build-initramfs ./build_files/image-info /ctx/
+
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     rm -f /etc/profile.d/toolbox.sh && \
     mkdir -p /var/tmp && chmod 1777 /var/tmp && \
@@ -639,8 +618,6 @@ COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     dnf5 -y copr enable ublue-os/staging && \
     dnf5 -y copr enable ublue-os/packages && \
     dnf5 -y copr enable bazzite-org/bazzite && \
@@ -655,8 +632,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Configure KDE & GNOME
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     dnf5 -y remove \
         jupiter-sd-mounting-btrfs && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
@@ -679,8 +654,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install \
         jupiter-fan-control \
         jupiter-hw-support-btrfs \
@@ -717,8 +690,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Install Steam Deck patched UPower
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     dnf5 -y swap \
     --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite \
         upower upower && \
@@ -732,8 +703,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Add sdl gamecontrollerdb used by handheld daemon for externals
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     mkdir -p /usr/share/gamescope-session-plus/ && \
     curl --retry 3 -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz && \
@@ -748,8 +717,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Cleanup & Finalize
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     mkdir -p "/etc/xdg/autostart" && \
     mv "/etc/skel/.config/autostart/steam.desktop" "/etc/xdg/autostart/steam.desktop" && \
     sed -i 's@Exec=waydroid first-launch@Exec=/usr/bin/waydroid-launcher first-launch\nX-Steam-Library-Capsule=/usr/share/applications/Waydroid/capsule.png\nX-Steam-Library-Hero=/usr/share/applications/Waydroid/hero.png\nX-Steam-Library-Logo=/usr/share/applications/Waydroid/logo.png\nX-Steam-Library-StoreCapsule=/usr/share/applications/Waydroid/store-logo.png\nX-Steam-Controller-Template=Desktop@g' /usr/share/applications/Waydroid.desktop && \
@@ -811,7 +778,7 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/finalize
 
 RUN dnf5 config-manager setopt skip_if_unavailable=1 && \
-    bootc container lint
+    rm -rf /ctx && bootc container lint
 
 ################
 # NVIDIA BUILDS
@@ -832,12 +799,12 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
 # Fetch NVIDIA driver
 COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
+COPY ./build_files/install-nvidia ./build_files/cleanup ./build_files/image-info \
+    ./build_files/build-initramfs ./build_files/finalize /ctx/
 
 # Remove everything that doesn't work well with NVIDIA, unset skip_if_unavailable option if was set beforehand
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     dnf5 -y remove \
         nvidia-gpu-firmware \
@@ -850,8 +817,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Install NVIDIA driver
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     dnf5 config-manager setopt "terra-mesa".enabled=1 && \
     dnf5 -y copr enable ublue-os/staging && \
@@ -870,8 +835,6 @@ RUN --mount=type=cache,dst=/var/cache \
 # Cleanup & Finalize
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
       mkdir -p "/usr/share/ublue-os/dconfs/nvidia-silverblue/" && \
@@ -891,7 +854,7 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/finalize
 
 RUN dnf5 config-manager setopt skip_if_unavailable=1 && \
-    bootc container lint
+    rm -rf /ctx && bootc container lint
 
 # Make yafti launcher script executable
 RUN chmod +x /usr/libexec/bazzite-yafti-launcher
