@@ -658,8 +658,6 @@ RUN --mount=type=cache,dst=/var/cache \
         jupiter-fan-control \
         jupiter-hw-support-btrfs \
         galileo-mura \
-        steamdeck-dsp \
-        powerbuttond \
         hhd \
         hhd-ui \
         adjustor \
