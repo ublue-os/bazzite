@@ -42,9 +42,9 @@ else
     curl -Lo /etc/yum.repos.d/_copr_ublue-os-staging.repo https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FRELEASE}"/ublue-os-staging-fedora-"${FRELEASE}".repo
 fi
 
-if [[ "${IMAGE_NAME}" == "kinoite" ]]; then
+if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
     VARIANT_PKGS="supergfxctl-plasmoid supergfxctl"
-elif [[ "${IMAGE_NAME}" == "silverblue" ]]; then
+elif [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
     VARIANT_PKGS="gnome-shell-extension-supergfxctl-gex supergfxctl"
 else
     VARIANT_PKGS=""
@@ -76,6 +76,13 @@ sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo
 
 # ensure kernel.conf matches NVIDIA_FLAVOR (which must be nvidia or nvidia-open)
 # kmod-nvidia-common defaults to 'nvidia-open' but this will match our akmod image
+if [[ "$IMAGE_NAME" == *"nvidia-open" || "$IMAGE_NAME" == *"-deck-nvidia"* ]]; then
+    echo "Using NVIDIA Open Kernel"
+    KERNEL_MODULE_TYPE="nvidia-open"
+elif [[ "$IMAGE_NAME" == *"nvidia"* ]]; then
+    echo "Using NVIDIA Closed Kernel with Legacy driver"
+    KERNEL_MODULE_TYPE="nvidia"
+fi
 sed -i "s/^MODULE_VARIANT=.*/MODULE_VARIANT=$KERNEL_MODULE_TYPE/" /etc/nvidia/kernel.conf
 
 systemctl enable ublue-nvctk-cdi.service
