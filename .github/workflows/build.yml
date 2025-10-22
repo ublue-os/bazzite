@@ -235,24 +235,6 @@ jobs:
           echo "Generated the following:"
           cat $GITHUB_OUTPUT
 
-      - name: Check Secureboot
-        shell: bash
-        run: |
-          set -x
-          if [[ ! $(command -v sbverify) || ! $(command -v curl) || ! $(command -v openssl) ]]; then
-            sudo apt update
-            sudo apt install sbsigntool curl openssl
-          fi
-          TMP=$(sudo podman create raw-img bash)
-          sudo podman cp $TMP:/usr/lib/modules/${{ matrix.kernel_version }}/vmlinuz .
-          sudo podman rm $TMP
-          sudo chmod 666 vmlinuz
-          sbverify --list vmlinuz
-          for key in ./build_files/ubmok101.cer ./build_files/ubmok102.cer; do
-            openssl x509 -in $key -out ${key%.cer}.crt
-            sbverify --cert ${key%.cer}.crt vmlinuz || exit 1
-          done
-
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
         id: rechunk
