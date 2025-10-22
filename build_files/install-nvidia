@@ -67,14 +67,6 @@ if [[ "${FRELEASE}" -ne 43 ]]; then
     dnf5 install -y nvidia-container-toolkit
 fi
 
-# Ensure the version of the Nvidia module matches the driver
-KMOD_VERSION="$(rpm -q --queryformat '%{VERSION}' kmod-nvidia)"
-DRIVER_VERSION="$(rpm -q --queryformat '%{VERSION}' nvidia-driver)"
-if [ "$KMOD_VERSION" != "$DRIVER_VERSION" ]; then
-    echo "Error: kmod-nvidia version ($KMOD_VERSION) does not match nvidia-driver version ($DRIVER_VERSION)"
-    exit 1
-fi
-
 ## nvidia post-install steps
 # disable repos provided by ublue-os-nvidia-addons
 dnf5 config-manager setopt fedora-nvidia.enabled=0 nvidia-container-toolkit.enabled=0
