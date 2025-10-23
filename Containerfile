@@ -402,11 +402,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
         rm -f /usr/share/backgrounds/default.xml \
     ; else \
-        dnf5 -y swap \
-        --repo terra-extras \
-            gnome-shell gnome-shell && \
-        dnf5 versionlock add \
-            gnome-shell && \
         dnf5 -y install \
             nautilus-gsconnect \
             steamdeck-backgrounds \
