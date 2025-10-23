@@ -652,6 +652,7 @@ RUN --mount=type=cache,dst=/var/cache \
         jupiter-fan-control \
         jupiter-hw-support-btrfs \
         galileo-mura \
+        powerbuttond \
         hhd \
         hhd-ui \
         adjustor \
