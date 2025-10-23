@@ -147,8 +147,6 @@ else
       echo 'Setting Framework logo menu'
       dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
       dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 4
-      echo 'Adjusting OSD position'
-      dconf write /org/gnome/shell/extensions/just-perfection/osd-position 4
       if [[ $SYS_ID == "Laptop ("* ]]; then
         echo 'Applying font fix for Framework 13'
         dconf write /org/gnome/desktop/interface/text-scaling-factor 1.25
