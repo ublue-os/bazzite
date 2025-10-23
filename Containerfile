@@ -70,7 +70,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/bazzite-multilib \
         ublue-os/staging \
         ublue-os/packages \
-        bazzite-org/LatencyFleX \
         bazzite-org/obs-vkcapture \
         ycollet/audinux \
         bazzite-org/rom-properties \
@@ -338,20 +337,16 @@ RUN --mount=type=cache,dst=/var/cache \
         vkBasalt.i686 \
         mangohud.x86_64 \
         mangohud.i686 \
+        libobs_vkcapture.x86_64 \
+        libobs_glcapture.x86_64 \
+        libobs_vkcapture.i686 \
+        libobs_glcapture.i686 \
         VK_hdr_layer && \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
         lutris && \
     dnf5 -y remove \
         gamemode && \
-    /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/ishitatsuyuki/LatencyFleX/releases/latest | jq -r '.assets[] | select(.name| test(".*.tar.xz$")).browser_download_url')" -Lo /tmp/latencyflex.tar.xz && \
-    mkdir -p /tmp/latencyflex && \
-    tar --no-same-owner --no-same-permissions --no-overwrite-dir --strip-components 1 -xvf /tmp/latencyflex.tar.xz -C /tmp/latencyflex && \
-    rm -f /tmp/latencyflex.tar.xz && \
-    mkdir -p /usr/lib64/latencyflex && \
-    cp -r /tmp/latencyflex/wine/usr/lib/wine/* /usr/lib64/latencyflex/ && \
-    /ctx/ghcurl "https://raw.githubusercontent.com/bazzite-org/LatencyFleX-Installer/main/install.sh" -Lo /usr/bin/latencyflex && \
-    chmod +x /usr/bin/latencyflex && \
     /ctx/ghcurl "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" -Lo /usr/bin/winetricks && \
     chmod +x /usr/bin/winetricks && \
     /ctx/cleanup
@@ -540,7 +535,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/bazzite-multilib \
         ublue-os/staging \
         ublue-os/packages \
-        bazzite-org/LatencyFleX \
         bazzite-org/obs-vkcapture \
         ycollet/audinux \
         bazzite-org/rom-properties \
@@ -623,7 +617,6 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable ublue-os/packages && \
     dnf5 -y copr enable bazzite-org/bazzite && \
     dnf5 -y copr enable bazzite-org/bazzite-multilib && \
-    dnf5 -y copr enable bazzite-org/LatencyFleX && \
     dnf5 -y copr enable bazzite-org/obs-vkcapture && \
     dnf5 -y copr enable hhd-dev/hhd && \
     dnf5 -y copr enable ycollet/audinux && \
@@ -731,7 +724,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/packages \
         bazzite-org/bazzite \
         bazzite-org/bazzite-multilib \
-        bazzite-org/LatencyFleX \
         bazzite-org/obs-vkcapture \
         hhd-dev/hhd \
         ycollet/audinux; \
