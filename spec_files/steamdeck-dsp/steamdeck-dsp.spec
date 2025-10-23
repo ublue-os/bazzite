@@ -3,14 +3,13 @@ Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
 Summary:        Steamdeck Audio Processing
 License:        GPLv2
-URL:            https://github.com/ublue-os/bazzite
-Source:         https://gitlab.com/evlaV/valve-hardware-audio-processing/-/archive/main/valve-hardware-audio-processing-main.tar.gz
+URL:            https://github.com/evlav/valve-hardware-audio-processing/
+Source:         %{url}archive/refs/heads/main.tar.gz
 
 Patch0:         fedora.patch
 Patch1:         bazzite.patch
 
 Requires:       pipewire-module-filter-chain-lv2
-Requires:       ladspa-noise-suppression-for-voice
 Requires:       boost
 
 BuildRequires:  make

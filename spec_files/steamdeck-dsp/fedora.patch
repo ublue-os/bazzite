@@ -1,5 +1,5 @@
 diff --git a/pipewire-confs/hardware-profiles/pipewire-hwconfig b/pipewire-confs/hardware-profiles/pipewire-hwconfig
-index 11c8bd2..ac7adb6 100755
+index cde0fb8..1e28171 100755
 --- a/pipewire-confs/hardware-profiles/pipewire-hwconfig
 +++ b/pipewire-confs/hardware-profiles/pipewire-hwconfig
 @@ -1,4 +1,4 @@
@@ -8,32 +8,6 @@ index 11c8bd2..ac7adb6 100755
  
  set -eu
  
-diff --git a/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain.conf b/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain.conf
-index 262fa0f..d7055e2 100644
---- a/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain.conf
-+++ b/pipewire-confs/hardware-profiles/valve-galileo/pipewire.conf.d/filter-chain.conf
-@@ -14,7 +14,7 @@ context.modules = [
-                     {
-                         type = ladspa
-                         name = rnnoise
--                        plugin = /usr/lib/ladspa/librnnoise_ladspa.so
-+                        plugin = /usr/lib64/ladspa/librnnoise_ladspa.so
-                         label = noise_suppressor_stereo
-                         control = {
-                             "VAD Threshold (%)" = 23.0
-diff --git a/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/filter-chain.conf b/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/filter-chain.conf
-index 90a1e12..43f03e0 100644
---- a/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/filter-chain.conf
-+++ b/pipewire-confs/hardware-profiles/valve-jupiter/pipewire.conf.d/filter-chain.conf
-@@ -14,7 +14,7 @@ context.modules = [
-                     {
-                         type = ladspa
-                         name = rnnoise
--                        plugin = /usr/lib/ladspa/librnnoise_ladspa.so
-+                        plugin = /usr/lib64/ladspa/librnnoise_ladspa.so
-                         label = noise_suppressor_stereo
-                         control = {
-                             "VAD Threshold (%)" = 23.0
 diff --git a/pipewire-confs/systemd/system/pipewire-sysconf.service b/pipewire-confs/systemd/system/pipewire-sysconf.service
 index ffbdd97..449a278 100644
 --- a/pipewire-confs/systemd/system/pipewire-sysconf.service
@@ -74,7 +48,7 @@ index ad10f23..320aa0a 100755
 +# cp -r bin/svg $LIB_DIR/lv2/svg
 +# cp version.txt $LIB_DIR/lv2/valve_audio_dsp_version.txt
 diff --git a/wireplumber/hardware-profiles/wireplumber-hwconfig b/wireplumber/hardware-profiles/wireplumber-hwconfig
-index 842edb2..3f03354 100755
+index a93b347..218b1e5 100755
 --- a/wireplumber/hardware-profiles/wireplumber-hwconfig
 +++ b/wireplumber/hardware-profiles/wireplumber-hwconfig
 @@ -1,4 +1,4 @@
