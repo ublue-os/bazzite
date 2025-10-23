@@ -371,7 +371,6 @@ RUN --mount=type=cache,dst=/var/cache \
             qt \
             krdp \
             steamdeck-kde-presets-desktop \
-            wallpaper-engine-kde-plugin \
             kdeconnectd \
             kdeplasma-addons \
             fcitx5-mozc \
@@ -419,7 +418,6 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-compiz-alike-magic-lamp-effect \
             gnome-shell-extension-just-perfection \
             gnome-shell-extension-blur-my-shell \
-            gnome-shell-extension-hanabi \
             gnome-shell-extension-bazzite-menu \
             gnome-shell-extension-hotedge \
             gnome-shell-extension-caffeine \
