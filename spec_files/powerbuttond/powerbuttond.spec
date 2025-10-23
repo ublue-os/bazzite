@@ -4,15 +4,14 @@ Release:        1%{?dist}
 Summary:        Steam Deck power button daemon
 
 License:        BSD
-URL:            https://gitlab.com/evlaV/%{name}/
-Source:         %{url}-/archive/main/%{name}-main.tar.gz
+URL:            https://github.com/evlav/%{name}/
+Source:         %{url}/archive/refs/heads/main.tar.gz
 
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  libevdev-devel
+BuildRequires:  libudev-devel
 BuildRequires:  cmake
 BuildRequires:  gcc
-
-Requires:       libevdev
 
 %description
 Steam Deck power button daemon
