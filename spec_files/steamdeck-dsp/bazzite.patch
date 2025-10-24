@@ -1,8 +1,8 @@
 diff --git a/pipewire-confs/hardware-profiles/pipewire-hwconfig b/pipewire-confs/hardware-profiles/pipewire-hwconfig
-index 1e28171..3ebb885 100755
+index 4d9171f..9c9beab 100755
 --- a/pipewire-confs/hardware-profiles/pipewire-hwconfig
 +++ b/pipewire-confs/hardware-profiles/pipewire-hwconfig
-@@ -53,41 +53,24 @@ install_hwprofile ()
+@@ -52,41 +52,24 @@ install_hwprofile ()
  {
      local -r prpath="$1"
      local -r hwprof="${2:-}"

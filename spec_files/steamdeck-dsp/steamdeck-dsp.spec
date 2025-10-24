@@ -1,15 +1,18 @@
+%global _default_patch_fuzz 2
+
 Name:           steamdeck-dsp
-Version:        {{{ git_dir_version }}}
+Version:        0.69
 Release:        1%{?dist}
 Summary:        Steamdeck Audio Processing
 License:        GPLv2
-URL:            https://github.com/evlav/valve-hardware-audio-processing/
-Source:         %{url}archive/refs/heads/main.tar.gz
+URL:            https://github.com/evlav/valve-hardware-audio-processing
+Source:         %{url}/archive/refs/tags/%{version}.tar.gz
 
 Patch0:         fedora.patch
 Patch1:         bazzite.patch
 
 Requires:       pipewire-module-filter-chain-lv2
+Requires:       ladspa-noise-suppression-for-voice
 Requires:       boost
 
 BuildRequires:  make
@@ -31,7 +34,7 @@ Steamdeck Audio Processing
 %define debug_package %{nil}
 
 %prep
-%autosetup -n valve-hardware-audio-processing-main -p1
+%autosetup -n valve-hardware-audio-processing-%{version} -p1
 
 %build
 %make_build FAUSTINC="/usr/include/faust"  FAUSTLIB="/usr/share/faust"
@@ -66,9 +69,6 @@ rm -rf %{buildroot}%{_datadir}/pipewire/hardware-profiles/default
 %{_unitdir}/wireplumber-sysconf.service
 %{_datadir}/pipewire/hardware-profiles/*
 %{_unitdir}/pipewire-sysconf.service
-%{_unitdir}/user@.service.d/20-ulimit.conf
-%{_prefix}/lib/systemd/user.conf.d/20-ulimit.conf
-%{_userunitdir}/filter-chain.service.d/20-ulimit.conf
 
 %post
 %systemd_post wireplumber-sysconf.service
