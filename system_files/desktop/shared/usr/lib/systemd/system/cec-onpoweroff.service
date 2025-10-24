@@ -1,7 +1,7 @@
 [Unit]
 Description=Run CEC actions for poweroff
 DefaultDependencies=no
-Before=final.target
+Before=poweroff.target
 
 [Service]
 Type=oneshot
