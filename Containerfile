@@ -142,7 +142,6 @@ RUN --mount=type=cache,dst=/var/cache \
 
 # Install patched fwupd
 # Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
-# Install patched switcheroo control with proper discrete GPU support
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     declare -A toswap=( \
@@ -171,7 +170,6 @@ RUN --mount=type=cache,dst=/var/cache \
         bluez-libs \
         bluez-obexd \
         xorg-x11-server-Xwayland \
-        switcheroo-control \
         mesa-dri-drivers \
         mesa-filesystem \
         mesa-libEGL \
