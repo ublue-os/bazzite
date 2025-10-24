@@ -66,6 +66,9 @@ rm -rf %{buildroot}%{_datadir}/pipewire/hardware-profiles/default
 %{_unitdir}/wireplumber-sysconf.service
 %{_datadir}/pipewire/hardware-profiles/*
 %{_unitdir}/pipewire-sysconf.service
+%{_unitdir}/user@.service.d/20-ulimit.conf
+%{_prefix}/lib/systemd/user.conf.d/20-ulimit.conf
+%{_userunitdir}/filter-chain.service.d/20-ulimit.conf
 
 %post
 %systemd_post wireplumber-sysconf.service
