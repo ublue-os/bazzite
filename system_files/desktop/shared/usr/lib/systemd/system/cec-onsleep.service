@@ -1,7 +1,7 @@
 [Unit]
 Description=Run CEC actions for sleep
 DefaultDependencies=no
-Before=final.target
+Before=sleep.target
 
 [Service]
 Type=oneshot
