@@ -3,9 +3,9 @@ Version:        {{{ git_dir_version }}}
 Release:        2%{?dist}
 Summary:        DualShock 4/DualSense mouse inhibitor
 License:        BSD-2-Clause
-URL:            https://github.com/ublue-os/bazzite
+URL:            https://github.com/evlav/
 
-Source0:         https://gitlab.com/evlaV/%{name}/-/archive/main/%{name}-main.tar.gz
+Source0:        %{url}ds-inhibit/archive/refs/heads/main.tar.gz
 BuildArch:      noarch
 
 Patch0:         fedora.patch

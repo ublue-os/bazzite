@@ -14,8 +14,8 @@ Summary:        SteamOS Manager daemon for running various tasks as root
 
 License:        MIT
 
-URL:            https://gitlab.com/evlaV/steamos-manager
-Source:         %{url}/-/archive/v%{version}/steamos-manager-v%{version}.tar.gz
+URL:            https://github.com/evlav/steamos-manager/
+Source:         %{url}archive/refs/heads/master.tar.gz
 Source1:        steamos-manager-%{version}-vendor.tar.xz
 Patch1:         0001-fedora-changes.patch
 Patch2:         bazzite.patch
