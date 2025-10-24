@@ -2,11 +2,13 @@
 
 Summary:        Power Management Service
 Name:           upower
-Version:        1.90.9
+Version:        1.90.10
 Release:        1000.bazzite.{{{ git_dir_version }}}
 License:        GPL-2.0-or-later
-URL:            http://upower.freedesktop.org/
+URL:            https://upower.freedesktop.org/
 Source0:        https://gitlab.freedesktop.org/upower/%{name}/-/archive/v%{version}/%{name}-v%{version}.tar.bz2
+
+Patch0:         valve.patch
 
 BuildRequires:  meson
 BuildRequires:  git
@@ -27,8 +29,6 @@ BuildRequires:  systemd
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Requires:       udev
-
-Patch0:         valve.patch
 
 %description
 UPower (formerly DeviceKit-power) provides a daemon, API and command
@@ -137,6 +137,8 @@ mv $RPM_BUILD_ROOT%{_libexecdir}/upower $RPM_BUILD_ROOT%{_libexecdir}/installed-
 
 %files tests
 %{_libexecdir}/installed-tests/upower
+%dir %{_datadir}/installed-tests/
+%dir %{_datadir}/installed-tests/upower/
 %{_datadir}/installed-tests/upower/upower-integration.test
 
 %changelog
