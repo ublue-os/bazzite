@@ -82,7 +82,7 @@ jobs:
       - name: Define env variables
         run: |
           IMAGE="${{ matrix.image }}"
-          if [[ "$IMAGE" == "*gnome*" ]]; then
+          if [[ "$IMAGE" == *gnome* ]]; then
             echo "base_image_name=silverblue" >> "$GITHUB_ENV"
           else
             echo "base_image_name=kinoite" >> "$GITHUB_ENV"
