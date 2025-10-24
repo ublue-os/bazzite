@@ -94,6 +94,7 @@ sections:
       - net.stabyourself.nottetris2
       - org.srb2.SRB2
       - org.srb2.SRB2Kart
+      - org.endlessaccess.threadbare
       - org.kartkrew.RingRacers
       - org.supertuxproject.SuperTux
       - net.supertuxkart.SuperTuxKart
