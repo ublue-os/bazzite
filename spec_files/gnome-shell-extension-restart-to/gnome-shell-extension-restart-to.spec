@@ -1,7 +1,7 @@
 %global uuid restartto@tiagoporsch.github.io
 
 Name:        gnome-shell-extension-restart-to
-Version:     8
+Version:     10
 Release:     1%{?dist}
 Summary:     GNOME extension that adds a menu allowing to reboot into any existing UEFI boot entry 
 

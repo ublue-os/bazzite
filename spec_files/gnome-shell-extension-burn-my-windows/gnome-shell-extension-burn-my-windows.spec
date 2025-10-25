@@ -1,7 +1,7 @@
 %global uuid  burn-my-windows@schneegans.github.com
 
 Name:        gnome-shell-extension-burn-my-windows
-Version:     46
+Version:     47
 Release:     1%{?dist}
 Summary:     Disintegrate your windows with style.
 
