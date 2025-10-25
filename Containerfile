@@ -75,9 +75,7 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/rom-properties \
         bazzite-org/webapp-manager \
         hhd-dev/hhd \
-        che/nerd-fonts \
-        hikariknight/looking-glass-kvmfr \
-        rok/cdemu; \
+        che/nerd-fonts; \
     do \
         echo "Enabling copr: $copr"; \
         dnf5 -y copr enable $copr; \
@@ -533,9 +531,7 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/rom-properties \
         bazzite-org/webapp-manager \
         hhd-dev/hhd \
-        che/nerd-fonts \
-        rok/cdemu \
-        hikariknight/looking-glass-kvmfr; \
+        che/nerd-fonts; \
     do \
         dnf5 -y copr disable $copr; \
     done && unset -v copr && \
