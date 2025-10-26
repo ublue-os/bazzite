@@ -209,9 +209,8 @@ jobs:
           # This needs to be tweaked, we need to verify a digest
           # and to confirm it is from a protected branch
           gh attestation verify -R bazzite-org/kernel-bazzite \
-            "${{ steps.base.outputs.kernel_ref }}" --deny-self-hosted-runners
+            "oci://${{ steps.base.outputs.kernel_ref }}" --deny-self-hosted-runners
           sudo podman pull ${{ steps.base.outputs.kernel_ref }}
-          DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' containers-storage:${{ steps.base.outputs.kernel_ref }})
           
           if [ "${{ steps.base.outputs.install_nvidia }}" == "true" ]; then
             sudo skopeo inspect docker://${{ steps.base.outputs.kernel_ref }} > kernel_source.json
@@ -219,7 +218,7 @@ jobs:
             NVIDIA_REF="${{ steps.base.outputs.nvidia_ref }}:${NVIDIA_VERSION}"
             # Same as above, we verify the uri moments before we pull it
             gh attestation verify -R bazzite-org/nvidia-drivers \
-              "$NVIDIA_REF" --deny-self-hosted-runners --source-ref "refs/heads/master"
+              "oci://$NVIDIA_REF" --deny-self-hosted-runners --source-ref "refs/heads/master"
             sudo podman pull "$NVIDIA_REF"
             echo "nvidia_ref=$NVIDIA_REF" >> $GITHUB_OUTPUT
           else
