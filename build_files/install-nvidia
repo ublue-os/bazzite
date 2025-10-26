@@ -16,18 +16,6 @@ dnf5 config-manager setopt fedora-cisco-openh264.enabled=0
 curl -L https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo \
     -o /etc/yum.repos.d/nvidia-container-toolkit.repo
 
-# Install MULTILIB packages from terra
-MULTILIB=(
-    mesa-dri-drivers.i686
-    mesa-filesystem.i686
-    mesa-libEGL.i686
-    mesa-libGL.i686
-    mesa-libgbm.i686
-    mesa-va-drivers.i686
-    mesa-vulkan-drivers.i686
-)
-dnf5 install -y "${MULTILIB[@]}"
-
 # enable repos provided by ublue-os-nvidia-addons
 dnf5 config-manager setopt nvidia-container-toolkit.enabled=1
 
