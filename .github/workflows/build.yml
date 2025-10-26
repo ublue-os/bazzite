@@ -160,25 +160,17 @@ jobs:
         run: |
           set -eo pipefail
           
+          #
           # Base Image and version
+          #
+
           sudo podman pull ${{ steps.base.outputs.base_image }}
           sudo skopeo inspect docker://${{ steps.base.outputs.base_image }} > source.json
-          ver=$(jq -r '.Labels["org.opencontainers.image.version"]' source.json)
-          if [ -z "$ver" ] || [ "null" = "$ver" ]; then
+          UPSTREAM_TAG=$(jq -r '.Labels["org.opencontainers.image.version"]' source.json)
+          if [ -z "$UPSTREAM_TAG" ] || [ "null" = "$UPSTREAM_TAG" ]; then
             echo "inspected image version must not be empty or null"
             exit 1
           fi
-          echo "source_image_version=$ver" >> $GITHUB_OUTPUT
-      
-      # Generate a primary version key that appears
-      # in KDE, rpm-ostree status, and github.
-      - name: Generate Version
-        id: generate-version
-        shell: bash
-        run: |
-          # Generate the primary version key that will be stored on os-release,
-          # shown on the bootloader, and used for the image tag.
-          UPSTREAM_TAG="${{ steps.labels.outputs.source_image_version }}"
           # Remove .0 suffix from upstream tag so we can add our own and
           # the wrong one does not end up in the image.
           UPSTREAM_TAG="${UPSTREAM_TAG%\.[0-9]}" 
@@ -217,8 +209,8 @@ jobs:
           NVIDIA_BASE=${{ steps.base.outputs.nvidia_base }}
           KERNEL_VERSION=${{ matrix.kernel_version }}
           SHA_HEAD_SHORT=${{ steps.base.outputs.sha_head_short }}
-          VERSION_TAG=${{ steps.generate-version.outputs.tag }}
-          VERSION_PRETTY=${{ steps.generate-version.outputs.pretty }}
+          VERSION_TAG=${{ steps.labels.outputs.tag }}
+          VERSION_PRETTY=${{ steps.labels.outputs.pretty }}
           EOF
 
       # Build image using buildah and save it to raw-img
@@ -241,7 +233,7 @@ jobs:
           rechunk: 'ghcr.io/hhd-dev/rechunk:v1.2.4'
           ref: 'raw-img'
           prev-ref: '${{ steps.base.outputs.prev_ref }}'
-          version: '${{ steps.generate-version.outputs.tag }}'
+          version: '${{ steps.labels.outputs.tag }}'
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/bazzite/refs/heads/main/README.md
