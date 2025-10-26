@@ -1,4 +1,3 @@
-# Welcome to Bazzite 󰊴
 󱋩 `%IMAGE_NAME%:%IMAGE_BRANCH%`
 
 |  Command | Description |
@@ -9,8 +8,8 @@
 | `brew help` | Manage command line packages |
 
 %TIP%
-- **** [Report an issue](https://github.com/ublue-os/bazzite/issues)
+- **** [Report an issue](http://issues.bazzite.gg/)
 - **󰈙** [Documentation](http://docs.bazzite.gg/)
 - **󰙯** [Discord](https://discord.bazzite.gg/)
-- **󰫑** [Mastodon](https://fosstodon.org/@UniversalBlue)
-- **** [Bluesky](https://bsky.app/profile/bazzite.gg)
+- **󰫑** [Mastodon](https://mastodon.bazzite.gg/)
+- **** [Bluesky](https://bluesky.bazzite.gg/)
