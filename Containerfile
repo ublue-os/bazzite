@@ -427,7 +427,10 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-system-monitor \
             gnome-initial-setup \
             gnome-shell-extension-background-logo \
-            gnome-shell-extension-apps-menu && \
+            gnome-shell-extension-apps-menu \
+            gnome-shell-extension-launch-new-instance \
+            gnome-shell-extension-places-menu \
+            gnome-shell-extension-window-list && \
         /ctx/ghcurl "https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer" -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
         systemctl enable dconf-update.service \
     ; fi && \
