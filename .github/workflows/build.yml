@@ -38,9 +38,6 @@ on:
         description: 'Clear rechunk history'
         type: boolean
         default: false
-env:
-  PULL_IMAGE_REGISTRY: ghcr.io/ublue-os
-  PUSH_IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -79,36 +76,63 @@ jobs:
         with:
           target-dir: /var/lib/containers
       
-      - name: Define env variables
+      - name: Define base variables
+        id: base
         run: |
           IMAGE="${{ matrix.image }}"
           if [[ "$IMAGE" == *gnome* ]]; then
-            echo "base_image_name=silverblue" >> "$GITHUB_ENV"
+            BASE_IMAGE_NAME="silverblue"
           else
-            echo "base_image_name=kinoite" >> "$GITHUB_ENV"
+            BASE_IMAGE_NAME="kinoite"
           fi
+          echo "base_image_name=$BASE_IMAGE_NAME" >> "$GITHUB_OUTPUT"
+
+          #
           # Define Container Target
+          #
           CONTAINER_TARGET="$IMAGE"
           CONTAINER_TARGET="${CONTAINER_TARGET/-open/}"
           CONTAINER_TARGET="${CONTAINER_TARGET/-gnome/}"
           if [[ "$CONTAINER_TARGET" == "bazzite-deck-nvidia" ]]; then
-            echo "container_target=bazzite-nvidia" >> "$GITHUB_ENV"
+            echo "container_target=bazzite-nvidia" >> "$GITHUB_OUTPUT"
           else
-            echo "container_target=$CONTAINER_TARGET" >> "$GITHUB_ENV"
+            echo "container_target=$CONTAINER_TARGET" >> "$GITHUB_OUTPUT"
           fi
           # Define Nvidia base
           if [[ "$IMAGE" == "bazzite-deck*" ]]; then
-            echo "nvidia_base=bazzite-deck" >> "$GITHUB_ENV"
+            echo "nvidia_base=bazzite-deck" >> "$GITHUB_OUTPUT"
           else
-            echo "nvidia_base=bazzite" >> "$GITHUB_ENV"
+            echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT"
           fi
-          echo "sha_head_short=${GITHUB_SHA::7}" >> $GITHUB_ENV
+          echo "sha_head_short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           # Define Nvidia Flavor
           if [[ "$IMAGE" == "*nvidia-open" || "$IMAGE" == "*-deck-nvidia*" ]]; then
-            echo "target_nvidia_flavor=nvidia-open" >> "$GITHUB_ENV"
+            echo "target_nvidia_flavor=nvidia-open" >> "$GITHUB_OUTPUT"
           else
-            echo "target_nvidia_flavor=nvidia" >> "$GITHUB_ENV"
+            echo "target_nvidia_flavor=nvidia" >> "$GITHUB_OUTPUT"
           fi
+          
+          #
+          # Define push and pull registries
+          #
+          PULL_REGISTRY=ghcr.io/ublue-os
+          PUSH_REGISTRY=ghcr.io/${{ github.repository_owner }}
+          echo "push_registry=${PUSH_REGISTRY}" >> $GITHUB_OUTPUT
+          echo "pull_registry=${PULL_REGISTRY}" >> $GITHUB_OUTPUT
+          
+          echo "output_image=${PULL_REGISTRY}/${{ matrix.image }}" >> $GITHUB_OUTPUT
+          BASE_IMAGE="${PULL_REGISTRY}/$BASE_IMAGE_NAME-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}"
+          echo "base_image=${BASE_IMAGE}" >> $GITHUB_OUTPUT
+
+          if [ "${{ github.event.inputs.fresh-rechunk }}" == "true" ]; then
+            IMAGEREF=""
+          else
+            IMAGEREF="$PULL_REGISTRY/${{ matrix.image }}:stable"
+          fi
+          echo "prev_ref=${IMAGEREF}" >> $GITHUB_OUTPUT
+
+          echo "Generated the following:"
+          cat $GITHUB_OUTPUT
 
       # Checkout push-to-registry action GitHub repository
       - name: Checkout repository
@@ -130,22 +154,21 @@ jobs:
 
       - name: Check just syntax
         uses: ublue-os/just-action@bda593098a84a84973b002b4377709166a68be52 # v2
-
-      - name: Get source versions
+      
+      - name: Pull Images and find versions
         id: labels
-        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
-        with:
-          attempt_limit: 3
-          attempt_delay: 15000
-          command: |
-            set -eo pipefail
-            skopeo inspect docker://${{ env.PULL_IMAGE_REGISTRY }}/${{ env.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }} > source.json
-            ver=$(jq -r '.Labels["org.opencontainers.image.version"]' source.json)
-            if [ -z "$ver" ] || [ "null" = "$ver" ]; then
-              echo "inspected image version must not be empty or null"
-              exit 1
-            fi
-            echo "source_image_version=$ver" >> $GITHUB_ENV
+        run: |
+          set -eo pipefail
+          
+          # Base Image and version
+          sudo podman pull ${{ steps.base.outputs.base_image }}
+          sudo skopeo inspect docker://${{ steps.base.outputs.base_image }} > source.json
+          ver=$(jq -r '.Labels["org.opencontainers.image.version"]' source.json)
+          if [ -z "$ver" ] || [ "null" = "$ver" ]; then
+            echo "inspected image version must not be empty or null"
+            exit 1
+          fi
+          echo "source_image_version=$ver" >> $GITHUB_OUTPUT
       
       # Generate a primary version key that appears
       # in KDE, rpm-ostree status, and github.
@@ -155,7 +178,7 @@ jobs:
         run: |
           # Generate the primary version key that will be stored on os-release,
           # shown on the bootloader, and used for the image tag.
-          UPSTREAM_TAG="${{ env.source_image_version }}"
+          UPSTREAM_TAG="${{ steps.labels.outputs.source_image_version }}"
           # Remove .0 suffix from upstream tag so we can add our own and
           # the wrong one does not end up in the image.
           UPSTREAM_TAG="${UPSTREAM_TAG%\.[0-9]}" 
@@ -185,15 +208,16 @@ jobs:
       - name: Prepare build args file
         run: |
           cat <<'EOF' >>build_args.txt
+          BASE_IMAGE=${{ steps.base.outputs.base_image }}
           IMAGE_NAME=${{ matrix.image }}
           IMAGE_VENDOR=${{ github.repository_owner }}
           IMAGE_BRANCH=${{ github.ref_name }}
-          NVIDIA_FLAVOR=${{ env.target_nvidia_flavor }}
-          NVIDIA_BASE=${{ env.nvidia_base }}
+          NVIDIA_FLAVOR=${{ steps.base.outputs.target_nvidia_flavor }}
+          NVIDIA_BASE=${{ steps.base.outputs.nvidia_base }}
           KERNEL_VERSION=${{ matrix.kernel_version }}
-          BASE_IMAGE_NAME=${{ env.base_image_name }}
+          BASE_IMAGE_NAME=${{ steps.base.outputs.base_image_name }}
           FEDORA_VERSION=${{ matrix.fedora_version }}
-          SHA_HEAD_SHORT=${{ env.sha_head_short }}
+          SHA_HEAD_SHORT=${{ steps.base.outputs.sha_head_short }}
           VERSION_TAG=${{ steps.generate-version.outputs.tag }}
           VERSION_PRETTY=${{ steps.generate-version.outputs.pretty }}
           EOF
@@ -205,34 +229,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           sudo -E buildah build \
-            --target ${{ env.container_target }} \
+            --target ${{ steps.base.outputs.container_target }} \
             --build-arg-file build_args.txt \
             --secret "id=GITHUB_TOKEN,env=GITHUB_TOKEN" \
             --tag raw-img .
-      
-      # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
-      # https://github.com/macbre/push-to-ghcr/issues/12
-      - name: Lowercase Registry
-        id: registry_case
-        uses: ASzc/change-string-case-action@d0603cd0a7dd490be678164909f65c7737470a7f # v6
-        with:
-          string: ${{ env.PUSH_IMAGE_REGISTRY }}
-      
-      # Generate the previous image reference used by the Rechunker
-      - name: Generate previous reference
-        id: generate-prev-ref
-        shell: bash
-        run: |
-          if [ "${{ github.event.inputs.fresh-rechunk }}" == "true" ]; then
-            IMAGEREF=""
-          else
-            IMAGEREF="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image }}:stable"
-          fi
-
-          echo "ref=${IMAGEREF}" >> $GITHUB_OUTPUT
-
-          echo "Generated the following:"
-          cat $GITHUB_OUTPUT
 
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
@@ -241,7 +241,7 @@ jobs:
         with:
           rechunk: 'ghcr.io/hhd-dev/rechunk:v1.2.4'
           ref: 'raw-img'
-          prev-ref: '${{ steps.generate-prev-ref.outputs.ref }}'
+          prev-ref: '${{ steps.base.outputs.prev_ref }}'
           version: '${{ steps.generate-version.outputs.tag }}'
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
@@ -298,15 +298,15 @@ jobs:
 
             # Push unique image id and sign, this way once evergreen tag is published
             # It will always be signed
-            dest_image="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image }}:${{ steps.rechunk.outputs.version }}"
+            dest_image="${{ steps.base.outputs.output_image }}:${{ steps.rechunk.outputs.version }}"
             sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
             log_sum "$dest_image"
             DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
             cosign sign -y --key env://SIGNING_SECRET --new-bundle-format=false \
-              "${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image }}@$DIGEST"
+              "${{ steps.base.outputs.output_image }}@$DIGEST"
 
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
-              dest_image="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image }}:$tag"
+              dest_image="${{ steps.base.outputs.output_image }}:$tag"
               sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
               log_sum "$dest_image"
             done
