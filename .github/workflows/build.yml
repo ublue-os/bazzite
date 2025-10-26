@@ -111,7 +111,7 @@ jobs:
           fi
 
       # Checkout push-to-registry action GitHub repository
-      - name: Checkout Push to Registry action
+      - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
       # Prepare offline documentation
@@ -190,10 +190,9 @@ jobs:
           IMAGE_BRANCH=${{ github.ref_name }}
           NVIDIA_FLAVOR=${{ env.target_nvidia_flavor }}
           NVIDIA_BASE=${{ env.nvidia_base }}
+          KERNEL_VERSION=${{ matrix.kernel_version }}
           BASE_IMAGE_NAME=${{ env.base_image_name }}
           FEDORA_VERSION=${{ matrix.fedora_version }}
-          KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
-          KERNEL_VERSION=${{ matrix.kernel_version }}
           SHA_HEAD_SHORT=${{ env.sha_head_short }}
           VERSION_TAG=${{ steps.generate-version.outputs.tag }}
           VERSION_PRETTY=${{ steps.generate-version.outputs.pretty }}
