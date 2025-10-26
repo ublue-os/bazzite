@@ -208,15 +208,14 @@ jobs:
       - name: Prepare build args file
         run: |
           cat <<'EOF' >>build_args.txt
+          BASE_IMAGE_NAME=${{ steps.base.outputs.base_image_name }}
+          FEDORA_VERSION=${{ matrix.fedora_version }}
           BASE_IMAGE=${{ steps.base.outputs.base_image }}
           IMAGE_NAME=${{ matrix.image }}
           IMAGE_VENDOR=${{ github.repository_owner }}
           IMAGE_BRANCH=${{ github.ref_name }}
-          NVIDIA_FLAVOR=${{ steps.base.outputs.target_nvidia_flavor }}
           NVIDIA_BASE=${{ steps.base.outputs.nvidia_base }}
           KERNEL_VERSION=${{ matrix.kernel_version }}
-          BASE_IMAGE_NAME=${{ steps.base.outputs.base_image_name }}
-          FEDORA_VERSION=${{ matrix.fedora_version }}
           SHA_HEAD_SHORT=${{ steps.base.outputs.sha_head_short }}
           VERSION_TAG=${{ steps.generate-version.outputs.tag }}
           VERSION_PRETTY=${{ steps.generate-version.outputs.pretty }}
