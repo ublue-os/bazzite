@@ -13,9 +13,6 @@ fi
 dnf5 config-manager setopt fedora-cisco-openh264.enabled=0
 
 ## nvidia install packages
-curl -L https://negativo17.org/repos/fedora-nvidia.repo \
-    -o /etc/yum.repos.d/negativo17-fedora-nvidia.repo
-
 curl -L https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo \
     -o /etc/yum.repos.d/nvidia-container-toolkit.repo
 
@@ -32,7 +29,7 @@ MULTILIB=(
 dnf5 install -y "${MULTILIB[@]}"
 
 # enable repos provided by ublue-os-nvidia-addons
-dnf5 config-manager setopt fedora-nvidia.enabled=1 nvidia-container-toolkit.enabled=1
+dnf5 config-manager setopt nvidia-container-toolkit.enabled=1
 
 # Enable staging for supergfxctl if repo file exists
 if [[ -f /etc/yum.repos.d/_copr_ublue-os-staging.repo ]]; then
@@ -51,14 +48,7 @@ else
 fi
 
 dnf5 install -y \
-    libnvidia-fbc \
-    libnvidia-ml.i686 \
-    libva-nvidia-driver \
-    nvidia-driver \
-    nvidia-driver-cuda \
-    nvidia-driver-cuda-libs.i686 \
-    nvidia-driver-libs.i686 \
-    nvidia-settings \
+    $(find "/rpms/nvidia" -type f ! -name "*debuginfo*" ! -name "*debugsource*") \
     ${VARIANT_PKGS}
 
 # nvidia-container-toolkit is not built with required crypto digests for RPM
@@ -69,21 +59,10 @@ fi
 
 ## nvidia post-install steps
 # disable repos provided by ublue-os-nvidia-addons
-dnf5 config-manager setopt fedora-nvidia.enabled=0 nvidia-container-toolkit.enabled=0
+dnf5 config-manager setopt nvidia-container-toolkit.enabled=0
 
 # Disable staging
 sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo
-
-# ensure kernel.conf matches NVIDIA_FLAVOR (which must be nvidia or nvidia-open)
-# kmod-nvidia-common defaults to 'nvidia-open' but this will match our akmod image
-if [[ "$IMAGE_NAME" == *"nvidia-open" || "$IMAGE_NAME" == *"-deck-nvidia"* ]]; then
-    echo "Using NVIDIA Open Kernel"
-    KERNEL_MODULE_TYPE="nvidia-open"
-elif [[ "$IMAGE_NAME" == *"nvidia"* ]]; then
-    echo "Using NVIDIA Closed Kernel with Legacy driver"
-    KERNEL_MODULE_TYPE="nvidia"
-fi
-sed -i "s/^MODULE_VARIANT=.*/MODULE_VARIANT=$KERNEL_MODULE_TYPE/" /etc/nvidia/kernel.conf
 
 # systemctl enable ublue-nvctk-cdi.service
 # semodule --verbose --install /usr/share/selinux/packages/nvidia-container.pp

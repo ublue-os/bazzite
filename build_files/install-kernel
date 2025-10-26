@@ -17,32 +17,6 @@ popd
 
 dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra kernel-tools kernel-tools-libs
 
-mkdir -p /tmp/kernel-rpms
-
-CURL=("curl" "--retry" "3" "--retry-delay" "2" "--retry-max-time" "60" "-s")
-
-# Check for GITHUB_TOKEN in /run/secrets/GITHUB_TOKEN (Podman secret mount)
-if [[ -f /run/secrets/GITHUB_TOKEN ]]; then
-  GITHUB_TOKEN=$(< /run/secrets/GITHUB_TOKEN)
-  echo "Using GITHUB_TOKEN from /run/secrets/GITHUB_TOKEN for authentication." >&2
-  AUTH_HEADER="Authorization: Bearer $GITHUB_TOKEN"
-    CURL+=("-H" "$AUTH_HEADER")
-else
-  echo "GITHUB_TOKEN secret not found. Using unauthenticated requests." >&2
-fi
-
-if [[ -n "$KERNEL_VERSION" && "$KERNEL_VERSION" != "latest" ]]; then
-    latest="$("${CURL[@]}" "https://api.github.com/repos/bazzite-org/kernel-bazzite/releases/tags/$KERNEL_VERSION" )"
-else
-    latest="$("${CURL[@]}" "https://api.github.com/repos/bazzite-org/kernel-bazzite/releases/latest")"
-fi
-
-ARCH=$(uname -m)
-FEDORA_VERSION=$(rpm -E %fedora)
-rpm=$(jq -r '.assets[].name | match("kernel-core.*.rpm").string' <<< $latest | grep "$FEDORA_VERSION.$ARCH" | head -1)
-kernel_version=$(echo -E $rpm | sed "s/kernel-core-//g;s/.rpm//g")
-build_tag=$(jq -r '.tag_name' <<< "$latest")
-
 pkgs=(
     kernel
     kernel-core
@@ -65,19 +39,13 @@ elif [[ "$IMAGE_NAME" == *"nvidia"* ]]; then
     pkgs+=("kernel-nvidia-closed-lts")
 fi
 
+PKG_PAT=()
 for pkg in "${pkgs[@]}"; do
-    ofn=/tmp/kernel-rpms/"$pkg".rpm
-    url=https://github.com/bazzite-org/kernel-bazzite/releases/download/"$build_tag"/"$pkg"-"$kernel_version".rpm
-    echo "Downloading $url"
-    "${CURL[@]}" -L $url -o "$ofn"
-    [[ -s "/tmp/kernel-rpms/$pkg.rpm" ]] || { echo "Empty download for $pkg"; exit 1; }
-    # Github api not available in image - fix me
-    # gh attestation verify -R bazzite-org/kernel-bazzite "$ofn" \
-    #     --deny-self-hosted-runners --source-ref "refs/tags/$build_tag"
+    # FIXME: assumes the kernel starts with version 6
+    PKG_PAT+=("/rpms/kernel/${pkg}-6"*)
 done
 
-dnf5 -y install \
-    /tmp/kernel-rpms/*.rpm
+dnf5 -y install ${PKG_PAT[@]}
 
 dnf5 versionlock add $pkgs
 

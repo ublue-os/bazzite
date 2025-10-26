@@ -70,6 +70,7 @@ jobs:
           - fedora_version: 43
             kernel_version: ${{ (github.ref_name == 'testing' || github.ref_name == 'unstable') && 'latest' || 'latest' }}
             base_image_flavor: main
+            arch: x86_64
     steps:
       - name: Mount BTRFS for podman storage
         uses: ublue-os/container-storage-action@main
@@ -90,26 +91,28 @@ jobs:
           #
           # Define Container Target
           #
-          CONTAINER_TARGET="$IMAGE"
-          CONTAINER_TARGET="${CONTAINER_TARGET/-open/}"
-          CONTAINER_TARGET="${CONTAINER_TARGET/-gnome/}"
-          if [[ "$CONTAINER_TARGET" == "bazzite-deck-nvidia" ]]; then
+          if [[ "$IMAGE" == *"deck"* && "$IMAGE" == *"nvidia"* ]]; then
             echo "container_target=bazzite-nvidia" >> "$GITHUB_OUTPUT"
-          else
-            echo "container_target=$CONTAINER_TARGET" >> "$GITHUB_OUTPUT"
-          fi
-          # Define Nvidia base
-          if [[ "$IMAGE" == "bazzite-deck*" ]]; then
             echo "nvidia_base=bazzite-deck" >> "$GITHUB_OUTPUT"
-          else
+            echo "install_nvidia=true" >> "$GITHUB_OUTPUT"
+          elif [[ "$IMAGE" == *"nvidia"* ]]; then
+            echo "container_target=bazzite-nvidia" >> "$GITHUB_OUTPUT"
             echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT"
-          fi
-          echo "sha_head_short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
-          # Define Nvidia Flavor
-          if [[ "$IMAGE" == "*nvidia-open" || "$IMAGE" == "*-deck-nvidia*" ]]; then
-            echo "target_nvidia_flavor=nvidia-open" >> "$GITHUB_OUTPUT"
+            echo "install_nvidia=true" >> "$GITHUB_OUTPUT"
+          elif [[ "$IMAGE" == *"deck"* ]]; then
+            echo "container_target=bazzite-deck" >> "$GITHUB_OUTPUT"
+            echo "nvidia_base=bazzite-deck" >> "$GITHUB_OUTPUT" # NOOP
+            echo "install_nvidia=false" >> "$GITHUB_OUTPUT"
           else
-            echo "target_nvidia_flavor=nvidia" >> "$GITHUB_OUTPUT"
+            echo "container_target=bazzite" >> "$GITHUB_OUTPUT"
+            echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT" # NOOP
+            echo "install_nvidia=false" >> "$GITHUB_OUTPUT"
+          fi
+          # Nvidia driver version to use
+          if [[ "$IMAGE_NAME" == *"nvidia-open" || "$IMAGE_NAME" == *"-deck-nvidia"* ]]; then
+            echo "nvidia_version=org.bazzite.kernel.nvidia" >> "$GITHUB_OUTPUT"
+          else
+            echo "nvidia_version=org.bazzite.kernel.nvidia_lts" >> "$GITHUB_OUTPUT"
           fi
           
           #
@@ -130,6 +133,11 @@ jobs:
             IMAGEREF="$PULL_REGISTRY/${{ matrix.image }}:stable"
           fi
           echo "prev_ref=${IMAGEREF}" >> $GITHUB_OUTPUT
+
+          KERNEL_URI=ghcr.io/bazzite-org/kernel-bazzite:${{ matrix.kernel_version }}-f${{ matrix.fedora_version }}-${{ matrix.arch }}
+          echo "kernel_ref=${KERNEL_URI}" >> $GITHUB_OUTPUT
+          NVIDIA_URI=ghcr.io/bazzite-org/nvidia-drivers
+          echo "nvidia_ref=${NVIDIA_URI}" >> $GITHUB_OUTPUT
 
           echo "Generated the following:"
           cat $GITHUB_OUTPUT
@@ -193,6 +201,30 @@ jobs:
           echo "tag=${VERSION}" >> $GITHUB_OUTPUT
           echo "pretty=${PRETTY_VERSION}" >> $GITHUB_OUTPUT
 
+          #
+          # Kernel and NVIDIA versions
+          #
+          # This needs to be tweaked, we need to verify a digest
+          # and to confirm it is from a protected branch
+          gh attestation verify -R bazzite-org/kernel-bazzite \
+            "${{ steps.base.outputs.kernel_ref }}" --deny-self-hosted-runners
+          sudo podman pull ${{ steps.base.outputs.kernel_ref }}
+          DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' containers-storage:${{ steps.base.outputs.kernel_ref }})
+          
+          if [ "${{ steps.base.outputs.install_nvidia }}" == "true" ]; then
+            sudo skopeo inspect docker://${{ steps.base.outputs.kernel_ref }} > kernel_source.json
+            NVIDIA_VERSION=$(jq -r '.Labels["${{ steps.base.outputs.nvidia_version }}"]' kernel_source.json)
+            NVIDIA_REF="${{ steps.base.outputs.nvidia_ref }}:${NVIDIA_VERSION}"
+            # Same as above, we verify the uri moments before we pull it
+            gh attestation verify -R bazzite-org/nvidia-drivers \
+              "$NVIDIA_REF" --deny-self-hosted-runners --source-ref "refs/heads/master"
+            sudo podman pull "$NVIDIA_REF"
+            echo "nvidia_ref=$NVIDIA_REF" >> $GITHUB_OUTPUT
+          else
+            echo "nvidia_ref=none" >> $GITHUB_OUTPUT
+          fi
+          
+          
           echo "Generated the following:"
           cat $GITHUB_OUTPUT
 
@@ -206,11 +238,13 @@ jobs:
           IMAGE_NAME=${{ matrix.image }}
           IMAGE_VENDOR=${{ github.repository_owner }}
           IMAGE_BRANCH=${{ github.ref_name }}
+          KERNEL_REF=${{ steps.base.outputs.kernel_ref }}
+          NVIDIA_REF=${{ steps.labels.outputs.nvidia_ref }}
           NVIDIA_BASE=${{ steps.base.outputs.nvidia_base }}
-          KERNEL_VERSION=${{ matrix.kernel_version }}
           SHA_HEAD_SHORT=${{ steps.base.outputs.sha_head_short }}
           VERSION_TAG=${{ steps.labels.outputs.tag }}
           VERSION_PRETTY=${{ steps.labels.outputs.pretty }}
+          ARCH=${{ matrix.arch }}
           EOF
 
       # Build image using buildah and save it to raw-img
