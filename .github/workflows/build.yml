@@ -165,6 +165,8 @@ jobs:
       
       - name: Pull Images and find versions
         id: labels
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -eo pipefail
           
