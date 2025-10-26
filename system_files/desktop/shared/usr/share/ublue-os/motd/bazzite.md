@@ -3,11 +3,10 @@
 
 |  Command | Description |
 | ------- | ----------- |
-| `ujust`  | List all available commands |
+| `ujust --choose`  | List all available commands |
 | `ujust toggle-user-motd` | Toggle this banner on/off |
-| `ujust changelog` | View changelog |
 | `fastfetch` | View system information |
-| `brew` | Package manager for CLI applications |
+| `brew help` | Manage command line packages |
 
 %TIP%
 - **** [Report an issue](https://github.com/ublue-os/bazzite/issues)
