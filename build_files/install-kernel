@@ -38,6 +38,7 @@ else
 fi
 
 ARCH=$(uname -m)
+FEDORA_VERSION=$(rpm -E %fedora)
 rpm=$(jq -r '.assets[].name | match("kernel-core.*.rpm").string' <<< $latest | grep "$FEDORA_VERSION.$ARCH" | head -1)
 kernel_version=$(echo -E $rpm | sed "s/kernel-core-//g;s/.rpm//g")
 build_tag=$(jq -r '.tag_name' <<< "$latest")
