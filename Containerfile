@@ -522,6 +522,7 @@ RUN --mount=type=cache,dst=/var/cache \
         fedora-cisco-openh264 \
         fedora-steam \
         fedora-rar \
+        google-chrome \
         tailscale \
         _copr_ublue-os-akmods \
         negativo17-fedora-multimedia; \
