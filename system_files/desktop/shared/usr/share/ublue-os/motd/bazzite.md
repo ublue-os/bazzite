@@ -1,3 +1,4 @@
+
 󱋩 `%IMAGE_NAME%:%IMAGE_BRANCH%`
 
 |  Command | Description |
@@ -11,5 +12,4 @@
 - **** [Report an issue](http://issues.bazzite.gg/)
 - **󰈙** [Documentation](http://docs.bazzite.gg/)
 - **󰙯** [Discord](https://discord.bazzite.gg/)
-- **󰫑** [Mastodon](https://mastodon.bazzite.gg/)
 - **** [Bluesky](https://bluesky.bazzite.gg/)
