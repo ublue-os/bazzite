@@ -185,11 +185,13 @@ toggle-iwd:
       sudo mkdir -p "/etc/NetworkManager/conf.d/"
       sudo rm -f "/etc/NetworkManager/conf.d/iwd.conf"
       printf "[device]\nwifi.backend=iwd" | sudo tee /etc/NetworkManager/conf.d/iwd.conf > /dev/null
+      sudo systemctl mask wpa_supplicant.service
       remove_saved_networks
       echo -e "iwd enabled. Reboot required to apply changes."
     }
     disable_iwd() {
       sudo rm -f "/etc/NetworkManager/conf.d/iwd.conf"
+      sudo systemctl unmask wpa_supplicant.service
       remove_saved_networks
       echo -e "iwd disabled. Reboot required to apply changes."
     }
