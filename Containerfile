@@ -511,8 +511,7 @@ RUN --mount=type=cache,dst=/var/cache \
         fedora-cisco-openh264 \
         fedora-steam \
         fedora-rar \
-        terra \
-        terra-extras \
+        tailscale \
         negativo17-fedora-multimedia; \
     do \
         sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/$repo.repo; \
@@ -530,9 +529,8 @@ RUN --mount=type=cache,dst=/var/cache \
     do \
         dnf5 -y copr disable $copr; \
     done && unset -v copr && \
-    dnf5 config-manager setopt "*tailscale*".enabled=0 && \
-    dnf5 config-manager setopt "*terra*".enabled=0 && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' enabled=0)" && \
+    eval "$(/ctx/dnf5-setopt setopt '*terra*' enabled=0)" && \
     sed -i 's#/var/lib/selinux#/etc/selinux#g' /usr/lib/python3.*/site-packages/setroubleshoot/util.py && \
     sed -i 's|^ExecStart=.*|ExecStart=/usr/libexec/rtkit-daemon --no-canary|' /usr/lib/systemd/system/rtkit-daemon.service && \
     sed -i 's/power-saver=powersave$/power-saver=powersave-bazzite/' /etc/tuned/ppd.conf && \
