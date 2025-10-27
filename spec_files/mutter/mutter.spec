@@ -21,8 +21,8 @@ Summary:       Window and compositing manager based on Clutter
 
 # Automatically converted from old format: GPLv2+ - review is highly recommended.
 License:       GPL-2.0-or-later
-URL:           http://www.gnome.org
-Source0:       http://download.gnome.org/sources/%{name}/%{major_version}/%{name}-%{tarball_version}.tar.xz
+URL:           https://www.gnome.org
+Source0:       https://download.gnome.org/sources/%{name}/%{major_version}/%{name}-%{tarball_version}.tar.xz
 Source1:       org.gnome.mutter.fedora.gschema.override
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1936991
