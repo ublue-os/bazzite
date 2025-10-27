@@ -360,18 +360,6 @@ if [ ! -f /etc/hostname ]; then
   touch /etc/hostname
 fi
 
-# Fix Gnome experimental-features when we switched to fedora mutter
-# FIXME: This fix was added in 09/2025, remove it when vrr and fractional scaling are no longer experimental
-if [[ ! -f /etc/bazzite/fixups/gnome_fixup && $IMAGE_NAME =~ "gnome" ]]; then
-  echo "Enabling VRR and fractional scaling"
-  if [[ $IMAGE_NAME =~ "nvidia" ]]; then
-    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate', scale-monitor-framebuffer', 'xwayland-native-scaling', 'kms-modifiers']"
-  else
-    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate', scale-monitor-framebuffer', 'xwayland-native-scaling']"
-  fi
-fi
-touch /etc/bazzite/fixups/gnome_fixup
-
 # Remove old hhd@ enables
 # Check if we've already removed old hhd@ service enablements
 if [ ! -f /etc/bazzite/fixups/hhd_service_cleanup ]; then

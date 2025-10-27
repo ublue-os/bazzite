@@ -391,6 +391,15 @@ RUN --mount=type=cache,dst=/var/cache \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
         rm -f /usr/share/backgrounds/default.xml \
     ; else \
+        declare -A toswap=( \
+            ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite-multilib"]="gsettings-desktop-schemas mutter" \
+        ) && \
+        for repo in "${!toswap[@]}"; do \
+            for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
+        done && unset -v toswap repo package && \
+        dnf5 versionlock add \
+            mutter \
+            gsettings-desktop-schemas && \
         dnf5 -y install \
             nautilus-gsconnect \
             steamdeck-backgrounds \
