@@ -3,7 +3,7 @@
 
 Summary: Hybrid image/package system
 Name: rpm-ostree
-Version: 2025.11
+Version: 2025.11.1.gf8478a1d
 Release: 1000.%{autorelease}.bazzite
 License: LGPL-2.0-or-later
 URL: https://github.com/coreos/rpm-ostree
