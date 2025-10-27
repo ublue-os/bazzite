@@ -21,7 +21,15 @@ else
 fi
 
 dnf5 install -y \
-    $(find "/rpms/nvidia" -type f ! -name "*debuginfo*" ! -name "*debugsource*") \
+    /rpms/nvidia/libnvidia-cfg-* \
+    /rpms/nvidia/libnvidia-fbc-* \
+    /rpms/nvidia/libnvidia-gpucomp-* \
+    /rpms/nvidia/libnvidia-ml-* \
+    /rpms/nvidia/nvidia-driver-* \
+    /rpms/nvidia/nvidia-kmod-common-* \
+    /rpms/nvidia/nvidia-modprobe-5* \
+    /rpms/nvidia/nvidia-persistenced-5* \
+    /rpms/nvidia/xorg-x11* \
     /rpms/nvidia/nvidia-container-toolkit-1* \
     /rpms/nvidia/nvidia-container-toolkit-base-1* \
     /rpms/nvidia/libnvidia-container1-1* \
