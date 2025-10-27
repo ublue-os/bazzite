@@ -1,0 +1,26 @@
+From 6b0a08776ae44a9102d7c6875a77e83dc6a11a37 Mon Sep 17 00:00:00 2001
+From: Pauli Virtanen <pav@iki.fi>
+Date: Thu, 18 Sep 2025 20:19:35 +0300
+Subject: [PATCH] media: fix pac_config_cb() error code return
+
+Fixes: a887b1a1b91f ("audio: Add support for specific error codes for A2DP configuration")
+---
+ profiles/audio/media.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/profiles/audio/media.c b/profiles/audio/media.c
+index 332f643bb..deb321e6c 100644
+--- a/profiles/audio/media.c
++++ b/profiles/audio/media.c
+@@ -1110,7 +1110,7 @@ static void pac_config_cb(struct media_endpoint *endpoint, void *ret, int size,
+ 	if (!transport)
+ 		return;
+ 
+-	data->cb(data->stream, error_code == 0 ? 0 : -EINVAL);
++	data->cb(data->stream, (error_code && *error_code == 0) ? 0 : -EINVAL);
+ }
+ 
+ static struct media_transport *pac_ucast_config(struct bt_bap_stream *stream,
+-- 
+2.51.0
+
