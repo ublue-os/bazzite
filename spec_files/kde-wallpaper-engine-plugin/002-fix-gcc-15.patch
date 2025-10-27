@@ -1,9 +1,0 @@
---- a/src/backend_scene/third_party/glslang/SPIRV/SpvBuilder.h	2025-04-02 20:04:36.250617834 -0400
-+++ b/src/backend_scene/third_party/glslang/SPIRV/SpvBuilder.h	2025-04-02 20:12:21.650676568 -0400
-@@ -61,6 +61,7 @@
- #include <set>
- #include <sstream>
- #include <stack>
-+#include <cstdint>
- #include <unordered_map>
- #include <map>
