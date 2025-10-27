@@ -90,7 +90,7 @@ install-decky-plugins ACTION="":
     declare -A PLUGINS
     PLUGINS["bazzite-buddy"]="bazzite-org|decky-bazzite-buddy|Bazzite Buddy|Bazzite.Buddy.zip"
     PLUGINS["decky-framegen"]="xXJSONDeruloXx|Decky-Framegen|Decky-Framegen|Decky-Framegen.zip"
-    PLUGINS["decky-lsfg-vk"]="xXJSONDeruloXx|decky-lsfg-vk|decky-lsfg-vk|decky-lsfg-vk.zip"
+    PLUGINS["decky-lsfg-vk"]="xXJSONDeruloXx|decky-lsfg-vk|decky-lsfg-vk|Decky.LSFG-VK.zip"
 
     # Core plugin installation function
     install_plugin() {
