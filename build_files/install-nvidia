@@ -4,21 +4,6 @@ set -ouex pipefail
 
 FRELEASE=$(rpm -E %fedora)
 
-# Check if any rpmfusion repos exist before trying to disable them
-if dnf5 repolist --all | grep -q rpmfusion; then
-    dnf5 config-manager setopt "rpmfusion*".enabled=0
-fi
-
-# Always try to disable cisco repo (or add similar check)
-dnf5 config-manager setopt fedora-cisco-openh264.enabled=0
-
-## nvidia install packages
-curl -L https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo \
-    -o /etc/yum.repos.d/nvidia-container-toolkit.repo
-
-# enable repos provided by ublue-os-nvidia-addons
-dnf5 config-manager setopt nvidia-container-toolkit.enabled=1
-
 # Enable staging for supergfxctl if repo file exists
 if [[ -f /etc/yum.repos.d/_copr_ublue-os-staging.repo ]]; then
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo
@@ -37,17 +22,11 @@ fi
 
 dnf5 install -y \
     $(find "/rpms/nvidia" -type f ! -name "*debuginfo*" ! -name "*debugsource*") \
+    /rpms/nvidia/nvidia-container-toolkit-1* \
+    /rpms/nvidia/nvidia-container-toolkit-base-1* \
+    /rpms/nvidia/libnvidia-container1-1* \
+    /rpms/nvidia/libnvidia-container-tools-1* \
     ${VARIANT_PKGS}
-
-# nvidia-container-toolkit is not built with required crypto digests for RPM
-# 6+, introduced in Fedora 43
-if [[ "${FRELEASE}" -ne 43 ]]; then
-    dnf5 install -y nvidia-container-toolkit
-fi
-
-## nvidia post-install steps
-# disable repos provided by ublue-os-nvidia-addons
-dnf5 config-manager setopt nvidia-container-toolkit.enabled=0
 
 # Disable staging
 sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo
