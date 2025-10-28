@@ -1,0 +1,49 @@
+#!/bin/bash
+
+set -ouex pipefail
+
+FRELEASE=$(rpm -E %fedora)
+
+# Enable staging for supergfxctl if repo file exists
+if [[ -f /etc/yum.repos.d/_copr_ublue-os-staging.repo ]]; then
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo
+else
+    # Otherwise, retrieve the repo file for staging
+    curl -Lo /etc/yum.repos.d/_copr_ublue-os-staging.repo https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FRELEASE}"/ublue-os-staging-fedora-"${FRELEASE}".repo
+fi
+
+if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
+    VARIANT_PKGS="supergfxctl-plasmoid supergfxctl"
+elif [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
+    VARIANT_PKGS="gnome-shell-extension-supergfxctl-gex supergfxctl"
+else
+    VARIANT_PKGS=""
+fi
+
+dnf5 install -y \
+    /rpms/nvidia/libnvidia-cfg-* \
+    /rpms/nvidia/libnvidia-fbc-* \
+    /rpms/nvidia/libnvidia-gpucomp-* \
+    /rpms/nvidia/libnvidia-ml-* \
+    /rpms/nvidia/nvidia-driver-* \
+    /rpms/nvidia/nvidia-kmod-common-* \
+    /rpms/nvidia/nvidia-modprobe-5* \
+    /rpms/nvidia/nvidia-persistenced-5* \
+    /rpms/nvidia/nvidia-container-toolkit-1* \
+    /rpms/nvidia/nvidia-container-toolkit-base-1* \
+    /rpms/nvidia/libnvidia-container1-1* \
+    /rpms/nvidia/libnvidia-container-tools-1* \
+    ${VARIANT_PKGS}
+
+# Disable staging
+sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo
+
+# systemctl enable ublue-nvctk-cdi.service
+# semodule --verbose --install /usr/share/selinux/packages/nvidia-container.pp
+
+# Universal Blue specific Initramfs fixes
+cp /etc/modprobe.d/nvidia-modeset.conf /usr/lib/modprobe.d/nvidia-modeset.conf
+# we must force driver load to fix black screen on boot for nvidia desktops
+sed -i 's@omit_drivers@force_drivers@g' /usr/lib/dracut/dracut.conf.d/99-nvidia.conf
+# as we need forced load, also mustpre-load intel/amd iGPU else chromium web browsers fail to use hardware acceleration
+sed -i 's@ nvidia @ i915 amdgpu nvidia @g' /usr/lib/dracut/dracut.conf.d/99-nvidia.conf

@@ -5,17 +5,17 @@ Subject: rename back to --json-fd
 
 Signed-off-by: Antheas Kapenekakis <git@antheas.dev>
 ---
- lib/src/cli.rs | 9 ++++++---
+ crates/lib/src/cli.rs | 9 ++++++---
  1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/crates/lib/src/cli.rs b/crates/lib/src/cli.rs
-index cc3fa808..15ecdc46 100644
+index 3412a6b03c48..5cda8810781f 100644
 --- a/crates/lib/src/cli.rs
 +++ b/crates/lib/src/cli.rs
-@@ -39,16 +39,19 @@ pub(crate) struct ProgressOptions {
+@@ -51,16 +51,19 @@ pub(crate) struct ProgressOptions {
+     /// File descriptor number which must refer to an open pipe.
      ///
-     /// Interactive progress will be written to this file descriptor as "JSON lines"
-     /// format, where each value is separated by a newline.
+     /// Progress is written as JSON lines to this file descriptor.
 -    #[clap(long, hide = true)]
 +    #[clap(long)]
      pub(crate) progress_fd: Option<RawProgressFd>,
@@ -36,5 +36,5 @@ index cc3fa808..15ecdc46 100644
              .transpose()?
              .unwrap_or_default();
 -- 
-2.49.0
+2.51.0
 

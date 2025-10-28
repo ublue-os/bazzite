@@ -3,9 +3,9 @@ Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
 Summary:        Utilities for setting and reading mura correction on Galileo
 License:        MIT
-URL:            https://github.com/ublue-os/bazzite
+URL:            https://github.com/evlav/galileo-mura-extractor/
 
-Source:         https://gitlab.com/evlaV/galileo-mura-extractor/-/archive/main/galileo-mura-extractor-main.tar.gz
+Source:         %{url}archive/refs/heads/main.tar.gz
 
 Patch0:         fedora.patch
 Patch1:         valve.patch

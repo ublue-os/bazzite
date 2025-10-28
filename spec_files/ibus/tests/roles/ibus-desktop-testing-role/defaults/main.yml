@@ -1,3 +1,0 @@
-role_pkgs_req:
-  - rsync
-  - xorg-x11-server-Xvfb

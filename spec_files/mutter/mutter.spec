@@ -7,50 +7,35 @@
 %global lcms2_version 2.6
 %global colord_version 1.4.5
 %global libei_version 1.3.901
-%global mutter_api_version 16
+%global _default_patch_fuzz 2
 
+%global mutter_api_version 17
+
+%global major_version %%(echo %{version} | cut -d '.' -f1 | cut -d '~' -f 1)
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 Name:          mutter
-Version:       48.1
+Version:       49.1.1
 Release:       %autorelease.bazzite
 Summary:       Window and compositing manager based on Clutter
 
 # Automatically converted from old format: GPLv2+ - review is highly recommended.
 License:       GPL-2.0-or-later
 URL:           https://www.gnome.org
-Source0:       https://download.gnome.org/sources/%{name}/48/%{name}-%{tarball_version}.tar.xz
+Source0:       https://download.gnome.org/sources/%{name}/%{major_version}/%{name}-%{tarball_version}.tar.xz
 Source1:       org.gnome.mutter.fedora.gschema.override
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1936991
-Patch:         mutter-42.alpha-disable-tegra.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=2239128
-# https://gitlab.gnome.org/GNOME/mutter/-/issues/3068
-# not upstreamed because for upstream we'd really want to find a way
-# to fix *both* problems
-Patch:         0001-Revert-x11-Use-input-region-from-frame-window-for-de.patch
+Patch0:        mutter-42.alpha-disable-tegra.patch
 
 # https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4296
-# Patch:         https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4296.patch
+Patch10:       https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/4296.patch
 
 BuildRequires: pkgconfig(gobject-introspection-1.0) >= 1.41.0
 BuildRequires: pkgconfig(sm)
+BuildRequires: pkgconfig(libadwaita-1)
 BuildRequires: pkgconfig(libwacom)
-BuildRequires: pkgconfig(x11)
-BuildRequires: pkgconfig(xdamage)
-BuildRequires: pkgconfig(xext)
-BuildRequires: pkgconfig(xfixes)
-BuildRequires: pkgconfig(xi)
-BuildRequires: pkgconfig(xrandr)
-BuildRequires: pkgconfig(xrender)
-BuildRequires: pkgconfig(xcursor)
-BuildRequires: pkgconfig(xcomposite)
-BuildRequires: pkgconfig(x11-xcb)
 BuildRequires: pkgconfig(xkbcommon)
-BuildRequires: pkgconfig(xkbcommon-x11)
-BuildRequires: pkgconfig(xkbfile)
-BuildRequires: pkgconfig(xtst)
 BuildRequires: mesa-libEGL-devel
 BuildRequires: mesa-libGLES-devel
 BuildRequires: mesa-libGL-devel
@@ -63,7 +48,7 @@ BuildRequires: pkgconfig(libpipewire-0.3) >= %{pipewire_version}
 BuildRequires: pkgconfig(sysprof-capture-4)
 BuildRequires: sysprof-devel
 BuildRequires: pkgconfig(libsystemd)
-BuildRequires: pkgconfig(xkeyboard-config)
+BuildRequires: pkgconfig(umockdev-1.0)
 BuildRequires: desktop-file-utils
 BuildRequires: cvt
 BuildRequires: python3-argcomplete
@@ -75,6 +60,7 @@ BuildRequires: pkgconfig(gsettings-desktop-schemas) >= %{gsettings_desktop_schem
 BuildRequires: pkgconfig(gnome-settings-daemon)
 BuildRequires: meson
 BuildRequires: pkgconfig(gbm)
+BuildRequires: pkgconfig(glycin-2)
 BuildRequires: pkgconfig(gnome-desktop-4)
 BuildRequires: pkgconfig(gudev-1.0)
 BuildRequires: pkgconfig(libdrm)
@@ -88,6 +74,7 @@ BuildRequires: pkgconfig(libeis-1.0) >= %{libei_version}
 
 BuildRequires: pkgconfig(libinput) >= %{libinput_version}
 BuildRequires: pkgconfig(xwayland)
+BuildRequires: pkgconfig(bash-completion)
 
 BuildRequires: python3-dbusmock
 
@@ -176,14 +163,17 @@ install -p %{SOURCE1} %{buildroot}%{_datadir}/glib-2.0/schemas
 %license COPYING
 %doc NEWS
 %{_bindir}/mutter
+%{_datadir}/polkit-1/actions/org.gnome.mutter.*.policy
+%{_bindir}/gdctl
+%{_bindir}/gnome-service-client
+%{_datadir}/bash-completion/completions/gdctl
 %{_libdir}/lib*.so.*
 %{_libdir}/mutter-%{mutter_api_version}/
-%{_libexecdir}/mutter-restart-helper
+%{_libexecdir}/mutter-backlight-helper
 %{_libexecdir}/mutter-x11-frames
 %{_mandir}/man1/mutter.1*
-%{_bindir}/gdctl
 %{_mandir}/man1/gdctl.1*
-%{_sysconfdir}/bash_completion.d/gdctl
+%{_mandir}/man1/gnome-service-client.1*
 
 %files common
 %{_datadir}/GConf/gsettings/mutter-schemas.convert
@@ -194,9 +184,14 @@ install -p %{SOURCE1} %{buildroot}%{_datadir}/glib-2.0/schemas
 %{_udevrulesdir}/61-mutter.rules
 
 %files devel
+%{_datadir}/applications/org.gnome.Mutter.Mdk.desktop
+%{_datadir}/glib-2.0/schemas/org.gnome.mutter.devkit.gschema.xml
+%{_datadir}/icons/hicolor/*/apps/org.gnome.Mutter.Mdk*
 %{_includedir}/*
 %{_libdir}/lib*.so
+%{_libdir}/mutter-%{mutter_api_version}/*.gir
 %{_libdir}/pkgconfig/*
+%{_libexecdir}/mutter-devkit
 
 %files tests
 %{_libexecdir}/installed-tests/mutter-%{mutter_api_version}

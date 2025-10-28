@@ -1,7 +1,7 @@
 %global uuid desktop-cube@schneegans.github.com
 
 Name:        gnome-shell-extension-desktop-cube
-Version:     28
+Version:     30
 Release:     1%{?dist}
 Summary:     Indulge in nostalgia with useless 3D effects.
 

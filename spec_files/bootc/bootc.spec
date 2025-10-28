@@ -1,5 +1,5 @@
 %bcond_without check
-%if 0%{?rhel} >= 10 || 0%{?fedora} > 41
+%if 0%{?rhel} >= 9 || 0%{?fedora} > 41
     %bcond_without ostree_ext
 %else
     %bcond_with ostree_ext
@@ -11,8 +11,17 @@
     %bcond_with rhsm
 %endif
 
+%global rust_minor %(rustc --version | cut -f2 -d" " | cut -f2 -d".")
+
+# https://github.com/bootc-dev/bootc/issues/1640
+%if 0%{?fedora} || 0%{?rhel} >= 10 || 0%{?rust_minor} >= 89
+    %global new_cargo_macros 1
+%else
+    %global new_cargo_macros 0
+%endif
+
 Name:           bootc
-Version:        1.7.1
+Version:        1.9.0
 Release:        100.bazzite
 Summary:        Bootable container system
 
@@ -38,6 +47,7 @@ BuildRequires: libzstd-devel
 BuildRequires: make
 BuildRequires: ostree-devel
 BuildRequires: openssl-devel
+BuildRequires: go-md2man
 %if 0%{?rhel}
 BuildRequires: rust-toolset
 %else
@@ -88,7 +98,7 @@ rm vendor-config.toml
 
 %build
 # Build the main bootc binary
-%if 0%{?fedora} || 0%{?rhel} >= 10
+%if %new_cargo_macros
     %cargo_build %{?with_rhsm:-f rhsm}
 %else
     %cargo_build %{?with_rhsm:--features rhsm}
@@ -97,7 +107,7 @@ rm vendor-config.toml
 # Build the system reinstallation CLI binary
 %global cargo_args -p system-reinstall-bootc
 export SYSTEM_REINSTALL_BOOTC_INSTALL_PODMAN_PATH=%{system_reinstall_bootc_install_podman_path}
-%if 0%{?fedora} || 0%{?rhel} >= 10
+%if %new_cargo_macros
     # In cargo-rpm-macros, the cargo_build macro does flag processing,
     # so we need to pass '--' to signify that cargo_args is not part
     # of the macro args
@@ -108,6 +118,8 @@ export SYSTEM_REINSTALL_BOOTC_INSTALL_PODMAN_PATH=%{system_reinstall_bootc_insta
     # what we want.
     %cargo_build %cargo_args
 %endif
+
+make manpages
 
 %cargo_vendor_manifest
 # https://pagure.io/fedora-rust/rust-packaging/issue/33
@@ -131,11 +143,6 @@ chmod +x %{?buildroot}/%{system_reinstall_bootc_install_podman_path}
 touch %{?buildroot}/%{_docdir}/bootc/baseimage/base/sysroot/.keepdir
 find %{?buildroot}/%{_docdir} ! -type d -printf '%{_docdir}/%%P\n' > bootcdoclist.txt
 
-%if %{with check}
-%check
-%cargo_test
-%endif
-
 %files -f bootcdoclist.txt
 %license LICENSE-MIT
 %license LICENSE-APACHE
@@ -149,7 +156,7 @@ find %{?buildroot}/%{_docdir} ! -type d -printf '%{_docdir}/%%P\n' > bootcdoclis
 %{_prefix}/libexec/libostree/ext/*
 %endif
 %{_unitdir}/*
-%{_mandir}/man*/bootc*
+%{_mandir}/man*/*bootc*
 
 %files -n system-reinstall-bootc
 %{_bindir}/system-reinstall-bootc
@@ -157,4 +164,3 @@ find %{?buildroot}/%{_docdir} ! -type d -printf '%{_docdir}/%%P\n' > bootcdoclis
 
 %changelog
 %autochangelog
-

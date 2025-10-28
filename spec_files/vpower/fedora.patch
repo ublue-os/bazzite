@@ -1,11 +1,10 @@
 --- vpower-main/vpower.service
 +++ vpower-main/vpower.service
-@@ -3,7 +3,7 @@
- ConditionPathExistsGlob=/sys/class/power_supply/BAT[0-9]
+@@ -4,7 +4,7 @@
+ After=dbus.service steamos-manager.service
  
  [Service]
 -ExecStart=/usr/lib/vpower
 +ExecStart=/usr/libexec/vpower
  Restart=on-failure
  RestartSec=1
- 

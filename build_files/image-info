@@ -19,23 +19,15 @@ if [[ $IMAGE_BRANCH_NORMALIZED == "main" ]]; then
   IMAGE_BRANCH_NORMALIZED="stable"
 fi
 
-case "$FEDORA_VERSION" in
-  39|40|41)
-    IMAGE_TAG="stable"
-    ;;
-  *)
-    IMAGE_TAG="$FEDORA_VERSION"
-    ;;
-esac
+FEDORA_VERSION=$(rpm -E %fedora)
 
 # Image Info File
 cat > $IMAGE_INFO <<EOF
 {
   "image-name": "$IMAGE_NAME",
-  "image-flavor": "$IMAGE_FLAVOR",
   "image-vendor": "$IMAGE_VENDOR",
   "image-ref": "$IMAGE_REF",
-  "image-tag": "$IMAGE_TAG",
+  "image-tag": "stable",
   "image-branch": "$IMAGE_BRANCH_NORMALIZED",
   "base-image-name": "$BASE_IMAGE_NAME",
   "fedora-version": "$FEDORA_VERSION",

@@ -1,10 +1,12 @@
+%global _default_patch_fuzz 2
+
 Name:           steamdeck-dsp
-Version:        {{{ git_dir_version }}}
+Version:        0.69
 Release:        1%{?dist}
 Summary:        Steamdeck Audio Processing
 License:        GPLv2
-URL:            https://github.com/ublue-os/bazzite
-Source:         https://gitlab.com/evlaV/valve-hardware-audio-processing/-/archive/main/valve-hardware-audio-processing-main.tar.gz
+URL:            https://github.com/evlav/valve-hardware-audio-processing
+Source:         %{url}/archive/refs/tags/%{version}.tar.gz
 
 Patch0:         fedora.patch
 Patch1:         bazzite.patch
@@ -32,7 +34,7 @@ Steamdeck Audio Processing
 %define debug_package %{nil}
 
 %prep
-%autosetup -n valve-hardware-audio-processing-main -p1
+%autosetup -n valve-hardware-audio-processing-%{version} -p1
 
 %build
 %make_build FAUSTINC="/usr/include/faust"  FAUSTLIB="/usr/share/faust"
@@ -50,8 +52,8 @@ rm -f %{buildroot}%{_sysconfdir}/pipewire
 mkdir -p %{buildroot}%{_libexecdir}/hwsupport
 mv %{buildroot}%{_datadir}/wireplumber/hardware-profiles/wireplumber-hwconfig %{buildroot}%{_libexecdir}/hwsupport/wireplumber-hwconfig
 mv %{buildroot}%{_datadir}/pipewire/hardware-profiles/pipewire-hwconfig %{buildroot}%{_libexecdir}/hwsupport/pipewire-hwconfig
-rm %{buildroot}%{_datadir}/wireplumber/hardware-profiles/default
-rm %{buildroot}%{_datadir}/pipewire/hardware-profiles/default
+rm -rf %{buildroot}%{_datadir}/wireplumber/hardware-profiles/default
+rm -rf %{buildroot}%{_datadir}/pipewire/hardware-profiles/default
 
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.

@@ -3,7 +3,6 @@
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
-IMAGE_FLAVOR=$(jq -r '."image-flavor"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
@@ -16,14 +15,11 @@ KNOWN_IMAGE_NAME_FILE="/etc/bazzite/image_name"
 KNOWN_IMAGE_NAME=$(cat $KNOWN_IMAGE_NAME_FILE)
 KNOWN_IMAGE_BRANCH_FILE="/etc/bazzite/image_branch"
 KNOWN_IMAGE_BRANCH=$(cat $KNOWN_IMAGE_BRANCH_FILE)
-KNOWN_IMAGE_FLAVOR_FILE="/etc/bazzite/image_flavor"
-KNOWN_IMAGE_FLAVOR=$(cat $KNOWN_IMAGE_FLAVOR_FILE)
 KNOWN_FEDORA_VERSION_FILE="/etc/bazzite/fedora_version"
 KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
 
 if [[ "$KNOWN_IMAGE_NAME" == "$IMAGE_NAME" && \
     "$KNOWN_IMAGE_BRANCH" == "$IMAGE_BRANCH" && \
-    "$KNOWN_IMAGE_FLAVOR" == "$IMAGE_FLAVOR" && \
     "$KNOWN_FEDORA_VERSION" == "$FEDORA_VERSION" && \
     "$HWS_VER_RAN" == "$HWS_VER" ]]; then
   echo "Hardware setup already ran for version $HWS_VER_RAN, skipping"
@@ -364,18 +360,6 @@ if [ ! -f /etc/hostname ]; then
   touch /etc/hostname
 fi
 
-# Fix Gnome experimental-features when we switched to fedora mutter
-# FIXME: This fix was added in 09/2025, remove it when vrr and fractional scaling are no longer experimental
-if [[ ! -f /etc/bazzite/fixups/gnome_fixup && $IMAGE_NAME =~ "gnome" ]]; then
-  echo "Enabling VRR and fractional scaling"
-  if [[ $IMAGE_NAME =~ "nvidia" ]]; then
-    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate', scale-monitor-framebuffer', 'xwayland-native-scaling', 'kms-modifiers']"
-  else
-    gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate', scale-monitor-framebuffer', 'xwayland-native-scaling']"
-  fi
-fi
-touch /etc/bazzite/fixups/gnome_fixup
-
 # Remove old hhd@ enables
 # Check if we've already removed old hhd@ service enablements
 if [ ! -f /etc/bazzite/fixups/hhd_service_cleanup ]; then
@@ -404,7 +388,6 @@ touch /etc/bazzite/fixups/gttsize
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE
 echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
-echo $IMAGE_FLAVOR > $KNOWN_IMAGE_FLAVOR_FILE
 echo $FEDORA_VERSION > $KNOWN_FEDORA_VERSION_FILE
 echo $IMAGE_BRANCH > $KNOWN_IMAGE_BRANCH_FILE
 

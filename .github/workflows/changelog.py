@@ -8,10 +8,18 @@ from collections import defaultdict
 
 REGISTRY = "docker://ghcr.io/ublue-os/"
 
-IMAGE_MATRIX = {
-    "base": ["desktop", "deck", "nvidia-closed", "nvidia-open"],
-    "de": ["kde", "gnome"],
-}
+IMAGES = [
+    "bazzite",
+    "bazzite-gnome",
+    # "bazzite-deck",
+    "bazzite-deck-gnome",
+    "bazzite-deck-nvidia",
+    "bazzite-deck-nvidia-gnome",
+    "bazzite-nvidia",
+    "bazzite-gnome-nvidia",
+    "bazzite-nvidia-open",
+    "bazzite-gnome-nvidia-open",
+]
 
 RETRIES = 3
 RETRY_WAIT = 5
@@ -31,11 +39,11 @@ OTHER_NAMES = {
     "kde": "### KDE Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
     "gnome": "### Gnome Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
     "nvidia": "### Nvidia Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
-    # "asus": "### Asus Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
-    # "surface": "### Surface Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
 }
 
-COMMITS_FORMAT = "### Commits\n| Hash | Subject | Author |\n| --- | --- | --- |{commits}\n\n"
+COMMITS_FORMAT = (
+    "### Commits\n| Hash | Subject | Author |\n| --- | --- | --- |{commits}\n\n"
+)
 COMMIT_FORMAT = "\n| **[{short}](https://github.com/ublue-os/bazzite/commit/{hash})** | {subject} | {author} |"
 
 CHANGELOG_TITLE = "{tag}: {pretty}"
@@ -80,19 +88,17 @@ BLACKLIST_VERSIONS = [
 
 
 def get_images():
-    for base, de in product(*IMAGE_MATRIX.values()):
-        img = "bazzite"
-        if base == "deck":
-            img += "-deck"
+    for img in IMAGES:
+        if "deck" in img:
+            base = "deck"
+        else:
+            base = "desktop"
 
-        if de == "gnome":
-            img += "-gnome"
-
-        if base == "nvidia-closed":
-            img += "-nvidia"
-        elif base == "nvidia-open":
-            img += "-nvidia-open"
-
+        if "gnome" in img:
+            de = "gnome"
+        else:
+            de = "kde"
+        
         yield img, base, de
 
 
@@ -338,7 +344,7 @@ def generate_changelog(
         except Exception as e:
             print(f"Failed to get finish hash:\n{e}")
             finish = ""
-        
+
         # Remove .0 from curr
         curr_pretty = re.sub(r"\.\d{1,2}$", "", curr)
         # Remove target- from curr
@@ -353,7 +359,9 @@ def generate_changelog(
     changelog = CHANGELOG_FORMAT
 
     changelog = (
-        changelog.replace("{handwritten}", handwritten if handwritten else HANDWRITTEN_PLACEHOLDER)
+        changelog.replace(
+            "{handwritten}", handwritten if handwritten else HANDWRITTEN_PLACEHOLDER
+        )
         .replace("{target}", target)
         .replace("{prev}", prev)
         .replace("{curr}", curr)
@@ -399,7 +407,7 @@ def main():
 
     # Remove refs/tags, refs/heads, refs/remotes e.g.
     # Tags cannot include / anyway.
-    target = args.target.split('/')[-1]
+    target = args.target.split("/")[-1]
 
     if target == "main":
         target = "stable"
@@ -420,7 +428,7 @@ def main():
     )
 
     print(f"Changelog:\n# {title}\n{changelog}")
-    print(f"\nOutput:\nTITLE=\"{title}\"\nTAG={curr}")
+    print(f'\nOutput:\nTITLE="{title}"\nTAG={curr}')
 
     with open(args.changelog, "w") as f:
         f.write(changelog)

@@ -38,9 +38,6 @@ on:
         description: 'Clear rechunk history'
         type: boolean
         default: false
-env:
-  PULL_IMAGE_REGISTRY: ghcr.io/ublue-os
-  PUSH_IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -58,97 +55,95 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        base_image_flavor: [main]
-        base_name: [bazzite, bazzite-deck, bazzite-nvidia, bazzite-deck-nvidia]
-        base_image_name: [kinoite, silverblue]
-        target_image_flavor: [main, asus, surface]
-        target_nvidia_flavor: [nvidia, nvidia-open]
-        fedora_version: [42]
+        image:
+          - bazzite
+          - bazzite-gnome
+          - bazzite-deck
+          - bazzite-deck-gnome
+          - bazzite-deck-nvidia
+          - bazzite-deck-nvidia-gnome
+          - bazzite-nvidia
+          - bazzite-gnome-nvidia
+          - bazzite-nvidia-open
+          - bazzite-gnome-nvidia-open
         include:
-          - fedora_version: 42
-            is_latest_version: true
-            is_stable_version: true
-            kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
-            kernel_version: 6.16.4-116.bazzite.fc42.x86_64 # must match a cached version of the above flavor
-        exclude:
-          - target_image_flavor: surface
-          - base_name: bazzite
-            target_nvidia_flavor: nvidia
-          - base_name: bazzite-deck
-            target_nvidia_flavor: nvidia
-          - base_name: bazzite-deck-nvidia
-            target_nvidia_flavor: nvidia
-          - base_name: bazzite-deck-nvidia
-            target_image_flavor: asus
-          - base_name: bazzite-deck-nvidia
-            target_image_flavor: surface
-          - base_name: bazzite-deck
-            target_image_flavor: surface
-          - target_image_flavor: surface
-            target_nvidia_flavor: nvidia
+          - fedora_version: 43
+            kernel_version: ${{ (github.ref_name == 'testing' || github.ref_name == 'unstable') && 'latest' || 'latest' }}
+            base_image_flavor: main
+            arch: x86_64
     steps:
       - name: Mount BTRFS for podman storage
         uses: ublue-os/container-storage-action@main
         with:
           target-dir: /var/lib/containers
-
-      - name: Define env.CONTAINER_TARGET
+      
+      - name: Define base variables
+        id: base
         run: |
-          if [[ "${{ matrix.base_name }}" == "bazzite-deck-nvidia" ]]; then
-              echo "CONTAINER_TARGET=bazzite-nvidia" >> $GITHUB_ENV
+          IMAGE="${{ matrix.image }}"
+          if [[ "$IMAGE" == *gnome* ]]; then
+            BASE_IMAGE_NAME="silverblue"
           else
-              echo "CONTAINER_TARGET=${{ matrix.base_name }}" >> $GITHUB_ENV
+            BASE_IMAGE_NAME="kinoite"
           fi
+          echo "base_image_name=$BASE_IMAGE_NAME" >> "$GITHUB_OUTPUT"
 
-      - name: Define env.IMAGE_FLAVOR
-        run: |
-          if [[ "${{ matrix.base_name }}" =~ "nvidia" ]]; then
-              if [[ "${{ matrix.target_image_flavor }}" == "main" ]]; then
-                  echo "IMAGE_FLAVOR=${{ matrix.target_nvidia_flavor }}" >> $GITHUB_ENV
-              else
-                  echo "IMAGE_FLAVOR=${{ format('{0}-{1}', matrix.target_image_flavor, matrix.target_nvidia_flavor) }}" >> $GITHUB_ENV
-              fi
+          #
+          # Define Container Target
+          #
+          if [[ "$IMAGE" == *"deck"* && "$IMAGE" == *"nvidia"* ]]; then
+            echo "container_target=bazzite-nvidia" >> "$GITHUB_OUTPUT"
+            echo "nvidia_base=bazzite-deck" >> "$GITHUB_OUTPUT"
+            echo "install_nvidia=true" >> "$GITHUB_OUTPUT"
+          elif [[ "$IMAGE" == *"nvidia"* ]]; then
+            echo "container_target=bazzite-nvidia" >> "$GITHUB_OUTPUT"
+            echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT"
+            echo "install_nvidia=true" >> "$GITHUB_OUTPUT"
+          elif [[ "$IMAGE" == *"deck"* ]]; then
+            echo "container_target=bazzite-deck" >> "$GITHUB_OUTPUT"
+            echo "nvidia_base=bazzite-deck" >> "$GITHUB_OUTPUT" # NOOP
+            echo "install_nvidia=false" >> "$GITHUB_OUTPUT"
           else
-              echo "IMAGE_FLAVOR=${{ matrix.target_image_flavor }}" >> $GITHUB_ENV
+            echo "container_target=bazzite" >> "$GITHUB_OUTPUT"
+            echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT" # NOOP
+            echo "install_nvidia=false" >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Define env.IMAGE_NAME
-        run: |
-          DESKTOP=""
-          if [[ "${{ matrix.base_image_name }}" == "silverblue" ]]; then
-              DESKTOP="-gnome"
-          fi
-
-          if [[ "${{ matrix.base_name }}" == "bazzite-deck" ]]; then
-              if [[ "${{ matrix.target_image_flavor }}" == "asus" ]]; then
-                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-ally', '${DESKTOP}') }}" >> $GITHUB_ENV
-              else
-                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-deck', '${DESKTOP}') }}" >> $GITHUB_ENV
-              fi
-          elif [[ "${{ matrix.base_name }}" == "bazzite-deck-nvidia" ]]; then
-              echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite-deck-nvidia', '${DESKTOP}') }}" >> $GITHUB_ENV
+          # Nvidia driver version to use
+          if [[ "$IMAGE_NAME" == *"nvidia-open" || "$IMAGE_NAME" == *"-deck-nvidia"* ]]; then
+            echo "nvidia_version=org.bazzite.kernel.nvidia" >> "$GITHUB_OUTPUT"
           else
-              if [[ "${{ env.IMAGE_FLAVOR }}" == "main" ]]; then
-                  echo "IMAGE_NAME=${{ format('{0}{1}', 'bazzite', '${DESKTOP}') }}" >> $GITHUB_ENV
-              else
-                  echo "IMAGE_NAME=${{ format('{0}{1}-{2}', 'bazzite', '${DESKTOP}', env.IMAGE_FLAVOR) }}" >> $GITHUB_ENV
-              fi
+            echo "nvidia_version=org.bazzite.kernel.nvidia_lts" >> "$GITHUB_OUTPUT"
           fi
+          
+          #
+          # Define push and pull registries
+          #
+          PULL_REGISTRY=ghcr.io/ublue-os
+          PUSH_REGISTRY=ghcr.io/${{ github.repository_owner }}
+          echo "push_registry=${PUSH_REGISTRY}" >> $GITHUB_OUTPUT
+          echo "pull_registry=${PULL_REGISTRY}" >> $GITHUB_OUTPUT
+          
+          echo "output_image=${PULL_REGISTRY}/${{ matrix.image }}" >> $GITHUB_OUTPUT
+          BASE_IMAGE="${PULL_REGISTRY}/$BASE_IMAGE_NAME-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}"
+          echo "base_image=${BASE_IMAGE}" >> $GITHUB_OUTPUT
 
-      - name: Define env.NVIDIA_BASE
-        run: |
-          if [[ "${{ matrix.base_name }}" == "bazzite-deck-nvidia" ]]; then
-              echo "NVIDIA_BASE=bazzite-deck" >> $GITHUB_ENV
+          if [ "${{ github.event.inputs.fresh-rechunk }}" == "true" ]; then
+            IMAGEREF=""
           else
-              echo "NVIDIA_BASE=bazzite" >> $GITHUB_ENV
+            IMAGEREF="$PULL_REGISTRY/${{ matrix.image }}:stable"
           fi
+          echo "prev_ref=${IMAGEREF}" >> $GITHUB_OUTPUT
 
-      - name: Define env.SHA_HEAD_SHORT
-        run: |
-          echo "SHA_HEAD_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
+          KERNEL_URI=ghcr.io/bazzite-org/kernel-bazzite:${{ matrix.kernel_version }}-f${{ matrix.fedora_version }}-${{ matrix.arch }}
+          echo "kernel_ref=${KERNEL_URI}" >> $GITHUB_OUTPUT
+          NVIDIA_URI=ghcr.io/bazzite-org/nvidia-drivers
+          echo "nvidia_ref=${NVIDIA_URI}" >> $GITHUB_OUTPUT
+
+          echo "Generated the following:"
+          cat $GITHUB_OUTPUT
 
       # Checkout push-to-registry action GitHub repository
-      - name: Checkout Push to Registry action
+      - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
       # Prepare offline documentation
@@ -167,44 +162,25 @@ jobs:
 
       - name: Check just syntax
         uses: ublue-os/just-action@bda593098a84a84973b002b4377709166a68be52 # v2
-
-      - name: Pull main, akmods, rechunk images
-        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
-        with:
-          attempt_limit: 3
-          attempt_delay: 15000
-          command: |
-            # pull the base images used for FROM in Containerfile so
-            # we can retry on that unfortunately common failure case
-            sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
-            sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
-            sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/akmods-${{ matrix.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
-
-      - name: Get source versions
-        id: labels
-        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
-        with:
-          attempt_limit: 3
-          attempt_delay: 15000
-          command: |
-            set -eo pipefail
-            skopeo inspect docker://${{ env.PULL_IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }} > source.json
-            ver=$(jq -r '.Labels["org.opencontainers.image.version"]' source.json)
-            if [ -z "$ver" ] || [ "null" = "$ver" ]; then
-              echo "inspected image version must not be empty or null"
-              exit 1
-            fi
-            echo "SOURCE_IMAGE_VERSION=$ver" >> $GITHUB_ENV
       
-      # Generate a primary version key that appears
-      # in KDE, rpm-ostree status, and github.
-      - name: Generate Version
-        id: generate-version
-        shell: bash
+      - name: Pull Images and find versions
+        id: labels
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          # Generate the primary version key that will be stored on os-release,
-          # shown on the bootloader, and used for the image tag.
-          UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
+          set -eo pipefail
+          
+          #
+          # Base Image and version
+          #
+
+          sudo podman pull ${{ steps.base.outputs.base_image }}
+          sudo skopeo inspect docker://${{ steps.base.outputs.base_image }} > source.json
+          UPSTREAM_TAG=$(jq -r '.Labels["org.opencontainers.image.version"]' source.json)
+          if [ -z "$UPSTREAM_TAG" ] || [ "null" = "$UPSTREAM_TAG" ]; then
+            echo "inspected image version must not be empty or null"
+            exit 1
+          fi
           # Remove .0 suffix from upstream tag so we can add our own and
           # the wrong one does not end up in the image.
           UPSTREAM_TAG="${UPSTREAM_TAG%\.[0-9]}" 
@@ -227,6 +203,29 @@ jobs:
           echo "tag=${VERSION}" >> $GITHUB_OUTPUT
           echo "pretty=${PRETTY_VERSION}" >> $GITHUB_OUTPUT
 
+          #
+          # Kernel and NVIDIA versions
+          #
+          # This needs to be tweaked, we need to verify a digest
+          # and to confirm it is from a protected branch
+          gh attestation verify -R bazzite-org/kernel-bazzite \
+            "oci://${{ steps.base.outputs.kernel_ref }}" --deny-self-hosted-runners
+          sudo podman pull ${{ steps.base.outputs.kernel_ref }}
+          
+          if [ "${{ steps.base.outputs.install_nvidia }}" == "true" ]; then
+            sudo skopeo inspect docker://${{ steps.base.outputs.kernel_ref }} > kernel_source.json
+            NVIDIA_VERSION=$(jq -r '.Labels["${{ steps.base.outputs.nvidia_version }}"]' kernel_source.json)
+            NVIDIA_REF="${{ steps.base.outputs.nvidia_ref }}:${NVIDIA_VERSION}-f${{ matrix.fedora_version }}-${{ matrix.arch }}"
+            # Same as above, we verify the uri moments before we pull it
+            gh attestation verify -R bazzite-org/nvidia-drivers \
+              "oci://$NVIDIA_REF" --deny-self-hosted-runners --source-ref "refs/heads/master"
+            sudo podman pull "$NVIDIA_REF"
+            echo "nvidia_ref=$NVIDIA_REF" >> $GITHUB_OUTPUT
+          else
+            echo "nvidia_ref=none" >> $GITHUB_OUTPUT
+          fi
+          
+          
           echo "Generated the following:"
           cat $GITHUB_OUTPUT
 
@@ -234,20 +233,19 @@ jobs:
       - name: Prepare build args file
         run: |
           cat <<'EOF' >>build_args.txt
-          IMAGE_NAME=${{ env.IMAGE_NAME }}
-          IMAGE_FLAVOR=${{ env.IMAGE_FLAVOR }}
-          NVIDIA_FLAVOR=${{ matrix.target_nvidia_flavor }}
-          NVIDIA_BASE=${{ env.NVIDIA_BASE }}
-          IMAGE_VENDOR=${{ github.repository_owner }}
-          BASE_IMAGE_NAME=${{ matrix.base_image_name }}
-          BASE_IMAGE_FLAVOR=${{ matrix.base_image_flavor }}
+          BASE_IMAGE_NAME=${{ steps.base.outputs.base_image_name }}
           FEDORA_VERSION=${{ matrix.fedora_version }}
-          KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
-          KERNEL_VERSION=${{ matrix.kernel_version }}
+          BASE_IMAGE=${{ steps.base.outputs.base_image }}
+          IMAGE_NAME=${{ matrix.image }}
+          IMAGE_VENDOR=${{ github.repository_owner }}
           IMAGE_BRANCH=${{ github.ref_name }}
-          SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }}
-          VERSION_TAG=${{ steps.generate-version.outputs.tag }}
-          VERSION_PRETTY=${{ steps.generate-version.outputs.pretty }}
+          KERNEL_REF=${{ steps.base.outputs.kernel_ref }}
+          NVIDIA_REF=${{ steps.labels.outputs.nvidia_ref }}
+          NVIDIA_BASE=${{ steps.base.outputs.nvidia_base }}
+          SHA_HEAD_SHORT=${{ steps.base.outputs.sha_head_short }}
+          VERSION_TAG=${{ steps.labels.outputs.tag }}
+          VERSION_PRETTY=${{ steps.labels.outputs.pretty }}
+          ARCH=${{ matrix.arch }}
           EOF
 
       # Build image using buildah and save it to raw-img
@@ -257,61 +255,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           sudo -E buildah build \
-            --target ${{ env.CONTAINER_TARGET }} \
+            --target ${{ steps.base.outputs.container_target }} \
             --build-arg-file build_args.txt \
             --secret "id=GITHUB_TOKEN,env=GITHUB_TOKEN" \
             --tag raw-img .
-      
-      - name: Remove auxiliary images
-        # We are tight on space, need at least 2x for OSTree
-        run: |
-          sudo podman image rm ${{ env.PULL_IMAGE_REGISTRY }}/${{ matrix.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
-          sudo podman image rm ${{ env.PULL_IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
-          sudo podman image rm ${{ env.PULL_IMAGE_REGISTRY }}/akmods-${{ matrix.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
-
-      # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
-      # https://github.com/macbre/push-to-ghcr/issues/12
-      - name: Lowercase Registry
-        id: registry_case
-        uses: ASzc/change-string-case-action@d0603cd0a7dd490be678164909f65c7737470a7f # v6
-        with:
-          string: ${{ env.PUSH_IMAGE_REGISTRY }}
-      
-      # Generate the previous image reference used by the Rechunker
-      - name: Generate previous reference
-        id: generate-prev-ref
-        shell: bash
-        run: |
-          if [ "${{ github.event.inputs.fresh-rechunk }}" == "true" ]; then
-            IMAGEREF=""
-          else
-            IMAGEREF="${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:stable"
-          fi
-
-          echo "ref=${IMAGEREF}" >> $GITHUB_OUTPUT
-
-          echo "Generated the following:"
-          cat $GITHUB_OUTPUT
-
-      - name: Check Secureboot
-        shell: bash
-        run: |
-          set -x
-          if [[ ! $(command -v sbverify) || ! $(command -v curl) || ! $(command -v openssl) ]]; then
-            sudo apt update
-            sudo apt install sbsigntool curl openssl
-          fi
-          TMP=$(sudo podman create raw-img bash)
-          sudo podman cp $TMP:/usr/lib/modules/${{ matrix.kernel_version }}/vmlinuz .
-          sudo podman rm $TMP
-          sudo chmod 666 vmlinuz # might not be needed
-          sbverify --list vmlinuz
-          curl --retry 3 -Lo kernel-sign.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key.der
-          curl --retry 3 -Lo akmods.der https://github.com/ublue-os/kernel-cache/raw/main/certs/public_key_2.der
-          openssl x509 -in kernel-sign.der -out kernel-sign.crt
-          openssl x509 -in akmods.der -out akmods.crt
-          sbverify --cert kernel-sign.crt vmlinuz || exit 1
-          sbverify --cert akmods.crt vmlinuz || exit 1
 
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
@@ -320,21 +267,19 @@ jobs:
         with:
           rechunk: 'ghcr.io/hhd-dev/rechunk:v1.2.4'
           ref: 'raw-img'
-          prev-ref: '${{ steps.generate-prev-ref.outputs.ref }}'
-          version: '${{ steps.generate-version.outputs.tag }}'
+          prev-ref: '${{ steps.base.outputs.prev_ref }}'
+          version: '${{ steps.labels.outputs.tag }}'
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/bazzite/refs/heads/main/README.md
             org.opencontainers.image.created=<timestamp>
-            org.opencontainers.image.description=Bazzite is a custom image built upon Fedora Atomic Desktops that brings the best of Linux gaming to all of your devices - including your favorite handheld.
+            org.opencontainers.image.description=Bazzite is a custom image that brings the best of Linux gaming to all of your devices - including your favorite handheld.
             org.opencontainers.image.licenses=Apache-2.0
             org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.source=https://github.com/ublue-os/bazzite
+            org.opencontainers.image.source=https://bazzite.gg
             org.opencontainers.image.title=Bazzite
             org.opencontainers.image.vendor=Universal Blue
             org.opencontainers.image.url=https://bazzite.gg
-            org.universal-blue.pkg.kernel=<relver:kernel>
-            org.universal-blue.pkg.gamescope=<relver:gamescope>
       
       # Generate tags after rechunker runs and checks the primary tag is not duplicated
       # If it is, rechunk will suffix it by .1, .2, etc and put it in steps.rechunk.outputs.version
@@ -344,50 +289,13 @@ jobs:
         run: |
           # Common vars for generating tags
           VERSION_TAG="${{ steps.rechunk.outputs.version }}"
-          UPSTREAM_TAG="${{ env.SOURCE_IMAGE_VERSION }}"
-          FEDORA_VERSION="${{ matrix.fedora_version }}"
-          SHA_SHORT="${GITHUB_SHA::7}"
-          BUILD_TAGS=( "${VERSION_TAG}" )
 
-          # Use latest var to check if we should tag as latest
-          unset LATEST
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-              [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-                LATEST="1"
-          fi
-
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            # Track latest ver per PR
-            if [ -n "$LATEST" ]; then
-                BUILD_TAGS+=("pr-${{ github.event.pull_request.number }}")
-            fi
-          elif [[ ${{ github.ref_name }} == "unstable" ]]; then
-            # Per fedora version
-            BUILD_TAGS+=("${FEDORA_VERSION}-unstable")
-            BUILD_TAGS+=("unstable-${FEDORA_VERSION}") # flip ver to be last
-
-            if [ -n "$LATEST" ]; then
-                BUILD_TAGS+=("unstable")
-            fi
+          if [[ ${{ github.ref_name }} == "unstable" ]]; then
+            BUILD_TAGS=("unstable")
           elif [[ ${{ github.ref_name }} == "testing" ]]; then
-            # Per fedora version
-            BUILD_TAGS+=("${FEDORA_VERSION}-testing")
-            BUILD_TAGS+=("testing-${FEDORA_VERSION}") # flip ver to be last
-
-            if [ -n "$LATEST" ]; then
-                BUILD_TAGS+=("testing")
-            fi
+            BUILD_TAGS=("testing")
           else
-            BUILD_TAGS+=("${FEDORA_VERSION}")
-            BUILD_TAGS+=("stable-${VERSION_TAG}")
-
-            # Per fedora version
-            BUILD_TAGS+=("${FEDORA_VERSION}-stable")
-            BUILD_TAGS+=("stable-${FEDORA_VERSION}") # flip ver to be last
-            
-            if [ -n "$LATEST" ]; then
-              BUILD_TAGS+=("latest" "stable")
-            fi
+            BUILD_TAGS=("stable-${VERSION_TAG}" "latest" "stable")
           fi
           
           echo "Generated the following build tags: "
@@ -397,11 +305,12 @@ jobs:
           echo "alias_tags=${BUILD_TAGS[*]}" >> $GITHUB_OUTPUT
 
       - name: Install Cosign
-        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
         if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 # v3.10.0
 
       # Push the image to GHCR (Image Registry)
       - name: Push To GHCR and Sign
+        if: github.event_name != 'pull_request'
         uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
         with:
           attempt_limit: 3
@@ -412,15 +321,22 @@ jobs:
             log_sum '```'
             echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Push unique image id and sign, this way once evergreen tag is published
+            # It will always be signed
+            dest_image="${{ steps.base.outputs.output_image }}:${{ steps.rechunk.outputs.version }}"
+            sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
+            log_sum "$dest_image"
+            DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
+            cosign sign -y --key env://SIGNING_SECRET --new-bundle-format=false \
+              "${{ steps.base.outputs.output_image }}@$DIGEST"
+
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
-              dest_image="${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}:$tag"
+              dest_image="${{ steps.base.outputs.output_image }}:$tag"
               sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
               log_sum "$dest_image"
             done
             log_sum '```'
-            DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
-            cosign sign -y --key env://SIGNING_SECRET --new-bundle-format=false \
-              "${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@$DIGEST"
         env:
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
 

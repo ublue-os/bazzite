@@ -4,7 +4,7 @@
 %define _binaries_in_noarch_packages_terminate_build 0
 
 Name:		linux-firmware
-Version:	20250917ba1
+Version:	20251021ba0
 Release:	0%{?dist}
 Summary:	Firmware files used by the Linux kernel
 License:	GPL-1.0-or-later AND GPL-2.0-or-later AND MIT AND LicenseRef-Callaway-Redistributable-no-modification-permitted
@@ -232,7 +232,6 @@ and ethernet including SRIOV, DCB etc.
 Summary:	Firmware for Mediatek SoCs
 License:	LicenseRef-Callaway-Redistributable-no-modification-permitted
 Requires:	linux-firmware-whence = %{version}-%{release}
-Requires:	atheros-firmware = %{version}-%{release}
 %description -n mediatek-firmware
 Firmware for various compoents in Mediatek SoCs, in particular SCP.
 
@@ -352,6 +351,7 @@ sed \
 	-i -e '/^i915/d' \
 	-i -e '/^intel\/avs/d' \
 	-i -e '/^intel\/catpt/d' \
+	-i -e '/^intel\/IntcSST2.bin/d' \
 	-i -e '/^intel\/dsp_fw/d' \
 	-i -e '/^intel\/fw_sst/d' \
 	-i -e '/^intel\/ipu/d' \
@@ -666,6 +666,7 @@ end
 %{_firmwarepath}/qcom/*.bin*
 %{_firmwarepath}/qcom/*.m*
 %{_firmwarepath}/qcom/apq*/
+%{_firmwarepath}/qcom/kaanapali/
 %{_firmwarepath}/qcom/qcm*/
 %{_firmwarepath}/qcom/qcs*/
 %{_firmwarepath}/qcom/qrb*/
@@ -702,6 +703,7 @@ end
 %{_firmwarepath}/intel/catpt/*
 %{_firmwarepath}/intel/dsp_fw*
 %{_firmwarepath}/intel/fw_sst*
+%{_firmwarepath}/intel/IntcSST2.bin*
 
 # Random other hardware
 %files -n dvb-firmware
