@@ -1,8 +1,8 @@
 # Tag is auto-inserted by workflow
-%global tag 1.2.5
+%global tag 1.2.9
 
 # Manual commit is auto-inserted by workflow
-%global commit a11540cbf2221a5671c4ced97c0bf7e61c98d21e
+%global commit 7f9d3a19ddfc0f408fd79adbafdd9a737d8c2282
 
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
@@ -47,17 +47,18 @@ BuildRequires:  cargo
 # Can't use these yet, F41 doesn't ship urllib3 >= 2.0 needed
 #BuildRequires:  python3-urllib3
 
-Requires:	python
-Requires:	python3
-Requires:	python3-xlib
-Requires:	python3-pyzstd
+Requires:   python
+Requires:   python3
+Requires:   python3-xlib
+Requires:   python3-filelock
+Requires:   python3-pyzstd
 
 # Can't use these yet, F41 doesn't ship urllib3 >= 2.0 needed
 #Requires:  python3-urllib3
 
-Recommends:	python3-cbor2
-Recommends:	python3-xxhash
-Recommends:	libzstd
+Recommends: python3-cbor2
+Recommends: python3-xxhash
+Recommends: libzstd
 
 # We need this for now to allow umu's builtin urllib3 version to be used.
 # Can be removed when python3-urllib3 version is bumped >= 2.0
@@ -78,6 +79,7 @@ if ! find subprojects/urllib3/ -mindepth 1 -maxdepth 1 | read; then
 fi
 
 %build
+export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
 # Update this when fedora ships urllib3 >= 2.0
 #./configure.sh --prefix=/usr --use-system-pyzstd --use-system-urllib
 ./configure.sh --prefix=/usr --use-system-pyzstd
