@@ -1,5 +1,5 @@
 [Unit]
-Description=Configure Bazzite for current user
+Description=Applies conditional user level workarounds
 ConditionUser=!@system
 
 [Service]
