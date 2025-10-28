@@ -208,7 +208,7 @@ RUN --mount=type=cache,dst=/var/cache \
         lato-fonts \
         fira-code-fonts \
         nerd-fonts \
-        sunshine \
+        Sunshine \
         python3-pip \
         libadwaita \
         duperemove \
