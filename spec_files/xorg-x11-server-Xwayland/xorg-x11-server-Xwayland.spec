@@ -1,4 +1,4 @@
-%global commit 9a55c402aa803fb10e39ab4fd18a709d0cd06fd4
+%global commit 65acc54b7079ad4c01c35ebdde34b3ff9ebd0d2a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 #global gitdate 20230426
@@ -8,7 +8,7 @@
 
 Summary:   Xwayland
 Name:      xorg-x11-server-Xwayland
-%global    xwayland_version 24.1.8
+%global    xwayland_version 24.1.9
 Version:   %{xwayland_version}.bazzite.{{{ git_dir_version }}}
 Release:   1%{?gitdate:.%{gitdate}git%{shortcommit}}%{?dist}
 
