@@ -71,7 +71,7 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/rom-properties \
         bazzite-org/webapp-manager \
         hhd-dev/hhd \
-        lizardbyte/stable \
+        lizardbyte/beta \
         che/nerd-fonts; \
     do \
         echo "Enabling copr: $copr"; \
@@ -543,7 +543,7 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/rom-properties \
         bazzite-org/webapp-manager \
         hhd-dev/hhd \
-        lizardbyte/stable \
+        lizardbyte/beta \
         che/nerd-fonts; \
     do \
         dnf5 -y copr disable $copr; \
