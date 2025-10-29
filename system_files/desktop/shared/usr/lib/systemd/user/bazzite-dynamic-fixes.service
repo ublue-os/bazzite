@@ -1,0 +1,10 @@
+[Unit]
+Description=Applies conditional user level workarounds
+ConditionUser=!@system
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/bazzite-dynamic-fixes
+
+[Install]
+WantedBy=default.target

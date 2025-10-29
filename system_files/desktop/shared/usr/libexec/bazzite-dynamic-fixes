@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+# Intel Xe/Arc gpus need the GSK_RENDERER set to gl to avoid graphical glitches with GTK4/libadwaita applications
+# This script dynamically detects if such a gpu is present by checking if the xe module is loaded and apply the workaround
+# and then remove the workaround, if it is applied but the xe module is not loaded (thereby no affected gpu is in use)
+if lsmod | grep -P "^xe " > /dev/null && [ ! -f "$HOME/.config/environment.d/intel-gtk-fix.conf" ]; then
+    # Set GSK_RENDERER to gl for the user
+    mkdir -p "$HOME/.config/environment.d"
+    echo "GSK_RENDERER=gl" > "$HOME/.config/environment.d/intel-gtk-fix.conf"
+elif ! lsmod | grep -P "^xe " > /dev/null && [ -f "$HOME/.config/environment.d/intel-gtk-fix.conf" ]; then
+    # Remove the env var file as no intel xe/arc gpu is being used.
+    rm "$HOME/.config/environment.d/intel-gtk-fix.conf"
+fi
