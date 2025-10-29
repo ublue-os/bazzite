@@ -291,11 +291,11 @@ jobs:
           VERSION_TAG="${{ steps.rechunk.outputs.version }}"
 
           if [[ ${{ github.ref_name }} == "unstable" ]]; then
-            BUILD_TAGS=("unstable")
+            BUILD_TAGS=("unstable" "unstable-${{ matrix.fedora_version }}")
           elif [[ ${{ github.ref_name }} == "testing" ]]; then
-            BUILD_TAGS=("testing")
+            BUILD_TAGS=("testing" "testing-${{ matrix.fedora_version }}")
           else
-            BUILD_TAGS=("stable-${VERSION_TAG}" "latest" "stable")
+            BUILD_TAGS=("stable-${VERSION_TAG}" "latest" "stable" "stable-${{ matrix.fedora_version }}")
           fi
           
           echo "Generated the following build tags: "
