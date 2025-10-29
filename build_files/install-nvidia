@@ -29,6 +29,7 @@ dnf5 install -y \
     /rpms/nvidia/nvidia-kmod-common-* \
     /rpms/nvidia/nvidia-modprobe-5* \
     /rpms/nvidia/nvidia-persistenced-5* \
+    /rpms/nvidia/xorg-x11* \
     /rpms/nvidia/nvidia-container-toolkit-1* \
     /rpms/nvidia/nvidia-container-toolkit-base-1* \
     /rpms/nvidia/libnvidia-container1-1* \
