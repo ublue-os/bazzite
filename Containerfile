@@ -54,7 +54,7 @@ ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
 COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
-COPY ./build_files/cleanup ./build_files/install-kernel ./build_files/ghcurl ./build_files/dnf5-setopt ./build_files/dnf5-search /ctx/
+COPY ./build_files/cleanup ./build_files/install-kernel ./build_files/ghcurl ./build_files/dnf5-setopt ./build_files/dnf5-search ./build_files/build-gnome-extensions /ctx/
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
@@ -409,18 +409,8 @@ RUN --mount=type=cache,dst=/var/cache \
             steamdeck-backgrounds \
             steamdeck-gnome-presets \
             gnome-randr-rust \
-            gnome-shell-extension-appindicator \
             gnome-shell-extension-user-theme \
             gnome-shell-extension-gsconnect \
-            gnome-shell-extension-compiz-windows-effect \
-            gnome-shell-extension-compiz-alike-magic-lamp-effect \
-            gnome-shell-extension-blur-my-shell \
-            gnome-shell-extension-bazzite-menu \
-            gnome-shell-extension-hotedge \
-            gnome-shell-extension-caffeine \
-            gnome-shell-extension-restart-to \
-            gnome-shell-extension-burn-my-windows \
-            gnome-shell-extension-desktop-cube \
             rom-properties-gtk3 \
             ibus-mozc \
             openssh-askpass \
@@ -438,6 +428,7 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-places-menu \
             gnome-shell-extension-window-list && \
         /ctx/ghcurl "https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer" -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
+        /ctx/build-gnome-extensions && \
         systemctl enable dconf-update.service \
     ; fi && \
     /ctx/cleanup
@@ -631,7 +622,6 @@ RUN --mount=type=cache,dst=/var/cache \
             steamdeck-kde-presets \
     ; else \
         dnf5 -y install \
-            gnome-shell-extension-caribou-blocker \
             sddm && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
