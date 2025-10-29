@@ -38,8 +38,8 @@ dnf5 install -y \
 # Disable staging
 sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo
 
-# systemctl enable ublue-nvctk-cdi.service
-# semodule --verbose --install /usr/share/selinux/packages/nvidia-container.pp
+systemctl enable ublue-nvctk-cdi.service
+semodule --verbose --install /usr/share/selinux/packages/nvidia-container.pp
 
 # Universal Blue specific Initramfs fixes
 cp /etc/modprobe.d/nvidia-modeset.conf /usr/lib/modprobe.d/nvidia-modeset.conf
