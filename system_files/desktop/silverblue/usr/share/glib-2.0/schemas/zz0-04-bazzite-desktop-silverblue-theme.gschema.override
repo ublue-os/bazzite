@@ -57,9 +57,6 @@ blur=true
 [org.gnome.shell.extensions.blur-my-shell.lockscreen]
 blur=true
 
-[org.gnome.shell.extensions.blur-my-shell.coverflow-alt-tab]
-blur=true
-
 [org.gnome.shell.extensions.blur-my-shell.dash-to-dock]
 blur=false
 
