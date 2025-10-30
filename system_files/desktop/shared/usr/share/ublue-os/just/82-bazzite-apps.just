@@ -27,7 +27,7 @@ _install_appimage_file $APPIMAGE_SRC $filename="":
 # Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
 [group("apps")]
 install-coolercontrol:
-    #!/usr/bin/bash
+    #!/usr/bin/env bash
     set -eo pipefail
 
     cat <<'EOF'
@@ -48,9 +48,18 @@ install-coolercontrol:
             packages+=("$pkg")
         fi
     done
+
     if [ ${#packages[@]} -gt 0 ]; then
-        echo 'Enabling Terra Repository.'
-        sudo sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/terra.repo
+        repo_path="/etc/yum.repos.d/terra.repo"
+        echo "$is_enabled"
+
+        if ( ! grep -q "enabled=0" "$repopath" ); then  # if not matches found
+            echo 'Terra Repository is already enabled, skipping.'
+        else
+            echo 'Enabling Terra Repository.'
+            sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
+        fi
+
         echo "Installing: ${packages[*]}"
         rpm-ostree install -y "${packages[@]}"
         echo 'Complete, please reboot to apply changes.'
