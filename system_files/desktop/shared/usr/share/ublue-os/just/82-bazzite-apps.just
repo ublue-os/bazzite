@@ -155,23 +155,6 @@ install-boxtron: distrobox-check-fedora
       curl -L https://github.com/dreamer/boxtron/releases/download/v0.5.4/boxtron.tar.xz | tar xJf - && \
       distrobox-export --bin /usr/bin/dosbox'
 
-alias get-wootility := install-wootility
-
-# Install Wootility for configuring Wooting Keyboards
-[group("hardware")]
-install-wootility: (_install_appimage_file "https://api.wooting.io/public/wootility/download?os=linux" "wootility.Appimage")
-
-# Install Adwaita-for-Steam theme for CSS Loader (https://github.com/tkashkin/Adwaita-for-Steam)
-[group("gaming")]
-install-adwaita-for-steam:
-    #!/usr/bin/bash
-    if [ -d "$HOME/homebrew/themes" ]; then
-        rm -rf "$HOME/homebrew/themes/Adwaita-for-Steam"
-        git clone https://github.com/tkashkin/Adwaita-for-Steam.git --single-branch "$HOME/homebrew/themes/Adwaita-for-Steam"
-    else
-        echo 'Please install Decky Loader by running "ujust setup-decky install" first, then install CSS Loader from the Decky Plugin Store.'
-    fi
-
 # Install Resilio Sync, a file synchronization utility powered by BitTorrent
 install-resilio-sync: distrobox-check-fedora
     distrobox-enter -n fedora -- bash -c 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc' && \
