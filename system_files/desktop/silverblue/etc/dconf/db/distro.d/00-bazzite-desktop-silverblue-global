@@ -22,7 +22,7 @@ hide-warehouse=true
 [org/gnome/shell/extensions/appindicator]
 legacy-tray-enabled=true
 
-[org.gnome.extensions.add-to-steam]
+[org/gnome/shell/extensions/add-to-steam]
 use-nautilus=false
 
 # Keybindings
