@@ -31,3 +31,6 @@
 [submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/block-caribou-36@lxylxy123456.ercli.dev"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/block-caribou-36@lxylxy123456.ercli.dev
 	url = https://github.com/bazzite-org/cariboublocker.git
+[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/add-to-steam@pupper.space"]
+	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/add-to-steam@pupper.space
+	url = https://github.com/skullbite/gnome-add-to-steam.git
