@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=44
+USER_SETUP_VER=45
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -120,6 +120,11 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   fi
 else
   echo 'Running setup for Silverblue'
+
+  if [[ ! -f "$BAZZITE_CONFIG_DIR/tiling-fix" ]]; then
+    dconf write /org/gnome/mutter/edge-tiling true
+    touch "$BAZZITE_CONFIG_DIR/tiling-fix"
+  fi
 
   if /usr/libexec/hwsupport/valve-hardware; then
     if [[ ! -f "$BAZZITE_CONFIG_DIR/deck-initialized" ]]; then
