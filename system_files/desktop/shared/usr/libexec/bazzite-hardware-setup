@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=63
+HWS_VER=64
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -59,17 +59,12 @@ fi
 
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
   if [[ "$SYS_ID" == "Laptop 16 ("* ]]; then
-    if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
-      echo "Framework 16 Laptop detected, fixing display artifacts"
-      NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
+    if [[ $KARGS =~ "amdgpu.dcdebugmask" ]]; then
+      echo "Removing old, no longer needed Framework 16 fix."
+      NEEDED_KARGS+=("--delete-if-present=amdgpu.dcdebugmask=0x410")
     fi
   fi
-  if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
-    if [[ ! $KARGS =~ "iomem" ]]; then
-      echo "AMD Framework Laptop detected, adding needed kargs for ryzenadj"
-      NEEDED_KARGS+=("--append-if-missing=iomem=relaxed")
-    fi
-  elif [[ "GenuineIntel" == "$CPU_VENDOR" ]]; then
+  if [[ "GenuineIntel" == "$CPU_VENDOR" ]]; then
     if [[ ! $KARGS =~ "hid_sensor_hub" ]]; then
       echo "Intel Framework Laptop detected, applying needed keyboard fix"
       NEEDED_KARGS+=("--append-if-missing=module_blacklist=hid_sensor_hub");
