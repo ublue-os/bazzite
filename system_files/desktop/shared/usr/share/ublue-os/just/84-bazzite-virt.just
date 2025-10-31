@@ -205,13 +205,13 @@ setup-virtualization ACTION="":
     # Find the current value by running "rpm-ostree kargs"
     KVMFR_MODPROBE'
       rpm-ostree kargs --append-if-missing="kvmfr.static_size_mb=128" --append-if-missing="split_lock_detect=off"
-      if [ -f "/etc/udev/rules.d/99-kvmfr.rules" ]; then
+      if [ -f "/etc/udev/rules.d/70-kvmfr.rules" ]; then
         echo "Re-creating kvmfr udev rules"
-        sudo rm /etc/udev/rules.d/99-kvmfr.rules
+        sudo rm /etc/udev/rules.d/70-kvmfr.rules
       fi
       echo "Adding udev rule for /dev/kvmfr0"
-      sudo bash -c 'cat << KVMFR_UDEV > /etc/udev/rules.d/99-kvmfr.rules
-    SUBSYSTEM=="kvmfr", OWNER="'$USER'", GROUP="qemu", MODE="0660"
+      sudo bash -c 'cat << KVMFR_UDEV > /etc/udev/rules.d/70-kvmfr.rules
+    SUBSYSTEM=="kvmfr", TAG+="uaccess", GROUP="qemu", MODE="0660"
     KVMFR_UDEV'
       echo "Adding /dev/kvmfr0 to qemu cgroup_device_acl"
       sudo perl -0777 -pi -e 's/
