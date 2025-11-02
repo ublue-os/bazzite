@@ -52,6 +52,8 @@ jobs:
 
       - name: Checkout Repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          submodules: recursive
 
       - name: Set Image Tag
         id: generate-tag
@@ -127,7 +129,7 @@ jobs:
           curl -Lo ${{ github.workspace }}/bazzite.repo https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/repo/fedora-${{ matrix.major_version }}/bazzite-org-bazzite-fedora-${{ matrix.major_version }}.repo
 
       - name: Build ISOs
-        uses: jasonn3/build-container-installer@f09a756b7a1205f121d8508f1171759328b95d2c # v1.2.4
+        uses: jasonn3/build-container-installer@c9ef3de33236e66781ec37bd0485e8009eaefe24 # v1.4.0
         id: build
         with:
           arch: x86_64

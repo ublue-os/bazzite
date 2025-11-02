@@ -1,0 +1,40 @@
+#!/usr/bin/bash
+
+set -eoux pipefail
+
+echo "::group::Executing build-gnome-extensions"
+trap 'echo "::endgroup::"' EXIT
+
+# Install tooling
+dnf5 -y install glib2-devel
+
+# Build Extensions
+glib-compile-schemas /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas
+glib-compile-schemas /usr/share/gnome-shell/extensions/compiz-windows-effect@hermes83.github.com/schemas
+glib-compile-schemas /usr/share/gnome-shell/extensions/compiz-alike-magic-lamp-effect@hermes83.github.com/schemas
+glib-compile-schemas /usr/share/gnome-shell/extensions/hotedge@jonathan.jdoda.ca/schemas
+glib-compile-schemas /usr/share/gnome-shell/extensions/restartto@tiagoporsch.github.io/schemas
+glib-compile-schemas /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/schemas
+glib-compile-schemas /usr/share/gnome-shell/extensions/add-to-steam@pupper.space/schemas
+mv /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info /usr/share/gnome-shell/extensions/caffeine@patapon.info
+glib-compile-schemas /usr/share/gnome-shell/extensions/caffeine@patapon.info/schemas
+
+# Burn My Windows
+make -C /usr/share/gnome-shell/extensions/burn-my-windows@schneegans.github.com
+glib-compile-schemas /usr/share/gnome-shell/extensions/burn-my-windows@schneegans.github.com/schemas
+rm /usr/share/gnome-shell/extensions/burn-my-windows@schneegans.github.com/burn-my-windows@schneegans.github.com.zip
+
+# Desktop Cube
+make -C /usr/share/gnome-shell/extensions/desktop-cube@schneegans.github.com
+glib-compile-schemas /usr/share/gnome-shell/extensions/desktop-cube@schneegans.github.com/schemas
+rm /usr/share/gnome-shell/extensions/desktop-cube@schneegans.github.com/desktop-cube@schneegans.github.com.zip
+
+# Blur My Shell
+make -C /usr/share/gnome-shell/extensions/blur-my-shell@aunetx
+unzip -o /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build/blur-my-shell@aunetx.shell-extension.zip -d /usr/share/gnome-shell/extensions/blur-my-shell@aunetx
+glib-compile-schemas /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/schemas
+rm -rf /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build
+
+# Cleanup
+dnf5 -y remove glib2-devel
+rm -rf /usr/share/gnome-shell/extensions/tmp

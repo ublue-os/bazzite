@@ -19,6 +19,12 @@ hide-forcequit=true
 show-distroshelf=true
 hide-warehouse=true
 
+[org/gnome/shell/extensions/appindicator]
+legacy-tray-enabled=true
+
+[org/gnome/shell/extensions/add-to-steam]
+use-nautilus=false
+
 # Keybindings
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
 binding='<Control><Alt>t'

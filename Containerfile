@@ -54,7 +54,7 @@ ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
 COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
-COPY ./build_files/cleanup ./build_files/install-kernel ./build_files/ghcurl ./build_files/dnf5-setopt ./build_files/dnf5-search /ctx/
+COPY ./build_files/cleanup ./build_files/install-kernel ./build_files/ghcurl ./build_files/dnf5-setopt ./build_files/dnf5-search ./build_files/build-gnome-extensions /ctx/
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
@@ -175,7 +175,8 @@ RUN --mount=type=cache,dst=/var/cache \
         fwupd-plugin-modem-manager \
         fwupd-plugin-uefi-capsule-data && \
     dnf5 -y install \
-        mesa-va-drivers.i686 && \
+        mesa-va-drivers.i686 \
+        libfreeaptx && \
     dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
         libaacs \
         libbdplus \
@@ -384,7 +385,6 @@ RUN --mount=type=cache,dst=/var/cache \
             plasma-discover \
             konsole && \
         sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:net.lutris.Lutris.desktop,applications:org.gnome.Ptyxis.desktop,applications:io.github.kolunmi.Bazaar.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
-        sed -i '/<entry name="favorites" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,steam.desktop,net.lutris.Lutris.desktop,systemsettings.desktop,org.kde.dolphin.desktop,org.kde.kate.desktop,org.gnome.Ptyxis.desktop,io.github.kolunmi.Bazaar.desktop,system-update.desktop<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.kickoff/contents/config/main.xml && \
         sed -i 's@\[Desktop Action new-window\]@\[Desktop Action new-window\]\nX-KDE-Shortcuts=Ctrl+Alt+T@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
@@ -409,18 +409,8 @@ RUN --mount=type=cache,dst=/var/cache \
             steamdeck-backgrounds \
             steamdeck-gnome-presets \
             gnome-randr-rust \
-            gnome-shell-extension-appindicator \
             gnome-shell-extension-user-theme \
             gnome-shell-extension-gsconnect \
-            gnome-shell-extension-compiz-windows-effect \
-            gnome-shell-extension-compiz-alike-magic-lamp-effect \
-            gnome-shell-extension-blur-my-shell \
-            gnome-shell-extension-bazzite-menu \
-            gnome-shell-extension-hotedge \
-            gnome-shell-extension-caffeine \
-            gnome-shell-extension-restart-to \
-            gnome-shell-extension-burn-my-windows \
-            gnome-shell-extension-desktop-cube \
             rom-properties-gtk3 \
             ibus-mozc \
             openssh-askpass \
@@ -438,6 +428,7 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-places-menu \
             gnome-shell-extension-window-list && \
         /ctx/ghcurl "https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer" -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
+        /ctx/build-gnome-extensions && \
         systemctl enable dconf-update.service \
     ; fi && \
     /ctx/cleanup
@@ -631,7 +622,6 @@ RUN --mount=type=cache,dst=/var/cache \
             steamdeck-kde-presets \
     ; else \
         dnf5 -y install \
-            gnome-shell-extension-caribou-blocker \
             sddm && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \

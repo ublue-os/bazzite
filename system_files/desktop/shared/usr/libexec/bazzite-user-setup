@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=44
+USER_SETUP_VER=46
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -46,17 +46,6 @@ fi
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup "$USER"
 
-# Set up optional Gradience themes
-GRADIENCE_THEME_DIR="/etc/skel/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
-GRADIENCE_DIR="$HOME/.var/app/com.github.GradienceTeam.Gradience/config/presets/user"
-mkdir -p "$GRADIENCE_DIR"
-if [[ ! -f "$GRADIENCE_DIR/vapor.json" ]]; then
-  cp "$GRADIENCE_THEME_DIR/vapor.json" "$GRADIENCE_DIR/vapor.json"
-fi
-if [[ ! -f "$GRADIENCE_DIR/vgui2.json" ]]; then
-  cp "$GRADIENCE_THEME_DIR/vgui2.json" "$GRADIENCE_DIR/vgui2.json"
-fi
-
 PTYXIS_THEME_DIR="/etc/skel/.local/share/org.gnome.Ptyxis/palettes"
 PTYXIS_DIR="$HOME/.local/share/org.gnome.Ptyxis/palettes"
 mkdir -p "$PTYXIS_DIR"
@@ -77,6 +66,16 @@ if [[ ! -f "$BAZZITE_CONFIG_DIR/ptyxis-initialized" ]]; then
     dconf load / < /usr/share/ublue-os/dconfs/desktop-kinoite/00-bazzite-desktop-kinoite-ptyxis
   fi
   touch "$BAZZITE_CONFIG_DIR/ptyxis-initialized"
+fi
+
+# Fix Bazaar Shortcut for users that manually customized it
+if [[ ! -f "$BAZZITE_CONFIG_DIR/bazaar-fix" ]]; then
+  if [[ -f "$HOME/.local/share/applications/io.github.kolunmi.Bazaar.desktop" ]]; then
+      if grep -qE '^Exec=.*(show|--auto-service)' "$HOME/.local/share/applications/io.github.kolunmi.Bazaar.desktop"; then
+          rm -f "$HOME/.local/share/applications/io.github.kolunmi.Bazaar.desktop"
+      fi
+  fi
+  touch "$BAZZITE_CONFIG_DIR/bazaar-fix"
 fi
 
 if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
@@ -120,6 +119,11 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   fi
 else
   echo 'Running setup for Silverblue'
+
+  if [[ ! -f "$BAZZITE_CONFIG_DIR/tiling-fix" ]]; then
+    dconf write /org/gnome/mutter/edge-tiling true
+    touch "$BAZZITE_CONFIG_DIR/tiling-fix"
+  fi
 
   if /usr/libexec/hwsupport/valve-hardware; then
     if [[ ! -f "$BAZZITE_CONFIG_DIR/deck-initialized" ]]; then
