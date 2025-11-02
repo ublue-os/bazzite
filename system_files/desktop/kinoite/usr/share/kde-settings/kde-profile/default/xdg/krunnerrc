@@ -1,0 +1,4 @@
+[Plugins]
+# Disable Discover, enable bazaar search results
+krunner_appstreamEnabled=false
+bazaarrunnerEnabled=true
