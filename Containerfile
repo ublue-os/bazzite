@@ -175,7 +175,8 @@ RUN --mount=type=cache,dst=/var/cache \
         fwupd-plugin-modem-manager \
         fwupd-plugin-uefi-capsule-data && \
     dnf5 -y install \
-        mesa-va-drivers.i686 && \
+        mesa-va-drivers.i686 \
+        libfreeaptx && \
     dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
         libaacs \
         libbdplus \
