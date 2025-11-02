@@ -1,0 +1,3 @@
+[General]
+Prepend=preferred://browser;steam.desktop;net.lutris.Lutris.desktop;systemsettings.desktop;io.github.kolunmi.Bazaar.desktop;org.gnome.Ptyxis.desktop;org.kde.dolphin.desktop;
+IgnoreDefaults=true
