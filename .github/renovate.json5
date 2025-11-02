@@ -4,6 +4,10 @@
     "config:best-practices"
   ],
 
+  "git-submodules": {
+    "enabled": true
+  },
+
   "rebaseWhen": "never",
 
   "packageRules": [
