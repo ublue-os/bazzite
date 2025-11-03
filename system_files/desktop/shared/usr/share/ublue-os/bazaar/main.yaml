@@ -16,4 +16,4 @@ hooks:
           - id: goto-web
             string: "Download Jetbrains Toolbox"
             style: suggested
-    shell: exec /usr/libexec/bazaar/jetbrains-hook.sh
+    shell: exec /usr/libexec/bazaar/jetbrains-hook
