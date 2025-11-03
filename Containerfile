@@ -384,6 +384,14 @@ RUN --mount=type=cache,dst=/var/cache \
             kde-partitionmanager \
             plasma-discover \
             konsole && \
+        dnf5 -y install --allowerasing \
+            https://kojipkgs.fedoraproject.org/packages/kwin/6.5.1/2.fc43/x86_64/kwin-6.5.1-2.fc43.x86_64.rpm \
+            https://kojipkgs.fedoraproject.org/packages/kwin/6.5.1/2.fc43/x86_64/kwin-common-6.5.1-2.fc43.x86_64.rpm \
+            https://kojipkgs.fedoraproject.org/packages/kwin/6.5.1/2.fc43/x86_64/kwin-libs-6.5.1-2.fc43.x86_64.rpm && \
+        dnf5 versionlock add \
+            kwin \
+            kwin-common \
+            kwin-libs && \
         sed -i 's@\[Desktop Action new-window\]@\[Desktop Action new-window\]\nX-KDE-Shortcuts=Ctrl+Alt+T@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
@@ -490,7 +498,6 @@ RUN --mount=type=cache,dst=/var/cache \
     echo "import \"/usr/share/ublue-os/just/90-bazzite-de.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/91-bazzite-decky.just\"" >> /usr/share/ublue-os/justfile && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-      sed -i '/^StartLimitBurst=2$/a # Wait for driver loading to be complete so that graphics work\n# (https://github.com/sddm/sddm/issues/1917)\nWants=systemd-udev-settle.service\nAfter=systemd-udev-settle.service' /usr/lib/systemd/system/sddm.service && \
       systemctl enable usr-share-sddm-themes.mount && \
       mkdir -p "/usr/share/ublue-os/dconfs/desktop-kinoite/" && \
       cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-desktop-kinoite-"*".gschema.override" "/usr/share/ublue-os/dconfs/desktop-kinoite/" && \
@@ -623,7 +630,6 @@ RUN --mount=type=cache,dst=/var/cache \
     ; else \
         dnf5 -y install \
             sddm && \
-        sed -i '/^StartLimitBurst=2$/a # Wait for driver loading to be complete so that graphics work\n# (https://github.com/sddm/sddm/issues/1917)\nWants=systemd-udev-settle.service\nAfter=systemd-udev-settle.service' /usr/lib/systemd/system/sddm.service && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
         rm -f /usr/share/backgrounds/default.xml && \
