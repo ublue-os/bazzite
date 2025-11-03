@@ -1,37 +1,37 @@
-[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/blur-my-shell@aunetx"]
+[submodule "blur-my-shell@aunetx"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/blur-my-shell@aunetx
 	url = https://github.com/xscriptor/blur-my-shell.git
 	branch = fix/gnome-49-support
-[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/logomenu@aryan_k"]
+[submodule "logomenu@aryan_k"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/logomenu@aryan_k
 	url = https://github.com/bazzite-org/Logomenu.git
-[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/compiz-windows-effect@hermes83.github.com"]
+[submodule "compiz-windows-effect@hermes83.github.com"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/compiz-windows-effect@hermes83.github.com
 	url = https://github.com/hermes83/compiz-windows-effect.git
-[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/compiz-alike-magic-lamp-effect@hermes83.github.com"]
+[submodule "compiz-alike-magic-lamp-effect@hermes83.github.com"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/compiz-alike-magic-lamp-effect@hermes83.github.com
 	url = https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
-[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/hotedge@jonathan.jdoda.ca"]
+[submodule "hotedge@jonathan.jdoda.ca"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/hotedge@jonathan.jdoda.ca
 	url = https://github.com/jdoda/hotedge.git
-[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/restartto@tiagoporsch.github.io"]
+[submodule "restartto@tiagoporsch.github.io"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/restartto@tiagoporsch.github.io
 	url = https://github.com/tiagoporsch/restartto.git
-[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com"]
+[submodule "appindicatorsupport@rgcjonas.gmail.com"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com
 	url = https://github.com/ubuntu/gnome-shell-extension-appindicator.git
-[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/burn-my-windows@schneegans.github.com"]
+[submodule "burn-my-windows@schneegans.github.com"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/burn-my-windows@schneegans.github.com
 	url = https://github.com/Schneegans/Burn-My-Windows.git
-[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/desktop-cube@schneegans.github.com"]
+[submodule "desktop-cube@schneegans.github.com"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/desktop-cube@schneegans.github.com
 	url = https://github.com/Schneegans/Desktop-Cube.git
-[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/tmp/caffeine"]
+[submodule "caffeine@patapon.info"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/tmp/caffeine
 	url = https://github.com/eonpatapon/gnome-shell-extension-caffeine.git
-[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/block-caribou-36@lxylxy123456.ercli.dev"]
+[submodule "block-caribou-36@lxylxy123456.ercli.dev"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/block-caribou-36@lxylxy123456.ercli.dev
 	url = https://github.com/bazzite-org/cariboublocker.git
-[submodule "system_files/desktop/silverblue/usr/share/gnome-shell/extensions/add-to-steam@pupper.space"]
+[submodule "add-to-steam@pupper.space"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/add-to-steam@pupper.space
 	url = https://github.com/skullbite/gnome-add-to-steam.git
