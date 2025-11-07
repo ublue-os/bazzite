@@ -1,7 +1,6 @@
 [submodule "blur-my-shell@aunetx"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/blur-my-shell@aunetx
-	url = https://github.com/xscriptor/blur-my-shell.git
-	branch = fix/gnome-49-support
+	url = https://github.com/aunetx/blur-my-shell.git
 [submodule "logomenu@aryan_k"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/logomenu@aryan_k
 	url = https://github.com/bazzite-org/Logomenu.git
