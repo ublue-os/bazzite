@@ -2005,3 +2005,169 @@ index b9b3fd160b75..0fb1deb4c8e4 100644
 -- 
 2.51.2
 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Sat, 8 Nov 2025 23:43:54 +0100
+Subject: remove zotac zone config (too many panel variants)
+
+---
+ .../00-gamescope/displays/zotac.zone.oled.lua | 56 -------------------
+ 1 file changed, 56 deletions(-)
+ delete mode 100644 scripts/00-gamescope/displays/zotac.zone.oled.lua
+
+diff --git a/scripts/00-gamescope/displays/zotac.zone.oled.lua b/scripts/00-gamescope/displays/zotac.zone.oled.lua
+deleted file mode 100644
+index f800fc7eee6f..000000000000
+--- a/scripts/00-gamescope/displays/zotac.zone.oled.lua
++++ /dev/null
+@@ -1,56 +0,0 @@
+--- colorimetry from DXQ7D0023 PDF specification
+-local zotac_amoled_colorimetry = {
+-   r = { x = 0.6396, y = 0.3300 },
+-   g = { x = 0.2998, y = 0.5996 },
+-   b = { x = 0.1503, y = 0.0595 },
+-   w = { x = 0.3095, y = 0.3095 }
+-}
+-
+-gamescope.config.known_displays.zotac_amoled = {
+-    pretty_name = "DXQ7D0023 AMOLED",
+-    dynamic_refresh_rates = {
+-        60, 72, 90, 120
+-    },
+-    hdr = {
+-        supported = true,
+-        force_enabled = true,
+-        eotf = gamescope.eotf.gamma22,
+-        max_content_light_level = 993,
+-        max_frame_average_luminance = 400,
+-        min_content_light_level = 0.007
+-    },
+-    colorimetry = zotac_amoled_colorimetry,
+-    dynamic_modegen = function(base_mode, refresh)
+-        debug("Generating mode "..refresh.."Hz for DXQ7D0023 AMOLED")
+-        local mode = base_mode
+-
+-        gamescope.modegen.set_resolution(mode, 1080, 1920)
+-
+-        -- Horizontal timings from PDF:       HFP, HSync, HBP
+-        gamescope.modegen.set_h_timings(mode, 80, 44, 156)
+-        -- Vertical timings from PDF: VFP=20, VSync=1, VBP=15
+-        gamescope.modegen.set_v_timings(mode, 48, 2, 14)
+-
+-        mode.clock = gamescope.modegen.calc_max_clock(mode, refresh)
+-        mode.vrefresh = gamescope.modegen.calc_vrefresh(mode)
+-
+-        return mode
+-    end,
+-    matches = function(display)
+-        -- Match based on the EDID information
+-        local lcd_types = {
+-            { vendor = "ZDZ", model = "ZDZ0501" },
+-            { vendor = "DXQ", model = "DXQ7D0023" },
+-        }
+-
+-        for index, value in ipairs(lcd_types) do
+-            if value.vendor == display.vendor and value.model == display.model then
+-                debug("[zotac_amoled] Matched vendor: "..value.vendor.." model: "..value.model)
+-                return 5000
+-            end
+-        end
+-
+-        return -1
+-    end
+-}
+-debug("Registered DXQ7D0023 AMOLED as a known display")
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Sun, 9 Nov 2025 00:28:21 +0100
+Subject: fix: enable HDR colorspace only when requested
+
+Currently, when using a PQ HDR10 display, if the user enables HDR, the
+output colorspace is always PQ, which causes additional battery drain,
+brightness quirks, and can potentially cause artifacting on Nvidia.
+
+Instead of enabling it always, detect when an app requests HDR and
+only enable it afterwards. Retain HDR capability until the app switches
+to SDR or the user exits it.
+---
+ src/steamcompmgr.cpp        | 25 ++++++++++++++++++++++++-
+ src/steamcompmgr_shared.hpp |  1 +
+ 2 files changed, 25 insertions(+), 1 deletion(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 741745a26e85..ce53910ba1f5 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -181,6 +181,7 @@ bool b_bForceFrameLimit = false;
+ bool g_bRefreshHalveEnable = false;
+ bool g_bDPMS = false;
+ bool g_bDPMS_set = false;
++bool g_HDR_requested = false;
+ 
+ namespace gamescope
+ {
+@@ -477,7 +478,7 @@ update_color_mgmt()
+ 		return;
+ 
+ 	GetBackend()->GetCurrentConnector()->GetNativeColorimetry(
+-		g_bOutputHDREnabled,
++		g_bOutputHDREnabled && g_HDR_requested,
+ 		&g_ColorMgmt.pending.displayColorimetry, &g_ColorMgmt.pending.displayEOTF,
+ 		&g_ColorMgmt.pending.outputEncodingColorimetry, &g_ColorMgmt.pending.outputEncodingEOTF );
+ 
+@@ -6750,6 +6751,8 @@ void handle_presented_for_window( steamcompmgr_win_t* w )
+ 			w->last_commit_present_time = lastCommit->present_time;
+ 		}
+ 
++		w->bHasHDRColorspace = ColorspaceIsHDR(lastCommit->colorspace());
++
+ 		if (!lastCommit->presentation_feedbacks.empty() || lastCommit->present_id)
+ 		{
+ 			if (!lastCommit->presentation_feedbacks.empty())
+@@ -8362,6 +8365,26 @@ steamcompmgr_main(int argc, char **argv)
+ 
+ 		g_uCompositeDebug = cv_composite_debug;
+ 
++		// Check if any running app has requested an hdr colorspace
++		g_HDR_requested = false;
++		{
++			gamescope_xwayland_server_t *server = NULL;
++			for (size_t i = 0; (server = wlserver_get_xwayland_server(i)); i++)
++			{
++				for (steamcompmgr_win_t *w = server->ctx->list; w; w = w->xwayland().next)
++				{
++					if (w->bHasHDRColorspace)
++						g_HDR_requested = true;
++				}
++			}
++
++			for ( const auto& xdg_win : g_steamcompmgr_xdg_wins )
++			{
++				if (xdg_win->bHasHDRColorspace)
++					g_HDR_requested = true;
++			}
++		}
++
+ 		g_bOutputHDREnabled = (g_bSupportsHDR_CachedValue || g_bForceHDR10OutputDebug) && cv_hdr_enabled;
+ 
+ 		// Pick our width/height for this potential frame, regardless of how it might change later
+diff --git a/src/steamcompmgr_shared.hpp b/src/steamcompmgr_shared.hpp
+index 55a691fc6b8f..0b5efe2b6258 100644
+--- a/src/steamcompmgr_shared.hpp
++++ b/src/steamcompmgr_shared.hpp
+@@ -142,6 +142,7 @@ struct steamcompmgr_win_t {
+ 	uint32_t hwndStyleEx = 0;
+ 
+ 	bool bHasHadNonSRGBColorSpace = false;
++	bool bHasHDRColorspace = false;
+ 
+ 	bool nudged = false;
+ 	bool ignoreOverrideRedirect = false;
+-- 
+2.51.2
+
