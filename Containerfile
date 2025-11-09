@@ -270,7 +270,6 @@ RUN --mount=type=cache,dst=/var/cache \
         libvirt \
         lsb_release \
         uupd \
-        ds-inhibit \
         rocm-hip \
         rocm-opencl \
         rocm-clinfo \
@@ -570,7 +569,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable bazzite-hardware-setup.service && \
     systemctl disable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
-    systemctl enable ds-inhibit.service && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
