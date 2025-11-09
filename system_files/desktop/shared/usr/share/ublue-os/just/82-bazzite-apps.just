@@ -52,7 +52,7 @@ install-coolercontrol:
     if [ ${#packages[@]} -gt 0 ]; then
         repo_path="/etc/yum.repos.d/terra.repo"
 
-        if ( ! grep -q "enabled=0" "$repopath" ); then  # if not matches found
+        if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
             echo 'Terra Repository is already enabled, skipping.'
         else
             echo 'Enabling Terra Repository.'
