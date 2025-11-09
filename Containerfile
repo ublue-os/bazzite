@@ -650,6 +650,7 @@ RUN --mount=type=cache,dst=/var/cache \
         powerbuttond \
         $([[ "$IMAGE_BRANCH" == "unstable" ]] && echo "hhd-git" || echo "hhd") \
         hhd-ui \
+        steamos-manager \
         acpica-tools \
         vpower \
         steam_notif_daemon \
