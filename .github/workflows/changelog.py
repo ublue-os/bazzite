@@ -86,6 +86,9 @@ BLACKLIST_VERSIONS = [
     "atheros-firmware",
 ]
 
+PKG_ALIAS = {
+    "hhd-git": "hhd",
+}
 
 def get_images():
     for img in IMAGES:
@@ -370,11 +373,11 @@ def generate_changelog(
     for pkg, v in versions.items():
         if pkg not in prev_versions or prev_versions[pkg] == v:
             changelog = changelog.replace(
-                "{pkgrel:" + pkg + "}", PATTERN_PKGREL.format(version=v)
+                "{pkgrel:" + (PKG_ALIAS.get(pkg, None) or pkg) + "}", PATTERN_PKGREL.format(version=v)
             )
         else:
             changelog = changelog.replace(
-                "{pkgrel:" + pkg + "}",
+                "{pkgrel:" + (PKG_ALIAS.get(pkg, None) or pkg) + "}",
                 PATTERN_PKGREL_CHANGED.format(prev=prev_versions[pkg], new=v),
             )
 
