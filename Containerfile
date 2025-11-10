@@ -737,6 +737,7 @@ RUN --mount=type=cache,dst=/var/cache \
     rm -r /tmp/bazzite-schema-test && \
     { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
     systemctl enable hhd.service && \
+    systemctl enable --global steamos-manager.service && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \
