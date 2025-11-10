@@ -646,7 +646,7 @@ RUN --mount=type=cache,dst=/var/cache \
         galileo-mura \
         steamdeck-dsp \
         powerbuttond \
-        $([[ "$IMAGE_BRANCH" == "unstable" ]] && echo "hhd-git" || echo "hhd") \
+        $([[ "$IMAGE_BRANCH" == "unstable" || "$IMAGE_BRANCH" == "testing" ]] && echo "hhd-git" || echo "hhd") \
         hhd-ui \
         steamos-manager \
         acpica-tools \
