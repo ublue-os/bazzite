@@ -383,14 +383,6 @@ RUN --mount=type=cache,dst=/var/cache \
             kde-partitionmanager \
             plasma-discover \
             konsole && \
-        dnf5 -y install --allowerasing \
-            https://kojipkgs.fedoraproject.org/packages/kwin/6.5.1/2.fc43/x86_64/kwin-6.5.1-2.fc43.x86_64.rpm \
-            https://kojipkgs.fedoraproject.org/packages/kwin/6.5.1/2.fc43/x86_64/kwin-common-6.5.1-2.fc43.x86_64.rpm \
-            https://kojipkgs.fedoraproject.org/packages/kwin/6.5.1/2.fc43/x86_64/kwin-libs-6.5.1-2.fc43.x86_64.rpm && \
-        dnf5 versionlock add \
-            kwin \
-            kwin-common \
-            kwin-libs && \
         sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:net.lutris.Lutris.desktop,applications:org.gnome.Ptyxis.desktop,applications:io.github.kolunmi.Bazaar.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
         sed -i 's@\[Desktop Action new-window\]@\[Desktop Action new-window\]\nX-KDE-Shortcuts=Ctrl+Alt+T@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop && \
