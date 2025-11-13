@@ -22,7 +22,7 @@
 %global tarball_version %%(echo %{version} | tr '~' '-')
 
 Name:           mangohud
-Version:        0.8.2-rc2
+Version:        0.8.2rc2
 Release:        %autorelease
 Summary:        Vulkan and OpenGL overlay for monitoring FPS, temperatures, CPU/GPU load
 
