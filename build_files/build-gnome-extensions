@@ -6,3 +6,4 @@ git clone https://github.com/bazzite-org/bazzite-gnome-extensions /tmp/gnome-ext
 pushd /tmp/gnome-ext
 CONTAINER=1 ./build.sh
 popd
+rm -rf /tmp/gnome-ext
