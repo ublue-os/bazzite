@@ -75,7 +75,6 @@ sections:
       - com.snes9x.Snes9x
       - io.mgba.mGBA
       - org.ppsspp.PPSSPP
-      - org.duckstation.DuckStation
       - net.pcsx2.PCSX2
       - net.rpcs3.RPCS3
       - app.xemu.xemu
