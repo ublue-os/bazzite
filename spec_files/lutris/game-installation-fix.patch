@@ -1,0 +1,19 @@
+diff -Naur a/bin/lutris b/bin/lutris
+--- a/bin/lutris	2025-11-04 22:09:58.750006035 -0500
++++ b/bin/lutris	2025-11-04 22:11:16.563000867 -0500
+@@ -14,10 +14,15 @@
+ """Main entry point for Lutris"""
+ import gettext
+ import locale
++import multiprocessing
+ import os
+ import sys
+ from os.path import dirname, normpath, realpath
+ 
++# Python 3.14 changes the default to 'forkserver' which is very different;
++# let's not put up with _that_!
++multiprocessing.set_start_method("fork")
++
+ LAUNCH_PATH = dirname(realpath(__file__))
+ 
+ # Prevent loading Python modules from home folder
