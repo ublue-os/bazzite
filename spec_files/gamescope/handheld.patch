@@ -2084,7 +2084,7 @@ index f800fc7eee6f..000000000000
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
-Date: Sun, 9 Nov 2025 13:13:50 +0100
+Date: Fri, 14 Nov 2025 20:14:34 +0100
 Subject: fix: enable HDR colorspace only when requested
 
 Currently, when using a PQ HDR10 display, if the user enables HDR for
@@ -2097,22 +2097,44 @@ enabling HDR always, detect when an app requests HDR and only enable it
 afterwards. Retain HDR capability until the app switches to SDR or the
 user exits it.
 ---
- src/steamcompmgr.cpp        | 78 ++++++++++++++++++++++++-------------
+ src/rendervulkan.cpp        |  4 ++--
+ src/steamcompmgr.cpp        | 32 ++++++++++++++++++++++++++++----
  src/steamcompmgr_shared.hpp |  1 +
- 2 files changed, 53 insertions(+), 26 deletions(-)
+ 3 files changed, 31 insertions(+), 6 deletions(-)
 
+diff --git a/src/rendervulkan.cpp b/src/rendervulkan.cpp
+index c0b20b52fdd9..e140c8c8b9e7 100644
+--- a/src/rendervulkan.cpp
++++ b/src/rendervulkan.cpp
+@@ -3115,14 +3115,14 @@ bool vulkan_supports_hdr10()
+ 	return false;
+ }
+ 
+-extern bool g_bOutputHDREnabled;
++extern bool g_bOutputHDRSupported;
+ 
+ bool vulkan_make_swapchain( VulkanOutput_t *pOutput )
+ {
+ 	uint32_t imageCount = pOutput->surfaceCaps.minImageCount + 1;
+ 	uint32_t formatCount = pOutput->surfaceFormats.size();
+ 	uint32_t surfaceFormat = formatCount;
+-	VkColorSpaceKHR preferredColorSpace = g_bOutputHDREnabled ? VK_COLOR_SPACE_HDR10_ST2084_EXT : VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
++	VkColorSpaceKHR preferredColorSpace = g_bOutputHDRSupported ? VK_COLOR_SPACE_HDR10_ST2084_EXT : VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+ 
+ 	if ( surfaceFormat == formatCount )
+ 	{
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 741745a26e85..29d82f6be156 100644
+index 741745a26e85..7fc22e3b4e3e 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -886,6 +886,7 @@ global_focus_t *GetCurrentFocus()
+@@ -181,6 +181,7 @@ bool b_bForceFrameLimit = false;
+ bool g_bRefreshHalveEnable = false;
+ bool g_bDPMS = false;
+ bool g_bDPMS_set = false;
++bool g_bOutputHDRSupported = false;
  
- uint32_t		currentOutputWidth, currentOutputHeight;
- bool			currentHDROutput = false;
-+bool			currentHDRSupport = false;
- bool			currentHDRForce = false;
- 
- std::vector< uint32_t > vecFocuscontrolAppIDs;
+ namespace gamescope
+ {
 @@ -6750,6 +6751,8 @@ void handle_presented_for_window( steamcompmgr_win_t* w )
  			w->last_commit_present_time = lastCommit->present_time;
  		}
@@ -2122,38 +2144,11 @@ index 741745a26e85..29d82f6be156 100644
  		if (!lastCommit->presentation_feedbacks.empty() || lastCommit->present_id)
  		{
  			if (!lastCommit->presentation_feedbacks.empty())
-@@ -8362,15 +8365,61 @@ steamcompmgr_main(int argc, char **argv)
+@@ -8362,14 +8365,35 @@ steamcompmgr_main(int argc, char **argv)
  
  		g_uCompositeDebug = cv_composite_debug;
  
 -		g_bOutputHDREnabled = (g_bSupportsHDR_CachedValue || g_bForceHDR10OutputDebug) && cv_hdr_enabled;
-+		// Advertise our HDR support state to X11 apps
-+		bool hdr_supported = (g_bSupportsHDR_CachedValue || g_bForceHDR10OutputDebug) && cv_hdr_enabled;
-+		if ( currentHDRSupport != hdr_supported ||
-+			 currentHDRForce != g_bForceHDRSupportDebug ) {
-+			gamescope_xwayland_server_t *server = NULL;
-+			for (size_t i = 0; (server = wlserver_get_xwayland_server(i)); i++)
-+			{
-+				uint32_t hdr_value = ( hdr_supported || g_bForceHDRSupportDebug ) ? 1 : 0;
-+				XChangeProperty(server->ctx->dpy, server->ctx->root, server->ctx->atoms.gamescopeHDROutputFeedback, XA_CARDINAL, 32, PropModeReplace,
-+					(unsigned char *)&hdr_value, 1 );
-+
-+				server->ctx->cursor->setDirty();
-+
-+				if (server->ctx.get() == root_ctx)
-+				{
-+					flush_root = true;
-+				}
-+				else
-+				{
-+					XFlush(server->ctx->dpy);
-+				}
-+			}
-+
-+			currentHDRSupport = hdr_supported;
-+			currentHDRForce = g_bForceHDRSupportDebug;
-+		}
-+
 +		// Check if any running app has requested an hdr colorspace
 +		// and only if it has, enable hdr output
 +		bool hdr_requested = false;
@@ -2174,7 +2169,8 @@ index 741745a26e85..29d82f6be156 100644
 +					hdr_requested = true;
 +			}
 +		}
-+		g_bOutputHDREnabled = hdr_supported && hdr_requested;
++		g_bOutputHDRSupported = (g_bSupportsHDR_CachedValue || g_bForceHDR10OutputDebug) && cv_hdr_enabled;
++		g_bOutputHDREnabled = g_bOutputHDRSupported && hdr_requested;
  
  		// Pick our width/height for this potential frame, regardless of how it might change later
  		// At some point we might even add proper locking so we get real updates atomically instead
@@ -2182,44 +2178,28 @@ index 741745a26e85..29d82f6be156 100644
  		if ( currentOutputWidth != g_nOutputWidth ||
  			 currentOutputHeight != g_nOutputHeight ||
 -			 currentHDROutput != g_bOutputHDREnabled ||
--			 currentHDRForce != g_bForceHDRSupportDebug )
-+			 currentHDROutput != g_bOutputHDREnabled )
++			 currentHDROutput != g_bOutputHDRSupported ||
+ 			 currentHDRForce != g_bForceHDRSupportDebug )
  		{
  			if ( steamMode && g_nXWaylandCount > 1 )
- 			{
-@@ -8394,32 +8443,9 @@ steamcompmgr_main(int argc, char **argv)
- 				vulkan_remake_output_images();
- 			}
- 
--
--			{
--				gamescope_xwayland_server_t *server = NULL;
--				for (size_t i = 0; (server = wlserver_get_xwayland_server(i)); i++)
--				{
+@@ -8399,7 +8423,7 @@ steamcompmgr_main(int argc, char **argv)
+ 				gamescope_xwayland_server_t *server = NULL;
+ 				for (size_t i = 0; (server = wlserver_get_xwayland_server(i)); i++)
+ 				{
 -					uint32_t hdr_value = ( g_bOutputHDREnabled || g_bForceHDRSupportDebug ) ? 1 : 0;
--					XChangeProperty(server->ctx->dpy, server->ctx->root, server->ctx->atoms.gamescopeHDROutputFeedback, XA_CARDINAL, 32, PropModeReplace,
--						(unsigned char *)&hdr_value, 1 );
--
--					server->ctx->cursor->setDirty();
--
--					if (server->ctx.get() == root_ctx)
--					{
--						flush_root = true;
--					}
--					else
--					{
--						XFlush(server->ctx->dpy);
--					}
--				}
--			}
--
++					uint32_t hdr_value = ( g_bOutputHDRSupported || g_bForceHDRSupportDebug ) ? 1 : 0;
+ 					XChangeProperty(server->ctx->dpy, server->ctx->root, server->ctx->atoms.gamescopeHDROutputFeedback, XA_CARDINAL, 32, PropModeReplace,
+ 						(unsigned char *)&hdr_value, 1 );
+ 
+@@ -8418,7 +8442,7 @@ steamcompmgr_main(int argc, char **argv)
+ 
  			currentOutputWidth = g_nOutputWidth;
  			currentOutputHeight = g_nOutputHeight;
- 			currentHDROutput = g_bOutputHDREnabled;
--			currentHDRForce = g_bForceHDRSupportDebug;
+-			currentHDROutput = g_bOutputHDREnabled;
++			currentHDROutput = g_bOutputHDRSupported;
+ 			currentHDRForce = g_bForceHDRSupportDebug;
  
  #if HAVE_PIPEWIRE
- 			nudge_pipewire();
 diff --git a/src/steamcompmgr_shared.hpp b/src/steamcompmgr_shared.hpp
 index 55a691fc6b8f..0b5efe2b6258 100644
 --- a/src/steamcompmgr_shared.hpp
