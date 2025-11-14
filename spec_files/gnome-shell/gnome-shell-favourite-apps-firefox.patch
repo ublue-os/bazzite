@@ -1,0 +1,9 @@
+diff --git a/data/default-apps/dash.txt b/data/default-apps/dash.txt
+index 65db4babc..f354d621b 100644
+--- a/data/default-apps/dash.txt
++++ b/data/default-apps/dash.txt
+@@ -1,2 +1,2 @@
+-org.gnome.Epiphany.desktop
++org.mozilla.firefox.desktop
+ org.gnome.Calendar.desktop
+--

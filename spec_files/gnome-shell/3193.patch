@@ -1,0 +1,101 @@
+From fefa1b0ac04bba72e0f32f7fa3c4bb78d383f078 Mon Sep 17 00:00:00 2001
+From: Jan200101 <sentrycraft123@gmail.com>
+Date: Wed, 12 Nov 2025 19:49:19 +0100
+Subject: [PATCH] shell-app: Improve discrete GPU detection
+
+The original logic only took into account if a GPU is the "Default",
+meaning the GPU used during boot, which was intended for Laptops with
+Hybrid Graphics.
+
+The new logic uses the new Discrete key to figure out which GPU is the
+most appropriate to use in order of:
+- the first non-default GPU if it is discrete
+- the first discrete GPU if it exists
+- the first non-default GPU
+---
+ .../net.hadess.SwitcherooControl.xml          |  3 +-
+ src/shell-app.c                               | 43 ++++++++++++++++---
+ 2 files changed, 39 insertions(+), 7 deletions(-)
+
+diff --git a/data/dbus-interfaces/net.hadess.SwitcherooControl.xml b/data/dbus-interfaces/net.hadess.SwitcherooControl.xml
+index e52bc1a0d25..59a889654f4 100644
+--- a/data/dbus-interfaces/net.hadess.SwitcherooControl.xml
++++ b/data/dbus-interfaces/net.hadess.SwitcherooControl.xml
+@@ -38,7 +38,8 @@
+         will contain a user-facing name for the GPU, the "Environment" (as) key will
+         contain an array of even number of strings, each being an environment
+         variable to set to use the GPU, followed by its value, the "Default" (b) key
+-        will tag the default (usually integrated) GPU.
++        will tag the default GPU, the "Discrete" (b) key tags if the GPU is a
++        dedicated component.
+     -->
+     <property name="GPUs" type="aa{sv}" access="read"/>
+ 
+diff --git a/src/shell-app.c b/src/shell-app.c
+index 916783a5976..344e215ee5a 100644
+--- a/src/shell-app.c
++++ b/src/shell-app.c
+@@ -1285,23 +1285,54 @@ apply_discrete_gpu_env (GAppLaunchContext *context,
+       return;
+     }
+ 
++  g_autoptr(GVariant) first_nondefault_discrete = NULL;
++  g_autoptr(GVariant) first_discrete = NULL;
++  g_autoptr(GVariant) first_nondefault = NULL;
++
+   num_children = g_variant_n_children (variant);
+   for (i = 0; i < num_children; i++)
+     {
+       g_autoptr(GVariant) gpu = NULL;
+-      g_autoptr(GVariant) env = NULL;
+       g_autoptr(GVariant) default_variant = NULL;
+-      g_autofree const char **env_s = NULL;
+-      guint j;
++      g_autoptr(GVariant) discrete_variant = NULL;
++      gboolean is_default = FALSE;
++      gboolean is_discrete = FALSE;
+ 
+       gpu = g_variant_get_child_value (variant, i);
+       if (!gpu ||
+           !g_variant_is_of_type (gpu, G_VARIANT_TYPE ("a{s*}")))
+         continue;
+ 
+-      /* Skip over the default GPU */
+-      default_variant = g_variant_lookup_value (gpu, "Default", NULL);
+-      if (!default_variant || g_variant_get_boolean (default_variant))
++      default_variant = g_variant_lookup_value (gpu, "Default", G_VARIANT_TYPE_BOOLEAN);
++      if (default_variant)
++        is_default = g_variant_get_boolean (default_variant);
++
++      discrete_variant = g_variant_lookup_value (gpu, "Discrete", G_VARIANT_TYPE_BOOLEAN);
++      if (discrete_variant)
++        is_discrete = g_variant_get_boolean (discrete_variant);
++
++      if (is_discrete) {
++        if (first_nondefault_discrete == NULL && !is_default)
++          first_nondefault_discrete = g_variant_ref (gpu);
++
++        if (first_discrete == NULL)
++          first_discrete = g_variant_ref (gpu);
++      }
++
++      if (first_nondefault == NULL && !is_default)
++        first_nondefault = g_variant_ref (gpu);
++    }
++
++  GVariant* gpu_list[] = { first_nondefault_discrete, first_discrete, first_nondefault };
++  
++  for (i = 0; i < G_N_ELEMENTS (gpu_list); ++i)
++    {
++      GVariant* gpu = gpu_list[i];
++      g_autoptr(GVariant) env = NULL;
++      g_autofree const char **env_s = NULL;
++      guint j;
++
++      if (!gpu)
+         continue;
+ 
+       env = g_variant_lookup_value (gpu, "Environment", NULL);
+-- 
+GitLab
+

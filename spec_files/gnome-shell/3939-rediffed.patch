@@ -1,0 +1,57 @@
+From a3d658851992b27ad2e0d8f9efeb680b4085d27f Mon Sep 17 00:00:00 2001
+From: Sebastian Keller <skeller@gnome.org>
+Date: Tue, 28 Oct 2025 23:22:26 +0100
+Subject: [PATCH 1/1] Revert "status/keyboard: Track
+ ::layout-layout-group-changed for changes"
+
+This reverts commit e8d73262c73246205e8f7887d99aeb2356cfa89e.
+
+The commit was causing freezes when changing layouts in some situations
+and not all of these were adressed by f643915b, such as when switching
+from the 3rd to the 4th layout using a xkb shortcut in the X11 session
+with 4 layouts.
+
+It was also breaking the order of switching layouts using modifier-only
+xkb shortcuts to switch to the next group, which it caused to advance
+multiple groups because of the shortcut being handled via both
+_modifiersSwitcher() and _layoutGroupChanged().
+
+Further it was possible for _layoutGroupChanged() to trigger an error
+due to the locale layout added by _buildGroupStrings() at the end of the
+xkb layout list being accessible via the xkb shortcuts. That layout was
+not present in _inputSources, leading to "is" being undefined.
+
+Reopens: https://gitlab.gnome.org/GNOME/mutter/-/issues/3926
+Closes: https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/8738
+Related: https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/3930
+---
+ js/ui/status/keyboard.js | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/js/ui/status/keyboard.js b/js/ui/status/keyboard.js
+index 88e6e93975..2f6773c8c0 100644
+--- a/js/ui/status/keyboard.js
++++ b/js/ui/status/keyboard.js
+@@ -380,7 +380,6 @@ export class InputSourceManager extends Signals.EventEmitter {
+         this._ibusManager.connect('set-content-type', this._ibusSetContentType.bind(this));
+ 
+         global.display.connect('modifiers-accelerator-activated', this._modifiersSwitcher.bind(this));
+-        global.backend.connect('keymap-layout-group-changed', this._layoutGroupChanged.bind(this));
+ 
+         this._sourcesPerWindow = false;
+         this._focusWindowNotifyId = 0;
+@@ -429,12 +428,6 @@ export class InputSourceManager extends Signals.EventEmitter {
+         return true;
+     }
+ 
+-    _layoutGroupChanged(backend, idx) {
+-        const is = this._inputSources[idx];
+-        this._currentInputSourceChanged(is);
+-        this._keyboardManager.apply(is.xkbId);
+-    }
+-
+     _switchInputSource(display, window, event, binding) {
+         if (this._mruSources.length < 2)
+             return;
+-- 
+GitLab
