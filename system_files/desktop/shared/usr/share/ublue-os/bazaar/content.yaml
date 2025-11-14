@@ -45,6 +45,7 @@ sections:
     rows: 4
     banner: file:///usr/share/ublue-os/bazaar/gaming.png
     banner-fit: contain
+    banner-height: 300
     banner-text-halign: start
     banner-text-valign: center
     banner-text-label-xalign: 0.0
@@ -103,6 +104,7 @@ sections:
     rows: 3
     banner: file:///usr/share/ublue-os/bazaar/streaming.png
     banner-fit: contain
+    banner-height: 300
     banner-text-halign: end
     banner-text-valign: center
     banner-text-label-xalign: 1.0
@@ -129,6 +131,7 @@ sections:
     rows: 2
     banner: file:///usr/share/ublue-os/bazaar/music.png
     banner-fit: contain
+    banner-height: 300
     banner-text-halign: start
     banner-text-valign: center
     banner-text-label-xalign: 0.0
@@ -153,6 +156,7 @@ sections:
     rows: 2
     banner: file:///usr/share/ublue-os/bazaar/office.png
     banner-fit: contain
+    banner-height: 300
     banner-text-halign: end
     banner-text-valign: center
     banner-text-label-xalign: 1.0
@@ -181,6 +185,7 @@ sections:
     rows: 2
     banner: file:///usr/share/ublue-os/bazaar/utilities.png
     banner-fit: contain
+    banner-height: 300
     banner-text-halign: start
     banner-text-valign: center
     banner-text-label-xalign: 0.0
