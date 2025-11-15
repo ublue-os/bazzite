@@ -34,6 +34,7 @@ dnf5 install -y \
     /rpms/nvidia/nvidia-container-toolkit-base-1* \
     /rpms/nvidia/libnvidia-container1-1* \
     /rpms/nvidia/libnvidia-container-tools-1* \
+    libva-nvidia-driver \
     ${VARIANT_PKGS}
 
 # Disable staging
