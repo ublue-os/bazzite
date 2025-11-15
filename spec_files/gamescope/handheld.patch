@@ -2236,3 +2236,38 @@ index 55a691fc6b8f..0b5efe2b6258 100644
 -- 
 2.51.2
 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <git@antheas.dev>
+Date: Sun, 16 Nov 2025 00:25:46 +0100
+Subject: Revert "subprojects: Bump libdisplay-info to 0.3.0"
+
+This reverts commit 9a2e7735f18e40ddb9fc832b3445f7f3f5397684.
+---
+ src/meson.build             | 2 +-
+ subprojects/libdisplay-info | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/meson.build b/src/meson.build
+index 8780d14fa4e0..12ad8d303235 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -35,7 +35,7 @@ wlroots_dep = dependency(
+ 
+ displayinfo_dep = dependency(
+   'libdisplay-info',
+-  version: ['>= 0.0.0', '< 0.4.0'],
++  version: ['>= 0.0.0', '< 0.3.0'],
+   fallback: 'libdisplay-info',
+   default_options: ['default_library=static'],
+ )
+diff --git a/subprojects/libdisplay-info b/subprojects/libdisplay-info
+index 47a5590e9c4e..66b802d05b37 160000
+--- a/subprojects/libdisplay-info
++++ b/subprojects/libdisplay-info
+@@ -1 +1 @@
+-Subproject commit 47a5590e9c4eb35d67651b8c05a55f1a48259329
++Subproject commit 66b802d05b374cd8f388dc6ad1e7ae4f08cb3300
+-- 
+2.51.2
+
