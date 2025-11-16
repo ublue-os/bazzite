@@ -292,60 +292,6 @@ index a3dfdabd7366..63eabb1cf377 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Simon Ser <contact@emersion.fr>
-Date: Thu, 16 Oct 2025 19:38:26 +0200
-Subject: build: fix wlroots dependency missing version
-
----
- src/meson.build     | 2 +-
- subprojects/wlroots | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/src/meson.build b/src/meson.build
-index 63eabb1cf377..2aca36aab256 100644
---- a/src/meson.build
-+++ b/src/meson.build
-@@ -25,7 +25,7 @@ sdl2_dep = dependency('SDL2', required: get_option('sdl2_backend'))
- avif_dep = dependency('libavif', version: '>=1.0.0', required: get_option('avif_screenshots'))
- 
- wlroots_dep = dependency(
--  'wlroots',
-+  'wlroots-0.18',
-   version: ['>= 0.18.0', '< 0.19.0'],
-   fallback: 'wlroots',
-   default_options: ['default_library=static', 'examples=false', 'xwayland=enabled', 'backends=libinput', 'renderers=[]', 'allocators=[]', 'session=enabled'],
-diff --git a/subprojects/wlroots b/subprojects/wlroots
-index 54e844748029..a5c9826e6d7d 160000
---- a/subprojects/wlroots
-+++ b/subprojects/wlroots
-@@ -1 +1 @@
--Subproject commit 54e844748029d4874e14d0c086d50092c04c8899
-+Subproject commit a5c9826e6d7d8b504b07d1c02425e6f62b020791
--- 
-2.51.2
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Simon Ser <contact@emersion.fr>
-Date: Thu, 16 Oct 2025 19:43:28 +0200
-Subject: Fix wlroots submodule commit
-
----
- subprojects/wlroots | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/subprojects/wlroots b/subprojects/wlroots
-index a5c9826e6d7d..54e844748029 160000
---- a/subprojects/wlroots
-+++ b/subprojects/wlroots
-@@ -1 +1 @@
--Subproject commit a5c9826e6d7d8b504b07d1c02425e6f62b020791
-+Subproject commit 54e844748029d4874e14d0c086d50092c04c8899
--- 
-2.51.2
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Simon Ser <contact@emersion.fr>
 Date: Thu, 16 Oct 2025 19:46:34 +0200
 Subject: build: add missing pixman and libudev deps
 
@@ -354,7 +300,7 @@ Subject: build: add missing pixman and libudev deps
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/meson.build b/src/meson.build
-index 2aca36aab256..3650cdb3f8bc 100644
+index 63eabb1cf377..69f0d3c0b054 100644
 --- a/src/meson.build
 +++ b/src/meson.build
 @@ -23,6 +23,8 @@ cap_dep = dependency('libcap', required: get_option('rt_cap'))
@@ -365,7 +311,7 @@ index 2aca36aab256..3650cdb3f8bc 100644
 +udev_dep = dependency('libudev')
  
  wlroots_dep = dependency(
-   'wlroots-0.18',
+   'wlroots',
 @@ -197,7 +199,7 @@ gamescope_version = configure_file(
        xkbcommon, thread_dep, sdl2_dep, wlroots_dep,
        vulkan_dep, liftoff_dep, dep_xtst, dep_xmu, cap_dep, epoll_dep, pipewire_dep, librt_dep,
@@ -3264,7 +3210,7 @@ index 390c04a63ecd..e7b857d44b0d 100644
  extern bool g_bFullscreen;
  
 diff --git a/src/meson.build b/src/meson.build
-index 3650cdb3f8bc..12ad8d303235 100644
+index 69f0d3c0b054..d3e2e42551fd 100644
 --- a/src/meson.build
 +++ b/src/meson.build
 @@ -72,6 +72,7 @@ shader_src = [
