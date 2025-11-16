@@ -2,22 +2,19 @@
 
 %global _default_patch_fuzz 2
 %global build_timestamp %(date +"%Y%m%d")
-%global gamescope_commit 844614e53a3addfb6af60308e0003776e51ab071 
-%define short_commit %(echo %{gamescope_commit} | cut -c1-8)
 
 Name:           gamescope
-Version:        143.%{short_commit}
+Version:        ba143
 Release:        1.bazzite
 Summary:        Micro-compositor for video games on Wayland
 
 License:        BSD
-URL:            https://github.com/ValveSoftware/gamescope
+URL:            https://github.com/bazzite-org/gamescope
 
 # Create stb.pc to satisfy dependency('stb')
 Source0:        stb.pc
 
 Patch0:         0001-cstdint.patch
-Patch1:         handheld.patch
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -91,10 +88,8 @@ Summary:	libs for %{name}
 %summary
 
 %prep
-# git clone --depth 1 --branch %%{gamescope_tag} %%{url}.git
-git clone %{url}.git
+git clone %{url}.git --depth 1 --branch %{version} gamescope
 cd gamescope
-git checkout %{gamescope_commit} 
 git submodule update --init --recursive
 mkdir -p pkgconfig
 cp %{SOURCE0} pkgconfig/stb.pc
