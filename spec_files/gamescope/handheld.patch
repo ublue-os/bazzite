@@ -1,4 +1,2673 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MithicSpirit <rpc01234@gmail.com>
+Date: Sun, 22 Dec 2024 16:55:21 -0500
+Subject: Consistent indentation
+
+The codebase has lots of inconsistent indentation between 1 tab or 4
+spaces. Rather than having massive diffs by fixing all that, this sets
+the editorconfig tab width to 4, so it's at least visually consistent,
+even on editors that default to 8-wide tabs.
+---
+ .editorconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/.editorconfig b/.editorconfig
+index 9b5abc1c8be9..dc59c756388f 100644
+--- a/.editorconfig
++++ b/.editorconfig
+@@ -5,3 +5,4 @@ end_of_line = lf
+ insert_final_newline = true
+ trim_trailing_whitespace = false
+ indent_style = tab
++tab_width = 4
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martin <spleefer90@gmail.com>
+Date: Sat, 2 Nov 2024 15:58:26 +0100
+Subject: README.md: Exclude end of life distributions in Repology status
+
+---
+ README.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/README.md b/README.md
+index 831ec947d66a..5df4a2589084 100644
+--- a/README.md
++++ b/README.md
+@@ -88,4 +88,4 @@ Pull requests for improving Reshade compatibility support are appreciated.
+ 
+ ## Status of Gamescope Packages
+ 
+-[![Packaging status](https://repology.org/badge/vertical-allrepos/gamescope.svg)](https://repology.org/project/gamescope/versions)
++[![Packaging status](https://repology.org/badge/vertical-allrepos/gamescope.svg?exclude_unsupported=1)](https://repology.org/project/gamescope/versions)
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ferdinand Bachmann <ferdinand.bachmann@yrlf.at>
+Date: Mon, 14 Jul 2025 22:34:04 +0200
+Subject: WaylandBackend: fix crash in UpdateCursor() when m_pPointer is null
+
+This can happen when the seat loses pointer capability, such as when
+switching to another TTY on Sway.
+---
+ src/Backends/WaylandBackend.cpp | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
+index 1171980ba61d..852c56618f73 100644
+--- a/src/Backends/WaylandBackend.cpp
++++ b/src/Backends/WaylandBackend.cpp
+@@ -2406,6 +2406,9 @@ namespace gamescope
+     {
+         bool bUseHostCursor = false;
+ 
++        if ( !m_pPointer )
++            return;
++
+         if ( cv_wayland_mouse_warp_without_keyboard_focus )
+             bUseHostCursor = m_pRelativePointer && !m_bKeyboardEntered && m_pDefaultCursorSurface;
+         else
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Olivier Tilloy <otilloy@igalia.com>
+Date: Fri, 22 Aug 2025 23:04:39 +0200
+Subject: wlserver: associate a monitor to each touchscreen input device
+
+and use its orientation to transform touch events.
+When an external touchscreen is connected to a Steam Deck,
+both the internal touchscreen and the external one can be used for touch input,
+but they might have different orientations.
+
+Fixes ValveSoftware/SteamOS#1259.
+---
+ src/wlserver.cpp | 56 ++++++++++++++++++++++++++++++++++++++++--------
+ src/wlserver.hpp |  6 ++++--
+ 2 files changed, 51 insertions(+), 11 deletions(-)
+
+diff --git a/src/wlserver.cpp b/src/wlserver.cpp
+index 4d8546eed51f..60ea18e77076 100644
+--- a/src/wlserver.cpp
++++ b/src/wlserver.cpp
+@@ -414,12 +414,48 @@ static inline uint32_t TouchClickModeToLinuxButton( gamescope::TouchClickMode eT
+ 
+ std::atomic<bool> g_bPendingTouchMovement = { false };
+ 
++static void wlserver_touch_associate_connector(struct wlserver_touch *touch)
++{
++	if (touch->connector != nullptr) return;
++
++	// Heuristic to associate a monitor to a touch input device:
++	//  - if a touchscreen's bus is I²C, it can very likely be associated to an internal monitor.
++	//  - if its bus is USB, it can be associated to an external monitor.
++	// This isn't perfect, but we can't rely on the physical sizes reported by both devices,
++	// because it's not uncommon for touchscreens to report wildly incorrect sizes.
++	gamescope::IBackendConnector* connector = nullptr;
++	struct libinput_device *lidev = wlr_libinput_get_device_handle(&touch->wlr->base);
++	struct udev_device *dev = libinput_device_get_udev_device(lidev);
++	auto *parent = dev;
++	while (parent) {
++		const char *subsystem = udev_device_get_subsystem(parent);
++		if (subsystem) {
++			if (strcmp( subsystem, "i2c" ) == 0) {
++				connector = GetBackend()->GetConnector(gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL);
++				break;
++			} else if (strcmp( subsystem, "usb" ) == 0) {
++				connector = GetBackend()->GetConnector(gamescope::GAMESCOPE_SCREEN_TYPE_EXTERNAL);
++				break;
++			}
++		}
++		parent = udev_device_get_parent(parent);
++	}
++	udev_device_unref(dev);
++	if (connector != nullptr) {
++		touch->connector = connector;
++		wl_log.infof("associating connector %s (%s %s) with touch input device %s",
++			connector->GetName(), connector->GetMake(), connector->GetModel(),
++			libinput_device_get_name(lidev));
++	}
++}
++
+ static void wlserver_handle_touch_down(struct wl_listener *listener, void *data)
+ {
+ 	struct wlserver_touch *touch = wl_container_of( listener, touch, down );
+ 	struct wlr_touch_down_event *event = (struct wlr_touch_down_event *) data;
+ 
+-	wlserver_touchdown( event->x, event->y, event->touch_id, event->time_msec );
++	wlserver_touch_associate_connector( touch );
++	wlserver_touchdown( event->x, event->y, event->touch_id, event->time_msec, touch->connector );
+ }
+ 
+ static void wlserver_handle_touch_up(struct wl_listener *listener, void *data)
+@@ -435,7 +471,8 @@ static void wlserver_handle_touch_motion(struct wl_listener *listener, void *dat
+ 	struct wlserver_touch *touch = wl_container_of( listener, touch, motion );
+ 	struct wlr_touch_motion_event *event = (struct wlr_touch_motion_event *) data;
+ 
+-	wlserver_touchmotion( event->x, event->y, event->touch_id, event->time_msec );
++	wlserver_touch_associate_connector( touch );
++	wlserver_touchmotion( event->x, event->y, event->touch_id, event->time_msec, false, touch->connector );
+ }
+ 
+ static void wlserver_new_input(struct wl_listener *listener, void *data)
+@@ -491,6 +528,8 @@ static void wlserver_new_input(struct wl_listener *listener, void *data)
+ 			wl_signal_add( &touch->wlr->events.up, &touch->up );
+ 			touch->motion.notify = wlserver_handle_touch_motion;
+ 			wl_signal_add( &touch->wlr->events.motion, &touch->motion );
++
++			wlserver_touch_associate_connector( touch );
+ 		}
+ 		break;
+ 		default:
+@@ -2740,13 +2779,12 @@ const std::shared_ptr<wlserver_vk_swapchain_feedback>& wlserver_surface_swapchai
+ }
+ 
+ /* Handle the orientation of the touch inputs */
+-static void apply_touchscreen_orientation(double *x, double *y )
++static void apply_touchscreen_orientation(GamescopePanelOrientation orientation, double *x, double *y )
+ {
+ 	double tx = 0;
+ 	double ty = 0;
+ 
+-	// Use internal screen always for orientation purposes.
+-	switch ( GetBackend()->GetConnector( gamescope::GAMESCOPE_SCREEN_TYPE_INTERNAL )->GetCurrentOrientation() )
++	switch ( orientation )
+ 	{
+ 		default:
+ 		case GAMESCOPE_PANEL_ORIENTATION_AUTO:
+@@ -2772,7 +2810,7 @@ static void apply_touchscreen_orientation(double *x, double *y )
+ 	*y = ty;
+ }
+ 
+-void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool bAlwaysWarpCursor )
++void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool bAlwaysWarpCursor, gamescope::IBackendConnector* connector )
+ {
+ 	assert( wlserver_is_lock_held() );
+ 
+@@ -2781,7 +2819,7 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool
+ 		double tx = x;
+ 		double ty = y;
+ 
+-		apply_touchscreen_orientation(&tx, &ty);
++		apply_touchscreen_orientation((connector ? connector : GetBackend()->GetCurrentConnector())->GetCurrentOrientation(), &tx, &ty);
+ 
+ 		tx *= g_nOutputWidth;
+ 		ty *= g_nOutputHeight;
+@@ -2827,7 +2865,7 @@ void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool
+ 	bump_input_counter();
+ }
+ 
+-void wlserver_touchdown( double x, double y, int touch_id, uint32_t time )
++void wlserver_touchdown( double x, double y, int touch_id, uint32_t time, gamescope::IBackendConnector* connector )
+ {
+ 	assert( wlserver_is_lock_held() );
+ 
+@@ -2836,7 +2874,7 @@ void wlserver_touchdown( double x, double y, int touch_id, uint32_t time )
+ 		double tx = x;
+ 		double ty = y;
+ 
+-		apply_touchscreen_orientation(&tx, &ty);
++		apply_touchscreen_orientation((connector ? connector : GetBackend()->GetCurrentConnector())->GetCurrentOrientation(), &tx, &ty);
+ 
+ 		tx *= g_nOutputWidth;
+ 		ty *= g_nOutputHeight;
+diff --git a/src/wlserver.hpp b/src/wlserver.hpp
+index dd9d7aa9e397..375211efeb6f 100644
+--- a/src/wlserver.hpp
++++ b/src/wlserver.hpp
+@@ -214,6 +214,8 @@ struct wlserver_touch {
+ 	struct wl_listener down;
+ 	struct wl_listener up;
+ 	struct wl_listener motion;
++
++    gamescope::IBackendConnector* connector;
+ };
+ 
+ void xwayland_surface_commit(struct wlr_surface *wlr_surface);
+@@ -242,8 +244,8 @@ void wlserver_mousewarp( double x, double y, uint32_t time, bool bSynthetic );
+ void wlserver_mousebutton( int button, bool press, uint32_t time );
+ void wlserver_mousewheel( double x, double y, uint32_t time );
+ 
+-void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool bAlwaysWarpCursor = false );
+-void wlserver_touchdown( double x, double y, int touch_id, uint32_t time );
++void wlserver_touchmotion( double x, double y, int touch_id, uint32_t time, bool bAlwaysWarpCursor = false, gamescope::IBackendConnector* connector = nullptr );
++void wlserver_touchdown( double x, double y, int touch_id, uint32_t time, gamescope::IBackendConnector* connector = nullptr );
+ void wlserver_touchup( int touch_id, uint32_t time );
+ 
+ void wlserver_send_frame_done( struct wlr_surface *surf, const struct timespec *when );
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Simon Ser <contact@emersion.fr>
+Date: Thu, 16 Oct 2025 19:33:09 +0200
+Subject: build: drop variable name from subproject fallbacks
+
+These projects use meson.override_dependency(), no need to specify
+the variable for the dep (which is an internal subproject detail).
+---
+ src/meson.build | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/meson.build b/src/meson.build
+index a3dfdabd7366..63eabb1cf377 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -27,14 +27,14 @@ avif_dep = dependency('libavif', version: '>=1.0.0', required: get_option('avif_
+ wlroots_dep = dependency(
+   'wlroots',
+   version: ['>= 0.18.0', '< 0.19.0'],
+-  fallback: ['wlroots', 'wlroots'],
++  fallback: 'wlroots',
+   default_options: ['default_library=static', 'examples=false', 'xwayland=enabled', 'backends=libinput', 'renderers=[]', 'allocators=[]', 'session=enabled'],
+ )
+ 
+ displayinfo_dep = dependency(
+   'libdisplay-info',
+   version: ['>= 0.0.0', '< 0.3.0'],
+-  fallback: ['libdisplay-info', 'di_dep'],
++  fallback: 'libdisplay-info',
+   default_options: ['default_library=static'],
+ )
+ 
+@@ -133,7 +133,7 @@ if drm_dep.found()
+   liftoff_dep = dependency(
+     'libliftoff',
+     version: ['>= 0.5.0', '< 0.6.0'],
+-    fallback: ['libliftoff', 'liftoff'],
++    fallback: 'libliftoff',
+     default_options: ['default_library=static'],
+   )
+ else
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Simon Ser <contact@emersion.fr>
+Date: Thu, 16 Oct 2025 19:38:26 +0200
+Subject: build: fix wlroots dependency missing version
+
+---
+ src/meson.build     | 2 +-
+ subprojects/wlroots | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/meson.build b/src/meson.build
+index 63eabb1cf377..2aca36aab256 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -25,7 +25,7 @@ sdl2_dep = dependency('SDL2', required: get_option('sdl2_backend'))
+ avif_dep = dependency('libavif', version: '>=1.0.0', required: get_option('avif_screenshots'))
+ 
+ wlroots_dep = dependency(
+-  'wlroots',
++  'wlroots-0.18',
+   version: ['>= 0.18.0', '< 0.19.0'],
+   fallback: 'wlroots',
+   default_options: ['default_library=static', 'examples=false', 'xwayland=enabled', 'backends=libinput', 'renderers=[]', 'allocators=[]', 'session=enabled'],
+diff --git a/subprojects/wlroots b/subprojects/wlroots
+index 54e844748029..a5c9826e6d7d 160000
+--- a/subprojects/wlroots
++++ b/subprojects/wlroots
+@@ -1 +1 @@
+-Subproject commit 54e844748029d4874e14d0c086d50092c04c8899
++Subproject commit a5c9826e6d7d8b504b07d1c02425e6f62b020791
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Simon Ser <contact@emersion.fr>
+Date: Thu, 16 Oct 2025 19:43:28 +0200
+Subject: Fix wlroots submodule commit
+
+---
+ subprojects/wlroots | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/subprojects/wlroots b/subprojects/wlroots
+index a5c9826e6d7d..54e844748029 160000
+--- a/subprojects/wlroots
++++ b/subprojects/wlroots
+@@ -1 +1 @@
+-Subproject commit a5c9826e6d7d8b504b07d1c02425e6f62b020791
++Subproject commit 54e844748029d4874e14d0c086d50092c04c8899
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Simon Ser <contact@emersion.fr>
+Date: Thu, 16 Oct 2025 19:46:34 +0200
+Subject: build: add missing pixman and libudev deps
+
+---
+ src/meson.build | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/meson.build b/src/meson.build
+index 2aca36aab256..3650cdb3f8bc 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -23,6 +23,8 @@ cap_dep = dependency('libcap', required: get_option('rt_cap'))
+ epoll_dep = dependency('epoll-shim', required: false)
+ sdl2_dep = dependency('SDL2', required: get_option('sdl2_backend'))
+ avif_dep = dependency('libavif', version: '>=1.0.0', required: get_option('avif_screenshots'))
++pixman_dep = dependency('pixman-1')
++udev_dep = dependency('libudev')
+ 
+ wlroots_dep = dependency(
+   'wlroots-0.18',
+@@ -197,7 +199,7 @@ gamescope_version = configure_file(
+       xkbcommon, thread_dep, sdl2_dep, wlroots_dep,
+       vulkan_dep, liftoff_dep, dep_xtst, dep_xmu, cap_dep, epoll_dep, pipewire_dep, librt_dep,
+       stb_dep, displayinfo_dep, openvr_dep, dep_xcursor, avif_dep, dep_xi,
+-      libdecor_dep, eis_dep, luajit_dep, libinput_dep, libsystemd_dep,
++      libdecor_dep, eis_dep, luajit_dep, libinput_dep, libsystemd_dep, pixman_dep, udev_dep,
+     ],
+     install: true,
+     cpp_args: gamescope_cpp_args,
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Colin Kinloch <colin.kinloch@collabora.com>
+Date: Thu, 16 Oct 2025 22:42:09 +0100
+Subject: WaylandBackend: listen for locked pointer events
+
+Ignore relative pointer motion and only hide the cursor when the locked
+pointer is in a locked state.
+
+This allows the cursor to continue to show when interacting with the
+window decorations.
+
+Signed-off-by: Colin Kinloch <colin.kinloch@collabora.com>
+---
+ src/Backends/WaylandBackend.cpp | 49 ++++++++++++++++++++++++---------
+ 1 file changed, 36 insertions(+), 13 deletions(-)
+
+diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
+index 852c56618f73..4c1942337ebb 100644
+--- a/src/Backends/WaylandBackend.cpp
++++ b/src/Backends/WaylandBackend.cpp
+@@ -724,6 +724,10 @@ namespace gamescope
+         void Wayland_Keyboard_Leave( wl_keyboard *pKeyboard, uint32_t uSerial, wl_surface *pSurface );
+         static const wl_keyboard_listener s_KeyboardListener;
+ 
++		void Wayland_LockedPointer_Locked( zwp_locked_pointer_v1 *pLockedPointer );
++		void Wayland_LockedPointer_Unlocked( zwp_locked_pointer_v1 *pLockedPointer );
++		static const zwp_locked_pointer_v1_listener s_LockedPointerListener;
++
+         void Wayland_WPColorManager_SupportedIntent( wp_color_manager_v1 *pWPColorManager, uint32_t uRenderIntent );
+         void Wayland_WPColorManager_SupportedFeature( wp_color_manager_v1 *pWPColorManager, uint32_t uFeature );
+         void Wayland_WPColorManager_SupportedTFNamed( wp_color_manager_v1 *pWPColorManager, uint32_t uTF );
+@@ -792,6 +796,7 @@ namespace gamescope
+         wl_pointer *m_pPointer = nullptr;
+         wl_touch *m_pTouch = nullptr;
+         zwp_locked_pointer_v1 *m_pLockedPointer = nullptr;
++		bool m_bPointerLocked = false;
+         wl_surface *m_pLockedSurface = nullptr;
+         zwp_relative_pointer_v1 *m_pRelativePointer = nullptr;
+ 
+@@ -850,6 +855,11 @@ namespace gamescope
+         .modifiers     = WAYLAND_NULL(),
+         .repeat_info   = WAYLAND_NULL(),
+     };
++	const zwp_locked_pointer_v1_listener CWaylandBackend::s_LockedPointerListener =
++	{
++		.locked        = WAYLAND_USERDATA_TO_THIS( CWaylandBackend, Wayland_LockedPointer_Locked ),
++		.unlocked      = WAYLAND_USERDATA_TO_THIS( CWaylandBackend, Wayland_LockedPointer_Unlocked ),
++	};
+ 
+     const wp_color_manager_v1_listener CWaylandBackend::s_WPColorManagerListener
+     {
+@@ -2390,11 +2400,13 @@ namespace gamescope
+                 m_pRelativePointer = nullptr;
+             }
+ 
+-            if ( bRelative )
+-            {
+-                m_pLockedPointer = zwp_pointer_constraints_v1_lock_pointer( m_pPointerConstraints, pSurface, m_pPointer, nullptr, ZWP_POINTER_CONSTRAINTS_V1_LIFETIME_PERSISTENT );
+-                m_pRelativePointer = zwp_relative_pointer_manager_v1_get_relative_pointer( m_pRelativePointerManager, m_pPointer );
+-            }
++			if ( bRelative )
++			{
++				m_pLockedPointer = zwp_pointer_constraints_v1_lock_pointer( m_pPointerConstraints, pSurface, m_pPointer, nullptr, ZWP_POINTER_CONSTRAINTS_V1_LIFETIME_PERSISTENT );
++				zwp_locked_pointer_v1_add_listener( m_pLockedPointer, &s_LockedPointerListener, this );
++
++				m_pRelativePointer = zwp_relative_pointer_manager_v1_get_relative_pointer( m_pRelativePointerManager, m_pPointer );
++			}
+ 
+             m_InputThread.SetRelativePointer( bRelative );
+ 
+@@ -2409,10 +2421,10 @@ namespace gamescope
+         if ( !m_pPointer )
+             return;
+ 
+-        if ( cv_wayland_mouse_warp_without_keyboard_focus )
+-            bUseHostCursor = m_pRelativePointer && !m_bKeyboardEntered && m_pDefaultCursorSurface;
+-        else
+-            bUseHostCursor = !m_bKeyboardEntered && m_pDefaultCursorSurface;
++		if ( cv_wayland_mouse_warp_without_keyboard_focus )
++			bUseHostCursor = m_bPointerLocked && !m_bKeyboardEntered && m_pDefaultCursorSurface;
++		else
++			bUseHostCursor = !m_bKeyboardEntered && m_pDefaultCursorSurface;
+ 
+         if ( bUseHostCursor )
+         {
+@@ -2420,7 +2432,7 @@ namespace gamescope
+         }
+         else
+         {
+-            bool bHideCursor = m_pLockedPointer || !m_pCursorSurface;
++			bool bHideCursor = m_bPointerLocked || !m_pCursorSurface;
+ 
+             if ( bHideCursor )
+                 wl_pointer_set_cursor( m_pPointer, m_uPointerEnterSerial, nullptr, 0, 0 );
+@@ -2645,6 +2657,17 @@ namespace gamescope
+         UpdateCursor();
+     }
+ 
++	void CWaylandBackend::Wayland_LockedPointer_Locked( zwp_locked_pointer_v1 *pLockedPointer )
++	{
++		m_bPointerLocked = true;
++		UpdateCursor();
++	}
++	void CWaylandBackend::Wayland_LockedPointer_Unlocked( zwp_locked_pointer_v1 *pLockedPointer )
++	{
++		m_bPointerLocked = false;
++		UpdateCursor();
++	}
++
+     // WP Color Manager
+ 
+     void CWaylandBackend::Wayland_WPColorManager_SupportedIntent( wp_color_manager_v1 *pWPColorManager, uint32_t uRenderIntent )
+@@ -3191,9 +3214,9 @@ namespace gamescope
+ 
+     void CWaylandInputThread::Wayland_RelativePointer_RelativeMotion( zwp_relative_pointer_v1 *pRelativePointer, uint32_t uTimeHi, uint32_t uTimeLo, wl_fixed_t fDx, wl_fixed_t fDy, wl_fixed_t fDxUnaccel, wl_fixed_t fDyUnaccel )
+     {
+-        // Don't do any motion/movement stuff if we don't have kb focus
+-        if ( !cv_wayland_mouse_relmotion_without_keyboard_focus && !m_bKeyboardEntered )
+-            return;
++		// Don't do any motion/movement stuff if we don't have kb focus
++		if ( !m_pBackend->m_bPointerLocked || ( !cv_wayland_mouse_relmotion_without_keyboard_focus && !m_bKeyboardEntered ) )
++			return;
+ 
+         wlserver_lock();
+         wlserver_mousemotion( wl_fixed_to_double( fDxUnaccel ), wl_fixed_to_double( fDyUnaccel ), ++m_uFakeTimestamp );
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Colin Kinloch <colin.kinloch@collabora.com>
+Date: Thu, 16 Oct 2025 21:34:24 +0100
+Subject: WaylandBackend: disable input on overlay planes
+
+Call `wl_surface_set_input_region` with an unmodified region to make
+subsurfaces ignore input. This allows the toplevel planes to recieve
+pointer and keyboard events directly even when overlay planes are
+covering it.
+
+Fixes #1466. Where pointer locking would never be triggered as the
+pointer would only enter the mangohud plane rather than the toplevel
+plane that had pointer locking enabled.
+
+Signed-off-by: Colin Kinloch <colin.kinloch@collabora.com>
+---
+ src/Backends/WaylandBackend.cpp | 137 ++++++++++++++++++++------------
+ 1 file changed, 86 insertions(+), 51 deletions(-)
+
+diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
+index 4c1942337ebb..b8d1b32ffe1b 100644
+--- a/src/Backends/WaylandBackend.cpp
++++ b/src/Backends/WaylandBackend.cpp
+@@ -56,7 +56,9 @@ using namespace std::literals;
+ 
+ static LogScope xdg_log( "xdg_backend" );
+ 
++static const char *GAMESCOPE_proxy_tag = "gamescope-proxy";
+ static const char *GAMESCOPE_plane_tag = "gamescope-plane";
++static const char *GAMESCOPE_toplevel_tag = "gamescope-toplevel";
+ 
+ template <typename Func, typename... Args>
+ auto CallWithAllButLast(Func pFunc, Args&&... args)
+@@ -75,10 +77,34 @@ static inline uint32_t WaylandScaleToLogical( uint32_t pValue, uint32_t pFactor
+     return div_roundup( pValue * WL_FRACTIONAL_SCALE_DENOMINATOR, pFactor );
+ }
+ 
+-static bool IsSurfacePlane( wl_surface *pSurface ) {
+-    // HACK: this probably should never be called with a null pointer, but it
+-    // was happening after a window was closed.
+-    return pSurface && (wl_proxy_get_tag( (wl_proxy *)pSurface ) == &GAMESCOPE_plane_tag);
++[[maybe_unused]] static bool IsGamescopeProxy( void *pProxy ) {
++	// HACK: this probably should never be called with a null pointer, but it
++	// was happening after a window was closed.
++	if ( pProxy )
++		return false;
++
++	const char* const* pTag = wl_proxy_get_tag( (wl_proxy *)pProxy );
++
++	return pTag == &GAMESCOPE_proxy_tag ||
++		pTag == &GAMESCOPE_plane_tag ||
++		pTag == &GAMESCOPE_toplevel_tag;
++}
++
++[[maybe_unused]] static bool IsGamescopePlane( wl_surface *pSurface ) {
++	// HACK: this probably should never be called with a null pointer, but it
++	// was happening after a window was closed.
++	if ( pSurface )
++		return false;
++	const char* const* pTag = wl_proxy_get_tag( (wl_proxy *)pSurface );
++
++	return pTag == &GAMESCOPE_plane_tag ||
++		pTag == &GAMESCOPE_toplevel_tag;
++}
++
++static bool IsGamescopeToplevel( wl_surface *pSurface ) {
++	// HACK: this probably should never be called with a null pointer, but it
++	// was happening after a window was closed.
++	return pSurface && (wl_proxy_get_tag( (wl_proxy *)pSurface ) == &GAMESCOPE_toplevel_tag);
+ }
+ 
+ #define WAYLAND_NULL() []<typename... Args> ( void *pData, Args... args ) { }
+@@ -527,7 +553,7 @@ namespace gamescope
+         double m_flScrollAccum[2] = { 0.0, 0.0 };
+         uint32_t m_uAxisSource = WL_POINTER_AXIS_SOURCE_WHEEL;
+ 
+-        CWaylandPlane *m_pCurrentCursorPlane = nullptr;
++		wl_surface *m_pCurrentCursorSurface = nullptr;
+ 
+         std::optional<wl_fixed_t> m_ofPendingCursorX;
+         std::optional<wl_fixed_t> m_ofPendingCursorY;
+@@ -690,6 +716,7 @@ namespace gamescope
+             return &iter->second;
+         }
+ 
++		wl_region *GetEmptyRegion() const { return m_pEmptyRegion; }
+         wl_region *GetFullRegion() const { return m_pFullRegion; }
+         CWaylandFb *GetBlackFb() const { return m_BlackFb.get(); }
+ 
+@@ -753,6 +780,7 @@ namespace gamescope
+         zwp_linux_dmabuf_v1 *m_pLinuxDmabuf = nullptr;
+         xdg_wm_base *m_pXdgWmBase = nullptr;
+         wp_viewporter *m_pViewporter = nullptr;
++		wl_region *m_pEmptyRegion = nullptr;
+         wl_region *m_pFullRegion = nullptr;
+         Rc<CWaylandFb> m_BlackFb;
+         OwningRc<CWaylandFb> m_pOwnedBlackFb;
+@@ -1336,7 +1364,6 @@ namespace gamescope
+     {
+         m_pParent = pParent;
+         m_pSurface = wl_compositor_create_surface( m_pBackend->GetCompositor() );
+-        wl_proxy_set_tag( (wl_proxy *)m_pSurface, &GAMESCOPE_plane_tag );
+         wl_surface_set_user_data( m_pSurface, this );
+         wl_surface_add_listener( m_pSurface, &s_SurfaceListener, this );
+ 
+@@ -1372,6 +1399,7 @@ namespace gamescope
+ 
+         if ( !pParent )
+         {
++			wl_proxy_set_tag( (wl_proxy *)m_pSurface, &GAMESCOPE_toplevel_tag );
+             m_pFrame = libdecor_decorate( m_pBackend->GetLibDecor(), m_pSurface, &s_LibDecorFrameInterface, this );
+             libdecor_frame_set_title( m_pFrame, "Gamescope" );
+             libdecor_frame_set_app_id( m_pFrame, "gamescope" );
+@@ -1379,9 +1407,12 @@ namespace gamescope
+         }
+         else
+         {
++			wl_proxy_set_tag( (wl_proxy *)m_pSurface, &GAMESCOPE_plane_tag );
+             m_pSubsurface = wl_subcompositor_get_subsurface( m_pBackend->GetSubcompositor(), m_pSurface, pParent->GetSurface() );
+             wl_subsurface_place_above( m_pSubsurface, pSiblingBelow->GetSurface() );
+             wl_subsurface_set_sync( m_pSubsurface );
++			// Allow pParent to receive input while covered by subsurface planes
++			wl_surface_set_input_region( m_pSurface, m_pBackend->GetEmptyRegion() );
+         }
+ 
+         wl_surface_commit( m_pSurface );
+@@ -1654,8 +1685,8 @@ namespace gamescope
+ 
+     void CWaylandPlane::Wayland_Surface_Enter( wl_surface *pSurface, wl_output *pOutput )
+     {
+-        if ( !IsSurfacePlane( pSurface ) )
+-            return;
++		if ( !IsGamescopeToplevel( pSurface ) )
++			return;
+ 
+         m_pOutputs.emplace_back( pOutput );
+ 
+@@ -1663,8 +1694,8 @@ namespace gamescope
+     }
+     void CWaylandPlane::Wayland_Surface_Leave( wl_surface *pSurface, wl_output *pOutput )
+     {
+-        if ( !IsSurfacePlane( pSurface ) )
+-            return;
++		if ( !IsGamescopeToplevel( pSurface ) )
++			return;
+ 
+         std::erase( m_pOutputs, pOutput );
+ 
+@@ -1979,6 +2010,10 @@ namespace gamescope
+             return false;
+         }
+ 
++		m_pEmptyRegion = wl_compositor_create_region( m_pCompositor );
++		m_pFullRegion = wl_compositor_create_region( m_pCompositor );
++		wl_region_add( m_pFullRegion, 0, 0, INT32_MAX, INT32_MAX );
++
+         // Grab stuff from any extra bindings/listeners we set up, eg. format/modifiers.
+         wl_display_roundtrip( m_pDisplay );
+ 
+@@ -2064,9 +2099,6 @@ namespace gamescope
+ 
+     bool CWaylandBackend::PostInit()
+     {
+-        m_pFullRegion = wl_compositor_create_region( m_pCompositor );
+-        wl_region_add( m_pFullRegion, 0, 0, INT32_MAX, INT32_MAX );
+-
+         if ( m_pSinglePixelBufferManager )
+         {
+             wl_buffer *pBlackBuffer = wp_single_pixel_buffer_manager_v1_create_u32_rgba_buffer( m_pSinglePixelBufferManager, 0, 0, 0, ~0u );
+@@ -2619,8 +2651,8 @@ namespace gamescope
+ 
+     void CWaylandBackend::Wayland_Pointer_Enter( wl_pointer *pPointer, uint32_t uSerial, wl_surface *pSurface, wl_fixed_t fSurfaceX, wl_fixed_t fSurfaceY )
+     {
+-        if ( !IsSurfacePlane( pSurface ) )
+-            return;
++		if ( !IsGamescopeToplevel( pSurface ) )
++			return;
+ 
+         m_uPointerEnterSerial = uSerial;
+         m_bMouseEntered = true;
+@@ -2629,8 +2661,8 @@ namespace gamescope
+     }
+     void CWaylandBackend::Wayland_Pointer_Leave( wl_pointer *pPointer, uint32_t uSerial, wl_surface *pSurface )
+     {
+-        if ( !IsSurfacePlane( pSurface ) )
+-            return;
++		if ( !IsGamescopeToplevel( pSurface ) )
++			return;
+ 
+         m_bMouseEntered = false;
+     }
+@@ -2639,8 +2671,8 @@ namespace gamescope
+ 
+     void CWaylandBackend::Wayland_Keyboard_Enter( wl_keyboard *pKeyboard, uint32_t uSerial, wl_surface *pSurface, wl_array *pKeys )
+     {
+-        if ( !IsSurfacePlane( pSurface ) )
+-            return;
++		if ( !IsGamescopeToplevel( pSurface ) )
++			return;
+ 
+         m_uKeyboardEnterSerial = uSerial;
+         m_bKeyboardEntered = true;
+@@ -2649,8 +2681,8 @@ namespace gamescope
+     }
+     void CWaylandBackend::Wayland_Keyboard_Leave( wl_keyboard *pKeyboard, uint32_t uSerial, wl_surface *pSurface )
+     {
+-        if ( !IsSurfacePlane( pSurface ) )
+-            return;
++		if ( !IsGamescopeToplevel( pSurface ) )
++			return;
+ 
+         m_bKeyboardEntered = false;
+ 
+@@ -3009,35 +3041,35 @@ namespace gamescope
+ 
+     // Pointer
+ 
+-    void CWaylandInputThread::Wayland_Pointer_Enter( wl_pointer *pPointer, uint32_t uSerial, wl_surface *pSurface, wl_fixed_t fSurfaceX, wl_fixed_t fSurfaceY )
+-    {
+-        if ( !IsSurfacePlane( pSurface ) )
+-            return;
++	void CWaylandInputThread::Wayland_Pointer_Enter( wl_pointer *pPointer, uint32_t uSerial, wl_surface *pSurface, wl_fixed_t fSurfaceX, wl_fixed_t fSurfaceY )
++	{
++		if ( !IsGamescopeToplevel( pSurface ) )
++			return;
+ 
+-        CWaylandPlane *pPlane = (CWaylandPlane *)wl_surface_get_user_data( pSurface );
+-        if ( !pPlane )
+-            return;
+-        m_pCurrentCursorPlane = pPlane;
+-        m_bMouseEntered = true;
+-        m_uPointerEnterSerial = uSerial;
++		m_pCurrentCursorSurface = pSurface;
++		m_bMouseEntered = true;
++		m_uPointerEnterSerial = uSerial;
+ 
+-        Wayland_Pointer_Motion( pPointer, 0, fSurfaceX, fSurfaceY );
+-    }
+-    void CWaylandInputThread::Wayland_Pointer_Leave( wl_pointer *pPointer, uint32_t uSerial, wl_surface *pSurface )
+-    {
+-        if ( !IsSurfacePlane( pSurface ) )
+-            return;
++		Wayland_Pointer_Motion( pPointer, 0, fSurfaceX, fSurfaceY );
++	}
++	void CWaylandInputThread::Wayland_Pointer_Leave( wl_pointer *pPointer, uint32_t uSerial, wl_surface *pSurface )
++	{
++		if ( !IsGamescopeToplevel( pSurface ) )
++			return;
++
++		m_pCurrentCursorSurface = nullptr;
++		m_bMouseEntered = false;
++	}
++	void CWaylandInputThread::Wayland_Pointer_Motion( wl_pointer *pPointer, uint32_t uTime, wl_fixed_t fSurfaceX, wl_fixed_t fSurfaceY )
++	{
++		if ( !m_bMouseEntered )
++			return;
++
++		CWaylandPlane *pPlane = (CWaylandPlane *)wl_surface_get_user_data( m_pCurrentCursorSurface );
++
++		if ( !pPlane )
++			return;
+ 
+-        CWaylandPlane *pPlane = (CWaylandPlane *)wl_surface_get_user_data( pSurface );
+-        if ( !pPlane )
+-            return;
+-        if ( pPlane != m_pCurrentCursorPlane )
+-            return;
+-        m_pCurrentCursorPlane = nullptr;
+-        m_bMouseEntered = false;
+-    }
+-    void CWaylandInputThread::Wayland_Pointer_Motion( wl_pointer *pPointer, uint32_t uTime, wl_fixed_t fSurfaceX, wl_fixed_t fSurfaceY )
+-    {
+         if ( m_pRelativePointer.load() != nullptr )
+             return;
+ 
+@@ -3049,10 +3081,7 @@ namespace gamescope
+             return;
+         }
+ 
+-        if ( !m_pCurrentCursorPlane )
+-            return;
+-
+-        auto oState = m_pCurrentCursorPlane->GetCurrentState();
++		auto oState = pPlane->GetCurrentState();
+         if ( !oState )
+             return;
+ 
+@@ -3154,6 +3183,9 @@ namespace gamescope
+     }
+     void CWaylandInputThread::Wayland_Keyboard_Enter( wl_keyboard *pKeyboard, uint32_t uSerial, wl_surface *pSurface, wl_array *pKeys )
+     {
++		if ( !IsGamescopeToplevel( pSurface ) )
++			return;
++
+         m_bKeyboardEntered = true;
+         m_uScancodesHeld.clear();
+ 
+@@ -3177,6 +3209,9 @@ namespace gamescope
+     }
+     void CWaylandInputThread::Wayland_Keyboard_Leave( wl_keyboard *pKeyboard, uint32_t uSerial, wl_surface *pSurface )
+     {
++		if ( !IsGamescopeToplevel( pSurface ) )
++			return;
++
+         m_bKeyboardEntered = false;
+         m_uKeyModifiers = 0;
+ 
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Luke Jones <luke@ljones.dev>
+Date: Sun, 27 Apr 2025 14:55:35 +1200
+Subject: Add display script for Zotac Zone
+
+Signed-off-by: Luke Jones <luke@ljones.dev>
+---
+ .../00-gamescope/displays/zotac.zone.oled.lua | 56 +++++++++++++++++++
+ 1 file changed, 56 insertions(+)
+ create mode 100644 scripts/00-gamescope/displays/zotac.zone.oled.lua
+
+diff --git a/scripts/00-gamescope/displays/zotac.zone.oled.lua b/scripts/00-gamescope/displays/zotac.zone.oled.lua
+new file mode 100644
+index 000000000000..8ea1392c14bf
+--- /dev/null
++++ b/scripts/00-gamescope/displays/zotac.zone.oled.lua
+@@ -0,0 +1,56 @@
++-- colorimetry from DXQ7D0023 PDF specification
++local zotac_amoled_colorimetry = {
++   r = { x = 0.6396, y = 0.3300 },
++   g = { x = 0.2998, y = 0.5996 },
++   b = { x = 0.1503, y = 0.0595 },
++   w = { x = 0.3095, y = 0.3095 }
++}
++
++gamescope.config.known_displays.zotac_amoled = {
++    pretty_name = "DXQ7D0023 AMOLED",
++    dynamic_refresh_rates = {
++        60, 72, 90, 120, 144
++    },
++    hdr = {
++        supported = true,
++        force_enabled = true,
++        eotf = gamescope.eotf.gamma22,
++        max_content_light_level = 993,
++        max_frame_average_luminance = 400,
++        min_content_light_level = 0.007
++    },
++    colorimetry = zotac_amoled_colorimetry,
++    dynamic_modegen = function(base_mode, refresh)
++        debug("Generating mode "..refresh.."Hz for DXQ7D0023 AMOLED")
++        local mode = base_mode
++
++        gamescope.modegen.set_resolution(mode, 1080, 1920)
++
++        -- Horizontal timings from PDF:       HFP, HSync, HBP
++        gamescope.modegen.set_h_timings(mode, 80, 44, 156)
++        -- Vertical timings from PDF: VFP=20, VSync=1, VBP=15
++        gamescope.modegen.set_v_timings(mode, 48, 2, 14)
++
++        mode.clock = gamescope.modegen.calc_max_clock(mode, refresh)
++        mode.vrefresh = gamescope.modegen.calc_vrefresh(mode)
++
++        return mode
++    end,
++    matches = function(display)
++        -- Match based on the EDID information
++        local lcd_types = {
++            { vendor = "ZDZ", model = "ZDZ0501" },
++            { vendor = "DXQ", model = "DXQ7D0023" },
++        }
++
++        for index, value in ipairs(lcd_types) do
++            if value.vendor == display.vendor and value.model == display.model then
++                debug("[zotac_amoled] Matched vendor: "..value.vendor.." model: "..value.model)
++                return 5000
++            end
++        end
++
++        return -1
++    end
++}
++debug("Registered DXQ7D0023 AMOLED as a known display")
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Philip Mueller <philm@manjaro.org>
+Date: Mon, 20 Oct 2025 04:02:54 +0200
+Subject: =?UTF-8?q?Adjust=20display=20script=20for=20Zotac=20Zone=0A-=2012?=
+ =?UTF-8?q?0Hz=20is=20the=20official=20max=20supported=20refresh=20rate?=
+
+---
+ scripts/00-gamescope/displays/zotac.zone.oled.lua | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/00-gamescope/displays/zotac.zone.oled.lua b/scripts/00-gamescope/displays/zotac.zone.oled.lua
+index 8ea1392c14bf..f800fc7eee6f 100644
+--- a/scripts/00-gamescope/displays/zotac.zone.oled.lua
++++ b/scripts/00-gamescope/displays/zotac.zone.oled.lua
+@@ -9,7 +9,7 @@ local zotac_amoled_colorimetry = {
+ gamescope.config.known_displays.zotac_amoled = {
+     pretty_name = "DXQ7D0023 AMOLED",
+     dynamic_refresh_rates = {
+-        60, 72, 90, 120, 144
++        60, 72, 90, 120
+     },
+     hdr = {
+         supported = true,
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Xaver Hugl <xaver.hugl@kde.org>
+Date: Sat, 25 Oct 2025 23:23:28 +0200
+Subject: WaylandBackend: use luminance instead of transfer function for HDR
+ check
+
+HDR doesn't depend on PQ or any specific transfer function.
+---
+ src/Backends/WaylandBackend.cpp | 43 ++++++++++-----------------------
+ 1 file changed, 13 insertions(+), 30 deletions(-)
+
+diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
+index b8d1b32ffe1b..f9f7d254860f 100644
+--- a/src/Backends/WaylandBackend.cpp
++++ b/src/Backends/WaylandBackend.cpp
+@@ -460,6 +460,8 @@ namespace gamescope
+         friend CWaylandPlane;
+ 
+         BackendConnectorHDRInfo m_HDRInfo{};
++        uint32_t m_uReferenceLuminance = 203;
++        uint32_t m_uMaxTargetLuminance = 203;
+         displaycolorimetry_t m_DisplayColorimetry = displaycolorimetry_709;
+         std::vector<uint8_t> m_FakeEdid;
+ 
+@@ -1840,7 +1842,16 @@ namespace gamescope
+ 
+     void CWaylandPlane::Wayland_WPImageDescriptionInfo_Done( wp_image_description_info_v1 *pImageDescInfo )
+     {
++        auto *pHDRInfo = &m_pConnector->m_HDRInfo;
++        if (m_pBackend->SupportsColorManagement()) {
++            pHDRInfo->bExposeHDRSupport   = ( cv_hdr_enabled && m_pConnector->m_uMaxTargetLuminance > m_pConnector->m_uReferenceLuminance );
++            pHDRInfo->eOutputEncodingEOTF = pHDRInfo->bExposeHDRSupport ? EOTF_PQ : EOTF_Gamma22;
++        }
+ 
++        xdg_log.infof( "HDR INFO" );
++        xdg_log.infof( "  cv_hdr_enabled: %s", cv_hdr_enabled ? "true" : "false" );
++        xdg_log.infof( "  uMaxLum: %u, uRefLum: %u", m_pConnector->m_uMaxTargetLuminance, m_pConnector->m_uReferenceLuminance);
++        xdg_log.infof( "  bExposeHDRSupport: %s", pHDRInfo->bExposeHDRSupport ? "true" : "false" );
+     }
+     void CWaylandPlane::Wayland_WPImageDescriptionInfo_ICCFile( wp_image_description_info_v1 *pImageDescInfo, int32_t nICCFd, uint32_t uICCSize )
+     {
+@@ -1858,41 +1869,13 @@ namespace gamescope
+     void CWaylandPlane::Wayland_WPImageDescriptionInfo_TFPower( wp_image_description_info_v1 *pImageDescInfo, uint32_t uExp)
+     {
+ 
+-    }
+-    static const char *TFToString( uint32_t uTF )
+-    {
+-        switch ( (wp_color_manager_v1_transfer_function) uTF )
+-        {
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_BT1886: return "BT1886";
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA22: return "GAMMA22";
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_GAMMA28: return "GAMMA28";
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_ST240: return "ST240";
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_EXT_LINEAR: return "EXT_LINEAR";
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_LOG_100: return "LOG_100";
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_LOG_316: return "LOG_316";
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_XVYCC: return "XVYCC";
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_SRGB: return "SRGB";
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_EXT_SRGB: return "EXT_SRGB";
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_ST2084_PQ: return "ST2084_PQ";
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_ST428: return "ST428";
+-            case WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_HLG: return "HLG";
+-            default: return "Unknown";
+-        }
+     }
+     void CWaylandPlane::Wayland_WPImageDescriptionInfo_TFNamed( wp_image_description_info_v1 *pImageDescInfo, uint32_t uTF)
+     {
+-        auto *pHDRInfo = &m_pConnector->m_HDRInfo;
+-        pHDRInfo->bExposeHDRSupport   = ( cv_hdr_enabled && uTF == WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_ST2084_PQ );
+-        pHDRInfo->eOutputEncodingEOTF = ( cv_hdr_enabled && uTF == WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_ST2084_PQ ) ? EOTF_PQ : EOTF_Gamma22;
+-
+-        xdg_log.infof( "HDR INFO" );
+-        xdg_log.infof( "  cv_hdr_enabled: %s", cv_hdr_enabled ? "true" : "false" );
+-        xdg_log.infof( "  uTF: %s", TFToString( uTF ) );
+-        xdg_log.infof( "  bExposeHDRSupport: %s", pHDRInfo->bExposeHDRSupport ? "true" : "false" );
+     }
+     void CWaylandPlane::Wayland_WPImageDescriptionInfo_Luminances( wp_image_description_info_v1 *pImageDescInfo, uint32_t uMinLum, uint32_t uMaxLum, uint32_t uRefLum )
+     {
+-
++        m_pConnector->m_uReferenceLuminance = uRefLum;
+     }
+     void CWaylandPlane::Wayland_WPImageDescriptionInfo_TargetPrimaries( wp_image_description_info_v1 *pImageDescInfo, int32_t nRedX, int32_t nRedY, int32_t nGreenX, int32_t nGreenY, int32_t nBlueX, int32_t nBlueY, int32_t nWhiteX, int32_t nWhiteY )
+     {
+@@ -1904,7 +1887,7 @@ namespace gamescope
+     }
+     void CWaylandPlane::Wayland_WPImageDescriptionInfo_TargetLuminance( wp_image_description_info_v1 *pImageDescInfo, uint32_t uMinLum, uint32_t uMaxLum )
+     {
+-
++        m_pConnector->m_uMaxTargetLuminance = uMaxLum;
+     }
+     void CWaylandPlane::Wayland_WPImageDescriptionInfo_Target_MaxCLL( wp_image_description_info_v1 *pImageDescInfo, uint32_t uMaxCLL )
+     {
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anna Maniscalco <anna.maniscalco2000@gmail.com>
+Date: Fri, 31 Oct 2025 00:50:45 +0100
+Subject: steamcompmgr: pick focused pid consistently with engine
+
+Pick focusedWindow_pid the same way as focusedWindow_engine which has
+proven more reliable.
+---
+ src/steamcompmgr.cpp | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 8de60d204a68..d493e035a792 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -1022,7 +1022,7 @@ unsigned int g_BlurFadeDuration = 0;
+ int g_BlurRadius = 5;
+ unsigned int g_BlurFadeStartTime = 0;
+ 
+-pid_t focusWindow_pid;
++pid_t focusWindow_pid, sdFocusWindow_pid;
+ std::shared_ptr<std::string> focusWindow_engine = nullptr;
+ 
+ focus_t g_steamcompmgr_xdg_focus;
+@@ -4161,8 +4161,8 @@ determine_and_apply_focus( global_focus_t *pFocus )
+ 
+ #if HAVE_LIBSYSTEMD
+ 	pid_t newFocusedWindowPID = pFocus->focusWindow ? pFocus->focusWindow->pid : 0;
+-	if (g_dbus && focusWindow_pid != newFocusedWindowPID) {
+-		const char *unfocusedWindowUnit = unit_from_pid(focusWindow_pid);
++	if (g_dbus && sdFocusWindow_pid != newFocusedWindowPID) {
++		const char *unfocusedWindowUnit = unit_from_pid(sdFocusWindow_pid);
+ 		const char *focusedWindowUnit = unit_from_pid(newFocusedWindowPID);
+ 		bool sameUnit = unfocusedWindowUnit && focusedWindowUnit && !strcmp(unfocusedWindowUnit, focusedWindowUnit);
+ 
+@@ -4187,7 +4187,7 @@ determine_and_apply_focus( global_focus_t *pFocus )
+ 		focusedBaseAppId = pFocus->focusWindow->appID;
+ 		focusedAppId = pFocus->inputFocusWindow->appID;
+ 		focused_display = get_win_display_name(pFocus->focusWindow);
+-		focusWindow_pid = pFocus->focusWindow->pid;
++		sdFocusWindow_pid = pFocus->focusWindow->pid;
+ 	}
+ 
+ 	g_focusedBaseAppId = (uint32_t)focusedAppId;
+@@ -6507,6 +6507,7 @@ bool handle_done_commit( steamcompmgr_win_t *w, xwayland_ctx_t *ctx, uint64_t co
+ 					hasRepaint = true;
+ 
+ 					focusWindow_engine = w->engineName;
++					focusWindow_pid = w->pid;
+ 				}
+ 
+ 				if ( w == pFocus->overrideWindow )
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Autumn Ashton <misyl@froggi.es>
+Date: Fri, 31 Oct 2025 21:38:53 +0000
+Subject: backend: Add support for deferred backends
+
+So we can eg. init Gamescope headlessly then transition into a backend that only uses SAMPLED modifiers like SteamVR.
+
+This way we can init VRWebHelper in a Gamescope before SteamVR fully comes up.
+---
+ src/Backends/DRMBackend.cpp      |   8 +-
+ src/Backends/DeferredBackend.h   | 432 +++++++++++++++++++++++++++++++
+ src/Backends/HeadlessBackend.cpp |   2 +-
+ src/Backends/OpenVRBackend.cpp   |  50 ++--
+ src/Backends/SDLBackend.cpp      |  30 +--
+ src/Backends/WaylandBackend.cpp  |  12 +-
+ src/backend.cpp                  |  22 +-
+ src/backend.h                    |  10 +-
+ src/main.cpp                     |  14 +
+ src/rendervulkan.cpp             |  31 ++-
+ src/steamcompmgr.cpp             |  23 +-
+ src/wlserver.cpp                 |   9 +
+ 12 files changed, 589 insertions(+), 54 deletions(-)
+ create mode 100644 src/Backends/DeferredBackend.h
+
+diff --git a/src/Backends/DRMBackend.cpp b/src/Backends/DRMBackend.cpp
+index 1ec2699821f0..7361e5aedb39 100644
+--- a/src/Backends/DRMBackend.cpp
++++ b/src/Backends/DRMBackend.cpp
+@@ -1523,7 +1523,7 @@ void finish_drm(struct drm_t *drm)
+ 	// page-flip handler thread.
+ }
+ 
+-gamescope::OwningRc<gamescope::IBackendFb> drm_fbid_from_dmabuf( struct drm_t *drm, struct wlr_buffer *buf, struct wlr_dmabuf_attributes *dma_buf )
++gamescope::OwningRc<gamescope::IBackendFb> drm_fbid_from_dmabuf( struct drm_t *drm, struct wlr_dmabuf_attributes *dma_buf )
+ {
+ 	gamescope::OwningRc<gamescope::IBackendFb> pBackendFb;
+ 	uint32_t fb_id = 0;
+@@ -2525,7 +2525,7 @@ drm_prepare_liftoff( struct drm_t *drm, const struct FrameInfo_t *frameInfo, boo
+ 		if ( i < frameInfo->layerCount )
+ 		{
+ 			const FrameInfo_t::Layer_t *pLayer = &frameInfo->layers[ i ];
+-			gamescope::CDRMFb *pDrmFb = static_cast<gamescope::CDRMFb *>( pLayer->tex ? pLayer->tex->GetBackendFb() : nullptr );
++			gamescope::CDRMFb *pDrmFb = static_cast<gamescope::CDRMFb *>( pLayer->tex ? pLayer->tex->GetBackendFb()->Unwrap() : nullptr );
+ 
+ 			if ( pDrmFb == nullptr )
+ 			{
+@@ -3710,9 +3710,9 @@ namespace gamescope
+ 			return std::make_shared<BackendBlob>( data, uBlob, true );
+ 		}
+ 
+-		virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_buffer *pBuffer, wlr_dmabuf_attributes *pDmaBuf ) override
++		virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_dmabuf_attributes *pDmaBuf ) override
+ 		{
+-			return drm_fbid_from_dmabuf( &g_DRM, pBuffer, pDmaBuf );
++			return drm_fbid_from_dmabuf( &g_DRM, pDmaBuf );
+ 		}
+ 
+ 		virtual bool UsesModifiers() const override
+diff --git a/src/Backends/DeferredBackend.h b/src/Backends/DeferredBackend.h
+new file mode 100644
+index 000000000000..1cc7f52c340b
+--- /dev/null
++++ b/src/Backends/DeferredBackend.h
+@@ -0,0 +1,432 @@
++#include "backend.h"
++#include "refresh_rate.h"
++#include "steamcompmgr.hpp"
++
++#include <cassert>
++#include <shared_mutex>
++
++extern int g_nPreferredOutputWidth;
++extern int g_nPreferredOutputHeight;
++
++std::span<const uint64_t> GetSupportedSampleModifiers( uint32_t uDrmFormat );
++
++namespace gamescope
++{
++    class CDeferredBackend;
++
++    class CDeferredFb final : public CBaseBackendFb
++    {
++    public:
++        CDeferredFb( CDeferredBackend *pDeferredBackend, struct wlr_dmabuf_attributes *attributes )
++            : m_pDeferredBackend{ pDeferredBackend }
++        {
++            wlr_dmabuf_attributes_copy( &m_attributes, attributes );
++        }
++
++        ~CDeferredFb()
++        {
++            wlr_dmabuf_attributes_finish( &m_attributes );
++        }
++        
++        IBackendFb *Unwrap() override;
++    private:
++        CDeferredBackend *m_pDeferredBackend = nullptr;
++        struct wlr_dmabuf_attributes m_attributes;
++        OwningRc<IBackendFb> m_pChild;
++    };
++
++	class CDeferredBackend final : public CBaseBackend
++	{
++	public:
++		CDeferredBackend( IBackend *pChild )
++            : m_pChild{ pChild }
++		{
++		}
++
++		virtual ~CDeferredBackend()
++		{
++            if ( m_pChild )
++            {
++                delete m_pChild;
++                m_pChild = nullptr;
++            }
++		}
++
++		virtual bool Init() override
++		{
++			g_nOutputWidth = g_nPreferredOutputWidth;
++			g_nOutputHeight = g_nPreferredOutputHeight;
++			g_nOutputRefresh = g_nNestedRefresh;
++
++			if ( g_nOutputHeight == 0 )
++			{
++				if ( g_nOutputWidth != 0 )
++				{
++					fprintf( stderr, "Cannot specify -W without -H\n" );
++					return false;
++				}
++				g_nOutputHeight = 720;
++			}
++			if ( g_nOutputWidth == 0 )
++				g_nOutputWidth = g_nOutputHeight * 16 / 9;
++			if ( g_nOutputRefresh == 0 )
++				g_nOutputRefresh = ConvertHztomHz( 60 );
++
++            if ( !vulkan_init( vulkan_get_instance(), VK_NULL_HANDLE ) )
++            {
++                return false;
++            }
++
++            if ( !wlsession_init() )
++            {
++                fprintf( stderr, "Failed to initialize deferred backend\n" );
++                return false;
++            }
++
++            TryInittingChild();
++
++			return true;
++		}
++
++		virtual bool PostInit() override
++		{
++            {
++                std::shared_lock lock{ m_mutInit };
++                m_bDonePostInit = true;
++
++                if ( m_bInittedChild )
++                    return m_pChild->PostInit();
++            }
++
++            return true;
++		}
++
++        virtual std::span<const char *const> GetInstanceExtensions() const override
++		{
++            // Basically what's needed to support SDL + OpenVR.
++            static const std::array<const char *const, 8> requiredInstanceExts
++            {
++                VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME,
++                VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
++                VK_KHR_EXTERNAL_FENCE_CAPABILITIES_EXTENSION_NAME,
++                VK_KHR_SURFACE_EXTENSION_NAME,
++                "VK_KHR_xcb_surface",
++                "VK_KHR_xlib_surface",
++                "VK_KHR_wayland_surface",
++                VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME,
++            };
++			return std::span<const char *const>{ requiredInstanceExts };
++		}
++        virtual std::span<const char *const> GetDeviceExtensions( VkPhysicalDevice pVkPhysicalDevice ) const override
++		{
++            // Basically what's needed to support OpenVR.
++            static const std::array<const char *const, 8> requiredDeviceExts
++            {
++                VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
++                VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
++                VK_KHR_TIMELINE_SEMAPHORE_EXTENSION_NAME,
++                VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME,
++                VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME,
++                VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME,
++                VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME,
++                VK_KHR_IMAGE_FORMAT_LIST_EXTENSION_NAME,
++            };
++			return std::span<const char *const>{ requiredDeviceExts };
++		}
++        virtual VkImageLayout GetPresentLayout() const override
++		{
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->GetPresentLayout();
++            }
++
++			return VK_IMAGE_LAYOUT_GENERAL;
++		}
++		virtual void GetPreferredOutputFormat( uint32_t *pPrimaryPlaneFormat, uint32_t *pOverlayPlaneFormat ) const override
++		{
++			*pPrimaryPlaneFormat = VulkanFormatToDRM( VK_FORMAT_A2B10G10R10_UNORM_PACK32 );
++			*pOverlayPlaneFormat = VulkanFormatToDRM( VK_FORMAT_B8G8R8A8_UNORM );
++		}
++		virtual bool ValidPhysicalDevice( VkPhysicalDevice pVkPhysicalDevice ) const override
++		{
++			return true;
++		}
++
++		virtual void DirtyState( bool bForce, bool bForceModeset ) override
++		{
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->DirtyState( bForce, bForceModeset );
++            }
++		}
++
++		virtual bool PollState() override
++		{
++            TryInittingChild();
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->PollState() || m_bJustInittedPoll;
++            }
++			return false;
++		}
++
++		virtual std::shared_ptr<BackendBlob> CreateBackendBlob( const std::type_info &type, std::span<const uint8_t> data ) override
++		{
++            // Only dummy backend blobs supported.
++			return std::make_shared<BackendBlob>( data );
++		}
++
++		virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_dmabuf_attributes *pDmaBuf ) override
++		{
++			return new CDeferredFb( this, pDmaBuf );
++		}
++
++		virtual bool UsesModifiers() const override
++		{
++            return true;
++		}
++		virtual std::span<const uint64_t> GetSupportedModifiers( uint32_t uDrmFormat ) const override
++		{
++			return GetSupportedSampleModifiers( uDrmFormat );
++		}
++
++		virtual IBackendConnector *GetCurrentConnector() override
++		{
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->GetCurrentConnector();
++            }
++
++            return nullptr;
++		}
++		virtual IBackendConnector *GetConnector( GamescopeScreenType eScreenType ) override
++		{
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->GetConnector( eScreenType );
++            }
++            
++			return nullptr;
++		}
++
++		virtual bool SupportsPlaneHardwareCursor() const override
++		{
++            // Doesn't need to be 'initted' for this check.
++            return m_pChild->SupportsPlaneHardwareCursor();
++		}
++
++		virtual bool SupportsTearing() const override
++		{
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->SupportsTearing();
++            }
++            
++			return false;
++		}
++
++		virtual bool UsesVulkanSwapchain() const override
++		{
++            // Doesn't need to be 'initted' for this check.
++            return m_pChild->UsesVulkanSwapchain();
++		}
++
++        virtual bool IsSessionBased() const override
++		{
++            // Doesn't need to be 'initted' for this check.
++            return m_pChild->IsSessionBased();
++		}
++
++		virtual bool SupportsExplicitSync() const override
++		{
++            // Doesn't need to be 'initted' for this check.
++            return m_pChild->SupportsExplicitSync();
++		}
++
++		virtual bool IsPaused() const override
++		{
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->IsPaused();
++            }
++
++            // We are always "paused" when not initted.
++            // Don't do any commits!
++			return true;
++		}
++
++		virtual bool IsVisible() const override
++		{
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->IsVisible();
++            }
++
++			return true;
++		}
++
++		virtual glm::uvec2 CursorSurfaceSize( glm::uvec2 uvecSize ) const override
++		{
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->CursorSurfaceSize( uvecSize );
++            }
++
++			return uvecSize;
++		}
++
++		virtual bool HackTemporarySetDynamicRefresh( int nRefresh ) override
++		{
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->HackTemporarySetDynamicRefresh( nRefresh );
++            }
++
++			return false;
++		}
++
++		virtual void HackUpdatePatchedEdid() override
++		{
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->HackUpdatePatchedEdid();
++            }
++		}
++
++        virtual bool NeedsFrameSync() const override
++        {
++            // Deferred backends do not support frame sync.
++            return false;
++        }
++
++        virtual TouchClickMode GetTouchClickMode() override
++        {
++            // Doesn't need to be 'initted' for this check.
++            return m_pChild->GetTouchClickMode();
++        }
++
++        virtual void DumpDebugInfo() override
++        {
++            // Doesn't need to be 'initted' for this check.
++            return m_pChild->DumpDebugInfo();
++        }
++
++        virtual bool UsesVirtualConnectors() override
++        {
++            // Doesn't need to be 'initted' for this check.
++            return m_pChild->UsesVirtualConnectors();
++        }
++        virtual std::shared_ptr<IBackendConnector> CreateVirtualConnector( uint64_t ulVirtualConnectorKey ) override
++        {
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->CreateVirtualConnector( ulVirtualConnectorKey );
++            }
++
++            return nullptr;
++        }
++
++        virtual void NotifyPhysicalInput( InputType eInputType ) override
++        {
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->NotifyPhysicalInput( eInputType );
++            }
++        }
++
++        virtual bool SupportsVROverlayForwarding() override
++        {
++            // Doesn't need to be 'initted' for this check.
++            return m_pChild->SupportsVROverlayForwarding();
++        }
++        virtual void ForwardFramebuffer( std::shared_ptr<IBackendPlane> &pPlane, IBackendFb *pFramebuffer, const void *pData ) override
++        {
++            {
++                std::shared_lock lock{ m_mutInit };
++                if ( m_bInittedChild )
++                    return m_pChild->ForwardFramebuffer( pPlane, pFramebuffer, pData );
++            }
++        }
++
++        bool IsChildInitted()
++        {
++            return m_bInittedChild;
++        }
++
++        IBackend *GetChild()
++        {
++            return m_pChild;
++        }
++
++        bool NewlyInitted() override
++        {
++            return m_bJustInittedClient.exchange( false );
++        }
++
++	protected:
++
++		virtual void OnBackendBlobDestroyed( BackendBlob *pBlob ) override
++		{
++		}
++
++	private:
++
++        void TryInittingChild()
++        {
++            if ( !m_bInittedChild )
++            {
++                std::unique_lock lock{ m_mutInit };
++                if ( !m_bInittedChild )
++                {
++                    if ( m_pChild->Init() )
++                    {
++                        m_bInittedChild = true;
++
++                        if ( m_bDonePostInit )
++                        {
++                            bool bRet = m_pChild->PostInit();
++                            assert( bRet && "PostInit failed!" );
++                        }
++
++                        m_bJustInittedClient = true;
++                        m_bJustInittedPoll = true;
++                    }
++                }
++            }
++        }
++
++        IBackend *m_pChild = nullptr;
++        mutable std::shared_mutex m_mutInit;
++        bool m_bDonePostInit = false;
++
++        std::atomic<bool> m_bInittedChild = { false };
++        std::atomic<bool> m_bJustInittedClient = { false };
++        std::atomic<bool> m_bJustInittedPoll = { false };
++	};
++
++    IBackendFb *CDeferredFb::Unwrap()
++    {
++        assert( m_pDeferredBackend->IsChildInitted() );
++
++        if ( !m_pChild )
++        {
++            m_pChild = m_pDeferredBackend->GetChild()->ImportDmabufToBackend( &m_attributes );
++        }
++
++        return m_pChild.get();
++    }
++
++}
+diff --git a/src/Backends/HeadlessBackend.cpp b/src/Backends/HeadlessBackend.cpp
+index 6f683721212a..8e4540066e75 100644
+--- a/src/Backends/HeadlessBackend.cpp
++++ b/src/Backends/HeadlessBackend.cpp
+@@ -180,7 +180,7 @@ namespace gamescope
+ 			return std::make_shared<BackendBlob>( data );
+ 		}
+ 
+-		virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_buffer *pBuffer, wlr_dmabuf_attributes *pDmaBuf ) override
++		virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_dmabuf_attributes *pDmaBuf ) override
+ 		{
+ 			return new CBaseBackendFb();
+ 		}
+diff --git a/src/Backends/OpenVRBackend.cpp b/src/Backends/OpenVRBackend.cpp
+index 6391628876e7..cb0a15c65ac7 100644
+--- a/src/Backends/OpenVRBackend.cpp
++++ b/src/Backends/OpenVRBackend.cpp
+@@ -48,6 +48,7 @@ extern std::string g_reshade_effect;
+ extern gamescope::ConVar<bool> cv_hdr_enabled;
+ 
+ extern uint64_t g_SteamCompMgrLimitedAppRefreshCycle;
++extern bool g_bAllowDeferredBackend;
+ 
+ void MakeFocusDirty();
+ void update_connector_display_info_wl(struct drm_t *drm);
+@@ -553,33 +554,37 @@ namespace gamescope
+                 m_pchOverlayName = "Gamescope";
+ 
+             m_pIPCResourceManager = vr::VRIPCResourceManager();
+-            if ( m_pIPCResourceManager )
+-            {
+-                uint32_t uFormatCount = 0;
+-                m_pIPCResourceManager->GetDmabufFormats( &uFormatCount, nullptr );
+ 
+-                if ( uFormatCount )
++            if ( !g_bAllowDeferredBackend )
++            {
++                if ( m_pIPCResourceManager )
+                 {
+-                    std::vector<uint32_t> uFormats;
+-                    uFormats.resize( uFormatCount );
+-                    m_pIPCResourceManager->GetDmabufFormats( &uFormatCount, uFormats.data() );
++                    uint32_t uFormatCount = 0;
++                    m_pIPCResourceManager->GetDmabufFormats( &uFormatCount, nullptr );
+ 
+-                    for ( uint32_t i = 0; i < uFormatCount; i++ )
++                    if ( uFormatCount )
+                     {
+-                        uint32_t uFormat = uFormats[i];
+-                        uint32_t uModifierCount = 0;
+-                        m_pIPCResourceManager->GetDmabufModifiers( vr::VRApplication_Overlay, uFormat, &uModifierCount, nullptr );
++                        std::vector<uint32_t> uFormats;
++                        uFormats.resize( uFormatCount );
++                        m_pIPCResourceManager->GetDmabufFormats( &uFormatCount, uFormats.data() );
+ 
+-                        if ( uModifierCount )
++                        for ( uint32_t i = 0; i < uFormatCount; i++ )
+                         {
+-                            std::vector<uint64_t> ulModifiers;
+-                            ulModifiers.resize( uModifierCount );
+-                            m_pIPCResourceManager->GetDmabufModifiers( vr::VRApplication_Overlay, uFormat, &uModifierCount, ulModifiers.data() );
++                            uint32_t uFormat = uFormats[i];
++                            uint32_t uModifierCount = 0;
++                            m_pIPCResourceManager->GetDmabufModifiers( vr::VRApplication_Overlay, uFormat, &uModifierCount, nullptr );
+ 
+-                            for ( uint64_t ulModifier : ulModifiers )
++                            if ( uModifierCount )
+                             {
+-                                if ( ulModifier != DRM_FORMAT_MOD_INVALID )
+-                                    m_FormatModifiers[uFormat].emplace_back( ulModifier );
++                                std::vector<uint64_t> ulModifiers;
++                                ulModifiers.resize( uModifierCount );
++                                m_pIPCResourceManager->GetDmabufModifiers( vr::VRApplication_Overlay, uFormat, &uModifierCount, ulModifiers.data() );
++
++                                for ( uint64_t ulModifier : ulModifiers )
++                                {
++                                    if ( ulModifier != DRM_FORMAT_MOD_INVALID )
++                                        m_FormatModifiers[uFormat].emplace_back( ulModifier );
++                                }
+                             }
+                         }
+                     }
+@@ -677,7 +682,7 @@ namespace gamescope
+ 			return std::make_shared<BackendBlob>( data );
+ 		}
+ 
+-		virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_buffer *pBuffer, wlr_dmabuf_attributes *pDmaBuf ) override
++		virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_dmabuf_attributes *pDmaBuf ) override
+ 		{
+             if ( UsesModifiers() )
+             {
+@@ -739,6 +744,9 @@ namespace gamescope
+             if ( !cv_vr_use_modifiers )
+                 return false;
+ 
++            if ( g_bAllowDeferredBackend )
++                return true;
++
+             if ( !m_pIPCResourceManager )
+                 return false;
+ 
+@@ -1834,7 +1842,7 @@ namespace gamescope
+                     vr::VROverlay()->ShowOverlay( m_hOverlay );
+                 }
+ 
+-                pFb = static_cast<COpenVRFb *>( oState->pTexture->GetBackendFb() );
++                pFb = static_cast<COpenVRFb *>( oState->pTexture->GetBackendFb()->Unwrap() );
+                 vr::SharedTextureHandle_t ulHandle = pFb->GetSharedTextureHandle();
+ 
+                 vr::Texture_t texture = { (void *)&ulHandle, vr::TextureType_SharedTextureHandle, vr::ColorSpace_Gamma };
+diff --git a/src/Backends/SDLBackend.cpp b/src/Backends/SDLBackend.cpp
+index 2bb8fb06ef0c..87bde7e2f13b 100644
+--- a/src/Backends/SDLBackend.cpp
++++ b/src/Backends/SDLBackend.cpp
+@@ -55,10 +55,12 @@ namespace gamescope
+ 		GAMESCOPE_SDL_EVENT_COUNT,
+ 	};
+ 
++	class CSDLBackend;
++
+ 	class CSDLConnector final : public CBaseBackendConnector, public INestedHints
+ 	{
+ 	public:
+-		CSDLConnector();
++		CSDLConnector( CSDLBackend *pBackend );
+ 		virtual bool Init();
+ 
+ 		virtual ~CSDLConnector();
+@@ -121,6 +123,7 @@ namespace gamescope
+ 		SDL_Window *GetSDLWindow() const { return m_pWindow; }
+ 		VkSurfaceKHR GetVulkanSurface() const { return m_pVkSurface; }
+ 	private:
++		CSDLBackend *m_pBackend = nullptr;
+ 		SDL_Window *m_pWindow = nullptr;
+ 		VkSurfaceKHR m_pVkSurface = VK_NULL_HANDLE;
+ 		BackendConnectorHDRInfo m_HDRInfo{};
+@@ -148,7 +151,7 @@ namespace gamescope
+ 
+ 		virtual std::shared_ptr<BackendBlob> CreateBackendBlob( const std::type_info &type, std::span<const uint8_t> data ) override;
+ 
+-        virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_buffer *pBuffer, wlr_dmabuf_attributes *pDmaBuf ) override;
++        virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_dmabuf_attributes *pDmaBuf ) override;
+ 		virtual bool UsesModifiers() const override;
+ 		virtual std::span<const uint64_t> GetSupportedModifiers( uint32_t uDrmFormat ) const override;
+ 
+@@ -208,7 +211,8 @@ namespace gamescope
+ 	// CSDLConnector
+ 	//////////////////
+ 
+-	CSDLConnector::CSDLConnector()
++	CSDLConnector::CSDLConnector( CSDLBackend *pBackend )
++		: m_pBackend{ pBackend }
+ 	{
+ 	}
+ 
+@@ -357,28 +361,23 @@ namespace gamescope
+ 
+ 	void CSDLConnector::SetCursorImage( std::shared_ptr<INestedHints::CursorInfo> info )
+ 	{
+-		CSDLBackend *pBackend = static_cast<CSDLBackend *>( GetBackend() );
+-		pBackend->SetCursorImage( std::move( info ) );
++		m_pBackend->SetCursorImage( std::move( info ) );
+ 	}
+ 	void CSDLConnector::SetRelativeMouseMode( bool bRelative )
+ 	{
+-		CSDLBackend *pBackend = static_cast<CSDLBackend *>( GetBackend() );
+-		pBackend->SetRelativeMouseMode( bRelative );
++		m_pBackend->SetRelativeMouseMode( bRelative );
+ 	}
+ 	void CSDLConnector::SetVisible( bool bVisible )
+ 	{
+-		CSDLBackend *pBackend = static_cast<CSDLBackend *>( GetBackend() );
+-		pBackend->SetVisible( bVisible );
++		m_pBackend->SetVisible( bVisible );
+ 	}
+ 	void CSDLConnector::SetTitle( std::shared_ptr<std::string> szTitle )
+ 	{
+-		CSDLBackend *pBackend = static_cast<CSDLBackend *>( GetBackend() );
+-		pBackend->SetTitle( std::move( szTitle ) );
++		m_pBackend->SetTitle( std::move( szTitle ) );
+ 	}
+ 	void CSDLConnector::SetIcon( std::shared_ptr<std::vector<uint32_t>> uIconPixels )
+ 	{
+-		CSDLBackend *pBackend = static_cast<CSDLBackend *>( GetBackend() );
+-		pBackend->SetIcon( std::move( uIconPixels ) );
++		m_pBackend->SetIcon( std::move( uIconPixels ) );
+ 	}
+ 
+     void CSDLConnector::SetSelection( std::shared_ptr<std::string> szContents, GamescopeSelection eSelection )
+@@ -394,7 +393,8 @@ namespace gamescope
+ 	////////////////
+ 
+ 	CSDLBackend::CSDLBackend()
+-		: m_SDLThread{ [this](){ this->SDLThreadFunc(); } }
++		: m_Connector{ this }
++		, m_SDLThread{ [this](){ this->SDLThreadFunc(); } }
+ 	{
+ 	}
+ 
+@@ -449,7 +449,7 @@ namespace gamescope
+ 		return std::make_shared<BackendBlob>( data );
+ 	}
+ 
+-	OwningRc<IBackendFb> CSDLBackend::ImportDmabufToBackend( wlr_buffer *pBuffer, wlr_dmabuf_attributes *pDmaBuf )
++	OwningRc<IBackendFb> CSDLBackend::ImportDmabufToBackend( wlr_dmabuf_attributes *pDmaBuf )
+ 	{
+ 		return new CBaseBackendFb();
+ 	}
+diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
+index f9f7d254860f..0d682fb359f6 100644
+--- a/src/Backends/WaylandBackend.cpp
++++ b/src/Backends/WaylandBackend.cpp
+@@ -652,7 +652,7 @@ namespace gamescope
+ 
+         virtual std::shared_ptr<BackendBlob> CreateBackendBlob( const std::type_info &type, std::span<const uint8_t> data ) override;
+ 
+-        virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_buffer *pBuffer, wlr_dmabuf_attributes *pDmaBuf ) override;
++        virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_dmabuf_attributes *pDmaBuf ) override;
+         virtual bool UsesModifiers() const override;
+         virtual std::span<const uint64_t> GetSupportedModifiers( uint32_t uDrmFormat ) const override;
+ 
+@@ -1625,7 +1625,7 @@ namespace gamescope
+ 
+     void CWaylandPlane::Present( const FrameInfo_t::Layer_t *pLayer )
+     {
+-        CWaylandFb *pWaylandFb = pLayer && pLayer->tex != nullptr ? static_cast<CWaylandFb*>( pLayer->tex->GetBackendFb() ) : nullptr;
++        CWaylandFb *pWaylandFb = pLayer && pLayer->tex != nullptr ? static_cast<CWaylandFb*>( pLayer->tex->GetBackendFb()->Unwrap() ) : nullptr;
+         wl_buffer *pBuffer = pWaylandFb ? pWaylandFb->GetHostBuffer() : nullptr;
+ 
+         if ( pBuffer )
+@@ -2064,7 +2064,7 @@ namespace gamescope
+         {
+             return false;
+         }
+-
++        
+         if ( !wlsession_init() )
+         {
+             xdg_log.errorf( "Failed to initialize Wayland session" );
+@@ -2077,6 +2077,8 @@ namespace gamescope
+             return false;
+         }
+ 
++        xdg_log.infof( "Initted Wayland backend" );
++
+         return true;
+     }
+ 
+@@ -2108,6 +2110,8 @@ namespace gamescope
+         m_pDefaultCursorInfo = GetX11HostCursor();
+         m_pDefaultCursorSurface = CursorInfoToSurface( m_pDefaultCursorInfo );
+ 
++        xdg_log.infof( "Post-Initted Wayland backend" );
++
+         return true;
+     }
+ 
+@@ -2198,7 +2202,7 @@ namespace gamescope
+         return std::make_shared<BackendBlob>( data );
+     }
+ 
+-    OwningRc<IBackendFb> CWaylandBackend::ImportDmabufToBackend( wlr_buffer *pClientBuffer, wlr_dmabuf_attributes *pDmaBuf )
++    OwningRc<IBackendFb> CWaylandBackend::ImportDmabufToBackend( wlr_dmabuf_attributes *pDmaBuf )
+     {
+         zwp_linux_buffer_params_v1 *pBufferParams = zwp_linux_dmabuf_v1_create_params( m_pLinuxDmabuf );
+         if ( !pBufferParams )
+diff --git a/src/backend.cpp b/src/backend.cpp
+index e5e7e2247b56..a6deb0edda73 100644
+--- a/src/backend.cpp
++++ b/src/backend.cpp
+@@ -1,4 +1,5 @@
+ #include "backend.h"
++#include "Backends/DeferredBackend.h"
+ #include "vblankmanager.hpp"
+ #include "convar.h"
+ #include "wlserver.hpp"
+@@ -10,6 +11,8 @@
+ extern void sleep_until_nanos(uint64_t nanos);
+ extern bool env_to_bool(const char *env);
+ 
++extern bool g_bAllowDeferredBackend;
++
+ namespace gamescope
+ {
+     ConVar<VirtualConnectorStrategy> cv_backend_virtual_connector_strategy( "backend_virtual_connector_strategy", VirtualConnectorStrategies::SingleApplication );
+@@ -38,9 +41,22 @@ namespace gamescope
+             s_pBackend = pBackend;
+             if ( !s_pBackend->Init() )
+             {
+-                delete s_pBackend;
+-                s_pBackend = nullptr;
+-                return false;
++                if ( g_bAllowDeferredBackend )
++                {
++                    s_pBackend = new CDeferredBackend( pBackend );
++                    if ( !s_pBackend->Init() )
++                    {
++                        delete s_pBackend;
++                        s_pBackend = nullptr;
++                        return false;
++                    }
++                }
++                else
++                {
++                    delete s_pBackend;
++                    s_pBackend = nullptr;
++                    return false;
++                }
+             }
+         }
+ 
+diff --git a/src/backend.h b/src/backend.h
+index 2731aec2625a..b866462fdb2b 100644
+--- a/src/backend.h
++++ b/src/backend.h
+@@ -256,6 +256,8 @@ namespace gamescope
+     public:
+         virtual void SetBuffer( wlr_buffer *pClientBuffer ) = 0;
+         virtual void SetReleasePoint( std::shared_ptr<CReleaseTimelinePoint> pReleasePoint ) = 0;
++
++        virtual IBackendFb *Unwrap() = 0;
+     };
+ 
+     class IBackendPlane
+@@ -276,6 +278,8 @@ namespace gamescope
+         void SetBuffer( wlr_buffer *pClientBuffer ) override;
+         void SetReleasePoint( std::shared_ptr<CReleaseTimelinePoint> pReleasePoint ) override;
+ 
++        virtual IBackendFb *Unwrap() override { return this; };
++
+     private:
+         wlr_buffer *m_pClientBuffer = nullptr;
+         std::shared_ptr<CReleaseTimelinePoint> m_pReleasePoint;
+@@ -311,7 +315,7 @@ namespace gamescope
+         //
+         // shared_ptr owns the structure.
+         // Rc manages acquire/release of buffer to/from client while imported.
+-        virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_buffer *pBuffer, wlr_dmabuf_attributes *pDmaBuf ) = 0;
++        virtual OwningRc<IBackendFb> ImportDmabufToBackend( wlr_dmabuf_attributes *pDmaBuf ) = 0;
+ 
+         virtual bool UsesModifiers() const = 0;
+         virtual std::span<const uint64_t> GetSupportedModifiers( uint32_t uDrmFormat ) const = 0;
+@@ -366,6 +370,8 @@ namespace gamescope
+         virtual bool SupportsVROverlayForwarding() = 0;
+         virtual void ForwardFramebuffer( std::shared_ptr<IBackendPlane> &pPlane, IBackendFb *pFramebuffer, const void *pData ) = 0;
+ 
++        virtual bool NewlyInitted() = 0;
++
+         static IBackend *Get();
+         template <typename T>
+         static bool Set();
+@@ -398,6 +404,8 @@ namespace gamescope
+ 
+         virtual bool SupportsVROverlayForwarding() override { return false; }
+         virtual void ForwardFramebuffer( std::shared_ptr<IBackendPlane> &pPlane, IBackendFb *pFramebuffer, const void *pData ) override {}
++
++        virtual bool NewlyInitted() override { return false; }
+     };
+ 
+     // This is a blob of data that may be associated with
+diff --git a/src/main.cpp b/src/main.cpp
+index cdb35c3b2518..23921a9dca19 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -45,11 +45,14 @@ using namespace std::literals;
+ 
+ EStreamColorspace g_ForcedNV12ColorSpace = k_EStreamColorspace_Unknown;
+ extern gamescope::ConVar<bool> cv_adaptive_sync;
++extern gamescope::ConVar<bool> cv_shutdown_on_primary_child_death;
+ 
+ const char *gamescope_optstring = nullptr;
+ const char *g_pOriginalDisplay = nullptr;
+ const char *g_pOriginalWaylandDisplay = nullptr;
+ 
++bool g_bAllowDeferredBackend = false;
++
+ int g_nCursorScaleHeight = -1;
+ 
+ const struct option *gamescope_options = (struct option[]){
+@@ -151,6 +154,9 @@ const struct option *gamescope_options = (struct option[]){
+ 	// Steam Deck options
+ 	{ "mura-map", required_argument, nullptr, 0 },
+ 
++	{ "allow-deferred-backend", no_argument, nullptr, 0 },
++	{ "keep-alive", no_argument, nullptr, 0 },
++
+ 	{} // keep last
+ };
+ 
+@@ -265,6 +271,10 @@ const char usage[] =
+ 	"Steam Deck options:\n"
+ 	"  --mura-map                     Set the mura compensation map to use for the display. Takes in a path to the mura map.\n"
+ 	"\n"
++	"Platform options:\n"
++	"  --allow-deferred-backend       Allows initting the backend in a deferred way, if it doesn't work immediately. (Note: This has some very minor correctness compromises that you should consider wrt. your platform with modifiers, etc).\n"
++	"  --keep-alive                   Keep Gamescope alive even when the primary process has died.\n"
++	"\n"
+ 	"Keyboard shortcuts:\n"
+ 	"  Super + F                      toggle fullscreen\n"
+ 	"  Super + N                      toggle nearest neighbour filtering\n"
+@@ -810,6 +820,10 @@ int main(int argc, char **argv)
+ 					g_nCursorScaleHeight = parse_integer(optarg, opt_name);
+ 				} else if (strcmp(opt_name, "mangoapp") == 0) {
+ 					g_bLaunchMangoapp = true;
++				} else if (strcmp(opt_name, "allow-deferred-backend") == 0) {
++					g_bAllowDeferredBackend = true;
++				} else if (strcmp(opt_name, "keep-alive") == 0) {
++					cv_shutdown_on_primary_child_death = false;
+ 				} else if (strcmp(opt_name, "virtual-connector-strategy") == 0) {
+ 					for ( uint32_t i = 0; i < gamescope::VirtualConnectorStrategies::Count; i++ )
+ 					{
+diff --git a/src/rendervulkan.cpp b/src/rendervulkan.cpp
+index 6f5141fde3ec..f97b301542c7 100644
+--- a/src/rendervulkan.cpp
++++ b/src/rendervulkan.cpp
+@@ -56,6 +56,7 @@
+ #include "reshade_effect_manager.hpp"
+ 
+ extern bool g_bWasPartialComposite;
++extern bool g_bAllowDeferredBackend;
+ 
+ static constexpr mat3x4 g_rgb2yuv_srgb_to_bt601_limited = {{
+   { 0.257f, 0.504f, 0.098f, 0.0625f },
+@@ -124,9 +125,19 @@ uint32_t g_uCompositeDebug = 0u;
+ gamescope::ConVar<uint32_t> cv_composite_debug{ "composite_debug", 0, "Debug composition flags" };
+ 
+ static std::map< VkFormat, std::map< uint64_t, VkDrmFormatModifierPropertiesEXT > > DRMModifierProps = {};
++static std::unordered_map<uint32_t, std::vector<uint64_t>> s_SampledModifierFormats = {};
+ static struct wlr_drm_format_set sampledShmFormats = {};
+ static struct wlr_drm_format_set sampledDRMFormats = {};
+ 
++std::span<const uint64_t> GetSupportedSampleModifiers( uint32_t uDrmFormat )
++{
++	auto iter = s_SampledModifierFormats.find( uDrmFormat );
++	if ( iter == s_SampledModifierFormats.end() )
++		return std::span<const uint64_t>{};
++
++	return std::span<const uint64_t>{ iter->second.begin(), iter->second.end() };
++}
++
+ static LogScope vk_log("vulkan");
+ 
+ static void vk_errorf(VkResult result, const char *fmt, ...) {
+@@ -2444,7 +2455,7 @@ bool CVulkanTexture::BInit( uint32_t width, uint32_t height, uint32_t depth, uin
+ 
+ 	if ( flags.bFlippable == true )
+ 	{
+-		m_pBackendFb = GetBackend()->ImportDmabufToBackend( nullptr, &m_dmabuf );
++		m_pBackendFb = GetBackend()->ImportDmabufToBackend( &m_dmabuf );
+ 	}
+ 
+ 	bool bHasAlpha = pDMA ? DRMFormatHasAlpha( pDMA->format ) : true;
+@@ -2822,10 +2833,15 @@ bool vulkan_init_format(VkFormat format, uint32_t drmFormat)
+ 				continue;
+ 			}
+ 
+-			if ( GetBackend()->UsesModifiers() && !gamescope::Algorithm::Contains( GetBackend()->GetSupportedModifiers( drmFormat ), modifier ) )
+-				continue;
++			// The deferred backend exposes all sample-able formats as supported modifiers.
++			if ( !g_bAllowDeferredBackend )
++			{
++				if ( GetBackend()->UsesModifiers() && !gamescope::Algorithm::Contains( GetBackend()->GetSupportedModifiers( drmFormat ), modifier ) )
++					continue;
++			}
+ 
+ 			wlr_drm_format_set_add( &sampledDRMFormats, drmFormat, modifier );
++			s_SampledModifierFormats[ drmFormat ].emplace_back( modifier );
+ 		}
+ 
+ 		DRMModifierProps[ format ] = map;
+@@ -3493,6 +3509,13 @@ VkInstance vulkan_get_instance( void )
+ 
+ bool vulkan_init( VkInstance instance, VkSurfaceKHR surface )
+ {
++	static bool s_bInitted = false;
++	if ( s_bInitted )
++	{
++		g_output.surface = surface;
++		return true;
++	}
++
+ 	if (!g_device.BInit(instance, surface))
+ 		return false;
+ 
+@@ -3505,6 +3528,8 @@ bool vulkan_init( VkInstance instance, VkSurfaceKHR surface )
+ 		present_wait_thread.detach();
+ 	}
+ 
++	s_bInitted = true;
++
+ 	return true;
+ }
+ 
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index d493e035a792..3b03f7efb5e5 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -1404,7 +1404,7 @@ import_commit (
+ 	gamescope::OwningRc<gamescope::IBackendFb> pBackendFb;
+ 	if ( wlr_buffer_get_dmabuf( buf, &dmabuf ) )
+ 	{
+-		pBackendFb = GetBackend()->ImportDmabufToBackend( buf, &dmabuf );
++		pBackendFb = GetBackend()->ImportDmabufToBackend( &dmabuf );
+ 	}
+ 
+ 	gamescope::OwningRc<CVulkanTexture> pOwnedTexture = vulkan_create_texture_from_wlr_buffer( buf, std::move( pBackendFb ) );
+@@ -8165,15 +8165,34 @@ steamcompmgr_main(int argc, char **argv)
+ 			flush_root = true;
+ 		}
+ 
++		bool bBackendJustInitted = GetBackend()->NewlyInitted();
++
+ 		static gamescope::VirtualConnectorStrategy s_eLastVirtualConnectorStrategy = gamescope::cv_backend_virtual_connector_strategy;
+ 		gamescope::VirtualConnectorStrategy eVirtualConnectorStrategy = gamescope::cv_backend_virtual_connector_strategy;
+ 
+-		if ( eVirtualConnectorStrategy != s_eLastVirtualConnectorStrategy )
++		if ( eVirtualConnectorStrategy != s_eLastVirtualConnectorStrategy || bBackendJustInitted )
+ 		{
+ 			// If our virtual connector strategy changes, clear out our virtual connector
+ 			// global focuses.
+ 			g_VirtualConnectorFocuses.clear();
+ 			s_eLastVirtualConnectorStrategy = eVirtualConnectorStrategy;
++
++			xwm_log.infof( "Late init of virtual connector stuff." );
++
++			if ( gamescope::VirtualConnectorIsSingleOutput() )
++			{
++				// misyl: Make the virtual connector up-front if we are in a single-output mode.
++				// So we don't delay in getting display/output info to the game
++				static constexpr uint64_t k_unSingleOutputVirtualConnectorKey = 0;
++
++				g_VirtualConnectorFocuses[ k_unSingleOutputVirtualConnectorKey ] = global_focus_t
++				{
++					.ulVirtualFocusKey = k_unSingleOutputVirtualConnectorKey,
++					.pVirtualConnector = GetBackend()->UsesVirtualConnectors() ? GetBackend()->CreateVirtualConnector( k_unSingleOutputVirtualConnectorKey ) : nullptr,
++				};
++			}
++
++			hasRepaint = true;
+ 		}
+ 
+ #if 0
+diff --git a/src/wlserver.cpp b/src/wlserver.cpp
+index 60ea18e77076..bae509e5b601 100644
+--- a/src/wlserver.cpp
++++ b/src/wlserver.cpp
+@@ -1624,6 +1624,10 @@ static bool filter_global(const struct wl_client *client, const struct wl_global
+ }
+ 
+ bool wlsession_init( void ) {
++	static bool s_bInitted = false;
++	if ( s_bInitted )
++		return true;
++
+ 	wlr_log_init(WLR_DEBUG, handle_wlr_log);
+ 
+ 	wlserver.display = wl_display_create();
+@@ -1639,7 +1643,10 @@ bool wlsession_init( void ) {
+ 
+ #if HAVE_SESSION
+ 	if ( !GetBackend()->IsSessionBased() )
++	{
++		s_bInitted = true;
+ 		return true;
++	}
+ 
+ 	wlserver.wlr.session = wlr_session_create( wlserver.event_loop );
+ 	if ( wlserver.wlr.session == nullptr )
+@@ -1652,6 +1659,8 @@ bool wlsession_init( void ) {
+ 	wl_signal_add( &wlserver.wlr.session->events.active, &wlserver.session_active );
+ #endif
+ 
++	s_bInitted = true;
++
+ 	return true;
+ }
+ 
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martin kareem <Martykareem@outlook.com>
+Date: Fri, 31 Oct 2025 19:45:17 -0400
+Subject: fix: invert null checks in IsGamescopeProxy/Plane
+
+The null checks were backwards - returning false for valid pointers
+and trying to dereference null ones. Matches the pattern already used
+in IsGamescopeToplevel.
+---
+ src/Backends/WaylandBackend.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/Backends/WaylandBackend.cpp b/src/Backends/WaylandBackend.cpp
+index 0d682fb359f6..ab6d30c3973b 100644
+--- a/src/Backends/WaylandBackend.cpp
++++ b/src/Backends/WaylandBackend.cpp
+@@ -80,7 +80,7 @@ static inline uint32_t WaylandScaleToLogical( uint32_t pValue, uint32_t pFactor
+ [[maybe_unused]] static bool IsGamescopeProxy( void *pProxy ) {
+ 	// HACK: this probably should never be called with a null pointer, but it
+ 	// was happening after a window was closed.
+-	if ( pProxy )
++	if ( !pProxy )
+ 		return false;
+ 
+ 	const char* const* pTag = wl_proxy_get_tag( (wl_proxy *)pProxy );
+@@ -93,7 +93,7 @@ static inline uint32_t WaylandScaleToLogical( uint32_t pValue, uint32_t pFactor
+ [[maybe_unused]] static bool IsGamescopePlane( wl_surface *pSurface ) {
+ 	// HACK: this probably should never be called with a null pointer, but it
+ 	// was happening after a window was closed.
+-	if ( pSurface )
++	if ( !pSurface )
+ 		return false;
+ 	const char* const* pTag = wl_proxy_get_tag( (wl_proxy *)pSurface );
+ 
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Autumn Ashton <misyl@froggi.es>
+Date: Mon, 3 Nov 2025 21:41:12 +0000
+Subject: steamcompmgr: Disable ffmpeg NV12 dump test
+
+---
+ src/steamcompmgr.cpp | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 3b03f7efb5e5..f70bff6ae3b1 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -3070,6 +3070,10 @@ paint_all( global_focus_t *pFocus, bool async )
+ 						fwrite(mappedData, 1, pScreenshotTexture->totalSize(), file );
+ 						fclose(file);
+ 
++						bScreenshotSuccess = true;
++						xwm_log.infof("Screenshot saved to %s", oScreenshotInfo->szScreenshotPath.c_str());
++
++#if 0
+ 						char cmd[4096];
+ 						sprintf(cmd, "ffmpeg -f rawvideo -pixel_format nv12 -video_size %dx%d -i %s %s_encoded.png", pScreenshotTexture->width(), pScreenshotTexture->height(), oScreenshotInfo->szScreenshotPath.c_str(), oScreenshotInfo->szScreenshotPath.c_str() );
+ 
+@@ -3081,8 +3085,8 @@ paint_all( global_focus_t *pFocus, bool async )
+ 							xwm_log.errorf( "Failed to save screenshot to %s", oScreenshotInfo->szScreenshotPath.c_str() );
+ 						} else {
+ 							xwm_log.infof("Screenshot saved to %s", oScreenshotInfo->szScreenshotPath.c_str());
+-							bScreenshotSuccess = true;
+ 						}
++#endif
+ 					}
+ 					else
+ 					{
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Sam Lantinga <slouken@libsdl.org>
+Date: Mon, 3 Nov 2025 17:27:26 -0800
+Subject: Don't treat the streaming client video window as focusable
+
+---
+ src/steamcompmgr.cpp | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index f70bff6ae3b1..4fff294f6893 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -3646,6 +3646,12 @@ found:;
+ 			continue;
+ 		}
+ 
++		// Skip streaming client video window
++		if ( w->isSteamStreamingClientVideo )
++		{
++			continue;
++		}
++
+ 		if ( w->xwayland().a.map_state == IsViewable && w->xwayland().a.c_class == InputOutput &&
+ 			( win_has_game_id( w ) || window_is_steam( w ) || w->isSteamStreamingClient ) &&
+ 			 (w->opacity > TRANSLUCENT || w->isSteamStreamingClient ) )
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Autumn Ashton <misyl@froggi.es>
+Date: Tue, 4 Nov 2025 20:53:06 +0000
+Subject: DeferredBackend: Fix spamming PollState
+
+Need to exchange this to false.
+---
+ src/Backends/DeferredBackend.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/Backends/DeferredBackend.h b/src/Backends/DeferredBackend.h
+index 1cc7f52c340b..e7771bfb7280 100644
+--- a/src/Backends/DeferredBackend.h
++++ b/src/Backends/DeferredBackend.h
+@@ -168,7 +168,7 @@ namespace gamescope
+             {
+                 std::shared_lock lock{ m_mutInit };
+                 if ( m_bInittedChild )
+-                    return m_pChild->PollState() || m_bJustInittedPoll;
++                    return m_pChild->PollState() || m_bJustInittedPoll.exchange( false );
+             }
+ 			return false;
+ 		}
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Olivier Tilloy <otilloy@igalia.com>
+Date: Wed, 8 Oct 2025 12:04:19 +0200
+Subject: steamcompmgr: Add a workaround for Forza Horizon 4 & 5
+
+This prevents a fully black background window from being considered a dropdown,
+thus stealing focus.
+---
+ src/steamcompmgr.cpp | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 4fff294f6893..c8ba833cbbd1 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -3310,6 +3310,12 @@ win_maybe_a_dropdown( steamcompmgr_win_t *w )
+ 		( ( w->hwndStyleEx & invalidLayered ) == 0 ) )
+ 		return true;
+ 
++	// Forza Horizon 4 & 5 create a black background window that might incorrectly
++	// be considered a valid dropdown and steal focus.
++	if ( ( w->appID == 1293830 || w->appID == 1551360 ) &&
++		w->maybe_a_dropdown && w->requestedWidth == 0 && w->requestedHeight == 0 )
++		return false;
++
+ 	// Josh:
+ 	// The logic here is as follows. The window will be treated as a dropdown if:
+ 	// 
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Autumn Ashton <misyl@froggi.es>
+Date: Mon, 29 Sep 2025 00:22:22 -0700
+Subject: OpenVRBackend: Initial support for non-Steam apps
+
+---
+ src/Backends/DeferredBackend.h |  5 +++++
+ src/Backends/OpenVRBackend.cpp | 39 +++++++++++++++++++++++++-------
+ src/backend.h                  | 11 +++++++++
+ src/steamcompmgr.cpp           | 41 ++++++++++++++++++++++++++++------
+ src/steamcompmgr_shared.hpp    |  9 +++++++-
+ src/wlserver.cpp               |  8 ++++---
+ src/wlserver.hpp               |  6 ++++-
+ 7 files changed, 99 insertions(+), 20 deletions(-)
+
+diff --git a/src/Backends/DeferredBackend.h b/src/Backends/DeferredBackend.h
+index e7771bfb7280..3e4d22a6631a 100644
+--- a/src/Backends/DeferredBackend.h
++++ b/src/Backends/DeferredBackend.h
+@@ -376,6 +376,11 @@ namespace gamescope
+             return m_bJustInittedClient.exchange( false );
+         }
+ 
++        bool ShouldFitWindows() override
++        {
++            return m_pChild->ShouldFitWindows();
++        }
++
+ 	protected:
+ 
+ 		virtual void OnBackendBlobDestroyed( BackendBlob *pBlob ) override
+diff --git a/src/Backends/OpenVRBackend.cpp b/src/Backends/OpenVRBackend.cpp
+index cb0a15c65ac7..5c32f8bca497 100644
+--- a/src/Backends/OpenVRBackend.cpp
++++ b/src/Backends/OpenVRBackend.cpp
+@@ -25,6 +25,7 @@
+ #include <string.h>
+ #include <thread>
+ #include <mutex>
++#include <format>
+ 
+ struct wlserver_input_method;
+ 
+@@ -947,6 +948,11 @@ namespace gamescope
+             }
+         }
+ 
++        bool ShouldFitWindows() override
++        {
++            return false;
++        }
++
+         vr::IVRIPCResourceManagerClient *GetIPCResourceManager()
+         {
+             return m_pIPCResourceManager;
+@@ -1503,6 +1509,11 @@ namespace gamescope
+ 
+         bNeedsFullComposite |= !!(g_uCompositeDebug & CompositeDebugFlag::Heatmap);
+ 
++        // Non-Steam windows NEVER use composition!
++        bool bExplicitNonSteam = VirtualConnectorKeyIsNonSteamWindow( GetVirtualConnectorKey() );
++        if ( bExplicitNonSteam )
++            bNeedsFullComposite = false;
++
+         if ( !bNeedsFullComposite )
+         {
+             bool bNeedsBacking = true;
+@@ -1601,6 +1612,8 @@ namespace gamescope
+     }
+     void COpenVRConnector::SetIcon( std::shared_ptr<std::vector<uint32_t>> uIconPixels )
+     {
++        bool bExplicitNonSteam = VirtualConnectorKeyIsNonSteamWindow( GetVirtualConnectorKey() );
++
+         if ( cv_vr_use_window_icons && uIconPixels && uIconPixels->size() >= 3 )
+         {
+             const uint32_t uWidth = (*uIconPixels)[0];
+@@ -1620,7 +1633,7 @@ namespace gamescope
+ 
+             vr::VROverlay()->SetOverlayRaw( GetPrimaryPlane()->GetOverlayThumbnail(), &(*uIconPixels)[2], uWidth, uHeight, sizeof(uint32_t) );
+         }
+-        else if ( m_pBackend->GetOverlayIcon() )
++        else if ( m_pBackend->GetOverlayIcon() && !bExplicitNonSteam )
+         {
+             vr::VROverlay()->SetOverlayFromFile( GetPrimaryPlane()->GetOverlayThumbnail(), m_pBackend->GetOverlayIcon() );
+         }
+@@ -1744,6 +1757,8 @@ namespace gamescope
+ 
+         std::string sOverlayKey = m_pBackend->GetOverlayKey();
+ 
++        bool bExplicitNonSteam = false;
++
+         VirtualConnectorStrategy eStrategy = cv_backend_virtual_connector_strategy;
+         if ( !VirtualConnectorStrategyIsSingleOutput( eStrategy ) )
+         {
+@@ -1751,17 +1766,25 @@ namespace gamescope
+             bool bIsSteam = VirtualConnectorKeyIsSteam( ulKey );
+             if ( !bIsSteam )
+             {
+-                const char *pszAppOverlayKey = m_pBackend->GetAppOverlayKey();
+-                if ( pszAppOverlayKey && *pszAppOverlayKey )
++                bExplicitNonSteam = VirtualConnectorKeyIsNonSteamWindow( ulKey );
++                if ( bExplicitNonSteam )
+                 {
+-                    sOverlayKey = pszAppOverlayKey;
+-                    sOverlayKey += ".";
++                    sOverlayKey = std::format( "gamescope.{}.window.{}", wlserver_get_wl_display_name(), ulKey & ~gamescope::k_ulNonSteamWindowBit );
+                 }
+                 else
+                 {
+-                    sOverlayKey += ".app.";
++                    const char *pszAppOverlayKey = m_pBackend->GetAppOverlayKey();
++                    if ( pszAppOverlayKey && *pszAppOverlayKey )
++                    {
++                        sOverlayKey = pszAppOverlayKey;
++                        sOverlayKey += ".";
++                    }
++                    else
++                    {
++                        sOverlayKey += ".app.";
++                    }
++                    sOverlayKey += std::to_string( m_pConnector->GetVirtualConnectorKey() );
+                 }
+-                sOverlayKey += std::to_string( m_pConnector->GetVirtualConnectorKey() );
+             }
+         }
+ 
+@@ -1787,7 +1810,7 @@ namespace gamescope
+             vr::VROverlay()->SetOverlayCurvature	( m_hOverlay,  m_pBackend->GetPhysicalCurvature() );
+             vr::VROverlay()->SetOverlayPreCurvePitch( m_hOverlay,  m_pBackend->GetPhysicalPreCurvePitch() );
+ 
+-            if ( m_pBackend->GetOverlayIcon() )
++            if ( m_pBackend->GetOverlayIcon() && !bExplicitNonSteam )
+             {
+                 vr::EVROverlayError err = vr::VROverlay()->SetOverlayFromFile( m_hOverlayThumbnail, m_pBackend->GetOverlayIcon() );
+                 if( err != vr::VROverlayError_None )
+diff --git a/src/backend.h b/src/backend.h
+index b866462fdb2b..18cb67f8c3f5 100644
+--- a/src/backend.h
++++ b/src/backend.h
+@@ -66,6 +66,13 @@ namespace gamescope
+         return VirtualConnectorInSteamPerAppState() && ulKey == 769;
+     }
+ 
++    static constexpr uint64_t k_ulNonSteamWindowBit = ( uint64_t( 1 ) << 63u );
++
++    static inline bool VirtualConnectorKeyIsNonSteamWindow( VirtualConnectorKey_t ulKey )
++    {
++        return VirtualConnectorInSteamPerAppState() && ( ulKey & k_ulNonSteamWindowBit ) == k_ulNonSteamWindowBit;
++    }
++
+     static inline std::string_view VirtualConnectorStrategyToString( VirtualConnectorStrategy eStrategy )
+     {
+         switch ( eStrategy )
+@@ -372,6 +379,8 @@ namespace gamescope
+ 
+         virtual bool NewlyInitted() = 0;
+ 
++        virtual bool ShouldFitWindows() = 0;
++
+         static IBackend *Get();
+         template <typename T>
+         static bool Set();
+@@ -406,6 +415,8 @@ namespace gamescope
+         virtual void ForwardFramebuffer( std::shared_ptr<IBackendPlane> &pPlane, IBackendFb *pFramebuffer, const void *pData ) override {}
+ 
+         virtual bool NewlyInitted() override { return false; }
++
++        virtual bool ShouldFitWindows() override { return true; }
+     };
+ 
+     // This is a blob of data that may be associated with
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index c8ba833cbbd1..e0e17f6f83fc 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -29,6 +29,7 @@
+  *   says above. Not that I can really do anything about it
+  */
+ 
++#include "backend.h"
+ #include "gamescope_shared.h"
+ #include "xwayland_ctx.hpp"
+ #include <X11/X.h>
+@@ -2064,6 +2065,9 @@ paint_window_commit( const gamescope::Rc<commit_t> &lastCommit, steamcompmgr_win
+ 	float baseScaleRatio_x = 1.0;
+ 	float baseScaleRatio_y = 1.0;
+ 
++	if ( !GetBackend()->ShouldFitWindows() )
++		fit = nullptr;
++
+ 	// Exit out if we have no window or
+ 	// no commit.
+ 	//
+@@ -3658,8 +3662,13 @@ found:;
+ 			continue;
+ 		}
+ 
++		if ( gamescope::cv_backend_virtual_connector_strategy == gamescope::VirtualConnectorStrategies::SteamControlled )
++		{
++			if ( !( win_has_game_id( w ) || window_is_steam( w ) || w->isSteamStreamingClient ) )	
++				continue;
++		}
++
+ 		if ( w->xwayland().a.map_state == IsViewable && w->xwayland().a.c_class == InputOutput &&
+-			( win_has_game_id( w ) || window_is_steam( w ) || w->isSteamStreamingClient ) &&
+ 			 (w->opacity > TRANSLUCENT || w->isSteamStreamingClient ) )
+ 		{
+ 			vecPossibleFocusWindows.push_back( w );
+@@ -3726,11 +3735,21 @@ void xwayland_ctx_t::DetermineAndApplyFocus( const std::vector< steamcompmgr_win
+ 		}
+ 	}
+ 
+-	gamescope::VirtualConnectorStrategy eStrategy = gamescope::cv_backend_virtual_connector_strategy == gamescope::VirtualConnectorStrategies::SteamControlled
+-		? gamescope::VirtualConnectorStrategies::SteamControlled
+-		: gamescope::VirtualConnectorStrategies::PerWindow;
++	gamescope::VirtualConnectorStrategy eStrategy = gamescope::VirtualConnectorStrategies::PerWindow;
++	gamescope::VirtualConnectorKey_t ulKey = 0;
+ 
+-	pick_primary_focus_and_override( &ctx->focus, ctx->focusControlWindow, vecPossibleFocusWindows, false, vecFocuscontrolAppIDs, 0, eStrategy );
++	if ( ctx->xwayland_server->get_index() != 0 )
++	{
++		eStrategy = gamescope::VirtualConnectorStrategies::SteamControlled;
++		ulKey = 0;
++	}
++	else if ( GetBackend() && GetBackend()->GetCurrentConnector() )
++	{
++		eStrategy = gamescope::cv_backend_virtual_connector_strategy;
++		ulKey = GetBackend()->GetCurrentConnector()->GetVirtualConnectorKey();
++	}
++
++	pick_primary_focus_and_override( &ctx->focus, ctx->focusControlWindow, vecPossibleFocusWindows, false, vecFocuscontrolAppIDs, ulKey, eStrategy );
+ 
+ 	if ( inputFocus == NULL )
+ 	{
+@@ -5040,15 +5059,23 @@ damage_win(xwayland_ctx_t *ctx, XDamageNotifyEvent *de)
+ 	if (w->IsAnyOverlay() && !w->opacity)
+ 		return;
+ 
++	bool bHasAppID = w->appID != 0;
++
++	if ( gamescope::cv_backend_virtual_connector_strategy != gamescope::VirtualConnectorStrategies::SteamControlled )
++	{
++		bHasAppID = true;
++	}
++
+ 	// First damage event we get, compute focus; we only want to focus damaged
+ 	// windows to have meaningful frames.
+-	if (w->appID && w->xwayland().damage_sequence == 0)
++	/// FIXME APPID FOCUS STRATERGY FOR 
++	if (bHasAppID && w->xwayland().damage_sequence == 0)
+ 		MakeFocusDirty();
+ 
+ 	w->xwayland().damage_sequence = damageSequence++;
+ 
+ 	// If we just passed the focused window, we might be eliglible to take over
+-	if ( focus && focus != w && w->appID &&
++	if ( focus && focus != w && bHasAppID &&
+ 		w->xwayland().damage_sequence > focus->xwayland().damage_sequence)
+ 		MakeFocusDirty();
+ 
+diff --git a/src/steamcompmgr_shared.hpp b/src/steamcompmgr_shared.hpp
+index 1b3a6e787a74..5cb29733bb26 100644
+--- a/src/steamcompmgr_shared.hpp
++++ b/src/steamcompmgr_shared.hpp
+@@ -233,7 +233,14 @@ struct steamcompmgr_win_t {
+ 		case gamescope::VirtualConnectorStrategies::SteamControlled:
+ 			return 0;
+ 		case gamescope::VirtualConnectorStrategies::PerAppId:
+-			return static_cast<gamescope::VirtualConnectorKey_t>( this->appID );
++			if ( this->appID )
++			{
++				return static_cast<gamescope::VirtualConnectorKey_t>( this->appID );
++			}
++			else
++			{
++				return static_cast<gamescope::VirtualConnectorKey_t>( gamescope::k_ulNonSteamWindowBit | this->seq );	
++			}
+ 		case gamescope::VirtualConnectorStrategies::PerWindow:
+ 			return static_cast<gamescope::VirtualConnectorKey_t>( this->seq );
+ 		}
+diff --git a/src/wlserver.cpp b/src/wlserver.cpp
+index bae509e5b601..bda03ced25d3 100644
+--- a/src/wlserver.cpp
++++ b/src/wlserver.cpp
+@@ -1710,8 +1710,10 @@ void wlsession_close_kms()
+ 
+ #endif
+ 
+-gamescope_xwayland_server_t::gamescope_xwayland_server_t(wl_display *display)
++gamescope_xwayland_server_t::gamescope_xwayland_server_t(wl_display *display, int nIndex)
+ {
++	m_nIndex = nIndex;
++
+ 	struct wlr_xwayland_server_options xwayland_options = {
+ 		.lazy = false,
+ 		.enable_wm = false,
+@@ -2099,7 +2101,7 @@ bool wlserver_init( void ) {
+ 
+ 	for (int i = 0; i < g_nXWaylandCount; i++)
+ 	{
+-		auto server = std::make_unique<gamescope_xwayland_server_t>(wlserver.display);
++		auto server = std::make_unique<gamescope_xwayland_server_t>(wlserver.display, i);
+ 		wlserver.wlr.xwayland_servers.emplace_back(std::move(server));
+ 	}
+ 
+@@ -3196,7 +3198,7 @@ uint32_t wlserver_make_new_xwayland_server()
+ {
+ 	assert( wlserver_is_lock_held() );
+ 
+-	auto& server = wlserver.wlr.xwayland_servers.emplace_back(std::make_unique<gamescope_xwayland_server_t>(wlserver.display));
++	auto& server = wlserver.wlr.xwayland_servers.emplace_back(std::make_unique<gamescope_xwayland_server_t>(wlserver.display, (int)wlserver.wlr.xwayland_servers.size()));
+ 
+ 	while (!server->is_xwayland_ready()) {
+ 		wl_display_flush_clients(wlserver.display);
+diff --git a/src/wlserver.hpp b/src/wlserver.hpp
+index 375211efeb6f..eb1270806d0c 100644
+--- a/src/wlserver.hpp
++++ b/src/wlserver.hpp
+@@ -57,7 +57,7 @@ bool wlserver_is_lock_held(void);
+ class gamescope_xwayland_server_t
+ {
+ public:
+-	gamescope_xwayland_server_t(wl_display *display);
++	gamescope_xwayland_server_t(wl_display *display, int nIndex);
+ 	~gamescope_xwayland_server_t();
+ 
+ 	void on_xwayland_ready(void *data);
+@@ -86,6 +86,8 @@ public:
+ 
+ 	void update_output_info();
+ 
++	int get_index() const { return m_nIndex; }
++
+ private:
+ 	struct wlr_xwayland_server *xwayland_server = NULL;
+ 	struct wl_listener xwayland_ready_listener = { .notify = xwayland_ready_callback };
+@@ -98,6 +100,8 @@ private:
+ 	bool xwayland_ready = false;
+ 	_XDisplay *dpy = NULL;
+ 
++	int m_nIndex = 0;
++
+ 	std::mutex wayland_commit_lock;
+ 	std::vector<ResListEntry_t> wayland_commit_queue;
+ };
+-- 
+2.51.2
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Fri, 22 Nov 2024 01:37:48 +0100
 Subject: [NA] add dev script
@@ -595,7 +3264,7 @@ index 390c04a63ecd..e7b857d44b0d 100644
  extern bool g_bFullscreen;
  
 diff --git a/src/meson.build b/src/meson.build
-index d1d02799e42a..8780d14fa4e0 100644
+index 3650cdb3f8bc..12ad8d303235 100644
 --- a/src/meson.build
 +++ b/src/meson.build
 @@ -72,6 +72,7 @@ shader_src = [
@@ -2233,41 +4902,6 @@ index 55a691fc6b8f..0b5efe2b6258 100644
  
  	bool nudged = false;
  	bool ignoreOverrideRedirect = false;
--- 
-2.51.2
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <git@antheas.dev>
-Date: Sun, 16 Nov 2025 00:25:46 +0100
-Subject: Revert "subprojects: Bump libdisplay-info to 0.3.0"
-
-This reverts commit 9a2e7735f18e40ddb9fc832b3445f7f3f5397684.
----
- src/meson.build             | 2 +-
- subprojects/libdisplay-info | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/src/meson.build b/src/meson.build
-index 8780d14fa4e0..12ad8d303235 100644
---- a/src/meson.build
-+++ b/src/meson.build
-@@ -35,7 +35,7 @@ wlroots_dep = dependency(
- 
- displayinfo_dep = dependency(
-   'libdisplay-info',
--  version: ['>= 0.0.0', '< 0.4.0'],
-+  version: ['>= 0.0.0', '< 0.3.0'],
-   fallback: 'libdisplay-info',
-   default_options: ['default_library=static'],
- )
-diff --git a/subprojects/libdisplay-info b/subprojects/libdisplay-info
-index 47a5590e9c4e..66b802d05b37 160000
---- a/subprojects/libdisplay-info
-+++ b/subprojects/libdisplay-info
-@@ -1 +1 @@
--Subproject commit 47a5590e9c4eb35d67651b8c05a55f1a48259329
-+Subproject commit 66b802d05b374cd8f388dc6ad1e7ae4f08cb3300
 -- 
 2.51.2
 
