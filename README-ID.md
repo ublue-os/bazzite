@@ -45,7 +45,6 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Dukungan penuh untuk [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Menyertakan Tema KDE Valve dari SteamOS.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), dan [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) terinstall dan tersedia secara bawaan.
-- Dukungan untuk [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Hanya ada di KDE)</sup></sub>
 - Disediakan [Ekstensi shell untuk ROM Properties Page ](https://github.com/GerbilSoft/rom-properties).
 - Dukungan penuh untuk [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - Pra-install [Distrobox](https://github.com/89luca89/distrobox).

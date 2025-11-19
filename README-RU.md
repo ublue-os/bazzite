@@ -53,7 +53,6 @@ Bazzite основан на [ublue-os/main](https://github.com/ublue-os/main) и
 - Включены темы KDE от Valve из SteamOS.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud) и [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) установлены по умолчанию.
 - [Исправленный Switcheroo-Control](https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/) для корректного переключения между iGPU и dGPU.
-- Поддержка [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Только для KDE)</sup></sub>
 - Расширение [ROM Properties Page](https://github.com/GerbilSoft/rom-properties) включено.
 - Полная поддержка [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - [Distrobox](https://github.com/89luca89/distrobox) предустановлен.

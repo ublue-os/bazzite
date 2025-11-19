@@ -54,7 +54,6 @@ Bazzite is gebouwd van [ublue-os/main](https://github.com/ublue-os/main) en [ubl
 - Met optionele Valve-geïnspireerde GTK3/4 thema's die overeenkomen met Vapor en VGUI2 van SteamOS. Installeer [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience) om die te gebruiken.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud) en [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) zijn standaard geïnstalleerd en beschikbaar.
 - [Gepatchte Switcheroo-Control](https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/) om gebroken iGPU/dGPU-omschakeling te herstellen.
-- Ondersteuning van [Wallpaper Engine](https://www.wallpaperengine.io/en). <sub><sup>(Alleen met KDE)</sup></sub>
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) inbegrepen.
 - Volledige ondersteuning van [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - [Distrobox](https://github.com/89luca89/distrobox) voorgeïnstalleerd.

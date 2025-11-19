@@ -54,7 +54,6 @@ Bazzite是使用[Fedora](https://fedoraproject.org/)技术基于[ublue-os/main](
 - 可选的 Valve-inspired GTK3/4 主题对应 SteamOS的Vapor and VGUI2。安装 [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience) 以启用它们。
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX)， [vkBasalt](https://github.com/DadSchoorse/vkBasalt)， [MangoHud](https://github.com/flightlessmango/Mangohud)，和 [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) 默认安装并可用。
 - [Patched Switcheroo-Control](https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/) 修复了默认损坏的iGPU/dGPU开关。
-- 支持 [Wallpaper Engine](https://www.wallpaperengine.io/en)。 <sub><sup>(仅限KDE)</sup></sub>
 - 包含[ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) 。
 - 完全支持 [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - 预装[Distrobox](https://github.com/89luca89/distrobox) 。
