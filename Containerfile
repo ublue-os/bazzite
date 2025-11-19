@@ -828,12 +828,10 @@ RUN --mount=type=cache,dst=/var/cache \
     glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
     rm -r /tmp/bazzite-schema-test && \
     systemctl disable supergfxd.service && \
+    dnf5 config-manager setopt skip_if_unavailable=1 && \
     /ctx/image-info && \
     /ctx/build-initramfs && \
-    /ctx/finalize
+    /ctx/finalize && \
+    rm -rf /ctx 
 
-RUN dnf5 config-manager setopt skip_if_unavailable=1 && \
-    rm -rf /ctx && bootc container lint
-
-# Make yafti launcher script executable
-RUN chmod +x /usr/libexec/bazzite-yafti-launcher
+RUN bootc container lint
