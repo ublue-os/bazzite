@@ -38,6 +38,8 @@ jobs:
 
       - name: Setup Cosign
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+        with:
+          cosign-release: 'v2.6.1'
 
       - name: Sign Image
         env:
@@ -45,4 +47,4 @@ jobs:
           IMAGE_NAME: ${{ steps.get-digest.outputs.NAME }}
           IMAGE_DIGEST: ${{ steps.get-digest.outputs.DIGEST }}
         run: |
-          cosign sign -y --key env://SIGNING_KEY $IMAGE_NAME@$IMAGE_DIGEST
+          cosign sign -y --key env://SIGNING_KEY --new-bundle-format=false $IMAGE_NAME@$IMAGE_DIGEST

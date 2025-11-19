@@ -307,6 +307,8 @@ jobs:
       - name: Install Cosign
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+        with:
+          cosign-release: 'v2.6.1'
 
       # Push the image to GHCR (Image Registry)
       - name: Push To GHCR and Sign
@@ -328,7 +330,8 @@ jobs:
             sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
             log_sum "$dest_image"
             DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
-            cosign sign -y --key env://SIGNING_SECRET "${{ steps.base.outputs.output_image }}@$DIGEST"
+            cosign sign -y --key env://SIGNING_SECRET --new-bundle-format=false \
+              "${{ steps.base.outputs.output_image }}@$DIGEST"
 
             for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
               dest_image="${{ steps.base.outputs.output_image }}:$tag"
