@@ -13,7 +13,7 @@ done
 
 # Dolphin integration requires --new-window to function properly
 if [[ ! "${args[@]}" =~ "--" && ! "${args[@]}" =~ "-h" && ! "${args[@]}" =~ "-x" ]]; then
-        /usr/bin/ptyxis --new-window "${args[@]}"
+        env GTK_IM_MODULE=ibus /usr/bin/ptyxis --new-window "${args[@]}"
 else
-        /usr/bin/ptyxis "${args[@]}"
+        env GTK_IM_MODULE=ibus /usr/bin/ptyxis "${args[@]}"
 fi
