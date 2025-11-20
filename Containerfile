@@ -582,7 +582,8 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/ghcurl "https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/incus/distrobox.ini" -Lo /etc/distrobox/incus.ini && \
     /ctx/image-info && \
     /ctx/build-initramfs && \
-    /ctx/finalize
+    /ctx/finalize && \
+    rm -rf /ctx
 
 RUN bootc container lint
 
@@ -599,6 +600,7 @@ ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
+COPY ./build_files/cleanup ./build_files/image-info ./build_files/ghcurl ./build_files/build-initramfs ./build_files/finalize /ctx/
 COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
 
 # Setup Copr repos
