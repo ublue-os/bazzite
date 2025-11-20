@@ -166,7 +166,6 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
     systemctl disable --now jupiter-biosupdate.service
     systemctl disable --now jupiter-controller-update.service
     systemctl disable --now ryzenadj.service
-    systemctl disable --now batterylimit.service
   fi
   systemctl enable --now ds-inhibit.service
 fi

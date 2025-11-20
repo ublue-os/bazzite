@@ -128,7 +128,6 @@ Imagem feita pra ser utilizada como alternativa ao SteamOS no Steam Deck, e para
 - Perfis de cor calibrada para as telas padrão e antirreflexo do Steam Deck inclusos.
 - Recursos para usuários avançados e desabilitados por padrão, incluindo:
     - Um serviço para undervolt de baixo risco do Steam Deck assim como laptops Framework com AMD via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) e [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), vide `ryzenadj.service` e `/etc/default/ryzenadj`.
-    - Um serviço para limitar o nível máximo da carga da bateria, vide `batterylimit.service` e `/etc/default/batterylimit`. <sup><sub>(Funciona mesmo se o dispositivo estiver desligado)</sub></sup>
     - Suporte a overclocking de tela. Por exemplo, escreva `CUSTOM_REFRESH_RATES=30-68` em `/etc/environment`. Taxas de atualização mínima e máxima mudam de portátil pra portátil!
     - Modificou seu Steam Deck pra ter 32GB de RAM? Aproveite o dobro da quantia máxima de VRAM, aplicada automaticamente. <sup><sub>(Quer emprestar esse talento com solda?)</sub></sup>
 - Serviços específicos para o hardware do Steam Deck podem ser desabilitados rodando `ujust disable-bios-updates` e `ujust disable-firmware-updates` no terminal. Eles são desabilitados automaticamente em hardware que não seja o Deck, e em Decks com telas DeckHD ou mods de 32GB de RAM.
