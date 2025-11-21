@@ -344,7 +344,7 @@ jobs:
 
       - name: Kickoff Bazzite-DX
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-        uses: peter-evans/repository-dispatch@v4
+        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4
         with:
           token: ${{ secrets.PAT }}
           repository: ublue-os/bazzite-dx
