@@ -124,7 +124,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - Цветовые профили для матовых и глянцевых экранов Steam Deck.
 - Функции для опытных пользователей:
     - Уменьшение напряжения на Steam Deck и ноутбуках AMD через [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) и [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu) (`ryzenadj.service` и `/etc/default/ryzenadj`).
-    - Ограничение уровня заряда батареи (`batterylimit.service` и `/etc/default/batterylimit`). <sup><sub>(Работает даже при выключенном устройстве)</sub></sup>
     - Разгон дисплея. Например, добавьте `CUSTOM_REFRESH_RATES=30-68` в `/etc/environment`. Минимальная и максимальная частота зависят от устройства!
     - Автоматическое увеличение VRAM для Steam Deck с 32GB RAM. <sup><sub>(Поделитесь навыками пайки?)</sub></sup>
 - Аппаратные службы Steam Deck можно отключить командами `ujust disable-bios-updates` и `ujust disable-firmware-updates`. Они автоматически отключаются на других устройствах и на Deck с DeckHD или 32GB RAM.

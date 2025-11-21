@@ -128,7 +128,6 @@ Varianten voor gebruik als alternatief voor SteamOS op de Steam Deck en voor con
 - Kleur gecalibreerde display profielen voor matte and reflectieven Steam Deck schermen.
 - Standaard uit, power-user opties zoals:
     - Mogelijkheid voor laag-risico undervolting van de Steam Deck en AMD Framework Laptops via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) en [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), zie `ryzenadj.service` en `/etc/default/ryzenadj`.
-    - Batterij oplaad limiet, zie `batterylimit.service` en `/etc/default/batterylimit`. <sup><sub>(Werkt ook als het apparaat uit is)</sub></sup>
     - Mogelijkheid om het scherm te overclocken. Bijvoorbeeld, voeg `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` toe in `/etc/environment`.
     - Heb je 32GB ram in je Steam Deck? Geniet van de dubbelen maximalen VRAM, automatisch ingeschakeld <sup><sub>(Kan je je soldeer skills delen?)</sub></sup>
 - Steam Deck hardware-specifieken services kunnen uit gezet worden met `ujust disable-bios-updates` en `ujust disable-firmware-updates` in de terminal. Dezen staan al uit op non-Deck hardware en op Decks met DeckHD schermen of 32GB RAM mods.

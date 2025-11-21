@@ -136,7 +136,6 @@ Esta variante esta diseñada para usarse como una alternativa de SteamOS en la S
 - Se incluyen perfiles de color calibrados para los diferentes tipos de pantalla de la Steam Deck, mate o glossy.
 - Características para usuarios avanzados que vienen desactivadas por defecto, las cuales incluyen:
   - Un servicio de bajo riesgo para reducir el voltaje de la Steam Deck gracias a [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) y [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), véase `ryzenadj.service` y `/etc/default/ryzenadj`.
-  - Un servicio que limita el nivel máximo de recarga de la batería, véase `batterylimit.service` y `/etc/default/batterylimit`. <sup><sub>(Funciona incluso cuando el dispositivo esta apagado)</sub></sup>
   - Soporte incorporado para el overclock de la pantalla, es decir, para incrementar la tasa de refresco que el panel tiene por defecto (60Hz en modelos LCD). Por ejemplo, añade `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` a `/etc/environment`.
   - La habilidad de utilizar el servidor gráfico X11 en vez de Wayland, si así se desea, tan solo editando `/etc/default/desktop-wayland`.
   - ¿Aplicaste el mod de 32 GB de memoria RAM en tu Steam Deck?, disfruta del doble de la cantidad máxima de VRAM, el cual es aplicado automáticamente. <sup><sub>(Hablando de, ¿crees que podrías compartirnos semejante habilidad para soldar?)</sub></sup>

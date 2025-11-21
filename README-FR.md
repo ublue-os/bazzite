@@ -129,7 +129,6 @@ Variante conçue pour être utilisée comme alternative à SteamOS sur le SteamD
 - Profils d'affichage calibrés en couleur pour les écrans mats et réfléchissants du SteamDeck inclus.
 - Fonctionnalités pour utilisateurs avancés désactivées par défaut, notamment :
     - Service pour l'undervolting à faible risque du SteamDeck ainsi que des ordinateurs portables AMD  via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) et [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), voir `ryzenadj.service` et `/etc/default/ryzenadj`.
-    - Service pour limiter le niveau de charge maximal de la batterie, voir `batterylimit.service` et `/etc/default/batterylimit`. <sup><sub>(Fonctionne même lorsque l'appareil est éteint)</sub></sup>
     - Support intégré pour l'overclocking d'affichage. Par exemple, ajoutez `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` à `/etc/environment`.
     - Vous avez modifié votre SteamDeck avec 32 Go de RAM ? Profitez du double de la quantité maximale de VRAM, appliqué automatiquement. <sup><sub>(Pourriez-vous partager vos compétences en soudure ?)</sub></sup>
 - Les services spécifiques au matériel du SteamDeck peuvent être désactivés en exécutant `ujust disable-bios-updates` et `ujust disable-firmware-updates` dans le terminal. Ils sont automatiquement désactivés sur le matériel non-Deck, et sur les Decks avec des écrans DeckHD ou des mods de 32 Go de RAM.

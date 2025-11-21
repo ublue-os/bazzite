@@ -119,7 +119,6 @@ Varian `bazzite-deck` ini didesain untuk digunakan sebagai alternatif untuk Stea
 - Kalibrasi Warna Layar untuk layar matte dan reflektif Steam Deck.
 - Fitur-fitur pengguna advance yang tidak diaktifkan secara bawaan seperti:
     - Service untuk undervolting Steam Deck yang beresiko rendah dengan [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) dan [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), anda bisa mengecek `ryzenadj.service` dan `/etc/default/ryzenadj`.
-    - Service untuk membatasi kapasitas maksimal saat mengisi ulang, anda bisa mengeceknya di `batterylimit.service` dan `/etc/default/batterylimit`. <sup><sub>(Bekerja walaupun perangkat dalam posisi non aktif)</sub></sup>
     - Dukungan bawaan untuk overclocking layar. Contohnya seperti ini, anda menambahkan `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` di `/etc/environment`.
     - Anda bisa menggunakan X11 jika diperlukan dengan mengedit `/etc/default/desktop-wayland`.
     - Lu punya RAM 32 GB? anda bisa memakai 2x lipat VRAM yang diaplikasikan secara otomatis!. <sup><sub>(Coba bagikan skill ngesolder lu dong)</sub></sup>
