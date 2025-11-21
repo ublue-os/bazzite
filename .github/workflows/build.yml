@@ -342,6 +342,14 @@ jobs:
         env:
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
 
+      - name: Kickoff Bazzite-DX
+        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ublue-os/bazzite-dx
+          event-type: build
+
   generate_release:
     name: Generate Release
     needs: [push-ghcr]
