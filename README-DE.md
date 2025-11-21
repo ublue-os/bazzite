@@ -14,14 +14,14 @@
 
 # Inhaltsverzeichnis
 
-- [🇺🇸 🇪🇸 🇮🇩 🇨🇳 🇫🇷 🇧🇷 🇳🇱 🇷🇺 🇩🇪](#------)
+- [🇺🇸 🇪🇸 🇮🇩 🇨🇳 🇫🇷 🇧🇷 🇳🇱 🇷🇺 🇩🇪](#--------)
 - [Inhaltsverzeichnis](#inhaltsverzeichnis)
   - [Über \& Funktionen](#über--funktionen)
     - [Desktop](#desktop)
     - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
       - [Alternative Handhelds](#alternative-handhelds)
     - [GNOME](#gnome)
-    - [Funktionen vom Upstream](#funktionen-von-upstream)
+    - [Funktionen von Upstream](#funktionen-von-upstream)
       - [Universal Blue](#universal-blue)
       - [Funktionen von Fedora Linux (Kinoite \& Silverblue)](#funktionen-von-fedora-linux-kinoite--silverblue)
   - [Warum](#warum)
