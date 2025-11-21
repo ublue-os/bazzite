@@ -65,6 +65,47 @@ install-coolercontrol:
     else
         echo "No changes were made."
     fi
+# Install Displaylink, Needed for some laptop docks to output video
+[group("apps")]
+install-displaylink:
+    #!/usr/bin/env bash
+    set -eo pipefail
+
+    cat <<'EOF'
+    {{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}Displaylink{{ NORMAL }}.
+    {{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"
+    {{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}
+    EOF
+
+    layered() {
+        local pkg="$1"
+        rpm-ostree status --json | jq -e ".deployments[] | select(.booted == true) | .packages | index(\"$pkg\")" > /dev/null
+    }
+    packages=()
+    for pkg in displaylink; do
+        if layered "$pkg"; then
+            echo "$pkg is already layered, skipping."
+        else
+            packages+=("$pkg")
+        fi
+    done
+
+    if [ ${#packages[@]} -gt 0 ]; then
+        repo_path="/etc/yum.repos.d/negativo17-fedora-multimedia.repo"
+
+        if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
+            echo 'Negativo17 Multimedia Repository is already enabled, skipping.'
+        else
+            echo 'Enabling Negativo17 Multimedia Repository.'
+            sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
+        fi
+
+        echo "Installing: ${packages[*]}"
+        rpm-ostree install -y "${packages[@]}"
+        echo 'Complete, please reboot to apply changes.'
+    else
+        echo "No changes were made."
+    fi
 
 # Install JetBrains Toolbox | https://www.jetbrains.com/toolbox-app/
 [group("apps")]
