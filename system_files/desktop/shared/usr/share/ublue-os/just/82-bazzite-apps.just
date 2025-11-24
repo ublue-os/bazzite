@@ -65,6 +65,7 @@ install-coolercontrol:
     else
         echo "No changes were made."
     fi
+
 # Install Displaylink, Needed for some laptop docks to output video
 [group("apps")]
 install-displaylink:
