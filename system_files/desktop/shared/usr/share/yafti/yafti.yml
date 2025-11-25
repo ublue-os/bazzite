@@ -43,11 +43,6 @@ screens:
         description: "Open source RGB lighting control that doesn't depend on manufacturer software"
         default: false
         script: "ujust install-openrgb"
-      - id: "wootility"
-        title: "Wootility"
-        description: "A configurator for Wooting keyboards"
-        default: false
-        script: "ujust install-wootility"
       - id: "resilio-sync"
         title: "Resilio Sync"
         description: "A file synchronization utility powered by BitTorrent"
