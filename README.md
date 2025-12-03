@@ -49,7 +49,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Full hardware accelerated codec support for H264 decoding.
 - Full support for AMD's ROCM OpenCL/HIP run-times.
 - [xone](https://github.com/medusalix/xone) driver for Xbox controllers.
-- Full support for [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
+- Full support for [DisplayLink](https://www.synaptics.com/products/displaylink-graphics). (Currently not working)
 - Includes Valve's KDE themes from SteamOS.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
 - [Patched Switcheroo-Control](https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/) fixing default-broken iGPU/dGPU switching.
