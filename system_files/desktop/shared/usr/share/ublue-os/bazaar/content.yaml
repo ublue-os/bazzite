@@ -39,184 +39,199 @@ css: |
   .utilities-section {
     background: linear-gradient(45deg, #ed5b00, #a6480d);
   }
-sections:
-  - title: "Gaming"
-    subtitle: "Protocol 3: Protect the Pilot"
-    rows: 4
-    banner: file:///usr/share/ublue-os/bazaar/gaming.png
-    banner-fit: contain
-    banner-height: 300
-    banner-text-halign: start
-    banner-text-valign: center
-    banner-text-label-xalign: 0.0
-    classes:
-      - bazzite-section
-      - gaming-section
-    appids:
-      - com.heroicgameslauncher.hgl
-      - io.itch.itch
-      - io.github.Faugus.faugus-launcher
-      - org.prismlauncher.PrismLauncher
-      - io.mrarm.mcpelauncher
-      - at.vintagestory.VintageStory
-      - org.vinegarhq.Sober
-      - org.zdoom.GZDoom
-      - org.zdoom.Raze
-      - org.openmw.OpenMW
-      - dev.goats.xivlauncher
-      - net.retrodeck.retrodeck
-      - org.libretro.RetroArch
-      - page.kramo.Cartridges
-      - com.github._0negal.Viper
-      - info.cemu.Cemu
-      - org.DolphinEmu.dolphin-emu
-      - io.github.shiiion.primehack
-      - net.kuribo64.melonDS
-      - com.snes9x.Snes9x
-      - io.mgba.mGBA
-      - org.ppsspp.PPSSPP
-      - net.pcsx2.PCSX2
-      - net.rpcs3.RPCS3
-      - app.xemu.xemu
-      - org.mamedev.MAME
-      - io.github.stella_emu.Stella
-      - org.scummvm.ScummVM
-      - io.github.dosbox-staging
-      - rs.ruffle.Ruffle
-      - com.supermodel3.Supermodel
-      - net.hhoney.rota
-      - io.github.doukutsu_rs.doukutsu-rs
-      - com.github.k4zmu2a.spacecadetpinball
-      - sh.ppy.osu
-      - com.pokemmo.PokeMMO
-      - com.etlegacy.ETLegacy
-      - com.realm667.Wolfenstein_Blade_of_Agony
-      - net.stabyourself.nottetris2
-      - org.srb2.SRB2
-      - org.srb2.SRB2Kart
-      - org.endlessaccess.threadbare
-      - org.kartkrew.RingRacers
-      - org.supertuxproject.SuperTux
-      - net.supertuxkart.SuperTuxKart
-  - title: "Streaming & Chat"
-    subtitle: "Sprunk'd it."
-    rows: 3
-    banner: file:///usr/share/ublue-os/bazaar/streaming.png
-    banner-fit: contain
-    banner-height: 300
-    banner-text-halign: end
-    banner-text-valign: center
-    banner-text-label-xalign: 1.0
-    classes:
-      - bazzite-section
-      - streaming-section
-    appids:
-      - com.obsproject.Studio
-      - com.feaneron.Boatswain
-      - com.moonlight_stream.Moonlight
-      - com.valvesoftware.SteamLink
-      - io.github.astralvixen.geforce-infinity
-      - com.parsecgaming.parsec
-      - com.discordapp.Discord
-      - dev.vencord.Vesktop
-      - im.pidgin.Pidgin
-      - com.teamspeak.TeamSpeak
-      - info.mumble.Mumble
-      - im.riot.Riot
-      - org.squidowl.halloy
-      - org.gnome.Fractal
-  - title: "Music & Media"
-    subtitle: "Let me break it down for you."
-    rows: 2
-    banner: file:///usr/share/ublue-os/bazaar/music.png
-    banner-fit: contain
-    banner-height: 300
-    banner-text-halign: start
-    banner-text-valign: center
-    banner-text-label-xalign: 0.0
-    classes:
-      - bazzite-section
-      - music-section
-    appids:
-      - io.bassi.Amberol
-      - com.github.neithern.g4music
-      - org.atheme.audacious
-      - com.spotify.Client
-      - com.mastermindzh.tidal-hifi
-      - org.videolan.VLC
-      - com.github.iwalton3.jellyfin-media-player
-      - tv.plex.PlexDesktop
-      - com.plexamp.Plexamp
-      - rocks.shy.VacuumTube
-      - org.strawberrymusicplayer.strawberry
-      - camp.nook.nookdesktop
-  - title: "Office & Productivity"
-    subtitle: "May the paperclip fellow have mercy."
-    rows: 2
-    banner: file:///usr/share/ublue-os/bazaar/office.png
-    banner-fit: contain
-    banner-height: 300
-    banner-text-halign: end
-    banner-text-valign: center
-    banner-text-label-xalign: 1.0
-    classes:
-      - bazzite-section
-      - office-section
-    appids:
-      - org.mozilla.Thunderbird
-      - org.libreoffice.LibreOffice
-      - org.onlyoffice.desktopeditors
-      - org.gimp.GIMP
-      - org.kde.krita
-      - org.inkscape.Inkscape
-      - org.blender.Blender
-      - io.github.nokse22.Exhibit
-      - io.github.jliljebl.Flowblade
-      - de.leopoldluley.Clapgrep
-      - org.audacityteam.Audacity
-      - org.ardour.Ardour
-      - md.obsidian.Obsidian
-      - org.standardnotes.standardnotes
-      - com.slack.Slack
-      - com.github.IsmaelMartinez.teams_for_linux
-  - title: "Utilities"
-    subtitle: "Stuff you didn't need until now."
-    rows: 2
-    banner: file:///usr/share/ublue-os/bazaar/utilities.png
-    banner-fit: contain
-    banner-height: 300
-    banner-text-halign: start
-    banner-text-valign: center
-    banner-text-label-xalign: 0.0
-    classes:
-      - bazzite-section
-      - utilities-section
-    appids:
-      - io.github.ilya_zlobintsev.LACT
-      - io.github.limo_app.limo
-      - io.github.radiolamp.mangojuice
-      - io.github.rfrench3.scopebuddy-gui
-      - io.github.trigg.discover_overlay
-      - com.github.wwmm.easyeffects
-      - me.timschneeberger.jdsp4linux
-      - com.github.Alcaro.Flips
-      - io.github.thetumultuousunicornofdarkness.cpu-x
-      - io.github.arunsivaramanneo.GPUViewer
-      - dev.deedles.Trayscale
-      - app.drey.Warp
-      - com.rustdesk.RustDesk
-      - org.deskflow.deskflow
-      - io.github.pwr_solaar.solaar
-      - it.mijorus.gearlever
-      - io.github.flattool.Ignition
-      - io.github.fastrizwaan.WineZGUI
-      - io.github.berarma.Oversteer
-      - io.github.lawstorant.boxflat
-      - org.keepassxc.KeePassXC
-      - com.bitwarden.desktop
-      - org.qbittorrent.qBittorrent
-      - com.github.zocker_160.SyncThingy
-      - org.fedoraproject.MediaWriter
-      - org.raspberrypi.rpi-imager
-      - cc.arduino.IDE2
-      - org.gnome.GHex
+
+rows:
+  - sections:
+    - expand-horizontally: true
+      classes:
+        - bazzite-section
+        - gaming-section
+      category:
+        title: "Gaming"
+        subtitle: "Protocol 3: Protect the Pilot"
+        banner: file:///usr/share/ublue-os/bazaar/gaming.png
+        banner-fit: contain
+        banner-height: 300
+        banner-text-halign: start
+        banner-text-valign: center
+        banner-text-label-xalign: 0.0
+        appids:
+          - com.heroicgameslauncher.hgl
+          - io.itch.itch
+          - io.github.Faugus.faugus-launcher
+          - org.prismlauncher.PrismLauncher
+          - io.mrarm.mcpelauncher
+          - at.vintagestory.VintageStory
+          - org.vinegarhq.Sober
+          - org.zdoom.GZDoom
+          - org.zdoom.Raze
+          - org.openmw.OpenMW
+          - dev.goats.xivlauncher
+          - net.retrodeck.retrodeck
+          - org.libretro.RetroArch
+          - page.kramo.Cartridges
+          - com.github._0negal.Viper
+          - info.cemu.Cemu
+          - org.DolphinEmu.dolphin-emu
+          - io.github.shiiion.primehack
+          - net.kuribo64.melonDS
+          - com.snes9x.Snes9x
+          - io.mgba.mGBA
+          - org.ppsspp.PPSSPP
+          - net.pcsx2.PCSX2
+          - net.rpcs3.RPCS3
+          - app.xemu.xemu
+          - org.mamedev.MAME
+          - io.github.stella_emu.Stella
+          - org.scummvm.ScummVM
+          - io.github.dosbox-staging
+          - rs.ruffle.Ruffle
+          - com.supermodel3.Supermodel
+          - net.hhoney.rota
+          - io.github.doukutsu_rs.doukutsu-rs
+          - com.github.k4zmu2a.spacecadetpinball
+          - sh.ppy.osu
+          - com.pokemmo.PokeMMO
+          - com.etlegacy.ETLegacy
+          - com.realm667.Wolfenstein_Blade_of_Agony
+          - net.stabyourself.nottetris2
+          - org.srb2.SRB2
+          - org.srb2.SRB2Kart
+          - org.endlessaccess.threadbare
+          - org.kartkrew.RingRacers
+          - org.supertuxproject.SuperTux
+          - net.supertuxkart.SuperTuxKart
+
+  - sections:
+    - expand-horizontally: true
+      classes:
+        - bazzite-section
+        - streaming-section
+      category:
+        title: "Streaming & Chat"
+        subtitle: "Sprunk'd it."
+        banner: file:///usr/share/ublue-os/bazaar/streaming.png
+        banner-fit: contain
+        banner-height: 300
+        banner-text-halign: end
+        banner-text-valign: center
+        banner-text-label-xalign: 1.0
+        appids:
+          - com.obsproject.Studio
+          - com.feaneron.Boatswain
+          - com.moonlight_stream.Moonlight
+          - com.valvesoftware.SteamLink
+          - io.github.astralvixen.geforce-infinity
+          - com.parsecgaming.parsec
+          - com.discordapp.Discord
+          - dev.vencord.Vesktop
+          - im.pidgin.Pidgin
+          - com.teamspeak.TeamSpeak
+          - info.mumble.Mumble
+          - im.riot.Riot
+          - org.squidowl.halloy
+          - org.gnome.Fractal
+
+  - sections:
+    - expand-horizontally: true
+      classes:
+        - bazzite-section
+        - music-section
+      category:
+        title: "Music & Media"
+        subtitle: "Let me break it down for you."
+        banner: file:///usr/share/ublue-os/bazaar/music.png
+        banner-fit: contain
+        banner-height: 300
+        banner-text-halign: start
+        banner-text-valign: center
+        banner-text-label-xalign: 0.0
+        appids:
+          - io.bassi.Amberol
+          - com.github.neithern.g4music
+          - org.atheme.audacious
+          - com.spotify.Client
+          - com.mastermindzh.tidal-hifi
+          - org.videolan.VLC
+          - com.github.iwalton3.jellyfin-media-player
+          - tv.plex.PlexDesktop
+          - com.plexamp.Plexamp
+          - rocks.shy.VacuumTube
+          - org.strawberrymusicplayer.strawberry
+          - camp.nook.nookdesktop
+
+  - sections:
+    - expand-horizontally: true
+      classes:
+        - bazzite-section
+        - office-section
+      category:
+        title: "Office & Productivity"
+        subtitle: "May the paperclip fellow have mercy."
+        banner: file:///usr/share/ublue-os/bazaar/office.png
+        banner-fit: contain
+        banner-height: 300
+        banner-text-halign: end
+        banner-text-valign: center
+        banner-text-label-xalign: 1.0
+        appids:
+          - org.mozilla.Thunderbird
+          - org.libreoffice.LibreOffice
+          - org.onlyoffice.desktopeditors
+          - org.gimp.GIMP
+          - org.kde.krita
+          - org.inkscape.Inkscape
+          - org.blender.Blender
+          - io.github.nokse22.Exhibit
+          - io.github.jliljebl.Flowblade
+          - de.leopoldluley.Clapgrep
+          - org.audacityteam.Audacity
+          - org.ardour.Ardour
+          - md.obsidian.Obsidian
+          - org.standardnotes.standardnotes
+          - com.slack.Slack
+          - com.github.IsmaelMartinez.teams_for_linux
+
+  - sections:
+    - expand-horizontally: true
+      classes:
+        - bazzite-section
+        - utilities-section
+      category:
+        title: "Utilities"
+        subtitle: "Stuff you didn't need until now."
+        banner: file:///usr/share/ublue-os/bazaar/utilities.png
+        banner-fit: contain
+        banner-height: 300
+        banner-text-halign: start
+        banner-text-valign: center
+        banner-text-label-xalign: 0.0
+        appids:
+          - io.github.ilya_zlobintsev.LACT
+          - io.github.limo_app.limo
+          - io.github.radiolamp.mangojuice
+          - io.github.rfrench3.scopebuddy-gui
+          - io.github.trigg.discover_overlay
+          - com.github.wwmm.easyeffects
+          - me.timschneeberger.jdsp4linux
+          - com.github.Alcaro.Flips
+          - io.github.thetumultuousunicornofdarkness.cpu-x
+          - io.github.arunsivaramanneo.GPUViewer
+          - dev.deedles.Trayscale
+          - app.drey.Warp
+          - com.rustdesk.RustDesk
+          - org.deskflow.deskflow
+          - io.github.pwr_solaar.solaar
+          - it.mijorus.gearlever
+          - io.github.flattool.Ignition
+          - io.github.fastrizwaan.WineZGUI
+          - io.github.berarma.Oversteer
+          - io.github.lawstorant.boxflat
+          - org.keepassxc.KeePassXC
+          - com.bitwarden.desktop
+          - org.qbittorrent.qBittorrent
+          - com.github.zocker_160.SyncThingy
+          - org.fedoraproject.MediaWriter
+          - org.raspberrypi.rpi-imager
+          - cc.arduino.IDE2
+          - org.gnome.GHex
