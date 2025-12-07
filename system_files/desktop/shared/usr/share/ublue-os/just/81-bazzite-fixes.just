@@ -439,3 +439,69 @@ steam-icons ACTION="":
       echo "Invalid choice. Exiting without changes."
       ;;
     esac
+
+# Toggle CEC_ONSLEEP_STANDBY - Controls whether TV goes to standby when system sleeps
+toggle-cec-sleep ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    CONFIG_FILE="/etc/default/cec-control"
+
+    # Check if config file exists
+    if [[ ! -f "$CONFIG_FILE" ]]; then
+      echo -e "${red}${bold}Error:${normal} CEC config file not found at $CONFIG_FILE"
+      echo "CEC control may not be installed or configured on this system."
+      exit 1
+    fi
+
+    # Determine current state (default to false if not set)
+    if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" 2>/dev/null; then
+      CURRENT_VALUE=$(grep '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" | cut -d= -f2)
+    else
+      CURRENT_VALUE="false"
+    fi
+
+    CURRENT_STATE="Disabled"
+    if [[ "$CURRENT_VALUE" == "true" ]]; then
+      CURRENT_STATE="Enabled"
+    fi
+
+    OPTION="{{ ACTION }}"
+
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust toggle-cec-onsleep <option>"
+      echo "  <option>: Specify the option to skip the interactive prompt"
+      echo "  Use 'enable' to make TV standby when system sleeps"
+      echo "  Use 'disable' to prevent TV standby when system sleeps"
+      exit 0
+    elif [ -z "$OPTION" ]; then
+      echo -e "${bold}CEC On-Sleep Standby:${normal} $CURRENT_STATE"
+      echo ""
+      echo "When enabled, your TV will go to standby when the system sleeps."
+      echo "When disabled, your TV will remain on when the system sleeps."
+      echo ""
+      OPTION=$(ugum choose "Enable" "Disable" "Exit without saving")
+    fi
+
+    case "$OPTION" in
+      Enable|enable)
+        echo "Enabling CEC on-sleep standby..."
+        if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE"; then
+          sudo sed -i 's/^CEC_ONSLEEP_STANDBY=.*/CEC_ONSLEEP_STANDBY=true/' "$CONFIG_FILE"
+        else
+          echo 'CEC_ONSLEEP_STANDBY=true' | sudo tee -a "$CONFIG_FILE" > /dev/null
+        fi
+        echo -e "CEC on-sleep standby is now ${green}${bold}Enabled${normal}."
+        ;;
+      Disable|disable)
+        echo "Disabling CEC on-sleep standby..."
+        if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE"; then
+          sudo sed -i 's/^CEC_ONSLEEP_STANDBY=.*/CEC_ONSLEEP_STANDBY=false/' "$CONFIG_FILE"
+        else
+          echo 'CEC_ONSLEEP_STANDBY=false' | sudo tee -a "$CONFIG_FILE" > /dev/null
+        fi
+        echo -e "CEC on-sleep standby is now ${red}${bold}Disabled${normal}."
+        ;;
+      "Exit without saving"|*)
+        echo "No changes made."
+        ;;
+    esac
