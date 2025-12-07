@@ -1,0 +1,311 @@
+#!/usr/bin/bash
+set -eo pipefail
+source /usr/lib/ujust/ujust.sh
+source /etc/os-release
+
+helptext="${bold}====== Custom Resolution Helper Util ======${normal}
+
+This tool helps with setting a custom resolution using modedb kernel arguments.
+
+${bold}Usage:${normal} $(basename "$0") [OPTION] [ARGUMENT]
+
+${bold}Options:${normal}
+  current             Show current custom resolutions
+  add [RESOLUTION]    Add a custom resolution
+  rm [RESOLUTION]     Remove a custom resolution
+  rm all              Remove all custom resolutions
+
+${bold}[RESOLUTION]${normal} must be in the form of ${bold}<name>:<xres>x<yres>[M][R][-<bpp>][@<refresh>][i][m][eDd]${normal}
+  For detailed explaination, see https://www.kernel.org/doc/Documentation/fb/modedb.txt
+
+${bold}Examples:${normal}
+  $(basename "$0") current
+  $(basename "$0") add [RESOLUTION]
+  $(basename "$0") rm [RESOLUTION]
+  $(basename "$0") rm all
+
+${bold}For help${normal}: https://discord.bazzite.gg
+"
+
+#Utility functions, mostly copied from brh
+confirm() {
+  local msg="$1"
+  echo -n "$msg ${yellow}(Y/n)${normal} "
+  read -r reply
+  [[ -z "$reply" || "${reply,,}" =~ ^y ]]
+}
+
+press_any_key() {
+  echo "Press Enter to continue..."
+  read -r
+}
+
+confirm_reboot() {
+  if [[ "$1" == "-y" ]]; then
+    echo "The system will reboot in 5 seconds!"
+    sleep 5
+    systemctl reboot
+  else
+    if confirm "Reboot now?"; then
+      systemctl reboot
+    fi
+  fi
+}
+
+print_status() {
+  KARGS=$(rpm-ostree kargs)
+  echo -n "Current custom resolution(s) are: "
+  MODEDB_OPTS=$(echo "$KARGS" | grep -oP 'video=\K[^ ]*')
+  if [ -z "$MODEDB_OPTS" ]; then
+    echo -n "${bold}None${normal}"
+  else
+    readarray -t OPT_ARRAY < <(echo "$MODEDB_OPTS")
+    for mode_options in "${OPT_ARRAY[@]}"; do
+      echo -n "${bold}$mode_options${normal} "
+    done
+  fi
+  echo
+}
+
+#Usage Functions
+add_to() {
+  echo "Select a monitor, this should be any one of the connected ports."
+  MONITOR_OPTS=$(gum choose $(for p in /sys/class/drm/*/status; do
+    con=${p%/status};
+    echo -n "${con#*/card?-}:$(cat "$p" | tr '\n' ' ')";
+    done) Cancel)
+  if [[ "$MONITOR_OPTS" = "Cancel" ]]; then
+    return 0;
+  fi
+  echo "$(echo "$MONITOR_OPTS" | grep -o '^[^:]*')"
+  ADD_MONITOR=$(echo "$(echo "$MONITOR_OPTS" | grep -o '^[^:]*')")
+  #The final form is <xres>x<yres>[M][R][-<bpp>][@<refresh>][i][m][eDd] according to the kernel modedb docs
+  local xyres=''
+  local refresh=''
+  local M=''
+  local R=''
+  local i=''
+  local m=''
+  local e=''
+
+  local res_check=''
+  until [[ $res_check != "" ]]; do
+  echo "Enter your resolution for ${bold}$ADD_MONITOR${normal}. "
+  echo "    For example, ${bold}1920x1080${normal}."
+  read -p "    Your Resolution: " xyres
+  res_check=$(echo "$xyres" | grep -oE '[0-9]+x[0-9]+' || :)
+  if [[ $res_check == "" ]]; then
+    echo "Invalid resolution ${bold}$xyres${normal}"
+  fi
+  done
+
+
+  echo "Enter your refresh rate for ${bold}$ADD_MONITOR${normal}."
+  echo "    For example, ${bold}75${normal}, if your desired resolution is ${bold}$xyres@75Hz${normal}"
+  read -p "    Your Refresh Rate: " refresh
+
+  if confirm "Do you want the timing to be calculated using the ${bold}VESA(TM) Coordinated Video Timings(CVT)${normal} instead of looking up the mode from a table?"; then
+    M="M"
+  fi
+  if confirm "Do you want the timing to be calculated with a ${bold}'Reduced Blanking'${normal}? (You probably want this if you are using a high resolution & refresh rate monitor)"; then
+    R="R"
+  fi
+  if confirm "Is this resolution ${bold}Interlaced${normal}?"; then
+    i="i"
+  fi
+  if confirm "Do you want to add ${bold}margins${normal} to the calculation? (1.8% of xres rounded down to 8 pixels and 1.8% of yres)"; then
+    m="m"
+  fi
+  if confirm "Do you want to make this display ${bold}always enabled${normal}? (This is useful for making a virtual display for game streaming with Sunshine)"; then
+    e="e"
+  fi
+
+  ADD_RESOLUTION=$(echo -n "$ADD_MONITOR:$xyres$M$R@$refresh$i$m$e")
+  echo "Your kernel argument for the resolution is ${bold}$ADD_RESOLUTION${normal}"
+  ADD_KARGS=$(echo -n "--append-if-missing=video=$ADD_RESOLUTION")
+  if confirm "Would you like to apply it now?"; then
+    echo "Adding kernel arguments..."
+    echo "Command: ${bold}rpm-ostree kargs $ADD_KARGS${normal}"
+    if rpm-ostree kargs "$ADD_KARGS"; then
+      echo "${green}Custom resolution added successfully!${normal} Reboot to apply changes."
+      confirm_reboot
+    else
+      echo "${red}Adding kernel arguments failed.${normal} You may have an update in the background."
+      return 1;
+    fi
+  else
+    echo "Cancelled."
+    return 0;
+  fi
+
+}
+
+remove() {
+  echo "Which custom resolution do you want to remove?"
+  RM_RESOLUTION=$(gum choose $(for mode_options in "${OPT_ARRAY[@]}"; do
+    echo -n "$mode_options "
+    done))
+  if confirm "Remove ${bold}$RM_RESOLUTION${normal}?"; then
+    RM_KARGS=$(echo -n "--delete-if-present=video=$RM_RESOLUTION")
+    echo "Command: ${bold}rpm-ostree kargs $RM_KARGS${normal}"
+    if rpm-ostree kargs "$RM_KARGS"; then
+      echo "${green}Custom resolution removed successfully!${normal} Reboot to apply changes."
+      confirm_reboot "$1"
+    else
+      echo "${red}Removing kernel arguments failed.${normal} You may have an update in the background."
+      return 1;
+    fi
+  else
+    echo "Cancelled."
+    return 0;
+  fi
+}
+
+removeAll() {
+  if [[ "-y" == "$1" ]] ; then
+    RM_KARGS=$(for mode_options in "${OPT_ARRAY[@]}"; do
+      echo -n "--delete-if-present=video=$mode_options "
+      done)
+    echo "Command: ${bold}rpm-ostree kargs $RM_KARGS${normal}"
+    if rpm-ostree kargs "$RM_KARGS"; then
+      echo "${green}Custom resolution removed successfully!${normal} Reboot to apply changes."
+      confirm_reboot "$1"
+    else
+      echo "${red}Removing kernel arguments failed.${normal} You may have an update in the background."
+      return 1;
+    fi
+  elif confirm "Remove All Custom Resolutions?" ; then
+      RM_KARGS=$(for mode_options in "${OPT_ARRAY[@]}"; do
+        echo -n "--delete-if-present=video=$mode_options "
+        done)
+      echo "Command: ${bold}rpm-ostree kargs $RM_KARGS${normal}"
+      if rpm-ostree kargs "$RM_KARGS"; then
+        echo "${green}Custom resolution removed successfully!${normal} Reboot to apply changes."
+        confirm_reboot "$1"
+      else
+        echo "${red}Removing kernel arguments failed.${normal} You may have an update in the background."
+        return 1;
+      fi
+    else
+      echo "Cancelled."
+      return 0;
+  fi
+}
+
+add() {
+  if [[ -z "$1" && -z "$2" ]]; then
+    add_to
+    return 0;
+  fi
+  local res_check=$(echo "$1" | grep -oE ':[0-9]+x[0-9]+[M]?[R]?@[0-9]+[e]?' || :)
+  if [[ $res_check == "" ]]; then
+    echo "Invalid resolution ${bold}$1${normal}"
+    echo >&2 "Usage: add <name>:<xres>x<yres>[M][R][-<bpp>][@<refresh>][i][m][eDd]"
+    echo >&2 "Examples: add DP1:1920x1080MR@75e"
+    echo >&2 "For detailed explaination see ${bold}https://www.kernel.org/doc/Documentation/fb/modedb.txt${normal}"
+    return 1
+  fi
+  echo "Adding kernel arguments..."
+  local ADD_KARGS=$(echo "--append-if-missing=video=$1")
+  echo "Command: ${bold}rpm-ostree kargs $ADD_KARGS${normal}"
+  if rpm-ostree kargs "$ADD_KARGS"; then
+    echo "${green}Custom resolution added successfully!${normal} Reboot to apply changes."
+    confirm_reboot "$2"
+  else
+    echo "${red}Adding kernel arguments failed.${normal} You may have an update in the background."
+    return 1;
+  fi
+}
+
+rm() {
+  print_status
+
+  if [[ -z "$1" && -z "$2" ]]; then
+    remove
+    return 0;
+  fi
+
+  if [[ "all" == "$1" ]]; then
+    removeAll "$2"
+    return 0;
+  fi
+
+  local res_check=$(echo "$1" | grep -oE ':[0-9]+x[0-9]+[M]?[R]?@[0-9]+[e]?' || :)
+  if [[ $res_check == "" ]]; then
+    echo "Invalid resolution ${bold}$1${normal}"
+    echo >&2 "Usage: rm <name>:<xres>x<yres>[M][R][-<bpp>][@<refresh>][i][m][eDd]"
+    echo >&2 "Examples: rm $mode_options"
+    echo >&2 "For detailed explaination see ${bold}https://www.kernel.org/doc/Documentation/fb/modedb.txt${normal}"
+    return 1;
+  fi
+
+  if [[ "$MODEDB_OPTS" =~ "$1" ]]; then
+    echo "Removing kernel arguments..."
+    local RM_KARGS=$(echo "--delete-if-present=video=$1")
+    echo "Command: ${bold}rpm-ostree kargs $RM_KARGS${normal}"
+    if rpm-ostree kargs "$RM_KARGS"; then
+      echo "${green}Custom resolution removed successfully!${normal} Reboot to apply changes."
+      confirm_reboot "$2"
+    else
+      echo "${red}Removing kernel arguments failed.${normal} You may have an update in the background."
+      return 1;
+    fi
+  else
+    echo "The resolution you are trying to remove does not exist!"
+    return 1;
+  fi
+}
+
+interactive_menu(){
+  while true; do
+    clear
+    echo "$helptext"
+    echo
+    print_status
+    echo "Add, Remove, Remove All or Exit without saving?"
+    OPTION=$(ugum choose Add Remove Remove-All Exit)
+
+
+    case "$OPTION" in
+      "Add")
+        clear
+        add_to
+      ;;
+      "Remove")
+        clear
+        remove
+      ;;
+      "Remove-All")
+        clear
+        removeAll
+      ;;
+      "Exit")
+        echo "Exiting"
+        exit 0
+      ;;
+    esac
+  done
+}
+
+
+#Main
+#If OSTREE_VERSION is blank, then this is not fedora atomic
+if  [[ "$OSTREE_VERSION" == "" ]]; then
+  echo "This is NOT Fedora Atomic, exiting"
+  exit 0
+fi
+
+OSTREE_STATE=$(rpm-ostree status | grep "idle" || :)
+if [[ "$OSTREE_STATE" != "State: idle" ]]; then
+  echo "You have an unfinished update! Please try again after waiting for the update to complete and rebooting."
+  echo "You can check via ${bold}rpm-ostree status${normal}."
+  exit 1
+fi
+
+case "$1" in
+  "current") print_status ;;
+  "add") add "$2" "$3" ;;
+  "rm") rm "$2" "$3" ;;
+  "help"|"-h"|"--help"|"") interactive_menu ;;
+  *) echo "Unknown option: $1. Run without arguments for interactive mode."
+esac
