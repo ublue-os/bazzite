@@ -204,6 +204,11 @@ screens:
         description: "Enable Wake-on-LAN functionality to power on your device remotely"
         default: false
         script: "ujust toggle-wol enable"
+      - id: "cec-sleep-standby"
+        title: "CEC Sleep Standby"
+        description: "Put TV to standby when system sleeps via HDMI-CEC. Requires a CEC-compatible Device, or Pulse 8 HDMI-CEC adapter."
+        default: false
+        script: "ujust toggle-cec-sleep enable"
       - id: "steam-icons"
         title: "Clean Steam Shortcuts"
         description: "Automatically removes Steam shortcuts from the desktop on boot, useful for keeping the desktop clean when installing games via game mode."
