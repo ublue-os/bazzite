@@ -110,7 +110,7 @@ RUN --mount=type=cache,dst=/var/cache \
         scx-tools && \
     dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
     declare -A toswap=( \
-        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite"]="bootc rpm-ostree plymouth" \
+        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite"]="bootc plymouth" \
     ) && \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
