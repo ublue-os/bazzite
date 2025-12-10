@@ -43,7 +43,8 @@ _rebase-to-dx:
     new_img="$(echo "$current_img" | sed \
         -e 's/bazzite/bazzite-dx/' \
         -e 's/-nvidia-open/-nvidia/' \
-        -e 's/ostree-unverified-registry:/ostree-image-signed:/')"
+        -e 's/ostree-unverified-registry:/ostree-image-signed:/' |
+        sed -E -e 's/:[^:]+$/:stable/')"
     gum spin --title="$(printf '%s\n' "Running 'rpm-ostree rebase $new_img' within 10 seconds." "Press CTRL+c to abort")" sleep 10 || exit 0
     rpm-ostree rebase "$new_img"
 
