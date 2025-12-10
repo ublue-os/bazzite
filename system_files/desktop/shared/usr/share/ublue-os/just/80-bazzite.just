@@ -46,7 +46,11 @@ _rebase-to-dx:
         -e 's/ostree-unverified-registry:/ostree-image-signed:/' |
         sed -E -e 's/:[^:]+$/:stable/')"
     gum spin --title="$(printf '%s\n' "Running 'rpm-ostree rebase $new_img' within 10 seconds." "Press CTRL+c to abort")" sleep 10 || exit 0
-    rpm-ostree rebase "$new_img"
+    rpm-ostree rebase "$new_img" || {
+        echo ""
+        echo "Rebase failed. Please ensure that your base image has a corresponding DX image at https://github.com/orgs/ublue-os/packages?repo_name=bazzite-dx"
+        exit 1
+    }
 
 # Toggle SSH availability on boot
 [group("network")]
