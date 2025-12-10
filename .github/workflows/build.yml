@@ -68,7 +68,7 @@ jobs:
           - bazzite-gnome-nvidia-open
         include:
           - fedora_version: 43
-            kernel_version: ${{ (github.ref_name == 'testing' || github.ref_name == 'unstable') && 'latest' || '6.17.7-ba20' }}
+            kernel_version: ${{ (github.ref_name == 'testing' || github.ref_name == 'unstable') && 'latest' || 'latest' }}
             base_image_flavor: main
             arch: x86_64
     steps:
