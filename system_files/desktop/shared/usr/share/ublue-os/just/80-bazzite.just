@@ -13,6 +13,40 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
+# Rebase to a Bazzite-DX image
+[group("development")]
+_rebase-to-dx:
+    #!/usr/bin/bash
+    current_img="$(rpm-ostree status --json | jq -r '.deployments[] | select(.booted == true) | .["container-image-reference"]')"
+
+    # Check if we are already on a Bazzite-DX image
+    if [[ $current_img == *bazzite-dx* ]]; then
+        echo "Already on a Bazzite-DX image"
+        exit 0
+    fi
+
+    # In case the user uses an image with legacy nvidia drivers,
+    if [[ $current_img == *-nvidia* && $current_img != *-nvidia-open* ]]; then
+        echo ""
+        echo 'WARNING: your current image uses legacy nvidia drivers.'
+        echo 'Rebasing to a Bazzite-DX image may render your system unusable if your card is not supported by the open-source module.'
+        gum spin --title="" sleep 10 || exit 0
+        read -t 1 -s -r -d '\0' _ || :
+        read -r -n1 -p "Continue rebasing to a Bazzite-DX image? [y/N]: "
+        echo ""
+        if [[ $REPLY != y && $REPLY != Y ]]; then
+            echo "Rebase aborted"
+            exit 0
+        fi
+    fi
+
+    new_img="$(echo "$current_img" | sed \
+        -e 's/bazzite/bazzite-dx/' \
+        -e 's/-nvidia-open/-nvidia/' \
+        -e 's/ostree-unverified-registry:/ostree-image-signed:/')"
+    gum spin --title="$(printf '%s\n' "Running 'rpm-ostree rebase $new_img' within 10 seconds." "Press CTRL+c to abort")" sleep 10 || exit 0
+    rpm-ostree rebase "$new_img"
+
 # Toggle SSH availability on boot
 [group("network")]
 toggle-ssh ACTION="":
