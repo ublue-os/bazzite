@@ -118,7 +118,11 @@ disable-ryzenadj-max-performance:
     #/bin/bash
     sudo rm /etc/udev/rules.d/99-ryzenadj-power-source-change.rules
     sudo udevadm control --reload-rules
-    echo 'removal complete'
+    sudo systemctl stop max-perf-boot.service
+    sudo systemctl disable --now max-perf-boot.service
+    sudo rm /etc/systemd/system/max-perf-boot.service
+    sudo systemctl daemon-reload
+    echo 'removal complete, reboot to take effect.'
 
 # Re-enable input remapper feature on non-desktop images
 restore-input-remapper:
