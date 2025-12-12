@@ -189,7 +189,8 @@ RUN --mount=type=cache,dst=/var/cache \
         libaacs \
         libbdplus \
         libbluray \
-        libbluray-utils && \
+        libbluray-utils \
+        pipewire-codec-aptx && \
     /ctx/cleanup
 
 # Remove unneeded packages
