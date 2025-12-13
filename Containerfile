@@ -86,6 +86,9 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-steam.repo && \
     dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-rar.repo && \
+    dnf5 -y config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
+    sed -i 's|baseurl=https://pkg.surfacelinux.com/fedora/f\$releasever/|baseurl=https://pkg.surfacelinux.com/fedora/f42/|' /etc/yum.repos.d/linux-surface.repo && \
+    dnf5 -y config-manager setopt "linux-surface".enabled=false && \
     dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
     dnf5 -y config-manager setopt "*terra*".priority=3 "*terra*".exclude="nerd-fonts topgrade scx-tools scx-scheds steam python3-protobuf" && \
     dnf5 -y config-manager setopt "terra-mesa".enabled=true && \
@@ -107,7 +110,7 @@ RUN --mount=type=cache,dst=/var/cache \
         scx-tools && \
     dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
     declare -A toswap=( \
-        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite"]="bootc rpm-ostree plymouth" \
+        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite"]="bootc plymouth" \
     ) && \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
@@ -137,6 +140,9 @@ RUN --mount=type=cache,dst=/var/cache \
 # Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
+    dnf5 -y install --enable-repo="linux-surface" --allowerasing \
+        iptsd \
+        libwacom-surface && \
     dnf5 -y remove \
         pipewire-config-raop && \
     declare -A toswap=( \
@@ -499,7 +505,8 @@ RUN --mount=type=cache,dst=/var/cache \
       cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-desktop-kinoite-"*".gschema.override" "/usr/share/ublue-os/dconfs/desktop-kinoite/" && \
       find "/etc/dconf/db/distro.d/" -maxdepth 1 -type f -exec cp {} "/usr/share/ublue-os/dconfs/desktop-kinoite/" \; && \
       dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/desktop-kinoite/zz0-"*"-bazzite-desktop-kinoite-"*".gschema.override" && \
-      rm "/usr/share/ublue-os/dconfs/desktop-kinoite/zz0-"*"-bazzite-desktop-kinoite-"*".gschema.override" \
+      rm "/usr/share/ublue-os/dconfs/desktop-kinoite/zz0-"*"-bazzite-desktop-kinoite-"*".gschema.override" && \
+      sed -i 's@Exec=/usr/bin/ptyxis@Exec=/usr/bin/kde-ptyxis@g' /usr/share/dbus-1/services/org.gnome.Ptyxis.service \
     ; else \
       mkdir -p "/usr/share/ublue-os/dconfs/desktop-silverblue/" && \
       cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/desktop-silverblue/" && \

@@ -109,7 +109,7 @@ jobs:
             echo "install_nvidia=false" >> "$GITHUB_OUTPUT"
           fi
           # Nvidia driver version to use
-          if [[ "$IMAGE_NAME" == *"nvidia-open" || "$IMAGE_NAME" == *"-deck-nvidia"* ]]; then
+          if [[ "$IMAGE" == *"nvidia-open" || "$IMAGE" == *"-deck-nvidia"* ]]; then
             echo "nvidia_version=org.bazzite.kernel.nvidia" >> "$GITHUB_OUTPUT"
           else
             echo "nvidia_version=org.bazzite.kernel.nvidia_lts" >> "$GITHUB_OUTPUT"

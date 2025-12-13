@@ -1,4 +1,5 @@
 %bcond_without check
+%bcond_with tests
 %if 0%{?rhel} >= 9 || 0%{?fedora} > 41
     %bcond_without ostree_ext
 %else
@@ -21,7 +22,8 @@
 %endif
 
 Name:           bootc
-Version:        1.9.0
+# Ensure this local build overrides anything else.
+Version:        1.11.0
 Release:        100.bazzite
 Summary:        Bootable container system
 
@@ -86,51 +88,72 @@ Recommends: podman
 %description -n system-reinstall-bootc
 This package provides a utility to simplify reinstalling the current system to a given bootc image.
 
+%if %{with tests}
+%package tests
+Summary: Integration tests for bootc
+Requires: %{name} = %{version}-%{release}
+
+%description tests
+This package contains the integration test suite for bootc.
+%endif
+
 %global system_reinstall_bootc_install_podman_path %{_prefix}/lib/system-reinstall-bootc/install-podman
 
+%if 0%{?container_build}
+# Source is already at /src, no subdirectory
+%global _buildsubdir .
+%endif
+
 %prep
+%if ! 0%{?container_build}
 %autosetup -p1 -a1
 # Default -v vendor config doesn't support non-crates.io deps (i.e. git)
 cp .cargo/vendor-config.toml .
 %cargo_prep -N
 cat vendor-config.toml >> .cargo/config.toml
 rm vendor-config.toml
+%else
+# Container build: source already at _builddir (/src), nothing to extract
+# RPM's %mkbuilddir creates a subdirectory; symlink it back to the source
+cd ..
+rm -rf %{name}-%{version}-build
+ln -s . %{name}-%{version}-build
+cd %{name}-%{version}-build
+%endif
 
 %build
-# Build the main bootc binary
-%if %new_cargo_macros
-    %cargo_build %{?with_rhsm:-f rhsm}
-%else
-    %cargo_build %{?with_rhsm:--features rhsm}
-%endif
-
-# Build the system reinstallation CLI binary
-%global cargo_args -p system-reinstall-bootc
 export SYSTEM_REINSTALL_BOOTC_INSTALL_PODMAN_PATH=%{system_reinstall_bootc_install_podman_path}
-%if %new_cargo_macros
-    # In cargo-rpm-macros, the cargo_build macro does flag processing,
-    # so we need to pass '--' to signify that cargo_args is not part
-    # of the macro args
-    %cargo_build -- %cargo_args
-%else
-    # Older macros from rust-toolset do *not* do flag processing, so
-    # '--' would be passed through to cargo directly, which is not
-    # what we want.
-    %cargo_build %cargo_args
-%endif
-
+# Build this first to avoid feature skew
 make manpages
 
+# Build all binaries
+%if 0%{?container_build}
+# Container build: use cargo directly with cached dependencies to avoid RPM macro overhead
+cargo build -j%{_smp_build_ncpus} --release %{?with_rhsm:--features rhsm} --bins
+%else
+# Non-container build: use RPM macros for proper dependency tracking
+%if %new_cargo_macros
+    %cargo_build %{?with_rhsm:-f rhsm} -- --bins
+%else
+    %cargo_build %{?with_rhsm:--features rhsm} -- --bins
+%endif
+%endif
+
+%if ! 0%{?container_build}
 %cargo_vendor_manifest
 # https://pagure.io/fedora-rust/rust-packaging/issue/33
 sed -i -e '/https:\/\//d' cargo-vendor.txt
 %cargo_license_summary
 %{cargo_license} > LICENSE.dependencies
+%endif
 
 %install
 %make_install INSTALL="install -p -c"
 %if %{with ostree_ext}
 make install-ostree-hooks DESTDIR=%{?buildroot}
+%endif
+%if %{with tests}
+install -D -m 0755 target/release/tests-integration %{buildroot}%{_bindir}/bootc-integration-tests
 %endif
 mkdir -p %{buildroot}/%{dirname:%{system_reinstall_bootc_install_podman_path}}
 cat >%{?buildroot}/%{system_reinstall_bootc_install_podman_path} <<EOF
@@ -143,15 +166,27 @@ chmod +x %{?buildroot}/%{system_reinstall_bootc_install_podman_path}
 touch %{?buildroot}/%{_docdir}/bootc/baseimage/base/sysroot/.keepdir
 find %{?buildroot}/%{_docdir} ! -type d -printf '%{_docdir}/%%P\n' > bootcdoclist.txt
 
+%if %{with check}
+%check
+if grep -qEe 'Seccomp:.*0$' /proc/self/status; then
+    %cargo_test
+else
+    echo "skipping unit tests due to https://github.com/rpm-software-management/mock/pull/1613#issuecomment-3421908652"
+fi
+%endif
+
 %files -f bootcdoclist.txt
 %license LICENSE-MIT
 %license LICENSE-APACHE
+%if ! 0%{?container_build}
 %license LICENSE.dependencies
 %license cargo-vendor.txt
+%endif
 %doc README.md
 %{_bindir}/bootc
 %{_prefix}/lib/bootc/
 %{_prefix}/lib/systemd/system-generators/*
+%{_prefix}/lib/dracut/modules.d/51bootc/
 %if %{with ostree_ext}
 %{_prefix}/libexec/libostree/ext/*
 %endif
@@ -162,5 +197,11 @@ find %{?buildroot}/%{_docdir} ! -type d -printf '%{_docdir}/%%P\n' > bootcdoclis
 %{_bindir}/system-reinstall-bootc
 %{system_reinstall_bootc_install_podman_path}
 
+%if %{with tests}
+%files tests
+%{_bindir}/bootc-integration-tests
+%endif
+
 %changelog
 %autochangelog
+
