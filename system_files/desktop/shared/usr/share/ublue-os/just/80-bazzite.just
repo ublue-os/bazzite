@@ -558,7 +558,7 @@ toggle-global-fsr4 ACTION="":
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh
 
-    FILE="/etc/environment.d/proton-fsr4.conf"
+    FILE="$HOME/.config/environment.d/proton-fsr4.conf"
 
     CURRENT="Disabled"
     if [[ -f "$FILE" ]]; then
@@ -578,11 +578,12 @@ toggle-global-fsr4 ACTION="":
 
     case "$OPTION" in
         Enable|enable)
-            echo "PROTON_FSR4_UPGRADE=1" | sudo tee "$FILE" > /dev/null
+            mkdir -p "$HOME/.config/environment.d"
+            echo "PROTON_FSR4_UPGRADE=1" > "$FILE"
             echo -e "${green}${bold}Enabled${normal}: PROTON_FSR4_UPGRADE=1"
             ;;
         Disable|disable)
-            sudo rm -f "$FILE"
+            rm -f "$FILE"
             echo -e "${red}${bold}Disabled${normal}: PROTON_FSR4_UPGRADE removed"
             ;;
         *)
