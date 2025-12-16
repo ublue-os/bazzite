@@ -145,6 +145,8 @@ jobs:
       # Checkout push-to-registry action GitHub repository
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          submodules: recursive
 
       # Prepare offline documentation
       - name: Download offline docs
