@@ -70,7 +70,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ycollet/audinux \
         bazzite-org/rom-properties \
         bazzite-org/webapp-manager \
-        hhd-dev/hhd \
+        bazzite-org/hhd \
         lizardbyte/beta \
         che/nerd-fonts; \
     do \
@@ -543,7 +543,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ycollet/audinux \
         bazzite-org/rom-properties \
         bazzite-org/webapp-manager \
-        hhd-dev/hhd \
+        bazzite-org/hhd \
         lizardbyte/beta \
         che/nerd-fonts; \
     do \
@@ -617,7 +617,7 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable bazzite-org/bazzite && \
     dnf5 -y copr enable bazzite-org/bazzite-multilib && \
     dnf5 -y copr enable bazzite-org/obs-vkcapture && \
-    dnf5 -y copr enable hhd-dev/hhd && \
+    dnf5 -y copr enable bazzite-org/hhd && \
     dnf5 -y copr enable ycollet/audinux && \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     /ctx/cleanup
@@ -724,7 +724,7 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-org/bazzite \
         bazzite-org/bazzite-multilib \
         bazzite-org/obs-vkcapture \
-        hhd-dev/hhd \
+        bazzite-org/hhd \
         ycollet/audinux; \
     do \
         dnf5 -y copr disable -y $copr; \
