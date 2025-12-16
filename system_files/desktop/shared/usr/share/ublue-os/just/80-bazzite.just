@@ -551,7 +551,7 @@ toggle-password-feedback ACTION="":
       echo "enabled, restart terminal to see changes"
     fi
 
-# Toggle global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on proton 10 or GE 10-25 or later
+# Toggle global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on Proton 10 or GE 10-25 or later
 [group("gaming")]
 toggle-global-fsr4 ACTION="":
     #!/usr/bin/bash
