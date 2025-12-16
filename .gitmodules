@@ -1,0 +1,15 @@
+[submodule "system_files/apple_silicon/submodules/linux"]
+	path = system_files/apple_silicon/submodules/linux
+	url = https://github.com/AsahiLinux/linux.git
+[submodule "system_files/apple_silicon/submodules/m1n1"]
+	path = system_files/apple_silicon/submodules/m1n1
+	url = https://github.com/AsahiLinux/m1n1.git
+[submodule "system_files/apple_silicon/submodules/asahi-installer"]
+	path = system_files/apple_silicon/submodules/asahi-installer
+	url = https://github.com/AsahiLinux/asahi-installer.git
+[submodule "system_files/apple_silicon/submodules/asahi-audio"]
+	path = system_files/apple_silicon/submodules/asahi-audio
+	url = https://github.com/AsahiLinux/asahi-audio.git
+[submodule "system_files/apple_silicon/submodules/u-boot"]
+	path = system_files/apple_silicon/submodules/u-boot
+	url = https://github.com/AsahiLinux/u-boot.git
