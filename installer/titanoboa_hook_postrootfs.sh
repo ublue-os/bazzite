@@ -500,7 +500,7 @@ _tmp=$(mktemp -d)
 (
     set -eo pipefail
     dnf -yq install python-evdev python-rich
-    git clone https://github.com/hhd-dev/jkbd "$_tmp"
+    git clone https://github.com/bazzite-org/jkbd "$_tmp"
     cd "$_tmp"
     python -m venv .venv
     #shellcheck disable=1091

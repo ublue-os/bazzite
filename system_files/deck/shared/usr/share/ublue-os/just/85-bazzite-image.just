@@ -5,16 +5,6 @@ enable-deduplication:
     systemctl enable btrfs-dedup@var-home.timer
     systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer
 
-# Install Handheld Controller Glyphs theme for hhd & CSS Loader (https://github.com/victor-borges/handheld-controller-glyphs)
-install-hhd-controller-glyph-theme:
-    #!/usr/bin/bash
-    if [ -d "$HOME/homebrew/themes" ]; then
-        rm -rf "$HOME/homebrew/themes/handheld-controller-glyphs"
-        git clone https://github.com/victor-borges/handheld-controller-glyphs.git --single-branch "$HOME/homebrew/themes/handheld-controller-glyphs"
-    else
-        echo 'Please install Decky Loader & CSS Loader first'
-    fi
-
 # Use EXT4 for SD Cards, allows use of SteamOS formatted SD cards
 switch-to-ext4:
     sudo sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs
@@ -118,7 +108,7 @@ install-speaker-firmware ACTION="":
     #!/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
-    FIRMWARE_SCRIPT="https://raw.githubusercontent.com/hhd-dev/hwinfo/refs/heads/master/firmware/bazzite-speaker.sh"
+    FIRMWARE_SCRIPT="https://raw.githubusercontent.com/bazzite-org/hwinfo/refs/heads/master/firmware/bazzite-speaker.sh"
     curl -o "/tmp/bazzite-speaker.sh" "$FIRMWARE_SCRIPT" && cat /tmp/bazzite-speaker.sh | pygmentize -l bash -O style=emacs
     echo ""
     echo "Run the above script using elevated permissions?"
@@ -183,13 +173,6 @@ restore-virtual-keyboard:
         cp /usr/share/ublue-os/backup/com.github.maliit.keyboard.desktop ~/.local/share/applications/com.github.maliit.keyboard.desktop
       fi
     fi
-
-# Install hhd main branch locally until reboot, helpful for hhd testing and debugging. (rename to install-hhd-dev if we unhide)
-_hhd-dev:
-    #!/usr/bin/bash
-    source /usr/lib/ujust/ujust.sh
-    echo "Installing ${b}Handheld Daemon${n} locally until next reboot."
-    curl -L https://raw.githubusercontent.com/hhd-dev/hhd/master/local_hhd.sh | bash
 
 _toggle-autologin:
     #!/usr/bin/bash

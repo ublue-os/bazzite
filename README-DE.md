@@ -45,7 +45,7 @@ Für eine einsteigerfreundliche Erklärung von Bazzite [besuche bitte unsere Web
 
 Bazzite basiert auf [ublue-os/main](https://github.com/ublue-os/main) und [ublue-os/nvidia](https://github.com/ublue-os/nvidia) unter Verwendung der [Fedora](https://fedoraproject.org/)-Technologie. Dies bedeutet erweiterte Hardware-Unterstützung und integrierte Treiber. Zusätzlich bietet Bazzite die folgenden Funktionen:
 
-- Verwendet den [Bazzite-Kernel](https://github.com/hhd-dev/kernel-bazzite), um HDR und erweiterte Hardware-Unterstützung zu ermöglichen, neben zahlreichen anderen enthaltenen Patches – basierend auf dem [fsync-Kernel](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
+- Verwendet den [Bazzite-Kernel](https://github.com/bazzite-org/kernel-bazzite), um HDR und erweiterte Hardware-Unterstützung zu ermöglichen, neben zahlreichen anderen enthaltenen Patches – basierend auf dem [fsync-Kernel](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
 - HDR im Spielmodus verfügbar.
 - NVK auf Nicht-Nvidia-Builds verfügbar.
 - Volle Hardware-beschleunigte Codec-Unterstützung für H264-Dekodierung.

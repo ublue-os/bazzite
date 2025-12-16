@@ -6,7 +6,7 @@ firmware="linux-firmware-whence qcom-wwan-firmware linux-firmware amd-gpu-firmwa
 dnf5 -y remove --no-autoremove $firmware
 dnf5 -y install --repo="copr:copr.fedorainfracloud.org:bazzite-org:bazzite" $firmware
 
-git clone https://github.com/hhd-dev/hwfirm /tmp/hwfirm --depth 1
+git clone https://github.com/bazzite-org/hwfirm /tmp/hwfirm --depth 1
 cp -r /tmp/hwfirm/cirrus/* /usr/lib/firmware/cirrus/
 cp -r /tmp/hwfirm/rtl_bt/* /usr/lib/firmware/rtl_bt/
 cp -r /tmp/hwfirm/awinic/* /usr/lib/firmware/
