@@ -558,7 +558,7 @@ toggle-global-fsr4 ACTION="":
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh
 
-    FILE="$HOME/.config/environment.d/proton-fsr4.conf"
+    FILE="$HOME/.config/environment.d/99-proton-fsr4.conf"
 
     CURRENT="Disabled"
     if [[ -f "$FILE" ]]; then
