@@ -263,7 +263,7 @@ jobs:
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
         id: rechunk
-        uses: ublue-os/legacy-rechunk@5fbe1d3a639615d2548d83bc888360de6267b1a2 # v1.0.0
+        uses: ublue-os/legacy-rechunk@a87410b56331029fb5d69e2459a7dc8dffe5b45e # v1.0.0
         with:
           rechunk: 'ghcr.io/ublue-os/legacy-rechunk:v1.0.0'
           ref: 'raw-img'
