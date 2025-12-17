@@ -41,7 +41,6 @@ FROM ${NVIDIA_REF} AS nvidia
 
 FROM scratch AS ctx
 COPY build_files /
-COPY firmware /
 
 ################
 # DESKTOP BUILDS
@@ -58,6 +57,10 @@ ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
 COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
+COPY firmware /
+
+# Copy Homebrew files from the brew image
+COPY --from=ghcr.io/ublue-os/brew:latest /system_files /
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
@@ -447,17 +450,6 @@ RUN --mount=type=cache,dst=/var/cache \
         /ctx/build-gnome-extensions && \
         systemctl enable dconf-update.service \
     ; fi && \
-    /ctx/cleanup
-
-# ublue-os packages
-# Homebrew & Bash Prexec
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    --mount=type=secret,id=GITHUB_TOKEN \
-    dnf5 install -y ublue-brew && \
-    /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh" -Lo /usr/share/bash-prexec && \
     /ctx/cleanup
 
 # ublue-os-media-automount-udev, mount non-removable device partitions automatically under /media/media-automount/
