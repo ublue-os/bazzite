@@ -219,6 +219,7 @@ RUN --mount=type=cache,dst=/var/cache \
         bazaar \
         iwd \
         greenboot \
+        greenboot-default-health-checks \
         ScopeBuddy \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
@@ -573,15 +574,8 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global enable systemd-tmpfiles-setup.service && \
     systemctl --global disable sunshine.service && \
     systemctl disable waydroid-container.service && \
-    systemctl enable greenboot-task-runner \
-        greenboot-healthcheck \
-        greenboot-status \
-        greenboot-loading-message \
-        greenboot-grub2-set-counter \
-        greenboot-grub2-set-success \
-        greenboot-rpm-ostree-grub2-check-fallback \
-        redboot-auto-reboot \
-        redboot-task-runner && \
+    systemctl enable greenboot-healthcheck.service && \
+    systemctl enable greenboot-set-rollback-trigger.service && \
     systemctl disable force-wol.service && \
     systemctl --global enable bazzite-dynamic-fixes.service && \
     /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf" -Lo /etc/dxvk-example.conf && \
@@ -768,11 +762,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable cec-onpoweroff.service && \
     systemctl enable cec-onsleep.service && \
     systemctl enable bazzite-tdpfix.service && \
-    systemctl enable bazzite-grub-boot-success.timer && \
-    systemctl enable bazzite-grub-boot-success.service && \
     systemctl --global disable sdgyrodsu.service && \
-    systemctl --global disable grub-boot-success.timer && \
-    systemctl disable grub-boot-indeterminate.service && \
     systemctl disable input-remapper.service && \
     systemctl disable uupd.timer && \
     systemctl disable jupiter-fan-control.service && \
