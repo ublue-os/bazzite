@@ -317,14 +317,11 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/cleanup
 
 # Install Steam & Lutris, plus supporting packages
-# Downgrade ibus to fix an issue with the Steam keyboard
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    dnf5 versionlock add \
-        ibus && \
     dnf5 -y install \
         gamescope.x86_64 \
         gamescope-libs.x86_64 \
@@ -673,6 +670,8 @@ RUN --mount=type=cache,dst=/var/cache \
         xorg-x11-server-Xvfb \
         python-vdf \
         python-crcmod && \
+    dnf5 -y remove \
+        ds-inhibit && \
     git clone https://github.com/bazzite-org/jupiter-dock-updater-bin.git \
         --depth 1 \
         /tmp/jupiter-dock-updater-bin && \
