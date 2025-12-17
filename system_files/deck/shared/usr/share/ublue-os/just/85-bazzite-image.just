@@ -120,23 +120,6 @@ restore-input-remapper:
     cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
     sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
 
-# Install firmware files needed for ayaneo and orangepi speakers
-install-speaker-firmware ACTION="":
-    #!/bin/bash
-    source /usr/lib/ujust/ujust.sh
-    OPTION={{ ACTION }}
-    FIRMWARE_SCRIPT="https://raw.githubusercontent.com/bazzite-org/hwinfo/refs/heads/master/firmware/bazzite-speaker.sh"
-    curl -o "/tmp/bazzite-speaker.sh" "$FIRMWARE_SCRIPT" && cat /tmp/bazzite-speaker.sh | pygmentize -l bash -O style=emacs
-    echo ""
-    echo "Run the above script using elevated permissions?"
-    if [ "$OPTION" == "" ]; then
-      OPTION=$(Choose "Yes" "No")
-    fi
-    if [[ "${OPTION,,}" =~ ^yes || "${OPTION,,}" =~ ^-y ]]; then
-      sudo bash /tmp/bazzite-speaker.sh
-    fi
-    rm /tmp/bazzite-speaker.sh
-
 # Configure video overrides for Steam
 configure-override-videos ACTION="":
     #!/usr/bin/bash
