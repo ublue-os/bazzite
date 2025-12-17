@@ -590,6 +590,15 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global enable systemd-tmpfiles-setup.service && \
     systemctl --global disable sunshine.service && \
     systemctl disable waydroid-container.service && \
+    systemctl enable greenboot-task-runner \
+        greenboot-healthcheck \
+        greenboot-status \
+        greenboot-loading-message \
+        greenboot-grub2-set-counter \
+        greenboot-grub2-set-success \
+        greenboot-rpm-ostree-grub2-check-fallback \
+        redboot-auto-reboot \
+        redboot-task-runner && \
     systemctl disable force-wol.service && \
     systemctl --global enable bazzite-dynamic-fixes.service && \
     /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf" -Lo /etc/dxvk-example.conf && \
@@ -664,6 +673,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install \
+        greenboot \
         jupiter-fan-control \
         jupiter-hw-support-btrfs \
         galileo-mura \

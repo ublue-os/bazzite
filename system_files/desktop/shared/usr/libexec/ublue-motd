@@ -33,6 +33,16 @@ if [[ -f "$TIP_FILE" ]]; then
 	THEME=$(gsettings get org.gnome.desktop.interface accent-color || echo "'purple'")
 	THEME=${THEME//\'/}
 	THEME=${MOTD_FORCE_THEME:-$THEME}
-  
-	sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" -e "s/%IMAGE_BRANCH%/$IMAGE_BRANCH_ESCAPED/g" -e "s/%TIP%/$TIP_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | tr '~' '\n' | /usr/bin/glow -s /usr/share/ublue-os/motd/themes/$COLOR_SCHEME/$THEME.json -w 78 -
+
+	GREENBOOT=''
+	if [[ -f /run/motd.d/boot-status ]]; then
+		if grep -q "GREEN" /run/motd.d/boot-status && grep -q "SUCCESS" /run/motd.d/boot-status; then
+			GREENBOOT='Boot Status: Healthy 󰄳'
+		else
+			GREENBOOT=$(cat /run/motd.d/boot-status)
+		fi
+	fi
+	GREENBOOT_ESCAPED=$(escape "$GREENBOOT")
+
+	sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" -e "s/%IMAGE_BRANCH%/$IMAGE_BRANCH_ESCAPED/g" -e "s/%TIP%/$TIP_ESCAPED/g" -e "s/%GREENBOOT%/$GREENBOOT_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | tr '~' '\n' | /usr/bin/glow -s /usr/share/ublue-os/motd/themes/$COLOR_SCHEME/$THEME.json -w 78 -
 fi

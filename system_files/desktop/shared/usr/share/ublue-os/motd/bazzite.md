@@ -1,5 +1,6 @@
 
 󱋩 `%IMAGE_NAME%:%IMAGE_BRANCH%`
+󰟀 `%GREENBOOT%`
 
 |  Command | Description |
 | ------- | ----------- |
