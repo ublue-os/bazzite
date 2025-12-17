@@ -35,7 +35,7 @@ if [[ -f "$TIP_FILE" ]]; then
 	THEME=${MOTD_FORCE_THEME:-$THEME}
 
 	GREENBOOT=""
-	if [[ -f /run/motd.d/boot-status ]]; then
+	if [[ -f /etc/motd.d/boot-status ]]; then
 		if grep -q "status is GREEN" /etc/motd.d/boot-status; then
 			GREENBOOT='Boot Status: Healthy 󰄳'
 		else
