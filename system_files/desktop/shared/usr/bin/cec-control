@@ -10,31 +10,44 @@ CEC_SETSOURCE=${CEC_SETSOURCE:-true}
 CEC_ONPOWEROFF_STANDBY=${CEC_ONPOWEROFF_STANDBY:-true}
 CEC_ONSLEEP_STANDBY=${CEC_ONSLEEP_STANDBY:-false}
 CEC_OSD_NAME=${CEC_OSD_NAME:-$(hostname)}
+CEC_DEVICE=${CEC_DEVICE:-/dev/cec0}
 
-args=()
-args+=( "--single-command" )
-args+=( "--log-level 1" )
-args+=( "--osd-name $CEC_OSD_NAME" )
+# Check if CEC device exists, silently exit if not
+if [[ ! -e "$CEC_DEVICE" ]]; then
+    exit 0
+fi
 
-# Conditionally apply a port number override if one is set
-[[ -n "$CEC_PORT_NUMBER" ]] && args+=( "--port $CEC_PORT_NUMBER" )
+# Configure device as playback device with OSD name
+configure_playback() {
+    cec-ctl -d "$CEC_DEVICE" --playback --osd-name "$CEC_OSD_NAME" 2>/dev/null
+}
+
+# Helper: Get our physical address for active source switching
+get_physical_address() {
+    cec-ctl -d "$CEC_DEVICE" --show-topology 2>/dev/null | \
+        grep "Physical Address" | head -1 | awk '{print $4}'
+}
 
 # Helper functions to send activate and standby messages to the CEC bus
 # We loop through TVIDs to cover cases where you might have multiple devices
 # to control (eg: a TV, an audio system, and some sort of tuner device)
 function perform_standby {
+    configure_playback
     for id in $CEC_TVID; do
-        echo "standby $id" | cec-client ${args[@]}
+        cec-ctl -d "$CEC_DEVICE" --to "$id" --standby 2>/dev/null
     done
 }
 
 function perform_activate {
+    configure_playback
+    local phys_addr=$(get_physical_address)
+    
     for id in $CEC_TVID; do
-        echo "on $id" | cec-client ${args[@]}
+        cec-ctl -d "$CEC_DEVICE" --to "$id" --image-view-on 2>/dev/null
     done
 
-    if [ "$CEC_SETSOURCE" = true ]; then
-        echo "as" | cec-client ${args[@]}
+    if [ "$CEC_SETSOURCE" = true ] && [ -n "$phys_addr" ]; then
+        cec-ctl -d "$CEC_DEVICE" --active-source phys-addr="$phys_addr" 2>/dev/null
     fi
 }
 
