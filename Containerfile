@@ -219,6 +219,7 @@ RUN --mount=type=cache,dst=/var/cache \
         bazaar \
         iwd \
         greenboot \
+        ScopeBuddy \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
         lato-fonts \
@@ -312,11 +313,6 @@ RUN --mount=type=cache,dst=/var/cache \
     tar --no-same-owner --no-same-permissions --no-overwrite-dir -xvzf /tmp/ls-iommu.tar.gz -C /tmp/ls-iommu && \
     rm -f /tmp/ls-iommu.tar.gz && \
     cp -r /tmp/ls-iommu/ls-iommu /usr/bin/ && \
-    /ctx/ghcurl "https://github.com/HikariKnight/ScopeBuddy/archive/refs/tags/$(/ctx/ghcurl https://api.github.com/repos/HikariKnight/scopebuddy/releases/latest | jq -r '.tag_name').tar.gz" -Lo /tmp/scopebuddy.tar.gz && \
-    mkdir -p /tmp/scopebuddy && \
-    tar --no-same-owner --no-same-permissions --no-overwrite-dir -xvzf /tmp/scopebuddy.tar.gz -C /tmp/scopebuddy && \
-    rm -f /tmp/scopebuddy.tar.gz && \
-    cp -r /tmp/scopebuddy/ScopeBuddy-*/bin/* /usr/bin/ && \
     /ctx/cleanup
 
 # Install Steam & Lutris, plus supporting packages
