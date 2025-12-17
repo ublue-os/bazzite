@@ -4,3 +4,4 @@ CEC_SETSOURCE=true
 CEC_ONPOWEROFF_STANDBY=true
 CEC_ONSLEEP_STANDBY=false
 CEC_DEVICE=/dev/cec0
+# CEC_PORT_NUMBER=  # Optional: for cec-client Pulse Eight port override

@@ -12,35 +12,35 @@ CEC_ONSLEEP_STANDBY=${CEC_ONSLEEP_STANDBY:-false}
 CEC_OSD_NAME=${CEC_OSD_NAME:-$(hostname)}
 CEC_DEVICE=${CEC_DEVICE:-/dev/cec0}
 
-# Check if CEC device exists, silently exit if not
-if [[ ! -e "$CEC_DEVICE" ]]; then
+# Detect which CEC method to use
+USE_CECCTL=false
+if [[ -e "$CEC_DEVICE" ]]; then
+    USE_CECCTL=true
+elif ! command -v cec-client &> /dev/null; then
+    # No CEC hardware and no cec-client, exit silently
     exit 0
 fi
 
-# Configure device as playback device with OSD name
-configure_playback() {
+# Helper functions using cec-ctl (for native GPU CEC and DP adapters)
+configure_playback_ctl() {
     cec-ctl -d "$CEC_DEVICE" --playback --osd-name "$CEC_OSD_NAME" 2>/dev/null
 }
 
-# Helper: Get our physical address for active source switching
-get_physical_address() {
+get_physical_address_ctl() {
     cec-ctl -d "$CEC_DEVICE" --show-topology 2>/dev/null | \
         grep "Physical Address" | head -1 | awk '{print $4}'
 }
 
-# Helper functions to send activate and standby messages to the CEC bus
-# We loop through TVIDs to cover cases where you might have multiple devices
-# to control (eg: a TV, an audio system, and some sort of tuner device)
-function perform_standby {
-    configure_playback
+perform_standby_ctl() {
+    configure_playback_ctl
     for id in $CEC_TVID; do
         cec-ctl -d "$CEC_DEVICE" --to "$id" --standby 2>/dev/null
     done
 }
 
-function perform_activate {
-    configure_playback
-    local phys_addr=$(get_physical_address)
+perform_activate_ctl() {
+    configure_playback_ctl
+    local phys_addr=$(get_physical_address_ctl)
     
     for id in $CEC_TVID; do
         cec-ctl -d "$CEC_DEVICE" --to "$id" --image-view-on 2>/dev/null
@@ -48,6 +48,46 @@ function perform_activate {
 
     if [ "$CEC_SETSOURCE" = true ] && [ -n "$phys_addr" ]; then
         cec-ctl -d "$CEC_DEVICE" --active-source phys-addr="$phys_addr" 2>/dev/null
+    fi
+}
+
+# Helper functions using cec-client (for Pulse Eight USB dongles)
+perform_standby_client() {
+    local args=("--single-command" "--log-level 1" "--osd-name $CEC_OSD_NAME")
+    [[ -n "$CEC_PORT_NUMBER" ]] && args+=("--port $CEC_PORT_NUMBER")
+    
+    for id in $CEC_TVID; do
+        echo "standby $id" | cec-client ${args[@]} 2>/dev/null
+    done
+}
+
+perform_activate_client() {
+    local args=("--single-command" "--log-level 1" "--osd-name $CEC_OSD_NAME")
+    [[ -n "$CEC_PORT_NUMBER" ]] && args+=("--port $CEC_PORT_NUMBER")
+    
+    for id in $CEC_TVID; do
+        echo "on $id" | cec-client ${args[@]} 2>/dev/null
+    done
+
+    if [ "$CEC_SETSOURCE" = true ]; then
+        echo "as" | cec-client ${args[@]} 2>/dev/null
+    fi
+}
+
+# Wrapper functions that call the appropriate backend
+function perform_standby {
+    if [ "$USE_CECCTL" = true ]; then
+        perform_standby_ctl
+    else
+        perform_standby_client
+    fi
+}
+
+function perform_activate {
+    if [ "$USE_CECCTL" = true ]; then
+        perform_activate_ctl
+    else
+        perform_activate_client
     fi
 }
 
