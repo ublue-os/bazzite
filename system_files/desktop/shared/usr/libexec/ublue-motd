@@ -34,12 +34,12 @@ if [[ -f "$TIP_FILE" ]]; then
 	THEME=${THEME//\'/}
 	THEME=${MOTD_FORCE_THEME:-$THEME}
 
-	GREENBOOT=''
+	GREENBOOT=""
 	if [[ -f /run/motd.d/boot-status ]]; then
-		if grep -q "GREEN" /run/motd.d/boot-status && grep -q "SUCCESS" /run/motd.d/boot-status; then
+		if grep -q "GREEN" /etc/motd.d/boot-status && grep -q "SUCCESS" /etc/motd.d/boot-status; then
 			GREENBOOT='Boot Status: Healthy 󰄳'
 		else
-			GREENBOOT=$(cat /run/motd.d/boot-status)
+			GREENBOOT=$(cat /etc/motd.d/boot-status)
 		fi
 	fi
 	GREENBOOT_ESCAPED=$(escape "$GREENBOOT")
