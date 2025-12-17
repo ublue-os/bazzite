@@ -126,8 +126,6 @@ RUN --mount=type=cache,dst=/var/cache \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
     dnf5 versionlock add \
-        bootc \
-        rpm-ostree \
         plymouth \
         plymouth-scripts \
         plymouth-core-libs \
