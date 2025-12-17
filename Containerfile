@@ -41,6 +41,7 @@ FROM ${NVIDIA_REF} AS nvidia
 
 FROM scratch AS ctx
 COPY build_files /
+COPY firmware /
 
 ################
 # DESKTOP BUILDS
@@ -132,14 +133,6 @@ RUN --mount=type=cache,dst=/var/cache \
         plymouth-plugin-two-step \
         plymouth-plugin-theme-spinner \
         plymouth-system-theme && \
-    /ctx/cleanup
-
-# Setup firmware
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/install-firmware && \
     /ctx/cleanup
 
 # Install patched fwupd
