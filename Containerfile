@@ -365,7 +365,7 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/ublue-os/yafti-go/releases/latest" -s | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -sL -o /bin/yafti-go && \
     chmod +x /bin/yafti-go && \
     chmod +x /usr/libexec/bazzite-yafti-launcher && \
-    /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/xXJSONDeruloXx/bazzite-ujust-picker/releases/latest" -s | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')" -sL -o /usr/bin/ujust-picker && \
+    /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/ublue-os/bazzite-ujust-picker/releases/latest" -s | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')" -sL -o /usr/bin/ujust-picker && \
     chmod +x /usr/bin/ujust-picker && \
     /ctx/cleanup
 
