@@ -495,27 +495,6 @@ Enabled=false
 EOF
 fi
 
-# Add support for controllers
-_tmp=$(mktemp -d)
-(
-    set -eo pipefail
-    dnf -yq install python-evdev python-rich
-    git clone https://github.com/bazzite-org/jkbd "$_tmp"
-    cd "$_tmp"
-    python -m venv .venv
-    #shellcheck disable=1091
-    source .venv/bin/activate
-    pip install build installer setuptools wheel
-    python -m build --wheel --no-isolation
-    python -m installer --prefix=/usr --destdir=/ dist/*.whl
-    sed -i '1s|.*|#!/usr/bin/python|' /usr/bin/jkbd
-    mkdir -p /usr/lib/systemd/system/
-    install -m644 usr/lib/systemd/system/jkbd.service /usr/lib/systemd/system/jkbd.service
-    systemctl enable jkbd.service
-) || :
-rm -rf "$_tmp"
-unset -v _tmp
-
 # Install Gparted
 dnf -yq install gparted
 
