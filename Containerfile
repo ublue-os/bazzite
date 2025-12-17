@@ -67,15 +67,15 @@ RUN --mount=type=cache,dst=/var/cache \
     mkdir -p /var/roothome && \
     dnf5 -y install dnf5-plugins && \
     for copr in \
-        bazzite-org/bazzite \
-        bazzite-org/bazzite-multilib \
+        ublue-os/bazzite \
+        ublue-os/bazzite-multilib \
         ublue-os/staging \
         ublue-os/packages \
-        bazzite-org/obs-vkcapture \
+        ublue-os/obs-vkcapture \
         ycollet/audinux \
-        bazzite-org/rom-properties \
-        bazzite-org/webapp-manager \
-        bazzite-org/hhd \
+        ublue-os/rom-properties \
+        ublue-os/webapp-manager \
+        ublue-os/hhd \
         lizardbyte/beta \
         che/nerd-fonts; \
     do \
@@ -117,7 +117,7 @@ RUN --mount=type=cache,dst=/var/cache \
         scx-tools && \
     dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
     declare -A toswap=( \
-        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite"]="plymouth" \
+        ["copr:copr.fedorainfracloud.org:ublue-os:bazzite"]="plymouth" \
     ) && \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
@@ -147,8 +147,8 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y remove \
         pipewire-config-raop && \
     declare -A toswap=( \
-        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite"]="wireplumber" \
-        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland" \
+        ["copr:copr.fedorainfracloud.org:ublue-os:bazzite"]="wireplumber" \
+        ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland" \
         ["terra-mesa"]="mesa-filesystem" \
         ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
@@ -213,7 +213,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \ 
     --mount=type=secret,id=GITHUB_TOKEN \
     dnf5 -y install \
-        $(/ctx/ghcurl https://api.github.com/repos/bazzite-org/cicpoffs/releases/latest | jq -r '.assets[] | select(.name| test(".*rpm$")).browser_download_url') && \
+        $(/ctx/ghcurl https://api.github.com/repos/ublue-os/cicpoffs/releases/latest | jq -r '.assets[] | select(.name| test(".*rpm$")).browser_download_url') && \
     dnf5 -y install \
         bazaar \
         iwd \
@@ -292,7 +292,7 @@ RUN --mount=type=cache,dst=/var/cache \
         wlr-randr && \
     systemctl mask iscsi && \
     mkdir -p /usr/lib/extest/ && \
-    /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/bazzite-org/extest/releases/latest | jq -r '.assets[] | select(.name| test(".*so$")).browser_download_url')" -Lo /usr/lib/extest/libextest.so && \
+    /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest | jq -r '.assets[] | select(.name| test(".*so$")).browser_download_url')" -Lo /usr/lib/extest/libextest.so && \
     /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/FrameworkComputer/framework-system/releases/latest | jq -r '.assets[] | select(.name == "framework_tool").browser_download_url')" -Lo /usr/bin/framework_tool && \
     chmod +x /usr/bin/framework_tool && \
     /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/HikariKnight/ls-iommu/releases/latest | jq -r '.assets[] | select(.name| test(".*x86_64.tar.gz$")).browser_download_url')" -Lo /tmp/ls-iommu.tar.gz && \
@@ -307,10 +307,6 @@ RUN --mount=type=cache,dst=/var/cache \
     mkdir -p /etc/xdg/autostart && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     sed -i 's/ --xdg-runtime=\\"${XDG_RUNTIME_DIR}\\"//g' /usr/bin/btrfs-assistant-launcher && \
-    /ctx/ghcurl "https://raw.githubusercontent.com/bazzite-org/steam-proton-mf-wmv/master/installcab.py" -Lo /usr/bin/installcab && \
-    chmod +x /usr/bin/installcab && \
-    /ctx/ghcurl "https://raw.githubusercontent.com/bazzite-org/steam-proton-mf-wmv/refs/heads/master/install-mf-wmv.sh" -Lo /usr/bin/install-mf-wmv && \
-    chmod +x /usr/bin/install-mf-wmv && \
     tar --no-same-owner --no-same-permissions --no-overwrite-dir -xvzf /tmp/ls-iommu.tar.gz -C /tmp/ls-iommu && \
     rm -f /tmp/ls-iommu.tar.gz && \
     cp -r /tmp/ls-iommu/ls-iommu /usr/bin/ && \
@@ -366,7 +362,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/bazzite-org/yafti-go/releases/latest" -s | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -sL -o /bin/yafti-go && \
+    /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/ublue-os/yafti-go/releases/latest" -s | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -sL -o /bin/yafti-go && \
     chmod +x /bin/yafti-go && \
     chmod +x /usr/libexec/bazzite-yafti-launcher && \
     /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/xXJSONDeruloXx/bazzite-ujust-picker/releases/latest" -s | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')" -sL -o /usr/bin/ujust-picker && \
@@ -415,7 +411,7 @@ RUN --mount=type=cache,dst=/var/cache \
         rm -f /usr/share/backgrounds/default.xml \
     ; else \
         declare -A toswap=( \
-            ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite-multilib"]="gsettings-desktop-schemas mutter gnome-shell" \
+            ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="gsettings-desktop-schemas mutter gnome-shell" \
         ) && \
         for repo in "${!toswap[@]}"; do \
             for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
@@ -551,15 +547,15 @@ RUN --mount=type=cache,dst=/var/cache \
     do \
         sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/$repo.repo; \
     done && for copr in \
-        bazzite-org/bazzite \
-        bazzite-org/bazzite-multilib \
+        ublue-os/bazzite \
+        ublue-os/bazzite-multilib \
         ublue-os/staging \
         ublue-os/packages \
-        bazzite-org/obs-vkcapture \
+        ublue-os/obs-vkcapture \
         ycollet/audinux \
-        bazzite-org/rom-properties \
-        bazzite-org/webapp-manager \
-        bazzite-org/hhd \
+        ublue-os/rom-properties \
+        ublue-os/webapp-manager \
+        ublue-os/hhd \
         lizardbyte/beta \
         che/nerd-fonts; \
     do \
@@ -597,7 +593,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl disable force-wol.service && \
     systemctl --global enable bazzite-dynamic-fixes.service && \
     /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf" -Lo /etc/dxvk-example.conf && \
-    /ctx/ghcurl "https://raw.githubusercontent.com/bazzite-org/waydroid-scripts/main/waydroid-choose-gpu.sh" -Lo /usr/bin/waydroid-choose-gpu && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/waydroid-scripts/main/waydroid-choose-gpu.sh" -Lo /usr/bin/waydroid-choose-gpu && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
     dnf5 config-manager setopt skip_if_unavailable=1 && \
     /ctx/ghcurl "https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/distrobox.ini" -Lo /etc/distrobox/docker.ini && \
@@ -631,10 +627,10 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y copr enable ublue-os/staging && \
     dnf5 -y copr enable ublue-os/packages && \
-    dnf5 -y copr enable bazzite-org/bazzite && \
-    dnf5 -y copr enable bazzite-org/bazzite-multilib && \
-    dnf5 -y copr enable bazzite-org/obs-vkcapture && \
-    dnf5 -y copr enable bazzite-org/hhd && \
+    dnf5 -y copr enable ublue-os/bazzite && \
+    dnf5 -y copr enable ublue-os/bazzite-multilib && \
+    dnf5 -y copr enable ublue-os/obs-vkcapture && \
+    dnf5 -y copr enable ublue-os/hhd && \
     dnf5 -y copr enable ycollet/audinux && \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     /ctx/cleanup
@@ -706,7 +702,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite \
+    --repo copr:copr.fedorainfracloud.org:ublue-os:bazzite \
         upower upower && \
     dnf5 versionlock add \
         upower \
@@ -726,7 +722,7 @@ RUN --mount=type=cache,dst=/var/cache \
     mkdir -p /usr/share/sdl/ && \
     /ctx/ghcurl "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt" -Lo /usr/share/sdl/gamecontrollerdb.txt && \
     dnf5 -y install \
-    --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite \
+    --repo copr:copr.fedorainfracloud.org:ublue-os:bazzite \
         gamescope-session-plus \
         gamescope-session-steam && \
     /ctx/cleanup
@@ -748,10 +744,10 @@ RUN --mount=type=cache,dst=/var/cache \
     for copr in \
         ublue-os/staging \
         ublue-os/packages \
-        bazzite-org/bazzite \
-        bazzite-org/bazzite-multilib \
-        bazzite-org/obs-vkcapture \
-        bazzite-org/hhd \
+        ublue-os/bazzite \
+        ublue-os/bazzite-multilib \
+        ublue-os/obs-vkcapture \
+        ublue-os/hhd \
         ycollet/audinux; \
     do \
         dnf5 -y copr disable -y $copr; \
