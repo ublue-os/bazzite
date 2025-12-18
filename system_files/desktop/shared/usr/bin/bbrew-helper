@@ -1,0 +1,14 @@
+#!/usr/bin/bash
+
+# Set up brew
+BREW_PATH="/home/linuxbrew/.linuxbrew/bin/brew"
+if [ -f "$BREW_PATH" ]; then
+    eval "$($BREW_PATH shellenv)"
+fi
+
+# Install bbrew if not already installed
+if ! command -v bbrew >/dev/null 2>&1; then
+    brew install "valkyrie00/bbrew/bbrew"
+fi
+
+bbrew "$@"
