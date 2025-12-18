@@ -69,15 +69,15 @@ enable-ryzenadj-max-performance:
 
     sudo udevadm control --reload-rules
 
-    echo "[Unit]" > /etc/systemd/system/max-perf-boot.service
-    echo "Description=Apply RyzenAdj max performance at boot" >> /etc/systemd/system/max-perf-boot.service
-    echo "" >> /etc/systemd/system/max-perf-boot.service
-    echo "[Service]" >> /etc/systemd/system/max-perf-boot.service
-    echo "Type=oneshot" >> /etc/systemd/system/max-perf-boot.service
-    echo "ExecStart=/usr/bin/ryzenadj --max-performance" >> /etc/systemd/system/max-perf-boot.service
-    echo "" >> /etc/systemd/system/max-perf-boot.service
-    echo "[Install]" >> /etc/systemd/system/max-perf-boot.service
-    echo "WantedBy=multi-user.target" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "[Unit]" > /etc/systemd/system/max-perf-boot.service
+    sudo echo "Description=Apply RyzenAdj max performance at boot" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "[Service]" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "Type=oneshot" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "ExecStart=/usr/bin/ryzenadj --max-performance" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "[Install]" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "WantedBy=multi-user.target" >> /etc/systemd/system/max-perf-boot.service
 
     sudo systemctl daemon-reload
     sudo systemctl enable max-perf-boot.service
