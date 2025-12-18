@@ -69,16 +69,16 @@ enable-ryzenadj-max-performance:
 
     sudo udevadm control --reload-rules
     cat <<EOF | sudo tee /etc/systemd/system/max-perf-boot.service > /dev/null
-    [Unit]
-    Description=Apply RyzenAdj max performance at boot
+[Unit]
+Description=Apply RyzenAdj max performance at boot
 
-    [Service]
-    Type=oneshot
-    ExecStart=/usr/bin/ryzenadj --max-performance
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/ryzenadj --max-performance
 
-    [Install]
-    WantedBy=multi-user.target
-    EOF
+[Install]
+WantedBy=multi-user.target
+EOF
     sudo systemctl daemon-reload
     sudo systemctl enable max-perf-boot.service
     echo 'installation complete. Reboot to take effect'
