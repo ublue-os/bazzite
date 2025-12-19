@@ -114,20 +114,6 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/install-kernel && \
     dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
-    dnf5 -y copr enable bieszczaders/kernel-cachyos-addons && \
-    dnf5 -y install \
-        scx-scheds \
-        scx-tools && \
-    dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
-    dnf5 versionlock add \
-        plymouth \
-        plymouth-scripts \
-        plymouth-core-libs \
-        plymouth-graphics-libs \
-        plymouth-plugin-label \
-        plymouth-plugin-two-step \
-        plymouth-plugin-theme-spinner \
-        plymouth-system-theme && \
     /ctx/cleanup
 
 # Install patched fwupd
@@ -212,6 +198,11 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=secret,id=GITHUB_TOKEN \
     dnf5 -y install \
         $(/ctx/ghcurl https://api.github.com/repos/ublue-os/cicpoffs/releases/latest | jq -r '.assets[] | select(.name| test(".*rpm$")).browser_download_url') && \
+    dnf5 -y copr enable bieszczaders/kernel-cachyos-addons && \
+    dnf5 -y install \
+        scx-scheds \
+        scx-tools && \
+    dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
     dnf5 -y install \
         bazaar \
         iwd \
