@@ -1,0 +1,4 @@
+plan:
+  import:
+    url: https://gitlab.freedesktop.org/NetworkManager/NetworkManager-ci
+    name: /plan/gate
