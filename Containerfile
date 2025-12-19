@@ -284,6 +284,7 @@ RUN --mount=type=cache,dst=/var/cache \
         wlr-randr && \
     systemctl mask iscsi && \
     systemctl mask wpa_supplicant.service && \
+    systemctl disable iwd.service && \
     mkdir -p /usr/lib/extest/ && \
     /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest | jq -r '.assets[] | select(.name| test(".*so$")).browser_download_url')" -Lo /usr/lib/extest/libextest.so && \
     /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/FrameworkComputer/framework-system/releases/latest | jq -r '.assets[] | select(.name == "framework_tool").browser_download_url')" -Lo /usr/bin/framework_tool && \
