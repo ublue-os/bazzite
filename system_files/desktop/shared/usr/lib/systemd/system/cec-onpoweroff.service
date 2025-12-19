@@ -1,7 +1,7 @@
 [Unit]
 Description=Run CEC actions for poweroff
 DefaultDependencies=no
-Before=poweroff.target
+Before=systemd-poweroff.service poweroff.target
 
 [Service]
 Type=oneshot
