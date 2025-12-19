@@ -5,3 +5,4 @@ pref("media.webspeech.synth.enabled", false);
 pref("browser.tabs.groups.smart.enabled", false);
 pref("browser.ml.chat.enabled", false);
 pref("extensions.ml.enabled", false);
+pref("browser.ml.enable", false);
