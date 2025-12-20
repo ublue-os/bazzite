@@ -273,6 +273,7 @@ RUN --mount=type=cache,dst=/var/cache \
         edk2-ovmf \
         qemu \
         libvirt \
+        guestfs-tools \
         lsb_release \
         uupd \
         ds-inhibit \
