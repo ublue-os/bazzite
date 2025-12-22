@@ -17,11 +17,7 @@ kernel_pkgs=(
 )
 dnf -y versionlock delete "${kernel_pkgs[@]}"
 dnf -y remove "${kernel_pkgs[@]}"
-dnf -y --repo fedora,updates install kernel kernel-core || {
-    echo "::error::Failed to install kernel"
-    cat /var/log/dnf?.log || :
-    exit 1
-}
+dnf -y --repo fedora,updates --setopt=tsflags=noscripts install kernel kernel-core
 
 imageref="$(podman images --format '{{ index .Names 0 }}\n' 'bazzite*' | head -1)"
 imageref="${imageref##*://}"
