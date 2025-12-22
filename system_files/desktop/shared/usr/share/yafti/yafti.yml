@@ -229,3 +229,8 @@ screens:
         description: "Toggle global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on proton 10 or GE 10-25 or later"
         default: false
         script: "ujust toggle-global-fsr4 enable"
+      - id: "steamdeck-var"
+        title: "Disable Steam Deck Detection (SteamDeck=0)"
+        description: "Prevents games from detecting hardware as a Steam Deck; avoids hidden settings and forced lower textures. Useful for HTPC setups."
+        default: false
+        script: "ujust toggle-steamdeck-var enable"

@@ -591,6 +591,47 @@ toggle-global-fsr4 ACTION="":
             ;;
     esac
 
+# Toggle global SteamDeck=0 environment variable to prevent games from detecting hardware as a Steam Deck. Useful for HTPC setups to avoid hidden settings or forced lower textures.
+[group("gaming")]
+toggle-steamdeck-var ACTION="":
+    #!/usr/bin/bash
+    set -euo pipefail
+    source /usr/lib/ujust/ujust.sh
+
+    FILE="$HOME/.config/environment.d/99-steamdeck-var.conf"
+
+    CURRENT="Disabled"
+    if [[ -f "$FILE" ]]; then
+        CURRENT="Enabled"
+    fi
+
+    OPTION="{{ ACTION }}"
+    if [[ -z "$OPTION" ]]; then
+        echo -e "${bold}SteamDeck=0 Environment Variable:${normal} $CURRENT"
+        echo ""
+        echo "Sets the SteamDeck environment variable to 0 globally."
+        echo "This prevents most games from detecting your hardware as a Steam Deck,"
+        echo "which can avoid hidden settings, forced lower textures, or FPS locks."
+        echo "Useful for HTPC setups or when using gamescope session on non-Deck hardware."
+        echo ""
+        OPTION="$(ugum choose "Enable" "Disable" "Exit without saving")"
+    fi
+
+    case "$OPTION" in
+        Enable|enable)
+            mkdir -p "$HOME/.config/environment.d"
+            echo "SteamDeck=0" > "$FILE"
+            echo -e "${green}${bold}Enabled${normal}: SteamDeck=0"
+            ;;
+        Disable|disable)
+            rm -f "$FILE"
+            echo -e "${red}${bold}Disabled${normal}: SteamDeck=0 removed"
+            ;;
+        *)
+            echo "No changes made."
+            ;;
+    esac
+
 # Toggle whether Steam launches with the -steamdeck flag, which causes Big Picture / Game Mode to emulate Steam Deck behavior. Disabling this can prevent games from forcing Steam Deck-specific assets, such as lower-resolution textures.
 [group("gaming")]
 _toggle-steamdeck-alias:
