@@ -16,8 +16,8 @@ kernel_pkgs=(
     kernel-modules-extra
 )
 dnf -y versionlock delete "${kernel_pkgs[@]}"
-rpm --erase -v --nodeps "${kernel_pkgs[@]}"
-dnf -yq install "${kernel_pkgs[@]}"
+dnf -y remove "${kernel_pkgs[@]}"
+dnf -y --repo fedora,updates install kernel kernel-core
 
 imageref="$(podman images --format '{{ index .Names 0 }}\n' 'bazzite*' | head -1)"
 imageref="${imageref##*://}"
