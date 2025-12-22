@@ -37,6 +37,11 @@ jobs:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
+      - name: Mount BTRFS for podman storage
+        uses: ublue-os/container-storage-action@911baca08baf30c8654933e9e9723cb399892140
+        with:
+          target-dir: /var/lib/containers
+
       - name: Checkout Repo
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
