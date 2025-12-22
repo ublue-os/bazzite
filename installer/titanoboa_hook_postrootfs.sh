@@ -5,7 +5,7 @@ set -exo pipefail
 source /etc/os-release
 
 # Install firefox as a dependency for Anaconda Web UI
-dnf install --disable-repo updates-archive firefox
+dnf install --repo=fedora-cisco-openh264,fedora,updates firefox
 
 # Install Anaconda webui
 dnf install -qy anaconda-live libblockdev-{btrfs,lvm,dm}
