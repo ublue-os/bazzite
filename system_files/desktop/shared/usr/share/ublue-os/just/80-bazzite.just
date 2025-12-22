@@ -610,7 +610,7 @@ toggle-steamdeck-var ACTION="":
         echo -e "${bold}SteamDeck=0 Environment Variable:${normal} $CURRENT"
         echo ""
         echo "Sets the SteamDeck environment variable to 0 globally."
-        echo "This prevents games from detecting your hardware as a Steam Deck,"
+        echo "This prevents most games from detecting your hardware as a Steam Deck,"
         echo "which can avoid hidden settings, forced lower textures, or FPS locks."
         echo "Useful for HTPC setups or when using gamescope session on non-Deck hardware."
         echo ""
