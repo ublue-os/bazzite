@@ -4,8 +4,11 @@ set -exo pipefail
 
 source /etc/os-release
 
+# Install firefox as a dependency for Anaconda Web UI
+dnf install --disable-repo updates-archive firefox
+
 # Install Anaconda webui
-dnf install -qy anaconda-live libblockdev-{btrfs,lvm,dm} firefox
+dnf install -qy anaconda-live libblockdev-{btrfs,lvm,dm}
 mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 
 # Utilities for displaying a dialog prompting users to review secure boot documentation
