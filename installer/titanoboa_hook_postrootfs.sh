@@ -5,10 +5,8 @@ set -exo pipefail
 source /etc/os-release
 
 # Install Anaconda webui
-dnf install -qy anaconda-live libblockdev-{btrfs,lvm,dm}
+dnf install -qy anaconda-live libblockdev-{btrfs,lvm,dm} firefox
 mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
-# TODO: Enable Anaconda Web UI whenever locale switching in kde lands
-# dnf install -qy anaconda-webui
 
 # Utilities for displaying a dialog prompting users to review secure boot documentation
 dnf install -qy --setopt=install_weak_deps=0 qrencode yad
