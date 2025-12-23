@@ -77,7 +77,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/obs-vkcapture \
         ycollet/audinux \
         ublue-os/rom-properties \
-        ublue-os/webapp-manager \
         ublue-os/hhd \
         lizardbyte/beta \
         che/nerd-fonts; \
@@ -526,7 +525,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/obs-vkcapture \
         ycollet/audinux \
         ublue-os/rom-properties \
-        ublue-os/webapp-manager \
         ublue-os/hhd \
         lizardbyte/beta \
         che/nerd-fonts; \
