@@ -4,11 +4,8 @@ set -exo pipefail
 
 source /etc/os-release
 
-# Remove noopenh264 package, as it breaks firefox
-#shellcheck disable=SC2046
-rpm --erase -v --nodeps $(rpm -qa | grep ^noopenh264-) || :
 # Install firefox as a dependency for Anaconda Web UI
-dnf install --repo=fedora-cisco-openh264,fedora,updates firefox
+dnf install -qy --enable-repo=fedora-cisco-openh264 --allowerasing firefox
 
 # Install Anaconda webui
 dnf install -qy anaconda-live libblockdev-{btrfs,lvm,dm}
