@@ -307,6 +307,7 @@ jobs:
           echo "alias_tags=${BUILD_TAGS[*]}" >> $GITHUB_OUTPUT
 
       - name: Install dgoss
+        run: |
           curl -L \
             https://github.com/goss-org/goss/releases/latest/download/dgoss \
             -o /usr/local/bin/dgoss
