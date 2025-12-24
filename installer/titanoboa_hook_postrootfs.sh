@@ -4,11 +4,12 @@ set -exo pipefail
 
 source /etc/os-release
 
-# Install firefox as a dependency for Anaconda Web UI
-dnf install -qy --enable-repo=fedora-cisco-openh264 --allowerasing firefox
+# Remove all versionlocks, in order to avoid dependency issues
+dnf -qy versionlock clear
 
-# Install Anaconda webui
-dnf install -qy anaconda-live libblockdev-{btrfs,lvm,dm}
+# Install Anaconda
+dnf install -qy --enable-repo=fedora-cisco-openh264 --allowerasing firefox anaconda-live libblockdev-{btrfs,lvm,dm}
+
 mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 
 # Utilities for displaying a dialog prompting users to review secure boot documentation
