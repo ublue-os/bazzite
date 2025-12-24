@@ -306,6 +306,16 @@ jobs:
           done
           echo "alias_tags=${BUILD_TAGS[*]}" >> $GITHUB_OUTPUT
 
+      - name: Install dgoss
+          curl -L \
+            https://github.com/goss-org/goss/releases/latest/download/dgoss \
+            -o /usr/local/bin/dgoss
+          chmod +rx /usr/local/bin/dgoss
+       
+      - name: Run goss tests
+        run: |
+          sudo tests/dgoss/dgoss-tests.sh tests/dgoss/tests.d "${{ steps.rechunk.outputs.ref }}"
+      
       - name: Install Cosign
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
