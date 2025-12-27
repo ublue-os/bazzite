@@ -4,10 +4,10 @@
 %global glib2_version %(pkg-config --modversion glib-2.0 2>/dev/null || echo bad)
 
 %global epoch_version 1
-%global real_version 1.55.91
-%global git_tag_version 1.56-rc2
+%global real_version 1.54.3
+%global git_tag_version 1.54.3
 %global rpm_version %{real_version}
-%global release_version 1
+%global release_version 2
 %global snapshot %{nil}
 %global git_sha %{nil}
 %global bcond_default_debug 0
@@ -667,6 +667,7 @@ Preferably use nmcli instead.
 	-Dselinux=true \
 	-Dpolkit=true  \
 	-Dconfig_auth_polkit_default=true \
+	-Dmodify_system=true \
 	-Dconcheck=true \
 %if 0%{?fedora}
 	-Dlibpsl=true \
@@ -1074,15 +1075,13 @@ fi
 
 
 %changelog
-* Mon Dec 15 2025 Íñigo Huguet <ihuguet@riseup.net>
-- Update to 1.56-rc2 release
-- Fixes CVE-2025-9615. To achieve it, remove normal users' permission to modify system connections.
-
-* Mon Dec 08 2025 Cristian Le <git@lecris.dev>
+* Tue Dec 16 2025 Cristian Le <git@lecris.dev> - 1:1.54.3-2
 - Convert STI tests to TMT (rhbz#2382851)
 
-* Thu Dec 04 2025 Íñigo Huguet <ihuguet@riseup.net> - 1:1.55.90-1
-- Update to 1.56-rc1 release
+* Mon Dec 15 2025 Íñigo Huguet <ihuguet@redhat.com> - 1:1.54.3-1
+- Update to 1.54.3
+- Partially fixes CVE-2025-9615. To protect totally from it, see:
+  https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/merge_requests/2325.
 
 * Mon Aug 25 2025 Beniamino Galvani <bgalvani@redhat.com> - 1:1.54.0-2
 - Change the system CA path (rh #2380436)
