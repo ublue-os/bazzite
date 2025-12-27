@@ -220,7 +220,7 @@ RUN --mount=type=cache,dst=/var/cache \
         cpulimit \
         sqlite \
         xwininfo \
-        xrandr \
+        usbip \
         compsize \
         ryzenadj \
         ddcutil \
