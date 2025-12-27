@@ -124,8 +124,7 @@ jobs:
           PUSH_REGISTRY=ghcr.io/${{ github.repository_owner }}
           echo "push_registry=${PUSH_REGISTRY}" >> $GITHUB_OUTPUT
           echo "pull_registry=${PULL_REGISTRY}" >> $GITHUB_OUTPUT
-
-          echo "output_image=${PULL_REGISTRY}/${{ matrix.image }}" >> $GITHUB_OUTPUT
+          echo "output_image=${PUSH_REGISTRY}/${{ matrix.image }}" >> $GITHUB_OUTPUT
           BASE_IMAGE="${PULL_REGISTRY}/$BASE_IMAGE_NAME-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}"
           echo "base_image=${BASE_IMAGE}" >> $GITHUB_OUTPUT
 
