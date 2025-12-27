@@ -7,7 +7,6 @@ License:        LGPL-2.1-or-later
 URL:            https://iwd.wiki.kernel.org/
 Source0:        https://www.kernel.org/pub/linux/network/wireless/%{name}-%{baseversion}.tar.xz
 
-Patch0:         0001-use-network-group-for-unprivileged-access.diff
 Patch1:         0002-fix-scan-segfault.patch
 
 BuildRequires:  asciidoc
