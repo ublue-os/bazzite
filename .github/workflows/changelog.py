@@ -61,7 +61,6 @@ From previous `{target}` version `{prev}` there have been the following changes.
 | **Gamescope** | {pkgrel:gamescope} |
 | **Gnome** | {pkgrel:gnome-control-center-filesystem} |
 | **KDE** | {pkgrel:plasma-desktop} |
-| **[HHD](https://github.com/hhd-dev/hhd)** | {pkgrel:hhd} |
 | **Nvidia** | {pkgrel:nvidia-kmod-common} |
 | **Nvidia LTS** | {pkgrel:nvidia-kmod-common-lts} |
 
@@ -88,12 +87,9 @@ BLACKLIST_VERSIONS = [
     "atheros-firmware",
     "nvidia-kmod-common",
     "nvidia-kmod-common-lts",
-    "hhd-git",
-    "hhd",
 ]
 
 PKG_ALIAS = {
-    "hhd-git": "hhd",
 }
 
 

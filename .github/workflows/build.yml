@@ -1,5 +1,7 @@
 name: Build Bazzite
 on:
+  schedule:
+    - cron: "40 4 * * 1" # 4:40 utc monday
   pull_request:
     branches:
       - testing
@@ -30,12 +32,12 @@ on:
   workflow_dispatch:
     inputs:
       handwritten:
-        description: 'Small changelog:'
+        description: "Small changelog:"
       # Run with this periodically to analyze the image again
       # As package drift will make the plan eventually non-ideal
       # (existing users will have to redownload most of the image)
       fresh-rechunk:
-        description: 'Clear rechunk history'
+        description: "Clear rechunk history"
         type: boolean
         default: false
 
@@ -76,7 +78,7 @@ jobs:
         uses: ublue-os/container-storage-action@main
         with:
           target-dir: /var/lib/containers
-      
+
       - name: Define base variables
         id: base
         run: |
@@ -114,7 +116,7 @@ jobs:
           else
             echo "nvidia_version=org.bazzite.kernel.nvidia_lts" >> "$GITHUB_OUTPUT"
           fi
-          
+
           #
           # Define push and pull registries
           #
@@ -152,7 +154,7 @@ jobs:
         id: download_offline_docs
         continue-on-error: true
         env:
-          docs_repo: bazzite-org/docs.bazzite.gg
+          docs_repo: ublue-os/docs.bazzite.gg
           GH_TOKEN: ${{ github.token }}
         run: |
           DOCS_DIR="${{ github.workspace }}/system_files/desktop/shared/usr/share/ublue-os/docs/html"
@@ -163,14 +165,14 @@ jobs:
 
       - name: Check just syntax
         uses: ublue-os/just-action@bda593098a84a84973b002b4377709166a68be52 # v2
-      
+
       - name: Pull Images and find versions
         id: labels
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -eo pipefail
-          
+
           #
           # Base Image and version
           #
@@ -184,7 +186,7 @@ jobs:
           fi
           # Remove .0 suffix from upstream tag so we can add our own and
           # the wrong one does not end up in the image.
-          UPSTREAM_TAG="${UPSTREAM_TAG%\.[0-9]}" 
+          UPSTREAM_TAG="${UPSTREAM_TAG%\.[0-9]}"
           FEDORA_VERSION="${{ matrix.fedora_version }}"
           SHA_SHORT="${GITHUB_SHA::7}"
 
@@ -212,7 +214,7 @@ jobs:
           gh attestation verify -R bazzite-org/kernel-bazzite \
             "oci://${{ steps.base.outputs.kernel_ref }}" --deny-self-hosted-runners
           sudo podman pull ${{ steps.base.outputs.kernel_ref }}
-          
+
           if [ "${{ steps.base.outputs.install_nvidia }}" == "true" ]; then
             sudo skopeo inspect docker://${{ steps.base.outputs.kernel_ref }} > kernel_source.json
             NVIDIA_VERSION=$(jq -r '.Labels["${{ steps.base.outputs.nvidia_version }}"]' kernel_source.json)
@@ -225,8 +227,8 @@ jobs:
           else
             echo "nvidia_ref=none" >> $GITHUB_OUTPUT
           fi
-          
-          
+
+
           echo "Generated the following:"
           cat $GITHUB_OUTPUT
 
@@ -266,10 +268,10 @@ jobs:
         id: rechunk
         uses: ublue-os/legacy-rechunk@a925083d9af7cb04b3e2a6e8c01bfa495f38b710 # v1.0.0
         with:
-          rechunk: 'ghcr.io/ublue-os/legacy-rechunk:v1.0.0-x86_64'
-          ref: 'raw-img'
-          prev-ref: '${{ steps.base.outputs.prev_ref }}'
-          version: '${{ steps.labels.outputs.tag }}'
+          rechunk: "ghcr.io/ublue-os/legacy-rechunk:v1.0.0-x86_64"
+          ref: "raw-img"
+          prev-ref: "${{ steps.base.outputs.prev_ref }}"
+          version: "${{ steps.labels.outputs.tag }}"
           labels: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/bazzite/refs/heads/main/README.md
@@ -281,7 +283,7 @@ jobs:
             org.opencontainers.image.title=Bazzite
             org.opencontainers.image.vendor=Universal Blue
             org.opencontainers.image.url=https://bazzite.gg
-      
+
       # Generate tags after rechunker runs and checks the primary tag is not duplicated
       # If it is, rechunk will suffix it by .1, .2, etc and put it in steps.rechunk.outputs.version
       - name: Generate tags
@@ -298,18 +300,33 @@ jobs:
           else
             BUILD_TAGS=("stable-${VERSION_TAG}" "latest" "stable" "stable-${{ matrix.fedora_version }}")
           fi
-          
+
           echo "Generated the following build tags: "
           for TAG in "${BUILD_TAGS[@]}"; do
               echo "${TAG}"
           done
           echo "alias_tags=${BUILD_TAGS[*]}" >> $GITHUB_OUTPUT
 
+      - name: Install dgoss
+        run: |
+          curl -L \
+            https://github.com/goss-org/goss/releases/latest/download/goss-linux-amd64 \
+            -o /usr/local/bin/goss
+          chmod +rx /usr/local/bin/goss
+          curl -L \
+            https://github.com/goss-org/goss/releases/latest/download/dgoss \
+            -o /usr/local/bin/dgoss
+          chmod +rx /usr/local/bin/dgoss
+
+      - name: Run goss tests
+        run: |
+          sudo tests/dgoss/dgoss-tests.sh tests/dgoss/tests.d "${{ steps.rechunk.outputs.ref }}"
+
       - name: Install Cosign
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
         with:
-          cosign-release: 'v2.6.1'
+          cosign-release: "v2.6.1"
 
       # Push the image to GHCR (Image Registry)
       - name: Push To GHCR and Sign

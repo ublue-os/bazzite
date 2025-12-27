@@ -1,0 +1,10 @@
+command:
+  shell_works:
+    exec: "sh -lc 'echo dgoss smoketest'"
+    exit-status: 0
+    stdout:
+      - "dgoss smoketest"
+
+file:
+  /etc/os-release:
+    exists: true

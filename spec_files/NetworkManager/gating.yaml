@@ -1,0 +1,14 @@
+--- !Policy
+product_versions:
+  - fedora-*
+decision_context: bodhi_update_push_testing
+subject_type: koji_build
+rules:
+  - !PassingTestCaseRule {test_case_name: fedora-ci.koji-build.tier0.functional}
+--- !Policy
+product_versions:
+  - fedora-*
+decision_context: bodhi_update_push_stable
+subject_type: koji_build
+rules:
+  - !PassingTestCaseRule {test_case_name: fedora-ci.koji-build.tier0.functional}

@@ -37,6 +37,11 @@ jobs:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
+      - name: Mount BTRFS for podman storage
+        uses: ublue-os/container-storage-action@911baca08baf30c8654933e9e9723cb399892140
+        with:
+          target-dir: /var/lib/containers
+
       - name: Checkout Repo
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
@@ -48,7 +53,7 @@ jobs:
         run: |
           TAG="stable"
 
-          if [[ "${{ github.ref_name }}" == "testing" ]]; then
+          if [[ "${{ github.ref_name }}" != "main" ]]; then
               TAG="testing"
           fi
 
@@ -77,7 +82,7 @@ jobs:
       #   id: setup-bazzite-repo
       #   shell: bash
       #   run: |
-      #     curl -Lo ${{ github.workspace }}/bazzite.repo https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/repo/fedora-${{ matrix.major_version }}/bazzite-org-bazzite-fedora-${{ matrix.major_version }}.repo
+      #     curl -Lo ${{ github.workspace }}/bazzite.repo https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/repo/fedora-${{ matrix.major_version }}/bazzite-org-bazzite-fedora-${{ matrix.major_version }}.repo
 
       # We need this as we use the desktop image as the runtime for
       # the livecds.
@@ -95,7 +100,7 @@ jobs:
           image-ref: ${{ steps.registry_case.outputs.lowercase }}/${{ steps.get-nondeck-ref.outputs.ref }}:${{ steps.generate-tag.outputs.tag }}
           container-image: ${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}
           # TODO (@Zeglius): Remove "liveiso" prefix once this becomes the main ISO
-          iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-live.iso
+          iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-live-amd64.iso
           flatpaks-list: ${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}/flatpaks
           hook-pre-initramfs: ${{ github.workspace }}/installer/titanoboa_hook_preinitramfs.sh
           hook-post-rootfs: ${{ github.workspace }}/installer/titanoboa_hook_postrootfs.sh

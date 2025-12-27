@@ -68,20 +68,20 @@ enable-ryzenadj-max-performance:
     echo 'ACTION=="change", SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="/usr/bin/ryzenadj --max-performance"' | sudo tee "/etc/udev/rules.d/99-ryzenadj-power-source-change.rules" > /dev/null
 
     sudo udevadm control --reload-rules
-    cat <<EOF | sudo tee /etc/systemd/system/max-perf-boot.service > /dev/null
-    [Unit]
-    Description=Apply RyzenAdj max performance at boot
 
-    [Service]
-    Type=oneshot
-    ExecStart=/usr/bin/ryzenadj --max-performance
+    sudo echo "[Unit]" > /etc/systemd/system/max-perf-boot.service
+    sudo echo "Description=Apply RyzenAdj max performance at boot" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "[Service]" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "Type=oneshot" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "ExecStart=/usr/bin/ryzenadj --max-performance" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "[Install]" >> /etc/systemd/system/max-perf-boot.service
+    sudo echo "WantedBy=multi-user.target" >> /etc/systemd/system/max-perf-boot.service
 
-    [Install]
-    WantedBy=multi-user.target
-    EOF
     sudo systemctl daemon-reload
     sudo systemctl enable max-perf-boot.service
-    echo 'installation complete. Reboot to take effect'
+    echo 'Installation complete. Reboot to take effect'
 
 # toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled
 toggle-password-feedback ACTION="":
@@ -119,23 +119,6 @@ restore-input-remapper:
     systemctl enable --now input-remapper.service && \
     cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
     sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
-
-# Install firmware files needed for ayaneo and orangepi speakers
-install-speaker-firmware ACTION="":
-    #!/bin/bash
-    source /usr/lib/ujust/ujust.sh
-    OPTION={{ ACTION }}
-    FIRMWARE_SCRIPT="https://raw.githubusercontent.com/bazzite-org/hwinfo/refs/heads/master/firmware/bazzite-speaker.sh"
-    curl -o "/tmp/bazzite-speaker.sh" "$FIRMWARE_SCRIPT" && cat /tmp/bazzite-speaker.sh | pygmentize -l bash -O style=emacs
-    echo ""
-    echo "Run the above script using elevated permissions?"
-    if [ "$OPTION" == "" ]; then
-      OPTION=$(Choose "Yes" "No")
-    fi
-    if [[ "${OPTION,,}" =~ ^yes || "${OPTION,,}" =~ ^-y ]]; then
-      sudo bash /tmp/bazzite-speaker.sh
-    fi
-    rm /tmp/bazzite-speaker.sh
 
 # Configure video overrides for Steam
 configure-override-videos ACTION="":

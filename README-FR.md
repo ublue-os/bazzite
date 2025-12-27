@@ -247,7 +247,7 @@ Découvrez nos [Newsletters](https://universal-blue.discourse.group/tag/bazzite-
 
 ## Packages personnalisés
 
-Les paquets portés de SteamOS et ChimeraOS, entre autres utilisés par Bazzite, sont construits sur Copr dans [bazzite](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/) et [bazzite-multilib](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite-multilib/).
+Les paquets portés de SteamOS et ChimeraOS, entre autres utilisés par Bazzite, sont construits sur Copr dans [bazzite](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/) et [bazzite-multilib](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite-multilib/).
 
 ## Vérification
 

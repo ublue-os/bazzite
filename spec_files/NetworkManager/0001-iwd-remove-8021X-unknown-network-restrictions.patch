@@ -1,0 +1,58 @@
+From 90ac76515dacea6fe8beeb2abc3bd6b85a038b64 Mon Sep 17 00:00:00 2001
+From: Emil Velikov <emil.velikov@collabora.com>
+Date: Thu, 16 Jun 2022 14:19:01 +0100
+Subject: [PATCH] iwd: remove 8021X "unknown network" restrictions
+
+Removing these restrictions gets 8021X networks (WPA-Enterprise +
+PEAP/MsCHAPv2) working on the Steam Deck.
+
+So the inline comments are not 100% correct and the restrictions seem
+dubious. Drop them.
+
+Update: Two of the restrictions in
+
+  - check_connection_available
+  - act_stage2_config
+
+have been dropped upstream. The restriction in check_connection_compatible
+has been modified but upstream does not agreee with us that it should be
+removed.
+
+Originally-Signed-off-by: Emil Velikov <emil.velikov@collabora.com>
+Updated-by: Vivek Das Mohapatra <vivek.dasmohapatra@collabora.com>
+Last-Updated: 2023-07-19
+---
+ src/core/devices/wifi/nm-device-iwd.c | 44 +++------------------------
+ 1 file changed, 4 insertions(+), 40 deletions(-)
+
+diff --git a/src/core/devices/wifi/nm-device-iwd.c b/src/core/devices/wifi/nm-device-iwd.c
+index ab37cbec91..c83840854c 100644
+--- a/src/core/devices/wifi/nm-device-iwd.c
++++ b/src/core/devices/wifi/nm-device-iwd.c
+@@ -811,20 +811,10 @@ check_connection_compatible(NMDevice *device, NMConnection *connection, GError *
+     }
+ 
+     if (NM_IN_STRSET(mode, NULL, NM_SETTING_WIRELESS_MODE_INFRA)) {
+-        /* 8021x networks can only be used if they've been provisioned on the IWD side and
+-         * thus are Known Networks.
+-         */
+-        if (security == NM_IWD_NETWORK_SECURITY_8021X) {
+-            if (!is_connection_known_network(priv->manager, connection)
+-                && !nm_iwd_manager_is_recently_mirrored(priv->manager, ssid)) {
+-                nm_utils_error_set_literal(error,
+-                                           NM_UTILS_ERROR_CONNECTION_AVAILABLE_INCOMPATIBLE,
+-                                           "802.1x connections must have IWD provisioning files");
+-                return FALSE;
+-            }
+-        } else if (!NM_IN_SET(security,
++        if (!NM_IN_SET(security,
+                               NM_IWD_NETWORK_SECURITY_OPEN,
+-                              NM_IWD_NETWORK_SECURITY_PSK)) {
++                              NM_IWD_NETWORK_SECURITY_PSK,
++                              NM_IWD_NETWORK_SECURITY_8021X)) {
+             nm_utils_error_set_literal(error,
+                                        NM_UTILS_ERROR_CONNECTION_AVAILABLE_INCOMPATIBLE,
+                                        "IWD backend only supports Open, PSK and 802.1x network "
+-- 
+2.36.1
+

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+NoDisplay=false
+Terminal=false
+StartupNotify=true
+Exec=/usr/bin/ptyxis -s -T "Bold Brew" -- /usr/bin/bbrew-helper
+Icon=/usr/share/ublue-os/bbrew.png
+Name=Bold Brew
+Comment=The modern Terminal UI for managing Homebrew packages and casks
+Categories=Utility;
