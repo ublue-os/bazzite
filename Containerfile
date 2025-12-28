@@ -229,6 +229,7 @@ RUN --mount=type=cache,dst=/var/cache \
         i2c-tools \
         lm_sensors \
         fw-ectool \
+        fw-fanctrl \
         framework-system \
         udica \
         ladspa-caps-plugins \
@@ -539,6 +540,7 @@ RUN --mount=type=cache,dst=/var/cache \
     ln -s /usr/bin/true /usr/bin/pulseaudio && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
+    systemctl disable fw-fanctrl.service && \
     systemctl disable scx_loader.service && \
     systemctl enable input-remapper.service && \
     systemctl enable bazzite-flatpak-manager.service && \
