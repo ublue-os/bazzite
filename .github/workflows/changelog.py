@@ -59,6 +59,7 @@ From previous `{target}` version `{prev}` there have been the following changes.
 | **Firmware** | {pkgrel:atheros-firmware} |
 | **Mesa** | {pkgrel:mesa-filesystem} |
 | **Gamescope** | {pkgrel:gamescope} |
+| **Bazaar** | {pkgrel:bazaar} |
 | **Gnome** | {pkgrel:gnome-control-center-filesystem} |
 | **KDE** | {pkgrel:plasma-desktop} |
 | **Nvidia** | {pkgrel:nvidia-kmod-common} |
@@ -82,6 +83,7 @@ BLACKLIST_VERSIONS = [
     "kernel",
     "mesa-filesystem",
     "gamescope",
+    "bazaar",
     "gnome-control-center-filesystem",
     "plasma-desktop",
     "atheros-firmware",
