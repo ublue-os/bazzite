@@ -442,29 +442,36 @@ dnf -yq remove steam lutris || :
 #   - Launch Bootloader Restoring tool
 #   - Close dialog
 cat >>/usr/bin/on_gui_login.sh <<'EOF'
+_EXITLOCK=1
 _RETVAL=0
-yad \
-    --no-escape \
-    --on-top \
-    --timeout-indicator=bottom \
-    --text-align=center \
-    --buttons-layout=center \
-    --title="Welcome" \
-    --text="\nWelcome to the Live ISO for Bazzite\!\n\nThe Live ISO is designed for installation and troubleshooting.\nBecause of this, it is <b>not capable of playing games.</b>\n\nPlease do not use it for benchmarks as it\ndoes not represent the installed experience.\n" \
-    --button="Install Bazzite:10" \
-    --button="Launch Bootloader Restoring tool:20"
-    --button="Close dialog:0"
-_RETVAL=$?
+while [[ $_EXITLOCK -eq 1 ]]; do
+    yad \
+        --no-escape \
+        --on-top \
+        --timeout-indicator=bottom \
+        --text-align=center \
+        --buttons-layout=center \
+        --title="Welcome" \
+        --text="\nWelcome to the Live ISO for Bazzite\!\n\nThe Live ISO is designed for installation and troubleshooting.\nBecause of this, it is <b>not capable of playing games.</b>\n\nPlease do not use it for benchmarks as it\ndoes not represent the installed experience.\n" \
+        --button="Install Bazzite:10" \
+        --button="Launch Bootloader Restoring tool:20"
+        --button="Close dialog:0"
+    _RETVAL=$?
 
-case $_RETVAL in
-    10)
-        liveinst & disown $!
-        ;;
-    20)
-        /usr/bin/bootloader_restore.sh & disown $!
-        ;;
-    0) : ;;
-esac
+    case $_RETVAL in
+        10)
+            liveinst & disown $!
+            _EXITLOCK=0
+            ;;
+        20)
+            /usr/bin/bootloader_restore.sh & disown $!
+            _EXITLOCK=0
+            ;;
+        0) : ;;
+    esac
+done
+unset -v _EXITLOCK
+unset -v _RETVAL
 EOF
 
 (
