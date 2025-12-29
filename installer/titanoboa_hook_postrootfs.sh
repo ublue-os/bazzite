@@ -79,6 +79,11 @@ case "${PRETTY_NAME,,}" in
 esac
 rm -rf /root/packages
 
+# Installer icon
+for f in /usr/share/icons/hicolor/48x48/apps/org.fedoraproject.AnacondaInstaller.svg /usr/share/icons/hicolor/scalable/apps/org.fedoraproject.AnacondaInstaller.svg /usr/share/icons/hicolor/symbolic/apps/org.fedoraproject.AnacondaInstaller-symbolic.svg; do
+    cp /root/packages/installer/branding/branding/bazzite-installer.svg "$f"
+done
+
 # Secureboot Key Fetch
 mkdir -p /usr/share/ublue-os
 curl -Lo /usr/share/ublue-os/sb_pubkey.der "$sbkey"
