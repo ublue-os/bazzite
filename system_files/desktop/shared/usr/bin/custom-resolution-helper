@@ -55,7 +55,7 @@ confirm_reboot() {
 print_status() {
   KARGS=$(rpm-ostree kargs)
   echo -n "Current custom resolution(s) are: "
-  MODEDB_OPTS=$(echo "$KARGS" | grep -oP 'video=\K[^ ]*')
+  MODEDB_OPTS=$(echo "$KARGS" | grep -oP 'video=\K[^ ]*' || true)
   if [ -z "$MODEDB_OPTS" ]; then
     echo -n "${bold}None${normal}"
   else
