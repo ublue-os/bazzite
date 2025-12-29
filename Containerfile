@@ -217,6 +217,7 @@ RUN --mount=type=cache,dst=/var/cache \
         python3-pip \
         libadwaita \
         duperemove \
+        bees \
         cpulimit \
         sqlite \
         xwininfo \
