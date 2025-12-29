@@ -220,6 +220,7 @@ rows:
           - dev.deedles.Trayscale
           - app.drey.Warp
           - com.rustdesk.RustDesk
+          - io.github.IshuSinghSE.aurynk
           - org.deskflow.deskflow
           - io.github.pwr_solaar.solaar
           - it.mijorus.gearlever
