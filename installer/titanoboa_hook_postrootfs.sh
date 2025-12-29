@@ -77,12 +77,12 @@ case "${PRETTY_NAME,,}" in
     cp -r /root/packages/installer/branding/* /usr/share/anaconda/pixmaps/
     ;;
 esac
-rm -rf /root/packages
 
 # Installer icon
 for f in /usr/share/icons/hicolor/48x48/apps/org.fedoraproject.AnacondaInstaller.svg /usr/share/icons/hicolor/scalable/apps/org.fedoraproject.AnacondaInstaller.svg /usr/share/icons/hicolor/symbolic/apps/org.fedoraproject.AnacondaInstaller-symbolic.svg; do
     cp /root/packages/installer/branding/branding/bazzite-installer.svg "$f"
 done
+rm -rf /root/packages
 
 # Secureboot Key Fetch
 mkdir -p /usr/share/ublue-os
