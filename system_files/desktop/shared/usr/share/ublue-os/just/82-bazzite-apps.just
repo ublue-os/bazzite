@@ -216,13 +216,6 @@ install-resilio-sync: distrobox-check-fedora
     systemctl --user daemon-reload && \
     systemctl enable --user --now fedora-resilio-sync.service
 
-# Install scrcpy, a utility that mirrors Android devices (video and audio) connected via USB or over TCP/IP
-[group("apps")]
-install-scrcpy: distrobox-check-fedora
-    distrobox enter -n fedora -- bash -c 'sudo dnf copr enable -y zeno/scrcpy && \
-      sudo dnf install -y scrcpy && \
-      distrobox-export --app scrcpy'
-
 # Install OpenTabletDriver, an open source, cross-platform, user-mode tablet driver
 [group("hardware")]
 install-opentabletdriver:
