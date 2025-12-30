@@ -32,7 +32,7 @@ jobs:
           - bazzite-deck
           - bazzite-deck-gnome
           - bazzite-deck-nvidia
-          # - bazzite-deck-nvidia-gnome
+          - bazzite-deck-nvidia-gnome
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
