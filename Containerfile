@@ -216,10 +216,7 @@ RUN --mount=type=cache,dst=/var/cache \
         Sunshine \
         python3-pip \
         libadwaita \
-        duperemove \
         bees \
-        cpulimit \
-        sqlite \
         xwininfo \
         usbip \
         compsize \

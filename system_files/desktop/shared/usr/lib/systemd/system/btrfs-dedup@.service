@@ -1,8 +1,0 @@
-[Unit]
-Description=Btrfs deduplication on %f
-
-[Service]
-EnvironmentFile=-/etc/conf.d/btrfs-dedup
-ExecStart=/usr/bin/btrfs-dedup %f
-ExecReload=/usr/bin/btrfs-dedup --powerchange
-PIDFile=/run/btrfs-dedup/%i.pid
