@@ -453,9 +453,9 @@ while [[ $_EXITLOCK -eq 1 ]]; do
         --buttons-layout=center \
         --title="Welcome" \
         --text="\nWelcome to the Live ISO for Bazzite\!\n\nThe Live ISO is designed for installation and troubleshooting.\nBecause of this, it is <b>not capable of playing games.</b>\n\nPlease do not use it for benchmarks as it\ndoes not represent the installed experience.\n" \
-        --button="Install Bazzite:10" \
-        --button="Launch Bootloader Restoring tool:20"
-        --button="Close dialog:0"
+        --button="Install Bazzite":10 \
+        --button="Launch Bootloader Restoring tool":20 \
+        --button="Close dialog":0
     _RETVAL=$?
 
     case $_RETVAL in
@@ -467,7 +467,7 @@ while [[ $_EXITLOCK -eq 1 ]]; do
             /usr/bin/bootloader_restore.sh & disown $!
             _EXITLOCK=0
             ;;
-        0) : ;;
+        0) _EXITLOCK=0 ;;
     esac
 done
 unset -v _EXITLOCK
