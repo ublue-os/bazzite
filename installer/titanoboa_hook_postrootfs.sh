@@ -80,15 +80,17 @@ esac
 
 # Installer icon
 _icon=/root/packages/installer/branding/bazzite-installer.svg
+_icon_symbol=/root/packages/installer/branding/bazzite-installer-symbolic.svg
 if [[ -f $_icon ]]; then
     for f in \
         /usr/share/icons/hicolor/48x48/apps/org.fedoraproject.AnacondaInstaller.svg \
-        /usr/share/icons/hicolor/scalable/apps/org.fedoraproject.AnacondaInstaller.svg \
-        /usr/share/icons/hicolor/symbolic/apps/org.fedoraproject.AnacondaInstaller-symbolic.svg; do
+        /usr/share/icons/hicolor/scalable/apps/org.fedoraproject.AnacondaInstaller.svg; do
         cp "$_icon" "$f"
     done
+    cp "$_icon_symbol" /usr/share/icons/hicolor/symbolic/apps/org.fedoraproject.AnacondaInstaller-symbolic.svg
 fi
 unset -v _icon
+unset -v _icon_symbol
 rm -rf /root/packages
 
 # Secureboot Key Fetch
