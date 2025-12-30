@@ -77,6 +77,18 @@ case "${PRETTY_NAME,,}" in
     cp -r /root/packages/installer/branding/* /usr/share/anaconda/pixmaps/
     ;;
 esac
+
+# Installer icon
+_icon=/root/packages/installer/branding/bazzite-installer.svg
+if [[ -f $_icon ]]; then
+    for f in \
+        /usr/share/icons/hicolor/48x48/apps/org.fedoraproject.AnacondaInstaller.svg \
+        /usr/share/icons/hicolor/scalable/apps/org.fedoraproject.AnacondaInstaller.svg \
+        /usr/share/icons/hicolor/symbolic/apps/org.fedoraproject.AnacondaInstaller-symbolic.svg; do
+        cp "$_icon" "$f"
+    done
+fi
+unset -v _icon
 rm -rf /root/packages
 
 # Secureboot Key Fetch
