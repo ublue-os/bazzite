@@ -166,8 +166,9 @@ removeAll() {
     RM_KARGS=$(for mode_options in "${OPT_ARRAY[@]}"; do
       echo -n "--delete-if-present=video=$mode_options "
       done)
+    RM_KARGS=$(echo "$RM_KARGS" | sed -e 's/[[:space:]]*$//g') #Remove trailing whitespaces
     echo "Command: ${bold}rpm-ostree kargs $RM_KARGS${normal}"
-    if rpm-ostree kargs "$RM_KARGS"; then
+    if rpm-ostree kargs $RM_KARGS; then
       echo "${green}Custom resolution removed successfully!${normal} Reboot to apply changes."
       confirm_reboot "$1"
     else
@@ -178,8 +179,9 @@ removeAll() {
       RM_KARGS=$(for mode_options in "${OPT_ARRAY[@]}"; do
         echo -n "--delete-if-present=video=$mode_options "
         done)
+      RM_KARGS=$(echo "$RM_KARGS" | sed -e 's/[[:space:]]*$//g') #Remove trailing whitespaces
       echo "Command: ${bold}rpm-ostree kargs $RM_KARGS${normal}"
-      if rpm-ostree kargs "$RM_KARGS"; then
+      if rpm-ostree kargs $RM_KARGS; then
         echo "${green}Custom resolution removed successfully!${normal} Reboot to apply changes."
         confirm_reboot "$1"
       else
