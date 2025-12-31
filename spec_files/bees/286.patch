@@ -1,0 +1,29 @@
+From 2b3cbce8f40b878dd7545ad597329863f645339d Mon Sep 17 00:00:00 2001
+From: Kyle Gospodnetich <me@kylegospodneti.ch>
+Date: Tue, 23 Jul 2024 13:05:41 -0700
+Subject: [PATCH] Disable warning-as-error
+
+Breaks compilation on newer versions of GCC. Likely better to leave this up to the build system.
+---
+ makeflags | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/makeflags b/makeflags
+index e0080119..8c65ca93 100644
+--- a/makeflags
++++ b/makeflags
+@@ -1,11 +1,11 @@
+ # Default:
+-CCFLAGS = -Wall -Wextra -Werror -O3
++CCFLAGS = -Wall -Wextra -O3
+ 
+ # Optimized:
+-# CCFLAGS = -Wall -Wextra -Werror -O3 -march=native
++# CCFLAGS = -Wall -Wextra -O3 -march=native
+ 
+ # Debug:
+-# CCFLAGS = -Wall -Wextra -Werror -O0 -ggdb
++# CCFLAGS = -Wall -Wextra -O0 -ggdb
+ 
+ CCFLAGS += -I../include -D_FILE_OFFSET_BITS=64
+ 
