@@ -3,7 +3,7 @@
 configure-beesd ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    
+
     while true; do
         # Get btrfs filesystem uuids
         mapfile -t btrfs_devices < <(lsblk --fs --list --noheadings --output "NAME,UUID,SIZE" --filter 'FSTYPE == "btrfs"')
@@ -74,7 +74,7 @@ configure-beesd ACTION="":
         # https://github.com/Zygo/bees/blob/master/docs/options.md#load-management-options
         sudo sed -i "s/^UUID=.*/UUID=${UUID}/" "/etc/bees/${UUID}.conf"
         sudo sed -i "s/# DB_SIZE=.*/DB_SIZE=\$((128*1024*1024))/" "/etc/bees/${UUID}.conf"
-        sudo sed -i "s/# OPTIONS=.*/OPTIONS=\"--strip-paths --no-timestamps\"/" "/etc/bees/${UUID}.conf"
+        sudo sed -i "s/# OPTIONS=.*/OPTIONS=\"--strip-paths --no-timestamps --throttle-factor 10\"/" "/etc/bees/${UUID}.conf"
         echo "Created /etc/bees/${UUID}.conf"
         sudo systemctl enable --now "beesd@${UUID}.service"
     done
