@@ -161,6 +161,62 @@ toggle-wol ACTION="":
       echo "No changes were made."
     fi
 
+# enable or disable IWD as a replacement for wpa_supplicant
+[group("network")]
+toggle-iwd:
+    #!/usr/bin/bash
+    # Explain the purpose of the script
+    echo -e "This script manages enabling or disabling iwd as a replacement for wpa_supplicant for Wi-Fi networking. Default is Enabled."
+    echo -e "Enabling this can improve throughput, mesh networking, and reduce latency increases when scanning for networks"
+    echo -e "Disabling this can improve functionality on some wifi adapters"
+    echo -e ""
+    echo -e "WARNING: Changing this will remove all saved wifi networks"
+    get_current_status() {
+      if [[ -f "/etc/NetworkManager/conf.d/supplicant.conf" ]]; then
+        echo "Disabled"
+      else
+        echo "Enabled"
+      fi
+    }
+    remove_saved_networks() {
+      nmcli -t -f NAME connection show | while read -r line; do sudo nmcli connection delete "$line"; done
+    }
+    enablw_iwd() {
+      sudo rm -f "/etc/NetworkManager/conf.d/supplicant.conf"
+      sudo systemctl mask wpa_supplicant.service
+      sudo systemctl unmask iwd.service
+      remove_saved_networks
+      echo -e "iwd enabled. Reboot required to apply changes."
+    }
+    disable_iwd() {
+      sudo mkdir -p "/etc/NetworkManager/conf.d/"
+      sudo rm -f "/etc/NetworkManager/conf.d/supplicant.conf"
+      printf "[device]\nwifi.backend=wpa_supplicant" | sudo tee /etc/NetworkManager/conf.d/supplicant.conf > /dev/null
+      sudo systemctl mask iwd.service
+      sudo systemctl unmask wpa_supplicant.service
+      remove_saved_networks
+      echo -e "iwd disabled. Reboot required to apply changes."
+    }
+    # Display current status
+    current_status=$(get_current_status)
+    echo -e "\nCurrent iwd status: $current_status\n"
+    # Prompt user for action
+    CHOICE=$(ugum choose "Enable iwd" "Disable iwd" "Exit without changes")
+    case "$CHOICE" in
+      "Enable iwd")
+        enable_iwd
+        ;;
+      "Disable iwd")
+        disable_iwd
+        ;;
+      "Exit without changes")
+        echo "No changes made."
+        ;;
+      *)
+        echo "Invalid choice. Exiting without changes."
+        ;;
+    esac
+
 # enable or disable a fix for 7th and 8th generation Intel chips not being able to sleep
 [group("hardware")]
 toggle-i915-sleep-fix:
