@@ -654,8 +654,6 @@ RUN --mount=type=cache,dst=/var/cache \
         xorg-x11-server-Xvfb \
         python-vdf \
         python-crcmod && \
-    dnf5 -y remove \
-        ds-inhibit && \
     git clone https://github.com/bazzite-org/jupiter-dock-updater-bin.git \
         --depth 1 \
         /tmp/jupiter-dock-updater-bin && \
