@@ -1,10 +1,5 @@
 # vim: set ft=make :
 
-# Enable BTRFS deduplication
-enable-deduplication:
-    systemctl enable btrfs-dedup@var-home.timer
-    systemctl enable btrfs-dedup@run-media-mmcblk0p1.timer
-
 # Use EXT4 for SD Cards, allows use of SteamOS formatted SD cards
 switch-to-ext4:
     sudo sed -i 's@STEAMOS_BTRFS_SDCARD_FORMAT_FS="btrfs"@STEAMOS_BTRFS_SDCARD_FORMAT_FS="ext4"@g' /etc/default/steamos-btrfs
