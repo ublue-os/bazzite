@@ -91,6 +91,10 @@ jobs:
         run: |
           ref="${{ matrix.image_name }}"
           ref="${ref/-deck/}"
+          # Handle naming mismatch: deck uses nvidia-gnome, non-deck uses gnome-nvidia
+          if [[ "$ref" == "bazzite-nvidia-gnome" ]]; then
+            ref="bazzite-gnome-nvidia"
+          fi
           echo "ref=${ref}" >> $GITHUB_OUTPUT
 
       - name: Build ISOs
