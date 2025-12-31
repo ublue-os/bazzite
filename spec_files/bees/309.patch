@@ -1,0 +1,57 @@
+From 635490d96040673334f4ab79091b687d02aece87 Mon Sep 17 00:00:00 2001
+From: Kyle Gospodnetich <me@kylegospodneti.ch>
+Date: Thu, 17 Apr 2025 17:52:33 -0700
+Subject: [PATCH] Add configurable bindir for distros without sbin
+
+---
+ Defines.mk                | 1 +
+ Makefile                  | 3 ++-
+ scripts/beesd@.service.in | 2 +-
+ 3 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/Defines.mk b/Defines.mk
+index e5394ba9..695ffafd 100644
+--- a/Defines.mk
++++ b/Defines.mk
+@@ -4,6 +4,7 @@ define TEMPLATE_COMPILER =
+ sed $< >$@ \
+ 		-e's#@DESTDIR@#$(DESTDIR)#' \
+ 		-e's#@PREFIX@#$(PREFIX)#' \
++		-e's#@BINDIR@#$(BINDIR)#' \
+ 		-e's#@ETC_PREFIX@#$(ETC_PREFIX)#' \
+ 		-e's#@LIBEXEC_PREFIX@#$(LIBEXEC_PREFIX)#'
+ endef
+diff --git a/Makefile b/Makefile
+index 19183721..5a04858e 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,6 +1,7 @@
+ PREFIX ?= /usr
+ ETC_PREFIX ?= /etc
+ LIBDIR ?= lib
++BINDIR ?= sbin
+ 
+ LIB_PREFIX ?= $(PREFIX)/$(LIBDIR)
+ LIBEXEC_PREFIX ?= $(LIB_PREFIX)/bees
+@@ -55,7 +56,7 @@ install_bees: src $(RUN_INSTALL_TESTS)
+ 
+ install_scripts: ## Install scipts
+ install_scripts: scripts
+-	install -Dm755 scripts/beesd $(DESTDIR)$(PREFIX)/sbin/beesd
++	install -Dm755 scripts/beesd $(DESTDIR)$(PREFIX)/$(BINDIR)/beesd
+ 	install -Dm644 scripts/beesd.conf.sample $(DESTDIR)$(ETC_PREFIX)/bees/beesd.conf.sample
+ ifneq ($(SYSTEMD_SYSTEM_UNIT_DIR),)
+ 	install -Dm644 scripts/beesd@.service $(DESTDIR)$(SYSTEMD_SYSTEM_UNIT_DIR)/beesd@.service
+diff --git a/scripts/beesd@.service.in b/scripts/beesd@.service.in
+index 32a6f857..f26511d4 100644
+--- a/scripts/beesd@.service.in
++++ b/scripts/beesd@.service.in
+@@ -5,7 +5,7 @@ After=sysinit.target
+ 
+ [Service]
+ Type=simple
+-ExecStart=@PREFIX@/sbin/beesd --no-timestamps %i
++ExecStart=@PREFIX@/@BINDIR@/beesd --no-timestamps %i
+ CPUAccounting=true
+ CPUSchedulingPolicy=batch
+ CPUWeight=12
