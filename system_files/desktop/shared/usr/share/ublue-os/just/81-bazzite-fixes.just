@@ -181,7 +181,7 @@ toggle-iwd:
     remove_saved_networks() {
       nmcli -t -f NAME connection show | while read -r line; do sudo nmcli connection delete "$line"; done
     }
-    enablw_iwd() {
+    enable_iwd() {
       sudo rm -f "/etc/NetworkManager/conf.d/supplicant.conf"
       sudo systemctl mask wpa_supplicant.service
       sudo systemctl unmask iwd.service
