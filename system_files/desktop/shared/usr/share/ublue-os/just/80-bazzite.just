@@ -591,14 +591,14 @@ toggle-global-fsr4 ACTION="":
             ;;
     esac
 
-# Toggle global SteamDeck=0 environment variable to prevent games from detecting hardware as a Steam Deck. Useful for HTPC setups to avoid hidden settings or forced lower textures.
+# Toggle global Proton FSR4 upgrade on RDNA3 GPUs; upgrades FSR 3.1+ → FSR 4, only compatible with Proton GE, Proton EM, or similar forks
 [group("gaming")]
-toggle-steamdeck-var ACTION="":
+toggle-global-fsr4-rdna3 ACTION="":
     #!/usr/bin/bash
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh
 
-    FILE="$HOME/.config/environment.d/99-steamdeck-var.conf"
+    FILE="$HOME/.config/environment.d/99-proton-fsr4-rdna3.conf"
 
     CURRENT="Disabled"
     if [[ -f "$FILE" ]]; then
@@ -607,12 +607,13 @@ toggle-steamdeck-var ACTION="":
 
     OPTION="{{ ACTION }}"
     if [[ -z "$OPTION" ]]; then
-        echo -e "${bold}SteamDeck=0 Environment Variable:${normal} $CURRENT"
+        echo -e "${bold}Global FSR4 (RDNA3):${normal} $CURRENT"
         echo ""
-        echo "Sets the SteamDeck environment variable to 0 globally."
-        echo "This prevents most games from detecting your hardware as a Steam Deck,"
-        echo "which can avoid hidden settings, forced lower textures, or FPS locks."
-        echo "Useful for HTPC setups or when using gamescope session on non-Deck hardware."
+        echo "Enables Proton's FSR4 upgrade path on RDNA3 GPUs (e.g. RX 7900 XTX)."
+        echo "When enabled, Proton can upgrade games using FSR 3.1+ to FSR 4 (FP8 Emulation)"
+        echo "and automatically fetch the required FSR4 DLL."
+        echo ""
+        echo -e "${bold}Note:${normal} This is only compatible with Proton GE, Proton EM, or similar forks."
         echo ""
         OPTION="$(ugum choose "Enable" "Disable" "Exit without saving")"
     fi
@@ -620,12 +621,12 @@ toggle-steamdeck-var ACTION="":
     case "$OPTION" in
         Enable|enable)
             mkdir -p "$HOME/.config/environment.d"
-            echo "SteamDeck=0" > "$FILE"
-            echo -e "${green}${bold}Enabled${normal}: SteamDeck=0"
+            echo "PROTON_FSR4_RDNA3_UPGRADE=1" > "$FILE"
+            echo -e "${green}${bold}Enabled${normal}: PROTON_FSR4_RDNA3_UPGRADE=1"
             ;;
         Disable|disable)
             rm -f "$FILE"
-            echo -e "${red}${bold}Disabled${normal}: SteamDeck=0 removed"
+            echo -e "${red}${bold}Disabled${normal}: PROTON_FSR4_RDNA3_UPGRADE removed"
             ;;
         *)
             echo "No changes made."
