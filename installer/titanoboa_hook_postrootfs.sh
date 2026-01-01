@@ -452,6 +452,13 @@ WARNINGEOF
 EOF
 fi
 
+# Use GSK_RENDERER=gl for nvidia, workaround for GTK apps not opening.
+if [[ $imageref == *-nvidia* ]]; then
+    mkdir -p /etc/environment.d /etc/skel/.config/environment.d
+    echo "GSK_RENDERER=gl" >>/etc/environment.d/99-nvidia-fix.conf
+    echo "GSK_RENDERER=gl" >>/etc/skel/.config/environment.d/99-nvidia-fix.conf
+fi
+
 # Determine desktop environment. Must match one of /usr/libexec/livesys/sessions.d/livesys-{desktop_env}
 # See https://github.com/ublue-os/titanoboa/blob/6c2e8ba58c7534b502081fe24363d2a60e7edca9/Justfile#L199-L213
 desktop_env=""
