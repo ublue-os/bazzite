@@ -113,6 +113,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/install-kernel && \
     dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
+    rm -rf /.git && \
     /ctx/cleanup
 
 # Install patched fwupd
