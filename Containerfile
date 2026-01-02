@@ -541,8 +541,6 @@ RUN --mount=type=cache,dst=/var/cache \
     mkdir -p /etc/flatpak/remotes.d && \
     curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
     systemctl enable brew-setup.service && \
-    systemctl disable brew-upgrade.timer && \
-    systemctl disable brew-update.timer && \
     systemctl disable fw-fanctrl.service && \
     systemctl disable scx_loader.service && \
     systemctl enable input-remapper.service && \
