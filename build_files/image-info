@@ -55,23 +55,23 @@ sed -i "s|^VERSION_CODENAME=.*|VERSION_CODENAME=\"${BASE_IMAGE_NAME^}\"|" /usr/l
 # Fix issues caused by ID no longer being fedora
 sed -i "s/^EFIDIR=.*/EFIDIR=\"fedora\"/" /usr/sbin/grub2-switch-to-blscfg
 
-if grep -q '^BUILD_ID=' "$OS_RELEASE"; then
-  sed -i "s/^BUILD_ID=.*/BUILD_ID=\"$VERSION_PRETTY\"/" "$OS_RELEASE"
+if grep -q '^BUILD_ID=' /usr/lib/os-release; then
+  sed -i "s/^BUILD_ID=.*/BUILD_ID=\"$VERSION_PRETTY\"/" /usr/lib/os-release
 else
-  echo "BUILD_ID=\"$VERSION_PRETTY\"" >> "$OS_RELEASE"
+  echo "BUILD_ID=\"$VERSION_PRETTY\"" >> /usr/lib/os-release
 fi
 
-if grep -q '^BOOTLOADER_NAME=' "$OS_RELEASE"; then
-  sed -i "s/^BOOTLOADER_NAME=.*/BOOTLOADER_NAME=\"$IMAGE_PRETTY_NAME $VERSION_PRETTY\"/" "$OS_RELEASE"
+if grep -q '^BOOTLOADER_NAME=' /usr/lib/os-release; then
+  sed -i "s/^BOOTLOADER_NAME=.*/BOOTLOADER_NAME=\"$IMAGE_PRETTY_NAME $VERSION_PRETTY\"/" /usr/lib/os-release
 else
-  echo "BOOTLOADER_NAME=\"$IMAGE_PRETTY_NAME $VERSION_PRETTY\"" >> "$OS_RELEASE"
+  echo "BOOTLOADER_NAME=\"$IMAGE_PRETTY_NAME $VERSION_PRETTY\"" >> /usr/lib/os-release
 fi
 
 # IMAGE_ID is used to decide whether to load a hibernation image
 # use a unique id to prevent loading stale hibernation images
 # INITRAMFS NEEDS TO BE GENERATED AFTER THIS SCRIPT HAS RUN
-if grep -q '^IMAGE_ID=' "$OS_RELEASE"; then
-  sed -i "s/^IMAGE_ID=.*/IMAGE_ID=\"$IMAGE_NAME-$VERSION_TAG\"/" "$OS_RELEASE"
+if grep -q '^IMAGE_ID=' /usr/lib/os-release; then
+  sed -i "s/^IMAGE_ID=.*/IMAGE_ID=\"$IMAGE_NAME-$VERSION_TAG\"/" /usr/lib/os-release
 else
-  echo "IMAGE_ID=\"$IMAGE_NAME-$VERSION_TAG\"" >> "$OS_RELEASE"
+  echo "IMAGE_ID=\"$IMAGE_NAME-$VERSION_TAG\"" >> /usr/lib/os-release
 fi
