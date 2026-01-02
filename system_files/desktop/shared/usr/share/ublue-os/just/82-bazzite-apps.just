@@ -258,3 +258,17 @@ distrobox-check-fedora:
       echo "Setting up Fedora distrobox"
       Assemble noconfirmcreate "" "fedora"
     fi
+
+# Install WinBoat (https://github.com/TibixDev/winboat)
+[group("virtualization")]
+install-winboat:
+    #!/usr/bin/bash
+    set -eo pipefail
+    echo 'Installing podman-compose...'
+    brew install podman-compose
+    echo 'Installing WinBoat...'
+    remote_appimage_url="$(
+        curl -s https://api.github.com/repos/TibixDev/winboat/releases/latest | \
+        jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url"
+    )"
+    just _install_appimage_file "$remote_appimage_url"
