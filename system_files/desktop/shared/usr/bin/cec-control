@@ -62,10 +62,6 @@ function perform_activate {
         for id in $CEC_TVID; do
             cec-ctl -d "$CEC_DEVICE" --to "$id" --image-view-on 2>/dev/null || \
                 echo "Warning: Failed to send image-view-on to CEC device $id" >&2
-            
-            if [ "$CEC_SETSOURCE" = true ]; then
-                cec-ctl -d "$CEC_DEVICE" --to "$id" --active-source phys-addr-from-edid-poll 2>/dev/null || true
-            fi
         done
     else
         # libcec path
