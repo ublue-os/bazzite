@@ -244,6 +244,7 @@ RUN --mount=type=cache,dst=/var/cache \
         xdotool \
         wmctrl \
         libcec \
+        v4l-utils \
         yad \
         f3 \
         pulseaudio-utils \
