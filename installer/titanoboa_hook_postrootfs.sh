@@ -527,8 +527,8 @@ EOF
     wallpaper_url=https://github.com/ublue-os/bazzite/raw/refs/heads/main/press_kit/art/Convergence_Wallpaper_DX.jxl
     wallpaper_file=/usr/share/wallpapers/convergence.jxl
     wget -nv -O "$wallpaper_file" "$wallpaper_url"
-    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence.jxl || :
-    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_morn.jxl || :
+    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/default.jxl || :
+    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/default-dark.jxl || :
     rm -f /usr/share/backgrounds/default.xml
 )
 
