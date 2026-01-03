@@ -90,10 +90,11 @@ jobs:
         id: get-nondeck-ref
         run: |
           ref="${{ matrix.image_name }}"
-          ref="${ref/-deck/}"
-          # Handle naming mismatch: deck uses nvidia-gnome, non-deck uses gnome-nvidia
-          if [[ "$ref" == "bazzite-nvidia-gnome" ]]; then
-            ref="bazzite-gnome-nvidia"
+
+          if [[ $ref == *gnome* ]]; then
+            ref="silverblue-main:latest"
+          else
+            ref="kinoite-main:latest"
           fi
           echo "ref=${ref}" >> $GITHUB_OUTPUT
 
@@ -101,7 +102,7 @@ jobs:
         uses: ublue-os/titanoboa@main
         id: build
         with:
-          image-ref: ${{ steps.registry_case.outputs.lowercase }}/${{ steps.get-nondeck-ref.outputs.ref }}:${{ steps.generate-tag.outputs.tag }}
+          image-ref: ${{ steps.registry_case.outputs.lowercase }}/${{ steps.get-nondeck-ref.outputs.ref }}
           container-image: ${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}
           # TODO (@Zeglius): Remove "liveiso" prefix once this becomes the main ISO
           iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-live-amd64.iso
