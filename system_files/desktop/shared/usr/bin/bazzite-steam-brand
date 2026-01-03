@@ -23,7 +23,7 @@ if ! $SKIP_VIDEOS; then
     DECK_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend.webm"
     OLED_STARTUP="/usr/share/ublue-os/bazzite/bazzite-oled.webm"
     OLED_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend-oled.webm"
-
+    
     # Check for Galileo model
     if [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
         VIDEO_STARTUP=$OLED_STARTUP
@@ -64,4 +64,11 @@ if ! $SKIP_VIDEOS; then
             cp $VIDEO_SUSPEND $LOCATION_SUSPEND
         fi
     done
+
+    # very important optional startup/suspend video
+    KYLE_BOUNCE_SRC="/usr/share/ublue-os/bazzite/kyle_bounce.webm"
+    KYLE_BOUNCE_DEST="$OVRDIR/kyle_bounce.webm"
+    if [ -f "$KYLE_BOUNCE_SRC" ] && ! cmp --silent $KYLE_BOUNCE_SRC $KYLE_BOUNCE_DEST; then
+        cp $KYLE_BOUNCE_SRC $KYLE_BOUNCE_DEST
+    fi
 fi
