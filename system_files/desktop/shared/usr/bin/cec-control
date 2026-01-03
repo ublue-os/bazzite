@@ -63,6 +63,14 @@ function perform_activate {
             cec-ctl -d "$CEC_DEVICE" --to "$id" --image-view-on 2>/dev/null || \
                 echo "Warning: Failed to send image-view-on to CEC device $id" >&2
         done
+        
+        if [ "$CEC_SETSOURCE" = true ]; then
+            # Get our physical address if we are setting source
+            local phys_addr=$(cec-ctl -d "$CEC_DEVICE" 2>/dev/null | grep "Physical Address" | awk '{print $4}')
+            if [[ -n "$phys_addr" ]]; then
+                cec-ctl -d "$CEC_DEVICE" -s --active-source phys-addr="$phys_addr" 2>/dev/null || true
+            fi
+        fi
     else
         # libcec path
         for id in $CEC_TVID; do
