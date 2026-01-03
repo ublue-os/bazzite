@@ -11,6 +11,21 @@ CEC_ONPOWEROFF_STANDBY=${CEC_ONPOWEROFF_STANDBY:-true}
 CEC_ONSLEEP_STANDBY=${CEC_ONSLEEP_STANDBY:-false}
 CEC_OSD_NAME=${CEC_OSD_NAME:-$(hostname)}
 
+# Auto-detect which CEC backend to use
+# If /dev/cec* exists -> kernel CEC (GPU native) -> use cec-ctl
+# If no /dev/cec* -> Pulse-Eight USB adapter -> use libcec
+USE_KERNEL_CEC=false
+CEC_DEVICE=""
+
+# Check for kernel CEC devices
+for cec_dev in /dev/cec*; do
+    if [[ -e "$cec_dev" ]]; then
+        USE_KERNEL_CEC=true
+        CEC_DEVICE="$cec_dev"
+        break
+    fi
+done
+
 args=()
 args+=( "--single-command" )
 args+=( "--log-level 1" )
@@ -23,18 +38,48 @@ args+=( "--osd-name $CEC_OSD_NAME" )
 # We loop through TVIDs to cover cases where you might have multiple devices
 # to control (eg: a TV, an audio system, and some sort of tuner device)
 function perform_standby {
-    for id in $CEC_TVID; do
-        echo "standby $id" | cec-client ${args[@]}
-    done
+    if [ "$USE_KERNEL_CEC" = true ]; then
+        # Kernel CEC path
+        cec-ctl -d "$CEC_DEVICE" --playback 2>/dev/null || true
+        
+        for id in $CEC_TVID; do
+            cec-ctl -d "$CEC_DEVICE" --to "$id" --standby 2>/dev/null || \
+                echo "Warning: Failed to send standby to CEC device $id" >&2
+        done
+    else
+        # libcec path
+        for id in $CEC_TVID; do
+            echo "standby $id" | cec-client ${args[@]}
+        done
+    fi
 }
 
 function perform_activate {
-    for id in $CEC_TVID; do
-        echo "on $id" | cec-client ${args[@]}
-    done
+    if [ "$USE_KERNEL_CEC" = true ]; then
+        # Kernel CEC path
+        cec-ctl -d "$CEC_DEVICE" --playback 2>/dev/null || true
+        
+        for id in $CEC_TVID; do
+            cec-ctl -d "$CEC_DEVICE" --to "$id" --image-view-on 2>/dev/null || \
+                echo "Warning: Failed to send image-view-on to CEC device $id" >&2
+        done
+        
+        if [ "$CEC_SETSOURCE" = true ]; then
+            # Get our physical address if we are setting source
+            local phys_addr=$(cec-ctl -d "$CEC_DEVICE" 2>/dev/null | grep "Physical Address" | awk '{print $4}')
+            if [[ -n "$phys_addr" ]]; then
+                cec-ctl -d "$CEC_DEVICE" -s --active-source phys-addr="$phys_addr" 2>/dev/null || true
+            fi
+        fi
+    else
+        # libcec path
+        for id in $CEC_TVID; do
+            echo "on $id" | cec-client ${args[@]}
+        done
 
-    if [ "$CEC_SETSOURCE" = true ]; then
-        echo "as" | cec-client ${args[@]}
+        if [ "$CEC_SETSOURCE" = true ]; then
+            echo "as" | cec-client ${args[@]}
+        fi
     fi
 }
 
