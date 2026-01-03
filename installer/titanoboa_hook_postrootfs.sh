@@ -2,6 +2,13 @@
 
 set -exo pipefail
 
+# Rebuild os-release
+mkdir "$(realpath /root)" /root/git
+git clone --depth 1 https://github.com/ublue-os/bazzite.git /root/git
+pushd /root/git || exit 1
+chmod +x ./build_files/image-info && ./build_files/image-info
+popd && rm -rf /root/git
+
 source /etc/os-release
 
 # Remove all versionlocks, in order to avoid dependency issues
