@@ -1,6 +1,6 @@
 # vim: set ft=make :
 
-# Add virtual audio channels/sinks named Game, Voice, Browser and Music which you can split audio to using qpwgraph, helvum, carla or other pipewire patchbays for use in OBS and other use cases
+# Add virtual audio channels/sinks named Game, Voice, Browser and Music which you can split audio to using qpwgraph, Helvum, Carla or other PipeWire patchbays for use in OBS and other use cases
 [group("audio")]
 setup-virtual-channels ACTION="":
     #!/usr/bin/bash
@@ -295,8 +295,8 @@ setup-virtual-surround ACTION="":
       echo "Surround configuration file and sample .sofa removed, please reboot or restart PipeWire for changes to take effect."
     fi
 
-# Restart pipewire
+# Restart PipeWire
 [group("audio")]
 restart-pipewire:
-    echo "Restarting pipewire..."
+    echo "Restarting PipeWire..."
     systemctl --user restart pipewire.service
