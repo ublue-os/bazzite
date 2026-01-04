@@ -465,8 +465,8 @@ fi
 # Reenable noveau.
 if [[ $imageref == *-nvidia* ]]; then
     for pkg in nvidia-gpu-firmware mesa-vulkan-drivers; do
-        dnf -yq --allowerasing --repo=fedora,updates reinstall $pkg ||
-            dnf -yq --allowerasing --repo=fedora,updates install $pkg
+        dnf -yq reinstall --allowerasing --repo=fedora,updates $pkg ||
+            dnf -yq install --allowerasing --repo=fedora,updates $pkg
     done
     # Ensure noveau vulkan icds exist
     (
