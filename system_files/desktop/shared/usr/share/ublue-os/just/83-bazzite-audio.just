@@ -106,16 +106,16 @@ setup-virtual-surround ACTION="":
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust setup-virtual-surround <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
-      echo "  Use 'enable' to select Enable Virtual Surround"
-      echo "  Use 'disable' to select Disable Virtual Surround"
+      echo "  Use 'enable' to select Enable Virtual Headphone Surround"
+      echo "  Use 'disable' to select Disable Virtual Headphone Surround"
       exit 0
     elif [ "$OPTION" == "" ]; then
-      echo "${bold}Virtual Surround configuration${normal}"
-      OPTION=$(Choose "Enable Virtual Surround" "Disable Virtual Surround")
+      echo "${bold}Virtual Headphone Surround configuration${normal}"
+      OPTION=$(Choose "Enable Virtual Headphone Surround" "Disable Virtual Headphone Surround")
     fi
     if [[ "${OPTION,,}" =~ ^enable ]]; then
-      echo "Downloading a sample HRTF .sofa from the Sofacoustics database..."
-      wget -O ~/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa https://sofacoustics.org/data/database_sofa_0.6/mit/mit_kemar_normal_pinna.sofa
+      echo "Downloading Valve's Steam Audio HRTF..."
+      wget -O ~/.config/pipewire/hrtf-sofa/sadie_d1.sofa https://github.com/ValveSoftware/steam-audio/raw/master/core/data/hrtf/sadie_d1.sofa
       if [ -f ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf ]; then
         mv ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf ~/.config/pipewire/virtual-surround-71.conf.bak
       fi
@@ -129,8 +129,8 @@ setup-virtual-surround ACTION="":
         { name = libpipewire-module-filter-chain
             flags = [ nofail ]
             args = {
-                node.description = "Spatial Sink"
-                media.name       = "Spatial Sink"
+                node.description = "Virtual Headphone Surround"
+                media.name       = "Virtual Headphone Surround"
                 filter.graph = {
                     nodes = [
                         {
@@ -138,7 +138,7 @@ setup-virtual-surround ACTION="":
                             label = spatializer
                             name = spFL
                             config = {
-                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/sadie_d1.sofa"
                             }
                             control = {
                                 "Azimuth"    = 30.0
@@ -151,7 +151,7 @@ setup-virtual-surround ACTION="":
                             label = spatializer
                             name = spFR
                             config = {
-                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/sadie_d1.sofa"
                             }
                             control = {
                                 "Azimuth"    = 330.0
@@ -164,7 +164,7 @@ setup-virtual-surround ACTION="":
                             label = spatializer
                             name = spFC
                             config = {
-                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/sadie_d1.sofa"
                             }
                             control = {
                                 "Azimuth"    = 0.0
@@ -177,7 +177,7 @@ setup-virtual-surround ACTION="":
                             label = spatializer
                             name = spRL
                             config = {
-                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/sadie_d1.sofa"
                             }
                             control = {
                                 "Azimuth"    = 150.0
@@ -190,7 +190,7 @@ setup-virtual-surround ACTION="":
                             label = spatializer
                             name = spRR
                             config = {
-                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/sadie_d1.sofa"
                             }
                             control = {
                                 "Azimuth"    = 210.0
@@ -203,7 +203,7 @@ setup-virtual-surround ACTION="":
                             label = spatializer
                             name = spSL
                             config = {
-                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/sadie_d1.sofa"
                             }
                             control = {
                                 "Azimuth"    = 90.0
@@ -216,7 +216,7 @@ setup-virtual-surround ACTION="":
                             label = spatializer
                             name = spSR
                             config = {
-                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/sadie_d1.sofa"
                             }
                             control = {
                                 "Azimuth"    = 270.0
@@ -229,7 +229,7 @@ setup-virtual-surround ACTION="":
                             label = spatializer
                             name = spLFE
                             config = {
-                                filename = "$HOME/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa"
+                                filename = "$HOME/.config/pipewire/hrtf-sofa/sadie_d1.sofa"
                             }
                             control = {
                                 "Azimuth"    = 0.0
@@ -274,25 +274,21 @@ setup-virtual-surround ACTION="":
                     node.passive   = true
                     audio.channels = 2
                     audio.position = [ FL FR ]
+                    channelmix.max-volume = 0.255
                 }
             }
         }
     ]
     SPATIALIZER'
       echo ""
-      echo "Virtual surround has now been set up with a placeholder HRTF file; either restart PipeWire - ${bold}TIP:${normal} ujust restart-pipewire - or reboot for changes to take effect. Select 'Spatial Sink' as the default audio device to enable surround sound virtualization. ${bold}This setup is incompatible with EasyEffects or JamesDSP;${normal} make sure neither of those is running."
-      echo ""
-      echo "${bold}IMPORTANT:${normal}"
-      echo "${bold}1.${normal} Watch https://youtu.be/VCXQp7swp5k for a demonstration of various HRTFs to find one that best matches your anatomy."
-      echo "${bold}2.${normal} Once you find an HRTF that seems to suit you, you may download it from https://sofacoustics.org/data/database_sofa_0.6/ - likely from inside the ${bold}listen/${normal} directory;"
-      echo "${bold}3.${normal} Then, open ~/.config/pipewire/pipewire.conf.d/spatializer-7.1.conf with a text editor, and replace the paths to the sample file with the path to yours."
+      echo "Virtual surround sound has been successfully set up. Reboot your system or restart PipeWire - ${bold}TIP:${normal} ujust restart-pipewire - for changes to take effect. Select 'Virtual Headphone Surround' as the default audio device to enable surround virtualization. ${bold}This setup is incompatible with EasyEffects or JamesDSP;${normal} make sure neither is currently running."
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
       if [ -f ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf ]; then
         rm ~/.config/pipewire/pipewire.conf.d/virtual-surround-71.conf
       fi
       rm ~/.config/pipewire/pipewire.conf.d/spatializer-7.1.conf
-      rm ~/.config/pipewire/hrtf-sofa/mit_kemar_normal_pinna.sofa
-      echo "Surround configuration file and sample .sofa removed, please reboot or restart PipeWire for changes to take effect."
+      rm ~/.config/pipewire/hrtf-sofa/sadie_d1.sofa
+      echo "Virtual surround configuration file and HRTF removed, please reboot or restart PipeWire for changes to take effect - ${bold}TIP:${normal} ujust restart-pipewire."
     fi
 
 # Restart pipewire
