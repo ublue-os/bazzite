@@ -126,13 +126,16 @@ if [[ \$IS_BITLOCKER =~ true ]]; then
     _EXITLOCK=1
     _RETCODE=0
     while [[ \$_EXITLOCK -ne 0 ]]; do
-        run0 --user=liveuser yad --timeout=0 --image=\$DOCS_QR \
+        run0 --user=liveuser yad \
+            --on-top \
+            --timeout=10 \
+            --image=\$DOCS_QR \
             --text="\$WARNING_MSG" \
             --button="Yes, I'm aware, continue":0 --button="Cancel installation":10
         _RETCODE=\$?
         case \$_RETCODE in
             0) _EXITLOCK=0; ;;
-            10) _EXITLOCK=0; exit 1 ;;
+            10) _EXITLOCK=0; pkill liveinst; pkill firefox; exit 0 ;;
         esac
     done
 fi
