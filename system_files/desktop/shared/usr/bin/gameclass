@@ -30,7 +30,7 @@ if [[ -z "$COMMAND" ]]; then
 fi
 COMMAND=$(printf %s "$COMMAND")
 
-function get_exe_window {
+_get_exe_window() {
 	local windowlist ; windowlist=$( wmctrl -l -p )
 	local windowcount ; windowcount=$( echo "$windowlist" | wc -l )
 
@@ -48,7 +48,7 @@ function get_exe_window {
 	done
 }
 
-function set_class {
+_set_class() {
 	if [[ -z $WID ]]; then
 		:
 	else
@@ -61,16 +61,16 @@ function set_class {
 	fi
 }
 
-function window_watcher {
+_window_watcher() {
 	while sleep 1; do
-		get_exe_window
-		set_class
+		_get_exe_window
+		_set_class
 	done
 }
 
 set -m
 
-window_watcher &
+_window_watcher &
 GAMECLASS_PID="$!"
 
 # Let it rip.
