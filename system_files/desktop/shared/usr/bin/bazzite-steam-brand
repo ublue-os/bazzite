@@ -23,7 +23,7 @@ if ! $SKIP_VIDEOS; then
     DECK_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend.webm"
     OLED_STARTUP="/usr/share/ublue-os/bazzite/bazzite-oled.webm"
     OLED_SUSPEND="/usr/share/ublue-os/bazzite/bazzite-suspend-oled.webm"
-    
+
     # Check for Galileo model
     if [[ ":Galileo:" =~ ":$SYS_ID:" ]]; then
         VIDEO_STARTUP=$OLED_STARTUP
