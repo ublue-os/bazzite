@@ -13,6 +13,21 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
+# Enable kyle bounce startup video
+_kyle-bounce:
+    #!/usr/bin/bash
+    OVRDIR="$HOME/.local/share/Steam/config/uioverrides/movies"
+    mkdir -p "$OVRDIR"
+    KYLE_BOUNCE_SRC="/usr/share/ublue-os/bazzite/kyle_bounce.webm"
+    KYLE_BOUNCE_DEST="$OVRDIR/kyle_bounce.webm"
+    if [ -f "$KYLE_BOUNCE_SRC" ]; then
+        cp "$KYLE_BOUNCE_SRC" "$KYLE_BOUNCE_DEST"
+        echo "Kyle bounce added to startup movies."
+    else
+        echo "Error: Kyle bounce video not found at $KYLE_BOUNCE_SRC"
+        exit 1
+    fi
+
 # Toggle SSH availability on boot
 [group("network")]
 toggle-ssh ACTION="":
