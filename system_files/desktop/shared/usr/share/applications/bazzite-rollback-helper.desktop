@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=Bazzite Rebase Helper
+Name=Bazzite Rollback Helper
 Comment=Manage rollbacks and rebase between Bazzite images
 Icon=/usr/share/ublue-os/bazzite/icon.svg
 Categories=System;Utility;
