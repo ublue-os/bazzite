@@ -1,5 +1,18 @@
 title: Bazzite Portal
 screens:
+  - title: "System Management"
+    description: "System updates and configuration"
+    actions:
+      - id: "update-bazzite"
+        title: "Update Bazzite and Apps"
+        description: "Updates Bazzite, Flatpaks, firmware, and more"
+        default: false
+        script: "ujust update"
+      - id: "rebase-bazzite"
+        title: "Rebase Bazzite"
+        description: "Rebase your Bazzite install to another version or image"
+        default: false
+        script: "brh"
   - title: "Setting up Bazzite"
     description: "Core system components and utilities"
     actions:
