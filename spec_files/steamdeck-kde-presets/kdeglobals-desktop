@@ -2,6 +2,9 @@
 LookAndFeelPackage=com.valve.vapor.desktop
 SingleClick=false
 
+[KDE Control Module Restrictions][$i]
+kcm_updates=false
+
 [General]
 TerminalApplication=kde-ptyxis
 TerminalService=org.gnome.Ptyxis.desktop

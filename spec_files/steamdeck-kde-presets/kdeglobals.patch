@@ -1,9 +1,10 @@
 --- a/etc/xdg/kdeglobals
 +++ b/etc/xdg/kdeglobals
-@@ -11,7 +11,13 @@
- kcm_sddm.desktop=false
- kcm_plymouth.desktop=false
- 
+@@ -11,7 +11,14 @@
+kcm_sddm.desktop=false
+kcm_plymouth.desktop=false
++kcm_updates=false
+
 +[KScreen]
 +XwaylandClientsScale=false
 +
