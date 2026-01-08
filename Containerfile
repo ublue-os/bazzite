@@ -204,6 +204,7 @@ RUN --mount=type=cache,dst=/var/cache \
         scx-tools && \
     dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
     dnf5 -y install \
+        uld \
         bazaar \
         iwd \
         greenboot \
@@ -514,6 +515,7 @@ RUN --mount=type=cache,dst=/var/cache \
         _copr_ublue-os-akmods \
         terra \
         terra-extras \
+        negativo17-fedora-uld \
         negativo17-fedora-multimedia; \
     do \
         sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/$repo.repo; \
