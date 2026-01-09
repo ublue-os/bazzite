@@ -338,16 +338,12 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/bin/winetricks && \
     /ctx/cleanup
 
-# Install yafti-gtk flatpak & ujust-picker from GitHub releases
+# Install ujust-picker from GitHub releases
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/ghcurl "https://github.com/xXJSONDeruloXx/yafti-gtk/releases/download/v0.1.2/yafti-gtk.flatpak" -sL -o /tmp/yafti-gtk.flatpak && \
-    echo "77d01c9b4f930e8f9b5a59b5869eea36c9dc5441a513781cf397ba471d0854a0  /tmp/yafti-gtk.flatpak" | sha256sum -c - && \
-    flatpak install --system -y /tmp/yafti-gtk.flatpak && \
-    rm -f /tmp/yafti-gtk.flatpak && \
     /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/ublue-os/bazzite-ujust-picker/releases/latest" -s | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')" -sL -o /usr/bin/ujust-picker && \
     chmod +x /usr/bin/ujust-picker && \
     /ctx/cleanup
