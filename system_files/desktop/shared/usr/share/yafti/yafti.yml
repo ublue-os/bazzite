@@ -24,7 +24,7 @@ screens:
         title: "Rollback Bazzite"
         description: "Rollback to the previous Bazzite deployment"
         default: false
-        script: "brh rollback -y && reboot"  
+        script: "brh rollback -y && reboot"
   - title: "Setting up Bazzite"
     description: "Core system components and utilities"
     actions:
