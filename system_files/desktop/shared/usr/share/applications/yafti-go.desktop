@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Bazzite Portal
-Comment=Run Bazzite setup scripts
-Exec=flatpak run com.github.yafti.gtk /run/host/usr/share/yafti/yafti.yml
-Icon=com.github.yafti.gtk
-Terminal=false
-Type=Application
-Categories=System;Settings;
-Keywords=bazzite;setup;configuration;
