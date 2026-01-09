@@ -338,15 +338,12 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/bin/winetricks && \
     /ctx/cleanup
 
-# Install yafti-go & ujust-picker from GitHub releases
+# Install ujust-picker from GitHub releases
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/ublue-os/yafti-go/releases/latest" -s | jq -r '.assets[] | select(.name == "yafti-go").browser_download_url')" -sL -o /bin/yafti-go && \
-    chmod +x /bin/yafti-go && \
-    chmod +x /usr/libexec/bazzite-yafti-launcher && \
     /ctx/ghcurl "$(/ctx/ghcurl "https://api.github.com/repos/ublue-os/bazzite-ujust-picker/releases/latest" -s | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')" -sL -o /usr/bin/ujust-picker && \
     chmod +x /usr/bin/ujust-picker && \
     /ctx/cleanup
