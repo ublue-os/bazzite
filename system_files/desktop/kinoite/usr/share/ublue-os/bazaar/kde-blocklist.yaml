@@ -6,3 +6,4 @@ blocklists:
     - org.kde.kwalletmanager
     - org.kde.ark
     - org.kde.kfind
+    - org.kde.dolphin

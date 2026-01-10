@@ -9,4 +9,3 @@ blocklists:
     - com.helix_editor.Helix
     - app.devsuite.Ptyxis
     - dev.lizardbyte.app.Sunshine
-    - org.kde.dolphin
