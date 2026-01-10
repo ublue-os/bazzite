@@ -1,0 +1,8 @@
+blocklists:
+  - block:
+    - org.kde.kate
+    - org.kde.kwrite
+    - org.kde.kwalletmanager5
+    - org.kde.kwalletmanager
+    - org.kde.ark
+    - org.kde.kfind
