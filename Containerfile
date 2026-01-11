@@ -60,7 +60,7 @@ COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 COPY firmware /
 
 # Copy Homebrew files from the brew image
-COPY --from=ghcr.io/ublue-os/brew:latest@sha256:abe58f2012bc433e75579ef75caef8278ed3d774f59783ed7ff02b3eae26f694 /system_files /
+COPY --from=ghcr.io/ublue-os/brew:latest@sha256:63c7219af97c1cae9a2a38e9944dc26f65d0798ab256980649947f96a269e1ce /system_files /
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
