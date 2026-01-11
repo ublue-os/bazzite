@@ -1,7 +1,9 @@
 [Desktop Entry]
 Type=Application
 Name=System Update
+Name[cs]=Aktualizace systému
 Comment=Update Bazzite, Flatpaks, and more
+Comment[cs]=Aktualizace Bazzite, Flatpaků a dalších
 Icon=/usr/share/ublue-os/bazzite/update.svg
 Categories=ConsoleOnly;System;
 Terminal=true

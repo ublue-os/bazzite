@@ -5,5 +5,7 @@ Terminal=false
 Exec=/usr/share/ublue-os/docs/serve.sh
 Icon=/usr/share/ublue-os/bazzite/docs.svg
 Name=Documentation
+Name[cs]=Dokumentace
 Comment=View Bazzite Documentation
+Comment[cs]=Zobrazit dokumentaci k Bazzite
 Categories=Utility;
