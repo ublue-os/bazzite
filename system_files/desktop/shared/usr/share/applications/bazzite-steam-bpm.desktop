@@ -1,5 +1,6 @@
 [Desktop Entry]
 Name=Steam Big Picture Mode
+Name[fr]= Mode Big Picture
 Exec=/usr/bin/bazzite-steam-bpm %U
 Icon=steam
 Terminal=false

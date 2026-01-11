@@ -18,11 +18,12 @@ setup-waydroid ACTION="":
       echo "  Use 'gpu' to choose Select GPU for Waydroid"
       echo "  Use 'integration' to enable desktop window integration for Waydroid"
       echo "  Use 'reset' to select Configure Waydroid"
+      echo "  Use 'helper' to install waydroid-helper (https://github.com/waydroid-helper/waydroid-helper)"
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Waydroid Setup${normal}"
       echo "Please read the $(Urllink "https://docs.bazzite.gg/Installing_and_Managing_Software/Waydroid_Setup_Guide/" "Waydroid setup documentation") before continuing"
-      OPTION=$(Choose "Initialize Waydroid" "Configure Waydroid" "Select GPU for Waydroid" "Reset Waydroid (also removes waydroid-related files from user folder)")
+      OPTION=$(Choose "Initialize Waydroid" "Configure Waydroid" "Select GPU for Waydroid" "Reset Waydroid (also removes waydroid-related files from user folder)" "Install waydroid-helper (https://github.com/waydroid-helper/waydroid-helper)")
     fi
     if [[ "${OPTION,,}" =~ ^init ]]; then
       if [[ ! $IMAGE_NAME =~ "deck" && ! $IMAGE_NAME =~ "ally" ]]; then
@@ -50,4 +51,22 @@ setup-waydroid ACTION="":
       echo "Resetting Waydroid"
       bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
       echo "Waydroid has been reset"
+    elif [[ "${OPTION,,}" =~ helper ]]; then
+      echo "Installing waydroid-helper"
+      if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
+          wget \
+              $(curl -s https://api.github.com/repos/waydroid-helper/waydroid-helper/releases/latest | \
+              jq -r ".assets[] | select(.name | test(\".*x86_64.AppImage\")) | .browser_download_url") \
+              -O $HOME/Downloads/waydroid-helper.AppImage
+          chmod +x $HOME/Downloads/waydroid-helper.AppImage
+          echo "Download complete, add it to your app menu via Gear Lever"
+          flatpak run it.mijorus.gearlever $HOME/Downloads/waydroid-helper.AppImage
+      else
+          wget \
+              $(curl -s https://api.github.com/repos/waydroid-helper/waydroid-helper/releases/latest | \
+              jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
+              -O $HOME/Desktop/waydroid-helper.AppImage
+          chmod +x $HOME/Desktop/waydroid-helper.AppImage
+          echo "Install complete, it has been added to your Desktop"
+      fi
     fi

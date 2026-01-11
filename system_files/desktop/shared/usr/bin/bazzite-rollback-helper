@@ -130,7 +130,8 @@ available_variants() {
 print_status() {
   echo "${bold}Current System Status:${normal}"
   local current=$(rpm-ostree status --json | jq -r '.deployments[] | select(.booted == true) | .["container-image-reference"]')
-  local pending=$(rpm-ostree status --json | jq -r '.deployments[] | select(.booted != true) | .["container-image-reference"]' | head -1)
+  # Only treat deployments with .staged==true as pending.
+  local pending=$(rpm-ostree status --json | jq -r '.deployments[] | select(.staged == true) | .["container-image-reference"]' | head -1)
   
   [[ -n "$current" ]] && echo "  ${bold}Active:${normal} ${green}$current${normal}"
   [[ -n "$pending" && "$pending" != "null" ]] && echo "  ${bold}Pending:${normal} ${yellow}$pending${normal} ${yellow}(next boot)${normal}"
@@ -220,6 +221,24 @@ pick_version() {
   choose "${options[@]}"
 }
 
+choose_filter() {
+  local provider="$1"
+  local image="$2"
+  local options=()
+
+  # Only include Stable/Testing if tags exist for that image
+  if [[ -n "$(skopeo_tags "$provider" "$image" stable 2>/dev/null)" ]]; then
+    options+=("Stable")
+  fi
+  if [[ -n "$(skopeo_tags "$provider" "$image" testing 2>/dev/null)" ]]; then
+    options+=("Testing")
+  fi
+
+  options+=("All" "Back")
+  echo >&2 "${bold}Available tracks for ${green}$image${normal}:"
+  choose "${options[@]}"
+}
+
 # Command functions
 list_images() {
   local branch="${1:-$DEFAULT_BRANCH}"
@@ -278,7 +297,7 @@ interactive_menu() {
         local img=$(pick_image "ublue-os")
         [[ "$img" != "Back" ]] && { 
           clear
-          local filter=$(choose "Stable" "Testing" "All" "Back")
+          local filter=$(choose_filter "ublue-os" "$img")
           [[ "$filter" != "Back" ]] && {
             clear
             skopeo_tags "ublue-os" "$img" "${filter,,}"
@@ -303,7 +322,7 @@ interactive_menu() {
         clear
         local img=$(pick_image "ublue-os")
         if [[ "$img" != "Back" ]]; then
-          local filter=$(choose "Stable" "Testing" "All" "Back")
+          local filter=$(choose_filter "ublue-os" "$img")
           if [[ "$filter" != "Back" ]]; then
             local version=$(pick_version "ublue-os" "$img" "${filter,,}")
             [[ "$version" != "Back" && -n "$version" ]] && {
@@ -329,7 +348,7 @@ interactive_menu() {
           if [[ -n "$manual_target" ]]; then
             rebase_to "$(signing_scheme)/$provider/$manual_target"
           else
-            local filter=$(choose "Stable" "Testing" "All" "Back")
+            local filter=$(choose_filter "$provider" "$img")
             if [[ "$filter" != "Back" ]]; then
               local version=$(pick_version "$provider" "$img" "${filter,,}")
               [[ "$version" != "Back" && -n "$version" ]] && rebase_to "$(signing_scheme)/$provider/$img:$version"
