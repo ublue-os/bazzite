@@ -45,6 +45,22 @@ if [[ ! -f "$PROTONTRICKS_SETUP_FILE" ]]; then
   fi
 fi
 
+# Install yafti-gtk flatpak from GitHub release
+YAFTI_GTK_SETUP_FILE="/etc/bazzite/yafti_gtk_installed"
+if [[ ! -f "$YAFTI_GTK_SETUP_FILE" ]]; then
+  if ! grep -q "com.github.yafti.gtk" <<< $(/usr/bin/flatpak list --app --columns=application); then
+    YAFTI_GTK_URL=$(curl -s "https://api.github.com/repos/xXJSONDeruloXx/yafti-gtk/releases/latest" | jq -r '.assets[] | select(.name == "yafti-gtk.flatpak") | .browser_download_url')
+    if [[ -n "$YAFTI_GTK_URL" ]]; then
+      curl -L "$YAFTI_GTK_URL" -o /tmp/yafti-gtk.flatpak
+      flatpak install --system --assumeyes /tmp/yafti-gtk.flatpak
+      rm -f /tmp/yafti-gtk.flatpak
+      touch "$YAFTI_GTK_SETUP_FILE"
+    fi
+  else
+    touch "$YAFTI_GTK_SETUP_FILE"
+  fi
+fi
+
 # Flatpak theming support
 flatpak override \
   --filesystem=xdg-config/gtk-4.0:ro \
