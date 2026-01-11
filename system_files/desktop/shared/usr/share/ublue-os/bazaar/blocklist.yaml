@@ -1,5 +1,6 @@
 blocklists:
-  - block:
+  - priority: 0
+    block:
     - io.github.kolunmi.Bazaar
     - com.valvesoftware.Steam
     - net.lutris.Lutris
@@ -9,4 +10,17 @@ blocklists:
     - com.helix_editor.Helix
     - app.devsuite.Ptyxis
     - dev.lizardbyte.app.Sunshine
+
+  - priority: 0
+    conditions:
+      - match-envvar:
+          var: XDG_CURRENT_DESKTOP
+          regex: KDE
+    block:
     - org.kde.dolphin
+    - org.kde.kate
+    - org.kde.kwrite
+    - org.kde.kwalletmanager5
+    - org.kde.kwalletmanager
+    - org.kde.ark
+    - org.kde.kfind
