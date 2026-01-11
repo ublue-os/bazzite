@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Force Restart Waydroid
+Name[cs]=Vynucený restart Waydroidu
 Name[fr]=Forcer le redémarrage de Waydroid
 Exec=pkexec /usr/libexec/waydroid-container-restart
 Categories=X-WayDroid-App;
