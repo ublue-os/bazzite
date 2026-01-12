@@ -174,8 +174,10 @@ _toggle-autologin:
     DESKTOP_AUTOLOGIN="/etc/bazzite/desktop_autologin"
     if [[ -f $DESKTOP_AUTOLOGIN ]]; then
       sudo rm -f $DESKTOP_AUTOLOGIN
+      echo "Removing autologin file (/etc/bazzite/desktop_autologin)."
     else
       sudo touch $DESKTOP_AUTOLOGIN
+      echo "Creating autologin file (/etc/bazzite/desktop_autologin)."
     fi
 
 # Restore the "Return to Gaming Mode" shortcut on the Desktop
