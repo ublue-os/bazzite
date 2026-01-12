@@ -100,7 +100,11 @@ configure-grub ACTION="":
     # Function to get the current GRUB menu_auto_hide setting and explain it
     get_current_setting() {
       local CURRENT_SETTING
-      CURRENT_SETTING=$(sudo grub2-editenv - list | grep menu_auto_hide | cut -d= -f2)
+      if sudo grub2-editenv - list | grep -q '^menu_auto_hide='; then
+        CURRENT_SETTING=$(sudo grub2-editenv - list | awk -F= '/menu_auto_hide/ {print $2}')
+      else
+        CURRENT_SETTING=""
+      fi
       if [ -z "$CURRENT_SETTING" ]; then
         echo "Current GRUB menu_auto_hide setting: ${bold}${red}Not Set (default to 0)${normal}"
         echo "Explanation:"
