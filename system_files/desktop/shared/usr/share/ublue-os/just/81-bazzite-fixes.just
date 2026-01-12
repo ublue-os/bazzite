@@ -305,7 +305,7 @@ toggle-amd-sleep-fix:
     #!/usr/bin/bash
     echo -e "This script manages the processor.max_cstate kernel parameter to fix black screen issues on wake from S3 sleep"
     echo -e "This fix is primarily needed for some AMD motherboard and CPU combinations, typically affecting X3D chips and Gigabyte motherboards"
-    echo -e "Enabling this setting can resolve black screen issues requiring hard reset, but may impact power consumption"
+    echo -e "Not recommented for handhelds or laptops, this is primarily for HTPC and desktoo"
     get_current_status() {
       local karg_status
       karg_status=$(cat /proc/cmdline | grep -o 'processor.max_cstate=[0-9]' | cut -d= -f2)
