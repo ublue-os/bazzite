@@ -299,7 +299,7 @@ toggle-i915-sleep-fix:
         ;;
     esac
 
-# Fix black screen on wake after extended S3 sleep on some AMD systems, primarily X3D chips
+# Fix black screen on wake after extended S3 sleep on some AMD chip and motherboard combinations
 [group("hardware")]
 toggle-amd-sleep-fix:
     #!/usr/bin/bash
