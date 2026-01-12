@@ -299,9 +299,49 @@ toggle-i915-sleep-fix:
         ;;
     esac
 
+# Fix black screen on wake after extended S3 sleep on some AMD systems, primarily X3D chips
+[group("hardware")]
+toggle-amd-sleep-fix:
+    #!/usr/bin/bash
+    echo -e "This script manages the processor.max_cstate kernel parameter to fix black screen issues on wake from S3 sleep"
+    echo -e "This fix is primarily needed for some AMD motherboard and CPU combinations, typically affecting X3D chips and Gigabyte motherboards"
+    echo -e "Enabling this setting can resolve black screen issues requiring hard reset, but may impact power consumption"
+    get_current_status() {
+      local karg_status
+      karg_status=$(cat /proc/cmdline | grep -o 'processor.max_cstate=[0-9]' | cut -d= -f2)
+      if [[ -z "$karg_status" ]]; then
+        echo "Not Set (Default)"
+      else
+        echo "Set to $karg_status"
+      fi
+    }
+    current_status=$(get_current_status)
+    echo -e "\nCurrent processor.max_cstate setting: $current_status\n"
+    CHOICE=$(ugum choose "Enable Fix (processor.max_cstate=1)" "Disable Fix (Remove Parameter)" "Exit without changes")
+    case "$CHOICE" in
+      "Enable Fix (processor.max_cstate=1)")
+        echo -e "\nEnabling AMD C-state fix (processor.max_cstate=1)..."
+        echo -e "This will limit the processor C-states to prevent black screen on wake from S3 sleep.\n"
+        rpm-ostree kargs --replace "processor.max_cstate=1"
+        echo -e "Kernel parameter updated. Reboot required to apply changes."
+        ;;
+      "Disable Fix (Remove Parameter)")
+        echo -e "\nDisabling AMD C-state fix..."
+        echo -e "Removing processor.max_cstate parameter.\n"
+        rpm-ostree kargs --delete "processor.max_cstate=1"
+        echo -e "Kernel parameter removed. Reboot required to apply changes."
+        ;;
+      "Exit without changes")
+        echo "No changes made."
+        ;;
+      *)
+        echo "Invalid choice. Exiting without changes."
+        ;;
+    esac
+
 # Toggle GPP0 wakeup fix to prevent unwanted system wake-ups, primarily affects Gigabyte motherboards.
 [group("hardware")]
-_toggle-gigabyte-wake-fix:
+toggle-gigabyte-wake-fix:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     SERVICE_FILE="/etc/systemd/system/biosWakeupWorkaround.service"
