@@ -18,6 +18,19 @@ configure-beesd ACTION="":
         sudo rm -f "/etc/systemd/system/beesd@${uuid}.service.d/override.conf"
         sudo rmdir "/etc/systemd/system/beesd@${uuid}.service.d" 2>/dev/null || true
         echo "Configuration removed and timer disabled."
+
+        echo "Cleaning leftover data"
+        fs_root=$(findmnt --source UUID="$uuid" -o TARGET,OPTIONS | grep "subvolid=5" | awk '{print $1}')
+        if [[ -n "$fs_root" ]]; then
+            beeshome_id=$(sudo btrfs subvolume list "$fs_root" -t | grep "\.beeshome" | awk '{print $1}')
+            if [[ -n "$beeshome_id" ]]; then
+                echo "Found .beeshome subvolume with ID: $beeshome_id"
+                sudo btrfs subvolume delete -i "$beeshome_id" "$fs_root"
+                echo "Deleted .beeshome subvolume"
+            else
+                echo "No .beeshome subvolume found"
+            fi
+        fi
     }
 
     while true; do
