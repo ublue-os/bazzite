@@ -21,6 +21,17 @@ configure-beesd ACTION="":
 
         echo "Cleaning leftover data"
         fs_root=$(findmnt --source UUID="$uuid" -o TARGET,OPTIONS | grep "subvolid=5" | awk '{print $1}')
+        is_manual_mount=false
+        if [[ -n "$fs_root" ]]; then
+            fs_root="/run/bees/mnt/${uuid}"
+            sudo mkdir -p "$fs_root"
+            if ! sudo mount -o subvolid=5 UUID="$uuid" "$fs_root"; then
+                fs_root=""
+            else
+                is_manual_mount=true
+            fi
+        fi
+
         if [[ -n "$fs_root" ]]; then
             beeshome_id=$(sudo btrfs subvolume list "$fs_root" -t | grep "\.beeshome" | awk '{print $1}')
             if [[ -n "$beeshome_id" ]]; then
@@ -30,7 +41,17 @@ configure-beesd ACTION="":
             else
                 echo "No .beeshome subvolume found"
             fi
+
+            if [[ "$is_manual_mount" == true ]]; then
+                sudo umount "$fs_root"
+                sleep 1
+                # Device might still be busy
+                # Not critical if this fails
+                sudo rmdir "$fs_root" >/dev/null 2>&1
+            fi
         fi
+
+        sudo systemctl daemon-reload
     }
 
     while true; do
