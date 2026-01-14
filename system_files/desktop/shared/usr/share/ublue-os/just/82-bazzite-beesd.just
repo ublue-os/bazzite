@@ -22,7 +22,7 @@ configure-beesd ACTION="":
         echo "Cleaning leftover data"
         fs_root=$(findmnt --source UUID="$uuid" -o TARGET,OPTIONS | grep "subvolid=5" | awk '{print $1}')
         is_manual_mount=false
-        if [[ -n "$fs_root" ]]; then
+        if [[ -z "$fs_root" ]]; then
             fs_root="/run/bees/mnt/${uuid}"
             sudo mkdir -p "$fs_root"
             if ! sudo mount -o subvolid=5 UUID="$uuid" "$fs_root"; then
