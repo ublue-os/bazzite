@@ -169,15 +169,6 @@ restore-virtual-keyboard:
       fi
     fi
 
-_toggle-autologin:
-    #!/usr/bin/bash
-    DESKTOP_AUTOLOGIN="/etc/bazzite/desktop_autologin"
-    if [[ -f $DESKTOP_AUTOLOGIN ]]; then
-      sudo rm -f $DESKTOP_AUTOLOGIN
-    else
-      sudo touch $DESKTOP_AUTOLOGIN
-    fi
-
 # Restore the "Return to Gaming Mode" shortcut on the Desktop
 restore-gamemode-shortcut:
     #!/usr/bin/bash
