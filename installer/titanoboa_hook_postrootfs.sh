@@ -443,7 +443,7 @@ cat >>/usr/bin/on_gui_login.sh <<'EOF'
 if [ -d /sys/firmware/efi ]; then
     exit 0
 fi
-yad --undecorated --on-top --timeout=0 --button=OK:0 \
+yad --undecorated --on-top --timeout=0 --button=Shutdown:0 \
     --text="Bazzite does not support CSM/Legacy Boot. Please boot into your UEFI/BIOS settings, disable CSM/Legacy Mode, and reboot." || true
 systemctl poweroff || shutdown -h now || true
 exit 0
