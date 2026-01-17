@@ -1,0 +1,9 @@
+[Unit]
+Description=NTFS/exFAT Monitor notification service
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /usr/libexec/ntfs_exfat_monitor_script.sh
+
+[Install]
+WantedBy=default.target
