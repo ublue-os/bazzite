@@ -66,6 +66,49 @@ install-coolercontrol:
         echo "No changes were made."
     fi
 
+# Install asusctl and ROG Control Center GUI for ASUS ROG hardware support
+[group("hardware")]
+install-asusctl:
+    #!/usr/bin/env bash
+    set -eo pipefail
+
+    cat <<'EOF'
+    {{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}asusctl and ROG Control Center{{ NORMAL }}.
+    {{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"
+    {{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}
+    EOF
+
+    layered() {
+        local pkg="$1"
+        rpm-ostree status --json | jq -e ".deployments[] | select(.booted == true) | .packages | index(\"$pkg\")" > /dev/null
+    }
+    packages=()
+    for pkg in asusctl rog-control-center; do
+        if layered "$pkg"; then
+            echo "$pkg is already layered, skipping."
+        else
+            packages+=("$pkg")
+        fi
+    done
+
+    if [ ${#packages[@]} -gt 0 ]; then
+        repo_path="/etc/yum.repos.d/terra.repo"
+
+        if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
+            echo 'Terra Repository is already enabled, skipping.'
+        else
+            echo 'Enabling Terra Repository.'
+            sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
+        fi
+
+        echo "Installing: ${packages[*]}"
+        rpm-ostree install -y "${packages[@]}"
+        echo 'Complete, please reboot to apply changes.'
+        echo 'If you have an NVIDIA GPU, be sure to also run "just enable-supergfxctl" enable GPU switching.'
+    else
+        echo "No changes were made."
+    fi
+
 # Install Displaylink, Needed for some laptop docks to output video
 [group("apps")]
 install-displaylink:
