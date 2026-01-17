@@ -52,6 +52,22 @@ if [[ $(echo "${switcheroo_state}" | grep -o 'Device:' | wc -l) -gt 1 ]]; then
 fi
 unset -v switcheroo_state
 
+# Multithreading precaching
+# See: https://www.reddit.com/r/linux_gaming/comments/1j06xpz/how_to_speed_up_steams_shader_precaching/
+# Use as many threads as cores minus 2, clamped between 1 and 16
+STEAM_CONFIG="$HOME/.steam/steam/steam_dev.cfg"
+SHADER_THREAD_SETTING="unShaderBackgroundProcessingThreads"
+
+if [[ ! -f "$STEAM_CONFIG" ]] || ! grep -q "$SHADER_THREAD_SETTING" "$STEAM_CONFIG"; then
+  threads=$(( $(nproc) - 2 ))
+  if [[ $threads -gt 16 ]]; then
+    threads=16
+  elif [[ $threads -lt 1 ]]; then
+    threads=1
+  fi
+  echo "${SHADER_THREAD_SETTING} ${threads}" >> "$STEAM_CONFIG"
+fi
+
 if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
   # https://github.com/Supreeeme/extest
   # Extest is a drop in replacement for the X11 XTEST extension.
