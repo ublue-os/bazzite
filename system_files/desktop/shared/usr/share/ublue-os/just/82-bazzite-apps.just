@@ -104,7 +104,7 @@ install-asusctl:
         echo "Installing: ${packages[*]}"
         rpm-ostree install -y "${packages[@]}"
         echo 'Complete, please reboot to apply changes.'
-        echo 'If you have an NVIDIA GPU, be sure to also run "just enable-supergfxctl" enable GPU switching.'
+        echo 'If you have an NVIDIA GPU, be sure to also run "just enable-supergfxctl" to enable GPU switching.'
     else
         echo "No changes were made."
     fi
