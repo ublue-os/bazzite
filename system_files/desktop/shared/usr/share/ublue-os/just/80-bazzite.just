@@ -1,5 +1,12 @@
 # vim: set ft=make :
 
+# Disable NTFS/exFAT monitor and notification service
+_disable-ntfs-service:
+    #!/usr/bin/bash
+    sudo systemctl --global disable ntfs
+    sudo systemctl stop ntfs
+
+
 # Install System Flatpaks (Support for Rebasing)
 _install-system-flatpaks:
     #!/usr/bin/bash
