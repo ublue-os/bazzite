@@ -3,7 +3,7 @@ Description=NTFS/exFAT Monitor notification service
 
 [Service]
 Type=simple
-ExecStart=/usr/libexec/ntfs_exfat_monitor_script.sh
+ExecStart=/usr/libexec/ntfs_exfat_monitor_script
 
 [Install]
 WantedBy=default.target
