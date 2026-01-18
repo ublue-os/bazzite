@@ -6,7 +6,6 @@ _disable-ntfs-service:
     sudo systemctl --global disable ntfs-nag.service
     sudo systemctl stop ntfs-nag.service
 
-
 # Install System Flatpaks (Support for Rebasing)
 _install-system-flatpaks:
     #!/usr/bin/bash
