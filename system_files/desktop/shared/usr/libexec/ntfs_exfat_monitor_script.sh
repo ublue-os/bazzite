@@ -22,8 +22,8 @@ findmnt -n --poll -t exfat,ntfs,fuseblk | while read -r _; do
     #compare current count to last count, if number increased,
     if [[ "$new_ntfs" > "$ntfs" ]] || [[ "$new_exfat" > "$exfat" ]];
         then
-            echo ""ntfs count: "$ntfs "-> new ntfs count: "$new_ntfs"
-            echo ""exfat count: "$exfat "-> new exfat count: "$new_exfat"
+            echo "ntfs count: "$ntfs -> new ntfs count: "$new_ntfs"
+            echo "exfat count: "$exfat -> new exfat count: "$new_exfat"
             #change button text if first button was clicked 5 times or more
             if [[ "$counter" > 4 ]]; then
                 firstbutton=$firstbutton_ignore
