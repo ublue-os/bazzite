@@ -1,9 +1,11 @@
 [Unit]
 Description=NTFS/exFAT Monitor notification service
+PartOf=xdg-desktop-autostart.target
+After=xdg-desktop-autostart.target
 
 [Service]
 Type=simple
 ExecStart=/usr/libexec/ntfs_exfat_monitor_script
 
 [Install]
-WantedBy=default.target
+WantedBy=xdg-desktop-autostart.target
