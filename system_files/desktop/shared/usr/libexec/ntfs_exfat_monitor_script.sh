@@ -29,7 +29,7 @@ findmnt -n --poll -t exfat,ntfs,fuseblk | while read -r _; do
                 firstbutton=$firstbutton_ignore
             fi
             # send notification
-            choice=$(notify-send  -t 500000 --action="opt1=$firstbutton" --action="opt2=$secondbutton"  -a "$sender" "$header" "$warning")
+            choice="$(notify-send  -t 500000 --action="opt1=$firstbutton" --action="opt2=$secondbutton"  -a "$sender" "$header" "$warning")"
                 case $choice in
                     "opt1")
                         if [[ "$counter" > 4 ]]; then
