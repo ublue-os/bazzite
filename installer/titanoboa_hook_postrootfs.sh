@@ -496,7 +496,7 @@ esac
 rm -vf /etc/skel/.config/autostart/steam*.desktop
 
 # Remove packages that shouldnt be used in a live session
-dnf -yq remove steam lutris || :
+dnf -yq remove steam lutris bazaar || :
 
 # Warn about limited capabilities of live sessions, and also show buttons to:
 #   - Install Bazzite
