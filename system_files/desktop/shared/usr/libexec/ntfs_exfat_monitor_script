@@ -12,7 +12,7 @@ documentation="https://docs.bazzite.gg/Gaming/Hardware_compatibility_for_gaming/
 #set other variables
 counter="0"
 query_filesystem() {
-    lsblk -o fstype,mountpoint -J | jq -rc ".blockdevices[].fstype" | grep -F -c -e "${1}"
+    lsblk -o fstype,mountpoint | grep -Ec "${1}.*\S+"
 }
 ntfs="$(query_filesystem ntfs)"
 exfat="$(query_filesystem exfat)"
