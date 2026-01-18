@@ -34,7 +34,7 @@ findmnt -n --poll -t exfat,ntfs,fuseblk | while read -r _; do
                     "opt1")
                         if [[ "$counter" > 4 ]]; then
                             echo "stopping service as per user choice. Goodbye."
-                            systemctl --user stop ntfs
+                            systemctl --user stop ntfs-nag
                         fi
                         ((counter++))
                         echo "counter: "$counter
