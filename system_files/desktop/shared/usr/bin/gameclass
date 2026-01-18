@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Sanity checks:
 if (( $# == 0 )); then
 	echo -e "No arguments provided.\n\nUsage: env GAMECLASS='<executable>=<window class>' gameclass \033[1m[COMMAND]\033[0m..."
 	exit 1
@@ -10,8 +11,12 @@ else
 	fi
 fi
 
-EXE="$( echo "$GAMECLASS" | awk 'BEGIN { FS = "=" } ; { print $1 }' )"
-WM_CLASS="$( echo "$GAMECLASS" | awk 'BEGIN { FS = "=" } ; { print $2 }' )"
+_get_variable_field() {
+	echo "$GAMECLASS" | awk -v FIELD="$1" 'BEGIN { FS = "=" } ; { print $FIELD }'
+}
+
+EXE="$( _get_variable_field 1 )"
+WM_CLASS="$( _get_variable_field 2 )"
 
 if [[ -z "$EXE" ]] || [[ -z "$WM_CLASS" ]]; then
 	echo -e "Incorrect environment variable formatting.\n\nUsage: env GAMECLASS='\033[1m<executable>=<window class>\033[0m' gameclass [COMMAND]..."
