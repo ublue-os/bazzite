@@ -41,7 +41,7 @@ findmnt -n --poll -t exfat,ntfs,fuseblk | while read -r _; do
                         ;;
                     "opt2")
                         #open documentation in browser
-                        xdg-open $documentation 2> /dev/null
+                        xdg-open "$documentation" 2> /dev/null
                         ;;
                 esac
 
