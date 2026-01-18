@@ -3,8 +3,8 @@
 # Disable NTFS/exFAT monitor and notification service
 _disable-ntfs-service:
     #!/usr/bin/bash
-    sudo systemctl --global disable ntfs-nag.service
-    sudo systemctl stop ntfs-nag.service
+    systemctl disable --now --user ntfs-nag.service
+    systemctl mask --now --user ntfs-nag.service
 
 # Install System Flatpaks (Support for Rebasing)
 _install-system-flatpaks:
