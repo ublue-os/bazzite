@@ -42,10 +42,14 @@ _get_exe_window() {
 	for (( n = 1 ; n <= windowcount ; n++ )); do
 		local window ; window=$( echo "$windowlist" | sed -n "$n"p )
 
-		local wid ; wid=$( echo "$window" | awk '{ print $1 }' )
-		local pid ; pid=$( echo "$window" | awk '{ print $3 }' )
+		_get_window_property() {
+			echo "$window" | awk -v prop="$1" '{ print $prop }'
+		}
 
-		local cmd ; cmd=$( cat /proc/"$pid"/cmdline | tr -d '\0' )
+		local wid ; wid=$( _get_window_property 1 )
+		local pid ; pid=$( _get_window_property 3 )
+
+		local cmd ; cmd=$( cat /proc/"$pid"/cmdline | tr -d '\0' ) # Trim null bytes from cmdline to avoid log spam
 		unset -v WID
 		if [[ "$cmd" =~ $EXE ]]; then
 			WID="$wid"
