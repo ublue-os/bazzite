@@ -222,6 +222,7 @@ rows:
           - com.rustdesk.RustDesk
           - io.github.IshuSinghSE.aurynk
           - org.deskflow.deskflow
+          - io.github.linx_systems.ClamUI
           - io.github.pwr_solaar.solaar
           - it.mijorus.gearlever
           - io.github.flattool.Ignition
