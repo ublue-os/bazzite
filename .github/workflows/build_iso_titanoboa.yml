@@ -91,6 +91,8 @@ jobs:
         run: |
           ref="${{ matrix.image_name }}"
           ref="${ref/-deck/}"
+          ref="${ref/-nvidia-open/}"
+          ref="${ref/-nvidia/}"
           # Handle naming mismatch: deck uses nvidia-gnome, non-deck uses gnome-nvidia
           if [[ "$ref" == "bazzite-nvidia-gnome" ]]; then
             ref="bazzite-gnome-nvidia"
