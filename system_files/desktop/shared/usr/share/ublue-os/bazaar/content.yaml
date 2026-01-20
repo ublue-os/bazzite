@@ -47,8 +47,12 @@ rows:
         - bazzite-section
         - gaming-section
       category:
-        title: "Gaming"
-        subtitle: "Protocol 3: Protect the Pilot"
+        title:
+          en: "Gaming"
+          el: "Παιχνίδια"
+        subtitle:
+          en: "Protocol 3: Protect the Pilot"
+          el: "Πρωτόκολλο 3: Προστατέψτε τον Πιλότο"
         banner: file:///usr/share/ublue-os/bazaar/gaming.png
         banner-fit: contain
         banner-height: 300
@@ -108,8 +112,12 @@ rows:
         - bazzite-section
         - streaming-section
       category:
-        title: "Streaming & Chat"
-        subtitle: "Sprunk'd it."
+        title:
+          en: "Streaming & Chat"
+          el: "Ροή & Συνομιλία"
+        subtitle:
+          en: "Sprunk'd it."
+          el: "Το'λουσα."
         banner: file:///usr/share/ublue-os/bazaar/streaming.png
         banner-fit: contain
         banner-height: 300
@@ -138,8 +146,12 @@ rows:
         - bazzite-section
         - music-section
       category:
-        title: "Music & Media"
-        subtitle: "Let me break it down for you."
+        title:
+          en: "Music & Media"
+          el: "Μουσική & Πολυμέσα"
+        subtitle:
+          en: "Let me break it down for you."
+          el: "Για να μπούμε στο ρυθμό."
         banner: file:///usr/share/ublue-os/bazaar/music.png
         banner-fit: contain
         banner-height: 300
@@ -166,8 +178,12 @@ rows:
         - bazzite-section
         - office-section
       category:
-        title: "Office & Productivity"
-        subtitle: "May the paperclip fellow have mercy."
+        title:
+          en: "Office & Productivity"
+          el: "Γραφείο & Παραγωγικότητα"
+        subtitle:
+          en: "May the paperclip fellow have mercy."
+          el: "Για να μη γίνουν όλα φύλλο και φτερό."
         banner: file:///usr/share/ublue-os/bazaar/office.png
         banner-fit: contain
         banner-height: 300
@@ -198,8 +214,12 @@ rows:
         - bazzite-section
         - utilities-section
       category:
-        title: "Utilities"
-        subtitle: "Stuff you didn't need until now."
+        title:
+          en: "Utilities"
+          el: "Βοηθήματα"
+        subtitle:
+          en: "Stuff you didn't need until now."
+          el: "Πράγματα που δεν ήξερες ότι χρειάζεσαι μέχρι τώρα."
         banner: file:///usr/share/ublue-os/bazaar/utilities.png
         banner-fit: contain
         banner-height: 300
