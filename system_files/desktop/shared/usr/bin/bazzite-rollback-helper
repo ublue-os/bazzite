@@ -257,7 +257,13 @@ current() {
 }
 
 rollback() {
-  if confirm "Rollback to previous image?"; then
+  local skip_confirm=false
+
+  if [[ "$1" == "-y" || "$1" == "--yes" ]]; then
+    skip_confirm=true
+  fi
+
+  if $skip_confirm || confirm "Rollback to previous image?"; then
     rpm-ostree rollback && echo >&2 "Reboot for changes to take effect"
   else
     echo "Cancelled."
@@ -368,7 +374,7 @@ interactive_menu() {
 
 case "$1" in
   "list") list_images "$2" ;;
-  "rollback") rollback ;;
+  "rollback") rollback "$2" ;;
   "current") current ;;
   "rebase") rebase "$2" "$3" ;;
   "help"|"-h"|"--help"|"") interactive_menu ;;
