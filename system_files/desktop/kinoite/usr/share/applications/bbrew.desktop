@@ -7,4 +7,5 @@ Exec=/usr/bin/kde-ptyxis -s -T "Bold Brew" -- /usr/bin/bbrew-helper
 Icon=/usr/share/ublue-os/bbrew.png
 Name=Bold Brew
 Comment=The modern Terminal UI for managing Homebrew packages and casks
+Comment[el]=Το σύγχρονο περιβάλλον τερματικού για τη διαχείριση πακέτων και βαρελιών Homebrew
 Categories=Utility;
