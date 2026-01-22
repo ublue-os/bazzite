@@ -14,6 +14,7 @@ ${bold}Options:${normal}
   add [RESOLUTION]    Add a custom resolution
   rm [RESOLUTION]     Remove a custom resolution
   rm all              Remove all custom resolutions
+  add-edid            Add an edid for a selected display
   dump-edid           Dump the edid from a selected display
 
 ${bold}[RESOLUTION]${normal} must be in the form of ${bold}<name>:<xres>x<yres>[M][R][-<bpp>][@<refresh>][i][m][eDd]${normal}
@@ -375,6 +376,7 @@ case "$1" in
   "current") print_status ;;
   "add") add "$2" "$3" ;;
   "rm") rm "$2" "$3" ;;
+  "add-edid") addEdid ;;
   "dump-edid") dumpEdid ;;
   "help"|"-h"|"--help"|"") interactive_menu ;;
   *) echo "Unknown option: $1. Run without arguments for interactive mode."
