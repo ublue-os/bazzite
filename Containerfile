@@ -78,7 +78,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ycollet/audinux \
         ublue-os/rom-properties \
         ublue-os/hhd \
-        lizardbyte/beta \
+        lizardbyte/stable \
         che/nerd-fonts; \
     do \
         echo "Enabling copr: $copr"; \
@@ -525,7 +525,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ycollet/audinux \
         ublue-os/rom-properties \
         ublue-os/hhd \
-        lizardbyte/beta \
+        lizardbyte/stable \
         che/nerd-fonts; \
     do \
         dnf5 -y copr disable $copr; \
