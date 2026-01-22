@@ -14,6 +14,7 @@ ${bold}Options:${normal}
   add [RESOLUTION]    Add a custom resolution
   rm [RESOLUTION]     Remove a custom resolution
   rm all              Remove all custom resolutions
+  dump-edid           Dump the edid from a selected display
 
 ${bold}[RESOLUTION]${normal} must be in the form of ${bold}<name>:<xres>x<yres>[M][R][-<bpp>][@<refresh>][i][m][eDd]${normal}
   For detailed explaination, see https://www.kernel.org/doc/Documentation/fb/modedb.txt
@@ -23,6 +24,7 @@ ${bold}Examples:${normal}
   $(basename "$0") add [RESOLUTION]
   $(basename "$0") rm [RESOLUTION]
   $(basename "$0") rm all
+  $(basename "$0") dump-edid
 
 ${bold}For help${normal}: https://discord.bazzite.gg
 "
