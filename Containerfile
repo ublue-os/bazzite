@@ -392,7 +392,7 @@ RUN --mount=type=cache,dst=/var/cache \
         rm -f /usr/share/backgrounds/default.xml \
     ; else \
         declare -A toswap=( \
-            ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="gsettings-desktop-schemas mutter gnome-shell" \
+            ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="mutter gnome-shell" \
         ) && \
         for repo in "${!toswap[@]}"; do \
             for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
