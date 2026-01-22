@@ -75,9 +75,9 @@ case $lang in
 #russian
     "ru")
     firstbutton=("Я понимаю")
-    firstbutton_ignore=("игнорировать")
-    secondbutton=("узнать больше")
-    header=("неподдерживаемая файловая система")
+    firstbutton_ignore=("Игнорировать")
+    secondbutton=("Узнать больше")
+    header=("Неподдерживаемая файловая система")
     warning=("Вы подключили раздел NTFS/exFAT (Windows). Вы можете использовать его для хранения данных, однако запуск игр с дисков Windows вызовет проблемы.")
     ;;
 #japanese
