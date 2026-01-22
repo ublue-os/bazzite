@@ -258,6 +258,30 @@ rm() {
   fi
 }
 
+dumpEdid() {
+  echo "Select a monitor to extract the edid from:"
+  MONITOR_OPTS=$(gum choose $(for p in /sys/class/drm/*/status; do
+    con=${p%/status};
+    if [[ $(cat "$p") != "connected" ]]; then
+      continue
+    fi
+    echo -n "${con#*/card?-}:$(cat "$p" | tr '\n' ' ')";
+    done) Cancel)
+  if [[ "$MONITOR_OPTS" = "Cancel" ]]; then
+    return 0;
+  fi
+  edid="/sys/class/drm/card*/card*-$(echo "$MONITOR_OPTS" | grep -o '^[^:]*')/edid"
+  edid=$(find $edid)
+  echo "EDID extracted from: ${bold}$edid${normal}"
+  mkdir -pv /tmp/crh/
+  touch /tmp/crh/edid.bin
+  tee /tmp/crh/edid.bin > /dev/null 2>&1 < "$edid"
+  echo
+  echo "EDID dumped at ${bold}${green}/tmp/crh/edid.bin${normal}, edit in your edid-editor"
+  press_any_key
+  return 0
+}
+
 interactive_menu(){
   while true; do
     clear
@@ -265,7 +289,7 @@ interactive_menu(){
     echo
     print_status
     echo "Add, Remove, Remove All or Exit without saving?"
-    OPTION=$(ugum choose Add Remove Remove-All Exit)
+    OPTION=$(ugum choose Add Remove Remove-All Dump-EDID Exit)
 
 
     case "$OPTION" in
@@ -280,6 +304,10 @@ interactive_menu(){
       "Remove-All")
         clear
         removeAll
+      ;;
+      "Dump-EDID")
+        clear
+        dumpEdid
       ;;
       "Exit")
         echo "Exiting"
@@ -308,6 +336,7 @@ case "$1" in
   "current") print_status ;;
   "add") add "$2" "$3" ;;
   "rm") rm "$2" "$3" ;;
+  "dump-edid") dumpEdid ;;
   "help"|"-h"|"--help"|"") interactive_menu ;;
   *) echo "Unknown option: $1. Run without arguments for interactive mode."
 esac
