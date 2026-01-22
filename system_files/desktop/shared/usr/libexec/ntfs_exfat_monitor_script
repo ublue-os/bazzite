@@ -1,16 +1,119 @@
 #!/usr/bin/env bash
 
 #set user facing variables
-firstbutton="I understand"
-firstbutton_ignore="Temporarily ignore"
-secondbutton="Learn more"
+firstbutton=""
+firstbutton_ignore=""
+secondbutton=""
 sender="Bazzite"
-header="Unsupported filesystem"
-warning="You have mounted an NTFS/exFAT (Windows) partition. You can use it for storing data, however running games from Windows drives will cause problems."
+header=""
+warning=""
 documentation="https://docs.bazzite.gg/Gaming/Hardware_compatibility_for_gaming/#unsupported-filesystems-for-secondary-drives"
 
 #set other variables
 counter="0"
+lang=$(locale | grep LANG | cut -d= -f2 | cut -d_ -f1)
+echo "Current system language: $lang"
+
+#translation support
+case $lang in
+#german
+    "de")
+    firstbutton=("Einverstanden")
+    firstbutton_ignore=("Ignorieren")
+    secondbutton=("Mehr erfahren")
+    header=("Nicht unterstütztes Dateisystem")
+    warning=("Sie haben eine NTFS/exFAT (Windows) Partition eingehängt. Sie können es als Datenspeicher benutzen, aber davon Spiele laufen zu lassen wird Probleme ergeben.")
+    ;;
+#spanish
+    "es")
+    firstbutton=("Entiendo")
+    firstbutton_ignore=("Ignorar")
+    secondbutton=("Saber más")
+    header=("Sistema de archivos no compatible")
+    warning=("Ha montado una partición NTFS/exFAT (Windows). Puede utilizarla para almacenar datos, pero ejecutar juegos desde unidades Windows causará problemas.")
+    ;;
+#french
+    "fr")
+    firstbutton=("Je comprends")
+    firstbutton_ignore=("Ignorer")
+    secondbutton=("En savoir plus")
+    header=("Système de fichiers non pris en charge")
+    warning=("Vous avez monté une partition NTFS/exFAT (Windows). Vous pouvez l'utiliser pour stocker des données, mais l'exécution de jeux à partir de lecteurs Windows posera des problèmes.")
+    ;;
+#italian
+    "it")
+    firstbutton=("Capisco")
+    firstbutton_ignore=("Ignorare")
+    secondbutton=("Scopri di più")
+    header=("Sistema di file non supportato")
+    warning=("Hai montato una partizione NTFS/exFAT (Windows). Puoi utilizzarla per archiviare dati, tuttavia l'esecuzione di giochi da unità Windows causerà problemi.")
+    ;;
+#chinese
+    "zh")
+    firstbutton=("我明白了")
+    firstbutton_ignore=("忽略")
+    secondbutton=("了解更多")
+    header=("不支持的文件系统")
+    warning=("您已挂载了一个NTFS/exFAT（Windows）分区。该分区可用于存储数据，但直接从Windows驱动器运行游戏会导致问题。.")
+    ;;
+#modern greek
+    "el")
+    firstbutton=("Καταλαβαίνω.")
+    firstbutton_ignore=("Αγνόηση")
+    secondbutton=("μάθετε περισσότερα")
+    header=("Μη υποστηριζόμενο σύστημα αρχείων")
+    warning=("Έχετε συνδέσει ένα διαμέρισμα NTFS/exFAT (Windows). Μπορείτε να το χρησιμοποιήσετε για την αποθήκευση δεδομένων, ωστόσο η εκτέλεση παιχνιδιών από μονάδες δίσκου Windows θα προκαλέσει προβλήματα.")
+    ;;
+#portuguese
+    "pt")
+    firstbutton=("Eu compreendo")
+    firstbutton_ignore=("Ignorar")
+    secondbutton=("Saiba mais")
+    header=("Sistema de ficheiros não suportado")
+    warning=("Montou uma partição NTFS/exFAT (Windows). Pode utilizá-la para armazenar dados, mas executar jogos a partir de unidades Windows causará problemas.")
+    ;;
+#russian
+    "ru")
+    firstbutton=("Я понимаю")
+    firstbutton_ignore=("игнорировать")
+    secondbutton=("узнать больше")
+    header=("неподдерживаемая файловая система")
+    warning=("Вы подключили раздел NTFS/exFAT (Windows). Вы можете использовать его для хранения данных, однако запуск игр с дисков Windows вызовет проблемы.")
+    ;;
+#japanese
+    "ja")
+    firstbutton=("承知しました")
+    firstbutton_ignore=("無視する")
+    secondbutton=("詳細を見る")
+    header=("サポートされていないファイルシステム")
+    warning=("NTFS/exFAT（Windows）パーティションをマウントしました。データ保存には使用できますが、Windowsドライブからゲームを実行すると問題が発生します。")
+    ;;
+#dutch
+    "nl")
+    firstbutton=("Ik begrijp het")
+    firstbutton_ignore=("Negeren")
+    secondbutton=("Meer informatie")
+    header=("Niet-ondersteund bestandssysteem")
+    warning=("Je hebt een NTFS/exFAT (Windows) partitie gemount. Je kunt deze gebruiken om gegevens op te slaan, maar het spelen van games vanaf Windows-schijven zal problemen veroorzaken.")
+    ;;
+#polish
+    "pl")
+    firstbutton=("Rozumiem")
+    firstbutton_ignore=("Ignorować")
+    secondbutton=("Dowiedz się więcej")
+    header=("Nieobsługiwany system plików")
+    warning=("Podłączyłeś partycję NTFS/exFAT (Windows). Możesz jej używać do przechowywania danych, ale uruchamianie gier z dysków Windows spowoduje problemy.")
+    ;;
+  *)
+    firstbutton=("I understand")
+    firstbutton_ignore=("Ignore")
+    secondbutton=("Learn more")
+    header=("Unsupported filesystem")
+    warning=("You have mounted an NTFS/exFAT (Windows) partition. You can use it for storing data, however running games from Windows drives will cause problems.")
+    ;;
+esac
+
+
 query_filesystem() {
     lsblk -o fstype,mountpoint | grep -Ec "^${1}.*\S+"
 }
