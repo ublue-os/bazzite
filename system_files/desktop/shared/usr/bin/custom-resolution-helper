@@ -14,6 +14,8 @@ ${bold}Options:${normal}
   add [RESOLUTION]    Add a custom resolution
   rm [RESOLUTION]     Remove a custom resolution
   rm all              Remove all custom resolutions
+  add-edid            Add an edid for a selected display
+  dump-edid           Dump the edid from a selected display
 
 ${bold}[RESOLUTION]${normal} must be in the form of ${bold}<name>:<xres>x<yres>[M][R][-<bpp>][@<refresh>][i][m][eDd]${normal}
   For detailed explaination, see https://www.kernel.org/doc/Documentation/fb/modedb.txt
@@ -23,6 +25,7 @@ ${bold}Examples:${normal}
   $(basename "$0") add [RESOLUTION]
   $(basename "$0") rm [RESOLUTION]
   $(basename "$0") rm all
+  $(basename "$0") dump-edid
 
 ${bold}For help${normal}: https://discord.bazzite.gg
 "
@@ -258,6 +261,63 @@ rm() {
   fi
 }
 
+dumpEdid() {
+  echo "Select a monitor to extract the edid from:"
+  MONITOR_OPTS=$(gum choose $(for p in /sys/class/drm/*/status; do
+    con=${p%/status};
+    if [[ $(cat "$p") != "connected" ]]; then
+      continue
+    fi
+    echo -n "${con#*/card?-}:$(cat "$p" | tr '\n' ' ')";
+    done) Cancel)
+  if [[ "$MONITOR_OPTS" = "Cancel" ]]; then
+    return 0;
+  fi
+  edid="/sys/class/drm/card*/card*-$(echo "$MONITOR_OPTS" | grep -o '^[^:]*')/edid"
+  edid=$(find $edid)
+  echo "EDID extracted from: ${bold}$edid${normal}"
+  mkdir -pv /tmp/crh/
+  touch /tmp/crh/edid.bin
+  tee /tmp/crh/edid.bin > /dev/null 2>&1 < "$edid"
+  echo
+  echo "EDID dumped at ${bold}${green}/tmp/crh/edid.bin${normal}, edit in your edid-editor"
+  press_any_key
+  return 0
+}
+
+addEdid() {
+  mkdir -pv /tmp/crh/edited/
+  echo "Place your edited edid into ${bold}${green}/tmp/crh/edited/${normal}"
+  while [ ! -f /tmp/crh/edited/edid.bin ] || [ ! -s /tmp/crh/edited/edid.bin ]; do
+    confirm "Confirm that you have placed the edid: "
+    if [ ! -s /tmp/crh/edited/edid.bin ]; then echo "Your edid is empty! Check it and try again."
+    fi
+  done
+  echo "Placing the file into ${bold}${green}/usr/local/lib/firmware/edid/${normal}..."
+  sudo cp /tmp/crh/edited/edid.bin /usr/local/lib/firmware/edid/
+  echo "Select your monitor to set: "
+  MONITOR_OPTS=$(gum choose $(for p in /sys/class/drm/*/status; do
+    con=${p%/status};
+    if [[ $(cat "$p") != "connected" ]]; then
+      continue
+    fi
+    echo -n "${con#*/card?-}:$(cat "$p" | tr '\n' ' ')";
+    done) Cancel)
+  if [[ "$MONITOR_OPTS" = "Cancel" ]]; then
+    return 0;
+  fi
+  echo "Adding kernel arguments..."
+  local ADD_KARGS=$(echo "--append-if-missing=drm.edid_firmware=$MONITOR_OPTS:edid/edid.bin")
+  echo "Command: ${bold}rpm-ostree kargs $ADD_KARGS${normal}"
+  if rpm-ostree kargs "$ADD_KARGS"; then
+    echo "${green}Custom edid set successfully!${normal} Reboot to apply changes."
+    confirm_reboot
+  else
+    echo "${red}Adding kernel arguments failed.${normal} You may have an update in the background."
+    return 1;
+  fi
+}
+
 interactive_menu(){
   while true; do
     clear
@@ -265,7 +325,7 @@ interactive_menu(){
     echo
     print_status
     echo "Add, Remove, Remove All or Exit without saving?"
-    OPTION=$(ugum choose Add Remove Remove-All Exit)
+    OPTION=$(ugum choose Add Remove Remove-All Add-EDID Dump-EDID Exit)
 
 
     case "$OPTION" in
@@ -280,6 +340,14 @@ interactive_menu(){
       "Remove-All")
         clear
         removeAll
+      ;;
+      "Add-EDID")
+        clear
+        addEdid
+      ;;
+      "Dump-EDID")
+        clear
+        dumpEdid
       ;;
       "Exit")
         echo "Exiting"
@@ -308,6 +376,8 @@ case "$1" in
   "current") print_status ;;
   "add") add "$2" "$3" ;;
   "rm") rm "$2" "$3" ;;
+  "add-edid") addEdid ;;
+  "dump-edid") dumpEdid ;;
   "help"|"-h"|"--help"|"") interactive_menu ;;
   *) echo "Unknown option: $1. Run without arguments for interactive mode."
 esac
