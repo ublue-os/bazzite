@@ -228,6 +228,9 @@ RUN --mount=type=cache,dst=/var/cache \
         libinput-utils \
         i2c-tools \
         lm_sensors \
+        fw-ectool \
+        fw-fanctrl \
+        framework-system \
         udica \
         ladspa-caps-plugins \
         ladspa-noise-suppression-for-voice \
