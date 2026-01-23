@@ -642,6 +642,47 @@ toggle-global-fsr4-rdna3 ACTION="":
             echo "No changes made."
             ;;
     esac
+    
+# Toggle global Proton DLSS upgrade; updates DLSS DLLs for Proton
+[group("gaming")]
+toggle-global-dlss ACTION="":
+    #!/usr/bin/bash
+    set -euo pipefail
+    source /usr/lib/ujust/ujust.sh
+
+    FILE="$HOME/.config/environment.d/99-proton-dlss.conf"
+
+    CURRENT="Disabled"
+    if [[ -f "$FILE" ]]; then
+        CURRENT="Enabled"
+    fi
+
+    OPTION="{{ ACTION }}"
+    if [[ -z "$OPTION" ]]; then
+        echo -e "${bold}Global DLSS Upgrade:${normal} $CURRENT"
+        echo ""
+        echo "Enables Proton to use the latest NVIDIA DLSS runtime/DLLs."
+        echo "Automatically fetches and replaces DLSS DLLs."
+        echo "Only compatible with Proton GE, Proton EM, or similar forks."
+        echo ""
+        OPTION="$(ugum choose "Enable" "Disable" "Exit without saving")"
+    fi
+
+    case "$OPTION" in
+        Enable|enable)
+            mkdir -p "$HOME/.config/environment.d"
+            echo "PROTON_DLSS_UPGRADE=1" > "$FILE"
+            echo -e "${green}${bold}Enabled${normal}: PROTON_DLSS_UPGRADE=1"
+            echo "You may need to restart Steam for changes to take effect."
+            ;;
+        Disable|disable)
+            rm -f "$FILE"
+            echo -e "${red}${bold}Disabled${normal}: PROTON_DLSS_UPGRADE removed"
+            ;;
+        *)
+            echo "No changes made."
+            ;;
+    esac
 
 # Toggle whether Steam launches with the -steamdeck flag, which causes Big Picture / Game Mode to emulate Steam Deck behavior. Disabling this can prevent games from forcing Steam Deck-specific assets, such as lower-resolution textures.
 [group("gaming")]

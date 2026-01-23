@@ -260,3 +260,8 @@ screens:
         description: "Toggle global Proton FSR4 upgrade on RDNA3 GPUs (e.g. RX 7900 XTX); upgrades FSR 3.1+ → FSR 4. Only compatible with Proton GE, Proton EM, or similar forks."
         default: false
         script: "ujust toggle-global-fsr4-rdna3 enable"
+      - id: "global-dlss"
+        title: "Global DLSS Upgrade"
+        description: "Toggle global Proton DLSS upgrade; updates DLSS DLLs. Only compatible with Proton GE, Proton EM, or similar forks."
+        default: false
+        script: "ujust toggle-global-dlss enable"
