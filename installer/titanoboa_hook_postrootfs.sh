@@ -440,13 +440,11 @@ chmod +x /usr/bin/on_gui_login.sh
 mkdir -p /etc/skel/.config/autostart
 cat >>/usr/bin/on_gui_login.sh <<'EOF'
 # if CSM/Legacy show blocking message and power off
-if [ -d /sys/firmware/efi ]; then
-    exit 0
+if [[ ! -d /sys/firmware/efi ]]; then
+    yad --undecorated --on-top --timeout=0 --button=Shutdown:0 \
+        --text="Bazzite does not support CSM/Legacy Boot. Please boot into your UEFI/BIOS settings, disable CSM/Legacy Mode, and reboot." || true
+    systemctl poweroff || shutdown -h now || true
 fi
-yad --undecorated --on-top --timeout=0 --button=Shutdown:0 \
-    --text="Bazzite does not support CSM/Legacy Boot. Please boot into your UEFI/BIOS settings, disable CSM/Legacy Mode, and reboot." || true
-systemctl poweroff || shutdown -h now || true
-exit 0
 EOF
 
 cat >/etc/skel/.config/autostart/on_gui_login.desktop <<'EOF'
