@@ -35,25 +35,9 @@ if [[ -f /usr/share/ublue-os/flatpak-blocklist ]]; then
   flatpak remote-modify --system --filter=/usr/share/ublue-os/flatpak-blocklist flathub
 fi
 
-PROTONTRICKS_SETUP_FILE="/etc/bazzite/protontricks_installed"
-if [[ ! -f "$PROTONTRICKS_SETUP_FILE" ]]; then
-  if ! grep -q "com.github.Matoking.protontricks" <<< $(/usr/bin/flatpak list --app --columns=application); then
-    flatpak install --system --assumeyes com.github.Matoking.protontricks
-    touch "$PROTONTRICKS_SETUP_FILE"
-  else
-    touch "$PROTONTRICKS_SETUP_FILE"
-  fi
-fi
-
-# Install yafti-gtk flatpak from GitHub release
-YAFTI_GTK_SETUP_FILE="/etc/bazzite/yafti_gtk_installed"
-if [[ ! -f "$YAFTI_GTK_SETUP_FILE" ]]; then
-  if ! grep -q "com.github.yafti.gtk" <<< $(/usr/bin/flatpak list --app --columns=application); then
-    flatpak install --system --assumeyes /usr/share/ublue-os/bazzite/yafti-gtk.flatpak
-    touch "$YAFTI_GTK_SETUP_FILE"
-  else
-    touch "$YAFTI_GTK_SETUP_FILE"
-  fi
+# Install Bazzite Portal local .flatpak if not already installed
+if ! flatpak info com.github.yafti.gtk >/dev/null 2>&1; then
+  flatpak install --system --assumeyes /usr/share/ublue-os/bazzite/yafti-gtk.flatpak || :
 fi
 
 # Flatpak theming support
