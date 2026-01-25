@@ -642,7 +642,7 @@ toggle-global-fsr4-rdna3 ACTION="":
             echo "No changes made."
             ;;
     esac
-    
+
 # Toggle global Proton DLSS upgrade; updates DLSS DLLs for Proton
 [group("gaming")]
 toggle-global-dlss ACTION="":
