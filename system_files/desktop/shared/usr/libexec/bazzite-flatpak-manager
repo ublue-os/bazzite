@@ -1,7 +1,11 @@
 #!/usr/bin/bash
 
-# SCRIPT VERSION
+# Script version
 VER=32
+# Allows to version the manager based on its contents.
+# Bump VER whenever we want to trigger a run explicitly event though the script is not changed.
+SCRIPT_HASH=$(tr -d '[:space:]' <"$0" | sha256sum | cut -d ' ' -f 1)
+VER="$VER-$SCRIPT_HASH"
 VER_FILE="/etc/bazzite/flatpak_manager_version"
 VER_RAN=$(cat $VER_FILE)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
