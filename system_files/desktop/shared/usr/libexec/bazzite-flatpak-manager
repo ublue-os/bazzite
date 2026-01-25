@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Script version
-VER=32
+VER=33
 # Allows to version the manager based on its contents.
 # Bump VER whenever we want to trigger a run explicitly event though the script is not changed.
 SCRIPT_HASH=$(tr -d '[:space:]' <"$0" | sha256sum | cut -d ' ' -f 1)
