@@ -265,3 +265,36 @@ screens:
         description: "Toggle global Proton DLSS upgrade; updates DLSS DLLs. Only compatible with Proton GE, Proton EM, or similar forks."
         default: false
         script: "ujust toggle-global-dlss enable"
+  - title: "Brew"
+    description: "Brew Taps and Casks"
+    actions:
+      - id: "ublue-tap"
+        title: "Add the Ublue tap"
+        description: "Adds the Ublue Brew tap"
+        default: false
+        script: "brew tap ublue-os/tap"
+      - id: "visual-studio-code-linux"
+        title: "Install Visual Studio Code (Needs Ublue Tap)"
+        description: "Installs Visual Studio Code editor"
+        default: false
+        script: "brew install --cask visual-studio-code-linux"
+      - id: "antigravity-linux"
+        title: "Install Antigravity (Needs Ublue Tap)"
+        description: "Installs Antigravity"
+        default: false
+        script: "brew install --cask antigravity-linux"
+      - id: "lm-studio-linux"
+        title: "Install LM Studio (Needs Ublue Tap)"
+        description: "Installs LM Studio"
+        default: false
+        script: "brew install --cask lm-studio-linux"
+      - id: "jetbrains-toolbox-linux"
+        title: "Install JetBrains Toolbox (Needs Ublue Tap)"
+        description: "Installs JetBrains Toolbox"
+        default: false
+        script: "brew install --cask jetbrains-toolbox-linux"
+      - id: "vscodium-linux"
+        title: "Install VSCodium (Needs Ublue Tap)"
+        description: "Installs VSCodium editor"
+        default: false
+        script: "brew install --cask vscodium-linux"
