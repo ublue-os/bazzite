@@ -35,8 +35,7 @@ if [[ -f /usr/share/ublue-os/flatpak-blocklist ]]; then
   flatpak remote-modify --system --filter=/usr/share/ublue-os/flatpak-blocklist flathub
 fi
 
-# Install Bazzite Portal local .flatpak if not already installed
-if ! flatpak info io.github.xxjsonderuloxx.yafti-gtk >/dev/null 2>&1; then
+if ! flatpak info io.github.xxjsonderuloxx.yafti-gtk >/dev/null 2>&1 || [ -z "$(flatpak info io.github.xxjsonderuloxx.yafti-gtk 2>/dev/null | sed -n 's/^ *Version: //p')" ] || [ "$(flatpak info io.github.xxjsonderuloxx.yafti-gtk 2>/dev/null | sed -n 's/^ *Version: //p')" != "$(cat /usr/share/ublue-os/bazzite/yafti-gtk.flatpak.version.txt 2>/dev/null)" ]; then
   flatpak install --system --assumeyes /usr/share/ublue-os/bazzite/yafti-gtk.flatpak || :
 fi
 
