@@ -33,11 +33,17 @@ ARG ARCH="${ARCH:-x86_64}"
 
 ARG BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/${BASE_IMAGE_NAME}-main:${FEDORA_VERSION}}"
 ARG NVIDIA_BASE="${NVIDIA_BASE:-bazzite}"
-ARG KERNEL_REF="${KERNEL_REF:-ghcr.io/bazzite-org/kernel-bazzite:latest-f${FEDORA_VERSION}-${ARCH}}"
-ARG NVIDIA_REF="${NVIDIA_REF:-ghcr.io/bazzite-org/nvidia-drivers:latest-f${FEDORA_VERSION}-${ARCH}}"
+ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-bazzite}"
+ARG KERNEL_VERSION="${KERNEL_VERSION:-6.16.4-102.bazzite.fc42.x86_64}"
+ARG SOURCE_IMAGE="${SOURCE_IMAGE:-${BASE_IMAGE_NAME}-main}"
+ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
+ARG FEDORA_VERSION="${FEDORA_VERSION:-42}"
+ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
+ARG VERSION_TAG="${VERSION_TAG}"
+ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
-FROM ${KERNEL_REF} AS kernel
-FROM ${NVIDIA_REF} AS nvidia
+FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS akmods
+FROM ghcr.io/ublue-os/akmods-extra:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS akmods-extra
 
 FROM scratch AS ctx
 COPY build_files /
@@ -49,8 +55,10 @@ COPY build_files /
 FROM ${BASE_IMAGE} AS bazzite
 
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite}"
-ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
-ARG IMAGE_BRANCH="${IMAGE_BRANCH:-stable}"
+ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia}"
+ARG NVIDIA_BASE="${NVIDIA_BASE:-bazzite}"
+ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-bazzite}"
+ARG KERNEL_VERSION="${KERNEL_VERSION:-6.16.4-102.bazzite.fc42.x86_64}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
 ARG VERSION_TAG="${VERSION_TAG}"
@@ -96,7 +104,8 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i 's|baseurl=https://pkg.surfacelinux.com/fedora/f\$releasever/|baseurl=https://pkg.surfacelinux.com/fedora/f42/|' /etc/yum.repos.d/linux-surface.repo && \
     dnf5 -y config-manager setopt "linux-surface".enabled=false && \
     dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
-    dnf5 -y config-manager setopt "*terra*".priority=3 "*terra*".exclude="nerd-fonts topgrade scx-tools scx-scheds steam python3-protobuf zlib-devel" && \
+    dnf5 -y config-manager setopt "*akmods*".priority=2 && \
+    dnf5 -y config-manager setopt "*terra*".priority=3 "*terra*".exclude="nerd-fonts topgrade scx-scheds" && \
     dnf5 -y config-manager setopt "terra-mesa".enabled=true && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=4 exclude='mesa-* *xone*')" && \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=5 "*rpmfusion*".exclude="mesa-*" && \
@@ -107,10 +116,12 @@ RUN --mount=type=cache,dst=/var/cache \
 # Install kernel
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=kernel,src=/,dst=/rpms/kernel \
+    --mount=type=bind,from=akmods,src=/kernel-rpms,dst=/tmp/kernel-rpms \
+    --mount=type=bind,from=akmods,src=/rpms,dst=/tmp/akmods-rpms \
+    --mount=type=bind,from=akmods-extra,src=/rpms,dst=/tmp/akmods-extra-rpms \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/install-kernel && \
+    /ctx/install-kernel-akmods && \
     dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
     rm -rf /.git && \
     /ctx/cleanup
@@ -512,8 +523,8 @@ RUN --mount=type=cache,dst=/var/cache \
         _copr_ublue-os-akmods \
         terra \
         terra-extras \
-        negativo17-fedora-uld \
-        negativo17-fedora-multimedia; \
+        negativo17-fedora-multimedia \
+        _copr_ublue-os-akmods; \
     do \
         sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/$repo.repo; \
     done && for copr in \
@@ -580,8 +591,10 @@ RUN bootc container lint
 FROM bazzite AS bazzite-deck
 
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-deck}"
-ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
-ARG IMAGE_BRANCH="${IMAGE_BRANCH:-stable}"
+ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia}"
+ARG NVIDIA_BASE="${NVIDIA_BASE:-bazzite}"
+ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-bazzite}"
+ARG KERNEL_VERSION="${KERNEL_VERSION:-6.16.4-102.bazzite.fc42.x86_64}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
@@ -593,6 +606,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     dnf5 -y copr enable ublue-os/staging && \
     dnf5 -y copr enable ublue-os/packages && \
     dnf5 -y copr enable ublue-os/bazzite && \
@@ -706,6 +720,7 @@ RUN --mount=type=cache,dst=/var/cache \
         mv /usr/share/applications/com.github.maliit.keyboard.desktop /usr/share/ublue-os/backup/com.github.maliit.keyboard.desktop \
     ; fi && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/input-remapper-gtk.desktop && \
+    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     for copr in \
         ublue-os/staging \
         ublue-os/packages \
@@ -753,6 +768,8 @@ RUN --mount=type=cache,dst=/var/cache \
 
 RUN bootc container lint
 
+FROM ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS nvidia-akmods
+
 ################
 # NVIDIA BUILDS
 ################
@@ -760,8 +777,10 @@ RUN bootc container lint
 FROM ${NVIDIA_BASE} AS bazzite-nvidia
 
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-nvidia}"
-ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
-ARG IMAGE_BRANCH="${IMAGE_BRANCH:-stable}"
+ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia}"
+ARG NVIDIA_BASE="${NVIDIA_BASE:-bazzite}"
+ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-bazzite}"
+ARG KERNEL_VERSION="${KERNEL_VERSION:-6.16.4-102.bazzite.fc42.x86_64}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
@@ -787,6 +806,7 @@ RUN --mount=type=cache,dst=/var/cache \
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=bind,from=nvidia-akmods,src=/rpms,dst=/tmp/akmods-rpms \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     --mount=type=bind,from=nvidia,src=/,dst=/rpms/nvidia \

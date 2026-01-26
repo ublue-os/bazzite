@@ -70,7 +70,8 @@ jobs:
           - bazzite-gnome-nvidia-open
         include:
           - fedora_version: 43
-            kernel_version: ${{ (github.ref_name == 'testing' || github.ref_name == 'unstable') && 'latest' || 'latest' }}
+            kernel_flavor: bazzite # must match a kernel_flavor from akmods repo
+            kernel_version: 6.16.4-116.bazzite.fc43.x86_64 # must match a cached version of the above flavor
             base_image_flavor: main
             arch: x86_64
     steps:
@@ -166,7 +167,19 @@ jobs:
       - name: Check just syntax
         uses: ublue-os/just-action@bda593098a84a84973b002b4377709166a68be52 # v2
 
-      - name: Pull Images and find versions
+      - name: Pull main, akmods, rechunk images
+        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+        with:
+          attempt_limit: 3
+          attempt_delay: 15000
+          command: |
+            # pull the base images used for FROM in Containerfile so
+            # we can retry on that unfortunately common failure case
+            sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/${{ env.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
+            sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
+            sudo podman pull ${{ env.PULL_IMAGE_REGISTRY }}/akmods-${{ env.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
+
+      - name: Get source versions
         id: labels
         env:
           GH_TOKEN: ${{ github.token }}
@@ -262,6 +275,55 @@ jobs:
             --build-arg-file build_args.txt \
             --secret "id=GITHUB_TOKEN,env=GITHUB_TOKEN" \
             --tag raw-img .
+
+      - name: Remove auxiliary images
+        # We are tight on space, need at least 2x for OSTree
+        run: |
+          sudo podman image rm ${{ env.PULL_IMAGE_REGISTRY }}/${{ env.base_image_name }}-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}
+          sudo podman image rm ${{ env.PULL_IMAGE_REGISTRY }}/akmods:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
+          sudo podman image rm ${{ env.PULL_IMAGE_REGISTRY }}/akmods-${{ env.target_nvidia_flavor }}:${{ matrix.kernel_flavor}}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}
+
+      # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
+      # https://github.com/macbre/push-to-ghcr/issues/12
+      - name: Lowercase Registry
+        id: registry_case
+        uses: ASzc/change-string-case-action@d0603cd0a7dd490be678164909f65c7737470a7f # v6
+        with:
+          string: ${{ env.PUSH_IMAGE_REGISTRY }}
+
+      # Generate the previous image reference used by the Rechunker
+      - name: Generate previous reference
+        id: generate-prev-ref
+        shell: bash
+        run: |
+          if [ "${{ github.event.inputs.fresh-rechunk }}" == "true" ]; then
+            IMAGEREF=""
+          else
+            IMAGEREF="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image }}:stable"
+          fi
+
+          echo "ref=${IMAGEREF}" >> $GITHUB_OUTPUT
+
+          echo "Generated the following:"
+          cat $GITHUB_OUTPUT
+
+      - name: Check Secureboot
+        shell: bash
+        run: |
+          set -x
+          if [[ ! $(command -v sbverify) || ! $(command -v curl) || ! $(command -v openssl) ]]; then
+            sudo apt update
+            sudo apt install sbsigntool curl openssl
+          fi
+          TMP=$(sudo podman create raw-img bash)
+          sudo podman cp $TMP:/usr/lib/modules/${{ matrix.kernel_version }}/vmlinuz .
+          sudo podman rm $TMP
+          sudo chmod 666 vmlinuz
+          sbverify --list vmlinuz
+          for key in ./build_files/ubmok101.cer ./build_files/ubmok102.cer; do
+            openssl x509 -in $key -out ${key%.cer}.crt
+            sbverify --cert ${key%.cer}.crt vmlinuz || exit 1
+          done
 
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
