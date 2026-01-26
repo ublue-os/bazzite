@@ -106,7 +106,6 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - **Able to be booted even if the drive is full.**
 - **Support for every language supported by upstream Fedora.**
 - **Uses Wayland on the desktop with [support for Steam input](https://github.com/Supreeeme/extest).**
-- Includes [HHD](https://github.com/hhd-dev/hhd) for expanded input support on non-Valve handhelds.
 - Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV).
 - Patched Mesa for proper framerate control from Gamescope.
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
@@ -141,14 +140,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 #### Alternative Handhelds
 
 Please refer to our [Handheld Wiki](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Handheld_Wiki/) for required setting changes and Decky Loader plugins for Steam Gaming Mode on your specific Handheld.
-
-**Be sure to also read the [hhd documentation](https://github.com/hhd-dev/hhd#after-install), some handhelds require specific setting changes/tweaks to function properly.**
-
-We also ship `ujust` commands to install various [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) themes that can't be found on the CSS Loader store. These will be automatically updated with Bazzite if installed.
-```bash
-# Install Handheld Controller Theme (https://github.com/victor-borges/handheld-controller-glyphs)
-ujust install-hhd-controller-glyph-theme
-```
 
 ### GNOME
 

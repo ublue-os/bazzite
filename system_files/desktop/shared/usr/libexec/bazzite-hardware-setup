@@ -285,17 +285,6 @@ if [ ! -f /etc/hostname ]; then
   touch /etc/hostname
 fi
 
-# Remove old hhd@ enables
-# Check if we've already removed old hhd@ service enablements
-if [ ! -f /etc/bazzite/fixups/hhd_service_cleanup ]; then
-  echo "Cleaning up old hhd@ service enables"
-  for service in $(systemctl list-units --type=service --all 'hhd@*.service' --no-legend | awk '{print $1}'); do
-    echo "Disabling $service"
-    systemctl disable --now "$service" || true
-  done
-  touch /etc/bazzite/fixups/hhd_service_cleanup
-fi
-
 # Update Nvidia package for Flatpak if there's a mismatch
 if [[ "$SYSTEM_NVIDIA_VERSION" != "$FLATPAK_NVIDIA_VERSION" && \
     $IMAGE_NAME =~ "nvidia" ]]; then

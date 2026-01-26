@@ -77,7 +77,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/obs-vkcapture \
         ycollet/audinux \
         ublue-os/rom-properties \
-        ublue-os/hhd \
         lizardbyte/beta \
         che/nerd-fonts; \
     do \
@@ -524,7 +523,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/obs-vkcapture \
         ycollet/audinux \
         ublue-os/rom-properties \
-        ublue-os/hhd \
         lizardbyte/beta \
         che/nerd-fonts; \
     do \
@@ -599,7 +597,6 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable ublue-os/bazzite && \
     dnf5 -y copr enable ublue-os/bazzite-multilib && \
     dnf5 -y copr enable ublue-os/obs-vkcapture && \
-    dnf5 -y copr enable ublue-os/hhd && \
     dnf5 -y copr enable ycollet/audinux && \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     /ctx/cleanup
@@ -638,8 +635,6 @@ RUN --mount=type=cache,dst=/var/cache \
         galileo-mura \
         steamdeck-dsp \
         powerbuttond \
-        $([[ "$IMAGE_BRANCH" == "unstable" || "$IMAGE_BRANCH" == "testing" ]] && echo "hhd-git" || echo "hhd") \
-        hhd-ui \
         steamos-manager \
         acpica-tools \
         vpower \
@@ -716,7 +711,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/bazzite \
         ublue-os/bazzite-multilib \
         ublue-os/obs-vkcapture \
-        ublue-os/hhd \
         ycollet/audinux; \
     do \
         dnf5 -y copr disable -y $copr; \
@@ -734,7 +728,6 @@ RUN --mount=type=cache,dst=/var/cache \
     glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
     rm -r /tmp/bazzite-schema-test && \
     { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
-    systemctl enable hhd.service && \
     systemctl enable --global steamos-manager.service && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-workaround.service && \
