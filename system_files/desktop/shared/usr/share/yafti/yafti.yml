@@ -31,7 +31,7 @@ screens:
         title: "Reset Bazzite"
         description: "Reset Bazzite to factory defaults (Does not remove user data)"
         default: false
-        script: "brh reset -y && reboot"
+        script: "rpm-ostree reset"
         
   - title: "Setting up Bazzite"
     description: "Core system components and utilities"
