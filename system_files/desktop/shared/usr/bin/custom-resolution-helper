@@ -294,6 +294,7 @@ addEdid() {
     fi
   done
   echo "Placing the file into ${bold}${green}/usr/local/lib/firmware/edid/${normal}..."
+  sudo mkdir -p /usr/local/lib/firmware/edid
   sudo cp /tmp/crh/edited/edid.bin /usr/local/lib/firmware/edid/
   echo "Select your monitor to set: "
   MONITOR_OPTS=$(gum choose $(for p in /sys/class/drm/*/status; do
