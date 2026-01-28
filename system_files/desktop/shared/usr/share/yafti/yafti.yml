@@ -29,7 +29,7 @@ screens:
 
       - id: "reset-bazzite"
         title: "Reset Bazzite"
-        description: "Reset Bazzite to factory defaults (Does not remove user data)"
+        description: "Reset Bazzite layering to Default (Only resets layers NOT user data)" 
         default: false
         script: "rpm-ostree reset"
         
