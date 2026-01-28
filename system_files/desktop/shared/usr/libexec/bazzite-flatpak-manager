@@ -39,10 +39,9 @@ if [[ -f /usr/share/ublue-os/flatpak-blocklist ]]; then
   flatpak remote-modify --system --filter=/usr/share/ublue-os/flatpak-blocklist flathub
 fi
 
-# Update Bazzite Portal and remove the old one if its still present
+# Remove Bazzite Portal Flatpak Leftovers if present
 flatpak uninstall --system --assumeyes com.github.yafti.gtk || :
 flatpak uninstall --system --assumeyes io.github.xxjsonderuloxx.yafti-gtk || :
-flatpak install --system --assumeyes /usr/share/ublue-os/bazzite/yafti-gtk.flatpak || { rc=$?; echo "Bazzite Portal install-upgrade failed (rc=$rc)" >&2; }
 
 # Flatpak theming support
 flatpak override \
