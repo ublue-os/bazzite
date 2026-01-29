@@ -287,6 +287,7 @@ dumpEdid() {
 }
 
 addEdid() {
+  print_status
   mkdir -pv /tmp/crh/edited/
   echo "Place your edited edid into ${bold}${green}/tmp/crh/edited/${normal}"
   while [ ! -f /tmp/crh/edited/edid.bin ] || [ ! -s /tmp/crh/edited/edid.bin ]; do
@@ -311,10 +312,26 @@ addEdid() {
   else
     MONITOR_OPTS=$(echo "${MONITOR_OPTS%:*}")
   fi
+  echo "Adding dracut config to ensure EDID is loaded"
+  sudo mkdir -p /etc/dracut.conf.d/
+  sudo touch /etc/dracut.conf.d/edid.conf
+  echo 'install_items+=" /usr/local/lib/firmware/edid/edid.bin "' | sudo tee /etc/dracut.conf.d/edid.conf
   echo "Adding kernel arguments..."
-  local ADD_KARGS=$(echo "--append-if-missing=drm.edid_firmware=$MONITOR_OPTS:edid/edid.bin")
-  echo "Command: ${bold}rpm-ostree kargs $ADD_KARGS${normal}"
-  if rpm-ostree kargs "$ADD_KARGS"; then
+  local ADD_KARGS=$(echo "--append-if-missing=firmware_class.path=/usr/local/lib/firmware")
+  local ADD_KARGS=$(echo $ADD_KARGS "--append-if-missing=drm.edid_firmware=$MONITOR_OPTS:edid/edid.bin")
+  local RM_KARGS=$(for mode_options in "${OPT_ARRAY[@]}"; do
+      if [ $(echo "${mode_options%:*}") != "$MONITOR_OPTS" ]; then
+        continue
+      fi
+      if [[ $(echo "${mode_options#*:}") =~ "e" ]]; then
+        continue
+      fi
+      echo -n "--delete-if-present=video=$mode_options "
+      done)
+    local ADD_KARGS=$(echo $ADD_KARGS "--append-if-missing=video=$MONITOR_OPTS:e")
+    local RM_KARGS=$(echo "$RM_KARGS" | sed -e 's/[[:space:]]*$//g') #Remove trailing whitespaces
+  echo "Command: ${bold}rpm-ostree kargs $ADD_KARGS $RM_KARGS${normal}"
+  if rpm-ostree kargs $ADD_KARGS $RM_KARGS; then
     echo "${green}Custom edid set successfully!${normal} Reboot to apply changes."
     confirm_reboot
   else
