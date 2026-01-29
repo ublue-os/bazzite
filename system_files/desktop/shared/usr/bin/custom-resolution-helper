@@ -25,6 +25,7 @@ ${bold}Examples:${normal}
   $(basename "$0") add [RESOLUTION]
   $(basename "$0") rm [RESOLUTION]
   $(basename "$0") rm all
+  $(basename "$0") add-edid
   $(basename "$0") dump-edid
 
 ${bold}For help${normal}: https://discord.bazzite.gg
@@ -65,6 +66,9 @@ print_status() {
     readarray -t OPT_ARRAY < <(echo "$MODEDB_OPTS")
     for mode_options in "${OPT_ARRAY[@]}"; do
       echo -n "${bold}$mode_options${normal} "
+      if [[ $(echo "${mode_options%:*}") == "$(echo "$KARGS" | grep -oP 'firmware=\K[^: ]*')" ]] ; then
+        echo -n "${blue}(EDID)${normal}"
+      fi
     done
   fi
   echo
@@ -146,12 +150,24 @@ add_to() {
 remove() {
   echo "Which custom resolution do you want to remove?"
   RM_RESOLUTION=$(gum choose $(for mode_options in "${OPT_ARRAY[@]}"; do
-    echo -n "$mode_options "
+    echo -n "$mode_options"
+    if [[ $(echo "${mode_options%:*}") == "$(echo "$KARGS" | grep -oP 'firmware=\K[^: ]*')" ]] ; then
+        echo -n "${blue}(EDID)${normal}"
+    fi
+    echo -n " "
     done))
+  RM_RESOLUTION=${RM_RESOLUTION%:*}
   if confirm "Remove ${bold}$RM_RESOLUTION${normal}?"; then
-    RM_KARGS=$(echo -n "--delete-if-present=video=$RM_RESOLUTION")
+    RM_KARGS=$(echo -n "--delete-if-present=video=$RM_RESOLUTION ")
+    if [[ $(echo "$RM_RESOLUTION") == "$(echo "$KARGS" | grep -oP 'firmware=\K[^: ]*')" ]] ; then
+        RM_KARGS+=$(echo -n "--delete-if-present=firmware_class.path=/usr/local/lib/firmware ")
+        RM_KARGS+=$(echo -n "--delete-if-present=drm.edid_firmware=$RM_RESOLUTION:edid/edid.bin ")
+        sudo rm -vi /usr/local/lib/firmware/edid/edid.bin
+        sudo rm -vi /etc/dracut.conf.d/edid.conf
+    fi
+    RM_KARGS=$(echo "$RM_KARGS" | sed -e 's/[[:space:]]*$//g') #Remove trailing whitespaces
     echo "Command: ${bold}rpm-ostree kargs $RM_KARGS${normal}"
-    if rpm-ostree kargs "$RM_KARGS"; then
+    if rpm-ostree kargs $RM_KARGS; then
       echo "${green}Custom resolution removed successfully!${normal} Reboot to apply changes."
       confirm_reboot "$1"
     else
@@ -165,9 +181,25 @@ remove() {
 }
 
 removeAll() {
-  if [[ "-y" == "$1" ]] ; then
-    RM_KARGS=$(for mode_options in "${OPT_ARRAY[@]}"; do
+  if [[ "-y" != "$1" ]] ; then
+    if ! confirm "Remove All Custom Resolutions?" ; then
+      echo "Cancelled."
+      return 0;
+    fi
+  fi
+  RM_KARGS=$(for mode_options in "${OPT_ARRAY[@]}"; do
       echo -n "--delete-if-present=video=$mode_options "
+      if [[ $(echo "${mode_options%:*}") == "$(echo "$KARGS" | grep -oP 'firmware=\K[^: ]*')" ]] ; then
+        echo -n "--delete-if-present=firmware_class.path=/usr/local/lib/firmware "
+        echo -n "--delete-if-present=drm.edid_firmware=${mode_options%:*}:edid/edid.bin "
+        if [[ "-y" == "$1" ]] ; then
+          sudo rm -v /usr/local/lib/firmware/edid/edid.bin
+          sudo rm -v /etc/dracut.conf.d/edid.conf
+        else
+          sudo rm -vi /usr/local/lib/firmware/edid/edid.bin
+          sudo rm -vi /etc/dracut.conf.d/edid.conf
+        fi
+      fi
       done)
     RM_KARGS=$(echo "$RM_KARGS" | sed -e 's/[[:space:]]*$//g') #Remove trailing whitespaces
     echo "Command: ${bold}rpm-ostree kargs $RM_KARGS${normal}"
@@ -178,23 +210,6 @@ removeAll() {
       echo "${red}Removing kernel arguments failed.${normal} You may have an update in the background."
       return 1;
     fi
-  elif confirm "Remove All Custom Resolutions?" ; then
-      RM_KARGS=$(for mode_options in "${OPT_ARRAY[@]}"; do
-        echo -n "--delete-if-present=video=$mode_options "
-        done)
-      RM_KARGS=$(echo "$RM_KARGS" | sed -e 's/[[:space:]]*$//g') #Remove trailing whitespaces
-      echo "Command: ${bold}rpm-ostree kargs $RM_KARGS${normal}"
-      if rpm-ostree kargs $RM_KARGS; then
-        echo "${green}Custom resolution removed successfully!${normal} Reboot to apply changes."
-        confirm_reboot "$1"
-      else
-        echo "${red}Removing kernel arguments failed.${normal} You may have an update in the background."
-        return 1;
-      fi
-    else
-      echo "Cancelled."
-      return 0;
-  fi
 }
 
 add() {
@@ -286,6 +301,7 @@ dumpEdid() {
 }
 
 addEdid() {
+  print_status
   mkdir -pv /tmp/crh/edited/
   echo "Place your edited edid into ${bold}${green}/tmp/crh/edited/${normal}"
   while [ ! -f /tmp/crh/edited/edid.bin ] || [ ! -s /tmp/crh/edited/edid.bin ]; do
@@ -294,22 +310,42 @@ addEdid() {
     fi
   done
   echo "Placing the file into ${bold}${green}/usr/local/lib/firmware/edid/${normal}..."
+  sudo mkdir -p /usr/local/lib/firmware/edid
   sudo cp /tmp/crh/edited/edid.bin /usr/local/lib/firmware/edid/
   echo "Select your monitor to set: "
   MONITOR_OPTS=$(gum choose $(for p in /sys/class/drm/*/status; do
     con=${p%/status};
-    if [[ $(cat "$p") != "connected" ]]; then
-      continue
-    fi
+    #if [[ $(cat "$p") != "connected" ]]; then
+    #  continue
+    #fi
+    # Keep showing non-connected displays
     echo -n "${con#*/card?-}:$(cat "$p" | tr '\n' ' ')";
     done) Cancel)
   if [[ "$MONITOR_OPTS" = "Cancel" ]]; then
     return 0;
+  else
+    MONITOR_OPTS=$(echo "${MONITOR_OPTS%:*}")
   fi
+  echo "Adding dracut config to ensure EDID is loaded"
+  sudo mkdir -p /etc/dracut.conf.d/
+  sudo touch /etc/dracut.conf.d/edid.conf
+  echo 'install_items+=" /usr/local/lib/firmware/edid/edid.bin "' | sudo tee /etc/dracut.conf.d/edid.conf
   echo "Adding kernel arguments..."
-  local ADD_KARGS=$(echo "--append-if-missing=drm.edid_firmware=$MONITOR_OPTS:edid/edid.bin")
-  echo "Command: ${bold}rpm-ostree kargs $ADD_KARGS${normal}"
-  if rpm-ostree kargs "$ADD_KARGS"; then
+  local ADD_KARGS=$(echo "--append-if-missing=firmware_class.path=/usr/local/lib/firmware")
+  local ADD_KARGS=$(echo $ADD_KARGS "--append-if-missing=drm.edid_firmware=$MONITOR_OPTS:edid/edid.bin")
+  local RM_KARGS=$(for mode_options in "${OPT_ARRAY[@]}"; do
+      if [ $(echo "${mode_options%:*}") != "$MONITOR_OPTS" ]; then
+        continue
+      fi
+      if [[ $(echo "${mode_options#*:}") =~ "e" ]]; then
+        continue
+      fi
+      echo -n "--delete-if-present=video=$mode_options "
+      done)
+    local ADD_KARGS=$(echo $ADD_KARGS "--append-if-missing=video=$MONITOR_OPTS:e")
+    local RM_KARGS=$(echo "$RM_KARGS" | sed -e 's/[[:space:]]*$//g') #Remove trailing whitespaces
+  echo "Command: ${bold}rpm-ostree kargs $ADD_KARGS $RM_KARGS${normal}"
+  if rpm-ostree kargs $ADD_KARGS $RM_KARGS; then
     echo "${green}Custom edid set successfully!${normal} Reboot to apply changes."
     confirm_reboot
   else

@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Script version
-VER=33
+VER=34
 # Allows to version the manager based on its contents.
 # Bump VER whenever we want to trigger a run explicitly event though the script is not changed.
 SCRIPT_HASH=$(tr -d '[:space:]' <"$0" | sha256sum | cut -d ' ' -f 1)
@@ -39,13 +39,9 @@ if [[ -f /usr/share/ublue-os/flatpak-blocklist ]]; then
   flatpak remote-modify --system --filter=/usr/share/ublue-os/flatpak-blocklist flathub
 fi
 
-# Install or Update Bazzite Portal if needed
-INSTALLED_VERSION=$(flatpak info io.github.xxjsonderuloxx.yafti-gtk 2>/dev/null | sed -n 's/^ *Version: //p')
-GIT_VERSION=$(cat /usr/share/ublue-os/bazzite/yafti-gtk.flatpak.version.txt 2>/dev/null)
-if [ -z "$INSTALLED_VERSION" ] || [ "$INSTALLED_VERSION" != "$GIT_VERSION" ]; then
-  flatpak install --system --assumeyes /usr/share/ublue-os/bazzite/yafti-gtk.flatpak || :
-  echo "Bazzite Portal Installed/Updated"
-fi
+# Remove Bazzite Portal Flatpak Leftovers if present
+flatpak uninstall --system --assumeyes com.github.yafti.gtk || :
+flatpak uninstall --system --assumeyes io.github.xxjsonderuloxx.yafti-gtk || :
 
 # Flatpak theming support
 flatpak override \

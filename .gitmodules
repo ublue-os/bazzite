@@ -37,3 +37,9 @@
 [submodule "firmware"]
 	path = firmware
 	url = https://github.com/ublue-os/bazzite-firmware-nonfree
+[submodule "vrr-monitor@OptimoSupreme"]
+	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/vrr-monitor@OptimoSupreme
+	url = https://github.com/OptimoSupreme/VRR-Refresh-Rate-Monitor-Gnome-Extension.git
+[submodule "bazaar-integration@kolunmi.github.io"]
+	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io
+	url = https://github.com/AlexanderVanhee/bazaar-companion.git

@@ -18,6 +18,7 @@ glib-compile-schemas /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjo
 glib-compile-schemas /usr/share/gnome-shell/extensions/add-to-steam@pupper.space/schemas
 mv /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info /usr/share/gnome-shell/extensions/caffeine@patapon.info
 glib-compile-schemas /usr/share/gnome-shell/extensions/caffeine@patapon.info/schemas
+glib-compile-schemas /usr/share/gnome-shell/extensions/vrr-monitor@OptimoSupreme/schemas
 
 # Burn My Windows
 make -C /usr/share/gnome-shell/extensions/burn-my-windows@schneegans.github.com
@@ -34,6 +35,10 @@ make -C /usr/share/gnome-shell/extensions/blur-my-shell@aunetx
 unzip -o /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build/blur-my-shell@aunetx.shell-extension.zip -d /usr/share/gnome-shell/extensions/blur-my-shell@aunetx
 glib-compile-schemas /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/schemas
 rm -rf /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build
+
+# Bazaar Integration
+mkdir -p /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io
+mv /usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io/src/* /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io/
 
 # Cleanup
 dnf5 -y remove glib2-devel

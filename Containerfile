@@ -79,7 +79,8 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/rom-properties \
         ublue-os/hhd \
         lizardbyte/beta \
-        che/nerd-fonts; \
+        che/nerd-fonts \
+        faugus/faugus-launcher; \
     do \
         echo "Enabling copr: $copr"; \
         dnf5 -y copr enable $copr; \
@@ -284,14 +285,13 @@ RUN --mount=type=cache,dst=/var/cache \
         waydroid \
         cage \
         wlr-randr \
+        bazzite-portal \
         ls-iommu && \
     systemctl mask iscsi && \
     systemctl mask wpa_supplicant.service && \
     systemctl disable iwd.service && \
     mkdir -p /usr/lib/extest/ && \
     /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest | jq -r '.assets[] | select(.name| test(".*so$")).browser_download_url')" -Lo /usr/lib/extest/libextest.so && \
-    /ctx/ghcurl -s https://api.github.com/repos/xXJSONDeruloXx/yafti-gtk/releases/latest | jq -r '.tag_name' | sed -E 's/^v//' > /usr/share/ublue-os/bazzite/yafti-gtk.flatpak.version.txt && \
-    /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/xXJSONDeruloXx/yafti-gtk/releases/latest | jq -r '.assets[] | select(.name == "yafti-gtk.flatpak") | .browser_download_url')" -Lo /usr/share/ublue-os/bazzite/yafti-gtk.flatpak && \
     chmod +x /usr/bin/framework_tool && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
     setcap 'cap_sys_admin+p' $(readlink -f /usr/bin/sunshine) && \
@@ -335,6 +335,7 @@ RUN --mount=type=cache,dst=/var/cache \
         openxr && \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
+        faugus-launcher \
         lutris && \
     dnf5 -y remove \
         gamemode && \
@@ -382,7 +383,7 @@ RUN --mount=type=cache,dst=/var/cache \
             kde-partitionmanager \
             plasma-discover \
             konsole && \
-        sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:net.lutris.Lutris.desktop,applications:org.gnome.Ptyxis.desktop,applications:io.github.kolunmi.Bazaar.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
+        sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:io.github.Faugus.faugus-launcher.desktop,applications:org.gnome.Ptyxis.desktop,applications:io.github.kolunmi.Bazaar.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
         sed -i 's@\[Desktop Action new-window\]@\[Desktop Action new-window\]\nX-KDE-Shortcuts=Ctrl+Alt+T@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
@@ -473,7 +474,6 @@ RUN --mount=type=cache,dst=/var/cache \
     echo "import \"/usr/share/ublue-os/just/82-bazzite-waydroid.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/83-bazzite-audio.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/84-bazzite-virt.just\"" >> /usr/share/ublue-os/justfile && \
-    echo "import \"/usr/share/ublue-os/just/85-bazzite-image.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/86-bazzite-windows.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/87-bazzite-framegen.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/88-bazzite-webapps.just\"" >> /usr/share/ublue-os/justfile && \
@@ -527,7 +527,8 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/rom-properties \
         ublue-os/hhd \
         lizardbyte/beta \
-        che/nerd-fonts; \
+        che/nerd-fonts \
+        faugus/faugus-launcher; \
     do \
         dnf5 -y copr disable $copr; \
     done && unset -v copr && \
