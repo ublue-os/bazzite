@@ -38,7 +38,7 @@ rm -rf /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build
 
 # Bazaar Integration
 mkdir -p /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io
-mv /usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io/src/ /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io/
+mv /usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io/src/* /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io/
 
 # Cleanup
 dnf5 -y remove glib2-devel
