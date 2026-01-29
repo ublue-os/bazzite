@@ -26,6 +26,13 @@ screens:
         description: "Rollback to the previous Bazzite deployment"
         default: false
         script: "brh rollback -y && reboot"
+
+      - id: "reset-bazzite"
+        title: "Reset Bazzite"
+        description: "Reset Bazzite layering to Default (Only resets layers NOT user data)" 
+        default: false
+        script: "rpm-ostree reset"
+        
   - title: "Setting up Bazzite"
     description: "Core system components and utilities"
     actions:
