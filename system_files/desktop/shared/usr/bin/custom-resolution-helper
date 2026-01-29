@@ -25,6 +25,7 @@ ${bold}Examples:${normal}
   $(basename "$0") add [RESOLUTION]
   $(basename "$0") rm [RESOLUTION]
   $(basename "$0") rm all
+  $(basename "$0") add-edid
   $(basename "$0") dump-edid
 
 ${bold}For help${normal}: https://discord.bazzite.gg
