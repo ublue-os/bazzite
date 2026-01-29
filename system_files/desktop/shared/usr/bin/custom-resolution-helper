@@ -166,8 +166,13 @@ remove() {
 }
 
 removeAll() {
-  if [[ "-y" == "$1" ]] ; then
-    RM_KARGS=$(for mode_options in "${OPT_ARRAY[@]}"; do
+  if [[ "-y" != "$1" ]] ; then
+    if ! confirm "Remove All Custom Resolutions?" ; then
+      echo "Cancelled."
+      return 0;
+    fi
+  fi
+  RM_KARGS=$(for mode_options in "${OPT_ARRAY[@]}"; do
       echo -n "--delete-if-present=video=$mode_options "
       done)
     RM_KARGS=$(echo "$RM_KARGS" | sed -e 's/[[:space:]]*$//g') #Remove trailing whitespaces
@@ -179,23 +184,6 @@ removeAll() {
       echo "${red}Removing kernel arguments failed.${normal} You may have an update in the background."
       return 1;
     fi
-  elif confirm "Remove All Custom Resolutions?" ; then
-      RM_KARGS=$(for mode_options in "${OPT_ARRAY[@]}"; do
-        echo -n "--delete-if-present=video=$mode_options "
-        done)
-      RM_KARGS=$(echo "$RM_KARGS" | sed -e 's/[[:space:]]*$//g') #Remove trailing whitespaces
-      echo "Command: ${bold}rpm-ostree kargs $RM_KARGS${normal}"
-      if rpm-ostree kargs $RM_KARGS; then
-        echo "${green}Custom resolution removed successfully!${normal} Reboot to apply changes."
-        confirm_reboot "$1"
-      else
-        echo "${red}Removing kernel arguments failed.${normal} You may have an update in the background."
-        return 1;
-      fi
-    else
-      echo "Cancelled."
-      return 0;
-  fi
 }
 
 add() {
