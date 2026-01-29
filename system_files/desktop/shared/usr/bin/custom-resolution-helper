@@ -299,13 +299,16 @@ addEdid() {
   echo "Select your monitor to set: "
   MONITOR_OPTS=$(gum choose $(for p in /sys/class/drm/*/status; do
     con=${p%/status};
-    if [[ $(cat "$p") != "connected" ]]; then
-      continue
-    fi
+    #if [[ $(cat "$p") != "connected" ]]; then
+    #  continue
+    #fi
+    # Keep showing non-connected displays
     echo -n "${con#*/card?-}:$(cat "$p" | tr '\n' ' ')";
     done) Cancel)
   if [[ "$MONITOR_OPTS" = "Cancel" ]]; then
     return 0;
+  else
+    MONITOR_OPTS=$(echo "${MONITOR_OPTS%:*}")
   fi
   echo "Adding kernel arguments..."
   local ADD_KARGS=$(echo "--append-if-missing=drm.edid_firmware=$MONITOR_OPTS:edid/edid.bin")
