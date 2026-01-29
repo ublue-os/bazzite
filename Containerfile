@@ -285,6 +285,7 @@ RUN --mount=type=cache,dst=/var/cache \
         waydroid \
         cage \
         wlr-randr \
+        bazzite-portal \
         ls-iommu && \
     systemctl mask iscsi && \
     systemctl mask wpa_supplicant.service && \
