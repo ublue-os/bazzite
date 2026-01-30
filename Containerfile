@@ -651,6 +651,8 @@ RUN --mount=type=cache,dst=/var/cache \
         galileo-mura \
         steamdeck-dsp \
         powerbuttond \
+        inputplumber \
+        opengamepadui \
         steamos-manager \
         acpica-tools \
         vpower \
