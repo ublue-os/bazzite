@@ -9,4 +9,7 @@ find /var/cache/* -maxdepth 0 -type d \! -name libdnf5 \! -name rpm-ostree -exec
 mkdir -p /var/tmp
 chmod -R 1777 /var/tmp
 
+## Remove Documentation folder to save space 
+rm -rf /usr/share/doc/
+
 ostree container commit
