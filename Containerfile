@@ -653,6 +653,7 @@ RUN --mount=type=cache,dst=/var/cache \
         powerbuttond \
         inputplumber \
         opengamepadui \
+        powerstation \
         steamos-manager \
         acpica-tools \
         vpower \
