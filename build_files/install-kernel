@@ -53,8 +53,3 @@ pushd /usr/lib/kernel/install.d
 mv -f 05-rpmostree.install.bak 05-rpmostree.install
 mv -f 50-dracut.install.bak 50-dracut.install
 popd
-
-# Remove leftover kernel-devel and clean up sources
-rpm -e kernel-devel
-rpm -e kernel-common
-rm -rf /usr/src/kernels/*
