@@ -296,15 +296,6 @@ if [ ! -f /etc/bazzite/fixups/hhd_service_cleanup ]; then
   touch /etc/bazzite/fixups/hhd_service_cleanup
 fi
 
-# Update Nvidia package for Flatpak if there's a mismatch
-if [[ "$SYSTEM_NVIDIA_VERSION" != "$FLATPAK_NVIDIA_VERSION" && \
-    $IMAGE_NAME =~ "nvidia" ]]; then
-  echo "Installing Nvidia Flatpak runtime"
-  flatpak install -y org.freedesktop.Platform.GL.nvidia-$SYSTEM_NVIDIA_VERSION org.freedesktop.Platform.GL32.nvidia-$SYSTEM_NVIDIA_VERSION
-else
-  echo "No Flatpak runtime changes needed"
-fi
-
 if [[ -n "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
   plymouth display-message --text="Preparing System - Please wait, this may take a while" || true
