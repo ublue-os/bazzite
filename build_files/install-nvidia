@@ -51,14 +51,3 @@ cp /etc/modprobe.d/nvidia-modeset.conf /usr/lib/modprobe.d/nvidia-modeset.conf
 sed -i 's@omit_drivers@force_drivers@g' /usr/lib/dracut/dracut.conf.d/99-nvidia.conf
 # as we need forced load, also mustpre-load intel/amd iGPU else chromium web browsers fail to use hardware acceleration
 sed -i 's@ nvidia @ i915 amdgpu nvidia @g' /usr/lib/dracut/dracut.conf.d/99-nvidia.conf
-
-# Keep Flatpak Nvidia in sync with driver version
-NV_VER=$(rpm -q --qf '%{VERSION}\n' nvidia-driver)
-NAME="org.freedesktop.Platform.GL.nvidia-${NV_VER//./-}"
-cat > /usr/lib/tmpfiles.d/ublue-nvidia-flatpak.conf <<EOF
-d /run/flatpak/extension/${NAME}/x86_64 0755 - - -
-L /run/flatpak/extension/${NAME}/x86_64/1.4 - - - - /usr/lib/nvidia/flatpak
-L /run/flatpak/extension/${NAME}/x86_64/1.6 - - - - /usr/lib/nvidia/flatpak
-L /run/flatpak/extension/${NAME}/i386/1.4 - - - - /usr/lib/nvidia/flatpak
-L /var/lib/flatpak/extension - - - - /run/flatpak/extension
-EOF
