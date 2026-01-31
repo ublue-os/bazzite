@@ -382,7 +382,8 @@ RUN --mount=type=cache,dst=/var/cache \
             kcharselect \
             kde-partitionmanager \
             plasma-discover \
-            konsole && \
+            konsole \
+            khelpcenter && \
         sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:io.github.Faugus.faugus-launcher.desktop,applications:org.gnome.Ptyxis.desktop,applications:io.github.kolunmi.Bazaar.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
         sed -i 's@\[Desktop Action new-window\]@\[Desktop Action new-window\]\nX-KDE-Shortcuts=Ctrl+Alt+T@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop && \
@@ -425,7 +426,8 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-apps-menu \
             gnome-shell-extension-launch-new-instance \
             gnome-shell-extension-places-menu \
-            gnome-shell-extension-window-list && \
+            gnome-shell-extension-window-list \
+            yelp && \
         /ctx/ghcurl "https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer" -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
         /ctx/build-gnome-extensions && \
         systemctl enable dconf-update.service \
