@@ -1,0 +1,21 @@
+name: Generate Cosign Keypair
+on:
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v4.0.0
+
+      - name: Generate keypair
+        env:
+          COSIGN_PASSWORD: ""
+        run: |
+          cosign generate-key-pair
+          echo "=== PRIVATE KEY (add as SIGNING_SECRET) ==="
+          cat cosign.key
+          echo ""
+          echo "=== PUBLIC KEY (add as cosign.pub in repo) ==="
+          cat cosign.pub
