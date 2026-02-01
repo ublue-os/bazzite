@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Luna
+Comment=Stellar OS Console Mode
+Exec=/usr/bin/luna-session
+Type=Application
+DesktopNames=luna

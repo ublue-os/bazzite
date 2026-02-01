@@ -1,0 +1,11 @@
+[Unit]
+Description=Luna Gamescope Session
+After=graphical-session-pre.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/luna-session
+Restart=no
+
+[Install]
+WantedBy=graphical-session.target

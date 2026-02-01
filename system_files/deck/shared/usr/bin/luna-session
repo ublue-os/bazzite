@@ -1,0 +1,18 @@
+#!/bin/bash
+# Luna Session — Stellar OS Console Mode
+# Starts gamescope as the compositor with Luna as the shell UI.
+# Steam runs silently in the background for library management.
+
+export GDM_SESSION_TYPE=wayland
+
+# Start Steam silently — it manages the library and launches games on demand.
+# Do not wait for it; Luna does not depend on Steam being fully ready at boot.
+steam --silent &
+
+# Hand off to gamescope. Luna app is the shell — gamescope will render it
+# fullscreen and manage all game windows that get launched afterward.
+exec gamescope \
+  --fullscreen \
+  --immediate \
+  --vrroff \
+  -- /usr/bin/luna-app
