@@ -18,17 +18,10 @@ KNOWN_IMAGE_BRANCH=$(cat $KNOWN_IMAGE_BRANCH_FILE)
 KNOWN_FEDORA_VERSION_FILE="/etc/bazzite/fedora_version"
 KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
 
-# NVIDIA DRIVER VERSION IDENTIFIERS
-if [[ $IMAGE_NAME =~ "nvidia" ]]; then
-    FLATPAK_NVIDIA_VERSION=$(flatpak list --runtime | grep nvidia | grep -Eo "[0-9]+-[0-9]+-[0-9]+" | tail -1)
-    SYSTEM_NVIDIA_VERSION=$(cat /proc/driver/nvidia/version | grep NVIDIA | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+" | tr '.' '-')
-fi
-
 if [[ "$KNOWN_IMAGE_NAME" == "$IMAGE_NAME" && \
     "$KNOWN_IMAGE_BRANCH" == "$IMAGE_BRANCH" && \
     "$KNOWN_FEDORA_VERSION" == "$FEDORA_VERSION" && \
-    "$HWS_VER_RAN" == "$HWS_VER" && \
-    "$SYSTEM_NVIDIA_VERSION" == "$FLATPAK_NVIDIA_VERSION" ]]; then
+    "$HWS_VER_RAN" == "$HWS_VER" ]]; then
   echo "Hardware setup already ran for version $HWS_VER_RAN, skipping"
   exit 0
 fi
