@@ -18,7 +18,6 @@ glib-compile-schemas /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjo
 glib-compile-schemas /usr/share/gnome-shell/extensions/add-to-steam@pupper.space/schemas
 mv /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info /usr/share/gnome-shell/extensions/caffeine@patapon.info
 glib-compile-schemas /usr/share/gnome-shell/extensions/caffeine@patapon.info/schemas
-glib-compile-schemas /usr/share/gnome-shell/extensions/vrr-monitor@OptimoSupreme/schemas
 
 # Burn My Windows
 make -C /usr/share/gnome-shell/extensions/burn-my-windows@schneegans.github.com

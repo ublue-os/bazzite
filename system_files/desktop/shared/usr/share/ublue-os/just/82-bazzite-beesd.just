@@ -123,7 +123,8 @@ configure-beesd ACTION="":
                 ;;
         esac
 
-        size_tb=$((SIZE_BYTES / 1024**4))
+        # Round up to nearest TB by adding 0.5TB-->B and flooring
+        size_tb=$(((SIZE_BYTES + 500000000000) / 1000**4))
         # Clamp filesystem size between min/max for hash table calculation
         # Avoid eating too much memory when bees starts
         size_tb=$(($size_tb < $MIN_FS_TB ? $MIN_FS_TB : $size_tb))

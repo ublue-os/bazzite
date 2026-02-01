@@ -71,9 +71,6 @@ resize-effect=true
 [org.gnome.shell.extensions.ncom.github.hermes83.compiz-alike-magic-lamp-effect]
 duration=250
 
-[org/gnome/shell/extensions/vrr-monitor]
-graph-color='#9141AC'
-
 [org/gnome/shell/extensions/desktop-cube]
 last-first-gap=false
 enable-desktop-edge-switch=false
