@@ -695,6 +695,20 @@ RUN --mount=type=cache,dst=/var/cache \
         gamescope-session-steam && \
     /ctx/cleanup
 
+# ─── Stellar OS: Luna Console Mode ───
+# Install Luna dependencies and set up the Luna session
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    dnf5 -y install \
+        python3-pyqt6 \
+        python3-pyqt6-webengine && \
+    chmod +755 /usr/bin/luna-session && \
+    chmod +755 /usr/bin/luna-app && \
+    chmod +755 /usr/share/luna/main.py && \
+    /ctx/cleanup
+
 # Cleanup & Finalize
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \

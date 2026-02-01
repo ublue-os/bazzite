@@ -1,0 +1,3 @@
+#!/bin/bash
+export PYTHONPATH=/usr/share/luna
+exec python3 /usr/share/luna/main.py

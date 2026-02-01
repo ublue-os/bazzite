@@ -1,0 +1,11 @@
+[Unit]
+Description=Luna Console Mode Application
+After=luna-session.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/luna-app
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target
