@@ -435,6 +435,11 @@ EOF
 ### Desktop-enviroment specific tweaks ###
 
 # Setup script to show dialog popups at login
+# Warn the user if they're using an unsupported nvidia card, or trying to install the wrong image for nvidia
+# Warn about limited capabilities of live sessions, and also show buttons to:
+#   - Install Bazzite
+#   - Launch Bootloader Restoring tool
+#   - Close dialog
 echo '#!/usr/bin/bash' >/usr/bin/on_gui_login.sh
 chmod +x /usr/bin/on_gui_login.sh
 mkdir -p /etc/skel/.config/autostart
@@ -445,6 +450,180 @@ if [[ ! -d /sys/firmware/efi ]]; then
         --text="Bazzite does not support CSM/Legacy Boot. Please boot into your UEFI/BIOS settings, disable CSM/Legacy Mode, and reboot." || true
     systemctl poweroff || shutdown -h now || true
 fi
+
+serve_docs(){
+  ADDRESS=127.0.0.1
+  PORT=1290
+  { python -m http.server -b $ADDRESS $PORT -d "$(dirname "$0")"/html; } >/dev/null 2>&1 &
+  if [[ $- == *i* ]]; then
+      fg >/dev/null 2>&1 || true
+  fi
+}
+
+welcome_dialog() {
+_EXITLOCK=1
+_RETVAL=0
+while [[ $_EXITLOCK -eq 1 ]]; do
+    yad \
+        --no-escape \
+        --on-top \
+        --timeout-indicator=bottom \
+        --text-align=center \
+        --buttons-layout=center \
+        --title="Welcome" \
+        --text="\nWelcome to the Live ISO for Bazzite\!\n\nThe Live ISO is designed for installation and troubleshooting.\nIt does <b>not</b> have drivers and is <b>not capable of playing games.</b>\n\nPlease <b>do not use it in benchmarks</b> as it\ndoes not represent the installed experience.\n" \
+         --button="Install Bazzite":10 \
+        --button="Launch Bootloader Restoring tool":20 \
+        --button="Close dialog":0
+    _RETVAL=$?
+
+    case $_RETVAL in
+        10)
+            liveinst & disown $!
+            _EXITLOCK=0
+            ;;
+        20)
+            /usr/bin/bootloader_restore.sh & disown $!
+            _EXITLOCK=0
+            ;;
+        0) _EXITLOCK=0 ;;
+    esac
+done
+unset -v _EXITLOCK
+unset -v _RETVAL
+}
+
+
+detect_nvidia () {
+timeout_seconds=30
+gpuinfo="$(timeout $timeout_seconds lspci -nn | grep '\[03')"
+#gpuinfo="03:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Navi 31 [Radeon RX 7900 XT/7900 XTX/7900 GRE/7900M] (rev cc)"
+
+#gpuinfo="01:00.0 VGA compatible controller [0300]: NVIDIA Corporation GK107M [GeForce GT 755M] [10de:0fcd] (rev a1)"
+
+#gpuinfo="01:00.0 VGA compatible controller: NVIDIA Corporation GM204M [GeForce GTX 980M] (rev a1)"
+
+#gpuinfo="#01:00.0 VGA compatible controller [0300]: NVIDIA Corporation TU116M [GeForce GTX 1660 Ti Mobile] [10de:2191] (rev a1)"
+
+if [ $? -ne 0 ]; then
+  echo "did not receive a reply from lspci in $timeout_seconds seconds. Exiting"
+  return 124
+fi
+echo "detected graphics cards: ""$gpuinfo"
+
+# parse nvidia gpu support status
+nvidia_count=$(echo "$gpuinfo" | grep -c 'NVIDIA')
+if ((nvidia_count == 0)); then
+  echo "No Nvidia GPU detected. Exiting…"
+  return 0
+elif ((nvidia_count > 0)); then
+  echo  "Nvidia GPU detected!"
+  architecture=$(echo "$gpuinfo" | grep -m 1 -i -o 'NVIDIA Corporation ..' | cut -d " " -f 3)
+  echo "architecture codename: ""$architecture"
+  support_status=""
+  case $architecture in
+#  Blackwell, Ada Lovelace, Ampere, Turing
+    "GB" |  "AD" |  "GA"  |  "TU")
+    support_status="supported"
+     ;;
+#   Maxwell, Pascal, Volta
+    "GM" | "GP" | "GV")
+    support_status="legacy"
+    ;;
+#  Kepler, Fermi, Tesla / Curie and older
+    "GK" | "GF" | "GT" | "MC" | "G8" | "G9" | "G7")
+    support_status="unsupported"
+    ;;
+    *)
+    support_status="unknown card"
+    echo "unknown card, exiting…"
+    return 1
+    ;;
+  esac
+  echo "support status: ""$support_status"
+
+# parse image information
+# live iso cannot use rpm-ostree, must use podman here
+image_name=$(timeout $timeout_seconds sudo podman images --format '{{ index .Names 0 }}\n' 'bazzite*')
+if [ -z "$image_name" ]; then
+  echo "did not receive a reply from podman in $timeout_seconds seconds. Exiting"
+  return 124
+fi
+#image_name="ghcr.io/ublue-os/bazzite-nvidia-open:stable"
+#image_name="ghcr.io/ublue-os/bazzite-nvidia:stable"
+#image_name="ghcr.io/ublue-os/bazzite-deck-nvidia:stable"
+#image_name="ghcr.io/ublue-os/bazzite-gnome-nvidia:stable"
+#image_name="ghcr.io/ublue-os/bazzite-gnome-nvidia-open:stable"
+#image_name="ghcr.io/ublue-os/bazzite-deck-nvidia-gnome:stable"
+#image_name="ghcr.io/ublue-os/bazzite:stable"
+#image_name="ghcr.io/ublue-os/bazzite-gnome:stable"
+#image_name="ghcr.io/ublue-os/bazzite-deck:stable"
+#image_name="ghcr.io/ublue-os/bazzite-deck-gnome:stable"
+echo "image name: ""$image_name"
+  if [[ $image_name == *-nvidia-open* ]] || [[ $image_name == *-deck-nvidia* ]]; then
+    echo "modern nvidia image detected!"
+    image="modern"
+  elif [[ $image_name == *-nvidia:* ]]; then
+    echo "legacy nvidia image detected!"
+    image="legacy"
+  else
+    echo "AMD/Intel image detected!"
+    image="amd_intel"
+  fi
+
+  title="Bazzite Hardware Helper"
+  heading=""
+  gpu_detected=""
+  recommendation=""
+  button1="I KNOW WHAT I AM DOING. Install Bazzite Anyway:0"
+  button2="Power Off:1"
+  heading2="Detected Graphics Adapter"
+  button3="GPU Information:2"
+  if [[ "$support_status" = "unsupported" ]]; then
+    serve_docs
+    heading="<b>Unsupported Graphics Card</b>\n"
+    gpu_detected="We've detected you're using a now unsupported Nvidia GPU.\n
+    Unfortunately, we cannot provide good support for your hardware ourselves.\n\n"
+    recommendation="Please read our <a href=
+    \"http://127.0.0.1:1290/General/FAQ/#will-you-add-support-for-even-older-nvidia-graphics-cards\"><b>documentation</b></a> for more information.\n"
+  elif [[ "$support_status" = "legacy" ]] && [[ "$image" = "legacy" ]]; then
+    echo "legacy GPU matches legacy image. Nothing to do. Exiting…"
+    return 0
+  elif [[ "$support_status" = "supported" ]] && [[ "$image"  = "modern"  ]]; then
+    echo "supported GPU matches modern image. Nothing to do. Exiting…"
+    return 0
+  elif [[ "$support_status" = "supported" ]] && [[ "$image"  != "modern" ]]; then
+    heading="<b>WRONG IMAGE DETECTED</b>\n"
+    gpu_detected="Your modern NVIDIA graphics card is better supported by a different version of Bazzite.\n\n"
+    recommendation="Pick \"<b>Nvidia (RTX Series | GTX 16xx Series+)</b>\" as \"vendor of your primary GPU\" on the website to download and install the correct version instead."
+  elif [[ "$support_status" = "legacy" ]] && [[ "$image" != "legacy" ]]; then
+    heading="<b>WRONG IMAGE DETECTED</b>\n"
+    gpu_detected="Your legacy NVIDIA graphics card is better supported by a different version of Bazzite.\n\n"
+    recommendation="Pick \"<b>Nvidia (GTX 9xx-10xx Series)</b>\" as \"vendor of your primary GPU\" on the website to download and install the correct version instead."
+  fi
+  while true; do
+  yad --warning --buttons-layout=center --text-align=center --title="$title" --text="$heading""$gpu_detected""$recommendation"\
+      --button="$button1" \
+      --button="$button2" \
+      --button="$button3"
+      case $? in
+           0) return 0;;
+           1) systemctl poweroff || shutdown -h now || true
+             break;;
+           2) yad --info --title="$heading2" --text="$gpuinfo" ;;
+      esac
+  done
+fi
+}
+
+detect_nvidia
+result=$?
+if [ $result -eq 0 ] || [ $result -eq 1 ] || [ $result -eq 124 ]
+then
+  echo 'launch welcome dialog'
+    welcome_dialog
+fi
+
 EOF
 
 cat >/etc/skel/.config/autostart/on_gui_login.desktop <<'EOF'
@@ -453,16 +632,6 @@ Exec=/usr/bin/on_gui_login.sh
 Icon=application-x-shellscript
 Type=Application
 EOF
-
-# Warn the user about non functional Nvidia drivers
-if [[ $imageref == *-nvidia* ]]; then
-    cat >>/usr/bin/on_gui_login.sh <<'EOF'
-{ yad --title="Warning" --text="$(</dev/stdin)" || true; } <<'WARNINGEOF'
-Nvidia drivers might not be functional on live isos.
-Please do not use them in benchmarks.
-WARNINGEOF
-EOF
-fi
 
 # Use GSK_RENDERER=gl for nvidia, workaround for GTK apps not opening.
 if [[ $imageref == *-nvidia* ]]; then
@@ -507,42 +676,6 @@ rm -vf /etc/skel/.config/autostart/steam*.desktop
 # Remove packages that shouldnt be used in a live session
 dnf -yq remove steam lutris bazaar || :
 
-# Warn about limited capabilities of live sessions, and also show buttons to:
-#   - Install Bazzite
-#   - Launch Bootloader Restoring tool
-#   - Close dialog
-cat >>/usr/bin/on_gui_login.sh <<'EOF'
-_EXITLOCK=1
-_RETVAL=0
-while [[ $_EXITLOCK -eq 1 ]]; do
-    yad \
-        --no-escape \
-        --on-top \
-        --timeout-indicator=bottom \
-        --text-align=center \
-        --buttons-layout=center \
-        --title="Welcome" \
-        --text="\nWelcome to the Live ISO for Bazzite\!\n\nThe Live ISO is designed for installation and troubleshooting.\nBecause of this, it is <b>not capable of playing games.</b>\n\nPlease do not use it for benchmarks as it\ndoes not represent the installed experience.\n" \
-        --button="Install Bazzite":10 \
-        --button="Launch Bootloader Restoring tool":20 \
-        --button="Close dialog":0
-    _RETVAL=$?
-
-    case $_RETVAL in
-        10)
-            liveinst & disown $!
-            _EXITLOCK=0
-            ;;
-        20)
-            /usr/bin/bootloader_restore.sh & disown $!
-            _EXITLOCK=0
-            ;;
-        0) _EXITLOCK=0 ;;
-    esac
-done
-unset -v _EXITLOCK
-unset -v _RETVAL
-EOF
 
 (
     wallpaper_url=https://github.com/ublue-os/bazzite/raw/refs/heads/main/press_kit/art/Convergence_Wallpaper_DX.jxl
