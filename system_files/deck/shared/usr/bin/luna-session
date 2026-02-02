@@ -120,16 +120,22 @@ if check_crash_loop; then
 fi
 
 # Verify Luna application exists
-if [[ ! -d "$LUNA_APP_DIR" ]]; then
-    log_crash 127 "Luna application directory not found: $LUNA_APP_DIR"
-    fallback_to_kde "Luna application not found at $LUNA_APP_DIR"
+if [[ ! -f "$LUNA_APP_DIR/luna" ]]; then
+    log_crash 127 "Luna application not found: $LUNA_APP_DIR/luna"
+    fallback_to_kde "Luna application not found at $LUNA_APP_DIR/luna"
 fi
 
 log "Launching Luna under gamescope"
 
+# Start Steam silently in the background for library management
+if command -v steam &>/dev/null; then
+    log "Starting Steam in background"
+    steam -silent &
+    STEAM_PID=$!
+fi
+
 # Launch Luna under gamescope
-# gamescope-session will handle the compositor setup
-# Luna runs as the primary client application
+# gamescope manages the compositor; Luna is the primary UI client
 EXIT_CODE=0
 gamescope \
     --steam \
@@ -137,7 +143,12 @@ gamescope \
     -f \
     --xwayland-count 2 \
     --force-grab-cursor \
-    -- "$LUNA_APP_DIR/luna" 2>&1 | tee -a "$LUNA_SESSION_LOG" || EXIT_CODE=$?
+    -- python3 "$LUNA_APP_DIR/luna" 2>&1 | tee -a "$LUNA_SESSION_LOG" || EXIT_CODE=$?
+
+# Clean up background Steam
+if [[ -n "${STEAM_PID:-}" ]]; then
+    kill "$STEAM_PID" 2>/dev/null || true
+fi
 
 if [[ "$EXIT_CODE" -ne 0 ]]; then
     log "Luna exited with code $EXIT_CODE"

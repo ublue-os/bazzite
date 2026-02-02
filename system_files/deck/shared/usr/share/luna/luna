@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""
+Luna Console Mode - Stellar OS Gaming Interface
+Main entry point for the Luna application.
+"""
+
+import sys
+import os
+import signal
+
+# Ensure our module path is available
+LUNA_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(LUNA_DIR, "py"))
+
+from PySide6.QtWidgets import QApplication
+from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
+from PySide6.QtCore import QUrl, QCoreApplication
+from PySide6.QtGui import QGuiApplication
+
+from game_scanner import GameScanner
+from game_launcher import GameLauncher
+from config_manager import ConfigManager
+from wifi_manager import WiFiManager
+from audio_manager import AudioManager
+
+
+def main():
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+    QCoreApplication.setApplicationName("Luna")
+    QCoreApplication.setOrganizationName("StellarOS")
+
+    app = QGuiApplication(sys.argv)
+
+    engine = QQmlApplicationEngine()
+
+    config = ConfigManager()
+    scanner = GameScanner()
+    launcher = GameLauncher(config)
+    wifi = WiFiManager()
+    audio = AudioManager(LUNA_DIR)
+
+    engine.rootContext().setContextProperty("configManager", config)
+    engine.rootContext().setContextProperty("gameScanner", scanner)
+    engine.rootContext().setContextProperty("gameLauncher", launcher)
+    engine.rootContext().setContextProperty("wifiManager", wifi)
+    engine.rootContext().setContextProperty("audioManager", audio)
+    engine.rootContext().setContextProperty("lunaDir", LUNA_DIR)
+
+    qml_path = os.path.join(LUNA_DIR, "qml", "main.qml")
+    engine.load(QUrl.fromLocalFile(qml_path))
+
+    if not engine.rootObjects():
+        print("ERROR: Failed to load Luna QML interface", file=sys.stderr)
+        sys.exit(1)
+
+    # Start background game scanning
+    scanner.scan_all()
+
+    sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()

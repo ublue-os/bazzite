@@ -1,0 +1,1 @@
+singleton Theme 1.0 Theme.qml
