@@ -497,14 +497,6 @@ unset -v _RETVAL
 detect_nvidia () {
 timeout_seconds=30
 gpuinfo="$(timeout $timeout_seconds lspci -nn | grep '\[03')"
-#gpuinfo="03:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Navi 31 [Radeon RX 7900 XT/7900 XTX/7900 GRE/7900M] (rev cc)"
-
-#gpuinfo="01:00.0 VGA compatible controller [0300]: NVIDIA Corporation GK107M [GeForce GT 755M] [10de:0fcd] (rev a1)"
-
-#gpuinfo="01:00.0 VGA compatible controller: NVIDIA Corporation GM204M [GeForce GTX 980M] (rev a1)"
-
-#gpuinfo="#01:00.0 VGA compatible controller [0300]: NVIDIA Corporation TU116M [GeForce GTX 1660 Ti Mobile] [10de:2191] (rev a1)"
-
 if [ $? -ne 0 ]; then
   echo "did not receive a reply from lspci in $timeout_seconds seconds. Exiting"
   return 124
@@ -549,16 +541,6 @@ if [ -z "$image_name" ]; then
   echo "did not receive a reply from podman in $timeout_seconds seconds. Exiting"
   return 124
 fi
-#image_name="ghcr.io/ublue-os/bazzite-nvidia-open:stable"
-#image_name="ghcr.io/ublue-os/bazzite-nvidia:stable"
-#image_name="ghcr.io/ublue-os/bazzite-deck-nvidia:stable"
-#image_name="ghcr.io/ublue-os/bazzite-gnome-nvidia:stable"
-#image_name="ghcr.io/ublue-os/bazzite-gnome-nvidia-open:stable"
-#image_name="ghcr.io/ublue-os/bazzite-deck-nvidia-gnome:stable"
-#image_name="ghcr.io/ublue-os/bazzite:stable"
-#image_name="ghcr.io/ublue-os/bazzite-gnome:stable"
-#image_name="ghcr.io/ublue-os/bazzite-deck:stable"
-#image_name="ghcr.io/ublue-os/bazzite-deck-gnome:stable"
 echo "image name: ""$image_name"
   if [[ $image_name == *-nvidia-open* ]] || [[ $image_name == *-deck-nvidia* ]]; then
     echo "modern nvidia image detected!"
