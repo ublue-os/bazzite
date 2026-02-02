@@ -1,0 +1,28 @@
+#!/usr/bin/bash
+#
+# luna-crash-notify - Show a KDE notification about Luna crash
+#
+# This runs once on KDE login after Luna crashes, notifies the user,
+# then removes itself from autostart.
+#
+
+LUNA_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/luna"
+LUNA_CRASH_LOG="$LUNA_CONFIG_DIR/logs/crash.log"
+AUTOSTART_FILE="$HOME/.config/autostart/luna-crash-notice.desktop"
+
+# Show notification via KDE
+if command -v kdialog &>/dev/null; then
+    kdialog \
+        --title "Luna Console Mode - Crash Recovery" \
+        --msgbox "Luna console mode encountered an error and has been recovered to KDE desktop.\n\nCrash log saved to:\n$LUNA_CRASH_LOG\n\nTo return to Luna console mode, open a terminal and run:\n  luna-console\n\nTo view the crash log:\n  luna-crash-log" \
+        2>/dev/null &
+elif command -v notify-send &>/dev/null; then
+    notify-send \
+        -u critical \
+        "Luna Console Mode - Crash Recovery" \
+        "Luna crashed and recovered to KDE. Crash log: $LUNA_CRASH_LOG. Run 'luna-console' to restart Luna." \
+        2>/dev/null &
+fi
+
+# Clean up: remove this autostart entry so it only runs once
+rm -f "$AUTOSTART_FILE"

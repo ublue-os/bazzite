@@ -1,0 +1,60 @@
+#!/usr/bin/bash
+#
+# luna-crash-log - Quick access to Luna crash logs from KDE
+#
+# Usage:
+#   luna-crash-log            Show crash log in pager
+#   luna-crash-log --tail     Follow the session log in real-time
+#   luna-crash-log --clear    Clear all Luna logs
+#
+
+LUNA_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/luna"
+LUNA_LOG_DIR="$LUNA_CONFIG_DIR/logs"
+LUNA_CRASH_LOG="$LUNA_LOG_DIR/crash.log"
+LUNA_SESSION_LOG="$LUNA_LOG_DIR/session.log"
+
+case "${1:-}" in
+    --tail|-f)
+        if [[ -f "$LUNA_SESSION_LOG" ]]; then
+            tail -f "$LUNA_SESSION_LOG"
+        else
+            echo "No session log found at $LUNA_SESSION_LOG"
+            exit 1
+        fi
+        ;;
+    --clear)
+        echo "Clearing all Luna logs..."
+        rm -f "$LUNA_CRASH_LOG" "$LUNA_SESSION_LOG"
+        echo "Done."
+        ;;
+    --help|-h)
+        echo "luna-crash-log - View Luna crash and session logs"
+        echo ""
+        echo "Usage:"
+        echo "  luna-crash-log            Show crash log"
+        echo "  luna-crash-log --tail     Follow session log in real-time"
+        echo "  luna-crash-log --clear    Clear all Luna logs"
+        echo ""
+        echo "Log locations:"
+        echo "  Crash log:   $LUNA_CRASH_LOG"
+        echo "  Session log: $LUNA_SESSION_LOG"
+        ;;
+    "")
+        if [[ -f "$LUNA_CRASH_LOG" ]]; then
+            less "$LUNA_CRASH_LOG"
+        else
+            echo "No crash log found at $LUNA_CRASH_LOG"
+            echo ""
+            echo "Luna has not recorded any crashes."
+            echo "Log locations:"
+            echo "  Crash log:   $LUNA_CRASH_LOG"
+            echo "  Session log: $LUNA_SESSION_LOG"
+            exit 0
+        fi
+        ;;
+    *)
+        echo "Unknown option: $1"
+        echo "Run 'luna-crash-log --help' for usage."
+        exit 1
+        ;;
+esac

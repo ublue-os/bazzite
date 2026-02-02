@@ -1,0 +1,115 @@
+#!/usr/bin/bash
+#
+# luna-console - Switch from KDE desktop to Luna console mode
+#
+# Terminal command to force Luna console mode to start.
+# Can be run from any KDE terminal session.
+#
+# Usage:
+#   luna-console              Start Luna console mode (reboot into Luna session)
+#   luna-console --reset      Clear crash logs and crash loop counter, then start
+#   luna-console --status     Show Luna session status and recent crash info
+#   luna-console --log        Show the crash log
+#
+
+set -e
+
+LUNA_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/luna"
+LUNA_LOG_DIR="$LUNA_CONFIG_DIR/logs"
+LUNA_CRASH_LOG="$LUNA_LOG_DIR/crash.log"
+LUNA_SESSION_LOG="$LUNA_LOG_DIR/session.log"
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < "$IMAGE_INFO" 2>/dev/null || echo "kinoite")
+
+usage() {
+    echo "luna-console - Switch to Luna console mode"
+    echo ""
+    echo "Usage:"
+    echo "  luna-console              Start Luna console mode"
+    echo "  luna-console --reset      Clear crash state and start Luna"
+    echo "  luna-console --status     Show Luna session status"
+    echo "  luna-console --log        Show the crash log"
+    echo "  luna-console --help       Show this help"
+}
+
+show_status() {
+    echo "=== Luna Console Status ==="
+    echo ""
+
+    if [[ -f "$LUNA_CRASH_LOG" ]]; then
+        local crash_count
+        crash_count=$(grep -c "^LUNA CRASH REPORT" "$LUNA_CRASH_LOG" 2>/dev/null || echo "0")
+        echo "Total crashes logged: $crash_count"
+        echo "Crash log: $LUNA_CRASH_LOG"
+        echo ""
+
+        echo "--- Last Crash ---"
+        # Show the last crash entry
+        awk '/^========/{block=""} {block=block $0 "\n"} END{printf "%s", block}' "$LUNA_CRASH_LOG" 2>/dev/null \
+            || echo "  Could not read crash log"
+    else
+        echo "No crash log found. Luna has not crashed."
+    fi
+
+    echo ""
+    if [[ -f "$LUNA_SESSION_LOG" ]]; then
+        echo "--- Recent Session Log ---"
+        tail -10 "$LUNA_SESSION_LOG"
+    fi
+}
+
+show_log() {
+    if [[ -f "$LUNA_CRASH_LOG" ]]; then
+        less "$LUNA_CRASH_LOG"
+    else
+        echo "No crash log found at $LUNA_CRASH_LOG"
+        exit 1
+    fi
+}
+
+reset_crash_state() {
+    echo "Clearing Luna crash logs and crash loop state..."
+    rm -f "$LUNA_CRASH_LOG"
+    echo "Crash state cleared."
+}
+
+start_luna() {
+    echo "Switching to Luna console mode..."
+    echo ""
+    echo "The display manager will restart and Luna will launch."
+    echo "If Luna crashes, you will be automatically returned to KDE."
+    echo ""
+
+    # Remove any leftover crash notification autostart
+    rm -f "$HOME/.config/autostart/luna-crash-notice.desktop"
+
+    # Set the SDDM session to luna-session and restart
+    # This uses the existing steamos-session-select infrastructure
+    # but targets the luna session
+    steamos-session-select luna
+}
+
+case "${1:-}" in
+    --help|-h)
+        usage
+        ;;
+    --status|-s)
+        show_status
+        ;;
+    --log|-l)
+        show_log
+        ;;
+    --reset|-r)
+        reset_crash_state
+        start_luna
+        ;;
+    "")
+        start_luna
+        ;;
+    *)
+        echo "Unknown option: $1"
+        usage
+        exit 1
+        ;;
+esac

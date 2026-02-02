@@ -1,0 +1,148 @@
+#!/usr/bin/bash
+#
+# luna-session - Main Luna console mode session wrapper
+#
+# Launches the Luna console interface under gamescope.
+# If Luna crashes, logs the crash and falls back to KDE Plasma desktop.
+#
+
+set -o pipefail
+
+LUNA_APP_DIR="/usr/share/luna"
+LUNA_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/luna"
+LUNA_LOG_DIR="$LUNA_CONFIG_DIR/logs"
+LUNA_CRASH_LOG="$LUNA_LOG_DIR/crash.log"
+LUNA_SESSION_LOG="$LUNA_LOG_DIR/session.log"
+MAX_CRASH_COUNT=3
+CRASH_WINDOW_SECONDS=300
+
+mkdir -p "$LUNA_CONFIG_DIR" "$LUNA_LOG_DIR"
+
+log() {
+    local timestamp
+    timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
+    echo "[$timestamp] $*" | tee -a "$LUNA_SESSION_LOG"
+}
+
+log_crash() {
+    local timestamp exit_code
+    timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
+    exit_code="$1"
+    shift
+    {
+        echo "========================================"
+        echo "LUNA CRASH REPORT"
+        echo "========================================"
+        echo "Timestamp:   $timestamp"
+        echo "Exit Code:   $exit_code"
+        echo "Description: $*"
+        echo ""
+        echo "--- System Info ---"
+        echo "Kernel:      $(uname -r)"
+        echo "Uptime:      $(uptime -p 2>/dev/null || echo 'unknown')"
+        echo "Memory:"
+        free -h 2>/dev/null | head -3 || echo "  unavailable"
+        echo ""
+        echo "GPU:"
+        lspci 2>/dev/null | grep -i 'vga\|3d\|display' || echo "  unavailable"
+        echo ""
+        echo "--- Gamescope Status ---"
+        pgrep -a gamescope 2>/dev/null || echo "  gamescope not running"
+        echo ""
+        echo "--- Recent Journal (luna/gamescope) ---"
+        journalctl --user --no-pager -n 50 --since "-5min" 2>/dev/null \
+            | grep -iE 'luna|gamescope|wayland|crash|error|fatal|segfault' \
+            || echo "  no relevant journal entries"
+        echo ""
+        echo "--- Session Log Tail ---"
+        tail -30 "$LUNA_SESSION_LOG" 2>/dev/null || echo "  no session log"
+        echo ""
+        echo "========================================"
+        echo ""
+    } >> "$LUNA_CRASH_LOG"
+}
+
+# Check for crash loop: if Luna has crashed MAX_CRASH_COUNT times
+# within CRASH_WINDOW_SECONDS, go straight to KDE
+check_crash_loop() {
+    local crash_count=0
+    local cutoff
+    cutoff="$(date -d "-${CRASH_WINDOW_SECONDS} seconds" '+%Y-%m-%d %H:%M:%S' 2>/dev/null)"
+
+    if [[ -f "$LUNA_CRASH_LOG" && -n "$cutoff" ]]; then
+        crash_count=$(grep -c "^Timestamp:" "$LUNA_CRASH_LOG" 2>/dev/null | tail -1)
+        # Count only recent crashes
+        crash_count=$(awk -v cutoff="$cutoff" '
+            /^Timestamp:/ {
+                ts = substr($0, 14)
+                if (ts >= cutoff) count++
+            }
+            END { print count+0 }
+        ' "$LUNA_CRASH_LOG" 2>/dev/null)
+    fi
+
+    if [[ "$crash_count" -ge "$MAX_CRASH_COUNT" ]]; then
+        return 0  # crash loop detected
+    fi
+    return 1
+}
+
+fallback_to_kde() {
+    local reason="$1"
+    log "FAILSAFE: Falling back to KDE Plasma desktop. Reason: $reason"
+    log "Crash log available at: $LUNA_CRASH_LOG"
+
+    # Notify user on next KDE login
+    mkdir -p "$HOME/.config/autostart"
+    cat > "$HOME/.config/autostart/luna-crash-notice.desktop" << 'DESKTOP_EOF'
+[Desktop Entry]
+Type=Application
+Name=Luna Crash Notice
+Exec=luna-crash-notify
+Terminal=false
+X-KDE-autostart-phase=2
+X-KDE-StartupNotify=false
+DESKTOP_EOF
+
+    # Switch session to KDE Plasma
+    steamos-session-select desktop
+    exit 0
+}
+
+# --- Main ---
+
+log "Luna session starting"
+
+# Check for crash loop before attempting to start
+if check_crash_loop; then
+    log_crash 0 "Crash loop detected ($MAX_CRASH_COUNT crashes in ${CRASH_WINDOW_SECONDS}s) - aborting launch"
+    fallback_to_kde "Crash loop detected ($MAX_CRASH_COUNT crashes in ${CRASH_WINDOW_SECONDS}s). Check $LUNA_CRASH_LOG for details."
+fi
+
+# Verify Luna application exists
+if [[ ! -d "$LUNA_APP_DIR" ]]; then
+    log_crash 127 "Luna application directory not found: $LUNA_APP_DIR"
+    fallback_to_kde "Luna application not found at $LUNA_APP_DIR"
+fi
+
+log "Launching Luna under gamescope"
+
+# Launch Luna under gamescope
+# gamescope-session will handle the compositor setup
+# Luna runs as the primary client application
+EXIT_CODE=0
+gamescope \
+    --steam \
+    -e \
+    -f \
+    --xwayland-count 2 \
+    --force-grab-cursor \
+    -- "$LUNA_APP_DIR/luna" 2>&1 | tee -a "$LUNA_SESSION_LOG" || EXIT_CODE=$?
+
+if [[ "$EXIT_CODE" -ne 0 ]]; then
+    log "Luna exited with code $EXIT_CODE"
+    log_crash "$EXIT_CODE" "Luna process terminated unexpectedly"
+    fallback_to_kde "Luna crashed with exit code $EXIT_CODE"
+else
+    log "Luna session ended normally (exit code 0)"
+fi

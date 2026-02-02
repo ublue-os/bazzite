@@ -1,0 +1,6 @@
+[Desktop Entry]
+Exec=/usr/bin/luna-session
+TryExec=/usr/bin/luna-session
+DesktopNames=Luna
+Name=Luna Console Mode
+Comment=Luna Console Mode - Stellar OS gaming interface with crash recovery

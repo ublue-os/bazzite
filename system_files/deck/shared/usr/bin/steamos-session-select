@@ -76,6 +76,10 @@ case "$session" in
     session_launcher="gamescope-session.desktop"
     create_sentinel=1
   ;;
+  luna)
+    session_launcher="luna-session.desktop"
+    create_sentinel=1
+  ;;
   *)
     echo >&2 "!! Unrecognized session '$session'"
     exit 1
