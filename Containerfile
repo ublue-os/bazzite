@@ -654,7 +654,9 @@ RUN --mount=type=cache,dst=/var/cache \
         qt6-qtvirtualkeyboard \
         xorg-x11-server-Xvfb \
         python-vdf \
-        python-crcmod && \
+        python-crcmod \
+        python3-pyside6 \
+        qt6-qtmultimedia && \
     git clone https://github.com/bazzite-org/jupiter-dock-updater-bin.git \
         --depth 1 \
         /tmp/jupiter-dock-updater-bin && \
