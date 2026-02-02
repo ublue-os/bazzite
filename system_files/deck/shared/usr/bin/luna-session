@@ -135,11 +135,13 @@ if command -v steam &>/dev/null; then
 fi
 
 # Launch Luna under gamescope
-# gamescope manages the compositor; Luna is the primary UI client
+# gamescope manages the compositor; Luna runs as an Xwayland client
+# --steam and -e are excluded (those are Steam-specific protocols that
+# cause segfaults / broken pipe with non-Steam Wayland clients)
+export QT_QPA_PLATFORM=xcb
+export QT_SCALE_FACTOR=1
 EXIT_CODE=0
 gamescope \
-    --steam \
-    -e \
     -f \
     --xwayland-count 2 \
     --force-grab-cursor \

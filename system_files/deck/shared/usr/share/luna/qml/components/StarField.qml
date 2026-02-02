@@ -92,7 +92,7 @@ Item {
         Component.onCompleted: shootAnim.start()
     }
 
-    // Subtle nebula glow spots
+    // Subtle nebula glow spots (soft colored circles)
     Repeater {
         model: 3
 
@@ -104,16 +104,8 @@ Item {
             width: 300
             height: 300
             radius: 150
-            color: "transparent"
+            color: index === 0 ? Theme.accentBlue : Theme.accentCyan
             opacity: 0.03
-
-            RadialGradient {
-                anchors.fill: parent
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: index === 0 ? Theme.accentBlue : Theme.accentCyan }
-                    GradientStop { position: 1.0; color: "transparent" }
-                }
-            }
 
             NumberAnimation on opacity {
                 from: 0.02; to: 0.06
