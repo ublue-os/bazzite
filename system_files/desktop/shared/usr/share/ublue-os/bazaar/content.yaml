@@ -45,17 +45,15 @@ rows:
     - expand-horizontally: true
       classes:
         - bazzite-section
-        - gaming-section
+        # TODO: add this class to the css section
+        - launchers-section
       category:
         title:
-          en: "Gaming"
-          el: "Παιχνίδια"
-          ru: "Игры"
+          en: "Launchers & Storefronts"
         subtitle:
-          en: "Protocol 3: Protect the Pilot"
-          el: "Πρωτόκολλο 3: Προστατέψτε τον Πιλότο"
-          ru: "Протокол 3: Защитить пилота"
-        banner: file:///usr/share/ublue-os/bazaar/gaming.png
+          en: "🚀🚀🚀"
+        # some sort of rocket ship with a penguin or something?
+        banner: file:///usr/share/ublue-os/bazaar/launchers.png
         banner-fit: contain
         banner-height: 300
         banner-text-halign: start
@@ -67,46 +65,115 @@ rows:
           - io.github.Faugus.faugus-launcher
           - org.prismlauncher.PrismLauncher
           - io.mrarm.mcpelauncher
-          - at.vintagestory.VintageStory
           - org.vinegarhq.Sober
-          - org.zdoom.GZDoom
-          - org.zdoom.Raze
-          - org.openmw.OpenMW
+          - at.vintagestory.VintageStory
           - dev.goats.xivlauncher
           - net.retrodeck.retrodeck
           - org.libretro.RetroArch
           - page.kramo.Cartridges
           - com.github._0negal.Viper
-          - info.cemu.Cemu
-          - org.DolphinEmu.dolphin-emu
-          - io.github.shiiion.primehack
-          - net.kuribo64.melonDS
+
+  - sections:
+    - expand-horizontally: true
+      classes:
+        - bazzite-section
+        # TODO: add this class to the css section
+        - emulators-section
+      category:
+        title:
+          en: "Emulators"
+        subtitle:
+          en: "The past is the future or something idk"
+        # penguin playing an NES or Atari ?
+        banner: file:///usr/share/ublue-os/bazaar/emulators.png
+        banner-fit: contain
+        banner-height: 300
+        banner-text-halign: start
+        banner-text-valign: center
+        banner-text-label-xalign: 0.0
+        appids:
+          - app.xemu.xemu
           - com.snes9x.Snes9x
+          - com.supermodel3.Supermodel
+          - info.cemu.Cemu
+          - io.github.dosbox-staging
+          - io.github.doukutsu_rs.doukutsu-rs
+          - io.github.stella_emu.Stella
           - io.mgba.mGBA
-          - org.ppsspp.PPSSPP
+          - net.kuribo64.melonDS
           - net.pcsx2.PCSX2
           - net.rpcs3.RPCS3
-          - app.xemu.xemu
+          - org.DolphinEmu.dolphin-emu
           - org.mamedev.MAME
-          - io.github.stella_emu.Stella
-          - org.scummvm.ScummVM
-          - io.github.dosbox-staging
+          - org.ppsspp.PPSSPP
           - rs.ruffle.Ruffle
-          - com.supermodel3.Supermodel
-          - net.hhoney.rota
-          - io.github.doukutsu_rs.doukutsu-rs
-          - com.github.k4zmu2a.spacecadetpinball
-          - sh.ppy.osu
-          - com.pokemmo.PokeMMO
+
+  - sections:
+    - expand-horizontally: true
+      classes:
+        - bazzite-section
+        # TODO: add this class to the css section
+        - games-section
+      category:
+        title:
+          en: "Games"
+        subtitle:
+          en: "Funny penguin knockoff games etc"
+        # Just reuse the old gaming.png maybe
+        banner: file:///usr/share/ublue-os/bazaar/games.png
+        banner-fit: contain
+        banner-height: 300
+        banner-text-halign: start
+        banner-text-valign: center
+        banner-text-label-xalign: 0.0
+        appids:
           - com.etlegacy.ETLegacy
+          - com.github.k4zmu2a.spacecadetpinball
+          - com.pokemmo.PokeMMO
           - com.realm667.Wolfenstein_Blade_of_Agony
+          - io.github.shiiion.primehack
+          - net.hhoney.rota
           - net.stabyourself.nottetris2
-          - org.srb2.SRB2
-          - org.srb2.SRB2Kart
+          - net.supertuxkart.SuperTuxKart
           - org.endlessaccess.threadbare
           - org.kartkrew.RingRacers
+          - org.openmw.OpenMW
+          - org.srb2.SRB2
+          - org.srb2.SRB2Kart
           - org.supertuxproject.SuperTux
-          - net.supertuxkart.SuperTuxKart
+          - org.zdoom.Raze
+          - sh.ppy.osu
+
+          # EOL I'm pretty sure?
+          - org.zdoom.GZDoom
+
+  - sections:
+    - expand-horizontally: true
+      classes:
+        - bazzite-section
+        # TODO: add this class to the css section
+        - engines-section
+      category:
+        title:
+          en: "Game Engines"
+        subtitle:
+          en: "Get developing!"
+        # Development themed image
+        banner: file:///usr/share/ublue-os/bazaar/engines.png
+        banner-fit: contain
+        banner-height: 300
+        banner-text-halign: start
+        banner-text-valign: center
+        banner-text-label-xalign: 0.0
+        appids:
+          - com.unity.UnityHub
+          - com.zquestclassic.ZQuest
+          - io.github.MakovWait.Godots
+          - org.godotengine.Godot
+          - org.scummvm.ScummVM
+          - org.upbge.UPBGE
+
+          # probably missing lots
 
   - sections:
     - expand-horizontally: true
