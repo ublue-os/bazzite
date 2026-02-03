@@ -492,6 +492,7 @@ unset -v _EXITLOCK
 unset -v _RETVAL
 }
 
+
 detect_nvidia () {
 timeout_seconds=30
 gpuinfo="$(timeout $timeout_seconds lspci -nn | grep '\[03')"
