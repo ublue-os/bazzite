@@ -523,13 +523,11 @@ elif ((nvidia_count > 0)); then
     support_status="legacy"
     ;;
 #  Kepler, Fermi, Tesla / Curie and older
-    "GK" | "GF" | "GT" | "MC" | "G8" | "G9" | "G7")
+    "GK" | "GF" | "GT" | "MC" | "G8" | "G9" | "G7" | "NV")
     support_status="unsupported"
     ;;
     *)
-    support_status="unknown card"
-    echo "unknown card, exiting…"
-    return 1
+    support_status="unknown"
     ;;
   esac
   echo "support status: ""$support_status"
@@ -564,10 +562,14 @@ echo "image name: ""$image_name"
   if [[ "$support_status" = "unsupported" ]]; then
     serve_docs
     heading="<b>Unsupported Graphics Card</b>\n"
-    gpu_detected="We've detected you're using a now unsupported Nvidia GPU.\n
+    gpu_detected="We've detected you're using a now unsupported NVIDIA GPU.\n
     Unfortunately, we cannot provide good support for your hardware ourselves.\n\n"
     recommendation="Please read our <a href=
     \"http://127.0.0.1:1290/General/FAQ/#will-you-add-support-for-even-older-nvidia-graphics-cards\"><b>documentation</b></a> for more information.\n"
+  elif [[ "$support_status" = "unknown" ]]; then
+        heading="<b>Unknown Graphics Card</b>\n"
+        gpu_detected="We could not identify your NVIDIA graphics card.\n\n"
+        recommendation="It is not recommended to install Bazzite as we cannot guarantee your hardware will work."
   elif [[ "$support_status" = "legacy" ]] && [[ "$image" = "legacy" ]]; then
     echo "legacy GPU matches legacy image. Nothing to do. Exiting…"
     return 0
