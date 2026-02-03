@@ -500,6 +500,7 @@ if [ $? -ne 0 ]; then
   echo "did not receive a reply from lspci in $timeout_seconds seconds. Exiting"
   return 124
 fi
+
 echo "detected graphics cards: ""$gpuinfo"
 
 # parse nvidia gpu support status
