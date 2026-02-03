@@ -1,0 +1,13 @@
+[Unit]
+Description=Prevent sleep when streaming with Sunshine
+After=sunshine.service
+BindsTo=sunshine.service
+PartOf=sunshine.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/systemd-inhibit --what=idle:sleep --who=SunshineInhibit --why="Prevent sleep when streaming with Sunshine" --mode=block /usr/bin/sleep infinity
+Restart=on-failure
+
+[Install]
+WantedBy=sunshine.service
