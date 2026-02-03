@@ -476,7 +476,6 @@ while [[ $_EXITLOCK -eq 1 ]]; do
         --button="Launch Bootloader Restoring tool":20 \
         --button="Close dialog":0
     _RETVAL=$?
-
     case $_RETVAL in
         10)
             liveinst & disown $!
