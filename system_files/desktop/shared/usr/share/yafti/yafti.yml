@@ -38,7 +38,7 @@ screens:
     actions:
       - id: "toggle-iwd"
         title: "Toggle iwd"
-        description:: "Toggles iwd ON/OFF"
+        description: "Toggles iwd ON/OFF"
         default: false
         script: "ujust toggle-iwd toggle"
       - id: "decky-loader"
