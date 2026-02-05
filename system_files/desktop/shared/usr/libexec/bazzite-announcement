@@ -2,7 +2,7 @@
 # Deliver announcements as notifications.
 #
 # Related files:
-#   - /usr/share/ublue-os/announcements/*.msg : Announcement files.
+#   - /usr/share/ublue-os/announcements/*.msg.json : Announcement files.
 #   - /etc/xdg/bazzite-announcement.desktop : Shortcut that launches the announcement script when the user logins.
 #   - /usr/libexec/bazzite-announcement : Script that delivers the announcements as notifications.
 
@@ -26,9 +26,9 @@ if [[ $UID -eq 0 ]]; then
     exit 1
 fi
 
-for msg_file in "$ANNOUNCEMENTS_DIR"/*.msg; do
+for msg_file in "$ANNOUNCEMENTS_DIR"/*.msg.json; do
     # We omit not existing files and example files.
-    if [[ ! -f "$msg_file" || $msg_file == */example.msg ]]; then
+    if [[ ! -f "$msg_file" || $msg_file == */example.msg.json ]]; then
         continue
     fi
 
@@ -41,31 +41,34 @@ for msg_file in "$ANNOUNCEMENTS_DIR"/*.msg; do
 
     sleep 1 # Small delay between notifications to avoid notify-send being overwhelmed.
     (
-        # We source the msg file. We expect the following shell variables:
-        #   - _msg_title: The title of the message. Must be short
-        #   - _msg_body: The url to open when the button "See more" is pressed.
-        #   - _btn_see_more_url: The action to perform when the OK button is clicked.
-        unset -v _msg_title _msg_body _btn_see_more_url
+        # Parse the message file. We expect the following fields:
+        #   - title: The title of the message. Must be short
+        #   - body: The body of the message. Supports html tags.
+        #   - seeMoreUrl: The url to open when the button "See more" is pressed.
+        #   - if: shell line to execute to check whenever the message should display.
+        #         It wont override the pressence of the seen message file.
+        unset -v _msg_file_contents title body see_more_url if
 
-        _PATH=$PATH
-        unset -v PATH
-        hash -r
+        _msg_file_contents="$(<"$msg_file")"
+        title=$(jq -r '.title // ""' <<<"$_msg_file_contents")
+        body=$(jq -r '.body // ""' <<<"$_msg_file_contents")
+        see_more_url=$(jq -r '.seeMoreUrl // ""' <<<"$_msg_file_contents")
+        if=$(jq -r '.if // ""' <<<"$_msg_file_contents")
+        unset -v _msg_file_contents
 
-        # shellcheck source=../share/ublue-os/announcements/example.msg
-        source "$msg_file" || exit # Skip if the exit code is not 0
-
-        PATH=$_PATH
-        unset -v _PATH
+        (eval "$if") || exit
 
         notify_cmd="/usr/bin/notify-send --app-name=\"Announcements\" --expire-time=0"
-        notify_cmd+=" \"${_msg_title:+$_msg_title}\" \"${_msg_body:+$_msg_body}\""
-        notify_cmd+=" ${_btn_see_more_url:+--action=\"see_more=See more\"}"
+        notify_cmd+=" \"${title:+$title}\" \"${body:+$body}\""
+        if [[ -n "$see_more_url" ]]; then
+            notify_cmd+=" --action=\"see_more=See more\""
+        fi
         notify_cmd+=' --action="dont_show_again=Dont show me this again"'
 
         action=$(eval "$notify_cmd") || exit
         case "$action" in
         see_more)
-            xdg-open "$_btn_see_more_url"
+            xdg-open "$see_more_url"
             ;;
         dont_show_again)
             # Create a file with the hash of the message as name to mark it as seen.
