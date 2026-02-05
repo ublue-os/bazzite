@@ -28,3 +28,7 @@ An example:
 ```
 
 In this example, the announcement will trigger when our system updates to 43 or greater.
+
+
+## Tooling
+Use `prepare_msg.sh` to create an announcement json interactively. Useful when dealing with multiline fields.
