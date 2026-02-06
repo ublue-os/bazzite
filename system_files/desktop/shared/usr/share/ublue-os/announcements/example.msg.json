@@ -1,0 +1,6 @@
+{
+  "title": "Announcement Title",
+  "seeMoreUrl": "https://bazzite.gg",
+  "body": "This is the body of the message.\n<hr/>\n<b>This is a bold text</b>",
+  "if": true
+}
