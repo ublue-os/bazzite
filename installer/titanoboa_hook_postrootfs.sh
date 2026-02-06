@@ -433,11 +433,6 @@ Terminal=false
 EOF
 
 ### Desktop-enviroment specific tweaks ###
-# Warn the user if they're using an unsupported nvidia card, or trying to install the wrong image for nvidia
-# Warn about limited capabilities of live sessions, and also show buttons to:
-#   - Install Bazzite
-#   - Launch Bootloader Restoring tool
-#   - Close dialog
 # Setup script to show dialog popups at login
 echo '#!/usr/bin/bash' >/usr/bin/on_gui_login.sh
 chmod +x /usr/bin/on_gui_login.sh
@@ -449,7 +444,9 @@ if [[ ! -d /sys/firmware/efi ]]; then
         --text="Bazzite does not support CSM/Legacy Boot. Please boot into your UEFI/BIOS settings, disable CSM/Legacy Mode, and reboot." || true
     systemctl poweroff || shutdown -h now || true
 fi
-
+EOF
+#serve docs in live session
+cat >>/usr/bin/on_gui_login.sh <<'EOF'
 serve_docs(){
   ADDRESS=127.0.0.1
   PORT=1290
@@ -458,7 +455,12 @@ serve_docs(){
       fg >/dev/null 2>&1 || true
   fi
 }
-
+EOF
+# Warn about limited capabilities of live sessions, and also show buttons to:
+#   - Install Bazzite
+#   - Launch Bootloader Restoring tool
+#   - Close dialog
+cat >>/usr/bin/on_gui_login.sh <<'EOF'
 welcome_dialog() {
 _EXITLOCK=1
 _RETVAL=0
@@ -490,54 +492,41 @@ done
 unset -v _EXITLOCK
 unset -v _RETVAL
 }
-
-
-detect_nvidia () {
-timeout_seconds=30
+EOF
+# Warn the user if they're using an unsupported nvidia card, or trying to install the wrong image for nvidia
+cat >>/usr/bin/on_gui_login.sh <<'EOF'
+nvidia_hardware_helper () {
+timeout_seconds=15
 gpuinfo="$(timeout $timeout_seconds lspci -nn | grep '\[03')"
 if [ $? -ne 0 ]; then
-  echo "did not receive a reply from lspci in $timeout_seconds seconds. Exiting"
   return 124
 fi
-
-echo "detected graphics cards: ""$gpuinfo"
-
-# parse nvidia gpu support status
-nvidia_count=$(echo "$gpuinfo" | grep -c 'NVIDIA')
-if ((nvidia_count == 0)); then
-  echo "No Nvidia GPU detected. Exiting…"
-  return 0
-elif ((nvidia_count > 0)); then
-  echo  "Nvidia GPU detected!"
-  architecture=$(echo "$gpuinfo" | grep -m 1 -i -o 'NVIDIA Corporation ..' | cut -d " " -f 3)
-  echo "architecture codename: ""$architecture"
-  support_status=""
-  case $architecture in
-#  Blackwell, Ada Lovelace, Ampere, Turing
-    "GB" |  "AD" |  "GA"  |  "TU")
-    support_status="supported"
-     ;;
-#   Maxwell, Pascal, Volta
-    "GM" | "GP" | "GV")
-    support_status="legacy"
-    ;;
-#  Kepler, Fermi, Tesla / Curie and older
-    "GK" | "GF" | "GT" | "MC" | "G8" | "G9" | "G7" | "NV")
-    support_status="unsupported"
-    ;;
-    *)
-    support_status="unknown"
-    ;;
-  esac
-  echo "support status: ""$support_status"
-
-# parse image information
-# live iso cannot use rpm-ostree, must use podman here
 image_name=$(timeout $timeout_seconds sudo podman images --format '{{ index .Names 0 }}\n' 'bazzite*')
 if [ -z "$image_name" ]; then
-  echo "did not receive a reply from podman in $timeout_seconds seconds. Exiting"
   return 124
 fi
+#call NVIDIA detection script TODO: change path
+output=$("/usr/libexec/bazzite_detect_nvidia_support_status")
+ret_val=$?
+# handle exit codes
+if [ $ret_val -eq 0 ] && [ "$output" == "" ]
+  then
+    echo "no NVIDIA GPU"
+    return 0
+fi
+if [ $ret_val  -eq 124 ]
+  then
+    return 124
+fi
+support_status=$output
+echo "support status: $support_status"
+if [ "$support_status" == "legacy" ]; then
+  correct_image="\"<b>Nvidia (GTX 9xx-10xx Series)</b>\""
+fi
+if [ "$support_status" == "supported" ]; then
+  correct_image="\"<b>Nvidia (RTX Series | GTX 16xx Series+)</b>\""
+fi
+# parse image information
 echo "image name: ""$image_name"
   if [[ $image_name == *-nvidia-open* ]] || [[ $image_name == *-deck-nvidia* ]]; then
     echo "modern nvidia image detected!"
@@ -549,42 +538,48 @@ echo "image name: ""$image_name"
     echo "AMD/Intel image detected!"
     image="amd_intel"
   fi
-
-  title="Bazzite Hardware Helper"
-  heading=""
-  gpu_detected=""
-  recommendation=""
-  button1="I KNOW WHAT I AM DOING. Install Bazzite Anyway:0"
-  button2="Power Off:1"
-  heading2="Detected Graphics Adapter"
-  button3="GPU Information:2"
-  if [[ "$support_status" = "unsupported" ]]; then
-    serve_docs
-    heading="<b>Unsupported Graphics Card</b>\n"
-    gpu_detected="We've detected you're using a now unsupported NVIDIA GPU.\n
-    Unfortunately, we cannot provide good support for your hardware ourselves.\n\n"
-    recommendation="Please read our <a href=
-    \"http://127.0.0.1:1290/General/FAQ/#will-you-add-support-for-even-older-nvidia-graphics-cards\"><b>documentation</b></a> for more information.\n"
-  elif [[ "$support_status" = "unknown" ]]; then
-        heading="<b>Unknown Graphics Card</b>\n"
-        gpu_detected="We could not identify your NVIDIA graphics card.\n\n"
-        recommendation="It is not recommended to install Bazzite as we cannot guarantee your hardware will work."
-  elif [[ "$support_status" = "legacy" ]] && [[ "$image" = "legacy" ]]; then
-    echo "legacy GPU matches legacy image. Nothing to do. Exiting…"
-    return 0
-  elif [[ "$support_status" = "supported" ]] && [[ "$image"  = "modern"  ]]; then
-    echo "supported GPU matches modern image. Nothing to do. Exiting…"
-    return 0
-  elif [[ "$support_status" = "supported" ]] && [[ "$image"  != "modern" ]]; then
-    heading="<b>WRONG IMAGE DETECTED</b>\n"
-    gpu_detected="Your modern NVIDIA graphics card is better supported by a different version of Bazzite.\n\n"
-    recommendation="Pick \"<b>Nvidia (RTX Series | GTX 16xx Series+)</b>\" as \"vendor of your primary GPU\" on the website to download and install the correct version instead."
-  elif [[ "$support_status" = "legacy" ]] && [[ "$image" != "legacy" ]]; then
-    heading="<b>WRONG IMAGE DETECTED</b>\n"
-    gpu_detected="Your legacy NVIDIA graphics card is better supported by a different version of Bazzite.\n\n"
-    recommendation="Pick \"<b>Nvidia (GTX 9xx-10xx Series)</b>\" as \"vendor of your primary GPU\" on the website to download and install the correct version instead."
-  fi
+#user facing text
+title="Bazzite Hardware Helper"
+heading_unsupported="<b>Unsupported Graphics Card</b>\n"
+detected_unsupported="We've detected you're using a now unsupported NVIDIA GPU.\nUnfortunately, we cannot provide good support for your hardware ourselves.\n\n"
+recommend_unsupported="Please read our <a href=\"http://127.0.0.1:1290/General/FAQ/#will-you-add-support-for-even-older-nvidia-graphics-cards\"><b>documentation</b></a> for more information.\n"
+heading_unknown="<b>Unknown Graphics Card</b>\n"
+detected_unknown="We could not identify your NVIDIA graphics card.\n\n"
+recommend_unknown="It is not recommended to install Bazzite as we cannot guarantee your hardware will work."
+heading_wrong_image="<b>WRONG IMAGE DETECTED</b>\n"
+detected_wrong_image="Your $support_status NVIDIA graphics card needs a different version of Bazzite.\n\n"
+recommend_wrong_image="Pick $correct_image as \"vendor of your primary GPU\" on the website to download and install the correct version instead."
+button1="I KNOW WHAT I AM DOING. Install Bazzite Anyway:0"
+button2="Power Off:1"
+heading2="Detected Graphics Adapter"
+button3="GPU Information:2"
+if [[ "$support_status" = "unsupported" ]]; then
+  serve_docs
+  heading="$heading_unsupported"
+  gpu_detected="$detected_unsupported"
+  recommendation="$recommend_unsupported"
+elif [[ "$support_status" = "unknown" ]]; then
+  heading="$heading_unknown"
+  gpu_detected="$detected_unknown"
+  recommendation="$recommend_unknown"
+elif [[ "$support_status" = "legacy" ]] && [[ "$image" = "legacy" ]]; then
+  echo "legacy GPU matches legacy image. Nothing to do. Exiting…"
+  return 0
+elif [[ "$support_status" = "supported" ]] && [[ "$image"  = "modern"  ]]; then
+  echo "supported GPU matches modern image. Nothing to do. Exiting…"
+  return 0
+elif [[ "$support_status" = "supported" ]] && [[ "$image"  != "modern" ]]; then
+  heading="$heading_wrong_image"
+  correct_image=
+  gpu_detected="$detected_wrong_image"
+  recommendation="$recommend_wrong_image"
+elif [[ "$support_status" = "legacy" ]] && [[ "$image" != "legacy" ]]; then
+  heading="$heading_wrong_image"
+  gpu_detected="$detected_wrong_image"
+  recommendation="$recommend_wrong_image"
+fi
   while true; do
+#YAD dialog
   yad --warning --buttons-layout=center --text-align=center --title="$title" --text="$heading""$gpu_detected""$recommendation"\
       --button="$button1" \
       --button="$button2" \
@@ -596,10 +591,8 @@ echo "image name: ""$image_name"
            2) yad --info --title="$heading2" --text="$gpuinfo" ;;
       esac
   done
-fi
 }
-
-detect_nvidia
+nvidia_hardware_helper
 result=$?
 if [ $result -eq 0 ] || [ $result -eq 1 ] || [ $result -eq 124 ]
 then
