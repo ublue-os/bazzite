@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+timeout_seconds=15
+gpuinfo="$(timeout $timeout_seconds lspci -nn | grep '\[03')"
+if [ $? -ne 0 ]; then
+  exit 124
+fi
+nvidia_count=$(echo "$gpuinfo" | grep -c 'NVIDIA')
+if ((nvidia_count == 0)); then
+  exit 0
+elif ((nvidia_count > 0)); then
+  architecture=$(echo "$gpuinfo" | grep -m 1 -i -o 'NVIDIA Corporation ..' | cut -d " " -f 3)
+  case $architecture in
+#  Blackwell, Ada Lovelace, Ampere, Turing
+    "GB" |  "AD" |  "GA"  |  "TU")
+    echo "supported"
+     ;;
+#   Maxwell, Pascal, Volta
+    "GM" | "GP" | "GV")
+    echo "legacy"
+    ;;
+#  Kepler, Fermi, Tesla / Curie and older
+    "GK" | "GF" | "GT" | "MC" | "G8" | "G9" | "G7")
+    echo "unsupported"
+    ;;
+    *)
+    echo "unknown"
+    ;;
+  esac
+fi
