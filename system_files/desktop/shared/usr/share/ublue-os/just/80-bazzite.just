@@ -466,7 +466,7 @@ bazzite-cli:
         sed -i '/### bling.fish source start/,/### bling.fish source end/d' \
             "${XDG_CONFIG_HOME:-$HOME/.config}/fish/config.fish" \
             || \
-            { line=$(grep -n "source /usr/share/ublue-os/bluefin-cli/bling.fish" \
+            { line=$(grep -n "source /usr/share/bazzite-cli/bling.fish" \
             "${XDG_CONFIG_HOME:-$HOME/.config}/fish/config.fish" \
             | grep -Eo '^[^:]+' | head -n1) && [[ -n "${line}" ]] && sed -i "${line}"d \
             "${XDG_CONFIG_HOME:-$HOME/.config}/fish/config.fish"; }
@@ -474,7 +474,7 @@ bazzite-cli:
         sed -i '/### bling.sh source start/,/### bling.sh source end/d' \
             "${ZDOTDIR:-$HOME}/.zshrc" \
             || \
-            { line=$(grep -n "source /usr/share/ublue-os/bluefin-cli/bling.sh" \
+            { line=$(grep -n "source /usr/share/bazzite-cli/bling.sh" \
             "${ZDOTDIR:-$HOME}/.zshrc" \
             | grep -Eo '^[^:]+' | head -n1) && [[ -n "${line}" ]] && sed -i "${line}"d \
             "${ZDOTDIR:-$HOME}/.zshrc"; }
@@ -482,7 +482,7 @@ bazzite-cli:
         sed -i '/### bling.sh source start/,/### bling.sh source end/d' \
             "${HOME}/.bashrc" \
             || \
-            { line=$(grep -n "source /usr/share/ublue-os/bluefin-cli/bling.sh" \
+            { line=$(grep -n "source /usr/share/bazzite-cli/bling.sh" \
             "${HOME}/.bashrc" \
             | grep -Eo '^[^:]+' | head -n1) && [[ -n "${line}" ]] && sed -i "${line}"d \
             "${HOME}/.bashrc"; }
