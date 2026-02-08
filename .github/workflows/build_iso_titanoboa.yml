@@ -38,7 +38,7 @@ jobs:
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
       - name: Mount BTRFS for podman storage
-        uses: ublue-os/container-storage-action@911baca08baf30c8654933e9e9723cb399892140
+        uses: ublue-os/container-storage-action@4d41781c2d4394275fec1397a244a74ea4fbc08c
         with:
           target-dir: /var/lib/containers
           mount-opts: compress-force=zstd:2
