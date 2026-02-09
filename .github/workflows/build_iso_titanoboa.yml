@@ -34,18 +34,28 @@ jobs:
           - bazzite-deck-nvidia
           - bazzite-deck-nvidia-gnome
     steps:
+      - name: Show disk space
+        run: sudo df -h
+
+      - name: Check if /mnt is there
+        id: check_mnt
+        run: |
+          if sudo mountpoint /mnt; then
+            echo "mnt_is_there=1" >>$GITHUB_OUTPUT
+          else
+            echo "mnt_is_there=0" >>$GITHUB_OUTPUT
+          fi
+
       - name: Free Disk Space (Ubuntu)
+        if: ${{ steps.check_mnt.outputs.mnt_is_there == '1' }}
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
       - name: Mount BTRFS for podman storage
+        if: ${{ steps.check_mnt.outputs.mnt_is_there == '1' }}
         uses: ublue-os/container-storage-action@911baca08baf30c8654933e9e9723cb399892140
         with:
           target-dir: /var/lib/containers
-          mount-opts: compress-force=zstd:2
-          loopback-free: "1"
-
-      - name: Maximize build space
-        uses: ublue-os/remove-unwanted-software@695eb75bc387dbcd9685a8e72d23439d8686cba6 # v10
+        continue-on-error: true
 
       - name: Checkout Repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6

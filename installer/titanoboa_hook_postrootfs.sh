@@ -506,6 +506,7 @@ if [ -z "$image_name" ]; then
   return 124
 fi
 #call NVIDIA detection script TODO: change path
+if [[ -f "/usr/libexec/bazzite_detect_nvidia_support_status"  ]]; then
 output=$("/usr/libexec/bazzite_detect_nvidia_support_status")
 ret_val=$?
 # handle exit codes
@@ -591,6 +592,7 @@ fi
            2) yad --info --title="$heading2" --text="$gpuinfo" ;;
       esac
   done
+  fi
 }
 nvidia_hardware_helper
 result=$?
