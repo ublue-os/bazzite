@@ -79,7 +79,8 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/rom-properties \
         ublue-os/hhd \
         lizardbyte/beta \
-        che/nerd-fonts; \
+        che/nerd-fonts \
+        faugus/faugus-launcher; \
     do \
         echo "Enabling copr: $copr"; \
         dnf5 -y copr enable $copr; \
@@ -334,6 +335,7 @@ RUN --mount=type=cache,dst=/var/cache \
         openxr && \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
+        faugus-launcher \
         lutris && \
     dnf5 -y remove \
         gamemode && \
@@ -381,7 +383,7 @@ RUN --mount=type=cache,dst=/var/cache \
             kde-partitionmanager \
             plasma-discover \
             konsole && \
-        sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:net.lutris.Lutris.desktop,applications:org.gnome.Ptyxis.desktop,applications:io.github.kolunmi.Bazaar.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
+        sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:io.github.Faugus.faugus-launcher.desktop,applications:org.gnome.Ptyxis.desktop,applications:io.github.kolunmi.Bazaar.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
         sed -i 's@\[Desktop Action new-window\]@\[Desktop Action new-window\]\nX-KDE-Shortcuts=Ctrl+Alt+T@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
@@ -525,7 +527,8 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/rom-properties \
         ublue-os/hhd \
         lizardbyte/beta \
-        che/nerd-fonts; \
+        che/nerd-fonts \
+        faugus/faugus-launcher; \
     do \
         dnf5 -y copr disable $copr; \
     done && unset -v copr && \
