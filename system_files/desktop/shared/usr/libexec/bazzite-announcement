@@ -1,0 +1,84 @@
+#!/usr/bin/bash
+# Deliver announcements as notifications.
+#
+# Related files:
+#   - /usr/share/ublue-os/announcements/*.msg.json : Announcement files.
+#   - /etc/xdg/bazzite-announcement.desktop : Shortcut that launches the announcement script when the user logins.
+#   - /usr/libexec/bazzite-announcement : Script that delivers the announcements as notifications.
+
+set -o pipefail
+
+declare -r ANNOUNCEMENTS_DIR=/usr/share/ublue-os/announcements
+declare -r ANNOUNCEMENTS_SEEN_DIR="$HOME/.local/share/bazzite/announcements_seen"
+
+# Get the sha256 hash of a message file, disregarding whitespaces.
+#
+# Args:
+#   1: Path of message file.
+get_msg_sha() {
+    local sha
+    sha=$(tr -d '[:space:]' <"$1" | sha256sum | cut -d ' ' -f 1) || return
+    echo "$sha"
+}
+
+if [[ $UID -eq 0 ]]; then
+    echo "This script should not be run as root." >&2
+    exit 1
+fi
+
+for msg_file in "$ANNOUNCEMENTS_DIR"/*.msg.json; do
+    # We omit not existing files and example files.
+    if [[ ! -f "$msg_file" || $msg_file == */example.msg.json ]]; then
+        continue
+    fi
+
+    # Check if we have already seen this message.
+    # A file is considered seen when a file with named after the matching hash exists at ANNOUNCEMENTS_SEEN_DIR.
+    msg_sha=$(get_msg_sha "$msg_file")
+    if [[ -f "${ANNOUNCEMENTS_SEEN_DIR}/${msg_sha}" ]]; then
+        continue
+    fi
+
+    sleep 1 # Small delay between notifications to avoid notify-send being overwhelmed.
+    (
+        # Parse the message file. We expect the following fields:
+        #   - title: The title of the message. Must be short
+        #   - body: The body of the message. Supports html tags.
+        #   - seeMoreUrl: The url to open when the button "See more" is pressed.
+        #   - if: shell line to execute to check whenever the message should display.
+        #         It wont override the pressence of the seen message file.
+        unset -v _msg_file_contents title body see_more_url if
+
+        _msg_file_contents="$(<"$msg_file")"
+        title=$(jq -r '.title // ""' <<<"$_msg_file_contents")
+        body=$(jq -r '.body // ""' <<<"$_msg_file_contents")
+        see_more_url=$(jq -r '.seeMoreUrl // ""' <<<"$_msg_file_contents")
+        if=$(jq -r '.if // ""' <<<"$_msg_file_contents")
+        unset -v _msg_file_contents
+
+        (eval "$if") || exit
+
+        notify_cmd="/usr/bin/notify-send --app-name=\"Announcements\" --expire-time=0"
+        notify_cmd+=" \"${title:+$title}\" \"${body:+$body}\""
+        if [[ -n "$see_more_url" ]]; then
+            notify_cmd+=" --action=\"see_more=See more\""
+        fi
+        notify_cmd+=' --action="dont_show_again=Dont show me this again"'
+
+        action=$(eval "$notify_cmd") || exit
+        case "$action" in
+        see_more)
+            xdg-open "$see_more_url"
+            ;;
+        dont_show_again)
+            # Create a file with the hash of the message as name to mark it as seen.
+            mkdir -p "${ANNOUNCEMENTS_SEEN_DIR}"
+            touch "${ANNOUNCEMENTS_SEEN_DIR}/${msg_sha}"
+            ;;
+        *)
+            # Do nothing
+            :
+            ;;
+        esac
+    ) &
+done

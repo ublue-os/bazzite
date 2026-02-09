@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Bazzite Announcements
+Exec=/usr/libexec/bazzite-announcement
+Terminal=false
+StartupNotify=false
+X-GNOME-Autostart-enabled=true
