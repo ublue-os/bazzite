@@ -5,7 +5,7 @@
 setup-sunshine ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    SERVICE_STATE="$(systemctl is-enabled --user sunshine.service)"
+    SERVICE_STATE="$(systemctl is-enabled --user sunshine-kms.service)"
     OPTION={{ ACTION }}
     if [ "$SERVICE_STATE" == "enabled" ]; then
         SERVICE_STATE="${green}${b}Enabled${n}"
@@ -25,9 +25,9 @@ setup-sunshine ACTION="":
       OPTION=$(Choose "Enable" "Disable" "Open Portal" "Exit")
     fi
     if [[ "${OPTION,,}" =~ ^enable ]]; then
-      systemctl enable --user --now sunshine.service
+      systemctl enable --user --now sunshine-kms.service
     elif [[ "${OPTION,,}" =~ ^(remove|uninstall|disable) ]]; then
-      systemctl disable --user --now sunshine.service 
+      systemctl disable --user --now sunshine-kms.service 
     elif [[ "${OPTION,,}" =~ ^(portal|open) ]]; then
       echo "Opening Sunshine management portal..."
       xdg-open https://localhost:47990
