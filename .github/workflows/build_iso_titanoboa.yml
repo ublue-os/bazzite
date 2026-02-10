@@ -82,13 +82,13 @@ jobs:
         id: generate-flatpak-dir-shortname
         shell: bash
         run: |
-          FLATPAK_DIR_SHORTNAME="installer/kde_flatpaks"
+          FLATPAK_DIR_SHORTNAME="kde_flatpaks"
 
           if [[ "${{ matrix.image_name }}" =~ "gnome" ]]; then
-            FLATPAK_DIR_SHORTNAME="installer/gnome_flatpaks"
+            FLATPAK_DIR_SHORTNAME="gnome_flatpaks"
           fi
 
-          echo "flatpak-dir-shortname=$(realpath ${FLATPAK_DIR_SHORTNAME})" >> $GITHUB_OUTPUT
+          echo "flatpak-dir-shortname=${FLATPAK_DIR_SHORTNAME}" >> $GITHUB_OUTPUT
 
       # Docker requires lowercase registry references
       - name: Lowercase Registry
@@ -118,17 +118,29 @@ jobs:
           fi
           echo "ref=${ref}" >> $GITHUB_OUTPUT
 
+      - name: Build Container Image
+        run: |
+          BASE_IMAGE="${{ steps.registry_case.outputs.lowercase }}/${{ steps.get-nondeck-ref.outputs.ref }}:${{ steps.generate-tag.outputs.tag }}"
+          INSTALL_IMAGE_PAYLOAD="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}"
+          FLATPAK_DIR_SHORTNAME="${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}"
+
+          cd installer || exit 1
+          sudo podman build \
+            --cap-add sys_admin \
+            --security-opt label=disable \
+            --build-arg BASE_IMAGE="$BASE_IMAGE" \
+            --build-arg INSTALL_IMAGE_PAYLOAD="$INSTALL_IMAGE_PAYLOAD" \
+            --build-arg FLATPAK_DIR_SHORTNAME="$FLATPAK_DIR_SHORTNAME" \
+            -v "$PWD":/src \
+            -t localhost/payload:latest .
+
       - name: Build ISOs
-        uses: ublue-os/titanoboa@main
+        uses: Zeglius/titanoboa@revamp-pr
         id: build
         with:
-          image-ref: ${{ steps.registry_case.outputs.lowercase }}/${{ steps.get-nondeck-ref.outputs.ref }}:${{ steps.generate-tag.outputs.tag }}
-          container-image: ${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}
+          image-ref: localhost/payload:latest
           # TODO (@Zeglius): Remove "liveiso" prefix once this becomes the main ISO
           iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-live-amd64.iso
-          flatpaks-list: ${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}/flatpaks
-          hook-pre-initramfs: ${{ github.workspace }}/installer/titanoboa_hook_preinitramfs.sh
-          hook-post-rootfs: ${{ github.workspace }}/installer/titanoboa_hook_postrootfs.sh
 
       - name: Move ISOs to Upload Directory
         id: upload-directory
