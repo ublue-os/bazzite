@@ -450,7 +450,7 @@ cat >>/usr/bin/on_gui_login.sh <<'EOF'
 serve_docs(){
   ADDRESS=127.0.0.1
   PORT=1290
-  { python -m http.server -b $ADDRESS $PORT -d "$(dirname "$0")"/html; } >/dev/null 2>&1 &
+  { python -m http.server -b $ADDRESS $PORT -d /usr/share/ublue-os/docs/html; } >/dev/null 2>&1 &
   if [[ $- == *i* ]]; then
       fg >/dev/null 2>&1 || true
   fi
@@ -543,7 +543,7 @@ echo "image name: ""$image_name"
 title="Bazzite Hardware Helper"
 heading_unsupported="<b>Unsupported Graphics Card</b>\n"
 detected_unsupported="We've detected you're using a now unsupported NVIDIA GPU.\nUnfortunately, we cannot provide good support for your hardware ourselves.\n\n"
-recommend_unsupported="Please read our <a href=\"http://127.0.0.1:1290/General/FAQ/#will-you-add-support-for-even-older-nvidia-graphics-cards\"><b>documentation</b></a> for more information.\n"
+recommend_unsupported="Please read our <a href=\"http://127.0.0.1:1290/General/FAQ/#will-support-for-much-older-nvidia-graphics-cards-be-added\"><b>documentation</b></a> for more information.\n"
 heading_unknown="<b>Unknown Graphics Card</b>\n"
 detected_unknown="We could not identify your NVIDIA graphics card.\n\n"
 recommend_unknown="It is not recommended to install Bazzite as we cannot guarantee your hardware will work."
