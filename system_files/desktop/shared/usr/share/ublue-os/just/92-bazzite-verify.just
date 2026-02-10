@@ -1,4 +1,3 @@
-# verify-image:
 # Detects if you are on an unverified official image and rebases you to the signed version.
 verify-image:
     #!/usr/bin/bash
