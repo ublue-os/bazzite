@@ -659,6 +659,10 @@ dnf -yq remove steam lutris bazaar || :
     wget -nv -O "$wallpaper_file" "$wallpaper_url"
     cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence.jxl || :
     cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_morn.jxl || :
+    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_midmorn.jxl || :
+    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_day.jxl || :
+    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_sunset.jxl || :
+    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_night.jxl || :
     rm -f /usr/share/backgrounds/default.xml
 )
 
