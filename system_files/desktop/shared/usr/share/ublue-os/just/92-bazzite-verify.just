@@ -5,32 +5,32 @@ verify-image:
     set -euo pipefail
 
     echo "Checking image verification status..."
-    
+
     # Define variables
     REF=$(rpm-ostree status --json | jq -r '.deployments[0]["container-image-reference"]' || echo "")
     BAD="ostree-unverified-registry"
     GOOD="ostree-image-signed:docker://"
-    
+
     # Logic: Check for Unverified AND Official
     if [[ "$REF" == *"$BAD"* ]] && [[ "$REF" == *"ghcr.io/ublue-os/"* ]]; then
         echo "⚠️  UNVERIFIED OFFICIAL IMAGE DETECTED"
         echo "Current: $REF"
-        
+
         # String replacement to build the new target
         CLEAN_REF=${REF#*$BAD}
         TARGET="$GOOD$CLEAN_REF"
-        
+
         echo ""
         echo "Target:  $TARGET"
         echo ""
         echo "This will rebase your system to the signed image."
         echo "This allows you to receive secure updates."
         echo ""
-        
+
         # Prompt user
         read -p "Proceed with rebase? [y/N] " -n 1 -r
         echo ""
-        
+
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             echo "Requesting root permission to rebase..."
             pkexec rpm-ostree rebase "$TARGET"
