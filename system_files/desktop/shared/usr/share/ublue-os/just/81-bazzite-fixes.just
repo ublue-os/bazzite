@@ -163,7 +163,7 @@ toggle-wol ACTION="":
 
 # enable or disable IWD as a replacement for wpa_supplicant
 [group("network")]
-toggle-iwd:
+toggle-iwd ACTION="":
     #!/usr/bin/bash
     # Explain the purpose of the script
     echo -e "This script manages enabling or disabling iwd as a replacement for wpa_supplicant for Wi-Fi networking. Default is Enabled."
@@ -197,11 +197,27 @@ toggle-iwd:
       remove_saved_networks
       echo -e "iwd disabled. Reboot required to apply changes."
     }
-    # Display current status
+    # ACTION param
+    OPTION={{ ACTION }}
+
+    # Show status
     current_status=$(get_current_status)
     echo -e "\nCurrent iwd status: $current_status\n"
-    # Prompt user for action
-    CHOICE=$(ugum choose "Enable iwd" "Disable iwd" "Exit without changes")
+
+    if [[ "${OPTION,,}" == "toggle" ]]; then
+      if [[ "$current_status" == "Enabled" ]]; then
+        disable_iwd
+      else
+        enable_iwd
+      fi
+      exit 0
+    fi
+
+    if [ -z "$OPTION" ]; then
+      CHOICE=$(ugum choose "Enable iwd" "Disable iwd" "Exit without changes")
+    else
+      exit 0
+    fi
     case "$CHOICE" in
       "Enable iwd")
         enable_iwd

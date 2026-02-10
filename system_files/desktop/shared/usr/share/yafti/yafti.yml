@@ -36,6 +36,11 @@ screens:
   - title: "Setting up Bazzite"
     description: "Core system components and utilities"
     actions:
+      - id: "toggle-iwd"
+        title: "Toggle iwd"
+        description: "Toggles iwd ON/OFF"
+        default: false
+        script: "ujust toggle-iwd toggle"
       - id: "decky-loader"
         title: "Decky Loader"
         description: "A plugin loader for the Steam Deck"
