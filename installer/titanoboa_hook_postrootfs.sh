@@ -675,10 +675,9 @@ if [[ $imageref == *-deck* ]]; then
     fi
 fi
 
-# Tweak the fedora-welcome app (gnome only) with our own text/icons
+# Don't start the fedora-welcome app (gnome only)
 if [[ $desktop_env == gnome ]]; then
-    sed -i 's| Fedora| Bazzite|' /usr/share/anaconda/gnome/fedora-welcome || :
-    cp -f /usr/share/pixmaps/{fedora-logo-sprite,fedora-logo-icon}.png || :
+    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nHidden=true@g' /usr/share/anaconda/gnome/org.fedoraproject.welcome-screen.desktop || :
 fi
 
 # Let only browser/installer in the task-bar/dock
