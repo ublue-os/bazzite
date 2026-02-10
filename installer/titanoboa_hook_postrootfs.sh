@@ -657,12 +657,6 @@ dnf -yq remove steam lutris bazaar || :
     wallpaper_url=https://github.com/ublue-os/bazzite/raw/refs/heads/main/press_kit/art/Convergence_Wallpaper_DX.jxl
     wallpaper_file=/usr/share/wallpapers/convergence.jxl
     wget -nv -O "$wallpaper_file" "$wallpaper_url"
-    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence.jxl || :
-    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_morn.jxl || :
-    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_midmorn.jxl || :
-    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_day.jxl || :
-    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_sunset.jxl || :
-    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_night.jxl || :
     rm -f /usr/share/backgrounds/default.xml
 )
 
@@ -684,7 +678,7 @@ if [[ $desktop_env == gnome ]]; then
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nHidden=true@g' /usr/share/anaconda/gnome/org.fedoraproject.welcome-screen.desktop || :
 fi
 
-# Let only browser/installer in the task-bar/dock
+# Let only browser/installer/file manager in the task-bar/dock, set new background for GNOME
 if [[ $desktop_env == kde ]]; then
     sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:liveinst.desktop,preferred:\/\/filemanager<\/default>/' \
         /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml
@@ -692,6 +686,9 @@ elif [[ $desktop_env == gnome ]]; then
     cat >/usr/share/glib-2.0/schemas/zz2-org.gnome.shell.gschema.override <<EOF
 [org.gnome.shell]
 favorite-apps = ['anaconda.desktop', 'org.mozilla.firefox.desktop', 'org.gnome.Nautilus.desktop']
+[org.gnome.desktop.background]
+picture-uri="file:///usr/share/wallpapers/convergence.jxl"
+picture-uri-dark="file:///usr/share/wallpapers/convergence.jxl"
 EOF
     glib-compile-schemas /usr/share/glib-2.0/schemas
 fi
