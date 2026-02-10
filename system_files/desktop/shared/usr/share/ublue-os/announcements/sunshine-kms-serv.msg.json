@@ -1,0 +1,6 @@
+{
+  "title": "Attention",
+  "body": "Due to some changes upstream at Sunshine (BETA), additional actions are required to fix possible malfunctioning.\nTo fix it, please run in the terminal:\n<hr/>\nsystemctl --user disable --now sunshine.service\nsystemctl --user enable --now sunshine-kms.service",
+  "if": "[[ $(systemctl --user is-enabled sunshine.service) == enabled && $(systemctl --user is-enabled sunshine-kms.service) == disabled ]]",
+  "seeMoreUrl": ""
+}
