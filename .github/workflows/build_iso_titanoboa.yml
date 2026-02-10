@@ -4,6 +4,10 @@ name: Build Live ISOs
 on:
   workflow_dispatch:
   workflow_call:
+  push:
+    branches: [testing]
+    paths:
+      - installer/**
 
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
@@ -145,7 +149,7 @@ jobs:
           name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
           path: ${{ steps.upload-directory.outputs.iso-upload-dir }}
           if-no-files-found: error
-          retention-days: 0
+          retention-days: 1
           compression-level: 0
           overwrite: true
 
