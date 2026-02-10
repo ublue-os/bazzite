@@ -1,2 +1,4 @@
 yaml-blocklist-paths:
   - /usr/share/ublue-os/bazaar/blocklist.yaml
+override-eol-markings:
+  - com.obsproject.Studio
