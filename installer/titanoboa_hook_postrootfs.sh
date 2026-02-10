@@ -659,6 +659,10 @@ dnf -yq remove steam lutris bazaar || :
     wget -nv -O "$wallpaper_file" "$wallpaper_url"
     cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence.jxl || :
     cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_morn.jxl || :
+    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_midmorn.jxl || :
+    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_day.jxl || :
+    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_sunset.jxl || :
+    cp 2>/dev/null "$wallpaper_file" /usr/share/backgrounds/convergence/convergence_night.jxl || :
     rm -f /usr/share/backgrounds/default.xml
 )
 
@@ -675,10 +679,9 @@ if [[ $imageref == *-deck* ]]; then
     fi
 fi
 
-# Tweak the fedora-welcome app (gnome only) with our own text/icons
+# Don't start the fedora-welcome app (gnome only)
 if [[ $desktop_env == gnome ]]; then
-    sed -i 's| Fedora| Bazzite|' /usr/share/anaconda/gnome/fedora-welcome || :
-    cp -f /usr/share/pixmaps/{fedora-logo-sprite,fedora-logo-icon}.png || :
+    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nHidden=true@g' /usr/share/anaconda/gnome/org.fedoraproject.welcome-screen.desktop || :
 fi
 
 # Let only browser/installer in the task-bar/dock
@@ -688,8 +691,7 @@ if [[ $desktop_env == kde ]]; then
 elif [[ $desktop_env == gnome ]]; then
     cat >/usr/share/glib-2.0/schemas/zz2-org.gnome.shell.gschema.override <<EOF
 [org.gnome.shell]
-welcome-dialog-last-shown-version='4294967295'
-favorite-apps = ['liveinst.desktop', 'org.mozilla.firefox.desktop', 'org.gnome.Nautilus.desktop']
+favorite-apps = ['anaconda.desktop', 'org.mozilla.firefox.desktop', 'org.gnome.Nautilus.desktop']
 EOF
     glib-compile-schemas /usr/share/glib-2.0/schemas
 fi
