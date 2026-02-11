@@ -236,7 +236,7 @@ if [[ ":83E1:ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
 fi
 
 # Swap sunshine.service with sunshine-kms.service
-if [[ $(systemctl --user status sunshine.service) == enabled && $(systemctl --user is-enabled sunshine-kms.service) == disabled ]]; then
+if [[ $(systemctl --user is-enabled sunshine.service) == enabled && $(systemctl --user is-enabled sunshine-kms.service) == disabled ]]; then
     systemctl --user disable --now sunshine.service
     systemctl --user enable --now sunshine-kms.service
 fi
