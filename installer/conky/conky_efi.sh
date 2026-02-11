@@ -7,7 +7,6 @@ cleanup() {
 }
 trap cleanup EXIT
 
-LSBLK_OPTS="-prno NAME --filter "'FSTYPE==\"vfat\" and RM==1'
 seen=""
 
 for name in $(lsblk -prno NAME --filter 'FSTYPE=="vfat" and RM==0'); do
