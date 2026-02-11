@@ -126,15 +126,13 @@ jobs:
           INSTALL_IMAGE_PAYLOAD="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}"
           FLATPAK_DIR_SHORTNAME="${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}"
 
-          cd installer || exit 1
           sudo podman build \
             --cap-add sys_admin \
             --security-opt label=disable \
             --build-arg BASE_IMAGE="$BASE_IMAGE" \
             --build-arg INSTALL_IMAGE_PAYLOAD="$INSTALL_IMAGE_PAYLOAD" \
             --build-arg FLATPAK_DIR_SHORTNAME="$FLATPAK_DIR_SHORTNAME" \
-            -v "$PWD":/src \
-            -t localhost/payload:latest .
+            -t localhost/payload:latest installer/
 
       - name: Build ISOs
         uses: Zeglius/titanoboa@revamp-pr
