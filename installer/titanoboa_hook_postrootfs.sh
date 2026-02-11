@@ -452,7 +452,7 @@ cat >>/usr/bin/on_gui_login.sh <<'EOF'
 conky -c /usr/share/conky/conky.conf &
 EOF
 
-# Check for for CMS/Legacy boot. If detected show blocking message
+# Check for for CSM/Legacy boot. If detected show blocking message
 cat >>/usr/bin/on_gui_login.sh <<'EOF'
 # if CSM/Legacy show blocking message and power off
 if [[ ! -d /sys/firmware/efi ]]; then
