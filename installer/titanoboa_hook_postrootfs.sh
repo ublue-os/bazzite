@@ -16,7 +16,7 @@ mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 dnf install -qy --setopt=install_weak_deps=0 qrencode yad
 
 # Install conky to display hardware information on the desktop
-dnf install -qy conky
+dnf install -qy --setopt=install_weak_deps=0 conky  
 
 # Variables
 imageref="$(podman images --format '{{ index .Names 0 }}\n' 'bazzite*' | head -1)"

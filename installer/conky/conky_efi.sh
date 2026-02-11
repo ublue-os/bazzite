@@ -15,14 +15,13 @@ for name in $(lsblk -prno NAME --filter 'FSTYPE=="vfat" and RM==0'); do
   base=$(basename "$name")
   base=${base%%[0-9]*}
 
-  mp="$TMPBASE/mnt_${base}_${RANDOM}"
-  mkdir -p "$mp" || continue
-  if mount -o ro "$name" "$mp" >& /dev/null; then
+  mp=$(mktemp -d "$TMPBASE/mnt_${base}_XXXXXX") || continue
+  if mount -o ro "$name" "$mp" >/dev/null 2>&1; then
     if [ -d "$mp/EFI" ]; then
       for d in "$mp"/EFI/*; do
         [ -d "$d" ] || continue
         dn=$(basename "$d" | tr '[:lower:]' '[:upper:]')
-        [ "$dn" == "BOOT" ] && continue
+        [ "$dn" = "BOOT" ] && continue
         case ",$seen," in
           *",$dn,"*) ;;
           *) [ -z "$seen" ] && seen="$dn" || seen="$seen,$dn" ;;
