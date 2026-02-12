@@ -1,0 +1,7 @@
+label: "Bazzite-Live"
+grub2:
+  timeout: 3
+  entries:
+    - name: "Launch Bazzite Installer"
+      linux: "/images/pxeboot/vmlinuz quiet rhgb root=live:CDLABEL=Bazzite-Live enforcing=0 rd.live.image"
+      initrd: "/images/pxeboot/initrd.img"
