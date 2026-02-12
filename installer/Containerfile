@@ -1,0 +1,17 @@
+# run with --cap-add sys_admin --security-opt label=disable
+
+ARG BASE_IMAGE=${BASE_IMAGE:-ghcr.io/ublue-os/bazzite:latest}
+ARG INSTALL_IMAGE_PAYLOAD=${INSTALL_IMAGE_PAYLOAD:-ghcr.io/ublue-os/bazzite:latest}
+ARG FLATPAK_DIR_SHORTNAME=${FLATPAK_DIR_SHORTNAME:-kde_flatpaks}
+
+
+FROM $BASE_IMAGE
+ARG BASE_IMAGE
+ARG INSTALL_IMAGE_PAYLOAD
+ARG FLATPAK_DIR_SHORTNAME
+RUN --mount=type=bind,source=./.,target=/src \
+    env \
+    BASE_IMAGE="$BASE_IMAGE" \
+    INSTALL_IMAGE_PAYLOAD="$INSTALL_IMAGE_PAYLOAD" \
+    FLATPAK_DIR_SHORTNAME="$FLATPAK_DIR_SHORTNAME" \
+    /src/build.sh
