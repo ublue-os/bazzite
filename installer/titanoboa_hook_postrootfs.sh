@@ -15,6 +15,9 @@ mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 # Utilities for displaying a dialog prompting users to review secure boot documentation
 dnf install -qy --setopt=install_weak_deps=0 qrencode yad
 
+# Install conky to display hardware information on the desktop
+dnf install -qy --setopt=install_weak_deps=0 conky  
+
 # Variables
 imageref="$(podman images --format '{{ index .Names 0 }}\n' 'bazzite*' | head -1)"
 imageref="${imageref##*://}"
@@ -91,6 +94,12 @@ if [[ -f $_icon ]]; then
 fi
 unset -v _icon
 unset -v _icon_symbol
+
+# Install conky conf and helper script
+mkdir -p /usr/share/conky
+cp /root/packages/installer/conky/conky.conf /usr/share/conky/conky.conf
+cp /root/packages/installer/conky/conky_efi.sh /usr/share/conky/conky_efi.sh
+
 rm -rf /root/packages
 
 # Secureboot Key Fetch
@@ -437,6 +446,13 @@ EOF
 echo '#!/usr/bin/bash' >/usr/bin/on_gui_login.sh
 chmod +x /usr/bin/on_gui_login.sh
 mkdir -p /etc/skel/.config/autostart
+
+# Call conky to show system info
+cat >>/usr/bin/on_gui_login.sh <<'EOF'
+conky -c /usr/share/conky/conky.conf &
+EOF
+
+# Check for for CSM/Legacy boot. If detected show blocking message
 cat >>/usr/bin/on_gui_login.sh <<'EOF'
 # if CSM/Legacy show blocking message and power off
 if [[ ! -d /sys/firmware/efi ]]; then
@@ -456,6 +472,7 @@ serve_docs(){
   fi
 }
 EOF
+
 # Warn about limited capabilities of live sessions, and also show buttons to:
 #   - Install Bazzite
 #   - Launch Bootloader Restoring tool
