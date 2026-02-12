@@ -94,13 +94,12 @@ if [[ -f $_icon ]]; then
 fi
 unset -v _icon
 unset -v _icon_symbol
+rm -rf /root/packages
 
 # Install conky conf and helper script
 mkdir -p /usr/share/conky
-cp /root/packages/installer/conky/conky.conf /usr/share/conky/conky.conf
-cp /root/packages/installer/conky/conky_efi.sh /usr/share/conky/conky_efi.sh
-
-rm -rf /root/packages
+curl -fsSL -o /usr/share/conky/conky.conf https://raw.githubusercontent.com/ublue-os/bazzite/testing/installer/conky/conky.conf
+curl -fsSL -o /usr/share/conky/conky_efi.sh https://raw.githubusercontent.com/ublue-os/bazzite/testing/installer/conky/conky_efi.sh
 
 # Secureboot Key Fetch
 mkdir -p /usr/share/ublue-os
