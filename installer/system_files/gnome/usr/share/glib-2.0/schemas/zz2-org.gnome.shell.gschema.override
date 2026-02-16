@@ -1,0 +1,5 @@
+[org.gnome.shell]
+favorite-apps = ['anaconda.desktop', 'org.mozilla.firefox.desktop', 'org.gnome.Nautilus.desktop']
+[org.gnome.desktop.background]
+picture-uri="file:///usr/share/wallpapers/convergence.jxl"
+picture-uri-dark="file:///usr/share/wallpapers/convergence.jxl"
