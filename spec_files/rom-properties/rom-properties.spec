@@ -136,7 +136,6 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %files kf6
 %{_datadir}/kio/servicemenus/rp-convert-to-png.desktop
-%{_libdir}/qt6/plugins/kf6/thumbcreator/rom-properties-kf6.so
 %{_libdir}/qt6/plugins/kf6/propertiesdialog/xattrview-kf6.so
 %{_libdir}/qt6/plugins/kf6/kfilemetadata/kfilemetadata_rom-properties-kf6.so
 %{_libdir}/qt6/plugins/kf6/overlayicon/overlayiconplugin_rom-properties-kf6.so
