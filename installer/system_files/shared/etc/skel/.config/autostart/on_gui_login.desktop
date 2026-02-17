@@ -1,0 +1,4 @@
+[Desktop Entry]
+Exec=/usr/bin/on_gui_login.sh
+Icon=application-x-shellscript
+Type=Application

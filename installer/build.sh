@@ -22,7 +22,12 @@ curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub
 xargs -r flatpak install -y --noninteractive <"/src/$FLATPAK_DIR_SHORTNAME/flatpaks"
 
 # Pull the container image to be installed
-podman pull "$INSTALL_IMAGE_PAYLOAD"
+if mountpoint -q /usr/lib/containers/storage; then
+    # We load our image from the host container storage if possible
+    podman save --format oci-archive "$INSTALL_IMAGE_PAYLOAD" | podman load --storage-opt additionalimagestore=''
+else
+    podman pull "$INSTALL_IMAGE_PAYLOAD"
+fi
 
 # Run the preinitramfs hook
 "$SCRIPT_DIR/titanoboa_hook_preinitramfs.sh"

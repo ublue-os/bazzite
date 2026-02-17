@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Icon=tools-wizard-symbolic
+Name=Bazzite Bootloader Restoring Tool BETA
+Comment=Restore the bootloader of an installation if has been overriden by Windows
+Keywords=bootloader;fix;grub;windows
+Categories=System;Utility
+Exec=/usr/bin/bootloader_restore.sh
+Hidden=false
+NoDisplay=false
+StartupNotify=true
+Terminal=false
