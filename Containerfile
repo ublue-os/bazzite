@@ -319,6 +319,7 @@ RUN --mount=type=cache,dst=/var/cache \
         jupiter-sd-mounting-btrfs \
         umu-launcher \
         dbus-x11 \
+        xrandr \
         xdg-user-dirs \
         xdg-terminal-exec \
         gobject-introspection \
