@@ -377,6 +377,7 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-disk-utility \
             kio-extras \
             krunner-bazaar \
+            krdc \
             ptyxis && \
         dnf5 -y remove \
             plasma-welcome \
