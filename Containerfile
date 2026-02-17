@@ -412,7 +412,7 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-randr-rust \
             gnome-shell-extension-user-theme \
             gnome-shell-extension-gsconnect \
-            rom-properties-gtk3 \
+            rom-properties-gtk4 \
             ibus-mozc \
             openssh-askpass \
             firewall-config && \
