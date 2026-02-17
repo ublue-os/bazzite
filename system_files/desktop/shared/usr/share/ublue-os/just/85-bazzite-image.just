@@ -1,1 +1,2 @@
+# vim: set ft=make :
 
