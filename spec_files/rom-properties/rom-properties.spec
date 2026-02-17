@@ -109,21 +109,6 @@ BuildArch: noarch
 %{_datadir}/mime/packages/rom-properties.xml
 %{_datarootdir}/locale/*/LC_MESSAGES/rom-properties.mo
 
-%package kf6
-Summary: KDE6 integration for rom-properties
-Requires: %{name}%{?_isa} = %{version}-%{release}
-
-%description kf6
-%{summary}
-
-%files kf6
-%{_datadir}/kio/servicemenus/rp-convert-to-png.desktop
-%{_libdir}/qt6/plugins/kf6/thumbcreator/rom-properties-kf6.so
-%{_libdir}/qt6/plugins/kf6/propertiesdialog/xattrview-kf6.so
-%{_libdir}/qt6/plugins/kf6/kfilemetadata/kfilemetadata_rom-properties-kf6.so
-%{_libdir}/qt6/plugins/kf6/overlayicon/overlayiconplugin_rom-properties-kf6.so
-%{_libdir}/qt6/plugins/kf6/propertiesdialog/rom-properties-kf6.so
-
 %package gtk4
 Summary: GTK4 integration for rom-properties
 Requires: %{name}%{?_isa} = %{version}-%{release}
