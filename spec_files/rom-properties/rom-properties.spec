@@ -17,7 +17,6 @@ Requires:       libseccomp
 Requires:       %{name}-common = %{version}-%{release}
 Requires:       %{name}-thumbnailer-dbus = %{version}-%{release}
 Requires:       %{name}-utils = %{version}-%{release}
-Requires:       %{name}-localsearch3 = %{version}-%{release}
 Recommends:     lz4
 Recommends:     lzo
 
@@ -44,6 +43,7 @@ BuildRequires:  extra-cmake-modules
 BuildRequires:  kf6-kio-devel
 BuildRequires:  kf6-kwidgetsaddons-devel
 BuildRequires:  kf6-kfilemetadata-devel
+BuildRequires:  kf6-kcrash-devel
 BuildRequires:  glib2-devel
 BuildRequires:  gtk4-devel
 BuildRequires:  gdk-pixbuf2-devel
@@ -119,12 +119,28 @@ BuildArch: noarch
 %package gtk4
 Summary: GTK4 integration for rom-properties
 Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: %{name}-localsearch3 = %{version}-%{release}
 
 %description gtk4
 %{summary}
 
 %files gtk4
 %{_libdir}/nautilus/extensions-4/rom-properties-gtk4.so
+
+%package kf6
+Summary: KDE6 integration for rom-properties
+Requires: %{name}%{?_isa} = %{version}-%{release}
+
+%description kf6
+%{summary}
+
+%files kf6
+%{_datadir}/kio/servicemenus/rp-convert-to-png.desktop
+%{_libdir}/qt6/plugins/kf6/thumbcreator/rom-properties-kf6.so
+%{_libdir}/qt6/plugins/kf6/propertiesdialog/xattrview-kf6.so
+%{_libdir}/qt6/plugins/kf6/kfilemetadata/kfilemetadata_rom-properties-kf6.so
+%{_libdir}/qt6/plugins/kf6/overlayicon/overlayiconplugin_rom-properties-kf6.so
+%{_libdir}/qt6/plugins/kf6/propertiesdialog/rom-properties-kf6.so
 
 %package xfce
 Summary: XFCE integration for rom-properties
