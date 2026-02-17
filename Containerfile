@@ -320,6 +320,7 @@ RUN --mount=type=cache,dst=/var/cache \
         umu-launcher \
         dbus-x11 \
         xrandr \
+        evtest \
         xdg-user-dirs \
         xdg-terminal-exec \
         gobject-introspection \
