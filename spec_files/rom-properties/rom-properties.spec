@@ -17,6 +17,7 @@ Requires:       libseccomp
 Requires:       %{name}-common = %{version}-%{release}
 Requires:       %{name}-thumbnailer-dbus = %{version}-%{release}
 Requires:       %{name}-utils = %{version}-%{release}
+Requires:       %{name}-localsearch3 = %{version}-%{release}
 Recommends:     lz4
 Recommends:     lzo
 
@@ -65,7 +66,13 @@ This shell extension adds a few nice features to file browsers for managing vide
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-%cmake -DBUILD_GTK3=OFF -DBUILD_KF5=OFF
+%cmake \
+  -DBUILD_GTK3=OFF \
+  -DBUILD_GTK4=ON \
+  -DBUILD_KDE4=OFF \
+  -DBUILD_KF5=OFF \
+  -DBUILD_KF6=ON \
+  -DSPLIT_DEBUG=OFF
 %cmake_build
 
 %install
@@ -154,5 +161,24 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 %{_datadir}/thumbnailers/rom-properties.thumbnailer
 %{_bindir}/rp-stub
 %{_bindir}/rp-config
+
+%package localsearch3
+Summary: localsearch3 definitions for rom-properties
+Requires: %{name}%{?_isa} = %{version}-%{release}
+
+%description localsearch3
+%{summary}
+
+%files localsearch3
+%{_libdir}/localsearch-3.0/extract-modules/libextract-rom-properties.so
+%{_datadir}/localsearch3/extract-rules/14-rp-application-packages.rule
+%{_datadir}/localsearch3/extract-rules/14-rp-audio.rule
+%{_datadir}/localsearch3/extract-rules/14-rp-banners.rule
+%{_datadir}/localsearch3/extract-rules/14-rp-cd-images.rule
+%{_datadir}/localsearch3/extract-rules/14-rp-disk-images.rule
+%{_datadir}/localsearch3/extract-rules/14-rp-executables.rule
+%{_datadir}/localsearch3/extract-rules/14-rp-rom-images.rule
+%{_datadir}/localsearch3/extract-rules/14-rp-save-files.rule
+%{_datadir}/localsearch3/extract-rules/14-rp-textures.rule
 
 %changelog
