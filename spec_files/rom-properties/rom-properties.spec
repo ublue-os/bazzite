@@ -90,6 +90,7 @@ rm -rf %{buildroot}%{_prefix}/lib/debug
 %doc %{_defaultdocdir}/%{name}/keys.conf.example
 %doc %{_defaultdocdir}/%{name}/rom-properties.conf.example
 %{_libdir}/libromdata.*
+%{_libdir}/libpugixml.a
 
 %package cli
 Summary: CLI tools for rom-properties
@@ -140,6 +141,7 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 %{_libdir}/qt6/plugins/kf6/kfilemetadata/kfilemetadata_rom-properties-kf6.so
 %{_libdir}/qt6/plugins/kf6/overlayicon/overlayiconplugin_rom-properties-kf6.so
 %{_libdir}/qt6/plugins/kf6/propertiesdialog/rom-properties-kf6.so
+%{_libdir}/qt6/plugins/kf6/thumbcreator/RomThumbnailCreator-kf6.so
 
 %package xfce
 Summary: XFCE integration for rom-properties
