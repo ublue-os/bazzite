@@ -1,0 +1,11 @@
+[Unit]
+Description=sc0710 driver
+After=multi-user.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=sh -c "/usr/libexec/sc0710-driver &"
+
+[Install]
+WantedBy=multi-user.target

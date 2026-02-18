@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if modinfo sc0710 > /dev/null 2>&1; then
+    echo Module already exists, exiting.
+    exit
+fi
+
+MODULEVER=$(modinfo --field=vermagic /usr/local/lib/sc0710.ko 2> /dev/null | cut -f1 -d ' ' || true)
+KERNELVER=$(uname -r)
+echo "Module version: $MODULEVER"
+echo "Kernel verison: $KERNELVER"
+if [ "$MODULEVER" = "$KERNELVER" ]; then
+    exit
+fi
+
+nm-online -t 120
+cd /usr/local/src
+if [ -d sc0710 ]; then
+    cd sc0710
+    git pull
+else
+    git clone https://github.com/Nakildias/sc0710
+    cd sc0710
+fi
+
+make clean all
+cp sc0710.ko /usr/local/lib
+chcon -t modules_object_t /usr/local/lib/sc0710.ko
+modprobe /usr/local/lib/sc0710.ko
