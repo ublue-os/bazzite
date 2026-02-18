@@ -24,6 +24,9 @@ css: |
     margin: 15px;
     border-radius: 25px;
   }
+  .bazzite-light-section app-tile > button {
+    background-color: alpha(lightgray, 0.4);
+  }
   .gaming-section {
     background: linear-gradient(45deg, #171a49, #52136c);
   }
@@ -46,6 +49,8 @@ rows:
       classes:
         - bazzite-section
         - gaming-section
+      light-classes:
+        - bazzite-light-section
       category:
         title:
           en: "Gaming"
@@ -113,6 +118,8 @@ rows:
       classes:
         - bazzite-section
         - streaming-section
+      light-classes:
+        - bazzite-light-section
       category:
         title:
           en: "Streaming & Chat"
@@ -149,6 +156,8 @@ rows:
       classes:
         - bazzite-section
         - music-section
+      light-classes:
+        - bazzite-light-section
       category:
         title:
           en: "Music & Media"
@@ -183,6 +192,8 @@ rows:
       classes:
         - bazzite-section
         - office-section
+      light-classes:
+        - bazzite-light-section
       category:
         title:
           en: "Office & Productivity"
@@ -221,6 +232,8 @@ rows:
       classes:
         - bazzite-section
         - utilities-section
+      light-classes:
+        - bazzite-light-section
       category:
         title:
           en: "Utilities"
