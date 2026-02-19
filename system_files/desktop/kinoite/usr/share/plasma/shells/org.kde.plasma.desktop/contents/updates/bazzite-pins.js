@@ -17,8 +17,10 @@ for (let i = 0; i < allPanels.length; ++i) {
             if (!currentLaunchers || currentLaunchers.trim() === "") {
                 widget.writeConfig("launchers", [
                     "preferred://browser",
-                    "applications:io.github.kolunmi.Bazaar.desktop",
+                    "applications:steam.desktop",
+                    "applications:net.lutris.Lutris.desktop",
                     "applications:org.gnome.Ptyxis.desktop",
+                    "applications:io.github.kolunmi.Bazaar.desktop",
                     "preferred://filemanager"
                 ].join(","));
                 widget.reloadConfig();
