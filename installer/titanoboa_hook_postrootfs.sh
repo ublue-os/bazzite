@@ -331,11 +331,8 @@ if [[ $desktop_env == gnome ]]; then
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nHidden=true@g' /usr/share/anaconda/gnome/org.fedoraproject.welcome-screen.desktop || :
 fi
 
-# Let only browser/installer/file manager in the task-bar/dock, set new background for GNOME
-if [[ $desktop_env == kde ]]; then
-    sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:liveinst.desktop,preferred:\/\/filemanager<\/default>/' \
-        /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml
-elif [[ $desktop_env == gnome ]]; then
+# Set new background for GNOME
+if [[ $desktop_env == gnome ]]; then
     glib-compile-schemas /usr/share/glib-2.0/schemas
 fi
 
