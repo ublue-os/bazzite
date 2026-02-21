@@ -22,7 +22,7 @@ for (let i = 0; i < allPanels.length; ++i) {
                     "applications:org.gnome.Ptyxis.desktop",
                     "applications:io.github.kolunmi.Bazaar.desktop",
                     "preferred://filemanager"
-                ].join(","));
+                ]);
                 widget.reloadConfig();
             }
         }

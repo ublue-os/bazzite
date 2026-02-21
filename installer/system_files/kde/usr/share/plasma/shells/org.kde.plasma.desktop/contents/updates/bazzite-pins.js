@@ -19,7 +19,7 @@ for (let i = 0; i < allPanels.length; ++i) {
                     "preferred://browser",
                     "applications:liveinst.desktop",
                     "preferred://filemanager"
-                ].join(","));
+                ]);
                 widget.reloadConfig();
             }
         }
