@@ -236,3 +236,7 @@ get-media-app service="":
         "YouTube TV") create_script "youtube-tv" "youTubeTV" ;;
         *) echo "Invalid choice" ; exit 1 ;;
     esac
+
+# Fix Chrome WebApps icons and visibility in KDE menu
+fix-chrome-webapps:
+    /usr/bin/fix-chrome
