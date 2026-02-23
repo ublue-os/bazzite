@@ -1,0 +1,49 @@
+cat << 'EOF' > ~/.local/bin/fix-chrome
+#!/bin/bash
+# Description: Fixes Chrome WebApps visibility and categorization in KDE Plasma (specifically for Bazzite/Fedora)
+# Author: SSD & ia
+
+echo "Fixing Chrome WebApps categorization for KDE Plasma..."
+
+# Target directory for local desktop entries
+APPS_DIR="$HOME/.local/share/applications"
+
+# Check if there are any Chrome WebApp files (using the flatpak/reverse-dns naming convention)
+if ls "$APPS_DIR"/com.google.Chrome*.desktop 1> /dev/null 2>&1; then
+    for file in "$APPS_DIR"/com.google.Chrome*.desktop; do
+        echo "Processing: $(basename "$file")"
+        
+        # 1. Ensure a clean [Desktop Entry] header
+        sed -i '/^\[Desktop Entry\]/d' "$file"
+        sed -i '1i [Desktop Entry]' "$file"
+        
+        # 2. Set categories to "Internet" and "Network"
+        sed -i '/^Categories=/d' "$file"
+        echo "Categories=Network;WebBrowser;Internet;" >> "$file"
+        
+        # 3. Ensure visibility in the application menu
+        sed -i '/^NoDisplay/d' "$file"
+        echo "NoDisplay=false" >> "$file"
+        
+        # 4. Set correct entry type
+        sed -i '/^Type=/d' "$file"
+        echo "Type=Application" >> "$file"
+        
+        # 5. Remove StartupWMClass to prevent icon grouping issues with the main browser
+        sed -i '/^StartupWMClass=/d' "$file"
+
+        echo "Successfully patched: $(basename "$file")"
+    done
+else
+    echo "No Chrome WebApps found in $APPS_DIR."
+fi
+
+# Refreshing system databases to apply changes
+echo "Refreshing desktop database and KDE sycoca..."
+update-desktop-database "$APPS_DIR"
+kbuildsycoca6 --noincremental 2>/dev/null
+
+echo "--- Done! Chrome WebApps should now appear under the 'Internet' category. ---"
+EOF
+
+chmod +x ~/.local/bin/fix-chrome
