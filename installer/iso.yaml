@@ -5,3 +5,6 @@ grub2:
     - name: "Launch Bazzite Installer"
       linux: "/images/pxeboot/vmlinuz quiet rhgb root=live:CDLABEL=Bazzite-Live enforcing=0 rd.live.image"
       initrd: "/images/pxeboot/initrd.img"
+    - name: "Launch Bazzite Installer (Basic Graphics Mode)"
+      linux: "/images/pxeboot/vmlinuz quiet rhgb root=live:CDLABEL=Bazzite-Live enforcing=0 rd.live.image nomodeset"
+      initrd: "/images/pxeboot/initrd.img"
