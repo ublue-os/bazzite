@@ -94,11 +94,11 @@ screens:
         description: "Cloud gaming service"
         default: false
         script: "ujust get-media-app \"Xbox Cloud Gaming\""
-      - id: "geforce-now"
-        title: "GeForce Now"
-        description: "Cloud gaming service"
-        default: false
-        script: "ujust get-media-app \"GeForce Now\""
+      # - id: "geforce-now"
+      #   title: "GeForce Now"
+      #   description: "Cloud gaming service"
+      #   default: false
+      #   script: "ujust get-media-app \"GeForce Now\""
       - id: "youtube"
         title: "YouTube"
         description: "Video sharing platform"
