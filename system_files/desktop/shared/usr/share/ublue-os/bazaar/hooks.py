@@ -56,8 +56,19 @@ stage_idx = os.getenv('BAZAAR_HOOK_STAGE_IDX')
 def spawn_and_detach(args):
     subprocess.Popen(args, start_new_session=True, stdout=subprocess.DEVNULL)
 
+def make_popup_terminal_shellcmd(cmd):
+    new_cmd =  f'{cmd} ; '
+    new_cmd +=  'echo 1>&2 ; '
+    new_cmd +=  'echo "------------------" 1>&2 ; '
+    new_cmd += f'echo "Command \'{cmd}\' completed. Press ENTER to finish!" 1>&2 ; '
+    new_cmd +=  'read'
+    new_cmd = new_cmd.replace('"', '\\"')
+    return f'/bin/sh -c "{new_cmd}"'
+
 def spawn_ujust(id):
-    spawn_and_detach(make_shellcmd_argv(f'ujust {id}'))
+    cmd  = make_popup_terminal_shellcmd(f'ujust {id}')
+    args = make_shellcmd_argv(cmd)
+    spawn_and_detach(args)
 
 # ---
 
