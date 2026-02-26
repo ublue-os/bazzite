@@ -1,44 +1,11 @@
 title: Bazzite Portal
-screens:
-  - title: "System Management"
-    description: "System updates and configuration"
-    actions:
-      - id: "update-bazzite"
-        title: "Update Bazzite and Apps"
-        description: "Updates Bazzite, Flatpaks, firmware, and more"
-        default: false
-        script: "ujust update"
-        
-      - id: "rebase-bazzite-stable"
-        title: "Rebase Bazzite (stable)"
-        description: "Rebase Bazzite to the stable track"
-        default: false
-        script: "brh rebase stable -y && reboot"
-
-      - id: "rebase-bazzite-testing"
-        title: "Rebase Bazzite (testing)"
-        description: "Rebase Bazzite to the testing track"
-        default: false
-        script: "brh rebase testing -y && reboot"
-
-      - id: "rollback-bazzite"
-        title: "Rollback Bazzite"
-        description: "Rollback to the previous Bazzite deployment"
-        default: false
-        script: "brh rollback -y && reboot"
-
-      - id: "reset-bazzite"
-        title: "Reset Bazzite"
-        description: "Reset Bazzite layering to Default (Only resets layers NOT user data)" 
-        default: false
-        script: "rpm-ostree reset"
-        
+screens:        
   - title: "Setting up Bazzite"
     description: "Core system components and utilities"
     actions:
       - id: "toggle-iwd"
         title: "Toggle iwd"
-        description: "Toggles iwd ON/OFF"
+        description: "Toggles iwd ON/OFF."
         default: false
         script: "ujust toggle-iwd toggle"
       - id: "decky-loader"
@@ -86,6 +53,89 @@ screens:
         description: "A file synchronization utility powered by BitTorrent"
         default: false
         script: "ujust install-resilio-sync"
+- title: "Customizations and Tweaks"
+    description: "System configurations and enhancements"
+    actions:
+      - id: "add-input-group"
+        title: "Add input group to current user"
+        description: "Adds the input group to your current user. Required by certain controller drivers."
+        default: true
+        script: "sudo -A ujust add-user-to-input-group"
+      - id: "password-asterisks"
+        title: "Visible Password Asterisks"
+        description: "Toggles pwfeedback on."
+        default: false
+        script: "sudo -A ujust toggle-password-feedback on"
+      - id: "hide-grub"
+        title: "Hide GRUB Menu"
+        description: "Hide the GRUB menu on boot"
+        default: true
+        script: "sudo -A ujust configure-grub hide"
+      - id: "boot-to-windows"
+        title: "Boot to Windows from Steam"
+        description: "Adds a script in Steam to boot Windows which is useful for dual-boot setups"
+        default: false
+        script: "ujust setup-boot-windows-steam"
+      - id: "automounting"
+        title: "Automounting"
+        description: "Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system"
+        default: false
+        script: "ujust enable-automounting"
+      - id: "disable-steamos-automounting"
+        title: "Disable SteamOS Automounting"
+        description: "Disable SteamOS automount, this fixes ntfs partitions getting mounted"
+        default: false
+        script: "ujust disable-steamos-automount"
+      - id: "enable-steamos-automounting"
+        title: "Enable SteamOS Automounting"
+        description: "Enable SteamOS automount"
+        default: false
+        script: "ujust enable-steamos-automount"
+      - id: "wake-on-lan"
+        title: "Wake-on-LAN"
+        description: "Enable Wake-on-LAN functionality to power on your device remotely"
+        default: false
+        script: "ujust toggle-wol enable"
+      - id: "cec-sleep-standby"
+        title: "CEC Sleep Standby"
+        description: "Put TV to standby when system sleeps via HDMI-CEC. Requires a CEC-compatible Device, or Pulse 8 HDMI-CEC adapter."
+        default: false
+        script: "ujust toggle-cec-sleep enable"
+      - id: "steam-icons"
+        title: "Clean Steam Shortcuts"
+        description: "Automatically removes Steam shortcuts from the desktop on boot, useful for keeping the desktop clean when installing games via game mode."
+        default: false
+        script: "ujust steam-icons enable"
+      - id: "opentabletdriver"
+        title: "OpenTabletDriver"
+        description: "Open source, cross-platform, user-mode tablet driver"
+        default: false
+        script: "ujust install-opentabletdriver"
+      - id: "ssh-service"
+        title: "SSH Service"
+        description: "Enable SSH remote access service on boot"
+        default: false
+        script: "ujust toggle-ssh enable"
+      - id: "steamcmd"
+        title: "SteamCMD"
+        description: "Command-line version of the Steam client for dedicated servers and game downloads"
+        default: false
+        script: "ujust install-steamcmd"
+      - id: "global-fsr4"
+        title: "Global FSR4 Upgrade (RDNA4)"
+        description: "Toggle global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on proton 10 or GE 10-25 or later"
+        default: false
+        script: "ujust toggle-global-fsr4 enable"
+      - id: "global-fsr4-rdna3"
+        title: "Global FSR4 Upgrade (RDNA3)"
+        description: "Toggle global Proton FSR4 upgrade on RDNA3 GPUs (e.g. RX 7900 XTX); upgrades FSR 3.1+ → FSR 4. Only compatible with Proton GE, Proton EM, or similar forks."
+        default: false
+        script: "ujust toggle-global-fsr4-rdna3 enable"
+      - id: "global-dlss"
+        title: "Global DLSS Upgrade"
+        description: "Toggle global Proton DLSS upgrade; updates DLSS DLLs. Only compatible with Proton GE, Proton EM, or similar forks."
+        default: false
+        script: "ujust toggle-global-dlss enable"        
   - title: "Media Applications"
     description: "Entertainment and streaming services"
     actions:
@@ -194,89 +244,6 @@ screens:
         description: "Live TV streaming service"
         default: false
         script: "ujust get-media-app \"YouTube TV\""
-  - title: "Customizations and Tweaks"
-    description: "System configurations and enhancements"
-    actions:
-      - id: "add-input-group"
-        title: "Add input group to current user"
-        description: "Adds the input group to your current user. Required by certain controller drivers."
-        default: true
-        script: "sudo -A ujust add-user-to-input-group"
-      - id: "password-asterisks"
-        title: "Visible Password Asterisks"
-        description: "Toggles pwfeedback on."
-        default: false
-        script: "sudo -A ujust toggle-password-feedback on"
-      - id: "hide-grub"
-        title: "Hide GRUB Menu"
-        description: "Hide the GRUB menu on boot"
-        default: true
-        script: "sudo -A ujust configure-grub hide"
-      - id: "boot-to-windows"
-        title: "Boot to Windows from Steam"
-        description: "Adds a script in Steam to boot Windows which is useful for dual-boot setups"
-        default: false
-        script: "ujust setup-boot-windows-steam"
-      - id: "automounting"
-        title: "Automounting"
-        description: "Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system"
-        default: false
-        script: "ujust enable-automounting"
-      - id: "disable-steamos-automounting"
-        title: "Disable SteamOS Automounting"
-        description: "Disable SteamOS automount, this fixes ntfs partitions getting mounted"
-        default: false
-        script: "ujust disable-steamos-automount"
-      - id: "enable-steamos-automounting"
-        title: "Enable SteamOS Automounting"
-        description: "Enable SteamOS automount"
-        default: false
-        script: "ujust enable-steamos-automount"
-      - id: "wake-on-lan"
-        title: "Wake-on-LAN"
-        description: "Enable Wake-on-LAN functionality to power on your device remotely"
-        default: false
-        script: "ujust toggle-wol enable"
-      - id: "cec-sleep-standby"
-        title: "CEC Sleep Standby"
-        description: "Put TV to standby when system sleeps via HDMI-CEC. Requires a CEC-compatible Device, or Pulse 8 HDMI-CEC adapter."
-        default: false
-        script: "ujust toggle-cec-sleep enable"
-      - id: "steam-icons"
-        title: "Clean Steam Shortcuts"
-        description: "Automatically removes Steam shortcuts from the desktop on boot, useful for keeping the desktop clean when installing games via game mode."
-        default: false
-        script: "ujust steam-icons enable"
-      - id: "opentabletdriver"
-        title: "OpenTabletDriver"
-        description: "Open source, cross-platform, user-mode tablet driver"
-        default: false
-        script: "ujust install-opentabletdriver"
-      - id: "ssh-service"
-        title: "SSH Service"
-        description: "Enable SSH remote access service on boot"
-        default: false
-        script: "ujust toggle-ssh enable"
-      - id: "steamcmd"
-        title: "SteamCMD"
-        description: "Command-line version of the Steam client for dedicated servers and game downloads"
-        default: false
-        script: "ujust install-steamcmd"
-      - id: "global-fsr4"
-        title: "Global FSR4 Upgrade (RDNA4)"
-        description: "Toggle global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on proton 10 or GE 10-25 or later"
-        default: false
-        script: "ujust toggle-global-fsr4 enable"
-      - id: "global-fsr4-rdna3"
-        title: "Global FSR4 Upgrade (RDNA3)"
-        description: "Toggle global Proton FSR4 upgrade on RDNA3 GPUs (e.g. RX 7900 XTX); upgrades FSR 3.1+ → FSR 4. Only compatible with Proton GE, Proton EM, or similar forks."
-        default: false
-        script: "ujust toggle-global-fsr4-rdna3 enable"
-      - id: "global-dlss"
-        title: "Global DLSS Upgrade"
-        description: "Toggle global Proton DLSS upgrade; updates DLSS DLLs. Only compatible with Proton GE, Proton EM, or similar forks."
-        default: false
-        script: "ujust toggle-global-dlss enable"
   - title: "Brew"
     description: "Brew Taps and Casks"
     actions:
@@ -310,3 +277,35 @@ screens:
         description: "Installs VSCodium editor"
         default: false
         script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew install --cask vscodium-linux'
+  - title: "System Management"
+    description: "System updates and configuration"
+    actions:
+      - id: "update-bazzite"
+        title: "Update Bazzite and Apps"
+        description: "Updates Bazzite, Flatpaks, firmware, and more"
+        default: false
+        script: "ujust update"
+        
+      - id: "rebase-bazzite-stable"
+        title: "Rebase Bazzite (stable)"
+        description: "Rebase Bazzite to the stable track"
+        default: false
+        script: "brh rebase stable -y && reboot"
+
+      - id: "rebase-bazzite-testing"
+        title: "Rebase Bazzite (testing)"
+        description: "Rebase Bazzite to the testing track"
+        default: false
+        script: "brh rebase testing -y && reboot"
+
+      - id: "rollback-bazzite"
+        title: "Rollback Bazzite"
+        description: "Rollback to the previous Bazzite deployment"
+        default: false
+        script: "brh rollback -y && reboot"
+
+      - id: "reset-bazzite"
+        title: "Reset Bazzite"
+        description: "Reset Bazzite layering to Default (Only resets layers NOT user data)" 
+        default: false
+        script: "rpm-ostree reset"        
