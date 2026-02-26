@@ -15,8 +15,8 @@ hooks:
         body-use-markup: true
         body: >-
           This is a <a href="https://www.jetbrains.com/">JetBrains</a>
-          application and is not officially supported on Flatpak. We
-          recommend using the Toolbox app to manage JetBrains IDEs.
+          application and is not officially supported on Flatpak. Bazzite
+          recommends using the Toolbox app to manage JetBrains IDEs.
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
         default-response-id: cancel
