@@ -2,6 +2,35 @@
 
 import os, subprocess, sys
 
+# ---
+
+#
+# CONFIG
+#
+
+def kde_make_shellcmd_argv(cmd):
+    return ['konsole', '-e', cmd]
+def gnome_make_shellcmd_argv(cmd):
+    return ['ptyxis', '-x', cmd]
+
+# ---
+
+#
+# ENVIRONMENT SETUP
+#
+
+desktop = os.getenv('XDG_CURRENT_DESKTOP')
+if desktop == 'KDE':
+    make_shellcmd_argv = kde_make_shellcmd_argv
+else:
+    make_shellcmd_argv = gnome_make_shellcmd_argv
+
+# ---
+
+#
+# BAZAAR STATE
+#
+
 unix_timestamp      = os.getenv('BAZAAR_HOOK_INITIATED_UNIX_STAMP')
 unix_timestamp_usec = os.getenv('BAZAAR_HOOK_INITIATED_UNIX_STAMP_USEC')
 
@@ -20,11 +49,17 @@ stage_idx = os.getenv('BAZAAR_HOOK_STAGE_IDX')
 
 # ---
 
+#
+# UTIL
+#
+
 def spawn_and_detach(args):
     subprocess.Popen(args, start_new_session=True, stdout=subprocess.DEVNULL)
 
 def spawn_ujust(id):
-    spawn_and_detach(['ptyxis', '-x', f'ujust {id}'])
+    spawn_and_detach(make_shellcmd_argv(f'ujust {id}'))
+
+# ---
 
 def handle_jetbrains():
 
