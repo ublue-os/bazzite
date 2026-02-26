@@ -156,7 +156,7 @@ jobs:
 
       - name: Upload ISOs and Checksum to Job Artifacts
         if: github.ref_name == 'testing'
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
           path: ${{ steps.upload-directory.outputs.iso-upload-dir }}
