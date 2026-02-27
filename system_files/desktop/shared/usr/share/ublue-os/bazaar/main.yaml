@@ -2,3 +2,30 @@ yaml-blocklist-paths:
   - /usr/share/ublue-os/bazaar/blocklist.yaml
 override-eol-markings:
   - com.obsproject.Studio
+
+hooks:
+  - id: jetbrains-toolbox
+    when: before-transaction
+    dialogs:
+      - id: jetbrains-warning
+        title: >-
+          JetBrains IDEs are not supported in this format
+        # If true, render inline markup commands in body; see
+        # https://docs.gtk.org/Pango/pango_markup.html
+        body-use-markup: true
+        body: >-
+          This is a <a href="https://www.jetbrains.com/">JetBrains</a>
+          application and is not officially supported on Flatpak. Bazzite
+          recommends using the Toolbox app to manage JetBrains IDEs.
+        # Determines which option will be assumed if the user hits the
+        # escape key or otherwise cancels the dialog
+        default-response-id: cancel
+        options:
+          - id: cancel
+            string: "Cancel"
+          - id: run-ujust
+            string: "Download JetBrains Toolbox"
+            # can be "destructive" or "suggested" or omit for no
+            # styling
+            style: suggested
+    shell: exec python3 /usr/share/ublue-os/bazaar/hooks.py

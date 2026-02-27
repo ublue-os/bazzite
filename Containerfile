@@ -376,6 +376,21 @@ RUN --mount=type=cache,dst=/var/cache \
             kio-extras \
             krunner-bazaar \
             krdc \
+            tesseract-langpack-spa \
+            tesseract-langpack-deu \
+            tesseract-langpack-jpn \
+            tesseract-langpack-jpn_vert \
+            tesseract-langpack-fra \
+            tesseract-langpack-por \
+            tesseract-langpack-rus \
+            tesseract-langpack-ita \
+            tesseract-langpack-nld \
+            tesseract-langpack-pol \
+            tesseract-langpack-tur \
+            tesseract-langpack-chi_sim \
+            tesseract-langpack-chi_sim_vert \
+            tesseract-langpack-ces \
+            tesseract-langpack-ell \
             ptyxis && \
         dnf5 -y remove \
             plasma-welcome \
