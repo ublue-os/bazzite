@@ -1,6 +1,6 @@
 --- a/etc/xdg/kdeglobals
 +++ b/etc/xdg/kdeglobals
-@@ -11,7 +11,14 @@
+@@ -11,5 +11,8 @@
 kcm_sddm.desktop=false
 kcm_plymouth.desktop=false
 +kcm_updates=false
@@ -9,8 +9,6 @@ kcm_plymouth.desktop=false
 +XwaylandClientsScale=false
 +
  [General]
-+TerminalApplication=kde-ptyxis
-+TerminalService=org.gnome.Ptyxis.desktop
 +fixed=Fira Code,9,-1,5,50,0,0,0,0,0
  font=Noto Sans,11,-1,5,50,0,0,0,0,0
  menuFont=Noto Sans,11,-1,5,50,0,0,0,0,0
