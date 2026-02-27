@@ -9,7 +9,7 @@ import os, subprocess, sys
 #
 
 def kde_make_shellcmd_argv(cmd):
-    return ['konsole', '-e', cmd]
+    return ['ptyxis', '-x', cmd]
 def gnome_make_shellcmd_argv(cmd):
     return ['ptyxis', '-x', cmd]
 
