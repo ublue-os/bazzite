@@ -13,7 +13,7 @@ else
 fi
 
 if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
-    VARIANT_PKGS="supergfxctl-plasmoid supergfxctl"
+    VARIANT_PKGS="supergfxctl"
 elif [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
     VARIANT_PKGS="supergfxctl"
 else
