@@ -53,7 +53,7 @@ screens:
         description: "A file synchronization utility powered by BitTorrent"
         default: false
         script: "ujust install-resilio-sync"
-- title: "Customizations and Tweaks"
+  - title: "Customizations and Tweaks"
     description: "System configurations and enhancements"
     actions:
       - id: "add-input-group"
