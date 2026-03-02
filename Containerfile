@@ -157,7 +157,6 @@ RUN --mount=type=cache,dst=/var/cache \
         mesa-libEGL \
         mesa-libGL \
         mesa-libgbm \
-        mesa-va-drivers \
         mesa-vulkan-drivers \
         fwupd \
         fwupd-plugin-flashrom \
@@ -167,7 +166,7 @@ RUN --mount=type=cache,dst=/var/cache \
         NetworkManager-wifi \
         NetworkManager-libnm && \
     dnf5 -y install \
-        mesa-va-drivers.i686 \
+        mesa-dri-drivers.i686 \
         libfreeaptx && \
     dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
         libaacs \
