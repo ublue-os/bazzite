@@ -746,14 +746,14 @@ RUN --mount=type=cache,dst=/var/cache \
         systemctl disable gdm.service && \
         systemctl enable sddm.service \
     ; else \
-        systemctl disable usr-share-sddm-themes.mount \
+        systemctl disable usr-share-sddm-themes.mount && \
+        mkdir -p /tmp/bazzite-schema-test && \
+        find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" -exec cp {} "/tmp/bazzite-schema-test/" \; && \
+        cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/" && \
+        glib-compile-schemas --strict /tmp/bazzite-schema-test && \
+        glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
+        rm -r /tmp/bazzite-schema-test \
     ; fi && \
-    mkdir -p /tmp/bazzite-schema-test && \
-    find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" -exec cp {} "/tmp/bazzite-schema-test/" \; && \
-    cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/" && \
-    glib-compile-schemas --strict /tmp/bazzite-schema-test && \
-    glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null && \
-    rm -r /tmp/bazzite-schema-test && \
     { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
     systemctl enable hhd.service && \
     systemctl enable --global steamos-manager.service && \
