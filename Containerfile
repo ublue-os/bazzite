@@ -125,7 +125,8 @@ RUN --mount=type=cache,dst=/var/cache \
         iptsd \
         libwacom-surface && \
     dnf5 -y remove \
-        pipewire-config-raop && \
+        pipewire-config-raop \
+        mesa-va-drivers && \
     declare -A toswap=( \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite"]="wireplumber" \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland NetworkManager" \
@@ -166,7 +167,6 @@ RUN --mount=type=cache,dst=/var/cache \
         NetworkManager-wifi \
         NetworkManager-libnm && \
     dnf5 -y install \
-        mesa-dri-drivers.i686 \
         libfreeaptx && \
     dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
         libaacs \
