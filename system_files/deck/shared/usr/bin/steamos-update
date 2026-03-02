@@ -10,7 +10,6 @@
 # Exit Codes:
 # 0: Success (e.g., upgrade available, --supports-duplicate-detection handled, or script completed even if upgrade failed).
 # 7: Failure (e.g., uupd not installed, upgrade already installed, update checks failed, or connectivity check failed).
-# Dynamic: Value propagated from /usr/bin/hhd.steamos if it is executed and returns a non-20 code.
 
 # Fake upgrade progress bar
 _fake_progress() {
@@ -46,16 +45,6 @@ if [[ ! -f $_fixup_file ]]; then
     sync "$_fixup_file"
     systemctl restart graphical.target
     exit 7
-fi
-
-if [ -x /usr/bin/hhd.steamos ]; then
-    /usr/bin/hhd.steamos steamos-update --fallback "$@"
-    ret=$?
-    # If ret is not 20, exit with the return code, otherwise continue
-    if [ $ret -ne 20 ]; then
-        exit $ret
-    fi
-    exit $ret
 fi
 
 while [[ $# -gt 0 ]]; do
