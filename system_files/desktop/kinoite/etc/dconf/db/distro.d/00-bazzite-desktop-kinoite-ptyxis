@@ -1,6 +1,0 @@
-# Relocatable schemas are located here in dconf
-# Some Gnome extensions don't ship gschema XML, so their settings also need to go in dconf
-
-[org/gnome/Ptyxis/Profiles/2871e8027773ae74d6c87a5f659bbc74]
-palette='Breeze'
-opacity=0.9
