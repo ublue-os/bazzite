@@ -408,6 +408,19 @@ if [[ "$OSTREE_STATE" != "State: idle" ]]; then
   exit 1
 fi
 
+#Check and notify for kscreen-doctor
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+if [[ "$BASE_IMAGE_NAME" == "kinoite" ]]; then
+   echo "
+${green}KDE Plasma 6.6${normal} adds the ability to add ${bold}custom resolutions${normal} in ${green}kscreen-doctor${normal}!
+Use that instead if you do not need a custom resolution for Game Mode or Sunshine.
+An updated guide is available on ${bold}https://docs.bazzite.gg/Advanced/custom_resolution/${normal}
+"
+   press_any_key
+fi
+
+
 case "$1" in
   "current") print_status ;;
   "add") add "$2" "$3" ;;
