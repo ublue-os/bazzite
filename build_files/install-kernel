@@ -15,7 +15,12 @@ printf '%s\n' '#!/bin/sh' 'exit 0' > 50-dracut.install
 chmod +x  05-rpmostree.install 50-dracut.install
 popd
 
-dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra kernel-tools kernel-tools-libs
+for pkg in kernel kernel{-core,-modules,-modules-core,-modules-extra,-tools-libs,-tools}; do
+    rpm --erase "${pkg}" --nodeps
+done
+
+# cleanup leftovers that are not covered by kernel-* packages
+rm -rf /usr/lib/modules
 
 pkgs=(
     kernel
