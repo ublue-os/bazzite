@@ -1,13 +1,14 @@
 --- a/etc/xdg/kdeglobals
 +++ b/etc/xdg/kdeglobals
-@@ -11,5 +11,8 @@
-kcm_sddm.desktop=false
-kcm_plymouth.desktop=false
+@@ -10,8 +10,13 @@
+ [KDE Control Module Restrictions][$i]
+ kcm_sddm.desktop=false
+ kcm_plymouth.desktop=false
 +kcm_updates=false
-
++
 +[KScreen]
 +XwaylandClientsScale=false
-+
+ 
  [General]
 +fixed=Fira Code,9,-1,5,50,0,0,0,0,0
  font=Noto Sans,11,-1,5,50,0,0,0,0,0
