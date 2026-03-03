@@ -16,11 +16,11 @@ Source3:        bazzite_logo.svgz
 Source4:        metadata_vapor.json
 Source5:        metadata_vgui2.json
 Source6:        plasmarc
+Source7:        kscreenlockerrc
 Patch0:         multiuser.patch
-Patch1:         lockscreen.patch
-Patch2:         bazzite_logo.patch
-Patch3:         ublue.patch
-Patch4:         splash.patch
+Patch1:         bazzite_logo.patch
+Patch2:         ublue.patch
+Patch3:         splash.patch
 
 BuildArch:      noarch
 
@@ -81,6 +81,7 @@ cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.deskt
 cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/bazzite_logo.svgz
 cp %{SOURCE4} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/metadata.json
 cp %{SOURCE5} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/metadata.json
+cp ${SOURCE7} %{buildroot}%{_sysconfdir}/xdg/kscreenlockerrc
 
 # Do post-installation
 %post
@@ -110,6 +111,7 @@ cp %{SOURCE5} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.deskto
 %{_sysconfdir}/xdg/gtk-3.0/settings.ini
 %{_sysconfdir}/xdg/kdeglobals
 %{_sysconfdir}/xdg/ktrashrc
+%{_sysconfdir}/xdg/kscreenlockerrc
 
 # Finally, changes from the latest release of your application are generated from
 # your project's Git history. It will be empty until you make first annotated Git tag.
