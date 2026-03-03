@@ -13,6 +13,9 @@ hooks:
             JetBrains IDEs are not supported in this format
           ru: >-
             IDE JetBrains не поддерживаются в данном формате
+          el: >-
+            Το IDE JetBrains δεν υποστηρίζεται σε αυτή τη μορφή
+
         # If true, render inline markup commands in body; see
         # https://docs.gtk.org/Pango/pango_markup.html
         body-use-markup: true
@@ -26,6 +29,11 @@ hooks:
             и оно официально не поддерживается как Flatpak. Bazzite
             рекомендует использовать Toolbox приложение для управления IDE
             JetBrains.
+          el: >-
+            Αυτή είναι μια εφαρμογή <a href="https://www.jetbrains.com/">JetBrains</a>
+            και δεν υποστηρίζεται επίσημα σε Flatpak. Το Bazzite
+            συνιστά τη χρήση της εφαρμογής Toolbox για τη διαχείριση των IDE
+            JetBrains.
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
         default-response-id: cancel
@@ -34,10 +42,12 @@ hooks:
             string:
               en: "Cancel"
               ru: "Отмена"
+              el: "Ακύρωση"
           - id: run-ujust
             string:
               en: "Download JetBrains Toolbox"
               ru: "Скачать JetBrains Toolbox"
+              el: "Λήψη JetBrains Toolbox"
             # can be "destructive" or "suggested" or omit for no
             # styling
             style: suggested
