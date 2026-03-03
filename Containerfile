@@ -401,6 +401,7 @@ RUN --mount=type=cache,dst=/var/cache \
             tesseract-langpack-ell \
             ptyxis && \
         dnf5 -y remove \
+            plasma-drkonqi \
             plasma-welcome \
             plasma-welcome-fedora \
             plasma-discover-kns \
