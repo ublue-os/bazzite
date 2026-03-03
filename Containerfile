@@ -56,11 +56,17 @@ ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
-COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
+RUN --mount=type=bind,target=/tmp/context \
+    cp -a /tmp/context/system_files/desktop/shared/. /tmp/context/system_files/desktop/${BASE_IMAGE_NAME}/. / && \
+    find /usr/share/ublue-os/docs -type f -exec setfattr -n user.component -v "ublue-docs" {} +
+
 COPY firmware /
 
 # Copy Homebrew files from the brew image
-COPY --from=ghcr.io/ublue-os/brew:latest@sha256:ca91068f51ce663d495ccfc829352d6621ec95f6c7db447ade55023b222f9762 /system_files /
+ARG BREW_IMAGE=ghcr.io/ublue-os/brew:latest@sha256:ca91068f51ce663d495ccfc829352d6621ec95f6c7db447ade55023b222f9762
+RUN --mount=type=bind,from=${BREW_IMAGE},source=/system_files,target=/tmp/brew_source \
+    cp -a /tmp/brew_source/. / && \
+    find /tmp/brew_source -type f -printf '/%P\0' | xargs -0 setfattr -n user.component -v "homebrew"
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
@@ -395,6 +401,7 @@ RUN --mount=type=cache,dst=/var/cache \
             tesseract-langpack-ell \
             ptyxis && \
         dnf5 -y remove \
+            plasma-drkonqi \
             plasma-welcome \
             plasma-welcome-fedora \
             plasma-discover-kns \
