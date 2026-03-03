@@ -348,6 +348,10 @@ jobs:
             sudo buildah config --label "$line" "$container"
           done <<< "$IMAGE_LABELS"
 
+          filter='{ "packages": [inputs | split(" ") | select(length==2) | { (.[0]): .[1] }] | sort_by(keys) | add }'
+          manifest=$(sudo podman run --rm "$img" rpm -qa --qf '%{NAME} %{VERSION}\n' | jq -Rnc "$filter")
+          sudo buildah config --label "dev.hhd.rechunk.info=$manifest" $container
+
           sudo buildah commit --identity-label=false --rm $container $img
 
           echo "version=$version" >> "$GITHUB_OUTPUT"
