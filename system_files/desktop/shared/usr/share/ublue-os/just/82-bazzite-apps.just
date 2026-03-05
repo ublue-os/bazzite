@@ -142,6 +142,7 @@ install-steamcmd:
     rm /tmp/steamcmd.tar.gz
     if [[ -f ~/.steam/steamcmd.sh ]]; then
         mkdir -p ~/.local/bin
+        rm -f ~/.local/bin/steamcmd
         printf '#!/usr/bin/bash\nexec ~/.steam/steamcmd.sh "$@"\n' > ~/.local/bin/steamcmd
         chmod +x ~/.local/bin/steamcmd
     fi
