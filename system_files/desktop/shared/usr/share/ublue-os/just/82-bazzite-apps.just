@@ -142,7 +142,8 @@ install-steamcmd:
     rm /tmp/steamcmd.tar.gz
     if [[ -f ~/.steam/steamcmd.sh ]]; then
         mkdir -p ~/.local/bin
-        ln -s ~/.steam/steamcmd.sh ~/.local/bin/steamcmd
+        printf '#!/usr/bin/bash\nexec ~/.steam/steamcmd.sh "$@"\n' > ~/.local/bin/steamcmd
+        chmod +x ~/.local/bin/steamcmd
     fi
 
 # Install OpenRazer for Razer gaming hardware
