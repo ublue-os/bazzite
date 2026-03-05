@@ -36,18 +36,6 @@ _upgrade() {
     echo $? >/tmp/upgrade-check
 }
 
-# The first time the steam client starts in deck mode, it will attempt to fetch an update.
-# We must exit the first time, otherwise you have users stuck when booting up the first time.
-# See: https://www.reddit.com/r/Bazzite/comments/1psuar7/bazzite_xbox_ally_issue/
-_fixup_file=/etc/bazzite/fixups/first_steam_gamemode_boostrap
-if [[ ! -f $_fixup_file ]]; then
-    mkdir -p "$(dirname "$_fixup_file")"
-    touch "$_fixup_file"
-    sync "$_fixup_file"
-    systemctl restart graphical.target
-    exit 7
-fi
-
 if [ -x /usr/bin/hhd.steamos ]; then
     /usr/bin/hhd.steamos steamos-update --fallback "$@"
     ret=$?
