@@ -21,6 +21,9 @@ mount -o remount,rw /proc/sys
 curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo
 xargs -r flatpak install -y --noninteractive <"/src/$FLATPAK_DIR_SHORTNAME/flatpaks"
 
+# Make a copy of the original flatpak files in order to avoid being altered by users on the live session
+cp -aT /var/lib/flatpak{,_original}
+
 # Pull the container image to be installed
 if mountpoint -q /usr/lib/containers/storage; then
     # We load our image from the host container storage if possible
