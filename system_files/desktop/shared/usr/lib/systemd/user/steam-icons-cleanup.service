@@ -5,7 +5,7 @@ PartOf=graphical-session.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/just steam-icons remove
+ExecStart=/usr/bin/ujust steam-icons remove
 RemainAfterExit=no
 
 [Install]
