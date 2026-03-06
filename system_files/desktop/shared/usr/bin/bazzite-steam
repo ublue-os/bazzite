@@ -5,6 +5,10 @@ IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 
 DECK_OPTION=""
 
+# Use a dummy updater during oobe
+# See: https://www.reddit.com/r/Bazzite/comments/1psuar7/bazzite_xbox_ally_issue/
+OOTB_DISABLE_UPDATER_OPTION="-testoobeupdater"
+
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   if [ ! -d $HOME/.local/share/Steam ]; then
     # Set up steam with the bootstrap before starting it, this allows steam to run for the first time even with no network access
@@ -72,7 +76,7 @@ if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
   # It's been primarily developed for allowing the desktop functionality
   # on the Steam Controller to work while Steam is open on Wayland.
   # Also supports Steam Input as a whole.
-  env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam "$DECK_OPTION" "$DGPU_OPTION" "$@"
+  env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam "$DECK_OPTION" "$OOTB_DISABLE_UPDATER_OPTION" "$DGPU_OPTION" "$@"
 else
-  /usr/bin/steam "$DECK_OPTION" "$DGPU_OPTION" "$@"
+  /usr/bin/steam "$DECK_OPTION" "$OOTB_DISABLE_UPDATER_OPTION" "$DGPU_OPTION" "$@"
 fi
