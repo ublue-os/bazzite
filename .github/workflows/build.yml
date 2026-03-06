@@ -419,7 +419,7 @@ jobs:
             dest_image="${{ steps.base.outputs.output_image }}:${{ steps.relabel.outputs.version }}"
             sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
             log_sum "$dest_image"
-            DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
+            DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' docker://$dest_image)
             cosign sign -y --key env://SIGNING_SECRET --new-bundle-format=false \
               "${{ steps.base.outputs.output_image }}@$DIGEST"
 
