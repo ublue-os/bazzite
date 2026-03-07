@@ -349,7 +349,8 @@ jobs:
           done <<< "$IMAGE_LABELS"
 
           filter='{ "packages": [inputs | split(" ") | select(length==2) | { (.[0]): .[1] }] | sort_by(keys) | add }'
-          manifest=$(sudo podman run --rm "$img" rpm -qa --qf '%{NAME} %{VERSION}\n' | jq -Rnc "$filter")
+          manifest=$(sudo podman run --rm "$img" rpm -qa --qf '%{NAME} %{VERSION}-%{RELEASE}\n' \
+              | sed -e 's/\.fc[0-9][0-9]*$//' | jq -Rnc "$filter")
           sudo buildah config --label "dev.hhd.rechunk.info=$manifest" $container
 
           sudo buildah commit --identity-label=false --rm $container $img
