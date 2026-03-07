@@ -268,6 +268,16 @@ jobs:
           ARCH=${{ matrix.arch }}
           EOF
 
+      - name: Setup DNF package cache
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        env:
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+        with:
+          path: /var/tmp/buildah-cache-*
+          key: ${{ runner.os }}-buildah-${{ env.IMAGE_NAME }}
+          restore-keys: |
+            ${{ runner.os }}-buildah-${{ env.IMAGE_NAME }}
+
       # Build image using buildah and save it to raw-img
       - name: Build Image
         id: build_image
@@ -431,6 +441,12 @@ jobs:
             log_sum '```'
         env:
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+
+      # https://github.com/actions/cache/issues/1533
+      - name: Hack around permission issue caching
+        id: cache-perms
+        run: |
+          sudo chmod 777 --recursive /var/tmp/buildah-cache-0
 
   generate_release:
     name: Generate Release
