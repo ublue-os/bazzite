@@ -1,3 +1,2 @@
 [Libinput]
-PointerAcceleration=0.0
-PointerAccelerationProfile=2
+PointerAccelerationProfile=1
