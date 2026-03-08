@@ -42,6 +42,10 @@ FROM ${NVIDIA_REF} AS nvidia
 FROM scratch AS ctx
 COPY build_files /
 
+FROM scratch AS dx-ctx
+COPY dx/build_files /build_files
+COPY dx/system_files /system_files
+
 ################
 # DESKTOP BUILDS
 ################
@@ -846,3 +850,99 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/finalize
 
 RUN --mount=type=tmpfs,target=/run --network=none bootc container lint
+
+# Deck NVIDIA variant - explicit stage for DX to build from
+FROM bazzite-deck AS bazzite-deck-nvidia
+
+ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-deck-nvidia}"
+ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
+ARG IMAGE_BRANCH="${IMAGE_BRANCH:-stable}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG VERSION_TAG="${VERSION_TAG}"
+ARG VERSION_PRETTY="${VERSION_PRETTY}"
+
+# Fetch NVIDIA driver
+COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
+
+# Remove everything that doesn't work well with NVIDIA
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    dnf5 config-manager unsetopt skip_if_unavailable && \
+    dnf5 -y remove \
+        nvidia-gpu-firmware \
+        rocm-hip \
+        rocm-opencl \
+        rocm-clinfo \
+        rocm-smi && \
+    /ctx/cleanup
+
+# Install NVIDIA driver
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    --mount=type=secret,id=GITHUB_TOKEN \
+    --mount=type=bind,from=nvidia,src=/,dst=/rpms/nvidia \
+    dnf5 -y copr enable ublue-os/staging && \
+    dnf5 -y install \
+        egl-wayland.x86_64 \
+        egl-wayland.i686 && \
+    /ctx/install-nvidia && \
+    rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
+    ln -s libnvidia-ml.so.1 /usr/lib64/libnvidia-ml.so && \
+    dnf5 -y copr disable ublue-os/staging && \
+    /ctx/cleanup
+
+# Cleanup & Finalize
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
+    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
+        mkdir -p "/usr/share/ublue-os/dconfs/nvidia-silverblue/" && \
+        cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/nvidia-silverblue/" && \
+        dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" && \
+        rm "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" \
+    ; fi && \
+    systemctl disable supergfxd.service && \
+    dnf5 config-manager setopt skip_if_unavailable=1 && \
+    /ctx/image-info && \
+    /ctx/build-initramfs && \
+    /ctx/finalize
+
+RUN --mount=type=tmpfs,target=/run --network=none bootc container lint
+
+################
+# DX BUILDS (Developer Experience)
+################
+
+FROM bazzite-deck AS bazzite-dx
+
+ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-dx}"
+ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
+
+RUN --mount=type=tmpfs,dst=/tmp \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=bind,from=dx-ctx,source=/system_files,target=/tmp/dx-system \
+    --mount=type=bind,from=dx-ctx,source=/build_files,target=/tmp/dx-build \
+    cp -rT /tmp/dx-system / && \
+    mkdir -p /var/roothome && \
+    /tmp/dx-build/build.sh && \
+    /ctx/finalize
+
+FROM bazzite-deck-nvidia AS bazzite-nvidia-dx
+
+ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-nvidia-dx}"
+ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
+
+RUN --mount=type=tmpfs,dst=/tmp \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=bind,from=dx-ctx,source=/system_files,target=/tmp/dx-system \
+    --mount=type=bind,from=dx-ctx,source=/build_files,target=/tmp/dx-build \
+    cp -rT /tmp/dx-system / && \
+    mkdir -p /var/roothome && \
+    /tmp/dx-build/build.sh && \
+    /ctx/finalize

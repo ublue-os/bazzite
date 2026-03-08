@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Nested Steam Gamemode
+Comment=Run Steam Gamemode in a nested gamescope window for testing
+Exec=gamemode-nested
+Icon=steamdeck
+Terminal=false
+Type=Application
+Categories=Network;FileTransfer;Game;
+PrefersNonDefaultGPU=true
+X-KDE-RunOnDiscreteGpu=true
