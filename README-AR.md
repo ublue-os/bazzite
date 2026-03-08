@@ -4,7 +4,7 @@
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ublue-os/bazzite) [![LFX Health Score](https://insights.linuxfoundation.org/api/badge/health-score?project=ublue-os-bazzite)](https://insights.linuxfoundation.org/project/ublue-os-bazzite) [![LFX Active Contributors](https://insights.linuxfoundation.org/api/badge/active-contributors?project=ublue-os-bazzite)](https://insights.linuxfoundation.org/project/ublue-os-bazzite)
 
-# [](https://github.com/ublue-os/bazzite/blob/main/README.md) [](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md) [](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [](https://github.com/ublue-os/bazzite/blob/main/README-BR.md) [](https://github.com/ublue-os/bazzite/blob/main/README-NL.md) [](https://github.com/ublue-os/bazzite/blob/main/README-RU.md) [](https://github.com/ublue-os/bazzite/blob/main/README-DE.md)
+# [](https://github.com/ublue-os/bazzite/blob/main/README.md) [](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md) [](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [](https://github.com/ublue-os/bazzite/blob/main/README-BR.md) [](https://github.com/ublue-os/bazzite/blob/main/README-NL.md) [](https://github.com/ublue-os/bazzite/blob/main/README-RU.md) [](https://github.com/ublue-os/bazzite/blob/main/README-DE.md) [](https://github.com/ublue-os/bazzite/blob/main/README-ZH-TW.md)
 
 <p align="center">
   <a href="https://download.bazzite.gg/"><img src="/repo_content/download.png?raw=true" alt="تنزيل Bazzite"/></a>
@@ -13,26 +13,26 @@
 ---
 
 # جدول المحتويات
-- [        ](#--------)
-- [جدول المحتويات](#table-of-contents)
-  - [حول والميزات](#about--features)
-    - [سطح المكتب](#desktop)
-    - [Steam Deck/أجهزة المسرح المنزلي (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
-      - [أجهزة محمولة بديلة](#alternative-handhelds)
-    - [جنوم](#gnome)
-    - [ميزات من المصدر الأعلى](#features-from-upstream)
+- [         ](#---------)
+- [جدول المحتويات](#جدول-المحتويات)
+  - [حول والميزات](#حول-والميزات)
+    - [سطح المكتب](#سطح-المكتب)
+    - [Steam Deck/أجهزة المسرح المنزلي (HTPCs)](#steam-deckأجهزة-المسرح-المنزلي-htpcs)
+      - [أجهزة محمولة بديلة](#أجهزة-محمولة-بديلة)
+    - [جنوم](#جنوم)
+    - [ميزات من المصدر الأعلى](#ميزات-من-المصدر-الأعلى)
       - [Universal Blue](#universal-blue)
-      - [ميزات من فيدورا لينكس (Kinoite & Silverblue)](#features-from-fedora-linux-kinoite--silverblue)
-  - [لماذا](#why)
-  - [العرض](#showcase)
-  - [التوثيق](#documentation)
-  - [التحقق](#verification)
-  - [الإقلاع الآمن](#secure-boot)
-  - [مقاييس المساهمين](#contributor-metrics)
-  - [تاريخ النجوم](#star-history)
-  - [شكر خاص](#special-thanks)
-  - [أنشئ نسختك الخاصة](#build-your-own)
-  - [انضم إلى المجتمع](#join-the-community)
+      - [ميزات من فيدورا لينكس (Kinoite \& Silverblue)](#ميزات-من-فيدورا-لينكس-kinoite--silverblue)
+  - [لماذا](#لماذا)
+  - [العرض](#العرض)
+  - [التوثيق](#التوثيق)
+  - [التحقق](#التحقق)
+  - [الإقلاع الآمن](#الإقلاع-الآمن)
+  - [مقاييس المساهمين](#مقاييس-المساهمين)
+  - [تاريخ النجوم](#تاريخ-النجوم)
+  - [شكر خاص](#شكر-خاص)
+  - [أنشئ نسختك الخاصة](#أنشئ-نسختك-الخاصة)
+  - [انضم إلى المجتمع](#انضم-إلى-المجتمع)
 ---
 
 ## حول والميزات

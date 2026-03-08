@@ -1,4 +1,4 @@
-# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/SECURITY.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/SECURITY-FR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/SECURITY-NL.md)
+# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/SECURITY.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/SECURITY-FR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/SECURITY-NL.md) [🇹🇼](https://github.com/ublue-os/bazzite/blob/main/SECURITY-ZH-TW.md)
 
 ## Expectations
 
