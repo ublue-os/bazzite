@@ -256,7 +256,6 @@ RUN --mount=type=cache,dst=/var/cache \
         v4l-utils \
         yad \
         f3 \
-        pulseaudio-utils \
         lzip \
         p7zip \
         p7zip-plugins \
