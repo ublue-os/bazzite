@@ -10,7 +10,7 @@
 | `brew help` | Manage command line packages |
 
 %TIP%
-- **** [Report an issue](http://issues.bazzite.gg/)
-- **󰈙** [Documentation](http://docs.bazzite.gg/)
+- **** [Report an issue](https://issues.bazzite.gg/)
+- **󰈙** [Documentation](https://docs.bazzite.gg/)
 - **󰙯** [Discord](https://discord.bazzite.gg/)
 - **** [Bluesky](https://bluesky.bazzite.gg/)
