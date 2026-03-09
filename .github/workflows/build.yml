@@ -33,13 +33,6 @@ on:
     inputs:
       handwritten:
         description: "Small changelog:"
-      # Run with this periodically to analyze the image again
-      # As package drift will make the plan eventually non-ideal
-      # (existing users will have to redownload most of the image)
-      fresh-rechunk:
-        description: "Clear rechunk history"
-        type: boolean
-        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -145,11 +138,7 @@ jobs:
           BASE_IMAGE="${PULL_REGISTRY}/$BASE_IMAGE_NAME-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}"
           echo "base_image=${BASE_IMAGE}" >> $GITHUB_OUTPUT
 
-          if [ "${{ github.event.inputs.fresh-rechunk }}" == "true" ]; then
-            IMAGEREF=""
-          else
-            IMAGEREF="$PULL_REGISTRY/${{ matrix.image }}:stable"
-          fi
+          IMAGEREF="$PULL_REGISTRY/${{ matrix.image }}:stable"
           echo "prev_ref=${IMAGEREF}" >> $GITHUB_OUTPUT
 
           KERNEL_URI=ghcr.io/bazzite-org/kernel-bazzite:${{ matrix.kernel_version }}-f${{ matrix.fedora_version }}-${{ matrix.arch }}
