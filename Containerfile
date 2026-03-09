@@ -232,6 +232,7 @@ RUN --mount=type=cache,dst=/var/cache \
         libinput-utils \
         i2c-tools \
         lm_sensors \
+        iio-sensor-proxy \
         fw-ectool \
         fw-fanctrl \
         framework-system \
