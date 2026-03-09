@@ -7,6 +7,8 @@ on:
   pull_request_review_comment:
     types: [created]
 
+permissions: {}
+
 jobs:
   spam-detection:
     runs-on: ubuntu-latest

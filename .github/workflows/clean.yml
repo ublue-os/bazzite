@@ -4,6 +4,8 @@ on:
     - cron: "15 0 * * 0" # 0015 UTC on Sundays
   workflow_dispatch:
 
+permissions: {}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
 

@@ -8,8 +8,7 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
 
-permissions:
-  packages: write
+permissions: {}
 
 on:
   workflow_dispatch:
@@ -36,6 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     if: inputs.old_tag != ''
     needs: [safeguard-timer]
+    permissions:
+      packages: write
     steps:
       - uses: Zeglius/ghcr-oci-retagger@1e08f1dac27d25efe1377d9a35f133731bf3d986
         env:
