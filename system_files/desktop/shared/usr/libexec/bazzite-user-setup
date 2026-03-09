@@ -235,12 +235,6 @@ if [[ ":83E1:ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
   wpctl set-volume $(wp_audio_sinks | grep "17h/19h" | sed 's@^[^0-9]*\([0-9]\+\).*@\1@') 100% || true
 fi
 
-# Swap sunshine.service with sunshine-kms.service
-if [[ $(systemctl --user is-enabled sunshine.service) == enabled && $(systemctl --user is-enabled sunshine-kms.service) == disabled ]]; then
-    systemctl --user disable --now sunshine.service
-    systemctl --user enable --now sunshine-kms.service
-fi
-
 # Prevent future executions
 echo "Writing state file"
 echo $USER_SETUP_VER > $USER_SETUP_VER_FILE
