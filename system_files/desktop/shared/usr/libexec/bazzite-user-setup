@@ -68,16 +68,6 @@ if [[ ! -f "$BAZZITE_CONFIG_DIR/ptyxis-initialized" ]]; then
   touch "$BAZZITE_CONFIG_DIR/ptyxis-initialized"
 fi
 
-# Fix Bazaar Shortcut for users that manually customized it
-if [[ ! -f "$BAZZITE_CONFIG_DIR/bazaar-fix" ]]; then
-  if [[ -f "$HOME/.local/share/applications/io.github.kolunmi.Bazaar.desktop" ]]; then
-      if grep -qE '^Exec=.*(show|--auto-service)' "$HOME/.local/share/applications/io.github.kolunmi.Bazaar.desktop"; then
-          rm -f "$HOME/.local/share/applications/io.github.kolunmi.Bazaar.desktop"
-      fi
-  fi
-  touch "$BAZZITE_CONFIG_DIR/bazaar-fix"
-fi
-
 if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   echo 'Running setup for Kinoite'
 
