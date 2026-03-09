@@ -377,24 +377,27 @@ jobs:
             done
           fi
 
+          # Figure out config
           img=${{ steps.rechunk.outputs.ref }}
-          container=$(sudo buildah from $img)
           kver=$(sudo podman run --rm "$img" rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
-
-          sudo buildah config --label "org.opencontainers.image.version=$version" $container
-          sudo buildah config --label "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" $container
-          sudo buildah config --label "ostree.bootable=true" $container
-          sudo buildah config --label "ostree.linux=$kver" $container
-          while IFS= read -r line; do
-            [ -z "$line" ] && continue
-            sudo buildah config --label "$line" "$container"
-          done <<< "$IMAGE_LABELS"
-
           filter='{ "packages": [inputs | split(" ") | select(length==2) | { (.[0]): .[1] }] | sort_by(keys) | add }'
           manifest=$(sudo podman run --rm "$img" rpm -qa --qf '%{NAME} %{VERSION}-%{RELEASE}\n' \
               | sed -e 's/\.fc[0-9][0-9]*$//' | jq -Rnc "$filter")
-          sudo buildah config --label "dev.hhd.rechunk.info=$manifest" $container
+          mapfile -t labels <<< "$IMAGE_LABELS"
+          labels+=(
+            "org.opencontainers.image.version=$version"
+            "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            "ostree.bootable=true"
+            "ostree.linux=$kver"
+            "dev.hhd.rechunk.info=$manifest"
+          )
 
+          # Apply config to labels and annotations
+          container=$(sudo buildah from $img)
+          for line in "${labels[@]}"; do
+            [ -z "$line" ] && continue
+            sudo buildah config --label "$line" --annotation "$line" "$container"
+          done
           sudo buildah commit --identity-label=false --rm $container $img
 
           echo "version=$version" >> "$GITHUB_OUTPUT"
