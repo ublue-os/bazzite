@@ -257,15 +257,36 @@ jobs:
           ARCH=${{ matrix.arch }}
           EOF
 
-      - name: Setup DNF package cache
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+      - name: DNF Package Cache Prep
+        id: cache-prep
         env:
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          IMAGE: ${{ matrix.image }}
+        run: |
+          set -eoux pipefail
+          if [[ "${IMAGE}" =~ gnome ]]; then
+            CACHE_NAME="gnome"
+          else
+            CACHE_NAME="kde"
+          fi
+
+          # TODO: If we ever integrate dx images here then this may need to be adjusted
+          if [[ "${IMAGE}" =~ "-deck" ]]; then
+            ALLOW_CACHE_WRITE="true"
+          else
+            ALLOW_CACHE_WRITE="false"
+          fi
+
+          echo "cache_name=${CACHE_NAME}" >> "$GITHUB_OUTPUT"
+          echo "allow_cache_write=${ALLOW_CACHE_WRITE}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore DNF package cache
+        uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        env:
+          CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
+          ALLOW_CACHE_WRITE: ${{ steps.cache-prep.outputs.allow_cache_write }}
         with:
           path: /var/tmp/buildah-cache-*
-          key: ${{ runner.os }}-buildah-${{ env.IMAGE_NAME }}
-          restore-keys: |
-            ${{ runner.os }}-buildah-${{ env.IMAGE_NAME }}
+          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
 
       # Build image using buildah and save it to raw-img
       - name: Build Image
@@ -278,6 +299,22 @@ jobs:
             --build-arg-file build_args.txt \
             --secret "id=GITHUB_TOKEN,env=GITHUB_TOKEN" \
             --tag raw-img .
+
+      # https://github.com/actions/cache/issues/1533
+      - name: Hack around permission issue caching
+        id: cache-perms
+        run: |
+          sudo chmod 777 --recursive /var/tmp/buildah-cache-0
+
+      - name: Save DNF package cache
+        if: steps.cache-prep.outputs.allow_cache_write == 'true'
+        uses: actions/cache/save@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        env:
+          CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
+          ALLOW_CACHE_WRITE: ${{ steps.cache-prep.outputs.allow_cache_write }}
+        with:
+          path: /var/tmp/buildah-cache-*
+          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
 
       # Reprocess raw-img using rechunker which will delete it
       - name: Run Rechunker
@@ -434,12 +471,6 @@ jobs:
             log_sum '```'
         env:
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
-
-      # https://github.com/actions/cache/issues/1533
-      - name: Hack around permission issue caching
-        id: cache-perms
-        run: |
-          sudo chmod 777 --recursive /var/tmp/buildah-cache-0
 
   generate_release:
     name: Generate Release
