@@ -81,7 +81,7 @@ cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.deskt
 cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/bazzite_logo.svgz
 cp %{SOURCE4} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/metadata.json
 cp %{SOURCE5} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/metadata.json
-cp ${SOURCE7} %{buildroot}%{_sysconfdir}/xdg/kscreenlockerrc
+cp %{SOURCE7} %{buildroot}%{_sysconfdir}/xdg/kscreenlockerrc
 
 # Do post-installation
 %post

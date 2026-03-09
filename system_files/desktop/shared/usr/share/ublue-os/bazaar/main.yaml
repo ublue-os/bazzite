@@ -8,23 +8,46 @@ hooks:
     when: before-transaction
     dialogs:
       - id: jetbrains-warning
-        title: >-
-          JetBrains IDEs are not supported in this format
+        title:
+          en: >-
+            JetBrains IDEs are not supported in this format
+          ru: >-
+            IDE JetBrains не поддерживаются в данном формате
+          el: >-
+            Το IDE JetBrains δεν υποστηρίζεται σε αυτή τη μορφή
+
         # If true, render inline markup commands in body; see
         # https://docs.gtk.org/Pango/pango_markup.html
         body-use-markup: true
-        body: >-
-          This is a <a href="https://www.jetbrains.com/">JetBrains</a>
-          application and is not officially supported on Flatpak. Bazzite
-          recommends using the Toolbox app to manage JetBrains IDEs.
+        body:
+          en: >-
+            This is a <a href="https://www.jetbrains.com/">JetBrains</a>
+            application and is not officially supported on Flatpak. Bazzite
+            recommends using the Toolbox app to manage JetBrains IDEs.
+          ru: >-
+            Это приложение <a href="https://www.jetbrains.com/">JetBrains</a>
+            и оно официально не поддерживается как Flatpak. Bazzite
+            рекомендует использовать Toolbox приложение для управления IDE
+            JetBrains.
+          el: >-
+            Αυτή είναι μια εφαρμογή <a href="https://www.jetbrains.com/">JetBrains</a>
+            και δεν υποστηρίζεται επίσημα σε Flatpak. Το Bazzite
+            συνιστά τη χρήση της εφαρμογής Toolbox για τη διαχείριση των IDE
+            JetBrains.
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
         default-response-id: cancel
         options:
           - id: cancel
-            string: "Cancel"
+            string:
+              en: "Cancel"
+              ru: "Отмена"
+              el: "Ακύρωση"
           - id: run-ujust
-            string: "Download JetBrains Toolbox"
+            string:
+              en: "Download JetBrains Toolbox"
+              ru: "Скачать JetBrains Toolbox"
+              el: "Λήψη JetBrains Toolbox"
             # can be "destructive" or "suggested" or omit for no
             # styling
             style: suggested
