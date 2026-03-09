@@ -9,6 +9,8 @@ on:
         description: 'Image to sign, including the tag'
         required: true
 
+permissions: {}
+
 jobs:
   sign:
     runs-on: ubuntu-latest
