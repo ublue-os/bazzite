@@ -68,16 +68,6 @@ if [[ ! -f "$BAZZITE_CONFIG_DIR/ptyxis-initialized" ]]; then
   touch "$BAZZITE_CONFIG_DIR/ptyxis-initialized"
 fi
 
-# Fix Bazaar Shortcut for users that manually customized it
-if [[ ! -f "$BAZZITE_CONFIG_DIR/bazaar-fix" ]]; then
-  if [[ -f "$HOME/.local/share/applications/io.github.kolunmi.Bazaar.desktop" ]]; then
-      if grep -qE '^Exec=.*(show|--auto-service)' "$HOME/.local/share/applications/io.github.kolunmi.Bazaar.desktop"; then
-          rm -f "$HOME/.local/share/applications/io.github.kolunmi.Bazaar.desktop"
-      fi
-  fi
-  touch "$BAZZITE_CONFIG_DIR/bazaar-fix"
-fi
-
 if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   echo 'Running setup for Kinoite'
 
@@ -233,12 +223,6 @@ wp_audio_sinks() {
 
 if [[ ":83E1:ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
   wpctl set-volume $(wp_audio_sinks | grep "17h/19h" | sed 's@^[^0-9]*\([0-9]\+\).*@\1@') 100% || true
-fi
-
-# Swap sunshine.service with sunshine-kms.service
-if [[ $(systemctl --user is-enabled sunshine.service) == enabled && $(systemctl --user is-enabled sunshine-kms.service) == disabled ]]; then
-    systemctl --user disable --now sunshine.service
-    systemctl --user enable --now sunshine-kms.service
 fi
 
 # Prevent future executions
