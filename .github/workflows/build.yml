@@ -383,6 +383,8 @@ jobs:
     name: Generate Release
     needs: [push-ghcr]
     if: github.event_name != 'pull_request'
+    permissions:
+      contents: write
     secrets: inherit
     uses: ./.github/workflows/generate_release.yml
 
