@@ -187,7 +187,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 We deploy, patch, and maintain these Copr repos and RPMs. Packages are grouped by source for clarity.
 
-- **Fedora Copr — `ublue-os`:**
+**Fedora Copr — `ublue-os`:**
   - `ublue-os-luks`
   - `ublue-os-just`
   - `ublue-os-udev-rules`
@@ -230,7 +230,7 @@ We deploy, patch, and maintain these Copr repos and RPMs. Packages are grouped b
   - `krunner-bazaar`
   - `steamdeck-kde-presets-desktop`
 
-- **Fedora Copr — `bazzite-org`:**
+**Fedora Copr — `bazzite-org`:**
   - `wireplumber-libs`
   - `wireplumber`
   - `bluez`
