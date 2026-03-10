@@ -20,6 +20,7 @@
     - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
       - [Alternative Handhelds](#alternative-handhelds)
     - [GNOME](#gnome)
+    - [Copr Packages We Maintain](#copr-packages-we-maintain)
     - [Features from Upstream](#features-from-upstream)
       - [Universal Blue](#universal-blue)
       - [Features from Fedora Linux (Kinoite \& Silverblue)](#features-from-fedora-linux-kinoite--silverblue)
@@ -181,6 +182,74 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 ```
 
 **For users with Secure Boot enabled:** Follow our [secure boot documentation](#secure-boot) prior to rebasing.
+
+### Copr Packages We Maintain
+
+We deploy, patch, and maintain these Copr repos and RPMs. Packages are grouped by source for clarity.
+
+- **Fedora Copr — `ublue-os`:**
+  - `ublue-os-luks`
+  - `ublue-os-just`
+  - `ublue-os-udev-rules`
+  - `ublue-os-signing`
+  - `uupd`
+  - `ublue-os-media-automount-udev`
+  - `oversteer-udev`
+  - `fwupd`
+  - `fwupd-plugin-uefi-capsule-data`
+  - `fwupd-plugin-modem-manager`
+  - `fwupd-plugin-flashrom`
+  - `pipewire-libs`
+  - `pipewire`
+  - `pipewire-jack-audio-connection-kit-libs`
+  - `pipewire-jack-audio-connection-kit`
+  - `pipewire-utils`
+  - `pipewire-pulseaudio`
+  - `pipewire-plugin-libcamera`
+  - `pipewire-gstreamer`
+  - `pipewire-alsa`
+  - `NetworkManager-libnm`
+  - `NetworkManager`
+  - `NetworkManager-wwan`
+  - `NetworkManager-bluetooth`
+  - `NetworkManager-wifi`
+  - `NetworkManager-ppp`
+  - `fw-ectool`
+  - `libdex`
+  - `bazaar`
+  - `iwd`
+  - `fw-fanctrl`
+  - `topgrade`
+  - `bees`
+  - `pipewire-module-filter-chain-sofa`
+  - `rom-properties`
+  - `rom-properties-common`
+  - `rom-properties-thumbnailer-dbus`
+  - `rom-properties-utils`
+  - `rom-properties-kf6`
+  - `krunner-bazaar`
+  - `steamdeck-kde-presets-desktop`
+
+- **Fedora Copr — `bazzite-org`:**
+  - `wireplumber-libs`
+  - `wireplumber`
+  - `bluez`
+  - `bluez-libs`
+  - `bluez-obexd`
+  - `bluez-cups`
+  - `xorg-x11-server-Xwayland`
+  - `ds-inhibit`
+  - `gamescope-libs`
+  - `gamescope`
+  - `obs-vkcapture-common`
+  - `umu-launcher`
+  - `mangohud`
+  - `libobs_vkcapture`
+  - `libobs_glcapture`
+  - `jupiter-sd-mounting-btrfs`
+  - `gamescope-shaders`
+  - `ryzenadj`
+  - `xwiimote-ng`
 
 ### Features from Upstream
 
