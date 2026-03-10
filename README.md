@@ -187,7 +187,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 We deploy, patch, and maintain these Copr repos and RPMs. Packages are grouped by source for clarity.
 
-**Fedora Copr — [`ublue-os`](https://copr.fedorainfracloud.org/coprs/ublue-os/):**
+**Fedora Copr: [ublue-os](https://copr.fedorainfracloud.org/coprs/ublue-os/):**
   - [ublue-os-luks](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-luks/)
   - [ublue-os-just](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-just/)
   - [ublue-os-udev-rules](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-udev-rules/)
@@ -211,7 +211,7 @@ We deploy, patch, and maintain these Copr repos and RPMs. Packages are grouped b
   - [steamdeck-kde-presets](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/steamdeck-kde-presets/)
   - [steamdeck-gnome-presets](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/steamdeck-gnome-presets/)
 
-**Fedora Copr — [`bazzite-org`](https://copr.fedorainfracloud.org/coprs/bazzite-org/):**
+**Fedora Copr: [bazzite-org](https://copr.fedorainfracloud.org/coprs/bazzite-org/):**
   - [wireplumber](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/wireplumber/)
   - [bluez](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite-multilib/package/bluez/)
   - [xorg-x11-server-Xwayland](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite-multilib/package/xorg-x11-server-Xwayland/)
