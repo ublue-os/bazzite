@@ -103,7 +103,7 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y config-manager setopt "linux-surface".enabled=false && \
     dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
     dnf5 -y config-manager setopt "*terra*".priority=3 "*terra*".exclude="nerd-fonts topgrade scx-tools scx-scheds steam python3-protobuf zlib-devel" && \
-    dnf5 -y config-manager setopt "terra-mesa".enabled=true && \
+    dnf5 -y config-manager setopt "terra-mesa".enabled=false && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=4 exclude='mesa-* *xone*')" && \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=5 "*rpmfusion*".exclude="mesa-*" && \
     dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
@@ -140,7 +140,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
     for repo in "${!toswap[@]}"; do \
-        for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
+        for package in ${toswap[$repo]}; do dnf5 -y swap --from-repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
     dnf5 versionlock add \
         pipewire \
@@ -316,7 +316,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    dnf5 -y install \
+    dnf5 --enable-repo=terra-mesa -y install \
         gamescope.x86_64 \
         gamescope-libs.x86_64 \
         gamescope-libs.i686 \
@@ -340,7 +340,7 @@ RUN --mount=type=cache,dst=/var/cache \
         libobs_vkcapture.i686 \
         libobs_glcapture.i686 \
         openxr && \
-    dnf5 -y --setopt=install_weak_deps=False install \
+    dnf5 -y --enable-repo=terra-mesa --setopt=install_weak_deps=False install \
         steam \
         lutris && \
     dnf5 -y remove \
