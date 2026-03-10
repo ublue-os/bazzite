@@ -187,69 +187,43 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 We deploy, patch, and maintain these Copr repos and RPMs. Packages are grouped by source for clarity.
 
-**Fedora Copr: `ublue-os`:**
-  - `ublue-os-luks`
-  - `ublue-os-just`
-  - `ublue-os-udev-rules`
-  - `ublue-os-signing`
-  - `uupd`
-  - `ublue-os-media-automount-udev`
-  - `oversteer-udev`
-  - `fwupd`
-  - `fwupd-plugin-uefi-capsule-data`
-  - `fwupd-plugin-modem-manager`
-  - `fwupd-plugin-flashrom`
-  - `pipewire-libs`
-  - `pipewire`
-  - `pipewire-jack-audio-connection-kit-libs`
-  - `pipewire-jack-audio-connection-kit`
-  - `pipewire-utils`
-  - `pipewire-pulseaudio`
-  - `pipewire-plugin-libcamera`
-  - `pipewire-gstreamer`
-  - `pipewire-alsa`
-  - `NetworkManager-libnm`
-  - `NetworkManager`
-  - `NetworkManager-wwan`
-  - `NetworkManager-bluetooth`
-  - `NetworkManager-wifi`
-  - `NetworkManager-ppp`
-  - `fw-ectool`
-  - `libdex`
-  - `bazaar`
-  - `iwd`
-  - `fw-fanctrl`
-  - `topgrade`
-  - `bees`
-  - `pipewire-module-filter-chain-sofa`
-  - `rom-properties`
-  - `rom-properties-common`
-  - `rom-properties-thumbnailer-dbus`
-  - `rom-properties-utils`
-  - `rom-properties-kf6`
-  - `krunner-bazaar`
-  - `steamdeck-kde-presets-desktop`
+**Fedora Copr — [`ublue-os`](https://copr.fedorainfracloud.org/coprs/ublue-os/):**
+  - [ublue-os-luks](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-luks/)
+  - [ublue-os-just](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-just/)
+  - [ublue-os-udev-rules](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-udev-rules/)
+  - [ublue-os-signing](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-signing/)
+  - [uupd](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/uupd/)
+  - [ublue-os-media-automount-udev](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-media-automount-udev/)
+  - [oversteer-udev](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/oversteer/)
+  - [fwupd](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/fwupd/)
+  - [pipewire](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite-multilib/package/pipewire/)
+  - [NetworkManager](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite-multilib/package/NetworkManager/)
+  - [fw-ectool](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/fw-ectool/)
+  - [libdex](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/libdex/)
+  - [bazaar](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/bazaar/)
+  - [iwd](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/iwd/)
+  - [fw-fanctrl](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/fw-fanctrl/)
+  - [topgrade](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/topgrade/)
+  - [bees](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/bees/)
+  - [rom-properties](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite-multilib/package/rom-properties/)
+  - [krunner-bazaar](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/krunner-bazaar/)
+  - [steamdeck-kde-presets-desktop](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/steamdeck-kde-presets-desktop/)
+  - [steamdeck-kde-presets](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/steamdeck-kde-presets/)
+  - [steamdeck-gnome-presets](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/steamdeck-gnome-presets/)
 
-**Fedora Copr: `bazzite-org`:**
-  - `wireplumber-libs`
-  - `wireplumber`
-  - `bluez`
-  - `bluez-libs`
-  - `bluez-obexd`
-  - `bluez-cups`
-  - `xorg-x11-server-Xwayland`
-  - `ds-inhibit`
-  - `gamescope-libs`
-  - `gamescope`
-  - `obs-vkcapture-common`
-  - `umu-launcher`
-  - `mangohud`
-  - `libobs_vkcapture`
-  - `libobs_glcapture`
-  - `jupiter-sd-mounting-btrfs`
-  - `gamescope-shaders`
-  - `ryzenadj`
-  - `xwiimote-ng`
+**Fedora Copr — [`bazzite-org`](https://copr.fedorainfracloud.org/coprs/bazzite-org/):**
+  - [wireplumber](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/wireplumber/)
+  - [bluez](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite-multilib/package/bluez/)
+  - [xorg-x11-server-Xwayland](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite-multilib/package/xorg-x11-server-Xwayland/)
+  - [ds-inhibit](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/ds-inhibit/)
+  - [gamescope](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite-multilib/package/gamescope/)
+  - [obs-vkcapture-common](https://copr.fedorainfracloud.org/coprs/bazzite-org/obs-vkcapture/package/obs-vkcapture/)
+  - [umu-launcher](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/umu-launcher/)
+  - [mangohud](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite-multilib/package/mangohud/)
+  - [jupiter-sd-mounting-btrfs](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/jupiter-sd-mounting-btrfs/)
+  - [gamescope-shaders](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/gamescope-shaders/)
+  - [ryzenadj](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/ryzenadj/)
+  - [xwiimote-ng](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/xwiimote-ng/)
 
 ### Features from Upstream
 
