@@ -199,7 +199,6 @@ We deploy, patch, and maintain these Copr repos and RPMs. Packages are grouped b
   - [pipewire](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite-multilib/package/pipewire/)
   - [NetworkManager](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite-multilib/package/NetworkManager/)
   - [fw-ectool](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/fw-ectool/)
-  - [libdex](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/libdex/)
   - [bazaar](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/bazaar/)
   - [iwd](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/iwd/)
   - [fw-fanctrl](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/fw-fanctrl/)
