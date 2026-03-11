@@ -76,6 +76,11 @@ screens:
         description: "Adds a script in Steam to boot Windows which is useful for dual-boot setups"
         default: false
         script: "ujust setup-boot-windows-steam"
+      - id: "fix-autologin"
+        title: "Fixes autologin after rebase KDE ONLY (Needs reboot)"
+        description: "Fixes autologin for users that have rebased from Gamemode to a Desktop version of Bazzite"
+        default: false
+        script: "sudo -A rm /etc/sddm.conf.d/steamos.conf"
       - id: "automounting"
         title: "Automounting"
         description: "Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system"
