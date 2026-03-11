@@ -19,7 +19,7 @@ KNOWN_FEDORA_VERSION_FILE="/etc/bazzite/fedora_version"
 KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
 
 # Take care of autologin for non-deck images where this file is not needed.
-if [[ $IMAGE_NAME != *deck* ]]; then
+if [[ "$IMAGE_NAME" != *deck* ]]; then
   rm -f /etc/sddm.conf.d/steamos.conf
 fi
 
