@@ -1,0 +1,67 @@
+#!/bin/bash
+# Base gamescope args for gamemode
+GAMESCOPE_CMD="gamescope -e --mangoapp --adaptive-sync --force-grab-cursor"
+
+# Configure nested gamemode
+GAMEMODE_CONFIG=$(
+    yad --title="Configure Gamemode" \
+    --text="Please configure Nested Gamemode" \
+    --image="/usr/share/icons/hicolor/scalable/places/steamdeck-le.svg" \
+    --button="Launch Gamemode" \
+    --form --separator="," \
+    --field="Max FPS in frame limiter: ":NUM "60" \
+    --field="Window width:":NUM 1280 \
+    --field="Window height:":NUM 720 \
+    --field="Enable HDR (hardware must support it)":CHK \
+    --field="":LBL \
+    --field="THIS IS NOT THE INTENDED WAY TO USE STEAM GAMEMODE.
+    * Steam will be restarted once configuration is done.
+    * Some features may not work properly in this mode.
+    * You will have to re-enable bluetooth once Nested Gamemode has started.
+    * Enable Force Composite in the Steam Gamemode developer settings to fix graphical issues.    
+    * Steam has to be closed through the tray icon to exit.":LBL
+    )
+
+# Split config into values
+IFS=, read -r MAX_FPS GAMEMODE_WIDTH GAMEMODE_HEIGHT GAMEMODE_HDR <<< "$GAMEMODE_CONFIG"
+
+# Set config or use defaults
+GAMEMODE_WIDTH=${GAMEMODE_WIDTH:-1280}
+GAMEMODE_HEIGHT=${GAMEMODE_HEIGHT:-720}
+MAX_FPS=${MAX_FPS:-0}
+if [ "$MAX_FPS" != "0" ]; then
+    GAMESCOPE_CMD+=" -r $MAX_FPS"
+fi
+if [ "$GAMEMODE_HDR" == "TRUE" ]; then
+    GAMESCOPE_CMD+=" --hdr-enabled"
+fi
+
+# Close steam before continuing
+if pgrep -x steam; then
+    steam +quit
+    while pgrep -x steam
+    do
+        sleep 1
+    done
+fi
+
+# Setup socket for gamescope
+# Create run directory file for startup and stats pipe
+tmpdir="$([[ -n ${XDG_RUNTIME_DIR+x} ]] && mktemp -p "$XDG_RUNTIME_DIR" -d -t gamescope.XXXXXXX)"
+stats="${tmpdir:+$tmpdir/stats.pipe}"
+
+# Fail early if we don't have a proper runtime directory setup
+if [[ -z $tmpdir || -z ${XDG_RUNTIME_DIR+x} ]]; then
+        echo >&2 "!! Failed to find run directory in which to create stats session sockets (is \$XDG_RUNTIME_DIR set?)"
+        exit 0
+fi
+
+# Export gamescope stats pipe file and make fifo files
+export GAMESCOPE_STATS="$stats"
+mkfifo -- "$stats"
+
+# Start steam in nested gamescope, emulating gamemode.
+# Certain things will not work
+# * You cannot exit steam through the UI, you must use the tray icon
+# * Not all UI elements will work due to gamescope running in nested mode (however fps limiter works)
+$GAMESCOPE_CMD -w "$GAMEMODE_WIDTH" -h "$GAMEMODE_HEIGHT" -W "$GAMEMODE_WIDTH" -H "$GAMEMODE_HEIGHT" -- bazzite-steam -gamepadui -steamos3 -steampal
