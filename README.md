@@ -20,6 +20,7 @@
     - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
       - [Alternative Handhelds](#alternative-handhelds)
     - [GNOME](#gnome)
+    - [Copr Packages We Maintain](#copr-packages-we-maintain)
     - [Features from Upstream](#features-from-upstream)
       - [Universal Blue](#universal-blue)
       - [Features from Fedora Linux (Kinoite \& Silverblue)](#features-from-fedora-linux-kinoite--silverblue)
@@ -181,6 +182,47 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 ```
 
 **For users with Secure Boot enabled:** Follow our [secure boot documentation](#secure-boot) prior to rebasing.
+
+### Copr Packages We Maintain
+
+We deploy, patch, and maintain these Copr repos and RPMs. Packages are grouped by source for clarity.
+
+**Fedora Copr: [ublue-os](https://copr.fedorainfracloud.org/coprs/ublue-os/):**
+  - [ublue-os-luks](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-luks/)
+  - [ublue-os-just](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-just/)
+  - [ublue-os-udev-rules](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-udev-rules/)
+  - [ublue-os-signing](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-signing/)
+  - [uupd](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/uupd/)
+  - [ublue-os-media-automount-udev](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/ublue-os-media-automount-udev/)
+  - [oversteer-udev](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/oversteer/)
+  - [fwupd](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/fwupd/)
+  - [pipewire](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite-multilib/package/pipewire/)
+  - [NetworkManager](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite-multilib/package/NetworkManager/)
+  - [fw-ectool](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/fw-ectool/)
+  - [bazaar](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/bazaar/)
+  - [iwd](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/iwd/)
+  - [fw-fanctrl](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/fw-fanctrl/)
+  - [topgrade](https://copr.fedorainfracloud.org/coprs/ublue-os/staging/package/topgrade/)
+  - [bees](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/bees/)
+  - [rom-properties](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite-multilib/package/rom-properties/)
+  - [krunner-bazaar](https://copr.fedorainfracloud.org/coprs/ublue-os/packages/package/krunner-bazaar/)
+  - [steamdeck-kde-presets-desktop](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/steamdeck-kde-presets-desktop/)
+  - [steamdeck-kde-presets](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/steamdeck-kde-presets/)
+  - [steamdeck-gnome-presets](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/package/steamdeck-gnome-presets/)
+
+**Fedora Copr: [bazzite-org](https://copr.fedorainfracloud.org/coprs/bazzite-org/):**
+  - [wireplumber](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/wireplumber/)
+  - [bluez](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite-multilib/package/bluez/)
+  - [xorg-x11-server-Xwayland](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite-multilib/package/xorg-x11-server-Xwayland/)
+  - [ds-inhibit](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/ds-inhibit/)
+  - [gamescope](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite-multilib/package/gamescope/)
+  - [obs-vkcapture-common](https://copr.fedorainfracloud.org/coprs/bazzite-org/obs-vkcapture/package/obs-vkcapture/)
+  - [umu-launcher](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/umu-launcher/)
+  - [mangohud](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite-multilib/package/mangohud/)
+  - [jupiter-sd-mounting-btrfs](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/jupiter-sd-mounting-btrfs/)
+  - [gamescope-shaders](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/gamescope-shaders/)
+  - [ryzenadj](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/ryzenadj/)
+  - [xwiimote-ng](https://copr.fedorainfracloud.org/coprs/bazzite-org/bazzite/package/xwiimote-ng/)
 
 ### Features from Upstream
 
