@@ -121,6 +121,7 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/install-kernel && \
     dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
     rm -rf /.git && \
+    dnf5 -y install https://kojipkgs.fedoraproject.org//packages/linux-firmware/20260309/1.fc45/noarch/linux-firmware-20260309-1.fc45.noarch.rpm && \
     /ctx/cleanup
 
 # Install patched fwupd
