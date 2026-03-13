@@ -74,8 +74,7 @@ setup-virtualization ACTION="":
               sudo mkdir /etc/libvirt/hooks/qemu.d
             fi
           fi
-          sudo systemctl enable bazzite-libvirtd-setup.service \
-            && echo "libvirtd will be enabled at next reboot"
+          sudo systemctl start --now bazzite-libvirtd-setup.service
           echo 'Please reboot to apply changes'
         fi
     elif [[ "${OPTION,,}" =~ (^disable[[:space:]]virtualization|virt-off) ]]; then
