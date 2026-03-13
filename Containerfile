@@ -119,6 +119,49 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/install-kernel && \
     dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
     rm -rf /.git && \
+    dnf5 -y remove --no-autoremove \
+        linux-firmware-whence \
+        qcom-wwan-firmware \
+        linux-firmware \
+        amd-gpu-firmware \
+        amd-ucode-firmware \
+        atheros-firmware \
+        brcmfmac-firmware \
+        cirrus-audio-firmware \
+        intel-audio-firmware \
+        intel-gpu-firmware \
+        intel-vsc-firmware \
+        iwlegacy-firmware \
+        iwlwifi-dvm-firmware \
+        iwlwifi-mvm-firmware \
+        libertas-firmware \
+        mt7xxx-firmware \
+        nvidia-gpu-firmware \
+        nxpwireless-firmware \
+        realtek-firmware \
+        tiwilink-firmware && \
+    dnf5 -y install \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/linux-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/linux-firmware-whence-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/iwlwifi-mld-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/iwlwifi-dvm-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/amd-gpu-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/amd-ucode-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/atheros-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/brcmfmac-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/cirrus-audio-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/intel-audio-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/intel-gpu-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/intel-vsc-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/iwlegacy-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/iwlwifi-mvm-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/libertas-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/mt7xxx-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/nvidia-gpu-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/nxpwireless-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/qcom-wwan-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/realtek-firmware-20260309-1.fc45.noarch.rpm \
+        https://kojipkgs.fedoraproject.org/packages/linux-firmware/20260309/1.fc45/noarch/tiwilink-firmware-20260309-1.fc45.noarch.rpm && \
     /ctx/cleanup
 
 # Install patched fwupd
