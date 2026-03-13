@@ -97,7 +97,7 @@ jobs:
       # Docker requires lowercase registry references
       - name: Lowercase Registry
         id: registry_case
-        uses: ASzc/change-string-case-action@d0603cd0a7dd490be678164909f65c7737470a7f # v6
+        uses: ASzc/change-string-case-action@624e17dfe730fc822c8171f67ccb134425b4b8ce # v7
         with:
           string: ${{ env.IMAGE_REGISTRY }}
 
