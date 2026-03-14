@@ -53,10 +53,22 @@ setup-waydroid ACTION="":
       echo "Waydroid has been reset"
     elif [[ "${OPTION,,}" =~ helper ]]; then
       echo "Installing waydroid-helper"
+      # Detect system architecture
+      ARCH=$(uname -m)
+      if [[ "$ARCH" == "aarch64" || "$ARCH" == "arm64" || "$ARCH" == "armv8"* ]]; then
+          ARCH_PATTERN=".*aarch64.AppImage"
+      elif [[ "$ARCH" == "x86_64" || "$ARCH" == "amd64" || "$ARCH" == "x64" ]]; then
+          ARCH_PATTERN=".*x86_64.AppImage"
+      else
+          echo "Unsupported architecture: $ARCH"
+          echo "waydroid-helper may not be available for your system architecture"
+          return 1
+      fi
+      
       if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
           wget \
               $(curl -s https://api.github.com/repos/waydroid-helper/waydroid-helper/releases/latest | \
-              jq -r ".assets[] | select(.name | test(\".*x86_64.AppImage\")) | .browser_download_url") \
+              jq -r ".assets[] | select(.name | test(\"$ARCH_PATTERN\")) | .browser_download_url") \
               -O $HOME/Downloads/waydroid-helper.AppImage
           chmod +x $HOME/Downloads/waydroid-helper.AppImage
           echo "Download complete, add it to your app menu via Gear Lever"
@@ -64,7 +76,7 @@ setup-waydroid ACTION="":
       else
           wget \
               $(curl -s https://api.github.com/repos/waydroid-helper/waydroid-helper/releases/latest | \
-              jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
+              jq -r ".assets[] | select(.name | test(\"$ARCH_PATTERN\")) | .browser_download_url") \
               -O $HOME/Desktop/waydroid-helper.AppImage
           chmod +x $HOME/Desktop/waydroid-helper.AppImage
           echo "Install complete, it has been added to your Desktop"
