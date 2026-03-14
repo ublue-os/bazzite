@@ -140,7 +140,6 @@ nvidia_hardware_helper() {
             return 0
         elif [[ "$support_status" = "supported" ]] && [[ "$image" != "nvidia-desktop" ]] || [[ "$image" != "nvidia-deck"  ]]; then
             heading="$heading_wrong_image"
-            correct_image=
             gpu_detected="$detected_wrong_image"
             recommendation="$recommend_wrong_image"
         elif [[ "$support_status" = "legacy" ]] && [[ "$image" != "legacy" ]]; then
