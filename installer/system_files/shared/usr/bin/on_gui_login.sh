@@ -102,7 +102,8 @@ nvidia_hardware_helper() {
         #user facing text
         title="Bazzite Hardware Helper"
         image_detected="Detected Bazzite version: $(echo "$image_name" |  cut -d '/' -f3)\n\n"
-        support="\n\n\nPlease join our <a href=\"https://discord.bazzite.gg\"><b>Discord Server</b></a> for support."
+        qrencode -o "\$SUPPORT_QR" "https://discord.bazzite.gg"
+        support="\n\n\nPlease join our <a href=\"https://discord.bazzite.gg\"><b>Discord Server</b></a> (scan the QR code) for support."
         heading_nvidia_deck="<b>STEAM GAMING MODE IN BETA ON NVIDIA HARDWARE</b>\n"
         detected_nvidia_deck="WARNING: Nvidia GPU Support in Steam Gaming mode and on HTPCs is available as a beta with known issues that <b>cannot be fixed</b> by Bazzite.\n\n"
         recommend_nvidia_deck="Unless you're a Linux driver developer, or looking for a known-broken toy to play with, we <b>strongly recommend</b> using one of our Desktop images without Steam Gaming Mode."
@@ -136,7 +137,7 @@ nvidia_hardware_helper() {
             gpu_detected="$detected_nvidia_deck"
             recommendation="$recommend_nvidia_deck"
         elif [[ "$support_status" = "supported" ]] && [[ "$image" = "nvidia-desktop" ]]; then
-            echo "supported GPU matches modern image. Nothing to do. Exiting…"
+            echo "supported GPU matches modern desktop image. Nothing to do. Exiting…"
             return 0
         elif [[ "$support_status" = "supported" ]] && [[ "$image" != "nvidia-desktop" ]] || [[ "$image" != "nvidia-deck"  ]]; then
             heading="$heading_wrong_image"
@@ -158,7 +159,7 @@ nvidia_hardware_helper() {
                 systemctl poweroff || shutdown -h now || true
                 break
                 ;;
-            2) yad  --info --title="$heading2" --text="$image_detected""\nDetected Graphics Adapters:$gpuinfo""$support" ;;
+            2) yad  --info --title="$heading2" --text="$image_detected""\nDetected Graphics Adapters:$gpuinfo""$support" --image=\$SUPPORT_QR ;;
             esac
         done
     fi
