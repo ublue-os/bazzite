@@ -700,6 +700,7 @@ RUN --mount=type=cache,dst=/var/cache \
         galileo-mura \
         steamdeck-dsp \
         powerbuttond \
+        inputplumber \
         powerstation \
         gamescope-session-ogui-steam \
         steamos-manager \
