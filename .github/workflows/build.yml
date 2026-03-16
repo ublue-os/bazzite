@@ -65,7 +65,8 @@ jobs:
           - bazzite-gnome-nvidia-open
         include:
           - fedora_version: 43
-            kernel_version: ${{ (github.ref_name == 'testing' || github.ref_name == 'unstable') && 'latest' || 'latest' }}
+            kernel_flavor: ogc
+            kernel_version: 6.19.6-200.nobara.fc43.x86_64
             base_image_flavor: main
             arch: x86_64
     steps:
@@ -122,11 +123,11 @@ jobs:
             echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT" # NOOP
             echo "install_nvidia=false" >> "$GITHUB_OUTPUT"
           fi
-          # Nvidia driver version to use
+          # Nvidia flavor
           if [[ "$IMAGE" == *"nvidia-open" || "$IMAGE" == *"-deck-nvidia"* ]]; then
-            echo "nvidia_version=org.bazzite.kernel.nvidia" >> "$GITHUB_OUTPUT"
+            echo "nvidia_flavor=nvidia-open" >> "$GITHUB_OUTPUT"
           else
-            echo "nvidia_version=org.bazzite.kernel.nvidia_lts" >> "$GITHUB_OUTPUT"
+            echo "nvidia_flavor=nvidia" >> "$GITHUB_OUTPUT"
           fi
 
           #
@@ -143,10 +144,8 @@ jobs:
           IMAGEREF="$PULL_REGISTRY/${{ matrix.image }}:stable"
           echo "prev_ref=${IMAGEREF}" >> $GITHUB_OUTPUT
 
-          KERNEL_URI=ghcr.io/bazzite-org/kernel-bazzite:${{ matrix.kernel_version }}-f${{ matrix.fedora_version }}-${{ matrix.arch }}
-          echo "kernel_ref=${KERNEL_URI}" >> $GITHUB_OUTPUT
-          NVIDIA_URI=ghcr.io/bazzite-org/nvidia-drivers
-          echo "nvidia_ref=${NVIDIA_URI}" >> $GITHUB_OUTPUT
+          AKMODS_TAG="${{ matrix.kernel_flavor }}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}"
+          echo "akmods_tag=${AKMODS_TAG}" >> $GITHUB_OUTPUT
 
           echo "Generated the following:"
           cat $GITHUB_OUTPUT
@@ -215,25 +214,15 @@ jobs:
           echo "pretty=${PRETTY_VERSION}" >> $GITHUB_OUTPUT
 
           #
-          # Kernel and NVIDIA versions
+          # Kernel & akmods
           #
-          # This needs to be tweaked, we need to verify a digest
-          # and to confirm it is from a protected branch
-          gh attestation verify -R bazzite-org/kernel-bazzite \
-            "oci://${{ steps.base.outputs.kernel_ref }}" --deny-self-hosted-runners
-          sudo podman pull ${{ steps.base.outputs.kernel_ref }}
+          AKMODS_TAG="${{ steps.base.outputs.akmods_tag }}"
+          sudo podman pull ghcr.io/ublue-os/akmods:${AKMODS_TAG}
+          # sudo podman pull ghcr.io/ublue-os/akmods-extra:${AKMODS_TAG}
 
           if [ "${{ steps.base.outputs.install_nvidia }}" == "true" ]; then
-            sudo skopeo inspect docker://${{ steps.base.outputs.kernel_ref }} > kernel_source.json
-            NVIDIA_VERSION=$(jq -r '.Labels["${{ steps.base.outputs.nvidia_version }}"]' kernel_source.json)
-            NVIDIA_REF="${{ steps.base.outputs.nvidia_ref }}:${NVIDIA_VERSION}-f${{ matrix.fedora_version }}-${{ matrix.arch }}"
-            # Same as above, we verify the uri moments before we pull it
-            gh attestation verify -R bazzite-org/nvidia-drivers \
-              "oci://$NVIDIA_REF" --deny-self-hosted-runners --source-ref "refs/heads/master"
-            sudo podman pull "$NVIDIA_REF"
-            echo "nvidia_ref=$NVIDIA_REF" >> $GITHUB_OUTPUT
-          else
-            echo "nvidia_ref=none" >> $GITHUB_OUTPUT
+            NVIDIA_FLAVOR="${{ steps.base.outputs.nvidia_flavor }}"
+            sudo podman pull "ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${AKMODS_TAG}"
           fi
 
 
@@ -250,8 +239,9 @@ jobs:
           IMAGE_NAME=${{ matrix.image }}
           IMAGE_VENDOR=${{ github.repository_owner }}
           IMAGE_BRANCH=${{ github.ref_name }}
-          KERNEL_REF=${{ steps.base.outputs.kernel_ref }}
-          NVIDIA_REF=${{ steps.labels.outputs.nvidia_ref }}
+          KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
+          KERNEL_VERSION=${{ matrix.kernel_version }}
+          NVIDIA_FLAVOR=${{ steps.base.outputs.nvidia_flavor }}
           NVIDIA_BASE=${{ steps.base.outputs.nvidia_base }}
           SHA_HEAD_SHORT=${{ steps.base.outputs.sha_head_short }}
           VERSION_TAG=${{ steps.labels.outputs.tag }}
