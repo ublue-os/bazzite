@@ -8,6 +8,10 @@ DECK_OPTION=""
 # Nvidia crash fix
 export __GL_CONSTANT_FRAME_RATE_HINT=3
 
+# Use a dummy updater during oobe
+# See: https://www.reddit.com/r/Bazzite/comments/1psuar7/bazzite_xbox_ally_issue/
+OOTB_DISABLE_UPDATER_OPTION="-testoobeupdater"
+
 if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   if [ ! -d $HOME/.local/share/Steam ]; then
     # Set up steam with the bootstrap before starting it, this allows steam to run for the first time even with no network access
@@ -77,5 +81,5 @@ if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
   # Also supports Steam Input as a whole.
   env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam "$DECK_OPTION" "$DGPU_OPTION" "$@"
 else
-  /usr/bin/steam "$DECK_OPTION" "$DGPU_OPTION" "$@"
+  /usr/bin/steam "$DECK_OPTION" "$OOTB_DISABLE_UPDATER_OPTION" "$DGPU_OPTION" "$@"
 fi
