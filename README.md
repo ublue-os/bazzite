@@ -41,7 +41,7 @@
 
 [Bazzite](https://bazzite.gg/) is a custom [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) image built with [cloud native](https://universal-blue.org/#cloud-native) technology that brings the best of Linux gaming to **all of your devices - including your favorite handheld**.
 
-Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ublue-os/nvidia](https://github.com/ublue-os/nvidia) using [Fedora](https://fedoraproject.org/) technology, which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features:
+Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) using [Fedora](https://fedoraproject.org/) technology, which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features:
 
 - Uses the [bazzite kernel](https://github.com/bazzite-org/kernel-bazzite) to achieve HDR and expanded hardware support, among numerous other included patches - based off of the [fsync kernel](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
 - HDR available in Game mode.
@@ -51,7 +51,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [xone](https://github.com/medusalix/xone) driver for Xbox controllers.
 - Full support for [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Includes Valve's KDE themes from SteamOS.
-- [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default
+- [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default.
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) included.
 - Full support for [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - [Distrobox](https://github.com/89luca89/distrobox) preinstalled.
@@ -68,14 +68,13 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [OpenTabletDriver](https://opentabletdriver.net/) udev rules built in, with the full software suite installable via Bazzite Portal or by running `ujust install-opentabletdriver` in a terminal.
 - Out of the box support for [Wooting](https://wooting.io/) keyboards.
 - Built in support for Southern Islands <sub><sup>(HD 7000)</sup></sub> and Sea Islands <sub><sup>(HD 8000)</sup></sub> AMD GPUs under the `amdgpu` driver.
-- [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) is available for Discord screensharing on Wayland.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) is available for creating applications from websites for a variety of browsers, including Firefox.
 
 ### Desktop
 
 Common variant available as `bazzite`, suitable for desktop computers.
 
-- Automatic updates for the OS, Flatpaks, and more - powered by [ublue-update](https://github.com/ublue-os/ublue-update) and [topgrade](https://github.com/topgrade-rs/topgrade).
+- Automatic updates for the OS, Flatpaks, and more - powered by [uupd](https://github.com/ublue-os/uupd) and [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
 > **ISOs can be downloaded from our [website](https://download.bazzite.gg), and a helpful install guide can be found [here](https://docs.bazzite.gg/General/Installation_Guide/).**
@@ -110,11 +109,10 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
 - Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default.
 - Option to install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), and [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), among numerous other useful packages on installation.
-- Custom update system allows for the OS, Flatpaks, and more to be updated directly from the Game mode UI powered by [ublue-update](https://github.com/ublue-os/ublue-update) and [topgrade](https://github.com/topgrade-rs/topgrade).
+- Custom update system allows for the OS, Flatpaks, and more to be updated directly from the Game mode UI powered by [uupd](https://github.com/ublue-os/uupd) and [topgrade](https://github.com/topgrade-rs/topgrade).
 - Built in support for Windows dual-boot thanks to Fedora's installation of GRUB being left intact.
 - Update break something? Easily roll back to the previous version of Bazzite thanks to `rpm-ostree`'s rollback functionality. You can even select previous images at boot.
 - Steam and Lutris preinstalled on the image as layered packages.
-- [Discover Overlay](https://github.com/trigg/Discover) for Discord pre-installed and automatically launches in both Game mode and on the Desktop if Discord is installed. [View the official documentation here](https://trigg.github.io/Discover/bazzite).
 - Uses ZRAM<sub><sup>(4GB)</sup></sub> with the LZ4 compression algorithm by default.
 - [LAVD](https://crates.io/crates/scx_lavd) and [BORE](https://github.com/firelzrd/bore-scheduler) CPU Schedulers for smooth and responsive gameplay.
 - Kyber I/O scheduler to prevent I/O starvation when installing games or during background `duperemove` process.
@@ -292,11 +290,4 @@ We also ship a config for the popular [pull app](https://github.com/apps/pull) i
 
 ## Join The Community
 
-- You can find us on the [Universal Blue Discord](https://discord.gg/f8MUghG5PB)
-  - View the [archive](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769) of support threads without an account.
-
-- Discuss and create user guides over at the [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
-
-- Follow Universal Blue on [Mastodon](https://fosstodon.org/@UniversalBlue).
-
-[**View the full list of Bazzite resources and social presence**](https://docs.bazzite.gg/Resources/).
+You can find us on the [Bazzite Discord](https://discord.gg/f8MUghG5PB)  View the [archive](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769) of support threads without an account.
