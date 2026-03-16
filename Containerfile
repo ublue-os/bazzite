@@ -84,7 +84,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/packages \
         ublue-os/obs-vkcapture \
         ycollet/audinux \
-        ublue-os/hhd \
         lizardbyte/beta \
         che/nerd-fonts; \
     do \
@@ -100,12 +99,9 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-steam.repo && \
     dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-rar.repo && \
-    dnf5 -y config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
-    sed -i 's|baseurl=https://pkg.surfacelinux.com/fedora/f\$releasever/|baseurl=https://pkg.surfacelinux.com/fedora/f42/|' /etc/yum.repos.d/linux-surface.repo && \
-    dnf5 -y config-manager setopt "linux-surface".enabled=false && \
-    dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
-    dnf5 -y config-manager setopt "*terra*".priority=3 "*terra*".exclude="nerd-fonts topgrade scx-tools scx-scheds steam python3-protobuf zlib-devel" && \
+    dnf5 -y config-manager setopt "*terra*".priority=1 "*terra*".exclude="nerd-fonts topgrade scx-tools scx-scheds python3-protobuf zlib-devel" && \
     dnf5 -y config-manager setopt "terra-mesa".enabled=false && \
+    dnf5 -y config-manager setopt "*bazzite*".priority=2 && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=4 exclude='mesa-* *xone*')" && \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=5 "*rpmfusion*".exclude="mesa-*" && \
     dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
@@ -173,9 +169,6 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y install --enable-repo="linux-surface" --allowerasing \
-        iptsd \
-        libwacom-surface && \
     dnf5 -y remove \
         pipewire-config-raop \
         mesa-va-drivers && \
@@ -245,7 +238,7 @@ RUN --mount=type=cache,dst=/var/cache \
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \ 
+    --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     dnf5 -y install \
         $(/ctx/ghcurl https://api.github.com/repos/ublue-os/cicpoffs/releases/latest | jq -r '.assets[] | select(.name| test(".*rpm$")).browser_download_url') && \
@@ -363,10 +356,10 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    dnf5 --enable-repo=terra-mesa -y install \
-        gamescope.x86_64 \
-        gamescope-libs.x86_64 \
-        gamescope-libs.i686 \
+    dnf5 --enable-repo=terra-mesa --enable-repo=terra -y install \
+        terra-gamescope.x86_64 \
+        terra-gamescope-libs.x86_64 \
+        terra-gamescope-libs.i686 \
         gamescope-shaders \
         jupiter-sd-mounting-btrfs \
         umu-launcher \
@@ -387,7 +380,7 @@ RUN --mount=type=cache,dst=/var/cache \
         libobs_vkcapture.i686 \
         libobs_glcapture.i686 \
         openxr && \
-    dnf5 -y --enable-repo=terra-mesa --setopt=install_weak_deps=False install \
+    dnf5 -y --enable-repo=terra-mesa --enable-repo=terra --setopt=install_weak_deps=False install \
         steam \
         lutris && \
     dnf5 -y remove \
@@ -590,7 +583,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/packages \
         ublue-os/obs-vkcapture \
         ycollet/audinux \
-        ublue-os/hhd \
         lizardbyte/beta \
         che/nerd-fonts; \
     do \
@@ -669,7 +661,6 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable ublue-os/bazzite && \
     dnf5 -y copr enable ublue-os/bazzite-multilib && \
     dnf5 -y copr enable ublue-os/obs-vkcapture && \
-    dnf5 -y copr enable ublue-os/hhd && \
     dnf5 -y copr enable ycollet/audinux && \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     /ctx/cleanup
@@ -703,18 +694,18 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y install \
+    dnf5 -y install --enable-repo=terra \
         jupiter-fan-control \
         jupiter-hw-support-btrfs \
         galileo-mura \
         steamdeck-dsp \
         powerbuttond \
-        $([[ "$IMAGE_BRANCH" == "unstable" || "$IMAGE_BRANCH" == "testing" ]] && echo "hhd-git" || echo "hhd") \
-        hhd-ui \
+        powerstation \
+        gamescope-session-ogui-steam \
         steamos-manager \
-        acpica-tools \
         vpower \
-        steam_notif_daemon \
+        steam-notif-daemon \
+        acpica-tools \
         sdgyrodsu \
         ibus-pinyin \
         ibus-table-chinese-cangjie \
@@ -750,7 +741,7 @@ RUN --mount=type=cache,dst=/var/cache \
         upower-libs && \
     /ctx/cleanup
 
-# Install Gamescope Session & Supporting changes
+# Install Gamescope Session Supporting changes
 # Add bootstrap_steam.tar.gz used by gamescope-session (Thanks GE & Nobara Project!)
 # Add sdl gamecontrollerdb used by handheld daemon for externals
 RUN --mount=type=cache,dst=/var/cache \
@@ -765,10 +756,6 @@ RUN --mount=type=cache,dst=/var/cache \
     mkdir -p /usr/share/sdl/ && \
     /ctx/ghcurl "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt" -Lo /usr/share/sdl/gamecontrollerdb.txt && \
     setfattr -n user.component -v "sdl2" /usr/share/sdl/gamecontrollerdb.txt && \
-    dnf5 -y install \
-    --repo copr:copr.fedorainfracloud.org:ublue-os:bazzite \
-        gamescope-session-plus \
-        gamescope-session-steam && \
     /ctx/cleanup
 
 # Cleanup & Finalize
@@ -790,7 +777,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/bazzite \
         ublue-os/bazzite-multilib \
         ublue-os/obs-vkcapture \
-        ublue-os/hhd \
         ycollet/audinux; \
     do \
         dnf5 -y copr disable -y $copr; \
@@ -802,7 +788,6 @@ RUN --mount=type=cache,dst=/var/cache \
         systemctl disable usr-share-sddm-themes.mount \
     ; fi && \
     { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
-    systemctl enable hhd.service && \
     systemctl enable --global steamos-manager.service && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-workaround.service && \
