@@ -575,7 +575,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
-    systemctl --global disable sunshine.service && \
     systemctl disable waydroid-container.service && \
     systemctl enable greenboot-healthcheck.service && \
     systemctl enable greenboot-set-rollback-trigger.service && \
