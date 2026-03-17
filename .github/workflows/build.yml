@@ -66,7 +66,7 @@ jobs:
         include:
           - fedora_version: 43
             kernel_flavor: ogc
-            kernel_version: 6.19.6-200.nobara.fc43.x86_64
+            kernel_version: 6.19.8-200.ogc.fc43.x86_64
             base_image_flavor: main
             arch: x86_64
     steps:
@@ -127,7 +127,7 @@ jobs:
           if [[ "$IMAGE" == *"nvidia-open" || "$IMAGE" == *"-deck-nvidia"* ]]; then
             echo "nvidia_flavor=nvidia-open" >> "$GITHUB_OUTPUT"
           else
-            echo "nvidia_flavor=nvidia" >> "$GITHUB_OUTPUT"
+            echo "nvidia_flavor=nvidia-lts" >> "$GITHUB_OUTPUT"
           fi
 
           #
