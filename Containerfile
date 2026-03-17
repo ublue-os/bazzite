@@ -490,7 +490,6 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-tour \
             gnome-extensions-app \
             gnome-system-monitor \
-            gnome-initial-setup \
             gnome-shell-extension-background-logo \
             gnome-shell-extension-apps-menu \
             gnome-shell-extension-launch-new-instance \
@@ -684,8 +683,9 @@ RUN --mount=type=cache,dst=/var/cache \
         jupiter-sd-mounting-btrfs && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y remove \
-            steamdeck-kde-presets-desktop && \
-       dnf5 -y install \
+            steamdeck-kde-presets-desktop \
+            plasma-setup && \
+        dnf5 -y install \
             steamdeck-kde-presets \
     ; else \
         dnf5 -y install \
@@ -695,6 +695,7 @@ RUN --mount=type=cache,dst=/var/cache \
         rm -f /usr/share/backgrounds/default.xml && \
         dnf5 -y remove \
             malcontent-control \
+            gnome-initial-setup \
     ; fi && \
     /ctx/cleanup
 

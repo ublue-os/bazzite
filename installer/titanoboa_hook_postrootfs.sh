@@ -61,6 +61,11 @@ rm -rf /root/packages
 mkdir -p /usr/share/ublue-os
 curl -Lo /usr/share/ublue-os/sb_pubkey.der "$sbkey"
 
+# Add accounts screen for deck users
+if [[ $imageref == *-deck* ]]; then
+    sed -i '/^anaconda-screen-accounts/d' /etc/anaconda/profile.d/bazzite.conf
+fi
+
 # Default Kickstart
 cat <<EOF >>/usr/share/anaconda/interactive-defaults.ks
 
