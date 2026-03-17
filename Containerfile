@@ -290,6 +290,7 @@ RUN --mount=type=cache,dst=/var/cache \
         waydroid \
         cage \
         wlr-randr \
+        gmodpatchtool \
         bazzite-portal \
         ls-iommu && \
     systemctl mask iscsi && \
@@ -325,6 +326,7 @@ RUN --mount=type=cache,dst=/var/cache \
         terra-gamescope-libs.i686 \
         gamescope-shaders \
         jupiter-sd-mounting-btrfs \
+        umu-wrapper \
         umu-launcher \
         dbus-x11 \
         xrandr \
