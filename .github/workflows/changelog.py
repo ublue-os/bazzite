@@ -58,7 +58,7 @@ From previous `{target}` version `{prev}` there have been the following changes.
 | **Kernel** | {pkgrel:kernel} |
 | **Firmware** | {pkgrel:atheros-firmware} |
 | **Mesa** | {pkgrel:mesa-filesystem} |
-| **Gamescope** | {pkgrel:gamescope} |
+| **Gamescope** | {pkgrel:terra-gamescope} |
 | **Bazaar** | {pkgrel:bazaar} |
 | **Gnome** | {pkgrel:gnome-control-center-filesystem} |
 | **KDE** | {pkgrel:plasma-desktop} |
@@ -82,7 +82,7 @@ This is an automatically generated changelog for release `{curr}`."""
 BLACKLIST_VERSIONS = [
     "kernel",
     "mesa-filesystem",
-    "gamescope",
+    "terra-gamescope",
     "bazaar",
     "gnome-control-center-filesystem",
     "plasma-desktop",
