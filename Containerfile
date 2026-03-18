@@ -666,9 +666,8 @@ RUN --mount=type=cache,dst=/var/cache \
         steamdeck-dsp \
         powerbuttond \
         inputplumber \
-        powerstation \
         gamescope-session-ogui-steam \
-        steamos-manager \
+        steamos-manager-powerstation \
         vpower \
         steam-notif-daemon \
         acpica-tools \

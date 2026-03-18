@@ -62,7 +62,7 @@ From previous `{target}` version `{prev}` there have been the following changes.
 | **InputPlumber** | {pkgrel:inputplumber} |
 | **OpenGamepadUI** | {pkgrel:opengamepadui} |
 | **PowerStation** | {pkgrel:powerstation} |
-| **SteamOS-Manager** | {pkgrel:steamos-manager} |
+| **SteamOS-Manager** | {pkgrel:steamos-manager-powerstation} |
 | **Bazaar** | {pkgrel:bazaar} |
 | **Gnome** | {pkgrel:gnome-control-center-filesystem} |
 | **KDE** | {pkgrel:plasma-desktop} |
@@ -89,7 +89,7 @@ BLACKLIST_VERSIONS = [
     "terra-gamescope",
     "inputplumber",
     "powerstation",
-    "steamos-manager",
+    "steamos-manager-powerstation",
     "opengamepadui",
     "bazaar",
     "gnome-control-center-filesystem",
