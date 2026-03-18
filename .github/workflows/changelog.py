@@ -59,6 +59,10 @@ From previous `{target}` version `{prev}` there have been the following changes.
 | **Firmware** | {pkgrel:atheros-firmware} |
 | **Mesa** | {pkgrel:mesa-filesystem} |
 | **Gamescope** | {pkgrel:terra-gamescope} |
+| **InputPlumber** | {pkgrel:inputplumber} |
+| **OpenGamepadUI** | {pkgrel:opengamepadui} |
+| **PowerStation** | {pkgrel:powerstation} |
+| **SteamOS-Manager** | {pkgrel:steamos-manager} |
 | **Bazaar** | {pkgrel:bazaar} |
 | **Gnome** | {pkgrel:gnome-control-center-filesystem} |
 | **KDE** | {pkgrel:plasma-desktop} |
@@ -83,6 +87,10 @@ BLACKLIST_VERSIONS = [
     "kernel",
     "mesa-filesystem",
     "terra-gamescope",
+    "inputplumber",
+    "powerstation",
+    "steamos-manager",
+    "opengamepadui",
     "bazaar",
     "gnome-control-center-filesystem",
     "plasma-desktop",
