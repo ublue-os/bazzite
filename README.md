@@ -288,6 +288,35 @@ Bazzite is built entirely in GitHub and creating your own custom version of it i
 
 We also ship a config for the popular [pull app](https://github.com/apps/pull) if you'd like to keep your fork in sync with upstream. Enable this app on your repo to keep track of Bazzite changes while also making your own modifications.
 
+### Publishing a custom rpm-OSTree variant
+
+The `Build Bazzite` workflow uploads and signs your custom variant automatically on non-PR runs. In your fork, either push your changes to `testing` or `unstable`, or open `Actions -> Build Bazzite -> Run workflow` to publish on demand.
+
+The custom variant images are pushed to GHCR under your fork owner:
+
+```text
+ghcr.io/<your-github-owner>/bazzite-custom:<tag>
+ghcr.io/<your-github-owner>/bazzite-custom-gnome:<tag>
+```
+
+After the workflow finishes, rebase a system to your uploaded image:
+
+```bash
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/<your-github-owner>/bazzite-custom:stable
+```
+
+For the GNOME variant:
+
+```bash
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/<your-github-owner>/bazzite-custom-gnome:stable
+```
+
+You can also verify the published image with your public cosign key:
+
+```bash
+cosign verify --key cosign.pub ghcr.io/<your-github-owner>/bazzite-custom:stable
+```
+
 ## Join The Community
 
 You can find us on the [Bazzite Discord](https://discord.gg/f8MUghG5PB)  View the [archive](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769) of support threads without an account.
