@@ -334,7 +334,7 @@ RUN --mount=type=cache,dst=/var/cache \
         wlr-randr \
         bazzite-portal \
         ls-iommu && \
-    if [[ "${IMAGE_NAME}" == *"custom"* ]]; then \
+    if [[ "${IMAGE_NAME}" == "bazzite-custom" || "${IMAGE_NAME}" == "bazzite-custom-gnome" ]]; then \
         dnf5 -y install \
             tmux \
             zstd \

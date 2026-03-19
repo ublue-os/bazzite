@@ -299,6 +299,8 @@ ghcr.io/<your-github-owner>/bazzite-custom:<tag>
 ghcr.io/<your-github-owner>/bazzite-custom-gnome:<tag>
 ```
 
+These custom variants add `tmux`, `zstd`, and `gnupg2` on top of the standard `bazzite` image.
+
 After the workflow finishes, rebase a system to your uploaded image:
 
 ```bash
