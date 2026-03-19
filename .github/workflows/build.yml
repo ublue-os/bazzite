@@ -49,6 +49,7 @@ jobs:
       contents: read
       packages: write
       id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -379,7 +380,7 @@ jobs:
             "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
             "ostree.bootable=true"
             "ostree.linux=$kver"
-            "dev.hhd.rechunk.info=$manifest"
+            "ostree.rechunk.info=$manifest"
           )
 
           # Apply config to labels and annotations
@@ -467,6 +468,21 @@ jobs:
             log_sum '```'
         env:
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+
+      - name: Get Image Digest
+        if: github.event_name != 'pull_request'
+        id: get-digest
+        run: |
+          DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' "docker://${{ steps.base.outputs.output_image }}:${{ steps.relabel.outputs.version }}")
+          echo "digest=${DIGEST}" >> "$GITHUB_OUTPUT"
+
+      - name: Attest Build Provenance
+        if: github.event_name != 'pull_request'
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4
+        with:
+          subject-name: ${{ steps.base.outputs.output_image }}
+          subject-digest: ${{ steps.get-digest.outputs.digest }}
+          push-to-registry: true
 
   generate_release:
     name: Generate Release

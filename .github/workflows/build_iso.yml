@@ -20,6 +20,7 @@ jobs:
       contents: read
       packages: write
       id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -160,6 +161,11 @@ jobs:
           mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }} ${ISO_UPLOAD_DIR}
           mv ${{ steps.build.outputs.iso_path }}/${{ steps.build.outputs.iso_name }}-CHECKSUM ${ISO_UPLOAD_DIR}
           echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
+
+      - name: Attest Build Provenance
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4
+        with:
+          subject-path: ${{ steps.upload-directory.outputs.iso-upload-dir }}/${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-amd64.iso
 
       - name: Upload ISOs and Checksum to Job Artifacts
         if: github.ref_name == 'testing'

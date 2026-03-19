@@ -177,7 +177,7 @@ def get_packages(manifests: dict[str, Any]):
     packages = {}
     for img, manifest in manifests.items():
         try:
-            packages[img] = json.loads(manifest["Labels"]["dev.hhd.rechunk.info"])[
+            packages[img] = json.loads(manifest["Labels"]["ostree.rechunk.info"])[
                 "packages"
             ]
         except Exception as e:
