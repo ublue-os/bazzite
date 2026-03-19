@@ -116,7 +116,7 @@ jobs:
           #
           if [[ "$IMAGE" == *"custom"* ]]; then
             echo "container_target=bazzite" >> "$GITHUB_OUTPUT"
-            echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT" # NOOP
+            echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT" # retained for shared build args, not used for custom images
             echo "install_nvidia=false" >> "$GITHUB_OUTPUT"
           elif [[ "$IMAGE" == *"deck"* && "$IMAGE" == *"nvidia"* ]]; then
             echo "container_target=bazzite-nvidia" >> "$GITHUB_OUTPUT"
