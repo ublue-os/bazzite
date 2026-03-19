@@ -393,7 +393,7 @@ jobs:
           sudo buildah commit --identity-label=false --rm $container raw-img
 
           sudo podman run --rm --privileged --volume /var/lib/containers:/var/lib/containers \
-              quay.io/centos-bootc/centos-bootc:stream10 \
+              localhost/raw-img \
               rpm-ostree compose build-chunked-oci \
               --bootc --max-layers 96 --format-version 2 \
               --from localhost/raw-img --output containers-storage:localhost/chunked-img
