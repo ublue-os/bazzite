@@ -340,6 +340,12 @@ jobs:
             version="testing-${version}"
           fi
 
+          # Clean out labels from base image
+          img=raw-img
+          container=$(sudo buildah from $img)
+          sudo buildah config --label "-" $container
+          sudo buildah commit --identity-label=false --rm $container $img
+
           declare -A tags
           while read -r t; do
               tags["$t"]=1
@@ -358,7 +364,6 @@ jobs:
           fi
 
           # Figure out config
-          img=raw-img
           kver=$(sudo podman run --rm "$img" rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
           filter='{ "packages": [inputs | split(" ") | select(length==2) | { (.[0]): .[1] }] | sort_by(keys) | add }'
           manifest=$(sudo podman run --rm "$img" rpm -qa --qf '%{NAME} %{VERSION}-%{RELEASE}\n' \
@@ -373,7 +378,6 @@ jobs:
           )
 
           # Apply config to labels and annotations
-          container=$(sudo buildah from $img)
           for line in "${labels[@]}"; do
             [ -z "$line" ] && continue
             sudo buildah config --label "$line" --annotation "$line" "$container"
