@@ -378,6 +378,7 @@ jobs:
           )
 
           # Apply config to labels and annotations
+          container=$(sudo buildah from $img)
           for line in "${labels[@]}"; do
             [ -z "$line" ] && continue
             sudo buildah config --label "$line" --annotation "$line" "$container"
