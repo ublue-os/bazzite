@@ -59,6 +59,7 @@ From previous `{target}` version `{prev}` there have been the following changes.
 | **Firmware** | {pkgrel:atheros-firmware} |
 | **Mesa** | {pkgrel:mesa-filesystem} |
 | **Gamescope** | {pkgrel:terra-gamescope} |
+| **Gamescope Session** | {pkgrel:gamescope-session} |
 | **InputPlumber** | {pkgrel:inputplumber} |
 | **OpenGamepadUI** | {pkgrel:opengamepadui} |
 | **PowerStation** | {pkgrel:powerstation} |
@@ -66,7 +67,7 @@ From previous `{target}` version `{prev}` there have been the following changes.
 | **Bazaar** | {pkgrel:bazaar} |
 | **Gnome** | {pkgrel:gnome-control-center-filesystem} |
 | **KDE** | {pkgrel:plasma-desktop} |
-| **Nvidia** | {pkgrel:nvidia-kmod-common} |
+| **Nvidia Open** | {pkgrel:nvidia-kmod-common} |
 | **Nvidia LTS** | {pkgrel:nvidia-kmod-common-lts} |
 
 {changes}
@@ -87,6 +88,7 @@ BLACKLIST_VERSIONS = [
     "kernel",
     "mesa-filesystem",
     "terra-gamescope",
+    "gamescope-session",
     "inputplumber",
     "powerstation",
     "steamos-manager-powerstation",
