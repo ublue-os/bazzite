@@ -46,11 +46,13 @@ jobs:
           PREFIX: ghcr.io/${{ github.repository_owner }}/
           TAG_MAPPINGS: |-
             bazzite:${{ inputs.old_tag }}                           => bazzite:latest,stable,${{ env.ver }}
+            bazzite-custom:${{ inputs.old_tag }}                    => bazzite-custom:latest,stable,${{ env.ver }}
             bazzite-deck:${{ inputs.old_tag }}                      => bazzite-deck:latest,stable,${{ env.ver }}
             bazzite-deck-gnome:${{ inputs.old_tag }}                => bazzite-deck-gnome:latest,stable,${{ env.ver }}
             bazzite-deck-nvidia:${{ inputs.old_tag }}               => bazzite-deck-nvidia:latest,stable,${{ env.ver }}
             bazzite-deck-nvidia-gnome:${{ inputs.old_tag }}         => bazzite-deck-nvidia-gnome:latest,stable,${{ env.ver }}
             bazzite-gnome:${{ inputs.old_tag }}                     => bazzite-gnome:latest,stable,${{ env.ver }}
+            bazzite-custom-gnome:${{ inputs.old_tag }}              => bazzite-custom-gnome:latest,stable,${{ env.ver }}
             bazzite-gnome-nvidia:${{ inputs.old_tag }}              => bazzite-gnome-nvidia:latest,stable,${{ env.ver }}
             bazzite-gnome-nvidia-open:${{ inputs.old_tag }}         => bazzite-gnome-nvidia-open:latest,stable,${{ env.ver }}
             bazzite-nvidia:${{ inputs.old_tag }}                    => bazzite-nvidia:latest,stable,${{ env.ver }}
