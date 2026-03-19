@@ -63,6 +63,8 @@ RUN find /usr/share/ublue-os/docs -type f -exec setfattr -n user.component -v "u
 
 # Install needed firmware blobs
 RUN --mount=type=bind,src=firmware,dst=/ctx/firmware \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
     cp -a /ctx/firmware/. /tmp/firmware && \
     find /tmp/firmware -type f -exec setfattr -n user.component -v "bazzite-nonfree" {} + && \
     cp -a /tmp/firmware/. / && \
