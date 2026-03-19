@@ -18,6 +18,11 @@ image=$2
 # Get info
 container_mgr=$(just _container_mgr)
 tag=$(just _tag "${image}")
+container_target=${target}
+
+if [[ ${target} == "bazzite-custom" ]]; then
+    container_target="bazzite"
+fi
 
 if [[ ${image} =~ "gnome" ]]; then
     base_image="silverblue"
@@ -38,6 +43,6 @@ $container_mgr build -f Containerfile \
     --build-arg="KERNEL_FLAVOR=bazzite" \
     --build-arg="SOURCE_IMAGE=${base_image}-${flavor}" \
     --build-arg="FEDORA_VERSION=${latest}" \
-    --target="${target}" \
+    --target="${container_target}" \
     --tag localhost/"${tag}:${latest}-${git_branch}" \
     "${project_root}"

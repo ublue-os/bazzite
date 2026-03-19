@@ -26,6 +26,7 @@ fi
 target=${target,,}
 valid_targets=(
     bazzite
+    bazzite-custom
     bazzite-deck
     bazzite-nvidia
 )
@@ -42,5 +43,4 @@ image="${target}${desktop}"
 if [[ ${image} =~ "nvidia" ]]; then
     image="bazzite${desktop}-nvidia"
 fi
-
 

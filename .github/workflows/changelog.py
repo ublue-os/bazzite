@@ -10,7 +10,9 @@ REGISTRY = "docker://ghcr.io/ublue-os/"
 
 IMAGES = [
     "bazzite",
+    "bazzite-custom",
     "bazzite-gnome",
+    "bazzite-custom-gnome",
     "bazzite-deck",
     "bazzite-deck-gnome",
     "bazzite-deck-nvidia",

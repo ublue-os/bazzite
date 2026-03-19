@@ -334,6 +334,12 @@ RUN --mount=type=cache,dst=/var/cache \
         wlr-randr \
         bazzite-portal \
         ls-iommu && \
+    if [[ "${IMAGE_NAME}" == "bazzite-custom" || "${IMAGE_NAME}" == "bazzite-custom-gnome" ]]; then \
+        dnf5 -y install \
+            tmux \
+            zstd \
+            gnupg2; \
+    fi && \
     systemctl mask iscsi && \
     systemctl mask wpa_supplicant.service && \
     systemctl disable iwd.service && \

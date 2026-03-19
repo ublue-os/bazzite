@@ -61,7 +61,9 @@ jobs:
       matrix:
         image:
           - bazzite
+          - bazzite-custom
           - bazzite-gnome
+          - bazzite-custom-gnome
           - bazzite-deck
           - bazzite-deck-gnome
           - bazzite-deck-nvidia
@@ -112,7 +114,11 @@ jobs:
           #
           # Define Container Target
           #
-          if [[ "$IMAGE" == *"deck"* && "$IMAGE" == *"nvidia"* ]]; then
+          if [[ "$IMAGE" == *"custom"* ]]; then
+            echo "container_target=bazzite" >> "$GITHUB_OUTPUT"
+            echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT" # retained for shared build args, not used for custom images
+            echo "install_nvidia=false" >> "$GITHUB_OUTPUT"
+          elif [[ "$IMAGE" == *"deck"* && "$IMAGE" == *"nvidia"* ]]; then
             echo "container_target=bazzite-nvidia" >> "$GITHUB_OUTPUT"
             echo "nvidia_base=bazzite-deck" >> "$GITHUB_OUTPUT"
             echo "install_nvidia=true" >> "$GITHUB_OUTPUT"
