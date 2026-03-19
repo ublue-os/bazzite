@@ -61,7 +61,12 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 COPY system_files/desktop/shared/ system_files/desktop/${BASE_IMAGE_NAME}/ /
 RUN find /usr/share/ublue-os/docs -type f -exec setfattr -n user.component -v "ublue-docs" {} +
 
-COPY firmware /
+# Install needed firmware blobs
+RUN --mount=type=bind,src=firmware,dst=/ctx/firmware \
+    cp -a /ctx/firmware/. /tmp/firmware && \
+    find /tmp/firmware -type f -exec setfattr -n user.component -v "bazzite-nonfree" {} + && \
+    cp -a /tmp/firmware/. / && \
+    rm -rf /tmp/firmware
 
 # Copy Homebrew files from the brew image
 ARG BREW_IMAGE=ghcr.io/ublue-os/brew:latest@sha256:ca91068f51ce663d495ccfc829352d6621ec95f6c7db447ade55023b222f9762
@@ -717,7 +722,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=secret,id=GITHUB_TOKEN \
     mkdir -p /usr/share/gamescope-session-plus/ && \
     curl --retry 3 -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz && \
-    setfattr -n user.component -v "bootstrap_steam" /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz && \
+    setfattr -n user.component -v "bazzite-nonfree" /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz && \
     mkdir -p /usr/share/sdl/ && \
     /ctx/ghcurl "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt" -Lo /usr/share/sdl/gamecontrollerdb.txt && \
     setfattr -n user.component -v "sdl2" /usr/share/sdl/gamecontrollerdb.txt && \
