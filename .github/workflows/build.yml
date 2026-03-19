@@ -390,7 +390,7 @@ jobs:
           mnt=$(sudo buildah mount $container)
           sudo bash -c "rm -rf $mnt/run/.* $mnt/run/* $mnt/tmp/.* $mnt/tmp/*"
           sudo buildah umount $container
-          sudo buildah commit --identity-label=false --rm $container $img
+          sudo buildah commit --identity-label=false --rm $container raw-img
 
           sudo podman run --rm --privileged --volume /var/lib/containers:/var/lib/containers \
               quay.io/centos-bootc/centos-bootc:stream10 \
