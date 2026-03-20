@@ -411,8 +411,7 @@ RUN --mount=type=cache,dst=/var/cache \
             tesseract-langpack-chi_sim \
             tesseract-langpack-chi_sim_vert \
             tesseract-langpack-ces \
-            tesseract-langpack-ell \
-            ptyxis && \
+            tesseract-langpack-ell && \
         dnf5 -y remove \
             plasma-drkonqi \
             plasma-welcome \
@@ -422,8 +421,6 @@ RUN --mount=type=cache,dst=/var/cache \
             kde-partitionmanager \
             plasma-discover && \
         sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js && \
-        sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop && \
-        sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
         rm -f /usr/share/backgrounds/default.xml \
@@ -521,8 +518,7 @@ RUN --mount=type=cache,dst=/var/cache \
     echo "import \"/usr/share/ublue-os/just/91-bazzite-decky.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/92-bazzite-verify.just\"" >> /usr/share/ublue-os/justfile && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        systemctl enable usr-share-sddm-themes.mount && \
-        sed -i 's@Exec=/usr/bin/ptyxis@Exec=/usr/bin/kde-ptyxis@g' /usr/share/dbus-1/services/org.gnome.Ptyxis.service \
+        systemctl enable usr-share-sddm-themes.mount \
     ; else \
         mkdir -p "/usr/share/ublue-os/dconfs/desktop-silverblue/" && \
         cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/desktop-silverblue/" && \

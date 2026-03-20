@@ -101,7 +101,7 @@ else
             info "Removed existing bootupd-state.json"
     fi
     run0 --user="$PKEXEC_UID" --
-    ptyxis --title="$_APP_NAME - Restoring bootloader" -- \
+    xdg-terminal-exec --title="$_APP_NAME - Restoring bootloader" -- \
         pkexec bash -c "bootupctl backend install
             -vvvv
         --auto
