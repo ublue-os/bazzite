@@ -158,10 +158,39 @@ jobs:
           sha256sum ${DEST} > ${DEST}-CHECKSUM
           echo "iso-upload-dir=${ISO_UPLOAD_DIR}" >> $GITHUB_OUTPUT
 
+      - name: Setup Cosign
+        uses: sigstore/cosign-installer@ba7bc0a3fef59531c69a25acd34668d6d3fe6f22 # v4.1.0
+        with:
+          cosign-release: 'v2.6.1'
+
+      - name: Sign ISO
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_SECRET }}
+          ISO_UPLOAD_DIR: ${{ steps.upload-directory.outputs.iso-upload-dir }}
+        run: |
+          for iso in ${ISO_UPLOAD_DIR}/*.iso; do
+            cosign sign-blob -y --key env://SIGNING_KEY "$iso" --output-signature "${iso}.sig"
+          done
+
       - name: Attest Build Provenance
+        id: attest
         uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4
         with:
           subject-path: ${{ steps.upload-directory.outputs.iso-upload-dir }}/*.iso
+
+      - name: Generate ISO Metadata JSON
+        env:
+          ISO_UPLOAD_DIR: ${{ steps.upload-directory.outputs.iso-upload-dir }}
+          ATTESTATION_URL: ${{ steps.attest.outputs.attestation-url }}
+        run: |
+          for iso in ${ISO_UPLOAD_DIR}/*.iso; do
+            iso_name=$(basename "$iso")
+            jq -n \
+              --arg iso "$iso_name" \
+              --arg url "$ATTESTATION_URL" \
+              --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+              '{iso: $iso, attestation_url: $url, build_date: $date}' > "${iso}.json"
+          done
 
       - name: Upload ISOs and Checksum to Job Artifacts
         if: github.ref_name == 'testing'
