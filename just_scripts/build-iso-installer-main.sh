@@ -22,6 +22,8 @@ if [[ -f /run/.containerenv ]]; then
     fi
 fi
 container_mgr=$(just _container_mgr)
+# shellcheck disable=SC1091
+. "${project_root}/just_scripts/container_env.sh"
 # If using rootless container manager, exit. Might not be best check
 if "${container_mgr}" info | grep Root | grep -q /home; then
     echo "Cannot build ISO with rootless container..."

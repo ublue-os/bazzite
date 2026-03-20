@@ -18,6 +18,8 @@ orig_image=$2
 
 # Get variables
 container_mgr=$(just _container_mgr)
+# shellcheck disable=SC1091
+. "${project_root}/just_scripts/container_env.sh"
 tag=$(just _tag "${image}")
 
 # Check if requested image exist, if it doesn't build it
