@@ -9,10 +9,10 @@ write_intel_gtk_fix() {
     echo "GSK_RENDERER=gl" > "$HOME/.config/environment.d/intel-gtk-fix.conf"
 }
 
-if lsmod | grep -P "^(xe|i915) " > /dev/null && [ ! -f "$HOME/.config/environment.d/intel-gtk-fix.conf" ]; then
+if lsmod | awk '$3 > 0' | grep -P "^(xe|i915) " > /dev/null && [ ! -f "$HOME/.config/environment.d/intel-gtk-fix.conf" ]; then
     # User is using an Intel GPU
     write_intel_gtk_fix
-elif ! lsmod | grep -P "^(xe|i915) " > /dev/null && [ -f "$HOME/.config/environment.d/intel-gtk-fix.conf" ]; then
+elif ! lsmod | awk '$3 > 0' | grep -P "^(xe|i915) " > /dev/null && [ -f "$HOME/.config/environment.d/intel-gtk-fix.conf" ]; then
     # Remove the env var file as no intel gpu is being used.
     rm "$HOME/.config/environment.d/intel-gtk-fix.conf"
 fi
