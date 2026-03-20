@@ -35,9 +35,17 @@ ARG BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/${BASE_IMAGE_NAME}-main:${FEDORA_
 ARG NVIDIA_BASE="${NVIDIA_BASE:-bazzite}"
 ARG KERNEL_REF="${KERNEL_REF:-ghcr.io/bazzite-org/kernel-bazzite:latest-f${FEDORA_VERSION}-${ARCH}}"
 ARG NVIDIA_REF="${NVIDIA_REF:-ghcr.io/bazzite-org/nvidia-drivers:latest-f${FEDORA_VERSION}-${ARCH}}"
+ARG BREW_IMAGE="${BREW_IMAGE:-ghcr.io/ublue-os/brew:latest@sha256:ca91068f51ce663d495ccfc829352d6621ec95f6c7db447ade55023b222f9762}"
+ARG IMAGE_NAME="bazzite"
+ARG IMAGE_VENDOR="ublue-os"
+ARG IMAGE_BRANCH="stable"
+ARG SHA_HEAD_SHORT=""
+ARG VERSION_TAG=""
+ARG VERSION_PRETTY=""
 
 FROM ${KERNEL_REF} AS kernel
 FROM ${NVIDIA_REF} AS nvidia
+FROM ${BREW_IMAGE} AS brew
 
 FROM scratch AS ctx
 COPY build_files /
@@ -48,13 +56,13 @@ COPY build_files /
 
 FROM ${BASE_IMAGE} AS bazzite
 
-ARG IMAGE_NAME="${IMAGE_NAME:-bazzite}"
-ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
-ARG IMAGE_BRANCH="${IMAGE_BRANCH:-stable}"
-ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
-ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
-ARG VERSION_TAG="${VERSION_TAG}"
-ARG VERSION_PRETTY="${VERSION_PRETTY}"
+ARG IMAGE_NAME
+ARG IMAGE_VENDOR
+ARG IMAGE_BRANCH
+ARG BASE_IMAGE_NAME
+ARG SHA_HEAD_SHORT
+ARG VERSION_TAG
+ARG VERSION_PRETTY
 
 RUN --mount=type=bind,target=/tmp/context \
     cp -a /tmp/context/system_files/desktop/shared/. /tmp/context/system_files/desktop/${BASE_IMAGE_NAME}/. / && \
@@ -63,8 +71,7 @@ RUN --mount=type=bind,target=/tmp/context \
 COPY firmware /
 
 # Copy Homebrew files from the brew image
-ARG BREW_IMAGE=ghcr.io/ublue-os/brew:latest@sha256:ca91068f51ce663d495ccfc829352d6621ec95f6c7db447ade55023b222f9762
-RUN --mount=type=bind,from=${BREW_IMAGE},source=/system_files,target=/tmp/brew_source \
+RUN --mount=type=bind,from=brew,source=/system_files,target=/tmp/brew_source \
     cp -a /tmp/brew_source/. / && \
     find /tmp/brew_source -type f -printf '/%P\0' | xargs -0 setfattr -n user.component -v "homebrew"
 
