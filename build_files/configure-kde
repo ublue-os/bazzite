@@ -35,7 +35,8 @@ dnf5 -y remove \
   plasma-discover-kns \
   kcharselect \
   kde-partitionmanager \
-  plasma-discover
+  plasma-discover \
+  plasma-discover-libs
 
 sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js
 sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop
