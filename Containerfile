@@ -412,51 +412,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        dnf5 -y install \
-            qt \
-            krdp \
-            steamdeck-kde-presets-desktop \
-            kdeconnectd \
-            kdeplasma-addons \
-            rom-properties-kf6 \
-            fcitx5-mozc \
-            fcitx5-chinese-addons \
-            fcitx5-hangul \
-            kcm-fcitx5 \
-            gnome-disk-utility \
-            kio-extras \
-            krunner-bazaar \
-            krdc \
-            tesseract-langpack-spa \
-            tesseract-langpack-deu \
-            tesseract-langpack-jpn \
-            tesseract-langpack-jpn_vert \
-            tesseract-langpack-fra \
-            tesseract-langpack-por \
-            tesseract-langpack-rus \
-            tesseract-langpack-ita \
-            tesseract-langpack-nld \
-            tesseract-langpack-pol \
-            tesseract-langpack-tur \
-            tesseract-langpack-chi_sim \
-            tesseract-langpack-chi_sim_vert \
-            tesseract-langpack-ces \
-            tesseract-langpack-ell \
-            ptyxis && \
-        dnf5 -y remove \
-            plasma-drkonqi \
-            plasma-welcome \
-            plasma-welcome-fedora \
-            plasma-discover-kns \
-            kcharselect \
-            kde-partitionmanager \
-            plasma-discover && \
-        sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js && \
-        sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop && \
-        sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
-        ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl && \
-        ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
-        rm -f /usr/share/backgrounds/default.xml \
+      /ctx/configure-kde \
     ; else \
         declare -A toswap=( \
             ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="mutter gnome-shell" \
