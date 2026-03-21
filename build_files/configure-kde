@@ -2,17 +2,13 @@
 
 dnf5 -y install \
   qt \
-  krdp \
   steamdeck-kde-presets-desktop \
-  kdeconnectd \
-  kdeplasma-addons \
   rom-properties-kf6 \
   fcitx5-mozc \
   fcitx5-chinese-addons \
   fcitx5-hangul \
   kcm-fcitx5 \
   gnome-disk-utility \
-  kio-extras \
   krunner-bazaar \
   krdc \
   tesseract-langpack-spa \
