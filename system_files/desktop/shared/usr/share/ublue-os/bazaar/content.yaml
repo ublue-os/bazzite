@@ -74,6 +74,7 @@ rows:
           - io.mrarm.mcpelauncher
           - at.vintagestory.VintageStory
           - org.vinegarhq.Sober
+          - org.zdoom.UZDoom
           - org.zdoom.Raze
           - org.openmw.OpenMW
           - dev.goats.xivlauncher
