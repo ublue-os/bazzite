@@ -263,6 +263,8 @@ jobs:
         id: cache-prep
         env:
           IMAGE: ${{ matrix.image }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           set -eoux pipefail
           if [[ "${IMAGE}" =~ gnome ]]; then
@@ -271,11 +273,15 @@ jobs:
             CACHE_NAME="kde"
           fi
 
+          ALLOW_CACHE_WRITE="false"
+
           # TODO: If we ever integrate dx images here then this may need to be adjusted
-          if [[ "${IMAGE}" =~ "-deck" ]]; then
+          # TODO: remove testing here when we have cache on main branch
+          # PR caches are useless and may wipe cache on main
+          if [[ "${IMAGE}" =~ "-deck" ]] && \
+             [[ "${EVENT_NAME}" != "pull_request" ]] && \
+             [[ "${REF_NAME}" == "main" || "${REF_NAME}" == "testing" ]]; then
             ALLOW_CACHE_WRITE="true"
-          else
-            ALLOW_CACHE_WRITE="false"
           fi
 
           echo "cache_name=${CACHE_NAME}" >> "$GITHUB_OUTPUT"
