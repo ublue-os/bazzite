@@ -182,6 +182,9 @@ RUN --mount=type=cache,dst=/var/cache \
         NetworkManager \
         NetworkManager-wifi \
         NetworkManager-libnm && \
+    dnf5 --enable-repo=terra-mesa -y install \
+        mesa-libOpenCL \
+        clinfo && \
     dnf5 -y install \
         libfreeaptx && \
     dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
@@ -287,15 +290,9 @@ RUN --mount=type=cache,dst=/var/cache \
         snapper \
         btrfs-assistant \
         edk2-ovmf \
-        qemu \
-        libvirt \
-        guestfs-tools \
         lsb_release \
         uupd \
         ds-inhibit \
-        rocm-hip \
-        rocm-opencl \
-        rocm-clinfo \
         waydroid \
         cage \
         wlr-randr \
@@ -309,11 +306,6 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/bin/framework_tool && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
     setcap 'cap_sys_admin+p' $(readlink -f /usr/bin/sunshine) && \
-    dnf5 -y --setopt=install_weak_deps=False install \
-        rocm-hip \
-        rocm-opencl \
-        rocm-clinfo \
-        rocm-smi && \
     mkdir -p /etc/xdg/autostart && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     sed -i 's/ --xdg-runtime=\\"${XDG_RUNTIME_DIR}\\"//g' /usr/bin/btrfs-assistant-launcher && \
@@ -668,6 +660,8 @@ RUN --mount=type=cache,dst=/var/cache \
         powerbuttond \
         inputplumber \
         gamescope-session-ogui-steam \
+        gamescope-session-steam \
+        gamescope-session \
         steamos-manager-powerstation \
         steamos-manager-powerstation-gamescope-session-plus \
         vpower \
@@ -803,11 +797,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     dnf5 -y remove \
-        nvidia-gpu-firmware \
-        rocm-hip \
-        rocm-opencl \
-        rocm-clinfo \
-        rocm-smi && \
+        nvidia-gpu-firmware && \
     /ctx/cleanup
 
 # Install NVIDIA driver
