@@ -661,8 +661,6 @@ RUN --mount=type=cache,dst=/var/cache \
         powerbuttond \
         inputplumber \
         gamescope-session-ogui-steam \
-        gamescope-session-steam \
-        gamescope-session \
         steamos-manager-powerstation \
         steamos-manager-powerstation-gamescope-session-plus \
         vpower \
