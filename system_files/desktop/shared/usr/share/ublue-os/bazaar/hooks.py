@@ -70,6 +70,11 @@ def spawn_ujust(id):
     args = make_shellcmd_argv(cmd)
     spawn_and_detach(args)
 
+def spawn_cmd(cmd):
+    cmd  = make_popup_terminal_shellcmd(cmd)
+    args = make_shellcmd_argv(cmd)
+    spawn_and_detach(args)
+
 # ---
 
 def handle_jetbrains():
@@ -107,12 +112,89 @@ def handle_jetbrains():
             # always prevent installation of JetBrains flatpaks
             return 'deny'
 
+def handle_vscode():
+
+    def appid_is_vscode(appid):
+        return appid.startswith('com.visualstudio.code')
+
+    match stage:
+        case 'setup':
+            if transaction_type == 'install' and appid_is_vscode(transaction_appid):
+                return 'ok'
+            else:
+                return 'pass'
+
+        case 'setup-dialog':
+            return 'ok'
+
+        case 'teardown-dialog':
+            if dialog_response_id == 'run-brew' or dialog_response_id == 'learn-dx':
+                return 'ok'
+            else:
+                return 'abort'
+
+        case 'catch':
+            return 'abort'
+
+        case 'action':
+            try:
+                if dialog_response_id == 'run-brew':
+                    spawn_cmd('/home/linuxbrew/.linuxbrew/bin/brew tap ublue-os/tap && /home/linuxbrew/.linuxbrew/bin/brew install --cask visual-studio-code-linux')
+                elif dialog_response_id == 'learn-dx':
+                    spawn_and_detach('/bin/sh -c "xdg-open https://dev.bazzite.gg/"')
+            except:
+                pass
+            return ''
+
+        case 'teardown':
+            # always prevent installation of JetBrains flatpaks
+            return 'deny'
+
+def handle_vscodium():
+
+    def appid_is_vscodium(appid):
+        return appid.startswith('com.vscodium.codium')
+
+    match stage:
+        case 'setup':
+            if transaction_type == 'install' and appid_is_vscodium(transaction_appid):
+                return 'ok'
+            else:
+                return 'pass'
+
+        case 'setup-dialog':
+            return 'ok'
+
+        case 'teardown-dialog':
+            if dialog_response_id == 'run-brew':
+                return 'ok'
+            else:
+                return 'abort'
+
+        case 'catch':
+            return 'abort'
+
+        case 'action':
+            try:
+                spawn_cmd('/home/linuxbrew/.linuxbrew/bin/brew tap ublue-os/tap && /home/linuxbrew/.linuxbrew/bin/brew install --cask vscodium-linux')
+            except:
+                pass
+            return ''
+
+        case 'teardown':
+            # always prevent installation of VSCodium
+            return 'deny'
+
 # ---
 
 response = 'pass'
 match hook_id:
     case 'jetbrains-toolbox':
         response = handle_jetbrains()
+    case 'vscode':
+        response = handle_vscode()
+    case 'vscodium':
+        response = handle_vscodium()
 
 print(response)
 sys.exit(0)
