@@ -79,21 +79,17 @@ toggle-reisub ACTION="":
     #!/usr/bin/bash
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh
-
     FILE="/etc/sysctl.d/90-sysrq.conf"
-
     CURRENT="Disabled"
     if [[ -f "$FILE" ]]; then
       CURRENT="Enabled"
     fi
-
     OPTION="{{ ACTION }}"
     if [[ -z "$OPTION" ]]; then
       echo -e "${bold}REISUB keys:${normal} $CURRENT"
       echo ""
       OPTION="$(ugum choose "Enable" "Disable" "Exit without saving")"
     fi
-
     case "$OPTION" in
       Enable|enable)
         echo "kernel.sysrq = 1" | sudo tee "$FILE" > /dev/null
