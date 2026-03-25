@@ -52,3 +52,97 @@ hooks:
             # styling
             style: suggested
     shell: exec python3 /usr/share/ublue-os/bazaar/hooks.py
+
+  - id: vscode
+    when: before-transaction
+    dialogs:
+      - id: vscode-warning
+        title: 
+          en: >-
+            Visual Studio Code is not supported in this format
+          ru: >-
+            Visual Studio Code не поддерживаются в данном формате
+
+        # If true, render inline markup commands in body; see
+        # https://docs.gtk.org/Pango/pango_markup.html
+        body-use-markup: true
+        body: 
+          en: >-
+            This is a <a href="https://www.microsoft.com/">Microsoft</a>
+            application and is not officially supported on Flatpak. Bazzite
+            recommends getting Visual Studio Code from Universal Blue's Brew
+            tap.
+
+            Alternatively, you can rebase to Bazzite DX (Developer
+            Experience) which provides Docker and Visual Studio Code out
+            of the box.
+          ru: >-
+            Это приложение <a href="https://www.microsoft.com/">Microsoft</a>
+            и оно официально не поддерживается как Flatpak. Bazzite
+            рекомендует устанавливать Visual Studio Code из Brew
+            tap репозитория Universal Blue.
+
+            Альтернативно, вы можете сменить систему на Bazzite DX
+            (Developer Experience), которая включает в себя Docker и Visual
+            Studio Code из коробки.
+        # Determines which option will be assumed if the user hits the
+        # escape key or otherwise cancels the dialog
+        default-response-id: cancel
+        options:
+          - id: cancel
+            string: 
+              en: "Cancel"
+              ru: "Отмена"
+          - id: learn-dx
+            string: 
+              en: "Learn about Bazzite DX"
+              ru: "Узнать о Bazzite DX"
+          - id: run-brew
+            string: 
+              en: "Download from Brew"
+              ru: "Скачать с Brew"
+            # can be "destructive" or "suggested" or omit for no
+            # styling
+            style: suggested
+    shell: exec python3 /usr/share/ublue-os/bazaar/hooks.py
+
+  - id: vscodium
+    when: before-transaction
+    dialogs:
+      - id: vscodium-warning
+        title:
+          en: >-
+            VSCodium is not supported in this format
+          ru: >-
+            VSCodium не поддерживаются в данном формате
+
+        # If true, render inline markup commands in body; see
+        # https://docs.gtk.org/Pango/pango_markup.html
+        body-use-markup: true
+        body:
+          en: >-
+            Although VSCodium is verified on Flathub, this is a repackaged
+            <a href="https://www.microsoft.com/">Microsoft</a> application and
+            is not officially supported on Flatpak. Bazzite recommends getting
+            VSCodium from Universal Blue's Brew tap.
+          ru: >-
+            Хотя VSCodium был подтверждён в Flathub, это перепакованное
+            приложение <a href="https://www.microsoft.com/">Microsoft</a> и оно
+            официально не поддерживается как Flatpak. Bazzite рекомендует
+            устанавливать VSCodium из Brew tap репозитория Universal Blue.
+        # Determines which option will be assumed if the user hits the
+        # escape key or otherwise cancels the dialog
+        default-response-id: cancel
+        options:
+          - id: cancel
+            string: 
+              en: "Cancel"
+              ru: "Отмена"
+          - id: run-brew
+            string: 
+              en: "Download from Brew"
+              ru: "Скачать с Brew"
+            # can be "destructive" or "suggested" or omit for no
+            # styling
+            style: suggested
+    shell: exec python3 /usr/share/ublue-os/bazaar/hooks.py
