@@ -164,6 +164,40 @@ nvidia_hardware_helper() {
         done
     fi
 }
+
+efi="c12a7328-f81f-11d2-ba4b-00a0c93ec93b"
+declare -A mount
+while read -r device path; do
+    mount["$device"]="-o bind,ro $path"
+done < <(lsblk -o PATH,MOUNTPOINTS -nQ 'PARTTYPE=="'$efi'" && MOUNTPOINTS' 2> /dev/null || true)
+
+for device in $(lsblk -o PATH -nQ 'PARTTYPE=="'$efi'" && !MOUNTPOINTS' 2> /dev/null || true); do
+    mount["$device"]="-o ro -t vfat $device"
+done
+
+export mnt=$(mktemp -d)
+trap "rmdir '$mnt'" EXIT
+
+for device in "${!mount[@]}"; do
+    export device
+    msg=$(sudo -E unshare -m sh -c '
+        mount '"${mount[$device]} '$mnt'"' 2> /dev/null || exit 0
+        shopt -s nullglob nocaseglob
+        for dir in "$mnt"/EFI/*; do
+            [ -d "$dir" ] || continue
+            base=$(basename "$dir" | tr "[:upper:]" "[:lower:]")
+            [[ "$base" == "fedora" || "$base" == "boot" ]] && continue
+            grub=("$dir"/grub*.efi)
+            (( ! ${#grub[@]} )) && continue
+            echo "The GRUB bootloader seems to be installed on $device at ${dir#$mnt}\nBazzite does not support dual boot with any other Linux installation.\nInstalls to this disk that attempt to reuse this EFI partition will fail.\nEither Bazzite must be installed to a different disk, or this partition or boot loader must be removed.\n\nSee the <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#error-code-1\">documentation</a> for details\n"
+        done
+    ' || true)
+    [ "$msg" ] || continue
+    serve_docs
+    yad --image=dialog-warning --button=OK --buttons-layout=center --title="GRUB already present" --text="$msg"
+done
+
+
 nvidia_hardware_helper
 result=$?
 if [ $result -eq 0 ] || [ $result -eq 1 ] || [ $result -eq 124 ]; then
