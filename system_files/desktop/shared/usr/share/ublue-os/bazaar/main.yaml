@@ -73,6 +73,8 @@ hooks:
             Visual Studio Code не поддерживаются в данном формате
           fr: >-
             Visual Studio Code n'est pas pris en charge dans ce format
+          el: >-
+            Το Visual Studio Code δεν υποστηρίζεται σε αυτή τη μορφή
 
         # If true, render inline markup commands in body; see
         # https://docs.gtk.org/Pango/pango_markup.html
@@ -105,6 +107,15 @@ hooks:
             Vous pouvez également choisir de rebaser votre système vers Bazzite DX
             (version de Bazzite pour les devéloppeurs) qui intègre Docker et
             Visual Studio Code par défaut.
+          el: >-
+            Αυτή είναι μια εφαρμογή <a href="https://www.microsoft.com/">Microsoft</a>
+            και δεν υποστηρίζεται επίσημα σε Flatpak. Το Bazzite
+            συνιστά τη λήψη του Visual Studio Code από το Brew tap
+            αποθετήριο της Universal Blue.
+
+            Εναλλακτικά, μπορείτε να κάνετε rebase σε Bazzite DX (Developer
+            Experience), που παρέχει Docker και Visual Studio Code έτοιμα
+            για χρήση.
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
         default-response-id: cancel
@@ -114,16 +125,19 @@ hooks:
               en: "Cancel"
               ru: "Отмена"
               fr: "Annuler"
+              el: "Ακύρωση"
           - id: learn-dx
             string:
               en: "Learn about Bazzite DX"
               ru: "Узнать о Bazzite DX"
               fr: "En savoir plus sur Bazzite DX"
+              el: "Μάθετε για το Bazzite DX"
           - id: run-brew
             string:
               en: "Download from Brew"
               ru: "Скачать с Brew"
               fr: "Téléchargez depuis Brew"
+              el: "Λήψη από Brew"
             # can be "destructive" or "suggested" or omit for no
             # styling
             style: suggested
@@ -140,6 +154,10 @@ hooks:
             VSCodium не поддерживаются в данном формате
           fr: >-
             VSCodium n'est pas pris en charge dans ce format
+          el: >-
+            Το VSCodium δεν υποστηρίζεται σε αυτή τη μορφή
+
+
         # If true, render inline markup commands in body; see
         # https://docs.gtk.org/Pango/pango_markup.html
         body-use-markup: true
@@ -160,7 +178,10 @@ hooks:
             <a href="https://www.microsoft.com/fr-fr">Microsoft</a> qui n'est pas
             pris en charge officiellement en Flatpak. Bazzite recommande
             l'installation de VSCodium depuis le tap Brew d'Universal Blue.
-
+          el: >-
+            Αν και το VSCodium έχει επαληθευτεί στο Flathub, αυτή είναι μια επανασυσκευασμένη εφαρμογή
+            <a href="https://www.microsoft.com/">Microsoft</a> και δεν υποστηρίζεται επίσημα σε Flatpak.
+            Το Bazzite συνιστά τη λήψη του VSCodium από το Brew tap της Universal Blue.
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
         default-response-id: cancel
@@ -170,11 +191,13 @@ hooks:
               en: "Cancel"
               ru: "Отмена"
               fr: "Annuler"
+              el: "Ακύρωση"
           - id: run-brew
             string:
               en: "Download from Brew"
               ru: "Скачать с Brew"
               fr: "Téléchargez depuis Brew"
+              el: "Λήψη από Brew"
             # can be "destructive" or "suggested" or omit for no
             # styling
             style: suggested
