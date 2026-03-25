@@ -1,4 +1,4 @@
-# See https://github.com/kolunmi/bazaar/blob/main/docs/overview.md#hooks
+# See https://github.com/bazaar-org/bazaar/blob/main/docs/overview.md#hooks
 
 import os, subprocess, sys
 
@@ -52,6 +52,19 @@ stage_idx = os.getenv('BAZAAR_HOOK_STAGE_IDX')
 #
 # UTIL
 #
+
+temp_file = "/tmp/bazaar-hook-choice"
+
+def pick_action(action):
+    file = open(temp_file, "w")
+    file.write(action)
+    file.close()
+
+def find_action():
+    file = open(temp_file)
+    output = file.read()
+    file.close()
+    return output
 
 def spawn_and_detach(args):
     subprocess.Popen(args, start_new_session=True, stdout=subprocess.DEVNULL)
@@ -129,6 +142,7 @@ def handle_vscode():
 
         case 'teardown-dialog':
             if dialog_response_id == 'run-brew' or dialog_response_id == 'learn-dx':
+                pick_action(dialog_response_id)
                 return 'ok'
             else:
                 return 'abort'
@@ -138,10 +152,11 @@ def handle_vscode():
 
         case 'action':
             try:
-                if dialog_response_id == 'run-brew':
+                action = find_action()
+                if action == 'run-brew':
                     spawn_cmd('/home/linuxbrew/.linuxbrew/bin/brew tap ublue-os/tap && /home/linuxbrew/.linuxbrew/bin/brew install --cask visual-studio-code-linux')
-                elif dialog_response_id == 'learn-dx':
-                    spawn_and_detach('/bin/sh -c "xdg-open https://dev.bazzite.gg/"')
+                elif action == 'learn-dx':
+                    spawn_and_detach(['xdg-open', 'https://dev.bazzite.gg/'])
             except:
                 pass
             return ''
