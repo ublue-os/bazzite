@@ -73,7 +73,7 @@ case "$session" in
     create_sentinel=1
   ;;
   gamescope)
-    session_launcher="gamescope-session.desktop"
+    session_launcher="gamescope-session-steam-plus.desktop"
     create_sentinel=1
   ;;
   *)
