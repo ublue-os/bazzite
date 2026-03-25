@@ -162,7 +162,7 @@ def handle_vscode():
             return ''
 
         case 'teardown':
-            # always prevent installation of JetBrains flatpaks
+            # always prevent installation of VSCode flatpak
             return 'deny'
 
 def handle_vscodium():
@@ -197,7 +197,7 @@ def handle_vscodium():
             return ''
 
         case 'teardown':
-            # always prevent installation of VSCodium
+            # always prevent installation of VSCodium flatpak
             return 'deny'
 
 # ---
