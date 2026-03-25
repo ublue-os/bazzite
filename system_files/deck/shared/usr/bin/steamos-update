@@ -21,7 +21,7 @@ _upgrade() {
     local last_pct=-1
 
     runcon system_u:unconfined_r:unconfined_t:s0 \
-        /usr/bin/uupd --hw-check=false --json --log-level debug 2>&1 | \
+        /usr/bin/uupd --hw-check=false --disable-module-brew --disable-module-distrobox --disable-module-flatpak --json --log-level debug 2>&1 | \
         while IFS= read -r line; do
             echo "$line" >> "${HOME}"/.steamos-update.log
 
