@@ -98,7 +98,7 @@ hooks:
             Studio Code из коробки.
           fr: >-
             C'est une application <a href="https://www.microsoft.com/fr-fr">Microsoft</a>
-            et n'est pas pris en charge officiellement en Flatpak. Bazzite
+            qui n'est pas prise en charge officiellement en Flatpak. Bazzite
             recommande l'installation de Visual Studio Code depuis le tap Brew
             d'Universal Blue.
 
@@ -123,7 +123,7 @@ hooks:
             string:
               en: "Download from Brew"
               ru: "Скачать с Brew"
-              fr: "Installer avec Brew"
+              fr: "Téléchargez depuis Brew"
             # can be "destructive" or "suggested" or omit for no
             # styling
             style: suggested
@@ -156,11 +156,11 @@ hooks:
             устанавливать VSCodium из Brew tap репозитория Universal Blue.
           fr: >-
             Même si VSCodium est vérifiée sur Flathub, c'est une version
-            réempaquetée d'une application
-            <a href="https://www.microsoft.com/fr-fr">Microsoft</a> et n'est pas
-            pris en charge officiellement en Flatpak.
-            Bazzite recommande l'installation de Visual Studio Code
-            depuis le tap Brew d'Universal Blue.
+            rempaquetée d'une application
+            <a href="https://www.microsoft.com/fr-fr">Microsoft</a> qui n'est pas
+            pris en charge officiellement en Flatpak. Bazzite recommande
+            l'installation de VSCodium depuis le tap Brew d'Universal Blue.
+
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
         default-response-id: cancel
@@ -174,7 +174,7 @@ hooks:
             string:
               en: "Download from Brew"
               ru: "Скачать с Brew"
-              fr: "Installer avec Brew"
+              fr: "Téléchargez depuis Brew"
             # can be "destructive" or "suggested" or omit for no
             # styling
             style: suggested

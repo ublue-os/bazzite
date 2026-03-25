@@ -132,7 +132,7 @@ rows:
           en: "Sprunk'd it."
           el: "Το'λουσα."
           ru: "Ещё катку?"
-          fr: "-"
+          fr: "Et c'est le train de la Hype!"
         banner: file:///usr/share/ublue-os/bazaar/streaming.png
         banner-fit: contain
         banner-height: 300
@@ -172,7 +172,7 @@ rows:
           en: "Let me break it down for you."
           el: "Για να μπούμε στο ρυθμό."
           ru: "Войдём в ритм."
-          fr: "-"
+          fr: "Entrez dans le rythme."
         banner: file:///usr/share/ublue-os/bazaar/music.png
         banner-fit: contain
         banner-height: 300
@@ -210,7 +210,7 @@ rows:
           en: "May the paperclip fellow have mercy."
           el: "Για να μη γίνουν όλα φύλλο και φτερό."
           ru: "Чтобы всё не превратилось в прах."
-          fr: "-"
+          fr: "Que le trombone ait pitié de vous"
         banner: file:///usr/share/ublue-os/bazaar/office.png
         banner-fit: contain
         banner-height: 300
