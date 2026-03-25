@@ -4,7 +4,7 @@
 %global build_timestamp %(date +"%Y%m%d")
 
 Name:           gamescope
-Version:        ba147
+Version:        ba148
 Release:        1.bazzite
 Summary:        Micro-compositor for video games on Wayland
 

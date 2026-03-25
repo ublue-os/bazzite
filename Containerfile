@@ -300,6 +300,7 @@ RUN --mount=type=cache,dst=/var/cache \
         gmodpatchtool \
         bazzite-portal \
         ls-iommu && \
+    ln -s /dev/null /etc/NetworkManager/dispatcher.d/04-iscsi && \
     systemctl mask iscsi && \
     systemctl mask wpa_supplicant.service && \
     systemctl mask systemd-remount-fs.service && \
