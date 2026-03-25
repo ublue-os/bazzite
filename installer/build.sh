@@ -21,8 +21,19 @@ mount -o remount,rw /proc/sys
 curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo
 xargs -r flatpak install -y --noninteractive <"/src/$FLATPAK_DIR_SHORTNAME/flatpaks"
 
-# Make a copy of the original flatpak files in order to avoid being altered by users on the live session
-cp -aT /var/lib/flatpak{,_original}
+# Mount an overlayfs in in order to avoid flatpak files being altered by users on the live session
+mv -T /var/lib/flatpak{,_original}
+mkdir -p /var/lib/flatpak{,.work}
+cat <<EOF >/etc/systemd/system/var-lib-flatpak.mount
+[Mount]
+Type=overlay
+What=overlay
+Options=lowerdir=/var/lib/flatpak_original,upperdir=/var/lib/flatpak,workdir=/var/lib/flatpak.work
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable var-lib-flatpak.mount
 
 # Pull the container image to be installed
 if mountpoint -q /usr/lib/containers/storage; then
