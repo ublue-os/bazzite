@@ -97,13 +97,13 @@ toggle-reisub ACTION="":
     case "$OPTION" in
       Enable|enable)
         echo "kernel.sysrq = 1" | sudo tee "$FILE" > /dev/null
+        sudo systemctl restart systemd-sysctl.service
         echo -e "${bold}${green}Enabled${normal}: kernel.sysrq=1"
-        echo "Reboot your system for the change to take effect."
         ;;
       Disable|disable)
         sudo rm -f "$FILE"
+        sudo systemctl restart systemd-sysctl.service
         echo -e "${red}${bold}Disabled${normal}: kernel.sysrq=1 removed"
-        echo "Reboot your system for the change to take effect."
         ;;
       *)
         echo "${blue}No changes made.${normal}"
