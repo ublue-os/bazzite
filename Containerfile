@@ -93,7 +93,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/packages \
         ublue-os/obs-vkcapture \
         ycollet/audinux \
-        lizardbyte/beta \
         che/nerd-fonts; \
     do \
         echo "Enabling copr: $copr"; \
@@ -234,7 +233,6 @@ RUN --mount=type=cache,dst=/var/cache \
         lato-fonts \
         fira-code-fonts \
         nerd-fonts \
-        Sunshine \
         python3-pip \
         libadwaita \
         bees \
@@ -307,7 +305,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl disable iwd.service && \
     chmod +x /usr/bin/framework_tool && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
-    setcap 'cap_sys_admin+p' $(readlink -f /usr/bin/sunshine) && \
     mkdir -p /etc/xdg/autostart && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     sed -i 's/ --xdg-runtime=\\"${XDG_RUNTIME_DIR}\\"//g' /usr/bin/btrfs-assistant-launcher && \
@@ -495,7 +492,6 @@ RUN --mount=type=cache,dst=/var/cache \
     echo "import \"/usr/share/ublue-os/just/81-bazzite-fixes.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/82-bazzite-apps.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/82-bazzite-beesd.just\"" >> /usr/share/ublue-os/justfile && \
-    echo "import \"/usr/share/ublue-os/just/82-bazzite-sunshine.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/82-bazzite-waydroid.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/83-bazzite-audio.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/85-bazzite-image.just\"" >> /usr/share/ublue-os/justfile && \
@@ -543,7 +539,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/packages \
         ublue-os/obs-vkcapture \
         ycollet/audinux \
-        lizardbyte/beta \
         che/nerd-fonts; \
     do \
         dnf5 -y copr disable $copr; \
