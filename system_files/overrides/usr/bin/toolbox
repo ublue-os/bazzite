@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+
+echo -e "ERROR: Bazzite preinstalls and utilizes Distrobox instead of Toolbx utility. \e]8;;https://docs.bazzite.gg/Installing_and_Managing_Software/Distrobox/\aRead our documentation\e]8;;\a to understand how it works.\n\e]8;;https://docs.bazzite.gg/Installing_and_Managing_Software/Distrobox/\ahttps://docs.bazzite.gg/Installing_and_Managing_Software/Distrobox/\e]8;;\a" >&2
+exit 1
