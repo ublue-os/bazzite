@@ -92,6 +92,7 @@ RUN --mount=type=cache,dst=/var/cache \
     done && unset -v copr && \
     dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release{,-extras,-mesa} && \
     dnf5 -y config-manager addrepo --overwrite --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
+    dnf5 -y config-manager addrepo --from-repofile=https://openrazer.github.io/hardware:razer.repo && \
     dnf5 -y install \
         https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
         https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
@@ -333,7 +334,8 @@ RUN --mount=type=cache,dst=/var/cache \
         cage \
         wlr-randr \
         bazzite-portal \
-        ls-iommu && \
+        ls-iommu \
+        openrazer-daemon && \
     systemctl mask iscsi && \
     systemctl mask wpa_supplicant.service && \
     systemctl disable iwd.service && \

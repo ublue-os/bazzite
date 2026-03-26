@@ -1,0 +1,12 @@
+[Unit]
+Description=Add plugdev groups
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/bazzite-groups.sh
+Restart=on-failure
+RestartSec=30
+StartLimitInterval=0
+
+[Install]
+WantedBy=default.target
