@@ -129,7 +129,7 @@ def handle_jetbrains():
 def handle_vscode():
 
     def appid_is_vscode(appid):
-        return appid == 'com.visualstudio.code'
+        return appid.startswith('com.visualstudio.code')
 
     match stage:
         case 'setup':
