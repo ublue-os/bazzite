@@ -70,7 +70,7 @@ hooks:
           en: >-
             Visual Studio Code is not supported in this format
           ru: >-
-            Visual Studio Code не поддерживаются в данном формате
+            Visual Studio Code не поддерживается в данном формате
           fr: >-
             Visual Studio Code n'est pas pris en charge dans ce format
           el: >-
@@ -116,6 +116,7 @@ hooks:
             Εναλλακτικά, μπορείτε να κάνετε rebase σε Bazzite DX (Developer
             Experience), που παρέχει Docker και Visual Studio Code έτοιμα
             για χρήση.
+
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
         default-response-id: cancel
@@ -151,12 +152,11 @@ hooks:
           en: >-
             VSCodium is not supported in this format
           ru: >-
-            VSCodium не поддерживаются в данном формате
+            VSCodium не поддерживается в данном формате
           fr: >-
             VSCodium n'est pas pris en charge dans ce format
           el: >-
             Το VSCodium δεν υποστηρίζεται σε αυτή τη μορφή
-
 
         # If true, render inline markup commands in body; see
         # https://docs.gtk.org/Pango/pango_markup.html
@@ -182,6 +182,7 @@ hooks:
             Αν και το VSCodium έχει επαληθευτεί στο Flathub, αυτή είναι μια επανασυσκευασμένη εφαρμογή
             <a href="https://www.microsoft.com/">Microsoft</a> και δεν υποστηρίζεται επίσημα σε Flatpak.
             Το Bazzite συνιστά τη λήψη του VSCodium από το Brew tap της Universal Blue.
+
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
         default-response-id: cancel
