@@ -93,7 +93,8 @@ def spawn_cmd(cmd):
 def handle_jetbrains():
 
     def appid_is_jetbrains(appid):
-        return appid.startswith('com.jetbrains.')
+        if appid.startswith('com.jetbrains.') or appid == 'com.google.AndroidStudio':
+            return True
 
     match stage:
         case 'setup':
@@ -128,7 +129,7 @@ def handle_jetbrains():
 def handle_vscode():
 
     def appid_is_vscode(appid):
-        return appid.startswith('com.visualstudio.code')
+        return appid == 'com.visualstudio.code'
 
     match stage:
         case 'setup':
