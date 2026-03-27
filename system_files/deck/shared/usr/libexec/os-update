@@ -13,31 +13,39 @@
 
 _upgrade() {
     # Log rotate the last session
-    if [ -f "${HOME}"/.steamos-update.log ]; then
-        cp "${HOME}"/.steamos-update.log "${HOME}"/.steamos-update.log.old
+    if [ -f "${HOME}/.steamos-update.log" ]; then
+        cp "${HOME}/.steamos-update.log" "${HOME}/.steamos-update.log.old"
     fi
-    > "${HOME}"/.steamos-update.log
+    : > "${HOME}/.steamos-update.log"
 
     local last_pct=-1
+    local uupd_status
 
-    runcon system_u:unconfined_r:unconfined_t:s0 \
-        /usr/bin/uupd --hw-check=false --disable-module-brew --disable-module-distrobox --disable-module-flatpak --json --log-level debug 2>&1 | \
-        while IFS= read -r line; do
-            echo "$line" >> "${HOME}"/.steamos-update.log
+    # Run uupd and capture its exit code
+    {
+        runcon system_u:unconfined_r:unconfined_t:s0 \
+            /usr/bin/uupd --hw-check=false --disable-module-brew --disable-module-distrobox \
+            --disable-module-flatpak --json --log-level debug 2>&1
+        echo $? > /tmp/uupd_exit_code
+    } | while IFS= read -r line; do
+        echo "$line" >> "${HOME}/.steamos-update.log"
 
-            # Extract progress
-            pct=$(echo "$line" | jq -r 'select(.msg == "Updating") | .overall // empty' 2>/dev/null) || continue
-            if [[ -n "$pct" ]]; then
-                pct=${pct%.*}  # Truncate to integer
-                if [[ "$pct" -ne "$last_pct" ]]; then
-                    echo "${pct}%"
-                    last_pct=$pct
-                fi
+        pct=$(echo "$line" | jq -r 'select(.msg == "Updating") | .overall // empty' 2>/dev/null)
+        if [[ -n "$pct" ]]; then
+            pct=${pct%.*}
+            if [[ "$pct" -ne "$last_pct" ]]; then
+                echo "${pct}%"
+                last_pct=$pct
             fi
-        done
+        fi
+    done
 
-    return "${PIPESTATUS[0]}"
+    uupd_status=$(cat /tmp/uupd_exit_code)
+    rm -f /tmp/uupd_exit_code
+
+    return "$uupd_status"
 }
+
 
 # The first time the steam client starts in deck mode, it will attempt to fetch an update.
 # We must exit the first time, otherwise you have users stuck when booting up the first time.
