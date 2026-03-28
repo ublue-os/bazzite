@@ -170,6 +170,58 @@ if systemctl list-unit-files | grep -q power-profiles-daemon.service; then
     systemctl enable power-profiles-daemon || true
 fi
 
+# ujust system -- the ublue-os-just package is not available on aarch64,
+# so we create the ujust wrapper, helper library, and root justfile here.
+mkdir -p /usr/lib/ujust
+cat > /usr/lib/ujust/ujust.sh << 'UJUST_LIB_EOF'
+#!/usr/bin/bash
+BOLD='\033[1m'
+NORMAL='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+YELLOW='\033[0;33m'
+
+ugum() { /usr/bin/gum "$@"; }
+
+Chooser() {
+    ugum choose "$@"
+}
+
+Choose() {
+    Chooser "$@" --header "$1"
+}
+
+OPTION=""
+UJUST_LIB_EOF
+chmod +x /usr/lib/ujust/ujust.sh
+
+cat > /usr/bin/ujust << 'UJUST_BIN_EOF'
+#!/usr/bin/bash
+JUST_DIR="/usr/share/ublue-os"
+if [ $# -eq 0 ]; then
+    just --unstable --justfile "$JUST_DIR/justfile" --list --list-heading $'Available commands:\n'
+else
+    just --unstable --justfile "$JUST_DIR/justfile" "$@"
+fi
+UJUST_BIN_EOF
+chmod +x /usr/bin/ujust
+
+# Generate the root justfile that imports all .just modules
+JUSTFILE="/usr/share/ublue-os/justfile"
+cat > "$JUSTFILE" << 'JUSTFILE_HEADER'
+set shell := ["/usr/bin/bash", "-euo", "pipefail", "-c"]
+
+default:
+    @just --unstable --list --list-heading $'Available commands:\n'
+JUSTFILE_HEADER
+
+for f in /usr/share/ublue-os/just/*.just; do
+    name=$(basename "$f")
+    echo "import \"/usr/share/ublue-os/just/$name\"" >> "$JUSTFILE"
+done
+
 # winetricks (arch-independent shell script)
 curl -sL "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" -o /usr/bin/winetricks && \
     chmod +x /usr/bin/winetricks || true
