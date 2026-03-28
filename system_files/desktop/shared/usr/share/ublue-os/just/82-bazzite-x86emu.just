@@ -10,133 +10,69 @@ check-x86-emulation:
     fi
     /usr/lib/bazzite/scripts/check-x86-emulation.sh
 
-# Install or update FEX-Emu for x86/x86_64 emulation
+# Update all x86 emulation packages to latest versions
 [group("arm")]
-setup-fex-emu:
+update-x86-emulation:
     #!/usr/bin/bash
     set -eo pipefail
     if [[ "$(uname -m)" != "aarch64" ]]; then
-        echo "FEX-Emu is only needed on aarch64 (ARM64) systems."
-        exit 1
-    fi
-
-    if command -v FEXInterpreter &>/dev/null; then
-        echo "FEX-Emu is already installed."
-        FEXInterpreter --version 2>&1 || true
-        echo ""
-        echo "To update, run: sudo dnf5 update fex-emu"
+        echo "This command is only relevant on aarch64 (ARM64) systems."
         exit 0
     fi
-
-    echo "Installing FEX-Emu for x86/x86_64 emulation..."
-    sudo dnf5 -y copr enable fex-emu/fex
-    sudo dnf5 -y install fex-emu
+    echo "Updating x86 emulation packages..."
+    sudo dnf5 -y update --skip-unavailable \
+        fex-emu \
+        fex-emu-rootfs-fedora \
+        mesa-fex-emu-overlay-i386 \
+        mesa-fex-emu-overlay-x86_64 \
+        box64 \
+        muvm \
+        libkrun \
+        libkrunfw \
+        steam
     echo ""
-    echo "FEX-Emu installed. x86/x86_64 binaries can now be run transparently."
-
-# Install or update Box64 for x86_64 emulation
-[group("arm")]
-setup-box64:
-    #!/usr/bin/bash
-    set -eo pipefail
-    if [[ "$(uname -m)" != "aarch64" ]]; then
-        echo "Box64 is only needed on aarch64 (ARM64) systems."
-        exit 1
-    fi
-
-    if command -v box64 &>/dev/null; then
-        echo "Box64 is already installed."
-        box64 --version 2>&1 || true
-        echo ""
-        echo "To update, run: sudo dnf5 update box64"
-        exit 0
-    fi
-
-    echo "Installing Box64 for x86_64 emulation..."
-    sudo dnf5 -y copr enable ptitSeb/box64
-    sudo dnf5 -y install box64
-    echo ""
-    echo "Box64 installed."
-
-# Install or update Box86 for 32-bit x86 emulation
-[group("arm")]
-setup-box86:
-    #!/usr/bin/bash
-    set -eo pipefail
-    if [[ "$(uname -m)" != "aarch64" ]]; then
-        echo "Box86 is only needed on aarch64 (ARM64) systems."
-        exit 1
-    fi
-
-    if command -v box86 &>/dev/null; then
-        echo "Box86 is already installed."
-        box86 --version 2>&1 || true
-        echo ""
-        echo "To update, run: sudo dnf5 update box86"
-        exit 0
-    fi
-
-    echo "Installing Box86 for 32-bit x86 emulation..."
-    sudo dnf5 -y copr enable ptitSeb/box86
-    sudo dnf5 -y install box86
-    echo ""
-    echo "Box86 installed."
-
-# Install all x86 emulation layers (FEX-Emu + Box64 + Box86)
-[group("arm")]
-setup-x86-emulation:
-    #!/usr/bin/bash
-    set -eo pipefail
-    if [[ "$(uname -m)" != "aarch64" ]]; then
-        echo "x86 emulation setup is only needed on aarch64 (ARM64) systems."
-        exit 1
-    fi
-
-    echo "=== Setting up x86/x86_64 emulation ==="
-    echo ""
-
-    echo "--- Installing FEX-Emu ---"
-    if ! command -v FEXInterpreter &>/dev/null; then
-        sudo dnf5 -y copr enable fex-emu/fex 2>/dev/null || true
-        sudo dnf5 -y install --skip-broken --skip-unavailable fex-emu
-    else
-        echo "Already installed."
-    fi
-
-    echo ""
-    echo "--- Installing Box64 ---"
-    if ! command -v box64 &>/dev/null; then
-        sudo dnf5 -y copr enable ptitSeb/box64 2>/dev/null || true
-        sudo dnf5 -y install --skip-broken --skip-unavailable box64
-    else
-        echo "Already installed."
-    fi
-
-    echo ""
-    echo "--- Installing Box86 ---"
-    if ! command -v box86 &>/dev/null; then
-        sudo dnf5 -y copr enable ptitSeb/box86 2>/dev/null || true
-        sudo dnf5 -y install --skip-broken --skip-unavailable box86
-    else
-        echo "Already installed."
-    fi
-
-    echo ""
-    echo "=== Setup complete ==="
+    echo "Update complete."
     /usr/lib/bazzite/scripts/check-x86-emulation.sh
 
-# Install Steam on ARM64 via Flatpak (experimental, requires x86 emulation)
+# Launch Steam through FEX-Emu emulation layer
+[group("arm")]
+run-steam:
+    #!/usr/bin/bash
+    if [[ "$(uname -m)" != "aarch64" ]]; then
+        echo "On x86_64 systems, launch Steam normally from your application menu."
+        exit 0
+    fi
+    if command -v steam &>/dev/null; then
+        steam
+    elif rpm -q steam &>/dev/null; then
+        /usr/bin/steam
+    else
+        echo "Steam is not installed."
+        echo "Run: ujust install-steam-arm"
+        exit 1
+    fi
+
+# Install Steam if it was not included in the image
 [group("arm")]
 install-steam-arm:
     #!/usr/bin/bash
     set -eo pipefail
     if [[ "$(uname -m)" != "aarch64" ]]; then
-        echo "This recipe is for ARM64 systems. On x86_64, Steam is installed natively."
+        echo "On x86_64, use the standard Steam installation."
         exit 1
     fi
-    /usr/lib/bazzite/scripts/setup-steam-arm.sh
 
-# Test x86 emulation by running a simple binary
+    if rpm -q steam &>/dev/null; then
+        echo "Steam is already installed via RPM (Asahi package)."
+        exit 0
+    fi
+
+    echo "Installing Steam from Asahi COPR..."
+    sudo dnf5 -y install steam
+    echo ""
+    echo "Steam installed. Launch from your application menu or run: ujust run-steam"
+
+# Test x86 emulation by verifying the installed components
 [group("arm")]
 test-x86-emulation:
     #!/usr/bin/bash
@@ -145,38 +81,76 @@ test-x86-emulation:
         exit 0
     fi
 
-    echo "=== Testing x86_64 emulation ==="
+    PASS=0
+    FAIL=0
+
+    echo "=== x86/x86_64 Emulation Test ==="
     echo ""
 
+    # Test FEX-Emu
     if command -v FEXInterpreter &>/dev/null; then
-        echo "FEX-Emu: available"
-    elif command -v box64 &>/dev/null; then
-        echo "Box64: available"
-    elif command -v qemu-x86_64-static &>/dev/null; then
-        echo "qemu-user-static: available (fallback)"
+        echo "[PASS] FEX-Emu is installed"
+        PASS=$((PASS + 1))
     else
-        echo "No x86_64 emulator found. Run: ujust setup-x86-emulation"
-        exit 1
+        echo "[FAIL] FEX-Emu is not installed"
+        FAIL=$((FAIL + 1))
     fi
 
-    if [[ -d /proc/sys/fs/binfmt_misc ]]; then
-        X86_REGISTERED=false
-        for f in /proc/sys/fs/binfmt_misc/*; do
-            name=$(basename "$f")
-            if echo "$name" | grep -qiE "x86_64|fex"; then
-                if head -1 "$f" | grep -q "enabled"; then
-                    X86_REGISTERED=true
-                    echo "binfmt handler '$name' is enabled"
-                fi
-            fi
-        done
-        if ! $X86_REGISTERED; then
-            echo "No active x86_64 binfmt handler found."
-            echo "x86 binaries may need to be invoked explicitly through the emulator."
-        fi
+    # Test FEX rootfs
+    if [[ -d /usr/share/fex-emu/RootFS ]] || [[ -d /usr/share/fex-emu-rootfs ]]; then
+        echo "[PASS] FEX-Emu x86_64 RootFS is present"
+        PASS=$((PASS + 1))
     else
-        echo "binfmt_misc not mounted; transparent execution not available."
+        echo "[FAIL] FEX-Emu x86_64 RootFS is missing"
+        FAIL=$((FAIL + 1))
+    fi
+
+    # Test Mesa overlay
+    if ls /usr/lib/fex-emu-overlay* &>/dev/null 2>&1; then
+        echo "[PASS] Mesa FEX overlay is present (GPU acceleration)"
+        PASS=$((PASS + 1))
+    else
+        echo "[WARN] Mesa FEX overlay not found (GPU acceleration may be limited)"
+    fi
+
+    # Test Box64
+    if command -v box64 &>/dev/null; then
+        echo "[PASS] Box64 is installed"
+        PASS=$((PASS + 1))
+    else
+        echo "[FAIL] Box64 is not installed"
+        FAIL=$((FAIL + 1))
+    fi
+
+    # Test muvm
+    if command -v muvm &>/dev/null; then
+        echo "[PASS] muvm (microVM) is installed"
+        PASS=$((PASS + 1))
+    else
+        echo "[WARN] muvm not installed (some GPU workloads may be slower)"
+    fi
+
+    # Test binfmt
+    if [[ -d /proc/sys/fs/binfmt_misc ]]; then
+        echo "[PASS] binfmt_misc is mounted"
+        PASS=$((PASS + 1))
+    else
+        echo "[WARN] binfmt_misc not mounted (transparent execution unavailable)"
+    fi
+
+    # Test Steam
+    if rpm -q steam &>/dev/null; then
+        echo "[PASS] Steam is installed"
+        PASS=$((PASS + 1))
+    else
+        echo "[FAIL] Steam is not installed"
+        FAIL=$((FAIL + 1))
     fi
 
     echo ""
-    echo "Emulation layer is configured. x86_64 binaries should be runnable."
+    echo "Results: $PASS passed, $FAIL failed"
+    if [[ $FAIL -eq 0 ]]; then
+        echo "All critical components are installed. Ready for gaming!"
+    else
+        echo "Some components are missing. Run: ujust update-x86-emulation"
+    fi

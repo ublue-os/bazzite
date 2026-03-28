@@ -115,8 +115,7 @@ dnf5 -y install --skip-broken --skip-unavailable \
     waydroid \
     cage \
     wlr-randr \
-    cabextract \
-    qemu-user-static
+    cabextract
 
 # DE-specific packages
 if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
