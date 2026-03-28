@@ -57,6 +57,7 @@ dnf5 -y install --skip-broken --skip-unavailable \
     udica \
     ladspa-caps-plugins \
     ladspa-noise-suppression-for-voice \
+    pipewire-module-filter-chain-sofa \
     python3-icoextract \
     tailscale \
     webapp-manager \
@@ -88,6 +89,10 @@ dnf5 -y install --skip-broken --skip-unavailable \
     podman \
     just \
     jq \
+    bees \
+    usbip \
+    stress-ng \
+    gobject-introspection \
     cockpit-networkmanager \
     cockpit-podman \
     cockpit-selinux \
@@ -162,6 +167,18 @@ dnf5 -y install --skip-broken --skip-unavailable \
 systemctl enable podman.socket || true
 systemctl enable tailscaled.service || true
 systemctl enable speakersafetyd.service || true
+systemctl enable input-remapper.service || true
+systemctl enable greenboot-healthcheck.service || true
+systemctl enable greenboot-set-rollback-trigger.service || true
+systemctl enable bazzite-flatpak-manager.service || true
+systemctl enable bazzite-hardware-setup.service || true
+systemctl enable --global bazzite-user-setup.service || true
+systemctl enable --global bazzite-dynamic-fixes.service || true
+systemctl enable --global ntfs-nag.service || true
+systemctl enable --global systemd-tmpfiles-setup.service || true
+systemctl disable waydroid-container.service || true
+systemctl disable rpm-ostreed-automatic.timer || true
+systemctl disable force-wol.service || true
 systemctl mask iscsi || true
 systemctl mask wpa_supplicant.service || true
 systemctl disable iwd.service || true
@@ -169,6 +186,46 @@ systemctl disable iwd.service || true
 if systemctl list-unit-files | grep -q power-profiles-daemon.service; then
     systemctl enable power-profiles-daemon || true
 fi
+
+# Bluetooth: enable userspace HID for Apple keyboards/trackpads
+sed -i 's/#UserspaceHID=true/UserspaceHID=true/' /etc/bluetooth/input.conf || true
+
+# PulseAudio shim -- some apps hardcode a check for pulseaudio binary
+ln -sf /usr/bin/true /usr/bin/pulseaudio || true
+
+# Flathub remote -- ensure it's configured system-wide
+mkdir -p /etc/flatpak/remotes.d
+cat > /etc/flatpak/remotes.d/flathub.flatpakrepo << 'FLATHUB_EOF'
+[Flatpak Repo]
+Title=Flathub
+Url=https://dl.flathub.org/repo/
+Homepage=https://flathub.org/
+Comment=Central repository of Flatpak applications
+Description=Central repository of Flatpak applications
+Icon=https://dl.flathub.org/repo/logo.svg
+GPGKey=mQINBFlD2sABEADsiUZUOYBg1UdDaWkEdJYkTSZD68214m8Q1fbrP5AptaUfCl8KYKFMNoAe8SB
+FLATHUB_EOF
+
+# Waydroid: patch nft/iptables detection for container networking
+if [[ -f /usr/lib/waydroid/data/scripts/waydroid-net.sh ]]; then
+    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh || true
+fi
+
+# Remove toolbox profile.d script (conflicts with distrobox)
+rm -f /etc/profile.d/toolbox.sh || true
+
+# rpm-ostreed: disable automatic staging (Bazzite manages updates via uupd)
+if [[ -f /etc/rpm-ostreed.conf ]]; then
+    sed -i 's/#\?AutomaticUpdatePolicy=.*/AutomaticUpdatePolicy=none/' /etc/rpm-ostreed.conf || true
+fi
+
+# Distrobox configs
+mkdir -p /etc/distrobox
+curl -sL "https://raw.githubusercontent.com/ublue-os/toolboxes/main/apps/docker/Distrobox.ini" -o /etc/distrobox/docker.ini || true
+curl -sL "https://raw.githubusercontent.com/ublue-os/toolboxes/main/apps/incus/Distrobox.ini" -o /etc/distrobox/incus.ini || true
+
+# bash-preexec for shell integration
+curl -sL "https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh" -o /usr/share/bash-prexec || true
 
 # ujust system -- the ublue-os-just package is not available on aarch64,
 # so we create the ujust wrapper, helper library, and root justfile here.
@@ -255,5 +312,14 @@ ExecStartPost=/usr/bin/touch /var/lib/bazzite/flatpaks-installed
 WantedBy=multi-user.target
 SVC_EOF
 systemctl enable bazzite-first-boot-flatpaks.service || true
+
+# Lock down COPR repos post-build -- prevent unexpected package pulls on updates.
+# The Asahi COPRs must stay enabled (kernel, mesa, firmware updates).
+# Only disable the ones we added for build-time package installation.
+for repo in /etc/yum.repos.d/_copr*.repo; do
+    if [[ -f "$repo" ]]; then
+        sed -i 's/enabled=1/enabled=0/' "$repo"
+    fi
+done
 
 /ctx/cleanup

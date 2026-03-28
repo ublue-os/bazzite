@@ -45,6 +45,7 @@ ARG VERSION_PRETTY="${VERSION_PRETTY:-}"
 
 COPY system_files/desktop/shared /
 COPY system_files/desktop/${BASE_IMAGE_NAME} /
+COPY system_files/overrides /
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
