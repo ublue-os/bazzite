@@ -1,0 +1,16 @@
+[customizations]
+
+[customizations.user]
+name = "bazzite"
+groups = ["wheel"]
+
+[customizations.kernel]
+append = "quiet"
+
+[customizations.installer]
+modules.enable = [
+    "org.fedoraproject.Anaconda.Modules.Network",
+    "org.fedoraproject.Anaconda.Modules.Payloads",
+    "org.fedoraproject.Anaconda.Modules.Storage",
+    "org.fedoraproject.Anaconda.Modules.Users",
+]
