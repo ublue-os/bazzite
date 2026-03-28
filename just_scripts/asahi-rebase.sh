@@ -16,5 +16,9 @@ sudo podman build \
   -t ghcr.io/nripeshn/bazzite-arm:latest \
   .
 
-rpm-ostree rebase ostree-image-signed:docker://localhost/ghcr.io/nripeshn/bazzite-arm:latest
+# Check if bootc is available
+which bootc
+
+sudo bootc switch ghcr.io/nripeshn/bazzite-arm:latest
+
 systemctl reboot
