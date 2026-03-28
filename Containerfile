@@ -187,6 +187,7 @@ RUN --mount=type=cache,dst=/var/cache \
     done && unset -v toswap repo package && \
     dnf5 versionlock add \
         pipewire \
+        pipewire-devel \
         pipewire-alsa \
         pipewire-gstreamer \
         pipewire-jack-audio-connection-kit \
@@ -196,6 +197,7 @@ RUN --mount=type=cache,dst=/var/cache \
         pipewire-pulseaudio \
         pipewire-utils \
         wireplumber \
+        wireplumber-devel \
         wireplumber-libs \
         bluez \
         bluez-cups \
@@ -262,7 +264,6 @@ RUN --mount=type=cache,dst=/var/cache \
         lato-fonts \
         fira-code-fonts \
         nerd-fonts \
-        Sunshine \
         python3-pip \
         libadwaita \
         bees \
@@ -339,7 +340,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl disable iwd.service && \
     chmod +x /usr/bin/framework_tool && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
-    setcap 'cap_sys_admin+p' $(readlink -f /usr/bin/sunshine) && \
     dnf5 -y --setopt=install_weak_deps=False install \
         rocm-hip \
         rocm-opencl \
@@ -532,7 +532,6 @@ RUN --mount=type=cache,dst=/var/cache \
     echo "import \"/usr/share/ublue-os/just/81-bazzite-fixes.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/82-bazzite-apps.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/82-bazzite-beesd.just\"" >> /usr/share/ublue-os/justfile && \
-    echo "import \"/usr/share/ublue-os/just/82-bazzite-sunshine.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/82-bazzite-waydroid.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/83-bazzite-audio.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/85-bazzite-image.just\"" >> /usr/share/ublue-os/justfile && \
@@ -613,7 +612,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
-    systemctl --global disable sunshine.service && \
     systemctl disable waydroid-container.service && \
     systemctl enable greenboot-healthcheck.service && \
     systemctl enable greenboot-set-rollback-trigger.service && \
