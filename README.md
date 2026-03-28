@@ -16,7 +16,7 @@
 - [🇺🇸 🇪🇸 🇮🇩 🇨🇳 🇫🇷 🇧🇷 🇳🇱 🇷🇺 🇩🇪 🇹🇼](#---------)
 - [Table of Contents](#table-of-contents)
 - [About \& Features](#about--features)
-  - [Apple Silicon (ARM64)](#apple-silicon-arm64-)
+  - [Apple Silicon (ARM64)](#apple-silicon-arm64)
   - [Desktop](#desktop)
     - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
       - [Alternative Handhelds](#alternative-handhelds)
@@ -71,7 +71,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) using [F
 - Built in support for Southern Islands <sub><sup>(HD 7000)</sup></sub> and Sea Islands <sub><sup>(HD 8000)</sup></sub> AMD GPUs under the `amdgpu` driver.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) is available for creating applications from websites for a variety of browsers, including Firefox.
 
-### Apple Silicon (ARM64) <sub><sup>Experimental</sup></sub>
+### Apple Silicon (ARM64)
 
 ARM64 variant for Apple Silicon Macs (M1/M2/M3), available as `bazzite-arm` (KDE) and `bazzite-arm-gnome` (GNOME):
 

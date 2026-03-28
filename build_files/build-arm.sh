@@ -280,8 +280,9 @@ for f in /usr/share/ublue-os/just/*.just; do
 done
 
 # winetricks (arch-independent shell script)
-curl -sL "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" -o /usr/bin/winetricks && \
-    chmod +x /usr/bin/winetricks || true
+if curl -sL "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" -o /usr/bin/winetricks; then
+    chmod +x /usr/bin/winetricks
+fi
 
 # Flatpak first-boot configuration
 mkdir -p /usr/lib/bazzite/scripts
