@@ -38,6 +38,8 @@ sudo podman run --rm --privileged \
   -v /:/target \
   --pid=host \
   --security-opt label=type:unconfined_t \
+  -e LANG=C.UTF-8 \
+  -e LC_ALL=C.UTF-8 \
   "$IMAGE" \
   bootc install to-existing-root
 
