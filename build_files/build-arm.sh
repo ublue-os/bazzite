@@ -10,12 +10,7 @@ dnf5 install -y \
 
 dnf5 update -y --refresh
 
-# Asahi-specific hardware support is already in the base image:
-#   - asahi-audio, asahi-scripts, apple firmware
-#   - Asahi Mesa (AGX GPU driver)
-#   - Asahi kernel with Apple Silicon DT/driver support
-
-# Remove conflicting packages
+# Remove conflicting/unwanted packages from the base
 dnf5 -y remove \
     tuned-ppd || true
 
@@ -26,30 +21,21 @@ dnf5 -y remove \
     toolbox \
     htop || true
 
-# Install base desktop packages (ARM-native, no i686/multilib)
-dnf5 -y install \
-    bluez \
-    bluez-libs \
-    xorg-x11-server-Xwayland \
-    mesa-dri-drivers \
-    mesa-filesystem \
-    mesa-libEGL \
-    mesa-libGL \
-    mesa-libgbm \
-    mesa-vulkan-drivers \
-    fwupd \
-    NetworkManager \
-    NetworkManager-wifi \
-    NetworkManager-bluetooth \
-    libfreeaptx
-
+# Media codec support via RPM Fusion
 dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
     libaacs \
     libbdplus \
     libbluray \
-    libbluray-utils || true
+    libbluray-utils \
+    libfreeaptx || true
 
-# Install Bazzite desktop stack (ARM-compatible subset)
+# Gaming packages available natively on aarch64
+dnf5 -y install --skip-broken --skip-unavailable \
+    gamescope \
+    mangohud \
+    lutris
+
+# Bazzite desktop stack (ARM-compatible packages only)
 dnf5 -y install --skip-broken --skip-unavailable \
     iwd \
     greenboot \
@@ -115,7 +101,12 @@ dnf5 -y install --skip-broken --skip-unavailable \
     waydroid \
     cage \
     wlr-randr \
-    cabextract
+    cabextract \
+    dbus-x11 \
+    xrandr \
+    evtest \
+    xdg-user-dirs \
+    xdg-terminal-exec
 
 # DE-specific packages
 if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
@@ -152,7 +143,8 @@ fi
 if dnf5 -y copr enable ublue-os/staging 2>/dev/null; then
     dnf5 -y install --skip-broken --skip-unavailable \
         ublue-update \
-        uupd
+        uupd \
+        topgrade
 fi
 
 if dnf5 -y copr enable ublue-os/bling 2>/dev/null; then
@@ -160,9 +152,16 @@ if dnf5 -y copr enable ublue-os/bling 2>/dev/null; then
         ublue-os-bling
 fi
 
+# Asahi Flatpak Mesa runtimes -- GPU acceleration for Flatpak apps
+# These come from the @asahi:flatpak COPR already configured in the base image
+dnf5 -y install --skip-broken --skip-unavailable \
+    mesa-asahi-24.08-flatpak \
+    mesa-asahi-23.08-flatpak || true
+
 # Enable services
 systemctl enable podman.socket || true
 systemctl enable tailscaled.service || true
+systemctl enable speakersafetyd.service || true
 systemctl mask iscsi || true
 systemctl mask wpa_supplicant.service || true
 systemctl disable iwd.service || true
@@ -171,11 +170,11 @@ if systemctl list-unit-files | grep -q power-profiles-daemon.service; then
     systemctl enable power-profiles-daemon || true
 fi
 
-# Install winetricks (arch-independent shell script)
+# winetricks (arch-independent shell script)
 curl -sL "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" -o /usr/bin/winetricks && \
     chmod +x /usr/bin/winetricks || true
 
-# Flatpak configuration for first-boot
+# Flatpak first-boot configuration
 mkdir -p /usr/lib/bazzite/scripts
 cat > /usr/lib/bazzite/scripts/install-flatpaks.sh << 'FLATPAK_EOF'
 #!/usr/bin/bash
