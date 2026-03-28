@@ -1,5 +1,5 @@
 title: Bazzite Portal
-screens:        
+screens:
   - title: "Setting up Bazzite"
     description: "Core system components and utilities"
     actions:
@@ -33,11 +33,6 @@ screens:
         description: "A utility for installing and configuring emulators on the Steam Deck"
         default: false
         script: "ujust get-emudeck"
-      - id: "sunshine"
-        title: "Sunshine"
-        description: "A self-hosted game stream host for Moonlight"
-        default: false
-        script: "ujust setup-sunshine enable"
       - id: "waydroid"
         title: "Waydroid"
         description: "Android app compatibility layer for Linux"
@@ -135,7 +130,7 @@ screens:
         title: "Global DLSS Upgrade"
         description: "Toggle global Proton DLSS upgrade; updates DLSS DLLs. Only compatible with Proton GE, Proton EM, or similar forks."
         default: false
-        script: "ujust toggle-global-dlss enable"        
+        script: "ujust toggle-global-dlss enable"
   - title: "Media Applications"
     description: "Entertainment and streaming services"
     actions:
@@ -143,7 +138,7 @@ screens:
         title: "Xbox Cloud Gaming"
         description: "Cloud gaming service"
         default: false
-        script: "ujust get-media-app \"Xbox Cloud Gaming\""
+        script: 'ujust get-media-app "Xbox Cloud Gaming"'
       # - id: "geforce-now"
       #   title: "GeForce Now"
       #   description: "Cloud gaming service"
@@ -153,97 +148,97 @@ screens:
         title: "YouTube"
         description: "Video sharing platform"
         default: false
-        script: "ujust get-media-app \"YouTube\""
+        script: 'ujust get-media-app "YouTube"'
       - id: "spotify"
         title: "Spotify"
         description: "Music streaming service"
         default: false
-        script: "ujust get-media-app \"Spotify\""
+        script: 'ujust get-media-app "Spotify"'
       - id: "netflix"
         title: "Netflix"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Netflix\""
+        script: 'ujust get-media-app "Netflix"'
       - id: "plex-htpc"
         title: "Plex HTPC"
         description: "Media server client"
         default: false
-        script: "ujust get-media-app \"Plex HTPC\""
+        script: 'ujust get-media-app "Plex HTPC"'
       - id: "jellyfin"
         title: "JellyFin"
         description: "Media server client"
         default: false
-        script: "ujust get-media-app \"Jellyfin Media Player\""
+        script: 'ujust get-media-app "Jellyfin Media Player"'
       - id: "amazon-luna"
         title: "Amazon Luna"
         description: "Cloud gaming service"
         default: false
-        script: "ujust get-media-app \"Amazon Luna\""
+        script: 'ujust get-media-app "Amazon Luna"'
       - id: "disney-plus"
         title: "Disney Plus"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Disney Plus\""
+        script: 'ujust get-media-app "Disney Plus"'
       - id: "amazon-prime-video"
         title: "Amazon Prime Video"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Amazon Prime Video\""
+        script: 'ujust get-media-app "Amazon Prime Video"'
       - id: "apple-tv"
         title: "Apple TV"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Apple TV\""
+        script: 'ujust get-media-app "Apple TV"'
       - id: "curiosity-stream"
         title: "Curiosity Stream"
         description: "Documentary streaming service"
         default: false
-        script: "ujust get-media-app \"Curiosity Stream\""
+        script: 'ujust get-media-app "Curiosity Stream"'
       - id: "crunchyroll"
         title: "Crunchyroll"
         description: "Anime streaming service"
         default: false
-        script: "ujust get-media-app \"Crunchyroll\""
+        script: 'ujust get-media-app "Crunchyroll"'
       - id: "hbo-max"
         title: "HBO Max"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"HBO Max\""
+        script: 'ujust get-media-app "HBO Max"'
       - id: "hulu"
         title: "Hulu"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Hulu\""
+        script: 'ujust get-media-app "Hulu"'
       - id: "paramount-plus"
         title: "Paramount Plus"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Paramount Plus\""
+        script: 'ujust get-media-app "Paramount Plus"'
       - id: "peacock"
         title: "Peacock"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Peacock\""
+        script: 'ujust get-media-app "Peacock"'
       - id: "sling-tv"
         title: "Sling TV"
         description: "Live TV streaming service"
         default: false
-        script: "ujust get-media-app \"Sling TV\""
+        script: 'ujust get-media-app "Sling TV"'
       - id: "vimeo"
         title: "Vimeo"
         description: "Video sharing platform"
         default: false
-        script: "ujust get-media-app \"Vimeo\""
+        script: 'ujust get-media-app "Vimeo"'
       - id: "youtube-music"
         title: "YouTube Music"
         description: "Music streaming service"
         default: false
-        script: "ujust get-media-app \"YouTube Music\""
+        script: 'ujust get-media-app "YouTube Music"'
       - id: "youtube-tv"
         title: "YouTube TV"
         description: "Live TV streaming service"
         default: false
-        script: "ujust get-media-app \"YouTube TV\""
+        script: 'ujust get-media-app "YouTube TV"'
   - title: "Brew"
     description: "Brew Taps and Casks"
     actions:
@@ -285,7 +280,7 @@ screens:
         description: "Updates Bazzite, Flatpaks, firmware, and more"
         default: false
         script: "ujust update"
-        
+
       - id: "rebase-bazzite-stable"
         title: "Rebase Bazzite (stable)"
         description: "Rebase Bazzite to the stable track"
@@ -306,6 +301,6 @@ screens:
 
       - id: "reset-bazzite"
         title: "Reset Bazzite"
-        description: "Reset Bazzite layering to Default (Only resets layers NOT user data)" 
+        description: "Reset Bazzite layering to Default (Only resets layers NOT user data)"
         default: false
-        script: "rpm-ostree reset"        
+        script: "rpm-ostree reset"

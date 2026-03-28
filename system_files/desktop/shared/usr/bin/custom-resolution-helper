@@ -123,9 +123,6 @@ add_to() {
   if confirm "Do you want to add ${bold}margins${normal} to the calculation? (1.8% of xres rounded down to 8 pixels and 1.8% of yres)"; then
     m="m"
   fi
-  if confirm "Do you want to make this display ${bold}always enabled${normal}? (This is useful for making a virtual display for game streaming with Sunshine)"; then
-    e="e"
-  fi
 
   ADD_RESOLUTION=$(echo -n "$ADD_MONITOR:$xyres$M$R@$refresh$i$m$e")
   echo "Your kernel argument for the resolution is ${bold}$ADD_RESOLUTION${normal}"
@@ -414,7 +411,7 @@ BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 if [[ "$BASE_IMAGE_NAME" == "kinoite" ]]; then
    echo "
 ${green}KDE Plasma 6.6${normal} adds the ability to add ${bold}custom resolutions${normal} in ${green}kscreen-doctor${normal}!
-Use that instead if you do not need a custom resolution for Game Mode or Sunshine.
+Use that instead if you do not need a custom resolution for Game Mode.
 An updated guide is available on ${bold}https://docs.bazzite.gg/Advanced/custom_resolution/${normal}
 "
    press_any_key
