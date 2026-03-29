@@ -25,7 +25,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 BAZZITE_IMAGE="localhost/bazzite-arm:latest"
 ATOMIC_BASE="quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42"
-BAZZITE_FINAL="ghcr.io/nripeshn/bazzite-arm:latest"
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Helper: ensure /boot/loader is the loader.0 symlink ostree requires
@@ -281,12 +280,12 @@ if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
             printf '%s:%s:19900:0:99999:7:::\n' "${NEW_USER}" "${PASS_HASH}" \
                 | sudo tee -a "${DEPLOY_DIR}/etc/shadow" > /dev/null
 
-            # ostree: /home -> /var/home. The deployment's var/home is
-            # what becomes /var/home after boot. Create it there so it
-            # exists on first login without the "no such file" error.
-            sudo mkdir -p "${DEPLOY_DIR}/var/home/${NEW_USER}" 2>/dev/null || true
+            # ostree persistent var lives at /ostree/deploy/fedora/var/ --
+            # NOT inside the deployment dir. This is what becomes /var after boot.
+            STATEROOT_VAR="/ostree/deploy/fedora/var"
+            sudo mkdir -p "${STATEROOT_VAR}/home/${NEW_USER}" 2>/dev/null || true
             sudo chown "${NEXT_UID}:${NEXT_UID}" \
-                "${DEPLOY_DIR}/var/home/${NEW_USER}" 2>/dev/null || true
+                "${STATEROOT_VAR}/home/${NEW_USER}" 2>/dev/null || true
 
             # Add to wheel for sudo
             if grep -q "^wheel:" "${DEPLOY_DIR}/etc/group"; then
@@ -305,25 +304,32 @@ else
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Step 8: Copy Bazzite image into ostree repo for first-boot rebase
+# Step 8: Export Bazzite image to stateroot var for first-boot rebase
 # ──────────────────────────────────────────────────────────────────────────────
 echo ""
-echo "--- Step 8: Prepare Bazzite image for first-boot rebase ---"
-echo "Copying Bazzite ARM image into /ostree/repo (this may take a few minutes)..."
+echo "--- Step 8: Export Bazzite image for first-boot rebase ---"
+
+# The ostree stateroot var (/ostree/deploy/fedora/var) becomes /var after boot.
+# Export the image as an OCI archive there so the first-boot service can
+# rebase directly from local storage without needing network access.
+STATEROOT_VAR="/ostree/deploy/fedora/var"
+OCI_DEST="${STATEROOT_VAR}/lib/bazzite-install"
+
+sudo mkdir -p "${OCI_DEST}"
+echo "Exporting Bazzite ARM image to ${OCI_DEST} (may take a few minutes)..."
 sudo skopeo copy \
     "containers-storage:${BAZZITE_IMAGE}" \
-    "ostree-unverified-registry:localhost/bazzite-arm:latest" \
-    --dest-ostree-tmp-dir /ostree/repo/tmp \
-    --dest-ostree-repo /ostree/repo 2>/dev/null || true
+    "oci:${OCI_DEST}:latest"
+echo "Image exported successfully."
 
 # Install a first-boot service into the deployment that rebases to Bazzite
 # once the system is up. This avoids having to manually run rpm-ostree rebase.
 if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
     sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system"
-    sudo mkdir -p "${DEPLOY_DIR}/usr/local/bin"
+    sudo mkdir -p "${DEPLOY_DIR}/usr/bin"
 
     # Progress-watching script shown at login
-    sudo tee "${DEPLOY_DIR}/usr/local/bin/bazzite-rebase-status" > /dev/null << 'STATUS_EOF'
+    sudo tee "${DEPLOY_DIR}/usr/bin/bazzite-rebase-status" > /dev/null << 'STATUS_EOF'
 #!/usr/bin/bash
 echo ""
 echo "  ╔══════════════════════════════════════════════════╗"
@@ -346,7 +352,7 @@ else
     echo "  Check: systemctl status bazzite-firstboot-rebase"
 fi
 STATUS_EOF
-    sudo chmod +x "${DEPLOY_DIR}/usr/local/bin/bazzite-rebase-status"
+    sudo chmod +x "${DEPLOY_DIR}/usr/bin/bazzite-rebase-status"
 
     # MOTD shown at every login until rebase completes
     sudo tee "${DEPLOY_DIR}/etc/motd" > /dev/null << 'MOTD_EOF'
@@ -359,24 +365,24 @@ STATUS_EOF
 
 MOTD_EOF
 
-    # The actual rebase service
+    # The actual rebase service -- uses local OCI archive exported in step 8
     sudo tee "${DEPLOY_DIR}/etc/systemd/system/bazzite-firstboot-rebase.service" \
         > /dev/null << 'SVC_EOF'
 [Unit]
 Description=Rebase to Bazzite ARM on first boot
-After=network-online.target
-Wants=network-online.target
+After=local-fs.target
 ConditionPathExists=!/var/lib/bazzite-rebase-done
+ConditionPathExists=/var/lib/bazzite-install
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/bin/bash -c '\
-    echo "Starting Bazzite ARM rebase..."; \
+    echo "Starting Bazzite ARM rebase from local image..."; \
     rpm-ostree rebase \
-        ostree-unverified-registry:ghcr.io/nripeshn/bazzite-arm:latest \
+        "ostree-unverified-image:oci:/var/lib/bazzite-install:latest" \
     && touch /var/lib/bazzite-rebase-done \
-    && echo "Rebase complete. Rebooting in 5 seconds..." \
+    && echo "Rebase complete! Rebooting in 5 seconds..." \
     && sleep 5 \
     && systemctl reboot'
 StandardOutput=journal+console
@@ -420,7 +426,7 @@ echo "    3. It automatically rebases to Bazzite ARM"
 echo "    4. System reboots again into full Bazzite"
 echo ""
 echo "  If the auto-rebase fails, run manually:"
-echo "    rpm-ostree rebase ostree-unverified-registry:${BAZZITE_FINAL}"
+echo "    rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest"
 echo "    systemctl reboot"
 echo "================================================="
 echo ""
