@@ -14,6 +14,54 @@ set -euo pipefail
 
 IMAGE="quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42"
 
+# ostree only accepts /boot/loader -> loader.0 or loader.1 (see read_current_bootversion in
+# ostree-sysroot.c). Symlinks like ../efi/EFI/fedora fail with "Invalid target in boot/loader".
+# BLS entries must live under /boot/loader.0/entries (or loader.1).
+ensure_boot_loader_symlink() {
+    local target
+    if [[ -L /boot/loader ]]; then
+        target=$(readlink /boot/loader)
+        if [[ "$target" == "loader.0" || "$target" == "loader.1" ]]; then
+            return 0
+        fi
+        echo "Replacing /boot/loader -> ${target} with ostree-compatible loader.0 symlink..."
+        sudo rm -f /boot/loader
+    fi
+
+    sudo mkdir -p /boot/loader.0
+
+    # Populate loader.0 from a plain /boot/loader directory (common on Asahi).
+    if [[ -d /boot/loader && ! -L /boot/loader ]]; then
+        echo "Migrating /boot/loader directory -> /boot/loader.0 ..."
+        sudo rsync -a /boot/loader/ /boot/loader.0/
+        sudo rm -rf /boot/loader
+    fi
+
+    # If BLS entries are still only on the ESP (or after a previous bad migration).
+    if [[ ! -d /boot/loader.0/entries ]] || [[ -z "$(find /boot/loader.0/entries -name '*.conf' 2>/dev/null | head -1)" ]]; then
+        for base in /boot/efi/EFI/fedora /boot/efi/EFI/Fedora; do
+            if [[ -d "${base}/loader/entries" ]]; then
+                echo "Migrating ${base}/loader/ -> /boot/loader.0/ ..."
+                sudo rsync -a "${base}/loader/" /boot/loader.0/
+                break
+            fi
+            if [[ -d "${base}/entries" ]]; then
+                echo "Migrating ${base}/entries -> /boot/loader.0/entries/ ..."
+                sudo mkdir -p /boot/loader.0/entries
+                sudo rsync -a "${base}/entries/" /boot/loader.0/entries/
+                break
+            fi
+        done
+    fi
+
+    if [[ ! -e /boot/loader ]]; then
+        sudo ln -s loader.0 /boot/loader
+    elif [[ ! -L /boot/loader ]]; then
+        echo "ERROR: /boot/loader exists but is not a symlink (unexpected). Fix manually, then re-run."
+        exit 1
+    fi
+}
+
 echo "=== Bazzite ARM: Asahi Atomic Conversion ==="
 echo ""
 echo "This will convert your Fedora Asahi Remix into an atomic (ostree)"
@@ -38,8 +86,9 @@ sudo ostree init --repo=/ostree/repo --mode=bare
 sudo ostree config --repo=/ostree/repo set sysroot.bootloader none
 sudo ostree config --repo=/ostree/repo set sysroot.readonly true
 
-# /boot/loader must exist for ostree admin to work
-sudo mkdir -p /boot/loader
+# See https://bugzilla.redhat.com/show_bug.cgi?id=1648672
+ensure_boot_loader_symlink
+
 sudo mkdir -p /ostree/deploy
 
 sudo ostree admin os-init fedora --sysroot /
