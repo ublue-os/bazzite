@@ -356,53 +356,74 @@ _toggle-gigabyte-wake-fix:
       fi
     fi
 
-# Manage Steam game shortcuts on the Desktop. Usage: just steam-icons [command] (list, remove, enable, disable)
+# Manage Steam game shortcuts on the Desktop or the application menu. Usage: just steam-icons [command] (list, list-all, remove, remove-all, enable, disable)
 steam-icons ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     DESKTOP_DIR="$HOME/Desktop"
     SERVICE_NAME="steam-icons-cleanup.service"
+    OVERRIDE_FILE="$HOME/.config/systemd/user/steam-icons-cleanup.service.d/override.conf"
     OPTION={{ ACTION }}
     # Function to count and list Steam shortcuts
     list_shortcuts() {
+      if [[ "$1" == "all" ]]; then
+        LAUNCHER_DIR="$HOME/.local/share/applications"
+      fi
       STEAM_SHORTCUTS=()
       while IFS= read -r shortcut; do
-      if grep -q "Comment=Play this game on Steam" "$shortcut" 2>/dev/null; then
-        STEAM_SHORTCUTS+=("$shortcut")
-      fi
-      done < <(find "$DESKTOP_DIR" -name "*.desktop" -type f 2>/dev/null)
+        if grep -q "Comment=Play this game on Steam" "$shortcut" 2>/dev/null; then
+          STEAM_SHORTCUTS+=("$shortcut")
+        fi
+      done < <(find "$DESKTOP_DIR" "$LAUNCHER_DIR" -name "*.desktop" -type f 2>/dev/null)
       SHORTCUT_COUNT=${#STEAM_SHORTCUTS[@]}
       if [[ $SHORTCUT_COUNT -eq 0 ]]; then
-      echo "No Steam game shortcuts found on the Desktop."
-      return 0
+        if [[ ! -e "$OVERRIDE_FILE" ]]; then
+          echo "No Steam game shortcuts found on the Desktop."
+        else
+          echo "No Steam game shortcuts found on the Desktop and launcher."
+        fi
+        return 0
       fi
-      echo -e "${b}Found $SHORTCUT_COUNT Steam game shortcuts on your Desktop:${n}"
+      if [[ ! -e "$OVERRIDE_FILE" ]]; then
+          echo -e "${b}Found $SHORTCUT_COUNT Steam game shortcuts on your Desktop:${n}"
+        else
+          echo -e "${b}Found $SHORTCUT_COUNT Steam game shortcuts on your Desktop and application launcher:${n}"
+        fi
+      
       for shortcut in "${STEAM_SHORTCUTS[@]}"; do
-      GAME_NAME=$(grep "^Name=" "$shortcut" | sed 's/^Name=//')
-      echo "- $GAME_NAME"
+        GAME_NAME=$(grep "^Name=" "$shortcut" | sed 's/^Name=//')
+        echo "- $GAME_NAME"
       done
       echo ""
       return $SHORTCUT_COUNT
     }
-    # Function to remove all shortcuts
-    remove_all_shortcuts() {
+    # Function to remove shortcuts
+    remove_shortcuts() {
       STEAM_SHORTCUTS=()
-      while IFS= read -r shortcut; do
-      if grep -q "Comment=Play this game on Steam" "$shortcut" 2>/dev/null; then
-        STEAM_SHORTCUTS+=("$shortcut")
+      if [[ "$1" == "all" ]]; then
+        LAUNCHER_DIR="$HOME/.local/share/applications"
       fi
-      done < <(find "$DESKTOP_DIR" -name "*.desktop" -type f 2>/dev/null)
+      while IFS= read -r shortcut; do
+        if grep -q "Comment=Play this game on Steam" "$shortcut" 2>/dev/null; then
+          STEAM_SHORTCUTS+=("$shortcut")
+        fi
+      done < <(find "$DESKTOP_DIR" "$LAUNCHER_DIR" -name "*.desktop" -type f 2>/dev/null)
       SHORTCUT_COUNT=${#STEAM_SHORTCUTS[@]}
       if [[ $SHORTCUT_COUNT -eq 0 ]]; then
-      echo "No Steam game shortcuts found on the Desktop."
-      return
+        if [[ ! -e "$OVERRIDE_FILE" ]]; then
+          echo "No Steam game shortcuts found on the Desktop."
+        else
+          echo "No Steam game shortcuts found on the Desktop and launcher."
+        fi
+        return
       fi
       for shortcut in "${STEAM_SHORTCUTS[@]}"; do
-      GAME_NAME=$(grep "^Name=" "$shortcut" | sed 's/^Name=//')
-      rm -f "$shortcut"
+        GAME_NAME=$(grep "^Name=" "$shortcut" | sed 's/^Name=//')
+        rm -f "$shortcut"
       done
       echo -e "${green}${b}Successfully removed $SHORTCUT_COUNT Steam game shortcuts.${n}"
     }
+
     # Check if auto-cleanup service is enabled
     SERVICE_STATUS="disabled"
     if systemctl --user is-enabled "$SERVICE_NAME" &>/dev/null; then
@@ -412,17 +433,25 @@ steam-icons ACTION="":
     if [ "$OPTION" == "help" ]; then
       echo "Usage: just steam-icons [command]"
       echo "Commands:"
-      echo "  list     - List all Steam shortcuts on Desktop"
-      echo "  remove   - Remove all Steam shortcuts"
-      echo "  enable   - Enable automatic cleanup on login"
-      echo "  disable  - Disable automatic cleanup"
-      echo "  help     - Show this help message"
+      echo "  list        - List all Steam shortcuts on Desktop"
+      echo "  list-all    - List all Steam shortcuts on Desktop and all start entries"
+      echo "  remove      - Remove all Steam shortcuts"
+      echo "  remove-all  - Remove all Steam shortcuts on Desktop and all start entries"
+      echo "  enable      - Enable automatic cleanup on login"
+      echo "  disable     - Disable automatic cleanup"
+      echo "  help        - Show this help message"
       exit 0
     elif [ "$OPTION" == "list" ]; then
       list_shortcuts
       exit 0
+    elif [ "$OPTION" == "list-all" ]; then
+      list_shortcuts "all"
+      exit 0
     elif [ "$OPTION" == "remove" ]; then
-      remove_all_shortcuts
+      remove_shortcuts
+      exit 0
+    elif [ "$OPTION" == "remove-all" ]; then
+      remove_shortcuts "all"
       exit 0
     elif [ "$OPTION" == "enable" ]; then
       systemctl --user enable --now "$SERVICE_NAME"
@@ -435,12 +464,18 @@ steam-icons ACTION="":
     fi
     # If no arguments provided or not matched, show interactive menu
     echo -e "Auto-cleanup service status: ${b}${SERVICE_STATUS}${n}\n"
+    if [[ -e "$OVERRIDE_FILE" ]]; then
+      echo -e "${green}${b}Launcher entries auto-cleanup enabled.${n}"
+    fi
     list_shortcuts
     # Ask the user what they want to do
-    OPTION=$(ugum choose "Remove All Shortcuts Now" "Enable Auto-Cleanup" "Disable Auto-Cleanup" "Exit")
+    OPTION=$(ugum choose "Remove Desktop Shortcuts Now" "Remove Desktop and Launcher Shortcuts Now" "Enable Auto-Cleanup" "Disable Auto-Cleanup" "Enable Clean Launcher Entries" "Disable Clean Launcher Entries" "Exit")
     case "$OPTION" in
-      "Remove All Shortcuts Now")
-      remove_all_shortcuts
+      "Remove Desktop Shortcuts Now")
+      remove_shortcuts
+      ;;
+      "Remove Desktop and Launcher Shortcuts Now")
+      remove_shortcuts "all"
       ;;
       "Enable Auto-Cleanup")
       systemctl --user enable --now "$SERVICE_NAME"
@@ -448,7 +483,31 @@ steam-icons ACTION="":
       ;;
       "Disable Auto-Cleanup")
       systemctl --user disable --now "$SERVICE_NAME" 2>/dev/null || true
+      rm "$OVERRIDE_FILE" &>/dev/null
+      rmdir "${OVERRIDE_FILE%/*}" &>/dev/null
       echo -e "\n${red}${b}Auto-cleanup disabled.${n} Steam game shortcuts will no longer be automatically removed."
+      ;;
+      "Enable Clean Launcher Entries")
+      if [[ "$SERVICE_STATUS" == "disabled" ]]; then
+        echo -e "\n${red}${b}Auto-cleanup disabled.${n} First enable it with Enable Auto-Cleanup option."
+      else
+        mkdir -p "${OVERRIDE_FILE%/*}"
+        cat > "$OVERRIDE_FILE" <<-'END'
+    [Service]
+    ExecStart=
+    ExecStart=-/usr/bin/ujust steam-icons remove-all
+    END
+        systemctl --user daemon-reload
+      fi
+      ;;
+      "Disable Clean Launcher Entries")
+      if [[ "$SERVICE_STATUS" == "disabled" ]]; then
+        echo -e "\n${red}${b}Auto-cleanup disabled.${n} First enable it with Enable Auto-Cleanup option."
+      else
+        rm "$OVERRIDE_FILE" &>/dev/null
+        rmdir "${OVERRIDE_FILE%/*}" &>/dev/null
+        systemctl --user daemon-reload
+      fi
       ;;
       "Exit")
       echo "No changes were made."
