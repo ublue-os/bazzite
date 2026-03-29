@@ -199,40 +199,46 @@ if [[ -z "$DEPLOY_DIR" || ! -d "$DEPLOY_DIR" ]]; then
     DEPLOY_DIR=$(find /ostree/deploy/fedora/deploy -maxdepth 1 -name "*.0" -type d -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2)
 fi
 
+# Wrap user creation in a subshell with set +e so errors NEVER block GRUB update.
+# A failed user setup is fixable; a missing GRUB update causes an unbootable kernel panic.
 if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
     echo "Deployment directory: $DEPLOY_DIR"
+    (
+        set +e
+        read -rp "Enter username for the new system: " NEW_USER
+        read -srp "Enter password: " NEW_PASS
+        echo ""
 
-    read -rp "Enter username for the new system: " NEW_USER
-    read -srp "Enter password: " NEW_PASS
-    echo ""
+        PASS_HASH=$(openssl passwd -6 "$NEW_PASS")
 
-    PASS_HASH=$(openssl passwd -6 "$NEW_PASS")
+        # Unlock root
+        sudo sed -i "s|^root:[^:]*:|root:${PASS_HASH}:|" "${DEPLOY_DIR}/etc/shadow"
+        echo "Root account unlocked."
 
-    # Unlock root with the same password
-    sudo sed -i "s|^root:[^:]*:|root:${PASS_HASH}:|" "${DEPLOY_DIR}/etc/shadow"
+        if ! grep -q "^${NEW_USER}:" "${DEPLOY_DIR}/etc/passwd" 2>/dev/null; then
+            NEXT_UID=$(awk -F: 'BEGIN{max=999} $3>max && $3<60000{max=$3} END{print max+1}' "${DEPLOY_DIR}/etc/passwd")
+            echo "${NEW_USER}:x:${NEXT_UID}:${NEXT_UID}:${NEW_USER}:/home/${NEW_USER}:/bin/bash" | sudo tee -a "${DEPLOY_DIR}/etc/passwd" > /dev/null
+            echo "${NEW_USER}:x:${NEXT_UID}:" | sudo tee -a "${DEPLOY_DIR}/etc/group" > /dev/null
+            echo "${NEW_USER}:${PASS_HASH}:19900:0:99999:7:::" | sudo tee -a "${DEPLOY_DIR}/etc/shadow" > /dev/null
 
-    # Create user in the new deployment
-    if ! grep -q "^${NEW_USER}:" "${DEPLOY_DIR}/etc/passwd" 2>/dev/null; then
-        NEXT_UID=$(awk -F: 'BEGIN{max=999} $3>max && $3<60000{max=$3} END{print max+1}' "${DEPLOY_DIR}/etc/passwd")
-        echo "${NEW_USER}:x:${NEXT_UID}:${NEXT_UID}:${NEW_USER}:/home/${NEW_USER}:/bin/bash" | sudo tee -a "${DEPLOY_DIR}/etc/passwd" > /dev/null
-        echo "${NEW_USER}:x:${NEXT_UID}:" | sudo tee -a "${DEPLOY_DIR}/etc/group" > /dev/null
-        echo "${NEW_USER}:${PASS_HASH}:19900:0:99999:7:::" | sudo tee -a "${DEPLOY_DIR}/etc/shadow" > /dev/null
-        # Atomic images symlink /home -> var/home. mkdir -p .../home/user can fail with
-        # "File exists" on the home component when the symlink target is missing; resolve first.
-        USER_HOME_DIR=$(sudo readlink -f "${DEPLOY_DIR}/home/${NEW_USER}" 2>/dev/null \
-            || echo "${DEPLOY_DIR}/home/${NEW_USER}")
-        sudo mkdir -p "${USER_HOME_DIR}"
-        sudo chown "${NEXT_UID}:${NEXT_UID}" "${USER_HOME_DIR}"
+            # In ostree, /home -> /var/home. Create home dir in /var/home
+            # which persists across deployments.
+            sudo mkdir -p "/var/home/${NEW_USER}" 2>/dev/null || true
+            sudo chown "${NEXT_UID}:${NEXT_UID}" "/var/home/${NEW_USER}" 2>/dev/null || true
 
-        # Add to wheel group for sudo
-        sudo sed -i "s|^wheel:x:\([0-9]*\):\(.*\)|wheel:x:\1:\2,${NEW_USER}|" "${DEPLOY_DIR}/etc/group"
-        sudo sed -i "s|,${NEW_USER},|,${NEW_USER}|g; s|:,|:|g" "${DEPLOY_DIR}/etc/group"
-    fi
-
-    echo "User '${NEW_USER}' created in the new deployment."
+            # Add to wheel for sudo
+            if grep -q "^wheel:" "${DEPLOY_DIR}/etc/group"; then
+                sudo sed -i "/^wheel:/ s/$/,${NEW_USER}/" "${DEPLOY_DIR}/etc/group"
+                sudo sed -i "s/,${NEW_USER},${NEW_USER}/,${NEW_USER}/g" "${DEPLOY_DIR}/etc/group"
+            fi
+            echo "User '${NEW_USER}' created."
+        else
+            sudo sed -i "s|^${NEW_USER}:[^:]*:|${NEW_USER}:${PASS_HASH}:|" "${DEPLOY_DIR}/etc/shadow"
+            echo "Password updated for existing user '${NEW_USER}'."
+        fi
+    ) || echo "WARNING: User setup had errors, but continuing to GRUB update."
 else
     echo "WARNING: Could not find deployment directory."
-    echo "You may need to use GRUB rescue mode to create a user after reboot."
 fi
 
 echo ""
