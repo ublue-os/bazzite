@@ -353,7 +353,7 @@ STATUS_EOF
 
   ╔══════════════════════════════════════════════════════╗
   ║   Bazzite ARM is being installed in the background.  ║
-  ║   Run:  bazzite-rebase-status  to watch progress.   ║
+  ║   Run:  bazzite-rebase-status  to watch progress.    ║
   ║   The system will reboot automatically when done.    ║
   ╚══════════════════════════════════════════════════════╝
 
