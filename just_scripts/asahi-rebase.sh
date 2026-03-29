@@ -123,20 +123,27 @@ fi
 
 echo ""
 echo "--- Step 6: Deploy the atomic image ---"
-REF=$(sudo ostree refs --repo=/ostree/repo | head -1)
-echo "Deploying ref: $REF"
-
-if [[ -z "$REF" ]]; then
-    echo "ERROR: No ostree ref found in repo. The image pull may have failed."
+# ostree refs lists layer blobs (ostree/container/blob/...) first; those are not root
+# filesystems and fail with "Failed to find kernel". Deploy the same ref the pull wrote:
+#   ostree-unverified-registry:<image>
+REF="ostree-unverified-registry:${IMAGE}"
+if ! sudo ostree rev-parse --repo=/ostree/repo "${REF}" &>/dev/null; then
+    echo "ERROR: Ref not in repo after pull: ${REF}"
     echo "Available refs:"
     sudo ostree refs --repo=/ostree/repo
     exit 1
 fi
+echo "Deploying ref: $REF"
 
-# Preserve the existing kernel arguments from the running system
-# and add ostree-required ones
 EXISTING_KARGS=$(cat /proc/cmdline)
 echo "Existing kernel args: $EXISTING_KARGS"
+
+# btrfs (e.g. Asahi) needs rootflags from the running system (e.g. subvol=root)
+ROOTFLAGS_KARG=()
+if [[ "$EXISTING_KARGS" =~ rootflags=([^[:space:]]+) ]]; then
+    ROOTFLAGS_KARG=(--karg="rootflags=${BASH_REMATCH[1]}")
+    echo "Preserving rootflags=${BASH_REMATCH[1]}"
+fi
 
 sudo ostree admin deploy "$REF" \
     --sysroot / \
@@ -144,7 +151,8 @@ sudo ostree admin deploy "$REF" \
     --karg="root=UUID=${ROOT_UUID}" \
     --karg="ro" \
     --karg="rhgb" \
-    --karg="quiet"
+    --karg="quiet" \
+    "${ROOTFLAGS_KARG[@]}"
 
 echo ""
 echo "--- Step 7: Copy kernel and initramfs to /boot ---"
