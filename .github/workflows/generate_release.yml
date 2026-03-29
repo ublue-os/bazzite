@@ -1,5 +1,14 @@
 on:
   workflow_call:
+    inputs:
+      handwritten:
+        type: string
+        required: false
+        description: 'Small changelog about changes in this build:'
+      target:
+        type: string
+        required: false
+        description: 'Release Branch (e.g., testing). Defaults to branch name.'
   workflow_dispatch:
     inputs:
       handwritten:
@@ -23,7 +32,7 @@ jobs:
       - name: Get target
         id: get-target
         run: |
-          TARGET="${{ github.event.inputs.target || github.ref }}"
+          TARGET="${{ inputs.target || github.event.inputs.target || github.ref }}"
           TARGET="${TARGET##*/}"
           if [ "$TARGET" = "main" ]; then
             TARGET="stable"
@@ -35,7 +44,7 @@ jobs:
         run: |
           python3 ./.github/workflows/changelog.py \
             "${{ steps.get-target.outputs.target }}" \
-            ./output.env ./changelog.md --workdir . --handwritten "${{ github.event.inputs.handwritten }}"
+            ./output.env ./changelog.md --workdir . --handwritten "${{ inputs.handwritten || github.event.inputs.handwritten }}"
           source ./output.env
           echo "title=${TITLE}" >> $GITHUB_OUTPUT
           echo "tag=${TAG}" >> $GITHUB_OUTPUT

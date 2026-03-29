@@ -1,0 +1,68 @@
+#
+#     %%%%%%====%%%%%%%%%%
+#   %%%%%%%%    %%%%%%%%%%%%%%
+#  %%%%%%%%%    %%%%%%%%%%%%%%%%
+#  %%%%%%%%%    %%%%%%%%%%%%%%%###
+#  %%%%%%%%%    %%%%%%%%%%%%%######
+#  ==                  =======######
+#  ==                  =========#####
+#  %%%%%%%%%    %%%%%%%####======#####
+#  %%%%%%%%%    %%%%%#######=====#####
+#  %%%%%%%%%    %%%#########=====#####
+#  %%%%%%%%%    %%##########=====#####
+#  %%%%%%%%%====###########=====######
+#   %%%%%%%%====#########======######
+#    %%%%%%%=====#####========######
+#     %%%%###===============#######
+#      %#######==========#########
+#        #######################
+#          ###################
+#              ###########
+#
+# Bazzite ARM -- Apple Silicon edition
+# Built on top of Fedora Asahi Remix Atomic Desktop images
+
+ARG FEDORA_VERSION="${FEDORA_VERSION:-42}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG BASE_IMAGE="quay.io/fedora-asahi-remix-atomic-desktops/${BASE_IMAGE_NAME}:${FEDORA_VERSION}"
+ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT:-}"
+ARG VERSION_TAG="${VERSION_TAG:-}"
+ARG VERSION_PRETTY="${VERSION_PRETTY:-}"
+
+FROM scratch AS ctx
+COPY build_files /
+
+FROM ${BASE_IMAGE} AS bazzite-arm
+
+ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-arm}"
+ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
+ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
+ARG FEDORA_VERSION="${FEDORA_VERSION:-42}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT:-}"
+ARG VERSION_TAG="${VERSION_TAG:-}"
+ARG VERSION_PRETTY="${VERSION_PRETTY:-}"
+
+COPY system_files/desktop/shared /
+COPY system_files/desktop/${BASE_IMAGE_NAME} /
+COPY system_files/overrides /
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/build-arm.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/setup-x86-emulation.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/image-info && \
+    bash /ctx/finalize
+
+RUN bootc container lint
