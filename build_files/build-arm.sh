@@ -4,9 +4,11 @@ set -eoux pipefail
 
 export BUILDAH_PLATFORM=linux/arm64
 
+FEDORA_VER=$(rpm -E %fedora)
+
 dnf5 install -y \
-    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VER}.noarch.rpm" \
+    "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VER}.noarch.rpm"
 
 dnf5 update -y --refresh
 
