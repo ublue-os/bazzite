@@ -11,6 +11,8 @@ set -euo pipefail
 # Prerequisites:
 #   - Fresh Fedora Asahi Remix Minimal installation
 #   - Run: sudo dnf upgrade -y && reboot (before running this script)
+# Safe to re-run after failures: skips init/os-init/deploy when already done.
+# Force another deployment: OSTREE_FORCE_DEPLOY=1 ./just_scripts/asahi-rebase.sh
 
 IMAGE="quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42"
 
@@ -82,7 +84,11 @@ sudo dnf install -y rpm-ostree ostree skopeo podman
 echo ""
 echo "--- Step 2: Initialize ostree repository ---"
 sudo mkdir -p /ostree/repo
-sudo ostree init --repo=/ostree/repo --mode=bare
+if [[ ! -f /ostree/repo/config ]]; then
+    sudo ostree init --repo=/ostree/repo --mode=bare
+else
+    echo "OSTree repo already initialized at /ostree/repo; skipping ostree init."
+fi
 sudo ostree config --repo=/ostree/repo set sysroot.bootloader none
 sudo ostree config --repo=/ostree/repo set sysroot.readonly true
 
@@ -91,7 +97,11 @@ ensure_boot_loader_symlink
 
 sudo mkdir -p /ostree/deploy
 
-sudo ostree admin os-init fedora --sysroot /
+if [[ ! -d /ostree/deploy/fedora ]]; then
+    sudo ostree admin os-init fedora --sysroot /
+else
+    echo "Stateroot 'fedora' already exists under /ostree/deploy/fedora; skipping os-init."
+fi
 
 echo ""
 echo "--- Step 3: Back up GRUB config ---"
@@ -123,18 +133,35 @@ fi
 
 echo ""
 echo "--- Step 6: Deploy the atomic image ---"
-# ostree refs lists layer blobs (ostree/container/blob/...) first; those are not root
-# filesystems and fail with "Failed to find kernel". Deploy the same ref the pull wrote:
-#   ostree-unverified-registry:<image>
-REF="ostree-unverified-registry:${IMAGE}"
-if ! sudo ostree rev-parse --repo=/ostree/repo "${REF}" &>/dev/null; then
-    echo "ERROR: Ref not in repo after pull: ${REF}"
-    echo "Available refs:"
+# Layer blobs (ostree/container/blob/...) are not root filesystems (no kernel). Do not use
+# ostree refs | head -1. Prefer ostree-unverified-registry:<image>; newer ostree may only
+# record ostree/container/image/... for the pulled image.
+REF=""
+if [[ -n "${IMAGE:-}" ]]; then
+    candidate="ostree-unverified-registry:${IMAGE}"
+    if sudo ostree rev-parse --repo=/ostree/repo "${candidate}" &>/dev/null; then
+        REF="${candidate}"
+    fi
+fi
+if [[ -z "${REF}" ]]; then
+    mapfile -t _image_refs < <(sudo ostree refs --repo=/ostree/repo | grep '^ostree/container/image/' || true)
+    if [[ "${#_image_refs[@]}" -eq 1 ]]; then
+        REF="${_image_refs[0]}"
+    elif [[ "${#_image_refs[@]}" -gt 1 ]]; then
+        echo "ERROR: Multiple ostree/container/image refs; cannot pick automatically:"
+        printf '%s\n' "${_image_refs[@]}"
+        exit 1
+    fi
+fi
+if [[ -z "${REF}" ]] || ! sudo ostree rev-parse --repo=/ostree/repo "${REF}" &>/dev/null; then
+    echo "ERROR: No deployable image ref in /ostree/repo."
+    echo "  Set IMAGE at the top of this script, or ensure a single ostree/container/image/ ref exists."
     sudo ostree refs --repo=/ostree/repo
     exit 1
 fi
 echo "Deploying ref: $REF"
 
+TARGET_REV=$(sudo ostree rev-parse --repo=/ostree/repo "${REF}")
 EXISTING_KARGS=$(cat /proc/cmdline)
 echo "Existing kernel args: $EXISTING_KARGS"
 
@@ -145,14 +172,25 @@ if [[ "$EXISTING_KARGS" =~ rootflags=([^[:space:]]+) ]]; then
     echo "Preserving rootflags=${BASH_REMATCH[1]}"
 fi
 
-sudo ostree admin deploy "$REF" \
-    --sysroot / \
-    --os fedora \
-    --karg="root=UUID=${ROOT_UUID}" \
-    --karg="ro" \
-    --karg="rhgb" \
-    --karg="quiet" \
-    "${ROOTFLAGS_KARG[@]}"
+# Re-runs: avoid stacking duplicate deployments if this tree is already present.
+# Match on a prefix of the commit (ostree admin status may shorten the hash).
+_skip_deploy=0
+if [[ -z "${OSTREE_FORCE_DEPLOY:-}" ]] \
+    && sudo ostree admin status --sysroot=/ 2>/dev/null | grep -qF "${TARGET_REV:0:16}"; then
+    _skip_deploy=1
+fi
+if [[ "${_skip_deploy}" -eq 1 ]]; then
+    echo "Skipping ostree admin deploy: revision ${TARGET_REV:0:12}... is already deployed (set OSTREE_FORCE_DEPLOY=1 to force a new deployment)."
+else
+    sudo ostree admin deploy "$REF" \
+        --sysroot / \
+        --os fedora \
+        --karg="root=UUID=${ROOT_UUID}" \
+        --karg="ro" \
+        --karg="rhgb" \
+        --karg="quiet" \
+        "${ROOTFLAGS_KARG[@]}"
+fi
 
 echo ""
 echo "--- Step 7: Copy kernel and initramfs to /boot ---"
