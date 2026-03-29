@@ -217,8 +217,12 @@ if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
         echo "${NEW_USER}:x:${NEXT_UID}:${NEXT_UID}:${NEW_USER}:/home/${NEW_USER}:/bin/bash" | sudo tee -a "${DEPLOY_DIR}/etc/passwd" > /dev/null
         echo "${NEW_USER}:x:${NEXT_UID}:" | sudo tee -a "${DEPLOY_DIR}/etc/group" > /dev/null
         echo "${NEW_USER}:${PASS_HASH}:19900:0:99999:7:::" | sudo tee -a "${DEPLOY_DIR}/etc/shadow" > /dev/null
-        sudo mkdir -p "${DEPLOY_DIR}/home/${NEW_USER}"
-        sudo chown "${NEXT_UID}:${NEXT_UID}" "${DEPLOY_DIR}/home/${NEW_USER}"
+        # Atomic images symlink /home -> var/home. mkdir -p .../home/user can fail with
+        # "File exists" on the home component when the symlink target is missing; resolve first.
+        USER_HOME_DIR=$(sudo readlink -f "${DEPLOY_DIR}/home/${NEW_USER}" 2>/dev/null \
+            || echo "${DEPLOY_DIR}/home/${NEW_USER}")
+        sudo mkdir -p "${USER_HOME_DIR}"
+        sudo chown "${NEXT_UID}:${NEXT_UID}" "${USER_HOME_DIR}"
 
         # Add to wheel group for sudo
         sudo sed -i "s|^wheel:x:\([0-9]*\):\(.*\)|wheel:x:\1:\2,${NEW_USER}|" "${DEPLOY_DIR}/etc/group"
