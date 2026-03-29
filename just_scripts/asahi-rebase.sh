@@ -102,6 +102,7 @@ fi
 # ──────────────────────────────────────────────────────────────────────────────
 echo ""
 echo "--- Step 1: Install prerequisites ---"
+sudo dnf upgrade -y
 sudo dnf install -y podman git rpm-ostree ostree rsync
 
 # ──────────────────────────────────────────────────────────────────────────────
