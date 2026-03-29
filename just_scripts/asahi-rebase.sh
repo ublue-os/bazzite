@@ -193,11 +193,42 @@ else
 fi
 
 echo ""
-echo "--- Step 7: Copy kernel and initramfs to /boot ---"
-# Ensure the deployed kernel is accessible to GRUB
+echo "--- Step 7: Inject user accounts into new deployment ---"
 DEPLOY_DIR=$(sudo ostree admin --sysroot=/ --print-current-dir 2>/dev/null || true)
+if [[ -z "$DEPLOY_DIR" || ! -d "$DEPLOY_DIR" ]]; then
+    DEPLOY_DIR=$(find /ostree/deploy/fedora/deploy -maxdepth 1 -name "*.0" -type d -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2)
+fi
+
 if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
     echo "Deployment directory: $DEPLOY_DIR"
+
+    read -rp "Enter username for the new system: " NEW_USER
+    read -srp "Enter password: " NEW_PASS
+    echo ""
+
+    PASS_HASH=$(openssl passwd -6 "$NEW_PASS")
+
+    # Unlock root with the same password
+    sudo sed -i "s|^root:[^:]*:|root:${PASS_HASH}:|" "${DEPLOY_DIR}/etc/shadow"
+
+    # Create user in the new deployment
+    if ! grep -q "^${NEW_USER}:" "${DEPLOY_DIR}/etc/passwd" 2>/dev/null; then
+        NEXT_UID=$(awk -F: 'BEGIN{max=999} $3>max && $3<60000{max=$3} END{print max+1}' "${DEPLOY_DIR}/etc/passwd")
+        echo "${NEW_USER}:x:${NEXT_UID}:${NEXT_UID}:${NEW_USER}:/home/${NEW_USER}:/bin/bash" | sudo tee -a "${DEPLOY_DIR}/etc/passwd" > /dev/null
+        echo "${NEW_USER}:x:${NEXT_UID}:" | sudo tee -a "${DEPLOY_DIR}/etc/group" > /dev/null
+        echo "${NEW_USER}:${PASS_HASH}:19900:0:99999:7:::" | sudo tee -a "${DEPLOY_DIR}/etc/shadow" > /dev/null
+        sudo mkdir -p "${DEPLOY_DIR}/home/${NEW_USER}"
+        sudo chown "${NEXT_UID}:${NEXT_UID}" "${DEPLOY_DIR}/home/${NEW_USER}"
+
+        # Add to wheel group for sudo
+        sudo sed -i "s|^wheel:x:\([0-9]*\):\(.*\)|wheel:x:\1:\2,${NEW_USER}|" "${DEPLOY_DIR}/etc/group"
+        sudo sed -i "s|,${NEW_USER},|,${NEW_USER}|g; s|:,|:|g" "${DEPLOY_DIR}/etc/group"
+    fi
+
+    echo "User '${NEW_USER}' created in the new deployment."
+else
+    echo "WARNING: Could not find deployment directory."
+    echo "You may need to use GRUB rescue mode to create a user after reboot."
 fi
 
 echo ""
