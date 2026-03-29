@@ -143,7 +143,7 @@ if [[ ! -f /ostree/repo/config ]]; then
 else
     echo "OSTree repo already initialized; skipping."
 fi
-sudo ostree config --repo=/ostree/repo set sysroot.bootloader none
+sudo ostree config --repo=/ostree/repo set sysroot.bootloader grub2
 sudo ostree config --repo=/ostree/repo set sysroot.readonly true
 
 ensure_boot_loader_symlink
@@ -326,10 +326,13 @@ echo "Image exported successfully."
 # once the system is up. This avoids having to manually run rpm-ostree rebase.
 if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
     sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system"
-    sudo mkdir -p "${DEPLOY_DIR}/usr/bin"
+
+    # bazzite-rebase-status: /usr/local -> /var/usrlocal in atomic Fedora.
+    # Write to STATEROOT_VAR/usrlocal/bin so it appears at /usr/local/bin after boot.
+    sudo mkdir -p "${STATEROOT_VAR}/usrlocal/bin"
 
     # Progress-watching script shown at login
-    sudo tee "${DEPLOY_DIR}/usr/bin/bazzite-rebase-status" > /dev/null << 'STATUS_EOF'
+    sudo tee "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-status" > /dev/null << 'STATUS_EOF'
 #!/usr/bin/bash
 echo ""
 echo "  ╔══════════════════════════════════════════════════╗"
@@ -352,7 +355,7 @@ else
     echo "  Check: systemctl status bazzite-firstboot-rebase"
 fi
 STATUS_EOF
-    sudo chmod +x "${DEPLOY_DIR}/usr/bin/bazzite-rebase-status"
+    sudo chmod +x "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-status"
 
     # MOTD shown at every login until rebase completes
     sudo tee "${DEPLOY_DIR}/etc/motd" > /dev/null << 'MOTD_EOF'
