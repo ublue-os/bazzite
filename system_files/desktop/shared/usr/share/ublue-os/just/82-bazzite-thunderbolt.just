@@ -162,7 +162,15 @@ install-fairydust-kernel:
         "${KRELEASE}"
 
     echo "--- Updating GRUB ---"
-    sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+    # grub2-mkconfig fails on atomic Fedora/Bazzite because the root is a
+    # composefs overlay and grub2-probe cannot resolve it.
+    # grubby is composefs-aware and correctly handles ostree boot entries.
+    sudo grubby \
+        --add-kernel="/boot/vmlinuz-fairydust-${KRELEASE}" \
+        --title="Bazzite ARM fairydust ${KRELEASE}" \
+        --initrd="/boot/initramfs-fairydust-${KRELEASE}.img" \
+        --copy-default
+    echo "GRUB entry added for fairydust kernel."
 
     echo ""
     echo "=== Installation complete ==="
