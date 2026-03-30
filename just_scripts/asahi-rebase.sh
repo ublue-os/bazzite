@@ -386,8 +386,8 @@ STATUS_EOF
     # MOTD -- shown at login
     sudo tee "${DEPLOY_DIR}/etc/motd" > /dev/null << 'MOTD_EOF'
   ╔══════════════════════════════════════════════════════╗
-  ║  Bazzite ARM: Log in to start the final rebase.     ║
-  ║  Rebase runs automatically after login (~2-5 min).  ║
+  ║  Bazzite ARM: Log in to start the final rebase.      ║
+  ║  Rebase runs automatically after login (~2-5 min).   ║
   ╚══════════════════════════════════════════════════════╝
 MOTD_EOF
 
@@ -406,8 +406,8 @@ if [[ ! -f /var/lib/bazzite-rebase-done ]] && [[ -d /var/lib/bazzite-install ]];
     echo "  ╔═══════════════════════════════════════════════════╗"
     echo "  ║         Bazzite ARM - Final Installation          ║"
     echo "  ║                                                   ║"
-    echo "  ║  Rebasing to Bazzite ARM. This takes ~2-5 min.   ║"
-    echo "  ║  The system reboots automatically when done.     ║"
+    echo "  ║  Rebasing to Bazzite ARM. This takes ~2-5 min.    ║"
+    echo "  ║  The system reboots automatically when done.      ║"
     echo "  ╚═══════════════════════════════════════════════════╝"
     echo ""
     echo "  [sudo] password for $(whoami):"
