@@ -358,48 +358,13 @@ sudo skopeo copy \
     "oci:${OCI_DEST}:latest"
 echo "Image exported successfully."
 
-# Install first-boot rebase mechanisms into the deployment.
-# We use TWO approaches for reliability:
-#   1. /etc/profile.d/bazzite-rebase.sh -- runs automatically when user logs in
-#   2. systemd service -- as a fallback
-# Both use the local OCI archive exported in step 8.
+# Install first-boot rebase mechanism into the deployment.
+# Profile.d only -- no systemd service. The service caused output to overlap
+# with the TTY login prompt since systemd started it in parallel with login.
+# Profile.d runs AFTER the user has fully logged in, so output is clean.
 if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
 
-    # Install a service that ensures /boot/loader exists BEFORE rpm-ostreed starts.
-    # On Asahi with GRUB, /boot/loader can be missing after the ostree conversion
-    # because grub2-mkconfig/ostree may not create it in the expected format.
-    # rpm-ostreed refuses to start if /boot/loader is absent, blocking all
-    # rpm-ostree commands including rebase.
-    sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system"
-    sudo tee "${DEPLOY_DIR}/etc/systemd/system/ensure-boot-loader.service" \
-        > /dev/null << 'BOOTLOADER_SVC_EOF'
-[Unit]
-Description=Ensure /boot/loader symlink exists for ostree/rpm-ostreed
-DefaultDependencies=no
-Before=rpm-ostreed.service
-After=local-fs.target
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/bin/bash -c '\
-    if [[ ! -e /boot/loader ]]; then \
-        mkdir -p /boot/loader.0/entries && \
-        ln -sfn loader.0 /boot/loader && \
-        echo "Created /boot/loader -> loader.0"; \
-    fi'
-
-[Install]
-WantedBy=multi-user.target
-BOOTLOADER_SVC_EOF
-
-    sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants"
-    sudo ln -sf \
-        /etc/systemd/system/ensure-boot-loader.service \
-        "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants/ensure-boot-loader.service"
-
     # bazzite-rebase-status: /usr/local -> /var/usrlocal in atomic Fedora.
-    # Write to STATEROOT_VAR/usrlocal/bin so it appears at /usr/local/bin.
     sudo mkdir -p "${STATEROOT_VAR}/usrlocal/bin"
     sudo tee "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-status" > /dev/null << 'STATUS_EOF'
 #!/usr/bin/bash
@@ -409,88 +374,60 @@ echo "  ║         Bazzite ARM - First Boot Rebase          ║"
 echo "  ╚══════════════════════════════════════════════════╝"
 echo ""
 if [[ -f /var/lib/bazzite-rebase-done ]]; then
-    echo "  Status: COMPLETE (reboot to boot into Bazzite)"
-    echo "  Run: sudo systemctl reboot"
-elif systemctl is-active --quiet bazzite-firstboot-rebase.service 2>/dev/null; then
-    echo "  Status: RUNNING via systemd service"
-    echo ""
-    journalctl -fu bazzite-firstboot-rebase.service --no-hostname -o cat
+    echo "  Status: COMPLETE -- run: sudo systemctl reboot"
 else
-    echo "  Status: Ready -- rebase will start automatically at next login"
-    echo "  Or run manually:"
+    echo "  Status: Ready -- will start automatically at login"
+    echo "  Or run now:"
     echo "    sudo rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest"
 fi
 STATUS_EOF
     sudo chmod +x "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-status"
 
-    # MOTD -- written to the deployment's etc (3-way merge makes it writable at runtime)
+    # MOTD -- shown at login
     sudo tee "${DEPLOY_DIR}/etc/motd" > /dev/null << 'MOTD_EOF'
   ╔══════════════════════════════════════════════════════╗
-  ║   Bazzite ARM rebase will start automatically.       ║
-  ║   Run: bazzite-rebase-status  to watch progress.     ║
-  ║   The system reboots automatically when done.        ║
+  ║  Bazzite ARM: Log in to start the final rebase.     ║
+  ║  Rebase runs automatically after login (~2-5 min).  ║
   ╚══════════════════════════════════════════════════════╝
 MOTD_EOF
 
-    # Approach 1: profile.d script (most reliable -- runs at login shell)
+    sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system"
+
+    # Profile.d: runs after login, output is clean (no overlap with login prompt)
     sudo mkdir -p "${DEPLOY_DIR}/etc/profile.d"
     sudo tee "${DEPLOY_DIR}/etc/profile.d/bazzite-rebase.sh" > /dev/null << 'PROF_EOF'
 #!/usr/bin/bash
-# Auto-rebase to Bazzite ARM on first login
+# Auto-rebase to Bazzite ARM after login (profile.d -- runs once shell is ready)
 if [[ ! -f /var/lib/bazzite-rebase-done ]] && [[ -d /var/lib/bazzite-install ]]; then
+    # Small pause to ensure the shell prompt has fully initialized
+    sleep 1
+    clear
     echo ""
-    echo "  ╔════════════════════════════════════════════╗"
-    echo "  ║  Rebasing to Bazzite ARM (~2-5 min)...     ║"
-    echo "  ╚════════════════════════════════════════════╝"
+    echo "  ╔═══════════════════════════════════════════════════╗"
+    echo "  ║         Bazzite ARM - Final Installation          ║"
+    echo "  ║                                                   ║"
+    echo "  ║  Rebasing to Bazzite ARM. This takes ~2-5 min.   ║"
+    echo "  ║  The system reboots automatically when done.     ║"
+    echo "  ╚═══════════════════════════════════════════════════╝"
     echo ""
+    echo "  [sudo] password for $(whoami):"
 
     if sudo rpm-ostree rebase \
             "ostree-unverified-image:oci:/var/lib/bazzite-install:latest"; then
         sudo touch /var/lib/bazzite-rebase-done
         echo ""
-        echo "  Rebase complete! Rebooting into Bazzite ARM in 5 seconds..."
+        echo "  ✓ Rebase complete! Rebooting into Bazzite ARM in 5 seconds..."
         sleep 5
         sudo systemctl reboot
     else
-        echo "  Rebase failed. Retry with:"
+        echo ""
+        echo "  ✗ Rebase failed. Run manually:"
         echo "    sudo rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest"
     fi
 fi
 PROF_EOF
 
-    # Approach 2: systemd service (fallback for non-interactive logins)
-    sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system" \
-                  "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants"
-    sudo tee "${DEPLOY_DIR}/etc/systemd/system/bazzite-firstboot-rebase.service" \
-        > /dev/null << 'SVC_EOF'
-[Unit]
-Description=Rebase to Bazzite ARM on first boot
-After=local-fs.target
-ConditionPathExists=!/var/lib/bazzite-rebase-done
-ConditionPathExists=/var/lib/bazzite-install
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/bin/bash -c '\
-    rpm-ostree rebase \
-        ostree-unverified-image:oci:/var/lib/bazzite-install:latest \
-    && touch /var/lib/bazzite-rebase-done \
-    && sleep 5 \
-    && systemctl reboot'
-StandardOutput=journal+console
-StandardError=journal+console
-TimeoutStartSec=1800
-
-[Install]
-WantedBy=multi-user.target
-SVC_EOF
-
-    sudo ln -sf \
-        /etc/systemd/system/bazzite-firstboot-rebase.service \
-        "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service"
-
-    echo "First-boot rebase installed (profile.d + systemd service)."
+    echo "First-boot rebase installed (profile.d only -- no systemd service overlap)."
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────

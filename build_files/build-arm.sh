@@ -182,7 +182,8 @@ systemctl disable waydroid-container.service || true
 systemctl disable rpm-ostreed-automatic.timer || true
 systemctl disable force-wol.service || true
 systemctl mask iscsi || true
-systemctl mask wpa_supplicant.service || true
+# Do NOT mask wpa_supplicant on ARM -- Apple Silicon uses NM + wpa_supplicant
+# for the Broadcom WiFi chip. Masking it breaks WiFi entirely.
 systemctl disable iwd.service || true
 
 if systemctl list-unit-files | grep -q power-profiles-daemon.service; then
