@@ -118,16 +118,23 @@ install-fairydust-kernel:
     cd "$WORK_DIR/linux"
 
     echo "--- Configuring kernel (using running config as base) ---"
-    cp "/boot/config-$(uname -r)" .config 2>/dev/null || \
+    if cp "/boot/config-$(uname -r)" .config 2>/dev/null; then
+        echo "Using running kernel config as base: /boot/config-$(uname -r)"
+    else
+        echo "Running kernel config not found -- using asahi ARM64 defconfig"
         make ARCH=arm64 defconfig
-    # Enable Thunderbolt/USB4
+    fi
+    # Enable Thunderbolt/USB4 -- these are the key symbols for dock + display support
     scripts/config --enable CONFIG_USB4
     scripts/config --enable CONFIG_USB4_NET
     scripts/config --enable CONFIG_THUNDERBOLT
     scripts/config --enable CONFIG_THUNDERBOLT_NET
     scripts/config --enable CONFIG_USB_TYPEC_ALTMODE
     scripts/config --enable CONFIG_USB_TYPEC_DP_ALTMODE
-    yes "" | make ARCH=arm64 oldconfig
+    # Use olddefconfig: sets ALL new symbols to their defaults silently.
+    # Do NOT use "yes | make oldconfig" -- yes generates infinite output,
+    # gets SIGPIPE when make closes stdin, exits 141, and kills the recipe.
+    make ARCH=arm64 olddefconfig
 
     echo "--- Building kernel (this takes 30-60 minutes) ---"
     NCPU=$(nproc)
