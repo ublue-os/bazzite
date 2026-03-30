@@ -152,7 +152,7 @@ hooks:
             Studio Code über Universal Blue's Brew Tap zu beziehen.
             
             Alternativ können Sie zu Bazzite DX (Entwickler Erfahrung) wechseln,
-            welches Docker und Visual Studio Code enthalt.
+            welches Docker und Visual Studio Code enthält.
           es: >-
             Esto es una aplicación de <a href="https://www.microsoft.com/">Microsoft</a>
             y no suportado oficialmente en Flatpak. Bazzite recomienda descargar
