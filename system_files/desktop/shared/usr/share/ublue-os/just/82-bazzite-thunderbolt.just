@@ -86,16 +86,27 @@ install-fairydust-kernel:
         exit 0
     fi
 
-    echo "--- Installing build dependencies ---"
-    sudo rpm-ostree install --apply-live \
-        git bc bison flex openssl-devel dwarves elfutils-libelf-devel \
-        gcc make perl rpm-build ncurses-devel python3 rsync cpio \
-        binutils openssl perl-Carp perl-generators \
-        gcc-aarch64-linux-gnu 2>/dev/null || \
-    sudo dnf5 install -y \
-        git bc bison flex openssl-devel dwarves elfutils-libelf-devel \
-        gcc make perl rpm-build ncurses-devel python3 rsync cpio \
-        binutils openssl perl-Carp 2>/dev/null || true
+    echo "--- Checking build dependencies ---"
+    # On the fairydust image variant, all build deps are pre-installed.
+    # On the stable variant, install them now via rpm-ostree.
+    VARIANT=$(cat /usr/share/ublue-os/kernel-variant 2>/dev/null || echo "stable")
+    if [[ "$VARIANT" != "fairydust" ]]; then
+        echo "Note: installing build deps on stable variant (fairydust has them pre-installed)"
+        sudo rpm-ostree install --apply-live \
+            gcc gcc-c++ make bc bison flex git \
+            openssl-devel dwarves elfutils-libelf-devel \
+            perl perl-Carp rpm-build ncurses-devel python3 \
+            rsync cpio binutils openssl diffutils \
+            hostname kmod dracut grubby 2>&1 || \
+        echo "rpm-ostree install failed -- trying dnf5 (may need reboot after)"
+    fi
+
+    # Verify make is available before proceeding
+    if ! command -v make &>/dev/null; then
+        echo "ERROR: 'make' not found. Please run from the fairydust image variant or"
+        echo "run: sudo rpm-ostree install make gcc && reboot"
+        exit 1
+    fi
 
     WORK_DIR=$(mktemp -d /var/tmp/fairydust-XXXXX)
     echo "--- Cloning fairydust branch to $WORK_DIR ---"
