@@ -140,13 +140,26 @@ install-fairydust-kernel:
     NCPU=$(nproc)
     make ARCH=arm64 -j"${NCPU}" Image modules
 
-    echo "--- Installing kernel ---"
+    # Capture the kernel release string once to use consistently
+    KRELEASE=$(make -s kernelrelease)
+    echo "Kernel release: $KRELEASE"
+
+    echo "--- Installing kernel modules ---"
+    # On atomic Fedora/Bazzite, /usr/lib/modules is part of the immutable
+    # ostree deployment and is READ-ONLY. rpm-ostree usroverlay mounts a
+    # temporary writable overlay on /usr for this boot session only.
+    # The overlay is lost on next reboot but the files written to it are
+    # copied into the next deployment when you run rpm-ostree commands.
+    sudo rpm-ostree usroverlay
+    echo "usroverlay active -- /usr/lib/modules is now writable"
     sudo make ARCH=arm64 modules_install
+
+    echo "--- Installing kernel image and initramfs to /boot ---"
     sudo install -m 644 arch/arm64/boot/Image \
-        "/boot/vmlinuz-fairydust-$(make -s kernelrelease)"
+        "/boot/vmlinuz-fairydust-${KRELEASE}"
     sudo dracut --force \
-        "/boot/initramfs-fairydust-$(make -s kernelrelease).img" \
-        "$(make -s kernelrelease)"
+        "/boot/initramfs-fairydust-${KRELEASE}.img" \
+        "${KRELEASE}"
 
     echo "--- Updating GRUB ---"
     sudo grub2-mkconfig -o /boot/grub2/grub.cfg
