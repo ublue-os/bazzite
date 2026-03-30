@@ -135,7 +135,12 @@ screens:
         title: "Global DLSS Upgrade"
         description: "Toggle global Proton DLSS upgrade; updates DLSS DLLs. Only compatible with Proton GE, Proton EM, or similar forks."
         default: false
-        script: "ujust toggle-global-dlss enable"        
+        script: "ujust toggle-global-dlss enable"
+      - id: "reisub"
+        title: "REISUB"
+        description: "Toggle the Magic SysRq key and allow using the REISUB shortcut to force-reboot your computer slightly more safely. Note that it is insecure to have it enabled since you can use it to bypass some stuff"
+        default: false
+        script: "ujust toggle-reisub enable"
   - title: "Media Applications"
     description: "Entertainment and streaming services"
     actions:
