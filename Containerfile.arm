@@ -21,9 +21,17 @@
 #
 # Bazzite ARM -- Apple Silicon edition
 # Built on top of Fedora Asahi Remix Atomic Desktop images
+#
+# KERNEL_VARIANT options:
+#   stable     (default) -- Asahi stable kernel, production-ready
+#   fairydust  (experimental) -- Installs bolt/USB4/Thunderbolt userspace stack
+#              and a ujust recipe to build+install the fairydust kernel.
+#              The fairydust branch adds Thunderbolt, USB4, DisplayPort over USB-C.
+#              See: https://github.com/AsahiLinux/linux/tree/fairydust
 
 ARG FEDORA_VERSION="${FEDORA_VERSION:-42}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
 ARG BASE_IMAGE="quay.io/fedora-asahi-remix-atomic-desktops/${BASE_IMAGE_NAME}:${FEDORA_VERSION}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT:-}"
 ARG VERSION_TAG="${VERSION_TAG:-}"
@@ -39,9 +47,12 @@ ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG FEDORA_VERSION="${FEDORA_VERSION:-42}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT:-}"
 ARG VERSION_TAG="${VERSION_TAG:-}"
 ARG VERSION_PRETTY="${VERSION_PRETTY:-}"
+
+ENV KERNEL_VARIANT=${KERNEL_VARIANT}
 
 COPY system_files/desktop/shared /
 COPY system_files/desktop/${BASE_IMAGE_NAME} /

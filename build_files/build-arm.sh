@@ -4,6 +4,12 @@ set -eoux pipefail
 
 export BUILDAH_PLATFORM=linux/arm64
 
+# KERNEL_VARIANT is passed in via ENV from Containerfile.arm
+# stable    = default Asahi kernel (production)
+# fairydust = experimental branch with Thunderbolt/USB4/DisplayPort-Alt-Mode
+KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
+echo "Building Bazzite ARM with KERNEL_VARIANT=${KERNEL_VARIANT}"
+
 FEDORA_VER=$(rpm -E %fedora)
 
 dnf5 install -y \
@@ -157,6 +163,32 @@ fi
 if dnf5 -y copr enable ublue-os/bling 2>/dev/null; then
     dnf5 -y install --skip-broken --skip-unavailable \
         ublue-os-bling
+fi
+
+# Thunderbolt / USB4 userspace stack
+# bolt: Thunderbolt device manager -- authorises devices, works with any
+# kernel that has CONFIG_USB4/CONFIG_THUNDERBOLT. Installed on ALL variants.
+# With the fairydust kernel, this unlocks your dock + peripherals + 4K display.
+dnf5 -y install --skip-broken --skip-unavailable \
+    bolt \
+    usbutils \
+    pciutils
+
+systemctl enable bolt.service || true
+
+# fairydust-specific setup
+# The fairydust kernel RPM is not yet packaged in any COPR so we cannot swap
+# the kernel at image build time. Instead we write a marker file and install
+# the build toolchain needed by ujust install-fairydust-kernel (see the ujust
+# recipe which compiles and installs the kernel at runtime).
+if [[ "${KERNEL_VARIANT}" == "fairydust" ]]; then
+    echo "fairydust" > /usr/share/ublue-os/kernel-variant
+    # Additional userspace tools useful with fairydust (USB4 debugging)
+    dnf5 -y install --skip-broken --skip-unavailable \
+        usbredir \
+        nftables
+else
+    echo "stable" > /usr/share/ublue-os/kernel-variant
 fi
 
 # Asahi Flatpak Mesa runtimes -- GPU acceleration for Flatpak apps

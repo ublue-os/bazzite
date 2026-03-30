@@ -1,0 +1,209 @@
+name: Build Bazzite ARM (Experimental)
+on:
+  schedule:
+    - cron: "40 6 * * 1" # 6:40 utc monday
+  pull_request:
+    branches:
+      - experimental
+    paths-ignore:
+      - "**.md"
+      - "**.txt"
+      - "installer/**"
+      - "repo_content/**"
+      - "spec_files/**"
+      - "post_install_files/**"
+      - "press_kit/**"
+      - "docs/**"
+  push:
+    branches:
+      - experimental
+    paths-ignore:
+      - "**.md"
+      - "**.txt"
+      - "repo_content/**"
+      - "spec_files/**"
+      - "post_install_files/**"
+      - "press_kit/**"
+  workflow_dispatch:
+    inputs:
+      handwritten:
+        description: 'Small changelog:'
+        required: false
+
+env:
+  PUSH_IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}-arm-experimental
+  cancel-in-progress: true
+
+jobs:
+  push-ghcr-arm-experimental:
+    name: Build ARM ${{ matrix.kernel_variant }} (${{ matrix.base_image_name }})
+    runs-on: ubuntu-24.04-arm
+    continue-on-error: false
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        base_image_name: [kinoite, silverblue]
+        fedora_version: [42]
+        # stable = default Asahi kernel
+        # fairydust = experimental kernel branch with Thunderbolt/USB4/DisplayPort
+        kernel_variant: [stable, fairydust]
+        include:
+          - fedora_version: 42
+            is_latest_version: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          submodules: recursive
+
+      - name: Get current date
+        id: date
+        run: |
+          echo "date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
+
+      - name: Define image name
+        run: |
+          BASE="${{ matrix.base_image_name }}"
+          VARIANT="${{ matrix.kernel_variant }}"
+          if [[ "$BASE" == "silverblue" ]]; then
+            SUFFIX="-gnome"
+          else
+            SUFFIX=""
+          fi
+          if [[ "$VARIANT" == "fairydust" ]]; then
+            VARIANT_SUFFIX="-fairydust"
+          else
+            VARIANT_SUFFIX=""
+          fi
+          echo "IMAGE_NAME=bazzite-arm${SUFFIX}${VARIANT_SUFFIX}" >> $GITHUB_ENV
+
+      - name: Define SHA_HEAD_SHORT
+        run: echo "SHA_HEAD_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Lowercase Registry
+        id: registry_case
+        uses: ASzc/change-string-case-action@d0603cd0a7dd490be678164909f65c7737470a7f # v6
+        with:
+          string: ${{ env.PUSH_IMAGE_REGISTRY }}
+
+      - name: Lowercase Image
+        id: image_case
+        uses: ASzc/change-string-case-action@d0603cd0a7dd490be678164909f65c7737470a7f # v6
+        with:
+          string: ${{ env.IMAGE_NAME }}
+
+      - name: Pull base image and find version
+        id: labels
+        run: |
+          set -eo pipefail
+          BASE_IMAGE="quay.io/fedora-asahi-remix-atomic-desktops/${{ matrix.base_image_name }}:${{ matrix.fedora_version }}"
+          sudo podman pull "$BASE_IMAGE"
+          sudo skopeo inspect "docker://$BASE_IMAGE" > source.json
+          UPSTREAM_TAG=$(jq -r '.Labels["org.opencontainers.image.version"]' source.json)
+          if [ -z "$UPSTREAM_TAG" ] || [ "null" = "$UPSTREAM_TAG" ]; then
+            UPSTREAM_TAG="${{ matrix.fedora_version }}"
+          fi
+          UPSTREAM_TAG="${UPSTREAM_TAG%\.[0-9]}"
+          SHA_SHORT="${GITHUB_SHA::7}"
+          VARIANT="${{ matrix.kernel_variant }}"
+
+          if [ -n "${{ github.event.pull_request.number }}" ]; then
+            VERSION="pr-${{ matrix.fedora_version }}-${{ github.event.pull_request.number }}-arm-${VARIANT}"
+            PRETTY_VERSION="PR (${{ github.event.pull_request.number }}, ${UPSTREAM_TAG}, ARM, ${VARIANT})"
+          else
+            VERSION="experimental-${UPSTREAM_TAG}-arm-${VARIANT}"
+            PRETTY_VERSION="Experimental (F${UPSTREAM_TAG}, #${SHA_SHORT}, ARM, ${VARIANT^})"
+          fi
+          echo "tag=${VERSION}" >> $GITHUB_OUTPUT
+          echo "pretty=${PRETTY_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Image Metadata
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5
+        id: metadata
+        with:
+          images: ${{ steps.registry_case.outputs.lowercase }}/${{ steps.image_case.outputs.lowercase }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ matrix.fedora_version }}
+            type=raw,value=${{ steps.labels.outputs.tag }}
+            type=raw,value=${{ env.SHA_HEAD_SHORT }}
+          labels: |
+            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.description=Bazzite ARM experimental (${{ matrix.kernel_variant }} kernel variant). Thunderbolt/USB4/DisplayPort support for Apple Silicon.
+            org.opencontainers.image.vendor=${{ github.repository_owner }}
+            org.opencontainers.image.url=https://github.com/${{ github.repository }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ steps.labels.outputs.tag }}
+            org.opencontainers.image.created=${{ steps.date.outputs.date }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            containers.bootc=1
+            org.bazzite.kernel-variant=${{ matrix.kernel_variant }}
+          sep-tags: " "
+          sep-annotations: " "
+
+      - name: Build Image
+        id: build_image
+        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2
+        with:
+          containerfiles: |
+            ./Containerfile.arm
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
+          oci: false
+          platforms: linux/arm64
+          build-args: |
+            BASE_IMAGE_NAME=${{ matrix.base_image_name }}
+            FEDORA_VERSION=${{ matrix.fedora_version }}
+            KERNEL_VARIANT=${{ matrix.kernel_variant }}
+            IMAGE_NAME=${{ env.IMAGE_NAME }}
+            IMAGE_VENDOR=${{ github.repository_owner }}
+            IMAGE_BRANCH=${{ github.ref_name }}
+            SHA_HEAD_SHORT=${{ env.SHA_HEAD_SHORT }}
+            VERSION_TAG=${{ steps.labels.outputs.tag }}
+            VERSION_PRETTY=${{ steps.labels.outputs.pretty }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push To GHCR
+        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2
+        if: github.event_name != 'pull_request'
+        id: push
+        env:
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ github.token }}
+        with:
+          registry: ${{ steps.registry_case.outputs.lowercase }}
+          image: ${{ steps.image_case.outputs.lowercase }}
+          tags: ${{ steps.metadata.outputs.tags }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@3454372f43399081ed03b604cb2d021dabca52bb # v3.8.2
+        if: github.event_name != 'pull_request'
+
+      - name: Sign container image
+        if: github.event_name != 'pull_request'
+        run: |
+          IMAGE_FULL="${{ steps.registry_case.outputs.lowercase }}/${{ steps.image_case.outputs.lowercase }}"
+          for tag in ${{ steps.metadata.outputs.tags }}; do
+            TAG_ONLY=$(echo "$tag" | cut -d':' -f2)
+            cosign sign -y --key env://COSIGN_PRIVATE_KEY "${IMAGE_FULL}:${TAG_ONLY}"
+          done
+        env:
+          COSIGN_EXPERIMENTAL: false
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
