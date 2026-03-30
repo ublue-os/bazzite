@@ -23,8 +23,19 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-BAZZITE_IMAGE="localhost/bazzite-arm:latest"
 ATOMIC_BASE="quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42"
+
+# Parse --fairydust flag
+KERNEL_VARIANT="stable"
+for arg in "$@"; do
+    if [[ "$arg" == "--fairydust" ]]; then
+        KERNEL_VARIANT="fairydust"
+    fi
+done
+
+BAZZITE_IMAGE="localhost/bazzite-arm-${KERNEL_VARIANT}:latest"
+
+echo "Kernel variant: ${KERNEL_VARIANT}"
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Helper: ensure /boot/loader is the loader.0 symlink ostree requires
@@ -121,6 +132,7 @@ if ! sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
         --build-arg FEDORA_VERSION=42 \
         --build-arg IMAGE_NAME=bazzite-arm \
         --build-arg IMAGE_VENDOR=nripeshn \
+        --build-arg KERNEL_VARIANT="${KERNEL_VARIANT}" \
         --build-arg IMAGE_BRANCH=apple-silicon \
         --build-arg VERSION_TAG=local \
         --build-arg VERSION_PRETTY="Local Build" \
