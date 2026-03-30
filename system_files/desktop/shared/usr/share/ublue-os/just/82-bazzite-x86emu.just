@@ -1,4 +1,35 @@
 # vim: set ft=make :
+# Update the Apple Silicon bootloader chain (m1n1, U-Boot) safely
+# NOTE: Do NOT rely on rpm-ostree upgrade for these -- run this recipe manually.
+
+# See https://github.com/fedora-asahi-remix-atomic-desktops/images/issues/2
+[group("arm")]
+update-asahi-bootloader:
+    #!/usr/bin/bash
+    set -eo pipefail
+    if [[ "$(uname -m)" != "aarch64" ]]; then
+        echo "This command is only relevant on aarch64 (Apple Silicon) systems."
+        exit 1
+    fi
+    echo "=== Asahi Bootloader Update ==="
+    echo ""
+    echo "This updates m1n1 and U-Boot in the Apple Silicon boot chain."
+    echo "WARNING: Only run this when you know a bootloader update is safe."
+    echo "See: https://github.com/fedora-asahi-remix-atomic-desktops/images/issues/2"
+    echo ""
+    read -rp "Continue? (y/N): " confirm
+    if [[ "$confirm" != [yY] ]]; then
+        echo "Aborted."
+        exit 0
+    fi
+    if command -v update-m1n1 &>/dev/null; then
+        echo "Running update-m1n1..."
+        sudo update-m1n1
+        echo "Bootloader update complete."
+    else
+        echo "update-m1n1 not found. Is asahi-scripts installed?"
+        exit 1
+    fi
 
 # Check x86/x86_64 emulation status on ARM64
 [group("arm")]
