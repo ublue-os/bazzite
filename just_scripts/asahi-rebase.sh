@@ -181,6 +181,17 @@ if [[ -z "$ROOT_UUID" ]]; then
     exit 1
 fi
 
+# Capture /boot and /boot/efi UUIDs from the RUNNING traditional system.
+# The base-atomic image's fstab only has / -- it doesn't know about Asahi's
+# separate /boot (ext4) and /boot/efi (vfat) partitions. Without fstab entries
+# for these, the atomic system boots with /boot unmounted (read-only overlay),
+# and all attempts to write to /boot (including rpm-ostreed setup) fail with
+# "Read-only file system".
+BOOT_UUID=$(findmnt -no UUID /boot 2>/dev/null || true)
+EFI_UUID=$(findmnt -no UUID /boot/efi 2>/dev/null || true)
+echo "Boot UUID:  ${BOOT_UUID:-NOT FOUND}"
+echo "EFI UUID:   ${EFI_UUID:-NOT FOUND}"
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Step 6: Deploy the atomic base image
 # ──────────────────────────────────────────────────────────────────────────────
@@ -252,6 +263,31 @@ if [[ -z "$DEPLOY_DIR" || ! -d "$DEPLOY_DIR" ]]; then
         -maxdepth 1 -name "*.0" -type d \
         -printf '%T@ %p\n' 2>/dev/null \
         | sort -rn | head -1 | cut -d' ' -f2)
+fi
+
+# ── CRITICAL: Inject /boot and /boot/efi into the deployment's fstab ─────────
+# The base-atomic image ships with an fstab that only has /. Without entries
+# for /boot (ext4, disk0s5) and /boot/efi (vfat, disk0s4), the atomic system
+# boots with those partitions unmounted. rpm-ostreed then fails with
+# "Read-only file system" when it tries to write to /boot/loader.
+if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
+    FSTAB="${DEPLOY_DIR}/etc/fstab"
+    sudo touch "${FSTAB}"
+
+    if [[ -n "$BOOT_UUID" ]] && ! grep -q "UUID=${BOOT_UUID}" "${FSTAB}" 2>/dev/null; then
+        echo "UUID=${BOOT_UUID}  /boot  ext4  defaults  1  2" \
+            | sudo tee -a "${FSTAB}" > /dev/null
+        echo "Added /boot (UUID=${BOOT_UUID}) to deployment fstab."
+    fi
+
+    if [[ -n "$EFI_UUID" ]] && ! grep -q "UUID=${EFI_UUID}" "${FSTAB}" 2>/dev/null; then
+        echo "UUID=${EFI_UUID}  /boot/efi  vfat  umask=0077,shortname=winnt  0  2" \
+            | sudo tee -a "${FSTAB}" > /dev/null
+        echo "Added /boot/efi (UUID=${EFI_UUID}) to deployment fstab."
+    fi
+
+    echo "Deployment fstab:"
+    cat "${FSTAB}"
 fi
 
 # Wrap in subshell with set +e -- user errors must NEVER block the GRUB update
@@ -407,16 +443,6 @@ if [[ ! -f /var/lib/bazzite-rebase-done ]] && [[ -d /var/lib/bazzite-install ]];
     echo "  ║  Rebasing to Bazzite ARM (~2-5 min)...     ║"
     echo "  ╚════════════════════════════════════════════╝"
     echo ""
-
-    # Ensure /boot/loader exists -- rpm-ostreed refuses to start without it
-    # On Asahi, grub2-mkconfig may not create this in the expected ostree format
-    if [[ ! -e /boot/loader ]]; then
-        echo "  Fixing /boot/loader (required by rpm-ostreed)..."
-        sudo mkdir -p /boot/loader.0/entries
-        sudo ln -sfn loader.0 /boot/loader
-        sudo systemctl restart rpm-ostreed
-        sleep 3
-    fi
 
     if sudo rpm-ostree rebase \
             "ostree-unverified-image:oci:/var/lib/bazzite-install:latest"; then
