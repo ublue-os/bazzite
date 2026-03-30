@@ -329,6 +329,39 @@ echo "Image exported successfully."
 # Both use the local OCI archive exported in step 8.
 if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
 
+    # Install a service that ensures /boot/loader exists BEFORE rpm-ostreed starts.
+    # On Asahi with GRUB, /boot/loader can be missing after the ostree conversion
+    # because grub2-mkconfig/ostree may not create it in the expected format.
+    # rpm-ostreed refuses to start if /boot/loader is absent, blocking all
+    # rpm-ostree commands including rebase.
+    sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system"
+    sudo tee "${DEPLOY_DIR}/etc/systemd/system/ensure-boot-loader.service" \
+        > /dev/null << 'BOOTLOADER_SVC_EOF'
+[Unit]
+Description=Ensure /boot/loader symlink exists for ostree/rpm-ostreed
+DefaultDependencies=no
+Before=rpm-ostreed.service
+After=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c '\
+    if [[ ! -e /boot/loader ]]; then \
+        mkdir -p /boot/loader.0/entries && \
+        ln -sfn loader.0 /boot/loader && \
+        echo "Created /boot/loader -> loader.0"; \
+    fi'
+
+[Install]
+WantedBy=multi-user.target
+BOOTLOADER_SVC_EOF
+
+    sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants"
+    sudo ln -sf \
+        /etc/systemd/system/ensure-boot-loader.service \
+        "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants/ensure-boot-loader.service"
+
     # bazzite-rebase-status: /usr/local -> /var/usrlocal in atomic Fedora.
     # Write to STATEROOT_VAR/usrlocal/bin so it appears at /usr/local/bin.
     sudo mkdir -p "${STATEROOT_VAR}/usrlocal/bin"
@@ -374,6 +407,17 @@ if [[ ! -f /var/lib/bazzite-rebase-done ]] && [[ -d /var/lib/bazzite-install ]];
     echo "  ║  Rebasing to Bazzite ARM (~2-5 min)...     ║"
     echo "  ╚════════════════════════════════════════════╝"
     echo ""
+
+    # Ensure /boot/loader exists -- rpm-ostreed refuses to start without it
+    # On Asahi, grub2-mkconfig may not create this in the expected ostree format
+    if [[ ! -e /boot/loader ]]; then
+        echo "  Fixing /boot/loader (required by rpm-ostreed)..."
+        sudo mkdir -p /boot/loader.0/entries
+        sudo ln -sfn loader.0 /boot/loader
+        sudo systemctl restart rpm-ostreed
+        sleep 3
+    fi
+
     if sudo rpm-ostree rebase \
             "ostree-unverified-image:oci:/var/lib/bazzite-install:latest"; then
         sudo touch /var/lib/bazzite-rebase-done
