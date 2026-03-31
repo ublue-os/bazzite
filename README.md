@@ -32,7 +32,7 @@
   - [Star History](#star-history)
   - [Special Thanks](#special-thanks)
   - [Build Your Own](#build-your-own)
-    - [How to Sign Your Images](#how-to-sign-your-images)
+    - [How to Sign Your Own Images](#how-to-sign-your-own-images)
   - [Join The Community](#join-the-community)
 ---
 
@@ -283,18 +283,16 @@ Bazzite is a community effort and wouldn't exist without everyone's support. Bel
 
 ## Build Your Own
 
-Bazzite is built entirely via GitHub Actions. Creating your own custom version of it is as easy as forking this repository, adding a private signing key, and enabling the fork's GitHub Actions. Running the `Build Bazzite` workflow will then generate custom images for all variants of Bazzite.
-
-If you only want to generate images for the variants of Bazzite you are using, edit `.github/workflows/build.yml` to comment out the variants you do not wish to build in the `push-ghcr` job's `strategy`'s `matrix` list.
+Bazzite is built entirely in GitHub and creating your own custom version of it is as easy as forking this repository, adding a private signing key, and enabling the fork's GitHub actions. You will also need to specifically enable the `Build Bazzite` workflow. After this, running it will generate an image.
 
 We also ship a config for the popular [pull app](https://github.com/apps/pull) if you'd like to keep your fork in sync with upstream. Enable this app on your repo to keep track of Bazzite changes while also making your own modifications.
 
-### How to Sign Your Images
+### How to Sign Your Own Images
 
-1. First, [familiarize yourself](https://docs.github.com/en/actions/security-guides/encrypted-secrets) with keeping secrets on GitHub.
-2. [Generate a new key pair](https://docs.sigstore.dev/cosign/key_management/signing_with_self-managed_keys/) with Cosign (`cosign generate-key-pair`). This key pair must have no signature.
-3. Replace the `cosign.pub` file in your public repo with the one you generated - you and your users will need it to check the signatures.
-4. Add the private key (stored as text inside the `cosign.key` file) as a Repository Secret in the fork's settings page, in the `Settings -> Secrets and variables -> Actions` menu. Name the secret `SIGNING_SECRET`.
+1. First, [familiarize yourself](https://docs.github.com/en/actions/security-guides/encrypted-secrets) on keeping secrets on GitHub.
+2. [Generate a new key pair](https://docs.sigstore.dev/cosign/key_management/signing_with_self-managed_keys/) with Cosign. This key pair must have no signature.
+3. Replace the `cosign.pub` file in your public repo with the one you generated - you and your users will need it to check the signatures. 
+4. Add the private key as a Repository Secret in the fork's settings page, in the menu `Settings -> Secrets and variables -> Actions`. Name the secret `SIGNING_SECRET`.
 
 ## Join The Community
 
