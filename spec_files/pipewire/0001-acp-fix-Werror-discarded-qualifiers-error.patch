@@ -1,0 +1,28 @@
+From fb47e739d9f605772b5098421a809537c108d30c Mon Sep 17 00:00:00 2001
+From: Wim Taymans <wtaymans@redhat.com>
+Date: Mon, 16 Mar 2026 13:11:20 +0100
+Subject: [PATCH] acp: fix -Werror=discarded-qualifiers error
+
+---
+ spa/plugins/alsa/acp/compat.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/spa/plugins/alsa/acp/compat.h b/spa/plugins/alsa/acp/compat.h
+index f7592e1a6..0f7b959df 100644
+--- a/spa/plugins/alsa/acp/compat.h
++++ b/spa/plugins/alsa/acp/compat.h
+@@ -429,9 +429,9 @@ static PA_PRINTF_FUNC(1,0) inline char *pa_vsprintf_malloc(const char *fmt, va_l
+ 
+ #define pa_fopen_cloexec(f,m)	fopen(f,m"e")
+ 
+-static inline char *pa_path_get_filename(const char *p)
++static inline const char *pa_path_get_filename(const char *p)
+ {
+-    char *fn;
++    const char *fn;
+     if (!p)
+         return NULL;
+     if ((fn = strrchr(p, PA_PATH_SEP_CHAR)))
+-- 
+2.53.0
+
