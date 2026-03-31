@@ -324,26 +324,6 @@ jobs:
           path: /var/tmp/buildah-cache-*
           key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
 
-      # Reprocess raw-img using rechunker which will delete it
-      - name: Run Rechunker
-        id: rechunk
-        run: |
-          container=$(sudo buildah from raw-img)
-          mnt=$(sudo buildah mount $container)
-          sudo bash -c "rm -rf $mnt/run/.* $mnt/run/* $mnt/tmp/.* $mnt/tmp/*"
-          sudo buildah umount $container
-          sudo buildah config --label "-" $container
-          sudo buildah commit --identity-label=false --rm $container raw-img
-
-          sudo podman run --rm --privileged --volume /var/lib/containers:/var/lib/containers \
-              quay.io/centos-bootc/centos-bootc:stream10 \
-              rpm-ostree compose build-chunked-oci \
-              --bootc --max-layers 96 --format-version 2 \
-              --from localhost/raw-img --output containers-storage:localhost/chunked-img
-          sudo podman untag raw-img
-
-          echo "ref=containers-storage:localhost/chunked-img" >> "$GITHUB_OUTPUT"
-
       # Relabel the image with Bazzite labels
       - name: Apply Labels
         id: relabel
@@ -366,6 +346,12 @@ jobs:
             version="testing-${version}"
           fi
 
+          # Clean out labels from base image
+          img=raw-img
+          container=$(sudo buildah from $img)
+          sudo buildah config --label "-" $container
+          sudo buildah commit --identity-label=false --rm $container $img
+
           declare -A tags
           while read -r t; do
               tags["$t"]=1
@@ -384,7 +370,6 @@ jobs:
           fi
 
           # Figure out config
-          img=${{ steps.rechunk.outputs.ref }}
           kver=$(sudo podman run --rm "$img" rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
           filter='{ "packages": [inputs | split(" ") | select(length==2) | { (.[0]): .[1] }] | sort_by(keys) | add }'
           manifest=$(sudo podman run --rm "$img" rpm -qa --qf '%{NAME} %{VERSION}-%{RELEASE}\n' \
@@ -407,6 +392,25 @@ jobs:
           sudo buildah commit --identity-label=false --rm $container $img
 
           echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # Reprocess raw-img using rechunker which will delete it
+      - name: Run Rechunker
+        id: rechunk
+        run: |
+          container=$(sudo buildah from raw-img)
+          mnt=$(sudo buildah mount $container)
+          sudo bash -c "rm -rf $mnt/run/.* $mnt/run/* $mnt/tmp/.* $mnt/tmp/*"
+          sudo buildah umount $container
+          sudo buildah commit --identity-label=false --rm $container raw-img
+
+          sudo podman run --rm --privileged --volume /var/lib/containers:/var/lib/containers \
+              localhost/raw-img \
+              rpm-ostree compose build-chunked-oci \
+              --bootc --max-layers 96 --format-version 2 \
+              --from localhost/raw-img --output containers-storage:localhost/chunked-img
+          sudo podman untag raw-img
+
+          echo "ref=containers-storage:localhost/chunked-img" >> "$GITHUB_OUTPUT"
 
       # Generate tags after relabel runs and checks the primary tag is not duplicated
       # If it is, relabel will suffix it by .1, .2, etc and put it in steps.relabel.outputs.version
