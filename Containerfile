@@ -342,6 +342,9 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl mask wpa_supplicant.service && \
     systemctl mask systemd-remount-fs.service && \
     systemctl disable iwd.service && \
+    mkdir -p /usr/lib/extest/ && \
+    /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest | jq -r '.assets[] | select(.name| test(".*so$")).browser_download_url')" -Lo /usr/lib/extest/libextest.so && \
+    setfattr -n user.component -v "extest" /usr/lib/extest/libextest.so && \
     chmod +x /usr/bin/framework_tool && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
     setcap 'cap_sys_admin+p' $(readlink -f /usr/bin/sunshine) && \
