@@ -46,7 +46,7 @@ hooks:
             Ceci est une application <a href="https://www.jetbrains.com/fr-fr/">JetBrains</a>
             et n'est pas officiellement pris en charge en Flatpak. Bazzite recommande
             l'utilisation de l'appli Toolbox pour gérer les IDEs JetBrains.
-           de: >-
+          de: >-
             Dies ist eine <a href="https://www.jetbrains.com/">JetBrains</a> Anwendung
             und nicht über Flatpak unterstützt. Bazzite empfiehlt, JetBrains IDEs
             über die Toolbox-App herunterzuladen.
@@ -262,7 +262,6 @@ hooks:
             Sebbene VSCodium sia verificato su Flatpak, si tratta comunque di un'applicazione riconfezionato
             <a href="https://www.microsoft.com/">Microsoft</a>, che non è ufficialmente supportata su Flatpak. 
             Bazzite consiglia di scaricare VSCodium tramite Brew Tap di Universal Blue.
-
 
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
