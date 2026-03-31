@@ -117,23 +117,57 @@ install-fairydust-kernel:
 
     cd "$WORK_DIR/linux"
 
-    echo "--- Configuring kernel (using running config as base) ---"
-    if cp "/boot/config-$(uname -r)" .config 2>/dev/null; then
-        echo "Using running kernel config as base: /boot/config-$(uname -r)"
-    else
-        echo "Running kernel config not found -- using asahi ARM64 defconfig"
-        make ARCH=arm64 defconfig
+    echo "--- Configuring kernel (Asahi config as base -- 16K pages required) ---"
+    # Critical: Apple Silicon REQUIRES CONFIG_ARM64_16K_PAGES=y.
+    # arm64 defconfig uses 4K pages -- that kernel black-screens and reboots.
+    # We MUST find the running Asahi kernel config. Try multiple paths.
+    ASAHI_CONFIG=""
+    KERNEL_VER=$(uname -r)
+    for cfg_path in \
+        "/boot/config-${KERNEL_VER}" \
+        "/usr/lib/modules/${KERNEL_VER}/config"; do
+        if [[ -f "$cfg_path" ]]; then
+            ASAHI_CONFIG="$cfg_path"
+            break
+        fi
+    done
+
+    if [[ -z "$ASAHI_CONFIG" ]]; then
+        echo "Config not in /boot or /usr/lib/modules -- extracting from kernel-16k RPM..."
+        ASAHI_CONFIG=$(mktemp /tmp/asahi-config-XXXXX)
+        rpm -q kernel-16k 2>/dev/null | while read -r pkg; do
+            rpm -ql "$pkg" 2>/dev/null | grep "^/boot/config" | head -1
+        done | head -1 | xargs -I{} cp {} "$ASAHI_CONFIG" 2>/dev/null || true
+        [[ -s "$ASAHI_CONFIG" ]] || ASAHI_CONFIG=""
     fi
-    # Enable Thunderbolt/USB4 -- these are the key symbols for dock + display support
+
+    if [[ -z "$ASAHI_CONFIG" ]]; then
+        echo "ERROR: Could not find Asahi kernel config anywhere."
+        echo "Cannot build a bootable kernel for Apple Silicon without it."
+        exit 1
+    fi
+
+    cp "$ASAHI_CONFIG" .config
+    echo "Using config: $ASAHI_CONFIG"
+
+    # Verify 16K pages -- abort rather than produce an unbootable kernel
+    if ! grep -q "^CONFIG_ARM64_16K_PAGES=y" .config; then
+        echo "ERROR: CONFIG_ARM64_16K_PAGES is not set in $ASAHI_CONFIG"
+        echo "Apple Silicon REQUIRES 16K pages. This config would produce"
+        echo "a kernel that black-screens and reboots on Apple Silicon."
+        grep -E "ARM64_4K_PAGES|ARM64_16K_PAGES|ARM64_64K_PAGES" .config || true
+        exit 1
+    fi
+    echo "Verified: CONFIG_ARM64_16K_PAGES=y (Apple Silicon safe)"
+
+    # Enable Thunderbolt/USB4 on top of the Asahi base config
     scripts/config --enable CONFIG_USB4
     scripts/config --enable CONFIG_USB4_NET
     scripts/config --enable CONFIG_THUNDERBOLT
     scripts/config --enable CONFIG_THUNDERBOLT_NET
     scripts/config --enable CONFIG_USB_TYPEC_ALTMODE
     scripts/config --enable CONFIG_USB_TYPEC_DP_ALTMODE
-    # Use olddefconfig: sets ALL new symbols to their defaults silently.
-    # Do NOT use "yes | make oldconfig" -- yes generates infinite output,
-    # gets SIGPIPE when make closes stdin, exits 141, and kills the recipe.
+    # olddefconfig sets new symbols to defaults without stdin (no SIGPIPE)
     make ARCH=arm64 olddefconfig
 
     echo "--- Building kernel (this takes 30-60 minutes) ---"
