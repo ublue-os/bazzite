@@ -753,9 +753,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable wireplumber-sysconf.service && \
     systemctl enable pipewire-workaround.service && \
     systemctl enable pipewire-sysconf.service && \
-    systemctl enable cec-onboot.service && \
-    systemctl enable cec-onpoweroff.service && \
-    systemctl enable cec-onsleep.service && \
     systemctl enable bazzite-tdpfix.service && \
     systemctl --global disable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \
