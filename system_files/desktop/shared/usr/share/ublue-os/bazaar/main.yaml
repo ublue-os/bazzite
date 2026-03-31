@@ -17,6 +17,12 @@ hooks:
             Το IDE JetBrains δεν υποστηρίζεται σε αυτή τη μορφή
           fr: >-
             Les IDEs JetBrains ne sont pas pris en charge dans ce format
+          de: >-
+            JetBrains IDEs sind in diesem Format nicht unterstützt
+          es: >-
+            Los IDEs de JetBrains no son compatibles con este formato
+          it: >-
+            Gli IDE JetBrains non sono supportati in questo formato
 
         # If true, render inline markup commands in body; see
         # https://docs.gtk.org/Pango/pango_markup.html
@@ -40,6 +46,18 @@ hooks:
             Ceci est une application <a href="https://www.jetbrains.com/fr-fr/">JetBrains</a>
             et n'est pas officiellement pris en charge en Flatpak. Bazzite recommande
             l'utilisation de l'appli Toolbox pour gérer les IDEs JetBrains.
+           de: >-
+            Dies ist eine <a href="https://www.jetbrains.com/">JetBrains</a> Anwendung
+            und nicht über Flatpak unterstützt. Bazzite empfiehlt, JetBrains IDEs
+            über die Toolbox-App herunterzuladen.
+          es: >-
+            Es una aplicación <a href="https://www.jetbrains.com/">JetBrains</a> 
+            y no suportado oficialmente en Flatpak. Bazzite recomienda utilizar
+            la aplicación 'Toolbox' para instalar IDEs de JetBrains.
+          it: >-
+            Si tratta di un'applicazione <a href="https://www.jetbrains.com/">JetBrains</a>
+            che non è ufficialmente supportata su Flatpak. Bazzite
+            consiglia di utilizzare l'app Toolbox per gestire gli IDE JetBrains.
 
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
@@ -51,12 +69,18 @@ hooks:
               ru: "Отмена"
               el: "Ακύρωση"
               fr: "Annuler"
+              de: "Abbrechen"
+              es: "Cancelar"
+              it: "Annullare"
           - id: run-ujust
             string:
               en: "Download JetBrains Toolbox"
               ru: "Скачать JetBrains Toolbox"
               el: "Λήψη JetBrains Toolbox"
               fr: "Télécharger JetBrains Toolbox"
+              de: "JetBrains Toolbox herunterladen"
+              es: "Descargar JetBrains Toolbox"
+              it: "Scaricare JetBrains Toolbox"
             # can be "destructive" or "suggested" or omit for no
             # styling
             style: suggested
@@ -75,6 +99,12 @@ hooks:
             Visual Studio Code n'est pas pris en charge dans ce format
           el: >-
             Το Visual Studio Code δεν υποστηρίζεται σε αυτή τη μορφή
+          de: >-
+            Visual Studio Code ist in diesem Format nicht unterstützt
+          es: >-
+            Visual Studio Code no es compatible con este formato
+          it: >-
+            Visual Studio Code non supportato in questo formato
 
         # If true, render inline markup commands in body; see
         # https://docs.gtk.org/Pango/pango_markup.html
@@ -116,6 +146,27 @@ hooks:
             Εναλλακτικά, μπορείτε να κάνετε rebase σε Bazzite DX (Developer
             Experience), που παρέχει Docker και Visual Studio Code έτοιμα
             για χρήση.
+          de: >-
+            Dies ist eine <a href="https://www.microsoft.com/">Microsoft</a> -Anwendung
+            und nicht offiziell über Flatpak unterstützt. Bazzite empfiehlt daher, Visual
+            Studio Code über Universal Blue's Brew Tap zu beziehen.
+            
+            Alternativ können Sie zu Bazzite DX (Entwickler Erfahrung) wechseln,
+            welches Docker und Visual Studio Code enthält.
+          es: >-
+            Esto es una aplicación de <a href="https://www.microsoft.com/">Microsoft</a>
+            y no suportado oficialmente en Flatpak. Bazzite recomienda descargar
+            Visual Studio Code a través de Brew Tap de Universal Blue.
+            
+            Alternativamiente, puedes cambriar a una versión alternativa de Bazzite: DX
+            (experiencia para desarrolladores) que incluye Docker y Visual Studio Code.
+          it: >-
+            Questa è un'applicazione <a href="https://www.microsoft.com/">Microsoft</a>
+            e non è ufficialmente supportata da Flatpak. Bazzite consiglia quindi di scaricare Visual
+            Studio Code tramite Brew Tap di Universal Blue.
+
+            In alternativa, è possibile passare a Bazzite DX (Esperienza come sviluppatore),
+            che include Docker e Visual Studio Code.
 
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
@@ -127,18 +178,28 @@ hooks:
               ru: "Отмена"
               fr: "Annuler"
               el: "Ακύρωση"
+              de: "Abbrechen"
+              es: "Cancelar"
+              it: "Annullare"
           - id: learn-dx
             string:
               en: "Learn about Bazzite DX"
               ru: "Узнать о Bazzite DX"
               fr: "En savoir plus sur Bazzite DX"
               el: "Μάθετε για το Bazzite DX"
+              de: "Mehr über Bazzite DX erfahren"
+              es: "Saber Más Sobre Bazzite DX"
+              it: "Scopri di più su Bazzite DX"
           - id: run-brew
             string:
               en: "Download from Brew"
               ru: "Скачать с Brew"
               fr: "Téléchargez depuis Brew"
               el: "Λήψη από Brew"
+              de: "Über Brew herunterladen"
+              es: "Descargar de Brew"
+              it: "Scaricare con Brew"
+              
             # can be "destructive" or "suggested" or omit for no
             # styling
             style: suggested
@@ -157,6 +218,12 @@ hooks:
             VSCodium n'est pas pris en charge dans ce format
           el: >-
             Το VSCodium δεν υποστηρίζεται σε αυτή τη μορφή
+          de: >-
+            VSCodium ist in diesem Format nicht unterstützt
+          es: >-
+            VSCodium no es compatible con este formato
+          it: >-
+            VSCodium non supportato in questo formato
 
         # If true, render inline markup commands in body; see
         # https://docs.gtk.org/Pango/pango_markup.html
@@ -182,6 +249,20 @@ hooks:
             Αν και το VSCodium έχει επαληθευτεί στο Flathub, αυτή είναι μια επανασυσκευασμένη εφαρμογή
             <a href="https://www.microsoft.com/">Microsoft</a> και δεν υποστηρίζεται επίσημα σε Flatpak.
             Το Bazzite συνιστά τη λήψη του VSCodium από το Brew tap της Universal Blue.
+          de: >-
+            Obwohl VSCodium auf Flathub verifiziert ist, handelt es sich trotzdem um
+            eine  von Dritten verpackte <a href="https://www.microsoft.com/">Microsoft</a> - Anwendung, 
+            welche auf Flatpak nicht offiziell unterstützt wird. Bazzite empfiehlt, VSCodium über den Brew Tap
+            von Universal Blue zu beziehen.
+          es: >-
+            VSCodium está verificado en Flathub, pero es una aplicación de 
+            <a href="https://www.microsoft.com/fr-fr">Microsoft</a> y no suportado oficialmente en Flatpak. 
+            Bazzite recomienda descargar VSCodium a través de Brew Tap de Universal Blue.
+          it: >-
+            Sebbene VSCodium sia verificato su Flatpak, si tratta comunque di un'applicazione riconfezionato
+            <a href="https://www.microsoft.com/">Microsoft</a>, che non è ufficialmente supportata su Flatpak. 
+            Bazzite consiglia di scaricare VSCodium tramite Brew Tap di Universal Blue.
+
 
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
@@ -193,12 +274,19 @@ hooks:
               ru: "Отмена"
               fr: "Annuler"
               el: "Ακύρωση"
+              de: "Abbrechen"
+              es: "Cancelar"
+              it: "Annullare"
           - id: run-brew
             string:
               en: "Download from Brew"
               ru: "Скачать с Brew"
               fr: "Téléchargez depuis Brew"
               el: "Λήψη από Brew"
+              de: "Über Brew herunterladen"
+              es: "Descargar de Brew"
+              it: "Scaricare con Brew"
+              
             # can be "destructive" or "suggested" or omit for no
             # styling
             style: suggested
