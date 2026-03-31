@@ -385,6 +385,7 @@ RUN --mount=type=cache,dst=/var/cache \
             kio-extras \
             krunner-bazaar \
             krdc \
+            tesseract-devel \
             tesseract-langpack-spa \
             tesseract-langpack-deu \
             tesseract-langpack-jpn \
