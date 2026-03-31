@@ -56,16 +56,16 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - bazzite
-          - bazzite-gnome
+          # - bazzite
+          # - bazzite-gnome
           - bazzite-deck
-          - bazzite-deck-gnome
-          - bazzite-deck-nvidia
-          - bazzite-deck-nvidia-gnome
-          - bazzite-nvidia
-          - bazzite-gnome-nvidia
-          - bazzite-nvidia-open
-          - bazzite-gnome-nvidia-open
+          # - bazzite-deck-gnome
+          # - bazzite-deck-nvidia
+          # - bazzite-deck-nvidia-gnome
+          # - bazzite-nvidia
+          # - bazzite-gnome-nvidia
+          # - bazzite-nvidia-open
+          # - bazzite-gnome-nvidia-open
         include:
           - fedora_version: 43
             kernel_version: ${{ (github.ref_name == 'testing' || github.ref_name == 'unstable') && 'latest' || 'latest' }}
