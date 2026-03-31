@@ -193,6 +193,13 @@ fi
 # Bluetooth: enable userspace HID for Apple keyboards/trackpads
 sed -i 's/#UserspaceHID=true/UserspaceHID=true/' /etc/bluetooth/input.conf || true
 
+# Force NetworkManager to use wpa_supplicant backend for WiFi on Apple Silicon.
+# The shared desktop config defaults to iwd, but Asahi's Broadcom stack is
+# more reliable with wpa_supplicant on M-series Macs.
+mkdir -p /etc/NetworkManager/conf.d
+printf '[device]\nwifi.backend=wpa_supplicant\n' \
+    > /etc/NetworkManager/conf.d/wifi_backend.conf
+
 # PulseAudio shim -- some apps hardcode a check for pulseaudio binary
 ln -sf /usr/bin/true /usr/bin/pulseaudio || true
 
