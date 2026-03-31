@@ -10,7 +10,6 @@ on:
       - installer/**
 
 env:
-  # IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
   REPO_OWNER: ${{ github.repository_owner }}
 
 permissions: {}
