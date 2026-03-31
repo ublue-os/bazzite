@@ -189,11 +189,24 @@ install-fairydust-kernel:
     sudo make ARCH=arm64 modules_install
 
     echo "--- Installing kernel image and initramfs to /boot ---"
+    # Clean up any previous failed fairydust attempts to free /boot space
+    sudo rm -f /boot/vmlinuz-fairydust-* /boot/initramfs-fairydust-* 2>/dev/null || true
+    echo "Freed space from previous attempts."
+    df -h /boot
+
     sudo install -m 644 arch/arm64/boot/Image \
         "/boot/vmlinuz-fairydust-${KRELEASE}"
-    sudo dracut --force \
+
+    # Use --host-only: only includes drivers for THIS machine's hardware.
+    # Generic initramfs is ~400MB and overflows the 1.1GB /boot partition.
+    # Host-only initramfs is ~50MB since it only needs Asahi/Apple drivers.
+    sudo dracut --force --host-only \
         "/boot/initramfs-fairydust-${KRELEASE}.img" \
         "${KRELEASE}"
+
+    echo "Installed kernel and initramfs:"
+    ls -lh /boot/*fairydust* 2>/dev/null
+    df -h /boot
 
     echo "--- Updating GRUB ---"
     # grub2-mkconfig fails on atomic Fedora/Bazzite because the root is a
