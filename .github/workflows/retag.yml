@@ -53,7 +53,7 @@ jobs:
           ver: "43"
         with:
           GITHUB_TOKEN: ${{ github.token }}
-          PREFIX: ${{ steps.registry_case.outputs.lowercase }}
+          PREFIX: ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}
           TAG_MAPPINGS: |-
             bazzite:${{ inputs.old_tag }}                           => bazzite:latest,stable,${{ env.ver }}
             bazzite-deck:${{ inputs.old_tag }}                      => bazzite-deck:latest,stable,${{ env.ver }}
