@@ -4,12 +4,17 @@
 [group("arm")]
 kernel-variant:
     #!/usr/bin/bash
-    variant=$(cat /usr/share/ublue-os/kernel-variant 2>/dev/null || echo "stable")
+    image_variant=$(cat /usr/share/ublue-os/kernel-variant 2>/dev/null || echo "stable")
     kernel=$(uname -r)
-    echo "Kernel variant : $variant"
+    running_variant="stable"
+    if [[ "$kernel" == *fairydust* ]]; then
+        running_variant="fairydust"
+    fi
+    echo "Image variant  : $image_variant"
     echo "Running kernel : $kernel"
+    echo "Kernel flavor  : $running_variant"
     echo ""
-    if [[ "$variant" == "fairydust" ]]; then
+    if [[ "$image_variant" == "fairydust" || "$running_variant" == "fairydust" ]]; then
         echo "Fairydust features: Thunderbolt, USB4, DisplayPort Alt Mode"
         echo "See: https://github.com/AsahiLinux/linux/tree/fairydust"
     else
@@ -65,11 +70,41 @@ thunderbolt-authorize-all:
 [group("arm")]
 install-fairydust-kernel:
     #!/usr/bin/bash
-    set -eo pipefail
+    set -euo pipefail
+    BUILD_DEPS=(
+        gcc gcc-c++ make bc bison flex git
+        openssl-devel dwarves elfutils-libelf-devel
+        perl perl-Carp rpm-build ncurses-devel python3
+        rsync cpio binutils openssl diffutils
+        hostname kmod dracut grubby
+    )
+    APPLE_INPUT_DRIVERS=(
+        pinctrl-apple-gpio
+        spi-apple
+        hid-apple
+        spi-hid-apple
+        spi-hid-apple-of
+    )
+    USB4_DRIVERS=(
+        typec
+        typec_displayport
+        typec_thunderbolt
+        phy-apple-atc
+        phy-apple-dptx
+        thunderbolt
+        thunderbolt_net
+    )
+    INITRAMFS_DRIVERS=("${APPLE_INPUT_DRIVERS[@]}" "${USB4_DRIVERS[@]}")
+    PERSIST_ROOT="/var/lib/fairydust-kernel/modules"
     if [[ "$(uname -m)" != "aarch64" ]]; then
         echo "This command is only relevant on aarch64 (Apple Silicon) systems."
         exit 1
     fi
+    WORK_DIR=$(mktemp -d /var/tmp/fairydust-XXXXX)
+    cleanup() {
+        rm -rf "$WORK_DIR"
+    }
+    trap cleanup EXIT
 
     echo "=== Fairydust Kernel Installation ==="
     echo ""
@@ -92,13 +127,14 @@ install-fairydust-kernel:
     VARIANT=$(cat /usr/share/ublue-os/kernel-variant 2>/dev/null || echo "stable")
     if [[ "$VARIANT" != "fairydust" ]]; then
         echo "Note: installing build deps on stable variant (fairydust has them pre-installed)"
-        sudo rpm-ostree install --apply-live \
-            gcc gcc-c++ make bc bison flex git \
-            openssl-devel dwarves elfutils-libelf-devel \
-            perl perl-Carp rpm-build ncurses-devel python3 \
-            rsync cpio binutils openssl diffutils \
-            hostname kmod dracut grubby 2>&1 || \
-        echo "rpm-ostree install failed -- trying dnf5 (may need reboot after)"
+        if ! sudo rpm-ostree install --apply-live "${BUILD_DEPS[@]}"; then
+            echo "rpm-ostree install failed -- falling back to package manager"
+            if command -v dnf5 &>/dev/null; then
+                sudo dnf5 install -y "${BUILD_DEPS[@]}"
+            else
+                sudo dnf install -y "${BUILD_DEPS[@]}"
+            fi
+        fi
     fi
 
     # Verify make is available before proceeding
@@ -108,10 +144,9 @@ install-fairydust-kernel:
         exit 1
     fi
 
-    WORK_DIR=$(mktemp -d /var/tmp/fairydust-XXXXX)
     echo "--- Cloning fairydust branch to $WORK_DIR ---"
     echo "(Shallow clone, ~500MB)"
-    git clone --depth=1 --branch=fairydust \
+    git clone --depth=1 --single-branch --branch=fairydust \
         https://github.com/AsahiLinux/linux.git \
         "$WORK_DIR/linux"
 
@@ -160,13 +195,16 @@ install-fairydust-kernel:
     fi
     echo "Verified: CONFIG_ARM64_16K_PAGES=y (Apple Silicon safe)"
 
-    # Enable Thunderbolt/USB4 on top of the Asahi base config
-    scripts/config --enable CONFIG_USB4
-    scripts/config --enable CONFIG_USB4_NET
-    scripts/config --enable CONFIG_THUNDERBOLT
-    scripts/config --enable CONFIG_THUNDERBOLT_NET
-    scripts/config --enable CONFIG_USB_TYPEC_ALTMODE
-    scripts/config --enable CONFIG_USB_TYPEC_DP_ALTMODE
+    # Enable the actual Fairydust transport and alt-mode symbols on top of
+    # the Asahi base config. These are the real Kconfig names in-tree; the
+    # module filenames differ for some of them (for example USB4 -> thunderbolt).
+    scripts/config --module USB4
+    scripts/config --module USB4_NET
+    scripts/config --module TYPEC
+    scripts/config --module TYPEC_DP_ALTMODE
+    scripts/config --module TYPEC_TBT_ALTMODE
+    scripts/config --module PHY_APPLE_ATC
+    scripts/config --module PHY_APPLE_DPTX
     # olddefconfig sets new symbols to defaults without stdin (no SIGPIPE)
     make ARCH=arm64 olddefconfig
 
@@ -179,28 +217,92 @@ install-fairydust-kernel:
     echo "Kernel release: $KRELEASE"
 
     echo "--- Installing kernel modules ---"
-    # On atomic Fedora/Bazzite, /usr/lib/modules is part of the immutable
-    # ostree deployment and is READ-ONLY. rpm-ostree usroverlay mounts a
-    # temporary writable overlay on /usr for this boot session only.
-    # The overlay is lost on next reboot but the files written to it are
-    # copied into the next deployment when you run rpm-ostree commands.
+    # Keep two copies:
+    #   1. a live usroverlay copy so dracut can build the new initramfs now
+    #   2. a persistent /var copy that is bind-mounted back onto /lib/modules
+    #      on future Fairydust boots, so post-boot module loading still works
+    #      after the ephemeral usroverlay disappears.
+    sudo mkdir -p "${PERSIST_ROOT}"
+    sudo rm -rf "${PERSIST_ROOT}/lib/modules/${KRELEASE}"
     sudo rpm-ostree usroverlay
-    echo "usroverlay active -- /usr/lib/modules is now writable"
+    echo "Installing modules into live usroverlay for initramfs generation..."
     sudo make ARCH=arm64 modules_install
+    echo "Installing modules into ${PERSIST_ROOT} for post-reboot use..."
+    sudo make ARCH=arm64 INSTALL_MOD_PATH="${PERSIST_ROOT}" modules_install
+    sudo depmod -b "${PERSIST_ROOT}" "${KRELEASE}"
+
+    echo "--- Installing persistent module mount helper ---"
+    sudo install -d /usr/local/bin /etc/systemd/system
+    sudo bash -c 'cat <<'"'"'EOF'"'"' > /usr/local/bin/fairydust-modules
+    #!/usr/bin/bash
+    set -euo pipefail
+
+    running="$(uname -r)"
+    module_root="/var/lib/fairydust-kernel/modules/lib/modules"
+
+    if [[ "$running" != *fairydust* ]]; then
+        exit 0
+    fi
+
+    if [[ ! -d "${module_root}/${running}" ]]; then
+        echo "fairydust-modules: missing module tree for ${running}" >&2
+        exit 1
+    fi
+
+    if mountpoint -q /lib/modules; then
+        exit 0
+    fi
+
+    mount --bind "${module_root}" /lib/modules
+    EOF'
+    sudo chmod 755 /usr/local/bin/fairydust-modules
+    sudo bash -c 'cat <<'"'"'EOF'"'"' > /etc/systemd/system/fairydust-modules.service
+    [Unit]
+    Description=Expose persistent Fairydust kernel modules
+    DefaultDependencies=no
+    After=local-fs.target
+    Before=systemd-modules-load.service sysinit.target
+    ConditionPathExists=/var/lib/fairydust-kernel/modules/lib/modules
+
+    [Service]
+    Type=oneshot
+    ExecStart=/usr/local/bin/fairydust-modules
+    RemainAfterExit=yes
+
+    [Install]
+    WantedBy=sysinit.target
+    EOF'
+    sudo systemctl daemon-reload
+    sudo systemctl enable fairydust-modules.service
+    sudo systemctl start fairydust-modules.service || true
 
     echo "--- Installing kernel image and initramfs to /boot ---"
     # Clean up any previous failed fairydust attempts to free /boot space
-    sudo rm -f /boot/vmlinuz-fairydust-* /boot/initramfs-fairydust-* 2>/dev/null || true
+    sudo rm -f \
+        /boot/vmlinuz-fairydust-* \
+        /boot/initramfs-fairydust-* \
+        /boot/config-fairydust-* \
+        /boot/System.map-fairydust-* \
+        2>/dev/null || true
     echo "Freed space from previous attempts."
     df -h /boot
 
     sudo install -m 644 arch/arm64/boot/Image \
         "/boot/vmlinuz-fairydust-${KRELEASE}"
+    sudo install -m 644 .config \
+        "/boot/config-fairydust-${KRELEASE}"
+    sudo install -m 644 System.map \
+        "/boot/System.map-fairydust-${KRELEASE}"
 
     # Use --host-only: only includes drivers for THIS machine's hardware.
     # Generic initramfs is ~400MB and overflows the 1.1GB /boot partition.
     # Host-only initramfs is ~50MB since it only needs Asahi/Apple drivers.
+    # Force the Apple internal keyboard/trackpad path and the new USB4/Type-C
+    # stack into the image so the Fairydust kernel does not depend on the live
+    # module tree just to bring up the built-in input devices.
     sudo dracut --force --host-only \
+        --add-drivers "${INITRAMFS_DRIVERS[*]}" \
+        --force-drivers "${INITRAMFS_DRIVERS[*]}" \
         "/boot/initramfs-fairydust-${KRELEASE}.img" \
         "${KRELEASE}"
 
@@ -227,13 +329,11 @@ install-fairydust-kernel:
     echo "After verifying it works, run: ujust set-fairydust-default"
     echo ""
 
-    rm -rf "$WORK_DIR"
-
 # Set the fairydust kernel as the default boot entry
 [group("arm")]
 set-fairydust-default:
     #!/usr/bin/bash
-    FAIRYDUST=$(ls /boot/vmlinuz-fairydust-* 2>/dev/null | head -1)
+    FAIRYDUST=$(find /boot -maxdepth 1 -name 'vmlinuz-fairydust-*' -print 2>/dev/null | sort -V | tail -1)
     if [[ -z "$FAIRYDUST" ]]; then
         echo "No fairydust kernel found. Run: ujust install-fairydust-kernel"
         exit 1
@@ -247,7 +347,7 @@ set-fairydust-default:
 [group("arm")]
 set-stable-kernel-default:
     #!/usr/bin/bash
-    STABLE=$(ls /boot/vmlinuz-*asahi* 2>/dev/null | grep -v fairydust | head -1)
+    STABLE=$(find /boot -maxdepth 1 -name 'vmlinuz-*asahi*' ! -name '*fairydust*' -print 2>/dev/null | sort -V | tail -1)
     if [[ -z "$STABLE" ]]; then
         echo "No stable Asahi kernel found."
         exit 1

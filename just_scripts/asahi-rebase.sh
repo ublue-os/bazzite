@@ -33,7 +33,13 @@ for arg in "$@"; do
     fi
 done
 
-BAZZITE_IMAGE="localhost/bazzite-arm-${KERNEL_VARIANT}:latest"
+IMAGE_NAME="bazzite-arm"
+if [[ "${KERNEL_VARIANT}" == "fairydust" ]]; then
+    IMAGE_NAME="${IMAGE_NAME}-fairydust"
+fi
+
+BAZZITE_IMAGE="localhost/${IMAGE_NAME}:latest"
+IMAGE_BRANCH=$(git -C "${REPO_ROOT}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "experimental")
 
 echo "Kernel variant: ${KERNEL_VARIANT}"
 
@@ -130,10 +136,10 @@ if ! sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
         -f Containerfile.arm \
         --build-arg BASE_IMAGE_NAME=kinoite \
         --build-arg FEDORA_VERSION=42 \
-        --build-arg IMAGE_NAME=bazzite-arm \
+        --build-arg IMAGE_NAME="${IMAGE_NAME}" \
         --build-arg IMAGE_VENDOR=nripeshn \
         --build-arg KERNEL_VARIANT="${KERNEL_VARIANT}" \
-        --build-arg IMAGE_BRANCH=apple-silicon \
+        --build-arg IMAGE_BRANCH="${IMAGE_BRANCH}" \
         --build-arg VERSION_TAG=local \
         --build-arg VERSION_PRETTY="Local Build" \
         --build-arg SHA_HEAD_SHORT=local \
