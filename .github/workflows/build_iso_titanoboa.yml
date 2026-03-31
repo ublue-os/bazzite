@@ -10,7 +10,8 @@ on:
       - installer/**
 
 env:
-  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  # IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  REPO_OWNER: ${{ github.repository_owner }}
 
 permissions: {}
 
@@ -94,12 +95,12 @@ jobs:
 
           echo "flatpak-dir-shortname=${FLATPAK_DIR_SHORTNAME}" >> $GITHUB_OUTPUT
 
-      # Docker requires lowercase registry references
-      - name: Lowercase Registry
-        id: registry_case
+      # The image registry name must be lower-case, but GitHub usernames can be capitalized.
+      - name: Get lower-case equivalent of the repository owner's username
+        id: repo_owner_case
         uses: ASzc/change-string-case-action@ecd1412d078f2e06e9eedcbaa6fcd988151c3f82 # v8
         with:
-          string: ${{ env.IMAGE_REGISTRY }}
+          string: ${{ env.REPO_OWNER }}
 
       # - name: Setup Bazzite Repo
       #   id: setup-bazzite-repo
@@ -124,8 +125,8 @@ jobs:
 
       - name: Build Container Image
         run: |
-          BASE_IMAGE="${{ steps.registry_case.outputs.lowercase }}/${{ steps.get-nondeck-ref.outputs.ref }}:${{ steps.generate-tag.outputs.tag }}"
-          INSTALL_IMAGE_PAYLOAD="${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}"
+          BASE_IMAGE="ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}/${{ steps.get-nondeck-ref.outputs.ref }}:${{ steps.generate-tag.outputs.tag }}"
+          INSTALL_IMAGE_PAYLOAD="ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}"
           FLATPAK_DIR_SHORTNAME="${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}"
 
           sudo podman build \
