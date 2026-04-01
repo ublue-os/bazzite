@@ -9,7 +9,19 @@ import os, subprocess, sys
 #
 
 def make_shellcmd_argv(cmd):
-    return ['xdg-terminal-exec', '--', cmd]
+    return [
+        'xdg-terminal-exec',
+        '--app-id=io.github.kolunmi.Bazaar',
+        '--title=Bazaar',
+        '--',
+        'bash',
+        '--noprofile',
+        '--norc',
+        '-lc',
+        cmd
+    ]
+
+# ---
 
 #
 # BAZAAR STATE
