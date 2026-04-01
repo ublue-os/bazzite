@@ -8,22 +8,18 @@ import os, subprocess, sys
 # CONFIG
 #
 
-def kde_make_shellcmd_argv(cmd):
-    return ['konsole', '-e', cmd]
-def gnome_make_shellcmd_argv(cmd):
-    return ['ptyxis', '-x', cmd]
-
-# ---
-
-#
-# ENVIRONMENT SETUP
-#
-
-desktop = os.getenv('XDG_CURRENT_DESKTOP')
-if desktop == 'KDE':
-    make_shellcmd_argv = kde_make_shellcmd_argv
-else:
-    make_shellcmd_argv = gnome_make_shellcmd_argv
+def make_shellcmd_argv(cmd):
+    return [
+        'xdg-terminal-exec',
+        '--app-id=io.github.kolunmi.Bazaar',
+        '--title=Bazaar',
+        '--',
+        'bash',
+        '--noprofile',
+        '--norc',
+        '-lc',
+        cmd
+    ]
 
 # ---
 
