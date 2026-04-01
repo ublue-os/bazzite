@@ -722,6 +722,46 @@ toggle-global-dlss ACTION="":
             ;;
     esac
 
+# Toggle global SteamDeck environment override
+[group("gaming")]
+toggle-global-steamdeck ACTION="":
+    #!/usr/bin/bash
+    set -euo pipefail
+    source /usr/lib/ujust/ujust.sh
+
+    FILE="$HOME/.config/environment.d/99-steamdeck-override.conf"
+
+    CURRENT="Disabled"
+    if [[ -f "$FILE" ]]; then
+        CURRENT="Enabled"
+    fi
+
+    OPTION="{{ ACTION }}"
+    if [[ -z "$OPTION" ]]; then
+        echo -e "${bold}Global Steam Deck Override:${normal} $CURRENT"
+        echo ""
+        echo "Forces SteamDeck=0 globally so games stop detecting the system as a Steam Deck."
+        echo "Useful for preventing games from loading Steam Deck assets or presets."
+        echo ""
+        OPTION="$(ugum choose "Enable" "Disable" "Exit without saving")"
+    fi
+
+    case "$OPTION" in
+        Enable|enable)
+            mkdir -p "$HOME/.config/environment.d"
+            echo "SteamDeck=0" > "$FILE"
+            echo -e "${green}${bold}Enabled${normal}: SteamDeck=0"
+            echo "You may need to restart Steam or log out for changes to take effect."
+            ;;
+        Disable|disable)
+            rm -f "$FILE"
+            echo -e "${red}${bold}Disabled${normal}: SteamDeck override removed"
+            ;;
+        *)
+            echo "No changes made."
+            ;;
+    esac
+
 # Toggle whether Steam launches with the -steamdeck flag, which causes Big Picture / Game Mode to emulate Steam Deck behavior. Disabling this can prevent games from forcing Steam Deck-specific assets, such as lower-resolution textures.
 [group("gaming")]
 _toggle-steamdeck-alias:
