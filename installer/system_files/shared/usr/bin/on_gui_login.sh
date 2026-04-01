@@ -189,12 +189,12 @@ for device in "${!mount[@]}"; do
             [[ "$base" == "fedora" || "$base" == "boot" ]] && continue
             grub=("$dir"/grub*.efi)
             (( ! ${#grub[@]} )) && continue
-            echo "The GRUB bootloader seems to be installed on $device at ${dir#$mnt}\nBazzite does not support dual boot with any other Linux installation.\nInstalls to this disk that attempt to reuse this EFI partition will fail.\nEither Bazzite must be installed to a different disk, or this partition or boot loader must be removed.\n\nSee the <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#error-code-1\">documentation</a> for details\n"
+            echo "The GRUB bootloader seems to be installed on $device at ${dir#$mnt}\nBazzite <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#error-code-1\">does not support dual boot with any other Linux installation.</a> \nInstalls to this disk that attempt to reuse this EFI partition will fail.\nEither Bazzite must be installed to a different disk, or this partition or boot loader must be removed.\n\nPlease see the <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#how-to-remove-an-orphaned-copy-of-grub\">documentation</a> for instructions.\n"
         done
     ' || true)
     [ "$msg" ] || continue
     serve_docs
-    yad --image=dialog-warning --button=OK --buttons-layout=center --title="GRUB already present" --text="$msg"
+    yad --image=dialog-warning --button=OK --buttons-layout=center --title="Existing Linux bootloader detected" --text="$msg"
 done
 
 
