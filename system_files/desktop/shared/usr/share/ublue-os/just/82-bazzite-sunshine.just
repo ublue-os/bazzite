@@ -36,8 +36,6 @@ setup-sunshine ACTION="":
       OPTION=$(Choose "Enable" "Enable-Beta" "Disable" "Open Portal" "Exit")
     fi
     if [[ "${OPTION,,}" =~ ^enable ]]; then
-      brew update
-      brew upgrade
       brew tap LizardByte/homebrew
       if [[ "${OPTION,,}" =~ ^enable-beta ]]; then
         brew install sunshine-beta

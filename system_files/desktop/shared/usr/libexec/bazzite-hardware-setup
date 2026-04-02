@@ -200,8 +200,6 @@ if [ ! -f /etc/bazzite/fixups/sunshine ]; then
   if [[ -f "$HOME/.config/sunshine/sunshine.conf" ]]; then
     # If the user is using sunshine, automatically reconfigure it to use the brew sunshine package.
     echo "Sunshine found, automatically switching over to brew package..."
-    brew update
-    brew upgrade
     brew tap LizardByte/homebrew
     brew install sunshine
     brew services start sunshine
