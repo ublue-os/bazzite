@@ -76,6 +76,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) using [F
 ARM64 variant for Apple Silicon Macs (M1/M2/M3), available as `bazzite-arm` (KDE) and `bazzite-arm-gnome` (GNOME):
 
 - Built on top of [Fedora Asahi Remix](https://fedora-asahi-remix.org/) atomic desktop images, which provide the Asahi Linux kernel, Apple Silicon GPU drivers (Mesa AGX), audio support, and firmware out of the box.
+- Native [Wine](https://www.winehq.org/) for `aarch64` Windows applications is preinstalled by default on ARM images.
 - x86/x86_64 emulation via [FEX-Emu](https://fex-emu.com/), [Box64](https://github.com/ptitSeb/box64), and [Box86](https://github.com/ptitSeb/box86) for running x86 applications including Steam.
 - Manage emulation with `ujust setup-x86-emulation`, check status with `ujust check-x86-emulation`.
 - No NVIDIA drivers needed -- Apple Silicon uses the integrated GPU with Asahi's open source Mesa driver.
