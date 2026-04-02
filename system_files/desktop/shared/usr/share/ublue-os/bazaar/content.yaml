@@ -1,20 +1,20 @@
 css: |
   .bazzite-section banner {
-     margin-top: 30px;
-     margin-left: 30px;
-     margin-right: 30px;
-     border-radius: 10px;
+    margin-top: 30px;
+    margin-left: 30px;
+    margin-right: 30px;
+    border-radius: 10px;
   }
   .bazzite-section banner-text-overlay {
-     margin: 30px;
-     padding: 20px;
+    margin: 30px;
+    padding: 20px;
   }
   .bazzite-section banner-text {
-     padding: 50px;
-     color: #ffffff;
+    padding: 50px;
+    color: #ffffff;
   }
   .bazzite-section title {
-     color: #ffffff;
+    color: #ffffff;
   }
   .bazzite-section subtitle {
     color: #ffffff;
@@ -55,11 +55,13 @@ rows:
         title:
           en: "Gaming"
           el: "Παιχνίδια"
-          ru: "Игры"
+          ru: "Видеоигры"
+          fr: "Jeux-vidéos"
         subtitle:
           en: "Protocol 3: Protect the Pilot"
           el: "Πρωτόκολλο 3: Προστατέψτε τον Πιλότο"
           ru: "Протокол 3: Защитить пилота"
+          fr: "Protocole 3: Protégez le pilote"
         banner: file:///usr/share/ublue-os/bazaar/gaming.png
         banner-fit: contain
         banner-height: 300
@@ -125,10 +127,12 @@ rows:
           en: "Streaming & Chat"
           el: "Ροή & Συνομιλία"
           ru: "Стриминг и общение"
+          fr: "Streaming et discussions"
         subtitle:
           en: "Sprunk'd it."
           el: "Το'λουσα."
           ru: "Ещё катку?"
+          fr: "Et c'est le train de la Hype!"
         banner: file:///usr/share/ublue-os/bazaar/streaming.png
         banner-fit: contain
         banner-height: 300
@@ -163,10 +167,12 @@ rows:
           en: "Music & Media"
           el: "Μουσική & Πολυμέσα"
           ru: "Музыка и медиа"
+          fr: "Musique & Média"
         subtitle:
           en: "Let me break it down for you."
           el: "Για να μπούμε στο ρυθμό."
           ru: "Войдём в ритм."
+          fr: "Entrez dans le rythme."
         banner: file:///usr/share/ublue-os/bazaar/music.png
         banner-fit: contain
         banner-height: 300
@@ -199,10 +205,12 @@ rows:
           en: "Office & Productivity"
           el: "Γραφείο & Παραγωγικότητα"
           ru: "Офис и продуктивность"
+          fr: "Bureautique & productivité"
         subtitle:
           en: "May the paperclip fellow have mercy."
           el: "Για να μη γίνουν όλα φύλλο και φτερό."
           ru: "Чтобы всё не превратилось в прах."
+          fr: "Que le trombone ait pitié de vous"
         banner: file:///usr/share/ublue-os/bazaar/office.png
         banner-fit: contain
         banner-height: 300
@@ -239,10 +247,12 @@ rows:
           en: "Utilities"
           el: "Βοηθήματα"
           ru: "Утилиты"
+          fr: "Utilitaires"
         subtitle:
           en: "Stuff you didn't need until now."
           el: "Πράγματα που δεν ήξερες ότι χρειάζεσαι μέχρι τώρα."
           ru: "Программы, которыми вы ещё не пользуетесь."
+          fr: "Ce dont vous n'aviez pas besoin jusqu'à maintenant"
         banner: file:///usr/share/ublue-os/bazaar/utilities.png
         banner-fit: contain
         banner-height: 300

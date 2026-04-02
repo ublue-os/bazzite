@@ -10,7 +10,6 @@
 # Exit Codes:
 # 0: Success (e.g., upgrade available, --supports-duplicate-detection handled, or script completed even if upgrade failed).
 # 7: Failure (e.g., uupd not installed, upgrade already installed, update checks failed, or connectivity check failed).
-# Dynamic: Value propagated from /usr/bin/hhd.steamos if it is executed and returns a non-20 code.
 
 # Fake upgrade progress bar
 _fake_progress() {
@@ -36,14 +35,16 @@ _upgrade() {
     echo $? >/tmp/upgrade-check
 }
 
-if [ -x /usr/bin/hhd.steamos ]; then
-    /usr/bin/hhd.steamos steamos-update --fallback "$@"
-    ret=$?
-    # If ret is not 20, exit with the return code, otherwise continue
-    if [ $ret -ne 20 ]; then
-        exit $ret
-    fi
-    exit $ret
+# The first time the steam client starts in deck mode, it will attempt to fetch an update.
+# We must exit the first time, otherwise you have users stuck when booting up the first time.
+# See: https://www.reddit.com/r/Bazzite/comments/1psuar7/bazzite_xbox_ally_issue/
+_fixup_file=/etc/bazzite/fixups/first_steam_gamemode_boostrap
+if [[ ! -f $_fixup_file ]]; then
+    mkdir -p "$(dirname "$_fixup_file")"
+    touch "$_fixup_file"
+    sync "$_fixup_file"
+    systemctl restart graphical.target
+    exit 7
 fi
 
 while [[ $# -gt 0 ]]; do

@@ -2,11 +2,42 @@
 
 set -eoux pipefail
 
-dnf5 clean all
+dnf5 config-manager setopt keepcache=0
+
 rm -rf /tmp/* || true
 find /var/* -maxdepth 0 -type d \! -name cache -exec rm -fr {} \;
-find /var/cache/* -maxdepth 0 -type d \! -name libdnf5 \! -name rpm-ostree -exec rm -fr {} \;
 mkdir -p /var/tmp
 chmod -R 1777 /var/tmp
 
-ostree container commit
+# Copy entries into /usr/lib/passwd and /usr/lib/group
+if [ -f /etc/passwd ]; then
+    out=$(grep -v "root" /etc/passwd) || true
+    if [ -n "$out" ]; then
+        echo
+        echo Moving the following passwd users to /usr/lib/passwd
+        echo "$out"
+        echo "$out" >> /usr/lib/passwd
+        echo "root:x:0:0:root:/root:/bin/bash" > /etc/passwd
+    fi
+fi
+if [ -f /etc/group ]; then
+    out=$(grep -v "root\|wheel" /etc/group) || true
+    if [ -n "$out" ]; then
+        echo
+        echo Moving the following group entries to /usr/lib/group
+        echo "$out"
+        echo "$out" >> /usr/lib/group
+        echo "root:x:0:" > /etc/group
+        echo "wheel:x:10:" >> /etc/group
+    fi
+fi
+
+# Extra lock files created by container processes that might cause issues
+rm -rf \
+    /etc/.pwd.lock \
+    /etc/passwd- \
+    /etc/group- \
+    /etc/shadow- \
+    /etc/gshadow- \
+    /etc/subuid- \
+    /etc/subgid- \

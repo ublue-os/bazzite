@@ -56,25 +56,27 @@ ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
-RUN --mount=type=bind,target=/tmp/context \
-    cp -a /tmp/context/system_files/desktop/shared/. /tmp/context/system_files/desktop/${BASE_IMAGE_NAME}/. / && \
-    find /usr/share/ublue-os/docs -type f -exec setfattr -n user.component -v "ublue-docs" {} +
+COPY system_files/desktop/shared/ system_files/desktop/${BASE_IMAGE_NAME}/ /
+RUN find /usr/share/ublue-os/docs -type f -exec setfattr -n user.component -v "ublue-docs" {} +
 
 COPY firmware /
 
 # Copy Homebrew files from the brew image
 ARG BREW_IMAGE=ghcr.io/ublue-os/brew:latest@sha256:ca91068f51ce663d495ccfc829352d6621ec95f6c7db447ade55023b222f9762
-RUN --mount=type=bind,from=${BREW_IMAGE},source=/system_files,target=/tmp/brew_source \
-    cp -a /tmp/brew_source/. / && \
-    find /tmp/brew_source -type f -printf '/%P\0' | xargs -0 setfattr -n user.component -v "homebrew"
+COPY --from=${BREW_IMAGE} /system_files/ /tmp/brew_files/
+RUN find /tmp/brew_files -type f -printf '/%P\0' > /tmp/brew_list.txt && \
+    cp -a /tmp/brew_files/. / && \
+    xargs -0 -a /tmp/brew_list.txt setfattr -h -n user.component -v "homebrew" && \
+    rm -rf /tmp/brew_files /tmp/brew_list.txt
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     mkdir -p /var/roothome && \
-    dnf5 -y install dnf5-plugins && \
+    dnf5 config-manager setopt keepcache=1 && \
     for copr in \
         ublue-os/bazzite \
         ublue-os/bazzite-multilib \
@@ -167,6 +169,7 @@ RUN --mount=type=cache,dst=/var/cache \
 # Install patched fwupd
 # Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
 RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
@@ -226,6 +229,7 @@ RUN --mount=type=cache,dst=/var/cache \
 
 # Remove unneeded packages
 RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
@@ -296,7 +300,6 @@ RUN --mount=type=cache,dst=/var/cache \
         v4l-utils \
         yad \
         f3 \
-        pulseaudio-utils \
         lzip \
         p7zip \
         p7zip-plugins \
@@ -334,9 +337,14 @@ RUN --mount=type=cache,dst=/var/cache \
         wlr-randr \
         bazzite-portal \
         ls-iommu && \
+    ln -s /dev/null /etc/NetworkManager/dispatcher.d/04-iscsi && \
     systemctl mask iscsi && \
     systemctl mask wpa_supplicant.service && \
+    systemctl mask systemd-remount-fs.service && \
     systemctl disable iwd.service && \
+    mkdir -p /usr/lib/extest/ && \
+    /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest | jq -r '.assets[] | select(.name| test(".*so$")).browser_download_url')" -Lo /usr/lib/extest/libextest.so && \
+    setfattr -n user.component -v "extest" /usr/lib/extest/libextest.so && \
     chmod +x /usr/bin/framework_tool && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
     setcap 'cap_sys_admin+p' $(readlink -f /usr/bin/sunshine) && \
@@ -352,6 +360,7 @@ RUN --mount=type=cache,dst=/var/cache \
 
 # Install Steam & Lutris, plus supporting packages
 RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
@@ -392,6 +401,7 @@ RUN --mount=type=cache,dst=/var/cache \
 
 # Install ujust-picker from GitHub releases
 RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
@@ -496,6 +506,7 @@ RUN --mount=type=cache,dst=/var/cache \
 
 # ublue-os-media-automount-udev, mount non-removable device partitions automatically under /media/media-automount/
 RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
@@ -567,12 +578,10 @@ RUN --mount=type=cache,dst=/var/cache \
         fedora-cisco-openh264 \
         fedora-steam \
         fedora-rar \
-        google-chrome \
         tailscale \
         _copr_ublue-os-akmods \
         terra \
         terra-extras \
-        negativo17-fedora-uld \
         negativo17-fedora-multimedia; \
     do \
         sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/$repo.repo; \
@@ -634,7 +643,7 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/build-initramfs && \
     /ctx/finalize
 
-RUN bootc container lint
+RUN --mount=type=tmpfs,target=/run --network=none bootc container lint
 
 ################
 # DECK BUILDS
@@ -653,6 +662,7 @@ COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
@@ -691,6 +701,7 @@ RUN --mount=type=cache,dst=/var/cache \
 
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
@@ -745,6 +756,7 @@ RUN --mount=type=cache,dst=/var/cache \
 # Add bootstrap_steam.tar.gz used by gamescope-session (Thanks GE & Nobara Project!)
 # Add sdl gamecontrollerdb used by handheld daemon for externals
 RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
@@ -763,6 +775,7 @@ RUN --mount=type=cache,dst=/var/cache \
 
 # Cleanup & Finalize
 RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
@@ -814,7 +827,7 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/build-initramfs && \
     /ctx/finalize
 
-RUN bootc container lint
+RUN --mount=type=tmpfs,target=/run --network=none bootc container lint
 
 ################
 # NVIDIA BUILDS
@@ -881,4 +894,4 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/build-initramfs && \
     /ctx/finalize
 
-RUN bootc container lint
+RUN --mount=type=tmpfs,target=/run --network=none bootc container lint

@@ -33,13 +33,6 @@ on:
     inputs:
       handwritten:
         description: "Small changelog:"
-      # Run with this periodically to analyze the image again
-      # As package drift will make the plan eventually non-ideal
-      # (existing users will have to redownload most of the image)
-      fresh-rechunk:
-        description: "Clear rechunk history"
-        type: boolean
-        default: false
 
 permissions: {}
 
@@ -147,11 +140,7 @@ jobs:
           BASE_IMAGE="${PULL_REGISTRY}/$BASE_IMAGE_NAME-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}"
           echo "base_image=${BASE_IMAGE}" >> $GITHUB_OUTPUT
 
-          if [ "${{ github.event.inputs.fresh-rechunk }}" == "true" ]; then
-            IMAGEREF=""
-          else
-            IMAGEREF="$PULL_REGISTRY/${{ matrix.image }}:stable"
-          fi
+          IMAGEREF="$PULL_REGISTRY/${{ matrix.image }}:stable"
           echo "prev_ref=${IMAGEREF}" >> $GITHUB_OUTPUT
 
           KERNEL_URI=ghcr.io/bazzite-org/kernel-bazzite:${{ matrix.kernel_version }}-f${{ matrix.fedora_version }}-${{ matrix.arch }}
@@ -270,6 +259,43 @@ jobs:
           ARCH=${{ matrix.arch }}
           EOF
 
+      - name: DNF Package Cache Prep
+        id: cache-prep
+        env:
+          IMAGE: ${{ matrix.image }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -eoux pipefail
+          if [[ "${IMAGE}" =~ gnome ]]; then
+            CACHE_NAME="gnome"
+          else
+            CACHE_NAME="kde"
+          fi
+
+          ALLOW_CACHE_WRITE="false"
+
+          # TODO: If we ever integrate dx images here then this may need to be adjusted
+          # TODO: remove testing here when we have cache on main branch
+          # PR caches are useless and may wipe cache on main
+          if [[ "${IMAGE}" =~ "-deck" ]] && \
+             [[ "${EVENT_NAME}" != "pull_request" ]] && \
+             [[ "${REF_NAME}" == "main" || "${REF_NAME}" == "testing" ]]; then
+            ALLOW_CACHE_WRITE="true"
+          fi
+
+          echo "cache_name=${CACHE_NAME}" >> "$GITHUB_OUTPUT"
+          echo "allow_cache_write=${ALLOW_CACHE_WRITE}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore DNF package cache
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        env:
+          CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
+          ALLOW_CACHE_WRITE: ${{ steps.cache-prep.outputs.allow_cache_write }}
+        with:
+          path: /var/tmp/buildah-cache-*
+          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
+
       # Build image using buildah and save it to raw-img
       - name: Build Image
         id: build_image
@@ -282,19 +308,29 @@ jobs:
             --secret "id=GITHUB_TOKEN,env=GITHUB_TOKEN" \
             --tag raw-img .
 
-      # Reprocess raw-img using rechunker which will delete it
-      - name: Run Rechunker
-        id: rechunk
-        uses: ublue-os/legacy-rechunk@a925083d9af7cb04b3e2a6e8c01bfa495f38b710 # v1.0.0
+      # https://github.com/actions/cache/issues/1533
+      - name: Hack around permission issue caching
+        id: cache-perms
+        run: |
+          sudo chmod 777 --recursive /var/tmp/buildah-cache-0
+
+      - name: Save DNF package cache
+        if: steps.cache-prep.outputs.allow_cache_write == 'true'
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        env:
+          CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
+          ALLOW_CACHE_WRITE: ${{ steps.cache-prep.outputs.allow_cache_write }}
         with:
-          rechunk: "ghcr.io/ublue-os/legacy-rechunk:v1.0.0-x86_64"
-          ref: "raw-img"
-          prev-ref: "${{ steps.base.outputs.prev_ref }}"
-          version: "${{ steps.labels.outputs.tag }}"
-          labels: |
+          path: /var/tmp/buildah-cache-*
+          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
+
+      # Relabel the image with Bazzite labels
+      - name: Apply Labels
+        id: relabel
+        env:
+          IMAGE_LABELS: |
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/bazzite/refs/heads/main/README.md
-            org.opencontainers.image.created=<timestamp>
             org.opencontainers.image.description=Bazzite is a custom image that brings the best of Linux gaming to all of your devices - including your favorite handheld.
             org.opencontainers.image.licenses=Apache-2.0
             org.opencontainers.image.revision=${{ github.sha }}
@@ -302,15 +338,88 @@ jobs:
             org.opencontainers.image.title=Bazzite
             org.opencontainers.image.vendor=Universal Blue
             org.opencontainers.image.url=https://bazzite.gg
+        run: |
+          version="${{ matrix.fedora_version }}.$(date  +%Y%m%d)"
+          if [[ "${{ github.ref_name }}" == "unstable" ]]; then
+            version="unstable-${version}"
+          elif [[ "${{ github.ref_name }}" == "testing" ]]; then
+            version="testing-${version}"
+          fi
 
-      # Generate tags after rechunker runs and checks the primary tag is not duplicated
-      # If it is, rechunk will suffix it by .1, .2, etc and put it in steps.rechunk.outputs.version
+          # Clean out labels from base image
+          img=raw-img
+          container=$(sudo buildah from $img)
+          sudo buildah config --label "-" $container
+          sudo buildah commit --identity-label=false --rm $container $img
+
+          declare -A tags
+          while read -r t; do
+              tags["$t"]=1
+          done < <(skopeo list-tags "docker://${{ steps.base.outputs.output_image }}" 2>/dev/null | jq -r '.Tags[]' || true)
+
+          if [[ -v tags[$version] ]]; then
+            build=1
+            while true; do
+              tag="$version.$build"
+              if [[ ! -v tags[$tag] ]]; then
+                version=$tag
+                break
+              fi
+              ((build++))
+            done
+          fi
+
+          # Figure out config
+          kver=$(sudo podman run --rm "$img" rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
+          filter='{ "packages": [inputs | split(" ") | select(length==2) | { (.[0]): .[1] }] | sort_by(keys) | add }'
+          manifest=$(sudo podman run --rm "$img" rpm -qa --qf '%{NAME} %{VERSION}-%{RELEASE}\n' \
+              | sed -e 's/\.fc[0-9][0-9]*$//' | jq -Rnc "$filter")
+          mapfile -t labels <<< "$IMAGE_LABELS"
+          labels+=(
+            "org.opencontainers.image.version=$version"
+            "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            "ostree.bootable=true"
+            "ostree.linux=$kver"
+            "dev.hhd.rechunk.info=$manifest"
+          )
+
+          # Apply config to labels and annotations
+          container=$(sudo buildah from $img)
+          for line in "${labels[@]}"; do
+            [ -z "$line" ] && continue
+            sudo buildah config --label "$line" --annotation "$line" "$container"
+          done
+          sudo buildah commit --identity-label=false --rm $container $img
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # Reprocess raw-img using rechunker which will delete it
+      - name: Run Rechunker
+        id: rechunk
+        run: |
+          container=$(sudo buildah from raw-img)
+          mnt=$(sudo buildah mount $container)
+          sudo bash -c "rm -rf $mnt/run/.* $mnt/run/* $mnt/tmp/.* $mnt/tmp/*"
+          sudo buildah umount $container
+          sudo buildah commit --identity-label=false --rm $container raw-img
+
+          sudo podman run --rm --privileged --volume /var/lib/containers:/var/lib/containers \
+              localhost/raw-img \
+              rpm-ostree compose build-chunked-oci \
+              --bootc --max-layers 96 --format-version 2 \
+              --from localhost/raw-img --output containers-storage:localhost/chunked-img
+          sudo podman untag raw-img
+
+          echo "ref=containers-storage:localhost/chunked-img" >> "$GITHUB_OUTPUT"
+
+      # Generate tags after relabel runs and checks the primary tag is not duplicated
+      # If it is, relabel will suffix it by .1, .2, etc and put it in steps.relabel.outputs.version
       - name: Generate tags
         id: generate-tags
         shell: bash
         run: |
           # Common vars for generating tags
-          VERSION_TAG="${{ steps.rechunk.outputs.version }}"
+          VERSION_TAG="${{ steps.relabel.outputs.version }}"
 
           if [[ ${{ github.ref_name }} == "unstable" ]]; then
             BUILD_TAGS=("unstable" "unstable-${{ matrix.fedora_version }}")
@@ -363,10 +472,10 @@ jobs:
 
             # Push unique image id and sign, this way once evergreen tag is published
             # It will always be signed
-            dest_image="${{ steps.base.outputs.output_image }}:${{ steps.rechunk.outputs.version }}"
+            dest_image="${{ steps.base.outputs.output_image }}:${{ steps.relabel.outputs.version }}"
             sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
             log_sum "$dest_image"
-            DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' ${{ steps.rechunk.outputs.ref }})
+            DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' docker://$dest_image)
             cosign sign -y --key env://SIGNING_SECRET --new-bundle-format=false \
               "${{ steps.base.outputs.output_image }}@$DIGEST"
 
@@ -391,7 +500,7 @@ jobs:
   kickoff_bazzite_dx:
     runs-on: ubuntu-24.04
     needs: [generate_release]
-    if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    if: github.action_repository == 'ublue-os/bazzite' && github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     steps:
       - name: Kickoff Bazzite-DX
         uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4

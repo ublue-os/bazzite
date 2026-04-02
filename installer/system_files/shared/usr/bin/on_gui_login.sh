@@ -65,7 +65,7 @@ nvidia_hardware_helper() {
     if [ -z "$image_name" ]; then
         return 124
     fi
-    #call NVIDIA detection script TODO: change path
+    #call NVIDIA detection script
     if [[ -f "/usr/libexec/bazzite_detect_nvidia_support_status" ]]; then
         output=$("/usr/libexec/bazzite_detect_nvidia_support_status")
         ret_val=$?
@@ -86,10 +86,12 @@ nvidia_hardware_helper() {
             correct_image="<b>Nvidia (RTX Series | GTX 16xx Series+)</b>"
         fi
         # parse image information
-        echo "image name: \"$image_name\""
-        if [[ $image_name == *-nvidia-open* ]] || [[ $image_name == *-deck-nvidia* ]]; then
-            echo "modern nvidia image detected!"
-            image="modern"
+        if [[ $image_name == *-nvidia-open* ]]; then
+            echo "modern nvidia desktop image detected"
+            image="nvidia-desktop"
+        elif [[ $image_name == *-deck-nvidia* ]]; then
+            echo "modern nvidia deck image detected!"
+            image="nvidia-deck"
         elif [[ $image_name == *-nvidia:* ]]; then
             echo "legacy nvidia image detected!"
             image="legacy"
@@ -99,6 +101,12 @@ nvidia_hardware_helper() {
         fi
         #user facing text
         title="Bazzite Hardware Helper"
+        image_detected="Detected Bazzite version: $(echo "$image_name" |  cut -d '/' -f3)\n\n"
+        qrencode -o "\$SUPPORT_QR" "https://discord.bazzite.gg"
+        support="\n\n\nPlease join our <a href=\"https://discord.bazzite.gg\"><b>Discord Server</b></a> (scan the QR code) for support."
+        heading_nvidia_deck="<b>STEAM GAMING MODE IN BETA ON NVIDIA HARDWARE</b>\n"
+        detected_nvidia_deck="WARNING: Nvidia GPU Support in Steam Gaming mode and on HTPCs is available as a beta with known issues that <b>cannot be fixed</b> by Bazzite.\n\n"
+        recommend_nvidia_deck="Unless you're a Linux driver developer, or looking for a known-broken toy to play with, we <b>strongly recommend</b> using one of our Desktop images without Steam Gaming Mode."
         heading_unsupported="<b>Unsupported Graphics Card</b>\n"
         detected_unsupported="We've detected you're using a now unsupported NVIDIA GPU.\nUnfortunately, we cannot provide good support for your hardware ourselves.\n"
         recommend_unsupported="Please read our <a href=\"http://127.0.0.1:1290/General/FAQ/#will-support-for-much-older-nvidia-graphics-cards-be-added\"><b>documentation</b></a> for more information.\n"
@@ -110,8 +118,8 @@ nvidia_hardware_helper() {
         recommend_wrong_image="Pick $correct_image as \"vendor of your primary GPU\" on the website to download and install the correct version instead."
         button1="I KNOW WHAT I AM DOING. Install Bazzite Anyway:0"
         button2="Power Off:1"
-        heading2="Detected Graphics Adapter"
-        button3="GPU Information:2"
+        heading2="More Information"
+        button3="More Information:2"
         if [[ "$support_status" = "unsupported" ]]; then
             serve_docs
             heading="$heading_unsupported"
@@ -124,12 +132,15 @@ nvidia_hardware_helper() {
         elif [[ "$support_status" = "legacy" ]] && [[ "$image" = "legacy" ]]; then
             echo "legacy GPU matches legacy image. Nothing to do. Exiting…"
             return 0
-        elif [[ "$support_status" = "supported" ]] && [[ "$image" = "modern" ]]; then
-            echo "supported GPU matches modern image. Nothing to do. Exiting…"
+        elif [[ "$support_status" = "supported" ]] && [[ "$image" = "nvidia-deck"  ]]; then
+            heading="$heading_nvidia_deck"
+            gpu_detected="$detected_nvidia_deck"
+            recommendation="$recommend_nvidia_deck"
+        elif [[ "$support_status" = "supported" ]] && [[ "$image" = "nvidia-desktop" ]]; then
+            echo "supported GPU matches modern desktop image. Nothing to do. Exiting…"
             return 0
-        elif [[ "$support_status" = "supported" ]] && [[ "$image" != "modern" ]]; then
+        elif [[ "$support_status" = "supported" ]] && [[ "$image" != "nvidia-desktop" ]] || [[ "$image" != "nvidia-deck"  ]]; then
             heading="$heading_wrong_image"
-            correct_image=
             gpu_detected="$detected_wrong_image"
             recommendation="$recommend_wrong_image"
         elif [[ "$support_status" = "legacy" ]] && [[ "$image" != "legacy" ]]; then
@@ -138,7 +149,6 @@ nvidia_hardware_helper() {
             recommendation="$recommend_wrong_image"
         fi
         while true; do
-            #YAD dialog
             yad --warning --buttons-layout=center --text-align=center --title="$title" --text="$heading""$gpu_detected""$recommendation" \
                 --button="$button1" \
                 --button="$button2" \
@@ -149,11 +159,45 @@ nvidia_hardware_helper() {
                 systemctl poweroff || shutdown -h now || true
                 break
                 ;;
-            2) yad --info --title="$heading2" --text="$gpuinfo" ;;
+            2) yad  --info --title="$heading2" --text="$image_detected""\nDetected Graphics Adapters:$gpuinfo""$support" --image=\$SUPPORT_QR ;;
             esac
         done
     fi
 }
+
+efi="c12a7328-f81f-11d2-ba4b-00a0c93ec93b"
+declare -A mount
+while read -r device path; do
+    mount["$device"]="-o bind,ro $path"
+done < <(lsblk -o PATH,MOUNTPOINTS -nQ 'PARTTYPE=="'$efi'" && MOUNTPOINTS' 2> /dev/null || true)
+
+for device in $(lsblk -o PATH -nQ 'PARTTYPE=="'$efi'" && !MOUNTPOINTS' 2> /dev/null || true); do
+    mount["$device"]="-o ro -t vfat $device"
+done
+
+export mnt=$(mktemp -d)
+trap "rmdir '$mnt'" EXIT
+
+for device in "${!mount[@]}"; do
+    export device
+    msg=$(sudo -E unshare -m sh -c '
+        mount '"${mount[$device]} '$mnt'"' 2> /dev/null || exit 0
+        shopt -s nullglob nocaseglob
+        for dir in "$mnt"/EFI/*; do
+            [ -d "$dir" ] || continue
+            base=$(basename "$dir" | tr "[:upper:]" "[:lower:]")
+            [[ "$base" == "fedora" || "$base" == "boot" ]] && continue
+            grub=("$dir"/grub*.efi)
+            (( ! ${#grub[@]} )) && continue
+            echo "The GRUB bootloader seems to be installed on $device at ${dir#$mnt}\nBazzite <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#error-code-1\">does not support dual boot with any other Linux installation.</a> \nInstalls to this disk that attempt to reuse this EFI partition will fail.\nEither Bazzite must be installed to a different disk, or this partition or boot loader must be removed.\n\nPlease see the <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#how-to-remove-an-orphaned-copy-of-grub\">documentation</a> for instructions.\n"
+        done
+    ' || true)
+    [ "$msg" ] || continue
+    serve_docs
+    yad --image=dialog-warning --button=OK --buttons-layout=center --title="Existing Linux bootloader detected" --text="$msg"
+done
+
+
 nvidia_hardware_helper
 result=$?
 if [ $result -eq 0 ] || [ $result -eq 1 ] || [ $result -eq 124 ]; then
