@@ -4,6 +4,12 @@ set -eoux pipefail
 
 export BUILDAH_PLATFORM=linux/arm64
 
+# KERNEL_VARIANT is passed in via ENV from Containerfile.arm
+# stable    = default Asahi kernel (production)
+# fairydust = experimental branch with Thunderbolt/USB4/DisplayPort-Alt-Mode
+KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
+echo "Building Bazzite ARM with KERNEL_VARIANT=${KERNEL_VARIANT}"
+
 FEDORA_VER=$(rpm -E %fedora)
 
 dnf5 install -y \
@@ -18,10 +24,12 @@ dnf5 -y remove \
 
 dnf5 -y remove \
     ublue-os-update-services \
-    firefox \
-    firefox-langpacks \
     toolbox \
     htop || true
+
+# Keep Firefox RPM -- users need a browser immediately out of the box.
+# The Flatpak version will install via first-boot service and users can
+# switch later. On ARM we don't remove the RPM like x86 Bazzite does.
 
 # Media codec support via RPM Fusion
 dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
@@ -159,6 +167,62 @@ if dnf5 -y copr enable ublue-os/bling 2>/dev/null; then
         ublue-os-bling
 fi
 
+# Thunderbolt / USB4 userspace stack
+# bolt: Thunderbolt device manager -- authorises devices, works with any
+# kernel that has CONFIG_USB4/CONFIG_THUNDERBOLT. Installed on ALL variants.
+# With the fairydust kernel, this unlocks your dock + peripherals + 4K display.
+dnf5 -y install --skip-broken --skip-unavailable \
+    bolt \
+    usbutils \
+    pciutils
+
+systemctl enable bolt.service || true
+
+# fairydust-specific setup
+# The fairydust kernel RPM is not yet packaged in any COPR so we cannot swap
+# the kernel at image build time. Instead we write a marker file and pre-install
+# the full kernel build toolchain so ujust install-fairydust-kernel works
+# immediately without any extra package installation steps.
+if [[ "${KERNEL_VARIANT}" == "fairydust" ]]; then
+    echo "fairydust" > /usr/share/ublue-os/kernel-variant
+
+    # Kernel build toolchain -- everything needed to compile Linux from source
+    # on native aarch64. Note: gcc-aarch64-linux-gnu is a CROSS-compiler (wrong
+    # here); on native ARM64 we just use plain gcc.
+    dnf5 -y install --skip-broken --skip-unavailable \
+        gcc \
+        gcc-c++ \
+        make \
+        bc \
+        bison \
+        flex \
+        git \
+        openssl-devel \
+        dwarves \
+        elfutils-libelf-devel \
+        perl \
+        perl-Carp \
+        perl-generators \
+        rpm-build \
+        ncurses-devel \
+        python3 \
+        rsync \
+        cpio \
+        binutils \
+        openssl \
+        diffutils \
+        hostname \
+        kmod \
+        dracut \
+        grubby \
+        usbredir \
+        nftables
+
+    echo "fairydust kernel build toolchain installed."
+else
+    echo "stable" > /usr/share/ublue-os/kernel-variant
+fi
+
 # Asahi Flatpak Mesa runtimes -- GPU acceleration for Flatpak apps
 # These come from the @asahi:flatpak COPR already configured in the base image
 dnf5 -y install --skip-broken --skip-unavailable \
@@ -194,8 +258,8 @@ fi
 sed -i 's/#UserspaceHID=true/UserspaceHID=true/' /etc/bluetooth/input.conf || true
 
 # Force NetworkManager to use wpa_supplicant backend for WiFi on Apple Silicon.
-# The shared desktop config defaults to iwd, but Asahi's Broadcom stack is
-# more reliable with wpa_supplicant on M-series Macs.
+# Without this, NM may try the iwd backend which doesn't reliably work with
+# the Broadcom WiFi chip on M-series Macs, causing WiFi to disconnect or not appear.
 mkdir -p /etc/NetworkManager/conf.d
 printf '[device]\nwifi.backend=wpa_supplicant\n' \
     > /etc/NetworkManager/conf.d/wifi_backend.conf
@@ -299,9 +363,12 @@ mkdir -p /usr/lib/bazzite/scripts
 cat > /usr/lib/bazzite/scripts/install-flatpaks.sh << 'FLATPAK_EOF'
 #!/usr/bin/bash
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install -y --noninteractive flathub com.github.tchx84.Flatseal || true
+# Firefox first -- users need a browser before anything else
 flatpak install -y --noninteractive flathub org.mozilla.firefox || true
+flatpak install -y --noninteractive flathub com.github.tchx84.Flatseal || true
 flatpak install -y --noninteractive flathub com.mattjakeman.ExtensionManager || true
+flatpak install -y --noninteractive flathub com.discordapp.Discord || true
+flatpak install -y --noninteractive flathub com.spotify.Client || true
 FLATPAK_EOF
 chmod +x /usr/lib/bazzite/scripts/install-flatpaks.sh
 
