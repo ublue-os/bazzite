@@ -30,6 +30,7 @@ dnf5 -y install --skip-broken --skip-unavailable \
     libkrunfw
 
 # qemu-user-static: fallback emulation via binary translation
+# Pulls in the architecture-specific static interpreters, including x86.
 dnf5 -y install --skip-broken --skip-unavailable \
     qemu-user-static \
     qemu-user-binfmt
@@ -101,7 +102,12 @@ fi
 
 echo ""
 echo "--- qemu-user-static ---"
-if command -v qemu-x86_64-static &>/dev/null; then
+if command -v qemu-i386-static &>/dev/null || [[ -x /usr/sbin/qemu-i386-static ]]; then
+    echo "  qemu-i386-static: installed"
+else
+    echo "  qemu-i386-static: not installed"
+fi
+if command -v qemu-x86_64-static &>/dev/null || [[ -x /usr/sbin/qemu-x86_64-static ]]; then
     echo "  qemu-x86_64-static: installed"
 else
     echo "  qemu-x86_64-static: not installed"

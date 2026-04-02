@@ -41,6 +41,12 @@ get-lsfg ACTION="prompt":
     if [ "${OPTION,,}" == "install" ] || [ "${OPTION,,}" == "install lsfg-vk directly" ]; then
         echo "Installing lsfg-vk directly..."
 
+        if [[ "$(uname -m)" == "aarch64" ]]; then
+            echo "Direct lsfg-vk installation is blocked on ARM."
+            echo "Upstream currently publishes only x86_64 direct packages, which would install the wrong Vulkan layer binary into native ARM userspace."
+            exit 1
+        fi
+
         # Get the latest release download URL
         API_URL="https://api.github.com/repos/PancakeTAS/lsfg-vk/releases/latest"
         DOWNLOAD_URL=$(timeout 30 curl -s "$API_URL" | grep "browser_download_url" | grep "lsfg-vk.*x86_64\.zip" | cut -d '"' -f 4 || echo "")

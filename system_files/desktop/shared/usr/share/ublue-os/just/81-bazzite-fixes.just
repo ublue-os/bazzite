@@ -6,6 +6,7 @@ alias patch-gmod := fix-gmod
 [group("gaming")]
 fix-gmod:
     #!/usr/bin/bash
+    set -euo pipefail
     mkdir -p /tmp/patch-gmod
     wget \
       $(curl -s https://api.github.com/repos/solsticegamestudios/GModPatchTool/releases/latest | \
@@ -13,6 +14,17 @@ fix-gmod:
       -P /tmp/patch-gmod
     cd /tmp/patch-gmod && unzip -q GModPatchTool-Linux.zip
     chmod +x /tmp/patch-gmod/gmodpatchtool
+    if [[ "$(uname -m)" == "aarch64" ]]; then
+      gmodpatchtool_desc="$(file -b /tmp/patch-gmod/gmodpatchtool 2>/dev/null || true)"
+      if grep -q 'x86-64' <<< "$gmodpatchtool_desc"; then
+        if ! command -v box64 >/dev/null 2>&1 && ! command -v FEXInterpreter >/dev/null 2>&1; then
+          echo "GModPatchTool is x86_64-only and requires the ARM emulation stack." >&2
+          rm -rf /tmp/patch-gmod
+          exit 1
+        fi
+        echo "GModPatchTool is x86_64-only and will run via the ARM emulation stack."
+      fi
+    fi
     /tmp/patch-gmod/gmodpatchtool
     rm -rf /tmp/patch-gmod
 

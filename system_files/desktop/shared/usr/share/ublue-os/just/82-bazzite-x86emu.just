@@ -169,6 +169,21 @@ test-x86-emulation:
         echo "[WARN] binfmt_misc not mounted (transparent execution unavailable)"
     fi
 
+    # Test qemu static interpreters used as the fallback x86 path
+    if command -v qemu-i386-static &>/dev/null || [[ -x /usr/sbin/qemu-i386-static ]]; then
+        echo "[PASS] qemu-i386-static is installed"
+        PASS=$((PASS + 1))
+    else
+        echo "[WARN] qemu-i386-static not installed (32-bit fallback may be unavailable)"
+    fi
+
+    if command -v qemu-x86_64-static &>/dev/null || [[ -x /usr/sbin/qemu-x86_64-static ]]; then
+        echo "[PASS] qemu-x86_64-static is installed"
+        PASS=$((PASS + 1))
+    else
+        echo "[WARN] qemu-x86_64-static not installed (x86_64 fallback may be unavailable)"
+    fi
+
     # Test Steam
     if rpm -q steam &>/dev/null; then
         echo "[PASS] Steam is installed"

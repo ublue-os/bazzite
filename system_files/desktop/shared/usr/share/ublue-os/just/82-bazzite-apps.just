@@ -19,6 +19,16 @@ _install_appimage_file $APPIMAGE_SRC $filename="":
     else
         cp "$APPIMAGE_SRC" "$appimage_file"
     fi
+
+    appimage_desc="$(file -b "$appimage_file" 2>/dev/null || true)"
+    if [[ "$(uname -m)" == "aarch64" ]] && grep -q 'x86-64' <<< "$appimage_desc"; then
+        if ! command -v box64 >/dev/null 2>&1 && ! command -v FEXInterpreter >/dev/null 2>&1; then
+            echo "This AppImage is x86_64-only and requires the ARM emulation stack (box64 or FEX-Emu)." >&2
+            exit 1
+        fi
+        echo "This AppImage is x86_64-only and will run via the ARM emulation stack."
+    fi
+
     chmod +x "$appimage_file"
     echo "Click {{ BOLD }}Unlock{{ NORMAL }} then {{ BLUE + BOLD }}Move to the app menu{{ NORMAL }} and close window to finish installation."
     sleep 3
@@ -131,15 +141,36 @@ alias get-steamcmd := install-steamcmd
 [group("gaming")]
 install-steamcmd:
     #!/usr/bin/bash
+    set -euo pipefail
     if [[ $UID -eq 0 ]]; then
         echo >&2 "This ujust should not be run as root."
         exit 1
     fi
     echo 'Installing SteamCMD...'
-    wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O /tmp/steamcmd.tar.gz
+    temp_dir="$(mktemp -d)"
+    trap 'rm -rf "$temp_dir"' EXIT
+    wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O "$temp_dir/steamcmd.tar.gz"
+    mkdir -p "$temp_dir/extract"
+    tar -xvzf "$temp_dir/steamcmd.tar.gz" -C "$temp_dir/extract"
+    steamcmd_binary="$temp_dir/extract/linux32/steamcmd"
+    if [[ "$(uname -m)" == "aarch64" && -f "$steamcmd_binary" ]]; then
+        steamcmd_desc="$(file -b "$steamcmd_binary" 2>/dev/null || true)"
+        if grep -Eq 'Intel 80386|x86-64' <<< "$steamcmd_desc"; then
+            if ! command -v FEXInterpreter >/dev/null 2>&1 && \
+               ! command -v qemu-i386-static >/dev/null 2>&1 && \
+               ! command -v qemu-x86_64-static >/dev/null 2>&1 && \
+               [[ ! -x /usr/sbin/qemu-i386-static ]] && \
+               [[ ! -x /usr/sbin/qemu-x86_64-static ]] && \
+               ! command -v box86 >/dev/null 2>&1 && \
+               ! command -v box64 >/dev/null 2>&1; then
+                echo "SteamCMD is x86-only and requires the ARM emulation stack." >&2
+                exit 1
+            fi
+            echo "SteamCMD is x86-only and will run via the ARM emulation stack."
+        fi
+    fi
     mkdir -p ~/.steam
-    tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
-    rm /tmp/steamcmd.tar.gz
+    cp -a "$temp_dir/extract"/. ~/.steam/
     if [[ -f ~/.steam/steamcmd.sh ]]; then
         mkdir -p ~/.local/bin
         rm -f ~/.local/bin/steamcmd
@@ -183,16 +214,65 @@ alias get-emudeck := install-emudeck
 [group("gaming")]
 install-emudeck:
     #!/usr/bin/bash
-    set -eo pipefail
+    set -euo pipefail
+    case "$(uname -m)" in
+        aarch64)
+            asset_regex='(?i)(aarch64|arm64).*AppImage$'
+            ;;
+        x86_64)
+            asset_regex='(?i)(x86_64|amd64).*AppImage$'
+            ;;
+        *)
+            asset_regex='.*AppImage$'
+            ;;
+    esac
     remote_appimage_url="$(
-        curl -s https://api.github.com/repos/EmuDeck/emudeck-electron/releases/latest | \
-        jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url"
+        curl -fsSL https://api.github.com/repos/EmuDeck/emudeck-electron/releases/latest | \
+        jq -r --arg asset_regex "$asset_regex" '.assets[] | select(.name | test($asset_regex)) | .browser_download_url' | \
+        head -n 1
     )"
+    if [[ -z "$remote_appimage_url" || "$remote_appimage_url" == "null" ]]; then
+        remote_appimage_url="$(
+            curl -fsSL https://api.github.com/repos/EmuDeck/emudeck-electron/releases/latest | \
+            jq -r '.assets[] | select(.name | test(".*AppImage$")) | .browser_download_url' | \
+            head -n 1
+        )"
+    fi
+    if [[ -z "$remote_appimage_url" || "$remote_appimage_url" == "null" ]]; then
+        echo "Failed to find a matching EmuDeck AppImage for $(uname -m)"
+        exit 1
+    fi
     just _install_appimage_file "$remote_appimage_url"
 
 # Install OpenRGB (https://openrgb.org/)
 [group("hardware")]
-install-openrgb: (_install_appimage_file "https://codeberg.org/OpenRGB/OpenRGB/releases/download/release_candidate_1.0rc2/OpenRGB_1.0rc2_x86_64_0fca93e.AppImage")
+install-openrgb:
+    #!/usr/bin/bash
+    set -euo pipefail
+    case "$(uname -m)" in
+        aarch64)
+            asset_regex='OpenRGB_.*_arm64_.*\.AppImage$'
+            ;;
+        x86_64)
+            asset_regex='OpenRGB_.*_x86_64_.*\.AppImage$'
+            ;;
+        *)
+            echo "Unsupported architecture for OpenRGB AppImage: $(uname -m)"
+            exit 1
+            ;;
+    esac
+
+    remote_appimage_url="$(
+        curl -fsSL 'https://codeberg.org/api/v1/repos/OpenRGB/OpenRGB/releases/tags/release_candidate_1.0rc2' | \
+        jq -r --arg asset_regex "$asset_regex" '.assets[] | select(.name | test($asset_regex)) | .browser_download_url' | \
+        head -n 1
+    )"
+    if [[ -z "$remote_appimage_url" || "$remote_appimage_url" == "null" ]]; then
+        echo "Failed to find a matching OpenRGB AppImage for $(uname -m)"
+        exit 1
+    fi
+
+    just _install_appimage_file "$remote_appimage_url"
 
 # Install Boxtron, a Steam Play compatibility tool to run DOS games using native Linux DOSBox
 [group("gaming")]
