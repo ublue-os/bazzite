@@ -25,12 +25,20 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 ATOMIC_BASE="quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42"
 
-# Parse --fairydust flag
+# Parse flags
+# --fairydust            : use experimental Thunderbolt/USB4 kernel variant
+# --external-build=PATH  : redirect podman container build storage to PATH
+#                          (use this when internal disk is small, e.g. 20-25 GB)
+#                          PATH must already be a mounted writable directory,
+#                          e.g. /mnt/external (your external SSD).
+#                          After the script finishes you can wipe PATH freely.
 KERNEL_VARIANT="stable"
+EXTERNAL_BUILD_PATH=""
 for arg in "$@"; do
-    if [[ "$arg" == "--fairydust" ]]; then
-        KERNEL_VARIANT="fairydust"
-    fi
+    case "$arg" in
+        --fairydust)           KERNEL_VARIANT="fairydust" ;;
+        --external-build=*)    EXTERNAL_BUILD_PATH="${arg#--external-build=}" ;;
+    esac
 done
 
 IMAGE_NAME="bazzite-arm"
@@ -41,7 +49,8 @@ fi
 BAZZITE_IMAGE="localhost/${IMAGE_NAME}:latest"
 IMAGE_BRANCH=$(git -C "${REPO_ROOT}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "experimental")
 
-echo "Kernel variant: ${KERNEL_VARIANT}"
+echo "Kernel variant:     ${KERNEL_VARIANT}"
+echo "External build dir: ${EXTERNAL_BUILD_PATH:-<none, using internal /var/lib/containers>}"
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Helper: ensure /boot/loader is the loader.0 symlink ostree requires
@@ -120,6 +129,48 @@ echo ""
 echo "--- Step 1: Install prerequisites ---"
 sudo dnf upgrade -y
 sudo dnf install -y podman git rpm-ostree ostree rsync
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Step 1b: Redirect podman build storage to external SSD (if requested)
+# ──────────────────────────────────────────────────────────────────────────────
+if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
+    echo ""
+    echo "--- Step 1b: Configuring podman to use external build storage ---"
+    if [[ ! -d "${EXTERNAL_BUILD_PATH}" ]]; then
+        echo "ERROR: External build path '${EXTERNAL_BUILD_PATH}' does not exist."
+        echo "Mount your external SSD first:"
+        echo "  sudo mkdir -p ${EXTERNAL_BUILD_PATH}"
+        echo "  sudo mount /dev/sda ${EXTERNAL_BUILD_PATH}  # adjust device as needed"
+        exit 1
+    fi
+
+    # How much free space is on the external path?
+    EXTERNAL_FREE_GB=$(df -BG "${EXTERNAL_BUILD_PATH}" | awk 'NR==2{gsub("G",""); print $4}')
+    echo "External path free space: ${EXTERNAL_FREE_GB} GB (need ~25 GB)"
+    if (( EXTERNAL_FREE_GB < 20 )); then
+        echo "ERROR: Not enough free space on ${EXTERNAL_BUILD_PATH} (${EXTERNAL_FREE_GB} GB < 20 GB needed)"
+        exit 1
+    fi
+
+    PODMAN_EXT_ROOT="${EXTERNAL_BUILD_PATH}/podman-build"
+    sudo mkdir -p "${PODMAN_EXT_ROOT}"
+
+    # Write /etc/containers/storage.conf for root to redirect all podman storage.
+    # This affects sudo podman build, sudo podman image exists, and
+    # sudo skopeo copy containers-storage:... -- all use this config.
+    sudo mkdir -p /etc/containers
+    sudo tee /etc/containers/storage.conf > /dev/null << EOF
+[storage]
+driver = "overlay"
+graphRoot = "${PODMAN_EXT_ROOT}"
+runRoot = "/run/containers/storage"
+
+[storage.options.overlay]
+mount_program = "/usr/bin/fuse-overlayfs"
+EOF
+    echo "Podman root storage → ${PODMAN_EXT_ROOT}"
+    echo "Internal disk freed from container build layers (~20 GB saved)."
+fi
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Step 2: Clone repo and build Bazzite ARM image
@@ -375,6 +426,19 @@ sudo skopeo copy \
     "containers-storage:${BAZZITE_IMAGE}" \
     "oci:${OCI_DEST}:latest"
 echo "Image exported successfully."
+
+# Now that the OCI archive is safely on the internal stateroot var,
+# the podman build storage on the external SSD is no longer needed.
+# Clean it up to free the external SSD for games/data after first boot.
+if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
+    echo ""
+    echo "--- Cleaning up external build storage (image now in ${OCI_DEST}) ---"
+    sudo podman system prune -af 2>/dev/null || true
+    sudo rm -rf "${PODMAN_EXT_ROOT:?}" 2>/dev/null || true
+    # Remove the storage.conf redirect so future podman operations use defaults
+    sudo rm -f /etc/containers/storage.conf
+    echo "External build storage cleaned. ${EXTERNAL_BUILD_PATH} is now free for other use."
+fi
 
 # Install first-boot rebase mechanism into the deployment.
 # Profile.d only -- no systemd service. The service caused output to overlap
