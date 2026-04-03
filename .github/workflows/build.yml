@@ -40,6 +40,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
   cancel-in-progress: true
 
+env:
+  REPO_OWNER: ${{ github.repository_owner }}
+
 jobs:
   push-ghcr:
     name: Make
@@ -72,6 +75,11 @@ jobs:
             base_image_flavor: main
             arch: x86_64
     steps:
+      # The image registry name must be lower-case, but GitHub usernames can be capitalized.
+      - name: Get lower-case equivalent of the repository owner's username
+        id: repo_owner_case
+        run: echo "lowercase=${REPO_OWNER,,}" >> "$GITHUB_OUTPUT"
+
       - name: Define base variables
         id: base
         run: |
@@ -114,7 +122,7 @@ jobs:
           # Define push and pull registries
           #
           PULL_REGISTRY=ghcr.io/ublue-os
-          PUSH_REGISTRY=ghcr.io/${{ github.repository_owner }}
+          PUSH_REGISTRY=ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}
           echo "push_registry=${PUSH_REGISTRY}" >> $GITHUB_OUTPUT
           echo "pull_registry=${PULL_REGISTRY}" >> $GITHUB_OUTPUT
           echo "output_image=${PUSH_REGISTRY}/${{ matrix.image }}" >> $GITHUB_OUTPUT
@@ -217,7 +225,7 @@ jobs:
           FEDORA_VERSION=${{ matrix.fedora_version }}
           BASE_IMAGE=${{ steps.base.outputs.base_image }}
           IMAGE_NAME=${{ matrix.image }}
-          IMAGE_VENDOR=${{ github.repository_owner }}
+          IMAGE_VENDOR=${{ steps.repo_owner_case.outputs.lowercase }}
           IMAGE_BRANCH=${{ github.ref_name }}
           KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
           KERNEL_VERSION=${{ matrix.kernel_version }}
