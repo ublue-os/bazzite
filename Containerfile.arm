@@ -71,9 +71,9 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     if [[ "${SKIP_WINE}" != "1" ]]; then \
-        bash /ctx/install-native-wine-aarch64.sh; \
+    bash /ctx/install-native-wine-aarch64.sh; \
     else \
-        echo "Skipping native Wine build (--skip-wine). x86 Wine via FEX-Emu still available."; \
+    echo "Skipping native Wine build (--skip-wine). x86 Wine via FEX-Emu still available."; \
     fi
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
