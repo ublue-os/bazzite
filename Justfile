@@ -1,10 +1,9 @@
 export project_root := `git rev-parse --show-toplevel`
 export git_branch := ` git branch --show-current`
-export latest := "43"
+export latest := "44"
 export default_image := "kinoite"
 export default_target := "bazzite"
-
-kernel_flavor := "bazzite"
+kernel_flavor := "ogc"
 
 alias build-iso := build-iso-release
 alias run := run-container
@@ -66,6 +65,7 @@ _resolve_image target image:
     echo "${resolved} ${base_image} ${target}"
 
 # Check Just Syntax
+[group('Just')]
 just-check:
     #!/usr/bin/bash
     find "${project_root}" -type f -name "*.just" | while read -r file; do
@@ -75,6 +75,7 @@ just-check:
     just --unstable --fmt --check -f ${project_root}/Justfile
 
 # Fix Just Syntax
+[group('Just')]
 [private]
 just-fix:
     #!/usr/bin/bash
@@ -85,6 +86,7 @@ just-fix:
     just --unstable --fmt -f ${project_root}/Justfile
 
 # Build image
+[group('Image')]
 build target="" image="":
     #!/usr/bin/bash
     set -euo pipefail
@@ -120,18 +122,22 @@ build target="" image="":
         "${project_root}"
 
 # Build ISO
+[group('ISO')]
 build-iso-release target="" image="":
     @{{ project_root }}/just_scripts/build-iso.sh {{ target }} {{ image }}
 
 # Build ISO using ISO Builder Git Head
+[group('ISO')]
 build-iso-git target="" image="":
     @{{ project_root }}/just_scripts/build-iso-installer-main.sh {{ target }} {{ image }}
 
 # Run ISO
+[group('ISO')]
 run-iso target="" image="":
     @{{ project_root }}/just_scripts/run-iso.sh {{ target }} {{ image }}
 
 # Run Container
+[group('Image')]
 run-container target="" image="":
     #!/usr/bin/bash
     set -euo pipefail
@@ -151,6 +157,7 @@ run-container target="" image="":
     $container_mgr run -it --rm "localhost/${tag}:{{ latest }}-{{ git_branch }}" /usr/bin/bash
 
 # List Images
+[group('Utility')]
 list-images:
     #!/usr/bin/bash
     set -euo pipefail
@@ -162,6 +169,7 @@ list-images:
     done
 
 # Clean Images
+[group('Utility')]
 clean-images:
     #!/usr/bin/bash
     set -euox pipefail
@@ -173,6 +181,7 @@ clean-images:
     done
 
 # Clean ISOs
+[group('Utility')]
 clean-isos:
     #!/usr/bin/bash
     set -euox pipefail
