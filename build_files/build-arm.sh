@@ -4,6 +4,35 @@ set -eoux pipefail
 
 export BUILDAH_PLATFORM=linux/arm64
 
+# ── Suppress dracut + kernel-install triggers ─────────────────────────────────
+# When kernel or kernel-module packages are installed/updated inside a
+# container, their RPM post-install scriptlets run dracut to rebuild the
+# initramfs. This always fails in containers (no live kernel, missing tools
+# like pgrep/nohup/losetup) and aborts the entire dnf transaction.
+# Replace the trigger scripts with no-ops for the duration of this build.
+# The finalize script already wipes /boot/* at the end anyway.
+_dracut_shims=(
+    /usr/lib/kernel/install.d/50-dracut.install
+    /usr/lib/kernel/install.d/90-loaderentry.install
+    /usr/lib/kernel/install.d/92-crashkernel.install
+    /usr/lib/kernel/install.d/99-grub2-mkconfig.install
+)
+for _shim in "${_dracut_shims[@]}"; do
+    if [[ -f "${_shim}" ]]; then
+        mv "${_shim}" "${_shim}.bak"
+    fi
+    mkdir -p "$(dirname "${_shim}")"
+    printf '#!/bin/sh\nexit 0\n' > "${_shim}"
+    chmod +x "${_shim}"
+done
+# Also shim dracut itself in case it gets called directly
+if [[ -x /usr/bin/dracut ]]; then
+    mv /usr/bin/dracut /usr/bin/dracut.real
+    printf '#!/bin/sh\nexit 0\n' > /usr/bin/dracut
+    chmod +x /usr/bin/dracut
+fi
+# ─────────────────────────────────────────────────────────────────────────────
+
 # KERNEL_VARIANT is passed in via ENV from Containerfile.arm
 # stable    = default Asahi kernel (production)
 # fairydust = experimental branch with Thunderbolt/USB4/DisplayPort-Alt-Mode
@@ -16,7 +45,7 @@ dnf5 install -y \
     "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VER}.noarch.rpm" \
     "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VER}.noarch.rpm"
 
-dnf5 update -y --refresh
+dnf5 update -y --refresh --exclude='kernel*' --exclude='asahi-kernel*'
 
 # Remove conflicting/unwanted packages from the base
 dnf5 -y remove \
