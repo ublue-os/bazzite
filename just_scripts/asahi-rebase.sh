@@ -23,7 +23,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-ATOMIC_BASE="quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:42"
+ATOMIC_BASE="quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:43"
 
 # Parse flags
 # --fairydust            : use experimental Thunderbolt/USB4 kernel variant
@@ -130,6 +130,13 @@ echo "--- Step 1: Install prerequisites ---"
 sudo dnf upgrade -y
 sudo dnf install -y podman git rpm-ostree ostree rsync
 
+# Prevent the system from sleeping during the 60-90 minute build.
+# The build will be killed if the system suspends mid-way.
+echo "Disabling sleep/suspend for the duration of this script..."
+sudo systemctl mask --now \
+    sleep.target suspend.target hibernate.target \
+    hybrid-sleep.target 2>/dev/null || true
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Step 1b: Redirect podman build storage to external SSD (if requested)
 # ──────────────────────────────────────────────────────────────────────────────
@@ -186,7 +193,7 @@ if ! sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
         --platform linux/arm64 \
         -f Containerfile.arm \
         --build-arg BASE_IMAGE_NAME=kinoite \
-        --build-arg FEDORA_VERSION=42 \
+        --build-arg FEDORA_VERSION=43 \
         --build-arg IMAGE_NAME="${IMAGE_NAME}" \
         --build-arg IMAGE_VENDOR=nripeshn \
         --build-arg KERNEL_VARIANT="${KERNEL_VARIANT}" \

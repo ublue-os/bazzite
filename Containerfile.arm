@@ -29,7 +29,7 @@
 #              The fairydust branch adds Thunderbolt, USB4, DisplayPort over USB-C.
 #              See: https://github.com/AsahiLinux/linux/tree/fairydust
 
-ARG FEDORA_VERSION="${FEDORA_VERSION:-42}"
+ARG FEDORA_VERSION="${FEDORA_VERSION:-43}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
 ARG BASE_IMAGE="quay.io/fedora-asahi-remix-atomic-desktops/${BASE_IMAGE_NAME}:${FEDORA_VERSION}"
@@ -45,7 +45,7 @@ FROM ${BASE_IMAGE} AS bazzite-arm
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-arm}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
-ARG FEDORA_VERSION="${FEDORA_VERSION:-42}"
+ARG FEDORA_VERSION="${FEDORA_VERSION:-43}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT:-}"

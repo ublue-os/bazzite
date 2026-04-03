@@ -114,9 +114,17 @@ cleanup() {
 }
 trap cleanup EXIT
 
-dnf5 -y install --setopt=install_weak_deps=False "${runtime_packages[@]}"
-dnf5 -y install --setopt=install_weak_deps=False "${build_packages[@]}"
-dnf5 -y install --setopt=install_weak_deps=False --skip-unavailable "${optional_runtime_packages[@]}" || true
+# Upgrade first so glibc and all virtual provides are current before
+# installing Wine's deps. This prevents "rtld(GNU_HASH) is needed by ..."
+# errors caused by stale package metadata in the base image.
+dnf5 -y upgrade --refresh
+
+dnf5 -y install --setopt=install_weak_deps=False \
+    --skip-broken --skip-unavailable "${runtime_packages[@]}"
+dnf5 -y install --setopt=install_weak_deps=False \
+    --skip-broken --skip-unavailable "${build_packages[@]}"
+dnf5 -y install --setopt=install_weak_deps=False \
+    --skip-broken --skip-unavailable "${optional_runtime_packages[@]}" || true
 
 mkdir -p /usr/local/bin
 if command -v llvm-dlltool >/dev/null 2>&1; then
