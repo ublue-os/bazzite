@@ -24,6 +24,11 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 ATOMIC_BASE="quay.io/fedora-asahi-remix-atomic-desktops/base-atomic:43"
+PODMAN_STORAGE_CONF="/etc/containers/storage.conf"
+PODMAN_STORAGE_CONF_BACKUP=""
+PODMAN_STORAGE_OVERRIDE_ACTIVE=0
+PODMAN_EXT_ROOT=""
+SLEEP_MASKED=0
 
 # Parse flags
 # --fairydust            : use experimental Thunderbolt/USB4 kernel variant
@@ -51,6 +56,30 @@ IMAGE_BRANCH=$(git -C "${REPO_ROOT}" rev-parse --abbrev-ref HEAD 2>/dev/null || 
 
 echo "Kernel variant:     ${KERNEL_VARIANT}"
 echo "External build dir: ${EXTERNAL_BUILD_PATH:-<none, using internal /var/lib/containers>}"
+
+cleanup_host_overrides() {
+    if [[ "${SLEEP_MASKED}" -eq 1 ]]; then
+        sudo systemctl unmask \
+            sleep.target suspend.target hibernate.target \
+            hybrid-sleep.target 2>/dev/null || true
+    fi
+
+    if [[ -n "${PODMAN_STORAGE_CONF_BACKUP}" ]]; then
+        sudo install -m 0644 "${PODMAN_STORAGE_CONF_BACKUP}" "${PODMAN_STORAGE_CONF}" 2>/dev/null || true
+        rm -f "${PODMAN_STORAGE_CONF_BACKUP}" 2>/dev/null || true
+    elif [[ "${PODMAN_STORAGE_OVERRIDE_ACTIVE}" -eq 1 ]]; then
+        sudo rm -f "${PODMAN_STORAGE_CONF}" 2>/dev/null || true
+    fi
+}
+
+cleanup_external_podman_storage() {
+    if [[ -n "${PODMAN_EXT_ROOT}" ]]; then
+        sudo podman system prune -af 2>/dev/null || true
+        sudo rm -rf "${PODMAN_EXT_ROOT}" 2>/dev/null || true
+    fi
+}
+
+trap cleanup_host_overrides EXIT
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Helper: ensure /boot/loader is the loader.0 symlink ostree requires
@@ -99,6 +128,19 @@ ensure_boot_loader_symlink() {
     fi
 }
 
+unmask_deployment_sleep_targets() {
+    local deploy_dir="$1"
+    local target_path target_name
+
+    for target_name in sleep.target suspend.target hibernate.target hybrid-sleep.target; do
+        target_path="${deploy_dir}/etc/systemd/system/${target_name}"
+        if [[ "$(readlink "${target_path}" 2>/dev/null || true)" == "/dev/null" ]]; then
+            sudo rm -f "${target_path}"
+            echo "Removed inherited sleep mask from deployment: ${target_name}"
+        fi
+    done
+}
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Banner
 # ──────────────────────────────────────────────────────────────────────────────
@@ -136,6 +178,7 @@ echo "Disabling sleep/suspend for the duration of this script..."
 sudo systemctl mask --now \
     sleep.target suspend.target hibernate.target \
     hybrid-sleep.target 2>/dev/null || true
+SLEEP_MASKED=1
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Step 1b: Redirect podman build storage to external SSD (if requested)
@@ -151,6 +194,22 @@ if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
         exit 1
     fi
 
+    EXTERNAL_SOURCE=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no SOURCE 2>/dev/null || true)
+    EXTERNAL_TARGET=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no TARGET 2>/dev/null || true)
+    EXTERNAL_FSTYPE=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no FSTYPE 2>/dev/null || true)
+    ROOT_SOURCE=$(findmnt -no SOURCE / 2>/dev/null || true)
+
+    if [[ -z "${EXTERNAL_SOURCE}" || -z "${EXTERNAL_TARGET}" || -z "${EXTERNAL_FSTYPE}" ]]; then
+        echo "ERROR: Could not resolve the filesystem backing '${EXTERNAL_BUILD_PATH}'."
+        exit 1
+    fi
+
+    if [[ "${EXTERNAL_TARGET}" == "/" || "${EXTERNAL_SOURCE}" == "${ROOT_SOURCE}" ]]; then
+        echo "ERROR: '${EXTERNAL_BUILD_PATH}' is on the internal root filesystem, not an external drive mount."
+        echo "Mount the external SSD first and pass that mount path, for example /mnt/external."
+        exit 1
+    fi
+
     # How much free space is on the external path?
     EXTERNAL_FREE_GB=$(df -BG "${EXTERNAL_BUILD_PATH}" | awk 'NR==2{gsub("G",""); print $4}')
     echo "External path free space: ${EXTERNAL_FREE_GB} GB (need ~25 GB)"
@@ -161,6 +220,21 @@ if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
 
     PODMAN_EXT_ROOT="${EXTERNAL_BUILD_PATH}/podman-build"
     sudo mkdir -p "${PODMAN_EXT_ROOT}"
+
+    FUSE_OVERLAYFS_BIN=$(command -v fuse-overlayfs || true)
+    if [[ -z "${FUSE_OVERLAYFS_BIN}" && -x /usr/sbin/fuse-overlayfs ]]; then
+        FUSE_OVERLAYFS_BIN="/usr/sbin/fuse-overlayfs"
+    fi
+    if [[ -z "${FUSE_OVERLAYFS_BIN}" ]]; then
+        echo "ERROR: fuse-overlayfs was not found after installing podman."
+        exit 1
+    fi
+
+    if [[ -f "${PODMAN_STORAGE_CONF}" && -z "${PODMAN_STORAGE_CONF_BACKUP}" ]]; then
+        PODMAN_STORAGE_CONF_BACKUP=$(mktemp /tmp/bazzite-storage.conf.XXXXXX)
+        sudo cp -a "${PODMAN_STORAGE_CONF}" "${PODMAN_STORAGE_CONF_BACKUP}"
+        sudo chown "$(id -u):$(id -g)" "${PODMAN_STORAGE_CONF_BACKUP}" 2>/dev/null || true
+    fi
 
     # Write /etc/containers/storage.conf for root to redirect all podman storage.
     # This affects sudo podman build, sudo podman image exists, and
@@ -173,8 +247,9 @@ graphRoot = "${PODMAN_EXT_ROOT}"
 runRoot = "/run/containers/storage"
 
 [storage.options.overlay]
-mount_program = "/usr/bin/fuse-overlayfs"
+mount_program = "${FUSE_OVERLAYFS_BIN}"
 EOF
+    PODMAN_STORAGE_OVERRIDE_ACTIVE=1
     echo "Podman root storage → ${PODMAN_EXT_ROOT}"
     echo "Internal disk freed from container build layers (~20 GB saved)."
 fi
@@ -341,6 +416,10 @@ if [[ -z "$DEPLOY_DIR" || ! -d "$DEPLOY_DIR" ]]; then
         | sort -rn | head -1 | cut -d' ' -f2)
 fi
 
+if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
+    unmask_deployment_sleep_targets "$DEPLOY_DIR"
+fi
+
 # ── CRITICAL: Inject /boot and /boot/efi into the deployment's fstab ─────────
 # The base-atomic image ships with an fstab that only has /. Without entries
 # for /boot (ext4, disk0s5) and /boot/efi (vfat, disk0s4), the atomic system
@@ -423,15 +502,23 @@ fi
 # auto-mounts at /var/mnt/games on every boot. The user can then use it
 # for game storage without manual mounting.
 if [[ -n "${EXTERNAL_BUILD_PATH}" ]] && [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
-    EXT_DEV=$(findmnt -no SOURCE "${EXTERNAL_BUILD_PATH}" 2>/dev/null || true)
-    EXT_UUID=$(blkid -s UUID -o value "${EXT_DEV}" 2>/dev/null || true)
-    if [[ -n "$EXT_UUID" ]]; then
+    EXT_DEV=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no SOURCE 2>/dev/null || true)
+    EXT_DEV="${EXT_DEV%%[*}"
+    EXT_FSTYPE=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no FSTYPE 2>/dev/null || true)
+    GAMES_FSCK_PASSNO=0
+    EXT_UUID=""
+    if [[ -n "${EXT_DEV}" && -b "${EXT_DEV}" ]]; then
+        EXT_UUID=$(sudo blkid -s UUID -o value "${EXT_DEV}" 2>/dev/null || true)
+    fi
+    if [[ "${EXT_FSTYPE}" =~ ^ext[234]$ ]]; then
+        GAMES_FSCK_PASSNO=2
+    fi
+    if [[ -n "$EXT_UUID" && -n "$EXT_FSTYPE" ]]; then
         GAMES_FSTAB="${DEPLOY_DIR}/etc/fstab"
-        if ! grep -q "UUID=${EXT_UUID}" "${GAMES_FSTAB}" 2>/dev/null; then
-            echo "UUID=${EXT_UUID}  /var/mnt/games  ext4  defaults,nofail,x-systemd.automount  0  2" \
-                | sudo tee -a "${GAMES_FSTAB}" > /dev/null
-            echo "Added external SSD (UUID=${EXT_UUID}) → /var/mnt/games in deployment fstab."
-        fi
+        sudo sed -i '\|[[:space:]]/var/mnt/games[[:space:]]|d' "${GAMES_FSTAB}"
+        echo "UUID=${EXT_UUID}  /var/mnt/games  ${EXT_FSTYPE}  defaults,nofail,x-systemd.automount  0  ${GAMES_FSCK_PASSNO}" \
+            | sudo tee -a "${GAMES_FSTAB}" > /dev/null
+        echo "Added external SSD (UUID=${EXT_UUID}, fstype=${EXT_FSTYPE}) → /var/mnt/games in deployment fstab."
         # Create the mount point in the stateroot var (becomes /var/mnt/games after boot)
         sudo mkdir -p "/ostree/deploy/fedora/var/mnt/games"
     else
@@ -462,10 +549,8 @@ echo "Image exported successfully."
 if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
     echo ""
     echo "--- Cleaning up external build storage (image now in ${OCI_DEST}) ---"
-    sudo podman system prune -af 2>/dev/null || true
-    sudo rm -rf "${PODMAN_EXT_ROOT:?}" 2>/dev/null || true
-    # Remove the storage.conf redirect so future podman operations use defaults
-    sudo rm -f /etc/containers/storage.conf
+    cleanup_external_podman_storage
+    PODMAN_EXT_ROOT=""
     echo "External build storage cleaned. ${EXTERNAL_BUILD_PATH} is now free for other use."
 fi
 

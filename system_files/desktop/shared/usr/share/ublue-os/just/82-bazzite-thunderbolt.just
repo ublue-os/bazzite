@@ -363,6 +363,10 @@ set-stable-kernel-default:
 setup-games-drive DEV="":
     #!/usr/bin/bash
     set -euo pipefail
+    if [[ "$(uname -m)" != "aarch64" ]]; then
+        echo "This command is only relevant on aarch64 (Apple Silicon) systems."
+        exit 1
+    fi
     if [[ -z "{{ DEV }}" ]]; then
         echo "Usage: ujust setup-games-drive /dev/sda"
         echo ""
@@ -375,20 +379,65 @@ setup-games-drive DEV="":
         echo "ERROR: $DEV is not a block device."
         exit 1
     fi
+
+    parent_disk_for_mountpoint() {
+        local mountpoint="$1"
+        local source=""
+        local parent=""
+
+        source="$(findmnt -no SOURCE "$mountpoint" 2>/dev/null || true)"
+        source="${source%%[*}"
+        if [[ -b "$source" ]]; then
+            parent="$(lsblk -ndo PKNAME "$source" 2>/dev/null | head -n 1 || true)"
+            if [[ -z "$parent" ]]; then
+                parent="$(basename "$source")"
+            fi
+        fi
+
+        printf '%s\n' "$parent"
+    }
+
+    mounted_paths="$(lsblk -nrpo MOUNTPOINTS "$DEV" 2>/dev/null | awk 'NF' || true)"
+    if [[ -n "$mounted_paths" ]]; then
+        echo "ERROR: $DEV or one of its child partitions is currently mounted:"
+        printf '%s\n' "$mounted_paths"
+        echo "Unmount it first, then rerun this command."
+        exit 1
+    fi
+
+    root_parent="$(parent_disk_for_mountpoint /)"
+    boot_parent="$(parent_disk_for_mountpoint /boot)"
+    efi_parent="$(parent_disk_for_mountpoint /boot/efi)"
+    dev_parent="$(lsblk -ndo PKNAME "$DEV" 2>/dev/null || true)"
+    if [[ -z "$dev_parent" ]]; then
+        dev_parent="$(basename "$DEV")"
+    fi
+    for system_parent in "$root_parent" "$boot_parent" "$efi_parent"; do
+        if [[ -n "$system_parent" && "$dev_parent" == "$system_parent" ]]; then
+            echo "ERROR: $DEV belongs to the current system disk (${system_parent}). Refusing to format it."
+            exit 1
+        fi
+    done
+
     echo "Setting up $DEV as games drive mounted at /var/mnt/games..."
     echo "WARNING: This will format $DEV as ext4 and erase all data on it."
     read -rp "Continue? (y/N): " confirm
     [[ "$confirm" == [yY] ]] || exit 0
     sudo mkfs.ext4 -L "BazziteGames" "$DEV"
-    UUID=$(blkid -s UUID -o value "$DEV")
-    sudo mkdir -p /var/mnt/games
-    if ! grep -q "UUID=${UUID}" /etc/fstab 2>/dev/null; then
-        echo "UUID=${UUID}  /var/mnt/games  ext4  defaults,nofail,x-systemd.automount  0  2" \
-            | sudo tee -a /etc/fstab > /dev/null
-        echo "Added to /etc/fstab (auto-mounts on every boot)."
+    UUID=$(sudo blkid -s UUID -o value "$DEV")
+    if [[ -z "$UUID" ]]; then
+        echo "ERROR: Could not read a UUID from $DEV after formatting."
+        exit 1
     fi
+    sudo mkdir -p /var/mnt/games
+    sudo touch /etc/fstab
+    sudo sed -i '\|[[:space:]]/var/mnt/games[[:space:]]|d' /etc/fstab
+    echo "UUID=${UUID}  /var/mnt/games  ext4  defaults,nofail,x-systemd.automount  0  2" \
+        | sudo tee -a /etc/fstab > /dev/null
+    echo "Added to /etc/fstab (auto-mounts on every boot)."
     sudo systemctl daemon-reload
     sudo mount /var/mnt/games
+    sudo chown "${SUDO_USER:-$USER}:${SUDO_USER:-$USER}" /var/mnt/games 2>/dev/null || true
     echo ""
     echo "Done! $DEV is now mounted at /var/mnt/games"
     echo "It will auto-mount on every boot."

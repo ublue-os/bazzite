@@ -4,6 +4,28 @@ set -eoux pipefail
 
 export BUILDAH_PLATFORM=linux/arm64
 
+restore_kernel_install_tools() {
+    if [[ -d /usr/lib/kernel/install.d ]]; then
+        for _backup in /usr/lib/kernel/install.d/*.install.bak; do
+            [[ -f "${_backup}" ]] || continue
+            _original="${_backup%.bak}"
+            rm -f "${_original}"
+            mv "${_backup}" "${_original}"
+            chmod +x "${_original}"
+            echo "Restored kernel install hook: ${_original}"
+        done
+    fi
+
+    if [[ -f /usr/bin/dracut.real ]]; then
+        rm -f /usr/bin/dracut
+        mv /usr/bin/dracut.real /usr/bin/dracut
+        chmod +x /usr/bin/dracut
+        echo "Restored: /usr/bin/dracut"
+    fi
+}
+
+trap restore_kernel_install_tools EXIT
+
 # ── Suppress dracut + kernel-install triggers ─────────────────────────────────
 # When kernel or kernel-module packages are installed/updated inside a
 # container, their RPM post-install scriptlets run dracut and Asahi-specific
@@ -425,5 +447,8 @@ for repo in /etc/yum.repos.d/_copr*.repo; do
         sed -i 's/enabled=1/enabled=0/' "$repo"
     fi
 done
+
+restore_kernel_install_tools
+trap - EXIT
 
 /ctx/cleanup
