@@ -19,7 +19,11 @@ setup-sunshine ACTION="":
         if [[ "$BETA_SERVICE_STATE" == "enabled" ]]; then
             SERVICE_STATE="${green}${b}Enabled (Beta)${n}"
         else
-        SERVICE_STATE="${red}${b}Disabled${n}"
+          if [[ -z $(brew list | grep sunshine) ]]; then
+            SERVICE_STATE="${red}${b}Not Installed${n}"
+          else
+            SERVICE_STATE="${yellow}${b}Disabled${n}"
+          fi
         fi
     fi
     if [ "$OPTION" == "help" ]; then
@@ -33,7 +37,7 @@ setup-sunshine ACTION="":
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo "Service is $SERVICE_STATE"
-      OPTION=$(Choose "Enable" "Enable-Beta" "Disable" "Open Portal" "Exit")
+      OPTION=$(Choose "Enable" "Enable-Beta" "Disable" "Uninstall" "Open Portal" "Exit")
     fi
     if [[ "${OPTION,,}" =~ ^enable ]]; then
       brew tap LizardByte/homebrew
@@ -45,7 +49,13 @@ setup-sunshine ACTION="":
         brew services start sunshine
       fi
       sudo setcap cap_sys_admin+p $(readlink -f $(which sunshine))
-    elif [[ "${OPTION,,}" =~ ^(remove|uninstall|disable) ]]; then
+    elif [[ "${OPTION,,}" =~ ^disable ]]; then
+      if [[ "$BETA" == "Yes" ]]; then
+        brew services stop sunshine-beta
+      else
+        brew services stop sunshine
+      fi
+    elif [[ "${OPTION,,}" =~ ^(remove|uninstall) ]]; then
       if [[ "$BETA" == "Yes" ]]; then
         brew services stop sunshine-beta
         brew uninstall sunshine-beta
