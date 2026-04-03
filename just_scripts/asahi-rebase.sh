@@ -416,7 +416,29 @@ else
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Step 8: Export Bazzite image to stateroot var for first-boot rebase
+# Step 7b: Inject external SSD fstab entry for auto-mount in Bazzite
+# ──────────────────────────────────────────────────────────────────────────────
+# If --external-build was used, the external SSD (e.g. /dev/sda) will be
+# present but unmounted after Bazzite boots. Inject an fstab entry so it
+# auto-mounts at /var/mnt/games on every boot. The user can then use it
+# for game storage without manual mounting.
+if [[ -n "${EXTERNAL_BUILD_PATH}" ]] && [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
+    EXT_DEV=$(findmnt -no SOURCE "${EXTERNAL_BUILD_PATH}" 2>/dev/null || true)
+    EXT_UUID=$(blkid -s UUID -o value "${EXT_DEV}" 2>/dev/null || true)
+    if [[ -n "$EXT_UUID" ]]; then
+        GAMES_FSTAB="${DEPLOY_DIR}/etc/fstab"
+        if ! grep -q "UUID=${EXT_UUID}" "${GAMES_FSTAB}" 2>/dev/null; then
+            echo "UUID=${EXT_UUID}  /var/mnt/games  ext4  defaults,nofail,x-systemd.automount  0  2" \
+                | sudo tee -a "${GAMES_FSTAB}" > /dev/null
+            echo "Added external SSD (UUID=${EXT_UUID}) → /var/mnt/games in deployment fstab."
+        fi
+        # Create the mount point in the stateroot var (becomes /var/mnt/games after boot)
+        sudo mkdir -p "/ostree/deploy/fedora/var/mnt/games"
+    else
+        echo "Note: could not detect external SSD UUID -- skipping auto-mount setup."
+        echo "      After Bazzite boots, run: ujust setup-games-drive /dev/sda"
+    fi
+fi
 # ──────────────────────────────────────────────────────────────────────────────
 echo ""
 echo "--- Step 8: Export Bazzite image for first-boot rebase ---"

@@ -6,30 +6,27 @@ export BUILDAH_PLATFORM=linux/arm64
 
 # ── Suppress dracut + kernel-install triggers ─────────────────────────────────
 # When kernel or kernel-module packages are installed/updated inside a
-# container, their RPM post-install scriptlets run dracut to rebuild the
-# initramfs. This always fails in containers (no live kernel, missing tools
-# like pgrep/nohup/losetup) and aborts the entire dnf transaction.
-# Replace the trigger scripts with no-ops for the duration of this build.
-# The finalize script already wipes /boot/* at the end anyway.
-_dracut_shims=(
-    /usr/lib/kernel/install.d/50-dracut.install
-    /usr/lib/kernel/install.d/90-loaderentry.install
-    /usr/lib/kernel/install.d/92-crashkernel.install
-    /usr/lib/kernel/install.d/99-grub2-mkconfig.install
-)
-for _shim in "${_dracut_shims[@]}"; do
-    if [[ -f "${_shim}" ]]; then
+# container, their RPM post-install scriptlets run dracut and Asahi-specific
+# hooks (15-update-m1n1, 50-dracut, 90-loaderentry, etc.) to rebuild the
+# initramfs and update the bootloader. All of these fail in containers
+# (no live kernel, no ESP, missing tools) and abort the entire dnf transaction.
+# Shim ALL scripts in /usr/lib/kernel/install.d/ with no-ops for the build.
+# Also shim dracut itself. The finalize script wipes /boot/* at the end anyway.
+if [[ -d /usr/lib/kernel/install.d ]]; then
+    for _shim in /usr/lib/kernel/install.d/*.install; do
+        [[ -f "${_shim}" ]] || continue
         mv "${_shim}" "${_shim}.bak"
-    fi
-    mkdir -p "$(dirname "${_shim}")"
-    printf '#!/bin/sh\nexit 0\n' > "${_shim}"
-    chmod +x "${_shim}"
-done
-# Also shim dracut itself in case it gets called directly
+        printf '#!/bin/sh\nexit 0\n' > "${_shim}"
+        chmod +x "${_shim}"
+        echo "Shimmed kernel install hook: ${_shim}"
+    done
+fi
+# Also shim dracut itself in case scriptlets call it directly
 if [[ -x /usr/bin/dracut ]]; then
     mv /usr/bin/dracut /usr/bin/dracut.real
     printf '#!/bin/sh\nexit 0\n' > /usr/bin/dracut
     chmod +x /usr/bin/dracut
+    echo "Shimmed: /usr/bin/dracut"
 fi
 # ─────────────────────────────────────────────────────────────────────────────
 

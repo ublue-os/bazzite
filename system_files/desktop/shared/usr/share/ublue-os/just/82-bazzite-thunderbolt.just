@@ -355,3 +355,41 @@ set-stable-kernel-default:
     echo "Setting stable kernel as default: $STABLE"
     sudo grubby --set-default="$STABLE"
     echo "Done. Reboot to use the stable kernel."
+
+# Set up an external drive for game storage with auto-mount
+
+# Usage: ujust setup-games-drive /dev/sda  (or whatever device)
+[group("arm")]
+setup-games-drive DEV="":
+    #!/usr/bin/bash
+    set -euo pipefail
+    if [[ -z "{{ DEV }}" ]]; then
+        echo "Usage: ujust setup-games-drive /dev/sda"
+        echo ""
+        echo "Available block devices:"
+        lsblk -o NAME,SIZE,TYPE,MOUNTPOINT | grep -v "^loop"
+        exit 1
+    fi
+    DEV="{{ DEV }}"
+    if [[ ! -b "$DEV" ]]; then
+        echo "ERROR: $DEV is not a block device."
+        exit 1
+    fi
+    echo "Setting up $DEV as games drive mounted at /var/mnt/games..."
+    echo "WARNING: This will format $DEV as ext4 and erase all data on it."
+    read -rp "Continue? (y/N): " confirm
+    [[ "$confirm" == [yY] ]] || exit 0
+    sudo mkfs.ext4 -L "BazziteGames" "$DEV"
+    UUID=$(blkid -s UUID -o value "$DEV")
+    sudo mkdir -p /var/mnt/games
+    if ! grep -q "UUID=${UUID}" /etc/fstab 2>/dev/null; then
+        echo "UUID=${UUID}  /var/mnt/games  ext4  defaults,nofail,x-systemd.automount  0  2" \
+            | sudo tee -a /etc/fstab > /dev/null
+        echo "Added to /etc/fstab (auto-mounts on every boot)."
+    fi
+    sudo systemctl daemon-reload
+    sudo mount /var/mnt/games
+    echo ""
+    echo "Done! $DEV is now mounted at /var/mnt/games"
+    echo "It will auto-mount on every boot."
+    df -h /var/mnt/games
