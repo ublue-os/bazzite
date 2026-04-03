@@ -1,28 +1,27 @@
 #!/usr/bin/bash
+
+set -eo pipefail
+
 if [[ -z ${project_root} ]]; then
     project_root=$(git rev-parse --show-toplevel)
 fi
 if [[ -z ${git_branch} ]]; then
     git_branch=$(git branch --show-current)
 fi
-set -eo pipefail
 
-# Get Inputs
+# Resolve image
 target=$1
 image=$2
-orig_image=$2
+resolved=$(just _resolve_image "$target" "$image")
+image_name=$(echo "$resolved" | cut -d' ' -f1)
 
-# Get image/target/version based on inputs
-# shellcheck disable=SC2154,SC1091
-. "${project_root}/just_scripts/get-defaults.sh"
-
-# Get variables
 container_mgr=$(just _container_mgr)
-tag=$(just _tag "${image}")
+tag=$(just _tag "${image_name}")
 
-#check if ISO exists. Create if it doesn't
+# Check if ISO exists, create if it doesn't
+#shellcheck disable=SC2154
 if [[ ! -f "${project_root}/just_scripts/output/${tag}-${git_branch}.iso" ]]; then
-    just build-iso "$target" "$orig_image"
+    just build-iso "$target" "$image"
 fi
 
 workspace=${project_root}
