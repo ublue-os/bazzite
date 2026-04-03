@@ -17,8 +17,12 @@ if [[ "$(uname -m)" != "aarch64" ]]; then
 fi
 
 runtime_packages=(
+    OpenCL-ICD-Loader
     SDL2
     cups-libs
+    libavcodec-free
+    libavformat-free
+    libavutil-free
     freetype
     gnutls
     gstreamer1
@@ -31,10 +35,13 @@ runtime_packages=(
     libpcap
     libpng
     libv4l
-    mesa-dri-drivers
     nss-mdns
     pulseaudio-libs
     sane-backends-libs
+    samba-client-libs
+    samba-libs
+    libswresample-free
+    libswscale-free
     unixODBC
     vulkan-loader
 )
@@ -85,12 +92,14 @@ build_packages=(
     make
     mesa-libGL-devel
     mesa-libGLU-devel
-    ocl-icd-devel
+    OpenCL-ICD-Loader-devel
+    ffmpeg-free-devel
     opencl-headers
     openldap-devel
     pcsc-lite-devel
     pulseaudio-libs-devel
     sane-backends-devel
+    samba-devel
     systemd-devel
     unixODBC-devel
     vulkan-devel
@@ -98,11 +107,8 @@ build_packages=(
     'pkgconfig(libusb-1.0)'
 )
 
-optional_runtime_packages=(
-    mingw64-wine-gecko
-)
-
 build_root="$(mktemp -d /var/tmp/bazzite-wine-aarch64.XXXXXX)"
+tool_bin="${build_root}/bin"
 source_tarball="${build_root}/wine-${WINE_VERSION}.tar.xz"
 source_dir="${build_root}/wine-${WINE_VERSION}"
 build_dir="${build_root}/build"
@@ -117,30 +123,33 @@ trap cleanup EXIT
 # Upgrade first so glibc and all virtual provides are current before
 # installing Wine's deps. This prevents "rtld(GNU_HASH) is needed by ..."
 # errors caused by stale package metadata in the base image.
-# --skip-broken: skip unresolvable packages (e.g. unixODBC with missing
-#   linux-aarch64.so.1 VDSO dep, or any other single-package breakage)
+# dnf5 upgrade does not support --skip-broken, so prefer a normal upgrade first
+# and fall back to distro-sync --skip-broken only if the solver hits a broken
+# package (e.g. unixODBC with a missing linux-aarch64.so.1 VDSO dep).
 # --exclude=mesa*: never let standard Fedora repos replace the Asahi COPR
 #   mesa packages -- that would break the Apple Silicon AGX GPU driver
-dnf5 -y upgrade --refresh --skip-broken --skip-unavailable --exclude='mesa*'
+if ! dnf5 -y upgrade --refresh --skip-unavailable --exclude='mesa*'; then
+    echo "dnf5 upgrade failed; retrying with distro-sync --skip-broken."
+    dnf5 -y distro-sync --refresh --skip-broken --skip-unavailable --exclude='mesa*'
+fi
 
 dnf5 -y install --setopt=install_weak_deps=False \
     --skip-broken --skip-unavailable "${runtime_packages[@]}"
 dnf5 -y install --setopt=install_weak_deps=False \
     --skip-broken --skip-unavailable "${build_packages[@]}"
-dnf5 -y install --setopt=install_weak_deps=False \
-    --skip-broken --skip-unavailable "${optional_runtime_packages[@]}" || true
 
-mkdir -p /usr/local/bin
+mkdir -p "${tool_bin}"
+export PATH="${tool_bin}:${PATH}"
 if command -v llvm-dlltool >/dev/null 2>&1; then
-    ln -sf "$(command -v llvm-dlltool)" /usr/local/bin/dlltool
+    ln -sf "$(command -v llvm-dlltool)" "${tool_bin}/dlltool"
 elif command -v llvm-dlltool-20 >/dev/null 2>&1; then
-    ln -sf "$(command -v llvm-dlltool-20)" /usr/local/bin/dlltool
+    ln -sf "$(command -v llvm-dlltool-20)" "${tool_bin}/dlltool"
 else
     curl -LfsS --retry 5 --retry-delay 2 "${LLVM_MINGW_URL}" -o "${llvm_mingw_tarball}"
     echo "${LLVM_MINGW_SHA256}  ${llvm_mingw_tarball}" | sha256sum -c -
     tar -xf "${llvm_mingw_tarball}" -C "${build_root}"
     export PATH="${llvm_mingw_dir}/bin:${PATH}"
-    ln -sf "${llvm_mingw_dir}/bin/llvm-dlltool" /usr/local/bin/dlltool
+    ln -sf "${llvm_mingw_dir}/bin/llvm-dlltool" "${tool_bin}/dlltool"
 fi
 
 curl -LfsS --retry 5 --retry-delay 2 "${WINE_SOURCE_URL}" -o "${source_tarball}"

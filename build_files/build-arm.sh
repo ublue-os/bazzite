@@ -80,7 +80,12 @@ dnf5 -y remove \
 # switch later. On ARM we don't remove the RPM like x86 Bazzite does.
 
 # Media codec support via RPM Fusion
-dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
+media_repo_args=(--enable-repo="*rpmfusion*")
+if dnf5 repolist --all | grep -q '^fedora-multimedia '; then
+    media_repo_args+=(--disable-repo="*fedora-multimedia*")
+fi
+
+dnf5 -y install "${media_repo_args[@]}" \
     libaacs \
     libbdplus \
     libbluray \
@@ -114,11 +119,9 @@ dnf5 -y install --skip-broken --skip-unavailable \
     iio-sensor-proxy \
     udica \
     ladspa-caps-plugins \
-    ladspa-noise-suppression-for-voice \
     pipewire-module-filter-chain-sofa \
     python3-icoextract \
     tailscale \
-    webapp-manager \
     btop \
     duf \
     fish \
@@ -157,7 +160,6 @@ dnf5 -y install --skip-broken --skip-unavailable \
     cockpit-system \
     cockpit-files \
     cockpit-storaged \
-    topgrade \
     ydotool \
     snapper \
     lsb_release \
@@ -205,9 +207,20 @@ fi
 # Enable COPRs that have aarch64 builds
 if dnf5 -y copr enable ublue-os/staging 2>/dev/null; then
     dnf5 -y install --skip-broken --skip-unavailable \
-        ublue-update \
-        uupd \
         topgrade
+fi
+
+if dnf5 -y copr enable ublue-os/packages 2>/dev/null; then
+    dnf5 -y install --skip-broken --skip-unavailable \
+        uupd
+
+    if [[ -f /usr/lib/systemd/system/uupd.service ]]; then
+        sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service
+    fi
+
+    if [[ -f /usr/lib/systemd/system/uupd.timer ]]; then
+        systemctl enable uupd.timer
+    fi
 fi
 
 if dnf5 -y copr enable ublue-os/bling 2>/dev/null; then
@@ -224,7 +237,8 @@ dnf5 -y install --skip-broken --skip-unavailable \
     usbutils \
     pciutils
 
-systemctl enable bolt.service || true
+# bolt is D-Bus activated by org.freedesktop.bolt, and its unit is static, so
+# there is no install target to enable at image build time.
 
 # fairydust-specific setup
 # The fairydust kernel RPM is not yet packaged in any COPR so we cannot swap

@@ -4,7 +4,15 @@ set -eoux pipefail
 
 dnf5 config-manager setopt keepcache=0
 
-rm -rf /tmp/* || true
+if [[ -d /tmp ]]; then
+    find /tmp -mindepth 1 -maxdepth 1 -exec rm -rf -- {} + || true
+fi
+if [[ -d /run ]]; then
+    find /run -mindepth 1 -maxdepth 1 ! -path /run/systemd -exec rm -rf -- {} + || true
+fi
+if [[ -d /run/systemd ]]; then
+    find /run/systemd -mindepth 1 -maxdepth 1 ! -name resolve -exec rm -rf -- {} + || true
+fi
 find /var/* -maxdepth 0 -type d \! -name cache -exec rm -fr {} \;
 mkdir -p /var/tmp
 chmod -R 1777 /var/tmp

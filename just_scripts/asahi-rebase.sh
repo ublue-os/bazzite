@@ -39,8 +39,9 @@ SLEEP_MASKED=0
 #                          After the script finishes you can wipe PATH freely.
 # --skip-wine            : skip native Wine aarch64 compilation (~40-60 min)
 #                          x86 Wine still runs via FEX-Emu/Box64 emulation.
-#                          Use this for faster first installs; you can add
-#                          Wine later with: ujust install-native-wine
+#                          Use this for faster first installs; rerun this
+#                          script later without --skip-wine to build and
+#                          deploy the native-Wine image variant.
 KERNEL_VARIANT="stable"
 EXTERNAL_BUILD_PATH=""
 SKIP_WINE=0
@@ -56,13 +57,21 @@ IMAGE_NAME="bazzite-arm"
 if [[ "${KERNEL_VARIANT}" == "fairydust" ]]; then
     IMAGE_NAME="${IMAGE_NAME}-fairydust"
 fi
+if [[ "${SKIP_WINE}" -eq 1 ]]; then
+    IMAGE_NAME="${IMAGE_NAME}-nowine"
+fi
 
-BAZZITE_IMAGE="localhost/${IMAGE_NAME}:latest"
 IMAGE_BRANCH=$(git -C "${REPO_ROOT}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "experimental")
+IMAGE_TAG=$(git -C "${REPO_ROOT}" rev-parse --short=12 HEAD 2>/dev/null || echo "local")
+if [[ -n "$(git -C "${REPO_ROOT}" status --porcelain --untracked-files=normal 2>/dev/null || true)" ]]; then
+    IMAGE_TAG="dirty-$(date +%Y%m%d%H%M%S)"
+fi
+BAZZITE_IMAGE="localhost/${IMAGE_NAME}:${IMAGE_TAG}"
 
 echo "Kernel variant:     ${KERNEL_VARIANT}"
 echo "External build dir: ${EXTERNAL_BUILD_PATH:-<none, using internal /var/lib/containers>}"
 echo "Skip Wine build:    ${SKIP_WINE}"
+echo "Local image:        ${BAZZITE_IMAGE}"
 
 cleanup_host_overrides() {
     if [[ "${SLEEP_MASKED}" -eq 1 ]]; then
@@ -283,7 +292,7 @@ if ! sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
         --build-arg SKIP_WINE="${SKIP_WINE}" \
         --build-arg VERSION_TAG=local \
         --build-arg VERSION_PRETTY="Local Build" \
-        --build-arg SHA_HEAD_SHORT=local \
+        --build-arg SHA_HEAD_SHORT="${IMAGE_TAG}" \
         -t "${BAZZITE_IMAGE}" \
         .
     echo "Bazzite ARM image built successfully."
