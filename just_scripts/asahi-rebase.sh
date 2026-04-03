@@ -37,12 +37,18 @@ SLEEP_MASKED=0
 #                          PATH must already be a mounted writable directory,
 #                          e.g. /mnt/external (your external SSD).
 #                          After the script finishes you can wipe PATH freely.
+# --skip-wine            : skip native Wine aarch64 compilation (~40-60 min)
+#                          x86 Wine still runs via FEX-Emu/Box64 emulation.
+#                          Use this for faster first installs; you can add
+#                          Wine later with: ujust install-native-wine
 KERNEL_VARIANT="stable"
 EXTERNAL_BUILD_PATH=""
+SKIP_WINE=0
 for arg in "$@"; do
     case "$arg" in
         --fairydust)           KERNEL_VARIANT="fairydust" ;;
         --external-build=*)    EXTERNAL_BUILD_PATH="${arg#--external-build=}" ;;
+        --skip-wine)           SKIP_WINE=1 ;;
     esac
 done
 
@@ -56,6 +62,7 @@ IMAGE_BRANCH=$(git -C "${REPO_ROOT}" rev-parse --abbrev-ref HEAD 2>/dev/null || 
 
 echo "Kernel variant:     ${KERNEL_VARIANT}"
 echo "External build dir: ${EXTERNAL_BUILD_PATH:-<none, using internal /var/lib/containers>}"
+echo "Skip Wine build:    ${SKIP_WINE}"
 
 cleanup_host_overrides() {
     if [[ "${SLEEP_MASKED}" -eq 1 ]]; then
@@ -273,6 +280,7 @@ if ! sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
         --build-arg IMAGE_VENDOR=nripeshn \
         --build-arg KERNEL_VARIANT="${KERNEL_VARIANT}" \
         --build-arg IMAGE_BRANCH="${IMAGE_BRANCH}" \
+        --build-arg SKIP_WINE="${SKIP_WINE}" \
         --build-arg VERSION_TAG=local \
         --build-arg VERSION_PRETTY="Local Build" \
         --build-arg SHA_HEAD_SHORT=local \

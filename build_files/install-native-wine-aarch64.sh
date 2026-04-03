@@ -117,7 +117,11 @@ trap cleanup EXIT
 # Upgrade first so glibc and all virtual provides are current before
 # installing Wine's deps. This prevents "rtld(GNU_HASH) is needed by ..."
 # errors caused by stale package metadata in the base image.
-dnf5 -y upgrade --refresh
+# --skip-broken: skip unresolvable packages (e.g. unixODBC with missing
+#   linux-aarch64.so.1 VDSO dep, or any other single-package breakage)
+# --exclude=mesa*: never let standard Fedora repos replace the Asahi COPR
+#   mesa packages -- that would break the Apple Silicon AGX GPU driver
+dnf5 -y upgrade --refresh --skip-broken --skip-unavailable --exclude='mesa*'
 
 dnf5 -y install --setopt=install_weak_deps=False \
     --skip-broken --skip-unavailable "${runtime_packages[@]}"
