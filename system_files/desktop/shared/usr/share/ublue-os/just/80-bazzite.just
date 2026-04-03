@@ -463,7 +463,7 @@ bazzite-cli:
     # Brew Bundle Install
     function brew-bundle(){
     echo 'Installing bling from Homebrew 🍻🍻🍻'
-    brew bundle --file /usr/share/ublue-os/homebrew/bazzite-cli.Brewfile
+    brew bundle --file /usr/share/ublue-os/homebrew/bazzite-cli.Brewfile --verbose
     }
 
     # Check if bling is already sourced
