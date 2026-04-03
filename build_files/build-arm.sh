@@ -60,6 +60,12 @@ echo "Building Bazzite ARM with KERNEL_VARIANT=${KERNEL_VARIANT}"
 
 FEDORA_VER=$(rpm -E %fedora)
 
+# Disable the Asahi hotfixes repo -- fedora-asahi-remix.org/repos/hotfixes
+# returns 403 (repo retired/restructured upstream). Leaving it enabled causes
+# dnf5 --refresh to fail and abort the entire build.
+dnf5 config-manager setopt 'fedora-asahi-remix-hotfixes*.enabled=0' 2>/dev/null || \
+    sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/*hotfixes*.repo 2>/dev/null || true
+
 dnf5 install -y \
     "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VER}.noarch.rpm" \
     "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VER}.noarch.rpm"
