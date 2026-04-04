@@ -162,9 +162,23 @@ toggle-wol ACTION="":
     fi
 
 # enable or disable IWD as a replacement for wpa_supplicant
+# Options: status | enable | disable
 [group("network")]
 toggle-iwd ACTION="":
     #!/usr/bin/bash
+    get_status_token() {
+      if [[ -f "/etc/NetworkManager/conf.d/supplicant.conf" ]]; then
+        echo "disable"
+      else
+        echo "enable"
+      fi
+    }
+
+    OPTION={{ ACTION }}
+    if [[ "${OPTION,,}" == "status" ]]; then
+      get_status_token
+      exit 0
+    fi
     # Explain the purpose of the script
     echo -e "This script manages enabling or disabling iwd as a replacement for wpa_supplicant for Wi-Fi networking. Default is Enabled."
     echo -e "Enabling this can improve throughput, mesh networking, and reduce latency increases when scanning for networks"
@@ -172,10 +186,10 @@ toggle-iwd ACTION="":
     echo -e ""
     echo -e "WARNING: Changing this will remove all saved wifi networks"
     get_current_status() {
-      if [[ -f "/etc/NetworkManager/conf.d/supplicant.conf" ]]; then
-        echo "Disabled"
-      else
+      if [[ "$(get_status_token)" == "enable" ]]; then
         echo "Enabled"
+      else
+        echo "Disabled"
       fi
     }
     remove_saved_networks() {
@@ -197,19 +211,17 @@ toggle-iwd ACTION="":
       remove_saved_networks
       echo -e "iwd disabled. Reboot required to apply changes."
     }
-    # ACTION param
-    OPTION={{ ACTION }}
-
     # Show status
     current_status=$(get_current_status)
     echo -e "\nCurrent iwd status: $current_status\n"
 
-    if [[ "${OPTION,,}" == "toggle" ]]; then
-      if [[ "$current_status" == "Enabled" ]]; then
-        disable_iwd
-      else
-        enable_iwd
-      fi
+    if [[ "${OPTION,,}" == "enable" ]]; then
+      enable_iwd
+      exit 0
+    fi
+
+    if [[ "${OPTION,,}" == "disable" ]]; then
+      disable_iwd
       exit 0
     fi
 

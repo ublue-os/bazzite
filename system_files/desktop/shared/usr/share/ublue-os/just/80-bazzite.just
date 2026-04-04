@@ -29,20 +29,23 @@ toggle-ssh ACTION="":
     HOSTNAME=$(hostname)
     IP_ADDRESS=$(hostname -I | awk '{print $1}') # First IP address
     SSH_STATE="$(systemctl is-enabled sshd 2>/dev/null || true)"
-    OPTION="{{ ACTION }}"
-    if [ "$OPTION" == "status" ]; then
+    get_status_token() {
       if [[ -z "$SSH_STATE" ]]; then
-        exit 1
+        return 1
       elif [[ "$SSH_STATE" == *enabled* ]]; then
         echo "enable"
       else
         echo "disable"
       fi
-      exit 0
+    }
+    OPTION="{{ ACTION }}"
+    if [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit $?
     fi
     # Get current SSH status
     SSH_STATUS="Disabled"
-    if [[ "$SSH_STATE" == *enabled* ]]; then
+    if [[ "$(get_status_token)" == "enable" ]]; then
       SSH_STATUS="Enabled"
     fi
     if [ "$OPTION" == "help" ]; then
@@ -93,17 +96,20 @@ toggle-reisub ACTION="":
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh
     FILE="/etc/sysctl.d/90-sysrq.conf"
-    CURRENT="Disabled"
-    if [[ -f "$FILE" ]]; then
-      CURRENT="Enabled"
-    fi
-    OPTION="{{ ACTION }}"
-    if [[ "$OPTION" == "status" ]]; then
+    get_status_token() {
       if [[ -f "$FILE" ]]; then
         echo "enable"
       else
         echo "disable"
       fi
+    }
+    CURRENT="Disabled"
+    if [[ "$(get_status_token)" == "enable" ]]; then
+      CURRENT="Enabled"
+    fi
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "status" ]]; then
+      get_status_token
       exit 0
     fi
     if [[ -z "$OPTION" ]]; then
