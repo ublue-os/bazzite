@@ -19,7 +19,7 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
-# Toggle SSH availability on boot
+# Manage SSH availability on boot: status | enable | disable
 [group("network")]
 toggle-ssh ACTION="":
     #!/usr/bin/bash
@@ -27,12 +27,23 @@ toggle-ssh ACTION="":
     # Get hostname and IP address
     HOSTNAME=$(hostname)
     IP_ADDRESS=$(hostname -I | awk '{print $1}') # First IP address
+    SSH_STATE="$(systemctl is-enabled sshd 2>/dev/null || true)"
+    OPTION="{{ ACTION }}"
+    if [ "$OPTION" == "status" ]; then
+      if [[ -z "$SSH_STATE" ]]; then
+        exit 1
+      elif [[ "$SSH_STATE" == *enabled* ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+      exit 0
+    fi
     # Get current SSH status
     SSH_STATUS="Disabled"
-    if systemctl is-enabled sshd | grep -q enabled; then
+    if [[ "$SSH_STATE" == *enabled* ]]; then
       SSH_STATUS="Enabled"
     fi
-    OPTION="{{ ACTION }}"
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust toggle-ssh <option>"
       echo "  <option>: Specify the option to skip the interactive prompt"
