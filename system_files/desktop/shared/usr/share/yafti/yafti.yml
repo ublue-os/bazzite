@@ -18,6 +18,11 @@ screens:
         description: "A Decky plugin that lets you see Bazzite changelogs in Game Mode."
         default: false
         script: "ujust install-decky-plugins bazzite-buddy"
+      - id: "sunshine"
+        title: "Sunshine"
+        description: "A self-hosted game stream host for Moonlight"
+        default: false
+        script: "ujust setup-sunshine enable"        
       - id: "decky-framegen"
         title: "Decky Framegen"
         description: "A Decky plugin that sets up OptiScaler for any Steam game."
