@@ -40,7 +40,7 @@ SLEEP_MASKED=0
 # Parse flags
 # --fairydust            : use experimental Thunderbolt/USB4 kernel variant
 # --external-build=PATH  : redirect podman container build storage to PATH
-#                          (use this when internal disk is small, e.g. 20-25 GB)
+#                          (recommended when internal disk is below ~40 GB)
 #                          PATH must already be a mounted writable directory,
 #                          e.g. /mnt/external (your external SSD).
 #                          After the script finishes you can wipe PATH freely.
@@ -100,6 +100,12 @@ cleanup_external_podman_storage() {
         sudo podman system prune -af 2>/dev/null || true
         sudo rm -rf "${PODMAN_EXT_ROOT}" 2>/dev/null || true
     fi
+}
+
+cleanup_local_podman_image() {
+    sudo podman image rm -f "${BAZZITE_IMAGE}" 2>/dev/null || true
+    sudo podman builder prune -af 2>/dev/null || true
+    sudo podman image prune -f 2>/dev/null || true
 }
 
 trap cleanup_host_overrides EXIT
@@ -172,7 +178,9 @@ echo "  Bazzite ARM: Full Asahi -> Bazzite Conversion"
 echo "================================================="
 echo ""
 echo "This script will:"
-echo "  1. Build the Bazzite ARM image locally (~30 min, needs ~20 GB free)"
+echo "  1. Build the Bazzite ARM image locally"
+echo "     - internal build storage: needs ~40 GB free on /"
+echo "     - external build storage: needs ~20 GB free on / plus ~25 GB on the external drive"
 echo "  2. Convert this Fedora install to atomic/ostree"
 echo "  3. Set up your user account"
 echo "  4. Reboot into atomic Fedora which auto-rebases to Bazzite ARM"
@@ -180,6 +188,29 @@ echo ""
 echo "The Asahi boot chain (m1n1/U-Boot/GRUB) will NOT be touched."
 echo ""
 df -h / | tail -1
+ROOT_FREE_GB=$(df -BG --output=avail / | awk 'NR==2{gsub("G",""); print $1}')
+if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
+    REQUIRED_ROOT_FREE_GB=20
+else
+    REQUIRED_ROOT_FREE_GB=40
+fi
+if (( ROOT_FREE_GB < REQUIRED_ROOT_FREE_GB )); then
+    echo ""
+    echo "ERROR: ${ROOT_FREE_GB} GB free on / is not enough for this conversion."
+    if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
+        echo "Need at least ${REQUIRED_ROOT_FREE_GB} GB free on / even with --external-build,"
+        echo "because the atomic base deployment, local OCI handoff image, and final"
+        echo "Bazzite deployment all live on the internal stateroot."
+    else
+        echo "Need at least ${REQUIRED_ROOT_FREE_GB} GB free on / when building on internal"
+        echo "storage, because Podman image layers and /var/lib/bazzite-install briefly"
+        echo "coexist before the final rebase."
+        echo ""
+        echo "Either increase the Asahi system partition or rerun with:"
+        echo "  bash just_scripts/asahi-rebase.sh --external-build=/path/to/external-ssd"
+    fi
+    exit 1
+fi
 echo ""
 read -rp "Continue? (y/N): " confirm
 if [[ "$confirm" != [yY] ]]; then
@@ -567,9 +598,14 @@ sudo skopeo copy \
     "oci:${OCI_DEST}:latest"
 echo "Image exported successfully."
 
-# Now that the OCI archive is safely on the internal stateroot var,
-# the podman build storage on the external SSD is no longer needed.
-# Clean it up to free the external SSD for games/data after first boot.
+echo ""
+echo "--- Cleaning up local Podman image/build cache (image now in ${OCI_DEST}) ---"
+cleanup_local_podman_image
+echo "Local Podman build artifacts cleaned."
+
+# Now that the OCI archive is safely on the internal stateroot var and the
+# source image has been removed from Podman, external build storage is no
+# longer needed. Clean it up to free the SSD for games/data after first boot.
 if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
     echo ""
     echo "--- Cleaning up external build storage (image now in ${OCI_DEST}) ---"
@@ -634,6 +670,7 @@ if [[ ! -f /var/lib/bazzite-rebase-done ]] && [[ -d /var/lib/bazzite-install ]];
 
     if sudo rpm-ostree rebase \
             "ostree-unverified-image:oci:/var/lib/bazzite-install:latest"; then
+        sudo rm -rf /var/lib/bazzite-install
         sudo touch /var/lib/bazzite-rebase-done
         echo ""
         echo "  ✓ Rebase complete! Rebooting into Bazzite ARM in 5 seconds..."
