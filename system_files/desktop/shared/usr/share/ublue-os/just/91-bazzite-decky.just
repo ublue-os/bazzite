@@ -1,6 +1,7 @@
 # vim: set ft=make :
 
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
+# Options: status | install | install-prerelease | uninstall
 [group("gaming")]
 setup-decky ACTION="":
     #!/usr/bin/bash
@@ -9,10 +10,30 @@ setup-decky ACTION="":
         exit 1
     fi
     source /usr/lib/ujust/ujust.sh
+    get_status_token() {
+      local decky_service="/etc/systemd/system/plugin_loader.service"
+      if [[ ! -f /etc/systemd/system/multi-user.target.wants/plugin_loader.service ]]; then
+        echo "uninstall"
+      elif [[ -r "$decky_service" ]] && grep -q 'Environment=LOG_LEVEL=DEBUG' "$decky_service"; then
+        echo "install-prerelease"
+      elif [[ -r "$decky_service" ]]; then
+        echo "install"
+      else
+        return 1
+      fi
+    }
     DECKY_STATE="${b}${red}Not Installed${n}"
-    if [[ -f /etc/systemd/system/multi-user.target.wants/plugin_loader.service ]]; then
-      DECKY_STATE="${b}${green}Installed${n}"
-    fi
+    case "$(get_status_token)" in
+      install)
+        DECKY_STATE="${b}${green}Installed${n}"
+        ;;
+      install-prerelease)
+        DECKY_STATE="${b}${yellow}Installed (Prerelease)${n}"
+        ;;
+      uninstall)
+        DECKY_STATE="${b}${red}Not Installed${n}"
+        ;;
+    esac
     install_release() {
       export HOME=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
       if [ ! -L "/home/deck" ] && [ ! -e "/home/deck" ]  && [ "$HOME" != "/home/deck" ]; then
@@ -41,10 +62,14 @@ setup-decky ACTION="":
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust setup-decky <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current portal token"
       echo "  Use 'install' to select Install Decky"
-      echo "  Use 'prerelease' to select Install Decky Prerelease"
+      echo "  Use 'install-prerelease' to select Install Decky Prerelease"
       echo "  Use 'uninstall' to uninstall Decky Loader"
       exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit $?
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Decky Loader setup and configuration${normal}"
       echo "Decky is $DECKY_STATE"
@@ -69,7 +94,7 @@ setup-decky ACTION="":
     elif [[ "$OPTION" == "install" ]]; then
       install_release
       exit 0
-    elif [[ "$OPTION" == "prerelease" ]]; then
+    elif [[ "$OPTION" == "install-prerelease" ]] || [[ "$OPTION" == "prerelease" ]]; then
       install_prerelease
       exit 0
     elif [[ "$OPTION" == "uninstall" ]]; then
