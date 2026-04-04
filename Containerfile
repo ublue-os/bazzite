@@ -445,7 +445,7 @@ RUN --mount=type=cache,dst=/var/cache \
         /ctx/build-gnome-extensions && \
         systemctl enable dconf-update.service \
     ; fi && \
-    dnf5 -y instal \
+    dnf5 -y install \
         rom-properties-utils && \
     /ctx/cleanup
 
