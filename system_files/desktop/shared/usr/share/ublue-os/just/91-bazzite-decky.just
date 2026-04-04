@@ -366,6 +366,63 @@ get-decky-bazzite-buddy ACTION="":
         exit 0
     fi
 
+# Manage Decky Lossless Scaling plugin
+# Options: status | install | uninstall
+get-decky-lossless-scaling ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    PLUGIN_DIR="$HOME/homebrew/plugins/decky-lsfg-vk"
+    get_status_token() {
+        if [[ -d "$PLUGIN_DIR" ]]; then
+            echo "install"
+        else
+            echo "uninstall"
+        fi
+    }
+    get_current_status() {
+        if [[ "$(get_status_token)" == "install" ]]; then
+            echo "Installed"
+        else
+            echo "Not Installed"
+        fi
+    }
+    uninstall_plugin() {
+        if [[ -d "$PLUGIN_DIR" ]]; then
+            sudo rm -rf "$PLUGIN_DIR"
+            echo "Decky Lossless Scaling has been uninstalled."
+        else
+            echo "Decky Lossless Scaling is not installed."
+        fi
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        ujust install-decky-plugins decky-lsfg-vk
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_plugin
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}Decky Lossless Scaling plugin${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                ujust install-decky-plugins decky-lsfg-vk
+                ;;
+            "Uninstall")
+                uninstall_plugin
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
+    fi
+
 get-framegen:
     #!/usr/bin/bash
     ujust install-decky-plugins decky-framegen
