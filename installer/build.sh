@@ -87,6 +87,20 @@ WantedBy=local-fs.target
 EOF
 systemctl enable var-tmp.mount
 
+# Mount /var/lib/flatpak as readonly.
+# This is in order to ensure the files dont get tainted when installing them in disk.
+cat /etc/systemd/system/var-lib-flatpak.mount <<'EOF'
+[Mount]
+Type=none
+What=/var/lib/flatpak
+Where=/var/lib/flatpak
+Options=bind,ro
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable var-lib-flatpak.mount
+
 # Copy in the iso config for image-builder
 mkdir -p /usr/lib/bootc-image-builder
 cp /src/iso.yaml /usr/lib/bootc-image-builder/iso.yaml
