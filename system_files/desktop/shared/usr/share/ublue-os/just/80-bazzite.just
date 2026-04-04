@@ -19,7 +19,8 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
-# Manage SSH availability on boot: status | enable | disable
+# Toggle SSH availability on boot
+# Options: status | enable | disable
 [group("network")]
 toggle-ssh ACTION="":
     #!/usr/bin/bash
@@ -85,6 +86,7 @@ toggle-ssh ACTION="":
     esac
 
 # Toggles REISUB, useful for force rebooting systems when pageflip timeouts and/or other horrible things happen.
+# Options: status | enable | disable
 [group("system")]
 toggle-reisub ACTION="":
     #!/usr/bin/bash
@@ -96,6 +98,14 @@ toggle-reisub ACTION="":
       CURRENT="Enabled"
     fi
     OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "status" ]]; then
+      if [[ -f "$FILE" ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+      exit 0
+    fi
     if [[ -z "$OPTION" ]]; then
       echo -e "${bold}REISUB keys:${normal} $CURRENT"
       echo ""
