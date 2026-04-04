@@ -309,9 +309,62 @@ install-decky-plugins ACTION="":
         exit 1
     fi
 
-get-decky-bazzite-buddy:
+# Manage Decky Bazzite Buddy plugin
+# Options: status | install | uninstall
+get-decky-bazzite-buddy ACTION="":
     #!/usr/bin/bash
-    ujust install-decky-plugins bazzite-buddy
+    source /usr/lib/ujust/ujust.sh
+    PLUGIN_DIR="$HOME/homebrew/plugins/Bazzite Buddy"
+    get_status_token() {
+        if [[ -d "$PLUGIN_DIR" ]]; then
+            echo "install"
+        else
+            echo "uninstall"
+        fi
+    }
+    get_current_status() {
+        if [[ "$(get_status_token)" == "install" ]]; then
+            echo "Installed"
+        else
+            echo "Not Installed"
+        fi
+    }
+    uninstall_plugin() {
+        if [[ -d "$PLUGIN_DIR" ]]; then
+            sudo rm -rf "$PLUGIN_DIR"
+            echo "Bazzite Buddy has been uninstalled."
+        else
+            echo "Bazzite Buddy is not installed."
+        fi
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        ujust install-decky-plugins bazzite-buddy
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_plugin
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}Decky Bazzite Buddy plugin${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                ujust install-decky-plugins bazzite-buddy
+                ;;
+            "Uninstall")
+                uninstall_plugin
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
+    fi
 
 get-framegen:
     #!/usr/bin/bash
