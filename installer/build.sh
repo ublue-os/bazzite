@@ -21,20 +21,6 @@ mount -o remount,rw /proc/sys
 curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo
 xargs -r flatpak install -y --noninteractive <"/src/$FLATPAK_DIR_SHORTNAME/flatpaks"
 
-# Mount an overlayfs in in order to avoid flatpak files being altered by users on the live session
-mv -T /var/lib/flatpak{,_original}
-mkdir -p /var/lib/flatpak{,.work}
-cat <<EOF >/etc/systemd/system/var-lib-flatpak.mount
-[Mount]
-Type=overlay
-What=overlay
-Options=lowerdir=/var/lib/flatpak_original,upperdir=/var/lib/flatpak,workdir=/var/lib/flatpak.work
-
-[Install]
-WantedBy=multi-user.target
-EOF
-systemctl enable var-lib-flatpak.mount
-
 # Pull the container image to be installed
 if mountpoint -q /usr/lib/containers/storage; then
     # We load our image from the host container storage if possible
@@ -100,6 +86,20 @@ Options=size=50%%,nr_inodes=1m,x-systemd.graceful-option=usrquota
 WantedBy=local-fs.target
 EOF
 systemctl enable var-tmp.mount
+
+# Mount /var/lib/flatpak as readonly.
+# This is in order to ensure the files dont get tainted when installing them in disk.
+cat /etc/systemd/system/var-lib-flatpak.mount <<'EOF'
+[Mount]
+Type=none
+What=/var/lib/flatpak
+Where=/var/lib/flatpak
+Options=bind,ro
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable var-lib-flatpak.mount
 
 # Copy in the iso config for image-builder
 mkdir -p /usr/lib/bootc-image-builder
