@@ -1,6 +1,13 @@
 #!/usr/bin/bash
 set -euo pipefail
 
+# ostree/skopeo image imports can fail on non-UTF-8 locales when layer tarballs
+# contain filenames outside pure ASCII. Force a UTF-8 locale for the conversion
+# workflow so behavior is deterministic across fresh Fedora installs and
+# containerized test harnesses.
+export LANG=C.UTF-8
+export LC_ALL=C.UTF-8
+
 # Bazzite ARM: Full end-to-end conversion from Fedora Asahi Remix to Bazzite ARM
 # Based on https://gist.github.com/davidvfx07/fec3d92f6075ece27f7dd875b5dc459b
 #

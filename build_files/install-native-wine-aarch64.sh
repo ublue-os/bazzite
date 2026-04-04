@@ -2,17 +2,25 @@
 
 set -euo pipefail
 
-WINE_VERSION="${WINE_VERSION:-11.5}"
-WINE_SOURCE_SHA256="${WINE_SOURCE_SHA256:-11370b57ea5d548a54d92c9cd65d0ba635f4f1c3eadace09ed1c419f705e19d1}"
-WINE_SOURCE_SERIES="${WINE_VERSION%%.*}.x"
-WINE_SOURCE_URL="https://dl.winehq.org/wine/source/${WINE_SOURCE_SERIES}/wine-${WINE_VERSION}.tar.xz"
-LLVM_MINGW_VERSION="${LLVM_MINGW_VERSION:-20260324}"
-LLVM_MINGW_ARCHIVE="llvm-mingw-${LLVM_MINGW_VERSION}-ucrt-ubuntu-22.04-aarch64.tar.xz"
-LLVM_MINGW_URL="https://github.com/mstorsjo/llvm-mingw/releases/download/${LLVM_MINGW_VERSION}/${LLVM_MINGW_ARCHIVE}"
-LLVM_MINGW_SHA256="${LLVM_MINGW_SHA256:-d28db713552e9d92699081b573a5b7c543d1d8095ed0d1c15dba184bf6e51440}"
+WINE_VERSION="${WINE_VERSION:-}"
+WINE_SOURCE_SERIES="${WINE_SOURCE_SERIES:-}"
+WINE_SOURCE_URL="${WINE_SOURCE_URL:-}"
+WINE_SOURCE_SHA512="${WINE_SOURCE_SHA512:-}"
+LLVM_MINGW_VERSION="${LLVM_MINGW_VERSION:-}"
+LLVM_MINGW_ARCHIVE="${LLVM_MINGW_ARCHIVE:-}"
+LLVM_MINGW_URL="${LLVM_MINGW_URL:-}"
+LLVM_MINGW_SHA256="${LLVM_MINGW_SHA256:-}"
+
+WINE_TAGS_API="https://gitlab.winehq.org/api/v4/projects/wine%2Fwine/repository/tags?per_page=100"
+LLVM_MINGW_RELEASES_API="https://api.github.com/repos/mstorsjo/llvm-mingw/releases"
 
 if [[ "$(uname -m)" != "aarch64" ]]; then
     echo "Native Wine installation is only supported on aarch64 builders" >&2
+    exit 1
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+    echo "jq is required to resolve the latest Wine/llvm-mingw releases" >&2
     exit 1
 fi
 
@@ -107,6 +115,129 @@ build_packages=(
     'pkgconfig(libusb-1.0)'
 )
 
+build_root=""
+
+cleanup() {
+    if [[ -n "${build_root}" ]]; then
+        rm -rf "${build_root}"
+    fi
+}
+trap cleanup EXIT
+
+remove_installed_packages() {
+    local installed_package
+    local package
+    local query_output
+    local -A installed_packages=()
+
+    for package in "$@"; do
+        if query_output="$(rpm -q --whatprovides --qf '%{NAME}\n' "${package}" 2>/dev/null)"; then
+            while IFS= read -r installed_package; do
+                [[ -n "${installed_package}" ]] || continue
+                installed_packages["${installed_package}"]=1
+            done <<< "${query_output}"
+        fi
+    done
+
+    if (( ${#installed_packages[@]} > 0 )); then
+        dnf5 -y remove "${!installed_packages[@]}"
+    fi
+}
+
+resolve_wine_source() {
+    local sha512_manifest_url
+    local wine_tag
+
+    if [[ -z "${WINE_VERSION}" && -n "${WINE_SOURCE_URL}" ]]; then
+        if [[ "${WINE_SOURCE_URL}" =~ /wine-([0-9]+\.[0-9]+)\.tar\.xz$ ]]; then
+            WINE_VERSION="${BASH_REMATCH[1]}"
+        else
+            echo "Unable to infer WINE_VERSION from ${WINE_SOURCE_URL}" >&2
+            exit 1
+        fi
+    fi
+
+    if [[ -z "${WINE_VERSION}" ]]; then
+        wine_tag="$(
+            curl -LfsS --retry 5 --retry-delay 2 "${WINE_TAGS_API}" |
+                jq -r 'first(.[] | .name | select(test("^wine-[0-9]+\\.[0-9]+$"))) // empty'
+        )"
+
+        if [[ -z "${wine_tag}" ]]; then
+            echo "Unable to resolve the latest Wine release tag from ${WINE_TAGS_API}" >&2
+            exit 1
+        fi
+
+        WINE_VERSION="${wine_tag#wine-}"
+    fi
+
+    WINE_SOURCE_SERIES="${WINE_SOURCE_SERIES:-${WINE_VERSION%%.*}.x}"
+    WINE_SOURCE_URL="${WINE_SOURCE_URL:-https://dl.winehq.org/wine/source/${WINE_SOURCE_SERIES}/wine-${WINE_VERSION}.tar.xz}"
+
+    if [[ -z "${WINE_SOURCE_SHA512}" ]]; then
+        sha512_manifest_url="https://dl.winehq.org/wine/source/${WINE_SOURCE_SERIES}/sha512sums.asc"
+        WINE_SOURCE_SHA512="$(
+            curl -LfsS --retry 5 --retry-delay 2 "${sha512_manifest_url}" |
+                awk -v source_name="wine-${WINE_VERSION}.tar.xz" '$2 == source_name { print $1; exit }'
+        )"
+
+        if [[ -z "${WINE_SOURCE_SHA512}" ]]; then
+            echo "Unable to resolve SHA-512 for wine-${WINE_VERSION}.tar.xz from ${sha512_manifest_url}" >&2
+            exit 1
+        fi
+    fi
+
+    echo "Resolved Wine ${WINE_VERSION} from ${WINE_SOURCE_URL}"
+}
+
+resolve_llvm_mingw_release() {
+    local digest
+    local release_api
+    local release_json
+
+    if [[ -z "${LLVM_MINGW_VERSION}" && -n "${LLVM_MINGW_ARCHIVE}" ]]; then
+        if [[ "${LLVM_MINGW_ARCHIVE}" =~ ^llvm-mingw-([0-9]+)- ]]; then
+            LLVM_MINGW_VERSION="${BASH_REMATCH[1]}"
+        else
+            echo "Unable to infer LLVM_MINGW_VERSION from ${LLVM_MINGW_ARCHIVE}" >&2
+            exit 1
+        fi
+    fi
+
+    if [[ -n "${LLVM_MINGW_VERSION}" ]]; then
+        release_api="${LLVM_MINGW_RELEASES_API}/tags/${LLVM_MINGW_VERSION}"
+    else
+        release_api="${LLVM_MINGW_RELEASES_API}/latest"
+    fi
+
+    if [[ -z "${LLVM_MINGW_VERSION}" || -z "${LLVM_MINGW_ARCHIVE}" || -z "${LLVM_MINGW_URL}" || -z "${LLVM_MINGW_SHA256}" ]]; then
+        release_json="$(curl -LfsS --retry 5 --retry-delay 2 "${release_api}")"
+        LLVM_MINGW_VERSION="${LLVM_MINGW_VERSION:-$(jq -r '.tag_name // empty' <<< "${release_json}")}"
+        LLVM_MINGW_ARCHIVE="${LLVM_MINGW_ARCHIVE:-$(
+            jq -r 'first(.assets[] | .name | select(test("^llvm-mingw-[0-9]+-ucrt-ubuntu-22\\.04-aarch64\\.tar\\.xz$"))) // empty' \
+                <<< "${release_json}"
+        )}"
+
+        if [[ -z "${LLVM_MINGW_ARCHIVE}" ]]; then
+            LLVM_MINGW_ARCHIVE="$(jq -r 'first(.assets[] | .name | select(test("^llvm-mingw-.*-ucrt-ubuntu-22\\.04-aarch64\\.tar\\.xz$"))) // empty' <<< "${release_json}")"
+        fi
+
+        LLVM_MINGW_URL="${LLVM_MINGW_URL:-$(jq -r --arg archive "${LLVM_MINGW_ARCHIVE}" 'first(.assets[] | select(.name == $archive) | .browser_download_url) // empty' <<< "${release_json}")}"
+        digest="$(jq -r --arg archive "${LLVM_MINGW_ARCHIVE}" 'first(.assets[] | select(.name == $archive) | .digest) // empty' <<< "${release_json}")"
+        LLVM_MINGW_SHA256="${LLVM_MINGW_SHA256:-${digest#sha256:}}"
+    fi
+
+    if [[ -z "${LLVM_MINGW_VERSION}" || -z "${LLVM_MINGW_ARCHIVE}" || -z "${LLVM_MINGW_URL}" || -z "${LLVM_MINGW_SHA256}" ]]; then
+        echo "Unable to resolve latest llvm-mingw aarch64 metadata from ${release_api}" >&2
+        exit 1
+    fi
+
+    echo "Resolved llvm-mingw ${LLVM_MINGW_VERSION} from ${LLVM_MINGW_URL}"
+}
+
+resolve_wine_source
+resolve_llvm_mingw_release
+
 build_root="$(mktemp -d /var/tmp/bazzite-wine-aarch64.XXXXXX)"
 tool_bin="${build_root}/bin"
 source_tarball="${build_root}/wine-${WINE_VERSION}.tar.xz"
@@ -114,11 +245,6 @@ source_dir="${build_root}/wine-${WINE_VERSION}"
 build_dir="${build_root}/build"
 llvm_mingw_tarball="${build_root}/${LLVM_MINGW_ARCHIVE}"
 llvm_mingw_dir="${build_root}/${LLVM_MINGW_ARCHIVE%.tar.xz}"
-
-cleanup() {
-    rm -rf "${build_root}"
-}
-trap cleanup EXIT
 
 # Upgrade first so glibc and all virtual provides are current before
 # installing Wine's deps. This prevents "rtld(GNU_HASH) is needed by ..."
@@ -153,7 +279,7 @@ else
 fi
 
 curl -LfsS --retry 5 --retry-delay 2 "${WINE_SOURCE_URL}" -o "${source_tarball}"
-echo "${WINE_SOURCE_SHA256}  ${source_tarball}" | sha256sum -c -
+echo "${WINE_SOURCE_SHA512}  ${source_tarball}" | sha512sum -c -
 
 tar -xf "${source_tarball}" -C "${build_root}"
 mkdir -p "${build_dir}"
@@ -199,7 +325,6 @@ EOF
 
 /usr/bin/wine --version | grep -Fx "wine-${WINE_VERSION}"
 
-dnf5 -y remove \
-    "${build_packages[@]}" || true
+remove_installed_packages "${build_packages[@]}"
 
 /ctx/cleanup

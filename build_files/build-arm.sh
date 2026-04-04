@@ -26,6 +26,26 @@ restore_kernel_install_tools() {
 
 trap restore_kernel_install_tools EXIT
 
+remove_installed_packages() {
+    local installed_package
+    local package
+    local query_output
+    local -A installed_packages=()
+
+    for package in "$@"; do
+        if query_output="$(rpm -q --whatprovides --qf '%{NAME}\n' "${package}" 2>/dev/null)"; then
+            while IFS= read -r installed_package; do
+                [[ -n "${installed_package}" ]] || continue
+                installed_packages["${installed_package}"]=1
+            done <<< "${query_output}"
+        fi
+    done
+
+    if (( ${#installed_packages[@]} > 0 )); then
+        dnf5 -y remove "${!installed_packages[@]}"
+    fi
+}
+
 # ── Suppress dracut + kernel-install triggers ─────────────────────────────────
 # When kernel or kernel-module packages are installed/updated inside a
 # container, their RPM post-install scriptlets run dracut and Asahi-specific
@@ -73,13 +93,13 @@ dnf5 install -y \
 dnf5 update -y --refresh --exclude='kernel*' --exclude='asahi-kernel*'
 
 # Remove conflicting/unwanted packages from the base
-dnf5 -y remove \
-    tuned-ppd || true
+remove_installed_packages \
+    tuned-ppd
 
-dnf5 -y remove \
+remove_installed_packages \
     ublue-os-update-services \
     toolbox \
-    htop || true
+    htop
 
 # Keep Firefox RPM -- users need a browser immediately out of the box.
 # The Flatpak version will install via first-boot service and users can
@@ -194,14 +214,14 @@ if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
         kio-extras \
         krdc \
         ptyxis
-    dnf5 -y remove \
+    remove_installed_packages \
         plasma-drkonqi \
         plasma-welcome \
         plasma-welcome-fedora \
         plasma-discover-kns \
         kcharselect \
         kde-partitionmanager \
-        plasma-discover || true
+        plasma-discover
 else
     dnf5 -y install --skip-broken --skip-unavailable \
         gnome-tweaks \
