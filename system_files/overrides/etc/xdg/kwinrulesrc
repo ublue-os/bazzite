@@ -1,0 +1,17 @@
+[49dc43e0-1933-4cb4-9540-0452746e71a9]
+Description=Window settings for Steam Keyboard
+above=true
+aboverule=2
+acceptfocusrule=2
+opacityinactive=80
+opacityinactiverule=2
+skiptaskbar=true
+skiptaskbarrule=2
+types=256
+wmclass=steamwebhelper steam
+wmclasscomplete=true
+wmclassmatch=1
+
+[General]
+count=1
+rules=49dc43e0-1933-4cb4-9540-0452746e71a9
