@@ -30,7 +30,7 @@ _upgrade() {
     } | while IFS= read -r line; do
         echo "$line" >> "${HOME}/.steamos-update.log"
 
-        pct=$(echo "$line" | jq -r 'select(.msg == "Updating") | .overall // empty' 2>/dev/null)
+        pct=$(echo "$line" | jq -r 'select(.msg == "Updating") | .step_progress // empty' 2>/dev/null)
         if [[ -n "$pct" ]]; then
             pct=${pct%.*}
             if [[ "$pct" -ne "$last_pct" ]]; then
