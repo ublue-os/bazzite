@@ -296,7 +296,7 @@ dnf -yq remove steam lutris bazaar || :
 )
 
 echo "Copying shared system files..."
-cp -a /src/system_files/shared/. /
+cp -af /src/system_files/shared/. /
 
 if [[ "$desktop_env" == "gnome" ]]; then
     echo "Copying GNOME-specific system files..."
