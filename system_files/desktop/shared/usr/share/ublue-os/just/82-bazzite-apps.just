@@ -249,8 +249,69 @@ install-emudeck ACTION="":
     fi
 
 # Install OpenRGB (https://openrgb.org/)
+# Options: status | install | uninstall
 [group("hardware")]
-install-openrgb: (_install_appimage_file "https://codeberg.org/OpenRGB/OpenRGB/releases/download/release_candidate_1.0rc2/OpenRGB_1.0rc2_x86_64_0fca93e.AppImage")
+install-openrgb ACTION="":
+    #!/usr/bin/bash
+    set -eo pipefail
+    get_status_token() {
+        if compgen -G "$HOME/Applications/*OpenRGB*.AppImage" > /dev/null; then
+            echo "install"
+        elif find "$HOME/.local/share/applications" -maxdepth 1 -type f -name "*.desktop" \
+            \( -iname "*openrgb*" -o -iname "*org.openrgb*" \) 2>/dev/null | grep -q .; then
+            echo "install"
+        else
+            echo "uninstall"
+        fi
+    }
+    get_current_status() {
+        if [[ "$(get_status_token)" == "install" ]]; then
+            echo "Installed"
+        else
+            echo "Not Installed"
+        fi
+    }
+    install_openrgb() {
+        just _install_appimage_file "https://codeberg.org/OpenRGB/OpenRGB/releases/download/release_candidate_1.0rc2/OpenRGB_1.0rc2_x86_64_0fca93e.AppImage"
+    }
+    uninstall_openrgb() {
+        find "$HOME/Applications" -maxdepth 1 -type f -name "*OpenRGB*.AppImage" -delete 2>/dev/null || true
+        find "$HOME/.local/share/applications" -maxdepth 1 -type f \
+            \( -iname "*openrgb*.desktop" -o -iname "*org.openrgb*.desktop" \) \
+            -delete 2>/dev/null || true
+        find "$HOME/.local/share/icons" -type f \
+            \( -iname "*openrgb*" -o -iname "*org.openrgb*" \) \
+            -delete 2>/dev/null || true
+        echo "OpenRGB has been uninstalled."
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        install_openrgb
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_openrgb
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}OpenRGB${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_openrgb
+                ;;
+            "Uninstall")
+                uninstall_openrgb
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
+    fi
 
 # Install Boxtron, a Steam Play compatibility tool to run DOS games using native Linux DOSBox
 [group("gaming")]
