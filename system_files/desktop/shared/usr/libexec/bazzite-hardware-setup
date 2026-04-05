@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=69
+HWS_VER=68
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -193,23 +193,6 @@ if [ ! -f /etc/bazzite/fixups/iwd ]; then
   fi
 
   touch /etc/bazzite/fixups/iwd
-fi
-
-# Sunshine Changeover
-if [ ! -f /etc/bazzite/fixups/sunshine ]; then
-  if [[ -f "$HOME/.config/sunshine/sunshine.conf" && $(journalctl --no-hostname -g sunshine -b -1 -n 1) != "-- No entries --" ]]; then
-    # If the user is using sunshine, automatically reconfigure it to use the brew sunshine package.
-    echo "Sunshine found, automatically switching over to brew package..."
-    brew tap LizardByte/homebrew
-    brew install sunshine
-    brew services start sunshine
-    KMS_CAPTURE=$(cat $HOME/.config/sunshine/sunshine.conf | grep capture)
-    if [[ $KMS_CAPTURE == "capture = kms" ]]; then
-      sudo setcap cap_sys_admin+p $(readlink -f $(which sunshine))
-    fi
-  fi
-
-  touch /etc/bazzite/fixups/sunshine
 fi
 
 # FRAMEWORK AMD FIXES
