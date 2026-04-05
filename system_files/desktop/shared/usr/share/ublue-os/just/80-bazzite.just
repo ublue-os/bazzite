@@ -147,6 +147,8 @@ regenerate-grub:
     remount_boot_ro
 
 # Configure grub bootmenu visibility. pass action 'help' for more info.
+# Options: hide | unhide | show
+# Pairing: hide = Hide After Successful Boot | unhide = Same except when Dual Booting | show = Always Show Grub
 [group("system")]
 configure-grub ACTION="":
     #!/usr/bin/bash
