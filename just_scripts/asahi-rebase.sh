@@ -309,28 +309,16 @@ EOF
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Steps 2 + 3 + 4: Build image AND initialise ostree + pull base in parallel
+# Step 2: Build Bazzite ARM image
 # ──────────────────────────────────────────────────────────────────────────────
-# The container image build (Step 2) and the ostree repo initialisation +
-# base-atomic pull (Steps 3–4) are completely independent.  Running them in
-# parallel cuts the total wall-clock time by the duration of the ostree pull
-# (~3–5 minutes on a fast connection) at no extra risk.
-#
-# Both jobs write their output to dedicated log files so progress from the
-# long podman build is not interleaved with ostree messages.
-PARALLEL_LOG_DIR=$(mktemp -d /var/tmp/bazzite-parallel-XXXXX)
-
-# ── Job A: podman build ───────────────────────────────────────────────────────
 echo ""
-echo "--- Step 2: Build Bazzite ARM image (running in parallel with ostree pull) ---"
-echo "Build log: ${PARALLEL_LOG_DIR}/podman-build.log"
+echo "--- Step 2: Build Bazzite ARM image ---"
+echo "This takes ~25 minutes with --skip-wine (~85 min without). Output is live."
 echo ""
 
-_run_podman_build() {
-    if sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
-        echo "[podman] Bazzite ARM image already exists; skipping build."
-        return 0
-    fi
+if sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
+    echo "Bazzite ARM image already exists; skipping build."
+else
     cd "${REPO_ROOT}"
     sudo podman build \
         --platform linux/arm64 \
@@ -346,145 +334,42 @@ _run_podman_build() {
         --build-arg VERSION_PRETTY="Local Build" \
         --build-arg SHA_HEAD_SHORT="${IMAGE_TAG}" \
         -t "${BAZZITE_IMAGE}" \
-        . && echo "[podman] Build complete."
-}
+        .
+    echo "Bazzite ARM image built successfully."
+fi
 
-# ── Job B: ostree repo init + base-atomic pull ────────────────────────────────
-echo "--- Steps 3+4: Initialize ostree + pull base image (parallel) ---"
-echo "OSTree log: ${PARALLEL_LOG_DIR}/ostree-pull.log"
+# ──────────────────────────────────────────────────────────────────────────────
+# Step 3: Initialize ostree repository
+# ──────────────────────────────────────────────────────────────────────────────
 echo ""
+echo "--- Step 3: Initialize ostree repository ---"
+sudo mkdir -p /ostree/repo
+if [[ ! -f /ostree/repo/config ]]; then
+    sudo ostree init --repo=/ostree/repo --mode=bare
+else
+    echo "OSTree repo already initialized; skipping."
+fi
+sudo ostree config --repo=/ostree/repo set sysroot.bootloader grub2
+sudo ostree config --repo=/ostree/repo set sysroot.readonly true
 
-_run_ostree_init_and_pull() {
-    echo "[ostree] Initializing repository..."
-    sudo mkdir -p /ostree/repo
-    if [[ ! -f /ostree/repo/config ]]; then
-        sudo ostree init --repo=/ostree/repo --mode=bare
-    else
-        echo "[ostree] OSTree repo already initialized; skipping."
-    fi
-    sudo ostree config --repo=/ostree/repo set sysroot.bootloader grub2
-    sudo ostree config --repo=/ostree/repo set sysroot.readonly true
+ensure_boot_loader_symlink
 
-    ensure_boot_loader_symlink
-
-    sudo mkdir -p /ostree/deploy
-    if [[ ! -d /ostree/deploy/fedora ]]; then
-        sudo ostree admin os-init fedora --sysroot /
-    else
-        echo "[ostree] Stateroot 'fedora' already exists; skipping os-init."
-    fi
-
-    echo "[ostree] Pulling ${ATOMIC_BASE} ..."
-    sudo ostree container image pull /ostree/repo \
-        "ostree-unverified-registry:${ATOMIC_BASE}"
-    echo "[ostree] Pull complete."
-}
-
-# ── File-based status tracking + process-group isolation ─────────────────────
-# `kill -0 $PID` polling is unreliable: bash keeps zombie PIDs in the job
-# table so the check stays true even after the process has exited, causing
-# the monitor loop to spin forever. Instead each background job writes its
-# own exit code to a file; the monitor polls those files every 2 seconds.
-#
-# The jobs also run in their own sessions so a failure can terminate the
-# entire sibling process group, not just the wrapper shell process.
-chmod 755 "${PARALLEL_LOG_DIR}"
-if ! command -v setsid >/dev/null 2>&1; then
-    echo "ERROR: setsid is required for reliable parallel job isolation."
-    exit 1
+sudo mkdir -p /ostree/deploy
+if [[ ! -d /ostree/deploy/fedora ]]; then
+    sudo ostree admin os-init fedora --sysroot /
+else
+    echo "Stateroot 'fedora' already exists; skipping os-init."
 fi
 
-launch_parallel_job() {
-    local job_func="$1"
-    local log_file="$2"
-    local done_file="$3"
-    local child_script
-
-    child_script="$(
-        declare -f ensure_boot_loader_symlink
-        declare -f _run_podman_build
-        declare -f _run_ostree_init_and_pull
-        cat <<EOF
-set -euo pipefail
-rc=0
-${job_func} >> "${log_file}" 2>&1 || rc=\$?
-echo "\${rc}" > "${done_file}"
-exit "\${rc}"
-EOF
-    )"
-
-    setsid bash -lc "${child_script}" &
-    echo $!
-}
-
-export REPO_ROOT ATOMIC_BASE BAZZITE_IMAGE IMAGE_NAME IMAGE_VENDOR \
-    KERNEL_VARIANT IMAGE_BRANCH SKIP_WINE IMAGE_TAG
-
-PODMAN_BUILD_PID="$(launch_parallel_job "_run_podman_build" \
-    "${PARALLEL_LOG_DIR}/podman-build.log" \
-    "${PARALLEL_LOG_DIR}/podman.done")"
-
-OSTREE_INIT_PID="$(launch_parallel_job "_run_ostree_init_and_pull" \
-    "${PARALLEL_LOG_DIR}/ostree-pull.log" \
-    "${PARALLEL_LOG_DIR}/ostree.done")"
-
-_fail_parallel() {
-    local failed_job="$1" failed_rc="$2" other_pid="$3" log_file="$4"
-    echo ""
-    echo "══════════════════════════════════════════════"
-    echo "  ERROR: ${failed_job} failed (exit ${failed_rc})"
-    echo "══════════════════════════════════════════════"
-    echo ""
-    echo "--- Full log: ${log_file} ---"
-    cat "${log_file}" 2>/dev/null || true
-    echo "--- End of log ---"
-    kill -- "-${other_pid}" 2>/dev/null || kill "${other_pid}" 2>/dev/null || true
-    wait "${other_pid}" 2>/dev/null || true
-    rm -rf "${PARALLEL_LOG_DIR}"
-    exit "${failed_rc}"
-}
-
-# ── Wait for both jobs ────────────────────────────────────────────────────────
-echo "Both jobs running in parallel. Waiting..."
-echo "  Live build output: tail -f ${PARALLEL_LOG_DIR}/podman-build.log"
-echo "  Live ostree output: tail -f ${PARALLEL_LOG_DIR}/ostree-pull.log"
+# ──────────────────────────────────────────────────────────────────────────────
+# Step 4: Pull the atomic base image into ostree
+# ──────────────────────────────────────────────────────────────────────────────
 echo ""
-
-while [[ ! -f "${PARALLEL_LOG_DIR}/podman.done" || ! -f "${PARALLEL_LOG_DIR}/ostree.done" ]]; do
-    if [[ -f "${PARALLEL_LOG_DIR}/podman.done" ]]; then
-        _rc=$(cat "${PARALLEL_LOG_DIR}/podman.done")
-        if [[ "${_rc}" != "0" ]]; then
-            _fail_parallel "Bazzite ARM image build (podman)" "${_rc}" \
-                "${OSTREE_INIT_PID}" "${PARALLEL_LOG_DIR}/podman-build.log"
-        fi
-    fi
-    if [[ -f "${PARALLEL_LOG_DIR}/ostree.done" ]]; then
-        _rc=$(cat "${PARALLEL_LOG_DIR}/ostree.done")
-        if [[ "${_rc}" != "0" ]]; then
-            _fail_parallel "OSTree init/pull" "${_rc}" \
-                "${PODMAN_BUILD_PID}" "${PARALLEL_LOG_DIR}/ostree-pull.log"
-        fi
-    fi
-    sleep 2
-done
-
-# Both done — check final status
-_podman_rc=$(cat "${PARALLEL_LOG_DIR}/podman.done")
-_ostree_rc=$(cat "${PARALLEL_LOG_DIR}/ostree.done")
-if [[ "${_podman_rc}" != "0" ]]; then
-    _fail_parallel "Bazzite ARM image build (podman)" "${_podman_rc}" \
-        "${OSTREE_INIT_PID}" "${PARALLEL_LOG_DIR}/podman-build.log"
-fi
-if [[ "${_ostree_rc}" != "0" ]]; then
-    _fail_parallel "OSTree init/pull" "${_ostree_rc}" \
-        "${PODMAN_BUILD_PID}" "${PARALLEL_LOG_DIR}/ostree-pull.log"
-fi
-
-wait "${PODMAN_BUILD_PID}" 2>/dev/null || true
-wait "${OSTREE_INIT_PID}"  2>/dev/null || true
-echo "Both parallel jobs completed successfully."
-rm -rf "${PARALLEL_LOG_DIR}"
-echo "Bazzite ARM image built successfully."
+echo "--- Step 4: Pull Fedora Asahi Atomic base image ---"
+echo "Pulling ${ATOMIC_BASE} (may take a few minutes)..."
+sudo ostree container image pull /ostree/repo \
+    "ostree-unverified-registry:${ATOMIC_BASE}"
+echo "Pull complete."
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Step 5: Detect root UUID
