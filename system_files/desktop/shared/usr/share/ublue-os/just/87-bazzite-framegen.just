@@ -145,7 +145,7 @@ get-lsfg ACTION="prompt":
         echo "The lsfg-vk UI should now be available in your applications menu and on your desktop."
     elif [ "${OPTION,,}" == "install decky plugin" ] || [ "${OPTION,,}" == "install-decky-plugin" ]; then
         echo "Installing Decky LSFG plugin..."
-        ujust install-decky-plugins decky-lsfg-vk
+        ujust get-decky-lossless-scaling install
     elif [ "${OPTION,,}" == "uninstall" ] || [ "${OPTION,,}" == "uninstall lsfg-vk" ]; then
         echo "Uninstalling lsfg-vk..."
 
