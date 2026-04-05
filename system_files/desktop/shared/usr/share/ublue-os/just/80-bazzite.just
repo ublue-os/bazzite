@@ -455,16 +455,6 @@ enable-automounting ACTION="":
     fi
     enable_automounting
 
-# Disables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
-[group("automounting")]
-disable-automounting:
-    #!/usr/bin/pkexec /usr/bin/bash
-    set -eo pipefail
-    rm -f /etc/udev/rules.d/99-media-automount.rules # DELETEME
-    if systemctl status --no-pager ublue-os-media-automount.service >/dev/null 2>&1; then
-        systemctl disable ublue-os-media-automount.service
-    fi
-
 # Enable framework automounting udev rules.
 [group("automounting")]
 enable-framework-automount:
@@ -478,11 +468,6 @@ disable-framework-automount:
     #!/usr/bin/pkexec /usr/bin/bash
     set -eo pipefail
     ln -sf /dev/null /etc/udev/rules.d/99-framework-steam-automount.rules
-
-# Disable SteamOS automount, this fixes ntfs partitions getting mounted.
-[group("automounting")]
-disable-steamos-automount:
-    @pkexec ln -sf /dev/null /etc/udev/rules.d/99-steamos-automount.rules
 
 # Enable SteamOS automount.
 # Options: status | enable | disable
@@ -546,7 +531,7 @@ enable-steamos-automount ACTION="":
 # Disable all partition automounting. This might increase boot times.
 [group("automounting")]
 disable-automount-all:
-    @pkexec --keep-cwd ujust disable-framework-automount disable-automounting disable-steamos-automount
+    @pkexec --keep-cwd ujust disable-framework-automount enable-automounting disable enable-steamos-automount disable
 
 # Enable all automounting.
 [group("automounting")]
