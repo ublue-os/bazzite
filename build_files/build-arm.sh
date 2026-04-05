@@ -90,11 +90,10 @@ dnf5 install -y \
     "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VER}.noarch.rpm" \
     "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VER}.noarch.rpm"
 
-dnf5 update -y --refresh --exclude='kernel*' --exclude='asahi-kernel*' \
-    --exclude='unixODBC*' || {
+dnf5 update -y --refresh --exclude='kernel*' --exclude='asahi-kernel*' || {
     echo "dnf5 update failed; retrying with distro-sync --skip-broken."
     dnf5 distro-sync -y --refresh --skip-broken --skip-unavailable \
-        --exclude='kernel*' --exclude='asahi-kernel*' --exclude='unixODBC*'
+        --exclude='kernel*' --exclude='asahi-kernel*'
 }
 
 # Remove conflicting/unwanted packages from the base

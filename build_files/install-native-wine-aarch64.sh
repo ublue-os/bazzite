@@ -113,7 +113,16 @@ build_packages=(
     'pkgconfig(libusb-1.0)'
 )
 
+optional_runtime_packages=(
+    unixODBC
+)
+
+optional_build_packages=(
+    unixODBC-devel
+)
+
 build_root=""
+odbc_enabled=0
 
 cleanup() {
     if [[ -n "${build_root}" ]]; then
@@ -140,6 +149,19 @@ remove_installed_packages() {
     if (( ${#installed_packages[@]} > 0 )); then
         dnf5 -y remove "${!installed_packages[@]}"
     fi
+}
+
+install_optional_packages() {
+    local description="$1"
+    shift
+
+    if dnf5 -y install --setopt=install_weak_deps=False "$@"; then
+        return 0
+    fi
+
+    echo "Optional ${description} packages could not be installed; continuing without ${description} support." >&2
+    dnf5 -y remove "$@" >/dev/null 2>&1 || true
+    return 1
 }
 
 resolve_wine_source() {
@@ -244,12 +266,9 @@ build_dir="${build_root}/build"
 llvm_mingw_tarball="${build_root}/${LLVM_MINGW_ARCHIVE}"
 llvm_mingw_dir="${build_root}/${LLVM_MINGW_ARCHIVE%.tar.xz}"
 
-# Upgrade first so glibc and all virtual provides are current before
-# installing Wine's deps. This prevents "rtld(GNU_HASH) is needed by ..."
-# errors caused by stale package metadata in the base image.
-# dnf5 upgrade does not support --skip-broken, so prefer a normal upgrade first
-# and fall back to distro-sync --skip-broken only if the solver hits a broken
-# package (e.g. unixODBC with a missing linux-aarch64.so.1 VDSO dep).
+# Upgrade first so the build root is current before installing Wine's deps.
+# Prefer a normal upgrade first and fall back to distro-sync only if the solver
+# cannot complete a straightforward upgrade on the current base image.
 # --exclude=mesa*: never let standard Fedora repos replace the Asahi COPR
 #   mesa packages -- that would break the Apple Silicon AGX GPU driver
 if ! dnf5 -y upgrade --refresh --skip-unavailable --exclude='mesa*'; then
@@ -257,10 +276,15 @@ if ! dnf5 -y upgrade --refresh --skip-unavailable --exclude='mesa*'; then
     dnf5 -y distro-sync --refresh --skip-broken --skip-unavailable --exclude='mesa*'
 fi
 
-dnf5 -y install --setopt=install_weak_deps=False \
-    --skip-broken --skip-unavailable "${runtime_packages[@]}"
-dnf5 -y install --setopt=install_weak_deps=False \
-    --skip-broken --skip-unavailable "${build_packages[@]}"
+dnf5 -y install --setopt=install_weak_deps=False "${runtime_packages[@]}"
+dnf5 -y install --setopt=install_weak_deps=False "${build_packages[@]}"
+
+if install_optional_packages "ODBC runtime" "${optional_runtime_packages[@]}" &&
+    install_optional_packages "ODBC build" "${optional_build_packages[@]}"; then
+    odbc_enabled=1
+else
+    remove_installed_packages "${optional_build_packages[@]}" "${optional_runtime_packages[@]}"
+fi
 
 mkdir -p "${tool_bin}"
 export PATH="${tool_bin}:${PATH}"
@@ -296,18 +320,20 @@ elif (( jobs < 2 )); then
     jobs=2
 fi
 
+configure_args=(
+    --prefix=/usr
+    --libdir=/usr/lib64
+    --sysconfdir=/etc/wine
+    --x-includes=/usr/include
+    --x-libraries=/usr/lib64
+    --with-dbus
+    --with-x
+    --enable-win64
+    --disable-tests
+)
+
 pushd "${build_dir}" >/dev/null
-"${source_dir}/configure" \
-    --prefix=/usr \
-    --libdir=/usr/lib64 \
-    --sysconfdir=/etc/wine \
-    --x-includes=/usr/include \
-    --x-libraries=/usr/lib64 \
-    --with-dbus \
-    --with-x \
-    --enable-win64 \
-    --disable-tests \
-    --without-odbc
+"${source_dir}/configure" "${configure_args[@]}"
 make -j"${jobs}" TARGETFLAGS=""
 make install
 popd >/dev/null
@@ -320,10 +346,12 @@ mkdir -p /usr/share/bazzite
 cat > /usr/share/bazzite/wine-aarch64-version <<EOF
 WINE_VERSION=${WINE_VERSION}
 WINE_SOURCE_URL=${WINE_SOURCE_URL}
+WINE_ODBC_ENABLED=${odbc_enabled}
 EOF
 
 /usr/bin/wine --version | grep -Fx "wine-${WINE_VERSION}"
 
 remove_installed_packages "${build_packages[@]}"
+remove_installed_packages "${optional_build_packages[@]}"
 
 /ctx/cleanup
