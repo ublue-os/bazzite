@@ -94,23 +94,35 @@ toggle-bt-mic:
     fi
 
 # enable or disable wake-on-lan functionality
+# Options: status | enable | disable | force-enable
 toggle-wol ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    INTERFACE=$(ip link show | awk '/state UP/ {print $2}' | tr -d ':' | grep -E '^(en|eth)')
-    if [[ -z "$INTERFACE" ]]; then
-      echo -e "${bold}No active Ethernet interface found.${normal}"
-      echo "Please ensure your Ethernet connection is enabled or connected."
-      echo "Exiting without making any changes."
-      exit 0
-    fi
     CONFIG_FILE="/etc/udev/rules.d/81-wol.rules"
     SERVICE_FILE="/etc/systemd/system/force-wol.service"
-    WOL_STATUS=$(sudo ethtool $INTERFACE | grep -P "^\s+Wake-on" | awk '{print $2}')
-    CURRENT_STATE="Disabled"
-    if [[ "$WOL_STATUS" == "g" ]]; then
-      CURRENT_STATE="Enabled"
-    fi
+    FORCE_WOL_LINK="/etc/systemd/system/multi-user.target.wants/force-wol.service"
+    get_status_token() {
+      if [[ -L "$FORCE_WOL_LINK" ]]; then
+        echo "force-enable"
+      elif [[ -f "$CONFIG_FILE" ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    get_current_status() {
+      case "$(get_status_token)" in
+        force-enable)
+          echo "Force-Enabled"
+          ;;
+        enable)
+          echo "Enabled"
+          ;;
+        *)
+          echo "Disabled"
+          ;;
+      esac
+    }
     OPTION="{{ ACTION }}"
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust toggle-wol <option>"
@@ -119,8 +131,19 @@ toggle-wol ACTION="":
       echo "  Use 'disable' to disable Wake-on-LAN"
       echo "  Use 'force-enable' to force-enable Wake-on-LAN (persists across reboots)"
       exit 0
-    elif [ -z "$OPTION" ]; then
-      echo "Wake-on-LAN is currently: ${bold}${CURRENT_STATE}${normal}"
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit $?
+    fi
+    INTERFACE=$(ip link show | awk '/state UP/ {print $2}' | tr -d ':' | grep -E '^(en|eth)')
+    if [[ -z "$INTERFACE" ]]; then
+      echo -e "${bold}No active Ethernet interface found.${normal}"
+      echo "Please ensure your Ethernet connection is enabled or connected."
+      echo "Exiting without making any changes."
+      exit 0
+    fi
+    if [ -z "$OPTION" ]; then
+      echo "Wake-on-LAN is currently: ${bold}$(get_current_status)${normal}"
       echo "Enable, Disable Wake-on-LAN, Force-Enable, or Exit without saving?"
       echo "Note: Force-Enable will make WOL persist across reboots"
       OPTION=$(ugum choose Enable Disable Force-Enable Exit)
