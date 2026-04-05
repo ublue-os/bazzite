@@ -841,6 +841,7 @@ toggle-password-feedback ACTION="":
     fi
 
 # Toggle global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on Proton 10 or GE 10-25 or later
+# Options: enable | disable
 [group("gaming")]
 toggle-global-fsr4 ACTION="":
     #!/usr/bin/bash
@@ -881,6 +882,7 @@ toggle-global-fsr4 ACTION="":
     esac
 
 # Toggle global Proton FSR4 upgrade on RDNA3 GPUs; upgrades FSR 3.1+ → FSR 4, only compatible with Proton GE, Proton EM, or similar forks
+# Options: enable | disable
 [group("gaming")]
 toggle-global-fsr4-rdna3 ACTION="":
     #!/usr/bin/bash
@@ -923,6 +925,7 @@ toggle-global-fsr4-rdna3 ACTION="":
     esac
 
 # Toggle global Proton DLSS upgrade; updates DLSS DLLs for Proton
+# Options: enable | disable
 [group("gaming")]
 toggle-global-dlss ACTION="":
     #!/usr/bin/bash
