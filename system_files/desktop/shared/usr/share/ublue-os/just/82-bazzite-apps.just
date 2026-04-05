@@ -128,23 +128,80 @@ install-jetbrains-toolbox:
 alias get-steamcmd := install-steamcmd
 
 # Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD)
+# Options: status | install | uninstall
 [group("gaming")]
-install-steamcmd:
+install-steamcmd ACTION="":
     #!/usr/bin/bash
-    if [[ $UID -eq 0 ]]; then
-        echo >&2 "This ujust should not be run as root."
-        exit 1
-    fi
-    echo 'Installing SteamCMD...'
-    wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O /tmp/steamcmd.tar.gz
-    mkdir -p ~/.steam
-    tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
-    rm /tmp/steamcmd.tar.gz
-    if [[ -f ~/.steam/steamcmd.sh ]]; then
-        mkdir -p ~/.local/bin
-        rm -f ~/.local/bin/steamcmd
-        printf '#!/usr/bin/bash\nexec ~/.steam/steamcmd.sh "$@"\n' > ~/.local/bin/steamcmd
-        chmod +x ~/.local/bin/steamcmd
+    get_status_token() {
+        if [[ -f "$HOME/.steam/steamcmd.sh" ]] || [[ -f "$HOME/.local/bin/steamcmd" ]]; then
+            echo "install"
+        else
+            echo "uninstall"
+        fi
+    }
+    get_current_status() {
+        if [[ "$(get_status_token)" == "install" ]]; then
+            echo "Installed"
+        else
+            echo "Not Installed"
+        fi
+    }
+    install_steamcmd() {
+        if [[ $UID -eq 0 ]]; then
+            echo >&2 "This ujust should not be run as root."
+            exit 1
+        fi
+        echo 'Installing SteamCMD...'
+        wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O /tmp/steamcmd.tar.gz
+        mkdir -p ~/.steam
+        tar -xvzf /tmp/steamcmd.tar.gz -C ~/.steam
+        rm /tmp/steamcmd.tar.gz
+        if [[ -f ~/.steam/steamcmd.sh ]]; then
+            mkdir -p ~/.local/bin
+            rm -f ~/.local/bin/steamcmd
+            printf '#!/usr/bin/bash\nexec ~/.steam/steamcmd.sh "$@"\n' > ~/.local/bin/steamcmd
+            chmod +x ~/.local/bin/steamcmd
+        fi
+    }
+    uninstall_steamcmd() {
+        rm -f "$HOME/.local/bin/steamcmd"
+        rm -f "$HOME/.steam/steamcmd.sh"
+        echo "SteamCMD has been uninstalled."
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+        echo "Usage: ujust install-steamcmd <option>"
+        echo "  <option>: Specify the quick option to skip the prompt"
+        echo "  Use 'status' to print the current portal token"
+        echo "  Use 'install' to install SteamCMD"
+        echo "  Use 'uninstall' to uninstall SteamCMD"
+        exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit $?
+    elif [[ "$OPTION" == "install" ]]; then
+        install_steamcmd
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_steamcmd
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}SteamCMD${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_steamcmd
+                ;;
+            "Uninstall")
+                uninstall_steamcmd
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
     fi
 
 # Install OpenRazer for Razer gaming hardware
