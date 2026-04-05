@@ -323,15 +323,76 @@ install-boxtron: distrobox-check-fedora
       distrobox-export --bin /usr/bin/dosbox'
 
 # Install Resilio Sync, a file synchronization utility powered by BitTorrent
-install-resilio-sync: distrobox-check-fedora
-    distrobox-enter -n fedora -- bash -c 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc' && \
-    distrobox-enter -n fedora -- bash -c 'sudo wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/resilio-sync.repo -O /etc/yum.repos.d/resilio-sync.repo' && \
-    distrobox-enter -n fedora -- bash -c 'sudo dnf install -y resilio-sync' && \
-    mkdir -p ~/.config/systemd/user/ && \
-    rm -f ~/.config/systemd/user/fedora-resilio-sync.service && \
-    wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/fedora-resilio-sync.service -O ~/.config/systemd/user/fedora-resilio-sync.service && \
-    systemctl --user daemon-reload && \
-    systemctl enable --user --now fedora-resilio-sync.service
+# Options: status | install | uninstall
+install-resilio-sync ACTION="":
+    #!/usr/bin/bash
+    set -eo pipefail
+    has_fedora_distrobox() {
+        distrobox list 2>/dev/null | grep -qE '(^|[[:space:]])fedora([[:space:]]|$)'
+    }
+    get_status_token() {
+        if [[ -f "$HOME/.config/systemd/user/fedora-resilio-sync.service" ]] || systemctl --user is-enabled fedora-resilio-sync.service >/dev/null 2>&1; then
+            echo "install"
+        else
+            echo "uninstall"
+        fi
+    }
+    get_current_status() {
+        if [[ "$(get_status_token)" == "install" ]]; then
+            echo "Installed"
+        else
+            echo "Not Installed"
+        fi
+    }
+    install_resilio_sync() {
+        just distrobox-check-fedora
+        distrobox-enter -n fedora -- bash -c 'sudo rpm --import https://linux-packages.resilio.com/resilio-sync/key.asc' && \
+        distrobox-enter -n fedora -- bash -c 'sudo wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/resilio-sync.repo -O /etc/yum.repos.d/resilio-sync.repo' && \
+        distrobox-enter -n fedora -- bash -c 'sudo dnf install -y resilio-sync' && \
+        mkdir -p ~/.config/systemd/user/ && \
+        rm -f ~/.config/systemd/user/fedora-resilio-sync.service && \
+        wget https://raw.githubusercontent.com/ublue-os/bazzite/main/post_install_files/resilio_sync/fedora-resilio-sync.service -O ~/.config/systemd/user/fedora-resilio-sync.service && \
+        systemctl --user daemon-reload && \
+        systemctl enable --user --now fedora-resilio-sync.service
+    }
+    uninstall_resilio_sync() {
+        systemctl --user disable --now fedora-resilio-sync.service 2>/dev/null || true
+        rm -f ~/.config/systemd/user/fedora-resilio-sync.service
+        systemctl --user daemon-reload
+        if has_fedora_distrobox; then
+            distrobox-enter -n fedora -- bash -c 'sudo dnf remove -y resilio-sync || true'
+            distrobox-enter -n fedora -- bash -c 'sudo rm -f /etc/yum.repos.d/resilio-sync.repo'
+        fi
+        echo "Resilio Sync has been uninstalled."
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        install_resilio_sync
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_resilio_sync
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}Resilio Sync${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_resilio_sync
+                ;;
+            "Uninstall")
+                uninstall_resilio_sync
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
+    fi
 
 # Install OpenTabletDriver, an open source, cross-platform, user-mode tablet driver
 [group("hardware")]
