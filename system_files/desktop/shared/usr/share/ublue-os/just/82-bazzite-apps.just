@@ -125,12 +125,10 @@ install-jetbrains-toolbox:
     fi
     jetbrains-toolbox &> /dev/null &
 
-alias get-steamcmd := install-steamcmd
-
 # Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD)
 # Options: status | install | uninstall
 [group("gaming")]
-install-steamcmd ACTION="":
+get-steamcmd ACTION="":
     #!/usr/bin/bash
     get_status_token() {
         if [[ -f "$HOME/.steam/steamcmd.sh" ]] || [[ -f "$HOME/.local/bin/steamcmd" ]]; then
@@ -170,7 +168,7 @@ install-steamcmd ACTION="":
     }
     OPTION="{{ ACTION }}"
     if [[ "$OPTION" == "help" ]]; then
-        echo "Usage: ujust install-steamcmd <option>"
+        echo "Usage: ujust get-steamcmd <option>"
         echo "  <option>: Specify the quick option to skip the prompt"
         echo "  Use 'status' to print the current portal token"
         echo "  Use 'install' to install SteamCMD"
@@ -234,12 +232,10 @@ install-openrazer:
     echo "$OPENRAZER_CONFIGURATOR_APP is installed"
     echo "Please reboot to apply needed changes."
 
-alias get-emudeck := install-emudeck
-
 # Install EmuDeck (https://www.emudeck.com/)
 # Options: status | install | uninstall
 [group("gaming")]
-install-emudeck ACTION="":
+get-emudeck ACTION="":
     #!/usr/bin/bash
     set -eo pipefail
     get_status_token() {

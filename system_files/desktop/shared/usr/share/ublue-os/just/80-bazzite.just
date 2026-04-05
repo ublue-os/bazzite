@@ -25,9 +25,6 @@ _install-system-flatpaks:
 toggle-ssh ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    # Get hostname and IP address
-    HOSTNAME=$(hostname)
-    IP_ADDRESS=$(hostname -I | awk '{print $1}') # First IP address
     SSH_STATE="$(systemctl is-enabled sshd 2>/dev/null || true)"
     get_status_token() {
       if [[ -z "$SSH_STATE" ]]; then
@@ -43,6 +40,9 @@ toggle-ssh ACTION="":
       get_status_token
       exit $?
     fi
+    # Get hostname and IP address
+    HOSTNAME=$(hostname)
+    IP_ADDRESS=$(hostname -I | awk '{print $1}') # First IP address
     # Get current SSH status
     SSH_STATUS="Disabled"
     if [[ "$(get_status_token)" == "enable" ]]; then

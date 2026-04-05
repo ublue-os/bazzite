@@ -1,11 +1,9 @@
 # vim: set ft=make :
 
-alias configure-waydroid := setup-waydroid
-
 # Launch Waydroid configuration helper
 # Options: init | configure | gpu | integration | reset | helper
 [group("apps")]
-setup-waydroid ACTION="":
+configure-waydroid ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
