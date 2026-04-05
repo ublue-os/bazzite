@@ -53,19 +53,34 @@ setup-waydroid ACTION="":
       echo "Waydroid has been reset"
     elif [[ "${OPTION,,}" =~ helper ]]; then
       echo "Installing waydroid-helper"
+      case "$(uname -m)" in
+          aarch64)
+              asset_regex='.*aarch64\.AppImage$'
+              ;;
+          x86_64)
+              asset_regex='.*x86_64\.AppImage$'
+              ;;
+          *)
+              echo "Unsupported architecture for waydroid-helper: $(uname -m)"
+              exit 1
+              ;;
+      esac
+      HELPER_URL="$(
+          curl -fsSL https://api.github.com/repos/waydroid-helper/waydroid-helper/releases/latest | \
+          jq -r --arg asset_regex "$asset_regex" '.assets[] | select(.name | test($asset_regex)) | .browser_download_url' | \
+          head -n 1
+      )"
+      if [[ -z "$HELPER_URL" || "$HELPER_URL" == "null" ]]; then
+          echo "Failed to find a matching waydroid-helper AppImage for $(uname -m)"
+          exit 1
+      fi
       if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
-          wget \
-              $(curl -s https://api.github.com/repos/waydroid-helper/waydroid-helper/releases/latest | \
-              jq -r ".assets[] | select(.name | test(\".*x86_64.AppImage\")) | .browser_download_url") \
-              -O $HOME/Downloads/waydroid-helper.AppImage
+          wget "$HELPER_URL" -O $HOME/Downloads/waydroid-helper.AppImage
           chmod +x $HOME/Downloads/waydroid-helper.AppImage
           echo "Download complete, add it to your app menu via Gear Lever"
           flatpak run it.mijorus.gearlever $HOME/Downloads/waydroid-helper.AppImage
       else
-          wget \
-              $(curl -s https://api.github.com/repos/waydroid-helper/waydroid-helper/releases/latest | \
-              jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
-              -O $HOME/Desktop/waydroid-helper.AppImage
+          wget "$HELPER_URL" -O $HOME/Desktop/waydroid-helper.AppImage
           chmod +x $HOME/Desktop/waydroid-helper.AppImage
           echo "Install complete, it has been added to your Desktop"
       fi

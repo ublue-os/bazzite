@@ -27,12 +27,12 @@ for cec_dev in /dev/cec*; do
 done
 
 args=()
-args+=( "--single-command" )
-args+=( "--log-level 1" )
-args+=( "--osd-name $CEC_OSD_NAME" )
+args+=(--single-command)
+args+=(--log-level 1)
+args+=(--osd-name "$CEC_OSD_NAME")
 
 # Conditionally apply a port number override if one is set
-[[ -n "$CEC_PORT_NUMBER" ]] && args+=( "--port $CEC_PORT_NUMBER" )
+[[ -n "$CEC_PORT_NUMBER" ]] && args+=(--port "$CEC_PORT_NUMBER")
 
 # Helper functions to send activate and standby messages to the CEC bus
 # We loop through TVIDs to cover cases where you might have multiple devices
@@ -49,7 +49,7 @@ function perform_standby {
     else
         # libcec path
         for id in $CEC_TVID; do
-            echo "standby $id" | cec-client ${args[@]}
+            echo "standby $id" | cec-client "${args[@]}"
         done
     fi
 }
@@ -74,11 +74,11 @@ function perform_activate {
     else
         # libcec path
         for id in $CEC_TVID; do
-            echo "on $id" | cec-client ${args[@]}
+            echo "on $id" | cec-client "${args[@]}"
         done
 
         if [ "$CEC_SETSOURCE" = true ]; then
-            echo "as" | cec-client ${args[@]}
+            echo "as" | cec-client "${args[@]}"
         fi
     fi
 }

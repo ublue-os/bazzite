@@ -1,0 +1,120 @@
+name: Build ARM ISOs
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload-to-r2:
+        description: "Upload to R2"
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches:
+      - main
+      - apple-silicon
+    paths:
+      - 'iso-arm.toml'
+      - '.github/workflows/build-iso-arm.yml'
+  pull_request:
+    branches:
+      - main
+      - apple-silicon
+    paths:
+      - 'iso-arm.toml'
+      - '.github/workflows/build-iso-arm.yml'
+
+env:
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}-arm-iso
+  cancel-in-progress: true
+
+jobs:
+  build-iso-arm:
+    name: Build ARM ISOs
+    runs-on: ubuntu-24.04-arm
+    strategy:
+      fail-fast: false
+      matrix:
+        image_name: [bazzite-arm, bazzite-arm-gnome]
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
+
+    steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+
+      - name: Lowercase Registry
+        id: registry_case
+        run: |
+          echo "IMAGE_REGISTRY=${IMAGE_REGISTRY,,}" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y podman
+
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Setup Just
+        uses: extractions/setup-just@e33e0265a09d6d736e2ee1e0eb685ef1de4669ff # v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Image Tag
+        id: generate-tag
+        run: |
+          TAG="latest"
+          if [[ "${{ github.ref_name }}" == "testing" || "${{ github.ref_name }}" == "apple-silicon" ]]; then
+            TAG="testing"
+          fi
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+      - name: Build ISO
+        id: build
+        uses: ublue-os/bootc-image-builder-action@main
+        with:
+          bootc-image-builder-image: ghcr.io/centos-workstation/bootc-image-builder:latest
+          use-librepo: true
+          config-file: ./iso-arm.toml
+          image: ${{ env.IMAGE_REGISTRY }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}
+          architecture: aarch64
+
+      - name: Upload ISOs and Checksum to Job Artifacts
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: ${{ matrix.image_name }}-arm64
+          path: ${{ steps.build.outputs.output-directory }}
+          if-no-files-found: error
+          retention-days: 0
+          compression-level: 0
+          overwrite: true
+
+      - name: Upload to R2
+        if: inputs.upload-to-r2 == true && github.event_name != 'pull_request'
+        shell: bash
+        env:
+          RCLONE_CONFIG_R2_TYPE: s3
+          RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+          RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          RCLONE_CONFIG_R2_REGION: auto
+          RCLONE_CONFIG_R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          SOURCE_DIR: ${{ steps.build.outputs.output-directory }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rclone
+          rclone copy $SOURCE_DIR R2:bazzite/arm

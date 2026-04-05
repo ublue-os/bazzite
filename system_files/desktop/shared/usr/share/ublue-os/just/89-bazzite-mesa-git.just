@@ -116,6 +116,29 @@ _mesa-git ACTION="":
         exit 1
     fi
 
+    SAMPLE_LIB=$(find "$EXTRACTED_DIR/lib64" -type f \( -name '*.so' -o -name '*.so.*' \) | head -n 1)
+    if [ -z "$SAMPLE_LIB" ]; then
+        echo -e "${red}${bold}Error: Could not find Mesa libraries in the extracted archive${normal}"
+        exit 1
+    fi
+
+    SAMPLE_LIB_DESC=$(file -b "$SAMPLE_LIB" 2>/dev/null || true)
+    case "$(uname -m)" in
+        aarch64)
+            if ! grep -Eq 'ARM aarch64|ARM64|aarch64' <<< "$SAMPLE_LIB_DESC"; then
+                echo -e "${red}${bold}Error: The latest mesa-maker archive does not contain native ARM64 Mesa libraries${normal}"
+                echo "Refusing to install foreign graphics userspace into $MESA_INSTALL_DIR."
+                exit 1
+            fi
+            ;;
+        x86_64)
+            if ! grep -q 'x86-64' <<< "$SAMPLE_LIB_DESC"; then
+                echo -e "${red}${bold}Error: The latest mesa-maker archive does not contain x86_64 Mesa libraries${normal}"
+                exit 1
+            fi
+            ;;
+    esac
+
     # Move contents to installation directory
     cp -r "$EXTRACTED_DIR"/* "$MESA_INSTALL_DIR/"
 

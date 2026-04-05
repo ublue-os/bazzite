@@ -3,7 +3,7 @@
 # https://bugs.kde.org/show_bug.cgi?id=459616
 # We replace all standalone occurrences, but ignore others, e.g. in 'distrobox-enter'
 args=()
-for arg in ${@}; do
+for arg in "$@"; do
         if [[ "$arg" == -e ]]; then
                 args+=("--")
         else
@@ -12,7 +12,17 @@ for arg in ${@}; do
 done
 
 # Dolphin integration requires --new-window to function properly
-if [[ ! "${args[@]}" =~ "--" && ! "${args[@]}" =~ "-h" && ! "${args[@]}" =~ "-x" ]]; then
+has_terminal_command_arg=false
+for arg in "${args[@]}"; do
+        case "$arg" in
+                --|-h|--help|-x)
+                        has_terminal_command_arg=true
+                        break
+                        ;;
+        esac
+done
+
+if [[ "${has_terminal_command_arg}" == false ]]; then
         env GTK_IM_MODULE=ibus /usr/bin/ptyxis --new-window "${args[@]}"
 else
         env GTK_IM_MODULE=ibus /usr/bin/ptyxis "${args[@]}"

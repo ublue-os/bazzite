@@ -1,0 +1,103 @@
+#
+#     %%%%%%====%%%%%%%%%%
+#   %%%%%%%%    %%%%%%%%%%%%%%
+#  %%%%%%%%%    %%%%%%%%%%%%%%%%
+#  %%%%%%%%%    %%%%%%%%%%%%%%%###
+#  %%%%%%%%%    %%%%%%%%%%%%%######
+#  ==                  =======######
+#  ==                  =========#####
+#  %%%%%%%%%    %%%%%%%####======#####
+#  %%%%%%%%%    %%%%%#######=====#####
+#  %%%%%%%%%    %%%#########=====#####
+#  %%%%%%%%%    %%##########=====#####
+#  %%%%%%%%%====###########=====######
+#   %%%%%%%%====#########======######
+#    %%%%%%%=====#####========######
+#     %%%%###===============#######
+#      %#######==========#########
+#        #######################
+#          ###################
+#              ###########
+#
+# Bazzite ARM -- Apple Silicon edition
+# Built on top of Fedora Asahi Remix Atomic Desktop images
+#
+# KERNEL_VARIANT options:
+#   stable     (default) -- Asahi stable kernel, production-ready
+#   fairydust  (experimental) -- Installs bolt/USB4/Thunderbolt userspace stack
+#              and a ujust recipe to build+install the fairydust kernel.
+#              The fairydust branch adds Thunderbolt, USB4, DisplayPort over USB-C.
+#              See: https://github.com/AsahiLinux/linux/tree/fairydust
+
+ARG FEDORA_VERSION="${FEDORA_VERSION:-43}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
+ARG SKIP_WINE="${SKIP_WINE:-0}"
+ARG BASE_IMAGE="quay.io/fedora-asahi-remix-atomic-desktops/${BASE_IMAGE_NAME}:${FEDORA_VERSION}"
+ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT:-}"
+ARG VERSION_TAG="${VERSION_TAG:-}"
+ARG VERSION_PRETTY="${VERSION_PRETTY:-}"
+
+FROM scratch AS ctx
+COPY build_files /
+
+FROM ${BASE_IMAGE} AS bazzite-arm
+
+ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-arm}"
+ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
+ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
+ARG FEDORA_VERSION="${FEDORA_VERSION:-43}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
+ARG SKIP_WINE="${SKIP_WINE:-0}"
+ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT:-}"
+ARG VERSION_TAG="${VERSION_TAG:-}"
+ARG VERSION_PRETTY="${VERSION_PRETTY:-}"
+
+ENV KERNEL_VARIANT=${KERNEL_VARIANT}
+
+COPY system_files/desktop/shared /
+COPY system_files/desktop/${BASE_IMAGE_NAME} /
+COPY system_files/overrides /
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/build-arm.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    if [[ "${SKIP_WINE}" != "1" ]]; then \
+        bash /ctx/install-native-wine-aarch64.sh; \
+    else \
+        echo "Skipping native Wine build (--skip-wine). x86 Wine via FEX-Emu still available."; \
+    fi
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/verify-arm-userspace.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/setup-x86-emulation.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/verify-arm-userspace.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/image-info && \
+    bash /ctx/finalize
+
+RUN bootc container lint
