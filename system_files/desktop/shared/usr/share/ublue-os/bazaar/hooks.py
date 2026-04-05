@@ -80,13 +80,13 @@ def make_popup_terminal_shellcmd(cmd):
     new_cmd = new_cmd.replace('"', '\\"')
     return f'/bin/sh -c "{new_cmd}"'
 
-def spawn_ujust(id):
-    cmd  = make_popup_terminal_shellcmd(f'ujust {id}')
+def spawn_ujust(script):
+    cmd  = make_popup_terminal_shellcmd(f'ujust {script}')
     args = make_shellcmd_argv(cmd)
     spawn_and_detach(args)
 
-def spawn_brew_ublue(id):
-    brew = brew_eval(f'brew tap ublue-os/tap && brew install --cask {id}')
+def spawn_brew_ublue(cask):
+    brew = brew_eval(f'brew tap ublue-os/tap && brew install --cask {cask}')
     cmd  = make_popup_terminal_shellcmd(brew)
     args = make_shellcmd_argv(cmd)
     spawn_and_detach(args)
