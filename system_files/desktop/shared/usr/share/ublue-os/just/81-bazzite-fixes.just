@@ -392,11 +392,26 @@ _toggle-gigabyte-wake-fix:
     fi
 
 # Manage Steam game shortcuts on the Desktop. Usage: just steam-icons [command] (list, remove, enable, disable)
+# Options: status | remove | enable | disable
 steam-icons ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     DESKTOP_DIR="$HOME/Desktop"
     SERVICE_NAME="steam-icons-cleanup.service"
+    get_status_token() {
+      if systemctl --user is-enabled "$SERVICE_NAME" &>/dev/null; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "enable" ]]; then
+        echo "enabled"
+      else
+        echo "disabled"
+      fi
+    }
     OPTION={{ ACTION }}
     # Function to count and list Steam shortcuts
     list_shortcuts() {
@@ -439,10 +454,7 @@ steam-icons ACTION="":
       echo -e "${green}${b}Successfully removed $SHORTCUT_COUNT Steam game shortcuts.${n}"
     }
     # Check if auto-cleanup service is enabled
-    SERVICE_STATUS="disabled"
-    if systemctl --user is-enabled "$SERVICE_NAME" &>/dev/null; then
-      SERVICE_STATUS="enabled"
-    fi
+    SERVICE_STATUS="$(get_current_status)"
     # Process direct command arguments
     if [ "$OPTION" == "help" ]; then
       echo "Usage: just steam-icons [command]"
@@ -453,6 +465,9 @@ steam-icons ACTION="":
       echo "  disable  - Disable automatic cleanup"
       echo "  help     - Show this help message"
       exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit $?
     elif [ "$OPTION" == "list" ]; then
       list_shortcuts
       exit 0
