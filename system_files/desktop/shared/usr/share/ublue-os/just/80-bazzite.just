@@ -697,11 +697,34 @@ benchmark:
     cd /tmp && stress-ng --matrix 0 -t 1m --times
 
 # toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled
+# Options: on | off
 [group("development")]
 toggle-password-feedback ACTION="":
     #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
     PWFEEDBACK_FILE="/etc/sudoers.d/enable-pwfeedback"
     OPTION={{ ACTION }}
+    if [ "$OPTION" = "help" ]; then
+      echo "Usage: ujust toggle-password-feedback <option>"
+      echo "  <option>: Specify the quick option to skip the toggle behavior"
+      echo "  Use 'on' to show password asterisks in sudo prompts"
+      echo "  Use 'off' to hide password asterisks in sudo prompts"
+      exit 0
+    elif [ -z "$OPTION" ]; then
+      OPTION=$(ugum choose "Show password asterisks" "Hide password asterisks" "Exit without changes")
+      case "$OPTION" in
+        "Show password asterisks")
+          OPTION="on"
+          ;;
+        "Hide password asterisks")
+          OPTION="off"
+          ;;
+        *)
+          echo "No changes made."
+          exit 0
+          ;;
+      esac
+    fi
     if [ "$OPTION" = "on" ]; then
       echo 'Defaults pwfeedback' | sudo tee $PWFEEDBACK_FILE
       echo "enabled, restart terminal to see changes"
