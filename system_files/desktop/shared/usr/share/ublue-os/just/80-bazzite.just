@@ -322,13 +322,66 @@ toggle-save-panics ACTION="":
     esac
 
 # Add user to "input" group required by certain controller drivers
+# Options: status | add | remove
 [group("hardware")]
-add-user-to-input-group:
+add-user-to-input-group ACTION="":
     #!/usr/bin/bash
-    if ! grep -q "input" /etc/group; then
-      sudo bash -c 'grep "input" /lib/group >> /etc/group'
+    get_status_token() {
+      if id -nG "$USER" | tr ' ' '\n' | grep -qx "input"; then
+        echo "add"
+      else
+        echo "remove"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "add" ]]; then
+        echo "Added"
+      else
+        echo "Not Added"
+      fi
+    }
+    add_user_to_input_group() {
+      if ! grep -q "input" /etc/group; then
+        sudo bash -c 'grep "input" /lib/group >> /etc/group'
+      fi
+      sudo usermod -a -G input "$USER"
+    }
+    remove_user_from_input_group() {
+      if grep -q "input" /etc/group; then
+        sudo gpasswd -d "$USER" input 2>/dev/null || true
+      fi
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+      echo "Usage: ujust add-user-to-input-group <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current portal token"
+      echo "  Use 'add' to add the current user to the input group"
+      echo "  Use 'remove' to remove the current user from the input group"
+      exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+      get_status_token
+      exit $?
+    elif [[ -z "$OPTION" ]]; then
+      echo "Current status: $(get_current_status)"
+      OPTION=$(ugum choose "Add" "Remove" "Exit without changes")
+      case "$OPTION" in
+        "Add")
+          add_user_to_input_group
+          ;;
+        "Remove")
+          remove_user_from_input_group
+          ;;
+        *)
+          echo "No changes made."
+          ;;
+      esac
+      exit 0
+    elif [[ "$OPTION" == "remove" ]]; then
+      remove_user_from_input_group
+      exit 0
     fi
-    sudo usermod -a -G input $USER
+    add_user_to_input_group
 
 # Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
 [group("automounting")]
