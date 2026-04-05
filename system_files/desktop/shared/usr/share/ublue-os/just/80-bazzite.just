@@ -485,9 +485,63 @@ disable-steamos-automount:
     @pkexec ln -sf /dev/null /etc/udev/rules.d/99-steamos-automount.rules
 
 # Enable SteamOS automount.
+# Options: status | enable | disable
 [group("automounting")]
-enable-steamos-automount:
-    @pkexec rm -f /etc/udev/rules.d/99-steamos-automount.rules
+enable-steamos-automount ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    RULE_FILE="/etc/udev/rules.d/99-steamos-automount.rules"
+    get_status_token() {
+      if [[ -L "$RULE_FILE" ]] && [[ "$(readlink "$RULE_FILE")" == "/dev/null" ]]; then
+        echo "disable"
+      else
+        echo "enable"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "enable" ]]; then
+        echo "Enabled"
+      else
+        echo "Disabled"
+      fi
+    }
+    enable_steamos_automount() {
+      pkexec rm -f "$RULE_FILE"
+    }
+    disable_steamos_automount_action() {
+      pkexec ln -sf /dev/null "$RULE_FILE"
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+      echo "Usage: ujust enable-steamos-automount <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current portal token"
+      echo "  Use 'enable' to enable SteamOS automount"
+      echo "  Use 'disable' to disable SteamOS automount"
+      exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+      get_status_token
+      exit $?
+    elif [[ -z "$OPTION" ]]; then
+      echo "Current status: $(get_current_status)"
+      OPTION=$(ugum choose "Enable" "Disable" "Exit without changes")
+      case "$OPTION" in
+        "Enable")
+          enable_steamos_automount
+          ;;
+        "Disable")
+          disable_steamos_automount_action
+          ;;
+        *)
+          echo "No changes made."
+          ;;
+      esac
+      exit 0
+    elif [[ "$OPTION" == "disable" ]]; then
+      disable_steamos_automount_action
+      exit 0
+    fi
+    enable_steamos_automount
 
 # Disable all partition automounting. This might increase boot times.
 [group("automounting")]
