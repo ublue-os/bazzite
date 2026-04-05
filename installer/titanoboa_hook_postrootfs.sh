@@ -288,6 +288,9 @@ rm -vf /etc/skel/.config/autostart/steam*.desktop
 # Remove packages that shouldnt be used in a live session
 dnf -yq remove steam lutris bazaar || :
 
+# Don't check for verified image
+rm -vf /etc/profile.d/verify_motd.sh
+
 (
     wallpaper_url=https://github.com/ublue-os/bazzite/raw/refs/heads/main/press_kit/art/Convergence_Wallpaper_DX.jxl
     wallpaper_file=/usr/share/wallpapers/convergence.jxl
