@@ -89,7 +89,7 @@ systemctl enable var-tmp.mount
 
 # Mount /var/lib/flatpak as readonly.
 # This is in order to ensure the files dont get tainted when installing them in disk.
-cat /etc/systemd/system/var-lib-flatpak.mount <<'EOF'
+cat >/etc/systemd/system/var-lib-flatpak.mount <<'EOF'
 [Mount]
 Type=none
 What=/var/lib/flatpak
