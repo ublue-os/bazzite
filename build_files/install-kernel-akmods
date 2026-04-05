@@ -35,7 +35,7 @@ dnf -y install \
     /tmp/rpms/{common,kmods}/*framework-laptop*.rpm \
     /tmp/rpms/{common,kmods}/*openrazer*.rpm \
     /tmp/rpms/{common,kmods}/*v4l2loopback*.rpm \
-    /tmp/rpms/{common,kmods}/*xone*.rpm \
+    /tmp/rpms/{common,kmods}/*xonedo*.rpm \
     /tmp/rpms/{common,kmods}/*xpadneo*.rpm \
     || true
 
