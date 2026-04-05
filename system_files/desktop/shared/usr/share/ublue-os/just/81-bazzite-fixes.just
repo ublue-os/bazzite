@@ -494,28 +494,35 @@ steam-icons ACTION="":
     esac
 
 # Toggle CEC_ONSLEEP_STANDBY - Controls whether TV goes to standby when system sleeps
+# Options: status | enable | disable
 toggle-cec-sleep ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     CONFIG_FILE="/etc/default/cec-control"
+    get_status_token() {
+      local current_value="false"
+      if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" 2>/dev/null; then
+        current_value=$(grep '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" | cut -d= -f2)
+      fi
+      if [[ "$current_value" == "true" ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "enable" ]]; then
+        echo "Enabled"
+      else
+        echo "Disabled"
+      fi
+    }
 
     # Check if config file exists
     if [[ ! -f "$CONFIG_FILE" ]]; then
       echo -e "${red}${bold}Error:${normal} CEC config file not found at $CONFIG_FILE"
       echo "CEC control may not be installed or configured on this system."
       exit 1
-    fi
-
-    # Determine current state (default to false if not set)
-    if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" 2>/dev/null; then
-      CURRENT_VALUE=$(grep '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" | cut -d= -f2)
-    else
-      CURRENT_VALUE="false"
-    fi
-
-    CURRENT_STATE="Disabled"
-    if [[ "$CURRENT_VALUE" == "true" ]]; then
-      CURRENT_STATE="Enabled"
     fi
 
     OPTION="{{ ACTION }}"
@@ -526,8 +533,11 @@ toggle-cec-sleep ACTION="":
       echo "  Use 'enable' to make TV standby when system sleeps"
       echo "  Use 'disable' to prevent TV standby when system sleeps"
       exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit $?
     elif [ -z "$OPTION" ]; then
-      echo -e "${bold}CEC On-Sleep Standby:${normal} $CURRENT_STATE"
+      echo -e "${bold}CEC On-Sleep Standby:${normal} $(get_current_status)"
       echo ""
       echo "When enabled, your TV will go to standby when the system sleeps."
       echo "When disabled, your TV will remain on when the system sleeps."
