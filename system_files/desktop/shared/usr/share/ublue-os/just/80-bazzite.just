@@ -386,14 +386,74 @@ add-user-to-input-group ACTION="":
     add_user_to_input_group
 
 # Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
+# Options: status | enable | disable
 [group("automounting")]
-enable-automounting:
-    #!/usr/bin/pkexec /usr/bin/bash
-    set -eo pipefail
-    rm -f /etc/udev/rules.d/99-media-automount.rules # DELETEME
-    if systemctl status --no-pager ublue-os-media-automount.service >/dev/null 2>&1; then
-        systemctl enable --now ublue-os-media-automount.service
+enable-automounting ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    get_status_token() {
+      if [[ -L /etc/systemd/system/multi-user.target.wants/ublue-os-media-automount.service ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "enable" ]]; then
+        echo "Enabled"
+      else
+        echo "Disabled"
+      fi
+    }
+    enable_automounting() {
+      pkexec /usr/bin/bash -lc '
+        set -eo pipefail
+        rm -f /etc/udev/rules.d/99-media-automount.rules
+        if systemctl status --no-pager ublue-os-media-automount.service >/dev/null 2>&1; then
+          systemctl enable --now ublue-os-media-automount.service
+        fi
+      '
+    }
+    disable_automounting_action() {
+      pkexec /usr/bin/bash -lc '
+        set -eo pipefail
+        rm -f /etc/udev/rules.d/99-media-automount.rules
+        if systemctl status --no-pager ublue-os-media-automount.service >/dev/null 2>&1; then
+          systemctl disable ublue-os-media-automount.service
+        fi
+      '
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+      echo "Usage: ujust enable-automounting <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current portal token"
+      echo "  Use 'enable' to enable automounting"
+      echo "  Use 'disable' to disable automounting"
+      exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+      get_status_token
+      exit $?
+    elif [[ -z "$OPTION" ]]; then
+      echo "Current status: $(get_current_status)"
+      OPTION=$(ugum choose "Enable" "Disable" "Exit without changes")
+      case "$OPTION" in
+        "Enable")
+          enable_automounting
+          ;;
+        "Disable")
+          disable_automounting_action
+          ;;
+        *)
+          echo "No changes made."
+          ;;
+      esac
+      exit 0
+    elif [[ "$OPTION" == "disable" ]]; then
+      disable_automounting_action
+      exit 0
     fi
+    enable_automounting
 
 # Disables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
 [group("automounting")]
