@@ -1,7 +1,5 @@
 # vim: set ft=make :
-
-# Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds
-# Options: status | install | install-prerelease | uninstall
+# Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds. Options: status | install | install-prerelease | uninstall
 [group("gaming")]
 setup-decky ACTION="":
     #!/usr/bin/bash
@@ -102,8 +100,7 @@ setup-decky ACTION="":
       exit 0
     fi
 
-# Manage Decky Bazzite Buddy plugin
-# Options: status | install | uninstall
+# Manage Decky Bazzite Buddy plugin. Options: status | install | uninstall
 get-decky-bazzite-buddy ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
@@ -255,8 +252,7 @@ get-decky-bazzite-buddy ACTION="":
         exit 0
     fi
 
-# Manage Decky Lossless Scaling plugin
-# Options: status | install | uninstall
+# Manage Decky Lossless Scaling plugin. Options: status | install | uninstall
 get-decky-lossless-scaling ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
@@ -408,8 +404,7 @@ get-decky-lossless-scaling ACTION="":
         exit 0
     fi
 
-# Manage Decky Framegen plugin
-# Options: status | install | uninstall
+# Manage Decky Framegen plugin. Options: status | install | uninstall
 get-framegen ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh

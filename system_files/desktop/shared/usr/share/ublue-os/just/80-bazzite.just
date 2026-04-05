@@ -19,8 +19,7 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
-# Toggle SSH availability on boot
-# Options: status | enable | disable
+# Toggle SSH availability on boot. Options: status | enable | disable
 [group("network")]
 toggle-ssh ACTION="":
     #!/usr/bin/bash
@@ -88,8 +87,7 @@ toggle-ssh ACTION="":
         ;;
     esac
 
-# Toggles REISUB, useful for force rebooting systems when pageflip timeouts and/or other horrible things happen.
-# Options: status | enable | disable
+# Toggles REISUB, useful for force rebooting systems when pageflip timeouts and/or other horrible things happen. Options: status | enable | disable
 [group("system")]
 toggle-reisub ACTION="":
     #!/usr/bin/bash
@@ -146,9 +144,7 @@ regenerate-grub:
     fi
     remount_boot_ro
 
-# Configure grub bootmenu visibility. pass action 'help' for more info.
-# Options: hide | unhide | show
-# Pairing: hide = Hide After Successful Boot | unhide = Same except when Dual Booting | show = Always Show Grub
+# Configure grub bootmenu visibility. Pass action 'help' for more info. Options: hide | unhide | show. Pairing: hide = Hide After Successful Boot | unhide = Same except when Dual Booting | show = Always Show Grub
 [group("system")]
 configure-grub ACTION="":
     #!/usr/bin/bash
@@ -323,8 +319,7 @@ toggle-save-panics ACTION="":
         ;;
     esac
 
-# Add user to "input" group required by certain controller drivers
-# Options: status | add | remove
+# Add user to "input" group required by certain controller drivers. Options: status | add | remove
 [group("hardware")]
 add-user-to-input-group ACTION="":
     #!/usr/bin/bash
@@ -385,8 +380,7 @@ add-user-to-input-group ACTION="":
     fi
     add_user_to_input_group
 
-# Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
-# Options: status | enable | disable
+# Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system. Options: status | enable | disable
 [group("automounting")]
 enable-automounting ACTION="":
     #!/usr/bin/bash
@@ -469,8 +463,7 @@ disable-framework-automount:
     set -eo pipefail
     ln -sf /dev/null /etc/udev/rules.d/99-framework-steam-automount.rules
 
-# Enable SteamOS automount.
-# Options: status | enable | disable
+# Enable SteamOS automount. Options: status | enable | disable
 [group("automounting")]
 enable-steamos-automount ACTION="":
     #!/usr/bin/bash
@@ -797,8 +790,7 @@ benchmark:
     echo 'Running a 1 minute benchmark ...'
     cd /tmp && stress-ng --matrix 0 -t 1m --times
 
-# toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled
-# Options: on | off
+# toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled. Options: on | off
 [group("development")]
 toggle-password-feedback ACTION="":
     #!/usr/bin/bash
@@ -840,8 +832,7 @@ toggle-password-feedback ACTION="":
       echo "enabled, restart terminal to see changes"
     fi
 
-# Toggle global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on Proton 10 or GE 10-25 or later
-# Options: enable | disable
+# Toggle global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on Proton 10 or GE 10-25 or later. Options: enable | disable
 [group("gaming")]
 toggle-global-fsr4 ACTION="":
     #!/usr/bin/bash
@@ -881,8 +872,7 @@ toggle-global-fsr4 ACTION="":
             ;;
     esac
 
-# Toggle global Proton FSR4 upgrade on RDNA3 GPUs; upgrades FSR 3.1+ → FSR 4, only compatible with Proton GE, Proton EM, or similar forks
-# Options: enable | disable
+# Toggle global Proton FSR4 upgrade on RDNA3 GPUs; upgrades FSR 3.1+ → FSR 4, only compatible with Proton GE, Proton EM, or similar forks. Options: enable | disable
 [group("gaming")]
 toggle-global-fsr4-rdna3 ACTION="":
     #!/usr/bin/bash
@@ -924,8 +914,7 @@ toggle-global-fsr4-rdna3 ACTION="":
             ;;
     esac
 
-# Toggle global Proton DLSS upgrade; updates DLSS DLLs for Proton
-# Options: enable | disable
+# Toggle global Proton DLSS upgrade; updates DLSS DLLs for Proton. Options: enable | disable
 [group("gaming")]
 toggle-global-dlss ACTION="":
     #!/usr/bin/bash

@@ -125,8 +125,7 @@ install-jetbrains-toolbox:
     fi
     jetbrains-toolbox &> /dev/null &
 
-# Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD)
-# Options: status | install | uninstall
+# Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD). Options: status | install | uninstall
 [group("gaming")]
 get-steamcmd ACTION="":
     #!/usr/bin/bash
@@ -232,8 +231,7 @@ install-openrazer:
     echo "$OPENRAZER_CONFIGURATOR_APP is installed"
     echo "Please reboot to apply needed changes."
 
-# Install EmuDeck (https://www.emudeck.com/)
-# Options: status | install | uninstall
+# Install EmuDeck (https://www.emudeck.com/). Options: status | install | uninstall
 [group("gaming")]
 get-emudeck ACTION="":
     #!/usr/bin/bash
@@ -301,8 +299,7 @@ get-emudeck ACTION="":
         exit 0
     fi
 
-# Install OpenRGB (https://openrgb.org/)
-# Options: status | install | uninstall
+# Install OpenRGB (https://openrgb.org/). Options: status | install | uninstall
 [group("hardware")]
 install-openrgb ACTION="":
     #!/usr/bin/bash
@@ -375,8 +372,7 @@ install-boxtron: distrobox-check-fedora
       curl -L https://github.com/dreamer/boxtron/releases/download/v0.5.4/boxtron.tar.xz | tar xJf - && \
       distrobox-export --bin /usr/bin/dosbox'
 
-# Install Resilio Sync, a file synchronization utility powered by BitTorrent
-# Options: status | install | uninstall
+# Install Resilio Sync, a file synchronization utility powered by BitTorrent. Options: status | install | uninstall
 install-resilio-sync ACTION="":
     #!/usr/bin/bash
     set -eo pipefail
@@ -447,8 +443,7 @@ install-resilio-sync ACTION="":
         exit 0
     fi
 
-# Install OpenTabletDriver, an open source, cross-platform, user-mode tablet driver
-# Options: status | install | uninstall
+# Install OpenTabletDriver, an open source, cross-platform, user-mode tablet driver. Options: status | install | uninstall
 [group("hardware")]
 install-opentabletdriver ACTION="":
     #!/usr/bin/bash
