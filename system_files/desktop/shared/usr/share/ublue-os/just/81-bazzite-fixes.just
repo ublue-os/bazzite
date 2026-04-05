@@ -93,8 +93,7 @@ toggle-bt-mic:
       echo "No changes were made."
     fi
 
-# enable or disable wake-on-lan functionality
-# Options: status | enable | disable | force-enable
+# enable or disable wake-on-lan functionality. Options: status | enable | disable | force-enable
 toggle-wol ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
@@ -184,8 +183,7 @@ toggle-wol ACTION="":
       echo "No changes were made."
     fi
 
-# enable or disable IWD as a replacement for wpa_supplicant
-# Options: status | enable | disable
+# enable or disable IWD as a replacement for wpa_supplicant. Options: status | enable | disable
 [group("network")]
 toggle-iwd ACTION="":
     #!/usr/bin/bash
@@ -391,8 +389,7 @@ _toggle-gigabyte-wake-fix:
       fi
     fi
 
-# Manage Steam game shortcuts on the Desktop. Usage: just steam-icons [command] (list, remove, enable, disable)
-# Options: status | remove | enable | disable
+# Manage Steam game shortcuts on the Desktop. Usage: just steam-icons [command] (list, remove, enable, disable). Options: status | remove | enable | disable
 steam-icons ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
@@ -508,8 +505,7 @@ steam-icons ACTION="":
       ;;
     esac
 
-# Toggle CEC_ONSLEEP_STANDBY - Controls whether TV goes to standby when system sleeps
-# Options: status | enable | disable
+# Toggle CEC_ONSLEEP_STANDBY - Controls whether TV goes to standby when system sleeps. Options: status | enable | disable
 toggle-cec-sleep ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh

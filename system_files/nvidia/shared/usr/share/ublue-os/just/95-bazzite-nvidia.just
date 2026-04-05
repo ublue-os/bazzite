@@ -1,7 +1,6 @@
 # vim: set ft=make :
 
-# Enable Supergfxctl, a GPU switcher for hybrid laptops
-# Options: status | enable | disable
+# Enable Supergfxctl, a GPU switcher for hybrid laptops. Options: status | enable | disable
 enable-supergfxctl ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh

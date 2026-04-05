@@ -1,7 +1,6 @@
 # vim: set ft=make :
 
-# Launch Waydroid configuration helper
-# Options: init | configure | gpu | integration | reset | helper
+# Launch Waydroid configuration helper. Options: init | configure | gpu | integration | reset | helper
 [group("apps")]
 configure-waydroid ACTION="":
     #!/usr/bin/bash
