@@ -349,7 +349,7 @@ _run_podman_build() {
         . && echo "[podman] Build complete."
 }
 
-_run_podman_build 2>&1 | tee "${PARALLEL_LOG_DIR}/podman-build.log" &
+_run_podman_build > "${PARALLEL_LOG_DIR}/podman-build.log" 2>&1 &
 PODMAN_BUILD_PID=$!
 
 # ── Job B: ostree repo init + base-atomic pull ────────────────────────────────
@@ -383,32 +383,61 @@ _run_ostree_init_and_pull() {
     echo "[ostree] Pull complete."
 }
 
-_run_ostree_init_and_pull 2>&1 | tee "${PARALLEL_LOG_DIR}/ostree-pull.log" &
+_run_ostree_init_and_pull > "${PARALLEL_LOG_DIR}/ostree-pull.log" 2>&1 &
 OSTREE_INIT_PID=$!
+
+stop_parallel_job() {
+    local pid="$1"
+
+    if kill -0 "${pid}" 2>/dev/null; then
+        kill "${pid}" 2>/dev/null || true
+        wait "${pid}" 2>/dev/null || true
+    fi
+}
+
+wait_for_parallel_jobs() {
+    local podman_done=0
+    local ostree_done=0
+    local rc
+
+    while (( ! podman_done || ! ostree_done )); do
+        if (( ! podman_done )) && ! kill -0 "${PODMAN_BUILD_PID}" 2>/dev/null; then
+            if wait "${PODMAN_BUILD_PID}"; then
+                podman_done=1
+            else
+                rc=$?
+                stop_parallel_job "${OSTREE_INIT_PID}"
+                echo ""
+                echo "ERROR: Bazzite ARM image build failed (exit ${rc})."
+                echo "Full build log: ${PARALLEL_LOG_DIR}/podman-build.log"
+                exit "${rc}"
+            fi
+        fi
+
+        if (( ! ostree_done )) && ! kill -0 "${OSTREE_INIT_PID}" 2>/dev/null; then
+            if wait "${OSTREE_INIT_PID}"; then
+                ostree_done=1
+            else
+                rc=$?
+                stop_parallel_job "${PODMAN_BUILD_PID}"
+                echo ""
+                echo "ERROR: OSTree init/pull failed (exit ${rc})."
+                echo "Full ostree log: ${PARALLEL_LOG_DIR}/ostree-pull.log"
+                exit "${rc}"
+            fi
+        fi
+
+        if (( ! podman_done || ! ostree_done )); then
+            sleep 1
+        fi
+    done
+}
 
 # ── Wait for both jobs ────────────────────────────────────────────────────────
 echo "Both jobs running in parallel. Waiting..."
-echo "(Tail ${PARALLEL_LOG_DIR}/podman-build.log for live build output)"
+echo "(Tail -f ${PARALLEL_LOG_DIR}/podman-build.log for live build output)"
 echo ""
-
-PODMAN_EXIT=0
-OSTREE_EXIT=0
-wait "${PODMAN_BUILD_PID}" || PODMAN_EXIT=$?
-wait "${OSTREE_INIT_PID}"  || OSTREE_EXIT=$?
-
-if [[ "${PODMAN_EXIT}" -ne 0 ]]; then
-    echo ""
-    echo "ERROR: Bazzite ARM image build failed (exit ${PODMAN_EXIT})."
-    echo "Full build log: ${PARALLEL_LOG_DIR}/podman-build.log"
-    exit "${PODMAN_EXIT}"
-fi
-
-if [[ "${OSTREE_EXIT}" -ne 0 ]]; then
-    echo ""
-    echo "ERROR: OSTree init/pull failed (exit ${OSTREE_EXIT})."
-    echo "Full ostree log: ${PARALLEL_LOG_DIR}/ostree-pull.log"
-    exit "${OSTREE_EXIT}"
-fi
+wait_for_parallel_jobs
 
 echo "Both parallel jobs completed successfully."
 rm -rf "${PARALLEL_LOG_DIR}"
