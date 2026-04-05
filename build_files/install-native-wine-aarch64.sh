@@ -314,9 +314,11 @@ export LD=ld.lld
 export PKG_CONFIG_PATH=""
 
 jobs="$(nproc)"
-if (( jobs > 8 )); then
-    jobs=8
-elif (( jobs < 2 )); then
+# Use all available CPUs for the Wine compilation.
+# nproc reflects the actual hardware thread count on the build machine
+# (e.g. 16 on an M2 Max) so there is no reason to artificially cap it.
+# Keep a floor of 2 so the build still works on minimal VMs.
+if (( jobs < 2 )); then
     jobs=2
 fi
 

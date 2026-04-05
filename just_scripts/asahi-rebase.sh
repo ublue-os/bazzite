@@ -309,14 +309,28 @@ EOF
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Step 2: Clone repo and build Bazzite ARM image
+# Steps 2 + 3 + 4: Build image AND initialise ostree + pull base in parallel
 # ──────────────────────────────────────────────────────────────────────────────
+# The container image build (Step 2) and the ostree repo initialisation +
+# base-atomic pull (Steps 3–4) are completely independent.  Running them in
+# parallel cuts the total wall-clock time by the duration of the ostree pull
+# (~3–5 minutes on a fast connection) at no extra risk.
+#
+# Both jobs write their output to dedicated log files so progress from the
+# long podman build is not interleaved with ostree messages.
+PARALLEL_LOG_DIR=$(mktemp -d /var/tmp/bazzite-parallel-XXXXX)
+
+# ── Job A: podman build ───────────────────────────────────────────────────────
 echo ""
-echo "--- Step 2: Build Bazzite ARM image ---"
-echo "This takes ~30 minutes. Progress will be shown."
+echo "--- Step 2: Build Bazzite ARM image (running in parallel with ostree pull) ---"
+echo "Build log: ${PARALLEL_LOG_DIR}/podman-build.log"
 echo ""
 
-if ! sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
+_run_podman_build() {
+    if sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
+        echo "[podman] Bazzite ARM image already exists; skipping build."
+        return 0
+    fi
     cd "${REPO_ROOT}"
     sudo podman build \
         --platform linux/arm64 \
@@ -332,43 +346,73 @@ if ! sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
         --build-arg VERSION_PRETTY="Local Build" \
         --build-arg SHA_HEAD_SHORT="${IMAGE_TAG}" \
         -t "${BAZZITE_IMAGE}" \
-        .
-    echo "Bazzite ARM image built successfully."
-else
-    echo "Bazzite ARM image already exists; skipping build."
-fi
+        . && echo "[podman] Build complete."
+}
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Step 3: Initialize ostree repository
-# ──────────────────────────────────────────────────────────────────────────────
+_run_podman_build 2>&1 | tee "${PARALLEL_LOG_DIR}/podman-build.log" &
+PODMAN_BUILD_PID=$!
+
+# ── Job B: ostree repo init + base-atomic pull ────────────────────────────────
+echo "--- Steps 3+4: Initialize ostree + pull base image (parallel) ---"
+echo "OSTree log: ${PARALLEL_LOG_DIR}/ostree-pull.log"
 echo ""
-echo "--- Step 3: Initialize ostree repository ---"
-sudo mkdir -p /ostree/repo
-if [[ ! -f /ostree/repo/config ]]; then
-    sudo ostree init --repo=/ostree/repo --mode=bare
-else
-    echo "OSTree repo already initialized; skipping."
-fi
-sudo ostree config --repo=/ostree/repo set sysroot.bootloader grub2
-sudo ostree config --repo=/ostree/repo set sysroot.readonly true
 
-ensure_boot_loader_symlink
+_run_ostree_init_and_pull() {
+    echo "[ostree] Initializing repository..."
+    sudo mkdir -p /ostree/repo
+    if [[ ! -f /ostree/repo/config ]]; then
+        sudo ostree init --repo=/ostree/repo --mode=bare
+    else
+        echo "[ostree] OSTree repo already initialized; skipping."
+    fi
+    sudo ostree config --repo=/ostree/repo set sysroot.bootloader grub2
+    sudo ostree config --repo=/ostree/repo set sysroot.readonly true
 
-sudo mkdir -p /ostree/deploy
-if [[ ! -d /ostree/deploy/fedora ]]; then
-    sudo ostree admin os-init fedora --sysroot /
-else
-    echo "Stateroot 'fedora' already exists; skipping os-init."
-fi
+    ensure_boot_loader_symlink
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Step 4: Pull the atomic base image into ostree
-# ──────────────────────────────────────────────────────────────────────────────
+    sudo mkdir -p /ostree/deploy
+    if [[ ! -d /ostree/deploy/fedora ]]; then
+        sudo ostree admin os-init fedora --sysroot /
+    else
+        echo "[ostree] Stateroot 'fedora' already exists; skipping os-init."
+    fi
+
+    echo "[ostree] Pulling ${ATOMIC_BASE} ..."
+    sudo ostree container image pull /ostree/repo \
+        "ostree-unverified-registry:${ATOMIC_BASE}"
+    echo "[ostree] Pull complete."
+}
+
+_run_ostree_init_and_pull 2>&1 | tee "${PARALLEL_LOG_DIR}/ostree-pull.log" &
+OSTREE_INIT_PID=$!
+
+# ── Wait for both jobs ────────────────────────────────────────────────────────
+echo "Both jobs running in parallel. Waiting..."
+echo "(Tail ${PARALLEL_LOG_DIR}/podman-build.log for live build output)"
 echo ""
-echo "--- Step 4: Pull Fedora Asahi Atomic base image ---"
-echo "Pulling ${ATOMIC_BASE} (may take a few minutes)..."
-sudo ostree container image pull /ostree/repo \
-    "ostree-unverified-registry:${ATOMIC_BASE}"
+
+PODMAN_EXIT=0
+OSTREE_EXIT=0
+wait "${PODMAN_BUILD_PID}" || PODMAN_EXIT=$?
+wait "${OSTREE_INIT_PID}"  || OSTREE_EXIT=$?
+
+if [[ "${PODMAN_EXIT}" -ne 0 ]]; then
+    echo ""
+    echo "ERROR: Bazzite ARM image build failed (exit ${PODMAN_EXIT})."
+    echo "Full build log: ${PARALLEL_LOG_DIR}/podman-build.log"
+    exit "${PODMAN_EXIT}"
+fi
+
+if [[ "${OSTREE_EXIT}" -ne 0 ]]; then
+    echo ""
+    echo "ERROR: OSTree init/pull failed (exit ${OSTREE_EXIT})."
+    echo "Full ostree log: ${PARALLEL_LOG_DIR}/ostree-pull.log"
+    exit "${OSTREE_EXIT}"
+fi
+
+echo "Both parallel jobs completed successfully."
+rm -rf "${PARALLEL_LOG_DIR}"
+echo "Bazzite ARM image built successfully."
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Step 5: Detect root UUID
