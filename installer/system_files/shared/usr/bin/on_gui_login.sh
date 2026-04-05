@@ -45,7 +45,7 @@ does not represent the installed experience."
             _EXITLOCK=0
             ;;
         20)
-            /usr/bin/bootloader_restore.sh &
+            /usr/bin/bootloader_restore &
             disown $!
             _EXITLOCK=0
             ;;
