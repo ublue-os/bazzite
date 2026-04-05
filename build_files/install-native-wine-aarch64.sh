@@ -50,7 +50,6 @@ runtime_packages=(
     samba-libs
     libswresample-free
     libswscale-free
-    unixODBC
     vulkan-loader
 )
 
@@ -109,7 +108,6 @@ build_packages=(
     sane-backends-devel
     samba-devel
     systemd-devel
-    unixODBC-devel
     vulkan-devel
     wayland-devel
     'pkgconfig(libusb-1.0)'
@@ -308,7 +306,8 @@ pushd "${build_dir}" >/dev/null
     --with-dbus \
     --with-x \
     --enable-win64 \
-    --disable-tests
+    --disable-tests \
+    --without-odbc
 make -j"${jobs}" TARGETFLAGS=""
 make install
 popd >/dev/null
