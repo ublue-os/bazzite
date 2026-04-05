@@ -7,6 +7,13 @@ if [[ "$(uname -m)" != "aarch64" ]]; then
     exit 1
 fi
 
+# Rebuild the RPM database index before querying it.  Package install and
+# remove operations earlier in the build can leave the SQLite backing store
+# in an inconsistent state (e.g. if a previous interrupted build left a
+# stale cached layer).  rebuilddb regenerates the indexes cleanly and is
+# idempotent, so running it unconditionally here is safe.
+rpm --rebuilddb 2>/dev/null || true
+
 foreign_rpms="$(
     rpm -qa --qf '%{NAME}\t%{ARCH}\n' |
         awk '$2 != "aarch64" && $2 != "noarch" && !($1 == "gpg-pubkey" && $2 == "(none)")'

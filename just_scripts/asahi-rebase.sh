@@ -349,9 +349,6 @@ _run_podman_build() {
         . && echo "[podman] Build complete."
 }
 
-_run_podman_build > "${PARALLEL_LOG_DIR}/podman-build.log" 2>&1 &
-PODMAN_BUILD_PID=$!
-
 # ── Job B: ostree repo init + base-atomic pull ────────────────────────────────
 echo "--- Steps 3+4: Initialize ostree + pull base image (parallel) ---"
 echo "OSTree log: ${PARALLEL_LOG_DIR}/ostree-pull.log"
@@ -383,62 +380,83 @@ _run_ostree_init_and_pull() {
     echo "[ostree] Pull complete."
 }
 
-_run_ostree_init_and_pull > "${PARALLEL_LOG_DIR}/ostree-pull.log" 2>&1 &
+# ── File-based status tracking ───────────────────────────────────────────────
+# `kill -0 $PID` polling is unreliable: bash keeps zombie PIDs in the job
+# table so the check stays true even after the process has exited, causing
+# the monitor loop to spin forever.  Instead each background job writes its
+# own exit code to a file; the monitor polls those files every 2 seconds.
+# On any failure the other job is killed, the full log is printed, and the
+# script exits immediately with the failed job's exit code.
+chmod 755 "${PARALLEL_LOG_DIR}"
+
+{
+    rc=0
+    _run_podman_build >> "${PARALLEL_LOG_DIR}/podman-build.log" 2>&1 || rc=$?
+    echo "${rc}" > "${PARALLEL_LOG_DIR}/podman.done"
+} &
+PODMAN_BUILD_PID=$!
+
+{
+    rc=0
+    _run_ostree_init_and_pull >> "${PARALLEL_LOG_DIR}/ostree-pull.log" 2>&1 || rc=$?
+    echo "${rc}" > "${PARALLEL_LOG_DIR}/ostree.done"
+} &
 OSTREE_INIT_PID=$!
 
-stop_parallel_job() {
-    local pid="$1"
-
-    if kill -0 "${pid}" 2>/dev/null; then
-        kill "${pid}" 2>/dev/null || true
-        wait "${pid}" 2>/dev/null || true
-    fi
-}
-
-wait_for_parallel_jobs() {
-    local podman_done=0
-    local ostree_done=0
-    local rc
-
-    while (( ! podman_done || ! ostree_done )); do
-        if (( ! podman_done )) && ! kill -0 "${PODMAN_BUILD_PID}" 2>/dev/null; then
-            if wait "${PODMAN_BUILD_PID}"; then
-                podman_done=1
-            else
-                rc=$?
-                stop_parallel_job "${OSTREE_INIT_PID}"
-                echo ""
-                echo "ERROR: Bazzite ARM image build failed (exit ${rc})."
-                echo "Full build log: ${PARALLEL_LOG_DIR}/podman-build.log"
-                exit "${rc}"
-            fi
-        fi
-
-        if (( ! ostree_done )) && ! kill -0 "${OSTREE_INIT_PID}" 2>/dev/null; then
-            if wait "${OSTREE_INIT_PID}"; then
-                ostree_done=1
-            else
-                rc=$?
-                stop_parallel_job "${PODMAN_BUILD_PID}"
-                echo ""
-                echo "ERROR: OSTree init/pull failed (exit ${rc})."
-                echo "Full ostree log: ${PARALLEL_LOG_DIR}/ostree-pull.log"
-                exit "${rc}"
-            fi
-        fi
-
-        if (( ! podman_done || ! ostree_done )); then
-            sleep 1
-        fi
-    done
+_fail_parallel() {
+    local failed_job="$1" failed_rc="$2" other_pid="$3" log_file="$4"
+    echo ""
+    echo "══════════════════════════════════════════════"
+    echo "  ERROR: ${failed_job} failed (exit ${failed_rc})"
+    echo "══════════════════════════════════════════════"
+    echo ""
+    echo "--- Full log: ${log_file} ---"
+    cat "${log_file}" 2>/dev/null || true
+    echo "--- End of log ---"
+    kill "${other_pid}" 2>/dev/null || true
+    wait "${other_pid}" 2>/dev/null || true
+    rm -rf "${PARALLEL_LOG_DIR}"
+    exit "${failed_rc}"
 }
 
 # ── Wait for both jobs ────────────────────────────────────────────────────────
 echo "Both jobs running in parallel. Waiting..."
-echo "(Tail -f ${PARALLEL_LOG_DIR}/podman-build.log for live build output)"
+echo "  Live build output: tail -f ${PARALLEL_LOG_DIR}/podman-build.log"
+echo "  Live ostree output: tail -f ${PARALLEL_LOG_DIR}/ostree-pull.log"
 echo ""
-wait_for_parallel_jobs
 
+while [[ ! -f "${PARALLEL_LOG_DIR}/podman.done" || ! -f "${PARALLEL_LOG_DIR}/ostree.done" ]]; do
+    if [[ -f "${PARALLEL_LOG_DIR}/podman.done" ]]; then
+        _rc=$(cat "${PARALLEL_LOG_DIR}/podman.done")
+        if [[ "${_rc}" != "0" ]]; then
+            _fail_parallel "Bazzite ARM image build (podman)" "${_rc}" \
+                "${OSTREE_INIT_PID}" "${PARALLEL_LOG_DIR}/podman-build.log"
+        fi
+    fi
+    if [[ -f "${PARALLEL_LOG_DIR}/ostree.done" ]]; then
+        _rc=$(cat "${PARALLEL_LOG_DIR}/ostree.done")
+        if [[ "${_rc}" != "0" ]]; then
+            _fail_parallel "OSTree init/pull" "${_rc}" \
+                "${PODMAN_BUILD_PID}" "${PARALLEL_LOG_DIR}/ostree-pull.log"
+        fi
+    fi
+    sleep 2
+done
+
+# Both done — check final status
+_podman_rc=$(cat "${PARALLEL_LOG_DIR}/podman.done")
+_ostree_rc=$(cat "${PARALLEL_LOG_DIR}/ostree.done")
+if [[ "${_podman_rc}" != "0" ]]; then
+    _fail_parallel "Bazzite ARM image build (podman)" "${_podman_rc}" \
+        "${OSTREE_INIT_PID}" "${PARALLEL_LOG_DIR}/podman-build.log"
+fi
+if [[ "${_ostree_rc}" != "0" ]]; then
+    _fail_parallel "OSTree init/pull" "${_ostree_rc}" \
+        "${PODMAN_BUILD_PID}" "${PARALLEL_LOG_DIR}/ostree-pull.log"
+fi
+
+wait "${PODMAN_BUILD_PID}" 2>/dev/null || true
+wait "${OSTREE_INIT_PID}"  2>/dev/null || true
 echo "Both parallel jobs completed successfully."
 rm -rf "${PARALLEL_LOG_DIR}"
 echo "Bazzite ARM image built successfully."
