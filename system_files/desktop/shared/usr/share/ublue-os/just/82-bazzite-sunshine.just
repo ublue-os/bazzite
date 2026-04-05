@@ -1,4 +1,5 @@
 # vim: set ft=make :
+
 # Setup and configure Sunshine Game Streaming host. Options: status | enable | disable | portal
 [group("gaming")]
 setup-sunshine ACTION="":

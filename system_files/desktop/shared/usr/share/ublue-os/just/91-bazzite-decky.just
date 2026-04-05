@@ -1,4 +1,5 @@
 # vim: set ft=make :
+
 # Install and configure Decky Loader (https://github.com/SteamDeckHomebrew/decky-loader) and plugins for alternative handhelds. Options: status | install | install-prerelease | uninstall
 [group("gaming")]
 setup-decky ACTION="":

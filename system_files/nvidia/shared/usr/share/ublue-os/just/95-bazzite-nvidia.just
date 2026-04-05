@@ -1,4 +1,5 @@
 # vim: set ft=make :
+
 # Enable Supergfxctl, a GPU switcher for hybrid laptops. Options: status | enable | disable
 enable-supergfxctl ACTION="":
     #!/usr/bin/bash
