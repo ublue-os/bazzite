@@ -1,15 +1,14 @@
 #!/usr/bin/bash
 #shellcheck disable=SC2154
 
+set -eo pipefail
+
 if [[ -z ${project_root} ]]; then
     project_root=$(git rev-parse --show-toplevel)
 fi
 if [[ -z ${git_branch} ]]; then
     git_branch=$(git branch --show-current)
 fi
-
-# shellcheck disable=SC1091
-. "${project_root}/just_scripts/sudoif.sh"
 
 # Check if inside rootless container
 if [[ -f /run/.containerenv ]]; then
@@ -22,57 +21,45 @@ if [[ -f /run/.containerenv ]]; then
     fi
 fi
 container_mgr=$(just _container_mgr)
-# If using rootless container manager, exit. Might not be best check
 if "${container_mgr}" info | grep Root | grep -q /home; then
     echo "Cannot build ISO with rootless container..."
     exit 1
 fi
 
-# Get Inputs
+# Resolve image
 target=$1
 image=$2
-orig_image=$2
+resolved=$(just _resolve_image "$target" "$image")
+image_name=$(echo "$resolved" | cut -d' ' -f1)
+base_image=$(echo "$resolved" | cut -d' ' -f2)
 
-# Set image/target/version based on inputs
-# shellcheck disable=SC2154,SC1091
-. "${project_root}/just_scripts/get-defaults.sh"
-
-# Set Container tag name
-tag=$(just _tag "${image}")
+tag=$(just _tag "${image_name}")
 
 # Remove old ISO if present
-sudoif rm -f "${project_root}/just_scripts/output/${tag}-${git_branch}.iso"
-sudoif rm -f "${project_root}/just_scripts/output/${tag}-${git_branch}.iso-CHECKSUM"
-
-# Set Base Image
-if [[ ${image} =~ "gnome" ]]; then
-    base_image="silverblue"
-else
-    base_image="kinoite"
-fi
+sudo rm -f "${project_root}/just_scripts/output/${tag}-${git_branch}.iso"
+sudo rm -f "${project_root}/just_scripts/output/${tag}-${git_branch}.iso-CHECKSUM"
 
 # Set variant and flatpak dir
-if [[ "${base_image}" =~ "silverblue" ]]; then
+if [[ "${base_image}" == "silverblue" ]]; then
     flatpak_dir_shortname="installer/gnome_flatpaks"
-elif [[ "${base_image}" =~ "kinoite" ]]; then
-    flatpak_dir_shortname="installer/kde_flatpaks"
 else
-    exit 1
+    flatpak_dir_shortname="installer/kde_flatpaks"
 fi
 variant="Kinoite"
-if [[ ${target} =~ "deck" ]]; then
+extra_boot_params=""
+if [[ ${image_name} =~ "deck" ]]; then
     extra_boot_params="inst.resolution=1280x800"
 fi
 
 # Make sure image actually exists, build if it doesn't
+#shellcheck disable=SC2154
 ID=$(${container_mgr} images --filter reference=localhost/"${tag}:${latest}-${git_branch}" --format "{{.ID}}")
 if [[ -z ${ID} ]]; then
-    just build "${target}" "${orig_image}"
+    just build "$target" "$image"
 fi
 
 # Make temp space
 TEMP_FLATPAK_INSTALL_DIR=$(mktemp -d -p "${project_root}" flatpak.XXX)
-# Get list of refs from directory
 FLATPAK_REFS_DIR=${project_root}/${flatpak_dir_shortname}
 FLATPAK_REFS_DIR_LIST=$(tr '\n' ' ' < "${FLATPAK_REFS_DIR}/flatpaks")
 
@@ -103,7 +90,7 @@ if [[ ! -f ${project_root}/${flatpak_dir_shortname}/flatpaks_with_deps ]]; then
         -e FLATPAK_TRIGGERSDIR=/flatpak/triggers \
         --volume "${FLATPAK_REFS_DIR}":/output \
         --volume "${TEMP_FLATPAK_INSTALL_DIR}":/temp_flatpak_install_dir \
-        "ghcr.io/ublue-os/${base_image}-main:${version}" /temp_flatpak_install_dir/script.sh
+        "ghcr.io/ublue-os/${base_image}-main:${latest}" /temp_flatpak_install_dir/script.sh
 fi
 
 # Remove Temp Directory
