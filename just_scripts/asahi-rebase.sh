@@ -380,28 +380,53 @@ _run_ostree_init_and_pull() {
     echo "[ostree] Pull complete."
 }
 
-# ── File-based status tracking ───────────────────────────────────────────────
+# ── File-based status tracking + process-group isolation ─────────────────────
 # `kill -0 $PID` polling is unreliable: bash keeps zombie PIDs in the job
 # table so the check stays true even after the process has exited, causing
-# the monitor loop to spin forever.  Instead each background job writes its
+# the monitor loop to spin forever. Instead each background job writes its
 # own exit code to a file; the monitor polls those files every 2 seconds.
-# On any failure the other job is killed, the full log is printed, and the
-# script exits immediately with the failed job's exit code.
+#
+# The jobs also run in their own sessions so a failure can terminate the
+# entire sibling process group, not just the wrapper shell process.
 chmod 755 "${PARALLEL_LOG_DIR}"
+if ! command -v setsid >/dev/null 2>&1; then
+    echo "ERROR: setsid is required for reliable parallel job isolation."
+    exit 1
+fi
 
-{
-    rc=0
-    _run_podman_build >> "${PARALLEL_LOG_DIR}/podman-build.log" 2>&1 || rc=$?
-    echo "${rc}" > "${PARALLEL_LOG_DIR}/podman.done"
-} &
-PODMAN_BUILD_PID=$!
+launch_parallel_job() {
+    local job_func="$1"
+    local log_file="$2"
+    local done_file="$3"
+    local child_script
 
-{
-    rc=0
-    _run_ostree_init_and_pull >> "${PARALLEL_LOG_DIR}/ostree-pull.log" 2>&1 || rc=$?
-    echo "${rc}" > "${PARALLEL_LOG_DIR}/ostree.done"
-} &
-OSTREE_INIT_PID=$!
+    child_script="$(
+        declare -f ensure_boot_loader_symlink
+        declare -f _run_podman_build
+        declare -f _run_ostree_init_and_pull
+        cat <<EOF
+set -euo pipefail
+rc=0
+${job_func} >> "${log_file}" 2>&1 || rc=\$?
+echo "\${rc}" > "${done_file}"
+exit "\${rc}"
+EOF
+    )"
+
+    setsid bash -lc "${child_script}" &
+    echo $!
+}
+
+export REPO_ROOT ATOMIC_BASE BAZZITE_IMAGE IMAGE_NAME IMAGE_VENDOR \
+    KERNEL_VARIANT IMAGE_BRANCH SKIP_WINE IMAGE_TAG
+
+PODMAN_BUILD_PID="$(launch_parallel_job "_run_podman_build" \
+    "${PARALLEL_LOG_DIR}/podman-build.log" \
+    "${PARALLEL_LOG_DIR}/podman.done")"
+
+OSTREE_INIT_PID="$(launch_parallel_job "_run_ostree_init_and_pull" \
+    "${PARALLEL_LOG_DIR}/ostree-pull.log" \
+    "${PARALLEL_LOG_DIR}/ostree.done")"
 
 _fail_parallel() {
     local failed_job="$1" failed_rc="$2" other_pid="$3" log_file="$4"
@@ -413,7 +438,7 @@ _fail_parallel() {
     echo "--- Full log: ${log_file} ---"
     cat "${log_file}" 2>/dev/null || true
     echo "--- End of log ---"
-    kill "${other_pid}" 2>/dev/null || true
+    kill -- "-${other_pid}" 2>/dev/null || kill "${other_pid}" 2>/dev/null || true
     wait "${other_pid}" 2>/dev/null || true
     rm -rf "${PARALLEL_LOG_DIR}"
     exit "${failed_rc}"
