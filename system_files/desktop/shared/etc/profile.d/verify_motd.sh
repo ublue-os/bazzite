@@ -17,10 +17,9 @@ else
     PROPER_IMAGE_TAG="stable"
 fi
 
-IMAGE_DATE=$(rpm-ostree status | sed -n 's/.*Timestamp: \(.*\)/\1/p')
-IMAGE_DATE_SECONDS=$(date -d "$IMAGE_DATE" +%s)
+IMAGE_DATE=$(rpm-ostree status --json | jq -r '.deployments[0]["timestamp"] // empty')
 CURRENT_SECONDS=$(date +%s)
-DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE_SECONDS))
+DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE))
 MONTH=$((30 * 24 * 60 * 60))
 
 # 2. Define Identifiers
