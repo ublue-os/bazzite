@@ -167,8 +167,8 @@ else
   if [[ ! -f "$TEMPLATES_DIR/MangoHud.conf" && -f "/usr/share/doc/mangohud/MangoHud.conf.example" ]]; then
     ln -s "/usr/share/doc/mangohud/MangoHud.conf.example" "$TEMPLATES_DIR/MangoHud.conf"
   fi
-  if [[ ! -f "$TEMPLATES_DIR/document.txt" ]]; then
-    touch "$TEMPLATES_DIR/document.txt"
+  if [[ ! -f "$TEMPLATES_DIR/EmptyFile" ]]; then
+    touch "$TEMPLATES_DIR/EmptyFile"
   fi
 
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
