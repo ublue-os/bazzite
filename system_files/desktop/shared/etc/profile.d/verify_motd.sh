@@ -5,7 +5,9 @@
 # - over 1 month old and user chose a specific tag (like stable-43.20260404).
 
 # 1. Get the current image reference, image tag and image date
-CURRENT_REF=$(rpm-ostree status --json | jq -r '.deployments[0]["container-image-reference"] // empty')
+JSON_OUTPUT=$(rpm-ostree status --json)
+
+CURRENT_REF=$(jq -r '.deployments[0]["container-image-reference"] // empty' <<<"$JSON_OUTPUT")
 
 IMAGE_TAG=${CURRENT_REF##*:}
 
@@ -17,7 +19,7 @@ else
     PROPER_IMAGE_TAG="stable"
 fi
 
-IMAGE_DATE=$(rpm-ostree status --json | jq -r '.deployments[0]["timestamp"] // empty')
+IMAGE_DATE=$(jq -r '.deployments[0]["timestamp"] // empty' <<<"$JSON_OUTPUT")
 CURRENT_SECONDS=$(date +%s)
 DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE))
 MONTH=$((30 * 24 * 60 * 60))
