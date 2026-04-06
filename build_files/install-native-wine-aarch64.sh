@@ -155,13 +155,32 @@ install_optional_packages() {
     local description="$1"
     shift
 
-    if dnf5 -y install --setopt=install_weak_deps=False "$@"; then
+    if dnf5 -y install --refresh --best --allowerasing --setopt=install_weak_deps=False "$@"; then
         return 0
     fi
 
     echo "Optional ${description} packages could not be installed; continuing without ${description} support." >&2
     dnf5 -y remove "$@" >/dev/null 2>&1 || true
     return 1
+}
+
+refresh_dnf_metadata() {
+    dnf5 clean all >/dev/null 2>&1 || true
+    rm -rf /var/cache/libdnf5/* /var/cache/dnf/* 2>/dev/null || true
+}
+
+install_required_packages() {
+    local description="$1"
+    shift
+
+    if dnf5 -y install --refresh --best --allowerasing --setopt=install_weak_deps=False "$@"; then
+        return 0
+    fi
+
+    echo "${description} install failed; cleaning metadata, syncing the base image, and retrying once." >&2
+    refresh_dnf_metadata
+    dnf5 -y distro-sync --refresh --best --allowerasing --exclude='mesa*'
+    dnf5 -y install --refresh --best --allowerasing --setopt=install_weak_deps=False "$@"
 }
 
 resolve_wine_source() {
@@ -276,8 +295,12 @@ if ! dnf5 -y upgrade --refresh --skip-unavailable --exclude='mesa*'; then
     dnf5 -y distro-sync --refresh --skip-broken --skip-unavailable --exclude='mesa*'
 fi
 
-dnf5 -y install --setopt=install_weak_deps=False "${runtime_packages[@]}"
-dnf5 -y install --setopt=install_weak_deps=False "${build_packages[@]}"
+required_packages=(
+    "${runtime_packages[@]}"
+    "${build_packages[@]}"
+)
+
+install_required_packages "Wine runtime/build dependency" "${required_packages[@]}"
 
 if install_optional_packages "ODBC runtime" "${optional_runtime_packages[@]}" &&
     install_optional_packages "ODBC build" "${optional_build_packages[@]}"; then
