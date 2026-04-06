@@ -1,6 +1,6 @@
 # vim: set ft=make :
 
-# Setup and configure Sunshine Game Streaming host
+# Setup and configure Sunshine Game Streaming host. Options:  enable | enable-beta | disable | portal
 [group("gaming")]
 setup-sunshine ACTION="":
     #!/usr/bin/bash
