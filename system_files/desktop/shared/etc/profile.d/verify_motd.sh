@@ -35,8 +35,7 @@ if [[ "$CURRENT_REF" == *"$UNVERIFIED_TAG"* ]] && [[ "$CURRENT_REF" == *"$OFFICI
     echo -e "    This prevents automatic updates and verification.\033[0m"
     # UPDATED COMMAND HERE:
     echo -e "\n    To fix this, run: \033[1mujust verify-image\033[0m\n"
-fi
-if [[ "$CURRENT_REF" == *"$OFFICIAL_TAG"* ]] && [[ "$DIFFERENCE" -ge "$MONTH" ]] && [[ "$IMAGE_TAG" != "$PROPER_IMAGE_TAG" ]]; then
+elif [[ "$CURRENT_REF" == *"$OFFICIAL_TAG"* ]] && [[ "$DIFFERENCE" -ge "$MONTH" ]] && [[ "$IMAGE_TAG" != "$PROPER_IMAGE_TAG" ]]; then
     # 4. The Warning (Red Text)
     echo -e "\n\033[0;31m\033[1m[!] SECURITY WARNING: Old System Image Detected\033[0m"
     echo -e "\033[0;31m    Your current image is over 1 month old and is pinned to a certain date."
