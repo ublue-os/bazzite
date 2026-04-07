@@ -78,8 +78,8 @@ enable-ryzenadj-max-performance:
     sudo systemctl enable max-perf-boot.service
     echo 'Installation complete. Reboot to take effect'
 
-# toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled
-toggle-password-feedback ACTION="":
+# Manage password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled
+password-feedback ACTION="":
     #!/usr/bin/bash
     PWFEEDBACK_FILE="/etc/sudoers.d/enable-pwfeedback"
     OPTION={{ ACTION }}
