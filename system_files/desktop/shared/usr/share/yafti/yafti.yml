@@ -192,7 +192,7 @@ screens:
             label: "No Timeout"
             script: "ujust grub-timeout no-timeout"
           - id: "instant"
-            label: "Skip Menu (Shift to show)"
+            label: "Skip Menu (Hold shift key to show boot menu)"
             script: "ujust grub-timeout instant"
           - id: "1-second"
             label: "1 Second"
