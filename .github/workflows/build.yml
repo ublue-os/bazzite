@@ -49,6 +49,8 @@ jobs:
       contents: read
       packages: write
       id-token: write
+      attestations: write
+      artifact-metadata: write
     strategy:
       fail-fast: false
       matrix:
@@ -324,6 +326,34 @@ jobs:
           path: /var/tmp/buildah-cache-*
           key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
 
+      - name: Setup Syft
+        id: setup-syft
+        if: github.event_name != 'pull_request'
+        uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0
+        with:
+          syft-version: v1.39.0
+
+      - name: Generate SBOM
+        if: github.event_name != 'pull_request'
+        id: generate-sbom
+        env:
+          IMAGE: ${{ matrix.image }}
+          VERSION_TAG: ${{ steps.labels.outputs.tag }}
+          SYFT_CMD: ${{ steps.setup-syft.outputs.cmd }}
+          OCI_DIR: "/tmp/image-oci-dir"
+        run: |
+          mkdir -p ${OCI_DIR}/rootfs
+          sudo podman container create --replace --name "${IMAGE}" "localhost/raw-img"
+          sudo podman export "${IMAGE}" | sudo tar -C ${OCI_DIR}/rootfs -xf -
+          sudo podman container rm "${IMAGE}"
+
+          SBOM="$(mktemp -d)/sbom.json"
+          export SYFT_PARALLELISM=$(($(nproc)*2))
+          sudo $SYFT_CMD --source-name "${IMAGE}"-"${VERSION_TAG}" ${OCI_DIR} -o syft-json=${SBOM}
+          du -sh ${SBOM}
+          echo "SBOM=${SBOM}" >> $GITHUB_OUTPUT
+          sudo rm -rf ${OCI_DIR}
+
       # Relabel the image with Bazzite labels
       - name: Apply Labels
         id: relabel
@@ -450,43 +480,102 @@ jobs:
         run: |
           sudo tests/dgoss/dgoss-tests.sh tests/dgoss/tests.d "${{ steps.rechunk.outputs.ref }}"
 
-      - name: Install Cosign
+      - name: Login to GitHub Container Registry
         if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
-        with:
-          cosign-release: "v2.6.1"
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       # Push the image to GHCR (Image Registry)
-      - name: Push To GHCR and Sign
+      - name: Push to GHCR
+        id: push
         if: github.event_name != 'pull_request'
-        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        env:
+          ALIAS_TAGS: ${{ steps.generate-tags.outputs.alias_tags }}
+          OUTPUT_IMAGE: ${{ steps.base.outputs.output_image }}
+          RECHUNK_REF: ${{ steps.rechunk.outputs.ref }}
+          VERSION: ${{ steps.relabel.outputs.version }}
         with:
-          attempt_limit: 3
-          attempt_delay: 15000
+          max_attempts: 3
+          retry_wait_seconds: 15
+          timeout_minutes: 10
           command: |
             log_sum() { echo "$1" >> $GITHUB_STEP_SUMMARY; }
             log_sum '# Push to GHCR result'
             log_sum '```'
-            echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # Push unique image id and sign, this way once evergreen tag is published
-            # It will always be signed
-            dest_image="${{ steps.base.outputs.output_image }}:${{ steps.relabel.outputs.version }}"
-            sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
+            dest_image="${OUTPUT_IMAGE}:${VERSION}"
+            sudo skopeo copy ${RECHUNK_REF} docker://$dest_image
             log_sum "$dest_image"
-            DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' docker://$dest_image)
-            cosign sign -y --key env://SIGNING_SECRET --new-bundle-format=false \
-              "${{ steps.base.outputs.output_image }}@$DIGEST"
 
-            for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
-              dest_image="${{ steps.base.outputs.output_image }}:$tag"
-              sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
+            for tag in ${ALIAS_TAGS}; do
+              dest_image="${OUTPUT_IMAGE}:$tag"
+              sudo skopeo copy ${RECHUNK_REF} docker://$dest_image
               log_sum "$dest_image"
             done
             log_sum '```'
+
+            digest=$(sudo skopeo inspect --format '{{.Digest}}' docker://${OUTPUT_IMAGE}:${VERSION})
+            echo "digest=${digest}" >> $GITHUB_OUTPUT
+
+      - name: Install Cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@7e8b541eb2e61bf99390e1afd4be13a184e9ebc5 # v3.10.1
+
+      - name: Sign container image
+        if: github.event_name != 'pull_request'
+        run: |
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.base.outputs.output_image }}@${{ steps.push.outputs.digest }}
         env:
-          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+          COSIGN_EXPERIMENTAL: false
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+
+      - name: Install ORAS
+        if: github.event_name != 'pull_request'
+        uses: oras-project/setup-oras@22ce207df3b08e061f537244349aac6ae1d214f6 # v1.2.4
+
+      - name: Login to GitHub Container Registry with ORAS
+        if: github.event_name != 'pull_request'
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | oras login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Upload SBOM
+        if: github.event_name != 'pull_request'
+        id: upload-sbom
+        env:
+          IMAGE: ${{ steps.base.outputs.output_image }}
+          DIGEST: ${{ steps.push.outputs.digest }}
+          SBOM: ${{ steps.generate-sbom.outputs.SBOM }}
+        run: |
+          cd "$(dirname "${SBOM}")"
+          oras attach \
+            --artifact-type application/vnd.spdx+json \
+            --annotation filename=$(basename "$SBOM") \
+            "${IMAGE}@${DIGEST}" \
+            "$(basename ${SBOM})"
+
+          sbom_digest=$(oras discover --format json "${IMAGE}@${DIGEST}" | jq -r '.referrers[] | select(.artifactType == "application/vnd.spdx+json") | .digest')
+
+          echo "sbom_digest=${sbom_digest}" >> $GITHUB_OUTPUT
+
+      - name: Sign SBOM OCI Artifact
+        if: github.event_name != 'pull_request'
+        env:
+          COSIGN_EXPERIMENTAL: false
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+          IMAGE: ${{ steps.base.outputs.output_image }}
+          SBOM_DIGEST: ${{ steps.upload-sbom.outputs.sbom_digest }}
+        run: |
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${IMAGE}@${SBOM_DIGEST}
+
+      - name: Attestation
+        if: github.event_name != 'pull_request'
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-name: ${{ steps.base.outputs.output_image }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
 
   generate_release:
     name: Generate Release

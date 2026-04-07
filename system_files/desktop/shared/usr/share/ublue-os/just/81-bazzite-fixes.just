@@ -93,24 +93,35 @@ toggle-bt-mic:
       echo "No changes were made."
     fi
 
-# enable or disable wake-on-lan functionality
+# enable or disable wake-on-lan functionality. Options: status | enable | disable | force-enable
 toggle-wol ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    INTERFACE=$(ip link show | awk '/state UP/ {print $2}' | tr -d ':' | grep -E '^(en|eth)')
-    if [[ -z "$INTERFACE" ]]; then
-      echo -e "${bold}No active Ethernet interface found.${normal}"
-      echo "Please ensure your Ethernet connection is enabled or connected."
-      echo "Exiting without making any changes."
-      exit 0
-    fi
     CONFIG_FILE="/etc/udev/rules.d/81-wol.rules"
     SERVICE_FILE="/etc/systemd/system/force-wol.service"
-    WOL_STATUS=$(sudo ethtool $INTERFACE | grep -P "^\s+Wake-on" | awk '{print $2}')
-    CURRENT_STATE="Disabled"
-    if [[ "$WOL_STATUS" == "g" ]]; then
-      CURRENT_STATE="Enabled"
-    fi
+    FORCE_WOL_LINK="/etc/systemd/system/multi-user.target.wants/force-wol.service"
+    get_status_token() {
+      if [[ -L "$FORCE_WOL_LINK" ]]; then
+        echo "force-enable"
+      elif [[ -f "$CONFIG_FILE" ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    get_current_status() {
+      case "$(get_status_token)" in
+        force-enable)
+          echo "Force-Enabled"
+          ;;
+        enable)
+          echo "Enabled"
+          ;;
+        *)
+          echo "Disabled"
+          ;;
+      esac
+    }
     OPTION="{{ ACTION }}"
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust toggle-wol <option>"
@@ -119,8 +130,19 @@ toggle-wol ACTION="":
       echo "  Use 'disable' to disable Wake-on-LAN"
       echo "  Use 'force-enable' to force-enable Wake-on-LAN (persists across reboots)"
       exit 0
-    elif [ -z "$OPTION" ]; then
-      echo "Wake-on-LAN is currently: ${bold}${CURRENT_STATE}${normal}"
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit $?
+    fi
+    INTERFACE=$(ip link show | awk '/state UP/ {print $2}' | tr -d ':' | grep -E '^(en|eth)')
+    if [[ -z "$INTERFACE" ]]; then
+      echo -e "${bold}No active Ethernet interface found.${normal}"
+      echo "Please ensure your Ethernet connection is enabled or connected."
+      echo "Exiting without making any changes."
+      exit 0
+    fi
+    if [ -z "$OPTION" ]; then
+      echo "Wake-on-LAN is currently: ${bold}$(get_current_status)${normal}"
       echo "Enable, Disable Wake-on-LAN, Force-Enable, or Exit without saving?"
       echo "Note: Force-Enable will make WOL persist across reboots"
       OPTION=$(ugum choose Enable Disable Force-Enable Exit)
@@ -161,10 +183,23 @@ toggle-wol ACTION="":
       echo "No changes were made."
     fi
 
-# enable or disable IWD as a replacement for wpa_supplicant
+# enable or disable IWD as a replacement for wpa_supplicant. Options: status | enable | disable
 [group("network")]
 toggle-iwd ACTION="":
     #!/usr/bin/bash
+    get_status_token() {
+      if [[ -f "/etc/NetworkManager/conf.d/supplicant.conf" ]]; then
+        echo "disable"
+      else
+        echo "enable"
+      fi
+    }
+
+    OPTION={{ ACTION }}
+    if [[ "${OPTION,,}" == "status" ]]; then
+      get_status_token
+      exit 0
+    fi
     # Explain the purpose of the script
     echo -e "This script manages enabling or disabling iwd as a replacement for wpa_supplicant for Wi-Fi networking. Default is Enabled."
     echo -e "Enabling this can improve throughput, mesh networking, and reduce latency increases when scanning for networks"
@@ -172,10 +207,10 @@ toggle-iwd ACTION="":
     echo -e ""
     echo -e "WARNING: Changing this will remove all saved wifi networks"
     get_current_status() {
-      if [[ -f "/etc/NetworkManager/conf.d/supplicant.conf" ]]; then
-        echo "Disabled"
-      else
+      if [[ "$(get_status_token)" == "enable" ]]; then
         echo "Enabled"
+      else
+        echo "Disabled"
       fi
     }
     remove_saved_networks() {
@@ -197,19 +232,17 @@ toggle-iwd ACTION="":
       remove_saved_networks
       echo -e "iwd disabled. Reboot required to apply changes."
     }
-    # ACTION param
-    OPTION={{ ACTION }}
-
     # Show status
     current_status=$(get_current_status)
     echo -e "\nCurrent iwd status: $current_status\n"
 
-    if [[ "${OPTION,,}" == "toggle" ]]; then
-      if [[ "$current_status" == "Enabled" ]]; then
-        disable_iwd
-      else
-        enable_iwd
-      fi
+    if [[ "${OPTION,,}" == "enable" ]]; then
+      enable_iwd
+      exit 0
+    fi
+
+    if [[ "${OPTION,,}" == "disable" ]]; then
+      disable_iwd
       exit 0
     fi
 
@@ -356,12 +389,26 @@ _toggle-gigabyte-wake-fix:
       fi
     fi
 
-# Manage Steam game shortcuts on the Desktop. Usage: just steam-icons [command] (list, remove, enable, disable)
+# Manage Steam game shortcuts on the Desktop. Usage: just steam-icons [command] (list, remove, enable, disable). Options: status | remove | enable | disable
 steam-icons ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     DESKTOP_DIR="$HOME/Desktop"
     SERVICE_NAME="steam-icons-cleanup.service"
+    get_status_token() {
+      if systemctl --user is-enabled "$SERVICE_NAME" &>/dev/null; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "enable" ]]; then
+        echo "enabled"
+      else
+        echo "disabled"
+      fi
+    }
     OPTION={{ ACTION }}
     # Function to count and list Steam shortcuts
     list_shortcuts() {
@@ -404,10 +451,7 @@ steam-icons ACTION="":
       echo -e "${green}${b}Successfully removed $SHORTCUT_COUNT Steam game shortcuts.${n}"
     }
     # Check if auto-cleanup service is enabled
-    SERVICE_STATUS="disabled"
-    if systemctl --user is-enabled "$SERVICE_NAME" &>/dev/null; then
-      SERVICE_STATUS="enabled"
-    fi
+    SERVICE_STATUS="$(get_current_status)"
     # Process direct command arguments
     if [ "$OPTION" == "help" ]; then
       echo "Usage: just steam-icons [command]"
@@ -418,6 +462,9 @@ steam-icons ACTION="":
       echo "  disable  - Disable automatic cleanup"
       echo "  help     - Show this help message"
       exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit $?
     elif [ "$OPTION" == "list" ]; then
       list_shortcuts
       exit 0
@@ -458,29 +505,35 @@ steam-icons ACTION="":
       ;;
     esac
 
-# Toggle CEC_ONSLEEP_STANDBY - Controls whether TV goes to standby when system sleeps
+# Toggle CEC_ONSLEEP_STANDBY - Controls whether TV goes to standby when system sleeps. Options: status | enable | disable
 toggle-cec-sleep ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     CONFIG_FILE="/etc/default/cec-control"
+    get_status_token() {
+      local current_value="false"
+      if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" 2>/dev/null; then
+        current_value=$(grep '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" | cut -d= -f2)
+      fi
+      if [[ "$current_value" == "true" ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "enable" ]]; then
+        echo "Enabled"
+      else
+        echo "Disabled"
+      fi
+    }
 
     # Check if config file exists
     if [[ ! -f "$CONFIG_FILE" ]]; then
       echo -e "${red}${bold}Error:${normal} CEC config file not found at $CONFIG_FILE"
       echo "CEC control may not be installed or configured on this system."
       exit 1
-    fi
-
-    # Determine current state (default to false if not set)
-    if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" 2>/dev/null; then
-      CURRENT_VALUE=$(grep '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" | cut -d= -f2)
-    else
-      CURRENT_VALUE="false"
-    fi
-
-    CURRENT_STATE="Disabled"
-    if [[ "$CURRENT_VALUE" == "true" ]]; then
-      CURRENT_STATE="Enabled"
     fi
 
     OPTION="{{ ACTION }}"
@@ -491,8 +544,11 @@ toggle-cec-sleep ACTION="":
       echo "  Use 'enable' to make TV standby when system sleeps"
       echo "  Use 'disable' to prevent TV standby when system sleeps"
       exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit $?
     elif [ -z "$OPTION" ]; then
-      echo -e "${bold}CEC On-Sleep Standby:${normal} $CURRENT_STATE"
+      echo -e "${bold}CEC On-Sleep Standby:${normal} $(get_current_status)"
       echo ""
       echo "When enabled, your TV will go to standby when the system sleeps."
       echo "When disabled, your TV will remain on when the system sleeps."
