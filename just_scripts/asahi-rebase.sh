@@ -219,6 +219,31 @@ if [[ "$confirm" != [yY] ]]; then
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────
+# Step 0: Collect user credentials up front
+# ──────────────────────────────────────────────────────────────────────────────
+# Ask for the username and password now — before the 30+ minute build — so
+# the user can enter everything and walk away. The credentials are used later
+# in Step 7 to inject the user account into the new ostree deployment.
+echo ""
+echo "--- User account for the new Bazzite system ---"
+echo "(This will be your login after the conversion is complete.)"
+echo ""
+read -rp "  Username: " BAZZITE_USER
+while [[ -z "${BAZZITE_USER}" ]]; do
+    read -rp "  Username cannot be empty. Username: " BAZZITE_USER
+done
+read -srp "  Password: " BAZZITE_PASS
+echo ""
+while [[ -z "${BAZZITE_PASS}" ]]; do
+    read -srp "  Password cannot be empty. Password: " BAZZITE_PASS
+    echo ""
+done
+BAZZITE_PASS_HASH=$(openssl passwd -6 "${BAZZITE_PASS}")
+unset BAZZITE_PASS
+echo "  User '${BAZZITE_USER}' will be created after the build completes."
+echo ""
+
+# ──────────────────────────────────────────────────────────────────────────────
 # Step 1: Install prerequisites
 # ──────────────────────────────────────────────────────────────────────────────
 echo ""
@@ -506,11 +531,8 @@ if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
     echo "Deployment directory: $DEPLOY_DIR"
     (
         set +e
-        read -rp "Enter username for the new system: " NEW_USER
-        read -srp "Enter password: " NEW_PASS
-        echo ""
-
-        PASS_HASH=$(openssl passwd -6 "${NEW_PASS}")
+        NEW_USER="${BAZZITE_USER}"
+        PASS_HASH="${BAZZITE_PASS_HASH}"
 
         # Unlock root
         sudo sed -i "s|^root:[^:]*:|root:${PASS_HASH}:|" "${DEPLOY_DIR}/etc/shadow"
@@ -650,42 +672,47 @@ MOTD_EOF
 
     sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system"
 
-    # Profile.d: runs after login, output is clean (no overlap with login prompt)
-    sudo mkdir -p "${DEPLOY_DIR}/etc/profile.d"
-    sudo tee "${DEPLOY_DIR}/etc/profile.d/bazzite-rebase.sh" > /dev/null << 'PROF_EOF'
-#!/usr/bin/bash
-# Auto-rebase to Bazzite ARM after login (profile.d -- runs once shell is ready)
-if [[ ! -f /var/lib/bazzite-rebase-done ]] && [[ -d /var/lib/bazzite-install ]]; then
-    # Small pause to ensure the shell prompt has fully initialized
-    sleep 1
-    clear
-    echo ""
-    echo "  ╔═══════════════════════════════════════════════════╗"
-    echo "  ║         Bazzite ARM - Final Installation          ║"
-    echo "  ║                                                   ║"
-    echo "  ║  Rebasing to Bazzite ARM. This takes ~2-5 min.    ║"
-    echo "  ║  The system reboots automatically when done.      ║"
-    echo "  ╚═══════════════════════════════════════════════════╝"
-    echo ""
-    echo "  [sudo] password for $(whoami):"
+    # First-boot rebase service: runs AFTER the user has fully logged in
+    # at the TTY. Uses a systemd service instead of profile.d so:
+    #   - It does not overlap with the login password prompt
+    #   - It runs as root directly (no sudo needed — no password overlap)
+    #   - It only runs once (ConditionPathExists guard)
+    sudo tee "${DEPLOY_DIR}/etc/systemd/system/bazzite-first-boot-rebase.service" > /dev/null << 'SVC_EOF'
+[Unit]
+Description=Bazzite ARM - First Boot Rebase
+ConditionPathExists=/var/lib/bazzite-install
+ConditionPathExists=!/var/lib/bazzite-rebase-done
+After=network-online.target multi-user.target
+Wants=network-online.target
 
-    if sudo rpm-ostree rebase \
-            "ostree-unverified-image:oci:/var/lib/bazzite-install:latest"; then
-        sudo rm -rf /var/lib/bazzite-install
-        sudo touch /var/lib/bazzite-rebase-done
-        echo ""
-        echo "  ✓ Rebase complete! Rebooting into Bazzite ARM in 5 seconds..."
-        sleep 5
-        sudo systemctl reboot
-    else
-        echo ""
-        echo "  ✗ Rebase failed. Run manually:"
-        echo "    sudo rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest"
-    fi
-fi
-PROF_EOF
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/bash -c 'echo ""; echo "  ╔═══════════════════════════════════════════════════╗"; echo "  ║         Bazzite ARM - Final Installation          ║"; echo "  ║                                                   ║"; echo "  ║  Rebasing to Bazzite ARM. This takes ~2-5 min.    ║"; echo "  ║  The system reboots automatically when done.      ║"; echo "  ╚═══════════════════════════════════════════════════╝"; echo ""'
+ExecStart=/usr/bin/bash -c 'rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest && rm -rf /var/lib/bazzite-install && touch /var/lib/bazzite-rebase-done && echo "  ✓ Rebase complete! Rebooting in 5 seconds..." && sleep 5 && systemctl reboot'
+ExecStopPost=/usr/bin/bash -c 'if [ ! -f /var/lib/bazzite-rebase-done ]; then echo "  ✗ Rebase failed. Run manually: sudo rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest"; fi'
+TimeoutStartSec=900
+StandardOutput=journal+console
+StandardError=journal+console
 
-    echo "First-boot rebase installed (profile.d only -- no systemd service overlap)."
+[Install]
+WantedBy=multi-user.target
+SVC_EOF
+
+    # Enable the service in the deployment
+    sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants"
+    sudo ln -sf /etc/systemd/system/bazzite-first-boot-rebase.service \
+        "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service"
+
+    # MOTD -- shown at login so user knows what's happening
+    sudo tee "${DEPLOY_DIR}/etc/motd" > /dev/null << 'MOTD_EOF'
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  Bazzite ARM: The final rebase is running automatically.    ║
+  ║  Check progress: journalctl -f -u bazzite-first-boot-rebase ║
+  ║  The system will reboot when done (~2-5 minutes).           ║
+  ╚══════════════════════════════════════════════════════════════╝
+MOTD_EOF
+
+    echo "First-boot rebase installed (systemd service, runs as root — no sudo overlap)."
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────
