@@ -380,9 +380,9 @@ add-user-to-input-group ACTION="":
     fi
     add_user_to_input_group
 
-# Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system. Options: status | enable | disable
+# Manage automounting of labeled BTRFS/EXT4 partitions under /run/media/system. Options: status | enable | disable
 [group("automounting")]
-enable-automounting ACTION="":
+automounting ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     get_status_token() {
@@ -419,7 +419,7 @@ enable-automounting ACTION="":
     }
     OPTION="{{ ACTION }}"
     if [[ "$OPTION" == "help" ]]; then
-      echo "Usage: ujust enable-automounting <option>"
+      echo "Usage: ujust automounting <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'status' to print the current portal token"
       echo "  Use 'enable' to enable automounting"
@@ -463,9 +463,9 @@ disable-framework-automount:
     set -eo pipefail
     ln -sf /dev/null /etc/udev/rules.d/99-framework-steam-automount.rules
 
-# Enable SteamOS automount. Options: status | enable | disable
+# Manage SteamOS automount. Options: status | enable | disable
 [group("automounting")]
-enable-steamos-automount ACTION="":
+steamos-automount ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     RULE_FILE="/etc/udev/rules.d/99-steamos-automount.rules"
@@ -491,7 +491,7 @@ enable-steamos-automount ACTION="":
     }
     OPTION="{{ ACTION }}"
     if [[ "$OPTION" == "help" ]]; then
-      echo "Usage: ujust enable-steamos-automount <option>"
+      echo "Usage: ujust steamos-automount <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'status' to print the current portal token"
       echo "  Use 'enable' to enable SteamOS automount"
@@ -524,12 +524,12 @@ enable-steamos-automount ACTION="":
 # Disable all partition automounting. This might increase boot times.
 [group("automounting")]
 disable-automount-all:
-    @pkexec --keep-cwd ujust disable-framework-automount enable-automounting disable enable-steamos-automount disable
+    @pkexec --keep-cwd ujust disable-framework-automount automounting disable steamos-automount disable
 
 # Enable all automounting.
 [group("automounting")]
 enable-automount-all:
-    @pkexec --keep-cwd ujust enable-framework-automount enable-automounting enable-steamos-automount
+    @pkexec --keep-cwd ujust enable-framework-automount automounting enable steamos-automount enable
 
 # Enable support for Tailscale. Options: status | enable | disable
 [group("network")]
