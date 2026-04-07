@@ -330,6 +330,9 @@ if [[ $desktop_env == gnome ]]; then
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nHidden=true@g' /usr/share/anaconda/gnome/org.fedoraproject.welcome-screen.desktop || :
 fi
 
+rm -f /usr/share/applications/bbrew.desktop /usr/share/applications/bazzite-steam*.desktop
+rm -f /usr/bin/rpm-ostree # Should never under any circumstance be ran on the live ISO
+
 # Set new background for GNOME
 if [[ $desktop_env == gnome ]]; then
     glib-compile-schemas /usr/share/glib-2.0/schemas
