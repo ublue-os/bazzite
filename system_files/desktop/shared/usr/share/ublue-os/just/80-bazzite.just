@@ -531,10 +531,55 @@ disable-automount-all:
 enable-automount-all:
     @pkexec --keep-cwd ujust enable-framework-automount enable-automounting enable-steamos-automount
 
-# Enable support for Tailscale
+# Enable support for Tailscale. Options: status | enable | disable
 [group("network")]
-enable-tailscale:
-    systemctl enable --now tailscaled.service
+tailscale ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    TAILSCALE_STATE="$(systemctl is-enabled tailscaled.service 2>/dev/null || true)"
+    get_status_token() {
+      if [[ -z "$TAILSCALE_STATE" ]]; then
+        return 1
+      elif [[ "$TAILSCALE_STATE" == "enabled" ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "enable" ]]; then
+        echo "${green}${bold}Enabled${normal}"
+      else
+        echo "${yellow}${bold}Disabled${normal}"
+      fi
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+      echo "Usage: ujust tailscale <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current portal token"
+      echo "  Use 'enable' to enable Tailscale"
+      echo "  Use 'disable' to disable Tailscale"
+      exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+      get_status_token
+      exit $?
+    elif [[ -z "$OPTION" ]]; then
+      echo "${bold}Tailscale${normal}"
+      echo "Current status: $(get_current_status)"
+      OPTION=$(ugum choose "Enable" "Disable" "Exit without changes")
+    fi
+    case "$OPTION" in
+      Enable|enable)
+        sudo systemctl enable --now tailscaled.service
+        ;;
+      Disable|disable)
+        sudo systemctl disable --now tailscaled.service
+        ;;
+      *)
+        echo "No changes made."
+        ;;
+    esac
 
 # Enable Framework Fan Control
 [group("hardware")]
