@@ -400,15 +400,12 @@ jobs:
           # Figure out config
           kver=$(sudo podman run --rm "$img" rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
           filter='{ "packages": [inputs | split(" ") | select(length==2) | { (.[0]): .[1] }] | sort_by(keys) | add }'
-          manifest=$(sudo podman run --rm "$img" rpm -qa --qf '%{NAME} %{VERSION}-%{RELEASE}\n' \
-              | sed -e 's/\.fc[0-9][0-9]*$//' | jq -Rnc "$filter")
           mapfile -t labels <<< "$IMAGE_LABELS"
           labels+=(
             "org.opencontainers.image.version=$version"
             "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
             "ostree.bootable=true"
             "ostree.linux=$kver"
-            "ostree.rechunk.info=$manifest"
           )
 
           # Apply config to labels and annotations
