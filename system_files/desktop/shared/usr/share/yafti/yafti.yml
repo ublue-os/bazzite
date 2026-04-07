@@ -87,9 +87,15 @@ screens:
           - id: "enable"
             label: "Enable"
             script: "ujust setup-sunshine enable"
+          - id: "enable-beta"
+            label: "Enable Beta"
+            script: "ujust setup-sunshine enable-beta"
           - id: "disable"
-            label: "Disable"
+            label: "Disable Service"
             script: "ujust setup-sunshine disable"
+          - id: "uninstall"
+            label: "Uninstall"
+            script: "ujust setup-sunshine uninstall"
           - id: "portal"
             label: "Open Portal"
             script: "ujust setup-sunshine portal"
@@ -501,4 +507,10 @@ screens:
         title: "Reset Bazzite"
         description: "Reset Bazzite layering to Default (Only resets layers NOT user data)" 
         default: false
-        script: "rpm-ostree reset"        
+        script: "rpm-ostree reset"
+
+      - id: "get-logs"
+        title: "Collect Troubleshooting Logs"
+        description: "Collects system information and logs, then gives you links to share with support for troubleshooting."
+        default: false
+        script: 'ujust get-logs; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
