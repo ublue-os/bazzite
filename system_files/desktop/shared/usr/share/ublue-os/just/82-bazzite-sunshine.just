@@ -26,17 +26,10 @@ setup-sunshine ACTION="":
         echo "uninstall"
       fi
     }
-    remove_flatpak_service() {
-      systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service >/dev/null 2>&1 || true
-    }
-    stop_homebrew_services() {
-      brew services stop sunshine >/dev/null 2>&1 || true
-      brew services stop sunshine-beta >/dev/null 2>&1 || true
-    }
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust setup-sunshine <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
-      echo "  Use 'status' to print the current portal current status"
+      echo "  Use 'status' to print the current portal status"
       echo "  Use 'enable' to enable the Sunshine service"
       echo "  Use 'enable-beta' to enable the Sunshine beta service"
       echo "  Use 'disable' to disable the Sunshine service"
@@ -66,47 +59,57 @@ setup-sunshine ACTION="":
       OPTION=$(Choose "Enable" "Enable Beta" "Disable Service" "Uninstall" "Open Portal" "Exit")
     fi
     if [[ "${OPTION,,}" =~ ^enable[-[:space:]]beta ]]; then
-      remove_flatpak_service
+      echo "Disabling any previous Flatpak Sunshine service..."
+      systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
       if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+        echo "Setting up Homebrew environment..."
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
       fi
       brew tap LizardByte/homebrew
-      brew services stop sunshine >/dev/null 2>&1 || true
-      brew uninstall sunshine >/dev/null 2>&1 || true
+      echo "Cleaning up any existing stable Sunshine install before installing beta..."
+      brew services stop sunshine || true
+      brew uninstall sunshine || true
       brew install sunshine-beta
       if ! sunshine_bin="$(command -v sunshine)"; then
         echo "sunshine was not found on PATH after installation." >&2
         exit 1
       fi
-      sudo -A setcap cap_sys_admin+p "$(readlink -f "$sunshine_bin")"
+      sudo setcap cap_sys_admin+p "$(readlink -f "$sunshine_bin")"
       brew services start sunshine-beta
     elif [[ "${OPTION,,}" =~ ^enable ]]; then
-      remove_flatpak_service
+      echo "Disabling any previous Flatpak Sunshine service..."
+      systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
       if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+        echo "Setting up Homebrew environment..."
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
       fi
       brew tap LizardByte/homebrew
-      brew services stop sunshine-beta >/dev/null 2>&1 || true
-      brew uninstall sunshine-beta >/dev/null 2>&1 || true
+      echo "Cleaning up any existing beta Sunshine install before installing stable..."
+      brew services stop sunshine-beta || true
+      brew uninstall sunshine-beta || true
       brew install sunshine
       if ! sunshine_bin="$(command -v sunshine)"; then
         echo "sunshine was not found on PATH after installation." >&2
         exit 1
       fi
-      sudo -A setcap cap_sys_admin+p "$(readlink -f "$sunshine_bin")"
+      sudo setcap cap_sys_admin+p "$(readlink -f "$sunshine_bin")"
       brew services start sunshine
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
       if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+        echo "Setting up Homebrew environment..."
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
       fi
-      stop_homebrew_services
+      brew services stop sunshine || true
+      brew services stop sunshine-beta || true
     elif [[ "${OPTION,,}" =~ ^uninstall ]]; then
       if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+        echo "Setting up Homebrew environment..."
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
       fi
-      stop_homebrew_services
-      brew uninstall sunshine >/dev/null 2>&1 || true
-      brew uninstall sunshine-beta >/dev/null 2>&1 || true
+      brew services stop sunshine || true
+      brew services stop sunshine-beta || true
+      brew uninstall sunshine || true
+      brew uninstall sunshine-beta || true
     elif [[ "${OPTION,,}" =~ ^(portal|open) ]]; then
       echo "Opening Sunshine management portal..."
       xdg-open https://localhost:47990
