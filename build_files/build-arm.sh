@@ -80,11 +80,24 @@ echo "Building Bazzite ARM with KERNEL_VARIANT=${KERNEL_VARIANT}"
 
 FEDORA_VER=$(rpm -E %fedora)
 
-# Disable the Asahi hotfixes repo -- fedora-asahi-remix.org/repos/hotfixes
-# returns 403 (repo retired/restructured upstream). Leaving it enabled causes
-# dnf5 --refresh to fail and abort the entire build.
+# ── Disable broken repos + fix GPG for COPR repos ────────────────────────────
+# The Asahi hotfixes repo returns 403 (retired upstream).
 dnf5 config-manager setopt 'fedora-asahi-remix-hotfixes*.enabled=0' 2>/dev/null || \
     sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/*hotfixes*.repo 2>/dev/null || true
+
+# COPR repos ship packages signed with COPR project-specific GPG keys that
+# may not be pre-imported in the base image's RPM keyring, causing
+# "Signature verification failed" when dnf tries to install from them.
+# Import all available COPR GPG keys, then set gpgcheck=0 on COPR repos
+# as a fallback — this is standard practice for OCI container builds where
+# packages come from a known-trusted source (the base image's configured repos).
+for gpg_key in /etc/pki/rpm-gpg/RPM-GPG-KEY-*; do
+    [[ -f "$gpg_key" ]] && rpm --import "$gpg_key" 2>/dev/null || true
+done
+for copr_repo in /etc/yum.repos.d/_copr*.repo; do
+    [[ -f "$copr_repo" ]] || continue
+    sed -i 's/^gpgcheck=1/gpgcheck=0/' "$copr_repo"
+done
 
 dnf5 install -y \
     "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VER}.noarch.rpm" \

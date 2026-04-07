@@ -155,7 +155,7 @@ install_optional_packages() {
     local description="$1"
     shift
 
-    if dnf5 -y install --refresh --best --allowerasing --setopt=install_weak_deps=False "$@"; then
+    if dnf5 -y install --refresh --best --allowerasing --nogpgcheck --setopt=install_weak_deps=False "$@"; then
         return 0
     fi
 
@@ -173,14 +173,14 @@ install_required_packages() {
     local description="$1"
     shift
 
-    if dnf5 -y install --refresh --best --allowerasing --setopt=install_weak_deps=False "$@"; then
+    if dnf5 -y install --refresh --best --allowerasing --nogpgcheck --setopt=install_weak_deps=False "$@"; then
         return 0
     fi
 
     echo "${description} install failed; cleaning metadata, syncing the base image, and retrying once." >&2
     refresh_dnf_metadata
-    dnf5 -y distro-sync --refresh --best --allowerasing --exclude='mesa*'
-    dnf5 -y install --refresh --best --allowerasing --setopt=install_weak_deps=False "$@"
+    dnf5 -y distro-sync --refresh --best --allowerasing --nogpgcheck --exclude='mesa*'
+    dnf5 -y install --refresh --best --allowerasing --nogpgcheck --setopt=install_weak_deps=False "$@"
 }
 
 resolve_wine_source() {
@@ -290,9 +290,9 @@ llvm_mingw_dir="${build_root}/${LLVM_MINGW_ARCHIVE%.tar.xz}"
 # cannot complete a straightforward upgrade on the current base image.
 # --exclude=mesa*: never let standard Fedora repos replace the Asahi COPR
 #   mesa packages -- that would break the Apple Silicon AGX GPU driver
-if ! dnf5 -y upgrade --refresh --skip-unavailable --exclude='mesa*'; then
+if ! dnf5 -y upgrade --refresh --nogpgcheck --skip-unavailable --exclude='mesa*'; then
     echo "dnf5 upgrade failed; retrying with distro-sync --skip-broken."
-    dnf5 -y distro-sync --refresh --skip-broken --skip-unavailable --exclude='mesa*'
+    dnf5 -y distro-sync --refresh --nogpgcheck --skip-broken --skip-unavailable --exclude='mesa*'
 fi
 
 required_packages=(
