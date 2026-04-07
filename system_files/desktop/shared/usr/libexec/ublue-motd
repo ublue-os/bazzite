@@ -1,48 +1,12 @@
-#!/usr/bin/bash
+#!/usr/bin/env sh
 
-# Exit immediately if this is a Midnight Commander (mc) subshell.
-# Fixes issue #2003.
-if [[ -n "$MC_SID" ]]; then
-	exit 0
+MOTD_TEMPLATE_FILE="${MOTD_TEMPLATE_FILE:-/usr/share/ublue-os/motd/template.md}"
+. "${MOTD_ENV_SCRIPT:-/usr/share/ublue-os/motd/env.sh}"
+
+if command -v tput >/dev/null 2>&1 && [ -t 1 ]; then
+  cols=$(tput cols 2>/dev/null)
+  envsubst < "${MOTD_TEMPLATE_FILE}" | glow -w $cols -
+else
+  envsubst < "${MOTD_TEMPLATE_FILE}" | glow -
 fi
 
-escape() {
-	sed 's/[&/\]/\\&/g' <<< "$1"
-}
-
-TIP_FILE=$(ls "/usr/share/ublue-os/motd/tips/"*".md" | shuf -n 1)
-if [[ -f "$TIP_FILE" ]]; then
-	IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-	IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
-	IMAGE_NAME_ESCAPED=$(escape "$IMAGE_NAME")
-	IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
-	IMAGE_BRANCH_ESCAPED=$(escape "$IMAGE_BRANCH")
-	TIP="󰋼 $(shuf -n 1 "$TIP_FILE")"
-
-	IMAGE_DATE=$(rpm-ostree status --booted | sed -n 's/.*Timestamp: \(.*\)/\1/p')
-	IMAGE_DATE_SECONDS=$(date -d "$IMAGE_DATE" +%s)
-	CURRENT_SECONDS=$(date +%s)
-	DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE_SECONDS))
-	MONTH=$((30 * 24 * 60 * 60))
-	if [ "$DIFFERENCE" -ge "$MONTH" ]; then
-		TIP='# 󰇻 Your current image is over 1 month old, run `ujust update`'
-	fi
-
-	TIP_ESCAPED=$(escape "$TIP")
-
-	THEME=$(gsettings get org.gnome.desktop.interface accent-color || echo "'purple'")
-	THEME=${THEME//\'/}
-	THEME=${MOTD_FORCE_THEME:-$THEME}
-
-	GREENBOOT=""
-	if [[ -f /etc/motd.d/boot-status ]]; then
-		if grep -q "status is GREEN" /etc/motd.d/boot-status; then
-			GREENBOOT='Boot Status: Healthy 󰄳'
-		else
-			GREENBOOT=$(cat /etc/motd.d/boot-status)
-		fi
-	fi
-	GREENBOOT_ESCAPED=$(escape "$GREENBOOT")
-
-	sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" -e "s/%IMAGE_BRANCH%/$IMAGE_BRANCH_ESCAPED/g" -e "s/%TIP%/$TIP_ESCAPED/g" -e "s/%GREENBOOT%/$GREENBOOT_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | tr '~' '\n' | /usr/bin/glow -s /usr/share/ublue-os/motd/themes/$COLOR_SCHEME/$THEME.json -w 78 -
-fi
