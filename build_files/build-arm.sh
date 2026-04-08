@@ -251,6 +251,7 @@ else
 fi
 
 # Enable COPRs that have aarch64 builds
+dnf5 -y install dnf5-plugins || true
 if dnf5 -y copr enable ublue-os/staging 2>/dev/null; then
     dnf5 -y install --skip-broken --skip-unavailable \
         topgrade
@@ -261,7 +262,7 @@ if dnf5 -y copr enable ublue-os/packages 2>/dev/null; then
         uupd
 
     if [[ -f /usr/lib/systemd/system/uupd.service ]]; then
-        sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service
+        sed -i '/^ExecStart=/s|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service
     fi
 
     if [[ -f /usr/lib/systemd/system/uupd.timer ]]; then
@@ -457,6 +458,7 @@ default:
 JUSTFILE_HEADER
 
 for f in /usr/share/ublue-os/just/*.just; do
+    [[ -f "$f" ]] || continue
     name=$(basename "$f")
     echo "import \"/usr/share/ublue-os/just/$name\"" >> "$JUSTFILE"
 done
@@ -501,8 +503,8 @@ systemctl enable bazzite-first-boot-flatpaks.service || true
 
 # Lock down COPR repos post-build -- prevent unexpected package pulls on updates.
 # The Asahi COPRs must stay enabled (kernel, mesa, firmware updates).
-# Only disable the ones we added for build-time package installation.
-for repo in /etc/yum.repos.d/_copr*.repo; do
+# Only disable the ublue-os COPRs we added for build-time package installation.
+for repo in /etc/yum.repos.d/_copr*ublue-os*.repo; do
     if [[ -f "$repo" ]]; then
         sed -i 's/enabled=1/enabled=0/' "$repo"
     fi

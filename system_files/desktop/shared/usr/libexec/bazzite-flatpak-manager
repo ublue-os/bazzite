@@ -7,13 +7,13 @@ VER=34
 SCRIPT_HASH=$(tr -d '[:space:]' <"$0" | sha256sum | cut -d ' ' -f 1)
 VER="$VER-$SCRIPT_HASH"
 VER_FILE="/etc/bazzite/flatpak_manager_version"
-VER_RAN=$(cat "$VER_FILE")
+VER_RAN=$(cat "$VER_FILE" 2>/dev/null || true)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
+IMAGE_NAME=$(jq -r '."image-name"' < "$IMAGE_INFO")
 
 # IMAGE IDENTIFIERS
 KNOWN_IMAGE_NAME_FILE="/etc/bazzite/flatpak_manager_image_name"
-KNOWN_IMAGE_NAME=$(cat "$KNOWN_IMAGE_NAME_FILE")
+KNOWN_IMAGE_NAME=$(cat "$KNOWN_IMAGE_NAME_FILE" 2>/dev/null || true)
 
 # Run script if updated
 if [[ -f $VER_FILE && $VER = "$VER_RAN" ]]; then

@@ -238,7 +238,7 @@ while [[ -z "${BAZZITE_PASS}" ]]; do
     read -srp "  Password cannot be empty. Password: " BAZZITE_PASS
     echo ""
 done
-BAZZITE_PASS_HASH=$(openssl passwd -6 "${BAZZITE_PASS}")
+BAZZITE_PASS_HASH=$(printf '%s' "${BAZZITE_PASS}" | openssl passwd -6 -stdin)
 unset BAZZITE_PASS
 echo "  User '${BAZZITE_USER}' will be created after the build completes."
 echo ""
@@ -420,8 +420,9 @@ fi
 # and all attempts to write to /boot (including rpm-ostreed setup) fail with
 # "Read-only file system".
 BOOT_UUID=$(findmnt -no UUID /boot 2>/dev/null || true)
+BOOT_FSTYPE=$(findmnt -no FSTYPE /boot 2>/dev/null || echo "ext4")
 EFI_UUID=$(findmnt -no UUID /boot/efi 2>/dev/null || true)
-echo "Boot UUID:  ${BOOT_UUID:-NOT FOUND}"
+echo "Boot UUID:  ${BOOT_UUID:-NOT FOUND} (${BOOT_FSTYPE})"
 echo "EFI UUID:   ${EFI_UUID:-NOT FOUND}"
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -492,7 +493,7 @@ echo "--- Step 7: Inject user account into new deployment ---"
 DEPLOY_DIR=$(sudo ostree admin --sysroot=/ --print-current-dir 2>/dev/null || true)
 if [[ -z "$DEPLOY_DIR" || ! -d "$DEPLOY_DIR" ]]; then
     DEPLOY_DIR=$(find /ostree/deploy/fedora/deploy \
-        -maxdepth 1 -name "*.0" -type d \
+        -maxdepth 1 -type d -not -name deploy \
         -printf '%T@ %p\n' 2>/dev/null \
         | sort -rn | head -1 | cut -d' ' -f2)
 fi
@@ -511,7 +512,7 @@ if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
     sudo touch "${FSTAB}"
 
     if [[ -n "$BOOT_UUID" ]] && ! grep -q "UUID=${BOOT_UUID}" "${FSTAB}" 2>/dev/null; then
-        echo "UUID=${BOOT_UUID}  /boot  ext4  defaults  1  2" \
+        echo "UUID=${BOOT_UUID}  /boot  ${BOOT_FSTYPE}  defaults  1  2" \
             | sudo tee -a "${FSTAB}" > /dev/null
         echo "Added /boot (UUID=${BOOT_UUID}) to deployment fstab."
     fi
@@ -556,10 +557,12 @@ if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
             sudo chown "${NEXT_UID}:${NEXT_UID}" \
                 "${STATEROOT_VAR}/home/${NEW_USER}" 2>/dev/null || true
 
-            # Add to wheel for sudo
+            # Add to wheel for sudo (check membership first to avoid duplicates/malformation)
             if grep -q "^wheel:" "${DEPLOY_DIR}/etc/group"; then
-                sudo sed -i "/^wheel:/ s/$/,${NEW_USER}/" "${DEPLOY_DIR}/etc/group"
-                sudo sed -i "s/,${NEW_USER},${NEW_USER}/,${NEW_USER}/g" "${DEPLOY_DIR}/etc/group"
+                if ! grep -qE "^wheel:.*[:,]${NEW_USER}(,|$)" "${DEPLOY_DIR}/etc/group"; then
+                    sudo sed -i "/^wheel:/ s/$/,${NEW_USER}/" "${DEPLOY_DIR}/etc/group"
+                    sudo sed -i 's/:,/:/' "${DEPLOY_DIR}/etc/group"
+                fi
             fi
             echo "User '${NEW_USER}' created in deployment."
         else
@@ -571,6 +574,7 @@ if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
 else
     echo "WARNING: Could not find deployment directory. Log in as root after reboot."
 fi
+unset BAZZITE_PASS_HASH
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Step 7b: Inject external SSD fstab entry for auto-mount in Bazzite
@@ -654,21 +658,17 @@ echo "  ╚═══════════════════════
 echo ""
 if [[ -f /var/lib/bazzite-rebase-done ]]; then
     echo "  Status: COMPLETE -- run: sudo systemctl reboot"
+elif systemctl is-active --quiet bazzite-first-boot-rebase.service 2>/dev/null; then
+    echo "  Status: RUNNING -- rebase is in progress"
+    echo "  Watch:  journalctl -f -u bazzite-first-boot-rebase"
+elif [[ -d /var/lib/bazzite-install ]]; then
+    echo "  Status: PENDING -- will start automatically"
+    echo "  Watch:  journalctl -f -u bazzite-first-boot-rebase"
 else
-    echo "  Status: Ready -- will start automatically at login"
-    echo "  Or run now:"
-    echo "    sudo rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest"
+    echo "  Status: N/A -- no rebase data found"
 fi
 STATUS_EOF
     sudo chmod +x "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-status"
-
-    # MOTD -- shown at login
-    sudo tee "${DEPLOY_DIR}/etc/motd" > /dev/null << 'MOTD_EOF'
-  ╔══════════════════════════════════════════════════════╗
-  ║  Bazzite ARM: Log in to start the final rebase.      ║
-  ║  Rebase runs automatically after login (~2-5 min).   ║
-  ╚══════════════════════════════════════════════════════╝
-MOTD_EOF
 
     sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system"
 
@@ -687,7 +687,10 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -c 'rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest && rm -rf /var/lib/bazzite-install && touch /var/lib/bazzite-rebase-done && sleep 5 && systemctl reboot'
+ExecStart=/usr/bin/bash -c 'rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest'
+ExecStartPost=/usr/bin/touch /var/lib/bazzite-rebase-done
+ExecStartPost=/usr/bin/bash -c 'rm -rf /var/lib/bazzite-install || true'
+ExecStartPost=/usr/bin/bash -c 'sleep 5 && systemctl reboot'
 TimeoutStartSec=900
 StandardOutput=journal
 StandardError=journal
@@ -749,5 +752,5 @@ echo "================================================="
 echo ""
 read -rp "Reboot now? (y/N): " reboot_confirm
 if [[ "$reboot_confirm" == [yY] ]]; then
-    systemctl reboot
+    sudo systemctl reboot
 fi

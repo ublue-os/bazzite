@@ -58,7 +58,9 @@ sed -i "s|^VERSION_CODENAME=.*|VERSION_CODENAME=\"${BASE_IMAGE_NAME^}\"|" /usr/l
 echo "$IMAGE_PRETTY_NAME release $FEDORA_VERSION (${BASE_IMAGE_NAME^})" > /etc/system-release
 
 # Fix issues caused by ID no longer being fedora
-sed -i "s/^EFIDIR=.*/EFIDIR=\"fedora\"/" /usr/sbin/grub2-switch-to-blscfg
+if [[ -f /usr/sbin/grub2-switch-to-blscfg ]]; then
+  sed -i "s/^EFIDIR=.*/EFIDIR=\"fedora\"/" /usr/sbin/grub2-switch-to-blscfg
+fi
 
 if grep -q '^BUILD_ID=' /usr/lib/os-release; then
   sed -i "s/^BUILD_ID=.*/BUILD_ID=\"$VERSION_PRETTY\"/" /usr/lib/os-release
