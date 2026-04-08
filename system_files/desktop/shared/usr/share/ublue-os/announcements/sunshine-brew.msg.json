@@ -1,0 +1,6 @@
+{
+  "title": "Changes to Sunshine on Bazzite",
+  "seeMoreUrl": "https://docs.bazzite.gg/Advanced/sunshine-brew/#what-should-i-do-if-i-am-currently-using-sunshine",
+  "body": "\n<b>Bazzite noticed you are using Sunshine actively on your system!</b>\nThis notifier is to let you know that Sunshine will soon be removed from the base Bazzite image, and you will need to reinstall it with brew.\n",
+  "if": "bash -c '[[ -f \"$HOME/.config/sunshine/sunshine.conf\" && $(journalctl --no-hostname -g sunshine -b -1 -n 1) != \"-- No entries --\" && $(ls /home/linuxbrew/.linuxbrew/Cellar/ | grep sunshine) == \"\" ]]'"
+}
