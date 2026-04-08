@@ -298,6 +298,10 @@ if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
     fi
 
     PODMAN_EXT_ROOT="${EXTERNAL_BUILD_PATH}/podman-build"
+    if [[ -d "${PODMAN_EXT_ROOT}" ]]; then
+        echo "Removing stale external build storage at ${PODMAN_EXT_ROOT}..."
+        sudo rm -rf "${PODMAN_EXT_ROOT}"
+    fi
     sudo mkdir -p "${PODMAN_EXT_ROOT}"
 
     FUSE_OVERLAYFS_BIN=$(command -v fuse-overlayfs || true)
@@ -346,6 +350,7 @@ if sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
 else
     cd "${REPO_ROOT}"
     sudo podman build \
+        --no-cache \
         --platform linux/arm64 \
         -f Containerfile.arm \
         --build-arg BASE_IMAGE_NAME=kinoite \

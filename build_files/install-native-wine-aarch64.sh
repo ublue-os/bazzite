@@ -47,10 +47,7 @@ runtime_packages=(
     libXrender
     libpcap
     libpng
-    libv4l
-    nss-mdns
     pulseaudio-libs
-    sane-backends-libs
     samba-client-libs
     samba-libs
     libswresample-free
@@ -61,7 +58,6 @@ runtime_packages=(
 build_packages=(
     SDL2-devel
     alsa-lib-devel
-    audiofile-devel
     autoconf
     bison
     clang
@@ -69,17 +65,13 @@ build_packages=(
     dbus-devel
     flex
     fontconfig-devel
-    fontforge
-    fontpackages-devel
     freetype-devel
     freeglut-devel
     gettext-devel
     giflib-devel
     gnutls-devel
-    gsm-devel
     gstreamer1-devel
     gstreamer1-plugins-base-devel
-    icoutils
     lld
     libX11-devel
     libXcomposite-devel
@@ -91,15 +83,11 @@ build_packages=(
     libXrender-devel
     libXxf86dga-devel
     libXxf86vm-devel
-    libappstream-glib
     libglvnd-devel
-    libgphoto2-devel
-    libieee1284-devel
     libpcap-devel
     librsvg2-devel
     libstdc++-devel
     libunwind-devel
-    libv4l-devel
     libxkbcommon-devel
     make
     mesa-libGL-devel
@@ -110,7 +98,6 @@ build_packages=(
     openldap-devel
     pcsc-lite-devel
     pulseaudio-libs-devel
-    sane-backends-devel
     samba-devel
     systemd-devel
     vulkan-devel
@@ -120,10 +107,18 @@ build_packages=(
 
 optional_runtime_packages=(
     unixODBC
+    nss-mdns
+    sane-backends-libs
+    libv4l
 )
 
 optional_build_packages=(
     unixODBC-devel
+    sane-backends-devel
+    libgphoto2-devel
+    libieee1284-devel
+    gsm-devel
+    libv4l-devel
 )
 
 build_root=""
