@@ -672,11 +672,11 @@ MOTD_EOF
 
     sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system"
 
-    # First-boot rebase service: runs AFTER the user has fully logged in
-    # at the TTY. Uses a systemd service instead of profile.d so:
-    #   - It does not overlap with the login password prompt
-    #   - It runs as root directly (no sudo needed — no password overlap)
-    #   - It only runs once (ConditionPathExists guard)
+    # First-boot rebase service: runs silently in the background as root.
+    # Output goes only to the journal (not the console) so it never overlaps
+    # with the login prompt. The MOTD tells users to check journalctl.
+    # After=multi-user.target ensures the system is fully booted before
+    # the rebase starts.
     sudo tee "${DEPLOY_DIR}/etc/systemd/system/bazzite-first-boot-rebase.service" > /dev/null << 'SVC_EOF'
 [Unit]
 Description=Bazzite ARM - First Boot Rebase
@@ -687,12 +687,10 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-ExecStartPre=/usr/bin/bash -c 'echo ""; echo "  ╔═══════════════════════════════════════════════════╗"; echo "  ║         Bazzite ARM - Final Installation          ║"; echo "  ║                                                   ║"; echo "  ║  Rebasing to Bazzite ARM. This takes ~2-5 min.    ║"; echo "  ║  The system reboots automatically when done.      ║"; echo "  ╚═══════════════════════════════════════════════════╝"; echo ""'
-ExecStart=/usr/bin/bash -c 'rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest && rm -rf /var/lib/bazzite-install && touch /var/lib/bazzite-rebase-done && echo "  ✓ Rebase complete! Rebooting in 5 seconds..." && sleep 5 && systemctl reboot'
-ExecStopPost=/usr/bin/bash -c 'if [ ! -f /var/lib/bazzite-rebase-done ]; then echo "  ✗ Rebase failed. Run manually: sudo rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest"; fi'
+ExecStart=/usr/bin/bash -c 'rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest && rm -rf /var/lib/bazzite-install && touch /var/lib/bazzite-rebase-done && sleep 5 && systemctl reboot'
 TimeoutStartSec=900
-StandardOutput=journal+console
-StandardError=journal+console
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
@@ -703,16 +701,23 @@ SVC_EOF
     sudo ln -sf /etc/systemd/system/bazzite-first-boot-rebase.service \
         "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service"
 
-    # MOTD -- shown at login so user knows what's happening
+    # MOTD -- shown at login so user knows rebase is running silently
     sudo tee "${DEPLOY_DIR}/etc/motd" > /dev/null << 'MOTD_EOF'
+
   ╔══════════════════════════════════════════════════════════════╗
-  ║  Bazzite ARM: The final rebase is running automatically.     ║
-  ║  Check progress: journalctl -f -u bazzite-first-boot-rebase  ║
-  ║  The system will reboot when done (~2-5 minutes).            ║
+  ║  Bazzite ARM: The final rebase is running in the background. ║
+  ║  It runs silently -- no output will appear on screen.        ║
+  ║                                                              ║
+  ║  Check progress:                                             ║
+  ║    journalctl -f -u bazzite-first-boot-rebase                ║
+  ║                                                              ║
+  ║  The system reboots automatically when done (~2-5 min).      ║
+  ║  DO NOT reboot manually -- just wait.                        ║
   ╚══════════════════════════════════════════════════════════════╝
+
 MOTD_EOF
 
-    echo "First-boot rebase installed (systemd service, runs as root — no sudo overlap)."
+    echo "First-boot rebase installed (silent systemd service, output to journal only)."
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────
