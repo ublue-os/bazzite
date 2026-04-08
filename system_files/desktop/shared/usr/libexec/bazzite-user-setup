@@ -46,28 +46,6 @@ fi
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup "$USER"
 
-PTYXIS_THEME_DIR="/etc/skel/.local/share/org.gnome.Ptyxis/palettes"
-PTYXIS_DIR="$HOME/.local/share/org.gnome.Ptyxis/palettes"
-mkdir -p "$PTYXIS_DIR"
-if [[ ! -f "$PTYXIS_DIR/vapor.palette" ]]; then
-  cp "$PTYXIS_THEME_DIR/vapor.palette" "$PTYXIS_DIR/vapor.palette"
-fi
-if [[ ! -f "$PTYXIS_DIR/vgui2.palette" ]]; then
-  cp "$PTYXIS_THEME_DIR/vgui2.palette" "$PTYXIS_DIR/vgui2.palette"
-fi
-
-# Initialize Ptyxis config
-# This is intentionally run on both images to ensure a user rebasing from Silverblue to Kinoite
-# doesn't get their Ptyxis config wiped out.
-if [[ ! -f "$BAZZITE_CONFIG_DIR/ptyxis-initialized" ]]; then
-  echo 'Configuring Ptyxis'
-  if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
-    dconf load / < /usr/share/ublue-os/dconfs/desktop-kinoite/zz0-00-bazzite-desktop-kinoite-global
-    dconf load / < /usr/share/ublue-os/dconfs/desktop-kinoite/00-bazzite-desktop-kinoite-ptyxis
-  fi
-  touch "$BAZZITE_CONFIG_DIR/ptyxis-initialized"
-fi
-
 if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   echo 'Running setup for Kinoite'
 
@@ -109,6 +87,16 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   fi
 else
   echo 'Running setup for Silverblue'
+
+  PTYXIS_THEME_DIR="/etc/skel/.local/share/org.gnome.Ptyxis/palettes"
+  PTYXIS_DIR="$HOME/.local/share/org.gnome.Ptyxis/palettes"
+  mkdir -p "$PTYXIS_DIR"
+  if [[ ! -f "$PTYXIS_DIR/vapor.palette" ]]; then
+    cp "$PTYXIS_THEME_DIR/vapor.palette" "$PTYXIS_DIR/vapor.palette"
+  fi
+  if [[ ! -f "$PTYXIS_DIR/vgui2.palette" ]]; then
+    cp "$PTYXIS_THEME_DIR/vgui2.palette" "$PTYXIS_DIR/vgui2.palette"
+  fi
 
   if [[ ! -f "$BAZZITE_CONFIG_DIR/tiling-fix" ]]; then
     dconf write /org/gnome/mutter/edge-tiling true

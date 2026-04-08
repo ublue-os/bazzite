@@ -11,29 +11,41 @@
 # 0: Success (e.g., upgrade available, --supports-duplicate-detection handled, or script completed even if upgrade failed).
 # 7: Failure (e.g., uupd not installed, upgrade already installed, update checks failed, or connectivity check failed).
 
-# Fake upgrade progress bar
-_fake_progress() {
-    local value=0
-    while [ ! -f '/tmp/upgrade-check' ]; do
-        sleep 12
-        if [ ${value} -lt '100' ]; then
-            echo ${value}'%'
-            value=$((value + 1))
-        fi
-    done
-    echo 100%
-}
-
 _upgrade() {
     # Log rotate the last session
-    if [ -f "${HOME}"/.steamos-update.log ]; then
-        cp "${HOME}"/.steamos-update.log "${HOME}"/.steamos-update.log.old
+    if [ -f "${HOME}/.steamos-update.log" ]; then
+        cp "${HOME}/.steamos-update.log" "${HOME}/.steamos-update.log.old"
     fi
+    : > "${HOME}/.steamos-update.log"
 
-    # Pull exit code from uupd
-    systemctl start uupd.service >"${HOME}"/.steamos-update.log 2>&1
-    echo $? >/tmp/upgrade-check
+    local last_pct=-1
+    local uupd_status
+
+    # Run uupd and capture its exit code
+    {
+        runcon system_u:unconfined_r:unconfined_t:s0 \
+            /usr/bin/uupd --hw-check=false --disable-module-brew --disable-module-distrobox \
+            --disable-module-flatpak --json --log-level debug 2>&1
+        echo $? > /tmp/uupd_exit_code
+    } | while IFS= read -r line; do
+        echo "$line" >> "${HOME}/.steamos-update.log"
+
+        pct=$(echo "$line" | jq -r 'select(.msg == "Updating") | .step_progress // empty' 2>/dev/null)
+        if [[ -n "$pct" ]]; then
+            pct=${pct%.*}
+            if [[ "$pct" -ne "$last_pct" ]]; then
+                echo "${pct}%"
+                last_pct=$pct
+            fi
+        fi
+    done
+
+    uupd_status=$(cat /tmp/uupd_exit_code)
+    rm -f /tmp/uupd_exit_code
+
+    return "$uupd_status"
 }
+
 
 # The first time the steam client starts in deck mode, it will attempt to fetch an update.
 # We must exit the first time, otherwise you have users stuck when booting up the first time.
@@ -71,6 +83,10 @@ if ! command -v uupd >/dev/null; then
     exit 7 # uupd not installed
 fi
 
+if ! command -v jq >/dev/null; then
+    exit 7 # jq not installed
+fi
+
 if [ -n "${_CHECK}" ]; then
     if [ -f '/tmp/upgrade-installed' ]; then
         exit 7 # Upgrade already installed
@@ -89,11 +105,8 @@ if [ -n "${_CHECK}" ]; then
     fi
 else
     # We are triggering update
-    _upgrade | _fake_progress
-    # Check if upgrade failed
-    UPGRADE_CHECK=$(cat /tmp/upgrade-check)
-    rm /tmp/upgrade-check
-    if [ "${UPGRADE_CHECK}" -eq 0 ]; then
+    _upgrade
+    if [ $? -eq 0 ]; then
         touch /tmp/upgrade-installed
     else
         exit 0 # Upgrade failed

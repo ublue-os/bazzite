@@ -283,17 +283,6 @@ if [ ! -f /etc/hostname ]; then
   touch /etc/hostname
 fi
 
-# Remove old hhd@ enables
-# Check if we've already removed old hhd@ service enablements
-if [ ! -f /etc/bazzite/fixups/hhd_service_cleanup ]; then
-  echo "Cleaning up old hhd@ service enables"
-  for service in $(systemctl list-units --type=service --all 'hhd@*.service' --no-legend | awk '{print $1}'); do
-    echo "Disabling $service"
-    systemctl disable --now "$service" || true
-  done
-  touch /etc/bazzite/fixups/hhd_service_cleanup
-fi
-
 if [[ -n "$NEEDED_KARGS" ]]; then
   echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
   plymouth display-message --text="Preparing System - Please wait, this may take a while" || true

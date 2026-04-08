@@ -13,7 +13,7 @@ AUTOLOGIN_CONF='/etc/sddm.conf.d/zz-steamos-autologin.conf'
 if [[ -f $HOME/.local/share/Steam/ubuntu12_32/steamui.so ]]; then
   {
     echo "[Autologin]"
-    echo "Session=gamescope-session.desktop"
+    echo "Session=gamescope-session-ogui-steam.desktop"
   } > "$AUTOLOGIN_CONF"
 fi
 

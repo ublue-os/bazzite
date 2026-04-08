@@ -40,6 +40,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
   cancel-in-progress: true
 
+env:
+  REPO_OWNER: ${{ github.repository_owner }}
+
 jobs:
   push-ghcr:
     name: Make
@@ -67,7 +70,8 @@ jobs:
           - bazzite-gnome-nvidia-open
         include:
           - fedora_version: 43
-            kernel_version: ${{ (github.ref_name == 'testing' || github.ref_name == 'unstable') && 'latest' || 'latest' }}
+            kernel_flavor: ogc
+            kernel_version: 6.19.10-ogc1.1.fc43.x86_64
             base_image_flavor: main
             arch: x86_64
     steps:
@@ -92,6 +96,11 @@ jobs:
         if: ${{ steps.check_mnt.outputs.mnt_is_there == '1' }}
         with:
           target-dir: /var/lib/containers
+
+      # The image registry name must be lower-case, but GitHub usernames can be capitalized.
+      - name: Get lower-case equivalent of the repository owner's username
+        id: repo_owner_case
+        run: echo "lowercase=${REPO_OWNER,,}" >> "$GITHUB_OUTPUT"
 
       - name: Define base variables
         id: base
@@ -124,18 +133,18 @@ jobs:
             echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT" # NOOP
             echo "install_nvidia=false" >> "$GITHUB_OUTPUT"
           fi
-          # Nvidia driver version to use
+          # Nvidia flavor
           if [[ "$IMAGE" == *"nvidia-open" || "$IMAGE" == *"-deck-nvidia"* ]]; then
-            echo "nvidia_version=org.bazzite.kernel.nvidia" >> "$GITHUB_OUTPUT"
+            echo "nvidia_flavor=nvidia-open" >> "$GITHUB_OUTPUT"
           else
-            echo "nvidia_version=org.bazzite.kernel.nvidia_lts" >> "$GITHUB_OUTPUT"
+            echo "nvidia_flavor=nvidia-lts" >> "$GITHUB_OUTPUT"
           fi
 
           #
           # Define push and pull registries
           #
           PULL_REGISTRY=ghcr.io/ublue-os
-          PUSH_REGISTRY=ghcr.io/${{ github.repository_owner }}
+          PUSH_REGISTRY=ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}
           echo "push_registry=${PUSH_REGISTRY}" >> $GITHUB_OUTPUT
           echo "pull_registry=${PULL_REGISTRY}" >> $GITHUB_OUTPUT
           echo "output_image=${PUSH_REGISTRY}/${{ matrix.image }}" >> $GITHUB_OUTPUT
@@ -145,10 +154,8 @@ jobs:
           IMAGEREF="$PULL_REGISTRY/${{ matrix.image }}:stable"
           echo "prev_ref=${IMAGEREF}" >> $GITHUB_OUTPUT
 
-          KERNEL_URI=ghcr.io/bazzite-org/kernel-bazzite:${{ matrix.kernel_version }}-f${{ matrix.fedora_version }}-${{ matrix.arch }}
-          echo "kernel_ref=${KERNEL_URI}" >> $GITHUB_OUTPUT
-          NVIDIA_URI=ghcr.io/bazzite-org/nvidia-drivers
-          echo "nvidia_ref=${NVIDIA_URI}" >> $GITHUB_OUTPUT
+          AKMODS_TAG="${{ matrix.kernel_flavor }}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}"
+          echo "akmods_tag=${AKMODS_TAG}" >> $GITHUB_OUTPUT
 
           echo "Generated the following:"
           cat $GITHUB_OUTPUT
@@ -217,25 +224,15 @@ jobs:
           echo "pretty=${PRETTY_VERSION}" >> $GITHUB_OUTPUT
 
           #
-          # Kernel and NVIDIA versions
+          # Kernel & akmods
           #
-          # This needs to be tweaked, we need to verify a digest
-          # and to confirm it is from a protected branch
-          gh attestation verify -R bazzite-org/kernel-bazzite \
-            "oci://${{ steps.base.outputs.kernel_ref }}" --deny-self-hosted-runners
-          sudo podman pull ${{ steps.base.outputs.kernel_ref }}
+          AKMODS_TAG="${{ steps.base.outputs.akmods_tag }}"
+          sudo podman pull ghcr.io/ublue-os/akmods:${AKMODS_TAG}
+          # sudo podman pull ghcr.io/ublue-os/akmods-extra:${AKMODS_TAG}
 
           if [ "${{ steps.base.outputs.install_nvidia }}" == "true" ]; then
-            sudo skopeo inspect docker://${{ steps.base.outputs.kernel_ref }} > kernel_source.json
-            NVIDIA_VERSION=$(jq -r '.Labels["${{ steps.base.outputs.nvidia_version }}"]' kernel_source.json)
-            NVIDIA_REF="${{ steps.base.outputs.nvidia_ref }}:${NVIDIA_VERSION}-f${{ matrix.fedora_version }}-${{ matrix.arch }}"
-            # Same as above, we verify the uri moments before we pull it
-            gh attestation verify -R bazzite-org/nvidia-drivers \
-              "oci://$NVIDIA_REF" --deny-self-hosted-runners --source-ref "refs/heads/master"
-            sudo podman pull "$NVIDIA_REF"
-            echo "nvidia_ref=$NVIDIA_REF" >> $GITHUB_OUTPUT
-          else
-            echo "nvidia_ref=none" >> $GITHUB_OUTPUT
+            NVIDIA_FLAVOR="${{ steps.base.outputs.nvidia_flavor }}"
+            sudo podman pull "ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${AKMODS_TAG}"
           fi
 
 
@@ -250,10 +247,11 @@ jobs:
           FEDORA_VERSION=${{ matrix.fedora_version }}
           BASE_IMAGE=${{ steps.base.outputs.base_image }}
           IMAGE_NAME=${{ matrix.image }}
-          IMAGE_VENDOR=${{ github.repository_owner }}
+          IMAGE_VENDOR=${{ steps.repo_owner_case.outputs.lowercase }}
           IMAGE_BRANCH=${{ github.ref_name }}
-          KERNEL_REF=${{ steps.base.outputs.kernel_ref }}
-          NVIDIA_REF=${{ steps.labels.outputs.nvidia_ref }}
+          KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
+          KERNEL_VERSION=${{ matrix.kernel_version }}
+          NVIDIA_FLAVOR=${{ steps.base.outputs.nvidia_flavor }}
           NVIDIA_BASE=${{ steps.base.outputs.nvidia_base }}
           SHA_HEAD_SHORT=${{ steps.base.outputs.sha_head_short }}
           VERSION_TAG=${{ steps.labels.outputs.tag }}
@@ -402,15 +400,12 @@ jobs:
           # Figure out config
           kver=$(sudo podman run --rm "$img" rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
           filter='{ "packages": [inputs | split(" ") | select(length==2) | { (.[0]): .[1] }] | sort_by(keys) | add }'
-          manifest=$(sudo podman run --rm "$img" rpm -qa --qf '%{NAME} %{VERSION}-%{RELEASE}\n' \
-              | sed -e 's/\.fc[0-9][0-9]*$//' | jq -Rnc "$filter")
           mapfile -t labels <<< "$IMAGE_LABELS"
           labels+=(
             "org.opencontainers.image.version=$version"
             "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
             "ostree.bootable=true"
             "ostree.linux=$kver"
-            "dev.hhd.rechunk.info=$manifest"
           )
 
           # Apply config to labels and annotations
@@ -534,7 +529,7 @@ jobs:
 
       - name: Install ORAS
         if: github.event_name != 'pull_request'
-        uses: oras-project/setup-oras@22ce207df3b08e061f537244349aac6ae1d214f6 # v1.2.4
+        uses: oras-project/setup-oras@38de303aac69abb66f3e6255b7198bff35f323e3 # v2.0.0
 
       - name: Login to GitHub Container Registry with ORAS
         if: github.event_name != 'pull_request'
