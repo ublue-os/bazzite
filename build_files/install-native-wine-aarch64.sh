@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+if [[ "${SKIP_WINE:-0}" == "1" ]]; then
+    echo "Skipping native Wine aarch64 build (SKIP_WINE=1)."
+    exit 0
+fi
+
 WINE_VERSION="${WINE_VERSION:-}"
 WINE_SOURCE_SERIES="${WINE_SOURCE_SERIES:-}"
 WINE_SOURCE_URL="${WINE_SOURCE_URL:-}"
