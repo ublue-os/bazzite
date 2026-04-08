@@ -706,9 +706,9 @@ SVC_EOF
     # MOTD -- shown at login so user knows what's happening
     sudo tee "${DEPLOY_DIR}/etc/motd" > /dev/null << 'MOTD_EOF'
   ╔══════════════════════════════════════════════════════════════╗
-  ║  Bazzite ARM: The final rebase is running automatically.    ║
-  ║  Check progress: journalctl -f -u bazzite-first-boot-rebase ║
-  ║  The system will reboot when done (~2-5 minutes).           ║
+  ║  Bazzite ARM: The final rebase is running automatically.     ║
+  ║  Check progress: journalctl -f -u bazzite-first-boot-rebase  ║
+  ║  The system will reboot when done (~2-5 minutes).            ║
   ╚══════════════════════════════════════════════════════════════╝
 MOTD_EOF
 
