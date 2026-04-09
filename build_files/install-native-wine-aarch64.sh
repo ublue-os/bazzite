@@ -33,9 +33,6 @@ runtime_packages=(
     OpenCL-ICD-Loader
     SDL2
     cups-libs
-    libavcodec-free
-    libavformat-free
-    libavutil-free
     freetype
     gnutls
     gstreamer1
@@ -48,10 +45,6 @@ runtime_packages=(
     libpcap
     libpng
     pulseaudio-libs
-    samba-client-libs
-    samba-libs
-    libswresample-free
-    libswscale-free
     vulkan-loader
 )
 
@@ -91,14 +84,11 @@ build_packages=(
     libxkbcommon-devel
     make
     mesa-libGL-devel
-    mesa-libGLU-devel
     OpenCL-ICD-Loader-devel
-    ffmpeg-free-devel
     opencl-headers
     openldap-devel
     pcsc-lite-devel
     pulseaudio-libs-devel
-    samba-devel
     systemd-devel
     vulkan-devel
     wayland-devel
@@ -110,6 +100,13 @@ optional_runtime_packages=(
     nss-mdns
     sane-backends-libs
     libv4l
+    samba-client-libs
+    samba-libs
+    libavcodec-free
+    libavformat-free
+    libavutil-free
+    libswresample-free
+    libswscale-free
 )
 
 optional_build_packages=(
@@ -119,6 +116,9 @@ optional_build_packages=(
     libieee1284-devel
     gsm-devel
     libv4l-devel
+    ffmpeg-free-devel
+    samba-devel
+    mesa-libGLU-devel
 )
 
 build_root=""
