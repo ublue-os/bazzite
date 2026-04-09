@@ -4,21 +4,6 @@ set -eoux pipefail
 
 export BUILDAH_PLATFORM=linux/arm64
 
-# ── Fix RPM database virtual provides ────────────────────────────────────────
-# The Asahi Remix F43 atomic base image is built via ostree, not rpm directly.
-# The RPM database may be missing auto-generated virtual provides like
-# rtld(GNU_HASH) and linux-aarch64.so.1(GLIBC_*) which glibc normally
-# registers at install time. Without these, dnf5 cannot resolve dependencies
-# for ANY package that requires them, causing mass transaction failures.
-# Force glibc to re-register by rebuilding the RPM DB and reinstalling glibc.
-echo "Rebuilding RPM database and re-registering glibc virtual provides..."
-rpm --rebuilddb
-dnf5 -y reinstall glibc glibc-common 2>/dev/null || \
-    rpm -q --provides glibc | head -5
-echo "RPM DB rebuilt. Checking rtld(GNU_HASH):"
-rpm -q --provides glibc | grep -i "rtld\|GNU_HASH" || echo "  (not found — packages with rtld deps will use --skip-broken)"
-# ─────────────────────────────────────────────────────────────────────────────
-
 restore_kernel_install_tools() {
     if [[ -d /usr/lib/kernel/install.d ]]; then
         for _backup in /usr/lib/kernel/install.d/*.install.bak; do

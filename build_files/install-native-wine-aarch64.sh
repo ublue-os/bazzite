@@ -18,6 +18,13 @@ LLVM_MINGW_SHA256="${LLVM_MINGW_SHA256:-}"
 
 WINE_TAGS_API="https://gitlab.winehq.org/api/v4/projects/wine%2Fwine/repository/tags?per_page=100"
 LLVM_MINGW_RELEASES_API="https://api.github.com/repos/mstorsjo/llvm-mingw/releases"
+CURL_COMMON_ARGS=(
+    -LfsS
+    --retry 5
+    --retry-all-errors
+    --retry-delay 2
+    --connect-timeout 20
+)
 
 if [[ "$(uname -m)" != "aarch64" ]]; then
     echo "Native Wine installation is only supported on aarch64 builders" >&2
@@ -123,6 +130,9 @@ optional_build_packages=(
 
 build_root=""
 odbc_enabled=0
+required_build_cleanup_list=""
+optional_build_cleanup_list=""
+optional_failed_cleanup_list=""
 
 cleanup() {
     if [[ -n "${build_root}" ]]; then
@@ -131,7 +141,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-remove_installed_packages() {
+resolve_installed_package_names() {
     local installed_package
     local package
     local query_output
@@ -147,7 +157,43 @@ remove_installed_packages() {
     done
 
     if (( ${#installed_packages[@]} > 0 )); then
-        dnf5 -y remove "${!installed_packages[@]}"
+        printf '%s\n' "${!installed_packages[@]}" | sort -u
+    fi
+}
+
+snapshot_installed_packages() {
+    local output_file="$1"
+    rpm -qa --qf '%{NAME}\n' | sort -u > "${output_file}"
+}
+
+record_newly_installed_packages() {
+    local before_file="$1"
+    local output_file="$2"
+    local package_name
+    local -a package_names=()
+
+    shift 2
+    mapfile -t package_names < <(resolve_installed_package_names "$@")
+    : > "${output_file}"
+
+    for package_name in "${package_names[@]}"; do
+        if ! grep -Fxq "${package_name}" "${before_file}"; then
+            printf '%s\n' "${package_name}" >> "${output_file}"
+        fi
+    done
+
+    sort -u -o "${output_file}" "${output_file}"
+}
+
+remove_package_list_file() {
+    local list_file="$1"
+    local -a package_names=()
+
+    [[ -s "${list_file}" ]] || return 0
+
+    mapfile -t package_names < "${list_file}"
+    if (( ${#package_names[@]} > 0 )); then
+        dnf5 -y remove "${package_names[@]}"
     fi
 }
 
@@ -160,7 +206,6 @@ install_optional_packages() {
     fi
 
     echo "Optional ${description} packages could not be installed; continuing without ${description} support." >&2
-    dnf5 -y remove "$@" >/dev/null 2>&1 || true
     return 1
 }
 
@@ -173,13 +218,13 @@ install_required_packages() {
     local description="$1"
     shift
 
-    if dnf5 -y install --refresh --best --allowerasing --nogpgcheck --skip-broken --setopt=install_weak_deps=False "$@"; then
+    if dnf5 -y install --refresh --best --allowerasing --nogpgcheck --setopt=install_weak_deps=False "$@"; then
         return 0
     fi
 
     echo "${description} install failed; cleaning metadata and retrying once." >&2
     refresh_dnf_metadata
-    dnf5 -y install --refresh --allowerasing --nogpgcheck --skip-broken --setopt=install_weak_deps=False "$@"
+    dnf5 -y install --refresh --best --allowerasing --nogpgcheck --setopt=install_weak_deps=False "$@"
 }
 
 resolve_wine_source() {
@@ -197,7 +242,7 @@ resolve_wine_source() {
 
     if [[ -z "${WINE_VERSION}" ]]; then
         wine_tag="$(
-            curl -LfsS --retry 5 --retry-delay 2 "${WINE_TAGS_API}" |
+            curl "${CURL_COMMON_ARGS[@]}" "${WINE_TAGS_API}" |
                 jq -r 'first(.[] | .name | select(test("^wine-[0-9]+\\.[0-9]+$"))) // empty'
         )"
 
@@ -215,7 +260,7 @@ resolve_wine_source() {
     if [[ -z "${WINE_SOURCE_SHA512}" ]]; then
         sha512_manifest_url="https://dl.winehq.org/wine/source/${WINE_SOURCE_SERIES}/sha512sums.asc"
         WINE_SOURCE_SHA512="$(
-            curl -LfsS --retry 5 --retry-delay 2 "${sha512_manifest_url}" |
+            curl "${CURL_COMMON_ARGS[@]}" "${sha512_manifest_url}" |
                 awk -v source_name="wine-${WINE_VERSION}.tar.xz" '$2 == source_name { print $1; exit }'
         )"
 
@@ -249,7 +294,7 @@ resolve_llvm_mingw_release() {
     fi
 
     if [[ -z "${LLVM_MINGW_VERSION}" || -z "${LLVM_MINGW_ARCHIVE}" || -z "${LLVM_MINGW_URL}" || -z "${LLVM_MINGW_SHA256}" ]]; then
-        release_json="$(curl -LfsS --retry 5 --retry-delay 2 "${release_api}")"
+        release_json="$(curl "${CURL_COMMON_ARGS[@]}" "${release_api}")"
         LLVM_MINGW_VERSION="${LLVM_MINGW_VERSION:-$(jq -r '.tag_name // empty' <<< "${release_json}")}"
         LLVM_MINGW_ARCHIVE="${LLVM_MINGW_ARCHIVE:-$(
             jq -r 'first(.assets[] | .name | select(test("^llvm-mingw-[0-9]+-ucrt-ubuntu-22\\.04-aarch64\\.tar\\.xz$"))) // empty' \
@@ -283,6 +328,11 @@ source_dir="${build_root}/wine-${WINE_VERSION}"
 build_dir="${build_root}/build"
 llvm_mingw_tarball="${build_root}/${LLVM_MINGW_ARCHIVE}"
 llvm_mingw_dir="${build_root}/${LLVM_MINGW_ARCHIVE%.tar.xz}"
+required_before_packages="${build_root}/required-before.txt"
+required_build_cleanup_list="${build_root}/required-build-cleanup.txt"
+optional_before_packages="${build_root}/optional-before.txt"
+optional_build_cleanup_list="${build_root}/optional-build-cleanup.txt"
+optional_failed_cleanup_list="${build_root}/optional-failed-cleanup.txt"
 
 # No system upgrade here — build-arm.sh already ran dnf5 update --refresh
 # in the previous Containerfile layer. Running it again pulls in unrelated
@@ -295,13 +345,19 @@ required_packages=(
     "${build_packages[@]}"
 )
 
+snapshot_installed_packages "${required_before_packages}"
 install_required_packages "Wine runtime/build dependency" "${required_packages[@]}"
+record_newly_installed_packages "${required_before_packages}" "${required_build_cleanup_list}" "${build_packages[@]}"
 
+snapshot_installed_packages "${optional_before_packages}"
 if install_optional_packages "ODBC runtime" "${optional_runtime_packages[@]}" &&
     install_optional_packages "ODBC build" "${optional_build_packages[@]}"; then
     odbc_enabled=1
+    record_newly_installed_packages "${optional_before_packages}" "${optional_build_cleanup_list}" "${optional_build_packages[@]}"
 else
-    remove_installed_packages "${optional_build_packages[@]}" "${optional_runtime_packages[@]}"
+    record_newly_installed_packages "${optional_before_packages}" "${optional_failed_cleanup_list}" \
+        "${optional_build_packages[@]}" "${optional_runtime_packages[@]}"
+    remove_package_list_file "${optional_failed_cleanup_list}"
 fi
 
 mkdir -p "${tool_bin}"
@@ -311,14 +367,14 @@ if command -v llvm-dlltool >/dev/null 2>&1; then
 elif command -v llvm-dlltool-20 >/dev/null 2>&1; then
     ln -sf "$(command -v llvm-dlltool-20)" "${tool_bin}/dlltool"
 else
-    curl -LfsS --retry 5 --retry-delay 2 "${LLVM_MINGW_URL}" -o "${llvm_mingw_tarball}"
+    curl "${CURL_COMMON_ARGS[@]}" "${LLVM_MINGW_URL}" -o "${llvm_mingw_tarball}"
     echo "${LLVM_MINGW_SHA256}  ${llvm_mingw_tarball}" | sha256sum -c -
     tar -xf "${llvm_mingw_tarball}" -C "${build_root}"
     export PATH="${llvm_mingw_dir}/bin:${PATH}"
     ln -sf "${llvm_mingw_dir}/bin/llvm-dlltool" "${tool_bin}/dlltool"
 fi
 
-curl -LfsS --retry 5 --retry-delay 2 "${WINE_SOURCE_URL}" -o "${source_tarball}"
+curl "${CURL_COMMON_ARGS[@]}" "${WINE_SOURCE_URL}" -o "${source_tarball}"
 echo "${WINE_SOURCE_SHA512}  ${source_tarball}" | sha512sum -c -
 
 tar -xf "${source_tarball}" -C "${build_root}"
@@ -331,14 +387,26 @@ export CXX=clang++
 export LD=ld.lld
 export PKG_CONFIG_PATH=""
 
-jobs="$(nproc)"
-# Use all available CPUs for the Wine compilation.
-# nproc reflects the actual hardware thread count on the build machine
-# (e.g. 16 on an M2 Max) so there is no reason to artificially cap it.
-# Keep a floor of 2 so the build still works on minimal VMs.
-if (( jobs < 2 )); then
-    jobs=2
+cpu_jobs="$(nproc)"
+jobs="${cpu_jobs}"
+memory_limit_mb="$(awk '/MemTotal:/ {print int($2 / 1024)}' /proc/meminfo)"
+if [[ -r /sys/fs/cgroup/memory.max ]]; then
+    cgroup_memory_max="$(< /sys/fs/cgroup/memory.max)"
+    if [[ "${cgroup_memory_max}" != "max" ]]; then
+        cgroup_memory_mb=$(( cgroup_memory_max / 1024 / 1024 ))
+        if (( cgroup_memory_mb > 0 && cgroup_memory_mb < memory_limit_mb )); then
+            memory_limit_mb="${cgroup_memory_mb}"
+        fi
+    fi
 fi
+memory_jobs=$(( memory_limit_mb / 1536 ))
+if (( memory_jobs < 2 )); then
+    memory_jobs=2
+fi
+if (( jobs > memory_jobs )); then
+    jobs="${memory_jobs}"
+fi
+echo "Wine build parallelism: jobs=${jobs} cpu_jobs=${cpu_jobs} memory_limit_mb=${memory_limit_mb}"
 
 configure_args=(
     --prefix=/usr
@@ -371,7 +439,7 @@ EOF
 
 /usr/bin/wine --version | grep -Fx "wine-${WINE_VERSION}"
 
-remove_installed_packages "${build_packages[@]}"
-remove_installed_packages "${optional_build_packages[@]}"
+remove_package_list_file "${required_build_cleanup_list}"
+remove_package_list_file "${optional_build_cleanup_list}"
 
 /ctx/cleanup
