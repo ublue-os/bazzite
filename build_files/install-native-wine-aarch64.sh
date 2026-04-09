@@ -173,13 +173,13 @@ install_required_packages() {
     local description="$1"
     shift
 
-    if dnf5 -y install --refresh --best --allowerasing --nogpgcheck --setopt=install_weak_deps=False "$@"; then
+    if dnf5 -y install --refresh --best --allowerasing --nogpgcheck --skip-broken --setopt=install_weak_deps=False "$@"; then
         return 0
     fi
 
     echo "${description} install failed; cleaning metadata and retrying once." >&2
     refresh_dnf_metadata
-    dnf5 -y install --refresh --best --allowerasing --nogpgcheck --skip-broken --setopt=install_weak_deps=False "$@"
+    dnf5 -y install --refresh --allowerasing --nogpgcheck --skip-broken --setopt=install_weak_deps=False "$@"
 }
 
 resolve_wine_source() {
