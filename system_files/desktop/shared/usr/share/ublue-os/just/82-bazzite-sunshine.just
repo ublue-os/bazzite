@@ -6,6 +6,12 @@ setup-sunshine ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
+    confirm() {
+      local msg="$1"
+      echo -n "$msg ${yellow}(Y/n)${normal} "
+      read -r reply
+      [[ -z "$reply" || "${reply,,}" =~ ^y ]]
+    }
     sunshine_installed() {
       [[ -e /home/linuxbrew/.linuxbrew/opt/sunshine ||
         -d /home/linuxbrew/.linuxbrew/Cellar/sunshine ||
@@ -56,7 +62,7 @@ setup-sunshine ACTION="":
           ;;
       esac
       echo "Service is $SERVICE_STATE"
-      OPTION=$(Choose "Enable" "Enable Beta" "Disable Service" "Uninstall" "Open Portal" "Exit")
+      OPTION=$(Choose "Enable" "Enable Beta" "Update" "Disable Service" "Uninstall" "Open Portal" "Exit")
     fi
     if [[ "${OPTION,,}" =~ ^enable[-[:space:]]beta ]]; then
       echo "Disabling any previous Flatpak Sunshine service..."
@@ -75,7 +81,7 @@ setup-sunshine ACTION="":
         echo "sunshine was not found on PATH after installation." >&2
         exit 1
       fi
-      sudo setcap cap_sys_admin+p "$(readlink -f "$sunshine_bin")"
+      sudo /usr/libexec/sunshine-postinst
       brew services start sunshine-beta
     elif [[ "${OPTION,,}" =~ ^enable ]]; then
       echo "Disabling any previous Flatpak Sunshine service..."
@@ -94,8 +100,42 @@ setup-sunshine ACTION="":
         echo "sunshine was not found on PATH after installation." >&2
         exit 1
       fi
-      sudo setcap cap_sys_admin+p "$(readlink -f "$sunshine_bin")"
+      sudo /usr/libexec/sunshine-postinst
       brew services start sunshine
+    elif [[ "${OPTION,,}" =~ ^(update|upgrade) ]]; then
+      if [[ "$(get_status_token)" == "uninstall" ]]; then
+        echo "An upgrade was attempted but Sunshine was not installed." >&2
+        exit 1
+      fi
+      if [[ "$(journalctl --no-hostname -b 0 -g 'Setting default sink to:')" != "-- No entries --" ]]; then
+        if ! confirm "Updating Sunshine while stream may leave you with a broken stream if you don't have physical access to the machine! Continue anyways?"; then
+          echo "Exiting..."
+          exit 0
+        fi
+      fi
+      if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+        echo "Setting up Homebrew environment..."
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+      fi
+      if [[ "$(get_status_token)" == "enable-beta" ]]; then
+        brew services stop sunshine-beta || true
+        brew unpin sunshine-beta || true
+        brew upgrade sunshine-beta || true
+        brew pin sunshine-beta
+        sudo /usr/libexec/sunshine-postinst
+        brew services start sunshine-beta
+      elif [[ "$(get_status_token)" == "enable" ]]; then
+        brew services stop sunshine || true
+        brew unpin sunshine || true
+        brew upgrade sunshine || true
+        brew pin sunshine
+        sudo /usr/libexec/sunshine-postinst
+        brew services start sunshine
+      fi
+      if ! sunshine_bin="$(command -v sunshine)"; then
+        echo "sunshine was not found on PATH after installation." >&2
+        exit 1
+      fi
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
       if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
         echo "Setting up Homebrew environment..."
