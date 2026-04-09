@@ -84,7 +84,7 @@ De nombreuses variantes communes sont disponibles sous le nom `bazzite`, adapté
 > [!IMPORTANT]
 > **Les ISOs peuvent être téléchargées depuis notre [page de versions](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile peut être trouvé [ici](https://universal-blue.discourse.group/docs?topic=30).**
 
-Rebase d'un Fedora Atomic existante de cette image est disponible ici avec des **pilotes GPU Open Source** :
+Rebase d'un Fedora Atomic existant de cette image est disponible ici avec des **pilotes GPU Open Source** :
 (Remarque : l'option Open Source de Mesa pour les GPU NVIDIA, NVK, est encore sujette à des erreurs au moment de la rédaction. Pour tout problème lié à NVK, [merci de soumettre un rapport à Mesa]([url](https://docs.mesa3d.org/bugs.html)), pas à Ublue/Bazzite)
 
 ```bash
@@ -120,7 +120,7 @@ Variante conçue pour être utilisée comme alternative à SteamOS sur le SteamD
 - Option pour installer [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), et [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), ainsi que de nombreux autres packages utiles lors de l'installation.
 - Le système de mise à jour personnalisé permet de mettre à jour directement depuis l'interface du mode jeu grâce à [ublue-update](https://github.com/ublue-os/ublue-update) et [topgrade](https://github.com/topgrade-rs/topgrade).
 - Prise en charge intégrée du dual-boot Windows en laissant l'installation du GRUB de Fedora intacte.
-- Une mise à jour casse quelque chose ? Reviennez facilement à la version précédente de Bazzite grâce à la fonctionnalité de rollback de `rpm-ostree`. Vous pouvez même sélectionner les images précédentes au démarrage.
+- Une mise à jour casse quelque chose ? Revenez facilement à la version précédente de Bazzite grâce à la fonctionnalité de rollback de `rpm-ostree`. Vous pouvez même sélectionner les images précédentes au démarrage.
 - Steam et Lutris préinstallés dans l'image en tant que packages superposés.
 - [Discover Overlay](https://github.com/trigg/Discover) pour Discord préinstallé et lancé automatiquement à la fois en mode jeu et sur le bureau si Discord est installé. [Consulte la documentation officielle ici](https://trigg.github.io/Discover/bazzite).
 - Utilise ZRAM<sub><sup>(4GB)</sup></sub> avec l'algorithme de compression LZ4 par défaut.
@@ -140,7 +140,7 @@ Variante conçue pour être utilisée comme alternative à SteamOS sur le SteamD
 > [!IMPORTANT]
 > **Les ISOs peuvent être téléchargées depuis notre [page de versions](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile peut être trouvé [ici](https://universal-blue.discourse.group/docs?topic=30).**
 
-Rebase d'un Fedora Atomic existante avec cette image :
+Rebase d'un Fedora Atomic existant avec cette image :
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stable
