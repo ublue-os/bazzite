@@ -70,6 +70,7 @@ setup-sunshine ACTION="":
       brew services stop sunshine || true
       brew uninstall sunshine || true
       brew install sunshine-beta
+      brew pin sunshine-beta
       if ! sunshine_bin="$(command -v sunshine)"; then
         echo "sunshine was not found on PATH after installation." >&2
         exit 1
@@ -88,6 +89,7 @@ setup-sunshine ACTION="":
       brew services stop sunshine-beta || true
       brew uninstall sunshine-beta || true
       brew install sunshine
+      brew pin sunshine
       if ! sunshine_bin="$(command -v sunshine)"; then
         echo "sunshine was not found on PATH after installation." >&2
         exit 1
