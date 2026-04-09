@@ -177,10 +177,9 @@ install_required_packages() {
         return 0
     fi
 
-    echo "${description} install failed; cleaning metadata, syncing the base image, and retrying once." >&2
+    echo "${description} install failed; cleaning metadata and retrying once." >&2
     refresh_dnf_metadata
-    dnf5 -y distro-sync --refresh --best --allowerasing --nogpgcheck --exclude='mesa*'
-    dnf5 -y install --refresh --best --allowerasing --nogpgcheck --setopt=install_weak_deps=False "$@"
+    dnf5 -y install --refresh --best --allowerasing --nogpgcheck --skip-broken --setopt=install_weak_deps=False "$@"
 }
 
 resolve_wine_source() {
@@ -285,15 +284,11 @@ build_dir="${build_root}/build"
 llvm_mingw_tarball="${build_root}/${LLVM_MINGW_ARCHIVE}"
 llvm_mingw_dir="${build_root}/${LLVM_MINGW_ARCHIVE%.tar.xz}"
 
-# Upgrade first so the build root is current before installing Wine's deps.
-# Prefer a normal upgrade first and fall back to distro-sync only if the solver
-# cannot complete a straightforward upgrade on the current base image.
-# --exclude=mesa*: never let standard Fedora repos replace the Asahi COPR
-#   mesa packages -- that would break the Apple Silicon AGX GPU driver
-if ! dnf5 -y upgrade --refresh --nogpgcheck --skip-unavailable --exclude='mesa*'; then
-    echo "dnf5 upgrade failed; retrying with distro-sync --skip-broken."
-    dnf5 -y distro-sync --refresh --nogpgcheck --skip-broken --skip-unavailable --exclude='mesa*'
-fi
+# No system upgrade here — build-arm.sh already ran dnf5 update --refresh
+# in the previous Containerfile layer. Running it again pulls in unrelated
+# base-system packages (speech-dispatcher, openmpi-libs) with broken
+# dependency chains on the Asahi F43 base image.
+# Only install Wine's own deps below.
 
 required_packages=(
     "${runtime_packages[@]}"
