@@ -36,6 +36,7 @@ PODMAN_STORAGE_CONF_BACKUP=""
 PODMAN_STORAGE_OVERRIDE_ACTIVE=0
 PODMAN_EXT_ROOT=""
 SLEEP_MASKED=0
+DNF_CMD=""
 
 # Parse flags
 # --fairydust            : use experimental Thunderbolt/USB4 kernel variant
@@ -218,6 +219,105 @@ if [[ "$confirm" != [yY] ]]; then
     exit 0
 fi
 
+detect_dnf() {
+    if [[ -n "${DNF_CMD}" ]]; then
+        return 0
+    fi
+
+    if command -v dnf5 >/dev/null 2>&1; then
+        DNF_CMD="dnf5"
+    elif command -v dnf >/dev/null 2>&1; then
+        DNF_CMD="dnf"
+    else
+        echo "ERROR: dnf/dnf5 was not found. This script must run on Fedora Asahi Remix." >&2
+        exit 1
+    fi
+}
+
+dnf_upgrade_host() {
+    detect_dnf
+
+    if [[ "${DNF_CMD}" == "dnf5" ]]; then
+        sudo dnf5 upgrade -y --refresh --skip-unavailable \
+            --setopt=skip_if_unavailable=1
+    else
+        sudo dnf upgrade -y --refresh \
+            --setopt=skip_if_unavailable=True
+    fi
+}
+
+dnf_install_host() {
+    detect_dnf
+
+    if [[ "${DNF_CMD}" == "dnf5" ]]; then
+        sudo dnf5 install -y --refresh --skip-unavailable \
+            --setopt=skip_if_unavailable=1 "$@"
+    else
+        sudo dnf install -y --refresh \
+            --setopt=skip_if_unavailable=True "$@"
+    fi
+}
+
+print_log_tail() {
+    local log_file="$1"
+
+    if [[ -f "${log_file}" ]]; then
+        echo ""
+        echo "Last 80 lines from ${log_file}:"
+        tail -n 80 "${log_file}" || true
+    fi
+}
+
+require_commands() {
+    local command_name
+    local -a missing=()
+
+    for command_name in "$@"; do
+        if ! command -v "${command_name}" >/dev/null 2>&1; then
+            missing+=("${command_name}")
+        fi
+    done
+
+    if (( ${#missing[@]} > 0 )); then
+        echo "ERROR: Required command(s) were not installed or are not in PATH:" >&2
+        printf '  %s\n' "${missing[@]}" >&2
+        exit 1
+    fi
+}
+
+ensure_ostree_repo_bare_mode() {
+    local deploys
+    local mode
+    local refs
+
+    mode="$(sudo ostree config --repo=/ostree/repo get core.mode 2>/dev/null || true)"
+    if [[ "${mode}" == "bare" ]]; then
+        return 0
+    fi
+
+    refs="$(sudo ostree refs --repo=/ostree/repo 2>/dev/null || true)"
+    deploys="$(
+        find /ostree/deploy/fedora/deploy \
+            -mindepth 1 -maxdepth 1 -type d -print -quit 2>/dev/null || true
+    )"
+
+    if [[ -z "${refs}" && -z "${deploys}" ]]; then
+        if [[ -n "${mode}" ]]; then
+            echo "Resetting empty OSTree repo from unsupported mode '${mode}' to 'bare'."
+        fi
+        sudo rm -rf /ostree/repo
+        sudo mkdir -p /ostree/repo
+        sudo ostree init --repo=/ostree/repo --mode=bare
+        sudo ostree config --repo=/ostree/repo set core.mode bare
+        return 0
+    fi
+
+    echo "ERROR: /ostree/repo is mode '${mode}', but Bazzite image imports require mode 'bare'." >&2
+    echo "Existing refs or deployments were found, so the script will not rewrite the repo automatically." >&2
+    echo "If this is a failed first conversion attempt with no bootable ostree deployment, remove /ostree/repo and rerun." >&2
+    exit 1
+}
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Step 0: Collect user credentials up front
 # ──────────────────────────────────────────────────────────────────────────────
@@ -232,6 +332,12 @@ read -rp "  Username: " BAZZITE_USER
 while [[ -z "${BAZZITE_USER}" ]]; do
     read -rp "  Username cannot be empty. Username: " BAZZITE_USER
 done
+
+if ! command -v openssl >/dev/null 2>&1; then
+    echo "Installing openssl for password hashing..."
+    dnf_install_host openssl
+fi
+
 read -srp "  Password: " BAZZITE_PASS
 echo ""
 while [[ -z "${BAZZITE_PASS}" ]]; do
@@ -248,8 +354,17 @@ echo ""
 # ──────────────────────────────────────────────────────────────────────────────
 echo ""
 echo "--- Step 1: Install prerequisites ---"
-sudo dnf upgrade -y
-sudo dnf install -y podman git rpm-ostree ostree rsync
+dnf_upgrade_host
+dnf_install_host \
+    podman \
+    git \
+    rpm-ostree \
+    ostree \
+    rsync \
+    skopeo \
+    fuse-overlayfs \
+    openssl
+require_commands podman git rpm-ostree ostree rsync skopeo openssl
 
 # Prevent the system from sleeping during the 60-90 minute build.
 # The build will be killed if the system suspends mid-way.
@@ -273,6 +388,7 @@ if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
         exit 1
     fi
 
+    EXTERNAL_BUILD_PATH=$(readlink -f "${EXTERNAL_BUILD_PATH}")
     EXTERNAL_SOURCE=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no SOURCE 2>/dev/null || true)
     EXTERNAL_TARGET=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no TARGET 2>/dev/null || true)
     EXTERNAL_FSTYPE=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no FSTYPE 2>/dev/null || true)
@@ -283,7 +399,10 @@ if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
         exit 1
     fi
 
-    if [[ "${EXTERNAL_TARGET}" == "/" || "${EXTERNAL_SOURCE}" == "${ROOT_SOURCE}" ]]; then
+    EXTERNAL_BLOCK_SOURCE="${EXTERNAL_SOURCE%%[*}"
+    ROOT_BLOCK_SOURCE="${ROOT_SOURCE%%[*}"
+    if [[ "${EXTERNAL_TARGET}" == "/" || "${EXTERNAL_BLOCK_SOURCE}" == "${ROOT_BLOCK_SOURCE}" ]]; then
+
         echo "ERROR: '${EXTERNAL_BUILD_PATH}' is on the internal root filesystem, not an external drive mount."
         echo "Mount the external SSD first and pass that mount path, for example /mnt/external."
         exit 1
@@ -344,12 +463,14 @@ echo ""
 echo "--- Step 2: Build Bazzite ARM image ---"
 echo "This takes ~25 minutes with --skip-wine (~85 min without). Output is live."
 echo ""
+BUILD_LOG="/var/tmp/${IMAGE_NAME}-${IMAGE_TAG}-podman-build.log"
 
 if sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
     echo "Bazzite ARM image already exists; skipping build."
 else
     cd "${REPO_ROOT}"
-    sudo podman build \
+    echo "Build log: ${BUILD_LOG}"
+    if ! sudo podman build \
         --no-cache \
         --platform linux/arm64 \
         -f Containerfile.arm \
@@ -364,7 +485,13 @@ else
         --build-arg VERSION_PRETTY="Local Build" \
         --build-arg SHA_HEAD_SHORT="${IMAGE_TAG}" \
         -t "${BAZZITE_IMAGE}" \
-        .
+        . 2>&1 | tee "${BUILD_LOG}"; then
+        echo ""
+        echo "ERROR: Bazzite ARM image build failed."
+        echo "Full build log: ${BUILD_LOG}"
+        print_log_tail "${BUILD_LOG}"
+        exit 1
+    fi
     echo "Bazzite ARM image built successfully."
 fi
 
@@ -379,6 +506,7 @@ if [[ ! -f /ostree/repo/config ]]; then
 else
     echo "OSTree repo already initialized; skipping."
 fi
+ensure_ostree_repo_bare_mode
 sudo ostree config --repo=/ostree/repo set sysroot.bootloader grub2
 sudo ostree config --repo=/ostree/repo set sysroot.readonly true
 
@@ -625,9 +753,17 @@ OCI_DEST="${STATEROOT_VAR}/lib/bazzite-install"
 
 sudo mkdir -p "${OCI_DEST}"
 echo "Exporting Bazzite ARM image to ${OCI_DEST} (may take a few minutes)..."
-sudo skopeo copy \
+EXPORT_LOG="/var/tmp/${IMAGE_NAME}-${IMAGE_TAG}-oci-export.log"
+echo "Export log: ${EXPORT_LOG}"
+if ! sudo skopeo copy \
     "containers-storage:${BAZZITE_IMAGE}" \
-    "oci:${OCI_DEST}:latest"
+    "oci:${OCI_DEST}:latest" 2>&1 | tee "${EXPORT_LOG}"; then
+    echo ""
+    echo "ERROR: Failed to export Bazzite image to ${OCI_DEST}."
+    echo "Full export log: ${EXPORT_LOG}"
+    print_log_tail "${EXPORT_LOG}"
+    exit 1
+fi
 echo "Image exported successfully."
 
 echo ""
@@ -647,9 +783,9 @@ if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
 fi
 
 # Install first-boot rebase mechanism into the deployment.
-# Profile.d only -- no systemd service. The service caused output to overlap
-# with the TTY login prompt since systemd started it in parallel with login.
-# Profile.d runs AFTER the user has fully logged in, so output is clean.
+# The service runs silently in the background and writes only to the journal so
+# it does not overlap with the login prompt. The MOTD/status helper tells users
+# exactly where to watch progress or diagnose failures.
 if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
 
     # bazzite-rebase-status: /usr/local -> /var/usrlocal in atomic Fedora.
@@ -696,7 +832,7 @@ ExecStart=/usr/bin/bash -c 'rpm-ostree rebase ostree-unverified-image:oci:/var/l
 ExecStartPost=/usr/bin/touch /var/lib/bazzite-rebase-done
 ExecStartPost=/usr/bin/bash -c 'rm -rf /var/lib/bazzite-install || true'
 ExecStartPost=/usr/bin/bash -c 'sleep 5 && systemctl reboot'
-TimeoutStartSec=900
+TimeoutStartSec=0
 StandardOutput=journal
 StandardError=journal
 
