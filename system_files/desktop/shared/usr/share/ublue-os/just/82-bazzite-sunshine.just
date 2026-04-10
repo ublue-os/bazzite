@@ -1,6 +1,6 @@
 # vim: set ft=make :
 
-# Setup and configure Sunshine Game Streaming host. Options: status | enable | enable-beta | disable | uninstall | portal
+# Setup and configure Sunshine Game Streaming host. Options: status | enable | enable-beta | update | disable | uninstall | portal
 [group("gaming")]
 setup-sunshine ACTION="":
     #!/usr/bin/bash
@@ -30,6 +30,23 @@ setup-sunshine ACTION="":
         echo "disable"
       else
         echo "uninstall"
+      fi
+    }
+    override_service() {
+      servicefile="[Unit]
+    After=graphical-session.target xdg-desktop-autostart.target xdg-desktop-portal.service
+
+    [Service]
+    ExecStartPre=/bin/sleep 5
+    Restart=on-failure
+    RestartSec=5s
+    "
+      if [[ $(systemctl --user cat homebrew.sunshine-beta | grep sleep 2>/dev/null || true) == "" ||  $(systemctl --user cat homebrew.sunshine-beta | grep sleep 2>/dev/null || true) == "" ]]; then
+        if [[ "$(get_status_token)" == "enable" ]]; then
+          systemctl --user edit --stdin homebrew.sunshine <<< "$servicefile"
+        elif [[ "$(get_status_token)" == "enable-beta" ]]; then
+          systemctl --user edit --stdin homebrew.sunshine-beta <<< "$servicefile"
+        fi
       fi
     }
     if [ "$OPTION" == "help" ]; then
@@ -83,6 +100,7 @@ setup-sunshine ACTION="":
       fi
       sudo /usr/libexec/sunshine-postinst
       brew services start sunshine-beta
+      override_service
     elif [[ "${OPTION,,}" =~ ^enable ]]; then
       echo "Disabling any previous Flatpak Sunshine service..."
       systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
@@ -102,6 +120,7 @@ setup-sunshine ACTION="":
       fi
       sudo /usr/libexec/sunshine-postinst
       brew services start sunshine
+      override_service
     elif [[ "${OPTION,,}" =~ ^(update|upgrade) ]]; then
       if [[ "$(get_status_token)" == "uninstall" ]]; then
         echo "An upgrade was attempted but Sunshine was not installed." >&2
@@ -124,6 +143,7 @@ setup-sunshine ACTION="":
         brew pin sunshine-beta
         sudo /usr/libexec/sunshine-postinst
         brew services start sunshine-beta
+        override_service
       elif [[ "$(get_status_token)" == "enable" ]]; then
         brew services stop sunshine || true
         brew unpin sunshine || true
@@ -131,6 +151,7 @@ setup-sunshine ACTION="":
         brew pin sunshine
         sudo /usr/libexec/sunshine-postinst
         brew services start sunshine
+        override_service
       fi
       if ! sunshine_bin="$(command -v sunshine)"; then
         echo "sunshine was not found on PATH after installation." >&2
