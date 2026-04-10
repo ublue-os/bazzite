@@ -313,13 +313,15 @@ dnf_install_host() {
 
 print_log_tail() {
     local log_file="$1"
+    local benign_pattern
     local pattern
 
     if [[ -f "${log_file}" ]]; then
         echo ""
         echo "First relevant failure lines from ${log_file}:"
         pattern='(^|[^[:alpha:]])(error|failed|failure|cannot|could not|no match|no space left|permission denied|curl error|status code: [45][0-9][0-9]|transaction failed|depsolve|conflicting requests|nothing provides)([^[:alpha:]]|$)'
-        grep -Ein "${pattern}" "${log_file}" | head -n 120 || true
+        benign_pattern='(Failed to preset unit: Unit bees@.*\.service does not exist|Failed to connect to audit log, ignoring: Invalid argument|rm: cannot remove .*/run/(secrets|\.containerenv).*Device or resource busy)'
+        grep -Ein "${pattern}" "${log_file}" | grep -Eiv "${benign_pattern}" | head -n 120 || true
         echo ""
         echo "Last 120 lines from ${log_file}:"
         tail -n 120 "${log_file}" || true
@@ -555,6 +557,8 @@ if sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
 else
     cd "${REPO_ROOT}"
     echo "Build log: ${BUILD_LOG}"
+    echo "Pruning stale Podman builder cache before the native build..."
+    sudo podman builder prune -af 2>/dev/null || true
     if ! sudo podman build \
         --no-cache \
         --pull=always \

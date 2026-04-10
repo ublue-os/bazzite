@@ -62,38 +62,31 @@ COPY system_files/desktop/shared /
 COPY system_files/desktop/${BASE_IMAGE_NAME} /
 COPY system_files/overrides /
 
+# Do not use persistent BuildKit cache mounts for DNF/RPM paths here. On native
+# Asahi Podman builds, interrupted or flaky external storage builds can leave
+# malformed RPM/DNF SQLite state in cache mounts, which then poisons later
+# --no-cache rebuilds with "database disk image is malformed".
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     bash /ctx/build-arm.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     bash /ctx/install-native-wine-aarch64.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     bash /ctx/verify-arm-userspace.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     bash /ctx/setup-x86-emulation.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     bash /ctx/verify-arm-userspace.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     bash /ctx/image-info && \
     bash /ctx/finalize
