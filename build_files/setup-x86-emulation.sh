@@ -12,39 +12,39 @@
 
 set -eoux pipefail
 
-# DNF5 needs the repo-scoped wildcard form here; plain skip_if_unavailable
-# does not reliably suppress broken mirrorlist/metalink metadata failures.
-DNF5_REPO_RESILIENCE_ARGS=(
-    "--setopt=*.skip_if_unavailable=1"
+DNF5_STRICT_REPO_ARGS=(
+    "--setopt=*.skip_if_unavailable=0"
+    "--setopt=*.timeout=30"
+    "--setopt=*.minrate=1000"
+    "--setopt=*.retries=10"
 )
-dnf5 config-manager setopt '*.skip_if_unavailable=1' >/dev/null 2>&1 || true
 
 # FEX-Emu: primary emulation layer
 # Pulls in fex-emu-rootfs-fedora (x86_64 sysroot) and
 # mesa-fex-emu-overlay (GPU acceleration through emulation)
-dnf5 -y install "${DNF5_REPO_RESILIENCE_ARGS[@]}" \
+dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" \
     fex-emu
 
 # Box64: secondary x86_64 emulator for additional compatibility
-dnf5 -y install "${DNF5_REPO_RESILIENCE_ARGS[@]}" --skip-broken --skip-unavailable \
+dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" --skip-broken --skip-unavailable \
     box64
 
 # muvm/libkrun: microVM-based emulation for GPU-intensive workloads
 # These allow running x86 apps with near-native Apple GPU access
-dnf5 -y install "${DNF5_REPO_RESILIENCE_ARGS[@]}" --skip-broken --skip-unavailable \
+dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" --skip-broken --skip-unavailable \
     muvm \
     libkrun \
     libkrunfw
 
 # qemu-user-static: fallback emulation via binary translation
 # Pulls in the architecture-specific static interpreters, including x86.
-dnf5 -y install "${DNF5_REPO_RESILIENCE_ARGS[@]}" --skip-broken --skip-unavailable \
+dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" --skip-broken --skip-unavailable \
     qemu-user-static \
     qemu-user-binfmt
 
 # Steam: Asahi's package handles FEX integration automatically
 # The @asahi steam COPR is already configured in the base image
-dnf5 -y install "${DNF5_REPO_RESILIENCE_ARGS[@]}" --skip-broken --skip-unavailable \
+dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" --skip-broken --skip-unavailable \
     steam
 
 # Create emulation status check script

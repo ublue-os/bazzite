@@ -133,10 +133,13 @@ odbc_enabled=0
 required_build_cleanup_list=""
 optional_build_cleanup_list=""
 optional_failed_cleanup_list=""
-# DNF5 needs the repo-scoped wildcard form here; plain skip_if_unavailable
-# does not reliably suppress broken mirrorlist/metalink metadata failures.
-DNF5_REPO_RESILIENCE_ARGS=(
-    "--setopt=*.skip_if_unavailable=1"
+# Required Wine deps must not skip Fedora/RPM Fusion repos. A skipped repo turns
+# into a misleading depsolve wall, so fail early and retry metadata once.
+DNF5_STRICT_REPO_ARGS=(
+    "--setopt=*.skip_if_unavailable=0"
+    "--setopt=*.timeout=30"
+    "--setopt=*.minrate=1000"
+    "--setopt=*.retries=10"
 )
 DNF5_INSTALL_ARGS=(
     -y
@@ -146,7 +149,7 @@ DNF5_INSTALL_ARGS=(
     --allowerasing
     --nogpgcheck
     --setopt=install_weak_deps=False
-    "${DNF5_REPO_RESILIENCE_ARGS[@]}"
+    "${DNF5_STRICT_REPO_ARGS[@]}"
 )
 
 cleanup() {
@@ -354,7 +357,6 @@ optional_failed_cleanup_list="${build_root}/optional-failed-cleanup.txt"
 # base-system packages (speech-dispatcher, openmpi-libs) with broken
 # dependency chains on the Asahi F43 base image.
 # Only install Wine's own deps below.
-dnf5 config-manager setopt '*.skip_if_unavailable=1' >/dev/null 2>&1 || true
 
 required_packages=(
     "${runtime_packages[@]}"

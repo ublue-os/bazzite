@@ -37,6 +37,18 @@ PODMAN_STORAGE_OVERRIDE_ACTIVE=0
 PODMAN_EXT_ROOT=""
 SLEEP_MASKED=0
 DNF_CMD=""
+DNF5_HOST_STRICT_REPO_ARGS=(
+    "--setopt=*.skip_if_unavailable=0"
+    "--setopt=*.timeout=30"
+    "--setopt=*.minrate=1000"
+    "--setopt=*.retries=10"
+)
+DNF4_HOST_STRICT_REPO_ARGS=(
+    "--setopt=*.skip_if_unavailable=False"
+    "--setopt=*.timeout=30"
+    "--setopt=*.minrate=1000"
+    "--setopt=*.retries=10"
+)
 
 # Parse flags
 # --fairydust            : use experimental Thunderbolt/USB4 kernel variant
@@ -181,7 +193,8 @@ echo ""
 echo "This script will:"
 echo "  1. Build the Bazzite ARM image locally"
 echo "     - internal build storage: needs ~40 GB free on /"
-echo "     - external build storage: needs ~20 GB free on / plus ~25 GB on the external drive"
+echo "     - external build storage: needs ~20 GB free on / plus ~45 GB on the external drive"
+echo "       (or ~25 GB on the external drive when using --skip-wine)"
 echo "  2. Convert this Fedora install to atomic/ostree"
 echo "  3. Set up your user account"
 echo "  4. Reboot into atomic Fedora which auto-rebases to Bazzite ARM"
@@ -234,39 +247,82 @@ detect_dnf() {
     fi
 }
 
-# DNF5 needs the repo-scoped wildcard form here; plain skip_if_unavailable
-# does not reliably suppress broken mirrorlist/metalink metadata failures.
-dnf_upgrade_host() {
+disable_host_broken_repos() {
     detect_dnf
 
+    # The retired Asahi hotfixes repo can poison host prerequisite installs.
+    # Disable it, but keep Fedora/RPM Fusion repos strict so missing metadata is
+    # reported immediately instead of becoming a later depsolve wall.
+    sudo "${DNF_CMD}" config-manager setopt \
+        'fedora-asahi-remix-hotfixes*.enabled=0' >/dev/null 2>&1 || \
+        sudo sed -i 's/^enabled=1/enabled=0/' \
+            /etc/yum.repos.d/*hotfixes*.repo 2>/dev/null || true
+}
+
+clean_host_dnf_metadata() {
+    detect_dnf
+    sudo "${DNF_CMD}" clean all >/dev/null 2>&1 || true
+    sudo rm -rf /var/cache/libdnf5/* /var/cache/dnf/* 2>/dev/null || true
+}
+
+dnf_upgrade_host() {
+    detect_dnf
+    disable_host_broken_repos
+
     if [[ "${DNF_CMD}" == "dnf5" ]]; then
-        sudo dnf5 upgrade -y --refresh --skip-unavailable \
-            "--setopt=*.skip_if_unavailable=1"
+        if sudo dnf5 upgrade -y --refresh "${DNF5_HOST_STRICT_REPO_ARGS[@]}"; then
+            return 0
+        fi
+
+        echo "Host dnf5 upgrade failed; cleaning metadata and retrying once." >&2
+        clean_host_dnf_metadata
+        sudo dnf5 upgrade -y --refresh "${DNF5_HOST_STRICT_REPO_ARGS[@]}"
     else
-        sudo dnf upgrade -y --refresh \
-            "--setopt=*.skip_if_unavailable=True"
+        if sudo dnf upgrade -y --refresh "${DNF4_HOST_STRICT_REPO_ARGS[@]}"; then
+            return 0
+        fi
+
+        echo "Host dnf upgrade failed; cleaning metadata and retrying once." >&2
+        clean_host_dnf_metadata
+        sudo dnf upgrade -y --refresh "${DNF4_HOST_STRICT_REPO_ARGS[@]}"
     fi
 }
 
 dnf_install_host() {
     detect_dnf
+    disable_host_broken_repos
 
     if [[ "${DNF_CMD}" == "dnf5" ]]; then
-        sudo dnf5 install -y --refresh --skip-unavailable \
-            "--setopt=*.skip_if_unavailable=1" "$@"
+        if sudo dnf5 install -y --refresh "${DNF5_HOST_STRICT_REPO_ARGS[@]}" "$@"; then
+            return 0
+        fi
+
+        echo "Host dnf5 install failed; cleaning metadata and retrying once." >&2
+        clean_host_dnf_metadata
+        sudo dnf5 install -y --refresh "${DNF5_HOST_STRICT_REPO_ARGS[@]}" "$@"
     else
-        sudo dnf install -y --refresh \
-            "--setopt=*.skip_if_unavailable=True" "$@"
+        if sudo dnf install -y --refresh "${DNF4_HOST_STRICT_REPO_ARGS[@]}" "$@"; then
+            return 0
+        fi
+
+        echo "Host dnf install failed; cleaning metadata and retrying once." >&2
+        clean_host_dnf_metadata
+        sudo dnf install -y --refresh "${DNF4_HOST_STRICT_REPO_ARGS[@]}" "$@"
     fi
 }
 
 print_log_tail() {
     local log_file="$1"
+    local pattern
 
     if [[ -f "${log_file}" ]]; then
         echo ""
-        echo "Last 80 lines from ${log_file}:"
-        tail -n 80 "${log_file}" || true
+        echo "First relevant failure lines from ${log_file}:"
+        pattern='(^|[^[:alpha:]])(error|failed|failure|cannot|could not|no match|no space left|permission denied|curl error|status code: [45][0-9][0-9]|transaction failed|depsolve|conflicting requests|nothing provides)([^[:alpha:]]|$)'
+        grep -Ein "${pattern}" "${log_file}" | head -n 120 || true
+        echo ""
+        echo "Last 120 lines from ${log_file}:"
+        tail -n 120 "${log_file}" || true
     fi
 }
 
@@ -410,11 +466,38 @@ if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
         exit 1
     fi
 
+    case "${EXTERNAL_FSTYPE}" in
+        ext4|xfs|btrfs)
+            ;;
+        *)
+            echo "ERROR: '${EXTERNAL_BUILD_PATH}' is ${EXTERNAL_FSTYPE}, but podman build storage needs a Linux filesystem."
+            echo "Reformat or mount the external build volume as ext4, xfs, or btrfs."
+            exit 1
+            ;;
+    esac
+
+    sudo rm -f "${EXTERNAL_BUILD_PATH}/.bazzite-write-test" \
+        "${EXTERNAL_BUILD_PATH}/.bazzite-symlink-test" 2>/dev/null || true
+    if ! sudo touch "${EXTERNAL_BUILD_PATH}/.bazzite-write-test" ||
+        ! sudo ln -s . "${EXTERNAL_BUILD_PATH}/.bazzite-symlink-test"; then
+        sudo rm -f "${EXTERNAL_BUILD_PATH}/.bazzite-write-test" \
+            "${EXTERNAL_BUILD_PATH}/.bazzite-symlink-test" 2>/dev/null || true
+        echo "ERROR: '${EXTERNAL_BUILD_PATH}' does not support the writes/symlinks podman storage needs."
+        exit 1
+    fi
+    sudo rm -f "${EXTERNAL_BUILD_PATH}/.bazzite-write-test" \
+        "${EXTERNAL_BUILD_PATH}/.bazzite-symlink-test"
+
     # How much free space is on the external path?
     EXTERNAL_FREE_GB=$(df -BG "${EXTERNAL_BUILD_PATH}" | awk 'NR==2{gsub("G",""); print $4}')
-    echo "External path free space: ${EXTERNAL_FREE_GB} GB (need ~25 GB)"
-    if (( EXTERNAL_FREE_GB < 20 )); then
-        echo "ERROR: Not enough free space on ${EXTERNAL_BUILD_PATH} (${EXTERNAL_FREE_GB} GB < 20 GB needed)"
+    if [[ "${SKIP_WINE}" -eq 1 ]]; then
+        REQUIRED_EXTERNAL_FREE_GB=25
+    else
+        REQUIRED_EXTERNAL_FREE_GB=45
+    fi
+    echo "External path free space: ${EXTERNAL_FREE_GB} GB (need ~${REQUIRED_EXTERNAL_FREE_GB} GB)"
+    if (( EXTERNAL_FREE_GB < REQUIRED_EXTERNAL_FREE_GB )); then
+        echo "ERROR: Not enough free space on ${EXTERNAL_BUILD_PATH} (${EXTERNAL_FREE_GB} GB < ${REQUIRED_EXTERNAL_FREE_GB} GB needed)"
         exit 1
     fi
 
@@ -474,6 +557,7 @@ else
     echo "Build log: ${BUILD_LOG}"
     if ! sudo podman build \
         --no-cache \
+        --pull=always \
         --platform linux/arm64 \
         -f Containerfile.arm \
         --build-arg BASE_IMAGE_NAME=kinoite \

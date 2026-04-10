@@ -79,10 +79,14 @@ KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
 echo "Building Bazzite ARM with KERNEL_VARIANT=${KERNEL_VARIANT}"
 
 FEDORA_VER=$(rpm -E %fedora)
-# DNF5 needs the repo-scoped wildcard form here; plain skip_if_unavailable
-# does not reliably suppress broken mirrorlist/metalink metadata failures.
-DNF5_REPO_RESILIENCE_ARGS=(
-    "--setopt=*.skip_if_unavailable=1"
+# Required package transactions must not skip Fedora/RPM Fusion repos. If a
+# mirror/metalink is unavailable, failing here gives a clear root cause instead
+# of producing a later depsolve wall during the Wine build.
+DNF5_STRICT_REPO_ARGS=(
+    "--setopt=*.skip_if_unavailable=0"
+    "--setopt=*.timeout=30"
+    "--setopt=*.minrate=1000"
+    "--setopt=*.retries=10"
 )
 CURL_COMMON_ARGS=(
     -fsSL
@@ -93,14 +97,32 @@ CURL_COMMON_ARGS=(
 )
 
 dnf5_install() {
-    dnf5 -y install "${DNF5_REPO_RESILIENCE_ARGS[@]}" "$@"
+    dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" "$@"
+}
+
+refresh_dnf_metadata() {
+    dnf5 clean all >/dev/null 2>&1 || true
+    rm -rf /var/cache/libdnf5/* /var/cache/dnf/* 2>/dev/null || true
+}
+
+dnf5_update_required() {
+    if dnf5 update -y --refresh \
+        "${DNF5_STRICT_REPO_ARGS[@]}" \
+        --exclude='kernel*' --exclude='asahi-kernel*'; then
+        return 0
+    fi
+
+    echo "dnf5 update failed; cleaning metadata and retrying once." >&2
+    refresh_dnf_metadata
+    dnf5 update -y --refresh \
+        "${DNF5_STRICT_REPO_ARGS[@]}" \
+        --exclude='kernel*' --exclude='asahi-kernel*'
 }
 
 # ── Disable broken repos + fix GPG for COPR repos ────────────────────────────
 # The Asahi hotfixes repo returns 403 (retired upstream).
 dnf5 config-manager setopt 'fedora-asahi-remix-hotfixes*.enabled=0' 2>/dev/null || \
     sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/*hotfixes*.repo 2>/dev/null || true
-dnf5 config-manager setopt '*.skip_if_unavailable=1' >/dev/null 2>&1 || true
 
 # COPR repos ship packages signed with COPR project-specific GPG keys that
 # may not be pre-imported in the base image's RPM keyring, causing
@@ -120,14 +142,7 @@ dnf5_install \
     "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VER}.noarch.rpm" \
     "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VER}.noarch.rpm"
 
-dnf5 update -y --refresh \
-    "${DNF5_REPO_RESILIENCE_ARGS[@]}" \
-    --exclude='kernel*' --exclude='asahi-kernel*' || {
-    echo "dnf5 update failed; retrying with distro-sync --skip-broken."
-    dnf5 distro-sync -y --refresh --skip-broken --skip-unavailable \
-        "${DNF5_REPO_RESILIENCE_ARGS[@]}" \
-        --exclude='kernel*' --exclude='asahi-kernel*'
-}
+dnf5_update_required
 
 # Remove conflicting/unwanted packages from the base
 remove_installed_packages \
