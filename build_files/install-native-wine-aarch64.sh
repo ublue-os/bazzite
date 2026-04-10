@@ -133,6 +133,21 @@ odbc_enabled=0
 required_build_cleanup_list=""
 optional_build_cleanup_list=""
 optional_failed_cleanup_list=""
+# DNF5 needs the repo-scoped wildcard form here; plain skip_if_unavailable
+# does not reliably suppress broken mirrorlist/metalink metadata failures.
+DNF5_REPO_RESILIENCE_ARGS=(
+    "--setopt=*.skip_if_unavailable=1"
+)
+DNF5_INSTALL_ARGS=(
+    -y
+    install
+    --refresh
+    --best
+    --allowerasing
+    --nogpgcheck
+    --setopt=install_weak_deps=False
+    "${DNF5_REPO_RESILIENCE_ARGS[@]}"
+)
 
 cleanup() {
     if [[ -n "${build_root}" ]]; then
@@ -201,7 +216,7 @@ install_optional_packages() {
     local description="$1"
     shift
 
-    if dnf5 -y install --refresh --best --allowerasing --nogpgcheck --setopt=install_weak_deps=False "$@"; then
+    if dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"; then
         return 0
     fi
 
@@ -218,13 +233,13 @@ install_required_packages() {
     local description="$1"
     shift
 
-    if dnf5 -y install --refresh --best --allowerasing --nogpgcheck --setopt=install_weak_deps=False "$@"; then
+    if dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"; then
         return 0
     fi
 
     echo "${description} install failed; cleaning metadata and retrying once." >&2
     refresh_dnf_metadata
-    dnf5 -y install --refresh --best --allowerasing --nogpgcheck --setopt=install_weak_deps=False "$@"
+    dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"
 }
 
 resolve_wine_source() {
@@ -339,6 +354,7 @@ optional_failed_cleanup_list="${build_root}/optional-failed-cleanup.txt"
 # base-system packages (speech-dispatcher, openmpi-libs) with broken
 # dependency chains on the Asahi F43 base image.
 # Only install Wine's own deps below.
+dnf5 config-manager setopt '*.skip_if_unavailable=1' >/dev/null 2>&1 || true
 
 required_packages=(
     "${runtime_packages[@]}"

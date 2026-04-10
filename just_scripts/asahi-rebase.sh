@@ -234,15 +234,17 @@ detect_dnf() {
     fi
 }
 
+# DNF5 needs the repo-scoped wildcard form here; plain skip_if_unavailable
+# does not reliably suppress broken mirrorlist/metalink metadata failures.
 dnf_upgrade_host() {
     detect_dnf
 
     if [[ "${DNF_CMD}" == "dnf5" ]]; then
         sudo dnf5 upgrade -y --refresh --skip-unavailable \
-            --setopt=skip_if_unavailable=1
+            "--setopt=*.skip_if_unavailable=1"
     else
         sudo dnf upgrade -y --refresh \
-            --setopt=skip_if_unavailable=True
+            "--setopt=*.skip_if_unavailable=True"
     fi
 }
 
@@ -251,10 +253,10 @@ dnf_install_host() {
 
     if [[ "${DNF_CMD}" == "dnf5" ]]; then
         sudo dnf5 install -y --refresh --skip-unavailable \
-            --setopt=skip_if_unavailable=1 "$@"
+            "--setopt=*.skip_if_unavailable=1" "$@"
     else
         sudo dnf install -y --refresh \
-            --setopt=skip_if_unavailable=True "$@"
+            "--setopt=*.skip_if_unavailable=True" "$@"
     fi
 }
 

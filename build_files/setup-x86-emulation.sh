@@ -12,32 +12,39 @@
 
 set -eoux pipefail
 
+# DNF5 needs the repo-scoped wildcard form here; plain skip_if_unavailable
+# does not reliably suppress broken mirrorlist/metalink metadata failures.
+DNF5_REPO_RESILIENCE_ARGS=(
+    "--setopt=*.skip_if_unavailable=1"
+)
+dnf5 config-manager setopt '*.skip_if_unavailable=1' >/dev/null 2>&1 || true
+
 # FEX-Emu: primary emulation layer
 # Pulls in fex-emu-rootfs-fedora (x86_64 sysroot) and
 # mesa-fex-emu-overlay (GPU acceleration through emulation)
-dnf5 -y install \
+dnf5 -y install "${DNF5_REPO_RESILIENCE_ARGS[@]}" \
     fex-emu
 
 # Box64: secondary x86_64 emulator for additional compatibility
-dnf5 -y install --skip-broken --skip-unavailable \
+dnf5 -y install "${DNF5_REPO_RESILIENCE_ARGS[@]}" --skip-broken --skip-unavailable \
     box64
 
 # muvm/libkrun: microVM-based emulation for GPU-intensive workloads
 # These allow running x86 apps with near-native Apple GPU access
-dnf5 -y install --skip-broken --skip-unavailable \
+dnf5 -y install "${DNF5_REPO_RESILIENCE_ARGS[@]}" --skip-broken --skip-unavailable \
     muvm \
     libkrun \
     libkrunfw
 
 # qemu-user-static: fallback emulation via binary translation
 # Pulls in the architecture-specific static interpreters, including x86.
-dnf5 -y install --skip-broken --skip-unavailable \
+dnf5 -y install "${DNF5_REPO_RESILIENCE_ARGS[@]}" --skip-broken --skip-unavailable \
     qemu-user-static \
     qemu-user-binfmt
 
 # Steam: Asahi's package handles FEX integration automatically
 # The @asahi steam COPR is already configured in the base image
-dnf5 -y install --skip-broken --skip-unavailable \
+dnf5 -y install "${DNF5_REPO_RESILIENCE_ARGS[@]}" --skip-broken --skip-unavailable \
     steam
 
 # Create emulation status check script
@@ -50,7 +57,10 @@ echo ""
 echo "--- FEX-Emu ---"
 if command -v FEXInterpreter &>/dev/null; then
     echo "  Installed"
-    FEXInterpreter --version 2>&1 | sed 's/^/  /' || true
+    fex_version="$(rpm -q --qf '%{VERSION}-%{RELEASE}' fex-emu 2>/dev/null || true)"
+    if [[ -n "${fex_version}" ]]; then
+        echo "  Version: ${fex_version}"
+    fi
     if [[ -d /usr/share/fex-emu/RootFS ]]; then
         echo "  x86_64 RootFS: present"
     fi

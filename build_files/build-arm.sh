@@ -79,11 +79,28 @@ KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
 echo "Building Bazzite ARM with KERNEL_VARIANT=${KERNEL_VARIANT}"
 
 FEDORA_VER=$(rpm -E %fedora)
+# DNF5 needs the repo-scoped wildcard form here; plain skip_if_unavailable
+# does not reliably suppress broken mirrorlist/metalink metadata failures.
+DNF5_REPO_RESILIENCE_ARGS=(
+    "--setopt=*.skip_if_unavailable=1"
+)
+CURL_COMMON_ARGS=(
+    -fsSL
+    --retry 5
+    --retry-all-errors
+    --retry-delay 2
+    --connect-timeout 20
+)
+
+dnf5_install() {
+    dnf5 -y install "${DNF5_REPO_RESILIENCE_ARGS[@]}" "$@"
+}
 
 # ── Disable broken repos + fix GPG for COPR repos ────────────────────────────
 # The Asahi hotfixes repo returns 403 (retired upstream).
 dnf5 config-manager setopt 'fedora-asahi-remix-hotfixes*.enabled=0' 2>/dev/null || \
     sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/*hotfixes*.repo 2>/dev/null || true
+dnf5 config-manager setopt '*.skip_if_unavailable=1' >/dev/null 2>&1 || true
 
 # COPR repos ship packages signed with COPR project-specific GPG keys that
 # may not be pre-imported in the base image's RPM keyring, causing
@@ -99,16 +116,16 @@ for copr_repo in /etc/yum.repos.d/_copr*.repo; do
     sed -i 's/^gpgcheck=1/gpgcheck=0/' "$copr_repo"
 done
 
-dnf5 install -y \
+dnf5_install \
     "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VER}.noarch.rpm" \
     "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VER}.noarch.rpm"
 
 dnf5 update -y --refresh \
-    --setopt=skip_if_unavailable=1 \
+    "${DNF5_REPO_RESILIENCE_ARGS[@]}" \
     --exclude='kernel*' --exclude='asahi-kernel*' || {
     echo "dnf5 update failed; retrying with distro-sync --skip-broken."
     dnf5 distro-sync -y --refresh --skip-broken --skip-unavailable \
-        --setopt=skip_if_unavailable=1 \
+        "${DNF5_REPO_RESILIENCE_ARGS[@]}" \
         --exclude='kernel*' --exclude='asahi-kernel*'
 }
 
@@ -131,7 +148,7 @@ if dnf5 repolist --all | grep -q '^fedora-multimedia '; then
     media_repo_args+=(--disable-repo="*fedora-multimedia*")
 fi
 
-dnf5 -y install "${media_repo_args[@]}" \
+dnf5_install "${media_repo_args[@]}" \
     libaacs \
     libbdplus \
     libbluray \
@@ -139,13 +156,13 @@ dnf5 -y install "${media_repo_args[@]}" \
     libfreeaptx || true
 
 # Gaming packages available natively on aarch64
-dnf5 -y install --skip-broken --skip-unavailable \
+dnf5_install --skip-broken --skip-unavailable \
     gamescope \
     mangohud \
     lutris
 
 # Bazzite desktop stack (ARM-compatible packages only)
-dnf5 -y install --skip-broken --skip-unavailable \
+dnf5_install --skip-broken --skip-unavailable \
     iwd \
     greenboot \
     greenboot-default-health-checks \
@@ -221,7 +238,7 @@ dnf5 -y install --skip-broken --skip-unavailable \
 
 # DE-specific packages
 if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
-    dnf5 -y install --skip-broken --skip-unavailable \
+    dnf5_install --skip-broken --skip-unavailable \
         qt \
         krdp \
         kdeconnectd \
@@ -243,7 +260,7 @@ if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
         kde-partitionmanager \
         plasma-discover
 else
-    dnf5 -y install --skip-broken --skip-unavailable \
+    dnf5_install --skip-broken --skip-unavailable \
         gnome-tweaks \
         gnome-extensions-app \
         dconf-editor \
@@ -251,14 +268,14 @@ else
 fi
 
 # Enable COPRs that have aarch64 builds
-dnf5 -y install dnf5-plugins || true
+dnf5_install dnf5-plugins || true
 if dnf5 -y copr enable ublue-os/staging 2>/dev/null; then
-    dnf5 -y install --skip-broken --skip-unavailable \
+    dnf5_install --skip-broken --skip-unavailable \
         topgrade
 fi
 
 if dnf5 -y copr enable ublue-os/packages 2>/dev/null; then
-    dnf5 -y install --skip-broken --skip-unavailable \
+    dnf5_install --skip-broken --skip-unavailable \
         uupd
 
     if [[ -f /usr/lib/systemd/system/uupd.service ]]; then
@@ -271,7 +288,7 @@ if dnf5 -y copr enable ublue-os/packages 2>/dev/null; then
 fi
 
 if dnf5 -y copr enable ublue-os/bling 2>/dev/null; then
-    dnf5 -y install --skip-broken --skip-unavailable \
+    dnf5_install --skip-broken --skip-unavailable \
         ublue-os-bling
 fi
 
@@ -279,7 +296,7 @@ fi
 # bolt: Thunderbolt device manager -- authorises devices, works with any
 # kernel that has CONFIG_USB4/CONFIG_THUNDERBOLT. Installed on ALL variants.
 # With the fairydust kernel, this unlocks your dock + peripherals + 4K display.
-dnf5 -y install --skip-broken --skip-unavailable \
+dnf5_install --skip-broken --skip-unavailable \
     bolt \
     usbutils \
     pciutils
@@ -298,7 +315,7 @@ if [[ "${KERNEL_VARIANT}" == "fairydust" ]]; then
     # Kernel build toolchain -- everything needed to compile Linux from source
     # on native aarch64. Note: gcc-aarch64-linux-gnu is a CROSS-compiler (wrong
     # here); on native ARM64 we just use plain gcc.
-    dnf5 -y install --skip-broken --skip-unavailable \
+    dnf5_install --skip-broken --skip-unavailable \
         gcc \
         gcc-c++ \
         make \
@@ -334,7 +351,7 @@ fi
 
 # Asahi Flatpak Mesa runtimes -- GPU acceleration for Flatpak apps
 # These come from the @asahi:flatpak COPR already configured in the base image
-dnf5 -y install --skip-broken --skip-unavailable \
+dnf5_install --skip-broken --skip-unavailable \
     mesa-asahi-24.08-flatpak \
     mesa-asahi-23.08-flatpak || true
 
@@ -404,11 +421,11 @@ fi
 
 # Distrobox configs
 mkdir -p /etc/distrobox
-curl -sL "https://raw.githubusercontent.com/ublue-os/toolboxes/main/apps/docker/Distrobox.ini" -o /etc/distrobox/docker.ini || true
-curl -sL "https://raw.githubusercontent.com/ublue-os/toolboxes/main/apps/incus/Distrobox.ini" -o /etc/distrobox/incus.ini || true
+curl "${CURL_COMMON_ARGS[@]}" "https://raw.githubusercontent.com/ublue-os/toolboxes/main/apps/docker/distrobox.ini" -o /etc/distrobox/docker.ini || true
+curl "${CURL_COMMON_ARGS[@]}" "https://raw.githubusercontent.com/ublue-os/toolboxes/main/apps/incus/distrobox.ini" -o /etc/distrobox/incus.ini || true
 
 # bash-preexec for shell integration
-curl -sL "https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh" -o /usr/share/bash-prexec || true
+curl "${CURL_COMMON_ARGS[@]}" "https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh" -o /usr/share/bash-prexec || true
 
 # ujust system -- the ublue-os-just package is not available on aarch64,
 # so we create the ujust wrapper, helper library, and root justfile here.
@@ -464,7 +481,7 @@ for f in /usr/share/ublue-os/just/*.just; do
 done
 
 # winetricks (arch-independent shell script)
-if curl -sL "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" -o /usr/bin/winetricks; then
+if curl "${CURL_COMMON_ARGS[@]}" "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" -o /usr/bin/winetricks; then
     chmod +x /usr/bin/winetricks
 fi
 
