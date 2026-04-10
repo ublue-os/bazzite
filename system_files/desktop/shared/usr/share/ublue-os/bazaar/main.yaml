@@ -85,6 +85,11 @@ hooks:
             # styling
             style: suggested
     shell: exec python3 /usr/share/ublue-os/bazaar/hooks.py
+    # This gives you the opportunity to add a basic regex check on an incoming
+    # appid before incurring the overhead of spawning a subprocess. This
+    # improves performance and reduces script boilerplate for long lists of
+    # hooks that execute on specific appids.
+    check-appid-regex: ^(com\.jetbrains\..*|com\.google\.AndroidStudio)$
 
   - id: vscode
     when: before-transaction
@@ -204,6 +209,11 @@ hooks:
             # styling
             style: suggested
     shell: exec python3 /usr/share/ublue-os/bazaar/hooks.py
+    # This gives you the opportunity to add a basic regex check on an incoming
+    # appid before incurring the overhead of spawning a subprocess. This
+    # improves performance and reduces script boilerplate for long lists of
+    # hooks that execute on specific appids.
+    check-appid-regex: ^com\.visualstudio\.code.*$
 
   - id: vscodium
     when: before-transaction
@@ -290,3 +300,8 @@ hooks:
             # styling
             style: suggested
     shell: exec python3 /usr/share/ublue-os/bazaar/hooks.py
+    # This gives you the opportunity to add a basic regex check on an incoming
+    # appid before incurring the overhead of spawning a subprocess. This
+    # improves performance and reduces script boilerplate for long lists of
+    # hooks that execute on specific appids.
+    check-appid-regex: ^com\.vscodium\.codium.*$
