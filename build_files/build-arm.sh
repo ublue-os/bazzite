@@ -119,6 +119,38 @@ dnf5_update_required() {
         --exclude='kernel*' --exclude='asahi-kernel*'
 }
 
+vendor_enable_system_unit() {
+    local unit="$1"
+    local install_target
+    local target_dir
+
+    shift
+    [[ -f "/usr/lib/systemd/system/${unit}" ]] || return 0
+
+    for install_target in "$@"; do
+        target_dir="/usr/lib/systemd/system/${install_target}"
+        mkdir -p "${target_dir}"
+        ln -sf "../${unit}" "${target_dir}/${unit}"
+        rm -f "/etc/systemd/system/${install_target}/${unit}"
+    done
+}
+
+vendor_enable_user_unit() {
+    local unit="$1"
+    local install_target
+    local target_dir
+
+    shift
+    [[ -f "/usr/lib/systemd/user/${unit}" ]] || return 0
+
+    for install_target in "$@"; do
+        target_dir="/usr/lib/systemd/user/${install_target}"
+        mkdir -p "${target_dir}"
+        ln -sf "../${unit}" "${target_dir}/${unit}"
+        rm -f "/etc/systemd/user/${install_target}/${unit}"
+    done
+}
+
 # ── Disable broken repos + fix GPG for COPR repos ────────────────────────────
 # The Asahi hotfixes repo returns 403 (retired upstream).
 dnf5 config-manager setopt 'fedora-asahi-remix-hotfixes*.enabled=0' 2>/dev/null || \
@@ -298,7 +330,7 @@ if dnf5 -y copr enable ublue-os/packages 2>/dev/null; then
     fi
 
     if [[ -f /usr/lib/systemd/system/uupd.timer ]]; then
-        systemctl enable uupd.timer
+        vendor_enable_system_unit uupd.timer timers.target.wants
     fi
 fi
 
@@ -370,19 +402,23 @@ dnf5_install --skip-broken --skip-unavailable \
     mesa-asahi-24.08-flatpak \
     mesa-asahi-23.08-flatpak || true
 
-# Enable services
-systemctl enable podman.socket || true
-systemctl enable tailscaled.service || true
-systemctl enable speakersafetyd.service || true
-systemctl enable input-remapper.service || true
-systemctl enable greenboot-healthcheck.service || true
-systemctl enable greenboot-set-rollback-trigger.service || true
-systemctl enable bazzite-flatpak-manager.service || true
-systemctl enable bazzite-hardware-setup.service || true
-systemctl enable --global bazzite-user-setup.service || true
-systemctl enable --global bazzite-dynamic-fixes.service || true
-systemctl enable --global ntfs-nag.service || true
-systemctl enable --global systemd-tmpfiles-setup.service || true
+# Enable services with vendor symlinks in /usr/lib so image-owned enablement
+# does not persist as mutable /etc/systemd state across rebases.
+vendor_enable_system_unit podman.socket sockets.target.wants || true
+vendor_enable_system_unit tailscaled.service multi-user.target.wants || true
+vendor_enable_system_unit speakersafetyd.service multi-user.target.wants || true
+vendor_enable_system_unit input-remapper.service default.target.wants || true
+vendor_enable_system_unit \
+    greenboot-healthcheck.service \
+    boot-complete.target.requires \
+    multi-user.target.wants || true
+vendor_enable_system_unit \
+    greenboot-set-rollback-trigger.service \
+    greenboot-healthcheck.service.wants \
+    systemd-update-done.service.wants || true
+vendor_enable_system_unit greenboot-success.target multi-user.target.wants || true
+vendor_enable_user_unit ntfs-nag.service xdg-desktop-autostart.target.wants || true
+vendor_enable_user_unit systemd-tmpfiles-setup.service basic.target.wants || true
 systemctl disable waydroid-container.service || true
 systemctl disable rpm-ostreed-automatic.timer || true
 systemctl disable force-wol.service || true
@@ -391,8 +427,8 @@ systemctl mask iscsi || true
 # for the Broadcom WiFi chip. Masking it breaks WiFi entirely.
 systemctl disable iwd.service || true
 
-if systemctl list-unit-files | grep -q power-profiles-daemon.service; then
-    systemctl enable power-profiles-daemon || true
+if [[ -f /usr/lib/systemd/system/power-profiles-daemon.service ]]; then
+    vendor_enable_system_unit power-profiles-daemon.service graphical.target.wants || true
 fi
 
 # Bluetooth: enable userspace HID for Apple keyboards/trackpads
@@ -514,8 +550,8 @@ flatpak install -y --noninteractive flathub com.spotify.Client || true
 FLATPAK_EOF
 chmod +x /usr/lib/bazzite/scripts/install-flatpaks.sh
 
-mkdir -p /etc/systemd/system
-cat > /etc/systemd/system/bazzite-first-boot-flatpaks.service << 'SVC_EOF'
+mkdir -p /usr/lib/systemd/system /usr/lib/systemd/system/multi-user.target.wants
+cat > /usr/lib/systemd/system/bazzite-first-boot-flatpaks.service << 'SVC_EOF'
 [Unit]
 Description=Install essential Flatpaks on first boot
 After=network-online.target
@@ -531,7 +567,30 @@ ExecStartPost=/usr/bin/touch /var/lib/bazzite/flatpaks-installed
 [Install]
 WantedBy=multi-user.target
 SVC_EOF
-systemctl enable bazzite-first-boot-flatpaks.service || true
+rm -f /etc/systemd/system/bazzite-first-boot-flatpaks.service \
+      /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service
+ln -sf ../bazzite-first-boot-flatpaks.service \
+    /usr/lib/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service
+
+# Keep Bazzite-owned service enablement in /usr/lib so rebases do not retain
+# stale /etc systemd state from earlier image revisions.
+mkdir -p /usr/lib/systemd/user/default.target.wants
+rm -f /etc/systemd/system/bazzite-flatpak-manager.service \
+      /etc/systemd/system/bazzite-hardware-setup.service \
+      /etc/systemd/system/multi-user.target.wants/bazzite-flatpak-manager.service \
+      /etc/systemd/system/multi-user.target.wants/bazzite-hardware-setup.service \
+      /etc/systemd/user/bazzite-user-setup.service \
+      /etc/systemd/user/bazzite-dynamic-fixes.service \
+      /etc/systemd/user/default.target.wants/bazzite-user-setup.service \
+      /etc/systemd/user/default.target.wants/bazzite-dynamic-fixes.service
+ln -sf ../bazzite-flatpak-manager.service \
+    /usr/lib/systemd/system/multi-user.target.wants/bazzite-flatpak-manager.service
+ln -sf ../bazzite-hardware-setup.service \
+    /usr/lib/systemd/system/multi-user.target.wants/bazzite-hardware-setup.service
+ln -sf ../bazzite-user-setup.service \
+    /usr/lib/systemd/user/default.target.wants/bazzite-user-setup.service
+ln -sf ../bazzite-dynamic-fixes.service \
+    /usr/lib/systemd/user/default.target.wants/bazzite-dynamic-fixes.service
 
 # Lock down COPR repos post-build -- prevent unexpected package pulls on updates.
 # The Asahi COPRs must stay enabled (kernel, mesa, firmware updates).

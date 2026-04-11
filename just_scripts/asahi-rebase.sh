@@ -328,6 +328,73 @@ print_log_tail() {
     fi
 }
 
+cleanup_stale_first_boot_artifacts() {
+    local root_prefix="${1:-}"
+    local stateroot_var="${2:-}"
+    local systemd_system_root="${root_prefix}/etc/systemd/system"
+    local systemd_user_root="${root_prefix}/etc/systemd/user"
+    local search_root
+    local stale_unit
+
+    sudo rm -rf \
+        "${root_prefix}/etc/profile.d/bazzite-rebase.sh" \
+        "${systemd_system_root}/bazzite-firstboot-rebase.service" \
+        "${systemd_system_root}/bazzite-first-boot-rebase.service" \
+        "${systemd_system_root}/bazzite-first-boot-flatpaks.service" \
+        "${systemd_system_root}/bazzite-flatpak-manager.service" \
+        "${systemd_system_root}/bazzite-flatpak-manager.service.d" \
+        "${systemd_system_root}/bazzite-hardware-setup.service" \
+        "${systemd_system_root}/bazzite-hardware-setup.service.d" \
+        "${systemd_system_root}/multi-user.target.wants/bazzite-firstboot-rebase.service" \
+        "${systemd_system_root}/multi-user.target.wants/bazzite-first-boot-rebase.service" \
+        "${systemd_system_root}/multi-user.target.wants/bazzite-first-boot-flatpaks.service" \
+        "${systemd_system_root}/multi-user.target.wants/bazzite-flatpak-manager.service" \
+        "${systemd_system_root}/multi-user.target.wants/bazzite-hardware-setup.service" \
+        "${systemd_system_root}/timers.target.wants/uupd.timer" \
+        "${systemd_system_root}/sockets.target.wants/podman.socket" \
+        "${systemd_system_root}/default.target.wants/input-remapper.service" \
+        "${systemd_system_root}/graphical.target.wants/power-profiles-daemon.service" \
+        "${systemd_system_root}/boot-complete.target.requires/greenboot-healthcheck.service" \
+        "${systemd_system_root}/greenboot-healthcheck.service.wants/greenboot-set-rollback-trigger.service" \
+        "${systemd_system_root}/systemd-update-done.service.wants/greenboot-set-rollback-trigger.service" \
+        "${systemd_system_root}/multi-user.target.wants/tailscaled.service" \
+        "${systemd_system_root}/multi-user.target.wants/speakersafetyd.service" \
+        "${systemd_system_root}/multi-user.target.wants/greenboot-healthcheck.service" \
+        "${systemd_system_root}/multi-user.target.wants/greenboot-success.target" \
+        "${systemd_user_root}/bazzite-user-setup.service" \
+        "${systemd_user_root}/bazzite-user-setup.service.d" \
+        "${systemd_user_root}/bazzite-dynamic-fixes.service" \
+        "${systemd_user_root}/bazzite-dynamic-fixes.service.d" \
+        "${systemd_user_root}/default.target.wants/bazzite-user-setup.service" \
+        "${systemd_user_root}/default.target.wants/bazzite-dynamic-fixes.service" \
+        "${systemd_user_root}/basic.target.wants/systemd-tmpfiles-setup.service" \
+        "${systemd_user_root}/xdg-desktop-autostart.target.wants/ntfs-nag.service" \
+        "${root_prefix}/usr/bin/bazzite-rebase-status" \
+        "${root_prefix}/usr/local/bin/bazzite-rebase-status" \
+        "${root_prefix}/var/usrlocal/bin/bazzite-rebase-status" 2>/dev/null || true
+
+    if [[ -n "${stateroot_var}" ]]; then
+        sudo rm -f \
+            "${stateroot_var}/usrlocal/bin/bazzite-rebase-status" 2>/dev/null || true
+    fi
+
+    # Older conversions wrote image-owned Bazzite units into /etc/systemd.
+    # Purge any such legacy unit so stale ConditionPath/ExecStart values do not
+    # override the vendor-owned units from the final Bazzite image.
+    for search_root in "${systemd_system_root}" "${systemd_user_root}"; do
+        [[ -d "${search_root}" ]] || continue
+
+        while IFS= read -r stale_unit; do
+            [[ -n "${stale_unit}" ]] || continue
+            sudo rm -rf "${stale_unit}" 2>/dev/null || true
+        done < <(
+            sudo grep -RIlE \
+                '(^ConditionPath[^=]*=/usr/lib/bazzite(|/|_)|/usr/lib/bazzite/scripts/|bazzite-rebase-status|ostree-unverified-(image|registry):.*bazzite|%h/\.bazzite-configured|/etc/bazzite/hardware_setup_done|/usr/bin/bazzite-(user|hardware)-setup)' \
+                "${search_root}" 2>/dev/null || true
+        )
+    done
+}
+
 require_commands() {
     local command_name
     local -a missing=()
@@ -877,6 +944,8 @@ fi
 # it does not overlap with the login prompt. The MOTD/status helper tells users
 # exactly where to watch progress or diagnose failures.
 if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
+    cleanup_stale_first_boot_artifacts "" "${STATEROOT_VAR}"
+    cleanup_stale_first_boot_artifacts "${DEPLOY_DIR}" "${STATEROOT_VAR}"
 
     # bazzite-rebase-status: /usr/local -> /var/usrlocal in atomic Fedora.
     sudo mkdir -p "${STATEROOT_VAR}/usrlocal/bin"
@@ -920,6 +989,7 @@ Wants=network-online.target
 Type=oneshot
 ExecStart=/usr/bin/bash -c 'rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest'
 ExecStartPost=/usr/bin/touch /var/lib/bazzite-rebase-done
+ExecStartPost=/usr/bin/bash -c 'rm -f /etc/profile.d/bazzite-rebase.sh /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status || true'
 ExecStartPost=/usr/bin/bash -c 'rm -rf /var/lib/bazzite-install || true'
 ExecStartPost=/usr/bin/bash -c 'sleep 5 && systemctl reboot'
 TimeoutStartSec=0

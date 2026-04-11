@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 # Returns true for Valve handhelds
-SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
-if [[ ":Jupiter:Galileo:" =~ ":$SYS_ID:" ]]; then
+SYS_ID="$("/usr/libexec/hwsupport/sysid" 2>/dev/null || true)"
+if [[ "${SYS_ID}" == "Jupiter" || "${SYS_ID}" == "Galileo" ]]; then
 	exit 0
 fi
 

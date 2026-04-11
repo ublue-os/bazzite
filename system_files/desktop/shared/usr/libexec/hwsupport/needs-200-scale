@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
-SYS_ID="$(/usr/libexec/hwsupport/sysid)"
+SYS_ID="$(/usr/libexec/hwsupport/sysid 2>/dev/null || true)"
 
-if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+if [[ "${SYS_ID}" == "83E1" ]]; then
 	exit 0
 fi
 

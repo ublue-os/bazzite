@@ -1,4 +1,7 @@
 #!/usr/bin/bash
+: "${default_image:=kinoite}"
+: "${default_target:=bazzite}"
+
 if [[ -z "${image}" ]]; then
     image=${default_image}
 fi
@@ -42,5 +45,4 @@ image="${target}${desktop}"
 if [[ ${image} =~ "nvidia" ]]; then
     image="bazzite${desktop}-nvidia"
 fi
-
 
