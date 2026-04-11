@@ -23,6 +23,7 @@ Patch3:         bazzite_logo.patch
 Patch4:         ublue.patch
 Patch5:         wayland-remove-env.patch
 Patch6:         splash.patch
+Patch7:         0001-steam-virtual-keyboard.patch
 
 Requires:       kde-filesystem
 
