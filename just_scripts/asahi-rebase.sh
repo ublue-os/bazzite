@@ -37,6 +37,8 @@ PODMAN_STORAGE_OVERRIDE_ACTIVE=0
 PODMAN_EXT_ROOT=""
 SLEEP_MASKED=0
 DNF_CMD=""
+HOST_DNF_REPO_OVERRIDE="/etc/dnf/repos.override.d/zz-bazzite-fedora-direct.repo"
+HOST_DNF_REPO_OVERRIDE_ACTIVE=0
 DNF5_HOST_STRICT_REPO_ARGS=(
     "--setopt=*.skip_if_unavailable=0"
     "--setopt=*.timeout=30"
@@ -98,6 +100,10 @@ cleanup_host_overrides() {
         sudo systemctl unmask \
             sleep.target suspend.target hibernate.target \
             hybrid-sleep.target 2>/dev/null || true
+    fi
+
+    if [[ "${HOST_DNF_REPO_OVERRIDE_ACTIVE}" -eq 1 ]]; then
+        sudo rm -f "${HOST_DNF_REPO_OVERRIDE}" 2>/dev/null || true
     fi
 
     if [[ -n "${PODMAN_STORAGE_CONF_BACKUP}" ]]; then
@@ -248,21 +254,82 @@ detect_dnf() {
 }
 
 disable_host_broken_repos() {
-    detect_dnf
+    local fedora_ver
 
-    # The retired Asahi hotfixes repo can poison host prerequisite installs.
-    # Disable it, but keep Fedora/RPM Fusion repos strict so missing metadata is
-    # reported immediately instead of becoming a later depsolve wall.
-    sudo "${DNF_CMD}" config-manager setopt \
-        'fedora-asahi-remix-hotfixes*.enabled=0' >/dev/null 2>&1 || \
-        sudo sed -i 's/^enabled=1/enabled=0/' \
-            /etc/yum.repos.d/*hotfixes*.repo 2>/dev/null || true
+    detect_dnf
+    fedora_ver="$(rpm -E %fedora 2>/dev/null || echo 43)"
+
+    # Fresh Asahi installs can land on a stale or partially synced Fedora
+    # mirror, which makes normal host prerequisite installs fail before we
+    # ever reach the container build. Pin the host-side prerequisite path to
+    # Fedora's direct endpoints, and disable the retired Asahi hotfixes repo.
+    if [[ "${DNF_CMD}" == "dnf5" ]]; then
+        sudo mkdir -p "$(dirname "${HOST_DNF_REPO_OVERRIDE}")"
+        sudo tee "${HOST_DNF_REPO_OVERRIDE}" > /dev/null << EOF
+[fedora]
+baseurl=https://dl.fedoraproject.org/pub/fedora/linux/releases/${fedora_ver}/Everything/\$basearch/os/
+metalink=
+mirrorlist=
+
+[updates]
+baseurl=https://dl.fedoraproject.org/pub/fedora/linux/updates/${fedora_ver}/Everything/\$basearch/
+metalink=
+mirrorlist=
+
+[fedora-cisco-openh264]
+baseurl=https://codecs.fedoraproject.org/openh264/${fedora_ver}/\$basearch/
+metalink=
+mirrorlist=
+
+[updates-archive]
+enabled=0
+
+[fedora-asahi-remix-hotfixes]
+enabled=0
+EOF
+        HOST_DNF_REPO_OVERRIDE_ACTIVE=1
+    else
+        sudo dnf config-manager --save \
+            "--setopt=fedora.baseurl=https://dl.fedoraproject.org/pub/fedora/linux/releases/${fedora_ver}/Everything/\$basearch/os/" \
+            "--setopt=fedora.metalink=" \
+            "--setopt=fedora.mirrorlist=" \
+            "--setopt=updates.baseurl=https://dl.fedoraproject.org/pub/fedora/linux/updates/${fedora_ver}/Everything/\$basearch/" \
+            "--setopt=updates.metalink=" \
+            "--setopt=updates.mirrorlist=" \
+            "--setopt=fedora-cisco-openh264.baseurl=https://codecs.fedoraproject.org/openh264/${fedora_ver}/\$basearch/" \
+            "--setopt=fedora-cisco-openh264.metalink=" \
+            "--setopt=fedora-cisco-openh264.mirrorlist=" \
+            "--setopt=updates-archive.enabled=0" \
+            "--setopt=fedora-asahi-remix-hotfixes.enabled=0" >/dev/null 2>&1 || \
+            sudo sed -i 's/^enabled=1/enabled=0/' \
+                /etc/yum.repos.d/*hotfixes*.repo 2>/dev/null || true
+    fi
 }
 
 clean_host_dnf_metadata() {
     detect_dnf
     sudo "${DNF_CMD}" clean all >/dev/null 2>&1 || true
     sudo rm -rf /var/cache/libdnf5/* /var/cache/dnf/* 2>/dev/null || true
+}
+
+print_host_repo_debug() {
+    detect_dnf
+
+    {
+        echo "Enabled host repos:"
+        if [[ "${DNF_CMD}" == "dnf5" ]]; then
+            sudo dnf5 repolist --enabled || true
+        else
+            sudo dnf repolist enabled || true
+        fi
+        echo
+        echo "Host Fedora repo configuration:"
+        sudo grep -RHE '^\[|^baseurl=|^metalink=|^mirrorlist=|^enabled=' \
+            /etc/dnf/repos.override.d/*.repo \
+            /etc/yum.repos.d/fedora*.repo \
+            /etc/yum.repos.d/fedora-cisco-openh264.repo \
+            /etc/yum.repos.d/*hotfixes*.repo 2>/dev/null || true
+    } >&2
 }
 
 dnf_upgrade_host() {
@@ -276,7 +343,13 @@ dnf_upgrade_host() {
 
         echo "Host dnf5 upgrade failed; cleaning metadata and retrying once." >&2
         clean_host_dnf_metadata
-        sudo dnf5 upgrade -y --refresh "${DNF5_HOST_STRICT_REPO_ARGS[@]}"
+        if sudo dnf5 upgrade -y --refresh "${DNF5_HOST_STRICT_REPO_ARGS[@]}"; then
+            return 0
+        fi
+
+        echo "Host dnf5 upgrade failed again after metadata refresh." >&2
+        print_host_repo_debug
+        return 1
     else
         if sudo dnf upgrade -y --refresh "${DNF4_HOST_STRICT_REPO_ARGS[@]}"; then
             return 0
@@ -284,7 +357,13 @@ dnf_upgrade_host() {
 
         echo "Host dnf upgrade failed; cleaning metadata and retrying once." >&2
         clean_host_dnf_metadata
-        sudo dnf upgrade -y --refresh "${DNF4_HOST_STRICT_REPO_ARGS[@]}"
+        if sudo dnf upgrade -y --refresh "${DNF4_HOST_STRICT_REPO_ARGS[@]}"; then
+            return 0
+        fi
+
+        echo "Host dnf upgrade failed again after metadata refresh." >&2
+        print_host_repo_debug
+        return 1
     fi
 }
 
@@ -299,7 +378,13 @@ dnf_install_host() {
 
         echo "Host dnf5 install failed; cleaning metadata and retrying once." >&2
         clean_host_dnf_metadata
-        sudo dnf5 install -y --refresh "${DNF5_HOST_STRICT_REPO_ARGS[@]}" "$@"
+        if sudo dnf5 install -y --refresh "${DNF5_HOST_STRICT_REPO_ARGS[@]}" "$@"; then
+            return 0
+        fi
+
+        echo "Host dnf5 install failed again after metadata refresh." >&2
+        print_host_repo_debug
+        return 1
     else
         if sudo dnf install -y --refresh "${DNF4_HOST_STRICT_REPO_ARGS[@]}" "$@"; then
             return 0
@@ -307,7 +392,13 @@ dnf_install_host() {
 
         echo "Host dnf install failed; cleaning metadata and retrying once." >&2
         clean_host_dnf_metadata
-        sudo dnf install -y --refresh "${DNF4_HOST_STRICT_REPO_ARGS[@]}" "$@"
+        if sudo dnf install -y --refresh "${DNF4_HOST_STRICT_REPO_ARGS[@]}" "$@"; then
+            return 0
+        fi
+
+        echo "Host dnf install failed again after metadata refresh." >&2
+        print_host_repo_debug
+        return 1
     fi
 }
 

@@ -151,22 +151,56 @@ DNF5_INSTALL_ARGS=(
     --setopt=install_weak_deps=False
     "${DNF5_STRICT_REPO_ARGS[@]}"
 )
+FEDORA_REPO_OVERRIDE="/etc/dnf/repos.override.d/zz-bazzite-fedora-direct.repo"
 
 pin_official_fedora_repos() {
     local fedora_ver
 
     fedora_ver="$(rpm -E %fedora)"
 
-    dnf5 config-manager setopt \
-        "fedora.baseurl=https://dl.fedoraproject.org/pub/fedora/linux/releases/${fedora_ver}/Everything/\$basearch/os/" \
-        "fedora.metalink=" \
-        "fedora.mirrorlist=" \
-        "updates.baseurl=https://dl.fedoraproject.org/pub/fedora/linux/updates/${fedora_ver}/Everything/\$basearch/" \
-        "updates.metalink=" \
-        "updates.mirrorlist=" \
-        "fedora-cisco-openh264.baseurl=https://codecs.fedoraproject.org/openh264/${fedora_ver}/\$basearch/" \
-        "fedora-cisco-openh264.metalink=" \
-        "fedora-cisco-openh264.mirrorlist=" >/dev/null 2>&1 || true
+    mkdir -p "$(dirname "${FEDORA_REPO_OVERRIDE}")"
+    cat > "${FEDORA_REPO_OVERRIDE}" <<EOF
+[fedora]
+baseurl=https://dl.fedoraproject.org/pub/fedora/linux/releases/${fedora_ver}/Everything/\$basearch/os/
+metalink=
+mirrorlist=
+
+[updates]
+baseurl=https://dl.fedoraproject.org/pub/fedora/linux/updates/${fedora_ver}/Everything/\$basearch/
+metalink=
+mirrorlist=
+
+[fedora-cisco-openh264]
+baseurl=https://codecs.fedoraproject.org/openh264/${fedora_ver}/\$basearch/
+metalink=
+mirrorlist=
+
+[rpmfusion-free]
+baseurl=https://download1.rpmfusion.org/free/fedora/releases/${fedora_ver}/Everything/\$basearch/os/
+metalink=
+mirrorlist=
+
+[rpmfusion-free-updates]
+baseurl=https://download1.rpmfusion.org/free/fedora/updates/${fedora_ver}/\$basearch/
+metalink=
+mirrorlist=
+
+[rpmfusion-nonfree]
+baseurl=https://download1.rpmfusion.org/nonfree/fedora/releases/${fedora_ver}/Everything/\$basearch/os/
+metalink=
+mirrorlist=
+
+[rpmfusion-nonfree-updates]
+baseurl=https://download1.rpmfusion.org/nonfree/fedora/updates/${fedora_ver}/\$basearch/
+metalink=
+mirrorlist=
+
+[updates-archive]
+enabled=0
+
+[fedora-asahi-remix-hotfixes]
+enabled=0
+EOF
 }
 
 print_repo_debug() {
@@ -176,6 +210,7 @@ print_repo_debug() {
         echo
         echo "Fedora repo configuration:"
         grep -RHE '^\[|^baseurl=|^metalink=|^mirrorlist=|^enabled=' \
+            /etc/dnf/repos.override.d/*.repo \
             /etc/yum.repos.d/fedora*.repo \
             /etc/yum.repos.d/fedora-cisco-openh264.repo 2>/dev/null || true
     } >&2

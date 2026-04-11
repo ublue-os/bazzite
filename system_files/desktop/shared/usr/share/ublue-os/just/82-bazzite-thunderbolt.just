@@ -129,11 +129,7 @@ install-fairydust-kernel:
         echo "Note: installing build deps on stable variant (fairydust has them pre-installed)"
         if ! sudo rpm-ostree install --apply-live "${BUILD_DEPS[@]}"; then
             echo "rpm-ostree install failed -- falling back to package manager"
-            if command -v dnf5 &>/dev/null; then
-                sudo dnf5 install -y "${BUILD_DEPS[@]}"
-            else
-                sudo dnf install -y "${BUILD_DEPS[@]}"
-            fi
+            /usr/libexec/bazzite-arm-runtime-dnf install "${BUILD_DEPS[@]}"
         fi
     fi
 

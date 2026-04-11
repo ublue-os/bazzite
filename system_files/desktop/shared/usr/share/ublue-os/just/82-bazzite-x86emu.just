@@ -51,7 +51,7 @@ update-x86-emulation:
         exit 0
     fi
     echo "Updating x86 emulation packages..."
-    sudo dnf5 -y update --skip-unavailable \
+    /usr/libexec/bazzite-arm-runtime-dnf update \
         fex-emu \
         fex-emu-rootfs-fedora \
         mesa-fex-emu-overlay-i386 \
@@ -61,6 +61,10 @@ update-x86-emulation:
         libkrun \
         libkrunfw \
         steam
+    command -v FEXInterpreter >/dev/null 2>&1
+    command -v box64 >/dev/null 2>&1
+    command -v muvm >/dev/null 2>&1
+    rpm -q qemu-user-static qemu-user-binfmt steam >/dev/null 2>&1
     echo ""
     echo "Update complete."
     /usr/lib/bazzite/scripts/check-x86-emulation.sh
@@ -99,7 +103,8 @@ install-steam-arm:
     fi
 
     echo "Installing Steam from Asahi COPR..."
-    sudo dnf5 -y install steam
+    /usr/libexec/bazzite-arm-runtime-dnf install steam
+    rpm -q steam >/dev/null 2>&1
     echo ""
     echo "Steam installed. Launch from your application menu or run: ujust run-steam"
 

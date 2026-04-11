@@ -19,33 +19,76 @@ DNF5_STRICT_REPO_ARGS=(
     "--setopt=*.retries=10"
 )
 
+refresh_dnf_metadata() {
+    dnf5 clean all >/dev/null 2>&1 || true
+    rm -rf /var/cache/libdnf5/* /var/cache/dnf/* 2>/dev/null || true
+}
+
+install_required_packages() {
+    local description="$1"
+    shift
+
+    if dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" "$@"; then
+        return 0
+    fi
+
+    echo "${description} install failed; cleaning metadata and retrying once." >&2
+    refresh_dnf_metadata
+    dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" "$@"
+}
+
+require_command() {
+    local command_name="$1"
+
+    if ! command -v "${command_name}" >/dev/null 2>&1; then
+        echo "Required command is missing after emulation setup: ${command_name}" >&2
+        exit 1
+    fi
+}
+
+require_package() {
+    local package_name="$1"
+
+    if ! rpm -q "${package_name}" >/dev/null 2>&1; then
+        echo "Required package is missing after emulation setup: ${package_name}" >&2
+        exit 1
+    fi
+}
+
 # FEX-Emu: primary emulation layer
 # Pulls in fex-emu-rootfs-fedora (x86_64 sysroot) and
 # mesa-fex-emu-overlay (GPU acceleration through emulation)
-dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" \
+install_required_packages "FEX emulation stack" \
     fex-emu
 
 # Box64: secondary x86_64 emulator for additional compatibility
-dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" --skip-broken --skip-unavailable \
+install_required_packages "Box64 emulation stack" \
     box64
 
 # muvm/libkrun: microVM-based emulation for GPU-intensive workloads
 # These allow running x86 apps with near-native Apple GPU access
-dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" --skip-broken --skip-unavailable \
+install_required_packages "microVM emulation stack" \
     muvm \
     libkrun \
     libkrunfw
 
 # qemu-user-static: fallback emulation via binary translation
 # Pulls in the architecture-specific static interpreters, including x86.
-dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" --skip-broken --skip-unavailable \
+install_required_packages "qemu user emulation stack" \
     qemu-user-static \
     qemu-user-binfmt
 
 # Steam: Asahi's package handles FEX integration automatically
 # The @asahi steam COPR is already configured in the base image
-dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" --skip-broken --skip-unavailable \
+install_required_packages "Steam on ARM" \
     steam
+
+require_command FEXInterpreter
+require_command box64
+require_command muvm
+require_package qemu-user-static
+require_package qemu-user-binfmt
+require_package steam
 
 # Create emulation status check script
 mkdir -p /usr/lib/bazzite/scripts

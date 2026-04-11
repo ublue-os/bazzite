@@ -95,23 +95,57 @@ CURL_COMMON_ARGS=(
     --retry-delay 2
     --connect-timeout 20
 )
+FEDORA_REPO_OVERRIDE="/etc/dnf/repos.override.d/zz-bazzite-fedora-direct.repo"
 
 pin_official_fedora_repos() {
     # Fresh Asahi installs sometimes hit a stale or partially synced Fedora
     # mirror during the native container build. That produces huge misleading
     # depsolve walls for normal Fedora packages (mesa, gtk3-devel, flex, etc.).
-    # Pin the build to Fedora's official direct endpoints so Podman builds on
-    # device behave like the clean Docker runs we validate with.
-    dnf5 config-manager setopt \
-        "fedora.baseurl=https://dl.fedoraproject.org/pub/fedora/linux/releases/${FEDORA_VER}/Everything/\$basearch/os/" \
-        "fedora.metalink=" \
-        "fedora.mirrorlist=" \
-        "updates.baseurl=https://dl.fedoraproject.org/pub/fedora/linux/updates/${FEDORA_VER}/Everything/\$basearch/" \
-        "updates.metalink=" \
-        "updates.mirrorlist=" \
-        "fedora-cisco-openh264.baseurl=https://codecs.fedoraproject.org/openh264/${FEDORA_VER}/\$basearch/" \
-        "fedora-cisco-openh264.metalink=" \
-        "fedora-cisco-openh264.mirrorlist=" >/dev/null 2>&1 || true
+    # Write the effective repo override directly so the build does not depend
+    # on dnf5 config-manager implementation details or plugin availability.
+    mkdir -p "$(dirname "${FEDORA_REPO_OVERRIDE}")"
+    cat > "${FEDORA_REPO_OVERRIDE}" <<EOF
+[fedora]
+baseurl=https://dl.fedoraproject.org/pub/fedora/linux/releases/${FEDORA_VER}/Everything/\$basearch/os/
+metalink=
+mirrorlist=
+
+[updates]
+baseurl=https://dl.fedoraproject.org/pub/fedora/linux/updates/${FEDORA_VER}/Everything/\$basearch/
+metalink=
+mirrorlist=
+
+[fedora-cisco-openh264]
+baseurl=https://codecs.fedoraproject.org/openh264/${FEDORA_VER}/\$basearch/
+metalink=
+mirrorlist=
+
+[rpmfusion-free]
+baseurl=https://download1.rpmfusion.org/free/fedora/releases/${FEDORA_VER}/Everything/\$basearch/os/
+metalink=
+mirrorlist=
+
+[rpmfusion-free-updates]
+baseurl=https://download1.rpmfusion.org/free/fedora/updates/${FEDORA_VER}/\$basearch/
+metalink=
+mirrorlist=
+
+[rpmfusion-nonfree]
+baseurl=https://download1.rpmfusion.org/nonfree/fedora/releases/${FEDORA_VER}/Everything/\$basearch/os/
+metalink=
+mirrorlist=
+
+[rpmfusion-nonfree-updates]
+baseurl=https://download1.rpmfusion.org/nonfree/fedora/updates/${FEDORA_VER}/\$basearch/
+metalink=
+mirrorlist=
+
+[updates-archive]
+enabled=0
+
+[fedora-asahi-remix-hotfixes]
+enabled=0
+EOF
 }
 
 dnf5_install() {
@@ -172,10 +206,6 @@ vendor_enable_user_unit() {
 }
 
 # ── Disable broken repos + fix GPG for COPR repos ────────────────────────────
-# The Asahi hotfixes repo returns 403 (retired upstream).
-dnf5 config-manager setopt 'fedora-asahi-remix-hotfixes*.enabled=0' 2>/dev/null || \
-    sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/*hotfixes*.repo 2>/dev/null || true
-
 # COPR repos ship packages signed with COPR project-specific GPG keys that
 # may not be pre-imported in the base image's RPM keyring, causing
 # "Signature verification failed" when dnf tries to install from them.
@@ -191,8 +221,8 @@ for copr_repo in /etc/yum.repos.d/_copr*.repo; do
 done
 
 dnf5_install \
-    "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VER}.noarch.rpm" \
-    "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VER}.noarch.rpm"
+    "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VER}.noarch.rpm" \
+    "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VER}.noarch.rpm"
 
 dnf5_update_required
 
@@ -363,7 +393,7 @@ fi
 # bolt: Thunderbolt device manager -- authorises devices, works with any
 # kernel that has CONFIG_USB4/CONFIG_THUNDERBOLT. Installed on ALL variants.
 # With the fairydust kernel, this unlocks your dock + peripherals + 4K display.
-dnf5_install --skip-broken --skip-unavailable \
+dnf5_install \
     bolt \
     usbutils \
     pciutils
@@ -382,7 +412,7 @@ if [[ "${KERNEL_VARIANT}" == "fairydust" ]]; then
     # Kernel build toolchain -- everything needed to compile Linux from source
     # on native aarch64. Note: gcc-aarch64-linux-gnu is a CROSS-compiler (wrong
     # here); on native ARM64 we just use plain gcc.
-    dnf5_install --skip-broken --skip-unavailable \
+    dnf5_install \
         gcc \
         gcc-c++ \
         make \
