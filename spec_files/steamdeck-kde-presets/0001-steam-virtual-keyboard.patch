@@ -1,0 +1,22 @@
+diff --git a/etc/xdg/kwinrulesrc b/etc/xdg/kwinrulesrc
+index 80b8acd..87ebb13 100644
+--- a/etc/xdg/kwinrulesrc
++++ b/etc/xdg/kwinrulesrc
+@@ -5,13 +5,13 @@ update_info=kwinrules.upd:replace-placement-string-to-enum,kwinrules.upd:use-vir
+ Description=Window settings for Steam Keyboard
+ above=true
+ aboverule=2
++acceptfocusrule=2
+ skiptaskbar=true
+ skiptaskbarrule=2
+ title=Steam Keyboard
+-titlematch=2
+ type=16
+ typerule=2
+-wmclass=steam
++wmclass=steamwebhelper steam
+ wmclasscomplete=true
+ wmclassmatch=2
+ 
+-- 
+2.53.0
