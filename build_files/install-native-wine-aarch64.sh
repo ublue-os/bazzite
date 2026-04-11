@@ -152,6 +152,35 @@ DNF5_INSTALL_ARGS=(
     "${DNF5_STRICT_REPO_ARGS[@]}"
 )
 
+pin_official_fedora_repos() {
+    local fedora_ver
+
+    fedora_ver="$(rpm -E %fedora)"
+
+    dnf5 config-manager setopt \
+        "fedora.baseurl=https://dl.fedoraproject.org/pub/fedora/linux/releases/${fedora_ver}/Everything/\$basearch/os/" \
+        "fedora.metalink=" \
+        "fedora.mirrorlist=" \
+        "updates.baseurl=https://dl.fedoraproject.org/pub/fedora/linux/updates/${fedora_ver}/Everything/\$basearch/" \
+        "updates.metalink=" \
+        "updates.mirrorlist=" \
+        "fedora-cisco-openh264.baseurl=https://codecs.fedoraproject.org/openh264/${fedora_ver}/\$basearch/" \
+        "fedora-cisco-openh264.metalink=" \
+        "fedora-cisco-openh264.mirrorlist=" >/dev/null 2>&1 || true
+}
+
+print_repo_debug() {
+    {
+        echo "Enabled repos:"
+        dnf5 repolist --enabled || true
+        echo
+        echo "Fedora repo configuration:"
+        grep -RHE '^\[|^baseurl=|^metalink=|^mirrorlist=|^enabled=' \
+            /etc/yum.repos.d/fedora*.repo \
+            /etc/yum.repos.d/fedora-cisco-openh264.repo 2>/dev/null || true
+    } >&2
+}
+
 cleanup() {
     if [[ -n "${build_root}" ]]; then
         rm -rf "${build_root}"
@@ -242,7 +271,13 @@ install_required_packages() {
 
     echo "${description} install failed; cleaning metadata and retrying once." >&2
     refresh_dnf_metadata
-    dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"
+    if dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"; then
+        return 0
+    fi
+
+    echo "${description} install failed again after metadata refresh." >&2
+    print_repo_debug
+    return 1
 }
 
 resolve_wine_source() {
@@ -338,6 +373,7 @@ resolve_llvm_mingw_release() {
 
 resolve_wine_source
 resolve_llvm_mingw_release
+pin_official_fedora_repos
 
 build_root="$(mktemp -d /var/tmp/bazzite-wine-aarch64.XXXXXX)"
 tool_bin="${build_root}/bin"

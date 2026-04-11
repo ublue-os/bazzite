@@ -96,6 +96,24 @@ CURL_COMMON_ARGS=(
     --connect-timeout 20
 )
 
+pin_official_fedora_repos() {
+    # Fresh Asahi installs sometimes hit a stale or partially synced Fedora
+    # mirror during the native container build. That produces huge misleading
+    # depsolve walls for normal Fedora packages (mesa, gtk3-devel, flex, etc.).
+    # Pin the build to Fedora's official direct endpoints so Podman builds on
+    # device behave like the clean Docker runs we validate with.
+    dnf5 config-manager setopt \
+        "fedora.baseurl=https://dl.fedoraproject.org/pub/fedora/linux/releases/${FEDORA_VER}/Everything/\$basearch/os/" \
+        "fedora.metalink=" \
+        "fedora.mirrorlist=" \
+        "updates.baseurl=https://dl.fedoraproject.org/pub/fedora/linux/updates/${FEDORA_VER}/Everything/\$basearch/" \
+        "updates.metalink=" \
+        "updates.mirrorlist=" \
+        "fedora-cisco-openh264.baseurl=https://codecs.fedoraproject.org/openh264/${FEDORA_VER}/\$basearch/" \
+        "fedora-cisco-openh264.metalink=" \
+        "fedora-cisco-openh264.mirrorlist=" >/dev/null 2>&1 || true
+}
+
 dnf5_install() {
     dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" "$@"
 }
@@ -118,6 +136,8 @@ dnf5_update_required() {
         "${DNF5_STRICT_REPO_ARGS[@]}" \
         --exclude='kernel*' --exclude='asahi-kernel*'
 }
+
+pin_official_fedora_repos
 
 vendor_enable_system_unit() {
     local unit="$1"
