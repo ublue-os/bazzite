@@ -35,6 +35,7 @@ PODMAN_STORAGE_CONF="/etc/containers/storage.conf"
 PODMAN_STORAGE_CONF_BACKUP=""
 PODMAN_STORAGE_OVERRIDE_ACTIVE=0
 PODMAN_EXT_ROOT=""
+PODMAN_BUILD_SECURITY_ARGS=()
 SLEEP_MASKED=0
 DNF_CMD=""
 HOST_DNF_REPO_OVERRIDE="/etc/dnf/repos.override.d/zz-bazzite-fedora-direct.repo"
@@ -340,6 +341,13 @@ print_external_build_debug() {
     {
         echo "External build storage:"
         findmnt -T "${external_path}" -o TARGET,SOURCE,FSTYPE,OPTIONS,SIZE,USED,AVAIL -n || true
+        echo
+        echo "SELinux mode:"
+        getenforce 2>/dev/null || true
+        echo
+        echo "External storage labels:"
+        ls -Zd "${external_path}" 2>/dev/null || true
+        [[ -n "${PODMAN_EXT_ROOT}" ]] && ls -Zd "${PODMAN_EXT_ROOT}" 2>/dev/null || true
         echo
         echo "Active podman storage.conf:"
         sudo cat /etc/containers/storage.conf 2>/dev/null || true
@@ -794,6 +802,12 @@ EOF
     PODMAN_STORAGE_OVERRIDE_ACTIVE=1
     echo "Podman root storage → ${PODMAN_EXT_ROOT}"
     echo "Internal disk freed from container build layers (~20 GB saved)."
+
+    if command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled; then
+        PODMAN_BUILD_SECURITY_ARGS+=(--security-opt label=disable)
+        echo "SELinux is enabled and the build graphroot is on external removable storage."
+        echo "Disabling SELinux label separation for podman build to avoid Buildah graphroot label failures."
+    fi
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -813,6 +827,7 @@ else
     echo "Pruning stale Podman builder cache before the native build..."
     sudo podman builder prune -af 2>/dev/null || true
     if ! sudo podman build \
+        "${PODMAN_BUILD_SECURITY_ARGS[@]}" \
         --no-cache \
         --pull=always \
         --platform linux/arm64 \
