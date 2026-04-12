@@ -332,6 +332,63 @@ print_host_repo_debug() {
     } >&2
 }
 
+print_external_build_debug() {
+    local external_path="${1:-}"
+
+    [[ -n "${external_path}" ]] || return 0
+
+    {
+        echo "External build storage:"
+        findmnt -T "${external_path}" -o TARGET,SOURCE,FSTYPE,OPTIONS,SIZE,USED,AVAIL -n || true
+        echo
+        echo "Active podman storage.conf:"
+        sudo cat /etc/containers/storage.conf 2>/dev/null || true
+    } >&2
+}
+
+run_logged_step() {
+    local description="$1"
+    local log_file="$2"
+    shift 2
+
+    echo "${description}"
+    echo "Log: ${log_file}"
+    if "$@" 2>&1 | tee "${log_file}"; then
+        return 0
+    fi
+
+    echo ""
+    echo "ERROR: ${description} failed."
+    echo "Full log: ${log_file}"
+    print_log_tail "${log_file}"
+    return 1
+}
+
+run_logged_retry_step() {
+    local description="$1"
+    local log_file="$2"
+    local attempts="$3"
+    shift 3
+
+    local attempt=1
+    local delay=5
+
+    while (( attempt <= attempts )); do
+        if run_logged_step "${description} (attempt ${attempt}/${attempts})" "${log_file}" "$@"; then
+            return 0
+        fi
+
+        if (( attempt == attempts )); then
+            return 1
+        fi
+
+        echo "${description} failed; retrying in ${delay}s..." >&2
+        sleep "${delay}"
+        delay=$(( delay * 2 ))
+        attempt=$(( attempt + 1 ))
+    done
+}
+
 dnf_upgrade_host() {
     detect_dnf
     disable_host_broken_repos
@@ -610,9 +667,10 @@ if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
     EXTERNAL_SOURCE=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no SOURCE 2>/dev/null || true)
     EXTERNAL_TARGET=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no TARGET 2>/dev/null || true)
     EXTERNAL_FSTYPE=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no FSTYPE 2>/dev/null || true)
+    EXTERNAL_OPTIONS=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no OPTIONS 2>/dev/null || true)
     ROOT_SOURCE=$(findmnt -no SOURCE / 2>/dev/null || true)
 
-    if [[ -z "${EXTERNAL_SOURCE}" || -z "${EXTERNAL_TARGET}" || -z "${EXTERNAL_FSTYPE}" ]]; then
+    if [[ -z "${EXTERNAL_SOURCE}" || -z "${EXTERNAL_TARGET}" || -z "${EXTERNAL_FSTYPE}" || -z "${EXTERNAL_OPTIONS}" ]]; then
         echo "ERROR: Could not resolve the filesystem backing '${EXTERNAL_BUILD_PATH}'."
         exit 1
     fi
@@ -636,17 +694,54 @@ if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
             ;;
     esac
 
-    sudo rm -f "${EXTERNAL_BUILD_PATH}/.bazzite-write-test" \
-        "${EXTERNAL_BUILD_PATH}/.bazzite-symlink-test" 2>/dev/null || true
-    if ! sudo touch "${EXTERNAL_BUILD_PATH}/.bazzite-write-test" ||
-        ! sudo ln -s . "${EXTERNAL_BUILD_PATH}/.bazzite-symlink-test"; then
-        sudo rm -f "${EXTERNAL_BUILD_PATH}/.bazzite-write-test" \
-            "${EXTERNAL_BUILD_PATH}/.bazzite-symlink-test" 2>/dev/null || true
-        echo "ERROR: '${EXTERNAL_BUILD_PATH}' does not support the writes/symlinks podman storage needs."
+    if [[ ",${EXTERNAL_OPTIONS}," == *,ro,* ]]; then
+        echo "ERROR: '${EXTERNAL_BUILD_PATH}' is mounted read-only."
+        echo "Remount it read-write before using --external-build."
         exit 1
     fi
-    sudo rm -f "${EXTERNAL_BUILD_PATH}/.bazzite-write-test" \
-        "${EXTERNAL_BUILD_PATH}/.bazzite-symlink-test"
+
+    if [[ ",${EXTERNAL_OPTIONS}," == *,noexec,* ]]; then
+        echo "ERROR: '${EXTERNAL_BUILD_PATH}' is mounted with noexec."
+        echo "Podman must execute binaries from the external graphroot during the build."
+        echo "Remount the filesystem with exec or use a different external drive mount."
+        exit 1
+    fi
+
+    echo "External build mount:"
+    findmnt -T "${EXTERNAL_BUILD_PATH}" -o TARGET,SOURCE,FSTYPE,OPTIONS,SIZE,USED,AVAIL -n
+
+    EXTERNAL_TEST_DIR="$(sudo mktemp -d "${EXTERNAL_BUILD_PATH}/.bazzite-podman-test.XXXXXX" 2>/dev/null || true)"
+    if [[ -z "${EXTERNAL_TEST_DIR}" ]]; then
+        echo "ERROR: Could not create a temporary validation directory under '${EXTERNAL_BUILD_PATH}'."
+        exit 1
+    fi
+
+    cleanup_external_test_dir() {
+        if [[ -n "${EXTERNAL_TEST_DIR:-}" ]]; then
+            sudo rm -rf "${EXTERNAL_TEST_DIR}" 2>/dev/null || true
+        fi
+    }
+
+    if ! sudo touch "${EXTERNAL_TEST_DIR}/write-test" ||
+        ! sudo ln -s write-test "${EXTERNAL_TEST_DIR}/symlink-test" ||
+        ! sudo ln "${EXTERNAL_TEST_DIR}/write-test" "${EXTERNAL_TEST_DIR}/hardlink-test"; then
+        cleanup_external_test_dir
+        echo "ERROR: '${EXTERNAL_BUILD_PATH}' does not support the write/symlink/hardlink operations podman storage needs."
+        exit 1
+    fi
+
+    sudo tee "${EXTERNAL_TEST_DIR}/exec-test.sh" > /dev/null << 'EOF'
+#!/bin/sh
+exit 0
+EOF
+    sudo chmod 755 "${EXTERNAL_TEST_DIR}/exec-test.sh"
+    if ! sudo "${EXTERNAL_TEST_DIR}/exec-test.sh"; then
+        cleanup_external_test_dir
+        echo "ERROR: '${EXTERNAL_BUILD_PATH}' cannot execute files as mounted."
+        echo "This usually means the filesystem was mounted with noexec or an incompatible security policy."
+        exit 1
+    fi
+    cleanup_external_test_dir
 
     # How much free space is on the external path?
     EXTERNAL_FREE_GB=$(df -BG "${EXTERNAL_BUILD_PATH}" | awk 'NR==2{gsub("G",""); print $4}')
@@ -738,6 +833,7 @@ else
         echo "ERROR: Bazzite ARM image build failed."
         echo "Full build log: ${BUILD_LOG}"
         print_log_tail "${BUILD_LOG}"
+        print_external_build_debug "${EXTERNAL_BUILD_PATH}"
         exit 1
     fi
     echo "Bazzite ARM image built successfully."
@@ -772,9 +868,13 @@ fi
 # ──────────────────────────────────────────────────────────────────────────────
 echo ""
 echo "--- Step 4: Pull Fedora Asahi Atomic base image ---"
-echo "Pulling ${ATOMIC_BASE} (may take a few minutes)..."
-sudo ostree container image pull /ostree/repo \
-    "ostree-unverified-registry:${ATOMIC_BASE}"
+PULL_LOG="/var/tmp/${IMAGE_NAME}-${IMAGE_TAG}-atomic-pull.log"
+run_logged_retry_step \
+    "Pulling ${ATOMIC_BASE} (may take a few minutes)" \
+    "${PULL_LOG}" \
+    3 \
+    sudo ostree container image pull /ostree/repo \
+        "ostree-unverified-registry:${ATOMIC_BASE}"
 echo "Pull complete."
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -855,14 +955,18 @@ fi
 if [[ "${_skip_deploy}" -eq 1 ]]; then
     echo "Revision already deployed; skipping (set OSTREE_FORCE_DEPLOY=1 to force)."
 else
-    sudo ostree admin deploy "${REF}" \
-        --sysroot / \
-        --os fedora \
-        --karg="root=UUID=${ROOT_UUID}" \
-        --karg="ro" \
-        --karg="rhgb" \
-        --karg="quiet" \
-        "${ROOTFLAGS_KARG[@]}"
+    DEPLOY_LOG="/var/tmp/${IMAGE_NAME}-${IMAGE_TAG}-atomic-deploy.log"
+    run_logged_step \
+        "Deploying atomic base image" \
+        "${DEPLOY_LOG}" \
+        sudo ostree admin deploy "${REF}" \
+            --sysroot / \
+            --os fedora \
+            --karg="root=UUID=${ROOT_UUID}" \
+            --karg="ro" \
+            --karg="rhgb" \
+            --karg="quiet" \
+            "${ROOTFLAGS_KARG[@]}"
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -1049,6 +1153,10 @@ echo "  ╚═══════════════════════
 echo ""
 if [[ -f /var/lib/bazzite-rebase-done ]]; then
     echo "  Status: COMPLETE -- run: sudo systemctl reboot"
+elif [[ -f /var/lib/bazzite-rebase-failed ]]; then
+    echo "  Status: FAILED -- inspect the log below"
+    echo "  Log:    /var/log/bazzite-first-boot-rebase.log"
+    echo "  Watch:  journalctl -u bazzite-first-boot-rebase -b"
 elif systemctl is-active --quiet bazzite-first-boot-rebase.service 2>/dev/null; then
     echo "  Status: RUNNING -- rebase is in progress"
     echo "  Watch:  journalctl -f -u bazzite-first-boot-rebase"
@@ -1073,16 +1181,12 @@ STATUS_EOF
 Description=Bazzite ARM - First Boot Rebase
 ConditionPathExists=/var/lib/bazzite-install
 ConditionPathExists=!/var/lib/bazzite-rebase-done
-After=network-online.target multi-user.target
-Wants=network-online.target
+After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -c 'rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest'
-ExecStartPost=/usr/bin/touch /var/lib/bazzite-rebase-done
-ExecStartPost=/usr/bin/bash -c 'rm -f /etc/profile.d/bazzite-rebase.sh /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status || true'
-ExecStartPost=/usr/bin/bash -c 'rm -rf /var/lib/bazzite-install || true'
-ExecStartPost=/usr/bin/bash -c 'sleep 5 && systemctl reboot'
+ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /var/lib/bazzite-rebase-failed; rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest 2>&1 | tee /var/log/bazzite-first-boot-rebase.log; touch /var/lib/bazzite-rebase-done; rm -f /etc/profile.d/bazzite-rebase.sh /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status || true; rm -rf /var/lib/bazzite-install || true; sleep 5; systemctl reboot'
+ExecStopPost=/usr/bin/bash -c 'if [[ ! -f /var/lib/bazzite-rebase-done ]]; then touch /var/lib/bazzite-rebase-failed; fi'
 TimeoutStartSec=0
 StandardOutput=journal
 StandardError=journal
@@ -1105,6 +1209,8 @@ SVC_EOF
   ║                                                              ║
   ║  Check progress:                                             ║
   ║    journalctl -f -u bazzite-first-boot-rebase                ║
+  ║  If it fails:                                                ║
+  ║    cat /var/log/bazzite-first-boot-rebase.log                ║
   ║                                                              ║
   ║  The system reboots automatically when done (~2-5 min).      ║
   ║  DO NOT reboot manually -- just wait.                        ║
@@ -1121,7 +1227,11 @@ fi
 echo ""
 echo "--- Step 9: Update GRUB ---"
 sudo cp /boot/grub2/grub.cfg /boot/grub2/grub.cfg.backup
-sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+GRUB_LOG="/var/tmp/${IMAGE_NAME}-${IMAGE_TAG}-grub-mkconfig.log"
+run_logged_step \
+    "Updating GRUB configuration" \
+    "${GRUB_LOG}" \
+    sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 echo "GRUB updated."
 
 # ──────────────────────────────────────────────────────────────────────────────

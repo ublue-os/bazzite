@@ -37,8 +37,6 @@ if ! command -v jq >/dev/null 2>&1; then
 fi
 
 runtime_packages=(
-    OpenCL-ICD-Loader
-    SDL2
     cups-libs
     freetype
     gnutls
@@ -56,7 +54,6 @@ runtime_packages=(
 )
 
 build_packages=(
-    SDL2-devel
     alsa-lib-devel
     autoconf
     bison
@@ -66,7 +63,6 @@ build_packages=(
     flex
     fontconfig-devel
     freetype-devel
-    freeglut-devel
     gettext-devel
     giflib-devel
     gnutls-devel
@@ -83,6 +79,10 @@ build_packages=(
     libXrender-devel
     libXxf86dga-devel
     libXxf86vm-devel
+    # libglvnd-devel is the real provider of libGL development headers on
+    # modern Fedora. Avoid the legacy mesa-libGL-devel compatibility package
+    # here because it is more sensitive to transient Mesa repo skew between
+    # the Fedora base image, Asahi Mesa, and RPM Fusion mirrors.
     libglvnd-devel
     libpcap-devel
     librsvg2-devel
@@ -90,20 +90,18 @@ build_packages=(
     libunwind-devel
     libxkbcommon-devel
     make
-    mesa-libGL-devel
-    OpenCL-ICD-Loader-devel
-    opencl-headers
     openldap-devel
     pcsc-lite-devel
     pulseaudio-libs-devel
     systemd-devel
-    vulkan-devel
+    vulkan-loader-devel
+    vulkan-headers
     wayland-devel
     'pkgconfig(libusb-1.0)'
 )
 
-optional_runtime_packages=(
-    unixODBC
+optional_compat_runtime_packages=(
+    OpenCL-ICD-Loader
     nss-mdns
     sane-backends-libs
     libv4l
@@ -116,8 +114,13 @@ optional_runtime_packages=(
     libswscale-free
 )
 
-optional_build_packages=(
-    unixODBC-devel
+optional_odbc_runtime_packages=(
+    unixODBC
+)
+
+optional_compat_build_packages=(
+    OpenCL-ICD-Loader-devel
+    opencl-headers
     sane-backends-devel
     libgphoto2-devel
     libieee1284-devel
@@ -125,7 +128,12 @@ optional_build_packages=(
     libv4l-devel
     ffmpeg-free-devel
     samba-devel
+    freeglut-devel
     mesa-libGLU-devel
+)
+
+optional_odbc_build_packages=(
+    unixODBC-devel
 )
 
 build_root=""
@@ -145,7 +153,6 @@ DNF5_INSTALL_ARGS=(
     -y
     install
     --refresh
-    --best
     --allowerasing
     --nogpgcheck
     --setopt=install_weak_deps=False
@@ -212,7 +219,23 @@ print_repo_debug() {
         grep -RHE '^\[|^baseurl=|^metalink=|^mirrorlist=|^enabled=' \
             /etc/dnf/repos.override.d/*.repo \
             /etc/yum.repos.d/fedora*.repo \
-            /etc/yum.repos.d/fedora-cisco-openh264.repo 2>/dev/null || true
+            /etc/yum.repos.d/fedora-cisco-openh264.repo \
+            /etc/yum.repos.d/rpmfusion*.repo 2>/dev/null || true
+        echo
+        echo "Installed graphics stack snapshot:"
+        rpm -qa 'mesa*' 'libglvnd*' 'vulkan*' 'OpenCL*' | sort || true
+        echo
+        echo "Candidate graphics packages from enabled repos:"
+        dnf5 repoquery --available \
+            libglvnd-devel \
+            mesa-libGL-devel \
+            mesa-libGLU-devel \
+            vulkan-loader \
+            vulkan-loader-devel \
+            vulkan-headers \
+            OpenCL-ICD-Loader \
+            OpenCL-ICD-Loader-devel \
+            opencl-headers 2>/dev/null || true
     } >&2
 }
 
@@ -422,6 +445,9 @@ required_build_cleanup_list="${build_root}/required-build-cleanup.txt"
 optional_before_packages="${build_root}/optional-before.txt"
 optional_build_cleanup_list="${build_root}/optional-build-cleanup.txt"
 optional_failed_cleanup_list="${build_root}/optional-failed-cleanup.txt"
+odbc_before_packages="${build_root}/odbc-before.txt"
+odbc_build_cleanup_list="${build_root}/odbc-build-cleanup.txt"
+odbc_failed_cleanup_list="${build_root}/odbc-failed-cleanup.txt"
 
 # No system upgrade here — build-arm.sh already ran dnf5 update --refresh
 # in the previous Containerfile layer. Running it again pulls in unrelated
@@ -429,24 +455,30 @@ optional_failed_cleanup_list="${build_root}/optional-failed-cleanup.txt"
 # dependency chains on the Asahi F43 base image.
 # Only install Wine's own deps below.
 
-required_packages=(
-    "${runtime_packages[@]}"
-    "${build_packages[@]}"
-)
-
 snapshot_installed_packages "${required_before_packages}"
-install_required_packages "Wine runtime/build dependency" "${required_packages[@]}"
+install_required_packages "Wine runtime dependency" "${runtime_packages[@]}"
+install_required_packages "Wine build dependency" "${build_packages[@]}"
 record_newly_installed_packages "${required_before_packages}" "${required_build_cleanup_list}" "${build_packages[@]}"
 
 snapshot_installed_packages "${optional_before_packages}"
-if install_optional_packages "ODBC runtime" "${optional_runtime_packages[@]}" &&
-    install_optional_packages "ODBC build" "${optional_build_packages[@]}"; then
-    odbc_enabled=1
-    record_newly_installed_packages "${optional_before_packages}" "${optional_build_cleanup_list}" "${optional_build_packages[@]}"
+if install_optional_packages "Wine optional compatibility runtime" "${optional_compat_runtime_packages[@]}" &&
+    install_optional_packages "Wine optional compatibility build" "${optional_compat_build_packages[@]}"; then
+    record_newly_installed_packages "${optional_before_packages}" "${optional_build_cleanup_list}" "${optional_compat_build_packages[@]}"
 else
     record_newly_installed_packages "${optional_before_packages}" "${optional_failed_cleanup_list}" \
-        "${optional_build_packages[@]}" "${optional_runtime_packages[@]}"
+        "${optional_compat_build_packages[@]}" "${optional_compat_runtime_packages[@]}"
     remove_package_list_file "${optional_failed_cleanup_list}"
+fi
+
+snapshot_installed_packages "${odbc_before_packages}"
+if install_optional_packages "Wine ODBC runtime" "${optional_odbc_runtime_packages[@]}" &&
+    install_optional_packages "Wine ODBC build" "${optional_odbc_build_packages[@]}"; then
+    odbc_enabled=1
+    record_newly_installed_packages "${odbc_before_packages}" "${odbc_build_cleanup_list}" "${optional_odbc_build_packages[@]}"
+else
+    record_newly_installed_packages "${odbc_before_packages}" "${odbc_failed_cleanup_list}" \
+        "${optional_odbc_build_packages[@]}" "${optional_odbc_runtime_packages[@]}"
+    remove_package_list_file "${odbc_failed_cleanup_list}"
 fi
 
 mkdir -p "${tool_bin}"
@@ -530,5 +562,6 @@ EOF
 
 remove_package_list_file "${required_build_cleanup_list}"
 remove_package_list_file "${optional_build_cleanup_list}"
+remove_package_list_file "${odbc_build_cleanup_list}"
 
 /ctx/cleanup
