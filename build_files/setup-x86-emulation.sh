@@ -11,6 +11,7 @@
 #   - steam: Asahi's Steam package with FEX integration
 
 set -eoux pipefail
+RPMDB_CHECK_QUERY=(rpm -qa --qf '%{NAME}\n')
 
 DNF5_STRICT_REPO_ARGS=(
     "--setopt=*.skip_if_unavailable=0"
@@ -24,16 +25,39 @@ refresh_dnf_metadata() {
     rm -rf /var/cache/libdnf5/* /var/cache/dnf/* 2>/dev/null || true
 }
 
+repair_rpmdb_if_needed() {
+    local reason="${1:-}"
+    local rpmdb_root="/usr/lib/sysimage/rpm"
+
+    if "${RPMDB_CHECK_QUERY[@]}" >/dev/null 2>&1; then
+        return 0
+    fi
+
+    echo "RPM database query failed${reason:+ (${reason})}; rebuilding database." >&2
+    rm -f "${rpmdb_root}"/__db.* 2>/dev/null || true
+    rpm --rebuilddb >/dev/null 2>&1 || true
+
+    if "${RPMDB_CHECK_QUERY[@]}" >/dev/null 2>&1; then
+        echo "RPM database rebuild succeeded." >&2
+        return 0
+    fi
+
+    echo "RPM database is still unreadable after rebuild attempt${reason:+ (${reason})}." >&2
+    return 1
+}
+
 install_required_packages() {
     local description="$1"
     shift
 
+    repair_rpmdb_if_needed "before ${description} install"
     if dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" "$@"; then
         return 0
     fi
 
     echo "${description} install failed; cleaning metadata and retrying once." >&2
     refresh_dnf_metadata
+    repair_rpmdb_if_needed "after failed ${description} install" || true
     dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" "$@"
 }
 
@@ -49,6 +73,7 @@ require_command() {
 require_package() {
     local package_name="$1"
 
+    repair_rpmdb_if_needed "before package verification" >/dev/null
     if ! rpm -q "${package_name}" >/dev/null 2>&1; then
         echo "Required package is missing after emulation setup: ${package_name}" >&2
         exit 1
@@ -58,6 +83,7 @@ require_package() {
 # FEX-Emu: primary emulation layer
 # Pulls in fex-emu-rootfs-fedora (x86_64 sysroot) and
 # mesa-fex-emu-overlay (GPU acceleration through emulation)
+repair_rpmdb_if_needed "before x86 emulation setup"
 install_required_packages "FEX emulation stack" \
     fex-emu
 

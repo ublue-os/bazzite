@@ -159,6 +159,7 @@ DNF5_INSTALL_ARGS=(
     "${DNF5_STRICT_REPO_ARGS[@]}"
 )
 FEDORA_REPO_OVERRIDE="/etc/dnf/repos.override.d/zz-bazzite-fedora-direct.repo"
+RPMDB_CHECK_QUERY=(rpm -qa --qf '%{NAME}\n')
 
 pin_official_fedora_repos() {
     local fedora_ver
@@ -211,6 +212,12 @@ EOF
 }
 
 print_repo_debug() {
+    local rpmdb_ok=1
+
+    if ! repair_rpmdb_if_needed "before repo debug"; then
+        rpmdb_ok=0
+    fi
+
     {
         echo "Enabled repos:"
         dnf5 repolist --enabled || true
@@ -223,7 +230,11 @@ print_repo_debug() {
             /etc/yum.repos.d/rpmfusion*.repo 2>/dev/null || true
         echo
         echo "Installed graphics stack snapshot:"
-        rpm -qa 'mesa*' 'libglvnd*' 'vulkan*' 'OpenCL*' | sort || true
+        if (( rpmdb_ok == 1 )); then
+            rpm -qa 'mesa*' 'libglvnd*' 'vulkan*' 'OpenCL*' | sort || true
+        else
+            echo "RPM database is still unreadable after rebuild attempt."
+        fi
         echo
         echo "Candidate graphics packages from enabled repos:"
         dnf5 repoquery --available \
@@ -246,11 +257,34 @@ cleanup() {
 }
 trap cleanup EXIT
 
+repair_rpmdb_if_needed() {
+    local reason="${1:-}"
+    local rpmdb_root="/usr/lib/sysimage/rpm"
+
+    if "${RPMDB_CHECK_QUERY[@]}" >/dev/null 2>&1; then
+        return 0
+    fi
+
+    echo "RPM database query failed${reason:+ (${reason})}; rebuilding database." >&2
+    rm -f "${rpmdb_root}"/__db.* 2>/dev/null || true
+    rpm --rebuilddb >/dev/null 2>&1 || true
+
+    if "${RPMDB_CHECK_QUERY[@]}" >/dev/null 2>&1; then
+        echo "RPM database rebuild succeeded." >&2
+        return 0
+    fi
+
+    echo "RPM database is still unreadable after rebuild attempt${reason:+ (${reason})}." >&2
+    return 1
+}
+
 resolve_installed_package_names() {
     local installed_package
     local package
     local query_output
     local -A installed_packages=()
+
+    repair_rpmdb_if_needed "before package resolution" >/dev/null
 
     for package in "$@"; do
         if query_output="$(rpm -q --whatprovides --qf '%{NAME}\n' "${package}" 2>/dev/null)"; then
@@ -268,6 +302,8 @@ resolve_installed_package_names() {
 
 snapshot_installed_packages() {
     local output_file="$1"
+
+    repair_rpmdb_if_needed "before package snapshot"
     rpm -qa --qf '%{NAME}\n' | sort -u > "${output_file}"
 }
 
@@ -295,6 +331,7 @@ remove_package_list_file() {
     local -a package_names=()
 
     [[ -s "${list_file}" ]] || return 0
+    repair_rpmdb_if_needed "before build dependency cleanup"
 
     mapfile -t package_names < "${list_file}"
     if (( ${#package_names[@]} > 0 )); then
@@ -306,10 +343,12 @@ install_optional_packages() {
     local description="$1"
     shift
 
+    repair_rpmdb_if_needed "before optional ${description} install"
     if dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"; then
         return 0
     fi
 
+    repair_rpmdb_if_needed "after failed optional ${description} install" || true
     echo "Optional ${description} packages could not be installed; continuing without ${description} support." >&2
     return 1
 }
@@ -323,17 +362,20 @@ install_required_packages() {
     local description="$1"
     shift
 
+    repair_rpmdb_if_needed "before ${description} install"
     if dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"; then
         return 0
     fi
 
     echo "${description} install failed; cleaning metadata and retrying once." >&2
     refresh_dnf_metadata
+    repair_rpmdb_if_needed "after failed ${description} install" || true
     if dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"; then
         return 0
     fi
 
     echo "${description} install failed again after metadata refresh." >&2
+    repair_rpmdb_if_needed "before final ${description} debug" || true
     print_repo_debug
     return 1
 }
@@ -432,6 +474,7 @@ resolve_llvm_mingw_release() {
 resolve_wine_source
 resolve_llvm_mingw_release
 pin_official_fedora_repos
+repair_rpmdb_if_needed "before Wine dependency installation"
 
 build_root="$(mktemp -d /var/tmp/bazzite-wine-aarch64.XXXXXX)"
 tool_bin="${build_root}/bin"

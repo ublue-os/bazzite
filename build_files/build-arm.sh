@@ -3,6 +3,7 @@
 set -eoux pipefail
 
 export BUILDAH_PLATFORM=linux/arm64
+RPMDB_CHECK_QUERY=(rpm -qa --qf '%{NAME}\n')
 
 restore_kernel_install_tools() {
     if [[ -d /usr/lib/kernel/install.d ]]; then
@@ -32,6 +33,8 @@ remove_installed_packages() {
     local query_output
     local -A installed_packages=()
 
+    repair_rpmdb_if_needed "before package removal" >/dev/null
+
     for package in "$@"; do
         if query_output="$(rpm -q --whatprovides --qf '%{NAME}\n' "${package}" 2>/dev/null)"; then
             while IFS= read -r installed_package; do
@@ -44,6 +47,27 @@ remove_installed_packages() {
     if (( ${#installed_packages[@]} > 0 )); then
         dnf5 -y remove "${!installed_packages[@]}"
     fi
+}
+
+repair_rpmdb_if_needed() {
+    local reason="${1:-}"
+    local rpmdb_root="/usr/lib/sysimage/rpm"
+
+    if "${RPMDB_CHECK_QUERY[@]}" >/dev/null 2>&1; then
+        return 0
+    fi
+
+    echo "RPM database query failed${reason:+ (${reason})}; rebuilding database." >&2
+    rm -f "${rpmdb_root}"/__db.* 2>/dev/null || true
+    rpm --rebuilddb >/dev/null 2>&1 || true
+
+    if "${RPMDB_CHECK_QUERY[@]}" >/dev/null 2>&1; then
+        echo "RPM database rebuild succeeded." >&2
+        return 0
+    fi
+
+    echo "RPM database is still unreadable after rebuild attempt${reason:+ (${reason})}." >&2
+    return 1
 }
 
 # ── Suppress dracut + kernel-install triggers ─────────────────────────────────
@@ -149,6 +173,7 @@ EOF
 }
 
 dnf5_install() {
+    repair_rpmdb_if_needed "before dnf5 install"
     dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" "$@"
 }
 
@@ -158,6 +183,7 @@ refresh_dnf_metadata() {
 }
 
 dnf5_update_required() {
+    repair_rpmdb_if_needed "before dnf5 update"
     if dnf5 update -y --refresh \
         "${DNF5_STRICT_REPO_ARGS[@]}" \
         --exclude='kernel*' --exclude='asahi-kernel*'; then
@@ -166,12 +192,14 @@ dnf5_update_required() {
 
     echo "dnf5 update failed; cleaning metadata and retrying once." >&2
     refresh_dnf_metadata
+    repair_rpmdb_if_needed "after failed dnf5 update" || true
     dnf5 update -y --refresh \
         "${DNF5_STRICT_REPO_ARGS[@]}" \
         --exclude='kernel*' --exclude='asahi-kernel*'
 }
 
 pin_official_fedora_repos
+repair_rpmdb_if_needed "before base image customization"
 
 vendor_enable_system_unit() {
     local unit="$1"

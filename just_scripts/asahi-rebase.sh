@@ -35,6 +35,7 @@ PODMAN_STORAGE_CONF="/etc/containers/storage.conf"
 PODMAN_STORAGE_CONF_BACKUP=""
 PODMAN_STORAGE_OVERRIDE_ACTIVE=0
 PODMAN_EXT_ROOT=""
+PODMAN_STORAGE_DRIVER="overlay"
 PODMAN_BUILD_SECURITY_ARGS=()
 SLEEP_MASKED=0
 DNF_CMD=""
@@ -200,8 +201,8 @@ echo ""
 echo "This script will:"
 echo "  1. Build the Bazzite ARM image locally"
 echo "     - internal build storage: needs ~40 GB free on /"
-echo "     - external build storage: needs ~20 GB free on / plus ~45 GB on the external drive"
-echo "       (or ~25 GB on the external drive when using --skip-wine)"
+echo "     - external build storage: needs ~20 GB free on / plus ~80 GB on the external drive"
+echo "       (or ~35 GB on the external drive when using --skip-wine)"
 echo "  2. Convert this Fedora install to atomic/ostree"
 echo "  3. Set up your user account"
 echo "  4. Reboot into atomic Fedora which auto-rebases to Bazzite ARM"
@@ -646,6 +647,7 @@ dnf_install_host \
     rsync \
     skopeo \
     fuse-overlayfs \
+    policycoreutils-python-utils \
     openssl
 require_commands podman git rpm-ostree ostree rsync skopeo openssl
 
@@ -749,11 +751,26 @@ EOF
         echo "This usually means the filesystem was mounted with noexec or an incompatible security policy."
         exit 1
     fi
+
+    if command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled; then
+        if ! sudo chcon -t container_var_lib_t "${EXTERNAL_TEST_DIR}/write-test" 2>/dev/null; then
+            PODMAN_STORAGE_DRIVER="vfs"
+            PODMAN_BUILD_SECURITY_ARGS+=(--security-opt label=disable)
+            echo "External build path does not allow SELinux relabeling needed by Podman overlay storage."
+            echo "Falling back to podman storage driver 'vfs' with SELinux label separation disabled for the build."
+        fi
+    fi
     cleanup_external_test_dir
 
     # How much free space is on the external path?
     EXTERNAL_FREE_GB=$(df -BG "${EXTERNAL_BUILD_PATH}" | awk 'NR==2{gsub("G",""); print $4}')
-    if [[ "${SKIP_WINE}" -eq 1 ]]; then
+    if [[ "${PODMAN_STORAGE_DRIVER}" == "vfs" ]]; then
+        if [[ "${SKIP_WINE}" -eq 1 ]]; then
+            REQUIRED_EXTERNAL_FREE_GB=35
+        else
+            REQUIRED_EXTERNAL_FREE_GB=80
+        fi
+    elif [[ "${SKIP_WINE}" -eq 1 ]]; then
         REQUIRED_EXTERNAL_FREE_GB=25
     else
         REQUIRED_EXTERNAL_FREE_GB=45
@@ -770,6 +787,22 @@ EOF
         sudo rm -rf "${PODMAN_EXT_ROOT}"
     fi
     sudo mkdir -p "${PODMAN_EXT_ROOT}"
+
+    if [[ "${PODMAN_STORAGE_DRIVER}" == "overlay" ]] &&
+        command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled; then
+        if command -v semanage >/dev/null 2>&1; then
+            sudo semanage fcontext -a -e /var/lib/containers/storage "${PODMAN_EXT_ROOT}" 2>/dev/null || \
+                sudo semanage fcontext -m -e /var/lib/containers/storage "${PODMAN_EXT_ROOT}" 2>/dev/null || true
+        fi
+        if ! sudo restorecon -R -F "${PODMAN_EXT_ROOT}" 2>/dev/null; then
+            echo "SELinux restorecon failed on external podman storage."
+            echo "Falling back to podman storage driver 'vfs' with SELinux label separation disabled for the build."
+            PODMAN_STORAGE_DRIVER="vfs"
+            PODMAN_BUILD_SECURITY_ARGS=(--security-opt label=disable)
+            sudo rm -rf "${PODMAN_EXT_ROOT}"
+            sudo mkdir -p "${PODMAN_EXT_ROOT}"
+        fi
+    fi
 
     FUSE_OVERLAYFS_BIN=$(command -v fuse-overlayfs || true)
     if [[ -z "${FUSE_OVERLAYFS_BIN}" && -x /usr/sbin/fuse-overlayfs ]]; then
@@ -790,23 +823,34 @@ EOF
     # This affects sudo podman build, sudo podman image exists, and
     # sudo skopeo copy containers-storage:... -- all use this config.
     sudo mkdir -p /etc/containers
-    sudo tee /etc/containers/storage.conf > /dev/null << EOF
+    if [[ "${PODMAN_STORAGE_DRIVER}" == "overlay" ]]; then
+        sudo tee /etc/containers/storage.conf > /dev/null << EOF
 [storage]
-driver = "overlay"
+driver = "${PODMAN_STORAGE_DRIVER}"
 graphRoot = "${PODMAN_EXT_ROOT}"
 runRoot = "/run/containers/storage"
 
 [storage.options.overlay]
 mount_program = "${FUSE_OVERLAYFS_BIN}"
 EOF
+    else
+        sudo tee /etc/containers/storage.conf > /dev/null << EOF
+[storage]
+driver = "${PODMAN_STORAGE_DRIVER}"
+graphRoot = "${PODMAN_EXT_ROOT}"
+runRoot = "/run/containers/storage"
+EOF
+    fi
     PODMAN_STORAGE_OVERRIDE_ACTIVE=1
     echo "Podman root storage → ${PODMAN_EXT_ROOT}"
+    echo "Podman storage driver → ${PODMAN_STORAGE_DRIVER}"
     echo "Internal disk freed from container build layers (~20 GB saved)."
 
     if command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled; then
-        PODMAN_BUILD_SECURITY_ARGS+=(--security-opt label=disable)
-        echo "SELinux is enabled and the build graphroot is on external removable storage."
-        echo "Disabling SELinux label separation for podman build to avoid Buildah graphroot label failures."
+        if [[ "${PODMAN_STORAGE_DRIVER}" == "vfs" ]]; then
+            echo "SELinux is enabled and the external graphroot does not support the normal container labeling flow."
+            echo "Using podman build with SELinux label separation disabled."
+        fi
     fi
 fi
 
