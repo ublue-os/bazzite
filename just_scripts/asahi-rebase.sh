@@ -615,6 +615,7 @@ cleanup_stale_first_boot_artifacts() {
         "${root_prefix}/etc/profile.d/bazzite-rebase.sh" \
         "${systemd_system_root}/bazzite-firstboot-rebase.service" \
         "${systemd_system_root}/bazzite-first-boot-rebase.service" \
+        "${systemd_system_root}/bazzite-first-boot-rebase.timer" \
         "${systemd_system_root}/bazzite-first-boot-flatpaks.service" \
         "${systemd_system_root}/bazzite-flatpak-manager.service" \
         "${systemd_system_root}/bazzite-flatpak-manager.service.d" \
@@ -622,6 +623,7 @@ cleanup_stale_first_boot_artifacts() {
         "${systemd_system_root}/bazzite-hardware-setup.service.d" \
         "${systemd_system_root}/multi-user.target.wants/bazzite-firstboot-rebase.service" \
         "${systemd_system_root}/multi-user.target.wants/bazzite-first-boot-rebase.service" \
+        "${systemd_system_root}/timers.target.wants/bazzite-first-boot-rebase.timer" \
         "${systemd_system_root}/multi-user.target.wants/bazzite-first-boot-flatpaks.service" \
         "${systemd_system_root}/multi-user.target.wants/bazzite-flatpak-manager.service" \
         "${systemd_system_root}/multi-user.target.wants/bazzite-hardware-setup.service" \
@@ -650,7 +652,10 @@ cleanup_stale_first_boot_artifacts() {
 
     if [[ -n "${stateroot_var}" ]]; then
         sudo rm -f \
-            "${stateroot_var}/usrlocal/bin/bazzite-rebase-status" 2>/dev/null || true
+            "${stateroot_var}/usrlocal/bin/bazzite-rebase-status" \
+            "${stateroot_var}/lib/bazzite-rebase-done" \
+            "${stateroot_var}/lib/bazzite-rebase-failed" \
+            "${stateroot_var}/log/bazzite-first-boot-rebase.log" 2>/dev/null || true
     fi
 
     # Older conversions wrote image-owned Bazzite units into /etc/systemd.
@@ -668,6 +673,29 @@ cleanup_stale_first_boot_artifacts() {
                 "${search_root}" 2>/dev/null || true
         )
     done
+}
+
+ensure_overlay_kernel_support() {
+    if ! command -v modprobe >/dev/null 2>&1; then
+        return 0
+    fi
+
+    if lsmod 2>/dev/null | grep -q '^overlay\b'; then
+        echo "Kernel overlay module already loaded."
+        return 0
+    fi
+
+    if sudo modprobe overlay 2>/dev/null; then
+        echo "Kernel overlay module loaded for Podman."
+        return 0
+    fi
+
+    if grep -qw overlay /proc/filesystems 2>/dev/null; then
+        echo "Kernel overlay filesystem support is present."
+        return 0
+    fi
+
+    echo "Note: could not preload the kernel overlay module. Podman may still autoload it on first use." >&2
 }
 
 require_commands() {
@@ -768,6 +796,7 @@ dnf_install_host \
     policycoreutils-python-utils \
     openssl
 require_commands podman git rpm-ostree ostree rsync skopeo openssl
+ensure_overlay_kernel_support
 
 # Prevent the system from sleeping during the 60-90 minute build.
 # The build will be killed if the system suspends mid-way.
@@ -1353,6 +1382,9 @@ elif [[ -f /var/lib/bazzite-rebase-failed ]]; then
 elif systemctl is-active --quiet bazzite-first-boot-rebase.service 2>/dev/null; then
     echo "  Status: RUNNING -- rebase is in progress"
     echo "  Watch:  journalctl -f -u bazzite-first-boot-rebase"
+elif systemctl is-active --quiet bazzite-first-boot-rebase.timer 2>/dev/null; then
+    echo "  Status: SCHEDULED -- timer is armed for this boot"
+    echo "  Watch:  systemctl status bazzite-first-boot-rebase.timer"
 elif [[ -d /var/lib/bazzite-install ]]; then
     echo "  Status: PENDING -- will start automatically"
     echo "  Watch:  journalctl -f -u bazzite-first-boot-rebase"
@@ -1365,48 +1397,60 @@ STATUS_EOF
     sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system"
 
     # First-boot rebase service: runs silently in the background as root.
-    # Output goes only to the journal (not the console) so it never overlaps
-    # with the login prompt. The MOTD tells users to check journalctl.
-    # After=multi-user.target ensures the system is fully booted before
-    # the rebase starts.
+    # A boot timer triggers it shortly after the first atomic boot so we do
+    # not depend on fragile post-target ordering or a user login race.
     sudo tee "${DEPLOY_DIR}/etc/systemd/system/bazzite-first-boot-rebase.service" > /dev/null << 'SVC_EOF'
 [Unit]
 Description=Bazzite ARM - First Boot Rebase
-ConditionPathExists=/var/lib/bazzite-install
+ConditionPathExists=/var/lib/bazzite-install/index.json
 ConditionPathExists=!/var/lib/bazzite-rebase-done
-After=multi-user.target
+After=local-fs.target systemd-user-sessions.service dbus.service
+Wants=local-fs.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /var/lib/bazzite-rebase-failed; rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest 2>&1 | tee /var/log/bazzite-first-boot-rebase.log; touch /var/lib/bazzite-rebase-done; rm -f /etc/profile.d/bazzite-rebase.sh /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status || true; rm -rf /var/lib/bazzite-install || true; sleep 5; systemctl reboot'
+ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /var/lib/bazzite-rebase-failed; : > /var/log/bazzite-first-boot-rebase.log; rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest 2>&1 | tee /var/log/bazzite-first-boot-rebase.log; touch /var/lib/bazzite-rebase-done; rm -f /etc/profile.d/bazzite-rebase.sh /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.timer /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status || true; rm -rf /var/lib/bazzite-install || true; sleep 5; systemctl --no-block reboot'
 ExecStopPost=/usr/bin/bash -c 'if [[ ! -f /var/lib/bazzite-rebase-done ]]; then touch /var/lib/bazzite-rebase-failed; fi'
 TimeoutStartSec=0
 StandardOutput=journal
 StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
 SVC_EOF
 
-    # Enable the service in the deployment
-    sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants"
-    sudo ln -sf /etc/systemd/system/bazzite-first-boot-rebase.service \
-        "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service"
+    sudo tee "${DEPLOY_DIR}/etc/systemd/system/bazzite-first-boot-rebase.timer" > /dev/null << 'TIMER_EOF'
+[Unit]
+Description=Bazzite ARM - Schedule First Boot Rebase
+ConditionPathExists=/var/lib/bazzite-install/index.json
+ConditionPathExists=!/var/lib/bazzite-rebase-done
+
+[Install]
+WantedBy=timers.target
+
+[Timer]
+Unit=bazzite-first-boot-rebase.service
+OnBootSec=20s
+AccuracySec=1s
+TIMER_EOF
+
+    # Enable the timer in the deployment so the local OCI rebase starts
+    # shortly after the first atomic boot whether or not anyone logs in.
+    sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system/timers.target.wants"
+    sudo ln -sf /etc/systemd/system/bazzite-first-boot-rebase.timer \
+        "${DEPLOY_DIR}/etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer"
 
     # MOTD -- shown at login so user knows rebase is running silently
     sudo tee "${DEPLOY_DIR}/etc/motd" > /dev/null << 'MOTD_EOF'
 
   ╔══════════════════════════════════════════════════════════════╗
-  ║  Bazzite ARM: The final rebase is running in the background. ║
-  ║  It runs silently -- no output will appear on screen.        ║
+  ║  Bazzite ARM: The final rebase is scheduled for this boot.   ║
+  ║  It starts automatically about 20 seconds after login/boot.  ║
   ║                                                              ║
   ║  Check progress:                                             ║
   ║    journalctl -f -u bazzite-first-boot-rebase                ║
+  ║    systemctl status bazzite-first-boot-rebase.timer          ║
   ║  If it fails:                                                ║
   ║    cat /var/log/bazzite-first-boot-rebase.log                ║
   ║                                                              ║
   ║  The system reboots automatically when done (~2-5 min).      ║
-  ║  DO NOT reboot manually -- just wait.                        ║
   ╚══════════════════════════════════════════════════════════════╝
 
 MOTD_EOF
@@ -1436,7 +1480,8 @@ echo "  Conversion complete!"
 echo ""
 echo "  On reboot:"
 echo "    1. You will boot into Fedora Asahi Atomic"
-echo "    2. Log in (the first-boot service will run)"
+echo "    2. The first-boot timer starts the local rebase automatically"
+echo "       about 20 seconds after the atomic boot"
 echo "    3. It automatically rebases to Bazzite ARM"
 echo "    4. System reboots again into full Bazzite"
 echo ""
