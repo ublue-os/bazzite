@@ -293,6 +293,27 @@ unmask_deployment_sleep_targets() {
     done
 }
 
+prepare_graphical_boot_in_deployment() {
+    local deploy_dir="$1"
+    local systemd_root="${deploy_dir}/etc/systemd/system"
+
+    sudo mkdir -p "${systemd_root}"
+
+    # The intermediate atomic base can leave /etc/systemd/system/default.target
+    # pointing at multi-user.target. Because /etc persists across the final
+    # rebase, that would override Bazzite's graphical default and land the user
+    # in a TTY even after a successful second reboot.
+    sudo rm -f "${systemd_root}/default.target"
+    sudo ln -sf /usr/lib/systemd/system/graphical.target \
+        "${systemd_root}/default.target"
+
+    # Our ARM build currently targets the KDE/Kinoite desktop, so ensure the
+    # display-manager alias also persists across the final rebase.
+    sudo rm -f "${systemd_root}/display-manager.service"
+    sudo ln -sf /usr/lib/systemd/system/sddm.service \
+        "${systemd_root}/display-manager.service"
+}
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Banner
 # ──────────────────────────────────────────────────────────────────────────────
@@ -1209,6 +1230,7 @@ fi
 
 if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
     unmask_deployment_sleep_targets "$DEPLOY_DIR"
+    prepare_graphical_boot_in_deployment "$DEPLOY_DIR"
 fi
 
 # ── CRITICAL: Inject /boot and /boot/efi into the deployment's fstab ─────────
@@ -1442,7 +1464,7 @@ After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /etc/profile.d/bazzite-rebase.sh /etc/motd /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.timer /etc/systemd/system/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status /var/log/bazzite-first-boot-rebase.log /var/lib/bazzite-rebase-done /var/lib/bazzite-rebase-failed || true'
+ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /etc/profile.d/bazzite-rebase.sh /etc/motd /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.timer /etc/systemd/system/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status /var/lib/bazzite-rebase-failed || true'
 
 [Install]
 WantedBy=multi-user.target
