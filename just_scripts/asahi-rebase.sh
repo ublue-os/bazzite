@@ -1448,14 +1448,20 @@ ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /etc/profile.d/bazzite-rebase.s
 WantedBy=multi-user.target
 CLEANUP_EOF
 
-    # Enable the timer in the deployment so the local OCI rebase starts
-    # shortly after the first atomic boot whether or not anyone logs in.
-    sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system/timers.target.wants"
-    sudo ln -sf /etc/systemd/system/bazzite-first-boot-rebase.timer \
-        "${DEPLOY_DIR}/etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer"
-    sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants"
-    sudo ln -sf /etc/systemd/system/bazzite-first-boot-rebase-cleanup.service \
-        "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase-cleanup.service"
+    # Enable the timer and cleanup service in the deployment so systemd sees
+    # them as first-class enabled units on the first atomic boot.
+    if ! sudo systemctl --root="${DEPLOY_DIR}" enable \
+        bazzite-first-boot-rebase.timer \
+        bazzite-first-boot-rebase-cleanup.service >/dev/null 2>&1; then
+        sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system/timers.target.wants"
+        sudo ln -sf /etc/systemd/system/bazzite-first-boot-rebase.timer \
+            "${DEPLOY_DIR}/etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer"
+        sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants"
+        sudo ln -sf /etc/systemd/system/bazzite-first-boot-rebase-cleanup.service \
+            "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase-cleanup.service"
+    fi
+    echo "Installed first-boot units in deployment:"
+    sudo systemctl --root="${DEPLOY_DIR}" list-unit-files 'bazzite-first-boot-*' 2>/dev/null || true
 
     # MOTD -- shown at login so user knows rebase is running silently
     sudo tee "${DEPLOY_DIR}/etc/motd" > /dev/null << 'MOTD_EOF'
