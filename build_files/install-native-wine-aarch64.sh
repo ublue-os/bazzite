@@ -160,6 +160,7 @@ DNF5_INSTALL_ARGS=(
 )
 FEDORA_REPO_OVERRIDE="/etc/dnf/repos.override.d/zz-bazzite-fedora-direct.repo"
 RPMDB_CHECK_QUERY=(rpm -qa --qf '%{NAME}\n')
+RPMDB_SQLITE_PATH="/usr/lib/sysimage/rpm/rpmdb.sqlite"
 
 pin_official_fedora_repos() {
     local fedora_ver
@@ -308,19 +309,40 @@ cleanup() {
 }
 trap cleanup EXIT
 
+rpmdb_is_healthy() {
+    "${RPMDB_CHECK_QUERY[@]}" >/dev/null 2>&1 || return 1
+    rpmdb --verifydb >/dev/null 2>&1 || return 1
+
+    if [[ -f "${RPMDB_SQLITE_PATH}" ]] && command -v python3 >/dev/null 2>&1; then
+        python3 - "${RPMDB_SQLITE_PATH}" <<'PY' >/dev/null 2>&1 || return 1
+import sqlite3
+import sys
+
+conn = sqlite3.connect(f"file:{sys.argv[1]}?mode=ro", uri=True)
+try:
+    row = conn.execute("PRAGMA quick_check").fetchone()
+    raise SystemExit(0 if row and row[0] == "ok" else 1)
+finally:
+    conn.close()
+PY
+    fi
+
+    return 0
+}
+
 repair_rpmdb_if_needed() {
     local reason="${1:-}"
     local rpmdb_root="/usr/lib/sysimage/rpm"
 
-    if "${RPMDB_CHECK_QUERY[@]}" >/dev/null 2>&1; then
+    if rpmdb_is_healthy; then
         return 0
     fi
 
     echo "RPM database query failed${reason:+ (${reason})}; rebuilding database." >&2
-    rm -f "${rpmdb_root}"/__db.* 2>/dev/null || true
+    rm -f "${rpmdb_root}"/__db.* "${rpmdb_root}"/rpmdb.sqlite-shm "${rpmdb_root}"/rpmdb.sqlite-wal 2>/dev/null || true
     rpm --rebuilddb >/dev/null 2>&1 || true
 
-    if "${RPMDB_CHECK_QUERY[@]}" >/dev/null 2>&1; then
+    if rpmdb_is_healthy; then
         echo "RPM database rebuild succeeded." >&2
         return 0
     fi
@@ -386,7 +408,10 @@ remove_package_list_file() {
 
     mapfile -t package_names < "${list_file}"
     if (( ${#package_names[@]} > 0 )); then
-        dnf5 -y remove "${package_names[@]}"
+        if ! dnf5 -y remove "${package_names[@]}"; then
+            echo "Warning: package cleanup failed for ${list_file}; continuing because the image payload is already built." >&2
+            repair_rpmdb_if_needed "after failed package cleanup for ${list_file}" || true
+        fi
     fi
 }
 

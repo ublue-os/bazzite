@@ -37,6 +37,7 @@ PODMAN_STORAGE_OVERRIDE_ACTIVE=0
 PODMAN_EXT_ROOT=""
 PODMAN_STORAGE_DRIVER="overlay"
 PODMAN_BUILD_SECURITY_ARGS=()
+PODMAN_TMPDIR=""
 SLEEP_MASKED=0
 DNF_CMD=""
 HOST_DNF_REPO_OVERRIDE="/etc/dnf/repos.override.d/zz-bazzite-fedora-direct.repo"
@@ -61,6 +62,9 @@ DNF4_HOST_STRICT_REPO_ARGS=(
 #                          PATH must already be a mounted writable directory,
 #                          e.g. /mnt/external (your external SSD).
 #                          After the script finishes you can wipe PATH freely.
+#                          For robustness this always uses Podman's 'vfs'
+#                          storage driver on external media. The faster overlay
+#                          path has been unreliable for long RPM-heavy builds.
 # --skip-wine            : skip native Wine aarch64 compilation (~40-60 min)
 #                          x86 Wine still runs via FEX-Emu/Box64 emulation.
 #                          Use this for faster first installs; rerun this
@@ -98,6 +102,8 @@ echo "Skip Wine build:    ${SKIP_WINE}"
 echo "Local image:        ${BAZZITE_IMAGE}"
 
 cleanup_host_overrides() {
+    cleanup_external_podman_storage
+
     if [[ "${SLEEP_MASKED}" -eq 1 ]]; then
         sudo systemctl unmask \
             sleep.target suspend.target hibernate.target \
@@ -118,18 +124,31 @@ cleanup_host_overrides() {
 
 cleanup_external_podman_storage() {
     if [[ -n "${PODMAN_EXT_ROOT}" ]]; then
-        sudo podman system prune -af 2>/dev/null || true
+        sudo_with_container_env podman system prune -af 2>/dev/null || true
         sudo rm -rf "${PODMAN_EXT_ROOT}" 2>/dev/null || true
+        PODMAN_EXT_ROOT=""
+    fi
+    if [[ -n "${PODMAN_TMPDIR}" ]]; then
+        sudo rm -rf "${PODMAN_TMPDIR}" 2>/dev/null || true
+        PODMAN_TMPDIR=""
     fi
 }
 
 cleanup_local_podman_image() {
-    sudo podman image rm -f "${BAZZITE_IMAGE}" 2>/dev/null || true
-    sudo podman builder prune -af 2>/dev/null || true
-    sudo podman image prune -f 2>/dev/null || true
+    sudo_with_container_env podman image rm -f "${BAZZITE_IMAGE}" 2>/dev/null || true
+    sudo_with_container_env podman builder prune -af 2>/dev/null || true
+    sudo_with_container_env podman image prune -f 2>/dev/null || true
 }
 
 trap cleanup_host_overrides EXIT
+
+sudo_with_container_env() {
+    if [[ -n "${PODMAN_TMPDIR}" ]]; then
+        sudo env TMPDIR="${PODMAN_TMPDIR}" TMP="${PODMAN_TMPDIR}" TEMP="${PODMAN_TMPDIR}" CONTAINERS_TMPDIR="${PODMAN_TMPDIR}" "$@"
+    else
+        sudo "$@"
+    fi
+}
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Helper: ensure /boot/loader is the loader.0 symlink ostree requires
@@ -349,6 +368,7 @@ print_external_build_debug() {
         echo "External storage labels:"
         ls -Zd "${external_path}" 2>/dev/null || true
         [[ -n "${PODMAN_EXT_ROOT}" ]] && ls -Zd "${PODMAN_EXT_ROOT}" 2>/dev/null || true
+        [[ -n "${PODMAN_TMPDIR}" ]] && ls -Zd "${PODMAN_TMPDIR}" 2>/dev/null || true
         echo
         echo "Active podman storage.conf:"
         sudo cat /etc/containers/storage.conf 2>/dev/null || true
@@ -678,16 +698,15 @@ if [[ -n "${EXTERNAL_BUILD_PATH}" ]]; then
     EXTERNAL_TARGET=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no TARGET 2>/dev/null || true)
     EXTERNAL_FSTYPE=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no FSTYPE 2>/dev/null || true)
     EXTERNAL_OPTIONS=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no OPTIONS 2>/dev/null || true)
-    ROOT_SOURCE=$(findmnt -no SOURCE / 2>/dev/null || true)
+    EXTERNAL_MAJ_MIN=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no MAJ:MIN 2>/dev/null || true)
+    ROOT_MAJ_MIN=$(findmnt -no MAJ:MIN / 2>/dev/null || true)
 
-    if [[ -z "${EXTERNAL_SOURCE}" || -z "${EXTERNAL_TARGET}" || -z "${EXTERNAL_FSTYPE}" || -z "${EXTERNAL_OPTIONS}" ]]; then
+    if [[ -z "${EXTERNAL_SOURCE}" || -z "${EXTERNAL_TARGET}" || -z "${EXTERNAL_FSTYPE}" || -z "${EXTERNAL_OPTIONS}" || -z "${EXTERNAL_MAJ_MIN}" || -z "${ROOT_MAJ_MIN}" ]]; then
         echo "ERROR: Could not resolve the filesystem backing '${EXTERNAL_BUILD_PATH}'."
         exit 1
     fi
 
-    EXTERNAL_BLOCK_SOURCE="${EXTERNAL_SOURCE%%[*}"
-    ROOT_BLOCK_SOURCE="${ROOT_SOURCE%%[*}"
-    if [[ "${EXTERNAL_TARGET}" == "/" || "${EXTERNAL_BLOCK_SOURCE}" == "${ROOT_BLOCK_SOURCE}" ]]; then
+    if [[ "${EXTERNAL_TARGET}" == "/" || "${EXTERNAL_MAJ_MIN}" == "${ROOT_MAJ_MIN}" ]]; then
 
         echo "ERROR: '${EXTERNAL_BUILD_PATH}' is on the internal root filesystem, not an external drive mount."
         echo "Mount the external SSD first and pass that mount path, for example /mnt/external."
@@ -752,23 +771,23 @@ EOF
         exit 1
     fi
 
+    PODMAN_STORAGE_DRIVER="vfs"
+    PODMAN_BUILD_SECURITY_ARGS=()
     if command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled; then
-        if ! sudo chcon -t container_var_lib_t "${EXTERNAL_TEST_DIR}/write-test" 2>/dev/null; then
-            PODMAN_STORAGE_DRIVER="vfs"
-            PODMAN_BUILD_SECURITY_ARGS+=(--security-opt label=disable)
-            echo "External build path does not allow SELinux relabeling needed by Podman overlay storage."
-            echo "Falling back to podman storage driver 'vfs' with SELinux label separation disabled for the build."
-        fi
+        PODMAN_BUILD_SECURITY_ARGS=(--security-opt label=disable)
     fi
     cleanup_external_test_dir
+
+    echo "Using podman storage driver 'vfs' for external build storage."
+    echo "Reason: external overlay/fuse-overlayfs has repeatedly corrupted RPM's sqlite database during the native Wine build on real Asahi installs."
 
     # How much free space is on the external path?
     EXTERNAL_FREE_GB=$(df -BG "${EXTERNAL_BUILD_PATH}" | awk 'NR==2{gsub("G",""); print $4}')
     if [[ "${PODMAN_STORAGE_DRIVER}" == "vfs" ]]; then
         if [[ "${SKIP_WINE}" -eq 1 ]]; then
-            REQUIRED_EXTERNAL_FREE_GB=35
+            REQUIRED_EXTERNAL_FREE_GB=120
         else
-            REQUIRED_EXTERNAL_FREE_GB=80
+            REQUIRED_EXTERNAL_FREE_GB=180
         fi
     elif [[ "${SKIP_WINE}" -eq 1 ]]; then
         REQUIRED_EXTERNAL_FREE_GB=25
@@ -782,35 +801,21 @@ EOF
     fi
 
     PODMAN_EXT_ROOT="${EXTERNAL_BUILD_PATH}/podman-build"
+    PODMAN_TMPDIR="${EXTERNAL_BUILD_PATH}/podman-tmp"
     if [[ -d "${PODMAN_EXT_ROOT}" ]]; then
         echo "Removing stale external build storage at ${PODMAN_EXT_ROOT}..."
         sudo rm -rf "${PODMAN_EXT_ROOT}"
     fi
     sudo mkdir -p "${PODMAN_EXT_ROOT}"
+    sudo mkdir -p "${PODMAN_TMPDIR}"
+    sudo chmod 1777 "${PODMAN_TMPDIR}"
 
-    if [[ "${PODMAN_STORAGE_DRIVER}" == "overlay" ]] &&
-        command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled; then
+    if command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled; then
         if command -v semanage >/dev/null 2>&1; then
             sudo semanage fcontext -a -e /var/lib/containers/storage "${PODMAN_EXT_ROOT}" 2>/dev/null || \
                 sudo semanage fcontext -m -e /var/lib/containers/storage "${PODMAN_EXT_ROOT}" 2>/dev/null || true
         fi
-        if ! sudo restorecon -R -F "${PODMAN_EXT_ROOT}" 2>/dev/null; then
-            echo "SELinux restorecon failed on external podman storage."
-            echo "Falling back to podman storage driver 'vfs' with SELinux label separation disabled for the build."
-            PODMAN_STORAGE_DRIVER="vfs"
-            PODMAN_BUILD_SECURITY_ARGS=(--security-opt label=disable)
-            sudo rm -rf "${PODMAN_EXT_ROOT}"
-            sudo mkdir -p "${PODMAN_EXT_ROOT}"
-        fi
-    fi
-
-    FUSE_OVERLAYFS_BIN=$(command -v fuse-overlayfs || true)
-    if [[ -z "${FUSE_OVERLAYFS_BIN}" && -x /usr/sbin/fuse-overlayfs ]]; then
-        FUSE_OVERLAYFS_BIN="/usr/sbin/fuse-overlayfs"
-    fi
-    if [[ -z "${FUSE_OVERLAYFS_BIN}" ]]; then
-        echo "ERROR: fuse-overlayfs was not found after installing podman."
-        exit 1
+        sudo restorecon -R -F "${PODMAN_EXT_ROOT}" 2>/dev/null || true
     fi
 
     if [[ -f "${PODMAN_STORAGE_CONF}" && -z "${PODMAN_STORAGE_CONF_BACKUP}" ]]; then
@@ -823,34 +828,20 @@ EOF
     # This affects sudo podman build, sudo podman image exists, and
     # sudo skopeo copy containers-storage:... -- all use this config.
     sudo mkdir -p /etc/containers
-    if [[ "${PODMAN_STORAGE_DRIVER}" == "overlay" ]]; then
-        sudo tee /etc/containers/storage.conf > /dev/null << EOF
-[storage]
-driver = "${PODMAN_STORAGE_DRIVER}"
-graphRoot = "${PODMAN_EXT_ROOT}"
-runRoot = "/run/containers/storage"
-
-[storage.options.overlay]
-mount_program = "${FUSE_OVERLAYFS_BIN}"
-EOF
-    else
-        sudo tee /etc/containers/storage.conf > /dev/null << EOF
+    sudo tee /etc/containers/storage.conf > /dev/null << EOF
 [storage]
 driver = "${PODMAN_STORAGE_DRIVER}"
 graphRoot = "${PODMAN_EXT_ROOT}"
 runRoot = "/run/containers/storage"
 EOF
-    fi
     PODMAN_STORAGE_OVERRIDE_ACTIVE=1
     echo "Podman root storage → ${PODMAN_EXT_ROOT}"
     echo "Podman storage driver → ${PODMAN_STORAGE_DRIVER}"
+    echo "Podman temp directory → ${PODMAN_TMPDIR}"
     echo "Internal disk freed from container build layers (~20 GB saved)."
 
     if command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled; then
-        if [[ "${PODMAN_STORAGE_DRIVER}" == "vfs" ]]; then
-            echo "SELinux is enabled and the external graphroot does not support the normal container labeling flow."
-            echo "Using podman build with SELinux label separation disabled."
-        fi
+        echo "SELinux is enabled; using podman build with SELinux label separation disabled for the external vfs graphroot."
     fi
 fi
 
@@ -863,14 +854,14 @@ echo "This takes ~25 minutes with --skip-wine (~85 min without). Output is live.
 echo ""
 BUILD_LOG="/var/tmp/${IMAGE_NAME}-${IMAGE_TAG}-podman-build.log"
 
-if sudo podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
+if sudo_with_container_env podman image exists "${BAZZITE_IMAGE}" 2>/dev/null; then
     echo "Bazzite ARM image already exists; skipping build."
 else
     cd "${REPO_ROOT}"
     echo "Build log: ${BUILD_LOG}"
     echo "Pruning stale Podman builder cache before the native build..."
-    sudo podman builder prune -af 2>/dev/null || true
-    if ! sudo podman build \
+    sudo_with_container_env podman builder prune -af 2>/dev/null || true
+    if ! sudo_with_container_env podman build \
         "${PODMAN_BUILD_SECURITY_ARGS[@]}" \
         --no-cache \
         --pull=always \
@@ -1166,7 +1157,7 @@ sudo mkdir -p "${OCI_DEST}"
 echo "Exporting Bazzite ARM image to ${OCI_DEST} (may take a few minutes)..."
 EXPORT_LOG="/var/tmp/${IMAGE_NAME}-${IMAGE_TAG}-oci-export.log"
 echo "Export log: ${EXPORT_LOG}"
-if ! sudo skopeo copy \
+if ! sudo_with_container_env skopeo copy \
     "containers-storage:${BAZZITE_IMAGE}" \
     "oci:${OCI_DEST}:latest" 2>&1 | tee "${EXPORT_LOG}"; then
     echo ""

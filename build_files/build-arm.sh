@@ -4,6 +4,7 @@ set -eoux pipefail
 
 export BUILDAH_PLATFORM=linux/arm64
 RPMDB_CHECK_QUERY=(rpm -qa --qf '%{NAME}\n')
+RPMDB_SQLITE_PATH="/usr/lib/sysimage/rpm/rpmdb.sqlite"
 
 restore_kernel_install_tools() {
     if [[ -d /usr/lib/kernel/install.d ]]; then
@@ -45,23 +46,47 @@ remove_installed_packages() {
     done
 
     if (( ${#installed_packages[@]} > 0 )); then
-        dnf5 -y remove "${!installed_packages[@]}"
+        if ! dnf5 -y remove "${!installed_packages[@]}"; then
+            echo "Warning: package cleanup failed; continuing because build content was already laid down." >&2
+            repair_rpmdb_if_needed "after failed package removal" || true
+        fi
     fi
+}
+
+rpmdb_is_healthy() {
+    "${RPMDB_CHECK_QUERY[@]}" >/dev/null 2>&1 || return 1
+    rpmdb --verifydb >/dev/null 2>&1 || return 1
+
+    if [[ -f "${RPMDB_SQLITE_PATH}" ]] && command -v python3 >/dev/null 2>&1; then
+        python3 - "${RPMDB_SQLITE_PATH}" <<'PY' >/dev/null 2>&1 || return 1
+import sqlite3
+import sys
+
+conn = sqlite3.connect(f"file:{sys.argv[1]}?mode=ro", uri=True)
+try:
+    row = conn.execute("PRAGMA quick_check").fetchone()
+    raise SystemExit(0 if row and row[0] == "ok" else 1)
+finally:
+    conn.close()
+PY
+    fi
+
+    return 0
 }
 
 repair_rpmdb_if_needed() {
     local reason="${1:-}"
     local rpmdb_root="/usr/lib/sysimage/rpm"
 
-    if "${RPMDB_CHECK_QUERY[@]}" >/dev/null 2>&1; then
+    if rpmdb_is_healthy; then
         return 0
     fi
 
     echo "RPM database query failed${reason:+ (${reason})}; rebuilding database." >&2
-    rm -f "${rpmdb_root}"/__db.* 2>/dev/null || true
+    rm -f "${rpmdb_root}"/__db.* "${rpmdb_root}"/rpmdb.sqlite-shm "${rpmdb_root}"/rpmdb.sqlite-wal 2>/dev/null || true
     rpm --rebuilddb >/dev/null 2>&1 || true
 
-    if "${RPMDB_CHECK_QUERY[@]}" >/dev/null 2>&1; then
+    if rpmdb_is_healthy; then
         echo "RPM database rebuild succeeded." >&2
         return 0
     fi
@@ -177,6 +202,32 @@ dnf5_install() {
     dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" "$@"
 }
 
+dnf5_install_optional() {
+    local description="$1"
+    shift
+
+    repair_rpmdb_if_needed "before optional ${description} install" || true
+    if dnf5 -y install "${DNF5_STRICT_REPO_ARGS[@]}" --skip-broken --skip-unavailable "$@"; then
+        return 0
+    fi
+
+    echo "Optional ${description} install failed; continuing without it." >&2
+    repair_rpmdb_if_needed "after failed optional ${description} install" || true
+    return 1
+}
+
+require_installed_packages() {
+    local package_name
+
+    repair_rpmdb_if_needed "before installed package verification" >/dev/null || true
+    for package_name in "$@"; do
+        if ! rpm -q "${package_name}" >/dev/null 2>&1; then
+            echo "Required package is missing after image customization: ${package_name}" >&2
+            exit 1
+        fi
+    done
+}
+
 refresh_dnf_metadata() {
     dnf5 clean all >/dev/null 2>&1 || true
     rm -rf /var/cache/libdnf5/* /var/cache/dnf/* 2>/dev/null || true
@@ -268,7 +319,16 @@ remove_installed_packages \
 # switch later. On ARM we don't remove the RPM like x86 Bazzite does.
 
 # Media codec support via RPM Fusion
-media_repo_args=(--enable-repo="*rpmfusion*")
+media_repo_args=(
+    --enable-repo=rpmfusion-free
+    --enable-repo=rpmfusion-free-updates
+    --enable-repo=rpmfusion-nonfree
+    --enable-repo=rpmfusion-nonfree-updates
+)
+while read -r repo_id; do
+    [[ -n "${repo_id}" ]] || continue
+    media_repo_args+=(--disable-repo="${repo_id}")
+done < <(dnf5 repolist --all | awk '/^rpmfusion-.*(testing|rawhide)/ {print $1}')
 if dnf5 repolist --all | grep -q '^fedora-multimedia '; then
     media_repo_args+=(--disable-repo="*fedora-multimedia*")
 fi
@@ -278,16 +338,16 @@ dnf5_install "${media_repo_args[@]}" \
     libbdplus \
     libbluray \
     libbluray-utils \
-    libfreeaptx || true
+    libfreeaptx
 
 # Gaming packages available natively on aarch64
-dnf5_install --skip-broken --skip-unavailable \
+dnf5_install \
     gamescope \
     mangohud \
     lutris
 
 # Bazzite desktop stack (ARM-compatible packages only)
-dnf5_install --skip-broken --skip-unavailable \
+dnf5_install_optional "desktop add-ons" \
     iwd \
     greenboot \
     greenboot-default-health-checks \
@@ -361,9 +421,26 @@ dnf5_install --skip-broken --skip-unavailable \
     xdg-user-dirs \
     xdg-terminal-exec
 
+require_installed_packages \
+    iwd \
+    greenboot \
+    greenboot-default-health-checks \
+    python3-pip \
+    input-remapper \
+    tailscale \
+    fish \
+    power-profiles-daemon \
+    distrobox \
+    podman \
+    just \
+    jq \
+    cabextract \
+    xdg-user-dirs \
+    xdg-terminal-exec
+
 # DE-specific packages
 if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
-    dnf5_install --skip-broken --skip-unavailable \
+    dnf5_install_optional "KDE desktop add-ons" \
         qt \
         krdp \
         kdeconnectd \
@@ -376,6 +453,10 @@ if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
         kio-extras \
         krdc \
         ptyxis
+    require_installed_packages \
+        qt \
+        kio-extras \
+        ptyxis
     remove_installed_packages \
         plasma-drkonqi \
         plasma-welcome \
@@ -385,22 +466,24 @@ if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
         kde-partitionmanager \
         plasma-discover
 else
-    dnf5_install --skip-broken --skip-unavailable \
+    dnf5_install_optional "GNOME desktop add-ons" \
         gnome-tweaks \
         gnome-extensions-app \
         dconf-editor \
+        ptyxis
+    require_installed_packages \
         ptyxis
 fi
 
 # Enable COPRs that have aarch64 builds
 dnf5_install dnf5-plugins || true
 if dnf5 -y copr enable ublue-os/staging 2>/dev/null; then
-    dnf5_install --skip-broken --skip-unavailable \
+    dnf5_install_optional "ublue staging packages" \
         topgrade
 fi
 
 if dnf5 -y copr enable ublue-os/packages 2>/dev/null; then
-    dnf5_install --skip-broken --skip-unavailable \
+    dnf5_install_optional "ublue packages" \
         uupd
 
     if [[ -f /usr/lib/systemd/system/uupd.service ]]; then
@@ -413,7 +496,7 @@ if dnf5 -y copr enable ublue-os/packages 2>/dev/null; then
 fi
 
 if dnf5 -y copr enable ublue-os/bling 2>/dev/null; then
-    dnf5_install --skip-broken --skip-unavailable \
+    dnf5_install_optional "ublue bling packages" \
         ublue-os-bling
 fi
 
@@ -476,9 +559,9 @@ fi
 
 # Asahi Flatpak Mesa runtimes -- GPU acceleration for Flatpak apps
 # These come from the @asahi:flatpak COPR already configured in the base image
-dnf5_install --skip-broken --skip-unavailable \
+dnf5_install_optional "Asahi Flatpak Mesa runtimes" \
     mesa-asahi-24.08-flatpak \
-    mesa-asahi-23.08-flatpak || true
+    mesa-asahi-23.08-flatpak
 
 # Enable services with vendor symlinks in /usr/lib so image-owned enablement
 # does not persist as mutable /etc/systemd state across rebases.
