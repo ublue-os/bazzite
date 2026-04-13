@@ -144,6 +144,183 @@ regenerate-grub:
     fi
     remount_boot_ro
 
+# Set GRUB menu timeout and regenerate config. Options: no-timeout | instant | 1-second | 3-seconds | 5-seconds | 10-seconds | custom
+[group("system")]
+grub-timeout ACTION="":
+    #!/usr/bin/bash
+    set -euo pipefail
+    source /usr/libexec/bazzite-boot-remount
+    source /usr/lib/ujust/ujust.sh
+
+    GRUB_FILE="/etc/default/grub"
+    GRUB_FILE_EXISTED="false"
+    GRUB_FILE_BACKUP=""
+    BOOT_REMOUNTED="false"
+
+    print_help() {
+      echo "Usage: ujust grub-timeout <option>"
+      echo "  <option>: Specify the timeout to skip the interactive prompt"
+      echo "  Use 'no-timeout' or '-1' to keep the GRUB menu open until the user makes a choice"
+      echo "  Use 'instant' or '0' to skip the GRUB menu. Menu appears with Shift being held."
+      echo "  Use '1-second', '3-seconds', '5-seconds', or '10-seconds' for common timeouts"
+      echo "  Use 'custom' to enter a custom whole number from 0 to 60 seconds"
+    }
+
+    confirm_existing_grub_file() {
+      local CONFIRM_CHOICE
+      clear
+      echo "${bold}Existing GRUB File${normal}"
+      echo "$GRUB_FILE already exists."
+      echo "Only GRUB_TIMEOUT will be changed temporarily."
+      echo "The GRUB config will be regenerated, then the original file will be restored."
+      echo "The existing file will not be deleted."
+      echo ""
+      CONFIRM_CHOICE=$(ugum choose "Continue" "Exit without changes")
+      if [[ "$CONFIRM_CHOICE" != "Continue" ]]; then
+        echo "No changes made."
+        exit 0
+      fi
+    }
+
+    cleanup() {
+      local EXIT_CODE=$?
+      if [[ "$GRUB_FILE_EXISTED" == "true" && -n "$GRUB_FILE_BACKUP" && -f "$GRUB_FILE_BACKUP" ]]; then
+        echo "Restoring previous $GRUB_FILE..."
+        sudo cp -a "$GRUB_FILE_BACKUP" "$GRUB_FILE" || true
+        sudo rm -f "$GRUB_FILE_BACKUP"
+      else
+        echo "Removing temporary $GRUB_FILE..."
+        sudo rm -f "$GRUB_FILE" || true
+      fi
+
+      if [[ "$BOOT_REMOUNTED" == "true" ]]; then
+        remount_boot_ro || true
+      fi
+
+      exit "$EXIT_CODE"
+    }
+
+    validate_timeout() {
+      local TIMEOUT="$1"
+      if [[ "$TIMEOUT" =~ ^[0-9]+$ ]] && (( TIMEOUT <= 60 )); then
+        return 0
+      fi
+
+      return 1
+    }
+
+    prompt_custom_timeout() {
+      local CUSTOM_TIMEOUT
+      while true; do
+        read -r -p "Enter GRUB timeout in seconds (0-60): " CUSTOM_TIMEOUT || exit 1
+        if validate_timeout "$CUSTOM_TIMEOUT" >/dev/null; then
+          TIMEOUT="$CUSTOM_TIMEOUT"
+          return 0
+        fi
+
+        echo "Please enter a whole number from 0 to 60 seconds." >&2
+      done
+    }
+
+    set_timeout_from_option() {
+      local OPTION_LOWER
+      OPTION_LOWER="$(echo "$1" | tr '[:upper:]' '[:lower:]')"
+
+      case "$OPTION_LOWER" in
+        "no timeout (-1)"|no-timeout|never|-1)
+          TIMEOUT="-1"
+          ;;
+        "skip menu (0 seconds - menu appears with shift being held)"|instant|0)
+          TIMEOUT="0"
+          ;;
+        "1 second"|1-second|1-seconds|1)
+          TIMEOUT="1"
+          ;;
+        "3 seconds"|3-seconds|3-second|3)
+          TIMEOUT="3"
+          ;;
+        "5 seconds"|5-seconds|5-second|5)
+          TIMEOUT="5"
+          ;;
+        "10 seconds"|10-seconds|10-second|10)
+          TIMEOUT="10"
+          ;;
+        "custom timeout"|custom)
+          prompt_custom_timeout
+          ;;
+        help)
+          print_help
+          exit 0
+          ;;
+        "exit without changes"|exit)
+          exit 0
+          ;;
+        *)
+          if [[ "$OPTION_LOWER" == "-1" ]]; then
+            TIMEOUT="-1"
+          elif validate_timeout "$OPTION_LOWER" >/dev/null; then
+            TIMEOUT="$OPTION_LOWER"
+          else
+            echo "Invalid timeout option: $1" >&2
+            print_help
+            exit 1
+          fi
+          ;;
+      esac
+    }
+
+    OPTION="{{ ACTION }}"
+    if [[ -z "$OPTION" ]]; then
+      echo "${bold}GRUB Timeout${normal}"
+      echo "Choose how long GRUB should wait before booting the default entry."
+      echo "This will regenerate the GRUB config."
+      OPTION=$(ugum choose "No Timeout (-1)" "Skip Menu (0 seconds - Menu appears with Shift being held)" "1 Second" "3 Seconds" "5 Seconds" "10 Seconds" "Custom Timeout" "Exit without changes")
+    fi
+
+    TIMEOUT=""
+    set_timeout_from_option "$OPTION"
+
+    if [[ -e "$GRUB_FILE" ]]; then
+      confirm_existing_grub_file
+    fi
+
+    trap cleanup EXIT
+
+    if sudo test -e "$GRUB_FILE"; then
+      GRUB_FILE_EXISTED="true"
+      GRUB_FILE_BACKUP="$(mktemp)"
+      sudo cp -a "$GRUB_FILE" "$GRUB_FILE_BACKUP"
+    fi
+
+    remount_boot_rw
+    BOOT_REMOUNTED="true"
+
+    echo "Writing temporary GRUB_TIMEOUT=$TIMEOUT to $GRUB_FILE..."
+    if sudo test -e "$GRUB_FILE" && sudo grep -q '^GRUB_TIMEOUT=' "$GRUB_FILE"; then
+      sudo sed -i "s/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=$TIMEOUT/" "$GRUB_FILE"
+    else
+      printf 'GRUB_TIMEOUT=%s\n' "$TIMEOUT" | sudo tee -a "$GRUB_FILE"
+    fi
+
+    echo "Regenerating GRUB config..."
+    if [ -d /sys/firmware/efi ]; then
+      sudo grub2-mkconfig -o /etc/grub2-efi.cfg
+    else
+      sudo grub2-mkconfig -o /etc/grub2.cfg
+    fi
+
+    case "$TIMEOUT" in
+      -1)
+        echo "GRUB timeout has been set to wait until the user makes a choice in the generated config."
+        ;;
+      0)
+        echo "GRUB timeout has been set to skip the menu. Menu appears with Shift being held."
+        ;;
+      *)
+        echo "GRUB timeout has been set to $TIMEOUT seconds in the generated config."
+        ;;
+    esac
+
 # Configure grub bootmenu visibility. Pass action 'help' for more info. Options: hide | unhide | show. Pairing: hide = Hide After Successful Boot | unhide = Same except when Dual Booting | show = Always Show Grub
 [group("system")]
 configure-grub ACTION="":
