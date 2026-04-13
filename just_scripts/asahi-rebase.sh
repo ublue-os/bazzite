@@ -38,6 +38,8 @@ PODMAN_EXT_ROOT=""
 PODMAN_STORAGE_DRIVER="overlay"
 PODMAN_BUILD_SECURITY_ARGS=()
 PODMAN_TMPDIR=""
+PODMAN_DRIVER_PROBE_LOG=""
+PODMAN_DRIVER_SELECTION_NOTE=""
 SLEEP_MASKED=0
 DNF_CMD=""
 HOST_DNF_REPO_OVERRIDE="/etc/dnf/repos.override.d/zz-bazzite-fedora-direct.repo"
@@ -62,9 +64,11 @@ DNF4_HOST_STRICT_REPO_ARGS=(
 #                          PATH must already be a mounted writable directory,
 #                          e.g. /mnt/external (your external SSD).
 #                          After the script finishes you can wipe PATH freely.
-#                          For robustness this always uses Podman's 'vfs'
-#                          storage driver on external media. The faster overlay
-#                          path has been unreliable for long RPM-heavy builds.
+#                          On native Linux filesystems the script probes Podman
+#                          overlay storage first and falls back to 'vfs' only
+#                          when overlay is not safe on that mount. Set
+#                          BAZZITE_EXTERNAL_PODMAN_DRIVER=overlay|vfs|auto
+#                          to override the automatic choice.
 # --skip-wine            : skip native Wine aarch64 compilation (~40-60 min)
 #                          x86 Wine still runs via FEX-Emu/Box64 emulation.
 #                          Use this for faster first installs; rerun this
@@ -150,6 +154,85 @@ sudo_with_container_env() {
     fi
 }
 
+probe_external_podman_driver() {
+    local driver="$1"
+    local disable_labels="${2:-0}"
+    local probe_dir=""
+    local probe_root=""
+    local probe_tmp=""
+    local probe_runroot=""
+    local probe_log=""
+    local probe_image="localhost/bazzite-storage-probe:${driver}-${disable_labels}"
+    local probe_status="standard"
+    local -a probe_build_security_args=()
+
+    PODMAN_DRIVER_PROBE_LOG=""
+    if [[ "${disable_labels}" -eq 1 ]]; then
+        probe_status="label-disabled"
+    fi
+
+    probe_dir="$(sudo mktemp -d "${EXTERNAL_BUILD_PATH}/.bazzite-podman-probe-${driver}-${probe_status}.XXXXXX" 2>/dev/null || true)"
+    if [[ -z "${probe_dir}" ]]; then
+        PODMAN_DRIVER_SELECTION_NOTE="Could not create an external probe directory for podman ${driver}."
+        return 1
+    fi
+
+    probe_root="${probe_dir}/root"
+    probe_tmp="${probe_dir}/tmp"
+    probe_runroot="/run/bazzite-podman-probe-${driver}-${probe_status}-$$"
+    probe_log="/var/tmp/bazzite-podman-probe-${driver}-${probe_status}.log"
+
+    cleanup_podman_probe() {
+        sudo env TMPDIR="${probe_tmp}" TMP="${probe_tmp}" TEMP="${probe_tmp}" CONTAINERS_TMPDIR="${probe_tmp}" \
+            podman --root "${probe_root}" --runroot "${probe_runroot}" --storage-driver "${driver}" \
+            image rm -f "${probe_image}" >/dev/null 2>&1 || true
+        sudo rm -rf "${probe_runroot}" "${probe_dir}" 2>/dev/null || true
+    }
+
+    sudo mkdir -p "${probe_root}" "${probe_tmp}" "${probe_dir}/context"
+    sudo chmod 1777 "${probe_tmp}"
+
+    if command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled; then
+        if command -v semanage >/dev/null 2>&1; then
+            sudo semanage fcontext -a -e /var/lib/containers/storage "${probe_root}" 2>/dev/null || \
+                sudo semanage fcontext -m -e /var/lib/containers/storage "${probe_root}" 2>/dev/null || true
+        fi
+        sudo restorecon -R -F "${probe_root}" 2>/dev/null || true
+    fi
+
+    sudo tee "${probe_dir}/context/Containerfile" > /dev/null << 'EOF'
+FROM quay.io/fedora/fedora:43
+RUN dd if=/dev/zero of=/probe-layer-1.bin bs=1M count=32 status=none
+RUN dd if=/dev/zero of=/probe-layer-2.bin bs=1M count=32 status=none
+EOF
+
+    if [[ "${disable_labels}" -eq 1 ]]; then
+        probe_build_security_args=(--security-opt label=disable)
+    fi
+
+    if sudo env TMPDIR="${probe_tmp}" TMP="${probe_tmp}" TEMP="${probe_tmp}" CONTAINERS_TMPDIR="${probe_tmp}" \
+        podman --root "${probe_root}" --runroot "${probe_runroot}" --storage-driver "${driver}" \
+        pull --platform linux/arm64 quay.io/fedora/fedora:43 2>&1 | tee "${probe_log}" >/dev/null && \
+        sudo env TMPDIR="${probe_tmp}" TMP="${probe_tmp}" TEMP="${probe_tmp}" CONTAINERS_TMPDIR="${probe_tmp}" \
+        podman --root "${probe_root}" --runroot "${probe_runroot}" --storage-driver "${driver}" \
+        build \
+        "${probe_build_security_args[@]}" \
+        --platform linux/arm64 \
+        --network=none \
+        -f "${probe_dir}/context/Containerfile" \
+        -t "${probe_image}" \
+        "${probe_dir}/context" 2>&1 | tee -a "${probe_log}" >/dev/null; then
+        cleanup_podman_probe
+        rm -f "${probe_log}" 2>/dev/null || true
+        return 0
+    fi
+
+    PODMAN_DRIVER_PROBE_LOG="${probe_log}"
+    PODMAN_DRIVER_SELECTION_NOTE="podman ${driver} probe (${probe_status}) failed."
+    cleanup_podman_probe
+    return 1
+}
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Helper: ensure /boot/loader is the loader.0 symlink ostree requires
 # ──────────────────────────────────────────────────────────────────────────────
@@ -220,8 +303,10 @@ echo ""
 echo "This script will:"
 echo "  1. Build the Bazzite ARM image locally"
 echo "     - internal build storage: needs ~40 GB free on /"
-echo "     - external build storage: needs ~20 GB free on / plus ~80 GB on the external drive"
-echo "       (or ~35 GB on the external drive when using --skip-wine)"
+echo "     - external build storage: needs ~20 GB free on / plus ~90 GB on the external drive"
+echo "       when native overlay works on that mount"
+echo "     - if the script must fall back to podman vfs, expect roughly ~420 GB external"
+echo "       (~220 GB with --skip-wine)"
 echo "  2. Convert this Fedora install to atomic/ostree"
 echo "  3. Set up your user account"
 echo "  4. Reboot into atomic Fedora which auto-rebases to Bazzite ARM"
@@ -369,9 +454,22 @@ print_external_build_debug() {
         ls -Zd "${external_path}" 2>/dev/null || true
         [[ -n "${PODMAN_EXT_ROOT}" ]] && ls -Zd "${PODMAN_EXT_ROOT}" 2>/dev/null || true
         [[ -n "${PODMAN_TMPDIR}" ]] && ls -Zd "${PODMAN_TMPDIR}" 2>/dev/null || true
+        if [[ -n "${PODMAN_DRIVER_SELECTION_NOTE}" ]]; then
+            echo
+            echo "Driver selection:"
+            echo "${PODMAN_DRIVER_SELECTION_NOTE}"
+        fi
+        if [[ -n "${PODMAN_DRIVER_PROBE_LOG}" && -f "${PODMAN_DRIVER_PROBE_LOG}" ]]; then
+            echo
+            echo "Probe log tail (${PODMAN_DRIVER_PROBE_LOG}):"
+            tail -n 40 "${PODMAN_DRIVER_PROBE_LOG}" 2>/dev/null || true
+        fi
         echo
         echo "Active podman storage.conf:"
         sudo cat /etc/containers/storage.conf 2>/dev/null || true
+        echo
+        echo "Podman store:"
+        sudo_with_container_env podman info --format '{{.Store.GraphDriverName}} {{.Store.GraphRoot}} {{.Store.RunRoot}}' 2>/dev/null || true
     } >&2
 }
 
@@ -771,28 +869,69 @@ EOF
         exit 1
     fi
 
-    PODMAN_STORAGE_DRIVER="vfs"
+    PODMAN_STORAGE_DRIVER=""
     PODMAN_BUILD_SECURITY_ARGS=()
-    if command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled; then
-        PODMAN_BUILD_SECURITY_ARGS=(--security-opt label=disable)
+    PODMAN_DRIVER_SELECTION_NOTE=""
+    EXTERNAL_DRIVER_MODE="${BAZZITE_EXTERNAL_PODMAN_DRIVER:-auto}"
+    case "${EXTERNAL_DRIVER_MODE}" in
+        auto|overlay|vfs)
+            ;;
+        *)
+            cleanup_external_test_dir
+            echo "ERROR: BAZZITE_EXTERNAL_PODMAN_DRIVER must be one of: auto, overlay, vfs"
+            exit 1
+            ;;
+    esac
+
+    if [[ "${EXTERNAL_DRIVER_MODE}" != "vfs" ]]; then
+        echo "Probing external podman overlay storage..."
+        if probe_external_podman_driver overlay 0; then
+            PODMAN_STORAGE_DRIVER="overlay"
+            PODMAN_DRIVER_SELECTION_NOTE="Using podman overlay on ${EXTERNAL_BUILD_PATH} (probe passed with SELinux labels enabled)."
+        elif command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled && probe_external_podman_driver overlay 1; then
+            PODMAN_STORAGE_DRIVER="overlay"
+            PODMAN_BUILD_SECURITY_ARGS=(--security-opt label=disable)
+            PODMAN_DRIVER_SELECTION_NOTE="Using podman overlay on ${EXTERNAL_BUILD_PATH} with SELinux label separation disabled (overlay probe required it)."
+        elif [[ "${EXTERNAL_DRIVER_MODE}" == "overlay" ]]; then
+            cleanup_external_test_dir
+            echo "ERROR: BAZZITE_EXTERNAL_PODMAN_DRIVER=overlay was requested, but the overlay probe failed."
+            if [[ -n "${PODMAN_DRIVER_PROBE_LOG}" && -f "${PODMAN_DRIVER_PROBE_LOG}" ]]; then
+                echo "Probe log: ${PODMAN_DRIVER_PROBE_LOG}"
+                tail -n 40 "${PODMAN_DRIVER_PROBE_LOG}" || true
+            fi
+            exit 1
+        fi
+    fi
+
+    if [[ "${EXTERNAL_DRIVER_MODE}" == "vfs" || "${PODMAN_STORAGE_DRIVER}" != "overlay" ]]; then
+        PODMAN_STORAGE_DRIVER="vfs"
+        if command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled; then
+            PODMAN_BUILD_SECURITY_ARGS=(--security-opt label=disable)
+        fi
+        if [[ "${EXTERNAL_DRIVER_MODE}" == "vfs" ]]; then
+            PODMAN_DRIVER_SELECTION_NOTE="Using podman vfs because BAZZITE_EXTERNAL_PODMAN_DRIVER=vfs forced it."
+        elif [[ -n "${PODMAN_DRIVER_SELECTION_NOTE}" ]]; then
+            PODMAN_DRIVER_SELECTION_NOTE="${PODMAN_DRIVER_SELECTION_NOTE} Falling back to podman vfs for compatibility."
+        else
+            PODMAN_DRIVER_SELECTION_NOTE="Falling back to podman vfs because the external overlay probe did not pass."
+        fi
     fi
     cleanup_external_test_dir
 
-    echo "Using podman storage driver 'vfs' for external build storage."
-    echo "Reason: external overlay/fuse-overlayfs has repeatedly corrupted RPM's sqlite database during the native Wine build on real Asahi installs."
+    echo "${PODMAN_DRIVER_SELECTION_NOTE}"
 
     # How much free space is on the external path?
     EXTERNAL_FREE_GB=$(df -BG "${EXTERNAL_BUILD_PATH}" | awk 'NR==2{gsub("G",""); print $4}')
     if [[ "${PODMAN_STORAGE_DRIVER}" == "vfs" ]]; then
         if [[ "${SKIP_WINE}" -eq 1 ]]; then
-            REQUIRED_EXTERNAL_FREE_GB=120
+            REQUIRED_EXTERNAL_FREE_GB=220
         else
-            REQUIRED_EXTERNAL_FREE_GB=180
+            REQUIRED_EXTERNAL_FREE_GB=420
         fi
     elif [[ "${SKIP_WINE}" -eq 1 ]]; then
-        REQUIRED_EXTERNAL_FREE_GB=25
+        REQUIRED_EXTERNAL_FREE_GB=50
     else
-        REQUIRED_EXTERNAL_FREE_GB=45
+        REQUIRED_EXTERNAL_FREE_GB=90
     fi
     echo "External path free space: ${EXTERNAL_FREE_GB} GB (need ~${REQUIRED_EXTERNAL_FREE_GB} GB)"
     if (( EXTERNAL_FREE_GB < REQUIRED_EXTERNAL_FREE_GB )); then
@@ -841,7 +980,11 @@ EOF
     echo "Internal disk freed from container build layers (~20 GB saved)."
 
     if command -v selinuxenabled >/dev/null 2>&1 && selinuxenabled; then
-        echo "SELinux is enabled; using podman build with SELinux label separation disabled for the external vfs graphroot."
+        if [[ "${#PODMAN_BUILD_SECURITY_ARGS[@]}" -gt 0 ]]; then
+            echo "SELinux is enabled; using podman build with SELinux label separation disabled for the external ${PODMAN_STORAGE_DRIVER} graphroot."
+        else
+            echo "SELinux is enabled; podman build will use normal SELinux label separation for the external ${PODMAN_STORAGE_DRIVER} graphroot."
+        fi
     fi
 fi
 
