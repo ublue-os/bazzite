@@ -676,6 +676,7 @@ cleanup_stale_first_boot_artifacts() {
     if [[ -n "${stateroot_var}" ]]; then
         sudo rm -f \
             "${stateroot_var}/usrlocal/bin/bazzite-rebase-status" \
+            "${stateroot_var}/lib/bazzite-rebase-queued" \
             "${stateroot_var}/lib/bazzite-rebase-done" \
             "${stateroot_var}/lib/bazzite-rebase-failed" \
             "${stateroot_var}/log/bazzite-first-boot-rebase.log" 2>/dev/null || true
@@ -1392,6 +1393,12 @@ if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
     sudo mkdir -p "${STATEROOT_VAR}/usrlocal/bin"
     sudo tee "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-status" > /dev/null << 'STATUS_EOF'
 #!/usr/bin/bash
+CURRENT_ID=""
+if [[ -r /usr/lib/os-release ]]; then
+    # shellcheck disable=SC1091
+    source /usr/lib/os-release
+    CURRENT_ID="${ID:-}"
+fi
 echo ""
 echo "  ╔══════════════════════════════════════════════════╗"
 echo "  ║         Bazzite ARM - First Boot Rebase          ║"
@@ -1399,6 +1406,14 @@ echo "  ╚═══════════════════════
 echo ""
 if [[ -f /var/lib/bazzite-rebase-done ]]; then
     echo "  Status: COMPLETE -- run: sudo systemctl reboot"
+elif [[ -f /var/lib/bazzite-rebase-queued ]]; then
+    if [[ "${CURRENT_ID}" == "bazzite" ]]; then
+        echo "  Status: COMPLETE -- cleanup will finish on this boot"
+    else
+        echo "  Status: QUEUED -- Bazzite deployment is staged"
+        echo "  Check:   rpm-ostree status"
+        echo "  Action:  sudo systemctl reboot"
+    fi
 elif [[ -f /var/lib/bazzite-rebase-failed ]]; then
     echo "  Status: FAILED -- inspect the log below"
     echo "  Log:    /var/log/bazzite-first-boot-rebase.log"
@@ -1406,9 +1421,9 @@ elif [[ -f /var/lib/bazzite-rebase-failed ]]; then
 elif systemctl is-active --quiet bazzite-first-boot-rebase.service 2>/dev/null; then
     echo "  Status: RUNNING -- rebase is in progress"
     echo "  Watch:  journalctl -f -u bazzite-first-boot-rebase"
-elif systemctl is-active --quiet bazzite-first-boot-rebase.timer 2>/dev/null; then
-    echo "  Status: SCHEDULED -- timer is armed for this boot"
-    echo "  Watch:  systemctl status bazzite-first-boot-rebase.timer"
+elif systemctl is-enabled --quiet bazzite-first-boot-rebase.service 2>/dev/null; then
+    echo "  Status: ARMED -- service will start automatically on boot"
+    echo "  Watch:  systemctl status bazzite-first-boot-rebase.service"
 elif [[ -d /var/lib/bazzite-install ]]; then
     echo "  Status: PENDING -- will start automatically"
     echo "  Watch:  journalctl -f -u bazzite-first-boot-rebase"
@@ -1421,64 +1436,57 @@ STATUS_EOF
     sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system"
 
     # First-boot rebase service: runs silently in the background as root.
-    # A boot timer triggers it shortly after the first atomic boot so we do
-    # not depend on fragile post-target ordering or a user login race.
+    # Enabling the service directly into the boot target is more reliable
+    # than gating a timer on /var-backed state. The service delays itself
+    # briefly so the first atomic boot can settle before the rebase starts.
     sudo tee "${DEPLOY_DIR}/etc/systemd/system/bazzite-first-boot-rebase.service" > /dev/null << 'SVC_EOF'
 [Unit]
 Description=Bazzite ARM - First Boot Rebase
 ConditionPathExists=/var/lib/bazzite-install/index.json
+ConditionPathExists=!/var/lib/bazzite-rebase-failed
+ConditionPathExists=!/var/lib/bazzite-rebase-queued
 ConditionPathExists=!/var/lib/bazzite-rebase-done
 After=local-fs.target systemd-user-sessions.service dbus.service
 Wants=local-fs.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /var/lib/bazzite-rebase-failed; : > /var/log/bazzite-first-boot-rebase.log; rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest 2>&1 | tee /var/log/bazzite-first-boot-rebase.log; touch /var/lib/bazzite-rebase-done; rm -rf /var/lib/bazzite-install || true'
+ExecStartPre=/usr/bin/sleep 20
+ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /var/lib/bazzite-rebase-failed; : > /var/log/bazzite-first-boot-rebase.log; rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; rpm-ostree status 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; touch /var/lib/bazzite-rebase-queued'
 ExecStartPost=/usr/bin/bash -euxo pipefail -c 'sleep 5; systemctl --no-block --job-mode=replace-irreversibly reboot'
-ExecStopPost=/usr/bin/bash -c 'if [[ ! -f /var/lib/bazzite-rebase-done ]]; then touch /var/lib/bazzite-rebase-failed; fi'
+ExecStopPost=/usr/bin/bash -c 'if [[ ! -f /var/lib/bazzite-rebase-queued ]]; then touch /var/lib/bazzite-rebase-failed; fi'
 TimeoutStartSec=0
 StandardOutput=journal
 StandardError=journal
-SVC_EOF
-
-    sudo tee "${DEPLOY_DIR}/etc/systemd/system/bazzite-first-boot-rebase.timer" > /dev/null << 'TIMER_EOF'
-[Unit]
-Description=Bazzite ARM - Schedule First Boot Rebase
-ConditionPathExists=/var/lib/bazzite-install/index.json
-ConditionPathExists=!/var/lib/bazzite-rebase-done
 
 [Install]
-WantedBy=timers.target
-
-[Timer]
-Unit=bazzite-first-boot-rebase.service
-OnBootSec=20s
-AccuracySec=1s
-TIMER_EOF
+WantedBy=multi-user.target
+SVC_EOF
 
     sudo tee "${DEPLOY_DIR}/etc/systemd/system/bazzite-first-boot-rebase-cleanup.service" > /dev/null << 'CLEANUP_EOF'
 [Unit]
 Description=Bazzite ARM - Clean First Boot Rebase Artifacts
-ConditionPathExists=/var/lib/bazzite-rebase-done
+ConditionPathExists=/var/lib/bazzite-rebase-queued
+ConditionPathExists=!/var/lib/bazzite-rebase-done
+ConditionPathExists=/usr/lib/bazzite
 After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /etc/profile.d/bazzite-rebase.sh /etc/motd /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.timer /etc/systemd/system/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status /var/lib/bazzite-rebase-failed || true'
+ExecStart=/usr/bin/bash -euxo pipefail -c 'touch /var/lib/bazzite-rebase-done; rm -rf /var/lib/bazzite-install; rm -f /etc/profile.d/bazzite-rebase.sh /etc/motd /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.timer /etc/systemd/system/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status /var/lib/bazzite-rebase-failed /var/lib/bazzite-rebase-queued || true'
 
 [Install]
 WantedBy=multi-user.target
 CLEANUP_EOF
 
-    # Enable the timer and cleanup service in the deployment so systemd sees
+    # Enable the rebase and cleanup services in the deployment so systemd sees
     # them as first-class enabled units on the first atomic boot.
     if ! sudo systemctl --root="${DEPLOY_DIR}" enable \
-        bazzite-first-boot-rebase.timer \
+        bazzite-first-boot-rebase.service \
         bazzite-first-boot-rebase-cleanup.service >/dev/null 2>&1; then
-        sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system/timers.target.wants"
-        sudo ln -sf /etc/systemd/system/bazzite-first-boot-rebase.timer \
-            "${DEPLOY_DIR}/etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer"
         sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants"
+        sudo ln -sf /etc/systemd/system/bazzite-first-boot-rebase.service \
+            "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service"
         sudo ln -sf /etc/systemd/system/bazzite-first-boot-rebase-cleanup.service \
             "${DEPLOY_DIR}/etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase-cleanup.service"
     fi
@@ -1494,7 +1502,7 @@ CLEANUP_EOF
   ║                                                              ║
   ║  Check progress:                                             ║
   ║    journalctl -f -u bazzite-first-boot-rebase                ║
-  ║    systemctl status bazzite-first-boot-rebase.timer          ║
+  ║    systemctl status bazzite-first-boot-rebase.service        ║
   ║  If it fails:                                                ║
   ║    cat /var/log/bazzite-first-boot-rebase.log                ║
   ║                                                              ║
