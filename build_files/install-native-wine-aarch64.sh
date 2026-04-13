@@ -250,6 +250,57 @@ print_repo_debug() {
     } >&2
 }
 
+sanitize_log_name() {
+    local input="$1"
+    local sanitized
+
+    sanitized="$(printf '%s' "${input,,}" | tr -cs 'a-z0-9' '-')"
+    sanitized="${sanitized#-}"
+    sanitized="${sanitized%-}"
+    if [[ -z "${sanitized}" ]]; then
+        sanitized="step"
+    fi
+    printf '%s\n' "${sanitized}"
+}
+
+print_step_log_failure() {
+    local log_file="$1"
+    local failure_pattern='(^|[^[:alpha:]])(error|failed|failure|cannot|could not|no match|no space left|permission denied|curl error|status code: [45][0-9][0-9]|transaction failed|depsolve|conflicting requests|nothing provides|problem:|requires|database disk image is malformed|rpmdb)([^[:alpha:]]|$)'
+
+    [[ -f "${log_file}" ]] || return 0
+
+    {
+        echo
+        echo "Relevant failure lines from ${log_file}:"
+        grep -Ein "${failure_pattern}" "${log_file}" | head -n 120 || true
+        echo
+        echo "Last 120 lines from ${log_file}:"
+        tail -n 120 "${log_file}" || true
+    } >&2
+}
+
+run_dnf5_logged() {
+    local description="$1"
+    shift
+
+    local log_name
+    local log_file
+    local -a cmd=("$@")
+
+    log_name="$(sanitize_log_name "${description}")"
+    log_file="${build_root}/${log_name}.log"
+
+    echo "${description}" >&2
+    echo "Log: ${log_file}" >&2
+
+    if "${cmd[@]}" 2>&1 | tee "${log_file}"; then
+        return 0
+    fi
+
+    print_step_log_failure "${log_file}"
+    return 1
+}
+
 cleanup() {
     if [[ -n "${build_root}" ]]; then
         rm -rf "${build_root}"
@@ -344,7 +395,7 @@ install_optional_packages() {
     shift
 
     repair_rpmdb_if_needed "before optional ${description} install"
-    if dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"; then
+    if run_dnf5_logged "Optional ${description} install" dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"; then
         return 0
     fi
 
@@ -363,14 +414,14 @@ install_required_packages() {
     shift
 
     repair_rpmdb_if_needed "before ${description} install"
-    if dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"; then
+    if run_dnf5_logged "${description} install" dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"; then
         return 0
     fi
 
     echo "${description} install failed; cleaning metadata and retrying once." >&2
     refresh_dnf_metadata
     repair_rpmdb_if_needed "after failed ${description} install" || true
-    if dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"; then
+    if run_dnf5_logged "${description} install retry" dnf5 "${DNF5_INSTALL_ARGS[@]}" "$@"; then
         return 0
     fi
 

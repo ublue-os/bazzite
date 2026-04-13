@@ -476,7 +476,7 @@ print_log_tail() {
     if [[ -f "${log_file}" ]]; then
         echo ""
         echo "First relevant failure lines from ${log_file}:"
-        pattern='(^|[^[:alpha:]])(error|failed|failure|cannot|could not|no match|no space left|permission denied|curl error|status code: [45][0-9][0-9]|transaction failed|depsolve|conflicting requests|nothing provides)([^[:alpha:]]|$)'
+        pattern='(^|[^[:alpha:]])(error|failed|failure|cannot|could not|no match|no space left|permission denied|curl error|status code: [45][0-9][0-9]|transaction failed|depsolve|conflicting requests|nothing provides|problem:|requires|database disk image is malformed|rpmdb)([^[:alpha:]]|$)'
         benign_pattern='(Failed to preset unit: Unit bees@.*\.service does not exist|Failed to connect to audit log, ignoring: Invalid argument|rm: cannot remove .*/run/(secrets|\.containerenv).*Device or resource busy)'
         grep -Ein "${pattern}" "${log_file}" | grep -Eiv "${benign_pattern}" | head -n 120 || true
         echo ""
