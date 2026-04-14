@@ -1229,10 +1229,19 @@ get-logs:
     #!/bin/bash
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh
-    # Get system status information
-    echo -e "${bold}System Information:${normal}"
+    echo -e "${red}${bold}Generating and uploading system information and logs for Bazzite Support...${normal}"
     echo " "
-    rpm-ostree status
+    # Upload system status information
+    system_information=$({
+      echo "rpm-ostree status"
+      echo "-----------------"
+      rpm-ostree status
+      echo
+      echo "fastfetch"
+      echo "---------"
+      /usr/bin/fastfetch --config none --logo none --pipe --structure-disabled colors
+    } | fpaste 2>/dev/null)
+    echo -e "${bold}System Information:${normal} $system_information"
     echo " "
     # Get logs for this boot
     this_boot_logs=$(journalctl -b | fpaste 2>/dev/null)
@@ -1244,11 +1253,9 @@ get-logs:
     echo " "
     # Concatenate all outputs and copy to clipboard
     {
-      echo "System Information:"
-      rpm-ostree status
-      echo
+      echo "System Information: $system_information"
       echo "Logs This Boot: $this_boot_logs"
       echo
       echo "Logs Last Boot: $last_boot_logs"
     } | wl-copy
-    echo -e "${green}All output has been copied to your clipboard.${normal}"
+    echo -e "${lightgreen}${bold}Logs and system information have been uploaded, and the links have been copied to your clipboard.\nPlease provide them to Bazzite Support for further help.${normal}"
