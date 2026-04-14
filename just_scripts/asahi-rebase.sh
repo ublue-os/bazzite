@@ -86,16 +86,21 @@ DNF4_HOST_STRICT_REPO_ARGS=(
 # --build-proton         : build native Proton aarch64 from source (~2-5 hours).
 #                          Proton is NOT built by default due to the long build
 #                          time. Use this flag to include it.
+# --build-heroic         : build native Heroic Games Launcher for aarch64.
+#                          Heroic is NOT built by default due to the extra build
+#                          time. Use this flag to include it.
 KERNEL_VARIANT="stable"
 EXTERNAL_BUILD_PATH=""
 SKIP_WINE=0
 BUILD_PROTON=0
+BUILD_HEROIC=0
 for arg in "$@"; do
     case "$arg" in
         --fairydust)           KERNEL_VARIANT="fairydust" ;;
         --external-build=*)    EXTERNAL_BUILD_PATH="${arg#--external-build=}" ;;
         --skip-wine)           SKIP_WINE=1 ;;
         --build-proton)        BUILD_PROTON=1 ;;
+        --build-heroic)        BUILD_HEROIC=1 ;;
     esac
 done
 
@@ -117,6 +122,7 @@ BAZZITE_IMAGE="localhost/${IMAGE_NAME}:${IMAGE_TAG}"
 echo "Kernel variant:     ${KERNEL_VARIANT}"
 echo "External build dir: ${EXTERNAL_BUILD_PATH:-<none, using internal /var/lib/containers>}"
 echo "Skip Wine build:    ${SKIP_WINE}"
+echo "Build Heroic:       ${BUILD_HEROIC}"
 echo "Build Proton:       ${BUILD_PROTON}"
 echo "Local image:        ${BAZZITE_IMAGE}"
 
@@ -1126,6 +1132,7 @@ else
         --build-arg KERNEL_VARIANT="${KERNEL_VARIANT}" \
         --build-arg IMAGE_BRANCH="${IMAGE_BRANCH}" \
         --build-arg SKIP_WINE="${SKIP_WINE}" \
+        --build-arg SKIP_HEROIC="$(( BUILD_HEROIC == 1 ? 0 : 1 ))" \
         --build-arg SKIP_PROTON="$(( BUILD_PROTON == 1 ? 0 : 1 ))" \
         --build-arg VERSION_TAG=local \
         --build-arg VERSION_PRETTY="Local Build" \
@@ -1396,34 +1403,127 @@ fi
 unset BAZZITE_PASS_HASH
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Step 7b: Inject external SSD fstab entry for auto-mount in Bazzite
+# Step 7b: Configure external SSD for persistent use after Bazzite boot
 # ──────────────────────────────────────────────────────────────────────────────
-# If --external-build was used, the external SSD (e.g. /dev/sda) will be
-# present but unmounted after Bazzite boots. Inject an fstab entry so it
-# auto-mounts at /var/mnt/games on every boot. The user can then use it
-# for game storage without manual mounting.
+# When --external-build is used the internal partition is typically small.
+# Mount the external SSD permanently and redirect ALL heavy-storage consumers
+# (podman, flatpak, Steam, games) there so the internal disk only holds the
+# atomic OS image and /etc.
 if [[ -n "${EXTERNAL_BUILD_PATH}" ]] && [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
     EXT_DEV=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no SOURCE 2>/dev/null || true)
     EXT_DEV="${EXT_DEV%%[*}"
     EXT_FSTYPE=$(findmnt -T "${EXTERNAL_BUILD_PATH}" -no FSTYPE 2>/dev/null || true)
-    GAMES_FSCK_PASSNO=0
+    EXT_FSCK_PASSNO=0
     EXT_UUID=""
     if [[ -n "${EXT_DEV}" && -b "${EXT_DEV}" ]]; then
         EXT_UUID=$(sudo blkid -s UUID -o value "${EXT_DEV}" 2>/dev/null || true)
     fi
     if [[ "${EXT_FSTYPE}" =~ ^ext[234]$ ]]; then
-        GAMES_FSCK_PASSNO=2
+        EXT_FSCK_PASSNO=2
     fi
     if [[ -n "$EXT_UUID" && -n "$EXT_FSTYPE" ]]; then
-        GAMES_FSTAB="${DEPLOY_DIR}/etc/fstab"
-        sudo sed -i '\|[[:space:]]/var/mnt/games[[:space:]]|d' "${GAMES_FSTAB}"
-        echo "UUID=${EXT_UUID}  /var/mnt/games  ${EXT_FSTYPE}  defaults,nofail,x-systemd.automount  0  ${GAMES_FSCK_PASSNO}" \
-            | sudo tee -a "${GAMES_FSTAB}" > /dev/null
-        echo "Added external SSD (UUID=${EXT_UUID}, fstype=${EXT_FSTYPE}) → /var/mnt/games in deployment fstab."
-        # Create the mount point in the stateroot var (becomes /var/mnt/games after boot)
-        sudo mkdir -p "/ostree/deploy/fedora/var/mnt/games"
+        EXT_MOUNT="/var/mnt/external"
+        EXT_FSTAB="${DEPLOY_DIR}/etc/fstab"
+        STATEROOT_VAR_EXT="/ostree/deploy/fedora/var"
+
+        sudo sed -i "\|[[:space:]]${EXT_MOUNT}[[:space:]]|d" "${EXT_FSTAB}"
+        echo "UUID=${EXT_UUID}  ${EXT_MOUNT}  ${EXT_FSTYPE}  defaults,nofail,x-systemd.automount  0  ${EXT_FSCK_PASSNO}" \
+            | sudo tee -a "${EXT_FSTAB}" > /dev/null
+        echo "Added external SSD (UUID=${EXT_UUID}) → ${EXT_MOUNT} in deployment fstab."
+
+        sudo mkdir -p "${STATEROOT_VAR_EXT}/mnt/external"
+
+        # Pre-create directory structure on the external SSD itself
+        for dir in containers/storage flatpak games steam .local/share/Steam; do
+            sudo mkdir -p "${EXTERNAL_BUILD_PATH}/bazzite/${dir}"
+        done
+        sudo chmod -R 755 "${EXTERNAL_BUILD_PATH}/bazzite"
+
+        # --- Podman root storage ---
+        sudo mkdir -p "${DEPLOY_DIR}/etc/containers"
+        sudo tee "${DEPLOY_DIR}/etc/containers/storage.conf" > /dev/null << PODMANCFG
+[storage]
+driver = "overlay"
+graphRoot = "${EXT_MOUNT}/bazzite/containers/storage"
+runRoot = "/run/containers/storage"
+PODMANCFG
+        echo "Configured podman root storage → ${EXT_MOUNT}/bazzite/containers/storage"
+
+        # --- Flatpak system-wide installation ---
+        sudo mkdir -p "${DEPLOY_DIR}/etc/flatpak"
+        if [[ ! -f "${DEPLOY_DIR}/etc/flatpak/installations.d" ]]; then
+            sudo mkdir -p "${DEPLOY_DIR}/etc/flatpak/installations.d"
+        fi
+        sudo tee "${DEPLOY_DIR}/etc/flatpak/installations.d/external.conf" > /dev/null << FLATPAKCFG
+[Installation "external"]
+Path=${EXT_MOUNT}/bazzite/flatpak
+DisplayName=External SSD
+StorageType=harddisk
+FLATPAKCFG
+        echo "Configured Flatpak external installation → ${EXT_MOUNT}/bazzite/flatpak"
+
+        # --- First-boot setup script to create user-level symlinks ---
+        # This runs once on first login to redirect Steam data and general
+        # game storage to the external SSD under the user's home.
+        sudo mkdir -p "${DEPLOY_DIR}/etc/profile.d"
+        sudo tee "${DEPLOY_DIR}/etc/profile.d/bazzite-external-storage.sh" > /dev/null << 'EXTSH'
+#!/usr/bin/bash
+# Redirect heavy user-level storage to external SSD (runs once per user)
+EXT="/var/mnt/external/bazzite"
+MARKER="${HOME}/.bazzite-external-storage-configured"
+
+if [[ -d "${EXT}" && ! -f "${MARKER}" ]]; then
+    # Steam data directory
+    if [[ ! -e "${HOME}/.local/share/Steam" ]]; then
+        mkdir -p "${HOME}/.local/share"
+        mkdir -p "${EXT}/steam/user-${UID}"
+        ln -sf "${EXT}/steam/user-${UID}" "${HOME}/.local/share/Steam"
+    fi
+
+    # Heroic data directory
+    if [[ ! -e "${HOME}/.config/heroic" ]]; then
+        mkdir -p "${HOME}/.config"
+        mkdir -p "${EXT}/heroic/user-${UID}"
+        ln -sf "${EXT}/heroic/user-${UID}" "${HOME}/.config/heroic"
+    fi
+
+    # Games directory shortcut
+    mkdir -p "${EXT}/games"
+    if [[ ! -e "${HOME}/Games" ]]; then
+        ln -sf "${EXT}/games" "${HOME}/Games"
+    fi
+
+    # User-level podman storage
+    if [[ ! -f "${HOME}/.config/containers/storage.conf" ]]; then
+        mkdir -p "${HOME}/.config/containers"
+        cat > "${HOME}/.config/containers/storage.conf" << USRPOD
+[storage]
+driver = "overlay"
+graphRoot = "${EXT}/containers/user-${UID}"
+runRoot = "/run/user/${UID}/containers"
+USRPOD
+    fi
+
+    touch "${MARKER}"
+fi
+EXTSH
+        echo "Installed first-login external storage redirect script."
+
+        # Backward-compat: also set up /var/mnt/games symlink
+        sudo sed -i '\|[[:space:]]/var/mnt/games[[:space:]]|d' "${EXT_FSTAB}"
+        sudo mkdir -p "${STATEROOT_VAR_EXT}/mnt/games"
+        sudo ln -sf "${EXT_MOUNT}/bazzite/games" "${STATEROOT_VAR_EXT}/mnt/games" 2>/dev/null || true
+
+        echo ""
+        echo "External SSD storage layout (${EXT_MOUNT}/bazzite/):"
+        echo "  containers/storage  — podman root images/containers"
+        echo "  flatpak/            — Flatpak apps (use: flatpak --installation=external install ...)"
+        echo "  steam/              — Steam data (symlinked from ~/.local/share/Steam)"
+        echo "  heroic/             — Heroic data (symlinked from ~/.config/heroic)"
+        echo "  games/              — General game storage (symlinked from ~/Games)"
+        echo "  containers/user-*   — User-level podman storage"
     else
-        echo "Note: could not detect external SSD UUID -- skipping auto-mount setup."
+        echo "Note: could not detect external SSD UUID -- skipping persistent storage setup."
         echo "      After Bazzite boots, run: ujust setup-games-drive /dev/sda"
     fi
 fi

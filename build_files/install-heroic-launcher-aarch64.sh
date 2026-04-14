@@ -12,6 +12,11 @@
 
 set -euo pipefail
 
+if [[ "${SKIP_HEROIC:-1}" == "1" ]]; then
+    echo "Skipping Heroic Games Launcher build (SKIP_HEROIC=1, use --build-heroic to enable)."
+    exit 0
+fi
+
 if [[ "$(uname -m)" != "aarch64" ]]; then
     echo "Heroic launcher build is only supported on aarch64 builders" >&2
     exit 1
