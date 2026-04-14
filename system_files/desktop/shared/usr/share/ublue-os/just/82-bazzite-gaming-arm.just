@@ -93,10 +93,22 @@ install-proton-aarch64:
         echo "This command is only relevant on aarch64 (Apple Silicon) systems."
         exit 1
     fi
+    if ! command -v podman >/dev/null 2>&1 && ! command -v docker >/dev/null 2>&1; then
+        echo "ERROR: Proton build requires podman or docker."
+        echo "Install with: sudo dnf install -y podman"
+        exit 1
+    fi
+    CONTAINER_ENGINE=""
+    if command -v podman >/dev/null 2>&1; then
+        CONTAINER_ENGINE="podman"
+    elif command -v docker >/dev/null 2>&1; then
+        CONTAINER_ENGINE="docker"
+    fi
     echo "=== Build Native Proton for aarch64 ==="
     echo ""
     echo "This builds Valve's Proton compatibility layer from source, targeting"
     echo "arm64 natively. The build takes 2-5 hours depending on your hardware."
+    echo "Requires: ${CONTAINER_ENGINE} (Proton builds inside a container)"
     echo ""
     echo "Proton will be installed to:"
     echo "  ~/.steam/root/compatibilitytools.d/proton-bazzite-aarch64/"
@@ -106,22 +118,26 @@ install-proton-aarch64:
         echo "Aborted."
         exit 0
     fi
+    echo "Installing build dependencies..."
+    sudo dnf -y install git make gcc gcc-c++ ccache python3 autoconf automake \
+        bison flex lld clang patch perl 2>&1 | tail -3
     PROTON_BRANCH="${PROTON_BRANCH:-experimental_10.0}"
     PROTON_BUILD_NAME="proton-bazzite-aarch64"
     BUILD_DIR="/tmp/proton-build-$$"
     mkdir -p "${BUILD_DIR}"
-    echo "Cloning Proton ${PROTON_BRANCH}..."
+    echo "Cloning Proton ${PROTON_BRANCH} (with submodules)..."
     git clone --depth 1 --branch "${PROTON_BRANCH}" \
         https://github.com/ValveSoftware/Proton.git "${BUILD_DIR}/proton"
     cd "${BUILD_DIR}/proton"
     git submodule update --init --recursive --depth 1 --jobs "$(nproc)"
     echo "Configuring..."
     mkdir -p "${BUILD_DIR}/build"
-    ./configure.sh \
+    cd "${BUILD_DIR}/build"
+    "${BUILD_DIR}/proton/configure.sh" \
         --build-name="${PROTON_BUILD_NAME}" \
         --target-arch=arm64 \
-        --enable-ccache
-    cd "${BUILD_DIR}/build"
+        --enable-ccache \
+        --container-engine="${CONTAINER_ENGINE}"
     echo "Building (this will take a while)..."
     make -j"$(nproc)"
     echo "Installing..."
