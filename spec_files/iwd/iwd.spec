@@ -1,12 +1,11 @@
 Name:           iwd
-%global baseversion 3.10
+%global baseversion 3.12
 Version:        1000.%{baseversion}
 Release:        %autorelease.bazzite
 Summary:        Wireless daemon for Linux
 License:        LGPL-2.1-or-later
 URL:            https://iwd.wiki.kernel.org/
 Source0:        https://www.kernel.org/pub/linux/network/wireless/%{name}-%{baseversion}.tar.xz
-
 Patch1:         0002-fix-scan-segfault.patch
 
 BuildRequires:  asciidoc
