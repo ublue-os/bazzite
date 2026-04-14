@@ -314,6 +314,39 @@ prepare_graphical_boot_in_deployment() {
         "${systemd_root}/display-manager.service"
 }
 
+list_stateroot_deployments() {
+    find /ostree/deploy/fedora/deploy \
+        -mindepth 1 -maxdepth 1 -type d \
+        -printf '%f\n' 2>/dev/null | sort
+}
+
+resolve_deployment_dir_for_revision() {
+    local revision="$1"
+
+    find /ostree/deploy/fedora/deploy \
+        -mindepth 1 -maxdepth 1 -type d \
+        -name "${revision}.*" \
+        -printf '%p\n' 2>/dev/null | sort -V | tail -1
+}
+
+resolve_new_deployment_dir_from_snapshot() {
+    local before_snapshot="$1"
+    local after_snapshot
+    local new_basename=""
+
+    after_snapshot="$(list_stateroot_deployments)"
+    new_basename="$(
+        comm -13 \
+            <(printf '%s\n' "${before_snapshot}" | sed '/^$/d' | sort) \
+            <(printf '%s\n' "${after_snapshot}" | sed '/^$/d' | sort) \
+            | tail -1
+    )"
+
+    if [[ -n "${new_basename}" ]]; then
+        printf '/ostree/deploy/fedora/deploy/%s\n' "${new_basename}"
+    fi
+}
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Banner
 # ──────────────────────────────────────────────────────────────────────────────
@@ -672,6 +705,9 @@ cleanup_stale_first_boot_artifacts() {
         "${root_prefix}/usr/bin/bazzite-rebase-status" \
         "${root_prefix}/usr/local/bin/bazzite-rebase-status" \
         "${root_prefix}/var/usrlocal/bin/bazzite-rebase-status" \
+        "${root_prefix}/usr/bin/bazzite-rebase-finalize-staged" \
+        "${root_prefix}/usr/local/bin/bazzite-rebase-finalize-staged" \
+        "${root_prefix}/var/usrlocal/bin/bazzite-rebase-finalize-staged" \
         "${root_prefix}/usr/bin/bazzite-rebase-select-next-boot" \
         "${root_prefix}/usr/local/bin/bazzite-rebase-select-next-boot" \
         "${root_prefix}/var/usrlocal/bin/bazzite-rebase-select-next-boot" 2>/dev/null || true
@@ -679,6 +715,7 @@ cleanup_stale_first_boot_artifacts() {
     if [[ -n "${stateroot_var}" ]]; then
         sudo rm -f \
             "${stateroot_var}/usrlocal/bin/bazzite-rebase-status" \
+            "${stateroot_var}/usrlocal/bin/bazzite-rebase-finalize-staged" \
             "${stateroot_var}/usrlocal/bin/bazzite-rebase-select-next-boot" \
             "${stateroot_var}/lib/bazzite-rebase-queued" \
             "${stateroot_var}/lib/bazzite-rebase-done" \
@@ -1188,6 +1225,8 @@ echo "Deploying ref: ${REF}"
 
 TARGET_REV=$(sudo ostree rev-parse --repo=/ostree/repo "${REF}")
 EXISTING_KARGS=$(cat /proc/cmdline)
+DEPLOY_DIR=""
+PRE_DEPLOYMENT_SNAPSHOT="$(list_stateroot_deployments)"
 
 # Preserve rootflags (needed for btrfs subvol on Asahi)
 ROOTFLAGS_KARG=()
@@ -1204,6 +1243,7 @@ fi
 
 if [[ "${_skip_deploy}" -eq 1 ]]; then
     echo "Revision already deployed; skipping (set OSTREE_FORCE_DEPLOY=1 to force)."
+    DEPLOY_DIR="$(resolve_deployment_dir_for_revision "${TARGET_REV}")"
 else
     DEPLOY_LOG="/var/tmp/${IMAGE_NAME}-${IMAGE_TAG}-atomic-deploy.log"
     run_logged_step \
@@ -1217,6 +1257,10 @@ else
             --karg="rhgb" \
             --karg="quiet" \
             "${ROOTFLAGS_KARG[@]}"
+    DEPLOY_DIR="$(resolve_new_deployment_dir_from_snapshot "${PRE_DEPLOYMENT_SNAPSHOT}")"
+    if [[ -z "${DEPLOY_DIR}" || ! -d "${DEPLOY_DIR}" ]]; then
+        DEPLOY_DIR="$(resolve_deployment_dir_for_revision "${TARGET_REV}")"
+    fi
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -1225,12 +1269,8 @@ fi
 echo ""
 echo "--- Step 7: Inject user account into new deployment ---"
 
-DEPLOY_DIR=$(sudo ostree admin --sysroot=/ --print-current-dir 2>/dev/null || true)
 if [[ -z "$DEPLOY_DIR" || ! -d "$DEPLOY_DIR" ]]; then
-    DEPLOY_DIR=$(find /ostree/deploy/fedora/deploy \
-        -maxdepth 1 -type d -not -name deploy \
-        -printf '%T@ %p\n' 2>/dev/null \
-        | sort -rn | head -1 | cut -d' ' -f2)
+    DEPLOY_DIR="$(resolve_deployment_dir_for_revision "${TARGET_REV}")"
 fi
 
 if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
@@ -1416,7 +1456,7 @@ elif [[ -f /var/lib/bazzite-rebase-queued ]]; then
     else
         echo "  Status: QUEUED -- Bazzite deployment is staged"
         echo "  Check:   rpm-ostree status"
-        echo "  Action:  sudo grub2-reboot 0 && sudo systemctl reboot"
+        echo "  Action:  sudo /var/usrlocal/bin/bazzite-rebase-select-next-boot && sudo systemctl reboot"
     fi
 elif [[ -f /var/lib/bazzite-rebase-failed ]]; then
     echo "  Status: FAILED -- inspect the log below"
@@ -1437,35 +1477,117 @@ else
 STATUS_EOF
     sudo chmod +x "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-status"
 
+    sudo tee "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-finalize-staged" > /dev/null << 'FINALIZE_EOF'
+#!/usr/bin/bash
+set -euo pipefail
+
+echo "Verifying boot partitions before staged deployment finalization..."
+for mount_point in /boot /boot/efi; do
+    if findmnt -T "${mount_point}" >/dev/null 2>&1; then
+        echo "${mount_point} is mounted:"
+        findmnt -T "${mount_point}" -no SOURCE,FSTYPE,OPTIONS
+    else
+        echo "${mount_point} is not mounted; attempting to mount it now."
+        mount "${mount_point}"
+        findmnt -T "${mount_point}" -no SOURCE,FSTYPE,OPTIONS
+    fi
+done
+
+bls_dir=/boot/loader/entries
+if [[ -d "${bls_dir}" ]]; then
+    echo "BLS entries before finalization: $(find "${bls_dir}" -maxdepth 1 -name '*.conf' | wc -l)"
+fi
+
+if systemctl list-unit-files ostree-finalize-staged.service >/dev/null 2>&1; then
+    echo "Running ostree-finalize-staged.service explicitly..."
+    systemctl start ostree-finalize-staged.service
+    systemctl --no-pager --full status ostree-finalize-staged.service
+else
+    echo "WARNING: ostree-finalize-staged.service is not available."
+fi
+
+if [[ -d "${bls_dir}" ]]; then
+    echo "BLS entries after finalization: $(find "${bls_dir}" -maxdepth 1 -name '*.conf' | wc -l)"
+    ls -1 "${bls_dir}"/*.conf 2>/dev/null || true
+fi
+FINALIZE_EOF
+    sudo chmod +x "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-finalize-staged"
+
     sudo tee "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-select-next-boot" > /dev/null << 'BOOTSEL_EOF'
 #!/usr/bin/bash
-set -uo pipefail
+set -euo pipefail
 
-echo "Selecting the newest GRUB entry for the next boot..."
-
-if command -v grub2-reboot >/dev/null 2>&1; then
-    if grub2-reboot 0; then
-        echo "Applied one-shot GRUB next_entry=0."
-    else
-        echo "WARNING: grub2-reboot 0 failed."
+for required_cmd in jq rpm-ostree grub2-reboot grub2-set-default grub2-editenv; do
+    if ! command -v "${required_cmd}" >/dev/null 2>&1; then
+        echo "ERROR: required command '${required_cmd}' is not available." >&2
+        exit 1
     fi
-else
-    echo "WARNING: grub2-reboot is not available."
+done
+
+status_json="$(mktemp)"
+trap 'rm -f "${status_json}"' EXIT
+
+if ! rpm-ostree status --json > "${status_json}"; then
+    echo "ERROR: rpm-ostree status --json failed; cannot resolve the staged deployment." >&2
+    exit 1
 fi
 
-if command -v grub2-set-default >/dev/null 2>&1; then
-    if grub2-set-default 0; then
-        echo "Applied persistent GRUB default=0."
-    else
-        echo "WARNING: grub2-set-default 0 failed."
-    fi
-else
-    echo "WARNING: grub2-set-default is not available."
+default_id="$(jq -r '.deployments[0].id // empty' "${status_json}")"
+default_booted="$(jq -r '.deployments[0].booted // false' "${status_json}")"
+booted_id="$(jq -r '.deployments[] | select(.booted == true) | .id' "${status_json}" | head -1)"
+
+if [[ -z "${default_id}" ]]; then
+    echo "ERROR: rpm-ostree did not report a default deployment." >&2
+    cat "${status_json}" >&2
+    exit 1
 fi
 
-if command -v grub2-editenv >/dev/null 2>&1; then
-    echo "Current grubenv:"
-    grub2-editenv list || echo "WARNING: grub2-editenv list failed."
+if [[ "${default_booted}" == "true" ]]; then
+    echo "ERROR: the booted deployment is still the default deployment after rebase." >&2
+    cat "${status_json}" >&2
+    exit 1
+fi
+
+selected_target="ostree-${default_id}"
+bls_path="/boot/loader/entries/${selected_target}.conf"
+if [[ ! -f "${bls_path}" ]]; then
+    fallback_bls_path="/boot/loader/entries/${default_id}.conf"
+    if [[ -f "${fallback_bls_path}" ]]; then
+        selected_target="${default_id}"
+        bls_path="${fallback_bls_path}"
+    else
+        echo "ERROR: expected BLS entry ${bls_path} was not found." >&2
+        ls -1 /boot/loader/entries/*.conf 2>/dev/null >&2 || true
+        exit 1
+    fi
+fi
+
+echo "Booted deployment id: ${booted_id:-<unknown>}"
+echo "Default next deployment id: ${default_id}"
+echo "Selected BLS entry for next boot: ${selected_target}"
+echo "Using BLS fragment: ${bls_path}"
+
+if command -v ostree >/dev/null 2>&1; then
+    ostree admin set-default 0
+fi
+
+if [[ ! -f /boot/grub2/grubenv ]]; then
+    grub2-editenv /boot/grub2/grubenv create
+fi
+
+grub2-reboot "${selected_target}"
+echo "Applied one-shot GRUB next_entry=${selected_target}."
+
+grub2-set-default "${selected_target}"
+echo "Applied persistent GRUB default=${selected_target}."
+
+echo "Current grubenv:"
+grubenv_dump="$(grub2-editenv list)"
+printf '%s\n' "${grubenv_dump}"
+
+if ! printf '%s\n' "${grubenv_dump}" | grep -qx "saved_entry=${selected_target}"; then
+    echo "ERROR: grubenv did not record saved_entry=${selected_target}." >&2
+    exit 1
 fi
 BOOTSEL_EOF
     sudo chmod +x "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-select-next-boot"
@@ -1489,7 +1611,7 @@ Wants=local-fs.target
 [Service]
 Type=oneshot
 ExecStartPre=/usr/bin/sleep 20
-ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /var/lib/bazzite-rebase-failed; : > /var/log/bazzite-first-boot-rebase.log; rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; rpm-ostree status 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; /var/usrlocal/bin/bazzite-rebase-select-next-boot 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log || true; touch /var/lib/bazzite-rebase-queued'
+ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /var/lib/bazzite-rebase-failed; : > /var/log/bazzite-first-boot-rebase.log; rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; rpm-ostree status --json 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; rpm-ostree status 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; /var/usrlocal/bin/bazzite-rebase-finalize-staged 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; /var/usrlocal/bin/bazzite-rebase-select-next-boot 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; touch /var/lib/bazzite-rebase-queued'
 ExecStartPost=/usr/bin/bash -euxo pipefail -c 'sleep 5; systemctl --no-block --job-mode=replace-irreversibly reboot'
 ExecStopPost=/usr/bin/bash -c 'if [[ ! -f /var/lib/bazzite-rebase-queued ]]; then touch /var/lib/bazzite-rebase-failed; fi'
 TimeoutStartSec=0
@@ -1510,7 +1632,7 @@ After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -euxo pipefail -c 'touch /var/lib/bazzite-rebase-done; rm -rf /var/lib/bazzite-install; rm -f /etc/profile.d/bazzite-rebase.sh /etc/motd /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.timer /etc/systemd/system/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status /var/usrlocal/bin/bazzite-rebase-select-next-boot /usr/local/bin/bazzite-rebase-select-next-boot /usr/bin/bazzite-rebase-select-next-boot /var/lib/bazzite-rebase-failed /var/lib/bazzite-rebase-queued || true'
+ExecStart=/usr/bin/bash -euxo pipefail -c 'touch /var/lib/bazzite-rebase-done; rm -rf /var/lib/bazzite-install; rm -f /etc/profile.d/bazzite-rebase.sh /etc/motd /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.timer /etc/systemd/system/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status /var/usrlocal/bin/bazzite-rebase-finalize-staged /usr/local/bin/bazzite-rebase-finalize-staged /usr/bin/bazzite-rebase-finalize-staged /var/usrlocal/bin/bazzite-rebase-select-next-boot /usr/local/bin/bazzite-rebase-select-next-boot /usr/bin/bazzite-rebase-select-next-boot /var/lib/bazzite-rebase-failed /var/lib/bazzite-rebase-queued || true'
 
 [Install]
 WantedBy=multi-user.target
@@ -1558,10 +1680,45 @@ echo ""
 echo "--- Step 9: Update GRUB ---"
 sudo cp /boot/grub2/grub.cfg /boot/grub2/grub.cfg.backup
 GRUB_LOG="/var/tmp/${IMAGE_NAME}-${IMAGE_TAG}-grub-mkconfig.log"
-run_logged_step \
-    "Updating GRUB configuration" \
-    "${GRUB_LOG}" \
-    sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+sudo mkdir -p /etc/default
+sudo touch /etc/default/grub
+if grep -q '^GRUB_DEFAULT=' /etc/default/grub 2>/dev/null; then
+    sudo sed -i 's/^GRUB_DEFAULT=.*/GRUB_DEFAULT=saved/' /etc/default/grub
+else
+    echo 'GRUB_DEFAULT=saved' | sudo tee -a /etc/default/grub > /dev/null
+fi
+if grep -q '^GRUB_ENABLE_BLSCFG=' /etc/default/grub 2>/dev/null; then
+    sudo sed -i 's/^GRUB_ENABLE_BLSCFG=.*/GRUB_ENABLE_BLSCFG=true/' /etc/default/grub
+else
+    echo 'GRUB_ENABLE_BLSCFG=true' | sudo tee -a /etc/default/grub > /dev/null
+fi
+sudo grub2-editenv /boot/grub2/grubenv create >/dev/null 2>&1 || true
+
+if [[ -d /sys/firmware/efi ]] && command -v grub2-switch-to-blscfg >/dev/null 2>&1; then
+    echo "Ensuring GRUB uses BLS on the EFI path..."
+    sudo sed -i 's/^EFIDIR=.*/EFIDIR="fedora"/' "$(command -v grub2-switch-to-blscfg)" || true
+    sudo grub2-switch-to-blscfg 2>&1 | tee -a "${GRUB_LOG}" >/dev/null || true
+fi
+
+GRUB_TARGETS=()
+if [[ -d /sys/firmware/efi ]]; then
+    GRUB_TARGETS+=(/etc/grub2-efi.cfg)
+else
+    GRUB_TARGETS+=(/etc/grub2.cfg)
+fi
+GRUB_TARGETS+=(/boot/grub2/grub.cfg)
+
+for grub_target in "${GRUB_TARGETS[@]}"; do
+    run_logged_step \
+        "Updating GRUB configuration (${grub_target})" \
+        "${GRUB_LOG}" \
+        sudo grub2-mkconfig -o "${grub_target}"
+done
+if ! sudo grep -Eq 'saved_entry|next_entry' /boot/grub2/grub.cfg; then
+    echo "ERROR: /boot/grub2/grub.cfg does not honor saved/next GRUB entries."
+    echo "GRUB selection would be ignored on reboot, so stopping here."
+    exit 1
+fi
 echo "GRUB updated."
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -1573,7 +1730,7 @@ echo "  Conversion complete!"
 echo ""
 echo "  On reboot:"
 echo "    1. You will boot into Fedora Asahi Atomic"
-echo "    2. The first-boot timer starts the local rebase automatically"
+echo "    2. The first-boot service starts the local rebase automatically"
 echo "       about 20 seconds after the atomic boot"
 echo "    3. It automatically rebases to Bazzite ARM"
 echo "    4. System reboots again into full Bazzite"
