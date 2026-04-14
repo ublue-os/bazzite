@@ -1147,7 +1147,7 @@ else
     echo "OSTree repo already initialized; skipping."
 fi
 ensure_ostree_repo_bare_mode
-sudo ostree config --repo=/ostree/repo set sysroot.bootloader grub2
+sudo ostree config --repo=/ostree/repo set sysroot.bootloader none
 sudo ostree config --repo=/ostree/repo set sysroot.readonly true
 
 ensure_boot_loader_symlink
