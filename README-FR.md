@@ -74,10 +74,10 @@ Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/m
 
 La variante courante est disponible sous le nom `bazzite`, adaptée aux ordinateurs de bureau.
 
-- Mises à jour automatiques pour le système d'exploitation, les Flatpaks et plus - propulsées par [ublue-update](https://github.com/ublue-os/ublue-update) et [topgrade](https://github.com/topgrade-rs/topgrade).
+- Mises à jour automatiques pour le système d'exploitation, les Flatpaks et plus - propulsées par [uupd](https://github.com/ublue-os/uupd) et [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
-> **Les ISOs peuvent être téléchargées depuis notre [page de versions](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile peut être trouvé [ici](https://universal-blue.discourse.group/docs?topic=30).**
+> **Les ISOs peuvent être téléchargées depuis notre [site web](https://download.bazzite.gg), et un guide d'installation utile peut être trouvé [ici](https://docs.bazzite.gg/General/Installation_Guide/).**
 
 Rebase d'un Fedora Atomic existant vers cette image pour les **pilotes GPU Open Source** :
 (Remarque : l'option Open Source de Mesa pour les GPU NVIDIA, NVK, est encore sujette à des erreurs au moment de la rédaction. Pour tout problème lié à NVK, [merci de soumettre un rapport à Mesa]([url](https://docs.mesa3d.org/bugs.html)), pas à Ublue/Bazzite)
