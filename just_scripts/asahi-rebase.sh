@@ -1,6 +1,15 @@
 #!/usr/bin/bash
 set -euo pipefail
 
+_on_error() {
+    local rc=$?
+    echo "" >&2
+    echo "ERROR: script failed at line ${BASH_LINENO[0]} (exit code ${rc})." >&2
+    echo "Command: ${BASH_COMMAND}" >&2
+    echo "" >&2
+}
+trap _on_error ERR
+
 # ostree/skopeo image imports can fail on non-UTF-8 locales when layer tarballs
 # contain filenames outside pure ASCII. Force a UTF-8 locale for the conversion
 # workflow so behavior is deterministic across fresh Fedora installs and
@@ -317,7 +326,7 @@ prepare_graphical_boot_in_deployment() {
 list_stateroot_deployments() {
     find /ostree/deploy/fedora/deploy \
         -mindepth 1 -maxdepth 1 -type d \
-        -printf '%f\n' 2>/dev/null | sort
+        -printf '%f\n' 2>/dev/null | sort || true
 }
 
 resolve_deployment_dir_for_revision() {
@@ -326,7 +335,7 @@ resolve_deployment_dir_for_revision() {
     find /ostree/deploy/fedora/deploy \
         -mindepth 1 -maxdepth 1 -type d \
         -name "${revision}.*" \
-        -printf '%p\n' 2>/dev/null | sort -V | tail -1
+        -printf '%p\n' 2>/dev/null | sort -V | tail -1 || true
 }
 
 resolve_new_deployment_dir_from_snapshot() {
@@ -334,13 +343,13 @@ resolve_new_deployment_dir_from_snapshot() {
     local after_snapshot
     local new_basename=""
 
-    after_snapshot="$(list_stateroot_deployments)"
+    after_snapshot="$(list_stateroot_deployments)" || true
     new_basename="$(
         comm -13 \
             <(printf '%s\n' "${before_snapshot}" | sed '/^$/d' | sort) \
             <(printf '%s\n' "${after_snapshot}" | sed '/^$/d' | sort) \
             | tail -1
-    )"
+    )" || true
 
     if [[ -n "${new_basename}" ]]; then
         printf '/ostree/deploy/fedora/deploy/%s\n' "${new_basename}"
@@ -1156,12 +1165,18 @@ fi
 echo ""
 echo "--- Step 4: Pull Fedora Asahi Atomic base image ---"
 PULL_LOG="/var/tmp/${IMAGE_NAME}-${IMAGE_TAG}-atomic-pull.log"
-run_logged_retry_step \
+if ! run_logged_retry_step \
     "Pulling ${ATOMIC_BASE} (may take a few minutes)" \
     "${PULL_LOG}" \
     3 \
     sudo ostree container image pull /ostree/repo \
-        "ostree-unverified-registry:${ATOMIC_BASE}"
+        "ostree-unverified-registry:${ATOMIC_BASE}"; then
+    echo ""
+    echo "ERROR: Failed to pull ${ATOMIC_BASE} after 3 attempts."
+    echo "Full pull log: ${PULL_LOG}"
+    print_log_tail "${PULL_LOG}"
+    exit 1
+fi
 echo "Pull complete."
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -1169,7 +1184,10 @@ echo "Pull complete."
 # ──────────────────────────────────────────────────────────────────────────────
 echo ""
 echo "--- Step 5: Detect root partition UUID ---"
-ROOT_UUID=$(grep -oP 'root=UUID=\K[^\s]+' /proc/cmdline || true)
+ROOT_UUID=$(grep -oP 'root=UUID=\K[^\s]+' /proc/cmdline 2>/dev/null || true)
+if [[ -z "$ROOT_UUID" ]]; then
+    ROOT_UUID=$(sed -n 's/.*root=UUID=\([^ ]*\).*/\1/p' /proc/cmdline 2>/dev/null || true)
+fi
 if [[ -z "$ROOT_UUID" ]]; then
     ROOT_UUID=$(findmnt -no UUID / 2>/dev/null || true)
 fi
@@ -1236,17 +1254,19 @@ if [[ "$EXISTING_KARGS" =~ rootflags=([^[:space:]]+) ]]; then
 fi
 
 _skip_deploy=0
-if [[ -z "${OSTREE_FORCE_DEPLOY:-}" ]] && \
-   sudo ostree admin status --sysroot=/ 2>/dev/null | grep -qF "${TARGET_REV:0:16}"; then
-    _skip_deploy=1
+if [[ -z "${OSTREE_FORCE_DEPLOY:-}" ]]; then
+    _ostree_status="$(sudo ostree admin status --sysroot=/ 2>/dev/null || true)"
+    if printf '%s\n' "${_ostree_status}" | grep -qF "${TARGET_REV:0:16}"; then
+        _skip_deploy=1
+    fi
 fi
 
 if [[ "${_skip_deploy}" -eq 1 ]]; then
     echo "Revision already deployed; skipping (set OSTREE_FORCE_DEPLOY=1 to force)."
-    DEPLOY_DIR="$(resolve_deployment_dir_for_revision "${TARGET_REV}")"
+    DEPLOY_DIR="$(resolve_deployment_dir_for_revision "${TARGET_REV}")" || true
 else
     DEPLOY_LOG="/var/tmp/${IMAGE_NAME}-${IMAGE_TAG}-atomic-deploy.log"
-    run_logged_step \
+    if ! run_logged_step \
         "Deploying atomic base image" \
         "${DEPLOY_LOG}" \
         sudo ostree admin deploy "${REF}" \
@@ -1256,11 +1276,27 @@ else
             --karg="ro" \
             --karg="rhgb" \
             --karg="quiet" \
-            "${ROOTFLAGS_KARG[@]}"
-    DEPLOY_DIR="$(resolve_new_deployment_dir_from_snapshot "${PRE_DEPLOYMENT_SNAPSHOT}")"
-    if [[ -z "${DEPLOY_DIR}" || ! -d "${DEPLOY_DIR}" ]]; then
-        DEPLOY_DIR="$(resolve_deployment_dir_for_revision "${TARGET_REV}")"
+            "${ROOTFLAGS_KARG[@]}"; then
+        echo ""
+        echo "ERROR: ostree admin deploy failed."
+        echo "Full deploy log: ${DEPLOY_LOG}"
+        print_log_tail "${DEPLOY_LOG}"
+        exit 1
     fi
+    echo "Deploy command completed. Resolving deployment directory..."
+    DEPLOY_DIR="$(resolve_new_deployment_dir_from_snapshot "${PRE_DEPLOYMENT_SNAPSHOT}")" || true
+    echo "Snapshot-based resolution: DEPLOY_DIR='${DEPLOY_DIR:-<empty>}'"
+    if [[ -z "${DEPLOY_DIR}" || ! -d "${DEPLOY_DIR}" ]]; then
+        echo "Snapshot resolution returned empty/nonexistent; trying revision-based resolution..."
+        DEPLOY_DIR="$(resolve_deployment_dir_for_revision "${TARGET_REV}")" || true
+        echo "Revision-based resolution: DEPLOY_DIR='${DEPLOY_DIR:-<empty>}'"
+    fi
+fi
+
+if [[ -z "${DEPLOY_DIR}" || ! -d "${DEPLOY_DIR}" ]]; then
+    echo "Listing all deployment directories for diagnosis:"
+    find /ostree/deploy/fedora/deploy -maxdepth 2 -type d 2>/dev/null || true
+    echo "TARGET_REV=${TARGET_REV}"
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -1270,7 +1306,7 @@ echo ""
 echo "--- Step 7: Inject user account into new deployment ---"
 
 if [[ -z "$DEPLOY_DIR" || ! -d "$DEPLOY_DIR" ]]; then
-    DEPLOY_DIR="$(resolve_deployment_dir_for_revision "${TARGET_REV}")"
+    DEPLOY_DIR="$(resolve_deployment_dir_for_revision "${TARGET_REV}")" || true
 fi
 
 if [[ -n "$DEPLOY_DIR" && -d "$DEPLOY_DIR" ]]; then
@@ -1473,7 +1509,7 @@ elif [[ -d /var/lib/bazzite-install ]]; then
     echo "  Watch:  journalctl -f -u bazzite-first-boot-rebase"
 else
     echo "  Status: N/A -- no rebase data found"
-    fi
+fi
 STATUS_EOF
     sudo chmod +x "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-status"
 
@@ -1709,10 +1745,12 @@ fi
 GRUB_TARGETS+=(/boot/grub2/grub.cfg)
 
 for grub_target in "${GRUB_TARGETS[@]}"; do
-    run_logged_step \
+    if ! run_logged_step \
         "Updating GRUB configuration (${grub_target})" \
         "${GRUB_LOG}" \
-        sudo grub2-mkconfig -o "${grub_target}"
+        sudo grub2-mkconfig -o "${grub_target}"; then
+        echo "WARNING: grub2-mkconfig for ${grub_target} had errors (see ${GRUB_LOG})."
+    fi
 done
 if ! sudo grep -Eq 'saved_entry|next_entry' /boot/grub2/grub.cfg; then
     echo "ERROR: /boot/grub2/grub.cfg does not honor saved/next GRUB entries."
