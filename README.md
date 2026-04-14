@@ -44,7 +44,7 @@
 
 Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) using [Fedora](https://fedoraproject.org/) technology, which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features:
 
-- Uses the [bazzite kernel](https://github.com/bazzite-org/kernel-bazzite) to achieve HDR and expanded hardware support, among numerous other included patches - based off of the [fsync kernel](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
+- Uses the [bazzite kernel](https://github.com/bazzite-org/kernel-bazzite) to achieve HDR and expanded hardware support, among numerous other included patches.
 - HDR available in Game mode.
 - NVK available on non-Nvidia builds.
 - Full hardware accelerated codec support for H264 decoding.
