@@ -39,11 +39,11 @@
 
 [Veuillez consulter notre site web](https://bazzite.gg/) pour une explication conviviale de Bazzite destinée aux nouveaux utilisateurs. Ce fichier readme couvrira tout en détail.
 
-[Bazzite](https://bazzite.gg/) est une image OCI qui sert de système d'exploitation alternatif pour le [Steam Deck](https://www.steamdeck.com/), et est un SteamOS-like prêt à l'emploi pour les ordinateurs de bureau et les PC Home Theater.
+[Bazzite](https://bazzite.gg/) est une image [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) personnalisée construite avec la technologie [cloud native](https://universal-blue.org/#cloud-native) qui apporte le meilleur du gaming Linux sur **tous vos appareils - y compris votre console portable préférée**.
 
-Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/main) et [ublue-os/nvidia](https://github.com/ublue-os/nvidia) en utilisant la technologie de [Fedora](https://fedoraproject.org/), ce qui signifie que le support matériel étendu et les pilotes intégrés sont inclus. De plus, Bazzite ajoute les fonctionnalités suivantes :
+Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/main) en utilisant la technologie de [Fedora](https://fedoraproject.org/), ce qui signifie que le support matériel et les pilotes intégrés sont inclus. De plus, Bazzite ajoute les fonctionnalités suivantes :
 
-- Utilise le [noyau fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) pour obtenir la prise en charge HDR et un support matériel étendu, ainsi que de nombreux autres correctifs.
+- Utilise le [noyau bazzite](https://github.com/bazzite-org/kernel-bazzite) pour obtenir la prise en charge HDR et un support matériel étendu, ainsi que de nombreux autres correctifs.
 - HDR disponible en mode jeu.
 - NVK disponible sur les builds non-Nvidia.
 - Support complet des codecs matériel pour le décodage H264.
@@ -51,28 +51,23 @@ Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/m
 - Pilote [xone](https://github.com/medusalix/xone) pour les contrôleurs Xbox.
 - Support complet pour [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Comprend le thème KDE de Valve issus de SteamOS.
-- Thèmes optionnels GTK3/4 inspirés de celui de Valve, correspondant à Vapor et VGUI2 de SteamOS. Installez [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience) pour les utiliser.
-- [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), et [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installés et disponibles par défaut.
-- [Switcheroo-Control patché](https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/) pour corriger le basculement iGPU/dGPU cassé par défaut.
+- [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), et [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installés et disponibles par défaut.
 - [Extension de shell ROM Properties Page](https://github.com/GerbilSoft/rom-properties) incluse par défaut.
 - Support complet pour [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - [Distrobox](https://github.com/89luca89/distrobox) préinstallé.
-- [Ptyxis Terminal](https://gitlab.gnome.org/chergert/ptyxis) est utilisé par défaut dans toutes les images. Ce terminal est spécialement conçu pour le workflow des conteneurs dans Bazzite. Pour revenir au terminal d'origine, exécutez `ujust _restore-original-terminal`.
+- Installation simplifiée de DaVinci Resolve avec [davincibox](https://github.com/zelikos/davincibox) (`ujust install-resolve`)
 - Service automatisé `duperemove` pour réduire l'espace disque utilisé par les contenus du préfixe wine.
 - Support pour HDMI CEC via [libCEC](https://libcec.pulse-eight.com/).
-- [System76-Scheduler](https://github.com/pop-os/system76-scheduler) préinstallé, fournissant des ajustements automatiques de priorité des processus pour l'application focalisée, gardant le temps CPU pour les processus en arrière-plan au minimum.
-- Configuration personnalisée de System76-Scheduler avec des règles supplémentaires.
 - Utilise par défaut [BBR TCP congestion control de Google](https://github.com/google/bbr).
-- [Input Remapper](https://github.com/sezanzeb/input-remapper) préinstallé et activé par défaut. <sub><sup>(Disponible mais désactivé par défaut sur la variante SteamDeck, peut être activé avec `ujust _restore-input-remapper`)</sup></sub>
-- Bazzite Portal offrant un moyen facile d'installer de nombreuses applications et ajustements, y compris l'installation de [LACT](https://github.com/ilya-zlobintsev/LACT) et [GreenWithEnvy](https://gitlab.com/leinardi/gwe).
-- [Waydroid](https://waydro.id/) est préinstallé pour exécuter des applications Android. Configurable avec ce [guide rapide](https://universal-blue.discourse.group/docs?topic=32).
+- [Input Remapper](https://github.com/sezanzeb/input-remapper) préinstallé et activé par défaut. <sub><sup>(Disponible mais désactivé par défaut sur la variante SteamDeck, peut être activé avec `ujust restore-input-remapper`)</sup></sub>
+- [Bazzite Portal](https://github.com/ublue-os/yafti-gtk) offre un moyen facile d'installer de nombreuses applications et ajustements, y compris l'installation de [LACT](https://github.com/ilya-zlobintsev/LACT) et des IDEs via Brew. Il fournit également des boutons pratiques pour mettre à jour, rebaser et même réinitialiser l'image système aux paramètres par défaut.
+- [Waydroid](https://waydro.id/) est préinstallé pour exécuter des applications Android. Configurable avec ce [guide rapide](https://docs.bazzite.gg/Installing_and_Managing_Software/Waydroid_Setup_Guide/).
 - Gère les applications avec [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), et [Gear Lever](https://github.com/mijorus/gearlever).
 - [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) pilotes i2c-piix4 et i2c-nct6775 pour contrôler le RGB sur certaines cartes mères.
 - Pilotes [OpenRazer](https://openrazer.github.io) intégrés, sélectionnez OpenRazer dans Bazzite Portal ou exécutez `ujust install-openrazer` dans un terminal pour commencer à l'utiliser.
 - Règles udev [OpenTabletDriver](https://opentabletdriver.net/) intégrées, avec la suite logicielle complète installable via Bazzite Portal ou en exécutant `ujust install-opentabletdriver` dans un terminal.
 - Prise en charge prête à l'emploi des claviers [Wooting](https://wooting.io/).
 - Prise en charge intégrée pour les GPU AMD Southern Islands <sub><sup>(HD 7000)</sup></sub> et Sea Islands <sub><sup>(HD 8000)</sup></sub> sous le pilote `amdgpu`.
-- [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) est disponible pour le partage d'écran Discord sur Wayland.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) est disponible pour créer des applications à partir de sites web pour une variété de navigateurs, y compris Firefox.
 
 ### Environnement de bureau
@@ -84,7 +79,7 @@ De nombreuses variantes communes sont disponibles sous le nom `bazzite`, adapté
 > [!IMPORTANT]
 > **Les ISOs peuvent être téléchargées depuis notre [page de versions](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile peut être trouvé [ici](https://universal-blue.discourse.group/docs?topic=30).**
 
-Rebase d'un Fedora Atomic existante de cette image est disponible ici avec des **pilotes GPU Open Source** :
+Rebase d'un Fedora Atomic existant de cette image est disponible ici avec des **pilotes GPU Open Source** :
 (Remarque : l'option Open Source de Mesa pour les GPU NVIDIA, NVK, est encore sujette à des erreurs au moment de la rédaction. Pour tout problème lié à NVK, [merci de soumettre un rapport à Mesa]([url](https://docs.mesa3d.org/bugs.html)), pas à Ublue/Bazzite)
 
 ```bash
@@ -120,7 +115,7 @@ Variante conçue pour être utilisée comme alternative à SteamOS sur le SteamD
 - Option pour installer [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), et [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), ainsi que de nombreux autres packages utiles lors de l'installation.
 - Le système de mise à jour personnalisé permet de mettre à jour directement depuis l'interface du mode jeu grâce à [ublue-update](https://github.com/ublue-os/ublue-update) et [topgrade](https://github.com/topgrade-rs/topgrade).
 - Prise en charge intégrée du dual-boot Windows en laissant l'installation du GRUB de Fedora intacte.
-- Une mise à jour casse quelque chose ? Reviennez facilement à la version précédente de Bazzite grâce à la fonctionnalité de rollback de `rpm-ostree`. Vous pouvez même sélectionner les images précédentes au démarrage.
+- Une mise à jour casse quelque chose ? Revenez facilement à la version précédente de Bazzite grâce à la fonctionnalité de rollback de `rpm-ostree`. Vous pouvez même sélectionner les images précédentes au démarrage.
 - Steam et Lutris préinstallés dans l'image en tant que packages superposés.
 - [Discover Overlay](https://github.com/trigg/Discover) pour Discord préinstallé et lancé automatiquement à la fois en mode jeu et sur le bureau si Discord est installé. [Consulte la documentation officielle ici](https://trigg.github.io/Discover/bazzite).
 - Utilise ZRAM<sub><sup>(4GB)</sup></sub> avec l'algorithme de compression LZ4 par défaut.
@@ -140,7 +135,7 @@ Variante conçue pour être utilisée comme alternative à SteamOS sur le SteamD
 > [!IMPORTANT]
 > **Les ISOs peuvent être téléchargées depuis notre [page de versions](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile peut être trouvé [ici](https://universal-blue.discourse.group/docs?topic=30).**
 
-Rebase d'un Fedora Atomic existante avec cette image :
+Rebase d'un Fedora Atomic existant avec cette image :
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stable
