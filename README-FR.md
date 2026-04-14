@@ -72,27 +72,27 @@ Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/m
 
 ### Environnement de bureau
 
-De nombreuses variantes communes sont disponibles sous le nom `bazzite`, adaptée aux ordinateurs de bureau.
+La variante courante est disponible sous le nom `bazzite`, adaptée aux ordinateurs de bureau.
 
 - Mises à jour automatiques pour le système d'exploitation, les Flatpaks et plus - propulsées par [ublue-update](https://github.com/ublue-os/ublue-update) et [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
 > **Les ISOs peuvent être téléchargées depuis notre [page de versions](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile peut être trouvé [ici](https://universal-blue.discourse.group/docs?topic=30).**
 
-Rebase d'un Fedora Atomic existant de cette image est disponible ici avec des **pilotes GPU Open Source** :
+Rebase d'un Fedora Atomic existant vers cette image pour les **pilotes GPU Open Source** :
 (Remarque : l'option Open Source de Mesa pour les GPU NVIDIA, NVK, est encore sujette à des erreurs au moment de la rédaction. Pour tout problème lié à NVK, [merci de soumettre un rapport à Mesa]([url](https://docs.mesa3d.org/bugs.html)), pas à Ublue/Bazzite)
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
 ```
 
-ou pour les appareils avec des GPU Nvidia voulant les **pilotes propriétaires NVIDIA** :
+ou pour les appareils avec des GPU Nvidia souhaitant les **pilotes propriétaires NVIDIA** :
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:stable
 ```
 
-**Pour les utilisateurs avec Secure Boot activé :** Suivez notre [documentation sur le démarrage sécurisé](#démarrage-sécurisé) avant de faire le rebase.
+**Pour les utilisateurs avec Secure Boot activé :** Suivez notre [documentation sur le démarrage sécurisé](#secure-boot) avant de faire le rebase.
 
 ### Steam Deck/Home Theater PCs (HTPCs)
 
