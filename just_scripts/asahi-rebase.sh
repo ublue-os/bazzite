@@ -83,14 +83,19 @@ DNF4_HOST_STRICT_REPO_ARGS=(
 #                          Use this for faster first installs; rerun this
 #                          script later without --skip-wine to build and
 #                          deploy the native-Wine image variant.
+# --build-proton         : build native Proton aarch64 from source (~2-5 hours).
+#                          Proton is NOT built by default due to the long build
+#                          time. Use this flag to include it.
 KERNEL_VARIANT="stable"
 EXTERNAL_BUILD_PATH=""
 SKIP_WINE=0
+BUILD_PROTON=0
 for arg in "$@"; do
     case "$arg" in
         --fairydust)           KERNEL_VARIANT="fairydust" ;;
         --external-build=*)    EXTERNAL_BUILD_PATH="${arg#--external-build=}" ;;
         --skip-wine)           SKIP_WINE=1 ;;
+        --build-proton)        BUILD_PROTON=1 ;;
     esac
 done
 
@@ -112,6 +117,7 @@ BAZZITE_IMAGE="localhost/${IMAGE_NAME}:${IMAGE_TAG}"
 echo "Kernel variant:     ${KERNEL_VARIANT}"
 echo "External build dir: ${EXTERNAL_BUILD_PATH:-<none, using internal /var/lib/containers>}"
 echo "Skip Wine build:    ${SKIP_WINE}"
+echo "Build Proton:       ${BUILD_PROTON}"
 echo "Local image:        ${BAZZITE_IMAGE}"
 
 cleanup_host_overrides() {
@@ -1120,6 +1126,7 @@ else
         --build-arg KERNEL_VARIANT="${KERNEL_VARIANT}" \
         --build-arg IMAGE_BRANCH="${IMAGE_BRANCH}" \
         --build-arg SKIP_WINE="${SKIP_WINE}" \
+        --build-arg SKIP_PROTON="$(( BUILD_PROTON == 1 ? 0 : 1 ))" \
         --build-arg VERSION_TAG=local \
         --build-arg VERSION_PRETTY="Local Build" \
         --build-arg SHA_HEAD_SHORT="${IMAGE_TAG}" \

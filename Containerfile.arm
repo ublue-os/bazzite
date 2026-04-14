@@ -33,6 +33,7 @@ ARG FEDORA_VERSION="${FEDORA_VERSION:-43}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
 ARG SKIP_WINE="${SKIP_WINE:-0}"
+ARG SKIP_PROTON="${SKIP_PROTON:-1}"
 ARG BASE_IMAGE="quay.io/fedora-asahi-remix-atomic-desktops/${BASE_IMAGE_NAME}:${FEDORA_VERSION}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT:-}"
 ARG VERSION_TAG="${VERSION_TAG:-}"
@@ -50,6 +51,7 @@ ARG FEDORA_VERSION="${FEDORA_VERSION:-43}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
 ARG SKIP_WINE="${SKIP_WINE:-0}"
+ARG SKIP_PROTON="${SKIP_PROTON:-1}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT:-}"
 ARG VERSION_TAG="${VERSION_TAG:-}"
 ARG VERSION_PRETTY="${VERSION_PRETTY:-}"
@@ -57,6 +59,7 @@ ARG VERSION_PRETTY="${VERSION_PRETTY:-}"
 ENV KERNEL_VARIANT=${KERNEL_VARIANT}
 ENV BASE_IMAGE_NAME=${BASE_IMAGE_NAME}
 ENV SKIP_WINE=${SKIP_WINE}
+ENV SKIP_PROTON=${SKIP_PROTON}
 
 COPY system_files/desktop/shared /
 COPY system_files/desktop/${BASE_IMAGE_NAME} /
@@ -73,6 +76,14 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     bash /ctx/install-native-wine-aarch64.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/install-heroic-launcher-aarch64.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/install-proton-aarch64.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
