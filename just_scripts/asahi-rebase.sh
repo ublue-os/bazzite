@@ -671,11 +671,15 @@ cleanup_stale_first_boot_artifacts() {
         "${systemd_user_root}/xdg-desktop-autostart.target.wants/ntfs-nag.service" \
         "${root_prefix}/usr/bin/bazzite-rebase-status" \
         "${root_prefix}/usr/local/bin/bazzite-rebase-status" \
-        "${root_prefix}/var/usrlocal/bin/bazzite-rebase-status" 2>/dev/null || true
+        "${root_prefix}/var/usrlocal/bin/bazzite-rebase-status" \
+        "${root_prefix}/usr/bin/bazzite-rebase-select-next-boot" \
+        "${root_prefix}/usr/local/bin/bazzite-rebase-select-next-boot" \
+        "${root_prefix}/var/usrlocal/bin/bazzite-rebase-select-next-boot" 2>/dev/null || true
 
     if [[ -n "${stateroot_var}" ]]; then
         sudo rm -f \
             "${stateroot_var}/usrlocal/bin/bazzite-rebase-status" \
+            "${stateroot_var}/usrlocal/bin/bazzite-rebase-select-next-boot" \
             "${stateroot_var}/lib/bazzite-rebase-queued" \
             "${stateroot_var}/lib/bazzite-rebase-done" \
             "${stateroot_var}/lib/bazzite-rebase-failed" \
@@ -1412,7 +1416,7 @@ elif [[ -f /var/lib/bazzite-rebase-queued ]]; then
     else
         echo "  Status: QUEUED -- Bazzite deployment is staged"
         echo "  Check:   rpm-ostree status"
-        echo "  Action:  sudo systemctl reboot"
+        echo "  Action:  sudo grub2-reboot 0 && sudo systemctl reboot"
     fi
 elif [[ -f /var/lib/bazzite-rebase-failed ]]; then
     echo "  Status: FAILED -- inspect the log below"
@@ -1429,9 +1433,42 @@ elif [[ -d /var/lib/bazzite-install ]]; then
     echo "  Watch:  journalctl -f -u bazzite-first-boot-rebase"
 else
     echo "  Status: N/A -- no rebase data found"
-fi
+    fi
 STATUS_EOF
     sudo chmod +x "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-status"
+
+    sudo tee "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-select-next-boot" > /dev/null << 'BOOTSEL_EOF'
+#!/usr/bin/bash
+set -uo pipefail
+
+echo "Selecting the newest GRUB entry for the next boot..."
+
+if command -v grub2-reboot >/dev/null 2>&1; then
+    if grub2-reboot 0; then
+        echo "Applied one-shot GRUB next_entry=0."
+    else
+        echo "WARNING: grub2-reboot 0 failed."
+    fi
+else
+    echo "WARNING: grub2-reboot is not available."
+fi
+
+if command -v grub2-set-default >/dev/null 2>&1; then
+    if grub2-set-default 0; then
+        echo "Applied persistent GRUB default=0."
+    else
+        echo "WARNING: grub2-set-default 0 failed."
+    fi
+else
+    echo "WARNING: grub2-set-default is not available."
+fi
+
+if command -v grub2-editenv >/dev/null 2>&1; then
+    echo "Current grubenv:"
+    grub2-editenv list || echo "WARNING: grub2-editenv list failed."
+fi
+BOOTSEL_EOF
+    sudo chmod +x "${STATEROOT_VAR}/usrlocal/bin/bazzite-rebase-select-next-boot"
 
     sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system"
 
@@ -1452,7 +1489,7 @@ Wants=local-fs.target
 [Service]
 Type=oneshot
 ExecStartPre=/usr/bin/sleep 20
-ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /var/lib/bazzite-rebase-failed; : > /var/log/bazzite-first-boot-rebase.log; rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; rpm-ostree status 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; touch /var/lib/bazzite-rebase-queued'
+ExecStart=/usr/bin/bash -euxo pipefail -c 'rm -f /var/lib/bazzite-rebase-failed; : > /var/log/bazzite-first-boot-rebase.log; rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; rpm-ostree status 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; /var/usrlocal/bin/bazzite-rebase-select-next-boot 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log || true; touch /var/lib/bazzite-rebase-queued'
 ExecStartPost=/usr/bin/bash -euxo pipefail -c 'sleep 5; systemctl --no-block --job-mode=replace-irreversibly reboot'
 ExecStopPost=/usr/bin/bash -c 'if [[ ! -f /var/lib/bazzite-rebase-queued ]]; then touch /var/lib/bazzite-rebase-failed; fi'
 TimeoutStartSec=0
@@ -1473,7 +1510,7 @@ After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -euxo pipefail -c 'touch /var/lib/bazzite-rebase-done; rm -rf /var/lib/bazzite-install; rm -f /etc/profile.d/bazzite-rebase.sh /etc/motd /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.timer /etc/systemd/system/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status /var/lib/bazzite-rebase-failed /var/lib/bazzite-rebase-queued || true'
+ExecStart=/usr/bin/bash -euxo pipefail -c 'touch /var/lib/bazzite-rebase-done; rm -rf /var/lib/bazzite-install; rm -f /etc/profile.d/bazzite-rebase.sh /etc/motd /etc/systemd/system/bazzite-firstboot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.service /etc/systemd/system/bazzite-first-boot-rebase.timer /etc/systemd/system/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/bazzite-first-boot-flatpaks.service /etc/systemd/system/multi-user.target.wants/bazzite-firstboot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase.service /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-rebase-cleanup.service /etc/systemd/system/timers.target.wants/bazzite-first-boot-rebase.timer /etc/systemd/system/multi-user.target.wants/bazzite-first-boot-flatpaks.service /var/usrlocal/bin/bazzite-rebase-status /usr/local/bin/bazzite-rebase-status /usr/bin/bazzite-rebase-status /var/usrlocal/bin/bazzite-rebase-select-next-boot /usr/local/bin/bazzite-rebase-select-next-boot /usr/bin/bazzite-rebase-select-next-boot /var/lib/bazzite-rebase-failed /var/lib/bazzite-rebase-queued || true'
 
 [Install]
 WantedBy=multi-user.target
