@@ -41,9 +41,9 @@
 
 [Bazzite](https://bazzite.gg/) est une image [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) personnalisée construite avec la technologie [cloud native](https://universal-blue.org/#cloud-native) qui apporte le meilleur du gaming Linux sur **tous vos appareils - y compris votre console portable préférée**.
 
-Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/main) en utilisant la technologie de [Fedora](https://fedoraproject.org/), ce qui signifie que le support matériel et les pilotes intégrés sont inclus. De plus, Bazzite ajoute les fonctionnalités suivantes :
+Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/main) en utilisant la technologie de [Fedora](https://fedoraproject.org/), ce qui signifie que le support matériel étendu et les pilotes intégrés sont inclus. De plus, Bazzite ajoute les fonctionnalités suivantes :
 
-- Utilise le [noyau bazzite](https://github.com/bazzite-org/kernel-bazzite) pour obtenir la prise en charge HDR et un support matériel étendu, ainsi que de nombreux autres correctifs.
+- Utilise le [noyau bazzite](https://github.com/bazzite-org/kernel-bazzite) pour la prise en charge HDR et un support matériel étendu, ainsi que de nombreux autres correctifs inclus.
 - HDR disponible en mode jeu.
 - NVK disponible sur les builds non-Nvidia.
 - Support complet des codecs matériels pour le décodage H264.
