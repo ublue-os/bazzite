@@ -22,6 +22,19 @@ if [[ "$(uname -m)" != "aarch64" ]]; then
     exit 1
 fi
 
+# In atomic/ostree container images /root is often a symlink to /var/roothome
+# which doesn't exist during the build. npm/node/electron-builder all need a
+# writable HOME for caches, config, and the Electron zip download cache.
+if [[ ! -d "/root" ]] || [[ -L "/root" ]]; then
+    rm -f /root 2>/dev/null || true
+    mkdir -p /root
+fi
+export HOME="/root"
+export npm_config_cache="/tmp/npm-cache"
+export ELECTRON_CACHE="/tmp/electron-cache"
+export XDG_CACHE_HOME="/tmp/xdg-cache"
+mkdir -p "${npm_config_cache}" "${ELECTRON_CACHE}" "${XDG_CACHE_HOME}"
+
 HEROIC_VERSION="${HEROIC_VERSION:-}"
 HEROIC_RELEASES_API="https://api.github.com/repos/Heroic-Games-Launcher/HeroicGamesLauncher/releases"
 CURL_COMMON_ARGS=(
@@ -150,6 +163,10 @@ install_packages "Heroic build dependencies" \
     "${build_packages[@]}" \
     "${runtime_packages[@]}"
 
+# electron-builder requires pnpm for node module collection
+echo "Installing pnpm..."
+npm install -g pnpm 2>&1 | tail -3
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Install native Python game store CLIs
 # ──────────────────────────────────────────────────────────────────────────────
@@ -170,13 +187,15 @@ git clone --depth 1 --branch "${HEROIC_VERSION}" \
     https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher.git heroic
 cd heroic
 
-echo "Installing Node.js dependencies..."
-npm install --legacy-peer-deps 2>&1 | tail -5
+echo "Installing Node.js dependencies with pnpm..."
+pnpm install --no-frozen-lockfile 2>&1 | tail -10
 
-echo "Building Heroic for linux/arm64..."
-npx electron-builder build --linux dir --arm64 \
-    --config.npmRebuild=true \
-    2>&1 | tail -20
+echo "Compiling Heroic source (electron-vite build)..."
+npx --yes electron-vite build 2>&1 | tail -15
+
+echo "Packaging Heroic for linux/arm64..."
+npx --yes electron-builder build --linux dir --arm64 \
+    2>&1 | tail -30
 
 DIST_DIR="${BUILD_DIR}/heroic/dist/linux-arm64-unpacked"
 if [[ ! -d "${DIST_DIR}" ]]; then
