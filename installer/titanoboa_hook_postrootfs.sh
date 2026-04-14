@@ -34,17 +34,16 @@ SECUREBOOT_DOC_URL_QR="/usr/share/ublue-os/secure_boot_qr.png"
 echo "Bazzite release $VERSION_ID ($VERSION_CODENAME)" >/etc/system-release
 
 # Get Artwork
-git clone --depth 1 --quiet https://github.com/ublue-os/bazzite.git /root/packages
 case "${PRETTY_NAME,,}" in
 "bazzite"*)
     mkdir -p /usr/share/anaconda/pixmaps/silverblue
-    cp -r /root/packages/installer/branding/* /usr/share/anaconda/pixmaps/
+    cp -r /src/branding/* /usr/share/anaconda/pixmaps/
     ;;
 esac
 
 # Installer icon
-_icon=/root/packages/installer/branding/bazzite-installer.svg
-_icon_symbol=/root/packages/installer/branding/bazzite-installer-symbolic.svg
+_icon=/src/branding/bazzite-installer.svg
+_icon_symbol=/src/branding/bazzite-installer-symbolic.svg
 if [[ -f $_icon ]]; then
     for f in \
         /usr/share/icons/hicolor/48x48/apps/org.fedoraproject.AnacondaInstaller.svg \
@@ -55,7 +54,6 @@ if [[ -f $_icon ]]; then
 fi
 unset -v _icon
 unset -v _icon_symbol
-rm -rf /root/packages
 
 # Secureboot Key Fetch
 mkdir -p /usr/share/ublue-os
