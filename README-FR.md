@@ -46,25 +46,25 @@ Bazzite est construit à partir de [ublue-os/main](https://github.com/ublue-os/m
 - Utilise le [noyau bazzite](https://github.com/bazzite-org/kernel-bazzite) pour obtenir la prise en charge HDR et un support matériel étendu, ainsi que de nombreux autres correctifs.
 - HDR disponible en mode jeu.
 - NVK disponible sur les builds non-Nvidia.
-- Support complet des codecs matériel pour le décodage H264.
+- Support complet des codecs matériels pour le décodage H264.
 - Support complet pour les runtimes OpenCL/HIP ROCM d'AMD.
 - Pilote [xone](https://github.com/medusalix/xone) pour les contrôleurs Xbox.
 - Support complet pour [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
-- Comprend le thème KDE de Valve issus de SteamOS.
-- [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), et [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installés et disponibles par défaut.
-- [Extension de shell ROM Properties Page](https://github.com/GerbilSoft/rom-properties) incluse par défaut.
+- Comprend les thèmes KDE de Valve issus de SteamOS.
+- [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud) et [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installés et disponibles par défaut.
+- [Extension de shell ROM Properties Page](https://github.com/GerbilSoft/rom-properties) incluse.
 - Support complet pour [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - [Distrobox](https://github.com/89luca89/distrobox) préinstallé.
 - Installation simplifiée de DaVinci Resolve avec [davincibox](https://github.com/zelikos/davincibox) (`ujust install-resolve`)
 - Service automatisé `duperemove` pour réduire l'espace disque utilisé par les contenus du préfixe wine.
 - Support pour HDMI CEC via [libCEC](https://libcec.pulse-eight.com/).
-- Utilise par défaut [BBR TCP congestion control de Google](https://github.com/google/bbr).
+- Utilise par défaut [contrôle de congestion Google BBR TCP](https://github.com/google/bbr).
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) préinstallé et activé par défaut. <sub><sup>(Disponible mais désactivé par défaut sur la variante SteamDeck, peut être activé avec `ujust restore-input-remapper`)</sup></sub>
 - [Bazzite Portal](https://github.com/ublue-os/yafti-gtk) offre un moyen facile d'installer de nombreuses applications et ajustements, y compris l'installation de [LACT](https://github.com/ilya-zlobintsev/LACT) et des IDEs via Brew. Il fournit également des boutons pratiques pour mettre à jour, rebaser et même réinitialiser l'image système aux paramètres par défaut.
-- [Waydroid](https://waydro.id/) est préinstallé pour exécuter des applications Android. Configurable avec ce [guide rapide](https://docs.bazzite.gg/Installing_and_Managing_Software/Waydroid_Setup_Guide/).
-- Gère les applications avec [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), et [Gear Lever](https://github.com/mijorus/gearlever).
-- [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) pilotes i2c-piix4 et i2c-nct6775 pour contrôler le RGB sur certaines cartes mères.
-- Pilotes [OpenRazer](https://openrazer.github.io) intégrés, sélectionnez OpenRazer dans Bazzite Portal ou exécutez `ujust install-openrazer` dans un terminal pour commencer à l'utiliser.
+- [Waydroid](https://waydro.id/) préinstallé pour exécuter des applications Android. Configurable avec ce [guide rapide](https://docs.bazzite.gg/Installing_and_Managing_Software/Waydroid_Setup_Guide/).
+- Gestion des applications avec [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse) et [Gear Lever](https://github.com/mijorus/gearlever).
+- Pilotes [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 et i2c-nct6775 pour contrôler le RGB sur certaines cartes mères.
+- Pilotes [OpenRazer](https://openrazer.github.io) intégrés. Sélectionnez OpenRazer dans Bazzite Portal ou exécutez `ujust install-openrazer` dans un terminal pour commencer à l'utiliser.
 - Règles udev [OpenTabletDriver](https://opentabletdriver.net/) intégrées, avec la suite logicielle complète installable via Bazzite Portal ou en exécutant `ujust install-opentabletdriver` dans un terminal.
 - Prise en charge prête à l'emploi des claviers [Wooting](https://wooting.io/).
 - Prise en charge intégrée pour les GPU AMD Southern Islands <sub><sup>(HD 7000)</sup></sub> et Sea Islands <sub><sup>(HD 8000)</sup></sub> sous le pilote `amdgpu`.
