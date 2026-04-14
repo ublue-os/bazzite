@@ -1485,19 +1485,21 @@ echo "  ║         Bazzite ARM - First Boot Rebase          ║"
 echo "  ╚══════════════════════════════════════════════════╝"
 echo ""
 if [[ -f /var/lib/bazzite-rebase-done ]]; then
-    echo "  Status: COMPLETE -- run: sudo systemctl reboot"
+    echo "  Status: COMPLETE"
 elif [[ -f /var/lib/bazzite-rebase-queued ]]; then
     if [[ "${CURRENT_ID}" == "bazzite" ]]; then
         echo "  Status: COMPLETE -- cleanup will finish on this boot"
     else
-        echo "  Status: QUEUED -- Bazzite deployment is staged"
-        echo "  Check:   rpm-ostree status"
-        echo "  Action:  sudo /var/usrlocal/bin/bazzite-rebase-select-next-boot && sudo systemctl reboot"
+        echo "  Status: QUEUED -- reboot to boot into Bazzite"
+        echo "  The staged deployment is finalized automatically during reboot."
+        echo "  Action: sudo systemctl reboot"
     fi
 elif [[ -f /var/lib/bazzite-rebase-failed ]]; then
     echo "  Status: FAILED -- inspect the log below"
     echo "  Log:    /var/log/bazzite-first-boot-rebase.log"
     echo "  Watch:  journalctl -u bazzite-first-boot-rebase -b"
+    echo ""
+    echo "  To retry: rm /var/lib/bazzite-rebase-failed && sudo systemctl start bazzite-first-boot-rebase"
 elif systemctl is-active --quiet bazzite-first-boot-rebase.service 2>/dev/null; then
     echo "  Status: RUNNING -- rebase is in progress"
     echo "  Watch:  journalctl -f -u bazzite-first-boot-rebase"
@@ -1628,9 +1630,14 @@ BOOTSEL_EOF
     sudo mkdir -p "${DEPLOY_DIR}/etc/systemd/system"
 
     # First-boot rebase service: runs silently in the background as root.
-    # Enabling the service directly into the boot target is more reliable
-    # than gating a timer on /var-backed state. The service delays itself
-    # briefly so the first atomic boot can settle before the rebase starts.
+    # After rpm-ostree rebase stages the deployment, we just reboot.
+    # The ostree-finalize-staged.service runs automatically at shutdown to
+    # finalize the staged deployment and write BLS entries. On the next boot,
+    # GRUB picks the new (Bazzite) deployment automatically because ostree
+    # gives it the highest BLS version number.
+    # DO NOT manually run ostree-finalize-staged or set GRUB entries — that
+    # interferes with the automatic shutdown-time finalization and breaks
+    # the BLS entry generation.
     sudo tee "${DEPLOY_DIR}/etc/systemd/system/bazzite-first-boot-rebase.service" > /dev/null << 'SVC_EOF'
 [Unit]
 Description=Bazzite ARM - First Boot Rebase
@@ -1649,10 +1656,8 @@ ExecStart=/usr/bin/bash -euxo pipefail -c '\
   : > /var/log/bazzite-first-boot-rebase.log; \
   rpm-ostree rebase ostree-unverified-image:oci:/var/lib/bazzite-install:latest 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log; \
   rpm-ostree status 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log || true; \
-  /var/usrlocal/bin/bazzite-rebase-finalize-staged 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log || true; \
-  /var/usrlocal/bin/bazzite-rebase-select-next-boot 2>&1 | tee -a /var/log/bazzite-first-boot-rebase.log || true; \
   touch /var/lib/bazzite-rebase-queued'
-ExecStartPost=/usr/bin/bash -euxo pipefail -c 'sleep 5; systemctl --no-block --job-mode=replace-irreversibly reboot'
+ExecStartPost=/usr/bin/bash -c 'sleep 5; systemctl --no-block --job-mode=replace-irreversibly reboot'
 ExecStopPost=/usr/bin/bash -c 'if [[ ! -f /var/lib/bazzite-rebase-queued ]]; then touch /var/lib/bazzite-rebase-failed; fi'
 TimeoutStartSec=0
 StandardOutput=journal
@@ -1705,7 +1710,9 @@ CLEANUP_EOF
   ║  If it fails:                                                ║
   ║    cat /var/log/bazzite-first-boot-rebase.log                ║
   ║                                                              ║
-  ║  The system reboots automatically when done (~2-5 min).      ║
+  ║  The system reboots twice:                                   ║
+  ║    1st reboot: stages Bazzite deployment (~2-5 min)          ║
+  ║    2nd reboot: boots into Bazzite (automatic)                ║
   ╚══════════════════════════════════════════════════════════════╝
 
 MOTD_EOF
