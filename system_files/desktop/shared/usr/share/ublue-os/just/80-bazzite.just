@@ -1239,7 +1239,7 @@ get-logs:
       echo
       echo "fastfetch"
       echo "---------"
-      /usr/bin/fastfetch --config none --logo none --pipe --structure-disabled colors
+      \fastfetch --config none --logo none --pipe --structure-disabled colors
     } | fpaste 2>/dev/null)
     echo -e "${bold}System Information:${normal} $system_information"
     echo " "
