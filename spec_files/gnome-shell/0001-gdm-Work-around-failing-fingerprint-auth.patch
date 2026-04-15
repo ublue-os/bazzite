@@ -37,7 +37,7 @@ index 97df6d687e..371953cb25 100644
                      serviceName, this._userName, this._cancellable);
 @@ -763,6 +768,7 @@ export class ShellUserVerifier extends Signals.EventEmitter {
                  const cancellable = this._cancellable;
-                 this._fingerprintFailedId = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
+                 this._fingerprintFailedId = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT,
                      FINGERPRINT_ERROR_TIMEOUT_WAIT, () => {
 +                        log("Generating _verificationFailed!");
                          this._fingerprintFailedId = 0;
