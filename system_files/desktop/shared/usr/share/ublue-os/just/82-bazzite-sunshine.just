@@ -171,8 +171,11 @@ setup-sunshine ACTION="":
       fi
       brew services stop sunshine || true
       brew services stop sunshine-beta || true
+      brew unpin sunshine || true
+      brew unpin sunshine-beta || true
       brew uninstall sunshine || true
       brew uninstall sunshine-beta || true
+      echo "Sunshine is now uninstalled."
     elif [[ "${OPTION,,}" =~ ^(portal|open) ]]; then
       echo "Opening Sunshine management portal..."
       xdg-open https://localhost:47990
