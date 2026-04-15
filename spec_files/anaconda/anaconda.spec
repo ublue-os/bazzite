@@ -1,6 +1,6 @@
 Summary: Graphical system installer
 Name:    anaconda
-Version: 41.35
+Version: 44.30
 Release: 101.bazzite
 License: GPL-2.0-or-later
 URL:     http://fedoraproject.org/wiki/Anaconda
@@ -13,6 +13,8 @@ URL:     http://fedoraproject.org/wiki/Anaconda
 Source0: https://github.com/rhinstaller/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.bz2
 
 Patch0:  bazzite.patch
+Patch1:  bazzite-800p.patch
+Patch2:  bazzite-scale.patch
 
 # Versions of required components (done so we make sure the buildrequires
 # match the requires versions of things).
