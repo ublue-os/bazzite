@@ -229,7 +229,7 @@ install-fairydust-kernel:
 
     echo "--- Installing persistent module mount helper ---"
     sudo install -d /usr/local/bin /etc/systemd/system
-    sudo bash -c 'cat <<'"'"'EOF'"'"' > /usr/local/bin/fairydust-modules
+    cat << 'FAIRYDUST_SCRIPT' | sed 's/^    //' | sudo tee /usr/local/bin/fairydust-modules > /dev/null
     #!/usr/bin/bash
     set -euo pipefail
 
@@ -250,9 +250,9 @@ install-fairydust-kernel:
     fi
 
     mount --bind "${module_root}" /lib/modules
-    EOF'
+    FAIRYDUST_SCRIPT
     sudo chmod 755 /usr/local/bin/fairydust-modules
-    sudo bash -c 'cat <<'"'"'EOF'"'"' > /etc/systemd/system/fairydust-modules.service
+    cat << 'FAIRYDUST_UNIT' | sed 's/^    //' | sudo tee /etc/systemd/system/fairydust-modules.service > /dev/null
     [Unit]
     Description=Expose persistent Fairydust kernel modules
     DefaultDependencies=no
@@ -267,7 +267,7 @@ install-fairydust-kernel:
 
     [Install]
     WantedBy=sysinit.target
-    EOF'
+    FAIRYDUST_UNIT
     sudo systemctl daemon-reload
     sudo systemctl enable fairydust-modules.service
     sudo systemctl start fairydust-modules.service || true
@@ -438,3 +438,168 @@ setup-games-drive DEV="":
     echo "Done! $DEV is now mounted at /var/mnt/games"
     echo "It will auto-mount on every boot."
     df -h /var/mnt/games
+    echo ""
+    echo "Next steps:"
+    echo "  Run: ujust use-external-storage"
+    echo "  This will redirect Steam, Heroic, Flatpak, and Podman to use the external drive."
+
+# Redirect Steam, Heroic, Flatpak, and Podman storage to external drive at /var/mnt/games
+[group("arm")]
+use-external-storage MOUNT="/var/mnt/games":
+    #!/usr/bin/bash
+    set -euo pipefail
+    MOUNT="{{ MOUNT }}"
+    if [[ ! -d "${MOUNT}" ]]; then
+        echo "ERROR: ${MOUNT} is not mounted."
+        echo "Run: ujust setup-games-drive /dev/<your-device>"
+        echo "  or mount your external drive at ${MOUNT}"
+        exit 1
+    fi
+    if ! findmnt -n "${MOUNT}" >/dev/null 2>&1; then
+        echo "ERROR: ${MOUNT} does not appear to be a mount point."
+        echo "Is your external drive connected and mounted?"
+        exit 1
+    fi
+
+    echo "=== External Storage Setup ==="
+    echo ""
+    echo "Mount point: ${MOUNT}"
+    echo "Free space:  $(df -h "${MOUNT}" | awk 'NR==2{print $4}')"
+    echo ""
+    echo "This will redirect the following to your external drive:"
+    echo "  - Steam library       → ${MOUNT}/Steam"
+    echo "  - Heroic games        → ${MOUNT}/Heroic"
+    echo "  - Flatpak user apps   → ${MOUNT}/Flatpak"
+    echo "  - Podman storage      → ${MOUNT}/containers"
+    echo "  - Proton compat tools → ${MOUNT}/compatibilitytools.d"
+    echo ""
+    echo "Existing data in these locations will be moved, not deleted."
+    read -rp "Continue? (y/N): " confirm
+    if [[ "$confirm" != [yY] ]]; then
+        echo "Aborted."
+        exit 0
+    fi
+
+    move_and_symlink() {
+        local src="$1"
+        local dst="$2"
+        local label="$3"
+
+        mkdir -p "$(dirname "${dst}")"
+        if [[ -L "${src}" ]]; then
+            local current_target
+            current_target="$(readlink -f "${src}")"
+            if [[ "${current_target}" == "${dst}" ]]; then
+                echo "  ${label}: already linked → ${dst}"
+                return 0
+            fi
+            rm -f "${src}"
+        fi
+        if [[ -d "${src}" ]]; then
+            echo "  ${label}: moving existing data to ${dst}..."
+            mkdir -p "${dst}"
+            rsync -a --remove-source-files "${src}/" "${dst}/" 2>/dev/null || \
+                cp -a "${src}/." "${dst}/" 2>/dev/null || true
+            rm -rf "${src}"
+        fi
+        mkdir -p "${dst}"
+        mkdir -p "$(dirname "${src}")"
+        ln -sf "${dst}" "${src}"
+        echo "  ${label}: ${src} → ${dst}"
+    }
+
+    echo ""
+    echo "--- Setting up Steam ---"
+    move_and_symlink \
+        "${HOME}/.local/share/Steam" \
+        "${MOUNT}/Steam" \
+        "Steam library"
+
+    echo "--- Setting up Steam compatibility tools ---"
+    move_and_symlink \
+        "${HOME}/.steam/root/compatibilitytools.d" \
+        "${MOUNT}/compatibilitytools.d" \
+        "Proton/compat tools"
+
+    echo "--- Setting up Heroic ---"
+    move_and_symlink \
+        "${HOME}/.config/heroic" \
+        "${MOUNT}/Heroic" \
+        "Heroic config+games"
+
+    echo "--- Setting up Flatpak user data ---"
+    move_and_symlink \
+        "${HOME}/.local/share/flatpak" \
+        "${MOUNT}/Flatpak" \
+        "Flatpak user data"
+
+    echo "--- Setting up Lutris ---"
+    move_and_symlink \
+        "${HOME}/Games" \
+        "${MOUNT}/LutrisGames" \
+        "Lutris games"
+
+    echo "--- Setting up Podman storage ---"
+    mkdir -p "${MOUNT}/containers"
+    if [[ ! -f "${HOME}/.config/containers/storage.conf" ]] || \
+       ! grep -q "${MOUNT}/containers" "${HOME}/.config/containers/storage.conf" 2>/dev/null; then
+        mkdir -p "${HOME}/.config/containers"
+        cat << STOREOF | sed 's/^        //' > "${HOME}/.config/containers/storage.conf"
+        [storage]
+        driver = "overlay"
+        graphroot = "${MOUNT}/containers/storage"
+        runroot = "/run/user/$(id -u)/containers"
+        STOREOF
+        echo "  Podman storage: → ${MOUNT}/containers/storage"
+    else
+        echo "  Podman storage: already configured"
+    fi
+
+    echo ""
+    echo "=== External storage setup complete ==="
+    echo ""
+    echo "All game data will now use your external drive."
+    echo "Internal drive usage is minimized."
+    echo ""
+    df -h "${MOUNT}"
+
+# Show external storage usage and symlink status
+[group("arm")]
+external-storage-status MOUNT="/var/mnt/games":
+    #!/usr/bin/bash
+    MOUNT="{{ MOUNT }}"
+    echo "=== External Storage Status ==="
+    echo ""
+    if findmnt -n "${MOUNT}" >/dev/null 2>&1; then
+        echo "Mount: ${MOUNT} (mounted)"
+        df -h "${MOUNT}"
+    else
+        echo "Mount: ${MOUNT} (NOT mounted)"
+        echo "Connect your external drive or run: ujust setup-games-drive /dev/<device>"
+        exit 0
+    fi
+    echo ""
+    echo "--- Symlink Status ---"
+    check_link() {
+        local path="$1"
+        local label="$2"
+        if [[ -L "${path}" ]]; then
+            echo "  ${label}: → $(readlink -f "${path}")"
+        elif [[ -d "${path}" ]]; then
+            local size
+            size="$(du -sh "${path}" 2>/dev/null | cut -f1)"
+            echo "  ${label}: local directory (${size})"
+        else
+            echo "  ${label}: not present"
+        fi
+    }
+    check_link "${HOME}/.local/share/Steam" "Steam library"
+    check_link "${HOME}/.steam/root/compatibilitytools.d" "Proton/compat tools"
+    check_link "${HOME}/.config/heroic" "Heroic config+games"
+    check_link "${HOME}/.local/share/flatpak" "Flatpak user data"
+    check_link "${HOME}/Games" "Lutris games"
+    echo ""
+    echo "--- External Drive Usage ---"
+    if [[ -d "${MOUNT}" ]]; then
+        du -sh "${MOUNT}"/*/ 2>/dev/null || echo "  (empty)"
+    fi

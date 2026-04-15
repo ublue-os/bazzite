@@ -77,7 +77,6 @@ build_packages=(
     libXinerama-devel
     libXrandr-devel
     libXrender-devel
-    libXxf86dga-devel
     libXxf86vm-devel
     # libglvnd-devel is the real provider of libGL development headers on
     # modern Fedora. Avoid the legacy mesa-libGL-devel compatibility package
@@ -121,6 +120,7 @@ optional_odbc_runtime_packages=(
 optional_compat_build_packages=(
     OpenCL-ICD-Loader-devel
     opencl-headers
+    libXxf86dga-devel
     sane-backends-devel
     libgphoto2-devel
     libieee1284-devel

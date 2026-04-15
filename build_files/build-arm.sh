@@ -637,7 +637,7 @@ curl "${CURL_COMMON_ARGS[@]}" "https://raw.githubusercontent.com/ublue-os/toolbo
 curl "${CURL_COMMON_ARGS[@]}" "https://raw.githubusercontent.com/ublue-os/toolboxes/main/apps/incus/distrobox.ini" -o /etc/distrobox/incus.ini || true
 
 # bash-preexec for shell integration
-curl "${CURL_COMMON_ARGS[@]}" "https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh" -o /usr/share/bash-prexec || true
+curl "${CURL_COMMON_ARGS[@]}" "https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh" -o /usr/share/bash-preexec || true
 
 # ujust system -- the ublue-os-just package is not available on aarch64,
 # so we create the ujust wrapper, helper library, and root justfile here.

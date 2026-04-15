@@ -171,7 +171,7 @@ npm install -g pnpm 2>&1 | tail -3
 # Install native Python game store CLIs
 # ──────────────────────────────────────────────────────────────────────────────
 echo "Installing native aarch64 game store CLIs..."
-pip3 install --no-cache-dir --prefix=/usr legendary-gl 2>/dev/null || \
+pip3 install --no-cache-dir --break-system-packages --prefix=/usr legendary-gl 2>/dev/null || \
     echo "WARNING: legendary-gl pip install failed; Epic Games may need manual setup."
 
 # ──────────────────────────────────────────────────────────────────────────────
