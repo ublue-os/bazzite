@@ -3,17 +3,16 @@
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 Name:           gsettings-desktop-schemas
-Version:        49.1
+Version:        50.1
 Release:        %autorelease.bazzite
 Summary:        A collection of GSettings schemas
 
 License:        LGPL-2.1-or-later
 # no homepage exists for this component
 URL:            https://gitlab.gnome.org/GNOME/gsettings-desktop-schemas
-Source0:        https://download.gnome.org/sources/%{name}/49/%{name}-%{tarball_version}.tar.xz
-Source1:        org.gnome.desktop.interface.rhel.gschema.override
-
+Source0:        https://download.gnome.org/sources/%{name}/50/%{name}-%{tarball_version}.tar.xz
 Patch:          https://gitlab.gnome.org/GNOME/gsettings-desktop-schemas/-/merge_requests/99.patch
+Source1:        org.gnome.desktop.interface.rhel.gschema.override
 
 BuildRequires:  gettext
 BuildRequires:  glib2-devel >= 2.31.0
@@ -73,6 +72,8 @@ glib-compile-schemas --dry-run --strict %{buildroot}%{_datadir}/glib-2.0/schemas
 %doc AUTHORS MAINTAINERS NEWS README
 %license COPYING
 %{_datadir}/glib-2.0/schemas/*
+%dir %{_datadir}/GConf
+%dir %{_datadir}/GConf/gsettings
 %{_datadir}/GConf/gsettings/gsettings-desktop-schemas.convert
 %{_datadir}/GConf/gsettings/wm-schemas.convert
 %{_libdir}/girepository-1.0/GDesktopEnums-3.0.typelib
