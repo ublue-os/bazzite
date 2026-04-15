@@ -271,14 +271,14 @@ diff --git a/src/device.h b/src/device.h
 index 5722ca9ca..f8c744baf 100644
 --- a/src/device.h
 +++ b/src/device.h
-@@ -149,6 +149,7 @@ void device_set_wake_support(struct btd_device *device, bool wake_support);
+@@ -162,6 +162,7 @@ void device_set_wake_support(struct btd_device *device, bool wake_support);
  void device_set_wake_override(struct btd_device *device, bool wake_override);
  void device_set_wake_allowed(struct btd_device *device, bool wake_allowed,
  			     guint32 id);
 +bool device_get_wake_support(struct btd_device *device);
- void device_set_refresh_discovery(struct btd_device *dev, bool refresh);
  
- typedef void (*disconnect_watch) (struct btd_device *device, gboolean removal,
+ void device_set_past_support(struct btd_device *device, bool value);
+ 
 -- 
 2.34.1
 
