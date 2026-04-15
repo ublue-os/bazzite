@@ -16,14 +16,17 @@
 
 Name:           gnome-initial-setup
 Version:        50.0
-Release:        %autorelease
+Release:        ba%autorelease
 Summary:        Bootstrapping your OS
 
 License:        GPL-2.0-or-later
 URL:            https://wiki.gnome.org/Design/OS/InitialSetup
 Source0:        https://download.gnome.org/sources/%{name}/%{major_version}/%{name}-%{tarball_version}.tar.xz
+Source1:        vendor.conf
 
-Patch0:         bazzite-icon.patch
+# https://gitlab.gnome.org/GNOME/gnome-initial-setup/-/issues/242
+Patch0:         no-run0.patch
+Patch1:         bazzite-icon.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
@@ -97,6 +100,7 @@ if [ `echo "%{version}" | grep -cE "\.alpha|\.beta|\.rc"` = "1" ]; then echo "Er
 %meson_install
 
 mkdir -p %{buildroot}%{_datadir}/gnome-initial-setup
+cp %{SOURCE1} %{buildroot}%{_datadir}/gnome-initial-setup/
 
 
 %find_lang %{name}
@@ -116,6 +120,7 @@ useradd -rM -d /run/gnome-initial-setup/ -s /sbin/nologin %{name} &>/dev/null ||
 %{_datadir}/dconf/profile/gnome-initial-setup
 %dir %{_datadir}/gnome-initial-setup
 %{_datadir}/gnome-initial-setup/initial-setup-dconf-defaults
+%{_datadir}/gnome-initial-setup/vendor.conf
 %{_datadir}/gnome-session/sessions/gnome-initial-setup.session
 %{_datadir}/gnome-shell/modes/initial-setup.json
 %{_datadir}/polkit-1/rules.d/20-gnome-initial-setup.rules
