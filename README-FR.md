@@ -229,7 +229,7 @@ Consultez la [documentation supplémentaire](http://docs.bazzite.gg/) concernant
 
 ## Vérification
 
-Ces images sont signées avec [cosign](https://docs.sigstore.dev/cosign/signing/overview/) de sigstore. Vous pouvez vérifier la signature en téléchargeant la clé `cosign.pub` depuis ce dépôt et en exécutant la commande suivante :
+Ces images sont signées avec [cosign](https://docs.sigstore.dev/cosign/key_management/overview/) de sigstore. Vous pouvez vérifier la signature en téléchargeant la clé `cosign.pub` depuis ce dépôt et en exécutant la commande suivante :
 
 ```bash
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
