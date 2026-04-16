@@ -209,7 +209,7 @@ Bazzite est livré avec le dernier noyau Linux et SELinux activé par défaut, a
 
 Consultez la [FAQ](https://docs.bazzite.gg/General/FAQ/) pour plus de détails sur ce qui distingue Bazzite des autres systèmes d'exploitation Linux.
 
-## Vitrine
+## Showcase
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
@@ -219,7 +219,7 @@ Consultez la [FAQ](https://docs.bazzite.gg/General/FAQ/) pour plus de détails s
 ![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
 ![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
 
-## Documentation et newsletters
+## Documentation
 
 - [Installation et gestion des applications](https://universal-blue.discourse.group/docs?topic=35)
 - [Mises à jour, rollback et rebasage](https://universal-blue.discourse.group/docs?topic=36)
