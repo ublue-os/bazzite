@@ -282,16 +282,19 @@ Bazzite est un effort communautaire et ne serait pas possible sans le soutien de
 
 ## Construisez le vôtre
 
-Bazzite est entièrement construit sur GitHub et créer votre propre version personnalisée est aussi simple que de forker ce dépôt, ajouter une clé de signature privée et activer les actions GitHub.
+Bazzite est entièrement construit via GitHub Actions. Créer votre propre version personnalisée est aussi simple que de forker ce dépôt, ajouter une clé de signature privée et activer les GitHub Actions du fork. L'exécution du workflow `Build Bazzite` génèrera alors des images personnalisées pour toutes les variantes de Bazzite.
 
-[Familiarisez-vous](https://docs.github.com/en/actions/security-guides/encrypted-secrets) sur la gestion des secrets dans GitHub. Vous devrez [générer une nouvelle paire de clés](https://docs.sigstore.dev/cosign/signing/overview/) avec cosign. La clé publique peut être dans votre repo public <sub><sup>(Vos utilisateurs en ont besoin pour vérifier les signatures)</sup></sub>, et vous pouvez coller la clé privée dans `Paramètres -> Secrets -> Actions` avec le nom `SIGNING_SECRET`.
+Si vous ne souhaitez générer des images que pour les variantes que vous utilisez, éditez `.github/workflows/build.yml` pour commenter les variantes que vous ne souhaitez pas construire dans la liste `matrix` de la `strategy` du job `push-ghcr`.
 
-Nous expédions également une configuration pour l'application populaire [pull app](https://github.com/apps/pull) si vous souhaitez synchroniser votre fork avec l'original. Activez cette application sur votre repo pour suivre les modifications de Bazzite tout en apportant vos propres modifications.
+Nous proposons également une configuration pour la bien connue [application pull](https://github.com/apps/pull) si vous souhaitez synchroniser votre fork avec l'original. Activez cette application sur votre repo pour suivre les modifications de Bazzite tout en apportant vos propres modifications.
+
+### Comment signer vos images
+
+1. Commencez par [vous familiariser](https://docs.github.com/en/actions/security-guides/encrypted-secrets) avec la gestion des secrets sur GitHub.
+2. [Générez une nouvelle paire de clés](https://docs.sigstore.dev/cosign/key_management/signing_with_self-managed_keys/) avec Cosign (`cosign generate-key-pair`). Cette paire de clés ne doit pas avoir de signature.
+3. Remplacez le fichier `cosign.pub` dans votre dépôt public par celui que vous avez généré - vous et vos utilisateurs en aurez besoin pour vérifier les signatures.
+4. Ajoutez la clé privée (stockée sous forme de texte dans le fichier `cosign.key`) en tant que Secret de Dépôt dans la page des paramètres du fork, dans le menu `Paramètres -> Secrets et variables -> Actions`. Nommez le secret `SIGNING_SECRET`.
 
 ## Rejoignez la communauté
 
-Vous pouvez nous trouver sur le [Discord Universal Blue](https://discord.gg/f8MUghG5PB) et consulter les [archives](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769) des discussions de support sans compte.
-
-Discutez et créez des guides utilisateur sur les [forums Universal Blue Discourse](https://universal-blue.discourse.group/c/bazzite/5).
-
-Suivez Universal Blue sur [Mastodon](https://fosstodon.org/@UniversalBlue).
+Vous pouvez nous trouver sur le [Discord Bazzite](https://discord.gg/f8MUghG5PB). Consultez les [archives](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769) des discussions de support sans avoir besoin d'un compte.
