@@ -20,7 +20,7 @@
     - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
       - [Consoles portables alternatives](#consoles-portables-alternatives)
     - [GNOME](#gnome)
-    - [Fonctionnalités en Amont](#fonctionnalités-en-amont)
+    - [Fonctionnalités héritées de l'upstream](#fonctionnalités-héritées-de-lupstream)
       - [Universal Blue](#universal-blue)
       - [Fonctionnalités de Fedora Linux (Kinoite \& Silverblue)](#fonctionnalités-de-fedora-linux-kinoite--silverblue)
   - [Pourquoi](#pourquoi)
@@ -181,7 +181,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 **Pour les utilisateurs avec Secure Boot activé :** Suivez notre [documentation sur le Secure Boot](#secure-boot) avant de rebaser.
 
-### Fonctionnalités en Amont
+### Fonctionnalités héritées de l'upstream
 
 #### Universal Blue
 
