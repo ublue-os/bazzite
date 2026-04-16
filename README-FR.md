@@ -207,7 +207,7 @@ Bien que ce projet soit également basé sur des images, vous pouvez installer n
 
 Bazzite est livré avec le dernier noyau Linux et SELinux activé par défaut, avec prise en charge complète du démarrage sécurisé <sub><sup>(Exécutez `ujust enroll-secure-boot-key` et entrez le mot de passe `universalblue` si vous êtes invité à enregistrer notre clé)</sup></sub> et du chiffrement des disques, en faisant une solution raisonnable pour l'informatique générale. <sup><sub>(Oui, vous pouvez imprimer depuis Bazzite)</sub></sup>
 
-Consultez la [FAQ](https://universal-blue.discourse.group/docs?topic=33) pour plus de détails sur ce qui distingue Bazzite des autres systèmes d'exploitation Linux.
+Consultez la [FAQ](https://docs.bazzite.gg/General/FAQ/) pour plus de détails sur ce qui distingue Bazzite des autres systèmes d'exploitation Linux.
 
 ## Vitrine
 
