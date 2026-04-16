@@ -20,11 +20,11 @@
     - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
       - [Consoles portables alternatives](#consoles-portables-alternatives)
     - [GNOME](#gnome)
-    - [Fonctionnalités provenant d'autres sources](#fonctionnalités-provenant-dautres-sources)
+    - [Fonctionnalités en Amont](#fonctionnalités-en-amont)
       - [Universal Blue](#universal-blue)
       - [Fonctionnalités de Fedora Linux (Kinoite \& Silverblue)](#fonctionnalités-de-fedora-linux-kinoite--silverblue)
   - [Pourquoi](#pourquoi)
-  - [Showcase](#Showcase)
+  - [Showcase](#showcase)
   - [Documentation](#documentation)
   - [Vérification](#vérification)
   - [Secure Boot](#secure-boot)
@@ -81,7 +81,7 @@ La variante courante est disponible sous le nom `bazzite`, adaptée aux ordinate
 > **Les ISOs peuvent être téléchargées depuis notre [site web](https://download.bazzite.gg), et un guide d'installation utile peut être trouvé [ici](https://docs.bazzite.gg/General/Installation_Guide/).**
 
 Rebase d'un Fedora Atomic existant vers cette image pour les **pilotes GPU Open Source** :
-(Remarque : l'option Open Source de Mesa pour les GPU NVIDIA, NVK, est encore sujette à des erreurs au moment de la rédaction. Pour tout problème lié à NVK, [merci de soumettre un rapport à Mesa]([url](https://docs.mesa3d.org/bugs.html)), pas à Ublue/Bazzite)
+(Remarque : l'option Open Source de Mesa pour les GPU NVIDIA, NVK, est encore sujette à des erreurs au moment de la rédaction. Pour tout problème lié à NVK, [merci de soumettre un rapport à Mesa](https://docs.mesa3d.org/bugs.html), pas à Ublue/Bazzite)
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
@@ -226,7 +226,7 @@ Consultez la [FAQ](https://docs.bazzite.gg/General/FAQ/) pour plus de détails s
 - [Mises à jour, rollback et rebasage](https://docs.bazzite.gg/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/)
 - [Guide de jeu](https://docs.bazzite.gg/Gaming/)
 
-Consultez la [documentation supplémentaire](http://docs.bazzite.gg/) concernant le projet.
+Consultez la [documentation supplémentaire](https://docs.bazzite.gg/) concernant le projet.
 
 ## Vérification
 
