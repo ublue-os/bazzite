@@ -180,7 +180,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 **Pour les utilisateurs avec Secure Boot activé :** Suivez notre [documentation sur le Secure Boot](#secure-boot) avant de rebaser.
 
-### Fonctionnalités provenant d'autres sources
+### Fonctionnalités en Amont
 
 #### Universal Blue
 
@@ -197,7 +197,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 - Possibilité de superposer des packages Fedora à l'image sans les perdre entre les mises à jour.
 - Orienté sécurité avec [SELinux](https://github.com/SELinuxProject/selinux) préinstallé et configuré par défaut.
 - Capacité de rebaser sur différentes images Fedora Atomic, si désiré, sans perte de données utilisateur.
-- Prise en charge de l'impression grâce à l'installation préinstallée de [CUPS](https://www.cups.org/).
+- Prise en charge de l'impression grâce à [CUPS](https://www.cups.org/) préinstallé.
 
 ## Pourquoi
 
