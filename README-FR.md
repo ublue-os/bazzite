@@ -166,14 +166,11 @@ Pour rebaser un système ostree existant vers cette image :
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome:stable
 ```
 
-Pour rebaser un système ostree existant vers une version avec l'environnement de bureau **Proprietary NVIDIA Drivers** :
+Pour rebaser un système ostree existant vers une version avec les **pilotes NVIDIA propriétaires** :
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
 ```
-
-> [!WARNING]
-> **En raison d'un bug en amont, Bazzite ne peut pas être utilisé sur les Steam Decks avec un stockage eMMC de 64 Go pour le moment.**
 
 Pour rebaser un système ostree existant vers la version **Steam Deck/HTPC** :
 
