@@ -238,9 +238,9 @@ cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 ## Secure Boot
 
 > [!WARNING]
-> **Utilisateurs de Steam Deck : Le Steam Deck ne vient pas avec le secure boot activé et n'inclut pas de clés inscrites par défaut. Ne l'activez pas à moins de savoir parfaitement ce que vous faites.**
+> **Utilisateurs de Steam Deck : Le Steam Deck ne vient pas avec le Secure Boot activé et n'inclut pas de clés inscrites par défaut. Ne l'activez pas à moins de savoir parfaitement ce que vous faites.**
 
-Le secure boot est pris en charge avec notre clé personnalisée. La clé publique peut être trouvée à la racine de ce dépôt [ici](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der).
+Le Secure Boot est pris en charge avec notre clé personnalisée. La clé publique peut être trouvée à la racine de ce dépôt [ici](https://github.com/ublue-os/bazzite/blob/main/secure_boot.der).
 Si vous souhaitez inscrire cette clé avant l'installation ou le rebasage, téléchargez la clé et exécutez les commandes suivantes :
 
 ```bash
