@@ -95,47 +95,40 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 **Pour les utilisateurs avec Secure Boot activé :** Suivez notre [documentation sur le démarrage sécurisé](#secure-boot) avant de faire le rebase.
 
 ### Steam Deck/Home Theater PCs (HTPCs)
-
-> [!IMPORTANT]
-Les appareils qui NE sont PAS des SteamDeck peuvent toujours utiliser les images `bazzite-deck`, mais doivent utiliser un GPU AMD moderne. Les GPU Intel Arc ont également été confirmés comme fonctionnels.
-
-Variante conçue pour être utilisée comme alternative à SteamOS sur le SteamDeck, et pour une expérience de console sur les HTPCs, disponible sous le nom `bazzite-deck` :
+Variante conçue pour être utilisée comme alternative à SteamOS sur le Steam Deck, et pour une expérience de console sur les HTPCs, disponible sous le nom `bazzite-deck` :
 
 - Démarre directement en mode jeu, correspondant au comportement de SteamOS.
 - **Le `duperemove` automatique réduit considérablement la taille des compatdata.**
 - **La dernière version de Mesa crée des caches de shaders plus petits et n'en nécessite pas pour éviter les saccades.**
 - **Peut être démarré même si le disque est plein.**
-- **Prise en charge de toutes les langues prises en charge par Fedora.**
-- **Utilise Wayland en mode bureau avec [support pour SteamInput](https://github.com/Supreeeme/extest).**
+- **Prise en charge de toutes les langues prises en charge par Fedora en amont.**
+- **Utilise Wayland en mode bureau avec [support pour Steam input](https://github.com/Supreeeme/extest).**
 - Inclut [HHD](https://github.com/hhd-dev/hhd) pour un support d'entrée étendu sur les consoles portables non-Valve.
-- Propose la plupart des packages SteamOS, y compris les pilotes, les mises à jour de firmware et les contrôleurs du ventilateur [du dépôt evlaV](https://gitlab.com/evlaV).
+- Propose des versions portées de la plupart des packages SteamOS, y compris les pilotes, les mises à jour de firmware et les contrôleurs du ventilateur [du dépôt evlaV](https://gitlab.com/evlaV).
 - Mesa patché pour un contrôle approprié du framerate par Gamescope.
-- Livré avec des patches de [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) pour un support complet de BTRFS pour le lecteur carte SD.
-- Livré avec une copie de [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), activé par défaut.
-- Option pour installer [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), et [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), ainsi que de nombreux autres packages utiles lors de l'installation.
-- Le système de mise à jour personnalisé permet de mettre à jour directement depuis l'interface du mode jeu grâce à [ublue-update](https://github.com/ublue-os/ublue-update) et [topgrade](https://github.com/topgrade-rs/topgrade).
-- Prise en charge intégrée du dual-boot Windows en laissant l'installation du GRUB de Fedora intacte.
+- Livré avec des patches de [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) pour un support complet de BTRFS pour le lecteur carte SD par défaut.
+- Livré avec une copie portée de [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), activé par défaut.
+- Option pour installer [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/) et [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), ainsi que de nombreux autres packages utiles lors de l'installation.
+- Système de mise à jour personnalisé permettant de mettre à jour l'OS, les Flatpaks et plus directement depuis l'interface du mode jeu grâce à [uupd](https://github.com/ublue-os/uupd) et [topgrade](https://github.com/topgrade-rs/topgrade).
+- Prise en charge intégrée du dual-boot Windows grâce à l'installation intacte de GRUB par Fedora.
 - Une mise à jour casse quelque chose ? Revenez facilement à la version précédente de Bazzite grâce à la fonctionnalité de rollback de `rpm-ostree`. Vous pouvez même sélectionner les images précédentes au démarrage.
 - Steam et Lutris préinstallés dans l'image en tant que packages superposés.
-- [Discover Overlay](https://github.com/trigg/Discover) pour Discord préinstallé et lancé automatiquement à la fois en mode jeu et sur le bureau si Discord est installé. [Consulte la documentation officielle ici](https://trigg.github.io/Discover/bazzite).
-- Utilise ZRAM<sub><sup>(4GB)</sup></sub> avec l'algorithme de compression LZ4 par défaut.
+- Utilise ZRAM<sub><sup>(4 Go)</sup></sub> avec l'algorithme de compression LZ4 par défaut.
+- Planificateurs CPU [LAVD](https://crates.io/crates/scx_lavd) et [BORE](https://github.com/firelzrd/bore-scheduler) pour un gameplay fluide et réactif.
 - Planificateur d'E/S Kyber pour éviter la starvation des E/S lors de l'installation de jeux ou pendant le processus de `duperemove` en arrière-plan.
 - Applique les paramètres du noyau de SteamOS.
-- Profils d'affichage calibrés en couleur pour les écrans mats et réfléchissants du SteamDeck inclus.
+- Profils d'affichage calibrés en couleur pour les écrans mats et réfléchissants du Steam Deck inclus.
 - Fonctionnalités pour utilisateurs avancés désactivées par défaut, notamment :
-    - Service pour l'undervolting à faible risque du SteamDeck ainsi que des ordinateurs portables AMD  via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) et [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), voir `ryzenadj.service` et `/etc/default/ryzenadj`.
-    - Support intégré pour l'overclocking d'affichage. Par exemple, ajoutez `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` à `/etc/environment`.
-    - Vous avez modifié votre SteamDeck avec 32 Go de RAM ? Profitez du double de la quantité maximale de VRAM, appliqué automatiquement. <sup><sub>(Pourriez-vous partager vos compétences en soudure ?)</sub></sup>
-- Les services spécifiques au matériel du SteamDeck peuvent être désactivés en exécutant `ujust disable-bios-updates` et `ujust disable-firmware-updates` dans le terminal. Ils sont automatiquement désactivés sur le matériel non-Deck, et sur les Decks avec des écrans DeckHD ou des mods de 32 Go de RAM.
-- Plus d'informations peuvent être trouvées [ici](https://universal-blue.discourse.group/docs?topic=37) sur les images Bazzite pour SteamDeck.
-
-> [!WARNING]
-> **En raison d'un bug amont, Bazzite ne peut pas être utilisé sur les SteamDecks avec 64 Go de stockage eMMC pour le moment. La mise à niveau du stockage résout le problème.**
+    - Service pour l'undervolting à faible risque du Steam Deck ainsi que des ordinateurs portables AMD Framework via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) et [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), voir `ryzenadj.service` et `/etc/default/ryzenadj`.
+    - Support intégré pour l'overclocking d'affichage. Par exemple, ajoutez `CUSTOM_REFRESH_RATES=30-68` à `/etc/environment`. Les taux de rafraîchissement minimum et maximum varient selon la console portable !
+    - Vous avez modifié votre Steam Deck avec 32 Go de RAM ? Profitez du double de la quantité maximale de VRAM, appliqué automatiquement. <sup><sub>(Pourriez-vous partager vos compétences en soudure ?)</sub></sup>
+- Les services spécifiques au matériel du Steam Deck peuvent être désactivés en exécutant `ujust disable-bios-updates` et `ujust disable-firmware-updates` dans le terminal. Ils sont automatiquement désactivés sur le matériel non-Deck, et sur les Decks avec des écrans DeckHD ou des mods de 32 Go de RAM.
+- Plus d'informations peuvent être trouvées [ici](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/) sur les images Bazzite pour Steam Deck.
 
 > [!IMPORTANT]
-> **Les ISOs peuvent être téléchargées depuis notre [page de versions](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile peut être trouvé [ici](https://universal-blue.discourse.group/docs?topic=30).**
+> **Les ISOs peuvent être téléchargées depuis notre [site web](https://download.bazzite.gg), et un guide d'installation utile peut être trouvé [ici](https://docs.bazzite.gg/General/Installation_Guide/).**
 
-Rebase d'un Fedora Atomic existant avec cette image :
+Rebase d'un Fedora Atomic existant vers cette image :
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stable
@@ -143,14 +136,13 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 
 #### Consoles portables alternatives
 
-Merci de consulter notre [Wiki des consoles portables](https://universal-blue.discourse.group/docs?topic=1038) pour les modifications de paramètres nécessaires et les plugins Decky Loader pour le mode jeu Steam sur votre console portable spécifique.
+Merci de consulter notre [Wiki des consoles portables](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Handheld_Wiki/) pour les modifications de paramètres nécessaires et les plugins Decky Loader pour le mode jeu Steam sur votre console portable spécifique.
 
 **Assurez-vous également de lire la [documentation de hhd](https://github.com/hhd-dev/hhd#after-install), certaines consoles portables nécessitent des modifications/tweaks spécifiques pour fonctionner correctement.**
 
 Nous avons également des commandes `ujust` pour installer divers thèmes [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) qui ne se trouvent pas sur le magasin CSS Loader. Ceux-ci seront automatiquement mis à jour avec Bazzite s'ils sont installés.
-
 ```bash
-# Installer le thème Manette de jeu portable (https://github.com/victor-borges/handheld-controller-glyphs)
+# Installer le thème manette de jeu portable (https://github.com/victor-borges/handheld-controller-glyphs)
 ujust install-hhd-controller-glyph-theme
 ```
 
@@ -158,15 +150,15 @@ ujust install-hhd-controller-glyph-theme
 
 Les versions avec l'environnement de bureau GNOME sont disponibles en versions desktop et deck. Ces versions incluent les fonctionnalités supplémentaires suivantes :
 
-- Prise en charge du taux de rafraîchissement variable et du scaling fractionné activés sous Wayland, voir [ici](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
+- [Prise en charge du taux de rafraîchissement variable et du scaling fractionné activés sous Wayland](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1154).
 - Menu personnalisé dans la barre supérieure pour revenir au mode jeu, lancer Steam et ouvrir plusieurs utilitaires utiles.
-- GSConnect est préinstallé et prêt à l'emploi, voir [ici](https://extensions.gnome.org/extension/1319/gsconnect/).
-- Extension Hanabi incluse pour offrir des fonctionnalités similaires à Wallpaper Engine sous KDE, voir [ici](https://github.com/jeffshee/gnome-ext-hanabi).
-- Nombreuses extensions optionnelles préinstallées, y compris des correctifs importants pour l'expérience utilisateur, voir [ici](https://www.youtube.com/watch?v=nbCg9_YgKgM).
-- Mises à jour automatiques pour le thème GNOME de [Firefox](https://github.com/rafaelmardojai/firefox-gnome-theme) et le thème GNOME de [Thunderbird](https://github.com/rafaelmardojai/thunderbird-gnome-theme), s'ils sont installés.
+- [GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/) préinstallé et prêt à l'emploi.
+- [Extension Hanabi](https://github.com/jeffshee/gnome-ext-hanabi) incluse pour offrir des fonctionnalités similaires à Wallpaper Engine sous KDE.
+- Nombreuses extensions optionnelles préinstallées, y compris des [correctifs importants pour l'expérience utilisateur](https://www.youtube.com/watch?v=nbCg9_YgKgM).
+- Mises à jour automatiques pour le [thème GNOME Firefox](https://github.com/rafaelmardojai/firefox-gnome-theme) et le [thème GNOME Thunderbird](https://github.com/rafaelmardojai/thunderbird-gnome-theme). <sup><sub>(Si installés)</sub></sup>
 
 > [!IMPORTANT]
-> **Les ISO peuvent être téléchargées depuis notre [page de releases](https://github.com/ublue-os/bazzite/releases), et un guide d'installation utile est disponible [ici](https://universal-blue.discourse.group/docs?topic=30).**
+> **Les ISOs peuvent être téléchargées depuis notre [site web](https://download.bazzite.gg), et un guide d'installation utile peut être trouvé [ici](https://docs.bazzite.gg/General/Installation_Guide/).**
 
 Pour rebaser un système ostree existant vers cette image :
 
