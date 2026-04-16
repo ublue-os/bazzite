@@ -268,13 +268,13 @@ Si on vous demande un mot de passe, utilisez `universalblue`.
 
 ## Remerciements spéciaux
 
-Bazzite est un effort communautaire et ne serait pas possible sans le soutien de chacun. Voici quelques personnes qui nous ont aidés tout au long du chemin :
+Bazzite est un effort communautaire et ne serait pas possible sans le soutien de chacun. Voici quelques-unes des personnes qui nous ont aidés en chemin :
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - Pour la création de notre logo et de notre identité visuelle.
 - [SuperRiderTH](https://github.com/SuperRiderTH) - Pour la création de notre vidéo de démarrage du mode jeu Steam.
 - [evlaV](https://gitlab.com/evlaV) - Pour avoir rendu le code de Valve disponible et pour être [cette personne](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - Pour gamescope-session et pour un soutien précieux tout au long du projet.
-- [Jovian-NixOS](https://github.com/Jovian-Experiments) - Pour le support technique et la création d'un projet similaire basé sur Nix. Allez voir, sérieusement.
+- [Jovian-NixOS](https://github.com/Jovian-Experiments) - Pour le support technique et la création d'un projet similaire. Allez voir, sérieusement. C'est notre cousin basé sur Nix.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - Pour l'aide avec les correctifs du noyau nécessaires et pour avoir créé le repo [kernel-fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) que nous utilisons maintenant.
 - [nicknamenamenick](https://github.com/nicknamenamenick) - Pour maintenir quasiment seul notre documentation et notre littérature de support, et pour avoir aidé d'innombrables utilisateurs.
 - [Steam Deck Homebrew](https://deckbrew.xyz) - Pour choisir de soutenir des distributions autres que SteamOS malgré le travail supplémentaire, et un merci spécial à [PartyWumpus](https://github.com/PartyWumpus) pour avoir fait fonctionner Decky Loader avec SELinux pour nous.
