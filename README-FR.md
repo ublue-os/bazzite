@@ -13,6 +13,7 @@
 ---
 
 # Table des matières
+
 - [🇺🇸 🇪🇸 🇮🇩 🇨🇳 🇫🇷 🇧🇷 🇳🇱 🇷🇺 🇩🇪 🇹🇼](#---------)
 - [Table des matières](#table-des-matières)
   - [À propos et fonctionnalités](#à-propos-et-fonctionnalités)
@@ -120,9 +121,9 @@ Variante conçue pour être utilisée comme alternative à SteamOS sur le Steam 
 - Applique les paramètres du noyau de SteamOS.
 - Profils d'affichage calibrés en couleur pour les écrans mats et réfléchissants du Steam Deck inclus.
 - Fonctionnalités pour utilisateurs avancés désactivées par défaut, notamment :
-    - Service pour l'undervolting à faible risque du Steam Deck ainsi que des ordinateurs portables AMD Framework via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) et [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), voir `ryzenadj.service` et `/etc/default/ryzenadj`.
-    - Support intégré pour l'overclocking d'affichage. Par exemple, ajoutez `CUSTOM_REFRESH_RATES=30-68` à `/etc/environment`. Les taux de rafraîchissement minimum et maximum varient selon la console portable !
-    - Vous avez modifié votre Steam Deck avec 32 Go de RAM ? Profitez du double de la quantité maximale de VRAM, appliqué automatiquement. <sup><sub>(Pourriez-vous partager vos compétences en soudure ?)</sub></sup>
+  - Service pour l'undervolting à faible risque du Steam Deck ainsi que des ordinateurs portables AMD Framework via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) et [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), voir `ryzenadj.service` et `/etc/default/ryzenadj`.
+  - Support intégré pour l'overclocking d'affichage. Par exemple, ajoutez `CUSTOM_REFRESH_RATES=30-68` à `/etc/environment`. Les taux de rafraîchissement minimum et maximum varient selon la console portable !
+  - Vous avez modifié votre Steam Deck avec 32 Go de RAM ? Profitez du double de la quantité maximale de VRAM, appliqué automatiquement. <sup><sub>(Pourriez-vous partager vos compétences en soudure ?)</sub></sup>
 - Les services spécifiques au matériel du Steam Deck peuvent être désactivés en exécutant `ujust disable-bios-updates` et `ujust disable-firmware-updates` dans le terminal. Ils sont automatiquement désactivés sur le matériel non-Deck, et sur les Decks avec des écrans DeckHD ou des mods de 32 Go de RAM.
 - Plus d'informations peuvent être trouvées [ici](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/) sur les images Bazzite pour Steam Deck.
 
