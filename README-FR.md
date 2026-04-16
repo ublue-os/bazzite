@@ -221,17 +221,11 @@ Consultez la [FAQ](https://docs.bazzite.gg/General/FAQ/) pour plus de détails s
 
 ## Documentation
 
-- [Installation et gestion des applications](https://universal-blue.discourse.group/docs?topic=35)
-- [Mises à jour, rollback et rebasage](https://universal-blue.discourse.group/docs?topic=36)
-- [Guide de jeu](https://universal-blue.discourse.group/docs?topic=31)
+- [Installation et gestion des applications](https://docs.bazzite.gg/Installing_and_Managing_Software/)
+- [Mises à jour, rollback et rebasage](https://docs.bazzite.gg/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/)
+- [Guide de jeu](https://docs.bazzite.gg/Gaming/)
 
 Consultez la [documentation supplémentaire](http://docs.bazzite.gg/) concernant le projet.
-
-Découvrez nos [Newsletters](https://universal-blue.discourse.group/tag/bazzite-buzz) publiés régulièrement pour les mises à jour sur le projet.
-
-## Packages personnalisés
-
-Les paquets portés de SteamOS et ChimeraOS, entre autres utilisés par Bazzite, sont construits sur Copr dans [bazzite](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/) et [bazzite-multilib](https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite-multilib/).
 
 ## Vérification
 
