@@ -1,5 +1,5 @@
 diff --git a/etc/xdg/kwinrulesrc b/etc/xdg/kwinrulesrc
-index 80b8acd..87ebb13 100644
+index 80b8acd..bd7a15c 100644
 --- a/etc/xdg/kwinrulesrc
 +++ b/etc/xdg/kwinrulesrc
 @@ -5,13 +5,13 @@ update_info=kwinrules.upd:replace-placement-string-to-enum,kwinrules.upd:use-vir
@@ -11,7 +11,8 @@ index 80b8acd..87ebb13 100644
  skiptaskbarrule=2
  title=Steam Keyboard
 -titlematch=2
- type=16
+-type=16
++types=256
  typerule=2
 -wmclass=steam
 +wmclass=steamwebhelper steam
