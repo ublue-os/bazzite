@@ -13,7 +13,7 @@ case $lang in
     info_text=("Steam запускается впервые. Пожалуйста, подождите, скачивание клиента Steam может занять несколько минут.")
     ;;
     *)
-    info_text=("Steam is opening for the first time. Please be patient, downloading the Steam client may take a few minutes.")
+    info_text=("Steam is opening for the first time. Please wait, downloading the Steam client may take a few minutes.")
     ;;
 esac
 
