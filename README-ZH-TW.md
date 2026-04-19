@@ -223,8 +223,8 @@ Bazzite 預設啟用最新的 Linux 核心和 SELinux，並完整支援安全啟
 ![Steam 遊戲模式](/repo_content/gamemode.png?raw=true "Steam 遊戲模式")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![Distrobox 終端機](/repo_content/distrobox.png?raw=true "Distrobox 終端機")
-![GNOME Vapor 主題](/repo_content/gnome1.png?raw=true "GNOME Vapor 主題")
-![GNOME VGUI2 主題](/repo_content/gnome2.png?raw=true "GNOME VGUI2 主題")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## 文件
 

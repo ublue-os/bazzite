@@ -222,11 +222,11 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "ثيم KDE Vapor")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "ثيم KDE VGUI2")
-![Steam Game Mode](/repo_content/gamemode.png?raw=true "وضع اللعب في Steam")
+![Steam Gaming Mode](/repo_content/gamemode.png?raw=true "وضع اللعب في Steam")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![Distrobox Terminals](/repo_content/distrobox.png?raw=true "طرفيات Distrobox")
-![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "ثيم GNOME Vapor")
-![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "ثيم GNOME VGUI2")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## التوثيق
 
