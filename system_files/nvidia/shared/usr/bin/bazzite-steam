@@ -35,6 +35,11 @@ if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
   else
     DECK_OPTION=""
   fi
+else
+  # Display a window which tells the user that Steam is about to be opened for the first time
+  if [[ -f /usr/bin/bazzite-steam-firstrun ]]; then
+    /usr/bin/bazzite-steam-firstrun
+  fi
 fi
 
 # HHD Support
