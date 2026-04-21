@@ -5,6 +5,15 @@ IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 
 DECK_OPTION=""
 
+DISABLE_FIRSTRUN=0
+
+# Add a flag to disable first run window
+for arg in "$@"; do
+    if [[ $arg == "--disable-firstrun" ]]; then
+        DISABLE_FIRSTRUN=1
+    fi
+done
+
 # Use a dummy updater during oobe
 # See: https://www.reddit.com/r/Bazzite/comments/1psuar7/bazzite_xbox_ally_issue/
 OOTB_DISABLE_UPDATER_OPTION="-testoobeupdater"
@@ -34,7 +43,7 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
   fi
 else
   # Display a window which tells the user that Steam is about to be opened for the first time
-  if [[ -f /usr/bin/bazzite-steam-firstrun ]]; then
+  if [[ -f /usr/bin/bazzite-steam-firstrun ]] && [[ $DISABLE_FIRSTRUN -ne 1 ]]; then
     /usr/bin/bazzite-steam-firstrun
   fi
 fi
