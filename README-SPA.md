@@ -238,15 +238,15 @@ Lee nuestras [preguntas frecuentes](https://universal-blue.discourse.group/docs?
 
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
 
-![Steam Game Mode](/repo_content/gamemode.png?raw=true "Steam Game Mode")
+![Steam Gaming Mode](/repo_content/gamemode.png?raw=true "Steam Gaming Mode")
 
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 
 ![Distrobox Terminals](/repo_content/distrobox.png?raw=true "Distrobox Terminals")
 
-![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
 
-![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## Documentación y Boletín informativo/Newsletters (En inglés)
 
