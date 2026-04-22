@@ -23,6 +23,8 @@ hooks:
             Los IDEs de JetBrains no son compatibles con este formato
           it: >-
             Gli IDE JetBrains non sono supportati in questo formato
+          pt_BR: >-
+            IDEs JetBrains não são suportadas neste formato
 
         # If true, render inline markup commands in body; see
         # https://docs.gtk.org/Pango/pango_markup.html
@@ -58,6 +60,10 @@ hooks:
             Si tratta di un'applicazione <a href="https://www.jetbrains.com/">JetBrains</a>
             che non è ufficialmente supportata su Flatpak. Bazzite
             consiglia di utilizzare l'app Toolbox per gestire gli IDE JetBrains.
+          pt_BR: >-
+            Isto é uma aplicação <a href="https://www.jetbrains.com/">JetBrains</a>
+            e não é suportada oficialmente em formato Flatpak. Bazzite recomenda usar 
+            o app Toolbox para gerenciar IDEs JetBrains.
 
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
@@ -72,6 +78,7 @@ hooks:
               de: "Abbrechen"
               es: "Cancelar"
               it: "Annullare"
+              pt_BR: "Cancelar"
           - id: run-ujust
             string:
               en: "Download JetBrains Toolbox"
@@ -81,6 +88,7 @@ hooks:
               de: "JetBrains Toolbox herunterladen"
               es: "Descargar JetBrains Toolbox"
               it: "Scaricare JetBrains Toolbox"
+              pt_BR: "Baixar JetBrains Toolbox"
             # can be "destructive" or "suggested" or omit for no
             # styling
             style: suggested
@@ -105,6 +113,8 @@ hooks:
             Visual Studio Code no es compatible con este formato
           it: >-
             Visual Studio Code non supportato in questo formato
+          pt_BR: >-
+            Visual Studio Code não é suportado neste formato
 
         # If true, render inline markup commands in body; see
         # https://docs.gtk.org/Pango/pango_markup.html
@@ -167,6 +177,13 @@ hooks:
 
             In alternativa, è possibile passare a Bazzite DX (Esperienza come sviluppatore),
             che include Docker e Visual Studio Code.
+          pt_BR: >-
+            Isto é uma aplicação <a href="https://www.microsoft.com/">Microsoft</a> e
+            não é suportada oficialmente em formato Flatpak. Bazzite recomenda 
+            baixar o Visual Studio Code pelo Brew Tap da Universal Blue.
+
+            Alternativamente, você pode fazer rebase para o Bazzite DX (Experiência para 
+            Desenvolvedores), que inclui Docker e Visual Studio Code pré-instalados.
 
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
@@ -181,6 +198,7 @@ hooks:
               de: "Abbrechen"
               es: "Cancelar"
               it: "Annullare"
+              pt_BR: "Cancelar"
           - id: learn-dx
             string:
               en: "Learn about Bazzite DX"
@@ -190,6 +208,7 @@ hooks:
               de: "Mehr über Bazzite DX erfahren"
               es: "Saber Más Sobre Bazzite DX"
               it: "Scopri di più su Bazzite DX"
+              pt_BR: "Saiba mais sobre o Bazzite DX"
           - id: run-brew
             string:
               en: "Download from Brew"
@@ -199,6 +218,7 @@ hooks:
               de: "Über Brew herunterladen"
               es: "Descargar de Brew"
               it: "Scaricare con Brew"
+              pt_BR: "Baixar do Brew"
               
             # can be "destructive" or "suggested" or omit for no
             # styling
@@ -224,6 +244,8 @@ hooks:
             VSCodium no es compatible con este formato
           it: >-
             VSCodium non supportato in questo formato
+          pt_BR: >-
+            VSCodium não é suportado neste formato
 
         # If true, render inline markup commands in body; see
         # https://docs.gtk.org/Pango/pango_markup.html
@@ -262,6 +284,10 @@ hooks:
             Sebbene VSCodium sia verificato su Flatpak, si tratta comunque di un'applicazione riconfezionato
             <a href="https://www.microsoft.com/">Microsoft</a>, che non è ufficialmente supportata su Flatpak. 
             Bazzite consiglia di scaricare VSCodium tramite Brew Tap di Universal Blue.
+          pt_BR: >-
+            Apesar do VSCodium ser verificado no Flathub, esta é uma versão de um aplicativo 
+            <a href="https://www.microsoft.com/">Microsoft</a> e não é oficialmente suportado 
+            em formato Flatpak. Bazzite recomenda baixar o VSCodium do Brew Tap da Universal Blue.
 
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
@@ -276,6 +302,7 @@ hooks:
               de: "Abbrechen"
               es: "Cancelar"
               it: "Annullare"
+              pt_BR: "Cancelar"
           - id: run-brew
             string:
               en: "Download from Brew"
@@ -285,6 +312,7 @@ hooks:
               de: "Über Brew herunterladen"
               es: "Descargar de Brew"
               it: "Scaricare con Brew"
+              pt_BR: "Baixar do Brew"
               
             # can be "destructive" or "suggested" or omit for no
             # styling
