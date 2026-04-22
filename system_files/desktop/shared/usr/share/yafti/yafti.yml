@@ -560,3 +560,9 @@ screens:
         description: "Collects system information and logs, then gives you links to share with support for troubleshooting."
         default: false
         script: 'ujust get-logs; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      
+      - id: "Reboot to UEFI"
+        title: "Reboot to UEFI"
+        description: "Reboot into the UEFI settings menu, useful for changing boot order or other firmware settings."
+        default: false
+        script: "systemctl reboot --firmware-setup"
