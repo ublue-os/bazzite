@@ -298,17 +298,6 @@ rm -vf /etc/profile.d/verify_motd.sh
     rm -f /usr/share/backgrounds/default.xml
 )
 
-echo "Copying shared system files..."
-cp -af /src/system_files/shared/. /
-
-if [[ "$desktop_env" == "gnome" ]]; then
-    echo "Copying GNOME-specific system files..."
-    cp -a /src/system_files/gnome/. /
-elif [[ "$desktop_env" == "kde" ]]; then
-    echo "Copying KDE-specific system files..."
-    cp -a /src/system_files/kde/. /
-fi
-
 # Enable on-screen keyboard
 if [[ $imageref == *-deck* ]]; then
     # Enable keyboard here
