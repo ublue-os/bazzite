@@ -493,35 +493,35 @@ screens:
     description: "Brew Taps and Casks"
     actions:
       - id: "ublue-tap"
-        title: "Add the Ublue tap"
-        description: "Adds the Ublue Brew tap"
+        title: "Add Universal Blue tap"
+        description: "Adds Universal Blue's Brew tap"
         default: false
         script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap'
       - id: "visual-studio-code-linux"
-        title: "Install Visual Studio Code (Needs Ublue Tap)"
+        title: "Install Visual Studio Code"
         description: "Installs Visual Studio Code editor"
         default: false
-        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew install --cask visual-studio-code-linux'
+        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask visual-studio-code-linux'
       - id: "antigravity-linux"
-        title: "Install Antigravity (Needs Ublue Tap)"
+        title: "Install Antigravity"
         description: "Installs Antigravity"
         default: false
-        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew install --cask antigravity-linux'
+        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask antigravity-linux'
       - id: "lm-studio-linux"
-        title: "Install LM Studio (Needs Ublue Tap)"
+        title: "Install LM Studio"
         description: "Installs LM Studio"
         default: false
-        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew install --cask lm-studio-linux'
+        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask lm-studio-linux'
       - id: "jetbrains-toolbox-linux"
-        title: "Install JetBrains Toolbox (Needs Ublue Tap)"
+        title: "Install JetBrains Toolbox"
         description: "Installs JetBrains Toolbox"
         default: false
-        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew install --cask jetbrains-toolbox-linux'
+        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask jetbrains-toolbox-linux'
       - id: "vscodium-linux"
-        title: "Install VSCodium (Needs Ublue Tap)"
+        title: "Install VSCodium"
         description: "Installs VSCodium editor"
         default: false
-        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew install --cask vscodium-linux'
+        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask vscodium-linux'
   - title: "System Management"
     description: "System updates and configuration"
     actions:
@@ -560,3 +560,9 @@ screens:
         description: "Collects system information and logs, then gives you links to share with support for troubleshooting."
         default: false
         script: 'ujust get-logs; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      
+      - id: "Reboot to UEFI"
+        title: "Reboot to UEFI"
+        description: "Reboot into the UEFI settings menu, useful for changing boot order or other firmware settings."
+        default: false
+        script: "systemctl reboot --firmware-setup"

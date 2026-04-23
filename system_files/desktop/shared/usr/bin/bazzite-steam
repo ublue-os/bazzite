@@ -14,6 +14,11 @@ for arg in "$@"; do
     fi
 done
 
+if [[ $IMAGE_NAME =~ "nvidia" ]]; then
+  # Nvidia crash fix
+  export __GL_CONSTANT_FRAME_RATE_HINT=3
+fi
+
 # Use a dummy updater during oobe
 # See: https://www.reddit.com/r/Bazzite/comments/1psuar7/bazzite_xbox_ally_issue/
 OOTB_DISABLE_UPDATER_OPTION="-testoobeupdater"
