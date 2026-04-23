@@ -1,5 +1,10 @@
 ﻿<p align="center">
-  <a href="https://bazzite.gg/"><img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
+  <a href="https://bazzite.gg/">
+    <picture>
+      <source srcset="repo_content/Bazzite_Light.svg" media="(prefers-color-scheme: dark)">
+      <img src="repo_content/Bazzite.svg" alt="Bazzite"/>
+    </picture>
+  </a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ublue-os/bazzite) [![LFX Health Score](https://insights.linuxfoundation.org/api/badge/health-score?project=ublue-os-bazzite)](https://insights.linuxfoundation.org/project/ublue-os-bazzite) [![LFX Active Contributors](https://insights.linuxfoundation.org/api/badge/active-contributors?project=ublue-os-bazzite)](https://insights.linuxfoundation.org/project/ublue-os-bazzite)
@@ -217,11 +222,11 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "ثيم KDE Vapor")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "ثيم KDE VGUI2")
-![Steam Game Mode](/repo_content/gamemode.png?raw=true "وضع اللعب في Steam")
+![Steam Gaming Mode](/repo_content/gamemode.png?raw=true "وضع اللعب في Steam")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![Distrobox Terminals](/repo_content/distrobox.png?raw=true "طرفيات Distrobox")
-![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "ثيم GNOME Vapor")
-![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "ثيم GNOME VGUI2")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## التوثيق
 

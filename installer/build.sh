@@ -29,6 +29,25 @@ else
     podman pull "$INSTALL_IMAGE_PAYLOAD"
 fi
 
+# Determine desktop environment
+if [[ ${BASE_IMAGE} == *-gnome* ]]; then
+    desktop_env="gnome"
+else
+    desktop_env="kde"
+fi
+
+# Copy system files
+echo "Copying shared system files..."
+cp -af /src/system_files/shared/. /
+
+if [[ "$desktop_env" == "gnome" ]]; then
+    echo "Copying GNOME-specific system files..."
+    cp -a /src/system_files/gnome/. /
+elif [[ "$desktop_env" == "kde" ]]; then
+    echo "Copying KDE-specific system files..."
+    cp -a /src/system_files/kde/. /
+fi
+
 # Run the preinitramfs hook
 "$SCRIPT_DIR/titanoboa_hook_preinitramfs.sh"
 

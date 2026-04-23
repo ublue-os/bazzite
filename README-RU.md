@@ -1,5 +1,10 @@
 <p align="center">
-  <a href="https://bazzite.gg/"><img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
+  <a href="https://bazzite.gg/">
+    <picture>
+      <source srcset="repo_content/Bazzite_Light.svg" media="(prefers-color-scheme: dark)">
+      <img src="repo_content/Bazzite.svg" alt="Bazzite"/>
+    </picture>
+  </a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
@@ -224,11 +229,11 @@ Bazzite использует новейшее ядро Linux, SELinux и под�
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "Тема KDE Vapor")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "Тема KDE VGUI2")
-![Steam Game Mode](/repo_content/gamemode.png?raw=true "Игровой режим Steam")
+![Steam Gaming Mode](/repo_content/gamemode.png?raw=true "Игровой режим Steam")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![Distrobox Terminals](/repo_content/distrobox.png?raw=true "Терминалы Distrobox")
-![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "Тема GNOME Vapor")
-![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "Тема GNOME VGUI2")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## Документация
 

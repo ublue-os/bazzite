@@ -19,9 +19,9 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
-# Toggle SSH availability on boot. Options: status | enable | disable
+# Manage SSH availability on boot. Options: status | enable | disable
 [group("network")]
-toggle-ssh ACTION="":
+ssh ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     SSH_STATE="$(systemctl is-enabled sshd 2>/dev/null || true)"
@@ -48,7 +48,7 @@ toggle-ssh ACTION="":
       SSH_STATUS="Enabled"
     fi
     if [ "$OPTION" == "help" ]; then
-      echo "Usage: ujust toggle-ssh <option>"
+      echo "Usage: ujust ssh <option>"
       echo "  <option>: Specify the option to skip the interactive prompt"
       echo "  Use 'enable' to enable SSH on boot"
       echo "  Use 'disable' to disable SSH on boot"
@@ -87,9 +87,9 @@ toggle-ssh ACTION="":
         ;;
     esac
 
-# Toggles REISUB, useful for force rebooting systems when pageflip timeouts and/or other horrible things happen. Options: status | enable | disable
+# Manage REISUB, useful for force rebooting systems when pageflip timeouts and/or other horrible things happen. Options: status | enable | disable
 [group("system")]
-toggle-reisub ACTION="":
+reisub ACTION="":
     #!/usr/bin/bash
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh
@@ -557,9 +557,9 @@ add-user-to-input-group ACTION="":
     fi
     add_user_to_input_group
 
-# Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system. Options: status | enable | disable
+# Manage automounting of labeled BTRFS/EXT4 partitions under /run/media/system. Options: status | enable | disable
 [group("automounting")]
-enable-automounting ACTION="":
+automounting ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     get_status_token() {
@@ -596,7 +596,7 @@ enable-automounting ACTION="":
     }
     OPTION="{{ ACTION }}"
     if [[ "$OPTION" == "help" ]]; then
-      echo "Usage: ujust enable-automounting <option>"
+      echo "Usage: ujust automounting <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'status' to print the current portal token"
       echo "  Use 'enable' to enable automounting"
@@ -640,9 +640,9 @@ disable-framework-automount:
     set -eo pipefail
     ln -sf /dev/null /etc/udev/rules.d/99-framework-steam-automount.rules
 
-# Enable SteamOS automount. Options: status | enable | disable
+# Manage SteamOS automount. Options: status | enable | disable
 [group("automounting")]
-enable-steamos-automount ACTION="":
+steamos-automount ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     RULE_FILE="/etc/udev/rules.d/99-steamos-automount.rules"
@@ -668,7 +668,7 @@ enable-steamos-automount ACTION="":
     }
     OPTION="{{ ACTION }}"
     if [[ "$OPTION" == "help" ]]; then
-      echo "Usage: ujust enable-steamos-automount <option>"
+      echo "Usage: ujust steamos-automount <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'status' to print the current portal token"
       echo "  Use 'enable' to enable SteamOS automount"
@@ -701,17 +701,62 @@ enable-steamos-automount ACTION="":
 # Disable all partition automounting. This might increase boot times.
 [group("automounting")]
 disable-automount-all:
-    @pkexec --keep-cwd ujust disable-framework-automount enable-automounting disable enable-steamos-automount disable
+    @pkexec --keep-cwd ujust disable-framework-automount automounting disable steamos-automount disable
 
 # Enable all automounting.
 [group("automounting")]
 enable-automount-all:
-    @pkexec --keep-cwd ujust enable-framework-automount enable-automounting enable-steamos-automount
+    @pkexec --keep-cwd ujust enable-framework-automount automounting enable steamos-automount enable
 
-# Enable support for Tailscale
+# Enable support for Tailscale. Options: status | enable | disable
 [group("network")]
-enable-tailscale:
-    systemctl enable --now tailscaled.service
+tailscale ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    TAILSCALE_STATE="$(systemctl is-enabled tailscaled.service 2>/dev/null || true)"
+    get_status_token() {
+      if [[ -z "$TAILSCALE_STATE" ]]; then
+        return 1
+      elif [[ "$TAILSCALE_STATE" == "enabled" ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "enable" ]]; then
+        echo "${green}${bold}Enabled${normal}"
+      else
+        echo "${yellow}${bold}Disabled${normal}"
+      fi
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+      echo "Usage: ujust tailscale <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current portal token"
+      echo "  Use 'enable' to enable Tailscale"
+      echo "  Use 'disable' to disable Tailscale"
+      exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+      get_status_token
+      exit $?
+    elif [[ -z "$OPTION" ]]; then
+      echo "${bold}Tailscale${normal}"
+      echo "Current status: $(get_current_status)"
+      OPTION=$(ugum choose "Enable" "Disable" "Exit without changes")
+    fi
+    case "$OPTION" in
+      Enable|enable)
+        sudo systemctl enable --now tailscaled.service
+        ;;
+      Disable|disable)
+        sudo systemctl disable --now tailscaled.service
+        ;;
+      *)
+        echo "No changes made."
+        ;;
+    esac
 
 # Enable Framework Fan Control
 [group("hardware")]
@@ -967,15 +1012,15 @@ benchmark:
     echo 'Running a 1 minute benchmark ...'
     cd /tmp && stress-ng --matrix 0 -t 1m --times
 
-# toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled. Options: on | off
+# Manage password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled. Options: on | off
 [group("development")]
-toggle-password-feedback ACTION="":
+password-feedback ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     PWFEEDBACK_FILE="/etc/sudoers.d/enable-pwfeedback"
     OPTION={{ ACTION }}
     if [ "$OPTION" = "help" ]; then
-      echo "Usage: ujust toggle-password-feedback <option>"
+      echo "Usage: ujust password-feedback <option>"
       echo "  <option>: Specify the quick option to skip the toggle behavior"
       echo "  Use 'on' to show password asterisks in sudo prompts"
       echo "  Use 'off' to hide password asterisks in sudo prompts"
@@ -1009,9 +1054,9 @@ toggle-password-feedback ACTION="":
       echo "enabled, restart terminal to see changes"
     fi
 
-# Toggle global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on Proton 10 or GE 10-25 or later. Options: enable | disable
+# Manage global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on Proton 10 or GE 10-25 or later. Options: enable | disable
 [group("gaming")]
-toggle-global-fsr4 ACTION="":
+global-fsr4 ACTION="":
     #!/usr/bin/bash
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh
@@ -1049,9 +1094,9 @@ toggle-global-fsr4 ACTION="":
             ;;
     esac
 
-# Toggle global Proton FSR4 upgrade on RDNA3 GPUs; upgrades FSR 3.1+ → FSR 4, only compatible with Proton GE, Proton EM, or similar forks. Options: enable | disable
+# Manage global Proton FSR4 upgrade on RDNA3 GPUs; upgrades FSR 3.1+ → FSR 4, only compatible with Proton GE, Proton EM, or similar forks. Options: enable | disable
 [group("gaming")]
-toggle-global-fsr4-rdna3 ACTION="":
+global-fsr4-rdna3 ACTION="":
     #!/usr/bin/bash
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh
@@ -1091,9 +1136,9 @@ toggle-global-fsr4-rdna3 ACTION="":
             ;;
     esac
 
-# Toggle global Proton DLSS upgrade; updates DLSS DLLs for Proton. Options: enable | disable
+# Manage global Proton DLSS upgrade; updates DLSS DLLs for Proton. Options: enable | disable
 [group("gaming")]
-toggle-global-dlss ACTION="":
+global-dlss ACTION="":
     #!/usr/bin/bash
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh

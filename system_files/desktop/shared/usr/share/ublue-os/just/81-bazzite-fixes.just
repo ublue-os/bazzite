@@ -85,8 +85,8 @@ toggle-bt-mic:
       echo "No changes were made."
     fi
 
-# enable or disable wake-on-lan functionality. Options: status | enable | disable | force-enable
-toggle-wol ACTION="":
+# Manage wake-on-lan functionality. Options: status | enable | disable | force-enable
+wol ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     CONFIG_FILE="/etc/udev/rules.d/81-wol.rules"
@@ -116,7 +116,7 @@ toggle-wol ACTION="":
     }
     OPTION="{{ ACTION }}"
     if [ "$OPTION" == "help" ]; then
-      echo "Usage: ujust toggle-wol <option>"
+      echo "Usage: ujust wol <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'enable' to enable Wake-on-LAN"
       echo "  Use 'disable' to disable Wake-on-LAN"
@@ -175,9 +175,9 @@ toggle-wol ACTION="":
       echo "No changes were made."
     fi
 
-# enable or disable IWD as a replacement for wpa_supplicant. Options: status | enable | disable
+# Manage IWD as a replacement for wpa_supplicant. Options: status | enable | disable
 [group("network")]
-toggle-iwd ACTION="":
+iwd ACTION="":
     #!/usr/bin/bash
     get_status_token() {
       if [[ -f "/etc/NetworkManager/conf.d/supplicant.conf" ]]; then
@@ -497,8 +497,8 @@ steam-icons ACTION="":
       ;;
     esac
 
-# Toggle CEC_ONSLEEP_STANDBY - Controls whether TV goes to standby when system sleeps. Options: status | enable | disable
-toggle-cec-sleep ACTION="":
+# Manage CEC_ONSLEEP_STANDBY - Controls whether TV goes to standby when system sleeps. Options: status | enable | disable
+cec-sleep ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     CONFIG_FILE="/etc/default/cec-control"
@@ -531,7 +531,7 @@ toggle-cec-sleep ACTION="":
     OPTION="{{ ACTION }}"
 
     if [ "$OPTION" == "help" ]; then
-      echo "Usage: ujust toggle-cec-onsleep <option>"
+      echo "Usage: ujust cec-sleep <option>"
       echo "  <option>: Specify the option to skip the interactive prompt"
       echo "  Use 'enable' to make TV standby when system sleeps"
       echo "  Use 'disable' to prevent TV standby when system sleeps"

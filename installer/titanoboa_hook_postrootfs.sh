@@ -252,13 +252,13 @@ if [[ $imageref == *-nvidia* ]]; then
     echo "GSK_RENDERER=gl" >>/etc/skel/.config/environment.d/99-nvidia-fix.conf
 fi
 
-# Reenable noveau.
+# Reenable nouveau
 if [[ $imageref == *-nvidia* ]]; then
     for pkg in nvidia-gpu-firmware mesa-vulkan-drivers; do
         dnf -yq reinstall --allowerasing $pkg ||
             dnf -yq install --allowerasing $pkg
     done
-    # Ensure noveau vulkan icds exist
+    # Ensure nouveau vulkan icds exist
     (
         shopt -u nullglob
         ls /usr/share/vulkan/icd.d/nouveau_icd.*.json >/dev/null
@@ -282,11 +282,11 @@ sway*) desktop_env=sway ;;
 xfce*) desktop_env=xfce ;;
 esac
 
-# Dont start Steam at login
+# Don't start Steam at login
 rm -vf /etc/skel/.config/autostart/steam*.desktop
 
-# Remove packages that shouldnt be used in a live session
-dnf -yq remove steam lutris bazaar || :
+# Remove packages that shouldn't be used in a live session
+dnf -yq remove steam lutris bazaar waydroid || :
 
 # Don't check for verified image
 rm -vf /etc/profile.d/verify_motd.sh
@@ -297,17 +297,6 @@ rm -vf /etc/profile.d/verify_motd.sh
     wget -nv -O "$wallpaper_file" "$wallpaper_url"
     rm -f /usr/share/backgrounds/default.xml
 )
-
-echo "Copying shared system files..."
-cp -af /src/system_files/shared/. /
-
-if [[ "$desktop_env" == "gnome" ]]; then
-    echo "Copying GNOME-specific system files..."
-    cp -a /src/system_files/gnome/. /
-elif [[ "$desktop_env" == "kde" ]]; then
-    echo "Copying KDE-specific system files..."
-    cp -a /src/system_files/kde/. /
-fi
 
 # Enable on-screen keyboard
 if [[ $imageref == *-deck* ]]; then
@@ -333,7 +322,7 @@ if [[ $desktop_env == gnome ]]; then
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nHidden=true@g' /usr/share/anaconda/gnome/org.fedoraproject.welcome-screen.desktop || :
 fi
 
-# Set new background for GNOME
+# Set new background and default pins for GNOME
 if [[ $desktop_env == gnome ]]; then
     glib-compile-schemas /usr/share/glib-2.0/schemas
 fi

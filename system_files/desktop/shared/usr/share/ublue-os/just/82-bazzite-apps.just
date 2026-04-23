@@ -299,9 +299,9 @@ get-emudeck ACTION="":
         exit 0
     fi
 
-# Install OpenRGB (https://openrgb.org/). Options: status | install | uninstall
+# Manage OpenRGB (https://openrgb.org/). Options: status | install | uninstall
 [group("hardware")]
-install-openrgb ACTION="":
+openrgb ACTION="":
     #!/usr/bin/bash
     set -eo pipefail
     get_status_token() {
@@ -372,8 +372,8 @@ install-boxtron: distrobox-check-fedora
       curl -L https://github.com/dreamer/boxtron/releases/download/v0.5.4/boxtron.tar.xz | tar xJf - && \
       distrobox-export --bin /usr/bin/dosbox'
 
-# Install Resilio Sync, a file synchronization utility powered by BitTorrent. Options: status | install | uninstall
-install-resilio-sync ACTION="":
+# Manage Resilio Sync, a file synchronization utility powered by BitTorrent. Options: status | install | uninstall
+resilio-sync ACTION="":
     #!/usr/bin/bash
     set -eo pipefail
     has_fedora_distrobox() {
@@ -443,9 +443,9 @@ install-resilio-sync ACTION="":
         exit 0
     fi
 
-# Install OpenTabletDriver, an open source, cross-platform, user-mode tablet driver. Options: status | install | uninstall
+# Manage OpenTabletDriver, an open source, cross-platform, user-mode tablet driver. Options: status | install | uninstall
 [group("hardware")]
-install-opentabletdriver ACTION="":
+opentabletdriver ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     get_status_token() {
@@ -490,7 +490,7 @@ install-opentabletdriver ACTION="":
     }
     OPTION="{{ ACTION }}"
     if [[ "$OPTION" == "help" ]]; then
-        echo "Usage: ujust install-opentabletdriver <option>"
+        echo "Usage: ujust opentabletdriver <option>"
         echo "  <option>: Specify the quick option to skip the prompt"
         echo "  Use 'status' to print the current portal token"
         echo "  Use 'install' to install OpenTabletDriver"

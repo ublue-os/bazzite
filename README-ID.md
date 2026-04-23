@@ -1,5 +1,10 @@
 <p align="center">
-  <img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/>
+  <a href="https://bazzite.gg/">
+    <picture>
+      <source srcset="repo_content/Bazzite_Light.svg" media="(prefers-color-scheme: dark)">
+      <img src="repo_content/Bazzite.svg" alt="Bazzite"/>
+    </picture>
+  </a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
@@ -208,11 +213,11 @@ Baca [FAQ](https://universal-blue.discourse.group/docs?topic=33) untuk tahu apa 
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
-![Steam Game Mode](/repo_content/gamemode.png?raw=true "Steam Game Mode")
+![Steam Gaming Mode](/repo_content/gamemode.png?raw=true "Steam Gaming Mode")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![Distrobox Terminals](/repo_content/distrobox.png?raw=true "Distrobox Terminals")
-![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
-![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## Dokumentasi & Buletin
 

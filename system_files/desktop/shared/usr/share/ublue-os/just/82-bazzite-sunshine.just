@@ -91,6 +91,7 @@ setup-sunshine ACTION="":
       brew tap LizardByte/homebrew
       echo "Cleaning up any existing stable Sunshine install before installing beta..."
       brew services stop sunshine || true
+      brew unpin sunshine || true
       brew uninstall sunshine || true
       brew install sunshine-beta
       brew pin sunshine-beta
@@ -111,6 +112,7 @@ setup-sunshine ACTION="":
       brew tap LizardByte/homebrew
       echo "Cleaning up any existing beta Sunshine install before installing stable..."
       brew services stop sunshine-beta || true
+      brew unpin sunshine-beta || true
       brew uninstall sunshine-beta || true
       brew install sunshine
       brew pin sunshine
@@ -171,8 +173,11 @@ setup-sunshine ACTION="":
       fi
       brew services stop sunshine || true
       brew services stop sunshine-beta || true
+      brew unpin sunshine || true
+      brew unpin sunshine-beta || true
       brew uninstall sunshine || true
       brew uninstall sunshine-beta || true
+      echo "Sunshine is now uninstalled."
     elif [[ "${OPTION,,}" =~ ^(portal|open) ]]; then
       echo "Opening Sunshine management portal..."
       xdg-open https://localhost:47990
