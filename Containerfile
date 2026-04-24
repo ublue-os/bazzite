@@ -425,9 +425,11 @@ RUN --mount=type=cache,dst=/var/cache \
             kdeconnectd \
             kdeplasma-addons \
             rom-properties-kf6 \
+            fcitx5-chewing \
             fcitx5-mozc \
             fcitx5-chinese-addons \
             fcitx5-hangul \
+            fcitx5-m17n \
             kcm-fcitx5 \
             gnome-disk-utility \
             kio-extras \
@@ -446,6 +448,8 @@ RUN --mount=type=cache,dst=/var/cache \
             tesseract-langpack-tur \
             tesseract-langpack-chi_sim \
             tesseract-langpack-chi_sim_vert \
+            tesseract-langpack-chi_tra \
+            tesseract-langpack-chi_tra_vert \
             tesseract-langpack-ces \
             tesseract-langpack-ell \
             ptyxis && \
