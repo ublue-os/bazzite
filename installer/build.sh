@@ -51,6 +51,10 @@ fi
 # Run the preinitramfs hook
 "$SCRIPT_DIR/titanoboa_hook_preinitramfs.sh"
 
+# Copy system files
+echo "Copying overrides of system files..."
+cp -af /src/system_files/overrides/. /
+
 # Install dracut-live and regenerate the initramfs
 dnf install -y dracut-live
 kernel=$(kernel-install list --json pretty | jq -r '.[] | select(.has_kernel == true) | .version')
