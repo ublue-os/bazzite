@@ -26,7 +26,7 @@ Patch16: 0021-valve-bluetooth-ll-privacy.patch
 
 BuildRequires: dbus-devel >= 1.6
 BuildRequires: glib2-devel
-BuildRequires: libell-devel >= 0.37
+BuildRequires: libell-devel >= 0.39
 BuildRequires: libical-devel
 BuildRequires: make
 BuildRequires: readline-devel
@@ -180,6 +180,9 @@ install -m0755 tools/avinfo $RPM_BUILD_ROOT%{_bindir}
 # some issues and to set the MAC address on HCIs which don't have their
 # MAC address configured 
 install -m0755 tools/btmgmt $RPM_BUILD_ROOT%{_bindir}
+
+# btmgmt man page needs manual install in 5.86+
+install -m0644 doc/btmgmt.1 $RPM_BUILD_ROOT%{_mandir}/man1/
 
 # Remove libtool archive
 find $RPM_BUILD_ROOT -name '*.la' -delete
