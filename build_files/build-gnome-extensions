@@ -41,6 +41,7 @@ mv /usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io/sr
 # Reboot to UEFI
 mkdir -p /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com
 mv /usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com/src/* /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com/
+mv /usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com/po /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com
 
 # I18n support for few extensions
 mv /usr/share/gnome-shell/extensions/caffeine@patapon.info/locale /usr/share/gnome-shell/extensions/caffeine@patapon.info/po
