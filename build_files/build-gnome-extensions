@@ -13,7 +13,6 @@ glib-compile-schemas /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/compiz-windows-effect@hermes83.github.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/compiz-alike-magic-lamp-effect@hermes83.github.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/hotedge@jonathan.jdoda.ca/schemas
-glib-compile-schemas /usr/share/gnome-shell/extensions/restartto@tiagoporsch.github.io/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/add-to-steam@pupper.space/schemas
 mv /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info /usr/share/gnome-shell/extensions/caffeine@patapon.info
@@ -38,6 +37,10 @@ rm -rf /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build
 # Bazaar Integration
 mkdir -p /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io
 mv /usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io/src/* /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io/
+
+# Reboot to UEFI
+mkdir -p /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com
+mv /usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com/src/* /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com/
 
 # Cleanup
 dnf5 -y remove glib2-devel
