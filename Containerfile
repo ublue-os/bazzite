@@ -143,7 +143,7 @@ RUN --mount=type=cache,dst=/var/cache \
         mesa-va-drivers && \
     declare -A toswap=( \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite"]="wireplumber" \
-        ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="bluez xorg-x11-server-Xwayland NetworkManager" \
+        ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="bluez xorg-x11-server-Xwayland" \
         ["terra-mesa"]="mesa-filesystem" \
         ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
@@ -291,7 +291,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ls-iommu && \
     ln -s /dev/null /etc/NetworkManager/dispatcher.d/04-iscsi && \
     systemctl mask iscsi && \
-    systemctl mask wpa_supplicant.service && \
     systemctl mask systemd-remount-fs.service && \
     systemctl disable iwd.service && \
     mkdir -p /usr/lib/extest/ && \
