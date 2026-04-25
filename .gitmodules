@@ -13,9 +13,6 @@
 [submodule "hotedge@jonathan.jdoda.ca"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/hotedge@jonathan.jdoda.ca
 	url = https://github.com/jdoda/hotedge.git
-[submodule "restartto@tiagoporsch.github.io"]
-	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/restartto@tiagoporsch.github.io
-	url = https://github.com/tiagoporsch/restartto.git
 [submodule "appindicatorsupport@rgcjonas.gmail.com"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com
 	url = https://github.com/ubuntu/gnome-shell-extension-appindicator.git
@@ -39,4 +36,7 @@
 	url = https://github.com/ublue-os/bazzite-firmware-nonfree
 [submodule "bazaar-integration@kolunmi.github.io"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io
-	url = https://github.com/AlexanderVanhee/bazaar-companion.git
+	url = https://github.com/bazaar-org/bazaar-companion.git
+[submodule "reboottouefi@ubaygd.com"]
+	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com
+	url = https://github.com/UbayGD/reboottouefi.git
