@@ -7,14 +7,13 @@
 %endif
 
 Name:    bluez
-Version: 5.84
+Version: 5.86
 Release: 2%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: Bluetooth utilities
 License: GPL-2.0-or-later
 URL:     http://www.bluez.org/
 
 Source0: https://www.kernel.org/pub/linux/bluetooth/%{name}-%{version}.tar.xz
-Patch0: 0001-media-fix-pac_config_cb-error-code-return.patch
 
 # Valve
 Patch10: 0001-valve-bluetooth-config.patch
