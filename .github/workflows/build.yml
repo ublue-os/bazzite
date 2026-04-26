@@ -261,13 +261,11 @@ jobs:
           IMAGE: ${{ matrix.image }}
           EVENT_NAME: ${{ github.event_name }}
           REF_NAME: ${{ github.ref_name }}
+          FEDORA_VERSION: ${{ matrix.fedora_version }}
         run: |
           set -eoux pipefail
-          if [[ "${IMAGE}" =~ gnome ]]; then
-            CACHE_NAME="gnome"
-          else
-            CACHE_NAME="kde"
-          fi
+
+          CACHE_NAME="bazzite-${FEDORA_VERSION}"
 
           ALLOW_CACHE_WRITE="false"
 
@@ -275,6 +273,7 @@ jobs:
           # TODO: remove testing here when we have cache on main branch
           # PR caches are useless and may wipe cache on main
           if [[ "${IMAGE}" =~ "-deck" ]] && \
+             [[ ! "${IMAGE}" =~ "gnome" ]] && \
              [[ "${EVENT_NAME}" != "pull_request" ]] && \
              [[ "${REF_NAME}" == "main" || "${REF_NAME}" == "testing" ]]; then
             ALLOW_CACHE_WRITE="true"
@@ -290,7 +289,10 @@ jobs:
           ALLOW_CACHE_WRITE: ${{ steps.cache-prep.outputs.allow_cache_write }}
         with:
           path: /var/tmp/buildah-cache-*
-          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
+          key: ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}-
+            ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}
 
       # Build image using buildah and save it to raw-img
       - name: Build Image
@@ -318,7 +320,7 @@ jobs:
           ALLOW_CACHE_WRITE: ${{ steps.cache-prep.outputs.allow_cache_write }}
         with:
           path: /var/tmp/buildah-cache-*
-          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
+          key: ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}
 
       - name: Setup Syft
         id: setup-syft
