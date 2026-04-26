@@ -418,6 +418,7 @@ RUN --mount=type=cache,dst=/var/cache \
     ; else \
         declare -A toswap=( \
             ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="mutter gnome-shell" \
+            ["copr:copr.fedorainfracloud.org:ublue-os:bazzite"]="gnome-initial-setup" \
         ) && \
         for repo in "${!toswap[@]}"; do \
             for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
@@ -444,7 +445,6 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-tour \
             gnome-extensions-app \
             gnome-system-monitor \
-            gnome-initial-setup \
             gnome-shell-extension-background-logo \
             gnome-shell-extension-apps-menu \
             gnome-shell-extension-launch-new-instance \
