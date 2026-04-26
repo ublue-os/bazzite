@@ -32,7 +32,7 @@
         {
             "type": "command",
             "key": " 󱋩",
-            "text": "/usr/libexec/bazzite-fetch-image"
+            "text": "cat /usr/share/ublue-os/image-info.json 2>/dev/null | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get('image-name','bazzite-arm') + ':' + d.get('image-branch','apple-silicon'))\" 2>/dev/null || echo 'bazzite-arm'"
         },
         {
             "type": "os",

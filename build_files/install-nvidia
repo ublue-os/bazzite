@@ -9,7 +9,9 @@ if [[ -f /etc/yum.repos.d/_copr_ublue-os-staging.repo ]]; then
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-staging.repo
 else
     # Otherwise, retrieve the repo file for staging
-    curl -Lo /etc/yum.repos.d/_copr_ublue-os-staging.repo https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FRELEASE}"/ublue-os-staging-fedora-"${FRELEASE}".repo
+    curl -fL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 20 \
+        -o /etc/yum.repos.d/_copr_ublue-os-staging.repo \
+        https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FRELEASE}"/ublue-os-staging-fedora-"${FRELEASE}".repo
 fi
 
 if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then

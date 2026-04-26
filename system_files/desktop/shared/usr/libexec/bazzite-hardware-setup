@@ -1,22 +1,28 @@
 #!/usr/bin/bash
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
-IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
-FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
+IMAGE_NAME=$(jq -r '."image-name"' < "$IMAGE_INFO")
+IMAGE_BRANCH=$(jq -r '."image-branch"' < "$IMAGE_INFO")
+FEDORA_VERSION=$(jq -r '."fedora-version"' < "$IMAGE_INFO")
+
+contains_id() {
+  local haystack="$1"
+  local needle="$2"
+  [[ -n "${needle}" && ":${haystack}:" == *":${needle}:"* ]]
+}
 
 # SCRIPT VERSION
 HWS_VER=68
 HWS_VER_FILE="/etc/bazzite/hws_version"
-HWS_VER_RAN=$(cat $HWS_VER_FILE)
+HWS_VER_RAN=$(cat "$HWS_VER_FILE" 2>/dev/null || true)
 
 # IMAGE IDENTIFIERS
 KNOWN_IMAGE_NAME_FILE="/etc/bazzite/image_name"
-KNOWN_IMAGE_NAME=$(cat $KNOWN_IMAGE_NAME_FILE)
+KNOWN_IMAGE_NAME=$(cat "$KNOWN_IMAGE_NAME_FILE" 2>/dev/null || true)
 KNOWN_IMAGE_BRANCH_FILE="/etc/bazzite/image_branch"
-KNOWN_IMAGE_BRANCH=$(cat $KNOWN_IMAGE_BRANCH_FILE)
+KNOWN_IMAGE_BRANCH=$(cat "$KNOWN_IMAGE_BRANCH_FILE" 2>/dev/null || true)
 KNOWN_FEDORA_VERSION_FILE="/etc/bazzite/fedora_version"
-KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
+KNOWN_FEDORA_VERSION=$(cat "$KNOWN_FEDORA_VERSION_FILE" 2>/dev/null || true)
 
 # Take care of autologin for non -deck or -dx images where this file is not needed.
 if [[ "$IMAGE_NAME" != *deck* && "$IMAGE_NAME" != *dx* ]]; then
@@ -32,8 +38,11 @@ if [[ "$KNOWN_IMAGE_NAME" == "$IMAGE_NAME" && \
 fi
 
 # GLOBAL
-SYS_ID="$(/usr/libexec/hwsupport/sysid)"
-VEN_ID="$(cat /sys/devices/virtual/dmi/id/chassis_vendor)"
+SYS_ID="$(/usr/libexec/hwsupport/sysid 2>/dev/null || true)"
+VEN_ID=""
+if [[ -r /sys/devices/virtual/dmi/id/chassis_vendor ]]; then
+  VEN_ID="$(tr -d '\0' < /sys/devices/virtual/dmi/id/chassis_vendor)"
+fi
 CPU_VENDOR=$(grep "vendor_id" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
 CPU_MODEL=$(grep "model name" "/proc/cpuinfo" | uniq | awk -F": " '{ print $2 }')
 MINIMUM_FREE_ZRAM=$(awk '/MemTotal/ {printf "%.0f", $2 * 0.01}' /proc/meminfo)
@@ -47,30 +56,30 @@ mkdir -p /etc/bazzite/fixups
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
 
-if /usr/libexec/hwsupport/valve-hardware || [[ ":83N0:83N1:83E1:ROG Ally RC71L:ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
+if /usr/libexec/hwsupport/valve-hardware || contains_id "83N0:83N1:83E1:ROG Ally RC71L:ROG Ally X RC72LA" "${SYS_ID}"; then
   echo "Checking for needed IOMMU change."
 
-  if [[ ! $KARGS =~ "amd_iommu" ]]; then
+  if [[ "${KARGS}" != *amd_iommu* ]]; then
     NEEDED_KARGS+=("--append-if-missing=amd_iommu=off")
   fi
 fi
 
-if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
+if [[ "${IMAGE_NAME}" == *deck* ]] && contains_id "AOKZOE A1 AR07" "${SYS_ID}"; then
   echo "AOKZOE A1 on deck build detected, fixing edid"
-  if [[ ! $KARGS =~ "drm.edid_firmware" ]]; then
+  if [[ "${KARGS}" != *drm.edid_firmware* ]]; then
     NEEDED_KARGS+=("--append-if-missing=drm.edid_firmware=eDP-1:edid/aokzoea1ar07_edid.bin")
   fi
 fi
 
-if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
+if contains_id "Framework" "${VEN_ID}"; then
   if [[ "$SYS_ID" == "Laptop 16 ("* ]]; then
-    if [[ $KARGS =~ "amdgpu.dcdebugmask" ]]; then
+    if [[ "${KARGS}" == *amdgpu.dcdebugmask* ]]; then
       echo "Removing old, no longer needed Framework 16 fix."
       NEEDED_KARGS+=("--delete-if-present=amdgpu.dcdebugmask=0x410")
     fi
   fi
   if [[ "GenuineIntel" == "$CPU_VENDOR" ]]; then
-    if [[ ! $KARGS =~ "hid_sensor_hub" ]]; then
+    if [[ "${KARGS}" != *hid_sensor_hub* ]]; then
       echo "Intel Framework Laptop detected, applying needed keyboard fix"
       NEEDED_KARGS+=("--append-if-missing=module_blacklist=hid_sensor_hub");
     fi
@@ -82,13 +91,13 @@ fi
 #
 if [ ! -f /etc/bazzite/fixups/gttsize ]; then
   echo "Removing gttsize for device in kernel if exists (default is 50%)"
-  if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+  if contains_id "83E1" "${SYS_ID}"; then
     NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=8128")
-  elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
+  elif contains_id "ROG Ally RC71L" "${SYS_ID}"; then
     NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=8128")
-  elif [[ ":ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
+  elif contains_id "ROG Ally X RC72LA" "${SYS_ID}"; then
     NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=12192")
-  elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
+  elif contains_id "ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro" "${SYS_ID}"; then
     NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=16256")
   elif /usr/libexec/hwsupport/valve-hardware; then
     NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=16256")
@@ -97,8 +106,8 @@ if [ ! -f /etc/bazzite/fixups/gttsize ]; then
 fi
 
 # Remove sg_display
-if [[ ":83E1:ROG Ally RC71L:ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! -f /etc/bazzite/fixups/sg_display2 && $KARGS =~ "amdgpu.sg_display" ]]; then
+if contains_id "83E1:ROG Ally RC71L:ROG Ally X RC72LA" "${SYS_ID}"; then
+  if [[ ! -f /etc/bazzite/fixups/sg_display2 && "${KARGS}" == *amdgpu.sg_display* ]]; then
     echo "Removing sd_display=0 (it is not needed anymore)"
     NEEDED_KARGS+=("--delete-if-present=amdgpu.sg_display=0")
   fi
@@ -106,53 +115,53 @@ fi
 
 if [[ ! -f /etc/bazzite/fixups/orientation_old2 ]]; then
   echo "Removing panel orientation for device in kernel if exists"
-  if [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
+  if contains_id "ROG Ally RC71L" "${SYS_ID}"; then
     NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=left_side_up")
-  elif [[ ":G1617-01:" =~ ":$SYS_ID:" && ! $CPU_MODEL =~ 8640U|8840U|7640U ]]; then
+  elif contains_id "G1617-01" "${SYS_ID}" && [[ "${CPU_MODEL}" != *8640U* && "${CPU_MODEL}" != *8840U* && "${CPU_MODEL}" != *7640U* ]]; then
     NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=right_side_up")
-  elif [[ ":G1617-01:" =~ ":$SYS_ID:" ]]; then
+  elif contains_id "G1617-01" "${SYS_ID}"; then
     NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=right_side_up")
-  elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
+  elif contains_id "WIN2" "${SYS_ID}"; then
     NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=right_side_up")
-  elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
+  elif contains_id "ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro" "${SYS_ID}"; then
     NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=left_side_up")
   fi
 fi
 
 # Slide reboots randomly, acpi=strict seems to fix it
-if [[ ":SLIDE:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "acpi=strict" ]]; then
+if contains_id "SLIDE" "${SYS_ID}"; then
+  if [[ "${KARGS}" != *acpi=strict* ]]; then
     echo "Adding acpi=strict for Slide to avoid random reboots"
     NEEDED_KARGS+=("--append-if-missing=acpi=strict")
   fi
 fi
 
-if [[ ":ROG Flow Z13 GZ302EA:" =~ "$:SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
+if contains_id "ROG Flow Z13 GZ302EA" "${SYS_ID}"; then
+  if [[ "${KARGS}" != *amdgpu.dcdebugmask* ]]; then
     echo "ROG Flow Z13 2025, fixing display artifacts"
     NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
   fi
 fi
 
-if [[ ! $KARGS =~ "disable_ertm" ]]; then
+if [[ "${KARGS}" != *disable_ertm* ]]; then
   echo "Adding needed kargs for bluetooth"
   NEEDED_KARGS+=("--append-if-missing=bluetooth.disable_ertm=1")
 fi
 
-if [[ ! -f /etc/bazzite/fixups/preempt_cleanup2 && $KARGS =~ "preempt" ]]; then
+if [[ ! -f /etc/bazzite/fixups/preempt_cleanup2 && "${KARGS}" == *preempt* ]]; then
   echo "Removing full preemption (once)"
   NEEDED_KARGS+=("--delete-if-present=preempt=full")
 fi
 
-if [[ $KARGS =~ "nomodeset" ]]; then
+if [[ "${KARGS}" == *nomodeset* ]]; then
   echo "Removing nomodeset"
   NEEDED_KARGS+=("--delete-if-present=nomodeset")
 fi
 
-if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
+if [[ "${IMAGE_NAME}" == *deck* || "${IMAGE_NAME}" == *ally* ]]; then
   if /usr/libexec/hwsupport/valve-hardware; then
-    if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
-      RESOLUTION=$(lshw -json -c display | jq -r .[]."configuration"."resolution")
+    if contains_id "Jupiter" "${SYS_ID}"; then
+      RESOLUTION=$(lshw -json -c display | jq -r '.[].configuration.resolution')
       if [[ "${RESOLUTION}" = "1200,1920" ]]; then
         echo "Jupiter with DeckHD detected, disabling BIOS updates..."
         systemctl disable --now jupiter-biosupdate.service
@@ -196,7 +205,7 @@ if [ ! -f /etc/bazzite/fixups/iwd ]; then
 fi
 
 # FRAMEWORK AMD FIXES
-if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
+if contains_id "Framework" "${VEN_ID}"; then
   if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
     # Remove ryzen_smu module load if it exists
     rm -rf /etc/modules-load.d/ryzen_smu.conf
@@ -217,7 +226,7 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
 fi
 
 # SURFACE FIXES
-if [[ ":Microsoft:" =~ ":$VEN_ID:" ]]; then
+if contains_id "Microsoft" "${VEN_ID}"; then
   if ! [[ -f "/etc/modules-load.d/surface.conf" ]]; then
     if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
       printf "# Support GPIO pins on AMD Surfaces\npinctrl_amd\n" > "/etc/modules-load.d/surface.conf"
@@ -294,10 +303,10 @@ if [ ! -f /etc/bazzite/fixups/hhd_service_cleanup ]; then
   touch /etc/bazzite/fixups/hhd_service_cleanup
 fi
 
-if [[ -n "$NEEDED_KARGS" ]]; then
+if (( ${#NEEDED_KARGS[@]} > 0 )); then
   echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
   plymouth display-message --text="Preparing System - Please wait, this may take a while" || true
-  rpm-ostree kargs ${NEEDED_KARGS[*]} || exit 1
+  rpm-ostree kargs "${NEEDED_KARGS[@]}" || exit 1
   SHOULD_REBOOT=true
 else
   echo "No karg changes needed"
@@ -309,10 +318,10 @@ touch /etc/bazzite/fixups/orientation_old2
 touch /etc/bazzite/fixups/gttsize
 
 mkdir -p /etc/bazzite
-echo $HWS_VER > $HWS_VER_FILE
-echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
-echo $FEDORA_VERSION > $KNOWN_FEDORA_VERSION_FILE
-echo $IMAGE_BRANCH > $KNOWN_IMAGE_BRANCH_FILE
+echo "$HWS_VER" > "$HWS_VER_FILE"
+echo "$IMAGE_NAME" > "$KNOWN_IMAGE_NAME_FILE"
+echo "$FEDORA_VERSION" > "$KNOWN_FEDORA_VERSION_FILE"
+echo "$IMAGE_BRANCH" > "$KNOWN_IMAGE_BRANCH_FILE"
 
 if [[ "$SHOULD_REBOOT" == true ]]; then
   echo "Rebooting to apply karg changes"

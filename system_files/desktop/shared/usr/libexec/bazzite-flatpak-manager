@@ -7,19 +7,18 @@ VER=34
 SCRIPT_HASH=$(tr -d '[:space:]' <"$0" | sha256sum | cut -d ' ' -f 1)
 VER="$VER-$SCRIPT_HASH"
 VER_FILE="/etc/bazzite/flatpak_manager_version"
-VER_RAN=$(cat $VER_FILE)
+VER_RAN=$(cat "$VER_FILE" 2>/dev/null || true)
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
-BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+IMAGE_NAME=$(jq -r '."image-name"' < "$IMAGE_INFO")
 
 # IMAGE IDENTIFIERS
 KNOWN_IMAGE_NAME_FILE="/etc/bazzite/flatpak_manager_image_name"
-KNOWN_IMAGE_NAME=$(cat $KNOWN_IMAGE_NAME_FILE)
+KNOWN_IMAGE_NAME=$(cat "$KNOWN_IMAGE_NAME_FILE" 2>/dev/null || true)
 
 # Run script if updated
-if [[ -f $VER_FILE && $VER = $VER_RAN ]]; then
+if [[ -f $VER_FILE && $VER = "$VER_RAN" ]]; then
   if [[ -f $KNOWN_IMAGE_NAME_FILE ]]; then
-    if [[ $IMAGE_NAME = $KNOWN_IMAGE_NAME ]]; then
+    if [[ $IMAGE_NAME = "$KNOWN_IMAGE_NAME" ]]; then
       echo "Flatpak manager v$VER has already ran. Exiting..."
       exit 0
     fi
@@ -88,7 +87,8 @@ do
 done && unset -v app
 
 # Params needed for HW accelerated video on Nvidia (Ignoring hybrid systems)
-if [[ $IMAGE_NAME =~ "nvidia" ]] && [ $(grep -o "\-display" <<< $(lshw -C display) | wc -l) -le 1 ] && grep -q "vendor: NVIDIA Corporation" <<< $(lshw -C display); then
+DISPLAY_INFO="$(lshw -C display 2>/dev/null || true)"
+if [[ $IMAGE_NAME =~ "nvidia" ]] && [[ $(grep -o '\-display' <<< "$DISPLAY_INFO" | wc -l) -le 1 ]] && grep -q "vendor: NVIDIA Corporation" <<< "$DISPLAY_INFO"; then
   flatpak override \
     --system \
     --filesystem=host-os \
@@ -111,11 +111,13 @@ else
     org.mozilla.firefox
 fi
 
-# Set up Firefox default configuration
-mkdir -p /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stable/defaults/pref
-rm -f /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stable/defaults/pref/*bazzite*.js
-/usr/bin/cp -rf /usr/share/ublue-os/firefox-config/* /var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/x86_64/stable/defaults/pref/
+# Set up Firefox default configuration for the host Flatpak architecture
+FLATPAK_ARCH="$(flatpak --default-arch 2>/dev/null || uname -m)"
+FIREFOX_SYSTEMCONFIG_DIR="/var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/${FLATPAK_ARCH}/stable/defaults/pref"
+mkdir -p "$FIREFOX_SYSTEMCONFIG_DIR"
+rm -f "$FIREFOX_SYSTEMCONFIG_DIR"/*bazzite*.js
+/usr/bin/cp -rf /usr/share/ublue-os/firefox-config/* "$FIREFOX_SYSTEMCONFIG_DIR"/
 
 mkdir -p /etc/bazzite
-echo $VER > $VER_FILE
-echo $IMAGE_NAME > $KNOWN_IMAGE_NAME_FILE
+echo "$VER" > "$VER_FILE"
+echo "$IMAGE_NAME" > "$KNOWN_IMAGE_NAME_FILE"

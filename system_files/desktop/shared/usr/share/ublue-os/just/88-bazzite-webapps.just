@@ -6,6 +6,40 @@ get-media-app service="":
     #!/usr/bin/bash
     # Load ugum for interactive menu
     source /usr/lib/ujust/ujust.sh
+    latest_appimage_url() {
+        local repo="$1"
+        local api_json asset_url=""
+
+        api_json="$(curl -fsSL "https://api.github.com/repos/$repo/releases/latest")" || return 1
+
+        case "$(uname -m)" in
+            aarch64)
+                asset_url="$(echo "$api_json" | jq -r '.assets[] | select(.name | test("(?i)(aarch64|arm64).*AppImage$")) | .browser_download_url' | head -n 1)"
+                ;;
+            x86_64)
+                asset_url="$(echo "$api_json" | jq -r '.assets[] | select(.name | test("(?i)(x86_64|amd64).*AppImage$")) | .browser_download_url' | head -n 1)"
+                ;;
+        esac
+
+        if [[ -z "$asset_url" ]]; then
+            asset_url="$(echo "$api_json" | jq -r '.assets[] | select(.name | test(".*AppImage$")) | .browser_download_url' | head -n 1)"
+        fi
+
+        printf '%s\n' "$asset_url"
+    }
+    report_foreign_appimage() {
+        local appimage_path="$1"
+        local appimage_desc
+        appimage_desc="$(file -b "$appimage_path" 2>/dev/null || true)"
+
+        if [[ "$(uname -m)" == "aarch64" ]] && grep -q 'x86-64' <<< "$appimage_desc"; then
+            if ! command -v box64 >/dev/null 2>&1 && ! command -v FEXInterpreter >/dev/null 2>&1; then
+                echo "This AppImage is x86_64-only and requires the ARM emulation stack." >&2
+                exit 1
+            fi
+            echo "This AppImage is x86_64-only and will run via the ARM emulation stack."
+        fi
+    }
     # Function to install StreamingServiceLauncher
     install_launcher() {
         echo "Installing StreamingServiceLauncher..."
@@ -17,9 +51,13 @@ get-media-app service="":
         rm -f "$HOME/Applications/StreamingServiceLauncher.AppImage"
         rm -f "$HOME/.local/bin/streaming-service-launcher"
         # Download latest release
-        RELEASE_URL="https://api.github.com/repos/aarron-lee/StreamingServiceLauncher/releases/latest"
-        wget -q $(curl -s $RELEASE_URL | jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
-            -O "$HOME/Applications/StreamingServiceLauncher.AppImage"
+        APPIMAGE_URL="$(latest_appimage_url "aarron-lee/StreamingServiceLauncher")"
+        if [[ -z "$APPIMAGE_URL" || "$APPIMAGE_URL" == "null" ]]; then
+            echo "Failed to resolve a StreamingServiceLauncher AppImage"
+            exit 1
+        fi
+        wget -q "$APPIMAGE_URL" -O "$HOME/Applications/StreamingServiceLauncher.AppImage"
+        report_foreign_appimage "$HOME/Applications/StreamingServiceLauncher.AppImage"
         # Create launcher script
         echo "#!/bin/bash" > "$HOME/.local/bin/streaming-service-launcher"
         echo "\"$HOME/Applications/StreamingServiceLauncher.AppImage\" --appname=\$1 --no-sandbox" >> "$HOME/.local/bin/streaming-service-launcher"
@@ -106,18 +144,19 @@ get-media-app service="":
         fi
     }
     install_crunchyroll() {
+        APPIMAGE_URL="$(latest_appimage_url "aarron-lee/crunchyroll-linux")"
+        if [[ -z "$APPIMAGE_URL" || "$APPIMAGE_URL" == "null" ]]; then
+            echo "Failed to resolve a Crunchyroll AppImage"
+            exit 1
+        fi
         if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
-            wget \
-                $(curl -s https://api.github.com/repos/aarron-lee/crunchyroll-linux/releases/latest | \
-                jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
-                -O $HOME/Downloads/Crunchyroll.AppImage
+            wget "$APPIMAGE_URL" -O $HOME/Downloads/Crunchyroll.AppImage
+            report_foreign_appimage "$HOME/Downloads/Crunchyroll.AppImage"
             chmod +x $HOME/Downloads/Crunchyroll.AppImage
             flatpak run it.mijorus.gearlever $HOME/Downloads/Crunchyroll.AppImage
         else
-            wget \
-                $(curl -s https://api.github.com/repos/aarron-lee/crunchyroll-linux/releases/latest | \
-                jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url") \
-                -O $HOME/Desktop/Crunchyroll.AppImage
+            wget "$APPIMAGE_URL" -O $HOME/Desktop/Crunchyroll.AppImage
+            report_foreign_appimage "$HOME/Desktop/Crunchyroll.AppImage"
             chmod +x $HOME/Desktop/Crunchyroll.AppImage
         fi
     }

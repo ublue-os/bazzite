@@ -5,11 +5,19 @@
 MESA_DIR="/home/$USER/mesa-git"
 
 # Export Mesa-specific environment variables
-export LD_LIBRARY_PATH="$MESA_DIR/lib64:$LD_LIBRARY_PATH"
+MESA_ARCH="$(uname -m)"
+VK_ICD_PATH="$MESA_DIR/share/vulkan/icd.d/radeon_icd.${MESA_ARCH}.json"
+
+export LD_LIBRARY_PATH="$MESA_DIR/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LIBGL_DRIVERS_PATH="$MESA_DIR/lib64/dri"
-export VK_ICD_FILENAMES="$MESA_DIR/share/vulkan/icd.d/radeon_icd.x86_64.json"
 export LIBVA_DRIVERS_PATH="$MESA_DIR/lib64/dri"
 export VDPAU_DRIVER_PATH="$MESA_DIR/lib64/vdpau"
+
+if [[ -f "$VK_ICD_PATH" ]]; then
+    export VK_ICD_FILENAMES="$VK_ICD_PATH"
+else
+    unset VK_ICD_FILENAMES
+fi
 
 # Show info if no arguments passed
 if [ $# -eq 0 ]; then

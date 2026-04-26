@@ -1,0 +1,147 @@
+#!/usr/bin/bash
+
+set -euo pipefail
+
+usage() {
+    echo "Usage: bazzite-arm-runtime-dnf <install|update> <packages...>" >&2
+    exit 2
+}
+
+if [[ $# -lt 2 ]]; then
+    usage
+fi
+
+action="$1"
+shift
+
+case "${action}" in
+    install|update) ;;
+    *)
+        usage
+        ;;
+esac
+
+fedora_ver="$(rpm -E %fedora 2>/dev/null || echo 43)"
+repo_override="/etc/dnf/repos.override.d/zz-bazzite-arm-runtime-direct.repo"
+
+dnf5_strict_repo_args=(
+    "--setopt=*.skip_if_unavailable=0"
+    "--setopt=*.timeout=30"
+    "--setopt=*.minrate=200k"
+    "--setopt=*.retries=10"
+)
+
+as_root() {
+    if [[ "${EUID}" -eq 0 ]]; then
+        "$@"
+    else
+        sudo "$@"
+    fi
+}
+
+write_repo_override() {
+    as_root mkdir -p "$(dirname "${repo_override}")"
+    as_root tee "${repo_override}" > /dev/null <<REPO_EOF
+[fedora]
+baseurl=https://dl.fedoraproject.org/pub/fedora/linux/releases/${fedora_ver}/Everything/\$basearch/os/
+metalink=
+mirrorlist=
+
+[updates]
+baseurl=https://dl.fedoraproject.org/pub/fedora/linux/updates/${fedora_ver}/Everything/\$basearch/
+metalink=
+mirrorlist=
+
+[fedora-cisco-openh264]
+baseurl=https://codecs.fedoraproject.org/openh264/${fedora_ver}/\$basearch/
+metalink=
+mirrorlist=
+
+[rpmfusion-free]
+baseurl=https://download1.rpmfusion.org/free/fedora/releases/${fedora_ver}/Everything/\$basearch/os/
+metalink=
+mirrorlist=
+
+[rpmfusion-free-updates]
+baseurl=https://download1.rpmfusion.org/free/fedora/updates/${fedora_ver}/\$basearch/
+metalink=
+mirrorlist=
+
+[rpmfusion-nonfree]
+baseurl=https://download1.rpmfusion.org/nonfree/fedora/releases/${fedora_ver}/Everything/\$basearch/os/
+metalink=
+mirrorlist=
+
+[rpmfusion-nonfree-updates]
+baseurl=https://download1.rpmfusion.org/nonfree/fedora/updates/${fedora_ver}/\$basearch/
+metalink=
+mirrorlist=
+
+[updates-archive]
+enabled=0
+
+[fedora-asahi-remix-hotfixes]
+enabled=0
+REPO_EOF
+}
+
+cleanup_repo_override() {
+    as_root rm -f "${repo_override}" 2>/dev/null || true
+}
+
+clean_dnf_metadata() {
+    if command -v dnf5 >/dev/null 2>&1; then
+        as_root dnf5 clean all >/dev/null 2>&1 || true
+    elif command -v dnf >/dev/null 2>&1; then
+        as_root dnf clean all >/dev/null 2>&1 || true
+    fi
+
+    as_root rm -rf /var/cache/libdnf5/* /var/cache/dnf/* 2>/dev/null || true
+}
+
+print_repo_debug() {
+    {
+        echo "Enabled runtime repos:"
+        if command -v dnf5 >/dev/null 2>&1; then
+            as_root dnf5 repolist --enabled || true
+        else
+            as_root dnf repolist enabled || true
+        fi
+        echo
+        echo "Runtime Fedora repo configuration:"
+        as_root grep -RHE '^\\[|^baseurl=|^metalink=|^mirrorlist=|^enabled=' \
+            /etc/dnf/repos.override.d/*.repo \
+            /etc/yum.repos.d/fedora*.repo \
+            /etc/yum.repos.d/fedora-cisco-openh264.repo \
+            /etc/yum.repos.d/*hotfixes*.repo \
+            /etc/yum.repos.d/rpmfusion*.repo 2>/dev/null || true
+    } >&2
+}
+
+run_transaction() {
+    if command -v dnf5 >/dev/null 2>&1; then
+        as_root dnf5 -y "${action}" --refresh "${dnf5_strict_repo_args[@]}" "$@"
+    elif command -v dnf >/dev/null 2>&1; then
+        as_root dnf -y "${action}" --refresh "${dnf5_strict_repo_args[@]}" "$@"
+    else
+        echo "Neither dnf5 nor dnf is available on this system." >&2
+        exit 1
+    fi
+}
+
+write_repo_override
+trap cleanup_repo_override EXIT
+
+if run_transaction "$@"; then
+    exit 0
+fi
+
+echo "Runtime ${action} failed; cleaning metadata and retrying once." >&2
+clean_dnf_metadata
+if run_transaction "$@"; then
+    exit 0
+fi
+
+echo "Runtime ${action} failed again after metadata refresh." >&2
+print_repo_debug
+exit 1

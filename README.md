@@ -20,8 +20,9 @@
 # Table of Contents
 - [🇺🇸 🇪🇸 🇮🇩 🇨🇳 🇫🇷 🇧🇷 🇳🇱 🇷🇺 🇩🇪 🇹🇼](#---------)
 - [Table of Contents](#table-of-contents)
-  - [About \& Features](#about--features)
-    - [Desktop](#desktop)
+- [About \& Features](#about--features)
+  - [Apple Silicon (ARM64)](#apple-silicon-arm64)
+  - [Desktop](#desktop)
     - [Steam Deck/Home Theater PCs (HTPCs)](#steam-deckhome-theater-pcs-htpcs)
       - [Alternative Handhelds](#alternative-handhelds)
     - [GNOME](#gnome)
@@ -75,6 +76,21 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) using [F
 - Out of the box support for [Wooting](https://wooting.io/) keyboards.
 - Built in support for Southern Islands <sub><sup>(HD 7000)</sup></sub> and Sea Islands <sub><sup>(HD 8000)</sup></sub> AMD GPUs under the `amdgpu` driver.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) is available for creating applications from websites for a variety of browsers, including Firefox.
+
+### Apple Silicon (ARM64)
+
+ARM64 variant for Apple Silicon Macs (M1/M2/M3), available as `bazzite-arm` (KDE) and `bazzite-arm-gnome` (GNOME):
+
+- Built on top of [Fedora Asahi Remix](https://fedora-asahi-remix.org/) atomic desktop images, which provide the Asahi Linux kernel, Apple Silicon GPU drivers (Mesa AGX), audio support, and firmware out of the box.
+- **Native aarch64 gaming stack**: [Wine](https://www.winehq.org/) (built from source), [Heroic Games Launcher](https://heroicgameslauncher.com/) (Electron aarch64), [Lutris](https://lutris.net/), [Gamescope](https://github.com/ValveSoftware/gamescope), and [MangoHud](https://github.com/flightlessmango/MangoHud) all run natively on ARM64 with zero emulation.
+- **Optional native Proton**: Build [Proton](https://github.com/ValveSoftware/Proton) from source for aarch64 with `--build-proton` flag (2-5 hour build) or post-install via `ujust install-proton-aarch64`.
+- **Steam via x86 emulation**: [Steam](https://store.steampowered.com/) runs through [FEX-Emu](https://fex-emu.com/) + [muvm](https://github.com/AsahiLinux/muvm) (Asahi's microVM for 4K-page compatibility). [Box64](https://github.com/ptitSeb/box64) and `qemu-user-binfmt` provide additional x86 emulation coverage.
+- Native [legendary](https://github.com/derrod/legendary) CLI for Epic Games Store (no emulation needed).
+- Check your gaming stack with `ujust gaming-status`, update Heroic with `ujust update-heroic`.
+- No NVIDIA drivers needed -- Apple Silicon uses the integrated GPU with Asahi's open source Mesa driver.
+
+> [!WARNING]
+> Apple Silicon support is **experimental**. Game compatibility through x86 emulation varies. Not all Bazzite features are available on ARM64.
 
 ### Desktop
 
