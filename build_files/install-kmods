@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+
+set -eoux pipefail
+
+INSTALL_RPMS=()
+for pattern in "$@"; do
+    for rpm in $pattern; do
+        [[ -f "$rpm" ]] && INSTALL_RPMS+=("$rpm") || echo "SKIPPED: $rpm"
+    done
+done
+
+if [[ ${#INSTALL_RPMS[@]} -gt 0 ]]; then
+    dnf -y install "${INSTALL_RPMS[@]}"
+else
+    echo "WARNING: No kmod RPMs found"
+fi

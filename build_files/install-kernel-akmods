@@ -31,15 +31,14 @@ dnf5 -y install \
 
 dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-modules
 
-dnf -y install \
+/ctx/install-kmods \
     /tmp/rpms/{common,kmods}/*framework-laptop*.rpm \
     /tmp/rpms/{common,kmods}/*openrazer*.rpm \
     /tmp/rpms/{common,kmods}/*v4l2loopback*.rpm \
     /tmp/rpms/{common,kmods}/*xone*.rpm \
-    /tmp/rpms/{common,kmods}/*xpadneo*.rpm \
-    || true
+    /tmp/rpms/{common,kmods}/*xpadneo*.rpm
 
-dnf -y install \
+/ctx/install-kmods \
     /tmp/rpms/{extra,kmods-extra}/*zenergy*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*gcadapter*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*evdi*.rpm \
@@ -48,8 +47,7 @@ dnf -y install \
     /tmp/rpms/{extra,kmods-extra}/*t150-driver*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*hid-fanatecff*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*sc0710*.rpm \
-    /tmp/rpms/{extra,kmods-extra}/*system76*.rpm \
-    || true
+    /tmp/rpms/{extra,kmods-extra}/*system76*.rpm
 
 pushd /usr/lib/kernel/install.d
 mv -f 05-rpmostree.install.bak 05-rpmostree.install
