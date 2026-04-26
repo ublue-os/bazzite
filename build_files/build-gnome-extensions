@@ -54,7 +54,7 @@ do
         msgfmt /usr/share/gnome-shell/extensions/${ext}/po/${locale}.po -o /usr/share/gnome-shell/extensions/${ext}/locale/${locale}/LC_MESSAGES/${ext}.mo;
     done;
     unset -v locale;
-    glib-compile-schemas /usr/share/gnome-shell/extensions/$ext/schemas;
+    glib-compile-schemas /usr/share/gnome-shell/extensions/${ext}/schemas;
 done
 unset -v ext
 
