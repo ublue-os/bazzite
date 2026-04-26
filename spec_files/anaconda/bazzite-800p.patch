@@ -1,0 +1,16 @@
+--- a/pyanaconda/display.py
++++ b/pyanaconda/display.py
+@@ -266,6 +266,13 @@ def set_resolution(runres):
+     :param str runres: a resolution specification string
+     """
+     try:
++        # Get product name
++        with open("/sys/devices/virtual/dmi/id/product_name") as f:
++            dmi = f.read().strip()
++
++        if "Jupiter" in dmi or "Galileo" in dmi or "NEXT" in dmi:
++            runres = "1280x800"
++
+         log.info("Setting the screen resolution to: %s.", runres)
+         mutter_display = MutterDisplay()
+         mutter_display.set_resolution(runres)
