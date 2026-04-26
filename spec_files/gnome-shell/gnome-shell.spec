@@ -8,7 +8,7 @@
 %endif
 
 Name:           gnome-shell
-Version:        49.1
+Version:        50.1
 Release:        1000.%autorelease.bazzite
 Summary:        Window management and application launching for GNOME
 
@@ -23,28 +23,16 @@ Patch: gnome-shell-favourite-apps-firefox.patch
 # downstream patch to stop trying on configuration errors.
 Patch: 0001-gdm-Work-around-failing-fingerprint-auth.patch
 
-# https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/3939
-# https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/8738#note_2589102
-# https://discussion.fedoraproject.org/t/169999
-# Reverts some xkb changes that turned out to cause way more problems
-# than they solved
-# Rediffed on 49.1 - we include only the first revert, as the second
-# commit was post-49.1 so there's nothing to revert
-Patch: 3939-rediffed.patch
-
-# https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/3193
-Patch: 3193.patch
 
 %define eds_version 3.45.1
 %define gnome_desktop_version 44.0-7
-%define glib2_version 2.79.2
-%define gobject_introspection_version 1.49.1
-%define gjs_version 1.73.1
+%define glib2_version 2.86.0
+%define gjs_version 1.85.90
 %define gtk4_version 4.0.0
 %define adwaita_version 1.5.0
-%define mutter_version 49~beta
+%define mutter_version 50~alpha
 %define polkit_version 0.100
-%define gsettings_desktop_schemas_version 48.0
+%define gsettings_desktop_schemas_version 50~alpha
 %define ibus_version 1.5.2
 %define gnome_bluetooth_version 1:42.3
 %define gstreamer_version 1.4.5
@@ -54,7 +42,7 @@ Patch: 3193.patch
 BuildRequires:  pkgconfig(bash-completion)
 BuildRequires:  gcc
 BuildRequires:  meson
-BuildRequires:  git
+BuildRequires:  git-core
 BuildRequires:  desktop-file-utils
 BuildRequires:  pkgconfig(libedataserver-1.2) >= %{eds_version}
 BuildRequires:  pkgconfig(gcr-4)
@@ -62,7 +50,6 @@ BuildRequires:  pkgconfig(gjs-1.0) >= %{gjs_version}
 BuildRequires:  pkgconfig(gio-2.0) >= %{glib2_version}
 BuildRequires:  pkgconfig(gnome-autoar-0)
 BuildRequires:  pkgconfig(gnome-desktop-4) >= %{gnome_desktop_version}
-BuildRequires:  pkgconfig(gobject-introspection-1.0) >= %{gobject_introspection_version}
 BuildRequires:  mesa-libGL-devel
 BuildRequires:  mesa-libEGL-devel
 BuildRequires:  pkgconfig(libnm)
@@ -96,7 +83,6 @@ Recommends:     gnome-bluetooth%{?_isa} >= %{gnome_bluetooth_version}
 %endif
 Requires:       %{name}-common = %{version}-%{release}
 Requires:       gcr%{?_isa}
-Requires:       gobject-introspection%{?_isa} >= %{gobject_introspection_version}
 Requires:       gjs%{?_isa} >= %{gjs_version}
 Requires:       gtk4%{?_isa} >= %{gtk4_version}
 Requires:       libadwaita%{_isa} >= %{adwaita_version}
@@ -256,8 +242,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/org.gnome.Shell.Porta
 %{_datadir}/icons/hicolor/scalable/apps/org.gnome.Shell.Extensions.svg
 %{_datadir}/icons/hicolor/symbolic/apps/org.gnome.Shell.Extensions-symbolic.svg
 %{_userunitdir}/org.gnome.Shell-disable-extensions.service
-%{_userunitdir}/org.gnome.Shell.target
-%{_userunitdir}/org.gnome.Shell@wayland.service
+#{_userunitdir}/org.gnome.Shell.target
+%{_userunitdir}/org.gnome.Shell@.service
 %{_libdir}/gnome-shell/
 %{_libexecdir}/gnome-shell-calendar-server
 %{_libexecdir}/gnome-shell-perf-helper
