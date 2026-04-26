@@ -27,13 +27,26 @@ pick:
         fi
     fi
 
-    # Parse latest asset and tag
-    ASSET_URL=$(echo "$API_JSON" | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')
+    # Parse the latest asset for the current host architecture.
+    case "$(uname -m)" in
+        aarch64)
+            ASSET_NAME="bazzite-ujust-picker_Linux_arm64"
+            ;;
+        x86_64)
+            ASSET_NAME="bazzite-ujust-picker_Linux_x86_64"
+            ;;
+        *)
+            echo "❌ Unsupported architecture for ujust-picker: $(uname -m)"
+            exit 1
+            ;;
+    esac
+
+    ASSET_URL=$(echo "$API_JSON" | jq -r --arg asset_name "$ASSET_NAME" '.assets[] | select(.name == $asset_name) | .browser_download_url')
     TAG_NAME=$(echo "$API_JSON" | jq -r '.tag_name')
     CACHED_TAG_FILE="$DEST.version"
 
-    if [[ -z "$ASSET_URL" ]]; then
-        echo "❌ Could not locate x86_64 asset in the latest release."
+    if [[ -z "$ASSET_URL" || "$ASSET_URL" == "null" ]]; then
+        echo "❌ Could not locate $ASSET_NAME in the latest release."
         exit 1
     fi
 

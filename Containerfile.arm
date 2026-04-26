@@ -1,0 +1,108 @@
+#
+#     %%%%%%====%%%%%%%%%%
+#   %%%%%%%%    %%%%%%%%%%%%%%
+#  %%%%%%%%%    %%%%%%%%%%%%%%%%
+#  %%%%%%%%%    %%%%%%%%%%%%%%%###
+#  %%%%%%%%%    %%%%%%%%%%%%%######
+#  ==                  =======######
+#  ==                  =========#####
+#  %%%%%%%%%    %%%%%%%####======#####
+#  %%%%%%%%%    %%%%%#######=====#####
+#  %%%%%%%%%    %%%#########=====#####
+#  %%%%%%%%%    %%##########=====#####
+#  %%%%%%%%%====###########=====######
+#   %%%%%%%%====#########======######
+#    %%%%%%%=====#####========######
+#     %%%%###===============#######
+#      %#######==========#########
+#        #######################
+#          ###################
+#              ###########
+#
+# Bazzite ARM -- Apple Silicon edition
+# Built on top of Fedora Asahi Remix Atomic Desktop images
+#
+# KERNEL_VARIANT options:
+#   stable     (default) -- Asahi stable kernel, production-ready
+#   fairydust  (experimental) -- Installs bolt/USB4/Thunderbolt userspace stack
+#              and a ujust recipe to build+install the fairydust kernel.
+#              The fairydust branch adds Thunderbolt, USB4, DisplayPort over USB-C.
+#              See: https://github.com/AsahiLinux/linux/tree/fairydust
+
+ARG FEDORA_VERSION="${FEDORA_VERSION:-43}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
+ARG SKIP_WINE="${SKIP_WINE:-0}"
+ARG SKIP_HEROIC="${SKIP_HEROIC:-1}"
+ARG SKIP_PROTON="${SKIP_PROTON:-1}"
+ARG BASE_IMAGE="quay.io/fedora-asahi-remix-atomic-desktops/${BASE_IMAGE_NAME}:${FEDORA_VERSION}"
+ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT:-}"
+ARG VERSION_TAG="${VERSION_TAG:-}"
+ARG VERSION_PRETTY="${VERSION_PRETTY:-}"
+
+FROM scratch AS ctx
+COPY build_files /
+
+FROM ${BASE_IMAGE} AS bazzite-arm
+
+ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-arm}"
+ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
+ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
+ARG FEDORA_VERSION="${FEDORA_VERSION:-43}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG KERNEL_VARIANT="${KERNEL_VARIANT:-stable}"
+ARG SKIP_WINE="${SKIP_WINE:-0}"
+ARG SKIP_HEROIC="${SKIP_HEROIC:-1}"
+ARG SKIP_PROTON="${SKIP_PROTON:-1}"
+ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT:-}"
+ARG VERSION_TAG="${VERSION_TAG:-}"
+ARG VERSION_PRETTY="${VERSION_PRETTY:-}"
+
+ENV KERNEL_VARIANT=${KERNEL_VARIANT}
+ENV BASE_IMAGE_NAME=${BASE_IMAGE_NAME}
+ENV SKIP_WINE=${SKIP_WINE}
+ENV SKIP_HEROIC=${SKIP_HEROIC}
+ENV SKIP_PROTON=${SKIP_PROTON}
+
+COPY system_files/desktop/shared /
+COPY system_files/desktop/${BASE_IMAGE_NAME} /
+COPY system_files/overrides /
+
+# Do not use persistent BuildKit cache mounts for DNF/RPM paths here. On native
+# Asahi Podman builds, interrupted or flaky external storage builds can leave
+# malformed RPM/DNF SQLite state in cache mounts, which then poisons later
+# --no-cache rebuilds with "database disk image is malformed".
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/build-arm.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/install-native-wine-aarch64.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/install-heroic-launcher-aarch64.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/install-proton-aarch64.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/verify-arm-userspace.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/setup-x86-emulation.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/verify-arm-userspace.sh
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/image-info && \
+    bash /ctx/finalize
+
+RUN bootc container lint

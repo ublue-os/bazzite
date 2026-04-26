@@ -2,7 +2,16 @@
 
 set -eoux pipefail
 
-rm -rf /tmp/* || true
+if [[ -d /tmp ]]; then
+    find /tmp -mindepth 1 -maxdepth 1 -exec rm -rf -- {} + || true
+fi
+if [[ -d /run ]]; then
+    find /run -mindepth 1 -maxdepth 1 ! -path /run/systemd -exec rm -rf -- {} + || true
+fi
+if [[ -d /run/systemd ]]; then
+    find /run/systemd -mindepth 1 -maxdepth 1 ! -name resolve -exec rm -rf -- {} + || true
+fi
 rm -rf /var/log/dnf5.log || true
-rm -rf /boot/* || true
-rm -rf /boot/.* || true
+if [[ -d /boot ]]; then
+    find /boot -mindepth 1 -maxdepth 1 -exec rm -rf -- {} + || true
+fi

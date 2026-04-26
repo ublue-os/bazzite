@@ -5,6 +5,7 @@ fi
 if [[ -z ${git_branch} ]]; then
     git_branch=$(git branch --show-current)
 fi
+: "${latest:=43}"
 set -eo pipefail
 
 # Get Inputs

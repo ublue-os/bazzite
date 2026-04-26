@@ -6,12 +6,21 @@ if [ "${EUID:-$(id -u)}" -lt 1000 ]; then
 fi
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
-BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
-FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
+IMAGE_NAME=$(jq -r '."image-name"' < "$IMAGE_INFO")
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < "$IMAGE_INFO")
+FEDORA_VERSION=$(jq -r '."fedora-version"' < "$IMAGE_INFO")
 
-SYS_ID="$(/usr/libexec/hwsupport/sysid)"
-VEN_ID="$(cat /sys/devices/virtual/dmi/id/chassis_vendor)"
+SYS_ID="$(/usr/libexec/hwsupport/sysid 2>/dev/null || true)"
+VEN_ID=""
+if [[ -r /sys/devices/virtual/dmi/id/chassis_vendor ]]; then
+  VEN_ID="$(tr -d '\0' < /sys/devices/virtual/dmi/id/chassis_vendor)"
+fi
+
+contains_id() {
+  local haystack="$1"
+  local needle="$2"
+  [[ -n "${needle}" && ":${haystack}:" == *":${needle}:"* ]]
+}
 
 # INIT
 BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
@@ -21,7 +30,7 @@ mkdir -p "$BAZZITE_CONFIG_DIR"
 USER_SETUP_VER=48
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
-USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
+USER_SETUP_IMAGE_VER_FILE="$BAZZITE_CONFIG_DIR/image_name"
 
 if [[ -f "$HOME/.bazzite-configured" ]]; then
   mv -f "$HOME/.bazzite-configured" "$USER_SETUP_VER_FILE"
@@ -32,12 +41,12 @@ if [[ -f "$HOME/.bazzite-configured-fedora-version" ]]; then
 fi
 
 # Run script if updated
-if [[ -f $USER_SETUP_VER_FILE && -f $USER_SETUP_FEDORA_VER_FILE && -f $USER_SETUP_IMAGE_VER_FILE ]]; then
-  USER_SETUP_VER_RAN=$(cat $USER_SETUP_VER_FILE)
-  USER_SETUP_FEDORA_VER_RAN=$(cat $USER_SETUP_FEDORA_VER_FILE)
-  USER_SETUP_IMAGE_VER_RAN=$(cat $USER_SETUP_IMAGE_VER_FILE)
+if [[ -f "$USER_SETUP_VER_FILE" && -f "$USER_SETUP_FEDORA_VER_FILE" && -f "$USER_SETUP_IMAGE_VER_FILE" ]]; then
+  USER_SETUP_VER_RAN=$(cat "$USER_SETUP_VER_FILE")
+  USER_SETUP_FEDORA_VER_RAN=$(cat "$USER_SETUP_FEDORA_VER_FILE")
+  USER_SETUP_IMAGE_VER_RAN=$(cat "$USER_SETUP_IMAGE_VER_FILE")
 
-  if [[ $USER_SETUP_VER = "$USER_SETUP_VER_RAN" && $FEDORA_VERSION = "$USER_SETUP_FEDORA_VER_RAN" && $BASE_IMAGE_NAME = "$USER_SETUP_IMAGE_VER_RAN" ]]; then
+  if [[ "${USER_SETUP_VER}" == "${USER_SETUP_VER_RAN}" && "${FEDORA_VERSION}" == "${USER_SETUP_FEDORA_VER_RAN}" && "${BASE_IMAGE_NAME}" == "${USER_SETUP_IMAGE_VER_RAN}" ]]; then
     echo "User setup v$USER_SETUP_VER has already run. Exiting..."
     exit 0
   fi
@@ -61,26 +70,26 @@ fi
 # doesn't get their Ptyxis config wiped out.
 if [[ ! -f "$BAZZITE_CONFIG_DIR/ptyxis-initialized" ]]; then
   echo 'Configuring Ptyxis'
-  if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+  if [[ "${BASE_IMAGE_NAME}" == *kinoite* ]]; then
     dconf load / < /usr/share/ublue-os/dconfs/desktop-kinoite/zz0-00-bazzite-desktop-kinoite-global
     dconf load / < /usr/share/ublue-os/dconfs/desktop-kinoite/00-bazzite-desktop-kinoite-ptyxis
   fi
   touch "$BAZZITE_CONFIG_DIR/ptyxis-initialized"
 fi
 
-if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+if [[ "${BASE_IMAGE_NAME}" == *kinoite* ]]; then
   echo 'Running setup for Kinoite'
 
-  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
+  if [[ "${IMAGE_NAME}" == *deck* || "${IMAGE_NAME}" == *ally* ]]; then
     echo 'Running setup for Kinoite on Steam Deck'
     if [[ ! -f "$HOME/Desktop/Return.desktop" ]]; then
       echo 'Re-creating return to gamemode shortcut'
-      mkdir -p $HOME/Desktop/
+      mkdir -p "$HOME/Desktop"
       cp "/etc/skel/Desktop/Return.desktop" "$HOME/Desktop/Return.desktop"
     fi
   fi
 
-  if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
+  if contains_id "Framework" "${VEN_ID}"; then
     if [[ ! -f "$BAZZITE_CONFIG_DIR/framework-initialized" ]]; then
       CONFIG="$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
 
@@ -89,7 +98,7 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
         APPLET_SECTIONS=$(grep -n '\[Containments\]\[[0-9]*\]\[Applets\]\[[0-9]*\]' "$CONFIG")
 
         # For each applet section, check if it's a launcher and update it
-        while IFS=: read -r line_num line_content; do
+        while IFS=: read -r _line_num line_content; do
           SECTION_NUM=$(echo "$line_content" | sed -E 's/\[Containments\]\[([0-9]+)\]\[Applets\]\[([0-9]+)\]/\1:\2/')
           CONT_NUM=$(echo "$SECTION_NUM" | cut -d: -f1)
           APP_NUM=$(echo "$SECTION_NUM" | cut -d: -f2)
@@ -122,21 +131,21 @@ else
       dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 2
       touch "$BAZZITE_CONFIG_DIR/deck-initialized"
     fi
-  elif [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
+  elif contains_id "83E1" "${SYS_ID}"; then
     if [[ ! -f "$BAZZITE_CONFIG_DIR/legion-initialized" ]]; then
       echo 'Setting Legion logo menu'
       dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
       dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 5
       touch "$BAZZITE_CONFIG_DIR/legion-initialized"
     fi
-  elif [[ ":ROG Ally RC71L:ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
+  elif contains_id "ROG Ally RC71L:ROG Ally X RC72LA" "${SYS_ID}"; then
     if [[ ! -f "$BAZZITE_CONFIG_DIR/ally-initialized" ]]; then
       echo 'Setting Ally logo menu'
       dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
       dconf write /org/gnome/shell/extensions/Logo-menu/menu-button-icon-image 6
       touch "$BAZZITE_CONFIG_DIR/ally-initialized"
     fi
-  elif [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
+  elif contains_id "Framework" "${VEN_ID}"; then
     if [[ ! -f "$BAZZITE_CONFIG_DIR/framework-initialized" ]]; then
       echo 'Setting Framework logo menu'
       dconf write /org/gnome/shell/extensions/Logo-menu/symbolic-icon true
@@ -168,7 +177,7 @@ else
     ln -s "/usr/share/doc/mangohud/MangoHud.conf.example" "$TEMPLATES_DIR/MangoHud.conf"
   fi
 
-  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
+  if [[ "${IMAGE_NAME}" == *deck* || "${IMAGE_NAME}" == *ally* ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
 
     echo 'Tweaking GNOME indexer'
@@ -184,7 +193,7 @@ else
 fi
 
 # Deck Build Setup
-if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
+if [[ "${IMAGE_NAME}" == *deck* || "${IMAGE_NAME}" == *ally* ]]; then
   # SDGyroDSU Setup
   if /usr/libexec/hwsupport/valve-hardware; then
     systemctl --user enable --now sdgyrodsu.service
@@ -221,12 +230,15 @@ wp_audio_sinks() {
         sed 's/^.* \([[:digit:]]*\)\. \(.*\) \[.*$/\1\t\2/'   
 }
 
-if [[ ":83E1:ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
-  wpctl set-volume $(wp_audio_sinks | grep "17h/19h" | sed 's@^[^0-9]*\([0-9]\+\).*@\1@') 100% || true
+if contains_id "83E1:ROG Ally RC71L" "${SYS_ID}"; then
+  sink_id="$(wp_audio_sinks | grep "17h/19h" | sed 's@^[^0-9]*\([0-9]\+\).*@\1@' | head -n 1)"
+  if [[ -n "${sink_id}" ]]; then
+    wpctl set-volume "${sink_id}" 100% || true
+  fi
 fi
 
 # Prevent future executions
 echo "Writing state file"
-echo $USER_SETUP_VER > $USER_SETUP_VER_FILE
-echo $FEDORA_VERSION > $USER_SETUP_FEDORA_VER_FILE
-echo $BASE_IMAGE_NAME > $USER_SETUP_IMAGE_VER_FILE
+echo "$USER_SETUP_VER" > "$USER_SETUP_VER_FILE"
+echo "$FEDORA_VERSION" > "$USER_SETUP_FEDORA_VER_FILE"
+echo "$BASE_IMAGE_NAME" > "$USER_SETUP_IMAGE_VER_FILE"
