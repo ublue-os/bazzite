@@ -1,4 +1,4 @@
-From e0db022baf32bccef32389cb1d4ed5f6167e6b02 Mon Sep 17 00:00:00 2001
+From 805fa53079703599a8540abab0c96fa4359e4f12 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Vivek=20Das=C2=A0Mohapatra?= <vivek@collabora.com>
 Date: Wed, 16 Apr 2025 15:14:34 +0100
 Subject: [PATCH] Revert "xwayland: Restrict allow commit to the window
@@ -10,17 +10,18 @@ of a seamless boot display.
 
 This reverts commit 2cc869626a5728d8bd80241322546f98df96094d.
 ---
- hw/xwayland/xwayland-screen.c | 21 ---------------------
- 1 file changed, 21 deletions(-)
+ hw/xwayland/xwayland-screen.c | 26 --------------------------
+ 1 file changed, 26 deletions(-)
 
 diff --git a/hw/xwayland/xwayland-screen.c b/hw/xwayland/xwayland-screen.c
-index 822e55bf3..b5d800c95 100644
+index c83adda..755cbad 100644
 --- a/hw/xwayland/xwayland-screen.c
 +++ b/hw/xwayland/xwayland-screen.c
-@@ -181,33 +181,12 @@ xwl_property_callback(CallbackListPtr *pcbl, void *closure,
+@@ -181,34 +181,12 @@ xwl_property_callback(CallbackListPtr *pcbl, void *closure,
          xwl_window_update_property(xwl_window, rec);
  }
  
+-#ifdef XACE
 -#define readOnlyPropertyAccessMask (DixReadAccess |\
 -                                    DixGetAttrAccess |\
 -                                    DixListPropAccess |\
@@ -47,10 +48,30 @@ index 822e55bf3..b5d800c95 100644
  }
  
 -#undef readOnlyPropertyAccessMask
--
+-#endif /* XACE */
+ 
  static void
  xwl_root_window_finalized_callback(CallbackListPtr *pcbl,
-                                    void *closure,
+@@ -239,9 +217,7 @@ xwl_close_screen(ScreenPtr screen)
+     xwl_dmabuf_feedback_destroy(&xwl_screen->default_feedback);
+ #endif
+     DeleteCallback(&PropertyStateCallback, xwl_property_callback, screen);
+-#ifdef XACE
+     XaceDeleteCallback(XACE_PROPERTY_ACCESS, xwl_access_property_callback, screen);
+-#endif
+ 
+     xorg_list_for_each_entry_safe(xwl_output, next_xwl_output,
+                                   &xwl_screen->output_list, link)
+@@ -1172,9 +1148,7 @@ xwl_screen_init(ScreenPtr pScreen, int argc, char **argv)
+ 
+     AddCallback(&PropertyStateCallback, xwl_property_callback, pScreen);
+     AddCallback(&RootWindowFinalizeCallback, xwl_root_window_finalized_callback, pScreen);
+-#ifdef XACE
+     XaceRegisterCallback(XACE_PROPERTY_ACCESS, xwl_access_property_callback, pScreen);
+-#endif
+ 
+     xwl_screen_setup_custom_vector(xwl_screen);
+ 
 -- 
-2.47.1
+2.54.0
 
