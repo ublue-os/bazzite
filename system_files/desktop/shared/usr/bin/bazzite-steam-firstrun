@@ -1,0 +1,27 @@
+#!/usr/bin/bash
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+
+lang=$(locale | grep LANG | cut -d= -f2 | cut -d_ -f1)
+info_text=""
+
+#translation support
+case $lang in
+#russian
+    "ru")
+    info_text=("Steam запускается впервые. Пожалуйста, подождите, скачивание клиента Steam может занять несколько минут.")
+    ;;
+    *)
+    info_text=("Steam is opening for the first time. Please wait, downloading the Steam client may take a few minutes.")
+    ;;
+esac
+
+# Skip if there's no internet connection and Steam was updated at least once
+if [ ! -f $HOME/.local/share/Steam/steamclient.dll ] && ( curl --http1.1 -Ls https://store.steampowered.com/about | grep '<html' > /dev/null ); then
+    if [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
+        kdialog --title=Steam --icon=steam --msgbox="$info_text"
+    elif [[ ${BASE_IMAGE_NAME} =~ "silverblue" ]]; then
+        zenity --info --icon=steam --text="$info_text"
+    fi
+fi
