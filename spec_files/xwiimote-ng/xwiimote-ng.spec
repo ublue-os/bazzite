@@ -13,6 +13,7 @@ ExclusiveArch: x86_64
 BuildRequires: cmake
 BuildRequires: gcc
 BuildRequires: gcc-c++
+BuildRequires: ninja-build
 BuildRequires: systemd-devel
 
 Requires:      ncurses
@@ -25,18 +26,11 @@ An open-source device driver for Nintendo Wii / Wii U remotes.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-%cmake -DCMAKE_INSTALL_PREFIX=/usr -B . .
-%make_build
+%cmake
+%cmake_build
 
 %install
-mkdir -p %{buildroot}%{_libdir}
-mkdir -p %{buildroot}%{_includedir}
-mkdir -p %{buildroot}%{_datadir}/pkgconfig
-install -D -m 755 lib%{name}.so.3.0.1 %{buildroot}%{_libdir}/lib%{name}.so.3.0.1
-install -D -m 755 lib%{name}.so.3 %{buildroot}%{_libdir}/lib%{name}.so.3
-install -D -m 755 lib%{name}.so %{buildroot}%{_libdir}/lib%{name}.so
-install -D -m 755 lib/%{name}.h %{buildroot}%{_includedir}/%{name}.h
-install -D -m 755 lib%{name}.pc %{buildroot}%{_datadir}/pkgconfig/lib%{name}.pc
+%cmake_install
 
 %files
 %license LICENSE
