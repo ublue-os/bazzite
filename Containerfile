@@ -332,8 +332,6 @@ RUN --mount=type=cache,dst=/var/cache \
         mangohud.i686 \
         libobs_vkcapture.x86_64 \
         libobs_glcapture.x86_64 \
-        libobs_vkcapture.i686 \
-        libobs_glcapture.i686 \
         openxr && \
     dnf5 -y --enable-repo=terra-mesa --enable-repo=terra --setopt=install_weak_deps=False install \
         steam \
