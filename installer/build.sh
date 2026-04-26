@@ -38,7 +38,7 @@ fi
 
 # Copy system files
 echo "Copying shared system files..."
-cp -af /src/system_files/shared/. /
+cp -a /src/system_files/shared/. /
 
 if [[ "$desktop_env" == "gnome" ]]; then
     echo "Copying GNOME-specific system files..."
