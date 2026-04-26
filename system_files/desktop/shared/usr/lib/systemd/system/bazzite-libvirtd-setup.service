@@ -5,8 +5,6 @@ ConditionPathExists=/usr/lib/systemd/system/libvirtd.service
 
 [Service]
 Type=oneshot
-# TODO: Rewrite this whenever systemd allows to queue ephemeral commands for next boot without modifying kernel args
-ExecStart=/usr/bin/bash -c "systemctl enable --now libvirtd; restorecon -Rv /var/log/libvirt /var/lib/libvirt; systemctl disable %n"
-
-[Install]
-WantedBy=multi-user.target
+# See https://github.com/ublue-os/bazzite/issues/4086#issue-3904621119
+# We dont need to enable modular services manually, these seem to come preenabled when installing qemu and libvirt.
+ExecStart=/usr/bin/bash -c "systemctl disable --now libvirtd.service; systemctl disable --now libvirtd{,-ro,-admin,-tcp,-tls}.socket"
