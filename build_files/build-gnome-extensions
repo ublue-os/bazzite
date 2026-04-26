@@ -6,7 +6,7 @@ echo "::group::Executing build-gnome-extensions"
 trap 'echo "::endgroup::"' EXIT
 
 # Install tooling
-dnf5 -y install glib2-devel
+dnf5 -y --setopt=install_weak_deps=False install glib2-devel nodejs-npm
 
 # Build Extensions
 glib-compile-schemas /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas
@@ -39,16 +39,15 @@ mkdir -p /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io
 mv /usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io/src/* /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io/
 
 # Reboot to UEFI
+make -C /usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com pack
 mkdir -p /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com
-mv /usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com/src/* /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com/
-mv /usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com/po /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com
+unzip -o /usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com/reboottouefi@ubaygd.com-*.zip -d /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com
 
 # I18n support for few extensions
 mv /usr/share/gnome-shell/extensions/caffeine@patapon.info/locale /usr/share/gnome-shell/extensions/caffeine@patapon.info/po
 mv /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/locale /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/po
 for ext in \
     logomenu@aryan_k \
-    reboottouefi@ubaygd.com \
     appindicatorsupport@rgcjonas.gmail.com \
     caffeine@patapon.info;
 do
@@ -62,5 +61,6 @@ done
 unset -v ext
 
 # Cleanup
-dnf5 -y remove glib2-devel
+dnf5 -y remove glib2-devel nodejs-npm
 rm -rf /usr/share/gnome-shell/extensions/tmp
+rm -rf /root/.npm
