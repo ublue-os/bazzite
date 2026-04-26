@@ -418,7 +418,6 @@ RUN --mount=type=cache,dst=/var/cache \
             nautilus-gsconnect \
             steamdeck-backgrounds \
             steamdeck-gnome-presets \
-            gnome-randr-rust \
             gnome-shell-extension-user-theme \
             gnome-shell-extension-gsconnect \
             rom-properties-gtk4 \
