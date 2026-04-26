@@ -180,10 +180,10 @@ wol ACTION="":
 iwd ACTION="":
     #!/usr/bin/bash
     get_status_token() {
-      if [[ -f "/etc/NetworkManager/conf.d/supplicant.conf" ]]; then
-        echo "disable"
-      else
+      if [[ -f "/etc/NetworkManager/conf.d/iwd.conf" ]]; then
         echo "enable"
+      else
+        echo "disable"
       fi
     }
 
@@ -193,7 +193,7 @@ iwd ACTION="":
       exit 0
     fi
     # Explain the purpose of the script
-    echo -e "This script manages enabling or disabling iwd as a replacement for wpa_supplicant for Wi-Fi networking. Default is Enabled."
+    echo -e "This script manages enabling or disabling iwd as a replacement for wpa_supplicant for Wi-Fi networking."
     echo -e "Enabling this can improve throughput, mesh networking, and reduce latency increases when scanning for networks"
     echo -e "Disabling this can improve functionality on some wifi adapters"
     echo -e ""
@@ -209,7 +209,8 @@ iwd ACTION="":
       nmcli -t -f NAME connection show | while read -r line; do sudo nmcli connection delete "$line"; done
     }
     enable_iwd() {
-      sudo rm -f "/etc/NetworkManager/conf.d/supplicant.conf"
+      sudo rm -f "/etc/NetworkManager/conf.d/iwd.conf"
+      printf "[device]\nwifi.backend=iwd\nwifi.iwd.autoconnect=yes" | sudo tee /etc/NetworkManager/conf.d/iwd.conf > /dev/null
       sudo systemctl mask wpa_supplicant.service
       sudo systemctl unmask iwd.service
       remove_saved_networks
@@ -217,8 +218,7 @@ iwd ACTION="":
     }
     disable_iwd() {
       sudo mkdir -p "/etc/NetworkManager/conf.d/"
-      sudo rm -f "/etc/NetworkManager/conf.d/supplicant.conf"
-      printf "[device]\nwifi.backend=wpa_supplicant" | sudo tee /etc/NetworkManager/conf.d/supplicant.conf > /dev/null
+      sudo rm -f "/etc/NetworkManager/conf.d/iwd.conf"
       sudo systemctl mask iwd.service
       sudo systemctl unmask wpa_supplicant.service
       remove_saved_networks
