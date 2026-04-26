@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=48
+USER_SETUP_VER=49
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -166,6 +166,9 @@ else
   fi
   if [[ ! -f "$TEMPLATES_DIR/MangoHud.conf" && -f "/usr/share/doc/mangohud/MangoHud.conf.example" ]]; then
     ln -s "/usr/share/doc/mangohud/MangoHud.conf.example" "$TEMPLATES_DIR/MangoHud.conf"
+  fi
+  if [[ ! -f "$TEMPLATES_DIR/EmptyFile" ]]; then
+    touch "$TEMPLATES_DIR/EmptyFile"
   fi
 
   if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
