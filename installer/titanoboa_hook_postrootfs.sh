@@ -221,6 +221,7 @@ qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL"
         rpm-ostree-countme.service \
         tailscaled.service \
         bazzite-hardware-setup.service \
+        ublue-hardware-setup.service \
         bootloader-update.service \
         brew-upgrade.timer \
         brew-update.timer \
@@ -231,14 +232,20 @@ qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL"
         ublue-os-media-automount.service \
         ublue-system-setup.service \
         check-sb-key.service; do
-        systemctl disable $s
+        if systemctl list-unit-files "$s" >/dev/null 2>&1; then
+            systemctl disable "$s"
+        fi
     done
 
     for s in \
+        bazzite-flatpak-manager.service \
         ublue-flatpak-manager.service \
         podman-auto-update.timer \
+        bazzite-user-setup.service \
         ublue-user-setup.service; do
-        systemctl --global disable $s
+        if systemctl --global list-unit-files "$s" >/dev/null 2>&1; then
+            systemctl --global disable "$s"
+        fi
     done
 )
 
