@@ -9,11 +9,14 @@ trap 'echo "::endgroup::"' EXIT
 dnf5 -y --setopt=install_weak_deps=False install glib2-devel nodejs-npm
 
 # Build Extensions
+glib-compile-schemas /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/compiz-windows-effect@hermes83.github.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/compiz-alike-magic-lamp-effect@hermes83.github.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/hotedge@jonathan.jdoda.ca/schemas
+glib-compile-schemas /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/add-to-steam@pupper.space/schemas
 mv /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info /usr/share/gnome-shell/extensions/caffeine@patapon.info
+glib-compile-schemas /usr/share/gnome-shell/extensions/caffeine@patapon.info/schemas
 
 # Burn My Windows
 make -C /usr/share/gnome-shell/extensions/burn-my-windows@schneegans.github.com
@@ -39,24 +42,6 @@ mv /usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io/sr
 env HOME=/tmp make -C /usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com pack
 mkdir -p /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com
 unzip -o /usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com/reboottouefi@ubaygd.com-*.zip -d /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com
-
-# Generate locales for few extensions
-mv /usr/share/gnome-shell/extensions/caffeine@patapon.info/locale /usr/share/gnome-shell/extensions/caffeine@patapon.info/po
-mv /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/locale /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/po
-for ext in \
-    logomenu@aryan_k \
-    appindicatorsupport@rgcjonas.gmail.com \
-    caffeine@patapon.info;
-do
-    echo "Generating locales for $ext GNOME extension";
-    find "/usr/share/gnome-shell/extensions/${ext}/po" -name '*.po' -type f -printf "%P\n" | cut -f1 -d . | while read -r locale; do
-        mkdir -p /usr/share/gnome-shell/extensions/${ext}/locale/${locale}/LC_MESSAGES;
-        msgfmt /usr/share/gnome-shell/extensions/${ext}/po/${locale}.po -o /usr/share/gnome-shell/extensions/${ext}/locale/${locale}/LC_MESSAGES/${ext}.mo;
-    done;
-    unset -v locale;
-    glib-compile-schemas /usr/share/gnome-shell/extensions/${ext}/schemas;
-done
-unset -v ext
 
 # Cleanup
 dnf5 -y remove glib2-devel nodejs-npm
