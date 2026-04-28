@@ -20,7 +20,7 @@ if [[ -f /run/.containerenv ]]; then
         exit 1
     fi
 fi
-container_mgr=$(just _container_mgr)
+container_mgr=${container_mgr}
 if "${container_mgr}" info | grep Root | grep -q /home; then
     echo "Cannot build ISO with rootless container..."
     exit 1
@@ -33,7 +33,7 @@ resolved=$(just _resolve_image "$target" "$image")
 image_name=$(echo "$resolved" | cut -d' ' -f1)
 base_image=$(echo "$resolved" | cut -d' ' -f2)
 
-tag=$(just _tag "${image_name}")
+tag="${image_name}-build"
 
 # Remove old ISO if present
 sudo rm -f "${project_root}/just_scripts/output/${tag}-${git_branch}.iso"

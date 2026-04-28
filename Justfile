@@ -1,35 +1,19 @@
+set unstable := true
+
 export project_root := `git rev-parse --show-toplevel`
 export git_branch := ` git branch --show-current`
 export latest := "44"
 export default_image := "kinoite"
 export default_target := "bazzite"
 kernel_flavor := "ogc"
+export just := just_executable()
+export container_mgr := env("CONTAINER_MGR", if which("podman") != "" { "podman" } else if which("docker") != "" { "docker" } else if which("podman-remote") != "" { "podman-remote" } else { error("No container manager found") })
 
 alias build-iso := build-iso-release
 alias run := run-container
 
 _default:
-    @just --list
-
-[private]
-_container_mgr:
-    #!/usr/bin/bash
-    if [[ -n ${CONTAINER_MGR} ]]; then
-        echo "${CONTAINER_MGR}"
-    elif command -v docker &>/dev/null; then
-        echo docker
-    elif command -v podman &>/dev/null; then
-        echo podman
-    elif command -v podman-remote &>/dev/null; then
-        echo podman-remote
-    else
-        echo "No container manager found" >&2
-        exit 1
-    fi
-
-[private]
-_tag image:
-    @echo {{ image }}-build
+    @{{ just }} --list
 
 # Resolve target and image name from shorthand inputs
 [private]
@@ -70,9 +54,9 @@ just-check:
     #!/usr/bin/bash
     find "${project_root}" -type f -name "*.just" | while read -r file; do
     	echo "Checking syntax: $file"
-    	just --unstable --fmt --check -f $file
+    	{{ just }} --unstable --fmt --check -f $file
     done
-    just --unstable --fmt --check -f ${project_root}/Justfile
+    {{ just }} --unstable --fmt --check -f ${project_root}/Justfile
 
 # Fix Just Syntax
 [group('Just')]
@@ -81,9 +65,9 @@ just-fix:
     #!/usr/bin/bash
     find "${project_root}" -type f -name "*.just" | while read -r file; do
     	echo "Checking syntax: $file"
-    	just --unstable --fmt -f $file
+    	{{ just }} --unstable --fmt -f $file
     done
-    just --unstable --fmt -f ${project_root}/Justfile
+    {{ just }} --unstable --fmt -f ${project_root}/Justfile
 
 # Build image
 [group('Image')]
@@ -91,13 +75,13 @@ build target="" image="":
     #!/usr/bin/bash
     set -euo pipefail
 
-    resolved=$(just _resolve_image "{{ target }}" "{{ image }}")
+    resolved=$({{ just }} _resolve_image "{{ target }}" "{{ image }}")
     image_name=$(echo "$resolved" | cut -d' ' -f1)
     base_image=$(echo "$resolved" | cut -d' ' -f2)
     container_target=$(echo "$resolved" | cut -d' ' -f3)
 
-    container_mgr=$(just _container_mgr)
-    tag=$(just _tag "${image_name}")
+    container_mgr="${container_mgr}"
+    tag="${image_name}-build"
 
     if [[ "$container_target" =~ "nvidia" ]]; then
         flavor="nvidia"
@@ -142,16 +126,16 @@ run-container target="" image="":
     #!/usr/bin/bash
     set -euo pipefail
 
-    resolved=$(just _resolve_image "{{ target }}" "{{ image }}")
+    resolved=$({{ just }} _resolve_image "{{ target }}" "{{ image }}")
     image_name=$(echo "$resolved" | cut -d' ' -f1)
 
-    container_mgr=$(just _container_mgr)
-    tag=$(just _tag "${image_name}")
+    container_mgr="${container_mgr}"
+    tag="${image_name}-build"
 
     # Build if image doesn't exist
     ID=$($container_mgr images --filter "reference=localhost/${tag}:{{ latest }}-{{ git_branch }}" --format "{{{{.ID}}")
     if [[ -z "$ID" ]]; then
-        just build "{{ target }}" "{{ image }}"
+        {{ just }} build "{{ target }}" "{{ image }}"
     fi
 
     $container_mgr run -it --rm "localhost/${tag}:{{ latest }}-{{ git_branch }}" /usr/bin/bash

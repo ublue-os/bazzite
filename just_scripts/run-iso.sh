@@ -15,8 +15,8 @@ image=$2
 resolved=$(just _resolve_image "$target" "$image")
 image_name=$(echo "$resolved" | cut -d' ' -f1)
 
-container_mgr=$(just _container_mgr)
-tag=$(just _tag "${image_name}")
+container_mgr=${container_mgr}
+tag="${image_name}-build"
 
 # Check if ISO exists, create if it doesn't
 #shellcheck disable=SC2154
