@@ -38,7 +38,7 @@ fi
 
 # Copy system files
 echo "Copying shared system files..."
-cp -af /src/system_files/shared/. /
+cp -a /src/system_files/shared/. /
 
 if [[ "$desktop_env" == "gnome" ]]; then
     echo "Copying GNOME-specific system files..."
@@ -69,6 +69,10 @@ systemctl enable livesys.service livesys-late.service
 
 # Run the postrootfs hook
 "$SCRIPT_DIR/titanoboa_hook_postrootfs.sh"
+
+# Copy system files
+echo "Copying overrides of system files..."
+cp -af /src/system_files/overrides/. /
 
 # image-builder needs gcdx64.efi
 dnf install -y grub2-efi-x64-cdboot
