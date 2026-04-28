@@ -1,0 +1,12 @@
+[Unit]
+Description=Cockpit Web Service
+Requires=cockpit-container.service
+After=cockpit-container.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/true
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
