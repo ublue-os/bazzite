@@ -106,7 +106,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/bazzite-multilib \
         ublue-os/staging \
         ublue-os/packages \
-        ublue-os/obs-vkcapture \
         ycollet/audinux \
         che/nerd-fonts; \
     do \
@@ -530,7 +529,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/bazzite-multilib \
         ublue-os/staging \
         ublue-os/packages \
-        ublue-os/obs-vkcapture \
         ycollet/audinux \
         che/nerd-fonts; \
     do \
@@ -608,7 +606,6 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable ublue-os/packages && \
     dnf5 -y copr enable ublue-os/bazzite && \
     dnf5 -y copr enable ublue-os/bazzite-multilib && \
-    dnf5 -y copr enable ublue-os/obs-vkcapture && \
     dnf5 -y copr enable ycollet/audinux && \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     /ctx/cleanup
@@ -728,7 +725,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/packages \
         ublue-os/bazzite \
         ublue-os/bazzite-multilib \
-        ublue-os/obs-vkcapture \
         ycollet/audinux; \
     do \
         dnf5 -y copr disable -y $copr; \
