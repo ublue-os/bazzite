@@ -16,7 +16,6 @@ blocklists:
           var: XDG_CURRENT_DESKTOP
           regex: GNOME
     block:
-    - app.devsuite.Ptyxis
 
   - priority: 0
     conditions:
