@@ -32,6 +32,10 @@ case $lang in
     "it")
     info_text=("Steam è in fase di download. Attendere prego. Il download del client Steam potrebbe richiedere alcuni minuti.")
     ;;
+#brazilian portuguese
+    "pt_BR")
+    info_text=("O Steam está sendo executado pela primeira vez. Por favor, aguarde. O download do cliente Steam pode levar alguns minutos.")
+    ;;    
     *)
     info_text=("Steam is opening for the first time. Please wait, downloading the Steam client may take a few minutes.")
     ;;
