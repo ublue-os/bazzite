@@ -30,8 +30,7 @@ URL:           http://www.gnome.org
 Source0:       http://download.gnome.org/sources/%{name}/%{major_version}/%{name}-%{tarball_version}.tar.xz
 Source1:       org.gnome.mutter.fedora.gschema.override
 
-Patch0:        mutter-42.alpha-disable-tegra.patch
-Patch10:       4296.patch
+Patch0:       4296.patch
 
 BuildRequires: cvt
 BuildRequires: desktop-file-utils
