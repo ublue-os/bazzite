@@ -187,6 +187,8 @@ fi
 
 # IWD Fixup
 if [ ! -f /etc/bazzite/fixups/nmiwd ]; then
+  rm -f "/etc/NetworkManager/conf.d/supplicant.conf"
+
   if find /var/lib/iwd -maxdepth 1 -type f \( -name '*.psk' -o -name '*.8021x' -o -name '*.open' \) -print -quit | grep -q .; then 
       mkdir -p /etc/NetworkManager/conf.d
       printf "[device]\nwifi.backend=iwd\nwifi.iwd.autoconnect=yes" | tee /etc/NetworkManager/conf.d/iwd.conf > /dev/null
