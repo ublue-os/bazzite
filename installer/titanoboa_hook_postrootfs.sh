@@ -15,9 +15,6 @@ mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 # Utilities for displaying a dialog prompting users to review secure boot documentation
 dnf install -qy --setopt=install_weak_deps=0 qrencode yad
 
-# Install conky to display hardware information on the desktop
-dnf install -qy --setopt=install_weak_deps=0 conky
-
 # Variables
 imageref="$(podman images --format '{{ index .Names 0 }}\n' 'bazzite*' | head -1)"
 imageref="${imageref##*://}"
@@ -231,6 +228,13 @@ qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL"
         ublue-guest-user.service \
         ublue-os-media-automount.service \
         ublue-system-setup.service \
+        bazzite-flatpak-manager.service \
+        ublue-flatpak-manager.service \
+        flatpak-add-fedora-repos.service \
+        greenboot-set-rollback-trigger.service \
+        greenboot-healthcheck.service \
+        input-remapper.service \
+        switcheroo-control.service \
         check-sb-key.service; do
         if systemctl list-unit-files "$s" >/dev/null 2>&1; then
             systemctl disable "$s"
@@ -238,8 +242,6 @@ qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL"
     done
 
     for s in \
-        bazzite-flatpak-manager.service \
-        ublue-flatpak-manager.service \
         podman-auto-update.timer \
         bazzite-user-setup.service \
         ublue-user-setup.service; do
@@ -288,6 +290,12 @@ plasma*) desktop_env=kde ;;
 sway*) desktop_env=sway ;;
 xfce*) desktop_env=xfce ;;
 esac
+
+# Install conky to display hardware information on the desktop
+# Excluded from GNOME for the time being
+if [[ $desktop_env == kde ]]; then
+    dnf install -qy --setopt=install_weak_deps=0 conky
+fi
 
 # Don't start Steam at login
 rm -vf /etc/skel/.config/autostart/steam*.desktop
