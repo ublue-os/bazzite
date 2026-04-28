@@ -14,7 +14,7 @@ case $lang in
     ;;
 #german
     "de")
-    info_text=("Steam wird jetzt heruntergeladen. Bitte warten. Bis sich Steam öffnet, kann es ein paar Minuten dauern.")
+    info_text=("Steam wird jetzt heruntergeladen. Bitte warten Sie. Es kann ein paar Minuten dauern, bis sich Steam öffnet.")
     ;;
 #spanish
     "es")
