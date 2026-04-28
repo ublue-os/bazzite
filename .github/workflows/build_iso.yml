@@ -67,6 +67,8 @@ jobs:
 
           if [[ "${{ github.ref_name }}" == "testing" ]]; then
               TAG="testing"
+          elif [[ "${{ github.ref_name }}" == "unstable" ]]; then
+              TAG="unstable"
           fi
 
           # Would like to implement in the future. This will allow us to support image tags from a PR.
@@ -167,7 +169,7 @@ jobs:
           subject-path: ${{ steps.upload-directory.outputs.iso-upload-dir }}/${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-amd64.iso
 
       - name: Upload ISOs and Checksum to Job Artifacts
-        if: github.ref_name == 'testing'
+        if: github.ref_name == 'testing' || github.ref_name == 'unstable'
         #if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
