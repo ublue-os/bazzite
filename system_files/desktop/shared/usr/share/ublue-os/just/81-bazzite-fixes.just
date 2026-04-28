@@ -580,14 +580,14 @@ toggle-cec-sleep ACTION="":
         ;;
     esac
 
-# Manage Intel Ethernet fix (Disables EEE & ASPM). Options: status | enable | disable
+# Manage Intel Ethernet fix (Disables ASPM and sets PCIe policy to Performance). Options: status | enable | disable
 [group("network")]
 manage-intel-ethernet ACTION="":
     #!/usr/bin/env bash
     # 1. Capture current state
     CURRENT_KARGS=$(rpm-ostree kargs)
     get_status_token() {
-        if echo "$CURRENT_KARGS" | grep -q "igc.EEE=0" && echo "$CURRENT_KARGS" | grep -q "pcie_aspm=off"; then
+        if echo "$CURRENT_KARGS" | grep -q "pcie_aspm.policy=performance" && echo "$CURRENT_KARGS" | grep -q "pcie_aspm=off"; then
             echo "enable"
         else
             echo "disable"
@@ -595,7 +595,7 @@ manage-intel-ethernet ACTION="":
     }
     get_current_status() {
         if [[ "$(get_status_token)" == "enable" ]]; then
-            echo "Disable EEE & ASPM"
+            echo "Disable ASPM & Set Performance Policy"
         else
             echo "Defaults"
         fi
@@ -613,35 +613,35 @@ manage-intel-ethernet ACTION="":
         exit 0
     fi
     echo -e "This script manages a stability fix for Intel I225-V and I226-V Ethernet controllers."
-    echo -e "It disables Energy Efficient Ethernet (EEE) and PCIe Active State Power Management (ASPM) to prevent hardware hangs, failed register reads, and total connection drops during high-speed transfers or gaming."
+    echo -e "It disables PCIe Active State Power Management (ASPM) and sets the PCIe policy to performance to prevent hardware hangs, failed register reads, and total connection drops."
     echo -e "\nCurrent setting: $(get_current_status)\n"
     if [ -z "$OPTION" ]; then
-        OPTION=$(gum choose "Disable EEE & ASPM" "Restore Defaults" "Exit without changes")
+        OPTION=$(gum choose "Disable ASPM & Performance Policy" "Restore Defaults" "Exit without changes")
     fi
 
     case "$OPTION" in
-      "Disable EEE & ASPM"|enable)
+      "Disable ASPM & Performance Policy"|enable)
         if ! lspci | grep -Ei "I225|I226|I221|I222" > /dev/null; then
              gum style --foreground 196 "Error: No compatible Intel NIC detected."
              exit 0
         fi
 
         # 2. Only run rpm-ostree if the fix is actually missing
-        if echo "$CURRENT_KARGS" | grep -q "igc.EEE=0" && echo "$CURRENT_KARGS" | grep -q "pcie_aspm=off"; then
+        if echo "$CURRENT_KARGS" | grep -q "pcie_aspm.policy=performance" && echo "$CURRENT_KARGS" | grep -q "pcie_aspm=off"; then
             gum style --foreground 212 "Notice: Fixes are already applied in kargs."
         else
             echo "Applying Intel Ethernet stability fixes..."
-            # We use --append-if-missing alone to ensure it actually adds the keys
-            rpm-ostree kargs --append-if-missing='igc.EEE=0' --append-if-missing='pcie_aspm=off'
+            # Added deletion of the old ignored EEE arg and appended the new policy
+            rpm-ostree kargs --delete='igc.EEE=0' --append-if-missing='pcie_aspm=off' --append-if-missing='pcie_aspm.policy=performance' 2>/dev/null || true
             echo "Done! Please reboot to apply changes."
         fi
         ;;
       "Restore Defaults"|disable)
-        if ! echo "$CURRENT_KARGS" | grep -q "igc.EEE=0"; then
+        if ! echo "$CURRENT_KARGS" | grep -q "pcie_aspm=off"; then
             gum style --foreground 117 "Notice: System is already at defaults."
         else
             echo "Restoring Intel Ethernet defaults..."
-            rpm-ostree kargs --delete='igc.EEE=0' --delete='pcie_aspm=off' 2>/dev/null || true
+            rpm-ostree kargs --delete='igc.EEE=0' --delete='pcie_aspm=off' --delete='pcie_aspm.policy=performance' 2>/dev/null || true
             echo "Defaults restored. Please reboot."
         fi
         ;;
