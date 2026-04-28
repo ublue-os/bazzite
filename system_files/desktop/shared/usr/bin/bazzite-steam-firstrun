@@ -26,7 +26,7 @@ case $lang in
     ;;
 #french
     "fr")
-    info_text=("Steam est en cours de téléchargement. S'il vous plaît, attendez. Cela peut prendre quelques minutes.")
+    info_text=("Steam est en cours de téléchargement. Veuillez patienter, cela peut prendre quelques minutes.")
     ;;
 #italian
     "it")
