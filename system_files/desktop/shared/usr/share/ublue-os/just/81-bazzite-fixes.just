@@ -42,7 +42,7 @@ fix-reset-steam:
       fi
     done
     sleep 1
-    bazzite-steam &
+    bazzite-steam --disable-firstrun &
     exit 0
 
 # Toggle Bluetooth headset profile mode. If enabled, mic will be disabled on the Bluetooth device preventing the switch to headset profile, which has poor audio quality. Disable to restore mic functionality.
