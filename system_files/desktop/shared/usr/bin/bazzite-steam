@@ -5,6 +5,15 @@ IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
 
 DECK_OPTION=""
 
+DISABLE_FIRSTRUN=0
+
+# Add a flag to disable first run window
+for arg in "$@"; do
+    if [[ $arg == "--disable-firstrun" ]]; then
+        DISABLE_FIRSTRUN=1
+    fi
+done
+
 if [[ $IMAGE_NAME =~ "nvidia" ]]; then
   # Nvidia crash fix
   export __GL_CONSTANT_FRAME_RATE_HINT=3
@@ -36,6 +45,11 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
     DECK_OPTION="-steamdeck"
   else
     DECK_OPTION=""
+  fi
+else
+  # Display a window which tells the user that Steam is about to be opened for the first time
+  if [[ -f /usr/bin/bazzite-steam-firstrun ]] && [[ $DISABLE_FIRSTRUN -ne 1 ]]; then
+    /usr/bin/bazzite-steam-firstrun
   fi
 fi
 
