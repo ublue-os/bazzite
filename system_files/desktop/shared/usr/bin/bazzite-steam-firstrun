@@ -16,6 +16,22 @@ case $lang in
     "ru")
     info_text=("Steam запускается впервые. Пожалуйста, подождите, скачивание клиента Steam может занять несколько минут.")
     ;;
+#german
+    "de")
+    info_text=("Steam wird jetzt heruntergeladen. Bitte warten Sie. Es kann ein paar Minuten dauern, bis sich Steam öffnet.")
+    ;;
+#spanish
+    "es")
+    info_text=("Steam está descargando. Espera por favor. La descarga puede tardar unos minutos.")
+    ;;
+#french
+    "fr")
+    info_text=("Steam est en cours de téléchargement. S'il vous plaît, attendez. Cela peut prendre quelques minutes.")
+    ;;
+#italian
+    "it")
+    info_text=("Steam è in fase di download. Attendere prego. Il download del client Steam potrebbe richiedere alcuni minuti.")
+    ;;
     *)
     info_text=("Steam is opening for the first time. Please wait, downloading the Steam client may take a few minutes.")
     ;;
