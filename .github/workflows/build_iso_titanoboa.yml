@@ -78,8 +78,10 @@ jobs:
         run: |
           TAG="stable"
 
-          if [[ "${{ github.ref_name }}" != "main" ]]; then
+          if [[ "${{ github.ref_name }}" == "testing" ]]; then
               TAG="testing"
+          elif [[ "${{ github.ref_name }}" == "unstable" ]]; then
+              TAG="unstable"
           fi
 
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -192,7 +194,7 @@ jobs:
           done
 
       - name: Upload ISOs and Checksum to Job Artifacts
-        if: github.ref_name == 'testing'
+        if: github.ref_name == 'testing' || github.ref_name == 'unstable'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
