@@ -1,0 +1,29 @@
+# Relocatable schemas are located here in dconf
+# Some Gnome extensions don't ship gschema XML, so their settings also need to go in dconf
+
+[org/gnome/shell/extensions/custom-command-list]
+menuoptions-setting=2
+menuicon-setting='bazzite-logo'
+menulocation-setting=1
+menuposition-setting=0
+show-arrow=false
+command-order=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+
+command1=('---$(hostname)', '', '', true)
+command2=('App Grid', 'busctl --user call org.gnome.Shell /org/gnome/Shell org.gnome.Shell ShowApplications', '', true)
+command3=('Files', 'nautilus', '', true)
+command4=('---', '', '', true)
+command5=('Return to Gaming Mode', 'gnome-session-quit --logout --no-prompt', '', true)
+command6=('---', '', '', true)
+command7=('Steam', 'steam', '', true)
+command8=('Lutris', 'lutris', '', true)
+command9=('---', '', '', true)
+command10=('Bazaar', '/usr/bin/bazaar', '', true)
+command11=('Extension Manager', 'com.mattjakeman.ExtensionManager.desktop', '', true)
+command12=('---', '', '', true)
+command13=('Mission Center', '/usr/bin/missioncenter-helper', '', true)
+command14=('Terminal', 'ptyxis --new-window', '', true)
+command15=('DistroShelf', '/usr/bin/distroshelf-helper', '', true)
+command16=('---', '', '', true)
+command17=('System Update', 'ptyxis -- ujust update', '', true)
+command18=('About My System', 'gnome-control-center system about', '', true)

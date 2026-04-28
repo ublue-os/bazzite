@@ -9,7 +9,7 @@ trap 'echo "::endgroup::"' EXIT
 dnf5 -y --setopt=install_weak_deps=False install glib2-devel nodejs22-npm
 
 # Build Extensions
-glib-compile-schemas /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas
+glib-compile-schemas /usr/share/gnome-shell/extensions/custom-command-list@storageb.github.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/compiz-windows-effect@hermes83.github.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/compiz-alike-magic-lamp-effect@hermes83.github.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/hotedge@jonathan.jdoda.ca/schemas

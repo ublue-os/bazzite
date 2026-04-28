@@ -35,7 +35,7 @@ legacy-tray-enabled=false
 #-------------- REMAINING SCHEMAS IN THIS SETTING SECTION ARE LOCATED IN DCONF --------------#
 # Settings bellow are supported with gschema override, but other settings, which are relocatable schemas, are not. Edit dconfs if you need to modify relocatable schemas.
 
-# LogoMenu extension misses Gschema XML file, so it's in dconf
+# Custom Command Menu extension commands are located in dconf
 
 # Modifying shortcut actions for custom0, custom1, custom2, etc. are recognized as relocatable schemas
 [org.gnome.settings-daemon.plugins.media-keys]
