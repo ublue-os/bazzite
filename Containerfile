@@ -175,7 +175,12 @@ RUN --mount=type=cache,dst=/var/cache \
         libfreeaptx && \
     dnf5 -y install --enable-repo="*fedora-multimedia*" \
         libbluray \
-        libbluray-utils && \
+        libbluray-utils \
+        makemkv && \
+    ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libaacs.so.0 && \
+    ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libaacs.so.0.7.2 && \
+    ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libbdplus.so.0 && \
+    ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libbdplus.so.0.2.0 && \
     /ctx/cleanup
 
 # Remove unneeded packages
