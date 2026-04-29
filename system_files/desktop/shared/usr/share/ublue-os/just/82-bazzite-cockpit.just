@@ -23,6 +23,8 @@ cockpit ACTION="":
         ;;
       Disable|disable)
         sudo systemctl disable --now cockpit.service
+        sudo systemctl stop cockpit-container.service
+        sudo podman rm -f cockpit-ws
         ;;
       *)
         echo "No changes made."
