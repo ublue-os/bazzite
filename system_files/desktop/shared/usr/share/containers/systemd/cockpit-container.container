@@ -9,7 +9,6 @@ ContainerName=cockpit-ws
 Volume=/:/host
 PodmanArgs=--privileged --pid=host --cgroups=split
 Exec=/container/label-run
-Notify=yes
 Label=io.containers.autoupdate=registry
 Environment=NAME=cockpit-ws
 
