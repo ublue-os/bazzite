@@ -177,6 +177,7 @@ RUN --mount=type=cache,dst=/var/cache \
         libbluray \
         libbluray-utils \
         makemkv && \
+    desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/makemkv.desktop && \
     ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libaacs.so.0 && \
     ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libaacs.so.0.7.2 && \
     ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libbdplus.so.0 && \
