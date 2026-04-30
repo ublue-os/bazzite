@@ -248,6 +248,7 @@ RUN --mount=type=cache,dst=/var/cache \
         webapp-manager \
         btop \
         amdsmi \
+        rocm-smi \
         duf \
         fish \
         lshw \
