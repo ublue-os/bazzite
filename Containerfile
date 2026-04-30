@@ -819,9 +819,7 @@ RUN --mount=type=cache,dst=/var/cache \
     ; fi && \
     systemctl disable supergfxd.service && \
     dnf5 config-manager setopt skip_if_unavailable=1 && \
-    if [[ -f /etc/modprobe.d/nvidia-modeset.conf ]]; then \
-        mv /etc/modprobe.d/nvidia-modeset.conf /usr/lib/modprobe.d/nvidia-modeset.conf \
-    ; fi && \
+    { mv /etc/modprobe.d/nvidia-modeset.conf /usr/lib/modprobe.d/nvidia-modeset.conf || true; } && \
     /ctx/image-info && \
     /ctx/build-initramfs && \
     /ctx/finalize
