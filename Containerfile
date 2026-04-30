@@ -294,8 +294,12 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl mask iwd.service && \
     mkdir -p /usr/lib/extest/ && \
     /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest | jq -r '.assets[] | select(.name| test(".*so$")).browser_download_url')" -Lo /usr/lib/extest/libextest.so && \
+    /ctx/ghcurl "https://download.copr.fedorainfracloud.org/results/lizardbyte/beta/fedora-44-x86_64/10404230-Sunshine/Sunshine-2026.428.130031-1.fc44.x86_64.rpm" -Lo /tmp/sunshine.rpm && \
+    dnf5 -y install /tmp/sunshine.rpm && \
+    rm /tmp/sunshine.rpm && \
     /ctx/ghcurl "https://github.com/ykshek/Sunshine/raw/1347f9ef290c089b815cf186f7d361470bdb9ef7/src_assets/linux/misc/postinst" -Lo /usr/libexec/sunshine-postinst && \
     chmod +x /usr/libexec/sunshine-postinst && \
+    /usr/libexec/sunshine-postinst && \
     setfattr -n user.component -v "extest" /usr/lib/extest/libextest.so && \
     sed -i 's|uupd|& --disable-module-distrobox|' /usr/lib/systemd/system/uupd.service && \
     mkdir -p /etc/xdg/autostart && \
