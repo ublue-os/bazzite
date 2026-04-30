@@ -1,0 +1,17 @@
+[Unit]
+Description=Cockpit Container
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=quay.io/cockpit/ws:latest
+ContainerName=cockpit-ws
+Volume=/:/host
+PodmanArgs=--privileged --pid=host --cgroups=split
+Exec=/container/label-run
+Label=io.containers.autoupdate=registry
+Environment=NAME=cockpit-ws
+
+[Service]
+Restart=always
+KillMode=mixed

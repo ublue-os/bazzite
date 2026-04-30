@@ -6,14 +6,13 @@ echo "::group::Executing build-gnome-extensions"
 trap 'echo "::endgroup::"' EXIT
 
 # Install tooling
-dnf5 -y install glib2-devel
+dnf5 -y --setopt=install_weak_deps=False install glib2-devel nodejs22-npm
 
 # Build Extensions
 glib-compile-schemas /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/compiz-windows-effect@hermes83.github.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/compiz-alike-magic-lamp-effect@hermes83.github.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/hotedge@jonathan.jdoda.ca/schemas
-glib-compile-schemas /usr/share/gnome-shell/extensions/restartto@tiagoporsch.github.io/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/add-to-steam@pupper.space/schemas
 mv /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info /usr/share/gnome-shell/extensions/caffeine@patapon.info
@@ -39,6 +38,11 @@ rm -rf /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build
 mkdir -p /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io
 mv /usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io/src/* /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io/
 
+# Reboot to UEFI
+env HOME=/tmp make -C /usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com pack
+mkdir -p /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com
+unzip -o /usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com/reboottouefi@ubaygd.com-*.zip -d /usr/share/gnome-shell/extensions/reboottouefi@ubaygd.com
+
 # Cleanup
-dnf5 -y remove glib2-devel
+dnf5 -y remove glib2-devel nodejs22-npm
 rm -rf /usr/share/gnome-shell/extensions/tmp

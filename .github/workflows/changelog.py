@@ -1,20 +1,18 @@
 from itertools import product
 import subprocess
 import json
+import os
+import tempfile
 import time
 from typing import Any
 import re
 from collections import defaultdict
 
-REGISTRY = "docker://ghcr.io/ublue-os/"
+REGISTRY = "ghcr.io/ublue-os/"
 
 IMAGES = [
     "bazzite",
     "bazzite-gnome",
-    "bazzite-deck",
-    "bazzite-deck-gnome",
-    "bazzite-deck-nvidia",
-    "bazzite-deck-nvidia-gnome",
     "bazzite-nvidia",
     "bazzite-gnome-nvidia",
     "bazzite-nvidia-open",
@@ -24,6 +22,7 @@ IMAGES = [
 RETRIES = 3
 RETRY_WAIT = 5
 FEDORA_PATTERN = re.compile(r"\.fc\d\d")
+EPOCH_PATTERN = re.compile(r"^\d+:")
 STABLE_START_PATTERN = re.compile(r"\d\d\.\d")
 OTHER_START_PATTERN = lambda target: re.compile(rf"{target}-\d\d\.\d")
 
@@ -58,11 +57,11 @@ From previous `{target}` version `{prev}` there have been the following changes.
 | **Kernel** | {pkgrel:kernel} |
 | **Firmware** | {pkgrel:atheros-firmware} |
 | **Mesa** | {pkgrel:mesa-filesystem} |
-| **Gamescope** | {pkgrel:gamescope} |
+| **Gamescope** | {pkgrel:terra-gamescope} |
 | **Bazaar** | {pkgrel:bazaar} |
 | **Gnome** | {pkgrel:gnome-control-center-filesystem} |
 | **KDE** | {pkgrel:plasma-desktop} |
-| **Nvidia** | {pkgrel:nvidia-kmod-common} |
+| **Nvidia Open** | {pkgrel:nvidia-kmod-common} |
 | **Nvidia LTS** | {pkgrel:nvidia-kmod-common-lts} |
 
 {changes}
@@ -82,7 +81,12 @@ This is an automatically generated changelog for release `{curr}`."""
 BLACKLIST_VERSIONS = [
     "kernel",
     "mesa-filesystem",
-    "gamescope",
+    "terra-gamescope",
+    "gamescope-session",
+    "inputplumber",
+    "powerstation",
+    "steamos-manager-powerstation",
+    "opengamepadui",
     "bazaar",
     "gnome-control-center-filesystem",
     "plasma-desktop",
@@ -119,7 +123,7 @@ def get_manifests(target: str):
         for i in range(RETRIES):
             try:
                 output = subprocess.run(
-                    ["skopeo", "inspect", REGISTRY + img + ":" + target],
+                    ["skopeo", "inspect", "docker://" + REGISTRY + img + ":" + target],
                     check=True,
                     stdout=subprocess.PIPE,
                 ).stdout
@@ -134,6 +138,78 @@ def get_manifests(target: str):
             continue
         out[img] = json.loads(output)
     return out
+
+
+def get_image_digest(image: str, tag: str) -> str:
+    """Get image digest using skopeo."""
+    result = subprocess.run(
+        ["skopeo", "inspect", f"docker://{image}:{tag}"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return json.loads(result.stdout)["Digest"]
+
+
+def get_sbom(image: str, digest: str) -> dict:
+    """Fetch SBOM using ORAS."""
+    full_ref = f"{image}@{digest}"
+
+    result = subprocess.run(
+        ["oras", "discover", "--format", "json", full_ref],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    discovered = json.loads(result.stdout)
+
+    sbom_digest = None
+    for referrer in discovered.get("referrers", []):
+        if "spdx+json" in referrer.get("artifactType", ""):
+            sbom_digest = referrer["digest"]
+            break
+
+    if sbom_digest is None:
+        raise RuntimeError(f"No SBOM referrer found for {full_ref}")
+
+    sbom_ref = f"{image}@{sbom_digest}"
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        subprocess.run(
+            ["oras", "pull", sbom_ref],
+            capture_output=True,
+            check=True,
+            cwd=tmpdir,
+        )
+
+        for fname in os.listdir(tmpdir):
+            fpath = os.path.join(tmpdir, fname)
+            if fname.endswith(".zst"):
+                result = subprocess.run(
+                    ["zstd", "-d", fpath, "--stdout"],
+                    capture_output=True,
+                    check=True,
+                )
+                return json.loads(result.stdout)
+            elif fname.endswith(".json"):
+                with open(fpath) as f:
+                    return json.load(f)
+
+    raise RuntimeError(f"No SBOM file found after pulling {sbom_ref}")
+
+
+def parse_sbom_packages(sbom: dict) -> dict[str, str]:
+    """Parse RPM packages from a Syft-format SBOM."""
+    packages = {}
+    for artifact in sbom.get("artifacts", []):
+        if artifact.get("type") != "rpm":
+            continue
+        name = artifact.get("name")
+        version = artifact.get("version")
+        if name and version:
+            if name not in packages or (":" in version and ":" not in packages[name]):
+                packages[name] = version
+    return packages
 
 
 def get_tags(target: str, manifests: dict[str, Any]):
@@ -163,15 +239,20 @@ def get_tags(target: str, manifests: dict[str, Any]):
     return tags[-2], tags[-1]
 
 
-def get_packages(manifests: dict[str, Any]):
+def get_packages(tag: str):
     packages = {}
-    for img, manifest in manifests.items():
+    imgs = list(get_images())
+    for j, (img, _, _) in enumerate(imgs):
+        print(f"Getting packages for {img}:{tag} via SBOM ({j+1}/{len(imgs)})")
         try:
-            packages[img] = json.loads(manifest["Labels"]["dev.hhd.rechunk.info"])[
-                "packages"
-            ]
+            full_image = REGISTRY + img
+            digest = get_image_digest(full_image, tag)
+            sbom = get_sbom(full_image, digest)
+            packages[img] = parse_sbom_packages(sbom)
+            print(f"  Found {len(packages[img])} packages")
         except Exception as e:
-            print(f"Failed to get packages for {img}:\n{e}")
+            print(f"  Failed to get packages for {img}:{tag}: {e}")
+            raise
     return packages
 
 
@@ -182,12 +263,14 @@ def is_nvidia(img: str, lts: bool):
         return "nvidia-open" in img or "deck-nvidia" in img
 
 
-def get_package_groups(prev: dict[str, Any], manifests: dict[str, Any]):
+def get_package_groups(prev_tag: str, curr_tag: str):
     common = set()
     others = {k: set() for k in OTHER_NAMES.keys()}
 
-    npkg = get_packages(manifests)
-    ppkg = get_packages(prev)
+    print(f"\nFetching current packages for {curr_tag}...")
+    npkg = get_packages(curr_tag)
+    print(f"\nFetching previous packages for {prev_tag}...")
+    ppkg = get_packages(prev_tag)
 
     keys = set(npkg.keys()) | set(ppkg.keys())
     pkg = defaultdict(set)
@@ -239,16 +322,16 @@ def get_package_groups(prev: dict[str, Any], manifests: dict[str, Any]):
 
             first = False
 
-    return sorted(common), {k: sorted(v) for k, v in others.items()}
+    return sorted(common), {k: sorted(v) for k, v in others.items()}, npkg, ppkg
 
 
-def get_versions(manifests: dict[str, Any]):
+def get_versions(packages: dict[str, dict[str, str]]):
     versions = {}
-    pkgs = get_packages(manifests)
-    for img, img_pkgs in pkgs.items():
+    for img, img_pkgs in packages.items():
         for pkg, v in img_pkgs.items():
             if is_nvidia(img, lts=True) and "nvidia" in pkg:
                 pkg += "-lts"
+            v = re.sub(EPOCH_PATTERN, "", v)
             versions[pkg] = re.sub(FEDORA_PATTERN, "", v)
     return versions
 
@@ -345,14 +428,16 @@ def generate_changelog(
     target: str,
     pretty: str | None,
     workdir: str,
+    prev_tag: str,
+    curr_tag: str,
     prev_manifests,
     manifests,
 ):
-    common, others = get_package_groups(prev_manifests, manifests)
-    versions = get_versions(manifests)
-    prev_versions = get_versions(prev_manifests)
+    common, others, curr_packages, prev_packages = get_package_groups(prev_tag, curr_tag)
+    versions = get_versions(curr_packages)
+    prev_versions = get_versions(prev_packages)
 
-    prev, curr = get_tags(target, manifests)
+    prev, curr = prev_tag, curr_tag
 
     if not pretty:
         # Generate pretty version since we dont have it
@@ -443,6 +528,8 @@ def main():
         target,
         args.pretty,
         args.workdir,
+        prev,
+        curr,
         prev_manifests,
         manifests,
     )

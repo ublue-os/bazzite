@@ -40,6 +40,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
   cancel-in-progress: true
 
+env:
+  REPO_OWNER: ${{ github.repository_owner }}
+
 jobs:
   push-ghcr:
     name: Make
@@ -49,23 +52,22 @@ jobs:
       contents: read
       packages: write
       id-token: write
+      attestations: write
+      artifact-metadata: write
     strategy:
       fail-fast: false
       matrix:
         image:
           - bazzite
           - bazzite-gnome
-          - bazzite-deck
-          - bazzite-deck-gnome
-          - bazzite-deck-nvidia
-          - bazzite-deck-nvidia-gnome
           - bazzite-nvidia
           - bazzite-gnome-nvidia
           - bazzite-nvidia-open
           - bazzite-gnome-nvidia-open
         include:
-          - fedora_version: 43
-            kernel_version: ${{ (github.ref_name == 'testing' || github.ref_name == 'unstable') && 'latest' || 'latest' }}
+          - fedora_version: 44
+            kernel_flavor: ogc
+            kernel_version: 6.19.11-ogc1.1.fc44.x86_64
             base_image_flavor: main
             arch: x86_64
     steps:
@@ -90,6 +92,11 @@ jobs:
         if: ${{ steps.check_mnt.outputs.mnt_is_there == '1' }}
         with:
           target-dir: /var/lib/containers
+
+      # The image registry name must be lower-case, but GitHub usernames can be capitalized.
+      - name: Get lower-case equivalent of the repository owner's username
+        id: repo_owner_case
+        run: echo "lowercase=${REPO_OWNER,,}" >> "$GITHUB_OUTPUT"
 
       - name: Define base variables
         id: base
@@ -122,18 +129,18 @@ jobs:
             echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT" # NOOP
             echo "install_nvidia=false" >> "$GITHUB_OUTPUT"
           fi
-          # Nvidia driver version to use
+          # Nvidia flavor
           if [[ "$IMAGE" == *"nvidia-open" || "$IMAGE" == *"-deck-nvidia"* ]]; then
-            echo "nvidia_version=org.bazzite.kernel.nvidia" >> "$GITHUB_OUTPUT"
+            echo "nvidia_flavor=nvidia-open" >> "$GITHUB_OUTPUT"
           else
-            echo "nvidia_version=org.bazzite.kernel.nvidia_lts" >> "$GITHUB_OUTPUT"
+            echo "nvidia_flavor=nvidia-lts" >> "$GITHUB_OUTPUT"
           fi
 
           #
           # Define push and pull registries
           #
           PULL_REGISTRY=ghcr.io/ublue-os
-          PUSH_REGISTRY=ghcr.io/${{ github.repository_owner }}
+          PUSH_REGISTRY=ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}
           echo "push_registry=${PUSH_REGISTRY}" >> $GITHUB_OUTPUT
           echo "pull_registry=${PULL_REGISTRY}" >> $GITHUB_OUTPUT
           echo "output_image=${PUSH_REGISTRY}/${{ matrix.image }}" >> $GITHUB_OUTPUT
@@ -143,10 +150,8 @@ jobs:
           IMAGEREF="$PULL_REGISTRY/${{ matrix.image }}:stable"
           echo "prev_ref=${IMAGEREF}" >> $GITHUB_OUTPUT
 
-          KERNEL_URI=ghcr.io/bazzite-org/kernel-bazzite:${{ matrix.kernel_version }}-f${{ matrix.fedora_version }}-${{ matrix.arch }}
-          echo "kernel_ref=${KERNEL_URI}" >> $GITHUB_OUTPUT
-          NVIDIA_URI=ghcr.io/bazzite-org/nvidia-drivers
-          echo "nvidia_ref=${NVIDIA_URI}" >> $GITHUB_OUTPUT
+          AKMODS_TAG="${{ matrix.kernel_flavor }}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}"
+          echo "akmods_tag=${AKMODS_TAG}" >> $GITHUB_OUTPUT
 
           echo "Generated the following:"
           cat $GITHUB_OUTPUT
@@ -215,25 +220,15 @@ jobs:
           echo "pretty=${PRETTY_VERSION}" >> $GITHUB_OUTPUT
 
           #
-          # Kernel and NVIDIA versions
+          # Kernel & akmods
           #
-          # This needs to be tweaked, we need to verify a digest
-          # and to confirm it is from a protected branch
-          gh attestation verify -R bazzite-org/kernel-bazzite \
-            "oci://${{ steps.base.outputs.kernel_ref }}" --deny-self-hosted-runners
-          sudo podman pull ${{ steps.base.outputs.kernel_ref }}
+          AKMODS_TAG="${{ steps.base.outputs.akmods_tag }}"
+          sudo podman pull ghcr.io/ublue-os/akmods:${AKMODS_TAG}
+          # sudo podman pull ghcr.io/ublue-os/akmods-extra:${AKMODS_TAG}
 
           if [ "${{ steps.base.outputs.install_nvidia }}" == "true" ]; then
-            sudo skopeo inspect docker://${{ steps.base.outputs.kernel_ref }} > kernel_source.json
-            NVIDIA_VERSION=$(jq -r '.Labels["${{ steps.base.outputs.nvidia_version }}"]' kernel_source.json)
-            NVIDIA_REF="${{ steps.base.outputs.nvidia_ref }}:${NVIDIA_VERSION}-f${{ matrix.fedora_version }}-${{ matrix.arch }}"
-            # Same as above, we verify the uri moments before we pull it
-            gh attestation verify -R bazzite-org/nvidia-drivers \
-              "oci://$NVIDIA_REF" --deny-self-hosted-runners --source-ref "refs/heads/master"
-            sudo podman pull "$NVIDIA_REF"
-            echo "nvidia_ref=$NVIDIA_REF" >> $GITHUB_OUTPUT
-          else
-            echo "nvidia_ref=none" >> $GITHUB_OUTPUT
+            NVIDIA_FLAVOR="${{ steps.base.outputs.nvidia_flavor }}"
+            sudo podman pull "ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${AKMODS_TAG}"
           fi
 
 
@@ -248,10 +243,11 @@ jobs:
           FEDORA_VERSION=${{ matrix.fedora_version }}
           BASE_IMAGE=${{ steps.base.outputs.base_image }}
           IMAGE_NAME=${{ matrix.image }}
-          IMAGE_VENDOR=${{ github.repository_owner }}
+          IMAGE_VENDOR=${{ steps.repo_owner_case.outputs.lowercase }}
           IMAGE_BRANCH=${{ github.ref_name }}
-          KERNEL_REF=${{ steps.base.outputs.kernel_ref }}
-          NVIDIA_REF=${{ steps.labels.outputs.nvidia_ref }}
+          KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
+          KERNEL_VERSION=${{ matrix.kernel_version }}
+          NVIDIA_FLAVOR=${{ steps.base.outputs.nvidia_flavor }}
           NVIDIA_BASE=${{ steps.base.outputs.nvidia_base }}
           SHA_HEAD_SHORT=${{ steps.base.outputs.sha_head_short }}
           VERSION_TAG=${{ steps.labels.outputs.tag }}
@@ -263,32 +259,40 @@ jobs:
         id: cache-prep
         env:
           IMAGE: ${{ matrix.image }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          FEDORA_VERSION: ${{ matrix.fedora_version }}
         run: |
           set -eoux pipefail
-          if [[ "${IMAGE}" =~ gnome ]]; then
-            CACHE_NAME="gnome"
-          else
-            CACHE_NAME="kde"
-          fi
+
+          CACHE_NAME="bazzite-${FEDORA_VERSION}"
+
+          ALLOW_CACHE_WRITE="false"
 
           # TODO: If we ever integrate dx images here then this may need to be adjusted
-          if [[ "${IMAGE}" =~ "-deck" ]]; then
+          # TODO: remove testing here when we have cache on main branch
+          # PR caches are useless and may wipe cache on main
+          if [[ "${IMAGE}" =~ "-deck" ]] && \
+             [[ ! "${IMAGE}" =~ "gnome" ]] && \
+             [[ "${EVENT_NAME}" != "pull_request" ]] && \
+             [[ "${REF_NAME}" == "main" || "${REF_NAME}" == "testing" ]]; then
             ALLOW_CACHE_WRITE="true"
-          else
-            ALLOW_CACHE_WRITE="false"
           fi
 
           echo "cache_name=${CACHE_NAME}" >> "$GITHUB_OUTPUT"
           echo "allow_cache_write=${ALLOW_CACHE_WRITE}" >> "$GITHUB_OUTPUT"
 
       - name: Restore DNF package cache
-        uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         env:
           CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
           ALLOW_CACHE_WRITE: ${{ steps.cache-prep.outputs.allow_cache_write }}
         with:
           path: /var/tmp/buildah-cache-*
-          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
+          key: ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}-
+            ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}
 
       # Build image using buildah and save it to raw-img
       - name: Build Image
@@ -310,33 +314,41 @@ jobs:
 
       - name: Save DNF package cache
         if: steps.cache-prep.outputs.allow_cache_write == 'true'
-        uses: actions/cache/save@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         env:
           CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
           ALLOW_CACHE_WRITE: ${{ steps.cache-prep.outputs.allow_cache_write }}
         with:
           path: /var/tmp/buildah-cache-*
-          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
+          key: ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}
 
-      # Reprocess raw-img using rechunker which will delete it
-      - name: Run Rechunker
-        id: rechunk
+      - name: Setup Syft
+        id: setup-syft
+        if: github.event_name != 'pull_request'
+        uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0
+        with:
+          syft-version: v1.39.0
+
+      - name: Generate SBOM
+        if: github.event_name != 'pull_request'
+        id: generate-sbom
+        env:
+          IMAGE: ${{ matrix.image }}
+          VERSION_TAG: ${{ steps.labels.outputs.tag }}
+          SYFT_CMD: ${{ steps.setup-syft.outputs.cmd }}
+          OCI_DIR: "/tmp/image-oci-dir"
         run: |
-          container=$(sudo buildah from raw-img)
-          mnt=$(sudo buildah mount $container)
-          sudo bash -c "rm -rf $mnt/run/.* $mnt/run/* $mnt/tmp/.* $mnt/tmp/*"
-          sudo buildah umount $container
-          sudo buildah config --label "-" $container
-          sudo buildah commit --identity-label=false --rm $container raw-img
+          mkdir -p ${OCI_DIR}/rootfs
+          sudo podman container create --replace --name "${IMAGE}" "localhost/raw-img"
+          sudo podman export "${IMAGE}" | sudo tar -C ${OCI_DIR}/rootfs -xf -
+          sudo podman container rm "${IMAGE}"
 
-          sudo podman run --rm --privileged --volume /var/lib/containers:/var/lib/containers \
-              quay.io/centos-bootc/centos-bootc:stream10 \
-              rpm-ostree compose build-chunked-oci \
-              --bootc --max-layers 96 --format-version 2 \
-              --from localhost/raw-img --output containers-storage:localhost/chunked-img
-          sudo podman untag raw-img
-
-          echo "ref=containers-storage:localhost/chunked-img" >> "$GITHUB_OUTPUT"
+          SBOM="$(mktemp -d)/sbom.json"
+          export SYFT_PARALLELISM=$(($(nproc)*2))
+          sudo $SYFT_CMD --source-name "${IMAGE}"-"${VERSION_TAG}" ${OCI_DIR} -o syft-json=${SBOM}
+          du -sh ${SBOM}
+          echo "SBOM=${SBOM}" >> $GITHUB_OUTPUT
+          sudo rm -rf ${OCI_DIR}
 
       # Relabel the image with Bazzite labels
       - name: Apply Labels
@@ -360,6 +372,12 @@ jobs:
             version="testing-${version}"
           fi
 
+          # Clean out labels from base image
+          img=raw-img
+          container=$(sudo buildah from $img)
+          sudo buildah config --label "-" $container
+          sudo buildah commit --identity-label=false --rm $container $img
+
           declare -A tags
           while read -r t; do
               tags["$t"]=1
@@ -378,18 +396,14 @@ jobs:
           fi
 
           # Figure out config
-          img=${{ steps.rechunk.outputs.ref }}
           kver=$(sudo podman run --rm "$img" rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
           filter='{ "packages": [inputs | split(" ") | select(length==2) | { (.[0]): .[1] }] | sort_by(keys) | add }'
-          manifest=$(sudo podman run --rm "$img" rpm -qa --qf '%{NAME} %{VERSION}-%{RELEASE}\n' \
-              | sed -e 's/\.fc[0-9][0-9]*$//' | jq -Rnc "$filter")
           mapfile -t labels <<< "$IMAGE_LABELS"
           labels+=(
             "org.opencontainers.image.version=$version"
             "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
             "ostree.bootable=true"
             "ostree.linux=$kver"
-            "dev.hhd.rechunk.info=$manifest"
           )
 
           # Apply config to labels and annotations
@@ -401,6 +415,25 @@ jobs:
           sudo buildah commit --identity-label=false --rm $container $img
 
           echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # Reprocess raw-img using rechunker which will delete it
+      - name: Run Rechunker
+        id: rechunk
+        run: |
+          container=$(sudo buildah from raw-img)
+          mnt=$(sudo buildah mount $container)
+          sudo bash -c "rm -rf $mnt/run/.* $mnt/run/* $mnt/tmp/.* $mnt/tmp/*"
+          sudo buildah umount $container
+          sudo buildah commit --identity-label=false --rm $container raw-img
+
+          sudo podman run --rm --privileged --volume /var/lib/containers:/var/lib/containers \
+              localhost/raw-img \
+              rpm-ostree compose build-chunked-oci \
+              --bootc --max-layers 127 --format-version 2 \
+              --from localhost/raw-img --output containers-storage:localhost/chunked-img
+          sudo podman untag raw-img
+
+          echo "ref=containers-storage:localhost/chunked-img" >> "$GITHUB_OUTPUT"
 
       # Generate tags after relabel runs and checks the primary tag is not duplicated
       # If it is, relabel will suffix it by .1, .2, etc and put it in steps.relabel.outputs.version
@@ -440,43 +473,102 @@ jobs:
         run: |
           sudo tests/dgoss/dgoss-tests.sh tests/dgoss/tests.d "${{ steps.rechunk.outputs.ref }}"
 
-      - name: Install Cosign
+      - name: Login to GitHub Container Registry
         if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@ba7bc0a3fef59531c69a25acd34668d6d3fe6f22 # v4.1.0
-        with:
-          cosign-release: "v2.6.1"
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       # Push the image to GHCR (Image Registry)
-      - name: Push To GHCR and Sign
+      - name: Push to GHCR
+        id: push
         if: github.event_name != 'pull_request'
-        uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        env:
+          ALIAS_TAGS: ${{ steps.generate-tags.outputs.alias_tags }}
+          OUTPUT_IMAGE: ${{ steps.base.outputs.output_image }}
+          RECHUNK_REF: ${{ steps.rechunk.outputs.ref }}
+          VERSION: ${{ steps.relabel.outputs.version }}
         with:
-          attempt_limit: 3
-          attempt_delay: 15000
+          max_attempts: 3
+          retry_wait_seconds: 15
+          timeout_minutes: 10
           command: |
             log_sum() { echo "$1" >> $GITHUB_STEP_SUMMARY; }
             log_sum '# Push to GHCR result'
             log_sum '```'
-            echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # Push unique image id and sign, this way once evergreen tag is published
-            # It will always be signed
-            dest_image="${{ steps.base.outputs.output_image }}:${{ steps.relabel.outputs.version }}"
-            sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
+            dest_image="${OUTPUT_IMAGE}:${VERSION}"
+            sudo skopeo copy ${RECHUNK_REF} docker://$dest_image
             log_sum "$dest_image"
-            DIGEST=$(sudo skopeo inspect --format '{{.Digest}}' docker://$dest_image)
-            cosign sign -y --key env://SIGNING_SECRET --new-bundle-format=false \
-              "${{ steps.base.outputs.output_image }}@$DIGEST"
 
-            for tag in ${{ steps.generate-tags.outputs.alias_tags }}; do
-              dest_image="${{ steps.base.outputs.output_image }}:$tag"
-              sudo skopeo copy ${{ steps.rechunk.outputs.ref }} docker://$dest_image
+            for tag in ${ALIAS_TAGS}; do
+              dest_image="${OUTPUT_IMAGE}:$tag"
+              sudo skopeo copy ${RECHUNK_REF} docker://$dest_image
               log_sum "$dest_image"
             done
             log_sum '```'
+
+            digest=$(sudo skopeo inspect --format '{{.Digest}}' docker://${OUTPUT_IMAGE}:${VERSION})
+            echo "digest=${digest}" >> $GITHUB_OUTPUT
+
+      - name: Install Cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
+        with:
+          cosign-release: "v2.6.1"
+
+      - name: Sign container image
+        if: github.event_name != 'pull_request'
+        run: |
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY --new-bundle-format=false ${{ steps.base.outputs.output_image }}@${{ steps.push.outputs.digest }}
         env:
-          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+
+      - name: Install ORAS
+        if: github.event_name != 'pull_request'
+        uses: oras-project/setup-oras@38de303aac69abb66f3e6255b7198bff35f323e3 # v2.0.0
+
+      - name: Login to GitHub Container Registry with ORAS
+        if: github.event_name != 'pull_request'
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | oras login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Upload SBOM
+        if: github.event_name != 'pull_request'
+        id: upload-sbom
+        env:
+          IMAGE: ${{ steps.base.outputs.output_image }}
+          DIGEST: ${{ steps.push.outputs.digest }}
+          SBOM: ${{ steps.generate-sbom.outputs.SBOM }}
+        run: |
+          cd "$(dirname "${SBOM}")"
+          oras attach \
+            --artifact-type application/vnd.spdx+json \
+            --annotation filename=$(basename "$SBOM") \
+            "${IMAGE}@${DIGEST}" \
+            "$(basename ${SBOM})"
+
+          sbom_digest=$(oras discover --format json "${IMAGE}@${DIGEST}" | jq -r '.referrers[] | select(.artifactType == "application/vnd.spdx+json") | .digest')
+
+          echo "sbom_digest=${sbom_digest}" >> $GITHUB_OUTPUT
+
+      - name: Sign SBOM OCI Artifact
+        if: github.event_name != 'pull_request'
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+          IMAGE: ${{ steps.base.outputs.output_image }}
+          SBOM_DIGEST: ${{ steps.upload-sbom.outputs.sbom_digest }}
+        run: |
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY --new-bundle-format=false ${IMAGE}@${SBOM_DIGEST}
+
+      - name: Attestation
+        if: github.event_name != 'pull_request'
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-name: ${{ steps.base.outputs.output_image }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
 
   generate_release:
     name: Generate Release
@@ -490,7 +582,7 @@ jobs:
   kickoff_bazzite_dx:
     runs-on: ubuntu-24.04
     needs: [generate_release]
-    if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    if: github.repository == 'ublue-os/bazzite' && github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     steps:
       - name: Kickoff Bazzite-DX
         uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4

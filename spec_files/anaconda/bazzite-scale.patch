@@ -1,0 +1,16 @@
+--- a/pyanaconda/ui/gui/__init__.py
++++ b/pyanaconda/ui/gui/__init__.py
+@@ -584,6 +584,13 @@ class GraphicalUserInterface(UserInterface):
+         if not primary_monitor:
+             return
+ 
++        with open("/sys/devices/virtual/dmi/id/product_name") as f:
++            dmi = f.read().strip()
++
++        if "Jupiter" in dmi or "Galileo" in dmi or "NEXT" in dmi:
++            util.setenv("GDK_SCALE", "1")
++            return
++
+         monitor_geometry = primary_monitor.get_geometry()
+         monitor_scale = primary_monitor.get_scale_factor()
+         monitor_width_mm = primary_monitor.get_width_mm()

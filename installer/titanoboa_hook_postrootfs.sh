@@ -15,9 +15,6 @@ mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 # Utilities for displaying a dialog prompting users to review secure boot documentation
 dnf install -qy --setopt=install_weak_deps=0 qrencode yad
 
-# Install conky to display hardware information on the desktop
-dnf install -qy --setopt=install_weak_deps=0 conky
-
 # Variables
 imageref="$(podman images --format '{{ index .Names 0 }}\n' 'bazzite*' | head -1)"
 imageref="${imageref##*://}"
@@ -32,30 +29,6 @@ SECUREBOOT_DOC_URL_QR="/usr/share/ublue-os/secure_boot_qr.png"
 : ${VARIANT_ID:?}
 
 echo "Bazzite release $VERSION_ID ($VERSION_CODENAME)" >/etc/system-release
-
-# Get Artwork
-git clone --depth 1 --quiet https://github.com/ublue-os/bazzite.git /root/packages
-case "${PRETTY_NAME,,}" in
-"bazzite"*)
-    mkdir -p /usr/share/anaconda/pixmaps/silverblue
-    cp -r /root/packages/installer/branding/* /usr/share/anaconda/pixmaps/
-    ;;
-esac
-
-# Installer icon
-_icon=/root/packages/installer/branding/bazzite-installer.svg
-_icon_symbol=/root/packages/installer/branding/bazzite-installer-symbolic.svg
-if [[ -f $_icon ]]; then
-    for f in \
-        /usr/share/icons/hicolor/48x48/apps/org.fedoraproject.AnacondaInstaller.svg \
-        /usr/share/icons/hicolor/scalable/apps/org.fedoraproject.AnacondaInstaller.svg; do
-        cp "$_icon" "$f"
-    done
-    cp "$_icon_symbol" /usr/share/icons/hicolor/symbolic/apps/org.fedoraproject.AnacondaInstaller-symbolic.svg
-fi
-unset -v _icon
-unset -v _icon_symbol
-rm -rf /root/packages
 
 # Secureboot Key Fetch
 mkdir -p /usr/share/ublue-os
@@ -132,15 +105,6 @@ run0 --user=liveuser yad \
     --text="An error occurred during installation. Please report this issue to the developers." \
     < /tmp/anaconda.log
 %end
-
-$(
-    if [[ $imageref == *-deck* ]]; then
-        cat <<EOCAT
-# Set default user
-user --name=bazzite --password=bazzite --plaintext --groups=wheel
-EOCAT
-    fi
-)
 
 ostreecontainer --url=$imageref:$imagetag --transport=containers-storage --no-signature-verification
 %include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
@@ -221,6 +185,7 @@ qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL"
         rpm-ostree-countme.service \
         tailscaled.service \
         bazzite-hardware-setup.service \
+        ublue-hardware-setup.service \
         bootloader-update.service \
         brew-upgrade.timer \
         brew-update.timer \
@@ -230,15 +195,26 @@ qrencode -o "$SECUREBOOT_DOC_URL_QR" "$SECUREBOOT_DOC_URL"
         ublue-guest-user.service \
         ublue-os-media-automount.service \
         ublue-system-setup.service \
+        bazzite-flatpak-manager.service \
+        ublue-flatpak-manager.service \
+        flatpak-add-fedora-repos.service \
+        greenboot-set-rollback-trigger.service \
+        greenboot-healthcheck.service \
+        input-remapper.service \
+        switcheroo-control.service \
         check-sb-key.service; do
-        systemctl disable $s
+        if systemctl list-unit-files "$s" >/dev/null 2>&1; then
+            systemctl disable "$s"
+        fi
     done
 
     for s in \
-        ublue-flatpak-manager.service \
         podman-auto-update.timer \
+        bazzite-user-setup.service \
         ublue-user-setup.service; do
-        systemctl --global disable $s
+        if systemctl --global list-unit-files "$s" >/dev/null 2>&1; then
+            systemctl --global disable "$s"
+        fi
     done
 )
 
@@ -252,13 +228,13 @@ if [[ $imageref == *-nvidia* ]]; then
     echo "GSK_RENDERER=gl" >>/etc/skel/.config/environment.d/99-nvidia-fix.conf
 fi
 
-# Reenable noveau.
+# Reenable nouveau
 if [[ $imageref == *-nvidia* ]]; then
     for pkg in nvidia-gpu-firmware mesa-vulkan-drivers; do
         dnf -yq reinstall --allowerasing $pkg ||
             dnf -yq install --allowerasing $pkg
     done
-    # Ensure noveau vulkan icds exist
+    # Ensure nouveau vulkan icds exist
     (
         shopt -u nullglob
         ls /usr/share/vulkan/icd.d/nouveau_icd.*.json >/dev/null
@@ -282,11 +258,20 @@ sway*) desktop_env=sway ;;
 xfce*) desktop_env=xfce ;;
 esac
 
-# Dont start Steam at login
+# Install conky to display hardware information on the desktop
+# Excluded from GNOME for the time being
+if [[ $desktop_env == kde ]]; then
+    dnf install -qy --setopt=install_weak_deps=0 conky
+fi
+
+# Don't start Steam at login
 rm -vf /etc/skel/.config/autostart/steam*.desktop
 
-# Remove packages that shouldnt be used in a live session
-dnf -yq remove steam lutris bazaar || :
+# Remove packages that shouldn't be used in a live session
+dnf -yq remove steam lutris bazaar waydroid || :
+
+# Don't check for verified image
+rm -vf /etc/profile.d/verify_motd.sh
 
 (
     wallpaper_url=https://github.com/ublue-os/bazzite/raw/refs/heads/main/press_kit/art/Convergence_Wallpaper_DX.jxl
@@ -294,17 +279,6 @@ dnf -yq remove steam lutris bazaar || :
     wget -nv -O "$wallpaper_file" "$wallpaper_url"
     rm -f /usr/share/backgrounds/default.xml
 )
-
-echo "Copying shared system files..."
-cp -a /src/system_files/shared/. /
-
-if [[ "$desktop_env" == "gnome" ]]; then
-    echo "Copying GNOME-specific system files..."
-    cp -a /src/system_files/gnome/. /
-elif [[ "$desktop_env" == "kde" ]]; then
-    echo "Copying KDE-specific system files..."
-    cp -a /src/system_files/kde/. /
-fi
 
 # Enable on-screen keyboard
 if [[ $imageref == *-deck* ]]; then
@@ -319,12 +293,18 @@ if [[ $imageref == *-deck* ]]; then
     fi
 fi
 
+# Change default pins for KDE
+if [[ $desktop_env == kde ]]; then
+    sed -i '/const allPanels/,$d' /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js
+    sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js
+fi
+
 # Don't start the fedora-welcome app (gnome only)
 if [[ $desktop_env == gnome ]]; then
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nHidden=true@g' /usr/share/anaconda/gnome/org.fedoraproject.welcome-screen.desktop || :
 fi
 
-# Set new background for GNOME
+# Set new background and default pins for GNOME
 if [[ $desktop_env == gnome ]]; then
     glib-compile-schemas /usr/share/glib-2.0/schemas
 fi

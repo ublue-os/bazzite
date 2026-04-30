@@ -1,0 +1,114 @@
+#!/usr/bin/bash
+
+# The Steam client is known to call this script with the following parameter combinations:
+# steamos-update --supports-duplicate-detection     -- should do nothing
+# steamos-update --enable-duplicate-detection check -- should check for update
+# steamos-update check                              -- should check for update
+# steamos-update --enable-duplicate-detection       -- should perform an update
+# steamos-update                                    -- should perform an update
+
+# Exit Codes:
+# 0: Success (e.g., upgrade available, --supports-duplicate-detection handled, or script completed even if upgrade failed).
+# 7: Failure (e.g., uupd not installed, upgrade already installed, update checks failed, or connectivity check failed).
+
+_upgrade() {
+    # Log rotate the last session
+    if [ -f "${HOME}/.steamos-update.log" ]; then
+        cp "${HOME}/.steamos-update.log" "${HOME}/.steamos-update.log.old"
+    fi
+    : > "${HOME}/.steamos-update.log"
+
+    local last_pct=-1
+    local uupd_status
+
+    # Run uupd and capture its exit code
+    {
+        runcon system_u:unconfined_r:unconfined_t:s0 \
+            /usr/bin/uupd --hw-check=false --disable-module-brew --disable-module-distrobox \
+            --disable-module-flatpak --json --log-level debug 2>&1
+        echo $? > /tmp/uupd_exit_code
+    } | while IFS= read -r line; do
+        echo "$line" >> "${HOME}/.steamos-update.log"
+
+        pct=$(echo "$line" | jq -r 'select(.msg == "Updating") | .step_progress // empty' 2>/dev/null)
+        if [[ -n "$pct" ]]; then
+            pct=${pct%.*}
+            if [[ "$pct" -ne "$last_pct" ]]; then
+                echo "${pct}%"
+                last_pct=$pct
+            fi
+        fi
+    done
+
+    uupd_status=$(cat /tmp/uupd_exit_code)
+    rm -f /tmp/uupd_exit_code
+
+    return "$uupd_status"
+}
+
+
+# The first time the steam client starts in deck mode, it will attempt to fetch an update.
+# We must exit the first time, otherwise you have users stuck when booting up the first time.
+# See: https://www.reddit.com/r/Bazzite/comments/1psuar7/bazzite_xbox_ally_issue/
+_fixup_file=/etc/bazzite/fixups/first_steam_gamemode_boostrap
+if [[ ! -f $_fixup_file ]]; then
+    mkdir -p "$(dirname "$_fixup_file")"
+    touch "$_fixup_file"
+    sync "$_fixup_file"
+    systemctl restart graphical.target
+    exit 7
+fi
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+    check)
+        _CHECK=1
+        shift
+        ;;
+    --supports-duplicate-detection)
+        _EXIT=1
+        shift
+        ;;
+    *)
+        shift
+        ;;
+    esac
+done
+
+if [[ -n $_EXIT ]]; then
+    exit 0
+fi
+
+if ! command -v uupd >/dev/null; then
+    exit 7 # uupd not installed
+fi
+
+if ! command -v jq >/dev/null; then
+    exit 7 # jq not installed
+fi
+
+if [ -n "${_CHECK}" ]; then
+    if [ -f '/tmp/upgrade-installed' ]; then
+        exit 7 # Upgrade already installed
+    else
+        # Perform connectivity check
+        if ! wget -q --spider https://github.com; then
+            exit 7 # Connectivity check failed
+        fi
+
+        # Check system state
+        if uupd update-check | grep -q "true"; then
+            exit 0 # Upgrade available
+        else
+            exit 7 # Checks failed
+        fi
+    fi
+else
+    # We are triggering update
+    _upgrade
+    if [ $? -eq 0 ]; then
+        touch /tmp/upgrade-installed
+    else
+        exit 0 # Upgrade failed
+    fi
+fi

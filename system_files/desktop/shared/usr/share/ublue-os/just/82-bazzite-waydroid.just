@@ -1,10 +1,10 @@
 # vim: set ft=make :
 
-alias configure-waydroid := setup-waydroid
+alias setup-waydroid := configure-waydroid
 
-# Launch Waydroid configuration helper
+# Launch Waydroid configuration helper. Options: init | configure | gpu | integration | reset | helper
 [group("apps")]
-setup-waydroid ACTION="":
+configure-waydroid ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     IMAGE_INFO="/usr/share/ublue-os/image-info.json"
@@ -17,7 +17,7 @@ setup-waydroid ACTION="":
       echo "  Use 'configure' to select Configure Waydroid"
       echo "  Use 'gpu' to choose Select GPU for Waydroid"
       echo "  Use 'integration' to enable desktop window integration for Waydroid"
-      echo "  Use 'reset' to select Configure Waydroid"
+      echo "  Use 'reset' to reset Waydroid"
       echo "  Use 'helper' to install waydroid-helper (https://github.com/waydroid-helper/waydroid-helper)"
       exit 0
     elif [ "$OPTION" == "" ]; then

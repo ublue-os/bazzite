@@ -1,0 +1,55 @@
+#!/usr/bin/bash
+
+set -eoux pipefail
+
+echo "::group::Executing install-kernel-akmods"
+trap 'echo "::endgroup::"' EXIT
+
+# create a shims to bypass kernel install triggering dracut/rpm-ostree
+# seems to be minimal impact, but allows progress on build
+pushd /usr/lib/kernel/install.d
+mv 05-rpmostree.install 05-rpmostree.install.bak
+mv 50-dracut.install 50-dracut.install.bak
+printf '%s\n' '#!/bin/sh' 'exit 0' > 05-rpmostree.install
+printf '%s\n' '#!/bin/sh' 'exit 0' > 50-dracut.install
+chmod +x  05-rpmostree.install 50-dracut.install
+popd
+
+# Remove Existing Kernel
+for pkg in kernel kernel{-core,-modules,-modules-core,-modules-extra,-tools-libs,-tools}; do
+    rpm --erase "${pkg}" --nodeps
+done
+
+# cleanup leftovers that are not covered by kernel-* packages for some reason
+rm -rf /usr/lib/modules
+
+dnf5 -y install \
+    /tmp/kernel-rpms/kernel-[0-9]*.rpm \
+    /tmp/kernel-rpms/kernel-core-*.rpm \
+    /tmp/kernel-rpms/kernel-modules-*.rpm \
+    /tmp/kernel-rpms/kernel-devel-*.rpm
+
+dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-modules
+
+/ctx/install-kmods \
+    /tmp/rpms/{common,kmods}/*framework-laptop*.rpm \
+    /tmp/rpms/{common,kmods}/*openrazer*.rpm \
+    /tmp/rpms/{common,kmods}/*v4l2loopback*.rpm \
+    /tmp/rpms/{common,kmods}/*xone*.rpm \
+    /tmp/rpms/{common,kmods}/*xpadneo*.rpm
+
+/ctx/install-kmods \
+    /tmp/rpms/{extra,kmods-extra}/*zenergy*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*gcadapter*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*evdi*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*kvmfr*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*new-lg4ff*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*t150-driver*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*hid-fanatecff*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*sc0710*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*system76*.rpm
+
+pushd /usr/lib/kernel/install.d
+mv -f 05-rpmostree.install.bak 05-rpmostree.install
+mv -f 50-dracut.install.bak 50-dracut.install
+popd

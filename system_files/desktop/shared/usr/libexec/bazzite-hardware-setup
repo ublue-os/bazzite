@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=68
+HWS_VER=69
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -186,13 +186,17 @@ else
 fi
 
 # IWD Fixup
-if [ ! -f /etc/bazzite/fixups/iwd ]; then
-  if [[ ! -f "/etc/NetworkManager/conf.d/iwd.conf" ]]; then
-    # If the user isn't already using IWD, remove their networks so they can be recreated properly.
-    nmcli -t -f UUID,TYPE connection show | awk -F: '$2=="802-11-wireless"{print $1}' | xargs -r nmcli connection delete
+if [ ! -f /etc/bazzite/fixups/nmiwd ]; then
+  rm -f "/etc/NetworkManager/conf.d/supplicant.conf"
+
+  if find /var/lib/iwd -maxdepth 1 -type f \( -name '*.psk' -o -name '*.8021x' -o -name '*.open' \) -print -quit | grep -q .; then 
+      mkdir -p /etc/NetworkManager/conf.d
+      printf "[device]\nwifi.backend=iwd\nwifi.iwd.autoconnect=yes" | tee /etc/NetworkManager/conf.d/iwd.conf > /dev/null
+      systemctl mask wpa_supplicant.service
+      systemctl unmask iwd.service
   fi
 
-  touch /etc/bazzite/fixups/iwd
+  touch /etc/bazzite/fixups/nmiwd
 fi
 
 # FRAMEWORK AMD FIXES
@@ -281,17 +285,6 @@ fi
 # Fix missing hostname file breaking distrobox
 if [ ! -f /etc/hostname ]; then
   touch /etc/hostname
-fi
-
-# Remove old hhd@ enables
-# Check if we've already removed old hhd@ service enablements
-if [ ! -f /etc/bazzite/fixups/hhd_service_cleanup ]; then
-  echo "Cleaning up old hhd@ service enables"
-  for service in $(systemctl list-units --type=service --all 'hhd@*.service' --no-legend | awk '{print $1}'); do
-    echo "Disabling $service"
-    systemctl disable --now "$service" || true
-  done
-  touch /etc/bazzite/fixups/hhd_service_cleanup
 fi
 
 if [[ -n "$NEEDED_KARGS" ]]; then
