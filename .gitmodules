@@ -1,9 +1,6 @@
 [submodule "blur-my-shell@aunetx"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/blur-my-shell@aunetx
 	url = https://github.com/aunetx/blur-my-shell.git
-[submodule "logomenu@aryan_k"]
-	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/logomenu@aryan_k
-	url = https://github.com/ublue-os/bazzite-logomenu.git
 [submodule "compiz-windows-effect@hermes83.github.com"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/compiz-windows-effect@hermes83.github.com
 	url = https://github.com/hermes83/compiz-windows-effect.git
@@ -40,3 +37,6 @@
 [submodule "reboottouefi@ubaygd.com"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/tmp/reboottouefi@ubaygd.com
 	url = https://github.com/UbayGD/reboottouefi.git
+[submodule "custom-command-list@storageb.github.com"]
+	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/custom-command-list@storageb.github.com
+	url = https://github.com/StorageB/custom-command-menu.git
