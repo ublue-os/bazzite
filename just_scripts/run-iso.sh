@@ -12,8 +12,7 @@ fi
 # Resolve image
 target=$1
 image=$2
-resolved=$(just _resolve_image "$target" "$image")
-image_name=$(echo "$resolved" | cut -d' ' -f1)
+image_name=$(just image_name "$target" "$image")
 
 container_mgr=${container_mgr}
 tag="${image_name}-build"

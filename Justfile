@@ -8,6 +8,7 @@ export default_target := "bazzite"
 kernel_flavor := "ogc"
 export just := just_executable()
 export container_mgr := env("CONTAINER_MGR", if which("podman") != "" { "podman" } else if which("docker") != "" { "docker" } else if which("podman-remote") != "" { "podman-remote" } else { error("No container manager found") })
+export SUDOIF := if `id -u` == "0" { "" } else { "sudo" }
 
 alias build-iso := build-iso-release
 alias run := run-container
@@ -15,22 +16,20 @@ alias run := run-container
 _default:
     @{{ just }} --list
 
-# Resolve target and image name from shorthand inputs
+# Resolve image name from shorthand inputs
+[group('Utility')]
 [private]
-_resolve_image target image:
+image_name target="bazzite" image="kinoite":
     #!/usr/bin/bash
-    set -euo pipefail
+    set -eou pipefail
     target="{{ target }}"
     image="{{ image }}"
-
     [[ -z "$image" ]] && image="{{ default_image }}"
     [[ -z "$target" ]] && target="{{ default_target }}"
     [[ "$target" == "deck" ]] && target="bazzite-deck"
     [[ "$target" == "nvidia" ]] && target="bazzite-nvidia"
-
     image="${image,,}"
     target="${target,,}"
-
     desktop=""
     if [[ "$image" == "gnome" || "$image" == "silverblue" ]]; then
         desktop="-gnome"
@@ -39,14 +38,34 @@ _resolve_image target image:
     if [[ "$resolved" =~ nvidia ]]; then
         resolved="bazzite${desktop}-nvidia"
     fi
+    echo "${resolved}"
 
+# Resolve base image from shorthand inputs
+[group('Utility')]
+[private]
+base_image image="kinoite":
+    #!/usr/bin/bash
+    set -eou pipefail
+    image="{{ image }}"
+    [[ -z "$image" ]] && image="{{ default_image }}"
+    image="${image,,}"
     if [[ "$image" =~ "gnome" || "$image" =~ "silverblue" ]]; then
-        base_image="silverblue"
+        echo "silverblue"
     else
-        base_image="kinoite"
+        echo "kinoite"
     fi
 
-    echo "${resolved} ${base_image} ${target}"
+# Resolve container target from shorthand inputs
+[group('Utility')]
+[private]
+container_target target="bazzite":
+    #!/usr/bin/bash
+    set -eou pipefail
+    target="{{ target }}"
+    [[ -z "$target" ]] && target="{{ default_target }}"
+    [[ "$target" == "deck" ]] && target="bazzite-deck"
+    [[ "$target" == "nvidia" ]] && target="bazzite-nvidia"
+    echo "${target,,}"
 
 # Check Just Syntax
 [group('Just')]
@@ -75,10 +94,9 @@ build target="" image="":
     #!/usr/bin/bash
     set -euo pipefail
 
-    resolved=$({{ just }} _resolve_image "{{ target }}" "{{ image }}")
-    image_name=$(echo "$resolved" | cut -d' ' -f1)
-    base_image=$(echo "$resolved" | cut -d' ' -f2)
-    container_target=$(echo "$resolved" | cut -d' ' -f3)
+    image_name=$({{ just }} image_name "{{ target }}" "{{ image }}")
+    base_image=$({{ just }} base_image "{{ image }}")
+    container_target=$({{ just }} container_target "{{ target }}")
 
     container_mgr="${container_mgr}"
     tag="${image_name}-build"
@@ -126,10 +144,7 @@ run-container target="" image="":
     #!/usr/bin/bash
     set -euo pipefail
 
-    resolved=$({{ just }} _resolve_image "{{ target }}" "{{ image }}")
-    image_name=$(echo "$resolved" | cut -d' ' -f1)
-
-    container_mgr="${container_mgr}"
+    image_name=$({{ just }} image_name "{{ target }}" "{{ image }}")
     tag="${image_name}-build"
 
     # Build if image doesn't exist
