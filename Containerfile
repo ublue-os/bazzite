@@ -406,6 +406,8 @@ RUN --mount=type=cache,dst=/var/cache \
             kcharselect \
             kde-partitionmanager \
             plasma-discover && \
+        dnf5 -y swap --repo=copr:copr.fedorainfracloud.org:ublue-os:staging \
+            plasma-setup plasma-setup-"$(rpm -q --qf "%{VERSION}" plasma-desktop)"-*.bazzite && \
         sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
