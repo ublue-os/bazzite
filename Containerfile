@@ -413,6 +413,9 @@ RUN --mount=type=cache,dst=/var/cache \
         mkdir -p /usr/share/wallpapers/bazzite/convergence/contents/images && \
         ln -s /usr/share/wallpapers/convergence.jxl /usr/share/wallpapers/bazzite/convergence/contents/images/3940x2160.jxl \
     ; else \
+        dnf5 -y swap --repo=copr:copr.fedorainfracloud.org:ublue-os:bazzite gnome-initial-setup gnome-initial-setup && \
+        dnf5 versionlock add \
+            gnome-initial-setup && \
         dnf5 -y install \
             nautilus-gsconnect \
             steamdeck-backgrounds \
@@ -430,7 +433,6 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-tour \
             gnome-extensions-app \
             gnome-system-monitor \
-            gnome-initial-setup \
             gnome-shell-extension-background-logo \
             gnome-shell-extension-apps-menu \
             gnome-shell-extension-launch-new-instance \
