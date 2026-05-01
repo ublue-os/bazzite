@@ -29,9 +29,8 @@ fi
 # Resolve image
 target=$1
 image=$2
-resolved=$(just _resolve_image "$target" "$image")
-image_name=$(echo "$resolved" | cut -d' ' -f1)
-base_image=$(echo "$resolved" | cut -d' ' -f2)
+image_name=$(just image_name "$target" "$image")
+base_image=$(just base_image "$image")
 
 tag="${image_name}-build"
 
