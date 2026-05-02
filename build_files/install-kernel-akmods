@@ -44,6 +44,7 @@ dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel
     /tmp/rpms/{extra,kmods-extra}/*evdi*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*kvmfr*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*new-lg4ff*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*hid-tmff2*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*t150-driver*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*hid-fanatecff*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*sc0710*.rpm \
