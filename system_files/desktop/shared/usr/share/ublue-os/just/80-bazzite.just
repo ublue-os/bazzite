@@ -1009,6 +1009,7 @@ bazzite-cli:
 # Run a one minute system benchmark
 [group("utilities")]
 benchmark:
+    #!/usr/bin/bash
     echo 'Running a 1 minute benchmark ...'
     cd /tmp && stress-ng --matrix 0 -t 1m --times
 

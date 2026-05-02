@@ -17,7 +17,7 @@ screens:
             script: "ujust iwd disable"
       - id: "decky-loader"
         title: "Decky Loader"
-        description: "A plugin loader for the Steam Deck"
+        description: "A plugin loader for the Steam Gaming Mode."
         default: false
         status_script: "ujust setup-decky status"
         options:
@@ -32,7 +32,7 @@ screens:
             script: "ujust setup-decky uninstall"
       - id: "decky-bazzite-buddy"
         title: "Decky Bazzite Buddy"
-        description: "A Decky plugin that lets you see Bazzite changelogs in Game Mode."
+        description: "A Decky plugin that lets you see Bazzite changelogs in Gaming Mode."
         default: false
         status_script: "ujust get-decky-bazzite-buddy status"
         options:
@@ -217,6 +217,22 @@ screens:
         description: "Regenerate the GRUB config so Windows can show as a boot menu option."
         default: false
         script: "ujust regenerate-grub"
+      - id: "beesd"
+        title: "beesd"
+        description: "Configure beesd deduplication agent for BTRFS filesystems."
+        default: false
+        script: "ujust configure-beesd"
+      - id: "luks-tpm"
+        title: "Automatic LUKS unlock via TPM"
+        description: "Enable or disable automatic unlock via TPM2 to skip LUKS password prompt on boot."
+        default: false
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: "ujust setup-luks-tpm-unlock"
+          - id: "disable"
+            label: "Disable"
+            script: "ujust remove-luks-tpm-unlock"
       - id: "boot-to-windows"
         title: "Boot to Windows from Steam"
         description: "Adds a script in Steam to boot Windows which is useful for dual-boot setups"
@@ -246,6 +262,20 @@ screens:
           - id: "disable"
             label: "Disable"
             script: "ujust steamos-automount disable"
+      - id: "homedir-snapshots"
+        title: "Home directory snapshots"
+        description: "Configure snapshotting of /var/home directory."
+        default: false
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: "ujust configure-snapshots enable"
+          - id: "disable"
+            label: "Disable"
+            script: "ujust configure-snapshots disable"
+          - id: "wipe"
+            label: "Disable and wipe all snapshots"
+            script: "ujust configure-snapshots wipe"
       - id: "wake-on-lan"
         title: "Wake-on-LAN"
         description: "Enable Wake-on-LAN functionality to power on your device remotely"
@@ -336,6 +366,29 @@ screens:
           - id: "uninstall"
             label: "Uninstall"
             script: "ujust get-steamcmd uninstall"
+      - id: "cockpit"
+        title: "Cockpit"
+        description: "Manage Cockpit, a web-based graphical interface for servers."
+        default: false
+        status_script: "ujust cockpit status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: "ujust cockpit enable"
+          - id: "disable"
+            label: "Disable"
+            script: "ujust cockpit disable"
+      # TODO: do a refactor of this script to better integrate it with portal
+      - id: "bazzite-cli"
+        title: "bazzite-cli"
+        description: "Opt-in Bluefin-style command line experience."
+        default: false
+        script: "ujust bazzite-cli"
+      - id: "benchmark"
+        title: "One minute benchmark"
+        description: "Perform a one minute benchmark."
+        default: false
+        script: 'ujust benchmark; echo "Press Enter to close..."; read -r _'
       - id: "global-fsr4"
         title: "Global FSR4 Upgrade (RDNA4)"
         description: "Enable or disable the global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ to FSR 4 on Proton 10 or GE 10-25 or later."
@@ -388,107 +441,107 @@ screens:
         title: "Xbox Cloud Gaming"
         description: "Cloud gaming service"
         default: false
-        script: "ujust get-media-app \"Xbox Cloud Gaming\""
+        script: 'ujust get-media-app "Xbox Cloud Gaming"'
       # - id: "geforce-now"
       #   title: "GeForce Now"
       #   description: "Cloud gaming service"
       #   default: false
-      #   script: "ujust get-media-app \"GeForce Now\""
+      #   script: 'ujust get-media-app "GeForce Now"'
       - id: "youtube"
         title: "YouTube"
         description: "Video sharing platform"
         default: false
-        script: "ujust get-media-app \"YouTube\""
+        script: 'ujust get-media-app "YouTube"'
       - id: "spotify"
         title: "Spotify"
         description: "Music streaming service"
         default: false
-        script: "ujust get-media-app \"Spotify\""
+        script: 'ujust get-media-app "Spotify"'
       - id: "netflix"
         title: "Netflix"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Netflix\""
+        script: 'ujust get-media-app "Netflix"'
       - id: "plex-htpc"
         title: "Plex HTPC"
         description: "Media server client"
         default: false
-        script: "ujust get-media-app \"Plex HTPC\""
+        script: 'ujust get-media-app "Plex HTPC"'
       - id: "jellyfin"
         title: "JellyFin"
         description: "Media server client"
         default: false
-        script: "ujust get-media-app \"Jellyfin Media Player\""
+        script: 'ujust get-media-app "Jellyfin Media Player"'
       - id: "amazon-luna"
         title: "Amazon Luna"
         description: "Cloud gaming service"
         default: false
-        script: "ujust get-media-app \"Amazon Luna\""
+        script: 'ujust get-media-app "Amazon Luna"'
       - id: "disney-plus"
         title: "Disney Plus"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Disney Plus\""
+        script: 'ujust get-media-app "Disney Plus"'
       - id: "amazon-prime-video"
         title: "Amazon Prime Video"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Amazon Prime Video\""
+        script: 'ujust get-media-app "Amazon Prime Video"'
       - id: "apple-tv"
         title: "Apple TV"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Apple TV\""
+        script: 'ujust get-media-app "Apple TV"'
       - id: "curiosity-stream"
         title: "Curiosity Stream"
         description: "Documentary streaming service"
         default: false
-        script: "ujust get-media-app \"Curiosity Stream\""
+        script: 'ujust get-media-app "Curiosity Stream"'
       - id: "crunchyroll"
         title: "Crunchyroll"
         description: "Anime streaming service"
         default: false
-        script: "ujust get-media-app \"Crunchyroll\""
+        script: 'ujust get-media-app "Crunchyroll"'
       - id: "hbo-max"
         title: "HBO Max"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"HBO Max\""
+        script: 'ujust get-media-app "HBO Max"'
       - id: "hulu"
         title: "Hulu"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Hulu\""
+        script: 'ujust get-media-app "Hulu"'
       - id: "paramount-plus"
         title: "Paramount Plus"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Paramount Plus\""
+        script: 'ujust get-media-app "Paramount Plus"'
       - id: "peacock"
         title: "Peacock"
         description: "Subscription streaming service"
         default: false
-        script: "ujust get-media-app \"Peacock\""
+        script: 'ujust get-media-app "Peacock"'
       - id: "sling-tv"
         title: "Sling TV"
         description: "Live TV streaming service"
         default: false
-        script: "ujust get-media-app \"Sling TV\""
+        script: 'ujust get-media-app "Sling TV"'
       - id: "vimeo"
         title: "Vimeo"
         description: "Video sharing platform"
         default: false
-        script: "ujust get-media-app \"Vimeo\""
+        script: 'ujust get-media-app "Vimeo"'
       - id: "youtube-music"
         title: "YouTube Music"
         description: "Music streaming service"
         default: false
-        script: "ujust get-media-app \"YouTube Music\""
+        script: 'ujust get-media-app "YouTube Music"'
       - id: "youtube-tv"
         title: "YouTube TV"
         description: "Live TV streaming service"
         default: false
-        script: "ujust get-media-app \"YouTube TV\""
+        script: 'ujust get-media-app "YouTube TV"'
   - title: "Brew"
     description: "Brew Taps and Casks"
     actions:
@@ -561,8 +614,14 @@ screens:
         default: false
         script: 'ujust get-logs; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       
-      - id: "Reboot to UEFI"
+      - id: "reboot-to-uefi"
         title: "Reboot to UEFI"
         description: "Reboot into the UEFI settings menu, useful for changing boot order or other firmware settings."
         default: false
         script: "systemctl reboot --firmware-setup"
+
+      - id: "enroll-secure-boot-key"
+        title: "Enroll Secure Boot Key"
+        description: "Enroll Universal Blue's key to use Bazzite with Secure Boot enabled."
+        default: false
+        script: 'ujust enroll-secure-boot-key; echo "Press Enter to close..."; read -r _'
