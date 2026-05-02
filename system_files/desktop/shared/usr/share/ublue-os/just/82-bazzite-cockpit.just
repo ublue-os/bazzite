@@ -8,8 +8,11 @@ cockpit ACTION="":
     OPTION="{{ ACTION }}"
 
     if [ "$OPTION" == "status" ]; then
-      systemctl is-enabled cockpit.service
-      exit $?
+      if systemctl is-enabled cockpit.service &>/dev/null; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
     fi
 
     if [ "$OPTION" == "" ]; then
