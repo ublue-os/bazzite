@@ -363,14 +363,97 @@ openrgb ACTION="":
         exit 0
     fi
 
-# Install Boxtron, a Steam Play compatibility tool to run DOS games using native Linux DOSBox
+# Manage Boxtron, a Steam Play compatibility tool to run DOS games using native Linux DOSBox. Options: status | install | uninstall
 [group("gaming")]
-install-boxtron: distrobox-check-fedora
-    distrobox enter -n fedora -- bash -c '\
-      sudo dnf install dosbox-staging inotify-tools timidity++ fluid-soundfont-gm -y && \
-      cd ~/.steam/root/compatibilitytools.d/ && \
-      curl -L https://github.com/dreamer/boxtron/releases/download/v0.5.4/boxtron.tar.xz | tar xJf - && \
-      distrobox-export --bin /usr/bin/dosbox'
+install-boxtron ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    boxtron_installed() {
+        for base in "$HOME/.steam/root/compatibilitytools.d" "$HOME/.local/share/Steam/compatibilitytools.d"; do
+            if [[ -d "$base/boxtron" ]] || [[ -d "$base/Boxtron" ]]; then
+                return 0
+            fi
+        done
+        return 1
+    }
+    get_status_token() {
+        if boxtron_installed; then
+            echo "install"
+        else
+            echo "uninstall"
+        fi
+    }
+    get_current_status() {
+        if [[ "$(get_status_token)" == "install" ]]; then
+            echo "Installed"
+        else
+            echo "Not Installed"
+        fi
+    }
+    install_boxtron() {
+        just distrobox-check-fedora
+        distrobox enter -n fedora -- bash -c '\
+          sudo dnf install dosbox-staging inotify-tools timidity++ fluid-soundfont-gm -y && \
+          cd ~/.steam/root/compatibilitytools.d/ && \
+          curl -L https://github.com/dreamer/boxtron/releases/download/v0.5.4/boxtron.tar.xz | tar xJf - && \
+          distrobox-export --bin /usr/bin/dosbox'
+    }
+    uninstall_boxtron() {
+        removed=false
+        for path in \
+            "$HOME/.steam/root/compatibilitytools.d/boxtron" \
+            "$HOME/.steam/root/compatibilitytools.d/Boxtron" \
+            "$HOME/.local/share/Steam/compatibilitytools.d/boxtron" \
+            "$HOME/.local/share/Steam/compatibilitytools.d/Boxtron"; do
+            if [[ -e "$path" ]]; then
+                rm -rf "$path"
+                removed=true
+            fi
+        done
+        if distrobox list 2>/dev/null | grep -qE '(^|[[:space:]])fedora([[:space:]]|$)'; then
+            distrobox enter -n fedora -- bash -c 'distrobox-export --bin /usr/bin/dosbox --delete || true'
+        fi
+        if [[ "$removed" == "true" ]]; then
+            echo "Boxtron has been uninstalled."
+        else
+            echo "Boxtron is not installed."
+        fi
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+        echo "Usage: ujust install-boxtron <option>"
+        echo "  <option>: Specify the quick option to skip the prompt"
+        echo "  Use 'status' to print the current portal token"
+        echo "  Use 'install' to install Boxtron"
+        echo "  Use 'uninstall' to uninstall Boxtron"
+        exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        install_boxtron
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_boxtron
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}Boxtron${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_boxtron
+                ;;
+            "Uninstall")
+                uninstall_boxtron
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
+    fi
 
 # Manage Resilio Sync, a file synchronization utility powered by BitTorrent. Options: status | install | uninstall
 resilio-sync ACTION="":

@@ -66,6 +66,18 @@ screens:
           - id: "uninstall"
             label: "Uninstall"
             script: 'ujust get-lsfg uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "boxtron"
+        title: "Boxtron"
+        description: "Installs Boxtron on a Fedora distrobox and exports it."
+        default: false
+        status_script: "ujust install-boxtron status"
+        options:
+          - id: "install"
+            label: "Install"
+            script: 'ujust install-boxtron install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "uninstall"
+            label: "Uninstall"
+            script: 'ujust install-boxtron uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "emudeck"
         title: "EmuDeck"
         description: "A utility for installing and configuring emulators on the Steam Deck"
