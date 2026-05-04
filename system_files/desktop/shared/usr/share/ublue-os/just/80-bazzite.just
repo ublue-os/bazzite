@@ -19,6 +19,8 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
+alias toggle-ssh := ssh
+
 # Manage SSH availability on boot. Options: status | enable | disable
 [group("network")]
 ssh ACTION="":
@@ -86,6 +88,8 @@ ssh ACTION="":
         echo "No changes made."
         ;;
     esac
+
+alias toggle-reisub := reisub
 
 # Manage REISUB, useful for force rebooting systems when pageflip timeouts and/or other horrible things happen. Options: status | enable | disable
 [group("system")]
@@ -557,6 +561,8 @@ add-user-to-input-group ACTION="":
     fi
     add_user_to_input_group
 
+alias toggle-automounting := automounting
+
 # Manage automounting of labeled BTRFS/EXT4 partitions under /run/media/system. Options: status | enable | disable
 [group("automounting")]
 automounting ACTION="":
@@ -640,6 +646,8 @@ disable-framework-automount:
     set -eo pipefail
     ln -sf /dev/null /etc/udev/rules.d/99-framework-steam-automount.rules
 
+alias toggle-steamos-automount := steamos-automount
+
 # Manage SteamOS automount. Options: status | enable | disable
 [group("automounting")]
 steamos-automount ACTION="":
@@ -707,6 +715,8 @@ disable-automount-all:
 [group("automounting")]
 enable-automount-all:
     @pkexec --keep-cwd ujust enable-framework-automount automounting enable steamos-automount enable
+
+alias enable-tailscale := tailscale
 
 # Enable support for Tailscale. Options: status | enable | disable
 [group("network")]
@@ -1012,6 +1022,8 @@ benchmark:
     echo 'Running a 1 minute benchmark ...'
     cd /tmp && stress-ng --matrix 0 -t 1m --times
 
+alias toggle-password-feedback := password-feedback
+
 # Manage password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled. Options: on | off
 [group("development")]
 password-feedback ACTION="":
@@ -1054,6 +1066,8 @@ password-feedback ACTION="":
       echo "enabled, restart terminal to see changes"
     fi
 
+alias toggle-global-fsr4 := global-fsr4
+
 # Manage global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on Proton 10 or GE 10-25 or later. Options: enable | disable
 [group("gaming")]
 global-fsr4 ACTION="":
@@ -1093,6 +1107,8 @@ global-fsr4 ACTION="":
             echo "No changes made."
             ;;
     esac
+
+alias toggle-global-fsr4-rdna3 := global-fsr4-rdna3
 
 # Manage global Proton FSR4 upgrade on RDNA3 GPUs; upgrades FSR 3.1+ → FSR 4, only compatible with Proton GE, Proton EM, or similar forks. Options: enable | disable
 [group("gaming")]
