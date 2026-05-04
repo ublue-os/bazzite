@@ -274,6 +274,24 @@ screens:
         description: "Configure beesd deduplication for BTRFS filesystems."
         default: false
         script: 'ujust configure-beesd; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "snapper"
+        title: "Snapshots"
+        description: "Enable or disable Snapper snapshots for /var/home."
+        default: false
+        status_script: "ujust configure-snapshots status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: "ujust configure-snapshots enable"
+          - id: "disable"
+            label: "Disable"
+            script: "ujust configure-snapshots disable"
+          - id: "wipe"
+            label: "Wipe"
+            script: "ujust configure-snapshots wipe"
+          - id: "btrfs-assistant"
+            label: "Open Btrfs Assistant"
+            script: "setsid -f gtk-launch btrfs-assistant.desktop >/dev/null 2>&1"
       - id: "automounting"
         title: "Automounting"
         description: "Enable or disable automounting of labeled BTRFS/EXT4 partitions under /run/media/system."

@@ -813,15 +813,35 @@ configure-snapshots ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
+    get_status_token() {
+      configs="$(sed -n 's/^SNAPPER_CONFIGS="\([^"]*\)".*/\1/p' /etc/sysconfig/snapper 2>/dev/null || true)"
+      if [[ " $configs " == *" root "* ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "enable" ]]; then
+        echo "${green}${bold}Enabled${normal}"
+      else
+        echo "${yellow}${bold}Disabled${normal}"
+      fi
+    }
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust configure-snapshots <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current status"
       echo "  Use 'enable' enable snapshotting of /var/home"
       echo "  Use 'disable' disable snapshotting of /var/home"
       echo "  Use 'wipe' disable snapshotting and remove all automatic snapshots of /var/home"
       exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Snapper setup and configuration${normal}"
+      echo "Current status: $(get_current_status)"
       OPTION=$(Choose "Enable Snapper" "Disable Snapper" "Wipe Snapper config and automatic snapshots")
     fi
     if [[ "${OPTION,,}" =~ ^enable ]]; then
