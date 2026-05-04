@@ -442,11 +442,11 @@ screens:
   - title: "Game Fixes"
     description: "Fixes for specific games"
     actions:
-      - id: "geforce-now"
-        title: "GeForce Now"
-        description: "Cloud gaming service"
+      - id: "fix-gmod"
+        title: "Garry's Mod Patch Tool"
+        description: "Patch Garry's Mod's 64-bit beta to work properly on Linux."
         default: false
-        script: "ujust get-media-app \"GeForce Now\""
+        script: "ujust fix-gmod"
   - title: "Media Apps"
     description: "Entertainment and streaming services"
     actions:
