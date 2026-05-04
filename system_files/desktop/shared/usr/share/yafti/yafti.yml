@@ -371,6 +371,17 @@ screens:
           - id: "disable"
             label: "Disable"
             script: 'ujust setup-virtual-surround disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "virtualization"
+        title: "Virtualization"
+        description: "Install or remove virt-manager and configure host virtualization support."
+        default: false
+        options:
+          - id: "virt-on"
+            label: "Enable"
+            script: 'ujust setup-virtualization virt-on; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "virt-off"
+            label: "Disable"
+            script: 'ujust setup-virtualization virt-off; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "configure-beesd"
         title: "BTRFS Deduplication"
         description: "Configure beesd deduplication for BTRFS filesystems."
