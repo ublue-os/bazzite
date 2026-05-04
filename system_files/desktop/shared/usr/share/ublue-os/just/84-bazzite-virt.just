@@ -50,6 +50,8 @@ setup-virtualization ACTION="":
     fi
     if [[ "${OPTION,,}" =~ (^enable[[:space:]]virtualization|virt-on) ]]; then
         if ! rpm -q virt-manager | grep -P "^virt-manager-" 1>/dev/null; then
+          echo "Installing libvirt..."
+          sudo rpm-ostree install libvirt qemu qemu-img qemu-kvm
           echo "Installing virt-manager..."
           flatpak install flathub org.virt_manager.virt-manager
           rpm-ostree kargs \
@@ -87,6 +89,8 @@ setup-virtualization ACTION="":
         echo "${red}Disabling${n} bazzite-libvirtd-setup"
         sudo systemctl disable --now bazzite-libvirtd-setup.service 2> /dev/null
       fi
+      echo "Removing libvirt..."
+      sudo rpm-ostree uninstall libvirt qemu qemu-img qemu-kvm
       echo "Removing virt-manager..."
       flatpak uninstall org.virt_manager.virt-manager
       rpm-ostree kargs \
