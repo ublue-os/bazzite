@@ -634,3 +634,8 @@ screens:
         description: "Runs a one-minute CPU benchmark."
         default: false
         script: 'ujust benchmark; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "fix-proton-hang"
+        title: "Kill Wine/Proton Processes"
+        description: "Kills all processes related to wine and proton."
+        default: false
+        script: "ujust fix-proton-hang"
