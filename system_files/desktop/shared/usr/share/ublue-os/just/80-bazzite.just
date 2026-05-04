@@ -834,7 +834,7 @@ configure-snapshots ACTION="":
 
 # Enable a Bluefin-style CLI experience
 [group("development")]
-bazzite-cli:
+bazzite-cli ACTION="":
     #!/usr/bin/bash
     #shellcheck disable=SC2154
 
@@ -842,6 +842,7 @@ bazzite-cli:
 
     # Source libujust for colors/ugum
     source /usr/lib/ujust/ujust.sh
+    OPTION="{{ ACTION }}"
 
     # Exit Handling
     function Exiting(){
@@ -965,21 +966,26 @@ bazzite-cli:
     # Get Shell
     shell=$(basename "$SHELL")
     reentry="$1"
-    clear
-    if [[ -n "${reentry:-}" ]]; then
-        printf "%s%s%s\n\n" "${bold}" "$reentry" "$normal"
-    fi
-
-    # Check if bling is enabled and display
-    printf "Shell:\t%s%s%s%s\n" "${green}" "${bold}" "${shell}" "${normal}"
-    if ! check-bling "${shell}"; then
-        printf "Bling:\t%s%sEnabled%s\n" "${green}" "${bold}" "${normal}"
-    else
-        printf "Bling:\t%s%sDisabled%s\n" "${red}" "${bold}" "${normal}"
-    fi
 
     # ugum enable/disable
-    CHOICE=$(Choose enable disable cancel)
+    if [[ -n "${OPTION}" ]]; then
+        CHOICE="${OPTION,,}"
+    else
+        clear
+        if [[ -n "${reentry:-}" ]]; then
+            printf "%s%s%s\n\n" "${bold}" "$reentry" "$normal"
+        fi
+
+        # Check if bling is enabled and display
+        printf "Shell:\t%s%s%s%s\n" "${green}" "${bold}" "${shell}" "${normal}"
+        if ! check-bling "${shell}"; then
+            printf "Bling:\t%s%sEnabled%s\n" "${green}" "${bold}" "${normal}"
+        else
+            printf "Bling:\t%s%sDisabled%s\n" "${red}" "${bold}" "${normal}"
+        fi
+
+        CHOICE=$(Choose enable disable cancel)
+    fi
 
     # Enable/Disable. Recurse if bad option.
     if [[ "${CHOICE}" == "enable" ]]; then
@@ -987,12 +993,18 @@ bazzite-cli:
             trap ctrl_c SIGINT
             add-bling "${shell}"
             printf "%s%sInstallation Complete%s ... please close and reopen your terminal!" "${green}" "${bold}" "${normal}"
+        elif [[ -n "${OPTION}" ]]; then
+            printf "%s%sBling is already configured ...%s\n" "${yellow}" "${bold}" "${normal}"
         else
             main "Bling is already configured ..."
         fi
     elif [[ "${CHOICE}" == "disable" ]]; then
         if check-bling "${shell}"; then
-            main "Bling is not yet configured ..."
+            if [[ -n "${OPTION}" ]]; then
+                printf "%s%sBling is not yet configured ...%s\n" "${yellow}" "${bold}" "${normal}"
+            else
+                main "Bling is not yet configured ..."
+            fi
         else
             remove-bling "${shell}"
             trap ctrl_c SIGINT
@@ -1004,7 +1016,22 @@ bazzite-cli:
     }
 
     # Entrypoint
-    main ""
+    case "${OPTION,,}" in
+      enable|disable|"")
+        main ""
+        ;;
+      help)
+        echo "Usage: ujust bazzite-cli <option>"
+        echo "  <option>: Specify the quick option to skip the prompt"
+        echo "  Use 'enable' to enable Bazzite CLI shell enhancements"
+        echo "  Use 'disable' to disable Bazzite CLI shell enhancements"
+        ;;
+      *)
+        echo "Invalid option: $OPTION"
+        echo "Usage: ujust bazzite-cli [enable|disable]"
+        exit 1
+        ;;
+    esac
 
 # Run a one minute system benchmark
 [group("utilities")]

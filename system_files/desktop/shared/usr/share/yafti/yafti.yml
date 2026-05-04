@@ -196,6 +196,17 @@ screens:
           - id: "off"
             label: "Hide Password Asterisks"
             script: "ujust password-feedback off"
+      - id: "bazzite-cli"
+        title: "Bazzite CLI"
+        description: "Enable or disable the Bazzite CLI shell enhancements."
+        default: false
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && ujust bazzite-cli enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable"
+            script: 'ujust bazzite-cli disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "hide-grub"
         title: "GRUB Menu Visibility"
         description: "Choose when the GRUB menu appears at boot."
@@ -384,6 +395,11 @@ screens:
   - title: "Game Fixes"
     description: "Fixes for specific games"
     actions:
+      - id: "geforce-now"
+        title: "GeForce Now"
+        description: "Cloud gaming service"
+        default: false
+        script: "ujust get-media-app \"GeForce Now\""
   - title: "Media Apps"
     description: "Entertainment and streaming services"
     actions:
