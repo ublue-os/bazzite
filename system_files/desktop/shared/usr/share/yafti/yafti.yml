@@ -146,6 +146,18 @@ screens:
           - id: "helper"
             label: "Install Helper"
             script: "ujust configure-waydroid helper"
+      - id: "coolercontrol"
+        title: "CoolerControl"
+        description: "View sensors and create fan and pump profiles from available temperature sensors."
+        default: false
+        status_script: "ujust install-coolercontrol status"
+        options:
+          - id: "install"
+            label: "Install"
+            script: 'ujust install-coolercontrol install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "uninstall"
+            label: "Uninstall"
+            script: 'ujust install-coolercontrol uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "openrgb"
         title: "OpenRGB"
         description: "Open source RGB lighting control that doesn't depend on manufacturer software"

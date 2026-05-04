@@ -24,46 +24,119 @@ _install_appimage_file $APPIMAGE_SRC $filename="":
     sleep 3
     LC_ALL=C flatpak run it.mijorus.gearlever "$appimage_file" <&-
 
-# Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
+# Manage CoolerControl, a GUI for viewing sensors and creating fan and pump profiles. Options: status | install | uninstall
 [group("apps")]
-install-coolercontrol:
+install-coolercontrol ACTION="":
     #!/usr/bin/env bash
     set -eo pipefail
+    source /usr/lib/ujust/ujust.sh
 
-    cat <<'EOF'
-    {{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}CoolerControl{{ NORMAL }}.
-    {{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"
-    {{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}
-    EOF
-
-    layered() {
+    layered_package() {
         local pkg="$1"
         rpm-ostree status --json | jq -e ".deployments[] | select(.booted == true) | .packages | index(\"$pkg\")" > /dev/null
     }
-    packages=()
-    for pkg in liquidctl coolercontrol; do
-        if layered "$pkg"; then
-            echo "$pkg is already layered, skipping."
+
+    get_status_token() {
+        if layered_package liquidctl && layered_package coolercontrol; then
+            echo "install"
         else
-            packages+=("$pkg")
+            echo "uninstall"
         fi
-    done
+    }
 
-    if [ ${#packages[@]} -gt 0 ]; then
-        repo_path="/etc/yum.repos.d/terra.repo"
-
-        if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
-            echo 'Terra Repository is already enabled, skipping.'
+    get_current_status() {
+        if layered_package liquidctl && layered_package coolercontrol; then
+            echo "Installed"
+        elif layered_package liquidctl || layered_package coolercontrol; then
+            echo "Partially Installed"
         else
-            echo 'Enabling Terra Repository.'
-            sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
+            echo "Not Installed"
         fi
+    }
 
-        echo "Installing: ${packages[*]}"
-        rpm-ostree install -y "${packages[@]}"
-        echo 'Complete, please reboot to apply changes.'
-    else
-        echo "No changes were made."
+    install_coolercontrol() {
+        echo '{{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}CoolerControl{{ NORMAL }}.'
+        echo '{{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"'
+        echo '{{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}'
+
+        packages=()
+        for pkg in liquidctl coolercontrol; do
+            if layered_package "$pkg"; then
+                echo "$pkg is already layered, skipping."
+            else
+                packages+=("$pkg")
+            fi
+        done
+
+        if [ ${#packages[@]} -gt 0 ]; then
+            repo_path="/etc/yum.repos.d/terra.repo"
+
+            if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
+                echo 'Terra Repository is already enabled, skipping.'
+            else
+                echo 'Enabling Terra Repository.'
+                sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
+            fi
+
+            echo "Installing: ${packages[*]}"
+            rpm-ostree install -y "${packages[@]}"
+            echo 'Complete, please reboot to apply changes.'
+        else
+            echo "No changes were made."
+        fi
+    }
+
+    uninstall_coolercontrol() {
+        packages=()
+        for pkg in liquidctl coolercontrol; do
+            if layered_package "$pkg"; then
+                packages+=("$pkg")
+            fi
+        done
+
+        if [ ${#packages[@]} -gt 0 ]; then
+            echo "Uninstalling: ${packages[*]}"
+            rpm-ostree uninstall -y "${packages[@]}"
+            echo 'Complete, please reboot to apply changes.'
+        else
+            echo "CoolerControl is not layered."
+        fi
+    }
+
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+        echo "Usage: ujust install-coolercontrol <option>"
+        echo "  <option>: Specify the quick option to skip the prompt"
+        echo "  Use 'status' to print the current portal token"
+        echo "  Use 'install' to install CoolerControl"
+        echo "  Use 'uninstall' to uninstall CoolerControl"
+        exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        install_coolercontrol
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_coolercontrol
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}CoolerControl${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_coolercontrol
+                ;;
+            "Uninstall")
+                uninstall_coolercontrol
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
     fi
 
 # Install Displaylink, Needed for some laptop docks to output video
