@@ -263,6 +263,18 @@ screens:
           - id: "remove"
             label: "Remove"
             script: "ujust add-user-to-input-group remove"
+      - id: "restore-input-remapper"
+        title: "Input Remapper"
+        description: "Manage Input Remapper and make its launcher visible on non-desktop images."
+        default: false
+        status_script: "ujust restore-input-remapper status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: 'ujust restore-input-remapper enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable"
+            script: 'ujust restore-input-remapper disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "password-asterisks"
         title: "Visible Password Asterisks"
         description: "Show or hide password asterisks in sudo prompts."
