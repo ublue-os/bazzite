@@ -803,6 +803,11 @@ screens:
         description: "Collects system information and logs, then gives you links to share with support for troubleshooting."
         default: false
         script: 'ujust get-logs; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "bazzite-discord"
+        title: "Bazzite Support Discord Server"
+        description: "Opens Discord into the Bazzite Support Channel. PLEASE BE SURE TO PASTE YOUR TROUBLESHOOTING LOGS!"
+        default: false
+        script: "xdg-open https://discord.gg/JQq48bYzrc"
       - id: "benchmark"
         title: "Run System Benchmark"
         description: "Runs a one-minute CPU benchmark."
