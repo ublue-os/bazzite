@@ -274,6 +274,18 @@ screens:
         description: "Configure beesd deduplication for BTRFS filesystems."
         default: false
         script: 'ujust configure-beesd; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "watchdog"
+        title: "Watchdog"
+        description: "Enable or disable the hardware watchdog recovery mechanism."
+        default: false
+        status_script: "ujust configure-watchdog status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: 'ujust configure-watchdog enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable"
+            script: 'ujust configure-watchdog disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "snapper"
         title: "Snapshots"
         description: "Enable or disable Snapper snapshots for /var/home."

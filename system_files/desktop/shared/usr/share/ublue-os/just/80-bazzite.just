@@ -768,28 +768,40 @@ enable-framework-fan-control:
 configure-watchdog ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    WATCHDOG_STATE="$(rpm-ostree kargs)"
-    CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
     OPTION={{ ACTION }}
-    if [[ "$WATCHDOG_STATE" =~ (nowatchdog|modprobe\.blacklist=(iTCO_wdt|sp5100_tco)) ]]; then
-        WATCHDOG_STATE="${red}${b}Disabled${n}"
-    else
-        WATCHDOG_STATE="${green}${b}Enabled${n}"
-    fi
+    get_status_token() {
+      if [[ "$(cat /proc/cmdline)" =~ (nowatchdog|modprobe\.blacklist=(iTCO_wdt|sp5100_tco)) ]]; then
+        echo "disable"
+      else
+        echo "enable"
+      fi
+    }
+    get_current_status() {
+      WATCHDOG_STATE="$(rpm-ostree kargs)"
+      if [[ "$WATCHDOG_STATE" =~ (nowatchdog|modprobe\.blacklist=(iTCO_wdt|sp5100_tco)) ]]; then
+        echo "${yellow}${bold}Disabled${normal}"
+      else
+        echo "${green}${bold}Enabled${normal}"
+      fi
+    }
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust configure-watchdog <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'enable' to select Enable Watchdog"
       echo "  Use 'disable' to select Disable Watchdog"
       exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Watchdog configuration${normal}"
       echo "Having the watchdog enabled will let it recover the system in the event of a malfunction, however"
       echo "disabling the watchdog can give a potential performance improvement due to fewer interrupts"
-      echo "Watchdog is $WATCHDOG_STATE"
+      echo "Watchdog is $(get_current_status)"
       OPTION=$(Choose "Enable Watchdog" "Disable Watchdog")
     fi
     if [[ "${OPTION,,}" =~ ^enable ]]; then
+      CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
       WATCHDOG_KARGS="--delete-if-present=nowatchdog"
       if [[ "$CPU_MODEL" =~ "Intel" ]]; then
         WATCHDOG_KARGS="$WATCHDOG_KARGS --delete-if-present=modprobe.blacklist=iTCO_wdt"
@@ -798,6 +810,7 @@ configure-watchdog ACTION="":
       fi
       rpm-ostree kargs $WATCHDOG_KARGS
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
+      CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
       WATCHDOG_KARGS="--append-if-missing=nowatchdog"
       if [[ "$CPU_MODEL" =~ "Intel" ]]; then
         WATCHDOG_KARGS="$WATCHDOG_KARGS --append-if-missing=modprobe.blacklist=iTCO_wdt"
