@@ -198,7 +198,7 @@ screens:
             script: "ujust password-feedback off"
       - id: "bazzite-cli"
         title: "Bazzite CLI"
-        description: "Enable or disable the Bazzite CLI shell enhancements."
+        description: "Enable a Bluefin-style CLI experience."
         default: false
         options:
           - id: "enable"
@@ -582,3 +582,8 @@ screens:
         description: "Collects system information and logs, then gives you links to share with support for troubleshooting."
         default: false
         script: 'ujust get-logs; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "benchmark"
+        title: "Run System Benchmark"
+        description: "Runs a one-minute CPU benchmark."
+        default: false
+        script: 'ujust benchmark; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
