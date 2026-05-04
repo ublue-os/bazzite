@@ -453,8 +453,16 @@ toggle-save-panics ACTION="":
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust toggle-save-panics <option>"
       echo "  <option>: Specify the option to skip the interactive prompt"
+      echo "  Use 'status' to print the current portal status"
       echo "  Use 'enable' to enable ramoops"
       echo "  Use 'disable' to disable ramoops"
+      exit 0
+    elif [ "$OPTION" == "status" ]; then
+      if [ "$STATUS" == "Enabled" ]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo Ramoops is a kernel module that will save panic information across a reboot and allow it to be

@@ -382,6 +382,18 @@ screens:
           - id: "virt-off"
             label: "Disable"
             script: 'ujust setup-virtualization virt-off; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "save-panics"
+        title: "Save Kernel Panics"
+        description: "Enable or disable ramoops so kernel panic details can be recovered after reboot."
+        default: false
+        status_script: "ujust toggle-save-panics status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: 'ujust toggle-save-panics enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable"
+            script: 'ujust toggle-save-panics disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "configure-beesd"
         title: "BTRFS Deduplication"
         description: "Configure beesd deduplication for BTRFS filesystems."
