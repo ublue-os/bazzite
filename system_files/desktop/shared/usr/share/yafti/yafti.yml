@@ -713,6 +713,11 @@ screens:
         description: "Rollback to the previous Bazzite deployment"
         default: false
         script: "brh rollback -y && reboot"
+      - id: "verify-image"
+        title: "Verify System Image"
+        description: "Detects if you are on an unverified official image and rebases you to the signed version."
+        default: false
+        script: "ujust verify-image"
       - id: "reset-bazzite"
         title: "Reset Bazzite"
         description: "Reset Bazzite layering to Default (Only resets layers NOT user data)" 
