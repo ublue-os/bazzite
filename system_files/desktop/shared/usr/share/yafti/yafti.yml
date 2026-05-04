@@ -705,6 +705,11 @@ screens:
         description: "Runs a one-minute CPU benchmark."
         default: false
         script: 'ujust benchmark; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "restart-pipewire"
+        title: "Restart PipeWire"
+        description: "Restart the user PipeWire audio service."
+        default: false
+        script: 'ujust restart-pipewire; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "fix-proton-hang"
         title: "Kill Wine/Proton Processes"
         description: "Kills all processes related to wine and proton."
