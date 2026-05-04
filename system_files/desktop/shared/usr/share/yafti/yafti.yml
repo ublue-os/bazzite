@@ -371,6 +371,18 @@ screens:
           - id: "disable"
             label: "Disable"
             script: 'ujust setup-virtual-surround disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "bluetooth-headset-mic"
+        title: "Bluetooth Headset Audio Fix"
+        description: "Prevent Bluetooth devices from switching to low-quality headset mode by disabling their mic profile."
+        default: false
+        status_script: "ujust toggle-bt-mic status"
+        options:
+          - id: "enable"
+            label: "Enable Fix"
+            script: 'ujust toggle-bt-mic enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable Fix"
+            script: 'ujust toggle-bt-mic disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "virtualization"
         title: "Virtualization"
         description: "Install or remove virt-manager and configure host virtualization support."

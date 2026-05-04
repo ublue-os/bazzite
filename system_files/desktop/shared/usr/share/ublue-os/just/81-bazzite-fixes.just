@@ -47,18 +47,44 @@ fix-reset-steam:
 
 # Toggle Bluetooth headset profile mode. If enabled, mic will be disabled on the Bluetooth device preventing the switch to headset profile, which has poor audio quality. Disable to restore mic functionality.
 [group("audio")]
-toggle-bt-mic:
+toggle-bt-mic ACTION="":
     #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
     CONFIG_FILE="/etc/wireplumber/wireplumber.conf.d/51-mitigate-annoying-profile-switch.conf"
+    OPTION="{{ ACTION }}"
     # Check current status
     CURRENT_STATE="Disabled"
     if [ -f "$CONFIG_FILE" ]; then
       CURRENT_STATE="Enabled"
     fi
+
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust toggle-bt-mic <option>"
+      echo "  <option>: Specify the option to skip the interactive prompt"
+      echo "  Use 'status' to print the current portal status"
+      echo "  Use 'enable' to disable Bluetooth headset profile switching"
+      echo "  Use 'disable' to restore Bluetooth headset profile switching"
+      exit 0
+    elif [ "$OPTION" == "status" ]; then
+      if [ "$CURRENT_STATE" == "Enabled" ]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+      exit 0
+    fi
+
     # Prompt user for action
-    echo "Bluetooth headset profile mitigation is currently: ${bold}${CURRENT_STATE}${normal}"
-    echo "Enable or Disable Bluetooth headset profile mitigation?"
-    OPTION=$(ugum choose Enable Disable)
+    if [ "$OPTION" == "" ]; then
+      echo "Enable or Disable Bluetooth headset profile mitigation?"
+      if [ "$CURRENT_STATE" == "Enabled" ]; then
+        echo -e "${bold}Bluetooth headset profile mitigation:${normal} ${green}${CURRENT_STATE}${normal}"
+      else
+        echo -e "${bold}Bluetooth headset profile mitigation:${normal} ${red}${CURRENT_STATE}${normal}"
+      fi
+      OPTION=$(ugum choose Enable Disable)
+    fi
+
     if [[ "${OPTION,,}" == "enable" ]]; then
       echo "You chose to enable mitigation. This will disable headset mic functionality."
       echo "Requesting root privileges..."
