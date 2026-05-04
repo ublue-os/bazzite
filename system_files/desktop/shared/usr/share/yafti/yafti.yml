@@ -652,6 +652,11 @@ screens:
         description: "Reset Bazzite layering to Default (Only resets layers NOT user data)" 
         default: false
         script: "rpm-ostree reset"
+      - id: "cancel-pending-deployment"
+        title: "Cancel Pending Deployment"
+        description: "Remove a pending rpm-ostree deployment that you do not want to boot into."
+        default: false
+        script: 'rpm-ostree cleanup -p; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "Reboot to UEFI"
         title: "Reboot to UEFI"
         description: "Reboot into the UEFI settings menu, useful for changing boot order or other firmware settings."
