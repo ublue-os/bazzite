@@ -269,6 +269,11 @@ screens:
         description: "Adds a script in Steam to boot Windows which is useful for dual-boot setups"
         default: false
         script: "ujust setup-boot-windows-steam"
+      - id: "configure-beesd"
+        title: "BTRFS Deduplication"
+        description: "Configure beesd deduplication for BTRFS filesystems."
+        default: false
+        script: 'ujust configure-beesd; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "automounting"
         title: "Automounting"
         description: "Enable or disable automounting of labeled BTRFS/EXT4 partitions under /run/media/system."
