@@ -158,6 +158,18 @@ screens:
           - id: "uninstall"
             label: "Uninstall"
             script: 'ujust install-coolercontrol uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "displaylink"
+        title: "DisplayLink"
+        description: "Install DisplayLink support for laptop docks and USB display adapters."
+        default: false
+        status_script: "ujust install-displaylink status"
+        options:
+          - id: "install"
+            label: "Install"
+            script: 'ujust install-displaylink install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "uninstall"
+            label: "Uninstall"
+            script: 'ujust install-displaylink uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "openrgb"
         title: "OpenRGB"
         description: "Open source RGB lighting control that doesn't depend on manufacturer software"

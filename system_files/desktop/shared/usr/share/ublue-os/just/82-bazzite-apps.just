@@ -139,46 +139,110 @@ install-coolercontrol ACTION="":
         exit 0
     fi
 
-# Install Displaylink, Needed for some laptop docks to output video
+# Manage DisplayLink, needed for some laptop docks to output video. Options: status | install | uninstall
 [group("apps")]
-install-displaylink:
+install-displaylink ACTION="":
     #!/usr/bin/env bash
     set -eo pipefail
+    source /usr/lib/ujust/ujust.sh
 
-    cat <<'EOF'
-    {{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}Displaylink{{ NORMAL }}.
-    {{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"
-    {{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}
-    EOF
-
-    layered() {
+    layered_package() {
         local pkg="$1"
         rpm-ostree status --json | jq -e ".deployments[] | select(.booted == true) | .packages | index(\"$pkg\")" > /dev/null
     }
-    packages=()
-    for pkg in displaylink; do
-        if layered "$pkg"; then
-            echo "$pkg is already layered, skipping."
+
+    get_status_token() {
+        if layered_package displaylink; then
+            echo "install"
         else
-            packages+=("$pkg")
+            echo "uninstall"
         fi
-    done
+    }
 
-    if [ ${#packages[@]} -gt 0 ]; then
-        repo_path="/etc/yum.repos.d/negativo17-fedora-multimedia.repo"
-
-        if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
-            echo 'Negativo17 Multimedia Repository is already enabled, skipping.'
+    get_current_status() {
+        if [[ "$(get_status_token)" == "install" ]]; then
+            echo "Installed"
         else
-            echo 'Enabling Negativo17 Multimedia Repository.'
-            sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
+            echo "Not Installed"
         fi
+    }
 
-        echo "Installing: ${packages[*]}"
-        rpm-ostree install -y "${packages[@]}"
-        echo 'Complete, please reboot to apply changes.'
-    else
-        echo "No changes were made."
+    install_displaylink() {
+        echo '{{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}DisplayLink{{ NORMAL }}.'
+        echo '{{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"'
+        echo '{{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}'
+
+        packages=()
+        for pkg in displaylink; do
+            if layered_package "$pkg"; then
+                echo "$pkg is already layered, skipping."
+            else
+                packages+=("$pkg")
+            fi
+        done
+
+        if [ ${#packages[@]} -gt 0 ]; then
+            repo_path="/etc/yum.repos.d/negativo17-fedora-multimedia.repo"
+
+            if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
+                echo 'Negativo17 Multimedia Repository is already enabled, skipping.'
+            else
+                echo 'Enabling Negativo17 Multimedia Repository.'
+                sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
+            fi
+
+            echo "Installing: ${packages[*]}"
+            rpm-ostree install -y "${packages[@]}"
+            echo 'Complete, please reboot to apply changes.'
+        else
+            echo "No changes were made."
+        fi
+    }
+
+    uninstall_displaylink() {
+        if layered_package displaylink; then
+            echo "Uninstalling: displaylink"
+            rpm-ostree uninstall -y displaylink
+            echo 'Complete, please reboot to apply changes.'
+        else
+            echo "DisplayLink is not layered."
+        fi
+    }
+
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+        echo "Usage: ujust install-displaylink <option>"
+        echo "  <option>: Specify the quick option to skip the prompt"
+        echo "  Use 'status' to print the current portal token"
+        echo "  Use 'install' to install DisplayLink"
+        echo "  Use 'uninstall' to uninstall DisplayLink"
+        exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        install_displaylink
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_displaylink
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}DisplayLink${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_displaylink
+                ;;
+            "Uninstall")
+                uninstall_displaylink
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
     fi
 
 # Install JetBrains Toolbox | https://www.jetbrains.com/toolbox-app/
