@@ -54,6 +54,18 @@ screens:
           - id: "uninstall"
             label: "Uninstall"
             script: "ujust get-decky-lossless-scaling uninstall"
+      - id: "lsfg-vk"
+        title: "Lossless Scaling Vulkan Layer"
+        description: "Install the lsfg-vk Vulkan layer for Lossless Scaling compatibility in Linux."
+        default: false
+        status_script: "ujust get-lsfg status"
+        options:
+          - id: "install"
+            label: "Install"
+            script: 'ujust get-lsfg install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "uninstall"
+            label: "Uninstall"
+            script: 'ujust get-lsfg uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "emudeck"
         title: "EmuDeck"
         description: "A utility for installing and configuring emulators on the Steam Deck"
