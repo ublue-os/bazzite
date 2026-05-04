@@ -338,35 +338,129 @@ get-steamcmd ACTION="":
         exit 0
     fi
 
-# Install OpenRazer for Razer gaming hardware
+# Manage OpenRazer for Razer gaming hardware. Options: status | install | uninstall
 [group("hardware")]
-install-openrazer:
+install-openrazer ACTION="":
     #!/usr/bin/bash
+    set -eo pipefail
     source /usr/lib/ujust/ujust.sh
-    OPENRAZER_CONFIGURATOR_APP="None of openrazer frontend apps"
-    sudo curl -Lo /etc/yum.repos.d/hardware:razer.repo https://openrazer.github.io/hardware:razer.repo && \
-    rpm-ostree install -y openrazer-daemon && \
-        if ! grep -q "plugdev" /etc/group; then \
-      sudo bash -c 'grep "plugdev" /lib/group >> /etc/group' \
-    ; fi && \
-    sudo usermod -a -G plugdev $USER && \
-    echo "${bold}Select OpenRazer Frontend Apps${normal}"
-    OPTION=$(Choose "Razer Genie" "Polychromatic" "None")
-    if [[ "${OPTION,,}" =~ ^razer[[:space:]]genie ]]; then
-        echo "Installing Razer Genie..."
-        flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-        flatpak --system install -y flathub xyz.z3ntu.razergenie
-        OPENRAZER_CONFIGURATOR_APP="Razer Genie"
-    elif [[ "${OPTION,,}" =~ ^polychromatic ]]; then
-        echo "Installing Polychromatic..."
-        flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-        flatpak --system install -y flathub app.polychromatic.controller
-        OPENRAZER_CONFIGURATOR_APP="Polychromatic"
-    else
-        echo "Not Selecting GUI Frontend"
+    layered_package() {
+        local pkg="$1"
+        rpm-ostree status --json | jq -e ".deployments[] | select(.booted == true) | .packages | index(\"$pkg\")" > /dev/null
+    }
+    flatpak_installed() {
+        local app="$1"
+        flatpak list --system --columns=application 2>/dev/null | grep -Fx "$app" >/dev/null
+    }
+    get_status_token() {
+        if ! layered_package openrazer-daemon; then
+            echo "uninstall"
+        elif flatpak_installed xyz.z3ntu.razergenie; then
+            echo "install-razer-genie"
+        elif flatpak_installed app.polychromatic.controller; then
+            echo "install-polychromatic"
+        else
+            echo "install"
+        fi
+    }
+    get_current_status() {
+        if ! layered_package openrazer-daemon; then
+            echo "Not Installed"
+        elif flatpak_installed xyz.z3ntu.razergenie; then
+            echo "Installed (Razer Genie)"
+        elif flatpak_installed app.polychromatic.controller; then
+            echo "Installed (Polychromatic)"
+        else
+            echo "Installed"
+        fi
+    }
+    install_openrazer() {
+        local FRONTEND_OPTION="${1:-}"
+        OPENRAZER_CONFIGURATOR_APP="None of openrazer frontend apps"
+        if [[ -z "$FRONTEND_OPTION" ]]; then
+            echo "${bold}Select OpenRazer Frontend Apps${normal}"
+            FRONTEND_OPTION=$(ugum choose "Razer Genie" "Polychromatic" "None")
+        fi
+        if [[ "${FRONTEND_OPTION,,}" =~ ^razer[[:space:]]genie ]]; then
+            echo "Installing Razer Genie..."
+            flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+            flatpak --system install -y flathub xyz.z3ntu.razergenie
+            OPENRAZER_CONFIGURATOR_APP="Razer Genie"
+        elif [[ "${FRONTEND_OPTION,,}" =~ ^polychromatic ]]; then
+            echo "Installing Polychromatic..."
+            flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+            flatpak --system install -y flathub app.polychromatic.controller
+            OPENRAZER_CONFIGURATOR_APP="Polychromatic"
+        else
+            echo "Not Selecting GUI Frontend"
+        fi
+        sudo curl -Lo /etc/yum.repos.d/hardware:razer.repo https://openrazer.github.io/hardware:razer.repo
+        rpm-ostree install -y openrazer-daemon
+        if ! grep -q "plugdev" /etc/group; then
+            sudo bash -c 'grep "plugdev" /lib/group >> /etc/group'
+        fi
+        sudo usermod -a -G plugdev "$USER"
+        echo "$OPENRAZER_CONFIGURATOR_APP is installed"
+        echo "Please reboot to apply needed changes."
+    }
+    uninstall_openrazer() {
+        if layered_package openrazer-daemon; then
+            rpm-ostree uninstall -y openrazer-daemon
+            echo "OpenRazer daemon has been uninstalled."
+        else
+            echo "OpenRazer daemon is not layered."
+        fi
+        if flatpak_installed xyz.z3ntu.razergenie; then
+            flatpak --system remove -y xyz.z3ntu.razergenie
+        fi
+        if flatpak_installed app.polychromatic.controller; then
+            flatpak --system remove -y app.polychromatic.controller
+        fi
+        echo "Please reboot to apply needed changes."
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+        echo "Usage: ujust install-openrazer <option>"
+        echo "  <option>: Specify the quick option to skip the prompt"
+        echo "  Use 'status' to print the current portal token"
+        echo "  Use 'install' to install OpenRazer without a frontend"
+        echo "  Use 'install-razer-genie' to install OpenRazer with Razer Genie"
+        echo "  Use 'install-polychromatic' to install OpenRazer with Polychromatic"
+        echo "  Use 'uninstall' to uninstall OpenRazer"
+        exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        install_openrazer "None"
+        exit 0
+    elif [[ "$OPTION" == "install-razer-genie" ]]; then
+        install_openrazer "Razer Genie"
+        exit 0
+    elif [[ "$OPTION" == "install-polychromatic" ]]; then
+        install_openrazer "Polychromatic"
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_openrazer
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}OpenRazer${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_openrazer
+                ;;
+            "Uninstall")
+                uninstall_openrazer
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
     fi
-    echo "$OPENRAZER_CONFIGURATOR_APP is installed"
-    echo "Please reboot to apply needed changes."
 
 # Install EmuDeck (https://www.emudeck.com/). Options: status | install | uninstall
 [group("gaming")]

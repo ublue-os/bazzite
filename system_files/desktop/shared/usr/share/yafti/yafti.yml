@@ -170,6 +170,24 @@ screens:
           - id: "uninstall"
             label: "Uninstall"
             script: 'ujust install-displaylink uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "openrazer"
+        title: "OpenRazer"
+        description: "Install OpenRazer support for Razer gaming hardware."
+        default: false
+        status_script: "ujust install-openrazer status"
+        options:
+          - id: "install-razer-genie"
+            label: "Install with Razer Genie"
+            script: 'ujust install-openrazer install-razer-genie; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "install-polychromatic"
+            label: "Install with Polychromatic"
+            script: 'ujust install-openrazer install-polychromatic; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "install"
+            label: "Install Without Frontend"
+            script: 'ujust install-openrazer install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "uninstall"
+            label: "Uninstall"
+            script: 'ujust install-openrazer uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "openrgb"
         title: "OpenRGB"
         description: "Open source RGB lighting control that doesn't depend on manufacturer software"
