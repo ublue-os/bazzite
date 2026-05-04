@@ -383,6 +383,33 @@ screens:
           - id: "disable"
             label: "Disable Fix"
             script: 'ujust toggle-bt-mic disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "intel-i915-sleep-fix"
+        title: "Intel i915 Sleep Fix"
+        description: "Manage the i915.enable_dc power-saving setting for older Intel GPUs with suspend issues."
+        default: false
+        status_script: "ujust toggle-i915-sleep-fix status"
+        options:
+          - id: "auto"
+            label: "Set to Auto (i915.enable_dc=-1)"
+            script: 'ujust toggle-i915-sleep-fix auto; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable Power Saving (i915.enable_dc=0)"
+            script: 'ujust toggle-i915-sleep-fix disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "level-1"
+            label: "Set to Level 1 (i915.enable_dc=1)"
+            script: 'ujust toggle-i915-sleep-fix level-1; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "level-2"
+            label: "Set to Level 2 (i915.enable_dc=2)"
+            script: 'ujust toggle-i915-sleep-fix level-2; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "level-3"
+            label: "Set to Level 3 (i915.enable_dc=3)"
+            script: 'ujust toggle-i915-sleep-fix level-3; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "level-4"
+            label: "Set to Level 4 (i915.enable_dc=4)"
+            script: 'ujust toggle-i915-sleep-fix level-4; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "unset"
+            label: "Unset Parameter"
+            script: 'ujust toggle-i915-sleep-fix unset; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "virtualization"
         title: "Virtualization"
         description: "Install or remove virt-manager and configure host virtualization support."

@@ -286,22 +286,79 @@ iwd ACTION="":
 
 # enable or disable a fix for 7th and 8th generation Intel chips not being able to sleep
 [group("hardware")]
-toggle-i915-sleep-fix:
+toggle-i915-sleep-fix ACTION="":
     #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    OPTION="{{ ACTION }}"
+
     # Explain the purpose of the script
-    echo -e "This script manages the i915.enable_dc kernel parameter, which controls a power-saving feature for Intel graphics"
-    echo -e "Enabling this setting can reduce power consumption, but may cause issues like random reboots or failed suspend on certain devices"
-    echo -e "Disabling it ensures stability at the cost of slightly higher power usage"
+    if [ "$OPTION" != "status" ]; then
+      echo -e "This script manages the i915.enable_dc kernel parameter, which controls a power-saving feature for Intel graphics"
+      echo -e "Enabling this setting can reduce power consumption, but may cause issues like random reboots or failed suspend on certain devices"
+      echo -e "Disabling it ensures stability at the cost of slightly higher power usage"
+    fi
+
     # Get the current i915.enable_dc setting
     get_current_status() {
       local karg_status
-      karg_status=$(cat /proc/cmdline | grep -o 'i915.enable_dc=[-0-9]' | cut -d= -f2)
+      local kargs
+      kargs=$(rpm-ostree kargs 2>/dev/null)
+      if [[ -z "$kargs" ]]; then
+        kargs=$(cat /proc/cmdline)
+      fi
+      karg_status=$(grep -o 'i915.enable_dc=[-0-9]' <<< "$kargs" | tail -n1 | cut -d= -f2)
       if [[ -z "$karg_status" ]]; then
         echo "Not Set"
       else
         echo "$karg_status"
       fi
     }
+
+    get_status_token() {
+      local current_status
+      current_status=$(get_current_status)
+      case "$current_status" in
+        -1)
+          echo "auto"
+          ;;
+        0)
+          echo "disable"
+          ;;
+        1)
+          echo "level-1"
+          ;;
+        2)
+          echo "level-2"
+          ;;
+        3)
+          echo "level-3"
+          ;;
+        4)
+          echo "level-4"
+          ;;
+        *)
+          echo "unset"
+          ;;
+      esac
+    }
+
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust toggle-i915-sleep-fix <option>"
+      echo "  <option>: Specify the option to skip the interactive prompt"
+      echo "  Use 'status' to print the current portal status"
+      echo "  Use 'auto' to set i915.enable_dc=-1"
+      echo "  Use 'disable' to set i915.enable_dc=0"
+      echo "  Use 'level-1' to set i915.enable_dc=1"
+      echo "  Use 'level-2' to set i915.enable_dc=2"
+      echo "  Use 'level-3' to set i915.enable_dc=3"
+      echo "  Use 'level-4' to set i915.enable_dc=4"
+      echo "  Use 'unset' to remove i915.enable_dc"
+      exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit 0
+    fi
+
     # Toggle i915.enable_dc kernel parameter
     update_karg() {
       local new_value=$1
@@ -320,42 +377,63 @@ toggle-i915-sleep-fix:
         echo -e "\nInvalid value for i915.enable_dc. Please choose a valid value.\n"
         return
       fi
-      rpm-ostree kargs --replace "i915.enable_dc=$new_value"
+      rpm-ostree kargs \
+        --delete-if-present="i915.enable_dc=-1" \
+        --delete-if-present="i915.enable_dc=0" \
+        --delete-if-present="i915.enable_dc=1" \
+        --delete-if-present="i915.enable_dc=2" \
+        --delete-if-present="i915.enable_dc=3" \
+        --delete-if-present="i915.enable_dc=4" \
+        --append-if-missing="i915.enable_dc=$new_value"
       echo -e "Kernel parameter updated. Reboot required to apply changes."
     }
-    # Display current status
-    current_status=$(get_current_status)
-    echo -e "\nCurrent i915.enable_dc setting: $current_status\n"
     # Prompt user for action
-    CHOICE=$(ugum choose "Set to Auto (i915.enable_dc=-1)" "Disable Power Saving (i915.enable_dc=0)" "Set to Level 1 (i915.enable_dc=1)" "Set to Level 2 (i915.enable_dc=2)" "Set to Level 3 (i915.enable_dc=3)" "Set to Level 4 (i915.enable_dc=4)" "Unset Parameter" "Exit without changes")
+    if [ "$OPTION" == "" ]; then
+      current_status=$(get_current_status)
+      if [ "$current_status" == "Not Set" ]; then
+        echo -e "${bold}Current i915.enable_dc setting:${normal} ${red}$current_status${normal}"
+      else
+        echo -e "${bold}Current i915.enable_dc setting:${normal} ${green}$current_status${normal}"
+      fi
+      CHOICE=$(ugum choose "Set to Auto (i915.enable_dc=-1)" "Disable Power Saving (i915.enable_dc=0)" "Set to Level 1 (i915.enable_dc=1)" "Set to Level 2 (i915.enable_dc=2)" "Set to Level 3 (i915.enable_dc=3)" "Set to Level 4 (i915.enable_dc=4)" "Unset Parameter" "Exit without changes")
+    else
+      CHOICE="$OPTION"
+    fi
+
     case "$CHOICE" in
-      "Set to Auto (i915.enable_dc=-1)")
+      "Set to Auto (i915.enable_dc=-1)"|auto|-1)
         echo "Setting power-saving mode to auto (i915.enable_dc=-1)..."
         update_karg -1
         ;;
-      "Disable Power Saving (i915.enable_dc=0)")
+      "Disable Power Saving (i915.enable_dc=0)"|disable|0)
         echo "Disabling power-saving mode (i915.enable_dc=0)..."
         update_karg 0
         ;;
-      "Set to Level 1 (i915.enable_dc=1)")
+      "Set to Level 1 (i915.enable_dc=1)"|level-1|1)
         echo "Setting power-saving mode to level 1 (i915.enable_dc=1)..."
         update_karg 1
         ;;
-      "Set to Level 2 (i915.enable_dc=2)")
+      "Set to Level 2 (i915.enable_dc=2)"|level-2|2)
         echo "Setting power-saving mode to level 2 (i915.enable_dc=2)..."
         update_karg 2
         ;;
-      "Set to Level 3 (i915.enable_dc=3)")
+      "Set to Level 3 (i915.enable_dc=3)"|level-3|3)
         echo "Setting power-saving mode to level 3 (i915.enable_dc=3)..."
         update_karg 3
         ;;
-      "Set to Level 4 (i915.enable_dc=4)")
+      "Set to Level 4 (i915.enable_dc=4)"|level-4|4)
         echo "Setting power-saving mode to level 4 (i915.enable_dc=4)..."
         update_karg 4
         ;;
-      "Unset Parameter")
+      "Unset Parameter"|unset)
         echo "Unsetting i915.enable_dc..."
-        rpm-ostree kargs --delete "i915.enable_dc=[-0-9]"
+        rpm-ostree kargs \
+          --delete-if-present="i915.enable_dc=-1" \
+          --delete-if-present="i915.enable_dc=0" \
+          --delete-if-present="i915.enable_dc=1" \
+          --delete-if-present="i915.enable_dc=2" \
+          --delete-if-present="i915.enable_dc=3" \
+          --delete-if-present="i915.enable_dc=4"
         echo -e "Kernel parameter unset. Reboot required to apply changes."
         ;;
       "Exit without changes")
