@@ -347,6 +347,30 @@ screens:
         description: "Adds a script in Steam to boot Windows which is useful for dual-boot setups"
         default: false
         script: "ujust setup-boot-windows-steam"
+      - id: "virtual-audio-channels"
+        title: "Virtual Audio Channels"
+        description: "Create or remove PipeWire virtual sinks for separate Game, Voice, Browser, and Music audio routing."
+        default: false
+        status_script: "ujust setup-virtual-channels status"
+        options:
+          - id: "create"
+            label: "Enable"
+            script: 'ujust setup-virtual-channels create; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "remove"
+            label: "Remove"
+            script: 'ujust setup-virtual-channels remove; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "virtual-headphone-surround"
+        title: "Virtual Headphone Surround"
+        description: "Enable or disable a PipeWire virtual 7.1 headphone surround sink."
+        default: false
+        status_script: "ujust setup-virtual-surround status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: 'ujust setup-virtual-surround enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable"
+            script: 'ujust setup-virtual-surround disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "configure-beesd"
         title: "BTRFS Deduplication"
         description: "Configure beesd deduplication for BTRFS filesystems."
