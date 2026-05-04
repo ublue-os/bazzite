@@ -639,3 +639,8 @@ screens:
         description: "Kills all processes related to wine and proton."
         default: false
         script: "ujust fix-proton-hang"
+      - id: "fix-reset-steam"
+        title: "Reset Steam Installation"
+        description: "Resets the Steam installation by deleting Steams local files. Does not delete game or save files!"
+        default: false
+        script: "ujust fix-reset-steam"
