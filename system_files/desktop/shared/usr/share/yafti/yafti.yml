@@ -1,20 +1,8 @@
 title: Bazzite Portal
-screens:        
-  - title: "Setting up Bazzite"
+screens:
+  - title: "App Install"
     description: "Core system components and utilities"
     actions:
-      - id: "iwd"
-        title: "iwd"
-        description: "Enable or disable iwd as the Wi-Fi backend instead of wpa_supplicant."
-        default: false
-        status_script: "ujust iwd status"
-        options:
-          - id: "enable"
-            label: "Enable"
-            script: "ujust iwd enable"
-          - id: "disable"
-            label: "Disable"
-            script: "ujust iwd disable"
       - id: "decky-loader"
         title: "Decky Loader"
         description: "A plugin loader for the Steam Deck"
@@ -146,9 +134,45 @@ screens:
           - id: "uninstall"
             label: "Uninstall"
             script: "ujust resilio-sync uninstall"
-  - title: "Customizations and Tweaks"
+      - id: "tailscale"
+        title: "Tailscale"
+        description: "Enable or disable the Tailscale service for mesh VPN support."
+        default: false
+        status_script: "ujust tailscale status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: "ujust tailscale enable"
+          - id: "disable"
+            label: "Disable"
+            script: "ujust tailscale disable"
+      - id: "steamcmd"
+        title: "SteamCMD"
+        description: "Command-line version of the Steam client for dedicated servers and game downloads"
+        default: false
+        status_script: "ujust get-steamcmd status"
+        options:
+          - id: "install"
+            label: "Install"
+            script: "ujust get-steamcmd install"
+          - id: "uninstall"
+            label: "Uninstall"
+            script: "ujust get-steamcmd uninstall"
+  - title: "System Fixes"
     description: "System configurations and enhancements"
     actions:
+      - id: "iwd"
+        title: "iwd"
+        description: "Enable or disable iwd as the Wi-Fi backend instead of wpa_supplicant."
+        default: false
+        status_script: "ujust iwd status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: "ujust iwd enable"
+          - id: "disable"
+            label: "Disable"
+            script: "ujust iwd disable"
       - id: "add-input-group"
         title: "Add input group to current user"
         description: "Adds the input group to your current user. Required by certain controller drivers."
@@ -312,30 +336,6 @@ screens:
           - id: "disable"
             label: "Disable"
             script: "ujust ssh disable"
-      - id: "tailscale"
-        title: "Tailscale"
-        description: "Enable or disable the Tailscale service for mesh VPN support."
-        default: false
-        status_script: "ujust tailscale status"
-        options:
-          - id: "enable"
-            label: "Enable"
-            script: "ujust tailscale enable"
-          - id: "disable"
-            label: "Disable"
-            script: "ujust tailscale disable"
-      - id: "steamcmd"
-        title: "SteamCMD"
-        description: "Command-line version of the Steam client for dedicated servers and game downloads"
-        default: false
-        status_script: "ujust get-steamcmd status"
-        options:
-          - id: "install"
-            label: "Install"
-            script: "ujust get-steamcmd install"
-          - id: "uninstall"
-            label: "Uninstall"
-            script: "ujust get-steamcmd uninstall"
       - id: "global-fsr4"
         title: "Global FSR4 Upgrade (RDNA4)"
         description: "Enable or disable the global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ to FSR 4 on Proton 10 or GE 10-25 or later."
@@ -381,7 +381,10 @@ screens:
           - id: "disable"
             label: "Disable"
             script: "ujust reisub disable"
-  - title: "Media Applications"
+  - title: "Game Fixes"
+    description: "Fixes for specific games"
+    actions:
+  - title: "Media Apps"
     description: "Entertainment and streaming services"
     actions:
       - id: "xbox-cloud-gaming"
@@ -522,7 +525,7 @@ screens:
         description: "Installs VSCodium editor"
         default: false
         script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask vscodium-linux'
-  - title: "System Management"
+  - title: "Manage PC"
     description: "System updates and configuration"
     actions:
       - id: "update-bazzite"
@@ -530,39 +533,36 @@ screens:
         description: "Updates Bazzite, Flatpaks, firmware, and more"
         default: false
         script: "ujust update"
-        
       - id: "rebase-bazzite-stable"
         title: "Rebase Bazzite (stable)"
         description: "Rebase Bazzite to the stable track"
         default: false
         script: "brh rebase stable -y && reboot"
-
       - id: "rebase-bazzite-testing"
         title: "Rebase Bazzite (testing)"
         description: "Rebase Bazzite to the testing track"
         default: false
         script: "brh rebase testing -y && reboot"
-
       - id: "rollback-bazzite"
         title: "Rollback Bazzite"
         description: "Rollback to the previous Bazzite deployment"
         default: false
         script: "brh rollback -y && reboot"
-
       - id: "reset-bazzite"
         title: "Reset Bazzite"
         description: "Reset Bazzite layering to Default (Only resets layers NOT user data)" 
         default: false
         script: "rpm-ostree reset"
-
-      - id: "get-logs"
-        title: "Collect Troubleshooting Logs"
-        description: "Collects system information and logs, then gives you links to share with support for troubleshooting."
-        default: false
-        script: 'ujust get-logs; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
-      
       - id: "Reboot to UEFI"
         title: "Reboot to UEFI"
         description: "Reboot into the UEFI settings menu, useful for changing boot order or other firmware settings."
         default: false
         script: "systemctl reboot --firmware-setup"
+  - title: "Troubleshooting"
+    description: "Tools and utilities for diagnosing and fixing issues"
+    actions:
+      - id: "get-logs"
+        title: "Collect Troubleshooting Logs"
+        description: "Collects system information and logs, then gives you links to share with support for troubleshooting."
+        default: false
+        script: 'ujust get-logs; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
