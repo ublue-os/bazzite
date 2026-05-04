@@ -90,6 +90,18 @@ screens:
           - id: "portal"
             label: "Open Portal"
             script: "ujust setup-sunshine portal"
+      - id: "cockpit"
+        title: "Cockpit"
+        description: "Enable or disable the Cockpit web interface for system management."
+        default: false
+        status_script: "ujust cockpit status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: "ujust cockpit enable"
+          - id: "disable"
+            label: "Disable"
+            script: "ujust cockpit disable"
       - id: "waydroid"
         title: "Waydroid"
         description: "Android app compatibility layer for Linux"
