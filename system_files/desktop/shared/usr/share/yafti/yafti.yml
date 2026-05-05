@@ -297,6 +297,18 @@ screens:
           - id: "disable"
             label: "Disable"
             script: 'ujust bazzite-cli disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "asus"
+        title: "asusctl and ROG Control Center"
+        description: "Install asusctl and ROG Control Center, ASUS ROG hardware managing tools."
+        default: false
+        status_script: "ujust asus status"
+        options:
+          - id: "install"
+            label: "Install"
+            script: 'ujust asus install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "uninstall"
+            label: "Uninstall"
+            script: 'ujust asus uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "hide-grub"
         title: "GRUB Menu Visibility"
         description: "Choose when the GRUB menu appears at boot."
