@@ -791,7 +791,7 @@ screens:
         title: "Verify System Image"
         description: "Detects if you are on an unverified official image and rebases you to the signed version."
         default: false
-        script: "ujust verify-image"
+        script: 'ujust verify-image; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "reset-bazzite"
         title: "Reset Bazzite"
         description: "Reset Bazzite layering to Default (Only resets layers NOT user data)" 
