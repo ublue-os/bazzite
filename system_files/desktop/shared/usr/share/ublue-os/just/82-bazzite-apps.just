@@ -337,7 +337,7 @@ asus ACTION="":
         brew_packages=()
         for pkg in asusctl-linux rog-control-center-linux; do
             if brew_package "$pkg"; then
-                echo "$pkg is already layered, skipping."
+                echo "$pkg is already installed, skipping."
             else
                 brew_packages+=("$pkg")
             fi
