@@ -302,13 +302,13 @@ asus ACTION="":
 
     get_current_status() {
         if brew_package asusctl-linux && brew_package rog-control-center-linux; then
-            echo "Installed"
+            echo "{{ BOLD }}{{ GREEN }}Installed{{ NORMAL }}"
         elif brew_package asusctl-linux || brew_package rog-control-center-linux; then
-            echo "Partially Installed"
+            echo "{{ BOLD }}{{ YELLOW }}Partially Installed{{ NORMAL }}"
         elif layered_package asusctl || layered_package asusctl-rog-gui; then
             echo "{{ YELLOW }}Installed (layered){{ NORMAL }}"
         else
-            echo "Not Installed"
+            echo "{{ RED }}Not Installed{{ NORMAL }}"
         fi
     }
 
