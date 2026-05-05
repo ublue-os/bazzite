@@ -24,88 +24,225 @@ _install_appimage_file $APPIMAGE_SRC $filename="":
     sleep 3
     LC_ALL=C flatpak run it.mijorus.gearlever "$appimage_file" <&-
 
-# Install CoolerControl, a GUI for viewing all your system's sensors and for creating custom fan and pump profiles based on any available temperature sensor28
+# Manage CoolerControl, a GUI for viewing sensors and creating fan and pump profiles. Options: status | install | uninstall
 [group("apps")]
-install-coolercontrol:
+install-coolercontrol ACTION="":
     #!/usr/bin/env bash
     set -eo pipefail
+    source /usr/lib/ujust/ujust.sh
 
-    cat <<'EOF'
-    {{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}CoolerControl{{ NORMAL }}.
-    {{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"
-    {{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}
-    EOF
-
-    layered() {
+    layered_package() {
         local pkg="$1"
         rpm-ostree status --json | jq -e ".deployments[] | select(.booted == true) | .packages | index(\"$pkg\")" > /dev/null
     }
-    packages=()
-    for pkg in liquidctl coolercontrol; do
-        if layered "$pkg"; then
-            echo "$pkg is already layered, skipping."
+
+    get_status_token() {
+        if layered_package liquidctl && layered_package coolercontrol; then
+            echo "install"
         else
-            packages+=("$pkg")
+            echo "uninstall"
         fi
-    done
+    }
 
-    if [ ${#packages[@]} -gt 0 ]; then
-        repo_path="/etc/yum.repos.d/terra.repo"
-
-        if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
-            echo 'Terra Repository is already enabled, skipping.'
+    get_current_status() {
+        if layered_package liquidctl && layered_package coolercontrol; then
+            echo "Installed"
+        elif layered_package liquidctl || layered_package coolercontrol; then
+            echo "Partially Installed"
         else
-            echo 'Enabling Terra Repository.'
-            sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
+            echo "Not Installed"
         fi
+    }
 
-        echo "Installing: ${packages[*]}"
-        rpm-ostree install -y "${packages[@]}"
-        echo 'Complete, please reboot to apply changes.'
-    else
-        echo "No changes were made."
+    install_coolercontrol() {
+        echo '{{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}CoolerControl{{ NORMAL }}.'
+        echo '{{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"'
+        echo '{{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}'
+
+        packages=()
+        for pkg in liquidctl coolercontrol; do
+            if layered_package "$pkg"; then
+                echo "$pkg is already layered, skipping."
+            else
+                packages+=("$pkg")
+            fi
+        done
+
+        if [ ${#packages[@]} -gt 0 ]; then
+            repo_path="/etc/yum.repos.d/terra.repo"
+
+            if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
+                echo 'Terra Repository is already enabled, skipping.'
+            else
+                echo 'Enabling Terra Repository.'
+                sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
+            fi
+
+            echo "Installing: ${packages[*]}"
+            rpm-ostree install -y "${packages[@]}"
+            echo 'Complete, please reboot to apply changes.'
+        else
+            echo "No changes were made."
+        fi
+    }
+
+    uninstall_coolercontrol() {
+        packages=()
+        for pkg in liquidctl coolercontrol; do
+            if layered_package "$pkg"; then
+                packages+=("$pkg")
+            fi
+        done
+
+        if [ ${#packages[@]} -gt 0 ]; then
+            echo "Uninstalling: ${packages[*]}"
+            rpm-ostree uninstall -y "${packages[@]}"
+            echo 'Complete, please reboot to apply changes.'
+        else
+            echo "CoolerControl is not layered."
+        fi
+    }
+
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+        echo "Usage: ujust install-coolercontrol <option>"
+        echo "  <option>: Specify the quick option to skip the prompt"
+        echo "  Use 'status' to print the current portal token"
+        echo "  Use 'install' to install CoolerControl"
+        echo "  Use 'uninstall' to uninstall CoolerControl"
+        exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        install_coolercontrol
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_coolercontrol
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}CoolerControl${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_coolercontrol
+                ;;
+            "Uninstall")
+                uninstall_coolercontrol
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
     fi
 
-# Install Displaylink, Needed for some laptop docks to output video
+# Manage DisplayLink, needed for some laptop docks to output video. Options: status | install | uninstall
 [group("apps")]
-install-displaylink:
+install-displaylink ACTION="":
     #!/usr/bin/env bash
     set -eo pipefail
+    source /usr/lib/ujust/ujust.sh
 
-    cat <<'EOF'
-    {{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}Displaylink{{ NORMAL }}.
-    {{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"
-    {{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}
-    EOF
-
-    layered() {
+    layered_package() {
         local pkg="$1"
         rpm-ostree status --json | jq -e ".deployments[] | select(.booted == true) | .packages | index(\"$pkg\")" > /dev/null
     }
-    packages=()
-    for pkg in displaylink; do
-        if layered "$pkg"; then
-            echo "$pkg is already layered, skipping."
+
+    get_status_token() {
+        if layered_package displaylink; then
+            echo "install"
         else
-            packages+=("$pkg")
+            echo "uninstall"
         fi
-    done
+    }
 
-    if [ ${#packages[@]} -gt 0 ]; then
-        repo_path="/etc/yum.repos.d/negativo17-fedora-multimedia.repo"
-
-        if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
-            echo 'Negativo17 Multimedia Repository is already enabled, skipping.'
+    get_current_status() {
+        if [[ "$(get_status_token)" == "install" ]]; then
+            echo "Installed"
         else
-            echo 'Enabling Negativo17 Multimedia Repository.'
-            sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
+            echo "Not Installed"
         fi
+    }
 
-        echo "Installing: ${packages[*]}"
-        rpm-ostree install -y "${packages[@]}"
-        echo 'Complete, please reboot to apply changes.'
-    else
-        echo "No changes were made."
+    install_displaylink() {
+        echo '{{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}DisplayLink{{ NORMAL }}.'
+        echo '{{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"'
+        echo '{{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}'
+
+        packages=()
+        for pkg in displaylink; do
+            if layered_package "$pkg"; then
+                echo "$pkg is already layered, skipping."
+            else
+                packages+=("$pkg")
+            fi
+        done
+
+        if [ ${#packages[@]} -gt 0 ]; then
+            repo_path="/etc/yum.repos.d/negativo17-fedora-multimedia.repo"
+
+            if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
+                echo 'Negativo17 Multimedia Repository is already enabled, skipping.'
+            else
+                echo 'Enabling Negativo17 Multimedia Repository.'
+                sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
+            fi
+
+            echo "Installing: ${packages[*]}"
+            rpm-ostree install -y "${packages[@]}"
+            echo 'Complete, please reboot to apply changes.'
+        else
+            echo "No changes were made."
+        fi
+    }
+
+    uninstall_displaylink() {
+        if layered_package displaylink; then
+            echo "Uninstalling: displaylink"
+            rpm-ostree uninstall -y displaylink
+            echo 'Complete, please reboot to apply changes.'
+        else
+            echo "DisplayLink is not layered."
+        fi
+    }
+
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+        echo "Usage: ujust install-displaylink <option>"
+        echo "  <option>: Specify the quick option to skip the prompt"
+        echo "  Use 'status' to print the current portal token"
+        echo "  Use 'install' to install DisplayLink"
+        echo "  Use 'uninstall' to uninstall DisplayLink"
+        exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        install_displaylink
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_displaylink
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}DisplayLink${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_displaylink
+                ;;
+            "Uninstall")
+                uninstall_displaylink
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
     fi
 
 # Install JetBrains Toolbox | https://www.jetbrains.com/toolbox-app/
@@ -124,6 +261,8 @@ install-jetbrains-toolbox:
         exit 1
     fi
     jetbrains-toolbox &> /dev/null &
+
+alias install-steamcmd := get-steamcmd
 
 # Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD). Options: status | install | uninstall
 [group("gaming")]
@@ -201,35 +340,131 @@ get-steamcmd ACTION="":
         exit 0
     fi
 
-# Install OpenRazer for Razer gaming hardware
+# Manage OpenRazer for Razer gaming hardware. Options: status | install | uninstall
 [group("hardware")]
-install-openrazer:
+install-openrazer ACTION="":
     #!/usr/bin/bash
+    set -eo pipefail
     source /usr/lib/ujust/ujust.sh
-    OPENRAZER_CONFIGURATOR_APP="None of openrazer frontend apps"
-    sudo curl -Lo /etc/yum.repos.d/hardware:razer.repo https://openrazer.github.io/hardware:razer.repo && \
-    rpm-ostree install -y openrazer-daemon && \
-        if ! grep -q "plugdev" /etc/group; then \
-      sudo bash -c 'grep "plugdev" /lib/group >> /etc/group' \
-    ; fi && \
-    sudo usermod -a -G plugdev $USER && \
-    echo "${bold}Select OpenRazer Frontend Apps${normal}"
-    OPTION=$(Choose "Razer Genie" "Polychromatic" "None")
-    if [[ "${OPTION,,}" =~ ^razer[[:space:]]genie ]]; then
-        echo "Installing Razer Genie..."
-        flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-        flatpak --system install -y flathub xyz.z3ntu.razergenie
-        OPENRAZER_CONFIGURATOR_APP="Razer Genie"
-    elif [[ "${OPTION,,}" =~ ^polychromatic ]]; then
-        echo "Installing Polychromatic..."
-        flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-        flatpak --system install -y flathub app.polychromatic.controller
-        OPENRAZER_CONFIGURATOR_APP="Polychromatic"
-    else
-        echo "Not Selecting GUI Frontend"
+    layered_package() {
+        local pkg="$1"
+        rpm-ostree status --json | jq -e ".deployments[] | select(.booted == true) | .packages | index(\"$pkg\")" > /dev/null
+    }
+    flatpak_installed() {
+        local app="$1"
+        flatpak list --system --columns=application 2>/dev/null | grep -Fx "$app" >/dev/null
+    }
+    get_status_token() {
+        if ! layered_package openrazer-daemon; then
+            echo "uninstall"
+        elif flatpak_installed xyz.z3ntu.razergenie; then
+            echo "install-razer-genie"
+        elif flatpak_installed app.polychromatic.controller; then
+            echo "install-polychromatic"
+        else
+            echo "install"
+        fi
+    }
+    get_current_status() {
+        if ! layered_package openrazer-daemon; then
+            echo "Not Installed"
+        elif flatpak_installed xyz.z3ntu.razergenie; then
+            echo "Installed (Razer Genie)"
+        elif flatpak_installed app.polychromatic.controller; then
+            echo "Installed (Polychromatic)"
+        else
+            echo "Installed"
+        fi
+    }
+    install_openrazer() {
+        local FRONTEND_OPTION="${1:-}"
+        OPENRAZER_CONFIGURATOR_APP="None of openrazer frontend apps"
+        if [[ -z "$FRONTEND_OPTION" ]]; then
+            echo "${bold}Select OpenRazer Frontend Apps${normal}"
+            FRONTEND_OPTION=$(ugum choose "Razer Genie" "Polychromatic" "None")
+        fi
+        if [[ "${FRONTEND_OPTION,,}" =~ ^razer[[:space:]]genie ]]; then
+            echo "Installing Razer Genie..."
+            flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+            flatpak --system install -y flathub xyz.z3ntu.razergenie
+            OPENRAZER_CONFIGURATOR_APP="Razer Genie"
+        elif [[ "${FRONTEND_OPTION,,}" =~ ^polychromatic ]]; then
+            echo "Installing Polychromatic..."
+            flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+            flatpak --system install -y flathub app.polychromatic.controller
+            OPENRAZER_CONFIGURATOR_APP="Polychromatic"
+        else
+            echo "Not Selecting GUI Frontend"
+        fi
+        sudo curl -Lo /etc/yum.repos.d/hardware:razer.repo https://openrazer.github.io/hardware:razer.repo
+        rpm-ostree install -y openrazer-daemon
+        if ! grep -q "plugdev" /etc/group; then
+            sudo bash -c 'grep "plugdev" /lib/group >> /etc/group'
+        fi
+        sudo usermod -a -G plugdev "$USER"
+        echo "$OPENRAZER_CONFIGURATOR_APP is installed"
+        echo "Please reboot to apply needed changes."
+    }
+    uninstall_openrazer() {
+        if layered_package openrazer-daemon; then
+            rpm-ostree uninstall -y openrazer-daemon
+            echo "OpenRazer daemon has been uninstalled."
+        else
+            echo "OpenRazer daemon is not layered."
+        fi
+        if flatpak_installed xyz.z3ntu.razergenie; then
+            flatpak --system remove -y xyz.z3ntu.razergenie
+        fi
+        if flatpak_installed app.polychromatic.controller; then
+            flatpak --system remove -y app.polychromatic.controller
+        fi
+        echo "Please reboot to apply needed changes."
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+        echo "Usage: ujust install-openrazer <option>"
+        echo "  <option>: Specify the quick option to skip the prompt"
+        echo "  Use 'status' to print the current portal token"
+        echo "  Use 'install' to install OpenRazer without a frontend"
+        echo "  Use 'install-razer-genie' to install OpenRazer with Razer Genie"
+        echo "  Use 'install-polychromatic' to install OpenRazer with Polychromatic"
+        echo "  Use 'uninstall' to uninstall OpenRazer"
+        exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        install_openrazer "None"
+        exit 0
+    elif [[ "$OPTION" == "install-razer-genie" ]]; then
+        install_openrazer "Razer Genie"
+        exit 0
+    elif [[ "$OPTION" == "install-polychromatic" ]]; then
+        install_openrazer "Polychromatic"
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_openrazer
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}OpenRazer${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_openrazer
+                ;;
+            "Uninstall")
+                uninstall_openrazer
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
     fi
-    echo "$OPENRAZER_CONFIGURATOR_APP is installed"
-    echo "Please reboot to apply needed changes."
+
+alias install-emudeck := get-emudeck
 
 # Install EmuDeck (https://www.emudeck.com/). Options: status | install | uninstall
 [group("gaming")]
@@ -299,6 +534,8 @@ get-emudeck ACTION="":
         exit 0
     fi
 
+alias install-openrgb := openrgb
+
 # Manage OpenRGB (https://openrgb.org/). Options: status | install | uninstall
 [group("hardware")]
 openrgb ACTION="":
@@ -363,14 +600,99 @@ openrgb ACTION="":
         exit 0
     fi
 
-# Install Boxtron, a Steam Play compatibility tool to run DOS games using native Linux DOSBox
+# Manage Boxtron, a Steam Play compatibility tool to run DOS games using native Linux DOSBox. Options: status | install | uninstall
 [group("gaming")]
-install-boxtron: distrobox-check-fedora
-    distrobox enter -n fedora -- bash -c '\
-      sudo dnf install dosbox-staging inotify-tools timidity++ fluid-soundfont-gm -y && \
-      cd ~/.steam/root/compatibilitytools.d/ && \
-      curl -L https://github.com/dreamer/boxtron/releases/download/v0.5.4/boxtron.tar.xz | tar xJf - && \
-      distrobox-export --bin /usr/bin/dosbox'
+install-boxtron ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    boxtron_installed() {
+        for base in "$HOME/.steam/root/compatibilitytools.d" "$HOME/.local/share/Steam/compatibilitytools.d"; do
+            if [[ -d "$base/boxtron" ]] || [[ -d "$base/Boxtron" ]]; then
+                return 0
+            fi
+        done
+        return 1
+    }
+    get_status_token() {
+        if boxtron_installed; then
+            echo "install"
+        else
+            echo "uninstall"
+        fi
+    }
+    get_current_status() {
+        if [[ "$(get_status_token)" == "install" ]]; then
+            echo "Installed"
+        else
+            echo "Not Installed"
+        fi
+    }
+    install_boxtron() {
+        just distrobox-check-fedora
+        distrobox enter -n fedora -- bash -c '\
+          sudo dnf install dosbox-staging inotify-tools timidity++ fluid-soundfont-gm -y && \
+          cd ~/.steam/root/compatibilitytools.d/ && \
+          curl -L https://github.com/dreamer/boxtron/releases/download/v0.5.4/boxtron.tar.xz | tar xJf - && \
+          distrobox-export --bin /usr/bin/dosbox'
+    }
+    uninstall_boxtron() {
+        removed=false
+        for path in \
+            "$HOME/.steam/root/compatibilitytools.d/boxtron" \
+            "$HOME/.steam/root/compatibilitytools.d/Boxtron" \
+            "$HOME/.local/share/Steam/compatibilitytools.d/boxtron" \
+            "$HOME/.local/share/Steam/compatibilitytools.d/Boxtron"; do
+            if [[ -e "$path" ]]; then
+                rm -rf "$path"
+                removed=true
+            fi
+        done
+        if distrobox list 2>/dev/null | grep -qE '(^|[[:space:]])fedora([[:space:]]|$)'; then
+            distrobox enter -n fedora -- bash -c 'distrobox-export --bin /usr/bin/dosbox --delete || true'
+        fi
+        if [[ "$removed" == "true" ]]; then
+            echo "Boxtron has been uninstalled."
+        else
+            echo "Boxtron is not installed."
+        fi
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+        echo "Usage: ujust install-boxtron <option>"
+        echo "  <option>: Specify the quick option to skip the prompt"
+        echo "  Use 'status' to print the current portal token"
+        echo "  Use 'install' to install Boxtron"
+        echo "  Use 'uninstall' to uninstall Boxtron"
+        exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        install_boxtron
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_boxtron
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}Boxtron${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_boxtron
+                ;;
+            "Uninstall")
+                uninstall_boxtron
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
+    fi
+
+alias install-resilio-sync := resilio-sync
 
 # Manage Resilio Sync, a file synchronization utility powered by BitTorrent. Options: status | install | uninstall
 resilio-sync ACTION="":
@@ -443,6 +765,8 @@ resilio-sync ACTION="":
         exit 0
     fi
 
+alias install-opentabletdriver := opentabletdriver
+
 # Manage OpenTabletDriver, an open source, cross-platform, user-mode tablet driver. Options: status | install | uninstall
 [group("hardware")]
 opentabletdriver ACTION="":
@@ -466,7 +790,7 @@ opentabletdriver ACTION="":
     install_opentabletdriver() {
         echo "Installing OpenTabletDriver..."
         curl -s https://api.github.com/repos/OpenTabletDriver/OpenTabletDriver/releases/latest \
-        | jq -r '.assets | sort_by(.created_at) | .[] | select (.name|test("opentabletdriver.*tar.gz$")) | .browser_download_url' \
+        | jq -r '.assets | sort_by(.created_at) | .[] | select (.name|test("opentabletdriver.*linux.*binary.*tar.gz$")) | .browser_download_url' \
         | wget -qi - -O /tmp/OpenTabletDriver/opentabletdriver.tar.gz && \
         tar --strip-components=1 -xvzf /tmp/OpenTabletDriver/opentabletdriver.tar.gz -C /tmp/OpenTabletDriver && \
         sudo cp /tmp/OpenTabletDriver/etc/udev/rules.d/70-opentabletdriver.rules /etc/udev/rules.d/71-opentabletdriver.rules && \

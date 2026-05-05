@@ -1,20 +1,8 @@
 title: Bazzite Portal
-screens:        
-  - title: "Setting up Bazzite"
+screens:
+  - title: "App Install"
     description: "Core system components and utilities"
     actions:
-      - id: "iwd"
-        title: "iwd"
-        description: "Enable or disable iwd as the Wi-Fi backend instead of wpa_supplicant."
-        default: false
-        status_script: "ujust iwd status"
-        options:
-          - id: "enable"
-            label: "Enable"
-            script: "ujust iwd enable"
-          - id: "disable"
-            label: "Disable"
-            script: "ujust iwd disable"
       - id: "decky-loader"
         title: "Decky Loader"
         description: "A plugin loader for the Steam Deck"
@@ -66,6 +54,30 @@ screens:
           - id: "uninstall"
             label: "Uninstall"
             script: "ujust get-decky-lossless-scaling uninstall"
+      - id: "lsfg-vk"
+        title: "Lossless Scaling Vulkan Layer"
+        description: "Install the lsfg-vk Vulkan layer for Lossless Scaling compatibility in Linux."
+        default: false
+        status_script: "ujust get-lsfg status"
+        options:
+          - id: "install"
+            label: "Install"
+            script: 'ujust get-lsfg install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "uninstall"
+            label: "Uninstall"
+            script: 'ujust get-lsfg uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "boxtron"
+        title: "Boxtron"
+        description: "Installs Boxtron on a Fedora distrobox and exports it."
+        default: false
+        status_script: "ujust install-boxtron status"
+        options:
+          - id: "install"
+            label: "Install"
+            script: 'ujust install-boxtron install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "uninstall"
+            label: "Uninstall"
+            script: 'ujust install-boxtron uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "emudeck"
         title: "EmuDeck"
         description: "A utility for installing and configuring emulators on the Steam Deck"
@@ -102,6 +114,18 @@ screens:
           - id: "portal"
             label: "Open Portal"
             script: "ujust setup-sunshine portal"
+      - id: "cockpit"
+        title: "Cockpit"
+        description: "Enable or disable the Cockpit web interface for system management."
+        default: false
+        status_script: "ujust cockpit status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: "ujust cockpit enable"
+          - id: "disable"
+            label: "Disable"
+            script: "ujust cockpit disable"
       - id: "waydroid"
         title: "Waydroid"
         description: "Android app compatibility layer for Linux"
@@ -122,6 +146,48 @@ screens:
           - id: "helper"
             label: "Install Helper"
             script: "ujust configure-waydroid helper"
+      - id: "coolercontrol"
+        title: "CoolerControl"
+        description: "View sensors and create fan and pump profiles from available temperature sensors."
+        default: false
+        status_script: "ujust install-coolercontrol status"
+        options:
+          - id: "install"
+            label: "Install"
+            script: 'ujust install-coolercontrol install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "uninstall"
+            label: "Uninstall"
+            script: 'ujust install-coolercontrol uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "displaylink"
+        title: "DisplayLink"
+        description: "Install DisplayLink support for laptop docks and USB display adapters."
+        default: false
+        status_script: "ujust install-displaylink status"
+        options:
+          - id: "install"
+            label: "Install"
+            script: 'ujust install-displaylink install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "uninstall"
+            label: "Uninstall"
+            script: 'ujust install-displaylink uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "openrazer"
+        title: "OpenRazer"
+        description: "Install OpenRazer support for Razer gaming hardware."
+        default: false
+        status_script: "ujust install-openrazer status"
+        options:
+          - id: "install-razer-genie"
+            label: "Install with Razer Genie"
+            script: 'ujust install-openrazer install-razer-genie; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "install-polychromatic"
+            label: "Install with Polychromatic"
+            script: 'ujust install-openrazer install-polychromatic; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "install"
+            label: "Install Without Frontend"
+            script: 'ujust install-openrazer install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "uninstall"
+            label: "Uninstall"
+            script: 'ujust install-openrazer uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "openrgb"
         title: "OpenRGB"
         description: "Open source RGB lighting control that doesn't depend on manufacturer software"
@@ -146,9 +212,45 @@ screens:
           - id: "uninstall"
             label: "Uninstall"
             script: "ujust resilio-sync uninstall"
-  - title: "Customizations and Tweaks"
+      - id: "tailscale"
+        title: "Tailscale"
+        description: "Enable or disable the Tailscale service for mesh VPN support."
+        default: false
+        status_script: "ujust tailscale status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: "ujust tailscale enable"
+          - id: "disable"
+            label: "Disable"
+            script: "ujust tailscale disable"
+      - id: "steamcmd"
+        title: "SteamCMD"
+        description: "Command-line version of the Steam client for dedicated servers and game downloads"
+        default: false
+        status_script: "ujust get-steamcmd status"
+        options:
+          - id: "install"
+            label: "Install"
+            script: "ujust get-steamcmd install"
+          - id: "uninstall"
+            label: "Uninstall"
+            script: "ujust get-steamcmd uninstall"
+  - title: "System Fixes"
     description: "System configurations and enhancements"
     actions:
+      - id: "iwd"
+        title: "iwd"
+        description: "Enable or disable iwd as the Wi-Fi backend instead of wpa_supplicant."
+        default: false
+        status_script: "ujust iwd status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: "ujust iwd enable"
+          - id: "disable"
+            label: "Disable"
+            script: "ujust iwd disable"
       - id: "add-input-group"
         title: "Add input group to current user"
         description: "Adds the input group to your current user. Required by certain controller drivers."
@@ -161,6 +263,18 @@ screens:
           - id: "remove"
             label: "Remove"
             script: "ujust add-user-to-input-group remove"
+      - id: "restore-input-remapper"
+        title: "Input Remapper"
+        description: "Manage Input Remapper and make its launcher visible on non-desktop images."
+        default: false
+        status_script: "ujust restore-input-remapper status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: 'ujust restore-input-remapper enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable"
+            script: 'ujust restore-input-remapper disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "password-asterisks"
         title: "Visible Password Asterisks"
         description: "Show or hide password asterisks in sudo prompts."
@@ -172,6 +286,17 @@ screens:
           - id: "off"
             label: "Hide Password Asterisks"
             script: "ujust password-feedback off"
+      - id: "bazzite-cli"
+        title: "Bazzite CLI"
+        description: "Enable a Bluefin-style CLI experience."
+        default: false
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && ujust bazzite-cli enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable"
+            script: 'ujust bazzite-cli disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "hide-grub"
         title: "GRUB Menu Visibility"
         description: "Choose when the GRUB menu appears at boot."
@@ -222,6 +347,127 @@ screens:
         description: "Adds a script in Steam to boot Windows which is useful for dual-boot setups"
         default: false
         script: "ujust setup-boot-windows-steam"
+      - id: "virtual-audio-channels"
+        title: "Virtual Audio Channels"
+        description: "Create or remove PipeWire virtual sinks for separate Game, Voice, Browser, and Music audio routing."
+        default: false
+        status_script: "ujust setup-virtual-channels status"
+        options:
+          - id: "create"
+            label: "Enable"
+            script: 'ujust setup-virtual-channels create; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "remove"
+            label: "Remove"
+            script: 'ujust setup-virtual-channels remove; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "virtual-headphone-surround"
+        title: "Virtual Headphone Surround"
+        description: "Enable or disable a PipeWire virtual 7.1 headphone surround sink."
+        default: false
+        status_script: "ujust setup-virtual-surround status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: 'ujust setup-virtual-surround enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable"
+            script: 'ujust setup-virtual-surround disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "bluetooth-headset-mic"
+        title: "Bluetooth Headset Audio Fix"
+        description: "Prevent Bluetooth devices from switching to low-quality headset mode by disabling their mic profile."
+        default: false
+        status_script: "ujust toggle-bt-mic status"
+        options:
+          - id: "enable"
+            label: "Enable Fix"
+            script: 'ujust toggle-bt-mic enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable Fix"
+            script: 'ujust toggle-bt-mic disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "intel-i915-sleep-fix"
+        title: "Intel i915 Sleep Fix"
+        description: "Manage the i915.enable_dc power-saving setting for older Intel GPUs with suspend issues."
+        default: false
+        status_script: "ujust toggle-i915-sleep-fix status"
+        options:
+          - id: "auto"
+            label: "Set to Auto (i915.enable_dc=-1)"
+            script: 'ujust toggle-i915-sleep-fix auto; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable Power Saving (i915.enable_dc=0)"
+            script: 'ujust toggle-i915-sleep-fix disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "level-1"
+            label: "Set to Level 1 (i915.enable_dc=1)"
+            script: 'ujust toggle-i915-sleep-fix level-1; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "level-2"
+            label: "Set to Level 2 (i915.enable_dc=2)"
+            script: 'ujust toggle-i915-sleep-fix level-2; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "level-3"
+            label: "Set to Level 3 (i915.enable_dc=3)"
+            script: 'ujust toggle-i915-sleep-fix level-3; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "level-4"
+            label: "Set to Level 4 (i915.enable_dc=4)"
+            script: 'ujust toggle-i915-sleep-fix level-4; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "unset"
+            label: "Unset Parameter"
+            script: 'ujust toggle-i915-sleep-fix unset; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "virtualization"
+        title: "Virtualization"
+        description: "Install or remove virt-manager and configure host virtualization support."
+        default: false
+        options:
+          - id: "virt-on"
+            label: "Enable"
+            script: 'ujust setup-virtualization virt-on; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "virt-off"
+            label: "Disable"
+            script: 'ujust setup-virtualization virt-off; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "save-panics"
+        title: "Save Kernel Panics"
+        description: "Enable or disable ramoops so kernel panic details can be recovered after reboot."
+        default: false
+        status_script: "ujust toggle-save-panics status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: 'ujust toggle-save-panics enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable"
+            script: 'ujust toggle-save-panics disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "configure-beesd"
+        title: "BTRFS Deduplication"
+        description: "Configure beesd deduplication for BTRFS filesystems."
+        default: false
+        script: 'ujust configure-beesd; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "watchdog"
+        title: "Watchdog"
+        description: "Enable or disable the hardware watchdog recovery mechanism."
+        default: false
+        status_script: "ujust configure-watchdog status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: 'ujust configure-watchdog enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable"
+            script: 'ujust configure-watchdog disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "snapper"
+        title: "Snapshots"
+        description: "Enable or disable Snapper snapshots for /var/home."
+        default: false
+        status_script: "ujust configure-snapshots status"
+        options:
+          - id: "enable"
+            label: "Enable"
+            script: "ujust configure-snapshots enable"
+          - id: "disable"
+            label: "Disable"
+            script: "ujust configure-snapshots disable"
+          - id: "wipe"
+            label: "Wipe"
+            script: "ujust configure-snapshots wipe"
+          - id: "btrfs-assistant"
+            label: "Open Btrfs Assistant"
+            script: "setsid -f gtk-launch btrfs-assistant.desktop >/dev/null 2>&1"
       - id: "automounting"
         title: "Automounting"
         description: "Enable or disable automounting of labeled BTRFS/EXT4 partitions under /run/media/system."
@@ -312,30 +558,6 @@ screens:
           - id: "disable"
             label: "Disable"
             script: "ujust ssh disable"
-      - id: "tailscale"
-        title: "Tailscale"
-        description: "Enable or disable the Tailscale service for mesh VPN support."
-        default: false
-        status_script: "ujust tailscale status"
-        options:
-          - id: "enable"
-            label: "Enable"
-            script: "ujust tailscale enable"
-          - id: "disable"
-            label: "Disable"
-            script: "ujust tailscale disable"
-      - id: "steamcmd"
-        title: "SteamCMD"
-        description: "Command-line version of the Steam client for dedicated servers and game downloads"
-        default: false
-        status_script: "ujust get-steamcmd status"
-        options:
-          - id: "install"
-            label: "Install"
-            script: "ujust get-steamcmd install"
-          - id: "uninstall"
-            label: "Uninstall"
-            script: "ujust get-steamcmd uninstall"
       - id: "global-fsr4"
         title: "Global FSR4 Upgrade (RDNA4)"
         description: "Enable or disable the global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ to FSR 4 on Proton 10 or GE 10-25 or later."
@@ -381,7 +603,15 @@ screens:
           - id: "disable"
             label: "Disable"
             script: "ujust reisub disable"
-  - title: "Media Applications"
+  - title: "Game Fixes"
+    description: "Fixes for specific games"
+    actions:
+      - id: "fix-gmod"
+        title: "Garry's Mod Patch Tool"
+        description: "Patch Garry's Mod's 64-bit beta to work properly on Linux."
+        default: false
+        script: "ujust fix-gmod"
+  - title: "Media Apps"
     description: "Entertainment and streaming services"
     actions:
       - id: "xbox-cloud-gaming"
@@ -492,11 +722,6 @@ screens:
   - title: "Brew"
     description: "Brew Taps and Casks"
     actions:
-      - id: "ublue-tap"
-        title: "Add Universal Blue tap"
-        description: "Adds Universal Blue's Brew tap"
-        default: false
-        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap'
       - id: "visual-studio-code-linux"
         title: "Install Visual Studio Code"
         description: "Installs Visual Studio Code editor"
@@ -522,7 +747,12 @@ screens:
         description: "Installs VSCodium editor"
         default: false
         script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask vscodium-linux'
-  - title: "System Management"
+      - id: "android-platform-tools"
+        title: "Install Android Platform Tools"
+        description: "Installs Android Platform Tools"
+        default: false
+        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew install --cask android-platform-tools'
+  - title: "Manage PC"
     description: "System updates and configuration"
     actions:
       - id: "update-bazzite"
@@ -530,39 +760,71 @@ screens:
         description: "Updates Bazzite, Flatpaks, firmware, and more"
         default: false
         script: "ujust update"
-        
       - id: "rebase-bazzite-stable"
         title: "Rebase Bazzite (stable)"
         description: "Rebase Bazzite to the stable track"
         default: false
         script: "brh rebase stable -y && reboot"
-
       - id: "rebase-bazzite-testing"
         title: "Rebase Bazzite (testing)"
         description: "Rebase Bazzite to the testing track"
         default: false
         script: "brh rebase testing -y && reboot"
-
       - id: "rollback-bazzite"
         title: "Rollback Bazzite"
         description: "Rollback to the previous Bazzite deployment"
         default: false
         script: "brh rollback -y && reboot"
-
+      - id: "verify-image"
+        title: "Verify System Image"
+        description: "Detects if you are on an unverified official image and rebases you to the signed version."
+        default: false
+        script: "ujust verify-image"
       - id: "reset-bazzite"
         title: "Reset Bazzite"
         description: "Reset Bazzite layering to Default (Only resets layers NOT user data)" 
         default: false
         script: "rpm-ostree reset"
-
-      - id: "get-logs"
-        title: "Collect Troubleshooting Logs"
-        description: "Collects system information and logs, then gives you links to share with support for troubleshooting."
+      - id: "cancel-pending-deployment"
+        title: "Cancel Pending Deployment"
+        description: "Remove a pending rpm-ostree deployment that you do not want to boot into."
         default: false
-        script: 'ujust get-logs; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
-      
+        script: 'rpm-ostree cleanup -p; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "Reboot to UEFI"
         title: "Reboot to UEFI"
         description: "Reboot into the UEFI settings menu, useful for changing boot order or other firmware settings."
         default: false
         script: "systemctl reboot --firmware-setup"
+  - title: "Troubleshooting"
+    description: "Tools and utilities for diagnosing and fixing issues"
+    actions:
+      - id: "get-logs"
+        title: "Collect Troubleshooting Logs"
+        description: "Collects system information and logs, then gives you links to share with support for troubleshooting."
+        default: false
+        script: 'ujust get-logs; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "bazzite-discord"
+        title: "Bazzite Support Discord Server"
+        description: "Opens Discord into the Bazzite Support Channel. PLEASE BE SURE TO PASTE YOUR TROUBLESHOOTING LOGS!"
+        default: false
+        script: "xdg-open https://discord.gg/JQq48bYzrc"
+      - id: "benchmark"
+        title: "Run System Benchmark"
+        description: "Runs a one-minute CPU benchmark."
+        default: false
+        script: 'ujust benchmark; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "restart-pipewire"
+        title: "Restart PipeWire"
+        description: "Restart the user PipeWire audio service."
+        default: false
+        script: 'ujust restart-pipewire; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "fix-proton-hang"
+        title: "Kill Wine/Proton Processes"
+        description: "Kills all processes related to wine and proton."
+        default: false
+        script: "ujust fix-proton-hang"
+      - id: "fix-reset-steam"
+        title: "Reset Steam Installation"
+        description: "Resets the Steam installation by deleting Steams local files. Does not delete game or save files!"
+        default: false
+        script: "ujust fix-reset-steam"

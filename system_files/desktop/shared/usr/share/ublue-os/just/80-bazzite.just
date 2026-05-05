@@ -19,6 +19,8 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
+alias toggle-ssh := ssh
+
 # Manage SSH availability on boot. Options: status | enable | disable
 [group("network")]
 ssh ACTION="":
@@ -86,6 +88,8 @@ ssh ACTION="":
         echo "No changes made."
         ;;
     esac
+
+alias toggle-reisub := reisub
 
 # Manage REISUB, useful for force rebooting systems when pageflip timeouts and/or other horrible things happen. Options: status | enable | disable
 [group("system")]
@@ -453,8 +457,16 @@ toggle-save-panics ACTION="":
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust toggle-save-panics <option>"
       echo "  <option>: Specify the option to skip the interactive prompt"
+      echo "  Use 'status' to print the current portal status"
       echo "  Use 'enable' to enable ramoops"
       echo "  Use 'disable' to disable ramoops"
+      exit 0
+    elif [ "$OPTION" == "status" ]; then
+      if [ "$STATUS" == "Enabled" ]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo Ramoops is a kernel module that will save panic information across a reboot and allow it to be
@@ -557,6 +569,8 @@ add-user-to-input-group ACTION="":
     fi
     add_user_to_input_group
 
+alias toggle-automounting := automounting
+
 # Manage automounting of labeled BTRFS/EXT4 partitions under /run/media/system. Options: status | enable | disable
 [group("automounting")]
 automounting ACTION="":
@@ -640,6 +654,8 @@ disable-framework-automount:
     set -eo pipefail
     ln -sf /dev/null /etc/udev/rules.d/99-framework-steam-automount.rules
 
+alias toggle-steamos-automount := steamos-automount
+
 # Manage SteamOS automount. Options: status | enable | disable
 [group("automounting")]
 steamos-automount ACTION="":
@@ -708,6 +724,8 @@ disable-automount-all:
 enable-automount-all:
     @pkexec --keep-cwd ujust enable-framework-automount automounting enable steamos-automount enable
 
+alias enable-tailscale := tailscale
+
 # Enable support for Tailscale. Options: status | enable | disable
 [group("network")]
 tailscale ACTION="":
@@ -768,28 +786,40 @@ enable-framework-fan-control:
 configure-watchdog ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    WATCHDOG_STATE="$(rpm-ostree kargs)"
-    CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
     OPTION={{ ACTION }}
-    if [[ "$WATCHDOG_STATE" =~ (nowatchdog|modprobe\.blacklist=(iTCO_wdt|sp5100_tco)) ]]; then
-        WATCHDOG_STATE="${red}${b}Disabled${n}"
-    else
-        WATCHDOG_STATE="${green}${b}Enabled${n}"
-    fi
+    get_status_token() {
+      if [[ "$(cat /proc/cmdline)" =~ (nowatchdog|modprobe\.blacklist=(iTCO_wdt|sp5100_tco)) ]]; then
+        echo "disable"
+      else
+        echo "enable"
+      fi
+    }
+    get_current_status() {
+      WATCHDOG_STATE="$(rpm-ostree kargs)"
+      if [[ "$WATCHDOG_STATE" =~ (nowatchdog|modprobe\.blacklist=(iTCO_wdt|sp5100_tco)) ]]; then
+        echo "${yellow}${bold}Disabled${normal}"
+      else
+        echo "${green}${bold}Enabled${normal}"
+      fi
+    }
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust configure-watchdog <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'enable' to select Enable Watchdog"
       echo "  Use 'disable' to select Disable Watchdog"
       exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Watchdog configuration${normal}"
       echo "Having the watchdog enabled will let it recover the system in the event of a malfunction, however"
       echo "disabling the watchdog can give a potential performance improvement due to fewer interrupts"
-      echo "Watchdog is $WATCHDOG_STATE"
+      echo "Watchdog is $(get_current_status)"
       OPTION=$(Choose "Enable Watchdog" "Disable Watchdog")
     fi
     if [[ "${OPTION,,}" =~ ^enable ]]; then
+      CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
       WATCHDOG_KARGS="--delete-if-present=nowatchdog"
       if [[ "$CPU_MODEL" =~ "Intel" ]]; then
         WATCHDOG_KARGS="$WATCHDOG_KARGS --delete-if-present=modprobe.blacklist=iTCO_wdt"
@@ -798,6 +828,7 @@ configure-watchdog ACTION="":
       fi
       rpm-ostree kargs $WATCHDOG_KARGS
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
+      CPU_MODEL=$(lscpu --json | jq -r '."lscpu"[7]."data"')
       WATCHDOG_KARGS="--append-if-missing=nowatchdog"
       if [[ "$CPU_MODEL" =~ "Intel" ]]; then
         WATCHDOG_KARGS="$WATCHDOG_KARGS --append-if-missing=modprobe.blacklist=iTCO_wdt"
@@ -813,15 +844,35 @@ configure-snapshots ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
+    get_status_token() {
+      configs="$(sed -n 's/^SNAPPER_CONFIGS="\([^"]*\)".*/\1/p' /etc/sysconfig/snapper 2>/dev/null || true)"
+      if [[ " $configs " == *" root "* ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "enable" ]]; then
+        echo "${green}${bold}Enabled${normal}"
+      else
+        echo "${yellow}${bold}Disabled${normal}"
+      fi
+    }
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust configure-snapshots <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current status"
       echo "  Use 'enable' enable snapshotting of /var/home"
       echo "  Use 'disable' disable snapshotting of /var/home"
       echo "  Use 'wipe' disable snapshotting and remove all automatic snapshots of /var/home"
       exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Snapper setup and configuration${normal}"
+      echo "Current status: $(get_current_status)"
       OPTION=$(Choose "Enable Snapper" "Disable Snapper" "Wipe Snapper config and automatic snapshots")
     fi
     if [[ "${OPTION,,}" =~ ^enable ]]; then
@@ -834,7 +885,7 @@ configure-snapshots ACTION="":
 
 # Enable a Bluefin-style CLI experience
 [group("development")]
-bazzite-cli:
+bazzite-cli ACTION="":
     #!/usr/bin/bash
     #shellcheck disable=SC2154
 
@@ -842,6 +893,7 @@ bazzite-cli:
 
     # Source libujust for colors/ugum
     source /usr/lib/ujust/ujust.sh
+    OPTION="{{ ACTION }}"
 
     # Exit Handling
     function Exiting(){
@@ -965,21 +1017,26 @@ bazzite-cli:
     # Get Shell
     shell=$(basename "$SHELL")
     reentry="$1"
-    clear
-    if [[ -n "${reentry:-}" ]]; then
-        printf "%s%s%s\n\n" "${bold}" "$reentry" "$normal"
-    fi
-
-    # Check if bling is enabled and display
-    printf "Shell:\t%s%s%s%s\n" "${green}" "${bold}" "${shell}" "${normal}"
-    if ! check-bling "${shell}"; then
-        printf "Bling:\t%s%sEnabled%s\n" "${green}" "${bold}" "${normal}"
-    else
-        printf "Bling:\t%s%sDisabled%s\n" "${red}" "${bold}" "${normal}"
-    fi
 
     # ugum enable/disable
-    CHOICE=$(Choose enable disable cancel)
+    if [[ -n "${OPTION}" ]]; then
+        CHOICE="${OPTION,,}"
+    else
+        clear
+        if [[ -n "${reentry:-}" ]]; then
+            printf "%s%s%s\n\n" "${bold}" "$reentry" "$normal"
+        fi
+
+        # Check if bling is enabled and display
+        printf "Shell:\t%s%s%s%s\n" "${green}" "${bold}" "${shell}" "${normal}"
+        if ! check-bling "${shell}"; then
+            printf "Bling:\t%s%sEnabled%s\n" "${green}" "${bold}" "${normal}"
+        else
+            printf "Bling:\t%s%sDisabled%s\n" "${red}" "${bold}" "${normal}"
+        fi
+
+        CHOICE=$(Choose enable disable cancel)
+    fi
 
     # Enable/Disable. Recurse if bad option.
     if [[ "${CHOICE}" == "enable" ]]; then
@@ -987,12 +1044,18 @@ bazzite-cli:
             trap ctrl_c SIGINT
             add-bling "${shell}"
             printf "%s%sInstallation Complete%s ... please close and reopen your terminal!" "${green}" "${bold}" "${normal}"
+        elif [[ -n "${OPTION}" ]]; then
+            printf "%s%sBling is already configured ...%s\n" "${yellow}" "${bold}" "${normal}"
         else
             main "Bling is already configured ..."
         fi
     elif [[ "${CHOICE}" == "disable" ]]; then
         if check-bling "${shell}"; then
-            main "Bling is not yet configured ..."
+            if [[ -n "${OPTION}" ]]; then
+                printf "%s%sBling is not yet configured ...%s\n" "${yellow}" "${bold}" "${normal}"
+            else
+                main "Bling is not yet configured ..."
+            fi
         else
             remove-bling "${shell}"
             trap ctrl_c SIGINT
@@ -1004,13 +1067,30 @@ bazzite-cli:
     }
 
     # Entrypoint
-    main ""
+    case "${OPTION,,}" in
+      enable|disable|"")
+        main ""
+        ;;
+      help)
+        echo "Usage: ujust bazzite-cli <option>"
+        echo "  <option>: Specify the quick option to skip the prompt"
+        echo "  Use 'enable' to enable Bazzite CLI shell enhancements"
+        echo "  Use 'disable' to disable Bazzite CLI shell enhancements"
+        ;;
+      *)
+        echo "Invalid option: $OPTION"
+        echo "Usage: ujust bazzite-cli [enable|disable]"
+        exit 1
+        ;;
+    esac
 
 # Run a one minute system benchmark
 [group("utilities")]
 benchmark:
     echo 'Running a 1 minute benchmark ...'
     cd /tmp && stress-ng --matrix 0 -t 1m --times
+
+alias toggle-password-feedback := password-feedback
 
 # Manage password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled. Options: on | off
 [group("development")]
@@ -1054,6 +1134,8 @@ password-feedback ACTION="":
       echo "enabled, restart terminal to see changes"
     fi
 
+alias toggle-global-fsr4 := global-fsr4
+
 # Manage global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on Proton 10 or GE 10-25 or later. Options: enable | disable
 [group("gaming")]
 global-fsr4 ACTION="":
@@ -1093,6 +1175,8 @@ global-fsr4 ACTION="":
             echo "No changes made."
             ;;
     esac
+
+alias toggle-global-fsr4-rdna3 := global-fsr4-rdna3
 
 # Manage global Proton FSR4 upgrade on RDNA3 GPUs; upgrades FSR 3.1+ → FSR 4, only compatible with Proton GE, Proton EM, or similar forks. Options: enable | disable
 [group("gaming")]
