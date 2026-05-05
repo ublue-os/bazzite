@@ -219,7 +219,7 @@ screens:
         status_script: "ujust install-davinci status"
         options:
           - id: "install"
-            label: "Install"
+            label: "Install/Upgrade"
             script: 'ujust install-davinci install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
           - id: "uninstall"
             label: "Uninstall"
