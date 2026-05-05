@@ -138,10 +138,12 @@ jobs:
 
       - name: Setup Cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        if: false
         with:
           cosign-release: "v2.6.1"
 
       - name: Sign ISO
+        if: false
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_SECRET }}
           ISO_UPLOAD_DIR: ${{ steps.upload-directory.outputs.iso-upload-dir }}
@@ -171,10 +173,11 @@ jobs:
           done
 
       - name: Upload ISOs and Checksum to Job Artifacts
-        if: github.ref_name == 'testing' || github.ref_name == 'unstable'
+        if: github.ref_name == 'testing' || github.ref_name == 'unstable' || true
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{ matrix.major_version}}
+          name: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-${{
+            matrix.major_version}}
           path: ${{ steps.upload-directory.outputs.iso-upload-dir }}
           if-no-files-found: error
           retention-days: 1
@@ -182,7 +185,7 @@ jobs:
           overwrite: true
 
       - name: Upload ISOs and Checksum to R2
-        if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
+        if: false
         shell: bash
         env:
           RCLONE_CONFIG_R2_TYPE: s3
