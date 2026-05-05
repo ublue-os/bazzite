@@ -212,6 +212,18 @@ screens:
           - id: "uninstall"
             label: "Uninstall"
             script: "ujust resilio-sync uninstall"
+      - id: "davinci-resolve"
+        title: "DaVinci Resolve"
+        description: "Install or remove DaVinci Resolve through davincibox."
+        default: false
+        status_script: "ujust install-davinci status"
+        options:
+          - id: "install"
+            label: "Install"
+            script: 'ujust install-davinci install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "uninstall"
+            label: "Uninstall"
+            script: 'ujust install-davinci uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "tailscale"
         title: "Tailscale"
         description: "Enable or disable the Tailscale service for mesh VPN support."
