@@ -269,6 +269,12 @@ alias install-asusctl := asus
 asus ACTION="":
     #!/usr/bin/env bash
     set -euo pipefail
+
+    if [[ $(id -u) -eq 0 ]]; then
+        echo >&2 "ERROR: Do not run this with sudo"
+        exit 1
+    fi
+
     source /usr/lib/ujust/ujust.sh
 
     # Ensure Homebrew is available in non-interactive shells
@@ -299,6 +305,8 @@ asus ACTION="":
             echo "Installed"
         elif brew_package asusctl-linux || brew_package rog-control-center-linux; then
             echo "Partially Installed"
+        elif layered_package asusctl || layered_package asusctl-rog-gui; then
+            echo "{{ YELLOW }}Installed (layered){{ NORMAL }}"
         else
             echo "Not Installed"
         fi
