@@ -319,7 +319,7 @@ asus ACTION="":
             echo "{{ BOLD }}Layered packages: {{ NORMAL }}${layered_packages[*]}"
             while true; do
                 read -r -p "Proceed to remove these layers first? {{ YELLOW }}(Y/n){{ NORMAL }} " REPLY || exit 1
-                if [[ $REPLY == "Y" || $REPLY == "y" ]]; then
+                if [[ ! $REPLY || $REPLY == "Y" || $REPLY == "y" ]]; then
                     sudo systemctl disable --now asusd.service asus-shutdown.service
                     sudo udevadm control --reload
                     sudo udevadm trigger
