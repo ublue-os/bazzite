@@ -18,8 +18,11 @@
         filter: unset;
     }
 
+    /* Hide the whole section with "Enable root account". Might be not as reliable as it seems to be.
+     * TODO: Remove once a proper option to hide root account section is implemented in Anaconda WebUI.
+     * https://bugzilla.redhat.com/show_bug.cgi?id=2464088
+     */
     .pf-v6-c-form__section:has(#anaconda-screen-accounts-root-account-enable-root-account) {
-        /* Hide the whole section with "Enable root account". Might be not as reliable as it seems to be */
         display: none;
     }
 }
