@@ -305,7 +305,7 @@ asus ACTION="":
             echo "{{ BOLD }}{{ GREEN }}Installed{{ NORMAL }}"
         elif brew_package asusctl-linux || brew_package rog-control-center-linux; then
             echo "{{ BOLD }}{{ YELLOW }}Partially Installed{{ NORMAL }}"
-        elif layered_package asusctl || layered_package asusctl-rog-gui; then
+        elif layered_package asusctl || layered_package asusctl-rog-gui || layered_package rog-control-center; then
             echo "{{ YELLOW }}Installed (layered){{ NORMAL }}"
         else
             echo "{{ RED }}Not Installed{{ NORMAL }}"
@@ -314,7 +314,7 @@ asus ACTION="":
 
     install_asus_tools() {
         layered_packages=()
-        for pkg in asusctl asusctl-rog-gui; do
+        for pkg in asusctl asusctl-rog-gui rog-control-center; do
             if layered_package "$pkg"; then
                 layered_packages+=("$pkg")
             fi
@@ -376,7 +376,7 @@ asus ACTION="":
             fi
         done
 
-        for pkg in asusctl asusctl-rog-gui; do
+        for pkg in asusctl asusctl-rog-gui rog-control-center; do
             if layered_package "$pkg"; then
                 layered_packages+=("$pkg")
             fi
