@@ -195,6 +195,9 @@ RUN --mount=type=cache,dst=/var/cache \
         firefox \
         firefox-langpacks \
         htop && \
+    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
+        dnf5 -y remove toolbox \
+    ; fi && \
     /ctx/cleanup
 
 # Install new packages
