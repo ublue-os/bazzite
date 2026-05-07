@@ -1,0 +1,7 @@
+{
+    "modules": {
+        "distrobox": {
+            "disable": true
+        }
+    }
+}
