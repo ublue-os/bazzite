@@ -71,7 +71,7 @@ jobs:
         include:
           - fedora_version: 44
             kernel_flavor: ogc
-            kernel_version: 6.19.14-ogc1.1.fc44.x86_64
+            kernel_version: 6.19.14-ogc2.1.fc44.x86_64
             base_image_flavor: main
             arch: x86_64
     steps:
@@ -518,7 +518,7 @@ jobs:
 
       - name: Install Cosign
         if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
         with:
           cosign-release: "v2.6.1"
 

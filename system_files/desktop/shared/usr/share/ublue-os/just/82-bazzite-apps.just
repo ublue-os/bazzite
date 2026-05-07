@@ -262,6 +262,183 @@ install-jetbrains-toolbox:
     fi
     jetbrains-toolbox &> /dev/null &
 
+alias install-asusctl := asus
+
+# Install asusctl and ROG Control Center, ASUS ROG hardware managing tools. Options: status | install | uninstall
+[group("hardware")]
+asus ACTION="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    if [[ $(id -u) -eq 0 ]]; then
+        echo >&2 "ERROR: Do not run this with sudo"
+        exit 1
+    fi
+
+    source /usr/lib/ujust/ujust.sh
+
+    # Ensure Homebrew is available in non-interactive shells
+    if ! command -v brew >/dev/null 2>&1 && [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    fi
+
+    brew_package() {
+        local pkg="$1"
+        [[ -d /home/linuxbrew/.linuxbrew/Caskroom/$pkg ]]
+    }
+
+    layered_package() {
+        local pkg="$1"
+        rpm-ostree status --json | jq -e ".deployments[] | select(.booted == true) | .packages | index(\"$pkg\")" > /dev/null
+    }
+
+    get_status_token() {
+        if brew_package asusctl-linux && brew_package rog-control-center-linux; then
+            echo "install"
+        else
+            echo "uninstall"
+        fi
+    }
+
+    get_current_status() {
+        if brew_package asusctl-linux && brew_package rog-control-center-linux; then
+            echo "{{ BOLD }}{{ GREEN }}Installed{{ NORMAL }}"
+        elif brew_package asusctl-linux || brew_package rog-control-center-linux; then
+            echo "{{ BOLD }}{{ YELLOW }}Partially Installed{{ NORMAL }}"
+        elif layered_package asusctl || layered_package asusctl-rog-gui || layered_package rog-control-center; then
+            echo "{{ YELLOW }}Installed (layered){{ NORMAL }}"
+        else
+            echo "{{ RED }}Not Installed{{ NORMAL }}"
+        fi
+    }
+
+    install_asus_tools() {
+        layered_packages=()
+        for pkg in asusctl asusctl-rog-gui rog-control-center; do
+            if layered_package "$pkg"; then
+                layered_packages+=("$pkg")
+            fi
+        done
+
+        if [ ${#layered_packages[@]} -gt 0 ]; then
+            local REPLY
+            echo "This script installs Brew casks from Universal Blue's tap used to manage ASUS"
+            echo "ROG hardware, but it appears your system already has {{ BOLD }}layered {{ NORMAL }}packages."
+            echo "{{ BOLD }}Layered packages: {{ NORMAL }}${layered_packages[*]}"
+            while true; do
+                read -r -p "Proceed to remove these layers first? {{ YELLOW }}(Y/n){{ NORMAL }} " REPLY || exit 1
+                if [[ ! $REPLY || $REPLY == "Y" || $REPLY == "y" ]]; then
+                    sudo systemctl disable --now asusd.service asus-shutdown.service
+                    sudo udevadm control --reload
+                    sudo udevadm trigger
+                    systemctl --user disable --now asusd-user.service
+                    rpm-ostree uninstall -y "${layered_packages[*]}"
+                    echo 'Complete, please reboot to apply changes.'
+                    exit 0
+                elif [[ $REPLY == "N" || $REPLY == "n" ]]; then
+                    echo 'Cancelled.'
+                    exit 1
+                fi
+            done
+        fi
+
+        brew_packages=()
+        for pkg in asusctl-linux rog-control-center-linux; do
+            if brew_package "$pkg"; then
+                echo "$pkg is already installed, skipping."
+            else
+                brew_packages+=("$pkg")
+            fi
+        done
+
+        if [ ${#brew_packages[@]} -gt 0 ]; then
+            brew tap ublue-os/tap
+            echo "Installing: ${brew_packages[*]}"
+            brew install --cask "${brew_packages[@]}"
+            sudo systemctl daemon-reload
+            sudo systemctl enable --now asusd.service asus-shutdown.service
+            sudo udevadm control --reload
+            sudo udevadm trigger
+            systemctl --user daemon-reload
+            systemctl --user enable --now asusd-user.service
+            echo 'Complete, all required services are enabled.'
+        else
+            echo "No changes were made."
+        fi
+    }
+
+    uninstall_asus_tools() {
+        brew_packages=()
+        layered_packages=()
+        for pkg in asusctl-linux rog-control-center-linux; do
+            if brew_package "$pkg"; then
+                brew_packages+=("$pkg")
+            fi
+        done
+
+        for pkg in asusctl asusctl-rog-gui rog-control-center; do
+            if layered_package "$pkg"; then
+                layered_packages+=("$pkg")
+            fi
+        done
+
+        if [ ${#brew_packages[@]} -gt 0 ]; then
+            sudo systemctl disable --now asusd.service asus-shutdown.service
+            sudo udevadm control --reload
+            sudo udevadm trigger
+            systemctl --user disable --now asusd-user.service
+            echo "Uninstalling: ${brew_packages[*]}"
+            brew remove "${brew_packages[@]}"
+            echo 'Complete.'
+        elif [ ${#layered_packages[@]} -gt 0 ]; then
+            sudo systemctl disable --now asusd.service asus-shutdown.service
+            sudo udevadm control --reload
+            sudo udevadm trigger
+            systemctl --user disable --now asusd-user.service
+            echo "Uninstalling: ${layered_packages[*]}"
+            rpm-ostree uninstall -y "${layered_packages[*]}"
+            echo 'Complete, please reboot to apply changes.'
+        else
+            echo "ASUS ROG utilities are not installed."
+        fi
+    }
+
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+        echo "Usage: ujust asus <option>"
+        echo "  <option>: Specify the quick option to skip the prompt"
+        echo "  Use 'status' to print the current portal token"
+        echo "  Use 'install' to install asusctl and ROG Control Center"
+        echo "  Use 'uninstall' to uninstall asusctl and ROG Control Center"
+        exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        install_asus_tools
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_asus_tools
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}ASUS ROG hardware managing tools${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_asus_tools
+                ;;
+            "Uninstall")
+                uninstall_asus_tools
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
+    fi
+
 alias install-steamcmd := get-steamcmd
 
 # Install SteamCMD (https://developer.valvesoftware.com/wiki/SteamCMD). Options: status | install | uninstall
