@@ -10,6 +10,7 @@ ARG BASE_IMAGE
 ARG INSTALL_IMAGE_PAYLOAD
 ARG FLATPAK_DIR_SHORTNAME
 RUN --mount=type=bind,source=./.,target=/src \
+    --mount=type=tmpfs,target=/var/tmp \
     env \
     BASE_IMAGE="$BASE_IMAGE" \
     INSTALL_IMAGE_PAYLOAD="$INSTALL_IMAGE_PAYLOAD" \
