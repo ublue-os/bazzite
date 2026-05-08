@@ -27,16 +27,7 @@ jobs:
       id-token: write
       attestations: write
       artifact-metadata: write
-    strategy:
-      fail-fast: false
-      matrix:
-        image_name:
-          - bazzite
-          - bazzite-nvidia
-          - bazzite-nvidia-open
-          - bazzite-gnome
-          - bazzite-gnome-nvidia
-          - bazzite-gnome-nvidia-open
+
     steps:
       - name: Show disk space
         run: sudo df -h
@@ -99,39 +90,31 @@ jobs:
         id: repo_owner_case
         run: echo "lowercase=${REPO_OWNER,,}" >> "$GITHUB_OUTPUT"
 
-      # - name: Setup Bazzite Repo
-      #   id: setup-bazzite-repo
-      #   shell: bash
-      #   run: |
-      #     curl -Lo ${{ github.workspace }}/bazzite.repo https://copr.fedorainfracloud.org/coprs/ublue-os/bazzite/repo/fedora-${{ matrix.major_version }}/bazzite-org-bazzite-fedora-${{ matrix.major_version }}.repo
-
-      # We need this as we use the desktop image as the runtime for
-      # the livecds.
-      - name: Obtain non-deck image ref
-        id: get-nondeck-ref
-        run: |
-          ref="${{ matrix.image_name }}"
-          ref="${ref/-deck/}"
-          ref="${ref/-nvidia-open/}"
-          ref="${ref/-nvidia/}"
-          # Handle naming mismatch: deck uses nvidia-gnome, non-deck uses gnome-nvidia
-          if [[ "$ref" == "bazzite-nvidia-gnome" ]]; then
-            ref="bazzite-gnome-nvidia"
-          fi
-          echo "ref=${ref}" >> $GITHUB_OUTPUT
-
       - name: Build Container Image
         run: |
-          BASE_IMAGE="ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}/${{ steps.get-nondeck-ref.outputs.ref }}:${{ steps.generate-tag.outputs.tag }}"
-          INSTALL_IMAGE_PAYLOAD="ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}"
+          images_to_install=(
+            bazzite
+            bazzite-nvidia
+            bazzite-nvidia-open
+            bazzite-gnome
+            bazzite-gnome-nvidia
+            bazzite-gnome-nvidia-open
+          )
+
+          BASE_IMAGE="ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}/bazzite:${{ steps.generate-tag.outputs.tag }}"
           FLATPAK_DIR_SHORTNAME="${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}"
+          INSTALL_IMAGE_PAYLOAD=""
+          for img in "${images_to_install[@]}"; do
+            INSTALL_IMAGE_PAYLOAD+="ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}/$img:${{ steps.generate-tag.outputs.tag }},"
+          done
+          INSTALL_IMAGE_PAYLOAD="${INSTALL_IMAGE_PAYLOAD%,}"
 
           sudo podman build \
             --cap-add sys_admin \
             --security-opt label=disable \
             --build-arg BASE_IMAGE="$BASE_IMAGE" \
-            --build-arg INSTALL_IMAGE_PAYLOAD="$INSTALL_IMAGE_PAYLOAD" \
             --build-arg FLATPAK_DIR_SHORTNAME="$FLATPAK_DIR_SHORTNAME" \
+            --build-arg INSTALL_IMAGE_PAYLOAD="$INSTALL_IMAGE_PAYLOAD" \
             -t localhost/payload:latest installer/
 
       - name: Build ISOs
@@ -158,7 +141,7 @@ jobs:
       - name: Setup Cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
         with:
-          cosign-release: 'v2.6.1'
+          cosign-release: "v2.6.1"
 
       - name: Sign ISO
         env:

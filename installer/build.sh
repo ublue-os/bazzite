@@ -21,13 +21,26 @@ mount -o remount,rw /proc/sys
 curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo
 xargs -r flatpak install -y --noninteractive <"/src/$FLATPAK_DIR_SHORTNAME/flatpaks"
 
-# Pull the container image to be installed
-if mountpoint -q /usr/lib/containers/storage; then
-    # We load our image from the host container storage if possible
-    podman save --format oci-archive "$INSTALL_IMAGE_PAYLOAD" | podman load --storage-opt additionalimagestore=''
-else
-    podman pull "$INSTALL_IMAGE_PAYLOAD"
-fi
+# Pull the container images to be installed
+IFS=',' read -ra images <<<"$INSTALL_IMAGE_PAYLOAD"
+for img in "${images[@]}"; do
+    podman --root /usr/lib/containers/storage pull "$img"
+done
+
+# Squashfs the container storage directory
+mksquashfs /usr/lib/containers/storage /usr/lib/containers/storage.squashfs -noappend
+find /usr/lib/containers/storage -mindepth 1 -depth -print0 | xargs -0 rm -rf
+
+cat >/etc/systemd/system/usr-lib-containers-storage.mount <<'EOF'
+[Mount]
+Type=squashfs
+What=/usr/lib/containers/storage.squashfs
+Where=/var/lib/containers/storage
+
+[Install]
+WantedBy=local-fs.target
+EOF
+systemctl enable usr-lib-containers-storage.mount
 
 # Determine desktop environment
 if [[ ${BASE_IMAGE} == *-gnome* ]]; then
