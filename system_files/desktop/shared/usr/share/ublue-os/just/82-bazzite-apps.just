@@ -328,10 +328,10 @@ asus ACTION="":
             while true; do
                 read -r -p "Proceed to remove these layers first? {{ YELLOW }}(Y/n){{ NORMAL }} " REPLY || exit 1
                 if [[ ! $REPLY || $REPLY == "Y" || $REPLY == "y" ]]; then
+                    systemctl --user disable --now asusd-user.service
                     sudo systemctl disable --now asusd.service asus-shutdown.service
                     sudo udevadm control --reload
                     sudo udevadm trigger
-                    systemctl --user disable --now asusd-user.service
                     rpm-ostree uninstall -y "${layered_packages[*]}"
                     echo 'Complete, please reboot to apply changes.'
                     exit 0
@@ -383,18 +383,18 @@ asus ACTION="":
         done
 
         if [ ${#brew_packages[@]} -gt 0 ]; then
+            systemctl --user disable --now asusd-user.service
             sudo systemctl disable --now asusd.service asus-shutdown.service
             sudo udevadm control --reload
             sudo udevadm trigger
-            systemctl --user disable --now asusd-user.service
             echo "Uninstalling: ${brew_packages[*]}"
             brew remove "${brew_packages[@]}"
             echo 'Complete.'
         elif [ ${#layered_packages[@]} -gt 0 ]; then
+            systemctl --user disable --now asusd-user.service
             sudo systemctl disable --now asusd.service asus-shutdown.service
             sudo udevadm control --reload
             sudo udevadm trigger
-            systemctl --user disable --now asusd-user.service
             echo "Uninstalling: ${layered_packages[*]}"
             rpm-ostree uninstall -y "${layered_packages[*]}"
             echo 'Complete, please reboot to apply changes.'
