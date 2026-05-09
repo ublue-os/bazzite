@@ -8,7 +8,7 @@ cockpit ACTION="":
     OPTION="{{ ACTION }}"
 
     get_status_token() {
-      if systemctl is-enabled --quiet cockpit.service; then
+      if systemctl is-enabled --quiet cockpit-ws.service; then
         echo "enable"
       else
         echo "disable"
@@ -36,10 +36,10 @@ cockpit ACTION="":
 
     case "$OPTION" in
       Enable|enable)
-        sudo systemctl enable --now cockpit.service
+        sudo systemctl enable --now cockpit-ws.service
         ;;
       Disable|disable)
-        sudo systemctl disable --now cockpit.service
+        sudo systemctl disable --now cockpit-ws.service
         sudo systemctl stop cockpit-container.service
         sudo podman rm -f cockpit-ws
         ;;
