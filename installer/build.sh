@@ -21,15 +21,11 @@ mount -o remount,rw /proc/sys
 curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo
 xargs -r flatpak install -y --noninteractive <"/src/$FLATPAK_DIR_SHORTNAME/flatpaks"
 
-# Pull the container images to be installed
-IFS=',' read -ra images <<<"$INSTALL_IMAGE_PAYLOAD"
-for img in "${images[@]}"; do
-    podman --root /usr/lib/containers/storage pull "$img"
-done
-
 # Squashfs the container storage directory
 mksquashfs /usr/lib/containers/storage /usr/lib/containers/storage.squashfs -noappend
-find /usr/lib/containers/storage -mindepth 1 -depth -print0 | xargs -0 rm -rf
+if ! mountpoint /usr/lib/containers/storage; then
+    find /usr/lib/containers/storage -mindepth 1 -depth -print0 | xargs -0 rm -rf
+fi
 
 cat >/etc/systemd/system/usr-lib-containers-storage.mount <<'EOF'
 [Mount]
