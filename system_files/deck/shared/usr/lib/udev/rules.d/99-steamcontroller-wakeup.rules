@@ -1,0 +1,3 @@
+# Enable wake from sleep for the Steam Controller Puck.
+# Source: https://www.reddit.com/r/SteamController/s/7ZEteNW6dm
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="28de", ATTR{idProduct}=="1304", TEST=="power/wakeup", ATTR{power/wakeup}="enabled"
