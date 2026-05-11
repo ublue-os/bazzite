@@ -10,3 +10,6 @@ no_retry = false
 
 [linux]
 rpm_ostree = true
+
+[firmware]
+upgrade = true
