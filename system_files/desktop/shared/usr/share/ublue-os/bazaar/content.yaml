@@ -64,7 +64,7 @@ rows:
           ru: "Протокол 3: Защитить пилота"
           fr: "Protocole 3: Protégez le pilote"
           pt_BR: "Protocolo 3: Proteger o Piloto"
-        banner: file:///usr/share/ublue-os/bazaar/gaming.png
+        banner: file:///usr/share/ublue-os/bazaar/gaming.jxl
         banner-fit: contain
         banner-height: 300
         banner-text-halign: start
@@ -137,7 +137,7 @@ rows:
           ru: "Ещё катку?"
           fr: "Et c'est le train de la Hype!"
           pt_BR: "O cara é profissional!"
-        banner: file:///usr/share/ublue-os/bazaar/streaming.png
+        banner: file:///usr/share/ublue-os/bazaar/streaming.jxl
         banner-fit: contain
         banner-height: 300
         banner-text-halign: end
@@ -179,7 +179,7 @@ rows:
           ru: "Войдём в ритм."
           fr: "Entrez dans le rythme."
           pt_BR: "Vamos esculachar!"
-        banner: file:///usr/share/ublue-os/bazaar/music.png
+        banner: file:///usr/share/ublue-os/bazaar/music.jxl
         banner-fit: contain
         banner-height: 300
         banner-text-halign: start
@@ -192,7 +192,7 @@ rows:
           - com.spotify.Client
           - com.mastermindzh.tidal-hifi
           - org.videolan.VLC
-          - com.github.iwalton3.jellyfin-media-player
+          - org.jellyfin.JellyfinDesktop
           - tv.plex.PlexDesktop
           - com.plexamp.Plexamp
           - rocks.shy.VacuumTube
@@ -219,7 +219,7 @@ rows:
           ru: "Чтобы всё не превратилось в прах."
           fr: "Que le trombone ait pitié de vous"
           pt_BR: "Que nosso camarada clipe de papel tenha piedade de nós."
-        banner: file:///usr/share/ublue-os/bazaar/office.png
+        banner: file:///usr/share/ublue-os/bazaar/office.jxl
         banner-fit: contain
         banner-height: 300
         banner-text-halign: end
@@ -263,7 +263,7 @@ rows:
           ru: "Программы, которыми вы ещё не пользуетесь."
           fr: "Ce dont vous n'aviez pas besoin jusqu'à maintenant"
           pt_br: "Coisas que você não precisava até agora."
-        banner: file:///usr/share/ublue-os/bazaar/utilities.png
+        banner: file:///usr/share/ublue-os/bazaar/utilities.jxl
         banner-fit: contain
         banner-height: 300
         banner-text-halign: start

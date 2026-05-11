@@ -1,2 +1,0 @@
-[org.gnome.mutter:GNOME]
-experimental-features=['kms-modifiers']
