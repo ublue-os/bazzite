@@ -192,7 +192,7 @@ rows:
           - com.spotify.Client
           - com.mastermindzh.tidal-hifi
           - org.videolan.VLC
-          - com.github.iwalton3.jellyfin-media-player
+          - org.jellyfin.JellyfinDesktop
           - tv.plex.PlexDesktop
           - com.plexamp.Plexamp
           - rocks.shy.VacuumTube
