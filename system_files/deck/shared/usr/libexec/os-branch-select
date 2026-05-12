@@ -16,11 +16,7 @@ source /etc/os-release
 if [[ $# -eq 1 ]]; then
   case "$1" in
     -c)
-      if [[ -f /var/ublue-update/branch ]]; then
-        branch=$(cat /var/ublue-update/branch)
-      else
-        branch=$(cut -d ":" -f4 <<< "$(rpm-ostree status --booted | grep -m 1 $ID)")
-      fi
+      branch=$(cut -d ":" -f4 <<< "$(rpm-ostree status --booted | grep -m 1 $ID)")
 
       # Trim and convert to lowercase
       branch=$(echo "$branch" | tr '[:upper:]' '[:lower:]' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
@@ -55,17 +51,20 @@ if [[ $# -eq 1 ]]; then
       exit 0
       ;;
     rel|latest|stable)
-      /usr/bin/pkexec /usr/libexec/ublue-update-rebase "stable"
+      runcon system_u:unconfined_r:unconfined_t:s0 \
+        /usr/bin/bazzite-rollback-helper rebase stable -y
       exit 0
       ;;
     rc|beta|testing)
-      /usr/bin/pkexec /usr/libexec/ublue-update-rebase "testing"
+      runcon system_u:unconfined_r:unconfined_t:s0 \
+        /usr/bin/bazzite-rollback-helper rebase testing -y
       exit 0
       ;;
     bc|main|unstable)
       echo "The unstable branch has a high risk of breaking."
       echo "Do NOT use it unless you know what you are doing."
-      /usr/bin/pkexec /usr/libexec/ublue-update-rebase "unstable"
+      runcon system_u:unconfined_r:unconfined_t:s0 \
+        /usr/bin/bazzite-rollback-helper rebase unstable -y
       exit 0
       ;;
   esac

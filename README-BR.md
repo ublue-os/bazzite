@@ -83,7 +83,7 @@ O Bazzite é feito a partir do [ublue-os/main](https://github.com/ublue-os/main)
 
 Imagem genérica disponível como `bazzite`, própria para computadores desktop.
 
-- Atualiza automaticamente o sistema, Flatpaks, e mais - via [ublue-update](https://github.com/ublue-os/ublue-update) e [topgrade](https://github.com/topgrade-rs/topgrade).
+- Atualiza automaticamente o sistema, Flatpaks, e mais - via [uupd](https://github.com/ublue-os/uupd) e [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
 > **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://docs.bazzite.gg/General/Installation_Guide/).**
@@ -121,7 +121,7 @@ Imagem feita pra ser utilizada como alternativa ao SteamOS no Steam Deck, e para
 - Vem com patches do [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) pra suporte completo a BTRFS no cartão SD por padrão.
 - Inclui uma versão do [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), habilitada por padrão.
 - Opções pra instalar o [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), e [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), entre outros vários programas úteis na instalação.
-- Um sistema de atualização customizado permite que o sistema, Flatpaks e mais sejam atualizados diretamente pela interface do Game mode via [ublue-update](https://github.com/ublue-os/ublue-update) e [topgrade](https://github.com/topgrade-rs/topgrade).
+- Um sistema de atualização customizado permite que o sistema, Flatpaks e mais sejam atualizados diretamente pela interface do Game mode via [uupd](https://github.com/ublue-os/uupd) e [topgrade](https://github.com/topgrade-rs/topgrade).
 - Suporte padrão a dual-boot com Windows já que a instalação de GRUB do Fedora é mantida intacta.
 - Uma atualização quebrou alguma coisa? Volte facilmente pra versão anterior do Bazzite graças à funcionalidade de rollback do `rpm-ostree`. Você pode até selecionar imagens anteriores na sequência de boot.
 - Steam e Lutris pré-instalados via pacotes sobrepostos na imagem.
