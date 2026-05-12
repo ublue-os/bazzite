@@ -493,7 +493,7 @@ jobs:
           ALIAS_TAGS: ${{ steps.generate-tags.outputs.alias_tags }}
           OUTPUT_IMAGE: ${{ steps.base.outputs.output_image }}
           VERSION: ${{ steps.relabel.outputs.version }}
-          MAX_RETRIES: 3
+          MAX_RETRIES: 5
           WAIT_SECONDS: 15
         run: |
           set -x
