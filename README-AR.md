@@ -82,7 +82,7 @@ Bazzite مبنية من [ublue-os/main](https://github.com/ublue-os/main) و[ubl
 
 النسخة العامة المتاحة باسم `bazzite` مناسبة لأجهزة الكمبيوتر المكتبية.
 
-- تحديثات تلقائية للنظام وFlatpaks وغيرها  تعتمد على [ublue-update](https://github.com/ublue-os/ublue-update) و[topgrade](https://github.com/topgrade-rs/topgrade).
+- تحديثات تلقائية للنظام وFlatpaks وغيرها  تعتمد على [uupd](https://github.com/ublue-os/uupd) و[topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
 > **يمكن تنزيل ملفات ISO من [موقعنا](https://download.bazzite.gg) ويمكن العثور على دليل تثبيت مفيد [هنا](https://docs.bazzite.gg/General/Installation_Guide/).**
@@ -117,7 +117,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - تأتي مع تصحيحات من [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) لدعم كامل لـ BTRFS لبطاقة SD بشكل افتراضي.
 - تشحن بنسخة منقولة من [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU) ممكنة افتراضيا.
 - خيار لتثبيت [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader) [EmuDeck](https://www.emudeck.com/) [RetroDECK](https://retrodeck.net/) و[ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) إلى جانب العديد من الحزم المفيدة الأخرى أثناء التثبيت.
-- نظام تحديث مخصص يسمح بتحديث النظام وFlatpaks وغيرها مباشرة من واجهة وضع اللعب يعتمد على [ublue-update](https://github.com/ublue-os/ublue-update) و[topgrade](https://github.com/topgrade-rs/topgrade).
+- نظام تحديث مخصص يسمح بتحديث النظام وFlatpaks وغيرها مباشرة من واجهة وضع اللعب يعتمد على [uupd](https://github.com/ublue-os/uupd) و[topgrade](https://github.com/topgrade-rs/topgrade).
 - دعم مدمج للإقلاع المزدوج مع ويندوز بفضل ترك تثبيت GRUB من Fedora كما هو.
 - هل تسبب التحديث بعطل يمكنك الرجوع بسهولة إلى النسخة السابقة من Bazzite بفضل خاصية rollback في `rpm-ostree`. يمكنك حتى اختيار صور سابقة عند الإقلاع.
 - Steam وLutris مثبتان مسبقا كحزم مكدسة (layered packages).

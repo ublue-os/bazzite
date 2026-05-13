@@ -80,7 +80,7 @@ Bazzite 採用 [Fedora](https://fedoraproject.org/) 技術並透過 [ublue-os/ma
 
 通用的 `bazzite` 版本，適合桌上型電腦使用。
 
-- 作業系統、Flatpak 等皆會自動更新 - 由 [ublue-update](https://github.com/ublue-os/ublue-update) 與 [topgrade](https://github.com/topgrade-rs/topgrade) 驅動。
+- 作業系統、Flatpak 等皆會自動更新 - 由 [uupd](https://github.com/ublue-os/uupd) 與 [topgrade](https://github.com/topgrade-rs/topgrade) 驅動。
 
 > [!IMPORTANT]
 > **ISO 映像檔可從我們的 [網站](https://download.bazzite.gg) 下載，並可在此找到實用的 [安裝指南](https://docs.bazzite.gg/General/Installation_Guide/)。**
@@ -115,7 +115,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - 預設包含來自 [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) 的修補程式，以完整支援 SD 卡的 BTRFS 格式。
 - 預裝並啟用 [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU) 的移植版本。
 - 安裝時可選擇安裝 [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader)、[EmuDeck](https://www.emudeck.com/)、[RetroDECK](https://retrodeck.net/) 與 [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) 等眾多實用套件。
-- 自訂的更新系統允許直接從遊戲模式介面更新作業系統、Flatpaks 等，由 [ublue-update](https://github.com/ublue-os/ublue-update) 與 [topgrade](https://github.com/topgrade-rs/topgrade) 驅動。
+- 自訂的更新系統允許直接從遊戲模式介面更新作業系統、Flatpaks 等，由 [uupd](https://github.com/ublue-os/uupd) 與 [topgrade](https://github.com/topgrade-rs/topgrade) 驅動。
 - 由於保留了 Fedora 的 GRUB 安裝，內建支援與 Windows 雙重開機 (Duel-boot)。
 - 更新後出問題了嗎？透過 `rpm-ostree` 的 rollback 功能，可輕鬆還原至 Bazzite 的前一個版本。您甚至可以在開機時選擇先前的映像檔。
 - Steam 與 Lutris 已作為分層套件 (layered packages) 預裝在映像檔中。
