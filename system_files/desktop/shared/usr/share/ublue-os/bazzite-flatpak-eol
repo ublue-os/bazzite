@@ -67,6 +67,9 @@ runtime/org.gnome.font-viewer.Locale/x86_64/stable
 runtime/org.gnome.Evince.Locale/x86_64/stable
 runtime/org.gnome.FileRoller.Locale/x86_64/stable
 runtime/org.gnome.Maps.Locale/x86_64/stable
+runtime/org.kde.KStyle.Adwaita/x86_64/5.13
+runtime/org.kde.KStyle.Adwaita/x86_64/5.14
+runtime/org.kde.KStyle.Adwaita/x86_64/5.15
 runtime/org.kde.KStyle.Adwaita/x86_64/5.15-23.08
 runtime/org.kde.KStyle.Adwaita/x86_64/5.15-24.08
 runtime/org.kde.KStyle.Adwaita/x86_64/5.15-25.08
@@ -80,6 +83,9 @@ runtime/org.kde.KStyle.Adwaita/x86_64/6.6
 runtime/org.kde.KStyle.Adwaita/x86_64/6.7
 runtime/org.kde.KStyle.Adwaita/x86_64/6.8
 runtime/org.kde.KStyle.Adwaita/x86_64/6.9
+runtime/org.kde.Platform.Locale/x86_64/5.13
+runtime/org.kde.Platform.Locale/x86_64/5.14
+runtime/org.kde.Platform.Locale/x86_64/5.15
 runtime/org.kde.Platform.Locale/x86_64/5.15-23.08
 runtime/org.kde.Platform.Locale/x86_64/5.15-24.08
 runtime/org.kde.Platform.Locale/x86_64/5.15-25.08
@@ -93,6 +99,9 @@ runtime/org.kde.Platform.Locale/x86_64/6.6
 runtime/org.kde.Platform.Locale/x86_64/6.7
 runtime/org.kde.Platform.Locale/x86_64/6.8
 runtime/org.kde.Platform.Locale/x86_64/6.9
+runtime/org.kde.Platform/x86_64/5.13
+runtime/org.kde.Platform/x86_64/5.14
+runtime/org.kde.Platform/x86_64/5.15
 runtime/org.kde.Platform/x86_64/5.15-23.08
 runtime/org.kde.Platform/x86_64/5.15-24.08
 runtime/org.kde.Platform/x86_64/5.15-25.08
