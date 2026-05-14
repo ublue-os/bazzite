@@ -1,4 +1,4 @@
-%global commit 5a873951579f1ff894f71489f3651a55d6dde250
+%global commit a0241c1d38297a800d2aae3d8ca7213b7b873879
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 #global gitdate 20230426
@@ -8,7 +8,7 @@
 
 Summary:   Xwayland
 Name:      xorg-x11-server-Xwayland
-%global    xwayland_version 24.1.10
+%global    xwayland_version 24.1.11
 Version:   %{xwayland_version}.bazzite.{{{ git_dir_version }}}
 Release:   1%{?gitdate:.%{gitdate}git%{shortcommit}}%{?dist}
 
@@ -141,6 +141,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_libdir}/pkgconfig/xwayland.pc
 
 %changelog
+* Mon Apr 27 2026 Olivier Fourdan <ofourdan@redhat.com> - 24.1.11
+- Addresses a number of regressions found in Xwayland 24.1.10.
+
 * Tue Oct 28 2025 Olivier Fourdan <ofourdan@redhat.com> - 24.1.9-1
 - Update to xwayland 24.1.9 (#2406802)
 - CVE fix for: CVE-2025-62229, CVE-2025-62230, CVE-2025-62231
