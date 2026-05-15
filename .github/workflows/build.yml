@@ -71,7 +71,7 @@ jobs:
         include:
           - fedora_version: 44
             kernel_flavor: ogc
-            kernel_version: 6.19.14-ogc4.1.fc44.x86_64
+            kernel_version: 6.19.14-ogc5.1.fc44.x86_64
             base_image_flavor: main
             arch: x86_64
     steps:
@@ -326,34 +326,6 @@ jobs:
           path: /var/tmp/buildah-cache-*
           key: ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}
 
-      - name: Setup Syft
-        id: setup-syft
-        if: github.event_name != 'pull_request'
-        uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0
-        with:
-          syft-version: v1.39.0
-
-      - name: Generate SBOM
-        if: github.event_name != 'pull_request'
-        id: generate-sbom
-        env:
-          IMAGE: ${{ matrix.image }}
-          VERSION_TAG: ${{ steps.labels.outputs.tag }}
-          SYFT_CMD: ${{ steps.setup-syft.outputs.cmd }}
-          OCI_DIR: "/tmp/image-oci-dir"
-        run: |
-          mkdir -p ${OCI_DIR}/rootfs
-          sudo podman container create --replace --name "${IMAGE}" "localhost/raw-img"
-          sudo podman export "${IMAGE}" | sudo tar -C ${OCI_DIR}/rootfs -xf -
-          sudo podman container rm "${IMAGE}"
-
-          SBOM="$(mktemp -d)/sbom.json"
-          export SYFT_PARALLELISM=$(($(nproc)*2))
-          sudo $SYFT_CMD --source-name "${IMAGE}"-"${VERSION_TAG}" ${OCI_DIR} -o syft-json=${SBOM}
-          du -sh ${SBOM}
-          echo "SBOM=${SBOM}" >> $GITHUB_OUTPUT
-          sudo rm -rf ${OCI_DIR}
-
       # Relabel the image with Bazzite labels
       - name: Apply Labels
         id: relabel
@@ -438,6 +410,35 @@ jobs:
           sudo podman untag raw-img
 
           echo "ref=containers-storage:localhost/chunked-img" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Syft
+        id: setup-syft
+        if: github.event_name != 'pull_request'
+        uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        with:
+          # FIXME: a renovate rule for this would be nice
+          syft-version: v1.44.0
+
+      - name: Generate SBOM
+        if: github.event_name != 'pull_request'
+        id: generate-sbom
+        env:
+          IMAGE: ${{ matrix.image }}
+          VERSION_TAG: ${{ steps.labels.outputs.tag }}
+          SYFT_CMD: ${{ steps.setup-syft.outputs.cmd }}
+          OCI_DIR: "/tmp/image-oci-dir"
+        run: |
+          mkdir -p ${OCI_DIR}/rootfs
+          sudo podman container create --replace --name "${IMAGE}" "localhost/chunked-img"
+          sudo podman export "${IMAGE}" | sudo tar -C ${OCI_DIR}/rootfs -xf -
+          sudo podman container rm "${IMAGE}"
+
+          SBOM="$(mktemp -d)/sbom.json"
+          export SYFT_PARALLELISM=$(($(nproc)*2))
+          sudo $SYFT_CMD --source-name "${IMAGE}"-"${VERSION_TAG}" ${OCI_DIR} -o syft-json=${SBOM}
+          du -sh ${SBOM}
+          echo "SBOM=${SBOM}" >> $GITHUB_OUTPUT
+          sudo rm -rf ${OCI_DIR}
 
       # Generate tags after relabel runs and checks the primary tag is not duplicated
       # If it is, relabel will suffix it by .1, .2, etc and put it in steps.relabel.outputs.version
