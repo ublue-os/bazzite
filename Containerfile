@@ -315,6 +315,7 @@ RUN --mount=type=cache,dst=/var/cache \
         terra-gamescope.x86_64 \
         terra-gamescope-libs.x86_64 \
         terra-gamescope-libs.i686 \
+        dmemcg-booster \
         jupiter-sd-mounting-btrfs \
         umu-wrapper \
         umu-launcher \
