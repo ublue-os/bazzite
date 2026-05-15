@@ -641,7 +641,6 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install --enable-repo=terra \
-        jupiter-fan-control \
         jupiter-hw-support-btrfs \
         galileo-mura \
         steamdeck-dsp \
@@ -650,7 +649,6 @@ RUN --mount=type=cache,dst=/var/cache \
         gamescope-session-ogui-steam \
         steamos-manager-powerstation \
         steamos-manager-powerstation-gamescope-session-plus \
-        vpower \
         steam-notif-daemon \
         acpica-tools \
         sdgyrodsu \
@@ -747,8 +745,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global disable sdgyrodsu.service && \
     systemctl disable input-remapper.service && \
     systemctl disable uupd.timer && \
-    systemctl disable jupiter-fan-control.service && \
-    systemctl disable vpower.service && \
     systemctl disable jupiter-biosupdate.service && \
     systemctl disable jupiter-controller-update.service && \
     dnf5 config-manager setopt skip_if_unavailable=1 && \
