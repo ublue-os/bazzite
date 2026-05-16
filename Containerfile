@@ -616,22 +616,27 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
+    dnf5 -y install \
+        sddm && \
     dnf5 -y remove \
-        jupiter-sd-mounting-btrfs && \
+        jupiter-sd-mounting-btrfs \
+        plasma-login-manager && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y remove \
             steamdeck-kde-presets-desktop && \
        dnf5 -y install \
             steamdeck-kde-presets \
     ; else \
-        dnf5 -y install \
-            sddm && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
         rm -f /usr/share/backgrounds/default.xml && \
         dnf5 -y remove \
             malcontent-control \
     ; fi && \
+    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
+        systemctl disable gdm.service \
+    ; fi && \
+    systemctl enable sddm.service && \
     /ctx/cleanup
 
 # Install new packages
@@ -728,10 +733,7 @@ RUN --mount=type=cache,dst=/var/cache \
     do \
         dnf5 -y copr disable -y $copr; \
     done && unset -v copr && \
-    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
-        systemctl disable gdm.service && \
-        systemctl enable sddm.service \
-    ; else \
+    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         systemctl disable usr-share-sddm-themes.mount \
     ; fi && \
     { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
