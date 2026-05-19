@@ -1,4 +1,5 @@
 import os
+import subprocess
 from urllib.parse import unquote
 from gi.repository import Nautilus, GObject
 from typing import List
@@ -15,7 +16,7 @@ class AddToSteamExtension(GObject.GObject, Nautilus.MenuProvider):
     def _add_to_steam(self, file: Nautilus.FileInfo) -> None:
         filename = unquote(file.get_uri()[7:])
 
-        os.popen(f'/usr/bin/steamos-add-to-steam "{filename}"')
+        subprocess.Popen(['/usr/bin/steamos-add-to-steam', filename])
 
     def menu_activate_cb(
         self,
