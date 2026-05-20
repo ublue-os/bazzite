@@ -58,7 +58,7 @@ From previous `{target}` version `{prev}` there have been the following changes.
 ### Major packages
 | Name | Version |
 | --- | --- |
-| **Kernel** | {pkgrel:kernel} |
+| **Kernel** | {pkgrel:kernel-core} |
 | **Firmware** | {pkgrel:atheros-firmware} |
 | **Mesa** | {pkgrel:mesa-filesystem} |
 | **Gamescope** | {pkgrel:terra-gamescope} |
@@ -89,6 +89,7 @@ This is an automatically generated changelog for release `{curr}`."""
 
 BLACKLIST_VERSIONS = [
     "kernel",
+    "kernel-core",
     "mesa-filesystem",
     "terra-gamescope",
     "gamescope-session",
