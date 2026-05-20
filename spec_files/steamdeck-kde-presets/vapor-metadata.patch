@@ -1,0 +1,17 @@
+diff -Naur a/usr/share/plasma/look-and-feel/com.valve.vapor.deck.desktop/metadata.json b/usr/share/plasma/look-and-feel/com.valve.vapor.deck.desktop/metadata.json
+--- a/usr/share/plasma/look-and-feel/com.valve.vapor.deck.desktop/metadata.json
++++ b/usr/share/plasma/look-and-feel/com.valve.vapor.deck.desktop/metadata.json
+@@ -8,10 +8,10 @@
+             }
+         ],
+         "Category": "",
+-        "Description": "Vapor - SteamOS theme variant of KDE BreezeDark - with Steam Deck tweaks",
+-        "Id": "com.valve.vapor.deck.desktop",
++        "Description": "Vapor - SteamOS theme variant of KDE BreezeDark",
++        "Id": "com.valve.vapor.desktop",
+         "License": "GPLv2+",
+-        "Name": "Vapor (Steam Deck)",
++        "Name": "Vapor",
+         "ServiceTypes": [
+             "Plasma/LookAndFeel"
+         ],

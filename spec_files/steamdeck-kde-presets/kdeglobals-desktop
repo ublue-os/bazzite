@@ -1,6 +1,5 @@
 [KDE]
 LookAndFeelPackage=com.valve.vapor.desktop
-SingleClick=false
 
 [KDE Control Module Restrictions][$i]
 kcm_updates=false
