@@ -8,7 +8,9 @@ SUPPORTED_MIMES = (
     "application/x-desktop",
     "application/x-executable",
     "application/vnd.appimage",
+    "application/vnd.microsoft.portable-executable",
     "application/x-shellscript",
+    "application/x-msdownload",
     "application/x-ms-dos-executable"
 )
 
@@ -44,8 +46,9 @@ class AddToSteamExtension(GObject.GObject, Nautilus.MenuProvider):
         if not mime in SUPPORTED_MIMES:
             return []
 
-        if not os.access(unquote(file.get_uri()[7:]), os.X_OK) and not mime == "application/x-ms-dos-executable":
-            return []
+        if not os.access(unquote(file.get_uri()[7:]), os.X_OK):
+            if not mime == "application/x-ms-dos-executable" or not mime == "application/x-msdownload" or not mime == "application/vnd.microsoft.portable-executable":
+                return []
 
         item = Nautilus.MenuItem(
             name="SteamOS::steamos_add_to_steam",

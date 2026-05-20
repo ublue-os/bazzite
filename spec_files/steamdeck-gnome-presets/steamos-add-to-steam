@@ -31,15 +31,21 @@ if [ "$1" = "-ui" ]; then
     shift
 fi
 
-file=$(realpath "$1")
-if [ ! -e "$file" ]
-then
-    echo "Usage: steamos-add-to-steam [-ui] <path>"
+case "$1" in
+    -h|--help|"")
+        echo "Usage: steamos-add-to-steam [-ui] <path>"
+        exit 0
+        ;;
+esac
+
+file=$(realpath -- "$1")
+if [ ! -e "$file" ]; then
+    show_error "Error: File not found at '$1'"
     exit 1
 fi
 mime=$(xdg-mime query filetype "$file")
 case "$mime" in
-    "application/x-desktop"|"application/x-ms-dos-executable")
+    "application/x-desktop"|"application/x-ms-dos-executable"|"application/x-msdownload"|"application/vnd.microsoft.portable-executable")
         add_to_steam "$file"
         ;;
     "application/x-executable"|"application/vnd.appimage"|"application/x-shellscript")
