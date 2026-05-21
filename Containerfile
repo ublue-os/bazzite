@@ -315,6 +315,7 @@ RUN --mount=type=cache,dst=/var/cache \
         terra-gamescope.x86_64 \
         terra-gamescope-libs.x86_64 \
         terra-gamescope-libs.i686 \
+        uresourced \
         dmemcg-booster \
         jupiter-sd-mounting-btrfs \
         umu-wrapper \
@@ -565,6 +566,9 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global enable ntfs-nag.service && \
     systemctl enable dmemcg-booster-system.service && \
     systemctl --global enable dmemcg-booster-user.service && \
+    systemctl enable uresourced.service && \
+    systemctl --global enable uresourced.service && \
+    sed -i -e 's/^ActiveCPUWeight=.*/ActiveCPUWeight=10000/' /etc/uresourced.conf && \
     /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf" -Lo /etc/dxvk-example.conf && \
     /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/waydroid-scripts/main/waydroid-choose-gpu.sh" -Lo /usr/bin/waydroid-choose-gpu && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
