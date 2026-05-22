@@ -1,7 +1,8 @@
 %global orgname io.github.rfrench3.bazzite_updater
 
 Name:           bazzite_updater
-Version:        0.4.2
+# renovate: datasource=github-releases depName=rfrench3/bazzite_updater
+Version:        0.7.1
 Release:        1%{?dist}
 Summary:        Update your Bazzite system
 
@@ -30,10 +31,10 @@ BuildRequires:  cmake(KF6I18n)
 BuildRequires:  cmake(KF6IconThemes)
 BuildRequires:  cmake(KF6KirigamiAddons)
 
-Requires:       kf6-kuserfeedback%{?_isa}
 Requires:       kf6-kirigami%{?_isa}
 Requires:       kf6-kirigami-addons%{?_isa}
 Requires:       kf6-qqc2-desktop-style%{?_isa}
+Requires:       which%{?_isa}
 
 Provides:       bazzite_updater = %{version}-%{release}
 
@@ -63,8 +64,8 @@ desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/%{orgname}.deskto
 %{_kf6_datadir}/applications/%{orgname}.desktop
 %{_kf6_metainfodir}/%{orgname}.*.xml
 %{_kf6_datadir}/icons/hicolor/scalable/apps/%{orgname}.svg
-
-
+%{_kf6_libdir}/libgamepad-support.so
+%{_kf6_qmldir}/io/github/rfrench3/Gamepad/*
 
 %changelog
 * Thu Feb 05 2026 Robert French
