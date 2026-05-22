@@ -218,6 +218,7 @@ RUN --mount=type=cache,dst=/var/cache \
         iwd \
         greenboot \
         greenboot-default-health-checks \
+        bazzite_updater \
         ScopeBuddy \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
