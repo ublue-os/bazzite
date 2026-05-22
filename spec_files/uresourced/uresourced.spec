@@ -22,7 +22,7 @@ using systemd (e.g. GNOME), then the memory allocation will be used
 to protect the sessions core processes (session.slice).
 
 %prep
-%autosetup -n %{name}-dmemcg-v%{version} -p1
+%autosetup -n %{name}-dmemcg-%{version} -p1
 
 %build
 %meson -Dappmanagement=true
