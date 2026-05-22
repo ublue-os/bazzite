@@ -316,6 +316,10 @@ RUN --mount=type=cache,dst=/var/cache \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y install \
             plasma-foreground-booster-dmemcg \
+    ; else \
+        dnf5 -y swap \
+        --repo copr:copr.fedorainfracloud.org:ublue-os:bazzite \
+            uresourced uresourced \
     ; fi && \
     dnf5 --enable-repo=terra-mesa --enable-repo=terra -y install \
         terra-gamescope.x86_64 \
