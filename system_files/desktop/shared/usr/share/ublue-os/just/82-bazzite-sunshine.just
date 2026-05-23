@@ -13,19 +13,21 @@ setup-sunshine ACTION="":
       [[ -z "$reply" || "${reply,,}" =~ ^y ]]
     }
     sunshine_installed() {
+      flatpak info dev.lizardbyte.app.Sunshine >/dev/null 2>&1
+    }
+    brew_sunshine_installed() {
       [[ -e /home/linuxbrew/.linuxbrew/opt/sunshine ||
         -d /home/linuxbrew/.linuxbrew/Cellar/sunshine ||
         -e /home/linuxbrew/.linuxbrew/opt/sunshine-beta ||
         -d /home/linuxbrew/.linuxbrew/Cellar/sunshine-beta ]]
     }
     get_status_token() {
-      local beta_service_state service_state
-      beta_service_state="$(systemctl is-enabled --user homebrew.sunshine-beta.service 2>/dev/null || true)"
-      service_state="$(systemctl is-enabled --user homebrew.sunshine.service 2>/dev/null || true)"
-      if [[ "$beta_service_state" == "enabled" ]]; then
-        echo "enable-beta"
-      elif [[ "$service_state" == "enabled" ]]; then
+      local flatpak_service_state beta_service_state service_state
+      flatpak_service_state="$(systemctl is-enabled --user app-dev.lizardbyte.app.Sunshine 2>/dev/null || true)"
+      if [[ "$flatpak_service_state" == "enabled" ]]; then
         echo "enable"
+      elif brew_sunshine_installed; then
+        echo "enable-brew"
       elif sunshine_installed; then
         echo "disable"
       else
@@ -42,11 +44,7 @@ setup-sunshine ACTION="":
     RestartSec=5s
     "
       if [[ $(systemctl --user cat homebrew.sunshine-beta | grep sleep 2>/dev/null || true) == "" ||  $(systemctl --user cat homebrew.sunshine-beta | grep sleep 2>/dev/null || true) == "" ]]; then
-        if [[ "$(get_status_token)" == "enable" ]]; then
-          systemctl --user edit --stdin homebrew.sunshine <<< "$servicefile"
-        elif [[ "$(get_status_token)" == "enable-beta" ]]; then
-          systemctl --user edit --stdin homebrew.sunshine-beta <<< "$servicefile"
-        fi
+        systemctl --user edit --stdin homebrew.sunshine-beta <<< "$servicefile"
       fi
     }
     if [ "$OPTION" == "help" ]; then
@@ -54,7 +52,6 @@ setup-sunshine ACTION="":
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'status' to print the current portal status"
       echo "  Use 'enable' to enable the Sunshine service"
-      echo "  Use 'enable-beta' to enable the Sunshine beta service"
       echo "  Use 'disable' to disable the Sunshine service"
       echo "  Use 'uninstall' to uninstall the Sunshine Homebrew packages"
       echo "  Use 'portal' to open the Sunshine management portal"
@@ -65,8 +62,8 @@ setup-sunshine ACTION="":
       exit $?
     elif [ "$OPTION" == "" ]; then
       case "$(get_status_token)" in
-        "enable-beta")
-          SERVICE_STATE="${green}${b}Enabled (Beta)${n}"
+        "enable-brew")
+          SERVICE_STATE="${yellow}${b}Enabled (Brew)${n}"
           ;;
         "enable")
           SERVICE_STATE="${green}${b}Enabled${n}"
@@ -82,63 +79,71 @@ setup-sunshine ACTION="":
       OPTION=$(Choose "Enable" "Enable Beta" "Update" "Disable Service" "Uninstall" "Open Portal" "Exit")
     fi
     if [[ "${OPTION,,}" =~ ^enable[-[:space:]]beta ]]; then
-      echo "Disabling any previous Flatpak Sunshine service..."
-      systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
-      if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
-        echo "Setting up Homebrew environment..."
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+      echo "Sunshine does not provide a beta repo for their flatpak."
+      echo "You will need to either: "
+      echo "  1) obtain and install the beta flatpak manually from their GitHub repository;"
+      echo "  2) or proceed with the experimental Brew package."
+      echo "Only proceed if you know what you are doing. Read http://docs.bazzite.gg/Advanced/sunshine/#installing-sunshine-beta to learn more."
+      if confirm "Confirm to proceed with installing the experimental Brew beta package? (This will remove your existing Sunshine installation!)"; then
+        echo "Disabling any previous Sunshine services..."
+        systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
+        if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+          echo "Setting up Homebrew environment..."
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        fi
+        brew tap LizardByte/homebrew
+        echo "Cleaning up any existing stable Sunshine install before installing beta..."
+        flatpak uninstall -y dev.lizardbyte.app.Sunshine || true
+        brew services stop sunshine || true
+        brew unpin sunshine || true
+        brew uninstall sunshine || true
+        brew install sunshine-beta
+        brew pin sunshine-beta
+        if ! sunshine_bin="$(command -v sunshine)"; then
+          echo "sunshine was not found on PATH after installation." >&2
+          exit 1
+        fi
+        sudo /usr/libexec/sunshine-postinst
+        brew services start sunshine-beta
+        override_service
       fi
-      brew tap LizardByte/homebrew
-      echo "Cleaning up any existing stable Sunshine install before installing beta..."
-      brew services stop sunshine || true
-      brew unpin sunshine || true
-      brew uninstall sunshine || true
-      brew install sunshine-beta
-      brew pin sunshine-beta
-      if ! sunshine_bin="$(command -v sunshine)"; then
-        echo "sunshine was not found on PATH after installation." >&2
-        exit 1
-      fi
-      sudo /usr/libexec/sunshine-postinst
-      brew services start sunshine-beta
-      override_service
     elif [[ "${OPTION,,}" =~ ^enable ]]; then
       echo "Disabling any previous Flatpak Sunshine service..."
       systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
-      if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
-        echo "Setting up Homebrew environment..."
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+      if [[ "$(get_status_token)" == "enable-brew" ]]; then
+        if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+          echo "Setting up Homebrew environment..."
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        fi
+        brew tap LizardByte/homebrew
+        echo "Cleaning up any existing brew Sunshine installs"
+        brew services stop sunshine-beta || true
+        brew unpin sunshine-beta || true
+        brew uninstall sunshine-beta || true
+        brew services stop sunshine || true
+        brew unpin sunshine || true
+        brew uninstall sunshine || true
       fi
-      brew tap LizardByte/homebrew
-      echo "Cleaning up any existing beta Sunshine install before installing stable..."
-      brew services stop sunshine-beta || true
-      brew unpin sunshine-beta || true
-      brew uninstall sunshine-beta || true
-      brew install sunshine
-      brew pin sunshine
-      if ! sunshine_bin="$(command -v sunshine)"; then
-        echo "sunshine was not found on PATH after installation." >&2
-        exit 1
-      fi
-      sudo /usr/libexec/sunshine-postinst
-      brew services start sunshine
-      override_service
+      flatpak install --system -y dev.lizardbyte.app.Sunshine
+      flatpak run --command=additional-install.sh dev.lizardbyte.app.Sunshine
+      systemctl --user enable --now app-dev.lizardbyte.app.Sunshine
+
     elif [[ "${OPTION,,}" =~ ^(update|upgrade) ]]; then
       if [[ "$(get_status_token)" == "uninstall" ]]; then
         echo "An upgrade was attempted but Sunshine was not installed." >&2
         exit 1
       fi
       if [[ "$(journalctl --no-hostname -b 0 -g 'Setting default sink to:')" != "-- No entries --" ]]; then
-        if ! confirm "Updating Sunshine while stream may leave you with a broken stream if you don't have physical access to the machine! Continue anyways?"; then
+        if ! confirm "Updating Sunshine while streaming may leave you with a broken stream if you don't have physical access to the machine! Continue anyways?"; then
           echo "Exiting..."
           exit 0
         fi
       fi
-      if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
-        echo "Setting up Homebrew environment..."
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-      fi
-      if [[ "$(get_status_token)" == "enable-beta" ]]; then
+      if [[ "$(get_status_token)" == "enable-brew" ]]; then
+        if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+          echo "Setting up Homebrew environment..."
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        fi
         brew services stop sunshine-beta || true
         brew unpin sunshine-beta || true
         brew upgrade sunshine-beta || true
@@ -147,36 +152,33 @@ setup-sunshine ACTION="":
         brew services start sunshine-beta
         override_service
       elif [[ "$(get_status_token)" == "enable" ]]; then
-        brew services stop sunshine || true
-        brew unpin sunshine || true
-        brew upgrade sunshine || true
-        brew pin sunshine
-        sudo /usr/libexec/sunshine-postinst
-        brew services start sunshine
-        override_service
-      fi
-      if ! sunshine_bin="$(command -v sunshine)"; then
-        echo "sunshine was not found on PATH after installation." >&2
-        exit 1
+        flatpak update dev.lizardbyte.app.Sunshine
       fi
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
-      if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
-        echo "Setting up Homebrew environment..."
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+      if [[ "$(get_status_token)" == "enable-brew" ]]; then
+        if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+          echo "Setting up Homebrew environment..."
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        fi
+        brew services stop sunshine || true
+        brew services stop sunshine-beta || true
       fi
-      brew services stop sunshine || true
-      brew services stop sunshine-beta || true
+      systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
     elif [[ "${OPTION,,}" =~ ^uninstall ]]; then
-      if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
-        echo "Setting up Homebrew environment..."
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+      if [[ "$(get_status_token)" == "enable-brew" ]]; then
+        if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+          echo "Setting up Homebrew environment..."
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        fi
+        brew services stop sunshine || true
+        brew services stop sunshine-beta || true
+        brew unpin sunshine || true
+        brew unpin sunshine-beta || true
+        brew uninstall sunshine || true
+        brew uninstall sunshine-beta || true
       fi
-      brew services stop sunshine || true
-      brew services stop sunshine-beta || true
-      brew unpin sunshine || true
-      brew unpin sunshine-beta || true
-      brew uninstall sunshine || true
-      brew uninstall sunshine-beta || true
+      systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
+      flatpak uninstall --delete-data -y dev.lizardbyte.app.Sunshine || true
       echo "Sunshine is now uninstalled."
     elif [[ "${OPTION,,}" =~ ^(portal|open) ]]; then
       echo "Opening Sunshine management portal..."
