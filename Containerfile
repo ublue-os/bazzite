@@ -319,8 +319,8 @@ RUN --mount=type=cache,dst=/var/cache \
             plasma-foreground-booster-dmemcg \
     ; else \
         dnf5 -y swap \
-        --repo copr:copr.fedorainfracloud.org:ublue-os:bazzite \
-            uresourced uresourced \
+        --repo terra-extras \
+            uresourced uresourced-dmemcg \
     ; fi && \
     dnf5 --enable-repo=terra-mesa --enable-repo=terra -y install \
         terra-gamescope.x86_64 \
