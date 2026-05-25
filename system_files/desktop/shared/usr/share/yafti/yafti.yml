@@ -531,18 +531,6 @@ screens:
           - id: "force-enable"
             label: "Force Enable"
             script: "ujust wol force-enable"
-      - id: "cec-sleep-standby"
-        title: "CEC Sleep Standby"
-        description: "Put TV to standby when system sleeps via HDMI-CEC. Requires a CEC-compatible Device, or Pulse 8 HDMI-CEC adapter."
-        default: false
-        status_script: "ujust cec-sleep status"
-        options:
-          - id: "enable"
-            label: "Enable"
-            script: "ujust cec-sleep enable"
-          - id: "disable"
-            label: "Disable"
-            script: "ujust cec-sleep disable"
       - id: "steam-icons"
         title: "Clean Steam Shortcuts"
         description: "Automatically removes Steam shortcuts from the desktop on boot, useful for keeping the desktop clean when installing games via game mode."
