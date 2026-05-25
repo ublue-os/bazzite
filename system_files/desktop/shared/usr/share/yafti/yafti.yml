@@ -531,6 +531,18 @@ screens:
           - id: "force-enable"
             label: "Force Enable"
             script: "ujust wol force-enable"
+      - id: "cec-mode"
+        title: "CEC Mode"
+        description: "Choose the HDMI-CEC backend. dGPU mode works better for home theater PCs, while Native mode works better for handhelds."
+        default: false
+        status_script: "ujust cec-mode status"
+        options:
+          - id: "dgpu"
+            label: "dGPU"
+            script: "ujust cec-mode dgpu"
+          - id: "native"
+            label: "Native"
+            script: "ujust cec-mode native"
       - id: "cec-sleep-standby"
         title: "CEC Sleep Standby"
         description: "Put TV to standby when system sleeps via HDMI-CEC. Requires a CEC-compatible Device, or Pulse 8 HDMI-CEC adapter."
