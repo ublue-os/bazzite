@@ -1,0 +1,11 @@
+[Unit]
+Description=Run CEC actions for sleep
+DefaultDependencies=no
+Before=systemd-suspend.service systemd-hibernate.service systemd-hybrid-sleep.service systemd-suspend-then-hibernate.service sleep.target
+
+[Service]
+Type=oneshot
+ExecStart=-/usr/bin/cec-control onsleep
+
+[Install]
+WantedBy=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
