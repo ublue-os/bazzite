@@ -605,6 +605,159 @@ steam-icons ACTION="":
       ;;
     esac
 
+alias cec-backend := cec-mode
+
+# Select the HDMI-CEC implementation. dGPU mode keeps the libcec/cec-ctl event services for external adapters. Native mode uses Valve's cecd backend for devices with native kernel CEC.
+cec-mode ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+
+    CONFIG_FILE="/etc/default/cec-control"
+    CECD_NATIVE_CONFIG="$HOME/.config/cecd/config.d/98-bazzite-cec-mode.toml"
+    DGPU_UNITS=(cec-onboot.service cec-onsleep.service cec-onpoweroff.service)
+    NATIVE_UNITS=(cecd.service steamos-manager-configure-cecd.service)
+    INPUTATTACH_UNITS=(pulse8-cec-inputattach@.service rainshadow-cec-inputattach@.service)
+
+    set_cec_mode() {
+      local mode="$1"
+      if [[ -f "$CONFIG_FILE" ]] && grep -q '^CEC_MODE=' "$CONFIG_FILE"; then
+        sudo sed -i "s/^CEC_MODE=.*/CEC_MODE=$mode/" "$CONFIG_FILE"
+      else
+        echo "CEC_MODE=$mode" | sudo tee -a "$CONFIG_FILE" > /dev/null
+      fi
+    }
+
+    write_cecd_native_config() {
+      mkdir -p "$(dirname "$CECD_NATIVE_CONFIG")"
+      printf '%s\n' \
+        '# Bazzite CEC Native mode defaults.' \
+        '# SteamOS Manager writes wake_tv/uinput state to 99-steamos-manager.toml.' \
+        '# Keep suspend_tv here because SteamOS Manager does not currently expose it.' \
+        'logical_address = "playback"' \
+        'suspend_tv = true' \
+        'allow_standby = false' \
+        > "$CECD_NATIVE_CONFIG"
+    }
+
+    remove_cecd_native_config() {
+      rm -f "$CECD_NATIVE_CONFIG"
+    }
+
+    has_user_unit() {
+      systemctl --user list-unit-files "$1" --no-legend 2>/dev/null | grep -q "^$1"
+    }
+
+    is_enabled() {
+      systemctl is-enabled "$1" >/dev/null 2>&1
+    }
+
+    user_is_enabled() {
+      systemctl --user is-enabled "$1" >/dev/null 2>&1
+    }
+
+    get_status_token() {
+      if user_is_enabled cecd.service; then
+        echo "native"
+      elif is_enabled cec-onboot.service || is_enabled cec-onsleep.service || is_enabled cec-onpoweroff.service; then
+        echo "dgpu"
+      else
+        echo "disabled"
+      fi
+    }
+
+    print_status() {
+      case "$(get_status_token)" in
+        native)
+          echo "Native"
+          ;;
+        dgpu)
+          echo "dGPU"
+          ;;
+        *)
+          echo "Disabled"
+          ;;
+      esac
+    }
+
+    enable_dgpu_mode() {
+      sudo -v || exit 1
+      echo "Switching HDMI-CEC to dGPU mode..."
+      systemctl --user disable --now "${NATIVE_UNITS[@]}" >/dev/null 2>&1 || true
+      sudo systemctl stop 'pulse8-cec-inputattach@*.service' 'rainshadow-cec-inputattach@*.service' >/dev/null 2>&1 || true
+      sudo systemctl mask "${INPUTATTACH_UNITS[@]}" >/dev/null 2>&1 || true
+      remove_cecd_native_config
+      set_cec_mode dgpu
+      sudo systemctl unmask "${DGPU_UNITS[@]}" >/dev/null 2>&1 || true
+      sudo systemctl daemon-reload
+      sudo systemctl enable "${DGPU_UNITS[@]}"
+      sudo systemctl start cec-onboot.service || true
+      echo -e "HDMI-CEC is now using ${green}${bold}dGPU mode${normal}."
+      echo "This uses /usr/bin/cec-control with libcec or cec-ctl for external/dGPU CEC adapters."
+    }
+
+    enable_native_mode() {
+      if ! command -v cecd >/dev/null 2>&1; then
+        echo -e "${red}${bold}Error:${normal} /usr/bin/cecd was not found."
+        echo "Native mode requires Valve's linux-cec/cecd binary package. Leaving the current CEC mode unchanged."
+        exit 1
+      fi
+      if ! has_user_unit cecd.service; then
+        echo -e "${red}${bold}Error:${normal} cecd.service was not found."
+        echo "Native mode requires the cecd user service. Leaving the current CEC mode unchanged."
+        exit 1
+      fi
+
+      sudo -v || exit 1
+      echo "Switching HDMI-CEC to Native mode..."
+      write_cecd_native_config
+      set_cec_mode native
+      sudo systemctl disable --now "${DGPU_UNITS[@]}" >/dev/null 2>&1 || true
+      sudo systemctl mask "${DGPU_UNITS[@]}" >/dev/null 2>&1 || true
+      sudo systemctl unmask "${INPUTATTACH_UNITS[@]}" >/dev/null 2>&1 || true
+      sudo udevadm control --reload-rules >/dev/null 2>&1 || true
+      sudo udevadm trigger --subsystem-match=tty --action=add >/dev/null 2>&1 || true
+      systemctl --user daemon-reload
+      systemctl --user enable steamos-manager-configure-cecd.service >/dev/null 2>&1 || true
+      systemctl --user enable cecd.service
+      systemctl --user start --no-block cecd.service
+      timeout 15 steamosctl set-hdmi-cec-state control-and-wake >/dev/null 2>&1 || true
+      echo -e "HDMI-CEC is now using ${green}${bold}Native mode${normal}."
+      echo "This uses Valve's linux-cec/cecd backend for native kernel CEC devices."
+    }
+
+    OPTION="{{ ACTION }}"
+
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust cec-mode <option>"
+      echo "  status   Print dgpu, native, or disabled"
+      echo "  dgpu     Use restored cec-control services for dGPU/external CEC adapters"
+      echo "  native   Use Valve linux-cec/cecd through SteamOS Manager"
+      exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit $?
+    elif [ -z "$OPTION" ]; then
+      echo -e "${bold}CEC Mode:${normal} $(print_status)"
+      echo ""
+      echo "dGPU mode uses the restored cec-control services for external adapters and dGPU paths."
+      echo "Native mode uses Valve's linux-cec/cecd backend through SteamOS Manager."
+      echo "Only one mode should be active at a time."
+      echo ""
+      OPTION=$(ugum choose "dGPU" "Native" "Exit without saving")
+    fi
+
+    case "$OPTION" in
+      dGPU|dgpu|legacy|Legacy)
+        enable_dgpu_mode
+        ;;
+      Native|native|cecd|CECD)
+        enable_native_mode
+        ;;
+      "Exit without saving"|*)
+        echo "No changes made."
+        ;;
+    esac
+
 alias toggle-cec-sleep := cec-sleep
 
 # Manage CEC_ONSLEEP_STANDBY - Controls whether TV goes to standby when system sleeps. Options: status | enable | disable
@@ -612,9 +765,45 @@ cec-sleep ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     CONFIG_FILE="/etc/default/cec-control"
+    CECD_NATIVE_CONFIG="$HOME/.config/cecd/config.d/98-bazzite-cec-mode.toml"
+
+    get_cec_mode() {
+      grep '^CEC_MODE=' "$CONFIG_FILE" 2>/dev/null | cut -d= -f2
+    }
+
+    get_native_suspend_tv() {
+      local current_value="false"
+      if grep -q '^suspend_tv[[:space:]]*=' "$CECD_NATIVE_CONFIG" 2>/dev/null; then
+        current_value=$(grep '^suspend_tv[[:space:]]*=' "$CECD_NATIVE_CONFIG" | tail -n1 | cut -d= -f2 | tr -d '[:space:]')
+      fi
+      echo "$current_value"
+    }
+
+    set_native_suspend_tv() {
+      local value="$1"
+      mkdir -p "$(dirname "$CECD_NATIVE_CONFIG")"
+      if [[ ! -f "$CECD_NATIVE_CONFIG" ]]; then
+        printf '%s\n' \
+          '# Bazzite CEC Native mode defaults.' \
+          '# SteamOS Manager writes wake_tv/uinput state to 99-steamos-manager.toml.' \
+          '# Keep suspend_tv here because SteamOS Manager does not currently expose it.' \
+          'logical_address = "playback"' \
+          'allow_standby = false' \
+          > "$CECD_NATIVE_CONFIG"
+      fi
+      if grep -q '^suspend_tv[[:space:]]*=' "$CECD_NATIVE_CONFIG"; then
+        sed -i "s/^suspend_tv[[:space:]]*=.*/suspend_tv = $value/" "$CECD_NATIVE_CONFIG"
+      else
+        echo "suspend_tv = $value" >> "$CECD_NATIVE_CONFIG"
+      fi
+      systemctl --user kill -s HUP cecd.service >/dev/null 2>&1 || true
+    }
+
     get_status_token() {
       local current_value="false"
-      if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" 2>/dev/null; then
+      if [[ "$(get_cec_mode)" == "native" ]]; then
+        current_value=$(get_native_suspend_tv)
+      elif grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" 2>/dev/null; then
         current_value=$(grep '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" | cut -d= -f2)
       fi
       if [[ "$current_value" == "true" ]]; then
@@ -661,7 +850,9 @@ cec-sleep ACTION="":
     case "$OPTION" in
       Enable|enable)
         echo "Enabling CEC on-sleep standby..."
-        if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE"; then
+        if [[ "$(get_cec_mode)" == "native" ]]; then
+          set_native_suspend_tv true
+        elif grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE"; then
           sudo sed -i 's/^CEC_ONSLEEP_STANDBY=.*/CEC_ONSLEEP_STANDBY=true/' "$CONFIG_FILE"
         else
           echo 'CEC_ONSLEEP_STANDBY=true' | sudo tee -a "$CONFIG_FILE" > /dev/null
@@ -670,7 +861,9 @@ cec-sleep ACTION="":
         ;;
       Disable|disable)
         echo "Disabling CEC on-sleep standby..."
-        if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE"; then
+        if [[ "$(get_cec_mode)" == "native" ]]; then
+          set_native_suspend_tv false
+        elif grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE"; then
           sudo sed -i 's/^CEC_ONSLEEP_STANDBY=.*/CEC_ONSLEEP_STANDBY=false/' "$CONFIG_FILE"
         else
           echo 'CEC_ONSLEEP_STANDBY=false' | sudo tee -a "$CONFIG_FILE" > /dev/null
