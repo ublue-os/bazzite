@@ -265,6 +265,7 @@ RUN --mount=type=cache,dst=/var/cache \
         rar \
         libxcrypt-compat \
         vulkan-tools \
+        vulkan-low-latency-layer \
         xwiimote-ng \
         fastfetch \
         glow \
