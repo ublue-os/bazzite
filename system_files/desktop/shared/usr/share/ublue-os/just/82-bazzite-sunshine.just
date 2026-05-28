@@ -93,6 +93,7 @@ setup-sunshine ACTION="":
         fi
         brew tap LizardByte/homebrew
         echo "Cleaning up any existing stable Sunshine install before installing beta..."
+        flatpak run --command=remove-additional-install.sh dev.lizardbyte.app.Sunshine || true
         flatpak uninstall -y dev.lizardbyte.app.Sunshine || true
         brew services stop sunshine || true
         brew unpin sunshine || true
@@ -178,6 +179,7 @@ setup-sunshine ACTION="":
         brew uninstall sunshine-beta || true
       fi
       systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
+      flatpak run --command=remove-additional-install.sh dev.lizardbyte.app.Sunshine || true
       flatpak uninstall --delete-data -y dev.lizardbyte.app.Sunshine || true
       echo "Sunshine is now uninstalled."
     elif [[ "${OPTION,,}" =~ ^(portal|open) ]]; then
