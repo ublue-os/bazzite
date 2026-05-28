@@ -725,6 +725,7 @@ RUN --mount=type=cache,dst=/var/cache \
         python-vdf \
         python-crcmod && \
     chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus && \
+    rm -f /usr/share/inputplumber/devices/50-steam_deck.yaml && \
     git clone https://github.com/bazzite-org/jupiter-dock-updater-bin.git \
         --depth 1 \
         /tmp/jupiter-dock-updater-bin && \
