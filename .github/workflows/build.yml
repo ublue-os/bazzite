@@ -480,44 +480,39 @@ jobs:
           echo ${{ secrets.GITHUB_TOKEN }} | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # Push the image to GHCR (Image Registry)
-      - name: Push to GHCR
-        id: push
-        if: github.event_name != 'pull_request'
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        env:
-          ALIAS_TAGS: ${{ steps.generate-tags.outputs.alias_tags }}
-          OUTPUT_IMAGE: ${{ steps.base.outputs.output_image }}
-          RECHUNK_REF: ${{ steps.rechunk.outputs.ref }}
-          VERSION: ${{ steps.relabel.outputs.version }}
-        with:
-          max_attempts: 3
-          retry_wait_seconds: 15
-          timeout_minutes: 10
-          command: |
-            log_sum() { echo "$1" >> $GITHUB_STEP_SUMMARY; }
-            log_sum '# Push to GHCR result'
-            log_sum '```'
-
-            dest_image="${OUTPUT_IMAGE}:${VERSION}"
-            sudo skopeo copy ${RECHUNK_REF} docker://$dest_image
-            log_sum "$dest_image"
-
-            for tag in ${ALIAS_TAGS}; do
-              dest_image="${OUTPUT_IMAGE}:$tag"
-              sudo skopeo copy ${RECHUNK_REF} docker://$dest_image
-              log_sum "$dest_image"
-            done
-            log_sum '```'
-
-            digest=$(sudo skopeo inspect --format '{{.Digest}}' docker://${OUTPUT_IMAGE}:${VERSION})
-            echo "digest=${digest}" >> $GITHUB_OUTPUT
-
       - name: Install Cosign
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
         with:
           cosign-release: "v2.6.1"
+
+      # Push the image to GHCR (Image Registry)
+      - name: Push to GHCR
+        id: push
+        if: github.event_name != 'pull_request'
+        env:
+          ALIAS_TAGS: ${{ steps.generate-tags.outputs.alias_tags }}
+          OUTPUT_IMAGE: ${{ steps.base.outputs.output_image }}
+          VERSION: ${{ steps.relabel.outputs.version }}
+          MAX_RETRIES: 5
+          WAIT_SECONDS: 15
+        run: |
+          set -x
+
+          log_sum() { echo "$1" >> $GITHUB_STEP_SUMMARY; }
+          log_sum '# Push to GHCR result'
+          log_sum '```'
+
+          for tag in ${VERSION} ${ALIAS_TAGS}; do
+            for i in $(seq "${MAX_RETRIES}"); do
+              sudo podman push --digestfile=/tmp/digestfile "localhost/chunked-img" "${OUTPUT_IMAGE}:$tag" && \
+                log_sum "${OUTPUT_IMAGE}:$tag" && break || sleep $((${WAIT_SECONDS} * i));
+            done
+          done
+
+          log_sum '```'
+
+          echo "digest=$(< /tmp/digestfile)" >> $GITHUB_OUTPUT
 
       - name: Sign container image
         if: github.event_name != 'pull_request'
