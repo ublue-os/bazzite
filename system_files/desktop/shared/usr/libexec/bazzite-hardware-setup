@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=69
+HWS_VER=70
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -186,6 +186,9 @@ else
 fi
 
 # IWD Fixup
+if [ -f /etc/NetworkManager/conf.d/99-valve-wifi-backend.conf ]; then
+  rm -f /etc/NetworkManager/conf.d/99-valve-wifi-backend.conf
+fi
 if [ ! -f /etc/bazzite/fixups/nmiwd ]; then
   rm -f "/etc/NetworkManager/conf.d/supplicant.conf"
 
