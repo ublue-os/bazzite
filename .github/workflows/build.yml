@@ -503,19 +503,14 @@ jobs:
             log_sum '# Push to GHCR result'
             log_sum '```'
 
-            dest_image="${OUTPUT_IMAGE}:${VERSION}"
-            sudo skopeo copy ${RECHUNK_REF} docker://$dest_image
-            log_sum "$dest_image"
-
-            for tag in ${ALIAS_TAGS}; do
+            for tag in ${VERSION} ${ALIAS_TAGS}; do
               dest_image="${OUTPUT_IMAGE}:$tag"
-              sudo skopeo copy ${RECHUNK_REF} docker://$dest_image
+              sudo skopeo copy ${RECHUNK_REF} docker://$dest_image --digestfile=/tmp/digestfile
               log_sum "$dest_image"
             done
             log_sum '```'
 
-            digest=$(sudo skopeo inspect --format '{{.Digest}}' docker://${OUTPUT_IMAGE}:${VERSION})
-            echo "digest=${digest}" >> $GITHUB_OUTPUT
+            echo "digest=$(< /tmp/digestfile)" >> $GITHUB_OUTPUT
 
       - name: Install Cosign
         if: github.event_name != 'pull_request'
