@@ -33,8 +33,10 @@ dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel
 
 /ctx/install-kmods \
     /tmp/rpms/{common,kmods}/*framework-laptop*.rpm \
+    /tmp/rpms/{common,kmods}/*kvmfr*.rpm \
     /tmp/rpms/{common,kmods}/*openrazer*.rpm \
     /tmp/rpms/{common,kmods}/*v4l2loopback*.rpm \
+    /tmp/rpms/{common,kmods}/*wl*.rpm \
     /tmp/rpms/{common,kmods}/*xone*.rpm \
     /tmp/rpms/{common,kmods}/*xpadneo*.rpm
 
@@ -47,6 +49,7 @@ dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel
     /tmp/rpms/{extra,kmods-extra}/*hid-tmff2*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*t150-driver*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*hid-fanatecff*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*ryzen-smu*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*sc0710*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*system76*.rpm
 
