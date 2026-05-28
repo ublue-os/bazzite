@@ -791,7 +791,8 @@ RUN --mount=type=cache,dst=/var/cache \
     done && unset -v copr && \
     { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
     systemctl enable --global steamos-manager.service && \
-    systemctl enable bazzite-autologin.service && \
+    systemctl enable steamos-manager.service && \
+    systemctl enable inputplumber.service && \
     systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \
     systemctl enable pipewire-workaround.service && \
