@@ -674,6 +674,7 @@ RUN --mount=type=cache,dst=/var/cache \
         sddm && \
     dnf5 -y remove \
         jupiter-sd-mounting-btrfs \
+        ds-inhibit \
         plasma-login-manager && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y remove \
