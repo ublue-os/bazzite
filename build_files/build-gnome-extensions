@@ -39,6 +39,11 @@ rm -rf /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build
 mkdir -p /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io
 mv /usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io/src/* /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io/
 
+# Gradia Capture
+mkdir -p /usr/share/gnome-shell/extensions/gradia-integration@alexandervanhee.github.io
+mv -f /usr/share/gnome-shell/extensions/tmp/gradia-capture/{src/*,icons,schemas} /usr/share/gnome-shell/extensions/gradia-integration@alexandervanhee.github.io
+glib-compile-schemas /usr/share/gnome-shell/extensions/gradia-integration@alexandervanhee.github.io/schemas
+
 # Cleanup
 dnf5 -y remove glib2-devel
 rm -rf /usr/share/gnome-shell/extensions/tmp
