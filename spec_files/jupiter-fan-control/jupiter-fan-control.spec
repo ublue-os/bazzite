@@ -8,9 +8,8 @@ URL:            https://github.com/evlav/jupiter-fan-control/
 Source:         %{url}archive/refs/heads/main.tar.gz
 BuildArch:      noarch
 
-Patch0:         fedora.patch
-
 Requires:       python3
+Requires:       python3-pyyaml
 
 BuildRequires:  systemd-rpm-macros
 
@@ -22,15 +21,16 @@ SteamOS 3.0 Steam Deck Fan Controller
 
 %prep
 %autosetup -n %{name}-main -p1
+# Use a versioned interpreter so the build's shebang mangling succeeds
+sed -i '1s|^#!/usr/bin/python\b|#!/usr/bin/python3|' usr/share/jupiter-fan-control/fancontrol.py
 
 %build
 
 %install
 mkdir -p %{buildroot}%{_unitdir}/
 mkdir -p %{buildroot}%{_datadir}/jupiter-fan-control
-mkdir -p %{buildroot}%{_libexecdir}/jupiter-fan-control
 cp -v usr/share/jupiter-fan-control/*.yaml %{buildroot}%{_datadir}/jupiter-fan-control/
-cp -v usr/share/jupiter-fan-control/*.py %{buildroot}%{_libexecdir}/jupiter-fan-control/
+install -v -m 0755 usr/share/jupiter-fan-control/fancontrol.py %{buildroot}%{_datadir}/jupiter-fan-control/fancontrol.py
 cp -v usr/lib/systemd/system/jupiter-fan-control.service %{buildroot}%{_unitdir}/jupiter-fan-control.service
 
 # Do post-installation
@@ -49,8 +49,7 @@ cp -v usr/lib/systemd/system/jupiter-fan-control.service %{buildroot}%{_unitdir}
 # are going to be installed into target system where the rpm is installed.
 %files
 %doc README.md
-%{_libexecdir}/jupiter-fan-control/fancontrol.py
-%{_libexecdir}/jupiter-fan-control/PID.py
+%{_datadir}/jupiter-fan-control/fancontrol.py
 %{_datadir}/jupiter-fan-control/*.yaml
 %{_unitdir}/jupiter-fan-control.service
 

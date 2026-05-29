@@ -260,6 +260,7 @@ RUN --mount=type=cache,dst=/var/cache \
         iwd \
         greenboot \
         greenboot-default-health-checks \
+        bazzite_updater \
         ScopeBuddy \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
@@ -307,6 +308,7 @@ RUN --mount=type=cache,dst=/var/cache \
         rar \
         libxcrypt-compat \
         vulkan-tools \
+        vulkan-low-latency-layer \
         xwiimote-ng \
         fastfetch \
         glow \
@@ -354,11 +356,20 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
+    dnf5 -y install \
+        dmemcg-booster && \
+    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
+        dnf5 -y install \
+            plasma-foreground-booster-dmemcg \
+    ; else \
+        dnf5 -y swap \
+        --repo terra-extras \
+            uresourced uresourced-dmemcg \
+    ; fi && \
     dnf5 --enable-repo=terra-mesa --enable-repo=terra -y install \
         terra-gamescope.x86_64 \
         terra-gamescope-libs.x86_64 \
         terra-gamescope-libs.i686 \
-        dmemcg-booster \
         jupiter-sd-mounting-btrfs \
         umu-wrapper \
         umu-launcher \
@@ -542,9 +553,7 @@ RUN --mount=type=cache,dst=/var/cache \
     echo "import \"/usr/share/ublue-os/just/90-bazzite-de.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/91-bazzite-decky.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/92-bazzite-verify.just\"" >> /usr/share/ublue-os/justfile && \
-    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        systemctl enable usr-share-sddm-themes.mount \
-    ; else \
+    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         mkdir -p "/usr/share/ublue-os/dconfs/desktop-silverblue/" && \
         cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/desktop-silverblue/" && \
         find "/etc/dconf/db/distro.d/" -maxdepth 1 -type f -exec cp {} "/usr/share/ublue-os/dconfs/desktop-silverblue/" \; && \
@@ -608,6 +617,8 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl disable force-wol.service && \
     systemctl --global enable bazzite-dynamic-fixes.service && \
     systemctl --global enable ntfs-nag.service && \
+    systemctl enable dmemcg-booster-system.service && \
+    systemctl --global enable dmemcg-booster-user.service && \
     /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf" -Lo /etc/dxvk-example.conf && \
     /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/waydroid-scripts/main/waydroid-choose-gpu.sh" -Lo /usr/bin/waydroid-choose-gpu && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
@@ -659,22 +670,28 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
+    dnf5 -y install \
+        sddm && \
     dnf5 -y remove \
-        jupiter-sd-mounting-btrfs && \
+        jupiter-sd-mounting-btrfs \
+        ds-inhibit \
+        plasma-login-manager && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y remove \
             steamdeck-kde-presets-desktop && \
        dnf5 -y install \
             steamdeck-kde-presets \
     ; else \
-        dnf5 -y install \
-            sddm && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
         rm -f /usr/share/backgrounds/default.xml && \
         dnf5 -y remove \
             malcontent-control \
     ; fi && \
+    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
+        systemctl disable gdm.service \
+    ; fi && \
+    systemctl enable sddm.service && \
     /ctx/cleanup
 
 # Install new packages
@@ -709,6 +726,7 @@ RUN --mount=type=cache,dst=/var/cache \
         python-vdf \
         python-crcmod && \
     chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus && \
+    sed -i 's/- xbox-elite/- deck/g' /usr/share/inputplumber/devices/50-steam_deck.yaml && \
     git clone https://github.com/bazzite-org/jupiter-dock-updater-bin.git \
         --depth 1 \
         /tmp/jupiter-dock-updater-bin && \
@@ -761,6 +779,8 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i 's@Exec=waydroid first-launch@Exec=/usr/bin/waydroid-launcher first-launch\nX-Steam-Library-Capsule=/usr/share/applications/Waydroid/capsule.png\nX-Steam-Library-Hero=/usr/share/applications/Waydroid/hero.png\nX-Steam-Library-Logo=/usr/share/applications/Waydroid/logo.png\nX-Steam-Library-StoreCapsule=/usr/share/applications/Waydroid/store-logo.png\nX-Steam-Controller-Template=Desktop@g' /usr/share/applications/Waydroid.desktop && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sed -i 's/Exec=.*/Exec=systemctl start return-to-gamemode.service/' /etc/skel/Desktop/Return.desktop \
+    ; else \
+        printf "\n[session]\ndesktop = \"gnome-wayland.desktop\"\n" >> /usr/share/steamos-manager/platform.toml \
     ; fi && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/input-remapper-gtk.desktop && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
@@ -773,15 +793,10 @@ RUN --mount=type=cache,dst=/var/cache \
     do \
         dnf5 -y copr disable -y $copr; \
     done && unset -v copr && \
-    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
-        systemctl disable gdm.service && \
-        systemctl enable sddm.service \
-    ; else \
-        systemctl disable usr-share-sddm-themes.mount \
-    ; fi && \
     { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
     systemctl enable --global steamos-manager.service && \
-    systemctl enable bazzite-autologin.service && \
+    systemctl enable steamos-manager.service && \
+    systemctl enable inputplumber.service && \
     systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \
     systemctl enable pipewire-workaround.service && \
