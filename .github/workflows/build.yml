@@ -181,7 +181,7 @@ jobs:
           tar -xC "$DOCS_DIR" -f artifact.tar
 
       - name: Check just syntax
-        uses: ublue-os/just-action@bda593098a84a84973b002b4377709166a68be52 # v2
+        uses: ublue-os/just-action@25ce72803385f5097fe169ebfc4f1bdec90567ac # main
 
       - name: Pull Images and find versions
         id: labels
