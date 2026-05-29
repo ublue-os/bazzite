@@ -7,6 +7,10 @@ die() { echo >&2 "!! $*"; exit 1; }
 SENTINEL_FILE="steamos-session-select"
 SENTINEL_VALUE="wayland"
 
+# Stop any lingering graphical sessions
+systemctl --user stop graphical-session.target || true
+sleep 1
+
 # If we proceed, execute this
 CHAINED_SESSION="/usr/bin/startplasma-wayland"
 
