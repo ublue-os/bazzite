@@ -92,6 +92,7 @@ setup-sunshine ACTION="":
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         fi
         brew tap LizardByte/homebrew
+        brew trust --tap LizardByte/homebrew
         echo "Cleaning up any existing stable Sunshine install before installing beta..."
         flatpak run --command=remove-additional-install.sh dev.lizardbyte.app.Sunshine || true
         flatpak uninstall -y dev.lizardbyte.app.Sunshine || true
@@ -117,6 +118,7 @@ setup-sunshine ACTION="":
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         fi
         brew tap LizardByte/homebrew
+        brew trust --tap LizardByte/homebrew
         echo "Cleaning up any existing brew Sunshine installs"
         brew services stop sunshine-beta || true
         brew unpin sunshine-beta || true

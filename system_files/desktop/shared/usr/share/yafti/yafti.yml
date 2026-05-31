@@ -12,7 +12,7 @@ screens:
         title: "Antigravity"
         description: "AI-powered IDE from Google — installed using Brew."
         default: false
-        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask antigravity-linux'
+        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew trust --tap ublue-os/tap && brew install --cask antigravity-linux'
       - id: "asus"
         title: "asusctl & ROG Control Center"
         description: "Utilities for management of ASUS hardware."
@@ -139,12 +139,12 @@ screens:
         title: "JetBrains Toolbox"
         description: "Utility for managing IDE installs from JetBrains — installed using Brew."
         default: false
-        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask jetbrains-toolbox-linux'
+        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew trust --tap ublue-os/tap && brew install --cask jetbrains-toolbox-linux'
       - id: "lm-studio-linux"
         title: "LM Studio"
         description: "Suite for locally utilizing large language models (LLMs) — installed using Brew."
         default: false
-        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask lm-studio-linux'
+        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew trust --tap ublue-os/tap && brew install --cask lm-studio-linux'
       - id: "lsfg-vk"
         title: "Lossless Scaling — Vulkan Layer"
         description: "Install «lsfg-vk», the adapter for Lossless Scaling frame generation on Linux."
@@ -251,12 +251,12 @@ screens:
         title: "Visual Studio Code"
         description: "Open source code editor and debugger from Microsoft — installed using Brew."
         default: false
-        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask visual-studio-code-linux'
+        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew trust --tap ublue-os/tap && brew install --cask visual-studio-code-linux'
       - id: "vscodium-linux"
         title: "VSCodium"
         description: "Strictly open source community edition of Visual Studio Code — installed using Brew."
         default: false
-        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask vscodium-linux'
+        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew trust --tap ublue-os/tap && brew install --cask vscodium-linux'
       - id: "waydroid"
         title: "Waydroid"
         description: "Android system in a container for app compatibility on Linux. Incompatible with NVIDIA drivers."

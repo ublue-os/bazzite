@@ -255,6 +255,7 @@ install-jetbrains-toolbox:
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     fi
     brew tap ublue-os/tap
+    brew trust --tap ublue-os/tap
     brew install --cask jetbrains-toolbox-linux
     if ! command -v jetbrains-toolbox >/dev/null 2>&1; then
         echo "jetbrains-toolbox was not found on PATH after installation. You may need to restart your shell or ensure Homebrew's bin directory is on your PATH." >&2
@@ -353,6 +354,7 @@ asus ACTION="":
 
         if [ ${#brew_packages[@]} -gt 0 ]; then
             brew tap ublue-os/tap
+            brew trust --tap ublue-os/tap
             echo "Installing: ${brew_packages[*]}"
             brew install --cask "${brew_packages[@]}"
             sudo systemctl daemon-reload

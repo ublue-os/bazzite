@@ -86,7 +86,7 @@ def spawn_ujust(script):
     spawn_and_detach(args)
 
 def spawn_brew_ublue(cask):
-    brew = brew_eval(f'brew tap ublue-os/tap && brew install --cask {cask}')
+    brew = brew_eval(f'brew tap ublue-os/tap && brew trust --tap ublue-os/tap && brew install --cask {cask}')
     cmd  = make_popup_terminal_shellcmd(brew)
     args = make_shellcmd_argv(cmd)
     spawn_and_detach(args)
