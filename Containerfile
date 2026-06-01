@@ -803,6 +803,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable pipewire-sysconf.service && \
     systemctl enable bazzite-tdpfix.service && \
     systemctl --global disable sdgyrodsu.service && \
+    systemctl --global enable steamos-powerbuttond.service && \
     systemctl disable input-remapper.service && \
     systemctl disable uupd.timer && \
     systemctl disable jupiter-fan-control.service && \
