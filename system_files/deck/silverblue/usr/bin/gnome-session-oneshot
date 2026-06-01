@@ -6,10 +6,6 @@ die() { echo >&2 "!! $*"; exit 1; }
 
 SENTINEL_FILE="steamos-session-select"
 
-# Stop any lingering graphical sessions
-systemctl --user stop graphical-session.target || true
-sleep 1
-
 # If we proceed, execute this
 CHAINED_SESSION="/usr/bin/gnome-session"
 # If we decide the sentinel is consumed, execute this command instead and fail
