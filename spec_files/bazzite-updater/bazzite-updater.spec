@@ -1,17 +1,19 @@
-%global orgname io.github.rfrench3.bazzite_updater
+%global appid io.github.rfrench3.bazzite-updater
 
-Name:           bazzite_updater
-# renovate: datasource=github-releases depName=rfrench3/bazzite_updater
-Version:        0.7.1
+Name:           bazzite-updater
+Version:        0.7.3
 Release:        1%{?dist}
 Summary:        Update your Bazzite system
 
-License:        GPL-2.0-or-later
-URL:            https://github.com/rfrench3/%{name}
+License:        GPL-2.0-or-later AND BSD-3-Clause AND CC0-1.0
+URL:            https://github.com/rfrench3/bazzite-updater
 Source0:        %{url}/archive/refs/tags/%{version}.tar.gz
+
+Packager:       Robert French <frenchrobertm@outlook.com>
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
+BuildRequires:  systemd-rpm-macros
 
 BuildRequires:  cmake
 BuildRequires:  extra-cmake-modules
@@ -35,8 +37,11 @@ Requires:       kf6-kirigami%{?_isa}
 Requires:       kf6-kirigami-addons%{?_isa}
 Requires:       kf6-qqc2-desktop-style%{?_isa}
 Requires:       which%{?_isa}
+Requires:       qt6-controllable%{?_isa}
+Requires:       uupd%{?_isa}
+Requires:       hicolor-icon-theme
 
-Provides:       bazzite_updater = %{version}-%{release}
+Provides:       bazzite-updater = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description
 This is a convenient, easy-to-use interface for updating your Bazzite system.
@@ -46,26 +51,26 @@ This is a convenient, easy-to-use interface for updating your Bazzite system.
 %prep
 %autosetup
 
-%build
+%conf
 %cmake
+
+%build
 %cmake_build
 
 %install
 %cmake_install
 
 %check
-appstream-util validate-relax --nonet %{buildroot}%{_kf6_metainfodir}/%{orgname}.*.xml || :
-desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/%{orgname}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_kf6_metainfodir}/%{appid}.*.xml || :
+desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/%{appid}.desktop
 
 %files
-%license LICENSES/{BSD-3-Clause.txt,CC0-1.0.txt,GPL-2.0-or-later.txt,FSFAP.txt}
+%license LICENSES/{BSD-3-Clause.txt,CC0-1.0.txt,GPL-2.0-or-later.txt}
 %doc README.md
-%{_kf6_bindir}/bazzite_updater
-%{_kf6_datadir}/applications/%{orgname}.desktop
-%{_kf6_metainfodir}/%{orgname}.*.xml
-%{_kf6_datadir}/icons/hicolor/scalable/apps/%{orgname}.svg
-%{_kf6_libdir}/libgamepad-support.so
-%{_kf6_qmldir}/io/github/rfrench3/Gamepad/*
+%{_bindir}/bazzite-updater
+%{_datadir}/applications/%{appid}.desktop
+%{_metainfodir}/%{appid}.*.xml
+%{_iconsdir}/hicolor/scalable/apps/%{appid}.svg
 
 %changelog
 * Thu Feb 05 2026 Robert French
