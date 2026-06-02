@@ -39,6 +39,7 @@ Requires:       kf6-qqc2-desktop-style%{?_isa}
 Requires:       which%{?_isa}
 Requires:       qt6-controllable%{?_isa}
 Requires:       uupd%{?_isa}
+Requires:       hicolor-icon-theme
 
 Provides:       bazzite-updater = %{?epoch:%{epoch}:}%{version}-%{release}
 
