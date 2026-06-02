@@ -5,7 +5,7 @@ Version:        0.7.3
 Release:        1%{?dist}
 Summary:        Update your Bazzite system
 
-License:        GPL-2.0-or-later
+License:        GPL-2.0-or-later AND BSD-3-Clause AND CC0-1.0
 URL:            https://github.com/rfrench3/bazzite-updater
 Source0:        %{url}/archive/refs/tags/%{version}.tar.gz
 
@@ -64,7 +64,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_kf6_metainfodir}/%{appid}.*
 desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/%{appid}.desktop
 
 %files
-%license LICENSES/{BSD-3-Clause.txt,CC0-1.0.txt,GPL-2.0-or-later.txt,FSFAP.txt}
+%license LICENSES/{BSD-3-Clause.txt,CC0-1.0.txt,GPL-2.0-or-later.txt}
 %doc README.md
 %{_bindir}/bazzite-updater
 %{_datadir}/applications/%{appid}.desktop
