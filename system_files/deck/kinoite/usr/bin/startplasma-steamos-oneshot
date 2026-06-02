@@ -7,10 +7,6 @@ die() { echo >&2 "!! $*"; exit 1; }
 SENTINEL_FILE="steamos-session-select"
 SENTINEL_VALUE="wayland"
 
-# Stop any lingering graphical sessions
-systemctl --user stop graphical-session.target || true
-sleep 1
-
 # If we proceed, execute this
 CHAINED_SESSION="/usr/bin/startplasma-wayland"
 
@@ -31,10 +27,8 @@ function check_sentinel()
     cd "$HOME"
     cd "$config_dir"
     sentinel_value="$(cat "$SENTINEL_FILE")"
-    if [[ "$sentinel_value" == "wayland" ]]; then
+    if [[ "$sentinel_value" == "wayland" || "$sentinel_value" == "x11" ]]; then
       echo "/usr/bin/startplasma-wayland"
-    elif [[ "$sentinel_value" == "x11" ]]; then
-      echo "/usr/bin/startplasma-x11"
     else
       return 1
     fi
