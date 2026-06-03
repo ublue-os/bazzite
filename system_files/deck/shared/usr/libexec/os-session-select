@@ -54,14 +54,14 @@ case "$session" in
     if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
       session_launcher="plasma.desktop"
     elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      session_launcher="gnome-wayland.desktop"
+      session_launcher="gnome.desktop"
     fi
   ;;
   desktop|plasma)
     if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
-      session_launcher="plasma-steamos-wayland-oneshot.desktop"
+      session_launcher="plasma-oneshot.desktop"
     elif [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
-      session_launcher="gnome-wayland-oneshot.desktop"
+      session_launcher="gnome-oneshot.desktop"
     fi
     create_sentinel=1
   ;;
