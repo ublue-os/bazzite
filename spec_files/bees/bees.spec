@@ -14,6 +14,12 @@ Patch0:         286.patch
 # https://github.com/Zygo/bees/pull/309
 Patch1:         309.patch
 
+# https://github.com/Zygo/bees/issues/333
+Patch2:         openat2-glibc-const.patch
+
+# https://github.com/Zygo/bees/commit/f1558d6 
+Patch3:         openat2-remove-throw.patch
+
 BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  btrfs-progs-devel
