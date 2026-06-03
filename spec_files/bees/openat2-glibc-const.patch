@@ -61,7 +61,7 @@ diff --git a/lib/openat2.cc b/lib/openat2.cc
 index 5b76bb0f..2912f864 100644
 --- a/lib/openat2.cc
 +++ b/lib/openat2.cc
-@@ -22,7 +22,7 @@ extern "C" {
+@@ -26,7 +26,7 @@ extern "C" {
  
  int
  __attribute__((weak))
@@ -69,4 +69,4 @@ index 5b76bb0f..2912f864 100644
 +openat2(int const dirfd, const char *const pathname, const struct open_how *const how, size_t const size)
  throw()
  {
- 	return syscall(SYS_openat2, dirfd, pathname, how, size);
+ #ifdef SYS_openat2
