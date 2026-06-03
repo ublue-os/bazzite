@@ -8,7 +8,3 @@ command:
 file:
   /etc/os-release:
     exists: true
-
-package:
-  ublue-os-selinux-workaround:
-    installed: true
