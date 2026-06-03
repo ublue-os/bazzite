@@ -22,6 +22,6 @@ if [[ ! -f ${DESKTOP_AUTOLOGIN} ]]; then
 elif [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
   sed -i 's/.*Session=.*/Session=plasma.desktop/g' ${SDDM_CONF}
 elif [[ ${BASE_IMAGE_NAME} =~ "silverblue" ]]; then
-  sed -i 's/.*Session=.*/Session=gnome-wayland.desktop/g' ${SDDM_CONF}
+  sed -i 's/.*Session=.*/Session=gnome.desktop/g' ${SDDM_CONF}
 fi
 sed -i 's/.*User=.*/User='${USER}'/g' ${SDDM_CONF}
