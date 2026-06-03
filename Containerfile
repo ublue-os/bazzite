@@ -260,6 +260,7 @@ RUN --mount=type=cache,dst=/var/cache \
         iwd \
         greenboot \
         greenboot-default-health-checks \
+        ublue-os-selinux-workaround \
         bazzite_updater \
         ScopeBuddy \
         twitter-twemoji-fonts \
