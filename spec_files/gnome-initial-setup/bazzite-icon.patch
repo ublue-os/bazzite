@@ -1,0 +1,10 @@
+--- gnome-initial-setup-50.0/gnome-initial-setup/pages/language/gis-language-page.c	2026-03-19 16:38:36.000000000 +0700
++++ gnome-initial-setup-50.0-patch/gnome-initial-setup/pages/language/gis-language-page.c	2026-03-21 13:24:20.973557552 +0700
+@@ -196,6 +196,7 @@
+     { "openSUSE Leap",                  "opensuse-logo-icon" },
+     { "SLED",                           "suse-logo-icon" },
+     { "SLES",                           "suse-logo-icon" },
++    { "bazzite",                        "bazzite-logo-icon" },
+   };
+ 
+   for (i = 0; i < G_N_ELEMENTS (id_to_logo); i++)

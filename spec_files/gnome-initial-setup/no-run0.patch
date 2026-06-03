@@ -1,0 +1,175 @@
+From 1373aa3dbe2e3b0910e2fa4980ec5fcc201dc20f Mon Sep 17 00:00:00 2001
+From: Michael Catanzaro <mcatanzaro@gnome.org>
+Date: Mon, 30 Mar 2026 11:28:17 -0500
+Subject: [PATCH] Revert "Try run0 first if available instead of pkexec"
+
+This reverts commit 7b2ffa4d09fbc947178625ebc7152532afd07054
+---
+ .../{gis-elevate.c => gis-pkexec.c}           | 48 +++++--------------
+ .../{gis-elevate.h => gis-pkexec.h}           | 14 +++---
+ gnome-initial-setup/gnome-initial-setup.h     |  2 +-
+ gnome-initial-setup/meson.build               |  4 +-
+ .../pages/software/gis-software-page.c        |  2 +-
+ 5 files changed, 24 insertions(+), 46 deletions(-)
+ rename gnome-initial-setup/{gis-elevate.c => gis-pkexec.c} (56%)
+ rename gnome-initial-setup/{gis-elevate.h => gis-pkexec.h} (83%)
+
+diff --git a/gnome-initial-setup/gis-elevate.c b/gnome-initial-setup/gis-pkexec.c
+similarity index 56%
+rename from gnome-initial-setup/gis-elevate.c
+rename to gnome-initial-setup/gis-pkexec.c
+index de7a68c5..9e1bfa9a 100644
+--- a/gnome-initial-setup/gis-elevate.c
++++ b/gnome-initial-setup/gis-pkexec.c
+@@ -23,29 +23,26 @@
+  *     Will Thompson <wjt@endlessos.org>
+  */
+ 
+-#include "gis-elevate.h"
++#include "gis-pkexec.h"
+ 
+-static gboolean
+-elevate (const char  *tool,
+-         const char  *command,
+-         const char  *arg1,
+-         const char  *user,
+-         GError     **error)
++gboolean
++gis_pkexec (const gchar  *command,
++            const gchar  *arg1,
++            const gchar  *user,
++            GError      **error)
+ {
+   g_autoptr(GSubprocessLauncher) launcher = NULL;
+   g_autoptr(GSubprocess) process = NULL;
+-  const char * const root_argv[] = { tool, command, arg1, NULL };
+-  const char * const user_argv[] = { tool, "--user", user, command, arg1, NULL };
+-  const char * const *argv = user == NULL ? root_argv : user_argv;
++  const gchar * const root_argv[] = { "pkexec", command, arg1, NULL };
++  const gchar * const user_argv[] = { "pkexec", "--user", user, command, arg1, NULL };
++  const gchar * const *argv = user == NULL ? root_argv : user_argv;
+ 
+   launcher = g_subprocess_launcher_new (G_SUBPROCESS_FLAGS_NONE);
+ 
+-  if (g_strcmp0 (tool, "pkexec") == 0) {
+-    /* pkexec won't let us run the program if $SHELL isn't in /etc/shells,
+-     * so remove it from the environment.
+-     */
+-    g_subprocess_launcher_unsetenv (launcher, "SHELL");
+-  }
++  /* pkexec won't let us run the program if $SHELL isn't in /etc/shells,
++   * so remove it from the environment.
++   */
++  g_subprocess_launcher_unsetenv (launcher, "SHELL");
+   process = g_subprocess_launcher_spawnv (launcher, argv, error);
+ 
+   if (!process) {
+@@ -60,22 +57,3 @@ elevate (const char  *tool,
+ 
+   return TRUE;
+ }
+-
+-gboolean
+-gis_elevate (const char  *command,
+-             const char  *arg1,
+-             const char  *user,
+-             GError     **error)
+-{
+-  g_autoptr(GError) local_error = NULL;
+-
+-  if (!elevate ("run0", command, arg1, user, &local_error)) {
+-    /* If run0 is not found, fall back to pkexec */
+-    if (g_error_matches (local_error, G_SPAWN_ERROR, G_SPAWN_ERROR_NOENT)) {
+-      return elevate ("pkexec", command, arg1, user, error);
+-    }
+-    g_propagate_error (error, g_steal_pointer (&local_error));
+-    return FALSE;
+-  }
+-  return TRUE;
+-}
+diff --git a/gnome-initial-setup/gis-elevate.h b/gnome-initial-setup/gis-pkexec.h
+similarity index 83%
+rename from gnome-initial-setup/gis-elevate.h
+rename to gnome-initial-setup/gis-pkexec.h
+index 0b466141..ff5a88cc 100644
+--- a/gnome-initial-setup/gis-elevate.h
++++ b/gnome-initial-setup/gis-pkexec.h
+@@ -23,19 +23,19 @@
+  *     Will Thompson <wjt@endlessos.org>
+  */
+ 
+-#ifndef __GIS_ELEVATE_H__
+-#define __GIS_ELEVATE_H__
++#ifndef __GIS_PKEXEC_H__
++#define __GIS_PKEXEC_H__
+ 
+ #include "gnome-initial-setup.h"
+ 
+ G_BEGIN_DECLS
+ 
+ gboolean
+-gis_elevate (const char  *command,
+-             const char  *arg1,
+-             const char  *user,
+-             GError     **error);
++gis_pkexec (const gchar  *command,
++            const gchar  *arg1,
++            const gchar  *user,
++            GError      **error);
+ 
+ G_END_DECLS
+ 
+-#endif /* __GIS_ELEVATE_H__ */
++#endif /* __GIS_PKEXEC_H__ */
+diff --git a/gnome-initial-setup/gnome-initial-setup.h b/gnome-initial-setup/gnome-initial-setup.h
+index af8b161e..5a2359b1 100644
+--- a/gnome-initial-setup/gnome-initial-setup.h
++++ b/gnome-initial-setup/gnome-initial-setup.h
+@@ -33,7 +33,7 @@ typedef struct _GisPage      GisPage;
+ #include "gis-driver.h"
+ #include "gis-assistant.h"
+ #include "gis-page.h"
+-#include "gis-elevate.h"
++#include "gis-pkexec.h"
+ #include "gis-util.h"
+ 
+ void gis_ensure_stamp_files (GisDriver *driver);
+diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
+index e88acb58..0dc21690 100644
+--- a/gnome-initial-setup/meson.build
++++ b/gnome-initial-setup/meson.build
+@@ -11,17 +11,17 @@ sources += [
+     'cc-common-language.c',
+     'gnome-initial-setup.c',
+     'gis-assistant.c',
+-    'gis-elevate.c',
+     'gis-page.c',
+     'gis-page-header.c',
++    'gis-pkexec.c',
+     'gis-driver.c',
+     'gis-util.c',
+     'gis-webkit.c',
+     'gnome-initial-setup.h',
+     'gis-assistant.h',
+-    'gis-elevate.h',
+     'gis-page.h',
+     'gis-page-header.h',
++    'gis-pkexec.h',
+     'gis-driver.h',
+ ]
+ 
+diff --git a/gnome-initial-setup/pages/software/gis-software-page.c b/gnome-initial-setup/pages/software/gis-software-page.c
+index 60afe386..0e2278fb 100644
+--- a/gnome-initial-setup/pages/software/gis-software-page.c
++++ b/gnome-initial-setup/pages/software/gis-software-page.c
+@@ -96,7 +96,7 @@ gis_software_page_apply (GisPage      *gis_page,
+       program = find_fedora_third_party ();
+       if (program)
+         {
+-          gis_elevate (program, "enable", "root", &error);
++          gis_pkexec (program, "enable", "root", &error);
+           if (error && !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+             g_warning ("%s failed: %s", program, error->message);
+         }
+-- 
+GitLab
