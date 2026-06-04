@@ -285,7 +285,7 @@ RUN --mount=type=cache,dst=/var/cache \
         framework-system \
         udica \
         ladspa-caps-plugins \
-        ladspa-noise-suppression-for-voice \
+        noise-suppression-for-voice \
         pipewire-module-filter-chain-sofa \
         python3-icoextract \
         tailscale \
