@@ -40,3 +40,6 @@
 [submodule "bazaar-integration@kolunmi.github.io"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io
 	url = https://github.com/bazaar-org/bazaar-companion.git
+[submodule "gradia-integration@alexandervanhee.github.io"]
+	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/tmp/gradia-capture
+	url = https://github.com/AlexanderVanhee/gradia-capture.git
