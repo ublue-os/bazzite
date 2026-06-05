@@ -105,6 +105,18 @@ setup-sunshine ACTION="":
           exit 1
         fi
         sudo /usr/libexec/sunshine-postinst
+        SUNSHINE_CONF="$HOME/.config/sunshine/sunshine.conf"
+        mkdir -p "$(dirname "$SUNSHINE_CONF")"
+        if grep -q "^capture" "$SUNSHINE_CONF" 2>/dev/null; then
+          sed -i 's/^capture=.*/capture = kms/' "$SUNSHINE_CONF"
+        else
+          echo "capture = kms" >> "$SUNSHINE_CONF"
+        fi
+        if grep -q "^system_tray" "$SUNSHINE_CONF" 2>/dev/null; then
+          sed -i 's/^system_tray=.*/system_tray = disabled/' "$SUNSHINE_CONF"
+        else
+          echo "system_tray = disabled" >> "$SUNSHINE_CONF"
+        fi
         brew services start sunshine-beta
         override_service
       fi
