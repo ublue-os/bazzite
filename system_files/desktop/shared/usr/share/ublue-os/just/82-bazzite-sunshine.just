@@ -210,10 +210,15 @@ setup-sunshine ACTION="":
         brew unpin sunshine-beta || true
         brew uninstall sunshine || true
         brew uninstall sunshine-beta || true
+      else
+        systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
+        flatpak run --command=remove-additional-install.sh dev.lizardbyte.app.Sunshine || true
+        if confirm "Also delete ${yellow}Sunshine${n} configurations?"; then
+          flatpak uninstall --delete-data -y dev.lizardbyte.app.Sunshine || true
+        else
+          flatpak uninstall -y dev.lizardbyte.app.Sunshine || true
+        fi
       fi
-      systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
-      flatpak run --command=remove-additional-install.sh dev.lizardbyte.app.Sunshine || true
-      flatpak uninstall --delete-data -y dev.lizardbyte.app.Sunshine || true
       echo "${yellow}Sunshine${n} is now uninstalled."
     elif [[ "${OPTION,,}" =~ ^(portal|open) ]]; then
       echo "Opening ${yellow}Sunshine${n} management portal..."
