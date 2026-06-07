@@ -79,12 +79,20 @@ setup-sunshine ACTION="":
       OPTION=$(Choose "Enable" "Enable Beta" "Update" "Disable Service" "Uninstall" "Open Portal" "Exit")
     fi
     if [[ "${OPTION,,}" =~ ^enable[-[:space:]]beta ]]; then
-      echo "Sunshine does not provide a beta repo for their flatpak."
-      echo "You will need to either: "
-      echo "  1) obtain and install the beta flatpak manually from their GitHub repository;"
-      echo "  2) or proceed with the experimental Brew package."
-      echo "Only proceed if you know what you are doing. Read http://docs.bazzite.gg/Advanced/sunshine/#installing-sunshine-beta to learn more."
-      if confirm "Confirm to proceed with installing the experimental Brew beta package? (This will remove your existing Sunshine installation!)"; then
+      if [[ $(cat /etc/bazzite/image_name) =~ deck ]]; then
+        echo "You are about to install the experimental Sunshine-beta package via brew."
+        echo "If you encounter issues with the Sunshine-beta brew package, consider layering from either the official or community-maintained COPR."
+        echo "Read http://docs.bazzite.gg/Advanced/sunshine/#setting-up-sunshine-on-deck-images to learn more."
+      else
+        echo "This option is primarily intended for users of the Deck image as the flatpak package does not support capture via Kernel Mode Setting."
+        echo "Installing Sunshine stable with the 'Enable' option is going to be better for just about everyone else."
+        echo "You may also use this to install Sunshine Beta as Sunshine does not provide a beta repo for their flatpak."
+        echo "Alternatively, you may also install sunshine by: "
+        echo "  1) obtaining and installing the beta flatpak manually from their GitHub repository;"
+        echo "  2) layering from either the official or community-maintained COPR."
+        echo "Only proceed if you know what you are doing. Read http://docs.bazzite.gg/Advanced/sunshine/#installing-sunshine-beta to learn more."
+      fi
+      if confirm "Confirm to proceed with installing the experimental Brew beta package? (This will remove any existing Sunshine installation!)"; then
         echo "Disabling any previous Sunshine services..."
         systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
         if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
@@ -105,22 +113,34 @@ setup-sunshine ACTION="":
           exit 1
         fi
         sudo /usr/libexec/sunshine-postinst
-        SUNSHINE_CONF="$HOME/.config/sunshine/sunshine.conf"
-        mkdir -p "$(dirname "$SUNSHINE_CONF")"
-        if grep -q "^capture" "$SUNSHINE_CONF" 2>/dev/null; then
-          sed -i 's/^capture=.*/capture = kms/' "$SUNSHINE_CONF"
-        else
-          echo "capture = kms" >> "$SUNSHINE_CONF"
-        fi
-        if grep -q "^system_tray" "$SUNSHINE_CONF" 2>/dev/null; then
-          sed -i 's/^system_tray=.*/system_tray = disabled/' "$SUNSHINE_CONF"
-        else
-          echo "system_tray = disabled" >> "$SUNSHINE_CONF"
+        if [[ $(cat /etc/bazzite/image_name) =~ deck ]]; then
+          echo "Automatically configuring options for streaming on Game Mode..."
+          SUNSHINE_CONF="$HOME/.config/sunshine/sunshine.conf"
+          mkdir -p "$(dirname "$SUNSHINE_CONF")"
+          if grep -q "^capture" "$SUNSHINE_CONF" 2>/dev/null; then
+            sed -i 's/^capture=.*/capture = kms/' "$SUNSHINE_CONF"
+          else
+            echo "capture = kms" >> "$SUNSHINE_CONF"
+          fi
+          if grep -q "^system_tray" "$SUNSHINE_CONF" 2>/dev/null; then
+            sed -i 's/^system_tray=.*/system_tray = disabled/' "$SUNSHINE_CONF"
+          else
+            echo "system_tray = disabled" >> "$SUNSHINE_CONF"
+          fi
         fi
         brew services start sunshine-beta
         override_service
       fi
     elif [[ "${OPTION,,}" =~ ^enable ]]; then
+      if [[ $(cat /etc/bazzite/image_name) =~ deck ]]; then
+        echo "Deck Images make use of Valve's gamescope microcompositor while in Game Mode."
+        echo "To stream on Game Mode, capture using Kernel Mode Setting must be used, which is not supported by the Flatpak package."
+        echo "Read http://docs.bazzite.gg/Advanced/sunshine/#setting-up-sunshine-on-deck-images to learn more."
+        if ! confirm "You may still stream on Desktop Mode by installing the flatpak. Continue?"; then
+          echo "Exiting..."
+          exit 0
+        fi
+      fi
       echo "Disabling any previous Flatpak Sunshine service..."
       systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
       if [[ "$(get_status_token)" == "enable-brew" ]]; then
