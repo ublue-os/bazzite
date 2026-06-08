@@ -5,12 +5,12 @@ set -e
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
-if [[ "$(steamosctl get-default-login-mode)" == desktop ]]; then
+#if [[ "$(steamosctl get-default-login-mode)" == desktop ]]; then
   steamosctl switch-to-game-mode
-else
-  if [[ "$BASE_IMAGE_NAME" == "kinoite" ]]; then
-    qdbus org.kde.Shutdown /Shutdown org.kde.Shutdown.logout
-  else
-    gnome-session-quit --logout --no-prompt
-  fi
-fi
+#else
+#  if [[ "$BASE_IMAGE_NAME" == "kinoite" ]]; then
+#    qdbus org.kde.Shutdown /Shutdown org.kde.Shutdown.logout
+#  else
+#    gnome-session-quit --logout --no-prompt
+#  fi
+#fi
