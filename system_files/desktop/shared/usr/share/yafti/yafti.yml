@@ -880,3 +880,5 @@ screens:
         description: "Use the current parameters to generate a new GRUB configuration file. This will probe again for a Windows installation to appear as a boot option."
         default: false
         script: "ujust regenerate-grub"
+
+        
