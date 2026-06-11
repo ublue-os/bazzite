@@ -22,7 +22,7 @@ screens:
         title: "Check out Announcements on our Bazzite Discourse"
         description: "For the latest big news on Bazzite!"
         default: false
-        script: "xdg-open https://universal-blue.discourse.group/c/bazzite/"
+        script: "xdg-open https://universal-blue.discourse.group/tags/c/bazzite/announcements/"
       - id: "reddit"
         title: "Browse our official Reddit community."
         description: "Come join the conversation, ask questions, and show off your build!"
