@@ -417,6 +417,7 @@ screens:
     description: "System management and configuration"
     actions:
       - id: "update-bazzite"
+        hidden: true
         title: "Update your system"
         description: "Update Bazzite, Flatpak apps, and more."
         default: false
