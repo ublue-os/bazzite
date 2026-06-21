@@ -2,6 +2,7 @@ title: Bazzite Portal
 screens:
   - title: "Welcome"
     description: "Get to know Bazzite"
+    hidden: true
     actions:
       - id: "bazzite-documentation"
         title: "Bazzite Documentation"
