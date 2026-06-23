@@ -262,7 +262,7 @@ rows:
           el: "Πράγματα που δεν ήξερες ότι χρειάζεσαι μέχρι τώρα."
           ru: "Программы, которыми вы ещё не пользуетесь."
           fr: "Ce dont vous n'aviez pas besoin jusqu'à maintenant"
-          pt_br: "Coisas que você não precisava até agora."
+          pt_BR: "Coisas que você não precisava até agora."
         banner: file:///usr/share/ublue-os/bazaar/utilities.jxl
         banner-fit: contain
         banner-height: 300
