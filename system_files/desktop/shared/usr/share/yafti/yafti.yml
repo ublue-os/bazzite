@@ -12,7 +12,7 @@ screens:
         title: "Browse your Bazaar"
         description: "Your software store! Check out our curated selection for apps like Discord, Heroic Games Launcher, or Viper."
         default: false
-        script: "yad --info --title=\"Tip\" --image=dialog-information --text \"You can launch Bazaar anytime from your pinned apps or the app menu.\" --button=\"I get it\"!gtk-ok!"
+        script: "yad --info --title=\"Tip\" --image=dialog-information --text \"You can launch Bazaar anytime from your pinned apps or the app menu.\" --button=\"I get it\"!gtk-ok! && nohup setsid gtk4-launch io.github.kolunmi.Bazaar >&/dev/null"
       - id: "bazzite-discord"
         title: "Get help through Discord"
         description: "Enter our official server for Bazzite user tech support. Bring your system logs!"
