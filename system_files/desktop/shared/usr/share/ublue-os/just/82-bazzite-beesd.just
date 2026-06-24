@@ -56,7 +56,7 @@ configure-beesd ACTION="":
 
     while true; do
         # Get btrfs filesystem info
-        mapfile -t raw_btrfs_output < <(lsblk --fs --list --noheadings --output "NAME,UUID,SIZE" --filter 'FSTYPE == "btrfs"' --bytes)
+        mapfile -t raw_btrfs_output < <(sudo lsblk --fs --list --noheadings --output "NAME,UUID,SIZE" --filter 'FSTYPE == "btrfs"' --bytes)
 
         if [[ ${#raw_btrfs_output[@]} -eq 0 ]]; then
           echo "No BTRFS filesystems found."
