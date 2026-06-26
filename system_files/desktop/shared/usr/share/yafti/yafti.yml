@@ -1,5 +1,33 @@
 title: Bazzite Portal
 screens:
+  - title: "Welcome!"
+    description: "Get to know Bazzite"
+    actions:
+      - id: "bazzite-documentation"
+        title: "Read the Bazzite Docs"
+        description: "New to Bazzite or Linux? Check out our helpful documentation. An offline version can be accessed by searching for ‘Documentation’ in your app menu."
+        default: false
+        script: "xdg-open https://docs.bazzite.gg/"
+      - id: "bazaar"
+        title: "Browse your Bazaar"
+        description: "Your software store! Check out our curated selection for apps like Discord, Heroic Games Launcher, or Viper."
+        default: false
+        script: "yad --info --title=\"Tip\" --image=dialog-information --text \"You can launch Bazaar anytime from your pinned apps or the app menu.\" --button=\"I get it\"!gtk-ok! && nohup setsid gtk4-launch io.github.kolunmi.Bazaar >&/dev/null"
+      - id: "bazzite-discord"
+        title: "Get help through Discord"
+        description: "Enter our official server for Bazzite user tech support. Bring your system logs!"
+        default: false
+        script: "xdg-open https://discord.gg/JQq48bYzrc"
+      - id: "bazzite-discourse"
+        title: "See our announcements in Discourse"
+        description: "Our forum posts for the latest breaking news on Bazzite!"
+        default: false
+        script: "xdg-open https://universal-blue.discourse.group/tags/c/bazzite/announcements/"
+      - id: "reddit"
+        title: "Join the official community on Reddit"
+        description: "Start a conversation, ask questions, or show off your Bazzite build!"
+        default: false
+        script: "xdg-open https://www.reddit.com/r/Bazzite/"
   - title: "Install Applications"
     description: "Get and configure software"
     actions:
@@ -725,11 +753,6 @@ screens:
   - title: "Troubleshoot"
     description: "Tools and resources for diagnosing and fixing issues"
     actions:
-      - id: "bazzite-discord"
-        title: "Get help through Discord"
-        description: "Enter our official server for Bazzite user tech support. Bring in your system logs!"
-        default: false
-        script: "xdg-open https://discord.gg/JQq48bYzrc"
       - id: "get-logs"
         title: "Collect system logs"
         description: "Gather system records and information into a shareable web page report."
@@ -857,3 +880,5 @@ screens:
         description: "Use the current parameters to generate a new GRUB configuration file. This will probe again for a Windows installation to appear as a boot option."
         default: false
         script: "ujust regenerate-grub"
+
+        
