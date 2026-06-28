@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=70
+HWS_VER=71
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -200,6 +200,11 @@ if [ ! -f /etc/bazzite/fixups/nmiwd ]; then
   fi
 
   touch /etc/bazzite/fixups/nmiwd
+fi
+
+if [[ "$(systemctl is-enabled wpa_supplicant.service 2>/dev/null)" == "masked" ]] && [[ "$(systemctl is-enabled iwd.service 2>/dev/null)" == "masked" ]]; then
+    echo "Both wpa_supplicant.service and iwd.service are masked, resolving with iwd"
+    systemctl unmask iwd.service
 fi
 
 # FRAMEWORK AMD FIXES
