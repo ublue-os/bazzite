@@ -422,6 +422,8 @@ RUN --mount=type=cache,dst=/var/cache \
             steamdeck-kde-presets-desktop \
             kdeconnectd \
             kdeplasma-addons \
+            plasma-oxygen \
+            oxygen-icon-theme \
             rom-properties-kf6 \
             fcitx5-chewing \
             fcitx5-table-extra \
