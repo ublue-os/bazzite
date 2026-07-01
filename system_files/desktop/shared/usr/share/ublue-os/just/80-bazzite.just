@@ -782,9 +782,11 @@ enable-framework-fan-control:
     systemctl enable --now fw-fanctrl.service
 
 # Setup LED Matrix module for the Framework 16 laptop
-[group("system)]
+[group("hardware")]
+setup-fw-led-matrix ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
+    OPTION={{ ACTION }}
     
 
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
