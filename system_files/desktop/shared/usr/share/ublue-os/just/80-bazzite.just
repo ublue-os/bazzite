@@ -698,7 +698,7 @@ steamos-automount ACTION="":
       OPTION=$(ugum choose "Enable" "Disable" "Exit without changes")
       case "$OPTION" in
         "Enable")
-          enable_steamos_automountj
+          enable_steamos_automount
           ;;
         "Disable")
           disable_steamos_automount_action
