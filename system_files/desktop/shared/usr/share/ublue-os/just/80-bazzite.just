@@ -786,7 +786,7 @@ enable-framework-fan-control:
 setup-fw-led-matrix ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    OPTION={{ ACTION }}
+    OPTION="{{ ACTION }}"
     if [[ "$OPTION" = "install" ]]; then
         mkdir -p ~/.tmp
         cd ~/.tmp
@@ -795,12 +795,33 @@ setup-fw-led-matrix ACTION="":
         sudo rm -f /etc/udev/rules.d/50-framework-inputmodule.rules
         sudo cp ~/.tmp/50-framework-inputmodule.rules /etc/udev/rules.d/
         sudo udevadm control --reload && sudo udevadm trigger
-        git clone https://github.com/MidnightJava/led-matrix.git ~/.tmp/
+        git clone https://github.com/MidnightJava/led-matrix.git ~/.tmp/led-matrix
         chmod +x ~/.tmp/led-matrix/build_and_install.sh
         ~/.tmp/led-matrix/
         chmod +x ~/.tmp/led-matrix/install_service.sh
         ~/.tmp/led-matrix/install_service.sh
+        exit 0
     fi
+    if [[ "OPTION" = "uninstall" ]]; then
+        systemctl disable --user fwledmonitor.service
+        rm -f $HOME/.config/systemd/user/fwledmonitor.service
+        sudo rm -rf /opt/led_mon
+        sudo rm -f /usr/local/bin/led_mon
+        sudo rm -rf /var/lib/led_mon
+        sudo rm -f /etc/led_mon
+        exit 0
+    fi
+    if [[ "OPTION" = "status" ]]; then
+        systemctl status --user fwledmonitor.service
+        exit 0
+    fi
+    if [[ "OPTION" = "restart" ]]; then
+        systemctl daemon-reload --user
+        systemctl stop fwledmonitor.service --user
+        systemctl start fwledmonitor.service --user --now
+        exit 0
+    fi
+    
 
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 [group("system")]
