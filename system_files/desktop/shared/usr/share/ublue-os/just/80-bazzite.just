@@ -789,18 +789,19 @@ setup-fw-led-matrix ACTION="":
     OPTION="{{ ACTION }}"
     install_led_mon() {
         mkdir -p ~/.tmp
-        cd ~/.tmp
+        cd ~/.tmp || exit 1
         rm -f ~/.tmp/50-framework-inputmodule.rules
         wget -P ~/.tmp https://raw.githubusercontent.com/FrameworkComputer/inputmodule-rs/refs/heads/main/release/50-framework-inputmodule.rules
         sudo rm -f /etc/udev/rules.d/50-framework-inputmodule.rules
         sudo cp ~/.tmp/50-framework-inputmodule.rules /etc/udev/rules.d/
         sudo udevadm control --reload && sudo udevadm trigger
         git clone https://github.com/MidnightJava/led-matrix.git ~/.tmp/led-matrix
+        cd ~/.tmp/led-matrix
         chmod +x ~/.tmp/led-matrix/build_and_install.sh
-        ~/.tmp/led-matrix/
+        ~/.tmp/led-matrix/build_and_install.sh
         chmod +x ~/.tmp/led-matrix/install_service.sh
         ~/.tmp/led-matrix/install_service.sh
-        exit 0 
+        exit 0
     }
 
     uninstall_led_mon() {
@@ -826,16 +827,16 @@ setup-fw-led-matrix ACTION="":
 
     gum_led_mon() {
         OPTION=$(ugum choose "Install" "Uninstall" "Status" "Restart" "Exit")
-        if [[ "$OPTION" == "install" ]]; then
+        if [[ "$OPTION" == "Install" ]]; then
             install_led_mon
         fi
-        if [[ "$OPTION" == "uninstall" ]]; then
+        if [[ "$OPTION" == "Uninstall" ]]; then
             uninstall_led_mon
         fi
-        if [[ "$OPTION" == "status" ]]; then
+        if [[ "$OPTION" == "Status" ]]; then
             status_led_mon
         fi
-        if [[ "$OPTION" == "restart" ]]; then
+        if [[ "$OPTION" == "Restart" ]]; then
             restart_led_mon
         fi
         if [[ "$OPTION" == "Exit" ]]; then
@@ -862,7 +863,6 @@ setup-fw-led-matrix ACTION="":
     fi
         
     
-
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 [group("system")]
 configure-watchdog ACTION="":
