@@ -781,6 +781,88 @@ tailscale ACTION="":
 enable-framework-fan-control:
     systemctl enable --now fw-fanctrl.service
 
+# Setup LED Matrix module for the Framework 16 laptop. Options: install | uninstall | status | restart
+[group("hardware")]
+setup-fw-led-matrix ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    OPTION="{{ ACTION }}"
+    install_led_mon() {
+        mkdir -p ~/.tmp
+        cd ~/.tmp || exit 1
+        rm -f ~/.tmp/50-framework-inputmodule.rules
+        wget -P ~/.tmp https://raw.githubusercontent.com/FrameworkComputer/inputmodule-rs/refs/heads/main/release/50-framework-inputmodule.rules
+        sudo rm -f /etc/udev/rules.d/50-framework-inputmodule.rules
+        sudo cp ~/.tmp/50-framework-inputmodule.rules /etc/udev/rules.d/
+        sudo udevadm control --reload && sudo udevadm trigger
+        git clone https://github.com/MidnightJava/led-matrix.git ~/.tmp/led-matrix
+        cd ~/.tmp/led-matrix
+        chmod +x ~/.tmp/led-matrix/build_and_install.sh
+        ~/.tmp/led-matrix/build_and_install.sh
+        chmod +x ~/.tmp/led-matrix/install_service.sh
+        ~/.tmp/led-matrix/install_service.sh
+        exit 0
+    }
+
+    uninstall_led_mon() {
+        rm -f $HOME/.config/systemd/user/fwledmonitor.service
+        sudo rm -rf /opt/led_mon
+        sudo rm -f /usr/local/bin/led_mon
+        sudo rm -rf /var/lib/led_mon
+        sudo rm -rf /etc/led_mon
+        exit 0
+    }
+
+    status_led_mon() {
+        systemctl status --user fwledmonitor.service
+        exit 0
+    }
+
+    restart_led_mon() {
+        systemctl daemon-reload --user
+        systemctl stop fwledmonitor.service --user
+        systemctl start fwledmonitor.service --user --now
+        exit 0
+    }
+
+    gum_led_mon() {
+        OPTION=$(ugum choose "Install" "Uninstall" "Status" "Restart" "Exit")
+        if [[ "$OPTION" == "Install" ]]; then
+            install_led_mon
+        fi
+        if [[ "$OPTION" == "Uninstall" ]]; then
+            uninstall_led_mon
+        fi
+        if [[ "$OPTION" == "Status" ]]; then
+            status_led_mon
+        fi
+        if [[ "$OPTION" == "Restart" ]]; then
+            restart_led_mon
+        fi
+        if [[ "$OPTION" == "Exit" ]]; then
+            exit 0
+        fi
+        exit 0
+    }
+
+    if [[ "$OPTION" == "install" ]]; then
+        install_led_mon
+    fi
+    if [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_led_mon
+    fi
+    if [[ "$OPTION" == "status" ]]; then
+        status_led_mon
+    fi
+    if [[ "$OPTION" == "restart" ]]; then
+        restart_led_mon
+    fi
+
+    if [[ -z "$OPTION" ]]; then
+        gum_led_mon
+    fi
+        
+    
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 [group("system")]
 configure-watchdog ACTION="":
