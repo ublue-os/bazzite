@@ -809,7 +809,7 @@ setup-fw-led-matrix ACTION="":
         sudo rm -rf /opt/led_mon
         sudo rm -f /usr/local/bin/led_mon
         sudo rm -rf /var/lib/led_mon
-        sudo rm -f /etc/led_mon
+        sudo rm -rf /etc/led_mon
         exit 0
     }
 
