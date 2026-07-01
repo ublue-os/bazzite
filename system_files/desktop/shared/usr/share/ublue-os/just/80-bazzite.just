@@ -698,7 +698,7 @@ steamos-automount ACTION="":
       OPTION=$(ugum choose "Enable" "Disable" "Exit without changes")
       case "$OPTION" in
         "Enable")
-          enable_steamos_automount
+          enable_steamos_automountj
           ;;
         "Disable")
           disable_steamos_automount_action
@@ -787,7 +787,7 @@ setup-fw-led-matrix ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION="{{ ACTION }}"
-    if [[ "$OPTION" = "install" ]]; then
+    install_led_mon() {
         mkdir -p ~/.tmp
         cd ~/.tmp
         rm -f ~/.tmp/50-framework-inputmodule.rules
@@ -800,27 +800,67 @@ setup-fw-led-matrix ACTION="":
         ~/.tmp/led-matrix/
         chmod +x ~/.tmp/led-matrix/install_service.sh
         ~/.tmp/led-matrix/install_service.sh
-        exit 0
-    fi
-    if [[ "OPTION" = "uninstall" ]]; then
-        systemctl disable --user fwledmonitor.service
+        exit 0 
+    }
+
+    uninstall_led_mon() {
         rm -f $HOME/.config/systemd/user/fwledmonitor.service
         sudo rm -rf /opt/led_mon
         sudo rm -f /usr/local/bin/led_mon
         sudo rm -rf /var/lib/led_mon
         sudo rm -f /etc/led_mon
         exit 0
-    fi
-    if [[ "OPTION" = "status" ]]; then
+    }
+
+    status_led_mon() {
         systemctl status --user fwledmonitor.service
         exit 0
-    fi
-    if [[ "OPTION" = "restart" ]]; then
+    }
+
+    restart_led_mon() {
         systemctl daemon-reload --user
         systemctl stop fwledmonitor.service --user
         systemctl start fwledmonitor.service --user --now
         exit 0
+    }
+
+    gum_led_mon() {
+        OPTION=$(ugum choose "Install" "Uninstall" "Status" "Restart" "Exit")
+        if [[ "$OPTION" == "install" ]]; then
+            install_led_mon
+        fi
+        if [[ "$OPTION" == "uninstall" ]]; then
+            uninstall_led_mon
+        fi
+        if [[ "$OPTION" == "status" ]]; then
+            status_led_mon
+        fi
+        if [[ "$OPTION" == "restart" ]]; then
+            restart_led_mon
+        fi
+        if [[ "$OPTION" == "Exit" ]]; then
+            exit 0
+        fi
+        exit 0
+    }
+
+    if [[ "$OPTION" == "install" ]]; then
+        install_led_mon
     fi
+    if [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_led_mon
+    fi
+    if [[ "$OPTION" == "status" ]]; then
+        status_led_mon
+    fi
+    if [[ "$OPTION" == "restart" ]]; then
+        restart_led_mon
+    fi
+
+    if [[ -z "$OPTION" ]]; then
+        gum_led_mon
+    fi
+        
     
 
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
