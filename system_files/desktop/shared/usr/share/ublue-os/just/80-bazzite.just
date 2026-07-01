@@ -781,6 +781,12 @@ tailscale ACTION="":
 enable-framework-fan-control:
     systemctl enable --now fw-fanctrl.service
 
+# Setup LED Matrix module for the Framework 16 laptop
+[group("system)]
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    
+
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 [group("system")]
 configure-watchdog ACTION="":
