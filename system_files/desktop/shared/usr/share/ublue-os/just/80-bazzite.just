@@ -781,13 +781,26 @@ tailscale ACTION="":
 enable-framework-fan-control:
     systemctl enable --now fw-fanctrl.service
 
-# Setup LED Matrix module for the Framework 16 laptop
+# Setup LED Matrix module for the Framework 16 laptop. Options: install | uninstall | status | restart
 [group("hardware")]
 setup-fw-led-matrix ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     OPTION={{ ACTION }}
-    
+    if [[ "$OPTION" = "install" ]]; then
+        mkdir -p ~/.tmp
+        cd ~/.tmp
+        rm -f ~/.tmp/50-framework-inputmodule.rules
+        wget -P ~/.tmp https://raw.githubusercontent.com/FrameworkComputer/inputmodule-rs/refs/heads/main/release/50-framework-inputmodule.rules
+        sudo rm -f /etc/udev/rules.d/50-framework-inputmodule.rules
+        sudo cp ~/.tmp/50-framework-inputmodule.rules /etc/udev/rules.d/
+        sudo udevadm control --reload && sudo udevadm trigger
+        git clone https://github.com/MidnightJava/led-matrix.git ~/.tmp/
+        chmod +x ~/.tmp/led-matrix/build_and_install.sh
+        ~/.tmp/led-matrix/
+        chmod +x ~/.tmp/led-matrix/install_service.sh
+        ~/.tmp/led-matrix/install_service.sh
+    fi
 
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 [group("system")]
