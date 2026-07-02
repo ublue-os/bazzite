@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=71
+HWS_VER=72
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -225,6 +225,14 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
         echo "ACTION==\"add\", SUBSYSTEM==\"serio\", DRIVERS==\"atkbd\", ATTR{power/wakeup}=\"disabled\"" > /etc/udev/rules.d/20-suspend-fixes.rules
       fi
     fi
+  fi
+fi
+
+# FRAMEWORK 16 LED MATRIX SETUP
+if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
+  if [[ "$SYS_ID" == "Laptop 16 ("* ]]; then
+    echo "Adding required udev rules for Framework 16 LED Matrix"
+    echo -e '# Framework Laptop 16 - LED Matrix\nSUBSYSTEMS=="usb", ATTRS{idVendor}=="32ac", ATTRS{idProduct}=="0020", MODE="0660", TAG+="uaccess"' > /etc/udev/rules.d/50-framework-inputmodule.rules
   fi
 fi
 
