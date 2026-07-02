@@ -786,76 +786,79 @@ enable-framework-fan-control:
 setup-fw-led-matrix ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
-    OPTION="{{ ACTION }}"
+    FWLED_STATE="$(systemctl is-enabled fwledmonitor.service 2>/dev/null || true)"
+    get_status_token() {
+      if [[ -z "$FWLED_STATE" ]]; then
+        return 1
+      elif [[ "$FWLED_STATE" == "enabled" ]]; then
+        echo "install"
+      else
+        echo "uninstall"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "install" ]]; then
+        echo "${green}${bold}Enabled${normal}"
+      else
+        echo "${yellow}${bold}Disabled${normal}"
+      fi
+    }
     install_led_mon() {
-        mkdir -p /tmp/fw-led
-        cd /tmp/fw-led || exit 1
-        git clone https://github.com/MidnightJava/led-matrix.git
-        cd ./led-matrix
-        chmod +x ./build_and_install.sh
-        chmod +x ./install_service.sh
-        ./build_and_install.sh
-        exit 0
+      mkdir -p /tmp/fw-led
+      cd /tmp/fw-led || exit 1
+      git clone https://github.com/MidnightJava/led-matrix.git
+      cd ./led-matrix
+      chmod +x ./build_and_install.sh
+      chmod +x ./install_service.sh
+      ./build_and_install.sh
+      exit 0
     }
     uninstall_led_mon() {
-        rm -f $HOME/.config/systemd/user/fwledmonitor.service
-        sudo rm -rf /opt/led_mon
-        sudo rm -f /usr/local/bin/led_mon
-        sudo rm -rf /var/lib/led_mon
-        sudo rm -rf /etc/led_mon
-        exit 0
+      systemctl --user disable --now fwledmonitor.service
+      sudo rm -rf /opt/led_mon
+      sudo rm -f /usr/local/bin/led_mon
+      sudo rm -rf /var/lib/led_mon
+      sudo rm -rf /etc/led_mon
+      exit 0
     }
-
-    status_led_mon() {
-        systemctl status --user fwledmonitor.service
-        exit 0
-    }
-
     restart_led_mon() {
-        systemctl daemon-reload --user
-        systemctl stop fwledmonitor.service --user
-        systemctl start fwledmonitor.service --user --now
-        exit 0
+      systemctl --user daemon-reload
+      systemctl --user restart fwledmonitor.service
+      exit 0
     }
-
-    gum_led_mon() {
-        OPTION=$(ugum choose "Install" "Uninstall" "Status" "Restart" "Exit")
-        if [[ "$OPTION" == "Install" ]]; then
-            install_led_mon
-        fi
-        if [[ "$OPTION" == "Uninstall" ]]; then
-            uninstall_led_mon
-        fi
-        if [[ "$OPTION" == "Status" ]]; then
-            status_led_mon
-        fi
-        if [[ "$OPTION" == "Restart" ]]; then
-            restart_led_mon
-        fi
-        if [[ "$OPTION" == "Exit" ]]; then
-            exit 0
-        fi
-        exit 0
-    }
-
-    if [[ "$OPTION" == "install" ]]; then
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+      echo "Usage: ujust setup-fw-led-matrix <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current portal token"
+      echo "  Use 'install' to enable LED Matrix"
+      echo "  Use 'uninstall' to disable LED Matrix"
+      exit 0
+    elif [[ -z "$OPTION" ]]; then
+      echo "${bold}Framework 16 LED Matrix${normal}"
+      echo "Current status: $(get_current_status)"
+      OPTION=$(ugum choose "Install" "Uninstall" "Status" "Restart" "Exit without changes")
+    fi
+    case "$OPTION" in
+      Install|install)
         install_led_mon
-    fi
-    if [[ "$OPTION" == "uninstall" ]]; then
+        ;;
+      Uninstall|uninstall)
         uninstall_led_mon
-    fi
-    if [[ "$OPTION" == "status" ]]; then
-        status_led_mon
-    fi
-    if [[ "$OPTION" == "restart" ]]; then
+        ;;
+      Status|status)
+        get_status_token
+        exit $?
+        ;;
+      Restart|restart)
         restart_led_mon
-    fi
+        ;;
+      *)
+        echo "No changes made."
+        ;;
+    esac
+    exit 0
 
-    if [[ -z "$OPTION" ]]; then
-        gum_led_mon
-    fi
-        
-    
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 [group("system")]
 configure-watchdog ACTION="":
