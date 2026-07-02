@@ -787,6 +787,18 @@ setup-fw-led-matrix ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     FWLED_STATE="$(systemctl is-enabled fwledmonitor.service 2>/dev/null || true)"
+    confirm_install() {
+      SYS_ID="$(/usr/libexec/hwsupport/sysid)"
+      msg="Your device is not a Framework 16! Continue anyways?"
+      if [[ ! "$SYS_ID" =~ "Laptop 16 ("* ]]; then
+        echo -n "$msg ${yellow}(Y/n)${normal} "
+        read -r reply
+        if ! [[ -z "$reply" || "${reply,,}" =~ ^y ]]; then
+          echo "Exiting..."
+          exit 0
+        fi
+      fi
+    }
     get_status_token() {
       if [[ -z "$FWLED_STATE" ]]; then
         return 1
@@ -804,6 +816,7 @@ setup-fw-led-matrix ACTION="":
       fi
     }
     install_led_mon() {
+      confirm_install
       mkdir -p /tmp/fw-led
       cd /tmp/fw-led || exit 1
       git clone https://github.com/MidnightJava/led-matrix.git
