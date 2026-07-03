@@ -167,7 +167,6 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y config-manager setopt "*staging*".exclude="scx-tools scx-scheds kf6-* mesa* mutter*" && \
     /ctx/cleanup
 
-# Install patched fwupd
 # Install Valve's patched Mesa, Bluez, and Xwayland
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
@@ -181,7 +180,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite"]="wireplumber" \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="bluez xorg-x11-server-Xwayland" \
         ["terra-mesa"]="mesa-filesystem" \
-        ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --from-repo=$repo $package $package; done; \
@@ -200,10 +198,6 @@ RUN --mount=type=cache,dst=/var/cache \
         mesa-libGL \
         mesa-libgbm \
         mesa-vulkan-drivers \
-        fwupd \
-        fwupd-plugin-flashrom \
-        fwupd-plugin-modem-manager \
-        fwupd-plugin-uefi-capsule-data \
         NetworkManager \
         NetworkManager-wifi \
         NetworkManager-libnm && \
