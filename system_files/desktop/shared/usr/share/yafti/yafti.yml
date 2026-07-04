@@ -821,15 +821,15 @@ screens:
             script: "ujust cec-mode native"
       - id: "iwd"
         title: "Change Wi-Fi system back-end"
-        description: "Toggle between the default «iwd» and legacy «wpa_supplicant» as the software Wi-Fi back-end."
+        description: "Toggle between the default «wpa_supplicant» and «iwd» as the software Wi-Fi back-end."
         default: false
         status_script: "ujust iwd status"
         options:
           - id: "enable"
-            label: "Reset to «iwd»"
+            label: "Switch to «iwd»"
             script: "ujust iwd enable"
           - id: "disable"
-            label: "Switch to «wpa_supplicant»"
+            label: "Reset to «wpa_supplicant»"
             script: "ujust iwd disable"
       - id: "intel-i915-sleep-fix"
         title: "Configure power saving for Intel HD Graphics"
