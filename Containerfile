@@ -420,6 +420,7 @@ RUN --mount=type=cache,dst=/var/cache \
             oxygen-icon-theme \
             rom-properties-kf6 \
             fcitx5-chewing \
+            fcitx5-table-extra \
             fcitx5-mozc \
             fcitx5-chinese-addons \
             fcitx5-hangul \
