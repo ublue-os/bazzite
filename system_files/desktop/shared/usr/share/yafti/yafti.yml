@@ -819,6 +819,18 @@ screens:
           - id: "native"
             label: "Route Natively"
             script: "ujust cec-mode native"
+      - id: "inputplumber"
+        title: "Toggle InputPlumber"
+        description: "Useful for duplicate controller input on desktop/HTPC systems."
+        default: false
+        status_script: 'bash -lc ''systemctl is-enabled --quiet inputplumber.service && echo enable || echo disable'''
+        options:
+          - id: "enable"
+            label: "Enable InputPlumber"
+            script: "sudo systemctl enable --now inputplumber.service"
+          - id: "disable"
+            label: "Disable InputPlumber"
+            script: "sudo systemctl disable --now inputplumber.service"
       - id: "iwd"
         title: "Change Wi-Fi system back-end"
         description: "Toggle between the default «wpa_supplicant» and «iwd» as the software Wi-Fi back-end."
