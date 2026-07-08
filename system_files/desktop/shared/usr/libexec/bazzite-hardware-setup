@@ -185,26 +185,9 @@ else
   echo "No minimum-free ZRAM changes needed"
 fi
 
-# IWD Fixup
-if [ -f /etc/NetworkManager/conf.d/99-valve-wifi-backend.conf ]; then
-  rm -f /etc/NetworkManager/conf.d/99-valve-wifi-backend.conf
-fi
-if [ ! -f /etc/bazzite/fixups/nmiwd ]; then
-  rm -f "/etc/NetworkManager/conf.d/supplicant.conf"
-
-  if find /var/lib/iwd -maxdepth 1 -type f \( -name '*.psk' -o -name '*.8021x' -o -name '*.open' \) -print -quit | grep -q .; then 
-      mkdir -p /etc/NetworkManager/conf.d
-      printf "[device]\nwifi.backend=iwd\nwifi.iwd.autoconnect=yes" | tee /etc/NetworkManager/conf.d/iwd.conf > /dev/null
-      systemctl mask wpa_supplicant.service
-      systemctl unmask iwd.service
-  fi
-
-  touch /etc/bazzite/fixups/nmiwd
-fi
-
 if [[ "$(systemctl is-enabled wpa_supplicant.service 2>/dev/null)" == "masked" ]] && [[ "$(systemctl is-enabled iwd.service 2>/dev/null)" == "masked" ]]; then
-    echo "Both wpa_supplicant.service and iwd.service are masked, resolving with iwd"
-    systemctl unmask iwd.service
+    echo "Both wpa_supplicant.service and iwd.service are masked, resolving with wpa_supplicant"
+    systemctl unmask wpa_supplicant.service
 fi
 
 # FRAMEWORK AMD FIXES
