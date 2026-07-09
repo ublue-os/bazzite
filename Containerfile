@@ -255,6 +255,7 @@ RUN --mount=type=cache,dst=/var/cache \
         greenboot \
         greenboot-default-health-checks \
         ublue-os-selinux-workarounds \
+        bazzite_updater \
         ScopeBuddy \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
