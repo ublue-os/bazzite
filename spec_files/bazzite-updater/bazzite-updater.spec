@@ -50,6 +50,8 @@ This is a convenient, easy-to-use interface for updating your Bazzite system.
 
 %prep
 %autosetup
+# Upstream hardcodes an unrelocatable /usr/etc install destination.
+sed -i 's|"/usr/etc/bazzite-updater"|"%{_sysconfdir}/%{name}"|g' CMakeLists.txt
 
 %conf
 %cmake
@@ -71,6 +73,11 @@ desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/%{appid}.desktop
 %{_datadir}/applications/%{appid}.desktop
 %{_metainfodir}/%{appid}.*.xml
 %{_iconsdir}/hicolor/scalable/apps/%{appid}.svg
+%dir %{_sysconfdir}/%{name}
+%{_sysconfdir}/%{name}/KAboutData_OS.json
+%{_sysconfdir}/%{name}/Tux.png
+%{_sysconfdir}/%{name}/config.ini
+%{_sysconfdir}/%{name}/service-as-program.sh
 
 %changelog
 * Thu Feb 05 2026 Robert French
