@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=71
+HWS_VER=72
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -185,9 +185,18 @@ else
   echo "No minimum-free ZRAM changes needed"
 fi
 
-if [[ "$(systemctl is-enabled wpa_supplicant.service 2>/dev/null)" == "masked" ]] && [[ "$(systemctl is-enabled iwd.service 2>/dev/null)" == "masked" ]]; then
-    echo "Both wpa_supplicant.service and iwd.service are masked, resolving with wpa_supplicant"
-    systemctl unmask wpa_supplicant.service
+# NETWORKING FIXUPS
+if [ -f /etc/NetworkManager/conf.d/99-valve-wifi-backend.conf ]; then
+  # This file was created by earlier versions of steamos-manager, make sure it's removed. We handle this ourselves.
+  rm -f /etc/NetworkManager/conf.d/99-valve-wifi-backend.conf
+fi
+
+if [[ "$(systemctl is-enabled wpa_supplicant.service 2>/dev/null)" == "masked" ]]; then
+  systemctl unmask wpa_supplicant.service
+
+  if [ -f /etc/NetworkManager/conf.d/iwd.conf ]; then
+      rm -f /etc/NetworkManager/conf.d/99-valve-wifi-backend.conf
+  fi
 fi
 
 # FRAMEWORK AMD FIXES

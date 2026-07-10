@@ -831,18 +831,6 @@ screens:
           - id: "disable"
             label: "Disable InputPlumber"
             script: "sudo systemctl disable --now inputplumber.service"
-      - id: "iwd"
-        title: "Change Wi-Fi system back-end"
-        description: "Toggle between the default «wpa_supplicant» and «iwd» as the software Wi-Fi back-end."
-        default: false
-        status_script: "ujust iwd status"
-        options:
-          - id: "enable"
-            label: "Switch to «iwd»"
-            script: "ujust iwd enable"
-          - id: "disable"
-            label: "Reset to «wpa_supplicant»"
-            script: "ujust iwd disable"
       - id: "intel-i915-sleep-fix"
         title: "Configure power saving for Intel HD Graphics"
         description: "Manage the «i915.enable_dc» power-saving setting for older i915 Intel GPUs with suspend issues."
