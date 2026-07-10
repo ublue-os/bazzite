@@ -1,26 +1,27 @@
 rows:
-  - sections:
-    - expand-horizontally: true
-      category:
-        title:
-          en: "Gaming"
-          el: "Παιχνίδια"
-          ru: "Видеоигры"
-          fr: "Jeux-vidéos"
-          pt_BR: "Jogos"
-        subtitle:
+  - banner:
+      height: 300
+      image:
+        uri: file:///usr/share/ublue-os/bazaar/gaming.jxl
+        fit: fill
+        can-shrink: true
+        alt: "Gaming"
+  - section:
+      title:
+        en: "Gaming"
+        el: "Παιχνίδια"
+        ru: "Видеоигры"
+        fr: "Jeux-vidéos"
+        pt_BR: "Jogos"
+      subtitle:
+        string:
           en: "Protocol 3: Protect the Pilot"
           el: "Πρωτόκολλο 3: Προστατέψτε τον Πιλότο"
           ru: "Протокол 3: Защитить пилота"
           fr: "Protocole 3: Protégez le pilote"
           pt_BR: "Protocolo 3: Proteger o Piloto"
-        banner: file:///usr/share/ublue-os/bazaar/gaming.jxl
-        banner-fit: contain
-        banner-height: 300
-        banner-text-halign: start
-        banner-text-valign: center
-        banner-text-label-xalign: 0.0
-        appids:
+      appids:
+        list:
           - com.heroicgameslauncher.hgl
           - io.itch.itch
           - io.github.Faugus.faugus-launcher
@@ -67,28 +68,29 @@ rows:
           - org.supertuxproject.SuperTux
           - net.supertuxkart.SuperTuxKart
 
-  - sections:
-    - expand-horizontally: true
-      category:
-        title:
-          en: "Streaming & Chat"
-          el: "Ροή & Συνομιλία"
-          ru: "Стриминг и общение"
-          fr: "Streaming et discussions"
-          pt_BR: "Transmitir & Conversar"
-        subtitle:
+  - banner:
+      height: 300
+      image:
+        uri: file:///usr/share/ublue-os/bazaar/streaming.jxl
+        fit: fill
+        can-shrink: true
+        alt: "Streaming & Chat"
+  - section:
+      title:
+        en: "Streaming & Chat"
+        el: "Ροή & Συνομιλία"
+        ru: "Стриминг и общение"
+        fr: "Streaming et discussions"
+        pt_BR: "Transmitir & Conversar"
+      subtitle:
+        string:
           en: "Sprunk'd it."
           el: "Το'λουσα."
           ru: "Ещё катку?"
           fr: "Et c'est le train de la Hype!"
           pt_BR: "O cara é profissional!"
-        banner: file:///usr/share/ublue-os/bazaar/streaming.jxl
-        banner-fit: contain
-        banner-height: 300
-        banner-text-halign: end
-        banner-text-valign: center
-        banner-text-label-xalign: 1.0
-        appids:
+      appids:
+        list:
           - com.obsproject.Studio
           - com.feaneron.Boatswain
           - com.moonlight_stream.Moonlight
@@ -104,28 +106,29 @@ rows:
           - org.squidowl.halloy
           - org.gnome.Fractal
 
-  - sections:
-    - expand-horizontally: true
-      category:
-        title:
-          en: "Music & Media"
-          el: "Μουσική & Πολυμέσα"
-          ru: "Музыка и медиа"
-          fr: "Musique & Média"
-          pt_BR: "Música & Mídia"
-        subtitle:
+  - banner:
+      height: 300
+      image:
+        uri: file:///usr/share/ublue-os/bazaar/music.jxl
+        fit: fill
+        can-shrink: true
+        alt: "Music & Media"
+  - section:
+      title:
+        en: "Music & Media"
+        el: "Μουσική & Πολυμέσα"
+        ru: "Музыка и медиа"
+        fr: "Musique & Média"
+        pt_BR: "Música & Mídia"
+      subtitle:
+        string:
           en: "Let me break it down for you."
           el: "Για να μπούμε στο ρυθμό."
           ru: "Войдём в ритм."
           fr: "Entrez dans le rythme."
           pt_BR: "Vamos esculachar!"
-        banner: file:///usr/share/ublue-os/bazaar/music.jxl
-        banner-fit: contain
-        banner-height: 300
-        banner-text-halign: start
-        banner-text-valign: center
-        banner-text-label-xalign: 0.0
-        appids:
+      appids:
+        list:
           - io.bassi.Amberol
           - com.github.neithern.g4music
           - org.atheme.audacious
@@ -139,28 +142,29 @@ rows:
           - org.strawberrymusicplayer.strawberry
           - camp.nook.nookdesktop
 
-  - sections:
-    - expand-horizontally: true
-      category:
-        title:
-          en: "Office & Productivity"
-          el: "Γραφείο & Παραγωγικότητα"
-          ru: "Офис и продуктивность"
-          fr: "Bureautique & productivité"
-          pt_BR: "Escritório & Produtividade"
-        subtitle:
+  - banner:
+      height: 300
+      image:
+        uri: file:///usr/share/ublue-os/bazaar/office.jxl
+        fit: fill
+        can-shrink: true
+        alt: "Office & Productivity"
+  - section:
+      title:
+        en: "Office & Productivity"
+        el: "Γραφείο & Παραγωγικότητα"
+        ru: "Офис и продуктивность"
+        fr: "Bureautique & productivité"
+        pt_BR: "Escritório & Produtividade"
+      subtitle:
+        string:
           en: "May the paperclip fellow have mercy."
           el: "Για να μη γίνουν όλα φύλλο και φτερό."
           ru: "Чтобы всё не превратилось в прах."
           fr: "Que le trombone ait pitié de vous"
           pt_BR: "Que nosso camarada clipe de papel tenha piedade de nós."
-        banner: file:///usr/share/ublue-os/bazaar/office.jxl
-        banner-fit: contain
-        banner-height: 300
-        banner-text-halign: end
-        banner-text-valign: center
-        banner-text-label-xalign: 1.0
-        appids:
+      appids:
+        list:
           - org.mozilla.Thunderbird
           - org.libreoffice.LibreOffice
           - org.onlyoffice.desktopeditors
@@ -178,28 +182,29 @@ rows:
           - com.slack.Slack
           - com.github.IsmaelMartinez.teams_for_linux
 
-  - sections:
-    - expand-horizontally: true
-      category:
-        title:
-          en: "Utilities"
-          el: "Βοηθήματα"
-          ru: "Утилиты"
-          fr: "Utilitaires"
-          pt_BR: "Utilitários"
-        subtitle:
+  - banner:
+      height: 300
+      image:
+        uri: file:///usr/share/ublue-os/bazaar/utilities.jxl
+        fit: fill
+        can-shrink: true
+        alt: "Utilities"
+  - section:
+      title:
+        en: "Utilities"
+        el: "Βοηθήματα"
+        ru: "Утилиты"
+        fr: "Utilitaires"
+        pt_BR: "Utilitários"
+      subtitle:
+        string:
           en: "Stuff you didn't need until now."
           el: "Πράγματα που δεν ήξερες ότι χρειάζεσαι μέχρι τώρα."
           ru: "Программы, которыми вы ещё не пользуетесь."
           fr: "Ce dont vous n'aviez pas besoin jusqu'à maintenant"
           pt_BR: "Coisas que você não precisava até agora."
-        banner: file:///usr/share/ublue-os/bazaar/utilities.jxl
-        banner-fit: contain
-        banner-height: 300
-        banner-text-halign: start
-        banner-text-valign: center
-        banner-text-label-xalign: 0.0
-        appids:
+      appids:
+        list:
           - org.waywallen.waywallen
           - io.github.ilya_zlobintsev.LACT
           - io.github.limo_app.limo
