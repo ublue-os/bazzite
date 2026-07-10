@@ -1,56 +1,6 @@
-css: |
-  .bazzite-section banner {
-    margin-top: 30px;
-    margin-left: 30px;
-    margin-right: 30px;
-    border-radius: 10px;
-  }
-  .bazzite-section banner-text-overlay {
-    margin: 30px;
-    padding: 20px;
-  }
-  .bazzite-section banner-text {
-    padding: 50px;
-    color: #ffffff;
-  }
-  .bazzite-section title {
-    color: #ffffff;
-  }
-  .bazzite-section subtitle {
-    color: #ffffff;
-    font-weight: 400;
-  }
-  .bazzite-section {
-    margin: 15px;
-    border-radius: 25px;
-  }
-  .bazzite-light-section app-tile > button {
-    background-color: alpha(lightgray, 0.4);
-  }
-  .gaming-section {
-    background: linear-gradient(45deg, #171a49, #52136c);
-  }
-  .streaming-section {
-    background: linear-gradient(135deg, #3550ec, #252b4b);
-  }
-  .music-section {
-    background: linear-gradient(45deg, #196d28, #3a944a);
-  }
-  .office-section {
-    background: linear-gradient(135deg, #6f8396, #4d5c69);
-  }
-  .utilities-section {
-    background: linear-gradient(45deg, #ed5b00, #a6480d);
-  }
-
 rows:
   - sections:
     - expand-horizontally: true
-      classes:
-        - bazzite-section
-        - gaming-section
-      light-classes:
-        - bazzite-light-section
       category:
         title:
           en: "Gaming"
@@ -119,11 +69,6 @@ rows:
 
   - sections:
     - expand-horizontally: true
-      classes:
-        - bazzite-section
-        - streaming-section
-      light-classes:
-        - bazzite-light-section
       category:
         title:
           en: "Streaming & Chat"
@@ -161,11 +106,6 @@ rows:
 
   - sections:
     - expand-horizontally: true
-      classes:
-        - bazzite-section
-        - music-section
-      light-classes:
-        - bazzite-light-section
       category:
         title:
           en: "Music & Media"
@@ -201,11 +141,6 @@ rows:
 
   - sections:
     - expand-horizontally: true
-      classes:
-        - bazzite-section
-        - office-section
-      light-classes:
-        - bazzite-light-section
       category:
         title:
           en: "Office & Productivity"
@@ -245,11 +180,6 @@ rows:
 
   - sections:
     - expand-horizontally: true
-      classes:
-        - bazzite-section
-        - utilities-section
-      light-classes:
-        - bazzite-light-section
       category:
         title:
           en: "Utilities"
