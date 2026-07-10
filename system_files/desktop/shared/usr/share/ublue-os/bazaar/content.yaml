@@ -270,6 +270,7 @@ rows:
         banner-text-valign: center
         banner-text-label-xalign: 0.0
         appids:
+          - org.waywallen.waywallen
           - io.github.ilya_zlobintsev.LACT
           - io.github.limo_app.limo
           - io.github.radiolamp.mangojuice
