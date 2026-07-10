@@ -67,7 +67,7 @@ jobs:
         include:
           - fedora_version: 44
             kernel_flavor: ogc
-            kernel_version: 7.0.9-ogc3.2.fc44.x86_64
+            kernel_version: 7.1.3-ogc3.4.fc44.x86_64
             base_image_flavor: main
             arch: x86_64
     steps:
