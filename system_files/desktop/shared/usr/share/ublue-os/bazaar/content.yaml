@@ -81,14 +81,14 @@ rows:
         el: "Ροή & Συνομιλία"
         ru: "Стриминг и общение"
         fr: "Streaming et discussions"
-        pt_BR: "Transmitir & Conversar"
+        pt_BR: "Conversa & Transmissão"
       subtitle:
         string:
           en: "Sprunk'd it."
           el: "Το'λουσα."
           ru: "Ещё катку?"
           fr: "Et c'est le train de la Hype!"
-          pt_BR: "O cara é profissional!"
+          pt_BR: "Redundantes com latas & barbante."
       appids:
         list:
           - com.obsproject.Studio
@@ -119,14 +119,14 @@ rows:
         el: "Μουσική & Πολυμέσα"
         ru: "Музыка и медиа"
         fr: "Musique & Média"
-        pt_BR: "Música & Mídia"
+        pt_BR: "Mídia & Música"
       subtitle:
         string:
           en: "Let me break it down for you."
           el: "Για να μπούμε στο ρυθμό."
           ru: "Войдём в ритм."
           fr: "Entrez dans le rythme."
-          pt_BR: "Vamos esculachar!"
+          pt_BR: "Seu requebrado me maltrata."
       appids:
         list:
           - io.bassi.Amberol
@@ -155,14 +155,14 @@ rows:
         el: "Γραφείο & Παραγωγικότητα"
         ru: "Офис и продуктивность"
         fr: "Bureautique & productivité"
-        pt_BR: "Escritório & Produtividade"
+        pt_BR: "Produtividade & Escritório"
       subtitle:
         string:
           en: "May the paperclip fellow have mercy."
           el: "Για να μη γίνουν όλα φύλλο και φτερό."
           ru: "Чтобы всё не превратилось в прах."
           fr: "Que le trombone ait pitié de vous"
-          pt_BR: "Que nosso camarada clipe de papel tenha piedade de nós."
+          pt_BR: "Que nosso camarada clipe tenha piedade."
       appids:
         list:
           - org.mozilla.Thunderbird
@@ -202,7 +202,7 @@ rows:
           el: "Πράγματα που δεν ήξερες ότι χρειάζεσαι μέχρι τώρα."
           ru: "Программы, которыми вы ещё не пользуетесь."
           fr: "Ce dont vous n'aviez pas besoin jusqu'à maintenant"
-          pt_BR: "Coisas que você não precisava até agora."
+          pt_BR: "Coisas de que você não precisava até agora."
       appids:
         list:
           - org.waywallen.waywallen
