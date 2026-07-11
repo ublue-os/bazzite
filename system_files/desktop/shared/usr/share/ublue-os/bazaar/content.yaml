@@ -165,7 +165,7 @@ rows:
           pt_BR: "Que nosso camarada clipe de papel tenha piedade de nós."
       appids:
         list:
-          - org.mozilla.Thunderbird
+          - org.mozilla.thunderbird
           - org.libreoffice.LibreOffice
           - org.onlyoffice.desktopeditors
           - org.gimp.GIMP
