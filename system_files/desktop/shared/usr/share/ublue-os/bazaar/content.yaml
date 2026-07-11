@@ -225,6 +225,7 @@ rows:
           - io.github.pwr_solaar.solaar
           - it.mijorus.gearlever
           - io.github.flattool.Ignition
+          - io.github.arijanj.Mimic
           - io.github.fastrizwaan.WineZGUI
           - io.github.berarma.Oversteer
           - io.github.lawstorant.boxflat
