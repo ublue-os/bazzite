@@ -469,6 +469,7 @@ RUN --mount=type=cache,dst=/var/cache \
             steamdeck-gnome-presets \
             gnome-shell-extension-user-theme \
             gnome-shell-extension-gsconnect \
+            gnome-search-yafti \
             rom-properties-gtk4 \
             rom-properties-localsearch3 \
             ibus-mozc \
