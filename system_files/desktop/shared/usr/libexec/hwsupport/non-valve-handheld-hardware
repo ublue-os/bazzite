@@ -1,0 +1,77 @@
+#!/usr/bin/bash
+
+DMI="/sys/devices/virtual/dmi/id"
+PRODUCT_NAME="$(cat "$DMI/product_name" 2>/dev/null)"
+BOARD_NAME="$(cat "$DMI/board_name" 2>/dev/null)"
+SYS_VENDOR="$(cat "$DMI/sys_vendor" 2>/dev/null)"
+BOARD_VENDOR="$(cat "$DMI/board_vendor" 2>/dev/null)"
+
+# Lowercase
+sys_vendor_lc="${SYS_VENDOR,,}"
+board_vendor_lc="${BOARD_VENDOR,,}"
+
+# AOKZOE
+if [[ "$PRODUCT_NAME" == *AOKZOE* ]]; then
+	exit 0
+fi
+
+# ASUS ROG Ally
+if [[ "$PRODUCT_NAME" == "ROG Ally"* ]]; then
+	exit 0
+fi
+
+# AYANEO
+if [[ "$board_vendor_lc" == *ayaneo* ]]; then
+	exit 0
+fi
+case "$PRODUCT_NAME" in
+	AIR | "AIR Pro" | "AIR Plus" | "AIR 1S" | "AIR 1S Limited" | \
+	"AYA NEO 2021" | "AYANEO 2021" | "AYANEO 2021 Pro" | "AYANEO 2021 Pro Retro Power" | \
+	"AYANEO 2" | "AYANEO 2S" | "AYANEO 3" | "AYA NEO FOUNDER" | \
+	"AYANEO KUN" | KUN | GEEK | "GEEK 1S" | \
+	NEXT | "NEXT Advance" | "NEXT Lite" | "NEXT Pro" | \
+	"FLIP DS" | "FLIP KB" | "FLIP 1S DS" | "FLIP 1S KB" | SLIDE)
+		exit 0
+		;;
+esac
+
+# Ayn
+if [[ "$sys_vendor_lc" == "ayn" ]]; then
+	exit 0
+fi
+case "$PRODUCT_NAME" in
+	"Loki Max" | "Loki Zero" | "Loki MiniPro")
+		exit 0
+		;;
+esac
+
+# GPD
+if [[ "$sys_vendor_lc" == "gpd" ]]; then
+	exit 0
+fi
+
+# Lenovo Legion Go
+case "$PRODUCT_NAME" in
+	83E1 | 83N0 | 83N1 | 83L3 | 83N6 | 83Q2 | 83Q3)
+		exit 0
+		;;
+esac
+
+# MSI Claw
+case "$BOARD_NAME" in
+	MS-1T41 | MS-1T42 | MS-1T52 | MS-1T8K)
+		exit 0
+		;;
+esac
+if [[ "$PRODUCT_NAME" == *"Claw"* ]]; then
+	exit 0
+fi
+
+# OneXPlayer
+case "$PRODUCT_NAME" in
+	*ONEXPLAYER* | *"ONE XPLAYER"* | *ONEXFLY*)
+		exit 0
+		;;
+esac
+
+exit 1
