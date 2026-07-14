@@ -185,20 +185,6 @@ else
   echo "No minimum-free ZRAM changes needed"
 fi
 
-# NETWORKING FIXUPS
-if [ -f /etc/NetworkManager/conf.d/99-valve-wifi-backend.conf ]; then
-  # This file was created by earlier versions of steamos-manager, make sure it's removed. We handle this ourselves.
-  rm -f /etc/NetworkManager/conf.d/99-valve-wifi-backend.conf
-fi
-
-if [[ "$(systemctl is-enabled wpa_supplicant.service 2>/dev/null)" == "masked" ]]; then
-  systemctl unmask wpa_supplicant.service
-
-  if [ -f /etc/NetworkManager/conf.d/iwd.conf ]; then
-      rm -f /etc/NetworkManager/conf.d/iwd.conf
-  fi
-fi
-
 # FRAMEWORK AMD FIXES
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
   if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then

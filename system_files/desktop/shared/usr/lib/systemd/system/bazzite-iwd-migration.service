@@ -1,0 +1,13 @@
+[Unit]
+Description=Handle IWD migration
+Before=NetworkManager.service
+ConditionPathExists=!/var/lib/bazzite-iwd-migration.done
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/libexec/bazzite-iwd-migration
+ExecStartPost=/usr/bin/touch /var/lib/bazzite-iwd-migration.done
+
+[Install]
+WantedBy=multi-user.target
