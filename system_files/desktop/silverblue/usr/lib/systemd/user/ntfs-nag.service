@@ -5,7 +5,7 @@ After=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=/usr/libexec/ntfs_exfat_monitor_script
+ExecStart=/usr/libexec/ntfs-exfat-monitor-script
 
 [Install]
 WantedBy=graphical-session.target
