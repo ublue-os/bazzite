@@ -1,0 +1,6 @@
+{
+  "title": "Nvidia Flatpak Runtime mismatch",
+  "seeMoreUrl": "https://docs.bazzite.gg/General/issues_and_resolutions/#flatpak-apps-have-no-hardware-acceleration-on-nvidia",
+  "body": "Bazzite noticed that there is an Nvidia flatpak runtime mismatch!\n\nHardware acceleration will not work in Flatpak Apps before you update it in <b>Bazzite Updater</b>.\n",
+  "if": "IMAGE_INFO=\"/usr/share/ublue-os/image-info.json\"; IMAGE_NAME=$(jq -r '.\"image-name\"' < $IMAGE_INFO); if [[ $IMAGE_NAME =~ \"nvidia\" ]]; then FLATPAK_NVIDIA_VERSION=$(flatpak list --runtime | grep nvidia | awk '{print $2}' | grep -Eo \"[0-9]+-[0-9]+(-[0-9]+)?\" | tail -1); SYSTEM_NVIDIA_VERSION=$(cat /proc/driver/nvidia/version 2>/dev/null | grep NVIDIA | grep -Eo \"[0-9]+\\.[0-9]+(\\.[0-9]+)?\" | tr '.' '-'); fi; [[ \"$SYSTEM_NVIDIA_VERSION\" != \"$FLATPAK_NVIDIA_VERSION\" && $IMAGE_NAME =~ \"nvidia\" ]]"
+}
