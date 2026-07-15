@@ -100,6 +100,7 @@ setup-sunshine ACTION="":
           echo "Setting up Homebrew environment..."
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         fi
+        brew trust LizardByte/homebrew
         brew tap LizardByte/homebrew
         echo "${b}Cleaning${n} up any existing stable ${yellow}Sunshine${n} install before installing beta..."
         flatpak run --command=remove-additional-install.sh dev.lizardbyte.app.Sunshine || true
