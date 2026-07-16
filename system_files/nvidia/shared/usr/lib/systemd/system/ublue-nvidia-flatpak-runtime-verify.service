@@ -1,0 +1,19 @@
+[Unit]
+Description=Verify NVIDIA system drivers are synced with Flatpak runtime
+After=graphical-session.target xdg-desktop-autostart.target xdg-desktop-portal.service ublue-nvidia-flatpak-runtime-sync.service
+ConditionPathExists=/sys/module/nvidia/version
+# To not run on live ISO
+ConditionPathExists=/run/ostree-booted
+
+[Service]
+Type=oneshot
+ExecCondition=/usr/libexec/ublue-nvidia-flatpak-runtime-sync check
+ExecStartPre=/bin/sleep 5
+ExecStart=/usr/libexec/ublue-nvidia-flatpak-runtime-notify
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=30
+TimeoutStartSec=600
+
+[Install]
+WantedBy=graphical-session.target
