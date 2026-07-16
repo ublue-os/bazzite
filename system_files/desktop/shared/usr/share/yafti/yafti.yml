@@ -787,6 +787,7 @@ screens:
         script: "ujust fix-proton-hang"
       - id: "unshade"
         title: "UnShade Shader Cache Cleaner"
+        description: "Clear Steam and Mesa shader caches to troubleshoot graphical issues. Currently tested on AMD graphics."
         default: false
         script: 'set -o pipefail; curl -fsSL https://raw.githubusercontent.com/andy10115/UnShade/main/unshade.sh | bash'
       - id: "fix-gmod"
