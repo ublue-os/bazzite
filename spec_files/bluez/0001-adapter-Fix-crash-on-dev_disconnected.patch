@@ -1,0 +1,86 @@
+From 5bc6aa79e53700d56fc1f9f9364573ba4c78da65 Mon Sep 17 00:00:00 2001
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Date: Thu, 2 Jul 2026 11:43:52 -0400
+Subject: [PATCH] adapter: Fix crash on dev_disconnected
+
+Commit 5d836f1c697c ("adapter: Fix failed bonding attempt after LE
+link disconnection") introduces a regression since it attempts to
+call device_is_connected after adapter_remove_connection which may
+free the device causing the following backtrace:
+
+    #0 0x5cd6e384262f in btd_device_bearer_is_connected src/device.c:3754
+    #1 0x5cd6e384266f in btd_device_is_connected src/device.c:3745
+    #2 0x5cd6e37f8614 in dev_disconnected src/adapter.c:8626
+
+Fixes: https://github.com/bluez/bluez/issues/2221
+---
+ src/adapter.c | 25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index 538f63e0a153..210225243f00 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -7612,12 +7612,16 @@ struct agent *adapter_get_agent(struct btd_adapter *adapter)
+ static void adapter_remove_connection(struct btd_adapter *adapter,
+ 						struct btd_device *device,
+ 						uint8_t bdaddr_type,
+-						uint8_t reason)
++						uint8_t reason,
++						bool *removed)
+ {
+ 	bool remove_device = false;
+ 
+ 	DBG("");
+ 
++	if (removed)
++		*removed = false;
++
+ 	if (!g_slist_find(adapter->connections, device)) {
+ 		btd_error(adapter->dev_id, "No matching connection for device");
+ 		return;
+@@ -7638,6 +7642,9 @@ static void adapter_remove_connection(struct btd_adapter *adapter,
+ 
+ 		DBG("Removing temporary device %s", path);
+ 		btd_adapter_remove_device(adapter, device);
++
++		if (removed)
++			*removed = true;
+ 	}
+ }
+ 
+@@ -7665,10 +7672,10 @@ static void adapter_stop(struct btd_adapter *adapter)
+ 		uint8_t addr_type = btd_device_get_bdaddr_type(device);
+ 
+ 		adapter_remove_connection(adapter, device, BDADDR_BREDR,
+-						MGMT_DEV_DISCONN_UNKNOWN);
++						MGMT_DEV_DISCONN_UNKNOWN, NULL);
+ 		if (addr_type != BDADDR_BREDR)
+ 			adapter_remove_connection(adapter, device, addr_type,
+-						MGMT_DEV_DISCONN_UNKNOWN);
++						MGMT_DEV_DISCONN_UNKNOWN, NULL);
+ 	}
+ 
+ 	g_dbus_emit_property_changed(dbus_conn, adapter->path,
+@@ -8618,7 +8625,17 @@ static void dev_disconnected(struct btd_adapter *adapter,
+ 
+ 	device = btd_adapter_find_device(adapter, &addr->bdaddr, addr->type);
+ 	if (device) {
+-		adapter_remove_connection(adapter, device, addr->type, reason);
++		bool removed;
++
++		adapter_remove_connection(adapter, device, addr->type, reason,
++						&removed);
++		/* No need to continue if device was removed from the adapter,
++		 * as it will be freed and the disconnect notify will be called
++		 * in the device free callback.
++		 */
++		if (removed)
++			return;
++
+ 		disconnect_notify(device, reason);
+ 	}
+ 
+-- 
+2.54.0
+
