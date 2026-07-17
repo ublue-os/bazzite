@@ -1,7 +1,6 @@
 [Unit]
 Description=Handle IWD migration
 Before=NetworkManager.service
-ConditionPathExists=!/var/lib/bazzite-iwd-migration.done
 
 [Service]
 Type=oneshot
