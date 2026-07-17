@@ -47,7 +47,7 @@ mkdir -p /etc/bazzite/fixups
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
 
-if /usr/libexec/hwsupport/valve-hardware || /usr/libexec/non-valve-handheld-hardware; then
+if /usr/libexec/hwsupport/valve-hardware || /usr/libexec/hwsupport/non-valve-handheld-hardware; then
   if [[ ! $KARGS =~ "ppfeaturemask" ]]; then
     NEEDED_KARGS+=("--append-if-missing="$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))"))
   fi
