@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+NOMONCONF="${HOME}/.config/bazzite/disable-other-monitors"
+SUNSHINE_FLATPAK_CONF="${HOME}/.var/app/dev.lizardbyte.app.Sunshine/config/sunshine/sunshine.conf"
+SUNSHINE_CONF="${HOME}/.config/sunshine/sunshine.conf"
+
+# Restore physical monitors
+kscreen-doctor --json | jq -r '.outputs[].name' | while read -r output; do
+  kscreen-doctor "output.${output}.enable"
+  sleep 0.5
+done
+
+# Kill virtual display
+if [ -f /tmp/sunshine-vmon.pid ]; then
+  kill "$(cat /tmp/sunshine-vmon.pid)" 2>/dev/null || true
+  rm -f /tmp/sunshine-vmon.pid
+fi
+
+# Restore Sunshine output to physical display
+if [[ -f "$SUNSHINE_FLATPAK_CONF" ]]; then
+  CONF="$SUNSHINE_FLATPAK_CONF"
+elif [[ -f "$SUNSHINE_CONF" ]]; then
+  CONF="$SUNSHINE_CONF"
+else
+  echo "No Sunshine config file found!"
+  exit 1
+fi
+sed -i '/^output_name/d' "$CONF"
+echo "output_name = ${output}" >> "$CONF"

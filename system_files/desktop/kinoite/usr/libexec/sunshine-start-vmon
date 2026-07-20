@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+WIDTH="${SUNSHINE_CLIENT_WIDTH:-1920}"
+HEIGHT="${SUNSHINE_CLIENT_HEIGHT:-1080}"
+FPS="${SUNSHINE_CLIENT_FPS%.*}"
+FPS="${FPS:-60}"
+FPS_MHZ=$(( FPS * 1000 ))
+RES="${WIDTH}x${HEIGHT}"
+
+NAME="sunshine-vmon"
+
+NOMONCONF="${HOME}/.config/bazzite/disable-physical-monitors"
+SUNSHINE_FLATPAK_CONF="${HOME}/.var/app/dev.lizardbyte.app.Sunshine/config/sunshine/sunshine.conf"
+SUNSHINE_CONF="${HOME}/.config/sunshine/sunshine.conf"
+
+# Create virtual display at client resolution
+echo "Got Sunshine env vars: $SUNSHINE_CLIENT_WIDTH x $SUNSHINE_CLIENT_HEIGHT at $SUNSHINE_CLIENT_FPS"
+echo "Creating virtual display with resolution: $RES"
+krfb-virtualmonitor --resolution "$RES" --name "$NAME" --password "sunshinepass" --port 5905 &
+echo $! > /tmp/sunshine-vmon.pid
+
+# Wait for KDE to register the new display
+sleep 3
+
+# Add custom mode support for the correct frame rate
+echo "Adding custom mode: ${WIDTH}.${HEIGHT}.${FPS_MHZ}.full"
+kscreen-doctor output.Virtual-${NAME}.addCustomMode.${WIDTH}.${HEIGHT}.${FPS_MHZ}.full
+
+# Disables all OTHER monitors
+kscreen-doctor --json |
+jq -r --arg vname "Virtual-$NAME" '
+  .outputs[]
+  | select(.name != $vname)
+  | .name
+' |
+while read -r output; do
+  kscreen-doctor "output.${output}.disable"
+  sleep 0.5
+done
+
+# Tell Sunshine to capture this display
+if [[ -f "$SUNSHINE_FLATPAK_CONF" ]]; then
+  CONF="$SUNSHINE_FLATPAK_CONF"
+elif [[ -f "$SUNSHINE_CONF" ]]; then
+  CONF="$SUNSHINE_CONF"
+else
+  echo "No Sunshine config file found!"
+  exit 1
+fi
+
+sed -i '/^output_name/d' "$CONF"
+echo "output_name = Virtual-${NAME}" >> "$CONF"
+
+
