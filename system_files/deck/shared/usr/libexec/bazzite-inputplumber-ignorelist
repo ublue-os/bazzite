@@ -1,0 +1,89 @@
+#!/usr/bin/bash
+source /usr/lib/ujust/ujust.sh
+
+# Check if we are run with sudo
+if [ "$EUID" -ne 0 ]
+  then echo "Please run with sudo"
+  exit
+fi
+
+inputplumber devices list
+echo "${b}This script is just for external controllers, not handheld controls! CTRL+C to exit${n}"
+read -rp "${b}Enter the ID for the controller to generate an ignore list for: ${n}" id
+if [ -z "$id" ] || ! [[ "$id" =~ ^[0-9]+$ ]]; then
+    echo "No Composite Device ID provided!"
+    exit 1
+fi
+# Grab all devices for the controller that inputplumber finds
+# shellcheck disable=SC2207
+DEVICES=($(inputplumber device "$id" info | grep "/dev" | perl -pe 's/.+\[(.+)\].+/\1/' | sed 's/[",]//g'))
+# Process the evdev devices
+for DEVICE in "${DEVICES[@]}"
+do
+    if [[ "$DEVICE" =~ event  ]];  then
+        echo "Processing $DEVICE"
+        UDEVINFO=$(udevadm info -a $DEVICE | grep -P "id/(vendor|product|name)")
+        VENDORID=""
+        PRODUCTID=""
+        NAME=""
+        # Grab the attribute information we need for the device to generate a config
+        # shellcheck disable=SC2046
+        while read -r UDEVINFO
+        do
+            if [[ "$UDEVINFO" =~ vendor ]]; then
+                VENDORID=$(echo $UDEVINFO | perl -pe 's/.+=="([a-f0-9]{4})"/\1/')
+            elif [[ "$UDEVINFO" =~ product ]]; then
+                PRODUCTID=$(echo $UDEVINFO | perl -pe 's/.+=="([a-f0-9]{4})"/\1/')
+            elif [[ "$UDEVINFO" =~ name ]]; then
+                NAME=$(echo $UDEVINFO | perl -pe 's/.+=="(.+)"/\1/')
+            fi
+        done <<< $(udevadm info -a "$DEVICE" | grep -P "id/(vendor|product)")
+        # Exit with error if VendorID or ProductID is still empty
+        if [ -z "$VENDORID" ] || [ -z "$PRODUCTID" ] || ! [[ "$VENDORID" =~ ^[a-f0-9]+$ ]] || ! [[ "$PRODUCTID" =~ ^[a-f0-9]+$ ]]; then
+            echo "${NAME}: No valid VendorID(${VENDORID}) or ProductID(${PRODUCTID}) detected!"
+            exit 2
+        fi
+        # If no valid name is detected then ask for one
+        if [ -z "$NAME" ]; then
+            read -rp "${b}Provide a name for the controller: ${n}" NAME
+            if [ -z "$NAME" ]; then
+                echo "No name provided"
+                exit 3
+            fi
+        fi
+        # Generate config for the controller and tell inputplumber to ignore it
+        mkdir -p "/etc/inputplumber/devices.d"
+        VENDORID=$VENDORID PRODUCTID=$PRODUCTID NAME=$NAME bash -c 'cat << INPUTPLUMBER_CONFIG > /etc/inputplumber/devices.d/19-custom-${VENDORID}_${PRODUCTID}.yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ShadowBlip/InputPlumber/main/rootfs/usr/share/inputplumber/schema/composite_device_v1.json
+# Schema version number
+version: 1
+
+# The type of configuration schema
+kind: CompositeDevice
+
+# Name of the composite device mapping
+name: $NAME
+## THIS CONFIG IS MEANT TO BE TEMPORARY AND SHOULD BE REMOVED
+## ONCE INPUTPLUMBER HAS FULL SUPPORT FOR THESE CONTROLLERS!
+
+# Only use this profile if *any* of the given matches matches. If this list is
+# empty, then the source devices will *always* be checked.
+# /sys/class/dmi/id/product_name
+matches: []
+
+# One or more source devices to combine into a single virtual device. The events
+# from these devices will be watched and translated according to the key map.
+source_devices:
+  # Dinput/SteamInput Mode & Dongle mode
+  - group: gamepad
+    ignore: true
+    evdev:
+      vendor_id: "$VENDORID"
+      product_id: "$PRODUCTID"
+INPUTPLUMBER_CONFIG'
+
+        echo "${b}Config file generated at:${n} /etc/inputplumber/devices.d/19-custom-${VENDORID}_${PRODUCTID}.yaml"
+        echo "The config file will take effect on the next reboot."
+        echo "Consider providing a copy of this file to the Bazzite team so we can add the IDs to the global config."
+    fi
+done
