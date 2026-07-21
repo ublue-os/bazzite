@@ -287,7 +287,7 @@ screens:
         script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask vscodium-linux'
       - id: "waydroid"
         title: "Waydroid"
-        description: "Android system in a container for app compatibility on Linux. Incompatible with NVIDIA drivers."
+        description: "Android system in a container, for app compatibility on Linux. Incompatible with NVIDIA drivers."
         default: false
         options:
           - id: "init"
