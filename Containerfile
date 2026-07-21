@@ -708,6 +708,7 @@ RUN --mount=type=cache,dst=/var/cache \
         gamescope-session-ogui-steam \
         steamos-manager-powerstation \
         steamos-manager-powerstation-gamescope-session-plus \
+        gamemode-news-hook \
         vpower \
         steam-notif-daemon \
         acpica-tools \
@@ -806,6 +807,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable pipewire-workaround.service && \
     systemctl enable pipewire-sysconf.service && \
     systemctl enable bazzite-tdpfix.service && \
+    systemctl --global enable gamemode-news-hook.service && \
     systemctl --global disable sdgyrodsu.service && \
     systemctl --global enable steamos-powerbuttond.service && \
     systemctl disable input-remapper.service && \
