@@ -22,7 +22,6 @@ for DEVICE in "${DEVICES[@]}"
 do
     if [[ "$DEVICE" =~ event  ]];  then
         echo "Processing $DEVICE"
-        UDEVINFO=$(udevadm info -a $DEVICE | grep -P "id/(vendor|product|name)")
         VENDORID=""
         PRODUCTID=""
         NAME=""
@@ -74,7 +73,6 @@ matches: []
 # One or more source devices to combine into a single virtual device. The events
 # from these devices will be watched and translated according to the key map.
 source_devices:
-  # Dinput/SteamInput Mode & Dongle mode
   - group: gamepad
     ignore: true
     evdev:
