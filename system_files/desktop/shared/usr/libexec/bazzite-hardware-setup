@@ -228,8 +228,8 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
   fi
 fi
 
-# SURFACE FIXES
-if [[ ":Microsoft:" =~ ":$VEN_ID:" ]]; then
+# SURFACE FIXES - Vendor ID expects startswith 'Microsoft'
+if [[ ":Microsoft*:" =~ ":$VEN_ID:" ]]; then
   if ! [[ -f "/etc/modules-load.d/surface.conf" ]]; then
     if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
       printf "# Support GPIO pins on AMD Surfaces\npinctrl_amd\n" > "/etc/modules-load.d/surface.conf"
