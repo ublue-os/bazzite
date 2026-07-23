@@ -50,8 +50,7 @@
 Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) using [Fedora](https://fedoraproject.org/) technology, which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features:
 
 - Uses the [OGC kernel](https://www.github.com/OpenGamingCollective/linux)
-- HDR available in Game mode.
-- NVK available on non-Nvidia builds.
+- HDR and VRR available by default.
 - Full hardware accelerated codec support for H264 decoding.
 - [xone](https://github.com/medusalix/xone) driver for Xbox controllers.
 - Full support for [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
