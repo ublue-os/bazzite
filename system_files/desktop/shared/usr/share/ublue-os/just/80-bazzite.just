@@ -781,6 +781,97 @@ tailscale ACTION="":
 enable-framework-fan-control:
     systemctl enable --now fw-fanctrl.service
 
+# Setup LED Matrix module for the Framework 16 laptop. Options: install | uninstall | status | restart
+[group("hardware")]
+setup-fw-led-matrix ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    FWLED_STATE="$(systemctl is-enabled fwledmonitor.service 2>/dev/null || true)"
+    confirm_install() {
+      SYS_ID="$(/usr/libexec/hwsupport/sysid)"
+      msg="Your device is not a Framework 16! Continue anyways?"
+      if [[ ! "$SYS_ID" =~ "Laptop 16 ("* ]]; then
+        echo -n "$msg ${yellow}(Y/n)${normal} "
+        read -r reply
+        if ! [[ -z "$reply" || "${reply,,}" =~ ^y ]]; then
+          echo "Exiting..."
+          exit 0
+        fi
+      fi
+    }
+    get_status_token() {
+      if [[ -z "$FWLED_STATE" ]]; then
+        return 1
+      elif [[ "$FWLED_STATE" == "enabled" ]]; then
+        echo "install"
+      else
+        echo "uninstall"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "install" ]]; then
+        echo "${green}${bold}Enabled${normal}"
+      else
+        echo "${yellow}${bold}Disabled${normal}"
+      fi
+    }
+    install_led_mon() {
+      confirm_install
+      mkdir -p /tmp/fw-led
+      cd /tmp/fw-led || exit 1
+      git clone https://github.com/MidnightJava/led-matrix.git
+      cd ./led-matrix
+      chmod +x ./build_and_install.sh
+      chmod +x ./install_service.sh
+      ./build_and_install.sh
+      exit 0
+    }
+    uninstall_led_mon() {
+      systemctl --user disable --now fwledmonitor.service
+      sudo rm -rf /opt/led_mon
+      sudo rm -f /usr/local/bin/led_mon
+      sudo rm -rf /var/lib/led_mon
+      sudo rm -rf /etc/led_mon
+      exit 0
+    }
+    restart_led_mon() {
+      systemctl --user daemon-reload
+      systemctl --user restart fwledmonitor.service
+      exit 0
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+      echo "Usage: ujust setup-fw-led-matrix <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current portal token"
+      echo "  Use 'install' to enable LED Matrix"
+      echo "  Use 'uninstall' to disable LED Matrix"
+      exit 0
+    elif [[ -z "$OPTION" ]]; then
+      echo "${bold}Framework 16 LED Matrix${normal}"
+      echo "Current status: $(get_current_status)"
+      OPTION=$(ugum choose "Install" "Uninstall" "Status" "Restart" "Exit without changes")
+    fi
+    case "$OPTION" in
+      Install|install)
+        install_led_mon
+        ;;
+      Uninstall|uninstall)
+        uninstall_led_mon
+        ;;
+      Status|status)
+        get_status_token
+        exit $?
+        ;;
+      Restart|restart)
+        restart_led_mon
+        ;;
+      *)
+        echo "No changes made."
+        ;;
+    esac
+    exit 0
+
 # Configure watchdog (default: enabled, recovers the system in the event of a malfunction)
 [group("system")]
 configure-watchdog ACTION="":

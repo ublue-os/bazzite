@@ -674,6 +674,21 @@ screens:
           - id: "uninstall"
             label: "Uninstall DisplayLink Support"
             script: 'ujust install-displaylink uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "setup-fw-led-matrix"
+        title: "Setup Framework 16 LED Matrix"
+        description: "Install a service to enable the LED Matrix on Framework Laptop 16."
+        default: false
+        status_script: "ujust setup-fw-led-matrix status"
+        options:
+          - id: "install"
+            label: "Install LED Matrix Service"
+            script: 'ujust setup-fw-led-matrix install'
+          - id: "uninstall"
+            label: "Uninstall LED Matrix Service"
+            script: 'ujust setup-fw-led-matrix uninstall'
+          - id: "restart"
+            label: "Restart LED Matrix Service"
+            script: 'ujust setup-fw-led-matrix restart'
       - id: "configure-beesd"
         title: "Setup btrfs deduplication"
         description: "Configure «beesd» for deduplication of btrfs file systems."
