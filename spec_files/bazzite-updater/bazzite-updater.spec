@@ -1,9 +1,9 @@
 %global appid io.github.rfrench3.bazzite-updater
 
 Name:           bazzite-updater
-Version:        0.8.0
+Version:        0.8.1
 Release:        1%{?dist}
-Summary:        Update your Bazzite system
+Summary:        Update your system
 
 License:        GPL-2.0-or-later AND BSD-3-Clause AND CC0-1.0
 URL:            https://github.com/rfrench3/bazzite-updater
@@ -36,22 +36,21 @@ BuildRequires:  cmake(KF6KirigamiAddons)
 Requires:       kf6-kirigami%{?_isa}
 Requires:       kf6-kirigami-addons%{?_isa}
 Requires:       kf6-qqc2-desktop-style%{?_isa}
-Requires:       which%{?_isa}
 Requires:       qt6-controllable%{?_isa}
-Requires:       uupd%{?_isa}
 Requires:       hicolor-icon-theme
+Requires:       systemd%{?_isa} >= 258
 
 Provides:       bazzite-updater = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description
-This is a convenient, easy-to-use interface for updating your Bazzite system.
+This is a convenient, easy-to-use interface for updating a Linux system.
+By default, it is configured for Bazzite.
 - Simple and powerful
 - Full support for all input types (keyboard/mouse, controller, touchscreen)
+- Configurable update and update-rollback commands
 
 %prep
 %autosetup
-# Upstream hardcodes an unrelocatable /usr/etc install destination.
-sed -i 's|"/usr/etc/bazzite-updater"|"%{_sysconfdir}/%{name}"|g' CMakeLists.txt
 
 %conf
 %cmake
@@ -73,12 +72,12 @@ desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/%{appid}.desktop
 %{_datadir}/applications/%{appid}.desktop
 %{_metainfodir}/%{appid}.*.xml
 %{_iconsdir}/hicolor/scalable/apps/%{appid}.svg
-%dir %{_sysconfdir}/%{name}
-%{_sysconfdir}/%{name}/KAboutData_OS.json
-%{_sysconfdir}/%{name}/Tux.png
-%{_sysconfdir}/%{name}/config.ini
-%{_sysconfdir}/%{name}/service-as-program.sh
+%config(noreplace) %{_sysconfdir}/%{name}/config.ini
+%{_sysconfdir}/%{name}
 
 %changelog
+* Sat Jul 04 2026 Robert French - 0.8.0
+- Added config file support
+
 * Thu Feb 05 2026 Robert French
 - Initial rpm build of Bazzite Updater
