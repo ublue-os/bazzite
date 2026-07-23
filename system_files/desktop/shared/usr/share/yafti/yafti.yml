@@ -2,6 +2,7 @@ title: Bazzite Portal
 screens:
   - title: "Welcome!"
     description: "Get to know Bazzite"
+    hidden: true
     actions:
       - id: "bazzite-documentation"
         title: "Read the Bazzite Docs"
@@ -417,6 +418,7 @@ screens:
     description: "System management and configuration"
     actions:
       - id: "update-bazzite"
+        hidden: true
         title: "Update your system"
         description: "Update Bazzite, Flatpak apps, and more."
         default: false

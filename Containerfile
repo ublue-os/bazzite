@@ -429,6 +429,7 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-disk-utility \
             kio-extras \
             krunner-bazaar \
+            krunner-yafti \
             krdc \
             tesseract-devel \
             tesseract-langpack-eng \
