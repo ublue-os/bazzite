@@ -20,6 +20,11 @@ if [[ "$PRODUCT_NAME" == "ROG Ally"* ]]; then
 	exit 0
 fi
 
+# ASUS ROG Xbox Ally
+if [[ "$PRODUCT_NAME" == "ROG Xbox Ally"* ]]; then
+	exit 0
+fi
+
 # AYANEO
 if [[ "$board_vendor_lc" == *ayaneo* ]]; then
 	exit 0
