@@ -53,6 +53,11 @@ screens:
           - id: "uninstall"
             label: "Uninstall asusctl & ROG Control Center"
             script: 'ujust asus uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "atv-couch-wake"
+        title: "ATV Couch Wake"
+        description: "Configure an Android or Google TV to wake with your Bazzite system. Also installs Android Platform Tools as a dependency."
+        default: false
+        script: 'set -o pipefail; eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew install --cask android-platform-tools && curl -fsSL https://raw.githubusercontent.com/andy10115/atv-couch-wake/main/install.sh | bash'
       - id: "bazzite-cli"
         title: "Bazzite CLI"
         description: "Setup a Bluefin-style command-line interface (CLI) experience with various utilities."
@@ -789,6 +794,11 @@ screens:
         description: "Send «kill» signal to processes pertaining to Wine/Proton. May be useful if a task seems to be stuck."
         default: false
         script: "ujust fix-proton-hang"
+      - id: "unshade"
+        title: "UnShade Shader Cache Cleaner"
+        description: "Clear Steam and Mesa shader caches to troubleshoot graphical issues. Currently tested on AMD graphics."
+        default: false
+        script: 'set -o pipefail; curl -fsSL https://raw.githubusercontent.com/andy10115/UnShade/main/unshade.sh | bash'
       - id: "fix-gmod"
         title: "Patch 64-bit beta version for Garry's Mod"
         description: "Fix over many issues with the native 64-bit Linux version of Garry's Mod through a third-party patch."
