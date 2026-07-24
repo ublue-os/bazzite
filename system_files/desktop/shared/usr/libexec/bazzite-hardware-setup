@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=74
+HWS_VER=75
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -212,7 +212,7 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
   fi
 fi
 
-# SURFACE FIXES - Vendor ID expects startswith 'Microsoft'
+# SURFACE FIXES - Vendor ID starts with 'Microsoft'
 if [[ ":Microsoft*:" =~ ":$VEN_ID:" ]]; then
   if ! [[ -f "/etc/modules-load.d/surface.conf" ]]; then
     if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
