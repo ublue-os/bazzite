@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ShadowBlip/InputPlumber/main/rootfs/usr/share/inputplumber/schema/composite_device_v1.json
+# Schema version number
+version: 1
+
+# The type of configuration schema
+kind: CompositeDevice
+
+# Name of the composite device mapping
+name: GameSir Controllers
+## THIS CONFIG IS MEANT TO BE TEMPORARY AND SHOULD BE REMOVED
+## ONCE INPUTPLUMBER HAS FULL SUPPORT FOR THESE CONTROLLERS!
+
+# Only use this profile if *any* of the given matches matches. If this list is
+# empty, then the source devices will *always* be checked.
+# /sys/class/dmi/id/product_name
+matches: []
+
+# One or more source devices to combine into a single virtual device. The events
+# from these devices will be watched and translated according to the key map.
+source_devices:
+  # Dinput/SteamInput Mode
+  # GameSir G7 Pro,
+  - group: gamepad
+    ignore: true
+    evdev:
+      vendor_id: "3537"
