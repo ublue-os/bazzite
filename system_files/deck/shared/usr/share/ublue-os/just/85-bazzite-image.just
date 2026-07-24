@@ -179,3 +179,42 @@ restore-gamemode-shortcut:
 # Generate ignore configs for unknown external controllers not yet in our system-provided ignore list
 generate-inputplumber-ignorelist:
     sudo /usr/libexec/bazzite-inputplumber-ignorelist
+
+# Enable/Disable opengamepadui overlay in gamemode
+configure-opengamepadui ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    OPTION={{ ACTION }}
+    OGUI_STEAM="$HOME/.config/gamescope-session-plus/sessions.d/ogui-steam"
+    if [ -f $OGUI_STEAM ]; then
+        OGUI_STATE="${b}Disabled${n}"
+    else
+        OGUI_STATE="${b}Enabled${n}"
+    fi
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust configure-opengamepadui <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'enable' to enable OpenGamepadUI overlay"
+      echo "  Use 'disable' to disable OpenGamepadUI overlay"
+      exit 0
+    elif [ "$OPTION" == "" ]; then
+      echo "${bold}Configure OpenGamepadUI overlay${normal}"
+      echo "OpenGamepadUI Overlay is: $OGUI_STATE"
+      OPTION=$(Choose "Enable" "Disable")
+    fi
+    if [[ "${OPTION,,}" =~ ^enable ]]; then
+      echo "Enabling OpenGamepadUI Overlay"
+      rm -f $OGUI_STEAM
+    elif [[ "${OPTION,,}" =~ ^disable ]]; then
+      echo "Disabling OpenGamepadUI Overlay"
+      # Create directory if it doesn't exist.
+      mkdir -p "${HOME}/.config/gamescope-session-plus/sessions.d"
+      # Create `ogui-steam` user override script for `gamescope-session-plus`
+      OGUI_STEAM=$OGUI_STEAM bash -c 'cat << EOF > "$OGUI_STEAM"
+    #!/usr/bin/bash
+
+    STEAM_SESSION_FILE=/usr/share/gamescope-session-plus/sessions.d/steam
+    [[ -f "\${STEAM_SESSION_FILE}" ]] && . "\${STEAM_SESSION_FILE}"
+    EOF'
+      chmod +x $OGUI_STEAM
+    fi
