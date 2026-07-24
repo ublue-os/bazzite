@@ -579,6 +579,31 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/generate_release.yml
 
+  kickoff_gamemode_news:
+    name: Build Game Mode Announcements
+    runs-on: ubuntu-24.04
+    needs: [generate_release]
+    if: github.repository == 'ublue-os/bazzite' && github.event_name != 'pull_request'
+    steps:
+      - name: Get target branch
+        id: get-target
+        run: |
+          TARGET="${{ github.ref }}"
+          TARGET="${TARGET##*/}"
+          if [ "$TARGET" = "main" ]; then
+            TARGET="stable"
+          fi
+          echo "target=$TARGET" >> $GITHUB_OUTPUT
+
+      - name: Kickoff Game Mode Announcements
+        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4
+        continue-on-error: true
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ublue-os/bazzite-gamemode-news
+          event-type: build-announcements
+          client-payload: '{"branch": "${{ steps.get-target.outputs.target }}"}'
+
   kickoff_bazzite_dx:
     runs-on: ubuntu-24.04
     needs: [generate_release]
