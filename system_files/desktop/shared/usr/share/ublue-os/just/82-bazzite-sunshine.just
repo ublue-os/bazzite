@@ -1,6 +1,6 @@
 # vim: set ft=make :
 
-# Setup and configure Sunshine Game Streaming host. Options: status | enable | enable-beta | update | disable | uninstall | portal
+# Setup and configure Sunshine Game Streaming host. Options: status | enable | enable-beta | update | disable | uninstall | portal | virtual-monitor
 [group("gaming")]
 setup-sunshine ACTION="":
     #!/usr/bin/bash
@@ -11,6 +11,10 @@ setup-sunshine ACTION="":
       echo -n "$msg ${yellow}(Y/n)${normal} "
       read -r reply
       [[ -z "$reply" || "${reply,,}" =~ ^y ]]
+    }
+    press_any_key() {
+      echo "Press Enter to continue..."
+      read -r
     }
     sunshine_installed() {
       flatpak info dev.lizardbyte.app.Sunshine >/dev/null 2>&1
@@ -40,6 +44,7 @@ setup-sunshine ACTION="":
 
     [Service]
     ExecStartPre=/bin/sleep 5
+    ExecStopPost=/usr/libexec/sunshine-stop-vmon
     Restart=on-failure
     RestartSec=5s
     "
@@ -47,6 +52,104 @@ setup-sunshine ACTION="":
         systemctl --user edit --stdin homebrew.sunshine-beta <<< "$servicefile"
       fi
     }
+    virtual-monitor() {
+      local FLATPAK_VMON_APP='{
+        "auto-detach": true,
+        "cmd": "",
+        "elevated": false,
+        "exclude-global-prep-cmd": false,
+        "exit-timeout": 5,
+        "image-path": "",
+        "name": "Virtual Monitor",
+        "output": "",
+        "prep-cmd": [
+            {
+                "do": "sh -c \"flatpak-spawn --host --env=SUNSHINE_CLIENT_WIDTH=\\\"${SUNSHINE_CLIENT_WIDTH}\" --env=SUNSHINE_CLIENT_HEIGHT=\\\"${SUNSHINE_CLIENT_HEIGHT}\" --env=SUNSHINE_CLIENT_FPS=\\\"${SUNSHINE_CLIENT_FPS}\\\" --env=QT_QPA_PLATFORM=wayland --env=WAYLAND_DISPLAY=wayland-0 --env=XDG_RUNTIME_DIR=/run/user/1000 --env=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus /usr/libexec/sunshine-start-vmon\"",
+                "undo": "sh -c \"flatpak-spawn --host env QT_QPA_PLATFORM=wayland WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus /usr/libexec/sunshine-stop-vmon\""
+            }
+        ],
+        "wait-all": true
+      }'
+      local NORMAL_VMON_APP='{
+        "auto-detach": true,
+        "cmd": "",
+        "elevated": false,
+        "exclude-global-prep-cmd": false,
+        "exit-timeout": 5,
+        "image-path": "",
+        "name": "Virtual Monitor",
+        "output": "",
+        "prep-cmd": [
+            {
+                "do": "sh -c \"/usr/libexec/sunshine-start-vmon\"",
+                "undo": "sh -c \"/usr/libexec/sunshine-stop-vmon\""
+            }
+        ],
+        "wait-all": true
+      }'
+      local FLATPAK_APP_CONF="$HOME/.var/app/dev.lizardbyte.app.Sunshine/config/sunshine/apps.json"
+      local NORMAL_APP_CONF="$HOME/.config/sunshine/apps.json"
+      if [[ -f "$FLATPAK_APP_CONF" ]]; then
+        local APP_CONF="$FLATPAK_APP_CONF"
+        local VMON_APP="$FLATPAK_VMON_APP"
+      elif [[ -f "$NORMAL_APP_CONF" ]]; then
+        local APP_CONF="$NORMAL_APP_CONF"
+        local VMON_APP="$NORMAL_VMON_APP"
+      else
+        echo "No app config found! Is Sunshine installed?"
+        exit 1
+      fi
+      local IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+      local BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+      local IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
+      if [[ "$BASE_IMAGE_NAME" != "kinoite" ]]; then
+        echo "Virtual monitors are only supported in KDE's KWin compositor!"
+        echo "See ${bold}https://docs.bazzite.gg/Advanced/custom_resolution/${normal} for more information."
+        press_any_key
+        return 0
+      fi
+      if [[ "$IMAGE_NAME" =~ "deck" ]]; then
+        echo "Virtual monitors are only supported in KDE's KWin compositor!"
+        echo "See ${bold}https://docs.bazzite.gg/Advanced/custom_resolution/${normal} for more information."
+        press_any_key
+      fi
+      local MON_OPTION=$(Choose "Add Virtual Monitor" "Fix Error 503" "Go Back" "Exit")
+      case "$MON_OPTION" in
+        "Add Virtual Monitor")
+          TMP_FILE=$(mktemp)
+          jq --argjson VMON_APP "$VMON_APP" '
+            if .apps then
+              if any(.apps[]; .name == $VMON_APP.name) then
+                .apps |= map(if .name == $VMON_APP.name then $VMON_APP else . end)
+              else
+                .apps += [$VMON_APP]
+              end
+            else
+              .apps = [$VMON_APP]
+            end
+          ' "$APP_CONF" > "$TMP_FILE"
+          mv "$TMP_FILE" "$APP_CONF"
+          echo "Successfully added/updated 'Virtual Monitor' in $APP_CONF"
+          echo -e "[Service]\nExecStopPost=/usr/libexec/sunshine-stop-vmon" | systemctl --user edit app-dev.lizardbyte.app.Sunshine --stdin
+          systemctl daemon-reload
+          echo "Remember to set the Capture Method to ${bold}KWin Screencast${normal}."
+          echo "${bold}Restart Sunshine${normal} for changes to takes effect."
+          xdg-open "https://localhost:47990/troubleshooting"
+          press_any_key
+        ;;
+        "Fix Error 503")
+          echo "KWIN_WAYLAND_NO_PERMISSION_CHECKS=1" > $HOME/.config/environment.d/98-kwin-no-permission-checks.conf
+          echo -n "Wrote in $HOME/.config/environment.d/98-kwin-no-permission-checks: "
+          cat $HOME/.config/environment.d/98-kwin-no-permission-checks.conf
+        ;;
+        "Go Back")
+          ujust setup-sunshine
+        ;;
+        *)
+        ;;
+      esac
+    }
+
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust setup-sunshine <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
@@ -55,6 +158,7 @@ setup-sunshine ACTION="":
       echo "  Use 'disable' to disable the Sunshine service"
       echo "  Use 'uninstall' to uninstall the Sunshine Homebrew packages"
       echo "  Use 'portal' to open the Sunshine management portal"
+      echo "  Use 'virtual-monitor' to configure virtual monitors"
       echo "  Use 'exit' to exit without making changes"
       exit 0
     elif [ "$OPTION" == "status" ]; then
@@ -76,7 +180,7 @@ setup-sunshine ACTION="":
           ;;
       esac
       echo "Service is $SERVICE_STATE"
-      OPTION=$(Choose "Enable" "Enable Beta" "Update" "Disable Service" "Uninstall" "Open Portal" "Exit")
+      OPTION=$(Choose "Enable" "Enable Beta" "Update" "Disable Service" "Uninstall" "Open Portal" "Configure Virtual Monitor" "Exit")
     fi
     if [[ "${OPTION,,}" =~ ^enable[-[:space:]]beta ]]; then
       if [[ $(cat /etc/bazzite/image_name) =~ deck ]]; then
@@ -221,6 +325,8 @@ setup-sunshine ACTION="":
         fi
       fi
       echo "${yellow}Sunshine${n} is now uninstalled."
+    elif [[ "${OPTION,,}" =~ ^(virtual-monitor|"configure virtual monitor") ]]; then
+      virtual-monitor
     elif [[ "${OPTION,,}" =~ ^(portal|open) ]]; then
       echo "Opening ${yellow}Sunshine${n} management portal..."
       xdg-open https://localhost:47990
