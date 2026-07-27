@@ -461,12 +461,19 @@ jobs:
 
       - name: Install dgoss
         run: |
-          curl -L \
-            https://github.com/goss-org/goss/releases/latest/download/goss-linux-amd64 \
-            -o /usr/local/bin/goss
+          set -euo pipefail
+          GOSS_VERSION=v0.4.10
+          # goss release tarballs use linux_x86_64 naming for amd64 systems.
+          curl -fL \
+            "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/goss_${GOSS_VERSION#v}_linux_x86_64.tar.gz" \
+            -o /tmp/goss.tar.gz
+          tar -xzf /tmp/goss.tar.gz -C /usr/local/bin goss
+          test -f /usr/local/bin/goss || { echo "Error: /usr/local/bin/goss binary not found after extraction"; exit 1; }
           chmod +rx /usr/local/bin/goss
-          curl -L \
-            https://github.com/goss-org/goss/releases/latest/download/dgoss \
+          /usr/local/bin/goss --version >/dev/null
+          rm -f /tmp/goss.tar.gz
+          curl -fL \
+            "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/dgoss" \
             -o /usr/local/bin/dgoss
           chmod +rx /usr/local/bin/dgoss
 
