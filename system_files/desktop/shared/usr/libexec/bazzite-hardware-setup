@@ -76,12 +76,6 @@ if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
 fi
 
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
-  if [[ "$SYS_ID" == "Laptop 16 ("* ]]; then
-    if [[ $KARGS =~ "amdgpu.dcdebugmask" ]]; then
-      echo "Removing old, no longer needed Framework 16 fix."
-      NEEDED_KARGS+=("--delete-if-present=amdgpu.dcdebugmask=0x410")
-    fi
-  fi
   if [[ "GenuineIntel" == "$CPU_VENDOR" ]]; then
     if [[ ! $KARGS =~ "hid_sensor_hub" ]]; then
       echo "Intel Framework Laptop detected, applying needed keyboard fix"
@@ -89,20 +83,12 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
     fi
   fi
 fi
-fi
 
 # Slide reboots randomly, acpi=strict seems to fix it
 if [[ ":SLIDE:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "acpi=strict" ]]; then
     echo "Adding acpi=strict for Slide to avoid random reboots"
     NEEDED_KARGS+=("--append-if-missing=acpi=strict")
-  fi
-fi
-
-if [[ ":ROG Flow Z13 GZ302EA:" =~ "$:SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
-    echo "ROG Flow Z13 2025, fixing display artifacts"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
   fi
 fi
 
