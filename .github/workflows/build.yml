@@ -466,6 +466,7 @@ jobs:
             "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/goss_${GOSS_VERSION#v}_linux_x86_64.tar.gz" \
             -o /tmp/goss.tar.gz
           tar -xzf /tmp/goss.tar.gz -C /usr/local/bin goss
+          rm /tmp/goss.tar.gz
           curl -L \
             "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/dgoss" \
             -o /usr/local/bin/dgoss
