@@ -17,20 +17,18 @@ For the first case, all Major classes in /etc/bluetooth/wake-policy.conf
 except Peripheral should be uncommented and set to 'false', while for the
 second case Peripheral should also be uncommented and set to '01;02'.
 ---
- Makefile.plugins         |   4 +
- plugins/wake-policy.c    | 180 +++++++++++++++++++++++++++++++++++++++
- plugins/wake-policy.conf |  21 +++++
+ Makefile.plugins         |   4 ++
+ plugins/wake-policy.c    | 180 +++++++++++++++++++++++++++++++++++++++++++++++
+ plugins/wake-policy.conf |  21 ++++++
  src/device.c             |   2 +-
  src/device.h             |   1 +
  5 files changed, 207 insertions(+), 1 deletion(-)
- create mode 100644 plugins/wake-policy.c
- create mode 100644 plugins/wake-policy.conf
 
 diff --git a/Makefile.plugins b/Makefile.plugins
-index 4aa2c9c92..fbd4e4155 100644
+index ac667be..584da67 100644
 --- a/Makefile.plugins
 +++ b/Makefile.plugins
-@@ -8,6 +8,10 @@
+@@ -8,6 +8,10 @@ builtin_sources += plugins/autopair.c
  builtin_modules += policy
  builtin_sources += plugins/policy.c
  
@@ -43,7 +41,7 @@ index 4aa2c9c92..fbd4e4155 100644
  			profiles/audio/player.h profiles/audio/player.c
 diff --git a/plugins/wake-policy.c b/plugins/wake-policy.c
 new file mode 100644
-index 000000000..34e77c615
+index 0000000..34e77c6
 --- /dev/null
 +++ b/plugins/wake-policy.c
 @@ -0,0 +1,180 @@
@@ -229,7 +227,7 @@ index 000000000..34e77c615
 +			wake_policy_init, wake_policy_exit)
 diff --git a/plugins/wake-policy.conf b/plugins/wake-policy.conf
 new file mode 100644
-index 000000000..e6220bad1
+index 0000000..e6220ba
 --- /dev/null
 +++ b/plugins/wake-policy.conf
 @@ -0,0 +1,21 @@
@@ -255,11 +253,11 @@ index 000000000..e6220bad1
 +#Health=true
 +#Uncategorized=true
 diff --git a/src/device.c b/src/device.c
-index 1d4b8ab36..d970745f5 100644
+index 65d84be..bd2b6d2 100644
 --- a/src/device.c
 +++ b/src/device.c
-@@ -1500,7 +1500,7 @@ dev_property_advertising_data_exist(const GDBusPropertyTable *property,
- 	return bt_ad_has_data(device->ad, NULL);
+@@ -1615,7 +1615,7 @@ dev_property_advertising_data_exist(const GDBusPropertyTable *property,
+ 	return bt_ad_has_data(device->ad, NULL) ? TRUE : FALSE;
  }
  
 -static bool device_get_wake_support(struct btd_device *device)
@@ -268,10 +266,10 @@ index 1d4b8ab36..d970745f5 100644
  	return device->wake_support;
  }
 diff --git a/src/device.h b/src/device.h
-index 5722ca9ca..f8c744baf 100644
+index b890f23..31ceb94 100644
 --- a/src/device.h
 +++ b/src/device.h
-@@ -162,6 +162,7 @@ void device_set_wake_support(struct btd_device *device, bool wake_support);
+@@ -165,6 +165,7 @@ void device_set_wake_support(struct btd_device *device, bool wake_support);
  void device_set_wake_override(struct btd_device *device, bool wake_override);
  void device_set_wake_allowed(struct btd_device *device, bool wake_allowed,
  			     guint32 id);
@@ -280,5 +278,5 @@ index 5722ca9ca..f8c744baf 100644
  void device_set_past_support(struct btd_device *device, bool value);
  
 -- 
-2.34.1
+2.51.0
 

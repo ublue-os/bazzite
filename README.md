@@ -49,31 +49,22 @@
 
 Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) using [Fedora](https://fedoraproject.org/) technology, which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features:
 
-- Uses the [bazzite kernel](https://github.com/bazzite-org/kernel-bazzite) to achieve HDR and expanded hardware support, among numerous other included patches.
-- HDR available in Game mode.
-- NVK available on non-Nvidia builds.
+- Uses the [OGC kernel](https://www.github.com/OpenGamingCollective/linux)
+- HDR and VRR available by default.
 - Full hardware accelerated codec support for H264 decoding.
-- Full support for AMD's ROCM OpenCL/HIP run-times.
 - [xone](https://github.com/medusalix/xone) driver for Xbox controllers.
 - Full support for [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
-- Includes Valve's KDE themes from SteamOS.
 - [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default.
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) included.
-- Full support for [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - [Distrobox](https://github.com/89luca89/distrobox) preinstalled.
-- Simplified Davinci Resolve installation with [davincibox](https://github.com/zelikos/davincibox) (`ujust install-resolve`)
-- Automated `duperemove` service for reducing the disk space used by wine prefix contents.
-- Support for HDMI CEC via [libCEC](https://libcec.pulse-eight.com/).
-- Uses [Google's BBR TCP congestion control](https://github.com/google/bbr) by default.
+- Automated `bees` service for reducing the disk space used by wine prefix contents.
+- Support for HDMI CEC.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) preinstalled and enabled. <sub><sup>(Available but default-disabled on the Deck variant, may be enabled with `ujust restore-input-remapper`)</sup></sub>
 - [Bazzite Portal](https://github.com/ublue-os/yafti-gtk) provides an easy way to install numerous applications( and tweaks, including installing [LACT](https://github.com/ilya-zlobintsev/LACT) and IDEs over Brew. It additionally provides easy buttons to update, rebase and even reset the system image to defaults.
 - [Waydroid](https://waydro.id/) preinstalled for running Android apps. Set it up with this [quick guide](https://docs.bazzite.gg/Installing_and_Managing_Software/Waydroid_Setup_Guide/).
 - Manage applications using [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse), and [Gear Lever](https://github.com/mijorus/gearlever).
-- [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4 and i2c-nct6775 drivers for controlling RGB on certain motherboards.
 - [OpenRazer](https://openrazer.github.io) drivers built in, Select OpenRazer in Bazzite Portal or run `ujust install-openrazer` in a terminal to begin using it.
 - [OpenTabletDriver](https://opentabletdriver.net/) udev rules built in, with the full software suite installable via Bazzite Portal or by running `ujust install-opentabletdriver` in a terminal.
-- Out of the box support for [Wooting](https://wooting.io/) keyboards.
-- Built in support for Southern Islands <sub><sup>(HD 7000)</sup></sub> and Sea Islands <sub><sup>(HD 8000)</sup></sub> AMD GPUs under the `amdgpu` driver.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) is available for creating applications from websites for a variety of browsers, including Firefox.
 
 ### Desktop
@@ -104,7 +95,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, and for a console-like experience on HTPCs, available as `bazzite-deck`:
 
 - Directly boots to Game mode matching SteamOS's behavior.
-- **Automatic `duperemove` greatly trims the size of compatdata.**
+- **Automatic `bees` greatly trims the size of compatdata.**
 - **Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.**
 - **Able to be booted even if the drive is full.**
 - **Support for every language supported by upstream Fedora.**
@@ -272,7 +263,7 @@ Bazzite is a community effort and wouldn't exist without everyone's support. Bel
 - [evlaV](https://gitlab.com/evlaV) - For making Valve's code available and for being [this person](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out. It's our Nix-based cousin.
-- [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - For assistance with needed kernel patches and for creating the [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) we now use.
+- [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - For assistance with needed kernel patches and for creating the [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
 - [nicknamenamenick](https://github.com/nicknamenamenick) - For being the MVP nearly single-handedly upkeeping our documentation and support literature, and countless cases of helping users.
 - [Steam Deck Homebrew](https://deckbrew.xyz) - For choosing to support distributions other than SteamOS despite the extra work, and a special thanks to [PartyWumpus](https://github.com/PartyWumpus) for getting Decky Loader working with SELinux for us.
 - [cyrv6737](https://github.com/cyrv6737) - For the initial inspiration and the base that became bazzite-arch.

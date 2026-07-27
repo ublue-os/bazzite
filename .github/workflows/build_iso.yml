@@ -68,7 +68,7 @@ jobs:
           sudo systemctl start podman.service
 
       - name: Checkout Repo
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           submodules: recursive
 
@@ -162,7 +162,7 @@ jobs:
       - name: Setup Cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
         with:
-          cosign-release: 'v2.6.1'
+          cosign-release: 'v2.6.4'
 
       - name: Sign ISO
         env:

@@ -280,6 +280,9 @@ screens:
           - id: "portal"
             label: "Open Sunshine Management Portal"
             script: "ujust setup-sunshine portal"
+          - id: "vmon"
+            label: "Setup Virtual Monitor"
+            script: "ujust setup-sunshine virtual-monitor"
       - id: "visual-studio-code-linux"
         title: "Visual Studio Code"
         description: "Open source code editor and debugger from Microsoft — installed using Brew."
@@ -292,7 +295,7 @@ screens:
         script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask vscodium-linux'
       - id: "waydroid"
         title: "Waydroid"
-        description: "Android system in a container for app compatibility on Linux. Incompatible with NVIDIA drivers."
+        description: "Android system in a container, for app compatibility on Linux. Incompatible with NVIDIA drivers."
         default: false
         options:
           - id: "init"
@@ -446,6 +449,12 @@ screens:
         description: "Remove the next image deployment, halting all updates or layering changes pending reboot."
         default: false
         script: 'rpm-ostree cleanup -p; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "update-nvidia-runtime"
+        title: "Update Nvidia Flatpak Runtime"
+        description: "Synchronizes Nvidia Flatpak Runtimes with system version. This is usually done automatically by the systemd service."
+        default: false
+        status_script: "ujust update-nvidia-runtime status"
+        script: "ujust update-nvidia-runtime upgrade"
       - id: "verify-image"
         title: "Move to a ‘verified’ image"
         description: "Detect if you are on an ‘unverified’ image of Bazzite and then, if applicable, move you to a signed one."
