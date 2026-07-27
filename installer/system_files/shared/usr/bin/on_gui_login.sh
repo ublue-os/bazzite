@@ -93,9 +93,9 @@ nvidia_hardware_helper() {
     if [ -z "$image_name" ]; then
         return 124
     fi
-    #call NVIDIA detection script
-    if [[ -f "/usr/libexec/bazzite_detect_nvidia_support_status" ]]; then
-        output=$("/usr/libexec/bazzite_detect_nvidia_support_status")
+    #Call NVIDIA detection script
+    if [[ -x "/usr/libexec/bazzite-detect-nvidia-support-status" ]]; then
+        output=$("/usr/libexec/bazzite-detect-nvidia-support-status")
         ret_val=$?
         # handle exit codes
         if [ $ret_val -eq 0 ] && [ "$output" == "" ]; then

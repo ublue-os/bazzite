@@ -37,6 +37,10 @@ jobs:
           - bazzite-gnome
           - bazzite-gnome-nvidia
           - bazzite-gnome-nvidia-open
+          - bazzite-deck
+          - bazzite-deck-gnome
+          - bazzite-deck-nvidia
+          - bazzite-deck-nvidia-gnome
     steps:
       - name: Show disk space
         run: sudo df -h

@@ -167,7 +167,6 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y config-manager setopt "*staging*".exclude="scx-tools scx-scheds kf6-* mesa* mutter*" && \
     /ctx/cleanup
 
-# Install patched fwupd
 # Install Valve's patched Mesa, Bluez, and Xwayland
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
@@ -181,7 +180,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite"]="wireplumber" \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="bluez xorg-x11-server-Xwayland" \
         ["terra-mesa"]="mesa-filesystem" \
-        ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --from-repo=$repo $package $package; done; \
@@ -200,10 +198,6 @@ RUN --mount=type=cache,dst=/var/cache \
         mesa-libGL \
         mesa-libgbm \
         mesa-vulkan-drivers \
-        fwupd \
-        fwupd-plugin-flashrom \
-        fwupd-plugin-modem-manager \
-        fwupd-plugin-uefi-capsule-data \
         NetworkManager \
         NetworkManager-wifi \
         NetworkManager-libnm && \
@@ -257,10 +251,10 @@ RUN --mount=type=cache,dst=/var/cache \
         fuse-libs \
         uld \
         bazaar \
-        iwd \
         greenboot \
         greenboot-default-health-checks \
         ublue-os-selinux-workarounds \
+        bazzite-updater \
         ScopeBuddy \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
@@ -333,11 +327,11 @@ RUN --mount=type=cache,dst=/var/cache \
         wlr-randr \
         gmodpatchtool \
         bazzite-portal \
+        kernel-tools \
         ls-iommu && \
     ln -s /dev/null /etc/NetworkManager/dispatcher.d/04-iscsi && \
     systemctl mask iscsi && \
     systemctl mask systemd-remount-fs.service && \
-    systemctl mask iwd.service && \
     mkdir -p /usr/lib/extest/ && \
     /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest | jq -r '.assets[] | select(.name| test(".*so$")).browser_download_url')" -Lo /usr/lib/extest/libextest.so && \
     /ctx/ghcurl "https://github.com/ykshek/Sunshine/raw/1347f9ef290c089b815cf186f7d361470bdb9ef7/src_assets/linux/misc/postinst" -Lo /usr/libexec/sunshine-postinst && \
@@ -463,6 +457,7 @@ RUN --mount=type=cache,dst=/var/cache \
             kcharselect \
             kde-partitionmanager \
             plasma-discover && \
+        setcap 'cap_net_admin+ep' /usr/bin/kdeconnectd && \
         sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl && \
         ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
@@ -607,6 +602,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable uupd.timer && \
     systemctl enable incus-workaround.service && \
     systemctl enable bazzite-hardware-setup.service && \
+    systemctl enable bazzite-iwd-migration.service && \
     systemctl disable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
     systemctl enable ds-inhibit.service && \
@@ -712,6 +708,7 @@ RUN --mount=type=cache,dst=/var/cache \
         gamescope-session-ogui-steam \
         steamos-manager-powerstation \
         steamos-manager-powerstation-gamescope-session-plus \
+        gamemode-news-hook \
         vpower \
         steam-notif-daemon \
         acpica-tools \
@@ -729,7 +726,9 @@ RUN --mount=type=cache,dst=/var/cache \
         python-crcmod && \
     chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus && \
     sed -i 's/- xbox-elite/- deck/g' /usr/share/inputplumber/devices/50-steam_deck.yaml && \
-    git clone https://github.com/bazzite-org/jupiter-dock-updater-bin.git \
+    sed -i 's/LOG_LEVEL=info/LOG_LEVEL=debug/g' /usr/lib/systemd/system/inputplumber.service && \
+    sed -i 's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="opengamepadui --accessibility disabled --overlay-mode|' /usr/share/gamescope-session-plus/sessions.d/ogui-steam && \
+    git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
         --depth 1 \
         /tmp/jupiter-dock-updater-bin && \
     mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/libexec/jupiter-dock-updater && \
@@ -779,6 +778,7 @@ RUN --mount=type=cache,dst=/var/cache \
     mkdir -p "/etc/xdg/autostart" && \
     mv "/etc/skel/.config/autostart/steam.desktop" "/etc/xdg/autostart/steam.desktop" && \
     sed -i 's@Exec=waydroid first-launch@Exec=/usr/bin/waydroid-launcher first-launch\nX-Steam-Library-Capsule=/usr/share/applications/Waydroid/capsule.png\nX-Steam-Library-Hero=/usr/share/applications/Waydroid/hero.png\nX-Steam-Library-Logo=/usr/share/applications/Waydroid/logo.png\nX-Steam-Library-StoreCapsule=/usr/share/applications/Waydroid/store-logo.png\nX-Steam-Controller-Template=Desktop@g' /usr/share/applications/Waydroid.desktop && \
+    sed -i 's|/usr/lib/|/usr/libexec/|g' /usr/share/steamos-manager/platform.toml && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sed -i 's|Exec=.*|Exec=/usr/bin/return-to-gamemode|' /etc/skel/Desktop/Return.desktop && \
         printf "\n[session]\ndesktop = \"plasma.desktop\"\n" >> /usr/share/steamos-manager/platform.toml \
@@ -797,15 +797,24 @@ RUN --mount=type=cache,dst=/var/cache \
         dnf5 -y copr disable -y $copr; \
     done && unset -v copr && \
     { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
+    sed -i "s|^github = .*|github = https://raw.githubusercontent.com/ublue-os/bazzite-gamemode-news/refs/heads/${IMAGE_BRANCH}/announcements.json|" /etc/gamemode-news-hook.conf && \
+    mkdir -p /usr/lib/systemd/user/gamescope-session-plus@.service.wants && \
+    ln -s /usr/lib/systemd/user/steamos-powerbuttond.service /usr/lib/systemd/user/gamescope-session-plus@.service.wants/ && \
     systemctl enable --global steamos-manager.service && \
+    systemctl enable --global steamos-manager-session-cleanup.service && \
+    systemctl enable --global steamos-manager-configure-cecd.service && \
     systemctl enable steamos-manager.service && \
     systemctl enable inputplumber.service && \
+    systemctl enable powerstation.service && \
+    systemctl disable tuned.service && \
+    systemctl disable tuned-ppd.service && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \
     systemctl enable pipewire-workaround.service && \
     systemctl enable pipewire-sysconf.service && \
     systemctl enable bazzite-tdpfix.service && \
+    systemctl --global enable gamemode-news-hook.service && \
     systemctl --global disable sdgyrodsu.service && \
     systemctl --global enable steamos-powerbuttond.service && \
     systemctl disable input-remapper.service && \
@@ -881,6 +890,8 @@ RUN --mount=type=cache,dst=/var/cache \
         rm "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" \
     ; fi && \
     systemctl disable supergfxd.service && \
+    systemctl enable ublue-nvidia-flatpak-runtime-sync && \
+    systemctl enable ublue-nvidia-flatpak-runtime-verify && \
     dnf5 config-manager setopt skip_if_unavailable=1 && \
     if [ -f /etc/modprobe.d/nvidia-modeset.conf ]; then \
       cp /etc/modprobe.d/nvidia-modeset.conf /usr/lib/modprobe.d/nvidia-modeset.conf \

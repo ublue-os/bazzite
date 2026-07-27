@@ -7,13 +7,16 @@
 %endif
 
 Name:    bluez
-Version: 5.86
+Version: 5.87
 Release: 2%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary: Bluetooth utilities
 License: GPL-2.0-or-later
 URL:     http://www.bluez.org/
 
 Source0: https://www.kernel.org/pub/linux/bluetooth/%{name}-%{version}.tar.xz
+
+# https://git.kernel.org/pub/scm/bluetooth/bluez.git/commit/?id=5bc6aa79e53700d56fc1f9f9364573ba4c78da65
+Patch1: 0001-adapter-Fix-crash-on-dev_disconnected.patch 
 
 # Valve
 Patch10: 0001-valve-bluetooth-config.patch
@@ -84,7 +87,6 @@ be dropped by upstream. Utilities include:
 	- gatttool
 	- hciattach
 	- hciconfig
-	- hcidump
 	- hcitool
 	- meshctl
 	- rfcomm
@@ -175,6 +177,9 @@ install -m0755 attrib/gatttool $RPM_BUILD_ROOT%{_bindir}
 # "make install" fails to install avinfo
 # Red Hat Bugzilla bug #1699680
 install -m0755 tools/avinfo $RPM_BUILD_ROOT%{_bindir}
+
+# "make install" fails to install avinfo            
+install -m0755 tools/btsnoop $RPM_BUILD_ROOT%{_bindir}
 
 # btmgmt is not installed by "make install", but it is useful for debugging
 # some issues and to set the MAC address on HCIs which don't have their
@@ -280,7 +285,6 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_bindir}/gatttool
 %{_bindir}/hciattach
 %{_bindir}/hciconfig
-%{_bindir}/hcidump
 %{_bindir}/hcitool
 %{_bindir}/meshctl
 %{_bindir}/rfcomm
@@ -288,7 +292,6 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_mandir}/man1/ciptool.1.*
 %{_mandir}/man1/hciattach.1.*
 %{_mandir}/man1/hciconfig.1.*
-%{_mandir}/man1/hcidump.1.*
 %{_mandir}/man1/hcitool.1.*
 %{_mandir}/man1/rfcomm.1.*
 %{_mandir}/man1/sdptool.1.*
@@ -301,6 +304,7 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 
 %files libs-devel
 %doc doc/*txt
+%{_bindir}/btsnoop
 %{_bindir}/isotest
 %{_bindir}/l2test
 %{_bindir}/l2ping
@@ -309,6 +313,7 @@ install emulator/btvirt ${RPM_BUILD_ROOT}/%{_libexecdir}/bluetooth/
 %{_mandir}/man1/l2ping.1.*
 %{_mandir}/man1/rctest.1.*
 %{_mandir}/man5/org.bluez.*.5.*
+%{_mandir}/man7/btsnoop.7.*
 %{_mandir}/man7/hci.7.*
 %{_mandir}/man7/iso.7.*
 %{_mandir}/man7/l2cap.7.*

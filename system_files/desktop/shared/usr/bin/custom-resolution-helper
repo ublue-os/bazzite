@@ -413,9 +413,9 @@ IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 if [[ "$BASE_IMAGE_NAME" == "kinoite" ]]; then
    echo "
-${green}KDE Plasma 6.6${normal} adds the ability to add ${bold}custom resolutions${normal} in ${green}kscreen-doctor${normal}!
+${green}KDE Plasma 6.6+${normal} adds the ability to add ${bold}custom resolutions${normal} and ${bold}virtual-monitors${normal} in ${green}kscreen-doctor${normal}!
 Use that instead if you do not need a custom resolution for Game Mode or Sunshine.
-An updated guide is available on ${bold}https://docs.bazzite.gg/Advanced/custom_resolution/${normal}
+A helper to add a Sunshine app to create virtual monitors according to client resolution is available in ${bold}Bazzite Portal${normal}; and an updated guide is available on ${bold}https://docs.bazzite.gg/Advanced/custom_resolution/${normal}
 "
    press_any_key
 fi
