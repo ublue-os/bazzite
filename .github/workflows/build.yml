@@ -469,7 +469,10 @@ jobs:
           GOSS_VERSION="$(curl -sfI --connect-timeout 10 --max-redirs 0 https://github.com/goss-org/goss/releases/latest \
             | grep -i '^location:' \
             | sed -E 's#.*/tag/v([0-9.]+).*#\1#' \
-            | tr -d '\r')"
+            | tr -d '\r')" || {
+            echo "Failed to fetch latest goss release URL" >&2
+            exit 1
+          }
 
           if [[ ! "${GOSS_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Failed to resolve a valid goss version (got: '${GOSS_VERSION}')" >&2
@@ -478,7 +481,10 @@ jobs:
 
           curl -sfL --connect-timeout 10 \
             "https://github.com/goss-org/goss/releases/download/v${GOSS_VERSION}/goss_${GOSS_VERSION}_linux_x86_64.tar.gz" \
-            -o /tmp/goss.tar.gz
+            -o /tmp/goss.tar.gz || {
+            echo "Failed to download goss tarball for version ${GOSS_VERSION}" >&2
+            exit 1
+          }
           tar -xzf /tmp/goss.tar.gz -C /usr/local/bin goss
           chmod +rx /usr/local/bin/goss
           rm -f /tmp/goss.tar.gz
