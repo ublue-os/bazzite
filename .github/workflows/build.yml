@@ -468,7 +468,7 @@ jobs:
             "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/goss_${GOSS_VERSION#v}_linux_x86_64.tar.gz" \
             -o /tmp/goss.tar.gz
           tar -xzf /tmp/goss.tar.gz -C /usr/local/bin goss
-          test -f /usr/local/bin/goss || { echo "Error: goss binary not found after extraction"; exit 1; }
+          test -f /usr/local/bin/goss || { echo "Error: /usr/local/bin/goss binary not found after extraction"; exit 1; }
           chmod +rx /usr/local/bin/goss
           /usr/local/bin/goss --version >/dev/null
           rm -f /tmp/goss.tar.gz
