@@ -461,10 +461,12 @@ jobs:
 
       - name: Install dgoss
         run: |
+          set -euo pipefail
+
           # goss >= v0.4.x no longer publishes a plain "goss-linux-amd64" binary,
           # it ships versioned tarballs instead (e.g. goss_<version>_linux_x86_64.tar.gz).
           # Resolve the latest release tag without hitting the rate-limited GitHub API.
-          GOSS_VERSION="$(curl -sI --max-redirs 0 https://github.com/goss-org/goss/releases/latest \
+          GOSS_VERSION="$(curl -sfI --connect-timeout 10 --max-redirs 0 https://github.com/goss-org/goss/releases/latest \
             | grep -i '^location:' \
             | sed -E 's#.*/tag/v([0-9.]+).*#\1#' \
             | tr -d '\r')"
@@ -474,14 +476,14 @@ jobs:
             exit 1
           fi
 
-          curl -L \
+          curl -sfL --connect-timeout 10 \
             "https://github.com/goss-org/goss/releases/download/v${GOSS_VERSION}/goss_${GOSS_VERSION}_linux_x86_64.tar.gz" \
             -o /tmp/goss.tar.gz
           tar -xzf /tmp/goss.tar.gz -C /usr/local/bin goss
           chmod +rx /usr/local/bin/goss
           rm -f /tmp/goss.tar.gz
 
-          curl -L \
+          curl -sfL --connect-timeout 10 \
             https://github.com/goss-org/goss/releases/latest/download/dgoss \
             -o /usr/local/bin/dgoss
           chmod +rx /usr/local/bin/dgoss
