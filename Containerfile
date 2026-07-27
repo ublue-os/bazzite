@@ -800,6 +800,7 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i "s|^github = .*|github = https://raw.githubusercontent.com/ublue-os/bazzite-gamemode-news/refs/heads/${IMAGE_BRANCH}/announcements.json|" /etc/gamemode-news-hook.conf && \
     mkdir -p /usr/lib/systemd/user/gamescope-session-plus@.service.wants && \
     ln -s /usr/lib/systemd/user/steamos-powerbuttond.service /usr/lib/systemd/user/gamescope-session-plus@.service.wants/ && \
+    sed -i 's/@steam/@ogui-steam/g' /usr/lib/systemd/user/gamemode-news-hook.service && \
     systemctl enable --global steamos-manager.service && \
     systemctl enable --global steamos-manager-session-cleanup.service && \
     systemctl enable --global steamos-manager-configure-cecd.service && \
