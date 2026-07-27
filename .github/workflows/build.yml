@@ -491,7 +491,10 @@ jobs:
 
           curl -sfL --connect-timeout 10 \
             https://github.com/goss-org/goss/releases/latest/download/dgoss \
-            -o /usr/local/bin/dgoss
+            -o /usr/local/bin/dgoss || {
+            echo "Failed to download dgoss" >&2
+            exit 1
+          }
           chmod +rx /usr/local/bin/dgoss
 
       - name: Run goss tests
