@@ -461,14 +461,16 @@ jobs:
 
       - name: Install dgoss
         run: |
+          GOSS_VERSION=v0.4.10
           curl -L \
-            https://github.com/goss-org/goss/releases/latest/download/goss-linux-amd64 \
-            -o /usr/local/bin/goss
-          chmod +rx /usr/local/bin/goss
+            "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/goss_${GOSS_VERSION#v}_linux_x86_64.tar.gz" \
+            -o /tmp/goss.tar.gz
+          tar -xzf /tmp/goss.tar.gz -C /usr/local/bin goss
           curl -L \
-            https://github.com/goss-org/goss/releases/latest/download/dgoss \
+            "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/dgoss" \
             -o /usr/local/bin/dgoss
           chmod +rx /usr/local/bin/dgoss
+          chmod +rx /usr/local/bin/goss
 
       - name: Run goss tests
         run: |
