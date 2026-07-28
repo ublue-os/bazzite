@@ -807,9 +807,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable steamos-manager.service && \
     systemctl enable steamos-manager-workaround.service && \
     systemctl enable inputplumber.service && \
-    systemctl enable powerstation.service && \
-    systemctl disable tuned.service && \
-    systemctl disable tuned-ppd.service && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \
