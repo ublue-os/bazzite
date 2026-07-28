@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=75
+HWS_VER=76
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -103,6 +103,20 @@ if [[ $KARGS =~ "nomodeset" ]]; then
 fi
 
 if [[ $IMAGE_NAME =~ "deck" ]]; then
+  if /usr/libexec/hwsupport/valve-hardware || /usr/libexec/hwsupport/non-valve-handheld-hardware; then
+    systemctl mask tuned.service
+    systemctl mask tuned-ppd.service
+    if /usr/libexec/hwsupport/valve-hardware; then
+      systemctl mask powerstation.service
+    else
+      systemctl unmask powerstation.service
+    fi
+  else
+    systemctl unmask tuned.service
+    systemctl unmask tuned-ppd.service
+    systemctl mask powerstation.service
+  fi
+
   if /usr/libexec/hwsupport/valve-hardware; then
     if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
       RESOLUTION=$(lshw -json -c display | jq -r .[]."configuration"."resolution")
