@@ -23,13 +23,6 @@ if [[ "$IMAGE_NAME" != *deck* && "$IMAGE_NAME" != *dx* ]]; then
   rm -f /etc/sddm.conf.d/steamos.conf
 fi
 
-# Take care of autologin for deck if the needed file is missing
-if [[ "$IMAGE_NAME" == *deck* ]]; then
-  if [ ! -f /etc/sddm.conf.d/steamos.conf ] && [ -f /usr/etc/sddm.conf.d/steamos.conf ]; then
-    cp /usr/etc/sddm.conf.d/steamos.conf /etc/sddm.conf.d/steamos.conf
-  fi
-fi
-
 if [[ "$KNOWN_IMAGE_NAME" == "$IMAGE_NAME" && \
     "$KNOWN_IMAGE_BRANCH" == "$IMAGE_BRANCH" && \
     "$KNOWN_FEDORA_VERSION" == "$FEDORA_VERSION" && \

@@ -805,7 +805,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable --global steamos-manager-session-cleanup.service && \
     systemctl enable --global steamos-manager-configure-cecd.service && \
     systemctl enable steamos-manager.service && \
-    systemctl enable steamos-manager-workaround.service && \
     systemctl enable inputplumber.service && \
     systemctl enable powerstation.service && \
     systemctl enable bazzite-autologin.service && \
