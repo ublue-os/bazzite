@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=75
+HWS_VER=76
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -21,13 +21,6 @@ KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
 # Take care of autologin for non -deck or -dx images where this file is not needed.
 if [[ "$IMAGE_NAME" != *deck* && "$IMAGE_NAME" != *dx* ]]; then
   rm -f /etc/sddm.conf.d/steamos.conf
-fi
-
-# Take care of autologin for deck if the needed file is missing
-if [[ "$IMAGE_NAME" == *deck* ]]; then
-  if [ ! -f /etc/sddm.conf.d/steamos.conf ] && [ -f /usr/etc/sddm.conf.d/steamos.conf ]; then
-    cp /usr/etc/sddm.conf.d/steamos.conf /etc/sddm.conf.d/steamos.conf
-  fi
 fi
 
 if [[ "$KNOWN_IMAGE_NAME" == "$IMAGE_NAME" && \
@@ -76,12 +69,6 @@ if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
 fi
 
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
-  if [[ "$SYS_ID" == "Laptop 16 ("* ]]; then
-    if [[ $KARGS =~ "amdgpu.dcdebugmask" ]]; then
-      echo "Removing old, no longer needed Framework 16 fix."
-      NEEDED_KARGS+=("--delete-if-present=amdgpu.dcdebugmask=0x410")
-    fi
-  fi
   if [[ "GenuineIntel" == "$CPU_VENDOR" ]]; then
     if [[ ! $KARGS =~ "hid_sensor_hub" ]]; then
       echo "Intel Framework Laptop detected, applying needed keyboard fix"
@@ -89,20 +76,12 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
     fi
   fi
 fi
-fi
 
 # Slide reboots randomly, acpi=strict seems to fix it
 if [[ ":SLIDE:" =~ ":$SYS_ID:" ]]; then
   if [[ ! $KARGS =~ "acpi=strict" ]]; then
     echo "Adding acpi=strict for Slide to avoid random reboots"
     NEEDED_KARGS+=("--append-if-missing=acpi=strict")
-  fi
-fi
-
-if [[ ":ROG Flow Z13 GZ302EA:" =~ "$:SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
-    echo "ROG Flow Z13 2025, fixing display artifacts"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
   fi
 fi
 
@@ -117,6 +96,20 @@ if [[ $KARGS =~ "nomodeset" ]]; then
 fi
 
 if [[ $IMAGE_NAME =~ "deck" ]]; then
+  if /usr/libexec/hwsupport/valve-hardware || /usr/libexec/hwsupport/non-valve-handheld-hardware; then
+    systemctl mask tuned.service
+    systemctl mask tuned-ppd.service
+    if /usr/libexec/hwsupport/valve-hardware; then
+      systemctl mask powerstation.service
+    else
+      systemctl unmask powerstation.service
+    fi
+  else
+    systemctl unmask tuned.service
+    systemctl unmask tuned-ppd.service
+    systemctl mask powerstation.service
+  fi
+
   if /usr/libexec/hwsupport/valve-hardware; then
     if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
       RESOLUTION=$(lshw -json -c display | jq -r .[]."configuration"."resolution")
