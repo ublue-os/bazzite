@@ -313,7 +313,6 @@ RUN --mount=type=cache,dst=/var/cache \
         cockpit-system \
         cockpit-files \
         cockpit-storaged \
-        topgrade \
         ydotool \
         stress-ng \
         snapper \
