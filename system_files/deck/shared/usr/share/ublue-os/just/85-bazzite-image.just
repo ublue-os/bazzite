@@ -71,7 +71,7 @@ enable-ryzenadj-max-performance:
     [Service]
     Type=oneshot
     ExecStart=/usr/bin/ryzenadj --max-performance
-    
+
     [Install]
     WantedBy=multi-user.target
     EOF
