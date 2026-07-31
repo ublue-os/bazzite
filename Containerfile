@@ -664,6 +664,7 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable ublue-os/bazzite && \
     dnf5 -y copr enable ublue-os/bazzite-multilib && \
     dnf5 -y copr enable ycollet/audinux && \
+    dnf5 -y copr enable addmixbb/Bazzite-Deck-Sleep-Inhibitor && \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     /ctx/cleanup
 
@@ -702,7 +703,9 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y install --enable-repo=terra \
+    dnf5 -y install \
+        --enable-repo=terra \
+        --enable-repo=copr:copr.fedorainfracloud.org:addmixbb:Bazzite-Deck-Sleep-Inhibitor \
         jupiter-fan-control \
         jupiter-hw-support-btrfs \
         galileo-mura \
@@ -712,6 +715,7 @@ RUN --mount=type=cache,dst=/var/cache \
         gamescope-session-ogui-steam \
         steamos-manager-powerstation \
         steamos-manager-powerstation-gamescope-session-plus \
+        bazzite-deck-sleep-inhibitor \
         vpower \
         steam-notif-daemon \
         acpica-tools \
@@ -814,6 +818,8 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl disable vpower.service && \
     systemctl disable jupiter-biosupdate.service && \
     systemctl disable jupiter-controller-update.service && \
+    systemctl enable sleep-inhibitor-root.service && \
+    systemctl --global enable sleep-inhibitor.service && \
     dnf5 config-manager setopt skip_if_unavailable=1 && \
     /ctx/image-info && \
     /ctx/build-initramfs && \
