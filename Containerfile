@@ -328,6 +328,9 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-portal \
         kernel-tools \
         ls-iommu && \
+    dnf5 -y swap \
+        --repo terra \
+            switcheroo-control cardwire && \
     ln -s /dev/null /etc/NetworkManager/dispatcher.d/04-iscsi && \
     systemctl mask iscsi && \
     systemctl mask systemd-remount-fs.service && \
@@ -616,6 +619,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global enable ntfs-nag.service && \
     systemctl enable dmemcg-booster-system.service && \
     systemctl --global enable dmemcg-booster-user.service && \
+    systemctl enable cardwired.service && \
     /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf" -Lo /etc/dxvk-example.conf && \
     /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/waydroid-scripts/main/waydroid-choose-gpu.sh" -Lo /usr/bin/waydroid-choose-gpu && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
@@ -868,7 +872,7 @@ RUN --mount=type=cache,dst=/var/cache \
         egl-wayland.i686 \
         egl-wayland2.x86_64 \
         egl-wayland2.i686 && \
-    IMAGE_NAME="${BASE_IMAGE_NAME}" AKMODNV_PATH="/tmp/rpms/nvidia" MULTILIB=1 /tmp/rpms/nvidia/ublue-os/nvidia-install.sh && \
+    IMAGE_NAME="SKIP_PACKAGE_INSTALL" AKMODNV_PATH="/tmp/rpms/nvidia" MULTILIB=1 /tmp/rpms/nvidia/ublue-os/nvidia-install.sh && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
     ln -s libnvidia-ml.so.1 /usr/lib64/libnvidia-ml.so && \
     dnf5 config-manager setopt "terra-mesa".enabled=0 && \
@@ -887,7 +891,6 @@ RUN --mount=type=cache,dst=/var/cache \
         dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" && \
         rm "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" \
     ; fi && \
-    systemctl disable supergfxd.service && \
     systemctl enable ublue-nvidia-flatpak-runtime-sync && \
     systemctl enable ublue-nvidia-flatpak-runtime-verify && \
     dnf5 config-manager setopt skip_if_unavailable=1 && \
