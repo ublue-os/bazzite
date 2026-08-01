@@ -412,7 +412,7 @@ get-framegen ACTION="":
     REPO_OWNER="xXJSONDeruloXx"
     REPO_NAME="Decky-Framegen"
     PLUGIN_NAME="Decky-Framegen"
-    FILENAME="Decky.Framegen.zip"
+    FILENAME="Decky-Framegen.zip"
     PLUGIN_BASE_DIR="$HOME/homebrew/plugins"
     PLUGIN_DIR="$HOME/homebrew/plugins/Decky-Framegen"
     get_status_token() {
