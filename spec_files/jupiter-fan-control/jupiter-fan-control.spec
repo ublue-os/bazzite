@@ -3,9 +3,9 @@ Version:        {{{ git_dir_version }}}
 Release:        1%{?dist}
 Summary:        Steam Deck Fan Controller
 License:        MIT
-URL:            https://github.com/evlav/jupiter-fan-control/
+URL:            https://github.com/evlav/jupiter-fan-control
 
-Source:         %{url}archive/refs/heads/main.tar.gz
+Source:         %{url}/archive/refs/heads/matts/7.2-fix.tar.gz
 BuildArch:      noarch
 
 Requires:       python3
@@ -20,7 +20,7 @@ SteamOS 3.0 Steam Deck Fan Controller
 %define debug_package %{nil}
 
 %prep
-%autosetup -n %{name}-main -p1
+%autosetup -n %{name}-matts-7.2-fix -p1
 # Use a versioned interpreter so the build's shebang mangling succeeds
 sed -i '1s|^#!/usr/bin/python\b|#!/usr/bin/python3|' usr/share/jupiter-fan-control/fancontrol.py
 
