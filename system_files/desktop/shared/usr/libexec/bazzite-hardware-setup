@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=76
+HWS_VER=77
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -101,8 +101,10 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
     systemctl mask tuned-ppd.service
     if /usr/libexec/hwsupport/valve-hardware; then
       systemctl mask powerstation.service
+      systemctl mask inputplumber.service
     else
       systemctl unmask powerstation.service
+      systemclt unmask inputplumber.service
     fi
   else
     systemctl unmask tuned.service
