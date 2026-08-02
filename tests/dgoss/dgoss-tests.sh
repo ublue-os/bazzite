@@ -16,9 +16,14 @@ fi
 # Force dgoss to use podman
 export CONTAINER_RUNTIME=podman
 
-# Fail fast if dgoss not present
+# Fail fast if required test tools are not present
 if ! command -v dgoss >/dev/null 2>&1; then
     echo "dgoss not found in PATH" >&2
+    exit 2
+fi
+
+if ! command -v podman >/dev/null 2>&1; then
+    echo "podman not found in PATH" >&2
     exit 2
 fi
 

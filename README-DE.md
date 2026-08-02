@@ -1,5 +1,10 @@
 <p align="center">
-  <a href="https://bazzite.gg/"><img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
+  <a href="https://bazzite.gg/">
+    <picture>
+      <source srcset="repo_content/Bazzite_Light.svg" media="(prefers-color-scheme: dark)">
+      <img src="repo_content/Bazzite.svg" alt="Bazzite"/>
+    </picture>
+  </a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
@@ -45,7 +50,7 @@ Für eine einsteigerfreundliche Erklärung von Bazzite [besuche bitte unsere Web
 
 Bazzite basiert auf [ublue-os/main](https://github.com/ublue-os/main) und [ublue-os/nvidia](https://github.com/ublue-os/nvidia) unter Verwendung der [Fedora](https://fedoraproject.org/)-Technologie. Dies bedeutet erweiterte Hardware-Unterstützung und integrierte Treiber. Zusätzlich bietet Bazzite die folgenden Funktionen:
 
-- Verwendet den [Bazzite-Kernel](https://github.com/bazzite-org/kernel-bazzite), um HDR und erweiterte Hardware-Unterstützung zu ermöglichen, neben zahlreichen anderen enthaltenen Patches – basierend auf dem [fsync-Kernel](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
+- Verwendet den [Bazzite-Kernel](https://github.com/bazzite-org/kernel-bazzite), um HDR und erweiterte Hardware-Unterstützung zu ermöglichen, neben zahlreichen anderen enthaltenen Patches.
 - HDR im Spielmodus verfügbar.
 - NVK auf Nicht-Nvidia-Builds verfügbar.
 - Volle Hardware-beschleunigte Codec-Unterstützung für H264-Dekodierung.
@@ -78,7 +83,7 @@ Bazzite basiert auf [ublue-os/main](https://github.com/ublue-os/main) und [ublue
 
 Standardvariante, verfügbar als `bazzite`, geeignet für Desktop-Computer.
 
-- Automatische Updates für das OS, Flatpaks und mehr – angetrieben von [ublue-update](https://github.com/ublue-os/ublue-update) und [topgrade](https://github.com/topgrade-rs/topgrade).
+- Automatische Updates für das OS, Flatpaks und mehr – angetrieben von [uupd](https://github.com/ublue-os/uupd) und [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
 > **ISOs können von unserer [Website](https://download.bazzite.gg) heruntergeladen werden, und eine hilfreiche Installationsanleitung findest du [hier](https://docs.bazzite.gg/General/Installation_Guide/) (Englisch).**
@@ -114,7 +119,7 @@ Diese Variante wurde für die Nutzung als Alternative zu SteamOS auf dem Steam D
 - Kommt standardmäßig mit Patches von [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) für volle BTRFS-Unterstützung der SD-Karte.
 - Liefert eine portierte Kopie von [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU) mit, die standardmäßig aktiviert ist.
 - Option zur Installation von [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/) und [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), neben zahlreichen anderen nützlichen Paketen während der Installation.
-- Ein benutzerdefiniertes Update-System ermöglicht es, das OS, Flatpaks und mehr direkt über die Game-Mode-UI zu aktualisieren, angetrieben von [ublue-update](https://github.com/ublue-os/ublue-update) und [topgrade](https://github.com/topgrade-rs/topgrade).
+- Ein benutzerdefiniertes Update-System ermöglicht es, das OS, Flatpaks und mehr direkt über die Game-Mode-UI zu aktualisieren, angetrieben von [uupd](https://github.com/ublue-os/uupd) und [topgrade](https://github.com/topgrade-rs/topgrade).
 - Integrierte Unterstützung für Windows-Dual-Boot dank der intakten Fedora-Installation von GRUB.
 - Update hat etwas kaputt gemacht? Rolle dank der Rollback-Funktion von `rpm-ostree` einfach zur vorherigen Bazzite-Version zurück. Du kannst sogar frühere Images beim Booten auswählen.
 - Steam und Lutris sind als Layered Packages auf dem Image vorinstalliert.
@@ -220,11 +225,11 @@ Lese die [FAQ](https://docs.bazzite.gg/General/FAQ/) für Details dazu, was Bazz
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
-![Steam Game Mode](/repo_content/gamemode.png?raw=true "Steam Game Mode")
+![Steam Gaming Mode](/repo_content/gamemode.png?raw=true "Steam Gaming Mode")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![Distrobox Terminals](/repo_content/distrobox.png?raw=true "Distrobox Terminals")
-![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
-![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## Dokumentation
 

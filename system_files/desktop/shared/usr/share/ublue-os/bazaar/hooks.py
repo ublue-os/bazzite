@@ -62,25 +62,32 @@ def find_action():
     file.close()
     return output
 
+def brew_eval(args):
+    return f'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && {args}'
+
 def spawn_and_detach(args):
     subprocess.Popen(args, start_new_session=True, stdout=subprocess.DEVNULL)
 
 def make_popup_terminal_shellcmd(cmd):
+    preview = cmd.replace('$', '\\$')
+    preview = preview.replace('(', '\\(')
+    preview = preview.replace(')', '\\)')
     new_cmd =  f'{cmd} ; '
     new_cmd +=  'echo 1>&2 ; '
     new_cmd +=  'echo "------------------" 1>&2 ; '
-    new_cmd += f'echo "Command \'{cmd}\' completed. Press ENTER to finish!" 1>&2 ; '
+    new_cmd += f'echo "Command \'{preview}\' completed. Press ENTER to finish!" 1>&2 ; '
     new_cmd +=  'read'
     new_cmd = new_cmd.replace('"', '\\"')
     return f'/bin/sh -c "{new_cmd}"'
 
-def spawn_ujust(id):
-    cmd  = make_popup_terminal_shellcmd(f'ujust {id}')
+def spawn_ujust(script):
+    cmd  = make_popup_terminal_shellcmd(f'ujust {script}')
     args = make_shellcmd_argv(cmd)
     spawn_and_detach(args)
 
-def spawn_cmd(cmd):
-    cmd  = make_popup_terminal_shellcmd(cmd)
+def spawn_brew_ublue(cask):
+    brew = brew_eval(f'brew tap ublue-os/tap && brew install --cask {cask}')
+    cmd  = make_popup_terminal_shellcmd(brew)
     args = make_shellcmd_argv(cmd)
     spawn_and_detach(args)
 
@@ -151,7 +158,7 @@ def handle_vscode():
             try:
                 action = find_action()
                 if action == 'run-brew':
-                    spawn_cmd('/home/linuxbrew/.linuxbrew/bin/brew tap ublue-os/tap && /home/linuxbrew/.linuxbrew/bin/brew install --cask visual-studio-code-linux')
+                    spawn_brew_ublue('visual-studio-code-linux')
                 elif action == 'learn-dx':
                     spawn_and_detach(['xdg-open', 'https://dev.bazzite.gg/'])
             except:
@@ -188,7 +195,7 @@ def handle_vscodium():
 
         case 'action':
             try:
-                spawn_cmd('/home/linuxbrew/.linuxbrew/bin/brew tap ublue-os/tap && /home/linuxbrew/.linuxbrew/bin/brew install --cask vscodium-linux')
+                spawn_brew_ublue('vscodium-linux')
             except:
                 pass
             return ''

@@ -8,8 +8,14 @@ blocklists:
     - org.vim.Vim
     - io.github.zyedidia.micro
     - com.helix_editor.Helix
+
+  - priority: 0
+    conditions:
+      - match-envvar:
+          var: XDG_CURRENT_DESKTOP
+          regex: GNOME
+    block:
     - app.devsuite.Ptyxis
-    - dev.lizardbyte.app.Sunshine
 
   - priority: 0
     conditions:

@@ -1,74 +1,27 @@
-css: |
-  .bazzite-section banner {
-    margin-top: 30px;
-    margin-left: 30px;
-    margin-right: 30px;
-    border-radius: 10px;
-  }
-  .bazzite-section banner-text-overlay {
-    margin: 30px;
-    padding: 20px;
-  }
-  .bazzite-section banner-text {
-    padding: 50px;
-    color: #ffffff;
-  }
-  .bazzite-section title {
-    color: #ffffff;
-  }
-  .bazzite-section subtitle {
-    color: #ffffff;
-    font-weight: 400;
-  }
-  .bazzite-section {
-    margin: 15px;
-    border-radius: 25px;
-  }
-  .bazzite-light-section app-tile > button {
-    background-color: alpha(lightgray, 0.4);
-  }
-  .gaming-section {
-    background: linear-gradient(45deg, #171a49, #52136c);
-  }
-  .streaming-section {
-    background: linear-gradient(135deg, #3550ec, #252b4b);
-  }
-  .music-section {
-    background: linear-gradient(45deg, #196d28, #3a944a);
-  }
-  .office-section {
-    background: linear-gradient(135deg, #6f8396, #4d5c69);
-  }
-  .utilities-section {
-    background: linear-gradient(45deg, #ed5b00, #a6480d);
-  }
-
 rows:
-  - sections:
-    - expand-horizontally: true
-      classes:
-        - bazzite-section
-        - gaming-section
-      light-classes:
-        - bazzite-light-section
-      category:
-        title:
-          en: "Gaming"
-          el: "Παιχνίδια"
-          ru: "Видеоигры"
-          fr: "Jeux-vidéos"
-        subtitle:
+  - banner:
+      height: 300
+      image:
+        uri: file:///usr/share/ublue-os/bazaar/gaming.jxl
+        fit: fill
+        can-shrink: true
+        alt: "Gaming"
+  - section:
+      title:
+        en: "Gaming"
+        el: "Παιχνίδια"
+        ru: "Видеоигры"
+        fr: "Jeux-vidéos"
+        pt_BR: "Jogos"
+      subtitle:
+        string:
           en: "Protocol 3: Protect the Pilot"
           el: "Πρωτόκολλο 3: Προστατέψτε τον Πιλότο"
           ru: "Протокол 3: Защитить пилота"
           fr: "Protocole 3: Protégez le pilote"
-        banner: file:///usr/share/ublue-os/bazaar/gaming.png
-        banner-fit: contain
-        banner-height: 300
-        banner-text-halign: start
-        banner-text-valign: center
-        banner-text-label-xalign: 0.0
-        appids:
+          pt_BR: "Protocolo 3: Proteger o Piloto"
+      appids:
+        list:
           - com.heroicgameslauncher.hgl
           - io.itch.itch
           - io.github.Faugus.faugus-launcher
@@ -115,31 +68,29 @@ rows:
           - org.supertuxproject.SuperTux
           - net.supertuxkart.SuperTuxKart
 
-  - sections:
-    - expand-horizontally: true
-      classes:
-        - bazzite-section
-        - streaming-section
-      light-classes:
-        - bazzite-light-section
-      category:
-        title:
-          en: "Streaming & Chat"
-          el: "Ροή & Συνομιλία"
-          ru: "Стриминг и общение"
-          fr: "Streaming et discussions"
-        subtitle:
+  - banner:
+      height: 300
+      image:
+        uri: file:///usr/share/ublue-os/bazaar/streaming.jxl
+        fit: fill
+        can-shrink: true
+        alt: "Streaming & Chat"
+  - section:
+      title:
+        en: "Streaming & Chat"
+        el: "Ροή & Συνομιλία"
+        ru: "Стриминг и общение"
+        fr: "Streaming et discussions"
+        pt_BR: "Transmitir & Conversar"
+      subtitle:
+        string:
           en: "Sprunk'd it."
           el: "Το'λουσα."
           ru: "Ещё катку?"
           fr: "Et c'est le train de la Hype!"
-        banner: file:///usr/share/ublue-os/bazaar/streaming.png
-        banner-fit: contain
-        banner-height: 300
-        banner-text-halign: end
-        banner-text-valign: center
-        banner-text-label-xalign: 1.0
-        appids:
+          pt_BR: "O cara é profissional!"
+      appids:
+        list:
           - com.obsproject.Studio
           - com.feaneron.Boatswain
           - com.moonlight_stream.Moonlight
@@ -155,69 +106,65 @@ rows:
           - org.squidowl.halloy
           - org.gnome.Fractal
 
-  - sections:
-    - expand-horizontally: true
-      classes:
-        - bazzite-section
-        - music-section
-      light-classes:
-        - bazzite-light-section
-      category:
-        title:
-          en: "Music & Media"
-          el: "Μουσική & Πολυμέσα"
-          ru: "Музыка и медиа"
-          fr: "Musique & Média"
-        subtitle:
+  - banner:
+      height: 300
+      image:
+        uri: file:///usr/share/ublue-os/bazaar/music.jxl
+        fit: fill
+        can-shrink: true
+        alt: "Music & Media"
+  - section:
+      title:
+        en: "Music & Media"
+        el: "Μουσική & Πολυμέσα"
+        ru: "Музыка и медиа"
+        fr: "Musique & Média"
+        pt_BR: "Música & Mídia"
+      subtitle:
+        string:
           en: "Let me break it down for you."
           el: "Για να μπούμε στο ρυθμό."
           ru: "Войдём в ритм."
           fr: "Entrez dans le rythme."
-        banner: file:///usr/share/ublue-os/bazaar/music.png
-        banner-fit: contain
-        banner-height: 300
-        banner-text-halign: start
-        banner-text-valign: center
-        banner-text-label-xalign: 0.0
-        appids:
+          pt_BR: "Vamos esculachar!"
+      appids:
+        list:
           - io.bassi.Amberol
           - com.github.neithern.g4music
           - org.atheme.audacious
           - com.spotify.Client
           - com.mastermindzh.tidal-hifi
           - org.videolan.VLC
-          - com.github.iwalton3.jellyfin-media-player
+          - org.jellyfin.JellyfinDesktop
           - tv.plex.PlexDesktop
           - com.plexamp.Plexamp
           - rocks.shy.VacuumTube
           - org.strawberrymusicplayer.strawberry
           - camp.nook.nookdesktop
 
-  - sections:
-    - expand-horizontally: true
-      classes:
-        - bazzite-section
-        - office-section
-      light-classes:
-        - bazzite-light-section
-      category:
-        title:
-          en: "Office & Productivity"
-          el: "Γραφείο & Παραγωγικότητα"
-          ru: "Офис и продуктивность"
-          fr: "Bureautique & productivité"
-        subtitle:
+  - banner:
+      height: 300
+      image:
+        uri: file:///usr/share/ublue-os/bazaar/office.jxl
+        fit: fill
+        can-shrink: true
+        alt: "Office & Productivity"
+  - section:
+      title:
+        en: "Office & Productivity"
+        el: "Γραφείο & Παραγωγικότητα"
+        ru: "Офис и продуктивность"
+        fr: "Bureautique & productivité"
+        pt_BR: "Escritório & Produtividade"
+      subtitle:
+        string:
           en: "May the paperclip fellow have mercy."
           el: "Για να μη γίνουν όλα φύλλο και φτερό."
           ru: "Чтобы всё не превратилось в прах."
           fr: "Que le trombone ait pitié de vous"
-        banner: file:///usr/share/ublue-os/bazaar/office.png
-        banner-fit: contain
-        banner-height: 300
-        banner-text-halign: end
-        banner-text-valign: center
-        banner-text-label-xalign: 1.0
-        appids:
+          pt_BR: "Que nosso camarada clipe de papel tenha piedade de nós."
+      appids:
+        list:
           - org.mozilla.Thunderbird
           - org.libreoffice.LibreOffice
           - org.onlyoffice.desktopeditors
@@ -235,31 +182,30 @@ rows:
           - com.slack.Slack
           - com.github.IsmaelMartinez.teams_for_linux
 
-  - sections:
-    - expand-horizontally: true
-      classes:
-        - bazzite-section
-        - utilities-section
-      light-classes:
-        - bazzite-light-section
-      category:
-        title:
-          en: "Utilities"
-          el: "Βοηθήματα"
-          ru: "Утилиты"
-          fr: "Utilitaires"
-        subtitle:
+  - banner:
+      height: 300
+      image:
+        uri: file:///usr/share/ublue-os/bazaar/utilities.jxl
+        fit: fill
+        can-shrink: true
+        alt: "Utilities"
+  - section:
+      title:
+        en: "Utilities"
+        el: "Βοηθήματα"
+        ru: "Утилиты"
+        fr: "Utilitaires"
+        pt_BR: "Utilitários"
+      subtitle:
+        string:
           en: "Stuff you didn't need until now."
           el: "Πράγματα που δεν ήξερες ότι χρειάζεσαι μέχρι τώρα."
           ru: "Программы, которыми вы ещё не пользуетесь."
           fr: "Ce dont vous n'aviez pas besoin jusqu'à maintenant"
-        banner: file:///usr/share/ublue-os/bazaar/utilities.png
-        banner-fit: contain
-        banner-height: 300
-        banner-text-halign: start
-        banner-text-valign: center
-        banner-text-label-xalign: 0.0
-        appids:
+          pt_BR: "Coisas que você não precisava até agora."
+      appids:
+        list:
+          - org.waywallen.waywallen
           - io.github.ilya_zlobintsev.LACT
           - io.github.limo_app.limo
           - io.github.radiolamp.mangojuice
@@ -279,6 +225,7 @@ rows:
           - io.github.pwr_solaar.solaar
           - it.mijorus.gearlever
           - io.github.flattool.Ignition
+          - io.github.arijanj.Mimic
           - io.github.fastrizwaan.WineZGUI
           - io.github.berarma.Oversteer
           - io.github.lawstorant.boxflat

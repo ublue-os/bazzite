@@ -1,0 +1,3 @@
+# Enable wake from sleep for Valve hardware.
+# Source: https://www.reddit.com/r/SteamController/s/7ZEteNW6dm
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="28de", ATTR{power/wakeup}="enabled"

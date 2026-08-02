@@ -1,8 +1,0 @@
-diff --git a/etc/xdg/plasma-workspace/env/ibus.sh b/etc/xdg/plasma-workspace/env/ibus.sh
-index 36558e7..97f74e7 100644
---- a/etc/xdg/plasma-workspace/env/ibus.sh
-+++ b/etc/xdg/plasma-workspace/env/ibus.sh
-@@ -1,3 +1 @@
--export QT_IM_MODULE=ibus
--export GTK_IM_MODULE=ibus
- export XMODIFIERS= @ im = ibus

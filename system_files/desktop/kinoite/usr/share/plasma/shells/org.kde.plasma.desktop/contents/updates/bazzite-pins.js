@@ -21,6 +21,7 @@ for (let i = 0; i < allPanels.length; ++i) {
                     "applications:net.lutris.Lutris.desktop",
                     "applications:org.kde.konsole.desktop",
                     "applications:io.github.kolunmi.Bazaar.desktop",
+                    "applications:io.github.ublue_os.yafti_gtk.desktop",
                     "preferred://filemanager"
                 ]);
                 widget.reloadConfig();
@@ -28,4 +29,3 @@ for (let i = 0; i < allPanels.length; ++i) {
         }
     }
 }
-

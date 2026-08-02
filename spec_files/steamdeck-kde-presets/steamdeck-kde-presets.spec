@@ -1,6 +1,6 @@
 %define packagename steamdeck-kde-presets
-%define packagever 0.23
-%global _default_patch_fuzz 2
+%define packagever 0.30
+%global _default_patch_fuzz 1
 
 Name:           steamdeck-kde-presets
 Version:        {{{ git_dir_version }}}
@@ -12,17 +12,17 @@ URL:            https://github.com/ublue-os/bazzite
 Source0:        https://gitlab.com/evlaV/%{packagename}/-/archive/%{packagever}/%{packagename}-%{packagever}.tar.gz
 Source1:        steamdeck-le.svg
 Source2:        bazzite_logo.svgz
-Source3:        metadata_vapor.json
-Source4:        metadata_vgui2.json
-Source5:        plasmarc
+Source3:        plasmarc
+Source4:        kwinrc
 BuildArch:      noarch
 Patch0:         fedora.patch
 Patch1:         nested-desktop-resolution.patch
 Patch2:         kdeglobals.patch
 Patch3:         bazzite_logo.patch
 Patch4:         ublue.patch
-Patch5:         wayland-remove-env.patch
-Patch6:         splash.patch
+Patch5:         splash.patch
+Patch6:         0001-steam-virtual-keyboard.patch
+Patch6:         vapor-metadata.patch
 
 Requires:       kde-filesystem
 
@@ -52,26 +52,29 @@ cp -rv usr/lib/* %{buildroot}%{_prefix}/lib
 cp -rv etc/* %{buildroot}%{_sysconfdir}
 mv %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck.svg
 cp %{SOURCE1} %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck-le.svg
-cp %{SOURCE5} %{buildroot}%{_datadir}/plasma/desktoptheme/Vapor/plasmarc
+cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/desktoptheme/Vapor/plasmarc
+cp %{SOURCE4} %{buildroot}%{_sysconfdir}/xdg/kwinrc
+rm -rf %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop
+mv %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.deck.desktop %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop
 # Remove unneeded files
+rm %{buildroot}%{_sysconfdir}/xdg/autostart/defaultbrightness.desktop
+rm %{buildroot}%{_sysconfdir}/xdg/autostart/setup-kwallet.desktop
 rm %{buildroot}%{_sysconfdir}/sddm.conf.d/steamdeck.conf
 rm %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo.svg
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/steam.desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
 rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
 rm %{buildroot}%{_sysconfdir}/xdg/kcm-about-distrorc
-rm %{buildroot}%{_sysconfdir}/X11/Xsession.d/50rotate-screen
+rm %{buildroot}%{_sysconfdir}/xdg/kded5rc
 rm %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/images/deck_logo.svgz
 rm %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/deck_logo.svgz
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/jupiter-plasma-bootstrap.desktop
-rm %{buildroot}%{_bindir}/jupiter-plasma-bootstrap
+rm %{buildroot}%{_bindir}/steamos-setup-kwallet
+rm -rf %{buildroot}%{_prefix}/lib/steamos
+rm -rf %{buildroot}%{_prefix}/lib/systemd
+rm -rf %{buildroot}%{_datadir}/kwalletd
 cp %{SOURCE2} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/images/bazzite_logo.svgz
 cp %{SOURCE2} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/bazzite_logo.svgz
-cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/metadata.json
-cp %{SOURCE4} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/metadata.json
-mkdir -p %{buildroot}%{_datadir}/kio/servicemenus
-mv %{buildroot}%{_datadir}/kservices5/ServiceMenus/steam.desktop %{buildroot}%{_datadir}/kio/servicemenus/steam.desktop
-rm -rf %{buildroot}%{_datadir}/kservices5
 
 # Do post-installation
 %post
@@ -100,12 +103,12 @@ rm -rf %{buildroot}%{_datadir}/kservices5
 %{_sysconfdir}/xdg/kwinrulesrc
 %{_sysconfdir}/xdg/plasma-nm
 %{_sysconfdir}/xdg/plasma-workspace/env/ibus.sh
-%{_sysconfdir}/xdg/powermanagementprofilesrc
+%{_sysconfdir}/xdg/plasma-workspace/env/set-return-icon.sh
+%{_sysconfdir}/xdg/powerdevilrc
 %{_bindir}/steamos-add-to-steam
 %{_bindir}/steamos-nested-desktop
 %{_prefix}/lib/udev/rules.d/99-kwin-ignore-tablet-mode.rules
 %{_datadir}/applications/steam/steamos-nested-desktop
-%{_datadir}/X11/xorg.conf.d/99-pointer.conf
 %{_datadir}/icons/*
 %{_datadir}/konsole/*
 %{_datadir}/kio/servicemenus/steam.desktop

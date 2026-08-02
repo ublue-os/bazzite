@@ -1,0 +1,19 @@
+[Unit]
+Description=Sync NVIDIA system drivers with Flatpak runtime
+After=network-online.target flatpak-system-helper.service
+Wants=network-online.target
+ConditionPathExists=/sys/module/nvidia/version
+# To not run on live ISO
+ConditionPathExists=/run/ostree-booted
+
+[Service]
+Type=oneshot
+ExecCondition=/usr/libexec/ublue-nvidia-flatpak-runtime-sync check
+ExecStart=/usr/libexec/ublue-nvidia-flatpak-runtime-sync sync
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=30
+TimeoutStartSec=600
+
+[Install]
+WantedBy=multi-user.target
