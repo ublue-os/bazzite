@@ -34,10 +34,8 @@ ARG ARCH="${ARCH:-x86_64}"
 ARG BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/${BASE_IMAGE_NAME}-main:${FEDORA_VERSION}}"
 ARG NVIDIA_BASE="${NVIDIA_BASE:-bazzite}"
 ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-ogc}"
-ARG KERNEL_VERSION="${KERNEL_VERSION:-7.0.9-ogc3.2.fc44.x86_64}"
+ARG KERNEL_VERSION="${KERNEL_VERSION:-7.0.9-ogc3.2.fc${FEDORA_VERSION}.${ARCH}}"
 ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia-open}"
-ARG LINUX_CEC_REF="218fd8194fbf2641b1646ed44d69ef76eb6c57fd"
-ARG INPUTATTACH_CEC_UNITS_REF="cbd910971a6712a7aa6c5e7f5714fd0a4bffc417"
 
 FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS akmods
 FROM ghcr.io/ublue-os/akmods-extra:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS akmods-extra
@@ -45,44 +43,6 @@ FROM ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${KERNEL_FLAVOR}-${FEDORA_VERSION}
 
 FROM scratch AS ctx
 COPY build_files /
-
-FROM quay.io/fedora/fedora:${FEDORA_VERSION} AS linux-cec-builder
-ARG LINUX_CEC_REF
-RUN dnf5 -y install \
-        cargo \
-        dbus-devel \
-        git \
-        make \
-        pkgconf-pkg-config \
-        rust \
-        systemd-devel \
-        systemd-rpm-macros && \
-    git clone https://gitlab.steamos.cloud/holo/linux-cec.git /tmp/linux-cec && \
-    cd /tmp/linux-cec && \
-    git checkout "${LINUX_CEC_REF}" && \
-    make && \
-    make DESTDIR=/out PREFIX=/usr \
-        UDEV_RULES_DIR=/usr/lib/udev/rules.d \
-        SYSTEMD_USER_UNIT_DIR=/usr/lib/systemd/user \
-        DBUS_INTERFACES_DIR=/usr/share/dbus-1/interfaces \
-        DBUS_SESSION_BUS_SERVICES_DIR=/usr/share/dbus-1/services \
-        install && \
-    rm -rf /tmp/linux-cec /var/cache/dnf /var/log/dnf*
-
-FROM quay.io/fedora/fedora:${FEDORA_VERSION} AS inputattach-cec-units-builder
-ARG INPUTATTACH_CEC_UNITS_REF
-RUN dnf5 -y install \
-        git \
-        make \
-        pkgconf-pkg-config && \
-    git clone https://gitlab.steamos.cloud/holo/inputattach-cec-units.git /tmp/inputattach-cec-units && \
-    cd /tmp/inputattach-cec-units && \
-    git checkout "${INPUTATTACH_CEC_UNITS_REF}" && \
-    make DESTDIR=/out PREFIX=/usr \
-        UDEV_RULES_DIR=/usr/lib/udev/rules.d \
-        SYSTEMD_SYSTEM_UNIT_DIR=/usr/lib/systemd/system \
-        install && \
-    rm -rf /tmp/inputattach-cec-units /var/cache/dnf /var/log/dnf*
 
 ################
 # DESKTOP BUILDS
@@ -100,8 +60,6 @@ ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
 COPY system_files/desktop/shared/ system_files/desktop/${BASE_IMAGE_NAME}/ /
-COPY --from=linux-cec-builder /out/ /
-COPY --from=inputattach-cec-units-builder /out/ /
 RUN find /usr/share/ublue-os/docs -type f -exec setfattr -n user.component -v "ublue-docs" {} +
 
 # Install needed firmware blobs
@@ -291,6 +249,8 @@ RUN --mount=type=cache,dst=/var/cache \
         xdotool \
         wmctrl \
         libcec \
+        linux-cec \
+        inputattach-cec-units \
         linuxconsoletools \
         v4l-utils \
         yad \
@@ -328,6 +288,11 @@ RUN --mount=type=cache,dst=/var/cache \
         bazzite-portal \
         kernel-tools \
         ls-iommu && \
+    dnf5 -y swap \
+        --repo terra \
+            switcheroo-control cardwire && \
+    dnf5 -y install --enable-repo=terra \
+        cardwire-gui && \
     ln -s /dev/null /etc/NetworkManager/dispatcher.d/04-iscsi && \
     systemctl mask iscsi && \
     systemctl mask systemd-remount-fs.service && \
@@ -428,6 +393,7 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-disk-utility \
             kio-extras \
             krunner-bazaar \
+            krunner-yafti \
             krdc \
             tesseract-devel \
             tesseract-langpack-eng \
@@ -470,6 +436,7 @@ RUN --mount=type=cache,dst=/var/cache \
             steamdeck-gnome-presets \
             gnome-shell-extension-user-theme \
             gnome-shell-extension-gsconnect \
+            gnome-search-yafti \
             rom-properties-gtk4 \
             rom-properties-localsearch3 \
             ibus-mozc \
@@ -616,6 +583,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global enable ntfs-nag.service && \
     systemctl enable dmemcg-booster-system.service && \
     systemctl --global enable dmemcg-booster-user.service && \
+    systemctl enable cardwired.service && \
     /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf" -Lo /etc/dxvk-example.conf && \
     /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/waydroid-scripts/main/waydroid-choose-gpu.sh" -Lo /usr/bin/waydroid-choose-gpu && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
@@ -868,7 +836,7 @@ RUN --mount=type=cache,dst=/var/cache \
         egl-wayland.i686 \
         egl-wayland2.x86_64 \
         egl-wayland2.i686 && \
-    IMAGE_NAME="${BASE_IMAGE_NAME}" AKMODNV_PATH="/tmp/rpms/nvidia" MULTILIB=1 /tmp/rpms/nvidia/ublue-os/nvidia-install.sh && \
+    IMAGE_NAME="SKIP_PACKAGE_INSTALL" AKMODNV_PATH="/tmp/rpms/nvidia" MULTILIB=1 /tmp/rpms/nvidia/ublue-os/nvidia-install.sh && \
     rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
     ln -s libnvidia-ml.so.1 /usr/lib64/libnvidia-ml.so && \
     dnf5 config-manager setopt "terra-mesa".enabled=0 && \
@@ -887,7 +855,7 @@ RUN --mount=type=cache,dst=/var/cache \
         dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" && \
         rm "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" \
     ; fi && \
-    systemctl disable supergfxd.service && \
+    systemctl enable nvidia-powerd.service && \
     systemctl enable ublue-nvidia-flatpak-runtime-sync && \
     systemctl enable ublue-nvidia-flatpak-runtime-verify && \
     dnf5 config-manager setopt skip_if_unavailable=1 && \

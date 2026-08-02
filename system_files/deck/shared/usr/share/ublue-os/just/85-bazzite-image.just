@@ -57,7 +57,7 @@ disable-sdgyrodsu:
 
 # runs ryzenadj --max-performance on AC power change
 enable-ryzenadj-max-performance:
-    #/bin/bash
+    #!/bin/bash
     # credit to adolforegosa on discord for the original fix and Katman for the script corrections
     echo 'this fix sets ryzenadj --max-performance whenever AC status changes to battery from plugged-in'
     echo 'ACTION=="change", SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="/usr/bin/ryzenadj --max-performance"' | sudo tee "/etc/udev/rules.d/99-ryzenadj-power-source-change.rules" > /dev/null
@@ -82,7 +82,7 @@ enable-ryzenadj-max-performance:
 
 # disables ryzenadj --max-performance on AC power
 disable-ryzenadj-max-performance:
-    #/bin/bash
+    #!/bin/bash
     sudo rm /etc/udev/rules.d/99-ryzenadj-power-source-change.rules
     sudo udevadm control --reload-rules
     sudo systemctl stop max-perf-boot.service

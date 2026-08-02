@@ -462,7 +462,7 @@ get-framegen ACTION="":
             sudo rm -rf "$PLUGIN_DIR"
         fi
         echo "Downloading $PLUGIN_NAME from $plugin_url..."
-        local temp_file="plugin_file"
+        local temp_file="$(basename "${plugin_url%.*}")"
         if ! timeout 60 curl -L -o "$temp_file" "$plugin_url"; then
             echo "Download failed or timed out!"
             cd - > /dev/null
