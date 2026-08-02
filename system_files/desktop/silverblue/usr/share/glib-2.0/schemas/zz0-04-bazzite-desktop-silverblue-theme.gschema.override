@@ -48,6 +48,9 @@ style-components=3
 blur=false
 style-dialogs=0
 
+[org.gnome.shell.extensions.blur-my-shell.popup]
+blur=false
+
 [org.gnome.shell.extensions.blur-my-shell.applications]
 blur=false
 

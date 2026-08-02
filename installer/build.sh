@@ -29,6 +29,25 @@ else
     podman pull "$INSTALL_IMAGE_PAYLOAD"
 fi
 
+# Determine desktop environment
+if [[ ${BASE_IMAGE} == *-gnome* ]]; then
+    desktop_env="gnome"
+else
+    desktop_env="kde"
+fi
+
+# Copy system files
+echo "Copying shared system files..."
+cp -a /src/system_files/shared/. /
+
+if [[ "$desktop_env" == "gnome" ]]; then
+    echo "Copying GNOME-specific system files..."
+    cp -a /src/system_files/gnome/. /
+elif [[ "$desktop_env" == "kde" ]]; then
+    echo "Copying KDE-specific system files..."
+    cp -a /src/system_files/kde/. /
+fi
+
 # Run the preinitramfs hook
 "$SCRIPT_DIR/titanoboa_hook_preinitramfs.sh"
 
@@ -50,6 +69,10 @@ systemctl enable livesys.service livesys-late.service
 
 # Run the postrootfs hook
 "$SCRIPT_DIR/titanoboa_hook_postrootfs.sh"
+
+# Copy system files
+echo "Copying overrides of system files..."
+cp -af /src/system_files/overrides/. /
 
 # image-builder needs gcdx64.efi
 dnf install -y grub2-efi-x64-cdboot
@@ -89,7 +112,7 @@ systemctl enable var-tmp.mount
 
 # Mount /var/lib/flatpak as readonly.
 # This is in order to ensure the files dont get tainted when installing them in disk.
-cat /etc/systemd/system/var-lib-flatpak.mount <<'EOF'
+cat >/etc/systemd/system/var-lib-flatpak.mount <<'EOF'
 [Mount]
 Type=none
 What=/var/lib/flatpak

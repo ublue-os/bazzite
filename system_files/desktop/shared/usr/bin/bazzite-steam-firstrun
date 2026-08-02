@@ -1,0 +1,51 @@
+#!/usr/bin/bash
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+
+lang=$(locale | grep LANG | cut -d= -f2 | cut -d_ -f1)
+info_text=""
+
+#translation support
+case $lang in
+#greek
+    "el")
+    info_text=("Το Steam ανοίγει για πρώτη φορά. Παρακαλώ περιμένετε, η λήψη του προγράμματος Steam μπορεί να διαρκέσει μερικά λεπτά.")
+    ;;
+#russian
+    "ru")
+    info_text=("Steam запускается впервые. Пожалуйста, подождите, скачивание клиента Steam может занять несколько минут.")
+    ;;
+#german
+    "de")
+    info_text=("Steam wird jetzt heruntergeladen. Bitte warten Sie. Es kann ein paar Minuten dauern, bis sich Steam öffnet.")
+    ;;
+#spanish
+    "es")
+    info_text=("Steam está descargando. Espera por favor. La descarga puede tardar unos minutos.")
+    ;;
+#french
+    "fr")
+    info_text=("Steam est en cours de téléchargement. Veuillez patienter, cela peut prendre quelques minutes.")
+    ;;
+#italian
+    "it")
+    info_text=("Steam è in fase di download. Attendere prego. Il download del client Steam potrebbe richiedere alcuni minuti.")
+    ;;
+#brazilian portuguese
+    "pt_BR")
+    info_text=("O Steam está sendo executado pela primeira vez. Por favor, aguarde. O download do cliente Steam pode levar alguns minutos.")
+    ;;    
+    *)
+    info_text=("Steam is opening for the first time. Please wait, downloading the Steam client may take a few minutes.")
+    ;;
+esac
+
+# Skip if there's no internet connection and Steam was updated at least once
+if [ ! -f $HOME/.local/share/Steam/steamclient.dll ] && ( curl --http1.1 -Ls https://store.steampowered.com/about | grep '<html' > /dev/null ); then
+    if [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
+        kdialog --title=Steam --icon=steam --msgbox="$info_text"
+    elif [[ ${BASE_IMAGE_NAME} =~ "silverblue" ]]; then
+        zenity --info --icon=steam --text="$info_text"
+    fi
+fi

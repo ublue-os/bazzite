@@ -1,0 +1,31 @@
+#!/usr/bin/bash
+
+# Workaround for: https://github.com/flatpak/flatpak/issues/3907
+set -euo pipefail
+
+SYSTEM_NVIDIA_VERSION=$(cat /sys/module/nvidia/version)
+FLATPAK_NVIDIA_VERSION=$(echo "${SYSTEM_NVIDIA_VERSION}" | tr '.' '-')
+
+case "${1}" in
+    check)
+        # Exit 0 if sync is needed (versions mismatch), exit 1 if already in sync
+        if flatpak info --system org.freedesktop.Platform.GL.nvidia-"${FLATPAK_NVIDIA_VERSION}" >/dev/null 2>&1 && \
+           flatpak info --system org.freedesktop.Platform.GL32.nvidia-"${FLATPAK_NVIDIA_VERSION}" >/dev/null 2>&1; then
+            echo "NVIDIA Flatpak runtime ${SYSTEM_NVIDIA_VERSION} already installed"
+            exit 1
+        fi
+        echo "NVIDIA Flatpak runtime ${SYSTEM_NVIDIA_VERSION} needs to be installed"
+        exit 0
+        ;;
+    sync)
+        echo "Installing NVIDIA Flatpak runtime version ${SYSTEM_NVIDIA_VERSION}"
+        flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+        flatpak install --system --noninteractive -y flathub \
+            org.freedesktop.Platform.GL.nvidia-"${FLATPAK_NVIDIA_VERSION}" \
+            org.freedesktop.Platform.GL32.nvidia-"${FLATPAK_NVIDIA_VERSION}"
+        ;;
+    *)
+        echo "Usage: $0 {check|sync}"
+        exit 1
+        ;;
+esac

@@ -1,0 +1,37 @@
+#!/usr/bin/bash
+# Notifier if Nvidia flatpak runtimes mismatch with system.
+#
+# Related files:
+#   - /usr/libexec/ublue-nvidia-flatpak-runtime-sync: checker for Nvidia runtime version.
+#   - /usr/lib/systemd/system/ublue-nvidia-flatpak-runtime-sync.service: service to try to sync flatpak runtimes.
+#   - /usr/lib/systemd/system/ublue-nvidia-flatpak-runtime-notifier.service: service that starts this script.
+
+set -euo pipefail
+
+title="Nvidia Flatpak Runtime Mismatch"
+body="Bazzite noticed that there is an Nvidia flatpak runtime mismatch!\n\nHardware acceleration will not work in Flatpak Apps before you update it.\n"
+see_more_url="https://docs.bazzite.gg/General/issues_and_resolutions/#flatpak-apps-have-no-hardware-acceleration-on-nvidia"
+
+notify_cmd="/usr/bin/notify-send --app-name=\"Bazzite Nvidia Runtime Checker\" --expire-time=0"
+notify_cmd+=" \"${title:+$title}\" \"${body:+$body}\""
+notify_cmd+=" --action=\"see_more=See more\""
+notify_cmd+=" --action=\"update_flatpak=Update all Flatpaks\""
+notify_cmd+=" --action=\"update_runtime_only=Update Runtime Only\""
+
+
+action=$(eval "$notify_cmd") || exit
+        case "$action" in
+        see_more)
+            xdg-open "$see_more_url"
+            ;;
+        update_flatpak)
+            /usr/bin/bazaar
+            ;;
+        update_runtime_only)
+            /usr/bin/yafti_gtk.py /usr/share/yafti/yafti.yml --action-id update-nvidia-runtime
+            ;;
+        *)
+            # Do nothing
+            :
+            ;;
+        esac
