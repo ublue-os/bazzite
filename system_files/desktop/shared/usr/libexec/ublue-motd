@@ -19,7 +19,10 @@ if [[ -f "$TIP_FILE" ]]; then
 	IMAGE_BRANCH_ESCAPED=$(escape "$IMAGE_BRANCH")
 	TIP="󰋼 $(shuf -n 1 "$TIP_FILE")"
 
-	IMAGE_DATE=$(rpm-ostree status --booted --json | jq -r '.deployments[0]["timestamp"] // empty')
+	if [ -e "/ostree" ] && [ -e "/sysroot" ] ; then
+		IMAGE_DATE=$(rpm-ostree status --booted | sed -n 's/.*Timestamp: \(.*\)/\1/p')
+	fi
+	IMAGE_DATE_SECONDS=$(date -d "$IMAGE_DATE" +%s)
 	CURRENT_SECONDS=$(date +%s)
 	DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE))
 	MONTH=$((30 * 24 * 60 * 60))
