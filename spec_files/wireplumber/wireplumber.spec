@@ -1,5 +1,5 @@
 Name:       wireplumber
-Version:    0.5.12
+Version:    0.5.14
 Release:    1%{?dist}.bazzite.{{{ git_dir_version }}}
 Summary:    A modular session/policy manager for PipeWire
 
@@ -7,14 +7,13 @@ License:    MIT
 URL:        https://pipewire.pages.freedesktop.org/wireplumber/
 Source0:    https://gitlab.freedesktop.org/pipewire/%{name}/-/archive/%{version}/%{name}-%{version}.tar.bz2
 
+Patch10:        block_steam_clear_default.patch
+
 ## upstream patches
 
 ## upstreamable patches
 
 ## fedora patches
-
-## nobara patches
-Patch10:        block_steam_clear_default.patch
 
 BuildRequires:  gettext
 BuildRequires:  meson gcc pkgconfig
@@ -115,6 +114,7 @@ fi
 %dir %{_sysconfdir}/wireplumber/policy.lua.d
 %{_datadir}/wireplumber/
 %{_datadir}/zsh/site-functions/_wpctl
+%{_datadir}/bash-completion/completions/wpctl
 %{_userunitdir}/wireplumber.service
 %{_userunitdir}/wireplumber@.service
 
@@ -135,172 +135,4 @@ fi
 %{_datadir}/doc/wireplumber/
 
 %changelog
-* Fri Oct 10 2025 Wim Taymans <wtaymans@redhat.com> - 0.5.12-1
-- wireplumber 0.5.12
-
-* Fri Sep 05 2025 Wim Taymans <wtaymans@redhat.com> - 0.5.11-1
-- wireplumber 0.5.11
-
-* Fri Jul 25 2025 Fedora Release Engineering <releng@fedoraproject.org> - 0.5.10-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_43_Mass_Rebuild
-
-* Wed May 21 2025 Wim Taymans <wtaymans@redhat.com> - 0.5.10-1
-- wireplumber 0.5.10
-
-* Mon May 19 2025 Wim Taymans <wtaymans@redhat.com> - 0.5.9-1
-- wireplumber 0.5.9
-
-* Fri Feb 07 2025 Wim Taymans <wtaymans@redhat.com> - 0.5.8-1
-- wireplumber 0.5.8
-
-* Sun Jan 19 2025 Fedora Release Engineering <releng@fedoraproject.org> - 0.5.7-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
-
-* Tue Dec 17 2024 Wim Taymans <wtaymans@redhat.com> - 0.5.7-1
-- wireplumber 0.5.7
-
-* Sat Jul 20 2024 Fedora Release Engineering <releng@fedoraproject.org> - 0.5.5-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
-
-* Fri Jun 28 2024 Wim Taymans <wtaymans@redhat.com> - 0.5.5-1
-- wireplumber 0.5.5
-
-* Wed Jun 26 2024 Wim Taymans <wtaymans@redhat.com> - 0.5.4-1
-- wireplumber 0.5.4
-
-* Sat Jun 01 2024 Wim Taymans <wtaymans@redhat.com> - 0.5.3-1
-- wireplumber 0.5.3
-
-* Mon Apr 22 2024 Wim Taymans <wtaymans@redhat.com> - 0.5.2-1
-- wireplumber 0.5.2
-
-* Thu Apr 18 2024 Neal Gompa <ngompa@fedoraproject.org> - 0.5.1-2
-- Backport support for loading external WpConf from disk
-
-* Tue Apr 02 2024 Wim Taymans <wtaymans@redhat.com> - 0.5.1-1
-- wireplumber 0.5.1
-
-* Mon Mar 25 2024 Adam Williamson <awilliam@redhat.com> - 0.5.0-2
-- Backport MR #620 to fix issues with bluetooth headsets etc.
-- Resolves: rhbz#2269343
-
-* Mon Mar 18 2024 Wim Taymans <wtaymans@redhat.com> - 0.5.0-1
-- wireplumber 0.5.0
-
-* Mon Mar 11 2024 Wim Taymans <wtaymans@redhat.com> - 0.4.90-1
-- wireplumber 0.4.90
-
-* Thu Jan 25 2024 Wim Taymans <wtaymans@redhat.com> - 0.4.81-1
-- wireplumber 0.4.81
-
-* Mon Dec 4 2023 Wim Taymans <wtaymans@redhat.com> - 0.4.17-1
-- wireplumber 0.4.17
-
-* Mon Dec 4 2023 Hector Martin <marcan@fedoraproject.org> - 0.4.16-2
-- Create and own /usr/share/wireplumber/wireplumber.conf.d
-
-* Thu Nov 23 2023 Wim Taymans <wtaymans@redhat.com> - 0.4.16-1
-- wireplumber 0.4.16
-
-* Tue Nov 7 2023 Hector Martin <marcan@fedoraproject.org> - 0.4.15-2
-- Add upstream patch to enable node hiding
-
-* Thu Oct 12 2023 Wim Taymans <wtaymans@redhat.com> - 0.4.15-1
-- wireplumber 0.4.15
-
-* Fri Sep 08 2023 Peter Hutterer <peter.hutterer@redhat.com>
-- SPDX migration: mark as done
-
-* Sat Jul 22 2023 Fedora Release Engineering <releng@fedoraproject.org> - 0.4.14-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
-
-* Thu Mar 9 2023 Wim Taymans <wim.taymans@redhat.com> - 0.4.14-1
-- wireplumber 0.4.14
-
-* Sat Jan 21 2023 Fedora Release Engineering <releng@fedoraproject.org> - 0.4.13-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_38_Mass_Rebuild
-
-* Tue Dec 13 2022 Wim Taymans <wim.taymans@redhat.com> - 0.4.13-1
-- wireplumber 0.4.13
-
-* Fri Oct 07 2022 Wim Taymans <wim.taymans@redhat.com> - 0.4.12-1
-- wireplumber 0.4.12
-
-* Thu Aug 04 2022 Ville-Pekka Vainio <vpvainio@iki.fi> - 0.4.11-4
-- Add two patches to fix a rescan loop with Bluetooth
-
-* Sat Jul 23 2022 Fedora Release Engineering <releng@fedoraproject.org> - 0.4.11-3
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
-
-* Wed Jul 13 2022 Wim Taymans <wim.taymans@redhat.com> - 0.4.11-2
-- Add patch to avoid crashes in VM
-- Add patch to avoid dbus crash
-- Resolves: rhbz#2104986
-
-* Tue Jul 5 2022 Wim Taymans <wim.taymans@redhat.com> - 0.4.11-1
-- wireplumber 0.4.11
-
-* Tue May 10 2022 Wim Taymans <wim.taymans@redhat.com> - 0.4.10-1
-- wireplumber 0.4.10
-
-* Tue Mar 22 2022 Wim Taymans <wim.taymans@redhat.com> - 0.4.9-1
-- wireplumber 0.4.9
-
-* Wed Mar 16 2022 Frantisek Zatloukal <fzatlouk@redhat.com> - 0.4.8-3
-- Backport e429db7e8c266045aee25e153fb2308bd61fe233 to fix sound on aarch64
-
-* Mon Mar 7 2022 Wim Taymans <wim.taymans@redhat.com> - 0.4.8-2
-- Add patch to fix openal and WINE format negotiation.
-
-* Mon Feb 7 2022 Wim Taymans <wim.taymans@redhat.com> - 0.4.8-1
-- wireplumber 0.4.8
-
-* Sat Jan 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 0.4.7-3
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
-
-* Fri Jan 14 2022 Wim Taymans <wim.taymans@redhat.com> - 0.4.7-2
-- Add patch to fix default device.
-
-* Thu Jan 13 2022 Wim Taymans <wim.taymans@redhat.com> - 0.4.7-1
-- wireplumber 0.4.7
-
-* Fri Jan 07 2022 Wim Taymans <wim.taymans@redhat.com> - 0.4.6-1
-- wireplumber 0.4.6
-
-* Fri Nov 19 2021 Wim Taymans <wim.taymans@redhat.com> - 0.4.5-3
-- Add some upstream patches for OBS audio output capture and
-  device switching.
-
-* Wed Nov 17 2021 Peter Hutterer <peter.hutterer@redhat.com> - 0.4.5-2
-- Move the systemd scriptlet to posttrans so we can dnf swap with
-  media-session (#2022584)
-
-* Thu Nov 11 2021 Wim Taymans <wim.taymans@redhat.com> - 0.4.5-1
-- wireplumber 0.4.5
-
-* Tue Nov 02 2021 Neal Gompa <ngompa@fedoraproject.org> - 0.4.4-3
-- Try again for WirePlumber preset upgrades to F35+ (#2016253)
-
-* Sun Oct 24 2021 Neal Gompa <ngompa@fedoraproject.org> - 0.4.4-2
-- Ensure WirePlumber activates on upgrade to F35+ (#2016253)
-
-* Fri Oct 15 2021 Wim Taymans <wim.taymans@redhat.com> - 0.4.4-1
-- wireplumber 0.4.4
-
-* Wed Oct 13 2021 Neal Gompa <ngompa@fedoraproject.org> - 0.4.3-3
-- Fix config setup in file list (#2013861)
-
-* Mon Oct 11 2021 Peter Hutterer <peter.hutterer@redhat.com> - 0.4.3-2
-- Fix segfault due to a typo (#2012606)
-
-* Fri Oct 08 2021 Wim Taymans <wim.taymans@redhat.com> - 0.4.3-1
-- wireplumber 0.4.3
-
-* Wed Sep 01 2021 Peter Hutterer <peter.hutterer@redhat.com> - 0.4.2-1
-- wireplumber 0.4.2
-
-* Fri Jul 23 2021 Fedora Release Engineering <releng@fedoraproject.org> - 0.4.1-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
-
-* Tue Jul 06 2021 Peter Hutterer <peter.hutterer@redhat.com> 0.4.1-1
-- Initial package (#1976012)
+%autochangelog

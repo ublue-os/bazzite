@@ -5,41 +5,48 @@ get-lsfg ACTION="prompt":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
 
-    function check_lsfg_installed() {
+    function get_current_status() {
         # Check new installation location
         if [[ -f "/usr/local/lib/liblsfg-vk.so" ]] && [[ -f "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
-            echo "${green}${bold}lsfg-vk is installed and ready to use.${normal}"
+            echo "${green}${bold}Installed${normal}"
         # Check legacy installation location
         elif [[ -f "$HOME/.local/lib/liblsfg-vk.so" ]] && [[ -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
-            echo "${yellow}${bold}lsfg-vk is installed (legacy location) - consider reinstalling for latest version.${normal}"
+            echo "${yellow}${bold}Installed (legacy location)${normal}"
         else
-            echo "${red}${bold}lsfg-vk is not installed.${normal}"
+            echo "${red}${bold}Not Installed${normal}"
+        fi
+    }
+
+    function get_status_token() {
+        if [[ -f "/usr/local/lib/liblsfg-vk.so" ]] && [[ -f "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
+            echo "install"
+        elif [[ -f "$HOME/.local/lib/liblsfg-vk.so" ]] && [[ -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
+            echo "install"
+        else
+            echo "uninstall"
         fi
     }
 
     OPTION={{ ACTION }}
     if [ "$OPTION" == "prompt" ]; then
-        echo ""
-        echo "Current Status:"
-        check_lsfg_installed
-        echo ""
+        current_status=$(get_current_status)
         echo "${bold}lsfg-vk${normal} enables lossless scaling functionality for supported games."
-        echo ""
-        echo "Below you can install or remove ${bold}lsfg-vk${normal} directly."
-        echo ""
-        echo "What would you like to do with lsfg-vk?"
-        echo ""
-        OPTION=$(ugum choose "Install lsfg-vk directly" "Install Decky Plugin" "Uninstall lsfg-vk" "Exit without changes")
+        echo "Below you can install or remove ${bold}lsfg-vk${normal}."
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install lsfg-vk" "Uninstall lsfg-vk" "Exit without changes")
     elif [ "$OPTION" == "help" ]; then
         echo "Usage: just get-lsfg <option>"
         echo "  <option>: Specify an action - 'install' or 'uninstall'"
-        echo "  Use 'install' to install lsfg-vk directly."
+        echo "  Use 'install' to install lsfg-vk."
         echo "  Use 'uninstall' to remove lsfg-vk."
+        exit 0
+    elif [ "$OPTION" == "status" ]; then
+        get_status_token
         exit 0
     fi
 
-    if [ "${OPTION,,}" == "install" ] || [ "${OPTION,,}" == "install lsfg-vk directly" ]; then
-        echo "Installing lsfg-vk directly..."
+    if [ "${OPTION,,}" == "install" ] || [ "${OPTION,,}" == "install lsfg-vk" ]; then
+        echo "Installing lsfg-vk..."
 
         # Get the latest release download URL
         API_URL="https://api.github.com/repos/PancakeTAS/lsfg-vk/releases/latest"
@@ -143,9 +150,6 @@ get-lsfg ACTION="prompt":
 
         echo "lsfg-vk installed successfully!"
         echo "The lsfg-vk UI should now be available in your applications menu and on your desktop."
-    elif [ "${OPTION,,}" == "install decky plugin" ] || [ "${OPTION,,}" == "install-decky-plugin" ]; then
-        echo "Installing Decky LSFG plugin..."
-        ujust get-decky-lossless-scaling install
     elif [ "${OPTION,,}" == "uninstall" ] || [ "${OPTION,,}" == "uninstall lsfg-vk" ]; then
         echo "Uninstalling lsfg-vk..."
 

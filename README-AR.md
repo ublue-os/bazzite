@@ -1,5 +1,10 @@
 ﻿<p align="center">
-  <a href="https://bazzite.gg/"><img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
+  <a href="https://bazzite.gg/">
+    <picture>
+      <source srcset="repo_content/Bazzite_Light.svg" media="(prefers-color-scheme: dark)">
+      <img src="repo_content/Bazzite.svg" alt="Bazzite"/>
+    </picture>
+  </a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ublue-os/bazzite) [![LFX Health Score](https://insights.linuxfoundation.org/api/badge/health-score?project=ublue-os-bazzite)](https://insights.linuxfoundation.org/project/ublue-os-bazzite) [![LFX Active Contributors](https://insights.linuxfoundation.org/api/badge/active-contributors?project=ublue-os-bazzite)](https://insights.linuxfoundation.org/project/ublue-os-bazzite)
@@ -77,7 +82,7 @@ Bazzite مبنية من [ublue-os/main](https://github.com/ublue-os/main) و[ubl
 
 النسخة العامة المتاحة باسم `bazzite` مناسبة لأجهزة الكمبيوتر المكتبية.
 
-- تحديثات تلقائية للنظام وFlatpaks وغيرها  تعتمد على [ublue-update](https://github.com/ublue-os/ublue-update) و[topgrade](https://github.com/topgrade-rs/topgrade).
+- تحديثات تلقائية للنظام وFlatpaks وغيرها  تعتمد على [uupd](https://github.com/ublue-os/uupd) و[topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
 > **يمكن تنزيل ملفات ISO من [موقعنا](https://download.bazzite.gg) ويمكن العثور على دليل تثبيت مفيد [هنا](https://docs.bazzite.gg/General/Installation_Guide/).**
@@ -112,7 +117,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - تأتي مع تصحيحات من [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) لدعم كامل لـ BTRFS لبطاقة SD بشكل افتراضي.
 - تشحن بنسخة منقولة من [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU) ممكنة افتراضيا.
 - خيار لتثبيت [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader) [EmuDeck](https://www.emudeck.com/) [RetroDECK](https://retrodeck.net/) و[ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) إلى جانب العديد من الحزم المفيدة الأخرى أثناء التثبيت.
-- نظام تحديث مخصص يسمح بتحديث النظام وFlatpaks وغيرها مباشرة من واجهة وضع اللعب يعتمد على [ublue-update](https://github.com/ublue-os/ublue-update) و[topgrade](https://github.com/topgrade-rs/topgrade).
+- نظام تحديث مخصص يسمح بتحديث النظام وFlatpaks وغيرها مباشرة من واجهة وضع اللعب يعتمد على [uupd](https://github.com/ublue-os/uupd) و[topgrade](https://github.com/topgrade-rs/topgrade).
 - دعم مدمج للإقلاع المزدوج مع ويندوز بفضل ترك تثبيت GRUB من Fedora كما هو.
 - هل تسبب التحديث بعطل يمكنك الرجوع بسهولة إلى النسخة السابقة من Bazzite بفضل خاصية rollback في `rpm-ostree`. يمكنك حتى اختيار صور سابقة عند الإقلاع.
 - Steam وLutris مثبتان مسبقا كحزم مكدسة (layered packages).
@@ -217,11 +222,11 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "ثيم KDE Vapor")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "ثيم KDE VGUI2")
-![Steam Game Mode](/repo_content/gamemode.png?raw=true "وضع اللعب في Steam")
+![Steam Gaming Mode](/repo_content/gamemode.png?raw=true "وضع اللعب في Steam")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![Distrobox Terminals](/repo_content/distrobox.png?raw=true "طرفيات Distrobox")
-![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "ثيم GNOME Vapor")
-![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "ثيم GNOME VGUI2")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## التوثيق
 

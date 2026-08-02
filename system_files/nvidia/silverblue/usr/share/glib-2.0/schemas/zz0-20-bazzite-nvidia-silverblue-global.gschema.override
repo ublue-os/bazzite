@@ -3,4 +3,4 @@ enabled-extensions=['logomenu@aryan_k', 'appindicatorsupport@rgcjonas.gmail.com'
 disabled-extensions=['background-logo@fedorahosted.org']
 
 [org.gnome.mutter]
-experimental-features=['variable-refresh-rate', 'scale-monitor-framebuffer', 'xwayland-native-scaling', 'kms-modifiers']
+experimental-features=['kms-modifiers']

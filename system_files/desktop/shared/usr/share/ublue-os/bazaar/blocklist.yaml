@@ -8,7 +8,6 @@ blocklists:
     - org.vim.Vim
     - io.github.zyedidia.micro
     - com.helix_editor.Helix
-    - dev.lizardbyte.app.Sunshine
 
   - priority: 0
     conditions:

@@ -57,50 +57,32 @@ disable-sdgyrodsu:
 
 # runs ryzenadj --max-performance on AC power change
 enable-ryzenadj-max-performance:
-    #/bin/bash
+    #!/bin/bash
     # credit to adolforegosa on discord for the original fix and Katman for the script corrections
     echo 'this fix sets ryzenadj --max-performance whenever AC status changes to battery from plugged-in'
     echo 'ACTION=="change", SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="/usr/bin/ryzenadj --max-performance"' | sudo tee "/etc/udev/rules.d/99-ryzenadj-power-source-change.rules" > /dev/null
 
     sudo udevadm control --reload-rules
 
-    sudo echo "[Unit]" > /etc/systemd/system/max-perf-boot.service
-    sudo echo "Description=Apply RyzenAdj max performance at boot" >> /etc/systemd/system/max-perf-boot.service
-    sudo echo "" >> /etc/systemd/system/max-perf-boot.service
-    sudo echo "[Service]" >> /etc/systemd/system/max-perf-boot.service
-    sudo echo "Type=oneshot" >> /etc/systemd/system/max-perf-boot.service
-    sudo echo "ExecStart=/usr/bin/ryzenadj --max-performance" >> /etc/systemd/system/max-perf-boot.service
-    sudo echo "" >> /etc/systemd/system/max-perf-boot.service
-    sudo echo "[Install]" >> /etc/systemd/system/max-perf-boot.service
-    sudo echo "WantedBy=multi-user.target" >> /etc/systemd/system/max-perf-boot.service
+    sudo tee /etc/systemd/system/max-perf-boot.service > /dev/null << 'EOF'
+    [Unit]
+    Description=Apply RyzenAdj max performance at boot
+
+    [Service]
+    Type=oneshot
+    ExecStart=/usr/bin/ryzenadj --max-performance
+
+    [Install]
+    WantedBy=multi-user.target
+    EOF
 
     sudo systemctl daemon-reload
     sudo systemctl enable max-perf-boot.service
     echo 'Installation complete. Reboot to take effect'
 
-# toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled
-toggle-password-feedback ACTION="":
-    #!/usr/bin/bash
-    PWFEEDBACK_FILE="/etc/sudoers.d/enable-pwfeedback"
-    OPTION={{ ACTION }}
-
-    if [ "$OPTION" = "on" ]; then
-      echo 'Defaults pwfeedback' | sudo tee $PWFEEDBACK_FILE
-      echo "enabled, restart terminal to see changes"
-    elif [ "$OPTION" = "off" ]; then
-      sudo rm -f $PWFEEDBACK_FILE
-      echo "disabled pwfeedback. restart your terminal to see changes"
-    elif sudo test -f $PWFEEDBACK_FILE; then
-      sudo rm -f $PWFEEDBACK_FILE
-      echo "disabled pwfeedback. restart your terminal to see changes"
-    else
-      echo 'Defaults pwfeedback' | sudo tee $PWFEEDBACK_FILE
-      echo "enabled, restart terminal to see changes"
-    fi
-
 # disables ryzenadj --max-performance on AC power
 disable-ryzenadj-max-performance:
-    #/bin/bash
+    #!/bin/bash
     sudo rm /etc/udev/rules.d/99-ryzenadj-power-source-change.rules
     sudo udevadm control --reload-rules
     sudo systemctl stop max-perf-boot.service
@@ -195,3 +177,46 @@ restore-gamemode-shortcut:
     chmod +x "$SHORTCUT_FILE"
     echo "Shortcut restored successfully at $SHORTCUT_FILE."
     echo "Note: The first time you use the shortcut, it may ask you to trust it. Please accept."
+
+# Generate ignore configs for unknown external controllers not yet in our system-provided ignore list
+generate-inputplumber-ignorelist:
+    sudo /usr/libexec/bazzite-inputplumber-ignorelist
+
+# Enable/Disable opengamepadui overlay in gamemode
+configure-opengamepadui ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    OPTION={{ ACTION }}
+    OGUI_STEAM="$HOME/.config/gamescope-session-plus/sessions.d/ogui-steam"
+    if [ -f $OGUI_STEAM ]; then
+        OGUI_STATE="${b}Disabled${n}"
+    else
+        OGUI_STATE="${b}Enabled${n}"
+    fi
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust configure-opengamepadui <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'enable' to enable OpenGamepadUI overlay"
+      echo "  Use 'disable' to disable OpenGamepadUI overlay"
+      exit 0
+    elif [ "$OPTION" == "" ]; then
+      echo "${bold}Configure OpenGamepadUI overlay${normal}"
+      echo "OpenGamepadUI Overlay is: $OGUI_STATE"
+      OPTION=$(Choose "Enable" "Disable")
+    fi
+    if [[ "${OPTION,,}" =~ ^enable ]]; then
+      echo "Enabling OpenGamepadUI Overlay"
+      rm -f $OGUI_STEAM
+    elif [[ "${OPTION,,}" =~ ^disable ]]; then
+      echo "Disabling OpenGamepadUI Overlay"
+      # Create directory if it doesn't exist.
+      mkdir -p "${HOME}/.config/gamescope-session-plus/sessions.d"
+      # Create `ogui-steam` user override script for `gamescope-session-plus`
+      OGUI_STEAM=$OGUI_STEAM bash -c 'cat << EOF > "$OGUI_STEAM"
+    #!/usr/bin/bash
+
+    STEAM_SESSION_FILE=/usr/share/gamescope-session-plus/sessions.d/steam
+    [[ -f "\${STEAM_SESSION_FILE}" ]] && . "\${STEAM_SESSION_FILE}"
+    EOF'
+      chmod +x $OGUI_STEAM
+    fi

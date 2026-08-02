@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=68
+HWS_VER=77
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -47,6 +47,12 @@ mkdir -p /etc/bazzite/fixups
 # KERNEL ARGUMENTS
 echo "Current kargs: $KARGS"
 
+if /usr/libexec/hwsupport/valve-hardware || /usr/libexec/hwsupport/non-valve-handheld-hardware; then
+  if [[ ! $KARGS =~ "ppfeaturemask" ]]; then
+    NEEDED_KARGS+=("--append-if-missing="$(printf 'amdgpu.ppfeaturemask=0x%x\n' "$(($(cat /sys/module/amdgpu/parameters/ppfeaturemask) | 0x4000))"))
+  fi
+fi
+
 if /usr/libexec/hwsupport/valve-hardware || [[ ":83N0:83N1:83E1:ROG Ally RC71L:ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
   echo "Checking for needed IOMMU change."
 
@@ -63,59 +69,11 @@ if [[ $IMAGE_NAME =~ "deck" && ":AOKZOE A1 AR07:" =~ ":$SYS_ID:" ]]; then
 fi
 
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
-  if [[ "$SYS_ID" == "Laptop 16 ("* ]]; then
-    if [[ $KARGS =~ "amdgpu.dcdebugmask" ]]; then
-      echo "Removing old, no longer needed Framework 16 fix."
-      NEEDED_KARGS+=("--delete-if-present=amdgpu.dcdebugmask=0x410")
-    fi
-  fi
   if [[ "GenuineIntel" == "$CPU_VENDOR" ]]; then
     if [[ ! $KARGS =~ "hid_sensor_hub" ]]; then
       echo "Intel Framework Laptop detected, applying needed keyboard fix"
       NEEDED_KARGS+=("--append-if-missing=module_blacklist=hid_sensor_hub");
     fi
-  fi
-fi
-
-#
-# GTT SIZE cleanup
-#
-if [ ! -f /etc/bazzite/fixups/gttsize ]; then
-  echo "Removing gttsize for device in kernel if exists (default is 50%)"
-  if [[ ":83E1:" =~ ":$SYS_ID:" ]]; then
-    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=8128")
-  elif [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
-    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=8128")
-  elif [[ ":ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
-    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=12192")
-  elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
-    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=16256")
-  elif /usr/libexec/hwsupport/valve-hardware; then
-    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=16256")
-    NEEDED_KARGS+=("--delete-if-present=amdgpu.gttsize=8128")
-  fi
-fi
-
-# Remove sg_display
-if [[ ":83E1:ROG Ally RC71L:ROG Ally X RC72LA:" =~ ":$SYS_ID:" ]]; then
-  if [[ ! -f /etc/bazzite/fixups/sg_display2 && $KARGS =~ "amdgpu.sg_display" ]]; then
-    echo "Removing sd_display=0 (it is not needed anymore)"
-    NEEDED_KARGS+=("--delete-if-present=amdgpu.sg_display=0")
-  fi
-fi
-
-if [[ ! -f /etc/bazzite/fixups/orientation_old2 ]]; then
-  echo "Removing panel orientation for device in kernel if exists"
-  if [[ ":ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
-    NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=left_side_up")
-  elif [[ ":G1617-01:" =~ ":$SYS_ID:" && ! $CPU_MODEL =~ 8640U|8840U|7640U ]]; then
-    NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=right_side_up")
-  elif [[ ":G1617-01:" =~ ":$SYS_ID:" ]]; then
-    NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=right_side_up")
-  elif [[ ":WIN2:" =~ ":$SYS_ID:" ]]; then
-    NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=right_side_up")
-  elif [[ ":ONEXPLAYER F1:ONEXPLAYER F1L:ONEXPLAYER F1 EVA-01:ONEXPLAYER X1Pro:Loki Max:Zeenix Pro:" =~ ":$SYS_ID:" ]]; then
-    NEEDED_KARGS+=("--delete-if-present=video=eDP-1:panel_orientation=left_side_up")
   fi
 fi
 
@@ -127,21 +85,9 @@ if [[ ":SLIDE:" =~ ":$SYS_ID:" ]]; then
   fi
 fi
 
-if [[ ":ROG Flow Z13 GZ302EA:" =~ "$:SYS_ID:" ]]; then
-  if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
-    echo "ROG Flow Z13 2025, fixing display artifacts"
-    NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
-  fi
-fi
-
 if [[ ! $KARGS =~ "disable_ertm" ]]; then
   echo "Adding needed kargs for bluetooth"
   NEEDED_KARGS+=("--append-if-missing=bluetooth.disable_ertm=1")
-fi
-
-if [[ ! -f /etc/bazzite/fixups/preempt_cleanup2 && $KARGS =~ "preempt" ]]; then
-  echo "Removing full preemption (once)"
-  NEEDED_KARGS+=("--delete-if-present=preempt=full")
 fi
 
 if [[ $KARGS =~ "nomodeset" ]]; then
@@ -149,7 +95,23 @@ if [[ $KARGS =~ "nomodeset" ]]; then
   NEEDED_KARGS+=("--delete-if-present=nomodeset")
 fi
 
-if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
+if [[ $IMAGE_NAME =~ "deck" ]]; then
+  if /usr/libexec/hwsupport/valve-hardware || /usr/libexec/hwsupport/non-valve-handheld-hardware; then
+    systemctl mask tuned.service
+    systemctl mask tuned-ppd.service
+    if /usr/libexec/hwsupport/valve-hardware; then
+      systemctl mask powerstation.service
+      systemctl mask inputplumber.service
+    else
+      systemctl unmask powerstation.service
+      systemclt unmask inputplumber.service
+    fi
+  else
+    systemctl unmask tuned.service
+    systemctl unmask tuned-ppd.service
+    systemctl mask powerstation.service
+  fi
+
   if /usr/libexec/hwsupport/valve-hardware; then
     if [[ ":Jupiter:" =~ ":$SYS_ID:" ]]; then
       RESOLUTION=$(lshw -json -c display | jq -r .[]."configuration"."resolution")
@@ -185,16 +147,6 @@ else
   echo "No minimum-free ZRAM changes needed"
 fi
 
-# IWD Fixup
-if [ ! -f /etc/bazzite/fixups/iwd ]; then
-  if [[ ! -f "/etc/NetworkManager/conf.d/iwd.conf" ]]; then
-    # If the user isn't already using IWD, remove their networks so they can be recreated properly.
-    nmcli -t -f UUID,TYPE connection show | awk -F: '$2=="802-11-wireless"{print $1}' | xargs -r nmcli connection delete
-  fi
-
-  touch /etc/bazzite/fixups/iwd
-fi
-
 # FRAMEWORK AMD FIXES
 if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
   if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
@@ -216,8 +168,8 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
   fi
 fi
 
-# SURFACE FIXES
-if [[ ":Microsoft:" =~ ":$VEN_ID:" ]]; then
+# SURFACE FIXES - Vendor ID starts with 'Microsoft'
+if [[ ":Microsoft*:" =~ ":$VEN_ID:" ]]; then
   if ! [[ -f "/etc/modules-load.d/surface.conf" ]]; then
     if [[ "AuthenticAMD" == "$CPU_VENDOR" ]]; then
       printf "# Support GPIO pins on AMD Surfaces\npinctrl_amd\n" > "/etc/modules-load.d/surface.conf"
@@ -291,11 +243,6 @@ if [[ -n "$NEEDED_KARGS" ]]; then
 else
   echo "No karg changes needed"
 fi
-# Applied / did not need to apply
-touch /etc/bazzite/fixups/sg_display2
-touch /etc/bazzite/fixups/preempt_cleanup2
-touch /etc/bazzite/fixups/orientation_old2
-touch /etc/bazzite/fixups/gttsize
 
 mkdir -p /etc/bazzite
 echo $HWS_VER > $HWS_VER_FILE

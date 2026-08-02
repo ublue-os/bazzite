@@ -69,9 +69,9 @@ jobs:
           - bazzite-nvidia-open
           - bazzite-gnome-nvidia-open
         include:
-          - fedora_version: 43
+          - fedora_version: 44
             kernel_flavor: ogc
-            kernel_version: 6.19.10-ogc1.2.fc43.x86_64
+            kernel_version: 7.1.5-ogc5.1.fc44.x86_64
             base_image_flavor: main
             arch: x86_64
     steps:
@@ -162,7 +162,7 @@ jobs:
 
       # Checkout push-to-registry action GitHub repository
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           submodules: recursive
 
@@ -181,7 +181,7 @@ jobs:
           tar -xC "$DOCS_DIR" -f artifact.tar
 
       - name: Check just syntax
-        uses: ublue-os/just-action@bda593098a84a84973b002b4377709166a68be52 # v2
+        uses: ublue-os/just-action@v3
 
       - name: Pull Images and find versions
         id: labels
@@ -265,13 +265,11 @@ jobs:
           IMAGE: ${{ matrix.image }}
           EVENT_NAME: ${{ github.event_name }}
           REF_NAME: ${{ github.ref_name }}
+          FEDORA_VERSION: ${{ matrix.fedora_version }}
         run: |
           set -eoux pipefail
-          if [[ "${IMAGE}" =~ gnome ]]; then
-            CACHE_NAME="gnome"
-          else
-            CACHE_NAME="kde"
-          fi
+
+          CACHE_NAME="bazzite-${FEDORA_VERSION}"
 
           ALLOW_CACHE_WRITE="false"
 
@@ -279,6 +277,7 @@ jobs:
           # TODO: remove testing here when we have cache on main branch
           # PR caches are useless and may wipe cache on main
           if [[ "${IMAGE}" =~ "-deck" ]] && \
+             [[ ! "${IMAGE}" =~ "gnome" ]] && \
              [[ "${EVENT_NAME}" != "pull_request" ]] && \
              [[ "${REF_NAME}" == "main" || "${REF_NAME}" == "testing" ]]; then
             ALLOW_CACHE_WRITE="true"
@@ -288,13 +287,16 @@ jobs:
           echo "allow_cache_write=${ALLOW_CACHE_WRITE}" >> "$GITHUB_OUTPUT"
 
       - name: Restore DNF package cache
-        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         env:
           CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
           ALLOW_CACHE_WRITE: ${{ steps.cache-prep.outputs.allow_cache_write }}
         with:
           path: /var/tmp/buildah-cache-*
-          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
+          key: ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}-
+            ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}
 
       # Build image using buildah and save it to raw-img
       - name: Build Image
@@ -316,41 +318,13 @@ jobs:
 
       - name: Save DNF package cache
         if: steps.cache-prep.outputs.allow_cache_write == 'true'
-        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         env:
           CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
           ALLOW_CACHE_WRITE: ${{ steps.cache-prep.outputs.allow_cache_write }}
         with:
           path: /var/tmp/buildah-cache-*
-          key: ${{ runner.os }}-buildah-${{ env.CACHE_NAME }}
-
-      - name: Setup Syft
-        id: setup-syft
-        if: github.event_name != 'pull_request'
-        uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0
-        with:
-          syft-version: v1.39.0
-
-      - name: Generate SBOM
-        if: github.event_name != 'pull_request'
-        id: generate-sbom
-        env:
-          IMAGE: ${{ matrix.image }}
-          VERSION_TAG: ${{ steps.labels.outputs.tag }}
-          SYFT_CMD: ${{ steps.setup-syft.outputs.cmd }}
-          OCI_DIR: "/tmp/image-oci-dir"
-        run: |
-          mkdir -p ${OCI_DIR}/rootfs
-          sudo podman container create --replace --name "${IMAGE}" "localhost/raw-img"
-          sudo podman export "${IMAGE}" | sudo tar -C ${OCI_DIR}/rootfs -xf -
-          sudo podman container rm "${IMAGE}"
-
-          SBOM="$(mktemp -d)/sbom.json"
-          export SYFT_PARALLELISM=$(($(nproc)*2))
-          sudo $SYFT_CMD --source-name "${IMAGE}"-"${VERSION_TAG}" ${OCI_DIR} -o syft-json=${SBOM}
-          du -sh ${SBOM}
-          echo "SBOM=${SBOM}" >> $GITHUB_OUTPUT
-          sudo rm -rf ${OCI_DIR}
+          key: ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}
 
       # Relabel the image with Bazzite labels
       - name: Apply Labels
@@ -431,11 +405,40 @@ jobs:
           sudo podman run --rm --privileged --volume /var/lib/containers:/var/lib/containers \
               localhost/raw-img \
               rpm-ostree compose build-chunked-oci \
-              --bootc --max-layers 96 --format-version 2 \
+              --bootc --max-layers 127 --format-version 2 \
               --from localhost/raw-img --output containers-storage:localhost/chunked-img
           sudo podman untag raw-img
 
           echo "ref=containers-storage:localhost/chunked-img" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Syft
+        id: setup-syft
+        if: github.event_name != 'pull_request'
+        uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        with:
+          # FIXME: a renovate rule for this would be nice
+          syft-version: v1.44.0
+
+      - name: Generate SBOM
+        if: github.event_name != 'pull_request'
+        id: generate-sbom
+        env:
+          IMAGE: ${{ matrix.image }}
+          VERSION_TAG: ${{ steps.labels.outputs.tag }}
+          SYFT_CMD: ${{ steps.setup-syft.outputs.cmd }}
+          OCI_DIR: "/tmp/image-oci-dir"
+        run: |
+          mkdir -p ${OCI_DIR}/rootfs
+          sudo podman container create --replace --name "${IMAGE}" "localhost/chunked-img"
+          sudo podman export "${IMAGE}" | sudo tar -C ${OCI_DIR}/rootfs -xf -
+          sudo podman container rm "${IMAGE}"
+
+          SBOM="$(mktemp -d)/sbom.json"
+          export SYFT_PARALLELISM=$(($(nproc)*2))
+          sudo $SYFT_CMD --source-name "${IMAGE}"-"${VERSION_TAG}" ${OCI_DIR} -o syft-json=${SBOM}
+          du -sh ${SBOM}
+          echo "SBOM=${SBOM}" >> $GITHUB_OUTPUT
+          sudo rm -rf ${OCI_DIR}
 
       # Generate tags after relabel runs and checks the primary tag is not duplicated
       # If it is, relabel will suffix it by .1, .2, etc and put it in steps.relabel.outputs.version
@@ -462,12 +465,19 @@ jobs:
 
       - name: Install dgoss
         run: |
-          curl -L \
-            https://github.com/goss-org/goss/releases/latest/download/goss-linux-amd64 \
-            -o /usr/local/bin/goss
+          set -euo pipefail
+          GOSS_VERSION=v0.4.10
+          # goss release tarballs use linux_x86_64 naming for amd64 systems.
+          curl -fL \
+            "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/goss_${GOSS_VERSION#v}_linux_x86_64.tar.gz" \
+            -o /tmp/goss.tar.gz
+          tar -xzf /tmp/goss.tar.gz -C /usr/local/bin goss
+          test -f /usr/local/bin/goss || { echo "Error: /usr/local/bin/goss binary not found after extraction"; exit 1; }
           chmod +rx /usr/local/bin/goss
-          curl -L \
-            https://github.com/goss-org/goss/releases/latest/download/dgoss \
+          /usr/local/bin/goss --version >/dev/null
+          rm -f /tmp/goss.tar.gz
+          curl -fL \
+            "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/dgoss" \
             -o /usr/local/bin/dgoss
           chmod +rx /usr/local/bin/dgoss
 
@@ -500,25 +510,20 @@ jobs:
             log_sum '# Push to GHCR result'
             log_sum '```'
 
-            dest_image="${OUTPUT_IMAGE}:${VERSION}"
-            sudo skopeo copy ${RECHUNK_REF} docker://$dest_image
-            log_sum "$dest_image"
-
-            for tag in ${ALIAS_TAGS}; do
+            for tag in ${VERSION} ${ALIAS_TAGS}; do
               dest_image="${OUTPUT_IMAGE}:$tag"
-              sudo skopeo copy ${RECHUNK_REF} docker://$dest_image
+              sudo skopeo copy ${RECHUNK_REF} docker://$dest_image --digestfile=/tmp/digestfile
               log_sum "$dest_image"
             done
             log_sum '```'
 
-            digest=$(sudo skopeo inspect --format '{{.Digest}}' docker://${OUTPUT_IMAGE}:${VERSION})
-            echo "digest=${digest}" >> $GITHUB_OUTPUT
+            echo "digest=$(< /tmp/digestfile)" >> $GITHUB_OUTPUT
 
       - name: Install Cosign
         if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
         with:
-          cosign-release: "v2.6.1"
+          cosign-release: "v2.6.4"
 
       - name: Sign container image
         if: github.event_name != 'pull_request'
@@ -529,7 +534,7 @@ jobs:
 
       - name: Install ORAS
         if: github.event_name != 'pull_request'
-        uses: oras-project/setup-oras@38de303aac69abb66f3e6255b7198bff35f323e3 # v2.0.0
+        uses: oras-project/setup-oras@1d808f7d7f6995cc68b7bf507bfe5c5446e1dc9d # v2.0.1
 
       - name: Login to GitHub Container Registry with ORAS
         if: github.event_name != 'pull_request'
@@ -566,7 +571,7 @@ jobs:
 
       - name: Attestation
         if: github.event_name != 'pull_request'
-        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        uses: actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d # v4.2.1
         with:
           subject-name: ${{ steps.base.outputs.output_image }}
           subject-digest: ${{ steps.push.outputs.digest }}
@@ -580,6 +585,31 @@ jobs:
       contents: write
     secrets: inherit
     uses: ./.github/workflows/generate_release.yml
+
+  kickoff_gamemode_news:
+    name: Build Game Mode Announcements
+    runs-on: ubuntu-24.04
+    needs: [generate_release]
+    if: github.repository == 'ublue-os/bazzite' && github.event_name != 'pull_request'
+    steps:
+      - name: Get target branch
+        id: get-target
+        run: |
+          TARGET="${{ github.ref }}"
+          TARGET="${TARGET##*/}"
+          if [ "$TARGET" = "main" ]; then
+            TARGET="stable"
+          fi
+          echo "target=$TARGET" >> $GITHUB_OUTPUT
+
+      - name: Kickoff Game Mode Announcements
+        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4
+        continue-on-error: true
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ublue-os/bazzite-gamemode-news
+          event-type: build-announcements
+          client-payload: '{"branch": "${{ steps.get-target.outputs.target }}"}'
 
   kickoff_bazzite_dx:
     runs-on: ubuntu-24.04

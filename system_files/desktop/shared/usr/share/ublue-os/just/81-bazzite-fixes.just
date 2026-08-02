@@ -42,23 +42,49 @@ fix-reset-steam:
       fi
     done
     sleep 1
-    bazzite-steam &
+    bazzite-steam --disable-firstrun &
     exit 0
 
 # Toggle Bluetooth headset profile mode. If enabled, mic will be disabled on the Bluetooth device preventing the switch to headset profile, which has poor audio quality. Disable to restore mic functionality.
 [group("audio")]
-toggle-bt-mic:
+toggle-bt-mic ACTION="":
     #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
     CONFIG_FILE="/etc/wireplumber/wireplumber.conf.d/51-mitigate-annoying-profile-switch.conf"
+    OPTION="{{ ACTION }}"
     # Check current status
     CURRENT_STATE="Disabled"
     if [ -f "$CONFIG_FILE" ]; then
       CURRENT_STATE="Enabled"
     fi
+
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust toggle-bt-mic <option>"
+      echo "  <option>: Specify the option to skip the interactive prompt"
+      echo "  Use 'status' to print the current portal status"
+      echo "  Use 'enable' to disable Bluetooth headset profile switching"
+      echo "  Use 'disable' to restore Bluetooth headset profile switching"
+      exit 0
+    elif [ "$OPTION" == "status" ]; then
+      if [ "$CURRENT_STATE" == "Enabled" ]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+      exit 0
+    fi
+
     # Prompt user for action
-    echo "Bluetooth headset profile mitigation is currently: ${bold}${CURRENT_STATE}${normal}"
-    echo "Enable or Disable Bluetooth headset profile mitigation?"
-    OPTION=$(ugum choose Enable Disable)
+    if [ "$OPTION" == "" ]; then
+      echo "Enable or Disable Bluetooth headset profile mitigation?"
+      if [ "$CURRENT_STATE" == "Enabled" ]; then
+        echo -e "${bold}Bluetooth headset profile mitigation:${normal} ${green}${CURRENT_STATE}${normal}"
+      else
+        echo -e "${bold}Bluetooth headset profile mitigation:${normal} ${red}${CURRENT_STATE}${normal}"
+      fi
+      OPTION=$(ugum choose Enable Disable)
+    fi
+
     if [[ "${OPTION,,}" == "enable" ]]; then
       echo "You chose to enable mitigation. This will disable headset mic functionality."
       echo "Requesting root privileges..."
@@ -85,8 +111,10 @@ toggle-bt-mic:
       echo "No changes were made."
     fi
 
-# enable or disable wake-on-lan functionality. Options: status | enable | disable | force-enable
-toggle-wol ACTION="":
+alias toggle-wol := wol
+
+# Manage wake-on-lan functionality. Options: status | enable | disable | force-enable
+wol ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     CONFIG_FILE="/etc/udev/rules.d/81-wol.rules"
@@ -116,7 +144,7 @@ toggle-wol ACTION="":
     }
     OPTION="{{ ACTION }}"
     if [ "$OPTION" == "help" ]; then
-      echo "Usage: ujust toggle-wol <option>"
+      echo "Usage: ujust wol <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'enable' to enable Wake-on-LAN"
       echo "  Use 'disable' to disable Wake-on-LAN"
@@ -175,107 +203,81 @@ toggle-wol ACTION="":
       echo "No changes were made."
     fi
 
-# enable or disable IWD as a replacement for wpa_supplicant. Options: status | enable | disable
-[group("network")]
-toggle-iwd ACTION="":
-    #!/usr/bin/bash
-    get_status_token() {
-      if [[ -f "/etc/NetworkManager/conf.d/supplicant.conf" ]]; then
-        echo "disable"
-      else
-        echo "enable"
-      fi
-    }
-
-    OPTION={{ ACTION }}
-    if [[ "${OPTION,,}" == "status" ]]; then
-      get_status_token
-      exit 0
-    fi
-    # Explain the purpose of the script
-    echo -e "This script manages enabling or disabling iwd as a replacement for wpa_supplicant for Wi-Fi networking. Default is Enabled."
-    echo -e "Enabling this can improve throughput, mesh networking, and reduce latency increases when scanning for networks"
-    echo -e "Disabling this can improve functionality on some wifi adapters"
-    echo -e ""
-    echo -e "WARNING: Changing this will remove all saved wifi networks"
-    get_current_status() {
-      if [[ "$(get_status_token)" == "enable" ]]; then
-        echo "Enabled"
-      else
-        echo "Disabled"
-      fi
-    }
-    remove_saved_networks() {
-      nmcli -t -f NAME connection show | while read -r line; do sudo nmcli connection delete "$line"; done
-    }
-    enable_iwd() {
-      sudo rm -f "/etc/NetworkManager/conf.d/supplicant.conf"
-      sudo systemctl mask wpa_supplicant.service
-      sudo systemctl unmask iwd.service
-      remove_saved_networks
-      echo -e "iwd enabled. Reboot required to apply changes."
-    }
-    disable_iwd() {
-      sudo mkdir -p "/etc/NetworkManager/conf.d/"
-      sudo rm -f "/etc/NetworkManager/conf.d/supplicant.conf"
-      printf "[device]\nwifi.backend=wpa_supplicant" | sudo tee /etc/NetworkManager/conf.d/supplicant.conf > /dev/null
-      sudo systemctl mask iwd.service
-      sudo systemctl unmask wpa_supplicant.service
-      remove_saved_networks
-      echo -e "iwd disabled. Reboot required to apply changes."
-    }
-    # Show status
-    current_status=$(get_current_status)
-    echo -e "\nCurrent iwd status: $current_status\n"
-
-    if [[ "${OPTION,,}" == "enable" ]]; then
-      enable_iwd
-      exit 0
-    fi
-
-    if [[ "${OPTION,,}" == "disable" ]]; then
-      disable_iwd
-      exit 0
-    fi
-
-    if [ -z "$OPTION" ]; then
-      CHOICE=$(ugum choose "Enable iwd" "Disable iwd" "Exit without changes")
-    else
-      exit 0
-    fi
-    case "$CHOICE" in
-      "Enable iwd")
-        enable_iwd
-        ;;
-      "Disable iwd")
-        disable_iwd
-        ;;
-      "Exit without changes")
-        echo "No changes made."
-        ;;
-      *)
-        echo "Invalid choice. Exiting without changes."
-        ;;
-    esac
-
 # enable or disable a fix for 7th and 8th generation Intel chips not being able to sleep
 [group("hardware")]
-toggle-i915-sleep-fix:
+toggle-i915-sleep-fix ACTION="":
     #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    OPTION="{{ ACTION }}"
+
     # Explain the purpose of the script
-    echo -e "This script manages the i915.enable_dc kernel parameter, which controls a power-saving feature for Intel graphics"
-    echo -e "Enabling this setting can reduce power consumption, but may cause issues like random reboots or failed suspend on certain devices"
-    echo -e "Disabling it ensures stability at the cost of slightly higher power usage"
+    if [ "$OPTION" != "status" ]; then
+      echo -e "This script manages the i915.enable_dc kernel parameter, which controls a power-saving feature for Intel graphics"
+      echo -e "Enabling this setting can reduce power consumption, but may cause issues like random reboots or failed suspend on certain devices"
+      echo -e "Disabling it ensures stability at the cost of slightly higher power usage"
+    fi
+
     # Get the current i915.enable_dc setting
     get_current_status() {
       local karg_status
-      karg_status=$(cat /proc/cmdline | grep -o 'i915.enable_dc=[-0-9]' | cut -d= -f2)
+      local kargs
+      kargs=$(rpm-ostree kargs 2>/dev/null)
+      if [[ -z "$kargs" ]]; then
+        kargs=$(cat /proc/cmdline)
+      fi
+      karg_status=$(grep -o 'i915.enable_dc=[-0-9]' <<< "$kargs" | tail -n1 | cut -d= -f2)
       if [[ -z "$karg_status" ]]; then
         echo "Not Set"
       else
         echo "$karg_status"
       fi
     }
+
+    get_status_token() {
+      local current_status
+      current_status=$(get_current_status)
+      case "$current_status" in
+        -1)
+          echo "auto"
+          ;;
+        0)
+          echo "disable"
+          ;;
+        1)
+          echo "level-1"
+          ;;
+        2)
+          echo "level-2"
+          ;;
+        3)
+          echo "level-3"
+          ;;
+        4)
+          echo "level-4"
+          ;;
+        *)
+          echo "unset"
+          ;;
+      esac
+    }
+
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust toggle-i915-sleep-fix <option>"
+      echo "  <option>: Specify the option to skip the interactive prompt"
+      echo "  Use 'status' to print the current portal status"
+      echo "  Use 'auto' to set i915.enable_dc=-1"
+      echo "  Use 'disable' to set i915.enable_dc=0"
+      echo "  Use 'level-1' to set i915.enable_dc=1"
+      echo "  Use 'level-2' to set i915.enable_dc=2"
+      echo "  Use 'level-3' to set i915.enable_dc=3"
+      echo "  Use 'level-4' to set i915.enable_dc=4"
+      echo "  Use 'unset' to remove i915.enable_dc"
+      exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit 0
+    fi
+
     # Toggle i915.enable_dc kernel parameter
     update_karg() {
       local new_value=$1
@@ -294,42 +296,63 @@ toggle-i915-sleep-fix:
         echo -e "\nInvalid value for i915.enable_dc. Please choose a valid value.\n"
         return
       fi
-      rpm-ostree kargs --replace "i915.enable_dc=$new_value"
+      rpm-ostree kargs \
+        --delete-if-present="i915.enable_dc=-1" \
+        --delete-if-present="i915.enable_dc=0" \
+        --delete-if-present="i915.enable_dc=1" \
+        --delete-if-present="i915.enable_dc=2" \
+        --delete-if-present="i915.enable_dc=3" \
+        --delete-if-present="i915.enable_dc=4" \
+        --append-if-missing="i915.enable_dc=$new_value"
       echo -e "Kernel parameter updated. Reboot required to apply changes."
     }
-    # Display current status
-    current_status=$(get_current_status)
-    echo -e "\nCurrent i915.enable_dc setting: $current_status\n"
     # Prompt user for action
-    CHOICE=$(ugum choose "Set to Auto (i915.enable_dc=-1)" "Disable Power Saving (i915.enable_dc=0)" "Set to Level 1 (i915.enable_dc=1)" "Set to Level 2 (i915.enable_dc=2)" "Set to Level 3 (i915.enable_dc=3)" "Set to Level 4 (i915.enable_dc=4)" "Unset Parameter" "Exit without changes")
+    if [ "$OPTION" == "" ]; then
+      current_status=$(get_current_status)
+      if [ "$current_status" == "Not Set" ]; then
+        echo -e "${bold}Current i915.enable_dc setting:${normal} ${red}$current_status${normal}"
+      else
+        echo -e "${bold}Current i915.enable_dc setting:${normal} ${green}$current_status${normal}"
+      fi
+      CHOICE=$(ugum choose "Set to Auto (i915.enable_dc=-1)" "Disable Power Saving (i915.enable_dc=0)" "Set to Level 1 (i915.enable_dc=1)" "Set to Level 2 (i915.enable_dc=2)" "Set to Level 3 (i915.enable_dc=3)" "Set to Level 4 (i915.enable_dc=4)" "Unset Parameter" "Exit without changes")
+    else
+      CHOICE="$OPTION"
+    fi
+
     case "$CHOICE" in
-      "Set to Auto (i915.enable_dc=-1)")
+      "Set to Auto (i915.enable_dc=-1)"|auto|-1)
         echo "Setting power-saving mode to auto (i915.enable_dc=-1)..."
         update_karg -1
         ;;
-      "Disable Power Saving (i915.enable_dc=0)")
+      "Disable Power Saving (i915.enable_dc=0)"|disable|0)
         echo "Disabling power-saving mode (i915.enable_dc=0)..."
         update_karg 0
         ;;
-      "Set to Level 1 (i915.enable_dc=1)")
+      "Set to Level 1 (i915.enable_dc=1)"|level-1|1)
         echo "Setting power-saving mode to level 1 (i915.enable_dc=1)..."
         update_karg 1
         ;;
-      "Set to Level 2 (i915.enable_dc=2)")
+      "Set to Level 2 (i915.enable_dc=2)"|level-2|2)
         echo "Setting power-saving mode to level 2 (i915.enable_dc=2)..."
         update_karg 2
         ;;
-      "Set to Level 3 (i915.enable_dc=3)")
+      "Set to Level 3 (i915.enable_dc=3)"|level-3|3)
         echo "Setting power-saving mode to level 3 (i915.enable_dc=3)..."
         update_karg 3
         ;;
-      "Set to Level 4 (i915.enable_dc=4)")
+      "Set to Level 4 (i915.enable_dc=4)"|level-4|4)
         echo "Setting power-saving mode to level 4 (i915.enable_dc=4)..."
         update_karg 4
         ;;
-      "Unset Parameter")
+      "Unset Parameter"|unset)
         echo "Unsetting i915.enable_dc..."
-        rpm-ostree kargs --delete "i915.enable_dc=[-0-9]"
+        rpm-ostree kargs \
+          --delete-if-present="i915.enable_dc=-1" \
+          --delete-if-present="i915.enable_dc=0" \
+          --delete-if-present="i915.enable_dc=1" \
+          --delete-if-present="i915.enable_dc=2" \
+          --delete-if-present="i915.enable_dc=3" \
+          --delete-if-present="i915.enable_dc=4"
         echo -e "Kernel parameter unset. Reboot required to apply changes."
         ;;
       "Exit without changes")
@@ -342,7 +365,7 @@ toggle-i915-sleep-fix:
 
 # Toggle GPP0 wakeup fix to prevent unwanted system wake-ups, primarily affects Gigabyte motherboards.
 [group("hardware")]
-_toggle-gigabyte-wake-fix:
+toggle-gigabyte-wake-fix:
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     SERVICE_FILE="/etc/systemd/system/biosWakeupWorkaround.service"
@@ -497,14 +520,205 @@ steam-icons ACTION="":
       ;;
     esac
 
-# Toggle CEC_ONSLEEP_STANDBY - Controls whether TV goes to standby when system sleeps. Options: status | enable | disable
-toggle-cec-sleep ACTION="":
+alias cec-backend := cec-mode
+
+# Select the HDMI-CEC implementation. dGPU mode keeps the libcec/cec-ctl event services for external adapters. Native mode uses Valve's cecd backend for devices with native kernel CEC.
+cec-mode ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+
+    CONFIG_FILE="/etc/default/cec-control"
+    CECD_NATIVE_CONFIG="$HOME/.config/cecd/config.d/98-bazzite-cec-mode.toml"
+    DGPU_UNITS=(cec-onboot.service cec-onsleep.service cec-onpoweroff.service)
+    NATIVE_UNITS=(cecd.service steamos-manager-configure-cecd.service)
+    INPUTATTACH_UNITS=(pulse8-cec-inputattach@.service rainshadow-cec-inputattach@.service)
+
+    set_cec_mode() {
+      local mode="$1"
+      if [[ -f "$CONFIG_FILE" ]] && grep -q '^CEC_MODE=' "$CONFIG_FILE"; then
+        sudo sed -i "s/^CEC_MODE=.*/CEC_MODE=$mode/" "$CONFIG_FILE"
+      else
+        echo "CEC_MODE=$mode" | sudo tee -a "$CONFIG_FILE" > /dev/null
+      fi
+    }
+
+    write_cecd_native_config() {
+      mkdir -p "$(dirname "$CECD_NATIVE_CONFIG")"
+      printf '%s\n' \
+        '# Bazzite CEC Native mode defaults.' \
+        '# SteamOS Manager writes wake_tv/uinput state to 99-steamos-manager.toml.' \
+        '# Keep suspend_tv here because SteamOS Manager does not currently expose it.' \
+        'logical_address = "playback"' \
+        'suspend_tv = true' \
+        'allow_standby = false' \
+        > "$CECD_NATIVE_CONFIG"
+    }
+
+    remove_cecd_native_config() {
+      rm -f "$CECD_NATIVE_CONFIG"
+    }
+
+    has_user_unit() {
+      systemctl --user list-unit-files "$1" --no-legend 2>/dev/null | grep -q "^$1"
+    }
+
+    is_enabled() {
+      systemctl is-enabled "$1" >/dev/null 2>&1
+    }
+
+    user_is_enabled() {
+      systemctl --user is-enabled "$1" >/dev/null 2>&1
+    }
+
+    get_status_token() {
+      if user_is_enabled cecd.service; then
+        echo "native"
+      elif is_enabled cec-onboot.service || is_enabled cec-onsleep.service || is_enabled cec-onpoweroff.service; then
+        echo "dgpu"
+      else
+        echo "disabled"
+      fi
+    }
+
+    print_status() {
+      case "$(get_status_token)" in
+        native)
+          echo "Native"
+          ;;
+        dgpu)
+          echo "dGPU"
+          ;;
+        *)
+          echo "Disabled"
+          ;;
+      esac
+    }
+
+    enable_dgpu_mode() {
+      sudo -v || exit 1
+      echo "Switching HDMI-CEC to dGPU mode..."
+      systemctl --user disable --now "${NATIVE_UNITS[@]}" >/dev/null 2>&1 || true
+      sudo systemctl stop 'pulse8-cec-inputattach@*.service' 'rainshadow-cec-inputattach@*.service' >/dev/null 2>&1 || true
+      sudo systemctl mask "${INPUTATTACH_UNITS[@]}" >/dev/null 2>&1 || true
+      remove_cecd_native_config
+      set_cec_mode dgpu
+      sudo systemctl unmask "${DGPU_UNITS[@]}" >/dev/null 2>&1 || true
+      sudo systemctl daemon-reload
+      sudo systemctl enable "${DGPU_UNITS[@]}"
+      sudo systemctl start cec-onboot.service || true
+      echo -e "HDMI-CEC is now using ${green}${bold}dGPU mode${normal}."
+      echo "This uses /usr/bin/cec-control with libcec or cec-ctl for external/dGPU CEC adapters."
+    }
+
+    enable_native_mode() {
+      if ! command -v cecd >/dev/null 2>&1; then
+        echo -e "${red}${bold}Error:${normal} /usr/bin/cecd was not found."
+        echo "Native mode requires Valve's linux-cec/cecd binary package. Leaving the current CEC mode unchanged."
+        exit 1
+      fi
+      if ! has_user_unit cecd.service; then
+        echo -e "${red}${bold}Error:${normal} cecd.service was not found."
+        echo "Native mode requires the cecd user service. Leaving the current CEC mode unchanged."
+        exit 1
+      fi
+
+      sudo -v || exit 1
+      echo "Switching HDMI-CEC to Native mode..."
+      write_cecd_native_config
+      set_cec_mode native
+      sudo systemctl disable --now "${DGPU_UNITS[@]}" >/dev/null 2>&1 || true
+      sudo systemctl mask "${DGPU_UNITS[@]}" >/dev/null 2>&1 || true
+      sudo systemctl unmask "${INPUTATTACH_UNITS[@]}" >/dev/null 2>&1 || true
+      sudo udevadm control --reload-rules >/dev/null 2>&1 || true
+      sudo udevadm trigger --subsystem-match=tty --action=add >/dev/null 2>&1 || true
+      systemctl --user daemon-reload
+      systemctl --user enable steamos-manager-configure-cecd.service >/dev/null 2>&1 || true
+      systemctl --user enable cecd.service
+      systemctl --user start --no-block cecd.service
+      timeout 15 steamosctl set-hdmi-cec-state control-and-wake >/dev/null 2>&1 || true
+      echo -e "HDMI-CEC is now using ${green}${bold}Native mode${normal}."
+      echo "This uses Valve's linux-cec/cecd backend for native kernel CEC devices."
+    }
+
+    OPTION="{{ ACTION }}"
+
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust cec-mode <option>"
+      echo "  status   Print dgpu, native, or disabled"
+      echo "  dgpu     Use restored cec-control services for dGPU/external CEC adapters"
+      echo "  native   Use Valve linux-cec/cecd through SteamOS Manager"
+      exit 0
+    elif [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit $?
+    elif [ -z "$OPTION" ]; then
+      echo -e "${bold}CEC Mode:${normal} $(print_status)"
+      echo ""
+      echo "dGPU mode uses the restored cec-control services for external adapters and dGPU paths."
+      echo "Native mode uses Valve's linux-cec/cecd backend through SteamOS Manager."
+      echo "Only one mode should be active at a time."
+      echo ""
+      OPTION=$(ugum choose "dGPU" "Native" "Exit without saving")
+    fi
+
+    case "$OPTION" in
+      dGPU|dgpu|legacy|Legacy)
+        enable_dgpu_mode
+        ;;
+      Native|native|cecd|CECD)
+        enable_native_mode
+        ;;
+      "Exit without saving"|*)
+        echo "No changes made."
+        ;;
+    esac
+
+alias toggle-cec-sleep := cec-sleep
+
+# Manage CEC_ONSLEEP_STANDBY - Controls whether TV goes to standby when system sleeps. Options: status | enable | disable
+cec-sleep ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     CONFIG_FILE="/etc/default/cec-control"
+    CECD_NATIVE_CONFIG="$HOME/.config/cecd/config.d/98-bazzite-cec-mode.toml"
+
+    get_cec_mode() {
+      grep '^CEC_MODE=' "$CONFIG_FILE" 2>/dev/null | cut -d= -f2
+    }
+
+    get_native_suspend_tv() {
+      local current_value="false"
+      if grep -q '^suspend_tv[[:space:]]*=' "$CECD_NATIVE_CONFIG" 2>/dev/null; then
+        current_value=$(grep '^suspend_tv[[:space:]]*=' "$CECD_NATIVE_CONFIG" | tail -n1 | cut -d= -f2 | tr -d '[:space:]')
+      fi
+      echo "$current_value"
+    }
+
+    set_native_suspend_tv() {
+      local value="$1"
+      mkdir -p "$(dirname "$CECD_NATIVE_CONFIG")"
+      if [[ ! -f "$CECD_NATIVE_CONFIG" ]]; then
+        printf '%s\n' \
+          '# Bazzite CEC Native mode defaults.' \
+          '# SteamOS Manager writes wake_tv/uinput state to 99-steamos-manager.toml.' \
+          '# Keep suspend_tv here because SteamOS Manager does not currently expose it.' \
+          'logical_address = "playback"' \
+          'allow_standby = false' \
+          > "$CECD_NATIVE_CONFIG"
+      fi
+      if grep -q '^suspend_tv[[:space:]]*=' "$CECD_NATIVE_CONFIG"; then
+        sed -i "s/^suspend_tv[[:space:]]*=.*/suspend_tv = $value/" "$CECD_NATIVE_CONFIG"
+      else
+        echo "suspend_tv = $value" >> "$CECD_NATIVE_CONFIG"
+      fi
+      systemctl --user kill -s HUP cecd.service >/dev/null 2>&1 || true
+    }
+
     get_status_token() {
       local current_value="false"
-      if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" 2>/dev/null; then
+      if [[ "$(get_cec_mode)" == "native" ]]; then
+        current_value=$(get_native_suspend_tv)
+      elif grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" 2>/dev/null; then
         current_value=$(grep '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE" | cut -d= -f2)
       fi
       if [[ "$current_value" == "true" ]]; then
@@ -531,7 +745,7 @@ toggle-cec-sleep ACTION="":
     OPTION="{{ ACTION }}"
 
     if [ "$OPTION" == "help" ]; then
-      echo "Usage: ujust toggle-cec-onsleep <option>"
+      echo "Usage: ujust cec-sleep <option>"
       echo "  <option>: Specify the option to skip the interactive prompt"
       echo "  Use 'enable' to make TV standby when system sleeps"
       echo "  Use 'disable' to prevent TV standby when system sleeps"
@@ -551,7 +765,9 @@ toggle-cec-sleep ACTION="":
     case "$OPTION" in
       Enable|enable)
         echo "Enabling CEC on-sleep standby..."
-        if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE"; then
+        if [[ "$(get_cec_mode)" == "native" ]]; then
+          set_native_suspend_tv true
+        elif grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE"; then
           sudo sed -i 's/^CEC_ONSLEEP_STANDBY=.*/CEC_ONSLEEP_STANDBY=true/' "$CONFIG_FILE"
         else
           echo 'CEC_ONSLEEP_STANDBY=true' | sudo tee -a "$CONFIG_FILE" > /dev/null
@@ -560,7 +776,9 @@ toggle-cec-sleep ACTION="":
         ;;
       Disable|disable)
         echo "Disabling CEC on-sleep standby..."
-        if grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE"; then
+        if [[ "$(get_cec_mode)" == "native" ]]; then
+          set_native_suspend_tv false
+        elif grep -q '^CEC_ONSLEEP_STANDBY=' "$CONFIG_FILE"; then
           sudo sed -i 's/^CEC_ONSLEEP_STANDBY=.*/CEC_ONSLEEP_STANDBY=false/' "$CONFIG_FILE"
         else
           echo 'CEC_ONSLEEP_STANDBY=false' | sudo tee -a "$CONFIG_FILE" > /dev/null
