@@ -291,6 +291,8 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y swap \
         --repo terra \
             switcheroo-control cardwire && \
+    dnf5 -y install --enable-repo=terra \
+        cardwire-gui && \
     ln -s /dev/null /etc/NetworkManager/dispatcher.d/04-iscsi && \
     systemctl mask iscsi && \
     systemctl mask systemd-remount-fs.service && \
