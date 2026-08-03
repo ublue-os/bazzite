@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Bazzite Portal
+Comment=Helps you setup Bazzite
+Exec=yafti_gtk.py /usr/share/yafti/yafti.yml
+Icon=io.github.ublue_os.yafti_gtk
+Terminal=false
+Type=Application
+X-GNOME-Autostart-enabled=true
