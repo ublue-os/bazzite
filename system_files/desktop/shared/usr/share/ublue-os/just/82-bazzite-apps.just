@@ -1025,6 +1025,63 @@ opentabletdriver ACTION="":
         exit 0
     fi
 
+alias install-couchside := get-couchside
+
+# Install Couchside (https://couchside.tv) - phone remote & dashboard for this machine. Options: status | install | uninstall
+[group("gaming")]
+get-couchside ACTION="":
+    #!/usr/bin/bash
+    set -eo pipefail
+    get_status_token() {
+        if systemctl list-unit-files couchside.service &>/dev/null && \
+           [[ -f "$HOME/.local/opt/couchside/couchsided.py" ]]; then
+            echo "install"
+        else
+            echo "uninstall"
+        fi
+    }
+    get_current_status() {
+        if [[ "$(get_status_token)" == "install" ]]; then
+            echo "Installed"
+        else
+            echo "Not Installed"
+        fi
+    }
+    install_couchside() {
+        curl --retry 3 -fsSL https://couchside.tv/install.sh | bash
+    }
+    uninstall_couchside() {
+        curl --retry 3 -fsSL https://couchside.tv/install.sh | bash -s -- --uninstall
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "status" ]]; then
+        get_status_token
+        exit 0
+    elif [[ "$OPTION" == "install" ]]; then
+        install_couchside
+        exit 0
+    elif [[ "$OPTION" == "uninstall" ]]; then
+        uninstall_couchside
+        exit 0
+    elif [[ -z "$OPTION" ]]; then
+        current_status=$(get_current_status)
+        echo "${bold}Couchside${normal}"
+        echo "Current status: $current_status"
+        OPTION=$(ugum choose "Install" "Uninstall" "Exit without changes")
+        case "$OPTION" in
+            "Install")
+                install_couchside
+                ;;
+            "Uninstall")
+                uninstall_couchside
+                ;;
+            *)
+                echo "No changes made."
+                ;;
+        esac
+        exit 0
+    fi
+
 # Create fedora distrobox if it doesn't exist
 [private]
 distrobox-check-fedora:
