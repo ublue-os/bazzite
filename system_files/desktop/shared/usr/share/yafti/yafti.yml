@@ -425,7 +425,7 @@ screens:
         title: "Update your system"
         description: "Update Bazzite, Flatpak apps, and more."
         default: false
-        script: "ujust update"
+        script: "yad --info --title=\"Tip\" --image=dialog-information --text \"You can launch Bazzite Updater anytime from your pinned apps or the app menu.\" --button=\"Got it\"!gtk-ok! && nohup setsid bazzite-updater >&/dev/null"
       - id: "rebase-bazzite-stable"
         title: "Move to the stable update track"
         description: "Rebase your system to the «stable» Bazzite image tag."
