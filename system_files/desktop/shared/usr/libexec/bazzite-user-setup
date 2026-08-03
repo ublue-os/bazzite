@@ -157,6 +157,9 @@ else
   if [[ ! -f "$TEMPLATES_DIR/MangoHud.conf" && -f "/usr/share/doc/mangohud/MangoHud.conf.example" ]]; then
     ln -s "/usr/share/doc/mangohud/MangoHud.conf.example" "$TEMPLATES_DIR/MangoHud.conf"
   fi
+  if [[ ! -f "$TEMPLATES_DIR/EmptyFile" ]]; then
+    touch "$TEMPLATES_DIR/EmptyFile"
+  fi
 
   if [[ $IMAGE_NAME =~ "deck" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
