@@ -206,6 +206,7 @@ RUN --mount=type=cache,dst=/var/cache \
         scx-tools && \
     dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
     dnf5 -y install \
+        bpftune \
         fuse-libs \
         uld \
         bazaar \
