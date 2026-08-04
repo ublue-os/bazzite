@@ -493,9 +493,9 @@ RUN --mount=type=cache,dst=/var/cache \
     mkdir -p /etc/skel/.config/autostart/ && \
     cp "/usr/share/applications/steam.desktop" "/etc/skel/.config/autostart/steam.desktop" && \
     sed -i 's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' /etc/skel/.config/autostart/steam.desktop && \
-    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/nvtop.desktop && \
-    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/btop.desktop && \
-    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/yad-icon-browser.desktop && \
+    desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/nvtop.desktop && \
+    desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/btop.desktop && \
+    desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/yad-icon-browser.desktop && \
     sed -i 's/#UserspaceHID.*/UserspaceHID=true/' /etc/bluetooth/input.conf && \
     sed -i "s|grub_probe\} --target=device /\`|grub_probe} --target=device /sysroot\`|g" /usr/bin/grub2-mkconfig && \
     rm -f /usr/lib/systemd/system/service.d/50-keep-warm.conf && \
@@ -696,6 +696,7 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i 's/- xbox-elite/- deck/g' /usr/share/inputplumber/devices/50-steam_deck.yaml && \
     sed -i 's/LOG_LEVEL=info/LOG_LEVEL=debug/g' /usr/lib/systemd/system/inputplumber.service && \
     sed -i 's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="opengamepadui --accessibility disabled --overlay-mode|' /usr/share/gamescope-session-plus/sessions.d/ogui-steam && \
+    desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/opengamepadui.desktop && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
         --depth 1 \
         /tmp/jupiter-dock-updater-bin && \
