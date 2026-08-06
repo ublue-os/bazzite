@@ -1136,7 +1136,7 @@ password-feedback ACTION="":
 
 alias toggle-global-fsr4 := global-fsr4
 
-# Manage global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on Proton 10 or GE 10-25 or later. Options: enable | disable
+# Enable globally upgrading FSR3.1+ to FSR4 — for handheld iGPU/APUs; upgrades FSR 3.1+ → FSR 4 on Proton CachyOS 11.0-20260702 or later. Options: enable | disable
 [group("gaming")]
 global-fsr4 ACTION="":
     #!/usr/bin/bash
@@ -1150,13 +1150,24 @@ global-fsr4 ACTION="":
         CURRENT="Enabled"
     fi
 
+    get_status_token() {
+      if [[ -f "$FILE" ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+
     OPTION="{{ ACTION }}"
     if [[ -z "$OPTION" ]]; then
-        echo -e "${bold}Global FSR4 (RDNA4):${normal} $CURRENT"
+        echo -e "${bold}Global FSR4 (Handheld iGPU/APUs):${normal} $CURRENT"
         echo ""
-        echo "Enables Proton's FSR4 upgrade path on RDNA4 GPUs (e.g. RX 9070 XT)."
+        echo "Enables Proton's FSR4 upgrade path on handheld iGPU/APUs."
         echo "When enabled, Proton can upgrade games using FSR 3.1+ to FSR 4"
-        echo "and automatically fetch the required FSR4 DLL."
+        echo "and automatically fetch the required FSR4 DLLs on handheld iGPU/APUs like the 7840HS."
+        echo "Note that RDNA 2-4 dGPUs require no launch options for automatic FSR4 upgrade."
+        echo ""
+        echo -e "${bold}Note:${normal} This is only compatible with Proton CachyOS 11.0-20260702 and later versions, or similar forks."
         echo ""
         OPTION="$(ugum choose "Enable" "Disable" "Exit without saving")"
     fi
@@ -1164,43 +1175,54 @@ global-fsr4 ACTION="":
     case "$OPTION" in
         Enable|enable)
             mkdir -p "$HOME/.config/environment.d"
-            echo "PROTON_FSR4_UPGRADE=1" > "$FILE"
-            echo -e "${green}${bold}Enabled${normal}: PROTON_FSR4_UPGRADE=1"
+            echo "FSR4_UPGRADE=1" > "$FILE"
+            echo -e "${green}${bold}Enabled${normal}: FSR4_UPGRADE=1"
             ;;
         Disable|disable)
             rm -f "$FILE"
-            echo -e "${red}${bold}Disabled${normal}: PROTON_FSR4_UPGRADE removed"
+            echo -e "${red}${bold}Disabled${normal}: FSR4_UPGRADE removed"
+            ;;
+        Status|status)
+            get_status_token
             ;;
         *)
             echo "No changes made."
             ;;
     esac
 
-alias toggle-global-fsr4-rdna3 := global-fsr4-rdna3
+alias toggle-global-fsr4-rdna3 := global-fsr4-mlfg
 
-# Manage global Proton FSR4 upgrade on RDNA3 GPUs; upgrades FSR 3.1+ → FSR 4, only compatible with Proton GE, Proton EM, or similar forks. Options: enable | disable
+# Enable globally enabling FSR4 MLFG(Machine Learning Frame Generation) — for RDNA3 graphics cards, only compatible with Proton CachyOS or similar forks. Options: enable | disable
 [group("gaming")]
-global-fsr4-rdna3 ACTION="":
+global-fsr4-mlfg ACTION="":
     #!/usr/bin/bash
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh
 
-    FILE="$HOME/.config/environment.d/99-proton-fsr4-rdna3.conf"
+    FILE="$HOME/.config/environment.d/99-proton-fsr4-mlfg.conf"
 
     CURRENT="Disabled"
     if [[ -f "$FILE" ]]; then
         CURRENT="Enabled"
     fi
 
+    get_status_token() {
+      if [[ -f "$FILE" ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+
     OPTION="{{ ACTION }}"
     if [[ -z "$OPTION" ]]; then
-        echo -e "${bold}Global FSR4 (RDNA3):${normal} $CURRENT"
+        echo -e "${bold}Global FSR4 MLFG (RDNA3):${normal} $CURRENT"
         echo ""
-        echo "Enables Proton's FSR4 upgrade path on RDNA3 GPUs (e.g. RX 7900 XTX)."
-        echo "When enabled, Proton can upgrade games using FSR 3.1+ to FSR 4 (FP8 Emulation)"
-        echo "and automatically fetch the required FSR4 DLL."
+        echo "Enables Proton's FSR4 MLFG upgrade path on RDNA3 GPUs (e.g. RX 7900 XTX)."
+        echo "When enabled, Proton can allow FSR4 MLFG to be used."
+        echo "Note that RDNA 2-4 dGPUs require no launch options for automatic FSR4 upgrade."
         echo ""
-        echo -e "${bold}Note:${normal} This is only compatible with Proton GE, Proton EM, or similar forks."
+        echo -e "${bold}Note:${normal} This is only compatible with Proton CachyOS 11.0-20260702 and later versions, or similar forks."
         echo ""
         OPTION="$(ugum choose "Enable" "Disable" "Exit without saving")"
     fi
@@ -1208,12 +1230,15 @@ global-fsr4-rdna3 ACTION="":
     case "$OPTION" in
         Enable|enable)
             mkdir -p "$HOME/.config/environment.d"
-            echo "PROTON_FSR4_RDNA3_UPGRADE=1" > "$FILE"
-            echo -e "${green}${bold}Enabled${normal}: PROTON_FSR4_RDNA3_UPGRADE=1"
+            echo -e "DXIL_SPIRV_CONFIG=wmma_rdna3_workaround\nMLFG_UPGRADE=1" > "$FILE"
+            echo -e "${green}${bold}Enabled${normal}: DXIL_SPIRV_CONFIG=wmma_rdna3_workaround\nMLFG_UPGRADE=1"
             ;;
         Disable|disable)
             rm -f "$FILE"
-            echo -e "${red}${bold}Disabled${normal}: PROTON_FSR4_RDNA3_UPGRADE removed"
+            echo -e "${red}${bold}Disabled${normal}: DXIL_SPIRV_CONFIG=wmma_rdna3_workaround\nMLFG_UPGRADE=1 removed"
+            ;;
+        Status|status)
+            get_status_token
             ;;
         *)
             echo "No changes made."
