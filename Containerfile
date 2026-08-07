@@ -673,6 +673,7 @@ RUN --mount=type=cache,dst=/var/cache \
         steamdeck-dsp \
         powerbuttond \
         inputplumber \
+        hid-replay \
         gamescope-session-ogui-steam \
         steamos-manager-powerstation \
         steamos-manager-powerstation-gamescope-session-plus \
