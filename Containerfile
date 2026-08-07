@@ -676,7 +676,6 @@ RUN --mount=type=cache,dst=/var/cache \
         hid-replay \
         gamescope-session-ogui-steam \
         steamos-manager-powerstation \
-        steamos-manager-powerstation-gamescope-session-plus \
         gamemode-news-hook \
         vpower \
         steam-notif-daemon \
@@ -767,8 +766,8 @@ RUN --mount=type=cache,dst=/var/cache \
     done && unset -v copr && \
     { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
     sed -i "s|^github = .*|github = https://raw.githubusercontent.com/ublue-os/bazzite-gamemode-news/refs/heads/${IMAGE_BRANCH}/announcements.json|" /etc/gamemode-news-hook.conf && \
-    mkdir -p /usr/lib/systemd/user/gamescope-session-plus@.service.wants && \
-    ln -s /usr/lib/systemd/user/steamos-powerbuttond.service /usr/lib/systemd/user/gamescope-session-plus@.service.wants/ && \
+    mkdir -p /usr/lib/systemd/user/gamescope-session-plus@ogui-steam.service.wants && \
+    ln -s /usr/lib/systemd/user/steamos-powerbuttond.service /usr/lib/systemd/user/gamescope-session-plus@ogui-steam.service.wants/ && \
     sed -i 's/@steam/@ogui-steam/g' /usr/lib/systemd/user/gamemode-news-hook.service && \
     sed -i '/^\[Service\]$/a KillSignal=SIGKILL\nTimeoutStopSec=2s\nTimeoutStopFailureMode=kill' /usr/lib/systemd/user/gamemode-news-hook.service && \
     systemctl enable --global steamos-manager.service && \
