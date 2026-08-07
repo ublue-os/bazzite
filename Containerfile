@@ -775,7 +775,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable --global steamos-manager-configure-cecd.service && \
     systemctl enable steamos-manager.service && \
     systemctl enable inputplumber.service && \
-    systemctl enable powerstation.service && \
     systemctl enable bazzite-autologin.service && \
     systemctl enable wireplumber-workaround.service && \
     systemctl enable wireplumber-sysconf.service && \
@@ -785,6 +784,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global enable gamemode-news-hook.service && \
     systemctl --global disable sdgyrodsu.service && \
     systemctl --global enable steamos-powerbuttond.service && \
+    systemctl disable powerstation.service && \
     systemctl disable input-remapper.service && \
     systemctl disable uupd.timer && \
     systemctl disable jupiter-fan-control.service && \
