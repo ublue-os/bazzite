@@ -1,0 +1,44 @@
+diff --git a/cmake/compile_definitions/linux.cmake b/cmake/compile_definitions/linux.cmake
+index ccfb8d7a..68f1afd9 100644
+--- a/cmake/compile_definitions/linux.cmake
++++ b/cmake/compile_definitions/linux.cmake
+@@ -22,6 +22,39 @@ if(${SUNSHINE_ENABLE_CUDA})
+         set(CUDA_FOUND ON)
+         enable_language(CUDA)
+ 
++        # Stop cmake from adding conda paths to the linker
++        # It should link with the system libs
++        set(CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES "")
++        set(CMAKE_CUDA_IMPLICIT_LINK_LIBRARIES "")
++        set(CMAKE_CUDA_RUNTIME_LIBRARY None)
++
++        # Manually add the needed cuda libraries
++        set(CUDA_RUNTIME_LIBRARIES
++            libcudadevrt.a
++            libcudart_static.a
++        )
++        if(NOT DEFINED SUNSHINE_CUDA_LIBRARY_PATH)
++            message(FATAL_ERROR
++                "SUNSHINE_CUDA_LIBRARY_PATH is not set. "
++                "Pass -DSUNSHINE_CUDA_LIBRARY_PATH=/path/to/cuda/lib")
++        endif()
++        if(NOT IS_DIRECTORY "${SUNSHINE_CUDA_LIBRARY_PATH}")
++            message(FATAL_ERROR
++                "SUNSHINE_CUDA_LIBRARY_PATH does not exist: "
++                "${SUNSHINE_CUDA_LIBRARY_PATH}")
++        endif()
++        foreach(cuda_lib IN LISTS CUDA_RUNTIME_LIBRARIES)
++            if(NOT EXISTS "${SUNSHINE_CUDA_LIBRARY_PATH}/${cuda_lib}")
++                message(FATAL_ERROR
++                    "Required CUDA library not found: "
++                    "${SUNSHINE_CUDA_LIBRARY_PATH}/${cuda_lib}")
++            endif()
++
++            list(APPEND PLATFORM_LIBRARIES
++                "${SUNSHINE_CUDA_LIBRARY_PATH}/${cuda_lib}"
++            )
++        endforeach()
++
+         message(STATUS "CUDA Compiler Version: ${CMAKE_CUDA_COMPILER_VERSION}")
+         set(CMAKE_CUDA_ARCHITECTURES "")
+ 
