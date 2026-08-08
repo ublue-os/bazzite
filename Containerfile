@@ -437,6 +437,7 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-user-theme \
             gnome-shell-extension-gsconnect \
             gnome-search-yafti \
+            gnome-rounded-blur \
             rom-properties-gtk4 \
             rom-properties-localsearch3 \
             ibus-mozc \
