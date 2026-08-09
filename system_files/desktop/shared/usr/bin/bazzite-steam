@@ -53,16 +53,15 @@ else
   fi
 fi
 
-switcheroo_state="$(switcherooctl list)"
+gpu_state="$(cardwire list --json 2>/dev/null)"
 DGPU_OPTION=""
 # If we're running this on a dGPU in a multi-gpu AMD/Intel system, apply a workaround for the blank Steam window bug
-if [[ $(echo "${switcheroo_state}" | grep -o 'Device:' | wc -l) -gt 1 ]]; then
-  # TODO: Check if -system-composer is needed with nvidia >=555 driver
-  if ! grep -Pq 'Name:\s+NVIDIA' <<< "$switcheroo_state"; then
+if [[ -n "$gpu_state" ]] && [[ $(jq 'length' <<< "$gpu_state") -gt 1 ]]; then
+  if [[ $(jq '[.[].nvidia] | any' <<< "$gpu_state") == "false" ]]; then
     DGPU_OPTION="-system-composer"
   fi
 fi
-unset -v switcheroo_state
+unset -v gpu_state
 
 # Multithreading precaching
 # See: https://www.reddit.com/r/linux_gaming/comments/1j06xpz/how_to_speed_up_steams_shader_precaching/
@@ -87,7 +86,7 @@ if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
   # It's been primarily developed for allowing the desktop functionality
   # on the Steam Controller to work while Steam is open on Wayland.
   # Also supports Steam Input as a whole.
-  env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam "$DECK_OPTION" "$OOTB_DISABLE_UPDATER_OPTION" "$DGPU_OPTION" "-pipewire" "$@"
+  env LD_PRELOAD=/usr/lib/extest/libextest.so /usr/bin/steam "$DECK_OPTION" "$OOTB_DISABLE_UPDATER_OPTION" "$DGPU_OPTION" "$@"
 else
-  /usr/bin/steam "$DECK_OPTION" "$OOTB_DISABLE_UPDATER_OPTION" "$DGPU_OPTION" "-pipewire" "$@"
+  /usr/bin/steam "$DECK_OPTION" "$OOTB_DISABLE_UPDATER_OPTION" "$DGPU_OPTION" "$@"
 fi

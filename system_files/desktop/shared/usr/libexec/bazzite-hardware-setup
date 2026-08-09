@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=77
+HWS_VER=78
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -96,17 +96,26 @@ if [[ $KARGS =~ "nomodeset" ]]; then
 fi
 
 if [[ $IMAGE_NAME =~ "deck" ]]; then
-  if /usr/libexec/hwsupport/valve-hardware || /usr/libexec/hwsupport/non-valve-handheld-hardware; then
+  if /usr/libexec/hwsupport/handheld-hardware; then
+    echo "Handheld hardware detected, masking PPD"
     systemctl mask tuned.service
     systemctl mask tuned-ppd.service
     if /usr/libexec/hwsupport/valve-hardware; then
+      echo "Valve handheld detected, masking powerstation and inputplumber".
       systemctl mask powerstation.service
       systemctl mask inputplumber.service
+    elif /usr/libexec/hwsupport/steamos-manager-hardware; then
+      echo "SteamOS Manager supported hardware detected, masking powerstation".
+      systemctl mask powerstation.service
+      systemclt unmask inputplumber.service
     else
+      echo "Other handheld detected, unmasking powerstation and inputplumber".
       systemctl unmask powerstation.service
+      systemctl enable powerstation.service
       systemclt unmask inputplumber.service
     fi
   else
+    echo "Non-handheld hardware detected, unmasking PPD and masking powerstation".
     systemctl unmask tuned.service
     systemctl unmask tuned-ppd.service
     systemctl mask powerstation.service

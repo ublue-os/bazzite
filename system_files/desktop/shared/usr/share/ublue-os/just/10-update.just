@@ -6,7 +6,7 @@ alias upgrade := update
 [group("system")]
 update:
     #!/usr/bin/bash
-    bazzite-updater --update
+    sudo uupd --hw-check=false --json --log-level=debug | jq -r '[(.title, .msg, .description) | select(.)] | join(" ")'
 
 alias changelog := changelogs
 
