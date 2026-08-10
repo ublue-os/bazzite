@@ -162,7 +162,7 @@ jobs:
       - name: Setup Cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
         with:
-          cosign-release: 'v2.6.4'
+          cosign-release: 'v2.6.5'
 
       - name: Sign ISO
         env:
@@ -175,7 +175,7 @@ jobs:
 
       - name: Attest Build Provenance
         id: attest
-        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: ${{ steps.upload-directory.outputs.iso-upload-dir }}/*.iso
 
