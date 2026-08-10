@@ -274,7 +274,7 @@ Bazzite is built entirely via GitHub Actions. Creating your own custom version o
 
 If you only want to generate images for the variants of Bazzite you are using, edit `.github/workflows/build.yml` to comment out the variants you do not wish to build in the `push-ghcr` job's `strategy`'s `matrix` list.
 
-We also ship a config for the popular [pull app](https://github.com/apps/pull) if you'd like to keep your fork in sync with upstream. Enable this app on your repo to keep track of Bazzite changes while also making your own modifications.
+We also ship a configuration for the popular [pull app](https://github.com/apps/pull) if you'd like to keep your fork in sync with upstream. Enable this app on your repo to keep track of Bazzite changes while also making your own modifications.
 
 ### How to Sign Your Images
 
