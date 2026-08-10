@@ -26,7 +26,7 @@ Usa nuestro [seleccionador de imágenes](https://bazzite.gg/#image-picker) para 
   - [Acerca de y Características](#acerca-de-y-características)
     - [Computadoras de Escritorio](#computadoras-de-escritorio)
     - [Steam Deck/Computadoras para Cine en Casa (HTPCs)](#steam-deckcomputadoras-para-cine-en-casa-htpcs)
-      - [Computadoras handheld alternativas](#computadoras-handheld-alternativas)
+      - [Portátiles alternativas](#portátiles-alternativas)
     - [GNOME](#gnome)
     - [Características del Upstream](#características-del-upstream)
       - [Universal Blue](#universal-blue)
@@ -161,7 +161,7 @@ Si deseas cambiar la base (rebase) de una imagen upstream existente de un sistem
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stable
 ```
 
-#### Computadoras handheld alternativas
+#### Portátiles alternativas
 
 **Igualmente, asegurate de tambien leer la [documentación de HHD (en inglés)](https://github.com/hhd-dev/hhd#after-install), algunas computadoras Handheld requieren ciertos ajustes o tweaks especificos para funcionar correctamente.**
 
