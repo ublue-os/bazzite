@@ -421,11 +421,16 @@ screens:
     description: "System management and configuration"
     actions:
       - id: "update-bazzite"
-        hidden: true
+        default: false
         title: "Update your system"
         description: "Update Bazzite, Flatpak apps, and more."
-        default: false
-        script: "yad --info --title=\"Tip\" --image=dialog-information --text \"You can launch Bazzite Updater anytime from your pinned apps or the app menu.\" --button=\"Got it\"!gtk-ok! && nohup setsid bazzite-updater >&/dev/null"
+        options:
+          - id: "Launch Bazzite Updater"
+            label: "Update Now"
+            script: "yad --info --title=\"Tip\" --image=dialog-information --text \"You can launch Bazzite Updater anytime from your pinned apps or the app menu.\" --button=\"Got it\"!gtk-ok! && nohup setsid bazzite-updater >&/dev/null"
+          - id: "Game Mode Shortcut"
+            label: "Add Bazzite Updater to Steam Big Picture"
+            script: "yad --info --title=\"Info\" --image=dialog-information --text \"This will add Bazzite Updater as a Non-Steam App, allowing updates with your controller from Big Picture Mode.\" --button=\"Nice\"!gtk-ok! && ujust add-updater-to-steam >&/dev/null"
       - id: "rebase-bazzite-stable"
         title: "Move to the stable update track"
         description: "Rebase your system to the «stable» Bazzite image tag."
