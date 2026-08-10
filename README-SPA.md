@@ -24,7 +24,7 @@ Usa nuestro [seleccionador de imágenes](https://bazzite.gg/#image-picker) para 
 - [Seleccionador de Imágenes](#seleccionador-de-imágenes)
 - [Tabla de Contenidos](#tabla-de-contenidos)
   - [Acerca de y Características](#acerca-de-y-características)
-    - [Computadoras de Escritorio](#computadoras-de-escritorio)
+    - [Escritorio](#escritorio)
     - [Steam Deck/Computadoras para Cine en Casa (HTPCs)](#steam-deckcomputadoras-para-cine-en-casa-htpcs)
       - [Computadoras handheld alternativas](#computadoras-handheld-alternativas)
     - [GNOME](#gnome)
@@ -86,7 +86,7 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) esta disponible para hacer posible compartir tu pantalla con Discord usando Wayland.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) esta disponible para crear aplicaciones de sitios web con una variedad de navegadores web, incluyendo Firefox.
 
-### Computadoras de Escritorio
+### Escritorio
 
 Esta variante común/genérica esta disponible como `bazzite`, la cual es adecuada para computadoras de escritorio, esta variante incluye la siguiente característica:
 
