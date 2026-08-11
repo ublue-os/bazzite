@@ -217,11 +217,11 @@ setup-sunshine ACTION="":
           if [[ $(cat /etc/bazzite/image_name) =~ deck ]]; then
             echo "You are about to layer the ${yellow}Sunshine${n} package via rpm-ostree."
             echo "If you encounter issues with ${b}system updates${n}, reset ostree and try layering it again."
-            echo "Read ${b}http://docs.bazzite.gg/Advanced/sunshine/#setting-up-sunshine-on-deck-images${n} to learn more."
+            echo "Read ${b}https://docs.bazzite.gg/Advanced/sunshine/#__tabbed_1_2${n} to learn more."
           else
             echo "This option is primarily intended for users of the Deck image as the flatpak package does not support capture via Kernel Mode Setting."
             echo "Installing ${yellow}Sunshine${n} stable with the normal ${b}'Enable Sunshine'${n} option will be better unless you encounter issues with XDG Portal/KWin Screencast capture options or need HDR."
-            echo "Only proceed if you know what you are doing. Read ${b}http://docs.bazzite.gg/Advanced/sunshine/#installing-sunshine-beta${n} to learn more."
+            echo "Only proceed if you know what you are doing. Read ${b}https://docs.bazzite.gg/Advanced/sunshine/#__tabbed_1_2${n} to learn more."
           fi
           echo ""
           if confirm "Confirm to proceed with layering ${yellow}Sunshine${n}? (This will remove all existing Sunshine installations!)"; then
@@ -263,7 +263,7 @@ setup-sunshine ACTION="":
           if [[ $(cat /etc/bazzite/image_name) =~ deck ]]; then
             echo "Deck Images make use of Valve's gamescope microcompositor while in Game Mode."
             echo "To stream on Game Mode, capture using ${b}Kernel Mode Setting${n} must be used, which is not supported by the Flatpak package."
-            echo "Read ${b}http://docs.bazzite.gg/Advanced/sunshine/#setting-up-sunshine-on-deck-images${n} to learn more."
+            echo "Read ${b}https://docs.bazzite.gg/Advanced/sunshine/#limitations-of-the-flatpak-package${n} to learn more."
             if ! confirm "You may still stream on Desktop Mode by installing the flatpak. Continue?"; then
               echo "Exiting..."
               exit 0
