@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+if [[ "$1" == "launch" ]]; then
+    shift
+    exec /usr/bin/cardwire launch "$@"
+fi
+
+echo "switcherooctl is deprecated on Bazzite and has been replaced by cardwire." >&2
+echo "Please use 'cardwire' instead. Run 'cardwire --help' for usage." >&2
+exit 1
