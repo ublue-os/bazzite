@@ -16,12 +16,9 @@
 </p>
 
 ---
-# Seleccionador de Imágenes
-Usa nuestro [seleccionador de imágenes](https://bazzite.gg/#image-picker) para encontrar la imagen correcta basada en tu hardware y tus preferencias.
 
 # Tabla de Contenidos
 - [🇺🇸 🇪🇸 🇮🇩 🇫🇷 🇧🇷 🇳🇱 🇹🇼](#------)
-- [Seleccionador de Imágenes](#seleccionador-de-imágenes)
 - [Tabla de Contenidos](#tabla-de-contenidos)
   - [Acerca de y Características](#acerca-de-y-características)
     - [Escritorio](#escritorio)
