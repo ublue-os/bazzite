@@ -22,6 +22,7 @@ rows:
           pt_BR: "Protocolo 3: Proteger o Piloto"
       appids:
         list:
+          - com.vysp3r.ProtonPlus
           - com.heroicgameslauncher.hgl
           - io.itch.itch
           - io.github.Faugus.faugus-launcher
