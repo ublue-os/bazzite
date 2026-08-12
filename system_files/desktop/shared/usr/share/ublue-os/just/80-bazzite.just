@@ -1,7 +1,7 @@
 # vim: set ft=make :
 
-# Disable NTFS/exFAT monitor and notification service
-_disable-ntfs-service:
+# Disable NTFS/exFAT monitor and notification service - REMINDER: Gaming on NTFS will lead to data corruption/loss! 
+disable-ntfs-service:
     #!/usr/bin/bash
     systemctl disable --now --user ntfs-nag.service
     systemctl mask --now --user ntfs-nag.service
