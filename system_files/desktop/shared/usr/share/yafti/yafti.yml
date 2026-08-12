@@ -228,7 +228,7 @@ screens:
           - id: "uninstall"
             label: "Uninstall OpenTabletDriver"
             script: "ujust opentabletdriver uninstall"
-                - id: "proton-plus"
+      - id: "proton-plus"
         title: "Proton Plus"
         description: "ProtonPlus helps you install, update, remove, and organize compatibility tools used by Steam and other Linux game launchers."
         default: false
