@@ -3,8 +3,8 @@
 # shellcheck disable=SC1091
 source /usr/lib/ujust/ujust.sh
 
-title="Switcherooctl Deprecation Notice"
-body="switcherooctl is deprecated on Bazzite and has been replaced by cardwire.\nPlease use 'cardwire' instead. Run 'cardwire --help' for usage."
+title="Switcherooctl is deprecated on Bazzite and has been replaced by cardwire."
+body="Please use 'cardwire' instead. Run 'cardwire --help' for usage."
 see_more_url="https://docs.bazzite.gg/Advanced/cardwire/#usage"
 
 notify_cmd="/usr/bin/notify-send --app-name=\"Switcherooctl Deprecation Notice\" --expire-time=20000"
@@ -16,18 +16,18 @@ notify_cmd+=" --action=\"open_cardwire=Open CardWire GUI\""
 if [ "$XDG_CURRENT_DESKTOP" != "gamescope" ] && [ -n "$XDG_CURRENT_DESKTOP" ]; then
     # Send a notification that sticks around for 20 seconds (so it is visible when launched through steam)
     action=$(eval "$notify_cmd") || exit
-        case "$action" in
-        see_more)
-            xdg-open "$see_more_url"
-            ;;
-        open_cardwire)
-            /usr/bin/cardwire-gui &
-            ;;
-        *)
-            # Do nothing
-            :
-            ;;
-        esac
+    case "$action" in
+    see_more)
+        xdg-open "$see_more_url"
+        ;;
+    open_cardwire)
+        /usr/bin/cardwire-gui &
+        ;;
+    *)
+        # Do nothing
+        :
+        ;;
+    esac
 fi
 
 if [[ "$1" == "launch" ]]; then
@@ -36,5 +36,6 @@ if [[ "$1" == "launch" ]]; then
 fi
 
 # shellcheck disable=SC2154
-echo "${b}$body${n}" >&2
+echo "${b}$title${n}" >&2
+echo "$body" >&2
 exit 1
