@@ -299,8 +299,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl mask systemd-remount-fs.service && \
     mkdir -p /usr/lib/extest/ && \
     /ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest | jq -r '.assets[] | select(.name| test(".*so$")).browser_download_url')" -Lo /usr/lib/extest/libextest.so && \
-    /ctx/ghcurl "https://github.com/ykshek/Sunshine/raw/1347f9ef290c089b815cf186f7d361470bdb9ef7/src_assets/linux/misc/postinst" -Lo /usr/libexec/sunshine-postinst && \
-    chmod +x /usr/libexec/sunshine-postinst && \
     setfattr -n user.component -v "extest" /usr/lib/extest/libextest.so && \
     mkdir -p /etc/xdg/autostart && \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
