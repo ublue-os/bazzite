@@ -30,7 +30,7 @@
       - [Características de Fedora Linux (Kinoite \& Silverblue)](#características-de-fedora-linux-kinoite--silverblue)
   - [¿Por qué?](#por-qué)
   - [Mira como luce Bazzite (Capturas de Pantalla)](#mira-como-luce-bazzite-capturas-de-pantalla)
-  - [Documentación y Boletín informativo/Newsletters (En inglés)](#documentación-y-boletín-informativonewsletters-en-inglés)
+  - [Documentación](#documentación)
   - [Verificación](#verificación)
   - [Arranque Seguro (Secure Boot)](#arranque-seguro-secure-boot)
   - [Métricas de Contribución](#métricas-de-contribución)
@@ -245,7 +245,7 @@ Lee nuestras [preguntas frecuentes](https://universal-blue.discourse.group/docs?
 
 ![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
-## Documentación y Boletín informativo/Newsletters (En inglés)
+## Documentación
 
 - [Actualizaciones, Reversiones y Cambio de Base (Rebasing)](https://universal-blue.discourse.group/docs?topic=36)
 - [Guía para Jugar en Linux](https://universal-blue.discourse.group/docs?topic=31)
