@@ -859,6 +859,7 @@ RUN --mount=type=cache,dst=/var/cache \
         dconf-override-converter to-dconf "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" && \
         rm "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override" \
     ; fi && \
+    sed -i 's/ nvidia_peermem\b//' /usr/lib/dracut/dracut.conf.d/99-nvidia.conf && \
     systemctl enable nvidia-powerd.service && \
     systemctl enable ublue-nvidia-flatpak-runtime-sync && \
     systemctl enable ublue-nvidia-flatpak-runtime-verify && \
