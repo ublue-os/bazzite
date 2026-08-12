@@ -1,0 +1,24 @@
+#!/usr/bin/bash
+
+# shellcheck disable=SC1091
+source /usr/lib/ujust/ujust.sh
+
+MSG1="switcherooctl is deprecated on Bazzite and has been replaced by cardwire."
+MSG2="Please use 'cardwire' instead. Run 'cardwire --help' for usage."
+
+# If we are not in gamemode session or tty
+if [ "$XDG_CURRENT_DESKTOP" != "gamescope" ] && [ -n "$XDG_CURRENT_DESKTOP" ]; then
+    # Send a notification that sticks around for 20 seconds (so it is visible when launched through steam)
+    notify-send -t 20000 -a "switcherooctl is deprecated" "$MSG1" "$MSG2"
+fi
+
+if [[ "$1" == "launch" ]]; then
+    shift
+    exec /usr/bin/cardwire launch "$@"
+fi
+
+# shellcheck disable=SC2154
+echo "${b}$MSG1${n}" >&2
+echo "$MSG2" >&2
+cardwire list
+exit 1
