@@ -29,10 +29,10 @@
       - [Universal Blue](#universal-blue)
       - [Características de Fedora Linux (Kinoite \& Silverblue)](#características-de-fedora-linux-kinoite--silverblue)
   - [¿Por qué?](#por-qué)
-  - [Mira como luce Bazzite (Capturas de Pantalla)](#mira-como-luce-bazzite-capturas-de-pantalla)
-  - [Documentación y Boletín informativo/Newsletters (En inglés)](#documentación-y-boletín-informativonewsletters-en-inglés)
+  - [Exhibición](#exhibición)
+  - [Documentación](#documentación)
   - [Verificación](#verificación)
-  - [Arranque Seguro (Secure Boot)](#arranque-seguro-secure-boot)
+  - [Arranque Seguro)](#arranque-seguro)
   - [Métricas de Contribución](#métricas-de-contribución)
   - [Historial de Estrellas](#historial-de-estrellas)
   - [Gracias Especiales](#gracias-especiales)
@@ -229,7 +229,7 @@ Bazzite se entrega con el kernel de Linux mas nuevo y SELinux esta habilitado po
 
 Lee nuestras [preguntas frecuentes](https://universal-blue.discourse.group/docs?topic=411) para saber más en lo que hace a Bazzite sobresalir de otras distribuciones de GNU Linux.
 
-## Mira como luce Bazzite (Capturas de Pantalla)
+## Exhibición
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 
@@ -245,7 +245,7 @@ Lee nuestras [preguntas frecuentes](https://universal-blue.discourse.group/docs?
 
 ![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
-## Documentación y Boletín informativo/Newsletters (En inglés)
+## Documentación
 
 - [Actualizaciones, Reversiones y Cambio de Base (Rebasing)](https://universal-blue.discourse.group/docs?topic=36)
 - [Guía para Jugar en Linux](https://universal-blue.discourse.group/docs?topic=31)
@@ -263,7 +263,7 @@ Estas imágenes son firmadas digitalmente con [cosign](https://docs.sigstore.dev
 cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
 ```
 
-## Arranque Seguro (Secure Boot)
+## Arranque Seguro
 
 > [!WARNING]
 > **Usuarios de la Steam Deck: La Steam Deck no viene con Arranque Seguro habilitado y no viene con ninguna llave registrada por defecto. No habilites esto a menos que estes seguro de lo que estes haciendo.**
