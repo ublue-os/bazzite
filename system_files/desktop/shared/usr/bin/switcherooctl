@@ -38,4 +38,5 @@ fi
 # shellcheck disable=SC2154
 echo "${b}$title${n}" >&2
 echo "$body" >&2
+cardwire list
 exit 1
