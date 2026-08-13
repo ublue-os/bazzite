@@ -5,6 +5,30 @@ command:
     stdout:
       - "dgoss smoketest"
 
+  # steamosctl only ships on deck images, so this is a no-op elsewhere.
+  steamosctl_selinux_label:
+    exec: |
+      sh -lc '
+      target=/usr/bin/steamosctl
+      expected=system_u:object_r:steamos_manager_exec_t:s0
+      if [ ! -e "$target" ]; then
+        echo "SKIP: $target not present in this image"
+        exit 0
+      fi
+      label=$(getfattr --absolute-names --only-values -n security.selinux "$target" 2>/dev/null | tr -d "\000")
+      if [ -z "$label" ]; then
+        label=$(ls -Zd "$target" 2>/dev/null | awk "{print \$1}")
+      fi
+      case "$label" in
+        "" | "?") echo "SKIP: no SELinux label readable for $target" ;;
+        "$expected") echo "OK: $target is labeled $expected" ;;
+        *) echo "FAIL: $target is labeled $label, expected $expected" ; exit 1 ;;
+      esac
+      '
+    exit-status: 0
+    stdout:
+      - "/^(OK|SKIP):/"
+
 file:
   /etc/os-release:
     exists: true
