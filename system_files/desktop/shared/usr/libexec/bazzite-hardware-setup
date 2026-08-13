@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=78
+HWS_VER=71
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -119,6 +119,8 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
     systemctl unmask tuned.service
     systemctl unmask tuned-ppd.service
     systemctl mask powerstation.service
+    systemctl mask pulse8-cec-inputattach@.service
+    systemctl mask rainshadow-cec-inputattach@.service
   fi
 
   if /usr/libexec/hwsupport/valve-hardware; then
@@ -141,7 +143,6 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
     systemctl disable --now vpower.service
     systemctl disable --now jupiter-biosupdate.service
     systemctl disable --now jupiter-controller-update.service
-    systemctl disable --now ryzenadj.service
   fi
   systemctl enable --now ds-inhibit.service
 fi
