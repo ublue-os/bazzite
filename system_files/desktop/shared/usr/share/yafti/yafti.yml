@@ -842,15 +842,15 @@ screens:
             script: 'ujust toggle-bt-mic disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "cec-mode"
         title: "Change CEC mode"
-        description: "Toggle the HDMI-CEC back-end path. Routing through the dedicated GPU should be more reliable for home theater PCs, while routing natively could be preferred in handhelds."
+        description: "Change the HDMI-CEC back-end path. Routing through the dedicated GPU should be more reliable for home theater PCs, while routing natively could be preferred in handhelds and is known to cause sleep/wake issues in some HTPC configurations."
         default: false
         status_script: "ujust cec-mode status"
         options:
           - id: "dgpu"
-            label: "Route through dGPU"
+            label: "Route through dGPU (HTPC)"
             script: "ujust cec-mode dgpu"
           - id: "native"
-            label: "Route Natively"
+            label: "Route Natively (Handhelds)"
             script: "ujust cec-mode native"
       - id: "inputplumber"
         title: "Toggle InputPlumber"
