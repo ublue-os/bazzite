@@ -5,6 +5,14 @@ command:
     stdout:
       - "dgoss smoketest"
 
+  hardware_setup_unmasks_inputplumber:
+    exec: |
+      sh -lc '
+      setup=/usr/libexec/bazzite-hardware-setup
+      test "$(grep -Fc "systemctl unmask inputplumber.service" "$setup")" -eq 2
+      '
+    exit-status: 0
+
   # steamosctl only ships on deck images, so this is a no-op elsewhere.
   steamosctl_selinux_label:
     exec: |
