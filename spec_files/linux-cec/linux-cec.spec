@@ -1,7 +1,7 @@
 # Upstream has no release tarballs, build from a pinned commit
-%global commit          218fd8194fbf2641b1646ed44d69ef76eb6c57fd
+%global commit          2b7a801a682eb3e728cdb6de85712e78738f5576
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
-%global commitdate      20260515
+%global commitdate      20260807
 
 Name:           linux-cec
 Version:        0.2.1
