@@ -33,7 +33,7 @@
   - [Documentación y Boletín informativo/Newsletters (En inglés)](#documentación-y-boletín-informativonewsletters-en-inglés)
   - [Verificación](#verificación)
   - [Arranque Seguro (Secure Boot)](#arranque-seguro-secure-boot)
-  - [Métricas de Contribución](#métricas-de-contribución)
+  - [Métricas de Contribuyentes](#métricas-de-contribuyentes)
   - [Historial de Estrellas](#historial-de-estrellas)
   - [Gracias Especiales](#gracias-especiales)
   - [Hazlo tu Mismo](#hazlo-tu-mismo)
@@ -280,7 +280,7 @@ Alternativamente, los usuarios que ya cuenten con una imagen de Universal Blue i
 
 Si se te pide una contraseña, introduce `universalblue`.
 
-## Métricas de Contribución
+## Métricas de Contribuyentes
 
 ![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats analytics image")
 
