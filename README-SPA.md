@@ -36,7 +36,7 @@
   - [Métricas de Contribución](#métricas-de-contribución)
   - [Historial de Estrellas](#historial-de-estrellas)
   - [Gracias Especiales](#gracias-especiales)
-  - [Hazlo tu Mismo](#hazlo-tu-mismo)
+  - [Hazlo tú mismo](#hazlo-tú-mismo)
   - [Únete a la Comunidad](#únete-a-la-comunidad)
 
 ---
@@ -308,7 +308,7 @@ Bazzite es producto de esfuerzo comunitario, y no existiría sin la contribució
 - [Steam Deck Homebrew](https://deckbrew.xyz) - Por escoger brindar soporte a otras distribuciones ademas de SteamOS, a pesar de todo el trabajo extra que esto conlleva, y damos gracias especiales a [PartyWumpus](https://github.com/PartyWumpus) por lograr que Decky Loader funcione con SELinux en Bazzite.
 - [cyrv6737](https://github.com/cyrv6737) - Por la inspiración inicial para crear el proyecto, y la base que eventualmente se volvió [bazzite-arch](https://github.com/ublue-os/bazzite-arch).
 
-## Hazlo tu Mismo
+## Hazlo tú mismo
 
 Bazzite esta construido enteramente en GitHub, y crear tu propia versión personalizada es muy fácil, tan solo crea un fork de este repositorio, añade tu propia llave digital privada, y habilita las acciones de GitHub.
 
