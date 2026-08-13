@@ -37,7 +37,7 @@
   - [Historial de Estrellas](#historial-de-estrellas)
   - [Gracias Especiales](#gracias-especiales)
   - [Hazlo tu Mismo](#hazlo-tu-mismo)
-  - [Únete a la Comunidad](#únete-a-la-comunidad)
+  - [Únete a la comunidad](#únete-a-la-comunidad)
 
 ---
 
@@ -316,7 +316,7 @@ Bazzite esta construido enteramente en GitHub, y crear tu propia versión person
 
 También incluimos una configuración para la popular app de GitHub [Pull](https://github.com/apps/pull), por si gustas mantener tu fork en sincronía con el upstream. Habilita esta aplicación en tu repositorio para realizar un seguimiento de los cambios en Bazzite, mientras al mismo tiempo, haces tus propias modificaciones.
 
-## Únete a la Comunidad
+## Únete a la comunidad
 
 Puedes encontrarnos en el [Discord de Universal Blue (en inglés)](https://discord.gg/f8MUghG5PB) y puedes ver todo el archivo de los hilos de ayuda en nuestro [Answer Overflow](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769).
 
