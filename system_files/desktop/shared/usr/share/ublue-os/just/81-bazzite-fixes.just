@@ -598,6 +598,7 @@ cec-mode ACTION="":
       sudo -v || exit 1
       echo "Switching HDMI-CEC to dGPU mode..."
       systemctl --user disable --now "${NATIVE_UNITS[@]}" >/dev/null 2>&1 || true
+      systemctl --user mask "${NATIVE_UNITS[@]}" >/dev/null 2>&1 || true
       sudo systemctl stop 'pulse8-cec-inputattach@*.service' 'rainshadow-cec-inputattach@*.service' >/dev/null 2>&1 || true
       sudo systemctl mask "${INPUTATTACH_UNITS[@]}" >/dev/null 2>&1 || true
       remove_cecd_native_config
@@ -632,8 +633,8 @@ cec-mode ACTION="":
       sudo udevadm control --reload-rules >/dev/null 2>&1 || true
       sudo udevadm trigger --subsystem-match=tty --action=add >/dev/null 2>&1 || true
       systemctl --user daemon-reload
-      systemctl --user enable steamos-manager-configure-cecd.service >/dev/null 2>&1 || true
-      systemctl --user enable cecd.service
+      systemctl --user unmask "${NATIVE_UNITS[@]}" >/dev/null 2>&1 || true
+      systemctl --user enable "${NATIVE_UNITS[@]}" >/dev/null 2>&1 || true
       systemctl --user start --no-block cecd.service
       timeout 15 steamosctl set-hdmi-cec-state control-and-wake >/dev/null 2>&1 || true
       echo -e "HDMI-CEC is now using ${green}${bold}Native mode${normal}."
