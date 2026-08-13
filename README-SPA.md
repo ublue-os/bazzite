@@ -35,7 +35,7 @@
   - [Arranque Seguro (Secure Boot)](#arranque-seguro-secure-boot)
   - [Métricas de Contribución](#métricas-de-contribución)
   - [Historial de Estrellas](#historial-de-estrellas)
-  - [Gracias Especiales](#gracias-especiales)
+  - [Agradecimientos especiales](#agradecimientos-especiales)
   - [Hazlo tu Mismo](#hazlo-tu-mismo)
   - [Únete a la Comunidad](#únete-a-la-comunidad)
 
@@ -294,7 +294,7 @@ Si se te pide una contraseña, introduce `universalblue`.
   </picture>
 </a>
 
-## Gracias Especiales
+## Agradecimientos especiales
 
 Bazzite es producto de esfuerzo comunitario, y no existiría sin la contribución de todos. A continuación, están listadas unas cuantas personas que nos han ayudado a lo largo del camino:
 
