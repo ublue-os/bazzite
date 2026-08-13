@@ -25,7 +25,7 @@
     - [Steam Deck/Computadoras para Cine en Casa (HTPCs)](#steam-deckcomputadoras-para-cine-en-casa-htpcs)
       - [Portátiles alternativas](#portátiles-alternativas)
     - [GNOME](#gnome)
-    - [Características del Upstream](#características-del-upstream)
+    - [Características de Upstream](#características-de-upstream)
       - [Universal Blue](#universal-blue)
       - [Características de Fedora Linux (Kinoite \& Silverblue)](#características-de-fedora-linux-kinoite--silverblue)
   - [¿Por qué?](#por-qué)
@@ -200,7 +200,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 ```
 **Para usuarios con Secure Boot habilitado:** Sigue nuestra [documentación para usuarios de Secure Boot](#secure-boot) antes de cambiar la base.
 
-### Características del Upstream
+### Características de Upstream
 
 #### Universal Blue
 

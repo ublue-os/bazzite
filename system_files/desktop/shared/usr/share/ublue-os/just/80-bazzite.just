@@ -71,16 +71,14 @@ ssh ACTION="":
     case "$OPTION" in
       "Enable SSH"|enable)
         echo "Enabling SSH on boot..."
-        sudo systemctl enable sshd
-        sudo systemctl start sshd
+        sudo systemctl enable --now sshd
         echo -e "SSH is now ${green}Enabled${normal}. You can SSH using:"
         echo -e "${bold}${USER}@${IP_ADDRESS}${normal}"
         echo " "
         ;;
       "Disable SSH"|disable)
         echo "Disabling SSH on boot..."
-        sudo systemctl disable sshd
-        sudo systemctl stop sshd
+        sudo systemctl disable --now sshd
         echo -e "SSH is now ${yellow}Disabled${normal}."
         echo " "
         ;;
@@ -441,7 +439,7 @@ configure-grub ACTION="":
       apply_setting "$OPTION"
     fi
 
-# Toogle a ramoops config to save panic messages across crashes
+# Toggle a ramoops config to save panic messages across crashes
 [group("system")]
 toggle-save-panics ACTION="":
     #!/usr/bin/bash
@@ -863,9 +861,9 @@ configure-snapshots ACTION="":
       echo "Usage: ujust configure-snapshots <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'status' to print the current status"
-      echo "  Use 'enable' enable snapshotting of /var/home"
-      echo "  Use 'disable' disable snapshotting of /var/home"
-      echo "  Use 'wipe' disable snapshotting and remove all automatic snapshots of /var/home"
+      echo "  Use 'enable' to enable snapshotting of /var/home"
+      echo "  Use 'disable' to disable snapshotting of /var/home"
+      echo "  Use 'wipe' to disable snapshotting and remove all automatic snapshots of /var/home"
       exit 0
     elif [ "$OPTION" == "status" ]; then
       get_status_token

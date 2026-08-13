@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=50
+USER_SETUP_VER=51
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -187,6 +187,11 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
     if [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/applications/opengamepadui.desktop" ]; then
       rm -rf "${XDG_DATA_HOME:-$HOME/.local/share}/applications/opengamepadui.desktop"
     fi
+  fi
+
+  if ! /usr/libexec/hwsupport/valve-hardware && ! /usr/libexec/hwsupport/handheld-hardware; then
+    systemctl --user mask cecd.service
+    systemctl --user mask steamos-manager-configure-cecd.service
   fi
 
   # Legion Rotation Fix
