@@ -18,7 +18,7 @@ KNOWN_IMAGE_BRANCH=$(cat $KNOWN_IMAGE_BRANCH_FILE)
 KNOWN_FEDORA_VERSION_FILE="/etc/bazzite/fedora_version"
 KNOWN_FEDORA_VERSION=$(cat $KNOWN_FEDORA_VERSION_FILE)
 
-# Take care of autologin for non -deck or -dx images where this file is not needed.
+# Take care of autologin for non-deck or -dx images where this file is not needed.
 if [[ "$IMAGE_NAME" != *deck* && "$IMAGE_NAME" != *dx* ]]; then
   rm -f /etc/sddm.conf.d/steamos.conf
 fi
@@ -107,12 +107,12 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
     elif /usr/libexec/hwsupport/steamos-manager-hardware; then
       echo "SteamOS Manager supported hardware detected, masking powerstation".
       systemctl mask powerstation.service
-      systemclt unmask inputplumber.service
+      systemctl unmask inputplumber.service
     else
       echo "Other handheld detected, unmasking powerstation and inputplumber".
       systemctl unmask powerstation.service
       systemctl enable powerstation.service
-      systemclt unmask inputplumber.service
+      systemctl unmask inputplumber.service
     fi
   else
     echo "Non-handheld hardware detected, unmasking PPD and masking powerstation".
