@@ -305,7 +305,7 @@ screens:
         title: "VSCodium"
         description: "Strictly open source community edition of Visual Studio Code — installed using Brew."
         default: false
-        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew tap ublue-os/tap && brew install --cask vscodium-linux'
+        script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew trust ublue-os/tap && brew tap ublue-os/tap && brew install --cask vscodium-linux'
       - id: "waydroid"
         title: "Waydroid"
         description: "Android system in a container, for app compatibility on Linux. Incompatible with NVIDIA drivers."
