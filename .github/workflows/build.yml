@@ -46,7 +46,7 @@ env:
 jobs:
   push-ghcr:
     name: Make
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     continue-on-error: false
     permissions:
       contents: read
