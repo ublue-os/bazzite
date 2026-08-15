@@ -88,14 +88,7 @@ jobs:
           fi
 
       - name: Free Disk Space (Ubuntu)
-        if: ${{ steps.check_mnt.outputs.mnt_is_there == '1' }}
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-
-      - name: Mount BTRFS for podman storage
-        uses: ublue-os/container-storage-action@main
-        if: ${{ steps.check_mnt.outputs.mnt_is_there == '1' }}
-        with:
-          target-dir: /var/lib/containers
 
       # The image registry name must be lower-case, but GitHub usernames can be capitalized.
       - name: Get lower-case equivalent of the repository owner's username
@@ -194,8 +187,8 @@ jobs:
           # Base Image and version
           #
 
-          sudo podman pull ${{ steps.base.outputs.base_image }}
-          sudo skopeo inspect docker://${{ steps.base.outputs.base_image }} > source.json
+          podman pull ${{ steps.base.outputs.base_image }}
+          skopeo inspect docker://${{ steps.base.outputs.base_image }} > source.json
           UPSTREAM_TAG=$(jq -r '.Labels["org.opencontainers.image.version"]' source.json)
           if [ -z "$UPSTREAM_TAG" ] || [ "null" = "$UPSTREAM_TAG" ]; then
             echo "inspected image version must not be empty or null"
@@ -227,12 +220,12 @@ jobs:
           # Kernel & akmods
           #
           AKMODS_TAG="${{ steps.base.outputs.akmods_tag }}"
-          sudo podman pull ghcr.io/ublue-os/akmods:${AKMODS_TAG}
-          # sudo podman pull ghcr.io/ublue-os/akmods-extra:${AKMODS_TAG}
+          podman pull ghcr.io/ublue-os/akmods:${AKMODS_TAG}
+          # podman pull ghcr.io/ublue-os/akmods-extra:${AKMODS_TAG}
 
           if [ "${{ steps.base.outputs.install_nvidia }}" == "true" ]; then
             NVIDIA_FLAVOR="${{ steps.base.outputs.nvidia_flavor }}"
-            sudo podman pull "ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${AKMODS_TAG}"
+            podman pull "ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${AKMODS_TAG}"
           fi
 
 
@@ -269,7 +262,9 @@ jobs:
         run: |
           set -eoux pipefail
 
-          CACHE_NAME="bazzite-${FEDORA_VERSION}"
+          # Rootless buildah caches to /var/tmp/buildah-cache-$UID rather than
+          # -0, so the old rootful caches are dead weight. Bump to invalidate.
+          CACHE_NAME="bazzite-${FEDORA_VERSION}-rootless"
 
           ALLOW_CACHE_WRITE="false"
 
@@ -304,17 +299,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sudo -E buildah build \
+          buildah build \
             --target ${{ steps.base.outputs.container_target }} \
             --build-arg-file build_args.txt \
             --secret "id=GITHUB_TOKEN,env=GITHUB_TOKEN" \
             --tag raw-img .
-
-      # https://github.com/actions/cache/issues/1533
-      - name: Hack around permission issue caching
-        id: cache-perms
-        run: |
-          sudo chmod 777 --recursive /var/tmp/buildah-cache-0
 
       - name: Save DNF package cache
         if: steps.cache-prep.outputs.allow_cache_write == 'true'
@@ -350,9 +339,9 @@ jobs:
 
           # Clean out labels from base image
           img=raw-img
-          container=$(sudo buildah from $img)
-          sudo buildah config --label "-" $container
-          sudo buildah commit --identity-label=false --rm $container $img
+          container=$(buildah from $img)
+          buildah config --label "-" $container
+          buildah commit --identity-label=false --rm $container $img
 
           declare -A tags
           while read -r t; do
@@ -372,7 +361,7 @@ jobs:
           fi
 
           # Figure out config
-          kver=$(sudo podman run --rm "$img" rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
+          kver=$(podman run --rm "$img" rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
           filter='{ "packages": [inputs | split(" ") | select(length==2) | { (.[0]): .[1] }] | sort_by(keys) | add }'
           mapfile -t labels <<< "$IMAGE_LABELS"
           labels+=(
@@ -383,12 +372,12 @@ jobs:
           )
 
           # Apply config to labels and annotations
-          container=$(sudo buildah from $img)
+          container=$(buildah from $img)
           for line in "${labels[@]}"; do
             [ -z "$line" ] && continue
-            sudo buildah config --label "$line" --annotation "$line" "$container"
+            buildah config --label "$line" --annotation "$line" "$container"
           done
-          sudo buildah commit --identity-label=false --rm $container $img
+          buildah commit --identity-label=false --rm $container $img
 
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
@@ -396,18 +385,34 @@ jobs:
       - name: Run Rechunker
         id: rechunk
         run: |
-          container=$(sudo buildah from raw-img)
-          mnt=$(sudo buildah mount $container)
-          sudo bash -c "rm -rf $mnt/run/.* $mnt/run/* $mnt/tmp/.* $mnt/tmp/*"
-          sudo buildah umount $container
-          sudo buildah commit --identity-label=false --rm $container raw-img
+          set -euo pipefail
 
-          sudo podman run --rm --privileged --volume /var/lib/containers:/var/lib/containers \
+          buildah unshare bash -euo pipefail -c '
+            container=$(buildah from raw-img)
+            mnt=$(buildah mount "$container")
+            rm -rf "$mnt"/run/.* "$mnt"/run/* "$mnt"/tmp/.* "$mnt"/tmp/* || true
+            buildah umount "$container"
+            buildah commit --identity-label=false --rm "$container" raw-img
+          '
+
+          RECHUNK_DIR="$(mktemp -d "${RUNNER_TEMP}/rechunk-XXXXXX")"
+          trap 'rm -rf "${RECHUNK_DIR}"' EXIT
+
+          podman run --rm \
+              --pull=never \
+              --privileged \
+              --mount=type=image,src=localhost/raw-img,target=/rpm-ostree \
+              --volume "${RECHUNK_DIR}:/run/out:Z" \
+              --entrypoint /usr/bin/rpm-ostree \
               localhost/raw-img \
-              rpm-ostree compose build-chunked-oci \
+              compose build-chunked-oci \
               --bootc --max-layers 127 --format-version 2 \
-              --from localhost/raw-img --output containers-storage:localhost/chunked-img
-          sudo podman untag raw-img
+              --rootfs /rpm-ostree --output oci-archive:/run/out/chunked.oci
+
+          podman rmi -f localhost/raw-img
+
+          chunked=$(podman pull oci-archive:"${RECHUNK_DIR}/chunked.oci")
+          podman tag "${chunked}" localhost/chunked-img
 
           echo "ref=containers-storage:localhost/chunked-img" >> "$GITHUB_OUTPUT"
 
@@ -426,19 +431,21 @@ jobs:
           IMAGE: ${{ matrix.image }}
           VERSION_TAG: ${{ steps.labels.outputs.tag }}
           SYFT_CMD: ${{ steps.setup-syft.outputs.cmd }}
-          OCI_DIR: "/tmp/image-oci-dir"
+          OCI_DIR: "${{ runner.temp }}/image-oci-dir"
         run: |
           mkdir -p ${OCI_DIR}/rootfs
-          sudo podman container create --replace --name "${IMAGE}" "localhost/chunked-img"
-          sudo podman export "${IMAGE}" | sudo tar -C ${OCI_DIR}/rootfs -xf -
-          sudo podman container rm "${IMAGE}"
+          podman container create --replace --name "${IMAGE}" "localhost/chunked-img"
+          podman export "${IMAGE}" | tar -C ${OCI_DIR}/rootfs --no-same-owner -xf -
+          podman container rm "${IMAGE}"
+
+          chmod -R u+rwX ${OCI_DIR}
 
           SBOM="$(mktemp -d)/sbom.json"
           export SYFT_PARALLELISM=$(($(nproc)*2))
-          sudo $SYFT_CMD --source-name "${IMAGE}"-"${VERSION_TAG}" ${OCI_DIR} -o syft-json=${SBOM}
+          $SYFT_CMD --source-name "${IMAGE}"-"${VERSION_TAG}" ${OCI_DIR}/rootfs -o syft-json=${SBOM}
           du -sh ${SBOM}
           echo "SBOM=${SBOM}" >> $GITHUB_OUTPUT
-          sudo rm -rf ${OCI_DIR}
+          rm -rf ${OCI_DIR}
 
       # Generate tags after relabel runs and checks the primary tag is not duplicated
       # If it is, relabel will suffix it by .1, .2, etc and put it in steps.relabel.outputs.version
@@ -483,12 +490,12 @@ jobs:
 
       - name: Run goss tests
         run: |
-          sudo tests/dgoss/dgoss-tests.sh tests/dgoss/tests.d "${{ steps.rechunk.outputs.ref }}"
+          tests/dgoss/dgoss-tests.sh tests/dgoss/tests.d "${{ steps.rechunk.outputs.ref }}"
 
       - name: Login to GitHub Container Registry
         if: github.event_name != 'pull_request'
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
+          echo ${{ secrets.GITHUB_TOKEN }} | podman login ghcr.io -u ${{ github.actor }} --password-stdin
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       # Push the image to GHCR (Image Registry)
@@ -506,29 +513,39 @@ jobs:
           retry_wait_seconds: 15
           timeout_minutes: 10
           command: |
+            set -euo pipefail
+
             log_sum() { echo "$1" >> $GITHUB_STEP_SUMMARY; }
             log_sum '# Push to GHCR result'
             log_sum '```'
 
             for tag in ${VERSION} ${ALIAS_TAGS}; do
               dest_image="${OUTPUT_IMAGE}:$tag"
-              sudo skopeo copy ${RECHUNK_REF} docker://$dest_image --digestfile=/tmp/digestfile
+              podman push --digestfile=/tmp/digestfile \
+                "${RECHUNK_REF#containers-storage:}" "docker://$dest_image"
               log_sum "$dest_image"
             done
             log_sum '```'
 
-            echo "digest=$(< /tmp/digestfile)" >> $GITHUB_OUTPUT
+            digest="$(< /tmp/digestfile)"
+            if [[ -z "$digest" ]]; then
+              echo "push reported success but wrote no digest" >&2
+              exit 1
+            fi
+            echo "digest=${digest}" >> $GITHUB_OUTPUT
 
       - name: Install Cosign
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
         with:
-          cosign-release: "v2.6.5"
+          cosign-release: "v3.1.3"
 
       - name: Sign container image
         if: github.event_name != 'pull_request'
         run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY --new-bundle-format=false ${{ steps.base.outputs.output_image }}@${{ steps.push.outputs.digest }}
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY \
+            --new-bundle-format=false --use-signing-config=false \
+            ${{ steps.base.outputs.output_image }}@${{ steps.push.outputs.digest }}
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
 
@@ -567,7 +584,9 @@ jobs:
           IMAGE: ${{ steps.base.outputs.output_image }}
           SBOM_DIGEST: ${{ steps.upload-sbom.outputs.sbom_digest }}
         run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY --new-bundle-format=false ${IMAGE}@${SBOM_DIGEST}
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY \
+            --new-bundle-format=false --use-signing-config=false \
+            ${IMAGE}@${SBOM_DIGEST}
 
       - name: Attestation
         if: github.event_name != 'pull_request'
