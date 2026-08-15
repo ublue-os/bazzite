@@ -37,6 +37,34 @@ command:
     stdout:
       - "/^(OK|SKIP):/"
 
+  # ryzen_smu backs TDP control, which deck images depend on.
+  deck_has_ryzen_smu:
+    exec: |
+      sh -lc '
+      info=/usr/share/ublue-os/image-info.json
+      name=$(sed -n "s/.*\"image-name\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$info" 2>/dev/null)
+      if [ -z "$name" ]; then
+        name=$(. /usr/lib/os-release 2>/dev/null; printf "%s" "$VARIANT_ID")
+      fi
+      if [ -z "$name" ]; then
+        echo "FAIL: unable to determine image name from $info or /usr/lib/os-release"
+        exit 1
+      fi
+      case "$name" in
+        *deck*) ;;
+        *) echo "SKIP: $name is not a deck image" ; exit 0 ;;
+      esac
+      module=$(find /usr/lib/modules -type f -name "ryzen_smu.ko*" 2>/dev/null | head -n1)
+      if [ -z "$module" ]; then
+        echo "FAIL: $name is a deck image but no ryzen_smu module was found under /usr/lib/modules"
+        exit 1
+      fi
+      echo "OK: $name ships ryzen_smu at $module"
+      '
+    exit-status: 0
+    stdout:
+      - "/^(OK|SKIP):/"
+
 file:
   /etc/os-release:
     exists: true
