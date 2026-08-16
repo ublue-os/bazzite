@@ -352,7 +352,7 @@ RUN --mount=type=cache,dst=/var/cache \
         lutris && \
     dnf5 -y remove \
         gamemode && \
-    /ctx/ghcurl "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" -Lo /usr/bin/winetricks && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/Winetricks/winetricks/5a59ea07513b24093bd90fad943ecf9543cf05bc/src/winetricks" -Lo /usr/bin/winetricks && \
     chmod +x /usr/bin/winetricks && \
     setfattr -n user.component -v "winetricks" /usr/bin/winetricks && \
     /ctx/cleanup
@@ -457,7 +457,7 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-launch-new-instance \
             gnome-shell-extension-places-menu \
             gnome-shell-extension-window-list && \
-        /ctx/ghcurl "https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer" -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
+        /ctx/ghcurl "https://raw.githubusercontent.com/jlu5/icoextract/079db7ec82c2f15718f42dfb2340ae26a95e690e/exe-thumbnailer.thumbnailer" -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
         setfattr -n user.component -v "exe-thumbnailer" /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
         /ctx/build-gnome-extensions && \
         systemctl enable dconf-update.service \
@@ -589,7 +589,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable dmemcg-booster-system.service && \
     systemctl --global enable dmemcg-booster-user.service && \
     systemctl enable cardwired.service && \
-    /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/master/dxvk.conf" -Lo /etc/dxvk-example.conf && \
+    /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/3a4c6fa3cb1548d56a90a38dd8f526b6c13e63fd/dxvk.conf" -Lo /etc/dxvk-example.conf && \
     /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/waydroid-scripts/main/waydroid-choose-gpu.sh" -Lo /usr/bin/waydroid-choose-gpu && \
     chmod +x /usr/bin/waydroid-choose-gpu && \
     dnf5 config-manager setopt skip_if_unavailable=1 && \
@@ -725,7 +725,6 @@ RUN --mount=type=cache,dst=/var/cache \
 
 # Install Gamescope Session Supporting changes
 # Add bootstrap_steam.tar.gz used by gamescope-session (Thanks GE & Nobara Project!)
-# Add sdl gamecontrollerdb used by handheld daemon for externals
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
@@ -736,9 +735,6 @@ RUN --mount=type=cache,dst=/var/cache \
     curl --retry 3 -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz && \
     setfattr -n user.component -v "steam-bootstrap" /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz && \
     setfattr -n user.update-interval -v "yearly" /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz && \
-    mkdir -p /usr/share/sdl/ && \
-    /ctx/ghcurl "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt" -Lo /usr/share/sdl/gamecontrollerdb.txt && \
-    setfattr -n user.component -v "sdl2" /usr/share/sdl/gamecontrollerdb.txt && \
     /ctx/cleanup
 
 # Cleanup & Finalize
