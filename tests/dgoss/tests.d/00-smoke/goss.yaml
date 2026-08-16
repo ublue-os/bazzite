@@ -13,25 +13,60 @@ command:
       '
     exit-status: 0
 
-  # steamosctl only ships on deck images, so this is a no-op elsewhere.
+  selinux_label_probe_works:
+    exec: |
+      sh -lc '
+      target=/usr/bin/sudo
+      expected=system_u:object_r:sudo_exec_t:s0
+      obj=$(find /sysroot/ostree/repo/objects -inum "$(stat -c %i "$target")" -name "*.file" -print -quit 2>/dev/null)
+      if [ -z "$obj" ]; then
+        echo "FAIL: no ostree object backs $target; the label probe is broken"
+        exit 1
+      fi
+      label=$(tr -c "[:print:]" "\n" < "${obj%.file}.file-xattrs-link" 2>/dev/null | grep -m1 "^system_u:object_r:")
+      if [ "$label" != "$expected" ]; then
+        echo "FAIL: probe read ${label:-<none>} for $target, expected $expected"
+        exit 1
+      fi
+      echo "OK: SELinux label probe works ($target is $label)"
+      '
+    exit-status: 0
+    stdout:
+      - "/^OK:/"
+
   steamosctl_selinux_label:
     exec: |
       sh -lc '
+      info=/usr/share/ublue-os/image-info.json
+      name=$(sed -n "s/.*\"image-name\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$info" 2>/dev/null)
+      if [ -z "$name" ]; then
+        name=$(. /usr/lib/os-release 2>/dev/null; printf "%s" "$VARIANT_ID")
+      fi
+      if [ -z "$name" ]; then
+        echo "FAIL: unable to determine image name from $info or /usr/lib/os-release"
+        exit 1
+      fi
+      case "$name" in
+        *deck*) ;;
+        *) echo "SKIP: $name is not a deck image" ; exit 0 ;;
+      esac
       target=/usr/bin/steamosctl
       expected=system_u:object_r:steamos_manager_exec_t:s0
       if [ ! -e "$target" ]; then
-        echo "SKIP: $target not present in this image"
-        exit 0
+        echo "FAIL: $name is a deck image but $target is missing"
+        exit 1
       fi
-      label=$(getfattr --absolute-names --only-values -n security.selinux "$target" 2>/dev/null | tr -d "\000")
-      if [ -z "$label" ]; then
-        label=$(ls -Zd "$target" 2>/dev/null | awk "{print \$1}")
+      obj=$(find /sysroot/ostree/repo/objects -inum "$(stat -c %i "$target")" -name "*.file" -print -quit 2>/dev/null)
+      if [ -z "$obj" ]; then
+        echo "FAIL: no ostree object backs $target; cannot verify its label"
+        exit 1
       fi
-      case "$label" in
-        "" | "?") echo "SKIP: no SELinux label readable for $target" ;;
-        "$expected") echo "OK: $target is labeled $expected" ;;
-        *) echo "FAIL: $target is labeled $label, expected $expected" ; exit 1 ;;
-      esac
+      label=$(tr -c "[:print:]" "\n" < "${obj%.file}.file-xattrs-link" 2>/dev/null | grep -m1 "^system_u:object_r:")
+      if [ "$label" != "$expected" ]; then
+        echo "FAIL: $target is labeled ${label:-<none>}, expected $expected"
+        exit 1
+      fi
+      echo "OK: $target is labeled $label"
       '
     exit-status: 0
     stdout:
