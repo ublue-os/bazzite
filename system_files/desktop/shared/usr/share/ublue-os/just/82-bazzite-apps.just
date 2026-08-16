@@ -977,7 +977,7 @@ opentabletdriver ACTION="":
         mkdir -p $HOME/.config/OpenTabletDriver && \
         flatpak override --user --filesystem=xdg-config/OpenTabletDriver net.opentabletdriver.OpenTabletDriver && \
         mkdir -p $HOME/.config/systemd/user && \
-        curl -s https://raw.githubusercontent.com/flathub/net.opentabletdriver.OpenTabletDriver/refs/heads/master/scripts/opentabletdriver.service > $HOME/.config/systemd/user/opentabletdriver.service  && \
+        curl -s https://raw.githubusercontent.com/flathub/net.opentabletdriver.OpenTabletDriver/48e27fe5fc2a26d3918880d292bb96dc66edf50b/scripts/opentabletdriver.service > $HOME/.config/systemd/user/opentabletdriver.service  && \
         systemctl --user daemon-reload && \
         systemctl enable --user --now opentabletdriver.service && \
         rpm-ostree kargs --append-if-missing=modprobe.blacklist=hid_uclogic --append-if-missing=modprobe.blacklist=wacom
