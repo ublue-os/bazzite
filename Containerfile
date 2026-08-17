@@ -120,7 +120,8 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y config-manager setopt "terra-mesa".enabled=false && \
     dnf5 -y config-manager setopt "*bazzite*".priority=2 && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=4 exclude='mesa-* *xone*')" && \
-    dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-* steam" && \
+    dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-* steam noopenh264" && \
+    dnf5 -y config-manager setopt "updates*".exclude="noopenh264" && \
     dnf5 -y config-manager setopt "*audinux*".exclude="kernel*" && \
     dnf5 -y config-manager setopt "*staging*".exclude="scx-tools scx-scheds kf6-* mesa* mutter*" && \
     /ctx/cleanup
@@ -165,6 +166,9 @@ RUN --mount=type=cache,dst=/var/cache \
         clinfo && \
     dnf5 -y install \
         libfreeaptx && \
+    dnf5 -y install --enable-repo="*fedora-multimedia*" --allowerasing \
+        openh264.x86_64 \
+        openh264.i686 && \
     dnf5 -y install --enable-repo="*fedora-multimedia*" \
         libbluray \
         libbluray-utils \
