@@ -343,11 +343,7 @@ jobs:
             version="testing-${version}"
           fi
 
-          # Clean out labels from base image
           img=raw-img
-          container=$(buildah from $img)
-          buildah config --label "-" $container
-          buildah commit --identity-label=false --rm $container $img
 
           declare -A tags
           while read -r t; do
@@ -377,13 +373,14 @@ jobs:
             "ostree.linux=$kver"
           )
 
-          # Apply config to labels and annotations
-          container=$(buildah from $img)
+          : > "${RUNNER_TEMP}/labels.txt"
           for line in "${labels[@]}"; do
             [ -z "$line" ] && continue
-            buildah config --label "$line" --annotation "$line" "$container"
+            printf '%s\n' "$line" >> "${RUNNER_TEMP}/labels.txt"
           done
-          buildah commit --identity-label=false --rm $container $img
+
+          echo "Labels for the final image:"
+          cat "${RUNNER_TEMP}/labels.txt"
 
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
@@ -404,6 +401,13 @@ jobs:
           RECHUNK_DIR="$(mktemp -d "${RUNNER_TEMP}/rechunk-XXXXXX")"
           trap 'rm -rf "${RECHUNK_DIR}"' EXIT
 
+          label_args=()
+          while IFS= read -r line; do
+            if [ -n "$line" ]; then
+              label_args+=(--label "$line")
+            fi
+          done < "${RUNNER_TEMP}/labels.txt"
+
           podman run --rm \
               --pull=never \
               --privileged \
@@ -413,6 +417,7 @@ jobs:
               localhost/raw-img \
               compose build-chunked-oci \
               --bootc --max-layers 127 --format-version 2 \
+              "${label_args[@]}" \
               --rootfs /rpm-ostree --output oci-archive:/run/out/chunked.oci
 
           podman rmi -f localhost/raw-img
