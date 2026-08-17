@@ -875,6 +875,11 @@ configure-amd-vrr ACTION="":
       OPTION=$(Choose "Enable AMD VRR" "Disable AMD VRR")
     fi
     if [[ "${OPTION,,}" =~ ^enable ]]; then
+      if [[ "$(rpm-ostree kargs)" =~ "amdgpu.dcfeaturemask" ]]; then
+        echo "Kernel argument already present or has conflicts, aborting..."
+        sleep 5
+        exit 1
+      fi
       rpm-ostree kargs --append-if-missing=amdgpu.dcfeaturemask=0x402
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
       rpm-ostree kargs --delete-if-present=amdgpu.dcfeaturemask=0x402
