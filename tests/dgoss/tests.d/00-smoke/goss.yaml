@@ -16,14 +16,16 @@ command:
   selinux_label_probe_works:
     exec: |
       sh -lc '
+      # Since chunkah replaced rpm-ostree for rechunking, the image no longer
+      # ships baked-in security.selinux xattrs. bootc labels files at deploy
+      # time from the file contexts in the image, so that is what we check.
       target=/usr/bin/sudo
       expected=system_u:object_r:sudo_exec_t:s0
-      obj=$(find /sysroot/ostree/repo/objects -inum "$(stat -c %i "$target")" -name "*.file" -print -quit 2>/dev/null)
-      if [ -z "$obj" ]; then
-        echo "FAIL: no ostree object backs $target; the label probe is broken"
+      label=$(matchpathcon -n "$target" 2>/dev/null)
+      if [ -z "$label" ]; then
+        echo "FAIL: no file context resolved for $target; the label probe is broken"
         exit 1
       fi
-      label=$(tr -c "[:print:]" "\n" < "${obj%.file}.file-xattrs-link" 2>/dev/null | grep -m1 "^system_u:object_r:")
       if [ "$label" != "$expected" ]; then
         echo "FAIL: probe read ${label:-<none>} for $target, expected $expected"
         exit 1
@@ -56,17 +58,16 @@ command:
         echo "FAIL: $name is a deck image but $target is missing"
         exit 1
       fi
-      obj=$(find /sysroot/ostree/repo/objects -inum "$(stat -c %i "$target")" -name "*.file" -print -quit 2>/dev/null)
-      if [ -z "$obj" ]; then
-        echo "FAIL: no ostree object backs $target; cannot verify its label"
+      label=$(matchpathcon -n "$target" 2>/dev/null)
+      if [ -z "$label" ]; then
+        echo "FAIL: no file context resolved for $target; cannot verify its label"
         exit 1
       fi
-      label=$(tr -c "[:print:]" "\n" < "${obj%.file}.file-xattrs-link" 2>/dev/null | grep -m1 "^system_u:object_r:")
       if [ "$label" != "$expected" ]; then
-        echo "FAIL: $target is labeled ${label:-<none>}, expected $expected"
+        echo "FAIL: $target resolves to ${label:-<none>}, expected $expected"
         exit 1
       fi
-      echo "OK: $target is labeled $label"
+      echo "OK: $target resolves to $label"
       '
     exit-status: 0
     stdout:
