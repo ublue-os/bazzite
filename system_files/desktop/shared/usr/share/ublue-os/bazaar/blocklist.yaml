@@ -31,3 +31,4 @@ blocklists:
     - org.kde.ark
     - org.kde.kfind
     - org.kde.konsole
+    - org.kde.krdc
