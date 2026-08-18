@@ -32,3 +32,4 @@ blocklists:
     - org.kde.kfind
     - org.kde.konsole
     - org.kde.krdc
+    - org.kde.filelight
