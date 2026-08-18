@@ -565,6 +565,7 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i 's/balanced=balanced$/balanced=balanced-bazzite/' /etc/tuned/ppd.conf && \
     sed -i 's/performance=throughput-performance$/performance=throughput-performance-bazzite/' /etc/tuned/ppd.conf && \
     sed -i 's/balanced=balanced-battery$/balanced=balanced-battery-bazzite\npower-saver=powersave-battery-bazzite/' /etc/tuned/ppd.conf && \
+    sed -i 's#/usr/bin/fstrim --listed-in /etc/fstab:/proc/self/mountinfo#/usr/bin/fstrim --listed-in /proc/self/mountinfo#' /usr/lib/systemd/system/fstrim.service && \
     ln -s /usr/bin/true /usr/bin/pulseaudio && \
     mkdir -p /etc/flatpak/remotes.d && \
     curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub.org/repo/flathub.flatpakrepo && \
