@@ -530,19 +530,26 @@ jobs:
             log_sum '# Push to GHCR result'
             log_sum '```'
 
-            for tag in ${VERSION} ${ALIAS_TAGS}; do
-              dest_image="${OUTPUT_IMAGE}:$tag"
+            push_version() {
               podman push --digestfile=/tmp/digestfile \
-                "${RECHUNK_REF#containers-storage:}" "docker://$dest_image"
-              log_sum "$dest_image"
-            done
-            log_sum '```'
+                "${RECHUNK_REF#containers-storage:}" "docker://${OUTPUT_IMAGE}:${VERSION}"
+            }
+            push_version
+            push_version
+            log_sum "${OUTPUT_IMAGE}:${VERSION}"
 
             digest="$(< /tmp/digestfile)"
             if [[ -z "$digest" ]]; then
               echo "push reported success but wrote no digest" >&2
               exit 1
             fi
+
+            for tag in ${ALIAS_TAGS}; do
+              skopeo copy "docker://${OUTPUT_IMAGE}@${digest}" "docker://${OUTPUT_IMAGE}:$tag"
+              log_sum "${OUTPUT_IMAGE}:$tag"
+            done
+            log_sum '```'
+
             echo "digest=${digest}" >> $GITHUB_OUTPUT
 
       - name: Install Cosign
