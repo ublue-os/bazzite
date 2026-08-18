@@ -100,6 +100,60 @@ command:
     stdout:
       - "/^(OK|SKIP):/"
 
+  kernel_modules_match_uname:
+    exec: |
+      sh -lc '
+      status=0
+      found=0
+      for dir in /usr/lib/modules/*/; do
+        kver=${dir%/}
+        kver=${kver##*/}
+        vmlinuz=${dir}vmlinuz
+        [ -f "$vmlinuz" ] || continue
+        found=$((found + 1))
+
+        if [ "$(dd if="$vmlinuz" bs=1 skip=514 count=4 2>/dev/null)" = "HdrS" ]; then
+          off=$(od -An -tu2 -j 526 -N 2 "$vmlinuz" 2>/dev/null | tr -d " ")
+          if [ -z "$off" ] || [ "$off" = "0" ]; then
+            echo "FAIL: $vmlinuz has no kernel_version pointer, cannot read UTS_RELEASE"
+            status=1
+          else
+            uts=$(dd if="$vmlinuz" bs=1 skip=$((512 + off)) count=200 2>/dev/null | tr "\0" "\n" | head -n1)
+            uts=${uts%% *}
+            if [ "$uts" != "$kver" ]; then
+              echo "FAIL: $vmlinuz boots as $uts but its modules are in /usr/lib/modules/$kver"
+              status=1
+            fi
+          fi
+        fi
+
+        ko=$(find "$dir" -type f -name "*.ko*" -print -quit 2>/dev/null)
+        if [ -z "$ko" ]; then
+          echo "FAIL: no kernel modules found under $dir"
+          status=1
+          continue
+        fi
+        vermagic=$(modinfo -F vermagic "$ko" 2>/dev/null)
+        vermagic=${vermagic%% *}
+        if [ -z "$vermagic" ]; then
+          echo "FAIL: could not read vermagic from $ko"
+          status=1
+        elif [ "$vermagic" != "$kver" ]; then
+          echo "FAIL: $ko was built for $vermagic but is installed in /usr/lib/modules/$kver"
+          status=1
+        fi
+      done
+      if [ "$found" -eq 0 ]; then
+        echo "FAIL: no kernel found under /usr/lib/modules"
+        exit 1
+      fi
+      [ "$status" -eq 0 ] || exit 1
+      echo "OK: UTS_RELEASE and vermagic match /usr/lib/modules for all $found kernel(s)"
+      '
+    exit-status: 0
+    stdout:
+      - "/^OK:/"
+
 file:
   /etc/os-release:
     exists: true
