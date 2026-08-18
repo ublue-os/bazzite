@@ -384,22 +384,32 @@ jobs:
 
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      # Reprocess raw-img using rechunker which will delete it
-      - name: Run Rechunker
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        with:
+          cosign-release: "v3.1.3"
+
+      # Reprocess raw-img with chunkah
+      - name: Run Chunkah
         id: rechunk
+        env:
+          CHUNKAH_IMAGE: quay.io/coreos/chunkah:latest
         run: |
           set -euo pipefail
 
-          buildah unshare bash -euo pipefail -c '
-            container=$(buildah from raw-img)
-            mnt=$(buildah mount "$container")
-            rm -rf "$mnt"/run/.* "$mnt"/run/* "$mnt"/tmp/.* "$mnt"/tmp/* || true
-            buildah umount "$container"
-            buildah commit --identity-label=false --rm "$container" raw-img
-          '
+          podman pull "${CHUNKAH_IMAGE}"
+          CHUNKAH_REF="$(podman image inspect --format '{{index .RepoDigests 0}}' "${CHUNKAH_IMAGE}")"
+          cosign verify \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-identity-regexp '^https://github\.com/coreos/chunkah/' \
+            "${CHUNKAH_REF}" > /dev/null
 
           RECHUNK_DIR="$(mktemp -d "${RUNNER_TEMP}/rechunk-XXXXXX")"
-          trap 'rm -rf "${RECHUNK_DIR}"' EXIT
+          CHUNKAH_CONFIG="$(mktemp "${RUNNER_TEMP}/chunkah-config-XXXXXX.json")"
+          trap 'rm -rf "${RECHUNK_DIR}" "${CHUNKAH_CONFIG}"' EXIT
+
+          # Carries Env, Cmd and containers.bootc over to the chunked image
+          podman image inspect localhost/raw-img > "${CHUNKAH_CONFIG}"
 
           label_args=()
           while IFS= read -r line; do
@@ -408,21 +418,31 @@ jobs:
             fi
           done < "${RUNNER_TEMP}/labels.txt"
 
+          for stale in ostree.commit ostree.final-diffid rpmostree.inputhash \
+                       quay.expires-after io.buildah.version; do
+            label_args+=(--label "${stale}-")
+          done
+
           podman run --rm \
               --pull=never \
-              --privileged \
-              --mount=type=image,src=localhost/raw-img,target=/rpm-ostree \
+              --mount=type=image,src=localhost/raw-img,target=/chunkah \
+              --volume "${CHUNKAH_CONFIG}:/chunkah-config.json:ro,Z" \
               --volume "${RECHUNK_DIR}:/run/out:Z" \
-              --entrypoint /usr/bin/rpm-ostree \
-              localhost/raw-img \
-              compose build-chunked-oci \
-              --bootc --max-layers 127 --format-version 2 \
+              "${CHUNKAH_REF}" \
+              build \
+              --verbose \
+              --compressed \
+              --max-layers 128 \
+              --prune /sysroot/ \
+              --prune /run/ \
+              --prune /tmp/ \
               "${label_args[@]}" \
-              --rootfs /rpm-ostree --output oci-archive:/run/out/chunked.oci
+              --config /chunkah-config.json \
+              --output oci:/run/out/chunked
 
           podman rmi -f localhost/raw-img
 
-          chunked=$(podman pull oci-archive:"${RECHUNK_DIR}/chunked.oci")
+          chunked=$(podman pull "oci:${RECHUNK_DIR}/chunked")
           podman tag "${chunked}" localhost/chunked-img
 
           echo "ref=containers-storage:localhost/chunked-img" >> "$GITHUB_OUTPUT"
@@ -551,12 +571,6 @@ jobs:
             log_sum '```'
 
             echo "digest=${digest}" >> $GITHUB_OUTPUT
-
-      - name: Install Cosign
-        if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
-        with:
-          cosign-release: "v3.1.3"
 
       - name: Sign container image
         if: github.event_name != 'pull_request'
