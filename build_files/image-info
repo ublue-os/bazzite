@@ -8,7 +8,7 @@ HOME_URL="https://bazzite.gg"
 DOCUMENTATION_URL="https://docs.bazzite.gg"
 SUPPORT_URL="https://discord.bazzite.gg"
 BUG_SUPPORT_URL="https://github.com/ublue-os/bazzite/issues/"
-LOGO_ICON="bazzite-logo-icon"
+LOGO_ICON="bazzite-logo"
 LOGO_COLOR="0;38;2;138;43;226"
 
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
