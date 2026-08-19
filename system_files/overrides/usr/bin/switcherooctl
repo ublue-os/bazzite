@@ -12,10 +12,9 @@ notify_cmd+=" \"${title:+$title}\" \"${body:+$body}\""
 notify_cmd+=" --action=\"see_more=Learn more\""
 notify_cmd+=" --action=\"open_cardwire=Open CardWire GUI\""
 
-# If we are not in gamemode session or tty
-if [ "$XDG_CURRENT_DESKTOP" != "gamescope" ] && [ -n "$XDG_CURRENT_DESKTOP" ]; then
-    # Send a notification that sticks around for 20 seconds (so it is visible when launched through steam)
-    action=$(eval "$notify_cmd") || exit
+notify() {
+    local action
+    action=$(eval "$notify_cmd") || return
     case "$action" in
     see_more)
         xdg-open "$see_more_url"
@@ -28,6 +27,15 @@ if [ "$XDG_CURRENT_DESKTOP" != "gamescope" ] && [ -n "$XDG_CURRENT_DESKTOP" ]; t
         :
         ;;
     esac
+}
+
+# If we are not in gamemode session or tty
+if [ "$XDG_CURRENT_DESKTOP" != "gamescope" ] && [ -n "$XDG_CURRENT_DESKTOP" ]; then
+    if [[ "$1" == "launch" ]]; then
+        notify >/dev/null 2>&1 </dev/null &
+    else
+        notify
+    fi
 fi
 
 if [[ "$1" == "launch" ]]; then

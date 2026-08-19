@@ -42,29 +42,22 @@ jobs:
           - bazzite-deck-nvidia
           - bazzite-deck-nvidia-gnome
     steps:
-      - name: Show disk space
-        run: sudo df -h
-
-      - name: Check if /mnt is there
-        id: check_mnt
-        run: |
-          if sudo mountpoint /mnt; then
-            echo "mnt_is_there=1" >>$GITHUB_OUTPUT
-          else
-            echo "mnt_is_there=0" >>$GITHUB_OUTPUT
-          fi
-
       - name: Free Disk Space (Ubuntu)
-        if: ${{ steps.check_mnt.outputs.mnt_is_there == '1' }}
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        with:
+          tool-cache: true
 
       - name: Mount Container Storage BTRFS Loopback
         run: |
-          sudo truncate -s 70G /mnt/podman-storage.img
-          sudo mkfs.btrfs -f /mnt/podman-storage.img
+          sudo truncate -s 110G /mnt/podman-storage.img
+          sudo mkfs.btrfs -f -m single -d single /mnt/podman-storage.img
           sudo podman system reset --force
           sudo systemctl stop podman.service
-          sudo mount -o compress-force=zstd:2 /mnt/podman-storage.img /var/lib/containers/storage
+          LOOP=$(sudo losetup --find --show --direct-io=on /mnt/podman-storage.img)
+          sudo mkdir -p /mnt/podman-storage
+          sudo mount -o compress-force=zstd:2,discard=async,noatime "$LOOP" /mnt/podman-storage
+          sudo mkdir -p /mnt/podman-storage/storage /mnt/podman-storage/tmp
+          sudo mount --bind /mnt/podman-storage/storage /var/lib/containers/storage
           sudo systemctl start podman.service
 
       - name: Checkout Repo
@@ -130,13 +123,19 @@ jobs:
           INSTALL_IMAGE_PAYLOAD="ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}/${{ matrix.image_name }}:${{ steps.generate-tag.outputs.tag }}"
           FLATPAK_DIR_SHORTNAME="${{ steps.generate-flatpak-dir-shortname.outputs.flatpak-dir-shortname }}"
 
-          sudo podman build \
+          sudo env TMPDIR=/mnt/podman-storage/tmp podman build \
             --cap-add sys_admin \
             --security-opt label=disable \
             --build-arg BASE_IMAGE="$BASE_IMAGE" \
             --build-arg INSTALL_IMAGE_PAYLOAD="$INSTALL_IMAGE_PAYLOAD" \
             --build-arg FLATPAK_DIR_SHORTNAME="$FLATPAK_DIR_SHORTNAME" \
             -t localhost/payload:latest installer/
+
+      - name: Show disk space
+        if: always()
+        run: |
+          sudo df -h
+          sudo du -sh /mnt/podman-storage.img
 
       - name: Build ISOs
         uses: Zeglius/titanoboa@revamp-pr
