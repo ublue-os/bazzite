@@ -63,7 +63,7 @@ COPY system_files/desktop/shared/ system_files/desktop/${BASE_IMAGE_NAME}/ /
 RUN find /usr/share/ublue-os/docs -type f -exec setfattr -n user.component -v "ublue-docs" {} +
 
 # Install needed firmware blobs
-RUN --mount=type=bind,src=firmware,dst=/ctx/firmware \
+RUN --mount=type=bind,src=firmware,dst=/ctx/firmware,relabel=shared \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     cp -a /ctx/firmware/. /tmp/firmware && \
