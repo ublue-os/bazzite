@@ -8,6 +8,6 @@ container_mgr=(
 for i in "${container_mgr[@]}"; do
     if [[ $(command -v "$i") ]]; then
         echo "Container Manager: ${i}"
-        ${i} images --filter "reference=localhost/bazzite*-build" 
+        ${i} images --filter "reference=localhost/bazzite*"
     fi
 done
