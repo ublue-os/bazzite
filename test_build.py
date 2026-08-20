@@ -301,3 +301,71 @@ def test_test_dry_run_invokes_dgoss(caplog):
     args = b.build_parser().parse_args(["--dry-run", "test", "--ref", "containers-storage:localhost/chunked-img"])
     assert b.cmd_test(args) == 0
     assert "tests/dgoss/dgoss-tests.sh tests/dgoss/tests.d containers-storage:localhost/chunked-img" in caplog.text
+
+
+# --- cmd_push / cmd_sign / cmd_sbom_attach: dry-run argument construction ---
+
+def test_push_pushes_twice_and_copies_all_alias_tags(caplog):
+    caplog.set_level(logging.INFO, logger="build")
+    args = b.build_parser().parse_args(
+        [
+            "--dry-run", "push",
+            "--output-image", "ghcr.io/testuser/bazzite-deck",
+            "--version", "44.20260820",
+            "--alias-tags", "stable-44.20260820 latest stable stable-44",
+            "--rechunk-ref", "containers-storage:localhost/chunked-img",
+        ]
+    )
+    assert b.cmd_push(args) == 0
+    assert caplog.text.count("podman push") == 2
+    assert caplog.text.count("localhost/chunked-img") == 2  # rechunk-ref prefix stripped
+    for tag in ("stable-44.20260820", "latest", "stable", "stable-44"):
+        assert f"docker://ghcr.io/testuser/bazzite-deck:{tag}" in caplog.text
+
+
+def test_push_dry_run_emits_digest(capsys):
+    args = b.build_parser().parse_args(
+        [
+            "--dry-run", "push",
+            "--output-image", "ghcr.io/testuser/bazzite-deck",
+            "--version", "44.20260820",
+            "--alias-tags", "latest",
+            "--rechunk-ref", "containers-storage:localhost/chunked-img",
+        ]
+    )
+    assert b.cmd_push(args) == 0
+    assert json.loads(capsys.readouterr().out) == {"digest": "sha256:dryrun"}
+
+
+def test_push_writes_step_summary(tmp_path, capsys):
+    summary_file = tmp_path / "summary.md"
+    args = b.build_parser().parse_args(
+        [
+            "--dry-run", "push",
+            "--output-image", "ghcr.io/testuser/bazzite-deck",
+            "--version", "44.20260820",
+            "--alias-tags", "latest",
+            "--rechunk-ref", "containers-storage:localhost/chunked-img",
+            "--summary-file", str(summary_file),
+        ]
+    )
+    assert b.cmd_push(args) == 0
+    text = summary_file.read_text()
+    assert "# Push to GHCR result" in text
+    assert "ghcr.io/testuser/bazzite-deck:44.20260820" in text
+
+
+def test_sign_uses_cosign_private_key_env(caplog):
+    caplog.set_level(logging.INFO, logger="build")
+    args = b.build_parser().parse_args(["--dry-run", "sign", "--ref", "ghcr.io/testuser/bazzite-deck@sha256:abc"])
+    assert b.cmd_sign(args) == 0
+    assert "env://COSIGN_PRIVATE_KEY" in caplog.text
+    assert "ghcr.io/testuser/bazzite-deck@sha256:abc" in caplog.text
+
+
+def test_sbom_attach_dry_run_emits_placeholder_digest(capsys):
+    args = b.build_parser().parse_args(
+        ["--dry-run", "sbom-attach", "--image", "ghcr.io/testuser/bazzite-deck", "--digest", "sha256:abc", "--sbom", "/tmp/sbom.json"]
+    )
+    assert b.cmd_sbom_attach(args) == 0
+    assert json.loads(capsys.readouterr().out) == {"sbom_digest": "sha256:dryrun-sbom"}

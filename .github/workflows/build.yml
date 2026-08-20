@@ -329,50 +329,22 @@ jobs:
         id: push
         if: github.event_name != 'pull_request'
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        env:
-          ALIAS_TAGS: ${{ steps.resolve.outputs.alias_tags }}
-          OUTPUT_IMAGE: ${{ steps.resolve.outputs.output_image }}
-          RECHUNK_REF: ${{ steps.rechunk.outputs.ref }}
-          VERSION: ${{ steps.resolve.outputs.version }}
         with:
           max_attempts: 3
           retry_wait_seconds: 15
           timeout_minutes: 10
           command: |
-            set -euo pipefail
-
-            log_sum() { echo "$1" >> $GITHUB_STEP_SUMMARY; }
-            log_sum '# Push to GHCR result'
-            log_sum '```'
-
-            push_version() {
-              podman push --digestfile=/tmp/digestfile \
-                "${RECHUNK_REF#containers-storage:}" "docker://${OUTPUT_IMAGE}:${VERSION}"
-            }
-            push_version
-            push_version
-            log_sum "${OUTPUT_IMAGE}:${VERSION}"
-
-            digest="$(< /tmp/digestfile)"
-            if [[ -z "$digest" ]]; then
-              echo "push reported success but wrote no digest" >&2
-              exit 1
-            fi
-
-            for tag in ${ALIAS_TAGS}; do
-              skopeo copy "docker://${OUTPUT_IMAGE}@${digest}" "docker://${OUTPUT_IMAGE}:$tag"
-              log_sum "${OUTPUT_IMAGE}:$tag"
-            done
-            log_sum '```'
-
-            echo "digest=${digest}" >> $GITHUB_OUTPUT
+            ./build.py push \
+              --output-image "${{ steps.resolve.outputs.output_image }}" \
+              --version "${{ steps.resolve.outputs.version }}" \
+              --alias-tags "${{ steps.resolve.outputs.alias_tags }}" \
+              --rechunk-ref "${{ steps.rechunk.outputs.ref }}" \
+              > push.json
+            echo "digest=$(jq -r .digest push.json)" >> "$GITHUB_OUTPUT"
 
       - name: Sign container image
         if: github.event_name != 'pull_request'
-        run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY \
-            --new-bundle-format=false --use-signing-config=false \
-            ${{ steps.resolve.outputs.output_image }}@${{ steps.push.outputs.digest }}
+        run: ./build.py sign --ref "${{ steps.resolve.outputs.output_image }}@${{ steps.push.outputs.digest }}"
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
 
@@ -388,32 +360,19 @@ jobs:
       - name: Upload SBOM
         if: github.event_name != 'pull_request'
         id: upload-sbom
-        env:
-          IMAGE: ${{ steps.resolve.outputs.output_image }}
-          DIGEST: ${{ steps.push.outputs.digest }}
-          SBOM: ${{ steps.generate-sbom.outputs.SBOM }}
         run: |
-          cd "$(dirname "${SBOM}")"
-          oras attach \
-            --artifact-type application/vnd.spdx+json \
-            --annotation filename=$(basename "$SBOM") \
-            "${IMAGE}@${DIGEST}" \
-            "$(basename ${SBOM})"
-
-          sbom_digest=$(oras discover --format json "${IMAGE}@${DIGEST}" | jq -r '.referrers[] | select(.artifactType == "application/vnd.spdx+json") | .digest')
-
-          echo "sbom_digest=${sbom_digest}" >> $GITHUB_OUTPUT
+          ./build.py sbom-attach \
+            --image "${{ steps.resolve.outputs.output_image }}" \
+            --digest "${{ steps.push.outputs.digest }}" \
+            --sbom "${{ steps.generate-sbom.outputs.SBOM }}" \
+            > sbom-attach.json
+          echo "sbom_digest=$(jq -r .sbom_digest sbom-attach.json)" >> $GITHUB_OUTPUT
 
       - name: Sign SBOM OCI Artifact
         if: github.event_name != 'pull_request'
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
-          IMAGE: ${{ steps.resolve.outputs.output_image }}
-          SBOM_DIGEST: ${{ steps.upload-sbom.outputs.sbom_digest }}
-        run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY \
-            --new-bundle-format=false --use-signing-config=false \
-            ${IMAGE}@${SBOM_DIGEST}
+        run: ./build.py sign --ref "${{ steps.resolve.outputs.output_image }}@${{ steps.upload-sbom.outputs.sbom_digest }}"
 
       - name: Attestation
         if: github.event_name != 'pull_request'
