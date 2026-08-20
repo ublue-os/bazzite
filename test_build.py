@@ -292,8 +292,51 @@ def test_rechunk_custom_images_and_max_layers(capsys, caplog):
     )
     assert b.cmd_rechunk(args) == 0
     assert "custom-raw" in caplog.text
-    assert "--max-layers=64" in caplog.text
+    assert "--max-layers 64" in caplog.text
     assert json.loads(capsys.readouterr().out) == {"ref": "containers-storage:localhost/custom-chunked"}
+
+
+def test_rechunk_verifies_chunkah_image_with_cosign(caplog):
+    caplog.set_level(logging.INFO, logger="build")
+    args = b.build_parser().parse_args(["--dry-run", "rechunk"])
+    assert b.cmd_rechunk(args) == 0
+    assert "cosign verify" in caplog.text
+    assert "quay.io/coreos/chunkah:latest" in caplog.text
+    assert "coreos/chunkah" in caplog.text  # the --certificate-identity-regexp
+
+
+def test_rechunk_uses_custom_chunkah_image(caplog):
+    caplog.set_level(logging.INFO, logger="build")
+    args = b.build_parser().parse_args(["--dry-run", "rechunk", "--chunkah-image", "quay.io/coreos/chunkah:v1.2.3"])
+    assert b.cmd_rechunk(args) == 0
+    assert "podman pull quay.io/coreos/chunkah:v1.2.3" in caplog.text
+
+
+def test_rechunk_strips_stale_labels(caplog):
+    caplog.set_level(logging.INFO, logger="build")
+    args = b.build_parser().parse_args(["--dry-run", "rechunk"])
+    assert b.cmd_rechunk(args) == 0
+    for stale in b.STALE_RECHUNK_LABELS:
+        assert f"--label {stale}-" in caplog.text
+
+
+def test_rechunk_includes_labels_from_file(tmp_path, caplog):
+    caplog.set_level(logging.INFO, logger="build")
+    labels_file = tmp_path / "labels.txt"
+    labels_file.write_text("org.opencontainers.image.version=44.20260820\nostree.bootable=true\n")
+    args = b.build_parser().parse_args(["--dry-run", "rechunk", "--labels-file", str(labels_file)])
+    assert b.cmd_rechunk(args) == 0
+    assert "--label org.opencontainers.image.version=44.20260820" in caplog.text
+    assert "--label ostree.bootable=true" in caplog.text
+
+
+def test_rechunk_no_privileged_flag(caplog):
+    # chunkah, unlike the old rpm-ostree-based rechunk, doesn't need
+    # --privileged -- assert it's genuinely gone, not just unmentioned.
+    caplog.set_level(logging.INFO, logger="build")
+    args = b.build_parser().parse_args(["--dry-run", "rechunk"])
+    assert b.cmd_rechunk(args) == 0
+    assert "--privileged" not in caplog.text
 
 
 def test_test_dry_run_invokes_dgoss(caplog):

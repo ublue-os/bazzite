@@ -681,43 +681,83 @@ def cmd_build(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_rechunk(args: argparse.Namespace) -> int:
-    """Replaces build.yml's "Run Rechunker".
+#: Labels stamped onto the raw build that shouldn't survive into the
+#: rechunked image -- ostree/rpm-ostree bookkeeping from intermediate
+#: layers, buildah's own version stamp, and registry expiry hints that
+#: don't apply once the image is actually published.
+STALE_RECHUNK_LABELS = (
+    "ostree.commit",
+    "ostree.final-diffid",
+    "rpmostree.inputhash",
+    "quay.expires-after",
+    "io.buildah.version",
+)
 
-    Squashes the raw build into one layer, then re-derives the final layer
-    set with rpm-ostree so related files land in the same OCI layer
-    (needed for efficient delta updates). Requires a privileged container
-    runtime -- opt-in locally, on by default in CI.
+
+def cmd_rechunk(args: argparse.Namespace) -> int:
+    """Replaces build.yml's "Run Chunkah" (formerly "Run Rechunker").
+
+    Re-derives the final layer set with chunkah so related files land in
+    the same OCI layer (needed for efficient delta updates). chunkah's own
+    image is cosign-verified before use, same as the common/brew image
+    verification pattern used elsewhere in the ublue-os pipelines. Unlike
+    the old rpm-ostree-based rechunk this doesn't need --privileged, and
+    chunkah prunes /run and /tmp itself so there's no separate squash step.
     """
-    with group("Squashing raw image"):
-        squash_script = (
-            f'container=$(buildah from {args.raw_image}) && '
-            f'mnt=$(buildah mount "$container") && '
-            f'rm -rf "$mnt"/run/.* "$mnt"/run/* "$mnt"/tmp/.* "$mnt"/tmp/* || true; '
-            f'buildah umount "$container" && '
-            f'buildah commit --identity-label=false --rm "$container" {args.raw_image}'
+    run(["podman", "pull", args.chunkah_image], dry_run=args.dry_run)
+
+    if args.dry_run:
+        chunkah_ref = args.chunkah_image
+    else:
+        inspected = run(
+            ["podman", "image", "inspect", "--format", "{{index .RepoDigests 0}}", args.chunkah_image],
+            capture=True,
         )
-        run(["buildah", "unshare", "bash", "-euo", "pipefail", "-c", squash_script], dry_run=args.dry_run)
+        chunkah_ref = inspected.stdout.strip()
+
+    with group(f"Verifying {chunkah_ref}"):
+        run(
+            [
+                "cosign", "verify",
+                "--certificate-oidc-issuer", "https://token.actions.githubusercontent.com",
+                "--certificate-identity-regexp", r"^https://github\.com/coreos/chunkah/",
+                chunkah_ref,
+            ],
+            dry_run=args.dry_run,
+        )
 
     labels = []
     if args.labels_file and Path(args.labels_file).exists():
         for line in Path(args.labels_file).read_text().splitlines():
             if line.strip():
                 labels += ["--label", line]
+    for stale in STALE_RECHUNK_LABELS:
+        labels += ["--label", f"{stale}-"]
 
     with tempfile.TemporaryDirectory(prefix="rechunk-") as rechunk_dir:
-        with group("Composing chunked OCI archive"):
+        config_path = Path(rechunk_dir) / "chunkah-config.json"
+        with group("Composing chunked OCI image"):
+            # Carries Env, Cmd, and containers.bootc over to the chunked image.
+            inspected = run(["podman", "image", "inspect", f"localhost/{args.raw_image}"], capture=True, dry_run=args.dry_run)
+            if not args.dry_run:
+                config_path.write_text(inspected.stdout)
+
             run(
                 [
-                    "podman", "run", "--rm", "--pull=never", "--privileged",
-                    f"--mount=type=image,src=localhost/{args.raw_image},target=/rpm-ostree",
+                    "podman", "run", "--rm", "--pull=never",
+                    f"--mount=type=image,src=localhost/{args.raw_image},target=/chunkah",
+                    "--volume", f"{config_path}:/chunkah-config.json:ro,Z",
                     "--volume", f"{rechunk_dir}:/run/out:Z",
-                    "--entrypoint", "/usr/bin/rpm-ostree",
-                    f"localhost/{args.raw_image}",
-                    "compose", "build-chunked-oci",
-                    "--bootc", f"--max-layers={args.max_layers}", "--format-version=2",
+                    chunkah_ref,
+                    "build",
+                    "--verbose", "--compressed",
+                    "--max-layers", str(args.max_layers),
+                    "--prune", "/sysroot/",
+                    "--prune", "/run/",
+                    "--prune", "/tmp/",
                     *labels,
-                    "--rootfs", "/rpm-ostree", "--output", f"oci-archive:{rechunk_dir}/chunked.oci",
+                    "--config", "/chunkah-config.json",
+                    "--output", "oci:/run/out/chunked",
                 ],
                 dry_run=args.dry_run,
             )
@@ -728,7 +768,7 @@ def cmd_rechunk(args: argparse.Namespace) -> int:
             print(json.dumps({"ref": f"containers-storage:{args.chunked_image}"}))
             return 0
 
-        pulled = run(["podman", "pull", f"oci-archive:{rechunk_dir}/chunked.oci"], capture=True)
+        pulled = run(["podman", "pull", f"oci:{rechunk_dir}/chunked"], capture=True)
         chunked_id = pulled.stdout.strip()
         run(["podman", "tag", chunked_id, args.chunked_image])
 
@@ -948,11 +988,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_shell.add_argument("--container-mgr", default=None)
     p_shell.set_defaults(func=cmd_shell)
 
-    p_rechunk = sub.add_parser("rechunk", help="squash + rechunk a raw build into an OCI archive (needs --privileged)")
+    p_rechunk = sub.add_parser("rechunk", help="rechunk a raw build into an OCI image via chunkah")
     p_rechunk.add_argument("--raw-image", default="raw-img")
     p_rechunk.add_argument("--chunked-image", default="localhost/chunked-img")
+    p_rechunk.add_argument("--chunkah-image", default="quay.io/coreos/chunkah:latest")
     p_rechunk.add_argument("--labels-file", default=None)
-    p_rechunk.add_argument("--max-layers", type=int, default=127)
+    p_rechunk.add_argument("--max-layers", type=int, default=128)
     p_rechunk.set_defaults(func=cmd_rechunk)
 
     p_sbom = sub.add_parser("sbom", help="generate a syft SBOM for a rechunked image")
