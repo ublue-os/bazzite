@@ -44,8 +44,28 @@ env:
   REPO_OWNER: ${{ github.repository_owner }}
 
 jobs:
+  # Matrix has to be known before push-ghcr's jobs are scheduled, so this
+  # computes it in a separate job and feeds it in via fromJson. The matrix
+  # itself now lives in build.py's IMAGES table (the single source of truth
+  # also used by build_iso.yml, clean.yml, and changelog.py) instead of
+  # being hardcoded here.
+  compute-matrix:
+    name: Compute build matrix
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Compute matrix
+        id: matrix
+        run: echo "matrix=$(./build.py matrix)" >> "$GITHUB_OUTPUT"
+
   push-ghcr:
     name: Make
+    needs: compute-matrix
     runs-on: ubuntu-26.04
     continue-on-error: false
     permissions:
@@ -56,30 +76,7 @@ jobs:
       artifact-metadata: write
     strategy:
       fail-fast: false
-      matrix:
-        image:
-          - bazzite
-          - bazzite-gnome
-          - bazzite-deck
-          - bazzite-deck-gnome
-          - bazzite-deck-nvidia
-          - bazzite-deck-nvidia-gnome
-          - bazzite-nvidia
-          - bazzite-gnome-nvidia
-          - bazzite-nvidia-open
-          - bazzite-gnome-nvidia-open
-        include:
-          - fedora_version: 44
-            kernel_flavor: ogc
-            kernel_version: 7.2.0-ogc3.1.fc44
-            base_image_flavor: main
-            arch: x86_64
-          - image: bazzite-nvidia
-            kernel_flavor: ogc-lts
-            kernel_version: 6.18.44-ogc1.1.fc44
-          - image: bazzite-gnome-nvidia
-            kernel_flavor: ogc-lts
-            kernel_version: 6.18.44-ogc1.1.fc44
+      matrix: ${{ fromJson(needs.compute-matrix.outputs.matrix) }}
     steps:
       - name: Show disk space
         run: sudo df -h
@@ -96,74 +93,55 @@ jobs:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
+      # Moved up from its old spot (after "Define base variables") --
+      # build.py has to exist on disk before the next step can call it.
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          submodules: recursive
+
       # The image registry name must be lower-case, but GitHub usernames can be capitalized.
       - name: Get lower-case equivalent of the repository owner's username
         id: repo_owner_case
         run: echo "lowercase=${REPO_OWNER,,}" >> "$GITHUB_OUTPUT"
 
-      - name: Define base variables
-        id: base
+      # Replaces the old "Define base variables" / "Pull Images and find
+      # versions" / "Prepare build args file" steps. build.py's IMAGES table
+      # and resolve() are the single source of truth for the per-image
+      # target/nvidia_base/nvidia_flavor derivation (see build.py's IMAGES
+      # comment for why that used to be substring-matched bash), and for the
+      # version/tag/label logic covered by build.py's golden tests. This
+      # also fixes SHA_HEAD_SHORT always being empty in the old build args
+      # file -- that field genuinely comes from github.sha now.
+      #
+      # Point-release dedup (the .1/.2 suffix) happens here too, against the
+      # registry's current tag list -- same as before, just earlier in the
+      # job. It only reads registry metadata, not the built image, so the
+      # timing shift doesn't change the result.
+      - name: Resolve build config
+        id: resolve
         run: |
-          IMAGE="${{ matrix.image }}"
-          if [[ "$IMAGE" == *gnome* ]]; then
-            BASE_IMAGE_NAME="silverblue"
-          else
-            BASE_IMAGE_NAME="kinoite"
-          fi
-          echo "base_image_name=$BASE_IMAGE_NAME" >> "$GITHUB_OUTPUT"
+          ./build.py -v resolve \
+            --image "${{ matrix.image }}" \
+            --ref-name "${{ github.ref_name }}" \
+            --sha "${{ github.sha }}" \
+            --pr-number "${{ github.event.pull_request.number }}" \
+            --push-registry "ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}" \
+            > resolved.json
+          jq . resolved.json
 
-          #
-          # Define Container Target
-          #
-          if [[ "$IMAGE" == *"deck"* && "$IMAGE" == *"nvidia"* ]]; then
-            echo "container_target=bazzite-nvidia" >> "$GITHUB_OUTPUT"
-            echo "nvidia_base=bazzite-deck" >> "$GITHUB_OUTPUT"
-            echo "install_nvidia=true" >> "$GITHUB_OUTPUT"
-          elif [[ "$IMAGE" == *"nvidia"* ]]; then
-            echo "container_target=bazzite-nvidia" >> "$GITHUB_OUTPUT"
-            echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT"
-            echo "install_nvidia=true" >> "$GITHUB_OUTPUT"
-          elif [[ "$IMAGE" == *"deck"* ]]; then
-            echo "container_target=bazzite-deck" >> "$GITHUB_OUTPUT"
-            echo "nvidia_base=bazzite-deck" >> "$GITHUB_OUTPUT" # NOOP
-            echo "install_nvidia=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "container_target=bazzite" >> "$GITHUB_OUTPUT"
-            echo "nvidia_base=bazzite" >> "$GITHUB_OUTPUT" # NOOP
-            echo "install_nvidia=false" >> "$GITHUB_OUTPUT"
-          fi
-          # Nvidia flavor
-          if [[ "$IMAGE" == *"nvidia-open" || "$IMAGE" == *"-deck-nvidia"* ]]; then
-            echo "nvidia_flavor=nvidia-open" >> "$GITHUB_OUTPUT"
-          else
-            echo "nvidia_flavor=nvidia-lts" >> "$GITHUB_OUTPUT"
-          fi
-
-          #
-          # Define push and pull registries
-          #
-          PULL_REGISTRY=ghcr.io/ublue-os
-          PUSH_REGISTRY=ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}
-          echo "push_registry=${PUSH_REGISTRY}" >> $GITHUB_OUTPUT
-          echo "pull_registry=${PULL_REGISTRY}" >> $GITHUB_OUTPUT
-          echo "output_image=${PUSH_REGISTRY}/${{ matrix.image }}" >> $GITHUB_OUTPUT
-          BASE_IMAGE="${PULL_REGISTRY}/$BASE_IMAGE_NAME-${{ matrix.base_image_flavor }}:${{ matrix.fedora_version }}"
-          echo "base_image=${BASE_IMAGE}" >> $GITHUB_OUTPUT
-
-          IMAGEREF="$PULL_REGISTRY/${{ matrix.image }}:stable"
-          echo "prev_ref=${IMAGEREF}" >> $GITHUB_OUTPUT
-
-          AKMODS_TAG="${{ matrix.kernel_flavor }}-${{ matrix.fedora_version }}-${{ matrix.kernel_version }}"
-          echo "akmods_tag=${AKMODS_TAG}" >> $GITHUB_OUTPUT
-
-          echo "Generated the following:"
-          cat $GITHUB_OUTPUT
-
-      # Checkout push-to-registry action GitHub repository
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          submodules: recursive
+          {
+            echo "output_image=$(jq -r .output_image resolved.json)"
+            echo "container_target=$(jq -r .container_target resolved.json)"
+            echo "nvidia_base=$(jq -r .nvidia_base resolved.json)"
+            echo "nvidia_flavor=$(jq -r .nvidia_flavor resolved.json)"
+            echo "install_nvidia=$(jq -r .install_nvidia resolved.json)"
+            echo "akmods_tag=$(jq -r .akmods_tag resolved.json)"
+            echo "akmods_nvidia_tag=$(jq -r '.akmods_nvidia_tag // empty' resolved.json)"
+            echo "version=$(jq -r .version resolved.json)"
+            echo "source_version_tag=$(jq -r .build_args.VERSION_TAG resolved.json)"
+            echo "alias_tags=$(jq -r '.alias_tags | join(" ")' resolved.json)"
+          } >> "$GITHUB_OUTPUT"
 
       # Prepare offline documentation
       - name: Download offline docs
@@ -182,81 +160,25 @@ jobs:
       - name: Check just syntax
         uses: ublue-os/just-action@v3
 
-      - name: Pull Images and find versions
-        id: labels
-        env:
-          GH_TOKEN: ${{ github.token }}
+      # Fail fast with a clear error and warm the local pull cache before
+      # DNF Package Cache Prep / Build Image, same as the old "Pull Images
+      # and find versions" step's podman pull calls. skopeo inspect (inside
+      # build.py resolve) doesn't require a local pull, so this is the only
+      # remaining reason to do it explicitly -- buildah build would pull
+      # these on demand anyway.
+      - name: Prefetch images
         run: |
           set -eo pipefail
-
-          #
-          # Base Image and version
-          #
-
-          podman pull ${{ steps.base.outputs.base_image }}
-          skopeo inspect docker://${{ steps.base.outputs.base_image }} > source.json
-          UPSTREAM_TAG=$(jq -r '.Labels["org.opencontainers.image.version"]' source.json)
-          if [ -z "$UPSTREAM_TAG" ] || [ "null" = "$UPSTREAM_TAG" ]; then
-            echo "inspected image version must not be empty or null"
-            exit 1
-          fi
-          # Remove .0 suffix from upstream tag so we can add our own and
-          # the wrong one does not end up in the image.
-          UPSTREAM_TAG="${UPSTREAM_TAG%\.[0-9]}"
-          FEDORA_VERSION="${{ matrix.fedora_version }}"
-          SHA_SHORT="${GITHUB_SHA::7}"
-
-          if [ -n "${{ github.event.pull_request.number }}" ]; then
-            VERSION="pr-${FEDORA_VERSION}-${{ github.event.pull_request.number }}"
-            PRETTY_VERSION="PR (${{ github.event.pull_request.number }}, ${UPSTREAM_TAG})"
-          elif [[ ${{ github.ref_name }} == "unstable" ]]; then
-            VERSION="unstable-${UPSTREAM_TAG}"
-            PRETTY_VERSION="Unstable (F${UPSTREAM_TAG}, #${SHA_SHORT})"
-          elif [[ ${{ github.ref_name }} == "testing" ]]; then
-            VERSION="testing-${UPSTREAM_TAG}"
-            PRETTY_VERSION="Testing (F${UPSTREAM_TAG}, #${SHA_SHORT})"
-          else
-            VERSION="${UPSTREAM_TAG}"
-            PRETTY_VERSION="Stable (F${UPSTREAM_TAG})"
-          fi
-          echo "tag=${VERSION}" >> $GITHUB_OUTPUT
-          echo "pretty=${PRETTY_VERSION}" >> $GITHUB_OUTPUT
-
-          #
-          # Kernel & akmods
-          #
-          AKMODS_TAG="${{ steps.base.outputs.akmods_tag }}"
-          podman pull ghcr.io/ublue-os/akmods:${AKMODS_TAG}
-          # podman pull ghcr.io/ublue-os/akmods-extra:${AKMODS_TAG}
-
-          if [ "${{ steps.base.outputs.install_nvidia }}" == "true" ]; then
-            NVIDIA_FLAVOR="${{ steps.base.outputs.nvidia_flavor }}"
-            podman pull "ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${AKMODS_TAG}"
+          podman pull "$(jq -r .base_image resolved.json)"
+          podman pull "ghcr.io/ublue-os/akmods:${{ steps.resolve.outputs.akmods_tag }}"
+          if [ "${{ steps.resolve.outputs.install_nvidia }}" == "true" ]; then
+            podman pull "ghcr.io/ublue-os/akmods-${{ steps.resolve.outputs.nvidia_flavor }}:${{ steps.resolve.outputs.akmods_tag }}"
           fi
 
-
-          echo "Generated the following:"
-          cat $GITHUB_OUTPUT
-
-      # Generate a file with all the build-args passed to buildah
+      # Generate a file with all the build-args passed to buildah, straight
+      # from resolved.json's build_args object.
       - name: Prepare build args file
-        run: |
-          cat <<'EOF' >>build_args.txt
-          BASE_IMAGE_NAME=${{ steps.base.outputs.base_image_name }}
-          FEDORA_VERSION=${{ matrix.fedora_version }}
-          BASE_IMAGE=${{ steps.base.outputs.base_image }}
-          IMAGE_NAME=${{ matrix.image }}
-          IMAGE_VENDOR=${{ steps.repo_owner_case.outputs.lowercase }}
-          IMAGE_BRANCH=${{ github.ref_name }}
-          KERNEL_FLAVOR=${{ matrix.kernel_flavor }}
-          KERNEL_VERSION=${{ matrix.kernel_version }}
-          NVIDIA_FLAVOR=${{ steps.base.outputs.nvidia_flavor }}
-          NVIDIA_BASE=${{ steps.base.outputs.nvidia_base }}
-          SHA_HEAD_SHORT=${{ steps.base.outputs.sha_head_short }}
-          VERSION_TAG=${{ steps.labels.outputs.tag }}
-          VERSION_PRETTY=${{ steps.labels.outputs.pretty }}
-          ARCH=${{ matrix.arch }}
-          EOF
+        run: jq -r '.build_args | to_entries[] | "\(.key)=\(.value)"' resolved.json > build_args.txt
 
       - name: DNF Package Cache Prep
         id: cache-prep
@@ -306,7 +228,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           buildah build \
-            --target ${{ steps.base.outputs.container_target }} \
+            --target ${{ steps.resolve.outputs.container_target }} \
             --build-arg-file build_args.txt \
             --secret "id=GITHUB_TOKEN,env=GITHUB_TOKEN" \
             --tag raw-img .
@@ -321,68 +243,21 @@ jobs:
           path: /var/tmp/buildah-cache-*
           key: ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}
 
-      # Relabel the image with Bazzite labels
+      # The final image label set. Everything except ostree.linux is already
+      # known (build.py resolve computed the deduped version + static OCI
+      # fields before the build even started); ostree.linux has to come from
+      # the actual built image, since the installed kernel-core NEVRA isn't
+      # guaranteed to match the KERNEL_VERSION build-arg's formatting.
       - name: Apply Labels
-        id: relabel
-        env:
-          IMAGE_LABELS: |
-            io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
-            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/bazzite/refs/heads/main/README.md
-            org.opencontainers.image.description=Bazzite is a custom image that brings the best of Linux gaming to all of your devices - including your favorite handheld.
-            org.opencontainers.image.licenses=Apache-2.0
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.source=https://bazzite.gg
-            org.opencontainers.image.title=Bazzite
-            org.opencontainers.image.vendor=Universal Blue
-            org.opencontainers.image.url=https://bazzite.gg
         run: |
-          version="${{ matrix.fedora_version }}.$(date  +%Y%m%d)"
-          if [[ "${{ github.ref_name }}" == "unstable" ]]; then
-            version="unstable-${version}"
-          elif [[ "${{ github.ref_name }}" == "testing" ]]; then
-            version="testing-${version}"
-          fi
+          kver=$(podman run --rm raw-img rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
+          jq --arg kver "$kver" '.labels["ostree.linux"] = $kver' resolved.json > resolved.json.tmp
+          mv resolved.json.tmp resolved.json
 
-          img=raw-img
-
-          declare -A tags
-          while read -r t; do
-              tags["$t"]=1
-          done < <(skopeo list-tags "docker://${{ steps.base.outputs.output_image }}" 2>/dev/null | jq -r '.Tags[]' || true)
-
-          if [[ -v tags[$version] ]]; then
-            build=1
-            while true; do
-              tag="$version.$build"
-              if [[ ! -v tags[$tag] ]]; then
-                version=$tag
-                break
-              fi
-              ((build++))
-            done
-          fi
-
-          # Figure out config
-          kver=$(podman run --rm "$img" rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
-          filter='{ "packages": [inputs | split(" ") | select(length==2) | { (.[0]): .[1] }] | sort_by(keys) | add }'
-          mapfile -t labels <<< "$IMAGE_LABELS"
-          labels+=(
-            "org.opencontainers.image.version=$version"
-            "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-            "ostree.bootable=true"
-            "ostree.linux=$kver"
-          )
-
-          : > "${RUNNER_TEMP}/labels.txt"
-          for line in "${labels[@]}"; do
-            [ -z "$line" ] && continue
-            printf '%s\n' "$line" >> "${RUNNER_TEMP}/labels.txt"
-          done
+          jq -r '.labels | to_entries[] | "\(.key)=\(.value)"' resolved.json > "${RUNNER_TEMP}/labels.txt"
 
           echo "Labels for the final image:"
           cat "${RUNNER_TEMP}/labels.txt"
-
-          echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
@@ -460,7 +335,7 @@ jobs:
         id: generate-sbom
         env:
           IMAGE: ${{ matrix.image }}
-          VERSION_TAG: ${{ steps.labels.outputs.tag }}
+          VERSION_TAG: ${{ steps.resolve.outputs.source_version_tag }}
           SYFT_CMD: ${{ steps.setup-syft.outputs.cmd }}
           OCI_DIR: "${{ runner.temp }}/image-oci-dir"
         run: |
@@ -477,29 +352,6 @@ jobs:
           du -sh ${SBOM}
           echo "SBOM=${SBOM}" >> $GITHUB_OUTPUT
           rm -rf ${OCI_DIR}
-
-      # Generate tags after relabel runs and checks the primary tag is not duplicated
-      # If it is, relabel will suffix it by .1, .2, etc and put it in steps.relabel.outputs.version
-      - name: Generate tags
-        id: generate-tags
-        shell: bash
-        run: |
-          # Common vars for generating tags
-          VERSION_TAG="${{ steps.relabel.outputs.version }}"
-
-          if [[ ${{ github.ref_name }} == "unstable" ]]; then
-            BUILD_TAGS=("unstable" "unstable-${{ matrix.fedora_version }}")
-          elif [[ ${{ github.ref_name }} == "testing" ]]; then
-            BUILD_TAGS=("testing" "testing-${{ matrix.fedora_version }}")
-          else
-            BUILD_TAGS=("stable-${VERSION_TAG}" "latest" "stable" "stable-${{ matrix.fedora_version }}")
-          fi
-
-          echo "Generated the following build tags: "
-          for TAG in "${BUILD_TAGS[@]}"; do
-              echo "${TAG}"
-          done
-          echo "alias_tags=${BUILD_TAGS[*]}" >> $GITHUB_OUTPUT
 
       - name: Install dgoss
         run: |
@@ -535,10 +387,10 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
-          ALIAS_TAGS: ${{ steps.generate-tags.outputs.alias_tags }}
-          OUTPUT_IMAGE: ${{ steps.base.outputs.output_image }}
+          ALIAS_TAGS: ${{ steps.resolve.outputs.alias_tags }}
+          OUTPUT_IMAGE: ${{ steps.resolve.outputs.output_image }}
           RECHUNK_REF: ${{ steps.rechunk.outputs.ref }}
-          VERSION: ${{ steps.relabel.outputs.version }}
+          VERSION: ${{ steps.resolve.outputs.version }}
         with:
           max_attempts: 3
           retry_wait_seconds: 15
@@ -577,7 +429,7 @@ jobs:
         run: |
           cosign sign -y --key env://COSIGN_PRIVATE_KEY \
             --new-bundle-format=false --use-signing-config=false \
-            ${{ steps.base.outputs.output_image }}@${{ steps.push.outputs.digest }}
+            ${{ steps.resolve.outputs.output_image }}@${{ steps.push.outputs.digest }}
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
 
@@ -594,7 +446,7 @@ jobs:
         if: github.event_name != 'pull_request'
         id: upload-sbom
         env:
-          IMAGE: ${{ steps.base.outputs.output_image }}
+          IMAGE: ${{ steps.resolve.outputs.output_image }}
           DIGEST: ${{ steps.push.outputs.digest }}
           SBOM: ${{ steps.generate-sbom.outputs.SBOM }}
         run: |
@@ -613,7 +465,7 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
-          IMAGE: ${{ steps.base.outputs.output_image }}
+          IMAGE: ${{ steps.resolve.outputs.output_image }}
           SBOM_DIGEST: ${{ steps.upload-sbom.outputs.sbom_digest }}
         run: |
           cosign sign -y --key env://COSIGN_PRIVATE_KEY \
@@ -624,7 +476,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
-          subject-name: ${{ steps.base.outputs.output_image }}
+          subject-name: ${{ steps.resolve.outputs.output_image }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
