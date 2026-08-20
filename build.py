@@ -778,6 +778,105 @@ def cmd_test(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_push(args: argparse.Namespace) -> int:
+    """Replaces build.yml's "Push to GHCR".
+
+    Pushes twice on purpose: a single `podman push` can report a digest
+    that doesn't match what's actually readable back from the registry
+    (containers/podman#27796), and everything downstream -- signing, SBOM
+    attach, attestation -- keys off this digest. The second push's digest
+    is the one that's actually stable. CI wraps this whole command in
+    nick-fields/retry, so a transient registry failure retries the full
+    push+tag sequence as a unit, not just one podman call.
+    """
+    rechunk_ref = args.rechunk_ref.removeprefix("containers-storage:")
+    target = f"{args.output_image}:{args.version}"
+    summary = ["# Push to GHCR result", "```"]
+
+    digestfile = Path(tempfile.mktemp(prefix="digestfile-"))
+    try:
+        for _ in range(2):
+            run(
+                ["podman", "push", f"--digestfile={digestfile}", rechunk_ref, f"docker://{target}"],
+                dry_run=args.dry_run,
+            )
+        summary.append(target)
+
+        if args.dry_run:
+            digest = "sha256:dryrun"
+        else:
+            digest = digestfile.read_text().strip()
+            if not digest:
+                raise CommandError("push reported success but wrote no digest")
+    finally:
+        digestfile.unlink(missing_ok=True)
+
+    for tag in args.alias_tags.split():
+        run(
+            ["skopeo", "copy", f"docker://{args.output_image}@{digest}", f"docker://{args.output_image}:{tag}"],
+            dry_run=args.dry_run,
+        )
+        summary.append(f"{args.output_image}:{tag}")
+    summary.append("```")
+
+    summary_text = "\n".join(summary)
+    if args.summary_file:
+        with open(args.summary_file, "a") as f:
+            f.write(summary_text + "\n")
+    log.info("%s", summary_text)
+
+    print(json.dumps({"digest": digest}))
+    return 0
+
+
+def cmd_sign(args: argparse.Namespace) -> int:
+    """Replaces build.yml's "Sign container image" and "Sign SBOM OCI
+    Artifact" -- both are the exact same cosign invocation against a
+    different ref, so one command covers both call sites. Reads
+    COSIGN_PRIVATE_KEY from the environment, same as the bash did.
+    """
+    run(
+        [
+            "cosign", "sign", "-y", "--key", "env://COSIGN_PRIVATE_KEY",
+            "--new-bundle-format=false", "--use-signing-config=false",
+            args.ref,
+        ],
+        dry_run=args.dry_run,
+    )
+    return 0
+
+
+def cmd_sbom_attach(args: argparse.Namespace) -> int:
+    """Replaces build.yml's "Upload SBOM": attaches the SBOM as an OCI
+    referrer artifact on the image digest, then looks up its own digest
+    so it can be signed in turn.
+    """
+    sbom_path = Path(args.sbom)
+    run(
+        [
+            "oras", "attach",
+            "--artifact-type", "application/vnd.spdx+json",
+            "--annotation", f"filename={sbom_path.name}",
+            f"{args.image}@{args.digest}",
+            str(sbom_path),
+        ],
+        dry_run=args.dry_run,
+    )
+
+    if args.dry_run:
+        sbom_digest = "sha256:dryrun-sbom"
+    else:
+        result = run(["oras", "discover", "--format", "json", f"{args.image}@{args.digest}"], capture=True)
+        referrers = json.loads(result.stdout).get("referrers", [])
+        matches = [r["digest"] for r in referrers if r.get("artifactType") == "application/vnd.spdx+json"]
+        if not matches:
+            raise CommandError("no application/vnd.spdx+json referrer found after oras attach")
+        sbom_digest = matches[0]
+
+    print(json.dumps({"sbom_digest": sbom_digest}))
+    return 0
+
+
 def cmd_shell(args: argparse.Namespace) -> int:
     """Replaces just_scripts/run-image.sh: build if missing, then shell in."""
     tag = f"localhost/{args.image}:build"
@@ -867,6 +966,24 @@ def build_parser() -> argparse.ArgumentParser:
     p_test = sub.add_parser("test", help="run the goss test suite against an image ref")
     p_test.add_argument("--ref", required=True)
     p_test.set_defaults(func=cmd_test)
+
+    p_push = sub.add_parser("push", help="push a rechunked image and its alias tags to a registry")
+    p_push.add_argument("--output-image", required=True)
+    p_push.add_argument("--version", required=True)
+    p_push.add_argument("--alias-tags", required=True, help="space-separated list of alias tags")
+    p_push.add_argument("--rechunk-ref", required=True, help="e.g. containers-storage:localhost/chunked-img")
+    p_push.add_argument("--summary-file", default=os.environ.get("GITHUB_STEP_SUMMARY"))
+    p_push.set_defaults(func=cmd_push)
+
+    p_sign = sub.add_parser("sign", help="cosign sign a ref using COSIGN_PRIVATE_KEY from the environment")
+    p_sign.add_argument("--ref", required=True)
+    p_sign.set_defaults(func=cmd_sign)
+
+    p_sbom_attach = sub.add_parser("sbom-attach", help="attach an SBOM file to an image digest via oras")
+    p_sbom_attach.add_argument("--image", required=True)
+    p_sbom_attach.add_argument("--digest", required=True)
+    p_sbom_attach.add_argument("--sbom", required=True)
+    p_sbom_attach.set_defaults(func=cmd_sbom_attach)
 
     return parser
 
