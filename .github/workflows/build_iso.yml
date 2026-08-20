@@ -19,7 +19,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Matrix has to be known before build-iso's jobs are scheduled, so this
+  # computes it in a separate job -- same pattern as build.yml's
+  # compute-matrix. The image list itself now comes from build.py's IMAGES
+  # table (the single source of truth also used by build.yml, clean.yml,
+  # and changelog.py) instead of being duplicated here.
+  compute-matrix:
+    name: Compute build matrix
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Compute matrix
+        id: matrix
+        run: |
+          echo "matrix=$(jq -cn --argjson img "$(./build.py images)" '{image_name: $img}')" >> "$GITHUB_OUTPUT"
+
   build-iso:
+    needs: compute-matrix
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -29,18 +50,7 @@ jobs:
       artifact-metadata: write
     strategy:
       fail-fast: false
-      matrix:
-        image_name:
-          - bazzite
-          - bazzite-nvidia
-          - bazzite-nvidia-open
-          - bazzite-gnome
-          - bazzite-gnome-nvidia
-          - bazzite-gnome-nvidia-open
-          - bazzite-deck
-          - bazzite-deck-gnome
-          - bazzite-deck-nvidia
-          - bazzite-deck-nvidia-gnome
+      matrix: ${{ fromJson(needs.compute-matrix.outputs.matrix) }}
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1

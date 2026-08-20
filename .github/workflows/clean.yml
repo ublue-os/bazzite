@@ -13,13 +13,25 @@ jobs:
   delete-older-than-90:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       packages: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      # The package list used to be a hardcoded, stale copy (still listing
+      # retired budgie/asus/surface variants). It now comes straight from
+      # build.py's IMAGES table -- the same source used by build.yml,
+      # build_iso.yml, and changelog.py.
+      - name: Compute image list
+        id: images
+        run: echo "packages=$(./build.py images | jq -r 'join(",")')" >> "$GITHUB_OUTPUT"
+
       - name: Delete Images Older Than 90 Days
         uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1.2.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          packages: bazzite,bazzite-ally-budgie,bazzite-asus-nvidia,bazzite-asus-nvidia-open,bazzite-budgie,bazzite-budgie-asus,bazzite-budgie-asus-nvidia,bazzite-budgie-nvidia,bazzite-budgie-surface,bazzite-budgie-surface-nvidia,bazzite-deck,bazzite-deck-budgie,bazzite-deck-gnome,bazzite-deck-nvidia,bazzite-framegame-budgie,bazzite-gnome,bazzite-gnome-asus-nvidia,bazzite-gnome-asus-nvidia-open,bazzite-gnome-nvidia,bazzite-gnome-nvidia-open,bazzite-nvidia,bazzite-nvidia-open
+          packages: ${{ steps.images.outputs.packages }}
           older-than: 90 days
           delete-orphaned-images: true
           keep-n-tagged: 7
