@@ -40,6 +40,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -645,26 +646,135 @@ def cmd_resolve(args: argparse.Namespace) -> int:
 
 
 def cmd_build(args: argparse.Namespace) -> int:
-    """Replaces just_scripts/build-image.sh and build.yml's "Build Image"."""
-    variant = get_variant(args.image)
-    tag = f"localhost/{args.image}:build"
-    cmd = [
-        args.container_mgr,
-        "build",
-        "-f", "Containerfile",
-        f"--build-arg=IMAGE_NAME={variant.image}",
-        f"--build-arg=BASE_IMAGE_NAME={variant.base_image_name}",
-        f"--build-arg=KERNEL_FLAVOR={variant.kernel_flavor}",
-        f"--build-arg=KERNEL_VERSION={variant.kernel_version}",
-        f"--build-arg=NVIDIA_BASE={variant.nvidia_base}",
-        f"--build-arg=NVIDIA_FLAVOR={variant.nvidia_flavor}",
-        f"--build-arg=FEDORA_VERSION={variant.fedora_version}",
-        "--target", variant.container_target,
-        "--tag", tag,
-        str(REPO_ROOT),
-    ]
+    """Replaces just_scripts/build-image.sh and build.yml's "Build Image".
+
+    Local dev builds skip the registry entirely -- no upstream tag lookup,
+    no version dedup -- since a contributor iterating on a package list
+    doesn't care whether "44.20260820" collides with a published tag. CI
+    passes --resolved-json to reuse the build args/target that `resolve`
+    already computed once, rather than resolving twice.
+    """
+    if args.resolved_json:
+        data = json.loads(Path(args.resolved_json).read_text())
+        target = data["container_target"]
+        args_dict = data["build_args"]
+    else:
+        variant = get_variant(args.image)
+        target = variant.container_target
+        args_dict = build_args(
+            variant,
+            image_branch="local",
+            sha_head_short="local",
+            version_tag=f"{variant.fedora_version}.dev",
+            version_pretty="Local dev build",
+        )
+
+    tag = args.tag or f"localhost/{args.image}:build"
+    cmd = [args.container_mgr, "build", "-f", "Containerfile", "--target", target]
+    for key, value in args_dict.items():
+        cmd.append(f"--build-arg={key}={value}")
+    if args.secret:
+        cmd += ["--secret", args.secret]
+    cmd += ["--tag", tag, str(REPO_ROOT)]
     run(cmd, dry_run=args.dry_run)
     log.info("built %s", tag)
+    return 0
+
+
+def cmd_rechunk(args: argparse.Namespace) -> int:
+    """Replaces build.yml's "Run Rechunker".
+
+    Squashes the raw build into one layer, then re-derives the final layer
+    set with rpm-ostree so related files land in the same OCI layer
+    (needed for efficient delta updates). Requires a privileged container
+    runtime -- opt-in locally, on by default in CI.
+    """
+    with group("Squashing raw image"):
+        squash_script = (
+            f'container=$(buildah from {args.raw_image}) && '
+            f'mnt=$(buildah mount "$container") && '
+            f'rm -rf "$mnt"/run/.* "$mnt"/run/* "$mnt"/tmp/.* "$mnt"/tmp/* || true; '
+            f'buildah umount "$container" && '
+            f'buildah commit --identity-label=false --rm "$container" {args.raw_image}'
+        )
+        run(["buildah", "unshare", "bash", "-euo", "pipefail", "-c", squash_script], dry_run=args.dry_run)
+
+    labels = []
+    if args.labels_file and Path(args.labels_file).exists():
+        for line in Path(args.labels_file).read_text().splitlines():
+            if line.strip():
+                labels += ["--label", line]
+
+    with tempfile.TemporaryDirectory(prefix="rechunk-") as rechunk_dir:
+        with group("Composing chunked OCI archive"):
+            run(
+                [
+                    "podman", "run", "--rm", "--pull=never", "--privileged",
+                    f"--mount=type=image,src=localhost/{args.raw_image},target=/rpm-ostree",
+                    "--volume", f"{rechunk_dir}:/run/out:Z",
+                    "--entrypoint", "/usr/bin/rpm-ostree",
+                    f"localhost/{args.raw_image}",
+                    "compose", "build-chunked-oci",
+                    "--bootc", f"--max-layers={args.max_layers}", "--format-version=2",
+                    *labels,
+                    "--rootfs", "/rpm-ostree", "--output", f"oci-archive:{rechunk_dir}/chunked.oci",
+                ],
+                dry_run=args.dry_run,
+            )
+
+        run(["podman", "rmi", "-f", f"localhost/{args.raw_image}"], dry_run=args.dry_run, check=False)
+
+        if args.dry_run:
+            print(json.dumps({"ref": f"containers-storage:{args.chunked_image}"}))
+            return 0
+
+        pulled = run(["podman", "pull", f"oci-archive:{rechunk_dir}/chunked.oci"], capture=True)
+        chunked_id = pulled.stdout.strip()
+        run(["podman", "tag", chunked_id, args.chunked_image])
+
+    print(json.dumps({"ref": f"containers-storage:{args.chunked_image}"}))
+    return 0
+
+
+def cmd_sbom(args: argparse.Namespace) -> int:
+    """Replaces build.yml's "Generate SBOM"."""
+    oci_dir = Path(tempfile.mkdtemp(prefix="image-oci-"))
+    rootfs = oci_dir / "rootfs"
+    rootfs.mkdir(parents=True)
+    try:
+        run(
+            [args.container_mgr, "container", "create", "--replace", "--name", args.image, args.chunked_image],
+            dry_run=args.dry_run,
+        )
+        export_cmd = [args.container_mgr, "export", args.image]
+        tar_cmd = ["tar", "-C", str(rootfs), "--no-same-owner", "-xf", "-"]
+        log.info("+ %s | %s", " ".join(export_cmd), " ".join(tar_cmd))
+        if not args.dry_run:
+            export = subprocess.Popen(export_cmd, stdout=subprocess.PIPE)
+            subprocess.run(tar_cmd, stdin=export.stdout, check=True)
+            export.stdout.close()
+            export.wait()
+        run([args.container_mgr, "container", "rm", args.image], dry_run=args.dry_run, check=False)
+
+        sbom_path = Path(tempfile.mkdtemp(prefix="sbom-")) / "sbom.json"
+        source_name = f"{args.image}-{args.version_tag}"
+        env = {"SYFT_PARALLELISM": str((os.cpu_count() or 1) * 2)}
+        run(
+            [args.syft_cmd, "--source-name", source_name, str(rootfs), "-o", f"syft-json={sbom_path}"],
+            dry_run=args.dry_run,
+            env=env,
+        )
+        print(json.dumps({"sbom": str(sbom_path)}))
+        return 0
+    finally:
+        shutil.rmtree(oci_dir, ignore_errors=True)
+
+
+def cmd_test(args: argparse.Namespace) -> int:
+    """Replaces build.yml's "Run goss tests". Thin passthrough so CI and
+    local iteration share one entrypoint; tests/dgoss/ itself is untouched.
+    """
+    run(["tests/dgoss/dgoss-tests.sh", "tests/dgoss/tests.d", args.ref], dry_run=args.dry_run)
     return 0
 
 
@@ -729,12 +839,34 @@ def build_parser() -> argparse.ArgumentParser:
     p_build = sub.add_parser("build", help="build one image locally")
     p_build.add_argument("--image", default=DEFAULT_IMAGE, choices=sorted(IMAGES))
     p_build.add_argument("--container-mgr", default=None)
+    p_build.add_argument("--resolved-json", default=None, help="reuse build args/target from `resolve`'s output (CI)")
+    p_build.add_argument("--tag", default=None)
+    p_build.add_argument("--secret", default=None, help="passed through to --secret (e.g. id=GITHUB_TOKEN,env=GITHUB_TOKEN)")
     p_build.set_defaults(func=cmd_build)
 
     p_shell = sub.add_parser("shell", help="build if needed, then shell into the image")
     p_shell.add_argument("--image", default=DEFAULT_IMAGE, choices=sorted(IMAGES))
     p_shell.add_argument("--container-mgr", default=None)
     p_shell.set_defaults(func=cmd_shell)
+
+    p_rechunk = sub.add_parser("rechunk", help="squash + rechunk a raw build into an OCI archive (needs --privileged)")
+    p_rechunk.add_argument("--raw-image", default="raw-img")
+    p_rechunk.add_argument("--chunked-image", default="localhost/chunked-img")
+    p_rechunk.add_argument("--labels-file", default=None)
+    p_rechunk.add_argument("--max-layers", type=int, default=127)
+    p_rechunk.set_defaults(func=cmd_rechunk)
+
+    p_sbom = sub.add_parser("sbom", help="generate a syft SBOM for a rechunked image")
+    p_sbom.add_argument("--image", default=DEFAULT_IMAGE, choices=sorted(IMAGES))
+    p_sbom.add_argument("--chunked-image", default="localhost/chunked-img")
+    p_sbom.add_argument("--version-tag", default="dev")
+    p_sbom.add_argument("--container-mgr", default=None)
+    p_sbom.add_argument("--syft-cmd", default="syft")
+    p_sbom.set_defaults(func=cmd_sbom)
+
+    p_test = sub.add_parser("test", help="run the goss test suite against an image ref")
+    p_test.add_argument("--ref", required=True)
+    p_test.set_defaults(func=cmd_test)
 
     return parser
 
