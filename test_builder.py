@@ -1,6 +1,6 @@
 """Golden tests for build.py.
 
-Run with: python3 -m pytest test_build.py -v
+Run with: python3 -m pytest test_builder.py -v
 
 These lock down the variant table and version/tag logic so a future edit
 can't silently change what gets published. See build.py's IMAGES table

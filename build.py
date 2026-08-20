@@ -48,12 +48,10 @@ IMAGE_VENDOR_DEFAULT = "ublue-os"
 
 # ---------------------------------------------------------------------------
 # Each row is written out explicitly rather than derived from substring
-# matching on the image name. The old derivation (build.yml:104-160) had
-# subtle rules -- e.g. nvidia_flavor was "nvidia-open" if the name *ended*
-# with "nvidia-open" OR *contained* "-deck-nvidia", else "nvidia-lts" -- and
-# an explicit table is the only version of that logic that's reviewable at a
-# glance. test_build.py asserts these rows match what the bash used to
-# derive for all 10 images.
+# matching on the image name -- e.g. nvidia_flavor is "nvidia-open" only for
+# specific images, not anything matching a naming pattern -- since an
+# explicit table is the only version of that logic that's reviewable at a
+# glance. test_builder.py asserts these rows are correct for all 10 images.
 # ---------------------------------------------------------------------------
 
 DEFAULTS = {
