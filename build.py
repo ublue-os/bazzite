@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""build.py -- bazzite's single build orchestrator.
-
-Replaces the ~200 lines of inline bash spread across .github/workflows/build.yml
-and just_scripts/ with one code path that both CI and a contributor's laptop
-call, so local builds and CI builds resolve identically.
-
-Zero third-party dependencies -- stdlib only, no venv, no install step.
+"""build.py -- build orchestrator.
 
 Quick start:
 
@@ -53,9 +47,6 @@ PULL_REGISTRY = "ghcr.io/ublue-os"
 IMAGE_VENDOR_DEFAULT = "ublue-os"
 
 # ---------------------------------------------------------------------------
-# The variant table -- the single source of truth for what used to be
-# duplicated across build.yml, build_iso.yml, clean.yml, and changelog.py.
-#
 # Each row is written out explicitly rather than derived from substring
 # matching on the image name. The old derivation (build.yml:104-160) had
 # subtle rules -- e.g. nvidia_flavor was "nvidia-open" if the name *ended*
@@ -170,7 +161,7 @@ IMAGE_LABELS = {
 # ---------------------------------------------------------------------------
 # Logging
 #
-# Hard rule: logging goes to stderr, data goes to stdout. `matrix`, `images`,
+# Logging goes to stderr, data goes to stdout. `matrix`, `images`,
 # and `resolve` print JSON that CI consumes via fromJson/$GITHUB_OUTPUT and
 # that contributors pipe into jq -- if a log line ever lands on stdout,
 # $(./build.py matrix) breaks in a way that's annoying to track down.
@@ -331,13 +322,6 @@ def run(
     assert last_exc is not None
     raise CommandError(str(last_exc)) from last_exc
 
-
-# ---------------------------------------------------------------------------
-# Pure resolution logic -- no I/O, fully unit-testable. This is the part
-# that silently controls published tag names today with zero test coverage.
-# ---------------------------------------------------------------------------
-
-
 @dataclasses.dataclass
 class Variant:
     image: str
@@ -384,7 +368,7 @@ def build_args(
     version_tag: str = "",
     version_pretty: str = "",
 ) -> dict[str, str]:
-    """The --build-arg set, replacing build.yml's "Prepare build args file"."""
+    """The --build-arg set passed to `podman/buildah build`."""
     return {
         "BASE_IMAGE_NAME": variant.base_image_name,
         "FEDORA_VERSION": str(variant.fedora_version),
@@ -412,9 +396,8 @@ def resolve_source_version(
     pr_number: str | None = None,
 ) -> tuple[str, str]:
     """VERSION_TAG / VERSION_PRETTY build args, baked into the image's
-    /usr/lib/os-release. Mirrors build.yml's "Pull Images and find versions"
-    step. `upstream_tag` is the base Fedora image's own version label with
-    any trailing ".0" stripped, e.g. skopeo inspect's
+    /usr/lib/os-release. `upstream_tag` is the base Fedora image's own
+    version label with any trailing ".0" stripped, e.g. skopeo inspect's
     Labels["org.opencontainers.image.version"].
     """
     if pr_number:
@@ -433,14 +416,12 @@ def resolve_source_version(
 
 
 def strip_trailing_zero(upstream_tag: str) -> str:
-    """Remove a trailing ".0" so it doesn't collide with our own point
-    releases (build.yml: `UPSTREAM_TAG="${UPSTREAM_TAG%\\.[0-9]}"`)."""
+    """Remove a trailing ".0" so it doesn't collide with our own point releases."""
     return re.sub(r"\.\d$", "", upstream_tag)
 
 
 def release_version(*, ref_name: str, fedora_version: int, today: datetime | None = None) -> str:
-    """The OCI-label / registry-tag version, before point-release dedup.
-    Mirrors build.yml's "Apply Labels" step."""
+    """The OCI-label / registry-tag version, before point-release dedup."""
     today = today or datetime.now(timezone.utc)
     version = f"{fedora_version}.{today:%Y%m%d}"
     if ref_name == "unstable":
@@ -451,8 +432,7 @@ def release_version(*, ref_name: str, fedora_version: int, today: datetime | Non
 
 
 def dedup_version(version: str, existing_tags: set[str]) -> str:
-    """Append .1, .2, ... if `version` already exists in the registry.
-    Mirrors build.yml's "Apply Labels" step point-release loop."""
+    """Append .1, .2, ... if `version` already exists in the registry."""
     if version not in existing_tags:
         return version
     build = 1
@@ -464,7 +444,7 @@ def dedup_version(version: str, existing_tags: set[str]) -> str:
 
 
 def alias_tags(*, ref_name: str, version: str, fedora_version: int) -> list[str]:
-    """Mirrors build.yml's "Generate tags" step."""
+    """The floating tags (latest, stable, stable-42, ...) that should point at this version."""
     if ref_name == "unstable":
         return ["unstable", f"unstable-{fedora_version}"]
     if ref_name == "testing":
@@ -493,7 +473,7 @@ def cmd_images(args: argparse.Namespace) -> int:
 
 
 def cmd_matrix(args: argparse.Namespace) -> int:
-    """Replaces build.yml's hardcoded `strategy.matrix` (lines 57-82)."""
+    """The CI job matrix: one row per image variant."""
     rows = []
     for image in sorted(IMAGES):
         v = get_variant(image)
@@ -562,12 +542,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
 
 
 def cmd_resolve(args: argparse.Namespace) -> int:
-    """Build args + labels + tags for one image, as JSON.
-
-    Replaces build.yml's "Define base variables", "Pull Images and find
-    versions", "Prepare build args file", "Apply Labels", and "Generate
-    tags" steps.
-    """
+    """Build args + labels + tags for one image, as JSON."""
     variant = get_variant(args.image)
     ref_name = args.ref_name
     sha = args.sha or "deadbeef"
@@ -646,7 +621,7 @@ def cmd_resolve(args: argparse.Namespace) -> int:
 
 
 def cmd_build(args: argparse.Namespace) -> int:
-    """Replaces just_scripts/build-image.sh and build.yml's "Build Image".
+    """Build the image with podman/buildah.
 
     Local dev builds skip the registry entirely -- no upstream tag lookup,
     no version dedup -- since a contributor iterating on a package list
@@ -695,8 +670,7 @@ STALE_RECHUNK_LABELS = (
 
 
 def cmd_rechunk(args: argparse.Namespace) -> int:
-    """Replaces build.yml's "Run Chunkah" (formerly "Run Rechunker").
-
+    """
     Re-derives the final layer set with chunkah so related files land in
     the same OCI layer (needed for efficient delta updates). chunkah's own
     image is cosign-verified before use, same as the common/brew image
@@ -777,7 +751,7 @@ def cmd_rechunk(args: argparse.Namespace) -> int:
 
 
 def cmd_sbom(args: argparse.Namespace) -> int:
-    """Replaces build.yml's "Generate SBOM"."""
+    """Export the chunked image's rootfs and run syft over it to produce an SBOM."""
     oci_dir = Path(tempfile.mkdtemp(prefix="image-oci-"))
     rootfs = oci_dir / "rootfs"
     rootfs.mkdir(parents=True)
@@ -811,7 +785,7 @@ def cmd_sbom(args: argparse.Namespace) -> int:
 
 
 def cmd_test(args: argparse.Namespace) -> int:
-    """Replaces build.yml's "Run goss tests". Thin passthrough so CI and
+    """Run the goss test suite against a built image. Thin passthrough so CI and
     local iteration share one entrypoint; tests/dgoss/ itself is untouched.
     """
     run(["tests/dgoss/dgoss-tests.sh", "tests/dgoss/tests.d", args.ref], dry_run=args.dry_run)
@@ -819,7 +793,7 @@ def cmd_test(args: argparse.Namespace) -> int:
 
 
 def cmd_push(args: argparse.Namespace) -> int:
-    """Replaces build.yml's "Push to GHCR".
+    """Push the rechunked image to GHCR and copy its digest onto the alias tags.
 
     Pushes twice on purpose: a single `podman push` can report a digest
     that doesn't match what's actually readable back from the registry
@@ -870,10 +844,9 @@ def cmd_push(args: argparse.Namespace) -> int:
 
 
 def cmd_sign(args: argparse.Namespace) -> int:
-    """Replaces build.yml's "Sign container image" and "Sign SBOM OCI
-    Artifact" -- both are the exact same cosign invocation against a
-    different ref, so one command covers both call sites. Reads
-    COSIGN_PRIVATE_KEY from the environment, same as the bash did.
+    """Cosign-sign a ref -- the image or its SBOM artifact, whichever is passed.
+
+    Reads COSIGN_PRIVATE_KEY from the environment.
     """
     run(
         [
@@ -887,9 +860,8 @@ def cmd_sign(args: argparse.Namespace) -> int:
 
 
 def cmd_sbom_attach(args: argparse.Namespace) -> int:
-    """Replaces build.yml's "Upload SBOM": attaches the SBOM as an OCI
-    referrer artifact on the image digest, then looks up its own digest
-    so it can be signed in turn.
+    """Attach the SBOM as an OCI referrer artifact on the image digest, then
+    look up its own digest so it can be signed in turn.
     """
     sbom_path = Path(args.sbom)
     run(
@@ -918,7 +890,7 @@ def cmd_sbom_attach(args: argparse.Namespace) -> int:
 
 
 def cmd_shell(args: argparse.Namespace) -> int:
-    """Replaces just_scripts/run-image.sh: build if missing, then shell in."""
+    """Build the image if it doesn't exist locally, then drop into a shell in it."""
     tag = f"localhost/{args.image}:build"
     check = run(
         [args.container_mgr, "images", "--filter", f"reference={tag}", "--format", "{{.ID}}"],
