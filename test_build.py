@@ -2,10 +2,9 @@
 
 Run with: python3 -m pytest test_build.py -v
 
-These lock down the variant table and version/tag logic against what the
-old build.yml bash derived, so a future edit can't silently change what
-gets published. See build.py's IMAGES table comment and the plan's
-verification section for context.
+These lock down the variant table and version/tag logic so a future edit
+can't silently change what gets published. See build.py's IMAGES table
+comment for why the table is hand-written rather than derived.
 """
 
 import json
@@ -16,9 +15,9 @@ import pytest
 
 import build as b
 
-# Hand-derived from build.yml's "Define base variables" step (lines 104-160)
-# and the matrix `include` overrides (lines 71-82), read directly off the
-# workflow file rather than off build.py, so this can't just echo a bug back.
+# Hand-derived by reading the base_image_name/nvidia/kernel rules directly
+# off each image name, independent of build.py's IMAGES table, so this
+# can't just echo a bug back.
 EXPECTED_VARIANTS = {
     "bazzite": {
         "base_image_name": "kinoite", "container_target": "bazzite",
@@ -97,7 +96,7 @@ def test_unknown_image_raises_with_valid_list():
         b.get_variant("bazzite-does-not-exist")
 
 
-# --- resolve_source_version: build.yml "Pull Images and find versions" (187-223) ---
+# --- resolve_source_version ---
 
 def test_source_version_stable():
     version, pretty = b.resolve_source_version(
@@ -124,7 +123,7 @@ def test_source_version_testing():
 
 
 def test_source_version_pr_number_takes_priority_over_ref():
-    # build.yml checks pr_number first regardless of ref_name (lines 208-210)
+    # pr_number takes priority regardless of ref_name
     version, pretty = b.resolve_source_version(
         ref_name="unstable", upstream_tag="44", sha_short="abc1234",
         fedora_version=44, pr_number="42",
@@ -141,7 +140,7 @@ def test_strip_trailing_zero():
     assert b.strip_trailing_zero("44") == "44"
 
 
-# --- release_version / dedup_version: build.yml "Apply Labels" (325-386) ---
+# --- release_version / dedup_version ---
 
 def test_release_version_stable():
     today = datetime(2026, 8, 20, tzinfo=timezone.utc)
@@ -171,7 +170,7 @@ def test_dedup_version_multiple_collisions():
     assert b.dedup_version("44.20260820", existing) == "44.20260820.3"
 
 
-# --- alias_tags: build.yml "Generate tags" (463-482) ---
+# --- alias_tags ---
 
 def test_alias_tags_stable():
     tags = b.alias_tags(ref_name="main", version="44.20260820", fedora_version=44)
@@ -188,7 +187,7 @@ def test_alias_tags_testing():
     assert tags == ["testing", "testing-44"]
 
 
-# --- build_args: build.yml "Prepare build args file" (242-259) ---
+# --- build_args ---
 
 def test_build_args_field_set_matches_ci():
     variant = b.get_variant("bazzite-deck-nvidia")
@@ -196,16 +195,15 @@ def test_build_args_field_set_matches_ci():
         variant, image_vendor="ublue-os", image_branch="main",
         sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
     )
-    # The exact 14 build-args CI writes to build_args.txt -- deliberately
-    # excludes SOURCE_IMAGE, which just_scripts/build-image.sh sends but
-    # which isn't a real ARG in the Containerfile (silently ignored there).
+    # The exact set of build-args passed to podman/buildah -- deliberately
+    # excludes SOURCE_IMAGE, which isn't a real ARG in the Containerfile.
     assert set(args) == {
         "BASE_IMAGE_NAME", "FEDORA_VERSION", "BASE_IMAGE", "IMAGE_NAME",
         "IMAGE_VENDOR", "IMAGE_BRANCH", "KERNEL_FLAVOR", "KERNEL_VERSION",
         "NVIDIA_FLAVOR", "NVIDIA_BASE", "SHA_HEAD_SHORT", "VERSION_TAG",
         "VERSION_PRETTY", "ARCH",
     }
-    assert args["SHA_HEAD_SHORT"] == "abc1234"  # never empty, unlike build.yml:255 today
+    assert args["SHA_HEAD_SHORT"] == "abc1234"  # never empty
 
 
 def test_labels_include_required_oci_fields():
@@ -331,8 +329,8 @@ def test_rechunk_includes_labels_from_file(tmp_path, caplog):
 
 
 def test_rechunk_no_privileged_flag(caplog):
-    # chunkah, unlike the old rpm-ostree-based rechunk, doesn't need
-    # --privileged -- assert it's genuinely gone, not just unmentioned.
+    # chunkah doesn't need --privileged -- assert it's genuinely gone,
+    # not just unmentioned.
     caplog.set_level(logging.INFO, logger="build")
     args = b.build_parser().parse_args(["--dry-run", "rechunk"])
     assert b.cmd_rechunk(args) == 0
