@@ -175,11 +175,6 @@ jobs:
             podman pull "ghcr.io/ublue-os/akmods-${{ steps.resolve.outputs.nvidia_flavor }}:${{ steps.resolve.outputs.akmods_tag }}"
           fi
 
-      # Generate a file with all the build-args passed to buildah, straight
-      # from resolved.json's build_args object.
-      - name: Prepare build args file
-        run: jq -r '.build_args | to_entries[] | "\(.key)=\(.value)"' resolved.json > build_args.txt
-
       - name: DNF Package Cache Prep
         id: cache-prep
         env:
@@ -227,11 +222,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          buildah build \
-            --target ${{ steps.resolve.outputs.container_target }} \
-            --build-arg-file build_args.txt \
+          ./build.py build \
+            --image "${{ matrix.image }}" \
+            --container-mgr buildah \
+            --resolved-json resolved.json \
             --secret "id=GITHUB_TOKEN,env=GITHUB_TOKEN" \
-            --tag raw-img .
+            --tag raw-img
 
       - name: Save DNF package cache
         if: steps.cache-prep.outputs.allow_cache_write == 'true'
@@ -267,60 +263,13 @@ jobs:
       # Reprocess raw-img with chunkah
       - name: Run Chunkah
         id: rechunk
-        env:
-          CHUNKAH_IMAGE: quay.io/coreos/chunkah:latest
         run: |
-          set -euo pipefail
-
-          podman pull "${CHUNKAH_IMAGE}"
-          CHUNKAH_REF="$(podman image inspect --format '{{index .RepoDigests 0}}' "${CHUNKAH_IMAGE}")"
-          cosign verify \
-            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-            --certificate-identity-regexp '^https://github\.com/coreos/chunkah/' \
-            "${CHUNKAH_REF}" > /dev/null
-
-          RECHUNK_DIR="$(mktemp -d "${RUNNER_TEMP}/rechunk-XXXXXX")"
-          CHUNKAH_CONFIG="$(mktemp "${RUNNER_TEMP}/chunkah-config-XXXXXX.json")"
-          trap 'rm -rf "${RECHUNK_DIR}" "${CHUNKAH_CONFIG}"' EXIT
-
-          # Carries Env, Cmd and containers.bootc over to the chunked image
-          podman image inspect localhost/raw-img > "${CHUNKAH_CONFIG}"
-
-          label_args=()
-          while IFS= read -r line; do
-            if [ -n "$line" ]; then
-              label_args+=(--label "$line")
-            fi
-          done < "${RUNNER_TEMP}/labels.txt"
-
-          for stale in ostree.commit ostree.final-diffid rpmostree.inputhash \
-                       quay.expires-after io.buildah.version; do
-            label_args+=(--label "${stale}-")
-          done
-
-          podman run --rm \
-              --pull=never \
-              --mount=type=image,src=localhost/raw-img,target=/chunkah \
-              --volume "${CHUNKAH_CONFIG}:/chunkah-config.json:ro,Z" \
-              --volume "${RECHUNK_DIR}:/run/out:Z" \
-              "${CHUNKAH_REF}" \
-              build \
-              --verbose \
-              --compressed \
-              --max-layers 128 \
-              --prune /sysroot/ \
-              --prune /run/ \
-              --prune /tmp/ \
-              "${label_args[@]}" \
-              --config /chunkah-config.json \
-              --output oci:/run/out/chunked
-
-          podman rmi -f localhost/raw-img
-
-          chunked=$(podman pull "oci:${RECHUNK_DIR}/chunked")
-          podman tag "${chunked}" localhost/chunked-img
-
-          echo "ref=containers-storage:localhost/chunked-img" >> "$GITHUB_OUTPUT"
+          ./build.py rechunk \
+            --raw-image raw-img \
+            --chunked-image localhost/chunked-img \
+            --labels-file "${RUNNER_TEMP}/labels.txt" \
+            > rechunk.json
+          echo "ref=$(jq -r .ref rechunk.json)" >> "$GITHUB_OUTPUT"
 
       - name: Setup Syft
         id: setup-syft
@@ -337,21 +286,16 @@ jobs:
           IMAGE: ${{ matrix.image }}
           VERSION_TAG: ${{ steps.resolve.outputs.source_version_tag }}
           SYFT_CMD: ${{ steps.setup-syft.outputs.cmd }}
-          OCI_DIR: "${{ runner.temp }}/image-oci-dir"
         run: |
-          mkdir -p ${OCI_DIR}/rootfs
-          podman container create --replace --name "${IMAGE}" "localhost/chunked-img"
-          podman export "${IMAGE}" | tar -C ${OCI_DIR}/rootfs --no-same-owner -xf -
-          podman container rm "${IMAGE}"
-
-          chmod -R u+rwX ${OCI_DIR}
-
-          SBOM="$(mktemp -d)/sbom.json"
-          export SYFT_PARALLELISM=$(($(nproc)*2))
-          $SYFT_CMD --source-name "${IMAGE}"-"${VERSION_TAG}" ${OCI_DIR}/rootfs -o syft-json=${SBOM}
-          du -sh ${SBOM}
-          echo "SBOM=${SBOM}" >> $GITHUB_OUTPUT
-          rm -rf ${OCI_DIR}
+          ./build.py sbom \
+            --image "${IMAGE}" \
+            --chunked-image localhost/chunked-img \
+            --version-tag "${VERSION_TAG}" \
+            --container-mgr podman \
+            --syft-cmd "${SYFT_CMD}" \
+            > sbom.json
+          du -sh "$(jq -r .sbom sbom.json)"
+          echo "SBOM=$(jq -r .sbom sbom.json)" >> $GITHUB_OUTPUT
 
       - name: Install dgoss
         run: |
@@ -372,8 +316,7 @@ jobs:
           chmod +rx /usr/local/bin/dgoss
 
       - name: Run goss tests
-        run: |
-          tests/dgoss/dgoss-tests.sh tests/dgoss/tests.d "${{ steps.rechunk.outputs.ref }}"
+        run: ./build.py test --ref "${{ steps.rechunk.outputs.ref }}"
 
       - name: Login to GitHub Container Registry
         if: github.event_name != 'pull_request'

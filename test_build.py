@@ -8,6 +8,8 @@ gets published. See build.py's IMAGES table comment and the plan's
 verification section for context.
 """
 
+import json
+import logging
 from datetime import datetime, timezone
 
 import pytest
@@ -226,7 +228,6 @@ def test_cmd_images_is_valid_json(capsys):
     args = b.build_parser().parse_args(["images"])
     assert b.cmd_images(args) == 0
     out = capsys.readouterr().out
-    import json
     assert json.loads(out) == sorted(b.IMAGES)
 
 
@@ -234,6 +235,69 @@ def test_cmd_matrix_covers_all_images(capsys):
     args = b.build_parser().parse_args(["matrix"])
     assert b.cmd_matrix(args) == 0
     out = capsys.readouterr().out
-    import json
     matrix = json.loads(out)
     assert {row["image"] for row in matrix["include"]} == set(b.IMAGES)
+
+
+# --- cmd_build: local vs CI resolved-json modes ---
+
+def test_build_local_mode_uses_dev_version(caplog):
+    caplog.set_level(logging.INFO, logger="build")
+    args = b.build_parser().parse_args(
+        ["--dry-run", "build", "--image", "bazzite-deck", "--container-mgr", "podman"]
+    )
+    assert b.cmd_build(args) == 0
+    assert "--build-arg=VERSION_TAG=44.dev" in caplog.text
+    assert "--build-arg=IMAGE_BRANCH=local" in caplog.text
+    assert "--tag localhost/bazzite-deck:build" in caplog.text
+    assert "--secret" not in caplog.text
+
+
+def test_build_ci_mode_reads_resolved_json(tmp_path, caplog):
+    caplog.set_level(logging.INFO, logger="build")
+    resolved = {
+        "container_target": "bazzite-nvidia",
+        "build_args": {"IMAGE_NAME": "bazzite-nvidia", "VERSION_TAG": "44"},
+    }
+    resolved_path = tmp_path / "resolved.json"
+    resolved_path.write_text(json.dumps(resolved))
+
+    args = b.build_parser().parse_args(
+        [
+            "--dry-run", "build", "--image", "bazzite-nvidia", "--container-mgr", "buildah",
+            "--resolved-json", str(resolved_path), "--tag", "raw-img",
+            "--secret", "id=GITHUB_TOKEN,env=GITHUB_TOKEN",
+        ]
+    )
+    assert b.cmd_build(args) == 0
+    assert "--target bazzite-nvidia" in caplog.text
+    assert "--build-arg=VERSION_TAG=44" in caplog.text
+    assert "--secret id=GITHUB_TOKEN,env=GITHUB_TOKEN" in caplog.text
+    assert "--tag raw-img" in caplog.text
+
+
+# --- cmd_rechunk / cmd_sbom / cmd_test: dry-run argument construction ---
+
+def test_rechunk_dry_run_emits_ref(capsys):
+    args = b.build_parser().parse_args(["--dry-run", "rechunk"])
+    assert b.cmd_rechunk(args) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert out == {"ref": "containers-storage:localhost/chunked-img"}
+
+
+def test_rechunk_custom_images_and_max_layers(capsys, caplog):
+    caplog.set_level(logging.INFO, logger="build")
+    args = b.build_parser().parse_args(
+        ["--dry-run", "rechunk", "--raw-image", "custom-raw", "--chunked-image", "localhost/custom-chunked", "--max-layers", "64"]
+    )
+    assert b.cmd_rechunk(args) == 0
+    assert "custom-raw" in caplog.text
+    assert "--max-layers=64" in caplog.text
+    assert json.loads(capsys.readouterr().out) == {"ref": "containers-storage:localhost/custom-chunked"}
+
+
+def test_test_dry_run_invokes_dgoss(caplog):
+    caplog.set_level(logging.INFO, logger="build")
+    args = b.build_parser().parse_args(["--dry-run", "test", "--ref", "containers-storage:localhost/chunked-img"])
+    assert b.cmd_test(args) == 0
+    assert "tests/dgoss/dgoss-tests.sh tests/dgoss/tests.d containers-storage:localhost/chunked-img" in caplog.text

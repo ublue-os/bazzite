@@ -8,7 +8,7 @@ container_mgr=(
 for i in "${container_mgr[@]}"; do
     if [[ $(command -v "$i") ]]; then
         echo "Container Manager: ${i}"
-        ID=$(${i} images --filter "reference=localhost/bazzite*-build")
+        ID=$(${i} images --filter "reference=localhost/bazzite*" --format "{{.ID}}")
         xargs -I {} "${i}" image rm {} <<< "$ID"
         echo ""
     fi
