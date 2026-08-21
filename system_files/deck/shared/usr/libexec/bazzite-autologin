@@ -5,19 +5,19 @@ BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
 USER=$(id -nu 1000)
 
-BAZZITE_CONF='/etc/sddm.conf.d/zz-bazzite-autologin.conf'
-DESKTOP_AUTOLOGIN='/etc/bazzite/desktop_autologin'
+BAZZITE_CONF="/etc/sddm.conf.d/zz-bazzite-autologin.conf"
+HOLO_CONF="/etc/sddm.conf.d/zz-holo-autologin.conf"
+DESKTOP_AUTOLOGIN="/etc/bazzite/desktop_autologin"
 
 rm -f /etc/sddm.conf.d/zz-steamos-autologin.conf \
-      /etc/sddm.conf.d/zz-holo-autologin.conf \
       /etc/sddm.conf.d/steamos.conf
 
 if [[ ! -f ${DESKTOP_AUTOLOGIN} ]]; then
-  SESSION='gamescope-session-ogui-steam.desktop'
+  SESSION="gamescope-session-ogui-steam.desktop"
 elif [[ ${BASE_IMAGE_NAME} =~ "kinoite" ]]; then
-  SESSION='plasma.desktop'
+  SESSION="plasma.desktop"
 elif [[ ${BASE_IMAGE_NAME} =~ "silverblue" ]]; then
-  SESSION='gnome.desktop'
+  SESSION="gnome.desktop"
 else
   echo "Unknown base image ${BASE_IMAGE_NAME}, leaving autologin alone" >&2
   exit 0
@@ -26,6 +26,12 @@ fi
 mkdir -p /etc/sddm.conf.d
 cat > ${BAZZITE_CONF} <<EOF
 [Autologin]
-Session=${SESSION}
 User=${USER}
 EOF
+
+if [[ ! -f ${HOLO_CONF} ]]; then
+  cat > ${HOLO_CONF} <<EOF
+[Autologin]
+Session=${SESSION}
+EOF
+fi
