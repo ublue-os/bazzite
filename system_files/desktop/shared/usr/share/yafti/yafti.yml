@@ -680,8 +680,8 @@ screens:
             label: "Disable Autoupgrading FSR"
             script: "ujust global-fsr4 disable"
       - id: "configure-amd-hdmi21"
-        title: "Enable HDMI 2.1 for AMD Graphics Cards"
-        description: "Sets a karg to unlock additional functionality on AMD graphics cards. However, this may also cause flickering and instability on some displays."
+        title: "Enable HDMI 2.1 for AMD graphics cards"
+        description: "Set a kernel argument for booting AMD graphics with additional functionality. Currently, this may induce flickering and/or signal instability to some displays."
         status_script: "ujust configure-amd-hdmi21 status"
         default: false
         options:
