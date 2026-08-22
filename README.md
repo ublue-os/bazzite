@@ -172,7 +172,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 ### Features from Upstream
 
-#### Universal Blue
+#### Universal Blue:
 
 - Proprietary Nvidia drivers pre-installed. <sub><sup>(Only for Nvidia images)</sup></sub>
 - Flathub is enabled by default.
@@ -180,7 +180,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 - Multi-media codecs out of the box.
 - Rollback Bazzite from any build within the last 90 days.
 
-#### Features from Fedora Linux (Kinoite & Silverblue)
+#### Features from Fedora Linux (Kinoite & Silverblue):
 
 - A rock solid and stable base.
 - System packages stay relatively up to date.
