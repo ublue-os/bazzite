@@ -97,11 +97,11 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, and for a console-like experience on HTPCs, available as `bazzite-deck`:
 
 - Directly boots to Game mode matching SteamOS's behavior.
-- **Automatic `bees` greatly trims the size of compatdata.**
-- **Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.**
-- **Able to be booted even if the drive is full.**
-- **Support for every language supported by upstream Fedora.**
-- **Uses Wayland on the desktop with [support for Steam input](https://github.com/Supreeeme/extest).**
+- Automatic `bees` greatly trims the size of compatdata.
+- Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.
+- Able to be booted even if the drive is full.
+- Support for every language supported by upstream Fedora.
+- Uses Wayland on the desktop with [support for Steam input](https://github.com/Supreeeme/extest).
 - Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV).
 - Patched Mesa for proper framerate control from Gamescope.
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
