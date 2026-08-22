@@ -192,11 +192,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y remove \
-        ublue-os-update-services \
-        firefox \
-        firefox-langpacks \
-        htop && \
+    /ctx/global-remove && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y remove toolbox \
     ; fi && \
@@ -386,61 +382,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        dnf5 -y install \
-            qt \
-            krdp \
-            steamdeck-kde-presets-desktop \
-            kdeconnectd \
-            kdeplasma-addons \
-            plasma-oxygen \
-            oxygen-icon-theme \
-            rom-properties-kf6 \
-            fcitx5-chewing \
-            fcitx5-table-extra \
-            fcitx5-mozc \
-            fcitx5-chinese-addons \
-            fcitx5-hangul \
-            fcitx5-m17n \
-            kcm-fcitx5 \
-            gnome-disk-utility \
-            kio-extras \
-            krunner-bazaar \
-            krunner-yafti \
-            krdc \
-            tesseract-devel \
-            tesseract-langpack-eng \
-            tesseract-langpack-spa \
-            tesseract-langpack-deu \
-            tesseract-langpack-jpn \
-            tesseract-langpack-jpn_vert \
-            tesseract-langpack-fra \
-            tesseract-langpack-por \
-            tesseract-langpack-rus \
-            tesseract-langpack-ita \
-            tesseract-langpack-nld \
-            tesseract-langpack-pol \
-            tesseract-langpack-tur \
-            tesseract-langpack-chi_sim \
-            tesseract-langpack-chi_sim_vert \
-            tesseract-langpack-chi_tra \
-            tesseract-langpack-chi_tra_vert \
-            tesseract-langpack-ces \
-            tesseract-langpack-ell && \
-        dnf5 -y remove \
-            plasma-drkonqi \
-            plasma-welcome \
-            plasma-welcome-fedora \
-            plasma-discover-kns \
-            kcharselect \
-            kde-partitionmanager \
-            plasma-discover && \
-        setcap 'cap_net_admin+ep' /usr/bin/kdeconnectd && \
-        sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js && \
-        ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl && \
-        ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
-        rm -f /usr/share/backgrounds/default.xml && \
-        mkdir -p /usr/share/wallpapers/bazzite/convergence/contents/images && \
-        ln -s /usr/share/wallpapers/convergence.jxl /usr/share/wallpapers/bazzite/convergence/contents/images/3940x2160.jxl \
+      /ctx/configure-kde \
     ; else \
         dnf5 -y install \
             nautilus-gsconnect \
