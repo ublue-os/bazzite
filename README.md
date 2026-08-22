@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://bazzite.gg/">
     <picture>
-      <source srcset="repo_content/Bazzite_Light.svg" media="(prefers-color-scheme: dark)" alt="Bazzite">
+      <source srcset="repo_content/Bazzite_Light.svg" media="(prefers-color-scheme: dark)">
       <img src="repo_content/Bazzite.svg" alt="Bazzite"/>
     </picture>
   </a>
