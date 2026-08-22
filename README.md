@@ -79,7 +79,7 @@ Common variant available as `bazzite`, suitable for desktop computers.
 Rebase from an existing upstream Fedora Atomic to this image if you want **Open Source GPU Drivers**.
 Please note: Mesa's Open Source option for NVIDIA GPUs, NVK is still prone to errors at the time of writing. 
 
-For any issues relating to NVK [please submit a report with Mesa]([url](https://docs.mesa3d.org/bugs.html)), not Ublue/Bazzite
+For any issues relating to NVK [please submit a report with Mesa]([url](https://docs.mesa3d.org/bugs.html)), not Ublue/Bazzite:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
