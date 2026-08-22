@@ -13,7 +13,8 @@ dnf5 -y install \
   krunner-bazaar \
   krunner-yafti \
   krdc \
-  tesseract-langpack-{ces,chi_sim,chi_sim_vert,deu,ell,fra,ita,jpn,jpn_vert,nld,pol,por,rus,spa,tur} \
+  tesseract-devel \
+  tesseract-langpack-{ces,chi_sim,chi_sim_vert,chi_tra,chi_tra_vert,deu,ell,fra,ita,jpn,jpn_vert,nld,pol,por,rus,spa,tur} \
   plasma-oxygen \
   oxygen-icon-theme
 
