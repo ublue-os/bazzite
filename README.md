@@ -85,7 +85,7 @@ For any issues relating to NVK [please submit a report with Mesa]([url](https://
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
 ```
 
-For devices with Nvidia GPUs wanting the **NVIDIA Proprietary Drivers**:
+For devices with Nvidia GPUs requiring the **NVIDIA Proprietary Drivers**:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:stable
