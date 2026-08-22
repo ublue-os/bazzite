@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-
 # This is supposed to be executed on all bazzite variants
+
+set -eoux pipefail
 
 dnf5 -y remove \
   ublue-os-update-services \
-  firefox \
-  firefox-langpacks \
-  toolbox \
+  firefox{,-langpacks} \
   htop

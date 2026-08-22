@@ -1,0 +1,40 @@
+From f1558d64a58cb760e0b0159623277e1e75516c24 Mon Sep 17 00:00:00 2001
+From: Zygo Blaxell <bees@furryterror.org>
+Date: Fri, 1 May 2026 04:01:34 -0400
+Subject: [PATCH] openat2: remove throw() specifier
+
+This removes the obsolete throw() specifier from the openat2() declaration in
+include/crucible/openat2.h and its definition in lib/openat2.cc. C++11 and
+later deprecates throw() and C++17 removes it in favor of noexcept.
+
+Co-Authored-By: Gemini CLI <gemini-cli@google.com>
+---
+ include/crucible/openat2.h | 2 +-
+ lib/openat2.cc             | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/include/crucible/openat2.h b/include/crucible/openat2.h
+index 6ccb34ef..149ec59e 100644
+--- a/include/crucible/openat2.h
++++ b/include/crucible/openat2.h
+@@ -45,7 +45,7 @@ struct open_how {
+ extern "C" {
+ 
+ /// Weak symbol to support libc with no syscall wrapper
+-int openat2(int dirfd, const char *pathname, const struct open_how *how, size_t size) throw();
++int openat2(int dirfd, const char *pathname, const struct open_how *how, size_t size);
+ 
+ };
+ 
+diff --git a/lib/openat2.cc b/lib/openat2.cc
+index 2912f864..c46182d0 100644
+--- a/lib/openat2.cc
++++ b/lib/openat2.cc
+@@ -27,7 +27,6 @@ extern "C" {
+ int
+ __attribute__((weak))
+ openat2(int const dirfd, const char *const pathname, const struct open_how *const how, size_t const size)
+-throw()
+ {
+ #ifdef SYS_openat2
+ 	return syscall(SYS_openat2, dirfd, pathname, how, size);

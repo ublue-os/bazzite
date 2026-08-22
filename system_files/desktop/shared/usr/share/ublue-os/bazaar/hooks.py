@@ -1,4 +1,4 @@
-# See https://github.com/kolunmi/bazaar/blob/main/docs/overview.md#hooks
+# See https://github.com/bazaar-org/bazaar/blob/main/docs/overview.md#hooks
 
 import os, subprocess, sys
 
@@ -8,22 +8,18 @@ import os, subprocess, sys
 # CONFIG
 #
 
-def kde_make_shellcmd_argv(cmd):
-    return ['konsole', '-e', cmd]
-def gnome_make_shellcmd_argv(cmd):
-    return ['ptyxis', '-x', cmd]
-
-# ---
-
-#
-# ENVIRONMENT SETUP
-#
-
-desktop = os.getenv('XDG_CURRENT_DESKTOP')
-if desktop == 'KDE':
-    make_shellcmd_argv = kde_make_shellcmd_argv
-else:
-    make_shellcmd_argv = gnome_make_shellcmd_argv
+def make_shellcmd_argv(cmd):
+    return [
+        'xdg-terminal-exec',
+        '--app-id=io.github.kolunmi.Bazaar',
+        '--title=Bazaar',
+        '--',
+        'bash',
+        '--noprofile',
+        '--norc',
+        '-lc',
+        cmd
+    ]
 
 # ---
 
@@ -53,20 +49,45 @@ stage_idx = os.getenv('BAZAAR_HOOK_STAGE_IDX')
 # UTIL
 #
 
+temp_file = "/tmp/bazaar-hook-choice"
+
+def pick_action(action):
+    file = open(temp_file, "w")
+    file.write(action)
+    file.close()
+
+def find_action():
+    file = open(temp_file)
+    output = file.read()
+    file.close()
+    return output
+
+def brew_eval(args):
+    return f'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && {args}'
+
 def spawn_and_detach(args):
     subprocess.Popen(args, start_new_session=True, stdout=subprocess.DEVNULL)
 
 def make_popup_terminal_shellcmd(cmd):
+    preview = cmd.replace('$', '\\$')
+    preview = preview.replace('(', '\\(')
+    preview = preview.replace(')', '\\)')
     new_cmd =  f'{cmd} ; '
     new_cmd +=  'echo 1>&2 ; '
     new_cmd +=  'echo "------------------" 1>&2 ; '
-    new_cmd += f'echo "Command \'{cmd}\' completed. Press ENTER to finish!" 1>&2 ; '
+    new_cmd += f'echo "Command \'{preview}\' completed. Press ENTER to finish!" 1>&2 ; '
     new_cmd +=  'read'
     new_cmd = new_cmd.replace('"', '\\"')
     return f'/bin/sh -c "{new_cmd}"'
 
-def spawn_ujust(id):
-    cmd  = make_popup_terminal_shellcmd(f'ujust {id}')
+def spawn_ujust(script):
+    cmd  = make_popup_terminal_shellcmd(f'ujust {script}')
+    args = make_shellcmd_argv(cmd)
+    spawn_and_detach(args)
+
+def spawn_brew_ublue(cask):
+    brew = brew_eval(f'brew tap ublue-os/tap && brew install --cask {cask}')
+    cmd  = make_popup_terminal_shellcmd(brew)
     args = make_shellcmd_argv(cmd)
     spawn_and_detach(args)
 
@@ -75,7 +96,8 @@ def spawn_ujust(id):
 def handle_jetbrains():
 
     def appid_is_jetbrains(appid):
-        return appid.startswith('com.jetbrains.')
+        if appid.startswith('com.jetbrains.') or appid == 'com.google.AndroidStudio':
+            return True
 
     match stage:
         case 'setup':
@@ -107,12 +129,91 @@ def handle_jetbrains():
             # always prevent installation of JetBrains flatpaks
             return 'deny'
 
+def handle_vscode():
+
+    def appid_is_vscode(appid):
+        return appid.startswith('com.visualstudio.code')
+
+    match stage:
+        case 'setup':
+            if transaction_type == 'install' and appid_is_vscode(transaction_appid):
+                return 'ok'
+            else:
+                return 'pass'
+
+        case 'setup-dialog':
+            return 'ok'
+
+        case 'teardown-dialog':
+            if dialog_response_id == 'run-brew' or dialog_response_id == 'learn-dx':
+                pick_action(dialog_response_id)
+                return 'ok'
+            else:
+                return 'abort'
+
+        case 'catch':
+            return 'abort'
+
+        case 'action':
+            try:
+                action = find_action()
+                if action == 'run-brew':
+                    spawn_brew_ublue('visual-studio-code-linux')
+                elif action == 'learn-dx':
+                    spawn_and_detach(['xdg-open', 'https://dev.bazzite.gg/'])
+            except:
+                pass
+            return ''
+
+        case 'teardown':
+            # always prevent installation of VSCode flatpak
+            return 'deny'
+
+def handle_vscodium():
+
+    def appid_is_vscodium(appid):
+        return appid.startswith('com.vscodium.codium')
+
+    match stage:
+        case 'setup':
+            if transaction_type == 'install' and appid_is_vscodium(transaction_appid):
+                return 'ok'
+            else:
+                return 'pass'
+
+        case 'setup-dialog':
+            return 'ok'
+
+        case 'teardown-dialog':
+            if dialog_response_id == 'run-brew':
+                return 'ok'
+            else:
+                return 'abort'
+
+        case 'catch':
+            return 'abort'
+
+        case 'action':
+            try:
+                spawn_brew_ublue('vscodium-linux')
+            except:
+                pass
+            return ''
+
+        case 'teardown':
+            # always prevent installation of VSCodium flatpak
+            return 'deny'
+
 # ---
 
 response = 'pass'
 match hook_id:
     case 'jetbrains-toolbox':
         response = handle_jetbrains()
+    case 'vscode':
+        response = handle_vscode()
+    case 'vscodium':
+        response = handle_vscodium()
 
 print(response)
 sys.exit(0)

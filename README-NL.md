@@ -1,5 +1,10 @@
 <p align="center">
-  <a href="https://bazzite.gg/"><img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
+  <a href="https://bazzite.gg/">
+    <picture>
+      <source srcset="repo_content/Bazzite_Light.svg" media="(prefers-color-scheme: dark)">
+      <img src="repo_content/Bazzite.svg" alt="Bazzite"/>
+    </picture>
+  </a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
@@ -79,7 +84,7 @@ Bazzite is gebouwd van [ublue-os/main](https://github.com/ublue-os/main) en [ubl
 
 Gangbare variant beschikbaar als `bazzite`, voor desktop computers.
 
-- Automatische updates voor OS, Flatpaks en meer - aangedreven door [ublue-update](https://github.com/ublue-os/ublue-update) en [topgrade](https://github.com/topgrade-rs/topgrade).
+- Automatische updates voor OS, Flatpaks en meer - aangedreven door [uupd](https://github.com/ublue-os/uupd) en [topgrade](https://github.com/topgrade-rs/topgrade).
 
 > [!IMPORTANT]
 > **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases) en een installatiegids kan [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
@@ -117,7 +122,7 @@ Varianten voor gebruik als alternatief voor SteamOS op de Steam Deck en voor con
 - Komt met patches voor [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) voor een volledige BTRFS beschikbaarheid voor SD kaarten.
 - Komt met [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU).
 - Optie om [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/) en [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) te instaleren, met velen anderen opties.
-- Aangepaste update systeem die het mogelijk maken om het bestuuringsysteem, Flatpaks en meer direct te updaten via de Game mode UI. Medemogelijk gemaat door [ublue-update](https://github.com/ublue-os/ublue-update) en [topgrade](https://github.com/topgrade-rs/topgrade).
+- Aangepaste update systeem die het mogelijk maken om het bestuuringsysteem, Flatpaks en meer direct te updaten via de Game mode UI. Medemogelijk gemaat door [uupd](https://github.com/ublue-os/uupd) en [topgrade](https://github.com/topgrade-rs/topgrade).
 - Makkelijk om Windows te Dual-Booten dankzij Fedora die GRUB intact laat.
 - Gaat een update fout? Ga gemakelijk terug naar een ouderen versie van Bazzite met `rpm-ostree`'s rollback functionaliteit. Je kan zelfs ouderen images selecteren tijdens het starten.
 - Steam en Lutris geïnstaleerd in de image.
@@ -228,11 +233,11 @@ Lees de [FAQ](https://universal-blue.discourse.group/docs?topic=33) om te zien w
 
 ![KDE Vapor Thema](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 ![KDE VGUI2 Thema](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
-![Steam Game Mode](/repo_content/gamemode.png?raw=true "Steam Game Mode")
+![Steam Gaming Mode](/repo_content/gamemode.png?raw=true "Steam Gaming Mode")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![Distrobox Terminals](/repo_content/distrobox.png?raw=true "Distrobox Terminals")
-![GNOME Vapor Thema](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
-![GNOME VGUI2 Thema](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## Documentatie & Nieuwsbrief
 

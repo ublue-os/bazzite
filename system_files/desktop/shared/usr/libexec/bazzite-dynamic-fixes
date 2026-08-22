@@ -12,7 +12,11 @@ write_intel_gtk_fix() {
 if lsmod | awk '$3 > 0' | grep -P "^(xe|i915) " > /dev/null && [ ! -f "$HOME/.config/environment.d/intel-gtk-fix.conf" ]; then
     # User is using an Intel GPU
     write_intel_gtk_fix
+    # This ensures that the env is set immediately when the file is generated
+    systemctl --user daemon-reload
 elif ! lsmod | awk '$3 > 0' | grep -P "^(xe|i915) " > /dev/null && [ -f "$HOME/.config/environment.d/intel-gtk-fix.conf" ]; then
     # Remove the env var file as no intel gpu is being used.
     rm "$HOME/.config/environment.d/intel-gtk-fix.conf"
+    # This ensures that the env is unset immediately when the file is deleted
+    systemctl --user daemon-reload
 fi

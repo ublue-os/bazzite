@@ -1,0 +1,2 @@
+ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="amdgpu_bl1", RUN+="/usr/bin/chmod a+w /sys/class/backlight/%k/brightness"
+ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="amdgpu_bl2", RUN+="/usr/bin/chmod a+w /sys/class/backlight/%k/brightness"

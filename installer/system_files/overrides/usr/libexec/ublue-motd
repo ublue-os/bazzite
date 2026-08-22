@@ -1,0 +1,20 @@
+#!/usr/bin/bash
+
+# Exit immediately if this is a Midnight Commander (mc) subshell.
+# Fixes issue #2003.
+if [[ -n "$MC_SID" ]]; then
+	exit 0
+fi
+
+escape() {
+	sed 's/[&/\]/\\&/g' <<< "$1"
+}
+
+IMAGE_NAME=$(sudo podman images --format '{{ index .Names 0 }}\n' 'bazzite*' | sed -E 's@.*/@@')
+IMAGE_NAME_ESCAPED=$(escape "$IMAGE_NAME")
+
+THEME=$(gsettings get org.gnome.desktop.interface accent-color || echo "'purple'")
+THEME=${THEME//\'/}
+THEME=${MOTD_FORCE_THEME:-$THEME}
+
+sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | tr '~' '\n' | /usr/bin/glow -s /usr/share/ublue-os/motd/themes/$COLOR_SCHEME/$THEME.json -w 78 -

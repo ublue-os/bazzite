@@ -16,7 +16,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout last 500 commits (for <commits> to work)
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 500
 
@@ -29,7 +29,10 @@ jobs:
             TARGET="stable"
           fi
           echo "target=$TARGET" >> $GITHUB_OUTPUT
-      
+
+      - name: Install ORAS
+        uses: oras-project/setup-oras@1d808f7d7f6995cc68b7bf507bfe5c5446e1dc9d # v2.0.1
+
       - name: Generate Release Text
         id: generate-release
         run: |
@@ -41,7 +44,7 @@ jobs:
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
       - name: Create Release
-        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3
         with:
           name: ${{ steps.generate-release.outputs.title }}
           tag_name: ${{ steps.generate-release.outputs.tag }}

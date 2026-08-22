@@ -5,6 +5,155 @@ command:
     stdout:
       - "dgoss smoketest"
 
+  hardware_setup_unmasks_inputplumber:
+    exec: |
+      sh -lc '
+      setup=/usr/libexec/bazzite-hardware-setup
+      test "$(grep -Fc "systemctl unmask inputplumber.service" "$setup")" -eq 2
+      '
+    exit-status: 0
+
+  selinux_label_probe_works:
+    exec: |
+      sh -lc '
+      target=/usr/bin/sudo
+      expected=system_u:object_r:sudo_exec_t:s0
+      obj=$(find /sysroot/ostree/repo/objects -inum "$(stat -c %i "$target")" -name "*.file" -print -quit 2>/dev/null)
+      if [ -z "$obj" ]; then
+        echo "FAIL: no ostree object backs $target; the label probe is broken"
+        exit 1
+      fi
+      label=$(tr -c "[:print:]" "\n" < "${obj%.file}.file-xattrs-link" 2>/dev/null | grep -m1 "^system_u:object_r:")
+      if [ "$label" != "$expected" ]; then
+        echo "FAIL: probe read ${label:-<none>} for $target, expected $expected"
+        exit 1
+      fi
+      echo "OK: SELinux label probe works ($target is $label)"
+      '
+    exit-status: 0
+    stdout:
+      - "/^OK:/"
+
+  steamosctl_selinux_label:
+    exec: |
+      sh -lc '
+      info=/usr/share/ublue-os/image-info.json
+      name=$(sed -n "s/.*\"image-name\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$info" 2>/dev/null)
+      if [ -z "$name" ]; then
+        name=$(. /usr/lib/os-release 2>/dev/null; printf "%s" "$VARIANT_ID")
+      fi
+      if [ -z "$name" ]; then
+        echo "FAIL: unable to determine image name from $info or /usr/lib/os-release"
+        exit 1
+      fi
+      case "$name" in
+        *deck*) ;;
+        *) echo "SKIP: $name is not a deck image" ; exit 0 ;;
+      esac
+      target=/usr/bin/steamosctl
+      expected=system_u:object_r:steamos_manager_exec_t:s0
+      if [ ! -e "$target" ]; then
+        echo "FAIL: $name is a deck image but $target is missing"
+        exit 1
+      fi
+      obj=$(find /sysroot/ostree/repo/objects -inum "$(stat -c %i "$target")" -name "*.file" -print -quit 2>/dev/null)
+      if [ -z "$obj" ]; then
+        echo "FAIL: no ostree object backs $target; cannot verify its label"
+        exit 1
+      fi
+      label=$(tr -c "[:print:]" "\n" < "${obj%.file}.file-xattrs-link" 2>/dev/null | grep -m1 "^system_u:object_r:")
+      if [ "$label" != "$expected" ]; then
+        echo "FAIL: $target is labeled ${label:-<none>}, expected $expected"
+        exit 1
+      fi
+      echo "OK: $target is labeled $label"
+      '
+    exit-status: 0
+    stdout:
+      - "/^(OK|SKIP):/"
+
+  # ryzen_smu backs TDP control, which deck images depend on.
+  deck_has_ryzen_smu:
+    exec: |
+      sh -lc '
+      info=/usr/share/ublue-os/image-info.json
+      name=$(sed -n "s/.*\"image-name\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$info" 2>/dev/null)
+      if [ -z "$name" ]; then
+        name=$(. /usr/lib/os-release 2>/dev/null; printf "%s" "$VARIANT_ID")
+      fi
+      if [ -z "$name" ]; then
+        echo "FAIL: unable to determine image name from $info or /usr/lib/os-release"
+        exit 1
+      fi
+      case "$name" in
+        *deck*) ;;
+        *) echo "SKIP: $name is not a deck image" ; exit 0 ;;
+      esac
+      module=$(find /usr/lib/modules -type f -name "ryzen_smu.ko*" 2>/dev/null | head -n1)
+      if [ -z "$module" ]; then
+        echo "FAIL: $name is a deck image but no ryzen_smu module was found under /usr/lib/modules"
+        exit 1
+      fi
+      echo "OK: $name ships ryzen_smu at $module"
+      '
+    exit-status: 0
+    stdout:
+      - "/^(OK|SKIP):/"
+
+  kernel_modules_match_uname:
+    exec: |
+      sh -lc '
+      status=0
+      found=0
+      for dir in /usr/lib/modules/*/; do
+        kver=${dir%/}
+        kver=${kver##*/}
+        vmlinuz=${dir}vmlinuz
+        [ -f "$vmlinuz" ] || continue
+        found=$((found + 1))
+
+        if [ "$(dd if="$vmlinuz" bs=1 skip=514 count=4 2>/dev/null)" = "HdrS" ]; then
+          off=$(od -An -tu2 -j 526 -N 2 "$vmlinuz" 2>/dev/null | tr -d " ")
+          if [ -z "$off" ] || [ "$off" = "0" ]; then
+            echo "FAIL: $vmlinuz has no kernel_version pointer, cannot read UTS_RELEASE"
+            status=1
+          else
+            uts=$(dd if="$vmlinuz" bs=1 skip=$((512 + off)) count=200 2>/dev/null | tr "\0" "\n" | head -n1)
+            uts=${uts%% *}
+            if [ "$uts" != "$kver" ]; then
+              echo "FAIL: $vmlinuz boots as $uts but its modules are in /usr/lib/modules/$kver"
+              status=1
+            fi
+          fi
+        fi
+
+        ko=$(find "$dir" -type f -name "*.ko*" -print -quit 2>/dev/null)
+        if [ -z "$ko" ]; then
+          echo "FAIL: no kernel modules found under $dir"
+          status=1
+          continue
+        fi
+        vermagic=$(modinfo -F vermagic "$ko" 2>/dev/null)
+        vermagic=${vermagic%% *}
+        if [ -z "$vermagic" ]; then
+          echo "FAIL: could not read vermagic from $ko"
+          status=1
+        elif [ "$vermagic" != "$kver" ]; then
+          echo "FAIL: $ko was built for $vermagic but is installed in /usr/lib/modules/$kver"
+          status=1
+        fi
+      done
+      if [ "$found" -eq 0 ]; then
+        echo "FAIL: no kernel found under /usr/lib/modules"
+        exit 1
+      fi
+      [ "$status" -eq 0 ] || exit 1
+      echo "OK: UTS_RELEASE and vermagic match /usr/lib/modules for all $found kernel(s)"
+      '
+    exit-status: 0
+    stdout:
+      - "/^OK:/"
+
 file:
   /etc/os-release:
     exists: true

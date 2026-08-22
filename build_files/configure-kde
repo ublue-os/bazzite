@@ -1,15 +1,22 @@
 #!/usr/bin/env bash
+# KDE specifc modifications
+
+set -eoux pipefail
 
 dnf5 -y install \
   qt \
   steamdeck-kde-presets-desktop \
   rom-properties-kf6 \
-  fcitx5-mozc \
+  fcitx5-chewing \
   fcitx5-chinese-addons \
   fcitx5-hangul \
+  fcitx5-m17n \
+  fcitx5-mozc \
+  fcitx5-table-extra \
   kcm-fcitx5 \
   gnome-disk-utility \
   krunner-bazaar \
+  krunner-yafti \
   krdc \
   tesseract-langpack-spa \
   tesseract-langpack-deu \
@@ -26,21 +33,24 @@ dnf5 -y install \
   tesseract-langpack-chi_sim_vert \
   tesseract-langpack-ces \
   tesseract-langpack-ell \
-  ptyxis
+  plasma-oxygen \
+  oxygen-icon-theme
 
 dnf5 -y remove \
   plasma-drkonqi \
-  plasma-welcome \
-  plasma-welcome-fedora \
+  plasma-welcome{,-fedora} \
   plasma-discover-kns \
   kcharselect \
   kde-partitionmanager \
-  plasma-discover \
-  plasma-discover-libs
+  plasma-discover{,-libs}
 
 sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js
-sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop
-sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop
 ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl
 ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl
 rm -f /usr/share/backgrounds/default.xml
+
+mkdir -p /usr/share/wallpapers/bazzite/convergence/contents/images
+ln -s /usr/share/wallpapers/convergence.jxl /usr/share/wallpapers/bazzite/convergence/contents/images/3940x2160.jxl
+
+# TODO: Figure out why this is needed and upstream this to fedora
+setcap 'cap_net_admin+ep' /usr/bin/kdeconnectd

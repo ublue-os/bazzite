@@ -10,27 +10,44 @@ mkdir -p /var/tmp
 chmod -R 1777 /var/tmp
 
 # Copy entries into /usr/lib/passwd and /usr/lib/group
-if [ -f /etc/passwd ]; then
-    out=$(grep -v "root" /etc/passwd) || true
-    if [ -n "$out" ]; then
-        echo
-        echo Moving the following passwd users to /usr/lib/passwd
-        echo "$out"
-        echo "$out" >> /usr/lib/passwd
-        echo "root:x:0:0:root:/root:/bin/bash" > /etc/passwd
+relocate_accounts() {
+    local etc="$1" lib="$2" shadow="$3" keep="$4" reset="$5"
+    local out line name
+
+    [ -f "$etc" ] || return 0
+    out=$(grep -vE -- "$keep" "$etc") || true
+    [ -n "$out" ] || return 0
+
+    echo
+    echo "Moving the following entries from ${etc} to ${lib}"
+    echo "$out"
+
+    { cat "$lib" 2>/dev/null || true; echo "$out"; } > "${lib}.new"
+    mv -f "${lib}.new" "$lib"
+
+    # Fail the build rather than ship an image where these went missing.
+    while IFS= read -r line; do
+        if ! grep -qxF -- "$line" "$lib"; then
+            echo "ERROR: '${line}' did not persist in ${lib}" >&2
+            return 1
+        fi
+    done <<< "$out"
+
+    printf '%s\n' "$reset" > "$etc"
+
+    if [ -f "$shadow" ]; then
+        while IFS= read -r line; do
+            name="${line%%:*}"
+            sed -i "/^${name}:/d" "$shadow"
+        done <<< "$out"
     fi
-fi
-if [ -f /etc/group ]; then
-    out=$(grep -v "root\|wheel" /etc/group) || true
-    if [ -n "$out" ]; then
-        echo
-        echo Moving the following group entries to /usr/lib/group
-        echo "$out"
-        echo "$out" >> /usr/lib/group
-        echo "root:x:0:" > /etc/group
-        echo "wheel:x:10:" >> /etc/group
-    fi
-fi
+}
+
+relocate_accounts /etc/passwd /usr/lib/passwd /etc/shadow \
+    'root' 'root:x:0:0:root:/root:/bin/bash'
+relocate_accounts /etc/group /usr/lib/group /etc/gshadow \
+    'root|wheel' 'root:x:0:
+wheel:x:10:'
 
 # Extra lock files created by container processes that might cause issues
 rm -rf \

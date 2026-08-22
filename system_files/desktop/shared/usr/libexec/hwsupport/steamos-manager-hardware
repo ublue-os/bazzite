@@ -1,0 +1,36 @@
+#!/usr/bin/bash
+# Returns true for non-Valve handhelds whose TDP is driven by steamos-manager
+# directly, via a firmware-attributes platform driver or amdgpu hwmon.
+
+DMI="/sys/devices/virtual/dmi/id"
+PRODUCT_NAME="$(cat "$DMI/product_name" 2>/dev/null)"
+BOARD_NAME="$(cat "$DMI/board_name" 2>/dev/null)"
+
+# ASUS ROG Ally
+if [[ "$PRODUCT_NAME" == "ROG Ally"* ]]; then
+	exit 0
+fi
+
+# ASUS ROG Xbox Ally
+if [[ "$PRODUCT_NAME" == "ROG Xbox Ally"* ]]; then
+	exit 0
+fi
+
+# Lenovo Legion Go / Legion Go S
+case "$PRODUCT_NAME" in
+	83E1 | 83N0 | 83N1 | 83L3 | 83N6 | 83Q2 | 83Q3)
+		exit 0
+		;;
+esac
+
+# MSI Claw
+case "$BOARD_NAME" in
+	MS-1T41 | MS-1T42 | MS-1T52 | MS-1T8K)
+		exit 0
+		;;
+esac
+if [[ "$PRODUCT_NAME" == *"Claw"* ]]; then
+	exit 0
+fi
+
+exit 1

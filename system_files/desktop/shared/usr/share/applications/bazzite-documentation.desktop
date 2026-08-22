@@ -13,4 +13,5 @@ Comment[cs]=Zobrazit dokumentaci k Bazzite
 Comment[fr]=Voir la documentation de Bazzite
 Comment[el]=Προβολή τεκμηρίωσης Bazzite
 Comment[ru]=Посмотреть документацию Bazzite
-Categories=Utility;
+Categories=Documentation;System;
+Keywords=bazzite;docs;manual;guide;help;tutorial;

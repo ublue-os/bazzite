@@ -3,6 +3,13 @@ ACTION="$1"
 
 source /etc/default/cec-control
 
+# Only the dGPU/external-adapter mode should use this legacy script. Native
+# mode is handled by cecd/SteamOS Manager and must not race this script.
+CEC_MODE=${CEC_MODE:-dgpu}
+if [[ "$CEC_MODE" == "native" || "$CEC_MODE" == "cecd" ]]; then
+    exit 0
+fi
+
 # OVERRIDE WITH DEFAULTS IF NOT SET
 CEC_TVID=${CEC_TVID:-0}
 CEC_WAKE=${CEC_WAKE:-true}
@@ -65,6 +72,8 @@ function perform_activate {
         done
         
         if [ "$CEC_SETSOURCE" = true ]; then
+            # Add a short delay so that the CEC device has time to acknowledge this command
+            sleep 0.1
             # Get our physical address if we are setting source
             local phys_addr=$(cec-ctl -d "$CEC_DEVICE" 2>/dev/null | grep "Physical Address" | awk '{print $4}')
             if [[ -n "$phys_addr" ]]; then

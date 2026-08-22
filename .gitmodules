@@ -39,4 +39,4 @@
 	url = https://github.com/ublue-os/bazzite-firmware-nonfree
 [submodule "bazaar-integration@kolunmi.github.io"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io
-	url = https://github.com/AlexanderVanhee/bazaar-companion.git
+	url = https://github.com/bazaar-org/bazaar-companion.git

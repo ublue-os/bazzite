@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-# Redirect to dnf5 if we are running inside a container
-if systemd-detect-virt -cq || { [[ -e /run/.containerenv || -e /.dockerenv ]]; }; then
+# Redirect to dnf5 if we are running inside a container or usroverlay is enabled
+if systemd-detect-virt -cq || { [[ -e /run/.containerenv || -e /.dockerenv ]]; } || { [[ $(rpm-ostree status --json --booted | jq -r '.deployments[0]["unlocked"]') == 'development' ]] }; then
     exec /usr/bin/dnf5 "$@"
 fi
 

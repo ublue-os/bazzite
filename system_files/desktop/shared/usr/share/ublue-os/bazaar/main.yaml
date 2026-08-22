@@ -15,6 +15,16 @@ hooks:
             IDE JetBrains не поддерживаются в данном формате
           el: >-
             Το IDE JetBrains δεν υποστηρίζεται σε αυτή τη μορφή
+          fr: >-
+            Les IDEs JetBrains ne sont pas pris en charge dans ce format
+          de: >-
+            JetBrains IDEs sind in diesem Format nicht unterstützt
+          es: >-
+            Los IDEs de JetBrains no son compatibles con este formato
+          it: >-
+            Gli IDE JetBrains non sono supportati in questo formato
+          pt_BR: >-
+            IDEs JetBrains não são suportadas neste formato
 
         # If true, render inline markup commands in body; see
         # https://docs.gtk.org/Pango/pango_markup.html
@@ -34,6 +44,27 @@ hooks:
             και δεν υποστηρίζεται επίσημα σε Flatpak. Το Bazzite
             συνιστά τη χρήση της εφαρμογής Toolbox για τη διαχείριση των IDE
             JetBrains.
+          fr: >-
+            Ceci est une application <a href="https://www.jetbrains.com/fr-fr/">JetBrains</a>
+            et n'est pas officiellement pris en charge en Flatpak. Bazzite recommande
+            l'utilisation de l'appli Toolbox pour gérer les IDEs JetBrains.
+          de: >-
+            Dies ist eine <a href="https://www.jetbrains.com/">JetBrains</a> Anwendung
+            und nicht über Flatpak unterstützt. Bazzite empfiehlt, JetBrains IDEs
+            über die Toolbox-App herunterzuladen.
+          es: >-
+            Es una aplicación <a href="https://www.jetbrains.com/">JetBrains</a> 
+            y no suportado oficialmente en Flatpak. Bazzite recomienda utilizar
+            la aplicación 'Toolbox' para instalar IDEs de JetBrains.
+          it: >-
+            Si tratta di un'applicazione <a href="https://www.jetbrains.com/">JetBrains</a>
+            che non è ufficialmente supportata su Flatpak. Bazzite
+            consiglia di utilizzare l'app Toolbox per gestire gli IDE JetBrains.
+          pt_BR: >-
+            Isto é uma aplicação <a href="https://www.jetbrains.com/">JetBrains</a>
+            e não é suportada oficialmente em formato Flatpak. Bazzite recomenda usar 
+            o app Toolbox para gerenciar IDEs JetBrains.
+
         # Determines which option will be assumed if the user hits the
         # escape key or otherwise cancels the dialog
         default-response-id: cancel
@@ -43,12 +74,262 @@ hooks:
               en: "Cancel"
               ru: "Отмена"
               el: "Ακύρωση"
+              fr: "Annuler"
+              de: "Abbrechen"
+              es: "Cancelar"
+              it: "Annullare"
+              pt_BR: "Cancelar"
           - id: run-ujust
             string:
               en: "Download JetBrains Toolbox"
               ru: "Скачать JetBrains Toolbox"
               el: "Λήψη JetBrains Toolbox"
+              fr: "Télécharger JetBrains Toolbox"
+              de: "JetBrains Toolbox herunterladen"
+              es: "Descargar JetBrains Toolbox"
+              it: "Scaricare JetBrains Toolbox"
+              pt_BR: "Baixar JetBrains Toolbox"
             # can be "destructive" or "suggested" or omit for no
             # styling
             style: suggested
     shell: exec python3 /usr/share/ublue-os/bazaar/hooks.py
+    # This gives you the opportunity to add a basic regex check on an incoming
+    # appid before incurring the overhead of spawning a subprocess. This
+    # improves performance and reduces script boilerplate for long lists of
+    # hooks that execute on specific appids.
+    check-appid-regex: ^(com\.jetbrains\..*|com\.google\.AndroidStudio)$
+
+  - id: vscode
+    when: before-transaction
+    dialogs:
+      - id: vscode-warning
+        title:
+          en: >-
+            Visual Studio Code is not supported in this format
+          ru: >-
+            Visual Studio Code не поддерживается в данном формате
+          fr: >-
+            Visual Studio Code n'est pas pris en charge dans ce format
+          el: >-
+            Το Visual Studio Code δεν υποστηρίζεται σε αυτή τη μορφή
+          de: >-
+            Visual Studio Code ist in diesem Format nicht unterstützt
+          es: >-
+            Visual Studio Code no es compatible con este formato
+          it: >-
+            Visual Studio Code non supportato in questo formato
+          pt_BR: >-
+            Visual Studio Code não é suportado neste formato
+
+        # If true, render inline markup commands in body; see
+        # https://docs.gtk.org/Pango/pango_markup.html
+        body-use-markup: true
+        body:
+          en: >-
+            This is a <a href="https://www.microsoft.com/">Microsoft</a>
+            application and is not officially supported on Flatpak. Bazzite
+            recommends getting Visual Studio Code from Universal Blue's Brew
+            tap.
+
+            Alternatively, you can rebase to Bazzite DX (Developer
+            Experience) which provides Docker and Visual Studio Code out
+            of the box.
+          ru: >-
+            Это приложение <a href="https://www.microsoft.com/">Microsoft</a>
+            и оно официально не поддерживается как Flatpak. Bazzite
+            рекомендует устанавливать Visual Studio Code из Brew
+            tap репозитория Universal Blue.
+
+            Альтернативно, вы можете сменить систему на Bazzite DX
+            (Developer Experience), которая включает в себя Docker и Visual
+            Studio Code из коробки.
+          fr: >-
+            C'est une application <a href="https://www.microsoft.com/fr-fr">Microsoft</a>
+            qui n'est pas prise en charge officiellement en Flatpak. Bazzite
+            recommande l'installation de Visual Studio Code depuis le tap Brew
+            d'Universal Blue.
+
+            Vous pouvez également choisir de rebaser votre système vers Bazzite DX
+            (version de Bazzite pour les devéloppeurs) qui intègre Docker et
+            Visual Studio Code par défaut.
+          el: >-
+            Αυτή είναι μια εφαρμογή <a href="https://www.microsoft.com/">Microsoft</a>
+            και δεν υποστηρίζεται επίσημα σε Flatpak. Το Bazzite
+            συνιστά τη λήψη του Visual Studio Code από το Brew tap
+            αποθετήριο της Universal Blue.
+
+            Εναλλακτικά, μπορείτε να κάνετε rebase σε Bazzite DX (Developer
+            Experience), που παρέχει Docker και Visual Studio Code έτοιμα
+            για χρήση.
+          de: >-
+            Dies ist eine <a href="https://www.microsoft.com/">Microsoft</a> -Anwendung
+            und nicht offiziell über Flatpak unterstützt. Bazzite empfiehlt daher, Visual
+            Studio Code über Universal Blue's Brew Tap zu beziehen.
+            
+            Alternativ können Sie zu Bazzite DX (Entwickler Erfahrung) wechseln,
+            welches Docker und Visual Studio Code enthält.
+          es: >-
+            Esto es una aplicación de <a href="https://www.microsoft.com/">Microsoft</a>
+            y no suportado oficialmente en Flatpak. Bazzite recomienda descargar
+            Visual Studio Code a través de Brew Tap de Universal Blue.
+            
+            Alternativamiente, puedes cambriar a una versión alternativa de Bazzite: DX
+            (experiencia para desarrolladores) que incluye Docker y Visual Studio Code.
+          it: >-
+            Questa è un'applicazione <a href="https://www.microsoft.com/">Microsoft</a>
+            e non è ufficialmente supportata da Flatpak. Bazzite consiglia quindi di scaricare Visual
+            Studio Code tramite Brew Tap di Universal Blue.
+
+            In alternativa, è possibile passare a Bazzite DX (Esperienza come sviluppatore),
+            che include Docker e Visual Studio Code.
+          pt_BR: >-
+            Isto é uma aplicação <a href="https://www.microsoft.com/">Microsoft</a> e
+            não é suportada oficialmente em formato Flatpak. Bazzite recomenda 
+            baixar o Visual Studio Code pelo Brew Tap da Universal Blue.
+
+            Alternativamente, você pode fazer rebase para o Bazzite DX (Experiência para 
+            Desenvolvedores), que inclui Docker e Visual Studio Code pré-instalados.
+
+        # Determines which option will be assumed if the user hits the
+        # escape key or otherwise cancels the dialog
+        default-response-id: cancel
+        options:
+          - id: cancel
+            string:
+              en: "Cancel"
+              ru: "Отмена"
+              fr: "Annuler"
+              el: "Ακύρωση"
+              de: "Abbrechen"
+              es: "Cancelar"
+              it: "Annullare"
+              pt_BR: "Cancelar"
+          - id: learn-dx
+            string:
+              en: "Learn about Bazzite DX"
+              ru: "Узнать о Bazzite DX"
+              fr: "En savoir plus sur Bazzite DX"
+              el: "Μάθετε για το Bazzite DX"
+              de: "Mehr über Bazzite DX erfahren"
+              es: "Saber Más Sobre Bazzite DX"
+              it: "Scopri di più su Bazzite DX"
+              pt_BR: "Saiba mais sobre o Bazzite DX"
+          - id: run-brew
+            string:
+              en: "Download from Brew"
+              ru: "Скачать с Brew"
+              fr: "Téléchargez depuis Brew"
+              el: "Λήψη από Brew"
+              de: "Über Brew herunterladen"
+              es: "Descargar de Brew"
+              it: "Scaricare con Brew"
+              pt_BR: "Baixar do Brew"
+              
+            # can be "destructive" or "suggested" or omit for no
+            # styling
+            style: suggested
+    shell: exec python3 /usr/share/ublue-os/bazaar/hooks.py
+    # This gives you the opportunity to add a basic regex check on an incoming
+    # appid before incurring the overhead of spawning a subprocess. This
+    # improves performance and reduces script boilerplate for long lists of
+    # hooks that execute on specific appids.
+    check-appid-regex: ^com\.visualstudio\.code.*$
+
+  - id: vscodium
+    when: before-transaction
+    dialogs:
+      - id: vscodium-warning
+        title:
+          en: >-
+            VSCodium is not supported in this format
+          ru: >-
+            VSCodium не поддерживается в данном формате
+          fr: >-
+            VSCodium n'est pas pris en charge dans ce format
+          el: >-
+            Το VSCodium δεν υποστηρίζεται σε αυτή τη μορφή
+          de: >-
+            VSCodium ist in diesem Format nicht unterstützt
+          es: >-
+            VSCodium no es compatible con este formato
+          it: >-
+            VSCodium non supportato in questo formato
+          pt_BR: >-
+            VSCodium não é suportado neste formato
+
+        # If true, render inline markup commands in body; see
+        # https://docs.gtk.org/Pango/pango_markup.html
+        body-use-markup: true
+        body:
+          en: >-
+            Although VSCodium is verified on Flathub, this is a repackaged
+            <a href="https://www.microsoft.com/">Microsoft</a> application and
+            is not officially supported on Flatpak. Bazzite recommends getting
+            VSCodium from Universal Blue's Brew tap.
+          ru: >-
+            Хотя VSCodium был подтверждён в Flathub, это перепакованное
+            приложение <a href="https://www.microsoft.com/">Microsoft</a> и оно
+            официально не поддерживается как Flatpak. Bazzite рекомендует
+            устанавливать VSCodium из Brew tap репозитория Universal Blue.
+          fr: >-
+            Même si VSCodium est vérifiée sur Flathub, c'est une version
+            rempaquetée d'une application
+            <a href="https://www.microsoft.com/fr-fr">Microsoft</a> qui n'est pas
+            pris en charge officiellement en Flatpak. Bazzite recommande
+            l'installation de VSCodium depuis le tap Brew d'Universal Blue.
+          el: >-
+            Αν και το VSCodium έχει επαληθευτεί στο Flathub, αυτή είναι μια επανασυσκευασμένη εφαρμογή
+            <a href="https://www.microsoft.com/">Microsoft</a> και δεν υποστηρίζεται επίσημα σε Flatpak.
+            Το Bazzite συνιστά τη λήψη του VSCodium από το Brew tap της Universal Blue.
+          de: >-
+            Obwohl VSCodium auf Flathub verifiziert ist, handelt es sich trotzdem um
+            eine  von Dritten verpackte <a href="https://www.microsoft.com/">Microsoft</a> - Anwendung, 
+            welche auf Flatpak nicht offiziell unterstützt wird. Bazzite empfiehlt, VSCodium über den Brew Tap
+            von Universal Blue zu beziehen.
+          es: >-
+            VSCodium está verificado en Flathub, pero es una aplicación de 
+            <a href="https://www.microsoft.com/fr-fr">Microsoft</a> y no suportado oficialmente en Flatpak. 
+            Bazzite recomienda descargar VSCodium a través de Brew Tap de Universal Blue.
+          it: >-
+            Sebbene VSCodium sia verificato su Flatpak, si tratta comunque di un'applicazione riconfezionato
+            <a href="https://www.microsoft.com/">Microsoft</a>, che non è ufficialmente supportata su Flatpak. 
+            Bazzite consiglia di scaricare VSCodium tramite Brew Tap di Universal Blue.
+          pt_BR: >-
+            Apesar do VSCodium ser verificado no Flathub, esta é uma versão de um aplicativo 
+            <a href="https://www.microsoft.com/">Microsoft</a> e não é oficialmente suportado 
+            em formato Flatpak. Bazzite recomenda baixar o VSCodium do Brew Tap da Universal Blue.
+
+        # Determines which option will be assumed if the user hits the
+        # escape key or otherwise cancels the dialog
+        default-response-id: cancel
+        options:
+          - id: cancel
+            string:
+              en: "Cancel"
+              ru: "Отмена"
+              fr: "Annuler"
+              el: "Ακύρωση"
+              de: "Abbrechen"
+              es: "Cancelar"
+              it: "Annullare"
+              pt_BR: "Cancelar"
+          - id: run-brew
+            string:
+              en: "Download from Brew"
+              ru: "Скачать с Brew"
+              fr: "Téléchargez depuis Brew"
+              el: "Λήψη από Brew"
+              de: "Über Brew herunterladen"
+              es: "Descargar de Brew"
+              it: "Scaricare con Brew"
+              pt_BR: "Baixar do Brew"
+              
+            # can be "destructive" or "suggested" or omit for no
+            # styling
+            style: suggested
+    shell: exec python3 /usr/share/ublue-os/bazaar/hooks.py
+    # This gives you the opportunity to add a basic regex check on an incoming
+    # appid before incurring the overhead of spawning a subprocess. This
+    # improves performance and reduces script boilerplate for long lists of
+    # hooks that execute on specific appids.
+    check-appid-regex: ^com\.vscodium\.codium.*$

@@ -1,0 +1,9 @@
+polkit.addRule(function(action, subject) {
+    if ((action.id == "org.bazzite.policykit.gamescope-session.pkexec.os-biosupdat" ||
+         action.id == "org.bazzite.policykit.gamescope-session.pkexec.os-branch-select" ||
+         action.id == "org.bazzite.policykit.gamescope-session.pkexec.os-session-select" ||
+         action.id == "org.bazzite.policykit.gamescope-session.pkexec.os-update") &&
+         subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+    }
+});

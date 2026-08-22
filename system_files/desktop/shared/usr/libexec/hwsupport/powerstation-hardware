@@ -1,0 +1,57 @@
+#!/usr/bin/bash
+# Returns true for non-Valve handhelds that need PowerStation for TDP control.
+# These have no upstream vendor WMI/firmware-attributes driver, so
+# steamos-manager falls back to the org.shadowblip.PowerStation DBus service.
+
+DMI="/sys/devices/virtual/dmi/id"
+PRODUCT_NAME="$(cat "$DMI/product_name" 2>/dev/null)"
+SYS_VENDOR="$(cat "$DMI/sys_vendor" 2>/dev/null)"
+BOARD_VENDOR="$(cat "$DMI/board_vendor" 2>/dev/null)"
+
+# Lowercase
+sys_vendor_lc="${SYS_VENDOR,,}"
+board_vendor_lc="${BOARD_VENDOR,,}"
+
+# AOKZOE
+if [[ "$PRODUCT_NAME" == *AOKZOE* ]]; then
+	exit 0
+fi
+
+# AYANEO
+if [[ "$board_vendor_lc" == *ayaneo* ]]; then
+	exit 0
+fi
+case "$PRODUCT_NAME" in
+	AIR | "AIR Pro" | "AIR Plus" | "AIR 1S" | "AIR 1S Limited" | \
+	"AYA NEO 2021" | "AYANEO 2021" | "AYANEO 2021 Pro" | "AYANEO 2021 Pro Retro Power" | \
+	"AYANEO 2" | "AYANEO 2S" | "AYANEO 3" | "AYA NEO FOUNDER" | \
+	"AYANEO KUN" | KUN | GEEK | "GEEK 1S" | \
+	NEXT | "NEXT Advance" | "NEXT Lite" | "NEXT Pro" | \
+	"FLIP DS" | "FLIP KB" | "FLIP 1S DS" | "FLIP 1S KB" | SLIDE)
+		exit 0
+		;;
+esac
+
+# Ayn
+if [[ "$sys_vendor_lc" == "ayn" ]]; then
+	exit 0
+fi
+case "$PRODUCT_NAME" in
+	"Loki Max" | "Loki Zero" | "Loki MiniPro")
+		exit 0
+		;;
+esac
+
+# GPD
+if [[ "$sys_vendor_lc" == "gpd" ]]; then
+	exit 0
+fi
+
+# OneXPlayer
+case "$PRODUCT_NAME" in
+	*ONEXPLAYER* | *"ONE XPLAYER"* | *ONEXFLY*)
+		exit 0
+		;;
+esac
+
+exit 1
