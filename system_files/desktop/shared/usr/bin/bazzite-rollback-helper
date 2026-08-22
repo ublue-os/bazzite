@@ -251,7 +251,23 @@ list_images() {
 }
 
 current() {
-  rpm-ostree status -vb
+  local pretty_IMAGE
+  local pretty_TAG
+  {
+  read -r pretty_IMAGE
+  read -r pretty_TAG
+  } < <(
+    rpm-ostree status --json | jq -r '
+      .deployments[]
+      | select(.booted)
+      | .["container-image-reference"]
+      | capture(".*/(?<image>[^:]+):(?<tag>[^:]+)$")
+      | .image, .tag
+    '
+  )
+
+  echo -e "IMAGE:\t${b}$pretty_IMAGE${n}"
+  echo -e "TAG:\t${b}$pretty_TAG${n}"
 }
 
 rollback() {
