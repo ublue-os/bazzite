@@ -193,9 +193,6 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/global-remove && \
-    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
-        dnf5 -y remove toolbox \
-    ; fi && \
     /ctx/cleanup
 
 # Install new packages
