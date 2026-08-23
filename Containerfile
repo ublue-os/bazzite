@@ -649,7 +649,7 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus && \
     sed -i 's/- xbox-elite/- deck/g' /usr/share/inputplumber/devices/50-steam_deck.yaml && \
     sed -i 's/LOG_LEVEL=info/LOG_LEVEL=debug/g' /usr/lib/systemd/system/inputplumber.service && \
-    sed -i 's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="opengamepadui --accessibility disabled --overlay-mode|' /usr/share/gamescope-session-plus/sessions.d/ogui-steam && \
+    sed -i 's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="env LOG_LEVEL=debug opengamepadui --accessibility disabled --overlay-mode|' /usr/share/gamescope-session-plus/sessions.d/ogui-steam && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
         --depth 1 \
         /tmp/jupiter-dock-updater-bin && \
@@ -716,7 +716,12 @@ RUN --mount=type=cache,dst=/var/cache \
         dnf5 -y copr disable -y $copr; \
     done && unset -v copr && \
     { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
-    sed -i "s|^github = .*|github = https://raw.githubusercontent.com/ublue-os/bazzite-gamemode-news/refs/heads/${IMAGE_BRANCH}/announcements.json|" /etc/gamemode-news-hook.conf && \
+    news_branch="${IMAGE_BRANCH}" && \
+    case "${news_branch}" in \
+        testing|unstable) ;; \
+        *) news_branch="stable" ;; \
+    esac && \
+    sed -i "s|^github = .*|github = https://raw.githubusercontent.com/ublue-os/bazzite-gamemode-news/refs/heads/${news_branch}/announcements.json|" /etc/gamemode-news-hook.conf && \
     mkdir -p /usr/lib/systemd/user/gamescope-session-plus@ogui-steam.service.wants && \
     ln -s /usr/lib/systemd/user/steamos-powerbuttond.service /usr/lib/systemd/user/gamescope-session-plus@ogui-steam.service.wants/ && \
     sed -i 's/@steam/@ogui-steam/g' /usr/lib/systemd/user/gamemode-news-hook.service && \
