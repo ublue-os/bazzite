@@ -764,6 +764,7 @@ ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-nvidia}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-stable}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia-open}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
@@ -778,6 +779,17 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     dnf5 -y remove \
         nvidia-gpu-firmware && \
+    if [ "${NVIDIA_FLAVOR}" = "nvidia-lts" ]; then \
+        systemctl disable cardwired.service && \
+        dnf5 -y remove \
+            cardwire-gui \
+            cardwire && \
+        rm -f /usr/bin/switcherooctl && \
+        dnf5 -y install --enable-repo=terra \
+            switcheroo-control \
+            supergfxctl && \
+        systemctl enable supergfxd.service \
+    ; fi && \
     /ctx/cleanup
 
 # Install NVIDIA driver
