@@ -100,6 +100,28 @@ command:
     stdout:
       - "/^(OK|SKIP):/"
 
+  opengamepadui_debug_logging_is_scoped:
+    exec: |
+      sh -lc '
+      session=/usr/share/gamescope-session-plus/sessions.d/ogui-steam
+      if [ ! -e "$session" ]; then
+        echo "SKIP: OpenGamepadUI session is not installed"
+        exit 0
+      fi
+      if [ -e /etc/environment.d/99-ogui-logs.conf ] || [ -e /usr/etc/environment.d/99-ogui-logs.conf ]; then
+        echo "FAIL: global LOG_LEVEL override is still installed"
+        exit 1
+      fi
+      if ! grep -Fq "CLIENTCMD=\"env LOG_LEVEL=debug opengamepadui " "$session"; then
+        echo "FAIL: OpenGamepadUI does not have a scoped debug log level"
+        exit 1
+      fi
+      echo "OK: OpenGamepadUI debug logging is scoped to its command"
+      '
+    exit-status: 0
+    stdout:
+      - "/^(OK|SKIP):/"
+
   kernel_modules_match_uname:
     exec: |
       sh -lc '
