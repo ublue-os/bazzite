@@ -145,10 +145,9 @@ restore-virtual-keyboard:
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
       gnome-extensions disable block-caribou-36@lxylxy123456.ercli.dev
     else
-      if [[ ! -f ~/.local/share/applications/com.github.maliit.keyboard.desktop ]]; then
-        mkdir -p ~/.local/share/applications/
-        cp /usr/share/ublue-os/backup/com.github.maliit.keyboard.desktop ~/.local/share/applications/com.github.maliit.keyboard.desktop
-      fi
+      kwriteconfig6 --file kwinrc --group Wayland --key InputMethod /usr/share/applications/org.kde.plasma.keyboard.desktop
+      kwriteconfig6 --file kwinrc --group Wayland --key VirtualKeyboardEnabled --type bool true
+      echo "The Plasma virtual keyboard will be enabled after logging out and back in."
     fi
 
 # Restore the "Return to Gaming Mode" shortcut on the Desktop
