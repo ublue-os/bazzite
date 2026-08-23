@@ -516,7 +516,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable brew-setup.service && \
     systemctl disable fw-fanctrl.service && \
     systemctl disable scx_loader.service && \
-    systemctl enable bpftune.service && \
     systemctl enable input-remapper.service && \
     systemctl enable bazzite-flatpak-manager.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
