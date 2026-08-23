@@ -13,6 +13,29 @@ command:
       '
     exit-status: 0
 
+  gamemode_news_hook_uses_release_channel:
+    exec: |
+      sh -lc '
+      config=/etc/gamemode-news-hook.conf
+      if [ ! -f "$config" ]; then
+        echo "SKIP: gamemode-news-hook is not installed"
+        exit 0
+      fi
+      url=$(sed -n "s/^github[[:space:]]*=[[:space:]]*//p" "$config")
+      case "$url" in
+        */refs/heads/stable/announcements.json|*/refs/heads/testing/announcements.json|*/refs/heads/unstable/announcements.json)
+          echo "OK: gamemode-news-hook uses a release channel ($url)"
+          ;;
+        *)
+          echo "FAIL: gamemode-news-hook uses a non-release announcement URL: ${url:-<missing>}"
+          exit 1
+          ;;
+      esac
+      '
+    exit-status: 0
+    stdout:
+      - "/^(OK|SKIP):/"
+
   selinux_label_probe_works:
     exec: |
       sh -lc '
