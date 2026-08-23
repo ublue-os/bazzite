@@ -207,6 +207,7 @@ configure-opengamepadui ACTION="":
     if [[ "${OPTION,,}" =~ ^enable ]]; then
       echo "Enabling OpenGamepadUI Overlay"
       rm -f $OGUI_STEAM
+      systemctl --user disable --now bazzite-native-steam-input.service 2>/dev/null || true
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
       echo "Disabling OpenGamepadUI Overlay"
       # Create directory if it doesn't exist.
@@ -219,4 +220,5 @@ configure-opengamepadui ACTION="":
     [[ -f "\${STEAM_SESSION_FILE}" ]] && . "\${STEAM_SESSION_FILE}"
     EOF'
       chmod +x $OGUI_STEAM
+      systemctl --user enable --now bazzite-native-steam-input.service
     fi
