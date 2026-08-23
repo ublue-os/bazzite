@@ -1,0 +1,16 @@
+[Unit]
+Description=Configure InputPlumber for native Steam Gaming Mode
+ConditionPathExists=%h/.config/gamescope-session-plus/sessions.d/ogui-steam
+StartLimitIntervalSec=30
+StartLimitBurst=15
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/inputplumber device 0 targets set deck-uhid keyboard mouse
+ExecStart=/usr/bin/inputplumber device 0 profile load /usr/share/inputplumber/profiles/default.yaml
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
