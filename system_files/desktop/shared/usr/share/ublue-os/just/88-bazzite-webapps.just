@@ -34,6 +34,14 @@ get-media-app service="":
     }
     # Check for StreamingServiceLauncher and install if needed
     [ ! -f "$HOME/Applications/StreamingServiceLauncher.AppImage" ] && install_launcher
+    notify_shortcut_added() {
+        local service_name="$1"
+        if command -v notify-send >/dev/null 2>&1; then
+            notify-send --app-name=Bazzite \
+                "Steam shortcut added" \
+                "$service_name is now available in your Steam library."
+        fi
+    }
     # Create scripts directory
     mkdir -p "$HOME/Applications/streaming_scripts"
     # Display menu
@@ -73,8 +81,13 @@ get-media-app service="":
         echo "#!/bin/bash" > "$script_path"
         echo "\"$HOME/.local/bin/streaming-service-launcher\" \"$2\"" >> "$script_path"
         chmod +x "$script_path"
-        steamos-add-to-steam "$script_path"
-        echo "Added $1 to Steam successfully!"
+        if steamos-add-to-steam "$script_path"; then
+            notify_shortcut_added "$CHOICE"
+            echo "Added $CHOICE to Steam successfully!"
+        else
+            echo "Failed to add $CHOICE to Steam." >&2
+            return 1
+        fi
     }
     install_vacuumtube() {
         local installed=false
