@@ -8,4 +8,4 @@ set-default-desktop:
 
 #Get currently set default session
 get-deck-session-status:
-    @steamosctl get-default-login-mode 2>/dev/null
+    steamosctl get-default-login-mode 2>/dev/null
