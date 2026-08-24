@@ -787,7 +787,9 @@ RUN --mount=type=cache,dst=/var/cache \
         rm -f /usr/bin/switcherooctl && \
         dnf5 -y install --enable-repo=terra \
             switcheroo-control \
-            supergfxctl && \
+            supergfxctl \
+    ; fi && \
+    if ! grep -q "deck" <<< "${IMAGE_NAME}"; then \
         rm -f /usr/lib/modprobe.d/nvidia-deck.conf \
     ; fi && \
     /ctx/cleanup
