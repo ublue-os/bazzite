@@ -604,7 +604,8 @@ screens:
       - id: "default-deck-session"
         title: "Set Default Deck Login Mode"
         description: "Change whether your Deck/HTPC logs start in Game Mode or Desktop"
-        status_script: "ujust get-deck-session-status"
+        status_script: |
+          steamosctl get-default-login-mode
         options:
           - id: "set-to-game-mode"
             label: "Set to Game Mode"
