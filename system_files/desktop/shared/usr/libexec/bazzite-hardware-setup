@@ -244,11 +244,6 @@ if (( $(hostname | wc -m) > 20 )); then
   hostnamectl set-hostname bazzite
 fi
 
-# Set default target to graphical, fixes rebase from base image
-if grep -qv "graphical.target" <<< "$(systemctl get-default)"; then
-  systemctl set-default graphical.target
-fi
-
 # Fix missing hostname file breaking distrobox
 if [ ! -f /etc/hostname ]; then
   touch /etc/hostname
