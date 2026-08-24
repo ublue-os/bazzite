@@ -5,7 +5,3 @@ set-default-game-mode:
 # Set Desktop Mode as the default deck login session
 set-default-desktop:
     steamosctl set-default-login-mode desktop
-
-# Get currently set default session
-get-deck-session-status:
-    steamosctl get-default-login-mode
