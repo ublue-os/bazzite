@@ -81,9 +81,13 @@ get-media-app service="":
         echo "#!/bin/bash" > "$script_path"
         echo "\"$HOME/.local/bin/streaming-service-launcher\" \"$2\"" >> "$script_path"
         chmod +x "$script_path"
-        steamos-add-to-steam "$script_path"
-        notify_shortcut_added "$1"
-        echo "Added $1 to Steam successfully!"
+        if steamos-add-to-steam "$script_path"; then
+            notify_shortcut_added "$CHOICE"
+            echo "Added $CHOICE to Steam successfully!"
+        else
+            echo "Failed to add $CHOICE to Steam." >&2
+            return 1
+        fi
     }
     install_vacuumtube() {
         local installed=false
