@@ -788,7 +788,6 @@ RUN --mount=type=cache,dst=/var/cache \
         dnf5 -y install --enable-repo=terra \
             switcheroo-control \
             supergfxctl && \
-        systemctl enable supergfxd.service && \
         rm -f /usr/lib/modprobe.d/nvidia-deck.conf \
     ; fi && \
     /ctx/cleanup
