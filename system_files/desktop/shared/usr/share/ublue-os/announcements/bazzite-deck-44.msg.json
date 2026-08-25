@@ -1,0 +1,6 @@
+{
+  "title": "Welcome to Bazzite Deck 44!",
+  "seeMoreUrl": "https://universal-blue.discourse.group/t/bazzites-biggest-update-deck-44-has-launched-happy-birthday-to-universal-blue/12373",
+  "body": "Apologies for the late notification! Your device is now updated to <b>Bazzite Deck 44</b>, which comes with big changes in the Handheld Stack, so there may be new bugs we will have to work through. \n\nDon't hesitate to report any bugs or regressions on Bazzite's support channels, or open an issue on GitHub!",
+  "if": "[[ $(jq -r '.\"image-name\"' < \"/usr/share/ublue-os/image-info.json\") =~ 'deck' ]]"
+}

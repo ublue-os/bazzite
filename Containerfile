@@ -192,14 +192,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y remove \
-        ublue-os-update-services \
-        firefox \
-        firefox-langpacks \
-        htop && \
-    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
-        dnf5 -y remove toolbox \
-    ; fi && \
+    /ctx/global-remove && \
     /ctx/cleanup
 
 # Install new packages
@@ -386,61 +379,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        dnf5 -y install \
-            qt \
-            krdp \
-            steamdeck-kde-presets-desktop \
-            kdeconnectd \
-            kdeplasma-addons \
-            plasma-oxygen \
-            oxygen-icon-theme \
-            rom-properties-kf6 \
-            fcitx5-chewing \
-            fcitx5-table-extra \
-            fcitx5-mozc \
-            fcitx5-chinese-addons \
-            fcitx5-hangul \
-            fcitx5-m17n \
-            kcm-fcitx5 \
-            gnome-disk-utility \
-            kio-extras \
-            krunner-bazaar \
-            krunner-yafti \
-            krdc \
-            tesseract-devel \
-            tesseract-langpack-eng \
-            tesseract-langpack-spa \
-            tesseract-langpack-deu \
-            tesseract-langpack-jpn \
-            tesseract-langpack-jpn_vert \
-            tesseract-langpack-fra \
-            tesseract-langpack-por \
-            tesseract-langpack-rus \
-            tesseract-langpack-ita \
-            tesseract-langpack-nld \
-            tesseract-langpack-pol \
-            tesseract-langpack-tur \
-            tesseract-langpack-chi_sim \
-            tesseract-langpack-chi_sim_vert \
-            tesseract-langpack-chi_tra \
-            tesseract-langpack-chi_tra_vert \
-            tesseract-langpack-ces \
-            tesseract-langpack-ell && \
-        dnf5 -y remove \
-            plasma-drkonqi \
-            plasma-welcome \
-            plasma-welcome-fedora \
-            plasma-discover-kns \
-            kcharselect \
-            kde-partitionmanager \
-            plasma-discover && \
-        setcap 'cap_net_admin+ep' /usr/bin/kdeconnectd && \
-        sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js && \
-        ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl && \
-        ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
-        rm -f /usr/share/backgrounds/default.xml && \
-        mkdir -p /usr/share/wallpapers/bazzite/convergence/contents/images && \
-        ln -s /usr/share/wallpapers/convergence.jxl /usr/share/wallpapers/bazzite/convergence/contents/images/3940x2160.jxl \
+      /ctx/configure-kde \
     ; else \
         dnf5 -y install \
             nautilus-gsconnect \
@@ -531,6 +470,7 @@ RUN --mount=type=cache,dst=/var/cache \
     echo "import \"/usr/share/ublue-os/just/92-bazzite-verify.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/93-bazzite-update.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/94-bazzite-protonplus.just\"" >> /usr/share/ublue-os/justfile && \
+    echo "import \"/usr/share/ublue-os/just/95-bazzite-deck-session.just\"" >> /usr/share/ublue-os/justfile && \
     if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
         mkdir -p "/usr/share/ublue-os/dconfs/desktop-silverblue/" && \
         cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" "/usr/share/ublue-os/dconfs/desktop-silverblue/" && \
@@ -577,7 +517,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable brew-setup.service && \
     systemctl disable fw-fanctrl.service && \
     systemctl disable scx_loader.service && \
-    systemctl enable bpftune.service && \
     systemctl enable input-remapper.service && \
     systemctl enable bazzite-flatpak-manager.service && \
     systemctl disable rpm-ostreed-automatic.timer && \
@@ -710,7 +649,7 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus && \
     sed -i 's/- xbox-elite/- deck/g' /usr/share/inputplumber/devices/50-steam_deck.yaml && \
     sed -i 's/LOG_LEVEL=info/LOG_LEVEL=debug/g' /usr/lib/systemd/system/inputplumber.service && \
-    sed -i 's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="opengamepadui --accessibility disabled --overlay-mode|' /usr/share/gamescope-session-plus/sessions.d/ogui-steam && \
+    sed -i 's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="env LOG_LEVEL=debug opengamepadui --accessibility disabled --overlay-mode|' /usr/share/gamescope-session-plus/sessions.d/ogui-steam && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
         --depth 1 \
         /tmp/jupiter-dock-updater-bin && \
@@ -777,7 +716,12 @@ RUN --mount=type=cache,dst=/var/cache \
         dnf5 -y copr disable -y $copr; \
     done && unset -v copr && \
     { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
-    sed -i "s|^github = .*|github = https://raw.githubusercontent.com/ublue-os/bazzite-gamemode-news/refs/heads/${IMAGE_BRANCH}/announcements.json|" /etc/gamemode-news-hook.conf && \
+    news_branch="${IMAGE_BRANCH}" && \
+    case "${news_branch}" in \
+        testing|unstable) ;; \
+        *) news_branch="stable" ;; \
+    esac && \
+    sed -i "s|^github = .*|github = https://raw.githubusercontent.com/ublue-os/bazzite-gamemode-news/refs/heads/${news_branch}/announcements.json|" /etc/gamemode-news-hook.conf && \
     mkdir -p /usr/lib/systemd/user/gamescope-session-plus@ogui-steam.service.wants && \
     ln -s /usr/lib/systemd/user/steamos-powerbuttond.service /usr/lib/systemd/user/gamescope-session-plus@ogui-steam.service.wants/ && \
     sed -i 's/@steam/@ogui-steam/g' /usr/lib/systemd/user/gamemode-news-hook.service && \
@@ -820,6 +764,7 @@ ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-nvidia}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-stable}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia-open}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
@@ -834,6 +779,19 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     dnf5 -y remove \
         nvidia-gpu-firmware && \
+    if [ "${NVIDIA_FLAVOR}" = "nvidia-lts" ]; then \
+        systemctl disable cardwired.service && \
+        dnf5 -y remove \
+            cardwire-gui \
+            cardwire && \
+        rm -f /usr/bin/switcherooctl && \
+        dnf5 -y install --enable-repo=terra \
+            switcheroo-control \
+            supergfxctl \
+    ; fi && \
+    if ! grep -q "deck" <<< "${IMAGE_NAME}"; then \
+        rm -f /usr/lib/modprobe.d/nvidia-deck.conf \
+    ; fi && \
     /ctx/cleanup
 
 # Install NVIDIA driver
