@@ -13,6 +13,29 @@ command:
       '
     exit-status: 0
 
+  gamemode_news_hook_uses_release_channel:
+    exec: |
+      sh -lc '
+      config=/etc/gamemode-news-hook.conf
+      if [ ! -f "$config" ]; then
+        echo "SKIP: gamemode-news-hook is not installed"
+        exit 0
+      fi
+      url=$(sed -n "s/^github[[:space:]]*=[[:space:]]*//p" "$config")
+      case "$url" in
+        */refs/heads/stable/announcements.json|*/refs/heads/testing/announcements.json|*/refs/heads/unstable/announcements.json)
+          echo "OK: gamemode-news-hook uses a release channel ($url)"
+          ;;
+        *)
+          echo "FAIL: gamemode-news-hook uses a non-release announcement URL: ${url:-<missing>}"
+          exit 1
+          ;;
+      esac
+      '
+    exit-status: 0
+    stdout:
+      - "/^(OK|SKIP):/"
+
   selinux_label_probe_works:
     exec: |
       sh -lc '
@@ -95,6 +118,28 @@ command:
         exit 1
       fi
       echo "OK: $name ships ryzen_smu at $module"
+      '
+    exit-status: 0
+    stdout:
+      - "/^(OK|SKIP):/"
+
+  opengamepadui_debug_logging_is_scoped:
+    exec: |
+      sh -lc '
+      session=/usr/share/gamescope-session-plus/sessions.d/ogui-steam
+      if [ ! -e "$session" ]; then
+        echo "SKIP: OpenGamepadUI session is not installed"
+        exit 0
+      fi
+      if [ -e /etc/environment.d/99-ogui-logs.conf ] || [ -e /usr/etc/environment.d/99-ogui-logs.conf ]; then
+        echo "FAIL: global LOG_LEVEL override is still installed"
+        exit 1
+      fi
+      if ! grep -Fq "CLIENTCMD=\"env LOG_LEVEL=debug opengamepadui " "$session"; then
+        echo "FAIL: OpenGamepadUI does not have a scoped debug log level"
+        exit 1
+      fi
+      echo "OK: OpenGamepadUI debug logging is scoped to its command"
       '
     exit-status: 0
     stdout:

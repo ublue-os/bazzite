@@ -145,10 +145,9 @@ restore-virtual-keyboard:
     if [[ ${BASE_IMAGE_NAME} == 'silverblue' ]]; then
       gnome-extensions disable block-caribou-36@lxylxy123456.ercli.dev
     else
-      if [[ ! -f ~/.local/share/applications/com.github.maliit.keyboard.desktop ]]; then
-        mkdir -p ~/.local/share/applications/
-        cp /usr/share/ublue-os/backup/com.github.maliit.keyboard.desktop ~/.local/share/applications/com.github.maliit.keyboard.desktop
-      fi
+      kwriteconfig6 --file kwinrc --group Wayland --key InputMethod /usr/share/applications/org.kde.plasma.keyboard.desktop
+      kwriteconfig6 --file kwinrc --group Wayland --key VirtualKeyboardEnabled --type bool true
+      echo "The Plasma virtual keyboard will be enabled after logging out and back in."
     fi
 
 # Restore the "Return to Gaming Mode" shortcut on the Desktop
@@ -207,6 +206,7 @@ configure-opengamepadui ACTION="":
     if [[ "${OPTION,,}" =~ ^enable ]]; then
       echo "Enabling OpenGamepadUI Overlay"
       rm -f $OGUI_STEAM
+      systemctl --user disable --now bazzite-native-steam-input.service 2>/dev/null || true
     elif [[ "${OPTION,,}" =~ ^disable ]]; then
       echo "Disabling OpenGamepadUI Overlay"
       # Create directory if it doesn't exist.
@@ -219,4 +219,5 @@ configure-opengamepadui ACTION="":
     [[ -f "\${STEAM_SESSION_FILE}" ]] && . "\${STEAM_SESSION_FILE}"
     EOF'
       chmod +x $OGUI_STEAM
+      systemctl --user enable --now bazzite-native-steam-input.service
     fi

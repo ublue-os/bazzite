@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# This is supposed to be executed on all bazzite variants
+
+set -eoux pipefail
+
+# Not quoted because we want the expanded words and not the raw strings themselves in the dnf command
+REMOVE_GLOBAL=(
+  firefox{,-langpacks} # we use the flatpak
+  htop # btop is better
+  ublue-os-update-services # we use uupd, from ublue-os/main
+)
+
+REMOVE_KDE=()
+
+REMOVE_GNOME=(
+  toolbox # This can be a global removal after KDE Gear 26.08 landed https://invent.kde.org/utilities/konsole/-/merge_requests/1207
+)
+
+if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
+  REMOVE_ALL=( "${REMOVE_KDE[@]}" "${REMOVE_GLOBAL[@]}" )
+elif [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
+  REMOVE_ALL=( "${REMOVE_GNOME[@]}" "${REMOVE_GLOBAL[@]}" )
+fi
+
+dnf5 -y remove "${REMOVE_ALL[@]}"

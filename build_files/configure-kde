@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# KDE specifc modifications
+
+set -eoux pipefail
+
+dnf5 -y install \
+  qt \
+  steamdeck-kde-presets-desktop \
+  rom-properties-kf6 \
+  fcitx5-{chewing,chinese-addons,hangul,m17n,mozc,table-extra} \
+  kcm-fcitx5 \
+  gnome-disk-utility \
+  krunner-bazaar \
+  krunner-yafti \
+  krdc \
+  tesseract-devel \
+  tesseract-langpack-{ces,chi_sim,chi_sim_vert,chi_tra,chi_tra_vert,deu,ell,fra,ita,jpn,jpn_vert,nld,pol,por,rus,spa,tur} \
+  plasma-oxygen \
+  oxygen-icon-theme
+
+dnf5 -y remove \
+  plasma-drkonqi \
+  plasma-welcome{,-fedora} \
+  plasma-discover-kns \
+  kcharselect \
+  kde-partitionmanager \
+  plasma-discover{,-libs}
+
+sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js
+ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl
+ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl
+rm -f /usr/share/backgrounds/default.xml
+
+mkdir -p /usr/share/wallpapers/bazzite/convergence/contents/images
+ln -s /usr/share/wallpapers/convergence.jxl /usr/share/wallpapers/bazzite/convergence/contents/images/3940x2160.jxl
+
+# TODO: Figure out why this is needed and upstream this to fedora
+setcap 'cap_net_admin+ep' /usr/bin/kdeconnectd
