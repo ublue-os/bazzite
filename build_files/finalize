@@ -4,6 +4,14 @@ set -eoux pipefail
 
 dnf5 config-manager setopt keepcache=0
 
+# dnf5 config-manager can leave trailing NUL bytes in this generated INI file.
+# libdnf rejects those bytes when the file is read during rpm-ostree rebases.
+repo_override=/etc/dnf/repos.override.d/99-config_manager.repo
+if [[ -f "$repo_override" ]]; then
+    tr -d '\000' < "$repo_override" > "${repo_override}.new"
+    mv -f "${repo_override}.new" "$repo_override"
+fi
+
 rm -rf /tmp/* || true
 find /var/* -maxdepth 0 -type d \! -name cache -exec rm -fr {} \;
 mkdir -p /var/tmp
