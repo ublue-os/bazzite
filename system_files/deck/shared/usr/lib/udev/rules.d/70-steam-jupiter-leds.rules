@@ -1,0 +1,1 @@
+KERNEL=="*:rgb:joystick_rings", SUBSYSTEM=="leds", MODE=0666
