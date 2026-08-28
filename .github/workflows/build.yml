@@ -44,9 +44,62 @@ env:
   REPO_OWNER: ${{ github.repository_owner }}
 
 jobs:
+  # Resolve the version tag once for the whole run.
+  version:
+    name: Version
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.generate.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Generate version tag
+        id: generate
+        run: |
+          set -euo pipefail
+
+          workflow=.github/workflows/build.yml
+          mapfile -t images < <(yq -r '.jobs.push-ghcr.strategy.matrix.image[]' "$workflow")
+          fedora_version="$(yq -r '.jobs.push-ghcr.strategy.matrix.include[] | select(has("fedora_version")) | .fedora_version' "$workflow" | head -n1)"
+          if [[ -z "$fedora_version" || "$fedora_version" == "null" || ${#images[@]} -eq 0 ]]; then
+            echo "Failed to read the image matrix from $workflow" >&2
+            exit 1
+          fi
+
+          version="${fedora_version}.$(date +%Y%m%d)"
+          if [[ "${{ github.ref_name }}" == "unstable" ]]; then
+            version="unstable-${version}"
+          elif [[ "${{ github.ref_name }}" == "testing" ]]; then
+            version="testing-${version}"
+          fi
+
+          # A tag already taken by any one image is taken for every image, so
+          # the whole run lands on a single tag.
+          declare -A tags
+          for image in "${images[@]}"; do
+            while read -r t; do
+              [[ -n "$t" ]] && tags["$t"]=1
+            done < <(skopeo list-tags "docker://ghcr.io/${REPO_OWNER,,}/${image}" 2>/dev/null | jq -r '.Tags[]' || true)
+          done
+
+          if [[ -v tags[$version] ]]; then
+            build=1
+            while [[ -v tags["$version.$build"] ]]; do
+              ((build++))
+            done
+            version="$version.$build"
+          fi
+
+          echo "Version tag for this run: $version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
   push-ghcr:
     name: Make
     runs-on: ubuntu-26.04
+    needs: [version]
     continue-on-error: false
     permissions:
       contents: read
@@ -71,7 +124,7 @@ jobs:
         include:
           - fedora_version: 44
             kernel_flavor: ogc
-            kernel_version: 7.2.0-ogc6.1.fc44
+            kernel_version: 7.2.1-ogc2.1.fc44
             base_image_flavor: main
             arch: x86_64
           - image: bazzite-nvidia
@@ -336,31 +389,16 @@ jobs:
             org.opencontainers.image.vendor=Universal Blue
             org.opencontainers.image.url=https://bazzite.gg
         run: |
-          version="${{ matrix.fedora_version }}.$(date  +%Y%m%d)"
-          if [[ "${{ github.ref_name }}" == "unstable" ]]; then
-            version="unstable-${version}"
-          elif [[ "${{ github.ref_name }}" == "testing" ]]; then
-            version="testing-${version}"
+          version="${{ needs.version.outputs.version }}"
+
+          # Guards against the version job and the matrix drifting apart on a
+          # Fedora bump, which would silently stamp the old release onto images.
+          if [[ "$version" != *"${{ matrix.fedora_version }}."* ]]; then
+            echo "Version tag $version does not match matrix fedora_version ${{ matrix.fedora_version }}" >&2
+            exit 1
           fi
 
           img=raw-img
-
-          declare -A tags
-          while read -r t; do
-              tags["$t"]=1
-          done < <(skopeo list-tags "docker://${{ steps.base.outputs.output_image }}" 2>/dev/null | jq -r '.Tags[]' || true)
-
-          if [[ -v tags[$version] ]]; then
-            build=1
-            while true; do
-              tag="$version.$build"
-              if [[ ! -v tags[$tag] ]]; then
-                version=$tag
-                break
-              fi
-              ((build++))
-            done
-          fi
 
           # Figure out config
           kver=$(podman run --rm "$img" rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" kernel-core)
@@ -430,7 +468,7 @@ jobs:
       - name: Setup Syft
         id: setup-syft
         if: github.event_name != 'pull_request'
-        uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        uses: anchore/sbom-action/download-syft@aa80c8c5bd439a416a62804f2151ab38c671a638 # v0.24.1
         with:
           # FIXME: a renovate rule for this would be nice
           syft-version: v1.44.0

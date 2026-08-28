@@ -782,11 +782,10 @@ RUN --mount=type=cache,dst=/var/cache \
     if [ "${NVIDIA_FLAVOR}" = "nvidia-lts" ]; then \
         systemctl disable cardwired.service && \
         dnf5 -y remove \
-            cardwire-gui \
-            cardwire && \
-        rm -f /usr/bin/switcherooctl && \
+            cardwire-gui && \
+        dnf5 -y swap \
+            cardwire switcheroo-control && \
         dnf5 -y install --enable-repo=terra \
-            switcheroo-control \
             supergfxctl \
     ; fi && \
     if ! grep -q "deck" <<< "${IMAGE_NAME}"; then \
