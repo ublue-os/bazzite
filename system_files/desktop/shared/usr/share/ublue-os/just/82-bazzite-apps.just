@@ -254,6 +254,7 @@ install-jetbrains-toolbox:
     if ! command -v brew >/dev/null 2>&1 && [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     fi
+    brew trust ublue-os/tap 
     brew tap ublue-os/tap
     brew install --cask jetbrains-toolbox-linux
     if ! command -v jetbrains-toolbox >/dev/null 2>&1; then
@@ -352,6 +353,7 @@ asus ACTION="":
         done
 
         if [ ${#brew_packages[@]} -gt 0 ]; then
+            brew trust ublue-os/tap 
             brew tap ublue-os/tap
             echo "Installing: ${brew_packages[*]}"
             brew install --cask "${brew_packages[@]}"
