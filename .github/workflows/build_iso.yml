@@ -31,16 +31,7 @@ jobs:
       fail-fast: false
       matrix:
         image_name:
-          - bazzite
-          - bazzite-nvidia
-          - bazzite-nvidia-open
           - bazzite-gnome
-          - bazzite-gnome-nvidia
-          - bazzite-gnome-nvidia-open
-          - bazzite-deck
-          - bazzite-deck-gnome
-          - bazzite-deck-nvidia
-          - bazzite-deck-nvidia-gnome
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
