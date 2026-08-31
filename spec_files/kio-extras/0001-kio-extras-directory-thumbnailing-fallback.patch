@@ -1,0 +1,48 @@
+diff '--color=auto' -ur kio-extras-26.08.0.orig/thumbnail/thumbnail.cpp kio-extras-26.08.0/thumbnail/thumbnail.cpp
+--- kio-extras-26.08.0.orig/thumbnail/thumbnail.cpp	2026-08-12 00:05:07.000000000 -0400
++++ kio-extras-26.08.0/thumbnail/thumbnail.cpp	2026-08-24 18:53:08.693805059 -0400
+@@ -316,8 +316,9 @@
+ 
+     QImage img;
+     QString plugin = metaData("plugin");
++    const bool isDirectory = (m_mimeType == "inode/directory");
+ 
+-    if ((plugin.isEmpty() || plugin.contains("directorythumbnail")) && m_mimeType == "inode/directory") {
++    if ((plugin.isEmpty() || plugin.contains("directorythumbnail")) && isDirectory) {
+         img = thumbForDirectory(info.canonicalFilePath());
+         if (img.isNull()) {
+             return KIO::WorkerResult::fail(KIO::ERR_INTERNAL, i18n("Cannot create thumbnail for directory"));
+@@ -334,7 +335,15 @@
+ 
+         ThumbCreatorWithMetadata *creator = getThumbCreator(plugin);
+         if (!creator) {
+-            return KIO::WorkerResult::fail(KIO::ERR_INTERNAL, i18n("Cannot load ThumbCreator %1", plugin));
++            if (isDirectory) {
++                // Fall back to standard directory thumbnailing.
++                img = thumbForDirectory(info.canonicalFilePath());
++                if (img.isNull()) {
++                    return KIO::WorkerResult::fail(KIO::ERR_INTERNAL, i18n("Cannot create thumbnail for directory"));
++                }
++            } else {
++                return KIO::WorkerResult::fail(KIO::ERR_INTERNAL, i18n("Cannot load ThumbCreator %1", plugin));
++            }
+         }
+ 
+         if (creator->handleSequences) {
+@@ -342,7 +351,15 @@
+         }
+ 
+         if (!createThumbnail(creator, info.canonicalFilePath(), physicalWidth, physicalHeight, img)) {
+-            return KIO::WorkerResult::fail(KIO::ERR_INTERNAL, i18n("Cannot create thumbnail for %1", info.canonicalFilePath()));
++            if (isDirectory) {
++                // Fall back to standard directory thumbnailing.
++                img = thumbForDirectory(info.canonicalFilePath());
++                if (img.isNull()) {
++                    return KIO::WorkerResult::fail(KIO::ERR_INTERNAL, i18n("Cannot create thumbnail for directory"));
++                }
++            } else {
++                return KIO::WorkerResult::fail(KIO::ERR_INTERNAL, i18n("Cannot create thumbnail for %1", info.canonicalFilePath()));
++            }
+         }
+ 
+         // We MUST do this after calling create(), because the create() call itself might change it.
