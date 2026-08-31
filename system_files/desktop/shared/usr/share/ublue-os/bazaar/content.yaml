@@ -214,6 +214,7 @@ rows:
           - io.github.trigg.discover_overlay
           - com.github.wwmm.easyeffects
           - me.timschneeberger.jdsp4linux
+          - io.github.plrigaux.sysd-manager
           - com.github.Alcaro.Flips
           - io.github.thetumultuousunicornofdarkness.cpu-x
           - io.github.arunsivaramanneo.GPUViewer
