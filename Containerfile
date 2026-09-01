@@ -285,7 +285,6 @@ RUN --mount=type=cache,dst=/var/cache \
         lsb_release \
         uupd \
         ds-inhibit \
-        waydroid \
         cage \
         wlr-randr \
         gmodpatchtool \
@@ -307,7 +306,6 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/libexec/sunshine-postinst && \
     setfattr -n user.component -v "extest" /usr/lib/extest/libextest.so && \
     mkdir -p /etc/xdg/autostart && \
-    sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     sed -i 's/ --xdg-runtime=\\"${XDG_RUNTIME_DIR}\\"//g' /usr/bin/btrfs-assistant-launcher && \
     /ctx/cleanup
 
@@ -343,12 +341,8 @@ RUN --mount=type=cache,dst=/var/cache \
         gobject-introspection \
         libFAudio.x86_64 \
         libFAudio.i686 \
-        vkBasalt.x86_64 \
-        vkBasalt.i686 \
         mangohud.x86_64 \
         mangohud.i686 \
-        obs-studio-plugin-vkcapture-hook-libs.x86_64 \
-        obs-studio-plugin-vkcapture-hook-libs.i686 \
         openxr && \
     dnf5 -y --enable-repo=terra-mesa --enable-repo=terra --setopt=install_weak_deps=False install \
         steam \
@@ -389,8 +383,6 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-gsconnect \
             gnome-search-yafti \
             gnome-rounded-blur \
-            rom-properties-gtk4 \
-            rom-properties-localsearch3 \
             ibus-mozc \
             openssh-askpass \
             firewall-config && \
@@ -411,8 +403,6 @@ RUN --mount=type=cache,dst=/var/cache \
         /ctx/build-gnome-extensions && \
         systemctl enable dconf-update.service \
     ; fi && \
-    dnf5 -y install \
-        rom-properties-utils && \
     /ctx/cleanup
 
 # ublue-os-media-automount-udev, mount non-removable device partitions automatically under /media/media-automount/
@@ -456,7 +446,6 @@ RUN --mount=type=cache,dst=/var/cache \
     echo "import \"/usr/share/ublue-os/just/82-bazzite-cockpit.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/82-bazzite-beesd.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/82-bazzite-sunshine.just\"" >> /usr/share/ublue-os/justfile && \
-    echo "import \"/usr/share/ublue-os/just/82-bazzite-waydroid.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/83-bazzite-audio.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/85-bazzite-image.just\"" >> /usr/share/ublue-os/justfile && \
     echo "import \"/usr/share/ublue-os/just/84-bazzite-virt.just\"" >> /usr/share/ublue-os/justfile && \
@@ -530,7 +519,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
-    systemctl disable waydroid-container.service && \
     systemctl enable greenboot-healthcheck.service && \
     systemctl enable greenboot-set-rollback-trigger.service && \
     systemctl disable force-wol.service && \
@@ -540,8 +528,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl --global enable dmemcg-booster-user.service && \
     systemctl enable cardwired.service && \
     /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/3a4c6fa3cb1548d56a90a38dd8f526b6c13e63fd/dxvk.conf" -Lo /etc/dxvk-example.conf && \
-    /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/waydroid-scripts/main/waydroid-choose-gpu.sh" -Lo /usr/bin/waydroid-choose-gpu && \
-    chmod +x /usr/bin/waydroid-choose-gpu && \
     dnf5 config-manager setopt skip_if_unavailable=1 && \
     /ctx/ghcurl "https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/distrobox.ini" -Lo /etc/distrobox/docker.ini && \
     setfattr -n user.component -v "toolbox-config" /etc/distrobox/docker.ini && \
@@ -695,7 +681,6 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     mkdir -p "/etc/xdg/autostart" && \
     mv "/etc/skel/.config/autostart/steam.desktop" "/etc/xdg/autostart/steam.desktop" && \
-    sed -i 's@Exec=waydroid first-launch@Exec=/usr/bin/waydroid-launcher first-launch\nX-Steam-Library-Capsule=/usr/share/applications/Waydroid/capsule.png\nX-Steam-Library-Hero=/usr/share/applications/Waydroid/hero.png\nX-Steam-Library-Logo=/usr/share/applications/Waydroid/logo.png\nX-Steam-Library-StoreCapsule=/usr/share/applications/Waydroid/store-logo.png\nX-Steam-Controller-Template=Desktop@g' /usr/share/applications/Waydroid.desktop && \
     sed -i 's|/usr/lib/|/usr/libexec/|g' /usr/share/steamos-manager/platform.toml && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sed -i 's|Exec=.*|Exec=/usr/bin/return-to-gamemode|' /etc/skel/Desktop/Return.desktop && \
