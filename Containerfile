@@ -291,6 +291,7 @@ RUN --mount=type=cache,dst=/var/cache \
         yazi \
         bat \
         lsd \
+        opencode \
         wlr-randr \
         gmodpatchtool \
         bazzite-portal \
