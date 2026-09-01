@@ -306,26 +306,6 @@ screens:
         description: "Strictly open source community edition of Visual Studio Code — installed using Brew."
         default: false
         script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew trust ublue-os/tap && brew tap ublue-os/tap && brew install --cask vscodium-linux'
-      - id: "waydroid"
-        title: "Waydroid"
-        description: "Android system in a container, for app compatibility on Linux. Incompatible with NVIDIA drivers."
-        default: false
-        options:
-          - id: "init"
-            label: "Initialize"
-            script: "ujust configure-waydroid init"
-          - id: "configure"
-            label: "Configure"
-            script: "ujust configure-waydroid configure"
-          - id: "gpu"
-            label: "Select GPU"
-            script: "ujust configure-waydroid gpu"
-          - id: "reset"
-            label: "Reset"
-            script: "ujust configure-waydroid reset"
-          - id: "helper"
-            label: "Install Helper"
-            script: "ujust configure-waydroid helper"
   - title: "Get Media Apps"
     description: "Configure streaming services"
     actions:
