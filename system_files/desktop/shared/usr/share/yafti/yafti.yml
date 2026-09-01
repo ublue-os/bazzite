@@ -271,15 +271,15 @@ screens:
             script: "ujust get-steamcmd uninstall"
       - id: "sunshine"
         title: "Sunshine"
-        description: "Self-hosted video game streaming host for Moonlight."
+        description: "Self-hosted video game streaming host for Moonlight. Desktop users are encouraged to use the Flatpak version, while Deck users may wish to choose Sunshine - Brew to enable streaming from game mode."
         default: false
         status_script: "ujust setup-sunshine status"
         options:
           - id: "enable"
-            label: "Enable Sunshine"
+            label: "Enable Sunshine (Flatpak)"
             script: "ujust setup-sunshine enable"
           - id: "enable-brew"
-            label: "Enable Sunshine Beta (installed using Brew)"
+            label: "Enable Sunshine - Brew (for deck users)"
             script: "ujust setup-sunshine enable-beta"
           - id: "update"
             label: "Update Sunshine"
