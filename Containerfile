@@ -126,26 +126,26 @@ RUN --mount=type=cache,dst=/var/cache \
         for package in ${toswap[$repo]}; do dnf5 -y swap --from-repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
     dnf5 versionlock add \
-        wireplumber \
-        wireplumber-libs \
         bluez \
         bluez-cups \
         bluez-libs \
         bluez-obexd \
-        xorg-x11-server-Xwayland \
         mesa-dri-drivers \
         mesa-filesystem \
         mesa-libEGL \
-        mesa-libGL \
         mesa-libgbm \
+        mesa-libGL \
         mesa-vulkan-drivers \
         NetworkManager \
+        NetworkManager-libnm \
         NetworkManager-wifi \
-        NetworkManager-libnm && \
+        wireplumber \
+        wireplumber-libs \
+        xorg-x11-server-Xwayland && \
     dnf5 --enable-repo=terra-mesa -y install \
-        mesa-libOpenCL \
+        clinfo \
         intel-opencl \
-        clinfo && \
+        mesa-libOpenCL && \
     dnf5 -y install \
         libfreeaptx && \
     dnf5 -y install --enable-repo="*fedora-multimedia*" --allowerasing \
@@ -189,94 +189,94 @@ RUN --mount=type=cache,dst=/var/cache \
         scx-tools && \
     dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
     dnf5 -y install \
-        bpftune-gaming \
-        fuse-libs \
-        uld \
-        bazaar \
-        greenboot \
-        greenboot-default-health-checks \
-        ublue-os-selinux-workarounds \
-        bazzite-updater \
-        ScopeBuddy \
-        twitter-twemoji-fonts \
-        google-noto-sans-cjk-fonts \
-        lato-fonts \
-        fira-code-fonts \
-        nerd-fonts \
-        python3-pip \
-        libadwaita \
-        bees \
-        xwininfo \
-        usbip \
-        compsize \
-        ryzenadj \
-        ddcutil \
-        input-remapper \
-        libinput-utils \
-        i2c-tools \
-        lm_sensors \
-        iio-sensor-proxy \
-        fw-ectool \
-        fw-fanctrl \
-        framework-system \
-        udica \
-        ladspa-caps-plugins \
-        pipewire-module-filter-chain-sofa \
-        python3-icoextract \
-        webapp-manager \
-        btop \
         amdsmi \
-        duf \
-        fish \
-        lshw \
-        xdotool \
-        wmctrl \
-        libcec \
-        linux-cec \
-        inputattach-cec-units \
-        linuxconsoletools \
-        v4l-utils \
-        yad \
-        f3 \
-        lzip \
-        p7zip \
-        p7zip-plugins \
-        rar \
-        libxcrypt-compat \
-        vulkan-tools \
-        vulkan-low-latency-layer \
-        xwiimote-ng \
-        fastfetch \
-        glow \
-        gum \
-        vim \
+        bat \
+        bazaar \
+        bazzite-portal \
+        bazzite-updater \
+        bees \
+        bpftune-gaming \
+        btop \
+        btrfs-assistant \
+        cage \
+        cockpit-files \
         cockpit-networkmanager \
         cockpit-podman \
         cockpit-selinux \
-        cockpit-system \
-        cockpit-files \
         cockpit-storaged \
-        ydotool \
-        stress-ng \
-        snapper \
-        btrfs-assistant \
-        edk2-ovmf \
-        lsb_release \
-        uupd \
+        cockpit-system \
+        compsize \
+        ddcutil \
         ds-inhibit \
-        cage \
+        duf \
+        edk2-ovmf \
+        f3 \
+        fastfetch \
         fd-find \
-        ripgrep \
-        yazi \
-        bat \
-        lsd \
-        opencode \
+        fira-code-fonts \
+        fish \
+        framework-system \
+        fuse-libs \
+        fw-ectool \
+        fw-fanctrl \
         ghostty \
-        wlr-randr \
+        glow \
         gmodpatchtool \
-        bazzite-portal \
+        google-noto-sans-cjk-fonts \
+        greenboot \
+        greenboot-default-health-checks \
+        gum \
+        i2c-tools \
+        iio-sensor-proxy \
+        input-remapper \
+        inputattach-cec-units \
         kernel-tools \
-        ls-iommu && \
+        ladspa-caps-plugins \
+        lato-fonts \
+        libadwaita \
+        libcec \
+        libinput-utils \
+        libxcrypt-compat \
+        linux-cec \
+        linuxconsoletools \
+        lm_sensors \
+        ls-iommu \
+        lsb_release \
+        lsd \
+        lshw \
+        lzip \
+        nerd-fonts \
+        opencode \
+        p7zip \
+        p7zip-plugins \
+        pipewire-module-filter-chain-sofa \
+        python3-icoextract \
+        python3-pip \
+        rar \
+        ripgrep \
+        ryzenadj \
+        ScopeBuddy \
+        snapper \
+        stress-ng \
+        twitter-twemoji-fonts \
+        ublue-os-selinux-workarounds \
+        udica \
+        uld \
+        usbip \
+        uupd \
+        v4l-utils \
+        vim \
+        vulkan-low-latency-layer \
+        vulkan-tools \
+        webapp-manager \
+        wlr-randr \
+        wmctrl \
+        xdotool \
+        xwiimote-ng \
+        xwininfo \
+        yad \
+        yazi \
+        ydotool && \
     dnf5 -y swap \
         --repo terra \
             switcheroo-control cardwire && \
@@ -315,26 +315,26 @@ RUN --mount=type=cache,dst=/var/cache \
             uresourced uresourced-dmemcg \
     ; fi && \
     dnf5 --enable-repo=terra-mesa --enable-repo=terra -y install \
-        terra-gamescope.x86_64 \
-        terra-gamescope-libs.x86_64 \
-        terra-gamescope-libs.i686 \
-        jupiter-sd-mounting-btrfs \
-        umu-wrapper \
-        umu-launcher \
         dbus-x11 \
-        xrandr \
         evtest \
-        xdg-user-dirs \
-        xdg-terminal-exec \
         gobject-introspection \
-        libFAudio.x86_64 \
+        jupiter-sd-mounting-btrfs \
         libFAudio.i686 \
-        mangohud.x86_64 \
+        libFAudio.x86_64 \
         mangohud.i686 \
-        openxr && \
+        mangohud.x86_64 \
+        openxr \
+        terra-gamescope-libs.i686 \
+        terra-gamescope-libs.x86_64 \
+        terra-gamescope.x86_64 \
+        umu-launcher \
+        umu-wrapper \
+        xdg-terminal-exec \
+        xdg-user-dirs \
+        xrandr && \
     dnf5 -y --enable-repo=terra --enable-repo=terra-mesa --setopt=install_weak_deps=False install \
-        steam \
-        lutris && \
+        lutris \
+        steam && \
     dnf5 -y remove \
         gamemode && \
     /ctx/ghcurl "https://raw.githubusercontent.com/Winetricks/winetricks/5a59ea07513b24093bd90fad943ecf9543cf05bc/src/winetricks" -Lo /usr/bin/winetricks && \
@@ -368,28 +368,28 @@ RUN --mount=type=cache,dst=/var/cache \
       /ctx/configure-kde \
     ; else \
         dnf5 -y install \
-            nautilus-gsconnect \
-            steamdeck-backgrounds \
-            steamdeck-gnome-presets \
-            gnome-shell-extension-user-theme \
-            gnome-shell-extension-gsconnect \
-            gnome-search-yafti \
+            firewall-config \
             gnome-rounded-blur \
+            gnome-search-yafti \
+            gnome-shell-extension-gsconnect \
+            gnome-shell-extension-user-theme \
             ibus-mozc \
+            nautilus-gsconnect \
             openssh-askpass \
-            firewall-config && \
+            steamdeck-backgrounds \
+            steamdeck-gnome-presets && \
         dnf5 -y remove \
-            gnome-software \
             gnome-classic-session \
-            gnome-tour \
             gnome-extensions-app \
-            gnome-system-monitor \
             gnome-initial-setup \
-            gnome-shell-extension-background-logo \
             gnome-shell-extension-apps-menu \
+            gnome-shell-extension-background-logo \
             gnome-shell-extension-launch-new-instance \
             gnome-shell-extension-places-menu \
-            gnome-shell-extension-window-list && \
+            gnome-shell-extension-window-list \
+            gnome-software \
+            gnome-system-monitor \
+            gnome-tour && \
         /ctx/ghcurl "https://raw.githubusercontent.com/jlu5/icoextract/079db7ec82c2f15718f42dfb2340ae26a95e690e/exe-thumbnailer.thumbnailer" -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
         setfattr -n user.component -v "exe-thumbnailer" /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
         /ctx/build-gnome-extensions && \
