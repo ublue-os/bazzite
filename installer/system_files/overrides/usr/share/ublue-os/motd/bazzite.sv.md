@@ -1,4 +1,5 @@
 # Välkommen till Bazzite Live ISO 󰊴
+
 󱋩 `%IMAGE_NAME%`
 
 󰋼 Live ISO-avbildningen är avsedd för installation och felsökning.

@@ -8,7 +8,7 @@ Detta är ett volontärdrivet projekt som huvudsakligen skapar avbildningar av b
 
 Om problemet gäller något du har hittat i Fedora, se informationen i [CoreOS security.md](https://github.com/coreos/.github/blob/master/SECURITY.md):
 
-> Om du har hittat ett säkerhetsproblem som du vill rapportera konfidentiellt, kontakta Red Hats Product Security-team. Kontaktuppgifter finns på https://access.redhat.com/security/team/contact
+> Om du har hittat ett säkerhetsproblem som du vill rapportera konfidentiellt, kontakta Red Hats Product Security-team. Kontaktuppgifter finns på [Red Hats säkerhetskontaktsida](https://access.redhat.com/security/team/contact).
 
 ## Licens
 
