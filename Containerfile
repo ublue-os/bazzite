@@ -286,6 +286,11 @@ RUN --mount=type=cache,dst=/var/cache \
         uupd \
         ds-inhibit \
         cage \
+        fd-find \
+        ripgrep \
+        yazi \
+        bat \
+        lsd \
         wlr-randr \
         gmodpatchtool \
         bazzite-portal \
