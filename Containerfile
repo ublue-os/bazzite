@@ -276,7 +276,8 @@ RUN --mount=type=cache,dst=/var/cache \
         xwininfo \
         yad \
         yazi \
-        ydotool && \
+        ydotool \
+        zoxide && \
     dnf5 -y swap \
         --repo terra \
             switcheroo-control cardwire && \
