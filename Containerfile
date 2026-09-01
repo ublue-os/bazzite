@@ -276,7 +276,9 @@ RUN --mount=type=cache,dst=/var/cache \
         xwininfo \
         yad \
         yazi \
+        yt-dlp \
         ydotool \
+        zed-0 \
         zoxide && \
     dnf5 -y swap \
         --repo terra \
