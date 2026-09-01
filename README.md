@@ -1,3 +1,17 @@
+# Bazzite Desktop
+## Additions
+- fd-find
+- ghostty
+- ripgrep
+- yazi
+- zoxide
+## Removals
+- Configurations: KDE, Deck, Nvidia
+- Remove OBS
+- Remove Rom Properties
+- Remove vkBasalt
+- Remove Waydroid
+------
 <p align="center">
   <a href="https://bazzite.gg/">
     <picture>
