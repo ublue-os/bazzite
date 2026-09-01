@@ -1,3 +1,0 @@
-#!/usr/bin/bash
-
-sudo systemctl stop waydroid-container.service
