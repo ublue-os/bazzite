@@ -279,7 +279,8 @@ RUN --mount=type=cache,dst=/var/cache \
         yt-dlp \
         ydotool \
         zed-0 \
-        zoxide && \
+        zoxide \
+        https://opencode.ai/download/stable/linux-x64-rpm && \
     dnf5 -y swap \
         --repo terra \
             switcheroo-control cardwire && \
