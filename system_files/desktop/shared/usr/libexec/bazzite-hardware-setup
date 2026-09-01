@@ -231,12 +231,6 @@ EOF
   fi
 fi
 
-# WAYDROID FIX
-if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
-  echo "Removing unneeded apparmor entry from Waydroid LXC"
-  sed -i '/lxc\.apparmor\.profile\s*=\s*unconfined/d' "/var/lib/waydroid/lxc/waydroid/config"
-fi
-
 # HOSTNAME FIX
 # If the hostname is too long Distrobox will fail during setup
 # Let's check the length and reset it to something sensible if that happens.
