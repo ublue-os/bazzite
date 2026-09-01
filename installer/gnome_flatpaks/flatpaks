@@ -1,11 +1,15 @@
 app/com.github.Matoking.protontricks/x86_64/stable
 app/com.github.tchx84.Flatseal/x86_64/stable
 app/com.mattjakeman.ExtensionManager/x86_64/stable
+app/com.nextcloud.desktopclient.nextcloud/x86_64/stable
+app/com.protonvpn.www/x86_64/stable
 app/com.ranfdev.DistroShelf/x86_64/stable
 app/com.sublimehq.SublimeText/x86_64/stable
 app/com.vysp3r.ProtonPlus/x86_64/stable
 app/io.github.flattool.Warehouse/x86_64/stable
+app/io.github.realmazharhussain.GdmSettings/x86_64/stable
 app/io.missioncenter.MissionCenter/x86_64/stable
+app/me.proton.Mail/x86_64/stable
 app/org.gnome.baobab/x86_64/stable
 app/org.gnome.Calculator/x86_64/stable
 app/org.gnome.Calendar/x86_64/stable
