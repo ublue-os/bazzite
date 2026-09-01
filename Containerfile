@@ -380,6 +380,7 @@ RUN --mount=type=cache,dst=/var/cache \
             steamdeck-backgrounds \
             steamdeck-gnome-presets && \
         dnf5 -y remove \
+            malcontent \
             gnome-classic-session \
             gnome-extensions-app \
             gnome-initial-setup \
