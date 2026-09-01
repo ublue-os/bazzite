@@ -1,4 +1,3 @@
-app/org.mozilla.firefox/x86_64/stable
 app/com.mattjakeman.ExtensionManager/x86_64/stable
 app/com.github.Matoking.protontricks/x86_64/stable
 app/com.ranfdev.DistroShelf/x86_64/stable
@@ -23,9 +22,4 @@ app/org.gnome.Showtime/x86_64/stable
 app/org.gnome.Firmware/x86_64/stable
 app/page.tesk.Refine/x86_64/stable
 app/com.github.Matoking.protontricks/x86_64/stable
-runtime/com.obsproject.Studio.Plugin.OBSVkCapture/x86_64/stable
-runtime/com.obsproject.Studio.Plugin.Gstreamer/x86_64/stable
-runtime/com.obsproject.Studio.Plugin.GStreamerVaapi/x86_64/stable
 runtime/org.freedesktop.Platform.VulkanLayer.MangoHud/x86_64/25.08
-runtime/org.freedesktop.Platform.VulkanLayer.vkBasalt/x86_64/25.08
-runtime/org.freedesktop.Platform.VulkanLayer.OBSVkCapture/x86_64/25.08
