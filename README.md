@@ -1,16 +1,23 @@
 # Bazzite Desktop
 ## Additions
+- bat
 - fd-find
 - ghostty
+- opencode
+- opencode desktop
 - ripgrep
 - yazi
 - zoxide
+## Flatpaks
+- Proton Mail
+- Proton VPN
 ## Removals
 - Configurations: KDE, Deck, Nvidia
-- Remove OBS
-- Remove Rom Properties
-- Remove vkBasalt
-- Remove Waydroid
+- OBS
+- Parental Controls
+- Rom Properties
+- vkBasalt
+- Waydroid
 ------
 <p align="center">
   <a href="https://bazzite.gg/">
