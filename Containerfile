@@ -1,30 +1,3 @@
-#
-#     %%%%%%====%%%%%%%%%%
-#   %%%%%%%%    %%%%%%%%%%%%%%
-#  %%%%%%%%%    %%%%%%%%%%%%%%%%
-#  %%%%%%%%%    %%%%%%%%%%%%%%%###
-#  %%%%%%%%%    %%%%%%%%%%%%%######
-#  ==                  =======######
-#  ==                  =========#####
-#  %%%%%%%%%    %%%%%%%####======#####
-#  %%%%%%%%%    %%%%%#######=====#####
-#  %%%%%%%%%    %%%#########=====#####
-#  %%%%%%%%%    %%##########=====#####
-#  %%%%%%%%%====###########=====######
-#   %%%%%%%%====#########======######
-#    %%%%%%%=====#####========######
-#     %%%%###===============#######
-#      %#######==========#########
-#        #######################
-#          ###################
-#              ###########
-#
-# Welcome to Bazzite! If you're looking to
-# build your own, we highly recommend you
-# use our custom image template. Forking
-# the main repo provides more control, but
-# is often unnecessary.
-#
 # https://github.com/ublue-os/image-template
 
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
@@ -93,6 +66,8 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/install-kernel-akmods && \
     /ctx/cleanup
 
+
+
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
@@ -120,7 +95,7 @@ RUN --mount=type=cache,dst=/var/cache \
         for package in ${toswap[$repo]}; do dnf5 -y swap --from-repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
     dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release{,-extras,-mesa} && \
-    dnf5 -y config-manager addrepo --overwrite --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
+    dnf5 -y install --nogpgcheck --repofrompath 'sublimehq-pm,https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo' sublime-text && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     dnf5 -y config-manager setopt "*terra*".priority=1 "*terra*".exclude="nerd-fonts scx-tools scx-scheds python3-protobuf zlib-devel uupd" && \
     dnf5 -y config-manager setopt "terra-mesa".enabled=false && \
@@ -131,6 +106,8 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y config-manager setopt "*audinux*".exclude="kernel*" && \
     dnf5 -y config-manager setopt "*staging*".exclude="scx-tools scx-scheds kf6-* mesa* mutter*" && \
     /ctx/cleanup
+
+
 
 # Install Valve's patched Mesa, Bluez, and Xwayland
 RUN --mount=type=cache,dst=/var/cache \
@@ -186,6 +163,8 @@ RUN --mount=type=cache,dst=/var/cache \
     ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libbdplus.so.0.2.0 && \
     /ctx/cleanup
 
+
+
 # Remove unneeded packages
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
@@ -194,6 +173,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/global-remove && \
     /ctx/cleanup
+
+
 
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache \
@@ -243,7 +224,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ladspa-caps-plugins \
         pipewire-module-filter-chain-sofa \
         python3-icoextract \
-        tailscale \
         webapp-manager \
         btop \
         amdsmi \
@@ -292,6 +272,8 @@ RUN --mount=type=cache,dst=/var/cache \
         bat \
         lsd \
         opencode \
+        ghostty \
+        sublime-text \
         wlr-randr \
         gmodpatchtool \
         bazzite-portal \
@@ -314,6 +296,8 @@ RUN --mount=type=cache,dst=/var/cache \
     mkdir -p /etc/xdg/autostart && \
     sed -i 's/ --xdg-runtime=\\"${XDG_RUNTIME_DIR}\\"//g' /usr/bin/btrfs-assistant-launcher && \
     /ctx/cleanup
+
+
 
 # Install Steam & Lutris, plus supporting packages
 RUN --mount=type=cache,dst=/var/cache \
@@ -350,7 +334,7 @@ RUN --mount=type=cache,dst=/var/cache \
         mangohud.x86_64 \
         mangohud.i686 \
         openxr && \
-    dnf5 -y --enable-repo=terra-mesa --enable-repo=terra --setopt=install_weak_deps=False install \
+    dnf5 -y --enable-repo=terra --enable-repo=terra-mesa --setopt=install_weak_deps=False install \
         steam \
         lutris && \
     dnf5 -y remove \
@@ -359,6 +343,8 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/bin/winetricks && \
     setfattr -n user.component -v "winetricks" /usr/bin/winetricks && \
     /ctx/cleanup
+
+
 
 # Install ujust-picker from GitHub releases
 RUN --mount=type=cache,dst=/var/cache \
@@ -371,6 +357,8 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/bin/ujust-picker && \
     setfattr -n user.component -v "ujust-picker" /usr/bin/ujust-picker && \
     /ctx/cleanup
+
+
 
 # Configure KDE & GNOME
 RUN --mount=type=cache,dst=/var/cache \
@@ -411,6 +399,8 @@ RUN --mount=type=cache,dst=/var/cache \
     ; fi && \
     /ctx/cleanup
 
+
+
 # ublue-os-media-automount-udev, mount non-removable device partitions automatically under /media/media-automount/
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
@@ -421,6 +411,8 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os-media-automount-udev && \
     { systemctl enable ublue-os-media-automount.service || true; } && \
     /ctx/cleanup
+
+
 
 # Cleanup & Finalize
 COPY system_files/overrides /
@@ -483,7 +475,6 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i 's/stage/none/g' /etc/rpm-ostreed.conf && \
     for repo in \
         fedora-cisco-openh264 \
-        tailscale \
         _copr_ublue-os-akmods \
         terra \
         terra-extras \
@@ -519,7 +510,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable incus-workaround.service && \
     systemctl enable bazzite-hardware-setup.service && \
     systemctl enable bazzite-iwd-migration.service && \
-    systemctl disable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
     systemctl enable ds-inhibit.service && \
     systemctl --global enable bazzite-user-setup.service && \
