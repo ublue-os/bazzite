@@ -1,11 +1,15 @@
 [Desktop Entry]
 Exec=/usr/bin/bazzite-desktop-bootstrap
 GenericName[en_US]=Desktop Bootstrap
+GenericName[sv]=Skrivbordsinitiering
 GenericName=Desktop Bootstrap
+GenericName[sv]=Skrivbordsinitiering
 Icon=system-run
 MimeType=
 Name[en_US]=Desktop Bootstrap
+Name[sv]=Skrivbordsinitiering
 Name=Desktop Bootstrap
+Name[sv]=Skrivbordsinitiering
 Path=
 StartupNotify=true
 Terminal=false
