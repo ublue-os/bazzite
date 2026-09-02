@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+#
+# This script starts uupd-manual.service or checks to see if uupd.service or uupd-manual.service is running.
+# If either is running, it displays the output of that active service.
+# Otherwise, it starts a new instance of uupd-manual.service.
+# It also uses the exit code of the service as its own exit code.
+
+MAIN_SERVICE="uupd.service"
+MANUAL_SERVICE="uupd-manual.service"
+
+MAIN_STATE=$(systemctl show -p ActiveState --value "$MAIN_SERVICE")
+MANUAL_STATE=$(systemctl show -p ActiveState --value "$MANUAL_SERVICE")
+
+NEEDS_START=0
+
+# Target the already active service, if there is one
+if [[ "$MAIN_STATE" != "inactive" && "$MAIN_STATE" != "failed" ]]; then
+    TARGET_SERVICE="$MAIN_SERVICE"
+elif [[ "$MANUAL_STATE" != "inactive" && "$MANUAL_STATE" != "failed" ]]; then
+    TARGET_SERVICE="$MANUAL_SERVICE"
+else
+    TARGET_SERVICE="$MANUAL_SERVICE"
+    NEEDS_START=1
+fi
+
+# Start journalctl on the target service. If it has already started, display all lines since it started.
+if [ "$NEEDS_START" -eq 0 ]; then
+    START_TIME=$(LC_ALL=C systemctl show -p InactiveExitTimestamp --value "$TARGET_SERVICE")
+
+    if [ -n "$START_TIME" ]; then
+        journalctl -u "$TARGET_SERVICE" -f -o cat --synchronize-on-exit=yes --since "$START_TIME" &
+    else
+        journalctl -u "$TARGET_SERVICE" -f -o cat --synchronize-on-exit=yes --lines=0 &
+    fi
+else
+    journalctl -u "$TARGET_SERVICE" -f -o cat --synchronize-on-exit=yes --lines=0 &
+fi
+
+JOURNAL_PID=$!
+
+trap 'kill -TERM $JOURNAL_PID 2>/dev/null' EXIT INT TERM
+
+if [ "$NEEDS_START" -eq 1 ]; then
+    systemctl start --wait "$TARGET_SERVICE"
+else
+    while state=$(systemctl show -p ActiveState --value "$TARGET_SERVICE"); [[ "$state" != "inactive" && "$state" != "failed" ]]; do
+        sleep 1
+    done
+fi
+
+# Exit the script with the service's exit code
+EXIT_CODE=$(systemctl show -p ExecMainStatus --value "$TARGET_SERVICE")
+
+if [ -n "$EXIT_CODE" ]; then
+    exit "$EXIT_CODE"
+fi
+
+exit 0
