@@ -199,7 +199,7 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
     if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
 
     else
-      # gnome-extensions enable tdp-control@opengamingcollective.org
+      gnome-extensions enable tdp-control@opengamingcollective.org
     fi
   fi
 
