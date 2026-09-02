@@ -17,4 +17,9 @@ THEME=$(gsettings get org.gnome.desktop.interface accent-color || echo "'purple'
 THEME=${THEME//\'/}
 THEME=${MOTD_FORCE_THEME:-$THEME}
 
-sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" /usr/share/ublue-os/motd/bazzite.md | tr '~' '\n' | /usr/bin/glow -s /usr/share/ublue-os/motd/themes/$COLOR_SCHEME/$THEME.json -w 78 -
+MOTD_FILE=/usr/share/ublue-os/motd/bazzite.md
+case "${LC_MESSAGES:-${LANG:-C}}" in
+    sv*) MOTD_FILE=/usr/share/ublue-os/motd/bazzite.sv.md ;;
+esac
+
+sed -e "s/%IMAGE_NAME%/$IMAGE_NAME_ESCAPED/g" "$MOTD_FILE" | tr '~' '\n' | /usr/bin/glow -s /usr/share/ublue-os/motd/themes/$COLOR_SCHEME/$THEME.json -w 78 -
