@@ -32,7 +32,6 @@ dnf5 -y install \
 dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-modules
 
 /ctx/install-kmods \
-    /tmp/rpms/{common,kmods}/*framework-laptop*.rpm \
     /tmp/rpms/{common,kmods}/*kvmfr*.rpm \
     /tmp/rpms/{common,kmods}/*openrazer*.rpm \
     /tmp/rpms/{common,kmods}/*v4l2loopback*.rpm \
