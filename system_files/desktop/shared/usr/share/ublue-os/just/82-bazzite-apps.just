@@ -576,7 +576,7 @@ install-openrazer ACTION="":
             echo "Not Selecting GUI Frontend"
         fi
 
-        rm -f /etc/yum.repos.d/hardware:razer.repo
+        sudo rm -f /etc/yum.repos.d/hardware:razer.repo
         repo_path="/etc/yum.repos.d/terra.repo"
         if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
             echo 'Terra Repository is already enabled, skipping.'
