@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Bazzite Announcements
+Name[sv]=Bazzite-meddelanden
 Exec=/usr/libexec/bazzite-announcement
 Terminal=false
 StartupNotify=false
