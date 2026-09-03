@@ -124,6 +124,10 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y config-manager setopt "updates*".exclude="noopenh264" && \
     dnf5 -y config-manager setopt "*audinux*".exclude="kernel*" && \
     dnf5 -y config-manager setopt "*staging*".exclude="scx-tools scx-scheds kf6-* mesa* mutter*" && \
+    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
+        dnf versionlock add "qt6-*" && \
+        dnf versionlock add "plasma-*" \
+    ; fi && \
     /ctx/cleanup
 
 # Install Valve's patched Mesa, Bluez, and Xwayland
