@@ -7,6 +7,7 @@ Exec=/usr/bin/xdg-terminal-exec --app-id=bbrew --title="Bold Brew" -- /usr/bin/b
 Icon=/usr/share/ublue-os/bbrew.png
 Name=Bold Brew
 Comment=The modern Terminal UI for managing Homebrew packages and casks
+Comment[sv]=Det moderna terminalgränssnittet för att hantera Homebrew-paket och caskar
 Comment[el]=Το σύγχρονο περιβάλλον τερματικού για τη διαχείριση πακέτων και βαρελιών Homebrew
 Comment[ru]=Современная консольная утилита для управления пакетами и cask Homebrew
 Categories=Utility;

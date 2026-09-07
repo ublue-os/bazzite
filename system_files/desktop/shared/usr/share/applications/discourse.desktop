@@ -6,6 +6,7 @@ Exec=xdg-open https://universal-blue.discourse.group/c/bazzite/
 Icon=/usr/share/ublue-os/bazzite/discourse.svg
 Name=Discourse
 Comment=Universal Blue Forums
+Comment[sv]=Universal Blue-forum
 Comment[cs]=Fórum Universal Blue
 Comment[fr]=Forums d'Universal Blue
 Comment[el]=Φόρουμ Universal Blue

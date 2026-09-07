@@ -2,8 +2,11 @@
 Type=Application
 Icon=tools-wizard-symbolic
 Name=Bazzite Bootloader Restoring Tool BETA
+Name[sv]=Bazzites verktyg för återställning av starthanteraren (beta)
 Comment=Restore the bootloader of an installation if has been overriden by Windows
+Comment[sv]=Återställ en installations starthanterare om den har skrivits över av Windows
 Keywords=bootloader;fix;grub;windows
+Keywords[sv]=starthanterare;återställ;grub;windows
 Categories=System;Utility
 Exec=/usr/bin/bootloader_restore
 Hidden=false
