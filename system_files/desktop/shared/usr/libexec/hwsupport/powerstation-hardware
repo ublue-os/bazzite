@@ -47,6 +47,11 @@ if [[ "$sys_vendor_lc" == "gpd" ]]; then
 	exit 0
 fi
 
+# KONKR
+if [[ "$sys_vendor_lc" == "konkr" ]]; then
+	exit 0
+fi
+
 # OneXPlayer
 case "$PRODUCT_NAME" in
 	*ONEXPLAYER* | *"ONE XPLAYER"* | *ONEXFLY*)

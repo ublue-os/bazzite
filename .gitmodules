@@ -29,8 +29,11 @@
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/tmp/caffeine
 	url = https://github.com/eonpatapon/gnome-shell-extension-caffeine.git
 [submodule "block-caribou-36@lxylxy123456.ercli.dev"]
-	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/block-caribou-36@lxylxy123456.ercli.dev
+	path = system_files/deck/silverblue/usr/share/gnome-shell/extensions/block-caribou-36@lxylxy123456.ercli.dev
 	url = https://github.com/ublue-os/bazzite-cariboublocker.git
+[submodule "tdp-control@opengamingcollective.org"]
+	path = system_files/deck/silverblue/usr/share/gnome-shell/extensions/tdp-control@opengamingcollective.org
+	url = https://github.com/OpenGamingCollective/gnome-shell-extension-tdp-control.git
 [submodule "add-to-steam@pupper.space"]
 	path = system_files/desktop/silverblue/usr/share/gnome-shell/extensions/add-to-steam@pupper.space
 	url = https://github.com/skullbite/gnome-add-to-steam.git

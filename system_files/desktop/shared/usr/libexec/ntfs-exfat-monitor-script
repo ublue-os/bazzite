@@ -16,6 +16,14 @@ echo "Current system language: $lang"
 
 #translation support
 case $lang in
+#swedish
+    "sv")
+    firstbutton=("Jag förstår")
+    firstbutton_ignore=("Ignorera")
+    secondbutton=("Läs mer")
+    header=("Filsystemet stöds inte")
+    warning=("Du har monterat en NTFS-/exFAT-partition (Windows). Du kan använda den för att lagra data, men spel som körs från Windows-enheter kan få problem.")
+    ;;
 #german
     "de")
     firstbutton=("Einverstanden")

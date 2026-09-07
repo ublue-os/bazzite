@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=51
+USER_SETUP_VER=53
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -189,9 +189,18 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
     fi
   fi
 
-  if ! /usr/libexec/hwsupport/valve-hardware && ! /usr/libexec/hwsupport/handheld-hardware; then
+  if ! /usr/libexec/hwsupport/handheld-hardware; then
     systemctl --user mask cecd.service
     systemctl --user mask steamos-manager-configure-cecd.service
+  fi
+
+  # Enable desktop TDP control extension/applet
+  if /usr/libexec/hwsupport/powerstation-hardware || /usr/libexec/hwsupport/steamos-manager-hardware; then
+    if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+
+    else
+      gnome-extensions enable tdp-control@opengamingcollective.org
+    fi
   fi
 
   # Legion Rotation Fix

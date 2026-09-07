@@ -124,15 +124,15 @@ jobs:
         include:
           - fedora_version: 44
             kernel_flavor: ogc
-            kernel_version: 7.2.1-ogc2.1.fc44
+            kernel_version: 7.2.3-ogc3.1.fc44
             base_image_flavor: main
             arch: x86_64
           - image: bazzite-nvidia
             kernel_flavor: ogc-lts
-            kernel_version: 6.18.44-ogc1.1.fc44
+            kernel_version: 6.18.49-ogc1.1.fc44
           - image: bazzite-gnome-nvidia
             kernel_flavor: ogc-lts
-            kernel_version: 6.18.44-ogc1.1.fc44
+            kernel_version: 6.18.49-ogc1.1.fc44
     steps:
       - name: Show disk space
         run: sudo df -h
@@ -340,18 +340,6 @@ jobs:
           echo "cache_name=${CACHE_NAME}" >> "$GITHUB_OUTPUT"
           echo "allow_cache_write=${ALLOW_CACHE_WRITE}" >> "$GITHUB_OUTPUT"
 
-      - name: Restore DNF package cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        env:
-          CACHE_NAME: ${{ steps.cache-prep.outputs.cache_name }}
-          ALLOW_CACHE_WRITE: ${{ steps.cache-prep.outputs.allow_cache_write }}
-        with:
-          path: /var/tmp/buildah-cache-*
-          key: ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}-
-            ${{ runner.os }}-${{ runner.arch }}-buildah-${{ env.CACHE_NAME }}
-
       # Build image using buildah and save it to raw-img
       - name: Build Image
         id: build_image
@@ -468,7 +456,7 @@ jobs:
       - name: Setup Syft
         id: setup-syft
         if: github.event_name != 'pull_request'
-        uses: anchore/sbom-action/download-syft@aa80c8c5bd439a416a62804f2151ab38c671a638 # v0.24.1
+        uses: anchore/sbom-action/download-syft@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.24.2
         with:
           # FIXME: a renovate rule for this would be nice
           syft-version: v1.44.0
