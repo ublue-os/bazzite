@@ -1,0 +1,41 @@
+From: Bazzite
+Subject: Support rotation shaders on ONEXPLAYER X1Pro EVA-02
+
+Based on OpenGamingCollective/gamescope-session
+1ddd3a95c296a31a3b7bafd3f402a597091a64f4. Fail the build if patch context drifts.
+
+diff --git a/device-quirks b/device-quirks
+--- a/device-quirks
++++ b/device-quirks
+@@ -30,6 +30,13 @@
+   export STEAM_DISPLAY_REFRESH_LIMITS=40,120
+ fi
+ 
++# ONEXPLAYER X1Pro EVA-02 (Intel) needs shader-based panel rotation.
++if [[ "$SYS_ID" == "ONEXPLAYER X1Pro EVA-02" ]]; then
++  PANEL_TYPE=internal
++  ORIENTATION=left
++  FORCE_COMPOSITION_ROTATION=1
++fi
++
+ # OXP X1 Devices
+ OXP_X1_LIST="ONEXPLAYER X1 i"
+ if [[ ":$OXP_X1_LIST:" =~ ":$SYS_ID:"  ]]; then
+diff --git a/gamescope-session-plus b/gamescope-session-plus
+--- a/gamescope-session-plus
++++ b/gamescope-session-plus
+@@ -218,8 +218,12 @@
+ 	fi
+ 
+ 	FORCE_COMPOSITION_ROTATION_OPTION=""
+-	if [ "$FORCE_COMPOSITION_ROTATION" = "1" ] && gamescope_has_option "--force-composition-rotation"; then
+-		FORCE_COMPOSITION_ROTATION_OPTION="--force-composition-rotation"
++	if [ "$FORCE_COMPOSITION_ROTATION" = "1" ]; then
++		if gamescope_has_option "--force-composition-rotation"; then
++			FORCE_COMPOSITION_ROTATION_OPTION="--force-composition-rotation"
++		elif gamescope_has_option "--use-rotation-shader"; then
++			FORCE_COMPOSITION_ROTATION_OPTION="--use-rotation-shader 1"
++		fi
+ 	fi
+ 
+ 	BACKEND_OPTION=""
