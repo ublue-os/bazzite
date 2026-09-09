@@ -13,6 +13,7 @@ rows:
         ru: "Видеоигры"
         fr: "Jeux-vidéos"
         pt_BR: "Jogos"
+        uk_UA: "Ігри"
       subtitle:
         string:
           en: "Protocol 3: Protect the Pilot"
@@ -20,6 +21,7 @@ rows:
           ru: "Протокол 3: Защитить пилота"
           fr: "Protocole 3: Protégez le pilote"
           pt_BR: "Protocolo 3: Proteger o Piloto"
+          uk_UA: "Протокол 3: Захистити пілота"
       appids:
         list:
           - com.vysp3r.ProtonPlus
@@ -83,6 +85,7 @@ rows:
         ru: "Стриминг и общение"
         fr: "Streaming et discussions"
         pt_BR: "Conversa & Transmissão"
+        uk_UA: "Балачки та потоки наживо"
       subtitle:
         string:
           en: "Sprunk'd it."
@@ -90,6 +93,7 @@ rows:
           ru: "Ещё катку?"
           fr: "Et c'est le train de la Hype!"
           pt_BR: "Redundantes com latas & barbante."
+          uk_UA: "Що як, чате?"
       appids:
         list:
           - com.obsproject.Studio
@@ -121,6 +125,7 @@ rows:
         ru: "Музыка и медиа"
         fr: "Musique & Média"
         pt_BR: "Mídia & Música"
+        uk_UA: "Музика та медіа"
       subtitle:
         string:
           en: "Let me break it down for you."
@@ -128,6 +133,7 @@ rows:
           ru: "Войдём в ритм."
           fr: "Entrez dans le rythme."
           pt_BR: "Seu requebrado me maltrata."
+          uk_UA: "Перемкни платівку."
       appids:
         list:
           - io.bassi.Amberol
@@ -157,6 +163,7 @@ rows:
         ru: "Офис и продуктивность"
         fr: "Bureautique & productivité"
         pt_BR: "Produtividade & Escritório"
+        uk_UA: "Офіс та продуктивність"
       subtitle:
         string:
           en: "May the paperclip fellow have mercy."
@@ -164,6 +171,7 @@ rows:
           ru: "Чтобы всё не превратилось в прах."
           fr: "Que le trombone ait pitié de vous"
           pt_BR: "Que nosso camarada clipe tenha piedade."
+          uk_UA: "Зроблю це завтра."
       appids:
         list:
           - org.mozilla.thunderbird
@@ -197,6 +205,7 @@ rows:
         ru: "Утилиты"
         fr: "Utilitaires"
         pt_BR: "Utilitários"
+        uk_UA: "Кориснощі"
       subtitle:
         string:
           en: "Stuff you didn't need until now."
@@ -204,6 +213,7 @@ rows:
           ru: "Программы, которыми вы ещё не пользуетесь."
           fr: "Ce dont vous n'aviez pas besoin jusqu'à maintenant"
           pt_BR: "Coisas de que você não precisava até agora."
+          uk_UA: "Ви досі не знали, що Вам це потрібно."
       appids:
         list:
           - org.waywallen.waywallen
