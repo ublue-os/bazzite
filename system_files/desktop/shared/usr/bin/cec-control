@@ -52,6 +52,10 @@ function perform_standby {
         for id in $CEC_TVID; do
             cec-ctl -d "$CEC_DEVICE" --to "$id" --standby 2>/dev/null || \
                 echo "Warning: Failed to send standby to CEC device $id" >&2
+            
+            #delay after sending standby command, to prevent the TV's Standby response
+            #from being saved during the suspend process, and causing re-suspend on wake
+            sleep 5
         done
     else
         # libcec path
