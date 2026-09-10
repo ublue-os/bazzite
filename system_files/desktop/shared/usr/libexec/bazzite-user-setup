@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=54
+USER_SETUP_VER=55
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -198,7 +198,9 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
   fi
 
   # Enable desktop TDP control extension/applet
-  if /usr/libexec/hwsupport/powerstation-hardware || /usr/libexec/hwsupport/steamos-manager-hardware; then
+  if /usr/libexec/hwsupport/powerstation-hardware || \
+    /usr/libexec/hwsupport/powerstation-htpc-hardware || \
+    /usr/libexec/hwsupport/steamos-manager-hardware; then
     if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
       echo "Enabling TDP Control applet on KDE"
       qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript '
