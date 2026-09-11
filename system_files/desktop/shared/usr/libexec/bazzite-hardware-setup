@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=76
+HWS_VER=77
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -248,6 +248,13 @@ fi
 if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
   echo "Removing unneeded apparmor entry from Waydroid LXC"
   sed -i '/lxc\.apparmor\.profile\s*=\s*unconfined/d' "/var/lib/waydroid/lxc/waydroid/config"
+fi
+
+# HIBERNATION
+if /usr/libexec/hwsupport/needs-hibernation && [[ ! -f /etc/bazzite/hibernation_enabled ]]; then
+  echo "Hardware requiring hibernation detected, enabling hibernation"
+  /usr/libexec/bazzite-enable-hibernation || exit 1
+  SHOULD_REBOOT=true
 fi
 
 # HOSTNAME FIX
