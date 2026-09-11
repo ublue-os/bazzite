@@ -1,212 +1,232 @@
 # vim: set ft=make :
 
-# Set up Lossless Scaling vulkan layer. This mod enables lossless scaling compatibility in linux. Be sure to also install Lossless Scaling from Steam to internal storage.
+# Set up LSFG-VK V2. This enables Lossless Scaling frame generation on Linux. Be sure to also install Lossless Scaling through Steam.
 get-lsfg ACTION="prompt":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
 
     function get_current_status() {
-        # Check new installation location
-        if [[ -f "/usr/local/lib/liblsfg-vk.so" ]] && [[ -f "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
-            echo "${green}${bold}Installed${normal}"
-        # Check legacy installation location
-        elif [[ -f "$HOME/.local/lib/liblsfg-vk.so" ]] && [[ -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
-            echo "${yellow}${bold}Installed (legacy location)${normal}"
+        # Current LSFG-VK V2 installation
+        if [[ -f "$HOME/.local/lib/liblsfg-vk-layer.so" ]] && \
+           [[ -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LSFGVK_frame_generation.json" ]]; then
+            echo "${green}${bold}LSFG-VK V2 Installed${normal}"
+
+        # Legacy system-wide installation
+        elif [[ -f "/usr/local/lib/liblsfg-vk.so" ]] && \
+             [[ -f "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
+            echo "${yellow}${bold}LSFG-VK V2 Not Installed (legacy installation detected)${normal}"
+
+        # Legacy per-user installation
+        elif [[ -f "$HOME/.local/lib/liblsfg-vk.so" ]] && \
+             [[ -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
+            echo "${yellow}${bold}LSFG-VK V2 Not Installed (legacy installation detected)${normal}"
         else
-            echo "${red}${bold}Not Installed${normal}"
+            echo "${red}${bold}LSFG-VK V2 Not Installed${normal}"
         fi
     }
 
     function get_status_token() {
-        if [[ -f "/usr/local/lib/liblsfg-vk.so" ]] && [[ -f "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
+        # Preserve existing status-token behavior
+        if [[ -f "$HOME/.local/lib/liblsfg-vk-layer.so" ]] && \
+           [[ -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LSFGVK_frame_generation.json" ]]; then
             echo "install"
-        elif [[ -f "$HOME/.local/lib/liblsfg-vk.so" ]] && [[ -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
+        elif [[ -f "/usr/local/lib/liblsfg-vk.so" ]] && \
+             [[ -f "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
+            echo "install"
+        elif [[ -f "$HOME/.local/lib/liblsfg-vk.so" ]] && \
+             [[ -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
             echo "install"
         else
             echo "uninstall"
         fi
     }
 
-    OPTION={{ ACTION }}
-    if [ "$OPTION" == "prompt" ]; then
-        current_status=$(get_current_status)
-        echo "${bold}lsfg-vk${normal} enables lossless scaling functionality for supported games."
-        echo "Below you can install or remove ${bold}lsfg-vk${normal}."
-        echo "Current status: $current_status"
-        OPTION=$(ugum choose "Install lsfg-vk" "Uninstall lsfg-vk" "Exit without changes")
-    elif [ "$OPTION" == "help" ]; then
-        echo "Usage: just get-lsfg <option>"
-        echo "  <option>: Specify an action - 'install' or 'uninstall'"
-        echo "  Use 'install' to install lsfg-vk."
-        echo "  Use 'uninstall' to remove lsfg-vk."
-        exit 0
-    elif [ "$OPTION" == "status" ]; then
-        get_status_token
-        exit 0
-    fi
+    function remove_current_files() {
+        rm -f \
+            "$HOME/.local/bin/lsfg-vk-cli" \
+            "$HOME/.local/bin/lsfg-vk-ui" \
+            "$HOME/.local/lib/liblsfg-vk-layer.x86.so" \
+            "$HOME/.local/lib/liblsfg-vk-layer.so" \
+            "$HOME/.local/share/applications/gay.pancake.lsfg-vk-ui.desktop" \
+            "$HOME/.local/share/icons/hicolor/256x256/apps/gay.pancake.lsfg-vk-ui.png" \
+            "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LSFGVK_frame_generation.x86.json" \
+            "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LSFGVK_frame_generation.json"
+    }
 
-    if [ "${OPTION,,}" == "install" ] || [ "${OPTION,,}" == "install lsfg-vk" ]; then
-        echo "Installing lsfg-vk..."
+    function remove_legacy_files() {
+        # Remove legacy per-user installation
+        rm -f \
+            "$HOME/.local/lib/liblsfg-vk.so" \
+            "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" \
+            "$HOME/.local/bin/lsfg-vk" \
+            "$HOME/Desktop/lsfg-vk-ui.desktop"
 
-        # Get the latest release download URL
-        API_URL="https://api.github.com/repos/PancakeTAS/lsfg-vk/releases/latest"
-        DOWNLOAD_URL=$(timeout 30 curl -s "$API_URL" | grep "browser_download_url" | grep "lsfg-vk.*x86_64\.zip" | cut -d '"' -f 4 || echo "")
+        # Only request sudo if a legacy system-wide installation exists
+        if [[ -f "/usr/local/lib/liblsfg-vk.so" ]] || \
+           [[ -f "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]] || \
+           [[ -f "/usr/local/bin/lsfg-vk-ui" ]] || \
+           [[ -f "/usr/local/share/applications/lsfg-vk-ui.desktop" ]] || \
+           [[ -f "/usr/local/share/icons/hicolor/256x256/apps/gay.pancake.lsfg-vk-ui.png" ]]; then
 
-        if [ -z "$DOWNLOAD_URL" ]; then
-            echo "Failed to fetch the latest lsfg-vk release or API timeout. Exiting..."
-            exit 1
+            echo "Preparing for LSFG-VK V2 by removing the legacy installation..."
+
+            sudo rm -f \
+                "/usr/local/lib/liblsfg-vk.so" \
+                "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" \
+                "/usr/local/bin/lsfg-vk-ui" \
+                "/usr/local/share/applications/lsfg-vk-ui.desktop" \
+                "/usr/local/share/icons/hicolor/256x256/apps/gay.pancake.lsfg-vk-ui.png"
         fi
+    }
 
-        # Work in a temporary directory
-        TEMP_DIR=$(mktemp -d)
-        cd "$TEMP_DIR" || { echo "Failed to create temp directory"; exit 1; }
-
-        echo "Downloading lsfg-vk from $DOWNLOAD_URL..."
-        timeout 60 curl -L -o "lsfg-vk.zip" "$DOWNLOAD_URL"
-        if [ $? -ne 0 ]; then
-            echo "Download failed or timed out!"
-            cd - > /dev/null
-            rm -rf "$TEMP_DIR"
-            exit 1
+    function refresh_app_menu() {
+        if command -v kbuildsycoca6 >/dev/null 2>&1; then
+            kbuildsycoca6 --noincremental >/dev/null 2>&1
         fi
+    }
 
-        echo "Extracting lsfg-vk..."
-        unzip -o "lsfg-vk.zip" -d .
-        if [ $? -ne 0 ]; then
-            echo "Extraction failed!"
-            cd - > /dev/null
-            rm -rf "$TEMP_DIR"
-            exit 1
-        fi
+    OPTION="{{ ACTION }}"
 
-        # Check if files were extracted directly to current directory
-        if [ -f "./lib/liblsfg-vk.so" ] && [ -f "./share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]; then
-            echo "Files extracted directly to current directory"
-            EXTRACTED_DIR="."
-        else
-            # Find the extracted directory
-            EXTRACTED_DIR=$(find . -maxdepth 1 -type d -name "lsfg-vk*" | head -n 1)
-            if [ -z "$EXTRACTED_DIR" ]; then
-                echo "Could not find extracted lsfg-vk directory!"
-                cd - > /dev/null
-                rm -rf "$TEMP_DIR"
+    case "${OPTION,,}" in
+        prompt)
+            current_status=$(get_current_status)
+            echo "${bold}LSFG-VK V2${normal} enables Lossless Scaling frame generation on Linux."
+            echo "Below you can install or remove ${bold}LSFG-VK V2${normal}."
+            echo "Current status: $current_status"
+
+            CHOICE=$(ugum choose \
+                "Install LSFG-VK V2" \
+                "Uninstall LSFG-VK V2" \
+                "Exit without changes")
+
+            case "$CHOICE" in
+                "Install LSFG-VK V2")
+                    OPTION="install"
+                    ;;
+                "Uninstall LSFG-VK V2")
+                    OPTION="uninstall"
+                    ;;
+                "Exit without changes")
+                    OPTION="exit"
+                    ;;
+                *)
+                    echo "No changes made. Exiting..."
+                    exit 0
+                    ;;
+            esac
+            ;;
+
+        help)
+            echo "Usage: just get-lsfg <option>"
+            echo "  <option>: Specify an action - 'install' or 'uninstall'"
+            echo "  Use 'install' to install LSFG-VK V2."
+            echo "  Use 'uninstall' to remove LSFG-VK V2."
+            exit 0
+            ;;
+
+        status)
+            get_status_token
+            exit 0
+            ;;
+    esac
+
+    case "${OPTION,,}" in
+        install|"install lsfg-vk"|"install lsfg-vk v2")
+            echo "Installing LSFG-VK V2..."
+            echo "Downloading latest LSFG-VK V2 release..."
+
+            BUILDS_URL="https://builds.lsfg-vk.dev/"
+
+            # Find the stable build identified by upstream as "Latest release".
+            RELEASE_PATH=$(
+                timeout 30 curl -fsSL "$BUILDS_URL" |
+                    grep 'Latest release (' |
+                    sed -n 's/.*href="\([^"]*\.tar\.xz\)".*/\1/p' |
+                    head -n 1
+            )
+
+            if [ -z "$RELEASE_PATH" ]; then
+                echo "Failed to find the latest LSFG-VK V2 release. Exiting..."
                 exit 1
             fi
-            echo "Found extracted directory: $EXTRACTED_DIR"
-        fi
 
-        # Remove legacy files if they exist
-        echo "Removing legacy lsfg-vk files if they exist..."
-        if [[ -f "$HOME/.local/lib/liblsfg-vk.so" ]]; then
-            rm -fv "$HOME/.local/lib/liblsfg-vk.so"
-            echo "Removed legacy lsfg-vk library"
-        fi
+            if [[ "$RELEASE_PATH" =~ ^https?:// ]]; then
+                DOWNLOAD_URL="$RELEASE_PATH"
+            else
+                DOWNLOAD_URL="${BUILDS_URL}${RELEASE_PATH#./}"
+            fi
 
-        if [[ -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
-            rm -fv "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
-            echo "Removed legacy lsfg-vk Vulkan layer"
-        fi
+            TEMP_DIR=$(mktemp -d)
 
-        # Install to /usr/local with sudo
-        echo "Installing lsfg-vk to /usr/local..."
-        if [ -d "$EXTRACTED_DIR/bin" ]; then
-            sudo cp -r "$EXTRACTED_DIR/bin"/* /usr/local/bin/
-            sudo chmod +x /usr/local/bin/lsfg-vk-ui
-            echo "Installed binaries to /usr/local/bin/ and made executable"
-        fi
+            if [ -z "$TEMP_DIR" ] || [ ! -d "$TEMP_DIR" ]; then
+                echo "Failed to create temporary directory. Exiting..."
+                exit 1
+            fi
 
-        if [ -d "$EXTRACTED_DIR/lib" ]; then
-            sudo mkdir -p /usr/local/lib
-            sudo cp -r "$EXTRACTED_DIR/lib"/* /usr/local/lib/
-            echo "Installed libraries to /usr/local/lib/"
-        fi
+            trap 'rm -rf "$TEMP_DIR"' EXIT
 
-        if [ -d "$EXTRACTED_DIR/share" ]; then
-            sudo mkdir -p /usr/local/share
-            sudo cp -r "$EXTRACTED_DIR/share"/* /usr/local/share/
-            echo "Installed shared files to /usr/local/share/"
-        fi
+            ARCHIVE="$TEMP_DIR/lsfg-vk.tar.xz"
 
-        # Fix the Vulkan layer JSON to use the correct library path
-        VULKAN_LAYER_FILE="/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
-        if [ -f "$VULKAN_LAYER_FILE" ]; then
-            echo "Updating Vulkan layer library path..."
-            sudo sed -i 's|"library_path": "liblsfg-vk.so"|"library_path": "../../../lib/liblsfg-vk.so"|' "$VULKAN_LAYER_FILE"
-            echo "Updated Vulkan layer library path to use absolute reference"
-        fi
+            if ! timeout 60 curl -fL "$DOWNLOAD_URL" -o "$ARCHIVE"; then
+                echo "LSFG-VK V2 download failed or timed out!"
+                exit 1
+            fi
 
-        # Copy desktop file to user's desktop if it exists
-        DESKTOP_FILE="$EXTRACTED_DIR/share/applications/lsfg-vk-ui.desktop"
-        if [ -f "$DESKTOP_FILE" ]; then
-            mkdir -p "$HOME/Desktop"
-            cp "$DESKTOP_FILE" "$HOME/Desktop/"
-            chmod +x "$HOME/Desktop/lsfg-vk-ui.desktop"
-            echo "Copied desktop file to ~/Desktop/"
-        fi
+            # Verify this is a V2 archive before touching the existing installation.
+            if ! tar -tf "$ARCHIVE" | grep -q 'lib/liblsfg-vk-layer.so' || \
+               ! tar -tf "$ARCHIVE" | grep -q 'share/vulkan/implicit_layer.d/VkLayer_LSFGVK_frame_generation.json'; then
+                echo "Downloaded archive does not contain the expected LSFG-VK V2 files. Exiting..."
+                exit 1
+            fi
 
-        # Clean up
-        cd - > /dev/null
-        rm -rf "$TEMP_DIR"
+            # Ensure upgrades/reinstalls do not leave stale files behind.
+            remove_current_files
+            remove_legacy_files
 
-        echo "lsfg-vk installed successfully!"
-        echo "The lsfg-vk UI should now be available in your applications menu and on your desktop."
-    elif [ "${OPTION,,}" == "uninstall" ] || [ "${OPTION,,}" == "uninstall lsfg-vk" ]; then
-        echo "Uninstalling lsfg-vk..."
+            echo "Installing LSFG-VK V2 to ~/.local..."
+            mkdir -p "$HOME/.local"
 
-        # Remove new installation files from /usr/local
-        if [[ -f "/usr/local/lib/liblsfg-vk.so" ]]; then
-            sudo rm -fv "/usr/local/lib/liblsfg-vk.so"
-            echo "Removed lsfg-vk library from /usr/local"
-        fi
+            if ! tar -xf "$ARCHIVE" -C "$HOME/.local"; then
+                echo "LSFG-VK V2 installation failed!"
+                exit 1
+            fi
 
-        if [[ -f "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
-            sudo rm -fv "/usr/local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
-            echo "Removed lsfg-vk Vulkan layer from /usr/local"
-        fi
+            # Verify the primary Vulkan layer files were installed.
+            if [[ ! -f "$HOME/.local/lib/liblsfg-vk-layer.so" ]] || \
+               [[ ! -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LSFGVK_frame_generation.json" ]]; then
+                echo "LSFG-VK V2 installation failed: expected files were not found."
+                exit 1
+            fi
 
-        if [[ -f "/usr/local/bin/lsfg-vk-ui" ]]; then
-            sudo rm -fv "/usr/local/bin/lsfg-vk-ui"
-            echo "Removed lsfg-vk UI binary from /usr/local"
-        fi
+            rm -rf "$TEMP_DIR"
+            trap - EXIT
 
-        if [[ -f "/usr/local/share/applications/lsfg-vk-ui.desktop" ]]; then
-            sudo rm -fv "/usr/local/share/applications/lsfg-vk-ui.desktop"
-            echo "Removed lsfg-vk desktop file from /usr/local"
-        fi
+            refresh_app_menu
 
-        if [[ -f "/usr/local/share/icons/hicolor/256x256/apps/gay.pancake.lsfg-vk-ui.png" ]]; then
-            sudo rm -fv "/usr/local/share/icons/hicolor/256x256/apps/gay.pancake.lsfg-vk-ui.png"
-            echo "Removed lsfg-vk icon from /usr/local"
-        fi
+            echo "LSFG-VK V2 installed successfully!"
+            echo
+            echo "The LSFG-VK V2 UI is now available in your applications menu."
+            echo "Please ensure Lossless Scaling is installed through Steam."
+            ;;
 
-        # Remove legacy installation files from ~/.local
-        if [[ -f "$HOME/.local/lib/liblsfg-vk.so" ]]; then
-            rm -fv "$HOME/.local/lib/liblsfg-vk.so"
-            echo "Removed legacy lsfg-vk library from ~/.local"
-        fi
+        uninstall|"uninstall lsfg-vk"|"uninstall lsfg-vk v2")
+            echo "Uninstalling LSFG-VK V2..."
 
-        if [[ -f "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json" ]]; then
-            rm -fv "$HOME/.local/share/vulkan/implicit_layer.d/VkLayer_LS_frame_generation.json"
-            echo "Removed legacy lsfg-vk Vulkan layer from ~/.local"
-        fi
+            remove_current_files
+            remove_legacy_files
 
-        # Remove desktop file from user's desktop
-        if [[ -f "$HOME/Desktop/lsfg-vk-ui.desktop" ]]; then
-            rm -fv "$HOME/Desktop/lsfg-vk-ui.desktop"
-            echo "Removed lsfg-vk desktop file from ~/Desktop"
-        fi
+            refresh_app_menu
 
-        # Remove lsfg-vk binary if it exists (legacy cleanup)
-        if [[ -f "$HOME/.local/bin/lsfg-vk" ]]; then
-            rm -f "$HOME/.local/bin/lsfg-vk"
-            echo "Removed legacy lsfg-vk binary from ~/.local/bin/"
-        fi
+            echo "LSFG-VK V2 uninstalled successfully!"
+            ;;
 
-        echo "lsfg-vk uninstalled successfully!"
-    elif [ "${OPTION,,}" == "exit" ] || [ "${OPTION,,}" == "exit without changes" ]; then
-        echo "No changes made. Exiting..."
-        exit 0
-    else
-        echo "Invalid option. Exiting..."
-        exit 1
-    fi
+        exit|"exit without changes")
+            echo "No changes made. Exiting..."
+            exit 0
+            ;;
+
+        *)
+            echo "Invalid option. Exiting..."
+            exit 1
+            ;;
+    esac
