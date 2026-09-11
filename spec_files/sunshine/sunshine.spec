@@ -1,7 +1,7 @@
 %undefine _hardened_build
 
 Name: sunshine
-Version: 2026.516.143833
+Version: 2026.906.222525
 Release: 1%{?dist}.bazzite
 Summary: Self-hosted game stream host for Moonlight.
 License: GPLv3-only
@@ -41,14 +41,9 @@ BuildRequires: libXrandr-devel
 BuildRequires: python3-jinja2
 BuildRequires: python3-setuptools
 BuildRequires: uv
-BuildRequires: libappindicator-gtk3-devel
-BuildRequires: libnotify-devel
-%if 0%{?fedora} >= 45
-# fix(crypto): OpenSSL 4.x compatibility (#5330)
-BuildRequires: openssl3-devel
-%else
+BuildRequires: qt6-qtbase-devel
+BuildRequires: qt6-qtsvg-devel
 BuildRequires: openssl-devel
-%endif
 
 %description
 Self-hosted game stream host for Moonlight.

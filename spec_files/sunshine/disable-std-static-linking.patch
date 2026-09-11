@@ -1,12 +1,17 @@
 diff --git a/cmake/targets/linux.cmake b/cmake/targets/linux.cmake
-index e8c466cb..fa1f33c0 100644
+index 6f9fb362..11da86ca 100644
 --- a/cmake/targets/linux.cmake
 +++ b/cmake/targets/linux.cmake
-@@ -1,7 +1 @@
+@@ -1,12 +1,2 @@
  # linux specific target definitions
+ 
+-if(NOT FREEBSD)
+-    # Using newer c++ compilers / features on older distros causes runtime dyn link errors
+-    list(APPEND SUNSHINE_EXTERNAL_LIBRARIES -static-libgcc)
 -
--# Using newer c++ compilers / features on older distros causes runtime dyn link errors
--list(APPEND SUNSHINE_EXTERNAL_LIBRARIES
--        -static-libgcc
--        -static-libstdc++
--)
+-    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 15)
+-        list(APPEND SUNSHINE_EXTERNAL_LIBRARIES stdc++)
+-    else()
+-        list(APPEND SUNSHINE_EXTERNAL_LIBRARIES -static-libstdc++)
+-    endif()
+-endif()
