@@ -348,7 +348,8 @@ RUN --mount=type=cache,dst=/var/cache \
         mangohud.i686 \
         obs-studio-plugin-vkcapture-hook-libs.x86_64 \
         obs-studio-plugin-vkcapture-hook-libs.i686 \
-        openxr && \
+        openxr \
+        openxr-libs && \
     dnf5 -y --enable-repo=terra-mesa --enable-repo=terra --setopt=install_weak_deps=False install \
         steam \
         lutris && \
