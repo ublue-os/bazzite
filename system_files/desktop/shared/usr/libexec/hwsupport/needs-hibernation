@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+# Returns true for hardware that requires hibernation to function properly
+
+DMI="/sys/devices/virtual/dmi/id"
+SYS_VENDOR="$(cat "$DMI/sys_vendor" 2>/dev/null)"
+
+if [[ "${SYS_VENDOR,,}" == "gpd" ]]; then
+	exit 0
+fi
+
+exit 1
