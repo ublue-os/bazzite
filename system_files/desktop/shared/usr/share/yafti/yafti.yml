@@ -174,17 +174,17 @@ screens:
         description: "Suite for locally utilizing large language models (LLMs) — installed using Brew."
         default: false
         script: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew trust ublue-os/tap && brew tap ublue-os/tap && brew install --cask lm-studio-linux'
-      - id: "lsfg-vk"
-        title: "Lossless Scaling — Vulkan Layer"
-        description: "Install «lsfg-vk», the adapter for Lossless Scaling frame generation on Linux."
+      - id: "lsfg-vk v2"
+        title: "Lossless Scaling — Vulkan Layer v2"
+        description: "Install «lsfg-vk v2», the adapter for Lossless Scaling frame generation on Linux."
         default: false
         status_script: "ujust get-lsfg status"
         options:
           - id: "install"
-            label: "Install «lsfg-vk»"
+            label: "Install «lsfg-vk v2»"
             script: 'ujust get-lsfg install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
           - id: "uninstall"
-            label: "Uninstall «lsfg-vk»"
+            label: "Uninstall «lsfg-vk v2»"
             script: 'ujust get-lsfg uninstall; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "openrazer"
         title: "OpenRazer"
