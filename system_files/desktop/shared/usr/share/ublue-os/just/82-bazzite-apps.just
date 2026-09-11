@@ -575,7 +575,15 @@ install-openrazer ACTION="":
         else
             echo "Not Selecting GUI Frontend"
         fi
-        sudo curl -Lo /etc/yum.repos.d/hardware:razer.repo https://openrazer.github.io/hardware:razer.repo
+
+        sudo rm -f /etc/yum.repos.d/hardware:razer.repo
+        repo_path="/etc/yum.repos.d/terra.repo"
+        if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
+            echo 'Terra Repository is already enabled, skipping.'
+        else
+            echo 'Enabling Terra Repository.'
+            sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
+        fi
         rpm-ostree install -y openrazer-daemon
         if ! grep -q "plugdev" /etc/group; then
             sudo bash -c 'grep "plugdev" /lib/group >> /etc/group'

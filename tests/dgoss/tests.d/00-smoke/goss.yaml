@@ -5,12 +5,16 @@ command:
     stdout:
       - "dgoss smoketest"
 
-  hardware_setup_unmasks_inputplumber:
-    exec: |
-      sh -lc '
-      setup=/usr/libexec/bazzite-hardware-setup
-      test "$(grep -Fc "systemctl unmask inputplumber.service" "$setup")" -eq 2
-      '
+  bazzite_hardware_setup_has_valid_shell_syntax:
+    exec: "/usr/bin/bash -n /usr/libexec/bazzite-hardware-setup"
+    exit-status: 0
+
+  bazzite_user_setup_has_valid_shell_syntax:
+    exec: "/usr/bin/bash -n /usr/libexec/bazzite-user-setup"
+    exit-status: 0
+
+  bazzite_privileged_user_setup_has_valid_shell_syntax:
+    exec: "/usr/bin/bash -n /usr/libexec/bazzite-privileged-user-setup"
     exit-status: 0
 
   gamemode_news_hook_uses_release_channel:

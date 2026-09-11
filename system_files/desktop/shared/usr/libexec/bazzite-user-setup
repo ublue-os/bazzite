@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=52
+USER_SETUP_VER=55
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -89,6 +89,9 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   fi
 else
   echo 'Running setup for Silverblue'
+
+  echo "Enabling Bazaar Integration extension"
+  gnome-extensions enable bazaar-integration@kolunmi.github.io
 
   PTYXIS_THEME_DIR="/etc/skel/.local/share/org.gnome.Ptyxis/palettes"
   PTYXIS_DIR="$HOME/.local/share/org.gnome.Ptyxis/palettes"
@@ -195,10 +198,52 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
   fi
 
   # Enable desktop TDP control extension/applet
-  if /usr/libexec/hwsupport/powerstation-hardware || /usr/libexec/hwsupport/steamos-manager-hardware; then
+  if /usr/libexec/hwsupport/powerstation-hardware || \
+    /usr/libexec/hwsupport/powerstation-htpc-hardware || \
+    /usr/libexec/hwsupport/steamos-manager-hardware; then
     if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+      echo "Enabling TDP Control applet on KDE"
+      qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript '
+        const batteryApplet = "org.kde.plasma.battery";
+        const tdpApplet = "org.opengamingcollective.tdpcontrol";
 
+        for (const panel of panels()) {
+          for (const tray of panel.widgets("org.kde.plasma.systemtray")) {
+            const systrayId = tray.readConfig("SystrayContainmentId");
+            const systray = systrayId ? desktopById(systrayId) : null;
+            if (!systray) {
+              continue;
+            }
+
+            systray.currentConfigGroup = ["General"];
+            const extraItems = systray.readConfig("extraItems", "").split(",").filter(item => item);
+            const updatedItems = [];
+            let tdpAdded = false;
+
+            for (const item of extraItems) {
+              if (item === tdpApplet) {
+                continue;
+              }
+
+              updatedItems.push(item);
+              if (item === batteryApplet) {
+                updatedItems.push(tdpApplet);
+                tdpAdded = true;
+              }
+            }
+
+            if (!tdpAdded) {
+              updatedItems.push(tdpApplet);
+            }
+
+            systray.writeConfig("extraItems", updatedItems);
+            systray.reloadConfig();
+          }
+        }
+      '
     else
+      echo "Enabling TDP Control & Add-to-Steam extension on GNOME"
+      gnome-extensions enable add-to-steam@pupper.space
       gnome-extensions enable tdp-control@opengamingcollective.org
     fi
   fi
