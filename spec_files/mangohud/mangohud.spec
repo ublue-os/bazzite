@@ -31,6 +31,8 @@ Source3:        https://github.com/KhronosGroup/Vulkan-Utility-Libraries/archive
 Source4:        https://github.com/epezent/implot/archive/v%{implot_ver}/implot-%{implot_ver}.tar.gz
 Source5:        https://wrapdb.mesonbuild.com/v%{implot_wrap_ver}/implot_%{implot_ver}-1/get_patch#/implot-%{implot_ver}-wrap.zip
 
+Patch0:         mangoapp-throttle-overlay-to-one-render-per-game-frame.patch
+
 BuildRequires:  vulkan-headers
 BuildRequires:  appstream
 BuildRequires:  dbus-devel
