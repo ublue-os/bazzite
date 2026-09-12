@@ -327,7 +327,7 @@ RUN --mount=type=cache,dst=/var/cache \
         --repo terra-extras \
             uresourced uresourced-dmemcg \
     ; fi && \
-    dnf5 --enable-repo=terra-mesa --enable-repo=terra -y install \
+    dnf5 --enable-repo=terra-mesa --enable-repo=terra --enable-repo=terra-extras -y install \
         terra-gamescope.x86_64 \
         terra-gamescope-libs.x86_64 \
         terra-gamescope-libs.i686 \
@@ -344,8 +344,8 @@ RUN --mount=type=cache,dst=/var/cache \
         libFAudio.i686 \
         vkBasalt.x86_64 \
         vkBasalt.i686 \
-        mangohud.x86_64 \
-        mangohud.i686 \
+        terra-mangohud.x86_64 \
+        terra-mangohud.i686 \
         obs-studio-plugin-vkcapture-hook-libs.x86_64 \
         obs-studio-plugin-vkcapture-hook-libs.i686 \
         openxr \
