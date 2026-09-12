@@ -645,6 +645,7 @@ RUN --mount=type=cache,dst=/var/cache \
         python-vdf \
         python-crcmod && \
     chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus && \
+    git -C /usr/share/gamescope-session-plus apply /ctx/gamescope-session-rotation.patch && \
     sed -i 's/- xbox-elite/- deck/g' /usr/share/inputplumber/devices/50-steam_deck.yaml && \
     sed -i 's/LOG_LEVEL=info/LOG_LEVEL=debug/g' /usr/lib/systemd/system/inputplumber.service && \
     sed -i 's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="env LOG_LEVEL=debug opengamepadui --accessibility disabled --overlay-mode --steam-input --steamos-manager --skip-update-pack|' /usr/share/gamescope-session-plus/sessions.d/ogui-steam && \
