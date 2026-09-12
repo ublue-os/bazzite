@@ -1,0 +1,63 @@
+From 2c1dc5283c045e9a7e424dc913fbafcdcc7e3be1 Mon Sep 17 00:00:00 2001
+From: Matthew Schwartz <matthew.schwartz@linux.dev>
+Date: Sat, 6 Jun 2026 14:55:46 -0700
+Subject: [PATCH] mangoapp: throttle overlay to one render per game frame
+
+a3b5683 removed the condition-variable wait in the main loop, and with it
+the only reset of new_frame. After the first frame, the overlay renders
+on every loop iteration instead of once per frame. gamescope doesn't
+frame-pace external overlays, so under VRR this renders flat-out. As a
+result, the game's fps tends to overshoot its frame limit cap and GPU
+power usage spikes.
+
+Re-add the wait, bounded so keybinds stay responsive if frames stop. The
+lock is released before render(), so it isn't held across rendering (the
+concern behind a3b5683).
+
+Fixes: https://github.com/flightlessmango/MangoHud/issues/2060
+---
+ src/app/main.cpp | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/src/app/main.cpp b/src/app/main.cpp
+index 709bcb6f7c..19c465fbea 100644
+--- a/src/app/main.cpp
++++ b/src/app/main.cpp
+@@ -11,6 +11,7 @@
+ #include "imgui_impl_opengl3.h"
+ #include <stdio.h>
+ #include <thread>
++#include <chrono>
+ #include <unistd.h>
+ #include "../overlay.h"
+ #include "notify.h"
+@@ -385,7 +386,7 @@ int main(int, char**)
+     while (!glfwWindowShouldClose(window)){
+         real_params = get_params();
+         check_keybinds(*real_params);
+-        if (!real_params->no_display && new_frame){
++        if (!real_params->no_display){
+             if (mangoapp_paused){
+                 glfwShowWindow(window);
+                 render(window, *real_params);
+@@ -399,6 +400,18 @@ int main(int, char**)
+                         gpu->resume();
+             }
+ 
++            // throttle to one render per game frame, else we render flat-out
++            {
++                std::unique_lock<std::mutex> lk(mangoapp_m);
++                mangoapp_cv.wait_for(lk, std::chrono::milliseconds(100), [&] {
++                    return new_frame || real_params->no_display;
++                });
++                // no_display can flip mid-wait so re-check
++                if (real_params->no_display || !new_frame)
++                    continue;
++                new_frame = false;
++            }
++
+             {
+                 if (render(window, *real_params)) {
+                     // If we need to resize our window, give it another couple of rounds for the
+-- 
+2.47.0
