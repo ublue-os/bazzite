@@ -43,13 +43,13 @@
 
 ## About & Features
 
-[Please see our website](https://bazzite.gg/) for a newcomer-friendly explanation of Bazzite. This readme will cover everything in-depth.
+[Please see our website](https://bazzite.gg/) for a newcomer-friendly explanation of Bazzite. This README will cover everything in-depth.
 
 [Bazzite](https://bazzite.gg/) is a custom [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) image built with [cloud native](https://universal-blue.org/#cloud-native) technology that brings the best of Linux gaming to **all of your devices - including your favorite handheld**.
 
 Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) using [Fedora](https://fedoraproject.org/) technology, which means expanded hardware support and built in drivers are included. Additionally, Bazzite adds the following features:
 
-- Uses the [OGC kernel](https://www.github.com/OpenGamingCollective/linux)
+- Uses the [OGC kernel](https://www.github.com/OpenGamingCollective/linux).
 - HDR and VRR available by default.
 - Full hardware accelerated codec support for H264 decoding.
 - [xone](https://github.com/medusalix/xone) driver for Xbox controllers.
@@ -76,14 +76,16 @@ Common variant available as `bazzite`, suitable for desktop computers.
 > [!IMPORTANT]
 > **ISOs can be downloaded from our [website](https://download.bazzite.gg), and a helpful install guide can be found [here](https://docs.bazzite.gg/General/Installation_Guide/).**
 
-Rebase from an existing upstream Fedora Atomic to this image if you want **Open Source GPU Drivers**:
-(Please note: Mesa's Open Source option for NVIDIA GPUs, NVK is still prone to errors at the time of writing, for any issues relating to NVK [please submit a report with Mesa]([url](https://docs.mesa3d.org/bugs.html)), not Ublue/Bazzite)
+Rebase from an existing upstream Fedora Atomic to this image if you want **Open Source GPU Drivers**.
+Please note: Mesa's Open Source option for NVIDIA GPUs, NVK is still prone to errors at the time of writing. 
+
+For any issues relating to NVK [please submit a report with Mesa]([url](https://docs.mesa3d.org/bugs.html)), not Ublue/Bazzite:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
 ```
 
-or for devices with Nvidia GPUs wanting the **NVIDIA Proprietary Drivers**:
+For devices with Nvidia GPUs requiring the **NVIDIA Proprietary Drivers**:
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:stable
@@ -95,11 +97,11 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 Variant designed for usage as an alternative to SteamOS on the Steam Deck, and for a console-like experience on HTPCs, available as `bazzite-deck`:
 
 - Directly boots to Game mode matching SteamOS's behavior.
-- **Automatic `bees` greatly trims the size of compatdata.**
-- **Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.**
-- **Able to be booted even if the drive is full.**
-- **Support for every language supported by upstream Fedora.**
-- **Uses Wayland on the desktop with [support for Steam input](https://github.com/Supreeeme/extest).**
+- Automatic `bees` greatly trims the size of compatdata.
+- Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.
+- Able to be booted even if the drive is full.
+- Support for every language supported by upstream Fedora.
+- Uses Wayland on the desktop with [support for Steam input](https://github.com/Supreeeme/extest).
 - Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV).
 - Patched Mesa for proper framerate control from Gamescope.
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
@@ -116,7 +118,7 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 - Color calibrated display profiles for matte and reflective Steam Deck screens included.
 - Default-disabled power-user features, including:
     - Service for low-risk undervolting of the Steam Deck as well as AMD Framework Laptops via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) and [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), see `ryzenadj.service` and `/etc/default/ryzenadj`.
-    - Built in support for display overclocking. For example, add `CUSTOM_REFRESH_RATES=30-68` to `/etc/environment`. Minimum and maximum refresh rates differ per handheld!
+    - Built in support for display overclocking. For example, add `CUSTOM_REFRESH_RATES=30-68` to `/etc/environment`. Minimum and maximum refresh rates are device-dependent.
     - 32GB RAM mod your Steam Deck? Enjoy double the maximum VRAM amount, automatically applied. <sup><sub>(Can you share your soldering skills?)</sub></sup>
 - Steam Deck hardware-specific services can be disabled by running `ujust disable-bios-updates` and `ujust disable-firmware-updates` in the terminal. These are automatically disabled on non-Deck hardware, and on Decks with DeckHD displays or 32GB RAM mods.
 - More information can be found [here](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/) on the Bazzite Steam Deck images.
@@ -192,7 +194,7 @@ Bazzite started as a project to resolve some of the issues that plague SteamOS, 
 
 Despite this project also being image-based, you are able to install any Fedora package straight from the command line. These packages will persist across updates <sub><sup>(So go ahead and install that obscure VPN software you spent an hour trying to get working in SteamOS)</sup></sub>. Additionally, Bazzite is updated multiple times a week with packages from upstream Fedora, giving you the best possible performance and latest features - all on a stable base.
 
-Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot <sub><sup>(Run `ujust enroll-secure-boot-key` and enter the password `universalblue` if prompted to enroll our key)</sup></sub> and disk encryption, making this a sensible solution for general computing. <sup><sub>(Yes, you can print from Bazzite)</sub></sup>
+Bazzite ships with the latest Linux kernel and SELinux enabled by default with full support for secure boot <sub><sup>(Run `ujust enroll-secure-boot-key` and enter the password `universalblue` if prompted to enroll our key)</sup></sub> and disk encryption. Making this a sensible solution for general computing. <sup><sub>(Yes, you can print from Bazzite)</sub></sup>
 
 Read the [FAQ](https://docs.bazzite.gg/General/FAQ/) for details on what makes Bazzite stand out from other Linux based operating systems.
 
@@ -208,9 +210,9 @@ Read the [FAQ](https://docs.bazzite.gg/General/FAQ/) for details on what makes B
 
 ## Documentation
 
-- [Installing and Managing Applications](https://docs.bazzite.gg/Installing_and_Managing_Software/)
-- [Updates, Rollbacks, and Rebasing](https://docs.bazzite.gg/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/)
-- [Gaming Guide](https://docs.bazzite.gg/Gaming/)
+- [Installing and Managing Applications](https://docs.bazzite.gg/Installing_and_Managing_Software/).
+- [Updates, Rollbacks, and Rebasing](https://docs.bazzite.gg/Installing_and_Managing_Software/Updates_Rollbacks_and_Rebasing/).
+- [Gaming Guide](https://docs.bazzite.gg/Gaming/).
 
 View [additional documentation](http://docs.bazzite.gg/) surrounding the project.
 
