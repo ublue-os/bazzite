@@ -6,21 +6,27 @@ if /usr/libexec/hwsupport/valve-hardware; then
     exit 0
 fi
 
-SYSFS_PATH=$(find /sys/class/hwmon/*/ -name "power1_cap")
+SYSFS_PATH=$(find /sys/class/hwmon/*/ -maxdepth 1 -name "power1_cap" 2>/dev/null || true)
 
 # Loop through the SYSFS paths that has a "power1_cap"
 for POWER_CAP_PATH in $SYSFS_PATH
 do
+    [ -f "$POWER_CAP_PATH" ] || continue
+
     # If the permissions are set to writable
-    if [ "$(stat -c %a "$POWER_CAP_PATH")" == "666" ]; then
-        chmod 644 "$POWER_CAP_PATH"
-        echo "fix: Permissions reset to 644 on $POWER_CAP_PATH" | systemd-cat -t bazzite-tdpfix -p warning
+    if [ "$(stat -c %a "$POWER_CAP_PATH" 2>/dev/null)" == "666" ]; then
+        chmod 644 "$POWER_CAP_PATH" 2>/dev/null || true
+        echo "fix: Permissions reset to 644 on $POWER_CAP_PATH" | systemd-cat -t bazzite-tdpfix -p warning 2>/dev/null || true
     fi
 
     # If TDP is 15W and default TDP is higher than 45W, set card to use default TDP
     # This will then be handled by firmware or software afterwards as this is set once
-    if [ "$(cat "$POWER_CAP_PATH")" == "15000000" ] && [ "$(cat "${POWER_CAP_PATH}_default")" -gt "45000000" ]; then
-        "$(cat "${POWER_CAP_PATH}_default")" > "$POWER_CAP_PATH"
-        echo "fix: TDP reset to default on $POWER_CAP_PATH" | systemd-cat -t bazzite-tdpfix -p warning
+    if [ -f "${POWER_CAP_PATH}_default" ]; then
+        CURRENT_CAP=$(cat "$POWER_CAP_PATH" 2>/dev/null || echo 0)
+        DEFAULT_CAP=$(cat "${POWER_CAP_PATH}_default" 2>/dev/null || echo 0)
+        if [ "$CURRENT_CAP" == "15000000" ] && [ "$DEFAULT_CAP" -gt "45000000" ] 2>/dev/null; then
+            cat "${POWER_CAP_PATH}_default" > "$POWER_CAP_PATH" 2>/dev/null || true
+            echo "fix: TDP reset to default on $POWER_CAP_PATH" | systemd-cat -t bazzite-tdpfix -p warning 2>/dev/null || true
+        fi
     fi
 done

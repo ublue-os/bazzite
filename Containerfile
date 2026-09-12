@@ -534,9 +534,9 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl disable force-wol.service && \
     systemctl --global enable bazzite-dynamic-fixes.service && \
     systemctl --global enable ntfs-nag.service && \
-    systemctl enable dmemcg-booster-system.service && \
     systemctl --global enable dmemcg-booster-user.service && \
     systemctl enable cardwired.service && \
+    systemctl enable bazzite-wifi-game-powersave.service && \
     /ctx/ghcurl "https://raw.githubusercontent.com/doitsujin/dxvk/3a4c6fa3cb1548d56a90a38dd8f526b6c13e63fd/dxvk.conf" -Lo /etc/dxvk-example.conf && \
     /ctx/ghcurl "https://raw.githubusercontent.com/ublue-os/waydroid-scripts/main/waydroid-choose-gpu.sh" -Lo /usr/bin/waydroid-choose-gpu && \
     chmod +x /usr/bin/waydroid-choose-gpu && \

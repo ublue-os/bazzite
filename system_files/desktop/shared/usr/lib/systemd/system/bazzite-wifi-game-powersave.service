@@ -1,0 +1,13 @@
+[Unit]
+Description=Bazzite Wi-Fi Game Power Save Auto Switcher
+After=network.target NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/bazzite-wifi-game-powersave
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

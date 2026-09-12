@@ -11,14 +11,15 @@ BOARD_VENDOR="$(cat "$DMI/board_vendor" 2>/dev/null)"
 # Lowercase
 sys_vendor_lc="${SYS_VENDOR,,}"
 board_vendor_lc="${BOARD_VENDOR,,}"
+product_name_lc="${PRODUCT_NAME,,}"
 
 # AOKZOE
-if [[ "$PRODUCT_NAME" == *AOKZOE* ]]; then
+if [[ "$product_name_lc" == *aokzoe* || "$sys_vendor_lc" == *aokzoe* || "$board_vendor_lc" == *aokzoe* ]]; then
 	exit 0
 fi
 
 # AYANEO
-if [[ "$board_vendor_lc" == *ayaneo* ]]; then
+if [[ "$board_vendor_lc" == *ayaneo* || "$sys_vendor_lc" == *ayaneo* || "$product_name_lc" == *ayaneo* || "$product_name_lc" == *aya\ neo* ]]; then
 	exit 0
 fi
 case "$PRODUCT_NAME" in
@@ -33,30 +34,43 @@ case "$PRODUCT_NAME" in
 esac
 
 # Ayn
-if [[ "$sys_vendor_lc" == "ayn" ]]; then
+if [[ "$sys_vendor_lc" == *ayn* || "$board_vendor_lc" == *ayn* || "$product_name_lc" == *loki* || "$product_name_lc" == *odin* ]]; then
 	exit 0
 fi
-case "$PRODUCT_NAME" in
-	"Loki Max" | "Loki Zero" | "Loki MiniPro")
-		exit 0
-		;;
-esac
 
 # GPD
-if [[ "$sys_vendor_lc" == "gpd" ]]; then
+if [[ "$sys_vendor_lc" == *gpd* || "$board_vendor_lc" == *gpd* || "$product_name_lc" == *gpd* ]]; then
 	exit 0
 fi
-
-# KONKR
-if [[ "$sys_vendor_lc" == "konkr" ]]; then
-	exit 0
-fi
-
-# OneXPlayer
 case "$PRODUCT_NAME" in
-	*ONEXPLAYER* | *"ONE XPLAYER"* | *ONEXFLY*)
+	"G1618-04" | "G1619-04" | "G1619-05" | "G1617-01")
 		exit 0
 		;;
 esac
+
+# KONKR
+if [[ "$sys_vendor_lc" == *konkr* || "$board_vendor_lc" == *konkr* || "$product_name_lc" == *konkr* ]]; then
+	exit 0
+fi
+
+# One-Netbook / OneXPlayer / ONEXFLY
+if [[ "$sys_vendor_lc" == *one-netbook* || "$sys_vendor_lc" == *onexplayer* || "$board_vendor_lc" == *one-netbook* || "$board_vendor_lc" == *onexplayer* ]]; then
+	exit 0
+fi
+case "$PRODUCT_NAME" in
+	*ONEXPLAYER* | *"ONE XPLAYER"* | *ONEXFLY* | *"ONEXPLAYER F1"* | *"ONEXPLAYER X1"* | *"ONEXPLAYER G1A"*)
+		exit 0
+		;;
+esac
+
+# OrangePi
+if [[ "$sys_vendor_lc" == *orange* || "$product_name_lc" == *neo* ]]; then
+	exit 0
+fi
+
+# ANBERNIC
+if [[ "$sys_vendor_lc" == *anbernic* || "$product_name_lc" == *win600* ]]; then
+	exit 0
+fi
 
 exit 1

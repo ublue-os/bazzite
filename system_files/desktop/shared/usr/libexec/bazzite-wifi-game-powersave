@@ -1,0 +1,105 @@
+#!/usr/bin/bash
+# bazzite-wifi-game-powersave
+# Dynamically synchronizes Wi-Fi 802.11 power saving with system power settings:
+# - Disables power save during active gameplay/streaming, on AC power, or in Performance mode for lowest latency.
+# - Enables power save when idling on battery or in Power-Saver mode to maximize battery life.
+
+set -euo pipefail
+
+is_on_ac_power() {
+    if command -v on_ac_power >/dev/null 2>&1; then
+        on_ac_power
+        return $?
+    fi
+
+    local has_battery=0
+    for ps in /sys/class/power_supply/*; do
+        [ -e "$ps" ] || continue
+        local type
+        type="$(cat "$ps/type" 2>/dev/null || true)"
+        if [ "$type" = "Battery" ]; then
+            has_battery=1
+            local status
+            status="$(cat "$ps/status" 2>/dev/null || true)"
+            if [ "$status" = "Discharging" ]; then
+                return 1
+            fi
+        elif [ -f "$ps/online" ] && [ "$(cat "$ps/online" 2>/dev/null)" = "1" ]; then
+            return 0
+        fi
+    done
+
+    # Desktop / mini-PC without battery defaults to AC power
+    if [ "$has_battery" -eq 0 ]; then
+        return 0
+    fi
+
+    return 1
+}
+
+is_game_running() {
+    # Detect active games / streams: Proton/Wine, Steam games, emulators, and game streaming clients
+    pgrep -f "pressure-vessel|wine64-preloader|wineserver|/steamapps/common/|moonlight|chiaki|sunshine|Ryujinx|yuzu|cemu|rpcs3|retroarch|dolphin-emu|duckstation|pcsx2|heroic|lutris" >/dev/null 2>&1
+}
+
+get_desired_wifi_powersave() {
+    # 1. Check Power Profile (power-profiles-daemon)
+    if command -v powerprofilesctl >/dev/null 2>&1; then
+        local profile
+        profile="$(powerprofilesctl get 2>/dev/null || true)"
+        if [ "$profile" = "performance" ]; then
+            echo "off"
+            return
+        elif [ "$profile" = "power-saver" ]; then
+            echo "on"
+            return
+        fi
+    fi
+
+    # 2. Check CPU EPP (Energy Performance Preference) for handhelds and tuned
+    local epp
+    epp="$(cat /sys/devices/system/cpu/cpufreq/policy0/energy_performance_preference 2>/dev/null || cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference 2>/dev/null || true)"
+    if [ "$epp" = "performance" ]; then
+        echo "off"
+        return
+    elif [ "$epp" = "power" ]; then
+        echo "on"
+        return
+    fi
+
+    # 3. Check AC Power status (always prioritize low latency / throughput on AC)
+    if is_on_ac_power; then
+        echo "off"
+        return
+    fi
+
+    # 4. On Battery: disable power save during active gameplay / streaming
+    if is_game_running; then
+        echo "off"
+        return
+    fi
+
+    # 5. On Battery: enable power save when idle / non-gaming
+    echo "on"
+}
+
+set_wifi_powersave() {
+    local state="$1" # "on" or "off"
+    for dev in $(iw dev 2>/dev/null | awk '$1=="Interface"{print $2}'); do
+        iw dev "$dev" set power_save "$state" 2>/dev/null || true
+    done
+}
+
+current_state=""
+
+# Clean restoration on termination
+trap 'set_wifi_powersave "on"; exit 0' SIGTERM SIGINT
+
+while true; do
+    desired="$(get_desired_wifi_powersave)"
+    if [ "$desired" != "$current_state" ]; then
+        set_wifi_powersave "$desired"
+        current_state="$desired"
+    fi
+    sleep 3
+done
