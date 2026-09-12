@@ -1,0 +1,12 @@
+[Unit]
+Description=Early Shadow Sync
+DefaultDependencies=no
+Before=systemd-sysusers.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/shadow-sync
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target
