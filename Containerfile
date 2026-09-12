@@ -165,7 +165,6 @@ RUN --mount=type=cache,dst=/var/cache \
         NetworkManager-wifi \
         NetworkManager-libnm && \
     dnf5 --enable-repo=terra-mesa -y install \
-        mesa-libOpenCL \
         intel-opencl \
         clinfo && \
     dnf5 -y install \
@@ -344,8 +343,8 @@ RUN --mount=type=cache,dst=/var/cache \
         libFAudio.i686 \
         vkBasalt.x86_64 \
         vkBasalt.i686 \
-        mangohud.x86_64 \
-        mangohud.i686 \
+        terra-mangohud.x86_64 \
+        terra-mangohud.i686 \
         obs-studio-plugin-vkcapture-hook-libs.x86_64 \
         obs-studio-plugin-vkcapture-hook-libs.i686 \
         openxr \
