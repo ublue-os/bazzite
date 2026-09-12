@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+# Re-run bazzite-tdpfix upon resume to ensure TDP and sysfs permissions
+# are restored after wake from suspend or hibernation.
+
+if [ "$1" = "post" ]; then
+    /usr/libexec/bazzite-tdpfix
+fi

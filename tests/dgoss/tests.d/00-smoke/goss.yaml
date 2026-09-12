@@ -187,6 +187,51 @@ command:
       [ "$status" -eq 0 ] || exit 1
       echo "OK: UTS_RELEASE and vermagic match /usr/lib/modules for all $found kernel(s)"
       '
+  wifi_powersave_disabled:
+    exec: |
+      sh -lc '
+      conf=/usr/lib/NetworkManager/conf.d/80-bazzite-wifi-powersave.conf
+      if [ ! -f "$conf" ]; then
+        echo "FAIL: $conf is missing"
+        exit 1
+      fi
+      val=$(sed -n "s/^wifi\.powersave[[:space:]]*=[[:space:]]*//p" "$conf")
+      if [ "$val" != "2" ]; then
+        echo "FAIL: wifi.powersave is ${val:-<empty>}, expected 2"
+        exit 1
+      fi
+      echo "OK: wifi powersave is disabled (wifi.powersave = 2)"
+      '
+    exit-status: 0
+    stdout:
+      - "/^OK:/"
+
+  bazzite_tdpfix_syntax:
+    exec: |
+      sh -lc '
+      script=/usr/libexec/bazzite-tdpfix
+      if [ ! -f "$script" ]; then
+        echo "SKIP: $script not present on non-deck image"
+        exit 0
+      fi
+      bash -n "$script" || { echo "FAIL: bash syntax error in $script"; exit 1; }
+      echo "OK: $script syntax is valid"
+      '
+    exit-status: 0
+    stdout:
+      - "/^(OK|SKIP):/"
+
+  bazzite_wifi_game_powersave_syntax:
+    exec: |
+      sh -lc '
+      script=/usr/libexec/bazzite-wifi-game-powersave
+      if [ ! -f "$script" ]; then
+        echo "FAIL: $script is missing"
+        exit 1
+      fi
+      bash -n "$script" || { echo "FAIL: bash syntax error in $script"; exit 1; }
+      echo "OK: $script syntax is valid"
+      '
     exit-status: 0
     stdout:
       - "/^OK:/"
@@ -194,3 +239,4 @@ command:
 file:
   /etc/os-release:
     exists: true
+

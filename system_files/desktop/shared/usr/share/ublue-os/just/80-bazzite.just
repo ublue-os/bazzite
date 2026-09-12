@@ -87,6 +87,99 @@ ssh ACTION="":
         ;;
     esac
 
+alias toggle-wifi-powersave := wifi-powersave
+
+# Manage Wi-Fi power saving (default: auto game-aware switching). Options: status | auto | enable | disable
+[group("network")]
+wifi-powersave ACTION="":
+    #!/usr/bin/bash
+    set -euo pipefail
+    source /usr/lib/ujust/ujust.sh
+    FILE="/etc/NetworkManager/conf.d/80-bazzite-wifi-powersave.conf"
+    SVC_ACTIVE="$(systemctl is-active bazzite-wifi-game-powersave.service 2>/dev/null || true)"
+
+    get_status_token() {
+      if [[ "$SVC_ACTIVE" == "active" ]]; then
+        echo "auto"
+      elif [[ -f "$FILE" ]] && grep -qE "wifi\.powersave[[:space:]]*=[[:space:]]*3" "$FILE"; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    CURRENT="Auto (Dynamic: Low Latency during games, Power Saving otherwise)"
+    case "$(get_status_token)" in
+      "auto")
+        CURRENT="Auto (Dynamic: Low Latency during games, Power Saving otherwise)"
+        ;;
+      "enable")
+        CURRENT="Always Enabled (Maximum Battery Life)"
+        ;;
+      "disable")
+        CURRENT="Always Disabled (Lowest Latency everywhere)"
+        ;;
+    esac
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "status" ]]; then
+      get_status_token
+      exit 0
+    fi
+    if [[ "$OPTION" == "help" ]]; then
+      echo "Usage: ujust wifi-powersave <option>"
+      echo "  <option>: Specify the option to skip the interactive prompt"
+      echo "  Use 'auto' to enable dynamic game-aware switching (low latency during games, power saving otherwise)"
+      echo "  Use 'enable' to keep Wi-Fi power saving always enabled (maximum battery life)"
+      echo "  Use 'disable' to keep Wi-Fi power saving always disabled (lowest latency everywhere)"
+      exit 0
+    fi
+    if [[ -z "$OPTION" ]]; then
+      echo -e "${bold}Wi-Fi Power Saving Mode:${normal} $CURRENT"
+      echo ""
+      echo "Wi-Fi power saving reduces battery drain, but causes periodic latency spikes"
+      echo "during game streaming (Moonlight, Sunshine, Chiaki) and multiplayer games."
+      echo ""
+      OPTION="$(ugum choose \
+        "Auto (Low Latency in games, Power Saving otherwise)" \
+        "Always Disable (Lowest Latency everywhere)" \
+        "Always Enable (Maximum Battery Life)" \
+        "Exit without saving")"
+    fi
+    case "$OPTION" in
+      "Auto (Low Latency in games, Power Saving otherwise)"|Auto|auto)
+        sudo mkdir -p /etc/NetworkManager/conf.d
+        printf '[connection]\nwifi.powersave = 3\n' | sudo tee "$FILE" > /dev/null
+        sudo systemctl reload NetworkManager || true
+        sudo systemctl unmask bazzite-wifi-game-powersave.service 2>/dev/null || true
+        sudo systemctl enable --now bazzite-wifi-game-powersave.service
+        echo -e "${bold}${green}Auto Mode Enabled${normal}: Power saving will automatically disable when games run, and re-enable when games exit."
+        ;;
+      "Always Disable (Lowest Latency everywhere)"|Disable|disable)
+        sudo systemctl stop bazzite-wifi-game-powersave.service 2>/dev/null || true
+        sudo systemctl disable bazzite-wifi-game-powersave.service 2>/dev/null || true
+        sudo mkdir -p /etc/NetworkManager/conf.d
+        printf '[connection]\nwifi.powersave = 2\n' | sudo tee "$FILE" > /dev/null
+        sudo systemctl reload NetworkManager || true
+        for dev in $(iw dev 2>/dev/null | awk '$1=="Interface"{print $2}'); do
+          sudo iw dev "$dev" set power_save off 2>/dev/null || true
+        done
+        echo -e "${bold}${yellow}Always Disabled${normal}: Wi-Fi power saving disabled system-wide (wifi.powersave=2)."
+        ;;
+      "Always Enable (Maximum Battery Life)"|Enable|enable)
+        sudo systemctl stop bazzite-wifi-game-powersave.service 2>/dev/null || true
+        sudo systemctl disable bazzite-wifi-game-powersave.service 2>/dev/null || true
+        sudo mkdir -p /etc/NetworkManager/conf.d
+        printf '[connection]\nwifi.powersave = 3\n' | sudo tee "$FILE" > /dev/null
+        sudo systemctl reload NetworkManager || true
+        for dev in $(iw dev 2>/dev/null | awk '$1=="Interface"{print $2}'); do
+          sudo iw dev "$dev" set power_save on 2>/dev/null || true
+        done
+        echo -e "${bold}${green}Always Enabled${normal}: Wi-Fi power saving enabled system-wide (wifi.powersave=3)."
+        ;;
+      *)
+        echo "${blue}No changes made.${normal}"
+        ;;
+    esac
+
 alias toggle-reisub := reisub
 
 # Manage REISUB, useful for force rebooting systems when pageflip timeouts and/or other horrible things happen. Options: status | enable | disable
