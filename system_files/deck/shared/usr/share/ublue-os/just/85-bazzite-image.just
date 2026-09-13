@@ -94,8 +94,10 @@ disable-ryzenadj-max-performance:
 # Re-enable input remapper feature on non-desktop images
 restore-input-remapper:
     systemctl enable --now input-remapper.service && \
+    mkdir -p ~/.local/share/applications ~/.config/autostart && \
     cp /usr/share/applications/input-remapper-gtk.desktop ~/.local/share/applications/input-remapper-gtk.desktop && \
-    sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop
+    sed -i '/NoDisplay=true/d' ~/.local/share/applications/input-remapper-gtk.desktop && \
+    if [[ -f /etc/xdg/autostart/input-remapper-autoload.desktop ]]; then cp /etc/xdg/autostart/input-remapper-autoload.desktop ~/.config/autostart/input-remapper-autoload.desktop && sed -i '/Hidden=true/d' ~/.config/autostart/input-remapper-autoload.desktop; fi
 
 # Configure video overrides for Steam
 configure-override-videos ACTION="":
