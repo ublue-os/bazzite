@@ -1,6 +1,6 @@
 # vim: set ft=make :
 
-# Setup and configure Sunshine Game Streaming host. Options: status | enable | enable-beta | update | disable | uninstall | portal | virtual-monitor
+# Setup and configure Sunshine Game Streaming host. Options: status | enable-flatpak | enable-brew | update | disable | uninstall | portal | virtual-monitor
 [group("gaming")]
 setup-sunshine ACTION="":
     #!/usr/bin/bash
@@ -48,8 +48,8 @@ setup-sunshine ACTION="":
     Restart=on-failure
     RestartSec=5s
     "
-      if [[ $(systemctl --user cat homebrew.sunshine-beta | grep sleep 2>/dev/null || true) == "" ||  $(systemctl --user cat homebrew.sunshine-beta | grep sleep 2>/dev/null || true) == "" ]]; then
-        systemctl --user edit --stdin homebrew.sunshine-beta <<< "$servicefile"
+      if [[ $(systemctl --user cat homebrew.sunshine | grep sleep 2>/dev/null || true) == "" ]]; then
+        systemctl --user edit --stdin homebrew.sunshine <<< "$servicefile"
       fi
     }
     virtual-monitor() {
@@ -180,24 +180,22 @@ setup-sunshine ACTION="":
           ;;
       esac
       echo "Service is $SERVICE_STATE"
-      OPTION=$(Choose "Enable" "Enable Beta" "Update" "Disable Service" "Uninstall" "Open Portal" "Configure Virtual Monitor" "Exit")
+      OPTION=$(Choose "Enable (Flatpak)" "Enable (Brew)" "Update" "Disable Service" "Uninstall" "Open Portal" "Configure Virtual Monitor" "Exit")
     fi
-    if [[ "${OPTION,,}" =~ ^enable[-[:space:]]beta ]]; then
+    if [[ "${OPTION,,}" =~ ^enable.*brew ]]; then
       if [[ $(cat /etc/bazzite/image_name) =~ deck ]]; then
-        echo "You are about to install the experimental ${yellow}Sunshine Beta${n} package via brew."
-        echo "If you encounter issues with the ${yellow}Sunshine Beta${n} brew package, consider layering from either the official or community-maintained COPR."
+        echo "You are about to install the Sunshine package via brew."
         echo "Read ${b}http://docs.bazzite.gg/Advanced/sunshine/#setting-up-sunshine-on-deck-images${n} to learn more."
       else
-        echo "This option is primarily intended for users of the Deck image as the flatpak package does not support capture via Kernel Mode Setting."
-        echo "Installing ${yellow}Sunshine${n} stable with the ${b}'Enable Sunshine'${n} option is going to be better for just about everyone else."
-        echo "You may also use this to install ${yellow}Sunshine Beta${n} as Sunshine does not provide a beta repo for their flatpak."
+        echo "This option is primarily intended for users of the Deck image as the flatpak does not support capture via Kernel Mode Setting (KMS)."
+        echo "Installing ${yellow}Sunshine${n} stable with the ${b}'Enable (Flatpak)'${n} option is going to be better for just about everyone else."
         echo "Alternatively, you may also install sunshine by: "
         echo "  1) obtaining and installing the beta flatpak manually from their GitHub repository;"
         echo "  2) layering from either the official or community-maintained COPR."
         echo "Only proceed if you know what you are doing. Read ${b}http://docs.bazzite.gg/Advanced/sunshine/#installing-sunshine-beta${n} to learn more."
       fi
       echo ""
-      if confirm "Confirm to proceed with installing the ${b}experimental${n} ${yellow}Sunshine Beta${n} package via brew? (This will remove any existing Sunshine installation!)"; then
+      if confirm "Confirm to proceed with installing the Sunshine via brew? (This will remove any existing Sunshine installation!)"; then
         echo "Disabling any previous ${yellow}Sunshine${n} services..."
         systemctl --user disable --now app-dev.lizardbyte.app.Sunshine.service || true
         if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
@@ -206,14 +204,17 @@ setup-sunshine ACTION="":
         fi
         brew trust LizardByte/homebrew
         brew tap LizardByte/homebrew
-        echo "${b}Cleaning${n} up any existing stable ${yellow}Sunshine${n} install before installing beta..."
+        echo "${b}Cleaning${n} up any existing beta ${yellow}Sunshine-beta${n} install before installing stable..."
         flatpak run --command=remove-additional-install.sh dev.lizardbyte.app.Sunshine || true
         flatpak uninstall -y dev.lizardbyte.app.Sunshine || true
+        brew services stop sunshine-beta || true
+        brew unpin sunshine-beta || true
+        brew uninstall sunshine-beta || true
         brew services stop sunshine || true
         brew unpin sunshine || true
         brew uninstall sunshine || true
-        brew install sunshine-beta
-        brew pin sunshine-beta
+        brew install sunshine
+        brew pin sunshine
         if ! sunshine_bin="$(command -v sunshine)"; then
           echo "${yellow}Sunshine${n} was not found on PATH after installation." >&2
           exit 1
@@ -234,7 +235,7 @@ setup-sunshine ACTION="":
             echo "system_tray = disabled" >> "$SUNSHINE_CONF"
           fi
         fi
-        brew services start sunshine-beta
+        brew services start sunshine
         override_service
       fi
     elif [[ "${OPTION,,}" =~ ^enable ]]; then
@@ -283,12 +284,12 @@ setup-sunshine ACTION="":
           echo "Setting up Homebrew environment..."
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         fi
-        brew services stop sunshine-beta || true
-        brew unpin sunshine-beta || true
-        brew upgrade sunshine-beta || true
-        brew pin sunshine-beta
+        brew services stop sunshine || true
+        brew unpin sunshine || true
+        brew upgrade sunshine || true
+        brew pin sunshine
         sudo /usr/libexec/sunshine-postinst
-        brew services start sunshine-beta
+        brew services start sunshine
         override_service
       elif [[ "$(get_status_token)" == "enable" ]]; then
         flatpak update dev.lizardbyte.app.Sunshine
