@@ -703,6 +703,7 @@ RUN --mount=type=cache,dst=/var/cache \
     ; fi && \
     printf "[scx]\nscx_service = \"scx_loader.service\"\n" >> /usr/share/steamos-manager/platform.toml && \
     sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/input-remapper-gtk.desktop && \
+    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nHidden=true@g' /etc/xdg/autostart/input-remapper-autoload.desktop && \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     for copr in \
         ublue-os/staging \
