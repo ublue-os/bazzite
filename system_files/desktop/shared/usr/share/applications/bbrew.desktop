@@ -10,4 +10,5 @@ Comment=The modern Terminal UI for managing Homebrew packages and casks
 Comment[sv]=Det moderna terminalgränssnittet för att hantera Homebrew-paket och caskar
 Comment[el]=Το σύγχρονο περιβάλλον τερματικού για τη διαχείριση πακέτων και βαρελιών Homebrew
 Comment[ru]=Современная консольная утилита для управления пакетами и cask Homebrew
+Comment[uk]=Сучасна консольна утиліта для керування встановленнями з Homebrew
 Categories=Utility;
