@@ -5,6 +5,7 @@ restore-input-remapper ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     DESKTOP_FILE="$HOME/.local/share/applications/input-remapper-gtk.desktop"
+    AUTOSTART_FILE="$HOME/.config/autostart/input-remapper-autoload.desktop"
     get_status_token() {
         if systemctl is-enabled --quiet input-remapper.service && [[ -f "$DESKTOP_FILE" ]]; then
             echo "enable"
@@ -21,14 +22,18 @@ restore-input-remapper ACTION="":
     }
     enable_input_remapper() {
         systemctl enable --now input-remapper.service
-        mkdir -p "$HOME/.local/share/applications"
+        mkdir -p "$HOME/.local/share/applications" "$HOME/.config/autostart"
         cp /usr/share/applications/input-remapper-gtk.desktop "$DESKTOP_FILE"
         sed -i '/NoDisplay=true/d' "$DESKTOP_FILE"
+        if [[ -f /etc/xdg/autostart/input-remapper-autoload.desktop ]]; then
+            cp /etc/xdg/autostart/input-remapper-autoload.desktop "$AUTOSTART_FILE"
+            sed -i '/Hidden=true/d' "$AUTOSTART_FILE"
+        fi
         echo "Input Remapper has been enabled."
     }
     disable_input_remapper() {
         systemctl disable --now input-remapper.service
-        rm -f "$DESKTOP_FILE"
+        rm -f "$DESKTOP_FILE" "$AUTOSTART_FILE"
         echo "Input Remapper has been disabled."
     }
     OPTION="{{ ACTION }}"
