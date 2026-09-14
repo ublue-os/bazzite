@@ -165,6 +165,7 @@ RUN --mount=type=cache,dst=/var/cache \
         NetworkManager-wifi \
         NetworkManager-libnm && \
     dnf5 --enable-repo=terra-mesa -y install \
+        mesa-libEGL.i686 \
         intel-opencl \
         clinfo && \
     dnf5 -y install \
