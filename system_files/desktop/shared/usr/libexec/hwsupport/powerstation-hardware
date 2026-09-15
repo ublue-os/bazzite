@@ -17,6 +17,11 @@ if [[ "$PRODUCT_NAME" == *AOKZOE* ]]; then
 	exit 0
 fi
 
+# Mysten / SuiPlay (Ayaneo 2S rebadge)
+if [[ "$sys_vendor_lc" == *"mysten"* ]] || [[ "$PRODUCT_NAME" == "SuiPlay0X1" ]]; then
+    exit 0
+fi
+
 # AYANEO
 if [[ "$board_vendor_lc" == *ayaneo* ]]; then
 	exit 0
@@ -24,7 +29,7 @@ fi
 case "$PRODUCT_NAME" in
 	AIR | "AIR Pro" | "AIR Plus" | "AIR 1S" | "AIR 1S Limited" | \
 	"AYA NEO 2021" | "AYANEO 2021" | "AYANEO 2021 Pro" | "AYANEO 2021 Pro Retro Power" | \
-	"AYANEO 2" | "AYANEO 2S" | "AYANEO 3" | "AYA NEO FOUNDER" | \
+	"AYANEO 2" | "AYANEO 2S" | "SuiPlay0X1" | "AYANEO 3" | "AYA NEO FOUNDER" | \
 	"AYANEO KUN" | KUN | GEEK | "GEEK 1S" | \
 	NEXT | "NEXT Advance" | "NEXT Lite" | "NEXT Pro" | \
 	"FLIP DS" | "FLIP KB" | "FLIP 1S DS" | "FLIP 1S KB" | SLIDE)
