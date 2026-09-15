@@ -1,0 +1,39 @@
+#!/usr/bin/bash
+
+set -euo pipefail
+
+SWAP_DIR="/var/swap"
+SWAP_FILE="$SWAP_DIR/swapfile"
+FSTAB_ENTRY="$SWAP_FILE none swap defaults 0 0"
+DRACUT_CONFIG="/etc/dracut.conf.d/resume.conf"
+HIBERNATION_ENABLED_FILE="/etc/bazzite/hibernation_enabled"
+
+if [[ -f "$HIBERNATION_ENABLED_FILE" ]]; then
+  echo "Hibernation is already enabled"
+  exit 0
+fi
+
+if [[ ! -e "$SWAP_FILE" ]]; then
+  SWAP_SIZE=$(free | awk '/Mem/ {x=$2/1024/1024; printf "%.0fG", (x<2 ? 2*x : x<8 ? 1.5*x : x) }')
+
+  if [[ ! -e "$SWAP_DIR" ]]; then
+    btrfs subvolume create "$SWAP_DIR"
+  fi
+
+  chattr +C "$SWAP_DIR"
+  restorecon "$SWAP_DIR"
+  mkswap --file -L SWAPFILE --size "$SWAP_SIZE" "$SWAP_FILE"
+fi
+
+if ! grep -qFx "$FSTAB_ENTRY" /etc/fstab; then
+  echo "$FSTAB_ENTRY" >> /etc/fstab
+fi
+
+swapon --all --verbose
+
+mkdir -p "$(dirname "$DRACUT_CONFIG")"
+echo 'add_dracutmodules+=" resume "' > "$DRACUT_CONFIG"
+rpm-ostree initramfs --enable
+
+mkdir -p "$(dirname "$HIBERNATION_ENABLED_FILE")"
+touch "$HIBERNATION_ENABLED_FILE"
