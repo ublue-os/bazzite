@@ -1,0 +1,14 @@
+# Create default user if none with UID 1000 exists already.
+
+[Unit]
+Description=Create Default User
+After=systemd-sysusers.service
+
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/bazzite-create-default-user
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

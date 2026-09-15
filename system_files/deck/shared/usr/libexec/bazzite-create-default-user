@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Create default user if none with UID 1000 exists already.
+# Used for onboarding users on first boot on deck images that bootup directly into steam.
+#
+# User: bazzite
+# Password: bazzite
+
+
+if ! getent passwd 1000 &> /dev/null; then
+    useradd -m -u 1000 -U -s /bin/bash bazzite
+    echo "bazzite:bazzite" | chpasswd
+fi
