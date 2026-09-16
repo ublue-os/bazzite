@@ -147,8 +147,8 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
       echo "PowerStation HTPC detected, unmasking powerstation and masking inputplumber".
       systemctl unmask powerstation.service
       systemctl enable --now powerstation.service
-      systemctl stop inputplumber.service
-      systemctl mask inputplumber.service
+      systemctl unmask inputplumber.service
+      systemctl enable --now inputplumber.service
       systemctl disable --now jupiter-fan-control.service
       systemctl disable --now vpower.service
       systemctl disable --now jupiter-biosupdate.service
@@ -160,8 +160,8 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
     echo "Non-handheld hardware detected, unmasking PPD and masking powerstation".
     systemctl unmask tuned.service
     systemctl unmask tuned-ppd.service
-    systemctl stop inputplumber.service
-    systemctl mask inputplumber.service
+    systemctl unmask inputplumber.service
+    systemctl enable --now inputplumber.service
     systemctl stop powerstation.service
     systemctl mask powerstation.service
     systemctl mask pulse8-cec-inputattach@.service
