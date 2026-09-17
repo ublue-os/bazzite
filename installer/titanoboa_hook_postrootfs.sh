@@ -110,7 +110,7 @@ ostreecontainer --url=$imageref:$imagetag --transport=containers-storage --no-si
 %include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
 %include /usr/share/anaconda/post-scripts/disable-fedora-flatpak.ks
 %include /usr/share/anaconda/post-scripts/install-flatpaks.ks
-%include /usr/share/anaconda/post-scripts/flatpak-restore-selinux-labels.ks
+%include /usr/share/anaconda/post-scripts/restore-selinux-labels.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 %include /usr/share/anaconda/post-scripts/secureboot-docs.ks
 
