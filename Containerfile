@@ -417,8 +417,6 @@ RUN --mount=type=cache,dst=/var/cache \
             gnome-shell-extension-launch-new-instance \
             gnome-shell-extension-places-menu \
             gnome-shell-extension-window-list && \
-        /ctx/ghcurl "https://raw.githubusercontent.com/jlu5/icoextract/079db7ec82c2f15718f42dfb2340ae26a95e690e/exe-thumbnailer.thumbnailer" -Lo /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
-        setfattr -n user.component -v "exe-thumbnailer" /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
         /ctx/build-gnome-extensions && \
         systemctl enable dconf-update.service \
     ; fi && \
