@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Only check the image when starting an interactive shell.
+case $- in
+    *i*) ;;
+    *) return 0 ;;
+esac
+
 if [ -e "/ostree" ] && [ -e "/sysroot" ] ; then
     # 1. Get the current image reference
     CURRENT_REF=$(rpm-ostree status --json | jq -r '.deployments[0]["container-image-reference"] // empty')
