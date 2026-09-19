@@ -265,11 +265,11 @@ sudo mokutil --import secure_boot.der
 
 ## 歷史星星
 
-<a href="https://star-history.com/#ublue-os/bazzite&Date">
+<a href="https://star-history.dera.page/#ublue-os/bazzite&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=ublue-os/bazzite&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=ublue-os/bazzite&type=Date" />
+    <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=ublue-os/bazzite&type=Date" />
   </picture>
 </a>
 
