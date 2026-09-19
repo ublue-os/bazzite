@@ -662,6 +662,19 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus && \
     sed -i 's/- xbox-elite/- deck/g' /usr/share/inputplumber/devices/50-steam_deck.yaml && \
     sed -i 's/LOG_LEVEL=info/LOG_LEVEL=debug/g' /usr/lib/systemd/system/inputplumber.service && \
+    sed -i \
+        -e 's|mkdir -p ~/.local/share/Steam|mkdir -p ~/.local/share|g' \
+        -e 's|-C ~/.local/share/Steam|-C ~/.local/share|g' \
+        -e 's|/etc/first-boot/bootstraplinux_ubuntu12_32.tar.xz|/usr/share/gamescope-session-plus/bootstrap_steam.tar.gz|g' \
+        -e 's|steamos-session-select desktop|steamosctl switch-to-desktop-mode|' \
+        -e '/# Run steam-tweaks if exists/,+3c\    if command -v /usr/bin/bazzite-steam-brand > /dev/null; then\
+            /usr/bin/bazzite-steam-brand\
+        fi' \
+        -e 's|export CLIENTCMD="steam -gamepadui -steamos3 -steampal -steamdeck"|export CLIENTCMD="steam -gamepadui -steamos3 -steampal -steamdeck -testoobeupdater"|' \
+        -e '/^    echo "set_bootstrap=1" >> "$STEAM_BOOTSTRAP_CONFIG"$/a\    if command -v /usr/bin/bazzite-steam-brand > /dev/null; then\
+            /usr/bin/bazzite-steam-brand\
+        fi' \
+        /usr/share/gamescope-session-plus/sessions.d/steam && \
     sed -i 's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="opengamepadui --accessibility disabled --overlay-mode --steam-input --steamos-manager --skip-update-pack|' /usr/share/gamescope-session-plus/sessions.d/ogui-steam && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
         --depth 1 \
