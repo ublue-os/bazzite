@@ -116,6 +116,9 @@ if [[ -f "/usr/share/gamescope-session-plus/bootstrap_steam.tar.gz" ]] && ! grep
     mkdir -p ~/.local/share
     tar xf /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz -C ~/.local/share
     echo "set_bootstrap=1" >> "$STEAM_BOOTSTRAP_CONFIG"
+    if command -v /usr/bin/bazzite-steam-brand > /dev/null; then
+        /usr/bin/bazzite-steam-brand
+    fi
 fi
 
 # If we have steam_notif_daemon binary start it
