@@ -661,7 +661,6 @@ RUN --mount=type=cache,dst=/var/cache \
     ; fi && \
     chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus && \
     sed -i 's/- xbox-elite/- deck/g' /usr/share/inputplumber/devices/50-steam_deck.yaml && \
-    sed -i 's/LOG_LEVEL=info/LOG_LEVEL=debug/g' /usr/lib/systemd/system/inputplumber.service && \
     sed -i \
         -e 's|^export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_ARCHIVE=.*$|export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_ARCHIVE="/usr/share/gamescope-session-plus/bootstrap_steam.tar.gz"|' \
         -e 's|^export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_DIR=.*$|export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_DIR="${HOME}/.local/share"|' \
