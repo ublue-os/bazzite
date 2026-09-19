@@ -668,6 +668,7 @@ RUN --mount=type=cache,dst=/var/cache \
         -e 's|export CLIENTCMD="steam -gamepadui -steamos3 -steampal -steamdeck"|export CLIENTCMD="steam -gamepadui -steamos3 -steampal -steamdeck -testoobeupdater"|' \
         /usr/share/gamescope-session-plus/sessions.d/steam && \
     sed -i 's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="opengamepadui --accessibility disabled --overlay-mode --steam-input --steamos-manager --skip-update-pack|' /usr/share/gamescope-session-plus/sessions.d/ogui-steam && \
+    sed -i 's|    steamos-session-select desktop|    if command -v steamosctl >/dev/null; then steamosctl switch-to-desktop-mode; else steamos-session-select desktop; fi|' /usr/share/gamescope-session-plus/sessions.d/steam && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
         --depth 1 \
         /tmp/jupiter-dock-updater-bin && \
