@@ -357,7 +357,7 @@ asus ACTION="":
             brew tap ublue-os/tap
             echo "Installing: ${brew_packages[*]}"
             sudo -v || exit 1
-            brew install --cask "${brew_packages[@]}"
+            env -u SUDO_ASKPASS brew install --cask "${brew_packages[@]}"
             sudo systemctl daemon-reload
             sudo systemctl enable --now asusd.service asus-shutdown.service
             sudo udevadm control --reload
@@ -391,7 +391,8 @@ asus ACTION="":
             sudo udevadm control --reload
             sudo udevadm trigger
             echo "Uninstalling: ${brew_packages[*]}"
-            brew remove "${brew_packages[@]}"
+            sudo -v || exit 1
+            env -u SUDO_ASKPASS brew remove "${brew_packages[@]}"
             echo 'Complete.'
         elif [ ${#layered_packages[@]} -gt 0 ]; then
             systemctl --user disable --now asusd-user.service 2>/dev/null || true
