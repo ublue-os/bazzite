@@ -329,8 +329,8 @@ asus ACTION="":
             while true; do
                 read -r -p "Proceed to remove these layers first? {{ YELLOW }}(Y/n){{ NORMAL }} " REPLY || exit 1
                 if [[ ! $REPLY || $REPLY == "Y" || $REPLY == "y" ]]; then
-                    systemctl --user disable --now asusd-user.service
-                    sudo systemctl disable --now asusd.service asus-shutdown.service
+                    systemctl --user disable --now asusd-user.service 2>/dev/null || true
+                    sudo systemctl disable --now asusd.service asus-shutdown.service 2>/dev/null || true
                     sudo udevadm control --reload
                     sudo udevadm trigger
                     rpm-ostree uninstall -y "${layered_packages[*]}"
@@ -356,6 +356,7 @@ asus ACTION="":
             brew trust ublue-os/tap 
             brew tap ublue-os/tap
             echo "Installing: ${brew_packages[*]}"
+            sudo -v || exit 1
             brew install --cask "${brew_packages[@]}"
             sudo systemctl daemon-reload
             sudo systemctl enable --now asusd.service asus-shutdown.service
@@ -385,16 +386,16 @@ asus ACTION="":
         done
 
         if [ ${#brew_packages[@]} -gt 0 ]; then
-            systemctl --user disable --now asusd-user.service
-            sudo systemctl disable --now asusd.service asus-shutdown.service
+            systemctl --user disable --now asusd-user.service 2>/dev/null || true
+            sudo systemctl disable --now asusd.service asus-shutdown.service 2>/dev/null || true
             sudo udevadm control --reload
             sudo udevadm trigger
             echo "Uninstalling: ${brew_packages[*]}"
             brew remove "${brew_packages[@]}"
             echo 'Complete.'
         elif [ ${#layered_packages[@]} -gt 0 ]; then
-            systemctl --user disable --now asusd-user.service
-            sudo systemctl disable --now asusd.service asus-shutdown.service
+            systemctl --user disable --now asusd-user.service 2>/dev/null || true
+            sudo systemctl disable --now asusd.service asus-shutdown.service 2>/dev/null || true
             sudo udevadm control --reload
             sudo udevadm trigger
             echo "Uninstalling: ${layered_packages[*]}"
