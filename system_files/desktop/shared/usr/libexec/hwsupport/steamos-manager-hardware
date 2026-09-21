@@ -33,4 +33,9 @@ if [[ "$PRODUCT_NAME" == *"Claw"* ]]; then
 	exit 0
 fi
 
+# Anbernic Win600
+if [[ "$PRODUCT_NAME" == "Win600"* ]]; then
+	exit 0
+fi
+
 exit 1
