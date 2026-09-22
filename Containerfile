@@ -654,7 +654,8 @@ RUN --mount=type=cache,dst=/var/cache \
         qt6-qtvirtualkeyboard \
         xorg-x11-server-Xvfb \
         python-vdf \
-        python-crcmod && \
+        python-crcmod \
+        acpid && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y install --enable-repo=terra \
             plasma-applet-tdp-control \
@@ -764,6 +765,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl disable vpower.service && \
     systemctl disable jupiter-biosupdate.service && \
     systemctl disable jupiter-controller-update.service && \
+    systemctl disable acpid.service && \
     dnf5 config-manager setopt skip_if_unavailable=1 && \
     /ctx/image-info && \
     /ctx/build-initramfs && \

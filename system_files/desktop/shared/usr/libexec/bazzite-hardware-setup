@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=78
+HWS_VER=79
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -251,10 +251,14 @@ if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
 fi
 
 # HIBERNATION
-if /usr/libexec/hwsupport/needs-hibernation && [[ ! -f /etc/bazzite/hibernation_enabled ]]; then
-  echo "Hardware requiring hibernation detected, enabling hibernation"
-  /usr/libexec/bazzite-enable-hibernation || exit 1
-  SHOULD_REBOOT=true
+if /usr/libexec/hwsupport/needs-hibernation; then
+  if [[ ! -f /etc/bazzite/hibernation_enabled ]]; then
+    echo "Hardware requiring hibernation detected, enabling hibernation"
+    /usr/libexec/bazzite-enable-hibernation || exit 1
+    SHOULD_REBOOT=true
+  fi
+
+  systemctl enable --now acpid.service
 fi
 
 # HOSTNAME FIX
