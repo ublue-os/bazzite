@@ -1,1 +1,8 @@
+# InputPlumber owns persisted AYANEO 3 joystick-ring settings. Keep these
+# attributes root-writable and skip Steam's generic RGB access below.
+# Ship together with InputPlumber's managed AYANEO profile and lighting API.
+ACTION=="add|change", SUBSYSTEM=="leds", KERNEL=="*:rgb:joystick_rings", DRIVERS=="hid-ayaneo", RUN+="/usr/bin/chmod 0644 /sys%p/brightness /sys%p/multi_intensity /sys%p/trigger", GOTO="steam_rgb_leds_end"
+
 ACTION=="add|change", SUBSYSTEM=="leds", KERNEL=="*:rgb:*", RUN+="/usr/bin/sh -c 'cd /sys/class/leds/%k && chmod 0666 brightness brightness_scale brightness_startup effect enabled mode multi_intensity multi_intensity_startup profile speed delay trigger delay_on delay_off 2>/dev/null; exit 0'"
+
+LABEL="steam_rgb_leds_end"
