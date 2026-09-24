@@ -767,6 +767,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl disable jupiter-biosupdate.service && \
     systemctl disable jupiter-controller-update.service && \
     systemctl disable acpid.service && \
+    find /etc/acpi/events -mindepth 1 -delete && \
     dnf5 config-manager setopt skip_if_unavailable=1 && \
     /ctx/image-info && \
     /ctx/build-initramfs && \
