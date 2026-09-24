@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=78
+HWS_VER=79
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -139,6 +139,10 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
       systemctl enable --now powerstation.service
       systemctl unmask inputplumber.service
       systemctl enable --now inputplumber.service
+      if [[ "$VEN_ID" == "AYANEO" && "$SYS_ID" == "AYANEO 3" ]]; then
+        echo "Enabling InputPlumber sleep hooks for AYANEO 3"
+        systemctl enable inputplumber-suspend.service
+      fi
       systemctl disable --now jupiter-fan-control.service
       systemctl disable --now vpower.service
       systemctl disable --now jupiter-biosupdate.service
