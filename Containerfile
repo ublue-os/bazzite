@@ -240,7 +240,6 @@ RUN --mount=type=cache,dst=/var/cache \
         usbip \
         compsize \
         ryzenadj \
-        ddcutil \
         input-remapper \
         libinput-utils \
         i2c-tools \
@@ -307,6 +306,9 @@ RUN --mount=type=cache,dst=/var/cache \
             switcheroo-control cardwire && \
     dnf5 -y install --enable-repo=terra \
         cardwire-gui && \
+    dnf5 -y swap --allowerasing \
+        --repo terra-extras \
+            ddcutil terra-ddcutil && \
     ln -s /dev/null /etc/NetworkManager/dispatcher.d/04-iscsi && \
     systemctl mask iscsi && \
     systemctl mask systemd-remount-fs.service && \
