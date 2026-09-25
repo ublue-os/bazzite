@@ -1,0 +1,32 @@
+#!/usr/bin/bash
+# Reset GPU DPM power profile and restore sustained TDP limits on resume/boot
+# Prevents APU throttling down to low power (e.g. 17W) and eliminates false 100% GPU busy reporting.
+
+# 1. Reset GPU DPM state to clear uninitialized telemetry and wake from locked minimum clocks
+for card_perf in /sys/class/drm/card*/device/power_dpm_force_performance_level; do
+    if [ -w "$card_perf" ]; then
+        echo "manual" > "$card_perf" 2>/dev/null || true
+        sleep 0.1
+        echo "auto" > "$card_perf" 2>/dev/null || true
+    fi
+done
+
+# 2. Restore TDP via ASUS Armoury firmware attributes if present
+ASUS_ARMOURY="/sys/class/firmware-attributes/asus-armoury/attributes"
+if [ -d "$ASUS_ARMOURY" ]; then
+    # Ensure sustained 25W SPL / 25W SPPT / 30W FPPT on handheld platforms
+    if [ -w "$ASUS_ARMOURY/ppt_pl1_spl/current_value" ]; then
+        echo 25 > "$ASUS_ARMOURY/ppt_pl1_spl/current_value" 2>/dev/null || true
+    fi
+    if [ -w "$ASUS_ARMOURY/ppt_pl2_sppt/current_value" ]; then
+        echo 25 > "$ASUS_ARMOURY/ppt_pl2_sppt/current_value" 2>/dev/null || true
+    fi
+    if [ -w "$ASUS_ARMOURY/ppt_pl3_fppt/current_value" ]; then
+        echo 30 > "$ASUS_ARMOURY/ppt_pl3_fppt/current_value" 2>/dev/null || true
+    fi
+fi
+
+# 3. Restore via ryzenadj fallback if available
+if command -v ryzenadj >/dev/null 2>&1; then
+    /usr/bin/ryzenadj --stapm-limit=25000 --fast-limit=30000 --slow-limit=25000 >/dev/null 2>&1 || true
+fi

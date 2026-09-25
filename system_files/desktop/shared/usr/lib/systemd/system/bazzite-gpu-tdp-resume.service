@@ -1,0 +1,11 @@
+[Unit]
+Description=Reset GPU DPM and restore TDP on resume from sleep
+After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+ConditionPathExists=/usr/libexec/hwsupport/non-valve-handheld-hardware
+
+[Service]
+Type=oneshot
+ExecStart=-/usr/libexec/bazzite-gpu-tdp-resume-reset
+
+[Install]
+WantedBy=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
