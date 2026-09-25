@@ -537,6 +537,7 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl disable tailscaled.service && \
     systemctl enable dev-hugepages1G.mount && \
     systemctl enable ds-inhibit.service && \
+    systemctl enable bazzite-gpu-tdp-resume.service && \
     systemctl --global enable bazzite-user-setup.service && \
     systemctl --global enable podman.socket && \
     systemctl --global enable systemd-tmpfiles-setup.service && \
