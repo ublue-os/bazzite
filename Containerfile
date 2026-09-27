@@ -280,6 +280,7 @@ RUN --mount=type=cache,dst=/var/cache \
         glow \
         gum \
         vim \
+        msedit \
         cockpit-networkmanager \
         cockpit-podman \
         cockpit-selinux \
