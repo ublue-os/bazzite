@@ -461,6 +461,7 @@ RUN --mount=type=cache,dst=/var/cache \
     desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/nvtop.desktop && \
     desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/btop.desktop && \
     desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/yad-icon-browser.desktop && \
+    desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/com.microsoft.edit.desktop && \
     sed -i 's/#UserspaceHID.*/UserspaceHID=true/' /etc/bluetooth/input.conf && \
     sed -i "s|grub_probe\} --target=device /\`|grub_probe} --target=device /sysroot\`|g" /usr/bin/grub2-mkconfig && \
     rm -f /usr/lib/systemd/system/service.d/50-keep-warm.conf && \
@@ -666,12 +667,9 @@ RUN --mount=type=cache,dst=/var/cache \
             plasma-applet-tdp-control \
     ; fi && \
     chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus && \
-    sed -i 's/- xbox-elite/- deck/g' /usr/share/inputplumber/devices/50-steam_deck.yaml && \
     sed -i \
         -e 's|^export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_ARCHIVE=.*$|export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_ARCHIVE="/usr/share/gamescope-session-plus/bootstrap_steam.tar.gz"|' \
         -e 's|^export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_DIR=.*$|export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_DIR="${HOME}/.local/share"|' \
-        -e 's|export CLIENTCMD="steam -gamepadui -steamos3 -steampal -steamdeck"|export CLIENTCMD="steam -gamepadui -steamos3 -steampal -steamdeck -testoobeupdater"|' \
-        /usr/share/gamescope-session-plus/sessions.d/steam && \
     sed -i 's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="opengamepadui --accessibility disabled --overlay-mode --steam-input --steamos-manager --skip-update-pack|' /usr/share/gamescope-session-plus/sessions.d/ogui-steam && \
     git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
         --depth 1 \
