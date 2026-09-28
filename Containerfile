@@ -310,6 +310,9 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y swap --allowerasing \
         --repo terra-extras \
             ddcutil terra-ddcutil && \
+    dnf5 -y swap --allowerasing \
+        --repo terra-extras \
+            libddcutil terra-libddcutil && \
     ln -s /dev/null /etc/NetworkManager/dispatcher.d/04-iscsi && \
     systemctl mask iscsi && \
     systemctl mask systemd-remount-fs.service && \
