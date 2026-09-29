@@ -68,10 +68,13 @@ resize-effect=true
 [org.gnome.shell.extensions.ncom.github.hermes83.compiz-alike-magic-lamp-effect]
 duration=250
 
-[org/gnome/shell/extensions/desktop-cube]
+[org.gnome.shell.extensions.desktop-cube]
 last-first-gap=false
 enable-desktop-edge-switch=false
 enable-panel-dragging=true
 enable-desktop-dragging=true
 enable-overview-edge-switch=false
 enable-overview-dragging=false
+
+[org.gnome.shell.extensions.touchup]
+navigation-bar-mode='buttons'

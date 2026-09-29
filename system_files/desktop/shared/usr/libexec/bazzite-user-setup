@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=55
+USER_SETUP_VER=56
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -137,6 +137,10 @@ else
       if [[ $SYS_ID == "Laptop ("* ]]; then
         echo 'Applying font fix for Framework 13'
         dconf write /org/gnome/desktop/interface/text-scaling-factor 1.25
+      fi
+      if [[ $SYS_ID == "Laptop (12"* ]]; then
+        echo 'Enabling improved touch screen behavior for Framework 12'
+        gnome-extensions enable touchup@mityax
       fi
       touch "$BAZZITE_CONFIG_DIR/framework-initialized"
     fi

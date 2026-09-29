@@ -39,6 +39,13 @@ rm -rf /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build
 mkdir -p /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io
 mv /usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io/src/* /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io/
 
+# TouchUp
+/ctx/ghcurl "$(/ctx/ghcurl https://api.github.com/repos/mityax/gnome-extension-touchup/releases/latest | jq -r '.assets[] | select(.name | test(".*\\.shell-extension\\.zip$")).browser_download_url')" -Lo /tmp/touchup.zip
+mkdir -p /usr/share/gnome-shell/extensions/touchup@mityax
+unzip -o /tmp/touchup.zip -d /usr/share/gnome-shell/extensions/touchup@mityax
+glib-compile-schemas /usr/share/gnome-shell/extensions/touchup@mityax/schemas
+rm /tmp/touchup.zip
+
 # Cleanup
 dnf5 -y remove glib2-devel
 rm -rf /usr/share/gnome-shell/extensions/tmp
