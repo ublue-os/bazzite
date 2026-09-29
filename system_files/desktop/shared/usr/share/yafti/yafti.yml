@@ -280,7 +280,7 @@ screens:
             script: "ujust setup-sunshine enable"
           - id: "enable-brew"
             label: "Enable Sunshine - Brew (for deck users)"
-            script: "ujust setup-sunshine enable-beta"
+            script: "ujust setup-sunshine enable-brew"
           - id: "update"
             label: "Update Sunshine"
             script: "ujust setup-sunshine update"
