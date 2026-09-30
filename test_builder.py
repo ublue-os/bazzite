@@ -459,3 +459,13 @@ def test_sbom_attach_dry_run_emits_placeholder_digest(capsys):
     )
     assert b.cmd_sbom_attach(args) == 0
     assert json.loads(capsys.readouterr().out) == {"sbom_digest": "sha256:dryrun-sbom"}
+
+
+def test_resolve_bakes_image_vendor_into_build_args(capsys):
+    """CI passes the lowercased repo owner, so fork builds identify as the fork."""
+    args = b.build_parser().parse_args([
+        "resolve", "--image", "bazzite", "--upstream-tag", "44.20260820.0",
+        "--skip-registry", "--image-vendor", "tedohayer",
+    ])
+    assert b.cmd_resolve(args) == 0
+    assert json.loads(capsys.readouterr().out)["build_args"]["IMAGE_VENDOR"] == "tedohayer"
