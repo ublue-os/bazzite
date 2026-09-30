@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+# Install the Steam Deck-patched UPower and lock its version.
+#
+# Replaces the default upower with the Bazzite-modified version and
+# versionlocks both upower and upower-libs to prevent unintended updates.
+#
+set -euo pipefail
+
+# ── 1. Swap to Steam Deck-patched UPower ────────────────────────────────────
+# Replace the default upower with the Bazzite-modified version from the COPR repo.
+echo "==> Installing Steam Deck-patched UPower..."
+dnf5 -y swap \
+    --repo copr:copr.fedorainfracloud.org:ublue-os:bazzite \
+    upower upower
+
+# ── 2. Versionlock UPower packages ──────────────────────────────────────────
+# Prevent package manager from updating upower and upower-libs beyond the patched version.
+echo "==> Versionlocking UPower packages..."
+dnf5 versionlock add \
+    upower \
+    upower-libs
+
+# ── 3. Run cleanup ──────────────────────────────────────────────────────────
+# Clean up package manager caches and temporary files.
+echo "==> Running cleanup..."
+/ctx/cleanup

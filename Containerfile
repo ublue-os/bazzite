@@ -194,43 +194,14 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    dnf5 -y copr enable ublue-os/staging && \
-    dnf5 -y copr enable ublue-os/packages && \
-    dnf5 -y copr enable ublue-os/bazzite && \
-    dnf5 -y copr enable ublue-os/bazzite-multilib && \
-    dnf5 -y copr enable ycollet/audinux && \
-    dnf5 config-manager unsetopt skip_if_unavailable && \
-    /ctx/cleanup
+    /ctx/bazzite-deck/setup-copr-repos
 
 # Configure KDE & GNOME
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y install \
-        sddm && \
-    dnf5 -y remove \
-        jupiter-sd-mounting-btrfs \
-        ds-inhibit \
-        plasma-login-manager && \
-    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        dnf5 -y remove \
-            steamdeck-kde-presets-desktop && \
-       dnf5 -y install \
-            steamdeck-kde-presets \
-    ; else \
-        ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl && \
-        ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl && \
-        rm -f /usr/share/backgrounds/default.xml && \
-        dnf5 -y remove \
-            malcontent-control \
-    ; fi && \
-    if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then \
-        systemctl disable gdm.service \
-    ; fi && \
-    systemctl enable sddm.service && \
-    /ctx/cleanup
+    /ctx/bazzite-deck/configure-desktop
 
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache \
@@ -238,65 +209,14 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y install --enable-repo=terra \
-        jupiter-fan-control \
-        jupiter-hw-support-btrfs \
-        galileo-mura \
-        steamdeck-dsp \
-        powerbuttond \
-        inputplumber \
-        hid-replay \
-        gamescope-session-ogui-steam \
-        steamos-manager-powerstation \
-        gamemode-news-hook \
-        vpower \
-        steam-notif-daemon \
-        acpica-tools \
-        sdgyrodsu \
-        ibus-pinyin \
-        ibus-table-chinese-cangjie \
-        ibus-table-chinese-quick \
-        socat \
-        zstd \
-        zenity \
-        newt \
-        qt6-qtvirtualkeyboard \
-        xorg-x11-server-Xvfb \
-        python-vdf \
-        python-crcmod \
-        acpid && \
-    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        dnf5 -y install --enable-repo=terra \
-            plasma-applet-tdp-control \
-    ; fi && \
-    chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus && \
-    sed -i \
-        -e 's|^export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_ARCHIVE=.*$|export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_ARCHIVE="/usr/share/gamescope-session-plus/bootstrap_steam.tar.gz"|' \
-        -e 's|^export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_DIR=.*$|export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_DIR="${HOME}/.local/share"|' \
-        /usr/share/gamescope-session-plus/sessions.d/steam && \
-    sed -i 's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="opengamepadui --accessibility disabled --overlay-mode --steam-input --steamos-manager --skip-update-pack|' /usr/share/gamescope-session-plus/sessions.d/ogui-steam && \
-    git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
-        --depth 1 \
-        /tmp/jupiter-dock-updater-bin && \
-    mv -v /tmp/jupiter-dock-updater-bin/packaged/usr/lib/jupiter-dock-updater /usr/libexec/jupiter-dock-updater && \
-    setfattr -n user.component -v "jupiter-dock-updater" /usr/libexec/jupiter-dock-updater/* && \
-    ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
-    ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
-    ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
-    /ctx/cleanup
+    /ctx/bazzite-deck/install-packages
 
 # Install Steam Deck patched UPower
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:ublue-os:bazzite \
-        upower upower && \
-    dnf5 versionlock add \
-        upower \
-        upower-libs && \
-    /ctx/cleanup
+    /ctx/bazzite-deck/install-patched-upower
 
 # Install Gamescope Session Supporting changes
 # Add bootstrap_steam.tar.gz used by gamescope-session (Thanks GE & Nobara Project!)
@@ -306,11 +226,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    mkdir -p /usr/share/gamescope-session-plus/ && \
-    curl --retry 3 -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz && \
-    setfattr -n user.component -v "steam-bootstrap" /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz && \
-    setfattr -n user.update-interval -v "yearly" /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz && \
-    /ctx/cleanup
+    /ctx/bazzite-deck/install-gamescope-session
 
 # Cleanup & Finalize
 RUN --mount=type=cache,dst=/var/cache \
@@ -318,68 +234,11 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    mkdir -p "/etc/xdg/autostart" && \
-    mv "/etc/skel/.config/autostart/steam.desktop" "/etc/xdg/autostart/steam.desktop" && \
-    sed -i 's@Exec=waydroid first-launch@Exec=/usr/bin/waydroid-launcher first-launch\nX-Steam-Library-Capsule=/usr/share/applications/Waydroid/capsule.png\nX-Steam-Library-Hero=/usr/share/applications/Waydroid/hero.png\nX-Steam-Library-Logo=/usr/share/applications/Waydroid/logo.png\nX-Steam-Library-StoreCapsule=/usr/share/applications/Waydroid/store-logo.png\nX-Steam-Controller-Template=Desktop@g' /usr/share/applications/Waydroid.desktop && \
-    sed -i 's|/usr/lib/|/usr/libexec/|g' /usr/share/steamos-manager/platform.toml && \
-    if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
-        sed -i 's|Exec=.*|Exec=/usr/bin/return-to-gamemode|' /etc/skel/Desktop/Return.desktop && \
-        printf "\n[session]\ndesktop = \"plasma.desktop\"\n" >> /usr/share/steamos-manager/platform.toml \
-    ; else \
-        printf "\n[session]\ndesktop = \"gnome.desktop\"\n" >> /usr/share/steamos-manager/platform.toml \
-    ; fi && \
-    printf "[scx]\nscx_service = \"scx_loader.service\"\n" >> /usr/share/steamos-manager/platform.toml && \
-    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' /usr/share/applications/input-remapper-gtk.desktop && \
-    sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nHidden=true@g' /etc/xdg/autostart/input-remapper-autoload.desktop && \
-    sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    for copr in \
-        ublue-os/staging \
-        ublue-os/packages \
-        ublue-os/bazzite \
-        ublue-os/bazzite-multilib \
-        ycollet/audinux; \
-    do \
-        dnf5 -y copr disable -y $copr; \
-    done && unset -v copr && \
-    { rm -v /usr/share/applications/bazzite-steam-bpm.desktop || true; } && \
-    news_branch="${IMAGE_BRANCH}" && \
-    case "${news_branch}" in \
-        testing|unstable) ;; \
-        *) news_branch="stable" ;; \
-    esac && \
-    sed -i "s|^github = .*|github = https://raw.githubusercontent.com/ublue-os/bazzite-gamemode-news/refs/heads/${news_branch}/announcements.json|" /etc/gamemode-news-hook.conf && \
-    mkdir -p /usr/lib/systemd/user/gamescope-session-plus@ogui-steam.service.wants && \
-    ln -s /usr/lib/systemd/user/steamos-powerbuttond.service /usr/lib/systemd/user/gamescope-session-plus@ogui-steam.service.wants/ && \
-    sed -i 's/@steam/@ogui-steam/g' /usr/lib/systemd/user/gamemode-news-hook.service && \
-    sed -i '/^\[Service\]$/a KillSignal=SIGKILL\nTimeoutStopSec=2s\nTimeoutStopFailureMode=kill' /usr/lib/systemd/user/gamemode-news-hook.service && \
-    systemctl enable --global steamos-manager.service && \
-    systemctl enable --global steamos-manager-session-cleanup.service && \
-    systemctl enable --global steamos-manager-configure-cecd.service && \
-    systemctl enable steamos-manager.service && \
-    systemctl enable inputplumber.service && \
-    systemctl enable bazzite-autologin.service && \
-    systemctl enable wireplumber-workaround.service && \
-    systemctl enable wireplumber-sysconf.service && \
-    systemctl enable pipewire-workaround.service && \
-    systemctl enable pipewire-sysconf.service && \
-    systemctl --global enable gamemode-news-hook.service && \
-    systemctl --global disable sdgyrodsu.service && \
-    systemctl --global enable steamos-powerbuttond.service && \
-    systemctl disable powerstation.service && \
-    systemctl disable input-remapper.service && \
-    systemctl disable uupd.timer && \
-    systemctl disable jupiter-fan-control.service && \
-    systemctl disable vpower.service && \
-    systemctl disable jupiter-biosupdate.service && \
-    systemctl disable jupiter-controller-update.service && \
-    systemctl disable acpid.service && \
-    find /etc/acpi/events -mindepth 1 -delete && \
-    dnf5 config-manager setopt skip_if_unavailable=1 && \
-    /ctx/image-info && \
-    /ctx/build-initramfs && \
-    /ctx/finalize
+    /ctx/bazzite-deck/cleanup-finalize
 
-RUN --mount=type=tmpfs,target=/run --network=none bootc container lint
+RUN --mount=type=tmpfs,target=/run \
+    --network=none \
+    bootc container lint
 
 ################
 # NVIDIA BUILDS

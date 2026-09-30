@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+#
+# Install Gamescope Session supporting files for Bazzite.
+#
+# Downloads the Steam bootstrap archive used by gamescope-session-plus
+# and sets component metadata attributes for tracking.
+#
+set -euo pipefail
+
+# ── 1. Create gamescope-session-plus directory ──────────────────────────────
+# Ensure the target directory exists before downloading files.
+echo "==> Creating gamescope-session-plus directory..."
+mkdir -p /usr/share/gamescope-session-plus/
+
+# ── 2. Download Steam bootstrap archive ─────────────────────────────────────
+# Fetch the Steam bootstrap tarball used by gamescope-session-plus.
+echo "==> Downloading Steam bootstrap archive..."
+curl --retry 3 -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz \
+    https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz
+
+# ── 3. Set component metadata attributes ────────────────────────────────────
+# Tag the bootstrap archive with component and update-interval for tracking.
+echo "==> Setting component metadata attributes..."
+setfattr \
+    -n user.component \
+    -v "steam-bootstrap" \
+    /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz
+
+setfattr \
+    -n user.update-interval \
+    -v "yearly" \
+    /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz
+
+# ── 4. Run cleanup ──────────────────────────────────────────────────────────
+# Clean up package manager caches and temporary files.
+echo "==> Running cleanup..."
+/ctx/cleanup
