@@ -283,6 +283,7 @@ def run(
     retry_wait: float = 5.0,
     env: dict | None = None,
     interactive: bool = False,
+    cwd: str | Path | None = None,
 ) -> subprocess.CompletedProcess:
     """Run a command. Streams its output to our stderr unless capture=True.
 
@@ -297,7 +298,7 @@ def run(
     should pass capture=True, and those are logged at DEBUG rather than INFO.
     """
     printable = " ".join(cmd)
-    log.info("+ %s", printable)
+    log.info("+ %s%s", f"(cd {cwd} && " if cwd else "", printable + (")" if cwd else ""))
     if dry_run:
         return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
 
@@ -312,6 +313,7 @@ def run(
                 stdout=None if capture or interactive else sys.stderr,
                 text=capture,
                 env=run_env,
+                cwd=cwd,
             )
             if capture:
                 log.debug("output: %s", result.stdout)
@@ -902,16 +904,20 @@ def cmd_sbom_attach(args: argparse.Namespace) -> int:
     """Attach the SBOM as an OCI referrer artifact on the image digest, then
     look up its own digest so it can be signed in turn.
     """
-    sbom_path = Path(args.sbom)
+    sbom_path = Path(args.sbom).resolve()
+    # oras refuses absolute file paths ("absolute file path detected"), so
+    # attach by bare name from the SBOM's own directory -- same as the old
+    # workflow's `cd "$(dirname "$SBOM")"`.
     run(
         [
             "oras", "attach",
             "--artifact-type", "application/vnd.spdx+json",
             "--annotation", f"filename={sbom_path.name}",
             f"{args.image}@{args.digest}",
-            str(sbom_path),
+            sbom_path.name,
         ],
         dry_run=args.dry_run,
+        cwd=sbom_path.parent,
     )
 
     if args.dry_run:
