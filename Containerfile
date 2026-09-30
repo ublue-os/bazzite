@@ -77,7 +77,8 @@ RUN --mount=type=cache,dst=/var/cache \
 EOF
 
 # Install needed firmware blobs
-RUN --mount=type=bind,src=firmware,dst=/ctx/firmware \
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=bind,src=firmware,dst=/ctx/firmware \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     <<'EOF'
@@ -86,7 +87,7 @@ EOF
 
 # Copy Homebrew files from the brew image
 COPY --from=brew /system_files/ /tmp/brew_files/
-RUN <<'EOF'
+RUN  --mount=type=bind,from=ctx,source=/,target=/ctx <<'EOF'
 /ctx/bazzite/copy-brew-files
 EOF
 
