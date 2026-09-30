@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#
+# Install ujust-picker from the latest GitHub release for the Bazzite image.
+#
+set -euo pipefail
+
+# ── 1. Download ujust-picker from GitHub releases ──────────────────────────
+# Fetch the latest x86_64 binary from the ublue-os/bazzite-ujust-picker repo.
+echo "==> Downloading ujust-picker..."
+
+release_url=$(/ctx/ghcurl \
+    "https://api.github.com/repos/ublue-os/bazzite-ujust-picker/releases/latest" \
+    -s \
+    | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')
+
+/ctx/ghcurl "${release_url}" -sL -o /usr/bin/ujust-picker
+unset -v release_url
+
+# ── 2. Set permissions and component attribute ─────────────────────────────
+echo "==> Configuring ujust-picker..."
+chmod +x /usr/bin/ujust-picker
+setfattr -n user.component -v "ujust-picker" /usr/bin/ujust-picker
+
+# ── 3. Cleanup ─────────────────────────────────────────────────────────────
+echo "==> Running cleanup..."
+/ctx/cleanup

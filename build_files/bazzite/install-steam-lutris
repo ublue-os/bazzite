@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+#
+# Install Steam, Lutris, and supporting gaming packages for the Bazzite image.
+#
+set -euo pipefail
+
+# ── 1. Install dmemcg booster ──────────────────────────────────────────────
+# Install the dmemcg-booster package, with desktop-specific variants.
+echo "==> Installing dmemcg booster..."
+dnf5 -y install dmemcg-booster
+
+if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
+    dnf5 -y install plasma-foreground-booster-dmemcg
+else
+    dnf5 -y swap \
+        --repo terra-extras \
+        uresourced uresourced-dmemcg
+fi
+
+# ── 2. Install gaming stack ────────────────────────────────────────────────
+# Install gamescope, Proton, Wine, and related graphics libraries.
+echo "==> Installing gaming stack..."
+dnf5 --enable-repo=terra-mesa \
+    --enable-repo=terra \
+    --enable-repo=terra-extras \
+    -y install \
+    terra-gamescope.x86_64 \
+    terra-gamescope-libs.x86_64 \
+    terra-gamescope-libs.i686 \
+    jupiter-sd-mounting-btrfs \
+    umu-wrapper \
+    umu-launcher \
+    dbus-x11 \
+    xrandr \
+    evtest \
+    xdg-user-dirs \
+    xdg-terminal-exec \
+    gobject-introspection \
+    libFAudio.x86_64 \
+    libFAudio.i686 \
+    vkBasalt.x86_64 \
+    vkBasalt.i686 \
+    terra-mangohud.x86_64 \
+    terra-mangohud.i686 \
+    obs-studio-plugin-vkcapture-hook-libs.x86_64 \
+    obs-studio-plugin-vkcapture-hook-libs.i686 \
+    openxr \
+    openxr-libs
+
+# ── 3. Install Steam and Lutris ────────────────────────────────────────────
+# Install the main gaming launchers without weak dependencies.
+echo "==> Installing Steam and Lutris..."
+dnf5 -y --enable-repo=terra-mesa \
+    --enable-repo=terra \
+    --setopt=install_weak_deps=False \
+    install steam lutris
+
+# ── 4. Remove conflicting gamemode ─────────────────────────────────────────
+# Remove gamemode as it conflicts with the dmemcg-based approach.
+echo "==> Removing gamemode..."
+dnf5 -y remove gamemode
+
+# ── 5. Install Winetricks ──────────────────────────────────────────────────
+# Download and install the pinned version of Winetricks.
+echo "==> Installing Winetricks..."
+/ctx/ghcurl \
+    "https://raw.githubusercontent.com/Winetricks/winetricks/5a59ea07513b24093bd90fad943ecf9543cf05bc/src/winetricks" \
+    -Lo /usr/bin/winetricks
+
+chmod +x /usr/bin/winetricks
+setfattr -n user.component -v "winetricks" /usr/bin/winetricks
+
+# ── 6. Cleanup ─────────────────────────────────────────────────────────────
+echo "==> Running cleanup..."
+/ctx/cleanup

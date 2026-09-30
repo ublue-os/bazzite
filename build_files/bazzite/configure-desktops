@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+#
+# Configure KDE (Kinoite) or GNOME desktop environment depending on the
+# BASE_IMAGE_NAME variable, plus common packages.
+#
+set -euo pipefail
+
+# ── 1. Configure desktop environment ───────────────────────────────────────
+# Install KDE for Kinoite images, or GNOME for all other variants.
+echo "==> Configuring desktop environment..."
+
+if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
+    /ctx/configure-kde
+else
+    # ── 1a. Install GNOME packages ────────────────────────────────────────
+    echo "    Installing GNOME packages..."
+    dnf5 -y install \
+        nautilus-gsconnect \
+        steamdeck-backgrounds \
+        steamdeck-gnome-presets \
+        gnome-shell-extension-user-theme \
+        gnome-shell-extension-gsconnect \
+        gnome-search-yafti \
+        gnome-rounded-blur \
+        rom-properties-gtk4 \
+        rom-properties-localsearch3 \
+        ibus-mozc \
+        openssh-askpass \
+        firewall-config
+
+    # ── 1b. Remove unnecessary GNOME packages ─────────────────────────────
+    echo "    Removing unnecessary GNOME packages..."
+    dnf5 -y remove \
+        gnome-software \
+        gnome-classic-session \
+        gnome-tour \
+        gnome-extensions-app \
+        gnome-system-monitor \
+        gnome-initial-setup \
+        gnome-shell-extension-background-logo \
+        gnome-shell-extension-apps-menu \
+        gnome-shell-extension-launch-new-instance \
+        gnome-shell-extension-places-menu \
+        gnome-shell-extension-window-list
+
+    # ── 1c. Build and install GNOME extensions ─────────────────────────────
+    echo "    Building GNOME extensions..."
+    /ctx/build-gnome-extensions
+
+    # ── 1d. Enable dconf-update service ───────────────────────────────────
+    echo "    Enabling dconf-update service..."
+    systemctl enable dconf-update.service
+fi
+
+# ── 2. Install common packages ─────────────────────────────────────────────
+# Install rom-properties-utils for both KDE and GNOME.
+echo "==> Installing common packages..."
+dnf5 -y install rom-properties-utils
+
+# ── 3. Cleanup ─────────────────────────────────────────────────────────────
+echo "==> Running cleanup..."
+/ctx/cleanup

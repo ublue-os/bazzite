@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#
+# Copy Homebrew files from the brew image into the root filesystem,
+# attach security attributes, and clean up temporary files.
+#
+set -euo pipefail
+
+# ── 1. Prepare file list from brew image ───────────────────────────────────
+# Build a null-delimited list of all files under /tmp/brew_files.
+echo "==> Preparing Homebrew file list..."
+find /tmp/brew_files -type f -printf '/%P\0' > /tmp/brew_list.txt
+
+# ── 2. Copy Homebrew files into root filesystem ────────────────────────────
+# Preserve attributes while copying all files from brew image to /.
+echo "==> Copying Homebrew files..."
+cp -a /tmp/brew_files/. /
+
+# ── 3. Attach Homebrew component attribute ─────────────────────────────────
+# Mark each copied file with the 'homebrew' component attribute.
+echo "==> Attaching component attributes..."
+xargs -0 -a /tmp/brew_list.txt setfattr -h -n user.component -v "homebrew"
+
+# ── 4. Cleanup temporary files ─────────────────────────────────────────────
+# Remove temporary file list and source directory.
+echo "==> Cleaning up temporary files..."
+rm -rf /tmp/brew_files /tmp/brew_list.txt
