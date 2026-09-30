@@ -4,6 +4,9 @@
 #
 set -euo pipefail
 
+echo "::group::Install gaming-related packages"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Install dmemcg booster --
 # Install the dmemcg-booster package, with desktop-specific variants.
 echo "==> Installing dmemcg booster..."

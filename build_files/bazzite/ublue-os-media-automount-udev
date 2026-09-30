@@ -5,6 +5,9 @@
 #
 set -euo pipefail
 
+echo "::group::Install ublue-os-media-automount-udev"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Install media automount udev rules --
 # Install the package from the ublue-os packages Copr repository.
 echo "==> Installing ublue-os-media-automount-udev..."

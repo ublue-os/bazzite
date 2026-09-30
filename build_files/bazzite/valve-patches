@@ -6,6 +6,9 @@
 #
 set -euo pipefail
 
+echo "::group::Install Valve patches"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Remove conflicting packages --
 # pipewire-config-raop conflicts with Valve's patched audio stack;
 # mesa-va-drivers conflicts with the patched Mesa from terra-mesa.

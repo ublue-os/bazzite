@@ -5,6 +5,9 @@
 #
 set -euo pipefail
 
+echo "::group::Install non-free firmware blobs"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Copy firmware into temporary staging area --
 # Extract firmware files to /tmp/firmware for processing.
 echo "==> Copying firmware files..."

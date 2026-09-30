@@ -7,6 +7,9 @@
 #
 set -euo pipefail
 
+echo "::group::Setup Copr repos (Deck)"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Enable akmods COPR repo --
 # The akmods repo is disabled by default; flip enabled=0 → enabled=1.
 echo "==> Enabling akmods COPR repo..."

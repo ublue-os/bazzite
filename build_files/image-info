@@ -4,6 +4,9 @@
 #
 set -euo pipefail
 
+echo "::group::Set image metadata"
+trap 'echo "::endgroup::"' EXIT
+
 # Set image identifiers, URLs, and branding constants.
 IMAGE_PRETTY_NAME="Bazzite"
 IMAGE_LIKE="fedora"

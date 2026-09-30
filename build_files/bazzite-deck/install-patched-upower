@@ -7,6 +7,9 @@
 #
 set -euo pipefail
 
+echo "::group::Install patched UPower"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Swap to Steam Deck-patched UPower --
 # Replace the default upower with the Bazzite-modified version from the COPR repo.
 echo "==> Installing Steam Deck-patched UPower..."

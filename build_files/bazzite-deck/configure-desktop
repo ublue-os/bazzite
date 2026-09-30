@@ -7,6 +7,9 @@
 #
 set -euo pipefail
 
+echo "::group::Configure desktop environments (Deck)"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Install sddm display manager --
 # Replace the default display manager with sddm for Bazzite.
 echo "==> Installing sddm display manager..."

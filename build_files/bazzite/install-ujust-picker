@@ -4,6 +4,9 @@
 #
 set -euo pipefail
 
+echo "::group::Install ujust picker"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Download ujust-picker from GitHub releases --
 # Fetch the latest x86_64 binary from the ublue-os/bazzite-ujust-picker repo.
 echo "==> Downloading ujust-picker..."

@@ -5,6 +5,9 @@
 #
 set -euo pipefail
 
+echo "::group::Install packages"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Install cicpoffs package from GitHub releases --
 # Fetch the latest cicpoffs RPM for the current Fedora version.
 echo "==> Installing cicpoffs package..."

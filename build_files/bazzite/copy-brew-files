@@ -5,6 +5,9 @@
 #
 set -euo pipefail
 
+echo "::group::Copy brew files"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Prepare file list from brew image --
 # Build a null-delimited list of all files under /tmp/brew_files.
 echo "==> Preparing Homebrew file list..."

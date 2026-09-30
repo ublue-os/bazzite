@@ -4,6 +4,9 @@
 #
 set -euo pipefail
 
+echo "::group::Finalize bazzite image"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Basic cleanup and setup --
 echo "==> Performing basic cleanup..."
 rm -f /etc/profile.d/toolbox.sh

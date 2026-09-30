@@ -7,6 +7,9 @@
 #
 set -euo pipefail
 
+echo "::group::Install gamescope session"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Create gamescope-session-plus directory --
 # Ensure the target directory exists before downloading files.
 echo "==> Creating gamescope-session-plus directory..."

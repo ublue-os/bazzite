@@ -5,6 +5,9 @@
 #
 set -euo pipefail
 
+echo "::group::Pin Linux firmware"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Install pinned firmware version --
 # Install the exact linux-firmware package matching the pinned version.
 echo "==> Installing pinned linux-firmware version: ${LINUX_FIRMWARE_VERSION}..."

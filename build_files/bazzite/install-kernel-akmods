@@ -4,7 +4,7 @@
 #
 set -euo pipefail
 
-echo "::group::Executing install-kernel-akmods"
+echo "::group::Install kernel akmods"
 trap 'echo "::endgroup::"' EXIT
 
 # -- 1. Create shims to bypass kernel install triggers --

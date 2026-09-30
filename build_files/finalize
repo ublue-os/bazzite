@@ -5,6 +5,9 @@
 #
 set -euo pipefail
 
+echo "::group::Finalize image"
+trap 'echo "::endgroup::"' EXIT
+
 # Tell DNF5 not to keep downloaded package cache after installation.
 dnf5 config-manager setopt keepcache=0
 

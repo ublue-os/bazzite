@@ -6,6 +6,9 @@
 #
 set -euo pipefail
 
+echo "::group::Build initramfs"
+trap 'echo "::endgroup::"' EXIT
+
 # Set KERNEL_SUFFIX based on KERNEL_FLAVOR, defaulting to empty.
 if [[ "${KERNEL_FLAVOR:-}" == "surface" ]]; then
     KERNEL_SUFFIX="surface"

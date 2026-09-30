@@ -5,6 +5,9 @@
 #
 set -euo pipefail
 
+echo "::group::Configure desktop environments"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Configure desktop environment --
 # Install KDE for Kinoite images, or GNOME for all other variants.
 echo "==> Configuring desktop environment..."

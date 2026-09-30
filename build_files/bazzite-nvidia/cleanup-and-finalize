@@ -7,6 +7,9 @@
 #
 set -euo pipefail
 
+echo "::group::Finalize bazzite-nvidia image"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Append Bazzite NVIDIA justfile include --
 # Register the NVIDIA-specific just recipes in the global justfile.
 echo "==> Appending Bazzite NVIDIA justfile include..."

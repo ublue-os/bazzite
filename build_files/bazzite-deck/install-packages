@@ -8,6 +8,9 @@
 #
 set -euo pipefail
 
+echo "::group::Install packages (Deck)"
+trap 'echo "::endgroup::"' EXIT
+
 # -- 1. Install core packages from Terra repo --
 # Install hardware support, input tools, language packs, and utilities.
 echo "==> Installing core packages from Terra repo..."
