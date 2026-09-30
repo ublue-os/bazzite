@@ -168,7 +168,13 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/bazzite/cleanup-finalize
+    <<'EOF'
+/ctx/bazzite/finalize-image-type
+
+/ctx/image-info
+/ctx/build-initramfs
+/ctx/finalize
+EOF
 
 RUN --mount=type=tmpfs,target=/run \
     --network=none \
@@ -235,7 +241,13 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-deck/cleanup-finalize
+    <<'EOF'
+/ctx/bazzite-deck/finalize-image-type
+
+/ctx/image-info
+/ctx/build-initramfs
+/ctx/finalize
+EOF
 
 RUN --mount=type=tmpfs,target=/run \
     --network=none \
@@ -279,7 +291,13 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-nvidia/cleanup-and-finalize
+    <<'EOF'
+/ctx/bazzite/finalize-image-type
+
+/ctx/image-info
+/ctx/build-initramfs
+/ctx/finalize
+EOF
 
 RUN --mount=type=tmpfs,target=/run \
     --network=none \

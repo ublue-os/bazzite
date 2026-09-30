@@ -263,9 +263,3 @@ setfattr \
     -n user.component \
     -v "bash-preexec" \
     /usr/share/bash-prexec
-
-# -- 24. Finalize image --
-echo "==> Running image finalization..."
-/ctx/image-info
-/ctx/build-initramfs
-/ctx/finalize

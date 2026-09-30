@@ -125,10 +125,8 @@ systemctl disable acpid.service
 echo "==> Cleaning up ACPI events..."
 find /etc/acpi/events -mindepth 1 -delete
 
-# -- 10. Finalize image --
-# Re-enable skip_if_unavailable in dnf5 and run final image build steps.
-echo "==> Finalizing image..."
+
+# -- 10. Re-enable skip_if_unavailable --
+# Restore the default DNF behavior after all NVIDIA configuration is complete.
+echo "==> Re-enabling skip_if_unavailable..."
 dnf5 config-manager setopt skip_if_unavailable=1
-/ctx/image-info
-/ctx/build-initramfs
-/ctx/finalize

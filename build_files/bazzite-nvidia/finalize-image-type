@@ -62,14 +62,3 @@ if [[ -f "/etc/modprobe.d/nvidia-modeset.conf" ]]; then
     echo "    Copying nvidia-modeset.conf to /usr/lib/modprobe.d..."
     cp /etc/modprobe.d/nvidia-modeset.conf /usr/lib/modprobe.d/nvidia-modeset.conf
 fi
-
-# -- 7. Generate image info and rebuild initramfs --
-echo "==> Generating image info..."
-/ctx/image-info
-
-echo "==> Rebuilding initramfs..."
-/ctx/build-initramfs
-
-# -- 8. Finalize the image --
-echo "==> Finalizing image..."
-/ctx/finalize
