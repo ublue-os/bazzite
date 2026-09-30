@@ -8,29 +8,29 @@
 #
 set -euo pipefail
 
-# ── 1. Collect installable RPMs ──────────────────────────────────────────────
+# -- 1. Collect installable RPMs --
 # Iterate over each argument (glob pattern), resolve it, and collect only
 # files that actually exist on disk.
 echo "==> Collecting RPMs to install..."
 
-declare -a install_rpms=()
+declare -a INSTALL_RPMS=()
 
 for pattern in "$@"; do
     for rpm in $pattern; do
         if [[ -f "${rpm}" ]]; then
-            install_rpms+=("${rpm}")
+            INSTALL_RPMS+=("${rpm}")
         else
             echo "    SKIPPED: ${rpm}"
         fi
     done
 done
 
-# ── 2. Install collected RPMs ────────────────────────────────────────────────
+# -- 2. Install collected RPMs --
 # Use dnf to install all collected RPMs in one transaction.
-echo "==> Installing ${#install_rpms[@]} RPM(s)..."
+echo "==> Installing ${#INSTALL_RPMS[@]} RPM(s)..."
 
-if [[ ${#install_rpms[@]} -gt 0 ]]; then
-    dnf -y install "${install_rpms[@]}"
+if [[ ${#INSTALL_RPMS[@]} -gt 0 ]]; then
+    dnf -y install "${INSTALL_RPMS[@]}"
 else
     echo "WARNING: No kmod RPMs found"
 fi

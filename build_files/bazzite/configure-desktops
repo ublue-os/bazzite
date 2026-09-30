@@ -5,7 +5,7 @@
 #
 set -euo pipefail
 
-# ── 1. Configure desktop environment ───────────────────────────────────────
+# -- 1. Configure desktop environment --
 # Install KDE for Kinoite images, or GNOME for all other variants.
 echo "==> Configuring desktop environment..."
 
@@ -15,11 +15,11 @@ else
     /ctx/desktop_env/configure-gnome
 fi
 
-# ── 2. Install common packages ─────────────────────────────────────────────
+# -- 2. Install common packages --
 # Install rom-properties-utils for both KDE and GNOME.
 echo "==> Installing common packages..."
 dnf5 -y install rom-properties-utils
 
-# ── 3. Cleanup ─────────────────────────────────────────────────────────────
+# -- 3. Cleanup --
 echo "==> Running cleanup..."
 /ctx/cleanup

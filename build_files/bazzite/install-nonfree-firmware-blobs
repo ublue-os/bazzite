@@ -5,26 +5,26 @@
 #
 set -euo pipefail
 
-# ── 1. Copy firmware into temporary staging area ───────────────────────────
+# -- 1. Copy firmware into temporary staging area --
 # Extract firmware files to /tmp/firmware for processing.
 echo "==> Copying firmware files..."
 cp -a /ctx/firmware/. /tmp/firmware
 
-# ── 2. Tag firmware as non-free ────────────────────────────────────────────
+# -- 2. Tag firmware as non-free --
 # Mark each firmware file with the 'bazzite-nonfree' component attribute.
 echo "==> Tagging firmware as non-free..."
 find /tmp/firmware -type f -exec setfattr -n user.component -v "bazzite-nonfree" {} +
 
-# ── 3. Remove git metadata ─────────────────────────────────────────────────
+# -- 3. Remove git metadata --
 # Clean up git history to keep the image size minimal.
 echo "==> Removing git metadata..."
 rm -rf /tmp/firmware/.git
 
-# ── 4. Install firmware into root filesystem ───────────────────────────────
+# -- 4. Install firmware into root filesystem --
 # Copy processed firmware files into /usr/lib/firmware or equivalent.
 echo "==> Installing firmware..."
 cp -a /tmp/firmware/. /
 
-# ── 5. Cleanup ─────────────────────────────────────────────────────────────
+# -- 5. Cleanup --
 echo "==> Cleaning up..."
 rm -rf /tmp/firmware

@@ -6,17 +6,17 @@
 #
 set -euo pipefail
 
-# ── 1. Remove conflicting packages ──────────────────────────────────────────
+# -- 1. Remove conflicting packages --
 # pipewire-config-raop conflicts with Valve's patched audio stack;
 # mesa-va-drivers conflicts with the patched Mesa from terra-mesa.
 echo "==> Removing conflicting packages..."
 dnf5 -y remove pipewire-config-raop mesa-va-drivers
 
-# ── 2. Swap in Valve's patched packages ─────────────────────────────────────
+# -- 2. Swap in Valve's patched packages --
 # bluez and Xwayland from the bazzite-multilib COPR,
 # mesa-filesystem from terra-mesa.
 echo "==> Swapping in Valve's patched packages..."
-declare -A toswap=(
+declare -A TOSWAP=(
     ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"] \
         "bluez xorg-x11-server-Xwayland"
     ["terra-mesa"] "mesa-filesystem"
@@ -27,16 +27,14 @@ echo "    Swapping wireplumber → terra-wireplumber..."
 dnf5 -y swap --allowerasing --repo terra-extras wireplumber terra-wireplumber
 
 # Swap each package from its designated repo into the patched version
-for repo in "${!toswap[@]}"; do
-    for package in ${toswap[$repo]}; do
+for repo in "${!TOSWAP[@]}"; do
+    for package in ${TOSWAP[$repo]}; do
         echo "    Swapping '$package' from '$repo'..."
         dnf5 -y swap --from-repo="$repo" "$package" "$package"
     done
 done
 
-unset -v toswap repo package
-
-# ── 3. Version-lock patched packages ────────────────────────────────────────
+# -- 3. Version-lock patched packages --
 # Prevent dnf from overwriting Valve's patched Mesa, Bluez, and Xwayland.
 echo "==> Locking package versions..."
 dnf5 versionlock add \
@@ -55,7 +53,7 @@ dnf5 versionlock add \
     NetworkManager-wifi \
     NetworkManager-libnm
 
-# ── 4. Install Mesa OpenCL & 32-bit EGL ─────────────────────────────────────
+# -- 4. Install Mesa OpenCL & 32-bit EGL --
 # intel-opencl and clinfo for OpenCL support; mesa-libEGL.i686 for 32-bit compat.
 echo "==> Installing Mesa OpenCL and 32-bit EGL..."
 dnf5 --enable-repo=terra-mesa -y install \
@@ -63,12 +61,12 @@ dnf5 --enable-repo=terra-mesa -y install \
     intel-opencl \
     clinfo
 
-# ── 5. Install audio codec support ──────────────────────────────────────────
+# -- 5. Install audio codec support --
 # libfreeaptx for A2DP aptX audio codec support.
 echo "==> Installing libfreeaptx..."
 dnf5 -y install libfreeaptx
 
-# ── 6. Install multimedia codecs & MakeMKV ──────────────────────────────────
+# -- 6. Install multimedia codecs & MakeMKV --
 # OpenH264 (both arches), libbluray, and MakeMKV from fedora-multimedia.
 echo "==> Installing OpenH264, libbluray, and MakeMKV..."
 dnf5 -y install --enable-repo="*fedora-multimedia*" --allowerasing \
@@ -80,7 +78,7 @@ dnf5 -y install --enable-repo="*fedora-multimedia*" \
     libbluray-utils \
     makemkv
 
-# ── 7. Hide MakeMKV from application menu ───────────────────────────────────
+# -- 7. Hide MakeMKV from application menu --
 # Mark as hidden so it doesn't clutter the app launcher.
 echo "==> Hiding MakeMKV from application menu..."
 desktop-file-edit \
@@ -88,7 +86,7 @@ desktop-file-edit \
     --set-value=true \
     /usr/share/applications/makemkv.desktop
 
-# ── 8. Create library symlinks ──────────────────────────────────────────────
+# -- 8. Create library symlinks --
 # Symlink libmmbd.so to libaacs.so and libbdplus.so for Blu-ray decryption.
 echo "==> Creating library symlinks..."
 ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libaacs.so.0
@@ -96,6 +94,6 @@ ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libaacs.so.0.7.2
 ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libbdplus.so.0
 ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libbdplus.so.0.2.0
 
-# ── 9. Cleanup ──────────────────────────────────────────────────────────────
+# -- 9. Cleanup --
 echo "==> Running cleanup..."
 /ctx/cleanup

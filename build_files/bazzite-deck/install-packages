@@ -8,7 +8,7 @@
 #
 set -euo pipefail
 
-# ── 1. Install core packages from Terra repo ────────────────────────────────
+# -- 1. Install core packages from Terra repo --
 # Install hardware support, input tools, language packs, and utilities.
 echo "==> Installing core packages from Terra repo..."
 dnf5 -y install --enable-repo=terra \
@@ -39,14 +39,14 @@ dnf5 -y install --enable-repo=terra \
     python-crcmod \
     acpid
 
-# ── 2. Install KDE-specific packages ────────────────────────────────────────
+# -- 2. Install KDE-specific packages --
 # Add the TDP control applet when building for Kinoite.
 echo "==> Installing KDE-specific packages..."
 if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
     dnf5 -y install --enable-repo=terra plasma-applet-tdp-control
 fi
 
-# ── 3. Configure gamescope-session-plus ─────────────────────────────────────
+# -- 3. Configure gamescope-session-plus --
 # Set executable permissions and update bootstrap paths and client command.
 echo "==> Configuring gamescope-session-plus..."
 chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus
@@ -60,7 +60,7 @@ sed -i \
     's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="opengamepadui --accessibility disabled --overlay-mode --steam-input --steamos-manager --skip-update-pack|' \
     /usr/share/gamescope-session-plus/sessions.d/ogui-steam
 
-# ── 4. Install jupiter-dock-updater ─────────────────────────────────────────
+# -- 4. Install jupiter-dock-updater --
 # Clone and deploy the jupiter-dock-updater binary with component metadata.
 echo "==> Installing jupiter-dock-updater..."
 git clone https://gitlab.com/evlaV/jupiter-dock-updater-bin.git \
@@ -73,14 +73,14 @@ setfattr \
     -v "jupiter-dock-updater" \
     /usr/libexec/jupiter-dock-updater/*
 
-# ── 5. Create steamos-logger symlinks ───────────────────────────────────────
+# -- 5. Create steamos-logger symlinks --
 # Alias steamos-logger as steamos-info, steamos-notice, and steamos-warning.
 echo "==> Creating steamos-logger symlinks..."
 ln -s /usr/bin/steamos-logger /usr/bin/steamos-info
 ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice
 ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning
 
-# ── 6. Run cleanup ──────────────────────────────────────────────────────────
+# -- 6. Run cleanup --
 # Clean up package manager caches and temporary files.
 echo "==> Running cleanup..."
 /ctx/cleanup

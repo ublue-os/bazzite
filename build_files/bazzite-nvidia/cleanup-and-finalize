@@ -7,12 +7,12 @@
 #
 set -euo pipefail
 
-# ── 1. Append Bazzite NVIDIA justfile include ───────────────────────────────
+# -- 1. Append Bazzite NVIDIA justfile include --
 # Register the NVIDIA-specific just recipes in the global justfile.
 echo "==> Appending Bazzite NVIDIA justfile include..."
 echo 'import "/usr/share/ublue-os/just/95-bazzite-nvidia.just"' >> /usr/share/ublue-os/justfile
 
-# ── 2. Handle Silverblue dconf overrides ────────────────────────────────────
+# -- 2. Handle Silverblue dconf overrides --
 # On Silverblue-based images, copy and convert gschema overrides to dconf
 # format, then remove the original gschema override files.
 if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then
@@ -31,14 +31,14 @@ if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then
     rm "/usr/share/ublue-os/dconfs/nvidia-silverblue/zz0-"*"-bazzite-nvidia-silverblue-"*".gschema.override"
 fi
 
-# ── 3. Remove nvidia_peermem from dracut config ─────────────────────────────
+# -- 3. Remove nvidia_peermem from dracut config --
 # nvidia_peermem is not needed and can cause issues during initramfs generation.
 echo "==> Removing nvidia_peermem from dracut config..."
 sed -i \
     's/ nvidia_peermem\b//' \
     /usr/lib/dracut/dracut.conf.d/99-nvidia.conf
 
-# ── 4. Configure NVIDIA systemd services ────────────────────────────────────
+# -- 4. Configure NVIDIA systemd services --
 # Enable power management and flatpak sync services; disable persistence
 # service which is not required for most use cases.
 echo "==> Configuring NVIDIA systemd services..."
@@ -47,12 +47,12 @@ systemctl disable nvidia-persistenced.service
 systemctl enable ublue-nvidia-flatpak-runtime-sync
 systemctl enable ublue-nvidia-flatpak-runtime-verify
 
-# ── 5. Re-enable skip_if_unavailable ────────────────────────────────────────
+# -- 5. Re-enable skip_if_unavailable --
 # Restore the default DNF behavior after all NVIDIA configuration is complete.
 echo "==> Re-enabling skip_if_unavailable..."
 dnf5 config-manager setopt skip_if_unavailable=1
 
-# ── 6. Copy nvidia-modeset.conf if present ──────────────────────────────────
+# -- 6. Copy nvidia-modeset.conf if present --
 # Ensure the modeset configuration is available in /usr/lib/modprobe.d
 # for early kernel module loading.
 if [[ -f "/etc/modprobe.d/nvidia-modeset.conf" ]]; then
@@ -60,13 +60,13 @@ if [[ -f "/etc/modprobe.d/nvidia-modeset.conf" ]]; then
     cp /etc/modprobe.d/nvidia-modeset.conf /usr/lib/modprobe.d/nvidia-modeset.conf
 fi
 
-# ── 7. Generate image info and rebuild initramfs ────────────────────────────
+# -- 7. Generate image info and rebuild initramfs --
 echo "==> Generating image info..."
 /ctx/image-info
 
 echo "==> Rebuilding initramfs..."
 /ctx/build-initramfs
 
-# ── 8. Finalize the image ───────────────────────────────────────────────────
+# -- 8. Finalize the image --
 echo "==> Finalizing image..."
 /ctx/finalize

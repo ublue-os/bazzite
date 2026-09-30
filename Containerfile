@@ -170,7 +170,9 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=secret,id=GITHUB_TOKEN \
     /ctx/bazzite/cleanup-finalize
 
-RUN --mount=type=tmpfs,target=/run --network=none bootc container lint
+RUN --mount=type=tmpfs,target=/run \
+    --network=none \
+    bootc container lint
 
 ################
 # DECK BUILDS

@@ -4,7 +4,7 @@
 #
 set -euo pipefail
 
-# ── 1. Install dmemcg booster ──────────────────────────────────────────────
+# -- 1. Install dmemcg booster --
 # Install the dmemcg-booster package, with desktop-specific variants.
 echo "==> Installing dmemcg booster..."
 dnf5 -y install dmemcg-booster
@@ -17,7 +17,7 @@ else
         uresourced uresourced-dmemcg
 fi
 
-# ── 2. Install gaming stack ────────────────────────────────────────────────
+# -- 2. Install gaming stack --
 # Install gamescope, Proton, Wine, and related graphics libraries.
 echo "==> Installing gaming stack..."
 dnf5 --enable-repo=terra-mesa \
@@ -47,7 +47,7 @@ dnf5 --enable-repo=terra-mesa \
     openxr \
     openxr-libs
 
-# ── 3. Install Steam and Lutris ────────────────────────────────────────────
+# -- 3. Install Steam and Lutris --
 # Install the main gaming launchers without weak dependencies.
 echo "==> Installing Steam and Lutris..."
 dnf5 -y --enable-repo=terra-mesa \
@@ -55,12 +55,12 @@ dnf5 -y --enable-repo=terra-mesa \
     --setopt=install_weak_deps=False \
     install steam lutris
 
-# ── 4. Remove conflicting gamemode ─────────────────────────────────────────
+# -- 4. Remove conflicting gamemode --
 # Remove gamemode as it conflicts with the dmemcg-based approach.
 echo "==> Removing gamemode..."
 dnf5 -y remove gamemode
 
-# ── 5. Install Winetricks ──────────────────────────────────────────────────
+# -- 5. Install Winetricks --
 # Download and install the pinned version of Winetricks.
 echo "==> Installing Winetricks..."
 /ctx/ghcurl \
@@ -68,8 +68,11 @@ echo "==> Installing Winetricks..."
     -Lo /usr/bin/winetricks
 
 chmod +x /usr/bin/winetricks
-setfattr -n user.component -v "winetricks" /usr/bin/winetricks
+setfattr \
+    -n user.component \
+    -v "winetricks" \
+    /usr/bin/winetricks
 
-# ── 6. Cleanup ─────────────────────────────────────────────────────────────
+# -- 6. Cleanup --
 echo "==> Running cleanup..."
 /ctx/cleanup

@@ -5,7 +5,7 @@
 #
 set -euo pipefail
 
-# ── 1. Install pinned firmware version ─────────────────────────────────────
+# -- 1. Install pinned firmware version --
 # Install the exact linux-firmware package matching the pinned version.
 echo "==> Installing pinned linux-firmware version: ${LINUX_FIRMWARE_VERSION}..."
 dnf5 -y install \
@@ -14,6 +14,6 @@ dnf5 -y install \
     "linux-firmware-${LINUX_FIRMWARE_VERSION}*" \
     "linux-firmware-whence-${LINUX_FIRMWARE_VERSION}*"
 
-# ── 2. Cleanup ─────────────────────────────────────────────────────────────
+# -- 2. Cleanup --
 echo "==> Running cleanup..."
 /ctx/cleanup

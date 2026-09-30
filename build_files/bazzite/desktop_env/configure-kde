@@ -7,7 +7,7 @@
 #
 set -euo pipefail
 
-# ── 1. Install KDE packages ─────────────────────────────────────────────────
+# -- 1. Install KDE packages --
 # Install required KDE packages, input method frameworks, and supporting tools.
 echo "==> Installing KDE packages..."
 
@@ -26,7 +26,7 @@ dnf5 -y install \
     plasma-oxygen \
     oxygen-icon-theme
 
-# ── 2. Remove unnecessary packages ──────────────────────────────────────────
+# -- 2. Remove unnecessary packages --
 # Remove default Fedora KDE packages that conflict with Bazzite customization.
 echo "==> Removing unnecessary packages..."
 
@@ -38,7 +38,7 @@ dnf5 -y remove \
     kde-partitionmanager \
     plasma-discover{,-libs}
 
-# ── 3. Swap conflicting packages ────────────────────────────────────────────
+# -- 3. Swap conflicting packages --
 # Replace kio-extras with the Bazzite version from the multilib COPR.
 echo "==> Swapping kio-extras for Bazzite version..."
 
@@ -46,11 +46,12 @@ dnf5 -y swap \
     --repo copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib \
     kio-extras kio-extras
 
-# ── 4. Configure layout and wallpaper ───────────────────────────────────────
+# -- 4. Configure layout and wallpaper --
 # Apply Bazzite pin configuration, set default wallpapers, and clean up legacy files.
 echo "==> Configuring layout and wallpaper..."
 
-sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' \
+sed -i \
+    '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' \
     /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js
 
 ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl

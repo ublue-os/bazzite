@@ -7,20 +7,20 @@
 #
 set -euo pipefail
 
-# ── 1. Configure desktop autostart ──────────────────────────────────────────
+# -- 1. Configure desktop autostart --
 # Move Steam autostart entry to the system-wide autostart directory.
 echo "==> Configuring desktop autostart..."
 mkdir -p "/etc/xdg/autostart"
 mv "/etc/skel/.config/autostart/steam.desktop" "/etc/xdg/autostart/steam.desktop"
 
-# ── 2. Configure Waydroid desktop entry ─────────────────────────────────────
+# -- 2. Configure Waydroid desktop entry --
 # Update Waydroid launch command and add Steam library metadata.
 echo "==> Configuring Waydroid desktop entry..."
 sed -i \
     's@Exec=waydroid first-launch@Exec=/usr/bin/waydroid-launcher first-launch\nX-Steam-Library-Capsule=/usr/share/applications/Waydroid/capsule.png\nX-Steam-Library-Hero=/usr/share/applications/Waydroid/hero.png\nX-Steam-Library-Logo=/usr/share/applications/Waydroid/logo.png\nX-Steam-Library-StoreCapsule=/usr/share/applications/Waydroid/store-logo.png\nX-Steam-Controller-Template=Desktop@g' \
     /usr/share/applications/Waydroid.desktop
 
-# ── 3. Configure steamos-manager platform.toml ──────────────────────────────
+# -- 3. Configure steamos-manager platform.toml --
 # Update library paths and set the desktop session based on the target image.
 echo "==> Configuring steamos-manager platform.toml..."
 sed -i \
@@ -38,7 +38,7 @@ fi
 
 printf "[scx]\nscx_service = \"scx_loader.service\"\n" >> /usr/share/steamos-manager/platform.toml
 
-# ── 4. Hide input-remapper desktop entries ──────────────────────────────────
+# -- 4. Hide input-remapper desktop entries --
 # Prevent input-remapper GUI and autoload from appearing in desktop menus.
 echo "==> Hiding input-remapper desktop entries..."
 sed -i \
@@ -48,7 +48,7 @@ sed -i \
     's@\[Desktop Entry\]@\[Desktop Entry\]\nHidden=true@g' \
     /etc/xdg/autostart/input-remapper-autoload.desktop
 
-# ── 5. Disable COPR repos ──────────────────────────────────────────────────
+# -- 5. Disable COPR repos --
 # Disable the COPR repositories after installation is complete.
 echo "==> Disabling COPR repos..."
 for copr in \
@@ -59,16 +59,15 @@ for copr in \
     ycollet/audinux; do
     dnf5 -y copr disable -y "${copr}"
 done
-unset -v copr
 
-# ── 6. Remove redundant desktop entries ─────────────────────────────────────
+# -- 6. Remove redundant desktop entries --
 # Clean up the bazzite-steam-bpm desktop entry if it exists.
 echo "==> Removing redundant desktop entries..."
 if [[ -f "/usr/share/applications/bazzite-steam-bpm.desktop" ]]; then
     rm -v /usr/share/applications/bazzite-steam-bpm.desktop
 fi
 
-# ── 7. Configure gamemode-news-hook ─────────────────────────────────────────
+# -- 7. Configure gamemode-news-hook --
 # Set the announcements JSON URL based on the image branch.
 echo "==> Configuring gamemode-news-hook..."
 news_branch="${IMAGE_BRANCH}"
@@ -76,11 +75,12 @@ case "${news_branch}" in
     testing|unstable) ;;
     *) news_branch="stable" ;;
 esac
+
 sed -i \
     "s|^github = .*|github = https://raw.githubusercontent.com/ublue-os/bazzite-gamemode-news/refs/heads/${news_branch}/announcements.json|" \
     /etc/gamemode-news-hook.conf
 
-# ── 8. Configure systemd services ───────────────────────────────────────────
+# -- 8. Configure systemd services --
 # Set up symlinks, modify service files, and enable/disable services as needed.
 echo "==> Configuring systemd services..."
 mkdir -p /usr/lib/systemd/user/gamescope-session-plus@ogui-steam.service.wants
@@ -117,12 +117,12 @@ systemctl disable jupiter-biosupdate.service
 systemctl disable jupiter-controller-update.service
 systemctl disable acpid.service
 
-# ── 9. Clean up ACPI events ─────────────────────────────────────────────────
+# -- 9. Clean up ACPI events --
 # Remove all ACPI event configuration files.
 echo "==> Cleaning up ACPI events..."
 find /etc/acpi/events -mindepth 1 -delete
 
-# ── 10. Finalize image ──────────────────────────────────────────────────────
+# -- 10. Finalize image --
 # Re-enable skip_if_unavailable in dnf5 and run final image build steps.
 echo "==> Finalizing image..."
 dnf5 config-manager setopt skip_if_unavailable=1

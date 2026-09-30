@@ -4,35 +4,40 @@
 #
 set -euo pipefail
 
-# ── 1. Basic cleanup and setup ─────────────────────────────────────────────
+# -- 1. Basic cleanup and setup --
 echo "==> Performing basic cleanup..."
 rm -f /etc/profile.d/toolbox.sh
 mkdir -p /var/tmp
 chmod 1777 /var/tmp
 
-# ── 2. Copy libdrm symlinks ────────────────────────────────────────────────
+# -- 2. Copy libdrm symlinks --
 # Preserve libdrm symlinks for compatibility.
 echo "==> Configuring libdrm symlinks..."
 cp --no-dereference --preserve=links /usr/lib/libdrm.so.2 /usr/lib/libdrm.so
 cp --no-dereference --preserve=links /usr/lib64/libdrm.so.2 /usr/lib64/libdrm.so
 
-# ── 3. Patch steam desktop entry ───────────────────────────────────────────
+# -- 3. Patch steam desktop entry --
 # Redirect steam.desktop to use bazzite-steam wrapper.
 echo "==> Patching steam desktop entry..."
-sed -i 's@/usr/bin/steam@/usr/bin/bazzite-steam@g' /usr/share/applications/steam.desktop
-sed -i 's@Exec=steam steam://open/bigpicture@Exec=/usr/bin/bazzite-steam-bpm@g' \
+sed -i \
+    's@/usr/bin/steam@/usr/bin/bazzite-steam@g' \
     /usr/share/applications/steam.desktop
 
-# ── 4. Configure steam autostart for all users ─────────────────────────────
+sed -i \
+    's@Exec=steam steam://open/bigpicture@Exec=/usr/bin/bazzite-steam-bpm@g' \
+    /usr/share/applications/steam.desktop
+
+# -- 4. Configure steam autostart for all users --
 # Copy steam.desktop to skel autostart with silent flag.
 echo "==> Configuring steam autostart..."
 mkdir -p /etc/skel/.config/autostart/
 cp "/usr/share/applications/steam.desktop" \
     "/etc/skel/.config/autostart/steam.desktop"
-sed -i 's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' \
+sed -i \
+    's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' \
     /etc/skel/.config/autostart/steam.desktop
 
-# ── 5. Hide unnecessary desktop entries ────────────────────────────────────
+# -- 5. Hide unnecessary desktop entries --
 echo "==> Hiding unnecessary desktop entries..."
 desktop-file-edit --set-key=Hidden --set-value=true \
     /usr/share/applications/nvtop.desktop
@@ -43,21 +48,24 @@ desktop-file-edit --set-key=Hidden --set-value=true \
 desktop-file-edit --set-key=Hidden --set-value=true \
     /usr/share/applications/com.microsoft.edit.desktop
 
-# ── 6. Configure Bluetooth input ───────────────────────────────────────────
+# -- 6. Configure Bluetooth input --
 echo "==> Configuring Bluetooth input..."
-sed -i 's/#UserspaceHID.*/UserspaceHID=true/' /etc/bluetooth/input.conf
+sed -i \
+    's/#UserspaceHID.*/UserspaceHID=true/' \
+    /etc/bluetooth/input.conf
 
-# ── 7. Patch grub2-mkconfig ────────────────────────────────────────────────
+# -- 7. Patch grub2-mkconfig --
 # Fix grub_probe path for chroot compatibility.
 echo "==> Patching grub2-mkconfig..."
-sed -i 's|grub_probe\} --target=device /\`|grub_probe} --target=device /sysroot\`|g' \
+sed -i \
+    's|grub_probe\} --target=device /\`|grub_probe} --target=device /sysroot\`|g' \
     /usr/bin/grub2-mkconfig
 
-# ── 8. Remove keep-warm service override ───────────────────────────────────
+# -- 8. Remove keep-warm service override --
 echo "==> Removing keep-warm service override..."
 rm -f /usr/lib/systemd/system/service.d/50-keep-warm.conf
 
-# ── 9. Add justfile imports ────────────────────────────────────────────────
+# -- 9. Add justfile imports --
 echo "==> Adding justfile imports..."
 cat >> /usr/share/ublue-os/justfile <<'EOF'
 import "/usr/share/ublue-os/just/80-bazzite.just"
@@ -83,7 +91,7 @@ import "/usr/share/ublue-os/just/94-bazzite-protonplus.just"
 import "/usr/share/ublue-os/just/95-bazzite-deck-session.just"
 EOF
 
-# ── 10. Handle Silverblue dconf overrides ──────────────────────────────────
+# -- 10. Handle Silverblue dconf overrides --
 # Convert gschema overrides to dconf format for Silverblue images.
 echo "==> Configuring Silverblue dconf overrides..."
 if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then
@@ -96,7 +104,8 @@ if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then
     dconf-override-converter to-dconf \
         "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override"
 
-    sed -i 's/\[org.gtk.Settings.FileChooser\]/\[org\/gtk\/settings\/file-chooser\]/g; s/\[org.gtk.gtk4.Settings.FileChooser\]/\[org\/gtk\/gtk4\/settings\/file-chooser\]/g' \
+    sed -i \
+        's/\[org.gtk.Settings.FileChooser\]/\[org\/gtk\/settings\/file-chooser\]/g; s/\[org.gtk.gtk4.Settings.FileChooser\]/\[org\/gtk\/gtk4\/settings\/file-chooser\]/g' \
         "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-00-bazzite-desktop-silverblue-global"
 
     rm "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override"
@@ -111,11 +120,13 @@ if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then
     rm -r /tmp/bazzite-schema-test
 fi
 
-# ── 11. Disable rpm-ostree stage ───────────────────────────────────────────
+# -- 11. Disable rpm-ostree stage --
 echo "==> Disabling rpm-ostree stage..."
-sed -i 's/stage/none/g' /etc/rpm-ostreed.conf
+sed -i \
+    's/stage/none/g' \
+    /etc/rpm-ostreed.conf
 
-# ── 12. Disable repository files ───────────────────────────────────────────
+# -- 12. Disable repository files --
 echo "==> Disabling repository files..."
 for repo in \
     fedora-cisco-openh264 \
@@ -124,10 +135,12 @@ for repo in \
     terra \
     terra-extras \
     negativo17-fedora-multimedia; do
-    sed -i 's@enabled=1@enabled=0@g' "/etc/yum.repos.d/${repo}.repo"
+    sed -i \
+        's@enabled=1@enabled=0@g' \
+        "/etc/yum.repos.d/${repo}.repo"
 done
 
-# ── 13. Disable Copr repositories ──────────────────────────────────────────
+# -- 13. Disable Copr repositories --
 echo "==> Disabling Copr repositories..."
 for copr in \
     ublue-os/bazzite \
@@ -138,35 +151,44 @@ for copr in \
     che/nerd-fonts; do
     dnf5 -y copr disable "${copr}"
 done
-unset -v copr
 
 eval "$(/ctx/dnf5-setopt setopt '*negativo17*' enabled=0)"
 
-# ── 14. Patch setroubleshoot path ──────────────────────────────────────────
+# -- 14. Patch setroubleshoot path --
 echo "==> Patching setroubleshoot path..."
-sed -i 's#/var/lib/selinux#/etc/selinux#g' \
+sed -i \
+    's#/var/lib/selinux#/etc/selinux#g' \
     /usr/lib/python3.*/site-packages/setroubleshoot/util.py
 
-# ── 15. Patch tuned profiles ───────────────────────────────────────────────
+# -- 15. Patch tuned profiles --
 echo "==> Patching tuned profiles..."
-sed -i 's/power-saver=powersave$/power-saver=powersave-bazzite/' /etc/tuned/ppd.conf
-sed -i 's/balanced=balanced$/balanced=balanced-bazzite/' /etc/tuned/ppd.conf
-sed -i 's/performance=throughput-performance$/performance=throughput-performance-bazzite/' \
-    /etc/tuned/ppd.conf
-sed -i 's/balanced=balanced-battery$/balanced=balanced-battery-bazzite\npower-saver=powersave-battery-bazzite/' \
+sed -i \
+    's/power-saver=powersave$/power-saver=powersave-bazzite/' \
     /etc/tuned/ppd.conf
 
-# ── 16. Create pulseaudio stub ─────────────────────────────────────────────
+sed -i \
+    's/balanced=balanced$/balanced=balanced-bazzite/' \
+    /etc/tuned/ppd.conf
+
+sed -i \
+    's/performance=throughput-performance$/performance=throughput-performance-bazzite/' \
+    /etc/tuned/ppd.conf
+
+sed -i \
+    's/balanced=balanced-battery$/balanced=balanced-battery-bazzite\npower-saver=powersave-battery-bazzite/' \
+    /etc/tuned/ppd.conf
+
+# -- 16. Create pulseaudio stub --
 echo "==> Creating pulseaudio stub..."
 ln -s /usr/bin/true /usr/bin/pulseaudio
 
-# ── 17. Configure Flatpak ──────────────────────────────────────────────────
+# -- 17. Configure Flatpak --
 echo "==> Configuring Flatpak..."
 mkdir -p /etc/flatpak/remotes.d
 curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo \
     https://dl.flathub.org/repo/flathub.flatpakrepo
 
-# ── 18. Configure systemd services ─────────────────────────────────────────
+# -- 18. Configure systemd services --
 echo "==> Configuring systemd services..."
 systemctl enable brew-setup.service
 systemctl disable fw-fanctrl.service
@@ -194,43 +216,52 @@ systemctl enable dmemcg-booster-system.service
 systemctl --global enable dmemcg-booster-user.service
 systemctl enable cardwired.service
 
-# ── 19. Download DXVK example config ───────────────────────────────────────
+# -- 19. Download DXVK example config --
 echo "==> Downloading DXVK example config..."
 /ctx/ghcurl \
     "https://raw.githubusercontent.com/doitsujin/dxvk/3a4c6fa3cb1548d56a90a38dd8f526b6c13e63fd/dxvk.conf" \
     -Lo /etc/dxvk-example.conf
 
-# ── 20. Download waydroid GPU selector ─────────────────────────────────────
+# -- 20. Download waydroid GPU selector --
 echo "==> Downloading waydroid GPU selector..."
 /ctx/ghcurl \
     "https://raw.githubusercontent.com/ublue-os/waydroid-scripts/main/waydroid-choose-gpu.sh" \
     -Lo /usr/bin/waydroid-choose-gpu
 chmod +x /usr/bin/waydroid-choose-gpu
 
-# ── 21. Configure DNF fallback ─────────────────────────────────────────────
+# -- 21. Configure DNF fallback --
 echo "==> Configuring DNF fallback..."
 dnf5 config-manager setopt skip_if_unavailable=1
 
-# ── 22. Download distrobox configs ─────────────────────────────────────────
+# -- 22. Download distrobox configs --
 echo "==> Downloading distrobox configs..."
 /ctx/ghcurl \
     "https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/distrobox.ini" \
     -Lo /etc/distrobox/docker.ini
-setfattr -n user.component -v "toolbox-config" /etc/distrobox/docker.ini
+setfattr \
+    -n user.component \
+    -v "toolbox-config" \
+    /etc/distrobox/docker.ini
 
 /ctx/ghcurl \
     "https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/incus/distrobox.ini" \
     -Lo /etc/distrobox/incus.ini
-setfattr -n user.component -v "toolbox-config" /etc/distrobox/incus.ini
+setfattr \
+    -n user.component \
+    -v "toolbox-config" \
+    /etc/distrobox/incus.ini
 
-# ── 23. Download bash-preexec ──────────────────────────────────────────────
+# -- 23. Download bash-preexec --
 echo "==> Downloading bash-preexec..."
 /ctx/ghcurl \
     "https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh" \
     -Lo /usr/share/bash-prexec
-setfattr -n user.component -v "bash-preexec" /usr/share/bash-prexec
+setfattr \
+    -n user.component \
+    -v "bash-preexec" \
+    /usr/share/bash-prexec
 
-# ── 24. Finalize image ─────────────────────────────────────────────────────
+# -- 24. Finalize image --
 echo "==> Running image finalization..."
 /ctx/image-info
 /ctx/build-initramfs

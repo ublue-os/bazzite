@@ -5,18 +5,18 @@
 #
 set -euo pipefail
 
-# ── 1. Install media automount udev rules ──────────────────────────────────
+# -- 1. Install media automount udev rules --
 # Install the package from the ublue-os packages Copr repository.
 echo "==> Installing ublue-os-media-automount-udev..."
 dnf5 install -y \
     --enable-repo=copr:copr.fedorainfracloud.org:ublue-os:packages \
     ublue-os-media-automount-udev
 
-# ── 2. Enable the automount service ────────────────────────────────────────
+# -- 2. Enable the automount service --
 # Enable the service, ignoring errors if it is already enabled.
 echo "==> Enabling automount service..."
 systemctl enable ublue-os-media-automount.service || true
 
-# ── 3. Cleanup ─────────────────────────────────────────────────────────────
+# -- 3. Cleanup --
 echo "==> Running cleanup..."
 /ctx/cleanup

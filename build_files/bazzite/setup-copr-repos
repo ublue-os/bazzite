@@ -5,17 +5,17 @@
 #
 set -euo pipefail
 
-# ── 1. Cache configuration ─────────────────────────────────────────────────
+# -- 1. Cache configuration --
 # Ensure cache directory exists and enable package caching in DNF.
 echo "==> Configuring DNF cache..."
 mkdir -p /var/roothome
 dnf5 config-manager setopt keepcache=1
 
-# ── 2. Enable Copr repositories ────────────────────────────────────────────
+# -- 2. Enable Copr repositories --
 # Enable each Copr repo and set its priority to 98.
 echo "==> Enabling Copr repositories..."
 
-declare -A copr_repos=(
+declare -A COPR_REPOS=(
     ["ublue-os/bazzite"] ""
     ["ublue-os/bazzite-multilib"] ""
     ["ublue-os/staging"] ""
@@ -24,16 +24,14 @@ declare -A copr_repos=(
     ["che/nerd-fonts"] ""
 )
 
-for copr in "${!copr_repos[@]}"; do
+for copr in "${!COPR_REPOS[@]}"; do
     echo "    Enabling copr: ${copr}..."
     dnf5 -y copr enable "${copr}"
     dnf5 -y config-manager \
         setopt "copr:copr.fedorainfracloud.org:${copr////:}.priority=98"
 done
 
-unset -v copr copr_repos
-
-# ── 3. Install Terra-release packages ──────────────────────────────────────
+# -- 3. Install Terra-release packages --
 # Add the Terra repository and install its release packages.
 echo "==> Installing Terra release packages..."
 dnf5 -y install \
@@ -41,18 +39,20 @@ dnf5 -y install \
     --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' \
     terra-release{,-extras,-mesa}
 
-# ── 4. Add Tailscale repository ────────────────────────────────────────────
+# -- 4. Add Tailscale repository --
 echo "==> Adding Tailscale repository..."
 dnf5 -y config-manager \
     addrepo \
     --overwrite \
     --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo
 
-# ── 5. Enable negativo17 multimedia repository ─────────────────────────────
+# -- 5. Enable negativo17 multimedia repository --
 echo "==> Enabling negativo17 multimedia repository..."
-sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
+sed -i \
+    's@enabled=0@enabled=1@g' \
+    /etc/yum.repos.d/negativo17-fedora-multimedia.repo
 
-# ── 6. Configure repository priorities and exclusions ──────────────────────
+# -- 6. Configure repository priorities and exclusions --
 # Set priority and exclusion rules for each repository.
 echo "==> Configuring repository priorities and exclusions..."
 
@@ -76,7 +76,7 @@ dnf5 -y config-manager setopt "*audinux*".exclude="kernel*"
 dnf5 -y config-manager \
     setopt "*staging*".exclude="scx-tools scx-scheds kf6-* mesa* mutter*"
 
-# ── 7. Versionlock KDE packages for Kinoite ────────────────────────────────
+# -- 7. Versionlock KDE packages for Kinoite --
 # On Kinoite images, lock qt6 and plasma packages to prevent unwanted updates.
 echo "==> Checking for Kinoite image..."
 if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
@@ -85,6 +85,6 @@ if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
     dnf versionlock add "plasma-*"
 fi
 
-# ── 8. Cleanup ─────────────────────────────────────────────────────────────
+# -- 8. Cleanup --
 echo "==> Running cleanup..."
 /ctx/cleanup
